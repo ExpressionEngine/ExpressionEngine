@@ -69,18 +69,18 @@ class Notifications {
 	{
 		ee()->load->library('typography');
 		ee()->typography->initialize(array(
-			'parse_images'		=> FALSE,
-			'allow_headings'	=> FALSE,
-			'smileys'			=> FALSE,
-			'word_censor'		=> (ee()->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
+			'parse_images'   => FALSE,
+			'allow_headings' => FALSE,
+			'smileys'        => FALSE,
+			'word_censor'    => (ee()->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
 		);
 
 		$parsed_comment = ee()->typography->parse_type(
 			$comment->comment,
 			array(
-				'text_format'	=> 'none',
-				'html_format'	=> 'none',
-				'auto_links'	=> 'n',
+				'text_format'   => 'none',
+				'html_format'   => 'none',
+				'auto_links'    => 'n',
 				'allow_img_url' => 'n'
 			)
 		);
@@ -94,26 +94,26 @@ class Notifications {
 		$action_id  = ee()->functions->fetch_action_id('Comment_mcp', 'delete_comment_notification');
 
 		$this->variables = array(
-			'approve_link'      => ee('CP/URL')->make('addons/settings/comment/delete_comment_confirm', array('comment_id' => $comment->comment_id, 'status' => 'o')),
-			'channel_id'        => $comment->channel_id,
-			'channel_name'      => $comment->Channel->channel_title,
-			'close_link'        => ee('CP/URL')->make('addons/settings/comment/delete_comment_confirm', array('comment_id' => $comment->comment_id, 'status' => 'c')),
-			'comment'           => $parsed_comment,
-			'comment_id'        => $comment->comment_id,
-			'comment_url'       => reduce_double_slashes(ee()->input->remove_session_id(ee()->functions->fetch_site_index().'/'.$url)),
+			'approve_link' => ee('CP/URL')->make('addons/settings/comment/delete_comment_confirm', array('comment_id' => $comment->comment_id, 'status' => 'o')),
+			'channel_id'   => $comment->channel_id,
+			'channel_name' => $comment->Channel->channel_title,
+			'close_link'   => ee('CP/URL')->make('addons/settings/comment/delete_comment_confirm', array('comment_id' => $comment->comment_id, 'status' => 'c')),
+			'comment'      => $parsed_comment,
+			'comment_id'   => $comment->comment_id,
+			'comment_url'  => reduce_double_slashes(ee()->input->remove_session_id(ee()->functions->fetch_site_index().'/'.$url)),
 			'comment_url_title_auto_path' => reduce_double_slashes($path.'/'.$comment->Entry->url_title),
-			'delete_link'       => ee('CP/URL')->make('addons/settings/comment/delete_comment_confirm', array('comment_id' => $comment->comment_id)),
-			'email'             => $comment->email,
-			'entry_id'          => $comment->entry_id,
-			'entry_title'       => $comment->Entry->title,
-			'location'          => $comment->location,
-			'name'              => $comment->name,
+			'delete_link'  => ee('CP/URL')->make('addons/settings/comment/delete_comment_confirm', array('comment_id' => $comment->comment_id)),
+			'email'        => $comment->email,
+			'entry_id'     => $comment->entry_id,
+			'entry_title'  => $comment->Entry->title,
+			'location'     => $comment->location,
+			'name'         => $comment->name,
 			'name_of_commenter' => $comment->name,
 			'notification_removal_url' => ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id={subscription_id}&hash={hash}',
-			'site_name'         => stripslashes(ee()->config->item('site_name')),
-			'site_url'          => ee()->config->item('site_url'),
-			'url'               => $comment->url,
-			'url_title'         => $comment->Entry->url_title,
+			'site_name'    => stripslashes(ee()->config->item('site_name')),
+			'site_url'     => ee()->config->item('site_url'),
+			'url'          => $comment->url,
+			'url_title'    => $comment->Entry->url_title,
 		);
 	}
 

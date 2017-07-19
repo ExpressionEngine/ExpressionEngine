@@ -185,19 +185,19 @@ class Notifications {
 	{
 		ee()->load->library('typography');
 		ee()->typography->initialize(array(
-			'parse_images'		=> FALSE,
-			'allow_headings'	=> FALSE,
-			'smileys'			=> FALSE,
-			'word_censor'		=> (ee()->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
+			'parse_images'   => FALSE,
+			'allow_headings' => FALSE,
+			'smileys'        => FALSE,
+			'word_censor'    => (ee()->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
 		);
 
 		$body = ($reply) ? $reply->body : $topic->body;
 		$body = ee()->typography->parse_type(
 			$body,
 			array(
-				'text_format'	=> 'none',
-				'html_format'	=> 'none',
-				'auto_links'	=> 'n',
+				'text_format'   => 'none',
+				'html_format'   => 'none',
+				'auto_links'    => 'n',
 				'allow_img_url' => 'n'
 			)
 		);
@@ -205,14 +205,14 @@ class Notifications {
 		$action_id  = ee()->functions->fetch_action_id('Forum', 'delete_subscription');
 
 		$this->variables = array(
-			'name_of_poster'	=> ($reply) ? $reply->Author->screen_name : $topic->Author->screen_name,
-			'forum_name'		=> $topic->Board->board_label,
-			'title'				=> $topic->title,
-			'body'				=> $body,
-			'topic_id'			=> $topic->topic_id,
-			'thread_url'		=> ee()->input->remove_session_id($url),
-			'post_url'			=> ($reply) ? $this->getForumUrl($topic)."/viewreply/{$reply->post_id}/" : ee()->input->remove_session_id($url),
-			'notification_removal_url'	=> ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id={subscription}&board_id='.$topic->board_id,
+			'name_of_poster' => ($reply) ? $reply->Author->screen_name : $topic->Author->screen_name,
+			'forum_name'     => $topic->Board->board_label,
+			'title'          => $topic->title,
+			'body'           => $body,
+			'topic_id'       => $topic->topic_id,
+			'thread_url'     => ee()->input->remove_session_id($url),
+			'post_url'       => ($reply) ? $this->getForumUrl($topic)."/viewreply/{$reply->post_id}/" : ee()->input->remove_session_id($url),
+			'notification_removal_url' => ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id={subscription}&board_id='.$topic->board_id,
 		 );
 	}
 
