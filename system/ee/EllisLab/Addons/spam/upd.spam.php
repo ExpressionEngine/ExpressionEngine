@@ -156,6 +156,14 @@ class Spam_upd {
 		ee()->dbforge->drop_table('spam_trap');
 		ee()->dbforge->drop_table('spam_kernels');
 
+		// remove any installed menu items
+		$menu_items = ee('Model')->get('MenuItem')
+			->filter('type', 'addon')
+			->filter('data', 'Spam_ext')
+			->all();
+
+		$menu_items->delete();
+
 		return TRUE;
 	}
 
@@ -234,6 +242,18 @@ class Spam_upd {
 		ee()->smartforge->drop_column('spam_trap', 'class');
 		ee()->smartforge->drop_column('spam_trap', 'approve');
 		ee()->smartforge->drop_column('spam_trap', 'remove');
+
+		// add menu extension
+		$data = array(
+			'class'		=> 'Spam_ext',
+			'method'	=> 'addSpamMenu',
+			'hook'		=> 'cp_custom_menu',
+			'settings'	=> '',
+			'version'	=> $this->version,
+			'enabled'	=> 'y'
+		);
+
+		ee()->db->insert('extensions', $data);
 	}
 
 	/**
