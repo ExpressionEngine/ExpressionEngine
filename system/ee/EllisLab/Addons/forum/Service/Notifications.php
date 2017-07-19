@@ -77,20 +77,20 @@ class Notifications {
 		$notify_moderators_topics = get_bool_from_string($topic->Forum->forum_notify_moderators_topics);
 		$notify_moderators_replies = get_bool_from_string($topic->Forum->forum_notify_moderators_replies);
 
-		$forum_category = ee('Model')->get('forum:Forum', $topic->Forum->forum_parent)->first();
+		$category = $topic->Forum->Category;
 
-		if ($forum_category)
+		if ($category)
 		{
-			$notify_moderators_topics = get_bool_from_string($forum_category->forum_notify_moderators_topics) OR $notify_moderators_topics;
-			$notify_moderators_replies = get_bool_from_string($forum_category->forum_notify_moderators_replies) OR $notify_moderators_replies;
+			$notify_moderators_topics = get_bool_from_string($category->forum_notify_moderators_topics) OR $notify_moderators_topics;
+			$notify_moderators_replies = get_bool_from_string($category->forum_notify_moderators_replies) OR $notify_moderators_replies;
 
 			if ($reply)
 			{
-				$notify_email_str .= ','.$forum_category->forum_notify_emails;
+				$notify_email_str .= ','.$category->forum_notify_emails;
 			}
 			else
 			{
-				$notify_email_str .= ','.$forum_category->forum_notify_emails_topics;
+				$notify_email_str .= ','.$category->forum_notify_emails_topics;
 			}
 		}
 
