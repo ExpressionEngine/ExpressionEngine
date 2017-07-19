@@ -456,7 +456,8 @@ class Relationship_ft extends EE_Fieldtype {
 		$choices = [];
 		foreach ($entries as $entry)
 		{
-			$choices[$entry->getId()] = [
+			$choices[] = [
+				'id' => $entry->getId(),
 				'label' => $entry->title,
 				'instructions' => $entry->Channel->channel_title
 			];
@@ -465,7 +466,8 @@ class Relationship_ft extends EE_Fieldtype {
 		$selected = [];
 		foreach ($related as $child)
 		{
-			$selected[$child->getId()] = [
+			$selected[] = [
+				'id' => $child->getId(),
 				'label' => $child->title,
 				'instructions' => $child->Channel->channel_title
 			];
