@@ -5,8 +5,8 @@ namespace EllisLab\Addons\Comment\Service;
 class Notifications {
 
 	protected $comment;
-	protected $recipients;
-	protected $variables;
+	protected $recipients = array();
+	protected $variables = array();
 
 	public function __construct($comment, $url)
 	{

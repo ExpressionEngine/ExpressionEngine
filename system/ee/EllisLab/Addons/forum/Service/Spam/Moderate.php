@@ -112,6 +112,12 @@ class Moderate {
 			ee()->db->where('member_id', $member->member_id);
 			ee()->db->delete('forum_subscriptions');
 		}
+
+		// send notifications
+		$notify = new Notifications($topic, $redirect);
+		$notify->send_admin_notifications();
+		$notify->send_user_notifications();
+
 	}
 
 	public function reject($sql)
