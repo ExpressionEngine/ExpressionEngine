@@ -11,7 +11,7 @@ class Moderate {
 
 	/**
 	 * Approve Trapped Spam
-	 * Posts the content to the forums and sends relevant notifications
+	 * Posts the comment and sends relevant notifications
 	 *
 	 * @param  object $comment EllisLab\ExpressionEngine\Model\Comment
 	 * @param  string $comment_path URL to the comment
