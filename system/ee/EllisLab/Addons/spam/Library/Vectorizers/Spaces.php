@@ -39,7 +39,7 @@ class Spaces implements Vectorizer {
 	 */
 	public function vectorize($source)
 	{
-		$whitespace = preg_match_all('/\s/u', $source);
+		$whitespace = preg_match_all('/\s/u', $source, $matches);
 		$characters  = mb_strlen($source);
 		if ($characters !== 0)
 		{

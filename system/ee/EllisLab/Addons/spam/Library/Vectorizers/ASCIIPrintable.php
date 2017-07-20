@@ -39,7 +39,7 @@ class ASCIIPrintable implements Vectorizer {
 	 */
 	public function vectorize($source)
 	{
-		$non_ascii  = preg_match_all('/[^\x20-\x7E]/u', $source);
+		$non_ascii  = preg_match_all('/[^\x20-\x7E]/u', $source, $matches);
 		$length = mb_strlen($source);
 		if ($length !== 0)
 		{
