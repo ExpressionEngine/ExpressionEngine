@@ -383,10 +383,6 @@ class Relationship_ft extends EE_Fieldtype {
 			'ui' => 'sortable'
 		));
 
-		ee()->javascript->set_global(array(
-			'relationship.filter_url' => ee('CP/URL', 'publish/relationship-filter')->compile()
-		));
-
 		if ($entry_id)
 		{
 			if ( ! isset($this->children[$entry_id]))
