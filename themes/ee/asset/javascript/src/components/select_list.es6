@@ -7,9 +7,7 @@ class SelectList extends React.Component {
     this.removable = props.removable !== undefined ? props.removable : false
     this.tooMany = props.tooMany ? props.tooMany : SelectList.limit
 
-    this.state = {
-      filterState: {}
-    }
+    this.filterState = {}
 
     // If the intial state is less than the limit, use DOM filtering
     this.ajaxFilter = (this.props.initialItems.length >= props.limit && props.filterUrl)
@@ -24,11 +22,19 @@ class SelectList extends React.Component {
 
     let items_array = []
     for (key of Object.keys(items)) {
-      items_array.push({
-        value: items[key].id ? items[key].id : key,
-        label: items[key].label ? items[key].label : items[key],
-        instructions: items[key].instructions ? items[key].instructions : ''
-      })
+      if (items[key].section) {
+        items_array.push({
+          section: items[key].section,
+          label: ''
+        })
+      } else {
+        items_array.push({
+          value: items[key].value ? items[key].value : key,
+          label: items[key].label ? items[key].label : items[key],
+          instructions: items[key].instructions ? items[key].instructions : '',
+          children: items[key].children ? SelectList.formatItems(items[key].children) : null
+        })
+      }
     }
     return items_array
   }
@@ -38,7 +44,7 @@ class SelectList extends React.Component {
   }
 
   bindSortable () {
-    $(this.inputs).sortable({
+    $('.field-inputs', this.container).sortable({
       axis: 'y',
       containment: 'parent',
       handle: '.icon-reorder',
@@ -84,7 +90,7 @@ class SelectList extends React.Component {
   }
 
   filterChange = (name, value) => {
-    this.state.filterState[name] = value
+    this.filterState[name] = value
 
     // DOM filter
     if ( ! this.ajaxFilter && name == 'search') {
@@ -98,7 +104,7 @@ class SelectList extends React.Component {
     clearTimeout(this.ajaxTimer)
     if (this.ajaxRequest) this.ajaxRequest.abort()
 
-    let params = this.state.filterState
+    let params = this.filterState
     params.selected = this.props.selected.map(item => {
       return item.value
     })
@@ -138,7 +144,8 @@ class SelectList extends React.Component {
     let shouldShowToggleAll = (props.multi || ! this.selectable) && props.toggleAll !== null
 
     return (
-      <div className={"fields-select" + (tooMany ? ' field-resizable' : '')}>
+      <div className={"fields-select" + (tooMany ? ' field-resizable' : '')}
+        ref={(container) => { this.container = container }}>
         <FieldTools>
           <FilterBar>
             {props.filters && props.filters.map(filter =>
@@ -157,17 +164,18 @@ class SelectList extends React.Component {
             <FilterToggleAll checkAll={props.toggleAll} onToggleAll={(check) => this.handleToggleAll(check)} />
           }
         </FieldTools>
-        <div className="field-inputs" ref={(container) => { this.inputs = container }}>
+        <FieldInputs nested={props.nested}>
           {props.items.length == 0 &&
             <NoResults text={props.noResults} />
           }
           {props.items.map((item, index) =>
-            <SelectItem key={item.value}
+            <SelectItem key={item.value ? item.value : item.section}
               sortableIndex={index}
               item={item}
               name={props.name}
               selected={props.selected}
               multi={props.multi}
+              nested={props.nested}
               selectable={this.selectable}
               reorderable={this.reorderable}
               removable={this.removable}
@@ -175,7 +183,7 @@ class SelectList extends React.Component {
               handleRemove={(e) => this.handleRemove(e, item)}
             />
           )}
-        </div>
+        </FieldInputs>
         { ! props.multi && props.selected[0] &&
           <SelectedItem name={props.name}
             item={props.selected[0]}
@@ -194,6 +202,22 @@ class SelectList extends React.Component {
       </div>
     )
   }
+}
+
+function FieldInputs (props) {
+  if (props.nested) {
+    return (
+      <ul className="field-inputs field-nested">
+        {props.children}
+      </ul>
+    )
+  }
+
+  return (
+    <div className="field-inputs">
+      {props.children}
+    </div>
+  )
 }
 
 class SelectItem extends React.Component {
@@ -215,7 +239,15 @@ class SelectItem extends React.Component {
     let props = this.props
     let checked = this.checked(props.item.value)
 
-    return (
+    if (props.item.section) {
+      return (
+        <div className="field-group-head" key={props.item.section}>
+          {props.item.section}
+        </div>
+      )
+    }
+
+    let listItem = (
       <label className={(checked ? 'act' : '')} ref={(label) => { this.node = label }}>
         {props.reorderable && (
           <span className="icon-reorder"> </span>
@@ -237,6 +269,23 @@ class SelectItem extends React.Component {
         )}
       </label>
     )
+
+    if (props.nested) {
+      return (
+        <li>
+          {listItem}
+          {props.item.children &&
+            <ul>
+              {props.item.children.map((item, index) =>
+                <SelectItem {...props} key={item.value} item={item} />
+              )}
+            </ul>
+          }
+        </li>
+      )
+    }
+
+    return listItem
   }
 }
 

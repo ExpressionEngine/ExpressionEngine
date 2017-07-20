@@ -97,6 +97,7 @@ case 'checkbox': ?>
 		'field_name' => $field_name,
 		'choices' => $field['choices'],
 		'value' => $value,
+		'nested' => isset($field['nested']) ? $field['nested'] : FALSE,
 		'multi' => TRUE,
 		'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : NULL,
 		'limit' => isset($field['limit']) ? $field['limit'] : 100,

@@ -44,6 +44,7 @@ var SelectField = function (_React$Component) {
         limit: this.props.limit,
         name: this.props.name,
         multi: this.props.multi,
+        nested: this.props.nested,
         selected: this.state.selected,
         itemsChanged: this.itemsChanged,
         selectionChanged: this.selectionChanged,

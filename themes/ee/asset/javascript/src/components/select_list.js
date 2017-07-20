@@ -1,5 +1,7 @@
 'use strict';
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -45,7 +47,7 @@ var SelectList = function (_React$Component) {
     };
 
     _this.filterChange = function (name, value) {
-      _this.state.filterState[name] = value;
+      _this.filterState[name] = value;
 
       // DOM filter
       if (!_this.ajaxFilter && name == 'search') {
@@ -59,7 +61,7 @@ var SelectList = function (_React$Component) {
       clearTimeout(_this.ajaxTimer);
       if (_this.ajaxRequest) _this.ajaxRequest.abort();
 
-      var params = _this.state.filterState;
+      var params = _this.filterState;
       params.selected = _this.props.selected.map(function (item) {
         return item.value;
       });
@@ -98,11 +100,10 @@ var SelectList = function (_React$Component) {
     _this.removable = props.removable !== undefined ? props.removable : false;
     _this.tooMany = props.tooMany ? props.tooMany : SelectList.limit;
 
-    _this.state = {
-      filterState: {}
+    _this.filterState = {};
 
-      // If the intial state is less than the limit, use DOM filtering
-    };_this.ajaxFilter = _this.props.initialItems.length >= props.limit && props.filterUrl;
+    // If the intial state is less than the limit, use DOM filtering
+    _this.ajaxFilter = _this.props.initialItems.length >= props.limit && props.filterUrl;
     _this.ajaxTimer = null;
     _this.ajaxRequest = null;
     return _this;
@@ -118,7 +119,7 @@ var SelectList = function (_React$Component) {
     value: function bindSortable() {
       var _this2 = this;
 
-      $(this.inputs).sortable({
+      $('.field-inputs', this.container).sortable({
         axis: 'y',
         containment: 'parent',
         handle: '.icon-reorder',
@@ -143,7 +144,10 @@ var SelectList = function (_React$Component) {
 
       return React.createElement(
         'div',
-        { className: "fields-select" + (tooMany ? ' field-resizable' : '') },
+        { className: "fields-select" + (tooMany ? ' field-resizable' : ''),
+          ref: function ref(container) {
+            _this3.container = container;
+          } },
         React.createElement(
           FieldTools,
           null,
@@ -171,18 +175,17 @@ var SelectList = function (_React$Component) {
             } })
         ),
         React.createElement(
-          'div',
-          { className: 'field-inputs', ref: function ref(container) {
-              _this3.inputs = container;
-            } },
+          FieldInputs,
+          { nested: props.nested },
           props.items.length == 0 && React.createElement(NoResults, { text: props.noResults }),
           props.items.map(function (item, index) {
-            return React.createElement(SelectItem, { key: item.value,
+            return React.createElement(SelectItem, { key: item.value ? item.value : item.section,
               sortableIndex: index,
               item: item,
               name: props.name,
               selected: props.selected,
               multi: props.multi,
+              nested: props.nested,
               selectable: _this3.selectable,
               reorderable: _this3.reorderable,
               removable: _this3.removable,
@@ -219,11 +222,19 @@ var SelectList = function (_React$Component) {
         for (var _iterator = Object.keys(items)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           key = _step.value;
 
-          items_array.push({
-            value: items[key].id ? items[key].id : key,
-            label: items[key].label ? items[key].label : items[key],
-            instructions: items[key].instructions ? items[key].instructions : ''
-          });
+          if (items[key].section) {
+            items_array.push({
+              section: items[key].section,
+              label: ''
+            });
+          } else {
+            items_array.push({
+              value: items[key].value ? items[key].value : key,
+              label: items[key].label ? items[key].label : items[key],
+              instructions: items[key].instructions ? items[key].instructions : '',
+              children: items[key].children ? SelectList.formatItems(items[key].children) : null
+            });
+          }
         }
       } catch (err) {
         _didIteratorError = true;
@@ -248,6 +259,23 @@ var SelectList = function (_React$Component) {
 }(React.Component);
 
 SelectList.limit = 8;
+
+
+function FieldInputs(props) {
+  if (props.nested) {
+    return React.createElement(
+      'ul',
+      { className: 'field-inputs field-nested' },
+      props.children
+    );
+  }
+
+  return React.createElement(
+    'div',
+    { className: 'field-inputs' },
+    props.children
+  );
+}
 
 var SelectItem = function (_React$Component2) {
   _inherits(SelectItem, _React$Component2);
@@ -283,7 +311,15 @@ var SelectItem = function (_React$Component2) {
       var props = this.props;
       var checked = this.checked(props.item.value);
 
-      return React.createElement(
+      if (props.item.section) {
+        return React.createElement(
+          'div',
+          { className: 'field-group-head', key: props.item.section },
+          props.item.section
+        );
+      }
+
+      var listItem = React.createElement(
         'label',
         { className: checked ? 'act' : '', ref: function ref(label) {
             _this5.node = label;
@@ -313,6 +349,23 @@ var SelectItem = function (_React$Component2) {
           )
         )
       );
+
+      if (props.nested) {
+        return React.createElement(
+          'li',
+          null,
+          listItem,
+          props.item.children && React.createElement(
+            'ul',
+            null,
+            props.item.children.map(function (item, index) {
+              return React.createElement(SelectItem, _extends({}, props, { key: item.value, item: item }));
+            })
+          )
+        );
+      }
+
+      return listItem;
     }
   }]);
 

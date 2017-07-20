@@ -234,7 +234,7 @@ class EntryList {
 		foreach ($this->query($settings) as $entry)
 		{
 			$response[] = [
-				'id' => $entry->getId(),
+				'value' => $entry->getId(),
 				'label' => $entry->title,
 				'instructions' => $entry->Channel->channel_title
 			];
