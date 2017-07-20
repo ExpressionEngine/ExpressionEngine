@@ -89,14 +89,29 @@ class SelectList extends React.Component {
     event.preventDefault()
   }
 
+  filterItems (items, searchTerm) {
+    items = items.map(item => {
+      // Clone item so we don't modify reference types
+      item = Object.assign({}, item)
+
+      // If any children contain the search term, we'll keep the parent
+      if (item.children) item.children = this.filterItems(item.children, searchTerm)
+
+      let itemFoundInChildren = (item.children !== null && item.children.length > 0)
+      let itemFound = item.label.toLowerCase().includes(searchTerm.toLowerCase())
+
+      return (itemFound || itemFoundInChildren) ? item : false
+    })
+
+    return items.filter(item => item);
+  }
+
   filterChange = (name, value) => {
     this.filterState[name] = value
 
     // DOM filter
     if ( ! this.ajaxFilter && name == 'search') {
-      this.props.itemsChanged(this.props.initialItems.filter(item =>
-        item.label.toLowerCase().includes(value.toLowerCase())
-      ))
+      this.props.itemsChanged(this.filterItems(this.props.initialItems, value))
       return
     }
 

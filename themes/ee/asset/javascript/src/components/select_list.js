@@ -51,9 +51,7 @@ var SelectList = function (_React$Component) {
 
       // DOM filter
       if (!_this.ajaxFilter && name == 'search') {
-        _this.props.itemsChanged(_this.props.initialItems.filter(function (item) {
-          return item.label.toLowerCase().includes(value.toLowerCase());
-        }));
+        _this.props.itemsChanged(_this.filterItems(_this.props.initialItems, value));
         return;
       }
 
@@ -134,9 +132,31 @@ var SelectList = function (_React$Component) {
       });
     }
   }, {
+    key: 'filterItems',
+    value: function filterItems(items, searchTerm) {
+      var _this3 = this;
+
+      items = items.map(function (item) {
+        // Clone item so we don't modify reference types
+        item = Object.assign({}, item);
+
+        // If any children contain the search term, we'll keep the parent
+        if (item.children) item.children = _this3.filterItems(item.children, searchTerm);
+
+        var itemFoundInChildren = item.children !== null && item.children.length > 0;
+        var itemFound = item.label.toLowerCase().includes(searchTerm.toLowerCase());
+
+        return itemFound || itemFoundInChildren ? item : false;
+      });
+
+      return items.filter(function (item) {
+        return item;
+      });
+    }
+  }, {
     key: 'render',
     value: function render() {
-      var _this3 = this;
+      var _this4 = this;
 
       var props = this.props;
       var tooMany = props.items.length > this.tooMany;
@@ -146,7 +166,7 @@ var SelectList = function (_React$Component) {
         'div',
         { className: "fields-select" + (tooMany ? ' field-resizable' : ''),
           ref: function ref(container) {
-            _this3.container = container;
+            _this4.container = container;
           } },
         React.createElement(
           FieldTools,
@@ -161,17 +181,17 @@ var SelectList = function (_React$Component) {
                 placeholder: filter.placeholder,
                 items: filter.items,
                 onSelect: function onSelect(value) {
-                  return _this3.filterChange(filter.name, value);
+                  return _this4.filterChange(filter.name, value);
                 }
               });
             }),
             React.createElement(FilterSearch, { onSearch: function onSearch(e) {
-                return _this3.filterChange('search', e.target.value);
+                return _this4.filterChange('search', e.target.value);
               } })
           ),
           shouldShowToggleAll && React.createElement('hr', null),
           shouldShowToggleAll && React.createElement(FilterToggleAll, { checkAll: props.toggleAll, onToggleAll: function onToggleAll(check) {
-              return _this3.handleToggleAll(check);
+              return _this4.handleToggleAll(check);
             } })
         ),
         React.createElement(
@@ -186,14 +206,14 @@ var SelectList = function (_React$Component) {
               selected: props.selected,
               multi: props.multi,
               nested: props.nested,
-              selectable: _this3.selectable,
-              reorderable: _this3.reorderable,
-              removable: _this3.removable,
+              selectable: _this4.selectable,
+              reorderable: _this4.reorderable,
+              removable: _this4.removable,
               handleSelect: function handleSelect(e) {
-                return _this3.handleChange(e, item);
+                return _this4.handleChange(e, item);
               },
               handleRemove: function handleRemove(e) {
-                return _this3.handleRemove(e, item);
+                return _this4.handleRemove(e, item);
               }
             });
           })
@@ -306,7 +326,7 @@ var SelectItem = function (_React$Component2) {
   }, {
     key: 'render',
     value: function render() {
-      var _this5 = this;
+      var _this6 = this;
 
       var props = this.props;
       var checked = this.checked(props.item.value);
@@ -322,7 +342,7 @@ var SelectItem = function (_React$Component2) {
       var listItem = React.createElement(
         'label',
         { className: checked ? 'act' : '', ref: function ref(label) {
-            _this5.node = label;
+            _this6.node = label;
           } },
         props.reorderable && React.createElement(
           'span',
