@@ -139,6 +139,7 @@ var SelectList = function (_React$Component) {
 
       var props = this.props;
       var tooMany = props.items.length > this.tooMany;
+      var shouldShowToggleAll = (props.multi || !this.selectable) && props.toggleAll !== null;
 
       return React.createElement(
         'div',
@@ -164,8 +165,8 @@ var SelectList = function (_React$Component) {
                 return _this3.filterChange('search', e.target.value);
               } })
           ),
-          props.toggleAll !== null && React.createElement('hr', null),
-          props.toggleAll !== null && React.createElement(FilterToggleAll, { checkAll: props.toggleAll, onToggleAll: function onToggleAll(check) {
+          shouldShowToggleAll && React.createElement('hr', null),
+          shouldShowToggleAll && React.createElement(FilterToggleAll, { checkAll: props.toggleAll, onToggleAll: function onToggleAll(check) {
               return _this3.handleToggleAll(check);
             } })
         ),

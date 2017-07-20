@@ -135,6 +135,7 @@ class SelectList extends React.Component {
   render () {
     let props = this.props
     let tooMany = props.items.length > this.tooMany
+    let shouldShowToggleAll = (props.multi || ! this.selectable) && props.toggleAll !== null
 
     return (
       <div className={"fields-select" + (tooMany ? ' field-resizable' : '')}>
@@ -151,8 +152,8 @@ class SelectList extends React.Component {
             )}
             <FilterSearch onSearch={(e) => this.filterChange('search', e.target.value)} />
           </FilterBar>
-          {props.toggleAll !== null && <hr />}
-          {props.toggleAll !== null &&
+          {shouldShowToggleAll && <hr />}
+          {shouldShowToggleAll &&
             <FilterToggleAll checkAll={props.toggleAll} onToggleAll={(check) => this.handleToggleAll(check)} />
           }
         </FieldTools>
