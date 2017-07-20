@@ -150,6 +150,8 @@ class Cp {
 			'check_all'				=> lang('check_all'),
 			'clear_all'				=> lang('clear_all'),
 			'keyword_search'		=> lang('keyword_search'),
+			'loading'				=> lang('loading'),
+			'searching'				=> lang('searching')
 		);
 
 		ee()->javascript->set_global(array(

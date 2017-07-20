@@ -111,6 +111,8 @@ $lang = array(
 
 'rights_reserved' => 'All Rights Reserved',
 
+'searching' => 'Searching',
+
 'session_idle' => 'Idle session detected',
 
 'session_idle_description' => 'You\'ve gone idle, please enter your password to continue.',
