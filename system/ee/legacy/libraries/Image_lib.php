@@ -1263,7 +1263,13 @@ class EE_Image_lib {
 					return FALSE;
 				}
 
-				if ( ! @imagepng($resource, $this->full_dst_path))
+				// We have a percentage value for quality (0 - 100) but PNGs
+				// only accept a quality of 0 - 9, so we must to some math!
+				// In short, we will take a percentage of 9 and round it to the
+				// nearest integer.
+				$png_quality = round(($this->quality / 100) * 9);
+
+				if ( ! @imagepng($resource, $this->full_dst_path, $png_quality))
 				{
 					$this->set_error('imglib_save_failed');
 					return FALSE;
