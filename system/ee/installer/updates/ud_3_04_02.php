@@ -57,7 +57,7 @@ class Updater {
 					'type'       => 'tinyint',
 					'constraint' => 1,
 					'unsigned'   => TRUE,
-					'default'    => '90',
+					'default'    => 90,
 				)
 			)
 		);
