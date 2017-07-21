@@ -411,9 +411,18 @@ class Channel_form_lib
 			{
 				ee()->load->library('channel_form/channel_form_category_tree');
 
-				$tree = ee()->channel_form_category_tree->create(
-					$this->channel('cat_group'), 'edit', '', $this->entry->Categories->pluck('cat_id')
-				);
+				if ($this->edit OR ! empty($this->channel->deft_category))
+				{
+					$tree = ee()->channel_form_category_tree->create(
+						$this->channel('cat_group'), 'edit', '', $this->entry->Categories->pluck('cat_id')
+					);
+				}
+				else
+				{
+					$tree = ee()->channel_form_category_tree->create(
+						$this->channel('cat_group'), '', '', ''
+					);
+				}
 
 				$this->parse_variables['category_menu'] = array(
 					array('select_options' => implode("\n", $tree->categories()))
@@ -1729,6 +1738,13 @@ GRID_FALLBACK;
 
 		ee()->config->set_item('site_id', $this->site_id);
 
+		// Structure category data the way the ChannelEntry model expects it
+		$cat_groups = explode('|', $this->entry->Channel->cat_group);
+		if ( ! empty($cat_groups) && isset($_POST['category']))
+		{
+			$_POST['categories'] = array('cat_group_id_'.$cat_groups[0] => $_POST['category']);
+		}
+
 		if (in_array($this->channel('channel_id'), $this->member->MemberGroup->AssignedChannels->pluck('channel_id')) OR (int) $this->member->MemberGroup->getId() == 1)
 		{
 			// Lastly we check for spam before inserting the data
@@ -1744,16 +1760,12 @@ GRID_FALLBACK;
 				$this->entry->set($entry_data);
 				$this->entry->edit_date = ee()->localize->now;
 
-				$result = $this->entry->validate();
-
-				if (isset($_POST['category']) && is_array($_POST['category']))
-				{
-					$this->entry->Categories = ee('Model')->get('Category', $_POST['category'])->all();
-				}
-				else
+				if ( ! isset($_POST['category']) OR empty($_POST['category']))
 				{
 					$this->entry->Categories = NULL;
 				}
+
+				$result = $this->entry->validate();
 
 				if (empty($this->field_errors) && empty($this->errors) && $result->isValid())
 				{
@@ -3385,10 +3397,26 @@ GRID_FALLBACK;
 
 		$url_title_js = <<<SCRIPT
 
-function liveUrlTitle()
+function liveUrlTitle(event)
 {
+	var title_field, url_title_field;
+
+	/* If event is present, we'll try to make sure we're only affecting the URL title field inside this form */
+	if (event) {
+		title_field = event.target;
+
+		for (var i = 0; i < document.forms.length; i++) {
+			if (document.forms[i].contains(title_field)) {
+				url_title_field = document.forms[i].querySelector('#url_title');
+			}
+		}
+	} else {
+		title_field = document.getElementById("title");
+		url_title_field = document.getElementById("url_title");
+	}
+
 	var defaultTitle =  EE.publish.default_entry_title;
-	var NewText = document.getElementById("title").value;
+	var NewText = title_field.value;
 
 	if (defaultTitle != '')
 	{
@@ -3433,13 +3461,13 @@ function liveUrlTitle()
 	NewText = NewText.replace(/^_/g,'');
 	NewText = NewText.replace(/^-/g,'');
 
-	if (document.getElementById("url_title"))
+	if (url_title_field)
 	{
-		document.getElementById("url_title").value = EE.publish.url_title_prefix + NewText;
+		url_title_field.value = EE.publish.url_title_prefix + NewText;
 	}
 	else
 	{
-		document.forms['entryform'].elements['url_title'].value = EE.publish.url_title_prefix + NewText;
+		document.forms['cform'].elements['url_title'].value = EE.publish.url_title_prefix + NewText;
 	}
 }
 

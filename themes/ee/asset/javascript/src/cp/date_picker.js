@@ -396,6 +396,7 @@ EE.cp.datePicker = {
 			EE.cp.datePicker.Calendar.init(this);
 			// position and toggle the .date-picker-wrap relative to the input clicked
 			$('.date-picker-wrap').css({ 'top': pos.top + 30, 'left': pos.left }).show();
+			$('.date-picker-clip').scrollLeft(0);
 		});
 	}
 };

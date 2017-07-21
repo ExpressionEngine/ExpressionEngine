@@ -2,10 +2,8 @@
 
 $lang = array(
 
-'invalid_license' =>
-'Invalid License',
+'invalid_license' => 'Invalid License',
 
-''=>''
 );
 
 // EOF
