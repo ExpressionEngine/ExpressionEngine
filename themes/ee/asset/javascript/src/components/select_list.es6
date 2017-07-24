@@ -63,7 +63,7 @@ class SelectList extends React.Component {
     })
   }
 
-  handleChange = (event, item) => {
+  handleSelect = (event, item) => {
     var selected = []
     if (this.props.multi) {
       if (event.target.checked) {
@@ -204,8 +204,8 @@ class SelectList extends React.Component {
               selectable={this.selectable}
               reorderable={this.reorderable}
               removable={this.removable}
-              handleSelect={(e) => this.handleChange(e, item)}
-              handleRemove={(e) => this.handleRemove(e, item)}
+              handleSelect={this.handleSelect}
+              handleRemove={this.handleRemove}
             />
           )}
         </FieldInputs>
@@ -280,7 +280,7 @@ class SelectItem extends React.Component {
         {props.selectable && (
           <input type={props.multi ? "checkbox" : "radio"}
             value={props.item.value}
-            onChange={props.handleSelect}
+            onChange={(e) => props.handleSelect(e, props.item)}
             checked={(checked ? 'checked' : '')} />
         )}
         {props.item.label+" "}
@@ -289,7 +289,7 @@ class SelectItem extends React.Component {
         )}
         {props.removable && (
           <ul className="toolbar">
-            <li className="remove"><a href="" onClick={props.handleRemove}></a></li>
+            <li className="remove"><a href="" onClick={(e) => props.handleRemove(e, props.item)}></a></li>
           </ul>
         )}
       </label>
@@ -302,7 +302,10 @@ class SelectItem extends React.Component {
           {props.item.children &&
             <ul>
               {props.item.children.map((item, index) =>
-                <SelectItem {...props} key={item.value} item={item} />
+                <SelectItem {...props}
+                  key={item.value}
+                  item={item}
+                />
               )}
             </ul>
           }

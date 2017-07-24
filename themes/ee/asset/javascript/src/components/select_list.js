@@ -18,7 +18,7 @@ var SelectList = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (SelectList.__proto__ || Object.getPrototypeOf(SelectList)).call(this, props));
 
-    _this.handleChange = function (event, item) {
+    _this.handleSelect = function (event, item) {
       var selected = [];
       if (_this.props.multi) {
         if (event.target.checked) {
@@ -217,12 +217,8 @@ var SelectList = function (_React$Component) {
               selectable: _this4.selectable,
               reorderable: _this4.reorderable,
               removable: _this4.removable,
-              handleSelect: function handleSelect(e) {
-                return _this4.handleChange(e, item);
-              },
-              handleRemove: function handleRemove(e) {
-                return _this4.handleRemove(e, item);
-              }
+              handleSelect: _this4.handleSelect,
+              handleRemove: _this4.handleRemove
             });
           })
         ),
@@ -359,7 +355,9 @@ var SelectItem = function (_React$Component2) {
         ),
         props.selectable && React.createElement('input', { type: props.multi ? "checkbox" : "radio",
           value: props.item.value,
-          onChange: props.handleSelect,
+          onChange: function onChange(e) {
+            return props.handleSelect(e, props.item);
+          },
           checked: checked ? 'checked' : '' }),
         props.item.label + " ",
         props.item.instructions && React.createElement(
@@ -373,7 +371,9 @@ var SelectItem = function (_React$Component2) {
           React.createElement(
             'li',
             { className: 'remove' },
-            React.createElement('a', { href: '', onClick: props.handleRemove })
+            React.createElement('a', { href: '', onClick: function onClick(e) {
+                return props.handleRemove(e, props.item);
+              } })
           )
         )
       );
@@ -387,7 +387,10 @@ var SelectItem = function (_React$Component2) {
             'ul',
             null,
             props.item.children.map(function (item, index) {
-              return React.createElement(SelectItem, _extends({}, props, { key: item.value, item: item }));
+              return React.createElement(SelectItem, _extends({}, props, {
+                key: item.value,
+                item: item
+              }));
             })
           )
         );
