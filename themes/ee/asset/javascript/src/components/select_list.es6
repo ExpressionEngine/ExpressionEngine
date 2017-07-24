@@ -101,7 +101,7 @@ class SelectList extends React.Component {
       // If any children contain the search term, we'll keep the parent
       if (item.children) item.children = this.filterItems(item.children, searchTerm)
 
-      let itemFoundInChildren = (item.children !== null && item.children.length > 0)
+      let itemFoundInChildren = (item.children && item.children.length > 0)
       let itemFound = item.label.toLowerCase().includes(searchTerm.toLowerCase())
 
       return (itemFound || itemFoundInChildren) ? item : false

@@ -150,7 +150,7 @@ var SelectList = function (_React$Component) {
         // If any children contain the search term, we'll keep the parent
         if (item.children) item.children = _this3.filterItems(item.children, searchTerm);
 
-        var itemFoundInChildren = item.children !== null && item.children.length > 0;
+        var itemFoundInChildren = item.children && item.children.length > 0;
         var itemFound = item.label.toLowerCase().includes(searchTerm.toLowerCase());
 
         return itemFound || itemFoundInChildren ? item : false;
