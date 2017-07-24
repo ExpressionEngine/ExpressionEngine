@@ -2,6 +2,7 @@ class SelectList extends React.Component {
   constructor (props) {
     super(props)
 
+    this.filterable = props.filterable !== undefined ? props.filterable : false
     this.selectable = props.selectable !== undefined ? props.selectable : true
     this.reorderable = props.reorderable !== undefined ? props.reorderable : false
     this.removable = props.removable !== undefined ? props.removable : false
@@ -164,28 +165,31 @@ class SelectList extends React.Component {
     let props = this.props
     let tooMany = props.items.length > this.tooMany && ! this.state.loading
     let shouldShowToggleAll = (props.multi || ! this.selectable) && props.toggleAll !== null
+    let shouldShowFieldTools = this.props.items.length > SelectList.limit
 
     return (
       <div className={"fields-select" + (tooMany ? ' field-resizable' : '')}
         ref={(container) => { this.container = container }}>
-        <FieldTools>
-          <FilterBar>
-            {props.filters && props.filters.map(filter =>
-              <FilterSelect key={filter.name}
-                name={filter.name}
-                title={filter.title}
-                placeholder={filter.placeholder}
-                items={filter.items}
-                onSelect={(value) => this.filterChange(filter.name, value)}
-              />
-            )}
-            <FilterSearch onSearch={(e) => this.filterChange('search', e.target.value)} />
-          </FilterBar>
-          {shouldShowToggleAll && <hr />}
-          {shouldShowToggleAll &&
-            <FilterToggleAll checkAll={props.toggleAll} onToggleAll={(check) => this.handleToggleAll(check)} />
-          }
-        </FieldTools>
+        {this.filterable &&
+          <FieldTools>
+            <FilterBar>
+              {props.filters && props.filters.map(filter =>
+                <FilterSelect key={filter.name}
+                  name={filter.name}
+                  title={filter.title}
+                  placeholder={filter.placeholder}
+                  items={filter.items}
+                  onSelect={(value) => this.filterChange(filter.name, value)}
+                />
+              )}
+              <FilterSearch onSearch={(e) => this.filterChange('search', e.target.value)} />
+            </FilterBar>
+            {shouldShowToggleAll && <hr />}
+            {shouldShowToggleAll &&
+              <FilterToggleAll checkAll={props.toggleAll} onToggleAll={(check) => this.handleToggleAll(check)} />
+            }
+          </FieldTools>
+        }
         <FieldInputs nested={props.nested}>
           {props.items.length == 0 &&
             <NoResults text={props.noResults} />

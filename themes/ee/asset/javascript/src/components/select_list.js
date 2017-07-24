@@ -96,6 +96,7 @@ var SelectList = function (_React$Component) {
       }
     };
 
+    _this.filterable = props.filterable !== undefined ? props.filterable : false;
     _this.selectable = props.selectable !== undefined ? props.selectable : true;
     _this.reorderable = props.reorderable !== undefined ? props.reorderable : false;
     _this.removable = props.removable !== undefined ? props.removable : false;
@@ -168,6 +169,7 @@ var SelectList = function (_React$Component) {
       var props = this.props;
       var tooMany = props.items.length > this.tooMany && !this.state.loading;
       var shouldShowToggleAll = (props.multi || !this.selectable) && props.toggleAll !== null;
+      var shouldShowFieldTools = this.props.items.length > SelectList.limit;
 
       return React.createElement(
         'div',
@@ -175,7 +177,7 @@ var SelectList = function (_React$Component) {
           ref: function ref(container) {
             _this4.container = container;
           } },
-        React.createElement(
+        this.filterable && React.createElement(
           FieldTools,
           null,
           React.createElement(

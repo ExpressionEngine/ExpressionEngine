@@ -21,6 +21,20 @@ class SelectField extends React.Component {
     })
   }
 
+  // Get count of all items including nested
+  countItems(items) {
+    items = items || this.initialItems
+
+    count = items.length + items.reduce((sum, item) => {
+      if (item.children) {
+        return sum + this.countItems(item.children)
+      }
+      return sum
+    }, 0)
+
+    return count
+  }
+
   render () {
     return (
       <SelectList items={this.state.items}
@@ -35,6 +49,7 @@ class SelectField extends React.Component {
         noResults={this.props.no_results}
         filters={this.props.filters}
         toggleAll={this.props.toggle_all}
+        filterable={this.countItems() > SelectList.limit}
       />
     )
   }

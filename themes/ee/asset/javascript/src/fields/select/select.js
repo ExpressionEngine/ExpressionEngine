@@ -37,6 +37,25 @@ var SelectField = function (_React$Component) {
   }
 
   _createClass(SelectField, [{
+    key: 'countItems',
+
+
+    // Get count of all items including nested
+    value: function countItems(items) {
+      var _this2 = this;
+
+      items = items || this.initialItems;
+
+      count = items.length + items.reduce(function (sum, item) {
+        if (item.children) {
+          return sum + _this2.countItems(item.children);
+        }
+        return sum;
+      }, 0);
+
+      return count;
+    }
+  }, {
     key: 'render',
     value: function render() {
       return React.createElement(SelectList, { items: this.state.items,
@@ -50,7 +69,8 @@ var SelectField = function (_React$Component) {
         selectionChanged: this.selectionChanged,
         noResults: this.props.no_results,
         filters: this.props.filters,
-        toggleAll: this.props.toggle_all
+        toggleAll: this.props.toggle_all,
+        filterable: this.countItems() > SelectList.limit
       });
     }
   }]);
