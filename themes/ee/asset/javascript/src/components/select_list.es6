@@ -54,8 +54,19 @@ class SelectList extends React.Component {
       containment: 'parent',
       handle: '.icon-reorder',
       items: 'label',
+      placeholder: 'field-reorder-placeholder',
+      start: (event, ui) => {
+        ui.helper.addClass('field-reorder-drag')
+      },
       stop: (event, ui) => {
         let items = ui.item.closest('.field-inputs').find('label').toArray()
+
+        ui.item.removeClass('field-reorder-drag')
+          .addClass('field-reorder-drop')
+
+        setTimeout(() => {
+          ui.item.removeClass('field-reorder-drop')
+        }, 1000)
 
         this.props.selectionChanged(items.map((element) => {
           return this.props.items[element.dataset.sortableIndex]

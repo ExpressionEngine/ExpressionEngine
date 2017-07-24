@@ -132,8 +132,18 @@ var SelectList = function (_React$Component) {
         containment: 'parent',
         handle: '.icon-reorder',
         items: 'label',
+        placeholder: 'field-reorder-placeholder',
+        start: function start(event, ui) {
+          ui.helper.addClass('field-reorder-drag');
+        },
         stop: function stop(event, ui) {
           var items = ui.item.closest('.field-inputs').find('label').toArray();
+
+          ui.item.removeClass('field-reorder-drag').addClass('field-reorder-drop');
+
+          setTimeout(function () {
+            ui.item.removeClass('field-reorder-drop');
+          }, 1000);
 
           _this2.props.selectionChanged(items.map(function (element) {
             return _this2.props.items[element.dataset.sortableIndex];
