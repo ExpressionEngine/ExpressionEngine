@@ -50,6 +50,7 @@ class SelectField extends React.Component {
         filters={this.props.filters}
         toggleAll={this.props.toggle_all}
         filterable={this.countItems() > SelectList.limit}
+        groupToggle={this.props.group_toggle}
       />
     )
   }

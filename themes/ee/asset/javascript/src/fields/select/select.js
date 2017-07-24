@@ -70,7 +70,8 @@ var SelectField = function (_React$Component) {
         noResults: this.props.no_results,
         filters: this.props.filters,
         toggleAll: this.props.toggle_all,
-        filterable: this.countItems() > SelectList.limit
+        filterable: this.countItems() > SelectList.limit,
+        groupToggle: this.props.group_toggle
       });
     }
   }]);

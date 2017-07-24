@@ -32,6 +32,8 @@ var SelectList = function (_React$Component) {
         selected = [item];
       }
       _this.props.selectionChanged(selected);
+
+      if (_this.props.groupToggle) EE.cp.form_group_toggle(event.target);
     };
 
     _this.handleRemove = function (event, item) {
@@ -220,7 +222,8 @@ var SelectList = function (_React$Component) {
               reorderable: _this4.reorderable,
               removable: _this4.removable,
               handleSelect: _this4.handleSelect,
-              handleRemove: _this4.handleRemove
+              handleRemove: _this4.handleRemove,
+              groupToggle: _this4.props.groupToggle
             });
           })
         ),
@@ -360,7 +363,8 @@ var SelectItem = function (_React$Component2) {
           onChange: function onChange(e) {
             return props.handleSelect(e, props.item);
           },
-          checked: checked ? 'checked' : '' }),
+          checked: checked ? 'checked' : '',
+          'data-group-toggle': props.groupToggle ? JSON.stringify(props.groupToggle) : '[]' }),
         props.item.label + " ",
         props.item.instructions && React.createElement(
           'i',

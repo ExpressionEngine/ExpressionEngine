@@ -78,6 +78,8 @@ case 'select': ?>
 		'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : NULL,
 		'limit' => isset($field['limit']) ? $field['limit'] : 100,
 		'no_results' => isset($field['no_results']) ? $field['no_results'] : NULL,
+		'attrs' => $attrs,
+		'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : NULL
 	]); ?>
 <?php break;
 

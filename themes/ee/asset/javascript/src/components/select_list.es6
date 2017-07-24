@@ -78,6 +78,8 @@ class SelectList extends React.Component {
       selected = [item]
     }
     this.props.selectionChanged(selected)
+
+    if (this.props.groupToggle) EE.cp.form_group_toggle(event.target)
   }
 
   handleRemove = (event, item) => {
@@ -210,6 +212,7 @@ class SelectList extends React.Component {
               removable={this.removable}
               handleSelect={this.handleSelect}
               handleRemove={this.handleRemove}
+              groupToggle={this.props.groupToggle}
             />
           )}
         </FieldInputs>
@@ -285,7 +288,8 @@ class SelectItem extends React.Component {
           <input type={props.multi ? "checkbox" : "radio"}
             value={props.item.value}
             onChange={(e) => props.handleSelect(e, props.item)}
-            checked={(checked ? 'checked' : '')} />
+            checked={(checked ? 'checked' : '')}
+            data-group-toggle={(props.groupToggle ? JSON.stringify(props.groupToggle) : '[]')} />
         )}
         {props.item.label+" "}
         {props.item.instructions && (

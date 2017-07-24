@@ -125,7 +125,8 @@ else:
 		'too_many' => $too_many,
 		'filter_url' => $filter_url,
 		'limit' => $limit,
-		'toggle_all' => NULL
+		'toggle_all' => NULL,
+		'group_toggle' => isset($group_toggle) ? $group_toggle : NULL
 	];
 	if (isset($no_results['text']))
 	{
