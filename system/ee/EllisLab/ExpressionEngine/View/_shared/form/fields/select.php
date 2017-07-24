@@ -44,6 +44,31 @@ if ( ! function_exists('normalizedChoices'))
 	}
 }
 
+if ( ! function_exists('findLabelForValue'))
+{
+	function findLabelForValue($value, $choices)
+	{
+		foreach ($choices as $choice)
+		{
+			if (isset($choice['value']) && $value == $choice['value'])
+			{
+				return $choice['label'];
+			}
+
+			if (isset($choice['children']))
+			{
+				$label = findLabelForValue($value, $choice['children']);
+				if ($label)
+				{
+					return $label;
+				}
+			}
+		}
+
+		return FALSE;
+	}
+}
+
 $nested = isset($nested) ? $nested : FALSE;
 
 // Normalize choices into an array to keep order of items, order cannot be
@@ -85,9 +110,9 @@ if (count($choices, COUNT_RECURSIVE) <= $too_many && ! $nested && ! $has_groupin
 <?php
 // Large list, render it using React
 else:
-	if ( ! is_array($value))
+	if ($value && ! is_array($value))
 	{
-		$label = isset($choices[$value]) ? $choices[$value] : $value;
+		$label = findLabelForValue($value, $normalized_choices);
 		$value = [$value => $label];
 	}
 

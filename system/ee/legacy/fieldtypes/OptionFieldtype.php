@@ -226,7 +226,8 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 			$settings[1]['fields']['field_pre_populate_id'] = array(
 				'type' => 'select',
 				'choices' => $this->get_channel_field_list(),
-				'value' => $data['field_pre_channel_id'] . '_' . $data['field_pre_field_id']
+				'value' => ($data['field_pre_channel_id'] != 0)
+					? $data['field_pre_channel_id'] . '_' . $data['field_pre_field_id'] : ''
 			);
 		}
 
