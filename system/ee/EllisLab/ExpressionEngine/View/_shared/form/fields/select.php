@@ -67,7 +67,8 @@ else:
 		'nested' => $nested,
 		'too_many' => $too_many,
 		'filter_url' => $filter_url,
-		'limit' => $limit
+		'limit' => $limit,
+		'toggle_all' => NULL
 	];
 	if (isset($no_results['text']))
 	{

@@ -34,6 +34,7 @@ class SelectField extends React.Component {
         selectionChanged={this.selectionChanged}
         noResults={this.props.no_results}
         filters={this.props.filters}
+        toggleAll={this.props.toggle_all}
       />
     )
   }
