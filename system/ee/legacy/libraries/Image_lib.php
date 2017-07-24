@@ -1298,9 +1298,12 @@ class EE_Image_lib {
 
 				// We have a percentage value for quality (0 - 100) but PNGs
 				// only accept a quality of 0 - 9, so we must to some math!
-				// In short, we will take a percentage of 9 and round it to the
-				// nearest integer.
-				$png_quality = round(($this->quality / 100) * 9);
+				// Additionally, for JPEGs 100 is best quality but for PNGs
+				// 0 is best quality. So...for the math, if we want 80% quality
+				// then we'd need to do 9 * .8 then subtract that from 9, or
+				// just do 9 * .2! So, we'll find that number by doing 100 -
+				// quality (percentage math, it's fun for the whole family!)
+				$png_quality = round(((100 - $this->quality) / 100) * 9);
 
 				if ( ! @imagepng($resource, $this->full_dst_path, $png_quality))
 				{
