@@ -64,12 +64,15 @@ var SelectList = function (_React$Component) {
         return item.value;
       });
 
+      _this.setState({ loading: true });
+
       _this.ajaxTimer = setTimeout(function () {
         _this.ajaxRequest = $.ajax({
           url: _this.props.filterUrl,
           data: $.param(params),
           dataType: 'json',
           success: function success(data) {
+            _this.setState({ loading: false });
             _this.props.initialItemsChanged(SelectList.formatItems(data));
           },
           error: function error() {} // Defined to prevent error on .abort above
@@ -97,6 +100,10 @@ var SelectList = function (_React$Component) {
     _this.reorderable = props.reorderable !== undefined ? props.reorderable : false;
     _this.removable = props.removable !== undefined ? props.removable : false;
     _this.tooMany = props.tooMany ? props.tooMany : SelectList.limit;
+
+    _this.state = {
+      loading: false
+    };
 
     _this.filterState = {};
 
@@ -159,7 +166,7 @@ var SelectList = function (_React$Component) {
       var _this4 = this;
 
       var props = this.props;
-      var tooMany = props.items.length > this.tooMany;
+      var tooMany = props.items.length > this.tooMany && !this.state.loading;
       var shouldShowToggleAll = (props.multi || !this.selectable) && props.toggleAll !== null;
 
       return React.createElement(
@@ -198,7 +205,8 @@ var SelectList = function (_React$Component) {
           FieldInputs,
           { nested: props.nested },
           props.items.length == 0 && React.createElement(NoResults, { text: props.noResults }),
-          props.items.map(function (item, index) {
+          this.state.loading && React.createElement(Loading, { text: EE.lang.loading }),
+          !this.state.loading && props.items.map(function (item, index) {
             return React.createElement(SelectItem, { key: item.value ? item.value : item.section,
               sortableIndex: index,
               item: item,

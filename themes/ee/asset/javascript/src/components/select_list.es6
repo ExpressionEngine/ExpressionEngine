@@ -7,6 +7,10 @@ class SelectList extends React.Component {
     this.removable = props.removable !== undefined ? props.removable : false
     this.tooMany = props.tooMany ? props.tooMany : SelectList.limit
 
+    this.state = {
+      loading: false
+    }
+
     this.filterState = {}
 
     // If the intial state is less than the limit, use DOM filtering
@@ -124,12 +128,15 @@ class SelectList extends React.Component {
       return item.value
     })
 
+    this.setState({ loading: true })
+
     this.ajaxTimer = setTimeout(() => {
       this.ajaxRequest = $.ajax({
         url: this.props.filterUrl,
         data: $.param(params),
         dataType: 'json',
         success: (data) => {
+          this.setState({ loading: false })
           this.props.initialItemsChanged(SelectList.formatItems(data))
         },
         error: () => {} // Defined to prevent error on .abort above
@@ -155,7 +162,7 @@ class SelectList extends React.Component {
 
   render () {
     let props = this.props
-    let tooMany = props.items.length > this.tooMany
+    let tooMany = props.items.length > this.tooMany && ! this.state.loading
     let shouldShowToggleAll = (props.multi || ! this.selectable) && props.toggleAll !== null
 
     return (
@@ -183,7 +190,10 @@ class SelectList extends React.Component {
           {props.items.length == 0 &&
             <NoResults text={props.noResults} />
           }
-          {props.items.map((item, index) =>
+          {this.state.loading &&
+            <Loading text={EE.lang.loading} />
+          }
+          { ! this.state.loading && props.items.map((item, index) =>
             <SelectItem key={item.value ? item.value : item.section}
               sortableIndex={index}
               item={item}
