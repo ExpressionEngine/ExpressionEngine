@@ -56,12 +56,13 @@ class Relationships_ft_cp {
 
 		if ($from_all_sites)
 		{
-			$channel_choices = array();
-
-			foreach ($channels->all() as $channel)
-			{
-				$channel_choices[$channel->channel_id] = $channel->channel_title . '<i>&mdash; ' . $channel->Site->site_label . '</i>';
-			}
+			$channel_choices = $channels->all()->map(function($channel) {
+				return [
+					'value' => $channel->getId(),
+					'label' => $channel->channel_title,
+					'instructions' => $channel->Site->site_label
+				];
+			});
 		}
 		else
 		{
