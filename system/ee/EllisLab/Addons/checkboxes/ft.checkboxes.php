@@ -124,6 +124,14 @@ class Checkboxes_ft extends OptionFieldtype {
 
 		if (REQ == 'CP')
 		{
+			return ee('View')->make('ee:_shared/form/fields/select')->render([
+				'field_name'   => $this->field_name,
+				'choices'      => $field_options,
+				'value'        => $values,
+				'multi'        => TRUE,
+				'manageable'   => $this->get_setting('editable'),
+				'manage_label' => $this->get_setting('manage_toggle_label', lang('manage'))
+			]);
 			return ee('View')->make('checkboxes:publish')->render(array(
 				'field_name'          => $this->field_name,
 				'values'              => $values,

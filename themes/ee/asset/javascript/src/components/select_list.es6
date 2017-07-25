@@ -4,8 +4,6 @@ class SelectList extends React.Component {
 
     this.filterable = props.filterable !== undefined ? props.filterable : false
     this.selectable = props.selectable !== undefined ? props.selectable : true
-    this.reorderable = props.reorderable !== undefined ? props.reorderable : false
-    this.removable = props.removable !== undefined ? props.removable : false
     this.tooMany = props.tooMany ? props.tooMany : SelectList.limit
 
     this.state = {
@@ -42,6 +40,14 @@ class SelectList extends React.Component {
       }
     }
     return items_array
+  }
+
+  reorderable () {
+    return this.props.reorderable !== undefined ? this.props.reorderable : false
+  }
+
+  removable () {
+    return this.props.removable !== undefined ? this.props.removable : false
   }
 
   componentDidMount () {
@@ -225,8 +231,8 @@ class SelectList extends React.Component {
               multi={props.multi}
               nested={props.nested}
               selectable={this.selectable}
-              reorderable={this.reorderable}
-              removable={this.removable}
+              reorderable={this.reorderable()}
+              removable={this.removable()}
               handleSelect={this.handleSelect}
               handleRemove={this.handleRemove}
               groupToggle={this.props.groupToggle}
@@ -240,13 +246,14 @@ class SelectList extends React.Component {
           />
         }
         {/* Maintain a blank input to easily know when field is empty */}
-        {props.multi && this.selectable &&
+        {props.multi && this.selectable && props.selected.length == 0 &&
           <input type="hidden" name={props.name + '[]'} value=''
             ref={(input) => { this.input = input }} />
         }
         {props.multi && this.selectable &&
           props.selected.map(item =>
-            <input type="hidden" key={item.value} name={props.name + '[]'} value={item.value} />
+            <input type="hidden" key={item.value} name={props.name + '[]'} value={item.value}
+              ref={(input) => { this.input = input }} />
           )
         }
       </div>

@@ -81,7 +81,10 @@ foreach ($normalized_choices as $key => $choice)
 	if (isset($choice['section']))
 	{
 		$has_groupings = TRUE;
-		break;
+	}
+	if (isset($choice['children']))
+	{
+		$nested = TRUE;
 	}
 }
 
@@ -123,10 +126,12 @@ else:
 		'multi' => $multi,
 		'nested' => $nested,
 		'too_many' => $too_many,
-		'filter_url' => $filter_url,
-		'limit' => $limit,
+		'filter_url' => isset($filter_url) ? $filter_url : NULL,
+		'limit' => isset($limit) ? $limit : 100,
 		'toggle_all' => NULL,
-		'group_toggle' => isset($group_toggle) ? $group_toggle : NULL
+		'group_toggle' => isset($group_toggle) ? $group_toggle : NULL,
+		'manageable' => isset($manageable) ? $manageable : NULL,
+		'manage_label' => isset($manage_label) ? $manage_label : NULL
 	];
 	if (isset($no_results['text']))
 	{

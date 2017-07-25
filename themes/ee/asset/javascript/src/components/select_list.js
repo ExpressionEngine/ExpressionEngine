@@ -100,8 +100,6 @@ var SelectList = function (_React$Component) {
 
     _this.filterable = props.filterable !== undefined ? props.filterable : false;
     _this.selectable = props.selectable !== undefined ? props.selectable : true;
-    _this.reorderable = props.reorderable !== undefined ? props.reorderable : false;
-    _this.removable = props.removable !== undefined ? props.removable : false;
     _this.tooMany = props.tooMany ? props.tooMany : SelectList.limit;
 
     _this.state = {
@@ -118,6 +116,16 @@ var SelectList = function (_React$Component) {
   }
 
   _createClass(SelectList, [{
+    key: 'reorderable',
+    value: function reorderable() {
+      return this.props.reorderable !== undefined ? this.props.reorderable : false;
+    }
+  }, {
+    key: 'removable',
+    value: function removable() {
+      return this.props.removable !== undefined ? this.props.removable : false;
+    }
+  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
       if (this.reorderable) this.bindSortable();
@@ -236,8 +244,8 @@ var SelectList = function (_React$Component) {
               multi: props.multi,
               nested: props.nested,
               selectable: _this4.selectable,
-              reorderable: _this4.reorderable,
-              removable: _this4.removable,
+              reorderable: _this4.reorderable(),
+              removable: _this4.removable(),
               handleSelect: _this4.handleSelect,
               handleRemove: _this4.handleRemove,
               groupToggle: _this4.props.groupToggle
@@ -248,12 +256,15 @@ var SelectList = function (_React$Component) {
           item: props.selected[0],
           clearSelection: this.clearSelection
         }),
-        props.multi && this.selectable && React.createElement('input', { type: 'hidden', name: props.name + '[]', value: '',
+        props.multi && this.selectable && props.selected.length == 0 && React.createElement('input', { type: 'hidden', name: props.name + '[]', value: '',
           ref: function ref(input) {
             _this4.input = input;
           } }),
         props.multi && this.selectable && props.selected.map(function (item) {
-          return React.createElement('input', { type: 'hidden', key: item.value, name: props.name + '[]', value: item.value });
+          return React.createElement('input', { type: 'hidden', key: item.value, name: props.name + '[]', value: item.value,
+            ref: function ref(input) {
+              _this4.input = input;
+            } });
         })
       );
     }

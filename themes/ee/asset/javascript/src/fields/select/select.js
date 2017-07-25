@@ -28,10 +28,17 @@ var SelectField = function (_React$Component) {
       });
     };
 
+    _this.setEditingMode = function (editing) {
+      _this.setState({
+        editing: editing
+      });
+    };
+
     _this.initialItems = SelectList.formatItems(props.items);
     _this.state = {
       items: _this.initialItems,
-      selected: SelectList.formatItems(props.selected)
+      selected: SelectList.formatItems(props.selected),
+      editing: false
     };
     return _this;
   }
@@ -58,7 +65,9 @@ var SelectField = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      return React.createElement(SelectList, { items: this.state.items,
+      var _this3 = this;
+
+      var selectItem = React.createElement(SelectList, { items: this.state.items,
         initialItems: this.initialItems,
         limit: this.props.limit,
         name: this.props.name,
@@ -71,8 +80,31 @@ var SelectField = function (_React$Component) {
         filters: this.props.filters,
         toggleAll: this.props.toggle_all,
         filterable: this.countItems() > SelectList.limit,
-        groupToggle: this.props.group_toggle
+        reorderable: this.state.editing,
+        removable: this.state.editing,
+        groupToggle: this.props.group_toggle,
+        setEditingMode: function setEditingMode(editing) {
+          return _this3.setEditingMode(editing);
+        },
+        manageLabel: this.props.manage_label
       });
+
+      if (this.props.manageable) {
+        return React.createElement(
+          'div',
+          null,
+          selectItem,
+          React.createElement(
+            ToggleTools,
+            { label: this.props.manage_label },
+            React.createElement(Toggle, { on: false, handleToggle: function handleToggle(toggle) {
+                return _this3.setEditingMode(toggle);
+              } })
+          )
+        );
+      }
+
+      return selectItem;
     }
   }]);
 
