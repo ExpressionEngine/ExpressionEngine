@@ -482,13 +482,14 @@ $(document).ready(function(){
 			}
 		});
 
-	// ===============================
-	// filters custom input submission
-	// ===============================
+	// =================
+	// non-React toggles
+	// =================
 
 		$('body').on('click', 'a.toggle-btn', function (e) {
 			if ($(this).hasClass('disabled') ||
-				$(this).parents('.toggle-tools').size() > 0) {
+				$(this).parents('.toggle-tools').size() > 0 ||
+				$(this).parents('[data-reactroot]').size() > 0) {
 				return;
 			}
 

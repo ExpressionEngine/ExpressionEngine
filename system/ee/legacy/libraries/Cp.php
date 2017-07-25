@@ -174,7 +174,7 @@ class Cp {
 			'plugin'	=> array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
 			'file'		=> array('json2', 'underscore', 'cp/global_start', 'cp/form_validation', 'cp/sort_helper', 'cp/fuzzy_filters',
 			'components/no_results', 'components/loading', 'components/filters',
-			'components/select_list', 'fields/select/select')
+			'components/toggle', 'components/select_list', 'fields/select/select')
 		);
 
 		$this->add_js_script($js_scripts);
