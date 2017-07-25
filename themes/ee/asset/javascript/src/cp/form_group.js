@@ -83,9 +83,9 @@ function toggleFields(fields, show, key) {
 	fields.each(function(i, field) {
 		var fieldset = $(field).closest('fieldset');
 
-		if (fieldset.hasClass('invalid')) {
+		if (fieldset.hasClass('fieldset-invalid')) {
 			if (fieldset.find('input:visible').not('input.btn').size() == 0) {
-				fieldset.removeClass('invalid');
+				fieldset.removeClass('fieldset-invalid');
 				fieldset.find('em.ee-form-error-message').remove();
 			}
 		}
