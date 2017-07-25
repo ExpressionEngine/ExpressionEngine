@@ -95,7 +95,7 @@ function toggleFields(fields, show, key) {
 function toggleSections(sections, show, key) {
 	sections.each(function() {
 		$(this).toggle(show);
-		$(this).nextUntil('h2, .form-ctrls').each(function() {
+		$(this).nextUntil('h2, .form-btns').each(function() {
 
 			var field = $(this),
 				group = field.data('group');
