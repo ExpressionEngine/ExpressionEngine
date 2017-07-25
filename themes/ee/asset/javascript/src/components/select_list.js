@@ -248,12 +248,12 @@ var SelectList = function (_React$Component) {
           item: props.selected[0],
           clearSelection: this.clearSelection
         }),
-        props.multi && this.selectable && React.createElement('input', { type: 'hidden', name: props.name + '[]', value: '' }),
+        props.multi && this.selectable && React.createElement('input', { type: 'hidden', name: props.name + '[]', value: '',
+          ref: function ref(input) {
+            _this4.input = input;
+          } }),
         props.multi && this.selectable && props.selected.map(function (item) {
-          return React.createElement('input', { type: 'hidden', key: item.value, name: props.name + '[]', value: item.value,
-            ref: function ref(input) {
-              _this4.input = input;
-            } });
+          return React.createElement('input', { type: 'hidden', key: item.value, name: props.name + '[]', value: item.value });
         })
       );
     }
