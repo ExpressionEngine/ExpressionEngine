@@ -419,26 +419,54 @@ var SelectItem = function (_React$Component2) {
   return SelectItem;
 }(React.Component);
 
-function SelectedItem(props) {
-  return React.createElement(
-    'div',
-    { className: 'field-input-selected' },
-    React.createElement(
-      'label',
-      null,
-      React.createElement('span', { className: 'icon--success' }),
-      ' ',
-      props.item.label,
-      React.createElement('input', { type: 'hidden', name: props.name, value: props.item.value }),
-      React.createElement(
-        'ul',
-        { className: 'toolbar' },
+var SelectedItem = function (_React$Component3) {
+  _inherits(SelectedItem, _React$Component3);
+
+  function SelectedItem() {
+    _classCallCheck(this, SelectedItem);
+
+    return _possibleConstructorReturn(this, (SelectedItem.__proto__ || Object.getPrototypeOf(SelectedItem)).apply(this, arguments));
+  }
+
+  _createClass(SelectedItem, [{
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps, prevState) {
+      if (prevProps.item.value != this.props.item.value) {
+        $(this.input).trigger('change');
+      }
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this8 = this;
+
+      var props = this.props;
+      return React.createElement(
+        'div',
+        { className: 'field-input-selected' },
         React.createElement(
-          'li',
-          { className: 'remove' },
-          React.createElement('a', { href: '', onClick: props.clearSelection })
+          'label',
+          null,
+          React.createElement('span', { className: 'icon--success' }),
+          ' ',
+          props.item.label,
+          React.createElement('input', { type: 'hidden', name: props.name, value: props.item.value,
+            ref: function ref(input) {
+              _this8.input = input;
+            } }),
+          React.createElement(
+            'ul',
+            { className: 'toolbar' },
+            React.createElement(
+              'li',
+              { className: 'remove' },
+              React.createElement('a', { href: '', onClick: props.clearSelection })
+            )
+          )
         )
-      )
-    )
-  );
-}
+      );
+    }
+  }]);
+
+  return SelectedItem;
+}(React.Component);

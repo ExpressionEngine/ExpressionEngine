@@ -336,16 +336,26 @@ class SelectItem extends React.Component {
   }
 }
 
-function SelectedItem (props) {
-  return (
-    <div className="field-input-selected">
-      <label>
-        <span className="icon--success"></span> {props.item.label}
-        <input type="hidden" name={props.name} value={props.item.value} />
-        <ul className="toolbar">
-          <li className="remove"><a href="" onClick={props.clearSelection}></a></li>
-        </ul>
-      </label>
-    </div>
-  )
+class SelectedItem extends React.Component {
+  componentDidUpdate (prevProps, prevState) {
+    if (prevProps.item.value != this.props.item.value) {
+      $(this.input).trigger('change')
+    }
+  }
+
+  render () {
+    let props = this.props
+    return (
+      <div className="field-input-selected">
+        <label>
+          <span className="icon--success"></span> {props.item.label}
+          <input type="hidden" name={props.name} value={props.item.value}
+            ref={(input) => { this.input = input }} />
+          <ul className="toolbar">
+            <li className="remove"><a href="" onClick={props.clearSelection}></a></li>
+          </ul>
+        </label>
+      </div>
+    )
+  }
 }
