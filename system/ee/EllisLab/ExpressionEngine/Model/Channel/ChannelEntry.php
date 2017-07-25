@@ -372,6 +372,7 @@ class ChannelEntry extends ContentModel {
 
 	public function onBeforeDelete()
 	{
+		$this->getAssociation('Channel')->markForReload();
 		parent::onBeforeDelete();
 
 		// Some Tabs might call ee()->api_channel_fields
