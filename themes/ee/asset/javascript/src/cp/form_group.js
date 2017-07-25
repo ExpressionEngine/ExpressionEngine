@@ -147,11 +147,6 @@ EE.cp.form_group_toggle = function(element) {
 
 	// The reset the form .last values
 	var form = $(element).closest('form');
-
-	form.find('fieldset.last').not('.grid-wrap fieldset').removeClass('last');
-	form.find('h2, .form-ctrls').each(function() {
-		$(this).prevAll('fieldset:visible').first().addClass('last');
-	});
 }
 
 // This all kind of came about from needing to preserve radio button
