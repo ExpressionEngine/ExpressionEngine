@@ -76,11 +76,11 @@ EE.cp.formValidation = {
 			}, 0);
 		});
 
-		$('input[type=checkbox], input[type=radio], input[type=hidden], select', container)
-			.not('*[data-ajax-validate=no]')
-			.change(function() {
+		$(container).on('change', 'input[type=checkbox], input[type=radio], input[type=hidden], select', function() {
 
 			var element = $(this);
+
+			if (element.data('ajaxValidate') == 'no') return
 
 			setTimeout(function() {
 				that._sendAjaxRequest(element);
