@@ -174,6 +174,12 @@ class SelectList extends React.Component {
     }
   }
 
+  componentDidUpdate (prevProps, prevState) {
+    if (this.props.multi && prevProps.selected.length != this.props.selected.length) {
+      $(this.input).trigger('change')
+    }
+  }
+
   render () {
     let props = this.props
     let tooMany = props.items.length > this.tooMany && ! this.state.loading
@@ -239,7 +245,8 @@ class SelectList extends React.Component {
         }
         {props.multi && this.selectable &&
           props.selected.map(item =>
-            <input type="hidden" key={item.value} name={props.name + '[]'} value={item.value} />
+            <input type="hidden" key={item.value} name={props.name + '[]'} value={item.value}
+              ref={(input) => { this.input = input }} />
           )
         }
       </div>

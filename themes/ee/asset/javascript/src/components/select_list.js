@@ -174,6 +174,13 @@ var SelectList = function (_React$Component) {
       });
     }
   }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps, prevState) {
+      if (this.props.multi && prevProps.selected.length != this.props.selected.length) {
+        $(this.input).trigger('change');
+      }
+    }
+  }, {
     key: 'render',
     value: function render() {
       var _this4 = this;
@@ -243,7 +250,10 @@ var SelectList = function (_React$Component) {
         }),
         props.multi && this.selectable && React.createElement('input', { type: 'hidden', name: props.name + '[]', value: '' }),
         props.multi && this.selectable && props.selected.map(function (item) {
-          return React.createElement('input', { type: 'hidden', key: item.value, name: props.name + '[]', value: item.value });
+          return React.createElement('input', { type: 'hidden', key: item.value, name: props.name + '[]', value: item.value,
+            ref: function ref(input) {
+              _this4.input = input;
+            } });
         })
       );
     }
