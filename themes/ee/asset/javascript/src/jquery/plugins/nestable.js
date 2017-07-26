@@ -271,7 +271,7 @@
 
             this.dragRootEl = this.el;
 
-            this.dragEl = $(document.createElement(this.options.listNodeName)).addClass(this.options.listClass + ' ' + this.options.dragClass.replace('.', ' '));
+            this.dragEl = $(document.createElement(this.options.listNodeName)).addClass(this.options.listClass.replace('.', ' ') + ' ' + this.options.dragClass.replace('.', ' '));
             this.dragEl.css('width', dragItem.width());
 
             dragItem.after(this.placeEl);
@@ -397,7 +397,7 @@
                     if (depth + this.dragDepth <= opt.maxDepth) {
                         // create new sub-level if one doesn't exist
                         if (!list.length) {
-                            list = $('<' + opt.listNodeName + '/>').addClass(opt.listClass);
+                            list = $('<' + opt.listNodeName + '/>').addClass(opt.listClass.replace('.', ' '));
                             list.append(this.placeEl);
                             prev.append(list);
                             this.setParent(prev);
@@ -463,7 +463,7 @@
                     parent = this.placeEl.parent();
                 // if empty create new list to replace empty placeholder
                 if (isEmpty) {
-                    list = $(document.createElement(opt.listNodeName)).addClass(opt.listClass);
+                    list = $(document.createElement(opt.listNodeName)).addClass(opt.listClass.replace('.', ' '));
                     list.append(this.placeEl);
                     this.pointEl.replaceWith(list);
                 }
