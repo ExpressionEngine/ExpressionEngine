@@ -263,6 +263,7 @@
                 dragItem = target.closest(this.options.itemNodeName+'.'+this.options.itemClass);
 
             this.placeEl.css('height', dragItem.height());
+            this.placeEl.css('box-sizing', 'border-box');
 
             mouse.offsetX = e.offsetX !== undefined ? e.offsetX : e.pageX - target.offset().left;
             mouse.offsetY = e.offsetY !== undefined ? e.offsetY : e.pageY - target.offset().top;
