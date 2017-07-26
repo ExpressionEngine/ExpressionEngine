@@ -128,7 +128,7 @@ var SelectList = function (_React$Component) {
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      if (this.reorderable) this.bindSortable();
+      if (this.reorderable && !this.props.nested) this.bindSortable();
     }
   }, {
     key: 'bindSortable',
@@ -160,6 +160,31 @@ var SelectList = function (_React$Component) {
       });
     }
   }, {
+    key: 'bindNestable',
+    value: function bindNestable() {
+      $(this.container).nestable({
+        listNodeName: 'ul',
+        listClass: 'field-inputs.field-nested',
+        itemClass: 'nestable-item',
+        rootClass: 'field-select',
+        dragClass: 'field-reorder-drag',
+        handleClass: 'icon-reorder',
+        placeElement: $('<li class="field-reorder-placeholder"></li>'),
+        expandBtnHTML: '',
+        collapseBtnHTML: '',
+        maxDepth: 10,
+        constrainToRoot: true
+      }).on('change', function () {
+
+        /*$.ajax({
+          url: EE.category.reorder.URL.replace('###', $(this).data('nestable-group')),
+          data: {'order': $(this).nestable('serialize') },
+          type: 'POST',
+          dataType: 'json'
+        })*/
+      });
+    }
+  }, {
     key: 'filterItems',
     value: function filterItems(items, searchTerm) {
       var _this3 = this;
@@ -187,6 +212,8 @@ var SelectList = function (_React$Component) {
       if (this.props.multi && prevProps.selected.length != this.props.selected.length) {
         $(this.input).trigger('change');
       }
+
+      if (this.props.nested && this.reorderable()) this.bindNestable();
     }
   }, {
     key: 'render',
@@ -418,11 +445,11 @@ var SelectItem = function (_React$Component2) {
       if (props.nested) {
         return React.createElement(
           'li',
-          null,
+          { className: 'nestable-item' },
           listItem,
           props.item.children && React.createElement(
             'ul',
-            null,
+            { className: 'field-inputs field-nested' },
             props.item.children.map(function (item, index) {
               return React.createElement(SelectItem, _extends({}, props, {
                 key: item.value,

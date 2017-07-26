@@ -51,7 +51,7 @@ class SelectList extends React.Component {
   }
 
   componentDidMount () {
-    if (this.reorderable) this.bindSortable()
+    if (this.reorderable && ! this.props.nested) this.bindSortable()
   }
 
   bindSortable () {
@@ -78,6 +78,30 @@ class SelectList extends React.Component {
           return this.props.items[element.dataset.sortableIndex]
         }))
       }
+    })
+  }
+
+  bindNestable () {
+    $(this.container).nestable({
+      listNodeName: 'ul',
+      listClass: 'field-inputs.field-nested',
+      itemClass: 'nestable-item',
+      rootClass: 'field-select',
+      dragClass: 'field-reorder-drag',
+      handleClass: 'icon-reorder',
+      placeElement: $('<li class="field-reorder-placeholder"></li>'),
+      expandBtnHTML: '',
+      collapseBtnHTML: '',
+      maxDepth: 10,
+      constrainToRoot: true
+    }).on('change', () => {
+
+      /*$.ajax({
+        url: EE.category.reorder.URL.replace('###', $(this).data('nestable-group')),
+        data: {'order': $(this).nestable('serialize') },
+        type: 'POST',
+        dataType: 'json'
+      })*/
     })
   }
 
@@ -184,6 +208,8 @@ class SelectList extends React.Component {
     if (this.props.multi && prevProps.selected.length != this.props.selected.length) {
       $(this.input).trigger('change')
     }
+
+    if (this.props.nested && this.reorderable()) this.bindNestable()
   }
 
   render () {
@@ -330,10 +356,10 @@ class SelectItem extends React.Component {
 
     if (props.nested) {
       return (
-        <li>
+        <li className="nestable-item">
           {listItem}
           {props.item.children &&
-            <ul>
+            <ul className="field-inputs field-nested">
               {props.item.children.map((item, index) =>
                 <SelectItem {...props}
                   key={item.value}
