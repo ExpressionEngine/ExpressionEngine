@@ -23,15 +23,15 @@ class SelectList extends React.Component {
   static formatItems (items) {
     if ( ! items) return []
 
-    let items_array = []
+    let itemsArray = []
     for (key of Object.keys(items)) {
       if (items[key].section) {
-        items_array.push({
+        itemsArray.push({
           section: items[key].section,
           label: ''
         })
       } else {
-        items_array.push({
+        itemsArray.push({
           value: items[key].value ? items[key].value : key,
           label: items[key].label ? items[key].label : items[key],
           instructions: items[key].instructions ? items[key].instructions : '',
@@ -39,7 +39,7 @@ class SelectList extends React.Component {
         })
       }
     }
-    return items_array
+    return itemsArray
   }
 
   reorderable () {

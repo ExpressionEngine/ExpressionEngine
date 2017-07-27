@@ -300,7 +300,7 @@ var SelectList = function (_React$Component) {
     value: function formatItems(items) {
       if (!items) return [];
 
-      var items_array = [];
+      var itemsArray = [];
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
       var _iteratorError = undefined;
@@ -310,12 +310,12 @@ var SelectList = function (_React$Component) {
           key = _step.value;
 
           if (items[key].section) {
-            items_array.push({
+            itemsArray.push({
               section: items[key].section,
               label: ''
             });
           } else {
-            items_array.push({
+            itemsArray.push({
               value: items[key].value ? items[key].value : key,
               label: items[key].label ? items[key].label : items[key],
               instructions: items[key].instructions ? items[key].instructions : '',
@@ -338,7 +338,7 @@ var SelectList = function (_React$Component) {
         }
       }
 
-      return items_array;
+      return itemsArray;
     }
   }]);
 
