@@ -131,7 +131,8 @@ else:
 		'toggle_all' => NULL,
 		'group_toggle' => isset($group_toggle) ? $group_toggle : NULL,
 		'manageable' => isset($manageable) ? $manageable : NULL,
-		'manage_label' => isset($manage_label) ? $manage_label : NULL
+		'manage_label' => isset($manage_label) ? $manage_label : NULL,
+		'reorder_ajax_url' => isset($reorder_ajax_url) ? $reorder_ajax_url : NULL
 	];
 	if (isset($no_results['text']))
 	{

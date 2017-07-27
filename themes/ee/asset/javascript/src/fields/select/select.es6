@@ -61,6 +61,7 @@ class SelectField extends React.Component {
       groupToggle={this.props.group_toggle}
       setEditingMode={(editing) => this.setEditingMode(editing)}
       manageLabel={this.props.manage_label}
+      reorderAjaxUrl={this.props.reorder_ajax_url}
     />
 
     if (this.props.manageable) {

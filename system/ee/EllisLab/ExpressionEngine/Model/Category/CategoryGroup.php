@@ -129,7 +129,8 @@ class CategoryGroup extends StructureModel {
 			'deletable'				=> $deletable,
 			'populateCallback'		=> array($this, 'populateCategories'),
 			'manage_toggle_label'	=> lang('manage_categories'),
-			'content_item_label'	=> lang('category')
+			'content_item_label'	=> lang('category'),
+			'reorder_ajax_url'		=> ee('CP/URL')->make('channels/cat/cat-reorder/'.$this->getId())->compile()
 		);
 
 		return $metadata;

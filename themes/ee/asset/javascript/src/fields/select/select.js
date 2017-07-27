@@ -86,7 +86,8 @@ var SelectField = function (_React$Component) {
         setEditingMode: function setEditingMode(editing) {
           return _this3.setEditingMode(editing);
         },
-        manageLabel: this.props.manage_label
+        manageLabel: this.props.manage_label,
+        reorderAjaxUrl: this.props.reorder_ajax_url
       });
 
       if (this.props.manageable) {

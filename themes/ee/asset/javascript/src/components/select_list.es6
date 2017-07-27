@@ -110,12 +110,14 @@ class SelectList extends React.Component {
         this.getItemsArrayForNestable(itemsHash, $(event.target).nestable('serialize'))
       )
 
-      $.ajax({
-        url: EE.category.reorder.URL.replace('###', 1),
-        data: {'order': $(event.target).nestable('serialize')},
-        type: 'POST',
-        dataType: 'json'
-      })
+      if (this.props.reorderAjaxUrl) {
+        $.ajax({
+          url: this.props.reorderAjaxUrl,
+          data: {'order': $(event.target).nestable('serialize')},
+          type: 'POST',
+          dataType: 'json'
+        })
+      }
     })
   }
 

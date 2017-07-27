@@ -190,12 +190,14 @@ var SelectList = function (_React$Component) {
         var itemsHash = _this3.getItemsHash(_this3.props.items);
         _this3.props.itemsChanged(_this3.getItemsArrayForNestable(itemsHash, $(event.target).nestable('serialize')));
 
-        $.ajax({
-          url: EE.category.reorder.URL.replace('###', 1),
-          data: { 'order': $(event.target).nestable('serialize') },
-          type: 'POST',
-          dataType: 'json'
-        });
+        if (_this3.props.reorderAjaxUrl) {
+          $.ajax({
+            url: _this3.props.reorderAjaxUrl,
+            data: { 'order': $(event.target).nestable('serialize') },
+            type: 'POST',
+            dataType: 'json'
+          });
+        }
       });
     }
   }, {
