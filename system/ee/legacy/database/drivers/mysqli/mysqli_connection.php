@@ -205,9 +205,9 @@ class CI_DB_mysqli_connection {
 	 */
 	private function setEmulatePrepares($query)
 	{
-		$on = strncasecmp($query, 'SELECT', 6) != 0;
 		if ($this->mysqlnd)
 		{
+			$on = strncasecmp($query, 'SELECT', 6) != 0;
 			$this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, $on);
 		}
 	}
