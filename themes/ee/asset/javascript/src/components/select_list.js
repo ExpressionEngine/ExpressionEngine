@@ -112,6 +112,11 @@ var SelectList = function (_React$Component) {
     _this.ajaxFilter = _this.props.initialItems.length >= props.limit && props.filterUrl;
     _this.ajaxTimer = null;
     _this.ajaxRequest = null;
+
+    // In the rare case we need to force a full-rerender of the component, we'll
+    // increment this variable which is set as a key on the root element,
+    // telling React to destroy it and start anew
+    _this.version = 0;
     return _this;
   }
 
@@ -177,6 +182,10 @@ var SelectList = function (_React$Component) {
         maxDepth: 10,
         constrainToRoot: true
       }).on('change', function (event) {
+
+        // React will not be able to handle Nestable changing a node's children,
+        // so force a full re-render if it happens
+        _this3.version++;
 
         var itemsHash = _this3.getItemsHash(_this3.props.items);
         _this3.props.itemsChanged(_this3.getItemsArrayForNestable(itemsHash, $(event.target).nestable('serialize')));
@@ -261,7 +270,7 @@ var SelectList = function (_React$Component) {
         { className: "fields-select" + (tooMany ? ' field-resizable' : ''),
           ref: function ref(container) {
             _this7.container = container;
-          } },
+          }, key: this.version },
         this.filterable && React.createElement(
           FieldTools,
           null,

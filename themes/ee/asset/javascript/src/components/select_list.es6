@@ -16,6 +16,11 @@ class SelectList extends React.Component {
     this.ajaxFilter = (this.props.initialItems.length >= props.limit && props.filterUrl)
     this.ajaxTimer = null
     this.ajaxRequest = null
+
+    // In the rare case we need to force a full-rerender of the component, we'll
+    // increment this variable which is set as a key on the root element,
+    // telling React to destroy it and start anew
+    this.version = 0
   }
 
   static limit = 8
@@ -95,6 +100,10 @@ class SelectList extends React.Component {
       maxDepth: 10,
       constrainToRoot: true
     }).on('change', (event) => {
+
+      // React will not be able to handle Nestable changing a node's children,
+      // so force a full re-render if it happens
+      this.version++
 
       let itemsHash = this.getItemsHash(this.props.items)
       this.props.itemsChanged(
@@ -245,7 +254,7 @@ class SelectList extends React.Component {
 
     return (
       <div className={"fields-select" + (tooMany ? ' field-resizable' : '')}
-        ref={(container) => { this.container = container }}>
+        ref={(container) => { this.container = container }} key={this.version}>
         {this.filterable &&
           <FieldTools>
             <FilterBar>
