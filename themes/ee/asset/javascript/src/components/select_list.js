@@ -221,7 +221,7 @@ var SelectList = function (_React$Component) {
       nestable.forEach(function (orderedItem) {
         var item = itemsHash[orderedItem.id];
         var newItem = Object.assign({}, item);
-        if (orderedItem.children) newItem.children = _this5.getItemsArrayForNestable(itemsHash, orderedItem.children);
+        newItem.children = orderedItem.children ? _this5.getItemsArrayForNestable(itemsHash, orderedItem.children) : null;
         items.push(newItem);
       });
       return items;

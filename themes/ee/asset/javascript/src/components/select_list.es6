@@ -135,7 +135,8 @@ class SelectList extends React.Component {
     nestable.forEach(orderedItem => {
       let item = itemsHash[orderedItem.id]
       let newItem = Object.assign({}, item)
-      if (orderedItem.children) newItem.children = this.getItemsArrayForNestable(itemsHash, orderedItem.children)
+      newItem.children = (orderedItem.children)
+        ? this.getItemsArrayForNestable(itemsHash, orderedItem.children) : null
       items.push(newItem)
     })
     return items
