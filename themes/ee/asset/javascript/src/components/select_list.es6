@@ -94,15 +94,40 @@ class SelectList extends React.Component {
       collapseBtnHTML: '',
       maxDepth: 10,
       constrainToRoot: true
-    }).on('change', () => {
+    }).on('change', (event) => {
 
-      /*$.ajax({
-        url: EE.category.reorder.URL.replace('###', $(this).data('nestable-group')),
-        data: {'order': $(this).nestable('serialize') },
+      let itemsHash = this.getItemsHash(this.props.items)
+      this.props.itemsChanged(
+        this.getItemsArrayForNestable(itemsHash, $(event.target).nestable('serialize'))
+      )
+
+      $.ajax({
+        url: EE.category.reorder.URL.replace('###', 1),
+        data: {'order': $(event.target).nestable('serialize')},
         type: 'POST',
         dataType: 'json'
-      })*/
+      })
     })
+  }
+
+  getItemsHash (items) {
+    var itemsHash = {}
+    items.forEach(item => {
+      itemsHash[item.value] = item
+      if (item.children) itemsHash = Object.assign(itemsHash, this.getItemsHash(item.children))
+    })
+    return itemsHash
+  }
+
+  getItemsArrayForNestable (itemsHash, nestable) {
+    var items = []
+    nestable.forEach(orderedItem => {
+      let item = itemsHash[orderedItem.id]
+      let newItem = Object.assign({}, item)
+      if (orderedItem.children) newItem.children = this.getItemsArrayForNestable(itemsHash, orderedItem.children)
+      items.push(newItem)
+    })
+    return items
   }
 
   handleSelect = (event, item) => {
@@ -356,7 +381,7 @@ class SelectItem extends React.Component {
 
     if (props.nested) {
       return (
-        <li className="nestable-item">
+        <li className="nestable-item" data-id={props.item.value}>
           {listItem}
           {props.item.children &&
             <ul className="field-inputs field-nested">

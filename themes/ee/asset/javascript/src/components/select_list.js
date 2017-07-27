@@ -162,6 +162,8 @@ var SelectList = function (_React$Component) {
   }, {
     key: 'bindNestable',
     value: function bindNestable() {
+      var _this3 = this;
+
       $(this.container).nestable({
         listNodeName: 'ul',
         listClass: 'field-inputs.field-nested',
@@ -174,27 +176,56 @@ var SelectList = function (_React$Component) {
         collapseBtnHTML: '',
         maxDepth: 10,
         constrainToRoot: true
-      }).on('change', function () {
+      }).on('change', function (event) {
 
-        /*$.ajax({
-          url: EE.category.reorder.URL.replace('###', $(this).data('nestable-group')),
-          data: {'order': $(this).nestable('serialize') },
+        var itemsHash = _this3.getItemsHash(_this3.props.items);
+        _this3.props.itemsChanged(_this3.getItemsArrayForNestable(itemsHash, $(event.target).nestable('serialize')));
+
+        $.ajax({
+          url: EE.category.reorder.URL.replace('###', 1),
+          data: { 'order': $(event.target).nestable('serialize') },
           type: 'POST',
           dataType: 'json'
-        })*/
+        });
       });
+    }
+  }, {
+    key: 'getItemsHash',
+    value: function getItemsHash(items) {
+      var _this4 = this;
+
+      var itemsHash = {};
+      items.forEach(function (item) {
+        itemsHash[item.value] = item;
+        if (item.children) itemsHash = Object.assign(itemsHash, _this4.getItemsHash(item.children));
+      });
+      return itemsHash;
+    }
+  }, {
+    key: 'getItemsArrayForNestable',
+    value: function getItemsArrayForNestable(itemsHash, nestable) {
+      var _this5 = this;
+
+      var items = [];
+      nestable.forEach(function (orderedItem) {
+        var item = itemsHash[orderedItem.id];
+        var newItem = Object.assign({}, item);
+        if (orderedItem.children) newItem.children = _this5.getItemsArrayForNestable(itemsHash, orderedItem.children);
+        items.push(newItem);
+      });
+      return items;
     }
   }, {
     key: 'filterItems',
     value: function filterItems(items, searchTerm) {
-      var _this3 = this;
+      var _this6 = this;
 
       items = items.map(function (item) {
         // Clone item so we don't modify reference types
         item = Object.assign({}, item);
 
         // If any children contain the search term, we'll keep the parent
-        if (item.children) item.children = _this3.filterItems(item.children, searchTerm);
+        if (item.children) item.children = _this6.filterItems(item.children, searchTerm);
 
         var itemFoundInChildren = item.children && item.children.length > 0;
         var itemFound = item.label.toLowerCase().includes(searchTerm.toLowerCase());
@@ -218,7 +249,7 @@ var SelectList = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this4 = this;
+      var _this7 = this;
 
       var props = this.props;
       var tooMany = props.items.length > this.tooMany && !this.state.loading;
@@ -229,7 +260,7 @@ var SelectList = function (_React$Component) {
         'div',
         { className: "fields-select" + (tooMany ? ' field-resizable' : ''),
           ref: function ref(container) {
-            _this4.container = container;
+            _this7.container = container;
           } },
         this.filterable && React.createElement(
           FieldTools,
@@ -244,17 +275,17 @@ var SelectList = function (_React$Component) {
                 placeholder: filter.placeholder,
                 items: filter.items,
                 onSelect: function onSelect(value) {
-                  return _this4.filterChange(filter.name, value);
+                  return _this7.filterChange(filter.name, value);
                 }
               });
             }),
             React.createElement(FilterSearch, { onSearch: function onSearch(e) {
-                return _this4.filterChange('search', e.target.value);
+                return _this7.filterChange('search', e.target.value);
               } })
           ),
           shouldShowToggleAll && React.createElement('hr', null),
           shouldShowToggleAll && React.createElement(FilterToggleAll, { checkAll: props.toggleAll, onToggleAll: function onToggleAll(check) {
-              return _this4.handleToggleAll(check);
+              return _this7.handleToggleAll(check);
             } })
         ),
         React.createElement(
@@ -270,12 +301,12 @@ var SelectList = function (_React$Component) {
               selected: props.selected,
               multi: props.multi,
               nested: props.nested,
-              selectable: _this4.selectable,
-              reorderable: _this4.reorderable(),
-              removable: _this4.removable(),
-              handleSelect: _this4.handleSelect,
-              handleRemove: _this4.handleRemove,
-              groupToggle: _this4.props.groupToggle
+              selectable: _this7.selectable,
+              reorderable: _this7.reorderable(),
+              removable: _this7.removable(),
+              handleSelect: _this7.handleSelect,
+              handleRemove: _this7.handleRemove,
+              groupToggle: _this7.props.groupToggle
             });
           })
         ),
@@ -285,12 +316,12 @@ var SelectList = function (_React$Component) {
         }),
         props.multi && this.selectable && props.selected.length == 0 && React.createElement('input', { type: 'hidden', name: props.name + '[]', value: '',
           ref: function ref(input) {
-            _this4.input = input;
+            _this7.input = input;
           } }),
         props.multi && this.selectable && props.selected.map(function (item) {
           return React.createElement('input', { type: 'hidden', key: item.value, name: props.name + '[]', value: item.value,
             ref: function ref(input) {
-              _this4.input = input;
+              _this7.input = input;
             } });
         })
       );
@@ -393,7 +424,7 @@ var SelectItem = function (_React$Component2) {
   }, {
     key: 'render',
     value: function render() {
-      var _this6 = this;
+      var _this9 = this;
 
       var props = this.props;
       var checked = this.checked(props.item.value);
@@ -409,7 +440,7 @@ var SelectItem = function (_React$Component2) {
       var listItem = React.createElement(
         'label',
         { className: checked ? 'act' : '', ref: function ref(label) {
-            _this6.node = label;
+            _this9.node = label;
           } },
         props.reorderable && React.createElement(
           'span',
@@ -445,7 +476,7 @@ var SelectItem = function (_React$Component2) {
       if (props.nested) {
         return React.createElement(
           'li',
-          { className: 'nestable-item' },
+          { className: 'nestable-item', 'data-id': props.item.value },
           listItem,
           props.item.children && React.createElement(
             'ul',
@@ -486,7 +517,7 @@ var SelectedItem = function (_React$Component3) {
   }, {
     key: 'render',
     value: function render() {
-      var _this8 = this;
+      var _this11 = this;
 
       var props = this.props;
       return React.createElement(
@@ -500,7 +531,7 @@ var SelectedItem = function (_React$Component3) {
           props.item.label,
           React.createElement('input', { type: 'hidden', name: props.name, value: props.item.value,
             ref: function ref(input) {
-              _this8.input = input;
+              _this11.input = input;
             } }),
           React.createElement(
             'ul',
