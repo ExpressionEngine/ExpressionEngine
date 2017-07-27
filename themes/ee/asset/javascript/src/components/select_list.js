@@ -128,7 +128,7 @@ var SelectList = function (_React$Component) {
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      if (this.reorderable && !this.props.nested) this.bindSortable();
+      if (this.reorderable() && !this.props.nested) this.bindSortable();
     }
   }, {
     key: 'bindSortable',

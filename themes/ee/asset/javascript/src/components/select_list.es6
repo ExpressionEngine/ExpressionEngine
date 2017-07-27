@@ -51,7 +51,7 @@ class SelectList extends React.Component {
   }
 
   componentDidMount () {
-    if (this.reorderable && ! this.props.nested) this.bindSortable()
+    if (this.reorderable() && ! this.props.nested) this.bindSortable()
   }
 
   bindSortable () {
