@@ -183,6 +183,8 @@ var SelectList = function (_React$Component) {
         constrainToRoot: true
       }).on('change', function (event) {
 
+        if (!$(event.target).data("nestable")) return;
+
         // React will not be able to handle Nestable changing a node's children,
         // so force a full re-render if it happens
         _this3.version++;
