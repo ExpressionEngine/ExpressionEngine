@@ -25,7 +25,7 @@ class SelectList extends React.Component {
 
   static limit = 8
 
-  static formatItems (items, multi) {
+  static formatItems (items, parent, multi) {
     if ( ! items) return []
 
     let itemsArray = []
@@ -39,15 +39,22 @@ class SelectList extends React.Component {
         // Whem formatting selected items lists, selections will likely be a flat
         // array of values for multi-select
         var value = (multi) ? items[key] : key
-
-        itemsArray.push({
+        var newItem = {
           value: items[key].value ? items[key].value : value,
           label: items[key].label ? items[key].label : items[key],
           instructions: items[key].instructions ? items[key].instructions : '',
-          children: items[key].children ? SelectList.formatItems(items[key].children) : null
-        })
+          children: null,
+          parent: parent ? parent : null
+        }
+
+        if (items[key].children) {
+          newItem.children = SelectList.formatItems(items[key].children, newItem)
+        }
+
+        itemsArray.push(newItem)
       }
     }
+
     return itemsArray
   }
 
@@ -112,14 +119,16 @@ class SelectList extends React.Component {
       this.version++
 
       let itemsHash = this.getItemsHash(this.props.items)
+      var nestableData = $(event.target).nestable('serialize')
+
       this.props.itemsChanged(
-        this.getItemsArrayForNestable(itemsHash, $(event.target).nestable('serialize'))
+        this.getItemsArrayForNestable(itemsHash, nestableData)
       )
 
       if (this.props.reorderAjaxUrl) {
         $.ajax({
           url: this.props.reorderAjaxUrl,
-          data: {'order': $(event.target).nestable('serialize')},
+          data: {'order': nestableData},
           type: 'POST',
           dataType: 'json'
         })
@@ -136,34 +145,76 @@ class SelectList extends React.Component {
     return itemsHash
   }
 
-  getItemsArrayForNestable (itemsHash, nestable) {
+  getItemsArrayForNestable (itemsHash, nestable, parent) {
     var items = []
     nestable.forEach(orderedItem => {
       let item = itemsHash[orderedItem.id]
       let newItem = Object.assign({}, item)
+      newItem.parent = (parent) ? parent : null
       newItem.children = (orderedItem.children)
-        ? this.getItemsArrayForNestable(itemsHash, orderedItem.children) : null
+        ? this.getItemsArrayForNestable(itemsHash, orderedItem.children, newItem) : null
       items.push(newItem)
     })
     return items
   }
 
   handleSelect = (event, item) => {
-    var selected = []
+    var selected = [],
+        checked = event.target.checked
+
     if (this.props.multi) {
-      if (event.target.checked) {
+      if (checked) {
         selected = this.props.selected.concat([item])
+        if (this.props.autoSelectParents) {
+          // Select all parents
+          selected = selected.concat(this.getRelativesForItemSelection(item, true))
+        }
       } else {
+        var values = [item.value]
+        if (this.props.autoSelectParents) {
+          // De-select all children
+          values = values.concat(this.getRelativesForItemSelection(item, false))
+        }
         selected = this.props.selected.filter((thisItem) => {
-          return thisItem.value != item.value
+          return ! values.includes(thisItem.value)
         })
       }
     } else {
       selected = [item]
     }
+
     this.props.selectionChanged(selected)
 
     if (this.props.groupToggle) EE.cp.form_group_toggle(event.target)
+  }
+
+  getRelativesForItemSelection(item, checked) {
+    var items = []
+    // If checking, we need to find all unchecked parents
+    if (checked && item.parent) {
+      while (item.parent) {
+        // Prevent duplicates
+        // This works ok unless items are selected and then the hierarchy is
+        // changed, selected item objects don't have their parents updated
+        found = this.props.selected.find((thisItem) => {
+          return thisItem.value == item.parent.value
+        })
+        if (found) break
+
+        items.push(item.parent)
+        item = item.parent
+      }
+    // If unchecking, we need to find values of all children as opposed to
+    // objects because we filter the selection based on value to de-select
+    } else if ( ! checked && item.children) {
+      item.children.forEach(child => {
+        items.push(child.value)
+        if (child.children) {
+          items = items.concat(this.getRelativesForItemSelection(child, checked))
+        }
+      })
+    }
+    return items
   }
 
   handleRemove = (event, item) => {
@@ -383,7 +434,9 @@ class SelectItem extends React.Component {
             value={props.item.value}
             onChange={(e) => props.handleSelect(e, props.item)}
             checked={(checked ? 'checked' : '')}
-            data-group-toggle={(props.groupToggle ? JSON.stringify(props.groupToggle) : '[]')} />
+            data-group-toggle={(props.groupToggle ? JSON.stringify(props.groupToggle) : '[]')}
+            disabled={props.reorderable ? 'disabled' : ''}
+           />
         )}
         {props.item.label+" "}
         {props.item.instructions && (

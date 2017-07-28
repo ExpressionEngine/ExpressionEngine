@@ -125,6 +125,7 @@ else:
 		'selected' => $value,
 		'multi' => $multi,
 		'nested' => $nested,
+		'auto_select_parents' => isset($auto_select_parents) ? $auto_select_parents : NULL,
 		'too_many' => $too_many,
 		'filter_url' => isset($filter_url) ? $filter_url : NULL,
 		'limit' => isset($limit) ? $limit : 100,

@@ -19,18 +19,30 @@ var SelectList = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, (SelectList.__proto__ || Object.getPrototypeOf(SelectList)).call(this, props));
 
     _this.handleSelect = function (event, item) {
-      var selected = [];
+      var selected = [],
+          checked = event.target.checked;
+
       if (_this.props.multi) {
-        if (event.target.checked) {
+        if (checked) {
           selected = _this.props.selected.concat([item]);
+          if (_this.props.autoSelectParents) {
+            // Select all parents
+            selected = selected.concat(_this.getRelativesForItemSelection(item, true));
+          }
         } else {
+          var values = [item.value];
+          if (_this.props.autoSelectParents) {
+            // De-select all children
+            values = values.concat(_this.getRelativesForItemSelection(item, false));
+          }
           selected = _this.props.selected.filter(function (thisItem) {
-            return thisItem.value != item.value;
+            return !values.includes(thisItem.value);
           });
         }
       } else {
         selected = [item];
       }
+
       _this.props.selectionChanged(selected);
 
       if (_this.props.groupToggle) EE.cp.form_group_toggle(event.target);
@@ -190,12 +202,14 @@ var SelectList = function (_React$Component) {
         _this3.version++;
 
         var itemsHash = _this3.getItemsHash(_this3.props.items);
-        _this3.props.itemsChanged(_this3.getItemsArrayForNestable(itemsHash, $(event.target).nestable('serialize')));
+        var nestableData = $(event.target).nestable('serialize');
+
+        _this3.props.itemsChanged(_this3.getItemsArrayForNestable(itemsHash, nestableData));
 
         if (_this3.props.reorderAjaxUrl) {
           $.ajax({
             url: _this3.props.reorderAjaxUrl,
-            data: { 'order': $(event.target).nestable('serialize') },
+            data: { 'order': nestableData },
             type: 'POST',
             dataType: 'json'
           });
@@ -216,29 +230,62 @@ var SelectList = function (_React$Component) {
     }
   }, {
     key: 'getItemsArrayForNestable',
-    value: function getItemsArrayForNestable(itemsHash, nestable) {
+    value: function getItemsArrayForNestable(itemsHash, nestable, parent) {
       var _this5 = this;
 
       var items = [];
       nestable.forEach(function (orderedItem) {
         var item = itemsHash[orderedItem.id];
         var newItem = Object.assign({}, item);
-        newItem.children = orderedItem.children ? _this5.getItemsArrayForNestable(itemsHash, orderedItem.children) : null;
+        newItem.parent = parent ? parent : null;
+        newItem.children = orderedItem.children ? _this5.getItemsArrayForNestable(itemsHash, orderedItem.children, newItem) : null;
         items.push(newItem);
       });
       return items;
     }
   }, {
+    key: 'getRelativesForItemSelection',
+    value: function getRelativesForItemSelection(item, checked) {
+      var _this6 = this;
+
+      var items = [];
+      // If checking, we need to find all unchecked parents
+      if (checked && item.parent) {
+        while (item.parent) {
+          // Prevent duplicates
+          // This works ok unless items are selected and then the hierarchy is
+          // changed, selected item objects don't have their parents updated
+          found = this.props.selected.find(function (thisItem) {
+            return thisItem.value == item.parent.value;
+          });
+          if (found) break;
+
+          items.push(item.parent);
+          item = item.parent;
+        }
+        // If unchecking, we need to find values of all children as opposed to
+        // objects because we filter the selection based on value to de-select
+      } else if (!checked && item.children) {
+        item.children.forEach(function (child) {
+          items.push(child.value);
+          if (child.children) {
+            items = items.concat(_this6.getRelativesForItemSelection(child, checked));
+          }
+        });
+      }
+      return items;
+    }
+  }, {
     key: 'filterItems',
     value: function filterItems(items, searchTerm) {
-      var _this6 = this;
+      var _this7 = this;
 
       items = items.map(function (item) {
         // Clone item so we don't modify reference types
         item = Object.assign({}, item);
 
         // If any children contain the search term, we'll keep the parent
-        if (item.children) item.children = _this6.filterItems(item.children, searchTerm);
+        if (item.children) item.children = _this7.filterItems(item.children, searchTerm);
 
         var itemFoundInChildren = item.children && item.children.length > 0;
         var itemFound = item.label.toLowerCase().includes(searchTerm.toLowerCase());
@@ -262,7 +309,7 @@ var SelectList = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this7 = this;
+      var _this8 = this;
 
       var props = this.props;
       var tooMany = props.items.length > this.tooMany && !this.state.loading;
@@ -273,7 +320,7 @@ var SelectList = function (_React$Component) {
         'div',
         { className: "fields-select" + (tooMany ? ' field-resizable' : ''),
           ref: function ref(container) {
-            _this7.container = container;
+            _this8.container = container;
           }, key: this.version },
         this.filterable && React.createElement(
           FieldTools,
@@ -288,17 +335,17 @@ var SelectList = function (_React$Component) {
                 placeholder: filter.placeholder,
                 items: filter.items,
                 onSelect: function onSelect(value) {
-                  return _this7.filterChange(filter.name, value);
+                  return _this8.filterChange(filter.name, value);
                 }
               });
             }),
             React.createElement(FilterSearch, { onSearch: function onSearch(e) {
-                return _this7.filterChange('search', e.target.value);
+                return _this8.filterChange('search', e.target.value);
               } })
           ),
           shouldShowToggleAll && React.createElement('hr', null),
           shouldShowToggleAll && React.createElement(FilterToggleAll, { checkAll: props.toggleAll, onToggleAll: function onToggleAll(check) {
-              return _this7.handleToggleAll(check);
+              return _this8.handleToggleAll(check);
             } })
         ),
         React.createElement(
@@ -314,12 +361,12 @@ var SelectList = function (_React$Component) {
               selected: props.selected,
               multi: props.multi,
               nested: props.nested,
-              selectable: _this7.selectable,
-              reorderable: _this7.reorderable(),
-              removable: _this7.removable(),
-              handleSelect: _this7.handleSelect,
-              handleRemove: _this7.handleRemove,
-              groupToggle: _this7.props.groupToggle
+              selectable: _this8.selectable,
+              reorderable: _this8.reorderable(),
+              removable: _this8.removable(),
+              handleSelect: _this8.handleSelect,
+              handleRemove: _this8.handleRemove,
+              groupToggle: _this8.props.groupToggle
             });
           })
         ),
@@ -329,19 +376,19 @@ var SelectList = function (_React$Component) {
         }),
         props.multi && this.selectable && props.selected.length == 0 && React.createElement('input', { type: 'hidden', name: props.name + '[]', value: '',
           ref: function ref(input) {
-            _this7.input = input;
+            _this8.input = input;
           } }),
         props.multi && this.selectable && props.selected.map(function (item) {
           return React.createElement('input', { type: 'hidden', key: item.value, name: props.name + '[]', value: item.value,
             ref: function ref(input) {
-              _this7.input = input;
+              _this8.input = input;
             } });
         })
       );
     }
   }], [{
     key: 'formatItems',
-    value: function formatItems(items, multi) {
+    value: function formatItems(items, parent, multi) {
       if (!items) return [];
 
       var itemsArray = [];
@@ -362,13 +409,19 @@ var SelectList = function (_React$Component) {
             // Whem formatting selected items lists, selections will likely be a flat
             // array of values for multi-select
             var value = multi ? items[key] : key;
-
-            itemsArray.push({
+            var newItem = {
               value: items[key].value ? items[key].value : value,
               label: items[key].label ? items[key].label : items[key],
               instructions: items[key].instructions ? items[key].instructions : '',
-              children: items[key].children ? SelectList.formatItems(items[key].children) : null
-            });
+              children: null,
+              parent: parent ? parent : null
+            };
+
+            if (items[key].children) {
+              newItem.children = SelectList.formatItems(items[key].children, newItem);
+            }
+
+            itemsArray.push(newItem);
           }
         }
       } catch (err) {
@@ -441,7 +494,7 @@ var SelectItem = function (_React$Component2) {
   }, {
     key: 'render',
     value: function render() {
-      var _this9 = this;
+      var _this10 = this;
 
       var props = this.props;
       var checked = this.checked(props.item.value);
@@ -457,7 +510,7 @@ var SelectItem = function (_React$Component2) {
       var listItem = React.createElement(
         'label',
         { className: checked ? 'act' : '', ref: function ref(label) {
-            _this9.node = label;
+            _this10.node = label;
           } },
         props.reorderable && React.createElement(
           'span',
@@ -470,7 +523,9 @@ var SelectItem = function (_React$Component2) {
             return props.handleSelect(e, props.item);
           },
           checked: checked ? 'checked' : '',
-          'data-group-toggle': props.groupToggle ? JSON.stringify(props.groupToggle) : '[]' }),
+          'data-group-toggle': props.groupToggle ? JSON.stringify(props.groupToggle) : '[]',
+          disabled: props.reorderable ? 'disabled' : ''
+        }),
         props.item.label + " ",
         props.item.instructions && React.createElement(
           'i',
@@ -534,7 +589,7 @@ var SelectedItem = function (_React$Component3) {
   }, {
     key: 'render',
     value: function render() {
-      var _this11 = this;
+      var _this12 = this;
 
       var props = this.props;
       return React.createElement(
@@ -548,7 +603,7 @@ var SelectedItem = function (_React$Component3) {
           props.item.label,
           React.createElement('input', { type: 'hidden', name: props.name, value: props.item.value,
             ref: function ref(input) {
-              _this11.input = input;
+              _this12.input = input;
             } }),
           React.createElement(
             'ul',

@@ -5,7 +5,7 @@ class SelectField extends React.Component {
     this.initialItems = SelectList.formatItems(props.items)
     this.state = {
       items: this.initialItems,
-      selected: SelectList.formatItems(props.selected, props.multi),
+      selected: SelectList.formatItems(props.selected, null, props.multi),
       editing: false
     }
   }
@@ -49,6 +49,7 @@ class SelectField extends React.Component {
       name={this.props.name}
       multi={this.props.multi}
       nested={this.props.nested}
+      autoSelectParents={this.props.auto_select_parents}
       selected={this.state.selected}
       itemsChanged={this.itemsChanged}
       selectionChanged={this.selectionChanged}
