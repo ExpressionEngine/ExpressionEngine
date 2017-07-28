@@ -25,7 +25,7 @@ class SelectList extends React.Component {
 
   static limit = 8
 
-  static formatItems (items) {
+  static formatItems (items, multi) {
     if ( ! items) return []
 
     let itemsArray = []
@@ -36,8 +36,12 @@ class SelectList extends React.Component {
           label: ''
         })
       } else {
+        // Whem formatting selected items lists, selections will likely be a flat
+        // array of values for multi-select
+        var value = (multi) ? items[key] : key
+
         itemsArray.push({
-          value: items[key].value ? items[key].value : key,
+          value: items[key].value ? items[key].value : value,
           label: items[key].label ? items[key].label : items[key],
           instructions: items[key].instructions ? items[key].instructions : '',
           children: items[key].children ? SelectList.formatItems(items[key].children) : null

@@ -37,7 +37,7 @@ var SelectField = function (_React$Component) {
     _this.initialItems = SelectList.formatItems(props.items);
     _this.state = {
       items: _this.initialItems,
-      selected: SelectList.formatItems(props.selected),
+      selected: SelectList.formatItems(props.selected, props.multi),
       editing: false
     };
     return _this;

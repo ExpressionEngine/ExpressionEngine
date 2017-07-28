@@ -339,7 +339,7 @@ var SelectList = function (_React$Component) {
     }
   }], [{
     key: 'formatItems',
-    value: function formatItems(items) {
+    value: function formatItems(items, multi) {
       if (!items) return [];
 
       var itemsArray = [];
@@ -357,8 +357,12 @@ var SelectList = function (_React$Component) {
               label: ''
             });
           } else {
+            // Whem formatting selected items lists, selections will likely be a flat
+            // array of values for multi-select
+            var value = multi ? items[key] : key;
+
             itemsArray.push({
-              value: items[key].value ? items[key].value : key,
+              value: items[key].value ? items[key].value : value,
               label: items[key].label ? items[key].label : items[key],
               instructions: items[key].instructions ? items[key].instructions : '',
               children: items[key].children ? SelectList.formatItems(items[key].children) : null

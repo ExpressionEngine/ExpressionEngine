@@ -5,7 +5,7 @@ class SelectField extends React.Component {
     this.initialItems = SelectList.formatItems(props.items)
     this.state = {
       items: this.initialItems,
-      selected: SelectList.formatItems(props.selected),
+      selected: SelectList.formatItems(props.selected, props.multi),
       editing: false
     }
   }
