@@ -633,7 +633,9 @@ class Channel {
 					continue;
 				}
 
-				$search_column_name = 'wd.field_id_'.$this->cfields[$site_id][$field_name];
+				$table = "fid{$this->cfields[$site_id][$field_name]}";
+
+				$search_column_name = $table . '.field_id_'.$this->cfields[$site_id][$field_name];
 
 				$fields_sql .= ee()->channel_model->field_search_sql($terms, $search_column_name, $site_id);
 
@@ -1898,6 +1900,25 @@ class Channel {
 
 		if ( ! empty(ee()->TMPL->search_fields))
 		{
+			$joins = '';
+			foreach (array_keys(ee()->TMPL->search_fields) as $field_name)
+			{
+				$sites = (ee()->TMPL->site_ids ? ee()->TMPL->site_ids : array(ee()->config->item('site_id')));
+				foreach ($sites as $site_name => $site_id)
+				{
+					if (isset($this->cfields[$site_id][$field_name]))
+					{
+						$field_id = $this->cfields[$site_id][$field_name];
+						$joins .= "LEFT JOIN exp_channel_data_field_{$field_id} AS fid{$field_id} ON fid{$field_id}.entry_id = t.entry_id ";
+					}
+				}
+			}
+
+			if ( ! empty($joins))
+			{
+				$sql = str_replace('WHERE ', $joins . 'WHERE ', $sql);
+			}
+
 			$sql .= $this->_generate_field_search_sql(ee()->TMPL->search_fields, ee()->TMPL->site_ids);
 		}
 
