@@ -175,8 +175,13 @@ class SelectList extends React.Component {
           // De-select all children
           values = values.concat(this.getRelativesForItemSelection(item, false))
         }
-        selected = this.props.selected.filter((thisItem) => {
-          return ! values.includes(thisItem.value)
+        selected = this.props.selected.filter(thisItem => {
+          // Would use .includes() here but we can't rely on types being
+          // the same, so we need to do a manual loose type check
+          for (value of values) {
+            if (value == thisItem.value) return false
+          }
+          return true
         })
       }
     } else {
@@ -196,7 +201,7 @@ class SelectList extends React.Component {
         // Prevent duplicates
         // This works ok unless items are selected and then the hierarchy is
         // changed, selected item objects don't have their parents updated
-        found = this.props.selected.find((thisItem) => {
+        found = this.props.selected.find(thisItem => {
           return thisItem.value == item.parent.value
         })
         if (found) break
