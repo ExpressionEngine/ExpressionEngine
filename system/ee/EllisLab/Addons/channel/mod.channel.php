@@ -633,7 +633,7 @@ class Channel {
 					continue;
 				}
 
-				$table = "fid{$this->cfields[$site_id][$field_name]}";
+				$table = "exp_channel_data_field_{$this->cfields[$site_id][$field_name]}";
 
 				$search_column_name = $table . '.field_id_'.$this->cfields[$site_id][$field_name];
 
@@ -1909,7 +1909,7 @@ class Channel {
 					if (isset($this->cfields[$site_id][$field_name]))
 					{
 						$field_id = $this->cfields[$site_id][$field_name];
-						$joins .= "LEFT JOIN exp_channel_data_field_{$field_id} AS fid{$field_id} ON fid{$field_id}.entry_id = t.entry_id ";
+						$joins .= "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
 					}
 				}
 			}
@@ -2074,8 +2074,16 @@ class Channel {
 							}
 							else
 							{
-								$end .= "wd.field_id_".$corder[$key];
-								$distinct_select .= ', wd.field_id_'.$corder[$key].' ';
+								$field_id = $corder[$key];
+
+								if (strpos($sql, "exp_channel_data_field_{$field_id}") === FALSE)
+								{
+									$join = "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
+									$sql = str_replace('WHERE ', $join . 'WHERE ', $sql);
+								}
+
+								$end .= "exp_channel_data_field_{$field_id}.field_id_{$field_id}";
+								$distinct_select .= ", exp_channel_data_field_{$field_id}.field_id_{$field_id} ";
 							}
 						break;
 
