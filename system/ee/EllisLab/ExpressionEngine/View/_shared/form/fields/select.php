@@ -114,10 +114,14 @@ if (count($choices, COUNT_RECURSIVE) <= $too_many && ! $nested && ! $has_groupin
 <?php
 // Large list, render it using React
 else:
-	if ($value && ! is_array($value))
+	if ($value && ! is_array($value) && ! $multi)
 	{
 		$label = findLabelForValue($value, $normalized_choices);
 		$value = [$value => $label];
+	}
+	elseif ($multi && ! is_array($value))
+	{
+		$value = [$value];
 	}
 
 	$component = [
