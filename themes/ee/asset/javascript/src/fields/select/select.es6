@@ -10,6 +10,14 @@ class SelectField extends React.Component {
     }
   }
 
+  static renderFields(context) {
+    $('div[data-select-react]', context).each(function () {
+      let props = JSON.parse(window.atob($(this).data('selectReact')))
+      props.name = $(this).data('inputValue')
+      ReactDOM.render(React.createElement(SelectField, props, null), this)
+    })
+  }
+
   itemsChanged = (items) => {
     this.setState({
       items: items
@@ -81,8 +89,21 @@ class SelectField extends React.Component {
 }
 
 $(document).ready(function () {
-  $('div[data-select-react]').each(function () {
-    let props = JSON.parse(window.atob($(this).data('selectReact')))
-    ReactDOM.render(React.createElement(SelectField, props, null), this)
-  })
+  SelectField.renderFields()
 })
+
+Grid.bind('relationship', 'displaySettings', function(cell) {
+  SelectField.renderFields(cell)
+});
+
+Grid.bind('checkboxes', 'display', function(cell) {
+  SelectField.renderFields(cell)
+});
+
+Grid.bind('radio', 'display', function(cell) {
+  SelectField.renderFields(cell)
+});
+
+Grid.bind('multi_select', 'display', function(cell) {
+  SelectField.renderFields(cell)
+});
