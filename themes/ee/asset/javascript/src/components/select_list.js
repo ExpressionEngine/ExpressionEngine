@@ -551,7 +551,7 @@ var SelectItem = function (_React$Component2) {
           },
           checked: checked ? 'checked' : '',
           'data-group-toggle': props.groupToggle ? JSON.stringify(props.groupToggle) : '[]',
-          disabled: props.reorderable ? 'disabled' : ''
+          disabled: props.disabled || props.reorderable ? 'disabled' : ''
         }),
         props.item.label + " ",
         props.item.instructions && React.createElement(

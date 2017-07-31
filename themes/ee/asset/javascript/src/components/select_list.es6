@@ -440,7 +440,7 @@ class SelectItem extends React.Component {
             onChange={(e) => props.handleSelect(e, props.item)}
             checked={(checked ? 'checked' : '')}
             data-group-toggle={(props.groupToggle ? JSON.stringify(props.groupToggle) : '[]')}
-            disabled={props.reorderable ? 'disabled' : ''}
+            disabled={props.disabled || props.reorderable ? 'disabled' : ''}
            />
         )}
         {props.item.label+" "}
