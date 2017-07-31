@@ -36,7 +36,7 @@ class SelectList extends React.Component {
           label: ''
         })
       } else {
-        // Whem formatting selected items lists, selections will likely be a flat
+        // When formatting selected items lists, selections will likely be a flat
         // array of values for multi-select
         var value = (multi) ? items[key] : key
         var newItem = {
