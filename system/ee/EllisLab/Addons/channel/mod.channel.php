@@ -2347,6 +2347,8 @@ class Channel {
 		//cache the entry_id
 		ee()->session->cache['channel']['entry_ids'] = $entries;
 
+		$end = "ORDER BY FIELD(t.entry_id, " . implode($entries, ',') . ")";
+
 		// modify the ORDER BY if displaying by week
 		if ($this->display_by == 'week' && isset($yearweek))
 		{
