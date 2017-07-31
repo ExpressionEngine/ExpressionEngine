@@ -89,7 +89,6 @@ class Radio_ft extends OptionFieldtype {
 			? $this->settings['field_text_direction'] : 'ltr';
 
 		$field_options = $this->_get_field_options($data);
-		$extra         = ($this->get_setting('field_disabled')) ? 'disabled' : '';
 
 		// Is this new entry?  Set a default
 		if ( ! $this->content_id AND empty($data))
@@ -109,12 +108,13 @@ class Radio_ft extends OptionFieldtype {
 				$data = 'n';
 			}
 
-			return ee('View')->make('radio:publish')->render(array(
+			return ee('View')->make('ee:_shared/form/fields/select')->render([
 				'field_name' => $this->field_name,
-				'selected'   => $data,
-				'options'    => $field_options,
-				'extra'      => $extra
-			));
+				'choices'    => $field_options,
+				'value'      => $data,
+				'multi'      => FALSE,
+				'disabled'   => $this->get_setting('field_disabled')
+			]);
 		}
 
 		$selected = $data;
