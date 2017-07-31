@@ -7,11 +7,12 @@ class Relationship extends React.Component {
       items: this.initialItems,
       selected: SelectList.formatItems(props.selected)
     }
+
     this.state.selectedVisible = this.state.selected
   }
 
-  static renderVisibleFields(context) {
-    $('div[data-relationship-react]:visible', context).each(function () {
+  static renderFields(context) {
+    $('div[data-relationship-react]', context).each(function () {
       let props = JSON.parse(window.atob($(this).data('relationshipReact')))
       props.name = $(this).data('inputValue')
       ReactDOM.render(React.createElement(Relationship, props, null), this)
@@ -86,9 +87,9 @@ class Relationship extends React.Component {
 }
 
 $(document).ready(function () {
-  Relationship.renderVisibleFields()
+  Relationship.renderFields()
 })
 
 Grid.bind('relationship', 'display', function(cell) {
-  Relationship.renderVisibleFields(cell)
+  Relationship.renderFields(cell)
 });

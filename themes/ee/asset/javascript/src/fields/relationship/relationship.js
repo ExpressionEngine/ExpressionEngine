@@ -47,6 +47,7 @@ var Relationship = function (_React$Component) {
       items: _this.initialItems,
       selected: SelectList.formatItems(props.selected)
     };
+
     _this.state.selectedVisible = _this.state.selected;
     return _this;
   }
@@ -95,9 +96,9 @@ var Relationship = function (_React$Component) {
       );
     }
   }], [{
-    key: 'renderVisibleFields',
-    value: function renderVisibleFields(context) {
-      $('div[data-relationship-react]:visible', context).each(function () {
+    key: 'renderFields',
+    value: function renderFields(context) {
+      $('div[data-relationship-react]', context).each(function () {
         var props = JSON.parse(window.atob($(this).data('relationshipReact')));
         props.name = $(this).data('inputValue');
         ReactDOM.render(React.createElement(Relationship, props, null), this);
@@ -112,9 +113,9 @@ var Relationship = function (_React$Component) {
 }(React.Component);
 
 $(document).ready(function () {
-  Relationship.renderVisibleFields();
+  Relationship.renderFields();
 });
 
 Grid.bind('relationship', 'display', function (cell) {
-  Relationship.renderVisibleFields(cell);
+  Relationship.renderFields(cell);
 });
