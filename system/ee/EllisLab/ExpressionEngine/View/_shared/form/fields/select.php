@@ -95,6 +95,7 @@ if (count($choices, COUNT_RECURSIVE) <= $too_many && ! $nested && ! $has_groupin
 		$keys = array_keys($choices);
 		$value = $keys[0];
 	}
+	if ( ! isset($scalar) && $multi) $field_name .= '[]';
 	?>
 	<div class="fields-select">
 		<div class="field-inputs">
@@ -141,7 +142,7 @@ else:
 		$component['no_results'] = lang($no_results['text']);
 	}
 	?>
-	<div data-select-react="<?=base64_encode(json_encode($component))?>">
+	<div data-select-react="<?=base64_encode(json_encode($component))?>" data-input-value="<?=$field_name?>">
 		<div class="fields-select">
 			<div class="field-inputs">
 				<label class="field-loading">

@@ -72,6 +72,7 @@ case 'radio':
 case 'inline_radio':
 case 'select': ?>
 	<?php $this->embed('ee:_shared/form/fields/select', [
+		'field_name' => $field_name,
 		'choices' => $field['choices'],
 		'value' => $value,
 		'multi' => FALSE,
@@ -93,10 +94,11 @@ case 'toggle': ?>
 <?php break;
 
 case 'checkbox': ?>
-	<?php if ( ! isset($field['scalar'])) $field_name .= '[]';
+	<?php
 	// TODO: disabled_choices, nested, input attrs
 	$this->embed('ee:_shared/form/fields/select', [
 		'field_name' => $field_name,
+		'scalar' => isset($field['scalar']) ? $field['scalar'] : NULL,
 		'choices' => $field['choices'],
 		'value' => $value,
 		'nested' => isset($field['nested']) ? $field['nested'] : FALSE,
