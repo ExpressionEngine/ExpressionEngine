@@ -64,6 +64,25 @@ if ( ! function_exists('findLabelForValue'))
 	}
 }
 
+// Get total number of choices including children
+if ( ! function_exists('countChoices'))
+{
+	function countChoices($choices)
+	{
+		$count = 0;
+		foreach ($choices as $choice)
+		{
+			$count += 1;
+			if (isset($choice['children']))
+			{
+				$count += countChoices($choice['children']);
+			}
+		}
+
+		return $count;
+	}
+}
+
 $nested = isset($nested) ? $nested : FALSE;
 
 // Normalize choices into an array to keep order of items, order cannot be
@@ -84,7 +103,7 @@ foreach ($normalized_choices as $key => $choice)
 }
 
 // If it's a small list, just render it server-side
-if (count($choices, COUNT_RECURSIVE) <= $too_many && ! $nested && ! $has_groupings):
+if (countChoices($normalized_choices) <= $too_many && ! $nested && ! $has_groupings):
 	// For radios with no value, set value to first choice
 	if ( ! $multi && ! $value) {
 		$keys = array_keys($choices);
