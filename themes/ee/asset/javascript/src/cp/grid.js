@@ -78,14 +78,14 @@ Grid.MiniField = function(field, settings) {
 	this.root.data('gridInitialized', true);
 	this.parentContainer = this.root;
 	this.blankRow = $('.grid-blank-row', this.root);
-	this.emptyField = $('.keyvalue-empty', this.root);
+	this.emptyField = $('.field-no-results', this.root);
 	this.tableActions = null;
 	this.rowContainer = $('.keyvalue-item-container', this.root);
-	this.addButtonToolbar = $('> ul.toolbar', this.parentContainer);
-	this.header = $('.keyvalue-header', this.root);
+	this.addButtonToolbar = $('> [rel=add_row]', this.parentContainer);
+	this.header = $('.fields-keyvalue-header', this.root);
 
-	this.rowSelector = '.keyvalue-item';
-	this.cellSelector = '.keyvalue-field';
+	this.rowSelector = '.fields-keyvalue-item';
+	this.cellSelector = '.field-control';
 	this.reorderHandleContainerSelector = 'ul.toolbar:has(li.reorder)';
 	this.deleteContainerHeaderSelector = null;
 	this.deleteButtonsSelector = 'ul.toolbar:has(li.remove)';
@@ -93,7 +93,7 @@ Grid.MiniField = function(field, settings) {
 		sortableContainer: '.keyvalue-item-container',
 		handle: 'li.reorder',
 		cancel: 'li.sort-cancel',
-		item: '.keyvalue-item'
+		item: '.fields-keyvalue-item'
 	},
 
 	this.settings = settings;

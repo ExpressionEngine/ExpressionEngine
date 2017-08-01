@@ -42,7 +42,7 @@ class MiniGridInput extends GridInput {
 		{
 			// getElementById instead of $('#...') for field names that have
 			// brackets in them
-			$this->javascript->output('$(".keyvalue").miniGrid('.json_encode($settings).');');
+			$this->javascript->output('$(".fields-keyvalue").miniGrid('.json_encode($settings).');');
 		}
 	}
 }

@@ -27,7 +27,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 			'Value',
 			'Label'
 		));
-		$grid->setNoResultsText(lang('no_value_label_pairs'), lang('add'));
+		$grid->setNoResultsText(lang('no_value_label_pairs'), lang('add_new'));
 		$grid->setBlankRow(array(
 			array('html' => form_input('value', '')),
 			array('html' => form_input('label', ''))
@@ -273,7 +273,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 
 		ee()->javascript->output("
 			Grid.bind('".$field_type."', 'displaySettings', function(column) {
-				$('.keyvalue', column).miniGrid({grid_min_rows:0,grid_max_rows:''});
+				$('.fields-keyvalue', column).miniGrid({grid_min_rows:0,grid_max_rows:''});
 			});
 		");
 
