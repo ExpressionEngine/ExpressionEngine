@@ -89,7 +89,8 @@ case 'toggle': ?>
 	<?php $this->embed('ee:_shared/form/fields/toggle', [
 		'yes_no' => ($field['type'] == 'yes_no'),
 		'value' => $value,
-		'disabled' => (isset($field['disabled']) && $field['disabled'] == TRUE)
+		'disabled' => (isset($field['disabled']) && $field['disabled'] == TRUE),
+		'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : NULL
 	]); ?>
 <?php break;
 

@@ -506,6 +506,8 @@ $(document).ready(function(){
 				$(input).val(yes_no ? 'n' : 0);
 			}
 
+			if ($(input).data('groupToggle')) EE.cp.form_group_toggle(input)
+
 			e.preventDefault();
 		});
 
