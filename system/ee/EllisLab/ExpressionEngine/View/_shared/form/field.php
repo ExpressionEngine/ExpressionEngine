@@ -77,7 +77,6 @@ case 'hidden': ?>
 case 'radio_block':
 case 'radio':
 case 'inline_radio':
-case 'select':
 case 'checkbox':
 if ($field['type'] == 'checkbox' && ! $value) $value = [];
 ?>
@@ -95,6 +94,10 @@ if ($field['type'] == 'checkbox' && ! $value) $value = [];
 		'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : NULL,
 		'auto_select_parents' => isset($field['auto_select_parents']) ? $field['auto_select_parents'] : FALSE,
 	]); ?>
+<?php break;
+
+case 'select': ?>
+	<?php if ( ! $no_results) echo form_dropdown($field_name, $field['choices'], $value, $attrs, isset($field['encode']) ? $field['encode'] : TRUE); ?>
 <?php break;
 
 case 'yes_no':
