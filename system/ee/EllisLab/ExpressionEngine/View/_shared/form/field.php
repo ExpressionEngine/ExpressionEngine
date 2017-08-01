@@ -70,17 +70,23 @@ case 'hidden': ?>
 case 'radio_block':
 case 'radio':
 case 'inline_radio':
-case 'select': ?>
+case 'select':
+case 'checkbox':
+if ($field['type'] == 'checkbox' && ! $value) $value = [];
+?>
 	<?php $this->embed('ee:_shared/form/fields/select', [
 		'field_name' => $field_name,
 		'choices' => $field['choices'],
 		'value' => $value,
-		'multi' => FALSE,
+		'scalar' => isset($field['scalar']) ? $field['scalar'] : NULL,
+		'multi' => ($field['type'] == 'checkbox'),
+		'nested' => isset($field['nested']) ? $field['nested'] : FALSE,
 		'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : NULL,
 		'limit' => isset($field['limit']) ? $field['limit'] : 100,
 		'no_results' => isset($field['no_results']) ? $field['no_results'] : NULL,
 		'attrs' => $attrs,
-		'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : NULL
+		'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : NULL,
+		'auto_select_parents' => isset($field['auto_select_parents']) ? $field['auto_select_parents'] : FALSE,
 	]); ?>
 <?php break;
 
@@ -91,22 +97,6 @@ case 'toggle': ?>
 		'value' => $value,
 		'disabled' => (isset($field['disabled']) && $field['disabled'] == TRUE),
 		'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : NULL
-	]); ?>
-<?php break;
-
-case 'checkbox': ?>
-	<?php
-	// TODO: disabled_choices, nested, input attrs
-	$this->embed('ee:_shared/form/fields/select', [
-		'field_name' => $field_name,
-		'scalar' => isset($field['scalar']) ? $field['scalar'] : NULL,
-		'choices' => $field['choices'],
-		'value' => $value,
-		'nested' => isset($field['nested']) ? $field['nested'] : FALSE,
-		'multi' => TRUE,
-		'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : NULL,
-		'limit' => isset($field['limit']) ? $field['limit'] : 100,
-		'no_results' => isset($field['no_results']) ? $field['no_results'] : NULL,
 	]); ?>
 <?php break;
 
