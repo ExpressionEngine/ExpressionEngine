@@ -421,6 +421,14 @@ JSC;
 	}
 
 	/**
+	 * :length modifier
+	 */
+	public function replace_length($data, $params = array(), $tagdata = FALSE)
+	{
+		return $data['file_size'];
+	}
+
+	/**
 	 * Replace frontend tag (with a modifier catchall)
 	 *
 	 * Here, the modifier is the short name of the image manipulation,

@@ -196,6 +196,14 @@ class Checkboxes_ft extends OptionFieldtype {
 		}
 	}
 
+	/**
+	 * :length modifier
+	 */
+	public function replace_length($data, $params = array(), $tagdata = FALSE)
+	{
+		return count(decode_multi_field($data));
+	}
+
 	function display_settings($data)
 	{
 		$settings = $this->getSettingsForm(

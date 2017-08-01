@@ -40,7 +40,13 @@ abstract class EE_Fieldtype {
 	protected $content_id = NULL;
 	protected $content_type = 'channel';
 
-	public function __construct() {}
+	// Multi-byte string function availability, for global modifiers
+	protected $mb_available = FALSE;
+
+	public function __construct()
+	{
+		$this->mb_available = extension_loaded('mbstring');
+	}
 
 	/**
 	 * Re-initialize the class.
@@ -227,6 +233,15 @@ abstract class EE_Fieldtype {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * :length modifier
+	 */
+	public function replace_length($data, $params = array(), $tagdata = FALSE)
+	{
+		$data = ($tagdata) ?: $data;
+		return ($this->mb_available) ? mb_strlen($data, 'utf8') : strlen($data);
 	}
 
 	/**
