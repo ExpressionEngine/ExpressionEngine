@@ -909,7 +909,8 @@ class Channels extends AbstractChannelsController {
 						),
 						'channel_notify_emails' => array(
 							'type' => 'text',
-							'value' => $channel->channel_notify_emails
+							'value' => $channel->channel_notify_emails,
+							'margin_top' => TRUE
 						)
 					)
 				),
@@ -927,7 +928,8 @@ class Channels extends AbstractChannelsController {
 						),
 						'comment_notify_emails' => array(
 							'type' => 'text',
-							'value' => $channel->comment_notify_emails
+							'value' => $channel->comment_notify_emails,
+							'margin_top' => TRUE
 						)
 					)
 				)
