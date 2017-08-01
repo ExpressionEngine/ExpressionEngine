@@ -70,7 +70,7 @@ class Group extends Profile {
 					'caution' => TRUE,
 					'fields' => array(
 						'group_id' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $choices,
 							'value' => $this->member->group_id
 						)

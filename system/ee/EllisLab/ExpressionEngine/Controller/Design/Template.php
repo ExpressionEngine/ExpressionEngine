@@ -141,7 +141,7 @@ class Template extends AbstractDesignController {
 						'title' => 'template_type',
 						'fields' => array(
 							'template_type' => array(
-								'type' => 'select',
+								'type' => 'radio',
 								'choices' => $this->getTemplateTypes()
 							)
 						)
@@ -151,7 +151,7 @@ class Template extends AbstractDesignController {
 						'desc' => 'duplicate_existing_template_desc',
 						'fields' => array(
 							'template_id' => array(
-								'type' => 'select',
+								'type' => 'radio',
 								'choices' => $existing_templates
 							)
 						)
@@ -877,7 +877,7 @@ class Template extends AbstractDesignController {
 					'title' => 'template_type',
 					'fields' => array(
 						'template_type' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $this->getTemplateTypes(),
 							'value' => $template->template_type
 						)
@@ -1005,7 +1005,7 @@ class Template extends AbstractDesignController {
 					'desc' => 'no_access_redirect_desc',
 					'fields' => array(
 						'no_auth_bounce' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $existing_templates,
 							'value' => $template->no_auth_bounce
 						)

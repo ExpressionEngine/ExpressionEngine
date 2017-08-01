@@ -252,7 +252,9 @@ class Metaweblog_api_mcp {
 		{
 			foreach($query->result() as $row)
 			{
-				$upload_directories[$row->id] = (ee()->config->item('multiple_sites_enabled') === 'y') ? $row->site_label.NBS.'-'.NBS.$row->name : $row->name;
+				$upload_directories[$row->id] = (ee()->config->item('multiple_sites_enabled') === 'y')
+					? ['label' => $row->name, 'instructions' => $row->site_label]
+					: $row->name;
 			}
 		}
 
@@ -302,7 +304,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_entry_status_desc',
 			'fields' => array(
 				'entry_status' => array(
-					'type' => 'select',
+					'type' => 'radio',
 					'choices' => array(
 						'null' => lang('do_not_set'),
 						'open' => lang('open'),
@@ -328,7 +330,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_channel_desc',
 			'fields' => array(
 				'field_group_id' => array(
-					'type' => 'select',
+					'type' => 'radio',
 					'choices' => $field_group_options
 				)
 			)
@@ -351,7 +353,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_excerpt_field_desc',
 			'fields' => array(
 				'excerpt_field_id' => array(
-					'type' => 'select',
+					'type' => 'radio',
 					'choices' => array('0' => lang('none')) + $fields_list
 				)
 			)
@@ -367,7 +369,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_content_field_desc',
 			'fields' => array(
 				'content_field_id' => array(
-					'type' => 'select',
+					'type' => 'radio',
 					'choices' => array('0' => lang('none')) + $fields_list
 				)
 			)
@@ -383,7 +385,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_more_field_desc',
 			'fields' => array(
 				'more_field_id' => array(
-					'type' => 'select',
+					'type' => 'radio',
 					'choices' => array('0' => lang('none')) + $fields_list
 				)
 			)
@@ -399,7 +401,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_keywords_field_desc',
 			'fields' => array(
 				'keywords_field_id' => array(
-					'type' => 'select',
+					'type' => 'radio',
 					'choices' => array('0' => lang('none')) + $fields_list
 				)
 			)
@@ -415,7 +417,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_upload_dir_desc',
 			'fields' => array(
 				'upload_dir' => array(
-					'type' => 'select',
+					'type' => 'radio',
 					'choices' => $upload_directories
 				)
 			)

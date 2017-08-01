@@ -169,7 +169,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 				'title' => 'field_fmt',
 				'fields' => array(
 					'field_fmt' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => $format_options,
 						'value' => $data['field_fmt'],
 						'note' => form_label(
@@ -230,7 +230,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 			);
 
 			$settings[1]['fields']['field_pre_populate_id'] = array(
-				'type' => 'select',
+				'type' => 'radio',
 				'margin_top' => TRUE,
 				'margin_left' => TRUE,
 				'choices' => $this->get_channel_field_list(),
@@ -291,7 +291,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 					'title' => 'field_fmt',
 					'fields' => array(
 						'field_fmt' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $format_options,
 							'value' => isset($data['field_fmt']) ? $data['field_fmt'] : 'none',
 						)

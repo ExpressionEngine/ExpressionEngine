@@ -195,7 +195,7 @@ class Uploads extends AbstractFilesController {
 					'desc' => '',
 					'fields' => array(
 						'allowed_types' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'img' => lang('upload_allowed_types_opt_images'),
 								'all' => lang('upload_allowed_types_opt_all')

@@ -55,7 +55,7 @@ class Template extends Settings {
 					'desc' => 'site_404_desc',
 					'fields' => array(
 						'site_404' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $this->templateListSearch(),
 							'filter_url' => ee('CP/URL', 'settings/template/search-templates')->compile(),
 							'value' => [

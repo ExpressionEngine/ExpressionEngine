@@ -230,13 +230,13 @@ class Bookmarks extends Settings {
 		{
 			$bookmarklet_field_fields = array(
 				'channel' => array(
-					'type' => 'select',
+					'type' => 'radio',
 					'choices' => $channels,
 					'value' => $channel->getId(),
 					'required' => TRUE
 				),
 				'field' => array(
-					'type' => 'select',
+					'type' => 'radio',
 					'choices' => $fields,
 					'value' => $field,
 					'required' => TRUE
@@ -247,7 +247,7 @@ class Bookmarks extends Settings {
 		{
 			$bookmarklet_field_fields = array(
 				'channel' => array(
-					'type' => 'select',
+					'type' => 'radio',
 					'choices' => $channels,
 					'value' => $channel,
 					'required' => TRUE,

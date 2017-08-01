@@ -1708,7 +1708,7 @@ class Addons extends CP_Controller {
 					}
 
 					$element['fields'][$key] = array(
-						'type' => 'select',
+						'type' => 'radio',
 						'value' => $value,
 						'choices' => $choices
 					);

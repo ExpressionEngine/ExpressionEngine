@@ -266,7 +266,7 @@ class Channels extends AbstractChannelsController {
 				'desc' => 'channel_duplicate_desc',
 				'fields' => array(
 					'duplicate_channel_prefs' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => $duplicate_channel_prefs_options
 					)
 				)
@@ -289,7 +289,7 @@ class Channels extends AbstractChannelsController {
 				'title' => ucfirst(strtolower(lang('status_groups'))),
 				'fields' => array(
 					'status_group' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => $status_group_options,
 						'value' => $channel->status_group,
 						'no_results' => array(
@@ -314,7 +314,7 @@ class Channels extends AbstractChannelsController {
 				'title' => 'custom_field_group',
 				'fields' => array(
 					'field_group' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => $field_group_options,
 						'value' => $channel->field_group,
 						'no_results' => array(
@@ -659,7 +659,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'xml_language_desc',
 					'fields' => array(
 						'channel_lang' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => ee()->lang->language_pack_names(),
 							'value' => $channel->channel_lang ?: 'english'
 						)
@@ -712,7 +712,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'live_look_template_desc',
 					'fields' => array(
 						'live_look_template' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $live_look_template_options,
 							'value' => $channel->live_look_template
 						)
@@ -745,7 +745,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'default_status_desc',
 					'fields' => array(
 						'deft_status' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $deft_status_options,
 							'value' => $channel->deft_status
 						)
@@ -756,7 +756,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'default_category_desc',
 					'fields' => array(
 						'deft_category' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $deft_category_options,
 							'value' => $channel->deft_category
 						)
@@ -767,7 +767,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'search_excerpt_desc',
 					'fields' => array(
 						'search_excerpt' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $search_excerpt_options,
 							'value' => $channel->search_excerpt
 						)
@@ -779,7 +779,7 @@ class Channels extends AbstractChannelsController {
 					'title' => 'html_formatting',
 					'fields' => array(
 						'channel_html_formatting' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $channel_html_formatting_options,
 							'value' => $channel->channel_html_formatting
 						)
@@ -822,7 +822,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'channel_form_status_desc',
 					'fields' => array(
 						'default_status' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $channel_form_statuses,
 							'value' => $channel_form->default_status
 						)
@@ -833,7 +833,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'channel_form_default_author_desc',
 					'fields' => array(
 						'default_author' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $all_authors,
 							'value' => $channel_form->default_author
 						)
@@ -1022,7 +1022,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'text_formatting_desc',
 					'fields' => array(
 						'comment_text_formatting' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $comment_text_formatting_options,
 							'value' => $channel->comment_text_formatting
 						)
@@ -1032,7 +1032,7 @@ class Channels extends AbstractChannelsController {
 					'title' => 'html_formatting',
 					'fields' => array(
 						'comment_html_formatting' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $comment_html_formatting_options,
 							'value' => $channel->comment_html_formatting
 						)

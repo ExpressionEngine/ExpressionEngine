@@ -594,7 +594,7 @@ class Forum_mcp extends CP_Controller {
 				'title' => 'site',
 				'fields' => array(
 					'board_site_id' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => ee('Model')->get('Site')->all()->getDictionary('site_id', 'site_label'),
 						'value' => $board->board_site_id,
 					)
@@ -666,7 +666,7 @@ class Forum_mcp extends CP_Controller {
 					'title' => 'default_theme',
 					'fields' => array(
 						'board_default_theme' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => ee('ee:Theme')->listThemes('forum'),
 							'value' => $board->board_default_theme,
 						)
@@ -734,7 +734,7 @@ class Forum_mcp extends CP_Controller {
 					'title' => 'allowed_file_types',
 					'fields' => array(
 						'board_attach_types' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'img' => lang('images_only'),
 								'all' => lang('all_files')
@@ -853,7 +853,7 @@ class Forum_mcp extends CP_Controller {
 					'desc' => 'topic_ordering_desc',
 					'fields' => array(
 						'board_topic_order' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'r' => lang('most_recent_post'),
 								'a' => lang('most_recent_first'),
@@ -868,7 +868,7 @@ class Forum_mcp extends CP_Controller {
 					'desc' => 'post_ordering_desc',
 					'fields' => array(
 						'board_post_order' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'a' => lang('most_recent_first'),
 								'd' => lang('most_recent_last'),
@@ -964,7 +964,7 @@ class Forum_mcp extends CP_Controller {
 					'desc' => 'text_formatting_desc',
 					'fields' => array(
 						'board_text_formatting' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $fmt_options,
 							'value' => $board->board_text_formatting,
 						)
@@ -974,7 +974,7 @@ class Forum_mcp extends CP_Controller {
 					'title' => 'html_formatting',
 					'fields' => array(
 						'board_html_formatting' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'all'  => lang('html_all'),
 								'safe' => lang('html_safe'),
@@ -1438,7 +1438,7 @@ class Forum_mcp extends CP_Controller {
 					'desc' => 'forum_board_desc',
 					'fields' => array(
 						'board_alias_id' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $boards,
 							'value' => $alias->board_alias_id,
 						)
@@ -1666,7 +1666,7 @@ class Forum_mcp extends CP_Controller {
 					'desc' => 'status_desc',
 					'fields' => array(
 						'forum_status' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'o' => lang('live'),
 								'c' => lang('hidden'),
@@ -2015,7 +2015,7 @@ class Forum_mcp extends CP_Controller {
 					'desc' => 'status_desc',
 					'fields' => array(
 						'forum_status' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'o' => lang('live'),
 								'c' => lang('hidden'),
@@ -2052,7 +2052,7 @@ class Forum_mcp extends CP_Controller {
 					'desc' => 'topic_ordering_desc',
 					'fields' => array(
 						'forum_topic_order' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'r' => lang('most_recent_post'),
 								'a' => lang('most_recent_first'),
@@ -2067,7 +2067,7 @@ class Forum_mcp extends CP_Controller {
 					'desc' => 'post_ordering_desc',
 					'fields' => array(
 						'forum_post_order' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'a' => lang('most_recent_first'),
 								'd' => lang('most_recent_last'),
@@ -2163,7 +2163,7 @@ class Forum_mcp extends CP_Controller {
 					'desc' => 'text_formatting_desc',
 					'fields' => array(
 						'forum_text_formatting' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $fmt_options,
 							'value' => $forum->forum_text_formatting,
 						)
@@ -2173,7 +2173,7 @@ class Forum_mcp extends CP_Controller {
 					'title' => 'html_formatting',
 					'fields' => array(
 						'forum_html_formatting' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'all'  => lang('html_all'),
 								'safe' => lang('html_safe'),
@@ -2909,7 +2909,7 @@ class Forum_mcp extends CP_Controller {
 							'value' => 'group',
 						),
 						'member_group' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $member_groups,
 							'value' => 5
 						),
@@ -3299,7 +3299,7 @@ class Forum_mcp extends CP_Controller {
 							'value' => ($moderator->getType()) ?: 'group',
 						),
 						'member_group' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $member_groups,
 							'value' => ($moderator->mod_group_id) ?: 5
 						),

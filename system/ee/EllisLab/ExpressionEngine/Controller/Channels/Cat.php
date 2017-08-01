@@ -203,7 +203,7 @@ class Cat extends AbstractChannelsController {
 					'title' => 'html_formatting',
 					'fields' => array(
 						'field_html_formatting' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'all'	=> lang('allow_all_html'),
 								'safe'	=> lang('allow_safe_html'),
@@ -777,7 +777,7 @@ class Cat extends AbstractChannelsController {
 			'title' => 'parent_category',
 			'fields' => array(
 				'parent_id' => array(
-					'type' => 'select',
+					'type' => 'radio',
 					'value' => $category->parent_id,
 					'choices' => $parent_id_options,
 					'encode' => FALSE

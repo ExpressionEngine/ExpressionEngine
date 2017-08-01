@@ -55,7 +55,7 @@ class MemberImport extends Utilities {
 					'title' => 'member_group',
 					'fields' => array(
 						'group_id' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $member_groups
 						)
 					)
@@ -64,7 +64,7 @@ class MemberImport extends Utilities {
 					'title' => 'mbr_language',
 					'fields' => array(
 						'language' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => ee()->lang->language_pack_names(),
 							'value' => ee()->config->item('deft_lang') ?: 'english'
 						)
@@ -84,7 +84,7 @@ class MemberImport extends Utilities {
 					'desc' => 'used_in_cp_only',
 					'fields' => array(
 						'date_format' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'%n/%j/%Y' => 'mm/dd/yyyy',
 								'%j/%n/%Y' => 'dd/mm/yyyy',
@@ -93,7 +93,7 @@ class MemberImport extends Utilities {
 							)
 						),
 						'time_format' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'24' => lang('24_hour'),
 								'12' => lang('12_hour')

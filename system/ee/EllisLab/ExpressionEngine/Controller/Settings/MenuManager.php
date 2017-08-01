@@ -492,7 +492,7 @@ class MenuManager extends Settings {
 				'title' => 'menu_type',
 				'fields' => array(
 					'type' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => $type_options,
 						'value' => $item->type
 					)

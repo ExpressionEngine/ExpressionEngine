@@ -222,7 +222,7 @@ class Settings extends Profile {
 					'desc' => 'language_desc',
 					'fields' => array(
 						'language' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => ee()->lang->language_pack_names(),
 							'value' => $this->member->language ?: ee()->config->item('deft_lang')
 						)

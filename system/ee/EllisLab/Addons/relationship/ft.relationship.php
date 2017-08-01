@@ -645,7 +645,7 @@ class Relationship_ft extends EE_Fieldtype {
 				'desc' => 'rel_ft_order_desc',
 				'fields' => array(
 					'relationship_order_field' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => array(
 							'title' 	 => lang('rel_ft_order_title'),
 							'entry_date' => lang('rel_ft_order_date')
@@ -653,7 +653,7 @@ class Relationship_ft extends EE_Fieldtype {
 						'value' => $values['order_field']
 					),
 					'relationship_order_dir' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => array(
 							'asc' => lang('rel_ft_order_ascending'),
 							'desc'	=> lang('rel_ft_order_descending'),

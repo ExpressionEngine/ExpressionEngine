@@ -62,7 +62,7 @@ class Create extends Members {
 					'desc' => 'member_group_desc',
 					'fields' => array(
 						'group_id' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $choices,
 							'group_toggle' => $group_toggle,
 							'value' => (isset($choices[5]) && $choices[5] == 'Members') ? 5 : '',

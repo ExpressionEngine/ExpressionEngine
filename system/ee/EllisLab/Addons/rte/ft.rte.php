@@ -106,7 +106,7 @@ class Rte_ft extends EE_Fieldtype {
 				'title' => 'field_text_direction',
 				'fields' => array(
 					'field_text_direction' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => array(
 							'ltr' => lang('field_text_direction_ltr'),
 							'rtl' => lang('field_text_direction_rtl')

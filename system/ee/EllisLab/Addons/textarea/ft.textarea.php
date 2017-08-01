@@ -219,7 +219,7 @@ class Textarea_ft extends EE_Fieldtype {
 				'title' => 'field_fmt',
 				'fields' => array(
 					'field_fmt' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => $format_options,
 						'value' => isset($data['field_fmt']) ? $data['field_fmt'] : 'none',
 						'note' => form_label(
@@ -255,7 +255,7 @@ class Textarea_ft extends EE_Fieldtype {
 			'title' => 'field_text_direction',
 			'fields' => array(
 				'field_text_direction' => array(
-					'type' => 'select',
+					'type' => 'radio',
 					'choices' => array(
 						'ltr' => lang('field_text_direction_ltr'),
 						'rtl' => lang('field_text_direction_rtl')
