@@ -1,4 +1,11 @@
 <?php
+$margin_top = isset($field['margin_top']) ? $field['margin_top'] : FALSE;
+$margin_left = isset($field['margin_left']) ? $field['margin_left'] : FALSE;
+
+if ($margin_top OR $margin_left): ?>
+	<div class="<?=$margin_top ? 'add-mrg-top' : '' ?> <?=$margin_left ? 'add-mrg-left' : '' ?>">
+<?php endif;
+
 // Check for a field name override
 if (isset($field['name']))
 {
@@ -161,3 +168,6 @@ case 'html': ?>
 	<?=form_error(rtrim($field_name, '[]'))?>
 	<?php if (isset($errors)) echo $errors->renderError($field_name); ?>
 <?php endif ?>
+<?php if ($margin_top OR $margin_left): ?>
+</div>
+<?php endif;
