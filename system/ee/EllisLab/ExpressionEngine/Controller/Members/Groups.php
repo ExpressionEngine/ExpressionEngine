@@ -509,7 +509,7 @@ class Groups extends Members\Members {
 							);
 							foreach ($iterator as $choice => $lang)
 							{
-								if ($choice == 'name' OR $choice == 'children') continue;
+								if (in_array($choice, ['name', 'children', 'label', 'instructions'])) continue;
 
 								if ($result[$choice] === TRUE)
 								{
@@ -593,7 +593,7 @@ class Groups extends Members\Members {
 							);
 							foreach ($iterator as $key => $value)
 							{
-								if ($key == 'name' OR $key == 'children') continue;
+								if (in_array($key, ['name', 'children', 'label', 'instructions'])) continue;
 
 								$choices[] = $key;
 							}
@@ -1436,19 +1436,33 @@ class Groups extends Members\Members {
 								'access_tools' => array(
 									'type' => 'checkbox',
 									'nested' => TRUE,
-									'choices' => array(
-										'can_access_comm' => array(
-											'name' => lang('can_access_communicate'),
-											'children' => array(
+									'auto_select_parents' => TRUE,
+									'choices' => [
+										'can_access_comm' => [
+											'label' => lang('can_access_communicate'),
+											'instructions' => lang('utility'),
+											'children' => [
 												'can_email_member_groups' => lang('can_email_member_groups'),
 												'can_send_cached_email' => lang('can_send_cached_email'),
-											)
-										),
-										'can_access_translate' => lang('can_access_translate'),
-										'can_access_import' => lang('can_access_import'),
-										'can_access_sql_manager' => lang('can_access_sql'),
-										'can_access_data' => lang('can_access_data')
-									),
+											]
+										],
+										'can_access_translate' => [
+											'label' => lang('can_access_translate'),
+											'instructions' => lang('utility')
+										],
+										'can_access_import' => [
+											'label' => lang('can_access_import'),
+											'instructions' => lang('utility')
+										],
+										'can_access_sql_manager' => [
+											'label' => lang('can_access_sql'),
+											'instructions' => lang('utility')
+										],
+										'can_access_data' => [
+											'label' => lang('can_access_data'),
+											'instructions' => lang('utility')
+										]
+									],
 									'value' => element('access_tools', $values)
 								)
 							)

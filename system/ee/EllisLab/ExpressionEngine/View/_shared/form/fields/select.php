@@ -19,21 +19,16 @@ if ( ! function_exists('normalizedChoices'))
 
 			$choice = [
 				'value' => $value,
-				'label' => $label
+				'label' => $label,
+				'instructions' => isset($label['instructions']) ? $label['instructions'] : ''
 			];
 
-			if (isset($label['value']))
-			{
-				$choice = [
-					'value' => $label['value'],
-					'label' => $label['label'],
-					'instructions' => isset($label['instructions']) ? $label['instructions'] : ''
-				];
-			}
+			if (isset($label['label'])) $choice['label'] = $label['label'];
+			if (isset($label['value'])) $choice['value'] = $label['value'];
+			if (isset($label['name'])) $choice['label'] = $label['name'];
 
-			if (is_array($label) && isset($label['name']))
+			if (isset($label['children']))
 			{
-				$choice['label'] = $label['name'];
 				$choice['children'] = normalizedChoices($label['children'], $disable_headings);
 			}
 

@@ -460,13 +460,13 @@ $lang = array(
 
 'can_access_addons_desc' => 'When set to <b>yes</b>, users assigned to this group may access the add-on manager.',
 
-'can_access_communicate' => 'Communicate <i>— Utility</i>',
+'can_access_communicate' => 'Communicate',
 
 'can_access_cp' => 'Access control panel',
 
 'can_access_cp_desc' => 'When set to <b>yes</b>, users assigned to this group may access the control panel.',
 
-'can_access_data' => 'Data Operations<i>— Utility</i>',
+'can_access_data' => 'Data Operations',
 
 'can_access_design' => 'Access template manager',
 
@@ -476,7 +476,7 @@ $lang = array(
 
 'can_access_files' => 'File Manager',
 
-'can_access_import' => 'Import <i>— Utility</i>',
+'can_access_import' => 'Import',
 
 'can_access_logs' => 'Logs',
 
@@ -488,7 +488,7 @@ $lang = array(
 
 'can_access_mod' => 'Can access module:',
 
-'can_access_sql' => ' SQL Management <i>— Utility</i>',
+'can_access_sql' => 'SQL Management',
 
 'can_access_sys_prefs' => 'Access settings',
 
@@ -496,7 +496,7 @@ $lang = array(
 
 'can_access_tg' => 'Can edit templates in this group:',
 
-'can_access_translate' => 'Translation <i>— Utility</i>',
+'can_access_translate' => 'Translation',
 
 'can_access_utilities' => 'Utilities',
 
@@ -705,6 +705,8 @@ $lang = array(
 'utilities_section' => 'Utilities',
 
 'utilities_section_desc' => 'Users can access all selected sections.',
+
+'utility' => 'Utility',
 
 'warning' => 'WARNING:',
 
