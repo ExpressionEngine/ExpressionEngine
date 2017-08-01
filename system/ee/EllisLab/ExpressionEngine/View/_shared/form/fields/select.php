@@ -115,13 +115,16 @@ if (countChoices($normalized_choices) <= $too_many && ! $nested && ! $has_groupi
 		<div class="field-inputs">
 			<?php foreach ($choices as $key => $choice):
 				$label = isset($choice['label']) ? $choice['label'] : $choice;
-				$instructions = isset($choice['instructions']) ? $choice['instructions'] : NULL;
+				$label = ee('Format')->make('Text', lang($label))->convertToEntities();
+				$instructions = isset($choice['instructions'])
+					? ee('Format')->make('Text', $choice['instructions'])->convertToEntities()
+					: NULL;
 				$checked = ((is_bool($value) && get_bool_from_string($key) === $value)
 					OR ( is_array($value) && in_array($key, $value))
 					OR ( ! is_bool($value) && $key == $value)); ?>
 
 				<label<?php if ($checked): ?> class="act"<?php endif ?>>
-					<input type="<?=($multi) ? 'checkbox' : 'radio'?>" name="<?=$field_name?>" value="<?=htmlentities($key, ENT_QUOTES, 'UTF-8')?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=isset($attrs) ? $attrs : ''?>> <?=lang($label)?>
+					<input type="<?=($multi) ? 'checkbox' : 'radio'?>" name="<?=$field_name?>" value="<?=htmlentities($key, ENT_QUOTES, 'UTF-8')?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=isset($attrs) ? $attrs : ''?>> <?=$label?>
 						<?php if ($instructions): ?><i><?=$instructions?></i><?php endif ?>
 				</label>
 			<?php endforeach; ?>
