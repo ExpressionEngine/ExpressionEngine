@@ -461,6 +461,15 @@ JSC;
 	}
 
 	/**
+	 * :form_prep modifier
+	 */
+	public function replace_form_prep($data, $params = array(), $tagdata = FALSE)
+	{
+		ee()->load->helper('form');
+		return form_prep($data['raw_content']);
+	}
+
+	/**
 	 * Replace frontend tag (with a modifier catchall)
 	 *
 	 * Here, the modifier is the short name of the image manipulation,

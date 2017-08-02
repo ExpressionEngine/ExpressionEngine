@@ -278,6 +278,15 @@ abstract class EE_Fieldtype {
 	}
 
 	/**
+	 * :form_prep modifier
+	 */
+	public function replace_form_prep($data, $params = array(), $tagdata = FALSE)
+	{
+		ee()->load->helper('form');
+		return form_prep($data);
+	}
+
+	/**
 	 * Pre process the stored data.
 	 *
 	 * This is called before the field is displayed. It's return will
