@@ -732,9 +732,9 @@ class File_model extends CI_Model {
 			$directory_id
 		);
 
-		// Delete the thumb
-		$thumb_information = $this->filemanager->get_thumb($file_name, $directory_id);
-		@unlink($thumb_information['thumb_path']);
+		// Delete the default thumb
+		$thumb_path = $upload_dir['server_path'] . '/_thumbs/' .  $file_name;
+		@unlink($thumb_path);
 
 		// Then, delete the dimensions
 		$file_dimensions = $this->get_dimensions_by_dir_id($directory_id);
