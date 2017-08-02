@@ -470,6 +470,14 @@ JSC;
 	}
 
 	/**
+	 * :rot13 modifier (for Seth)
+	 */
+	public function replace_rot13($data, $params = array(), $tagdata = FALSE)
+	{
+		return str_rot13($data['url']);
+	}
+
+	/**
 	 * Replace frontend tag (with a modifier catchall)
 	 *
 	 * Here, the modifier is the short name of the image manipulation,
