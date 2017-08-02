@@ -450,6 +450,17 @@ JSC;
 	}
 
 	/**
+	 * :limit modifier
+	 */
+	public function replace_limit($data, $params = array(), $tagdata = FALSE)
+	{
+		$limit = (isset($params['characters'])) ? (int) $params['characters'] : FALSE;
+		$end_char = (isset($params['end_char'])) ? $params['end_char'] : '&#8230;';
+
+		return (string) ee('Format')->make('Text', $data['url'])->limitChars($limit, $end_char);
+	}
+
+	/**
 	 * Replace frontend tag (with a modifier catchall)
 	 *
 	 * Here, the modifier is the short name of the image manipulation,

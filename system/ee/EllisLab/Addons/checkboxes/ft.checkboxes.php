@@ -218,6 +218,17 @@ class Checkboxes_ft extends OptionFieldtype {
 			->attributeSafe($double_encode, $unicode_punctuation, $limit, $end_char);
 	}
 
+	/**
+	 * :limit modifier
+	 */
+	public function replace_limit($data, $params = array(), $tagdata = FALSE)
+	{
+		$limit = (isset($params['characters'])) ? (int) $params['characters'] : FALSE;
+		$end_char = (isset($params['end_char'])) ? $params['end_char'] : '&#8230;';
+
+		return (string) ee('Format')->make('Text', $this->replace_tag($data, $params, $tagdata))->limitChars($limit, $end_char);
+	}
+
 	function display_settings($data)
 	{
 		$settings = $this->getSettingsForm(

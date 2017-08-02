@@ -95,18 +95,8 @@ class Text extends Formatter {
 			return $this;
 		}
 
-		$out = '';
-		foreach (explode(' ', trim($this->content)) as $val)
-		{
-			$out .= $val.' ';
-
-			if (strlen($out) >= $limit)
-			{
-				$out = trim($out);
-				$this->content = (strlen($out) == strlen($this->content)) ? $out : $out.$end_char;
-				return $this;
-			}
-		}
+		$cut = substr($this->content, 0, $limit);
+		$this->content = (strlen($cut) == strlen($this->content)) ? $cut : $cut.$end_char;
 
 		return $this;
 	}

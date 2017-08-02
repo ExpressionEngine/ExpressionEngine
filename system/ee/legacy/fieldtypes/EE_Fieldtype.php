@@ -266,6 +266,18 @@ abstract class EE_Fieldtype {
 	}
 
 	/**
+	 * :limit modifier
+	 */
+	public function replace_limit($data, $params = array(), $tagdata = FALSE)
+	{
+		$limit = (isset($params['characters'])) ? (int) $params['characters'] : FALSE;
+		$end_char = (isset($params['end_char'])) ? $params['end_char'] : '&#8230;';
+		$data = strip_tags($data);
+
+		return (string) ee('Format')->make('Text', $data)->limitChars($limit, $end_char);
+	}
+
+	/**
 	 * Pre process the stored data.
 	 *
 	 * This is called before the field is displayed. It's return will
