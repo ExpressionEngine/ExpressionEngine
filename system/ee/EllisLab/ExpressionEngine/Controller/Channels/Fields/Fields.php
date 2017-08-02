@@ -310,7 +310,8 @@ class Fields extends AbstractChannelsController {
 							'type' => 'select',
 							'choices' => $fieldtype_choices,
 							'group_toggle' => $fieldtypes->getDictionary('name', 'name'),
-							'value' => $field->field_type
+							'value' => $field->field_type,
+							'no_results' => ['text' => sprintf(lang('no_found'), lang('fieldtypes'))]
 						)
 					)
 				),

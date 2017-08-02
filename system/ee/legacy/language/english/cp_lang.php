@@ -39,6 +39,8 @@ $lang = array(
 
 'captcha_explanation' => 'A CAPTCHA is an image containing a security code that users have to submit. Please consult the user guide for more info.',
 
+'choose_wisely' => 'Choose wisely',
+
 'click_to_edit' => 'Click to Edit',
 
 'consult_user_guide' => 'Consult User Guide',
@@ -82,6 +84,8 @@ $lang = array(
 'new_tab' => 'New Tab',
 
 'new_version_available' => 'ExpressionEngine Version %s is now available',
+
+'no_found' => 'No <b>%s</b> found.',
 
 'notepad' => 'Notepad',
 
