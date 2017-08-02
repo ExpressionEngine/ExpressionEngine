@@ -429,6 +429,14 @@ JSC;
 	}
 
 	/**
+	 * :raw_content modifier
+	 */
+	public function replace_raw_content($data, $params = array(), $tagdata = FALSE)
+	{
+		return ee()->functions->encode_ee_tags($data['raw_output']);
+	}
+
+	/**
 	 * Replace frontend tag (with a modifier catchall)
 	 *
 	 * Here, the modifier is the short name of the image manipulation,

@@ -245,6 +245,14 @@ abstract class EE_Fieldtype {
 	}
 
 	/**
+	 * :raw_content modifier
+	 */
+	public function replace_raw_content($data, $params = array(), $tagdata = FALSE)
+	{
+		return ee()->functions->encode_ee_tags($data);
+	}
+
+	/**
 	 * Pre process the stored data.
 	 *
 	 * This is called before the field is displayed. It's return will

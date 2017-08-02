@@ -599,6 +599,7 @@ class File_field {
 
 		// Set additional data based on what we've gathered
 		$file['raw_output']	= $data;
+		$file['raw_content'] = $data;
 		$file['path'] 		= (isset($upload_dir['url'])) ? $upload_dir['url'] : '';
 		$file['extension'] 	= substr(strrchr($file['file_name'], '.'), 1);
 		$file['filename'] 	= basename($file['file_name'], '.'.$file['extension']); // backwards compatibility
