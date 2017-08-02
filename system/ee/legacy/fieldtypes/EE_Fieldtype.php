@@ -42,13 +42,7 @@ abstract class EE_Fieldtype {
 	protected $content_id = NULL;
 	protected $content_type = 'channel';
 
-	// Multi-byte string function availability, for global modifiers
-	protected $mb_available = FALSE;
-
-	public function __construct()
-	{
-		$this->mb_available = extension_loaded('mbstring');
-	}
+	public function __construct(){}
 
 	/**
 	 * Re-initialize the class.
@@ -242,8 +236,7 @@ abstract class EE_Fieldtype {
 	 */
 	public function replace_length($data, $params = array(), $tagdata = FALSE)
 	{
-		$data = ($tagdata) ?: $data;
-		return ($this->mb_available) ? mb_strlen($data, 'utf8') : strlen($data);
+		return (string) ee('Format')->make('Text', $data)->getLength($data);
 	}
 
 	/**
@@ -251,7 +244,7 @@ abstract class EE_Fieldtype {
 	 */
 	public function replace_raw_content($data, $params = array(), $tagdata = FALSE)
 	{
-		return ee()->functions->encode_ee_tags($data);
+		return (string) ee('Format')->make('Text', $data)->encodeEETags($params);
 	}
 
 	/**
@@ -259,12 +252,7 @@ abstract class EE_Fieldtype {
 	 */
 	public function replace_attr_safe($data, $params = array(), $tagdata = FALSE)
 	{
-		$double_encode = (isset($params['double_encode'])) ? get_bool_from_string($params['double_encode']) : FALSE;
-		$unicode_punctuation = (isset($params['unicode_punctuation'])) ? get_bool_from_string($params['unicode_punctuation']) : TRUE;
-		$limit = (isset($params['limit'])) ? (int) $params['limit'] : FALSE;
-		$end_char = (isset($params['end_char'])) ? $params['end_char'] : '&#8230;';
-
-		return (string) ee('Format')->make('Text', $data)->attributeSafe($double_encode, $unicode_punctuation, $limit, $end_char);
+		return (string) ee('Format')->make('Text', $data)->attributeSafe($params);
 	}
 
 	/**
@@ -272,11 +260,7 @@ abstract class EE_Fieldtype {
 	 */
 	public function replace_limit($data, $params = array(), $tagdata = FALSE)
 	{
-		$limit = (isset($params['characters'])) ? (int) $params['characters'] : FALSE;
-		$end_char = (isset($params['end_char'])) ? $params['end_char'] : '&#8230;';
-		$data = strip_tags($data);
-
-		return (string) ee('Format')->make('Text', $data)->limitChars($limit, $end_char);
+		return (string) ee('Format')->make('Text', $data)->limitChars($params);
 	}
 
 	/**
@@ -284,8 +268,7 @@ abstract class EE_Fieldtype {
 	 */
 	public function replace_form_prep($data, $params = array(), $tagdata = FALSE)
 	{
-		ee()->load->helper('form');
-		return form_prep($data);
+		return (string) ee('Format')->make('Text', $data)->formPrep($params)->encodeEETags($params);
 	}
 
 	/**
@@ -301,14 +284,7 @@ abstract class EE_Fieldtype {
 	 */
 	public function replace_encrypt($data, $params = array(), $tagdata = FALSE)
 	{
-		$key = (isset($params['key'])) ? $params['key'] : NULL;
-
-		if (isset($params['encode']) && get_bool_from_string($params['encode']))
-		{
-			return ee('Encrypt', $key)->encode($data);
-		}
-
-		return ee('Encrypt', $key)->encrypt($data);
+		return (string) ee('Format')->make('Text', $data)->encrypt($params);
 	}
 
 	/**

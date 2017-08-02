@@ -3730,7 +3730,7 @@ class EE_Template {
 	 */
 	public function replace_length($data, $params = array(), $raw)
 	{
-		return ($this->mb_available) ? mb_strlen($data, 'utf8') : strlen($data);
+		return (string) ee('Format')->make('Text', $data)->getLength($data);
 	}
 
 	/**
@@ -3738,7 +3738,7 @@ class EE_Template {
 	 */
 	public function replace_raw_content($data, $params = array(), $raw)
 	{
-		return ee()->functions->encode_ee_tags($raw);
+		return (string) ee('Format')->make('Text', $raw)->encodeEETags($params);
 	}
 
 	/**
@@ -3746,12 +3746,7 @@ class EE_Template {
 	 */
 	public function replace_attr_safe($data, $params = array(), $raw)
 	{
-		$double_encode = (isset($params['double_encode'])) ? get_bool_from_string($params['double_encode']) : FALSE;
-		$unicode_punctuation = (isset($params['unicode_punctuation'])) ? get_bool_from_string($params['unicode_punctuation']) : TRUE;
-		$limit = (isset($params['limit'])) ? (int) $params['limit'] : FALSE;
-		$end_char = (isset($params['end_char'])) ? $params['end_char'] : '&#8230;';
-
-		return (string) ee('Format')->make('Text', $data)->attributeSafe($double_encode, $unicode_punctuation, $limit, $end_char);
+		return (string) ee('Format')->make('Text', $data)->attributeSafe($params);
 	}
 
 	/**
@@ -3759,11 +3754,7 @@ class EE_Template {
 	 */
 	public function replace_limit($data, $params = array(), $raw)
 	{
-		$limit = (isset($params['characters'])) ? (int) $params['characters'] : FALSE;
-		$end_char = (isset($params['end_char'])) ? $params['end_char'] : '&#8230;';
-		$data = strip_tags($data);
-
-		return (string) ee('Format')->make('Text', $data)->limitChars($limit, $end_char);
+		return (string) ee('Format')->make('Text', $data)->limitChars($params);
 	}
 
 	/**
@@ -3771,8 +3762,7 @@ class EE_Template {
 	 */
 	public function replace_form_prep($data, $params = array(), $raw)
 	{
-		ee()->load->helper('form');
-		return form_prep($data);
+		return (string) ee('Format')->make('Text', $data)->formPrep($params)->encodeEETags($params);
 	}
 
 	/**
@@ -3788,14 +3778,7 @@ class EE_Template {
 	 */
 	public function replace_encrypt($data, $params = array(), $raw)
 	{
-		$key = (isset($params['key'])) ? $params['key'] : NULL;
-
-		if (isset($params['encode']) && get_bool_from_string($params['encode']))
-		{
-			return ee('Encrypt', $key)->encode($data);
-		}
-
-		return ee('Encrypt', $key)->encrypt($data);
+		return (string) ee('Format')->make('Text', $data)->encrypt($params);
 	}
 
 	/**

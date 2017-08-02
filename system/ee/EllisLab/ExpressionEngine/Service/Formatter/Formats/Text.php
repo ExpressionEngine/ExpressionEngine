@@ -28,15 +28,22 @@ class Text extends Formatter {
 		return $this;
 	}
 
-	public function attributeSafe($double_encode = FALSE, $unicode_punctuation = TRUE, $limit = FALSE, $end_char = '&#8230;')
+	public function attributeSafe($options = [])
 	{
+		$options = [
+			'double_encode'       => (isset($options['double_encode'])) ? get_bool_from_string($options['double_encode']) : FALSE,
+			'end_char'            => (isset($options['end_char'])) ? $options['end_char'] : '&#8230;',
+			'limit'               => (isset($options['limit'])) ? $options['limit'] : FALSE,
+			'unicode_punctuation' => (isset($options['unicode_punctuation'])) ? get_bool_from_string($options['unicode_punctuation']) : TRUE,
+		];
+
 		// syntax highlighted code will be one long "word" and not summarizable
 		if (strpos($this->content, '<div class="codeblock">') !== FALSE)
 		{
 			$this->content = preg_replace('|<div class="codeblock">.*?</div>|is', '', $this->content);
 		}
 
-		if ($unicode_punctuation)
+		if ($options['unicode_punctuation'])
 		{
 			$punctuation = [
 				'&#8217;' => '’', // right single curly
@@ -51,30 +58,34 @@ class Text extends Formatter {
 			$this->content = str_replace(array_keys($punctuation), array_values($punctuation), $this->content);
 
 			// flip end_char too if set to the default
-			$end_char = (isset($punctuation[$end_char])) ? $punctuation[$end_char] : $end_char;
+			$options['end_char'] = (isset($punctuation[$options['end_char']])) ? $punctuation[$options['end_char']] : $options['end_char'];
 		}
 
 		$this->content = strip_tags($this->content);
-		$this->attributeEscape($double_encode);
+		$this->attributeEscape($options['double_encode']);
 
-		if (is_numeric($limit))
+		if (is_numeric($options['limit']))
 		{
-			$this->limitChars($limit, $end_char);
+			$this->limitChars($options['limit'], $options['end_char']);
 
 			// keep whole words only
-			while (strlen($this->content) > $limit)
+			while (strlen($this->content) > $options['limit'])
 			{
 				$words = explode(' ', $this->content);
 				array_pop($words);
-				$this->content = implode(' ', $words).$end_char;
+				$this->content = implode(' ', $words).$options['end_char'];
 			}
 		}
 
 		return $this;
 	}
 
-	public function limitChars($limit = 500, $end_char = '&#8230;')
+	public function limitChars($options = [])
 	{
+		$limit = (isset($options['characters'])) ? (int) $options['characters'] : FALSE;
+		$end_char = (isset($options['end_char'])) ? $options['end_char'] : '&#8230;';
+		$this->content = strip_tags($this->content);
+
 		if (strlen($this->content) < $limit)
 		{
 			return $this;
@@ -98,6 +109,60 @@ class Text extends Formatter {
 		$cut = substr($this->content, 0, $limit);
 		$this->content = (strlen($cut) == strlen($this->content)) ? $cut : $cut.$end_char;
 
+		return $this;
+	}
+
+	public function formPrep($options = [])
+	{
+		ee()->load->helper('form');
+		$this->content = form_prep($this->content);
+		return $this;
+	}
+
+	public function encrypt($options = [])
+	{
+		$key = (isset($options['key'])) ? $options['key'] : NULL;
+
+		if (isset($options['encode']) && get_bool_from_string($options['encode']))
+		{
+			$this->content = ee('Encrypt', $key)->encode($this->content);
+		}
+		else
+		{
+			$this->content = ee('Encrypt', $key)->encrypt($this->content);
+		}
+
+		return $this;
+	}
+
+	public function encodeEETags($options = [])
+	{
+		$convert_curly = (isset($options['convert_curly'])) ? $options['convert_curly'] : TRUE;
+
+		if ($this->content != '' && strpos($this->content, '{') !== FALSE)
+		{
+			if ($convert_curly === TRUE)
+			{
+				$this->content = str_replace(array('{', '}'), array('&#123;', '&#125;'), $this->content);
+			}
+			else
+			{
+				$this->content = preg_replace("/\{(\/){0,1}exp:(.+?)\}/", "&#123;\\1exp:\\2&#125;", $this->content);
+				$this->content = str_replace(array('{exp:', '{/exp'), array('&#123;exp:', '&#123;\exp'), $this->content);
+				$this->content = preg_replace("/\{embed=(.+?)\}/", "&#123;embed=\\1&#125;", $this->content);
+				$this->content = preg_replace("/\{path:(.+?)\}/", "&#123;path:\\1&#125;", $this->content);
+				$this->content = preg_replace("/\{redirect=(.+?)\}/", "&#123;redirect=\\1&#125;", $this->content);
+				$this->content = str_replace(array('{if', '{/if'), array('&#123;if', '&#123;/if'), $this->content);
+				$this->content = preg_replace("/\{layout:(.+?)\}/", "&#123;layout:\\1&#125;", $this->content);
+			}
+		}
+
+		return $this;
+	}
+
+	public function getLength($options = [])
+	{
+		$this->content = (extension_loaded('mbstring')) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
 		return $this;
 	}
 
