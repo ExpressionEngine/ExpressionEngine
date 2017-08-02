@@ -7,6 +7,8 @@
  * @license   https://expressionengine.com/license
  */
 
+use EllisLab\ExpressionEngine\Service\Encrypt;
+
 /**
  * EE_Fieldtype
  */
@@ -292,6 +294,28 @@ abstract class EE_Fieldtype {
 	public function replace_rot13($data, $params = array(), $tagdata = FALSE)
 	{
 		return str_rot13($data);
+	}
+
+	/**
+	 * :encrypt modifier
+	 */
+	public function replace_encrypt($data, $params = array(), $tagdata = FALSE)
+	{
+		if (isset($params['key']))
+		{
+			$encrypt = new Encrypt\Encrypt($params['key']);
+		}
+		else
+		{
+			$encrypt = ee('Encrypt');
+		}
+
+		if (isset($params['encode']) && get_bool_from_string($params['encode']))
+		{
+			return $encrypt->encode($data);
+		}
+
+		return $encrypt->encrypt($data);
 	}
 
 	/**
