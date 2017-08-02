@@ -691,7 +691,7 @@ class Channel_form_lib
 				//let's not needlessly call this, otherwise we could get duplicate fields rendering
 				if (strpos(ee()->TMPL->tagdata, LD.'field:'.$field->field_name.RD) !== FALSE)
 				{
-					if ($field->field_type == 'checkboxes' OR $field_type_match == 'grid')
+					if ($field->field_type == 'checkboxes' OR $field->field_type == 'grid')
 					{
 						$checkbox_fields[] = $field->field_name;
 					}
