@@ -297,6 +297,16 @@ class Channel_form_lib
 		// build custom field variables
 		$custom_field_variables = $this->_build_custom_field_variables();
 
+		// Since empty checkbox arrays don't show up in POST at all, we
+		// fill them in with their old values to preserve them in case they
+		// weren't on screen at all, in the instance someone is using
+		// Channel Form to update a partial entry (not including all fields
+		// in the form); but for the cases where the checkbox fields are
+		// present on screen and are left blank, we need to keep track of
+		// which fields those are here so we don't repopulate them with
+		// their old values
+		$checkbox_fields = array();
+
 		// parse custom fields loop
 		if (preg_match('/'.LD.'custom_fields'.RD.'(.*)'.LD.'\/custom_fields'.RD.'/s', ee()->TMPL->tagdata, $match))
 		{
@@ -349,6 +359,11 @@ class Channel_form_lib
 					$temp = $this->replace_tag($field_name, $this->entry($field_name), array(), $temp);
 				}
 
+				if ($custom_field_variables_row['field_type'] === 'checkboxes' OR $custom_field_variables_row['field_type'] === 'grid')
+				{
+					$checkbox_fields[] = $field_name;
+				}
+
 				$custom_field_output .= $temp;
 			}
 
@@ -360,15 +375,6 @@ class Channel_form_lib
 			ee()->javascript->output('$.each(EE.markItUpFields,function(a){$("#"+a).markItUp(mySettings);});');
 		}
 
-		// Since empty checkbox arrays don't show up in POST at all, we
-		// fill them in with their old values to preserve them in case they
-		// weren't on screen at all, in the instance someone is using
-		// Channel Form to update a partial entry (not including all fields
-		// in the form); but for the cases where the checkbox fields are
-		// present on screen and are left blank, we need to keep track of
-		// which fields those are here so we don't repopulate them with
-		// their old values
-		$checkbox_fields = array();
 
 		foreach (ee()->TMPL->var_pair as $tag_pair_open => $tagparams)
 		{
@@ -491,7 +497,7 @@ class Channel_form_lib
 				// use fieldtype display_field method
 				elseif (preg_match('/^field:(.*)$/', $key, $match))
 				{
-					if ($this->get_field_type($match[1]) == 'checkboxes')
+					if ($this->get_field_type($match[1]) == 'checkboxes' OR $this->get_field_type($match[1]) == 'grid')
 					{
 						$checkbox_fields[] = $match[1];
 					}
@@ -685,7 +691,7 @@ class Channel_form_lib
 				//let's not needlessly call this, otherwise we could get duplicate fields rendering
 				if (strpos(ee()->TMPL->tagdata, LD.'field:'.$field->field_name.RD) !== FALSE)
 				{
-					if ($field->field_type == 'checkboxes')
+					if ($field->field_type == 'checkboxes' OR $field_type_match == 'grid')
 					{
 						$checkbox_fields[] = $field->field_name;
 					}
