@@ -126,6 +126,7 @@ class EE_Template {
 		);
 
 		$this->marker = md5(ee()->config->site_url().$this->marker);
+		$this->mb_available = extension_loaded('mbstring');
 	}
 
 	/**
@@ -3559,6 +3560,19 @@ class EE_Template {
 		$count = 0;
 		$total_results = count($variables);
 
+		// get potential modified vars
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+
+		$this->modified_vars = [];
+		foreach ($this->var_single as $variable)
+		{
+			if (strpos($variable, ':') !== FALSE)
+			{
+				$this->modified_vars[$variable] = ee()->api_channel_fields->get_single_field($variable);
+			}
+		}
+
 		while (($row = array_shift($variables)) !== NULL)
 		{
 			$count++;
@@ -3656,19 +3670,133 @@ class EE_Template {
 			$tagdata = $this->_parse_var_single($name, $value, $tagdata);
 		}
 
+		// now hit modifiers, we do this after the data loop in case the add-on has defined "modified" variables in their data
+		foreach ($this->modified_vars as $tag => $var)
+		{
+			// if the variable doesn't exist, don't bother
+			if ( ! isset($variables[$var['field_name']]))
+			{
+				continue;
+			}
+
+			// is the modifier valid?
+			$method = 'replace_'.$var['modifier'];
+			if ( ! method_exists($this, $method))
+			{
+				continue;
+			}
+
+			// Process *just* this variable so we can send its content off to modifier methods
+			$original = $variables[$var['field_name']];
+			$tagname = $var['field_name'].':'.$var['modifier'];
+			$content = $this->_parse_var_single($var['field_name'], $original, LD.$var['field_name'].RD);
+
+			// we need to send just the content without any metadata to our modifiers
+			if (is_array($original))
+			{
+				// both typography and path will be an array, but path is only useful as a URL, so which is it?
+				if (isset($original[1]['path_variable']))
+				{
+					$raw = $content;
+				}
+				elseif (is_scalar($original[0]))
+				{
+					$raw = $original[0];
+				}
+				else
+				{
+					$raw = '';
+				}
+			}
+			else
+			{
+				$raw = $original;
+			}
+
+			$content = $this->$method($content, $var['params'], $raw);
+			$this->conditional_vars[$tagname] = $content;
+
+			$tagdata = $this->_parse_var_single($tag, $content, $tagdata);
+		}
+
 		// Prep conditionals
 		$tagdata = ee()->functions->prep_conditionals($tagdata, $this->conditional_vars);
 
 		return $tagdata;
 	}
 
-	function create_url_check($matches)
+	/**
+	 * :length modifier
+	 */
+	public function replace_length($data, $params = array(), $raw)
 	{
-
-		print_r($matches);
-
+		return ($this->mb_available) ? mb_strlen($data, 'utf8') : strlen($data);
 	}
 
+	/**
+	 * :raw_content modifier
+	 */
+	public function replace_raw_content($data, $params = array(), $raw)
+	{
+		return ee()->functions->encode_ee_tags($raw);
+	}
+
+	/**
+	 * :attr_safe modifier
+	 */
+	public function replace_attr_safe($data, $params = array(), $raw)
+	{
+		$double_encode = (isset($params['double_encode'])) ? get_bool_from_string($params['double_encode']) : FALSE;
+		$unicode_punctuation = (isset($params['unicode_punctuation'])) ? get_bool_from_string($params['unicode_punctuation']) : TRUE;
+		$limit = (isset($params['limit'])) ? (int) $params['limit'] : FALSE;
+		$end_char = (isset($params['end_char'])) ? $params['end_char'] : '&#8230;';
+
+		return (string) ee('Format')->make('Text', $data)->attributeSafe($double_encode, $unicode_punctuation, $limit, $end_char);
+	}
+
+	/**
+	 * :limit modifier
+	 */
+	public function replace_limit($data, $params = array(), $raw)
+	{
+		$limit = (isset($params['characters'])) ? (int) $params['characters'] : FALSE;
+		$end_char = (isset($params['end_char'])) ? $params['end_char'] : '&#8230;';
+		$data = strip_tags($data);
+
+		return (string) ee('Format')->make('Text', $data)->limitChars($limit, $end_char);
+	}
+
+	/**
+	 * :form_prep modifier
+	 */
+	public function replace_form_prep($data, $params = array(), $raw)
+	{
+		ee()->load->helper('form');
+		return form_prep($data);
+	}
+
+	/**
+	 * :rot13 modifier (for Seth)
+	 */
+	public function replace_rot13($data, $params = array(), $raw)
+	{
+		return str_rot13($data);
+	}
+
+	/**
+	 * :encrypt modifier
+	 */
+	public function replace_encrypt($data, $params = array(), $raw)
+	{
+		$key = (isset($params['key'])) ? $params['key'] : NULL;
+
+		if (isset($params['encode']) && get_bool_from_string($params['encode']))
+		{
+			return ee('Encrypt', $key)->encode($data);
+		}
+
+		return ee('Encrypt', $key)->encrypt($data);
+	}
 
 	/**
 	 * Parse Var Single
