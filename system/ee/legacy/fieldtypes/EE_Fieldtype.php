@@ -253,6 +253,19 @@ abstract class EE_Fieldtype {
 	}
 
 	/**
+	 * :attr_safe modifier
+	 */
+	public function replace_attr_safe($data, $params = array(), $tagdata = FALSE)
+	{
+		$double_encode = (isset($params['double_encode'])) ? get_bool_from_string($params['double_encode']) : FALSE;
+		$unicode_punctuation = (isset($params['unicode_punctuation'])) ? get_bool_from_string($params['unicode_punctuation']) : TRUE;
+		$limit = (isset($params['limit'])) ? (int) $params['limit'] : FALSE;
+		$end_char = (isset($params['end_char'])) ? $params['end_char'] : '&#8230;';
+
+		return (string) ee('Format')->make('Text', $data)->attributeSafe($double_encode, $unicode_punctuation, $limit, $end_char);
+	}
+
+	/**
 	 * Pre process the stored data.
 	 *
 	 * This is called before the field is displayed. It's return will
