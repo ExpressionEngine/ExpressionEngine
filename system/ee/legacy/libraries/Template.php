@@ -3730,7 +3730,7 @@ class EE_Template {
 	 */
 	public function replace_length($data, $params = array(), $raw)
 	{
-		return (string) ee('Format')->make('Text', $data)->getLength($data);
+		return (string) ee('Format')->make('Text', $data)->getLength();
 	}
 
 	/**
@@ -3762,7 +3762,7 @@ class EE_Template {
 	 */
 	public function replace_form_prep($data, $params = array(), $raw)
 	{
-		return (string) ee('Format')->make('Text', $data)->formPrep($params)->encodeEETags($params);
+		return (string) ee('Format')->make('Text', $data)->formPrep()->encodeEETags($params);
 	}
 
 	/**

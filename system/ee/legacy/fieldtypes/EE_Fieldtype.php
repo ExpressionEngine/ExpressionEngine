@@ -236,7 +236,7 @@ abstract class EE_Fieldtype {
 	 */
 	public function replace_length($data, $params = array(), $tagdata = FALSE)
 	{
-		return (string) ee('Format')->make('Text', $data)->getLength($data);
+		return (string) ee('Format')->make('Text', $data)->getLength();
 	}
 
 	/**
@@ -268,7 +268,7 @@ abstract class EE_Fieldtype {
 	 */
 	public function replace_form_prep($data, $params = array(), $tagdata = FALSE)
 	{
-		return (string) ee('Format')->make('Text', $data)->formPrep($params)->encodeEETags($params);
+		return (string) ee('Format')->make('Text', $data)->formPrep()->encodeEETags($params);
 	}
 
 	/**

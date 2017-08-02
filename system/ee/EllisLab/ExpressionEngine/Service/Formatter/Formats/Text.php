@@ -28,12 +28,19 @@ class Text extends Formatter {
 		return $this;
 	}
 
+	/**
+	 * Makes content safe to use in an HTML attribute. In addition to escaping like attributeEscape(),
+	 * it allows for character limiting, and unicode punctuation—handy for meta tags where entities may not be parsed.
+	 *
+	 * @param  array  $options Options: (bool) double_encode, (string) end_char, (int) limit, (bool) unicode_punctuation
+	 * @return self This returns a reference to itself
+	 */
 	public function attributeSafe($options = [])
 	{
 		$options = [
 			'double_encode'       => (isset($options['double_encode'])) ? get_bool_from_string($options['double_encode']) : FALSE,
 			'end_char'            => (isset($options['end_char'])) ? $options['end_char'] : '&#8230;',
-			'limit'               => (isset($options['limit'])) ? $options['limit'] : FALSE,
+			'limit'               => (isset($options['limit'])) ? (int) $options['limit'] : FALSE,
 			'unicode_punctuation' => (isset($options['unicode_punctuation'])) ? get_bool_from_string($options['unicode_punctuation']) : TRUE,
 		];
 
@@ -66,7 +73,7 @@ class Text extends Formatter {
 
 		if (is_numeric($options['limit']))
 		{
-			$this->limitChars($options['limit'], $options['end_char']);
+			$this->limitChars(['characters' => $options['limit'], 'end_char' => $options['end_char']]);
 
 			// keep whole words only
 			while (strlen($this->content) > $options['limit'])
@@ -80,9 +87,15 @@ class Text extends Formatter {
 		return $this;
 	}
 
+	/**
+	 * Limit to X characters, with an optional end character
+	 *
+	 * @param  array  $options Options: (int) characters, (string) end_char
+	 * @return self This returns a reference to itself
+	 */
 	public function limitChars($options = [])
 	{
-		$limit = (isset($options['characters'])) ? (int) $options['characters'] : FALSE;
+		$limit = (isset($options['characters'])) ? (int) $options['characters'] : 500;
 		$end_char = (isset($options['end_char'])) ? $options['end_char'] : '&#8230;';
 		$this->content = strip_tags($this->content);
 
@@ -112,13 +125,24 @@ class Text extends Formatter {
 		return $this;
 	}
 
-	public function formPrep($options = [])
+	/**
+	 * Preps the content for use in a form field
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function formPrep()
 	{
 		ee()->load->helper('form');
 		$this->content = form_prep($this->content);
 		return $this;
 	}
 
+	/**
+	 * Encrypt the text
+	 *
+	 * @param  array  $options Options: (string) key, (bool) encode
+	 * @return self This returns a reference to itself
+	 */
 	public function encrypt($options = [])
 	{
 		$key = (isset($options['key'])) ? $options['key'] : NULL;
@@ -135,6 +159,12 @@ class Text extends Formatter {
 		return $this;
 	}
 
+	/**
+	 * Encode ExpressionEngine Tags. By default encodes all curly braces so variables are also protected.
+	 *
+	 * @param  array  $options Options: (bool) convert_curly
+	 * @return self This returns a reference to itself
+	 */
 	public function encodeEETags($options = [])
 	{
 		$convert_curly = (isset($options['convert_curly'])) ? $options['convert_curly'] : TRUE;
@@ -160,7 +190,12 @@ class Text extends Formatter {
 		return $this;
 	}
 
-	public function getLength($options = [])
+	/**
+	 * Get the length of the string
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function getLength()
 	{
 		$this->content = (extension_loaded('mbstring')) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
 		return $this;
