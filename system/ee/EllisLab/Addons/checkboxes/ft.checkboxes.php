@@ -209,13 +209,7 @@ class Checkboxes_ft extends OptionFieldtype {
 	 */
 	public function replace_attr_safe($data, $params = array(), $tagdata = FALSE)
 	{
-		$double_encode = (isset($params['double_encode'])) ? get_bool_from_string($params['double_encode']) : FALSE;
-		$unicode_punctuation = (isset($params['unicode_punctuation'])) ? get_bool_from_string($params['unicode_punctuation']) : TRUE;
-		$limit = (isset($params['limit'])) ? (int) $params['limit'] : FALSE;
-		$end_char = (isset($params['end_char'])) ? $params['end_char'] : '&#8230;';
-
-		return (string) ee('Format')->make('Text', $this->replace_tag($data, $params, $tagdata))
-			->attributeSafe($double_encode, $unicode_punctuation, $limit, $end_char);
+		return parent::replace_attr_safe($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
 	}
 
 	/**
@@ -223,10 +217,7 @@ class Checkboxes_ft extends OptionFieldtype {
 	 */
 	public function replace_limit($data, $params = array(), $tagdata = FALSE)
 	{
-		$limit = (isset($params['characters'])) ? (int) $params['characters'] : FALSE;
-		$end_char = (isset($params['end_char'])) ? $params['end_char'] : '&#8230;';
-
-		return (string) ee('Format')->make('Text', $this->replace_tag($data, $params, $tagdata))->limitChars($limit, $end_char);
+		return parent::replace_limit($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
 	}
 
 	function display_settings($data)

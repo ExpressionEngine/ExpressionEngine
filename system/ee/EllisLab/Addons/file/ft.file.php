@@ -433,7 +433,7 @@ JSC;
 	 */
 	public function replace_raw_content($data, $params = array(), $tagdata = FALSE)
 	{
-		return ee()->functions->encode_ee_tags($data['raw_output']);
+		return parent::replace_raw_content($data['raw_output'], $params, $tagdata);
 	}
 
 	/**
@@ -441,12 +441,7 @@ JSC;
 	 */
 	public function replace_attr_safe($data, $params = array(), $tagdata = FALSE)
 	{
-		$double_encode = (isset($params['double_encode'])) ? get_bool_from_string($params['double_encode']) : FALSE;
-		$unicode_punctuation = (isset($params['unicode_punctuation'])) ? get_bool_from_string($params['unicode_punctuation']) : TRUE;
-		$limit = (isset($params['limit'])) ? (int) $params['limit'] : FALSE;
-		$end_char = (isset($params['end_char'])) ? $params['end_char'] : '&#8230;';
-
-		return (string) ee('Format')->make('Text', $data['url'])->attributeSafe($double_encode, $unicode_punctuation, $limit, $end_char);
+		return parent::replace_attr_safe($data['url'], $params, $tagdata);
 	}
 
 	/**
@@ -454,10 +449,7 @@ JSC;
 	 */
 	public function replace_limit($data, $params = array(), $tagdata = FALSE)
 	{
-		$limit = (isset($params['characters'])) ? (int) $params['characters'] : FALSE;
-		$end_char = (isset($params['end_char'])) ? $params['end_char'] : '&#8230;';
-
-		return (string) ee('Format')->make('Text', $data['url'])->limitChars($limit, $end_char);
+		return parent::replace_limit($data['url'], $params, $tagdata);
 	}
 
 	/**
@@ -465,8 +457,7 @@ JSC;
 	 */
 	public function replace_form_prep($data, $params = array(), $tagdata = FALSE)
 	{
-		ee()->load->helper('form');
-		return form_prep($data['raw_content']);
+		return parent::replace_form_prep($data['url'], $params, $tagdata);
 	}
 
 	/**
