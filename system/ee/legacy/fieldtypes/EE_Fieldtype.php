@@ -301,21 +301,14 @@ abstract class EE_Fieldtype {
 	 */
 	public function replace_encrypt($data, $params = array(), $tagdata = FALSE)
 	{
-		if (isset($params['key']))
-		{
-			$encrypt = new Encrypt\Encrypt($params['key']);
-		}
-		else
-		{
-			$encrypt = ee('Encrypt');
-		}
+		$key = (isset($params['key'])) ? $params['key'] : NULL;
 
 		if (isset($params['encode']) && get_bool_from_string($params['encode']))
 		{
-			return $encrypt->encode($data);
+			return ee('Encrypt', $key)->encode($data);
 		}
 
-		return $encrypt->encrypt($data);
+		return ee('Encrypt', $key)->encrypt($data);
 	}
 
 	/**

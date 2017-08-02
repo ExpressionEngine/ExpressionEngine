@@ -42,7 +42,7 @@ return array(
 
 	'author' => 'EllisLab',
 	'name' => 'ExpressionEngine',
-	'description' => 'The worlds most flexible content management system.',
+	'description' => "The world's most flexible content management system.",
 
 	'namespace' => 'EllisLab\ExpressionEngine',
 
@@ -207,9 +207,12 @@ return array(
 			return new Permission\Permission($userdata);
 		},
 
-		'Encrypt' => function($ee)
+		'Encrypt' => function($ee, $key = NULL)
 		{
-			$key = (ee()->config->item('encryption_key')) ?: ee()->db->username.ee()->db->password;
+			if (empty($key))
+			{
+				$key = (ee()->config->item('encryption_key')) ?: ee()->db->username.ee()->db->password;
+			}
 
 			return new Encrypt\Encrypt($key);
 		}
