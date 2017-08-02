@@ -67,8 +67,7 @@ class FilterSelect extends React.Component {
     this.initialItems = SelectList.formatItems(props.items)
     this.state = {
       items: this.initialItems,
-      selected: null,
-      open: false
+      selected: null
     }
   }
 
@@ -81,7 +80,7 @@ class FilterSelect extends React.Component {
   selectItem = (event, item) => {
     this.setState({ selected: item })
     this.props.onSelect(item ? item.value : null)
-    $(event.target).closest('.filter-item').find('.js-filter-link').click() // Not working
+    $(event.target).closest('.filter-item').find('.js-filter-link').click()
     event.preventDefault()
   }
 

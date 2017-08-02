@@ -96,15 +96,14 @@ var FilterSelect = function (_React$Component2) {
     _this2.selectItem = function (event, item) {
       _this2.setState({ selected: item });
       _this2.props.onSelect(item ? item.value : null);
-      $(event.target).closest('.filter-item').find('.js-filter-link').click(); // Not working
+      $(event.target).closest('.filter-item').find('.js-filter-link').click();
       event.preventDefault();
     };
 
     _this2.initialItems = SelectList.formatItems(props.items);
     _this2.state = {
       items: _this2.initialItems,
-      selected: null,
-      open: false
+      selected: null
     };
     return _this2;
   }
