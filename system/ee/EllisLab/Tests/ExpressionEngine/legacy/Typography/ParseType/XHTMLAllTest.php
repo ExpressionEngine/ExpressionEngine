@@ -10,7 +10,7 @@ require_once APPPATH.'libraries/typography/Markdown/Michelf/MarkdownExtra.inc.ph
 define('PATH_ADDONS', APPPATH.'modules/');
 define('REQ', FALSE);
 
-class ParseTypeTest extends \PHPUnit_Framework_TestCase {
+class XHTMLAllTest extends \PHPUnit_Framework_TestCase {
 
 	private $typography;
 
