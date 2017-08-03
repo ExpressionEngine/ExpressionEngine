@@ -58,39 +58,18 @@ class NoneNoneTest extends \PHPUnit_Framework_TestCase {
 		);
 
 		$data = array_merge(
-			$data,
 			$this->whitespaceData(),
 			$this->punctuationData(),
 			$this->HTMLWithClosingTagsData(),
 			$this->HTMLWithoutClosingTagsData(),
 			$this->HTMLWithContentData(),
 			$this->HTMLAttributesData(),
-			$this->HTMLWithAttributesData()
+			$this->HTMLWithAttributesData(),
+			$this->unprocessedMarkdownData(),
+			$this->BBCodeData(),
+			$data
 		);
 
-		array_walk($data, function (&$datum) {
-			$datum[2] = str_replace(array("<", ">"), array("&lt;", "&gt;"), $datum[2]);
-		});
-
-		// $markdown = $this->markdownData();
-		//
-		// array_walk($markdown, function (&$datum) {
-		// 	$datum[2] = str_replace(array("<", ">"), array("&lt;", "&gt;"), $datum[1]);
-		// });
-		//
-		// $data = array_merge(
-		// 	$data,
-		// 	$markdown
-		// );
-
-		array_walk($data, function (&$datum) {
-			$datum[2] = ee()->functions->encode_ee_tags($datum[2], TRUE);
-		});
-
-		$data = array_merge(
-			$data,
-			$this->BBCodeData()
-		);
 
 		return $data;
 	}
@@ -135,7 +114,7 @@ class NoneNoneTest extends \PHPUnit_Framework_TestCase {
 			array('Double quote', '"', '"'),
 			array('Comma', ',', ','),
 			array('Period', '.', '.'),
-			array('Angle brackets', '<>', '<>'),
+			array('Angle brackets', '<>', '&lt;&gt;'),
 			array('Forward slash', '/', '/'),
 			array('Question mark', '?', '?'),
 			array('Em dash', '--', '--'),
@@ -176,7 +155,7 @@ class NoneNoneTest extends \PHPUnit_Framework_TestCase {
 			array('<caption></caption>', '<caption></caption>', '&lt;caption&gt;&lt;/caption&gt;'),
 			array('<center></center>', '<center></center>', '&lt;center&gt;&lt;/center&gt;'),
 			array('<cite></cite>', '<cite></cite>', '&lt;cite&gt;&lt;/cite&gt;'),
-			array('<code></code>', '<code></code>', '<code></code>'),
+			array('<code></code>', '<code></code>', '&lt;code&gt;&lt;/code&gt;'),
 			array('<col></col>', '<col></col>', '&lt;col&gt;&lt;/col&gt;'),
 			array('<colgroup></colgroup>', '<colgroup></colgroup>', '&lt;colgroup&gt;&lt;/colgroup&gt;'),
 			array('<datalist></datalist>', '<datalist></datalist>', '&lt;datalist&gt;&lt;/datalist&gt;'),
@@ -219,7 +198,7 @@ class NoneNoneTest extends \PHPUnit_Framework_TestCase {
 			array('<link></link>', '<link></link>', '&lt;link&gt;&lt;/link&gt;'),
 			array('<main></main>', '<main></main>', '&lt;main&gt;&lt;/main&gt;'),
 			array('<map></map>', '<map></map>', '&lt;map&gt;&lt;/map&gt;'),
-			array('<mark></mark>', '<mark></mark>', '<mark></mark>'),
+			array('<mark></mark>', '<mark></mark>', '&lt;mark&gt;&lt;/mark&gt;'),
 			array('<menu></menu>', '<menu></menu>', '&lt;menu&gt;&lt;/menu&gt;'),
 			array('<menuitem></menuitem>', '<menuitem></menuitem>', '&lt;menuitem&gt;&lt;/menuitem&gt;'),
 			array('<meta></meta>', '<meta></meta>', '&lt;meta&gt;&lt;/meta&gt;'),
@@ -248,7 +227,7 @@ class NoneNoneTest extends \PHPUnit_Framework_TestCase {
 			array('<select></select>', '<select></select>', '&lt;select&gt;&lt;/select&gt;'),
 			array('<small></small>', '<small></small>', '&lt;small&gt;&lt;/small&gt;'),
 			array('<source></source>', '<source></source>', '&lt;source&gt;&lt;/source&gt;'),
-			array('<span></span>', '<span></span>', '<span></span>'),
+			array('<span></span>', '<span></span>', '&lt;span&gt;&lt;/span&gt;'),
 			array('<strike></strike>', '<strike></strike>', '&lt;strike&gt;&lt;/strike&gt;'),
 			array('<strong></strong>', '<strong></strong>', '&lt;strong&gt;&lt;/strong&gt;'),
 			array('<style></style>', '<style></style>', '&lt;style&gt;&lt;/style&gt;'),
@@ -417,25 +396,25 @@ class NoneNoneTest extends \PHPUnit_Framework_TestCase {
 			array('<article>foobar</article>', '<article>foobar</article>', '&lt;article&gt;foobar&lt;/article&gt;'),
 			array('<aside>foobar</aside>', '<aside>foobar</aside>', '&lt;aside&gt;foobar&lt;/aside&gt;'),
 			array('<audio>foobar</audio>', '<audio>foobar</audio>','&lt;audio&gt;foobar&lt;/audio&gt;'),
-			array('<b>foobar</b>', '<b>foobar</b>', '<b>foobar</b>'),
+			array('<b>foobar</b>', '<b>foobar</b>', '&lt;b&gt;foobar&lt;/b&gt;'),
 			array('<base>foobar</base>', '<base>foobar</base>', '&lt;base&gt;foobar&lt;/base&gt;'),
 			array('<basefont>foobar</basefont>', '<basefont>foobar</basefont>', '&lt;basefont&gt;foobar&lt;/basefont&gt;'),
 			array('<bdi>foobar</bdi>', '<bdi>foobar</bdi>', '&lt;bdi&gt;foobar&lt;/bdi&gt;'),
 			array('<bdo>foobar</bdo>', '<bdo>foobar</bdo>', '&lt;bdo&gt;foobar&lt;/bdo&gt;'),
 			array('<big>foobar</big>', '<big>foobar</big>', '&lt;big&gt;foobar&lt;/big&gt;'),
-			array('<blockquote>foobar</blockquote>', '<blockquote>foobar</blockquote>', '<blockquote>foobar</blockquote>'),
+			array('<blockquote>foobar</blockquote>', '<blockquote>foobar</blockquote>', '&lt;blockquote&gt;foobar&lt;/blockquote&gt;'),
 			array('<body>foobar</body>', '<body>foobar</body>', '&lt;body&gt;foobar&lt;/body&gt;'),
 			array('<button>foobar</button>', '<button>foobar</button>', '&lt;button&gt;foobar&lt;/button&gt;'),
 			array('<canvas>foobar</canvas>', '<canvas>foobar</canvas>', '&lt;canvas&gt;foobar&lt;/canvas&gt;'),
 			array('<caption>foobar</caption>', '<caption>foobar</caption>', '&lt;caption&gt;foobar&lt;/caption&gt;'),
 			array('<center>foobar</center>', '<center>foobar</center>', '&lt;center&gt;foobar&lt;/center&gt;'),
-			array('<cite>foobar</cite>', '<cite>foobar</cite>', '<cite>foobar</cite>'),
-			array('<code>foobar</code>', '<code>foobar</code>', '<code>foobar</code>'),
+			array('<cite>foobar</cite>', '<cite>foobar</cite>', '&lt;cite&gt;foobar&lt;/cite&gt;'),
+			array('<code>foobar</code>', '<code>foobar</code>', '&lt;code&gt;foobar&lt;/code&gt;'),
 			array('<col>foobar</col>', '<col>foobar</col>', '&lt;col&gt;foobar&lt;/col&gt;'),
 			array('<colgroup>foobar</colgroup>', '<colgroup>foobar</colgroup>', '&lt;colgroup&gt;foobar&lt;/colgroup&gt;'),
 			array('<datalist>foobar</datalist>', '<datalist>foobar</datalist>', '&lt;datalist&gt;foobar&lt;/datalist&gt;'),
 			array('<dd>foobar</dd>', '<dd>foobar</dd>', '&lt;dd&gt;foobar&lt;/dd&gt;'),
-			array('<del>foobar</del>', '<del>foobar</del>', '<del>foobar</del>'),
+			array('<del>foobar</del>', '<del>foobar</del>', '&lt;del&gt;foobar&lt;/del&gt;'),
 			array('<details>foobar</details>', '<details>foobar</details>', '&lt;details&gt;foobar&lt;/details&gt;'),
 			array('<dfn>foobar</dfn>', '<dfn>foobar</dfn>', '&lt;dfn&gt;foobar&lt;/dfn&gt;'),
 			array('<dialog>foobar</dialog>', '<dialog>foobar</dialog>', '&lt;dialog&gt;foobar&lt;/dialog&gt;'),
@@ -443,7 +422,7 @@ class NoneNoneTest extends \PHPUnit_Framework_TestCase {
 			array('<div>foobar</div>', '<div>foobar</div>', '&lt;div&gt;foobar&lt;/div&gt;'),
 			array('<dl>foobar</dl>', '<dl>foobar</dl>', '&lt;dl&gt;foobar&lt;/dl&gt;'),
 			array('<dt>foobar</dt>', '<dt>foobar</dt>', '&lt;dt&gt;foobar&lt;/dt&gt;'),
-			array('<em>foobar</em>', '<em>foobar</em>', '<em>foobar</em>'),
+			array('<em>foobar</em>', '<em>foobar</em>', '&lt;em&gt;foobar&lt;/em&gt;'),
 			array('<embed>foobar</embed>', '<embed>foobar</embed>', '&lt;embed&gt;foobar&lt;/embed&gt;'),
 			array('<fieldset>foobar</fieldset>', '<fieldset>foobar</fieldset>', '&lt;fieldset&gt;foobar&lt;/fieldset&gt;'),
 			array('<figcaption>foobar</figcaption>', '<figcaption>foobar</figcaption>', '&lt;figcaption&gt;foobar&lt;/figcaption&gt;'),
@@ -454,17 +433,17 @@ class NoneNoneTest extends \PHPUnit_Framework_TestCase {
 			array('<frame>foobar</frame>', '<frame>foobar</frame>', '&lt;frame&gt;foobar&lt;/frame&gt;'),
 			array('<frameset>foobar</frameset>', '<frameset>foobar</frameset>', '&lt;frameset&gt;foobar&lt;/frameset&gt;'),
 			array('<h1>foobar</h1>', '<h1>foobar</h1>', '&lt;h1&gt;foobar&lt;/h1&gt;'),
-			array('<h2>foobar</h2>', '<h2>foobar</h2>', '<h2>foobar</h2>'),
-			array('<h3>foobar</h3>', '<h3>foobar</h3>', '<h3>foobar</h3>'),
-			array('<h4>foobar</h4>', '<h4>foobar</h4>', '<h4>foobar</h4>'),
-			array('<h5>foobar</h5>', '<h5>foobar</h5>', '<h5>foobar</h5>'),
-			array('<h6>foobar</h6>', '<h6>foobar</h6>', '<h6>foobar</h6>'),
+			array('<h2>foobar</h2>', '<h2>foobar</h2>', '&lt;h2&gt;foobar&lt;/h2&gt;'),
+			array('<h3>foobar</h3>', '<h3>foobar</h3>', '&lt;h3&gt;foobar&lt;/h3&gt;'),
+			array('<h4>foobar</h4>', '<h4>foobar</h4>', '&lt;h4&gt;foobar&lt;/h4&gt;'),
+			array('<h5>foobar</h5>', '<h5>foobar</h5>', '&lt;h5&gt;foobar&lt;/h5&gt;'),
+			array('<h6>foobar</h6>', '<h6>foobar</h6>', '&lt;h6&gt;foobar&lt;/h6&gt;'),
 			array('<head>foobar</head>', '<head>foobar</head>', '&lt;head&gt;foobar&lt;/head&gt;'),
 			array('<header>foobar</header>', '<header>foobar</header>', '&lt;header&gt;foobar&lt;/header&gt;'),
 			array('<html>foobar</html>', '<html>foobar</html>', '&lt;html&gt;foobar&lt;/html&gt;'),
-			array('<i>foobar</i>', '<i>foobar</i>', '<i>foobar</i>'),
+			array('<i>foobar</i>', '<i>foobar</i>', '&lt;i&gt;foobar&lt;/i&gt;'),
 			array('<iframe>foobar</iframe>', '<iframe>foobar</iframe>', '&lt;iframe&gt;foobar&lt;/iframe&gt;'),
-			array('<ins>foobar</ins>', '<ins>foobar</ins>', '<ins>foobar</ins>'),
+			array('<ins>foobar</ins>', '<ins>foobar</ins>', '&lt;ins&gt;foobar&lt;/ins&gt;'),
 			array('<kbd>foobar</kbd>', '<kbd>foobar</kbd>', '&lt;kbd&gt;foobar&lt;/kbd&gt;'),
 			array('<keygen>foobar</keygen>', '<keygen>foobar</keygen>', '&lt;keygen&gt;foobar&lt;/keygen&gt;'),
 			array('<label>foobar</label>', '<label>foobar</label>', '&lt;label&gt;foobar&lt;/label&gt;'),
@@ -473,7 +452,7 @@ class NoneNoneTest extends \PHPUnit_Framework_TestCase {
 			array('<link>foobar</link>', '<link>foobar</link>', '&lt;link&gt;foobar&lt;/link&gt;'),
 			array('<main>foobar</main>', '<main>foobar</main>', '&lt;main&gt;foobar&lt;/main&gt;'),
 			array('<map>foobar</map>', '<map>foobar</map>', '&lt;map&gt;foobar&lt;/map&gt;'),
-			array('<mark>foobar</mark>', '<mark>foobar</mark>', '<mark>foobar</mark>'),
+			array('<mark>foobar</mark>', '<mark>foobar</mark>', '&lt;mark&gt;foobar&lt;/mark&gt;'),
 			array('<menu>foobar</menu>', '<menu>foobar</menu>', '&lt;menu&gt;foobar&lt;/menu&gt;'),
 			array('<menuitem>foobar</menuitem>', '<menuitem>foobar</menuitem>', '&lt;menuitem&gt;foobar&lt;/menuitem&gt;'),
 			array('<meta>foobar</meta>', '<meta>foobar</meta>', '&lt;meta&gt;foobar&lt;/meta&gt;'),
@@ -489,7 +468,7 @@ class NoneNoneTest extends \PHPUnit_Framework_TestCase {
 			array('<p>foobar</p>', '<p>foobar</p>', '&lt;p&gt;foobar&lt;/p&gt;'),
 			array('<param>foobar</param>', '<param>foobar</param>', '&lt;param&gt;foobar&lt;/param&gt;'),
 			array('<picture>foobar</picture>', '<picture>foobar</picture>','&lt;picture&gt;foobar&lt;/picture&gt;'),
-			array('<pre>foobar</pre>', '<pre>foobar</pre>', '<pre>foobar</pre>'),
+			array('<pre>foobar</pre>', '<pre>foobar</pre>', '&lt;pre&gt;foobar&lt;/pre&gt;'),
 			array('<progress>foobar</progress>', '<progress>foobar</progress>', '&lt;progress&gt;foobar&lt;/progress&gt;'),
 			array('<q>foobar</q>', '<q>foobar</q>', '&lt;q&gt;foobar&lt;/q&gt;'),
 			array('<rp>foobar</rp>', '<rp>foobar</rp>', '&lt;rp&gt;foobar&lt;/rp&gt;'),
@@ -502,13 +481,13 @@ class NoneNoneTest extends \PHPUnit_Framework_TestCase {
 			array('<select>foobar</select>', '<select>foobar</select>', '&lt;select&gt;foobar&lt;/select&gt;'),
 			array('<small>foobar</small>', '<small>foobar</small>', '&lt;small&gt;foobar&lt;/small&gt;'),
 			array('<source>foobar</source>', '<source>foobar</source>', '&lt;source&gt;foobar&lt;/source&gt;'),
-			array('<span>foobar</span>', '<span>foobar</span>', '<span>foobar</span>'),
+			array('<span>foobar</span>', '<span>foobar</span>', '&lt;span&gt;foobar&lt;/span&gt;'),
 			array('<strike>foobar</strike>', '<strike>foobar</strike>', '&lt;strike&gt;foobar&lt;/strike&gt;'),
-			array('<strong>foobar</strong>', '<strong>foobar</strong>', '<strong>foobar</strong>'),
+			array('<strong>foobar</strong>', '<strong>foobar</strong>', '&lt;strong&gt;foobar&lt;/strong&gt;'),
 			array('<style>foobar</style>', '<style>foobar</style>', '&lt;style&gt;foobar&lt;/style&gt;'),
-			array('<sub>foobar</sub>', '<sub>foobar</sub>', '<sub>foobar</sub>'),
+			array('<sub>foobar</sub>', '<sub>foobar</sub>', '&lt;sub&gt;foobar&lt;/sub&gt;'),
 			array('<summary>foobar</summary>', '<summary>foobar</summary>', '&lt;summary&gt;foobar&lt;/summary&gt;'),
-			array('<sup>foobar</sup>', '<sup>foobar</sup>', '<sup>foobar</sup>'),
+			array('<sup>foobar</sup>', '<sup>foobar</sup>', '&lt;sup&gt;foobar&lt;/sup&gt;'),
 			array('<table>foobar</table>', '<table>foobar</table>', '&lt;table&gt;foobar&lt;/table&gt;'),
 			array('<tbody>foobar</tbody>', '<tbody>foobar</tbody>', '&lt;tbody&gt;foobar&lt;/tbody&gt;'),
 			array('<td>foobar</td>', '<td>foobar</td>', '&lt;td&gt;foobar&lt;/td&gt;'),
@@ -839,149 +818,152 @@ class NoneNoneTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
-	protected function markdownData()
+	protected function unprocessedMarkdownData()
 	{
 		$data = array(
 			// Automatic Escaping
-			array('Ampersands', 'AT&T', "<p>AT&amp;T</p>\n"),
-			array('HTML Entity', '&copy;', "<p>&copy;</p>\n"),
-			array('Angle brackets', '4 < 5 and 3 > 4', "<p>4 &lt; 5 and 3 > 4</p>\n"),
+			array('Ampersands', 'AT&T', "AT&T"),
+			array('HTML Entity', '&copy;', "&copy;"),
+			array('Angle brackets', '4 < 5 and 3 > 4', "4 &lt; 5 and 3 &gt; 4"),
 
 			// Links
 			// array('Link with title attribute', 'This is [an example](http://example.com/ "Title") inline link.', ""),
-			array('Link without title attribute', '[This link](http://example.net/) has no title attribute.', "<p><a href=\"http://example.net/\">This link</a> has no title attribute.</p>\n"),
-			array('Relative URLs', 'See my [About](/about/) page for details.', "<p>See my <a href=\"/about/\">About</a> page for details.</p>\n"),
-			array('Refernce style link', "This is [an example][id] reference-style link.\n\n[id]: http://example.com/  \"Optional Title Here\"\n", "<p>This is <a href=\"http://example.com/\" title=\"Optional Title Here\">an example</a> reference-style link.</p>\n"),
-			array('Refernce style link (with space)', "This is [an example] [id] reference-style link.\n\n[id]: http://example.com/  \"Optional Title Here\"\n", "<p>This is <a href=\"http://example.com/\" title=\"Optional Title Here\">an example</a> reference-style link.</p>\n"),
-			// array('Refernce style link (with single quote)', "This is [an example][id] reference-style link.\n\n[id]: http://example.com/  'Optional Title Here'", "<p>This is <a href=\"http://example.com/\" title=\"Optional Title Here\">an example</a> reference-style link.</p>\n"),
-			array('Refernce style link (with parenthesis)', "This is [an example][id] reference-style link.\n\n[id]: http://example.com/  (Optional Title Here)", "<p>This is <a href=\"http://example.com/\" title=\"Optional Title Here\">an example</a> reference-style link.</p>\n"),
-			array('Refernce style link (with angle brackets)', "This is [an example][id] reference-style link.\n\n[id]: <http://example.com/>  \"Optional Title Here\"\n", "<p>This is <a href=\"http://example.com/\" title=\"Optional Title Here\">an example</a> reference-style link.</p>\n"),
-			array('Refernce style link (with title on newline)', "This is [an example][id] reference-style link.\n\n[id]: http://example.com/\n\t\"Optional Title Here\"\n", "<p>This is <a href=\"http://example.com/\" title=\"Optional Title Here\">an example</a> reference-style link.</p>\n"),
-			array('Refernce style implicit link', "Visit [Daring Fireball][] for more information.\n\n[Daring Fireball]: http://daringfireball.net/", "<p>Visit <a href=\"http://daringfireball.net/\">Daring Fireball</a> for more information.</p>\n"),
-			array('Automatic link', '<http://example.com>', '<p><a href="http://example.com">http://example.com</a></p>' . "\n"),
-			array('Automatic email ink', '<address@example.com>', '<p><a href="&#109;&#x61;&#x69;&#108;&#x74;&#x6f;&#58;&#x61;&#x64;&#100;&#114;&#x65;&#115;&#115;&#x40;&#101;&#120;&#x61;m&#112;&#x6c;e&#46;&#x63;&#x6f;&#109;">&#x61;&#x64;&#100;&#114;&#x65;&#115;&#115;&#x40;&#101;&#120;&#x61;m&#112;&#x6c;e&#46;&#x63;&#x6f;&#109;</a></p>' . "\n"),
+			array('Link without title attribute', '[This link](http://example.net/) has no title attribute.', '[This link](http://example.net/) has no title attribute.'),
+			array('Relative URLs', 'See my [About](/about/) page for details.', 'See my [About](/about/) page for details.'),
+			array('Refernce style link', "This is [an example][id] reference-style link.\n\n[id]: http://example.com/  \"Optional Title Here\"\n", "This is [an example][id] reference-style link.\n\n[id]: http://example.com/  \"Optional Title Here\"\n"),
+			array('Refernce style link (with space)', "This is [an example] [id] reference-style link.\n\n[id]: http://example.com/  \"Optional Title Here\"\n", "This is [an example] [id] reference-style link.\n\n[id]: http://example.com/  \"Optional Title Here\"\n"),
+			// array('Refernce style link (with single quote)', "This is [an example][id] reference-style link.\n\n[id]: http://example.com/  'Optional Title Here'", "This is <a href=\"http://example.com/\" title=\"Optional Title Here\">an example</a> reference-style link."),
+			array('Refernce style link (with parenthesis)', "This is [an example][id] reference-style link.\n\n[id]: http://example.com/  (Optional Title Here)", "This is [an example][id] reference-style link.\n\n[id]: http://example.com/  (Optional Title Here)"),
+			array('Refernce style link (with angle brackets)', "This is [an example][id] reference-style link.\n\n[id]: <http://example.com/>  \"Optional Title Here\"\n", "This is [an example][id] reference-style link.\n\n[id]: &lt;http://example.com/&gt;  \"Optional Title Here\"\n"),
+			array('Refernce style link (with title on newline)', "This is [an example][id] reference-style link.\n\n[id]: http://example.com/\n\t\"Optional Title Here\"\n", "This is [an example][id] reference-style link.\n\n[id]: http://example.com/\n\t\"Optional Title Here\"\n"),
+			array('Refernce style implicit link', "Visit [Daring Fireball][] for more information.\n\n[Daring Fireball]: http://daringfireball.net/", "Visit [Daring Fireball][] for more information.\n\n[Daring Fireball]: http://daringfireball.net/"),
+			array('Automatic link', '<http://example.com>', '&lt;http://example.com&gt;'),
+            // array('Automatic email ink', '<address@example.com>', '&lt;a&gt;'),
 
 			// Emphasis
-			array('Single asterisks', '*single asterisks*', "<p><em>single asterisks</em></p>\n"),
-			array('Single underscores', '_single underscores_', "<p><em>single underscores</em></p>\n"),
-			array('Double asterisks', '**double asterisks**', "<p><strong>double asterisks</strong></p>\n"),
-			array('Double underscores', '__double underscores__', "<p><strong>double underscores</strong></p>\n"),
-			array('Single asterisks in the middle of a word', 'un*frigging*believable', "<p>un<em>frigging</em>believable</p>\n"),
-			array('Double asterisks in the middle of a word', 'un**frigging**believable', "<p>un<strong>frigging</strong>believable</p>\n"),
-			array('Literal asterisk', '8 * 7 = 56', "<p>8 * 7 = 56</p>\n"),
-			array('Literal underscore', 'Literal _ underscore', "<p>Literal _ underscore</p>\n"),
-			array('Escaped asterisk', '\*this text is surrounded by literal asterisks\*', "<p>&#42;this text is surrounded by literal asterisks&#42;</p>\n"),
-			array('Escaped underscore', '\_this text is surrounded by literal asterisks\_', "<p>&#95;this text is surrounded by literal asterisks&#95;</p>\n"),
+			array('Single asterisks', '*single asterisks*', '*single asterisks*'),
+			array('Single underscores', '_single underscores_', '_single underscores_'),
+			array('Double asterisks', '**double asterisks**', '**double asterisks**'),
+			array('Double underscores', '__double underscores__', '__double underscores__'),
+			array('Single asterisks in the middle of a word', 'un*frigging*believable', 'un*frigging*believable'),
+			array('Double asterisks in the middle of a word', 'un**frigging**believable', 'un**frigging**believable'),
+			array('Literal asterisk', '8 * 7 = 56', '8 * 7 = 56'),
+			array('Literal underscore', 'Literal _ underscore', 'Literal _ underscore'),
+			array('Escaped asterisk', '\*this text is surrounded by literal asterisks\*', '\*this text is surrounded by literal asterisks\*'),
+			array('Escaped underscore', '\_this text is surrounded by literal asterisks\_', '\_this text is surrounded by literal asterisks\_'),
 
 			// Code
-			array('Span of code', 'Use the `printf()` function.', "<p>Use the <code>printf()</code> function.</p>\n"),
-			array('Literal backtick', '``There is a literal backtick (`) here.``', "<p><code>There is a literal backtick (`) here.</code></p>\n"),
-			array('Encoded angle brackets inside code span', "Please don't use any `<blink>` tags.", "<p>Please don&#8217;t use any <code>&lt;blink&gt;</code> tags.</p>\n"),
-			array('Encoded ampersands inside code span', '`&#8212;` is the decimal-encoded equivalent of `&mdash;`.', "<p><code>&amp;#8212;</code> is the decimal-encoded equivalent of <code>&amp;mdash;</code>.</p>\n"),
+			array('Span of code', 'Use the `printf()` function.', 'Use the `printf()` function.'),
+			array('Literal backtick', '``There is a literal backtick (`) here.``', '``There is a literal backtick (`) here.``'),
+			array('Encoded angle brackets inside code span', "Please don't use any `<blink>` tags.", "Please don't use any `&lt;blink&gt;` tags."),
+			array('Encoded ampersands inside code span', '`&#8212;` is the decimal-encoded equivalent of `&mdash;`.', '`&#8212;` is the decimal-encoded equivalent of `&mdash;`.'),
 
 			// Images
-			array('Image tag', '![Alt text](/path/to/img.jpg)', "<p><img src=\"/path/to/img.jpg\" alt=\"Alt text\" /></p>\n"),
-			// array('Image tag with title', '![Alt text](/path/to/img.jpg "Optional title")', "\n"),
-			array('Reference style image tag', "![Alt text][id]\n\n[id]: url/to/image  \"Optional title attribute\"\n", "<p><img src=\"url/to/image\" alt=\"Alt text\" title=\"Optional title attribute\" /></p>\n"),
+			array('Image tag', '![Alt text](/path/to/img.jpg)', '![Alt text](/path/to/img.jpg)'),
+			// array('Image tag with title', '![Alt text](/path/to/img.jpg "Optional title")', ""),
+			array('Reference style image tag', "![Alt text][id]\n\n[id]: url/to/image  \"Optional title attribute\"\n", "![Alt text][id]\n\n[id]: url/to/image  \"Optional title attribute\"\n"),
 
 			// Escapes
-			array('Escaped backslash', '\\\\', "<p>&#92;</p>\n"),
-			array('Escaped backtick', '\`', "<p>&#96;</p>\n"),
-			array('Escaped asterisk', '\*', "<p>&#42;</p>\n"),
-			array('Escaped underscore', '\_', "<p>&#95;</p>\n"),
-			array('Escaped curly braces', '\{\}', "<p>&#123;&#125;</p>\n"),
-			array('Escaped square brackets', '\[\]', "<p>&#91;&#93;</p>\n"),
-			array('Escaped parentheses', '\(\)', "<p>&#40;&#41;</p>\n"),
-			array('Escaped hash mark', '\#', "<p>&#35;</p>\n"),
-			array('Escaped plus sign', '\+', "<p>&#43;</p>\n"),
-			array('Escaped hyphen', '\-', "<p>&#45;</p>\n"),
-			array('Escaped dot', '\.', "<p>&#46;</p>\n"),
-			array('Escaped exclamation mark', '\!', "<p>&#33;</p>\n"),
+			array('Escaped backslash', '\\\\', "\\\\"),
+			array('Escaped backtick', '\`', "\`"),
+			array('Escaped asterisk', '\*', "\*"),
+			array('Escaped underscore', '\_', "\_"),
+			array('Escaped curly braces', '\{\}', "\&#123;\&#125;"),
+			array('Escaped square brackets', '\[\]', "\[\]"),
+			array('Escaped parentheses', '\(\)', "\(\)"),
+			array('Escaped hash mark', '\#', "\#"),
+			array('Escaped plus sign', '\+', "\+"),
+			array('Escaped hyphen', '\-', "\-"),
+			array('Escaped dot', '\.', "\."),
+			array('Escaped exclamation mark', '\!', "\!"),
 
 			// Horizontal rules
-			array('HR by "* * *"', '* * *', "<hr />\n"),
-			array('HR by "***"', '***', "<hr />\n"),
-			array('HR by "*****"', '*****', "<hr />\n"),
-			array('HR by "---"', '---', "<hr />\n"),
-			array('HR by "- - -"', '- - -', "<hr />\n"),
-			array('HR by "-----"', '-----', "<hr />\n"),
-			array('HR by "___"', '___', "<hr />\n"),
-			array('HR by "_ _ _"', '_ _ _', "<hr />\n"),
-			array('HR by "_____"', '_____', "<hr />\n"),
+			array('HR by "* * *"', '* * *', '* * *'),
+			array('HR by "***"', '***', '***'),
+			array('HR by "*****"', '*****', '*****'),
+			array('HR by "---"', '---', '---'),
+			array('HR by "- - -"', '- - -', '- - -'),
+			array('HR by "-----"', '-----', '-----'),
+			array('HR by "___"', '___', '___'),
+			array('HR by "_ _ _"', '_ _ _', '_ _ _'),
+			array('HR by "_____"', '_____', '_____'),
 
 			// Headers
-			array('# H1', '# This is an H1', "<h1>This is an H1</h1>\n"),
-			array('## H2', '## This is an H2', "<h2>This is an H2</h2>\n"),
-			array('### H3', '### This is an H3', "<h3>This is an H3</h3>\n"),
-			array('#### H4', '#### This is an H4', "<h4>This is an H4</h4>\n"),
-			array('##### H5', '##### This is an H5', "<h5>This is an H5</h5>\n"),
-			array('###### H6', '###### This is an H6', "<h6>This is an H6</h6>\n"),
-			array('# H1 #', '# This is an H1 #', "<h1>This is an H1</h1>\n"),
-			array('## H2 ##', '## This is an H2 ##', "<h2>This is an H2</h2>\n"),
-			array('### H3 ###', '### This is an H3 ###', "<h3>This is an H3</h3>\n"),
-			array('#### H4 ####', '#### This is an H4 ####', "<h4>This is an H4</h4>\n"),
-			array('##### H5 #####', '##### This is an H5 #####', "<h5>This is an H5</h5>\n"),
-			array('###### H6 ######', '###### This is an H6 ######', "<h6>This is an H6</h6>\n"),
-			array('H1 by underscore', "This is an H1\n=============", "<h1>This is an H1</h1>\n"),
-			array('H2 by underscore', "This is an H2\n-------------", "<h2>This is an H2</h2>\n"),
+			array('# H1', '# This is an H1', '# This is an H1'),
+			array('## H2', '## This is an H2', '## This is an H2'),
+			array('### H3', '### This is an H3', '### This is an H3'),
+			array('#### H4', '#### This is an H4', '#### This is an H4'),
+			array('##### H5', '##### This is an H5', '##### This is an H5'),
+			array('###### H6', '###### This is an H6', '###### This is an H6'),
+			array('# H1 #', '# This is an H1 #', '# This is an H1 #'),
+			array('## H2 ##', '## This is an H2 ##', '## This is an H2 ##'),
+			array('### H3 ###', '### This is an H3 ###', '### This is an H3 ###'),
+			array('#### H4 ####', '#### This is an H4 ####', '#### This is an H4 ####'),
+			array('##### H5 #####', '##### This is an H5 #####', '##### This is an H5 #####'),
+			array('###### H6 ######', '###### This is an H6 ######', '###### This is an H6 ######'),
+			array('H1 by underscore', "This is an H1\n=============", "This is an H1\n============="),
+			array('H2 by underscore', "This is an H2\n-------------", "This is an H2\n-------------"),
 
+			/* @TODO alter the expectation...
 			// Blockquotes
-			array('Email style blockquote', $this->getContentForMarkup('email-style-blockquote.in.md'), $this->getContentForMarkup('email-style-blockquote.out.md')),
-			array('Lazy style blockquote', $this->getContentForMarkup('lazy-style-blockquote.in.md'), $this->getContentForMarkup('lazy-style-blockquote.out.md')),
-			array('Nested blockquotes', $this->getContentForMarkup('nested-blockquotes.in.md'), $this->getContentForMarkup('nested-blockquotes.out.md')),
-			array('Markdown inside blockquote', $this->getContentForMarkup('markdown-in-blockquote.in.md'), $this->getContentForMarkup('markdown-in-blockquote.out.md')),
+			array('Email style blockquote', $this->getContentForMarkup('email-style-blockquote.in.md'), $this->getContentForMarkup('email-style-blockquote.in.md')),
+			array('Lazy style blockquote', $this->getContentForMarkup('lazy-style-blockquote.in.md'), $this->getContentForMarkup('lazy-style-blockquote.in.md')),
+			array('Nested blockquotes', $this->getContentForMarkup('nested-blockquotes.in.md'), $this->getContentForMarkup('nested-blockquotes.in.md')),
+			array('Markdown inside blockquote', $this->getContentForMarkup('markdown-in-blockquote.in.md'), $this->getContentForMarkup('markdown-in-blockquote.in.md')),
 
 			// Lists
-			array('List by asterisk', $this->getContentForMarkup('list-by-asterisk.in.md'), $this->getContentForMarkup('list-by-asterisk.out.md')),
-			array('List by plus', $this->getContentForMarkup('list-by-plus.in.md'), $this->getContentForMarkup('list-by-plus.out.md')),
-			array('List by hyphen', $this->getContentForMarkup('list-by-hyphen.in.md'), $this->getContentForMarkup('list-by-hyphen.out.md')),
-			array('Ordered list', $this->getContentForMarkup('ordered-list.in.md'), $this->getContentForMarkup('ordered-list.out.md')),
-			array('Wrapped lists', $this->getContentForMarkup('wrapped-lists.in.md'), $this->getContentForMarkup('wrapped-lists.out.md')),
-			array('Lists with paragraph tags', $this->getContentForMarkup('lists-with-paragraph-tags.in.md'), $this->getContentForMarkup('lists-with-paragraph-tags.out.md')),
-			array('Lists with paragraphs', $this->getContentForMarkup('lists-with-paragraphs.in.md'), $this->getContentForMarkup('lists-with-paragraphs.out.md')),
-			array('Lists with blockquotes', $this->getContentForMarkup('lists-with-blockquotes.in.md'), $this->getContentForMarkup('lists-with-blockquotes.out.md')),
-			array('Lists with code blocks', $this->getContentForMarkup('lists-with-code-blocks.in.md'), $this->getContentForMarkup('lists-with-code-blocks.out.md')),
-			array('Not a list', '1986\. What a great season.', "<p>1986&#46; What a great season.</p>\n"),
+			array('List by asterisk', $this->getContentForMarkup('list-by-asterisk.in.md'), $this->getContentForMarkup('list-by-asterisk.in.md')),
+			array('List by plus', $this->getContentForMarkup('list-by-plus.in.md'), $this->getContentForMarkup('list-by-plus.in.md')),
+			array('List by hyphen', $this->getContentForMarkup('list-by-hyphen.in.md'), $this->getContentForMarkup('list-by-hyphen.in.md')),
+			array('Ordered list', $this->getContentForMarkup('ordered-list.in.md'), $this->getContentForMarkup('ordered-list.in.md')),
+			array('Wrapped lists', $this->getContentForMarkup('wrapped-lists.in.md'), $this->getContentForMarkup('wrapped-lists.in.md')),
+			array('Lists with paragraph tags', $this->getContentForMarkup('lists-with-paragraph-tags.in.md'), $this->getContentForMarkup('lists-with-paragraph-tags.in.md')),
+			array('Lists with paragraphs', $this->getContentForMarkup('lists-with-paragraphs.in.md'), $this->getContentForMarkup('lists-with-paragraphs.in.md')),
+			array('Lists with blockquotes', $this->getContentForMarkup('lists-with-blockquotes.in.md'), $this->getContentForMarkup('lists-with-blockquotes.in.md')),
+			array('Lists with code blocks', $this->getContentForMarkup('lists-with-code-blocks.in.md'), $this->getContentForMarkup('lists-with-code-blocks.in.md')),
+			array('Not a list', '1986\. What a great season.', "1986&#46; What a great season."),
 
 			// Code blocks
-			array('Code block by 4 spaces', $this->getContentForMarkup('codeblock-by-4-spaces.in.md'), $this->getContentForMarkup('codeblock-by-4-spaces.out.md')),
-			array('Code block by 5 spaces', $this->getContentForMarkup('codeblock-by-5-spaces.in.md'), $this->getContentForMarkup('codeblock-by-5-spaces.out.md')),
-			array('Code block by 1 tab', $this->getContentForMarkup('codeblock-by-1-tab.in.md'), $this->getContentForMarkup('codeblock-by-1-tab.out.md')),
-			array('Code block by 2 tabs', $this->getContentForMarkup('codeblock-by-2-tabs.in.md'), $this->getContentForMarkup('codeblock-by-2-tabs.out.md')),
-			array('Code block with encoded ampersands', $this->getContentForMarkup('codeblock-with-encoded-ampersands.in.md'), $this->getContentForMarkup('codeblock-with-encoded-ampersands.out.md')),
-			array('Code block with encoded angle brackets', $this->getContentForMarkup('codeblock-with-encoded-angle-brackets.in.md'), $this->getContentForMarkup('codeblock-with-encoded-angle-brackets.out.md')),
+			array('Code block by 4 spaces', $this->getContentForMarkup('codeblock-by-4-spaces.in.md'), $this->getContentForMarkup('codeblock-by-4-spaces.in.md')),
+			array('Code block by 5 spaces', $this->getContentForMarkup('codeblock-by-5-spaces.in.md'), $this->getContentForMarkup('codeblock-by-5-spaces.in.md')),
+			array('Code block by 1 tab', $this->getContentForMarkup('codeblock-by-1-tab.in.md'), $this->getContentForMarkup('codeblock-by-1-tab.in.md')),
+			array('Code block by 2 tabs', $this->getContentForMarkup('codeblock-by-2-tabs.in.md'), $this->getContentForMarkup('codeblock-by-2-tabs.in.md')),
+			array('Code block with encoded ampersands', $this->getContentForMarkup('codeblock-with-encoded-ampersands.in.md'), $this->getContentForMarkup('codeblock-with-encoded-ampersands.in.md')),
+			array('Code block with encoded angle brackets', $this->getContentForMarkup('codeblock-with-encoded-angle-brackets.in.md'), $this->getContentForMarkup('codeblock-with-encoded-angle-brackets.in.md')),
+			*/
 		);
 
-		return array_merge($data, $this->markdownExtraData());
+		return array_merge($data, $this->unprocessedMarkdownExtraData());
 	}
 
-	protected function markdownExtraData()
+	protected function unprocessedMarkdownExtraData()
 	{
 		return array(
-			array('Markdown inside HTML blocks', $this->getContentForMarkup('markdown-inside-html-blocks.in.md'), $this->getContentForMarkup('markdown-inside-html-blocks.out.md')),
+			// array('Markdown inside HTML blocks', $this->getContentForMarkup('markdown-inside-html-blocks.in.md'), $this->getContentForMarkup('markdown-inside-html-blocks.out.md')),
 
 			// Special Attributes
-			array('Header: ID', '## Header 2 {#header2}', "<h2 id=\"header2\">Header 2</h2>\n"),
-			array('Header: Class names', '## Header 2 {.main}', "<h2 class=\"main\">Header 2</h2>\n"),
-			array('Header: Custom attributes', '## Le Header 2 {lang=fr}', "<h2 lang=\"fr\">Le Header 2</h2>\n"),
-			array('Header: Multiple attributes', '## Le Header 2 {.main .shine lang=fr #header2}', "<h2 id=\"header2\" class=\"main shine\" lang=\"fr\">Le Header 2</h2>\n"),
-			array('Link: ID', '[link](/url){#header2}', "<p><a href=\"/url\" title=\"\" id=\"header2\">link</a></p>\n"),
-			array('Link: Class names', '[link](/url){.main}', "<p><a href=\"/url\" title=\"\" class=\"main\">link</a></p>\n"),
-			array('Link: Custom attributes', '[link](/url){lang=fr}', "<p><a href=\"/url\" title=\"\" lang=\"fr\">link</a></p>\n"),
-			array('Link: Multiple attributes', '[link](/url){.main .shine lang=fr #header2}', "<p><a href=\"/url\" title=\"\" id=\"header2\" class=\"main shine\" lang=\"fr\">link</a></p>\n"),
-			array('Reference Link: ID', "[link][linkref]\n\n[linkref]: /url {#header2}", "<p><a href=\"/url\" title=\"\" id=\"header2\">link</a></p>\n"),
-			array('Reference Link: Class names', "[link][linkref]\n\n[linkref]: /url {.main}", "<p><a href=\"/url\" title=\"\" class=\"main\">link</a></p>\n"),
-			array('Reference Link: Custom attributes', "[link][linkref]\n\n[linkref]: /url {lang=fr}", "<p><a href=\"/url\" title=\"\" lang=\"fr\">link</a></p>\n"),
-			array('Reference Link: Multiple attributes', "[link][linkref]\n\n[linkref]: /url {.main .shine lang=fr #header2}", "<p><a href=\"/url\" title=\"\" id=\"header2\" class=\"main shine\" lang=\"fr\">link</a></p>\n"),
-			array('Image: ID', '![link](/url){#header2}', "<p><img src=\"/url\" alt=\"link\" title=\"\" id=\"header2\" /></p>\n"),
-			array('Image: Class names', '![link](/url){.main}', "<p><img src=\"/url\" alt=\"link\" title=\"\" class=\"main\" /></p>\n"),
-			array('Image: Custom attributes', '![link](/url){lang=fr}', "<p><img src=\"/url\" alt=\"link\" title=\"\" lang=\"fr\" /></p>\n"),
-			array('Image: Multiple attributes', '![link](/url){.main .shine lang=fr #header2}', "<p><img src=\"/url\" alt=\"link\" title=\"\" id=\"header2\" class=\"main shine\" lang=\"fr\" /></p>\n"),
-			array('Fenced code block: ID', "~~~ {#header2}\ncode block\n~~~\n", "<pre><code id=\"header2\">code block\n</code></pre>\n"),
-			array('Fenced code block: Class names', "~~~ {.main}\ncode block\n~~~\n", "<pre><code class=\"main\">code block\n</code></pre>\n"),
-			array('Fenced code block: Custom attributes', "~~~ {lang=fr}\ncode block\n~~~\n", "<pre><code lang=\"fr\">code block\n</code></pre>\n"),
-			array('Fenced code block: Multiple attributes', "~~~ {.main .shine lang=fr #header2}\ncode block\n~~~\n", "<pre><code id=\"header2\" class=\"main shine\" lang=\"fr\">code block\n</code></pre>\n"),
+			array('Header: ID', '## Header 2 {#header2}', '## Header 2 &#123;#header2&#125;'),
+			array('Header: Class names', '## Header 2 {.main}', '## Header 2 &#123;.main&#125;'),
+			array('Header: Custom attributes', '## Le Header 2 {lang=fr}', '## Le Header 2 &#123;lang=fr&#125;'),
+			array('Header: Multiple attributes', '## Le Header 2 {.main .shine lang=fr #header2}', '## Le Header 2 &#123;.main .shine lang=fr #header2&#125;'),
+			array('Link: ID', '[link](/url){#header2}', '[link](/url)&#123;#header2&#125;'),
+			array('Link: Class names', '[link](/url){.main}', '[link](/url)&#123;.main&#125;'),
+			array('Link: Custom attributes', '[link](/url){lang=fr}', '[link](/url)&#123;lang=fr&#125;'),
+			array('Link: Multiple attributes', '[link](/url){.main .shine lang=fr #header2}', '[link](/url)&#123;.main .shine lang=fr #header2&#125;'),
+			array('Reference Link: ID', "[link][linkref]\n\n[linkref]: /url {#header2}", "[link][linkref]\n\n[linkref]: /url &#123;#header2&#125;"),
+			array('Reference Link: Class names', "[link][linkref]\n\n[linkref]: /url {.main}", "[link][linkref]\n\n[linkref]: /url &#123;.main&#125;"),
+			array('Reference Link: Custom attributes', "[link][linkref]\n\n[linkref]: /url {lang=fr}", "[link][linkref]\n\n[linkref]: /url &#123;lang=fr&#125;"),
+			array('Reference Link: Multiple attributes', "[link][linkref]\n\n[linkref]: /url {.main .shine lang=fr #header2}", "[link][linkref]\n\n[linkref]: /url &#123;.main .shine lang=fr #header2&#125;"),
+			array('Image: ID', '![link](/url){#header2}', '![link](/url)&#123;#header2&#125;'),
+			array('Image: Class names', '![link](/url){.main}', '![link](/url)&#123;.main&#125;'),
+			array('Image: Custom attributes', '![link](/url){lang=fr}', '![link](/url)&#123;lang=fr&#125;'),
+			array('Image: Multiple attributes', '![link](/url){.main .shine lang=fr #header2}', '![link](/url)&#123;.main .shine lang=fr #header2&#125;'),
+			array('Fenced code block: ID', "~~~ {#header2}\ncode block\n~~~\n", "~~~ &#123;#header2&#125;\ncode block\n~~~\n"),
+			array('Fenced code block: Class names', "~~~ {.main}\ncode block\n~~~\n", "~~~ &#123;.main&#125;\ncode block\n~~~\n"),
+			array('Fenced code block: Custom attributes', "~~~ {lang=fr}\ncode block\n~~~\n", "~~~ &#123;lang=fr&#125;\ncode block\n~~~\n"),
+			array('Fenced code block: Multiple attributes', "~~~ {.main .shine lang=fr #header2}\ncode block\n~~~\n", "~~~ &#123;.main .shine lang=fr #header2&#125;\ncode block\n~~~\n"),
 
+			/*
 			// Fenced Code Blocks
 			array('Fenced code block by 3 tildes', $this->getContentForMarkup('codeblock-by-3-tildes.in.md'), $this->getContentForMarkup('codeblock-by-3-tildes.out.md')),
 			array('Fenced code block by 4 tildes', $this->getContentForMarkup('codeblock-by-4-tildes.in.md'), $this->getContentForMarkup('codeblock-by-4-tildes.out.md')),
@@ -1011,14 +993,15 @@ class NoneNoneTest extends \PHPUnit_Framework_TestCase {
 			array('Footnote with multiple paragraphs', $this->getContentForMarkup('footnote-with-multiple-paragraphs.in.md'), $this->getContentForMarkup('footnote-with-multiple-paragraphs.out.md')),
 
 			// Abbreviations
-			array('Abbreviation definition first', "*[HTML]: Hyper Text Markup Language\n\nThe HTML specification", "<p>The <abbr title=\"Hyper Text Markup Language\">HTML</abbr> specification</p>\n"),
-			array('Abbreviation definition middle', "The HTML specification\n\n*[HTML]: Hyper Text Markup Language\n\nis dry", "<p>The <abbr title=\"Hyper Text Markup Language\">HTML</abbr> specification</p>\n\n<p>is dry</p>\n"),
-			array('Abbreviation definition last', "The HTML specification\n\n*[HTML]: Hyper Text Markup Language", "<p>The <abbr title=\"Hyper Text Markup Language\">HTML</abbr> specification</p>\n"),
-			array('Multiword abbreviation', "*[Foo Bar]: Fubar\n\nI saw a Foo Bar once", "<p>I saw a <abbr title=\"Fubar\">Foo Bar</abbr> once</p>\n"),
-			array('Empty abbreviateion', "Operation Tigra Genesis is going well.\n\n*[Tigra Genesis]:", "<p>Operation <abbr>Tigra Genesis</abbr> is going well.</p>\n"),
+			array('Abbreviation definition first', "*[HTML]: Hyper Text Markup Language\n\nThe HTML specification", "The <abbr title=\"Hyper Text Markup Language\">HTML</abbr> specification\n"),
+			array('Abbreviation definition middle', "The HTML specification\n\n*[HTML]: Hyper Text Markup Language\n\nis dry", "The <abbr title=\"Hyper Text Markup Language\">HTML</abbr> specification\n\nis dry\n"),
+			array('Abbreviation definition last', "The HTML specification\n\n*[HTML]: Hyper Text Markup Language", "The <abbr title=\"Hyper Text Markup Language\">HTML</abbr> specification\n"),
+			array('Multiword abbreviation', "*[Foo Bar]: Fubar\n\nI saw a Foo Bar once", "I saw a <abbr title=\"Fubar\">Foo Bar</abbr> once\n"),
+			array('Empty abbreviateion', "Operation Tigra Genesis is going well.\n\n*[Tigra Genesis]:", "Operation <abbr>Tigra Genesis</abbr> is going well.\n"),
+			*/
 
-			array('Single underscores in the middle of a word', 'un_frigging_believable', "<p>un_frigging_believable</p>\n"),
-			array('Double underscores in the middle of a word', 'un__frigging__believable', "<p>un__frigging__believable</p>\n"),
+			array('Single underscores in the middle of a word', 'un_frigging_believable', "un_frigging_believable"),
+			array('Double underscores in the middle of a word', 'un__frigging__believable', "un__frigging__believable"),
 		);
 	}
 
