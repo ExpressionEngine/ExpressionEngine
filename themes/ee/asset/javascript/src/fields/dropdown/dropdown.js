@@ -154,19 +154,9 @@ var Dropdown = function (_React$Component) {
             this.state.items.length == 0 && React.createElement(NoResults, { text: this.props.noResults }),
             this.state.loading && React.createElement(Loading, { text: EE.lang.loading }),
             this.state.items.map(function (item) {
-              return React.createElement(
-                'label',
-                { key: item.value, onClick: function onClick(e) {
-                    return _this2.selectionChanged(item);
-                  } },
-                item.label,
-                ' ',
-                item.instructions && React.createElement(
-                  'i',
-                  null,
-                  item.instructions
-                )
-              );
+              return React.createElement(DropdownItem, { key: item.value ? item.value : item.section, item: item, onClick: function onClick(e) {
+                  return _this2.selectionChanged(item);
+                } });
             })
           )
         )
@@ -185,6 +175,30 @@ var Dropdown = function (_React$Component) {
 
   return Dropdown;
 }(React.Component);
+
+function DropdownItem(props) {
+  var item = props.item;
+
+  if (item.section) {
+    return React.createElement(
+      'div',
+      { className: 'field-group-head' },
+      item.section
+    );
+  }
+
+  return React.createElement(
+    'label',
+    { onClick: props.onClick },
+    item.label,
+    ' ',
+    item.instructions && React.createElement(
+      'i',
+      null,
+      item.instructions
+    )
+  );
+}
 
 $(document).ready(function () {
   Dropdown.renderFields();

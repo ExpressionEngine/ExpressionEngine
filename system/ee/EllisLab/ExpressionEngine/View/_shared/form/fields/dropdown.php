@@ -3,7 +3,7 @@ $too_many = 8;
 
 $component = [
 	'name' => $field_name,
-	'items' => $choices,
+	'items' => ee('View/Helpers')->normalizedChoices($choices),
 	'selected' => $value,
 	'disabled' => isset($disabled) ? $disabled : FALSE,
 	'tooMany' => $too_many,

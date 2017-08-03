@@ -126,15 +126,31 @@ class Dropdown extends React.Component {
               <Loading text={EE.lang.loading} />
             }
             {this.state.items.map((item) =>
-              <label key={item.value} onClick={(e) => this.selectionChanged(item)}>
-                {item.label} {item.instructions && <i>{item.instructions}</i>}
-              </label>
+              <DropdownItem key={item.value ? item.value : item.section} item={item} onClick={(e) => this.selectionChanged(item)} />
             )}
           </div>
         </div>
       </div>
     )
   }
+}
+
+function DropdownItem (props) {
+  var item = props.item
+
+  if (item.section) {
+    return (
+      <div className="field-group-head">
+        {item.section}
+      </div>
+    )
+  }
+
+  return (
+    <label onClick={props.onClick}>
+      {item.label} {item.instructions && <i>{item.instructions}</i>}
+    </label>
+  )
 }
 
 $(document).ready(function () {
