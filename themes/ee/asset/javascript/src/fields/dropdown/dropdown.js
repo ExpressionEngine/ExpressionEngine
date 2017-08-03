@@ -100,7 +100,7 @@ var Dropdown = function (_React$Component) {
     key: 'getItemForSelectedValue',
     value: function getItemForSelectedValue(value) {
       return this.initialItems.find(function (item) {
-        return item.value == value;
+        return String(item.value) == String(value);
       });
     }
   }, {

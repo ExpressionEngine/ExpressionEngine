@@ -60,7 +60,7 @@ class Dropdown extends React.Component {
 
   getItemForSelectedValue (value) {
     return this.initialItems.find(item => {
-      return item.value == value
+      return String(item.value) == String(value)
     })
   }
 
