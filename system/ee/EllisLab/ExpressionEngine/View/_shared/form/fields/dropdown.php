@@ -22,12 +22,5 @@ $component = [
 				<i><?=$empty_text?></i>
 			</label>
 		</div>
-		<div class="field-drop-choices">
-			<div class="field-inputs">
-				<label class="field-loading">
-					<?=lang('loading')?><span></span>
-				</label>
-			</div>
-		</div>
 	</div>
 </div>
