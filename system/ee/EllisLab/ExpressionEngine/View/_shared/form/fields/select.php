@@ -3,91 +3,11 @@ $too_many = 8;
 
 if (count($choices) == 0) return;
 
-if ( ! function_exists('normalizedChoices'))
-{
-	function normalizedChoices($choices, $disable_headings)
-	{
-		$return_array = [];
-		foreach ($choices as $value => $label)
-		{
-			if ( ! $disable_headings && is_array($label) && is_string($value))
-			{
-				$return_array[] = ['section' => $value];
-				$return_array = array_merge($return_array, normalizedChoices($label, $disable_headings));
-				continue;
-			}
-
-			$choice = [
-				'value' => $value,
-				'label' => $label,
-				'instructions' => isset($label['instructions']) ? $label['instructions'] : ''
-			];
-
-			if (isset($label['label'])) $choice['label'] = $label['label'];
-			if (isset($label['value'])) $choice['value'] = $label['value'];
-			if (isset($label['name'])) $choice['label'] = $label['name'];
-
-			if (isset($label['children']))
-			{
-				$choice['children'] = normalizedChoices($label['children'], $disable_headings);
-			}
-
-			$return_array[] = $choice;
-		}
-
-		return $return_array;
-	}
-}
-
-if ( ! function_exists('findLabelForValue'))
-{
-	function findLabelForValue($value, $choices)
-	{
-		foreach ($choices as $choice)
-		{
-			if (isset($choice['value']) && $value == $choice['value'])
-			{
-				return $choice['label'];
-			}
-
-			if (isset($choice['children']))
-			{
-				$label = findLabelForValue($value, $choice['children']);
-				if ($label)
-				{
-					return $label;
-				}
-			}
-		}
-
-		return FALSE;
-	}
-}
-
-// Get total number of choices including children
-if ( ! function_exists('countChoices'))
-{
-	function countChoices($choices)
-	{
-		$count = 0;
-		foreach ($choices as $choice)
-		{
-			$count += 1;
-			if (isset($choice['children']))
-			{
-				$count += countChoices($choice['children']);
-			}
-		}
-
-		return $count;
-	}
-}
-
 $nested = isset($nested) ? $nested : FALSE;
 
 // Normalize choices into an array to keep order of items, order cannot be
 // counted on in a JavaScript object
-$normalized_choices = normalizedChoices($choices, $nested);
+$normalized_choices = ee('View/Helpers')->normalizedChoices($choices, $nested);
 
 $has_groupings = FALSE;
 foreach ($normalized_choices as $key => $choice)
@@ -103,7 +23,7 @@ foreach ($normalized_choices as $key => $choice)
 }
 
 // If it's a small list, just render it server-side
-if (countChoices($normalized_choices) <= $too_many && ! $nested && ! $has_groupings):
+if (ee('View/Helpers')->countChoices($normalized_choices) <= $too_many && ! $nested && ! $has_groupings):
 	// For radios with no value, set value to first choice
 	if ( ! $multi && ! $value) {
 		$keys = array_keys($choices);
@@ -135,7 +55,7 @@ if (countChoices($normalized_choices) <= $too_many && ! $nested && ! $has_groupi
 else:
 	if ($value && ! is_array($value) && ! $multi)
 	{
-		$label = findLabelForValue($value, $normalized_choices);
+		$label = ee('View/Helpers')->findLabelForValue($value, $normalized_choices);
 		$value = [$value => $label];
 	}
 	elseif ($multi && ! is_array($value))
