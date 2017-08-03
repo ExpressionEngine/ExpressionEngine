@@ -162,16 +162,16 @@ class Text extends Formatter {
 	/**
 	 * Encode ExpressionEngine Tags. By default encodes all curly braces so variables are also protected.
 	 *
-	 * @param  array  $options Options: (bool) convert_curly
+	 * @param  array  $options Options: (bool) encode_vars
 	 * @return self This returns a reference to itself
 	 */
 	public function encodeEETags($options = [])
 	{
-		$convert_curly = (isset($options['convert_curly'])) ? $options['convert_curly'] : TRUE;
+		$encode_vars = (isset($options['encode_vars'])) ? $options['encode_vars'] : TRUE;
 
 		if ($this->content != '' && strpos($this->content, '{') !== FALSE)
 		{
-			if ($convert_curly === TRUE)
+			if ($encode_vars === TRUE)
 			{
 				$this->content = str_replace(array('{', '}'), array('&#123;', '&#125;'), $this->content);
 			}

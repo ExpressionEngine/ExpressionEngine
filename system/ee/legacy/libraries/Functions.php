@@ -265,7 +265,7 @@ class EE_Functions {
 	 */
 	public function encode_ee_tags($str, $convert_curly = FALSE)
 	{
-		return (string) ee('Format')->make('Text', $str)->encodeEETags(['convert_curly' => $convert_curly]);
+		return (string) ee('Format')->make('Text', $str)->encodeEETags(['encode_vars' => $convert_curly]);
 	}
 
 	/**
