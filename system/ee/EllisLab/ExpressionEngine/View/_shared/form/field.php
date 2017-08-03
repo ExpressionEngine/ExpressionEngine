@@ -93,6 +93,7 @@ if ($field['type'] == 'checkbox' && ! $value) $value = [];
 		'attrs' => $attrs,
 		'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : NULL,
 		'auto_select_parents' => isset($field['auto_select_parents']) ? $field['auto_select_parents'] : FALSE,
+		'encode' => isset($field['encode']) ? $field['encode'] : TRUE,
 	]); ?>
 <?php break;
 

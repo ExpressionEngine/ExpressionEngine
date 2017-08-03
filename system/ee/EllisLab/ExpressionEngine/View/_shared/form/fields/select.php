@@ -4,6 +4,7 @@ $too_many = 8;
 if (count($choices) == 0) return;
 
 $nested = isset($nested) ? $nested : FALSE;
+$encode = isset($encode) ? $encode : TRUE;
 
 // Normalize choices into an array to keep order of items, order cannot be
 // counted on in a JavaScript object
@@ -35,10 +36,13 @@ if (ee('View/Helpers')->countChoices($normalized_choices) <= $too_many && ! $nes
 		<div class="field-inputs">
 			<?php foreach ($choices as $key => $choice):
 				$label = isset($choice['label']) ? $choice['label'] : $choice;
-				$label = ee('Format')->make('Text', lang($label))->convertToEntities();
-				$instructions = isset($choice['instructions'])
-					? ee('Format')->make('Text', $choice['instructions'])->convertToEntities()
-					: NULL;
+				$key = isset($choice['value']) ? $choice['value'] : $key;
+				$instructions = isset($choice['instructions']) ? $choice['instructions'] : NULL;
+				if ($encode)
+				{
+					$label = ee('Format')->make('Text', lang($label))->convertToEntities();
+					$instructions = ee('Format')->make('Text', $instructions)->convertToEntities();
+				}
 				$checked = ((is_bool($value) && get_bool_from_string($key) === $value)
 					OR ( is_array($value) && in_array($key, $value))
 					OR ( ! is_bool($value) && $key == $value)); ?>

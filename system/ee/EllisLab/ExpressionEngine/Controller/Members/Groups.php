@@ -766,7 +766,8 @@ class Groups extends Members\Members {
 									'can_view_online_system' => lang('can_view_online_system'),
 									'can_view_offline_system' => lang('can_view_offline_system')
 								),
-								'value' => element('website_access', $values)
+								'value' => element('website_access', $values),
+								'encode' => FALSE
 							),
 						)
 					),
@@ -973,11 +974,13 @@ class Groups extends Members\Members {
 										form_dropdown('cp_homepage_channel', $allowed_channels, element('cp_homepage_channel', $values)),
 									'custom' => lang('custom_uri'),
 								),
-								'value' => element('cp_homepage', $values, 'overview')
+								'value' => element('cp_homepage', $values, 'overview'),
+								'encode' => FALSE
 							),
 							'cp_homepage_custom' => array(
 								'type' => 'text',
-								'value' => element('cp_homepage_custom', $values)
+								'value' => element('cp_homepage_custom', $values),
+								'margin_top' => TRUE
 							)
 						)
 					),
@@ -1235,7 +1238,8 @@ class Groups extends Members\Members {
 										'can_email_from_profile' => lang('can_email_from_profile'),
 										'can_edit_html_buttons' => lang('can_edit_html_buttons')
 									),
-									'value' => element('member_actions', $values)
+									'value' => element('member_actions', $values),
+									'encode' => FALSE
 								)
 							)
 						)
