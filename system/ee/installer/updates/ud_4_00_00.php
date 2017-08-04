@@ -25,7 +25,8 @@ class Updater {
 			array(
 				'removeMemberHomepageTable',
 				'globalizeSave_tmpl_files',
-				'nullOutRelationshipChannelDataFields'
+				'nullOutRelationshipChannelDataFields',
+				'addImageQualityColumn'
 			)
 		);
 
@@ -101,6 +102,24 @@ class Updater {
 				[$field_name => '']
 			);
 		}
+	}
+
+	/**
+	 * Adds a new image quality column to the file dimensions table
+	 */
+	private function addImageQualityColumn()
+	{
+		ee()->smartforge->add_column(
+			'file_dimensions',
+			array(
+				'quality' => array(
+					'type'       => 'tinyint',
+					'constraint' => 1,
+					'unsigned'   => TRUE,
+					'default'    => 90,
+				)
+			)
+		);
 	}
 
 }
