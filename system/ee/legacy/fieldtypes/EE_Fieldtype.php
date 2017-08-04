@@ -7,6 +7,8 @@
  * @license   https://expressionengine.com/license
  */
 
+use EllisLab\ExpressionEngine\Service\Encrypt;
+
 /**
  * EE_Fieldtype
  */
@@ -40,7 +42,7 @@ abstract class EE_Fieldtype {
 	protected $content_id = NULL;
 	protected $content_type = 'channel';
 
-	public function __construct() {}
+	public function __construct(){}
 
 	/**
 	 * Re-initialize the class.
@@ -227,6 +229,62 @@ abstract class EE_Fieldtype {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * :length modifier
+	 */
+	public function replace_length($data, $params = array(), $tagdata = FALSE)
+	{
+		return (string) ee('Format')->make('Text', $data)->getLength();
+	}
+
+	/**
+	 * :raw_content modifier
+	 */
+	public function replace_raw_content($data, $params = array(), $tagdata = FALSE)
+	{
+		return (string) ee('Format')->make('Text', $data)->encodeEETags($params);
+	}
+
+	/**
+	 * :attr_safe modifier
+	 */
+	public function replace_attr_safe($data, $params = array(), $tagdata = FALSE)
+	{
+		return (string) ee('Format')->make('Text', $data)->attributeSafe($params);
+	}
+
+	/**
+	 * :limit modifier
+	 */
+	public function replace_limit($data, $params = array(), $tagdata = FALSE)
+	{
+		return (string) ee('Format')->make('Text', $data)->limitChars($params);
+	}
+
+	/**
+	 * :form_prep modifier
+	 */
+	public function replace_form_prep($data, $params = array(), $tagdata = FALSE)
+	{
+		return (string) ee('Format')->make('Text', $data)->formPrep()->encodeEETags($params);
+	}
+
+	/**
+	 * :rot13 modifier (for Seth)
+	 */
+	public function replace_rot13($data, $params = array(), $tagdata = FALSE)
+	{
+		return str_rot13($data);
+	}
+
+	/**
+	 * :encrypt modifier
+	 */
+	public function replace_encrypt($data, $params = array(), $tagdata = FALSE)
+	{
+		return (string) ee('Format')->make('Text', $data)->encrypt($params);
 	}
 
 	/**

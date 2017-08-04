@@ -108,6 +108,38 @@ class Multi_select_ft extends OptionFieldtype {
 		}
 	}
 
+	/**
+	 * :length modifier
+	 */
+	public function replace_length($data, $params = array(), $tagdata = FALSE)
+	{
+		return count(decode_multi_field($data));
+	}
+
+	/**
+	 * :attr_safe modifier
+	 */
+	public function replace_attr_safe($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_attr_safe($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :limit modifier
+	 */
+	public function replace_limit($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_limit($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :encrypt modifier
+	 */
+	public function replace_encrypt($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_encrypt($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
 	function display_settings($data)
 	{
 		$settings = $this->getSettingsForm(

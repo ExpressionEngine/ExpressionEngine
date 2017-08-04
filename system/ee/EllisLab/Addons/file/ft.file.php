@@ -421,6 +421,62 @@ JSC;
 	}
 
 	/**
+	 * :length modifier
+	 */
+	public function replace_length($data, $params = array(), $tagdata = FALSE)
+	{
+		return $data['file_size'];
+	}
+
+	/**
+	 * :raw_content modifier
+	 */
+	public function replace_raw_content($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_raw_content($data['raw_output'], $params, $tagdata);
+	}
+
+	/**
+	 * :attr_safe modifier
+	 */
+	public function replace_attr_safe($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_attr_safe($data['url'], $params, $tagdata);
+	}
+
+	/**
+	 * :limit modifier
+	 */
+	public function replace_limit($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_limit($data['url'], $params, $tagdata);
+	}
+
+	/**
+	 * :form_prep modifier
+	 */
+	public function replace_form_prep($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_form_prep($data['url'], $params, $tagdata);
+	}
+
+	/**
+	 * :rot13 modifier (for Seth)
+	 */
+	public function replace_rot13($data, $params = array(), $tagdata = FALSE)
+	{
+		return str_rot13($data['url']);
+	}
+
+	/**
+	 * :encrypt modifier
+	 */
+	public function replace_encrypt($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_encrypt($data['url'], $params, $tagdata);
+	}
+
+	/**
 	 * Replace frontend tag (with a modifier catchall)
 	 *
 	 * Here, the modifier is the short name of the image manipulation,

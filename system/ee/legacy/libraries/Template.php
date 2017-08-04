@@ -126,6 +126,7 @@ class EE_Template {
 		);
 
 		$this->marker = md5(ee()->config->site_url().$this->marker);
+		$this->mb_available = extension_loaded('mbstring');
 	}
 
 	/**
@@ -3559,6 +3560,19 @@ class EE_Template {
 		$count = 0;
 		$total_results = count($variables);
 
+		// get potential modified vars
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+
+		$this->modified_vars = [];
+		foreach ($this->var_single as $variable)
+		{
+			if (strpos($variable, ':') !== FALSE)
+			{
+				$this->modified_vars[$variable] = ee()->api_channel_fields->get_single_field($variable);
+			}
+		}
+
 		while (($row = array_shift($variables)) !== NULL)
 		{
 			$count++;
@@ -3656,19 +3670,116 @@ class EE_Template {
 			$tagdata = $this->_parse_var_single($name, $value, $tagdata);
 		}
 
+		// now hit modifiers, we do this after the data loop in case the add-on has defined "modified" variables in their data
+		foreach ($this->modified_vars as $tag => $var)
+		{
+			// if the variable doesn't exist, don't bother
+			if ( ! isset($variables[$var['field_name']]))
+			{
+				continue;
+			}
+
+			// is the modifier valid?
+			$method = 'replace_'.$var['modifier'];
+			if ( ! method_exists($this, $method))
+			{
+				continue;
+			}
+
+			// Process *just* this variable so we can send its content off to modifier methods
+			$original = $variables[$var['field_name']];
+			$tagname = $var['field_name'].':'.$var['modifier'];
+			$content = $this->_parse_var_single($var['field_name'], $original, LD.$var['field_name'].RD);
+
+			// we need to send just the content without any metadata to our modifiers
+			if (is_array($original))
+			{
+				// both typography and path will be an array, but path is only useful as a URL, so which is it?
+				if (isset($original[1]['path_variable']))
+				{
+					$raw = $content;
+				}
+				elseif (is_scalar($original[0]))
+				{
+					$raw = $original[0];
+				}
+				else
+				{
+					$raw = '';
+				}
+			}
+			else
+			{
+				$raw = $original;
+			}
+
+			$content = $this->$method($content, $var['params'], $raw);
+			$this->conditional_vars[$tagname] = $content;
+
+			$tagdata = $this->_parse_var_single($tag, $content, $tagdata);
+		}
+
 		// Prep conditionals
 		$tagdata = ee()->functions->prep_conditionals($tagdata, $this->conditional_vars);
 
 		return $tagdata;
 	}
 
-	function create_url_check($matches)
+	/**
+	 * :length modifier
+	 */
+	public function replace_length($data, $params = array(), $raw)
 	{
-
-		print_r($matches);
-
+		return (string) ee('Format')->make('Text', $data)->getLength();
 	}
 
+	/**
+	 * :raw_content modifier
+	 */
+	public function replace_raw_content($data, $params = array(), $raw)
+	{
+		return (string) ee('Format')->make('Text', $raw)->encodeEETags($params);
+	}
+
+	/**
+	 * :attr_safe modifier
+	 */
+	public function replace_attr_safe($data, $params = array(), $raw)
+	{
+		return (string) ee('Format')->make('Text', $data)->attributeSafe($params);
+	}
+
+	/**
+	 * :limit modifier
+	 */
+	public function replace_limit($data, $params = array(), $raw)
+	{
+		return (string) ee('Format')->make('Text', $data)->limitChars($params);
+	}
+
+	/**
+	 * :form_prep modifier
+	 */
+	public function replace_form_prep($data, $params = array(), $raw)
+	{
+		return (string) ee('Format')->make('Text', $data)->formPrep()->encodeEETags($params);
+	}
+
+	/**
+	 * :rot13 modifier (for Seth)
+	 */
+	public function replace_rot13($data, $params = array(), $raw)
+	{
+		return str_rot13($data);
+	}
+
+	/**
+	 * :encrypt modifier
+	 */
+	public function replace_encrypt($data, $params = array(), $raw)
+	{
+		return (string) ee('Format')->make('Text', $data)->encrypt($params);
+	}
 
 	/**
 	 * Parse Var Single
