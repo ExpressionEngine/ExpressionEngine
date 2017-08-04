@@ -61,8 +61,8 @@ class NoneSafeTest extends \PHPUnit_Framework_TestCase {
             'allow_img_url' => 'y',
         );
 
-        $title = $this->typography->parse_type($in, $prefs);
-        $this->assertEquals($title, $out, '[No Format] ' . $description);
+        $parsed = $this->typography->parse_type($in, $prefs);
+        $this->assertEquals($out, $parsed, '[No Format] ' . $description);
     }
 
 	public function dataProvider()

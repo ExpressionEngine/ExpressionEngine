@@ -14,14 +14,14 @@ if ( ! defined('PATH_ADDONS'))
 
 if ( ! defined('REQ'))
 {
-	define('REQ', FALSE);	
+	define('REQ', FALSE);
 }
 
 
 class XHTMLNoneTest extends \PHPUnit_Framework_TestCase {
 
 		private $typography;
-	
+
 	public function tearDown()
 	{
 		unset($this->typography);
@@ -61,8 +61,8 @@ class XHTMLNoneTest extends \PHPUnit_Framework_TestCase {
             'allow_img_url' => 'y',
         );
 
-        $title = $this->typography->parse_type($in, $prefs);
-        $this->assertEquals($title, $out, '[No XHTML] ' . $description);
+        $parsed = $this->typography->parse_type($in, $prefs);
+        $this->assertEquals($out, $parsed, '[No XHTML] ' . $description);
     }
 
 	public function dataProvider()
@@ -79,7 +79,7 @@ class XHTMLNoneTest extends \PHPUnit_Framework_TestCase {
             $this->HTMLWithContentData(),
             $this->HTMLAttributesData(),
             $this->HTMLWithAttributesData(),
-            $this->BBCodeDataSafe(),
+            $this->BBCodeData(),
             // $this->unprocessedMarkdownData(), // @TODO - fix errors or bypass?
 			$data
 		);
@@ -1017,7 +1017,7 @@ class XHTMLNoneTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
-	protected function BBCodeDataSafe()
+	protected function BBCodeData()
 	{
 		return array(
             array('[abbr] tag', '[abbr="Cascading Style Sheets"]CSS[/abbr]', '<p><abbr title="Cascading Style Sheets">CSS</abbr></p>'),

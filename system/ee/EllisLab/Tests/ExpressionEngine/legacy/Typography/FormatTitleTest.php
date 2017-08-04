@@ -43,7 +43,7 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 	public function testFormatTitles($description, $in, $out)
 	{
 		$title = $this->typography->formatTitle($in);
-		$this->assertEquals($title, $out, $description);
+		$this->assertEquals($out, $parsed, $description);
 	}
 
 	public function titlesDataProvider()

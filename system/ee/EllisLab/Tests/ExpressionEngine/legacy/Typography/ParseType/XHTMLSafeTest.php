@@ -61,8 +61,8 @@ class XHTMLSafeTest extends \PHPUnit_Framework_TestCase {
             'allow_img_url' => 'y',
         );
 
-        $title = $this->typography->parse_type($in, $prefs);
-        $this->assertEquals($title, $out, '[Safe XHTML] ' . $description);
+        $parsed = $this->typography->parse_type($in, $prefs);
+        $this->assertEquals($out, $parsed, '[Safe XHTML] ' . $description);
     }
 
 	public function dataProvider()
