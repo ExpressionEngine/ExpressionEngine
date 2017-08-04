@@ -485,6 +485,14 @@ JSC;
 	}
 
 	/**
+	 * :censor modifier
+	 */
+	public function replace_censor($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_censor($data['title'], $params, $tagdata);
+	}
+
+	/**
 	 * Replace frontend tag (with a modifier catchall)
 	 *
 	 * Here, the modifier is the short name of the image manipulation,

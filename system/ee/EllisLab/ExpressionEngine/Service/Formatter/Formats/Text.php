@@ -150,7 +150,7 @@ class Text extends Formatter {
 		}
 
 		$this->content = utf8_decode($this->content);
-		$chars = preg_split('//', $this->content, null, PREG_SPLIT_NO_EMPTY);
+		$chars = preg_split('//', $this->content, NULL, PREG_SPLIT_NO_EMPTY);
 
 		foreach ($chars as $index => $char)
 		{
@@ -159,6 +159,63 @@ class Text extends Formatter {
 			{
 				$this->content[$index] = $accent_map[$ord];
 			}
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Censor naughty words
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function censor()
+	{
+		$censored = ee()->session->cache(__CLASS__, 'censored_words');
+
+		if ( ! is_array($censored))
+		{
+			$censored = ee()->config->item('censored_words');
+
+			if (empty($censored))
+			{
+				ee()->session->set_cache(__CLASS__, 'censored_words', []);
+				return $this;
+			}
+
+			$censored = preg_split('/[\n|\|]/', $censored, NULL, PREG_SPLIT_NO_EMPTY);
+
+			foreach ($censored as $key => $bad)
+			{
+				$length = strlen($bad);
+				$bad = '/\b('.preg_quote($bad, '/').')\b/ui';
+
+				// wildcards
+				$censored[$key] = str_replace('\*', '(\w*)', $bad);
+			}
+
+			ee()->session->set_cache(__CLASS__, 'censored_words', $censored);
+		}
+
+		$replace = ee()->config->item('censor_replacement');
+
+		foreach ($censored as $bad)
+		{
+			if ($replace)
+			{
+				$this->content = preg_replace($bad, $replace, $this->content);
+			}
+			else
+			{
+				$this->content = preg_replace_callback($bad,
+					function($matches)
+					{
+						return str_repeat('#', strlen($matches[0]));
+					},
+					$this->content
+				);
+			}
+
 		}
 
 		return $this;

@@ -296,6 +296,14 @@ abstract class EE_Fieldtype {
 	}
 
 	/**
+	 * :censor modifier
+	 */
+	public function replace_censor($data, $params = array(), $raw)
+	{
+		return (string) ee('Format')->make('Text', $data)->censor();
+	}
+
+	/**
 	 * Pre process the stored data.
 	 *
 	 * This is called before the field is displayed. It's return will
