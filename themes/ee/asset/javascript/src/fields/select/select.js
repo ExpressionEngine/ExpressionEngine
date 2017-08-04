@@ -73,22 +73,24 @@ var SelectField = function (_React$Component) {
         name: this.props.name,
         multi: this.props.multi,
         nested: this.props.nested,
-        autoSelectParents: this.props.auto_select_parents,
+        autoSelectParents: this.props.autoSelectParents,
         selected: this.state.selected,
+        filterUrl: this.props.filterUrl,
+        initialItemsChanged: this.initialItemsChanged,
         itemsChanged: this.itemsChanged,
         selectionChanged: this.selectionChanged,
-        noResults: this.props.no_results,
+        noResults: this.props.noResults,
         filters: this.props.filters,
-        toggleAll: this.props.toggle_all,
+        toggleAll: this.props.toggleAll,
         filterable: this.countItems() > SelectList.limit,
         reorderable: this.state.editing,
         removable: this.state.editing,
-        groupToggle: this.props.group_toggle,
+        groupToggle: this.props.groupToggle,
         setEditingMode: function setEditingMode(editing) {
           return _this3.setEditingMode(editing);
         },
-        manageLabel: this.props.manage_label,
-        reorderAjaxUrl: this.props.reorder_ajax_url
+        manageLabel: this.props.manageLabel,
+        reorderAjaxUrl: this.props.reorderAjaxUrl
       });
 
       if (this.props.manageable) {
@@ -98,7 +100,7 @@ var SelectField = function (_React$Component) {
           selectItem,
           React.createElement(
             ToggleTools,
-            { label: this.props.manage_label },
+            { label: this.props.manageLabel },
             React.createElement(Toggle, { on: false, handleToggle: function handleToggle(toggle) {
                 return _this3.setEditingMode(toggle);
               } })

@@ -1,5 +1,6 @@
 <?php
 $too_many = 8;
+$empty_text = isset($empty_text) ? $empty_text : lang('choose_wisely');
 
 $component = [
 	'name' => $field_name,

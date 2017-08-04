@@ -74,20 +74,17 @@ else:
 		'multi' => $multi,
 		'nested' => $nested,
 		'disabled' => isset($disabled) ? $disabled : FALSE,
-		'auto_select_parents' => isset($auto_select_parents) ? $auto_select_parents : NULL,
+		'autoSelectParents' => isset($auto_select_parents) ? $auto_select_parents : NULL,
 		'too_many' => $too_many,
-		'filter_url' => isset($filter_url) ? $filter_url : NULL,
+		'filterUrl' => isset($filter_url) ? $filter_url : NULL,
 		'limit' => isset($limit) ? $limit : 100,
-		'toggle_all' => NULL,
-		'group_toggle' => isset($group_toggle) ? $group_toggle : NULL,
+		'toggleAll' => NULL,
+		'groupToggle' => isset($group_toggle) ? $group_toggle : NULL,
 		'manageable' => isset($manageable) ? $manageable : NULL,
-		'manage_label' => isset($manage_label) ? $manage_label : NULL,
-		'reorder_ajax_url' => isset($reorder_ajax_url) ? $reorder_ajax_url : NULL
+		'manageLabel' => isset($manage_label) ? $manage_label : NULL,
+		'reorderAjaxUrl' => isset($reorder_ajax_url) ? $reorder_ajax_url : NULL,
+		'noResults' => isset($no_results['text']) ? lang($no_results['text']) : NULL
 	];
-	if (isset($no_results['text']))
-	{
-		$component['no_results'] = lang($no_results['text']);
-	}
 	?>
 	<div data-select-react="<?=base64_encode(json_encode($component))?>" data-input-value="<?=$field_name?>">
 		<div class="fields-select">

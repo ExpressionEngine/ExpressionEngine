@@ -57,27 +57,29 @@ class SelectField extends React.Component {
       name={this.props.name}
       multi={this.props.multi}
       nested={this.props.nested}
-      autoSelectParents={this.props.auto_select_parents}
+      autoSelectParents={this.props.autoSelectParents}
       selected={this.state.selected}
+      filterUrl={this.props.filterUrl}
+      initialItemsChanged={this.initialItemsChanged}
       itemsChanged={this.itemsChanged}
       selectionChanged={this.selectionChanged}
-      noResults={this.props.no_results}
+      noResults={this.props.noResults}
       filters={this.props.filters}
-      toggleAll={this.props.toggle_all}
+      toggleAll={this.props.toggleAll}
       filterable={this.countItems() > SelectList.limit}
       reorderable={this.state.editing}
       removable={this.state.editing}
-      groupToggle={this.props.group_toggle}
+      groupToggle={this.props.groupToggle}
       setEditingMode={(editing) => this.setEditingMode(editing)}
-      manageLabel={this.props.manage_label}
-      reorderAjaxUrl={this.props.reorder_ajax_url}
+      manageLabel={this.props.manageLabel}
+      reorderAjaxUrl={this.props.reorderAjaxUrl}
     />
 
     if (this.props.manageable) {
       return (
         <div>
           {selectItem}
-          <ToggleTools label={this.props.manage_label}>
+          <ToggleTools label={this.props.manageLabel}>
             <Toggle on={false} handleToggle={(toggle) => this.setEditingMode(toggle)} />
           </ToggleTools>
         </div>
