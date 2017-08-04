@@ -288,6 +288,14 @@ abstract class EE_Fieldtype {
 	}
 
 	/**
+	 * :url_slug modifier
+	 */
+	public function replace_url_slug($data, $params = array(), $raw)
+	{
+		return (string) ee('Format')->make('Text', $data)->urlSlug($params);
+	}
+
+	/**
 	 * Pre process the stored data.
 	 *
 	 * This is called before the field is displayed. It's return will

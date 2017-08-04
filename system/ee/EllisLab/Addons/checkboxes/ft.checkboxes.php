@@ -228,6 +228,14 @@ class Checkboxes_ft extends OptionFieldtype {
 		return parent::replace_encrypt($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
 	}
 
+	/**
+	 * :url_slug modifier
+	 */
+	public function replace_url_slug($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_url_slug($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
 	function display_settings($data)
 	{
 		$settings = $this->getSettingsForm(

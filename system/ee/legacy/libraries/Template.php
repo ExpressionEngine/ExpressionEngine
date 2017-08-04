@@ -3782,6 +3782,14 @@ class EE_Template {
 	}
 
 	/**
+	 * :url_slug modifier
+	 */
+	public function replace_url_slug($data, $params = array(), $raw)
+	{
+		return (string) ee('Format')->make('Text', $data)->urlSlug($params);
+	}
+
+	/**
 	 * Parse Var Single
 	 *
 	 * Parses single variables from the parse_variables() method
