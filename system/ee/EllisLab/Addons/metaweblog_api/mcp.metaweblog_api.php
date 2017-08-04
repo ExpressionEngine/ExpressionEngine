@@ -330,7 +330,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_channel_desc',
 			'fields' => array(
 				'field_group_id' => array(
-					'type' => 'radio',
+					'type' => 'select',
 					'choices' => $field_group_options
 				)
 			)
@@ -353,7 +353,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_excerpt_field_desc',
 			'fields' => array(
 				'excerpt_field_id' => array(
-					'type' => 'radio',
+					'type' => 'select',
 					'choices' => array('0' => lang('none')) + $fields_list
 				)
 			)
@@ -369,7 +369,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_content_field_desc',
 			'fields' => array(
 				'content_field_id' => array(
-					'type' => 'radio',
+					'type' => 'select',
 					'choices' => array('0' => lang('none')) + $fields_list
 				)
 			)
@@ -385,7 +385,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_more_field_desc',
 			'fields' => array(
 				'more_field_id' => array(
-					'type' => 'radio',
+					'type' => 'select',
 					'choices' => array('0' => lang('none')) + $fields_list
 				)
 			)
@@ -401,7 +401,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_keywords_field_desc',
 			'fields' => array(
 				'keywords_field_id' => array(
-					'type' => 'radio',
+					'type' => 'select',
 					'choices' => array('0' => lang('none')) + $fields_list
 				)
 			)
@@ -412,13 +412,17 @@ class Metaweblog_api_mcp {
 		}
 		$vars['sections'][0][] = $form_element;
 
+		ee()->lang->load('filemanager');
 		$form_element = array(
 			'title' => 'metaweblog_upload_dir',
 			'desc' => 'metaweblog_upload_dir_desc',
 			'fields' => array(
 				'upload_dir' => array(
 					'type' => 'radio',
-					'choices' => $upload_directories
+					'choices' => $upload_directories,
+					'no_results' => [
+						'text' => sprintf(lang('no_found'), lang('upload_directories'))
+					]
 				)
 			)
 		);

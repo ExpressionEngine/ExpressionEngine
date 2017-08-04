@@ -288,7 +288,7 @@ EOT;
 		foreach ($channels as $channel)
 		{
 			$channels_options[$channel->channel_id] = (ee()->config->item('multiple_sites_enabled') === 'y')
-				? $channel->Site->site_label.NBS.'-'.NBS.$channel->channel_title : $channel->channel_title;
+				? $channel->Site->site_label.' - '.$channel->channel_title : $channel->channel_title;
 		}
 
 		$author_options = array();
@@ -382,7 +382,7 @@ EOT;
 					'desc' => 'moblog_channel_desc',
 					'fields' => array(
 						'moblog_channel_id' => array(
-							'type' => 'radio',
+							'type' => 'select',
 							'choices' => $channels_options,
 							'value' => $moblog->moblog_channel_id
 						)
@@ -402,7 +402,7 @@ EOT;
 					'title' => 'field_id',
 					'fields' => array(
 						'moblog_field_id' => array(
-							'type' => 'radio',
+							'type' => 'select',
 							'choices' => ee('Model')->get('ChannelField')->fields('field_id', 'field_label')->all()->getDictionary('field_id', 'field_label'),
 							'value' => $moblog->moblog_field_id
 						)
@@ -412,7 +412,7 @@ EOT;
 					'title' => 'default_status',
 					'fields' => array(
 						'moblog_status' => array(
-							'type' => 'radio',
+							'type' => 'select',
 							'choices' => ee('Model')->get('Status')->fields('status')->all()->getDictionary('status', 'status'),
 							'value' => $moblog->moblog_status
 						)
@@ -422,7 +422,7 @@ EOT;
 					'title' => 'author_id',
 					'fields' => array(
 						'moblog_author_id' => array(
-							'type' => 'radio',
+							'type' => 'select',
 							'choices' => $moblog_authors,
 							'value' => $moblog->moblog_author_id
 						)
@@ -567,7 +567,7 @@ EOT;
 					'title' => 'moblog_upload_directory',
 					'fields' => array(
 						'moblog_upload_directory' => array(
-							'type' => 'radio',
+							'type' => 'select',
 							'choices' => ee('Model')->get('UploadDestination')
 								->fields('site_id', 'module_id', 'id', 'name')
 								->filter('site_id', ee()->config->item('site_id'))
@@ -582,7 +582,7 @@ EOT;
 					'title' => 'moblog_image_size',
 					'fields' => array(
 						'moblog_image_size' => array(
-							'type' => 'radio',
+							'type' => 'select',
 							'choices' => array('0'=> lang('none')),
 							'value' => $moblog->moblog_image_size
 						)
@@ -592,7 +592,7 @@ EOT;
 					'title' => 'moblog_thumb_size',
 					'fields' => array(
 						'moblog_thumb_size' => array(
-							'type' => 'radio',
+							'type' => 'select',
 							'choices' => array('0'=> lang('none')),
 							'value' => $moblog->moblog_thumb_size
 						)
