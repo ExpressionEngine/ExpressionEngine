@@ -18,6 +18,13 @@ class SelectField extends React.Component {
     })
   }
 
+  initialItemsChanged = (items) => {
+    this.initialItems = items
+    this.setState({
+      items: items
+    })
+  }
+
   itemsChanged = (items) => {
     this.setState({
       items: items

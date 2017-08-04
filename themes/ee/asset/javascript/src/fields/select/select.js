@@ -16,6 +16,13 @@ var SelectField = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (SelectField.__proto__ || Object.getPrototypeOf(SelectField)).call(this, props));
 
+    _this.initialItemsChanged = function (items) {
+      _this.initialItems = items;
+      _this.setState({
+        items: items
+      });
+    };
+
     _this.itemsChanged = function (items) {
       _this.setState({
         items: items
