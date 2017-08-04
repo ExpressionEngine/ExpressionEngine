@@ -24,6 +24,9 @@ if ( ! function_exists('convert_accented_characters'))
 {
 	function convert_accented_characters($match)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('4.0.0', "ee('Format')->make('Text', \$str)->accentsToAscii()");
+
         $foreign_characters = ee()->config->loadFile('foreign_chars');
 
 		/* -------------------------------------
@@ -260,6 +263,9 @@ if ( ! function_exists('word_censor'))
 {
 	function word_censor($str, $censored, $replacement = '')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('4.0.0', "ee('Format')->make('Text', \$str)->censor()");
+
 		if ( ! is_array($censored))
 		{
 			return $str;

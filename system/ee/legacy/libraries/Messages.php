@@ -949,14 +949,7 @@ class EE_Messages {
 		$folder_rows_template = $this->retrieve_template('message_folder_rows');
 		$r = '';
 		$i = 0;
-		$censor = FALSE;
-
-		if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
-		{
-			ee()->load->library('typography');
-			ee()->typography->initialize();
-			$censor = TRUE;
-		}
+		$censor = bool_config_item('enable_censoring');
 
 		$query = ee()->db->query($dql.$sql);
 
@@ -967,7 +960,7 @@ class EE_Messages {
 			$data['msg_id']		  = 'd'.$row['message_id'];
 			$data['message_date'] = ee()->localize->human_time($data['message_date']);
 			$data['style']		  = ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
-			$data['message_subject']  = ($censor === FALSE) ? $data['message_subject'] : ee()->typography->filter_censored_words($data['message_subject']);
+			$data['message_subject']  = ($censor === FALSE) ? $data['message_subject'] : ee('Format')->make('Text', $data['message_subject'])->censor();
 
 			if ($this->allegiance == 'user')
 			{
@@ -1201,14 +1194,7 @@ class EE_Messages {
 		$folder_rows_template	= $this->retrieve_template('message_folder_rows');
 		$i = 0;
 		$r = '';
-		$censor = FALSE;
-
-		if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
-		{
-			ee()->load->library('typography');
-			ee()->typography->initialize();
-			$censor = TRUE;
-		}
+		$censor = bool_config_item('enable_censoring');
 
 		$query = ee()->db->query($dql.$sql);
 
@@ -1222,7 +1208,7 @@ class EE_Messages {
 			$data['msg_id']				= ($row['message_read'] == 'n') ? 'u'.$row['msg_id'] : $row['msg_id'];
 			$data['message_date']		= ee()->localize->human_time($data['message_date']);
 			$data['style']				= ($i % 2) ? 'tableCellTwo' : 'tableCellOne';
-			$data['message_subject']	= ($censor === FALSE) ? $data['message_subject'] : ee()->typography->filter_censored_words($data['message_subject']);
+			$data['message_subject']	= ($censor === FALSE) ? $data['message_subject'] : ee('Format')->make('Text', $data['message_subject'])->censor();
 
 			if ($this->allegiance == 'user')
 			{
@@ -2477,13 +2463,10 @@ DOH;
 			{
 				$data = $this->_message_data($id, '', $this->member_id);
 
-				if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
+				if (bool_config_item('enable_censoring'))
 				{
-					ee()->load->library('typography');
-					ee()->typography->initialize();
-
-					$subject = ($data === FALSE) ? '' : ee()->typography->filter_censored_words($data['subject']);
-					$body = ($data === FALSE) ? '' : ee()->typography->filter_censored_words($data['body']);
+					$subject = ($data === FALSE) ? '' : ee('Format')->make('Text', $data['subject'])->censor();
+					$body = ($data === FALSE) ? '' : ee('Format')->make('Text', $data['body'])->censor();
 				}
 				else
 				{
@@ -2550,13 +2533,10 @@ DOH;
 			{
 				$data = $this->_message_data($id, $this->member_id);
 
-				if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
+				if (bool_config_item('enable_censoring'))
 				{
-					ee()->load->library('typography');
-					ee()->typography->initialize();
-
-					$subject = ($data === FALSE) ? '' : ee()->typography->filter_censored_words($data['subject']);
-					$body = ($data === FALSE) ? '' : ee()->typography->filter_censored_words($data['body']);
+					$subject = ($data === FALSE) ? '' : ee('Format')->make('Text', $data['subject'])->censor();
+					$body = ($data === FALSE) ? '' : ee('Format')->make('Text', $data['body'])->censor();
 				}
 				else
 				{
@@ -2867,13 +2847,10 @@ DOH;
 			return $this->_error_page('invalid_message');
 		}
 
-		if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
+		if (bool_config_item('enable_censoring'))
 		{
-			ee()->load->library('typography');
-			ee()->typography->initialize();
-
-			$data['subject'] = ee()->typography->filter_censored_words($data['subject']);
-			$data['body'] = ee()->typography->filter_censored_words($data['body']);
+			$data['subject'] = ee('Format')->make('Text', $data['subject'])->censor();
+			$data['body'] = ee('Format')->make('Text', $data['body'])->censor();
 		}
 
 		// Load the XML Helper
@@ -3225,14 +3202,7 @@ DOH;
 		$folder_rows_template = $this->retrieve_template('bulletin');
 		$i = 0;
 		$r = '';
-		$censor = FALSE;
-
-		if (ee()->config->item('enable_censoring') == 'y' && ee()->config->item('censored_words') != '')
-		{
-			ee()->load->library('typography');
-			ee()->typography->initialize();
-			$censor = TRUE;
-		}
+		$censor = bool_config_item('enable_censoring');
 
 		$query = ee()->db->query($dql.$sql);
 
@@ -3257,7 +3227,7 @@ DOH;
 				$this->single_parts['path']['delete_bulletin']	= $this->_create_path('delete_bulletin').'/'.$row['bulletin_id'];
 			}
 
-			$data['bulletin_message'] = ($censor === FALSE) ? $data['bulletin_message'] : ee()->typography->filter_censored_words($data['bulletin_message']);
+			$data['bulletin_message'] = ($censor === FALSE) ? $data['bulletin_message'] : ee('Format')->make('Text', $data['bulletin_message'])->censor();
 			$data['bulletin_sender'] = $row['screen_name'];
 			$data['bulletin_date'] = ee()->localize->human_time($row['bulletin_date']);
 			$data['style']			= ($i % 2) ? 'tableCellTwo' : 'tableCellOne';

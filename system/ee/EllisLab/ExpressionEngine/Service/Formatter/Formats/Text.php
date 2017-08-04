@@ -88,6 +88,141 @@ class Text extends Formatter {
 	}
 
 	/**
+	 * Make a URL slug from the text
+	 *
+	 * @param  array  $options Options: (string) separator, (bool) lowercase
+	 * @return self This returns a reference to itself
+	 */
+	public function urlSlug($options = [])
+	{
+		if ( ! isset($options['separator']))
+		{
+			$options['separator'] = (ee()->config->item('word_separator') == 'underscore') ? '_' : '-';
+		}
+
+		$lowercase = (isset($options['lowercase']) && $options['lowercase'] === FALSE) ? FALSE : TRUE;
+
+		$this->accentsToAscii();
+
+		// order here is important
+		$replace = [
+			// remove numeric entities
+			'#&\#\d+?;#i' => '',
+			// remove named entities
+			'#&\S+?;#i' => '',
+			// replace whitespace and forward slashes with the separator
+			'#\s+|/+#i' => $options['separator'],
+			// only allow low ascii letters, numbers, dash, dot, and underscore
+			'#[^a-z0-9\-\._]#i' => '',
+			// no dot-then-separator (in case multiple sentences were passed)
+			'#\.'.$options['separator'].'#i' => $options['separator'],
+			// reduce multiple instances of the separator to a single
+			'#'.$options['separator'].'+#i' => $options['separator'],
+		];
+
+		$this->content = strip_tags($this->content);
+		$this->content = preg_replace(array_keys($replace), array_values($replace), $this->content);
+
+		// don't allow separators or dots at the beginning or end of the string, and remove slashes if they exist
+		$this->content = trim(stripslashes($this->content), '-_.');
+
+		if ($lowercase === TRUE)
+		{
+			$this->content = strtolower($this->content);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Converts accented / multi-byte characters, e.g. ü, é, ß to ASCII transliterations
+	 * Uses foreign_chars.php config, either the default or user override, as a map
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function accentsToAscii()
+	{
+		$accent_map = ee()->config->loadFile('foreign_chars');
+
+		if (empty($accent_map))
+		{
+			return $this;
+		}
+
+		$this->content = utf8_decode($this->content);
+		$chars = preg_split('//', $this->content, NULL, PREG_SPLIT_NO_EMPTY);
+
+		foreach ($chars as $index => $char)
+		{
+			$ord = ord($char);
+			if (isset($accent_map[$ord]))
+			{
+				$this->content[$index] = $accent_map[$ord];
+			}
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Censor naughty words, respects application preferences
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function censor()
+	{
+		$censored = ee()->session->cache(__CLASS__, 'censored_words');
+
+		// setup censored words regex
+		if ( ! is_array($censored))
+		{
+			$censored = ee()->config->item('censored_words');
+
+			if (empty($censored))
+			{
+				ee()->session->set_cache(__CLASS__, 'censored_words', []);
+				return $this;
+			}
+
+			$censored = preg_split('/[\n|\|]/', $censored, NULL, PREG_SPLIT_NO_EMPTY);
+
+			foreach ($censored as $key => $bad)
+			{
+				$length = strlen($bad);
+				$bad = '/\b('.preg_quote($bad, '/').')\b/ui';
+
+				// wildcards
+				$censored[$key] = str_replace('\*', '(\w*)', $bad);
+			}
+
+			ee()->session->set_cache(__CLASS__, 'censored_words', $censored);
+		}
+
+		$replace = ee()->config->item('censor_replacement');
+
+		foreach ($censored as $bad)
+		{
+			if ($replace)
+			{
+				$this->content = preg_replace($bad, $replace, $this->content);
+			}
+			else
+			{
+				$this->content = preg_replace_callback($bad,
+					function($matches)
+					{
+						return str_repeat('#', strlen($matches[0]));
+					},
+					$this->content
+				);
+			}
+
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Limit to X characters, with an optional end character
 	 *
 	 * @param  array  $options Options: (int) characters, (string) end_char
