@@ -698,7 +698,11 @@ class Email {
 
 		$subject = ee()->input->post('subject', TRUE);
 		$subject = entities_to_ascii($subject);
-		$subject = ee()->typography->filter_censored_words($subject);
+
+		if (bool_config_item('enable_censoring'))
+		{
+			$subject = ee('Format')->make('Text', $subject)->censor();
+		}
 
 		// Retrieve message
 		$message = ee()->input->post('message', TRUE);
@@ -717,7 +721,11 @@ class Email {
 		}
 
 		$message = entities_to_ascii($message);
-		$message = ee()->typography->filter_censored_words($message);
+
+		if (bool_config_item('enable_censoring'))
+		{
+			$message = ee('Format')->make('Text', $message)->censor();
+		}
 
 		// Send mail
 		$this->mail_recipients($subject, $message, $approved_recipients, $approved_tos, $_POST);

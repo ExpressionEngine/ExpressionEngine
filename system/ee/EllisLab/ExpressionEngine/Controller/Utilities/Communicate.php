@@ -628,7 +628,7 @@ class Communicate extends Utilities {
 	}
 
 	/**
-	 * Censors the subject of an email if necissary
+	 * Censors the subject of an email if necessary
 	 *
 	 * @param	obj	$email	An EmailCache object
 	 * @return	string		The censored subject
@@ -637,17 +637,9 @@ class Communicate extends Utilities {
 	{
 		$subject = $email->subject;
 
-		if (ee()->config->item('enable_censoring') == 'y' &&
-			ee()->config->item('censored_words') != '')
+		if (bool_config_item('enable_censoring'))
     	{
-			ee()->load->library('typography');
-			ee()->typography->initialize(array(
-				'bbencode_links' => FALSE,
-				'parse_images'	=> FALSE,
-				'parse_smileys'	=> FALSE
-			));
-
-			$subject = ee()->typography->filter_censored_words($email->subject);
+			$subject = (string) ee('Format')->make('Text', $subject)->censor();
 		}
 
 		return $subject;

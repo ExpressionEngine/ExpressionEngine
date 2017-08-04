@@ -165,7 +165,7 @@ class Text extends Formatter {
 	}
 
 	/**
-	 * Censor naughty words
+	 * Censor naughty words, respects application preferences
 	 *
 	 * @return self This returns a reference to itself
 	 */
@@ -173,6 +173,7 @@ class Text extends Formatter {
 	{
 		$censored = ee()->session->cache(__CLASS__, 'censored_words');
 
+		// setup censored words regex
 		if ( ! is_array($censored))
 		{
 			$censored = ee()->config->item('censored_words');
