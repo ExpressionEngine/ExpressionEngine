@@ -1030,13 +1030,9 @@ class Api_channel_entries extends Api {
 	 */
 	function _validate_url_title($url_title = '', $title = '', $update = FALSE)
 	{
-		$word_separator = ee()->config->item('word_separator');
-
-		ee()->load->helper('url');
-
 		if ( ! trim($url_title))
 		{
-			$url_title = url_title($title, $word_separator, TRUE);
+			$url_title = $title;
 		}
 
 		// Remove extraneous characters
@@ -1048,12 +1044,12 @@ class Api_channel_entries extends Api {
 
 			if ($url_query->row('url_title') != $url_title)
 			{
-				$url_title = url_title($url_title, $word_separator);
+				$url_title = ee('Format')->make('Text', $url_title)->urlSlug();
 			}
 		}
 		else
 		{
-			$url_title = url_title($url_title, $word_separator);
+			$url_title = ee('Format')->make('Text', $url_title)->urlSlug();
 		}
 
 		// URL title cannot be a number
