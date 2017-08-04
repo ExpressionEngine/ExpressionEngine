@@ -884,7 +884,7 @@ $lang = array(
 
 'member_delete_dont_reassign_entries' => 'Delete the member\'s entries',
 
-'member_delete_reassign_entries' => 'Reassign the member\'s entries to ',
+'member_delete_reassign_entries' => 'Reassign the member\'s entries to:',
 
 'member_search_instructions' => 'Fill out at least one field. You can submit partial or full words.',
 
