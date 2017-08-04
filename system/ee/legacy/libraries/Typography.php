@@ -742,7 +742,7 @@ class EE_Typography {
 		$str = $this->emoticon_replace($str);
 
 		//  Parse censored words
-		$str = ee('Format')->make('Text', $str)->censor();
+		$str = $this->filter_censored_words($str);
 
 		// Decode {encode=...} only in the CP since the template parser handles
 		// this for page requets
