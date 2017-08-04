@@ -378,7 +378,7 @@ var SelectList = function (_React$Component) {
         React.createElement(
           FieldInputs,
           { nested: props.nested },
-          props.items.length == 0 && React.createElement(NoResults, { text: props.noResults }),
+          !this.state.loading && props.items.length == 0 && React.createElement(NoResults, { text: props.noResults }),
           this.state.loading && React.createElement(Loading, { text: EE.lang.loading }),
           !this.state.loading && props.items.map(function (item, index) {
             return React.createElement(SelectItem, { key: item.value ? item.value : item.section,

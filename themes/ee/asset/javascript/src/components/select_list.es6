@@ -341,7 +341,7 @@ class SelectList extends React.Component {
           </FieldTools>
         }
         <FieldInputs nested={props.nested}>
-          {props.items.length == 0 &&
+          { ! this.state.loading && props.items.length == 0 &&
             <NoResults text={props.noResults} />
           }
           {this.state.loading &&
