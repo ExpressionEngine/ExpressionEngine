@@ -102,6 +102,18 @@ class FileDimension extends Model {
 
 		$original_dimensions = explode(" ", $file->file_hw_original);
 
+		// We do math on these values, so we'll coerce them into integers
+		// now. Empty strings ('') turn into 0.
+        $original_dimensions[0] = (int) $original_dimensions[0];
+        $original_dimensions[1] = (int) $original_dimensions[1];
+
+		// If we have 0 or negative numbers for the original height/width
+		// this is not an image
+        if ($original_dimensions[0] < 1 || $original_dimensions[1] < 1)
+        {
+            return FALSE;
+        }
+
 		$width  = $this->width;
 		$height = $this->height;
 
