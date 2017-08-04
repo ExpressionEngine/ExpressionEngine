@@ -32,3 +32,70 @@ function lang($str)
 {
 	return $str;
 }
+
+// Added for Typography tests (eew)
+
+require_once APPPATH.'helpers/string_helper.php';
+require_once APPPATH.'helpers/security_helper.php';
+require_once APPPATH.'libraries/Functions.php';
+require_once APPPATH.'libraries/Typography.php';
+require_once APPPATH.'libraries/typography/Markdown/Michelf/MarkdownExtra.inc.php';
+
+class ConfigStub {
+	public function item($str = '')
+	{
+		return 'n';
+	}
+}
+
+class LoadStub {
+	public function model($str = '')
+	{
+		return;
+	}
+
+	public function helper($str = '')
+	{
+		return;
+	}
+}
+
+class AddonsModelStub {
+	public function get_plugin_formatting()
+	{
+		return array();
+	}
+}
+
+class ExtensionsStub {
+	public function active_hook($str)
+	{
+		return FALSE;
+	}
+}
+
+class TypographyStub extends EE_Typography
+{
+	public function __construct()
+	{
+		// Skipping initialize and autoloader
+	}
+}
+
+function ee($str = '')
+{
+	if ($str)
+	{
+		require_once SYSPATH.'ee/EllisLab/ExpressionEngine/Library/Security/XSS.php';
+		return new EllisLab\ExpressionEngine\Library\Security\XSS();
+	}
+
+	$obj = new StdClass();
+	$obj->config = new ConfigStub();
+	$obj->load = new LoadStub();
+	$obj->addons_model = new AddonsModelStub();
+	$obj->functions = new EE_Functions();
+	$obj->extensions = new ExtensionsStub();
+
+	return $obj;
+}

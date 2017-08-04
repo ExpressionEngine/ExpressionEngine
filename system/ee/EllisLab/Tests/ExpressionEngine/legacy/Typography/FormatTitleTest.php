@@ -5,12 +5,26 @@ require_once APPPATH.'helpers/string_helper.php';
 require_once APPPATH.'libraries/Typography.php';
 // require_once APPPATH.'libraries/typography/Markdown/Michelf/MarkdownExtra.inc.php';
 
-define('PATH_ADDONS', APPPATH.'modules/');
-define('REQ', FALSE);
+if ( ! defined('PATH_ADDONS'))
+{
+	define('PATH_ADDONS', APPPATH.'modules/');
+}
+
+if ( ! defined('REQ'))
+{
+	define('REQ', FALSE);	
+}
+
 
 class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 
-	private $typography;
+		private $typography;
+	
+	public function tearDown()
+	{
+		unset($this->typography);
+	}
+
 
 	public function setUp()
 	{
@@ -929,43 +943,6 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
-}
-
-class ConfigStub {
-	public function item($str = '')
-	{
-		return 'n';
-	}
-}
-
-class LoadStub {
-	public function model($str = '')
-	{
-		return;
-	}
-}
-
-class AddonsModelStub {
-	public function get_plugin_formatting()
-	{
-		return array();
-	}
-}
-
-function ee($str = '')
-{
-	if ($str)
-	{
-		require_once SYSPATH.'ee/EllisLab/ExpressionEngine/Library/Security/XSS.php';
-		return new EllisLab\ExpressionEngine\Library\Security\XSS();
-	}
-
-	$obj = new StdClass();
-	$obj->config = new ConfigStub();
-	$obj->load = new LoadStub();
-	$obj->addons_model = new AddonsModelStub();
-
-	return $obj;
 }
 
 // EOF

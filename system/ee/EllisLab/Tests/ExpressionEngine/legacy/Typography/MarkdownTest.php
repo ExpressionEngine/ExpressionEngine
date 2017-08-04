@@ -5,11 +5,21 @@ require_once APPPATH.'helpers/string_helper.php';
 require_once APPPATH.'libraries/Typography.php';
 require_once APPPATH.'libraries/typography/Markdown/Michelf/MarkdownExtra.inc.php';
 
-define('PATH_ADDONS', APPPATH.'modules/');
+if ( ! defined('PATH_ADDONS'))
+{
+	define('PATH_ADDONS', APPPATH.'modules/');
+}
+
 
 class MarkdownTest extends \PHPUnit_Framework_TestCase {
 
-	private $typography;
+		private $typography;
+	
+	public function tearDown()
+	{
+		unset($this->typography);
+	}
+
 
 	public function setUp()
 	{
@@ -308,11 +318,4 @@ class MarkdownTest extends \PHPUnit_Framework_TestCase {
 
 }
 
-class TypographyStub extends EE_Typography
-{
-	public function __construct()
-	{
-		// Skipping initialize and autoloader
-	}
-}
 // EOF
