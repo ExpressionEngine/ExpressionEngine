@@ -35,8 +35,10 @@ if (ee('View/Helpers')->countChoices($normalized_choices) <= $too_many && ! $nes
 	<div class="fields-select">
 		<div class="field-inputs">
 			<?php foreach ($choices as $key => $choice):
-				$label = isset($choice['label']) ? $choice['label'] : $choice;
-				$key = isset($choice['value']) ? $choice['value'] : $key;
+				$label = isset($choice['label'])
+					? lang($choice['label']) : lang($choice);
+				$key = isset($choice['value'])
+					? lang($choice['value']) : lang($key);
 				$instructions = isset($choice['instructions']) ? $choice['instructions'] : NULL;
 				if ($encode)
 				{

@@ -175,6 +175,26 @@ class CategoryGroup extends StructureModel {
 	}
 
 	/**
+	 * Builds a tree of categories in the current category group for use in a
+	 * SelectField form
+	 *
+	 * @param array Category tree
+	 */
+	public function buildCategoryOptionsTree()
+	{
+		$sort_column = 'cat_order';
+		if ($this->sort_order == 'a')
+		{
+			$sort_column = 'cat_name';
+		}
+
+		return $this->buildCategoryList(
+			$this->Categories->filter('parent_id', 0),
+			$sort_column
+		);
+	}
+
+	/**
 	 * Turn the categories collection into a nested array of ids => names
 	 *
 	 * @param	Collection	$categories		Top level categories to construct tree out of

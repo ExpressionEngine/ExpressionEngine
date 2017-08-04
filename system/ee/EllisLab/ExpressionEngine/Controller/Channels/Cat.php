@@ -761,7 +761,8 @@ class Cat extends AbstractChannelsController {
 							'none' => 'cat_image_none',
 							'choose' => 'cat_image_choose'
 						),
-						'value' => 'none'
+						'value' => 'none',
+						'encode' => FALSE
 					),
 					'cat_image' => array(
 						'type' => 'image',
@@ -779,8 +780,8 @@ class Cat extends AbstractChannelsController {
 				'parent_id' => array(
 					'type' => 'radio',
 					'value' => $category->parent_id,
-					'choices' => $parent_id_options,
-					'encode' => FALSE
+					'choices' => $cat_group->buildCategoryOptionsTree(),
+					'no_results' => ['text' => sprintf(lang('no_found'), lang('categories'))]
 				)
 			)
 		);
