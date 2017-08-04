@@ -1216,7 +1216,7 @@ class Cat extends AbstractChannelsController {
 					'desc' => '',
 					'fields' => array(
 						'field_type' => array(
-							'type' => 'select',
+							'type' => 'dropdown',
 							'choices' => array(
 								'text'     => lang('text_input'),
 								'textarea' => lang('textarea'),

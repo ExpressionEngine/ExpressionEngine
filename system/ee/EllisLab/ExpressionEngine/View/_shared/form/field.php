@@ -97,7 +97,10 @@ if ($field['type'] == 'checkbox' && ! $value) $value = [];
 	]); ?>
 <?php break;
 
-case 'select': ?>
+case 'select':
+	if ( ! $no_results) echo form_dropdown($field_name, $field['choices'], $value, $attrs, isset($field['encode']) ? $field['encode'] : TRUE);
+break;
+case 'dropdown': ?>
 	<?php $this->embed('ee:_shared/form/fields/dropdown', [
 		'field_name' => $field_name,
 		'choices' => $field['choices'],
