@@ -20,7 +20,7 @@ if ( ! defined('REQ'))
 class BRAllTest extends \PHPUnit_Framework_TestCase {
 
 		private $typography;
-	
+
 	public function tearDown()
 	{
 		unset($this->typography);
@@ -61,7 +61,7 @@ class BRAllTest extends \PHPUnit_Framework_TestCase {
         );
 
         $parsed = $this->typography->parse_type($in, $prefs);
-        $this->assertEquals($out, $parsed, '[No Format] ' . $description);
+        $this->assertEquals($out, $parsed, '[BR/All] ' . $description);
     }
 
 	public function dataProvider()

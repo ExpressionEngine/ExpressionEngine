@@ -14,14 +14,14 @@ if ( ! defined('PATH_ADDONS'))
 
 if ( ! defined('REQ'))
 {
-	define('REQ', FALSE);	
+	define('REQ', FALSE);
 }
 
 
 class XHTMLSafeTest extends \PHPUnit_Framework_TestCase {
 
 		private $typography;
-	
+
 	public function tearDown()
 	{
 		unset($this->typography);
@@ -62,7 +62,7 @@ class XHTMLSafeTest extends \PHPUnit_Framework_TestCase {
         );
 
         $parsed = $this->typography->parse_type($in, $prefs);
-        $this->assertEquals($out, $parsed, '[Safe XHTML] ' . $description);
+        $this->assertEquals($out, $parsed, '[XHTML/Safe] ' . $description);
     }
 
 	public function dataProvider()

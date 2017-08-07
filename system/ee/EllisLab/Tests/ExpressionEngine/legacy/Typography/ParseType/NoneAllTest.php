@@ -14,14 +14,14 @@ if ( ! defined('PATH_ADDONS'))
 
 if ( ! defined('REQ'))
 {
-	define('REQ', FALSE);	
+	define('REQ', FALSE);
 }
 
 
 class NoneAllTest extends \PHPUnit_Framework_TestCase {
 
 		private $typography;
-	
+
 	public function tearDown()
 	{
 		unset($this->typography);
@@ -62,7 +62,7 @@ class NoneAllTest extends \PHPUnit_Framework_TestCase {
         );
 
         $parsed = $this->typography->parse_type($in, $prefs);
-        $this->assertEquals($out, $parsed, '[No Format] ' . $description);
+        $this->assertEquals($out, $parsed, '[None/All] ' . $description);
     }
 
 	public function dataProvider()

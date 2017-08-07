@@ -62,7 +62,7 @@ class XHTMLNoneTest extends \PHPUnit_Framework_TestCase {
         );
 
         $parsed = $this->typography->parse_type($in, $prefs);
-        $this->assertEquals($out, $parsed, '[No XHTML] ' . $description);
+        $this->assertEquals($out, $parsed, '[XHTML/None] ' . $description);
     }
 
 	public function dataProvider()

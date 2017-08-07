@@ -62,7 +62,7 @@ class MarkdownNoneTest extends \PHPUnit_Framework_TestCase {
         );
 
         $parsed = $this->typography->parse_type($in, $prefs);
-        $this->assertEquals($out, $parsed, '[No Format/HTML] ' . $description);
+        $this->assertEquals($out, $parsed, '[Markdown/None] ' . $description);
     }
 
 	public function dataProvider()

@@ -62,7 +62,7 @@ class XHTMLAllTest extends \PHPUnit_Framework_TestCase {
 		);
 
 		$parsed = $this->typography->parse_type($in, $prefs);
-		$this->assertEquals($out, $parsed, '[ XHTML] ' . $description);
+		$this->assertEquals($out, $parsed, '[XHTML/All] ' . $description);
 	}
 
 	public function dataProvider()

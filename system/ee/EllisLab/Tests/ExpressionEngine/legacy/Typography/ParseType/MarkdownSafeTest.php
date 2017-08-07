@@ -62,7 +62,7 @@ class MarkdownSafeTest extends \PHPUnit_Framework_TestCase {
         );
 
         $parsed = $this->typography->parse_type($in, $prefs);
-        $this->assertEquals($out, $parsed, '[No Format] ' . $description);
+        $this->assertEquals($out, $parsed, '[Markdown/Safe] ' . $description);
     }
 
 	public function dataProvider()
