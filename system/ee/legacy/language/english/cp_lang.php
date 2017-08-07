@@ -85,8 +85,6 @@ $lang = array(
 
 'new_version_available' => 'ExpressionEngine Version %s is now available',
 
-'no_found' => 'No <b>%s</b> found.',
-
 'notepad' => 'Notepad',
 
 'notepad_no_content' => 'No Notepad Entry. Click to create one.',
