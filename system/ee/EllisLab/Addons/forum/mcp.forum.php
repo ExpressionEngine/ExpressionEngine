@@ -3377,7 +3377,6 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'permissions' => array(
 							'type' => 'checkbox',
-							'wrap' => TRUE,
 							'choices' => array(
 								'mod_can_edit'          => lang('mod_can_edit'),
 								'mod_can_move'          => lang('mod_can_move'),

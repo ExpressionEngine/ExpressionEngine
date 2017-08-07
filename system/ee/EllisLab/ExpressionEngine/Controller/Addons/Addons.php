@@ -1746,7 +1746,6 @@ class Addons extends CP_Controller {
 						'type' => 'checkbox',
 						'value' => $value,
 						'choices' => $choices,
-						'wrap' => TRUE,
 						'no_results' => [
 							'text' => 'no_rows_returned'
 						]

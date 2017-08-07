@@ -997,7 +997,6 @@ class Template extends AbstractDesignController {
 					'fields' => array(
 						'allowed_member_groups' => array(
 							'type' => 'checkbox',
-							'wrap' => TRUE,
 							'choices' => $member_group_options,
 							'value' => $allowed_member_groups,
 							'no_results' => [

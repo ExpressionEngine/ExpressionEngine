@@ -133,7 +133,6 @@ class Rte_lib {
 							'type' => 'checkbox',
 							'choices' => $tools,
 							'value' => $toolset['tools'],
-							'wrap' => FALSE,
 							'no_results' => ['text' => sprintf(lang('no_found'), lang('tools'))]
 						)
 					)
