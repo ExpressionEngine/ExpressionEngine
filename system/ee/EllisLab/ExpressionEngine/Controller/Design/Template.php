@@ -550,6 +550,9 @@ class Template extends AbstractDesignController {
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('template_data', 'LIKE', '%' . $search_terms . '%');
 
+		$base_url = ee('CP/URL')->make('design/template/search');
+		$base_url->setQueryStringVariable('search', $search_terms);
+
 		if (ee()->session->userdata['group_id'] != 1)
 		{
 			$assigned_groups = array_keys(ee()->session->userdata['assigned_template_groups']);
@@ -561,30 +564,19 @@ class Template extends AbstractDesignController {
 			}
 		}
 
-		$templates = $templates->all();
+		$this->base_url = $base_url;
 
-		$base_url = ee('CP/URL')->make('design/template/search');
+		$total = $templates->count();
 
-		$table = $this->buildTableFromTemplateCollection($templates, TRUE);
+		$vars = $this->buildTableFromTemplateQueryBuilder($templates, TRUE);
 
-		$vars['table'] = $table->viewData($base_url);
-		$vars['form_url'] = $vars['table']['base_url'];
 		$vars['show_new_template_button'] = FALSE;
 		$vars['show_bulk_delete'] = ee()->cp->allowed_group('can_delete_templates');
 
-		if ( ! empty($vars['table']['data']))
-		{
-			// Paginate!
-			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-				->perPage($vars['table']['limit'])
-				->currentPage($vars['table']['page'])
-				->render($base_url);
-		}
-
 		ee()->view->cp_heading = sprintf(
 			lang('search_results_heading'),
-			$templates->count(),
-			htmlentities($search_terms)
+			$vars['total'],
+			htmlentities($search_terms, ENT_QUOTES, 'UTF-8')
 		);
 
 		ee()->javascript->set_global('template_settings_url', ee('CP/URL')->make('design/template/settings/###')->compile());

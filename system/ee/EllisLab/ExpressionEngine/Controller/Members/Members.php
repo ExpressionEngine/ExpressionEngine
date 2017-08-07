@@ -41,6 +41,8 @@ class Members extends CP_Controller {
 	private $group;
 	private $filter = TRUE;
 	protected $perpage;
+	protected $page = 1;
+	protected $offset = 0;
 
 	/**
 	 * Constructor
@@ -245,11 +247,6 @@ class Members extends CP_Controller {
 			->filter('group_id', 4)
 			->filter('MemberGroup.site_id', ee()->config->item('site_id'));
 
-		$filter = ee('CP/Filter')
-				->add('Perpage', $members->count(), 'show_all_pending');
-
-		$this->renderFilters($filter);
-
 		$listings = $this->listingsPage($members, $this->base_url, 'no_pending_members_found', $checkboxes);
 
 		$vars = array_merge($listings, $vars);
@@ -307,15 +304,14 @@ class Members extends CP_Controller {
 			);
 		}
 
-		$count = $members->count();
+		$total = $members->count();
 
-		// Add this last to get the right $count
-		$page = ((int) ee()->input->get('page')) ?: 1;
-		$offset = ($page - 1) * $this->perpage; // Offset is 0 indexed
+		$filter = ee('CP/Filter')
+				->add('Perpage', $total, 'show_all_banned');
 
-
+		$this->renderFilters($filter);
 		$members->limit($this->perpage)
-			->offset($offset);
+			->offset($this->offset);
 
 		$table = $this->buildTableFromMemberQuery($members, $checkboxes);
 		$table->setNoResultsText($no_results_text);
@@ -325,9 +321,9 @@ class Members extends CP_Controller {
 
 		if ( ! empty($vars['table']['data']))
 		{
-			$vars['pagination'] = ee('CP/Pagination', $count)
+			$vars['pagination'] = ee('CP/Pagination', $total)
 				->perPage($this->perpage)
-				->currentPage($vars['table']['page'])
+				->currentPage($this->page)
 			->render($base_url);
 		}
 
@@ -363,11 +359,6 @@ class Members extends CP_Controller {
 			->with('MemberGroup')
 			->filter('group_id', 2)
 			->filter('MemberGroup.site_id', ee()->config->item('site_id'));
-
-		$filter = ee('CP/Filter')
-				->add('Perpage', $members->count(), 'show_all_banned');
-
-		$this->renderFilters($filter);
 
 		$listings = $this->listingsPage($members, $this->base_url, 'no_banned_members_found');
 
@@ -1128,6 +1119,8 @@ class Members extends CP_Controller {
 		ee()->view->filters = $filters->render($this->base_url);
 		$this->params = $filters->values();
 		$this->perpage = $this->params['perpage'];
+		$this->page = ((int) ee()->input->get('page')) ?: 1;
+		$this->offset = ($this->page - 1) * $this->perpage;
 
 		$this->base_url->addQueryStringVariables($this->params);
 	}

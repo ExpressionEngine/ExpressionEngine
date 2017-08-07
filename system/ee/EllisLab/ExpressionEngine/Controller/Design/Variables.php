@@ -65,7 +65,7 @@ class Variables extends AbstractDesignController {
 		}
 
 		$vars = array();
-		$table = ee('CP/Table', array('autosort' => TRUE));
+		$table = ee('CP/Table', array('autosort' => FALSE));
 		$columns = array(
 			'variable',
 			'all_sites' => array(
@@ -89,11 +89,41 @@ class Variables extends AbstractDesignController {
 		$table->setColumns($columns);
 
 		$data = array();
-		$variables = ee('Model')->make('GlobalVariable')->loadAll();
+
+		$variables = ee('Model')->get('GlobalVariable')
+			->filterGroup()
+				->filter('site_id', ee()->config->item('site_id'))
+				->orFilter('site_id', 0)
+			->endFilterGroup();
 
 		$this->base_url = ee('CP/URL')->make('design/variables');
 
-		foreach($variables as $variable)
+		$total = $variables->count();
+
+		$filters = ee('CP/Filter')
+			->add('Perpage', $variables->count(), 'show_all_variables');
+
+		// Before pagination so perpage is set correctly
+		$this->renderFilters($filters);
+
+		$sort_col = $table->sort_col;
+
+		$sort_map = array(
+			'all_sites' => 'site_id',
+			'variable' => 'variable_name'
+		);
+
+		if ( ! array_key_exists($sort_col, $sort_map))
+		{
+			throw new \Exception("Invalid sort column: ".htmlentities($sort_col));
+		}
+
+		$variable_data = $variables->order($sort_map[$sort_col], $table->sort_dir)
+			->limit($this->perpage)
+			->offset($this->offset)
+			->all();
+
+		foreach($variable_data as $variable)
 		{
 			if ($variable->site_id == 0)
 			{
@@ -153,18 +183,12 @@ class Variables extends AbstractDesignController {
 		$vars['table'] = $table->viewData($this->base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 
-		$filters = ee('CP/Filter')
-			->add('Perpage', $variables->count(), 'show_all_variables');
-
-		// Before pagination so perpage is set correctly
-		$this->renderFilters($filters);
-
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
-			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+			$vars['pagination'] = ee('CP/Pagination', $total)
 				->perPage($this->perpage)
-				->currentPage($vars['table']['page'])
+				->currentPage($this->page)
 				->render($this->base_url);
 		}
 
@@ -172,9 +196,6 @@ class Variables extends AbstractDesignController {
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/confirm_remove'),
 		));
-
-		$filters = ee('CP/Filter')
-			->add('Perpage', $variables->count(), 'show_all_variables');
 
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('template_manager');
