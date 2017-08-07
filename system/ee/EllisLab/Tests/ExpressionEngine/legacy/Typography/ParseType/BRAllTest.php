@@ -851,7 +851,7 @@ class BRAllTest extends \PHPUnit_Framework_TestCase {
 			array('Refernce style link (with title on newline)', "This is [an example][id] reference-style link.\n\n[id]: http://example.com/\n\t\"Optional Title Here\"\n", "This is [an example][id] reference-style link.<br />\n<br />\n[id]: http://example.com/<br />\n\t\"Optional Title Here\"<br />\n"),
 			array('Refernce style implicit link', "Visit [Daring Fireball][] for more information.\n\n[Daring Fireball]: http://daringfireball.net/", "Visit [Daring Fireball][] for more information.<br />\n<br />\n[Daring Fireball]: http://daringfireball.net/"),
 			array('Automatic link', '<http://example.com>', '<http://example.com>'),
-            // array('Automatic email ink', '<address@example.com>', '<a>'),
+            // array('Automatic email link', '<address@example.com>', '<a>'),
 
 			// Emphasis
 			array('Single asterisks', '*single asterisks*', '*single asterisks*'),

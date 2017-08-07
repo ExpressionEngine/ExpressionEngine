@@ -850,7 +850,7 @@ class XHTMLSafeTest extends \PHPUnit_Framework_TestCase {
 			array('Refernce style link (with title on newline)', "This is [an example][id] reference-style link.\n\n[id]: http://example.com/\n\t\"Optional Title Here\"\n", "<p>This is [an example][id] reference-style link.</p>\n\n<p>[id]: <a href=\"http://example.com/\">http://example.com/</a><br />\n &#8220;Optional Title Here&#8221;</p>\n\n"),
 			array('Refernce style implicit link', "Visit [Daring Fireball][] for more information.\n\n[Daring Fireball]: http://daringfireball.net/", "<p>Visit [Daring Fireball][] for more information.</p>\n\n<p>[Daring Fireball]: <a href=\"http://daringfireball.net/\">http://daringfireball.net/</a></p>"),
 			array('Automatic link', '<http://example.com>', '<p>&lt;http://example.com&gt;</p>'),
-            // array('Automatic email ink', '<address@example.com>', '<p>&lt;a&gt;</p>'),
+            // array('Automatic email link', '<address@example.com>', '<p>&lt;a&gt;</p>'),
 
 			// Emphasis
 			array('Single asterisks', '*single asterisks*', '<p>*single asterisks*</p>'),

@@ -153,7 +153,7 @@ class MarkdownTest extends \PHPUnit_Framework_TestCase {
 			array('Refernce style link (with title on newline)', "This is [an example][id] reference-style link.\n\n[id]: http://example.com/\n\t\"Optional Title Here\"\n", "<p>This is <a href=\"http://example.com/\" title=\"Optional Title Here\">an example</a> reference-style link.</p>\n"),
 			array('Refernce style implicit link', "Visit [Daring Fireball][] for more information.\n\n[Daring Fireball]: http://daringfireball.net/", "<p>Visit <a href=\"http://daringfireball.net/\">Daring Fireball</a> for more information.</p>\n"),
 			array('Automatic link', '<http://example.com>', '<p><a href="http://example.com">http://example.com</a></p>' . "\n"),
-			array('Automatic email ink', '<address@example.com>', '<p><a href="&#109;&#x61;&#x69;&#108;&#x74;&#x6f;&#58;&#x61;&#x64;&#100;&#114;&#x65;&#115;&#115;&#x40;&#101;&#120;&#x61;m&#112;&#x6c;e&#46;&#x63;&#x6f;&#109;">&#x61;&#x64;&#100;&#114;&#x65;&#115;&#115;&#x40;&#101;&#120;&#x61;m&#112;&#x6c;e&#46;&#x63;&#x6f;&#109;</a></p>' . "\n"),
+			array('Automatic email link', '<address@example.com>', '<p><a href="&#109;&#x61;&#x69;&#108;&#x74;&#x6f;&#58;&#x61;&#x64;&#100;&#114;&#x65;&#115;&#115;&#x40;&#101;&#120;&#x61;m&#112;&#x6c;e&#46;&#x63;&#x6f;&#109;">&#x61;&#x64;&#100;&#114;&#x65;&#115;&#115;&#x40;&#101;&#120;&#x61;m&#112;&#x6c;e&#46;&#x63;&#x6f;&#109;</a></p>' . "\n"),
 
 			// Emphasis
 			array('Single asterisks', '*single asterisks*', "<p><em>single asterisks</em></p>\n"),

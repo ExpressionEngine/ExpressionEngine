@@ -852,7 +852,7 @@ class NoneNoneTest extends \PHPUnit_Framework_TestCase {
 			array('Refernce style link (with title on newline)', "This is [an example][id] reference-style link.\n\n[id]: http://example.com/\n\t\"Optional Title Here\"\n", "This is [an example][id] reference-style link.\n\n[id]: http://example.com/\n\t\"Optional Title Here\"\n"),
 			array('Refernce style implicit link', "Visit [Daring Fireball][] for more information.\n\n[Daring Fireball]: http://daringfireball.net/", "Visit [Daring Fireball][] for more information.\n\n[Daring Fireball]: http://daringfireball.net/"),
 			array('Automatic link', '<http://example.com>', '&lt;http://example.com&gt;'),
-            // array('Automatic email ink', '<address@example.com>', '&lt;a&gt;'),
+            // array('Automatic email link', '<address@example.com>', '&lt;a&gt;'),
 
 			// Emphasis
 			array('Single asterisks', '*single asterisks*', '*single asterisks*'),
