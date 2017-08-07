@@ -870,6 +870,7 @@ class MarkdownSafeTest extends \PHPUnit_Framework_TestCase {
 			array('Span of code', 'Use the `printf()` function.', "<p>Use the <code>printf()</code> function.</p>\n"),
 			array('Literal backtick', '``There is a literal backtick (`) here.``', "<p><code>There is a literal backtick (`) here.</code></p>\n"),
 			// array('Encoded angle brackets inside code span', "Please don't use any `<blink>` tags.", "<p>Please don&#8217;t use any <code>&lt;blink&gt;</code> tags.</p>\n"),
+			array('HTML inside code span', "This `<strong>thing</strong>`.", "<p>This <code>&lt;strong&gt;thing&lt;/strong&gt;</code>.</p>\n"),
 			array('Encoded ampersands inside code span', '`&#8212;` is the decimal-encoded equivalent of `&mdash;`.', "<p><code>&amp;#8212;</code> is the decimal-encoded equivalent of <code>&amp;mdash;</code>.</p>\n"),
 
 			// Images
