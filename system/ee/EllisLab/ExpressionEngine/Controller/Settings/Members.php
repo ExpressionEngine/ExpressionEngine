@@ -104,7 +104,10 @@ class Members extends Settings {
 					'fields' => array(
 						'default_member_group' => array(
 							'type' => 'radio',
-							'choices' => $member_groups
+							'choices' => $member_groups,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+							]
 						)
 					)
 				),

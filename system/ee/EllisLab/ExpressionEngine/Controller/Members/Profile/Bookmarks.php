@@ -233,13 +233,19 @@ class Bookmarks extends Settings {
 					'type' => 'radio',
 					'choices' => $channels,
 					'value' => $channel->getId(),
-					'required' => TRUE
+					'required' => TRUE,
+					'no_results' => [
+						'text' => 'no_channels'
+					]
 				),
 				'field' => array(
 					'type' => 'radio',
 					'choices' => $fields,
 					'value' => $field,
-					'required' => TRUE
+					'required' => TRUE,
+					'no_results' => [
+						'text' => sprintf(lang('no_found'), lang('fields'))
+					]
 				)
 			);
 		}

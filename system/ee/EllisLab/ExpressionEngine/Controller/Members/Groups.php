@@ -1122,7 +1122,10 @@ class Groups extends Members\Members {
 							'allowed_channels' => array(
 								'type' => 'checkbox',
 								'choices' => $allowed_channels,
-								'value' => element('allowed_channels', $values)
+								'value' => element('allowed_channels', $values),
+								'no_results' => [
+									'text' => sprintf(lang('no_found'), lang('channels'))
+								]
 							),
 						)
 					)
@@ -1349,7 +1352,10 @@ class Groups extends Members\Members {
 								'allowed_template_groups' => array(
 									'type' => 'checkbox',
 									'choices' => $template_groups,
-									'value' => element('template_groups', $values)
+									'value' => element('template_groups', $values),
+									'no_results' => [
+										'text' => sprintf(lang('no_found'), lang('template_groups'))
+									]
 								),
 							)
 						)
@@ -1392,7 +1398,10 @@ class Groups extends Members\Members {
 								'addons_access' => array(
 									'type' => 'checkbox',
 									'choices' => $addons,
-									'value' => element('addons_access', $values)
+									'value' => element('addons_access', $values),
+									'no_results' => [
+										'text' => sprintf(lang('no_found'), lang('addons'))
+									]
 								)
 							)
 						),

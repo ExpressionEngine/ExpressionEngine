@@ -781,7 +781,9 @@ class Cat extends AbstractChannelsController {
 					'type' => 'radio',
 					'value' => $category->parent_id,
 					'choices' => $cat_group->buildCategoryOptionsTree(),
-					'no_results' => ['text' => sprintf(lang('no_found'), lang('categories'))]
+					'no_results' => [
+						'text' => sprintf(lang('no_found'), lang('categories'))
+					]
 				)
 			)
 		);

@@ -597,6 +597,9 @@ class Forum_mcp extends CP_Controller {
 						'type' => 'radio',
 						'choices' => ee('Model')->get('Site')->all()->getDictionary('site_id', 'site_label'),
 						'value' => $board->board_site_id,
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('sites'))
+						]
 					)
 				)
 			);
@@ -934,7 +937,8 @@ class Forum_mcp extends CP_Controller {
 						'board_notify_emails_topics' => array(
 							'type' => 'text',
 							'value' => $board->board_notify_emails_topics,
-							'attrs' => 'placeholder="' . lang('recipients'). '"'
+							'attrs' => 'placeholder="' . lang('recipients'). '"',
+							'margin_top' => TRUE
 						),
 					)
 				),
@@ -953,7 +957,8 @@ class Forum_mcp extends CP_Controller {
 						'board_notify_emails' => array(
 							'type' => 'text',
 							'value' => $board->board_notify_emails,
-							'attrs' => 'placeholder="' . lang('recipients'). '"'
+							'attrs' => 'placeholder="' . lang('recipients'). '"',
+							'margin_top' => TRUE
 						),
 					)
 				),
@@ -1062,6 +1067,10 @@ class Forum_mcp extends CP_Controller {
 			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
 		}, $member_groups);
 
+		$member_groups_no_results = [
+			'text' => sprintf(lang('no_found'), lang('member_groups'))
+		];
+
 		$sections = array(
 			array(
 				ee('CP/Alert')->makeInline('permissions-warn')
@@ -1091,6 +1100,7 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $board->getPermission('can_view_forum'),
+							'no_results' => $member_groups_no_results
 						)
 					)
 				),
@@ -1102,6 +1112,7 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $board->getPermission('can_view_hidden'),
+							'no_results' => $member_groups_no_results
 						)
 					)
 				),
@@ -1113,6 +1124,7 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $board->getPermission('can_view_topics'),
+							'no_results' => $member_groups_no_results
 						)
 					)
 				),
@@ -1124,6 +1136,7 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $board->getPermission('can_post_topics'),
+							'no_results' => $member_groups_no_results
 						)
 					)
 				),
@@ -1135,6 +1148,9 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $board->getPermission('can_post_reply'),
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+							]
 						)
 					)
 				),
@@ -1146,6 +1162,9 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $board->getPermission('upload_files'),
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+							]
 						)
 					)
 				),
@@ -1157,6 +1176,7 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $board->getPermission('can_report'),
+							'no_results' => $member_groups_no_results
 						)
 					)
 				),
@@ -1168,6 +1188,7 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $board->getPermission('can_search'),
+							'no_results' => $member_groups_no_results
 						)
 					)
 				),
@@ -1441,6 +1462,9 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'radio',
 							'choices' => $boards,
 							'value' => $alias->board_alias_id,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('forum_boards'))
+							]
 						)
 					)
 				),
@@ -1691,7 +1715,8 @@ class Forum_mcp extends CP_Controller {
 						'forum_notify_emails' => array(
 							'type' => 'text',
 							'value' => $category->forum_notify_emails,
-							'attrs' => 'placeholder="' . lang('recipients'). '"'
+							'attrs' => 'placeholder="' . lang('recipients'). '"',
+							'margin_top' => TRUE
 						),
 					)
 				),
@@ -1710,7 +1735,8 @@ class Forum_mcp extends CP_Controller {
 						'forum_notify_emails_topics' => array(
 							'type' => 'text',
 							'value' => $category->forum_notify_emails_topics,
-							'attrs' => 'placeholder="' . lang('recipients'). '"'
+							'attrs' => 'placeholder="' . lang('recipients'). '"',
+							'margin_top' => TRUE
 						),
 					)
 				),
@@ -1770,6 +1796,10 @@ class Forum_mcp extends CP_Controller {
 			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
 		}, $member_groups);
 
+		$member_groups_no_results = [
+			'text' => sprintf(lang('no_found'), lang('member_groups'))
+		];
+
 		$vars['sections'] = array(
 			array(
 				ee('CP/Alert')->makeInline('permissions-warn')
@@ -1785,6 +1815,7 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $category->getPermission('can_view_forum'),
+							'no_results' => $member_groups_no_results
 						)
 					)
 				),
@@ -1796,6 +1827,7 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $category->getPermission('can_view_hidden'),
+							'no_results' => $member_groups_no_results
 						)
 					)
 				),
@@ -2133,7 +2165,8 @@ class Forum_mcp extends CP_Controller {
 						'forum_notify_emails' => array(
 							'type' => 'text',
 							'value' => $forum->forum_notify_emails,
-							'attrs' => 'placeholder="' . lang('recipients'). '"'
+							'attrs' => 'placeholder="' . lang('recipients'). '"',
+							'margin_top' => TRUE
 						),
 					)
 				),
@@ -2152,7 +2185,8 @@ class Forum_mcp extends CP_Controller {
 						'forum_notify_emails_topics' => array(
 							'type' => 'text',
 							'value' => $forum->forum_notify_emails_topics,
-							'attrs' => 'placeholder="' . lang('recipients'). '"'
+							'attrs' => 'placeholder="' . lang('recipients'). '"',
+							'margin_top' => TRUE
 						),
 					)
 				),
@@ -2289,6 +2323,10 @@ class Forum_mcp extends CP_Controller {
 			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
 		}, $member_groups);
 
+		$member_groups_no_results = [
+			'text' => sprintf(lang('no_found'), lang('member_groups'))
+		];
+
 		$vars['sections'] = array(
 			array(
 				ee('CP/Alert')->makeInline('permissions-warn')
@@ -2304,6 +2342,7 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $forum->getPermission('can_view_forum'),
+							'no_results' => $member_groups_no_results
 						)
 					)
 				),
@@ -2315,6 +2354,7 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $forum->getPermission('can_view_hidden'),
+							'no_results' => $member_groups_no_results
 						)
 					)
 				),
@@ -2326,6 +2366,7 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $forum->getPermission('can_view_topics'),
+							'no_results' => $member_groups_no_results
 						)
 					)
 				),
@@ -2337,6 +2378,7 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $forum->getPermission('can_post_topics'),
+							'no_results' => $member_groups_no_results
 						)
 					)
 				),
@@ -2348,6 +2390,7 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $forum->getPermission('can_post_reply'),
+							'no_results' => $member_groups_no_results
 						)
 					)
 				),
@@ -2359,6 +2402,7 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $forum->getPermission('upload_files'),
+							'no_results' => $member_groups_no_results
 						)
 					)
 				),
@@ -2370,6 +2414,7 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $forum->getPermission('can_report'),
+							'no_results' => $member_groups_no_results
 						)
 					)
 				),
@@ -2381,6 +2426,7 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $forum->getPermission('can_search'),
+							'no_results' => $member_groups_no_results
 						)
 					)
 				),
@@ -2907,11 +2953,15 @@ class Forum_mcp extends CP_Controller {
 								'group' => lang('admin_type_member_group'),
 							),
 							'value' => 'group',
+							'encode' => FALSE
 						),
 						'member_group' => array(
 							'type' => 'radio',
 							'choices' => $member_groups,
-							'value' => 5
+							'value' => 5,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+							]
 						),
 						'administrator_type_individual' => array(
 							'type' => 'radio',
@@ -2919,6 +2969,7 @@ class Forum_mcp extends CP_Controller {
 							'choices' => array(
 								'individual' => lang('admin_type_individual')
 							),
+							'encode' => FALSE
 						),
 						'individual' => array(
 							'type' => 'text',
@@ -3301,7 +3352,10 @@ class Forum_mcp extends CP_Controller {
 						'member_group' => array(
 							'type' => 'radio',
 							'choices' => $member_groups,
-							'value' => ($moderator->mod_group_id) ?: 5
+							'value' => ($moderator->mod_group_id) ?: 5,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+							]
 						),
 						'moderator_type_individual' => array(
 							'type' => 'radio',

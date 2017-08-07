@@ -75,7 +75,10 @@ class Group extends AbstractDesignController {
 						'fields' => array(
 							'duplicate_group' => array(
 								'type' => 'radio',
-								'choices' => $groups
+								'choices' => $groups,
+								'no_results' => [
+									'text' => sprintf(lang('no_found'), lang('template_groups'))
+								]
 							)
 						)
 					),

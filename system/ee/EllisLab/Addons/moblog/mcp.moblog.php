@@ -394,7 +394,10 @@ EOT;
 						'moblog_categories' => array(
 							'type' => 'checkbox',
 							'choices' => ee('Model')->get('Category')->fields('cat_id', 'cat_name')->all()->getDictionary('cat_id', 'cat_name'),
-							'value' => $moblog->moblog_categories
+							'value' => $moblog->moblog_categories,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('categories'))
+							]
 						)
 					)
 				),

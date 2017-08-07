@@ -152,7 +152,10 @@ class Template extends AbstractDesignController {
 						'fields' => array(
 							'template_id' => array(
 								'type' => 'radio',
-								'choices' => $existing_templates
+								'choices' => $existing_templates,
+								'no_results' => [
+									'text' => sprintf(lang('no_found'), lang('templates'))
+								]
 							)
 						)
 					),
@@ -996,7 +999,10 @@ class Template extends AbstractDesignController {
 							'type' => 'checkbox',
 							'wrap' => TRUE,
 							'choices' => $member_group_options,
-							'value' => $allowed_member_groups
+							'value' => $allowed_member_groups,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+							]
 						)
 					)
 				),
@@ -1007,7 +1013,10 @@ class Template extends AbstractDesignController {
 						'no_auth_bounce' => array(
 							'type' => 'radio',
 							'choices' => $existing_templates,
-							'value' => $template->no_auth_bounce
+							'value' => $template->no_auth_bounce,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('templates'))
+							]
 						)
 					)
 				),

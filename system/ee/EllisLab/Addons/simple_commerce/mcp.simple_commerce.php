@@ -567,7 +567,10 @@ class Simple_commerce_mcp {
 						$prefix.'[admin_email_template]' => array(
 							'type' => 'radio',
 							'choices' => $email_templates,
-							'value' => $item->admin_email_template
+							'value' => $item->admin_email_template,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('email_templates'))
+							]
 						)
 					)
 				),
@@ -578,7 +581,10 @@ class Simple_commerce_mcp {
 						$prefix.'[customer_email_template]' => array(
 							'type' => 'radio',
 							'choices' => $email_templates,
-							'value' => $item->customer_email_template
+							'value' => $item->customer_email_template,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('email_templates'))
+							]
 						)
 					)
 				),
@@ -589,7 +595,10 @@ class Simple_commerce_mcp {
 						$prefix.'[new_member_group]' => array(
 							'type' => 'radio',
 							'choices' => $member_groups,
-							'value' => $item->new_member_group
+							'value' => $item->new_member_group,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+							]
 						)
 					)
 				),
@@ -600,7 +609,10 @@ class Simple_commerce_mcp {
 						$prefix.'[admin_email_template_unsubscribe]' => array(
 							'type' => 'radio',
 							'choices' => $email_templates,
-							'value' => $item->admin_email_template_unsubscribe
+							'value' => $item->admin_email_template_unsubscribe,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('email_templates'))
+							]
 						)
 					)
 				),
@@ -611,7 +623,10 @@ class Simple_commerce_mcp {
 						$prefix.'[customer_email_template_unsubscribe]' => array(
 							'type' => 'radio',
 							'choices' => $email_templates,
-							'value' => $item->customer_email_template_unsubscribe
+							'value' => $item->customer_email_template_unsubscribe,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('email_templates'))
+							]
 						)
 					)
 				),
@@ -622,7 +637,10 @@ class Simple_commerce_mcp {
 						$prefix.'[member_group_unsubscribe]' => array(
 							'type' => 'radio',
 							'choices' => $member_groups,
-							'value' => $item->member_group_unsubscribe
+							'value' => $item->member_group_unsubscribe,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+							]
 						)
 					)
 				),

@@ -66,7 +66,10 @@ class Create extends Members {
 							'choices' => $choices,
 							'group_toggle' => $group_toggle,
 							'value' => (isset($choices[5]) && $choices[5] == 'Members') ? 5 : '',
-							'required' => TRUE
+							'required' => TRUE,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+							]
 						)
 					)
 				),

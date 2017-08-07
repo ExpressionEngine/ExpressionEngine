@@ -342,7 +342,10 @@ class Pages_mcp {
 						'default_channel' => array(
 							'type' => 'radio',
 							'choices' => $channels_dropdown,
-							'value' => (int) $config['default_channel']
+							'value' => (int) $config['default_channel'],
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('channels'))
+							]
 						)
 					)
 				),

@@ -56,7 +56,10 @@ class MemberImport extends Utilities {
 					'fields' => array(
 						'group_id' => array(
 							'type' => 'radio',
-							'choices' => $member_groups
+							'choices' => $member_groups,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+							]
 						)
 					)
 				),

@@ -267,7 +267,10 @@ class Channels extends AbstractChannelsController {
 				'fields' => array(
 					'duplicate_channel_prefs' => array(
 						'type' => 'radio',
-						'choices' => $duplicate_channel_prefs_options
+						'choices' => $duplicate_channel_prefs_options,
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('channels'))
+						]
 					)
 				)
 			);
@@ -714,7 +717,10 @@ class Channels extends AbstractChannelsController {
 						'live_look_template' => array(
 							'type' => 'radio',
 							'choices' => $live_look_template_options,
-							'value' => $channel->live_look_template
+							'value' => $channel->live_look_template,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('templates'))
+							]
 						)
 					)
 				)
@@ -747,7 +753,10 @@ class Channels extends AbstractChannelsController {
 						'deft_status' => array(
 							'type' => 'radio',
 							'choices' => $deft_status_options,
-							'value' => $channel->deft_status
+							'value' => $channel->deft_status,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('statuses'))
+							]
 						)
 					)
 				),
@@ -758,7 +767,10 @@ class Channels extends AbstractChannelsController {
 						'deft_category' => array(
 							'type' => 'radio',
 							'choices' => $deft_category_options,
-							'value' => $channel->deft_category
+							'value' => $channel->deft_category,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('categories'))
+							]
 						)
 					)
 				),
@@ -769,7 +781,10 @@ class Channels extends AbstractChannelsController {
 						'search_excerpt' => array(
 							'type' => 'radio',
 							'choices' => $search_excerpt_options,
-							'value' => $channel->search_excerpt
+							'value' => $channel->search_excerpt,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('fields'))
+							]
 						)
 					)
 				)
@@ -824,7 +839,10 @@ class Channels extends AbstractChannelsController {
 						'default_status' => array(
 							'type' => 'radio',
 							'choices' => $channel_form_statuses,
-							'value' => $channel_form->default_status
+							'value' => $channel_form->default_status,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('statuses'))
+							]
 						)
 					)
 				),
@@ -835,7 +853,10 @@ class Channels extends AbstractChannelsController {
 						'default_author' => array(
 							'type' => 'radio',
 							'choices' => $all_authors,
-							'value' => $channel_form->default_author
+							'value' => $channel_form->default_author,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('authors'))
+							]
 						)
 					)
 				),

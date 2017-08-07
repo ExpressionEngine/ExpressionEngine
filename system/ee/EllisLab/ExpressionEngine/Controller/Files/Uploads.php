@@ -283,7 +283,10 @@ class Uploads extends AbstractFilesController {
 						'type' => 'checkbox',
 						'wrap' => TRUE,
 						'choices' => $member_groups,
-						'value' => $allowed_groups
+						'value' => $allowed_groups,
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('member_groups'))
+						]
 					)
 				)
 			)
@@ -314,7 +317,10 @@ class Uploads extends AbstractFilesController {
 					'type' => 'checkbox',
 					'wrap' => TRUE,
 					'choices' => $cat_group_options,
-					'value' => ($upload_destination) ? explode('|', $upload_destination->cat_group) : array()
+					'value' => ($upload_destination) ? explode('|', $upload_destination->cat_group) : array(),
+					'no_results' => [
+						'text' => sprintf(lang('no_found'), lang('category_groups'))
+					]
 				)
 			)
 		);
@@ -756,7 +762,10 @@ class Uploads extends AbstractFilesController {
 				'fields' => array(
 					'sizes' => array(
 						'type' => 'checkbox',
-						'choices' => $size_choices
+						'choices' => $size_choices,
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('image_manipulations'))
+						]
 					)
 				)
 			);

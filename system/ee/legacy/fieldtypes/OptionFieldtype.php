@@ -235,7 +235,10 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 				'margin_left' => TRUE,
 				'choices' => $this->get_channel_field_list(),
 				'value' => ($data['field_pre_channel_id'] != 0)
-					? $data['field_pre_channel_id'] . '_' . $data['field_pre_field_id'] : ''
+					? $data['field_pre_channel_id'] . '_' . $data['field_pre_field_id'] : '',
+				'no_results' => [
+					'text' => sprintf(lang('no_found'), lang('fields'))
+				]
 			);
 		}
 
