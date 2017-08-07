@@ -12,14 +12,14 @@ if ( ! defined('PATH_ADDONS'))
 
 if ( ! defined('REQ'))
 {
-	define('REQ', FALSE);	
+	define('REQ', FALSE);
 }
 
 
 class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 
 		private $typography;
-	
+
 	public function tearDown()
 	{
 		unset($this->typography);
@@ -43,7 +43,7 @@ class FormatTitleTest extends \PHPUnit_Framework_TestCase {
 	public function testFormatTitles($description, $in, $out)
 	{
 		$title = $this->typography->formatTitle($in);
-		$this->assertEquals($out, $parsed, $description);
+		$this->assertEquals($out, $title, $description);
 	}
 
 	public function titlesDataProvider()
