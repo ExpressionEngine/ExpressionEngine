@@ -144,14 +144,12 @@ class Settings extends Profile {
 				],
 				'upload_avatar' => [
 					'type' => 'html',
-					'margin_top' => TRUE,
 					'margin_left' => TRUE,
 					'content' => form_upload('upload_avatar')
 				],
 				'avatar_picker_choose' => [
 					'type' => 'radio',
 					'name' => 'avatar_picker',
-					'margin_top' => TRUE,
 					'choices' => [
 						'choose' => lang('choose_avatar')
 					],
@@ -159,7 +157,6 @@ class Settings extends Profile {
 				],
 				'choose_avatar' => [
 					'type' => 'html',
-					'margin_top' => TRUE,
 					'margin_left' => TRUE,
 					'content' => ul($dirs, array('class' => 'arrow-list'))
 				],

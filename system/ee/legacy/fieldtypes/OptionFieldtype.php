@@ -193,7 +193,6 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 					),
 					'value_label_pairs' => array(
 						'type' =>'html',
-						'margin_top' => TRUE,
 						'margin_left' => TRUE,
 						'content' => ee('View')->make('ee:_shared/form/mini_grid')
 							->render($grid->viewData())
@@ -201,7 +200,6 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 					'field_pre_populate_n' => array(
 						'type' => 'radio',
 						'name' => 'field_pre_populate',
-						'margin_top' => TRUE,
 						'choices' => array(
 							'n' => lang('field_populate_manually'),
 						),
@@ -209,7 +207,6 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 					),
 					'field_list_items' => array(
 						'type' => 'textarea',
-						'margin_top' => TRUE,
 						'margin_left' => TRUE,
 						'value' => $data['field_list_items']
 					)
@@ -222,7 +219,6 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 			$settings[1]['fields']['field_pre_populate_y'] = array(
 				'type' => 'radio',
 				'name' => 'field_pre_populate',
-				'margin_top' => TRUE,
 				'choices' => array(
 					'y' => lang('field_populate_from_channel'),
 				),
@@ -231,7 +227,6 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 
 			$settings[1]['fields']['field_pre_populate_id'] = array(
 				'type' => 'radio',
-				'margin_top' => TRUE,
 				'margin_left' => TRUE,
 				'choices' => $this->get_channel_field_list(),
 				'value' => ($data['field_pre_channel_id'] != 0)
@@ -314,7 +309,6 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 						),
 						'value_label_pairs' => array(
 							'type' =>'html',
-							'margin_top' => TRUE,
 							'margin_left' => TRUE,
 							'content' => ee('View')->make('ee:_shared/form/mini_grid')
 								->render($grid->viewData())
@@ -322,7 +316,6 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 						'field_pre_populate_n' => array(
 							'type' => 'radio',
 							'name' => 'field_pre_populate',
-							'margin_top' => TRUE,
 							'choices' => array(
 								'n' => lang('field_populate_manually'),
 							),
@@ -330,7 +323,6 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 						),
 						'field_list_items' => array(
 							'type' => 'textarea',
-							'margin_top' => TRUE,
 							'margin_left' => TRUE,
 							'value' => isset($data['field_list_items']) ? $data['field_list_items'] : ''
 						)

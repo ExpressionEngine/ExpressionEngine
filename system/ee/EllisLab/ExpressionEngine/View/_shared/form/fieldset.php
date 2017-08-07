@@ -98,6 +98,7 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 	</div>
 	<div class="field-control">
 		<?php
+			$count = 0;
 			foreach ($setting['fields'] as $field_name => $field)
 			{
 				$vars = array(
@@ -106,6 +107,14 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 					'setting' => $setting,
 					'grid' => $grid
 				);
+
+				// Add top margin to sequential fields
+				if ($count > 0 && ! isset($field['margin_top']))
+				{
+					$vars['field']['margin_top'] = TRUE;
+				}
+
+				$count++;
 
 				$this->embed('ee:_shared/form/field', $vars);
 			}

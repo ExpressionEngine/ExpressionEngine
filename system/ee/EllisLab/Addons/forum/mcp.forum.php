@@ -938,7 +938,6 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'text',
 							'value' => $board->board_notify_emails_topics,
 							'attrs' => 'placeholder="' . lang('recipients'). '"',
-							'margin_top' => TRUE
 						),
 					)
 				),
@@ -958,7 +957,6 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'text',
 							'value' => $board->board_notify_emails,
 							'attrs' => 'placeholder="' . lang('recipients'). '"',
-							'margin_top' => TRUE
 						),
 					)
 				),
@@ -1716,7 +1714,6 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'text',
 							'value' => $category->forum_notify_emails,
 							'attrs' => 'placeholder="' . lang('recipients'). '"',
-							'margin_top' => TRUE
 						),
 					)
 				),
@@ -1736,7 +1733,6 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'text',
 							'value' => $category->forum_notify_emails_topics,
 							'attrs' => 'placeholder="' . lang('recipients'). '"',
-							'margin_top' => TRUE
 						),
 					)
 				),
@@ -2166,7 +2162,6 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'text',
 							'value' => $forum->forum_notify_emails,
 							'attrs' => 'placeholder="' . lang('recipients'). '"',
-							'margin_top' => TRUE
 						),
 					)
 				),
@@ -2186,7 +2181,6 @@ class Forum_mcp extends CP_Controller {
 							'type' => 'text',
 							'value' => $forum->forum_notify_emails_topics,
 							'attrs' => 'placeholder="' . lang('recipients'). '"',
-							'margin_top' => TRUE
 						),
 					)
 				),

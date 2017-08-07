@@ -980,7 +980,6 @@ class Groups extends Members\Members {
 							'cp_homepage_custom' => array(
 								'type' => 'text',
 								'value' => element('cp_homepage_custom', $values),
-								'margin_top' => TRUE
 							)
 						)
 					),
