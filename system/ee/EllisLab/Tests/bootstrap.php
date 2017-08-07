@@ -44,7 +44,7 @@ require_once APPPATH.'libraries/typography/Markdown/Michelf/MarkdownExtra.inc.ph
 class ConfigStub {
 	public function item($str = '')
 	{
-		return 'n';
+		return FALSE;
 	}
 }
 
