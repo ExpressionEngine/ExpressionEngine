@@ -155,6 +155,14 @@ function DropdownItem (props) {
 
 $(document).ready(function () {
   Dropdown.renderFields()
+
+  // Close when clicked elsewhere
+  $(document).on('click',function(e) {
+    $('.field-drop-selected.field-open')
+      .not($(e.target)
+      .closest('.field-drop-selected.field-open'))
+      .click()
+  })
 })
 
 Grid.bind('select', 'display', function(cell) {
