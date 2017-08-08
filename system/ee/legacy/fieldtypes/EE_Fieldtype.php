@@ -312,6 +312,14 @@ abstract class EE_Fieldtype {
 	}
 
 	/**
+	 * :replace modifier
+	 */
+	public function replace_replace($data, $params = array(), $tagdata = FALSE)
+	{
+		return (string) ee('Format')->make('Text', $data)->replace($params);
+	}
+
+	/**
 	 * Pre process the stored data.
 	 *
 	 * This is called before the field is displayed. It's return will

@@ -223,7 +223,7 @@ class Text extends Formatter {
 	}
 
 	/**
-	 * Limit to X characters, with an optional end character
+	 * Limit to X characters, with an optional end character. Strips HTML.
 	 *
 	 * @param  array  $options Options: (int) characters, (string) end_char
 	 * @return self This returns a reference to itself
@@ -350,6 +350,48 @@ class Text extends Formatter {
 		if ( ! $enclose_with_quotes)
 		{
 			$this->content = trim($this->content, '"');
+		}
+
+		return $this;
+	}
+
+	/**
+	 * String replacement
+	 * @param  array  $options Options: (string) find, (string) (replace), (bool) regex
+	 * @return object This returns a reference to itself
+	 */
+	public function replace($options = [])
+	{
+		$find = (isset($options['find'])) ? $options['find'] : '';
+		$replace = (isset($options['replace'])) ? $options['replace'] : '';
+
+		// anything to do?
+		if ( ! $find)
+		{
+			return $this;
+		}
+
+		if ( ! isset($options['regex']) OR get_bool_from_string($options['regex']) !== TRUE)
+		{
+			if (isset($options['case_sensitive']) && get_bool_from_string($options['case_sensitive']) === FALSE)
+			{
+				$this->content = str_ireplace($find, $replace, $this->content);
+			}
+			else
+			{
+				$this->content = str_replace($find, $replace, $this->content);
+			}
+
+			return $this;
+		}
+
+		$orig = $this->content;
+		$valid = @preg_match($find, NULL);
+
+		// valid regex only, unless DEBUG is enabled
+		if ($valid !== FALSE OR DEBUG)
+		{
+			$this->content = preg_replace($find, $replace, $this->content);
 		}
 
 		return $this;

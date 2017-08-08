@@ -3806,6 +3806,14 @@ class EE_Template {
 	}
 
 	/**
+	 * :replace modifier
+	 */
+	public function replace_replace($data, $params = array(), $raw)
+	{
+		return (string) ee('Format')->make('Text', $data)->replace($params);
+	}
+
+	/**
 	 * Parse Var Single
 	 *
 	 * Parses single variables from the parse_variables() method
