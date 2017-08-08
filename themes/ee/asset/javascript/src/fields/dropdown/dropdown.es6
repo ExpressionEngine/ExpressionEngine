@@ -67,7 +67,7 @@ class Dropdown extends React.Component {
   handleSearch = (searchTerm) => {
     if ( ! this.ajaxFilter) {
       this.setState({ items: this.initialItems.filter(item =>
-        item.label.toLowerCase().includes(searchTerm.toLowerCase())
+        String(item.label).toLowerCase().includes(searchTerm.toLowerCase())
       )})
       return
     }

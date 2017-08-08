@@ -44,7 +44,7 @@ var Dropdown = function (_React$Component) {
     _this.handleSearch = function (searchTerm) {
       if (!_this.ajaxFilter) {
         _this.setState({ items: _this.initialItems.filter(function (item) {
-            return item.label.toLowerCase().includes(searchTerm.toLowerCase());
+            return String(item.label).toLowerCase().includes(searchTerm.toLowerCase());
           }) });
         return;
       }
