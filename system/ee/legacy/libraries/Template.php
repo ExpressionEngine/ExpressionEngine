@@ -3798,6 +3798,14 @@ class EE_Template {
 	}
 
 	/**
+	 * :json modifier
+	 */
+	public function replace_json($data, $params = array(), $raw)
+	{
+		return (string) ee('Format')->make('Text', $data)->json($params);
+	}
+
+	/**
 	 * Parse Var Single
 	 *
 	 * Parses single variables from the parse_variables() method

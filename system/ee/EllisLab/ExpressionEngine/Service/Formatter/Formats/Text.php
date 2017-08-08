@@ -326,6 +326,36 @@ class Text extends Formatter {
 	}
 
 	/**
+	 * JSON encoding
+	 * @param  array  $options Options: (bool) double_encode, (bool) enclose_with_quotes, (string) options, pipedelimited list of PHP JSON bitmask constants
+	 * @return self This returns a reference to itself
+	 */
+	public function json($options = [])
+	{
+		$double_encode = (isset($options['double_encode'])) ? get_bool_from_string($options['double_encode']) : TRUE;
+		$enclose_with_quotes = (isset($options['enclose_with_quotes'])) ? get_bool_from_string($options['enclose_with_quotes']) : TRUE;
+
+		$json_options = 0;
+		if (isset($options['options']))
+		{
+			foreach(preg_split('/[\s\|]/', $options['options'], NULL, PREG_SPLIT_NO_EMPTY) as $param)
+			{
+				$json_options += constant($param);
+			}
+		}
+
+		$this->attributeEscape($double_encode);
+		$this->content = json_encode($this->content, $json_options);
+
+		if ( ! $enclose_with_quotes)
+		{
+			$this->content = trim($this->content, '"');
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Get the length of the string
 	 *
 	 * @return self This returns a reference to itself

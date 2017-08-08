@@ -244,6 +244,14 @@ class Checkboxes_ft extends OptionFieldtype {
 		return parent::replace_censor($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
 	}
 
+	/**
+	 * :json modifier
+	 */
+	public function replace_json($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_json($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
 	function display_settings($data)
 	{
 		$settings = $this->getSettingsForm(
