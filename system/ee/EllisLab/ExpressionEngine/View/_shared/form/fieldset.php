@@ -19,6 +19,11 @@ if (isset($setting['attrs']['class']))
 	unset($setting['attrs']['class']);
 }
 
+if (isset($setting['columns']))
+{
+	$fieldset_classes = 'w-'.$setting['columns'];
+}
+
 // Any fields required?
 foreach ($setting['fields'] as $field_name => $field)
 {
