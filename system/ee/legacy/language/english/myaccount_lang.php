@@ -34,9 +34,17 @@ $lang = array(
 
 'biography_desc' => 'Your biography.',
 
-'birthday' => 'Birthday',
+'birth_day' => 'Birth day',
 
-'birthday_desc' => 'Your date of birth.',
+'birth_day_desc' => 'Your day of birth.',
+
+'birth_month' => 'Birth month',
+
+'birth_month_desc' => 'Your month of birth.',
+
+'birth_year' => 'Birth year',
+
+'birth_year_desc' => 'Your year of birth.',
 
 'blocked_members' => 'Blocked Members',
 
