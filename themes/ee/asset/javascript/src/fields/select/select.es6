@@ -1,3 +1,5 @@
+const FilterableSelectList = makeFilterableComponent(SelectList)
+
 class SelectField extends React.Component {
   constructor (props) {
     super(props)
@@ -58,8 +60,6 @@ class SelectField extends React.Component {
   }
 
   render () {
-    const FilterableSelectList = makeFilterableComponent(SelectList)
-
     let selectItem = <FilterableSelectList items={this.state.items}
       initialItems={this.initialItems}
       limit={this.props.limit}
@@ -79,9 +79,9 @@ class SelectField extends React.Component {
       reorderable={this.state.editing}
       removable={this.state.editing}
       groupToggle={this.props.groupToggle}
-      setEditingMode={(editing) => this.setEditingMode(editing)}
       manageLabel={this.props.manageLabel}
       reorderAjaxUrl={this.props.reorderAjaxUrl}
+      loading={this.props.loading}
     />
 
     if (this.props.manageable) {

@@ -1,22 +1,20 @@
 class SelectList extends React.Component {
+  static defaultProps = {
+    filterable: false,
+    reorderable: false,
+    removable: false,
+    selectable: true,
+    tooMany: 8
+  }
+
   constructor (props) {
     super(props)
-
-    this.filterable = props.filterable !== undefined ? props.filterable : false
-    this.selectable = props.selectable !== undefined ? props.selectable : true
-    this.tooMany = props.tooMany ? props.tooMany : SelectList.limit
-
-    this.state = {
-      loading: false
-    }
 
     // In the rare case we need to force a full-rerender of the component, we'll
     // increment this variable which is set as a key on the root element,
     // telling React to destroy it and start anew
     this.version = 0
   }
-
-  static limit = 8
 
   static formatItems (items, parent, multi) {
     if ( ! items) return []
@@ -51,16 +49,8 @@ class SelectList extends React.Component {
     return itemsArray
   }
 
-  reorderable () {
-    return this.props.reorderable !== undefined ? this.props.reorderable : false
-  }
-
-  removable () {
-    return this.props.removable !== undefined ? this.props.removable : false
-  }
-
   componentDidMount () {
-    if (this.reorderable() && ! this.props.nested) this.bindSortable()
+    if (this.props.reorderable && ! this.props.nested) this.bindSortable()
   }
 
   bindSortable () {
@@ -254,19 +244,19 @@ class SelectList extends React.Component {
       $(this.input).trigger('change')
     }
 
-    if (this.props.nested && this.reorderable()) this.bindNestable()
+    if (this.props.nested && this.props.reorderable) this.bindNestable()
   }
 
   render () {
     let props = this.props
-    let tooMany = props.items.length > this.tooMany && ! this.state.loading
-    let shouldShowToggleAll = (props.multi || ! this.selectable) && props.toggleAll !== null
-    let shouldShowFieldTools = this.props.items.length > SelectList.limit
+    let tooMany = props.items.length > this.props.tooMany && ! this.props.loading
+    let shouldShowToggleAll = (props.multi || ! this.props.selectable) && props.toggleAll !== null
+    let shouldShowFieldTools = this.props.items.length > this.props.tooMany
 
     return (
       <div className={"fields-select" + (tooMany ? ' field-resizable' : '')}
         ref={(container) => { this.container = container }} key={this.version}>
-        {this.filterable &&
+        {this.props.filterable &&
           <FieldTools>
             <FilterBar>
               {props.filters && props.filters.map(filter =>
@@ -287,13 +277,13 @@ class SelectList extends React.Component {
           </FieldTools>
         }
         <FieldInputs nested={props.nested}>
-          { ! this.state.loading && props.items.length == 0 &&
+          { ! this.props.loading && props.items.length == 0 &&
             <NoResults text={props.noResults} />
           }
-          {this.state.loading &&
+          {this.props.loading &&
             <Loading text={EE.lang.loading} />
           }
-          { ! this.state.loading && props.items.map((item, index) =>
+          { ! this.props.loading && props.items.map((item, index) =>
             <SelectItem key={item.value ? item.value : item.section}
               sortableIndex={index}
               item={item}
@@ -301,9 +291,9 @@ class SelectList extends React.Component {
               selected={props.selected}
               multi={props.multi}
               nested={props.nested}
-              selectable={this.selectable}
-              reorderable={this.reorderable()}
-              removable={this.removable()}
+              selectable={this.props.selectable}
+              reorderable={this.props.reorderable}
+              removable={this.props.removable}
               handleSelect={this.handleSelect}
               handleRemove={this.handleRemove}
               groupToggle={this.props.groupToggle}
@@ -317,11 +307,11 @@ class SelectList extends React.Component {
           />
         }
         {/* Maintain a blank input to easily know when field is empty */}
-        {props.multi && this.selectable && props.selected.length == 0 &&
+        {props.multi && this.props.selectable && props.selected.length == 0 &&
           <input type="hidden" name={props.name + '[]'} value=''
             ref={(input) => { this.input = input }} />
         }
-        {props.multi && this.selectable &&
+        {props.multi && this.props.selectable &&
           props.selected.map(item =>
             <input type="hidden" key={item.value} name={props.name + '[]'} value={item.value}
               ref={(input) => { this.input = input }} />

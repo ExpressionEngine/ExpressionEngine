@@ -8,6 +8,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var FilterableSelectList = makeFilterableComponent(SelectList);
+
 var SelectField = function (_React$Component) {
   _inherits(SelectField, _React$Component);
 
@@ -74,8 +76,6 @@ var SelectField = function (_React$Component) {
     value: function render() {
       var _this3 = this;
 
-      var FilterableSelectList = makeFilterableComponent(SelectList);
-
       var selectItem = React.createElement(FilterableSelectList, { items: this.state.items,
         initialItems: this.initialItems,
         limit: this.props.limit,
@@ -95,11 +95,9 @@ var SelectField = function (_React$Component) {
         reorderable: this.state.editing,
         removable: this.state.editing,
         groupToggle: this.props.groupToggle,
-        setEditingMode: function setEditingMode(editing) {
-          return _this3.setEditingMode(editing);
-        },
         manageLabel: this.props.manageLabel,
-        reorderAjaxUrl: this.props.reorderAjaxUrl
+        reorderAjaxUrl: this.props.reorderAjaxUrl,
+        loading: this.props.loading
       });
 
       if (this.props.manageable) {

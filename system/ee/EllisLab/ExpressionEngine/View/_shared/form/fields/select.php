@@ -77,7 +77,7 @@ else:
 		'nested' => $nested,
 		'disabled' => isset($disabled) ? $disabled : FALSE,
 		'autoSelectParents' => isset($auto_select_parents) ? $auto_select_parents : NULL,
-		'too_many' => $too_many,
+		'tooMany' => $too_many,
 		'filterUrl' => isset($filter_url) ? $filter_url : NULL,
 		'limit' => isset($limit) ? $limit : 100,
 		'toggleAll' => NULL,

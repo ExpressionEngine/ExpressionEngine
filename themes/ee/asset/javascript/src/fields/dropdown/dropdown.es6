@@ -1,4 +1,8 @@
 class Dropdown extends React.Component {
+  static defaultProps = {
+    tooMany: 8
+  }
+
   constructor (props) {
     super(props)
 
@@ -6,8 +10,6 @@ class Dropdown extends React.Component {
       selected: this.getItemForSelectedValue(props.selected),
       open: false
     }
-
-    this.tooMany = props.tooMany ? props.tooMany : this.limit
   }
 
   limit = 8
@@ -58,7 +60,7 @@ class Dropdown extends React.Component {
   }
 
   render () {
-    let tooMany = this.props.items.length > this.tooMany && ! this.state.loading
+    let tooMany = this.props.items.length > this.props.tooMany && ! this.state.loading
 
     return (
       <div className={"fields-select-drop" + (tooMany ? ' field-resizable' : '')}>
@@ -74,7 +76,7 @@ class Dropdown extends React.Component {
           </label>
         </div>
         <div className="field-drop-choices" style={this.state.open ? {display: 'block'} : {}}>
-          {this.props.initialItems.length > this.tooMany &&
+          {this.props.initialItems.length > this.props.tooMany &&
             <FieldTools>
               <FilterBar>
                 <FilterSearch onSearch={(e) => this.handleSearch(e.target.value)} />

@@ -16,6 +16,9 @@ var SelectList = function (_React$Component) {
   function SelectList(props) {
     _classCallCheck(this, SelectList);
 
+    // In the rare case we need to force a full-rerender of the component, we'll
+    // increment this variable which is set as a key on the root element,
+    // telling React to destroy it and start anew
     var _this = _possibleConstructorReturn(this, (SelectList.__proto__ || Object.getPrototypeOf(SelectList)).call(this, props));
 
     _this.handleSelect = function (event, item) {
@@ -107,34 +110,14 @@ var SelectList = function (_React$Component) {
       }
     };
 
-    _this.filterable = props.filterable !== undefined ? props.filterable : false;
-    _this.selectable = props.selectable !== undefined ? props.selectable : true;
-    _this.tooMany = props.tooMany ? props.tooMany : SelectList.limit;
-
-    _this.state = {
-      loading: false
-
-      // In the rare case we need to force a full-rerender of the component, we'll
-      // increment this variable which is set as a key on the root element,
-      // telling React to destroy it and start anew
-    };_this.version = 0;
+    _this.version = 0;
     return _this;
   }
 
   _createClass(SelectList, [{
-    key: 'reorderable',
-    value: function reorderable() {
-      return this.props.reorderable !== undefined ? this.props.reorderable : false;
-    }
-  }, {
-    key: 'removable',
-    value: function removable() {
-      return this.props.removable !== undefined ? this.props.removable : false;
-    }
-  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      if (this.reorderable() && !this.props.nested) this.bindSortable();
+      if (this.props.reorderable && !this.props.nested) this.bindSortable();
     }
   }, {
     key: 'bindSortable',
@@ -271,7 +254,7 @@ var SelectList = function (_React$Component) {
         $(this.input).trigger('change');
       }
 
-      if (this.props.nested && this.reorderable()) this.bindNestable();
+      if (this.props.nested && this.props.reorderable) this.bindNestable();
     }
   }, {
     key: 'render',
@@ -279,9 +262,9 @@ var SelectList = function (_React$Component) {
       var _this7 = this;
 
       var props = this.props;
-      var tooMany = props.items.length > this.tooMany && !this.state.loading;
-      var shouldShowToggleAll = (props.multi || !this.selectable) && props.toggleAll !== null;
-      var shouldShowFieldTools = this.props.items.length > SelectList.limit;
+      var tooMany = props.items.length > this.props.tooMany && !this.props.loading;
+      var shouldShowToggleAll = (props.multi || !this.props.selectable) && props.toggleAll !== null;
+      var shouldShowFieldTools = this.props.items.length > this.props.tooMany;
 
       return React.createElement(
         'div',
@@ -289,7 +272,7 @@ var SelectList = function (_React$Component) {
           ref: function ref(container) {
             _this7.container = container;
           }, key: this.version },
-        this.filterable && React.createElement(
+        this.props.filterable && React.createElement(
           FieldTools,
           null,
           React.createElement(
@@ -318,9 +301,9 @@ var SelectList = function (_React$Component) {
         React.createElement(
           FieldInputs,
           { nested: props.nested },
-          !this.state.loading && props.items.length == 0 && React.createElement(NoResults, { text: props.noResults }),
-          this.state.loading && React.createElement(Loading, { text: EE.lang.loading }),
-          !this.state.loading && props.items.map(function (item, index) {
+          !this.props.loading && props.items.length == 0 && React.createElement(NoResults, { text: props.noResults }),
+          this.props.loading && React.createElement(Loading, { text: EE.lang.loading }),
+          !this.props.loading && props.items.map(function (item, index) {
             return React.createElement(SelectItem, { key: item.value ? item.value : item.section,
               sortableIndex: index,
               item: item,
@@ -328,9 +311,9 @@ var SelectList = function (_React$Component) {
               selected: props.selected,
               multi: props.multi,
               nested: props.nested,
-              selectable: _this7.selectable,
-              reorderable: _this7.reorderable(),
-              removable: _this7.removable(),
+              selectable: _this7.props.selectable,
+              reorderable: _this7.props.reorderable,
+              removable: _this7.props.removable,
               handleSelect: _this7.handleSelect,
               handleRemove: _this7.handleRemove,
               groupToggle: _this7.props.groupToggle
@@ -341,11 +324,11 @@ var SelectList = function (_React$Component) {
           item: props.selected[0],
           clearSelection: this.clearSelection
         }),
-        props.multi && this.selectable && props.selected.length == 0 && React.createElement('input', { type: 'hidden', name: props.name + '[]', value: '',
+        props.multi && this.props.selectable && props.selected.length == 0 && React.createElement('input', { type: 'hidden', name: props.name + '[]', value: '',
           ref: function ref(input) {
             _this7.input = input;
           } }),
-        props.multi && this.selectable && props.selected.map(function (item) {
+        props.multi && this.props.selectable && props.selected.map(function (item) {
           return React.createElement('input', { type: 'hidden', key: item.value, name: props.name + '[]', value: item.value,
             ref: function ref(input) {
               _this7.input = input;
@@ -413,7 +396,13 @@ var SelectList = function (_React$Component) {
   return SelectList;
 }(React.Component);
 
-SelectList.limit = 8;
+SelectList.defaultProps = {
+  filterable: false,
+  reorderable: false,
+  removable: false,
+  selectable: true,
+  tooMany: 8
+};
 
 
 function FieldInputs(props) {

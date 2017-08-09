@@ -39,8 +39,6 @@ var Dropdown = function (_React$Component) {
       selected: _this.getItemForSelectedValue(props.selected),
       open: false
     };
-
-    _this.tooMany = props.tooMany ? props.tooMany : _this.limit;
     return _this;
   }
 
@@ -71,7 +69,7 @@ var Dropdown = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      var tooMany = this.props.items.length > this.tooMany && !this.state.loading;
+      var tooMany = this.props.items.length > this.props.tooMany && !this.state.loading;
 
       return React.createElement(
         'div',
@@ -100,7 +98,7 @@ var Dropdown = function (_React$Component) {
         React.createElement(
           'div',
           { className: 'field-drop-choices', style: this.state.open ? { display: 'block' } : {} },
-          this.props.initialItems.length > this.tooMany && React.createElement(
+          this.props.initialItems.length > this.props.tooMany && React.createElement(
             FieldTools,
             null,
             React.createElement(
@@ -139,6 +137,11 @@ var Dropdown = function (_React$Component) {
 
   return Dropdown;
 }(React.Component);
+
+Dropdown.defaultProps = {
+  tooMany: 8
+};
+
 
 function DropdownItem(props) {
   var item = props.item;
