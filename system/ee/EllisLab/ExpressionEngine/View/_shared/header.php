@@ -153,11 +153,12 @@
 								<div class="nav-sub-menu">
 									<?php if ($item->hasFilter()): ?>
 										<form class="nav-filter">
+											<input type="text" value="" placeholder="<?=lang($item->placeholder)?>">
+
 											<?php if (count($item->getItems()) < 10 && ! empty($item->view_all_link)): ?>
+												<hr>
 												<a class="reset" href="<?=$item->view_all_link?>"><b><?= lang('view_all') ?></b></a>
-											<?php else: ?>
-												<input type="text" value="" placeholder="<?=lang($item->placeholder)?>">
-											<?php endif ?>
+											<?php endif; ?>
 										</form>
 									<?php endif; ?>
 									<ul>
