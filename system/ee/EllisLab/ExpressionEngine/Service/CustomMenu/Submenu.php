@@ -71,7 +71,21 @@ class Submenu extends Menu {
 	 * @param String $placholder Search box placeholder text
 	 * @return $this
 	 */
-	public function withFilter($placeholder, $view_all_link = FALSE)
+	public function withFilter($placeholder)
+	{
+		$this->has_filter = TRUE;
+		$this->placeholder = $placeholder;
+		return $this;
+	}
+
+	/**
+	 * Add filter box, with a view all link displayed in certain cases
+	 *
+	 * @param string $placeholder Search box placeholder text
+	 * @param string $view_all_link URL to use as a "View All" link
+	 * @return $this
+	 */
+	public function withFilterOrLink($placeholder, $view_all_link)
 	{
 		$this->has_filter = TRUE;
 		$this->placeholder = $placeholder;
