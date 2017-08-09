@@ -2,17 +2,11 @@ class Dropdown extends React.Component {
   constructor (props) {
     super(props)
 
-    this.initialItems = SelectList.formatItems(props.items)
     this.state = {
-      items: this.initialItems,
       selected: this.getItemForSelectedValue(props.selected),
-      open: false,
-      loading: false
+      open: false
     }
 
-    this.ajaxFilter = (this.initialItems.length >= props.limit && props.filterUrl)
-    this.ajaxTimer = null
-    this.ajaxRequest = null
     this.tooMany = props.tooMany ? props.tooMany : this.limit
   }
 
@@ -22,13 +16,8 @@ class Dropdown extends React.Component {
     $('div[data-dropdown-react]', context).each(function () {
       let props = JSON.parse(window.atob($(this).data('dropdownReact')))
       props.name = $(this).data('inputValue')
-      ReactDOM.render(React.createElement(Dropdown, props, null), this)
-    })
-  }
-
-  itemsChanged = (items) => {
-    this.setState({
-      items: items
+      const FilterableDropdown = makeFilterableComponent(Dropdown)
+      ReactDOM.render(React.createElement(FilterableDropdown, props, null), this)
     })
   }
 
@@ -59,43 +48,17 @@ class Dropdown extends React.Component {
   }
 
   getItemForSelectedValue (value) {
-    return this.initialItems.find(item => {
+    return this.props.initialItems.find(item => {
       return String(item.value) == String(value)
     })
   }
 
-  handleSearch = (searchTerm) => {
-    if ( ! this.ajaxFilter) {
-      this.setState({ items: this.initialItems.filter(item =>
-        String(item.label).toLowerCase().includes(searchTerm.toLowerCase())
-      )})
-      return
-    }
-
-    // Debounce AJAX filter
-    clearTimeout(this.ajaxTimer)
-    if (this.ajaxRequest) this.ajaxRequest.abort()
-
-    this.setState({ loading: true })
-
-    this.ajaxTimer = setTimeout(() => {
-      this.ajaxRequest = $.ajax({
-        url: this.props.filterUrl,
-        data: $.param({'search': searchTerm}),
-        dataType: 'json',
-        success: (data) => {
-          this.setState({
-            items: SelectList.formatItems(data),
-            loading: false
-          })
-        },
-        error: () => {} // Defined to prevent error on .abort above
-      })
-    }, 300)
+  handleSearch(searchTerm) {
+    this.props.filterChange('search', searchTerm)
   }
 
   render () {
-    let tooMany = this.state.items.length > this.tooMany && ! this.state.loading
+    let tooMany = this.props.items.length > this.tooMany && ! this.state.loading
 
     return (
       <div className={"fields-select-drop" + (tooMany ? ' field-resizable' : '')}>
@@ -111,7 +74,7 @@ class Dropdown extends React.Component {
           </label>
         </div>
         <div className="field-drop-choices" style={this.state.open ? {display: 'block'} : {}}>
-          {this.initialItems.length > this.tooMany &&
+          {this.props.initialItems.length > this.tooMany &&
             <FieldTools>
               <FilterBar>
                 <FilterSearch onSearch={(e) => this.handleSearch(e.target.value)} />
@@ -119,13 +82,13 @@ class Dropdown extends React.Component {
             </FieldTools>
           }
           <div className="field-inputs">
-            {this.state.items.length == 0 &&
+            {this.props.items.length == 0 &&
               <NoResults text={this.props.noResults} />
             }
             {this.state.loading &&
               <Loading text={EE.lang.loading} />
             }
-            {this.state.items.map((item) =>
+            {this.props.items.map((item) =>
               <DropdownItem key={item.value ? item.value : item.section} item={item} onClick={(e) => this.selectionChanged(item)} />
             )}
           </div>
@@ -159,8 +122,7 @@ $(document).ready(function () {
   // Close when clicked elsewhere
   $(document).on('click',function(e) {
     $('.field-drop-selected.field-open')
-      .not($(e.target)
-      .closest('.field-drop-selected.field-open'))
+      .not($(e.target).parents('.fields-select-drop').find('.field-drop-selected.field-open'))
       .click()
   })
 })

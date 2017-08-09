@@ -18,12 +18,6 @@ var Dropdown = function (_React$Component) {
 
     _this.limit = 8;
 
-    _this.itemsChanged = function (items) {
-      _this.setState({
-        items: items
-      });
-    };
-
     _this.selectionChanged = function (selected) {
       _this.setState({
         selected: selected,
@@ -41,47 +35,11 @@ var Dropdown = function (_React$Component) {
       });
     };
 
-    _this.handleSearch = function (searchTerm) {
-      if (!_this.ajaxFilter) {
-        _this.setState({ items: _this.initialItems.filter(function (item) {
-            return String(item.label).toLowerCase().includes(searchTerm.toLowerCase());
-          }) });
-        return;
-      }
-
-      // Debounce AJAX filter
-      clearTimeout(_this.ajaxTimer);
-      if (_this.ajaxRequest) _this.ajaxRequest.abort();
-
-      _this.setState({ loading: true });
-
-      _this.ajaxTimer = setTimeout(function () {
-        _this.ajaxRequest = $.ajax({
-          url: _this.props.filterUrl,
-          data: $.param({ 'search': searchTerm }),
-          dataType: 'json',
-          success: function success(data) {
-            _this.setState({
-              items: SelectList.formatItems(data),
-              loading: false
-            });
-          },
-          error: function error() {} // Defined to prevent error on .abort above
-        });
-      }, 300);
-    };
-
-    _this.initialItems = SelectList.formatItems(props.items);
     _this.state = {
-      items: _this.initialItems,
       selected: _this.getItemForSelectedValue(props.selected),
-      open: false,
-      loading: false
+      open: false
     };
 
-    _this.ajaxFilter = _this.initialItems.length >= props.limit && props.filterUrl;
-    _this.ajaxTimer = null;
-    _this.ajaxRequest = null;
     _this.tooMany = props.tooMany ? props.tooMany : _this.limit;
     return _this;
   }
@@ -99,16 +57,21 @@ var Dropdown = function (_React$Component) {
   }, {
     key: 'getItemForSelectedValue',
     value: function getItemForSelectedValue(value) {
-      return this.initialItems.find(function (item) {
+      return this.props.initialItems.find(function (item) {
         return String(item.value) == String(value);
       });
+    }
+  }, {
+    key: 'handleSearch',
+    value: function handleSearch(searchTerm) {
+      this.props.filterChange('search', searchTerm);
     }
   }, {
     key: 'render',
     value: function render() {
       var _this2 = this;
 
-      var tooMany = this.state.items.length > this.tooMany && !this.state.loading;
+      var tooMany = this.props.items.length > this.tooMany && !this.state.loading;
 
       return React.createElement(
         'div',
@@ -137,7 +100,7 @@ var Dropdown = function (_React$Component) {
         React.createElement(
           'div',
           { className: 'field-drop-choices', style: this.state.open ? { display: 'block' } : {} },
-          this.initialItems.length > this.tooMany && React.createElement(
+          this.props.initialItems.length > this.tooMany && React.createElement(
             FieldTools,
             null,
             React.createElement(
@@ -151,9 +114,9 @@ var Dropdown = function (_React$Component) {
           React.createElement(
             'div',
             { className: 'field-inputs' },
-            this.state.items.length == 0 && React.createElement(NoResults, { text: this.props.noResults }),
+            this.props.items.length == 0 && React.createElement(NoResults, { text: this.props.noResults }),
             this.state.loading && React.createElement(Loading, { text: EE.lang.loading }),
-            this.state.items.map(function (item) {
+            this.props.items.map(function (item) {
               return React.createElement(DropdownItem, { key: item.value ? item.value : item.section, item: item, onClick: function onClick(e) {
                   return _this2.selectionChanged(item);
                 } });
@@ -168,7 +131,8 @@ var Dropdown = function (_React$Component) {
       $('div[data-dropdown-react]', context).each(function () {
         var props = JSON.parse(window.atob($(this).data('dropdownReact')));
         props.name = $(this).data('inputValue');
-        ReactDOM.render(React.createElement(Dropdown, props, null), this);
+        var FilterableDropdown = makeFilterableComponent(Dropdown);
+        ReactDOM.render(React.createElement(FilterableDropdown, props, null), this);
       });
     }
   }]);
@@ -205,7 +169,7 @@ $(document).ready(function () {
 
   // Close when clicked elsewhere
   $(document).on('click', function (e) {
-    $('.field-drop-selected.field-open').not($(e.target).closest('.field-drop-selected.field-open')).click();
+    $('.field-drop-selected.field-open').not($(e.target).parents('.fields-select-drop').find('.field-drop-selected.field-open')).click();
   });
 });
 

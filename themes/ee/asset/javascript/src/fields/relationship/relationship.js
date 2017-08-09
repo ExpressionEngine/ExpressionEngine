@@ -16,19 +16,6 @@ var Relationship = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Relationship.__proto__ || Object.getPrototypeOf(Relationship)).call(this, props));
 
-    _this.initialItemsChanged = function (items) {
-      _this.initialItems = items;
-      _this.setState({
-        items: items
-      });
-    };
-
-    _this.itemsChanged = function (items) {
-      _this.setState({
-        items: items
-      });
-    };
-
     _this.selectedItemsChanged = function (selectedItems) {
       _this.setState({
         selectedVisible: selectedItems
@@ -42,9 +29,7 @@ var Relationship = function (_React$Component) {
       });
     };
 
-    _this.initialItems = SelectList.formatItems(props.items);
     _this.state = {
-      items: _this.initialItems,
       selected: SelectList.formatItems(props.selected)
     };
 
@@ -57,38 +42,37 @@ var Relationship = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
+      var FilterableSelectList = makeFilterableComponent(SelectList);
+
       return React.createElement(
         'div',
         { className: "fields-relate" + (this.props.multi ? ' fields-relate-multi' : '') },
-        React.createElement(SelectList, { items: this.state.items,
-          initialItems: this.initialItems,
-          initialItemsChanged: this.initialItemsChanged,
+        React.createElement(FilterableSelectList, {
+          items: this.props.items,
           name: this.props.name,
           limit: this.props.limit,
           multi: this.props.multi,
           selected: this.state.selected,
-          itemsChanged: this.itemsChanged,
           selectionChanged: this.selectionChanged,
           noResults: this.props.no_results,
           filterable: true,
           filters: this.props.select_filters,
           filterUrl: this.props.filter_url,
-          toggleAll: this.props.multi && this.state.items.length > SelectList.limit ? true : null,
+          toggleAll: this.props.multi && this.props.items.length > SelectList.limit ? true : null,
           onToggleAll: function onToggleAll(e) {
             return _this2.handleToggleAll(true);
           }
         }),
-        this.props.multi && React.createElement(SelectList, { items: this.state.selectedVisible,
+        this.props.multi && React.createElement(FilterableSelectList, {
+          items: this.state.selectedVisible,
           selected: [],
-          initialItems: this.state.selected,
           filterable: true,
           selectable: false,
           reorderable: true,
           removable: true,
-          itemsChanged: this.selectedItemsChanged,
           selectionChanged: this.selectionChanged,
           noResults: this.props.no_related,
-          toggleAll: this.state.items.length > SelectList.limit ? false : null,
+          toggleAll: this.props.items.length > SelectList.limit ? false : null,
           onToggleAll: function onToggleAll(e) {
             return _this2.handleToggleAll(false);
           }

@@ -88,37 +88,7 @@ var SelectList = function (_React$Component) {
     };
 
     _this.filterChange = function (name, value) {
-      _this.filterState[name] = value;
-
-      // DOM filter
-      if (!_this.ajaxFilter && name == 'search') {
-        _this.props.itemsChanged(_this.filterItems(_this.props.initialItems, value));
-        return;
-      }
-
-      // Debounce AJAX filter
-      clearTimeout(_this.ajaxTimer);
-      if (_this.ajaxRequest) _this.ajaxRequest.abort();
-
-      var params = _this.filterState;
-      params.selected = _this.props.selected.map(function (item) {
-        return item.value;
-      });
-
-      _this.setState({ loading: true });
-
-      _this.ajaxTimer = setTimeout(function () {
-        _this.ajaxRequest = $.ajax({
-          url: _this.props.filterUrl,
-          data: $.param(params),
-          dataType: 'json',
-          success: function success(data) {
-            _this.setState({ loading: false });
-            _this.props.initialItemsChanged(SelectList.formatItems(data));
-          },
-          error: function error() {} // Defined to prevent error on .abort above
-        });
-      }, 300);
+      _this.props.filterChange(name, value);
     };
 
     _this.handleToggleAll = function (check) {
@@ -143,19 +113,11 @@ var SelectList = function (_React$Component) {
 
     _this.state = {
       loading: false
-    };
 
-    _this.filterState = {};
-
-    // If the intial state is less than the limit, use DOM filtering
-    _this.ajaxFilter = _this.props.initialItems.length >= props.limit && props.filterUrl;
-    _this.ajaxTimer = null;
-    _this.ajaxRequest = null;
-
-    // In the rare case we need to force a full-rerender of the component, we'll
-    // increment this variable which is set as a key on the root element,
-    // telling React to destroy it and start anew
-    _this.version = 0;
+      // In the rare case we need to force a full-rerender of the component, we'll
+      // increment this variable which is set as a key on the root element,
+      // telling React to destroy it and start anew
+    };_this.version = 0;
     return _this;
   }
 
@@ -303,28 +265,6 @@ var SelectList = function (_React$Component) {
       return items;
     }
   }, {
-    key: 'filterItems',
-    value: function filterItems(items, searchTerm) {
-      var _this7 = this;
-
-      items = items.map(function (item) {
-        // Clone item so we don't modify reference types
-        item = Object.assign({}, item);
-
-        // If any children contain the search term, we'll keep the parent
-        if (item.children) item.children = _this7.filterItems(item.children, searchTerm);
-
-        var itemFoundInChildren = item.children && item.children.length > 0;
-        var itemFound = item.label.toLowerCase().includes(searchTerm.toLowerCase());
-
-        return itemFound || itemFoundInChildren ? item : false;
-      });
-
-      return items.filter(function (item) {
-        return item;
-      });
-    }
-  }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate(prevProps, prevState) {
       if (this.props.multi && prevProps.selected.length != this.props.selected.length) {
@@ -336,7 +276,7 @@ var SelectList = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this8 = this;
+      var _this7 = this;
 
       var props = this.props;
       var tooMany = props.items.length > this.tooMany && !this.state.loading;
@@ -347,7 +287,7 @@ var SelectList = function (_React$Component) {
         'div',
         { className: "fields-select" + (tooMany ? ' field-resizable' : ''),
           ref: function ref(container) {
-            _this8.container = container;
+            _this7.container = container;
           }, key: this.version },
         this.filterable && React.createElement(
           FieldTools,
@@ -362,17 +302,17 @@ var SelectList = function (_React$Component) {
                 placeholder: filter.placeholder,
                 items: filter.items,
                 onSelect: function onSelect(value) {
-                  return _this8.filterChange(filter.name, value);
+                  return _this7.filterChange(filter.name, value);
                 }
               });
             }),
             React.createElement(FilterSearch, { onSearch: function onSearch(e) {
-                return _this8.filterChange('search', e.target.value);
+                return _this7.filterChange('search', e.target.value);
               } })
           ),
           shouldShowToggleAll && React.createElement('hr', null),
           shouldShowToggleAll && React.createElement(FilterToggleAll, { checkAll: props.toggleAll, onToggleAll: function onToggleAll(check) {
-              return _this8.handleToggleAll(check);
+              return _this7.handleToggleAll(check);
             } })
         ),
         React.createElement(
@@ -388,12 +328,12 @@ var SelectList = function (_React$Component) {
               selected: props.selected,
               multi: props.multi,
               nested: props.nested,
-              selectable: _this8.selectable,
-              reorderable: _this8.reorderable(),
-              removable: _this8.removable(),
-              handleSelect: _this8.handleSelect,
-              handleRemove: _this8.handleRemove,
-              groupToggle: _this8.props.groupToggle
+              selectable: _this7.selectable,
+              reorderable: _this7.reorderable(),
+              removable: _this7.removable(),
+              handleSelect: _this7.handleSelect,
+              handleRemove: _this7.handleRemove,
+              groupToggle: _this7.props.groupToggle
             });
           })
         ),
@@ -403,12 +343,12 @@ var SelectList = function (_React$Component) {
         }),
         props.multi && this.selectable && props.selected.length == 0 && React.createElement('input', { type: 'hidden', name: props.name + '[]', value: '',
           ref: function ref(input) {
-            _this8.input = input;
+            _this7.input = input;
           } }),
         props.multi && this.selectable && props.selected.map(function (item) {
           return React.createElement('input', { type: 'hidden', key: item.value, name: props.name + '[]', value: item.value,
             ref: function ref(input) {
-              _this8.input = input;
+              _this7.input = input;
             } });
         })
       );
@@ -521,7 +461,7 @@ var SelectItem = function (_React$Component2) {
   }, {
     key: 'render',
     value: function render() {
-      var _this10 = this;
+      var _this9 = this;
 
       var props = this.props;
       var checked = this.checked(props.item.value);
@@ -537,7 +477,7 @@ var SelectItem = function (_React$Component2) {
       var listItem = React.createElement(
         'label',
         { className: checked ? 'act' : '', ref: function ref(label) {
-            _this10.node = label;
+            _this9.node = label;
           } },
         props.reorderable && React.createElement(
           'span',
@@ -616,7 +556,7 @@ var SelectedItem = function (_React$Component3) {
   }, {
     key: 'render',
     value: function render() {
-      var _this12 = this;
+      var _this11 = this;
 
       var props = this.props;
       return React.createElement(
@@ -630,7 +570,7 @@ var SelectedItem = function (_React$Component3) {
           props.item.label,
           React.createElement('input', { type: 'hidden', name: props.name, value: props.item.value,
             ref: function ref(input) {
-              _this12.input = input;
+              _this11.input = input;
             } }),
           React.createElement(
             'ul',

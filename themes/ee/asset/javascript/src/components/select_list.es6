@@ -10,13 +10,6 @@ class SelectList extends React.Component {
       loading: false
     }
 
-    this.filterState = {}
-
-    // If the intial state is less than the limit, use DOM filtering
-    this.ajaxFilter = (this.props.initialItems.length >= props.limit && props.filterUrl)
-    this.ajaxTimer = null
-    this.ajaxRequest = null
-
     // In the rare case we need to force a full-rerender of the component, we'll
     // increment this variable which is set as a key on the root element,
     // telling React to destroy it and start anew
@@ -236,55 +229,8 @@ class SelectList extends React.Component {
     event.preventDefault()
   }
 
-  filterItems (items, searchTerm) {
-    items = items.map(item => {
-      // Clone item so we don't modify reference types
-      item = Object.assign({}, item)
-
-      // If any children contain the search term, we'll keep the parent
-      if (item.children) item.children = this.filterItems(item.children, searchTerm)
-
-      let itemFoundInChildren = (item.children && item.children.length > 0)
-      let itemFound = item.label.toLowerCase().includes(searchTerm.toLowerCase())
-
-      return (itemFound || itemFoundInChildren) ? item : false
-    })
-
-    return items.filter(item => item);
-  }
-
   filterChange = (name, value) => {
-    this.filterState[name] = value
-
-    // DOM filter
-    if ( ! this.ajaxFilter && name == 'search') {
-      this.props.itemsChanged(this.filterItems(this.props.initialItems, value))
-      return
-    }
-
-    // Debounce AJAX filter
-    clearTimeout(this.ajaxTimer)
-    if (this.ajaxRequest) this.ajaxRequest.abort()
-
-    let params = this.filterState
-    params.selected = this.props.selected.map(item => {
-      return item.value
-    })
-
-    this.setState({ loading: true })
-
-    this.ajaxTimer = setTimeout(() => {
-      this.ajaxRequest = $.ajax({
-        url: this.props.filterUrl,
-        data: $.param(params),
-        dataType: 'json',
-        success: (data) => {
-          this.setState({ loading: false })
-          this.props.initialItemsChanged(SelectList.formatItems(data))
-        },
-        error: () => {} // Defined to prevent error on .abort above
-      })
-    }, 300)
+    this.props.filterChange(name, value)
   }
 
   handleToggleAll = (check) => {

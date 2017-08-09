@@ -58,7 +58,9 @@ class SelectField extends React.Component {
   }
 
   render () {
-    let selectItem = <SelectList items={this.state.items}
+    const FilterableSelectList = makeFilterableComponent(SelectList)
+
+    let selectItem = <FilterableSelectList items={this.state.items}
       initialItems={this.initialItems}
       limit={this.props.limit}
       name={this.props.name}

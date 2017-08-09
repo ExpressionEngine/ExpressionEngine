@@ -74,7 +74,9 @@ var SelectField = function (_React$Component) {
     value: function render() {
       var _this3 = this;
 
-      var selectItem = React.createElement(SelectList, { items: this.state.items,
+      var FilterableSelectList = makeFilterableComponent(SelectList);
+
+      var selectItem = React.createElement(FilterableSelectList, { items: this.state.items,
         initialItems: this.initialItems,
         limit: this.props.limit,
         name: this.props.name,
