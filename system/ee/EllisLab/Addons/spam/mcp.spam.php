@@ -401,12 +401,9 @@ class Spam_mcp {
 			}
 			catch (\Exception $e)
 			{
-				$message = str_replace(SYSPATH, '', $e->getMessage());
-				$file = str_replace(SYSPATH, '', $e->getFile()).':'.$e->getLine();
-				$exceptions[] = $message.' '.lang('in').' '.$file;
+				$exceptions[] = $this->prepErrorExceptionMessage($e);
 			}
 		}
-
 
 		$alert = ee('CP/Alert')->makeInline('spam')
 			->asSuccess()
@@ -455,9 +452,7 @@ class Spam_mcp {
 			}
 			catch (\Exception $e)
 			{
-				$message = str_replace(SYSPATH, '', $e->getMessage());
-				$file = str_replace(SYSPATH, '', $e->getFile()).':'.$e->getLine();
-				$exceptions[] = $message.' '.lang('in').' '.$file;
+				$exceptions[] = $this->prepErrorExceptionMessage($e);
 			}
 		}
 
@@ -477,6 +472,20 @@ class Spam_mcp {
 
 		$this->moderate($trapped, 'spam');
 		ee()->functions->redirect($this->base_url);
+	}
+
+	/**
+	 * Prepare message from an Exception
+	 * @param  \Exception $e Exception object
+	 * @return string Compiled error message
+	 */
+	private function prepErrorExceptionMessage(\Exception $e)
+	{
+		$message = str_replace("\\", "/", $e->getMessage());
+		$message = str_replace(SYSPATH, '', $message);
+		$file = str_replace("\\", "/", $e->getFile());
+		$file = str_replace(SYSPATH, '', $file).':'.$e->getLine();
+		return $message.' '.lang('in').' '.$file;
 	}
 
 	public function download()
