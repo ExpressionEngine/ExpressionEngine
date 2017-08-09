@@ -48,8 +48,8 @@ class Moderate {
 
 		// send notifications
 		$notify = new Notifications($comment, $comment_path);
-		$notify->send_admin_notifications();
-		$notify->send_user_notifications();
+		$notify->sendAdminNotifications();
+		$notify->sendUserNotifications();
 
 		// clear caches
 		ee()->functions->clear_caching('all', ee()->functions->fetch_site_index().$comment_path);

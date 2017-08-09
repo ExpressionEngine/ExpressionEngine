@@ -122,7 +122,7 @@ class Notifications {
 	 *
 	 * @return void
 	 */
-	public function send_admin_notifications()
+	public function sendAdminNotifications()
 	{
 		$emails = array();
 
@@ -157,7 +157,7 @@ class Notifications {
 	 *
 	 * @return void
 	 */
-	public function send_user_notifications()
+	public function sendUserNotifications()
 	{
 		if (empty($this->recipients))
 		{

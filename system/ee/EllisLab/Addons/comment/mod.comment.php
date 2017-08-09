@@ -2572,11 +2572,11 @@ class Comment {
 		if ( ! $is_spam)
 		{
 			$notify = new Notifications($comment, $_POST['URI']);
-			$notify->send_admin_notifications();
+			$notify->sendAdminNotifications();
 
 			if ($comment_moderate == 'n')
 			{
-				$notify->send_user_notifications();
+				$notify->sendUserNotifications();
 			}
 		}
 
