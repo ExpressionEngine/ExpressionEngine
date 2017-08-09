@@ -373,10 +373,6 @@ class Layouts extends AbstractChannelsController {
 		$member_groups = $this->getEligibleMemberGroups($layout->Channel)
 			->getDictionary('group_id', 'group_title');
 
-		$member_groups = array_map(function($group_name) {
-			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
-		}, $member_groups);
-
 		$other_layouts = ee('Model')->get('ChannelLayout')
 			->with('MemberGroups')
 			->filter('site_id', ee()->config->item('site_id'))
@@ -420,6 +416,9 @@ class Layouts extends AbstractChannelsController {
 						'choices' => $member_groups,
 						'disabled_choices' => $disabled_choices,
 						'value' => $selected_member_groups,
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('member_groups'))
+						]
 					)
 				)
 			),

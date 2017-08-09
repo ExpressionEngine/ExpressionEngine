@@ -141,7 +141,7 @@ class Template extends AbstractDesignController {
 						'title' => 'template_type',
 						'fields' => array(
 							'template_type' => array(
-								'type' => 'select',
+								'type' => 'radio',
 								'choices' => $this->getTemplateTypes()
 							)
 						)
@@ -151,8 +151,11 @@ class Template extends AbstractDesignController {
 						'desc' => 'duplicate_existing_template_desc',
 						'fields' => array(
 							'template_id' => array(
-								'type' => 'select',
-								'choices' => $existing_templates
+								'type' => 'radio',
+								'choices' => $existing_templates,
+								'no_results' => [
+									'text' => sprintf(lang('no_found'), lang('templates'))
+								]
 							)
 						)
 					),
@@ -877,7 +880,7 @@ class Template extends AbstractDesignController {
 					'title' => 'template_type',
 					'fields' => array(
 						'template_type' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $this->getTemplateTypes(),
 							'value' => $template->template_type
 						)
@@ -976,10 +979,6 @@ class Template extends AbstractDesignController {
 			->filter('group_id', '!=', 1)
 			->all();
 
-		$member_group_options = array_map(function($group_name) {
-			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
-		}, $member_groups->getDictionary('group_id', 'group_title'));
-
 		$allowed_member_groups = array_diff(
 			$member_groups->pluck('group_id'),
 			$template->getNoAccess()->pluck('group_id')
@@ -994,9 +993,11 @@ class Template extends AbstractDesignController {
 					'fields' => array(
 						'allowed_member_groups' => array(
 							'type' => 'checkbox',
-							'wrap' => TRUE,
-							'choices' => $member_group_options,
-							'value' => $allowed_member_groups
+							'choices' => $member_groups->getDictionary('group_id', 'group_title'),
+							'value' => $allowed_member_groups,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+							]
 						)
 					)
 				),
@@ -1005,9 +1006,12 @@ class Template extends AbstractDesignController {
 					'desc' => 'no_access_redirect_desc',
 					'fields' => array(
 						'no_auth_bounce' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $existing_templates,
-							'value' => $template->no_auth_bounce
+							'value' => $template->no_auth_bounce,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('templates'))
+							]
 						)
 					)
 				),

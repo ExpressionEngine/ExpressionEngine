@@ -39,6 +39,8 @@ $lang = array(
 
 'captcha_explanation' => 'A CAPTCHA is an image containing a security code that users have to submit. Please consult the user guide for more info.',
 
+'choose_wisely' => 'Choose wisely',
+
 'click_to_edit' => 'Click to Edit',
 
 'consult_user_guide' => 'Consult User Guide',
@@ -110,6 +112,8 @@ $lang = array(
 'reveal_sidebar' => 'show sidebar',
 
 'rights_reserved' => 'All Rights Reserved',
+
+'searching' => 'Searching',
 
 'session_idle' => 'Idle session detected',
 
@@ -197,6 +201,10 @@ $lang = array(
 
 'channel' => 'Channel',
 
+'check_all' => 'Check All',
+
+'clear_all' => 'Clear All',
+
 'create' => 'Create',
 
 'create_and_edit' => 'Create and Edit',
@@ -210,6 +218,9 @@ $lang = array(
 'entry' => 'Entry',
 
 'limit_by' => 'limit by',
+
+'keyword_search' =>
+'Keyword Search',
 
 'manage' => 'Manage',
 

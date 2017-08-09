@@ -379,12 +379,8 @@ class Relationship_ft extends EE_Fieldtype {
 
 		ee()->cp->add_js_script(array(
 			'plugin' => array('ui.touch.punch', 'ee_interact.event'),
-			'file' => 'fields/relationship/cp',
+			'file' => 'fields/relationship/relationship',
 			'ui' => 'sortable'
-		));
-
-		ee()->javascript->set_global(array(
-			'relationship.filter_url' => ee('CP/URL', 'publish/relationship-filter')->compile()
 		));
 
 		if ($entry_id)
@@ -453,7 +449,66 @@ class Relationship_ft extends EE_Fieldtype {
 
 		$multiple = (bool) $this->settings['allow_multiple'];
 
-		return ee('View')->make('relationship:publish')->render(compact('field_name', 'entries', 'selected', 'related', 'multiple', 'channels', 'settings'));
+		$choices = [];
+		foreach ($entries as $entry)
+		{
+			$choices[] = [
+				'value' => $entry->getId(),
+				'label' => $entry->title,
+				'instructions' => $entry->Channel->channel_title
+			];
+		}
+
+		$selected = [];
+		foreach ($related as $child)
+		{
+			$selected[] = [
+				'value' => $child->getId(),
+				'label' => $child->title,
+				'instructions' => $child->Channel->channel_title
+			];
+		}
+
+		$field_name = $field_name.'[data]';
+
+		// Single relationships also expects an array
+		if ( ! $multiple) $field_name .= '[]';
+
+		$select_filters = [];
+		if ($channels->count() > 1) {
+			$select_filters[] = [
+				'name' => 'channel_id',
+				'title' => lang('channel'),
+				'placeholder' => lang('filter_channels'),
+				'items' => $channels->getDictionary('channel_id', 'channel_title')
+			];
+		}
+
+		if ($multiple)
+		{
+			$select_filters[] = [
+				'name' => 'related',
+				'title' => lang('show'),
+				'items' => [
+					'related' => lang('rel_ft_related_only'),
+					'unrelated' => lang('rel_ft_unrelated_only')
+				]
+			];
+		}
+
+		return ee('View')->make('relationship:publish')->render([
+			'field_name' => $field_name,
+			'choices' => $choices,
+			'selected' => $selected,
+			'multi' => $multiple,
+			'filter_url' => ee('CP/URL')->make('publish/relationship-filter', [
+				'settings' => $settings
+			])->compile(),
+			'limit' => $this->settings['limit'] ?: 100,
+			'no_results' => ['text' => lang('no_entries_found')],
+			'no_related' => ['text' => lang('no_entries_related')],
+			'select_filters' => $select_filters
+		]);
 	}
 
 	/**
@@ -505,9 +560,11 @@ class Relationship_ft extends EE_Fieldtype {
 						'type' => 'checkbox',
 						'nested' => TRUE,
 						'attrs' => 'data-any="y"',
-						'wrap' => TRUE,
 						'choices' => $util->all_channels(),
-						'value' => ($values['channels']) ?: '--'
+						'value' => ($values['channels']) ?: '--',
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('channels'))
+						]
 					)
 				)
 			),
@@ -540,10 +597,12 @@ class Relationship_ft extends EE_Fieldtype {
 					'relationship_categories' => array(
 						'type' => 'checkbox',
 						'nested' => TRUE,
-						'wrap' => TRUE,
 						'attrs' => 'data-any="y"',
 						'choices' => $util->all_categories(),
-						'value' => ($values['categories']) ?: '--'
+						'value' => ($values['categories']) ?: '--',
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('categories'))
+						]
 					)
 				)
 			),
@@ -554,10 +613,12 @@ class Relationship_ft extends EE_Fieldtype {
 					'relationship_authors' => array(
 						'type' => 'checkbox',
 						'nested' => TRUE,
-						'wrap' => TRUE,
 						'attrs' => 'data-any="y"',
 						'choices' => $util->all_authors(),
-						'value' => ($values['authors']) ?: '--'
+						'value' => ($values['authors']) ?: '--',
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('authors'))
+						]
 					)
 				)
 			),
@@ -568,10 +629,12 @@ class Relationship_ft extends EE_Fieldtype {
 					'relationship_statuses' => array(
 						'type' => 'checkbox',
 						'nested' => TRUE,
-						'wrap' => TRUE,
 						'attrs' => 'data-any="y"',
 						'choices' => $util->all_statuses(),
-						'value' => ($values['statuses']) ?: '--'
+						'value' => ($values['statuses']) ?: '--',
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('statuses'))
+						]
 					)
 				)
 			),
@@ -590,7 +653,7 @@ class Relationship_ft extends EE_Fieldtype {
 				'desc' => 'rel_ft_order_desc',
 				'fields' => array(
 					'relationship_order_field' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => array(
 							'title' 	 => lang('rel_ft_order_title'),
 							'entry_date' => lang('rel_ft_order_date')
@@ -598,7 +661,7 @@ class Relationship_ft extends EE_Fieldtype {
 						'value' => $values['order_field']
 					),
 					'relationship_order_dir' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => array(
 							'asc' => lang('rel_ft_order_ascending'),
 							'desc'	=> lang('rel_ft_order_descending'),

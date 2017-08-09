@@ -347,6 +347,11 @@ return array(
 		{
 			return new Validation\Factory();
 		},
+
+		'View/Helpers' => function($ee)
+		{
+			return new View\ViewHelpers();
+		}
 	),
 
 	// models exposed on the model service

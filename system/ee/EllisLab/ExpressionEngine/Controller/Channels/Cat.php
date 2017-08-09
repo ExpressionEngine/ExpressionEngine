@@ -203,7 +203,7 @@ class Cat extends AbstractChannelsController {
 					'title' => 'html_formatting',
 					'fields' => array(
 						'field_html_formatting' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'all'	=> lang('allow_all_html'),
 								'safe'	=> lang('allow_safe_html'),
@@ -761,7 +761,8 @@ class Cat extends AbstractChannelsController {
 							'none' => 'cat_image_none',
 							'choose' => 'cat_image_choose'
 						),
-						'value' => 'none'
+						'value' => 'none',
+						'encode' => FALSE
 					),
 					'cat_image' => array(
 						'type' => 'image',
@@ -777,10 +778,12 @@ class Cat extends AbstractChannelsController {
 			'title' => 'parent_category',
 			'fields' => array(
 				'parent_id' => array(
-					'type' => 'select',
+					'type' => 'radio',
 					'value' => $category->parent_id,
-					'choices' => $parent_id_options,
-					'encode' => FALSE
+					'choices' => $cat_group->buildCategoryOptionsTree(),
+					'no_results' => [
+						'text' => sprintf(lang('no_found'), lang('categories'))
+					]
 				)
 			)
 		);
@@ -1215,7 +1218,7 @@ class Cat extends AbstractChannelsController {
 					'desc' => '',
 					'fields' => array(
 						'field_type' => array(
-							'type' => 'select',
+							'type' => 'dropdown',
 							'choices' => array(
 								'text'     => lang('text_input'),
 								'textarea' => lang('textarea'),

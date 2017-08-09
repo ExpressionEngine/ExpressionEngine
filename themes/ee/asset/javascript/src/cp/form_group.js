@@ -83,9 +83,9 @@ function toggleFields(fields, show, key) {
 	fields.each(function(i, field) {
 		var fieldset = $(field).closest('fieldset');
 
-		if (fieldset.hasClass('invalid')) {
+		if (fieldset.hasClass('fieldset-invalid')) {
 			if (fieldset.find('input:visible').not('input.btn').size() == 0) {
-				fieldset.removeClass('invalid');
+				fieldset.removeClass('fieldset-invalid');
 				fieldset.find('em.ee-form-error-message').remove();
 			}
 		}
@@ -95,7 +95,7 @@ function toggleFields(fields, show, key) {
 function toggleSections(sections, show, key) {
 	sections.each(function() {
 		$(this).toggle(show);
-		$(this).nextUntil('h2, .form-ctrls').each(function() {
+		$(this).nextUntil('h2, .form-btns').each(function() {
 
 			var field = $(this),
 				group = field.data('group');
@@ -147,11 +147,6 @@ EE.cp.form_group_toggle = function(element) {
 
 	// The reset the form .last values
 	var form = $(element).closest('form');
-
-	form.find('fieldset.last').not('.grid-wrap fieldset').removeClass('last');
-	form.find('h2, .form-ctrls').each(function() {
-		$(this).prevAll('fieldset:visible').first().addClass('last');
-	});
 }
 
 // This all kind of came about from needing to preserve radio button

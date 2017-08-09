@@ -1002,9 +1002,15 @@ class Grid_lib {
 		$_POST = $post;
 
 		// Namespace form field names
-		return $this->_namespace_inputs(
+		$view_namespaced = $this->_namespace_inputs(
 			$settings_view,
 			'$1name="grid[cols]['.$col_id.'][col_settings][$2]$3"'
+		);
+
+		return preg_replace(
+			'/data-input-value=["\']([^"\'\[\]]+)([^"\']*)["\']/',
+			'data-input-value="grid[cols]['.$col_id.'][col_settings][$1]$2"',
+			$view_namespaced
 		);
 	}
 

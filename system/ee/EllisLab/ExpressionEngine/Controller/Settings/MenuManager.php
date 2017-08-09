@@ -317,6 +317,9 @@ class MenuManager extends Settings {
 						'choices' => $member_groups,
 						'disabled_choices' => $disabled_choices,
 						'value' => $selected_member_groups,
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('member_groups'))
+						]
 					)
 				)
 			),
@@ -492,7 +495,7 @@ class MenuManager extends Settings {
 				'title' => 'menu_type',
 				'fields' => array(
 					'type' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => $type_options,
 						'value' => $item->type
 					)

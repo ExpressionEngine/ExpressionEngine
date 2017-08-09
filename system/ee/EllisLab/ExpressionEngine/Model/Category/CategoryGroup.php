@@ -129,7 +129,9 @@ class CategoryGroup extends StructureModel {
 			'deletable'				=> $deletable,
 			'populateCallback'		=> array($this, 'populateCategories'),
 			'manage_toggle_label'	=> lang('manage_categories'),
-			'content_item_label'	=> lang('category')
+			'content_item_label'	=> lang('category'),
+			'reorder_ajax_url'		=> ee('CP/URL')->make('channels/cat/cat-reorder/'.$this->getId())->compile(),
+			'auto_select_parents'	=> ee()->config->item('auto_assign_cat_parents') == 'y'
 		);
 
 		return $metadata;
@@ -170,6 +172,26 @@ class CategoryGroup extends StructureModel {
 			$set_categories = $object->Categories->filter('group_id', $field->getItem('group_id'))->pluck('cat_id');
 			$field->setData(implode('|', $set_categories));
 		}
+	}
+
+	/**
+	 * Builds a tree of categories in the current category group for use in a
+	 * SelectField form
+	 *
+	 * @param array Category tree
+	 */
+	public function buildCategoryOptionsTree()
+	{
+		$sort_column = 'cat_order';
+		if ($this->sort_order == 'a')
+		{
+			$sort_column = 'cat_name';
+		}
+
+		return $this->buildCategoryList(
+			$this->Categories->filter('parent_id', 0),
+			$sort_column
+		);
 	}
 
 	/**

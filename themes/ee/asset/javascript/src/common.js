@@ -482,13 +482,14 @@ $(document).ready(function(){
 			}
 		});
 
-	// ===============================
-	// filters custom input submission
-	// ===============================
+	// =================
+	// non-React toggles
+	// =================
 
 		$('body').on('click', 'a.toggle-btn', function (e) {
 			if ($(this).hasClass('disabled') ||
-				$(this).parents('.toggle-tools').size() > 0) {
+				$(this).parents('.toggle-tools').size() > 0 ||
+				$(this).parents('[data-reactroot]').size() > 0) {
 				return;
 			}
 
@@ -505,7 +506,54 @@ $(document).ready(function(){
 				$(input).val(yes_no ? 'n' : 0);
 			}
 
+			if ($(input).data('groupToggle')) EE.cp.form_group_toggle(input)
+
 			e.preventDefault();
 		});
 
+	// =============
+	// filter-bar
+	// =============
+
+		// listen for clicks on elements with a class of has-sub
+		$('body').on('click', '.js-filter-link', function(){
+			// close OTHER open sub menus
+			// when clicking THIS sub menu trigger
+			// thanks me :D
+			$('.filter-item__link---active').not(this)
+				// remove the class of open
+				.removeClass('filter-item__link---active')
+				// hide all siblings of open with a class of sub-menu
+				.siblings('.filter-submenu').hide();
+
+			// toggles THIS sub menu
+			// thanks pascal
+			$(this)
+				// toggle of siblings of THIS
+				// with a class of sub-menu
+				.siblings('.filter-submenu').toggle()
+				// go back to THIS and...
+				.end()
+				// toggle a class of open on THIS
+				.toggleClass('filter-item__link---active');
+			// stop THIS from reloading
+			// the source window and appending to the URI
+			// and stop propagation up to document
+			return false;
+		});
+
+		// listen for clicks to the document
+		$(document).on('click',function(e){
+			// check to see if we are inside a sub-menu or not.
+			if(!$(e.target).closest('.filter-submenu').length){
+				// close OTHER open sub menus
+				// when clicking outside ANY sub menu trigger
+				// thanks me :D
+				$('.filter-item__link---active')
+					// remove the class of open
+					.removeClass('filter-item__link---active')
+					// hide all siblings of open with a class of sub-menu
+					.siblings('.filter-submenu').hide();
+			}
+		});
 }); // close (document).ready

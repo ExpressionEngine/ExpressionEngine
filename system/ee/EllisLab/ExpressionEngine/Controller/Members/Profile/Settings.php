@@ -39,30 +39,25 @@ class Settings extends Profile {
 		// Birthday Options
 		$birthday['days'] = array();
 
-		$birthday['years'][''] = lang('year');
-
 		for ($i = date('Y', $this->localize->now); $i > 1904; $i--)
 		{
 		  $birthday['years'][$i] = $i;
 		}
 
 		$birthday['months'] = array(
-			''	 => lang('month'),
-			'01' => lang('January'),
-			'02' => lang('February'),
-			'03' => lang('March'),
-			'04' => lang('April'),
-			'05' => lang('May_l'),
-			'06' => lang('June'),
-			'07' => lang('July'),
-			'08' => lang('August'),
-			'09' => lang('September'),
+			'1' => lang('January'),
+			'2' => lang('February'),
+			'3' => lang('March'),
+			'4' => lang('April'),
+			'5' => lang('May_l'),
+			'6' => lang('June'),
+			'7' => lang('July'),
+			'8' => lang('August'),
+			'9' => lang('September'),
 			'10' => lang('October'),
 			'11' => lang('November'),
 			'12' => lang('December')
 		);
-
-		$birthday['days'][''] = lang('day');
 
 		for ($i = 1; $i <= 31; $i++)
 		{
@@ -133,20 +128,38 @@ class Settings extends Profile {
 
 			$dirs[] = $link->render();
 
-			$avatar_choices = array(
-				'upload' => array(
-					'label' => 'upload_avatar',
-					'html' => form_upload('upload_avatar')
-				),
-				'choose' => array(
-					'label' => 'choose_avatar',
-					'html' => ul($dirs, array('class' => 'arrow-list'))
-				)
-			);
+			$avatar_choices = [
+				'avatar_picker_upload' => [
+					'type' => 'radio',
+					'name' => 'avatar_picker',
+					'choices' => [
+						'upload' => lang('upload_avatar')
+					],
+					'value' => 'choose'
+				],
+				'upload_avatar' => [
+					'type' => 'html',
+					'margin_left' => TRUE,
+					'content' => form_upload('upload_avatar')
+				],
+				'avatar_picker_choose' => [
+					'type' => 'radio',
+					'name' => 'avatar_picker',
+					'choices' => [
+						'choose' => lang('choose_avatar')
+					],
+					'value' => 'choose'
+				],
+				'choose_avatar' => [
+					'type' => 'html',
+					'margin_left' => TRUE,
+					'content' => ul($dirs, array('class' => 'arrow-list'))
+				],
+			];
 		}
 
 		$avatar_choose_lang_desc = lang('change_avatar_desc');
-		if (count($avatar_choices) == 1)
+		if (count($avatar_choices) == 0)
 		{
 			$avatar_choose_lang_desc .= sprintf(lang('update_avatar_path'), ee('CP/URL', 'settings/avatars'));
 		}
@@ -168,27 +181,49 @@ class Settings extends Profile {
 						'location' => array('type' => 'text', 'value' => $this->member->location)
 					)
 				),
+			),
+			'fieldset_group' => [
 				array(
-					'title' => 'birthday',
-					'desc' => 'birthday_desc',
+					'title' => 'birth_day',
+					'desc' => 'birth_day_desc',
+					'columns' => '3rds',
 					'fields' => array(
 						'bday_d' => array(
-							'type' => 'select',
+							'type' => 'dropdown',
 							'choices' => $birthday['days'],
-							'value' => $this->member->bday_d
-						),
-						'bday_m' => array(
-							'type' => 'select',
-							'choices' => $birthday['months'],
-							'value' => $this->member->bday_m
-						),
-						'bday_y' => array(
-							'type' => 'select',
-							'choices' => $birthday['years'],
-							'value' => $this->member->bday_y
+							'value' => $this->member->bday_d,
+							'empty_text' => lang('day')
 						)
 					)
 				),
+				array(
+					'title' => 'birth_month',
+					'desc' => 'birth_month_desc',
+					'columns' => '3rds',
+					'fields' => array(
+						'bday_m' => array(
+							'type' => 'dropdown',
+							'choices' => $birthday['months'],
+							'value' => $this->member->bday_m,
+							'empty_text' => lang('month')
+						)
+					)
+				),
+				array(
+					'title' => 'birth_year',
+					'desc' => 'birth_year_desc',
+					'columns' => '3rds',
+					'fields' => array(
+						'bday_y' => array(
+							'type' => 'dropdown',
+							'choices' => $birthday['years'],
+							'value' => $this->member->bday_y,
+							'empty_text' => lang('year')
+						)
+					)
+				),
+			],
+			array(
 				array(
 					'title' => 'biography',
 					'desc' => 'biography_desc',
@@ -201,7 +236,7 @@ class Settings extends Profile {
 					'desc' => 'language_desc',
 					'fields' => array(
 						'language' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => ee()->lang->language_pack_names(),
 							'value' => $this->member->language ?: ee()->config->item('deft_lang')
 						)
@@ -240,13 +275,7 @@ class Settings extends Profile {
 				array(
 					'title' => 'change_avatar',
 					'desc' => $avatar_choose_lang_desc,
-					'fields' => array(
-						'avatar_picker' => array(
-							'type' => 'radio_block',
-							'choices' => $avatar_choices,
-							'value' => (count($avatar_choices) == 1) ? 'link' : 'choose'
-						)
-					)
+					'fields' => $avatar_choices
 				)
 			)
 		);

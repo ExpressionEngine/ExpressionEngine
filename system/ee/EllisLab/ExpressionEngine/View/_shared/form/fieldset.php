@@ -19,6 +19,11 @@ if (isset($setting['attrs']['class']))
 	unset($setting['attrs']['class']);
 }
 
+if (isset($setting['columns']))
+{
+	$fieldset_classes = 'w-'.$setting['columns'];
+}
+
 // Any fields required?
 foreach ($setting['fields'] as $field_name => $field)
 {
@@ -98,14 +103,39 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 	</div>
 	<div class="field-control">
 		<?php
+			$count = 0;
+			$values = [];
 			foreach ($setting['fields'] as $field_name => $field)
 			{
+				$field_name = isset($field['name'])
+					? $field['name'] : $field_name;
+
 				$vars = array(
 					'field_name' => $field_name,
 					'field' => $field,
 					'setting' => $setting,
 					'grid' => $grid
 				);
+
+				// If there are multiple fields with the same name, such as
+				// radio options with fields in between, persist the value
+				// across them, otherwise the first value in each will be checked
+				if (isset($values[$field_name]) && ! isset($field['value']))
+				{
+					$vars['field']['value'] = $values[$field_name];
+				}
+				elseif (isset($field['value']))
+				{
+					$values[$field_name] = $field['value'];
+				}
+
+				// Add top margin to sequential fields
+				if ($count > 0 && ! isset($field['margin_top']))
+				{
+					$vars['field']['margin_top'] = TRUE;
+				}
+
+				$count++;
 
 				$this->embed('ee:_shared/form/field', $vars);
 			}

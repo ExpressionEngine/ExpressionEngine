@@ -124,18 +124,17 @@ class Checkboxes_ft extends OptionFieldtype {
 
 		if (REQ == 'CP')
 		{
-			return ee('View')->make('checkboxes:publish')->render(array(
+			return ee('View')->make('ee:_shared/form/fields/select')->render([
 				'field_name'          => $this->field_name,
-				'values'              => $values,
-				'options'             => $field_options,
-				'editable'            => $this->get_setting('editable'),
-				'editing'             => $this->get_setting('editing'),
-				'disabled'            => ($this->get_setting('field_disabled')) ? 'disabled' : NULL,
-				'deletable'           => $this->get_setting('deletable'),
-				'group_id'            => $this->get_setting('group_id', 0),
-				'manage_toggle_label' => $this->get_setting('manage_toggle_label', lang('manage')),
-				'content_item_label'  => $this->get_setting('content_item_label', '')
-			));
+				'choices'             => $field_options,
+				'value'               => $values,
+				'multi'               => TRUE,
+				'nested'              => TRUE,
+				'manageable'          => $this->get_setting('editable'),
+				'manage_label'        => $this->get_setting('manage_toggle_label', lang('manage')),
+				'reorder_ajax_url'    => $this->get_setting('reorder_ajax_url', NULL),
+				'auto_select_parents' => $this->get_setting('auto_select_parents', FALSE)
+			]);
 		}
 
 		$r = '<div class="scroll-wrap pr">';

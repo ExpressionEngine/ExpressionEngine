@@ -97,7 +97,8 @@
 			</section>
 		</footer>
 		<div class="overlay"></div>
-
+		<script src="https://unpkg.com/react@15/dist/react.js"></script>
+		<script src="https://unpkg.com/react-dom@15/dist/react-dom.js"></script>
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->view->script_tag('common.js')?>
 		<?php

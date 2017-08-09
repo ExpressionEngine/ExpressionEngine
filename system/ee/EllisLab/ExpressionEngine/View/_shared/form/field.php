@@ -1,4 +1,11 @@
 <?php
+$margin_top = isset($field['margin_top']) ? $field['margin_top'] : FALSE;
+$margin_left = isset($field['margin_left']) ? $field['margin_left'] : FALSE;
+
+if ($margin_top OR $margin_left): ?>
+	<div class="<?=$margin_top ? 'add-mrg-top' : '' ?> <?=$margin_left ? 'add-mrg-left' : '' ?>">
+<?php endif;
+
 // Check for a field name override
 if (isset($field['name']))
 {
@@ -70,12 +77,39 @@ case 'hidden': ?>
 case 'radio_block':
 case 'radio':
 case 'inline_radio':
-case 'select': ?>
+case 'checkbox':
+if ($field['type'] == 'checkbox' && ! $value) $value = [];
+?>
 	<?php $this->embed('ee:_shared/form/fields/select', [
+		'field_name' => $field_name,
 		'choices' => $field['choices'],
 		'value' => $value,
-		'multi' => FALSE,
-		'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : NULL
+		'scalar' => isset($field['scalar']) ? $field['scalar'] : NULL,
+		'multi' => ($field['type'] == 'checkbox'),
+		'nested' => isset($field['nested']) ? $field['nested'] : FALSE,
+		'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : NULL,
+		'limit' => isset($field['limit']) ? $field['limit'] : 100,
+		'no_results' => isset($field['no_results']) ? $field['no_results'] : NULL,
+		'attrs' => $attrs,
+		'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : NULL,
+		'auto_select_parents' => isset($field['auto_select_parents']) ? $field['auto_select_parents'] : FALSE,
+		'encode' => isset($field['encode']) ? $field['encode'] : TRUE,
+	]); ?>
+<?php break;
+
+case 'select':
+	if ( ! $no_results) echo form_dropdown($field_name, $field['choices'], $value, $attrs, isset($field['encode']) ? $field['encode'] : TRUE);
+break;
+case 'dropdown': ?>
+	<?php $this->embed('ee:_shared/form/fields/dropdown', [
+		'field_name' => $field_name,
+		'choices' => $field['choices'],
+		'value' => $value,
+		'filter_url' => isset($field['filter_url']) ? $field['filter_url'] : NULL,
+		'limit' => isset($field['limit']) ? $field['limit'] : 100,
+		'no_results' => isset($field['no_results']) ? $field['no_results'] : NULL,
+		'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : NULL,
+		'empty_text' => isset($field['empty_text']) ? lang($field['empty_text']) : lang('choose_wisely')
 	]); ?>
 <?php break;
 
@@ -84,50 +118,9 @@ case 'toggle': ?>
 	<?php $this->embed('ee:_shared/form/fields/toggle', [
 		'yes_no' => ($field['type'] == 'yes_no'),
 		'value' => $value,
-		'disabled' => (isset($field['disabled']) && $field['disabled'] == TRUE)
+		'disabled' => (isset($field['disabled']) && $field['disabled'] == TRUE),
+		'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : NULL
 	]); ?>
-<?php break;
-
-case 'checkbox': ?>
-	<?php if ( ! isset($field['scalar'])) $field_name .= '[]'; ?>
-	<?php if (isset($field['wrap']) && $field['wrap']): ?>
-		<div class="scroll-wrap pr">
-	<?php endif ?>
-		<?php if (isset($field['nested']) && $field['nested']): ?>
-			<ul class="nested-list">
-				<?php $this->embed('ee:_shared/form/nested_checkbox', array(
-					'field_name' => $field_name,
-					'attrs' => $attrs,
-					'choices' => $field['choices'],
-					'disabled_choices' => (isset($field['disabled_choices'])) ? $field['disabled_choices'] : array(),
-					'value' => $value,
-				)); ?>
-			</ul>
-		<?php else: ?>
-			<?php foreach ($field['choices'] as $key => $label):
-				if (is_array($value))
-				{
-					$selected = in_array($key, $value);
-				}
-				else
-				{
-					$selected = ((string) $value == (string) $key);
-				}
-
-				$disabled = FALSE;
-				if (isset($field['disabled_choices']))
-				{
-					$disabled = in_array($key, $field['disabled_choices']);
-				}
-			?>
-				<label class="choice block<?php if ($selected):?> chosen<?php endif ?><?php if ($disabled):?> disable<?php endif ?>">
-					<input type="checkbox" name="<?=$field_name?>" value="<?=$key?>"<?php if ($selected):?> checked="checked"<?php endif ?><?php if ($disabled):?> disabled="disabled"<?php endif ?><?=$attrs?>> <?=$label?>
-				</label>
-			<?php endforeach ?>
-		<?php endif ?>
-	<?php if (isset($field['wrap']) && $field['wrap']): ?>
-		</div>
-	<?php endif ?>
 <?php break;
 
 case 'textarea': ?>
@@ -191,3 +184,6 @@ case 'html': ?>
 	<?=form_error(rtrim($field_name, '[]'))?>
 	<?php if (isset($errors)) echo $errors->renderError($field_name); ?>
 <?php endif ?>
+<?php if ($margin_top OR $margin_left): ?>
+</div>
+<?php endif;

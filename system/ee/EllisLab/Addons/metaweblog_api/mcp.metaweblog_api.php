@@ -252,7 +252,9 @@ class Metaweblog_api_mcp {
 		{
 			foreach($query->result() as $row)
 			{
-				$upload_directories[$row->id] = (ee()->config->item('multiple_sites_enabled') === 'y') ? $row->site_label.NBS.'-'.NBS.$row->name : $row->name;
+				$upload_directories[$row->id] = (ee()->config->item('multiple_sites_enabled') === 'y')
+					? ['label' => $row->name, 'instructions' => $row->site_label]
+					: $row->name;
 			}
 		}
 
@@ -302,7 +304,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_entry_status_desc',
 			'fields' => array(
 				'entry_status' => array(
-					'type' => 'select',
+					'type' => 'radio',
 					'choices' => array(
 						'null' => lang('do_not_set'),
 						'open' => lang('open'),
@@ -410,13 +412,17 @@ class Metaweblog_api_mcp {
 		}
 		$vars['sections'][0][] = $form_element;
 
+		ee()->lang->load('filemanager');
 		$form_element = array(
 			'title' => 'metaweblog_upload_dir',
 			'desc' => 'metaweblog_upload_dir_desc',
 			'fields' => array(
 				'upload_dir' => array(
-					'type' => 'select',
-					'choices' => $upload_directories
+					'type' => 'radio',
+					'choices' => $upload_directories,
+					'no_results' => [
+						'text' => sprintf(lang('no_found'), lang('upload_directories'))
+					]
 				)
 			)
 		);

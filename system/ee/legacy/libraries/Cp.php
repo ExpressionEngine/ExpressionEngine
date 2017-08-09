@@ -146,6 +146,12 @@ class Cp {
 			'search'				=> lang('search'),
 			'session_idle'			=> lang('session_idle'),
 			'btn_fix_errors'		=> lang('btn_fix_errors'),
+			'btn_fix_errors'		=> lang('btn_fix_errors'),
+			'check_all'				=> lang('check_all'),
+			'clear_all'				=> lang('clear_all'),
+			'keyword_search'		=> lang('keyword_search'),
+			'loading'				=> lang('loading'),
+			'searching'				=> lang('searching')
 		);
 
 		ee()->javascript->set_global(array(
@@ -167,7 +173,9 @@ class Cp {
 			'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog', 'button'),
 			'plugin'	=> array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
 			'file'		=> array('json2', 'underscore', 'cp/global_start', 'cp/form_validation', 'cp/sort_helper', 'cp/fuzzy_filters',
-			'cp/fields/select')
+			'components/no_results', 'components/loading', 'components/filters',
+			'components/filterable', 'components/toggle', 'components/select_list',
+			'fields/select/select', 'fields/dropdown/dropdown')
 		);
 
 		$this->add_js_script($js_scripts);
