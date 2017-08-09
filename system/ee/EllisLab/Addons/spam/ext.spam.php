@@ -68,8 +68,9 @@ class Spam_ext {
 	 */
 	public function disable_extension()
 	{
-		ee()->db->where('class', __CLASS__);
-		ee()->db->delete('extensions');
+		ee('Model')->get('Extension')
+			->filter('class', __CLASS__)
+			->delete();
 	}
 }
 // END CLASS
