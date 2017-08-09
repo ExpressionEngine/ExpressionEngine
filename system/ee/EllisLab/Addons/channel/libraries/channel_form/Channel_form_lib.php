@@ -1798,7 +1798,7 @@ GRID_FALLBACK;
 
 					if ($is_spam)
 					{
-						ee('Spam')->moderate('channel', $this->entry, $spam_content, serialize($entry_data));
+						ee('Spam')->moderate('channel', $this->entry, $spam_content, $entry_data);
 					}
 					else
 					{

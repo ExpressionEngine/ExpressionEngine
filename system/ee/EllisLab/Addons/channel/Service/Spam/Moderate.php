@@ -10,7 +10,7 @@ class Moderate {
 	public function approve($entry, $post_data)
 	{
 		// save it
-		$entry->set(unserialize($post_data));
+		$entry->set($post_data);
 		$entry->edit_date = ee()->localize->now;
 		$entry->save();
 

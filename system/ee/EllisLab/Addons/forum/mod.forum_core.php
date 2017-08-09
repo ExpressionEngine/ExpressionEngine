@@ -6097,7 +6097,7 @@ class Forum_Core extends Forum {
 
 		if ($spam)
 		{
-			ee('Spam')->moderate('forum', $sql, $text, serialize(array('postdata' => $_POST, 'redirect' => $redirect)));
+			ee('Spam')->moderate('forum', $sql, $text, array('postdata' => $_POST, 'redirect' => $redirect));
 			$this->submission_error = lang('spam');
 
 			$data = array(	'title' 	=> lang('post_is_moderated'),

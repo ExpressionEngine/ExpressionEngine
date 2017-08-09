@@ -38,7 +38,6 @@ class Moderate {
 		// take ze action
 		ee()->db->query($sql);
 
-		$extra = unserialize($extra);
 		$postdata = $extra['postdata'];
 		$redirect = $extra['redirect'];
 
