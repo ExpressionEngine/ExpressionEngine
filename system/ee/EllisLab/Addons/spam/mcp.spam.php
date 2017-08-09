@@ -382,6 +382,8 @@ class Spam_mcp {
 	 */
 	private function approve($trapped)
 	{
+		$exceptions = [];
+
 		foreach ($trapped as $spam)
 		{
 			$addon = ee('Addon')->get($spam->content_type);
@@ -399,15 +401,26 @@ class Spam_mcp {
 			}
 			catch (\Exception $e)
 			{
-				// @todo behavior here?
+				$message = str_replace(SYSPATH, '', $e->getMessage());
+				$file = str_replace(SYSPATH, '', $e->getFile()).':'.$e->getLine();
+				$exceptions[] = $message.' '.lang('in').' '.$file;
 			}
 		}
 
-		ee('CP/Alert')->makeInline('spam')
+
+		$alert = ee('CP/Alert')->makeInline('spam')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(sprintf(lang('spam_trap_approved'), count($trapped)))
-			->defer();
+			->addToBody(sprintf(lang('spam_trap_approved'), count($trapped)));
+
+		if ( ! empty($exceptions))
+		{
+			$alert->withTitle(lang('success_with_errors'));
+			$alert->asWarning();
+			$alert->addToBody($exceptions);
+		}
+
+		$alert->defer();
 
 		$this->moderate($trapped, 'ham');
 		ee()->functions->redirect($this->base_url);
@@ -423,6 +436,8 @@ class Spam_mcp {
 	 */
 	public function remove($trapped)
 	{
+		$exceptions = [];
+
 		foreach ($trapped as $spam)
 		{
 			$addon = ee('Addon')->get($spam->content_type);
@@ -440,15 +455,25 @@ class Spam_mcp {
 			}
 			catch (\Exception $e)
 			{
-				// @todo behavior here?
+				$message = str_replace(SYSPATH, '', $e->getMessage());
+				$file = str_replace(SYSPATH, '', $e->getFile()).':'.$e->getLine();
+				$exceptions[] = $message.' '.lang('in').' '.$file;
 			}
 		}
 
 		ee('CP/Alert')->makeInline('spam')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(sprintf(lang('spam_trap_removed'), count($trapped)))
-			->defer();
+			->addToBody(sprintf(lang('spam_trap_removed'), count($trapped)));
+
+		if ( ! empty($exceptions))
+		{
+			$alert->withTitle(lang('success_with_errors'));
+			$alert->asWarning();
+			$alert->addToBody($exceptions);
+		}
+
+		$alert->defer();
 
 		$this->moderate($trapped, 'spam');
 		ee()->functions->redirect($this->base_url);
