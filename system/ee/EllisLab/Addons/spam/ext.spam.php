@@ -53,16 +53,14 @@ class Spam_ext {
 	 */
 	public function activate_extension()
 	{
-		$data = array(
+		ee('Model')->make('Extension', [
 			'class'		=> __CLASS__,
 			'method'	=> 'addSpamMenu',
 			'hook'		=> 'cp_custom_menu',
-			'settings'	=> '',
+			'settings'	=> [],
 			'version'	=> $this->version,
 			'enabled'	=> 'y'
-		);
-
-		ee()->db->insert('extensions', $data);
+		])->save();
 	}
 
 	/**
