@@ -20,7 +20,7 @@ class Text extends Formatter {
 	 * Escapes a string for use in an HTML attribute
 	 *
 	 * @param bool $double_encode Whether to double encode existing HTML entities
-	 * @return self This returns a reference to itself
+	 * @return self $this
 	 */
 	public function attributeEscape($double_encode = FALSE)
 	{
@@ -33,7 +33,7 @@ class Text extends Formatter {
 	 * it allows for character limiting, and unicode punctuation—handy for meta tags where entities may not be parsed.
 	 *
 	 * @param  array  $options Options: (bool) double_encode, (string) end_char, (int) limit, (bool) unicode_punctuation
-	 * @return self This returns a reference to itself
+	 * @return self $this
 	 */
 	public function attributeSafe($options = [])
 	{
@@ -91,7 +91,7 @@ class Text extends Formatter {
 	 * Make a URL slug from the text
 	 *
 	 * @param  array  $options Options: (string) separator, (bool) lowercase
-	 * @return self This returns a reference to itself
+	 * @return self $this
 	 */
 	public function urlSlug($options = [])
 	{
@@ -138,7 +138,7 @@ class Text extends Formatter {
 	 * Converts accented / multi-byte characters, e.g. ü, é, ß to ASCII transliterations
 	 * Uses foreign_chars.php config, either the default or user override, as a map
 	 *
-	 * @return self This returns a reference to itself
+	 * @return self $this
 	 */
 	public function accentsToAscii()
 	{
@@ -167,7 +167,7 @@ class Text extends Formatter {
 	/**
 	 * Censor naughty words, respects application preferences
 	 *
-	 * @return self This returns a reference to itself
+	 * @return self $this
 	 */
 	public function censor()
 	{
@@ -226,7 +226,7 @@ class Text extends Formatter {
 	 * Limit to X characters, with an optional end character. Strips HTML.
 	 *
 	 * @param  array  $options Options: (int) characters, (string) end_char
-	 * @return self This returns a reference to itself
+	 * @return self $this
 	 */
 	public function limitChars($options = [])
 	{
@@ -263,7 +263,7 @@ class Text extends Formatter {
 	/**
 	 * Preps the content for use in a form field
 	 *
-	 * @return self This returns a reference to itself
+	 * @return self $this
 	 */
 	public function formPrep()
 	{
@@ -276,7 +276,7 @@ class Text extends Formatter {
 	 * Encrypt the text
 	 *
 	 * @param  array  $options Options: (string) key, (bool) encode
-	 * @return self This returns a reference to itself
+	 * @return self $this
 	 */
 	public function encrypt($options = [])
 	{
@@ -298,7 +298,7 @@ class Text extends Formatter {
 	 * Encode ExpressionEngine Tags. By default encodes all curly braces so variables are also protected.
 	 *
 	 * @param  array  $options Options: (bool) encode_vars
-	 * @return self This returns a reference to itself
+	 * @return self $this
 	 */
 	public function encodeEETags($options = [])
 	{
@@ -328,7 +328,7 @@ class Text extends Formatter {
 	/**
 	 * JSON encoding
 	 * @param  array  $options Options: (bool) double_encode, (bool) enclose_with_quotes, (string) options, pipedelimited list of PHP JSON bitmask constants
-	 * @return self This returns a reference to itself
+	 * @return self $this
 	 */
 	public function json($options = [])
 	{
@@ -358,7 +358,7 @@ class Text extends Formatter {
 	/**
 	 * String replacement
 	 * @param  array  $options Options: (string) find, (string) (replace), (bool) regex
-	 * @return object This returns a reference to itself
+	 * @return object $this
 	 */
 	public function replace($options = [])
 	{
@@ -400,7 +400,7 @@ class Text extends Formatter {
 	/**
 	 * Get the length of the string
 	 *
-	 * @return self This returns a reference to itself
+	 * @return self $this
 	 */
 	public function getLength()
 	{
@@ -411,7 +411,7 @@ class Text extends Formatter {
 	/**
 	 * Converts all applicable characters to HTML entities
 	 *
-	 * @return self This returns a reference to itself
+	 * @return self $this
 	 */
 	public function convertToEntities()
 	{
