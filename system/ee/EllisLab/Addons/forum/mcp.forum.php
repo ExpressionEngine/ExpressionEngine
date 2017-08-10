@@ -947,26 +947,8 @@ class Forum_mcp extends CP_Controller {
 			),
 			'notification_settings' => array(
 				array(
-					'title' => 'reply_notification_moderators',
-					'fields' => array(
-						'board_notify_emails_topics' => array(
-							'type' => 'text',
-							'value' => $board->board_notify_emails_topics,
-							'attrs' => 'placeholder="' . lang('recipients'). '"'
-						),
-						'board_notify_emails' => array(
-							'type' => 'text',
-							'value' => $board->board_notify_emails,
-							'attrs' => 'placeholder="' . lang('recipients'). '"'
-						),
-					)
-				),
-			),
-
-			'notification_settings' => array(
-				array(
-					'title' => 'topic_notifications',
-					'desc' => 'topic_notifications_desc',
+					'title' => 'topic_notification',
+					'desc' => 'topic_notification_desc',
 					'fields' => array(
 						'board_notify_emails_topics' => array(
 							'type' => 'text',
