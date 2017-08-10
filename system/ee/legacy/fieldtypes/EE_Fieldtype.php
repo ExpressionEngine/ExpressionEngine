@@ -320,6 +320,22 @@ abstract class EE_Fieldtype {
 	}
 
 	/**
+	 * :url_encode modifier
+	 */
+	public function replace_url_encode($data, $params = array(), $tagdata = FALSE)
+	{
+		return (string) ee('Format')->make('Text', $data)->urlEncode($params);
+	}
+
+	/**
+	 * :url_decode modifier
+	 */
+	public function replace_url_decode($data, $params = array(), $tagdata = FALSE)
+	{
+		return (string) ee('Format')->make('Text', $data)->urlDecode($params);
+	}
+
+	/**
 	 * Pre process the stored data.
 	 *
 	 * This is called before the field is displayed. It's return will

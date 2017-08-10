@@ -398,6 +398,45 @@ class Text extends Formatter {
 	}
 
 	/**
+	 * URL Encode
+	 * @param  array  $options Options: (bool) plus_encoded_spaces
+	 * @return object $this
+	 */
+	public function urlEncode($options = [])
+	{
+		if (isset($options['plus_encoded_spaces']) && get_bool_from_string($options['plus_encoded_spaces']))
+		{
+			$this->content = urlencode($this->content);
+		}
+		else
+		{
+			$this->content = rawurlencode($this->content);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * URL Decode
+	 * @param  array  $options Options: (bool) plus_encoded_spaces
+	 * @return object $this
+	 */
+	public function urlDecode($options = [])
+	{
+		if (isset($options['plus_encoded_spaces']) && get_bool_from_string($options['plus_encoded_spaces']))
+		{
+			$this->content = urldecode($this->content);
+		}
+		else
+		{
+			$this->content = rawurldecode($this->content);
+		}
+
+		return $this;
+	}
+
+
+	/**
 	 * Get the length of the string
 	 *
 	 * @return self $this
