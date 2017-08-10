@@ -556,6 +556,17 @@ class Forum_mcp extends CP_Controller {
 
 		$action = ($board->isNew()) ? 'create' : 'edit';
 
+		// Set moderator checkbox values
+		$_POST['forum_notify_moderators_topics'] = 'n';
+		$_POST['forum_notify_moderators_replies'] = 'n';
+
+		if (isset($_POST['notify_moderators']))
+		{
+			$_POST['forum_notify_moderators_topics'] = (in_array('forum_notify_moderators_topics', $_POST['notify_moderators'])) ? 'y' : 'n';
+			$_POST['forum_notify_moderators_replies'] = (in_array('forum_notify_moderators_replies', $_POST['notify_moderators'])) ? 'y' : 'n';
+			unset($_POST['notify_moderators']);
+		}
+
 		$board->set($_POST);
 		$result = $board->validate();
 
@@ -936,17 +947,27 @@ class Forum_mcp extends CP_Controller {
 			),
 			'notification_settings' => array(
 				array(
+					'title' => 'reply_notification_moderators',
+					'fields' => array(
+						'board_notify_emails_topics' => array(
+							'type' => 'text',
+							'value' => $board->board_notify_emails_topics,
+							'attrs' => 'placeholder="' . lang('recipients'). '"'
+						),
+						'board_notify_emails' => array(
+							'type' => 'text',
+							'value' => $board->board_notify_emails,
+							'attrs' => 'placeholder="' . lang('recipients'). '"'
+						),
+					)
+				),
+			),
+
+			'notification_settings' => array(
+				array(
 					'title' => 'topic_notifications',
 					'desc' => 'topic_notifications_desc',
 					'fields' => array(
-						'board_enable_notify_emails_topics' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
-							// 'value' => $board->board_enable_notify_emails_topics,
-						),
 						'board_notify_emails_topics' => array(
 							'type' => 'text',
 							'value' => $board->board_notify_emails_topics,
@@ -958,14 +979,6 @@ class Forum_mcp extends CP_Controller {
 					'title' => 'reply_notification',
 					'desc' => 'reply_notification_desc',
 					'fields' => array(
-						'board_enable_notify_emails' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
-							// 'value' => $board->board_enable_notify_emails,
-						),
 						'board_notify_emails' => array(
 							'type' => 'text',
 							'value' => $board->board_notify_emails,
@@ -1658,6 +1671,8 @@ class Forum_mcp extends CP_Controller {
 
 	private function categoryForm($category)
 	{
+		$notify_moderators = $this->moderatorNotificationSettings($category);
+
 		$sections = array(
 			array(
 				array(
@@ -1697,43 +1712,41 @@ class Forum_mcp extends CP_Controller {
 					)
 				),
 				array(
-					'title' => 'topic_notifications',
-					'desc' => 'topic_notifications_desc',
+					'title' => 'notify_moderators',
 					'fields' => array(
-						'forum_enable_notify_emails' => array(
-							'type' => 'inline_radio',
+						'notify_moderators' => array(
+							'type' => 'checkbox',
 							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
+								'forum_notify_moderators_topics' => lang('new_topics'),
+								'forum_notify_moderators_replies'  => lang('new_replies')
 							),
-							// 'value' => $category->forum_enable_notify_emails,
-						),
+							'value' => $notify_moderators
+
+						)
+					)
+				),
+				array(
+					'title' => 'topic_notification',
+					'desc' => 'topic_notification_desc',
+					'fields' => array(
 						'forum_notify_emails' => array(
 							'type' => 'text',
 							'value' => $category->forum_notify_emails,
 							'attrs' => 'placeholder="' . lang('recipients'). '"'
-						),
+						)
 					)
 				),
 				array(
 					'title' => 'reply_notification',
 					'desc' => 'reply_notification_desc',
 					'fields' => array(
-						'forum_enable_notify_emails_topics' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
-							// 'value' => $category->forum_enable_notify_emails_topics,
-						),
 						'forum_notify_emails_topics' => array(
 							'type' => 'text',
 							'value' => $category->forum_notify_emails_topics,
 							'attrs' => 'placeholder="' . lang('recipients'). '"'
-						),
+						)
 					)
-				),
+				)
 			)
 		);
 
@@ -2008,6 +2021,7 @@ class Forum_mcp extends CP_Controller {
 	{
 		ee()->load->model('addons_model');
 		$fmt_options = ee()->addons_model->get_plugin_formatting(TRUE);
+		$notify_moderators = $this->moderatorNotificationSettings($forum);
 
 		$sections = array(
 			array(
@@ -2141,43 +2155,40 @@ class Forum_mcp extends CP_Controller {
 			),
 			'notification_settings' => array(
 				array(
-					'title' => 'topic_notifications',
-					'desc' => 'topic_notifications_desc',
+					'title' => 'notify_moderators',
 					'fields' => array(
-						'forum_enable_notify_emails' => array(
-							'type' => 'inline_radio',
+						'notify_moderators' => array(
+							'type' => 'checkbox',
 							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
+								'forum_notify_moderators_topics' => lang('new_topics'),
+								'forum_notify_moderators_replies'  => lang('new_replies')
 							),
-							// 'value' => $forum->forum_enable_notify_emails,
-						),
+							'value' => $notify_moderators
+						)
+					)
+				),
+				array(
+					'title' => 'topic_notification',
+					'desc' => 'topic_notification_desc',
+					'fields' => array(
 						'forum_notify_emails' => array(
 							'type' => 'text',
 							'value' => $forum->forum_notify_emails,
 							'attrs' => 'placeholder="' . lang('recipients'). '"'
-						),
+						)
 					)
 				),
 				array(
 					'title' => 'reply_notification',
 					'desc' => 'reply_notification_desc',
 					'fields' => array(
-						'forum_enable_notify_emails_topics' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
-							// 'value' => $forum->forum_enable_notify_emails_topics,
-						),
 						'forum_notify_emails_topics' => array(
 							'type' => 'text',
 							'value' => $forum->forum_notify_emails_topics,
 							'attrs' => 'placeholder="' . lang('recipients'). '"'
-						),
+						)
 					)
-				),
+				)
 			),
 			'text_and_html_formatting' => array(
 				array(
@@ -2259,6 +2270,24 @@ class Forum_mcp extends CP_Controller {
 		);
 
 		return $sections;
+	}
+
+	private function moderatorNotificationSettings($data)
+	{
+		$notify_moderators = array();
+
+		if ($data->forum_notify_moderators_topics == 'y')
+		{
+			$notify_moderators[] = 'forum_notify_moderators_topics';
+		}
+
+		if ($data->forum_notify_moderators_replies == 'y')
+		{
+			$notify_moderators[] = 'forum_notify_moderators_replies';
+		}
+
+		return 	$notify_moderators;
+
 	}
 
 	private function settingsForForum($id)
