@@ -26,7 +26,8 @@ class Updater {
 				'addFieldDataFlag',
 				'removeMemberHomepageTable',
 				'globalizeSave_tmpl_files',
-				'nullOutRelationshipChannelDataFields'
+				'nullOutRelationshipChannelDataFields',
+				'addSortIndexToChannelTitles',
 			)
 		);
 
@@ -155,6 +156,14 @@ class Updater {
 				[$field_name => '']
 			);
 		}
+	}
+
+	/**
+	 * Adds an index to exp_channel_titles for optimizing our channel entry tags
+	 */
+	private function addSortIndexToChannelTitles()
+	{
+		ee()->smartforge->add_key('channel_titles', array('sticky', 'entry_date', 'entry_id'), 'sticky_date_id_idx');
 	}
 
 }
