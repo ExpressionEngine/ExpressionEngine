@@ -38,7 +38,7 @@ if (ee('View/Helpers')->countChoices($normalized_choices) <= $too_many && ! $nes
 				$label = isset($choice['label'])
 					? lang($choice['label']) : lang($choice);
 				$key = isset($choice['value'])
-					? lang($choice['value']) : lang($key);
+					? $choice['value'] : $key;
 				$instructions = isset($choice['instructions']) ? $choice['instructions'] : NULL;
 				if ($encode)
 				{

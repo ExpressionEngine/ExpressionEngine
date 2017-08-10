@@ -124,7 +124,7 @@ $lang = array(
 
 'grid_col_width' => 'Column width',
 
-'grid_col_width_desc' => 'Set the width of this column in the publish form.',
+'grid_col_width_desc' => 'Set the width (in pixels) of this column in the publish form.',
 
 'grid_col_width_percent' => 'Percentage.',
 

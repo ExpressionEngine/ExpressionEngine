@@ -434,9 +434,6 @@ class Grid_ft extends EE_Fieldtype {
 			foreach ($columns as $field_name => &$column)
 			{
 				$column['col_id'] = $field_name;
-				$column['col_required'] = isset($column['col_required']) ? 'y' : 'n';
-				$column['col_search'] = isset($column['col_search']) ? 'y' : 'n';
-
 				$vars['columns'][] = ee()->grid_lib->get_column_view($column, $this->error_fields);
 			}
 		}
@@ -505,7 +502,7 @@ class Grid_ft extends EE_Fieldtype {
 			'grid_fields' => array(
 				'label' => 'grid_fields',
 				'group' => 'grid',
-				'settings' => array($grid_alert, ee()->load->view('settings', $vars, TRUE))
+				'settings' => array($grid_alert, ee('View')->make('grid:settings')->render($vars))
 			)
 		);
 
