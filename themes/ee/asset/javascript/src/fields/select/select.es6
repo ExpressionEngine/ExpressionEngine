@@ -6,7 +6,6 @@ class SelectField extends React.Component {
 
     this.initialItems = SelectList.formatItems(props.items)
     this.state = {
-      items: this.initialItems,
       selected: SelectList.formatItems(props.selected, null, props.multi),
       editing: false
     }
@@ -17,19 +16,6 @@ class SelectField extends React.Component {
       let props = JSON.parse(window.atob($(this).data('selectReact')))
       props.name = $(this).data('inputValue')
       ReactDOM.render(React.createElement(SelectField, props, null), this)
-    })
-  }
-
-  initialItemsChanged = (items) => {
-    this.initialItems = items
-    this.setState({
-      items: items
-    })
-  }
-
-  itemsChanged = (items) => {
-    this.setState({
-      items: items
     })
   }
 
@@ -60,8 +46,7 @@ class SelectField extends React.Component {
   }
 
   render () {
-    let selectItem = <FilterableSelectList items={this.state.items}
-      initialItems={this.initialItems}
+    let selectItem = <FilterableSelectList items={this.initialItems}
       limit={this.props.limit}
       name={this.props.name}
       multi={this.props.multi}
@@ -69,13 +54,11 @@ class SelectField extends React.Component {
       autoSelectParents={this.props.autoSelectParents}
       selected={this.state.selected}
       filterUrl={this.props.filterUrl}
-      initialItemsChanged={this.initialItemsChanged}
-      itemsChanged={this.itemsChanged}
       selectionChanged={this.selectionChanged}
       noResults={this.props.noResults}
       filters={this.props.filters}
       toggleAll={this.props.toggleAll}
-      filterable={this.countItems() > SelectList.limit}
+      filterable={this.countItems() > SelectList.defaultProps.tooMany}
       reorderable={this.state.editing}
       removable={this.state.editing}
       groupToggle={this.props.groupToggle}

@@ -1,3 +1,5 @@
+const FilterableSelectList = makeFilterableComponent(SelectList)
+
 class Relationship extends React.Component {
   constructor (props) {
     super(props)
@@ -27,12 +29,14 @@ class Relationship extends React.Component {
   selectionChanged = (selected) => {
     this.setState({
       selected: selected,
-      selectedVisible: selected,
+      selectedVisible: selected
     })
   }
 
   render () {
-    const FilterableSelectList = makeFilterableComponent(SelectList)
+    // Force the selected pane to re-render because we need to pass in new
+    // items as props which the filterable component doesn't expect...
+    const SelectedFilterableSelectList = makeFilterableComponent(SelectList)
 
     return (
       <div className={"fields-relate" + (this.props.multi ? ' fields-relate-multi' : '')}>
@@ -52,7 +56,7 @@ class Relationship extends React.Component {
         />
 
         {this.props.multi &&
-          <FilterableSelectList
+          <SelectedFilterableSelectList
             items={this.state.selectedVisible}
             selected={[]}
             filterable={true}

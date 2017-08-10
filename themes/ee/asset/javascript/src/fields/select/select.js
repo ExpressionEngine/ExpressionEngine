@@ -18,19 +18,6 @@ var SelectField = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (SelectField.__proto__ || Object.getPrototypeOf(SelectField)).call(this, props));
 
-    _this.initialItemsChanged = function (items) {
-      _this.initialItems = items;
-      _this.setState({
-        items: items
-      });
-    };
-
-    _this.itemsChanged = function (items) {
-      _this.setState({
-        items: items
-      });
-    };
-
     _this.selectionChanged = function (selected) {
       _this.setState({
         selected: selected
@@ -45,7 +32,6 @@ var SelectField = function (_React$Component) {
 
     _this.initialItems = SelectList.formatItems(props.items);
     _this.state = {
-      items: _this.initialItems,
       selected: SelectList.formatItems(props.selected, null, props.multi),
       editing: false
     };
@@ -76,8 +62,7 @@ var SelectField = function (_React$Component) {
     value: function render() {
       var _this3 = this;
 
-      var selectItem = React.createElement(FilterableSelectList, { items: this.state.items,
-        initialItems: this.initialItems,
+      var selectItem = React.createElement(FilterableSelectList, { items: this.initialItems,
         limit: this.props.limit,
         name: this.props.name,
         multi: this.props.multi,
@@ -85,13 +70,11 @@ var SelectField = function (_React$Component) {
         autoSelectParents: this.props.autoSelectParents,
         selected: this.state.selected,
         filterUrl: this.props.filterUrl,
-        initialItemsChanged: this.initialItemsChanged,
-        itemsChanged: this.itemsChanged,
         selectionChanged: this.selectionChanged,
         noResults: this.props.noResults,
         filters: this.props.filters,
         toggleAll: this.props.toggleAll,
-        filterable: this.countItems() > SelectList.limit,
+        filterable: this.countItems() > SelectList.defaultProps.tooMany,
         reorderable: this.state.editing,
         removable: this.state.editing,
         groupToggle: this.props.groupToggle,

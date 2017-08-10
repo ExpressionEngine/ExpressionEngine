@@ -8,6 +8,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var FilterableSelectList = makeFilterableComponent(SelectList);
+
 var Relationship = function (_React$Component) {
   _inherits(Relationship, _React$Component);
 
@@ -42,7 +44,9 @@ var Relationship = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      var FilterableSelectList = makeFilterableComponent(SelectList);
+      // Force the selected pane to re-render because we need to pass in new
+      // items as props which the filterable component doesn't expect...
+      var SelectedFilterableSelectList = makeFilterableComponent(SelectList);
 
       return React.createElement(
         'div',
@@ -63,7 +67,7 @@ var Relationship = function (_React$Component) {
             return _this2.handleToggleAll(true);
           }
         }),
-        this.props.multi && React.createElement(FilterableSelectList, {
+        this.props.multi && React.createElement(SelectedFilterableSelectList, {
           items: this.state.selectedVisible,
           selected: [],
           filterable: true,
