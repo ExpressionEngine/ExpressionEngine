@@ -12,13 +12,10 @@ class Dropdown extends React.Component {
     }
   }
 
-  limit = 8
-
   static renderFields(context) {
     $('div[data-dropdown-react]', context).each(function () {
       let props = JSON.parse(window.atob($(this).data('dropdownReact')))
       props.name = $(this).data('inputValue')
-      const FilterableDropdown = makeFilterableComponent(Dropdown)
       ReactDOM.render(React.createElement(FilterableDropdown, props, null), this)
     })
   }
@@ -132,3 +129,5 @@ $(document).ready(function () {
 Grid.bind('select', 'display', function(cell) {
   Dropdown.renderFields(cell)
 });
+
+const FilterableDropdown = makeFilterableComponent(Dropdown)

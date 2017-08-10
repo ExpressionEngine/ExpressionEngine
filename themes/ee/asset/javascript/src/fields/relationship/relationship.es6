@@ -47,7 +47,7 @@ class Relationship extends React.Component {
           filterable={true}
           filters={this.props.select_filters}
           filterUrl={this.props.filter_url}
-          toggleAll={this.props.multi && this.props.items.length > SelectList.limit ? true : null}
+          toggleAll={this.props.multi && this.props.items.length > SelectList.defaultProps.tooMany ? true : null}
           onToggleAll={(e) => this.handleToggleAll(true)}
         />
 
@@ -61,7 +61,7 @@ class Relationship extends React.Component {
             removable={true}
             selectionChanged={this.selectionChanged}
             noResults={this.props.no_related}
-            toggleAll={this.props.items.length > SelectList.limit ? false : null}
+            toggleAll={this.props.items.length > SelectList.defaultProps.tooMany ? false : null}
             onToggleAll={(e) => this.handleToggleAll(false)}
           />
         }

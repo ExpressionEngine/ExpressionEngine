@@ -120,6 +120,18 @@ var SelectList = function (_React$Component) {
       if (this.props.reorderable && !this.props.nested) this.bindSortable();
     }
   }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps, prevState) {
+      if (this.props.multi && prevProps.selected.length != this.props.selected.length) {
+        $(this.input).trigger('change');
+      }
+
+      if (this.props.nested && this.props.reorderable) this.bindNestable();
+    }
+
+    // Sorting for nested lists
+
+  }, {
     key: 'bindSortable',
     value: function bindSortable() {
       var _this2 = this;
@@ -148,6 +160,9 @@ var SelectList = function (_React$Component) {
         }
       });
     }
+
+    // Sorting for non-nested lists
+
   }, {
     key: 'bindNestable',
     value: function bindNestable() {
@@ -248,23 +263,14 @@ var SelectList = function (_React$Component) {
       return items;
     }
   }, {
-    key: 'componentDidUpdate',
-    value: function componentDidUpdate(prevProps, prevState) {
-      if (this.props.multi && prevProps.selected.length != this.props.selected.length) {
-        $(this.input).trigger('change');
-      }
-
-      if (this.props.nested && this.props.reorderable) this.bindNestable();
-    }
-  }, {
     key: 'render',
     value: function render() {
       var _this7 = this;
 
       var props = this.props;
-      var tooMany = props.items.length > this.props.tooMany && !this.props.loading;
-      var shouldShowToggleAll = (props.multi || !this.props.selectable) && props.toggleAll !== null;
-      var shouldShowFieldTools = this.props.items.length > this.props.tooMany;
+      var tooMany = props.items.length > props.tooMany && !props.loading;
+      var shouldShowToggleAll = (props.multi || !props.selectable) && props.toggleAll !== null;
+      var shouldShowFieldTools = props.items.length > props.tooMany;
 
       return React.createElement(
         'div',

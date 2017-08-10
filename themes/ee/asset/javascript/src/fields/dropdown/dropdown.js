@@ -16,8 +16,6 @@ var Dropdown = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Dropdown.__proto__ || Object.getPrototypeOf(Dropdown)).call(this, props));
 
-    _this.limit = 8;
-
     _this.selectionChanged = function (selected) {
       _this.setState({
         selected: selected,
@@ -129,7 +127,6 @@ var Dropdown = function (_React$Component) {
       $('div[data-dropdown-react]', context).each(function () {
         var props = JSON.parse(window.atob($(this).data('dropdownReact')));
         props.name = $(this).data('inputValue');
-        var FilterableDropdown = makeFilterableComponent(Dropdown);
         ReactDOM.render(React.createElement(FilterableDropdown, props, null), this);
       });
     }
@@ -179,3 +176,5 @@ $(document).ready(function () {
 Grid.bind('select', 'display', function (cell) {
   Dropdown.renderFields(cell);
 });
+
+var FilterableDropdown = makeFilterableComponent(Dropdown);

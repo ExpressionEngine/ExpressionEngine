@@ -53,6 +53,15 @@ class SelectList extends React.Component {
     if (this.props.reorderable && ! this.props.nested) this.bindSortable()
   }
 
+  componentDidUpdate (prevProps, prevState) {
+    if (this.props.multi && prevProps.selected.length != this.props.selected.length) {
+      $(this.input).trigger('change')
+    }
+
+    if (this.props.nested && this.props.reorderable) this.bindNestable()
+  }
+
+  // Sorting for nested lists
   bindSortable () {
     $('.field-inputs', this.container).sortable({
       axis: 'y',
@@ -80,6 +89,7 @@ class SelectList extends React.Component {
     })
   }
 
+  // Sorting for non-nested lists
   bindNestable () {
     $(this.container).nestable({
       listNodeName: 'ul',
@@ -239,19 +249,11 @@ class SelectList extends React.Component {
     }
   }
 
-  componentDidUpdate (prevProps, prevState) {
-    if (this.props.multi && prevProps.selected.length != this.props.selected.length) {
-      $(this.input).trigger('change')
-    }
-
-    if (this.props.nested && this.props.reorderable) this.bindNestable()
-  }
-
   render () {
     let props = this.props
-    let tooMany = props.items.length > this.props.tooMany && ! this.props.loading
-    let shouldShowToggleAll = (props.multi || ! this.props.selectable) && props.toggleAll !== null
-    let shouldShowFieldTools = this.props.items.length > this.props.tooMany
+    let tooMany = props.items.length > props.tooMany && ! props.loading
+    let shouldShowToggleAll = (props.multi || ! props.selectable) && props.toggleAll !== null
+    let shouldShowFieldTools = props.items.length > props.tooMany
 
     return (
       <div className={"fields-select" + (tooMany ? ' field-resizable' : '')}
