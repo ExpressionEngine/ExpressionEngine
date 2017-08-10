@@ -641,7 +641,8 @@ class EE_Schema {
 			KEY `status` (`status`),
 			KEY `entry_date` (`entry_date`),
 			KEY `expiration_date` (`expiration_date`),
-			KEY `site_id` (`site_id`)
+			KEY `site_id` (`site_id`),
+			KEY `sticky_date_id_idx` (`sticky`,`entry_date`,`entry_id`)
 		)";
 
 		// Channel Titles Autosave
