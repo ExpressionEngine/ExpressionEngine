@@ -1197,7 +1197,8 @@ class Channel {
 			$sql .= "LEFT JOIN exp_channel_data AS wd ON wd.entry_id = t.entry_id ";
 		}
 
-		$sql .= "LEFT JOIN exp_members AS m ON m.member_id = t.author_id ";
+		$join_member_table = FALSE;
+		$member_join = "LEFT JOIN exp_members AS m ON m.member_id = t.author_id ";
 
 
 		if (ee()->TMPL->fetch_param('category') OR ee()->TMPL->fetch_param('category_group') OR ($cat_id != '' && $dynamic == TRUE))
@@ -1825,6 +1826,7 @@ class Channel {
 		if ($username = ee()->TMPL->fetch_param('username'))
 		{
 			// Shows entries ONLY for currently logged in user
+			$join_member_table = TRUE;
 
 			if ($username == 'CURRENT_USER')
 			{
@@ -1846,6 +1848,7 @@ class Channel {
 
 		if ($author_id = ee()->TMPL->fetch_param('author_id'))
 		{
+			$join_member_table = TRUE;
 			// Shows entries ONLY for currently logged in user
 
 			if ($author_id == 'CURRENT_USER')
@@ -1891,6 +1894,7 @@ class Channel {
 
 		if ($group_id = ee()->TMPL->fetch_param('group_id'))
 		{
+			$join_member_table = TRUE;
 			$sql .= ee()->functions->sql_andor_string($group_id, 'm.group_id');
 		}
 
@@ -2056,11 +2060,13 @@ class Channel {
 						break;
 
 						case 'username' :
+							$join_member_table = TRUE;
 							$end .= "m.username";
 							$distinct_select .= ', m.username ';
 						break;
 
 						case 'screen_name' :
+							$join_member_table = TRUE;
 							$end .= "m.screen_name";
 							$distinct_select .= ', m.screen_name ';
 						break;
@@ -2239,6 +2245,11 @@ class Channel {
 		/**------
 		/**  Fetch the entry_id numbers
 		/**------*/
+
+		if ($join_member_table)
+		{
+			$sql = str_replace(' WHERE ', $member_join . ' WHERE ', $sql);
+		}
 
 		$query = ee()->db->query($sql_a.$sql_b.$sql);
 
