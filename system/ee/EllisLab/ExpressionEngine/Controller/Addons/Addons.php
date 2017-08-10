@@ -831,7 +831,9 @@ class Addons extends CP_Controller {
 			}
 
 			$fieldtype = $this->getFieldtype($addon);
-			if ( ! empty($fieldtype) && $fieldtype['installed'] === TRUE)
+			// no need to check if installed, we'll let the uninstaller handle
+
+			if ( ! empty($fieldtype))
 			{
 				$name = $this->uninstallFieldtype($addon);
 				if ($name && ! isset($uninstalled[$party][$addon]))
@@ -1551,6 +1553,7 @@ class Addons extends CP_Controller {
 		$name = NULL;
 		$fieldtype = ee()->security->sanitize_filename(strtolower($fieldtype));
 
+		// Note, the addons_uninstaller will loop through all fieldtypes for the addon path and delete them
 		if (ee()->addons_installer->install($fieldtype, 'fieldtype', FALSE))
 		{
 			$data = $this->getFieldtype($fieldtype);
@@ -1573,6 +1576,7 @@ class Addons extends CP_Controller {
 		$name = NULL;
 		$fieldtype = ee()->security->sanitize_filename(strtolower($fieldtype));
 
+		// Note, the addons_installer will loop through all fieldtypes for the addon path and delete them
 		if (ee()->addons_installer->uninstall($fieldtype, 'fieldtype', FALSE))
 		{
 			$data = $this->getFieldtype($fieldtype);
