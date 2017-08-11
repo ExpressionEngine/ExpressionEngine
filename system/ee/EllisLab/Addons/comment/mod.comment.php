@@ -2317,7 +2317,7 @@ class Comment {
 		$comment_string = ee('Security/XSS')->clean($_POST['comment']);
 
 		$is_spam = ee()->session->userdata('group_id') != 1 && ee('Spam')->isSpam($comment_string);
-		$is_spam = TRUE;
+
 		if ($is_spam === TRUE)
 		{
 			$comment_moderate = 'y';
@@ -2607,11 +2607,11 @@ class Comment {
 				'rate'		=> 3
 			);
 
-//			ee()->output->show_message($data);
+			ee()->output->show_message($data);
 		}
 		else
 		{
-//			ee()->functions->redirect($return_link);
+			ee()->functions->redirect($return_link);
 		}
 	}
 
