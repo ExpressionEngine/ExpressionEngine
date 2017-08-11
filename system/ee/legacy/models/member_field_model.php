@@ -1,26 +1,14 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.7
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Member Field Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Field Model
  */
 class Member_field_model extends CI_Model {
 
@@ -108,8 +96,6 @@ class Member_field_model extends CI_Model {
 		return $data;
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Creates a field settings array to pass to db forge add/modify_column
 	 * @param  Integer	$id		ID of the field
@@ -140,8 +126,6 @@ class Member_field_model extends CI_Model {
 		return $column_data;
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Delete a Member Field
 	 * @param  Integer $m_field_id Member Field ID
@@ -160,8 +144,6 @@ class Member_field_model extends CI_Model {
 		ee()->load->dbforge();
 		ee()->dbforge->drop_column($this->table_data, 'm_field_id_'.$m_field_id);
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Get field information for one or all fields

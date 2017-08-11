@@ -1,4 +1,4 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /*
 | -------------------------------------------------------------------
 | Foreign Characters
@@ -8,7 +8,7 @@
 |
 */
 
-// $foreign_chars = 
+// $foreign_chars =
 return array(
 	'223'	=>	"ss", // ß
 	'224'	=>  "a",

@@ -1,27 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
- * @since		Version 3.40
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Update Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * Update
  */
 class Updater {
 
@@ -37,6 +24,7 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'add_enable_devlog_alerts',
+                'addImageQualityColumn',
 				'fix_file_dimension_site_ids'
 			)
 		);
@@ -54,6 +42,24 @@ class Updater {
 		ee()->config->update_site_prefs(
 			array('enable_devlog_alerts' => 'n'),
 			'all'
+		);
+	}
+
+	/**
+	 * Adds a new image quality column to the file dimensions table
+	 */
+	private function addImageQualityColumn()
+	{
+		ee()->smartforge->add_column(
+			'file_dimensions',
+			array(
+				'quality' => array(
+					'type'       => 'tinyint',
+					'constraint' => 1,
+					'unsigned'   => TRUE,
+					'default'    => 90,
+				)
+			)
 		);
 	}
 

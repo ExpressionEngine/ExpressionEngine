@@ -1,31 +1,17 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\Addons\Spam\Service;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
+ * Spam Training
  */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Spam Module
- *
- * @package		ExpressionEngine
- * @subpackage	Extensions
- * @category	Extensions
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- */
-
 class Training {
 
 	public $stop_words_path = 'spam/training/stopwords.txt';
@@ -42,8 +28,6 @@ class Training {
 		$this->kernel = $this->getKernel($kernel);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Close the shared memory segment if we're using it.
 	 *
@@ -57,8 +41,6 @@ class Training {
 			shmop_close($this->shm_id);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load the classifier object from memory if available, otherwise construct
@@ -104,8 +86,6 @@ class Training {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Deletes the shared memory segment containing our classifier
 	 *
@@ -138,8 +118,6 @@ class Training {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns a new classifier based on our training data.
 	 *
@@ -159,8 +137,6 @@ class Training {
 
 		return ee('spam:Classifier', $training, $collection, $stop_words);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Returns an array of all the parameters for a class
@@ -210,8 +186,6 @@ class Training {
 
 		return $result;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Returns the total document count for the current kernel

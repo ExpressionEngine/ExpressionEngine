@@ -1,17 +1,16 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Library\DataStructure\Tree;
 
-
-
 /**
- * ExpressionEngine Tree Iterator Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core Datastructures
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Tree Iterator
  */
 class TreeIterator extends \RecursiveArrayIterator {
 
@@ -25,8 +24,6 @@ class TreeIterator extends \RecursiveArrayIterator {
 	{
 		return ! $this->current()->isLeaf();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Override RecursiveArrayIterator's get child method to skip

@@ -1,31 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Channels;
 
 use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Channel Set Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Set Controller
  */
 class Sets extends AbstractChannelsController {
 
@@ -260,7 +247,7 @@ class Sets extends AbstractChannelsController {
 
 				// Frequently the error is on the short_name, but in those cases
 				// you really want to edit the long name as well, so we'll show it.
-				if (isset($long_field))
+				if (isset($long_field) && isset($hidden[$key]))
 				{
 					$key = $model_name.'['.$ident.']['.$long_field.']';
 					$vars['sections'][$section.': '.$model->$title_field][] = array(

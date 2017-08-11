@@ -1,27 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Config Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core, Core. CORE!
  */
 class EE_Core {
 
@@ -82,8 +69,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20170626');
-		define('APP_VER',		'3.5.11');
+		define('APP_BUILD',		'20161229');
+		define('APP_VER',		'4.0.0');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -247,8 +234,6 @@ class EE_Core {
 		ee()->load->library('api');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Initialize EE
 	 *
@@ -394,8 +379,6 @@ class EE_Core {
 		}
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Generate Control Panel Request
 	 *
@@ -500,8 +483,6 @@ class EE_Core {
 		});
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Define the BASE constant
 	 * @return void
@@ -510,8 +491,6 @@ class EE_Core {
 	{
 		define('BASE', SELF.'?S='.ee()->session->session_id().'&amp;D=cp'); // cp url
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Enable Debugging
@@ -525,8 +504,6 @@ class EE_Core {
 		error_reporting(E_ALL);
 		@ini_set('display_errors', 1);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Generate Page Request
@@ -544,8 +521,6 @@ class EE_Core {
 			$that->set_newrelic_transaction('ACT: '.$class.'::'.$method.'()');
 		});
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Generate Page Request
@@ -681,8 +656,6 @@ class EE_Core {
 		ee()->TMPL->run_template_engine($template_group, $template);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Garbage Collection
 	 *
@@ -732,8 +705,6 @@ class EE_Core {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the New Relic transasction name
 	 * @param String/callable $transaction_name Either a string containing the
@@ -764,8 +735,6 @@ class EE_Core {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set iFrame Headers
 	 *
@@ -791,8 +760,6 @@ class EE_Core {
 			ee()->output->set_header('X-Frame-Options: '.$frame_options);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Process Secure Forms

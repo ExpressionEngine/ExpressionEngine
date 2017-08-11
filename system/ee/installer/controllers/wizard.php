@@ -1,30 +1,19 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine Installation and Update Wizard
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '3.5.11';	// The version being installed
+
+	public $version           = '4.0.0';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -125,8 +114,8 @@ class Wizard extends CI_Controller {
 		'install_default_theme' => 'n'
 	);
 
-	// These are the default values for the CodeIgniter config array.  Since the
-	// EE and CI config files are one in the same now we use this data when we
+	// These are the default values for the config array.  Since the
+	// EE and legacy CI config files are one in the same now we use this data when we
 	// write the initial config file using $this->write_config_data()
 	public $ci_config = array(
 		'subclass_prefix'    => 'EE_',
@@ -137,8 +126,6 @@ class Wizard extends CI_Controller {
 		// Enabled for cleaner view files and compatibility
 		'rewrite_short_tags' => TRUE
 	);
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Constructor
@@ -228,8 +215,6 @@ class Wizard extends CI_Controller {
 		$this->day   = gmdate('d', $this->now);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remap - Intercepts the request and dynamically determines what we should
 	 * do
@@ -276,8 +261,6 @@ class Wizard extends CI_Controller {
 		// Call the action
 		$this->$action();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Pre-flight Tests - Does all of our error checks
@@ -498,8 +481,6 @@ class Wizard extends CI_Controller {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * New installation form
 	 * @return void
@@ -530,8 +511,6 @@ class Wizard extends CI_Controller {
 		$this->set_output('install_form', array_merge($vars, $this->userdata));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Checks if the database host is valid
 	 *
@@ -547,8 +526,6 @@ class Wizard extends CI_Controller {
 		});
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check if the database given is valid
 	 *
@@ -563,8 +540,6 @@ class Wizard extends CI_Controller {
 			);
 		});
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Given a MySQL error number, will check to see if that error was thrown
@@ -604,8 +579,6 @@ class Wizard extends CI_Controller {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Abstraction to retrieve the default or user over-ridden database prefix
 	 */
@@ -613,8 +586,6 @@ class Wizard extends CI_Controller {
 	{
 		return ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Form validation callback for checking DB prefixes
@@ -647,8 +618,6 @@ class Wizard extends CI_Controller {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	public function license_agreement($value)
 	{
 		if ($value !== 'y')
@@ -662,8 +631,6 @@ class Wizard extends CI_Controller {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Perform the installation
@@ -909,8 +876,6 @@ class Wizard extends CI_Controller {
 		$this->show_success('install', $vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	public function template_path_writeable($radio)
 	{
 		if ( ! is_really_writable(PATH_TMPL))
@@ -924,8 +889,6 @@ class Wizard extends CI_Controller {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Split off the port, if given one (e.g. 192.168.10.2:4055)
@@ -946,8 +909,6 @@ class Wizard extends CI_Controller {
 			$this->userdata['db_port'] = NULL;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get the DB Config, whether it's from database.php or config.php
@@ -979,8 +940,6 @@ class Wizard extends CI_Controller {
 			throw new \Exception(lang('database_no_data'));
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Show installation or upgrade succes page
@@ -1030,8 +989,6 @@ class Wizard extends CI_Controller {
 
 		$this->set_output('success', $template_variables);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Assigns the values submitted in the settings form
@@ -1095,8 +1052,6 @@ class Wizard extends CI_Controller {
 		$this->userdata['site_url'] = preg_replace("#([^/])/*$#", "\\1/", $this->userdata['site_url']);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Show the update form
 	 * @return void
@@ -1107,8 +1062,6 @@ class Wizard extends CI_Controller {
 		$vars['action'] = $this->set_qstr('do_update');
 		$this->set_output('update_form', $vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Perform the update
@@ -1282,8 +1235,6 @@ class Wizard extends CI_Controller {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Determine which update should be performed - Reads though the "updates"
 	 * directory and makes a list of all available updates
@@ -1335,8 +1286,6 @@ class Wizard extends CI_Controller {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Connect to the database
 	 *
@@ -1383,8 +1332,6 @@ class Wizard extends CI_Controller {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get an actual path to certain items, namely global images, themes, and
 	 * javascript.
@@ -1402,8 +1349,6 @@ class Wizard extends CI_Controller {
 
 		return $path;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set output
@@ -1493,8 +1438,6 @@ class Wizard extends CI_Controller {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the base URL and index values so our links work properly
 	 * @return void
@@ -1514,8 +1457,6 @@ class Wizard extends CI_Controller {
 		$this->config->set_item('site_index', SELF); // Same with the CI site_index
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create the query string needed for form actions
 	 * @param string  $method The method name for the action
@@ -1525,8 +1466,6 @@ class Wizard extends CI_Controller {
 		$query_string = 'C=wizard&M='.$method.'&language='.$this->mylang;
 		return site_url($query_string);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Install the default site theme
@@ -1556,8 +1495,6 @@ class Wizard extends CI_Controller {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Install the Modules
 	 * @return boolean  TRUE if successful, FALSE if not
@@ -1569,8 +1506,6 @@ class Wizard extends CI_Controller {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Write the config file
@@ -1619,7 +1554,7 @@ class Wizard extends CI_Controller {
 			'show_profiler'             => 'n',
 			'include_seconds'           => 'n',
 			'cookie_domain'             => '',
-			'cookie_path'               => '',
+			'cookie_path'               => '/',
 			'cookie_prefix'             => '',
 			'website_session_type'      => 'c',
 			'cp_session_type'           => 'c',
@@ -1708,7 +1643,7 @@ class Wizard extends CI_Controller {
 			'site_404'                  => '',
 			'save_tmpl_revisions'       => 'n',
 			'max_tmpl_revisions'        => '5',
-			'save_tmpl_files'           => 'n',
+			'save_tmpl_files'           => 'y',
 			'deny_duplicate_data'       => 'y',
 			'redirect_submitted_links'  => 'n',
 			'enable_censoring'          => 'n',
@@ -1918,7 +1853,6 @@ class Wizard extends CI_Controller {
 			'site_404',
 			'save_tmpl_revisions',
 			'max_tmpl_revisions',
-			'save_tmpl_files',
 		);
 		$site_prefs = array();
 
@@ -1971,8 +1905,6 @@ class Wizard extends CI_Controller {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Write config file from the template file
@@ -2089,8 +2021,6 @@ class Wizard extends CI_Controller {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update modules (first party only)
 	 * @return void
@@ -2144,8 +2074,6 @@ class Wizard extends CI_Controller {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the default channel entry data
 	 * @return string
@@ -2154,8 +2082,6 @@ class Wizard extends CI_Controller {
 	{
 		return read_file(APPPATH.'language/'.$this->userdata['deft_lang'].'/channel_entry_lang.php');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Checks to see if we're allowed to automatically rename the installer dir

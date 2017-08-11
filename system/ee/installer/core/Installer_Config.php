@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Config Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Installer Config
  */
 class Installer_Config Extends EE_Config {
 
@@ -36,8 +24,6 @@ class Installer_Config Extends EE_Config {
 		$this->config_path = SYSPATH.'user/config/config.php';
 		$this->_initialize();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load the EE config file and set the initial values
@@ -74,8 +60,6 @@ class Installer_Config Extends EE_Config {
 		// Reinforce the subclass_prefix
 		$this->set_item('subclass_prefix', 'Installer_');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set configuration overrides
@@ -118,6 +102,60 @@ class Installer_Config Extends EE_Config {
 		unset($params);
 		unset($exceptions);
 	}
+
+	/**
+	 * Remove config items from all MSM sites
+	 *
+	 * @param	mixed	$remove_key	String or array of strings of keys to remove
+	 */
+	public function remove_config_item($remove_key)
+	{
+		$columns = array(
+			'site_system_preferences',
+			'site_member_preferences',
+			'site_template_preferences',
+			'site_channel_preferences',
+		);
+
+		if ( ! is_array($remove_key))
+		{
+			$remove_key = array($remove_key);
+		}
+
+		ee()->db->select(implode(', ', $columns).', site_id');
+
+		$sites = ee()->db->get('sites')->result_array();
+
+		foreach ($sites as $site)
+		{
+			$changed = FALSE;
+			$site_id = $site['site_id'];
+
+			unset($site['site_id']);
+
+			foreach ($site as $column => $data)
+			{
+				$data = unserialize(base64_decode($data));
+
+				foreach ($remove_key as $key)
+				{
+					if (isset($data[$key]))
+					{
+						$changed = TRUE;
+						unset($data[$key]);
+						$site[$column] = base64_encode(serialize($data));
+					}
+				}
+			}
+
+			if ($changed)
+			{
+				ee()->db->where('site_id', $site_id);
+				ee()->db->update('sites', $site);
+			}
+		}
+	}
+
 }
 
 class MSM_Config extends EE_Config

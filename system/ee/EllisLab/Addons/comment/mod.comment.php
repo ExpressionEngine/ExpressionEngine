@@ -5,27 +5,15 @@ namespace EllisLab\Addons\Comment;
 use EllisLab\Addons\Comment\Service\Notifications;
 
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Comment Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Comment Module
  */
 class Comment {
 
@@ -72,8 +60,6 @@ class Comment {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Retrieve the disable parameter from the template and parse it
@@ -1236,8 +1222,6 @@ class Comment {
 	}
 
 
-	// --------------------------------------------------------------------
-
 
 	/**
 	 * Fetch comment ids associated entry ids
@@ -1265,8 +1249,6 @@ class Comment {
 		return $entry_ids;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Comment Submission Form
@@ -1741,8 +1723,6 @@ class Comment {
 		return $res;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Preview
 	 *
@@ -1983,8 +1963,6 @@ class Comment {
 		return $tagdata;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Preview Handler
 	 *
@@ -2038,8 +2016,6 @@ class Comment {
 		ee()->TMPL->parse_template_uri();
 		ee()->TMPL->run_template_engine($group, $templ);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Insert New Comment
@@ -2615,8 +2591,6 @@ class Comment {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Comment subscription tag
 	 *
@@ -2657,8 +2631,6 @@ class Comment {
 		$tagdata = ee()->TMPL->tagdata;
 		return ee()->TMPL->parse_variables($tagdata, $data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * List of subscribers to an entry
@@ -2733,8 +2705,6 @@ class Comment {
 
 		return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Comment subscription w/out commenting
@@ -2814,8 +2784,6 @@ class Comment {
 
 		ee()->output->show_message($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Frontend comment editing
@@ -2923,8 +2891,6 @@ class Comment {
 		ee()->output->send_ajax_response(array('error' => $unauthorized));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Edit Comment Script
 	 *
@@ -2938,8 +2904,6 @@ class Comment {
 		$src = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT=comment_editor';
 		return $this->return_data = '<script type="text/javascript" charset="utf-8" src="'.$src.'"></script>';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Comment Editor
@@ -3041,8 +3005,6 @@ CMT_EDIT_SCR;
 		exit($script);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * AJAX Edit URL
 	 *
@@ -3055,8 +3017,6 @@ CMT_EDIT_SCR;
 
 		return $url;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Discover the entry ID for the current entry

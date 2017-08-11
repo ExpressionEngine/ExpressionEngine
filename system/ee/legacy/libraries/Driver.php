@@ -1,27 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Driver Library Class
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Driver Library
  */
 class EE_Driver_Library {
 
@@ -163,20 +150,13 @@ class EE_Driver_Library {
 	}
 
 }
-
-// --------------------------------------------------------------------------
+// END CLASS
 
 /**
- * CodeIgniter Driver Class
+ * Driver Class
  *
  * This class enables you to create drivers for a Library based on the Driver Library.
  * It handles the drivers' access to the parent library
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Libraries
- * @author		EllisLab Dev Team
- * @link
  */
 class EE_Driver {
 
@@ -254,8 +234,6 @@ class EE_Driver {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * __call magic method
 	 *
@@ -277,8 +255,6 @@ class EE_Driver {
 		exit(EXIT_UNKNOWN_METHOD);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * __get magic method
 	 *
@@ -294,8 +270,6 @@ class EE_Driver {
 			return $this->_parent->$var;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * __set magic method
@@ -315,6 +289,7 @@ class EE_Driver {
 	}
 
 }
+// END CLASS
 
 class_alias('EE_Driver_Library', 'CI_Driver_Library');
 class_alias('EE_Driver', 'CI_Driver');

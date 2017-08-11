@@ -1,31 +1,17 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 use EllisLab\ExpressionEngine\Service\Validation\Result;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.7
- * @filesource
+ * Grid Field Library
  */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Grid Field Library
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- */
-
 class Grid_lib {
 
 	public $field_id;
@@ -41,8 +27,6 @@ class Grid_lib {
 		ee()->load->model('grid_model');
 		ee()->load->library('grid_parser');
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Handles EE_Fieldtype's display_field for displaying the Grid field
@@ -187,8 +171,6 @@ class Grid_lib {
 		return $class;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Returns publish field HTML for a given cell
 	 *
@@ -231,8 +213,6 @@ class Grid_lib {
 		// Return the publish field HTML with namespaced form field names
 		return $display_field;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Interface for Grid fieldtype validation
@@ -293,8 +273,6 @@ class Grid_lib {
 
 		return $this->_validated[$this->field_id];
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Interface for Grid fieldtype saving
@@ -367,7 +345,7 @@ class Grid_lib {
 		$row_ids = array();
 		foreach ($deleted_rows as $row)
 		{
-			$row_ids[] = $row['row_id'];
+			$row_ids[$this->entry_id][] = $row['row_id'];
 		}
 
 		$this->delete_rows($row_ids);
@@ -387,8 +365,6 @@ class Grid_lib {
 		return FALSE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Notifies fieldtypes of impending deletion of their Grid rows, and then
 	 * deletes those rows
@@ -406,17 +382,24 @@ class Grid_lib {
 		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->content_type);
 
 		// Call delete/grid_delete on each affected fieldtype and send along
-		// the row IDs
-		foreach ($columns as $column)
+		// the row IDs for each entry deleted
+		foreach ($row_ids as $entry_id => $rows)
 		{
-			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0, $this->content_type);
-			ee()->grid_parser->call('delete', $row_ids);
+			foreach ($columns as $column)
+			{
+				ee()->grid_parser->instantiate_fieldtype(
+					$column,
+					NULL,
+					$this->field_id,
+					$entry_id,
+					$this->content_type
+				);
+				ee()->grid_parser->call('delete', $rows);
+			}
+
+			ee()->grid_model->delete_rows($rows, $this->field_id, $this->content_type);
 		}
-
-		ee()->grid_model->delete_rows($row_ids, $this->field_id, $this->content_type);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Processes a POSTed Grid field for validation for saving
@@ -613,8 +596,6 @@ class Grid_lib {
 		return array('value' => $final_values, 'error' => $errors);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Gets a list of installed fieldtypes and filters them for ones enabled
 	 * for Grid
@@ -678,8 +659,6 @@ class Grid_lib {
 
 		return $this->_fieldtypes;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Validates settings before form is saved
@@ -773,8 +752,6 @@ class Grid_lib {
 		return (empty($errors)) ? TRUE : $errors;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Given POSTed column settings, adds new columns to the database and
 	 * figures out if any columns need deleting
@@ -857,8 +834,6 @@ class Grid_lib {
 		}
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Calls grid_save_settings() on fieldtypes to do any extra processing on
 	 * saved field settings
@@ -882,8 +857,6 @@ class Grid_lib {
 
 		return $settings;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Returns rendered HTML for a column on the field settings page
@@ -957,8 +930,6 @@ class Grid_lib {
 		);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Returns rendered HTML for the custom settings form of a grid column type
 	 *
@@ -994,8 +965,6 @@ class Grid_lib {
 
 		return $this->_view_for_col_settings($type, $settings, $column['col_id']);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Returns rendered HTML for the custom settings form of a grid column type,
@@ -1038,8 +1007,6 @@ class Grid_lib {
 			'$1name="grid[cols]['.$col_id.'][col_settings][$2]$3"'
 		);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Performes find and replace for input names in order to namespace them

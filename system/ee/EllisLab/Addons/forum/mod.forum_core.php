@@ -1,29 +1,15 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
- * ExpressionEngine Discussion Forum Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Discussion Forum Module "Core" class
  */
-
 class Forum_Core extends Forum {
 
 	/**
@@ -33,8 +19,6 @@ class Forum_Core extends Forum {
 	{
 		ee()->load->library('template', NULL, 'TMPL');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Display forum handler
@@ -145,8 +129,6 @@ class Forum_Core extends Forum {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch Forum Moderators
 	 */
@@ -192,8 +174,6 @@ class Forum_Core extends Forum {
 						);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch Forum Name/Description
@@ -263,8 +243,6 @@ class Forum_Core extends Forum {
 		return $this->forum_metadata;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch Forum Name, etc
 	 * This function is identical to the one above except
@@ -326,8 +304,6 @@ class Forum_Core extends Forum {
 		return $this->topic_metadata;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch Post Meta Data
 	 *
@@ -379,8 +355,6 @@ class Forum_Core extends Forum {
 
 		return $this->post_metadata;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Topic Tracker
@@ -451,8 +425,6 @@ class Forum_Core extends Forum {
 		return $new;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch Tracker Cookie
 	 */
@@ -501,8 +473,6 @@ class Forum_Core extends Forum {
 		return $new;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Final Quote Parsing
 	 */
@@ -536,8 +506,6 @@ class Forum_Core extends Forum {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Is the user authorized for the page?
@@ -657,8 +625,6 @@ class Forum_Core extends Forum {
 		return TRUE;	// User is Authorized!!
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Error page
 	 */
@@ -674,8 +640,6 @@ class Forum_Core extends Forum {
 		return $this->display_forum('error_page');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Trigger Login
 	 *
@@ -689,8 +653,6 @@ class Forum_Core extends Forum {
 		$this->trigger_login_page = TRUE;
 		return FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch admins
@@ -746,8 +708,6 @@ class Forum_Core extends Forum {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Is this user an admin?
@@ -812,8 +772,6 @@ class Forum_Core extends Forum {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch permission
 	 */
@@ -832,8 +790,6 @@ class Forum_Core extends Forum {
 		$groups = explode('|', $permission_array[$item]);
 		return in_array(ee()->session->userdata('group_id'), $groups);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch moderator permission
@@ -904,8 +860,6 @@ class Forum_Core extends Forum {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch topic marker folder images
 	 */
@@ -924,8 +878,6 @@ class Forum_Core extends Forum {
 						'poll_old'	=> $this->image_url.'marker_old_poll.gif'
 					);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch Pagination Number
@@ -975,8 +927,6 @@ class Forum_Core extends Forum {
 
 		return 'P'.$tot;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update stats
@@ -1059,8 +1009,6 @@ class Forum_Core extends Forum {
 		ee()->db->update('members', $d);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * update global forum stats
 	 */
@@ -1073,8 +1021,6 @@ class Forum_Core extends Forum {
 										'total_forum_topics'	=> $total_topics,
 										'total_forum_posts'		=> $total_posts));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update topic stats
@@ -1132,8 +1078,6 @@ class Forum_Core extends Forum {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * update member stats
 	 */
@@ -1157,8 +1101,6 @@ class Forum_Core extends Forum {
 			ee()->db->query(ee()->db->update_string('exp_members', array('total_forum_topics' => $total_forum_topics, 'total_forum_posts' => $total_forum_posts), "member_id = '{$member_id}'"));
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Feed Builder
@@ -1445,8 +1387,6 @@ class Forum_Core extends Forum {
 		return $template;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * View Posts Redirect
 	 */
@@ -1479,8 +1419,6 @@ class Forum_Core extends Forum {
 		ee()->functions->redirect($this->forum_path('/viewthread/'.$topic_id.'/'.$pag_seg.'/').'#'.$this->current_id);
 		exit;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Main Forum Display
@@ -1606,8 +1544,6 @@ class Forum_Core extends Forum {
 		return $return;
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Forum Category Heading
 	 */
@@ -1631,8 +1567,6 @@ class Forum_Core extends Forum {
 
 		return $table_close.$table_head;
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Forum Table Rows
@@ -1825,8 +1759,6 @@ class Forum_Core extends Forum {
 		return $table_rows;
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Forum Table Close
 	 */
@@ -1836,8 +1768,6 @@ class Forum_Core extends Forum {
 
 		return $this->load_element('forum_table_footer');
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Show/hide Javascript
@@ -1873,8 +1803,6 @@ class Forum_Core extends Forum {
 		$this->head_extra = str_replace('{include:javascript_forum_array}', $s, $str);
 		$this->body_extra = $this->load_element('javascript_set_show_hide');
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Announcement Topics
@@ -1937,8 +1865,6 @@ class Forum_Core extends Forum {
 
 		return str_replace('{include:announcement_rows}', $topics, $str);
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * View Announcements page
@@ -2020,8 +1946,6 @@ class Forum_Core extends Forum {
 
 		return str_replace('{topic_title}', $this->_convert_special_chars($tquery->row('title') ), $str);
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Topic View Table
@@ -2494,8 +2418,6 @@ class Forum_Core extends Forum {
 		return $str;
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Thread Review for submission page
 	 */
@@ -2510,8 +2432,6 @@ class Forum_Core extends Forum {
 			return $this->threads(FALSE, TRUE);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Forum Threads
@@ -3142,8 +3062,6 @@ class Forum_Core extends Forum {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Generate Poll
 	 *
@@ -3312,8 +3230,6 @@ class Forum_Core extends Forum {
 
 		return $template;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * thread rows
@@ -3983,8 +3899,6 @@ class Forum_Core extends Forum {
 		return $thread_rows;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * New Forum Submission Page
 	 *
@@ -4101,8 +4015,6 @@ class Forum_Core extends Forum {
 		return $str;
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Display Attachment
 	 */
@@ -4188,8 +4100,6 @@ class Forum_Core extends Forum {
 
 	}
 
-	// ----------------------------------------------------------------------
-
 	/** -------------------------------------
 	/**  New Forum Submission Page
 	/** -------------------------------------*/
@@ -4197,8 +4107,6 @@ class Forum_Core extends Forum {
 	function edit_topic_page() { return $this->submission_page('edit_topic');}
 	function new_reply_page()  { return $this->submission_page('new_reply'); }
 	function edit_reply_page() { return $this->submission_page('edit_reply');}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Submission Page
@@ -4447,8 +4355,6 @@ class Forum_Core extends Forum {
 										)
 								);
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Forum Submission Form
@@ -4903,8 +4809,6 @@ class Forum_Core extends Forum {
 								);
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Attachemnt Rows
 	 *
@@ -4947,8 +4851,6 @@ class Forum_Core extends Forum {
 								);
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Fast Reply Form
 	 */
@@ -4983,8 +4885,6 @@ class Forum_Core extends Forum {
 		return $template;
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Fetch Superadmins
 	 */
@@ -5003,8 +4903,6 @@ class Forum_Core extends Forum {
 		return $super_admins;
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Moderation method used by the spam module. Takes a query generated from
 	 * the submit_post method.
@@ -5013,8 +4911,6 @@ class Forum_Core extends Forum {
 	{
 		ee()->db->query($sql);
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Display errors
@@ -5083,8 +4979,6 @@ class Forum_Core extends Forum {
 		}
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Submission Error Display
 	 */
@@ -5106,8 +5000,6 @@ class Forum_Core extends Forum {
 									)
 								);
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Post Preview
@@ -5215,8 +5107,6 @@ class Forum_Core extends Forum {
 									)
 								);
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Upload and Attach File
@@ -5489,8 +5379,6 @@ class Forum_Core extends Forum {
 		return TRUE;
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Remove post attachment
 	 *
@@ -5565,8 +5453,6 @@ class Forum_Core extends Forum {
 
 		$_POST['attach'] = $at;
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Forum Submission Handler
@@ -6485,8 +6371,6 @@ class Forum_Core extends Forum {
 		exit;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Submit/update a poll
 	 */
@@ -6544,8 +6428,6 @@ class Forum_Core extends Forum {
 
 		return TRUE;
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Forum Delete Confirmation Page
@@ -6648,8 +6530,6 @@ class Forum_Core extends Forum {
 
 		return str_replace('{include:delete_post_warning}', $str, $this->load_element('delete_post_page'));
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Delete Post
@@ -6774,8 +6654,6 @@ class Forum_Core extends Forum {
 		exit;
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Change Post Status
 	 */
@@ -6818,8 +6696,6 @@ class Forum_Core extends Forum {
 		ee()->functions->redirect($this->forum_path($viewpath));
 		exit;
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Move Topic Confirmation
@@ -6882,8 +6758,6 @@ class Forum_Core extends Forum {
 								);
 	}
 
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Move Topic
@@ -6970,8 +6844,6 @@ class Forum_Core extends Forum {
 		exit;
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Move Reply Confirmation
 	 */
@@ -7025,8 +6897,6 @@ class Forum_Core extends Forum {
 									)
 								);
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Move a Reply!
@@ -7141,8 +7011,6 @@ class Forum_Core extends Forum {
 		exit;
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Mark all posts as read
 	 *
@@ -7177,8 +7045,6 @@ class Forum_Core extends Forum {
 
 		return ee()->output->show_message($data);
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Subscribe to a post
@@ -7229,8 +7095,6 @@ class Forum_Core extends Forum {
 		return ee()->output->show_message($data);
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Un-subscribe to a post
 	 */
@@ -7268,8 +7132,6 @@ class Forum_Core extends Forum {
 
 		return ee()->output->show_message($data);
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Remove notification for a posts via email
@@ -7326,8 +7188,6 @@ class Forum_Core extends Forum {
 		return ee()->output->show_message($data);
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Merge Page
 	 */
@@ -7371,8 +7231,6 @@ class Forum_Core extends Forum {
 
 		return str_replace('{include:merge_interface}', $str, $this->load_element('merge_page'));
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Perform the merge
@@ -7576,8 +7434,6 @@ class Forum_Core extends Forum {
 		exit;
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Split Page
 	 */
@@ -7585,8 +7441,6 @@ class Forum_Core extends Forum {
 	{
 		return $this->threads(FALSE, FALSE, TRUE);
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Do the split!  Make sure and stretch first...
@@ -7779,8 +7633,6 @@ class Forum_Core extends Forum {
 		exit;
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Report Page
 	 */
@@ -7884,8 +7736,6 @@ class Forum_Core extends Forum {
 
 		return str_replace('{include:report_form}', $str, $this->load_element('report_page'));
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Report a post
@@ -8032,8 +7882,6 @@ class Forum_Core extends Forum {
 		exit;
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Member banning form
 	 */
@@ -8103,8 +7951,6 @@ class Forum_Core extends Forum {
 									)
 								);
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Ban Member
@@ -8288,8 +8134,6 @@ class Forum_Core extends Forum {
 								);
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Ignore Member Confirmation
 	 */
@@ -8342,8 +8186,6 @@ class Forum_Core extends Forum {
 								);
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Do Ignore Member
 	 */
@@ -8394,8 +8236,6 @@ class Forum_Core extends Forum {
 
 		ee()->functions->redirect($this->forum_path());
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Parse Visitor Stats
@@ -8538,8 +8378,6 @@ class Forum_Core extends Forum {
 		return $str;
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Individual Member's Last Visit
 	 */
@@ -8547,8 +8385,6 @@ class Forum_Core extends Forum {
 	{
 		return str_replace('%x', ee()->session->userdata('total_forum_posts'), lang('your_post_total'));
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Simple Search Form
@@ -8558,8 +8394,6 @@ class Forum_Core extends Forum {
 		$this->form_actions['member:member_login']['anon'] = 1;
 		return $this->load_element('login_form_mini');
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Advanced Search Form
@@ -8622,8 +8456,6 @@ class Forum_Core extends Forum {
 							);
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Fetch the forums that can be searched
 	 *
@@ -8678,8 +8510,6 @@ class Forum_Core extends Forum {
 		return $forums;
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Swap Date
 	 */
@@ -8692,8 +8522,6 @@ class Forum_Core extends Forum {
 
 		return str_replace('{dd}', $replace, $this->date_limit);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Cache the search result
@@ -8719,8 +8547,6 @@ class Forum_Core extends Forum {
 		return $hash;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Perform Member Search
 	 */
@@ -8729,8 +8555,6 @@ class Forum_Core extends Forum {
 		return $this->do_search($this->current_id, FALSE);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Perform New Topic Search
 	 */
@@ -8738,8 +8562,6 @@ class Forum_Core extends Forum {
 	{
 		return $this->do_search('', TRUE);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Perform Pending Topic Search
@@ -8750,8 +8572,6 @@ class Forum_Core extends Forum {
 		return $this->do_search('', FALSE, TRUE);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Perform Active Topic Search
 	 * Fetches topics that are active today
@@ -8760,8 +8580,6 @@ class Forum_Core extends Forum {
 	{
 		return $this->do_search('', TRUE, FALSE, TRUE);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Perform Search
@@ -9548,8 +9366,6 @@ class Forum_Core extends Forum {
 		return ee()->output->show_message($data);
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Search Results Page
 	 */
@@ -9865,8 +9681,6 @@ class Forum_Core extends Forum {
 					);
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Search Thread Page
 	 */
@@ -10076,8 +9890,6 @@ class Forum_Core extends Forum {
 		);
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Most Recent Topics
 	 */
@@ -10225,8 +10037,6 @@ class Forum_Core extends Forum {
 		return $str;
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Most Popular Posts
 	 */
@@ -10365,8 +10175,6 @@ class Forum_Core extends Forum {
 		return $str;
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Emoticons
 	 */
@@ -10470,8 +10278,6 @@ class Forum_Core extends Forum {
 		$this->set_page_title(lang('smileys'));
 		return str_replace('{include:smileys}', $r, $this->load_element('emoticon_page'));
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Topic Titles Tag
@@ -10800,8 +10606,6 @@ class Forum_Core extends Forum {
 		return $str;
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * HTTP Authentication - Basic
 	 */
@@ -10813,8 +10617,6 @@ class Forum_Core extends Forum {
 		exit("HTTP/1.0 401 Unauthorized");
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * HTTP Authentication - Digest
 	 */
@@ -10825,8 +10627,6 @@ class Forum_Core extends Forum {
 		@header("Date: ".gmdate("D, d M Y H:i:s")." GMT");
 		exit("HTTP/1.0 401 Unauthorized");
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Check HTTP Authentication - Digest
@@ -10904,8 +10704,6 @@ class Forum_Core extends Forum {
 			return FALSE;
 		}
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Check HTTP Authentication - Basic

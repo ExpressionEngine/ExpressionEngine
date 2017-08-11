@@ -1,31 +1,16 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Utilities;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Member Import Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Import Controller
  */
 class MemberImport extends Utilities {
 
@@ -174,8 +159,6 @@ class MemberImport extends Utilities {
 		ee()->cp->render('settings/form', $vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Confirm Import Member Data from XML
 	 *
@@ -260,8 +243,6 @@ class MemberImport extends Utilities {
 
 		ee()->cp->render('utilities/member-import/confirm', $vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Process XML
@@ -355,8 +336,6 @@ class MemberImport extends Utilities {
 
 		$this->functions->redirect(ee('CP/URL')->make('utilities/member_import'));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Validate XML for Member Import
@@ -601,8 +580,6 @@ class MemberImport extends Utilities {
 		return $errors;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Do Import
 	 *
@@ -726,7 +703,7 @@ class MemberImport extends Utilities {
 		}
 
 		/** -------------------------------------
-		/**  Add records to exp_member_data and exp_member_homepage tables for all imported members
+		/**  Add records to exp_member_data tables for all imported members
 		/** -------------------------------------*/
 
 		$values = '';
@@ -743,15 +720,11 @@ class MemberImport extends Utilities {
 			$this->db->query("INSERT INTO exp_member_data (member_id) VALUES ".$values);
 		}
 
-		$this->db->query("INSERT INTO exp_member_homepage (member_id) VALUES ".$values);
-
 		//  Update Statistics
 		$this->stats->update_member_stats();
 
 		return $counter;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Custom Field Check
@@ -840,8 +813,6 @@ class MemberImport extends Utilities {
 		return $new_custom_fields;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * New Custom Fields Form
 	 *
@@ -862,8 +833,6 @@ class MemberImport extends Utilities {
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('utilities/member_import'), lang('member_import'));
 		ee()->cp->render('utilities/member-import/custom', $vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create Custom Fields
@@ -938,8 +907,6 @@ class MemberImport extends Utilities {
 
 		return $this->memberImportConfirm();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create Custom Field Validation

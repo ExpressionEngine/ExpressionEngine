@@ -1,32 +1,18 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// --------------------------------------------------------------------
-
-/**
- * ExpressionEngine File Picker Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 use EllisLab\Addons\FilePicker\FilePicker as Picker;
 
+/**
+ * File Picker Module control panel
+ */
 class Filepicker_mcp {
 
 	private $images = FALSE;
@@ -47,7 +33,7 @@ class Filepicker_mcp {
 
 	protected function getUserUploadDirectories()
 	{
-		$dirs = ee()->api->get('UploadDestination')
+		$dirs = ee('Model')->get('UploadDestination')
 			->with('NoAccess')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('module_id', 0)
@@ -63,7 +49,8 @@ class Filepicker_mcp {
 
 	protected function getSystemUploadDirectories()
 	{
-		$dirs = ee()->api->get('UploadDestination')
+		$dirs = ee('Model')->get('UploadDestination')
+			->filter('site_id', ee()->config->item('site_id'))
 			->filter('module_id', '!=', 0)
 			->all();
 

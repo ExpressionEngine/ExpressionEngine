@@ -1,26 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Admin Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Addons Model
  */
 class Addons_model extends CI_Model {
 
@@ -63,8 +51,6 @@ class Addons_model extends CI_Model {
 		asort($return);
 		return $return;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Plugins
@@ -205,8 +191,6 @@ class Addons_model extends CI_Model {
 		return $info;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Installed Modules
 	 *
@@ -230,8 +214,6 @@ class Addons_model extends CI_Model {
 		return $this->db->get('modules');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Installed Extensions
 	 *
@@ -253,8 +235,6 @@ class Addons_model extends CI_Model {
 
 		return $this->db->get('extensions');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module installed
@@ -279,8 +259,6 @@ class Addons_model extends CI_Model {
 		return $_installed[$module_name];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Extension installed
 	 *
@@ -304,8 +282,6 @@ class Addons_model extends CI_Model {
 		return $_installed[$ext_name];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fieldtype installed
 	 *
@@ -328,8 +304,6 @@ class Addons_model extends CI_Model {
 
 		return $_installed[$ft_name];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * RTE Tool installed
@@ -359,8 +333,6 @@ class Addons_model extends CI_Model {
 
 		return $_installed[$tool_name];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update an Extension

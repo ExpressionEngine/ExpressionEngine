@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Moblog Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Moblog Module
  */
 class Moblog {
 
@@ -72,8 +60,6 @@ class Moblog {
 	var $txt_override	= FALSE;				// When set to TRUE, all .txt files are treated as message text
 
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * 	Constructor
 	 */
@@ -99,8 +85,6 @@ class Moblog {
 
 		$this->max_size = $this->max_size * 1024 * 1000;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * 	Check for Expired Moblogs
@@ -221,8 +205,6 @@ class Moblog {
 		return $message;
 
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * 	Check Pop3 Moblog
@@ -940,8 +922,6 @@ class Moblog {
 		return TRUE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * 	Post Entry
 	 */
@@ -1217,8 +1197,6 @@ class Moblog {
 		ee()->session->userdata['can_edit_other_entries'] = $orig_can_edit;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * 	Assign Params
 	 *
@@ -1257,8 +1235,6 @@ class Moblog {
 
 		return FALSE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * 	parse_field
@@ -1539,8 +1515,6 @@ class Moblog {
 		$this->entry_data[$field_id]['format'] 	= $format;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * 	Parse Email
 	 *
@@ -1733,8 +1707,6 @@ class Moblog {
 
 		return TRUE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Parses out file data and saves it to moblog upload directory
@@ -2005,8 +1977,6 @@ class Moblog {
 		return TRUE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * 	Strip Apple Double Crap
 	 *
@@ -2048,8 +2018,6 @@ class Moblog {
 
 		return FALSE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * 	Check Login
@@ -2102,8 +2070,6 @@ class Moblog {
 		return TRUE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * 	Find Boundary
 	 */
@@ -2122,8 +2088,6 @@ class Moblog {
 			return TRUE;
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * 	Pop Command.
@@ -2150,8 +2114,6 @@ class Moblog {
 		return $line;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * 	Remove New Lines
 	 *
@@ -2168,8 +2130,6 @@ class Moblog {
 
 		return $str;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * 	ISO Clean
@@ -2247,8 +2207,6 @@ class Moblog {
 
 		return ltrim($str);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * 	Find Data

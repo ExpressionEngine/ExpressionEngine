@@ -1,26 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine File Category Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * File Category Model
  */
 class File_category_model extends CI_Model
 {
@@ -80,8 +68,6 @@ class File_category_model extends CI_Model
 		return TRUE;
 	}
 
-	// -----------------------------------------------------------------------
-
 	/**
 	 * Get the categories from the database
 	 *
@@ -104,8 +90,6 @@ class File_category_model extends CI_Model
 
 		return $this->db->get_where('file_categories', $data);
 	}
-
-	// -----------------------------------------------------------------------
 
 	/**
 	 * Deletes category records for a specific file_id and optionally a cat_id as well
@@ -132,8 +116,6 @@ class File_category_model extends CI_Model
 		return TRUE;
 	}
 
-	// -----------------------------------------------------------------------
-
 	/**
 	 * Make sure the parameter passed is a valid non-zero integer
 	 *
@@ -144,8 +126,6 @@ class File_category_model extends CI_Model
 	{
 		return (is_numeric($id) AND intval($id) >= 0) ? TRUE : FALSE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Checks to see if the file exists in the database
@@ -158,8 +138,6 @@ class File_category_model extends CI_Model
 		$this->db->where('file_id', $file_id);
 		return ($this->db->count_all_results('files') > 0) ? TRUE : FALSE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Checks to see if the category exists in the database

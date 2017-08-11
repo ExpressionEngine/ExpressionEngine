@@ -1,29 +1,16 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 use EllisLab\Addons\FilePicker\FilePicker;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// --------------------------------------------------------------------
-
-/**
- * ExpressionEngine Textarea Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Textarea Fieldtype
  */
 class Textarea_ft extends EE_Fieldtype {
 
@@ -34,14 +21,10 @@ class Textarea_ft extends EE_Fieldtype {
 
 	var $has_array_data = FALSE;
 
-	// --------------------------------------------------------------------
-
 	function validate($data)
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	function display_field($data)
 	{
@@ -185,8 +168,6 @@ class Textarea_ft extends EE_Fieldtype {
 		return form_textarea($params);
 	}
 
-	// --------------------------------------------------------------------
-
 	function replace_tag($data, $params = '', $tagdata = '')
 	{
 		// Experimental parameter, do not use
@@ -207,8 +188,6 @@ class Textarea_ft extends EE_Fieldtype {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Accept all content types.
 	 *
@@ -219,8 +198,6 @@ class Textarea_ft extends EE_Fieldtype {
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	function display_settings($data)
 	{
@@ -323,11 +300,7 @@ class Textarea_ft extends EE_Fieldtype {
 				)
 			);
 
-			$emoticons_installed = ee('Model')->get('Module')
-				->filter('module_name', 'Emoticon')
-				->count();
-
-			if ( ! $emoticons_installed)
+			if ( ! ee('Addon')->get('emoticon')->isInstalled())
 			{
 				unset($field_tools['fields']['field_show_smileys']);
 			}
@@ -347,14 +320,10 @@ class Textarea_ft extends EE_Fieldtype {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	function grid_save_settings($data)
 	{
 		return array_merge($this->save_settings($data), $data);
 	}
-
-	// --------------------------------------------------------------------
 
 	function save_settings($data)
 	{
@@ -368,8 +337,6 @@ class Textarea_ft extends EE_Fieldtype {
 
 		return array_intersect_key($all, $defaults);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

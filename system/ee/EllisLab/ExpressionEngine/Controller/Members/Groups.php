@@ -1,8 +1,13 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Members;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
@@ -10,27 +15,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Controller\Members;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Members Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Groups Controller
  */
 class Groups extends Members\Members {
 
@@ -111,11 +96,11 @@ class Groups extends Members\Members {
 
 		$data = array();
 		$groupData = array();
-		$total = ee()->api->get('MemberGroup')
+		$total = ee('Model')->get('MemberGroup')
 			->filter('site_id', ee()->config->item('site_id'))
 			->count();
 
-		$groups = ee()->api->get('MemberGroup')
+		$groups = ee('Model')->get('MemberGroup')
 			->filter('site_id', ee()->config->item('site_id'))
 			->order($sort_col, $sort_dir)
 			->limit($perpage)

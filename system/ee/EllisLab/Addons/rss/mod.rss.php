@@ -1,29 +1,15 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
- * ExpressionEngine RSS Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * RSS Module
  */
-
 class Rss {
 
 	protected $_debug = FALSE;
@@ -217,8 +203,6 @@ class Rss {
 		return ee()->TMPL->tagdata;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Setup the meta query
 	 *
@@ -327,8 +311,6 @@ class Rss {
 		return array($query, $last_update, $edit_date, $entry_date);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Feed Variables Query
 	 *
@@ -347,8 +329,6 @@ class Rss {
 							->where_in('c.site_id', ee()->TMPL->site_ids)
 							->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 *  Empty feed handler
@@ -381,8 +361,6 @@ class Rss {
 
 		return $empty_feed;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	  *  Default empty feed

@@ -1,28 +1,15 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine New Relic Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * New Relic
  */
-
 class Newrelic {
 
 	/**
@@ -55,8 +42,6 @@ class Newrelic {
 		newrelic_set_appname($appname.APP_NAME.$version);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Give New Relic a name for this transaction
 	 *
@@ -78,8 +63,6 @@ class Newrelic {
 		newrelic_name_transaction($transaction_name);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prevent the New Relic PHP extension from inserting its JavaScript
 	 * for this transaction
@@ -91,8 +74,6 @@ class Newrelic {
 	{
 		newrelic_disable_autorum();
 	}
-
-	// --------------------------------------------------------------------
 }
 // END CLASS
 

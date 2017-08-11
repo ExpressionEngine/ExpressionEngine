@@ -1,27 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.7.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Update Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Update
  */
 class Updater {
 
@@ -67,8 +54,6 @@ class Updater {
 		return TRUE;
 	}
 
-	// -------------------------------------------------------------------
-
 	/**
 	 * Update Specialty Templates
 	 *
@@ -95,8 +80,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			->update('specialty_templates', $data);
 
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the Actions Table
@@ -133,8 +116,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Drop ping data and columns
 	 */
@@ -148,8 +129,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->load->library('layout');
 		ee()->layout->delete_layout_fields('ping');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Drop updated sites module data
@@ -172,8 +151,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Remove the default localization member in favor or a site setting
@@ -214,8 +191,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Insert markdown as a formatting option
@@ -283,8 +258,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		return $ids;
 	}
 
-	// -------------------------------------------------------------------
-
 	/**
 	 * Add a used flag to xids to allow for back button usage without
 	 * sacrificing existing cross site request forgery security.
@@ -304,8 +277,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update safecracker to channel:form and convert old saef's while we're
@@ -447,8 +418,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->db->delete('extensions', array('class' => 'Safecracker_ext'));
 	}
 
-	// -------------------------------------------------------------------
-
 	/**
 	 * Update all Safecracker Tags in All Templates
 	 *
@@ -545,8 +514,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	}
 
 
-	// -------------------------------------------------------------------
-
 	/**
 	 * Combine the native file field with the safecracker file field.
 	 *
@@ -607,8 +574,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	}
 
 
-	// -------------------------------------------------------------------
-
 	/**
 	 * Add the new columns for relationships in a grid
 	 *
@@ -645,8 +610,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 		ee()->smartforge->add_key('relationships', 'grid_row_id');
 	}
-
-	// -------------------------------------------------------------------
 
 	/**
 	 * Add the new columns for relationships in a grid
@@ -733,8 +696,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->smartforge->create_table('grid_columns');
 	}
 
-	// -------------------------------------------------------------------
-
 	/**
 	 * Update Relationship Tags in Snippets, Missed in Previous Update
 	 *
@@ -804,8 +765,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Modify custom fields in exp_channel_data
 	 *
@@ -855,8 +814,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Helper to check field setting content type for text fields
 	 */
@@ -874,8 +831,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		return $is_text;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Modify custom fields in exp_category_data
@@ -906,8 +861,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		}
 	}
 
-	// -------------------------------------------------------------------
-
 	/**
 	 * Clear the developer log and add a hash column
 	 *
@@ -928,8 +881,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			)
 		);
 	}
-
-	// -------------------------------------------------------------------
 
 	/**
 	 * Clean up the quick tab links so they no longer have index.php and session
@@ -955,8 +906,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		}
 	}
 
-	// -------------------------------------------------------------------
-
 	/**
 	 * Remove the index.php and Session ID from quick tabs
 	 * @param  string $string Quick Tab string
@@ -978,8 +927,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 		return implode("\n", $lines);
 	}
-
-	// -------------------------------------------------------------------
 
 	/**
 	 * Fix how RTE contents were stored by running htmlspecialcharacters_decode

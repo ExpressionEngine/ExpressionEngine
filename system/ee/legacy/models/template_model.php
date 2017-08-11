@@ -1,25 +1,14 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
 /**
- * ExpressionEngine Template Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Template Model
  */
 class Template_model extends CI_Model {
 
@@ -137,8 +126,6 @@ class Template_model extends CI_Model {
 
 	}
 
-	// ----------------------------------------------------------------
-
 	/**
 	 * Fetch Template Entities from the Database
 	 *
@@ -208,8 +195,6 @@ class Template_model extends CI_Model {
 		return $entities;
 	}
 
-	// ----------------------------------------------------------------
-
 	/**
 	 * Fetch the Most Recently Edited Version of the Template (File or DB)
 	 *
@@ -243,8 +228,6 @@ class Template_model extends CI_Model {
 		return $templates;
 	}
 
-	// ----------------------------------------------------------------
-
 	/**
 	 * Saves an Entity to the Database/File
 	 *
@@ -262,8 +245,6 @@ class Template_model extends CI_Model {
 			$this->save_to_file($entity);
 		}
 	}
-
-	// -----------------------------------------------------------------
 
 	/**
 	 * Save a Template_Entity to a File
@@ -359,8 +340,6 @@ class Template_model extends CI_Model {
 		return TRUE;
 	}
 
-	// -----------------------------------------------------------------
-
 	/**
  	 * Save a Template_Entity to the Database
  	 *
@@ -428,12 +407,6 @@ class Template_model extends CI_Model {
 		return $data;
 	}
 
-	// -----------------------------------------------------------------
-	//		End of Entity using methods
-	// -----------------------------------------------------------------
-
-	// -----------------------------------------------------------------
-
 	/**
 	 * Get Template Group Metadata
 	 *
@@ -445,8 +418,6 @@ class Template_model extends CI_Model {
 	{
 		return $this->db->get_where('template_groups', array('group_id' => $group_id));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create Group
@@ -488,8 +459,6 @@ class Template_model extends CI_Model {
 		return $template_group_id;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create Template
 	 *
@@ -504,8 +473,6 @@ class Template_model extends CI_Model {
 		$this->db->insert('templates', $data);
 		return $this->db->insert_id();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Template Groups
@@ -535,8 +502,6 @@ class Template_model extends CI_Model {
 		return $this->db->get('template_groups');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Template Group
 	 *
@@ -557,8 +522,6 @@ class Template_model extends CI_Model {
 		$this->db->set($fields);
 		$this->db->update('template_groups');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update Template Route
@@ -590,8 +553,6 @@ class Template_model extends CI_Model {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Template Info
 	 *
@@ -612,8 +573,6 @@ class Template_model extends CI_Model {
 		$this->db->where('site_id', $this->config->item('site_id'));
 		return $this->db->get('templates');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Rename Template File
@@ -641,8 +600,6 @@ class Template_model extends CI_Model {
 		return rename($existing_path, $basepath.'/'.$new_name.$ext);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Template Ajax
 	 *
@@ -665,8 +622,6 @@ class Template_model extends CI_Model {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update Access Ajax
@@ -707,8 +662,6 @@ class Template_model extends CI_Model {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Access Ajax Details
 	 *
@@ -725,8 +678,6 @@ class Template_model extends CI_Model {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete Template
@@ -765,8 +716,6 @@ class Template_model extends CI_Model {
 			return FALSE;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Templates
@@ -816,8 +765,6 @@ class Template_model extends CI_Model {
 		return $results;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Snippets
 	 *
@@ -832,8 +779,6 @@ class Template_model extends CI_Model {
 		$this->db->order_by('snippet_name');
 		return $this->db->get('snippets');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Snippet
@@ -868,8 +813,6 @@ class Template_model extends CI_Model {
 		return $result->row_array();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check Snippet for Uniqueness
 	 *
@@ -892,8 +835,6 @@ class Template_model extends CI_Model {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete Snippet
 	 *
@@ -907,8 +848,6 @@ class Template_model extends CI_Model {
 		$this->db->delete('snippets');
 		return $this->db->affected_rows();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Global Variables
@@ -924,8 +863,6 @@ class Template_model extends CI_Model {
 		$this->db->order_by('variable_name');
 		return $this->db->get('global_variables');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Global Variable
@@ -945,8 +882,6 @@ class Template_model extends CI_Model {
 
 		return $results;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Check Duplicate Global Variable Name
@@ -974,8 +909,6 @@ class Template_model extends CI_Model {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Global Variable
 	 *
@@ -997,8 +930,6 @@ class Template_model extends CI_Model {
 		return $this->db->affected_rows();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create Global Variable
 	 *
@@ -1018,8 +949,6 @@ class Template_model extends CI_Model {
 		return $this->db->insert_id();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete Global Variable
 	 *
@@ -1034,8 +963,6 @@ class Template_model extends CI_Model {
 
 		return $this->db->affected_rows();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Specialty Email Templates Summary
@@ -1058,8 +985,6 @@ class Template_model extends CI_Model {
 		return $results;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Specialty Template Data
 	 *
@@ -1079,8 +1004,6 @@ class Template_model extends CI_Model {
 
 		return $results;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Specialty Template Variables
@@ -1115,8 +1038,6 @@ class Template_model extends CI_Model {
 
 			return (isset($vars[$template_name])) ? $vars[$template_name] : array();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update Specialty Template

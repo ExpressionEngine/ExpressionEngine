@@ -1,30 +1,16 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
 
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine String Helper
- *
- * @package		ExpressionEngine
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * String Helper
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Trim Slashes
@@ -48,8 +34,6 @@ if ( ! function_exists('trim_slashes'))
 		return trim($str, '/');
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Strip Slashes
@@ -80,8 +64,6 @@ if ( ! function_exists('strip_slashes'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Strip Quotes
  *
@@ -99,8 +81,6 @@ if ( ! function_exists('strip_quotes'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Quotes to Entities
  *
@@ -117,8 +97,6 @@ if ( ! function_exists('quotes_to_entities'))
 		return str_replace(array("\'","\"","'",'"'), array("&#39;","&quot;","&#39;","&quot;"), $str);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Reduce Double Slashes
@@ -143,8 +121,6 @@ if ( ! function_exists('reduce_double_slashes'))
 		return preg_replace("#([^/:])/+#", "\\1/", $str);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Reduce Multiples
@@ -177,8 +153,6 @@ if ( ! function_exists('reduce_multiples'))
 		return $str;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Create a Random String
@@ -238,8 +212,6 @@ if ( ! function_exists('random_string'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Alternator
  *
@@ -265,8 +237,6 @@ if ( ! function_exists('alternator'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Repeater function
  *
@@ -282,8 +252,6 @@ if ( ! function_exists('repeater'))
 		return (($num > 0) ? str_repeat($data, $num) : '');
 	}
 }
-
-// ------------------------------------------------------------------------
 
  /**
  * Unique Marker
@@ -308,8 +276,6 @@ function unique_marker($ident)
 	return $rand.$ident;
 }
 
-// ----------------------------------------------------------------------------
-
 /**
  * Just like trim, but also removes non-breaking spaces
  *
@@ -320,9 +286,6 @@ function trim_nbs($string)
 {
 	return trim($string, " \t\n\r\0\xB\xA0".chr(0xC2).chr(0xA0));
 }
-
-// ----------------------------------------------------------------------------
-
 
 /**
  * Validates format of submitted license number, for soft validation
@@ -349,8 +312,6 @@ function valid_license_pattern($license)
 
 	return TRUE;
 }
-
-// ----------------------------------------------------------------------------
 
 /**
  * Returns the surrounding character of a string, if it exists

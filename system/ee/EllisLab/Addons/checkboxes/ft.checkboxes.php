@@ -1,29 +1,16 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 require_once SYSPATH.'ee/legacy/fieldtypes/OptionFieldtype.php';
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// --------------------------------------------------------------------
-
-/**
- * ExpressionEngine Option Group Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Option Group Fieldtype
  */
 class Checkboxes_ft extends OptionFieldtype {
 
@@ -55,8 +42,6 @@ class Checkboxes_ft extends OptionFieldtype {
 		ee()->load->helper('custom_field');
 	}
 
-	// --------------------------------------------------------------------
-
 	function validate($data)
 	{
 		$selected = decode_multi_field($data);
@@ -84,8 +69,6 @@ class Checkboxes_ft extends OptionFieldtype {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	protected function _flatten($options)
 	{
 		$out = array();
@@ -110,21 +93,15 @@ class Checkboxes_ft extends OptionFieldtype {
 		return $out;
 	}
 
-	// --------------------------------------------------------------------
-
 	function display_field($data)
 	{
 		return $this->_display_field($data);
 	}
 
-	// --------------------------------------------------------------------
-
 	function grid_display_field($data)
 	{
 		return $this->_display_field(form_prep($data), 'grid');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Displays the field for the CP or Frontend, and accounts for grid
@@ -204,8 +181,6 @@ class Checkboxes_ft extends OptionFieldtype {
 		return $out;
 	}
 
-	// --------------------------------------------------------------------
-
 	function replace_tag($data, $params = array(), $tagdata = FALSE)
 	{
 		ee()->load->helper('custom_field');
@@ -220,8 +195,6 @@ class Checkboxes_ft extends OptionFieldtype {
 			return $this->_parse_single($data, $params);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	function display_settings($data)
 	{
@@ -249,8 +222,6 @@ class Checkboxes_ft extends OptionFieldtype {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Accept all content types.
 	 *
@@ -272,8 +243,6 @@ class Checkboxes_ft extends OptionFieldtype {
 
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\ChannelSet;
 
@@ -6,6 +13,9 @@ use StdClass;
 use ZipArchive;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
+/**
+ * Channel Set Service: Export
+ */
 class Export {
 
 	private $zip;
