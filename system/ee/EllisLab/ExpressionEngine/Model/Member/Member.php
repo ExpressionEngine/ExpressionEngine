@@ -328,16 +328,41 @@ class Member extends ContentModel {
 	 */
 	public function updateAuthorStats()
 	{
-		$total_entries = $this->getModelFacade()->get('ChannelEntry')
+		// open, non-expired entries only
+		$entries = ee('Model')->get('ChannelEntry')
 			->filter('author_id', $this->member_id)
-			->count();
+			->filter('status', '!=', 'closed')
+			->filterGroup()
+				->filter('expiration_date', 0)
+				->orFilter('expiration_date', '>', ee()->localize->now)
+			->endFilterGroup()
+			->fields('entry_date');
 
-		$total_comments = $this->getModelFacade()->get('Comment')
+		$total_entries = $entries->count();
+
+		$recent_entry = $entries->order('entry_date', 'desc')
+			->first();
+
+		$last_entry_date = ($recent_entry) ? $recent_entry->entry_date : 0;
+
+		// open comments only
+		$comments = ee('Model')->get('Comment')
 			->filter('author_id', $this->member_id)
-			->count();
+			->filter('status', 'o')
+			->fields('comment_date');
 
-		$this->setProperty('total_entries', $total_entries);
+		$total_comments = $comments->count();
+
+		$recent_comment = $comments->order('comment_date', 'desc')
+			->first();
+
+		$last_comment_date = ($recent_comment) ? $recent_comment->comment_date : 0;
+
+		$this->setProperty('last_comment_date', $last_comment_date);
+		$this->setProperty('last_entry_date', $last_entry_date);
 		$this->setProperty('total_comments', $total_comments);
+		$this->setProperty('total_entries', $total_entries);
+
 		$this->save();
 	}
 

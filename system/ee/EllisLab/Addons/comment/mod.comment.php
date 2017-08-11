@@ -2317,7 +2317,7 @@ class Comment {
 		$comment_string = ee('Security/XSS')->clean($_POST['comment']);
 
 		$is_spam = ee()->session->userdata('group_id') != 1 && ee('Spam')->isSpam($comment_string);
-
+		$is_spam = TRUE;
 		if ($is_spam === TRUE)
 		{
 			$comment_moderate = 'y';
@@ -2540,34 +2540,6 @@ class Comment {
 			}
 		}
 
-		// update stats immediately if we're posting now
-		if ($comment_moderate == 'n')
-		{
-			// comment total and recent comment date
-			ee()->db->set('recent_comment_date', ee()->localize->now);
-			ee()->db->where('entry_id', $_POST['entry_id']);
-
-			ee()->db->update('channel_titles');
-
-			// member's comment stats
-			if (ee()->session->userdata('member_id') != 0)
-			{
-				ee()->db->select('total_comments');
-				ee()->db->where('member_id', ee()->session->userdata('member_id'));
-
-				$query = ee()->db->get('members');
-
-				ee()->db->set('total_comments', $query->row('total_comments') + 1);
-				ee()->db->set('last_comment_date', ee()->localize->now);
-				ee()->db->where('member_id', ee()->session->userdata('member_id'));
-
-				ee()->db->update('members');
-			}
-
-			// site comment stats
-			ee()->stats->update_comment_stats($channel_id, ee()->localize->now);
-		}
-
 		// send notifications
 		if ( ! $is_spam)
 		{
@@ -2635,11 +2607,11 @@ class Comment {
 				'rate'		=> 3
 			);
 
-			ee()->output->show_message($data);
+//			ee()->output->show_message($data);
 		}
 		else
 		{
-			ee()->functions->redirect($return_link);
+//			ee()->functions->redirect($return_link);
 		}
 	}
 
@@ -2927,9 +2899,6 @@ class Comment {
 
 				if ($edited_status != FALSE & $can_moderate != FALSE)
 				{
-					// We closed an entry, update our stats
-					$this->_update_comment_stats($entry_id, $channel_id, $author_id);
-
 					// Send back the updated comment
 					ee()->output->send_ajax_response(array('moderated' => ee()->lang->line('closed')));
 				}
@@ -3145,23 +3114,6 @@ CMT_EDIT_SCR;
 		}
 
 		return ee()->session->cache['comment']['entry_id'][$qstring_hash] = $entry_id;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Update Entry and Channel Stats
-	 *
-	 * @return	void
-	 */
-	private function _update_comment_stats($entry_id, $channel_id, $author_id)
-	{
-		ee()->stats->update_channel_title_comment_stats(array($entry_id));
-		ee()->stats->update_comment_stats($channel_id, '', FALSE);
-		ee()->stats->update_comment_stats();
-		ee()->stats->update_authors_comment_stats(array($author_id));
-
-		return;
 	}
 
 }

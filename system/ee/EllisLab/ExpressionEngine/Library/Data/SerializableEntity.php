@@ -55,5 +55,8 @@ class SerializableEntity extends Entity implements Serializable {
 
 		// restore new/existing primary key
 		$this->setId($this->getId());
+
+		// mark as clean, or all the backups will have null values
+		$this->markAsClean();
 	}
 }

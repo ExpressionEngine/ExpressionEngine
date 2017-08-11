@@ -456,7 +456,7 @@ class Spam_mcp {
 			}
 		}
 
-		ee('CP/Alert')->makeInline('spam')
+		$alert = ee('CP/Alert')->makeInline('spam')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(sprintf(lang('spam_trap_removed'), count($trapped)));
