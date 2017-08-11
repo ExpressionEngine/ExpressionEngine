@@ -506,7 +506,10 @@ class ChannelEntry extends ContentModel {
 			->order('entry_date', 'desc');
 
 		$total_entries = $entries->count();
-		$last_entry_date = ($entries->first()) ? $entries->first()->entry_date : 0;
+
+		$entry = $entries->first();
+
+		$last_entry_date = ($entry) ? $entry->entry_date : 0;
 
 		$stats = $this->getFrontend()->get('Stats')
 			->filter('site_id', $site_id)
