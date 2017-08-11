@@ -88,7 +88,12 @@ class Comment extends Model {
 
 	public function onAfterInsert()
 	{
-		$this->updateCommentStats();
+		// only update stats for open comments
+		if ($this->status == 'o')
+		{
+			$this->updateCommentStats();
+		}
+
 		ee()->functions->clear_caching('all');
 	}
 
