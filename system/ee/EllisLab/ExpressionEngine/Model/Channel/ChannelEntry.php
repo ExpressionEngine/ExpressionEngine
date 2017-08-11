@@ -567,27 +567,34 @@ class ChannelEntry extends ContentModel {
 
 	protected function getModulesWithTabs()
 	{
-		$modules = array();
-		$providers = ee('App')->getProviders();
-		$installed_modules = $this->getFrontend()->get('Module')
-			->all()
-			->pluck('module_name');
+		$modules = ee()->session->cache(__CLASS__, __METHOD__);
 
-		foreach (array_keys($providers) as $name)
+		if ($modules === FALSE)
 		{
-			try
+			$modules = [];
+			$providers = ee('App')->getProviders();
+			$installed_modules = $this->getFrontend()->get('Module')
+				->all()
+				->pluck('module_name');
+
+			foreach (array_keys($providers) as $name)
 			{
-				$info = ee('App')->get($name);
-				if (file_exists($info->getPath() . '/tab.' . $name . '.php')
-					&& in_array(ucfirst($name), $installed_modules))
+				try
 				{
-					$modules[$name] = $info;
+					$info = ee('App')->get($name);
+					if (file_exists($info->getPath() . '/tab.' . $name . '.php')
+						&& in_array(ucfirst($name), $installed_modules))
+					{
+						$modules[$name] = $info;
+					}
+				}
+				catch (\Exception $e)
+				{
+					continue;
 				}
 			}
-			catch (\Exception $e)
-			{
-				continue;
-			}
+
+			ee()->session->set_cache(__CLASS__, __METHOD__, $modules);
 		}
 
 		return $modules;
