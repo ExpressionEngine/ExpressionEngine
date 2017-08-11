@@ -153,7 +153,7 @@ class CategoryGroup extends StructureModel {
 	 */
 	public function populateCategories($field)
 	{
-		$categories = ee('Model')->get('Category')
+		$categories = $this->getModelFacade()->get('Category')
 			->with(array('Children as C0' => array('Children as C1' => 'Children as C2')))
 			->with('CategoryGroup')
 			->filter('CategoryGroup.group_id', $field->getItem('group_id'))

@@ -329,7 +329,7 @@ class Member extends ContentModel {
 	public function updateAuthorStats()
 	{
 		// open, non-expired entries only
-		$entries = ee('Model')->get('ChannelEntry')
+		$entries = $this->getModelFacade()->get('ChannelEntry')
 			->filter('author_id', $this->member_id)
 			->filter('status', '!=', 'closed')
 			->filterGroup()
@@ -346,7 +346,7 @@ class Member extends ContentModel {
 		$last_entry_date = ($recent_entry) ? $recent_entry->entry_date : 0;
 
 		// open comments only
-		$comments = ee('Model')->get('Comment')
+		$comments = $this->getModelFacade()->get('Comment')
 			->filter('author_id', $this->member_id)
 			->filter('status', 'o')
 			->fields('comment_date');
@@ -385,7 +385,7 @@ class Member extends ContentModel {
 		}
 
 		// Make sure to get the correct site, revert once issue #1285 is fixed
-		$member_group = ee('Model')->get('MemberGroup')
+		$member_group = $this->getModelFacade()->get('MemberGroup')
 			->filter('group_id', $this->group_id)
 			->filter('site_id', $site_id)
 			->first();

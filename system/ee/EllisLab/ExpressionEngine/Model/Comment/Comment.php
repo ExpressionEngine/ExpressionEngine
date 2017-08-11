@@ -128,7 +128,7 @@ class Comment extends Model {
 		$site_id = ($this->site_id) ?: ee()->config->item('site_id');
 		$now = ee()->localize->now;
 
-		$comments = ee('Model')->get('Comment')
+		$comments = $this->getModelFacade()->get('Comment')
 			->filter('site_id', $site_id);
 
 		$total_comments = $comments->count();
@@ -140,7 +140,7 @@ class Comment extends Model {
 
 		$last_comment_date = ($last_comment) ? $last_comment->comment_date : 0;
 
-		$stats = ee('Model')->get('Stats')
+		$stats = $this->getModelFacade()->get('Stats')
 			->filter('site_id', $site_id)
 			->first();
 

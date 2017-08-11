@@ -122,7 +122,7 @@ class CategoryField extends FieldModel {
 
 		if (empty($field_order))
 		{
-			$count = $this->getFrontend()->get('CategoryField')
+			$count = $this->getModelFacade()->get('CategoryField')
 				->filter('group_id', $this->getProperty('group_id'))
 				->count();
 			$this->setProperty('field_order', $count + 1);

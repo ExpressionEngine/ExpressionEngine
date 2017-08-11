@@ -94,7 +94,7 @@ class Status extends Model {
 
 		if (empty($status_order))
 		{
-			$count = $this->getFrontend()->get('Status')
+			$count = $this->getModelFacade()->get('Status')
 				->filter('group_id', $this->getProperty('group_id'))
 				->count();
 			$this->setProperty('status_order', $count + 1);
