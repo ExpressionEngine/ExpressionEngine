@@ -9,8 +9,4 @@ return array(
 	'namespace'      => 'EllisLab\Addons\Channel',
 	'settings_exist' => TRUE,
 	'built_in'       => TRUE,
-
-	'spam.enabled' => TRUE,
-	'spam.approve' => 'Service\Spam\Moderate',
-	'spam.reject' => 'Service\Spam\Moderate',
 );

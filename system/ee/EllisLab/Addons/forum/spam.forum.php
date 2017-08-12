@@ -1,13 +1,13 @@
 <?php
 
-namespace EllisLab\Addons\Forum\Service\Spam;
+namespace EllisLab\Addons\Forum;
 
 use EllisLab\Addons\Forum\Service\Notifications;
 
 /**
  * Moderate Spam for the Forum module
  */
-class Moderate {
+class Forum_spam {
 
 	/**
 	 * @var object Forum_core class

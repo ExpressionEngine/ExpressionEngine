@@ -69,10 +69,6 @@ return array(
 			'ee:Member'
 		),
 	),
-
-	'spam.enabled' => TRUE,
-	'spam.approve' => 'Service\Spam\Moderate',
-	'spam.reject' => 'Service\Spam\Moderate',
 );
 
 // EOF

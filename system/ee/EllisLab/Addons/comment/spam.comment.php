@@ -1,13 +1,13 @@
 <?php
 
-namespace EllisLab\Addons\Comment\Service\Spam;
+namespace EllisLab\Addons\Comment;
 
 use EllisLab\Addons\Comment\Service\Notifications;
 
 /**
  * Moderate Spam for the Comment module
  */
-class Moderate {
+class Comment_spam {
 
 	/**
 	 * Approve Trapped Spam

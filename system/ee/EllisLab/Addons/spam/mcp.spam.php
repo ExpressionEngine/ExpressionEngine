@@ -379,7 +379,7 @@ class Spam_mcp {
 				continue;
 			}
 
-			$fqcn = $addon->getSpamApproveClass();
+			$fqcn = $addon->getSpamClass();
 
 			try {
 				$approver = new $fqcn;
@@ -430,7 +430,7 @@ class Spam_mcp {
 				continue;
 			}
 
-			$fqcn = $addon->getSpamRejectClass();
+			$fqcn = $addon->getSpamClass();
 
 			try {
 				$rejecter = new $fqcn;

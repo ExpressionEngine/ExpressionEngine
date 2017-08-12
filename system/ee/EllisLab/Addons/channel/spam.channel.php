@@ -1,11 +1,11 @@
 <?php
 
-namespace EllisLab\Addons\Channel\Service\Spam;
+namespace EllisLab\Addons\Channel;
 
 /**
  * Moderate Spam for the Channel Form
  */
-class Moderate {
+class Channel_spam {
 
 	public function approve($entry, $post_data)
 	{
