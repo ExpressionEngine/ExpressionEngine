@@ -90,7 +90,7 @@ class Spam_upd {
 
 		$fields = array(
 			'trap_id'       => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
-			'site_id'       => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE),
+			'site_id'       => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'default' => 1),
 			'trap_date'     => array('type' => 'int', 'constraint' => '10', 'null' => FALSE),
 			'author_id'     => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'null' => FALSE, 'default' => 0),
 			'ip_address'    => array('type' => 'varchar', 'constraint' => '45'),
