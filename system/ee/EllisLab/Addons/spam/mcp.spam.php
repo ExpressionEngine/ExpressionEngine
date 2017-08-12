@@ -9,6 +9,7 @@
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\Data\Collection as CoreCollection;
+use EllisLab\Addons\Spam\Service\SpamModerationInterface;
 
 /**
  * Spam Module control panel
@@ -383,6 +384,12 @@ class Spam_mcp {
 
 			try {
 				$approver = new $fqcn;
+
+				if ( ! $approver instanceof SpamModerationInterface)
+				{
+					throw new \Exception('Skipped approval action: '.get_class($approver).' must implement <code>SpamModerationInterface</code>');
+				}
+
 				$approver->approve($spam->entity, $spam->optional_data);
 			}
 			catch (\Exception $e)
@@ -434,6 +441,12 @@ class Spam_mcp {
 
 			try {
 				$rejecter = new $fqcn;
+
+				if ( ! $rejecter instanceof SpamModerationInterface)
+				{
+					throw new \Exception('Skipped reject action: '.get_class($rejecter).' must implement <code>SpamModerationInterface</code>');
+				}
+
 				$rejecter->reject($spam->entity, $spam->optional_data);
 			}
 			catch (\Exception $e)

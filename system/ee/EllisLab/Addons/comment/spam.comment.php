@@ -3,11 +3,12 @@
 namespace EllisLab\Addons\Comment;
 
 use EllisLab\Addons\Comment\Service\Notifications;
+use EllisLab\Addons\Spam\Service\SpamModerationInterface;
 
 /**
  * Moderate Spam for the Comment module
  */
-class Comment_spam {
+class Comment_spam implements SpamModerationInterface {
 
 	/**
 	 * Approve Trapped Spam
@@ -40,7 +41,7 @@ class Comment_spam {
 	 * @param  object $comment EllisLab\ExpressionEngine\Model\Comment
 	 * @return void
 	 */
-	public function reject($comment)
+	public function reject($comment, $comment_path)
 	{
 		$comment->delete();
 	}

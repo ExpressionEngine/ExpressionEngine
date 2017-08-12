@@ -3,11 +3,12 @@
 namespace EllisLab\Addons\Forum;
 
 use EllisLab\Addons\Forum\Service\Notifications;
+use EllisLab\Addons\Spam\Service\SpamModerationInterface;
 
 /**
  * Moderate Spam for the Forum module
  */
-class Forum_spam {
+class Forum_spam implements SpamModerationInterface  {
 
 	/**
 	 * @var object Forum_core class
@@ -140,7 +141,7 @@ class Forum_spam {
 	 * @param  string $sql SQL query that holds the submitted content
 	 * @return void
 	 */
-	public function reject($sql)
+	public function reject($sql, $extra)
 	{
 		// nothing to do, we've not saved anything outside of the spam trap
 	}
