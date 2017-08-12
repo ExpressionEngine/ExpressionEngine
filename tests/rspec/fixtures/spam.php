@@ -65,7 +65,7 @@ for ($i = 0; $i < $total; $i++)
 			$author_id = 0;
 			$comment_data['author_id'] = $author_id;
 			$comment_data['name']      = $faker->name;
-			$comment_data['email']     = $faker->email;
+			$comment_data['email']     = $faker->safeEmail;
 			$comment_data['url']       = 'http://'.$faker->domainName;
 			$comment_data['location']  = $faker->city.', '.$faker->stateAbbr;
 			break;
