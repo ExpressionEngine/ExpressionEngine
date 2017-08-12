@@ -669,64 +669,9 @@ class Grid_lib {
 	public function validate_settings($settings)
 	{
 		$errors = array();
-		$col_labels = array();
-		$col_names = array();
-
-		// Create an array of column names and labels for counting to see if
-		//  there are duplicates; they should be unique
-		foreach ($settings['grid']['cols'] as $col_field => $column)
-		{
-			$col_labels[] = $column['col_label'];
-			$col_names[] = $column['col_name'];
-		}
-
-		$col_label_count = array_count_values($col_labels);
-		$col_name_count = array_count_values($col_names);
-
-		ee()->load->library('grid_parser');
 
 		foreach ($settings['grid']['cols'] as $col_field => $column)
 		{
-			// Column labels are required
-			if (empty($column['col_label']))
-			{
-				$errors[$col_field]['col_label'] = 'grid_col_label_required';
-			}
-			// There cannot be duplicate column labels
-			elseif ($col_label_count[$column['col_label']] > 1)
-			{
-				$errors[$col_field]['col_label'] = 'grid_duplicate_col_label';
-			}
-
-			// Column names are required
-			if (empty($column['col_name']))
-			{
-				$errors[$col_field]['col_name'] = 'grid_col_name_required';
-			}
-			// Columns cannot be the same name as our protected modifiers
-			elseif (in_array($column['col_name'], ee()->grid_parser->reserved_names))
-			{
-				$errors[$col_field]['col_name'] = 'grid_col_name_reserved';
-			}
-			// There cannot be duplicate column names
-			elseif ($col_name_count[$column['col_name']] > 1)
-			{
-				$errors[$col_field]['col_name'] = 'grid_duplicate_col_name';
-			}
-
-			// Column names must contain only alpha-numeric characters and no spaces
-			if (preg_match('/[^a-z0-9\-\_]/i', $column['col_name']))
-			{
-				$errors[$col_field]['col_name'] = 'grid_invalid_column_name';
-			}
-
-			// Column widths, if specified, must be numeric
-			if ( ! empty($column['col_width']) &&
-				 ! is_numeric(str_replace('%', '', $column['col_width'])))
-			{
-				$errors[$col_field]['col_width'] = 'grid_numeric_percentage';
-			}
-
 			$column['col_id'] = (strpos($col_field, 'new_') === FALSE)
 				? str_replace('col_id_', '', $col_field) : FALSE;
 			$column['col_required'] = isset($column['col_required']) ? 'y' : 'n';
@@ -865,7 +810,7 @@ class Grid_lib {
 	 *	that have validation errors
 	 * @return	string	Rendered column view for settings page
 	 */
-	public function get_column_view($column = NULL, $error_fields = array())
+	public function get_column_view($column = NULL, $errors = NULL)
 	{
 		// Column ID could be a string if we're coming back from a valdiation error
 		// in order to preserve original namespacing
@@ -980,7 +925,7 @@ class Grid_lib {
 		foreach ($sections as $name => $settings)
 		{
 			$column['top_form'] .= ee('View')->make('_shared/form/section')
-				->render(['name' => $name, 'settings' => $settings]);
+				->render(['name' => $name, 'settings' => $settings, 'errors' => $errors]);
 		}
 
 		$column['settings_form'] = ( ! isset($column['col_type']))

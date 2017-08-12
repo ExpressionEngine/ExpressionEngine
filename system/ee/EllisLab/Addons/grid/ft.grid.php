@@ -19,8 +19,6 @@ class Grid_ft extends EE_Fieldtype {
 
 	var $has_array_data = TRUE;
 
-	private $error_fields = array();
-
 	public function __construct()
 	{
 		parent::__construct();
@@ -434,7 +432,7 @@ class Grid_ft extends EE_Fieldtype {
 			foreach ($columns as $field_name => &$column)
 			{
 				$column['col_id'] = $field_name;
-				$vars['columns'][] = ee()->grid_lib->get_column_view($column, $this->error_fields);
+				$vars['columns'][] = ee()->grid_lib->get_column_view($column, $this->errors);
 			}
 		}
 		elseif ( ! empty($field_id))
@@ -521,15 +519,85 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function validate_settings($data)
 	{
-		$validator = ee('Validation')->make(array(
+		$rules = [
 			'grid_min_rows' => 'isNatural',
-			'grid_max_rows' => 'isNaturalNoZero',
-			'grid' => 'validGridSettings'
-		));
+			'grid_max_rows' => 'isNaturalNoZero'
+		];
 
-		$validator->defineRule('validGridSettings', array($this, '_validate_grid'));
+		$grid_settings = ee('Request')->post('grid');
+		$col_labels = [];
+		$col_names = [];
 
-		return $validator->validate($data);
+		// Create a flattened version of the grid settings data to pass to the
+		// validator, but also assign rules to the dynamic field names
+		foreach ($grid_settings['cols'] as $column_id => $column)
+		{
+			// We'll look at these later to see if there are any duplicates
+			$col_labels[] = $column['col_label'];
+			$col_names[] = $column['col_name'];
+
+			foreach ($column as $field => $value)
+			{
+				$field_name = 'grid[cols]['.$column_id.']['.$field.']';
+				$data[$field_name] = $value;
+
+				switch ($field) {
+					case 'col_label':
+						$rules[$field_name] = 'required|validGridColLabel';
+						break;
+					case 'col_name':
+						$rules[$field_name] = 'required|alphaDash|validGridColName';
+						break;
+					case 'col_width':
+						$rules[$field_name] = 'whenPresent|isNatural';
+						break;
+					case 'col_required':
+						$rules[$field_name] = 'enum[y,n]';
+						break;
+					case 'col_search':
+						$rules[$field_name] = 'enum[y,n]';
+						break;
+					default:
+						break;
+				}
+			}
+		}
+
+		$col_label_count = array_count_values($col_labels);
+		$col_name_count = array_count_values($col_names);
+
+		$validator = ee('Validation')->make($rules);
+
+		$validator->defineRule('validGridColLabel', function ($key, $value, $params, $rule) use ($col_label_count)
+		{
+			if ($col_label_count[$value] > 1)
+			{
+				$rule->stop();
+				return lang('grid_duplicate_col_label');
+			}
+
+			return TRUE;
+		});
+
+		$validator->defineRule('validGridColName', function ($key, $value, $params, $rule) use ($col_name_count)
+		{
+			ee()->load->library('grid_parser');
+			if (in_array($value, ee()->grid_parser->reserved_names))
+			{
+				$rule->stop();
+				return lang('grid_col_name_reserved');
+			}
+
+			if ($col_name_count[$value] > 1)
+			{
+				$rule->stop();
+				return lang('grid_duplicate_col_name');
+			}
+
+			return TRUE;
+		});
+
+		return $this->errors = $validator->validate($data);
 	}
 
 	/**

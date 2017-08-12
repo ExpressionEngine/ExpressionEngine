@@ -110,13 +110,9 @@ $lang = array(
 
 'grid_col_label' => 'Publish label',
 
-'grid_col_label_required' => 'There are one or more columns without a column label.',
-
 'grid_col_name' => 'Field name',
 
-'grid_col_name_required' => 'There are one or more columns without a column name.',
-
-'grid_col_name_reserved' => 'One or more columns are using a column name reserved for other template functionality.',
+'grid_col_name_reserved' => 'This column is using a column name reserved for other template functionality.',
 
 'grid_col_options' => 'Is this data',
 
@@ -146,8 +142,6 @@ $lang = array(
 
 'grid_in_this_field_desc' => 'Make this field required, or searchable.',
 
-'grid_invalid_column_name' => 'Column names must contain only alpha-numeric characters and no spaces.',
-
 'grid_limit_input' => 'Limit input?',
 
 'grid_max_rows' => 'Maximum Rows',
@@ -157,8 +151,6 @@ $lang = array(
 'grid_min_rows' => 'Minimum Rows',
 
 'grid_min_rows_desc' => 'Sets the minumum amount of data rows this grid will accept',
-
-'grid_numeric_percentage' => 'Column widths must be numeric.',
 
 'grid_order_by' => 'Order by',
 
