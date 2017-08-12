@@ -39,6 +39,7 @@ class Comment_spam implements SpamModerationInterface {
 	 * Reject Trapped Spam
 	 *
 	 * @param  object $comment EllisLab\ExpressionEngine\Model\Comment
+	 * @param  string $comment_path URL to the comment
 	 * @return void
 	 */
 	public function reject($comment, $comment_path)

@@ -8,6 +8,13 @@ use EllisLab\Addons\Spam\Service\SpamModerationInterface;
  */
 class Channel_spam implements SpamModerationInterface  {
 
+	/**
+	 * Approve Trapped Spam
+	 *
+	 * @param  object $entry EllisLab\ExpressionEngine\Model\ChannelEntry
+	 * @param  array $post_data The original $_POST data
+	 * @return void
+	 */
 	public function approve($entry, $post_data)
 	{
 		// save it
@@ -18,6 +25,13 @@ class Channel_spam implements SpamModerationInterface  {
 		// ChannelEntry model handles all post-save actions: notifications, cache clearing, stats updates, etc.
 	}
 
+	/**
+	 * Reject Trapped Spam
+	 *
+	 * @param  object $entry EllisLab\ExpressionEngine\Model\ChannelEntry
+	 * @param  array $post_data The original $_POST data
+	 * @return void
+	 */
 	public function reject($entry, $post_data)
 	{
 		// Nothing was saved outside of the spam trap, so we don't need to do anything

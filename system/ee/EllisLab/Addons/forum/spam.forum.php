@@ -31,7 +31,7 @@ class Forum_spam implements SpamModerationInterface  {
 	 * Posts the content to the forums and sends relevant notifications
 	 *
 	 * @param  string $sql SQL query to run to activate the post
-	 * @param  string $extra serialized array('postdata' => $_POST, 'redirect' => <url>)
+	 * @param  array $extra array('postdata' => $_POST, 'redirect' => <url>)
 	 * @return void
 	 */
 	public function approve($sql, $extra)
@@ -139,6 +139,7 @@ class Forum_spam implements SpamModerationInterface  {
 	 * Reject Trapped Spam
 	 *
 	 * @param  string $sql SQL query that holds the submitted content
+	 * @param  array $extra array('postdata' => $_POST, 'redirect' => <url>)
 	 * @return void
 	 */
 	public function reject($sql, $extra)
