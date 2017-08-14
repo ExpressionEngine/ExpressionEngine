@@ -19,8 +19,9 @@ class Grid_lib {
 	public $content_type;
 	public $entry_id;
 
-	protected $_fieldtypes = array();
-	protected $_validated = array();
+	protected $_fieldtypes = [];
+	protected $_validated = [];
+	protected $error_objects = [];
 
 	public function __construct()
 	{
@@ -664,37 +665,37 @@ class Grid_lib {
 	 * Validates settings before form is saved
 	 *
 	 * @param	array	POSTed column settings from field settings page
-	 * @return	mixed	Array of errors or TRUE for successful validation
+	 * @return	array	Array of failed result objects
 	 */
 	public function validate_settings($settings)
 	{
-		$errors = array();
-
-		foreach ($settings['grid']['cols'] as $col_field => $column)
+		foreach ($settings['cols'] as $col_field => $column)
 		{
 			$column['col_id'] = (strpos($col_field, 'new_') === FALSE)
 				? str_replace('col_id_', '', $col_field) : FALSE;
-			$column['col_required'] = isset($column['col_required']) ? 'y' : 'n';
 			$column['col_settings']['field_required'] = $column['col_required'];
 
-			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0, $this->content_type);
+			ee()->grid_parser->instantiate_fieldtype(
+				$column,
+				NULL,
+				$this->field_id,
+				0,
+				$this->content_type
+			);
 
 			// Let fieldtypes validate their Grid column settings
-			$ft_validate = ee()->grid_parser->call('validate_settings', $column['col_settings']);
+			$ft_validate = ee()->grid_parser->call(
+				'validate_settings',
+				$column['col_settings']
+			);
 
 			if ($ft_validate instanceof Result && $ft_validate->isNotValid())
 			{
-				foreach ($ft_validate->getAllErrors() as $field => $field_errors)
-				{
-					foreach ($field_errors as $rule => $error)
-					{
-						$errors[$col_field][$field.'_'.$rule] = $error;
-					}
-				}
+				$this->error_objects[$col_field] = $ft_validate;
 			}
 		}
 
-		return (empty($errors)) ? TRUE : $errors;
+		return $this->error_objects;
 	}
 
 	/**
@@ -929,7 +930,7 @@ class Grid_lib {
 		}
 
 		$column['settings_form'] = ( ! isset($column['col_type']))
-			? $this->get_settings_form('text') : $this->get_settings_form($column['col_type'], $column);
+			? $this->get_settings_form('text', $field_name) : $this->get_settings_form($column['col_type'], $field_name, $column);
 
 		if (isset($column['col_width']) && $column['col_width'] == 0)
 		{
@@ -991,11 +992,12 @@ class Grid_lib {
 	 * Returns rendered HTML for the custom settings form of a grid column type
 	 *
 	 * @param	string	Name of fieldtype to get settings form for
+	 * @param	string	Name of field in POST for accessing validation errors
 	 * @param	array	Column data from database to populate settings form
 	 * @return	array	Rendered HTML settings form for given fieldtype and
 	 * 					column data
 	 */
-	public function get_settings_form($type, $column = NULL)
+	public function get_settings_form($type, $field_name = NULL, $column = NULL)
 	{
 		$ft_api = ee()->api_channel_fields;
 		$settings = NULL;
@@ -1020,7 +1022,10 @@ class Grid_lib {
 			(isset($column['col_settings'])) ? $column['col_settings'] : array()
 		);
 
-		return $this->_view_for_col_settings($type, $settings, $column['col_id']);
+		$fieldtype_errors = isset($this->error_objects[$field_name])
+			? $this->error_objects[$field_name] : NULL;
+
+		return $this->_view_for_col_settings($type, $settings, $column['col_id'], $fieldtype_errors);
 	}
 
 	/**
@@ -1030,10 +1035,11 @@ class Grid_lib {
 	 * @param	string	Name of fieldtype to get settings form for
 	 * @param	array	Column data from database to populate settings form
 	 * @param	int		Column ID for field naming
+	 * @param	Validation\Result	Validation result object for this column
 	 * @return	array	Rendered HTML settings form for given fieldtype and
 	 * 					column data
 	 */
-	protected function _view_for_col_settings($col_type, $col_settings, $col_id = NULL)
+	protected function _view_for_col_settings($col_type, $col_settings, $col_id = NULL, $fieldtype_errors = NULL)
 	{
 		// shared form does a set_value() by default, but since we're dealing with
 		// un-namespaced fields here and namespaced fields in POST that can lead
@@ -1047,7 +1053,8 @@ class Grid_lib {
 			->render(
 			array(
 				'col_type'		=> $col_type,
-				'col_settings'	=> (empty($col_settings)) ? array() : $col_settings
+				'col_settings'	=> (empty($col_settings)) ? [] : $col_settings,
+				'errors' 		=> $fieldtype_errors
 			)
 		);
 

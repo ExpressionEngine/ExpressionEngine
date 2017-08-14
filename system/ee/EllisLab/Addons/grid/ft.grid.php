@@ -19,6 +19,8 @@ class Grid_ft extends EE_Fieldtype {
 
 	var $has_array_data = TRUE;
 
+	private $errors;
+
 	public function __construct()
 	{
 		parent::__construct();
@@ -517,11 +519,15 @@ class Grid_ft extends EE_Fieldtype {
 		return $settings;
 	}
 
+	/**
+	 * Called by FieldModel to validate the fieldtype's settings
+	 */
 	public function validate_settings($data)
 	{
 		$rules = [
 			'grid_min_rows' => 'isNatural',
-			'grid_max_rows' => 'isNaturalNoZero'
+			'grid_max_rows' => 'isNaturalNoZero',
+			'fieldtype_errors' => 'ensureNoFieldtypeErrors'
 		];
 
 		$grid_settings = ee('Request')->post('grid');
@@ -568,7 +574,9 @@ class Grid_ft extends EE_Fieldtype {
 
 		$validator = ee('Validation')->make($rules);
 
-		$validator->defineRule('validGridColLabel', function ($key, $value, $params, $rule) use ($col_label_count)
+		$validator->defineRule(
+			'validGridColLabel',
+			function ($key, $value, $params, $rule) use ($col_label_count)
 		{
 			if ($col_label_count[$value] > 1)
 			{
@@ -579,7 +587,9 @@ class Grid_ft extends EE_Fieldtype {
 			return TRUE;
 		});
 
-		$validator->defineRule('validGridColName', function ($key, $value, $params, $rule) use ($col_name_count)
+		$validator->defineRule(
+			'validGridColName',
+			function ($key, $value, $params, $rule) use ($col_name_count)
 		{
 			ee()->load->library('grid_parser');
 			if (in_array($value, ee()->grid_parser->reserved_names))
@@ -597,89 +607,35 @@ class Grid_ft extends EE_Fieldtype {
 			return TRUE;
 		});
 
-		return $this->errors = $validator->validate($data);
-	}
-
-	/**
-	 * Callback for validation service
-	 *
-	 * @return	mixed	Boolean, whether or not the settings passed validation,
-	 *   or string of errors
-	 */
-	public function _validate_grid($key, $value, $params, $rule)
-	{
 		$this->_load_grid_lib();
+		$fieldtype_errors = ee()->grid_lib->validate_settings($grid_settings);
 
-		$validate = ee()->grid_lib->validate_settings(array('grid' => ee()->input->post('grid')));
-
-		$this->error_fields = array();
-
-		$ajax_field = ee()->input->post('ee_fv_field');
-
-		if ($validate !== TRUE)
+		$validator->defineRule(
+			'ensureNoFieldtypeErrors',
+			function ($key, $value, $params, $rule) use ($fieldtype_errors)
 		{
-			$errors = array();
+			if ( ! empty($fieldtype_errors)) $rule->stop();
 
-			// Gather error messages and fields with errors so that we can
-			// display the error messages and highlight the fields that
-			// have errors
-			foreach ($validate as $column => $fields)
+			return TRUE;
+		});
+
+		$this->errors = $validator->validate($data);
+
+		// Add any failed rules from fieldtypes as a top-level fields on our
+		// result object so that AJAX validation can pick it up
+		foreach ($fieldtype_errors as $field_name => $error)
+		{
+			foreach ($error->getFailed() as $field => $rules)
 			{
-				foreach ($fields as $field => $error)
+				$field_name = 'grid[cols]['.$field_name.'][col_settings]['.$field.']';
+				foreach ($rules as $rule)
 				{
-					$field_name = 'grid[cols]['.$column.']['.$field.']';
-
-					if (AJAX_REQUEST && $ajax_field && $ajax_field == $field_name)
-					{
-						$rule->stop();
-						return lang($error);
-					}
-
-					if (is_numeric($column))
-					{
-						$column = 'col_id_'.$column;
-					}
-
-					if ( ! isset($errors[$field]))
-					{
-						$errors[$field] = array(
-							'message' => $error,
-							'columns' => array('['.$column.']')
-						);
-					}
-					else
-					{
-						$errors[$field]['columns'][] = '['.$column.']';
-					}
-
-					$this->error_fields[] = $field_name;
+					$this->errors->addFailed($field_name, $rule);
 				}
 			}
-
-			// If we got here on AJAX validation, return that we passed, because the
-			// single field we're validating must be valid
-			if (AJAX_REQUEST && $ajax_field)
-			{
-				return TRUE;
-			}
-
-			// Make error messages unique and convert to a string to pass
-			// to form validaiton library
-			$this->error_string = '';
-			foreach ($errors as $field => $error)
-			{
-				// Custom span for use with Grid settings validation callbacks
-				$this->error_string .= '<span
-					style="display: block"
-					data-field="['.$field.']"
-					data-columns="'.implode('', $error['columns']).'">'.lang($error['message']).'</span>';
-			}
-
-			$rule->stop();
-			return $this->error_string;
 		}
 
-		return TRUE;
+		return $this->errors;
 	}
 
 	public function save_settings($data)
