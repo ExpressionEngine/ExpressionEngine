@@ -20,13 +20,21 @@ class Comment_spam implements SpamModerationInterface {
 	 */
 	public function approve($comment, $comment_path)
 	{
+		// is this comment still relevant?
+		if ( ! $entry = $comment->Entry)
+		{
+			$comment->delete();
+			throw new \Exception('Comment deleted, entry no longer exists');
+		}
+
 		// open it
 		$comment->status = 'o';
 		$comment->edit_date = ee()->localize->now;
 		$comment->save();
 
 		// send notifications
-		$notify = new Notifications($comment, $comment_path);
+		// if column is NULL, $comment_path will be turned into an empty array by the model
+		$notify = new Notifications($comment, ($comment_path) ?: '');
 		$notify->sendAdminNotifications();
 		$notify->sendUserNotifications();
 
