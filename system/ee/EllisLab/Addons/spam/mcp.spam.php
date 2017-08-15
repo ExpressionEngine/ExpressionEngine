@@ -404,9 +404,11 @@ class Spam_mcp {
 
 		if ( ! empty($exceptions))
 		{
-			$alert->withTitle(lang('success_with_errors'));
-			$alert->asWarning();
-			$alert->addToBody($exceptions);
+			$except = ee('CP/Alert')->makeInline('spam_errors')
+				->asWarning()
+				->addToBody($exceptions);
+
+			$alert->setSubAlert($except);
 		}
 
 		$alert->defer();
@@ -459,12 +461,14 @@ class Spam_mcp {
 			->withTitle(lang('success'))
 			->addToBody(sprintf(lang('spam_trap_removed'), count($trapped)));
 
-		if ( ! empty($exceptions))
-		{
-			$alert->withTitle(lang('success_with_errors'));
-			$alert->asWarning();
-			$alert->addToBody($exceptions);
-		}
+			if ( ! empty($exceptions))
+			{
+				$except = ee('CP/Alert')->makeInline('spam_errors')
+					->asWarning()
+					->addToBody($exceptions);
+
+				$alert->setSubAlert($except);
+			}
 
 		$alert->defer();
 

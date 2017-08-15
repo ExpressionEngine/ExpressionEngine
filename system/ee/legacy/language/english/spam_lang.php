@@ -70,8 +70,6 @@ $lang = array(
 
 'success' => 'Success',
 
-'success_with_errors' => 'Success (with errors)',
-
 'training_downloaded' => 'Training data downloaded',
 
 'training_finished' => 'Training Finished',
