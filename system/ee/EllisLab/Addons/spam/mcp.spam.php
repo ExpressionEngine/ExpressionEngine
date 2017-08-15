@@ -113,7 +113,6 @@ class Spam_mcp {
 		$trap = $this->getSpamTrap($filter_fields, $table->sort_col, $table->sort_dir, $search, $filter_values['perpage'], ($table->config['page'] - 1) * $filter_values['perpage']);
 
 		$trapped = array();
-		$content_type = array();
 
 		foreach ($trap as $spam)
 		{
