@@ -2554,6 +2554,8 @@ class Channel {
 					}
 				}, $row);
 			}
+
+			$query->free_result();
 		}
 
 		return $query_result;
