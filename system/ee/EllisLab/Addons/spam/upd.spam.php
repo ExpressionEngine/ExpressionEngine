@@ -450,7 +450,7 @@ class Spam_upd {
 				'ip_address'    => $trapped->ip_address,
 				'entity'        => $entry,
 				'document'      => $trapped->document,
-				'optional_data' => serialize($postdata),
+				'optional_data' => $postdata,
 			);
 
 			$trap = ee('Model')->make('spam:SpamTrap', $data);
@@ -503,7 +503,7 @@ class Spam_upd {
 				'ip_address'    => $trapped->ip_address,
 				'entity'        => $sql,
 				'document'      => $trapped->document,
-				'optional_data' => serialize(array('postdata' => array(), 'redirect' => '')),
+				'optional_data' => array('postdata' => array(), 'redirect' => ''),
 			);
 
 			$trap = ee('Model')->make('spam:SpamTrap', $data);
