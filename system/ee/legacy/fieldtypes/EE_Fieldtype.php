@@ -290,7 +290,7 @@ abstract class EE_Fieldtype {
 	/**
 	 * :url_slug modifier
 	 */
-	public function replace_url_slug($data, $params = array(), $raw)
+	public function replace_url_slug($data, $params = array(), $tagdata = FALSE)
 	{
 		return (string) ee('Format')->make('Text', $data)->urlSlug($params);
 	}
@@ -298,9 +298,41 @@ abstract class EE_Fieldtype {
 	/**
 	 * :censor modifier
 	 */
-	public function replace_censor($data, $params = array(), $raw)
+	public function replace_censor($data, $params = array(), $tagdata = FALSE)
 	{
 		return (string) ee('Format')->make('Text', $data)->censor();
+	}
+
+	/**
+	 * :json modifier
+	 */
+	public function replace_json($data, $params = array(), $tagdata = FALSE)
+	{
+		return (string) ee('Format')->make('Text', $data)->json($params);
+	}
+
+	/**
+	 * :replace modifier
+	 */
+	public function replace_replace($data, $params = array(), $tagdata = FALSE)
+	{
+		return (string) ee('Format')->make('Text', $data)->replace($params);
+	}
+
+	/**
+	 * :url_encode modifier
+	 */
+	public function replace_url_encode($data, $params = array(), $tagdata = FALSE)
+	{
+		return (string) ee('Format')->make('Text', $data)->urlEncode($params);
+	}
+
+	/**
+	 * :url_decode modifier
+	 */
+	public function replace_url_decode($data, $params = array(), $tagdata = FALSE)
+	{
+		return (string) ee('Format')->make('Text', $data)->urlDecode($params);
 	}
 
 	/**

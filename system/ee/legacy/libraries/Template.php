@@ -3798,6 +3798,38 @@ class EE_Template {
 	}
 
 	/**
+	 * :json modifier
+	 */
+	public function replace_json($data, $params = array(), $raw)
+	{
+		return (string) ee('Format')->make('Text', $data)->json($params);
+	}
+
+	/**
+	 * :replace modifier
+	 */
+	public function replace_replace($data, $params = array(), $raw)
+	{
+		return (string) ee('Format')->make('Text', $data)->replace($params);
+	}
+
+	/**
+	 * :url_encode modifier
+	 */
+	public function replace_url_encode($data, $params = array(), $raw)
+	{
+		return (string) ee('Format')->make('Text', $data)->urlEncode($params);
+	}
+
+	/**
+	 * :url_decode modifier
+	 */
+	public function replace_url_decode($data, $params = array(), $raw)
+	{
+		return (string) ee('Format')->make('Text', $data)->urlDecode($params);
+	}
+
+	/**
 	 * Parse Var Single
 	 *
 	 * Parses single variables from the parse_variables() method

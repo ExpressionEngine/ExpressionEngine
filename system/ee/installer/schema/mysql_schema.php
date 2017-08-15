@@ -475,6 +475,7 @@ class EE_Schema {
 			`can_access_translate` char(1) NOT NULL DEFAULT 'n',
 			`can_access_import` char(1) NOT NULL DEFAULT 'n',
 			`can_access_sql_manager` char(1) NOT NULL DEFAULT 'n',
+			`can_moderate_spam` char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY `group_id_site_id` (`group_id`, `site_id`)
 		)";
 
@@ -1548,6 +1549,7 @@ class EE_Schema {
 				'can_access_translate'           => 'y',
 				'can_access_import'              => 'y',
 				'can_access_sql_manager'         => 'y',
+				'can_moderate_spam'              => 'y',
 				'search_flood_control'           => '0'
 			),
 			array(

@@ -109,7 +109,7 @@ class Category extends ContentModel {
 
 		if (empty($cat_order))
 		{
-			$count = $this->getFrontend()->get('Category')
+			$count = $this->getModelFacade()->get('Category')
 				->filter('group_id', $this->getProperty('group_id'))
 				->count();
 			$this->setProperty('cat_order', $count + 1);

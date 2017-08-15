@@ -26,7 +26,9 @@ class Updater {
 				'removeMemberHomepageTable',
 				'globalizeSave_tmpl_files',
 				'nullOutRelationshipChannelDataFields',
-				'addImageQualityColumn'
+				'addImageQualityColumn',
+				'addSpamModerationPermissions',
+				'runSpamModuleUpdate',
 			)
 		);
 
@@ -122,6 +124,44 @@ class Updater {
 		);
 	}
 
+	private function addSpamModerationPermissions()
+	{
+		ee()->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_moderate_spam' => array(
+					'type'       => 'CHAR',
+					'constraint' => 1,
+					'default'    => 'n',
+					'null'       => FALSE,
+				)
+			)
+		);
+
+		// Only assume super admins can moderate spam
+		ee()->db->update('member_groups', array('can_moderate_spam' => 'y'), array('group_id' => 1));
+	}
+
+	private function runSpamModuleUpdate()
+	{
+		// run the Spam module update
+		$spam = ee('Addon')->get('spam');
+		if ($spam->hasUpdate())
+		{
+			$class = $spam->getInstallerClass();
+			$UPD = new $class;
+
+			if ($UPD->update($spam->getInstalledVersion()) !== FALSE)
+			{
+				$module = ee('Model')->get('Module')
+					->filter('module_name', 'Spam')
+					->first();
+
+				$module->module_version = $spam->getVersion();
+				$module->save();
+			}
+		}
+	}
 }
 
 // EOF
