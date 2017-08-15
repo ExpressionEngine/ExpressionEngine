@@ -207,14 +207,18 @@ class Spam_upd {
 			)
 		);
 
-		// migrate any comments trapped to the new schema
-		$this->updateCommentSpam_2_00_00();
+		// in case this runs multiple times, with partial success
+		if (ee()->db->field_exists('file', 'spam_trap'))
+		{
+			// migrate any comments trapped to the new schema
+			$this->updateCommentSpam_2_00_00();
 
-		// migrate any Channel Entries trapped to the new schema
-		$this->updateChannelSpam_2_00_00();
+			// migrate any Channel Entries trapped to the new schema
+			$this->updateChannelSpam_2_00_00();
 
-		// migrate any legacy Forum
-		$this->updateForumSpam_2_00_00();
+			// migrate any legacy Forum
+			$this->updateForumSpam_2_00_00();
+		}
 
 		// kill the rest, orphaned unusable data. `content_type` won't have values for old items that aren't converted
 		ee()->db->where('content_type', '');
