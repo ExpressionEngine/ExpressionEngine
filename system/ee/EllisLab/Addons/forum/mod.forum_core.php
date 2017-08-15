@@ -5883,7 +5883,7 @@ class Forum_Core extends Forum {
 						// Where should we send the user to?  Normally we'll send them to either
 						// the thread or the announcement page, but if they are allowed to post,
 						// but not view threads we have to send them to the topic page.
-						if ( ! $this->_permission('can_view_topics', $fdata['permissions']))
+						if ( ! $this->_permission('can_view_topics', $fdata['permissions']) OR $spam)
 						{
 							$redirect = $this->forum_path('/viewforum/'.$fdata['forum_id'].'/');
 						}
@@ -5920,12 +5920,7 @@ class Forum_Core extends Forum {
 						$data['topic_edit_date']	= ee()->localize->now;
 
 						$sql = ee()->db->update_string('exp_forum_topics', $data, array('topic_id' => ee()->input->post('topic_id')));
-
-						if ( ! $spam)
-						{
-							ee()->db->query($sql);
-						}
-
+						ee()->db->query($sql);
 
 						$data['topic_id'] = $this->current_id;
 
@@ -6011,11 +6006,7 @@ class Forum_Core extends Forum {
 						$data['post_edit_date']		= ee()->localize->now;
 
 						$sql = ee()->db->update_string('exp_forum_posts', $data, "post_id='".$data['post_id']."'");
-
-						if ( ! $spam)
-						{
-							ee()->db->query($sql);
-						}
+						ee()->db->query($sql);
 
 						// Determine the redirect location
 						ee()->db->select('COUNT(*) as count');
@@ -6032,11 +6023,18 @@ class Forum_Core extends Forum {
 
 		if ($spam)
 		{
-			$args = array($sql);
-			ee('Spam')->moderate(__FILE__, 'Forum Post', 'moderate_post', NULL, $args, $text);
-
+			ee('Spam')->moderate('forum', $sql, $text, array('postdata' => $_POST, 'redirect' => $redirect));
 			$this->submission_error = lang('spam');
-			return $this->display_errors();
+
+			$data = array(	'title' 	=> lang('post_is_moderated'),
+							'heading'	=> lang('thank_you'),
+							'content'	=> lang('post_is_moderated'),
+							'redirect'	=> $redirect,
+							'rate'      => 8,
+							'link'		=> array($redirect, '')
+						 );
+
+			return ee()->output->show_message($data);
 		}
 
 		// Fetch/Set the "topic tracker" cookie

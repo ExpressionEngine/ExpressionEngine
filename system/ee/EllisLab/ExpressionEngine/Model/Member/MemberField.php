@@ -113,7 +113,7 @@ class MemberField extends FieldModel {
 
 		if (empty($field_order))
 		{
-			$count = $this->getFrontend()->get('MemberField')->count();
+			$count = $this->getModelFacade()->get('MemberField')->count();
 			$this->setProperty('m_field_order', $count + 1);
 		}
 	}

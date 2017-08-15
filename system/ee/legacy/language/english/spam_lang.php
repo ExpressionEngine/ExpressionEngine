@@ -22,17 +22,13 @@ $lang = array(
 
 'approve_spam' => 'NOT SPAM, then approve',
 
-'comment' => 'comment',
-
 'content_type' => 'content type',
 
 'deny_spam' => 'SPAM, then remove from spam trap',
 
-'email' => 'email',
-
 'engine_training' => 'Engine Training',
 
-'forum_post' => 'forum post',
+'filter_by_type' => 'filter by type&hellip;',
 
 'mark_selected' => 'mark selected',
 
@@ -51,6 +47,8 @@ $lang = array(
 'spam_module_description' => 'Spam filter for comments and forum posts',
 
 'spam_module_name' => 'Spam',
+
+'spam_queue' => 'Spam Queue',
 
 'spam_sensitivity' => 'Sensitivity',
 
@@ -80,6 +78,8 @@ $lang = array(
 
 'training_update_failed' => 'Could not update training data',
 
+'trap_date' => 'Date',
+
 'update_training' => 'Update Training',
 
 'update_training_desc' => 'This will download up-to-date training data from EllisLab and update your database.',
@@ -87,8 +87,6 @@ $lang = array(
 'updating_parameters' => 'Updating Parameters',
 
 'updating_vocabulary' => 'Updating Vocabulary',
-
-'wiki_post' => 'wiki post',
 
 );
 

@@ -136,7 +136,7 @@ class ChannelField extends FieldModel {
 			return;
 		}
 
-		$this->field_order = $this->getFrontend()->get('ChannelField')
+		$this->field_order = $this->getModelFacade()->get('ChannelField')
 			->filter('group_id', $this->group_id)
 			->filter('site_id', $this->site_id)
 			->count() + 1;
