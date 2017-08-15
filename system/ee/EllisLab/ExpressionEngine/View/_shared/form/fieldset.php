@@ -47,7 +47,7 @@ if (isset($setting['hide']) && $setting['hide'] == TRUE)
 }
 if ($grid)
 {
-	$fieldset_classes .= ' grid-publish';
+	$fieldset_classes .= ' fieldset-faux';
 }
 else
 {
