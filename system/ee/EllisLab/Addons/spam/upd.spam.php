@@ -304,7 +304,10 @@ class Spam_upd {
 			);
 		}
 
-		ee()->db->update_batch('spam_trap', $update, 'trap_id');
+		if ( ! empty($update))
+		{
+			ee()->db->update_batch('spam_trap', $update, 'trap_id');
+		}
 
 		// cleanup
 		if ( ! empty($delete_ids))
