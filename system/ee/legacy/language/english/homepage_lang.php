@@ -46,11 +46,15 @@ $lang = array(
 
 'new_members_permission_desc' => 'You may <a href="%s">change the settings</a> to allow or disallow, new member registrations.',
 
+'new_spam' => '<em>new</em> items in the Spam queue',
+
 'news_fetch_failure' => 'Oops, we couldn\'t fetch the news.',
 
 'overview' => 'Overview',
 
 'register_new' => 'Register New',
+
+'review_all' => 'Review All',
 
 'review_all_new' => 'Review All New',
 
@@ -61,6 +65,10 @@ $lang = array(
 'settings' => 'settings',
 
 'since_last_login' => 'since your last login',
+
+'spam' => 'Spam',
+
+'there_are' => 'There are',
 
 'there_were' => 'There were',
 

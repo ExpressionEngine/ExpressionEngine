@@ -344,6 +344,20 @@ class Addon {
 	}
 
 	/**
+	 * Get the spam class
+	 *
+	 * @return string The fqcn or $class
+	 */
+	public function getSpamClass()
+	{
+		$this->requireFile('spam');
+
+		$class = ucfirst($this->shortname).'_spam';
+
+		return $this->getFullyQualified($class);
+	}
+
+	/**
 	 * Has a README.md file?
 	 *
 	 * @return bool TRUE of it does, FALSE if not
@@ -423,6 +437,16 @@ class Addon {
 		$files = $this->getFilesMatching('ft.*.php');
 		$this->requireFieldtypes($files);
 		return ! empty($files);
+	}
+
+	/**
+	 * Has a spam.* file?
+	 *
+	 * @return bool TRUE of it does, FALSE if not
+	 */
+	public function hasSpam()
+	{
+		return $this->hasFile('spam');
 	}
 
 	/**
