@@ -512,7 +512,7 @@ Grid.Settings.prototype = {
 					settings.html('');
 
 					settings.animate({
-						width: 0
+						height: 0
 					}, 200, function() {
 						settings.remove();
 						that._toggleDeleteButtons();
