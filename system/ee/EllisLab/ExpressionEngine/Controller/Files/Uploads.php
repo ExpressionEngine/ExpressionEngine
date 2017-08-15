@@ -515,17 +515,12 @@ class Uploads extends AbstractFilesController {
 	 */
 	private function getAllowedGroups($upload_destination = NULL)
 	{
-		$groups = ee('Model')->get('MemberGroup')
+		$member_groups = ee('Model')->get('MemberGroup')
 			->filter('group_id', 'NOT IN', array(1,2,3,4))
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('group_title')
-			->all();
-
-		$member_groups = array();
-		foreach ($groups as $group)
-		{
-			$member_groups[$group->group_id] = htmlentities($group->group_title, ENT_QUOTES, 'UTF-8');
-		}
+			->all()
+			->getDictionary('group_id', 'group_title');
 
 		if ( ! empty($_POST))
 		{
