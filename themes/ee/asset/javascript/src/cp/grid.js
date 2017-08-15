@@ -389,7 +389,6 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
  */
 Grid.Settings = function(settings) {
 	this.root = $('.fields-grid-setup');
-	this.settingsContainer = this.root.find('.fields-grid-setup');
 	this.colTemplateContainer = $('#grid_col_settings_elements');
 	this.blankColumn = this.colTemplateContainer.find('.fields-grid-item');
 	this.settings = settings;
@@ -422,11 +421,11 @@ Grid.Settings.prototype = {
 	 */
 	_bindSortable: function() {
 		this.root.sortable({
-			axis: 'x',								// Only allow horizontal dragging
-			containment: 'parent',					// Contain to parent
-			handle: '.fields-grid-tool-reorder',	// Set drag handle to the top box
-			items: '.fields-grid-item',					// Only allow these to be sortable
-			sort: EE.sortable_sort_helper			// Custom sort handler
+			axis: 'y',
+			containment: 'parent',
+			handle: '.fields-grid-tool-reorder',
+			items: '.fields-grid-item',
+			sort: EE.sortable_sort_helper
 		});
 
 		$('.fields-grid-tool-reorder', this.root).on('click', function(e){
