@@ -31,6 +31,7 @@ class Updater {
 				'addImageQualityColumn',
 				'addSpamModerationPermissions',
 				'runSpamModuleUpdate',
+				'addPrimaryKeyToFileCategoryTable',
 			)
 		);
 
@@ -224,6 +225,39 @@ class Updater {
 				$module->save();
 			}
 		}
+	}
+
+	/**
+	 * Adds a primary key to exp_file_categories
+	 */
+	private function addPrimaryKeyToFileCategoryTable()
+	{
+		// First modify the file_id and cat_id columns to not accept NULL values
+		ee()->smartforge->modify_column(
+			'file_categories',
+			array(
+				'file_id' => array(
+					'name'       => 'file_id',
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				),
+				'cat_id' => array(
+					'name'       => 'cat_id',
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				)
+			)
+		);
+
+		// Second remove the file_id index
+		ee()->smartforge->drop_key('file_categories', 'file_id');
+
+		// Finally create the primary key
+		ee()->smartforge->add_key('file_categories', array('file_id', 'cat_id'), 'PRIMARY');
 	}
 }
 

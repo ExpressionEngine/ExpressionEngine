@@ -1268,11 +1268,11 @@ class EE_Schema {
 
 
 		$Q[] = "CREATE TABLE `exp_file_categories` (
-			`file_id` int(10) unsigned DEFAULT NULL,
-			`cat_id` int(10) unsigned DEFAULT NULL,
+			`file_id` int(10) unsigned NOT NULL,
+			`cat_id` int(10) unsigned NOT NULL,
 			`sort` int(10) unsigned DEFAULT '0',
 			`is_cover` char(1) DEFAULT 'n',
-			KEY `file_id` (`file_id`),
+			PRIMARY KEY (`file_id`, `cat_id`),
 			KEY `cat_id` (`cat_id`)
 		)";
 
