@@ -1,10 +1,20 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Library\Mixin;
 
 use BadMethodCallException;
 use EllisLab\ExpressionEngine\Service\Event\Publisher;
 
+/**
+ * Mixin Manager
+ */
 class Manager {
 
 	protected $scope;

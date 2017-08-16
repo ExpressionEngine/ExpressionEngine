@@ -1,31 +1,17 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 use EllisLab\ExpressionEngine\Service\Validation\Result;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.7
- * @filesource
+ * Grid Field Library
  */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Grid Field Library
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- */
-
 class Grid_lib {
 
 	public $field_id;
@@ -35,14 +21,13 @@ class Grid_lib {
 
 	protected $_fieldtypes = array();
 	protected $_validated = array();
+	protected $_searchable_data = array();
 
 	public function __construct()
 	{
 		ee()->load->model('grid_model');
 		ee()->load->library('grid_parser');
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Handles EE_Fieldtype's display_field for displaying the Grid field
@@ -84,14 +69,20 @@ class Grid_lib {
 				'required' => ($column['col_required'] == 'y')
 			);
 
+			$attrs = array(
+				'class' => $this->get_class_for_column($column),
+				'data-fieldtype' => $column['col_type'],
+				'data-column-id' => $column['col_id']
+			);
+
+			if ( ! empty($column['col_width']))
+			{
+				$attrs['style'] = 'min-width: '.$column['col_width'].'px';
+			}
+
 			$blank_column[] = array(
 				'html' => $this->_publish_field_cell($column),
-				'attrs' => array(
-					'class' => $this->get_class_for_column($column),
-					'data-fieldtype' => $column['col_type'],
-					'data-column-id' => $column['col_id'],
-					'width' => $column['col_width'].'%',
-				)
+				'attrs' => $attrs
 			);
 		}
 		$grid->setColumns($column_headings);
@@ -119,16 +110,22 @@ class Grid_lib {
 
 			foreach ($columns as $column)
 			{
+				$attrs = array(
+					'class' => $this->get_class_for_column($column),
+					'data-fieldtype' => $column['col_type'],
+					'data-column-id' => $column['col_id'],
+					$data_row_id_attr => $row_id,
+				);
+
+				if ( ! empty($column['col_width']))
+				{
+					$attrs['style'] = 'min-width: '.$column['col_width'].'px';
+				}
+
 				$col = array(
 					'html' => $this->_publish_field_cell($column, $row),
 					'error' => isset($row['col_id_'.$column['col_id'].'_error']) ? $row['col_id_'.$column['col_id'].'_error'] : NULL,
-					'attrs' => array(
-						'class' => $this->get_class_for_column($column),
-						'data-fieldtype' => $column['col_type'],
-						'data-column-id' => $column['col_id'],
-						$data_row_id_attr => $row_id,
-						'width' => $column['col_width'].'%',
-					)
+					'attrs' => $attrs
 				);
 
 				if ($column['col_required'] == 'y')
@@ -164,6 +161,9 @@ class Grid_lib {
 			case 'toggle':
 				$class = 'grid-toggle';
 				break;
+			case 'file':
+				$class = 'grid-file-upload';
+				break;
 			default:
 				$class = '';
 				break;
@@ -171,8 +171,6 @@ class Grid_lib {
 
 		return $class;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Returns publish field HTML for a given cell
@@ -216,8 +214,6 @@ class Grid_lib {
 		// Return the publish field HTML with namespaced form field names
 		return $display_field;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Interface for Grid fieldtype validation
@@ -273,13 +269,13 @@ class Grid_lib {
 			return $this->_validated[$this->field_id];
 		}
 
+		$this->_searchable_data[$this->field_id] = [];
+
 		// Process the posted data and cache
 		$this->_validated[$this->field_id] = $this->_process_field_data('validate', $data);
 
 		return $this->_validated[$this->field_id];
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Interface for Grid fieldtype saving
@@ -299,9 +295,6 @@ class Grid_lib {
 		);
 
 		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->content_type);
-
-		// We'll keep track of searchable data for columns marked as searchable here
-		$searchable_data = array();
 
 		// Get row data to send back to fieldtypes with new row IDs
 		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type, array(), TRUE);
@@ -337,12 +330,6 @@ class Grid_lib {
 				}
 
 				ee()->grid_parser->call('post_save', $cell_data);
-
-				// Add to searchable array if searchable
-				if ($column['col_search'] == 'y')
-				{
-					$searchable_data[] = $cell_data;
-				}
 			}
 
 			$i++;
@@ -357,22 +344,8 @@ class Grid_lib {
 
 		$this->delete_rows($row_ids);
 
-		if ( ! empty($searchable_data) && $this->content_type == 'channel')
-		{
-			ee()->load->helper('custom_field_helper');
-
-			// Update row in channel_data with searchable data string
-			ee()->db->where('entry_id', $this->entry_id)
-				->update('channel_data', array(
-					'field_id_'.$this->field_id => encode_multi_field($searchable_data)
-				)
-			);
-		}
-
 		return FALSE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Notifies fieldtypes of impending deletion of their Grid rows, and then
@@ -409,8 +382,6 @@ class Grid_lib {
 			ee()->grid_model->delete_rows($rows, $this->field_id, $this->content_type);
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Processes a POSTed Grid field for validation for saving
@@ -580,6 +551,12 @@ class Grid_lib {
 						$final_values[$row_id][$col_id.'_error'] = $error;
 						$errors = lang('grid_validation_error');
 					}
+
+					// Add to searchable array if searchable
+					if ($column['col_search'] == 'y')
+					{
+						$this->_searchable_data[$this->field_id][] = $value;
+					}
 				}
 				// 'save' method
 				elseif ($method == 'save')
@@ -607,7 +584,20 @@ class Grid_lib {
 		return array('value' => $final_values, 'error' => $errors);
 	}
 
-	// ------------------------------------------------------------------------
+	/**
+	 * Gets the searchable data for this field as accumulated in validation
+	 *
+	 * @return	array	Array of searchable data
+	 */
+	public function getSearchableData()
+	{
+		if (isset($this->_searchable_data[$this->field_id]))
+		{
+			return $this->_searchable_data[$this->field_id];
+		}
+
+		return [];
+	}
 
 	/**
 	 * Gets a list of installed fieldtypes and filters them for ones enabled
@@ -673,8 +663,6 @@ class Grid_lib {
 
 		return $this->_fieldtypes;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Validates settings before form is saved
@@ -768,8 +756,6 @@ class Grid_lib {
 		return (empty($errors)) ? TRUE : $errors;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Given POSTed column settings, adds new columns to the database and
 	 * figures out if any columns need deleting
@@ -852,8 +838,6 @@ class Grid_lib {
 		}
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Calls grid_save_settings() on fieldtypes to do any extra processing on
 	 * saved field settings
@@ -877,8 +861,6 @@ class Grid_lib {
 
 		return $settings;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Returns rendered HTML for a column on the field settings page
@@ -952,8 +934,6 @@ class Grid_lib {
 		);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Returns rendered HTML for the custom settings form of a grid column type
 	 *
@@ -989,8 +969,6 @@ class Grid_lib {
 
 		return $this->_view_for_col_settings($type, $settings, $column['col_id']);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Returns rendered HTML for the custom settings form of a grid column type,
@@ -1033,8 +1011,6 @@ class Grid_lib {
 			'$1name="grid[cols]['.$col_id.'][col_settings][$2]$3"'
 		);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Performes find and replace for input names in order to namespace them

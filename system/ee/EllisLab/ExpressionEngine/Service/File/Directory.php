@@ -1,11 +1,20 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\File;
 
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 use EllisLab\ExpressionEngine\Library\Filesystem\FilesystemException;
 
-// a directory behaves just like the filesystem rooted at a certain path
+/**
+ * A directory behaves just like the filesystem rooted at a certain path
+ */
 class Directory extends Filesystem {
 
 	protected $url;
@@ -23,7 +32,7 @@ class Directory extends Filesystem {
 	{
 		$path = $this->root.'/'.$path;
 
-		if (strpos($path, '..') !== FALSE)
+		if ($path == '..' || strpos($path, '../') !== FALSE)
 		{
 			throw new FilesystemException('Attempting to access file outside of directory.');
 		}

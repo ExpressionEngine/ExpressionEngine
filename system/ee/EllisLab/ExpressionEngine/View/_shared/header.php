@@ -36,7 +36,7 @@
 					<?php if (ee()->config->item('multiple_sites_enabled') === 'y' && (count($cp_main_menu['sites']) > 0 || ee()->cp->allowed_group('can_admin_sites'))): ?>
 					<div class="nav-sites">
 						<a class="nav-has-sub" href=""><?=ee()->config->item('site_name')?></a>
-						<a class="nav-view" href="<?=ee()->config->item('base_url').ee()->config->item('site_index')?>" rel="external"><i class="icon-view"></i><span class="nav-txt-collapse"><?=lang('view')?></span></a>
+						<a class="nav-view" href="<?=ee()->config->item('site_url')?>" rel="external"><i class="icon-view"></i><span class="nav-txt-collapse"><?=lang('view')?></span></a>
 						<ul class="nav-sub-menu">
 							<?php foreach ($cp_main_menu['sites'] as $site_name => $link): ?>
 								<li><a href="<?=$link?>"><?=$site_name?></a></li>
@@ -152,9 +152,14 @@
 								<a class="nav-has-sub" href=""><?=lang($item->title)?></a>
 								<div class="nav-sub-menu">
 									<?php if ($item->hasFilter()): ?>
-									<form class="nav-filter">
-										<input type="text" value="" placeholder="<?=lang($item->placeholder)?>">
-									</form>
+										<form class="nav-filter">
+											<input type="text" value="" placeholder="<?=lang($item->placeholder)?>">
+
+											<?php if (count($item->getItems()) < 10 && ! empty($item->view_all_link)): ?>
+												<hr>
+												<a class="reset" href="<?=$item->view_all_link?>"><b><?= lang('view_all') ?></b></a>
+											<?php endif; ?>
+										</form>
 									<?php endif; ?>
 									<ul>
 										<?php foreach ($item->getItems() as $sub): ?>

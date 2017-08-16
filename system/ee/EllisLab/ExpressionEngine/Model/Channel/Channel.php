@@ -1,9 +1,19 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Channel;
 
 use EllisLab\ExpressionEngine\Model\Content\StructureModel;
 
+/**
+ * Channel Model
+ */
 class Channel extends StructureModel {
 
 	protected static $_primary_key = 'channel_id';
@@ -220,7 +230,7 @@ class Channel extends StructureModel {
 	{
 		if ( ! isset($content))
 		{
-			$content = $this->getFrontend()->make('ChannelEntry');
+			$content = $this->getModelFacade()->make('ChannelEntry');
 			$content->setChannel($this);
 		}
 		elseif ($content->getChannel()->channel_id != $this->channel_id)
@@ -367,6 +377,9 @@ class Channel extends StructureModel {
 						else
 						{
 							unset($field_layout[$i]['fields'][$j]);
+
+							// Re-index to ensure flat, zero-indexed array
+							$field_layout[$i]['fields'] = array_values($field_layout[$i]['fields']);
 						}
 					}
 				}
@@ -441,7 +454,7 @@ class Channel extends StructureModel {
 		$site_pages = ee()->config->item('site_pages');
 		$site_id = ee()->config->item('site_id');
 
-		$entries = $this->getFrontend()->get('ChannelEntry')
+		$entries = $this->getModelFacade()->get('ChannelEntry')
 			->fields('entry_id', 'author_id')
 			->filter('channel_id', $this->channel_id)
 			->all();

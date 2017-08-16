@@ -1,27 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Channel Parser Component (Relationships)
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Parser Component (Relationships)
  */
 class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 
@@ -35,8 +22,6 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 	{
 		return empty($pre->channel()->rfields) OR in_array('relationships', $disabled);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set up the relationship parser's tree and data pre-caching.
@@ -70,8 +55,6 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 
 		return NULL;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace all of the relationship fields in one fell swoop.

@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Library\Parser\Conditional;
 
@@ -8,21 +15,7 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\BooleanExpres
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Boolean;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.9.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Core Conditional Parser Class
+ * Core Conditional Parser
  *
  * Implemented as a recursive descent parser.
  *
@@ -37,12 +30,6 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token\Boolean;
  *
  * The grammar as it stands should be LL(1) and LALR compatible. If anyone
  * goes really code happy, be my guest.
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Parser extends AbstractParser {
 
@@ -72,7 +59,16 @@ class Parser extends AbstractParser {
 
 		$out = $this->closeBuffer(FALSE);
 
-		return preg_replace('/^\n?(.*?)\n?$/is', '$1', $out);
+		// If the output starts with \n and ends with \n remove just the first
+		// and last (not trim() which will remove ALL); this is to remove any
+		// whitespace we added with annotations
+		if ($out && $out[0] == "\n" && substr($out, -1) == "\n")
+		{
+			$out = substr($out, 1);
+			$out = substr($out, 0, strlen($out) - 1);
+		}
+
+		return $out;
 	}
 
 	/**

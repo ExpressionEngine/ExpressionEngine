@@ -1,7 +1,17 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Category;
 
+/**
+ * Category Factory Service
+ */
 class Factory {
 
 	/**
@@ -24,6 +34,7 @@ class Factory {
 			'category.edit.URL'            => ee('CP/URL')->make('channels/cat/editCat/###')->compile(),
 			'category.reorder.URL'         => ee('CP/URL')->make('channels/cat/cat-reorder/###')->compile(),
 			'category.auto_assign_parents' => ee()->config->item('auto_assign_cat_parents'),
+			'category.manage_categories_toggle' => FALSE,
 		));
 	}
 

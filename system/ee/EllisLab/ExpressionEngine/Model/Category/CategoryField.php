@@ -1,31 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Category;
 
 use EllisLab\ExpressionEngine\Model\Content\FieldModel;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Category Field Model
- *
- * @package		ExpressionEngine
- * @subpackage	Category
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Category Field Model
  */
 class CategoryField extends FieldModel {
 
@@ -56,14 +43,14 @@ class CategoryField extends FieldModel {
 
 	protected static $_validation_rules = array(
 		'field_type'        => 'required|enum[text,textarea,select]',
-		'field_label'       => 'required|xss|noHtml',
-		'field_name'        => 'required|alphaDash|unique[site_id]',
+		'field_label'       => 'required|xss|noHtml|maxLength[50]',
+		'field_name'        => 'required|alphaDash|unique[site_id]|validateNameIsNotReserved|maxLength[32]',
 		'field_ta_rows'     => 'integer',
 		'field_maxl'        => 'integer',
 		'field_required'    => 'enum[y,n]',
 		'field_show_fmt'    => 'enum[y,n]',
 		'field_order'       => 'integer',
-		'legacy_field_data' => 'enum[y,n]',
+		'legacy_field_data' => 'enum[y,n]'
 	);
 
 	protected $field_id;
@@ -130,7 +117,7 @@ class CategoryField extends FieldModel {
 
 		if (empty($field_order))
 		{
-			$count = $this->getFrontend()->get('CategoryField')
+			$count = $this->getModelFacade()->get('CategoryField')
 				->filter('group_id', $this->getProperty('group_id'))
 				->count();
 			$this->setProperty('field_order', $count + 1);
@@ -159,6 +146,20 @@ class CategoryField extends FieldModel {
 	{
 		return 'category_field_data';
 	}
+
+	/**
+	 * Validate the field name to avoid variable name collisions
+	 */
+	public function validateNameIsNotReserved($key, $value, $params, $rule)
+	{
+		if (in_array($value, ee()->cp->invalid_custom_field_names()))
+		{
+			return lang('reserved_word');
+		}
+
+		return TRUE;
+	}
+
 }
 
 // EOF

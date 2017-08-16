@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Design;
 
@@ -10,27 +17,7 @@ use EllisLab\ExpressionEngine\Model\Template\Template as TemplateModel;
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Design\Template Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ *Design\Template Controller
  */
 class Template extends AbstractDesignController {
 
@@ -404,7 +391,7 @@ class Template extends AbstractDesignController {
 				'columns' => array(
 					$i,
 					ee()->localize->human_time($version->item_date),
-					$version->getAuthorName(),
+					($version->getAuthorName()) ?: lang('author_unknown'),
 					$toolbar
 				)
 			);
@@ -516,7 +503,19 @@ class Template extends AbstractDesignController {
 
 	public function search()
 	{
-		if (ee()->input->post('bulk_action') == 'export')
+		if (ee()->input->post('bulk_action') == 'remove')
+		{
+			if (ee()->cp->allowed_group('can_delete_templates'))
+			{
+				$this->removeTemplates(ee()->input->post('selection'));
+				ee()->functions->redirect(ee('CP/URL')->make('design/template/search', ee()->cp->get_url_state()));
+			}
+			else
+			{
+				show_error(lang('unauthorized_access'), 403);
+			}
+		}
+		elseif (ee()->input->post('bulk_action') == 'export')
 		{
 			$this->exportTemplates(ee()->input->post('selection'));
 		}
@@ -558,6 +557,7 @@ class Template extends AbstractDesignController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 		$vars['show_new_template_button'] = FALSE;
+		$vars['show_bulk_delete'] = ee()->cp->allowed_group('can_delete_templates');
 
 		if ( ! empty($vars['table']['data']))
 		{
@@ -789,7 +789,7 @@ class Template extends AbstractDesignController {
 		$section = array(
 			array(
 				'title' => '',
-				'desc' => sprintf(lang('last_edit'), ee()->localize->human_time($template->edit_date), (empty($author)) ? '-' : $author->screen_name),
+				'desc' => sprintf(lang('last_edit'), ee()->localize->human_time($template->edit_date), (empty($author)) ? lang('author_unknown') : $author->screen_name),
 				'wide' => TRUE,
 				'fields' => array(
 					'template_data' => array(

@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Category;
 
@@ -7,31 +14,12 @@ use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 use EllisLab\ExpressionEngine\Model\Category\Display\CategoryFieldLayout;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Category Model
- *
- * @package		ExpressionEngine
- * @subpackage	Category
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Category Model
  */
 class Category extends ContentModel {
 
 	protected static $_primary_key = 'cat_id';
+	protected static $_table_name = 'categories';
 	protected static $_gateway_names = array('CategoryGateway', 'CategoryFieldDataGateway');
 
 	protected static $_hook_id = 'category';
@@ -71,12 +59,8 @@ class Category extends ContentModel {
 	);
 
 	protected static $_field_data = array(
-		'field_model'   => 'CategoryField',
-		'extra_data'    => array(
-			'group_column' => 'Category__group_id',
-			'parent_table' => 'categories',
-			'key_column'   => 'cat_id'
-		)
+		'field_model'  => 'CategoryField',
+		'group_column' => 'Category__group_id'
 	);
 
 	protected static $_validation_rules = array(
@@ -132,16 +116,11 @@ class Category extends ContentModel {
 
 		if (empty($cat_order))
 		{
-			$count = $this->getFrontend()->get('Category')
+			$count = $this->getModelFacade()->get('Category')
 				->filter('group_id', $this->getProperty('group_id'))
 				->count();
 			$this->setProperty('cat_order', $count + 1);
 		}
-	}
-
-	public function onBeforeDelete()
-	{
-		$this->deleteFieldData();
 	}
 
 	/**
@@ -157,26 +136,6 @@ class Category extends ContentModel {
 		}
 
 		return parent::addFacade($id, $info, $name_prefix);
-	}
-
-	/**
-	 * Gets a collection of CategoryGroup objects
-	 *
-	 * @return Collection A collection of CategoryGroup objects
-	 */
-	protected function getFieldModels()
-	{
-		$fields = $this->CategoryGroup->CategoryFields;
-
-		if ($fields->count() == 0)
-		{
-			$fields = $this->getModelFacade()
-				->get('CategoryGroup', $this->group_id)
-				->first()
-				->CategoryFields;
-		}
-
-		return $fields;
 	}
 }
 

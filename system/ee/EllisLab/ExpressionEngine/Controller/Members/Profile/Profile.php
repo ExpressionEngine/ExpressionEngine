@@ -1,8 +1,13 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Members\Profile;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
@@ -10,27 +15,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Members Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Members Profile Controller
  */
 class Profile extends CP_Controller {
 
@@ -81,7 +66,12 @@ class Profile extends CP_Controller {
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('members'), lang('members'));
 
 		ee()->view->header = array(
-			'title' => sprintf(lang('profile_header'), $this->member->username)
+			'title' => sprintf(lang('profile_header'),
+				htmlentities($this->member->username, ENT_QUOTES, 'UTF-8'),
+				htmlentities($this->member->email, ENT_QUOTES, 'UTF-8'),
+				htmlentities($this->member->email, ENT_QUOTES, 'UTF-8'),
+				$this->member->ip_address
+			)
 		);
 	}
 
@@ -156,6 +146,8 @@ class Profile extends CP_Controller {
 			$list = $sidebar->addHeader(lang('administration'))
 				->addBasicList();
 
+			$list->addItem(lang('view_activity'), ee('CP/URL')->make('members/profile/activity', $this->query_string));
+
 			$list->addItem(lang('blocked_members'), ee('CP/URL')->make('members/profile/ignore', $this->query_string));
 
 			$sa_editing_self = ($this->member->group_id == 1 && $this->member->member_id == ee()->session->userdata['member_id']);
@@ -229,8 +221,6 @@ class Profile extends CP_Controller {
 		ee()->functions->redirect($this->base_url);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Generic method for saving member settings given an expected array
 	 * of fields.
@@ -245,7 +235,7 @@ class Profile extends CP_Controller {
 		{
 			foreach ($settings as $setting)
 			{
-				if ( ! empty($setting['fields']))
+				if ( ! empty($setting['fields']) && is_array($setting['fields']))
 				{
 					foreach ($setting['fields'] as $field_name => $field)
 					{

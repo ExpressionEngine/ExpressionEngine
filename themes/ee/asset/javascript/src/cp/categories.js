@@ -1,13 +1,9 @@
-/*!
- * ExpressionEngine - by EllisLab
+/**
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 $(document).ready(function () {
@@ -37,27 +33,29 @@ $(document).ready(function () {
 	// Category management tools toggle
 	$('body').on('click', '.toggle-tools a.toggle-btn', function (e) {
 		e.preventDefault();
-		var cat_container = $(this).parents('.nestable');
+		var cat_container = $(this).parents('.nestable'),
+			turning_on = $(this).hasClass('off'),
+			list_reorder = $('.list-reorder', cat_container),
+			toolbar = $('.toolbar', cat_container);
+
+		EE.category.manage_categories_toggle = (turning_on);
+
+		$(this).toggleClass('off', ! turning_on);
+		$(this).toggleClass('on', turning_on);
+		$('.form-ctrls button').toggleClass('disable', turning_on);
+		$('input[type=checkbox]', cat_container).prop('disabled', turning_on);
 
 		// On
-		if ($(this).hasClass('off')) {
-			$(this).removeClass('off');
-			$(this).addClass('on');
-
-			$('.list-reorder', cat_container).clearQueue().animate({
+		if (turning_on) {
+			list_reorder.clearQueue().animate({
 				'margin-left': '-10px'
 			}, 400);
-			$('.toolbar', cat_container).stop().fadeIn();
-			$('input[type=checkbox]', cat_container).prop('disabled', true);
-		} else { // Off
-			$(this).removeClass('on');
-			$(this).addClass('off');
-
-			$('.list-reorder', cat_container).clearQueue().animate({
+			toolbar.stop().fadeIn();
+		} else { // Off\
+			list_reorder.clearQueue().animate({
 				'margin-left': '-50px'
 			}, 400);
-			$('.toolbar', cat_container).stop().fadeOut();
-			$('input[type=checkbox]', cat_container).prop('disabled', false);
+			toolbar.stop().fadeOut();
 		}
 	});
 
@@ -218,6 +216,10 @@ $(document).ready(function () {
 			maxDepth: 10,
 			constrainToRoot: true
 		}).on('change', function() {
+
+			if (EE.category.manage_categories_toggle == false) {
+				return;
+			}
 
 			EE.cp.addLastToChecklists();
 

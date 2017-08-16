@@ -1,27 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Channel Parser Component (Categories)
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Parser Component (Categories)
  */
 class EE_Channel_category_parser implements EE_Channel_parser_component {
 
@@ -35,8 +22,6 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 	{
 		return in_array('categories', $disabled) OR ! $pre->has_tag_pair('categories');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Before the parser runs, this will gather all category tag pairs that
@@ -52,8 +37,6 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 	{
 		return $this->_get_cat_chunks($tagdata, $pre->prefix());
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Find any {category} {/category} tag pair chunks in the template and
@@ -81,8 +64,6 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 
 		return $cat_chunk;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace all of the category pairs with the correct data.

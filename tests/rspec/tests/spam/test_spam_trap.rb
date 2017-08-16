@@ -35,13 +35,13 @@ feature 'Spam Module' do
     end
 
     it 'can search by phrases' do
-      @page.phrase_search.set 'test'
+      @page.phrase_search.set 'about'
       @page.search_submit_button.click
       no_php_js_errors
 
-      @page.heading.text.should eq 'Search Results we found 188 results for "test"'
-      @page.phrase_search.value.should eq 'test'
-      @page.should have_text 'test'
+      @page.heading.text.should eq 'Search Results we found 5 results for "about"'
+      @page.phrase_search.value.should eq 'about'
+      @page.should have_text 'about'
     end
 
     it 'can mark as ham' do

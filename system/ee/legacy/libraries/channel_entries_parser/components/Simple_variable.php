@@ -1,27 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Channel Parser Component (Basic Varaibles)
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Parser Component (Basic Variables)
  */
 class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
@@ -35,8 +22,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 	{
 		return FALSE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Parse out $search_link for the {member_search_path} variable
@@ -53,8 +38,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
 		return ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace all variables.
@@ -156,8 +139,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
 		return $tagdata;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Handle variables that end in _path or contain "permalink".
@@ -286,8 +267,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
 		return $tagdata;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Handle variables that end in _url.
@@ -427,8 +406,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
 		return $tagdata;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Handle regular fields as basic replacements.

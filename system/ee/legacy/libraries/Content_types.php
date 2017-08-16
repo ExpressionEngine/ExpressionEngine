@@ -1,32 +1,18 @@
 <?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.7
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Core Content Types Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Content Types
  */
 class EE_content_types {
 
 	private $_table = 'content_types';
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add a content types
@@ -53,8 +39,6 @@ class EE_content_types {
 
 		$this->_notify_fieldtypes('register_content_type', $param);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Remove a content type
@@ -85,8 +69,6 @@ class EE_content_types {
 
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Retrieve a list of all content types
 	 */
@@ -97,8 +79,6 @@ class EE_content_types {
 			ee()->db->select('name')->get($this->_table)->result_array()
 		));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Notify all fieldtypes of the content type change.

@@ -1,4 +1,12 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
 namespace EllisLab\ExpressionEngine\Service\EntryListing;
 
 use Serializable;
@@ -7,26 +15,7 @@ use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Service\View\View;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Entry Listing Service
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * CP Entry Listing Service
  */
 class EntryListing {
 
@@ -165,6 +154,8 @@ class EntryListing {
 	protected function setupEntries()
 	{
 		$entries = ee('Model')->get('ChannelEntry')
+			->with('Channel', 'Author')
+			->fields('entry_id', 'title', 'Author.screen_name', 'Author.username', 'Channel.channel_title', 'author_id', 'comment_total', 'entry_date', 'status')
 			->filter('site_id', $this->site_id);
 
 		// We need to filter by Channel first (if necissary) as that will

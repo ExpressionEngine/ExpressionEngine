@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Category;
 
@@ -6,27 +13,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 use EllisLab\ExpressionEngine\Model\Content\StructureModel;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Category Group Model
- *
- * @package		ExpressionEngine
- * @subpackage	Category
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Category Group Model
  */
 class CategoryGroup extends StructureModel {
 
@@ -153,7 +140,7 @@ class CategoryGroup extends StructureModel {
 	 */
 	public function populateCategories($field)
 	{
-		$categories = ee('Model')->get('Category')
+		$categories = $this->getModelFacade()->get('Category')
 			->with(array('Children as C0' => array('Children as C1' => 'Children as C2')))
 			->with('CategoryGroup')
 			->filter('CategoryGroup.group_id', $field->getItem('group_id'))
@@ -172,9 +159,13 @@ class CategoryGroup extends StructureModel {
 
 		$object = $field->getItem('categorized_object');
 
-		// New Channel Entries might have a default category selecdted, but File
+		// isset() and empty() don't work here on $object->Channel because it hasn't been dynamically fetched yet,
+		// is_object() apparently works differently and lets it dynamically load it before evaluating
+		$has_default = ($object->getName() == 'ee:ChannelEntry' && is_object($object->Channel)) ? TRUE : FALSE;
+
+		// New Channel Entries might have a default category selected, but File
 		// entities should not have categories pre-selected for new entries
-		if ( ! $object->isNew() OR $object->getName() == 'ee:ChannelEntry')
+		if ( ! $object->isNew() OR ($object->getName() == 'ee:ChannelEntry' && $has_default))
 		{
 			$set_categories = $object->Categories->filter('group_id', $field->getItem('group_id'))->pluck('cat_id');
 			$field->setData(implode('|', $set_categories));

@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Publish;
 
@@ -9,27 +16,7 @@ use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPubl
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Publish/Edit Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Publish/Edit Controller
  */
 class Edit extends AbstractPublishController {
 
@@ -275,14 +262,15 @@ class Edit extends AbstractPublishController {
 					: $highlight->lighten(100);
 
 				$status = array(
-					'content'          => $status->status,
+					'content'          => (in_array($status->status, array('open', 'closed'))) ? lang($status->status) : $status->status,
+					'status'           => $status->status,
 					'color'            => $color,
 					'background-color' => $status->highlight
 				);
 			}
 			else
 			{
-				$status = $entry->status;
+				$status = (in_array($entry->status, array('open', 'closed'))) ? lang($entry->status) : $entry->status;
 			}
 
 			$column = array(

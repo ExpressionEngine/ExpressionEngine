@@ -1,28 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * CodeIgniter
+ * ExpressionEngine (https://expressionengine.com)
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Image Manipulation class
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Image_lib
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/image_lib.html
  */
 class EE_Image_lib {
 
@@ -93,8 +79,6 @@ class EE_Image_lib {
 		log_message('debug', "Image Lib Class Initialized");
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Initialize image properties
 	 *
@@ -115,8 +99,6 @@ class EE_Image_lib {
 		// special consideration for master_dim
 		$this->master_dim = 'auto';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * initialize image preferences
@@ -297,7 +279,7 @@ class EE_Image_lib {
 		// Set the quality
 		$this->quality = trim(str_replace("%", "", $this->quality));
 
-		if ($this->quality == '' OR $this->quality == 0 OR ! is_numeric($this->quality))
+		if ($this->quality === '' OR $this->quality < 0 OR ! is_numeric($this->quality))
 		{
 			$this->quality = 90;
 		}
@@ -346,8 +328,6 @@ class EE_Image_lib {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Image Resize
 	 *
@@ -369,8 +349,6 @@ class EE_Image_lib {
 		return $this->$protocol('resize');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Image Crop
 	 *
@@ -391,8 +369,6 @@ class EE_Image_lib {
 
 		return $this->$protocol('crop');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Image Rotate
@@ -444,8 +420,6 @@ class EE_Image_lib {
 			return $this->image_rotate_gd();
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Image Process Using GD/GD2
@@ -555,8 +529,6 @@ class EE_Image_lib {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Image Process Using ImageMagick
 	 *
@@ -575,6 +547,11 @@ class EE_Image_lib {
 			return FALSE;
 		}
 
+		if ( ! $this->arePathsSafe())
+		{
+			return FALSE;
+		}
+
 		if ( ! preg_match("/convert$/i", $this->library_path))
 		{
 			$this->library_path = rtrim($this->library_path, '/').'/';
@@ -587,7 +564,7 @@ class EE_Image_lib {
 
 		if ($action == 'crop')
 		{
-			$cmd .= " -crop ".$this->width."x".$this->height."+".$this->x_axis."+".$this->y_axis." \"$this->full_src_path\" \"$this->full_dst_path\" 2>&1";
+			$cmd .= " -crop ".$this->width."x".$this->height."+".$this->x_axis."+".$this->y_axis." ".escapeshellarg($this->full_src_path)." ".escapeshellarg($this->full_dst_path)." 2>&1";
 		}
 		elseif ($action == 'rotate')
 		{
@@ -601,11 +578,11 @@ class EE_Image_lib {
 					break;
 			}
 
-			$cmd .= " ".$angle." \"$this->full_src_path\" \"$this->full_dst_path\" 2>&1";
+			$cmd .= " ".$angle." ".escapeshellarg($this->full_src_path)." ".escapeshellarg($this->full_dst_path)." 2>&1";
 		}
 		else  // Resize
 		{
-			$cmd .= " -resize ".$this->width."x".$this->height." \"$this->full_src_path\" \"$this->full_dst_path\" 2>&1";
+			$cmd .= " -resize ".$this->width."x".$this->height." ".escapeshellarg($this->full_src_path)." ".escapeshellarg($this->full_dst_path)." 2>&1";
 		}
 
 		$retval = 1;
@@ -625,8 +602,6 @@ class EE_Image_lib {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Image Process Using NetPBM
 	 *
@@ -641,6 +616,11 @@ class EE_Image_lib {
 		if ($this->library_path == '')
 		{
 			$this->set_error('imglib_libpath_invalid');
+			return FALSE;
+		}
+
+		if ( ! $this->arePathsSafe())
+		{
 			return FALSE;
 		}
 
@@ -688,7 +668,7 @@ class EE_Image_lib {
 			$cmd_inner = 'pnmscale -xysize '.$this->width.' '.$this->height;
 		}
 
-		$cmd = $this->library_path.$cmd_in.' '.$this->full_src_path.' | '.$cmd_inner.' | '.$cmd_out.' > '.$this->dest_folder.'netpbm.tmp';
+		$cmd = $this->library_path.$cmd_in.' '.escapeshellarg($this->full_src_path).' | '.$cmd_inner.' | '.$cmd_out.' > '.escapeshellarg($this->dest_folder.'netpbm.tmp');
 
 		$retval = 1;
 
@@ -707,6 +687,27 @@ class EE_Image_lib {
 		copy ($this->dest_folder.'netpbm.tmp', $this->full_dst_path);
 		unlink ($this->dest_folder.'netpbm.tmp');
 		@chmod($this->full_dst_path, FILE_WRITE_MODE);
+
+		return TRUE;
+	}
+
+	/**
+	 * Checks path instance variables to make sure they have been properly
+	 * sanitized before passing to shell functions
+	 *
+	 * @return	bool
+	 */
+	private function arePathsSafe()
+	{
+		foreach (array('library_path', 'full_src_path',
+			'full_dst_path', 'dest_folder') as $path)
+		{
+			if (ee()->security->sanitize_filename($this->$path, TRUE) !== $this->$path)
+			{
+				$this->set_error(sprintf(lang('imglib_unsafe_config'), $path));
+				return FALSE;
+			}
+		}
 
 		return TRUE;
 	}
@@ -763,8 +764,6 @@ class EE_Image_lib {
 
 		return true;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create Mirror Image using GD
@@ -830,8 +829,6 @@ class EE_Image_lib {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Preserves transparencies when working with GIFs and PNGs
 	 *
@@ -881,8 +878,6 @@ class EE_Image_lib {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Image Watermark
 	 *
@@ -904,8 +899,6 @@ class EE_Image_lib {
 			return $this->text_watermark();
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Watermark - Graphic Version
@@ -1036,8 +1029,6 @@ class EE_Image_lib {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Watermark - Text Version
 	 *
@@ -1126,8 +1117,8 @@ class EE_Image_lib {
 		}
 
 		// Set base X and Y axis values
-		$x_axis = $this->wm_hor_offset + $x_padding;
-		$y_axis = $this->wm_vrt_offset + $y_padding;
+		$x_axis = (int) $this->wm_hor_offset + (int) $x_padding;
+		$y_axis = (int) $this->wm_vrt_offset + (int) $y_padding;
 
 		// Set verticle alignment
 		if ($this->wm_use_drop_shadow == FALSE)
@@ -1201,8 +1192,6 @@ class EE_Image_lib {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create Image - GD
 	 *
@@ -1260,8 +1249,6 @@ class EE_Image_lib {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Write image file to disk - GD
 	 *
@@ -1309,7 +1296,16 @@ class EE_Image_lib {
 					return FALSE;
 				}
 
-				if ( ! @imagepng($resource, $this->full_dst_path))
+				// We have a percentage value for quality (0 - 100) but PNGs
+				// only accept a quality of 0 - 9, so we must to some math!
+				// Additionally, for JPEGs 100 is best quality but for PNGs
+				// 0 is best quality. So...for the math, if we want 80% quality
+				// then we'd need to do 9 * .8 then subtract that from 9, or
+				// just do 9 * .2! So, we'll find that number by doing 100 -
+				// quality (percentage math, it's fun for the whole family!)
+				$png_quality = round(((100 - $this->quality) / 100) * 9);
+
+				if ( ! @imagepng($resource, $this->full_dst_path, $png_quality))
 				{
 					$this->set_error('imglib_save_failed');
 					return FALSE;
@@ -1323,8 +1319,6 @@ class EE_Image_lib {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Dynamically outputs an image
@@ -1356,8 +1350,6 @@ class EE_Image_lib {
 				break;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Re-proportion Image Width/Height
@@ -1406,8 +1398,6 @@ class EE_Image_lib {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get image properties
@@ -1459,8 +1449,6 @@ class EE_Image_lib {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Size calculator
@@ -1514,8 +1502,6 @@ class EE_Image_lib {
 		return $vals;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Explode source_image
 	 *
@@ -1538,8 +1524,6 @@ class EE_Image_lib {
 		return array('ext' => $ext, 'name' => $name);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Is GD Installed?
 	 *
@@ -1559,8 +1543,6 @@ class EE_Image_lib {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get GD version
 	 *
@@ -1579,8 +1561,6 @@ class EE_Image_lib {
 
 		return FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set error message
@@ -1609,8 +1589,6 @@ class EE_Image_lib {
 			log_message('error', $msg);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Show error messages

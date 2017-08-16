@@ -1,35 +1,20 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Addons;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 use Michelf\MarkdownExtra;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Home Page Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Addons Controller
  */
 class Addons extends CP_Controller {
 
@@ -88,8 +73,6 @@ class Addons extends CP_Controller {
 			$this->assigned_modules[] = ee('Model')->get('Module')->filter('module_name', 'Filepicker')->first()->getId();
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Sets up the display filters
@@ -167,8 +150,6 @@ class Addons extends CP_Controller {
 	{
 		return strtolower(str_replace(' ', '_', $str));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Index function
@@ -509,8 +490,6 @@ class Addons extends CP_Controller {
 		return $addons;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Updates an add-on
 	 *
@@ -675,8 +654,6 @@ class Addons extends CP_Controller {
 		ee()->functions->redirect($return);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Installs an add-on
 	 *
@@ -788,8 +765,6 @@ class Addons extends CP_Controller {
 		ee()->functions->redirect($return);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Uninstalls an add-on
 	 *
@@ -886,8 +861,6 @@ class Addons extends CP_Controller {
 
 		ee()->functions->redirect($return);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Display add-on settings
@@ -996,16 +969,16 @@ class Addons extends CP_Controller {
 		ee()->cp->render('addons/settings', $vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Display plugin manual/documentation
 	 *
 	 * @param	str	$addon	The name of plugin whose manual to display
 	 * @return	void
 	 */
-	public function manual($addon)
+	public function manual($addon = NULL)
 	{
+		if ( ! $addon) show_404();
+
 		$this->assertUserHasAccess($addon);
 
 		try
@@ -1123,8 +1096,6 @@ class Addons extends CP_Controller {
 		ee()->cp->render('addons/manual', $vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get data on a module
 	 *
@@ -1203,8 +1174,6 @@ class Addons extends CP_Controller {
 		return $data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get data on a plugin
 	 *
@@ -1259,8 +1228,6 @@ class Addons extends CP_Controller {
 
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get data on a fieldtype
@@ -1327,8 +1294,6 @@ class Addons extends CP_Controller {
 
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get data on an extension
@@ -1428,8 +1393,6 @@ class Addons extends CP_Controller {
 		return $data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Installs an extension
 	 *
@@ -1450,8 +1413,6 @@ class Addons extends CP_Controller {
 		return $name;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Uninstalls a an extension
 	 *
@@ -1471,8 +1432,6 @@ class Addons extends CP_Controller {
 
 		return $name;
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Installs a module
@@ -1504,8 +1463,6 @@ class Addons extends CP_Controller {
 		return $name;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Uninstalls a module
 	 *
@@ -1536,8 +1493,6 @@ class Addons extends CP_Controller {
 		return $name;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Installs a fieldtype
 	 *
@@ -1558,8 +1513,6 @@ class Addons extends CP_Controller {
 		return $name;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Uninstalls a fieldtype
 	 *
@@ -1579,8 +1532,6 @@ class Addons extends CP_Controller {
 
 		return $name;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Render module-specific settings
@@ -1685,7 +1636,7 @@ class Addons extends CP_Controller {
 			->filter('class', $extension['class'])
 			->first();
 
-		$current = strip_slashes($extension_model->settings);
+		$current = $extension_model->settings;
 
 		$class_name = $extension['class'];
 		$OBJ = new $class_name($current);
@@ -1730,19 +1681,11 @@ class Addons extends CP_Controller {
 				$value = '';
 			}
 
-			$sub = '';
 			$choices = array();
 			$selected = '';
 
-			if (isset($subtext[$key]))
-			{
-				foreach ($subtext[$key] as $txt)
-				{
-					$sub .= lang($txt);
-				}
-			}
-
-			$element['desc'] = $sub;
+			// add field instructions, if they exist
+			$element['desc'] = (lang($key.'_desc') != $key.'_desc') ? lang($key.'_desc') : '';
 
 			if ( ! is_array($options))
 			{
@@ -1796,7 +1739,8 @@ class Addons extends CP_Controller {
 					$element['fields'][$key] = array(
 						'type' => 'checkbox',
 						'value' => $value,
-						'choices' => $choices
+						'choices' => $choices,
+						'wrap' => TRUE,
 					);
 					break;
 

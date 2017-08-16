@@ -1,26 +1,14 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Admin Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Admin Model
  */
 class Admin_model extends CI_Model {
 
@@ -40,8 +28,6 @@ class Admin_model extends CI_Model {
 		return $encodings;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Installed Language Packs
 	 *
@@ -56,8 +42,6 @@ class Admin_model extends CI_Model {
 		ee()->load->model('language_model');
 		return ee()->lang->language_pack_names();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Theme List
@@ -101,8 +85,6 @@ class Admin_model extends CI_Model {
 		return $themes;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Template List
 	 *
@@ -136,8 +118,6 @@ class Admin_model extends CI_Model {
 		return $templates;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get HTML Buttons
 	 *
@@ -167,8 +147,6 @@ class Admin_model extends CI_Model {
 		return $buttons;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete HTML Button
 	 *
@@ -182,8 +160,6 @@ class Admin_model extends CI_Model {
 		$this->db->where('id', $id);
 		$this->db->delete();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update HTML Buttons
@@ -209,8 +185,6 @@ class Admin_model extends CI_Model {
 		}
 
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Unique Upload Name

@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Login Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Login Controller
  */
 class Login extends CP_Controller {
 
@@ -36,8 +24,6 @@ class Login extends CP_Controller {
 		$this->load->library('auth');
 		$this->lang->loadfile('login');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Main login form
@@ -144,8 +130,6 @@ class Login extends CP_Controller {
 		$this->view->render('account/login');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Authenticate user
 	 *
@@ -248,8 +232,6 @@ class Login extends CP_Controller {
 		$this->functions->redirect($return_path);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Username/password update form
 	 *
@@ -308,8 +290,6 @@ class Login extends CP_Controller {
 
 		return ee('View')->make('account/update_un_pw')->render($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the username/password
@@ -412,8 +392,6 @@ class Login extends CP_Controller {
 		$this->functions->redirect(BASE.AMP.'C=login');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Lock CP
 	 *
@@ -434,8 +412,6 @@ class Login extends CP_Controller {
 			'message' => 'locked'
 		));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Log-out
@@ -479,8 +455,6 @@ class Login extends CP_Controller {
 		$this->functions->redirect(BASE.AMP.'C=login');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Forgotten password form
 	 *
@@ -510,8 +484,6 @@ class Login extends CP_Controller {
 
 		$this->view->render('account/forgot_password');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Request a forgotten password
@@ -610,8 +582,6 @@ class Login extends CP_Controller {
 
 		$this->forgotten_password_form();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Reset Password
@@ -745,8 +715,6 @@ class Login extends CP_Controller {
 		$this->view->render('account/reset_password');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 *  Replace variables
 	 */
@@ -764,8 +732,6 @@ class Login extends CP_Controller {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 *	Refresh XID
@@ -786,14 +752,15 @@ class Login extends CP_Controller {
 
 		header('X-CSRF-TOKEN: '.CSRF_TOKEN);
 		header('X-EEXID: '.CSRF_TOKEN);
+		header("Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0");  //Don't cache
+     	header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+     	header("Pragma: no-cache");
 
 		$this->output->send_ajax_response(array(
 			'base' => BASE,
 			'message' => 'refresh'
 		));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 *	Return to login

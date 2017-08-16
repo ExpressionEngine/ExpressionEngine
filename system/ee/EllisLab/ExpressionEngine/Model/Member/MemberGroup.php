@@ -1,9 +1,19 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Member;
 
 use EllisLab\ExpressionEngine\Model\Content\StructureModel;
 
+/**
+ * Member Group Model
+ */
 class MemberGroup extends StructureModel {
 
 	protected static $_primary_key = 'group_id';
@@ -339,14 +349,14 @@ class MemberGroup extends StructureModel {
 	{
 		$this->setId($this->group_id);
 
-		$sites = $this->getFrontend()->get('Site')
+		$sites = $this->getModelFacade()->get('Site')
 			->fields('site_id')
 			->all()
 			->pluck('site_id');
 
 		foreach ($sites as $site_id)
 		{
-			$group = $this->getFrontend()->get('MemberGroup')
+			$group = $this->getModelFacade()->get('MemberGroup')
 				->filter('group_id', $this->group_id)
 				->filter('site_id', $site_id)
 				->first();
@@ -355,7 +365,7 @@ class MemberGroup extends StructureModel {
 			{
 				$data = $this->getValues();
 				$data['site_id'] = (int) $site_id;
-				$this->getFrontend()->make('MemberGroup', $data)->save();
+				$this->getModelFacade()->make('MemberGroup', $data)->save();
 			}
 		}
 	}
@@ -399,7 +409,7 @@ class MemberGroup extends StructureModel {
 		// might be empty, so need to be specific
 		if ( ! is_array($member_cfields))
 		{
-			$member_cfields = ee('Model')->get('MemberField')->all()->asArray();
+			$member_cfields = $this->getModelFacade()->get('MemberField')->all()->asArray();
 			ee()->session->set_cache('EllisLab::MemberGroupModel', 'getCustomFields', $member_cfields);
 		}
 

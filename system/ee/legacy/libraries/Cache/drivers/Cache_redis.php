@@ -1,27 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.8
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Redis Caching Class
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Redis Caching
  */
 class EE_Cache_redis extends CI_Driver
 {
@@ -31,8 +18,6 @@ class EE_Cache_redis extends CI_Driver
 	 * @var	Redis
 	 */
 	protected $_redis;
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Look for a value in the cache. If it exists, return the data
@@ -49,8 +34,6 @@ class EE_Cache_redis extends CI_Driver
 
 		return is_array($data) ? $data[0] : FALSE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Save value to cache
@@ -72,8 +55,6 @@ class EE_Cache_redis extends CI_Driver
 			? $this->_redis->setex($key, $ttl, $data)
 			: $this->_redis->set($key, $data);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Delete from cache
@@ -97,8 +78,6 @@ class EE_Cache_redis extends CI_Driver
 		return ($this->_redis->delete($this->unique_key($key, $scope)) === 1);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Clean cache for the current scope
 	 *
@@ -113,8 +92,6 @@ class EE_Cache_redis extends CI_Driver
 		) === 1);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Cache Info
 	 *
@@ -125,8 +102,6 @@ class EE_Cache_redis extends CI_Driver
 	{
 		return $this->_redis->info();
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Get Cache Metadata
@@ -160,8 +135,6 @@ class EE_Cache_redis extends CI_Driver
 		return FALSE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Check if Redis driver is supported
 	 *
@@ -184,8 +157,6 @@ class EE_Cache_redis extends CI_Driver
 			return FALSE;
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Setup Redis config and connection
@@ -243,8 +214,6 @@ class EE_Cache_redis extends CI_Driver
 
 		return $result;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Class destructor

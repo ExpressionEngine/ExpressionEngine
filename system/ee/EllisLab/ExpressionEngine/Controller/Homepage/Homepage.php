@@ -1,36 +1,25 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Homepage;
 
 use CP_Controller;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Homepage Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Homepage Controller
  */
 class Homepage extends CP_Controller {
 
 	public function index()
 	{
+		$this->redirectIfNoSegments();
+
 		ee('CP/Alert')->makeDeprecationNotice()->now();
 
 		$stats = ee('Model')->get('Stats')
@@ -77,9 +66,8 @@ class Homepage extends CP_Controller {
 			->filter('site_id', ee()->config->item('site_id'))
 			->count();
 
-		$vars['number_of_banned_members'] = ee('Model')->get('MemberGroup', 2)
-			->first()
-			->getMembers()
+		$vars['number_of_banned_members'] = ee('Model')->get('Member')
+			->filter('group_id', 2)
 			->count();
 
 		$vars['number_of_closed_entries'] = ee('Model')->get('ChannelEntry')
@@ -93,11 +81,37 @@ class Homepage extends CP_Controller {
 			->filter('Entry.status', 'closed')
 			->count();
 
-		$vars['spam_module_installed'] = (ee('Model')->get('Module')->filter('module_name', 'Spam')->count());
+		$vars['spam_module_installed'] = (bool) ee('Model')->get('Module')->filter('module_name', 'Spam')->count();
+
+		if ($vars['spam_module_installed'])
+		{
+			$vars['number_of_new_spam'] = ee('Model')->get('spam:SpamTrap')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('trap_date', '>', ee()->session->userdata['last_visit'])
+				->count();
+
+			$vars['number_of_spam'] = ee('Model')->get('spam:SpamTrap')
+				->filter('site_id', ee()->config->item('site_id'))
+				->count();
+
+			// db query to aggregate
+			$vars['trapped_spam'] = ee()->db->select('content_type, COUNT(trap_id) as total_trapped')
+				->group_by('content_type')
+				->get('spam_trap')
+				->result();
+
+			foreach ($vars['trapped_spam'] as $trapped)
+			{
+				ee()->lang->load($trapped->content_type);
+			}
+
+			$vars['can_moderate_spam'] = ee()->cp->allowed_group('can_moderate_spam');
+		}
+
 
 		// Gather the news
 		ee()->load->library(array('rss_parser', 'typography'));
-		$url_rss = 'feed://ellislab.com/blog/rss-feed/cpnews/';
+		$url_rss = 'https://expressionengine.com/blog/rss-feed/cpnews/';
 		$news = array();
 
 		try
@@ -151,6 +165,26 @@ class Homepage extends CP_Controller {
 
 		ee()->view->cp_page_title = ee()->config->item('site_name') . ' ' . lang('overview');
 		ee()->cp->render('homepage', $vars);
+	}
+
+	/**
+	 * If we arrive to this controller's index as a result of being the default
+	 * controller, check to see if there is a default homepage we should be
+	 * redirecting to instead
+	 */
+	private function redirectIfNoSegments()
+	{
+		if (empty(ee()->uri->segments))
+		{
+			$member_home_url = ee('Model')->get('Member', ee()->session->userdata('member_id'))
+				->first()
+				->getCPHomepageURL();
+
+			if ($member_home_url->path != 'homepage')
+			{
+				$this->functions->redirect($member_home_url);
+			}
+		}
 	}
 
 	public function acceptChecksums()

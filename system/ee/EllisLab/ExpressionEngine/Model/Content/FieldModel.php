@@ -1,10 +1,20 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Content;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
+/**
+ * Content Field Model abstract
+ */
 abstract class FieldModel extends Model {
 
 	protected static $_events = array(
@@ -347,9 +357,23 @@ abstract class FieldModel extends Model {
 		return $this->ensureDefaultColumns($columns);
 	}
 
+	private function getCacheKey()
+	{
+		return $cache_key = '/' . get_class($this) . '/' . $this->getId();
+	}
+
 	public function getColumnNames()
 	{
-		return array_keys($this->getColumns());
+		$cache_key = $this->getCacheKey();
+		$names = ee()->cache->get($cache_key);
+
+		if ($names === FALSE)
+		{
+			$names = array_keys($this->getColumns());
+			ee()->cache->save($cache_key, $names, 0);
+		}
+
+		return $names;
 	}
 
 	/**
@@ -401,6 +425,9 @@ abstract class FieldModel extends Model {
 		ee()->dbforge->add_key('id', TRUE);
 		ee()->dbforge->add_key($this->getForeignKey());
 		ee()->smartforge->create_table($this->getTableName());
+
+		// Pre-populate the cache...
+		$this->getColumnNames();
 	}
 
 	/**
@@ -410,6 +437,8 @@ abstract class FieldModel extends Model {
 	{
 		ee()->load->library('smartforge');
 		ee()->smartforge->drop_table($this->getTableName());
+
+		ee()->cache->delete($this->getCacheKey());
 	}
 
 /**
@@ -441,6 +470,7 @@ abstract class FieldModel extends Model {
 
 		$fieldtype->_init(array(
 			'row'			=> $row,
+			'field_id'		=> $this->getId(),
 			'content_id'	=> $content_id,
 			'content_type'	=> $content_type,
 			'field_fmt'		=> $field_fmt,

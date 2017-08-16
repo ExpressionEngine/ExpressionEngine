@@ -1,28 +1,15 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Simple Commerce Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Simple Commerce Module
  */
-
 class Simple_commerce {
 
 	var $return_data		= '';
@@ -366,6 +353,7 @@ class Simple_commerce {
 			ee()->email->to($debug_to);
 			ee()->email->subject('EE Debug: Incoming IPN Response');
 			ee()->email->message($msg);
+			ee()->email->mailtype = ee()->config->item('mail_format');
 			ee()->email->send();
 			ee()->email->EE_initialize();
 
@@ -828,6 +816,7 @@ class Simple_commerce {
 				ee()->email->to($to);
 				ee()->email->subject($subject);
 				ee()->email->message(entities_to_ascii($message));
+				ee()->email->mailtype = ee()->config->item('mail_format');
 				ee()->email->send();
 				ee()->email->EE_initialize();
 			}
@@ -859,6 +848,7 @@ class Simple_commerce {
 				ee()->email->to($row->admin_email_address);
 				ee()->email->subject($subject);
 				ee()->email->message(entities_to_ascii($message));
+				ee()->email->mailtype = ee()->config->item('mail_format');
 				ee()->email->send();
 				ee()->email->EE_initialize();
 			}

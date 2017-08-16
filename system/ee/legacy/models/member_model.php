@@ -1,26 +1,14 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Member Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Model
  */
 class Member_model extends CI_Model {
 
@@ -64,8 +52,6 @@ class Member_model extends CI_Model {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Upload Groups
 	 *
@@ -82,8 +68,6 @@ class Member_model extends CI_Model {
 
 		return $this->db->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Memmbers
@@ -150,8 +134,6 @@ class Member_model extends CI_Model {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 *	Count Members
 	 *
@@ -197,8 +179,6 @@ class Member_model extends CI_Model {
 		return ($members->num_rows() == 0) ? FALSE : $members->row('count');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get All Member Fields
 	 *
@@ -237,8 +217,6 @@ class Member_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Member Data
 	 *
@@ -252,8 +230,6 @@ class Member_model extends CI_Model {
 
 		return $this->db->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Member Data
@@ -276,8 +252,6 @@ class Member_model extends CI_Model {
 		return $this->db->get('members');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Member Ignore List
 	 *
@@ -299,8 +273,6 @@ class Member_model extends CI_Model {
 
 		return $this->db->get('members');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Member Quicklinks
@@ -335,8 +307,6 @@ class Member_model extends CI_Model {
 
 		return $quicklinks;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Member Emails
@@ -390,8 +360,6 @@ class Member_model extends CI_Model {
 
 		return $this->db->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create member
@@ -447,8 +415,6 @@ class Member_model extends CI_Model {
 
 		return $member_id;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update member
@@ -513,8 +479,6 @@ class Member_model extends CI_Model {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Member Group
 	 *
@@ -529,8 +493,6 @@ class Member_model extends CI_Model {
 	{
 		// for later use
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update member data
@@ -567,8 +529,6 @@ class Member_model extends CI_Model {
 		$this->db->where('member_id', $member_id);
 		$this->db->update('member_data', $data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete member
@@ -824,8 +784,6 @@ class Member_model extends CI_Model {
 		$this->stats->update_member_stats();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update entry stats for members, specifically total_entries and last_entry_date
 	 *
@@ -859,8 +817,6 @@ class Member_model extends CI_Model {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remove From Author List
 	 *
@@ -882,8 +838,6 @@ class Member_model extends CI_Model {
 		$this->db->update('members');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Author List
 	 *
@@ -904,8 +858,6 @@ class Member_model extends CI_Model {
 		$this->db->set('in_authorlist', 'y');
 		$this->db->update('members');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Author Groups
@@ -935,8 +887,6 @@ class Member_model extends CI_Model {
 
 		return $group_ids;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Authors
@@ -986,8 +936,6 @@ class Member_model extends CI_Model {
 
 		return $this->db->get('members');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Member Groups
@@ -1052,8 +1000,6 @@ class Member_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete Member Group
 	 *
@@ -1081,8 +1027,6 @@ class Member_model extends CI_Model {
 		$this->db->delete('upload_no_access', array('member_group' => $group_id));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Count Members
 	 *
@@ -1096,8 +1040,6 @@ class Member_model extends CI_Model {
 		return $this->db->count_all_results('members');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Count Recrods
 	 *
@@ -1109,8 +1051,6 @@ class Member_model extends CI_Model {
 	{
 		return $this->db->count_all($table);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Count Member Entries
@@ -1132,8 +1072,6 @@ class Member_model extends CI_Model {
 
 		return $this->db->count_all_results();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Members Group Ids
@@ -1174,8 +1112,6 @@ class Member_model extends CI_Model {
 		return $group_ids;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Custom Member Fields
 	 *
@@ -1199,8 +1135,6 @@ class Member_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Member By Screen Name
 	 *
@@ -1216,8 +1150,6 @@ class Member_model extends CI_Model {
 
 		return $this->db->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/*
 	 * Get IP Members
@@ -1240,8 +1172,6 @@ class Member_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Group Members
 	 *
@@ -1261,8 +1191,6 @@ class Member_model extends CI_Model {
 
 		return $this->db->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Check Duplicate
@@ -1290,8 +1218,6 @@ class Member_model extends CI_Model {
 			return TRUE;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Theme List
@@ -1330,8 +1256,6 @@ class Member_model extends CI_Model {
 		return $themes;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Profile Templates
 	 *
@@ -1357,8 +1281,6 @@ class Member_model extends CI_Model {
 
 		return $themes;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Insert Group Layout
@@ -1432,8 +1354,6 @@ class Member_model extends CI_Model {
 		$this->db->delete('layout_publish');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Group Layout
 	 *
@@ -1454,8 +1374,6 @@ class Member_model extends CI_Model {
 			'member_group' => $member_group
 		));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get All Group Layouts
@@ -1493,8 +1411,6 @@ class Member_model extends CI_Model {
 		return $returned_data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Notepad Content
 	 *
@@ -1520,8 +1436,6 @@ class Member_model extends CI_Model {
 
 		return '';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Can Access Module
@@ -1552,8 +1466,6 @@ class Member_model extends CI_Model {
 		return ($query->num_rows() === 0) ? FALSE : TRUE;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set up the search query which is used by get_members and

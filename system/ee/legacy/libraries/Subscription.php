@@ -1,26 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Subscription Class
- *
- * @package		ExpressionEngine
-* @subpackage	Libraries
-* @category	Subscription
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Subscription
  */
 class EE_Subscription {
 
@@ -31,8 +19,6 @@ class EE_Subscription {
 	var $publisher	= array();
 
 	var $table;
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * init the library
@@ -48,8 +34,6 @@ class EE_Subscription {
 
 		$this->table	 = $module.'_subscriptions';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Check if they're subscribed
@@ -99,8 +83,6 @@ class EE_Subscription {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Mark post as read
 	 *
@@ -112,8 +94,6 @@ class EE_Subscription {
 		$this->_mark($identifiers, 'n', $skip_prep);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Mark post as unread
 	 *
@@ -124,8 +104,6 @@ class EE_Subscription {
 	{
 		$this->_mark($identifiers, 'y', $skip_prep);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add subscriptions for current post
@@ -214,8 +192,6 @@ class EE_Subscription {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remove subscriptions for current post
 	 *
@@ -263,8 +239,6 @@ class EE_Subscription {
 		ee()->db->delete($this->table);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remove all subscriptions for a publisher
 	 *
@@ -278,8 +252,6 @@ class EE_Subscription {
 		ee()->db->where($this->publisher);
 		ee()->db->delete($this->table);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get subscription totals
@@ -311,8 +283,6 @@ class EE_Subscription {
 
 		return $return;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get subscribers
@@ -379,8 +349,6 @@ class EE_Subscription {
 		return $return;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prep user data
 	 *
@@ -441,8 +409,6 @@ class EE_Subscription {
 		return array($member_ids, $emails);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Mark a subscription as read / unread
 	 *
@@ -489,8 +455,6 @@ class EE_Subscription {
 		ee()->db->where($this->publisher);
 		ee()->db->update($this->table);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Identify the current user

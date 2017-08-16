@@ -1,29 +1,16 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 use EllisLab\Addons\FilePicker\FilePicker;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// --------------------------------------------------------------------
-
-/**
- * ExpressionEngine Textarea Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Textarea Fieldtype
  */
 class Textarea_ft extends EE_Fieldtype {
 
@@ -34,14 +21,10 @@ class Textarea_ft extends EE_Fieldtype {
 
 	var $has_array_data = FALSE;
 
-	// --------------------------------------------------------------------
-
 	function validate($data)
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	function display_field($data)
 	{
@@ -186,8 +169,6 @@ class Textarea_ft extends EE_Fieldtype {
 		return form_textarea($params);
 	}
 
-	// --------------------------------------------------------------------
-
 	function replace_tag($data, $params = '', $tagdata = '')
 	{
 		// Experimental parameter, do not use
@@ -196,21 +177,17 @@ class Textarea_ft extends EE_Fieldtype {
 			return ee()->functions->encode_ee_tags($data);
 		}
 
-		$field_fmt = $this->get_setting('field_fmt') ?: $this->row('field_ft_'.$this->field_id);
-
 		ee()->load->library('typography');
 		return ee()->typography->parse_type(
 			$data,
 			array(
-				'text_format'	=> $field_fmt ?: 'none',
+				'text_format'	=> $this->get_format(),
 				'html_format'	=> $this->row('channel_html_formatting', 'all'),
 				'auto_links'	=> $this->row('channel_auto_link_urls', 'n'),
 				'allow_img_url' => $this->row('channel_allow_img_urls', 'y')
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Accept all content types.
@@ -222,8 +199,6 @@ class Textarea_ft extends EE_Fieldtype {
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	function display_settings($data)
 	{
@@ -346,14 +321,10 @@ class Textarea_ft extends EE_Fieldtype {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	function grid_save_settings($data)
 	{
 		return array_merge($this->save_settings($data), $data);
 	}
-
-	// --------------------------------------------------------------------
 
 	function save_settings($data)
 	{
@@ -367,8 +338,6 @@ class Textarea_ft extends EE_Fieldtype {
 
 		return array_intersect_key($all, $defaults);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

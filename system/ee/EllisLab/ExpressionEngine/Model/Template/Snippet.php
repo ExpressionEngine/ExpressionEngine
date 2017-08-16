@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Template;
 
@@ -7,27 +14,7 @@ use EllisLab\ExpressionEngine\Service\Model\FileSyncedModel;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Snippet Model
- *
- * @package		ExpressionEngine
- * @subpackage	Template
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Snippet Model
  */
 class Snippet extends FileSyncedModel {
 
@@ -161,7 +148,7 @@ class Snippet extends FileSyncedModel {
 
 		if ( ! $site = ee()->session->cache('site/id/' . $this->site_id, 'site'))
 		{
-			$site = $this->getFrontend()->get('Site')
+			$site = $this->getModelFacade()->get('Site')
 				->fields('site_name')
 				->filter('site_id', $this->site_id)
 				->first();
@@ -228,7 +215,7 @@ class Snippet extends FileSyncedModel {
 					{
 						$contents = file_get_contents($item->getRealPath());
 
-						$new_snip = ee('Model')->make('Snippet', array(
+						$new_snip = $this->getModelFacade()->make('Snippet', array(
 							'site_id' => $site_id,
 							'snippet_name' => $name,
 							'snippet_contents' => $contents

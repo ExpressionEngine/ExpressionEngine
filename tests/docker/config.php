@@ -1,4 +1,4 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +37,8 @@ $config['database'] = array(
 		'username' => 'root'
 	),
 );
+
+$config['session_crypt_key'] = '549782140d653f8865b6cbabb36600766d5e25a0';
 
 
 /*
@@ -135,7 +137,7 @@ $config['cache_path'] = '';
 | enabled you MUST set an encryption key.  See the user guide for info.
 |
 */
-$config['encryption_key'] = '';
+$config['encryption_key'] = 'b7bcac5513e84fc8608159f7a296aa036d6d634b';
 
 
 /*

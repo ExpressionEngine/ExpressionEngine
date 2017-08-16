@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * CodeIgniter
+ * ExpressionEngine (https://expressionengine.com)
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * MySQLi Forge Class
- *
- * @category	Database
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
+ * MySQLi Forge
  */
 class CI_DB_mysqli_forge extends CI_DB_forge {
 
@@ -36,8 +24,6 @@ class CI_DB_mysqli_forge extends CI_DB_forge {
 		return "CREATE DATABASE ".$name;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Drop database
 	 *
@@ -49,8 +35,6 @@ class CI_DB_mysqli_forge extends CI_DB_forge {
 	{
 		return "DROP DATABASE ".$name;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Process Fields
@@ -125,8 +109,6 @@ class CI_DB_mysqli_forge extends CI_DB_forge {
 		return $sql;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create Table
 	 *
@@ -182,8 +164,6 @@ class CI_DB_mysqli_forge extends CI_DB_forge {
 		return $sql;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Drop Table
 	 *
@@ -194,8 +174,6 @@ class CI_DB_mysqli_forge extends CI_DB_forge {
 	{
 		return "DROP TABLE IF EXISTS ".$this->db->escape_identifiers($table);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Alter table query
@@ -229,8 +207,6 @@ class CI_DB_mysqli_forge extends CI_DB_forge {
 
 		return $sql;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Rename a table

@@ -1,29 +1,15 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
- * ExpressionEngine RSS Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * RSS Module
  */
-
 class Rss {
 
 	protected $_debug = FALSE;
@@ -217,8 +203,6 @@ class Rss {
 		return ee()->TMPL->tagdata;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Setup the meta query
 	 *
@@ -229,14 +213,8 @@ class Rss {
 	protected function _setup_meta_query($query)
 	{
 		//  Create Meta Query
-		//
-		// Since UTC_TIMESTAMP() is what we need, but it is not available until
-		// MySQL 4.1.1, we have to use this ever so clever SQL to figure it out:
-		// DATE_ADD( '1970-01-01', INTERVAL UNIX_TIMESTAMP() SECOND )
 		$sql = "SELECT exp_channel_titles.entry_id, exp_channel_titles.entry_date, exp_channel_titles.edit_date,
-				GREATEST((UNIX_TIMESTAMP(exp_channel_titles.edit_date) +
-						 (UNIX_TIMESTAMP(DATE_ADD( '1970-01-01', INTERVAL UNIX_TIMESTAMP() SECOND)) - UNIX_TIMESTAMP())),
-						exp_channel_titles.entry_date) AS last_update
+				GREATEST(exp_channel_titles.edit_date, exp_channel_titles.entry_date) AS last_update
 				FROM exp_channel_titles
 				LEFT JOIN exp_channels ON exp_channel_titles.channel_id = exp_channels.channel_id
 				LEFT JOIN exp_members ON exp_members.member_id = exp_channel_titles.author_id
@@ -333,8 +311,6 @@ class Rss {
 		return array($query, $last_update, $edit_date, $entry_date);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Feed Variables Query
 	 *
@@ -353,8 +329,6 @@ class Rss {
 							->where_in('c.site_id', ee()->TMPL->site_ids)
 							->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 *  Empty feed handler
@@ -387,8 +361,6 @@ class Rss {
 
 		return $empty_feed;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	  *  Default empty feed

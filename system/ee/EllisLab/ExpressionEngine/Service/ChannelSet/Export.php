@@ -1,10 +1,21 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\ChannelSet;
 
 use StdClass;
 use ZipArchive;
+use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
+/**
+ * Channel Set Service: Export
+ */
 class Export {
 
 	private $zip;
@@ -37,7 +48,8 @@ class Export {
 
 		if ( ! is_dir(PATH_CACHE.'cset/'))
 		{
-			mkdir(PATH_CACHE.'cset/', DIR_WRITE_MODE);
+			$filesystem = new Filesystem();
+			$filesystem->mkdir(PATH_CACHE.'cset/');
 		}
 
 		$this->zip->open($location, ZipArchive::CREATE | ZipArchive::OVERWRITE);

@@ -1,6 +1,15 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
-
+/**
+ * Schema Class
+ */
 class EE_Schema {
 
 	// All of these variables are set dyncamically
@@ -23,8 +32,6 @@ class EE_Schema {
 	{
 		return "SHOW tables LIKE '".ee()->db->escape_like_str($this->userdata['db_prefix'])."%'";
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Installs the DB tables and data
@@ -456,6 +463,7 @@ class EE_Schema {
 			`can_access_translate` char(1) NOT NULL DEFAULT 'n',
 			`can_access_import` char(1) NOT NULL DEFAULT 'n',
 			`can_access_sql_manager` char(1) NOT NULL DEFAULT 'n',
+			`can_moderate_spam` char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY `group_id_site_id` (`group_id`, `site_id`)
 		)";
 
@@ -622,7 +630,8 @@ class EE_Schema {
 			KEY `status` (`status`),
 			KEY `entry_date` (`entry_date`),
 			KEY `expiration_date` (`expiration_date`),
-			KEY `site_id` (`site_id`)
+			KEY `site_id` (`site_id`),
+			KEY `sticky_date_id_idx` (`sticky`,`entry_date`,`entry_id`)
 		)";
 
 		// Channel Titles Autosave
@@ -1247,11 +1256,11 @@ class EE_Schema {
 
 
 		$Q[] = "CREATE TABLE `exp_file_categories` (
-			`file_id` int(10) unsigned DEFAULT NULL,
-			`cat_id` int(10) unsigned DEFAULT NULL,
+			`file_id` int(10) unsigned NOT NULL,
+			`cat_id` int(10) unsigned NOT NULL,
 			`sort` int(10) unsigned DEFAULT '0',
 			`is_cover` char(1) DEFAULT 'n',
-			KEY `file_id` (`file_id`),
+			PRIMARY KEY (`file_id`, `cat_id`),
 			KEY `cat_id` (`cat_id`)
 		)";
 
@@ -1259,11 +1268,12 @@ class EE_Schema {
 			`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`site_id` int(4) unsigned NOT NULL DEFAULT '1',
 			`upload_location_id` int(4) unsigned DEFAULT NULL,
-				`title` varchar(255) DEFAULT '',
+			`title` varchar(255) DEFAULT '',
 			`short_name` varchar(255) DEFAULT '',
 			`resize_type` varchar(50) DEFAULT '',
 			`width` int(10) DEFAULT '0',
 			`height` int(10) DEFAULT '0',
+			`quality` tinyint(1) unsigned DEFAULT '90',
 			`watermark_id` int(4) unsigned DEFAULT NULL,
 			PRIMARY KEY (`id`),
 			KEY `upload_location_id` (`upload_location_id`)
@@ -1389,19 +1399,15 @@ class EE_Schema {
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('private_message_notification', 'email', 'private_messages', " . time() . ", '".addslashes(trim(private_message_notification_title()))."', '".addslashes(private_message_notification())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('pm_inbox_full', 'email', 'private_messages', " . time() . ", '".addslashes(trim(pm_inbox_full_title()))."', '".addslashes(pm_inbox_full())."')";
 
-
-		// --------------------------------------------------------------------
-		// --------------------------------------------------------------------
 		//  Default Site Data - CANNOT BE CHANGED
-		// --------------------------------------------------------------------
-		// --------------------------------------------------------------------
 
 		// Register the default admin
 		//		$quick_link = 'My Site|'.$this->userdata['site_url'].$this->userdata['site_index'].'|1';
 		$quick_link = '';
 
-		$Q[] = "INSERT INTO exp_members (group_id, username, password, salt, unique_id, email, screen_name, join_date, ip_address, timezone, quick_links, language)
+		$Q[] = "INSERT INTO exp_members (member_id, group_id, username, password, salt, unique_id, email, screen_name, join_date, ip_address, timezone, quick_links, language)
 			VALUES (
+				'1',
 				'1',
 				'".ee()->db->escape_str($this->userdata['username'])."',
 				'".$this->userdata['password']."',
@@ -1422,11 +1428,7 @@ class EE_Schema {
 		$Q[] = "INSERT INTO exp_stats (total_members, total_entries, last_entry_date, recent_member, recent_member_id, last_cache_clear)
 			VALUES ('1', '0', '".$this->now."', '".ee()->db->escape_str($this->userdata['screen_name'])."', '1', '".$this->now."')";
 
-		// --------------------------------------------------------------------
-		// --------------------------------------------------------------------
 		//  Customizable Site Data, Woot!
-		// --------------------------------------------------------------------
-		// --------------------------------------------------------------------
 
 		// Default Site
 		$site = array(
@@ -1539,6 +1541,7 @@ class EE_Schema {
 				'can_access_translate'           => 'y',
 				'can_access_import'              => 'y',
 				'can_access_sql_manager'         => 'y',
+				'can_moderate_spam'              => 'y',
 				'search_flood_control'           => '0'
 			),
 			array(
@@ -1628,11 +1631,7 @@ class EE_Schema {
 		// Add Grid as a content type
 		$Q[] = "INSERT INTO `exp_content_types` (`name`) VALUES ('grid')";
 
-		// --------------------------------------------------------------------
-		// --------------------------------------------------------------------
 		//  Create DB tables and insert data
-		// --------------------------------------------------------------------
-		// --------------------------------------------------------------------
 
 		foreach(ee()->db->list_tables(TRUE) as $kill)
 		{

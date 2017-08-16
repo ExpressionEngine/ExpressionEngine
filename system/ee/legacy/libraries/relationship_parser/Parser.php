@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Relationship Data Parser Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Data Parser
  */
 class EE_Relationship_data_parser {
 
@@ -37,8 +25,6 @@ class EE_Relationship_data_parser {
 		$this->_categories = $categories;
 	}
 
- 	// --------------------------------------------------------------------
-
 	/**
 	 * Entry data accessor.
 	 *
@@ -52,8 +38,6 @@ class EE_Relationship_data_parser {
 		return $this->_entries[$id];
 	}
 
- 	// --------------------------------------------------------------------
-
 	/**
 	 * Category data accessor.
 	 *
@@ -66,8 +50,6 @@ class EE_Relationship_data_parser {
 	{
 		return isset($this->_categories[$id]) ? $this->_categories[$id] : NULL;
 	}
-
- 	// --------------------------------------------------------------------
 
 	/**
 	 * Take the tagdata from a single entry, and the entry's id
@@ -103,8 +85,6 @@ class EE_Relationship_data_parser {
 
 		return $tagdata;
 	}
-
- 	// --------------------------------------------------------------------
 
 	/**
 	 * Parse an individual tree node. Will loop through each chunk that
@@ -237,8 +217,6 @@ class EE_Relationship_data_parser {
 		return $tagdata;
 	}
 
- 	// --------------------------------------------------------------------
-
 	/**
 	 * Call the channel entries parser for this node and its tagchunk.
 	 *
@@ -278,8 +256,6 @@ class EE_Relationship_data_parser {
 
 		return $this->cleanup_no_results_tag($node, $result);
 	}
-
- 	// --------------------------------------------------------------------
 
 	/**
 	 * Find a node's no_results Tag
@@ -326,9 +302,6 @@ class EE_Relationship_data_parser {
 		return '';
 	}
 
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Deletes the node tags from the given template and replace it with
 	 * the no_results tag if it exists.
@@ -365,8 +338,6 @@ class EE_Relationship_data_parser {
 		return $tagdata;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Removes leftover no_results tags from the node's template
 	 * after we've successfully parsed the node.
@@ -389,8 +360,6 @@ class EE_Relationship_data_parser {
 		return $tagdata;
 	}
 
- 	// --------------------------------------------------------------------
-
 	/**
 	 * Process the parameters of this tag pair to figure out what data
 	 * we need, and in what order.
@@ -409,7 +378,7 @@ class EE_Relationship_data_parser {
 		$entry_ids = $entry_ids[$parent_id];
 
 		// reorder the ids
-		if ($node->param('orderby'))
+		if ($node->param('orderby') OR $node->param('sticky', 'yes') == 'yes')
 		{
 			$entry_ids = $this->_apply_sort($node, $entry_ids);
 		}
@@ -594,8 +563,6 @@ class EE_Relationship_data_parser {
 		);
 	}
 
- 	// --------------------------------------------------------------------
-
 	/**
 	 * Utility method to format the category array for processing by the
 	 * Channel Entries Parser's Category parser.  Renames required elements and
@@ -644,8 +611,6 @@ class EE_Relationship_data_parser {
 		return $categories;
 	}
 
- 	// --------------------------------------------------------------------
-
 	/**
 	 * Utility method to do the row sorting in PHP.
 	 *
@@ -656,14 +621,20 @@ class EE_Relationship_data_parser {
 	 */
 	public function _apply_sort($node, $entry_ids)
 	{
-		$order_by = explode('|', $node->param('orderby'));
+		$order_by = array_filter(explode('|', $node->param('orderby')));
 		$sort = explode('|', $node->param('sort', 'desc'));
 
 		// random
-		if ($order_by[0] == 'random')
+		if ( ! empty($order_by) && $order_by[0] == 'random')
 		{
 			shuffle($entry_ids);
 			return $entry_ids;
+		}
+
+		if ($node->param('sticky', 'yes') == 'yes')
+		{
+			$order_by = array_merge(array('sticky'), $order_by);
+			$sort = array_merge(array('desc'), $sort);
 		}
 
 		// custom field
@@ -683,7 +654,7 @@ class EE_Relationship_data_parser {
 		// split into columns
 		$columns = array_fill_keys($order_by, array());
 
-		foreach ($entry_ids as $entry_id)
+		foreach ($entry_ids as $rel_order => $entry_id)
 		{
 			$data = $this->entry($entry_id);
 
@@ -691,21 +662,25 @@ class EE_Relationship_data_parser {
 			{
 				$k = ($k == 'date') ? 'entry_date' : $k;
 
-				$columns[$k][] = $data[$k];
+				$columns[$k][] = strtolower($data[$k]);
 			}
-		}
 
-		// default everyting to desc
-		$sort = $sort + array_fill_keys(array_keys($order_by), 'desc');
+			$columns['rel_order'][] = $rel_order;
+		}
 
 		// fill array_multisort parameters
 		$sort_parameters = array();
 
+		// Fall back to sorting by relationship order after all else
+		$order_by[] = 'rel_order';
+
 		foreach ($order_by as $i => $v)
 		{
-			$sort_parameters[] =& $columns[$v];
-			$sort_flag = constant('SORT_'.strtoupper($sort[$i]));
-			$sort_parameters[] =& $sort_flag;
+			$sort_parameters[] = $columns[$v];
+			$sort_flag = ((isset($sort[$i]) && $sort[$i] == 'asc') OR $v == 'rel_order')
+				? 'asc' : 'desc';
+			$sort_flag = constant('SORT_'.strtoupper($sort_flag));
+			$sort_parameters[] = $sort_flag;
 		}
 
 		$sort_parameters[] = &$entry_ids;
@@ -715,5 +690,6 @@ class EE_Relationship_data_parser {
 		return $entry_ids;
 	}
 }
+// END CLASS
 
 // EOF

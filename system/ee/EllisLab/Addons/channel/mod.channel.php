@@ -1,29 +1,15 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
- * ExpressionEngine Channel Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Module
  */
-
 class Channel {
 
 	public $limit	= '100';	// Default maximum query results if not specified.
@@ -66,6 +52,8 @@ class Channel {
 	public $pagination;
 	public $pager_sql 				= '';
 
+	protected $chunks               = array();
+
 	// SQL cache key prefix
 	protected $_sql_cache_prefix	= 'sql_cache';
 
@@ -104,8 +92,6 @@ class Channel {
 			'month_limit', 'offset', 'author_id', 'url_title');
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Initialize values
 	  */
@@ -114,8 +100,6 @@ class Channel {
 		$this->sql 			= '';
 		$this->return_data	= '';
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Fetch Cache
@@ -128,8 +112,6 @@ class Channel {
 
 		return ee()->cache->get('/'.$this->_sql_cache_prefix.'/'.md5($tag.$this->uri));
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Save Cache
@@ -144,8 +126,6 @@ class Channel {
 			0	// No TTL, cache lives on till cleared
 		);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Channel entries
@@ -199,6 +179,8 @@ class Channel {
 					}
 				}
 			}
+
+			$this->chunks = $this->fetch_cache('chunks');
 
 			if (($cache = $this->fetch_cache('pagination_count')) !== FALSE)
 			{
@@ -268,6 +250,10 @@ class Channel {
 		if ($save_cache == TRUE)
 		{
 			$this->save_cache($this->sql);
+			if ( ! empty($this->chunks))
+			{
+				$this->save_cache($this->chunks, 'chunks');
+			}
 		}
 
 		$this->query = ee()->db->query($this->sql);
@@ -306,8 +292,6 @@ class Channel {
 		return $this->return_data;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Track Views
 	  */
@@ -341,8 +325,6 @@ class Channel {
 			ee()->db->query($sql);
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Fetch custom channel field IDs
@@ -381,8 +363,6 @@ class Channel {
 		ee()->session->cache['channel']['pair_custom_fields']		= $this->pfields;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Fetch custom member field IDs
 	  */
@@ -413,8 +393,6 @@ class Channel {
 		}
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Fetch categories
 	  */
@@ -436,7 +414,7 @@ class Channel {
 			$categories[] = $row['entry_id'];
 		}
 
-		$sql .= implode(array_unique($categories), ',') . ')';
+		$sql .= implode(array_unique(array_filter($categories)), ',') . ')';
 
 		$sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
 
@@ -496,8 +474,6 @@ class Channel {
 		unset($this->temp_array);
 		unset($this->cat_array);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch dynamic parameters
@@ -581,10 +557,6 @@ class Channel {
 		return $tag;
 	}
 
-
-	// ------------------------------------------------------------------------
-
-
 	/****************************************************************
 	* Field Searching
 	*
@@ -595,8 +567,6 @@ class Channel {
 	*  all of those fields will be searched.
 	*
 	*****************************************************************/
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Generate the SQL where condition to handle the {exp:channel:entries}
@@ -663,7 +633,9 @@ class Channel {
 					continue;
 				}
 
-				$search_column_name = 'wd.field_id_'.$this->cfields[$site_id][$field_name];
+				$table = "exp_channel_data_field_{$this->cfields[$site_id][$field_name]}";
+
+				$search_column_name = $table . '.field_id_'.$this->cfields[$site_id][$field_name];
 
 				$fields_sql .= ee()->channel_model->field_search_sql($terms, $search_column_name, $site_id);
 
@@ -1225,7 +1197,8 @@ class Channel {
 			$sql .= "LEFT JOIN exp_channel_data AS wd ON wd.entry_id = t.entry_id ";
 		}
 
-		$sql .= "LEFT JOIN exp_members AS m ON m.member_id = t.author_id ";
+		$join_member_table = FALSE;
+		$member_join = "LEFT JOIN exp_members AS m ON m.member_id = t.author_id ";
 
 
 		if (ee()->TMPL->fetch_param('category') OR ee()->TMPL->fetch_param('category_group') OR ($cat_id != '' && $dynamic == TRUE))
@@ -1260,9 +1233,19 @@ class Channel {
 			$sql .= " AND t.entry_date < ".$timestamp." ";
 		}
 
-		if (ee()->TMPL->fetch_param('show_expired') != 'yes')
+		if (ee()->TMPL->fetch_param('show_expired') == 'only')
+		{
+			$sql .= " AND (t.expiration_date != 0 AND t.expiration_date <= ".$timestamp.") ";
+		}
+		elseif (ee()->TMPL->fetch_param('show_expired') != 'yes')
 		{
 			$sql .= " AND (t.expiration_date = 0 OR t.expiration_date > ".$timestamp.") ";
+		}
+
+		// Only Sticky Entries
+		if (ee()->TMPL->fetch_param('sticky') == 'only')
+		{
+			$sql .= " AND t.sticky = 'y' ";
 		}
 
 		/**------
@@ -1843,6 +1826,7 @@ class Channel {
 		if ($username = ee()->TMPL->fetch_param('username'))
 		{
 			// Shows entries ONLY for currently logged in user
+			$join_member_table = TRUE;
 
 			if ($username == 'CURRENT_USER')
 			{
@@ -1864,6 +1848,7 @@ class Channel {
 
 		if ($author_id = ee()->TMPL->fetch_param('author_id'))
 		{
+			$join_member_table = TRUE;
 			// Shows entries ONLY for currently logged in user
 
 			if ($author_id == 'CURRENT_USER')
@@ -1909,6 +1894,7 @@ class Channel {
 
 		if ($group_id = ee()->TMPL->fetch_param('group_id'))
 		{
+			$join_member_table = TRUE;
 			$sql .= ee()->functions->sql_andor_string($group_id, 'm.group_id');
 		}
 
@@ -1918,6 +1904,25 @@ class Channel {
 
 		if ( ! empty(ee()->TMPL->search_fields))
 		{
+			$joins = '';
+			foreach (array_keys(ee()->TMPL->search_fields) as $field_name)
+			{
+				$sites = (ee()->TMPL->site_ids ? ee()->TMPL->site_ids : array(ee()->config->item('site_id')));
+				foreach ($sites as $site_name => $site_id)
+				{
+					if (isset($this->cfields[$site_id][$field_name]))
+					{
+						$field_id = $this->cfields[$site_id][$field_name];
+						$joins .= "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
+					}
+				}
+			}
+
+			if ( ! empty($joins))
+			{
+				$sql = str_replace('WHERE ', $joins . 'WHERE ', $sql);
+			}
+
 			$sql .= $this->_generate_field_search_sql(ee()->TMPL->search_fields, ee()->TMPL->site_ids);
 		}
 
@@ -2055,11 +2060,13 @@ class Channel {
 						break;
 
 						case 'username' :
+							$join_member_table = TRUE;
 							$end .= "m.username";
 							$distinct_select .= ', m.username ';
 						break;
 
 						case 'screen_name' :
+							$join_member_table = TRUE;
 							$end .= "m.screen_name";
 							$distinct_select .= ', m.screen_name ';
 						break;
@@ -2073,8 +2080,16 @@ class Channel {
 							}
 							else
 							{
-								$end .= "wd.field_id_".$corder[$key];
-								$distinct_select .= ', wd.field_id_'.$corder[$key].' ';
+								$field_id = $corder[$key];
+
+								if (strpos($sql, "exp_channel_data_field_{$field_id}") === FALSE)
+								{
+									$join = "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
+									$sql = str_replace('WHERE ', $join . 'WHERE ', $sql);
+								}
+
+								$end .= "exp_channel_data_field_{$field_id}.field_id_{$field_id}";
+								$distinct_select .= ", exp_channel_data_field_{$field_id}.field_id_{$field_id} ";
 							}
 						break;
 
@@ -2231,6 +2246,11 @@ class Channel {
 		/**  Fetch the entry_id numbers
 		/**------*/
 
+		if ($join_member_table)
+		{
+			$sql = str_replace(' WHERE ', $member_join . ' WHERE ', $sql);
+		}
+
 		$query = ee()->db->query($sql_a.$sql_b.$sql);
 
 		//exit($sql_a.$sql_b.$sql);
@@ -2290,15 +2310,14 @@ class Channel {
 
 			foreach ($this->mfields as $mfield)
 			{
-				if ($mfield[2] == 'y')
+				// Only join non-legacy field tables
+				if ($mfield[2] == 'n')
 				{
-					continue;
+					$field_id = $mfield[0];
+					$table = "exp_member_data_field_{$field_id}";
+					$this->sql .= ", {$table}.*";
+					$from .= "LEFT JOIN	{$table} ON m.member_id = {$table}.member_id ";
 				}
-
-				$field_id = $mfield[0];
-				$table = "exp_member_data_field_{$field_id}";
-				$this->sql .= ", {$table}.*";
-				$from .= "LEFT JOIN	{$table} ON m.member_id = {$table}.member_id ";
 			}
 		}
 
@@ -2309,7 +2328,16 @@ class Channel {
 
 		if ($fields->count())
 		{
-			foreach ($fields as $field)
+			$chunks = array_chunk($fields->asArray(), 50);
+
+			$chunk = array_shift($chunks);
+
+			if ( ! empty($chunks))
+			{
+				$this->chunks = $chunks;
+			}
+
+			foreach ($chunk as $field)
 			{
 				$field_id = $field->getId();
 				$table = "exp_channel_data_field_{$field_id}";
@@ -2330,6 +2358,8 @@ class Channel {
 		//cache the entry_id
 		ee()->session->cache['channel']['entry_ids'] = $entries;
 
+		$end = "ORDER BY FIELD(t.entry_id, " . implode($entries, ',') . ")";
+
 		// modify the ORDER BY if displaying by week
 		if ($this->display_by == 'week' && isset($yearweek))
 		{
@@ -2339,8 +2369,6 @@ class Channel {
 
 		$this->sql .= $end;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Gets timezone offset for use in SQL queries for the display_by parameter
@@ -2374,8 +2402,6 @@ class Channel {
 		return $offset;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Parse channel entries
 	  *  @param Callable $per_row_callback A callable to send each row's tagdata
@@ -2387,6 +2413,11 @@ class Channel {
 	{
 		// For our hook to work, we need to grab the result array
 		$query_result = $this->query->result_array();
+
+		if ( ! empty($this->chunks))
+		{
+			$query_result = $this->getExtraData($query_result);
+		}
 
 		// Ditch everything else
 		$this->query->free_result();
@@ -2490,7 +2521,45 @@ class Channel {
 		}
 	}
 
-	// ------------------------------------------------------------------------
+	private function getExtraData($query_result)
+	{
+		$where = "WHERE t.entry_id IN (" . implode(ee()->session->cache['channel']['entry_ids'], ',') . ")";
+
+		foreach ($this->chunks as $chunk)
+		{
+			$sql  = "SELECT t.entry_id";
+			$from = " FROM exp_channel_titles AS t ";
+
+			foreach ($chunk as $field)
+			{
+				$field_id = $field->getId();
+				$table = "exp_channel_data_field_{$field_id}";
+
+				foreach ($field->getColumnNames() as $column)
+				{
+					$sql .= ", {$table}.{$column}";
+				}
+
+				$from .= "LEFT JOIN	{$table} ON t.entry_id = {$table}.entry_id ";
+			}
+
+			$query = ee()->db->query($sql.$from.$where);
+
+			foreach ($query->result_array() as $row)
+			{
+				array_walk($query_result, function (&$data, $key, $field_data) {
+					if ($data['entry_id'] == $field_data['entry_id'])
+					{
+						$data = array_merge($data, $field_data);
+					}
+				}, $row);
+			}
+
+			$query->free_result();
+		}
+
+		return $query_result;
+	}
 
 	public function callback_entry_row_data($tagdata, $row)
 	{
@@ -2510,8 +2579,6 @@ class Channel {
 		return $row;
 	}
 
-	// ------------------------------------------------------------------------
-
 	public function callback_tagdata_loop_start($tagdata, $row)
 	{
 		// -------------------------------------------
@@ -2529,8 +2596,6 @@ class Channel {
 		return $tagdata;
 	}
 
-	// ------------------------------------------------------------------------
-
 	public function callback_tagdata_loop_end($tagdata, $row)
 	{
 		// -------------------------------------------
@@ -2547,8 +2612,6 @@ class Channel {
 
 		return $tagdata;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Channel Info Tag
@@ -2627,8 +2690,6 @@ class Channel {
 		return ee()->TMPL->tagdata;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Channel Name
 	  */
@@ -2663,8 +2724,6 @@ class Channel {
 			return '';
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Channel Categories
@@ -3088,8 +3147,6 @@ class Channel {
 		return $str;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Process Subcategories
 	  */
@@ -3104,8 +3161,6 @@ class Channel {
 			}
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Category archives
@@ -3527,8 +3582,6 @@ class Channel {
 		return $return_data;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/** --------------------------------
 	/**  Locate category parent
 	/** --------------------------------*/
@@ -3550,8 +3603,6 @@ class Channel {
 		}
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Category Tree
 	  *
@@ -3571,7 +3622,7 @@ class Channel {
 			return FALSE;
 		}
 
-		list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL($group_ids);
+		list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL($group_id);
 
 		/** -----------------------------------
 		/**  Are we showing empty categories
@@ -3786,8 +3837,6 @@ class Channel {
 			$active_cat
 		);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Category Sub-tree
@@ -4025,7 +4074,8 @@ class Channel {
 					array(
 						'channel_html_formatting' => $data['field_html_formatting'],
 						'channel_auto_link_urls' => 'n',
-						'channel_allow_img_urls' => 'y'
+						'channel_allow_img_urls' => 'y',
+						'field_ft_'.$field_id => $data['field_ft_'.$field_id]
 					)
 				);
 			}
@@ -4084,8 +4134,6 @@ class Channel {
 		ee()->session->set_cache(__CLASS__, 'cat_field_models', $this->cat_field_models);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Close </ul> tags
 	  *
@@ -4111,8 +4159,6 @@ class Channel {
 		if ($count == 0)
 			$this->category_list[] = $tab."</ul>\n";
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Channel "category_heading" tag
@@ -4328,8 +4374,6 @@ class Channel {
 
 		return ee()->TMPL->tagdata;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/** ---------------------------------------
 	/**  Next / Prev entry tags
@@ -4639,8 +4683,6 @@ class Channel {
 
 		return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Channel "month links"
@@ -5061,8 +5103,6 @@ class Channel {
 		return $this->return_data;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Fetch Disable Parameter
 	  */
@@ -5096,8 +5136,6 @@ class Channel {
 		}
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Channel Calendar
 	  */
@@ -5124,8 +5162,6 @@ class Channel {
 		return $WC->calendar();
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Ajax Image Upload
 	  *
@@ -5149,8 +5185,6 @@ class Channel {
 
 		ee()->filemanager->process_request($config);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Smiley pop up
@@ -5270,8 +5304,6 @@ class Channel {
 		exit;
 	}
 
-	// ------------------------------------------------------------------------
-
 	public function form()
 	{
 		ee()->load->library('channel_form/channel_form_lib');
@@ -5290,8 +5322,6 @@ class Channel {
 
 		return '';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * submit_entry
@@ -5317,8 +5347,6 @@ class Channel {
 			return $e->show_user_error();
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * combo_loader
@@ -5369,7 +5397,8 @@ class Channel {
 
 		if ( ! empty($group_ids))
 		{
-			$sql .= " AND group_id IN ('".str_replace('|', "','", ee()->db->escape_str($group_ids))."')";
+			$group_ids = implode("','", array_unique(array_filter(explode('|', $group_ids))));
+			$sql .= " AND group_id IN ('".$group_ids."')";
 		}
 
 		$query = ee()->db->query($sql);

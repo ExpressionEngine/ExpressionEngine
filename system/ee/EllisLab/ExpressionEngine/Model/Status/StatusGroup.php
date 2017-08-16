@@ -1,31 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Status;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Status Group Model
- *
- * @package		ExpressionEngine
- * @subpackage	Status
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Status Group Model
  */
 class StatusGroup extends Model {
 
@@ -57,7 +44,7 @@ class StatusGroup extends Model {
 	 */
 	public function onAfterInsert()
 	{
-		$open = $this->getFrontend()->make('Status');
+		$open = $this->getModelFacade()->make('Status');
 		$open->group_id = $this->getId();
 		$open->site_id = $this->site_id;
 		$open->status = 'open';
@@ -65,7 +52,7 @@ class StatusGroup extends Model {
 		$open->highlight = '009933';
 		$open->save();
 
-		$closed = $this->getFrontend()->make('Status');
+		$closed = $this->getModelFacade()->make('Status');
 		$closed->group_id = $this->getId();
 		$closed->site_id = $this->site_id;
 		$closed->status = 'closed';

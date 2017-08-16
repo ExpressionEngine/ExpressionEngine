@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Member;
 
@@ -38,7 +45,8 @@ class Member extends ContentModel {
 		'LastAuthoredTemplates' => array(
 			'type' => 'hasMany',
 			'model' => 'Template',
-			'to_key' => 'last_author_id'
+			'to_key' => 'last_author_id',
+			'weak' => TRUE
 		),
 		'AuthoredChannelEntries' => array(
 			'type' => 'hasMany',
@@ -48,7 +56,8 @@ class Member extends ContentModel {
 		'LastAuthoredSpecialtyTemplates' => array(
 			'type' => 'hasMany',
 			'model' => 'SpecialtyTemplate',
-			'to_key' => 'last_author_id'
+			'to_key' => 'last_author_id',
+			'weak' => TRUE
 		),
 		'UploadedFiles' => array(
 			'type' => 'hasMany',
@@ -92,7 +101,8 @@ class Member extends ContentModel {
 		'TemplateRevisions' => array(
 			'type' => 'hasMany',
 			'model' => 'RevisionTracker',
-			'to_key' => 'item_author_id'
+			'to_key' => 'item_author_id',
+			'weak' => TRUE
 		),
 		'SiteStatsIfLastMember' => array(
 			'type' => 'hasOne',
@@ -107,16 +117,13 @@ class Member extends ContentModel {
 	);
 
 	protected static $_field_data = array(
-		'field_model'   => 'MemberField',
-		'extra_data'    => array(
-			'parent_table' => 'members',
-			'key_column'   => 'member_id'
-		)
+		'field_model'   => 'MemberField'
 	);
 
 	protected static $_validation_rules = array(
 		'group_id'        => 'required|isNatural|validateGroupId',
 		'username'        => 'required|unique|validateUsername',
+		'screen_name'     => 'validateScreenName',
 		'email'           => 'required|email|uniqueEmail|validateEmail',
 		'password'        => 'required|validatePassword',
 		'timezone'        => 'validateTimezone',
@@ -205,8 +212,8 @@ class Member extends ContentModel {
 	 */
 	public function onBeforeInsert()
 	{
-		$this->setProperty('unique_id', sha1(uniqid(mt_rand(), TRUE)));
-		$this->setProperty('crypt_key', sha1(uniqid(mt_rand(), TRUE)));
+		$this->setProperty('unique_id', ee('Encrypt')->generateKey());
+		$this->setProperty('crypt_key', ee('Encrypt')->generateKey());
 	}
 
 	/**
@@ -249,17 +256,26 @@ class Member extends ContentModel {
 	}
 
 	/**
-	 * Zero-out member ID data in assoicated files
+	 * Zero-out member ID data in associated models
 	 */
 	public function onBeforeDelete()
 	{
+		parent::onBeforeDelete();
+
 		$this->UploadedFiles->uploaded_by_member_id = 0;
 		$this->UploadedFiles->save();
 
 		$this->ModifiedFiles->modified_by_member_id = 0;
 		$this->ModifiedFiles->save();
 
-		$this->deleteFieldData();
+		$this->LastAuthoredSpecialtyTemplates->last_author_id = 0;
+		$this->LastAuthoredSpecialtyTemplates->save();
+
+		$this->LastAuthoredTemplates->last_author_id = 0;
+		$this->LastAuthoredTemplates->save();
+
+		$this->TemplateRevisions->item_author_id = 0;
+		$this->TemplateRevisions->save();
 	}
 
 	/**
@@ -307,16 +323,41 @@ class Member extends ContentModel {
 	 */
 	public function updateAuthorStats()
 	{
-		$total_entries = $this->getModelFacade()->get('ChannelEntry')
+		// open, non-expired entries only
+		$entries = $this->getModelFacade()->get('ChannelEntry')
 			->filter('author_id', $this->member_id)
-			->count();
+			->filter('status', '!=', 'closed')
+			->filterGroup()
+				->filter('expiration_date', 0)
+				->orFilter('expiration_date', '>', ee()->localize->now)
+			->endFilterGroup()
+			->fields('entry_date');
 
-		$total_comments = $this->getModelFacade()->get('Comment')
+		$total_entries = $entries->count();
+
+		$recent_entry = $entries->order('entry_date', 'desc')
+			->first();
+
+		$last_entry_date = ($recent_entry) ? $recent_entry->entry_date : 0;
+
+		// open comments only
+		$comments = $this->getModelFacade()->get('Comment')
 			->filter('author_id', $this->member_id)
-			->count();
+			->filter('status', 'o')
+			->fields('comment_date');
 
-		$this->setProperty('total_entries', $total_entries);
+		$total_comments = $comments->count();
+
+		$recent_comment = $comments->order('comment_date', 'desc')
+			->first();
+
+		$last_comment_date = ($recent_comment) ? $recent_comment->comment_date : 0;
+
+		$this->setProperty('last_comment_date', $last_comment_date);
+		$this->setProperty('last_entry_date', $last_entry_date);
 		$this->setProperty('total_comments', $total_comments);
+		$this->setProperty('total_entries', $total_entries);
+
 		$this->save();
 	}
 
@@ -331,6 +372,7 @@ class Member extends ContentModel {
 	public function getCPHomepageURL($site_id = NULL)
 	{
 		$cp_homepage = NULL;
+		$cp_homepage_custom = 'homepage';
 
 		if ( ! $site_id)
 		{
@@ -338,7 +380,7 @@ class Member extends ContentModel {
 		}
 
 		// Make sure to get the correct site, revert once issue #1285 is fixed
-		$member_group = ee('Model')->get('MemberGroup')
+		$member_group = $this->getModelFacade()->get('MemberGroup')
 			->filter('group_id', $this->group_id)
 			->filter('site_id', $site_id)
 			->first();
@@ -466,6 +508,32 @@ class Member extends ContentModel {
 	}
 
 	/**
+	 * Validation callback for screen name
+	 */
+	public function validateScreenName($key, $screen_name)
+	{
+		if (preg_match('/[\{\}<>]/', $screen_name))
+		{
+			return 'disallowed_screen_chars';
+		}
+
+		if (strlen($screen_name) > USERNAME_MAX_LENGTH)
+		{
+			return 'screenname_too_long';
+		}
+
+		if ($this->isNew())
+		{
+			if (ee()->session->ban_check('screen_name', $screen_name))
+			{
+				return 'screen_name_taken';
+			}
+		}
+
+		return TRUE;
+	}
+
+	/**
 	 * Validation callback for email field
 	 */
 	public function validateEmail($key, $email)
@@ -473,6 +541,12 @@ class Member extends ContentModel {
 		if (strlen($email) > USERNAME_MAX_LENGTH)
 		{
 			return 'email_too_long';
+		}
+
+		// Is email address banned?
+		if (ee()->session->ban_check('email', $email))
+		{
+			return 'email_taken';
 		}
 
 		return TRUE;
@@ -586,27 +660,6 @@ class Member extends ContentModel {
 		}
 
 		return TRUE;
-	}
-
-
-	/**
-	 * Gets a collection of MemberField objects
-	 *
-	 * @return Collection A collection of MemberField objects
-	 */
-	protected function getFieldModels()
-	{
-		$fields = $this->MemberGroup->getCustomFields();
-
-		if (empty($fields))
-		{
-			$fields = $this->getModelFacade()
-				->get('MemberGroup', $this->group_id)
-				->first()
-				->getCustomFields();
-		}
-
-		return $fields;
 	}
 }
 

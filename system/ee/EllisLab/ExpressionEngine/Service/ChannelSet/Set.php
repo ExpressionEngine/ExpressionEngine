@@ -1,7 +1,19 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\ChannelSet;
 
+use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
+
+/**
+ * Channel Set Service: Set
+ */
 class Set {
 
 	/**
@@ -101,6 +113,7 @@ class Set {
 
 		if ( ! $this->result->isValid())
 		{
+			$this->deleteFiles();
 			return $this->result;
 		}
 
@@ -113,6 +126,15 @@ class Set {
 		}
 
 		return $this->result;
+	}
+
+	/**
+	 * Deletes the source files used in the import
+	 */
+	protected function deleteFiles()
+	{
+		$filesystem = new Filesystem();
+		$filesystem->delete($this->getPath());
 	}
 
 	/**
@@ -179,7 +201,7 @@ class Set {
 			}
 		}
 
-		@unlink($this->path);
+		$this->deleteFiles();
 	}
 
 	/**

@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Core Functions Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Functions
  */
 class EE_Functions {
 
@@ -76,8 +64,6 @@ class EE_Functions {
 		$this->cached_index[$add_slash.$sess_id.$this->template_type] = $url;
 		return $url;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create a URL for a Template Route
@@ -135,8 +121,6 @@ class EE_Functions {
 		return $out;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create a custom URL
 	 *
@@ -192,8 +176,6 @@ class EE_Functions {
 		return $out;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Creates a url for Pages links
 	 *
@@ -225,8 +207,6 @@ class EE_Functions {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch site index with URI query string
 	 *
@@ -235,10 +215,10 @@ class EE_Functions {
 	 */
 	public function fetch_current_uri()
 	{
-		return rtrim(reduce_double_slashes($this->fetch_site_index(1).ee()->uri->uri_string), '/');
+		$url = rtrim(reduce_double_slashes($this->fetch_site_index(1).ee()->uri->uri_string), '/');
+		$url = str_replace(array('"', "'"), array('%22', '%27'), $url);
+		return $url;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep Query String
@@ -271,8 +251,6 @@ class EE_Functions {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Convert EE Tags to Entities
@@ -307,8 +285,6 @@ class EE_Functions {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Extract path info
@@ -353,8 +329,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Replace variables
 	 *
@@ -377,8 +351,6 @@ class EE_Functions {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Redirect
@@ -441,8 +413,6 @@ class EE_Functions {
 		exit;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Random number/password generator
 	 *
@@ -455,8 +425,6 @@ class EE_Functions {
 	{
 		return random_string($type, $len);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Form declaration
@@ -570,8 +538,6 @@ class EE_Functions {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Form backtrack
 	 *
@@ -664,8 +630,6 @@ class EE_Functions {
 		return reduce_double_slashes($ret);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * eval()
 	 *
@@ -679,8 +643,6 @@ class EE_Functions {
 	{
 		return eval('?'.'>'.$str.'<?php ');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Encode email from template callback
@@ -716,8 +678,6 @@ class EE_Functions {
 
 		return $encoded;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Character limiter
@@ -758,8 +718,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Word limiter
 	 *
@@ -790,8 +748,6 @@ class EE_Functions {
 
 		return trim($str).'&#8230;';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch Email Template
@@ -864,8 +820,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create pull-down optios from dirctory map
 	 *
@@ -905,8 +859,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch names of installed language packs
 	 *
@@ -922,8 +874,6 @@ class EE_Functions {
 		$dirs = ee()->lang->language_pack_names();
 		return form_dropdown('language', $dirs, $default);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete cache files
@@ -949,8 +899,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete Direcories
 	 *
@@ -961,71 +909,8 @@ class EE_Functions {
 	 */
 	public function delete_directory($path, $del_root = FALSE)
 	{
-		$path = rtrim($path, '/');
-		$path_delete = $path.'_delete';
-
-		if ( ! is_dir($path))
-		{
-			return FALSE;
-		}
-
-		// Delete temporary directory if it happens to exist from a previous attempt
-		if (is_dir($path_delete))
-		{
-			@exec("rm -r -f {$path_delete}");
-		}
-
-		// let's try this the sane way first
-		@exec("mv {$path} {$path_delete}", $out, $ret);
-
-		if (isset($ret) && $ret == 0)
-		{
-			if ($del_root === FALSE)
-			{
-				@mkdir($path, DIR_WRITE_MODE);
-
-				if ($fp = @fopen($path.'/index.html', FOPEN_WRITE_CREATE_DESTRUCTIVE))
-				{
-					fclose($fp);
-				}
-			}
-
-			@exec("rm -r -f {$path_delete}");
-		}
-		else
-		{
-			if ( ! $current_dir = @opendir($path))
-			{
-				return;
-			}
-
-			while($filename = @readdir($current_dir))
-			{
-				if (@is_dir($path.'/'.$filename) and ($filename != "." and $filename != ".."))
-				{
-					$this->delete_directory($path.'/'.$filename, TRUE);
-				}
-				elseif($filename != "." and $filename != "..")
-				{
-					@unlink($path.'/'.$filename);
-				}
-			}
-
-			@closedir($current_dir);
-
-			if (substr($path, -6) == '_cache' && $fp = @fopen($path.'/index.html', FOPEN_WRITE_CREATE_DESTRUCTIVE))
-			{
-				fclose($fp);
-			}
-
-			if ($del_root == TRUE)
-			{
-				@rmdir($path);
-			}
-		}
+		return ee('Filesystem')->deleteDir($path, ! $del_root);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch allowed channels
@@ -1094,8 +979,6 @@ class EE_Functions {
 		return array_values($allowed_channels);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Log Search terms
 	 *
@@ -1143,8 +1026,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch Action ID
 	 *
@@ -1164,8 +1045,6 @@ class EE_Functions {
 
 		return LD.'AID:'.ucfirst($class).':'.$method.RD;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Insert Action IDs
@@ -1203,8 +1082,6 @@ class EE_Functions {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Categories for Channel Entry/Entries
@@ -1288,8 +1165,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Process Subcategories
 	 *
@@ -1309,8 +1184,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add security hashes to forms
 	 *
@@ -1327,8 +1200,6 @@ class EE_Functions {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Generate CAPTCHA
 	 *
@@ -1342,8 +1213,6 @@ class EE_Functions {
 		ee()->logger->deprecated('3.0', "ee('Captcha')->create()");
 		return ee('Captcha')->create($old_word, $force_word);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * SQL "AND" or "OR" string for conditional tag parameters
@@ -1429,8 +1298,6 @@ class EE_Functions {
 
 		return $sql;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * AR "AND" or "OR" string for conditional tag parameters
@@ -1539,8 +1406,6 @@ class EE_Functions {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Assign Conditional Variables
@@ -1714,8 +1579,6 @@ class EE_Functions {
 		return $final_conds;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Assign Tag Variables
 	 *
@@ -1888,8 +1751,6 @@ class EE_Functions {
 		return $return;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Find the Full Opening Tag
 	 *
@@ -1922,8 +1783,6 @@ class EE_Functions {
 		return $matches[0];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch simple conditionals
 	 *
@@ -1942,8 +1801,6 @@ class EE_Functions {
 
 		return explode('|', $str);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch date variables
@@ -1968,8 +1825,6 @@ class EE_Functions {
 
 		return $match[1];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Return parameters as an array
@@ -2034,8 +1889,6 @@ class EE_Functions {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prep conditional
 	 *
@@ -2069,8 +1922,6 @@ class EE_Functions {
 		return trim($cond);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Reverse Key Sort
 	 *
@@ -2080,8 +1931,6 @@ class EE_Functions {
 	 * @return	string
 	 */
 	public function reverse_key_sort($a, $b) {return strlen($b) > strlen($a);}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep conditionals
@@ -2170,8 +2019,6 @@ class EE_Functions {
 		return $prepped_string;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch file upload paths
 	 *
@@ -2187,8 +2034,6 @@ class EE_Functions {
 		$this->file_paths = ee()->file_upload_preferences_model->get_paths();
 		return $this->file_paths;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * bookmarklet qstr decode
@@ -2215,8 +2060,6 @@ class EE_Functions {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 }
 // END CLASS

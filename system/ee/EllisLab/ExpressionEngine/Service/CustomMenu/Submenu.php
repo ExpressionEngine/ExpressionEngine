@@ -1,35 +1,23 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\CustomMenu;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.4
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Custom Submenu
- *
- * @package		ExpressionEngine
- * @subpackage	CP\CustomMenu
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Custom Submenu
  */
 class Submenu extends Menu {
 
 	public $title;
 	public $addlink;
 	public $placeholder;
+	public $view_all_link;
 
 	private $has_add = FALSE;
 	private $has_filter = FALSE;
@@ -74,6 +62,21 @@ class Submenu extends Menu {
 	{
 		$this->has_filter = TRUE;
 		$this->placeholder = $placeholder;
+		return $this;
+	}
+
+	/**
+	 * Add filter box, with a view all link
+	 *
+	 * @param string $placeholder Search box placeholder text
+	 * @param string $view_all_link URL to use as a "View All" link
+	 * @return $this
+	 */
+	public function withFilterLink($placeholder, $view_all_link)
+	{
+		$this->has_filter = TRUE;
+		$this->placeholder = $placeholder;
+		$this->view_all_link = $view_all_link;
 		return $this;
 	}
 

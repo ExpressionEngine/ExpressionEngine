@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Content;
 
@@ -14,7 +21,6 @@ use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
  * set data: $entry->title = "Foo"; $entry->getForm();
  * mass set: $entry->set(array); $entry->getForm();
  */
-
 abstract class ContentModel extends VariableColumnModel {
 
 	protected static $_events = array(
@@ -85,13 +91,15 @@ abstract class ContentModel extends VariableColumnModel {
 	/**
 	 * Cascade the delete to the fieldtypes
 	 */
-	 public function onBeforeDelete()
-	 {
-		 foreach ($this->getCustomFields() as $field)
-		 {
-			 $field->delete();
-		 }
-	 }
+	public function onBeforeDelete()
+	{
+		foreach ($this->getCustomFields() as $field)
+		{
+			$field->delete();
+		}
+
+		$this->deleteFieldData();
+	}
 
 	/**
 	 * Check if a custom field of $name exists
@@ -358,15 +366,15 @@ abstract class ContentModel extends VariableColumnModel {
 		$native_prefix = $this->getCustomFieldPrefix();
 
 		foreach ($native_fields as $field)
-        {
-            $settings = array_merge($field->getSettingsValues(), $field->toArray());
+		{
+			$settings = array_merge($field->getSettingsValues(), $field->toArray());
 
-            $this->addFacade(
-                $field->getId(),
-                $settings,
-                $native_prefix
-            );
-        }
+			$this->addFacade(
+				$field->getId(),
+				$settings,
+				$native_prefix
+			);
+		}
 
 		$this->setDataOnCustomFields($this->getValues());
 
@@ -410,31 +418,24 @@ abstract class ContentModel extends VariableColumnModel {
 	}
 
 	/**
-	 * Gets a collection of FieldModel objects (channel, member, category fields)
-	 *
-	 * @return Collection A collection of FieldModel objects
-	 */
-	abstract protected function getFieldModels();
-
-    /**
-     * Find all the fields that are stored in their own tables. For those that
+	 * Find all the fields that are stored in their own tables. For those that
 	 * are dirty (have changed) we update or insert the changes into their
 	 * tables. If the list of changed properties is not supplied we will get
 	 * the list of dirty properties.
 	 *
 	 * @param array $changed An associative array of class properties that have changed
-     */
+	 */
 	protected function saveFieldData($changed = NULL)
 	{
 		$dirty = ($changed) ?: $this->getDirty();
 
-        // Optimization: if there are no dirty fields, there's nothing to do
-        if (empty($dirty))
-        {
-            return;
-        }
+		// Optimization: if there are no dirty fields, there's nothing to do
+		if (empty($dirty))
+		{
+			return;
+		}
 
-		foreach ($this->getFieldModels() as $field)
+		foreach ($this->getStructure()->getCustomFields() as $field)
 		{
 			// Skip this field if it is in `exp_channel_data`
 			if ($field->legacy_field_data)
@@ -479,28 +480,27 @@ abstract class ContentModel extends VariableColumnModel {
 
 			$query = ee('Model/Datastore')->rawQuery();
 
-			$meta = self::getMetaData('field_data');
-			$key_column = $meta['extra_data']['key_column'];
+			$key_column = $this->getPrimaryKey();
 
 			// When a new entity is saved, this will be triggered by an
 			// onAfterInsert event (else, we won't have id to link to).
 			// The primary key can only be marked dirty on an insert event,
 			// not an update.
-			if (array_key_exists($this->getPrimaryKey(), $dirty))
+			if (array_key_exists($key_column, $dirty))
 			{
 				$update = FALSE;
 			}
 
 			if ($update)
 			{
-    			$query->set($values);
+				$query->set($values);
 				$query->where($key_column, $this->getId());
 				$query->update($field->getTableName());
 			}
 			else
 			{
 				$values[$key_column] = $this->getId();
-    			$query->set($values);
+				$query->set($values);
 				$query->insert($field->getTableName());
 			}
 		}
@@ -513,7 +513,7 @@ abstract class ContentModel extends VariableColumnModel {
 	{
 		$tables = array();
 
-		foreach ($this->getFieldModels() as $field)
+		foreach ($this->getStructure()->getCustomFields() as $field)
 		{
 			// Skip this field if it is in `exp_channel_data`
 			if ($field->legacy_field_data)

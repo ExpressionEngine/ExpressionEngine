@@ -1,29 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
-use EllisLab\ExpressionEngine\Service\Sidebar\Sidebar;
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
+use  EllisLab\ExpressionEngine\Service\Sidebar\Sidebar;
 
 /**
- * ExpressionEngine Menu Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Menu
  */
 class EE_Menu {
 
@@ -36,8 +23,6 @@ class EE_Menu {
 	{
 		ee()->load->library('api');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generate Menu
@@ -111,8 +96,6 @@ class EE_Menu {
 		return $menu;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch Site List
 	 *
@@ -145,8 +128,6 @@ class EE_Menu {
 		return $menu;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get channels the user currently has access to for putting into the
 	 * Create and Edit links in the menu
@@ -175,30 +156,29 @@ class EE_Menu {
 			{
 				$filtered_by_channel = ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $channel->channel_id));
 
-				// Create link
-				$menu['create'][$channel->channel_title] = ee('CP/URL')->make('publish/create/' . $channel->channel_id);
-
 				// Edit link
 				$menu['edit'][$channel->channel_title] = $filtered_by_channel;
 
-				// Is there a max entries setting and are we at the limit?
-				if ($channel->max_entries != 0 && $channel->total_records >= $channel->max_entries)
+				// Only add Create link if channel has room for more entries
+				if (empty($channel->max_entries) OR
+					($channel->max_entries != 0 && $channel->total_records < $channel->max_entries))
 				{
-					// Point folks trying to publish to the edit listing
-					$menu['create'][$channel->channel_title] = $filtered_by_channel;
+					// Create link
+					$menu['create'][$channel->channel_title] = ee('CP/URL')->make('publish/create/' . $channel->channel_id);
+				}
 
-					// If there's a limit of 1, just send them to the edit screen for that entry
-					if ($channel->total_records == 1 && $channel->max_entries == 1)
+				// If there's a limit of 1, just send them to the edit screen for that entry
+				if ( ! empty($channel->max_entries) &&
+					$channel->total_records == 1 && $channel->max_entries == 1)
+				{
+					$entry = ee('Model')->get('ChannelEntry')
+						->filter('channel_id', $channel->channel_id)
+						->first();
+
+					// Just in case $channel->total_records is inaccurate
+					if ($entry)
 					{
-						$entry = ee('Model')->get('ChannelEntry')
-							->filter('channel_id', $channel->channel_id)
-							->first();
-
-						// Just in case $channel->total_records is inaccurate
-						if ($entry)
-						{
-							$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
-						}
+						$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
 					}
 				}
 			}
@@ -206,8 +186,6 @@ class EE_Menu {
 
 		return $menu;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch the develop menu
@@ -312,8 +290,6 @@ class EE_Menu {
 		return $menu;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Future home of quick links
 	 *
@@ -360,8 +336,6 @@ class EE_Menu {
 		return $tabs;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Sets up left sidebar navigation given an array of data like this:
 	 *
@@ -391,8 +365,6 @@ class EE_Menu {
 			);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch Quick Tabs

@@ -1,9 +1,19 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\ChannelSet;
 
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
+/**
+ * Channel Set Service: Zip to Set
+ */
 class ZipToSet {
 
 	private $path;
@@ -29,8 +39,16 @@ class ZipToSet {
 			throw new ImportException('Zip file not readable.');
 		}
 
+		$this->ensureNoPHP($zip);
+
 		// create a temporary directory for the contents in our cache folder
 		$fs = new Filesystem();
+
+		if ( ! is_dir(PATH_CACHE.'cset/'))
+		{
+			$fs->mkdir(PATH_CACHE.'cset/');
+		}
+
 		$tmp_dir = 'cset/tmp_'.time();
 		$fs->mkdir(PATH_CACHE.$tmp_dir, FALSE);
 
@@ -49,5 +67,22 @@ class ZipToSet {
 		}
 
 		return new Set($new_path);
+	}
+
+	/**
+	 * Ensure there are no PHP files inside the archive before we extract them
+	 * on to the server
+	 *
+	 * @param Resource $zip Opened ZipArchive file
+	 */
+	protected function ensureNoPHP($zip)
+	{
+		for ($i = 0; $i < $zip->numFiles; $i++)
+		{
+			if (stripos($zip->getNameIndex($i), '.php') !== FALSE)
+			{
+				throw new ImportException('Cannot extract archive that contains PHP files.');
+			}
+		}
 	}
 }

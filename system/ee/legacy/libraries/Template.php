@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Template Parser Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Template Parser
  */
 class EE_Template {
 
@@ -112,8 +100,6 @@ class EE_Template {
 	private $user_vars            = array();
 	private $globals_regex;
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Constructor
 	 *
@@ -138,9 +124,9 @@ class EE_Template {
 			'email', 'ip_address', 'location', 'total_entries',
 			'total_comments', 'private_messages', 'total_forum_posts', 'total_forum_topics', 'total_forum_replies'
 		);
-	}
 
-	// --------------------------------------------------------------------
+		$this->marker = md5(ee()->config->site_url().$this->marker);
+	}
 
 	/**
 	 * Run Template Engine
@@ -184,8 +170,6 @@ class EE_Template {
 		ee()->output->out_type = $this->template_type;
 		ee()->output->set_output($this->final_template);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch and Process Template
@@ -252,8 +236,6 @@ class EE_Template {
 		//
 		// -------------------------------------------
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Parse a string as a template
@@ -326,7 +308,7 @@ class EE_Template {
 		$added_globals = array(
 			'last_segment'         => end($seg_array),
 			'current_url'          => ee()->functions->fetch_current_uri(),
-			'current_path'         => (ee()->uri->uri_string) ? ee()->uri->uri_string : '/',
+			'current_path'         => (ee()->uri->uri_string) ? str_replace(array('"', "'"), array('%22', '%27'), ee()->uri->uri_string) : '/',
 			'current_query_string' => http_build_query($_GET), // GET has been sanitized!
 			'template_name'        => $this->template_name,
 			'template_group'       => $this->group_name,
@@ -349,29 +331,32 @@ class EE_Template {
 		$this->template = $this->markContext().$this->template;
 
 		// Parse assign_to_config variables and Snippets
-
 		if (count(ee()->config->_global_vars) > 0)
 		{
 			$this->log_item("Config Assignments & Template Partials");
 
 			// Only iterate over the partials present in the template
-			$regex = $this->getGlobalsRegex();
-			while (preg_match_all($regex, $this->template, $result))
+			$regexes = $this->getGlobalsRegex();
+
+			foreach ($regexes as $regex)
 			{
-				foreach ($result[1] as $variable)
+				while (preg_match_all($regex, $this->template, $result))
 				{
-					// In case any of these variables have EE comments of their own,
-					// removing from the value makes snippets more usable in conditionals
-					$value = $this->remove_ee_comments(
-						ee()->config->_global_vars[$variable]
-					);
+					foreach ($result[1] as $variable)
+					{
+						// In case any of these variables have EE comments of their own,
+						// removing from the value makes snippets more usable in conditionals
+						$value = $this->remove_ee_comments(
+							ee()->config->_global_vars[$variable]
+						);
 
-					$replace = $this->wrapInContextAnnotations(
-						$value,
-						'Snippet "'.$variable.'"'
-					);
+						$replace = $this->wrapInContextAnnotations(
+							$value,
+							'Snippet "'.$variable.'"'
+						);
 
-					$this->template = str_replace(LD.$variable.RD, $replace, $this->template);
+						$this->template = str_replace(LD.$variable.RD, $replace, $this->template);
+					}
 				}
 			}
 		}
@@ -610,8 +595,6 @@ class EE_Template {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Generates the regex needed to grab all global template
 	 * partials/variables present on the page
@@ -620,9 +603,11 @@ class EE_Template {
 	 */
 	private function getGlobalsRegex()
 	{
-		if ( ! isset($this->globals_regex))
+		$global_names = array_keys(ee()->config->_global_vars);
+		$cache_key = md5(serialize($global_names));
+
+		if ( ! isset($this->globals_regex[$cache_key]))
 		{
-			$global_names = array_keys(ee()->config->_global_vars);
 			$global_names = array_map(
 				function($str)
 				{
@@ -631,13 +616,49 @@ class EE_Template {
 				$global_names
 			);
 
-			$this->globals_regex = '/'.LD.'('.implode('|', $global_names).')'.RD.'/';
+			$global_names = $this->chunkGlobalsArray($global_names);
+
+			$this->globals_regex[$cache_key] = array_map(
+				function($array)
+				{
+					return '/'.LD.'('.implode('|', $array).')'.RD.'/';
+				},
+				$global_names
+			);
 		}
 
-		return $this->globals_regex;
+		return $this->globals_regex[$cache_key];
 	}
 
-	// --------------------------------------------------------------------
+	/**
+	 * Chunks the globals array by groups to make sure their combined String
+	 * lengths doesn't exceed a certain number to prevent a "Regular Expression
+	 * too large" error in getGlobalsRegex() above
+	 *
+	 * @param	array	$globals	Array of preg_quoted variable names
+	 * @return	array	Chunked array of global variable names
+	 */
+	private function chunkGlobalsArray($globals)
+	{
+		$max_length = 30000;
+
+		$chunks = array(array());
+		$regex_length = 0;
+		$index = 0;
+		foreach ($globals as $variable)
+		{
+			$regex_length += strlen($variable) + 1; // + 1 for pipe
+			$chunks[$index][] = $variable;
+
+			if ($regex_length > $max_length)
+			{
+				$regex_length = 0;
+				$index++;
+			}
+		}
+
+		return $chunks;
+	}
 
 	/**
 	 * Find the first layout tag.
@@ -699,8 +720,6 @@ class EE_Template {
 		return $layout;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Cleanup any leftover layout tags
 	 *
@@ -717,8 +736,6 @@ class EE_Template {
 			$this->final_template = preg_replace('/'.LD.'layout:([^!]+?)'.RD.'/', '', $this->final_template);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Processes Any Layout Templates
@@ -841,8 +858,6 @@ class EE_Template {
 
 		return $template;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Processes Any Embedded Templates in String
@@ -990,8 +1005,6 @@ class EE_Template {
 		return $parent_template;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Grab all the data required to fetch a template from a template path.
 	 *
@@ -1051,8 +1064,6 @@ class EE_Template {
 
 		return array($ex[0], $ex[1], $site_id);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Finds Tags, Parses Them
@@ -1273,8 +1284,6 @@ class EE_Template {
 		} // END WHILE
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Looks Through Template Looking for Tags
 	 *
@@ -1321,8 +1330,6 @@ class EE_Template {
 
 		$this->log_item(" - End Tag Processing - ");
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Process Tags
@@ -1484,6 +1491,22 @@ class EE_Template {
 								ee()->remove('TMPL');
 								ee()->set('TMPL', $this);
 							}
+						}
+					}
+				}
+
+				// did marker tags get caught in here?
+				if (strpos($this->tag_data[$i]['chunk'], $this->marker) !== FALSE)
+				{
+					foreach ($this->tag_data as $index => $tag_data)
+					{
+						$marker = 'M'.$index.$this->marker;
+						if (strpos($this->tag_data[$i]['chunk'], $marker) !== FALSE)
+						{
+							$this->tag_data[$i]['chunk'] = str_replace($marker, $tag_data['chunk'], $this->tag_data[$i]['chunk']);
+							$this->tag_data[$i]['block'] = str_replace($marker, $tag_data['chunk'], $this->tag_data[$i]['block']);
+							$this->tag_data[$i]['no_results'] = str_replace($marker, $tag_data['chunk'], $this->tag_data[$i]['no_results']);
+							$this->tag_data[$i]['no_results_block'] = str_replace($marker, $tag_data['chunk'], $this->tag_data[$i]['no_results_block']);
 						}
 					}
 				}
@@ -1703,8 +1726,6 @@ class EE_Template {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch Parameter for Tag
 	 *
@@ -1743,8 +1764,6 @@ class EE_Template {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Replace a Single Variable with Its Value
 	 *
@@ -1760,8 +1779,6 @@ class EE_Template {
 	{
 		return str_replace(LD.$search.RD, $replace, $source);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Seems to Take a Variable Pair and Replace it With Its COntents
@@ -1779,8 +1796,6 @@ class EE_Template {
 		return preg_replace("/".LD.preg_quote($open).RD."(.*?)".LD.'\/'.$close.RD."/s", "\\1", $source);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Completely Removes a Variable Pair
 	 *
@@ -1796,8 +1811,6 @@ class EE_Template {
 	{
 		return preg_replace("/".LD.preg_quote($open).RD."(.*?)".LD.'\/'.$close.RD."/s", "", $source);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetches Variable Pair's Content
@@ -1820,8 +1833,6 @@ class EE_Template {
 		return $match[1];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns String with PHP Processed
 	 *
@@ -1842,8 +1853,6 @@ class EE_Template {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Cache File Data
@@ -1897,8 +1906,6 @@ class EE_Template {
 		return $cache;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Write Data to Cache File
 	 *
@@ -1944,8 +1951,6 @@ class EE_Template {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Cache items are prefixed with a hash of the URI or query string of
 	 * the current page so that tags can still be influenced by URI items
@@ -1955,15 +1960,15 @@ class EE_Template {
 	 */
 	protected function _get_cache_prefix()
 	{
+		$language = ee()->session->get_language();
+
 		if (ee()->uri->uri_string != '')
 		{
-			return md5(ee()->functions->fetch_site_index().ee()->uri->uri_string);
+			return md5(ee()->functions->fetch_site_index().$language.ee()->uri->uri_string);
 		}
 
-		return md5(ee()->config->item('site_url').'index'.ee()->uri->query_string);
+		return md5(ee()->config->item('site_url').'index'.$language.ee()->uri->query_string);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Page cache garbage collection
@@ -2020,8 +2025,6 @@ class EE_Template {
 			$this->log_item(" - End Page Cache Garbage Collection - ");
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Parse Template URI
@@ -2250,8 +2253,6 @@ class EE_Template {
 	   return $this->fetch_template($template_group, $template, FALSE);
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Show a 404 page whether one is set in the config or not
 	 * @return void
@@ -2279,8 +2280,6 @@ class EE_Template {
 			show_404(ee()->uri->uri_string);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch Template Data
@@ -2660,8 +2659,6 @@ class EE_Template {
 		return $this->convert_xml_declaration($this->remove_ee_comments($row['template_data']));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create From File
 	 *
@@ -2792,8 +2789,6 @@ class EE_Template {
 		return $template_id;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * No Results
 	 *
@@ -2834,8 +2829,6 @@ class EE_Template {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Make XML Declaration Safe
 	 *
@@ -2854,8 +2847,6 @@ class EE_Template {
 		return preg_replace("/\<\?xml(.+?)\?\>/", "<XXML\\1/XXML>", $str);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Restore XML Declaration
 	 *
@@ -2868,8 +2859,6 @@ class EE_Template {
 
 		return preg_replace("/\<XXML(.+?)\/XXML\>/", "<?xml\\1?".">", $str); // <?
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Remove all EE Code Comment Strings
@@ -2886,8 +2875,6 @@ class EE_Template {
 
 		return preg_replace("/\{!--.*?--\}/s", '', $str);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch Add-ons
@@ -2916,8 +2903,6 @@ class EE_Template {
 			$this->plugins = $plugins->pluck('plugin_package');
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Parse Globals
@@ -3201,8 +3186,6 @@ class EE_Template {
 		return $this->remove_ee_comments($str);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Parse Uncachaable Forms
 	 *
@@ -3298,8 +3281,6 @@ class EE_Template {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Process Advanced Conditionals
 	 *
@@ -3343,8 +3324,6 @@ class EE_Template {
 		return ee()->functions->prep_conditionals($str, array_merge($this->segment_vars, $this->template_route_vars, $this->embed_vars, $this->layout_conditionals, ee()->config->_global_vars, $data), 'y');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Parse Simple Segment Conditionals
 	 *
@@ -3369,8 +3348,6 @@ class EE_Template {
 		return ee()->functions->prep_conditionals($str, $vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Parse Simple Conditionals
 	 *
@@ -3387,8 +3364,6 @@ class EE_Template {
 	{
 		return ee()->functions->prep_conditionals($str, $vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Handle "exclusive" conditional statements. For example, if there's a
@@ -3414,8 +3389,6 @@ class EE_Template {
 
 		return '';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Log Item for Template Processing Log
@@ -3457,8 +3430,6 @@ class EE_Template {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 *	Assign Form Params
 	 *
@@ -3491,8 +3462,6 @@ class EE_Template {
 
 		return $tag_data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch Site IDs for this Installation
@@ -3541,8 +3510,6 @@ class EE_Template {
 			$this->site_ids[] = ee()->config->item('site_id');
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Parse Variables
@@ -3627,8 +3594,6 @@ class EE_Template {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Parse Variables Row
 	 *
@@ -3704,8 +3669,6 @@ class EE_Template {
 
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Parse Var Single
@@ -3816,8 +3779,6 @@ class EE_Template {
 		return str_replace(LD.$name.RD, $value, $string);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Parse Var Pair
 	 *
@@ -3920,8 +3881,6 @@ class EE_Template {
 		return $string;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Match Date Vars
 	 *
@@ -3970,8 +3929,6 @@ class EE_Template {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Parses {switch=} variables in a row of tag data
 	 *
@@ -4003,8 +3960,6 @@ class EE_Template {
 		return $tagdata;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Parse {encode=...} tags
 	 * @param  String $str String to parse
@@ -4022,8 +3977,6 @@ class EE_Template {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Parses {date_tag format="..."} variables in tag data
@@ -4064,8 +4017,6 @@ class EE_Template {
 		}
 		return $tagdata;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Determines how to format a date (UNIX timestamp, formatted date, or
@@ -4160,8 +4111,6 @@ class EE_Template {
 
 		return $dt;
 	}
-
-	// --------------------------------------------------------------------
 
 	private function replace_special_group_conditional($str)
 	{

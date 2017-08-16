@@ -1,9 +1,21 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\FreeVersion\Spam;
 
 use EllisLab\ExpressionEngine\Protocol\Spam\Spam as SpamProtocol;
 
+/**
+ * Free Version Spam Class
+ *
+ * Prevents errors in the free version, which doesn't come with the Spam module
+ */
 class Spam implements SpamProtocol {
 
 	/**

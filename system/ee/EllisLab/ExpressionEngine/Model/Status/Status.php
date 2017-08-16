@@ -1,31 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Status;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Status Model
- *
- * @package		ExpressionEngine
- * @subpackage	Status
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Status Model
  */
 class Status extends Model {
 
@@ -57,7 +44,7 @@ class Status extends Model {
 	);
 
 	protected static $_validation_rules = array(
-		'highlight'			=> 'required',
+		'highlight' => 'required|hexColor'
 	);
 
 	protected static $_events = array(
@@ -79,7 +66,10 @@ class Status extends Model {
 	 */
 	protected function get__highlight()
 	{
-		return $this->highlight ?: '000000';
+		// Old data from before validation may be invalid
+		$valid = (bool) preg_match('/^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $this->highlight);
+
+		return $valid ? $this->highlight : '000000';
 	}
 
 	/**
@@ -91,7 +81,7 @@ class Status extends Model {
 
 		if (empty($status_order))
 		{
-			$count = $this->getFrontend()->get('Status')
+			$count = $this->getModelFacade()->get('Status')
 				->filter('group_id', $this->getProperty('group_id'))
 				->count();
 			$this->setProperty('status_order', $count + 1);
