@@ -162,49 +162,45 @@ class Filemanager {
 			return $this->_upload_dir_prefs[$dir_id];
 		}
 
-		ee()->load->model(array('file_model', 'file_upload_preferences_model'));
+		$dir = ee('Model')->get('UploadDestination', $dir_id);
 
-		// Figure out if the directory actually exists
-		$prefs = ee()->file_upload_preferences_model->get_file_upload_preferences(
-			'1', // Overriding the group ID to get all IDs
-			$dir_id,
-			$ignore_site_id
-		);
+		if ( ! $ignore_site_id)
+		{
+			$dir->filter('site_id', ee()->config->item('site_id'));
+		}
 
-		if (count($prefs) == 0)
+		if ($dir->count() < 1)
 		{
 			return FALSE;
 		}
 
+		$dir = $dir->first();
+		$prefs = $dir->getValues();
+
 		// Add dimensions to prefs
 		$prefs['dimensions'] = array();
 
-		$qry = ee()->file_model->get_dimensions_by_dir_id($dir_id, TRUE);
-
-		foreach ($qry->result_array() as $row)
+		foreach ($dir->FileDimensions as $dimension)
 		{
-			$prefs['dimensions'][$row['id']] = array(
-				'short_name'	=> $row['short_name'],
-				'width'			=> $row['width'],
-				'height'		=> $row['height'],
-				'watermark_id'	=> $row['watermark_id'],
-				'resize_type'	=> $row['resize_type']
+			$data = array(
+				'short_name'   => $dimension->short_name,
+				'width'        => $dimension->width,
+				'height'       => $dimension->height,
+				'watermark_id' => $dimension->watermark_id,
+				'resize_type'  => $dimension->resize_type,
+				'quality'      => $dimension->quality
 			);
 
 			// Add watermarking prefs
-			foreach ($row as $key => $val)
+			if ($dimension->Watermark)
 			{
-				if (substr($key, 0, 3) == 'wm_')
-				{
-					$prefs['dimensions'][$row['id']][$key] = $val;
-				}
+				$data = array_merge($data, $dimension->Watermark->getValues());
 			}
+
+			$prefs['dimensions'][$dimension->getId()] = $data;
 		}
 
-		$qry->free_result();
-
 		// check keys and cache
-		//return $this->set_upload_dir_prefs($dir_id, $qry->row_array());
 		return $this->set_upload_dir_prefs($dir_id, $prefs);
 	}
 
@@ -1163,6 +1159,7 @@ class Filemanager {
 				'short_name'	=> 'thumbs',
 				'width'			=> 73,
 				'height'		=> 60,
+				'quality'       => 90,
 				'watermark_id'	=> 0,
 				'resize_type'	=> 'crop'
 			);
@@ -1258,6 +1255,7 @@ class Filemanager {
 			$config['library_path']		= $lib_path;
 			$config['width']			= $size['width'];
 			$config['height']			= $size['height'];
+			$config['quality']          = $size['quality'];
 
 			// If the original is smaller than the thumb hxw, we'll make a copy rather than upsize
 			if (($force_master_dim == 'height' && $prefs['height'] < $size['height']) OR

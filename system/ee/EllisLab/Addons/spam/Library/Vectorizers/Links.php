@@ -26,7 +26,7 @@ class Links implements Vectorizer {
 	public function vectorize($source)
 	{
 		$pattern = '#[-a-zA-Z0-9@:%_\+.~\#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~\#?&//=]*)?#si';
-		return preg_match_all($pattern, $source);
+		return preg_match_all($pattern, $source, $matches);
 	}
 
 }

@@ -28,6 +28,9 @@ class Updater {
 				'globalizeSave_tmpl_files',
 				'nullOutRelationshipChannelDataFields',
 				'addSortIndexToChannelTitles',
+				'addImageQualityColumn',
+				'addSpamModerationPermissions',
+				'runSpamModuleUpdate',
 			)
 		);
 
@@ -166,6 +169,62 @@ class Updater {
 		ee()->smartforge->add_key('channel_titles', array('sticky', 'entry_date', 'entry_id'), 'sticky_date_id_idx');
 	}
 
+	/**
+	 * Adds a new image quality column to the file dimensions table
+	 */
+	private function addImageQualityColumn()
+	{
+		ee()->smartforge->add_column(
+			'file_dimensions',
+			array(
+				'quality' => array(
+					'type'       => 'tinyint',
+					'constraint' => 1,
+					'unsigned'   => TRUE,
+					'default'    => 90,
+				)
+			)
+		);
+	}
+
+	private function addSpamModerationPermissions()
+	{
+		ee()->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_moderate_spam' => array(
+					'type'       => 'CHAR',
+					'constraint' => 1,
+					'default'    => 'n',
+					'null'       => FALSE,
+				)
+			)
+		);
+
+		// Only assume super admins can moderate spam
+		ee()->db->update('member_groups', array('can_moderate_spam' => 'y'), array('group_id' => 1));
+	}
+
+	private function runSpamModuleUpdate()
+	{
+		// run the Spam module update
+		$spam = ee('Addon')->get('spam');
+		if ($spam->hasUpdate())
+		{
+			$class = $spam->getInstallerClass();
+			$UPD = new $class;
+
+			if ($UPD->update($spam->getInstalledVersion()) !== FALSE)
+			{
+				$module = ee('Model')->get('Module')
+					->filter('module_name', 'Spam')
+					->first();
+
+				$module->module_version = $spam->getVersion();
+				$module->save();
+			}
+		}
+	}
 }
 
 // EOF

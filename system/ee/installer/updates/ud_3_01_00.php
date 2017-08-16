@@ -387,6 +387,11 @@ class Updater {
 
 		foreach ($layouts as $layout)
 		{
+			if ( ! isset($layout->Channel))
+			{
+				continue;
+			}
+
 			// Account for any new fields that have been added to the channel
 			// since the last edit
 
@@ -397,11 +402,6 @@ class Updater {
 			foreach ($query->result_array() as $row)
 			{
 				$custom_fields[$row['field_id']] = $row['field_id'];
-			}
-
-			if ( ! isset($layout->Channel))
-			{
-				continue;
 			}
 
 			foreach ($layout->field_layout as $section)
