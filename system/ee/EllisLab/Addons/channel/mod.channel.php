@@ -633,7 +633,9 @@ class Channel {
 					continue;
 				}
 
-				$search_column_name = 'wd.field_id_'.$this->cfields[$site_id][$field_name];
+				$table = "exp_channel_data_field_{$this->cfields[$site_id][$field_name]}";
+
+				$search_column_name = $table . '.field_id_'.$this->cfields[$site_id][$field_name];
 
 				$fields_sql .= ee()->channel_model->field_search_sql($terms, $search_column_name, $site_id);
 
@@ -1195,7 +1197,8 @@ class Channel {
 			$sql .= "LEFT JOIN exp_channel_data AS wd ON wd.entry_id = t.entry_id ";
 		}
 
-		$sql .= "LEFT JOIN exp_members AS m ON m.member_id = t.author_id ";
+		$join_member_table = FALSE;
+		$member_join = "LEFT JOIN exp_members AS m ON m.member_id = t.author_id ";
 
 
 		if (ee()->TMPL->fetch_param('category') OR ee()->TMPL->fetch_param('category_group') OR ($cat_id != '' && $dynamic == TRUE))
@@ -1823,6 +1826,7 @@ class Channel {
 		if ($username = ee()->TMPL->fetch_param('username'))
 		{
 			// Shows entries ONLY for currently logged in user
+			$join_member_table = TRUE;
 
 			if ($username == 'CURRENT_USER')
 			{
@@ -1844,6 +1848,7 @@ class Channel {
 
 		if ($author_id = ee()->TMPL->fetch_param('author_id'))
 		{
+			$join_member_table = TRUE;
 			// Shows entries ONLY for currently logged in user
 
 			if ($author_id == 'CURRENT_USER')
@@ -1889,6 +1894,7 @@ class Channel {
 
 		if ($group_id = ee()->TMPL->fetch_param('group_id'))
 		{
+			$join_member_table = TRUE;
 			$sql .= ee()->functions->sql_andor_string($group_id, 'm.group_id');
 		}
 
@@ -1898,6 +1904,25 @@ class Channel {
 
 		if ( ! empty(ee()->TMPL->search_fields))
 		{
+			$joins = '';
+			foreach (array_keys(ee()->TMPL->search_fields) as $field_name)
+			{
+				$sites = (ee()->TMPL->site_ids ? ee()->TMPL->site_ids : array(ee()->config->item('site_id')));
+				foreach ($sites as $site_name => $site_id)
+				{
+					if (isset($this->cfields[$site_id][$field_name]))
+					{
+						$field_id = $this->cfields[$site_id][$field_name];
+						$joins .= "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
+					}
+				}
+			}
+
+			if ( ! empty($joins))
+			{
+				$sql = str_replace('WHERE ', $joins . 'WHERE ', $sql);
+			}
+
 			$sql .= $this->_generate_field_search_sql(ee()->TMPL->search_fields, ee()->TMPL->site_ids);
 		}
 
@@ -2035,11 +2060,13 @@ class Channel {
 						break;
 
 						case 'username' :
+							$join_member_table = TRUE;
 							$end .= "m.username";
 							$distinct_select .= ', m.username ';
 						break;
 
 						case 'screen_name' :
+							$join_member_table = TRUE;
 							$end .= "m.screen_name";
 							$distinct_select .= ', m.screen_name ';
 						break;
@@ -2053,8 +2080,16 @@ class Channel {
 							}
 							else
 							{
-								$end .= "wd.field_id_".$corder[$key];
-								$distinct_select .= ', wd.field_id_'.$corder[$key].' ';
+								$field_id = $corder[$key];
+
+								if (strpos($sql, "exp_channel_data_field_{$field_id}") === FALSE)
+								{
+									$join = "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
+									$sql = str_replace('WHERE ', $join . 'WHERE ', $sql);
+								}
+
+								$end .= "exp_channel_data_field_{$field_id}.field_id_{$field_id}";
+								$distinct_select .= ", exp_channel_data_field_{$field_id}.field_id_{$field_id} ";
 							}
 						break;
 
@@ -2211,6 +2246,11 @@ class Channel {
 		/**  Fetch the entry_id numbers
 		/**------*/
 
+		if ($join_member_table)
+		{
+			$sql = str_replace(' WHERE ', $member_join . ' WHERE ', $sql);
+		}
+
 		$query = ee()->db->query($sql_a.$sql_b.$sql);
 
 		if ($query->num_rows() == 0)
@@ -2325,6 +2365,8 @@ class Channel {
 
 		//cache the entry_id
 		ee()->session->cache['channel']['entry_ids'] = $entries;
+
+		$end = "ORDER BY FIELD(t.entry_id, " . implode($entries, ',') . ")";
 
 		// modify the ORDER BY if displaying by week
 		if ($this->display_by == 'week' && isset($yearweek))
@@ -2520,6 +2562,8 @@ class Channel {
 					}
 				}, $row);
 			}
+
+			$query->free_result();
 		}
 
 		return $query_result;

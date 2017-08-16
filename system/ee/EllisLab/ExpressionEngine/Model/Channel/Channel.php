@@ -231,7 +231,7 @@ class Channel extends StructureModel {
 	{
 		if ( ! isset($content))
 		{
-			$content = $this->getFrontend()->make('ChannelEntry');
+			$content = $this->getModelFacade()->make('ChannelEntry');
 			$content->setChannel($this);
 		}
 		elseif ($content->getChannel()->channel_id != $this->channel_id)
@@ -455,7 +455,7 @@ class Channel extends StructureModel {
 		$site_pages = ee()->config->item('site_pages');
 		$site_id = ee()->config->item('site_id');
 
-		$entries = $this->getFrontend()->get('ChannelEntry')
+		$entries = $this->getModelFacade()->get('ChannelEntry')
 			->fields('entry_id', 'author_id')
 			->filter('channel_id', $this->channel_id)
 			->all();

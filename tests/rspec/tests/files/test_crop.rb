@@ -313,30 +313,26 @@ feature 'File Manager / Crop File' do
     @page.should have_css('div.tab.t-2.tab-open')
   end
 
-  it 'requires resize width when resizing', :tab => 'resize' do
+  it 'width is optional when resizing', :tab => 'resize' do
     @page.resize_width_input.set ''
     @page.resize_height_input.set 5
     @page.resize_submit_button.click
     no_php_js_errors
 
-    @page.should have_alert
-    @page.should have_css('div.alert.issue')
-    @page.should have_css('div.invalid')
-    @page.alert.text.should include "Cannot Resize File"
-    @page.alert.text.should include "We were unable to resize the file, please review and fix errors below."
+    @page.should have_css('div.alert.success')
+    @page.should_not have_css('div.invalid')
+    @page.alert.text.should include "File Resize Success"
   end
 
-  it 'requires resize height when resizing', :tab => 'resize' do
+  it 'height is optional when resizing', :tab => 'resize' do
     @page.resize_width_input.set 5
     @page.resize_height_input.set ''
     @page.resize_submit_button.click
     no_php_js_errors
 
-    @page.should have_alert
-    @page.should have_css('div.alert.issue')
-    @page.should have_css('div.invalid')
-    @page.alert.text.should include "Cannot Resize File"
-    @page.alert.text.should include "We were unable to resize the file, please review and fix errors below."
+    @page.should have_css('div.alert.success')
+    @page.should_not have_css('div.invalid')
+    @page.alert.text.should include "File Resize Success"
   end
 
   it 'validates that resize width is a number', :tab => 'resize' do
@@ -355,34 +351,6 @@ feature 'File Manager / Crop File' do
   it 'validates that resize height is a number', :tab => 'resize' do
     @page.resize_width_input.set 5
     @page.resize_height_input.set 'a'
-    @page.resize_submit_button.click
-    no_php_js_errors
-
-    @page.should have_alert
-    @page.should have_css('div.alert.issue')
-    @page.should have_css('div.invalid')
-    @page.alert.text.should include "Cannot Resize File"
-    @page.alert.text.should include "We were unable to resize the file, please review and fix errors below."
-  end
-
-  it 'validates that resize height is greater than zero', :tab => 'resize' do
-    @page.resize_height_input.set 5
-    wait_for_ajax
-    @page.resize_width_input.set 0
-    @page.resize_submit_button.click
-    no_php_js_errors
-
-    @page.should have_alert
-    @page.should have_css('div.alert.issue')
-    @page.should have_css('div.invalid')
-    @page.alert.text.should include "Cannot Resize File"
-    @page.alert.text.should include "We were unable to resize the file, please review and fix errors below."
-  end
-
-  it 'validates that resize width is greater than zero', :tab => 'resize' do
-    @page.resize_width_input.set 5
-    wait_for_ajax
-    @page.resize_height_input.set 0
     @page.resize_submit_button.click
     no_php_js_errors
 

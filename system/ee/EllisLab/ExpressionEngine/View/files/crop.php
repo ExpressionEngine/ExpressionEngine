@@ -80,7 +80,7 @@
 				</div>
 			</fieldset>
 			<figure class="img-preview">
-				<img src="<?=$file->getAbsoluteURL()?>">
+				<img src="<?=$file->getAbsoluteURL()?>?v=<?=time()?>">
 			</figure>
 			<fieldset class="form-ctrls">
 				<?=cp_form_submit(lang('btn_resize_and_save_image'), lang('btn_saving'), 'save_resize')?>

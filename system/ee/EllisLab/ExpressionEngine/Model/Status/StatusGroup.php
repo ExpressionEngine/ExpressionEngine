@@ -44,7 +44,7 @@ class StatusGroup extends Model {
 	 */
 	public function onAfterInsert()
 	{
-		$open = $this->getFrontend()->make('Status');
+		$open = $this->getModelFacade()->make('Status');
 		$open->group_id = $this->getId();
 		$open->site_id = $this->site_id;
 		$open->status = 'open';
@@ -52,7 +52,7 @@ class StatusGroup extends Model {
 		$open->highlight = '009933';
 		$open->save();
 
-		$closed = $this->getFrontend()->make('Status');
+		$closed = $this->getModelFacade()->make('Status');
 		$closed->group_id = $this->getId();
 		$closed->site_id = $this->site_id;
 		$closed->status = 'closed';

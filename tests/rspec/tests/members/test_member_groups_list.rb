@@ -302,7 +302,7 @@ feature 'Member Group List' do
     @page.edit.template_groups.each(&:click)
     @page.edit.allowed_template_groups.each(&:click)
     @page.edit.access_tools[0].click
-    @page.edit.access_tools[1].click
+    @page.edit.access_tools[3].click
     @page.edit.submit.click
 
     @page.list.groups.last.find('li.edit a').click
@@ -319,9 +319,9 @@ feature 'Member Group List' do
     @page.edit.template_groups.each { |e| e.checked?.should == false }
     @page.edit.allowed_template_groups.each { |e| e.checked?.should == false }
     @page.edit.access_tools[0].checked?.should == false
-    @page.edit.access_tools[1].checked?.should == false
-    @page.edit.access_tools[2].checked?.should == true
-    @page.edit.access_tools[3].checked?.should == true
+    @page.edit.access_tools[3].checked?.should == false
+    @page.edit.access_tools[4].checked?.should == true
+    @page.edit.access_tools[5].checked?.should == true
   end
 
   def submit_form
