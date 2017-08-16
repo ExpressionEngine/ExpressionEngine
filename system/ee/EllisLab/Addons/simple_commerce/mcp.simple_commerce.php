@@ -21,7 +21,6 @@ class Simple_commerce_mcp {
 	var $nest_categories	= 'y';
 	var $perpage			= 50;
 	var $pipe_length 		= 5;
-	var $base_url			= '';
 
 	/**
 	 * Constructor
@@ -31,8 +30,6 @@ class Simple_commerce_mcp {
 
 	function __construct($switch = TRUE)
 	{
-		$this->base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce';
-
 		$this->sidebar = ee('CP/Sidebar')->make();
 
 		$this->items_nav = $this->sidebar->addHeader(lang('items'), ee('CP/URL')->make('addons/settings/simple_commerce'))

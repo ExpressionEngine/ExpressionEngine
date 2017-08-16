@@ -27,7 +27,12 @@ class Updater {
 				'addFieldDataFlag',
 				'removeMemberHomepageTable',
 				'globalizeSave_tmpl_files',
-				'nullOutRelationshipChannelDataFields'
+				'nullOutRelationshipChannelDataFields',
+				'addSortIndexToChannelTitles',
+				'addImageQualityColumn',
+				'addSpamModerationPermissions',
+				'runSpamModuleUpdate',
+				'addPrimaryKeyToFileCategoryTable',
 			)
 		);
 
@@ -281,6 +286,103 @@ class Updater {
 		}
 	}
 
+	/**
+	 * Adds an index to exp_channel_titles for optimizing our channel entry tags
+	 */
+	private function addSortIndexToChannelTitles()
+	{
+		ee()->smartforge->add_key('channel_titles', array('sticky', 'entry_date', 'entry_id'), 'sticky_date_id_idx');
+	}
+
+	/**
+	 * Adds a new image quality column to the file dimensions table
+	 */
+	private function addImageQualityColumn()
+	{
+		ee()->smartforge->add_column(
+			'file_dimensions',
+			array(
+				'quality' => array(
+					'type'       => 'tinyint',
+					'constraint' => 1,
+					'unsigned'   => TRUE,
+					'default'    => 90,
+				)
+			)
+		);
+	}
+
+	private function addSpamModerationPermissions()
+	{
+		ee()->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_moderate_spam' => array(
+					'type'       => 'CHAR',
+					'constraint' => 1,
+					'default'    => 'n',
+					'null'       => FALSE,
+				)
+			)
+		);
+
+		// Only assume super admins can moderate spam
+		ee()->db->update('member_groups', array('can_moderate_spam' => 'y'), array('group_id' => 1));
+	}
+
+	private function runSpamModuleUpdate()
+	{
+		// run the Spam module update
+		$spam = ee('Addon')->get('spam');
+		if ($spam->hasUpdate())
+		{
+			$class = $spam->getInstallerClass();
+			$UPD = new $class;
+
+			if ($UPD->update($spam->getInstalledVersion()) !== FALSE)
+			{
+				$module = ee('Model')->get('Module')
+					->filter('module_name', 'Spam')
+					->first();
+
+				$module->module_version = $spam->getVersion();
+				$module->save();
+			}
+		}
+	}
+
+	/**
+	 * Adds a primary key to exp_file_categories
+	 */
+	private function addPrimaryKeyToFileCategoryTable()
+	{
+		// First modify the file_id and cat_id columns to not accept NULL values
+		ee()->smartforge->modify_column(
+			'file_categories',
+			array(
+				'file_id' => array(
+					'name'       => 'file_id',
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				),
+				'cat_id' => array(
+					'name'       => 'cat_id',
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				)
+			)
+		);
+
+		// Second remove the file_id index
+		ee()->smartforge->drop_key('file_categories', 'file_id');
+
+		// Finally create the primary key
+		ee()->smartforge->add_key('file_categories', array('file_id', 'cat_id'), 'PRIMARY');
+	}
 }
 
 // EOF

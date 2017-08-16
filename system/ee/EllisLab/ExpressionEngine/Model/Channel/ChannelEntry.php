@@ -161,16 +161,29 @@ class ChannelEntry extends ContentModel {
 	protected $recent_comment_date;
 	protected $comment_total;
 
-	public function set__entry_date($entry_date)
-	{
-		$this->setRawProperty('entry_date', $entry_date);
+    public function set__entry_date($entry_date)
+    {
+        if ( ! is_numeric($entry_date))
+        {
+            // @TODO: DRY this out; this was copied from ft.date.php
+            // First we try with the configured date format
+            $entry_date = ee()->localize->string_to_timestamp($entry_date, TRUE, ee()->localize->get_date_format());
 
-		// Day, Month, and Year Fields
-		// @TODO un-break these windows: inject this dependency
-		$this->setProperty('year', ee()->localize->format_date('%Y', $entry_date));
-		$this->setProperty('month', ee()->localize->format_date('%m', $entry_date));
-		$this->setProperty('day', ee()->localize->format_date('%d', $entry_date));
-	}
+            // If the date format didn't work, try something more fuzzy
+            if ($entry_date === FALSE)
+            {
+                $entry_date = ee()->localize->string_to_timestamp($entry_date);
+            }
+        }
+
+        $this->setRawProperty('entry_date', $entry_date);
+
+        // Day, Month, and Year Fields
+        // @TODO un-break these windows: inject this dependency
+        $this->setProperty('year', ee()->localize->format_date('%Y', $entry_date));
+        $this->setProperty('month', ee()->localize->format_date('%m', $entry_date));
+        $this->setProperty('day', ee()->localize->format_date('%d', $entry_date));
+    }
 
 	public function validate()
 	{
@@ -231,7 +244,7 @@ class ChannelEntry extends ContentModel {
 			return TRUE;
 		}
 
-		$total_entries = $this->getFrontend()->get('ChannelEntry')
+		$total_entries = $this->getModelFacade()->get('ChannelEntry')
 			->fields('entry_id', 'title')
 			->filter('channel_id', $value)
 			->count();
@@ -295,7 +308,7 @@ class ChannelEntry extends ContentModel {
 	{
 		$channel_id = $this->getProperty($params[0]);
 
-		$entry = $this->getFrontend()->get('ChannelEntry')
+		$entry = $this->getModelFacade()->get('ChannelEntry')
 			->fields('entry_id', 'title')
 			->filter('entry_id', '!=', $this->getId())
 			->filter('channel_id', $channel_id)
@@ -373,6 +386,7 @@ class ChannelEntry extends ContentModel {
 
 	public function onBeforeDelete()
 	{
+		$this->getAssociation('Channel')->markForReload();
 		parent::onBeforeDelete();
 
 		// Some Tabs might call ee()->api_channel_fields
@@ -492,7 +506,7 @@ class ChannelEntry extends ContentModel {
 			'version_data' => $data
 		);
 
-		$version = $this->getFrontend()->make('ChannelEntryVersion', $data)->save();
+		$version = $this->getModelFacade()->make('ChannelEntryVersion', $data)->save();
 	}
 
 	private function updateEntryStats()
@@ -500,7 +514,7 @@ class ChannelEntry extends ContentModel {
 		$site_id = ($this->site_id) ?: ee()->config->item('site_id');
 		$now = ee()->localize->now;
 
-		$entries = $this->getFrontend()->get('ChannelEntry')
+		$entries = $this->getModelFacade()->get('ChannelEntry')
 			->fields('entry_date', 'channel_id')
 			->filter('site_id', $site_id)
 			->filter('entry_date', '<=', $now)
@@ -512,9 +526,12 @@ class ChannelEntry extends ContentModel {
 			->order('entry_date', 'desc');
 
 		$total_entries = $entries->count();
-		$last_entry_date = ($entries->first()) ? $entries->first()->entry_date : 0;
 
-		$stats = $this->getFrontend()->get('Stats')
+		$entry = $entries->first();
+
+		$last_entry_date = ($entry) ? $entry->entry_date : 0;
+
+		$stats = $this->getModelFacade()->get('Stats')
 			->filter('site_id', $site_id)
 			->first();
 
@@ -573,27 +590,34 @@ class ChannelEntry extends ContentModel {
 
 	protected function getModulesWithTabs()
 	{
-		$modules = array();
-		$providers = ee('App')->getProviders();
-		$installed_modules = $this->getFrontend()->get('Module')
-			->all()
-			->pluck('module_name');
+		$modules = ee()->session->cache(__CLASS__, __METHOD__);
 
-		foreach (array_keys($providers) as $name)
+		if ($modules === FALSE)
 		{
-			try
+			$modules = [];
+			$providers = ee('App')->getProviders();
+			$installed_modules = $this->getModelFacade()->get('Module')
+				->all()
+				->pluck('module_name');
+
+			foreach (array_keys($providers) as $name)
 			{
-				$info = ee('App')->get($name);
-				if (file_exists($info->getPath() . '/tab.' . $name . '.php')
-					&& in_array(ucfirst($name), $installed_modules))
+				try
 				{
-					$modules[$name] = $info;
+					$info = ee('App')->get($name);
+					if (file_exists($info->getPath() . '/tab.' . $name . '.php')
+						&& in_array(ucfirst($name), $installed_modules))
+					{
+						$modules[$name] = $info;
+					}
+				}
+				catch (\Exception $e)
+				{
+					continue;
 				}
 			}
-			catch (\Exception $e)
-			{
-				continue;
-			}
+
+			ee()->session->set_cache(__CLASS__, __METHOD__, $modules);
 		}
 
 		return $modules;
@@ -664,6 +688,11 @@ class ChannelEntry extends ContentModel {
 			$cat_groups = explode('|', $this->Channel->cat_group);
 		}
 
+		if ($this->isNew() OR empty($categories))
+		{
+			$this->Categories = NULL;
+		}
+
 		if (empty($categories))
 		{
 			foreach ($cat_groups as $cat_group)
@@ -672,34 +701,47 @@ class ChannelEntry extends ContentModel {
 				$this->getCustomField('categories[cat_group_id_'.$cat_group.']')->setData('');
 			}
 
-			$this->Categories = NULL;
-
 			return;
 		}
 
-		$set_cats = array();
+		$cat_groups = array_filter($cat_groups, function($cat_group_id) use ($categories) {
+			return array_key_exists('cat_group_id_'.$cat_group_id, $categories);
+		});
+
+		$category_ids = array();
 
 		// Set the data on the fields in case we come back from a validation error
 		foreach ($cat_groups as $cat_group)
 		{
-			if (array_key_exists('cat_group_id_'.$cat_group, $categories))
+			$group_cats = $categories['cat_group_id_'.$cat_group];
+
+			$category_ids = array_merge($category_ids, $group_cats);
+
+			$this->setRawProperty('cat_group_id_'.$cat_group, implode('|', $group_cats));
+			$this->getCustomField('categories[cat_group_id_'.$cat_group.']')->setData(implode('|', $group_cats));
+		}
+
+		$cat_objects = $this->getModelFacade()
+			->get('Category')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('cat_id', 'IN', $category_ids)
+			->all();
+
+		$set_cats = $cat_objects->asArray();
+
+		if (ee()->config->item('auto_assign_cat_parents') == 'y')
+		{
+			$category_ids = $cat_objects->pluck('cat_id');
+			foreach ($set_cats as $cat)
 			{
-				$group_cats = $categories['cat_group_id_'.$cat_group];
-
-				$cats = implode('|', $group_cats);
-
-				$this->setRawProperty('cat_group_id_'.$cat_group, $cats);
-				$this->getCustomField('categories[cat_group_id_'.$cat_group.']')->setData($cats);
-
-				$group_cat_objects = $this->getModelFacade()
-					->get('Category')
-					->filter('site_id', ee()->config->item('site_id'))
-					->filter('cat_id', 'IN', $group_cats)
-					->all();
-
-				foreach ($group_cat_objects as $cat)
+				while ($cat->Parent !== NULL)
 				{
-					$set_cats[] = $cat;
+					$cat = $cat->Parent;
+					if ( ! in_array($cat->getId(), $category_ids))
+					{
+						$category_ids[] = $cat->getId();
+						$set_cats[] = $cat;
+					}
 				}
 			}
 		}
@@ -859,7 +901,7 @@ class ChannelEntry extends ContentModel {
 
 			if ($this->Channel)
 			{
-				$cat_groups = ee('Model')->get('CategoryGroup')
+				$cat_groups = $this->getModelFacade()->get('CategoryGroup')
 					->filter('group_id', 'IN', explode('|', $this->Channel->cat_group))
 					->all();
 
@@ -928,7 +970,7 @@ class ChannelEntry extends ContentModel {
 			OR ! is_array(ee()->session->userdata('assigned_channels')))
 			? NULL : array_keys(ee()->session->userdata('assigned_channels'));
 
-		$channel_filter_options = ee('Model')->get('Channel', $allowed_channel_ids)
+		$channel_filter_options = $this->getModelFacade()->get('Channel', $allowed_channel_ids)
 			->filter('site_id', ee()->config->item('site_id'))
 			// ->filter('field_group', $this->Channel->field_group)
 			->fields('channel_id', 'channel_title')
@@ -975,13 +1017,13 @@ class ChannelEntry extends ContentModel {
 		}
 
 		// First, get member groups who should be in the list
-		$member_groups = ee('Model')->get('MemberGroup')
+		$member_groups = $this->getModelFacade()->get('MemberGroup')
 			->filter('include_in_authorlist', 'y')
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
 		// Then authors who are individually selected to appear in author list
-		$authors = ee('Model')->get('Member')
+		$authors = $this->getModelFacade()->get('Member')
 			->fields('username', 'screen_name')
 			->filter('in_authorlist', 'y');
 
@@ -1013,7 +1055,7 @@ class ChannelEntry extends ContentModel {
 
 	public function populateStatus($field)
 	{
-		$statuses = ee('Model')->get('Status')
+		$statuses = $this->getModelFacade()->get('Status')
 			->with('NoAccess')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('group_id', $this->Channel->status_group)

@@ -17,6 +17,7 @@ class Submenu extends Menu {
 	public $title;
 	public $addlink;
 	public $placeholder;
+	public $view_all_link;
 
 	private $has_add = FALSE;
 	private $has_filter = FALSE;
@@ -61,6 +62,21 @@ class Submenu extends Menu {
 	{
 		$this->has_filter = TRUE;
 		$this->placeholder = $placeholder;
+		return $this;
+	}
+
+	/**
+	 * Add filter box, with a view all link
+	 *
+	 * @param string $placeholder Search box placeholder text
+	 * @param string $view_all_link URL to use as a "View All" link
+	 * @return $this
+	 */
+	public function withFilterLink($placeholder, $view_all_link)
+	{
+		$this->has_filter = TRUE;
+		$this->placeholder = $placeholder;
+		$this->view_all_link = $view_all_link;
 		return $this;
 	}
 

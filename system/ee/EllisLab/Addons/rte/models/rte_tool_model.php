@@ -137,7 +137,9 @@ class Rte_tool_model extends CI_Model {
 
 				if ( ! file_exists($file))
 				{
-					continue 2;
+					if ($tmp_path == PATH_THIRD) continue 2;
+
+					continue;
 				}
 
 				// load it in, instantiate the tool & add the definition

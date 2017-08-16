@@ -69,14 +69,20 @@ class Grid_lib {
 				'required' => ($column['col_required'] == 'y')
 			);
 
+			$attrs = array(
+				'class' => $this->get_class_for_column($column),
+				'data-fieldtype' => $column['col_type'],
+				'data-column-id' => $column['col_id']
+			);
+
+			if ( ! empty($column['col_width']))
+			{
+				$attrs['style'] = 'min-width: '.$column['col_width'].'px';
+			}
+
 			$blank_column[] = array(
 				'html' => $this->_publish_field_cell($column),
-				'attrs' => array(
-					'class' => $this->get_class_for_column($column),
-					'data-fieldtype' => $column['col_type'],
-					'data-column-id' => $column['col_id'],
-					'width' => $column['col_width'].'%',
-				)
+				'attrs' => $attrs
 			);
 		}
 		$grid->setColumns($column_headings);
@@ -104,16 +110,22 @@ class Grid_lib {
 
 			foreach ($columns as $column)
 			{
+				$attrs = array(
+					'class' => $this->get_class_for_column($column),
+					'data-fieldtype' => $column['col_type'],
+					'data-column-id' => $column['col_id'],
+					$data_row_id_attr => $row_id,
+				);
+
+				if ( ! empty($column['col_width']))
+				{
+					$attrs['style'] = 'min-width: '.$column['col_width'].'px';
+				}
+
 				$col = array(
 					'html' => $this->_publish_field_cell($column, $row),
 					'error' => isset($row['col_id_'.$column['col_id'].'_error']) ? $row['col_id_'.$column['col_id'].'_error'] : NULL,
-					'attrs' => array(
-						'class' => $this->get_class_for_column($column),
-						'data-fieldtype' => $column['col_type'],
-						'data-column-id' => $column['col_id'],
-						$data_row_id_attr => $row_id,
-						'width' => $column['col_width'].'%',
-					)
+					'attrs' => $attrs
 				);
 
 				if ($column['col_required'] == 'y')
@@ -148,6 +160,9 @@ class Grid_lib {
 				break;
 			case 'toggle':
 				$class = 'grid-toggle';
+				break;
+			case 'file':
+				$class = 'grid-file-upload';
 				break;
 			default:
 				$class = '';
