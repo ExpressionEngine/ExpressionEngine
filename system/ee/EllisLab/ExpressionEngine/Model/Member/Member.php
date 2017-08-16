@@ -116,6 +116,10 @@ class Member extends ContentModel {
 		)
 	);
 
+	protected static $_field_data = array(
+		'field_model'   => 'MemberField'
+	);
+
 	protected static $_validation_rules = array(
 		'group_id'        => 'required|isNatural|validateGroupId',
 		'username'        => 'required|unique|validateUsername',
@@ -274,6 +278,8 @@ class Member extends ContentModel {
 	 */
 	public function onBeforeDelete()
 	{
+		parent::onBeforeDelete();
+
 		$this->UploadedFiles->uploaded_by_member_id = 0;
 		$this->UploadedFiles->save();
 

@@ -21,6 +21,7 @@ class Grid_lib {
 
 	protected $_fieldtypes = array();
 	protected $_validated = array();
+	protected $_searchable_data = array();
 
 	public function __construct()
 	{
@@ -268,6 +269,8 @@ class Grid_lib {
 			return $this->_validated[$this->field_id];
 		}
 
+		$this->_searchable_data[$this->field_id] = [];
+
 		// Process the posted data and cache
 		$this->_validated[$this->field_id] = $this->_process_field_data('validate', $data);
 
@@ -292,9 +295,6 @@ class Grid_lib {
 		);
 
 		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->content_type);
-
-		// We'll keep track of searchable data for columns marked as searchable here
-		$searchable_data = array();
 
 		// Get row data to send back to fieldtypes with new row IDs
 		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type, array(), TRUE);
@@ -330,12 +330,6 @@ class Grid_lib {
 				}
 
 				ee()->grid_parser->call('post_save', $cell_data);
-
-				// Add to searchable array if searchable
-				if ($column['col_search'] == 'y')
-				{
-					$searchable_data[] = $cell_data;
-				}
 			}
 
 			$i++;
@@ -349,18 +343,6 @@ class Grid_lib {
 		}
 
 		$this->delete_rows($row_ids);
-
-		if ( ! empty($searchable_data) && $this->content_type == 'channel')
-		{
-			ee()->load->helper('custom_field_helper');
-
-			// Update row in channel_data with searchable data string
-			ee()->db->where('entry_id', $this->entry_id)
-				->update('channel_data', array(
-					'field_id_'.$this->field_id => encode_multi_field($searchable_data)
-				)
-			);
-		}
 
 		return FALSE;
 	}
@@ -569,6 +551,12 @@ class Grid_lib {
 						$final_values[$row_id][$col_id.'_error'] = $error;
 						$errors = lang('grid_validation_error');
 					}
+
+					// Add to searchable array if searchable
+					if ($column['col_search'] == 'y')
+					{
+						$this->_searchable_data[$this->field_id][] = $value;
+					}
 				}
 				// 'save' method
 				elseif ($method == 'save')
@@ -594,6 +582,21 @@ class Grid_lib {
 		$_FILES = $files_backup;
 
 		return array('value' => $final_values, 'error' => $errors);
+	}
+
+	/**
+	 * Gets the searchable data for this field as accumulated in validation
+	 *
+	 * @return	array	Array of searchable data
+	 */
+	public function getSearchableData()
+	{
+		if (isset($this->_searchable_data[$this->field_id]))
+		{
+			return $this->_searchable_data[$this->field_id];
+		}
+
+		return [];
 	}
 
 	/**
@@ -635,6 +638,7 @@ class Grid_lib {
 
 		// Shorten some line lengths
 		$ft_api = ee()->api_channel_fields;
+		$ft_api->fetch_installed_fieldtypes();
 
 		foreach ($fieldtypes as $field_short_name => $field_name)
 		{

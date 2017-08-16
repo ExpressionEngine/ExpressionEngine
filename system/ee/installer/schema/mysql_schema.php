@@ -530,6 +530,7 @@ class EE_Schema {
 			m_field_order int(3) unsigned NULL DEFAULT NULL,
 			m_field_text_direction char(3) DEFAULT 'ltr',
 			m_field_settings text NULL,
+			m_legacy_field_data char(1) NOT NULL default 'n',
 			PRIMARY KEY `m_field_id` (`m_field_id`)
 			)";
 
@@ -641,7 +642,8 @@ class EE_Schema {
 			KEY `status` (`status`),
 			KEY `entry_date` (`entry_date`),
 			KEY `expiration_date` (`expiration_date`),
-			KEY `site_id` (`site_id`)
+			KEY `site_id` (`site_id`),
+			KEY `sticky_date_id_idx` (`sticky`,`entry_date`,`entry_id`)
 		)";
 
 		// Channel Titles Autosave
@@ -730,6 +732,7 @@ class EE_Schema {
 			field_order int(3) unsigned NOT NULL,
 			field_content_type varchar(20) NOT NULL default 'any',
 			field_settings text NULL,
+			legacy_field_data char(1) NOT NULL default 'n',
 			PRIMARY KEY `field_id` (`field_id`),
 			KEY `group_id` (`group_id`),
 			KEY `field_type` (`field_type`),
@@ -860,6 +863,7 @@ class EE_Schema {
 			`field_required` char(1) NOT NULL default 'n',
 			`field_order` int(3) unsigned NOT NULL,
 			`field_settings` text NULL,
+			`legacy_field_data` char(1) NOT NULL default 'n',
 			PRIMARY KEY `field_id` (`field_id`),
 			KEY `site_id` (`site_id`),
 			KEY `group_id` (`group_id`)
@@ -1264,11 +1268,11 @@ class EE_Schema {
 
 
 		$Q[] = "CREATE TABLE `exp_file_categories` (
-			`file_id` int(10) unsigned DEFAULT NULL,
-			`cat_id` int(10) unsigned DEFAULT NULL,
+			`file_id` int(10) unsigned NOT NULL,
+			`cat_id` int(10) unsigned NOT NULL,
 			`sort` int(10) unsigned DEFAULT '0',
 			`is_cover` char(1) DEFAULT 'n',
-			KEY `file_id` (`file_id`),
+			PRIMARY KEY (`file_id`, `cat_id`),
 			KEY `cat_id` (`cat_id`)
 		)";
 

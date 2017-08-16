@@ -23,12 +23,15 @@ class Updater {
 	{
 		$steps = new ProgressIterator(
 			array(
+				'addFieldDataFlag',
 				'removeMemberHomepageTable',
 				'globalizeSave_tmpl_files',
 				'nullOutRelationshipChannelDataFields',
+				'addSortIndexToChannelTitles',
 				'addImageQualityColumn',
 				'addSpamModerationPermissions',
 				'runSpamModuleUpdate',
+				'addPrimaryKeyToFileCategoryTable',
 			)
 		);
 
@@ -38,6 +41,59 @@ class Updater {
 		}
 
 		return TRUE;
+	}
+
+	/**
+	 * Adds a column to exp_channel_fields, exp_member_fields, and
+	 * exp_category_fields tables that indicates if the
+	 * data is in the legacy data tables or their own table.
+	 */
+	private function addFieldDataFlag()
+	{
+		if ( ! ee()->db->field_exists('legacy_field_data', 'category_fields'))
+		{
+			ee()->smartforge->add_column(
+				'category_fields',
+				array(
+					'legacy_field_data' => array(
+						'type'    => 'CHAR(1)',
+						'null'    => FALSE,
+						'default' => 'n'
+					)
+				)
+			);
+			ee()->db->update('category_fields', array('legacy_field_data' => 'y'));
+		}
+
+		if ( ! ee()->db->field_exists('legacy_field_data', 'channel_fields'))
+		{
+			ee()->smartforge->add_column(
+				'channel_fields',
+				array(
+					'legacy_field_data' => array(
+						'type'    => 'CHAR(1)',
+						'null'    => FALSE,
+						'default' => 'n'
+					)
+				)
+			);
+			ee()->db->update('channel_fields', array('legacy_field_data' => 'y'));
+		}
+
+		if ( ! ee()->db->field_exists('m_legacy_field_data', 'member_fields'))
+		{
+			ee()->smartforge->add_column(
+				'member_fields',
+				array(
+					'm_legacy_field_data' => array(
+						'type'    => 'CHAR(1)',
+						'null'    => FALSE,
+						'default' => 'n'
+					)
+				)
+			);
+			ee()->db->update('member_fields', array('m_legacy_field_data' => 'y'));
+		}
 	}
 
 	private function removeMemberHomepageTable()
@@ -107,6 +163,14 @@ class Updater {
 	}
 
 	/**
+	 * Adds an index to exp_channel_titles for optimizing our channel entry tags
+	 */
+	private function addSortIndexToChannelTitles()
+	{
+		ee()->smartforge->add_key('channel_titles', array('sticky', 'entry_date', 'entry_id'), 'sticky_date_id_idx');
+	}
+
+	/**
 	 * Adds a new image quality column to the file dimensions table
 	 */
 	private function addImageQualityColumn()
@@ -161,6 +225,39 @@ class Updater {
 				$module->save();
 			}
 		}
+	}
+
+	/**
+	 * Adds a primary key to exp_file_categories
+	 */
+	private function addPrimaryKeyToFileCategoryTable()
+	{
+		// First modify the file_id and cat_id columns to not accept NULL values
+		ee()->smartforge->modify_column(
+			'file_categories',
+			array(
+				'file_id' => array(
+					'name'       => 'file_id',
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				),
+				'cat_id' => array(
+					'name'       => 'cat_id',
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				)
+			)
+		);
+
+		// Second remove the file_id index
+		ee()->smartforge->drop_key('file_categories', 'file_id');
+
+		// Finally create the primary key
+		ee()->smartforge->add_key('file_categories', array('file_id', 'cat_id'), 'PRIMARY');
 	}
 }
 

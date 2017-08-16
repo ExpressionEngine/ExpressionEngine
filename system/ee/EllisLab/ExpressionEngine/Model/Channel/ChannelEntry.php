@@ -29,6 +29,7 @@ use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 class ChannelEntry extends ContentModel {
 
 	protected static $_primary_key = 'entry_id';
+	protected static $_table_name = 'channel_titles';
 	protected static $_gateway_names = array('ChannelTitleGateway', 'ChannelDataGateway');
 
 	protected static $_hook_id = 'channel_entry';
@@ -99,6 +100,13 @@ class ChannelEntry extends ContentModel {
 			'type' => 'hasMany',
 			'model' => 'CommentSubscription'
 		)
+	);
+
+	protected static $_auto_join = array('Channel');
+
+	protected static $_field_data = array(
+		'field_model'  => 'ChannelField',
+		'group_column' => 'Channel__field_group'
 	);
 
 	protected static $_validation_rules = array(
@@ -351,6 +359,7 @@ class ChannelEntry extends ContentModel {
 
 	public function onAfterInsert()
 	{
+		parent::onAfterInsert();
 		$this->Author->updateAuthorStats();
 
 		if ($this->Channel->channel_notify == 'y' && $this->Channel->channel_notify_emails != '')
@@ -366,6 +375,8 @@ class ChannelEntry extends ContentModel {
 
 	public function onAfterUpdate($changed)
 	{
+		parent::onAfterUpdate($changed);
+
 		if (array_key_exists('author_id', $changed))
 		{
 			$this->Author->updateAuthorStats();
@@ -374,6 +385,7 @@ class ChannelEntry extends ContentModel {
 
 	public function onBeforeDelete()
 	{
+		$this->getAssociation('Channel')->markForReload();
 		parent::onBeforeDelete();
 
 		// Some Tabs might call ee()->api_channel_fields

@@ -126,11 +126,6 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 		$this->addFilter('set', array('this', 'typedSetAndForeignKeys'));
 		$this->addFilter('fill', array('this', 'typedLoad'));
 		$this->addFilter('store', array('this', 'typedStore'));
-
-		if ($publish_as = $this->getMetaData('hook_id'))
-		{
-			$this->forwardEventsToHooks($publish_as);
-		}
 	}
 
 	/**
@@ -343,13 +338,17 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	{
 		$qb = $this->newSelfReferentialQuery();
 
+		$this->forwardEventToHooks('save');
+
 		if ($this->isNew())
 		{
+			$this->forwardEventToHooks('insert');
 			$qb->insert();
 		}
 		else
 		{
 			$this->constrainQueryToSelf($qb);
+			$this->forwardEventToHooks('update');
 			$qb->update();
 		}
 
@@ -380,6 +379,8 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 		$qb = $this->newSelfReferentialQuery();
 
 		$this->constrainQueryToSelf($qb);
+
+		$this->forwardEventToHooks('delete');
 		$qb->delete();
 
 		$this->setId(NULL);
@@ -573,24 +574,22 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	 * This is fired automatically from initialize() if `hook_id` is
 	 * given in the model metadata.
 	 *
-	 * @param String $hook_basename The name that identifies the subject of the hook
+	 * @param String $event Event name, either 'insert', 'update', 'save', or 'delete'
 	 */
-	protected function forwardEventsToHooks($hook_basename)
+	protected function forwardEventToHooks($event)
 	{
-		$trigger = $this->getHookTrigger();
+		$hook_basename = $this->getMetaData('hook_id');
+
+		$lc_event = ucfirst($event);
+		$uc_first_event = ucfirst($lc_event);
 
 		$forwarded = array(
-			'beforeInsert' => 'before_'.$hook_basename.'_insert',
-			'afterInsert' => 'after_'.$hook_basename.'_insert',
-			'beforeUpdate' => 'before_'.$hook_basename.'_update',
-			'afterUpdate' => 'after_'.$hook_basename.'_update',
-			'beforeSave' => 'before_'.$hook_basename.'_save',
-			'afterSave' => 'after_'.$hook_basename.'_save',
-			'beforeDelete' => 'before_'.$hook_basename.'_delete',
-			'afterDelete' => 'after_'.$hook_basename.'_delete'
+			'before'.$uc_first_event => 'before_'.$hook_basename.'_'.$lc_event,
+			'after'.$uc_first_event => 'after_'.$hook_basename.'_'.$lc_event
 		);
 
 		$that = $this;
+		$trigger = $this->getHookTrigger();
 
 		foreach ($forwarded as $event => $hook)
 		{
@@ -724,12 +723,13 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	public function createTypeFor($name)
 	{
 		$columns = $this->getMetadata('typed_columns') ?: array();
-		$types = $this->getMetadata('type_classes');
 
 		if ( ! array_key_exists($name, $columns))
 		{
 			return NULL;
 		}
+
+		$types = $this->getMetadata('type_classes');
 
 		$type = $columns[$name];
 		$class = $types[$type];
