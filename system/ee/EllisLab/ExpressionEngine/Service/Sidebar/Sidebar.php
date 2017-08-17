@@ -27,6 +27,11 @@ class Sidebar {
 	protected $view;
 
 	/**
+	 * @var array $list Primary folder list for this sidebar
+	 */
+	protected $list = array();
+
+	/**
 	 * Constructor: sets the ViewFactory property
 	 *
 	 * @param ViewFactory $view A ViewFactory object to use with rendering
@@ -52,6 +57,11 @@ class Sidebar {
 	public function render()
 	{
 		$output = '';
+
+		if ( ! empty($this->list))
+		{
+			$output .= $this->list->render($this->view);
+		}
 
 		foreach ($this->headers as $header)
 		{
@@ -82,6 +92,17 @@ class Sidebar {
 		return $header;
 	}
 
+	/**
+	 * Adds a folder list under this header
+	 *
+	 * @param string $name The name of the folder list
+	 * @return FolderList A new FolderList object
+	 */
+	public function addFolderList($name)
+	{
+		$this->list = new FolderList($name);
+		return $this->list;
+	}
 }
 
 // EOF
