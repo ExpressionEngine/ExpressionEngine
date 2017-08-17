@@ -14,6 +14,9 @@ use EllisLab\ExpressionEngine\Service\Encrypt;
  */
 abstract class EE_Fieldtype {
 
+	// bring in the :modifier methods
+	use EllisLab\ExpressionEngine\Service\Template\Variables\ModifiableTrait;
+
 	// Old identifiers for backwards compatibility.
 	// @deprecated
 	public $field_id;
@@ -229,110 +232,6 @@ abstract class EE_Fieldtype {
 		}
 
 		return $data;
-	}
-
-	/**
-	 * :length modifier
-	 */
-	public function replace_length($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->getLength();
-	}
-
-	/**
-	 * :raw_content modifier
-	 */
-	public function replace_raw_content($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->encodeEETags($params);
-	}
-
-	/**
-	 * :attr_safe modifier
-	 */
-	public function replace_attr_safe($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->attributeSafe($params);
-	}
-
-	/**
-	 * :limit modifier
-	 */
-	public function replace_limit($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->limitChars($params);
-	}
-
-	/**
-	 * :form_prep modifier
-	 */
-	public function replace_form_prep($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->formPrep()->encodeEETags($params);
-	}
-
-	/**
-	 * :rot13 modifier (for Seth)
-	 */
-	public function replace_rot13($data, $params = array(), $tagdata = FALSE)
-	{
-		return str_rot13($data);
-	}
-
-	/**
-	 * :encrypt modifier
-	 */
-	public function replace_encrypt($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->encrypt($params);
-	}
-
-	/**
-	 * :url_slug modifier
-	 */
-	public function replace_url_slug($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->urlSlug($params);
-	}
-
-	/**
-	 * :censor modifier
-	 */
-	public function replace_censor($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->censor();
-	}
-
-	/**
-	 * :json modifier
-	 */
-	public function replace_json($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->json($params);
-	}
-
-	/**
-	 * :replace modifier
-	 */
-	public function replace_replace($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->replace($params);
-	}
-
-	/**
-	 * :url_encode modifier
-	 */
-	public function replace_url_encode($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->urlEncode($params);
-	}
-
-	/**
-	 * :url_decode modifier
-	 */
-	public function replace_url_decode($data, $params = array(), $tagdata = FALSE)
-	{
-		return (string) ee('Format')->make('Text', $data)->urlDecode($params);
 	}
 
 	/**

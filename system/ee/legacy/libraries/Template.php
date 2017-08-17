@@ -12,6 +12,9 @@
  */
 class EE_Template {
 
+	// bring in the :modifier methods
+	use EllisLab\ExpressionEngine\Service\Template\Variables\ModifiableTrait;
+
 	public $loop_count           = 0;			// Main loop counter.
 	public $depth                = 0;			// Sub-template loop depth
 	public $in_point             = '';			// String position of matched opening tag
@@ -3712,8 +3715,8 @@ class EE_Template {
 			{
 				$raw = $original;
 			}
-
-			$content = $this->$method($content, $var['params'], $raw);
+			$content = ($method == 'replace_raw_content') ? $raw : $content;
+			$content = $this->$method($content, $var['params']);
 			$this->conditional_vars[$tagname] = $content;
 
 			$tagdata = $this->_parse_var_single($tag, $content, $tagdata);
@@ -3723,110 +3726,6 @@ class EE_Template {
 		$tagdata = ee()->functions->prep_conditionals($tagdata, $this->conditional_vars);
 
 		return $tagdata;
-	}
-
-	/**
-	 * :length modifier
-	 */
-	public function replace_length($data, $params = array(), $raw)
-	{
-		return (string) ee('Format')->make('Text', $data)->getLength();
-	}
-
-	/**
-	 * :raw_content modifier
-	 */
-	public function replace_raw_content($data, $params = array(), $raw)
-	{
-		return (string) ee('Format')->make('Text', $raw)->encodeEETags($params);
-	}
-
-	/**
-	 * :attr_safe modifier
-	 */
-	public function replace_attr_safe($data, $params = array(), $raw)
-	{
-		return (string) ee('Format')->make('Text', $data)->attributeSafe($params);
-	}
-
-	/**
-	 * :limit modifier
-	 */
-	public function replace_limit($data, $params = array(), $raw)
-	{
-		return (string) ee('Format')->make('Text', $data)->limitChars($params);
-	}
-
-	/**
-	 * :form_prep modifier
-	 */
-	public function replace_form_prep($data, $params = array(), $raw)
-	{
-		return (string) ee('Format')->make('Text', $data)->formPrep()->encodeEETags($params);
-	}
-
-	/**
-	 * :rot13 modifier (for Seth)
-	 */
-	public function replace_rot13($data, $params = array(), $raw)
-	{
-		return str_rot13($data);
-	}
-
-	/**
-	 * :encrypt modifier
-	 */
-	public function replace_encrypt($data, $params = array(), $raw)
-	{
-		return (string) ee('Format')->make('Text', $data)->encrypt($params);
-	}
-
-	/**
-	 * :url_slug modifier
-	 */
-	public function replace_url_slug($data, $params = array(), $raw)
-	{
-		return (string) ee('Format')->make('Text', $data)->urlSlug($params);
-	}
-
-	/**
-	 * :censor modifier
-	 */
-	public function replace_censor($data, $params = array(), $raw)
-	{
-		return (string) ee('Format')->make('Text', $data)->censor();
-	}
-
-	/**
-	 * :json modifier
-	 */
-	public function replace_json($data, $params = array(), $raw)
-	{
-		return (string) ee('Format')->make('Text', $data)->json($params);
-	}
-
-	/**
-	 * :replace modifier
-	 */
-	public function replace_replace($data, $params = array(), $raw)
-	{
-		return (string) ee('Format')->make('Text', $data)->replace($params);
-	}
-
-	/**
-	 * :url_encode modifier
-	 */
-	public function replace_url_encode($data, $params = array(), $raw)
-	{
-		return (string) ee('Format')->make('Text', $data)->urlEncode($params);
-	}
-
-	/**
-	 * :url_decode modifier
-	 */
-	public function replace_url_decode($data, $params = array(), $raw)
-	{
-		return (string) ee('Format')->make('Text', $data)->urlDecode($params);
 	}
 
 	/**
