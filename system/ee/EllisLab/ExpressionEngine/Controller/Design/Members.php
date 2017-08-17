@@ -36,7 +36,6 @@ class Members extends AbstractDesignController {
 		ee()->lang->loadfile('specialty_tmp');
 
 		$this->template_group_map = array(
-			'aim_console.html' => 'profile',
 			'avatar_folder_list.html' => 'profile',
 			'basic_profile.html' => 'profile',
 			'breadcrumb.html' => 'breadcrumb',
@@ -68,7 +67,6 @@ class Members extends AbstractDesignController {
 			'home_page.html' => 'profile',
 			'html_footer.html' => 'common',
 			'html_header.html' => 'common',
-			'icq_console.html' => 'profile',
 			'localization_form.html' => 'account',
 			'login_form.html' => 'registration',
 			'member_page.html' => 'member',
