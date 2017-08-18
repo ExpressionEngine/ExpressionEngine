@@ -134,6 +134,8 @@ $lang = array(
 
 'grid_duplicate_col_name' => 'Column field names must be unique.',
 
+'grid_expand_field' => 'expand field',
+
 'grid_field_required' => 'This field is required',
 
 'grid_fields' => 'Grid Fields',
