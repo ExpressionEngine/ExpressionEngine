@@ -65,23 +65,21 @@ class Channels extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$channel_ids = ee()->input->post('channels');
+		$channel_id = ee()->input->post('channel_id');
+		$channel = ee('Model')->get('Channel', $channel_id)->first();
 
-		if ( ! empty($channel_ids) && ee()->input->post('bulk_action') == 'remove')
+		if ($channel)
 		{
-			// Filter out junk
-			$channel_ids = array_filter($channel_ids, 'is_numeric');
+			$channel->delete();
 
-			if ( ! empty($channel_ids))
-			{
-				ee('Model')->get('Channel', $channel_ids)->delete();
-
-				ee('CP/Alert')->makeInline('sites')
-					->asSuccess()
-					->withTitle(lang('channels_removed'))
-					->addToBody(sprintf(lang('channels_removed_desc'), count($channel_ids)))
-					->defer();
-			}
+			ee('CP/Alert')->makeInline('sites')
+				->asSuccess()
+				->withTitle(lang('channels_removed'))
+				->addToBody(sprintf(
+					lang('channels_removed_desc'),
+					htmlentities($channel->channel_title, ENT_QUOTES, 'UTF-8')
+				))
+				->defer();
 		}
 		else
 		{

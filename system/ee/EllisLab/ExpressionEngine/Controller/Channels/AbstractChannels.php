@@ -85,81 +85,55 @@ abstract class AbstractChannels extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		if (ee()->cp->allowed_group_any(
-			'can_create_channels',
-			'can_edit_channels',
-			'can_delete_channels'
-		))
-		{
-			$header = $sidebar->addHeader(lang('channels'), ee('CP/URL')->make('channels'));
+		$list = $sidebar->addFolderList('channels');
 
-			if (ee()->cp->allowed_group('can_create_channels'))
+		if (ee()->cp->allowed_group('can_delete_channels'))
+		{
+			$list->withRemoveUrl(ee('CP/URL')->make('channels/remove'))
+				->withRemovalKey('channel_id');
+		}
+
+		$channels = ee('Model')->get('Channel')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		foreach ($channels as $channel)
+		{
+			$channel_name = htmlentities($channel->channel_title, ENT_QUOTES, 'UTF-8');
+
+			$item = $list->addItem(
+				$channel_name,
+				ee('CP/URL')->make('channels/layouts/' . $channel->getId())
+			);
+
+			if (ee()->cp->allowed_group('can_edit_channels'))
 			{
-				$header->withButton(lang('new'), ee('CP/URL')->make('channels/create'));
+				$item->withEditUrl(
+					ee('CP/URL')->make('channels/edit/' . $channel->getId())
+				);
 			}
 
-			if ($active == 'channel')
+			if (ee()->cp->allowed_group('can_delete_channels'))
 			{
-				$header->isActive();
+				$item->withRemoveConfirmation(
+					lang('channel') . ': <b>' . $channel_name . '</b>'
+				)->identifiedBy($channel->getId());
 			}
 		}
 
-		if (ee()->cp->allowed_group_any(
-			'can_create_channel_fields',
-			'can_edit_channel_fields',
-			'can_delete_channel_fields'
-		))
-		{
-			$header = $sidebar->addHeader(lang('field_groups'), ee('CP/URL')->make('channels/fields/groups'));
+		$sidebar->addActionBar()
+			->withLeftButton(
+				lang('new'),
+				ee('CP/URL')->make('channels/create')
+			)->withRightButton(
+				lang('import'),
+				NULL,
+				'import-channel'
+			);
 
-			if (ee()->cp->allowed_group('can_create_channel_fields'))
-			{
-				$header->withButton(lang('new'), ee('CP/URL')->make('channels/fields/groups/create'));
-			}
-
-			if ($active == 'field')
-			{
-				$header->isActive();
-			}
-		}
-
-		if (ee()->cp->allowed_group_any(
-			'can_create_categories',
-			'can_edit_categories',
-			'can_delete_categories'
-		))
-		{
-			$header = $sidebar->addHeader(lang('category_groups'), ee('CP/URL')->make('channels/cat'));
-
-			if (ee()->cp->allowed_group('can_create_categories'))
-			{
-				$header->withButton(lang('new'), ee('CP/URL')->make('channels/cat/create'));
-			}
-
-			if ($active == 'category')
-			{
-				$header->isActive();
-			}
-		}
-
-		if (ee()->cp->allowed_group_any(
-			'can_create_statuses',
-			'can_delete_statuses',
-			'can_edit_statuses'
-		))
-		{
-			$header = $sidebar->addHeader(lang('status_groups'), ee('CP/URL')->make('channels/status'));
-
-			if (ee()->cp->allowed_group('can_create_statuses'))
-			{
-				$header->withButton(lang('new'), ee('CP/URL')->make('channels/status/create'));
-			}
-
-			if ($active == 'status')
-			{
-				$header->isActive();
-			}
-		}
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/channel/menu'),
+		));
 	}
 
 	/**

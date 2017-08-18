@@ -50,7 +50,7 @@ $lang = array(
 
 'channels_removed' => 'Channels removed',
 
-'channels_removed_desc' => '%d channels were removed.',
+'channels_removed_desc' => 'The <b>%s</b> channel has been removed.',
 
 'create_channel' => 'Create Channel',
 
