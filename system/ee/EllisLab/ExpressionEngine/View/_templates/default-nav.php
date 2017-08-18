@@ -3,31 +3,18 @@
 <?php if (isset($header)): ?>
 	<div class="col-group">
 		<div class="col w-16 last">
-			<div class="box full mb">
-				<div class="tbl-ctrls">
-					<?php if (isset($header['form_url'])): ?>
-						<?=form_open($header['form_url'])?>
-							<fieldset class="tbl-search right">
-								<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=form_prep(ee()->input->get_post('search'))?>">
-								<?php if (isset($header['search_button_value'])): ?>
-								<input class="btn submit" type="submit" value="<?=$header['search_button_value']?>">
-								<?php else: ?>
-								<input class="btn submit" type="submit" value="<?=lang('search')?>">
-								<?php endif; ?>
-							</fieldset>
-					<?php endif ?>
-						<h1>
-							<?=$header['title']?>
-							<?php if (isset($header['toolbar_items']))
-							{
-								echo ee()->load->view('_shared/toolbar', $header, TRUE);
-							} ?>
-						</h1>
-					<?php if (isset($header['form_url'])): ?>
-						</form>
-					<?php endif ?>
+			<header class="section-header">
+				<?php if (isset($header['toolbar_items'])): ?>
+					<div class="section-header__options">
+						<?php foreach ($header['toolbar_items'] as $name => $item): ?>
+							<a class="icon--<?=$name?>" href="<?=$item['href']?>" title="<?=$item['title']?>"></a>
+						<?php endforeach; ?>
+					</div>
+				<?php endif ?>
+				<div class="section-header__title">
+					<?=$header['title']?>
 				</div>
-			</div>
+			</header>
 		</div>
 	</div>
 <?php endif ?>
