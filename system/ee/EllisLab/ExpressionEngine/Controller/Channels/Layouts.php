@@ -35,7 +35,7 @@ class Layouts extends AbstractChannelsController {
 		$this->generateSidebar('channel');
 	}
 
-	public function layouts($channel_id)
+	public function layouts($channel_id = NULL)
 	{
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
@@ -43,9 +43,9 @@ class Layouts extends AbstractChannelsController {
 			ee()->functions->redirect(ee('CP/URL')->make('channels/layouts/' . $channel_id));
 		}
 
-		$channel = ee('Model')->get('Channel', $channel_id)
-			->filter('site_id', ee()->config->item('site_id'))
-			->first();
+		$channel = is_numeric($channel_id)
+			? ee('Model')->get('Channel', $channel_id) : ee('Model')->get('Channel');
+		$channel = $channel->filter('site_id', ee()->config->item('site_id'))->first();
 
 		if ( ! $channel)
 		{
@@ -129,7 +129,6 @@ class Layouts extends AbstractChannelsController {
 		));
 
 		ee()->view->cp_page_title = sprintf(lang('channel_form_layouts'), $channel->channel_title);
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels'), lang('channels'));
 
 		ee()->cp->render('channels/layout/index', $vars);
 	}

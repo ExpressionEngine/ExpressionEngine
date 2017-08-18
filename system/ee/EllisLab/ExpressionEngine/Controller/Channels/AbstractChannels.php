@@ -95,6 +95,7 @@ abstract class AbstractChannels extends CP_Controller {
 
 		$channels = ee('Model')->get('Channel')
 			->filter('site_id', ee()->config->item('site_id'))
+			->order('channel_title')
 			->all();
 
 		foreach ($channels as $channel)

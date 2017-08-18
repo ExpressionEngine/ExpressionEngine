@@ -24,35 +24,9 @@ class Channels extends AbstractChannelsController {
 		$this->generateSidebar('channel');
 	}
 
-	/**
-	 * Channel Manager
-	 */
 	public function index()
 	{
-		$channels = ee('Model')->get('Channel')
-			->filter('site_id', ee()->config->item('site_id'));
-		$total_rows = $channels->count();
-
-		$table = $this->buildTableFromChannelQuery($channels, array(), ee()->cp->allowed_group('can_delete_channels'));
-
-		$vars['table'] = $table->viewData(ee('CP/URL')->make('channels'));
-		$vars['show_new_channel_button'] = ee()->cp->allowed_group('can_create_channels');
-
-		$vars['pagination'] = ee('CP/Pagination', $total_rows)
-			->perPage($vars['table']['limit'])
-			->currentPage($vars['table']['page'])
-			->render($vars['table']['base_url']);
-
-		$vars['disable'] = $this->hasMaximumChannels() ? 'disable' : '';
-
-		ee()->view->cp_page_title = lang('manage_channels');
-
-		ee()->javascript->set_global('lang.remove_confirm', lang('channels') . ': <b>### ' . lang('channels') . '</b>');
-		ee()->cp->add_js_script(array(
-			'file' => array('cp/confirm_remove'),
-		));
-
-		ee()->cp->render('channels/index', $vars);
+		ee()->functions->redirect(ee('CP/URL')->make('channels/layouts'));
 	}
 
 	/**
