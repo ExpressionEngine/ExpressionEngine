@@ -617,7 +617,7 @@ Grid.Settings.prototype = {
 		el.find('input[name$="\\[col_name\\]"]').attr('value', '');
 
 		// Need to make sure the new column's field names are unique
-		var new_namespace = 'new_' + $('.grid-item', this.root).size();
+		var new_namespace = 'new_' + $('.fields-grid-item', this.root).size();
 		var old_namespace = el.data('field-name');
 
 		el.html(
