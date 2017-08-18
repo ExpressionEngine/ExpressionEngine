@@ -400,6 +400,8 @@ Grid.Settings.prototype = {
 
 	init: function() {
 		this._bindSortable();
+		this._bindExpandButton();
+		this._expandErroredColumns();
 		this._bindActionButtons(this.root);
 		this._toggleDeleteButtons();
 		this._bindColTypeChange();
@@ -434,10 +436,56 @@ Grid.Settings.prototype = {
 	},
 
 	/**
+	 * Binds expand button in column toolbar
+	 */
+	_bindExpandButton: function() {
+		var that = this;
+		$(this.root).on('click', '.fields-grid-tool-expand', function(e) {
+			that._toggleColumnExpand($(this).parents('.fields-grid-item'))
+			e.preventDefault()
+		});
+	},
+
+	/**
+	 * For any columns that have validation errors, expand them
+	 */
+	_expandErroredColumns: function() {
+		var that = this;
+		$('.fields-grid-item', this.root).each(function(i, column) {
+			if ($('.fieldset-invalid', column).size()) {
+				that._toggleColumnExpand($(column), true)
+			}
+		})
+	},
+
+	/**
+	 * Toggle collapsed state of column settings
+	 *
+	 * @param	{jQuery Object}	column	Object to find action buttons in to bind
+	 * @param	{boolean}		state	Optional, whether or not to expand (true) or collapse (false)
+	 */
+	_toggleColumnExpand: function(column, state) {
+		var openClass = 'fields-grid-item---open',
+			isOpen = column.hasClass(openClass),
+			toggleHeader = $('.toggle-header', column),
+			toggleHeaderFieldName = $('b', toggleHeader),
+			toggleHeaderFieldType = $('span.txt-fade', toggleHeader),
+			colLabel = $('input[name$="[col_label]"]', column).val(),
+			colType = $('input[name$="[col_type]"]', column).val()
+
+		if (isOpen) {
+			toggleHeaderFieldName.html(colLabel)
+			toggleHeaderFieldType.html('('+colType+')')
+		}
+
+		column.toggleClass(openClass, state !== undefined ? state : ! isOpen)
+	},
+
+	/**
 	 * Convenience method for binding column manipulation buttons (add, copy, remove)
 	 * for a given context
 	 *
-	 * @param	{jQuery Object}	context		Object to find action buttons in to bind
+	 * @param	{jQuery Object}	context	Object to find action buttons in to bind
 	 */
 	_bindActionButtons: function(context) {
 		this._bindAddButton(context);
@@ -476,6 +524,9 @@ Grid.Settings.prototype = {
 			event.preventDefault();
 
 			var parentCol = $(this).parents('.fields-grid-item');
+
+			// Collapse cloned column
+			that._toggleColumnExpand(parentCol, false)
 
 			that._insertColumn(
 				// Build new column based on current column
@@ -579,6 +630,12 @@ Grid.Settings.prototype = {
 		// Bind column type dropdown component
 		Dropdown.renderFields(column)
 
+		// Expand column
+		this._toggleColumnExpand(column, true)
+
+		// Scroll to new element
+		$('body').animate({ scrollTop: column.offset().top - 10 }, 500)
+
 		// Fire displaySettings event
 		this._fireEvent('displaySettings', $('.grid-col-settings-custom > div', column));
 	},
@@ -617,7 +674,7 @@ Grid.Settings.prototype = {
 		el.find('input[name$="\\[col_name\\]"]').attr('value', '');
 
 		// Need to make sure the new column's field names are unique
-		var new_namespace = 'new_' + $('.grid-item', this.root).size();
+		var new_namespace = 'new_' + $('.fields-grid-item', this.root).size();
 		var old_namespace = el.data('field-name');
 
 		el.html(
