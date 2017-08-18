@@ -31,7 +31,7 @@ use CP_Controller;
  */
 class Create extends Members {
 
-	private $base_url = 'members/create';
+	protected $base_url = 'members/create';
 
 	/**
 	 * Create Member Form

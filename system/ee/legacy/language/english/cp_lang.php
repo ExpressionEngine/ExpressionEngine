@@ -47,6 +47,8 @@ $lang = array(
 
 'copyright' => 'Copyright',
 
+'custom_limit' => 'custom limit',
+
 'e_no_css' => 'The requested CSS file could not be opened.',
 
 'edit_quicklinks' => 'Edit Quick Links',
