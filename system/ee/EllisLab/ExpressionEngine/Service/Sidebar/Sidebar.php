@@ -27,9 +27,14 @@ class Sidebar {
 	protected $view;
 
 	/**
-	 * @var array $list Primary folder list for this sidebar
+	 * @var FolderList $list Primary folder list for this sidebar
 	 */
-	protected $list = array();
+	protected $list;
+
+	/**
+	 * @var ActionBar $action_bar Primary action bar for this sidebar
+	 */
+	protected $action_bar;
 
 	/**
 	 * Constructor: sets the ViewFactory property
@@ -68,6 +73,11 @@ class Sidebar {
 			$output .= $header->render($this->view);
 		}
 
+		if ( ! empty($this->action_bar))
+		{
+			$output .= $this->action_bar->render($this->view);
+		}
+
 		if (empty($output))
 		{
 			return '';
@@ -102,6 +112,18 @@ class Sidebar {
 	{
 		$this->list = new FolderList($name);
 		return $this->list;
+	}
+
+	/**
+	 * Adds a folder list under this header
+	 *
+	 * @param string $name The name of the folder list
+	 * @return FolderList A new FolderList object
+	 */
+	public function addActionBar()
+	{
+		$this->action_bar = new ActionBar();
+		return $this->action_bar;
 	}
 }
 
