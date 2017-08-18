@@ -60,19 +60,20 @@ class Status extends AbstractChannelsController {
 			->filter('site_id', ee()->config->item('site_id'));
 		$total_rows = $status_groups->count();
 
-		$table = $this->buildTableFromStatusGroupsQuery($status_groups, array(), ee()->cp->allowed_group('can_delete_statuses'));
-
-		$vars['table'] = $table->viewData($this->base_url);
 
 		$filters = ee('CP/Filter')
-			->add('Perpage', $total_rows, 'show_all_statuses');
+			->add('Perpage', $total_rows, 'show_all_status_groups');
 
 		// Before pagination so perpage is set correctly
 		$this->renderFilters($filters);
 
+		$table = $this->buildTableFromStatusGroupsQuery($status_groups, array(), ee()->cp->allowed_group('can_delete_statuses'));
+
+		$vars['table'] = $table->viewData($this->base_url);
+
 		$vars['pagination'] = ee('CP/Pagination', $total_rows)
 			->perPage($this->perpage)
-			->currentPage($vars['table']['page'])
+			->currentPage($this->page)
 			->render($this->base_url);
 
 		$vars['can_create_statuses'] = ee()->cp->allowed_group('can_create_statuses');

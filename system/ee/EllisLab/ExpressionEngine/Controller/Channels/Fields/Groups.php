@@ -62,25 +62,27 @@ class Groups extends AbstractChannelsController {
 		$groups = ee('Model')->get('ChannelFieldGroup')
 			->filter('site_id', ee()->config->item('site_id'));
 
+		$total_rows = $groups->count();
+
 		$vars = array(
 			'create_url' => ee('CP/URL')->make('channels/fields/groups/create')
 		);
+
+		$filters = ee('CP/Filter')
+					->add('Perpage', $total_rows, 'show_all_field_groups');
+
+		// Before pagination so perpage is set correctly
+		$this->renderFilters($filters);
 
 		$table = $this->buildTableFromChannelGroupsQuery($groups, array(), ee()->cp->allowed_group('can_delete_channel_fields'));
 
 		$vars['table'] = $table->viewData($this->base_url);
 		$vars['show_create_button'] = ee()->cp->allowed_group('can_create_channel_fields');
 
-		$filters = ee('CP/Filter')
-					->add('Perpage', $groups->count(), 'show_all_groups');
 
-		// Before pagination so perpage is set correctly
-		$this->renderFilters($filters);
-
-
-		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+		$vars['pagination'] = ee('CP/Pagination', $total_rows)
 			->perPage($this->perpage)
-			->currentPage($vars['table']['page'])
+			->currentPage($this->page)
 			->render($this->base_url);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('group') . ': <b>### ' . lang('groups') . '</b>');

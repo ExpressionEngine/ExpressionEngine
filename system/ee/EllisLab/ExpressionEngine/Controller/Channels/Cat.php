@@ -67,19 +67,19 @@ class Cat extends AbstractChannelsController {
 
 		$total_rows = $cat_groups->count();
 
-		$table = $this->buildTableFromCategoryGroupsQuery($cat_groups, array(), ee()->cp->allowed_group('can_delete_categories'));
-
-		$vars['table'] = $table->viewData($this->base_url);
-
 		$filters = ee('CP/Filter')
-			->add('Perpage', $total_rows, 'show_all_categories');
+			->add('Perpage', $total_rows, 'show_all_category_groups');
 
 		// Before pagination so perpage is set correctly
 		$this->renderFilters($filters);
 
+		$table = $this->buildTableFromCategoryGroupsQuery($cat_groups, array(), ee()->cp->allowed_group('can_delete_categories'));
+
+		$vars['table'] = $table->viewData($this->base_url);
+
 		$vars['pagination'] = ee('CP/Pagination', $total_rows)
 			->perPage($this->perpage)
-			->currentPage($vars['table']['page'])
+			->currentPage($this->page)
 			->render($this->base_url);
 
 		$vars['can_create_categories'] = ee()->cp->allowed_group('can_create_categories');

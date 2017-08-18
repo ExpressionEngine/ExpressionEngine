@@ -78,22 +78,24 @@ class Fields extends AbstractChannelsController {
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('group_id', $group_id);
 
+		$total_rows = $fields->count();
+
+		$filters = ee('CP/Filter')
+					->add('Perpage', $total_rows, 'show_all_fields');
+
+		// Before pagination so perpage is set correctly
+		$this->renderFilters($filters);
+
 		$table = $this->buildTableFromChannelFieldsQuery($fields, array(), ee()->cp->allowed_group('can_delete_channel_fields'));
 		$table->setNoResultsText('no_fields', 'create_new', ee('CP/URL')->make('channels/fields/create/' . $group_id));
 
 		$vars['table'] = $table->viewData($this->base_url);
 		$vars['show_create_button'] = ee()->cp->allowed_group('can_create_channel_fields');
 
-		$filters = ee('CP/Filter')
-					->add('Perpage', $vars['table']['total_rows'], 'show_all_templates');
 
-				// Before pagination so perpage is set correctly
-				$this->renderFilters($filters);
-
-
-		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+		$vars['pagination'] = ee('CP/Pagination', $total_rows)
 			->perPage($this->perpage)
-			->currentPage($vars['table']['page'])
+			->currentPage($this->page)
 			->render($this->base_url);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('field') . ': <b>### ' . lang('fields') . '</b>');
