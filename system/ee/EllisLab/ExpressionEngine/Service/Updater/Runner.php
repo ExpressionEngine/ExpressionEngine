@@ -52,7 +52,7 @@ class Runner {
 		$preflight->checkPermissions();
 		$preflight->cleanUpOldUpgrades();
 		$preflight->checkDiskSpace();
-		$preflight->stashConfigs();
+		$preflight->stashConfig();
 	}
 
 	public function download()

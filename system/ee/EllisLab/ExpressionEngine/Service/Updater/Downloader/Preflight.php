@@ -171,9 +171,9 @@ class Preflight {
 	 * within the microapp because they may be stored in any manner of places, so
 	 * we'll grab them early and put them in our working directory for the update.
 	 */
-	public function stashConfigs()
+	public function stashConfig()
 	{
-		$configs = [
+		$config = [
 			'update_path' => $this->path(),
 			'archive_path' => $this->getExtractedArchivePath(),
 			'theme_paths' => $this->getThemePaths()
@@ -181,7 +181,7 @@ class Preflight {
 
 		$this->filesystem->write(
 			$this->path() . 'configs.json',
-			json_encode($configs),
+			json_encode($config),
 			TRUE
 		);
 	}
