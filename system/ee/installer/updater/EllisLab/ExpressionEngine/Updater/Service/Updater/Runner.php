@@ -18,7 +18,7 @@ use EllisLab\ExpressionEngine\Updater\Service\Updater\Logger;
  * database, and updating the files and database
  */
 class Runner {
-	use Service\Updater\Steppable {
+	use Service\Updater\SteppableTrait {
 		runStep as runStepParent;
 	}
 
@@ -215,7 +215,7 @@ class Runner {
 	}
 
 	/**
-	 * Overrides Steppable's runStep to be a catch-all for exceptions
+	 * Overrides SteppableTrait's runStep to be a catch-all for exceptions
 	 */
 	public function runStep($step)
 	{

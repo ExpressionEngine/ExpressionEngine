@@ -14,7 +14,7 @@ namespace EllisLab\ExpressionEngine\Service\Updater;
  * pre-defined steps to accomplish a goal. You can inject steps at any point
  * and start the iterator from any point.
  */
-trait Steppable {
+trait SteppableTrait {
 
 	/**
 	 * Stores list of methods to call on the implementing class

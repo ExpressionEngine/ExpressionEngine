@@ -10,14 +10,14 @@
 namespace EllisLab\ExpressionEngine\Service\Updater;
 
 use EllisLab\ExpressionEngine\Service\Updater\Logger;
-use EllisLab\ExpressionEngine\Service\Updater\Steppable;
+use EllisLab\ExpressionEngine\Service\Updater\SteppableTrait;
 
 /**
  * Handles the first half of an ExpressionEngine upgrade: downloading, verifying,
  * and moving the updater micro app into place
  */
 class Runner {
-	use Steppable {
+	use SteppableTrait {
 		runStep as runStepParent;
 	}
 

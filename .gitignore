@@ -158,5 +158,5 @@ system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Config/Fac
 system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Config/File.php
 system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Logger/File.php
 system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/Logger.php
-system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/Steppable.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/SteppableTrait.php
 system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/Verifier.php

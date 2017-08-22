@@ -2,7 +2,7 @@
 
 namespace EllisLab\Tests\ExpressionEngine\Service\Updater;
 
-use EllisLab\ExpressionEngine\Service\Updater\Steppable;
+use EllisLab\ExpressionEngine\Service\Updater\SteppableTrait;
 use Mockery;
 
 class SteppableTest extends \PHPUnit_Framework_TestCase {
@@ -82,8 +82,8 @@ class SteppableTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	// Nomenclature may not be clear here, but this is testing what happens
-	// if a fresh Steppable object gets told to run an injected step right off
-	// the bat; basically, injected steps need to always tell us where to go
+	// if a fresh SteppableTrait object gets told to run an injected step right
+	// off the bat; basically, injected steps need to always tell us where to go
 	// afterwards to make sure order of steps remains intact
 	public function testInjectedStepFreshRequest()
 	{
@@ -120,7 +120,7 @@ class SteppableTest extends \PHPUnit_Framework_TestCase {
 }
 
 class Stepper {
-	use Steppable;
+	use SteppableTrait;
 
 	public $step1_called = FALSE;
 	public $step2_called = FALSE;
@@ -152,7 +152,7 @@ class Stepper {
 }
 
 class StepperSkipSteps {
-	use Steppable;
+	use SteppableTrait;
 
 	public $step1_called = FALSE;
 	public $step2_called = FALSE;
@@ -185,7 +185,7 @@ class StepperSkipSteps {
 }
 
 class StepperWithInjection {
-	use Steppable;
+	use SteppableTrait;
 
 	public $step1_called = FALSE;
 	public $step2_called = FALSE;

@@ -10,7 +10,7 @@
 namespace EllisLab\ExpressionEngine\Updater\Service\Updater;
 
 use EllisLab\ExpressionEngine\Updater\Library\Filesystem\Filesystem;
-use EllisLab\ExpressionEngine\Updater\Service\Updater\Steppable;
+use EllisLab\ExpressionEngine\Updater\Service\Updater\SteppableTrait;
 
 /**
  * Database updater for one-click updater
@@ -18,7 +18,7 @@ use EllisLab\ExpressionEngine\Updater\Service\Updater\Steppable;
  * Runs the ud_x_xx_xx.php files needed to complete the update
  */
 class DatabaseUpdater {
-	use Steppable;
+	use SteppableTrait;
 
 	protected $from_version;
 	protected $filesystem;
