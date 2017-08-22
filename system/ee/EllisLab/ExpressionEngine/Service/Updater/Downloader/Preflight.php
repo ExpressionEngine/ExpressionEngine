@@ -160,7 +160,7 @@ class Preflight {
 			throw new UpdaterException(sprintf(
 				lang('files_not_writable'),
 				implode("\n", $paths),
-				'https://docs.expressionengine.com/latest/installation/update.html'
+				DOC_URL.'installation/update.html'
 			), 1);
 		}
 	}

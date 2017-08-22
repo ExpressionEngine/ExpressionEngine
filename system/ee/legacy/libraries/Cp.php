@@ -314,7 +314,7 @@ class Cp {
 					lang('update_completed_desc'),
 					APP_VER,
 					ee()->cp->masked_url(
-						'https://docs.expressionengine.com/v4/about/changelog.html'
+						DOC_URL.'about/changelog.html'
 					)
 				))
 				->now();
@@ -326,7 +326,7 @@ class Cp {
 				->withTitle(sprintf(lang('update_rolledback'), APP_VER))
 				->addToBody(sprintf(
 					lang('update_rolledback_desc'),
-					'https://docs.expressionengine.com/v4/installation/update.html'
+					DOC_URL.'installation/update.html'
 				))
 				->now();
 		}
