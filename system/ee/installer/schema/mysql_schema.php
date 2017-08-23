@@ -292,18 +292,6 @@ class EE_Schema {
 			crypt_key varchar(40) NULL DEFAULT NULL,
 			authcode varchar(10) NULL DEFAULT NULL,
 			email varchar(".USERNAME_MAX_LENGTH.") NOT NULL,
-			url varchar(150) NULL DEFAULT NULL,
-			location varchar(50) NULL DEFAULT NULL,
-			occupation varchar(80) NULL DEFAULT NULL,
-			interests varchar(120) NULL DEFAULT NULL,
-			bday_d int(2) NULL DEFAULT NULL,
-			bday_m int(2) NULL DEFAULT NULL,
-			bday_y int(4) NULL DEFAULT NULL,
-			aol_im varchar(50) NULL DEFAULT NULL,
-			yahoo_im varchar(50) NULL DEFAULT NULL,
-			msn_im varchar(50) NULL DEFAULT NULL,
-			icq varchar(50) NULL DEFAULT NULL,
-			bio text NULL,
 			signature text NULL,
 			avatar_filename varchar(120) NULL DEFAULT NULL,
 			avatar_width int(4) unsigned NULL DEFAULT NULL,
@@ -475,6 +463,7 @@ class EE_Schema {
 			`can_access_translate` char(1) NOT NULL DEFAULT 'n',
 			`can_access_import` char(1) NOT NULL DEFAULT 'n',
 			`can_access_sql_manager` char(1) NOT NULL DEFAULT 'n',
+			`can_moderate_spam` char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY `group_id_site_id` (`group_id`, `site_id`)
 		)";
 
@@ -529,6 +518,7 @@ class EE_Schema {
 			m_field_order int(3) unsigned NULL DEFAULT NULL,
 			m_field_text_direction char(3) DEFAULT 'ltr',
 			m_field_settings text NULL,
+			m_legacy_field_data char(1) NOT NULL default 'n',
 			PRIMARY KEY `m_field_id` (`m_field_id`)
 			)";
 
@@ -640,7 +630,8 @@ class EE_Schema {
 			KEY `status` (`status`),
 			KEY `entry_date` (`entry_date`),
 			KEY `expiration_date` (`expiration_date`),
-			KEY `site_id` (`site_id`)
+			KEY `site_id` (`site_id`),
+			KEY `sticky_date_id_idx` (`sticky`,`entry_date`,`entry_id`)
 		)";
 
 		// Channel Titles Autosave
@@ -729,6 +720,7 @@ class EE_Schema {
 			field_order int(3) unsigned NOT NULL,
 			field_content_type varchar(20) NOT NULL default 'any',
 			field_settings text NULL,
+			legacy_field_data char(1) NOT NULL default 'n',
 			PRIMARY KEY `field_id` (`field_id`),
 			KEY `group_id` (`group_id`),
 			KEY `field_type` (`field_type`),
@@ -859,6 +851,7 @@ class EE_Schema {
 			`field_required` char(1) NOT NULL default 'n',
 			`field_order` int(3) unsigned NOT NULL,
 			`field_settings` text NULL,
+			`legacy_field_data` char(1) NOT NULL default 'n',
 			PRIMARY KEY `field_id` (`field_id`),
 			KEY `site_id` (`site_id`),
 			KEY `group_id` (`group_id`)
@@ -1263,11 +1256,11 @@ class EE_Schema {
 
 
 		$Q[] = "CREATE TABLE `exp_file_categories` (
-			`file_id` int(10) unsigned DEFAULT NULL,
-			`cat_id` int(10) unsigned DEFAULT NULL,
+			`file_id` int(10) unsigned NOT NULL,
+			`cat_id` int(10) unsigned NOT NULL,
 			`sort` int(10) unsigned DEFAULT '0',
 			`is_cover` char(1) DEFAULT 'n',
-			KEY `file_id` (`file_id`),
+			PRIMARY KEY (`file_id`, `cat_id`),
 			KEY `cat_id` (`cat_id`)
 		)";
 
@@ -1275,11 +1268,12 @@ class EE_Schema {
 			`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`site_id` int(4) unsigned NOT NULL DEFAULT '1',
 			`upload_location_id` int(4) unsigned DEFAULT NULL,
-				`title` varchar(255) DEFAULT '',
+			`title` varchar(255) DEFAULT '',
 			`short_name` varchar(255) DEFAULT '',
 			`resize_type` varchar(50) DEFAULT '',
 			`width` int(10) DEFAULT '0',
 			`height` int(10) DEFAULT '0',
+			`quality` tinyint(1) unsigned DEFAULT '90',
 			`watermark_id` int(4) unsigned DEFAULT NULL,
 			PRIMARY KEY (`id`),
 			KEY `upload_location_id` (`upload_location_id`)
@@ -1411,8 +1405,9 @@ class EE_Schema {
 		//		$quick_link = 'My Site|'.$this->userdata['site_url'].$this->userdata['site_index'].'|1';
 		$quick_link = '';
 
-		$Q[] = "INSERT INTO exp_members (group_id, username, password, salt, unique_id, email, screen_name, join_date, ip_address, timezone, quick_links, language)
+		$Q[] = "INSERT INTO exp_members (member_id, group_id, username, password, salt, unique_id, email, screen_name, join_date, ip_address, timezone, quick_links, language)
 			VALUES (
+				'1',
 				'1',
 				'".ee()->db->escape_str($this->userdata['username'])."',
 				'".$this->userdata['password']."',
@@ -1546,6 +1541,7 @@ class EE_Schema {
 				'can_access_translate'           => 'y',
 				'can_access_import'              => 'y',
 				'can_access_sql_manager'         => 'y',
+				'can_moderate_spam'              => 'y',
 				'search_flood_control'           => '0'
 			),
 			array(

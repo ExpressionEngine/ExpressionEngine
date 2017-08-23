@@ -86,6 +86,8 @@ system/ee/EllisLab/Tests/phpunit/composer.lock
 tests/rspec/config.local.rb
 tests/rspec/screenshots/*
 tests/rspec/support/file-sync/uploads/*
+tests/rspec/fixtures/vendor/
+tests/rspec/fixtures/composer.lock
 
 system/ee/EllisLab/Tests/vendor/*
 system/ee/EllisLab/Tests/composer.lock

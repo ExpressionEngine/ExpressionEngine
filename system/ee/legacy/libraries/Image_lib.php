@@ -279,7 +279,7 @@ class EE_Image_lib {
 		// Set the quality
 		$this->quality = trim(str_replace("%", "", $this->quality));
 
-		if ($this->quality == '' OR $this->quality == 0 OR ! is_numeric($this->quality))
+		if ($this->quality === '' OR $this->quality < 0 OR ! is_numeric($this->quality))
 		{
 			$this->quality = 90;
 		}
@@ -547,6 +547,11 @@ class EE_Image_lib {
 			return FALSE;
 		}
 
+		if ( ! $this->arePathsSafe())
+		{
+			return FALSE;
+		}
+
 		if ( ! preg_match("/convert$/i", $this->library_path))
 		{
 			$this->library_path = rtrim($this->library_path, '/').'/';
@@ -559,7 +564,7 @@ class EE_Image_lib {
 
 		if ($action == 'crop')
 		{
-			$cmd .= " -crop ".$this->width."x".$this->height."+".$this->x_axis."+".$this->y_axis." \"$this->full_src_path\" \"$this->full_dst_path\" 2>&1";
+			$cmd .= " -crop ".$this->width."x".$this->height."+".$this->x_axis."+".$this->y_axis." ".escapeshellarg($this->full_src_path)." ".escapeshellarg($this->full_dst_path)." 2>&1";
 		}
 		elseif ($action == 'rotate')
 		{
@@ -573,11 +578,11 @@ class EE_Image_lib {
 					break;
 			}
 
-			$cmd .= " ".$angle." \"$this->full_src_path\" \"$this->full_dst_path\" 2>&1";
+			$cmd .= " ".$angle." ".escapeshellarg($this->full_src_path)." ".escapeshellarg($this->full_dst_path)." 2>&1";
 		}
 		else  // Resize
 		{
-			$cmd .= " -resize ".$this->width."x".$this->height." \"$this->full_src_path\" \"$this->full_dst_path\" 2>&1";
+			$cmd .= " -resize ".$this->width."x".$this->height." ".escapeshellarg($this->full_src_path)." ".escapeshellarg($this->full_dst_path)." 2>&1";
 		}
 
 		$retval = 1;
@@ -611,6 +616,11 @@ class EE_Image_lib {
 		if ($this->library_path == '')
 		{
 			$this->set_error('imglib_libpath_invalid');
+			return FALSE;
+		}
+
+		if ( ! $this->arePathsSafe())
+		{
 			return FALSE;
 		}
 
@@ -658,7 +668,7 @@ class EE_Image_lib {
 			$cmd_inner = 'pnmscale -xysize '.$this->width.' '.$this->height;
 		}
 
-		$cmd = $this->library_path.$cmd_in.' '.$this->full_src_path.' | '.$cmd_inner.' | '.$cmd_out.' > '.$this->dest_folder.'netpbm.tmp';
+		$cmd = $this->library_path.$cmd_in.' '.escapeshellarg($this->full_src_path).' | '.$cmd_inner.' | '.$cmd_out.' > '.escapeshellarg($this->dest_folder.'netpbm.tmp');
 
 		$retval = 1;
 
@@ -680,6 +690,29 @@ class EE_Image_lib {
 
 		return TRUE;
 	}
+
+	/**
+	 * Checks path instance variables to make sure they have been properly
+	 * sanitized before passing to shell functions
+	 *
+	 * @return	bool
+	 */
+	private function arePathsSafe()
+	{
+		foreach (array('library_path', 'full_src_path',
+			'full_dst_path', 'dest_folder') as $path)
+		{
+			if (ee()->security->sanitize_filename($this->$path, TRUE) !== $this->$path)
+			{
+				$this->set_error(sprintf(lang('imglib_unsafe_config'), $path));
+				return FALSE;
+			}
+		}
+
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Image Rotate Using GD
@@ -1263,7 +1296,16 @@ class EE_Image_lib {
 					return FALSE;
 				}
 
-				if ( ! @imagepng($resource, $this->full_dst_path))
+				// We have a percentage value for quality (0 - 100) but PNGs
+				// only accept a quality of 0 - 9, so we must to some math!
+				// Additionally, for JPEGs 100 is best quality but for PNGs
+				// 0 is best quality. So...for the math, if we want 80% quality
+				// then we'd need to do 9 * .8 then subtract that from 9, or
+				// just do 9 * .2! So, we'll find that number by doing 100 -
+				// quality (percentage math, it's fun for the whole family!)
+				$png_quality = round(((100 - $this->quality) / 100) * 9);
+
+				if ( ! @imagepng($resource, $this->full_dst_path, $png_quality))
 				{
 					$this->set_error('imglib_save_failed');
 					return FALSE;

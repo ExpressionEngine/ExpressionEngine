@@ -241,12 +241,6 @@ class Profile extends CP_Controller {
 					{
 						$post = ee()->input->post($field_name);
 
-						// birthday fields must be NULL if blank
-						if (in_array($field_name, array('bday_d', 'bday_m', 'bday_y')))
-						{
-							$post = ($post == '') ? NULL : $post;
-						}
-
 						// Handle arrays of checkboxes as a special case;
 						if ($field['type'] == 'checkbox')
 						{

@@ -26,6 +26,7 @@ class Updater {
 		$steps = new \ProgressIterator(
 			array(
 				'add_enable_devlog_alerts',
+                'addImageQualityColumn',
 				'fix_file_dimension_site_ids'
 			)
 		);
@@ -43,6 +44,24 @@ class Updater {
 		ee()->config->update_site_prefs(
 			array('enable_devlog_alerts' => 'n'),
 			'all'
+		);
+	}
+
+	/**
+	 * Adds a new image quality column to the file dimensions table
+	 */
+	private function addImageQualityColumn()
+	{
+		ee()->smartforge->add_column(
+			'file_dimensions',
+			array(
+				'quality' => array(
+					'type'       => 'tinyint',
+					'constraint' => 1,
+					'unsigned'   => TRUE,
+					'default'    => 90,
+				)
+			)
 		);
 	}
 

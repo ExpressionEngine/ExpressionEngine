@@ -25,7 +25,7 @@ class Punctuation implements Vectorizer {
 	 */
 	public function vectorize($source)
 	{
-		$punctuation = preg_match_all('/[!-~]/u', $source);
+		$punctuation = preg_match_all('/[!-~]/u', $source, $matches);
 		$characters  = mb_strlen($source);
 		if ($characters !== 0)
 		{

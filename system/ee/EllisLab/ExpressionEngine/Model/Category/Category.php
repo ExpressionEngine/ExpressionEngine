@@ -19,6 +19,7 @@ use EllisLab\ExpressionEngine\Model\Category\Display\CategoryFieldLayout;
 class Category extends ContentModel {
 
 	protected static $_primary_key = 'cat_id';
+	protected static $_table_name = 'categories';
 	protected static $_gateway_names = array('CategoryGateway', 'CategoryFieldDataGateway');
 
 	protected static $_hook_id = 'category';
@@ -57,6 +58,11 @@ class Category extends ContentModel {
 		)
 	);
 
+	protected static $_field_data = array(
+		'field_model'  => 'CategoryField',
+		'group_column' => 'Category__group_id'
+	);
+
 	protected static $_validation_rules = array(
 		'cat_name'			=> 'required|noHtml|xss',
 		'cat_url_title'		=> 'required|alphaDash|unique[group_id]',
@@ -65,7 +71,8 @@ class Category extends ContentModel {
 	);
 
 	protected static $_events = array(
-		'beforeInsert'
+		'beforeInsert',
+		'beforeDelete'
 	);
 
 	// Properties
@@ -109,7 +116,7 @@ class Category extends ContentModel {
 
 		if (empty($cat_order))
 		{
-			$count = $this->getFrontend()->get('Category')
+			$count = $this->getModelFacade()->get('Category')
 				->filter('group_id', $this->getProperty('group_id'))
 				->count();
 			$this->setProperty('cat_order', $count + 1);
@@ -130,7 +137,6 @@ class Category extends ContentModel {
 
 		return parent::addFacade($id, $info, $name_prefix);
 	}
-
 }
 
 // EOF

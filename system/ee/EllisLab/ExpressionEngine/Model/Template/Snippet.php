@@ -148,7 +148,7 @@ class Snippet extends FileSyncedModel {
 
 		if ( ! $site = ee()->session->cache('site/id/' . $this->site_id, 'site'))
 		{
-			$site = $this->getFrontend()->get('Site')
+			$site = $this->getModelFacade()->get('Site')
 				->fields('site_name')
 				->filter('site_id', $this->site_id)
 				->first();
@@ -215,7 +215,7 @@ class Snippet extends FileSyncedModel {
 					{
 						$contents = file_get_contents($item->getRealPath());
 
-						$new_snip = ee('Model')->make('Snippet', array(
+						$new_snip = $this->getModelFacade()->make('Snippet', array(
 							'site_id' => $site_id,
 							'snippet_name' => $name,
 							'snippet_contents' => $contents
