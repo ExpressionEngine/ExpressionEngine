@@ -339,6 +339,11 @@ class Cp {
 	 */
 	protected function _notices()
 	{
+		if (ee()->session->flashdata)
+		{
+			ee()->session->_age_flashdata();
+		}
+
 		$alert = $this->_checksum_bootstrap_files();
 
 		// These are only displayed to Super Admins

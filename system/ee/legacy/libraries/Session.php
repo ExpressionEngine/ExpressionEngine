@@ -1218,7 +1218,6 @@ class EE_Session {
 		{
 			if ($this->flashdata = ee('Encrypt/Cookie')->getVerifiedCookieData($cookie))
 			{
-				$this->_age_flashdata();
 				return;
 			}
 		}
