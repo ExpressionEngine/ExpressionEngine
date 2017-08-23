@@ -150,8 +150,7 @@ class Members extends CP_Controller {
 		$page = (ee()->input->get('page') > 0) ? ee()->input->get('page') : 1;
 
 		$state = array(
-			'sort'	=> array($table->sort_col => $table->sort_dir),
-			'offset' => ! empty($page) ? ($page - 1) * $table->config['limit'] : 0
+			'sort'	=> array($table->sort_col => $table->sort_dir)
 		);
 
 		$params = array(
@@ -776,7 +775,7 @@ class Members extends CP_Controller {
 
 		$this->renderFilters($filters);
 
-		$members = $this->member_model->get_members($group_id, $this->perpage, $state['offset'], $search_value, $sort, $column_filter);
+		$members = $this->member_model->get_members($group_id, $this->perpage, $this->offset, $search_value, $sort, $column_filter);
 		$members = $members ? $members->result_array() : array();
 		$member_groups = $this->member_model->get_member_groups();
 		$groups = array();

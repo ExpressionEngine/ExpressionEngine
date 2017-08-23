@@ -71,8 +71,6 @@ class Groups extends Members\Members {
 		$sort_col = ($sort_col == 'id') ? 'group_id' : $sort_col;
 		$sort_col = ($sort_col == 'status') ? 'is_locked' : $sort_col;
 		$sort_dir = ee()->input->get('sort_dir') ?: 'asc';
-		$page = ee()->input->get('page') > 0 ? ee()->input->get('page') : 1;
-		$offset = ! empty($page) ? ($page - 1) * $this->perpage : 0;
 
 		$table = ee('CP/Table', array(
 			'sort_col' => $sort_col,
@@ -124,7 +122,7 @@ class Groups extends Members\Members {
 			->filter('site_id', ee()->config->item('site_id'))
 			->order($sort_col, $sort_dir)
 			->limit($this->perpage)
-			->offset($offset);
+			->offset($this->offset);
 
 		$search = ee()->input->post('search');
 
@@ -207,8 +205,8 @@ class Groups extends Members\Members {
 		{
 			$data['pagination'] = ee('CP/Pagination', $total)
 				->perPage($this->perpage)
-				->currentPage($page)
-				->render($base_url);
+				->currentPage($this->page)
+				->render($this->base_url);
 		}
 
 		// Set search results heading

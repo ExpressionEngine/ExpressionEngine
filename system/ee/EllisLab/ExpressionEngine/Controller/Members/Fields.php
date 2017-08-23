@@ -82,8 +82,6 @@ class Fields extends Members\Members {
 		}
 
 		$sort_dir = ee()->input->get('sort_dir') ?: 'asc';
-		$page = ee()->input->get('page') > 0 ? ee()->input->get('page') : 1;
-		$offset = ! empty($page) ? ($page - 1) * $this->perpage : 0;
 
 		$table = ee('CP/Table', array(
 			'sort_col' => $sort_col,
@@ -130,7 +128,7 @@ class Fields extends Members\Members {
 		$fields = ee()->api->get('MemberField')
 		->order($sort_col, $sort_dir)
 		->limit($this->perpage)
-		->offset($offset);
+		->offset($this->offset);
 
 
 		$type_map = array(
@@ -192,8 +190,8 @@ class Fields extends Members\Members {
 		{
 			$data['pagination'] = ee('CP/Pagination', $total)
 				->perPage($this->perpage)
-				->currentPage($page)
-				->render($base_url);
+				->currentPage($this->page)
+				->render($this->base_url);
 		}
 
 
