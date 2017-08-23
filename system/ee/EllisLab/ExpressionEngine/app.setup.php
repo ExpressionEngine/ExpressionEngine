@@ -148,9 +148,14 @@ return array(
 		'Database/Backup' => function($ee, $file_path)
 		{
 			$filesystem = $ee->make('Filesystem');
-			$backup_query = new Database\Backup\Query($ee->make('db'));
+			$backup_query = $ee->make('Database/Backup/Query');
 
 			return new Database\Backup\Backup($filesystem, $backup_query, $file_path);
+		},
+
+		'Database/Backup/Query' => function($ee)
+		{
+			return new Database\Backup\Query($ee->make('db'));
 		},
 
 		'Database/Restore' => function($ee)

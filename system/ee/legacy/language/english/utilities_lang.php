@@ -24,6 +24,8 @@ $lang = array(
 
 'member_import' => 'Member Import',
 
+'backup_utility' => 'Backup Utility',
+
 'sql_manager' => 'SQL Manager',
 
 'sql_manager_abbr' => '<abbr title="Structured Query Language">SQL</abbr> Manager',
@@ -337,6 +339,37 @@ $lang = array(
 'member_import_error_desc' => 'We were unable to complete the import, please review and fix errors below.',
 
 'member_import_no_custom_fields_selected' => 'No custom fields were selected for import. Please click the checkboxes next to the fields you which to create.',
+
+/**
+ * Database Backup Utility
+ */
+
+'backup_database' =>
+'Backup Database',
+
+'backing_up' =>
+'Backing up...',
+
+'backup_tables' =>
+'Backup tables',
+
+'table_count' =>
+'<b>%s</b> tables',
+
+'backup_success' =>
+'Backup Succeeded',
+
+'backup_success_desc' =>
+'Your backup has been stored in your system folder at: <b>%s</b>',
+
+'backup_error' =>
+'Cannot Make Backup',
+
+'cache_path_not_writable' =>
+'Your cache path is not writable. This folder must be writable to write your backup.',
+
+'not_enough_free_disk_space' =>
+'There is not enough free disk space to write your backup. %s needed.',
 
 /**
  * SQL Query Form
