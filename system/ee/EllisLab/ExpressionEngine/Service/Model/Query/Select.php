@@ -284,7 +284,7 @@ class Select extends Query {
 				return $column[$item_key_column];
 			}, $result_array);
 
-			$chunks = array_chunk($fields->asArray(), 59);
+			$chunks = array_chunk($fields, 59);
 
 			foreach ($chunks as $fields)
 			{
