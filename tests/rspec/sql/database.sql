@@ -73,6 +73,8 @@ DROP TABLE IF EXISTS `exp_channel_titles`;
 DROP TABLE IF EXISTS `exp_channel_member_groups`;
 DROP TABLE IF EXISTS `exp_channel_form_settings`;
 DROP TABLE IF EXISTS `exp_channel_fields`;
+DROP TABLE IF EXISTS `exp_channels_channel_fields`;
+DROP TABLE IF EXISTS `exp_channel_field_groups_fields`;
 DROP TABLE IF EXISTS `exp_channel_entries_autosave`;
 DROP TABLE IF EXISTS `exp_channel_data`;
 DROP TABLE IF EXISTS `exp_category_posts`;
@@ -265,6 +267,20 @@ CREATE TABLE `exp_channel_fields` (
   KEY `group_id` (`group_id`),
   KEY `field_type` (`field_type`),
   KEY `site_id` (`site_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `exp_channels_channel_fields` (
+	`channel_id` int(4) unsigned NOT NULL,
+	`field_id` int(6) unsigned NOT NULL,
+	PRIMARY KEY `channel_id_field_id` (`channel_id`, `field_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `exp_channel_field_groups_fields` (
+	`field_id` int(6) unsigned NOT NULL,
+	`group_id` int(4) unsigned NOT NULL,
+	PRIMARY KEY `field_id_group_id` (`field_id`, `group_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 
