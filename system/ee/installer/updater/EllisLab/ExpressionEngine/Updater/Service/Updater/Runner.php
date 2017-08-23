@@ -147,7 +147,7 @@ class Runner {
 
 		ee('Filesystem')->deleteDir(SYSPATH.'ee/installer');
 
-		$this->setNextStep('rollback');
+		$this->setNextStep('selfDestruct');
 	}
 
 	/**
