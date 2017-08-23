@@ -1435,8 +1435,9 @@ class EE_Schema {
 		//		$quick_link = 'My Site|'.$this->userdata['site_url'].$this->userdata['site_index'].'|1';
 		$quick_link = '';
 
-		$Q[] = "INSERT INTO exp_members (group_id, username, password, salt, unique_id, email, screen_name, join_date, ip_address, timezone, quick_links, language)
+		$Q[] = "INSERT INTO exp_members (member_id, group_id, username, password, salt, unique_id, email, screen_name, join_date, ip_address, timezone, quick_links, language)
 			VALUES (
+				'1',
 				'1',
 				'".ee()->db->escape_str($this->userdata['username'])."',
 				'".$this->userdata['password']."',

@@ -192,22 +192,22 @@ class File extends Model {
 		{
 			// Remove the file
 			unlink($this->getAbsolutePath());
+		}
 
-			// Remove the thumbnail if it exists
-			if (file_exists($this->getAbsoluteThumbnailPath()))
+		// Remove the thumbnail if it exists
+		if (file_exists($this->getAbsoluteThumbnailPath()))
+		{
+			unlink($this->getAbsoluteThumbnailPath());
+		}
+
+		// Remove any manipulated files as well
+		foreach ($this->UploadDestination->FileDimensions as $file_dimension)
+		{
+			$file = rtrim($file_dimension->getAbsolutePath(), '/') . '/' . $this->file_name;
+
+			if (file_exists($file))
 			{
-				unlink($this->getAbsoluteThumbnailPath());
-			}
-
-			// Remove any manipulated files as well
-			foreach ($this->UploadDestination->FileDimensions as $file_dimension)
-			{
-				$file = rtrim($file_dimension->getAbsolutePath(), '/') . '/' . $this->file_name;
-
-				if (file_exists($file))
-				{
-					unlink($file);
-				}
+				unlink($file);
 			}
 		}
 	}

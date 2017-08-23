@@ -141,7 +141,14 @@ class Design extends AbstractDesignController {
 
 		$this->_sync_from_files();
 
-		$this->base_url = ee('CP/URL')->make('design/manager/' . $group_name);
+		$vars = array();
+		$vars['show_new_template_button'] = ee()->cp->allowed_group('can_create_new_templates');
+		$vars['show_bulk_delete'] = ee()->cp->allowed_group('can_delete_templates');
+		$vars['group_id'] = $group->group_name;
+
+		$base_url = ee('CP/URL')->make('design/manager/' . $group->group_name);
+    $this->base_url = $base_url;
+
 
 		$templates = ee('Model')->get('Template')->filter('group_id', $group->group_id)->filter('site_id', ee()->config->item('site_id'));
 

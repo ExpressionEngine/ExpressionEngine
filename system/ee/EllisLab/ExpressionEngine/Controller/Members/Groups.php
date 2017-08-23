@@ -719,7 +719,7 @@ class Groups extends Members\Members {
 
 			$addons = ee('Model')->get('Module')
 				->fields('module_id', 'module_name')
-				->filter('module_name', 'NOT IN', array('channel', 'comment', 'filepicker')) // @TODO This REALLY needs abstracting.
+				->filter('module_name', 'NOT IN', array('Channel', 'Comment', 'Member', 'File', 'Filepicker')) // @TODO This REALLY needs abstracting.
 				->all()
 				->filter(function($addon) {
 					$provision = ee('Addon')->get(strtolower($addon->module_name));
