@@ -32,8 +32,6 @@ class FileUpdater {
 		$this->verifier = $verifier;
 		$this->logger = $logger;
 		$this->configs = $this->parseConfigs();
-
-		$this->configs['theme_paths'] = array_unique($this->configs['theme_paths']);
 	}
 
 	public function updateFiles()
@@ -198,7 +196,7 @@ class FileUpdater {
 		// Otherwise, move the themes folder back to the archive folder
 		else
 		{
-			$theme_path = array_values($this->configs['theme_paths'])[0];
+			$theme_path = $this->configs['theme_paths'][0];
 			$theme_path = rtrim($theme_path, DIRECTORY_SEPARATOR) . '/ee/';
 
 			$this->move($theme_path, $new_themes_dir);
