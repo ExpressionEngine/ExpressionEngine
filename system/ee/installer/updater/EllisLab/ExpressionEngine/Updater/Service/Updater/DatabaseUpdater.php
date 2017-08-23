@@ -138,6 +138,15 @@ class DatabaseUpdater {
 			}
 		}
 
+		// Sort based on version, not filesystem order
+		usort($update_files, function ($a, $b)
+		{
+			$a = $this->getVersionForFilename($a);
+			$b = $this->getVersionForFilename($b);
+
+			return version_compare($a, $b, '>');
+		});
+
 		return $update_files;
 	}
 
