@@ -158,10 +158,26 @@ class DatabaseUpdater {
 	 */
 	protected function getVersionForFilename($filename)
 	{
-		if (preg_match('/^ud_0*(\d+)_0*(\d+)_0*(\d+).php$/', $filename, $matches))
+		$version = '';
+
+		if (preg_match('/^ud_0*(\d+)_0*(\d+)_0*(\d+)(?:_(.*?))?.php$/', $filename, $matches))
 		{
-			return "{$matches[1]}.{$matches[2]}.{$matches[3]}";
+			$version = "{$matches[1]}.{$matches[2]}.{$matches[3]}";
+
+			// Convert _dp_01 => -dp.1 type suffixes
+			if ( ! empty($matches[4]))
+			{
+				$dev_segs = explode('_', $matches[4]);
+				$version .= '-'.array_shift($dev_segs);
+
+				foreach ($dev_segs as $seg)
+				{
+					$version .= '.'.trim($seg, '0');
+				}
+			}
 		}
+
+		return $version;
 	}
 
 	/**
