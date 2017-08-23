@@ -30,8 +30,7 @@ class Runner {
 			'updateFiles',
 			'checkForDbUpdates',
 			'backupDatabase',
-			'updateDatabase',
-			'selfDestruct'
+			'updateDatabase'
 		]);
 
 		$this->logger = $this->makeLoggerService();
@@ -175,7 +174,7 @@ class Runner {
 			return $this->setNextStep('restoreDatabase');
 		}
 
-		$this->setNextStep('selfDestruct');
+		$this->setNextStep('selfDestruct[rollback]');
 	}
 
 	/**
@@ -188,14 +187,14 @@ class Runner {
 
 		ee('Database/Restore')->restoreLineByLine($db_path);
 
-		$this->setNextStep('selfDestruct');
+		$this->setNextStep('selfDestruct[rollback]');
 	}
 
 	/**
 	 * Cleans up and supporting update files, turns the system back on, and
 	 * updates app_version
 	 */
-	public function selfDestruct()
+	public function selfDestruct($rollback = NULL)
 	{
 		$config = ee('Config')->getFile();
 		$config->set('is_system_on', 'y', TRUE);
@@ -211,7 +210,38 @@ class Runner {
 
 		ee('Filesystem')->deleteDir(SYSPATH.'ee/updater');
 
-		if (REQ == 'CLI') stdout('Successfully updated to ExpressionEngine ' . APP_VER, CLI_STDOUT_SUCCESS);
+		if (REQ == 'CLI')
+		{
+			stdout('Successfully updated to ExpressionEngine ' . APP_VER, CLI_STDOUT_SUCCESS);
+		}
+
+		ee()->lang->loadfile('updater');
+		ee()->load->library('session');
+		if (empty($rollback))
+		{
+			ee('CP/Alert')->makeBanner('update-completed')
+				->asSuccess()
+				->withTitle(sprintf(lang('update_completed'), APP_VER))
+				->addToBody(sprintf(
+					lang('update_completed_desc'),
+					APP_VER,
+					ee()->cp->masked_url(
+						DOC_URL.'about/changelog.html'
+					)
+				))
+				->defer();
+		}
+		else
+		{
+			ee('CP/Alert')->makeBanner('update-rolledback')
+				->asWarning()
+				->withTitle(sprintf(lang('update_rolledback'), APP_VER))
+				->addToBody(sprintf(
+					lang('update_rolledback_desc'),
+					DOC_URL.'installation/update.html'
+				))
+				->defer();
+		}
 	}
 
 	/**

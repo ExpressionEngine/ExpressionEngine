@@ -16,7 +16,7 @@ if (file_exists(SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php') && $step &
 		strpos($step, 'updateDatabase') === 0 OR
 		$step == 'checkForDbUpdates' OR
 		$step == 'restoreDatabase' OR
-		$step == 'selfDestruct'))
+		strpos($step, 'selfDestruct') === 0))
 {
 	define('BOOT_ONLY', TRUE);
 	include_once SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php';

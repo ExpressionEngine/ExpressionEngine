@@ -12,7 +12,6 @@ var Updater = {
 	{
 		this._lastStep = $('.box.updating .updater-step-work').text();
 		this._updaterInPlace = false;
-		this._rollingBack = false;
 		var that = this;
 
 		$('.toggle').on('click', function(e) {
@@ -23,7 +22,6 @@ var Updater = {
 
 		$('a[rel=rollback]').on('click', function(e) {
 			e.preventDefault();
-			that._rollingBack = true;
 			that.runStep('rollback');
 		});
 
@@ -70,11 +68,7 @@ var Updater = {
 							that._updaterInPlace = true;
 						}
 					} else {
-						if (that._rollingBack) {
-							window.location = EE.BASE + '&update=rolledback';
-						} else {
-							window.location = EE.BASE + '&update=completed';
-						}
+						window.location = EE.BASE;
 					}
 				} else {
 					that._showError(result);
