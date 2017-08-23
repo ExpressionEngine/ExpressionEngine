@@ -500,7 +500,7 @@ class EE_Form_validation {
 
 		if (strlen($str) < $len)
 		{
-			$this->set_message('valid_password', str_replace('%x', $len, ee()->lang->line('password_too_short')));
+			$this->set_message('valid_password', sprintf(lang('password_too_short'), $len));
 			return FALSE;
 		}
 

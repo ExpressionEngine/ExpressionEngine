@@ -236,7 +236,7 @@ class EE_Validate {
 
 		if (strlen($this->password) < $len)
 		{
-			return $this->errors[] = str_replace('%x', $len, ee()->lang->line('password_too_short'));
+			return $this->errors[] = sprintf(lang('password_too_short'), $len);
 		}
 
 		/** -------------------------------------
