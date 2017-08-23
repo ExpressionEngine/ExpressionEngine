@@ -65,7 +65,11 @@ class Updater extends CP_Controller {
 
 		$next_step = $runner->getNextStep();
 
-		if (session_status() == PHP_SESSION_NONE) session_start();
+		if (session_status() == PHP_SESSION_NONE)
+		{
+			session_start();
+		}
+
 		$_SESSION['update_step'] = $next_step;
 		session_write_close();
 
@@ -91,10 +95,17 @@ class Updater extends CP_Controller {
 	 */
 	public function run($step = NULL)
 	{
-		if (session_status() == PHP_SESSION_NONE) session_start();
+		if (session_status() == PHP_SESSION_NONE)
+		{
+			session_start();
+		}
+
 		$step = isset($_SESSION['update_step']) ? $_SESSION['update_step'] : FALSE;
 
-		if ($step === FALSE) return;
+		if ($step === FALSE)
+		{
+			return;
+		}
 
 		$runner = ee('Updater/Runner');
 		$runner->runStep($step);

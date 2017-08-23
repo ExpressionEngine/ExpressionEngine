@@ -36,13 +36,19 @@ class Updater {
 		$runner = new Runner();
 		$runner->runStep($step);
 
-		if (session_status() == PHP_SESSION_NONE) session_start();
+		if (session_status() == PHP_SESSION_NONE)
+		{
+			session_start();
+		}
+
 		$_SESSION['update_step'] = $runner->getNextStep();
 		$next_step = $_SESSION['update_step'];
+
 		if ( ! $_SESSION['update_step'])
 		{
 			unset($_SESSION['update_step']);
 		}
+
 		session_write_close();
 
 		return json_encode([
