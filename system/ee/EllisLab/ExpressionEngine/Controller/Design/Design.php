@@ -72,7 +72,7 @@ class Design extends AbstractDesignController {
 		if (is_null($group_name))
 		{
 			$group = ee('Model')->get('TemplateGroup')
-				->fields('group_id')
+				->fields('group_id', 'group_name')
 				->filter('is_site_default', 'y')
 				->filter('site_id', ee()->config->item('site_id'));
 
@@ -86,7 +86,7 @@ class Design extends AbstractDesignController {
 			if ( ! $group)
 			{
 				$group = ee('Model')->get('TemplateGroup')
-					->fields('group_id')
+					->fields('group_id', 'group_name')
 					->filter('site_id', ee()->config->item('site_id'))
 					->order('group_name', 'asc');
 
@@ -106,7 +106,7 @@ class Design extends AbstractDesignController {
 		else
 		{
 			$group = ee('Model')->get('TemplateGroup')
-				->fields('group_id')
+				->fields('group_id', 'group_name')
 				->filter('group_name', $group_name)
 				->filter('site_id', ee()->config->item('site_id'))
 				->first();
@@ -141,14 +141,8 @@ class Design extends AbstractDesignController {
 
 		$this->_sync_from_files();
 
-		$vars = array();
-		$vars['show_new_template_button'] = ee()->cp->allowed_group('can_create_new_templates');
-		$vars['show_bulk_delete'] = ee()->cp->allowed_group('can_delete_templates');
-		$vars['group_id'] = $group->group_name;
-
 		$base_url = ee('CP/URL')->make('design/manager/' . $group->group_name);
     $this->base_url = $base_url;
-
 
 		$templates = ee('Model')->get('Template')->filter('group_id', $group->group_id)->filter('site_id', ee()->config->item('site_id'));
 
