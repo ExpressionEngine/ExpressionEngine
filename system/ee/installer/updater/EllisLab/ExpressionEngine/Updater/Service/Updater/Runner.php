@@ -217,8 +217,11 @@ class Runner {
 
 		ee()->lang->loadfile('updater');
 		ee()->load->library('session');
+
 		if (empty($rollback))
 		{
+			ee()->load->library('cp');
+
 			ee('CP/Alert')->makeBanner('update-completed')
 				->asSuccess()
 				->withTitle(sprintf(lang('update_completed'), APP_VER))
