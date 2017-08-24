@@ -944,13 +944,8 @@ class Cat extends AbstractChannelsController {
 		return $field->getForm();
 	}
 
-	/**
-	 * Category group custom fields listing
-	 */
 	public function field($group_id)
 	{
-		$this->base_url = ee('CP/URL')->make('channels/cat' . $group_id);
-
 		$cat_group = ee('Model')->get('CategoryGroup')
 			->filter('group_id', $group_id)
 			->first();
@@ -960,18 +955,10 @@ class Cat extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$sort_col = ee()->input->get('sort_col');
-
-		$sort_dir = ee()->input->get('sort_dir') ?: 'asc';
-		$page = ee()->input->get('page') > 0 ? ee()->input->get('page') : 1;
-		$offset = ! empty($page) ? ($page - 1) * $this->perpage : 0;
-
 		$table = ee('CP/Table', array(
-			'sort_col' => $sort_col,
-			'sort_dir' => $sort_dir,
-			'reorder' => TRUE
+			'reorder' => TRUE,
+			'sortable' => FALSE
 		));
-
 		$table->setColumns(
 			array(
 				'col_id' => array(
@@ -1003,19 +990,7 @@ class Cat extends AbstractChannelsController {
 			'type' => 'field_type'
 		);
 
-		$total = $cat_group->getCategoryFields()->count();
-
-		$filter = ee('CP/Filter')
-						->add('Perpage', $total, 'show_all_category_fields');
-
-		$this->renderFilters($filter);
-
-		$cat_fields = $cat_group->getCategoryFields()
-		->order($sort_col, $sort_dir)
-		->limit($this->perpage)
-		->offset($offset);
-
-
+		$cat_fields = $cat_group->getCategoryFields()->sortBy('field_order');
 
 		$type_map = array(
 			'text' => lang('text_input'),
@@ -1065,17 +1040,8 @@ class Cat extends AbstractChannelsController {
 
 		$table->setData($data);
 
-		$vars['table'] = $table->viewData($this->base_url);
+		$vars['table'] = $table->viewData(ee('CP/URL')->make('channels/cat/field/'.$group_id));
 		$vars['group_id'] = $group_id;
-
-		if ( ! empty($data['table']['data']))
-		{
-			$data['pagination'] = ee('CP/Pagination', $total)
-				->perPage($this->perpage)
-				->currentPage($page)
-				->render($this->base_url);
-		}
-
 
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels/cat'), lang('category_groups'));
 		ee()->view->cp_page_title = lang('category_fields') . ' ' . lang('for') . ' ' . $cat_group->group_name;
