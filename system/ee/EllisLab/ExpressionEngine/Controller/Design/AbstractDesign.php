@@ -7,6 +7,10 @@ use ZipArchive;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\Template\TemplateRoute;
+use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
+use EllisLab\ExpressionEngine\Service\Filter\FilterFactory;
+use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
+use EllisLab\ExpressionEngine\Service\Model\Query\Builder as QueryBuilder;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -33,6 +37,12 @@ use EllisLab\ExpressionEngine\Model\Template\TemplateRoute;
  */
 abstract class AbstractDesign extends CP_Controller {
 
+	public $base_url;
+	protected $params;
+	protected $perpage = 25;
+	protected $page = 1;
+	protected $offset = 0;
+
 	/**
 	 * Constructor
 	 */
@@ -50,6 +60,24 @@ abstract class AbstractDesign extends CP_Controller {
 
 		ee()->lang->loadfile('design');
 	}
+
+	/**
+	 * Display filters
+	 *
+	 * @param int
+	 * @return void
+	 */
+	protected function renderFilters(FilterFactory $filters)
+	{
+		ee()->view->filters = $filters->render($this->base_url);
+		$this->params = $filters->values();
+		$this->perpage = $this->params['perpage'];
+		$this->page = ((int) ee()->input->get('page')) ?: 1;
+		$this->offset = ($this->page - 1) * $this->perpage;
+
+		$this->base_url->addQueryStringVariables($this->params);
+	}
+
 
 	protected function generateSidebar($active = NULL)
 	{
@@ -406,9 +434,11 @@ abstract class AbstractDesign extends CP_Controller {
 		force_download('ExpressionEngine-templates.zip', $data);
 	}
 
-	protected function buildTableFromTemplateCollection(Collection $templates, $include_group_name = FALSE)
+	protected function buildTableFromTemplateQueryBuilder(QueryBuilder $templates, $include_group_name = FALSE)
 	{
-		$table = ee('CP/Table', array('autosort' => TRUE));
+		$table = ee('CP/Table', array('autosort' => FALSE));
+		$total = $templates->count();
+		$vars = array();
 
 		$columns = array(
 			'template' => array(
@@ -441,7 +471,31 @@ abstract class AbstractDesign extends CP_Controller {
 		$hidden_indicator = ($this->config->item('hidden_template_indicator') != '') ? $this->config->item('hidden_template_indicator') : '_';
 		$hidden_indicator_length = strlen($hidden_indicator);
 
-		foreach ($templates as $template)
+ 		$filters = ee('CP/Filter')
+			->add('Perpage', $total, 'show_all_templates');
+
+		// Before pagination so perpage is set correctly
+		$this->renderFilters($filters);
+
+		$sort_col = $table->sort_col;
+
+		$sort_map = array(
+			'template' => 'template_name',
+			'type' => 'template_type'
+		);
+
+		if ( ! array_key_exists($sort_col, $sort_map))
+		{
+			throw new \Exception("Invalid sort column: ".htmlentities($sort_col));
+		}
+
+		$template_data = $templates->order($sort_map[$sort_col], $table->sort_dir)
+			->limit($this->perpage)
+			->offset($this->offset)
+			->all();
+
+
+		foreach ($template_data as $template)
 		{
 			$group = $template->getTemplateGroup();
 			$template_name = htmlentities($template->template_name, ENT_QUOTES, 'UTF-8');
@@ -545,7 +599,20 @@ abstract class AbstractDesign extends CP_Controller {
 
 		$table->setData($data);
 
-		return $table;
+		$vars['table'] = $table->viewData($this->base_url);
+		$vars['form_url'] = $this->base_url;
+		$vars['total'] = $total;
+
+		if ( ! empty($vars['table']['data']))
+		{
+			// Paginate!
+			$vars['pagination'] = ee('CP/Pagination', $total)
+				->perPage($this->perpage)
+				->currentPage($this->page)
+				->render($this->base_url);
+		}
+
+		return $vars;
 	}
 
 	/**

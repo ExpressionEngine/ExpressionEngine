@@ -9,6 +9,7 @@
 		<?php endif; ?>
 		<h1><?=$cp_heading?></h1>
 		<?=ee('CP/Alert')->getAllInlines()?>
+		<?php if (isset($filters)) echo $filters; ?>
 		<?php $this->embed('_shared/table', $table); ?>
 		<?php if (isset($pagination)) echo $pagination; ?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>

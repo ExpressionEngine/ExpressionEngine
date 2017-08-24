@@ -5,6 +5,8 @@ namespace EllisLab\ExpressionEngine\Controller\Channels;
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
+use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
+use EllisLab\ExpressionEngine\Service\Filter\FilterFactory;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -30,6 +32,11 @@ use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
  * @link		https://ellislab.com
  */
 abstract class AbstractChannels extends CP_Controller {
+
+	protected $perpage = 25;
+	protected $page = 1;
+	protected $offset = 0;
+
 
 	/**
 	 * Constructor
@@ -176,6 +183,24 @@ abstract class AbstractChannels extends CP_Controller {
 	}
 
 	/**
+	 * Display filters
+	 *
+	 * @param filter object
+	 * @return void
+	 */
+	protected function renderFilters(FilterFactory $filters)
+	{
+		ee()->view->filters = $filters->render($this->base_url);
+		$this->params = $filters->values();
+		$this->perpage = $this->params['perpage'];
+		$this->page = ((int) ee()->input->get('page')) ?: 1;
+		$this->offset = ($this->page - 1) * $this->perpage;
+
+		$this->base_url->addQueryStringVariables($this->params);
+	}
+
+
+	/**
 	 * Builds and returns a Table object for use of displaying a list of channels
 	 *
 	 * @param	Builder 	$channels	Query builder object for Channels
@@ -213,9 +238,10 @@ abstract class AbstractChannels extends CP_Controller {
 		);
 
 		$channels = $channels->order($sort_map[$table->sort_col], $table->sort_dir)
-			->limit($table->config['limit'])
-			->offset(($table->config['page'] - 1) * $table->config['limit'])
+			->limit($this->perpage)
+			->offset($this->offset)
 			->all();
+
 
 		$data = array();
 		foreach ($channels as $channel)
@@ -302,7 +328,7 @@ abstract class AbstractChannels extends CP_Controller {
 	 */
 	protected function buildTableFromChannelFieldsQuery(Builder $fields, $config = array(), $mutable = TRUE)
 	{
-		$table = ee('CP/Table', array_merge(array('autosort' => TRUE), $config));
+		$table = ee('CP/Table', array_merge(array('autosort' => TRUE, 'limit' => $this->perpage), $config));
 
 		$columns = array(
 			'id',
@@ -400,7 +426,7 @@ abstract class AbstractChannels extends CP_Controller {
 	 */
 	protected function buildTableFromChannelGroupsQuery(Builder $groups, $config = array(), $mutable = TRUE)
 	{
-		$table = ee('CP/Table', array_merge(array('autosort' => TRUE), $config));
+		$table = ee('CP/Table', array_merge(array('autosort' => TRUE, 'limit' => $this->perpage), $config));
 
 		$columns = array(
 			'group_name',
@@ -520,8 +546,8 @@ abstract class AbstractChannels extends CP_Controller {
 		);
 
 		$cat_groups = $cat_groups->order($sort_map[$table->sort_col], $table->sort_dir)
-			->limit($table->config['limit'])
-			->offset(($table->config['page'] - 1) * $table->config['limit'])
+			->limit($this->perpage)
+			->offset($this->offset)
 			->all();
 
 		$data = array();
@@ -616,8 +642,8 @@ abstract class AbstractChannels extends CP_Controller {
 		);
 
 		$categories = $categories->order($sort_map[$table->sort_col], $table->sort_dir)
-			->limit($table->config['limit'])
-			->offset(($table->config['page'] - 1) * $table->config['limit'])
+			->limit($this->perpage)
+			->offset($this->offset)
 			->all();
 
 		$data = array();
@@ -681,8 +707,8 @@ abstract class AbstractChannels extends CP_Controller {
 		);
 
 		$status_groups = $status_groups->order($sort_map[$table->sort_col], $table->sort_dir)
-			->limit($table->config['limit'])
-			->offset(($table->config['page'] - 1) * $table->config['limit'])
+			->limit($this->perpage)
+			->offset($this->offset)
 			->all();
 
 		$data = array();

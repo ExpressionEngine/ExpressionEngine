@@ -31,13 +31,13 @@ use CP_Controller;
  */
 class Create extends Members {
 
-	private $base_url = 'members/create';
-
 	/**
 	 * Create Member Form
 	 */
 	public function index()
 	{
+		$this->base_url = ee('CP/URL')->make('members/create');
+
 		if ( ! ee()->cp->allowed_group('can_create_members'))
 		{
 			show_error(lang('unauthorized_access'), 403);
@@ -48,7 +48,6 @@ class Create extends Members {
 			show_error(lang('maximum_members_reached'));
 		}
 
-		$this->base_url = ee('CP/URL')->make($this->base_url);
 		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
 		$choices = array();
 

@@ -65,7 +65,7 @@ class Snippets extends AbstractDesignController {
 		}
 
 		$vars = array();
-		$table = ee('CP/Table', array('autosort' => TRUE));
+		$table = ee('CP/Table', array('autosort' => FALSE));
 		$columns = array(
 			'partial',
 			'all_sites' => array(
@@ -89,11 +89,40 @@ class Snippets extends AbstractDesignController {
 		$table->setColumns($columns);
 
 		$data = array();
-		$snippets = ee('Model')->make('Snippet')->loadAll();
+		$snippets = ee('Model')->get('Snippet')
+			->filterGroup()
+				->filter('site_id', ee()->config->item('site_id'))
+				->orFilter('site_id', 0)
+			->endFilterGroup();
 
-		$base_url = ee('CP/URL')->make('design/snippets');
+		$this->base_url = ee('CP/URL')->make('design/snippets');
 
-		foreach ($snippets as $snippet)
+		$total = $snippets->count();
+
+		$filters = ee('CP/Filter')
+			->add('Perpage', $total, 'show_all_partials');
+
+		// Before pagination so perpage is set correctly
+		$this->renderFilters($filters);
+
+		$sort_col = $table->sort_col;
+
+		$sort_map = array(
+			'all_sites' => 'site_id',
+			'partial' => 'snippet_name'
+		);
+
+		if ( ! array_key_exists($sort_col, $sort_map))
+		{
+			throw new \Exception("Invalid sort column: ".htmlentities($sort_col));
+		}
+
+		$snippet_data = $snippets->order($sort_map[$sort_col], $table->sort_dir)
+			->limit($this->perpage)
+			->offset($this->offset)
+			->all();
+
+		foreach ($snippet_data as $snippet)
 		{
 			if ($snippet->site_id == 0)
 			{
@@ -149,16 +178,16 @@ class Snippets extends AbstractDesignController {
 		$table->setNoResultsText('no_snippets');
 		$table->setData($data);
 
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData($this->base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
-			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-				->perPage($vars['table']['limit'])
-				->currentPage($vars['table']['page'])
-				->render($base_url);
+			$vars['pagination'] = ee('CP/Pagination', $total)
+				->perPage($this->perpage)
+				->currentPage($this->page)
+				->render($this->base_url);
 		}
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('template_partial') . ': <b>### ' . lang('template_partials') . '</b>');

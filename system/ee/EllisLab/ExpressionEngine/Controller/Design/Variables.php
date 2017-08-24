@@ -65,7 +65,7 @@ class Variables extends AbstractDesignController {
 		}
 
 		$vars = array();
-		$table = ee('CP/Table', array('autosort' => TRUE));
+		$table = ee('CP/Table', array('autosort' => FALSE));
 		$columns = array(
 			'variable',
 			'all_sites' => array(
@@ -89,11 +89,41 @@ class Variables extends AbstractDesignController {
 		$table->setColumns($columns);
 
 		$data = array();
-		$variables = ee('Model')->make('GlobalVariable')->loadAll();
 
-		$base_url = ee('CP/URL')->make('design/variables');
+		$variables = ee('Model')->get('GlobalVariable')
+			->filterGroup()
+				->filter('site_id', ee()->config->item('site_id'))
+				->orFilter('site_id', 0)
+			->endFilterGroup();
 
-		foreach($variables as $variable)
+		$this->base_url = ee('CP/URL')->make('design/variables');
+
+		$total = $variables->count();
+
+		$filters = ee('CP/Filter')
+			->add('Perpage', $variables->count(), 'show_all_variables');
+
+		// Before pagination so perpage is set correctly
+		$this->renderFilters($filters);
+
+		$sort_col = $table->sort_col;
+
+		$sort_map = array(
+			'all_sites' => 'site_id',
+			'variable' => 'variable_name'
+		);
+
+		if ( ! array_key_exists($sort_col, $sort_map))
+		{
+			throw new \Exception("Invalid sort column: ".htmlentities($sort_col));
+		}
+
+		$variable_data = $variables->order($sort_map[$sort_col], $table->sort_dir)
+			->limit($this->perpage)
+			->offset($this->offset)
+			->all();
+
+		foreach($variable_data as $variable)
 		{
 			if ($variable->site_id == 0)
 			{
@@ -150,16 +180,16 @@ class Variables extends AbstractDesignController {
 		$table->setNoResultsText('no_template_variables');
 		$table->setData($data);
 
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData($this->base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
-			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-				->perPage($vars['table']['limit'])
-				->currentPage($vars['table']['page'])
-				->render($base_url);
+			$vars['pagination'] = ee('CP/Pagination', $total)
+				->perPage($this->perpage)
+				->currentPage($this->page)
+				->render($this->base_url);
 		}
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('template_variable') . ': <b>### ' . lang('template_variables') . '</b>');
