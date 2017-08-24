@@ -68,7 +68,7 @@ return array(
 		'Topic'   => array(
 			'ee:Member'
 		),
-	)
+	),
 );
 
 // EOF

@@ -244,6 +244,9 @@ $lang = array(
 
 'location_desc' => 'Your physical location.',
 
+
+'accept_admin_email' => 'From admins',
+
 'login_as' => 'Login as %s',
 
 'login_as_member' => 'Login as Member',
@@ -267,6 +270,8 @@ $lang = array(
 'member_group_default' => 'Member group default',
 
 'member_group_warning' => 'Be very careful assigning this',
+
+'user_ip_address' => 'IP Address',
 
 'member_preferences' => 'Member Preferences',
 

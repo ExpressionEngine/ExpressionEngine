@@ -37,6 +37,11 @@ $provider = $app->addProvider(
 	'ee'
 );
 
+if ( ! empty($boot_with_spam))
+{
+	$app->addProvider('../../../system/ee/EllisLab/Addons/spam/', 'addon.setup.php', 'spam');
+}
+
 $provider->setConfigPath(SYSPATH.'user/config');
 
 $di->register('App', function($di, $prefix = NULL) use ($app)
@@ -114,4 +119,13 @@ class MockSession {
 
 ee()->session = new MockSession();
 
+// :-)
+class MockFunctions{
+	public function clear_caching($which, $sub_dir = '')
+	{
+		return;
+	}
+}
+
+ee()->functions = new MockFunctions;
 // EOF

@@ -360,6 +360,9 @@ class Uploads extends AbstractFilesController {
 				'image_manip_height' => array(
 					'desc'  => 'image_manip_height_desc'
 				),
+				'image_manip_quality' => array(
+					'desc'  => 'image_manip_quality_desc'
+				),
 				'image_manip_watermark' => array(
 					'desc'  => 'image_manip_watermark_desc'
 				)
@@ -391,6 +394,7 @@ class Uploads extends AbstractFilesController {
 					'resize_type'  => $columns['resize_type'],
 					'width'        => $columns['width'],
 					'height'       => $columns['height'],
+					'quality'      => $columns['quality'],
 					'watermark_id' => $columns['watermark_id'],
 				);
 			}
@@ -443,10 +447,11 @@ class Uploads extends AbstractFilesController {
 	private function getGridRow($watermarks_choices, $size = array())
 	{
 		$defaults = array(
-			'short_name' => '',
-			'resize_type' => '',
-			'width' => '',
-			'height' => '',
+			'short_name'   => '',
+			'resize_type'  => '',
+			'width'        => '',
+			'height'       => '',
+			'quality'      => 90,
 			'watermark_id' => ''
 		);
 
@@ -476,6 +481,10 @@ class Uploads extends AbstractFilesController {
 			array(
 				'html' => form_input('height', $size['height']),
 				'error' => $this->getGridFieldError($size, 'height')
+			),
+			array(
+				'html' => form_input('quality', $size['quality']),
+				'error' => $this->getGridFieldError($size, 'quality')
 			),
 			array(
 				'html' => form_dropdown(
@@ -653,6 +662,11 @@ class Uploads extends AbstractFilesController {
 				$model->width = 0;
 			}
 
+			if ($model->quality === '')
+			{
+				$model->quality = 90;
+			}
+
 			$result = $model->validate();
 
 			if ( ! $result->isValid())
@@ -742,6 +756,7 @@ class Uploads extends AbstractFilesController {
 				'resize_type'  => $size->resize_type,
 				'width'        => $size->width,
 				'height'       => $size->height,
+				'quality'      => $size->quality,
 				'watermark_id' => $size->watermark_id
 			);
 		}

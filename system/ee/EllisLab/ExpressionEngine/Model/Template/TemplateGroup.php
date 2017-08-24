@@ -74,7 +74,7 @@ class TemplateGroup extends Model {
 		$group_order = $this->getProperty('group_order');
 		if (empty($group_order))
 		{
-			$count = $this->getFrontend()->get('TemplateGroup')
+			$count = $this->getModelFacade()->get('TemplateGroup')
 				->count();
 			$this->setProperty('group_order', $count + 1);
 		}
@@ -123,7 +123,7 @@ class TemplateGroup extends Model {
 	{
 		if ($this->getProperty('is_site_default'))
 		{
-			$template_groups = $this->getFrontend()->get('TemplateGroup')
+			$template_groups = $this->getModelFacade()->get('TemplateGroup')
 				->filter('site_id', $this->site_id)
 				->filter('is_site_default', 'y')
 				->filter('group_id', '!=', $this->group_id)
@@ -173,7 +173,7 @@ class TemplateGroup extends Model {
 		// Cache the sites as we query
 		if ( ! $site = ee()->session->cache('site/id/' . $this->site_id, 'site'))
 		{
-			$site = $this->getFrontend()->get('Site')
+			$site = $this->getModelFacade()->get('Site')
 				->fields('site_name')
 				->filter('site_id', $this->site_id)
 				->first();

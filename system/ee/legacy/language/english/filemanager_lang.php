@@ -542,6 +542,10 @@ $lang = array(
 
 'kind' => 'Kind',
 
+'image_manip_quality' => 'Quality',
+
+'image_manip_quality_desc' => 'Final quality of image',
+
 'no_upload_dirs' => 'You have no upload directories defined',
 
 'permissions' => 'Permissions',

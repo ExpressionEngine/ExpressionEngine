@@ -15,7 +15,7 @@ return array(
 	'author'      => 'EllisLab',
 	'author_url'  => 'https://ellislab.com/',
 	'name'        => 'ExpressionEngine Spam Module',
-	'version'     => '1.0.0',
+	'version'     => '2.0.0',
 	'namespace'   => 'EllisLab\Addons\Spam',
 	'settings_exist' => TRUE,
 	'services' => array(

@@ -654,6 +654,10 @@ $lang = array(
 
 'spam' => 'SPAM',
 
+'spam_comments' => 'There are <b>%d comments</b> flagged as potential spam that <a href="%s">need moderation</a>.',
+
+'spam_comments_header' => 'Spam Comments',
+
 'span' => 'Span',
 
 'spell_check' => 'Spell Checker',

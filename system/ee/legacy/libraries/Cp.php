@@ -991,7 +991,6 @@ class Cp {
 	 *
 	 * Member access validation
 	 *
-	 * @param	string  any number of permission names
 	 * @return	bool    TRUE if member has all permissions
 	 */
 	public function allowed_group()
@@ -1068,16 +1067,14 @@ class Cp {
 		}
 
 		$channel_vars = array(
-			'aol_im', 'author', 'author_id', 'avatar_image_height',
-			'avatar_image_width', 'avatar_url', 'bday_d', 'bday_m',
-			'bday_y', 'bio', 'comment_auto_path',
-			'comment_entry_id_auto_path',
-			'comment_total', 'comment_url_title_path', 'count',
+			'author', 'author_id', 'avatar_image_height',
+			'avatar_image_width', 'avatar_url', 'comment_auto_path',
+			'comment_entry_id_auto_path', 'comment_total', 'comment_url_title_path', 'count',
 			'edit_date', 'email', 'entry_date', 'entry_id',
 			'entry_id_path', 'expiration_date', 'forum_topic_id',
-			'gmt_edit_date', 'gmt_entry_date', 'icq', 'interests',
-			'ip_address', 'location', 'member_search_path', 'month',
-			'msn_im', 'occupation', 'permalink', 'photo_image_height',
+			'gmt_edit_date', 'gmt_entry_date',
+			'ip_address', 'member_search_path', 'month',
+			'permalink', 'photo_image_height',
 			'photo_image_width', 'photo_url', 'profile_path',
 			'recent_comment_date', 'relative_date', 'relative_url',
 			'screen_name', 'signature', 'signature_image_height',
@@ -1085,7 +1082,7 @@ class Cp {
 			'switch', 'title', 'title_permalink', 'total_results',
 			'trimmed_url', 'url', 'url_as_email_as_link', 'url_or_email',
 			'url_or_email_as_author', 'url_title', 'url_title_path',
-			'username', 'channel', 'channel_id', 'yahoo_im', 'year'
+			'username', 'channel', 'channel_id', 'year'
 		);
 
 		$global_vars = array(
