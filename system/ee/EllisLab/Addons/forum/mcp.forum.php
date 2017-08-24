@@ -190,7 +190,7 @@ class Forum_mcp extends CP_Controller {
 							'content' => form_checkbox(array(
 								'name' => 'selection[]',
 								'value' => $category->getId(),
-								'data-confirm' => lang('forum') . ' <b>' . htmlentities($category->forum_name, ENT_QUOTES, 'UTF-8') . '</b>'
+								'data-confirm' => lang('forum') . ': <b>' . htmlentities($category->forum_name, ENT_QUOTES, 'UTF-8') . '</b>'
 							))
 						)
 					)
@@ -221,7 +221,7 @@ class Forum_mcp extends CP_Controller {
 							'name' => 'selection[]',
 							'value' => $forum->forum_id,
 							'data'	=> array(
-								'confirm' => lang('forum') . ' <b>' . htmlentities($forum->forum_name, ENT_QUOTES, 'UTF-8') . '</b>'
+								'confirm' => lang('forum') . ': <b>' . htmlentities($forum->forum_name, ENT_QUOTES, 'UTF-8') . '</b>'
 							)
 						)
 					);

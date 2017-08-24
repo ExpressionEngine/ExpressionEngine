@@ -219,7 +219,7 @@ class Template extends FileSyncedModel {
 		if ($parts['group_id'] != $this->group_id)
 		{
 			// TODO there must be a better way
-			$group = $this->getFrontend()->get('TemplateGroup', $parts['group_id'])->first();
+			$group = $this->getModelFacade()->get('TemplateGroup', $parts['group_id'])->first();
 		}
 		else
 		{

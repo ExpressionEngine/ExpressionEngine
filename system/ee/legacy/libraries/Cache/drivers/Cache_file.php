@@ -262,6 +262,12 @@ class EE_Cache_file extends CI_Driver {
 		// Replace all namespace separators with the system's directory separator
 		$key = str_replace(Cache::NAMESPACE_SEPARATOR, DIRECTORY_SEPARATOR, $key);
 
+		// Replace \ with _ if on Windows
+		if (DIRECTORY_SEPARATOR == '\\')
+		{
+			$key = str_replace('\\', '_', $key);
+		}
+
 		// For locally-cached items, separate by site name
 		if ($scope == Cache::LOCAL_SCOPE)
 		{

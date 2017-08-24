@@ -36,34 +36,6 @@ class Settings extends Profile {
 	{
 		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 
-		// Birthday Options
-		$birthday['days'] = array();
-
-		for ($i = date('Y', $this->localize->now); $i > 1904; $i--)
-		{
-		  $birthday['years'][$i] = $i;
-		}
-
-		$birthday['months'] = array(
-			'1' => lang('January'),
-			'2' => lang('February'),
-			'3' => lang('March'),
-			'4' => lang('April'),
-			'5' => lang('May_l'),
-			'6' => lang('June'),
-			'7' => lang('July'),
-			'8' => lang('August'),
-			'9' => lang('September'),
-			'10' => lang('October'),
-			'11' => lang('November'),
-			'12' => lang('December')
-		);
-
-		for ($i = 1; $i <= 31; $i++)
-		{
-		  $birthday['days'][$i] = $i;
-		}
-
 		$settings = array();
 
 		if ($this->member->parse_smileys == 'y')
@@ -167,70 +139,6 @@ class Settings extends Profile {
 		$vars['has_file_input'] = TRUE;
 		$vars['sections'] = array(
 			array(
-				array(
-					'title' => 'url',
-					'desc' => 'url_desc',
-					'fields' => array(
-						'url' => array('type' => 'text', 'value' => $this->member->url)
-					)
-				),
-				array(
-					'title' => 'location',
-					'desc' => 'location_desc',
-					'fields' => array(
-						'location' => array('type' => 'text', 'value' => $this->member->location)
-					)
-				),
-			),
-			'fieldset_group' => [
-				array(
-					'title' => 'birth_day',
-					'desc' => 'birth_day_desc',
-					'columns' => '3rds',
-					'fields' => array(
-						'bday_d' => array(
-							'type' => 'dropdown',
-							'choices' => $birthday['days'],
-							'value' => $this->member->bday_d,
-							'empty_text' => lang('day')
-						)
-					)
-				),
-				array(
-					'title' => 'birth_month',
-					'desc' => 'birth_month_desc',
-					'columns' => '3rds',
-					'fields' => array(
-						'bday_m' => array(
-							'type' => 'dropdown',
-							'choices' => $birthday['months'],
-							'value' => $this->member->bday_m,
-							'empty_text' => lang('month')
-						)
-					)
-				),
-				array(
-					'title' => 'birth_year',
-					'desc' => 'birth_year_desc',
-					'columns' => '3rds',
-					'fields' => array(
-						'bday_y' => array(
-							'type' => 'dropdown',
-							'choices' => $birthday['years'],
-							'value' => $this->member->bday_y,
-							'empty_text' => lang('year')
-						)
-					)
-				),
-			],
-			array(
-				array(
-					'title' => 'biography',
-					'desc' => 'biography_desc',
-					'fields' => array(
-						'bio' => array('type' => 'textarea', 'value' => $this->member->bio)
-					)
-				),
 				array(
 					'title' => 'language',
 					'desc' => 'language_desc',

@@ -45,7 +45,7 @@ abstract class FieldModel extends Model {
 
 		if (empty($field_type))
 		{
-			throw new \Exception('Cannot get field of unknown type.');
+			throw new \Exception('Cannot get field of unknown type "' . $field_type . '".');
 		}
 
 		if ( ! isset($this->_field_facade) ||
@@ -136,17 +136,8 @@ abstract class FieldModel extends Model {
 	 */
 	public function onAfterInsert()
 	{
+		$this->createTable();
 		$this->callPostSaveSettings();
-
-		$ft = $this->getFieldtypeInstance();
-
-		$data = $this->getValues();
-		$data['ee_action'] = 'add';
-
-		$columns = $ft->settings_modify_column($data);
-		$columns = $this->ensureDefaultColumns($columns);
-
-		$this->createColumns($columns);
 	}
 
 	/**
@@ -154,15 +145,15 @@ abstract class FieldModel extends Model {
 	 */
 	public function onAfterDelete()
 	{
-		$ft = $this->getFieldtypeInstance();
-
-		$data = $this->getValues();
-		$data['ee_action'] = 'delete';
-
-		$columns = $ft->settings_modify_column($data);
-		$columns = $this->ensureDefaultColumns($columns);
-
-		$this->dropColumns($columns);
+		if ($this->hasProperty($this->getColumnPrefix().'legacy_field_data')
+			&& $this->getProperty($this->getColumnPrefix().'legacy_field_data') == FALSE)
+		{
+			$this->dropTable();
+		}
+		else
+		{
+			$this->dropColumns($this->getColumns());
+		}
 	}
 
 	/**
@@ -268,25 +259,6 @@ abstract class FieldModel extends Model {
 
 		$this->dropColumns($drop);
 		$this->modifyColumns($change);
-		$this->createColumns($new);
-	}
-
-	/**
-	 * Create columns, add the defaults if they don't exist
-	 *
-	 * @param Array $columns List of [column name => column definition]
-	 */
-	private function createColumns($columns)
-	{
-		if (empty($columns))
-		{
-			return;
-		}
-
-		$data_table = $this->getDataTable();
-
-		ee()->load->dbforge();
-		ee()->dbforge->add_column($data_table, $columns);
 	}
 
 	/**
@@ -370,6 +342,40 @@ abstract class FieldModel extends Model {
 		return $columns;
 	}
 
+	private function getColumns()
+	{
+		$ft = $this->getFieldtypeInstance();
+		$data = $this->getValues();
+		$data['ee_action'] = 'add';
+		$columns = array();
+
+		foreach($ft->settings_modify_column($data) as $key => $values)
+		{
+			$columns[$this->getColumnPrefix().$key] = $values;
+		}
+
+		return $this->ensureDefaultColumns($columns);
+	}
+
+	private function getCacheKey()
+	{
+		return $cache_key = '/' . get_class($this) . '/' . $this->getId();
+	}
+
+	public function getColumnNames()
+	{
+		$cache_key = $this->getCacheKey();
+		$names = ee()->cache->get($cache_key);
+
+		if ($names === FALSE)
+		{
+			$names = array_keys($this->getColumns());
+			ee()->cache->save($cache_key, $names, 0);
+		}
+
+		return $names;
+	}
+
 	/**
 	 * Set a prefix on the default columns we manage for fields
 	 *
@@ -380,23 +386,87 @@ abstract class FieldModel extends Model {
 		return '';
 	}
 
+	public function getTableName()
+	{
+		return $this->getDataTable() . '_field_' . $this->getId();
+	}
+
+	protected function getForeignKey()
+	{
+		return 'entry_id';
+	}
+
 	/**
+	 * Create the table for the field
+	 */
+	private function createTable()
+	{
+		$fields = array(
+			'id' => array(
+				'type'           => 'int',
+				'constraint'     => 10,
+				'null'           => FALSE,
+				'unsigned'       => TRUE,
+				'auto_increment' => TRUE
+			),
+			$this->getForeignKey() => array(
+				'type'           => 'int',
+				'constraint'     => 10,
+				'null'           => FALSE,
+				'unsigned'       => TRUE,
+			)
+		);
+
+		$fields = array_merge($fields, $this->getColumns());
+
+		ee()->load->dbforge();
+		ee()->load->library('smartforge');
+		ee()->dbforge->add_field($fields);
+		ee()->dbforge->add_key('id', TRUE);
+		ee()->dbforge->add_key($this->getForeignKey());
+		ee()->smartforge->create_table($this->getTableName());
+
+		// Pre-populate the cache...
+		$this->getColumnNames();
+	}
+
+	/**
+	 * Drops the table for the field
+	 */
+	private function dropTable()
+	{
+		ee()->load->library('smartforge');
+		ee()->smartforge->drop_table($this->getTableName());
+
+		ee()->cache->delete($this->getCacheKey());
+	}
+
+/**
 	 * TEMPORARY, VOLATILE, DO NOT USE
 	 *
 	 * @param	mixed	$data			Data for this field
 	 * @param	int		$content_id		Content ID to pass to the fieldtype
 	 * @param	string	$content_type	Content type to pass to the fieldtype
-	 * @param	string	$modifier		Variable modifier, if present
+	 * @param	array	$variable_mods		Variable modifiers and parameters, if present
 	 * @param	string	$tagdata		Tagdata to perform the replacement in
 	 * @param	string	$row			Row array to set on the fieldtype
 	 * @return	string	String with variable parsed
 	 */
-	public function parse($data, $content_id, $content_type, $modifier, $tagdata, $row)
+	public function parse($data, $content_id, $content_type, $variable_mods, $tagdata, $row, $tag = FALSE)
 	{
 		$fieldtype = $this->getFieldtypeInstance();
 		$settings = $this->getSettingsValues();
 		$field_fmt = isset($this->field_fmt) ? $this->field_fmt : $this->field_default_fmt;
 		$settings['field_settings'] = array_merge($settings['field_settings'], array('field_fmt' =>$field_fmt));
+		$modifier = ( ! empty($variable_mods['modifier'])) ? $variable_mods['modifier'] : '';
+		$params =  ( ! empty($variable_mods['params'])) ? $variable_mods['params'] : array();
+
+		if ($this->field_type == 'date')
+		{
+			// Set 0 to NULL, kill any formatting
+			//$row['field_ft_'.$dval] = 'none';
+			$data = ($data == 0) ? NULL : $data;
+		}
 
 		$fieldtype->_init(array(
 			'row'			=> $row,
@@ -408,24 +478,27 @@ abstract class FieldModel extends Model {
 		));
 
 		$parse_fnc = ($modifier) ? 'replace_'.$modifier : 'replace_tag';
-
 		if (method_exists($fieldtype, $parse_fnc))
 		{
+			ee()->api_channel_fields->include_handler($this->field_type);
+			ee()->api_channel_fields->setup_handler($this->field_type, TRUE);
+			ee()->api_channel_fields->field_types[$this->field_type] = $fieldtype;
 			$data = ee()->api_channel_fields->apply($parse_fnc, array(
 				$data,
-				array(),
+				$params,
 				FALSE
 			));
 		}
-
+		if ($tag)
+		{
+			return str_replace(LD.$tag.RD, $data, $tagdata);
+		}
 		$tag = $this->field_name;
 		if ($modifier)
 		{
 			$tag = $tag.':'.$modifier;
 		}
-
 		return str_replace(LD.$tag.RD, $data, $tagdata);
 	}
 }
-
 // EOF

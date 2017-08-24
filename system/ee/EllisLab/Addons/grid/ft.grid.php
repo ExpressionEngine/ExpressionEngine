@@ -56,7 +56,9 @@ class Grid_ft extends EE_Fieldtype {
 
 		ee()->session->set_cache(__CLASS__, $this->name(), $data);
 
-		return ' ';
+		ee()->load->helper('custom_field_helper');
+
+		return encode_multi_field(ee()->grid_lib->getSearchableData());
 	}
 
 	public function post_save($data)

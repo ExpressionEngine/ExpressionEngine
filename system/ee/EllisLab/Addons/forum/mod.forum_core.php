@@ -1875,7 +1875,7 @@ class Forum_Core extends Forum {
 
 		$tquery = ee()->db->query("SELECT f.forum_text_formatting, f.forum_html_formatting, f.forum_auto_link_urls, f.forum_allow_img_urls, f.forum_hot_topic, f.forum_post_order, f.forum_posts_perpage, f.forum_display_edit_date,
 									 t.forum_id, t.topic_id as post_id, t.author_id, t.ip_address, t.title, t.body, t.status, t.announcement, t.thread_views, t.parse_smileys, t.topic_date AS date, t.topic_edit_date AS edit_date, t.topic_edit_author AS edit_author_id, em.screen_name AS edit_author,
-							  		 m.group_id, m.screen_name AS author, m.join_date, m.total_forum_topics, m.total_forum_posts, m.location, m.email, m.accept_user_email, m.url, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height
+							  		 m.group_id, m.screen_name AS author, m.join_date, m.total_forum_topics, m.total_forum_posts, m.email, m.accept_user_email, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height
 							FROM (exp_forums f, exp_forum_topics t, exp_members m)
 							LEFT JOIN exp_members em ON t.topic_edit_author = em.member_id
 							WHERE f.forum_id = t.forum_id
@@ -2488,8 +2488,8 @@ class Forum_Core extends Forum {
 			t.topic_date AS date, t.topic_edit_date AS edit_date,
 			t.topic_edit_author AS edit_author_id, em.screen_name AS edit_author,
 			m.group_id, m.screen_name AS author, m.join_date, m.total_forum_topics,
-			m.total_forum_posts, m.location, m.email, m.accept_user_email, m.url, m.aol_im,
-			m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width,
+			m.total_forum_posts, m.email, m.accept_user_email,
+			m.signature, m.sig_img_filename, m.sig_img_width,
 			m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height,
 			m.photo_filename, m.photo_width, m.photo_height');
 		ee()->db->from(array('forums f', 'forum_topics t', 'members m'));
@@ -2863,7 +2863,7 @@ class Forum_Core extends Forum {
 			}
 
 			$pquery = ee()->db->query("SELECT p.post_id, p.forum_id, p.author_id, p.ip_address, p.body, p.parse_smileys, p.post_date AS date, p.post_edit_date AS edit_date, p.post_edit_author AS edit_author_id, em.screen_name AS edit_author,
-				m.group_id, m.screen_name AS author, m.join_date, m.total_forum_topics, m.total_forum_posts, m.location, m.email, m.accept_user_email, m.url, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height,
+				m.group_id, m.screen_name AS author, m.join_date, m.total_forum_topics, m.total_forum_posts, m.email, m.accept_user_email, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height,
 				f.forum_display_edit_date
 				FROM (exp_forum_posts p, exp_members m, exp_forums f)
 				LEFT JOIN exp_members em ON p.post_edit_author = em.member_id
@@ -3303,7 +3303,7 @@ class Forum_Core extends Forum {
 			$template = str_replace($matches['0'], '{rank_stars}', $template);
 		}
 
-		$iif = array('location', 'email', 'url', 'aol_im', 'yahoo_im', 'msn_im', 'icq');
+		$iif = array('email');
 
 		// Load the typography class
 		ee()->load->library('typography');
@@ -3373,9 +3373,6 @@ class Forum_Core extends Forum {
 			}
 
 			$consoles = array(
-						'aim_console'	=> "onclick=\"window.open('".$this->profile_path('aim_console/'.$row['author_id'])."', '_blank', 'width=240,height=360,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
-						'icq_console'	=> "onclick=\"window.open('".$this->profile_path('icq_console/'.$row['author_id'])."', '_blank', 'width=650,height=580,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
-						'yahoo_console'	=> "http://edit.yahoo.com/config/send_webmesg?.target=".$row['yahoo_im']."&amp;.src=pg",
 						'email_console'	=> "onclick=\"window.open('".$this->profile_path('email_console/'.$row['author_id'])."', '_blank', 'width=650,height=600,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
 					);
 
@@ -5843,7 +5840,7 @@ class Forum_Core extends Forum {
 						// Where should we send the user to?  Normally we'll send them to either
 						// the thread or the announcement page, but if they are allowed to post,
 						// but not view threads we have to send them to the topic page.
-						if ( ! $this->_permission('can_view_topics', $fdata['permissions']))
+						if ( ! $this->_permission('can_view_topics', $fdata['permissions']) OR $spam)
 						{
 							$redirect = $this->forum_path('/viewforum/'.$fdata['forum_id'].'/');
 						}
@@ -5880,12 +5877,7 @@ class Forum_Core extends Forum {
 						$data['topic_edit_date']	= ee()->localize->now;
 
 						$sql = ee()->db->update_string('exp_forum_topics', $data, array('topic_id' => ee()->input->post('topic_id')));
-
-						if ( ! $spam)
-						{
-							ee()->db->query($sql);
-						}
-
+						ee()->db->query($sql);
 
 						$data['topic_id'] = $this->current_id;
 
@@ -5971,11 +5963,7 @@ class Forum_Core extends Forum {
 						$data['post_edit_date']		= ee()->localize->now;
 
 						$sql = ee()->db->update_string('exp_forum_posts', $data, "post_id='".$data['post_id']."'");
-
-						if ( ! $spam)
-						{
-							ee()->db->query($sql);
-						}
+						ee()->db->query($sql);
 
 						// Determine the redirect location
 						ee()->db->select('COUNT(*) as count');
@@ -5992,11 +5980,18 @@ class Forum_Core extends Forum {
 
 		if ($spam)
 		{
-			$args = array($sql);
-			ee('Spam')->moderate(__FILE__, 'Forum Post', 'moderate_post', NULL, $args, $text);
-
+			ee('Spam')->moderate('forum', $sql, $text, array('postdata' => $_POST, 'redirect' => $redirect));
 			$this->submission_error = lang('spam');
-			return $this->display_errors();
+
+			$data = array(	'title' 	=> lang('post_is_moderated'),
+							'heading'	=> lang('thank_you'),
+							'content'	=> lang('post_is_moderated'),
+							'redirect'	=> $redirect,
+							'rate'      => 8,
+							'link'		=> array($redirect, '')
+						 );
+
+			return ee()->output->show_message($data);
 		}
 
 		// Fetch/Set the "topic tracker" cookie

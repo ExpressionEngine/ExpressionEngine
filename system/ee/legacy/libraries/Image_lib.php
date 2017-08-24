@@ -279,7 +279,7 @@ class EE_Image_lib {
 		// Set the quality
 		$this->quality = trim(str_replace("%", "", $this->quality));
 
-		if ($this->quality == '' OR $this->quality == 0 OR ! is_numeric($this->quality))
+		if ($this->quality === '' OR $this->quality < 0 OR ! is_numeric($this->quality))
 		{
 			$this->quality = 90;
 		}
@@ -1296,7 +1296,16 @@ class EE_Image_lib {
 					return FALSE;
 				}
 
-				if ( ! @imagepng($resource, $this->full_dst_path))
+				// We have a percentage value for quality (0 - 100) but PNGs
+				// only accept a quality of 0 - 9, so we must to some math!
+				// Additionally, for JPEGs 100 is best quality but for PNGs
+				// 0 is best quality. So...for the math, if we want 80% quality
+				// then we'd need to do 9 * .8 then subtract that from 9, or
+				// just do 9 * .2! So, we'll find that number by doing 100 -
+				// quality (percentage math, it's fun for the whole family!)
+				$png_quality = round(((100 - $this->quality) / 100) * 9);
+
+				if ( ! @imagepng($resource, $this->full_dst_path, $png_quality))
 				{
 					$this->set_error('imglib_save_failed');
 					return FALSE;

@@ -55,11 +55,11 @@ class Result {
 		}
 
 
-		$this->collectColumnsByAliasPrefix($this->db_result[0]);
 		$this->initializeResultArray();
 
 		foreach ($this->db_result as $row)
 		{
+			$this->collectColumnsByAliasPrefix($row);
 			$this->parseRow($row);
 		}
 

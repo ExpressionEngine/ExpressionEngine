@@ -57,6 +57,13 @@ class SerializableEntity extends Entity implements Serializable {
 	 */
 	protected function setSerializeData($data)
 	{
-		$this->fill($data);
+		// set() instead of fill() so properties are not lost on write
+		$this->set($data);
+
+		// restore new/existing primary key
+		$this->setId($this->getId());
+
+		// mark as clean, or all the backups will have null values
+		$this->markAsClean();
 	}
 }

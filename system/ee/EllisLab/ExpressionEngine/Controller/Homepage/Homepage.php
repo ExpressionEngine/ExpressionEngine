@@ -81,7 +81,33 @@ class Homepage extends CP_Controller {
 			->filter('Entry.status', 'closed')
 			->count();
 
-		$vars['spam_module_installed'] = (ee('Model')->get('Module')->filter('module_name', 'Spam')->count());
+		$vars['spam_module_installed'] = (bool) ee('Model')->get('Module')->filter('module_name', 'Spam')->count();
+
+		if ($vars['spam_module_installed'])
+		{
+			$vars['number_of_new_spam'] = ee('Model')->get('spam:SpamTrap')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('trap_date', '>', ee()->session->userdata['last_visit'])
+				->count();
+
+			$vars['number_of_spam'] = ee('Model')->get('spam:SpamTrap')
+				->filter('site_id', ee()->config->item('site_id'))
+				->count();
+
+			// db query to aggregate
+			$vars['trapped_spam'] = ee()->db->select('content_type, COUNT(trap_id) as total_trapped')
+				->group_by('content_type')
+				->get('spam_trap')
+				->result();
+
+			foreach ($vars['trapped_spam'] as $trapped)
+			{
+				ee()->lang->load($trapped->content_type);
+			}
+
+			$vars['can_moderate_spam'] = ee()->cp->allowed_group('can_moderate_spam');
+		}
+
 
 		// Gather the news
 		ee()->load->library(array('rss_parser', 'typography'));
