@@ -1105,9 +1105,10 @@ class EE_Session {
 	{
 		foreach($this->flashdata as $key => $val)
 		{
-			if (strpos($key, ':old:') === 0)
+			if (strpos($key, ':new:') === FALSE &&
+				strpos($key, ':old:') === FALSE)
 			{
-				$this->flashdata[':new:'.substr($key, 5)] = $val;
+				$this->flashdata[':new:'.$key] = $val;
 			}
 
 			unset($this->flashdata[$key]);
