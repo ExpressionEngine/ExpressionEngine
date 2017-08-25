@@ -732,6 +732,37 @@ class EE_Upload {
 
 	// --------------------------------------------------------------------
 
+    /**
+     * If possible, will increase PHP's memory limit by the specified number of
+     * bytes
+     *
+     * @param int $size The number of bytes in increase by
+     * @return void
+     */
+    protected function increase_memory_limit($size)
+    {
+		if (function_exists('memory_get_usage') && memory_get_usage() && ini_get('memory_limit') != '')
+		{
+			$current = (int) ini_get('memory_limit') * 1024 * 1024;
+
+			// Because 1G is a thing
+			if (strtolower(substr(ini_get('memory_limit'), -1)) == 'g')
+			{
+				$current *= 1024;
+			}
+
+			// There was a bug/behavioural change in PHP 5.2, where numbers over
+			// one million get output into scientific notation.  number_format()
+			// ensures this number is an integer
+			// http://bugs.php.net/bug.php?id=43053
+
+			$new_memory = number_format(ceil($size + $current), 0, '.', '');
+
+			// When an integer is used, the value is measured in bytes.
+			ini_set('memory_limit', $new_memory);
+		}
+    }
+
 	/**
 	 * Runs the file through the XSS clean function
 	 *
@@ -750,20 +781,7 @@ class EE_Upload {
 			return FALSE;
 		}
 
-		if (function_exists('memory_get_usage') && memory_get_usage() && ini_get('memory_limit') != '')
-		{
-			$current = (int) ini_get('memory_limit') * 1024 * 1024;
-
-			// There was a bug/behavioural change in PHP 5.2, where numbers over
-			// one million get output into scientific notation.  number_format()
-			// ensures this number is an integer
-			// http://bugs.php.net/bug.php?id=43053
-
-			$new_memory = number_format(ceil(filesize($file) + $current), 0, '.', '');
-
-			// When an integer is used, the value is measured in bytes.
-			ini_set('memory_limit', $new_memory);
-		}
+        $this->increase_memory_limit(filesize($file));
 
 		// If the file being uploaded is an image, then we should have no
 		// problem with XSS attacks (in theory), but IE can be fooled into mime-
@@ -822,20 +840,7 @@ class EE_Upload {
 			return FALSE;
 		}
 
-		if (function_exists('memory_get_usage') && memory_get_usage() && ini_get('memory_limit') != '')
-		{
-			$current = (int) ini_get('memory_limit') * 1024 * 1024;
-
-			// There was a bug/behavioural change in PHP 5.2, where numbers over
-			// one million get output into scientific notation.  number_format()
-			// ensures this number is an integer
-			// http://bugs.php.net/bug.php?id=43053
-
-			$new_memory = number_format(ceil(filesize($file) + $current), 0, '.', '');
-
-			// When an integer is used, the value is measured in bytes.
-			ini_set('memory_limit', $new_memory);
-		}
+        $this->increase_memory_limit(filesize($file));
 
 		if (($data = @file_get_contents($file)) === FALSE)
 		{

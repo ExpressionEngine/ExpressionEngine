@@ -57,21 +57,22 @@ class Design extends AbstractDesignController {
 
 	public function manager($group_name = NULL)
 	{
+		$assigned_groups = NULL;
+
+		if (ee()->session->userdata['group_id'] != 1)
+		{
+			$assigned_groups = array_keys(ee()->session->userdata['assigned_template_groups']);
+
+			if (empty($assigned_groups))
+			{
+				ee()->functions->redirect(ee('CP/URL')->make('design/system'));
+			}
+		}
+
 		if (is_null($group_name))
 		{
-			$assigned_groups = NULL;
-
-			if (ee()->session->userdata['group_id'] != 1)
-			{
-				$assigned_groups = array_keys(ee()->session->userdata['assigned_template_groups']);
-
-				if (empty($assigned_groups))
-				{
-					ee()->functions->redirect(ee('CP/URL')->make('design/system'));
-				}
-			}
-
 			$group = ee('Model')->get('TemplateGroup')
+				->fields('group_id', 'group_name')
 				->filter('is_site_default', 'y')
 				->filter('site_id', ee()->config->item('site_id'));
 
@@ -85,6 +86,7 @@ class Design extends AbstractDesignController {
 			if ( ! $group)
 			{
 				$group = ee('Model')->get('TemplateGroup')
+					->fields('group_id', 'group_name')
 					->filter('site_id', ee()->config->item('site_id'))
 					->order('group_name', 'asc');
 
@@ -104,9 +106,15 @@ class Design extends AbstractDesignController {
 		else
 		{
 			$group = ee('Model')->get('TemplateGroup')
+				->fields('group_id', 'group_name')
 				->filter('group_name', $group_name)
 				->filter('site_id', ee()->config->item('site_id'))
 				->first();
+
+			if ($assigned_groups)
+			{
+				$group->filter('group_id', 'IN', $assigned_groups);
+			}
 
 			if ( ! $group)
 			{
@@ -133,26 +141,16 @@ class Design extends AbstractDesignController {
 
 		$this->_sync_from_files();
 
-		$vars = array();
+		$base_url = ee('CP/URL')->make('design/manager/' . $group->group_name);
+    $this->base_url = $base_url;
+
+		$templates = ee('Model')->get('Template')->filter('group_id', $group->group_id)->filter('site_id', ee()->config->item('site_id'));
+
+		$vars = $this->buildTableFromTemplateQueryBuilder($templates);
+
 		$vars['show_new_template_button'] = ee()->cp->allowed_group('can_create_templates');
 		$vars['show_bulk_delete'] = ee()->cp->allowed_group('can_delete_templates');
 		$vars['group_id'] = $group->group_name;
-
-		$base_url = ee('CP/URL')->make('design/manager/' . $group->group_name);
-
-		$table = $this->buildTableFromTemplateCollection($group->Templates);
-
-		$vars['table'] = $table->viewData($base_url);
-		$vars['form_url'] = $vars['table']['base_url'];
-
-		if ( ! empty($vars['table']['data']))
-		{
-			// Paginate!
-			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-				->perPage($vars['table']['limit'])
-				->currentPage($vars['table']['page'])
-				->render($base_url);
-		}
 
 		ee()->javascript->set_global('template_settings_url', ee('CP/URL')->make('design/template/settings/###')->compile());
 		ee()->javascript->set_global('templage_groups_reorder_url', ee('CP/URL')->make('design/reorder-groups')->compile());
@@ -212,6 +210,8 @@ class Design extends AbstractDesignController {
 
 		ee()->load->library('api');
 		ee()->legacy_api->instantiate('template_structure');
+
+		// Lazy load templates instead, this was looping the group query with it included
 
 		$groups = ee('Model')->get('TemplateGroup')
 			->with('Templates')

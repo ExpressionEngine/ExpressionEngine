@@ -48,18 +48,18 @@
 					input.siblings('em').remove();
 				}
 			});
-
-			$('li.remove a').click(function (e) {
-				var figure_container = $(this).closest('.fields-upload-chosen');
-				figure_container.addClass('hidden');
-				figure_container.siblings('em').remove(); // Hide the "missing file" erorr
-				figure_container.siblings('input[type="hidden"]').val('').trigger('change');
-				figure_container.siblings('.fields-upload-btn').removeClass('hidden');
-				e.preventDefault();
-			});
 		}
 
 		setupFileField();
+
+		$('body').on('click', '.fields-upload-chosen li.remove a', function (e) {
+			var figure_container = $(this).closest('.fields-upload-chosen');
+			figure_container.addClass('hidden');
+			figure_container.siblings('em').remove(); // Hide the "missing file" erorr
+			figure_container.siblings('input[type="hidden"]').val('').trigger('change');
+			figure_container.siblings('.fields-upload-btn').removeClass('hidden');
+			e.preventDefault();
+		});
 
 		Grid.bind('file', 'display', function(cell) {
 			var button = $('.file-field-filepicker', cell),

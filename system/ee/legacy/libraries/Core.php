@@ -82,8 +82,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20170626');
-		define('APP_VER',		'3.5.10');
+		define('APP_BUILD',		'20170823');
+		define('APP_VER',		'3.5.11');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -480,7 +480,7 @@ class EE_Core {
 		}
 
 		// Load common helper files
-		ee()->load->helper(array('url', 'form', 'quicktab'));
+		ee()->load->helper(array('url', 'form', 'quicktab', 'file'));
 
 		// Certain variables will be included in every page, so we make sure they are set here
 		// Prevents possible PHP errors, if a developer forgets to set it explicitly.

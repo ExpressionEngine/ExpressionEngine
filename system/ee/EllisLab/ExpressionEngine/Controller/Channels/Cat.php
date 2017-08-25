@@ -60,19 +60,27 @@ class Cat extends AbstractChannelsController {
 	 */
 	public function index()
 	{
+		$this->base_url = ee('CP/URL')->make('channels/cat');
+
 		$cat_groups = ee('Model')->get('CategoryGroup')
 			->filter('site_id', ee()->config->item('site_id'));
 
 		$total_rows = $cat_groups->count();
 
+		$filters = ee('CP/Filter')
+			->add('Perpage', $total_rows, 'show_all_category_groups');
+
+		// Before pagination so perpage is set correctly
+		$this->renderFilters($filters);
+
 		$table = $this->buildTableFromCategoryGroupsQuery($cat_groups, array(), ee()->cp->allowed_group('can_delete_categories'));
 
-		$vars['table'] = $table->viewData(ee('CP/URL')->make('channels/cat'));
+		$vars['table'] = $table->viewData($this->base_url);
 
 		$vars['pagination'] = ee('CP/Pagination', $total_rows)
-			->perPage($vars['table']['limit'])
-			->currentPage($vars['table']['page'])
-			->render($vars['table']['base_url']);
+			->perPage($this->perpage)
+			->currentPage($this->page)
+			->render($this->base_url);
 
 		$vars['can_create_categories'] = ee()->cp->allowed_group('can_create_categories');
 		$vars['can_delete_categories'] = ee()->cp->allowed_group('can_delete_categories');
@@ -936,9 +944,6 @@ class Cat extends AbstractChannelsController {
 		return $field->getForm();
 	}
 
-	/**
-	 * Category group custom fields listing
-	 */
 	public function field($group_id)
 	{
 		$cat_group = ee('Model')->get('CategoryGroup')
