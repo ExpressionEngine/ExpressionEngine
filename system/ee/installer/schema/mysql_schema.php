@@ -739,7 +739,6 @@ class EE_Schema {
 			field_settings text NULL,
 			legacy_field_data char(1) NOT NULL default 'n',
 			PRIMARY KEY `field_id` (`field_id`),
-			KEY `group_id` (`group_id`),
 			KEY `field_type` (`field_type`),
 			KEY `site_id` (`site_id`)
 		)";
