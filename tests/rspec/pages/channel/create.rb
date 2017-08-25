@@ -4,8 +4,9 @@ class ChannelCreate < ControlPanelPage
   element :channel_name, 'input[name=channel_name]'
   element :duplicate_channel_prefs, 'select[name=duplicate_channel_prefs]'
   element :status_group, 'select[name=status_group]'
-  element :field_group, 'select[name=field_group]'
   element :title_field_label, 'input[name=title_field_label]'
+  elements :field_groups, 'input[name="field_groups[]"]'
+  elements :custom_fields, 'input[name="custom_fields[]"]'
   elements :cat_group, 'input[name="cat_group[]"]'
 
   def load
