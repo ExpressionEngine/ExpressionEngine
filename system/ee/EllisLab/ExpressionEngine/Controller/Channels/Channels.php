@@ -26,6 +26,7 @@ class Channels extends AbstractChannelsController {
 
 	public function index()
 	{
+		ee()->session->benjaminButtonFlashdata();
 		ee()->functions->redirect(ee('CP/URL')->make('channels/layouts'));
 	}
 
