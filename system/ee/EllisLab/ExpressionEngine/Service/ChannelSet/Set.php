@@ -73,6 +73,12 @@ class Set {
 	private $aliases = array();
 
 	/**
+	 * @var Associative array of top level element types and the IDs of the
+	 *      newly-created elements
+	 */
+	private $insert_ids = [];
+
+	/**
 	 * @param String $path Path to the channel set
 	 */
 	public function __construct($path)
@@ -195,13 +201,32 @@ class Set {
 	{
 		foreach ($this->top_level_elements as $property)
 		{
+			$this->insert_ids[$property] = [];
+
 			foreach ($this->$property as $model)
 			{
 				$model->save();
+				$this->insert_ids[$property][] = $model->getId();
 			}
 		}
 
 		$this->deleteFiles();
+	}
+
+	/**
+	 * Get array of IDs for newly-inserted items
+	 *
+	 * @param string $element_type Element type to grab IDs for
+	 * @return array Array of database IDs for given element type
+	 */
+	public function getIdsForElementType($element_type)
+	{
+		if (empty($this->insert_ids[$element_type]))
+		{
+			return [];
+		}
+
+		return $this->insert_ids[$element_type];
 	}
 
 	/**
