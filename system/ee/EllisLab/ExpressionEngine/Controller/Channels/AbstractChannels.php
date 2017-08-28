@@ -93,6 +93,8 @@ abstract class AbstractChannels extends CP_Controller {
 				->withRemovalKey('channel_id');
 		}
 
+		$imported_channels = ee()->session->flashdata('imported_channels') ?: [];
+
 		$channels = ee('Model')->get('Channel')
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('channel_title')
@@ -120,6 +122,16 @@ abstract class AbstractChannels extends CP_Controller {
 					lang('channel') . ': <b>' . $channel_name . '</b>'
 				)->identifiedBy($channel->getId());
 			}
+
+			if ($active == $channel->getId())
+			{
+				$item->isActive();
+			}
+
+			if (in_array($channel->getId(), $imported_channels))
+			{
+				$item->isSelected();
+			}
 		}
 
 		$sidebar->addActionBar()
@@ -131,6 +143,11 @@ abstract class AbstractChannels extends CP_Controller {
 				NULL,
 				'import-channel'
 			);
+
+		ee()->javascript->set_global(
+			'sets.importUrl',
+			ee('CP/URL', 'channels/sets')->compile()
+		);
 
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/channel/menu'),

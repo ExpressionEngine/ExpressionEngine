@@ -16,4 +16,33 @@ $(document).ready(function () {
 
 		e.preventDefault();
 	})
+
+	bindChannelSetImport()
+
+	function bindChannelSetImport() {
+		var fileInput = $('<input/>', {
+			type: 'file',
+			name: 'set_file'
+		})
+
+		var channelSetForm = $('<form/>', {
+			method: 'post',
+			action: EE.sets.importUrl,
+			enctype: 'multipart/form-data',
+			class: 'hidden'
+		}).append($('<input/>', {
+			type: 'hidden',
+			name: 'csrf_token',
+			value: EE.CSRF_TOKEN
+		})).append(fileInput)
+
+		fileInput.on('change', function(e) {
+			channelSetForm.submit()
+		})
+
+		$('.sidebar .actions a[rel="import-channel"]').click(function(e) {
+			e.preventDefault()
+			fileInput.click()
+		}).after(channelSetForm)
+	}
 });
