@@ -254,8 +254,8 @@ feature 'Channel Create/Edit' do
     @page.channel_name.value.should == 'test'
 
     @page.status_group.value.should == '1'
-    @page.field_groups[0].checked?.should == true
-    @page.field_groups[1].checked?.should == false
+    @page.field_groups[0].checked?.should == false
+    @page.field_groups[1].checked?.should == true
 
     @page.cat_group[0].checked?.should == false
     @page.cat_group[1].checked?.should == true
