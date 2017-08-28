@@ -152,48 +152,72 @@ class ChannelField extends FieldModel {
 	public function onAfterInsert()
 	{
 		parent::onAfterInsert();
-
-		foreach ($this->ChannelFieldGroups->Channels as $channel)
-		{
-			foreach ($channel->ChannelLayouts as $channel_layout)
-			{
-				$field_layout = $channel_layout->field_layout;
-				$field_info = array(
-					'field'     => 'field_id_' . $this->field_id,
-					'visible'   => TRUE,
-					'collapsed' => $this->getProperty('field_is_hidden')
-				);
-				$field_layout[0]['fields'][] = $field_info;
-
-				$channel_layout->field_layout = $field_layout;
-				$channel_layout->save();
-			}
-		}
+		$this->addToLayouts();
 	}
 
 	public function onBeforeDelete()
 	{
-		foreach ($this->ChannelFieldGroups->Channels as $channel)
-		{
-			foreach ($channel->ChannelLayouts as $channel_layout)
-			{
-				$field_layout = $channel_layout->field_layout;
+		$this->removeFromLayouts();
+	}
 
-				foreach ($field_layout as $i => $section)
+	private function getRelatedChannelIds()
+	{
+		$channel_ids = $this->Channels->pluck('channel_id');
+		foreach ($this->ChannelFieldGroups as $field_group)
+		{
+			foreach ($field_group->Channels as $channel)
+			{
+				$channel_ids[] = $channel->getId();
+			}
+		}
+
+		return array_unique($channel_ids);
+	}
+
+	private function getRelatedChannelLayouts()
+	{
+		return $this->getModelFacade()->get('ChannelLayout')
+			->filter('channel_id', $this->getRelatedChannelIds())
+			->all();
+	}
+
+	private function addToLayouts()
+	{
+		foreach ($this->getRelatedChannelLayouts() as $channel_layout)
+		{
+			$field_layout = $channel_layout->field_layout;
+			$field_info = array(
+				'field'     => 'field_id_' . $this->field_id,
+				'visible'   => TRUE,
+				'collapsed' => $this->getProperty('field_is_hidden')
+			);
+			$field_layout[0]['fields'][] = $field_info;
+
+			$channel_layout->field_layout = $field_layout;
+			$channel_layout->save();
+		}
+	}
+
+	private function removeFromLayouts()
+	{
+		foreach ($this->getRelatedChannelLayouts() as $channel_layout)
+		{
+			$field_layout = $channel_layout->field_layout;
+
+			foreach ($field_layout as $i => $section)
+			{
+				foreach ($section['fields'] as $j => $field_info)
 				{
-					foreach ($section['fields'] as $j => $field_info)
+					if ($field_info['field'] == 'field_id_' . $this->field_id)
 					{
-						if ($field_info['field'] == 'field_id_' . $this->field_id)
-						{
-							array_splice($field_layout[$i]['fields'], $j, 1);
-							break 2;
-						}
+						array_splice($field_layout[$i]['fields'], $j, 1);
+						break 2;
 					}
 				}
-
-				$channel_layout->field_layout = $field_layout;
-				$channel_layout->save();
 			}
+
+			$channel_layout->field_layout = $field_layout;
+			$channel_layout->save();
 		}
 	}
 
