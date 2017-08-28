@@ -31,8 +31,6 @@ class Layouts extends AbstractChannelsController {
 		}
 
 		ee()->lang->loadfile('content');
-
-		$this->generateSidebar('channel');
 	}
 
 	public function layouts($channel_id = NULL)
@@ -51,6 +49,8 @@ class Layouts extends AbstractChannelsController {
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
+
+		$this->generateSidebar($channel->getId());
 
 		$vars['channel_id'] = $channel_id;
 		$vars['create_url'] = ee('CP/URL')->make('channels/layouts/create/' . $channel_id);
