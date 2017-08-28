@@ -37,15 +37,17 @@ class ChannelField extends FieldModel {
 	);
 
 	protected static $_relationships = array(
-		'ChannelFieldGroup' => array(
+		'ChannelFieldGroups' => array(
 			'type' => 'hasAndBelongsToMany',
+			'model' => 'ChannelFieldGroup',
 			'pivot' => array(
 				'table' => 'channel_field_groups_fields'
 			),
 			'weak' => TRUE
 		),
-		'Channel' => array(
+		'Channels' => array(
 			'type' => 'hasAndBelongsToMany',
+			'model' => 'Channel',
 			'pivot' => array(
 				'table' => 'channels_channel_fields'
 			),
@@ -103,7 +105,7 @@ class ChannelField extends FieldModel {
 
 	public function getStructure()
 	{
-		return $this->getChannelFieldGroup();
+		return $this->getChannelFieldGroups()->first();
 	}
 
 	public function getDataTable()
@@ -151,7 +153,7 @@ class ChannelField extends FieldModel {
 	{
 		parent::onAfterInsert();
 
-		foreach ($this->ChannelFieldGroup->Channels as $channel)
+		foreach ($this->ChannelFieldGroups->Channels as $channel)
 		{
 			foreach ($channel->ChannelLayouts as $channel_layout)
 			{
@@ -171,7 +173,7 @@ class ChannelField extends FieldModel {
 
 	public function onBeforeDelete()
 	{
-		foreach ($this->ChannelFieldGroup->Channels as $channel)
+		foreach ($this->ChannelFieldGroups->Channels as $channel)
 		{
 			foreach ($channel->ChannelLayouts as $channel_layout)
 			{
