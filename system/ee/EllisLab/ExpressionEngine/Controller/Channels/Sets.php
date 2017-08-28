@@ -81,7 +81,7 @@ class Sets extends AbstractChannelsController {
 		);
 
 		ee()->view->cp_page_title = lang('import_channel');
-		ee()->cp->render('channels/sets/index', $vars);
+		ee()->cp->render('settings/form', $vars);
 	}
 
 	/**
@@ -207,7 +207,7 @@ class Sets extends AbstractChannelsController {
 		);
 
 		ee()->view->cp_page_title = lang('import_channel');
-		ee()->cp->render('channels/sets/index', $vars);
+		ee()->cp->render('settings/form', $vars);
 	}
 
 	private function createAliasForm($set, $result)
