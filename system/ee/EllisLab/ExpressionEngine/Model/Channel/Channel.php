@@ -304,6 +304,9 @@ class Channel extends StructureModel {
 					break;
 			}
 		}
+
+		$this->FieldGroups = clone $channel->FieldGroups;
+		$this->CustomFields = clone $channel->CustomFields;
 	}
 
 	public function onBeforeSave()
