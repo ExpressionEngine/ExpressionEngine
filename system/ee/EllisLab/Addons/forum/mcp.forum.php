@@ -30,6 +30,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 class Forum_mcp extends CP_Controller {
 
 	public $base = 'addons/settings/forum/';
+	public $forum_checkboxes = array('can_view_forum', 'can_view_hidden', 'can_view_topics', 'can_post_topics', 'can_post_reply', 'can_upload_files', 'can_report', 'can_search');
 
 	/**
 	 * Constructor
@@ -590,6 +591,14 @@ class Forum_mcp extends CP_Controller {
 	private function saveBoardAndRedirect($board)
 	{
 		$action = ($board->isNew()) ? 'create' : 'edit';
+
+		// Check for empty checkboxes
+		$set_permissions = array_keys($_POST['permissions']);
+
+		foreach (array_diff($this->forum_checkboxes, $set_permissions) as $permission)
+		{
+			$_POST['permissions'][$permission] = '';
+		}
 
 		foreach ($_POST['permissions'] as $key => $value)
 		{
@@ -1153,10 +1162,10 @@ class Forum_mcp extends CP_Controller {
 					'title' => 'upload',
 					'desc' => 'upload_desc',
 					'fields' => array(
-						'permissions[upload_files]' => array(
+						'permissions[can_upload_files]' => array(
 							'type' => 'checkbox',
 							'choices' => $member_groups,
-							'value' => $board->getPermission('upload_files'),
+							'value' => $board->getPermission('can_upload_files'),
 						)
 					)
 				),
@@ -1749,6 +1758,14 @@ class Forum_mcp extends CP_Controller {
 
 		if ( ! empty($_POST))
 		{
+			// Check for empty checkboxes
+			$set_permissions = array_keys($_POST['permissions']);
+
+			foreach (array_diff(array('can_view_forum', 'can_view_hidden'), $set_permissions) as $permission)
+			{
+				$_POST['permissions'][$permission] = '';
+			}
+
 			foreach ($_POST['permissions'] as $key => $value)
 			{
 				$category->setPermission($key, $value);
@@ -2286,6 +2303,14 @@ class Forum_mcp extends CP_Controller {
 
 		if ( ! empty($_POST))
 		{
+			// Check for empty checkboxes
+			$set_permissions = array_keys($_POST['permissions']);
+
+			foreach (array_diff($this->forum_checkboxes, $set_permissions) as $permission)
+			{
+				$_POST['permissions'][$permission] = '';
+			}
+
 			foreach ($_POST['permissions'] as $key => $value)
 			{
 				$forum->setPermission($key, $value);
@@ -2388,10 +2413,10 @@ class Forum_mcp extends CP_Controller {
 					'title' => 'upload',
 					'desc' => 'upload_desc',
 					'fields' => array(
-						'permissions[upload_files]' => array(
+						'permissions[can_upload_files]' => array(
 							'type' => 'checkbox',
 							'choices' => $member_groups,
-							'value' => $forum->getPermission('upload_files'),
+							'value' => $forum->getPermission('can_upload_files'),
 						)
 					)
 				),
