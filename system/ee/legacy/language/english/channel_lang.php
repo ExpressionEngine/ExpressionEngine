@@ -14,7 +14,7 @@ $lang = array(
 
 'channel' => 'Channel',
 
-'channel_form_layouts' => '%s &ndash; Form Layouts',
+'channel_form_layouts' => '%s &ndash; Publish Layouts',
 
 'channel_manager' => 'Channel Manager',
 
@@ -54,15 +54,15 @@ $lang = array(
 
 'create_channel' => 'Create Channel',
 
-'create_form_layout' => 'Create Form Layout',
+'create_form_layout' => 'New Publish Layout',
 
-'create_layout_error' => 'Cannot Create Form Layout',
+'create_layout_error' => 'Cannot Create Publish Layout',
 
 'create_layout_error_desc' => 'We were unable to update this group, please review and fix errors below.',
 
-'create_layout_success' => 'Form Layout Created',
+'create_layout_success' => 'Publish Layout Created',
 
-'create_layout_success_desc' => 'The form layout <b>%s</b> has been created.',
+'create_layout_success_desc' => 'The publish layout <b>%s</b> has been created.',
 
 'custom_fields' => 'Custom Fields',
 
@@ -72,15 +72,15 @@ $lang = array(
 
 'edit' => 'edit',
 
-'edit_form_layout' => 'Edit Form Layout &ndash; %s',
+'edit_form_layout' => 'Edit Publish Layout',
 
-'edit_layout_error' => 'Cannot Update Form Layout',
+'edit_layout_error' => 'Cannot Update Publish Layout',
 
 'edit_layout_error_desc' => 'We were unable to update this group, please review and fix errors below.',
 
-'edit_layout_success' => 'Form Layout Updated',
+'edit_layout_success' => 'Publish Layout Updated',
 
-'edit_layout_success_desc' => 'The form layout <b>%s</b> has been updated.',
+'edit_layout_success_desc' => 'The publish layout <b>%s</b> has been updated.',
 
 'error_cannot_hide_tab' => 'Cannot Hide Tab',
 
@@ -96,7 +96,7 @@ $lang = array(
 
 'field_groups' => 'Field Groups',
 
-'form_layouts' => 'Form Layouts',
+'form_layouts' => 'Publish Layouts',
 
 'illegal_tab_name' => 'Tab names may not contain the following characters: *, >, :, +, (, ), [, ], =, |, ", \', ., #, or $',
 
@@ -112,7 +112,7 @@ $lang = array(
 
 'layouts' => 'Layouts',
 
-'layouts_removed_desc' => 'The following form layouts were removed',
+'layouts_removed_desc' => 'The following publish layouts were removed',
 
 'manage_channels' => 'Manage Channels',
 
@@ -122,9 +122,11 @@ $lang = array(
 
 'member_groups_desc' => 'Choose the member group(s) to apply this layout to.',
 
+'new_layout' => 'New Layout',
+
 'no_channels' => 'No <b>Channels</b> found.',
 
-'no_layouts' => 'No Layouts',
+'no_layouts' => 'No <b>Layouts</b> found.',
 
 'search_for' => 'Search for "%s"',
 

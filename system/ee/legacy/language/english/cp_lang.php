@@ -240,7 +240,7 @@ $lang = array(
 
 'recent_entries' => 'Recent Entries',
 
-'select_all' => 'Select All',
+'select_all' => 'select all',
 
 'site' => 'Site',
 
