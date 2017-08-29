@@ -53,23 +53,7 @@ class Layouts extends AbstractChannelsController {
 		$this->generateSidebar($channel->getId());
 
 		$vars['channel_id'] = $channel_id;
-		$vars['create_url'] = ee('CP/URL')->make('channels/layouts/create/' . $channel_id);
-
-		$table = ee('CP/Table');
-		$table->setColumns(
-			array(
-				'name',
-				'member_group',
-				'manage' => array(
-					'type'	=> Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=>
-						Table::COL_CHECKBOX
-				)
-			)
-		);
-		$table->setNoResultsText('no_layouts', 'create_new', $vars['create_url']);
+		$vars['create_url'] = ee('CP/URL')->make('channels/layouts/create/' . $channel->getId());
 
 		$data = array();
 
@@ -78,48 +62,28 @@ class Layouts extends AbstractChannelsController {
 		foreach ($channel->ChannelLayouts as $layout)
 		{
 			$edit_url = ee('CP/URL')->make('channels/layouts/edit/' . $layout->layout_id);
-			$column = array(
-				array(
-					'content' => $layout->layout_name,
-					'href' => $edit_url
-				),
-				implode(', ', $layout->MemberGroups->pluck('group_title')),
-				array('toolbar_items' => array(
-					'edit' => array(
+
+			$data[] = [
+				'id' => $layout->getId(),
+				'label' => $layout->layout_name,
+				'href' => $edit_url,
+				'extra' => implode(', ', $layout->MemberGroups->pluck('group_title')),
+				'selected' => ($layout_id && $layout->layout_id == $layout_id),
+				'toolbar_items' => [
+					'edit' => [
 						'href' => $edit_url,
 						'title' => lang('edit')
-					)
-				)),
-				array(
+					]
+				],
+				'selection' => [
 					'name' => 'selection[]',
 					'value' => $layout->layout_id,
-					'data' => array(
-						'confirm' => lang('layout') . ': <b>' . htmlentities($layout->layout_name, ENT_QUOTES, 'UTF-8') . '</b>'
-					)
-				)
-			);
-
-			$attrs = array();
-
-			if ($layout_id && $layout->layout_id == $layout_id)
-			{
-				$attrs = array('class' => 'selected');
-			}
-
-			$data[] = array(
-				'attrs'		=> $attrs,
-				'columns'	=> $column
-			);
+					'data' => [
+						'confirm' => lang('layout') . ': <b>' . ee('Format')->make('Text', $layout->layout_name)->convertToEntities() . '</b>'
+					]
+				]
+			];
 		}
-
-		$table->setData($data);
-
-		$vars['table'] = $table->viewData(ee('CP/URL')->make('channels/layout/' . $channel_id));
-
-		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-			->perPage($vars['table']['limit'])
-			->currentPage($vars['table']['page'])
-			->render($vars['table']['base_url']);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('layout') . ': <b>### ' . lang('layouts') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -128,7 +92,12 @@ class Layouts extends AbstractChannelsController {
 			),
 		));
 
-		ee()->view->cp_page_title = sprintf(lang('channel_form_layouts'), $channel->channel_title);
+		$vars['cp_page_title'] = sprintf(lang('channel_form_layouts'), $channel->channel_title);
+		$vars['base_url'] = ee('CP/URL', 'channels/layouts/' . $channel->getId());
+		$vars['export_url'] = ee('CP/URL', 'channels/sets/export/' . $channel->getId());
+		$vars['channel_title'] = ee('Format')->make('Text', $channel->channel_title)->convertToEntities();
+		$vars['layouts'] = $data;
+		$vars['no_results'] = ['text' => lang('no_layouts'), 'href' => $vars['create_url']];
 
 		ee()->cp->render('channels/layout/index', $vars);
 	}
@@ -337,7 +306,7 @@ class Layouts extends AbstractChannelsController {
 			ee('CP/URL')->make('channels/layouts/' . $channel_layout->channel_id)->compile() => lang('form_layouts')
 		);
 
-		ee()->view->cp_page_title = sprintf(lang('edit_form_layout'), $channel_layout->layout_name);
+		ee()->view->cp_page_title = lang('edit_form_layout');
 
 		$this->addJSAlerts();
 		ee()->javascript->set_global('publish_layout', $channel_layout->field_layout);
