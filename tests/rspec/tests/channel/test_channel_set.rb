@@ -81,9 +81,9 @@ feature 'Channel Sets' do
       no_php_js_errors
 
       expected_files = %w(
-        /custom_fields/News/news_body.textarea
-        /custom_fields/News/news_extended.textarea
-        /custom_fields/News/news_image.file
+        /custom_fields/news_body.textarea
+        /custom_fields/news_extended.textarea
+        /custom_fields/news_image.file
         channel_set.json
       )
       found_files = []
@@ -109,7 +109,7 @@ feature 'Channel Sets' do
       channel_set = JSON.parse(found_files[3].get_input_stream.read)
       channel_set['channels'].size.should == 1
       channel_set['channels'][0]['channel_title'].should == 'News'
-      channel_set['channels'][0]['field_group'].should == 'News'
+      channel_set['channels'][0]['field_groups'][0].should == 'News'
       channel_set['channels'][0]['cat_groups'][0].should == 'News Categories'
       channel_set['status_groups'].size.should == 1
       channel_set['status_groups'][0]['name'].should == 'Default'
