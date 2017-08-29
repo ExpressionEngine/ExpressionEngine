@@ -2,6 +2,8 @@ machine:
   timezone: America/New_York
   ruby:
     version: 2.2.3
+  node:
+    version: 5.5.0
   hosts:
     ee2.test: 127.0.0.1
   environment:
