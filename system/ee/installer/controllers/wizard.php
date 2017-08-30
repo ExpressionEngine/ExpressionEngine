@@ -174,6 +174,9 @@ class Wizard extends CI_Controller {
 		$this->lang->loadfile('installer');
 		$this->load->library('progress');
 
+		// ensures the Installer_Extensions lib is loaded which prevents extension hooks from running
+		$this->load->library('extensions');
+
 		$this->load->model('installer_template_model', 'template_model');
 
 		// Update notices are used to print info at the end of
@@ -1050,9 +1053,6 @@ class Wizard extends CI_Controller {
 	{
 		// Make sure the current step is the correct number
 		$this->current_step = ($this->addon_step) ? 3 : 2;
-
-		// ensures the Installer_Extensions lib is loaded which prevents extension hooks from running
-		$this->load->library('extensions');
 
 		$this->load->library('javascript');
 
