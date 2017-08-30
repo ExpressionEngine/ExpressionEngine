@@ -27,6 +27,11 @@ class Set {
 	private $channels = array();
 
 	/**
+	 * @var Array of fields [group_name => ChannelFieldModel, ...]
+	 */
+	private $fields = array();
+
+	/**
 	 * @var Array of field groups [group_name => FieldGroupModel, ...]
 	 */
 	private $field_groups = array();
@@ -54,6 +59,7 @@ class Set {
 	private $top_level_elements = array(
 		'upload_destinations',
 		'channels',
+		'fields',
 		'field_groups',
 		'status_groups',
 		'category_groups'
@@ -319,9 +325,35 @@ class Set {
 
 			$this->applyOverrides($channel, $channel->channel_name);
 
+			$field_groups = array();
+
 			if (isset($channel_data->field_group))
 			{
-				$channel->FieldGroups = $this->field_groups[$channel_data->field_group];
+				$field_groups[] = $this->field_groups[$channel_data->field_group];
+			}
+
+			if (isset($channel_data->field_groups))
+			{
+				foreach ($channel_data->field_groups as $field_group)
+				{
+					$field_groups[] = $this->field_groups[$field_group];
+				}
+			}
+
+			if ( ! empty($field_groups))
+			{
+				$fn = function() use ($channel, $field_groups)
+				{
+					$field_group_ids = array();
+					foreach ($field_groups as $field_group)
+					{
+						$field_group_ids[] = $field_group->getId();
+					}
+					$channel->FieldGroups = ee('Model')->get('ChannelFieldGroup', $field_group_ids)->all();
+					$channel->save();
+				};
+
+				$channel->on('afterInsert', $fn);
 			}
 
 			if (isset($channel_data->status_group))
@@ -543,42 +575,57 @@ class Set {
 			// fieldgroups are directories
 			if ($item->isDir())
 			{
-				$this->loadFieldGroup($it);
+				$group_name = $it->getFilename();
+				$group = $this->loadFieldGroup($group_name);
+				$fields = array();
+
+				foreach ($it->getChildren() as $field)
+				{
+					if ($field->isFile())
+					{
+						$field_model = $this->loadChannelField($field);
+						$this->fields[$field_model->field_name] = $field_model;
+						$fields[] = $field_model;
+					}
+				}
+
+				$fn = function() use ($group, $fields)
+				{
+					$field_ids = array();
+					foreach ($fields as $field)
+					{
+						$field_ids[] = $field->getId();
+					}
+					$group->ChannelFields = ee('Model')->get('ChannelField', $field_ids)->all();
+					$group->save();
+				};
+
+				$group->on('afterInsert', $fn);
 			}
-			/* lone fields for future compatibility
 			elseif ($item->isFile())
 			{
-				$this->fields[] = $this->loadField($item);
+				$field_model = $this->loadChannelField($item);
+				$this->fields[$field_model->field_name] = $field_model;
 			}
-			*/
 		}
 	}
 
 	/**
 	 * Instantiate a field group model
 	 *
-	 * @param Iterator $it Filesystem iterator with its cursor on the field group folder
-	 * @return void
+	 * @param String $group_name The name of the group to be added
+	 * @return ChannelFieldGroupModel
 	 */
-	private function loadFieldGroup($it)
+	private function loadFieldGroup($group_name)
 	{
-		$group_name = $it->getFilename();
-
 		$group = ee('Model')->make('ChannelFieldGroup');
 		$group->site_id = $this->site_id;
 		$group->group_name = $group_name;
 
 		$this->applyOverrides($group, $group_name);
 
-		foreach ($it->getChildren() as $field)
-		{
-			if ($field->isFile())
-			{
-				$group->ChannelFields[] = $this->loadChannelField($field);
-			}
-		}
-
 		$this->field_groups[$group_name] = $group;
+		return $group;
 	}
 
 	/**
@@ -670,7 +717,7 @@ class Set {
 	 * Instantiate a field model
 	 *
 	 * @param SplFileInfo $file File instance for the field.fieldtype file
-	 * @return ChannelFieldModel
+	 * @return CategoryFieldModel
 	 */
 	private function loadCategoryField(\SplFileInfo $file)
 	{
@@ -739,6 +786,7 @@ class Set {
 					if (isset($column['settings']['channels']))
 					{
 						$channel_ids = $that->getIdsForChannels($column['settings']['channels']);
+						var_dump($column['settings']['channels'], $channel_ids);
 						$column['settings']['channels'] = $channel_ids;
 					}
 				}
