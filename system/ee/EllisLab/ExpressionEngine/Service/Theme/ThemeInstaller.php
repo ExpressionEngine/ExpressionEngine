@@ -526,13 +526,26 @@ class ThemeInstaller {
 			$channel->channel_lang = 'en';
 			unset($channel_data->channel_title);
 
-			foreach (array('field_group', 'status_group', 'cat_group') as $group_type)
+			foreach (array('status_group', 'cat_group') as $group_type)
 			{
 				if (isset($channel_data->$group_type))
 				{
 					$channel->$group_type = $this->model_data[$group_type][$channel_data->$group_type]->group_id;
 					unset($channel_data->$group_type);
 				}
+			}
+
+			if (isset($channel_data->field_group))
+			{
+				$group_id = $this->model_data['field_group'][$channel_data->field_group]->group_id;
+				$field_group = ee('Model')->get('ChannelFieldGroup', $group_id)->all();
+
+				if ($field_group)
+				{
+					$channel->FieldGroups = $field_group;
+				}
+
+				unset($channel_data->field_group);
 			}
 
 			foreach ($channel_data as $pref_key => $pref_value)

@@ -718,7 +718,6 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE exp_channel_fields (
 			field_id int(6) unsigned NOT NULL auto_increment,
 			site_id INT(4) UNSIGNED NULL DEFAULT 1,
-			group_id int(4) unsigned NULL,
 			field_name varchar(32) NOT NULL,
 			field_label varchar(50) NOT NULL,
 			field_instructions TEXT NULL,
@@ -740,7 +739,6 @@ class EE_Schema {
 			field_settings text NULL,
 			legacy_field_data char(1) NOT NULL default 'n',
 			PRIMARY KEY `field_id` (`field_id`),
-			KEY `group_id` (`group_id`),
 			KEY `field_type` (`field_type`),
 			KEY `site_id` (`site_id`)
 		)";

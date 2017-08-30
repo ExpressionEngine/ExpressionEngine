@@ -21,6 +21,8 @@ class Export {
 	private $zip;
 
 	private $channels = array();
+	private $fields = array();
+	private $field_groups = array();
 	private $status_groups = array();
 	private $category_groups = array();
 	private $upload_destinations = array();
@@ -62,6 +64,7 @@ class Export {
 		}
 
 		$base->channels = array_values($this->channels);
+		$base->field_groups = array_values($this->field_groups);
 		$base->status_groups = $this->status_groups;
 		$base->category_groups = $this->category_groups;
 		$base->upload_destinations = array_values($this->upload_destinations);
@@ -113,7 +116,21 @@ class Export {
 
 		if ($channel->FieldGroups)
 		{
-			$result->field_group = $this->exportFieldGroup($channel->FieldGroups);
+			$result->field_groups = array();
+			foreach ($channel->FieldGroups as $group)
+			{
+				$result->field_groups[] = $this->exportFieldGroup($group);
+			}
+		}
+
+		if ($channel->CustomFields)
+		{
+			$result->fields = array();
+			foreach ($channel->CustomFields as $field)
+			{
+				$this->exportField($field);
+				$result->fields[] = $field->field_name;
+			}
 		}
 
 		if ($channel->getCategoryGroups())
@@ -238,16 +255,27 @@ class Export {
 	 */
 	private function exportFieldGroup($group)
 	{
-		$name = $group->group_name;
+		// already in process
+		if (isset($this->field_groups[$group->getId()]))
+		{
+			return;
+		}
+
+		$result = new StdClass();
+		$result->name = $group->group_name;
+		$result->fields = array();
+
+		$this->field_groups[$group->getId()] = $result;
 
 		$fields = $group->ChannelFields;
 
 		foreach ($fields as $field)
 		{
-			$this->exportField($field, $name);
+			$result->fields[] = $field->field_name;
+			$this->exportField($field);
 		}
 
-		return $name;
+		return $group->group_name;
 	}
 
 	/**
@@ -257,9 +285,17 @@ class Export {
 	 * @param String $group Group name
 	 * @return void
 	 */
-	private function exportField($field, $group, $type = 'custom')
+	private function exportField($field, $type = 'custom')
 	{
-		$file = '/' . $type . '_fields/'.$group.'/'.$field->field_name.'.'.$field->field_type;
+		// already in process
+		if (isset($this->fields[$field->getId()]))
+		{
+			return;
+		}
+
+		$this->fields[$field->getId()] = TRUE;
+
+		$file = '/' . $type . '_fields/'.$field->field_name.'.'.$field->field_type;
 
 		$result = new StdClass();
 
