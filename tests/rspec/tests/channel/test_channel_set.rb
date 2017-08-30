@@ -307,9 +307,9 @@ feature 'Channel Sets' do
         File.exist?(path).should == true
 
         expected_files = [
-          '/custom_fields/Board Games/editions.grid',
-          '/custom_fields/Board Games/duration.text',
-          '/custom_fields/Board Games/number_of_players.text',
+          '/custom_fields/editions.grid',
+          '/custom_fields/duration.text',
+          '/custom_fields/number_of_players.text',
           'channel_set.json'
         ]
         found_files = []
@@ -319,7 +319,7 @@ feature 'Channel Sets' do
           end
         end
 
-        expected_files.sort.should == found_files.sort.map(&:name)
+        found_files.sort.map(&:name) == expected_files.sort.should
       end
 
       it 'exports with a relationship column' do
@@ -334,11 +334,11 @@ feature 'Channel Sets' do
         File.exist?(path).should == true
 
         expected_files = [
-          '/custom_fields/Board Games/editions.grid',
-          '/custom_fields/Board Games/duration.text',
-          '/custom_fields/Board Games/number_of_players.text',
-          '/custom_fields/Game Sessions/game_day.date',
-          '/custom_fields/Game Sessions/games_played.grid',
+          '/custom_fields/editions.grid',
+          '/custom_fields/duration.text',
+          '/custom_fields/number_of_players.text',
+          '/custom_fields/game_day.date',
+          '/custom_fields/games_played.grid',
           'channel_set.json'
         ]
         found_files = []
@@ -348,7 +348,7 @@ feature 'Channel Sets' do
           end
         end
 
-        expected_files.sort.should == found_files.sort.map(&:name)
+        found_files.sort.map(&:name) == expected_files.sort.should
       end
 
       it 'exports grid colums with settings' do
@@ -377,7 +377,7 @@ feature 'Channel Sets' do
         page = ChannelCreate.new
         page.load
         page.channel_title.set 'Big Grid'
-        page.field_group.select 'Gridlocked'
+        page.field_groups[1].click
         page.title_field_label.set '¯\_(ツ)_/¯'
         page.submit
 
@@ -391,15 +391,15 @@ feature 'Channel Sets' do
         File.exist?(path).should == true
 
         expected_files = [
-          '/custom_fields/About/about_body.textarea',
-          '/custom_fields/About/about_extended.textarea',
-          '/custom_fields/About/about_image.file',
-          '/custom_fields/About/about_staff_title.text',
-          '/custom_fields/Gridlocked/zen.grid',
-          '/custom_fields/News/news_body.textarea',
-          '/custom_fields/News/news_extended.textarea',
-          '/custom_fields/News/news_image.file',
-          'channel_set.json'
+			'/custom_fields/news_body.textarea',
+			'/custom_fields/news_extended.textarea',
+			'/custom_fields/news_image.file',
+			'/custom_fields/about_body.textarea',
+			'/custom_fields/about_image.file',
+			'/custom_fields/about_staff_title.text',
+			'/custom_fields/about_extended.textarea',
+			'/custom_fields/zen.grid',
+			'channel_set.json'
         ]
         found_files = []
         Zip::File.open(path) do |zipfile|
@@ -408,14 +408,14 @@ feature 'Channel Sets' do
           end
         end
 
-        expected_files.sort.should == found_files.sort.map(&:name)
+        found_files.sort.map(&:name) == expected_files.sort.should
 
         # Check that we exported the title field label
         channel_set = JSON.parse(found_files.sort.last.get_input_stream.read)
         channel_set['channels'][0]['channel_title'].should eq 'Big Grid'
         channel_set['channels'][0]['title_field_label'].should eq '¯\_(ツ)_/¯'
 
-        grid = JSON.parse(found_files.sort[4].get_input_stream.read)
+        grid = JSON.parse(found_files.sort[7].get_input_stream.read)
 
         data = GridSettings::test_data
 
@@ -634,7 +634,7 @@ feature 'Channel Sets' do
           }
         }
 
-        $db.query('SELECT * FROM exp_channel_fields WHERE group_id = 3').each do |row|
+        $db.query('SELECT * FROM exp_channel_fields').each do |row|
           if fields.has_key? row['field_name']
             fields[row['field_name']].each do |key, assumed_value|
               if key == 'field_settings'
