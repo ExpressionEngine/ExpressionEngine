@@ -160,6 +160,11 @@ class Channels extends AbstractChannelsController {
 			{
 				$channel->status_group = $default_status_group->group_id;
 			}
+
+            // For some reason, not setting these to NULL can result in in pre-populated
+            // selections. @TODO find and fix the bug
+            $channel->FieldGroups = NULL;
+            $channel->CustomFields = NULL;
 		}
 		else
 		{
