@@ -211,6 +211,7 @@ class Groups extends AbstractChannelsController {
 		if ( ! $field_group)
 		{
 			$field_group = ee('Model')->make('ChannelFieldGroup');
+            $field_group->ChannelFields = NULL;
 		}
 
 		$custom_field_options = ee('Model')->get('ChannelField')
