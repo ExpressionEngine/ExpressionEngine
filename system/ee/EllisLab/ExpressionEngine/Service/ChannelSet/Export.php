@@ -63,6 +63,7 @@ class Export {
 			$this->exportChannel($channel);
 		}
 
+		$base->version = ee()->config->item('app_version');
 		$base->channels = array_values($this->channels);
 		$base->field_groups = array_values($this->field_groups);
 		$base->status_groups = $this->status_groups;
