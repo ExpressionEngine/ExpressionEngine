@@ -406,6 +406,8 @@ $lang = array(
 
 'image' => 'Image',
 
+'keyword_filter' => 'keywords, hit enter',
+
 'log_out' => 'log out',
 
 'menu_create' => 'Create',

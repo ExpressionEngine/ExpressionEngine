@@ -220,6 +220,16 @@ class FilterFactory {
 	}
 
 	/**
+	 * This will instantiate and return a default Keyword filter
+	 *
+	 * @return Filter\Keyword a Keyword Filter object
+	 */
+	protected function createDefaultKeyword()
+	{
+		return new Filter\Keyword();
+	}
+
+	/**
 	 * This will instantiate and return a default Site filter
 	 *
 	 * @todo Use the $container to make Config->item
