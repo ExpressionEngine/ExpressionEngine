@@ -296,7 +296,7 @@ class Set {
 		}
 
 		$data = json_decode(file_get_contents($this->path.'/channel_set.json'));
-		$field_groups = (isset($data->field_groups)) ? $data->field_groups : NULL;
+		$field_groups = (isset($data->field_groups)) ? $data->field_groups : array();
 
 		try
 		{
@@ -375,7 +375,7 @@ class Set {
 				? $channel_data->title_field_label
 				: lang('title');
 			$channel->site_id = $this->site_id;
-			$channel->channel_name = url_title($channel_data->channel_title, ee()->config->item('word_separator'), TRUE);
+			$channel->channel_name = url_title($channel_data->channel_title, '_', TRUE);
 			$channel->channel_title = $channel_data->channel_title;
 			$channel->channel_lang = 'en';
 
@@ -618,7 +618,7 @@ class Set {
 	 *
 	 * @return void
 	 */
-	private function loadFieldsAndGroups($field_groups = NULL)
+	private function loadFieldsAndGroups($field_groups = array())
 	{
 		if ( ! is_dir($this->path.'/custom_fields'))
 		{
