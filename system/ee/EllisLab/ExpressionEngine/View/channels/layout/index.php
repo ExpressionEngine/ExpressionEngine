@@ -4,7 +4,7 @@
 	<div class="tbl-ctrls">
 		<?=form_open($base_url)?>
 			<fieldset class="tbl-search right">
-				<a class="btn tn action" href="<?=$create_url?>"><?=lang('new_layout')?></a>
+				<a class="btn action" href="<?=$create_url?>"><?=lang('new_layout')?></a>
 			</fieldset>
 			<h1>
 				<?=$cp_page_title?>
