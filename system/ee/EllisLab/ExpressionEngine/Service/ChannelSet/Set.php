@@ -70,6 +70,16 @@ class Set {
 		'category_groups'
 	);
 
+    /**
+     * @var String containing the path to the channel set
+     */
+    private $path;
+
+    /**
+     * @var ImportResult containing the result of the import
+     */
+    private $result;
+
 	/**
 	 * @var Array of things that would create duplicates and need to be renamed
 	 *
