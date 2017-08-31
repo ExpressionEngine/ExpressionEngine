@@ -54,7 +54,10 @@ class Set {
 	/**
 	 * @var Array of model relationships to be assigned after the saves
 	 */
-	private $assignments = array();
+	private $assignments = array(
+		'channel_field_groups' => array(),
+		'channel_fields'       => array()
+	);
 
 	/**
 	 * @var Array of top level containers. These are the properties of this
@@ -100,11 +103,6 @@ class Set {
 	{
 		$this->path = rtrim($path, '/');
 		$this->result = new ImportResult();
-
-		$this->assignments = array(
-			'channel_field_groups' => array(),
-			'channel_fields' => array()
-		);
 	}
 
 	/**
