@@ -22,7 +22,7 @@ class Set {
 	private $site_id = 1;
 
 	/**
-	 * @var Array of channels
+	 * @var Array of channels [channel_title => ChannelModel, ...]
 	 */
 	private $channels = array();
 
@@ -50,6 +50,11 @@ class Set {
 	 * @var Array of upload destinations [name => UploadDestinationModel, ...]
 	 */
 	private $upload_destinations = array();
+
+	/**
+	 * @var Array of model relationships to be assigned after the saves
+	 */
+	private $assignments = array();
 
 	/**
 	 * @var Array of top level containers. These are the properties of this
@@ -85,6 +90,11 @@ class Set {
 	{
 		$this->path = rtrim($path, '/');
 		$this->result = new ImportResult();
+
+		$this->assignments = array(
+			'channel_field_groups' => array(),
+			'channel_fields' => array()
+		);
 	}
 
 	/**
@@ -207,7 +217,51 @@ class Set {
 			}
 		}
 
+		$this->assignFieldGroupsToChannels();
+		$this->assignFieldsToChannels();
+
 		$this->deleteFiles();
+	}
+
+	/**
+	 * Saves the Channel -> FieldGroups relationshp
+	 */
+	private function assignFieldGroupsToChannels()
+	{
+		foreach ($this->assignments['channel_field_groups'] as $channel_title => $field_groups)
+		{
+			$channel = $this->channels[$channel_title];
+
+			$field_group_ids = array();
+			foreach ($field_groups as $field_group)
+			{
+				$field_group_ids[] = $field_group->getId();
+			}
+
+			$channel->FieldGroups = ee('Model')->get('ChannelFieldGroup', $field_group_ids)->all();
+			$channel->save();
+		}
+	}
+
+	/**
+	 * Saves the Channel -> CustomFields relationshp
+	 */
+	private function assignFieldsToChannels()
+	{
+		foreach ($this->assignments['channel_fields'] as $channel_title => $fields)
+		{
+			$channel = $this->channels[$channel_title];
+
+			$field_ids = array();
+			foreach ($fields as $field_name)
+			{
+				$field = $this->fields[$field_name];
+				$field_ids[] = $field->getId();
+			}
+
+			$channel->CustomFields = ee('Model')->get('ChannelField', $field_ids)->all();
+			$channel->save();
+		}
 	}
 
 	/**
@@ -234,11 +288,12 @@ class Set {
 		}
 
 		$data = json_decode(file_get_contents($this->path.'/channel_set.json'));
+		$field_groups = (isset($data->field_groups)) ? $data->field_groups : NULL;
 
 		try
 		{
 			$this->loadUploadDestinations($data->upload_destinations);
-			$this->loadFieldsAndGroups();
+			$this->loadFieldsAndGroups($field_groups);
 			$this->loadStatusGroups($data->status_groups);
 			$this->loadCategoryGroups($data->category_groups);
 			$this->loadCategoryFields();
@@ -300,6 +355,9 @@ class Set {
 	 */
 	private function loadChannels($channels)
 	{
+		// @TODO Use the Format service's urlSlug instead
+		ee()->load->helper('url_helper');
+
 		foreach ($channels as $channel_data)
 		{
 			$channel = ee('Model')->make('Channel');
@@ -309,7 +367,7 @@ class Set {
 				? $channel_data->title_field_label
 				: lang('title');
 			$channel->site_id = $this->site_id;
-			$channel->channel_name = strtolower(str_replace(' ', '_', $channel_data->channel_title));
+			$channel->channel_name = url_title($channel_data->channel_title, ee()->config->item('word_separator'), TRUE);
 			$channel->channel_title = $channel_data->channel_title;
 			$channel->channel_lang = 'en';
 
@@ -342,18 +400,12 @@ class Set {
 
 			if ( ! empty($field_groups))
 			{
-				$fn = function() use ($channel, $field_groups)
-				{
-					$field_group_ids = array();
-					foreach ($field_groups as $field_group)
-					{
-						$field_group_ids[] = $field_group->getId();
-					}
-					$channel->FieldGroups = ee('Model')->get('ChannelFieldGroup', $field_group_ids)->all();
-					$channel->save();
-				};
+				$this->assignments['channel_field_groups'][$channel_title] = $field_groups;
+			}
 
-				$channel->on('afterInsert', $fn);
+			if (isset($channel_data->fields))
+			{
+				$this->assignments['channel_fields'][$channel_title] = $channel_data->fields;
 			}
 
 			if (isset($channel_data->status_group))
@@ -558,7 +610,7 @@ class Set {
 	 *
 	 * @return void
 	 */
-	private function loadFieldsAndGroups()
+	private function loadFieldsAndGroups($field_groups = NULL)
 	{
 		if ( ! is_dir($this->path.'/custom_fields'))
 		{
@@ -607,6 +659,28 @@ class Set {
 				$field_model = $this->loadChannelField($item);
 				$this->fields[$field_model->field_name] = $field_model;
 			}
+		}
+
+		foreach ($field_groups as $field_group)
+		{
+			$group = $this->loadFieldGroup($field_group->name);
+
+			$fields = array();
+			foreach ($field_group->fields as $field)
+			{
+				$fields[] = $this->fields[$field];
+			}
+
+			$fn = function() use ($group, $fields)
+			{
+				$field_ids = array();
+				foreach ($fields as $field)
+				{
+					$field_ids[] = $field->getId();
+				}
+				$group->ChannelFields = ee('Model')->get('ChannelField', $field_ids)->all();
+				$group->save();
+			};
 		}
 	}
 
