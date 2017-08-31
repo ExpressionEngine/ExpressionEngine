@@ -154,7 +154,10 @@ class FilterFactory {
 			$html = $filter->render($this->view, $url);
 			if ( ! empty($html))
 			{
-				$filters[] = $html;
+				$filters[] = [
+					'html' => $html,
+					'class' => $filter->list_class
+				];
 			}
 		}
 
