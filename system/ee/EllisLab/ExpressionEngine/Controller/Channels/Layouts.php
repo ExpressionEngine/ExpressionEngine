@@ -54,12 +54,65 @@ class Layouts extends AbstractChannelsController {
 
 		$vars['channel_id'] = $channel_id;
 		$vars['create_url'] = ee('CP/URL')->make('channels/layouts/create/' . $channel->getId());
+		$vars['base_url'] = ee('CP/URL', 'channels/layouts/' . $channel->getId());
 
 		$data = array();
 
 		$layout_id = ee()->session->flashdata('layout_id');
 
-		foreach ($channel->ChannelLayouts as $layout)
+		// Set up filters
+		$group_ids = ee('Model')->get('MemberGroup')
+			// Banned & Pending have their own views
+			->filter('group_id', 'NOT IN', array(2, 4))
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_title', 'asc')
+			->all()
+			->getDictionary('group_id', 'group_title');
+
+		$options = $group_ids;
+		$options['all'] = lang('all');
+
+		$filters = ee('CP/Filter');
+		$group_filter = $filters->make('group_id', 'member_group', $options);
+		$group_filter->setPlaceholder(lang('all'));
+		$group_filter->disableCustomValue();
+
+		$filters->add($group_filter)
+			->add('Keyword');
+
+		$filter_values = $filters->values();
+
+		$page = ee('Request')->get('page') ?: 1;
+		$per_page = 10;
+
+		$layouts = $channel->ChannelLayouts->asArray();
+
+		// Perform filtering
+		if ($group_id = $filter_values['group_id'])
+		{
+			$layouts = array_filter($layouts, function($layout) use ($group_id) {
+				return in_array($group_id, $layout->MemberGroups->pluck('group_id'));
+			});
+		}
+		if ($search = $filter_values['filter_by_keyword'])
+		{
+			$layouts = array_filter($layouts, function($layout) use ($search) {
+				return strpos(
+					strtolower($layout->layout_name),
+					strtolower($search)
+				) !== FALSE;
+			});
+		}
+
+		$layouts = array_slice($layouts, (($page - 1) * $per_page), $per_page);
+
+		// Only show filters if there is data to filter or we are currently filtered
+		if ($group_id OR ! empty($layouts))
+		{
+			$vars['filters'] = $filters->render($vars['base_url']);
+		}
+
+		foreach ($layouts as $layout)
 		{
 			$edit_url = ee('CP/URL')->make('channels/layouts/edit/' . $layout->layout_id);
 
@@ -92,8 +145,12 @@ class Layouts extends AbstractChannelsController {
 			),
 		));
 
+		$vars['pagination'] = ee('CP/Pagination', $channel->ChannelLayouts->count())
+			->perPage($per_page)
+			->currentPage($page)
+			->render($vars['base_url']);
+
 		$vars['cp_page_title'] = sprintf(lang('channel_form_layouts'), $channel->channel_title);
-		$vars['base_url'] = ee('CP/URL', 'channels/layouts/' . $channel->getId());
 		$vars['export_url'] = ee('CP/URL', 'channels/sets/export/' . $channel->getId());
 		$vars['channel_title'] = ee('Format')->make('Text', $channel->channel_title)->convertToEntities();
 		$vars['layouts'] = $data;
