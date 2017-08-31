@@ -490,6 +490,138 @@ feature 'Channel Sets' do
       check_success
     end
 
+		context 'v4 channel sets' do
+			it 'imports a channel with 2 field groups' do
+				import_channel_set 'channel-with-two-field-groups'
+
+				check_success
+
+				# We start with only 2 channels and this adds only one, so the channel id should be 3
+				$db.query("SELECT count(*) AS count FROM exp_channels_channel_field_groups WHERE channel_id = 3").each do |row|
+					field_groups = row['count']
+					field_groups.should == 2
+				end
+
+				$db.query("SELECT count(*) AS count FROM exp_channels_channel_fields WHERE channel_id = 3").each do |row|
+					fields = row['count']
+					fields.should == 0
+				end
+
+				$db.query("SELECT count(*) AS count FROM exp_channel_fields WHERE field_name IN ('checkboxes', 'electronic_mail_address')").each do |row|
+					fields = row['count']
+					fields.should == 2
+				end
+
+				$db.query("SELECT count(*) AS count FROM exp_field_groups WHERE group_name IN ('FG One', 'FG Two')").each do |row|
+					field_groups = row['count']
+					field_groups.should == 2
+				end
+			end
+
+			it 'imports a channel with fields but no field group' do
+				import_channel_set 'channel-with-fields'
+
+				check_success
+
+				# We start with only 2 channels and this adds only one, so the channel id should be 3
+				$db.query("SELECT count(*) AS count FROM exp_channels_channel_field_groups WHERE channel_id = 3").each do |row|
+					field_groups = row['count']
+					field_groups.should == 0
+				end
+
+				$db.query("SELECT count(*) AS count FROM exp_channels_channel_fields WHERE channel_id = 3").each do |row|
+					fields = row['count']
+					fields.should == 2
+				end
+
+				$db.query("SELECT count(*) AS count FROM exp_channel_fields WHERE field_name IN ('checkboxes', 'electronic_mail_address')").each do |row|
+					fields = row['count']
+					fields.should == 2
+				end
+			end
+
+			it 'imports a channel with fields and field groups' do
+				import_channel_set 'channel-with-field-groups-and-fields'
+
+				check_success
+
+				# We start with only 2 channels and this adds only one, so the channel id should be 3
+				$db.query("SELECT count(*) AS count FROM exp_channels_channel_field_groups WHERE channel_id = 3").each do |row|
+					field_groups = row['count']
+					field_groups.should == 2
+				end
+
+				$db.query("SELECT count(*) AS count FROM exp_channels_channel_fields WHERE channel_id = 3").each do |row|
+					fields = row['count']
+					fields.should == 2
+				end
+
+				$db.query("SELECT count(*) AS count FROM exp_channel_fields WHERE field_name IN ('checkboxes', 'electronic_mail_address', 'youtube_url', 'text')").each do |row|
+					fields = row['count']
+					fields.should == 4
+				end
+
+				$db.query("SELECT count(*) AS count FROM exp_field_groups WHERE group_name IN ('FG One', 'FG Two')").each do |row|
+					field_groups = row['count']
+					field_groups.should == 2
+				end
+			end
+
+			it 'imports a channel with a field in two field groups' do
+				import_channel_set 'channel-with-field-in-two-groups'
+
+				check_success
+
+				# We start with only 2 channels and this adds only one, so the channel id should be 3
+				$db.query("SELECT count(*) AS count FROM exp_channels_channel_field_groups WHERE channel_id = 3").each do |row|
+					field_groups = row['count']
+					field_groups.should == 3
+				end
+
+				$db.query("SELECT count(*) AS count FROM exp_channels_channel_fields WHERE channel_id = 3").each do |row|
+					fields = row['count']
+					fields.should == 0
+				end
+
+				$db.query("SELECT count(*) AS count FROM exp_channel_fields WHERE field_name IN ('checkboxes', 'electronic_mail_address', 'a_date')").each do |row|
+					fields = row['count']
+					fields.should == 3
+				end
+
+				$db.query("SELECT count(*) AS count FROM exp_field_groups WHERE group_name IN ('FG One', 'FG Two', 'FG Three')").each do |row|
+					field_groups = row['count']
+					field_groups.should == 3
+				end
+			end
+
+			it 'imports a channel with a field already in an assigned field group' do
+				import_channel_set 'channel-with-field-in-a-group'
+
+				check_success
+
+				# We start with only 2 channels and this adds only one, so the channel id should be 3
+				$db.query("SELECT count(*) AS count FROM exp_channels_channel_field_groups WHERE channel_id = 3").each do |row|
+					field_groups = row['count']
+					field_groups.should == 2
+				end
+
+				$db.query("SELECT count(*) AS count FROM exp_channels_channel_fields WHERE channel_id = 3").each do |row|
+					fields = row['count']
+					fields.should == 1
+				end
+
+				$db.query("SELECT count(*) AS count FROM exp_channel_fields WHERE field_name IN ('checkboxes', 'electronic_mail_address')").each do |row|
+					fields = row['count']
+					fields.should == 2
+				end
+
+				$db.query("SELECT count(*) AS count FROM exp_field_groups WHERE group_name IN ('FG One', 'FG Two')").each do |row|
+					field_groups = row['count']
+					field_groups.should == 2
+				end
+			end
+		end
+
     it 'shows errors when the channel set cannot be imported' do
       import_channel_set('no-json') do
         @page.alert.text.should include 'Cannot Import Channel'
