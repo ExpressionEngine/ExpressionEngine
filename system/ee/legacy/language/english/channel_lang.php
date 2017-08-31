@@ -52,7 +52,7 @@ $lang = array(
 
 'channels_removed_desc' => 'The <b>%s</b> channel has been removed.',
 
-'create_channel' => 'Create Channel',
+'create_channel' => 'New Channel',
 
 'create_form_layout' => 'New Publish Layout',
 
