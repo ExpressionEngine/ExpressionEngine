@@ -56,7 +56,8 @@ class Set {
 	 */
 	private $assignments = array(
 		'channel_field_groups' => array(),
-		'channel_fields'       => array()
+		'channel_fields'       => array(),
+		'field_group_fields'   => array()
 	);
 
 	/**
@@ -225,6 +226,7 @@ class Set {
 			}
 		}
 
+		$this->assignFieldsToFieldGroups();
 		$this->assignFieldGroupsToChannels();
 		$this->assignFieldsToChannels();
 
@@ -269,6 +271,27 @@ class Set {
 
 			$channel->CustomFields = ee('Model')->get('ChannelField', $field_ids)->all();
 			$channel->save();
+		}
+	}
+
+	/**
+	 * Saves the FieldGroup -> CustomFields relationshp
+	 */
+	private function assignFieldsToFieldGroups()
+	{
+		foreach ($this->assignments['field_group_fields'] as $group_name => $fields)
+		{
+			$field_group = $this->field_groups[$group_name];
+
+			$field_ids = array();
+			foreach ($fields as $field_name)
+			{
+				$field = $this->fields[$field_name];
+				$field_ids[] = $field->getId();
+			}
+
+			$field_group->ChannelFields = ee('Model')->get('ChannelField', $field_ids)->all();
+			$field_group->save();
 		}
 	}
 
@@ -672,23 +695,7 @@ class Set {
 		foreach ($field_groups as $field_group)
 		{
 			$group = $this->loadFieldGroup($field_group->name);
-
-			$fields = array();
-			foreach ($field_group->fields as $field)
-			{
-				$fields[] = $this->fields[$field];
-			}
-
-			$fn = function() use ($group, $fields)
-			{
-				$field_ids = array();
-				foreach ($fields as $field)
-				{
-					$field_ids[] = $field->getId();
-				}
-				$group->ChannelFields = ee('Model')->get('ChannelField', $field_ids)->all();
-				$group->save();
-			};
+			$this->assignments['field_group_fields'][$group->group_name] = $field_group->fields;
 		}
 	}
 
