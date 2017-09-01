@@ -9,6 +9,7 @@
 
 namespace EllisLab\ExpressionEngine\Service\ChannelSet;
 
+use Closure;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
@@ -83,6 +84,11 @@ class Set {
      * @var ImportResult containing the result of the import
      */
     private $result;
+
+    /**
+     * @var Array A queue of closures to call after all the saving
+     */
+    private $post_save_queue = array();
 
 	/**
 	 * @var Array of things that would create duplicates and need to be renamed
@@ -229,6 +235,15 @@ class Set {
 		$this->assignFieldsToFieldGroups();
 		$this->assignFieldGroupsToChannels();
 		$this->assignFieldsToChannels();
+
+        foreach ($this->post_save_queue as $fn)
+        {
+            if ($fn instanceOf Closure)
+            {
+                $fn();
+            }
+        }
+		die();
 
 		$this->deleteFiles();
 	}
@@ -794,6 +809,10 @@ class Set {
 		{
 			$field_data = $this->importRelationshipField($field, $field_data);
 		}
+        elseif ($type == 'fluid_block')
+		{
+			$this->importFluidBlockField($field, $field_data);
+		}
 
 		$field->set($field_data);
 
@@ -988,5 +1007,33 @@ class Set {
 
 		return $field_data;
 
+	}
+
+	/**
+	 * Helper function for fluid block imports. We need to associate the correct field
+	 * ids to our fluid block field. Since those don't exist until after saving has begun,
+	 * we'll just capture the identifying names in a closure and query for 'em.
+	 *
+	 * @param ChannelFieldModel $field Field instance
+	 * @param Array $field_data The field data that will be set() on the field
+	 * @return void
+	 */
+	private function importFluidBlockField($field, $field_data)
+	{
+		$fn = function() use ($field, $field_data)
+		{
+			$settings = $field_data;
+
+			$settings['field_channel_fields'] = ee('Model')->get('ChannelField')
+				->fields('field_id')
+				->filter('field_name', 'IN', $field_data['field_channel_fields'])
+				->all()
+				->pluck('field_id');
+
+			$field->set($settings);
+			$field->save();
+		};
+
+        $this->post_save_queue[] = $fn;
 	}
 }
