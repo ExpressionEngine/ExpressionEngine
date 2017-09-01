@@ -33,6 +33,7 @@ class Updater {
 				'addSpamModerationPermissions',
 				'runSpamModuleUpdate',
 				'addPrimaryKeyToFileCategoryTable',
+				'addFluidBlockField',
 			)
 		);
 
@@ -382,6 +383,65 @@ class Updater {
 
 		// Finally create the primary key
 		ee()->smartforge->add_key('file_categories', array('file_id', 'cat_id'), 'PRIMARY');
+	}
+
+	/**
+	 * New "Fluid Block" Field Type in 4.0.0
+	 */
+	private function addFluidBlockField()
+	{
+		ee()->db->insert('fieldtypes', array(
+				'name' => 'fluid_block',
+				'version' => '1.0.0',
+				'settings' => base64_encode(serialize(array())),
+				'has_global_settings' => 'n'
+			)
+		);
+
+		ee()->dbforge->add_field(
+			array(
+				'id' => array(
+					'type'       => 'int',
+					'constraint' => 11,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				),
+				'block_id' => array(
+					'type'       => 'int',
+					'constraint' => 11,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				),
+				'entry_id' => array(
+					'type'       => 'int',
+					'constraint' => 11,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				),
+				'field_id' => array(
+					'type'       => 'int',
+					'constraint' => 11,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				),
+				'field_data_id' => array(
+					'type'       => 'int',
+					'constraint' => 11,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				),
+				'order' => array(
+					'type'       => 'int',
+					'constraint' => 5,
+					'unsigned'   => TRUE,
+					'null'       => FALSE,
+					'default'    => 0
+				)
+			)
+		);
+
+		ee()->dbforge->add_key(array('block_id', 'entry_id'), TRUE);
+		ee()->smartforge->create_table('fluid_block_data');
 	}
 }
 
