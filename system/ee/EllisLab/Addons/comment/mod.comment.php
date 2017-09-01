@@ -562,57 +562,7 @@ class Comment {
 
 		$results = $result_ids;
 		$mfields = array();
-
-		/** ----------------------------------------
-		/**  "Search by Member" link
-		/** ----------------------------------------*/
-		// We use this with the {member_search_path} variable
-
-		$result_path = (preg_match("/".LD."member_search_path\s*=(.*?)".RD."/s", ee()->TMPL->tagdata, $match)) ? $match['1'] : 'search/results';
-		$result_path = str_replace("\"", "", $result_path);
-		$result_path = str_replace("'",  "", $result_path);
-
-		$search_link = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
-
-		ee()->db->select('comments.comment_id, comments.entry_id, comments.channel_id, comments.author_id, comments.name, comments.email, comments.url, comments.location AS c_location, comments.ip_address, comments.comment_date, comments.edit_date, comments.comment, comments.site_id AS comment_site_id,
-			members.username, members.group_id, members.location, members.occupation, members.interests, members.aol_im, members.yahoo_im, members.msn_im, members.icq, members.group_id, members.member_id, members.signature, members.sig_img_filename, members.sig_img_width, members.sig_img_height, members.avatar_filename, members.avatar_width, members.avatar_height, members.photo_filename, members.photo_width, members.photo_height,
-			member_data.*,
-			channel_titles.title, channel_titles.url_title, channel_titles.author_id AS entry_author_id, channel_titles.allow_comments, channel_titles.comment_expiration_date,
-			channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls, channels.channel_url, channels.comment_url, channels.channel_title, channels.channel_name AS channel_short_name, channels.comment_system_enabled'
-		);
-
-		ee()->db->join('channels',			'comments.channel_id = channels.channel_id',	'left');
-		ee()->db->join('channel_titles',	'comments.entry_id = channel_titles.entry_id',	'left');
-		ee()->db->join('members',			'members.member_id = comments.author_id',		'left');
-		ee()->db->join('member_data',		'member_data.member_id = members.member_id',	'left');
-
-		ee()->db->where_in('comments.comment_id', $result_ids);
-		ee()->db->order_by($order_by, $this_sort);
-
-		$query = ee()->db->get('comments');
-
-		$total_results = $query->num_rows();
-
-		if ($query->num_rows() > 0)
-		{
-			$results = $query->result_array();
-
-			// Potentially a lot of information
-			$query->free_result();
-
-			// -------------------------------------------
-			// 'comment_entries_query_result' hook.
-			//  - Take the whole query result array, do what you wish
-			//  - Added 3.1.0
-			//
-				if (ee()->extensions->active_hook('comment_entries_query_result') === TRUE)
-				{
-					$results = ee()->extensions->call('comment_entries_query_result', $results);
-					if (ee()->extensions->end_script === TRUE) return ee()->TMPL->tagdata;
-				}
-			//
-			// -------------------------------------------
-		}
+		$mfields_data = array();
 
 		/** ----------------------------------------
 		/**  Fetch custom member field IDs
@@ -626,6 +576,52 @@ class Comment {
 			foreach ($query->result_array() as $row)
 			{
 				$mfields[$row['m_field_name']] = $row['m_field_id'];
+			}
+		}
+
+		/** ----------------------------------------
+		/**  "Search by Member" link
+		/** ----------------------------------------*/
+		// We use this with the {member_search_path} variable
+
+		$result_path = (preg_match("/".LD."member_search_path\s*=(.*?)".RD."/s", ee()->TMPL->tagdata, $match)) ? $match['1'] : 'search/results';
+		$result_path = str_replace("\"", "", $result_path);
+		$result_path = str_replace("'",  "", $result_path);
+
+		$search_link = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
+
+		$comments = ee('Model')->get('Comment', $result_ids)
+			->with('Author', 'Channel')
+			->order($order_by, $this_sort)
+			->all();
+
+		$total_results = count($comments);
+
+		if ($total_results)
+		{
+			$results = array();
+			foreach ($comments as $comment)
+			{
+				$values = array_merge($comment->getValues(), $comment->Channel->getValues());
+				unset($values['location'], $values['site_id']);
+				$values['c_location'] = $comment->location;
+				$values['comment_site_id'] = $comment->site_id;
+
+				$author = ($comment->Author) ?: ee('Model')->make('Member');
+				$author = $author->getValues();
+
+				if (isset($values['url']) && ! empty($values['url']))
+				{
+					unset($author['url']);
+				}
+
+				$results[] = array_merge($values, $author);
+			}
+
+			if (ee()->extensions->active_hook('comment_entries_query_result') === TRUE)
+			{
+				$results = ee()->extensions->call('comment_entries_query_result', $results);
+				if (ee()->extensions->end_script === TRUE) return ee()->TMPL->tagdata;
 			}
 		}
 
@@ -649,8 +645,7 @@ class Comment {
 		// left-over unparsed junk.  The $member_vars array is all of those
 		// member related variables that should be removed.
 
-		$member_vars = array('location', 'occupation', 'interests', 'aol_im', 'yahoo_im', 'msn_im', 'icq',
-			'signature', 'sig_img_filename', 'sig_img_width', 'sig_img_height',
+		$member_vars = array('signature', 'sig_img_filename', 'sig_img_width', 'sig_img_height',
 			'avatar_filename', 'avatar_width', 'avatar_height',
 			'photo_filename', 'photo_width', 'photo_height');
 
@@ -661,6 +656,21 @@ class Comment {
 			$member_cond_vars[$var] = '';
 		}
 
+		// Fetch the custom member field definitions
+		$m_fields = array();
+
+		ee()->db->select('m_field_id, m_field_name, m_field_fmt');
+		$query = ee()->db->get('member_fields');
+
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result_array() as $row)
+			{
+				$m_fields[$row['m_field_name']] = array($row['m_field_id'], $row['m_field_fmt']);
+			}
+		}
+
+		$this->cacheMemberFieldModels($m_fields);
 
 		/** ----------------------------------------
 		/**  Start the processing loop
@@ -705,6 +715,19 @@ class Comment {
 				if ($row['author_id'] == 0)
 				{
 					$row['location'] = $row['c_location'];
+				}
+				else
+				{
+					// location and url set based on member custom field if it exists
+					if (isset($mfields['url']) && array_key_exists('m_field_id_'.$m_fields['url']['0'], $row))
+					{
+						$row['url'] = $row['m_field_id_'.$m_fields['url']['0']];
+					}
+
+					if (isset($mfields['location']) && array_key_exists('m_field_id_'.$m_fields['location']['0'], $row))
+					{
+						$row['location'] = $row['m_field_id_'.$m_fields['location']['0']];
+					}
 				}
 			}
 
@@ -781,12 +804,12 @@ class Comment {
 
 			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('gmt_comment_date' => $row['comment_date']), FALSE);
 
+
 			/** ----------------------------------------
 			/**  Parse "single" variables
 			/** ----------------------------------------*/
 			foreach (ee()->TMPL->var_single as $key => $val)
 			{
-
 				/** ----------------------------------------
 				/**  parse {switch} variable
 				/** ----------------------------------------*/
@@ -892,16 +915,15 @@ class Comment {
 				/**  {url_or_email} - Uses Raw Email Address, Like Channel Module
 				/** ----------------------------------------*/
 
-				if ($key == "url_or_email" AND isset($row['url']))
+				if ($key == "url_or_email" AND array_key_exists('url', $row))
 				{
 					$tagdata = ee()->TMPL->swap_var_single($val, ($row['url'] != '') ? $row['url'] : $row['email'], $tagdata);
 				}
 
-
 				/** ----------------------------------------
 				/**  {url_as_author}
 				/** ----------------------------------------*/
-				if ($key == "url_as_author" AND isset($row['url']))
+				if ($key == "url_as_author" AND array_key_exists('url', $row))
 				{
 					if ($row['url'] != '')
 					{
@@ -917,7 +939,7 @@ class Comment {
 				/**  {url_or_email_as_author}
 				/** ----------------------------------------*/
 
-				if ($key == "url_or_email_as_author" AND isset($row['url']))
+				if ($key == "url_or_email_as_author" AND array_key_exists('url', $row))
 				{
 					if ($row['url'] != '')
 					{
@@ -940,7 +962,7 @@ class Comment {
 				/**  {url_or_email_as_link}
 				/** ----------------------------------------*/
 
-				if ($key == "url_or_email_as_link" AND isset($row['url']))
+				if ($key == "url_or_email_as_link" AND array_key_exists('url', $row))
 				{
 					if ($row['url'] != '')
 					{
@@ -1166,19 +1188,32 @@ class Comment {
 				/**  parse custom member fields
 				/** ----------------------------------------*/
 
-				if ( isset($mfields[$val]))
+				$field = ee()->api_channel_fields->get_single_field($key);
+				$val2 = $field['field_name'];
+
+				// parse custom member fields
+				if (isset($m_fields[$val2]))
 				{
-					// Since comments do not necessarily require registration, and since
-					// you are allowed to put custom member variables in comments,
-					// we delete them if no such row exists
-
-					$return_val = (isset($row['m_field_id_'.$mfields[$val]])) ? $row['m_field_id_'.$mfields[$val]] : '';
-
-					$tagdata = ee()->TMPL->swap_var_single(
-						$val,
-						$return_val,
+					if (array_key_exists('m_field_id_'.$m_fields[$val2]['0'], $row))
+					{
+						$tagdata = $this->parseField(
+							$m_fields[$val2]['0'],
+							$field,
+							$row['m_field_id_'.$m_fields[$val2]['0']],
+							$tagdata,
+							$row['author_id'],
+							array(),
+							$key
+						);
+					}
+					else
+					{
+						$tagdata = ee()->TMPL->swap_var_single(
+						$key,
+						'',
 						$tagdata
-					);
+						);
+					}
 				}
 
 				/** ----------------------------------------
@@ -1220,6 +1255,81 @@ class Comment {
 			return $return;
 		}
 	}
+
+	/**
+	 * Called after $m_fields is populated, caches associated MemberField models
+	 */
+	private function cacheMemberFieldModels($m_fields)
+	{
+		$this->member_field_models = ee()->session->cache(__CLASS__, 'member_field_models') ?: array();
+
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+		$single_field_data = array();
+
+		// Get field names present in the template, sans modifiers
+		$clean_field_names = array_map(function($field)
+		{
+
+			$field = ee()->api_channel_fields->get_single_field($field);
+
+			return $field['field_name'];
+		}, array_flip(ee()->TMPL->var_single));
+
+		// Get field IDs for the member fields we need to fetch
+		$member_field_ids = array();
+		foreach ($clean_field_names as $field_name)
+		{
+			if (isset($m_fields[$field_name][0]))
+			{
+				$member_field_ids[] = $m_fields[$field_name][0];
+			}
+		}
+
+		// Cache member fields here before we start parsing
+		if ( ! empty($member_field_ids))
+		{
+			$this->member_field_models = ee('Model')->get('MemberField', array_unique($member_field_ids))
+				->all()
+				->indexBy('field_id');
+		}
+
+		ee()->session->set_cache(__CLASS__, 'member_field_models', $this->member_field_models);
+	}
+
+	/**
+	 * Parse a custom member field
+	 *
+	 * @param	int		$field_id	Member field ID
+	 * @param	array	$field		Tag information as parsed by Api_channel_fields::get_single_field
+	 * @param	mixed	$data		Data for this field
+	 * @param	string	$tagdata	Tagdata to perform the replacement in
+	 * @param	string	$member_id	ID for the member this data is associated
+	 * @return	string	String with variable parsed
+	 */
+	protected function parseField($field_id, $field, $data, $tagdata, $member_id, $row = array(), $tag = FALSE)
+	{
+
+		if ( ! isset($this->member_field_models[$field_id]))
+		{
+
+			return $tagdata;
+		}
+
+		$member_field = $this->member_field_models[$field_id];
+
+
+		$default_row = array(
+			'channel_html_formatting' => 'safe',
+			'channel_auto_link_urls' => 'y',
+			'channel_allow_img_urls' => 'n'
+		);
+		$row = array_merge($default_row, $row);
+
+
+		return $member_field->parse($data, $member_id, 'member', $field, $tagdata, $row, $tag);
+	}
+
 
 
 

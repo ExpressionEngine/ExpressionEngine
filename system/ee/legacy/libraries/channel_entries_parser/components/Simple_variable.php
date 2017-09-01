@@ -69,14 +69,12 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
 		if (strpos($tag, 'url') !== FALSE)
 		{
-			return $this->_urls($data, $tagdata, $tag, $tag_options, $prefix);
+			return $this->_urls($data, $tagdata, $tag, $tag_options, $prefix, $obj->channel()->mfields);
 		}
-
 
 		// @todo remove
 		$key = $tag;
 		$val = $tag_options;
-
 
 		//  parse {title}
 		if ($key == $prefix.'title')
@@ -281,8 +279,11 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 	 *
 	 * @return String	The processed tagdata
 	 */
-	protected function _urls($data, $tagdata, $key, $val, $prefix)
+	protected function _urls($data, $tagdata, $key, $val, $prefix, $mfields)
 	{
+			// URL was moved to a custom member field or dropped
+			$member_url = (isset($mfields['url'])) ? $data['m_field_id_'.$mfields['url'][0]] : '';
+
 		if ($key == $prefix.'url_title')
 		{
 			$tagdata = str_replace(LD.$val.RD, $data['url_title'], $tagdata);
@@ -319,7 +320,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		//  {url_or_email}
 		elseif ($key == $prefix."url_or_email")
 		{
-			$tagdata = str_replace(LD.$val.RD, ($data['url'] != '') ? $data['url'] : $data['email'], $tagdata);
+			$tagdata = str_replace(LD.$val.RD, ($member_url != '') ? $member_url : $data['email'], $tagdata);
 		}
 
 		//  {url_or_email_as_author}
@@ -327,9 +328,9 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		{
 			$name = ($data['screen_name'] != '') ? $data['screen_name'] : $data['username'];
 
-			if ($data['url'] != '')
+			if ($member_url != '')
 			{
-				$tagdata = str_replace(LD.$val.RD, "<a href=\"".$data['url']."\">".$name."</a>", $tagdata);
+				$tagdata = str_replace(LD.$val.RD, "<a href=\"".$member_url."\">".$name."</a>", $tagdata);
 			}
 			else
 			{
@@ -340,9 +341,9 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		//  {url_or_email_as_link}
 		elseif ($key == $prefix."url_or_email_as_link")
 		{
-			if ($data['url'] != '')
+			if ($member_url != '')
 			{
-				$tagdata = str_replace(LD.$val.RD, "<a href=\"".$data['url']."\">".$data['url']."</a>", $tagdata);
+				$tagdata = str_replace(LD.$val.RD, "<a href=\"".$member_url."\">".$member_url."</a>", $tagdata);
 			}
 			else
 			{

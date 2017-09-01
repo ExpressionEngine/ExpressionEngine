@@ -102,11 +102,25 @@ abstract class Entity extends MixableImpl implements Publisher {
 	 */
 	public static function getMetaData($key)
 	{
-		$values = static::getMetaDataByClass($key);
+		static $cached_values = [];
+
+		$class = get_called_class();
+
+		if ( ! isset($cached_values[$class]))
+		{
+			$cached_values[$class] = [];
+		}
+
+		if (array_key_exists($key, $cached_values[$class]))
+		{
+			return $cached_values[$class][$key];
+		}
+
+		$values = static::getMetaDataByClass($key, $class);
 
 		if ( ! count($values))
 		{
-			return NULL;
+			return $cached_values[$class][$key] = NULL;
 		}
 
 		$result = array_shift($values);
@@ -123,7 +137,7 @@ abstract class Entity extends MixableImpl implements Publisher {
 			}
 		}
 
-		return $result;
+		return $cached_values[$class][$key] = $result;
 	}
 
 	/**
@@ -132,12 +146,10 @@ abstract class Entity extends MixableImpl implements Publisher {
 	 * @param String $key Metadata name
 	 * @return Array [class => value] for all classes that define the metadata
 	 */
-	public static function getMetaDataByClass($key)
+	protected static function getMetaDataByClass($key, $class)
 	{
 		$key = '_'.$key;
 		$values = array();
-
-		$class = get_called_class();
 		$child = NULL;
 
 		do
@@ -157,7 +169,8 @@ abstract class Entity extends MixableImpl implements Publisher {
 
 			$child = $class;
 		}
-		while ($class = get_parent_class($class));
+		while (($class = get_parent_class($class))
+			&& $child != 'EllisLab\ExpressionEngine\Service\Model\Model');
 
 		return array_reverse($values);
 	}
