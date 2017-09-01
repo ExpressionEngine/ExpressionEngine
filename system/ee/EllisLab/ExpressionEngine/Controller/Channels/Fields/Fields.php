@@ -377,23 +377,6 @@ class Fields extends AbstractChannelsController {
 			),
 		);
 
-		if (ee()->config->item('multiple_sites_enabled') == 'y')
-		{
-			$sections[0][] = array(
-				'title' => 'enable_on_all_sites',
-				'desc' => 'enable_on_all_sites_desc',
-				'fields' => array(
-					'site_id' => array(
-						'type' => 'inline_radio',
-						'choices' => array(
-							'0' => 'enable',
-							ee()->config->item('site_id') => 'disable'
-						)
-					)
-				)
-			);
-		}
-
 		$field_options = $field->getSettingsForm();
 		if (is_array($field_options) && ! empty($field_options))
 		{
