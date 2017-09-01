@@ -21,6 +21,11 @@ feature 'One-Click Updater' do
     )
   end
 
+  after(:each) do
+    # Expand stack trace if we have one
+    click_link('view stack trace') unless page.has_no_css?('a[rel="updater-stack-trace"]')
+  end
+
   it 'should fail preflight check when permissions are incorrect' do
     @page.find('span.version').click
     @page.find('.update-btn .submit').click
