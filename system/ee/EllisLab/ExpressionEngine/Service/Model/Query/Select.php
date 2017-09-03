@@ -292,7 +292,7 @@ class Select extends Query {
 					break;
 			}
 
-			$comparison = "{$comparison} NULL";
+			$comparison = "{$property} {$operator} NULL";
 		}
 
 		if (in_array($fn, array('where_in', 'or_where_in')))
