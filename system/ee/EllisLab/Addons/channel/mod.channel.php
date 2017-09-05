@@ -2346,17 +2346,20 @@ class Channel {
 			$this->chunks = $chunks;
 		}
 
-		foreach ($chunk as $field)
+		if (is_array($chunk))
 		{
-			$field_id = $field->getId();
-			$table = "exp_channel_data_field_{$field_id}";
-
-			foreach ($field->getColumnNames() as $column)
+			foreach ($chunk as $field)
 			{
-				$this->sql .= ", {$table}.{$column}";
-			}
+				$field_id = $field->getId();
+				$table = "exp_channel_data_field_{$field_id}";
 
-			$from .= "LEFT JOIN	{$table} ON t.entry_id = {$table}.entry_id ";
+				foreach ($field->getColumnNames() as $column)
+				{
+					$this->sql .= ", {$table}.{$column}";
+				}
+
+				$from .= "LEFT JOIN	{$table} ON t.entry_id = {$table}.entry_id ";
+			}
 		}
 
 		$this->sql .= $from;
