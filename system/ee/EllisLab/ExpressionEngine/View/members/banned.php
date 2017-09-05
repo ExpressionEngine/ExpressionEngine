@@ -9,6 +9,8 @@
 
 		<?=ee('CP/Alert')->get('view-members')?>
 
+		<?php if (isset($filters)) echo $filters; ?>
+
 		<?php $this->embed('_shared/table', $table); ?>
 
 		<?php if ( ! empty($pagination)) echo $pagination; ?>

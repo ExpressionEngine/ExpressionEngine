@@ -562,13 +562,13 @@ class Comment {
 
 		$results = $result_ids;
 		$mfields = array();
+		$mfields_data = array();
 
 		/** ----------------------------------------
 		/**  Fetch custom member field IDs
 		/** ----------------------------------------*/
 
 		ee()->db->select('m_field_id, m_field_name');
-		// ee()->db->where('m_legacy_field_data', 'n');
 		$query = ee()->db->get('member_fields');
 
 		if ($query->num_rows() > 0)
@@ -645,8 +645,7 @@ class Comment {
 		// left-over unparsed junk.  The $member_vars array is all of those
 		// member related variables that should be removed.
 
-		$member_vars = array('location', 'occupation', 'interests', 'aol_im', 'yahoo_im', 'msn_im', 'icq',
-			'signature', 'sig_img_filename', 'sig_img_width', 'sig_img_height',
+		$member_vars = array('signature', 'sig_img_filename', 'sig_img_width', 'sig_img_height',
 			'avatar_filename', 'avatar_width', 'avatar_height',
 			'photo_filename', 'photo_width', 'photo_height');
 
@@ -657,6 +656,21 @@ class Comment {
 			$member_cond_vars[$var] = '';
 		}
 
+		// Fetch the custom member field definitions
+		$m_fields = array();
+
+		ee()->db->select('m_field_id, m_field_name, m_field_fmt');
+		$query = ee()->db->get('member_fields');
+
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result_array() as $row)
+			{
+				$m_fields[$row['m_field_name']] = array($row['m_field_id'], $row['m_field_fmt']);
+			}
+		}
+
+		$this->cacheMemberFieldModels($m_fields);
 
 		/** ----------------------------------------
 		/**  Start the processing loop
@@ -701,6 +715,19 @@ class Comment {
 				if ($row['author_id'] == 0)
 				{
 					$row['location'] = $row['c_location'];
+				}
+				else
+				{
+					// location and url set based on member custom field if it exists
+					if (isset($mfields['url']) && array_key_exists('m_field_id_'.$m_fields['url']['0'], $row))
+					{
+						$row['url'] = $row['m_field_id_'.$m_fields['url']['0']];
+					}
+
+					if (isset($mfields['location']) && array_key_exists('m_field_id_'.$m_fields['location']['0'], $row))
+					{
+						$row['location'] = $row['m_field_id_'.$m_fields['location']['0']];
+					}
 				}
 			}
 
@@ -777,12 +804,12 @@ class Comment {
 
 			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('gmt_comment_date' => $row['comment_date']), FALSE);
 
+
 			/** ----------------------------------------
 			/**  Parse "single" variables
 			/** ----------------------------------------*/
 			foreach (ee()->TMPL->var_single as $key => $val)
 			{
-
 				/** ----------------------------------------
 				/**  parse {switch} variable
 				/** ----------------------------------------*/
@@ -1161,19 +1188,32 @@ class Comment {
 				/**  parse custom member fields
 				/** ----------------------------------------*/
 
-				if ( isset($mfields[$val]))
+				$field = ee()->api_channel_fields->get_single_field($key);
+				$val2 = $field['field_name'];
+
+				// parse custom member fields
+				if (isset($m_fields[$val2]))
 				{
-					// Since comments do not necessarily require registration, and since
-					// you are allowed to put custom member variables in comments,
-					// we delete them if no such row exists
-
-					$return_val = (isset($row['m_field_id_'.$mfields[$val]])) ? $row['m_field_id_'.$mfields[$val]] : '';
-
-					$tagdata = ee()->TMPL->swap_var_single(
-						$val,
-						$return_val,
+					if (array_key_exists('m_field_id_'.$m_fields[$val2]['0'], $row))
+					{
+						$tagdata = $this->parseField(
+							$m_fields[$val2]['0'],
+							$field,
+							$row['m_field_id_'.$m_fields[$val2]['0']],
+							$tagdata,
+							$row['author_id'],
+							array(),
+							$key
+						);
+					}
+					else
+					{
+						$tagdata = ee()->TMPL->swap_var_single(
+						$key,
+						'',
 						$tagdata
-					);
+						);
+					}
 				}
 
 				/** ----------------------------------------
@@ -1215,6 +1255,81 @@ class Comment {
 			return $return;
 		}
 	}
+
+	/**
+	 * Called after $m_fields is populated, caches associated MemberField models
+	 */
+	private function cacheMemberFieldModels($m_fields)
+	{
+		$this->member_field_models = ee()->session->cache(__CLASS__, 'member_field_models') ?: array();
+
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+		$single_field_data = array();
+
+		// Get field names present in the template, sans modifiers
+		$clean_field_names = array_map(function($field)
+		{
+
+			$field = ee()->api_channel_fields->get_single_field($field);
+
+			return $field['field_name'];
+		}, array_flip(ee()->TMPL->var_single));
+
+		// Get field IDs for the member fields we need to fetch
+		$member_field_ids = array();
+		foreach ($clean_field_names as $field_name)
+		{
+			if (isset($m_fields[$field_name][0]))
+			{
+				$member_field_ids[] = $m_fields[$field_name][0];
+			}
+		}
+
+		// Cache member fields here before we start parsing
+		if ( ! empty($member_field_ids))
+		{
+			$this->member_field_models = ee('Model')->get('MemberField', array_unique($member_field_ids))
+				->all()
+				->indexBy('field_id');
+		}
+
+		ee()->session->set_cache(__CLASS__, 'member_field_models', $this->member_field_models);
+	}
+
+	/**
+	 * Parse a custom member field
+	 *
+	 * @param	int		$field_id	Member field ID
+	 * @param	array	$field		Tag information as parsed by Api_channel_fields::get_single_field
+	 * @param	mixed	$data		Data for this field
+	 * @param	string	$tagdata	Tagdata to perform the replacement in
+	 * @param	string	$member_id	ID for the member this data is associated
+	 * @return	string	String with variable parsed
+	 */
+	protected function parseField($field_id, $field, $data, $tagdata, $member_id, $row = array(), $tag = FALSE)
+	{
+
+		if ( ! isset($this->member_field_models[$field_id]))
+		{
+
+			return $tagdata;
+		}
+
+		$member_field = $this->member_field_models[$field_id];
+
+
+		$default_row = array(
+			'channel_html_formatting' => 'safe',
+			'channel_auto_link_urls' => 'y',
+			'channel_allow_img_urls' => 'n'
+		);
+		$row = array_merge($default_row, $row);
+
+
+		return $member_field->parse($data, $member_id, 'member', $field, $tagdata, $row, $tag);
+	}
+
 
 
 

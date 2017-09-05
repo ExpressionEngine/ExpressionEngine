@@ -1,12 +1,12 @@
 <table class='border' border='0' cellspacing='0' cellpadding='0' style='width:100%'>
 <tr>
 <td class='profileTopBox' valign='top' style="width:50%;">
-	
+
 	<table border='0' cellspacing='0' cellpadding='0' >
 	<tr>
 	{if avatar}<td style="width:{avatar_width}px;"><img class="avatar" src="{path:avatar_url}" width="{avatar_width}" height="{avatar_height}" border="0" alt="{name}" title="{name}" /></td>{/if}
 	<td valign="top">
-	<div class='profileTitle'>{name}</div>			
+	<div class='profileTitle'>{name}</div>
 	<div class="{rank_class}">{rank_title}</div>
 	<div class="itempad">{if rank_stars}<img src="{path:image_url}rank.gif" width="9" height="10" border="0" alt="{lang:rank}" class="rankImage" />{/if}</div>
 	<div class='itempad'>{lang:member_group}&nbsp; <b>{member_group}</b></div>
@@ -20,7 +20,7 @@
 
 </td>
 	<td class='profilePhoto' valign='middle' style="width:50%;">
-	
+
 	<table border='0' cellspacing='0' cellpadding='0' style='width:100%'>
 	<tr>
 	<td>
@@ -52,11 +52,6 @@
 <table class='tableBorderLeft' border='0' cellspacing='0' cellpadding='0' style='width:100%'>
 <tr>
 <td class='tableRowHeadingBold' colspan='2'>{lang:communications}</td>
-</tr><tr>
-
-<td class='tableCellTwo'><div class='defaultBold'>{lang:url}</div></td>
-<td class='tableCellOne'>{if url}<a href="{url}" target="_blank"><img src="{path:image_url}icon_www.gif"  width="56" height="14" alt="{url}" title="{url}" border="0" /></a>{/if}</td>
-
 
 </tr>
 {if can_private_message}
@@ -78,38 +73,6 @@
 {/if}
 </td>
 
-</tr><tr>
-
-<td class='tableCellTwo'><div class='defaultBold'>{lang:aol_im}</div></td>
-<td class='tableCellOne'>
-{if aol_im}
-<a href="#" {aim_console}><img src="{path:image_url}icon_aim.gif" width="56" height="14" border="0" alt="{lang:mbr_aim_console}" title="{lang:mbr_aim_console}" /></a>
-{/if}
-</td>
-
-</tr><tr>
-
-<td class='tableCellTwo'><div class='defaultBold'>{lang:icq}</div></td>
-<td class='tableCellOne'>
-{if icq}
-<a href="#" {icq_console}><img src="{path:image_url}icon_icq.gif" width="56" height="14" border="0" alt="{lang:mbr_icq}" title="{lang:mbr_icq}" /></a>
-{/if}
-</td>
-
-</tr><tr>
-
-<td class='tableCellTwo'><div class='defaultBold'>{lang:yahoo}</div></td>
-<td class='tableCellOne'>
-{if yahoo_im}
-<a href="{yahoo_console}" target="_blank"><img src="{path:image_url}icon_yim.gif" width="56" height="14" border="0" alt="{lang:mbr_yahoo}" title="{lang:mbr_yahoo}"></a>
-{/if}
-</td>
-
-</tr><tr>
-
-<td class='tableCellTwo'><div class='defaultBold'>{lang:msn}</div></td>
-<td class='tableCellOne'>{msn_im}</td>
-
 </tr>
 </table>
 
@@ -120,20 +83,6 @@
 <table class='tableBorderLeft' border='0' cellspacing='0' cellpadding='0' style='width:100%'>
 <tr>
 <td class='tableRowHeadingBold' colspan='2'>{lang:personal_info}</td>
-</tr><tr>
-
-<td class='tableCellTwo' style="width:42%;"><div class='defaultBold'>{lang:location}</div></td>
-<td class='tableCellOne' style="width:58%;"><div class='default'>{location}</div></td>
-
-</tr><tr>
-
-<td class='tableCellTwo'><div class='defaultBold'>{lang:occupation}</div></td>
-<td class='tableCellOne'><div class='default'>{occupation}</div></td>
-
-</tr><tr>
-
-<td class='tableCellTwo'><div class='defaultBold'>{lang:interests}</div></td>
-<td class='tableCellOne'><div class='default'>{interests}</div></td>
 
 {custom_profile_fields}
 
@@ -220,11 +169,6 @@
 
 {/if}
 
-</tr><tr>
-
-<td class='tableCellTwo'><div class='defaultBold'>{lang:birthday}</div></td>
-<td class='tableCellOne'>{birthday}</td>
-
 </tr>
 </table>
 
@@ -232,23 +176,4 @@
 </tr>
 </table>
 
-
-<div class='itempad'>&nbsp;</div>
-
-
-<table class='tableBorder' border='0' cellspacing='0' cellpadding='0' style='width:100%'>
-<tr>
-	<td class='tableRowHeadingBold'>{lang:bio}</td>
-</tr><tr>
-	<td>
-		{if bio != ''}
-		<div class="leftpad">{bio}</div>
-		{/if}
-		
-		{if bio == ''}
-		<div class="itempadbig"><div class="lighttext">&nbsp;{lang:no_info_available}</div></div>
-		{/if}
-	</td>
-</tr>
-</table>
 

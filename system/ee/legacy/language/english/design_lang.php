@@ -602,6 +602,12 @@ $lang = array(
 
 'settings_manager' => 'Settings/Manager',
 
+'show_all_partials' => 'All %d partials',
+
+'show_all_templates' => 'All %d templates',
+
+'show_all_variables' => 'All %d variables',
+
 'site_404_exp' => 'Determines which template should be displayed when someone tries to access an invalid URL. Note: If you choose \'None\', your default channel will be shown when an invalid URL is requested.',
 
 'small' => 'Small',
@@ -730,6 +736,8 @@ $lang = array(
 
 'unable_to_write_files' => 'Unable to write the files to your cache directory',
 
+'breadcrumb' => 'Breadcrumb',
+
 'undersores_allowed' => '(underscores and dashes are allowed)',
 
 'url_manager' => 'Template Route Manager',
@@ -747,6 +755,8 @@ $lang = array(
 'view' => 'View',
 
 'view_rendered_template' => 'View Rendered Template',
+
+'localization_form' => 'Localization Preferences Form',
 
 'webpage' => 'Web Page (HTML)',
 

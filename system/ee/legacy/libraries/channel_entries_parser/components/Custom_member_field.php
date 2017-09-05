@@ -94,18 +94,17 @@ class EE_Channel_custom_member_field_parser implements EE_Channel_parser_compone
 				$data['m_field_id_'.$field_id],
 				$data['member_id'],
 				'member',
-				$field['modifier'],
+				$field,
 				$tagdata,
 				array(
 					'channel_html_formatting' => 'safe',
 					'channel_auto_link_urls' => 'y',
 					'channel_allow_img_urls' => 'n',
-					'field_ft_'.$field_id => $data['m_field_ft_'.$field_id]
-				)
+          'field_ft_'.$field_id => $data['m_field_ft_'.$field_id]
+				),
+				$key
 			);
 		}
-
-
 		return $tagdata;
 	}
 }
