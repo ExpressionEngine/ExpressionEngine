@@ -131,12 +131,6 @@ class Member extends ContentModel {
 		'date_format'     => 'validateDateFormat',
 		'time_format'     => 'enum[12,24]',
 		'include_seconds' => 'enum[y,n]',
-		'url'             => 'url',
-		'location'        => 'xss',
-		'bio'             => 'xss',
-		'bday_d'          => 'xss',
-		'bday_m'          => 'xss',
-		'bday_y'          => 'xss'
 	);
 
 	protected static $_events = array(
@@ -156,18 +150,6 @@ class Member extends ContentModel {
 	protected $crypt_key;
 	protected $authcode;
 	protected $email;
-	protected $url;
-	protected $location;
-	protected $occupation;
-	protected $interests;
-	protected $bday_d;
-	protected $bday_m;
-	protected $bday_y;
-	protected $aol_im;
-	protected $yahoo_im;
-	protected $msn_im;
-	protected $icq;
-	protected $bio;
 	protected $signature;
 	protected $avatar_filename;
 	protected $avatar_width;

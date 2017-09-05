@@ -20,7 +20,6 @@ use EllisLab\ExpressionEngine\Controller\Members;
  */
 class Fields extends Members\Members {
 
-	private $base_url;
 
 	/**
 	 * Constructor
@@ -44,8 +43,35 @@ class Fields extends Members\Members {
 	 */
 	public function index()
 	{
+		$sort_col = ee()->input->get('sort_col');
+		switch ($sort_col)
+		{
+			case 'id':
+				$sort_col = 'm_field_id';
+				break;
+
+			case 'label':
+				$sort_col = 'm_field_label';
+				break;
+
+			case 'snort_name':
+				$sort_col = 'm_field_name';
+				break;
+
+			case 'type':
+				$sort_col = 'm_field_type';
+				break;
+
+			default:
+				$sort_col = 'm_field_order';
+		}
+
+		$sort_dir = ee()->input->get('sort_dir') ?: 'asc';
+
 		$table = ee('CP/Table', array(
-			'sortable' => FALSE,
+			'sort_col' => $sort_col,
+			'sort_dir' => $sort_dir,
+			'limit' => $this->perpage,
 			'reorder' => TRUE,
 			'save' => ee('CP/URL')->make("members/fields/order")
 		));
@@ -77,13 +103,28 @@ class Fields extends Members\Members {
 
 		$data = array();
 		$fieldData = array();
+
 		$total = ee('Model')->get('MemberField')->count();
-		$fields = ee('Model')->get('MemberField')->order('m_field_order', 'asc')->all();
+
+		$filter = ee('CP/Filter')->add('Perpage', $total, 'show_all_member_fields');
+
+		$this->renderFilters($filter);
+
+		$fields = ee('Model')->get('MemberField')
+			->order($sort_col, $sort_dir)
+			->limit($this->perpage)
+			->offset($this->offset)
+			->all();
+
 		$type_map = array(
 			'text' => lang('text_input'),
 			'textarea' => lang('textarea'),
 			'select' => lang('select_dropdown'),
+			'date' => lang('date'),
+			'url' => lang('url')
 		);
+
+		$fields = $fields->all();
 
 		foreach ($fields as $field)
 		{
@@ -131,6 +172,14 @@ class Fields extends Members\Members {
 		$data['form_url'] = ee('CP/URL')->make('members/fields/delete');
 		$data['new'] = ee('CP/URL')->make('members/fields/create');
 		$base_url = $data['table']['base_url'];
+
+		if ( ! empty($data['table']['data']))
+		{
+			$data['pagination'] = ee('CP/Pagination', $total)
+				->perPage($this->perpage)
+				->currentPage($this->page)
+				->render($this->base_url);
+		}
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('custom_member_fields') . ': <b>### ' . lang('custom_member_fields') . '</b>');
 		ee()->cp->add_js_script('file', 'cp/confirm_remove');
@@ -263,11 +312,14 @@ class Fields extends Members\Members {
 						'm_field_type' => array(
 							'type' => 'select',
 							'choices' => array(
+								'date'     => lang('date'),
 								'text'     => lang('text_input'),
 								'textarea' => lang('textarea'),
-								'select'   => lang('select_dropdown')
+								'select'   => lang('select_dropdown'),
+								'url'   => lang('url'),
 							),
 							'group_toggle' => array(
+								'date' => 'date',
 								'text' => 'text',
 								'textarea' => 'textarea',
 								'select' => 'select'
@@ -345,7 +397,7 @@ class Fields extends Members\Members {
 		$vars['sections'] = array_merge($vars['sections'], $field->getSettingsForm());
 
 		// These are currently the only fieldtypes we allow; get their settings forms
-		foreach (array('text', 'textarea', 'select') as $fieldtype)
+		foreach (array('date', 'text', 'textarea', 'select') as $fieldtype)
 		{
 			if ($field->field_type != $fieldtype)
 			{

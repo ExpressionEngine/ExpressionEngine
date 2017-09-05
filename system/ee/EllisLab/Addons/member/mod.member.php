@@ -20,7 +20,7 @@ class Member {
 						'public_profile', 'memberlist', 'do_member_search',
 						'member_search', 'register', 'smileys', 'login',
 						'unpw_update', 'email_console', 'send_email',
-						'aim_console', 'icq_console', 'forgot_password', 'reset_password',
+						'forgot_password', 'reset_password',
 						'delete', 'member_mini_search', 'do_member_mini_search',
 					);
 
@@ -36,13 +36,11 @@ class Member {
 					);
 
 	var $no_breadcrumb 		= array(
-						'email_console', 'send_email', 'aim_console',
-						'icq_console', 'member_mini_search', 'do_member_mini_search'
+						'email_console', 'send_email', 'member_mini_search', 'do_member_mini_search'
 					);
 
 	var $simple_page		= array(
-						'email_console', 'send_email', 'aim_console',
-						'icq_console', 'smileys', 'member_mini_search', 'do_member_mini_search'
+						'email_console', 'send_email', 'smileys', 'member_mini_search', 'do_member_mini_search'
 					);
 
 	var $page_title 		= '';
@@ -74,8 +72,6 @@ class Member {
 								'register'				=> 	'mbr_member_registration',
 								'email'					=>	'mbr_email_member',
 								'send_email'			=>	'mbr_send_email',
-								'aim'					=>	'mbr_aim_console',
-								'icq'					=>	'mbr_icq_console',
 								'profile_main'			=>	'mbr_my_account',
 								'edit_profile'			=>	'mbr_edit_your_profile',
 								'edit_email'			=>	'email_settings',
@@ -129,6 +125,10 @@ class Member {
 	{
 		ee()->lang->loadfile('myaccount');
 		ee()->lang->loadfile('member');
+
+		// For custom fields that use the template library
+		ee()->load->library('template', NULL, 'TMPL');
+
 		ee()->functions->template_type = 'webpage';
 
 		if (isset(ee()->TMPL) && is_object(ee()->TMPL))
@@ -324,8 +324,6 @@ class Member {
 			'member_mini_search',
 			'do_member_mini_search',
 			'email_console',
-			'aim_console',
-			'icq_console',
 			'send_email',
 			'forgot_password',
 			'reset_password',
@@ -1508,46 +1506,6 @@ class Member {
 	}
 
 	/**
-	 * AIM Console
-	 */
-	public function aim_console()
-	{
-		if ( ! class_exists('Member_memberlist'))
-		{
-			require PATH_ADDONS.'member/mod.member_memberlist.php';
-		}
-
-		$MM = new Member_memberlist();
-
-		foreach(get_object_vars($this) as $key => $value)
-		{
-			$MM->{$key} = $value;
-		}
-
-		return $MM->aim_console();
-	}
-
-	/**
-	 * ICQ Console
-	 */
-	public function icq_console()
-	{
-		if ( ! class_exists('Member_memberlist'))
-		{
-			require PATH_ADDONS.'member/mod.member_memberlist.php';
-		}
-
-		$MM = new Member_memberlist();
-
-		foreach(get_object_vars($this) as $key => $value)
-		{
-			$MM->{$key} = $value;
-		}
-
-		return $MM->icq_console();
-	}
-
-	/**
 	 * Member List
 	 */
 	public function memberlist()
@@ -1955,80 +1913,6 @@ class Member {
 	}
 
 	/**
-	 * Create the "year" pull-down menu
-	 */
-	function _birthday_year($year = '')
-	{
-		$r = "<select name='bday_y' class='select'>\n";
-
-		$selected = ($year == '') ? " selected='selected'" : '';
-
-		$r .= "<option value=''{$selected}>".ee()->lang->line('year')."</option>\n";
-
-		for ($i = date('Y', ee()->localize->now); $i > 1904; $i--)
-		{
-			$selected = ($year == $i) ? " selected='selected'" : '';
-
-			$r .= "<option value='{$i}'{$selected}>".$i."</option>\n";
-		}
-
-		$r .= "</select>\n";
-
-		return $r;
-	}
-
-	/**
-	 * Create the "month" pull-down menu
-	 */
-	function _birthday_month($month = '')
-	{
-		$months = array('01' => 'January','02' => 'February','03' => 'March', '04' => 'April', '05' => 'May', '06' => 'June', '07' => 'July', '08' => 'August', '09' => 'September', '10' => 'October', '11' => 'November', '12' => 'December');
-
-		$r = "<select name='bday_m' class='select'>\n";
-
-		$selected = ($month == '') ? " selected='selected'" : '';
-
-		$r .= "<option value=''{$selected}>".ee()->lang->line('month')."</option>\n";
-
-		for ($i = 1; $i < 13; $i++)
-		{
-			if (strlen($i) == 1)
-				$i = '0'.$i;
-
-			$selected = ($month == $i) ? " selected='selected'" : '';
-
-			$r .= "<option value='{$i}'{$selected}>".ee()->lang->line($months[$i])."</option>\n";
-		}
-
-		$r .= "</select>\n";
-
-		return $r;
-	}
-
-	/**
-	 * Create the "day" pull-down menu
-	 */
-	function _birthday_day($day = '')
-	{
-		$r = "<select name='bday_d' class='select'>\n";
-
-		$selected = ($day == '') ? " selected='selected'" : '';
-
-		$r .= "<option value=''{$selected}>".ee()->lang->line('day')."</option>\n";
-
-		for ($i = 1; $i <= 31; $i++)
-		{
-			$selected = ($day == $i) ? " selected='selected'" : '';
-
-			$r .= "<option value='{$i}'{$selected}>".$i."</option>\n";
-		}
-
-		$r .= "</select>\n";
-
-		return $r;
-	}
-
-	/**
 	 * Prep Element Data
 	 *
 	 * Right now we only use this to parse the logged-in/logged-out vars
@@ -2343,41 +2227,34 @@ class Member {
 		$member_id = ( ! ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
 
 		// Default Member Data
-		ee()->db->select('m.member_id, m.group_id, m.username, m.screen_name, m.email, m.signature,
-							m.avatar_filename, m.avatar_width, m.avatar_height,
-							m.photo_filename, m.photo_width, m.photo_height,
-							m.url, m.location, m.occupation, m.interests,
-							m.bio,
-							m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date,
-							m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts,
-							m.language, m.timezone, m.bday_d, m.bday_m, m.bday_y, g.group_title');
-		ee()->db->from(array('members m', 'member_groups g'));
-		ee()->db->where('m.member_id', $member_id);
-		ee()->db->where('g.site_id', ee()->config->item('site_id'));
-		ee()->db->where('m.group_id = g.group_id');
-		$query = ee()->db->get();
+		$member = ee('Model')->get('Member', $member_id)
+			->first();
 
-		if ($query->num_rows() == 0)
+		$total_results = count($member);
+
+		if ($total_results == 0)
 		{
 			return ee()->TMPL->tagdata = '';
 		}
 
-		$default_fields = $query->row_array();
+		$results = $member->getValues();
+
+		$default_fields = $results;
 
 		// Is there an avatar?
-		if (ee()->config->item('enable_avatars') == 'y' AND $query->row('avatar_filename') != '')
+		if (ee()->config->item('enable_avatars') == 'y' AND $results['avatar_filename'] != '')
 		{
 			$avatar_url = ee()->config->slash_item('avatar_url');
 			$avatar_fs_path = ee()->config->slash_item('avatar_path');
 
-			if (file_exists($avatar_fs_path.'default/'.$query->row('avatar_filename')))
+			if (file_exists($avatar_fs_path.'default/'.$results['avatar_filename']))
 			{
 				$avatar_url .= 'default/';
 			}
 
-			$avatar_path	= $avatar_url.$query->row('avatar_filename');
-			$avatar_width	= $query->row('avatar_width');
-			$avatar_height	= $query->row('avatar_height');
+			$avatar_path	= $avatar_url.$results['avatar_filename'];
+			$avatar_width	= $results['avatar_width'];
+			$avatar_height	= $results['avatar_height'];
 			$avatar			= TRUE;
 		}
 		else
@@ -2389,11 +2266,11 @@ class Member {
 		}
 
 		// Is there a member photo?
-		if (ee()->config->item('enable_photos') == 'y' AND $query->row('photo_filename') != '')
+		if (ee()->config->item('enable_photos') == 'y' AND $results['photo_filename'] != '')
 		{
-			$photo_path		= ee()->config->item('photo_url').$query->row('photo_filename');
-			$photo_width	= $query->row('photo_width');
-			$photo_height	= $query->row('photo_height');
+			$photo_path		= ee()->config->item('photo_url').$results['photo_filename'];
+			$photo_width	= $results['photo_width'];
+			$photo_height	= $results['photo_height'];
 			$photo			= TRUE;
 		}
 		else
@@ -2405,11 +2282,11 @@ class Member {
 		}
 
 		// Is there a signature image?
-		if (ee()->config->item('enable_signatures') == 'y' AND $query->row('sig_img_filename') != '')
+		if (ee()->config->item('enable_signatures') == 'y' AND $results['sig_img_filename'] != '')
 		{
-			$sig_img_path	= ee()->config->item('sig_img_url').$query->row('sig_img_filename');
-			$sig_img_width	= $query->row('sig_img_width');
-			$sig_img_height	= $query->row('sig_img_height');
+			$sig_img_path	= ee()->config->item('sig_img_url').$results['sig_img_filename'];
+			$sig_img_width	= $results['sig_img_width'];
+			$sig_img_height	= $results['sig_img_height'];
 			$sig_img_image	= TRUE;
 		}
 		else
@@ -2427,22 +2304,22 @@ class Member {
 		}
 		else
 		{
-			$search_path = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;mbr='.urlencode($query->row('member_id'));
+			$search_path = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;mbr='.urlencode($results['member_id']);
 		}
 
 		$more_fields = array(
 							'send_private_message'	=> $this->_member_path('messages/pm/'.$member_id),
 							'search_path'			=> $search_path,
 							'avatar_url'			=> $avatar_path,
-							'avatar_filename'		=> $query->row('avatar_filename'),
+							'avatar_filename'		=> $results['avatar_filename'],
 							'avatar_width'			=> $avatar_width,
 							'avatar_height'			=> $avatar_height,
 							'photo_url'				=> $photo_path,
-							'photo_filename'		=> $query->row('photo_filename'),
+							'photo_filename'		=> $results['photo_filename'],
 							'photo_width'			=> $photo_width,
 							'photo_height'			=> $photo_height,
 							'signature_image_url'		=> $sig_img_path,
-							'signature_image_filename'	=> $query->row('sig_img_filename'),
+							'signature_image_filename'	=> $results['sig_img_filename'],
 							'signature_image_width'		=> $sig_img_width,
 							'signature_image_height'	=> $sig_img_height
 						);
@@ -2463,19 +2340,6 @@ class Member {
 			}
 		}
 
-		ee()->db->where('member_id', $member_id);
-		$query = ee()->db->get('member_data');
-
-		if ($query->num_rows() == 0)
-		{
-			foreach ($fields as $key => $val)
-			{
-				ee()->TMPL->tagdata = ee()->TMPL->swap_var_single($key, '', ee()->TMPL->tagdata);
-			}
-
-			return ee()->TMPL->tagdata;
-		}
-
 		ee()->load->library('typography');
 		ee()->typography->initialize();
 
@@ -2488,8 +2352,9 @@ class Member {
 		$clean_field_names = array_map(function($field)
 		{
 			$field = ee()->api_channel_fields->get_single_field($field);
+
 			return $field['field_name'];
-		}, ee()->TMPL->var_single);
+		}, array_flip(ee()->TMPL->var_single));
 
 		// Get field IDs for the member fields we need to fetch
 		$member_field_ids = array();
@@ -2509,22 +2374,10 @@ class Member {
 				->indexBy('field_id');
 		}
 
-		foreach ($query->result_array() as $row)
+		foreach (array($results) as $row)
 		{
 			$cond['avatar']	= $avatar;
 			$cond['photo'] = $photo;
-
-			foreach($fields as $key =>  $value)
-			{
-				$cond[$key] = ee()->typography->parse_type($row['m_field_id_'.$value['0']],
-												array(
-													  'text_format'	=> $value['1'],
-													  'html_format'	=> 'safe',
-													  'auto_links'	=> 'y',
-													  'allow_img_url' => 'n'
-													 )
-										  	  );
-			}
 
 			ee()->TMPL->tagdata = ee()->functions->prep_conditionals(ee()->TMPL->tagdata, $cond);
 
@@ -2532,15 +2385,6 @@ class Member {
 			foreach (ee()->TMPL->var_single as $key => $val)
 			{
 				// parse default member data
-
-				//  Format URLs
-				if ($key == 'url')
-				{
-					if (substr($default_fields['url'], 0, 4) != "http" && strpos($default_fields['url'], '://') === FALSE)
-					{
-						$default_fields['url'] = "http://".$default_fields['url'];
-					}
-				}
 
 				//  "last_visit"
 				if (strncmp($key, 'last_visit', 10) == 0)
@@ -2600,43 +2444,6 @@ class Member {
 					ee()->TMPL->tagdata = $this->_var_swap_single($val, ee()->typography->encode_email($default_fields['email']), ee()->TMPL->tagdata, FALSE);
 				}
 
-				//  {birthday}
-				if ($key == "birthday")
-				{
-					$birthday = '';
-
-					if ($default_fields['bday_m'] != '' AND $default_fields['bday_m'] != 0)
-					{
-						$month = (strlen($default_fields['bday_m']) == 1) ? '0'.$default_fields['bday_m'] : $default_fields['bday_m'];
-
-						$m = ee()->localize->localize_month($month);
-
-						$birthday .= ee()->lang->line($m['1']);
-
-						if ($default_fields['bday_d'] != '' AND $default_fields['bday_d'] != 0)
-						{
-							$birthday .= ' '.$default_fields['bday_d'];
-						}
-					}
-
-					if ($default_fields['bday_y'] != '' AND $default_fields['bday_y'] != 0)
-					{
-						if ($birthday != '')
-						{
-							$birthday .= ', ';
-						}
-
-						$birthday .= $default_fields['bday_y'];
-					}
-
-					if ($birthday == '')
-					{
-						$birthday = '';
-					}
-
-					ee()->TMPL->tagdata = $this->_var_swap_single($val, $birthday, ee()->TMPL->tagdata);
-				}
-
 				//  {timezone}
 				if ($key == "timezone")
 				{
@@ -2663,20 +2470,6 @@ class Member {
 					);
 				}
 
-				//  {bio}
-				if ($key == 'bio')
-				{
-					$bio = ee()->typography->parse_type($default_fields[$val],
-																 array(
-																			'text_format'   => 'xhtml',
-																			'html_format'   => 'safe',
-																			'auto_links'    => 'y',
-																			'allow_img_url' => 'n'
-																	   )
-																);
-
-					ee()->TMPL->tagdata = $this->_var_swap_single($key, $bio, ee()->TMPL->tagdata);
-				}
 
 				// Special condideration for {total_forum_replies}, and
 				// {total_forum_posts} whose meanings do not match the
@@ -2698,19 +2491,33 @@ class Member {
 					ee()->TMPL->tagdata = $this->_var_swap_single($val, $default_fields[$val], ee()->TMPL->tagdata);
 				}
 
-				$field = ee()->api_channel_fields->get_single_field($val);
+				// Custom member fields
+				$field = ee()->api_channel_fields->get_single_field($key);
 				$val = $field['field_name'];
 
 				// parse custom member fields
-				if (isset($fields[$val]) && array_key_exists('m_field_id_'.$fields[$val]['0'], $row))
+				if (isset($fields[$val]))
 				{
-					ee()->TMPL->tagdata = $this->parseField(
-						$fields[$val]['0'],
-						$field,
-						$row['m_field_id_'.$fields[$val]['0']],
-						ee()->TMPL->tagdata,
-						$member_id
-					);
+					if (array_key_exists('m_field_id_'.$fields[$val]['0'], $row))
+					{
+						ee()->TMPL->tagdata = $this->parseField(
+							$fields[$val]['0'],
+							$field,
+							$row['m_field_id_'.$fields[$val]['0']],
+							ee()->TMPL->tagdata,
+							$member_id,
+							array(),
+							$key
+						);
+					}
+					else
+					{
+						ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
+						$key,
+						'',
+						ee()->TMPL->tagdata
+						);
+					}
 				}
 			}
 		}
@@ -2728,8 +2535,9 @@ class Member {
 	 * @param	string	$member_id	ID for the member this data is associated
 	 * @return	string	String with variable parsed
 	 */
-	protected function parseField($field_id, $field, $data, $tagdata, $member_id, $row = array())
+	protected function parseField($field_id, $field, $data, $tagdata, $member_id, $row = array(), $tag = FALSE)
 	{
+
 		if ( ! isset($this->member_fields[$field_id]))
 		{
 			return $tagdata;
@@ -2744,7 +2552,7 @@ class Member {
 		);
 		$row = array_merge($default_row, $row);
 
-		return $member_field->parse($data, $member_id, 'member', $field['modifier'], $tagdata, $row);
+		return $member_field->parse($data, $member_id, 'member', $field, $tagdata, $row, $tag);
 	}
 
 	/**
@@ -2771,7 +2579,7 @@ class Member {
 			$ignored = ee()->session->userdata('ignore_list');
 		}
 
-		$query = ee()->db->query("SELECT m.member_id, m.group_id, m.username, m.screen_name, m.email, m.ip_address, m.location, m.total_entries, m.total_comments, m.private_messages, m.total_forum_topics, m.total_forum_posts AS total_forum_replies, m.total_forum_topics + m.total_forum_posts AS total_forum_posts,
+		$query = ee()->db->query("SELECT m.member_id, m.group_id, m.username, m.screen_name, m.email, m.ip_address, m.total_entries, m.total_comments, m.private_messages, m.total_forum_topics, m.total_forum_posts AS total_forum_replies, m.total_forum_topics + m.total_forum_posts AS total_forum_posts,
 							g.group_title AS group_description FROM exp_members AS m, exp_member_groups AS g
 							WHERE g.group_id = m.group_id
 							AND g.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'

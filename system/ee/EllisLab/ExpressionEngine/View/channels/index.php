@@ -10,6 +10,7 @@
 		<?php endif; ?>
 		<h1><?=$cp_page_title?></h1>
 		<?=ee('CP/Alert')->getAllInlines()?>
+		<?php if (isset($filters)) echo $filters; ?>
 		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>
 		<fieldset class="tbl-bulk-act hidden">
