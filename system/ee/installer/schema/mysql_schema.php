@@ -562,7 +562,6 @@ class EE_Schema {
 			cat_group varchar(255) NULL DEFAULT NULL,
 			status_group int(4) unsigned NULL DEFAULT NULL,
 			deft_status varchar(50) NOT NULL default 'open',
-			field_group int(4) unsigned NULL DEFAULT NULL,
 			search_excerpt int(4) unsigned NULL DEFAULT NULL,
 			deft_category varchar(60) NULL DEFAULT NULL,
 			deft_comments char(1) NOT NULL default 'y',

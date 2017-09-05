@@ -271,7 +271,6 @@ class Channel extends StructureModel {
 					}
 					break;
 				case 'status_group':
-				case 'field_group':
 					if ( ! isset($this->{$property}))
 					{
 						$this->setRawProperty($property, $channel->{$property});
@@ -283,12 +282,6 @@ class Channel extends StructureModel {
 					break;
 				case 'deft_status':
 					if ( ! isset($this->status_group) OR $this->status_group == $channel->status_group )
-					{
-						$this->setRawProperty($property, $channel->{$property});
-					}
-					break;
-				case 'search_excerpt':
-					if ( ! isset($this->field_group) OR $this->field_group == $channel->field_group )
 					{
 						$this->setRawProperty($property, $channel->{$property});
 					}
