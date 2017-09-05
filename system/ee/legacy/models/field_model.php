@@ -39,7 +39,8 @@ class Field_model extends CI_Model {
 
 		if ($group_id != '')
 		{
-			$this->db->where('group_id', $group_id);
+			$this->db->join('exp_channel_field_groups_fields AS fgf', 'fgf.field_id = channel_fields.field_id', 'inner');
+			$this->db->where('fgf.group_id', $group_id);
 		}
 
 		// add additional WHERE clauses
@@ -81,9 +82,9 @@ class Field_model extends CI_Model {
 	function get_field_groups()
 	{
 		$this->db->select('exp_field_groups.group_id, exp_field_groups.group_name,
-							COUNT(exp_channel_fields.group_id) as count');
+							COUNT(exp_channel_field_groups_fields.field_id) as count');
 		$this->db->from('exp_field_groups');
-		$this->db->join('exp_channel_fields', 'exp_field_groups.group_id = exp_channel_fields.group_id', 'left');
+		$this->db->join('exp_channel_field_groups_fields', 'exp_field_groups.group_id = exp_channel_field_groups_fields.group_id', 'inner');
 		$this->db->where('exp_field_groups.site_id', $this->config->item('site_id'));
 		$this->db->group_by('exp_field_groups.group_id');
 		$this->db->order_by('exp_field_groups.group_name');
@@ -123,7 +124,7 @@ class Field_model extends CI_Model {
 						'site_id' => $this->config->item('site_id')
 		);
 
-		$this->db->insert('field_groups', $data);
+		ee('Model')->make('ChannelFieldGroup', $data)->save();
 	}
 
 	/**
@@ -134,14 +135,8 @@ class Field_model extends CI_Model {
 	 */
 	function delete_fields($field_id)
 	{
-		$query = $this->field_model->get_field($field_id);
-
-		$field_ids = $this->_remove_fields($query);
-
-		$this->db->where('field_id', $field_id);
-		$this->db->delete('channel_fields');
-
-		return $field_ids;
+		ee('Model')->get('ChannelField', $field_id)->delete();
+		return array($field_id);
 	}
 
 	/**
@@ -152,23 +147,8 @@ class Field_model extends CI_Model {
 	 */
 	function delete_field_groups($group_id)
 	{
-		$query = $this->get_fields($group_id);
-
-		$field_ids = $this->_remove_fields($query);
-
-		$this->db->where('group_id', $group_id);
-		$this->db->delete('field_groups');
-
-		// Delete associated channel fields
-		$this->db->where('group_id', $group_id);
-		$this->db->delete('channel_fields');
-
-		// Disassociate field group with channels
-		$this->db->where('field_group', $group_id);
-		$this->db->update('channels', array('field_group' => NULL));
-
-		return $field_ids;
-
+		ee('Model')->get('ChannelFieldGroup', $group_id)->delete();
+		return array();
 	}
 
 	/**
@@ -275,8 +255,9 @@ class Field_model extends CI_Model {
 	{
 		$this->db->select('channel_id');
 		$this->db->from('channels');
+		$this->db->join('exp_channels_channel_field_groups AS fg', 'fg.channel_id = channels.channel_id', 'inner');
 		$this->db->where('site_id', $this->config->item('site_id'));
-		$this->db->where('field_group', $group_id);
+		$this->db->where('fg.group_id', $group_id);
 
 		return $this->db->get();
 	}
