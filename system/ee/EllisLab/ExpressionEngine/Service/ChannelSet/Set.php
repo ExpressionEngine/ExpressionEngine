@@ -894,7 +894,6 @@ class Set {
 					if (isset($column['settings']['channels']))
 					{
 						$channel_ids = $that->getIdsForChannels($column['settings']['channels']);
-						var_dump($column['settings']['channels'], $channel_ids);
 						$column['settings']['channels'] = $channel_ids;
 					}
 				}
