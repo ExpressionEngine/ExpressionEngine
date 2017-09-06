@@ -28,7 +28,7 @@ class Api_channel_fields extends Api {
 		parent::__construct();
 
 		$this->native = array(
-			'field_id', 'site_id', 'group_id',
+			'field_id', 'site_id',
 			'field_name', 'field_label', 'field_instructions',
 			'field_type', 'field_list_items', 'field_pre_populate',
 			'field_pre_channel_id', 'field_pre_field_id',
@@ -711,43 +711,21 @@ class Api_channel_fields extends Api {
 	 */
 	function get_required_fields($channel_id)
 	{
-		ee()->load->model('channel_model');
+		$channel = ee('Model')->get('Channel', $channel_id)->first();
 		$required = array('title', 'entry_date');
 
-		$query = ee()->channel_model->get_channel_info($channel_id, array('field_group'));
-
-		if ($query->num_rows() > 0)
+		if ($channel)
 		{
-			$row = $query->row();
-			$fields = ee()->channel_model->get_required_fields($row->field_group);
-
-			if ($fields->num_rows() > 0)
+			foreach ($channel->getCustomFields() as $field)
 			{
-				foreach ($fields->result() as $row)
+				if ($field->field_required)
 				{
-					$required[] = $row->field_id;
-				}
-			}
-		}
-
-		$module_data = $this->get_module_fields($channel_id);
-
-		if ($module_data && is_array($module_data))
-		{
-			foreach ($module_data as $tab => $v)
-			{
-				foreach ($v as $val)
-				{
-					if ($val['field_required'] == 'y')
-					{
-						$required[] =  $val['field_id'];
-					}
+					$required[] = $field->field_id;
 				}
 			}
 		}
 
 		return $required;
-
 	}
 
 	/**
@@ -1101,14 +1079,15 @@ class Api_channel_fields extends Api {
 		// Now we set our custom fields
 
 		// Get Channel fields in the field group
-		$channel_fields = ee()->channel_model->get_channel_fields($channel_data['field_group']);
-
-
+		$channel = ee('Model')->get('Channel', $channel_id)->first();
+		$channel_fields = $channel->getCustomFields();
 
 		$field_settings = array();
 
-		foreach ($channel_fields->result_array() as $row)
+		foreach ($channel_fields as $field)
 		{
+			$row = $field->getValues();
+
 			$field_fmt 		= $row['field_fmt'];
 			$field_dt 		= '';
 			$field_data		= '';

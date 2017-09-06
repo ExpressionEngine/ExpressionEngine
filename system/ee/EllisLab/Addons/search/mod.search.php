@@ -510,47 +510,28 @@ class Search {
 		// no need to do this unless there are keywords to search
 		if (trim($this->keywords) != '')
 		{
-			$xql = "SELECT DISTINCT(field_group) FROM exp_channels WHERE site_id IN ('".implode("','", $this->_meta['site_ids'])."')";
+            $channels = ee('Model')->get('Channel')
+                ->filter('site_id', 'IN', $this->_meta['site_ids'])
+                ->all();
 
-			if ($id_query != '')
-			{
-				$xql .= $id_query.' ';
-				$xql = str_replace('exp_channel_titles.', '', $xql);
-			}
+            if ($channels)
+            {
+    			$custom_fields = array();
+    			foreach ($channels as $channel)
+    			{
+    				$custom_fields = array_merge($custom_fields, $channel->getCustomFields());
+    			}
 
-			$query = ee()->db->query($xql);
+                foreach ($custom_fields as $field)
+                {
+                    if ($field->field_search)
+                    {
+                        $fields[] = $field->field_id;
+                    }
 
-			if ($query->num_rows() > 0)
-			{
-				ee()->db->select('field_id, field_name, field_search');
-
-				// Build array of field groups
-				$field_groups = array();
-				foreach ($query->result_array() as $row)
-				{
-					$field_groups[] = $row['field_group'];
-				}
-
-				if (count($field_groups) > 0)
-				{
-					ee()->db->where_in('group_id', $field_groups);
-				}
-
-				$field_query = ee()->db->get('channel_fields');
-
-				if ($field_query->num_rows() > 0)
-				{
-					foreach ($field_query->result_array() as $row)
-					{
-						if ($row['field_search'] == 'y')
-						{
-							$fields[] = $row['field_id'];
-						}
-
-						$this->fields[$row['field_name']] = array($row['field_id'], $row['field_search']);
-					}
-				}
-			}
+					$this->fields[$field->field_name] = array($field->field_id, $field->field_search);
+                }
+            }
 		}
 
 

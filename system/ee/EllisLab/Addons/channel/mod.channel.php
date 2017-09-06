@@ -2324,9 +2324,17 @@ class Channel {
 			}
 		}
 
-		$channels = ee('Model')->get('Channel', $channel_ids)
-			->with('FieldGroups', 'CustomFields')
-			->all();
+
+		$cache_key = "mod.channel/Channels/" . implode(',' ,$channel_ids);
+
+		if (($channels = ee()->session->cache(__CLASS__, $cache_key, FALSE)) === FALSE)
+		{
+			$channels = ee('Model')->get('Channel', $channel_ids)
+				->with('FieldGroups', 'CustomFields')
+				->all();
+
+			ee()->session->set_cache(__CLASS__, $cache_key, $channels);
+		}
 
 		$fields = array();
 
@@ -2351,17 +2359,20 @@ class Channel {
 			$this->chunks = $chunks;
 		}
 
-		foreach ($chunk as $field)
+		if (is_array($chunk))
 		{
-			$field_id = $field->getId();
-			$table = "exp_channel_data_field_{$field_id}";
-
-			foreach ($field->getColumnNames() as $column)
+			foreach ($chunk as $field)
 			{
-				$this->sql .= ", {$table}.{$column}";
-			}
+				$field_id = $field->getId();
+				$table = "exp_channel_data_field_{$field_id}";
 
-			$from .= "LEFT JOIN	{$table} ON t.entry_id = {$table}.entry_id ";
+				foreach ($field->getColumnNames() as $column)
+				{
+					$this->sql .= ", {$table}.{$column}";
+				}
+
+				$from .= "LEFT JOIN	{$table} ON t.entry_id = {$table}.entry_id ";
+			}
 		}
 
 		$this->sql .= $from;

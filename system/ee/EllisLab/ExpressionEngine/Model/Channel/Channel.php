@@ -10,6 +10,7 @@
 namespace EllisLab\ExpressionEngine\Model\Channel;
 
 use EllisLab\ExpressionEngine\Model\Content\StructureModel;
+use EllisLab\ExpressionEngine\Library\Data\Collection;
 
 /**
  * Channel Model
@@ -271,7 +272,6 @@ class Channel extends StructureModel {
 					}
 					break;
 				case 'status_group':
-				case 'field_group':
 					if ( ! isset($this->{$property}))
 					{
 						$this->setRawProperty($property, $channel->{$property});
@@ -283,12 +283,6 @@ class Channel extends StructureModel {
 					break;
 				case 'deft_status':
 					if ( ! isset($this->status_group) OR $this->status_group == $channel->status_group )
-					{
-						$this->setRawProperty($property, $channel->{$property});
-					}
-					break;
-				case 'search_excerpt':
-					if ( ! isset($this->field_group) OR $this->field_group == $channel->field_group )
 					{
 						$this->setRawProperty($property, $channel->{$property});
 					}
@@ -526,6 +520,11 @@ class Channel extends StructureModel {
 		$this->save();
 	}
 
+	/**
+	 * Returns a collection of all the channel fields available for this channel
+	 *
+	 * @return Collection A collection of fields
+	 */
 	public function getCustomFields()
 	{
 		$fields = $this->CustomFields->indexBy('field_name');
@@ -538,7 +537,7 @@ class Channel extends StructureModel {
 			}
 		}
 
-		return $fields;
+		return new Collection($fields);
 	}
 }
 

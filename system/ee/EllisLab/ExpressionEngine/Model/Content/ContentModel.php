@@ -206,8 +206,9 @@ abstract class ContentModel extends VariableColumnModel {
 	 */
 	public function save()
 	{
-		foreach ($this->getCustomFields() as $name => $field)
+		foreach ($this->getCustomFields() as $field)
 		{
+			$name = $field->field_name;
 			if ($this->isDirty($name))
 			{
 				$this->setRawProperty($name, $field->save($this));
