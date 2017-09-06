@@ -243,7 +243,6 @@ class Set {
                 $fn();
             }
         }
-		die();
 
 		$this->deleteFiles();
 	}
