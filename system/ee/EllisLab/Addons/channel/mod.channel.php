@@ -2319,9 +2319,17 @@ class Channel {
 			}
 		}
 
-		$channels = ee('Model')->get('Channel', $channel_ids)
-			->with('FieldGroups', 'CustomFields')
-			->all();
+
+		$cache_key = "mod.channel/Channels/" . implode(',' ,$channel_ids);
+
+		if (($channels = ee()->session->cache(__CLASS__, $cache_key, FALSE)) === FALSE)
+		{
+			$channels = ee('Model')->get('Channel', $channel_ids)
+				->with('FieldGroups', 'CustomFields')
+				->all();
+
+			ee()->session->set_cache(__CLASS__, $cache_key, $channels);
+		}
 
 		$fields = array();
 
