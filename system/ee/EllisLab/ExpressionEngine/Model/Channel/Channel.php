@@ -10,6 +10,7 @@
 namespace EllisLab\ExpressionEngine\Model\Channel;
 
 use EllisLab\ExpressionEngine\Model\Content\StructureModel;
+use EllisLab\ExpressionEngine\Library\Data\Collection;
 
 /**
  * Channel Model
@@ -519,6 +520,11 @@ class Channel extends StructureModel {
 		$this->save();
 	}
 
+	/**
+	 * Returns a collection of all the channel fields available for this channel
+	 *
+	 * @return Collection A collection of fields
+	 */
 	public function getCustomFields()
 	{
 		$fields = $this->CustomFields->indexBy('field_name');
@@ -531,7 +537,7 @@ class Channel extends StructureModel {
 			}
 		}
 
-		return $fields;
+		return new Collection($fields);
 	}
 }
 
