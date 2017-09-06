@@ -1091,7 +1091,7 @@ abstract class EE_Fieldtype {
 
 		foreach ($channels as $channel)
 		{
-			foreach ($channel->CustomFields as $field)
+			foreach ($channel->getCustomFields() as $field)
 			{
 				$channels_options[$channel->channel_title][$channel->channel_id . '_' . $field->field_id] = htmlentities($field->field_label, ENT_QUOTES, 'UTF-8');
 			}
