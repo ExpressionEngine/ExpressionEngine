@@ -51,6 +51,7 @@ class SelectList extends React.Component {
 
   componentDidMount () {
     if (this.props.reorderable && ! this.props.nested) this.bindSortable()
+    if (this.props.nested && this.props.reorderable) this.bindNestable()
   }
 
   componentDidUpdate (prevProps, prevState) {
@@ -296,6 +297,7 @@ class SelectList extends React.Component {
               selectable={this.props.selectable}
               reorderable={this.props.reorderable}
               removable={this.props.removable}
+              editable={this.props.editable}
               handleSelect={this.handleSelect}
               handleRemove={this.handleRemove}
               groupToggle={this.props.groupToggle}
@@ -381,7 +383,11 @@ class SelectItem extends React.Component {
             disabled={props.disabled || props.reorderable ? 'disabled' : ''}
            />
         )}
-        {props.item.label+" "}
+        {props.editable && (
+            <a href="#">{props.item.label}</a>
+        )}
+        { ! props.editable && props.item.label}
+        {" "}
         {props.item.instructions && (
           <i>{props.item.instructions}</i>
         )}

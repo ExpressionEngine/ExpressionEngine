@@ -118,6 +118,7 @@ var SelectList = function (_React$Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       if (this.props.reorderable && !this.props.nested) this.bindSortable();
+      if (this.props.nested && this.props.reorderable) this.bindNestable();
     }
   }, {
     key: 'componentDidUpdate',
@@ -320,6 +321,7 @@ var SelectList = function (_React$Component) {
               selectable: _this7.props.selectable,
               reorderable: _this7.props.reorderable,
               removable: _this7.props.removable,
+              editable: _this7.props.editable,
               handleSelect: _this7.handleSelect,
               handleRemove: _this7.handleRemove,
               groupToggle: _this7.props.groupToggle
@@ -488,7 +490,13 @@ var SelectItem = function (_React$Component2) {
           'data-group-toggle': props.groupToggle ? JSON.stringify(props.groupToggle) : '[]',
           disabled: props.disabled || props.reorderable ? 'disabled' : ''
         }),
-        props.item.label + " ",
+        props.editable && React.createElement(
+          'a',
+          { href: '#' },
+          props.item.label
+        ),
+        !props.editable && props.item.label,
+        " ",
         props.item.instructions && React.createElement(
           'i',
           null,

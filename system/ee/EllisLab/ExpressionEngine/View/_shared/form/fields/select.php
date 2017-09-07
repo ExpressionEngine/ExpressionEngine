@@ -83,6 +83,10 @@ else:
 		'toggleAll' => NULL,
 		'groupToggle' => isset($group_toggle) ? $group_toggle : NULL,
 		'manageable' => isset($manageable) ? $manageable : NULL,
+		'selectable' => isset($selectable) ? $selectable : TRUE,
+		'reorderable' => isset($reorderable) ? $reorderable : FALSE,
+		'removable' => isset($removable) ? $removable : FALSE,
+		'editable' => isset($editable) ? $editable : FALSE,
 		'manageLabel' => isset($manage_label) ? $manage_label : NULL,
 		'reorderAjaxUrl' => isset($reorder_ajax_url) ? $reorder_ajax_url : NULL,
 		'noResults' => isset($no_results['text']) ? lang($no_results['text']) : NULL
