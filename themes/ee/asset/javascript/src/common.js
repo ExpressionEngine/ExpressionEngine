@@ -287,45 +287,74 @@ $(document).ready(function(){
 			return false;
 		});
 
-		$('body').on('modal:open', '.modal-wrap, .modal-form-wrap', function(e) {
+		$('body').on('modal:open', '.modal-wrap, .modal-form-wrap, .app-modal', function(e) {
 			// set the heightIs variable
 			// this allows the overlay to be scrolled
 			var heightIs = $(document).height();
 
 			// fade in the overlay
-			$('.overlay').fadeIn('fast').css('height', heightIs);
-			// fade in modal
-			$(this).fadeIn('slow');
+			$('.app-overlay')
+				.removeClass('app-overlay---closed')
+				.addClass('app-overlay---open')
+				.css('height', heightIs);
+
+			$(this).removeClass('app-modal---closed')
+				.addClass('app-modal---open');
 
 			// remember the scroll location on open
 			$(this).data('scroll', $(document).scrollTop());
 
 			// scroll up, if needed, but only do so after a significant
 			// portion of the overlay is show so as not to disorient the user
-			if ( ! $(this).is('.modal-form-wrap'))
+			if ( ! $(this).is('.modal-form-wrap, .app-modal'))
 			{
 				setTimeout(function() {
 					$(document).scrollTop(0);
 				}, 100);
+			} else {
+				// Remove viewport scroll
+				$('body').css('overflow','hidden');
 			}
 
 			$(document).one('keydown', function(e) {
 				if (e.keyCode === 27) {
-					$('.modal-wrap, .modal-form-wrap').trigger('modal:close');
+					$('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
 				}
 			});
 		});
 
-		$('body').on('modal:close', '.modal-wrap, .modal-form-wrap', function(e) {
+		$('body').on('modal:close', '.modal-wrap, .modal-form-wrap, .app-modal', function(e) {
 			if ($(e.target).is(":visible")) {
 				// fade out the overlay
 				$('.overlay').fadeOut('slow');
 				// fade out the modal
 				$('.modal-wrap, .modal-form-wrap').fadeOut('fast');
 
-				if ( ! $(this).is('.modal-form-wrap'))
+				// disappear the app modal
+				$(this).addClass('app-modal---closed');
+				setTimeout(function() {
+					$('.app-modal---open').removeClass('app-modal---open');
+				}, 500);
+
+				// distract the actor
+				$('.app-overlay---open').addClass('app-overlay---closed');
+				setTimeout(function() {
+					$('.app-overlay---open').removeClass('app-overlay---open')
+						.removeClass('app-overlay--destruct')
+						.removeClass('app-overlay--warning');
+				}, 500);
+
+				// replace the viewport scroll, if needed
+				setTimeout(function() {
+					$('body').css('overflow','');
+				}, 200);
+
+				if ( ! $(this).is('.modal-form-wrap, .app-modal'))
 				{
 					$(document).scrollTop($(this).data('scroll'));
+				} else {
+					// Remove viewport scroll
+					$('body').css('overflow','hidden');
 				}
 			}
 		});
@@ -342,15 +371,15 @@ $(document).ready(function(){
 		});
 
 		// listen for clicks on the element with a class of overlay
-		$('body').on('click', '.m-close', function(e) {
-			$(this).closest('.modal-wrap, .modal-form-wrap').trigger('modal:close');
+		$('body').on('click', '.m-close, .js-modal-close', function(e) {
+			$(this).closest('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
 
 			// stop THIS from reloading the source window
 			e.preventDefault();
 		});
 
-		$('body').on('click', '.overlay', function() {
-			$('.modal-wrap, .modal-form-wrap').trigger('modal:close');
+		$('body').on('click', '.overlay, .app-overlay---open', function() {
+			$('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
 		});
 
 	// ==================================
