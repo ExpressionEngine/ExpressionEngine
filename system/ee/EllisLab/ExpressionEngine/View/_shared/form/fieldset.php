@@ -93,13 +93,6 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 		<?php if (isset($setting['example'])): ?>
 		<p><?=$setting['example']?></p>
 		<?php endif; ?>
-		<?php if (isset($setting['button'])): ?>
-		<?php
-			$button = $setting['button'];
-			$rel = isset($button['rel']) ? $button['rel'] : '';
-		?>
-		<p><button class="btn action submit mf-link" type="button" rel="<?=$rel?>"><?=lang($button['text'])?></button></p>
-		<?php endif; ?>
 	</div>
 	<div class="field-control">
 		<?php
@@ -140,5 +133,12 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 				$this->embed('ee:_shared/form/field', $vars);
 			}
 		?>
+		<?php if (isset($setting['button'])): ?>
+		<?php
+			$button = $setting['button'];
+			$rel = isset($button['rel']) ? $button['rel'] : '';
+		?>
+		<a class="btn action submit js-modal-link--side" rel="<?=$rel?>" href="#"><?=lang($button['text'])?></a>
+		<?php endif; ?>
 	</div>
 </<?=$element?>>
