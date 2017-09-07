@@ -7,8 +7,6 @@ $attributes = array(
 	'class' => $class,
 );
 
-$format_name = str_replace('field_id_' . $settings['field_id'], 'field_ft_' . $settings['field_id'], $name);
-
 if (isset($settings['field_show_formatting_btns']) && $settings['field_show_formatting_btns'] == 'y')
 {
 	$attributes['data-markitup'] = 'yes';
@@ -22,6 +20,7 @@ if (isset($settings['field_disabled']) && $settings['field_disabled'] == 'y')
 ?>
 <?=form_textarea($attributes);?>
 <?php if ($toolbar || ( ! $toolbar && isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y')): ?>
+	<?php $format_name = str_replace('field_id_' . $settings['field_id'], 'field_ft_' . $settings['field_id'], $name); ?>
 	<div class="format-options">
 		<?php if ($toolbar): ?>
 			<ul class="toolbar">
