@@ -99,6 +99,7 @@ class FluidBlock extends Model {
 			return $rows[0];
 		}
 
+		return array();
 	}
 
 	public function getFieldData()
