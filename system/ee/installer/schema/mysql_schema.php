@@ -588,7 +588,6 @@ class EE_Schema {
 			PRIMARY KEY `channel_id` (`channel_id`),
 			KEY `cat_group` (`cat_group`),
 			KEY `status_group` (`status_group`),
-			KEY `field_group` (`field_group`),
 			KEY `channel_name` (`channel_name`),
 			KEY `site_id` (`site_id`)
 		)";
