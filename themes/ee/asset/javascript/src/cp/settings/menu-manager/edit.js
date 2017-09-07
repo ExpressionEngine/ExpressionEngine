@@ -6,34 +6,20 @@
  * @license   https://expressionengine.com/license
  */
 
-function bindSortable(root) {
-	var root = 'ul.nested-list';
-
-	$(root).sortable({
-		axis: 'y',						// Only allow vertical dragging
-		containment: 'parent',			// Contain to parent
-		handle: '.list-reorder',		// Set drag handle
-		items: '> li',					// Only allow these to be sortable
-		sort: EE.sortable_sort_helper,	// Custom sort handler
-		forcePlaceholderSize: true		// Custom sort handler
-	});
-}
-
-var modal = $('.modal-menu-edit');
+var modal = $('div[rel="modal-form"]');
 
 function didLoad()
 {
 	bindToolbar();
-	bindSortable();
 
 	EE.grid(document.getElementById("submenu"), EE.grid_field_settings['submenu']);
 
-	var select = $('div.box', modal).find('select[name="type"]');
+	var select = $(modal).find('input[name="type"]');
 	var items = {
-		name : $('div.box', modal).find('.col-group[data-group="name"]'),
-		link : $('div.box', modal).find('.col-group[data-group="link"]'),
-		addon : $('div.box', modal).find('.col-group[data-group="addon"]'),
-		submenu : $('div.box', modal).find('.col-group[data-group="submenu"]')
+		name : $(modal).find('[data-group="name"]'),
+		link : $(modal).find('[data-group="link"]'),
+		addon : $(modal).find('[data-group="addon"]'),
+		submenu : $(modal).find('[data-group="submenu"]')
 	};
 
 	select.on('change', function() {
@@ -52,11 +38,12 @@ function didLoad()
 		}
 
 		items[val].show()
-			.parent().find('.col-group:visible')
+			.parent().find('[data-group]:visible')
 			.removeClass('last')
 			.last()
 			.addClass('last');
-	}).trigger('change');
+	})
+	$('input[name=type]:checked', modal).trigger('change')
 
 	// Bind validation
 	EE.cp.formValidation.init(modal.find('form'));
@@ -65,7 +52,7 @@ function didLoad()
 
 		$.post(this.action, $(this).serialize(), function(result) {
 			if ($.type(result) === 'string') {
-				$('div.box', modal).html(result.body);
+				$('div.contents', modal).html(result.body);
 			} else {
 				if (result.reorder_list) {
 					$('.nestable').replaceWith(result.reorder_list);
@@ -82,19 +69,19 @@ function didLoad()
 
 function loadEditModal(id) {
 	var url = EE.item_edit_url.replace('###', id);
-	$('div.box', modal).load(url, didLoad);
+	$('div.contents', modal).load(url, didLoad);
 }
 
 function loadCreateModal() {
 	var url = EE.item_create_url;
 	modal.trigger('modal:open');
 
-	$('div.box', modal).load(url, didLoad);
+	$('div.contents', modal).load(url, didLoad);
 }
 
 function bindToolbar() {
 	var body = $('body');
-	var create = $('button[rel=modal-menu-item]');
+	var create = $('a[rel=modal-menu-item]');
 
 	var edit = 'a[rel=modal-menu-edit]'
 	var remove = 'a[rel=modal-menu-confirm-remove]';
@@ -143,4 +130,3 @@ function bindToolbar() {
 }
 
 bindToolbar();
-bindSortable();
