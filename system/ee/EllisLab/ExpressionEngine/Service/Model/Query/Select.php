@@ -260,7 +260,7 @@ class Select extends Query {
 			$fields = array();
 			foreach ($structure_models as $model)
 			{
-				foreach ($model->getCustomFields() as $f)
+				foreach ($model->getAllCustomFields() as $f)
 				{
 					if ( ! $f->legacy_field_data)
 					{

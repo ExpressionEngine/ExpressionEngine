@@ -600,7 +600,7 @@ class Channels extends AbstractChannelsController {
 			}
 		}
 
-		$channel_fields = $channel->getCustomFields();
+		$channel_fields = $channel->getAllCustomFields();
 
 		$search_excerpt_options = array();
 

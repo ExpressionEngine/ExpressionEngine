@@ -2340,7 +2340,7 @@ class Channel {
 
 		foreach ($channels as $channel)
 		{
-			foreach ($channel->getCustomFields() as $field)
+			foreach ($channel->getAllCustomFields() as $field)
 			{
 				if ( ! $field->legacy_field_data)
 				{

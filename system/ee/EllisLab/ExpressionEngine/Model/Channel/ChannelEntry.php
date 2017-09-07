@@ -970,7 +970,7 @@ class ChannelEntry extends ContentModel {
 			OR ! is_array(ee()->session->userdata('assigned_channels')))
 			? NULL : array_keys(ee()->session->userdata('assigned_channels'));
 
-		$my_fields = $this->Channel->getCustomFields()->pluck('field_id');
+		$my_fields = $this->Channel->getAllCustomFields()->pluck('field_id');
 
 		$channel_filter_options = array();
 
@@ -981,7 +981,7 @@ class ChannelEntry extends ContentModel {
 
 		foreach ($channels as $channel)
 		{
-			if ($my_fields == $channel->getCustomFields()->pluck('field_id'))
+			if ($my_fields == $channel->getAllCustomFields()->pluck('field_id'))
 			{
 				$channel_filter_options[$channel->channel_id] = $channel->channel_title;
 			}
