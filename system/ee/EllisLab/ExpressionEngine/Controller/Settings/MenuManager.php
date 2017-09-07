@@ -229,7 +229,22 @@ class MenuManager extends Settings {
 
 		if (isset($set_id))
 		{
-			$vars['sections']['menu_options'] = $this->reorderList($set);
+			$vars['sections']['menu_options'] = array(
+				array(
+					'title' => 'menu_items',
+					'desc' => 'menu_items_desc',
+					'button' => array(
+						'text' => 'add_menu_item',
+						'rel' => 'modal-menu-item'
+					),
+					'fields' => array(
+						'menu_items' => array(
+							'type' => 'html',
+							'content' => $this->reorderList($set)
+						)
+					)
+				)
+			);;
 		}
 
 		$grid = ee('CP/GridInput', array(
@@ -331,43 +346,26 @@ class MenuManager extends Settings {
 	/**
 	 * Create the nested list of menu items for a given set
 	 *
-	 * @return Array of form sections or the rendered html
+	 * @return Rendered HTML of selection form
 	 */
-	private function reorderList(MenuSet $set, $html_only = FALSE)
+	private function reorderList(MenuSet $set)
 	{
 		// annoying model issue where partial sets are not fully reloaded
 		// which can happen with submenus. Need to fix that in the model code,
 		// but for now ...
 		$set = ee('Model')->get('MenuSet', $set->getId())->first();
 
-		$out = ee('View')->make('settings/menu-manager/reorder')->render(array(
-			'field_name'          => 'fieldname',
-			'options'             => $set->Items->filter('parent_id', 0)->sortBy('sort'),
-			'set_id'              => $set->getId(),
-			'content_item_label'  => $set->name
-		));
-
-		if ($html_only)
-		{
-			return $out;
-		}
-
-		return array(
-			array(
-				'title' => 'menu_items',
-				'desc' => 'menu_items_desc',
-				'button' => array(
-					'text' => 'add_menu_item',
-					'rel' => 'modal-menu-item'
-				),
-				'fields' => array(
-					'menu_items' => array(
-						'type' => 'html',
-						'content' => $out
-					)
-				)
-			)
-		);
+		return ee('View')->make('ee:_shared/form/fields/select')->render([
+			'field_name'  => 'menu_items',
+			'choices'     => $set->buildItemsTree(),
+			'value'       => NULL,
+			'multi'       => FALSE,
+			'nested'      => TRUE,
+			'selectable'  => FALSE,
+			'reorderable' => TRUE,
+			'removable'   => TRUE,
+			'editable'    => TRUE
+		]);
 	}
 
 	public function createItem($set_id = NULL)
