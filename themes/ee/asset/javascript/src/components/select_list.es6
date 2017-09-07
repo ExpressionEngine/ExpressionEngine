@@ -115,10 +115,6 @@ class SelectList extends React.Component {
       let itemsHash = this.getItemsHash(this.props.items)
       var nestableData = $(event.target).nestable('serialize')
 
-      this.props.itemsChanged(
-        this.getItemsArrayForNestable(itemsHash, nestableData)
-      )
-
       if (this.props.reorderAjaxUrl) {
         $.ajax({
           url: this.props.reorderAjaxUrl,

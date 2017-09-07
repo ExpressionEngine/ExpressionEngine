@@ -192,8 +192,6 @@ var SelectList = function (_React$Component) {
         var itemsHash = _this3.getItemsHash(_this3.props.items);
         var nestableData = $(event.target).nestable('serialize');
 
-        _this3.props.itemsChanged(_this3.getItemsArrayForNestable(itemsHash, nestableData));
-
         if (_this3.props.reorderAjaxUrl) {
           $.ajax({
             url: _this3.props.reorderAjaxUrl,
