@@ -213,7 +213,7 @@ class EntryListing {
 
 			if (isset($channel))
 			{
-				$custom_fields = $channel->getCustomFields();
+				$custom_fields = $channel->getAllCustomFields();
 			}
 			else
 			{
@@ -221,7 +221,7 @@ class EntryListing {
 
 				foreach ($this->getChannels() as $channel)
 				{
-					$custom_fields = array_merge($custom_fields, $channel->getCustomFields());
+					$custom_fields = array_merge($custom_fields, $channel->getAllCustomFields());
 				}
 			}
 

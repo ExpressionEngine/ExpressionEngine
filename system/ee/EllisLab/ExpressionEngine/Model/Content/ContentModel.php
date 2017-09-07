@@ -363,7 +363,7 @@ abstract class ContentModel extends VariableColumnModel {
 			return;
 		}
 
-		$native_fields = $this->getStructure()->getCustomFields();
+		$native_fields = $this->getStructure()->getAllCustomFields();
 		$native_prefix = $this->getCustomFieldPrefix();
 
 		foreach ($native_fields as $field)
@@ -436,7 +436,7 @@ abstract class ContentModel extends VariableColumnModel {
 			return;
 		}
 
-		foreach ($this->getStructure()->getCustomFields() as $field)
+		foreach ($this->getStructure()->getAllCustomFields() as $field)
 		{
 			// Skip this field if it is in `exp_channel_data`
 			if ($field->legacy_field_data)
@@ -514,7 +514,7 @@ abstract class ContentModel extends VariableColumnModel {
 	{
 		$tables = array();
 
-		foreach ($this->getStructure()->getCustomFields() as $field)
+		foreach ($this->getStructure()->getAllCustomFields() as $field)
 		{
 			// Skip this field if it is in `exp_channel_data`
 			if ($field->legacy_field_data)

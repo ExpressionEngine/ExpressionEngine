@@ -231,7 +231,7 @@ class Export {
 	 */
 	private function exportCategory($category)
 	{
-		$fields = $category->getCustomFields();
+		$fields = $category->getAllCustomFields();
 
 		$cat = new StdClass();
 		$cat->cat_name = $category->cat_name;

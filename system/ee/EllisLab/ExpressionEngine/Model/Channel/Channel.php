@@ -525,7 +525,7 @@ class Channel extends StructureModel {
 	 *
 	 * @return Collection A collection of fields
 	 */
-	public function getCustomFields()
+	public function getAllCustomFields()
 	{
 		$fields = $this->CustomFields->indexBy('field_name');
 

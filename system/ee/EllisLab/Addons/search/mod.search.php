@@ -519,7 +519,7 @@ class Search {
     			$custom_fields = array();
     			foreach ($channels as $channel)
     			{
-    				$custom_fields = array_merge($custom_fields, $channel->getCustomFields());
+    				$custom_fields = array_merge($custom_fields, $channel->getAllCustomFields());
     			}
 
                 foreach ($custom_fields as $field)

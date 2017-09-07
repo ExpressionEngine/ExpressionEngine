@@ -711,7 +711,7 @@ class Api_channel_fields extends Api {
 
 		if ($channel)
 		{
-			foreach ($channel->getCustomFields() as $field)
+			foreach ($channel->getAllCustomFields() as $field)
 			{
 				if ($field->field_required)
 				{
@@ -1075,7 +1075,7 @@ class Api_channel_fields extends Api {
 
 		// Get Channel fields in the field group
 		$channel = ee('Model')->get('Channel', $channel_id)->first();
-		$channel_fields = $channel->getCustomFields();
+		$channel_fields = $channel->getAllCustomFields();
 
 		$field_settings = array();
 

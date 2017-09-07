@@ -2226,7 +2226,7 @@ GRID_FALLBACK;
 	 */
 	public function fetch_custom_fields()
 	{
-		$fields = $this->channel->getCustomFields();
+		$fields = $this->channel->getAllCustomFields();
 
 		foreach ($fields as $field)
 		{
