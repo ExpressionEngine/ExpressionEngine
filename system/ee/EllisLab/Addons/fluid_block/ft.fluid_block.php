@@ -262,9 +262,9 @@ class Fluid_block_ft extends EE_Fieldtype {
 			),
 		);
 
-		return array('field_options_field_block' => array(
+		return array('field_options_fluid_block' => array(
 			'label' => 'field_options',
-			'group' => 'field_block',
+			'group' => 'fluid_block',
 			'settings' => $settings
 		));
 	}
