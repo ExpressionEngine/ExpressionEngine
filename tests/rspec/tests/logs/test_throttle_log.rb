@@ -42,7 +42,7 @@ feature 'Throttling Log' do
   context 'when throttling is disabled' do
     it 'shows the Turn Throttling On button', :enabled => false, :pregen => true do
       @page.should have_no_results
-      @page.should have_selector('a.action', :text => 'TURN THROTTLING ON')
+      @page.should have_selector('a.action', :text => 'Turn Throttling On')
     end
   end
 
