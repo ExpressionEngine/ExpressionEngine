@@ -298,7 +298,7 @@ EE.cp.formValidation = {
 	_toggleErrorForFields: function(field, message) {
 
 		var form = field.parents('form'),
-			container = field.parents('div[class*=setting]').not('div[class=setting-note]'),
+			container = field.parents('div[class*=setting], div.field-control').not('div[class=setting-note]'),
 			fieldset = (container.parents('fieldset').size() > 0) ? container.parents('fieldset') : container.parent(),
 			errorClass = 'em.ee-form-error-message',
 			grid = false;
