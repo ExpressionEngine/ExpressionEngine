@@ -1,6 +1,6 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
-<div class="box has-tabs publish">
+<div class="box has-tabs publish" data-publish>
 	<h1>
 		<?=$cp_page_title?> <span class="req-title"><?=lang('required_fields')?></span>
 	</h1>
