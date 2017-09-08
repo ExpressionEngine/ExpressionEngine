@@ -197,10 +197,10 @@ $(document).ready(function () {
 				input.parents('fieldset').addClass('invalid');
 			} else {
 				var tab = {
-					fields: [],
 					id: tab_id,
 					name: tab_name,
-					visible: true
+					visible: true,
+					fields: []
 				};
 				EE.publish_layout.push(tab);
 
