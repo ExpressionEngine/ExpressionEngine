@@ -233,7 +233,6 @@ class EntryListing {
 			$entries->search($search_fields, $this->search_value);
 		}
 
-
 		$filter_values = $this->filters->values();
 
 		if ( ! empty($filter_values['filter_by_date']))
