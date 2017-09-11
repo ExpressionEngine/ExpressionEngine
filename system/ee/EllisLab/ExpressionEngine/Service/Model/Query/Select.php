@@ -354,17 +354,73 @@ class Select extends Query {
 
 		$field_ids = array();
 
-		foreach ($this->builder->getFilters() as $filter)
+		// It's possible we'll be asked to search across more tables than we can
+		// JOIN in a single query. In such cases we can simply search each of the
+		// tables individually and build up a list of primary keys to filter on
+		foreach ($this->builder->getSearch() as $field => $words)
 		{
-			$field = $filter[0];
 			if (strpos($field, $column_prefix.'field_id') === 0)
 			{
 				$field_ids[] = str_replace($column_prefix.'field_id_', '', $field);
 			}
 		}
 
-		foreach (array_keys($this->builder->getSearch()) as $field)
+		if ( ! empty($field_ids))
 		{
+			$pks = array();
+
+			$fields = ee('Model')->get($meta_field_data['field_model'])
+				->fields($column_prefix.'field_id')
+				->filter($column_prefix.'field_id', 'IN', $field_ids)
+				->filter($column_prefix.'legacy_field_data', 'n');
+
+			// If we have fewer than our table limit we'll just keep on keeping on.
+			if ($fields->count() > $this->table_join_limit)
+			{
+				$search = $this->builder->getSearch();
+
+				foreach ($fields->all()->pluck('field_id') as $field_id)
+				{
+					$field = "field_id_{$field_id}";
+					$words = $search[$field];
+
+					$sq = ee('Model/Datastore')->rawQuery();
+					$sq->select($primary_key);
+					$sq->from("{$join_table_prefix}{$field_id}");
+
+					$sq->or_start_like_group();
+					foreach ($words as $word => $include)
+					{
+						$fn = $include ? 'like' : 'not_like';
+						$sq->$fn($field, $word);
+					}
+					$sq->end_like_group();
+
+					$data = $sq->get();
+					foreach ($data->result_array() as $row)
+					{
+						$pks[] = $row[$parent_key];
+					}
+					$data->free_result();
+
+					$this->searched_fields[] = "{$column_prefix}field_id_{$field_id}";
+				}
+
+				if ( ! empty($pks))
+				{
+					$pks = array_unique($pks);
+					$query->where_in("{$primary_key}", $pks);
+				}
+
+				// Reset: we've investigated these and don't need to JOIN them for
+				// searching's sake
+				$field_ids = array();
+			}
+		}
+
+		foreach ($this->builder->getFilters() as $filter)
+		{
+			$field = $filter[0];
 			if (strpos($field, $column_prefix.'field_id') === 0)
 			{
 				$field_ids[] = str_replace($column_prefix.'field_id_', '', $field);
@@ -568,6 +624,11 @@ class Select extends Query {
 	{
 		foreach ($search as $field => $words)
 		{
+			if (in_array($field, $this->searched_fields))
+			{
+				continue;
+			}
+
 			$field = $this->translateProperty($field);
 
 			$query->or_start_like_group();
