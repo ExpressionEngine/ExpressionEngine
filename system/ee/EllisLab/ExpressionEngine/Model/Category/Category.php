@@ -60,6 +60,7 @@ class Category extends ContentModel {
 
 	protected static $_field_data = array(
 		'field_model'  => 'CategoryField',
+		'structure_model' => 'CategoryGroup',
 		'group_column' => 'Category__group_id'
 	);
 

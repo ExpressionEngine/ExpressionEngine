@@ -47,7 +47,7 @@ class Groups extends AbstractChannelsController {
 		}
 
 		$groups = ee('Model')->get('ChannelFieldGroup')
-			->filter('site_id', ee()->config->item('site_id'));
+			->filter('site_id', 'IN', array(ee()->config->item('site_id'), 0));
 
 		$total_rows = $groups->count();
 
@@ -211,7 +211,8 @@ class Groups extends AbstractChannelsController {
 
 	private function setWithPost(ChannelFieldGroup $field_group)
 	{
-		$field_group->group_name = ee()->input->post('group_name');
+		$field_group->set($_POST);
+		$field_group->ChannelFields = ee('Model')->get('ChannelField', ee()->input->post('channel_fields'))->all();
 		return $field_group;
 	}
 
@@ -220,7 +221,15 @@ class Groups extends AbstractChannelsController {
 		if ( ! $field_group)
 		{
 			$field_group = ee('Model')->make('ChannelFieldGroup');
+            $field_group->ChannelFields = NULL;
 		}
+
+		$custom_field_options = ee('Model')->get('ChannelField')
+			->fields('field_id', 'field_label')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('field_label')
+			->all()
+			->getDictionary('field_id', 'field_label');
 
 		$sections = array(
 			array(
@@ -234,7 +243,18 @@ class Groups extends AbstractChannelsController {
 							'required' => TRUE
 						)
 					)
-				)
+				),
+				array(
+					'title' => 'custom_fields',
+					'fields' => array(
+						'channel_fields' => array(
+							'type' => 'checkbox',
+							'wrap' => TRUE,
+							'choices' => $custom_field_options,
+							'value' => $field_group->ChannelFields->pluck('field_id'),
+						)
+					)
+				),
 			)
 		);
 

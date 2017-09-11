@@ -62,8 +62,7 @@ class Fields extends AbstractChannelsController {
 		);
 
 		$fields = ee('Model')->get('ChannelField')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_id', $group_id);
+			->filter('site_id', 'IN', array(ee()->config->item('site_id'), 0));
 
 		$total_rows = $fields->count();
 
@@ -120,11 +119,16 @@ class Fields extends AbstractChannelsController {
 		);
 
 		$errors = NULL;
-		$field = ee('Model')->make('ChannelField', compact($group_id));
+		$field = ee('Model')->make('ChannelField');
 
 		if ( ! empty($_POST))
 		{
 			$field = $this->setWithPost($field);
+
+			$field->ChannelFieldGroups = ee('Model')->get('ChannelFieldGroup')
+				->filter('group_id', $group_id)
+				->all();
+
 			$result = $field->validate();
 
 			if ($response = $this->ajaxValidation($result))
@@ -167,7 +171,6 @@ class Fields extends AbstractChannelsController {
 			'save_btn_text_working' => 'btn_saving',
 			'form_hidden' => array(
 				'field_id' => NULL,
-			'group_id' => $group_id,
 				'site_id' => ee()->config->item('site_id')
 			),
 		);
@@ -193,7 +196,6 @@ class Fields extends AbstractChannelsController {
 		}
 
 		$field = ee('Model')->get('ChannelField', $id)
-			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
 		if ( ! $field)
@@ -203,7 +205,6 @@ class Fields extends AbstractChannelsController {
 
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('channels/fields/groups')->compile() => lang('field_groups'),
-			ee('CP/URL')->make('channels/fields/' . $field->group_id)->compile() => $field->ChannelFieldGroup->group_name . ' &mdash; ' . lang('fields'),
 		);
 
 		$errors = NULL;
@@ -237,7 +238,7 @@ class Fields extends AbstractChannelsController {
 					->addToBody(sprintf(lang('edit_field_success_desc'), $field->field_label))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL')->make('channels/fields/' . $field->group_id));
+				ee()->functions->redirect(ee('CP/URL')->make('channels/fields/groups'));
 			}
 			else
 			{
@@ -260,7 +261,6 @@ class Fields extends AbstractChannelsController {
 			'save_btn_text_working' => 'btn_saving',
 			'form_hidden' => array(
 				'field_id' => $id,
-				'group_id' => $field->group_id,
 				'site_id' => ee()->config->item('site_id')
 			),
 		);
@@ -273,7 +273,6 @@ class Fields extends AbstractChannelsController {
 	private function setWithPost(ChannelField $field)
 	{
 		$field->site_id = (int) ee()->config->item('site_id');
-		$field->group_id = ($field->group_id) ?: 0;
 		$field->field_list_items = ($field->field_list_items) ?: '';
 		$field->field_order = ($field->field_order) ?: 0;
 

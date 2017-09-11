@@ -402,7 +402,7 @@ class MemberGroup extends StructureModel {
 	/**
 	 * Returns array of field models; implements StructureModel interface
 	 */
-	public function getCustomFields()
+	public function getAllCustomFields()
 	{
 		$member_cfields = ee()->session->cache('EllisLab::MemberGroupModel', 'getCustomFields');
 
