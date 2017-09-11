@@ -48,7 +48,7 @@ class CategoryGroup extends StructureModel {
 	protected $can_edit_categories;
 	protected $can_delete_categories;
 
-	public function getCustomFields()
+	public function getAllCustomFields()
 	{
 		return $this->getCategoryFields();
 	}

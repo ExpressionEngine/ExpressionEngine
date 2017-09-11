@@ -211,7 +211,13 @@ $lang = array(
 
 'name_desc' => 'Full descriptive name of this board.',
 
+'new_replies' => 'New replies',
+
+'new_topics' => 'New topics',
+
 'notification_settings' => 'Notification Settings',
+
+'notify_moderators' => 'Moderator notifications',
 
 'output' => 'Output',
 
@@ -241,9 +247,9 @@ $lang = array(
 
 'posts_per_page_desc' => 'Maximum number of posts that will be shown per page.',
 
-'reply_notification' => 'Reply notification',
+'reply_notification' => 'Reply notifications',
 
-'reply_notification_desc' => 'When set to <b>enable</b>, all recipients listed will receive e-mail notification when a <b>new</b> reply is made.</em><em>Separate multiple e-mails with a <mark>comma (,)</mark>.',
+'reply_notification_desc' => 'All recipients listed will receive e-mail notification when a <b>new</b> reply is made.</em><em>Separate multiple e-mails with a <mark>comma (,)</mark>.',
 
 'reply_to_topics' => 'Reply to topics',
 
@@ -287,9 +293,9 @@ $lang = array(
 
 'thumbnail_width_desc' => 'Maximum thumbnail width in pixels.',
 
-'topic_notifications' => 'Topic notifications',
+'topic_notification' => 'Topic notifications',
 
-'topic_notifications_desc' => 'When set to <b>enable</b>, all recipients listed will receive e-mail notification when a <b>new</b> topic is posted.</em><em>Separate multiple e-mails with a <mark>comma (,)</mark>.',
+'topic_notification_desc' => 'All recipients listed will receive e-mail notification when a <b>new</b> topic is posted.</em><em>Separate multiple e-mails with a <mark>comma (,)</mark>.',
 
 'topic_ordering' => 'Topic ordering',
 

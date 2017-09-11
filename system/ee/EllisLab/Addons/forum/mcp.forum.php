@@ -16,6 +16,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 class Forum_mcp extends CP_Controller {
 
 	public $base = 'addons/settings/forum/';
+	public $forum_checkboxes = array('can_view_forum', 'can_view_hidden', 'can_view_topics', 'can_post_topics', 'can_post_reply', 'can_upload_files', 'can_report', 'can_search');
 
 	/**
 	 * Constructor
@@ -540,6 +541,17 @@ class Forum_mcp extends CP_Controller {
 
 		$action = ($board->isNew()) ? 'create' : 'edit';
 
+		// Set moderator checkbox values
+		$_POST['forum_notify_moderators_topics'] = 'n';
+		$_POST['forum_notify_moderators_replies'] = 'n';
+
+		if (isset($_POST['notify_moderators']))
+		{
+			$_POST['forum_notify_moderators_topics'] = (in_array('forum_notify_moderators_topics', $_POST['notify_moderators'])) ? 'y' : 'n';
+			$_POST['forum_notify_moderators_replies'] = (in_array('forum_notify_moderators_replies', $_POST['notify_moderators'])) ? 'y' : 'n';
+			unset($_POST['notify_moderators']);
+		}
+
 		$board->set($_POST);
 		$result = $board->validate();
 
@@ -563,6 +575,14 @@ class Forum_mcp extends CP_Controller {
 	private function saveBoardAndRedirect($board)
 	{
 		$action = ($board->isNew()) ? 'create' : 'edit';
+
+		// Check for empty checkboxes
+		$set_permissions = array_keys($_POST['permissions']);
+
+		foreach (array_diff($this->forum_checkboxes, $set_permissions) as $permission)
+		{
+			$_POST['permissions'][$permission] = '';
+		}
 
 		foreach ($_POST['permissions'] as $key => $value)
 		{
@@ -923,17 +943,9 @@ class Forum_mcp extends CP_Controller {
 			),
 			'notification_settings' => array(
 				array(
-					'title' => 'topic_notifications',
-					'desc' => 'topic_notifications_desc',
+					'title' => 'topic_notification',
+					'desc' => 'topic_notification_desc',
 					'fields' => array(
-						'board_enable_notify_emails_topics' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
-							// 'value' => $board->board_enable_notify_emails_topics,
-						),
 						'board_notify_emails_topics' => array(
 							'type' => 'text',
 							'value' => $board->board_notify_emails_topics,
@@ -945,14 +957,6 @@ class Forum_mcp extends CP_Controller {
 					'title' => 'reply_notification',
 					'desc' => 'reply_notification_desc',
 					'fields' => array(
-						'board_enable_notify_emails' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
-							// 'value' => $board->board_enable_notify_emails,
-						),
 						'board_notify_emails' => array(
 							'type' => 'text',
 							'value' => $board->board_notify_emails,
@@ -1152,10 +1156,10 @@ class Forum_mcp extends CP_Controller {
 					'title' => 'upload',
 					'desc' => 'upload_desc',
 					'fields' => array(
-						'permissions[upload_files]' => array(
+						'permissions[can_upload_files]' => array(
 							'type' => 'checkbox',
 							'choices' => $member_groups,
-							'value' => $board->getPermission('upload_files'),
+							'value' => $board->getPermission('can_upload_files'),
 							'no_results' => [
 								'text' => sprintf(lang('no_found'), lang('member_groups'))
 							]
@@ -1656,6 +1660,8 @@ class Forum_mcp extends CP_Controller {
 
 	private function categoryForm($category)
 	{
+		$notify_moderators = $this->moderatorNotificationSettings($category);
+
 		$sections = array(
 			array(
 				array(
@@ -1695,43 +1701,41 @@ class Forum_mcp extends CP_Controller {
 					)
 				),
 				array(
-					'title' => 'topic_notifications',
-					'desc' => 'topic_notifications_desc',
+					'title' => 'notify_moderators',
 					'fields' => array(
-						'forum_enable_notify_emails' => array(
-							'type' => 'inline_radio',
+						'notify_moderators' => array(
+							'type' => 'checkbox',
 							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
+								'forum_notify_moderators_topics' => lang('new_topics'),
+								'forum_notify_moderators_replies'  => lang('new_replies')
 							),
-							// 'value' => $category->forum_enable_notify_emails,
-						),
+							'value' => $notify_moderators
+
+						)
+					)
+				),
+				array(
+					'title' => 'topic_notification',
+					'desc' => 'topic_notification_desc',
+					'fields' => array(
 						'forum_notify_emails' => array(
 							'type' => 'text',
 							'value' => $category->forum_notify_emails,
-							'attrs' => 'placeholder="' . lang('recipients'). '"',
-						),
+							'attrs' => 'placeholder="' . lang('recipients'). '"'
+						)
 					)
 				),
 				array(
 					'title' => 'reply_notification',
 					'desc' => 'reply_notification_desc',
 					'fields' => array(
-						'forum_enable_notify_emails_topics' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
-							// 'value' => $category->forum_enable_notify_emails_topics,
-						),
 						'forum_notify_emails_topics' => array(
 							'type' => 'text',
 							'value' => $category->forum_notify_emails_topics,
-							'attrs' => 'placeholder="' . lang('recipients'). '"',
-						),
+							'attrs' => 'placeholder="' . lang('recipients'). '"'
+						)
 					)
-				),
+				)
 			)
 		);
 
@@ -1752,6 +1756,14 @@ class Forum_mcp extends CP_Controller {
 
 		if ( ! empty($_POST))
 		{
+			// Check for empty checkboxes
+			$set_permissions = array_keys($_POST['permissions']);
+
+			foreach (array_diff(array('can_view_forum', 'can_view_hidden'), $set_permissions) as $permission)
+			{
+				$_POST['permissions'][$permission] = '';
+			}
+
 			foreach ($_POST['permissions'] as $key => $value)
 			{
 				$category->setPermission($key, $value);
@@ -2006,6 +2018,7 @@ class Forum_mcp extends CP_Controller {
 	{
 		ee()->load->model('addons_model');
 		$fmt_options = ee()->addons_model->get_plugin_formatting(TRUE);
+		$notify_moderators = $this->moderatorNotificationSettings($forum);
 
 		$sections = array(
 			array(
@@ -2139,43 +2152,40 @@ class Forum_mcp extends CP_Controller {
 			),
 			'notification_settings' => array(
 				array(
-					'title' => 'topic_notifications',
-					'desc' => 'topic_notifications_desc',
+					'title' => 'notify_moderators',
 					'fields' => array(
-						'forum_enable_notify_emails' => array(
-							'type' => 'inline_radio',
+						'notify_moderators' => array(
+							'type' => 'checkbox',
 							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
+								'forum_notify_moderators_topics' => lang('new_topics'),
+								'forum_notify_moderators_replies'  => lang('new_replies')
 							),
-							// 'value' => $forum->forum_enable_notify_emails,
-						),
+							'value' => $notify_moderators
+						)
+					)
+				),
+				array(
+					'title' => 'topic_notification',
+					'desc' => 'topic_notification_desc',
+					'fields' => array(
 						'forum_notify_emails' => array(
 							'type' => 'text',
 							'value' => $forum->forum_notify_emails,
-							'attrs' => 'placeholder="' . lang('recipients'). '"',
-						),
+							'attrs' => 'placeholder="' . lang('recipients'). '"'
+						)
 					)
 				),
 				array(
 					'title' => 'reply_notification',
 					'desc' => 'reply_notification_desc',
 					'fields' => array(
-						'forum_enable_notify_emails_topics' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
-							// 'value' => $forum->forum_enable_notify_emails_topics,
-						),
 						'forum_notify_emails_topics' => array(
 							'type' => 'text',
 							'value' => $forum->forum_notify_emails_topics,
-							'attrs' => 'placeholder="' . lang('recipients'). '"',
-						),
+							'attrs' => 'placeholder="' . lang('recipients'). '"'
+						)
 					)
-				),
+				)
 			),
 			'text_and_html_formatting' => array(
 				array(
@@ -2259,6 +2269,24 @@ class Forum_mcp extends CP_Controller {
 		return $sections;
 	}
 
+	private function moderatorNotificationSettings($data)
+	{
+		$notify_moderators = array();
+
+		if ($data->forum_notify_moderators_topics == 'y')
+		{
+			$notify_moderators[] = 'forum_notify_moderators_topics';
+		}
+
+		if ($data->forum_notify_moderators_replies == 'y')
+		{
+			$notify_moderators[] = 'forum_notify_moderators_replies';
+		}
+
+		return 	$notify_moderators;
+
+	}
+
 	private function settingsForForum($id)
 	{
 		$errors = NULL;
@@ -2273,6 +2301,14 @@ class Forum_mcp extends CP_Controller {
 
 		if ( ! empty($_POST))
 		{
+			// Check for empty checkboxes
+			$set_permissions = array_keys($_POST['permissions']);
+
+			foreach (array_diff($this->forum_checkboxes, $set_permissions) as $permission)
+			{
+				$_POST['permissions'][$permission] = '';
+			}
+
 			foreach ($_POST['permissions'] as $key => $value)
 			{
 				$forum->setPermission($key, $value);
@@ -2380,10 +2416,10 @@ class Forum_mcp extends CP_Controller {
 					'title' => 'upload',
 					'desc' => 'upload_desc',
 					'fields' => array(
-						'permissions[upload_files]' => array(
+						'permissions[can_upload_files]' => array(
 							'type' => 'checkbox',
 							'choices' => $member_groups,
-							'value' => $forum->getPermission('upload_files'),
+							'value' => $forum->getPermission('can_upload_files'),
 							'no_results' => $member_groups_no_results
 						)
 					)

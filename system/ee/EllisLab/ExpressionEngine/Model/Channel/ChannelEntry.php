@@ -106,7 +106,8 @@ class ChannelEntry extends ContentModel {
 
 	protected static $_field_data = array(
 		'field_model'  => 'ChannelField',
-		'group_column' => 'Channel__field_group'
+		'structure_model' => 'Channel',
+		'group_column' => 'Channel__channel_id'
 	);
 
 	protected static $_validation_rules = array(
@@ -969,12 +970,22 @@ class ChannelEntry extends ContentModel {
 			OR ! is_array(ee()->session->userdata('assigned_channels')))
 			? NULL : array_keys(ee()->session->userdata('assigned_channels'));
 
-		$channel_filter_options = $this->getModelFacade()->get('Channel', $allowed_channel_ids)
+		$my_fields = $this->Channel->getAllCustomFields()->pluck('field_id');
+
+		$channel_filter_options = array();
+
+		$channels = $this->getModelFacade()->get('Channel', $allowed_channel_ids)
 			->filter('site_id', ee()->config->item('site_id'))
-			->filter('field_group', $this->Channel->field_group)
 			->fields('channel_id', 'channel_title')
-			->all()
-			->getDictionary('channel_id', 'channel_title');
+			->all();
+
+		foreach ($channels as $channel)
+		{
+			if ($my_fields == $channel->getAllCustomFields()->pluck('field_id'))
+			{
+				$channel_filter_options[$channel->channel_id] = $channel->channel_title;
+			}
+		}
 
 		$field->setItem('field_list_items', $channel_filter_options);
 	}

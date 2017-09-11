@@ -213,17 +213,16 @@ class EntryListing {
 
 			if (isset($channel))
 			{
-				$custom_fields = $channel->CustomFields;
+				$custom_fields = $channel->getAllCustomFields();
 			}
 			else
 			{
-				$channels = $this->getChannels();
-				$field_groups = $channels->pluck('field_group');
+				$custom_fields = array();
 
-				$custom_fields = ee('Model')->get('ChannelField')
-					->fields('field_id')
-					->filter('group_id', 'IN', $field_groups)
-					->all();
+				foreach ($this->getChannels() as $channel)
+				{
+					$custom_fields = array_merge($custom_fields, $channel->getAllCustomFields());
+				}
 			}
 
 			foreach ($custom_fields as $cf)
@@ -278,7 +277,7 @@ class EntryListing {
 		{
 			$allowed_channel_ids = ($this->is_admin) ? NULL : $this->allowed_channels;
 			$this->channels = ee('Model')->get('Channel', $allowed_channel_ids)
-				->fields('channel_id', 'channel_title', 'field_group')
+				->fields('channel_id', 'channel_title')
 				->filter('site_id', ee()->config->item('site_id'))
 				->order('channel_title', 'asc')
 				->all();

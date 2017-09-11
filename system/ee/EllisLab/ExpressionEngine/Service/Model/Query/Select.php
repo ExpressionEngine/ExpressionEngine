@@ -231,7 +231,7 @@ class Select extends Query {
 
 		$meta_field_data = $class::getMetaData('field_data');
 
-		$field_model = ee('Model')->make($meta_field_data['field_model']);
+		$field_model     = ee('Model')->make($meta_field_data['field_model']);
 
 		// let's make life a bit easier
 		$item_key_column   = $alias . '__' . $meta->getPrimaryKey();
@@ -247,26 +247,44 @@ class Select extends Query {
 
 		if (array_key_exists('group_column', $meta_field_data))
 		{
-			$field_groups = array_map(function($column) use($meta_field_data){
+			$structure_ids = array_map(function($column) use($meta_field_data){
 				if (array_key_exists($meta_field_data['group_column'], $column))
 				{
 					return $column[$meta_field_data['group_column']];
 				}
 			}, $result_array);
 
-			$field_groups = array_unique($field_groups);
-			$fields = $fields->filter('group_id', 'IN', $field_groups);
+			$structure_ids = array_unique($structure_ids);
+			$structure_models = ee('Model')->get($meta_field_data['structure_model'], $structure_ids)->all();
+
+			$fields = array();
+			foreach ($structure_models as $model)
+			{
+				foreach ($model->getAllCustomFields() as $f)
+				{
+					if ( ! $f->legacy_field_data)
+					{
+						$fields[$f->field_id] = $f;
+					}
+				}
+			}
+			$fields = array_values($fields);
+		}
+		else
+		{
+			$fields = ee('Model')->get($meta_field_data['field_model'])
+				->filter($column_prefix.'legacy_field_data', 'n')
+				->all()
+				->asArray();
 		}
 
-		$fields = $fields->all();
-
-		if ($fields->count())
+		if ( ! empty($fields))
 		{
 			$entry_ids = array_map(function($column) use ($item_key_column) {
 				return $column[$item_key_column];
 			}, $result_array);
 
-			$chunks = array_chunk($fields->asArray(), 59);
+			$chunks = array_chunk($fields, 59);
 
 			foreach ($chunks as $fields)
 			{

@@ -112,7 +112,8 @@ class Registry {
 	{
 		$class = $this->expandAlias($name);
 
-		if ( ! isset($this->metadata[$class]))
+		if ( ! isset($this->metadata[$class])
+			|| $this->metadata[$class]->getName() != $name)
 		{
 			$this->metadata[$class] = new MetaDataReader($name, $class);
 		}
