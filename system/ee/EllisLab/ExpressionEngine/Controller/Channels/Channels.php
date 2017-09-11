@@ -157,7 +157,7 @@ class Channels extends AbstractChannelsController {
 
 		if ( ! empty($_POST))
 		{
-			$channel->set($_POST);
+			$channel = $this->setWithPost($channel);
 			$channel->site_id = ee()->config->item('site_id');
 			$result = $channel->validate();
 
@@ -185,6 +185,9 @@ class Channels extends AbstractChannelsController {
 			}
 			else
 			{
+				// Put cat_group back as an array
+				$_POST['cat_group'] = explode('|', $_POST['cat_group']);
+
 				$vars['errors'] = $result;
 				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
@@ -200,7 +203,7 @@ class Channels extends AbstractChannelsController {
 			'fields' => $this->renderFieldsTab($channel, $vars['errors']),
 			'categories' => $this->renderCategoriesTab($channel, $vars['errors']),
 			'statuses' => $this->renderStatusesTab($channel, $vars['errors']),
-			//'settings' => $this->renderCategoriesTab($channel, $errors),
+			'settings' => $this->renderSettingsTab($channel, $vars['errors']),
 		];
 
 		ee()->view->header = array(
@@ -345,7 +348,7 @@ class Channels extends AbstractChannelsController {
 					'rel' => 'add-field-group'
 				],
 				'fields' => array(
-					'field_group' => array(
+					'field_groups' => array(
 						'type' => 'checkbox',
 						'choices' => $field_group_options,
 						'value' => $channel->FieldGroups->pluck('group_id'),
@@ -370,6 +373,11 @@ class Channels extends AbstractChannelsController {
 						'wrap' => TRUE,
 						'choices' => $custom_field_options,
 						'value' => $channel->CustomFields->pluck('field_id'),
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('fields')),
+							'link_text' => 'add_new',
+							'link_href' => ee('CP/URL')->make('channels/fields/create')
+						]
 					)
 				)
 			),
@@ -469,113 +477,16 @@ class Channels extends AbstractChannelsController {
 	}
 
 	/**
-	 * Channel preference submission handler, copied from old
-	 * admin_content controller
+	 * Renders the Settings tab for the Channel create/edit form
 	 *
-	 * This function receives the submitted channel preferences
-	 * and stores them in the database.
+	 * @param Channel $channel A Channel entity
+	 * @param null|ValidationResult $errors NULL (if nothing was submitted) or
+	 *   a ValidationResult object. This is needed to render any inline erorrs
+	 *   on the form.
+	 * @return string HTML
 	 */
-	private function saveChannel($channel)
+	private function renderSettingsTab($channel, $errors)
 	{
-		$dupe_id = ee()->input->get_post('duplicate_channel_prefs');
-		unset($_POST['duplicate_channel_prefs']);
-
-		if (isset($_POST['cat_group']) && is_array($_POST['cat_group']))
-		{
-			$_POST['cat_group'] = implode('|', $_POST['cat_group']);
-		}
-		else
-		{
-			$_POST['cat_group'] = '';
-		}
-
-		$channel->set($_POST);
-
-		$channel->FieldGroups = ee('Model')->get('ChannelFieldGroup', ee()->input->post('field_groups'))->all();
-		$channel->CustomFields = ee('Model')->get('ChannelField', ee()->input->post('custom_fields'))->all();
-
-		// Make sure these are the correct NULL value if they are not set.
-		$channel->status_group = ($channel->status_group !== FALSE
-			&& $channel->status_group != '')
-			? $channel->status_group : NULL;
-
-		if ($channel->max_entries == '')
-		{
-			$channel->max_entries = 0;
-		}
-
-		// Create Channel
-		if ($channel->isNew())
-		{
-			$channel->default_entry_title = '';
-			$channel->url_title_prefix = '';
-			$channel->channel_url = ee()->functions->fetch_site_index();
-			$channel->channel_lang = ee()->config->item('xml_lang');
-			$channel->site_id = ee()->config->item('site_id');
-
-			// duplicating preferences?
-			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
-			{
-				$dupe_channel = ee('Model')->get('Channel')
-					->filter('channel_id', $dupe_id)
-					->first();
-				$channel->duplicatePreferences($dupe_channel);
-			}
-
-			$channel->save();
-
-			// If they made the channel?  Give access to that channel to the member group?
-			// If member group has ability to create the channel, they should be
-			// able to access it as well
-			if (ee()->session->userdata('group_id') != 1)
-			{
-				$data = array(
-					'group_id'		=> ee()->session->userdata('group_id'),
-					'channel_id'	=> $channel->channel_id
-				);
-
-				ee()->db->insert('channel_member_groups', $data);
-			}
-
-			$success_msg = lang('channel_created');
-
-			ee()->logger->log_action($success_msg.NBS.NBS.$_POST['channel_title']);
-		}
-		else
-		{
-			$channel->save();
-		}
-
-		return $channel;
-	}
-
-	/**
-	 * Maximum number of channels reached?
-	 *
-	 * @return bool
-	 **/
-	private function hasMaximumChannels()
-	{
-		return (IS_CORE && ee('Model')->get('Channel')->count() >= 3);
-	}
-
-	/**
-	 * Channel settings
-	 */
-	public function settings($channel_id)
-	{
-		$channel = ee('Model')->get('Channel', $channel_id)->first();
-
-		if ( ! $channel)
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
-		if ( ! ee()->cp->allowed_group('can_edit_channels'))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
 		$templates = ee('Model')->get('Template')
 			->with('TemplateGroup')
 			->filter('site_id', ee()->config->item('site_id'))
@@ -693,7 +604,7 @@ class Channels extends AbstractChannelsController {
 		$channel_form_statuses = array('' => lang('channel_form_default_status_empty'));
 		$channel_form_statuses = array_merge($channel_form_statuses, $deft_status_options);
 
-		$vars['sections'] = array(
+		$sections = array(
 			array(
 				array(
 					'title' => 'channel_description',
@@ -1130,188 +1041,160 @@ class Channels extends AbstractChannelsController {
 			)
 		);
 
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'channel_description',
-				'label' => 'lang:channel_description',
-				'rules' => 'strip_tags|valid_xss_check'
-			),
-			array(
-				'field' => 'channel_url',
-				'label' => 'lang:channel',
-				'rules' => 'trim|strip_tags|valid_xss_check'
-			),
-			array(
-				'field' => 'comment_url',
-				'label' => 'lang:comment_form',
-				'rules' => 'trim|strip_tags|valid_xss_check'
-			),
-			array(
-				'field' => 'search_results_url',
-				'label' => 'lang:search_results',
-				'rules' => 'trim|strip_tags|valid_xss_check'
-			),
-			array(
-				'field' => 'rss_url',
-				'label' => 'lang:rss_feed',
-				'rules' => 'trim|strip_tags|valid_xss_check'
-			),
-			array(
-				'field' => 'default_entry_title',
-				'label' => 'lang:default_title',
-				'rules' => 'valid_xss_check'
-			),
-			array(
-				'field' => 'url_title_prefix',
-				'label' => 'lang:url_title_prefix',
-				'rules' => 'strtolower|trim|strip_tags|valid_xss_check|callback__validPrefix'
-			),
-			array(
-				'field' => 'max_revisions',
-				'label' => 'lang:max_versions',
-				'rules' => 'trim|integer'
-			),
-			array(
-				'field' => 'channel_notify_emails',
-				'label' => 'lang:enable_channel_entry_notification',
-				'rules' => 'trim|valid_emails'
-			),
-			array(
-				'field' => 'comment_notify_emails',
-				'label' => 'lang:enable_comment_notification',
-				'rules' => 'trim|valid_emails'
-			),
-			array(
-				'field' => 'comment_max_chars',
-				'label' => 'lang:max_characters',
-				'rules' => 'trim|integer'
-			),
-			array(
-				'field' => 'comment_timelock',
-				'label' => 'lang:comment_time_limit',
-				'rules' => 'trim|integer'
-			),
-			array(
-				'field' => 'comment_expiration',
-				'label' => 'lang:comment_expiration',
-				'rules' => 'trim|integer'
-			)
-		));
+		$html = '';
 
-		ee()->form_validation->validateNonTextInputs($vars['sections']);
-
-		$base_url = ee('CP/URL')->make('channels/settings/'.$channel_id);
-
-		if (AJAX_REQUEST)
+		foreach ($sections as $name => $settings)
 		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			$this->saveChannelSettings($channel, $vars['sections']);
-
-			ee('CP/Alert')->makeInline('shared-form')
-				->asSuccess()
-				->withTitle(lang('channel_settings_saved'))
-				->addToBody(sprintf(lang('channel_settings_saved_desc'), $channel->channel_title))
-				->defer();
-
-			ee()->functions->redirect(ee('CP/URL')->make('channels'));
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('CP/Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang('channel_settings_not_saved'))
-				->addToBody(lang('channel_settings_not_saved_desc'))
-				->now();
+			$html .= ee('View')->make('_shared/form/section')
+				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
 		}
 
-		ee()->view->ajax_validate = TRUE;
-		ee()->view->base_url = $base_url;
-		ee()->view->cp_page_title = $channel->channel_title . ' &mdash; ' . lang('channel_settings');
-		ee()->view->save_btn_text = 'btn_save_settings';
-		ee()->view->save_btn_text_working = 'btn_saving';
-
-		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels'), lang('channels'));
-
-		ee()->cp->render('settings/form', $vars);
+		return $html;
 	}
 
 	/**
-	 * Custom validator for URL title prefix
+	 * Sets channel object data with normalized POST values
+	 * @param Channel $channel A Channel entity
+	 * @return Modifed Channel entity
 	 */
-	public function _validPrefix($str)
+	private function setWithPost($channel)
 	{
-		if ($str == '')
+		if (isset($_POST['cat_group']) && is_array($_POST['cat_group']))
 		{
-			return TRUE;
+			$_POST['cat_group'] = implode('|', $_POST['cat_group']);
+		}
+		else
+		{
+			$_POST['cat_group'] = '';
 		}
 
-		ee()->form_validation->set_message('_validPrefix', lang('invalid_url_title_prefix'));
-
-		return preg_match('/^[\w\-]+$/', $str) ? TRUE : FALSE;
-	}
-
-	/**
-	 * POST handler for saving channel settings
-	 *
-	 * @param	int	$channel_id	ID of channel to save settings for
-	 */
-	private function saveChannelSettings($channel, $sections)
-	{
-		if (isset($_POST['comment_expiration']) && $_POST['comment_expiration'] == '')
+		if ( ! ee('Request')->post('comment_expiration'))
 		{
 			$_POST['comment_expiration'] = 0;
 		}
 
+		$channel->set($_POST);
+
+		$channel->FieldGroups = ee('Model')->get('ChannelFieldGroup', ee()->input->post('field_groups'))->all();
+		$channel->CustomFields = ee('Model')->get('ChannelField', ee()->input->post('custom_fields'))->all();
+
+		// Make sure these are the correct NULL value if they are not set.
+		$channel->status_group = ($channel->status_group !== FALSE
+			&& $channel->status_group != '')
+			? $channel->status_group : NULL;
+
+		foreach (['max_entries', 'max_revisions', 'comment_max_chars',
+			'comment_timelock'] as $field)
+		{
+			if ($channel->$field == '')
+			{
+				$channel->$field = 0;
+			}
+		}
+
+		if ($channel->ChannelFormSettings === NULL)
+		{
+			$channel->ChannelFormSettings = ee('Model')->make('ChannelFormSettings');
+			$channel->ChannelFormSettings->site_id = ee()->config->item('site_id');
+		}
+
+		$channel->ChannelFormSettings->default_status = ee('Request')->post('default_status');
+		$channel->ChannelFormSettings->allow_guest_posts = ee('Request')->post('allow_guest_posts');
+		$channel->ChannelFormSettings->default_author = ee('Request')->post('default_author');
+
+		return $channel;
+	}
+
+	/**
+	 * Channel preference submission handler, copied from old
+	 * admin_content controller
+	 *
+	 * This function receives the submitted channel preferences
+	 * and stores them in the database.
+	 */
+	private function saveChannel($channel)
+	{
 		ee()->load->model('channel_model');
 
-		if (ee()->input->post('apply_expiration_to_existing'))
+		if (ee('Request')->post('apply_expiration_to_existing'))
 		{
-			if (ee()->input->post('comment_expiration') == 0)
+			if (ee('Request')->post('comment_expiration') == 0)
 			{
-				ee()->channel_model->update_comment_expiration($channel->getId(), 0, TRUE);
+				ee()->channel_model->update_comment_expiration(
+					$channel->getId(),
+					0, TRUE
+				);
 			}
 			else
 			{
 				ee()->channel_model->update_comment_expiration(
 					$channel->getId(),
-					ee()->input->post('comment_expiration') * 86400
+					ee('Request')->post('comment_expiration') * 86400
 				);
 			}
 		}
 
-		if (ee()->input->post('clear_versioning_data'))
+		if (ee('Request')->post('clear_versioning_data'))
 		{
 			ee()->channel_model->clear_versioning_data($channel->getId());
 		}
 
-		// Make sure we only got the fields we asked for
-		foreach ($sections as $settings)
+		// Create Channel
+		if ($channel->isNew())
 		{
-			foreach ($settings as $setting)
+			$channel->default_entry_title = '';
+			$channel->url_title_prefix = '';
+			$channel->channel_url = ee()->functions->fetch_site_index();
+			$channel->channel_lang = ee()->config->item('xml_lang');
+			$channel->site_id = ee()->config->item('site_id');
+
+			$dupe_id = ee()->input->post('duplicate_channel_prefs');
+			unset($_POST['duplicate_channel_prefs']);
+
+			// duplicating preferences?
+			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
 			{
-				foreach ($setting['fields'] as $field_name => $field)
-				{
-					$fields[$field_name] = ee()->input->post($field_name);
-				}
+				$dupe_channel = ee('Model')->get('Channel')
+					->filter('channel_id', $dupe_id)
+					->first();
+				$channel->duplicatePreferences($dupe_channel);
 			}
+
+			$channel->save();
+
+			// If they made the channel?  Give access to that channel to the member group?
+			// If member group has ability to create the channel, they should be
+			// able to access it as well
+			if (ee()->session->userdata('group_id') != 1)
+			{
+				$data = array(
+					'group_id'		=> ee()->session->userdata('group_id'),
+					'channel_id'	=> $channel->channel_id
+				);
+
+				ee()->db->insert('channel_member_groups', $data);
+			}
+
+			$success_msg = lang('channel_created');
+
+			ee()->logger->log_action($success_msg.NBS.NBS.$_POST['channel_title']);
 		}
-
-		$channel->set($fields);
-
-		if ($channel->ChannelFormSettings === NULL)
+		else
 		{
-			$channel->ChannelFormSettings = ee('Model')->make('ChannelFormSettings');
-			$channel->ChannelFormSettings->site_id = $channel->site_id;
+			$channel->save();
 		}
 
-		$channel->ChannelFormSettings->default_status = $fields['default_status'];
-		$channel->ChannelFormSettings->allow_guest_posts = $fields['allow_guest_posts'];
-		$channel->ChannelFormSettings->default_author = $fields['default_author'];
-		$channel->save();
+		return $channel;
+	}
+
+	/**
+	 * Maximum number of channels reached?
+	 *
+	 * @return bool
+	 **/
+	private function hasMaximumChannels()
+	{
+		return (IS_CORE && ee('Model')->get('Channel')->count() >= 3);
 	}
 }
 

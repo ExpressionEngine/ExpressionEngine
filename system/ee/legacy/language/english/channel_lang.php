@@ -142,7 +142,7 @@ $lang = array(
 
 'section_search_results' => 'results for the search term <mark>%s</mark>',
 
-'settings' => 'settings',
+'settings' => 'Settings',
 
 'short_name' => 'Short name',
 
@@ -257,16 +257,6 @@ $lang = array(
 'channel_form_default_status_empty' => '-- Use Channel Default --',
 
 'channel_form_status_desc' => 'Default status for forms in this channel.',
-
-'channel_settings' => 'Channel Settings',
-
-'channel_settings_not_saved' => 'Cannot Save Channel Settings',
-
-'channel_settings_not_saved_desc' => 'We were unable to save this channel\'s settings, please review and fix errors below.',
-
-'channel_settings_saved' => 'Channel Settings Saved',
-
-'channel_settings_saved_desc' => 'The settings for channel <b>%s</b> have been saved.',
 
 'channel_url_desc' => '<abbr title="Unified Resource Locator">URL</abbr> location of this channel.',
 
