@@ -298,8 +298,12 @@ $(document).ready(function(){
 				.addClass('app-overlay---open')
 				.css('height', heightIs);
 
-			$(this).removeClass('app-modal---closed')
-				.addClass('app-modal---open');
+			if ($(this).hasClass('modal-wrap')) {
+				$(this).fadeIn('slow');
+			} else {
+				$(this).removeClass('app-modal---closed')
+					.addClass('app-modal---open');
+			}
 
 			// remember the scroll location on open
 			$(this).data('scroll', $(document).scrollTop());
