@@ -125,7 +125,14 @@ class Channel extends StructureModel {
 		'comment_notify'             => 'enum[y,n]',
 		'comment_notify_authors'     => 'enum[y,n]',
 		'enable_versioning'          => 'enum[y,n]',
-		'max_entries'                => 'isNatural'
+		'max_entries'                => 'isNatural',
+		'max_revisions'              => 'isNatural',
+		'max_characters'             => 'isNatural',
+		'comment_timelock'           => 'isNatural',
+		'comment_expiration'         => 'isNatural',
+		'url_title_prefix'           => 'alphaDash',
+		'channel_notify_emails'      => 'validateEmails',
+		'comment_notify_emails'      => 'validateEmails'
 	);
 
 	protected static $_events = array(
@@ -191,6 +198,31 @@ class Channel extends StructureModel {
 	protected $url_title_prefix;
 	protected $live_look_template;
 	protected $max_entries;
+
+	/**
+	 * Custom validation callback to validate a comma-separated list of email
+	 * addresses
+	 */
+	public function validateEmails($key, $value, $params, $rule)
+	{
+		if (empty($value))
+		{
+			return TRUE;
+		}
+
+		$emails = explode(',', $value);
+
+		foreach ($emails as $email)
+		{
+			if ($value != filter_var($value, FILTER_SANITIZE_EMAIL) OR ! filter_var($value, FILTER_VALIDATE_EMAIL))
+			{
+				$rule->stop();
+				return 'valid_email';
+			}
+		}
+
+		return TRUE;
+	}
 
 	/**
 	 * Parses URL properties for any config variables
