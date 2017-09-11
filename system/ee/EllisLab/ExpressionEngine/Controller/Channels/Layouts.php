@@ -185,7 +185,7 @@ class Layouts extends AbstractChannelsController {
 			$default_layout = new DefaultChannelLayout($channel_id, NULL);
 			$field_layout = $default_layout->getLayout();
 
-			foreach ($channel->CustomFields as $custom_field)
+			foreach ($channel->getAllCustomFields() as $custom_field)
 			{
 				$field_layout[0]['fields'][] = array(
 					'field' => $entry->getCustomFieldPrefix() . $custom_field->field_id,
@@ -502,7 +502,7 @@ class Layouts extends AbstractChannelsController {
 	{
 		$field_layout = $channel_layout->field_layout;
 
-		$fields = $channel_layout->Channel->CustomFields->map(function($field) {
+		$fields = $channel_layout->Channel->getAllCustomFields()->map(function($field) {
 			return "field_id_" . $field->field_id;
 		});
 

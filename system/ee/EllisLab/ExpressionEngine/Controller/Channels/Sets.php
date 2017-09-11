@@ -252,20 +252,23 @@ class Sets extends AbstractChannelsController {
 
 				// Frequently the error is on the short_name, but in those cases
 				// you really want to edit the long name as well, so we'll show it.
-				if (isset($long_field) && isset($hidden[$key]))
+				if (isset($long_field))
 				{
 					$key = $model_name.'['.$ident.']['.$long_field.']';
-					$vars['sections'][$section.': '.$model->$title_field][] = array(
-						'title' => $long_field,
-						'fields' => array(
-							$key => array(
-								'type' => 'text',
-								'value' => $model->$long_field,
-								// 'required' => TRUE
+					if (isset($hidden[$key]))
+					{
+						$vars['sections'][$section.': '.$model->$title_field][] = array(
+							'title' => $long_field,
+							'fields' => array(
+								$key => array(
+									'type' => 'text',
+									'value' => $model->$long_field,
+									// 'required' => TRUE
+								)
 							)
-						)
-					);
-					unset($hidden[$key]);
+						);
+						unset($hidden[$key]);
+					}
 				}
 
 				$key = $model_name.'['.$ident.']['.$field.']';

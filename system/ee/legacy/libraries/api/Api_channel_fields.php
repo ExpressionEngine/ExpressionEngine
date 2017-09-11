@@ -28,7 +28,7 @@ class Api_channel_fields extends Api {
 		parent::__construct();
 
 		$this->native = array(
-			'field_id', 'site_id', 'group_id',
+			'field_id', 'site_id',
 			'field_name', 'field_label', 'field_instructions',
 			'field_type', 'field_list_items', 'field_pre_populate',
 			'field_pre_channel_id', 'field_pre_field_id',
@@ -706,43 +706,21 @@ class Api_channel_fields extends Api {
 	 */
 	function get_required_fields($channel_id)
 	{
-		ee()->load->model('channel_model');
+		$channel = ee('Model')->get('Channel', $channel_id)->first();
 		$required = array('title', 'entry_date');
 
-		$query = ee()->channel_model->get_channel_info($channel_id, array('field_group'));
-
-		if ($query->num_rows() > 0)
+		if ($channel)
 		{
-			$row = $query->row();
-			$fields = ee()->channel_model->get_required_fields($row->field_group);
-
-			if ($fields->num_rows() > 0)
+			foreach ($channel->getAllCustomFields() as $field)
 			{
-				foreach ($fields->result() as $row)
+				if ($field->field_required)
 				{
-					$required[] = $row->field_id;
-				}
-			}
-		}
-
-		$module_data = $this->get_module_fields($channel_id);
-
-		if ($module_data && is_array($module_data))
-		{
-			foreach ($module_data as $tab => $v)
-			{
-				foreach ($v as $val)
-				{
-					if ($val['field_required'] == 'y')
-					{
-						$required[] =  $val['field_id'];
-					}
+					$required[] = $field->field_id;
 				}
 			}
 		}
 
 		return $required;
-
 	}
 
 	/**
@@ -1096,14 +1074,15 @@ class Api_channel_fields extends Api {
 		// Now we set our custom fields
 
 		// Get Channel fields in the field group
-		$channel_fields = ee()->channel_model->get_channel_fields($channel_data['field_group']);
-
-
+		$channel = ee('Model')->get('Channel', $channel_id)->first();
+		$channel_fields = $channel->getAllCustomFields();
 
 		$field_settings = array();
 
-		foreach ($channel_fields->result_array() as $row)
+		foreach ($channel_fields as $field)
 		{
+			$row = $field->getValues();
+
 			$field_fmt 		= $row['field_fmt'];
 			$field_dt 		= '';
 			$field_data		= '';
@@ -1530,235 +1509,6 @@ class Api_channel_fields extends Api {
 		$key = $field_type.'_'.$key;
 
 		return (isset($field_data[$key])) ? $field_data[$key] : FALSE;
-	}
-
-	/**
-	 * gets variables to be passed to the admin/field_edit view
-	 * for new fields or existing fields
-	 *
-	 * @param string|int $group_id
-	 * @param string|int $field_id optional if new field
-	 * @param array|false $field_types array of field types to present as field_type_options,
-	 * 				   will show all valid field types if FALSE
-	 *
-	 * @return array    the default fields needed to use the admin/field_edit view
-	 */
-	public function field_edit_vars($group_id, $field_id = FALSE, $field_types = FALSE)
-	{
-		$this->errors = array();
-
-		ee()->load->library('table');
-
-		ee()->load->model('field_model');
-
-		$vars = array(
-			'group_id' => $group_id,
-			'field_id' => $field_id,
-		);
-
-		ee()->db->select('f.*');
-		ee()->db->from('channel_fields AS f, field_groups AS g');
-		ee()->db->where('f.group_id = g.group_id');
-		ee()->db->where('g.site_id', ee()->config->item('site_id'));
-		ee()->db->where('f.field_id', $vars['field_id']);
-
-		$field_query = ee()->db->get();
-
-		if ($field_id == '')
-		{
-			$type = 'new';
-
-			foreach ($field_query->list_fields() as $f)
-			{
-				if ( ! isset($vars[$f]))
-				{
-					$vars[$f] = '';
-				}
-			}
-
-			ee()->db->select('group_id');
-			ee()->db->where('group_id', $vars['group_id']);
-			ee()->db->where('site_id', ee()->config->item('site_id'));
-			$query = ee()->db->get('channel_fields');
-
-			$vars['field_order'] = $query->num_rows() + 1;
-
-			if ($query->num_rows() > 0)
-			{
-				$vars['group_id'] = $query->row('group_id');
-			}
-			else
-			{
-				// if there are no existing fields yet for this group, this allows us to still validate the group_id
-				ee()->db->where('group_id', $vars['group_id']);
-				ee()->db->where('site_id', ee()->config->item('site_id'));
-
-				if (ee()->db->count_all_results('field_groups') != 1)
-				{
-					$this->_set_error('unauthorized_access');
-
-					return FALSE;
-				}
-			}
-		}
-		else
-		{
-			$type = 'edit';
-
-			// No valid edit id?  No access
-			if ($field_query->num_rows() == 0)
-			{
-				$this->_set_error('unauthorized_access');
-
-				return FALSE;
-			}
-
-			foreach ($field_query->row_array() as $key => $val)
-			{
-				if ($key == 'field_settings' && $val)
-				{
-					$ft_settings = unserialize(base64_decode($val));
-					$vars = array_merge($vars, $ft_settings);
-				}
-				else
-				{
-					$vars[$key] = $val;
-				}
-			}
-
-			$vars['update_formatting']	= FALSE;
-		}
-
-		extract($vars);
-
-		// Fetch the name of the group
-		$query = ee()->field_model->get_field_group($group_id);
-
-		$vars['group_name']			= $query->row('group_name');
-		$vars['submit_lang_key']	= ($type == 'new') ? 'submit' : 'update';
-
-		// Fetch the channel names
-
-		ee()->db->select('channel_id, channel_title, field_group');
-		ee()->db->where('site_id', ee()->config->item('site_id'));
-		ee()->db->order_by('channel_title', 'asc');
-		$query = ee()->db->get('channels');
-
-		$vars['field_pre_populate_id_options'] = array();
-
-		foreach ($query->result_array() as $row)
-		{
-			// Fetch the field names
-			ee()->db->select('field_id, field_label');
-			ee()->db->where('group_id', $row['field_group']);
-			ee()->db->order_by('field_label','ASC');
-			$rez = ee()->db->get('channel_fields');
-
-			if ($rez->num_rows() > 0)
-			{
-				$vars['field_pre_populate_id_options'][$row['channel_title']] = array();
-
-				foreach ($rez->result_array() as $frow)
-				{
-					$vars['field_pre_populate_id_options'][$row['channel_title']][$row['channel_id'].'_'.$frow['field_id']] = htmlentities($frow['field_label'], ENT_QUOTES, 'UTF-8');
-				}
-			}
-		}
-
-		$vars['field_pre_populate_id_select'] = $field_pre_channel_id.'_'.$field_pre_field_id;
-
-		ee()->load->model('addons_model');
-		$vars['field_fmt_options'] = ee()->addons_model->get_plugin_formatting(TRUE);
-
-		$vars['field_fmt'] = (isset($field_fmt) && $field_fmt != '') ? $field_fmt : 'none';
-
-		// Prep our own fields
-
-		$fts = $this->fetch_installed_fieldtypes();
-
-		$default_values = array(
-			'field_type'					=> isset($fts['text']) ? 'text' : key($fts),
-			'field_show_fmt'				=> set_value('field_show_fmt', 'n'),
-			'field_required'				=> set_value('field_required', 'n'),
-			'field_search'					=> set_value('field_search', 'n'),
-			'field_is_hidden'				=> set_value('field_is_hidden', 'n'),
-			'field_pre_populate'			=> set_value('field_pre_populate', 'n'),
-			'field_show_smileys'			=> set_value('field_show_smileys', 'n'),
-			'field_show_formatting_btns'	=> set_value('field_show_formatting_btns', 'n'),
-			'field_show_file_selector'		=> set_value('field_show_file_selector', 'n'),
-			'field_text_direction'			=> set_value('field_text_direction', 'ltr')
-		);
-
-		foreach($default_values as $key => $val)
-		{
-			$vars[$key] = ( ! isset($vars[$key]) OR $vars[$key] == '') ? $val : $vars[$key];
-		}
-
-		foreach(array('field_pre_populate', 'field_required', 'field_search', 'field_show_fmt') as $key)
-		{
-			$current = ($vars[$key] == 'y') ? 'y' : 'n';
-			$other = ($current == 'y') ? 'n' : 'y';
-
-			$vars[$key.'_'.$current] = TRUE;
-			$vars[$key.'_'.$other] = FALSE;
-		}
-
-		// Text Direction
-		$current = $vars['field_text_direction'];
-		$other = ($current == 'rtl') ? 'ltr' : 'rtl';
-
-		$vars['field_text_direction_'.$current] = TRUE;
-		$vars['field_text_direction_'.$other] = FALSE;
-
-		// Grab Field Type Settings
-
-		$vars['field_type_table']	= array();
-		$vars['field_type_options']	= array();
-
-		$created = FALSE;
-
-		foreach($fts as $key => $attr)
-		{
-			if (is_array($field_types) && ! in_array($key, $field_types))
-			{
-				continue;
-			}
-
-			// Global settings
-			$settings = unserialize(base64_decode($fts[$key]['settings']));
-
-			$settings['field_type'] = $key;
-
-			ee()->table->clear();
-
-			$this->set_settings($key, $settings);
-			$this->setup_handler($key);
-			$this->apply('_init', array(
-				array('id' => $field_id)
-			));
-
-			$str = $this->apply('display_settings', array($vars));
-
-			$vars['field_type_tables'][$key]	= $str;
-			$vars['field_type_options'][$key]	= $attr['name'];
-
-			if (count(ee()->table->rows))
-			{
-				$vars['field_type_tables'][$key] = ee()->table->rows;
-			}
-		}
-
-		asort($vars['field_type_options']);	// sort by title
-
-		$vars['form_hidden'] = array(
-			'group_id'		=> $group_id,
-			'field_id'		=> $field_id,
-			'site_id'		=> ee()->config->item('site_id')
-		);
-
-		$vars['ft_selector'] = "#ft_".implode(", #ft_", array_keys($fts));
-
-		return $vars;
 	}
 
 	/**

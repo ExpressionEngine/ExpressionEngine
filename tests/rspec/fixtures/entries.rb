@@ -56,13 +56,23 @@ ActiveRecord::Base.establish_connection(options)
 class Channels < ActiveRecord::Base; self.table_name = 'exp_channels'; end
 class ChannelData < ActiveRecord::Base; self.table_name = 'exp_channel_data'; end
 class ChannelFields < ActiveRecord::Base; self.table_name = 'exp_channel_fields'; end
+
+class ChannelFieldGroups < ActiveRecord::Base; self.table_name = 'exp_channels_channel_field_groups'; end
+class ChannelFieldGroupsFields < ActiveRecord::Base; self.table_name = 'exp_channel_field_groups_fields'; end
+class ChannelChannelFields < ActiveRecord::Base; self.table_name = 'exp_channels_channel_fields'; end
+
 class ChannelTitles < ActiveRecord::Base; self.table_name = 'exp_channel_titles'; self.primary_key = 'entry_id'; end
 class Member < ActiveRecord::Base; self.table_name = 'exp_members'; end
 
 # First let's get the channel information
 channel = Channels.find(options[:channel_id])
+
+field_groups = ChannelFieldGroups.where(channel_id: options[:channel_id]).pluck('group_id')
+field_ids = ChannelFieldGroupsFields.where(group_id: field_groups).pluck('field_id')
+field_ids += ChannelChannelFields.where(channel_id: options[:channel_id]).pluck('field_id')
+
 fields = ChannelFields.all
-  .where(group_id: channel.field_group)
+  .where(field_id: field_ids)
   .select('field_id, field_type, field_fmt')
 
 allowed_fields = ['textarea', 'text', 'rte', 'date']

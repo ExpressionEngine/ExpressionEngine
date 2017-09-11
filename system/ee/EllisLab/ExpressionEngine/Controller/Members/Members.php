@@ -14,6 +14,7 @@ use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
 use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
+use EllisLab\ExpressionEngine\Service\Filter\FilterFactory;
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
 /**
@@ -21,9 +22,12 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
  */
 class Members extends CP_Controller {
 
-	private $base_url;
+	protected $base_url;
 	private $group;
 	private $filter = TRUE;
+	protected $perpage;
+	protected $page = 1;
+	protected $offset = 0;
 
 	/**
 	 * Constructor
@@ -33,6 +37,7 @@ class Members extends CP_Controller {
 		parent::__construct();
 
 		$this->perpage = ee()->config->item('memberlist_row_limit');
+		$this->group_id = ($this->input->get_post('group') && $this->input->get_post('group') != 'all') ? $this->input->get_post('group') : '';
 
 		if ( ! ee()->cp->allowed_group('can_access_members'))
 		{
@@ -127,18 +132,14 @@ class Members extends CP_Controller {
 
 		$table = $this->initializeTable();
 
-		$this->filter();
-
 		$page = (ee()->input->get('page') > 0) ? ee()->input->get('page') : 1;
 
 		$state = array(
-			'sort'	=> array($table->sort_col => $table->sort_dir),
-			'offset' => ! empty($page) ? ($page - 1) * $table->config['limit'] : 0
+			'sort'	=> array($table->sort_col => $table->sort_dir)
 		);
 
 		$params = array(
-			'member_name' => $member_name,
-			'perpage'	=> $table->config['limit']
+			'member_name' => $member_name
 		);
 
 		$data = $this->_member_search($state, $params);
@@ -214,7 +215,7 @@ class Members extends CP_Controller {
 
 		$this->generateSidebar('pending');
 
-		$base_url = ee('CP/URL')->make('members/pending');
+		$this->base_url = ee('CP/URL')->make('members/pending');
 
 		$vars = array(
 			'cp_page_title' => lang('pending_members'),
@@ -230,11 +231,11 @@ class Members extends CP_Controller {
 			->filter('group_id', 4)
 			->filter('MemberGroup.site_id', ee()->config->item('site_id'));
 
-		$listings = $this->listingsPage($members, $base_url, 'no_pending_members_found', $checkboxes);
+		$listings = $this->listingsPage($members, $this->base_url, 'no_pending_members_found', $checkboxes);
 
 		$vars = array_merge($listings, $vars);
 
-		$this->set_view_header($base_url);
+		$this->set_view_header($this->base_url);
 		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/confirm_remove'),
@@ -287,14 +288,14 @@ class Members extends CP_Controller {
 			);
 		}
 
-		$count = $members->count();
+		$total = $members->count();
 
-		// Add this last to get the right $count
-		$page = ((int) ee()->input->get('page')) ?: 1;
-		$offset = ($page - 1) * $this->perpage; // Offset is 0 indexed
+		$filter = ee('CP/Filter')
+				->add('Perpage', $total, 'show_all_banned');
 
+		$this->renderFilters($filter);
 		$members->limit($this->perpage)
-			->offset($offset);
+			->offset($this->offset);
 
 		$table = $this->buildTableFromMemberQuery($members, $checkboxes);
 		$table->setNoResultsText($no_results_text);
@@ -304,9 +305,9 @@ class Members extends CP_Controller {
 
 		if ( ! empty($vars['table']['data']))
 		{
-			$vars['pagination'] = ee('CP/Pagination', $count)
-				->perPage($vars['table']['limit'])
-				->currentPage($vars['table']['page'])
+			$vars['pagination'] = ee('CP/Pagination', $total)
+				->perPage($this->perpage)
+				->currentPage($this->page)
 			->render($base_url);
 		}
 
@@ -335,19 +336,19 @@ class Members extends CP_Controller {
 			'can_delete' => ee()->cp->allowed_group('can_delete_members')
 		);
 
-		$base_url = ee('CP/URL', 'members/bans');
-		$this->set_view_header($base_url);
+		$this->base_url = ee('CP/URL', 'members/bans');
+		$this->set_view_header($this->base_url);
 
 		$members = ee('Model')->get('Member')
 			->with('MemberGroup')
 			->filter('group_id', 2)
 			->filter('MemberGroup.site_id', ee()->config->item('site_id'));
 
-		$listings = $this->listingsPage($members, $base_url, 'no_banned_members_found');
+		$listings = $this->listingsPage($members, $this->base_url, 'no_banned_members_found');
 
 		$vars = array_merge($listings, $vars);
 
-		$this->set_view_header($base_url);
+		$this->set_view_header($this->base_url);
 
 
 		$values = array(
@@ -374,7 +375,7 @@ class Members extends CP_Controller {
 
 		$vars['form'] = array(
 			'ajax_validate' => TRUE,
-			'base_url'      => $base_url,
+			'base_url'      => $this->base_url,
 			'cp_page_title' => lang('user_banning'),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('settings')),
 			'save_btn_text_working' => 'btn_saving',
@@ -506,7 +507,7 @@ class Members extends CP_Controller {
 				->withTitle(lang('ban_settings_updated'))
 				->defer();
 
-			ee()->functions->redirect($base_url);
+			ee()->functions->redirect($this->base_url);
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -712,14 +713,11 @@ class Members extends CP_Controller {
 	private function _member_search($state, $params)
 	{
 		$search_value = $params['member_name'];
-		$group_id = $this->group ?: '';
+		$group_id = $this->group_id ?: '';
 		$column_filter = ($this->input->get_post('column_filter')) ? $this->input->get_post('column_filter') : 'all';
 
 		// Check for search tokens within the search_value
 		$search_value = $this->_check_search_tokens($search_value);
-
-		$perpage = $this->input->get_post('perpage');
-		$perpage = $perpage ? $perpage : $params['perpage'];
 
 		$convert = array(
 			'member_group' => 'group_id',
@@ -737,7 +735,32 @@ class Members extends CP_Controller {
 			$sort = $state['sort'];
 		}
 
-		$members = $this->member_model->get_members($group_id, $perpage, $state['offset'], $search_value, $sort, $column_filter);
+		$total_rows = $this->member_model->count_members($group_id, $search_value, $column_filter);
+
+		// Create filter object
+		$group_ids = ee('Model')->get('MemberGroup')
+			// Banned & Pending have their own views
+			->filter('group_id', 'NOT IN', array(2, 4))
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_title', 'asc')
+			->all()
+			->getDictionary('group_id', 'group_title');
+
+		$options = $group_ids;
+		$options['all'] = lang('all');
+
+		$group = ee('CP/Filter')->make('group', 'member_group', $options);
+		$group->setPlaceholder(lang('all'));
+		$group->disableCustomValue();
+
+
+		$filters = ee('CP/Filter')
+				->add($group)
+				->add('Perpage', $total_rows, 'show_all_members');
+
+		$this->renderFilters($filters);
+
+		$members = $this->member_model->get_members($group_id, $this->perpage, $this->offset, $search_value, $sort, $column_filter);
 		$members = $members ? $members->result_array() : array();
 		$member_groups = $this->member_model->get_member_groups();
 		$groups = array();
@@ -748,6 +771,8 @@ class Members extends CP_Controller {
 		}
 
 		$rows = array();
+
+
 
 		foreach ($members as $member)
 		{
@@ -836,8 +861,8 @@ class Members extends CP_Controller {
 
 		return array(
 			'rows' => $rows,
-			'per_page' => $perpage,
-			'total_rows' => $this->member_model->count_members($group_id, $search_value, $column_filter),
+			'per_page' => $this->perpage,
+			'total_rows' => $total_rows,
 			'member_name' => $params['member_name'],
 			'member_groups' => $member_groups
 		);
@@ -1068,33 +1093,19 @@ class Members extends CP_Controller {
 	}
 
 	/**
-	 * Sets up the display filters
+	 * Display filters
 	 *
 	 * @param int
 	 * @return void
 	 */
-	private function filter()
+	protected function renderFilters(FilterFactory $filters)
 	{
-		$group_ids = ee('Model')->get('MemberGroup')
-			// Banned & Pending have their own views
-			->filter('group_id', 'NOT IN', array(2, 4))
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('group_title', 'asc')
-			->all()
-			->getDictionary('group_id', 'group_title');
-
-		$options = $group_ids;
-		$options['all'] = lang('all');
-
-		$group = ee('CP/Filter')->make('group', 'member_group', $options);
-		$group->setPlaceholder(lang('all'));
-		$group->disableCustomValue();
-
-		$filters = ee('CP/Filter')->add($group);
-
 		ee()->view->filters = $filters->render($this->base_url);
 		$this->params = $filters->values();
-		$this->group = $this->params['group'];
+		$this->perpage = $this->params['perpage'];
+		$this->page = ((int) ee()->input->get('page')) ?: 1;
+		$this->offset = ($this->page - 1) * $this->perpage;
+
 		$this->base_url->addQueryStringVariables($this->params);
 	}
 

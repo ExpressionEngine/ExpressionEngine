@@ -65,6 +65,52 @@ feature 'Channel Sets' do
     @page.alert.text.should include 'This channel set uses names that already exist on your site. Please rename the following items.'
   end
 
+	def field_groups_created(field_groups)
+		$db.query("SELECT count(*) AS count FROM exp_field_groups WHERE group_name IN ('" + field_groups.join("','") + "')").each do |row|
+			field_group_count = row['count']
+			field_group_count.should == field_groups.count
+		end
+	end
+
+	def fields_created(fields)
+		$db.query("SELECT count(*) AS count FROM exp_channel_fields WHERE field_name IN ('" + fields.join("','") + "')").each do |row|
+			fields_count = row['count']
+			fields_count.should == fields.count
+		end
+	end
+
+	def fields_assinged_to_group(group, fields)
+		group_id = ''
+		field_ids = []
+
+		$db.query("SELECT group_id FROM exp_field_groups WHERE group_name = '" + group + "'").each do |row|
+			group_id = row['group_id']
+		end
+
+		$db.query("SELECT field_id FROM exp_channel_fields WHERE field_name IN ('" + fields.join("','") + "')").each do |row|
+			field_ids.push row['field_id']
+		end
+
+		$db.query("SELECT count(*) AS count FROM exp_channel_field_groups_fields WHERE group_id = '" + group_id.to_s + "' AND field_id IN ('" + field_ids.join("','") + "')").each do |row|
+			fields_count = row['count']
+			fields_count.should == fields.count
+		end
+	end
+
+	def field_groups_assigned_to_channel(channel_id, count)
+		$db.query("SELECT count(*) AS count FROM exp_channels_channel_field_groups WHERE channel_id = " + channel_id.to_s).each do |row|
+			field_groups = row['count']
+			field_groups.should == count
+		end
+	end
+
+	def fields_assigned_to_channel(channel_id, count)
+		$db.query("SELECT count(*) AS count FROM exp_channels_channel_fields WHERE channel_id = " + channel_id.to_s).each do |row|
+			fields = row['count']
+			fields.should == count
+		end
+	end
+
   context 'when exporting' do
     before :each do
       # Set debug to false to create fieldtypes from scratch
@@ -81,9 +127,9 @@ feature 'Channel Sets' do
       no_php_js_errors
 
       expected_files = %w(
-        /custom_fields/News/news_body.textarea
-        /custom_fields/News/news_extended.textarea
-        /custom_fields/News/news_image.file
+        /custom_fields/news_body.textarea
+        /custom_fields/news_extended.textarea
+        /custom_fields/news_image.file
         channel_set.json
       )
       found_files = []
@@ -109,7 +155,7 @@ feature 'Channel Sets' do
       channel_set = JSON.parse(found_files[3].get_input_stream.read)
       channel_set['channels'].size.should == 1
       channel_set['channels'][0]['channel_title'].should == 'News'
-      channel_set['channels'][0]['field_group'].should == 'News'
+      channel_set['channels'][0]['field_groups'][0].should == 'News'
       channel_set['channels'][0]['cat_groups'][0].should == 'News Categories'
       channel_set['status_groups'].size.should == 1
       channel_set['status_groups'][0]['name'].should == 'Default'
@@ -307,9 +353,9 @@ feature 'Channel Sets' do
         File.exist?(path).should == true
 
         expected_files = [
-          '/custom_fields/Board Games/editions.grid',
-          '/custom_fields/Board Games/duration.text',
-          '/custom_fields/Board Games/number_of_players.text',
+          '/custom_fields/editions.grid',
+          '/custom_fields/duration.text',
+          '/custom_fields/number_of_players.text',
           'channel_set.json'
         ]
         found_files = []
@@ -319,7 +365,7 @@ feature 'Channel Sets' do
           end
         end
 
-        expected_files.sort.should == found_files.sort.map(&:name)
+        found_files.sort.map(&:name) == expected_files.sort.should
       end
 
       it 'exports with a relationship column' do
@@ -334,11 +380,11 @@ feature 'Channel Sets' do
         File.exist?(path).should == true
 
         expected_files = [
-          '/custom_fields/Board Games/editions.grid',
-          '/custom_fields/Board Games/duration.text',
-          '/custom_fields/Board Games/number_of_players.text',
-          '/custom_fields/Game Sessions/game_day.date',
-          '/custom_fields/Game Sessions/games_played.grid',
+          '/custom_fields/editions.grid',
+          '/custom_fields/duration.text',
+          '/custom_fields/number_of_players.text',
+          '/custom_fields/game_day.date',
+          '/custom_fields/games_played.grid',
           'channel_set.json'
         ]
         found_files = []
@@ -348,7 +394,7 @@ feature 'Channel Sets' do
           end
         end
 
-        expected_files.sort.should == found_files.sort.map(&:name)
+        found_files.sort.map(&:name) == expected_files.sort.should
       end
 
       it 'exports grid colums with settings' do
@@ -377,7 +423,7 @@ feature 'Channel Sets' do
         page = ChannelCreate.new
         page.load
         page.channel_title.set 'Big Grid'
-        page.field_group.select 'Gridlocked'
+        page.field_groups[1].click
         page.title_field_label.set '¯\_(ツ)_/¯'
         page.submit
 
@@ -391,15 +437,15 @@ feature 'Channel Sets' do
         File.exist?(path).should == true
 
         expected_files = [
-          '/custom_fields/About/about_body.textarea',
-          '/custom_fields/About/about_extended.textarea',
-          '/custom_fields/About/about_image.file',
-          '/custom_fields/About/about_staff_title.text',
-          '/custom_fields/Gridlocked/zen.grid',
-          '/custom_fields/News/news_body.textarea',
-          '/custom_fields/News/news_extended.textarea',
-          '/custom_fields/News/news_image.file',
-          'channel_set.json'
+			'/custom_fields/news_body.textarea',
+			'/custom_fields/news_extended.textarea',
+			'/custom_fields/news_image.file',
+			'/custom_fields/about_body.textarea',
+			'/custom_fields/about_image.file',
+			'/custom_fields/about_staff_title.text',
+			'/custom_fields/about_extended.textarea',
+			'/custom_fields/zen.grid',
+			'channel_set.json'
         ]
         found_files = []
         Zip::File.open(path) do |zipfile|
@@ -408,14 +454,14 @@ feature 'Channel Sets' do
           end
         end
 
-        expected_files.sort.should == found_files.sort.map(&:name)
+        found_files.sort.map(&:name) == expected_files.sort.should
 
         # Check that we exported the title field label
         channel_set = JSON.parse(found_files.sort.last.get_input_stream.read)
         channel_set['channels'][0]['channel_title'].should eq 'Big Grid'
         channel_set['channels'][0]['title_field_label'].should eq '¯\_(ツ)_/¯'
 
-        grid = JSON.parse(found_files.sort[4].get_input_stream.read)
+        grid = JSON.parse(found_files.sort[7].get_input_stream.read)
 
         data = GridSettings::test_data
 
@@ -489,6 +535,80 @@ feature 'Channel Sets' do
 
       check_success
     end
+
+		context 'v4 channel sets' do
+			it 'imports a channel with 2 field groups' do
+				import_channel_set 'channel-with-two-field-groups'
+
+				check_success
+				channel_id = @page.get_channel_id_from_name('channel_w_two_field_groups')
+
+				fields_assigned_to_channel(channel_id, 0)
+				field_groups_assigned_to_channel(channel_id, 2)
+				fields_created ['checkboxes', 'electronic_mail_address']
+				field_groups_created ['FG One', 'FG Two']
+
+				fields_assinged_to_group('FG One', ['checkboxes'])
+				fields_assinged_to_group('FG Two', ['electronic_mail_address'])
+			end
+
+			it 'imports a channel with fields but no field group' do
+				import_channel_set 'channel-with-fields'
+
+				check_success
+				channel_id = @page.get_channel_id_from_name('channel_w_fields')
+
+				fields_assigned_to_channel(channel_id, 2)
+				field_groups_assigned_to_channel(channel_id, 0)
+				fields_created ['checkboxes', 'electronic_mail_address']
+			end
+
+			it 'imports a channel with fields and field groups' do
+				import_channel_set 'channel-with-field-groups-and-fields'
+
+				check_success
+				channel_id = @page.get_channel_id_from_name('channel_w_field_groups_and_fields')
+
+				fields_assigned_to_channel(channel_id, 2)
+				field_groups_assigned_to_channel(channel_id, 2)
+				fields_created ['checkboxes', 'electronic_mail_address', 'youtube_url', 'text']
+				field_groups_created ['FG One', 'FG Two']
+
+				fields_assinged_to_group('FG One', ['checkboxes'])
+				fields_assinged_to_group('FG Two', ['electronic_mail_address'])
+			end
+
+			it 'imports a channel with a field in two field groups' do
+				import_channel_set 'channel-with-field-in-two-groups'
+
+				check_success
+				channel_id = @page.get_channel_id_from_name('channel_w_field_in_two_groups')
+
+				fields_assigned_to_channel(channel_id, 0)
+				field_groups_assigned_to_channel(channel_id, 3)
+				fields_created ['checkboxes', 'electronic_mail_address', 'a_date']
+				field_groups_created ['FG One', 'FG Two', 'FG Three']
+
+				fields_assinged_to_group('FG One', ['checkboxes'])
+				fields_assinged_to_group('FG Two', ['electronic_mail_address'])
+				fields_assinged_to_group('FG Three', ['checkboxes', 'a_date'])
+			end
+
+			it 'imports a channel with a field already in an assigned field group' do
+				import_channel_set 'channel-with-field-in-a-group'
+
+				check_success
+				channel_id = @page.get_channel_id_from_name('channel_w_field_in_a_group')
+
+				fields_assigned_to_channel(channel_id, 1)
+				field_groups_assigned_to_channel(channel_id, 2)
+				fields_created ['checkboxes', 'electronic_mail_address']
+				field_groups_created ['FG One', 'FG Two']
+
+				fields_assinged_to_group('FG One', ['checkboxes'])
+				fields_assinged_to_group('FG Two', ['electronic_mail_address'])
+			end
+		end
 
     it 'shows errors when the channel set cannot be imported' do
       import_channel_set('no-json') do
@@ -634,7 +754,7 @@ feature 'Channel Sets' do
           }
         }
 
-        $db.query('SELECT * FROM exp_channel_fields WHERE group_id = 3').each do |row|
+        $db.query('SELECT * FROM exp_channel_fields').each do |row|
           if fields.has_key? row['field_name']
             fields[row['field_name']].each do |key, assumed_value|
               if key == 'field_settings'

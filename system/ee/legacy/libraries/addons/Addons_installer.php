@@ -189,44 +189,10 @@ class Addons_installer {
 		{
 			ee()->load->dbforge();
 
-			// Drop columns
-			ee()->db->select('channel_fields.field_id, channels.channel_id');
-			ee()->db->from('channel_fields');
-			ee()->db->join('channels', 'channels.field_group = channel_fields.group_id');
-			ee()->db->where('channel_fields.field_type', $fieldtype);
-			$query = ee()->db->get();
-
-			$ids = array();
-			$channel_ids = array();
-
-			if ($query->num_rows() > 0)
-			{
-				foreach($query->result() as $row)
-				{
-					$ids[] = $row->field_id;
-					$channel_ids[] = $row->channel_id;
-				}
-			}
-
-			$ids = array_unique($ids);
-
-			if (count($ids))
-			{
-				foreach($ids as $id)
-				{
-					ee()->dbforge->drop_column('channel_data', 'field_id_'.$id);
-					ee()->dbforge->drop_column('channel_data', 'field_ft_'.$id);
-				}
-
-				// Remove from layouts
-				$c_ids = array_unique($channel_ids);
-
-				ee()->load->library('layout');
-				ee()->layout->delete_layout_fields($ids, $c_ids);
-
-				ee()->db->where_in('field_id', $ids);
-				ee()->db->delete(array('channel_fields'));
-			}
+			$fields = ee('Model')->get('ChannelField')
+				->filter('field_type', $fieldtype)
+				->all()
+				->delete();
 
 			// Uninstall
 			$FT = ee()->api_channel_fields->setup_handler($fieldtype, TRUE);
@@ -235,6 +201,7 @@ class Addons_installer {
 			ee()->db->delete('fieldtypes', array('name' => $fieldtype));
 		}
 	}
+
 	/**
 	 * RTE Tool Installer
 	 *

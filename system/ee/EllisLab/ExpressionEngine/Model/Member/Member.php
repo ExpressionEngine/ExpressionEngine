@@ -121,7 +121,8 @@ class Member extends ContentModel {
 	);
 
 	protected static $_field_data = array(
-		'field_model'   => 'MemberField'
+		'field_model'   => 'MemberField',
+		'structure_model' => 'MemberGroup'
 	);
 
 	protected static $_validation_rules = array(

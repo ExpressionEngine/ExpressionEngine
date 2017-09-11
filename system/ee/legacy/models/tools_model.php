@@ -37,17 +37,16 @@ class Tools_model extends CI_Model {
 
 		// channel fields
 
-		$this->db->select('fg.group_name, cf.field_id, cf.field_label, s.site_label');
-		$this->db->from('field_groups AS fg');
-		$this->db->join('sites AS s', 's.site_id = fg.site_id');
-		$this->db->join('channel_fields AS cf', 'cf.group_id = fg.group_id');
+		$this->db->select('cf.field_id, cf.field_label, cf.field_name, s.site_label');
+		$this->db->from('channel_fields AS cf');
+		$this->db->join('sites AS s', 's.site_id = cf.site_id');
 
 		if ($this->config->item('multiple_sites_enabled') !== 'y')
 		{
 			$this->db->where('cf.site_id', 1);
 		}
 
-		$this->db->order_by('s.site_label, fg.group_id, cf.field_label');
+		$this->db->order_by('s.site_label, cf.field_label, cf.field_name');
 
 		$query = $this->db->get();
 
@@ -55,16 +54,13 @@ class Tools_model extends CI_Model {
 
 		$fields = array();
 
+		$display_site = ($this->config->item('multiple_sites_enabled') == 'y');
+
 		foreach($query->result() as $row)
 		{
-			if ($this->config->item('multiple_sites_enabled') == 'y')
-			{
-				$fields["field_id_{$row->field_id}"] = $row->site_label.' - '.$row->field_label.' ('.$row->group_name.')';
-			}
-			else
-			{
-				$fields["field_id_{$row->field_id}"] = $row->field_label.' ('.$row->group_name.')';
-			}
+			$prefix = ($display_site) ? $row->site_label . ' - ' : '';
+
+			$fields["field_id_{$row->field_id}"] = $prefix . $row->field_label .' {' . $row->field_name . '}';
 		}
 
 		$options['channel_fields'] = array('name' => $this->lang->line('channel_fields'), 'choices' => $fields);

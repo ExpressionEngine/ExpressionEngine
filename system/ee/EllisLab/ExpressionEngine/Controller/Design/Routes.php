@@ -20,8 +20,6 @@ use EllisLab\ExpressionEngine\Library\Data\Collection;
  */
 class Routes extends AbstractDesignController {
 
-	protected $base_url;
-
 	/**
 	 * Constructor
 	 */
