@@ -312,14 +312,19 @@ class Channels extends AbstractChannelsController {
 	 */
 	private function renderFieldsTab($channel, $errors)
 	{
-		$field_groups = ee('Model')->get('ChannelFieldGroup')
+		$field_group_options = ee('Model')->get('ChannelFieldGroup')
+			->fields('group_name')
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('group_name')
-			->all();
-		foreach ($field_groups as $group)
-		{
-			$field_group_options[$group->group_id] = $group->group_name;
-		}
+			->all()
+			->getDictionary('group_id', 'group_name');
+
+		$custom_field_options = ee('Model')->get('ChannelField')
+			->fields('field_label')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('field_label')
+			->all()
+			->getDictionary('field_id', 'field_label');
 
 		$section = array(
 			array(
@@ -333,7 +338,12 @@ class Channels extends AbstractChannelsController {
 				)
 			),
 			array(
-				'title' => 'custom_field_groups',
+				'title' => 'field_groups',
+				'desc' => 'field_groups_desc',
+				'button' => [
+					'text' => 'add_group',
+					'rel' => 'add-field-group'
+				],
 				'fields' => array(
 					'field_group' => array(
 						'type' => 'checkbox',
@@ -344,6 +354,22 @@ class Channels extends AbstractChannelsController {
 							'link_text' => 'create_new_field_group',
 							'link_href' => ee('CP/URL')->make('channels/groups/create')
 						)
+					)
+				)
+			),
+			array(
+				'title' => 'fields',
+				'desc' => 'fields_desc',
+				'button' => [
+					'text' => 'add_field',
+					'rel' => 'add-field'
+				],
+				'fields' => array(
+					'custom_fields' => array(
+						'type' => 'checkbox',
+						'wrap' => TRUE,
+						'choices' => $custom_field_options,
+						'value' => $channel->CustomFields->pluck('field_id'),
 					)
 				)
 			),
@@ -364,31 +390,22 @@ class Channels extends AbstractChannelsController {
 	 */
 	private function renderCategoriesTab($channel, $errors)
 	{
-		$cat_group_options = array();
-		$category_groups = ee('Model')->get('CategoryGroup')
+		$cat_group_options = ee('Model')->get('CategoryGroup')
+			->fields('group_name')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('exclude_group', '!=', 1)
 			->order('group_name')
-			->all();
-		foreach ($category_groups as $group)
-		{
-			$cat_group_options[$group->group_id] = $group->group_name;
-		}
+			->all()
+			->getDictionary('group_id', 'group_name');
 
 		$section = array(
 			array(
-				'title' => 'custom_fields',
-				'fields' => array(
-					'custom_fields' => array(
-						'type' => 'checkbox',
-						'wrap' => TRUE,
-						'choices' => $custom_field_options,
-						'value' => $channel->CustomFields->pluck('field_id'),
-					)
-				)
-			),
-			array(
-				'title' => ucfirst(strtolower(lang('category_groups'))),
+				'title' => 'category_groups',
+				'desc' => 'category_groups_desc',
+				'button' => [
+					'text' => 'add_group',
+					'rel' => 'add-cat-group'
+				],
 				'fields' => array(
 					'cat_group' => array(
 						'type' => 'checkbox',

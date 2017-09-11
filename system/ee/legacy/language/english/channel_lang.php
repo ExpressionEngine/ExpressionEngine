@@ -2,6 +2,10 @@
 
 $lang = array(
 
+'add_field' => 'Add Field',
+
+'add_group' => 'Add Group',
+
 'add_tab' => 'Add Tab',
 
 'assigned_to' => 'assigned to',
@@ -10,7 +14,9 @@ $lang = array(
 
 'btn_preview_layout' => 'Preview Layout',
 
-'category_groups' => 'Category Groups',
+'category_groups' => 'Category groups',
+
+'category_groups_desc' => 'Assign one of more category groups to this channel.',
 
 'channel' => 'Channel',
 
@@ -94,7 +100,11 @@ $lang = array(
 
 'field_group' => 'Field Group',
 
-'field_groups' => 'Field Groups',
+'field_groups' => 'Field groups',
+
+'field_groups_desc' => 'Assign one of more field groups to this channel.',
+
+'fields_desc' => 'Assign one of more fields to this channel.',
 
 'form_layouts' => 'Publish Layouts',
 
