@@ -221,7 +221,7 @@ class EntryListing {
 
 				foreach ($this->getChannels() as $channel)
 				{
-					$custom_fields = array_merge($custom_fields, $channel->getAllCustomFields());
+					$custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
 				}
 			}
 
