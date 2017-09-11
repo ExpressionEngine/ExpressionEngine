@@ -318,9 +318,9 @@ class Select extends Query {
 
 				$query->where_in("{$parent_key}", $entry_ids);
 
-				$data = $query->get()->result_array();
+				$data = $query->get();
 
-				foreach ($data as $row)
+				foreach ($data->result_array() as $row)
 				{
 					array_walk($result_array, function (&$data, $key, $field_data) use ($item_key_column){
 						if ($data[$item_key_column] == $field_data[$item_key_column])
@@ -329,6 +329,7 @@ class Select extends Query {
 						}
 					}, $row);
 				}
+				$data->free_result();
 			}
 		}
 
