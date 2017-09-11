@@ -21,6 +21,13 @@ class Select extends Query {
 	protected $aliases = array();
 	protected $relations = array();
 	protected $model_fields = array();
+	protected $searched_fields = array();
+
+	/**
+	 * @var int $table_join_limit MySQL only allows 61 tables in a single
+	 *   statement. We'll keep our joins nunder that.
+	 */
+	private $table_join_limit = 59;
 
 	protected function getClass($alias = '')
 	{
@@ -284,7 +291,7 @@ class Select extends Query {
 				return $column[$item_key_column];
 			}, $result_array);
 
-			$chunks = array_chunk($fields, 59);
+			$chunks = array_chunk($fields, $this->table_join_limit);
 
 			foreach ($chunks as $fields)
 			{
