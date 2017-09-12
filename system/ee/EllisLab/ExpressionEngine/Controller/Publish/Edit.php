@@ -58,7 +58,7 @@ class Edit extends AbstractPublishController {
 			$entries->filter('author_id', ee()->session->userdata('member_id'));
 		}
 
-		$count = $entries->count();
+		$count = $entry_listing->getEntryCount();
 
 		if ( ! empty(ee()->view->search_value))
 		{

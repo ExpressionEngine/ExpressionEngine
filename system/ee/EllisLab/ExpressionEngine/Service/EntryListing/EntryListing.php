@@ -113,12 +113,24 @@ class EntryListing {
 	 */
 	public function getFilters()
 	{
-		$count = $this->getEntries()->count();
+		$count = $this->getEntryCount();
 
 		// Add this last to get the right $count
 		$this->filters->add('Perpage', $count, 'all_entries');
 
 		return $this->filters;
+	}
+
+	public function getEntryCount()
+	{
+		static $count;
+
+		if (is_null($count))
+		{
+			$count = $this->getEntries()->count();
+		}
+
+		return $count;
 	}
 
 	public function getChannelModelFromFilter()
