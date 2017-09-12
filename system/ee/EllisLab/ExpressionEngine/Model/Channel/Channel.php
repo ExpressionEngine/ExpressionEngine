@@ -529,8 +529,10 @@ class Channel extends StructureModel {
 	{
 		$fields = $this->CustomFields->indexBy('field_name');
 
-		foreach ($this->FieldGroups as $field_group)
+		foreach ($this->FieldGroups->pluck('group_id') as $group_id)
 		{
+			$field_group = $this->getFieldGroup($group_id);
+
 			foreach($field_group->ChannelFields as $field)
 			{
 				$fields[$field->field_name] = $field;
@@ -538,6 +540,22 @@ class Channel extends StructureModel {
 		}
 
 		return new Collection($fields);
+	}
+
+	private function getFieldGroup($id)
+	{
+		$cache_key = "ChannelFieldGroup/{$id}/";
+
+		if (($group = ee()->session->cache(__CLASS__, $cache_key, FALSE)) === FALSE)
+		{
+			$group = $this->getModelFacade()->get('ChannelFieldGroup', $id)
+				->with('ChannelFields')
+				->first();
+
+			ee()->session->set_cache(__CLASS__, $cache_key, $group);
+		}
+
+		return $group;
 	}
 }
 
