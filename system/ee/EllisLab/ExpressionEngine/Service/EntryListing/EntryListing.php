@@ -113,12 +113,39 @@ class EntryListing {
 	 */
 	public function getFilters()
 	{
-		$count = $this->getEntries()->count();
+		$count = $this->getEntryCount();
 
 		// Add this last to get the right $count
 		$this->filters->add('Perpage', $count, 'all_entries');
 
 		return $this->filters;
+	}
+
+	public function getEntryCount()
+	{
+		static $count;
+
+		if (is_null($count))
+		{
+			$count = $this->getEntries()->count();
+		}
+
+		return $count;
+	}
+
+	public function getChannelModelFromFilter()
+	{
+		static $channel = NULL;
+
+		if (is_null($channel)
+			&& $this->channel_filter
+			&& $this->channel_filter->value())
+		{
+			$channel = ee('Model')->get('Channel', $this->channel_filter->value())
+				->first();
+		}
+
+		return $channel;
 	}
 
 	/**
@@ -127,15 +154,9 @@ class EntryListing {
 	 */
 	private function setupFilters()
 	{
-		$channel = NULL;
-
 		$this->channel_filter = $this->createChannelFilter();
 
-		if ($this->channel_filter->value())
-		{
-			$channel = ee('Model')->get('Channel', $this->channel_filter->value())
-				->first();
-		}
+		$channel = $this->getChannelModelFromFilter();
 
 		$this->category_filter = $this->createCategoryFilter($channel);
 		$this->status_filter = $this->createStatusFilter($channel);
@@ -171,8 +192,7 @@ class EntryListing {
 			if ($this->is_admin || in_array($channel_id, $this->allowed_channels))
 			{
 				$entries->filter('channel_id', $channel_id);
-				$channel = ee('Model')->get('Channel', $channel_id)
-					->first();
+				$channel = $this->getChannelModelFromFilter();
 
 				$channel_name = $channel->channel_title;
 			}
@@ -221,7 +241,7 @@ class EntryListing {
 
 				foreach ($this->getChannels() as $channel)
 				{
-					$custom_fields = array_merge($custom_fields, $channel->getAllCustomFields());
+					$custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
 				}
 			}
 
@@ -232,7 +252,6 @@ class EntryListing {
 
 			$entries->search($search_fields, $this->search_value);
 		}
-
 
 		$filter_values = $this->filters->values();
 
