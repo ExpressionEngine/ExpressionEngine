@@ -336,6 +336,24 @@ class Select extends Query {
 		return $result_array;
 	}
 
+	private function getCustomFields($model_name, $column_prefix, $field_ids)
+	{
+		$cache_key = "CustomFields/{$model_name}/" . implode(',', $field_ids);
+
+		if (($fields = ee()->session->cache(__CLASS__, $cache_key, FALSE)) === FALSE)
+		{
+			$fields = ee('Model')->get($model_name)
+				->fields($column_prefix.'field_id')
+				->filter($column_prefix.'field_id', 'IN', $field_ids)
+				->filter($column_prefix.'legacy_field_data', 'n')
+				->all();
+
+			ee()->session->set_cache(__CLASS__, $cache_key, $fields);
+		}
+
+		return $fields;
+	}
+
 	protected function augmentQuery($query)
 	{
 		$meta  = $this->store->getMetaDataReader($this->expandAlias($this->root_alias));
@@ -369,17 +387,14 @@ class Select extends Query {
 		{
 			$pks = array();
 
-			$fields = ee('Model')->get($meta_field_data['field_model'])
-				->fields($column_prefix.'field_id')
-				->filter($column_prefix.'field_id', 'IN', $field_ids)
-				->filter($column_prefix.'legacy_field_data', 'n');
+			$fields = $this->getCustomFields($meta_field_data['field_model'], $column_prefix, $field_ids);
 
 			// If we have fewer than our table limit we'll just keep on keeping on.
 			if ($fields->count() > $this->table_join_limit)
 			{
 				$search = $this->builder->getSearch();
 
-				foreach ($fields->all()->pluck('field_id') as $field_id)
+				foreach ($fields->pluck('field_id') as $field_id)
 				{
 					$field = "field_id_{$field_id}";
 					$words = $search[$field];
@@ -441,11 +456,7 @@ class Select extends Query {
 		{
 			$field_ids = array_unique($field_ids);
 
-			$fields = ee('Model')->get($meta_field_data['field_model'])
-				->fields($column_prefix.'field_id')
-				->filter($column_prefix.'field_id', 'IN', $field_ids)
-				->filter($column_prefix.'legacy_field_data', 'n')
-				->all();
+			$fields = $this->getCustomFields($meta_field_data['field_model'], $column_prefix, $field_ids);
 
 			foreach ($fields->pluck('field_id') as $field_id)
 			{
