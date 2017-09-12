@@ -116,7 +116,7 @@ class Edit extends AbstractPublishController {
 
 		if ($channel_id)
 		{
-			$channel = ee('Model')->get('Channel', $channel_id)->first();
+			$channel = $entry_listing->getChannelModelFromFilter();
 			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel->channel_title).'</a>';
 
 			// Have we reached the max entries limit for this channel?

@@ -121,21 +121,30 @@ class EntryListing {
 		return $this->filters;
 	}
 
+	public function getChannelModelFromFilter()
+	{
+		static $channel = NULL;
+
+		if (is_null($channel)
+			&& $this->channel_filter
+			&& $this->channel_filter->value())
+		{
+			$channel = ee('Model')->get('Channel', $this->channel_filter->value())
+				->first();
+		}
+
+		return $channel;
+	}
+
 	/**
 	 * Sets up our various filters for showing an entry listing and
 	 * creates the FilterFactory object
 	 */
 	private function setupFilters()
 	{
-		$channel = NULL;
-
 		$this->channel_filter = $this->createChannelFilter();
 
-		if ($this->channel_filter->value())
-		{
-			$channel = ee('Model')->get('Channel', $this->channel_filter->value())
-				->first();
-		}
+		$channel = $this->getChannelModelFromFilter();
 
 		$this->category_filter = $this->createCategoryFilter($channel);
 		$this->status_filter = $this->createStatusFilter($channel);
@@ -171,8 +180,7 @@ class EntryListing {
 			if ($this->is_admin || in_array($channel_id, $this->allowed_channels))
 			{
 				$entries->filter('channel_id', $channel_id);
-				$channel = ee('Model')->get('Channel', $channel_id)
-					->first();
+				$channel = $this->getChannelModelFromFilter();
 
 				$channel_name = $channel->channel_title;
 			}
