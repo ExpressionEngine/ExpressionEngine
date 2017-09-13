@@ -22,6 +22,7 @@ class Select extends Query {
 	protected $relations = array();
 	protected $model_fields = array();
 	protected $searched_fields = array();
+	protected $additional_search = array();
 
 	/**
 	 * @var int $table_join_limit MySQL only allows 61 tables in a single
@@ -385,52 +386,65 @@ class Select extends Query {
 
 		if ( ! empty($field_ids))
 		{
-			$pks = array();
+			$cache_key = "Query/Select/additionalSearch/" . md5(json_encode($field_ids));
 
-			$fields = $this->getCustomFields($meta_field_data['field_model'], $column_prefix, $field_ids);
-
-			// If we have fewer than our table limit we'll just keep on keeping on.
-			if ($fields->count() > $this->table_join_limit)
+			if (($cached_search = ee()->session->cache(__CLASS__, $cache_key, FALSE)) === FALSE)
 			{
-				$search = $this->builder->getSearch();
+				$pks = array();
 
-				foreach ($fields->pluck('field_id') as $field_id)
+				$fields = $this->getCustomFields($meta_field_data['field_model'], $column_prefix, $field_ids);
+
+				// If we have fewer than our table limit we'll just keep on keeping on.
+				if ($fields->count() > $this->table_join_limit)
 				{
-					$field = "field_id_{$field_id}";
-					$words = $search[$field];
+					$search = $this->builder->getSearch();
 
-					$sq = ee('Model/Datastore')->rawQuery();
-					$sq->select($primary_key);
-					$sq->from("{$join_table_prefix}{$field_id}");
-
-					$sq->or_start_like_group();
-					foreach ($words as $word => $include)
+					foreach ($fields->pluck('field_id') as $field_id)
 					{
-						$fn = $include ? 'like' : 'not_like';
-						$sq->$fn($field, $word);
-					}
-					$sq->end_like_group();
+						$field = "field_id_{$field_id}";
+						$words = $search[$field];
 
-					$data = $sq->get();
-					foreach ($data->result_array() as $row)
+						$sq = ee('Model/Datastore')->rawQuery();
+						$sq->select($primary_key);
+						$sq->from("{$join_table_prefix}{$field_id}");
+
+						$sq->or_start_like_group();
+						foreach ($words as $word => $include)
+						{
+							$fn = $include ? 'like' : 'not_like';
+							$sq->$fn($field, $word);
+						}
+						$sq->end_like_group();
+
+						$data = $sq->get();
+						foreach ($data->result_array() as $row)
+						{
+							$pks[] = $row[$primary_key];
+						}
+						$data->free_result();
+
+						$this->searched_fields[] = "{$column_prefix}field_id_{$field_id}";
+					}
+
+					if ( ! empty($pks))
 					{
-						$pks[] = $row[$parent_key];
+						$pks = array_unique($pks);
+						$tables = array_keys($meta->getTables());
+						$this->additional_search = array("{$table_prefix}_{$tables[0]}.{$primary_key}", $pks);
 					}
-					$data->free_result();
-
-					$this->searched_fields[] = "{$column_prefix}field_id_{$field_id}";
 				}
 
-				if ( ! empty($pks))
-				{
-					$pks = array_unique($pks);
-					$query->where_in("{$primary_key}", $pks);
-				}
-
-				// Reset: we've investigated these and don't need to JOIN them for
-				// searching's sake
-				$field_ids = array();
+				ee()->session->set_cache(__CLASS__, $cache_key, array($this->additional_search, $this->searched_fields));
 			}
+			else
+			{
+				$this->additional_search = $cached_search[0];
+				$this->searched_fields = $cached_search[1];
+			}
+
+			// Reset: we've investigated these and don't need to JOIN them for
+			// searching's sake
+			$field_ids = array();
 		}
 
 		foreach ($this->builder->getFilters() as $filter)
@@ -651,6 +665,14 @@ class Select extends Query {
 			}
 
 			$query->end_like_group();
+		}
+
+		if ( ! empty($this->additional_search))
+		{
+			// We need to add this WHERE inside the LIKE group else the query doesn't work
+			$query->or_where_in($this->additional_search[0], $this->additional_search[1]);
+			$where = array_pop($query->ar_where);
+			$query->ar_like[] = $where;
 		}
 	}
 

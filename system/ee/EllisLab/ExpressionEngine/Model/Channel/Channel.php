@@ -550,7 +550,9 @@ class Channel extends StructureModel {
 		{
 			$group = $this->getModelFacade()->get('ChannelFieldGroup', $id)
 				->with('ChannelFields')
-				->first();
+				->all();
+
+			$group = $group[0];
 
 			ee()->session->set_cache(__CLASS__, $cache_key, $group);
 		}
