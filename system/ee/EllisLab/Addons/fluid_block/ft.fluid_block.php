@@ -61,7 +61,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 		{
 			foreach ($field_data as $key => $value)
 			{
-				if (strpos($key, '_id_'))
+				if (strpos($key, '_id_') and is_string($value))
 				{
 					$compiled_data_for_search[] = $value;
 				}
@@ -85,6 +85,11 @@ class Fluid_block_ft extends EE_Fieldtype {
 		$i = 1;
 		foreach ($data['fields'] as $key => $value)
 		{
+			if ($key == 'new_field_0')
+			{
+				continue;
+			}
+
 			// Existing field
 			if (strpos($key, 'field_') === 0)
 			{
