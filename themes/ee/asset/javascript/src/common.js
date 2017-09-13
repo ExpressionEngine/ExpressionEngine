@@ -401,7 +401,7 @@ $(document).ready(function(){
 				.trigger('change');
 		});
 
-		$('.field-inputs label input').on('click',function(){
+		$('body').on('click', '.field-inputs label input', function(){
 			$('input[name="'+$(this).attr('name')+'"]').each(function(index, el) {
 				$(this).parents('label').toggleClass('act', $(this).is(':checked'))
 			})
