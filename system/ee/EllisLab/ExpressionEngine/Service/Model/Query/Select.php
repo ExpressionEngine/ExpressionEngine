@@ -432,19 +432,20 @@ class Select extends Query {
 						$tables = array_keys($meta->getTables());
 						$this->additional_search = array("{$table_prefix}_{$tables[0]}.{$primary_key}", $pks);
 					}
+
+					// Reset: we've investigated these and don't need to JOIN them for
+					// searching's sake
+					$field_ids = array();
 				}
 
-				ee()->session->set_cache(__CLASS__, $cache_key, array($this->additional_search, $this->searched_fields));
+				ee()->session->set_cache(__CLASS__, $cache_key, array($this->additional_search, $this->searched_fields, $field_ids));
 			}
 			else
 			{
 				$this->additional_search = $cached_search[0];
 				$this->searched_fields = $cached_search[1];
+				$field_ids = $cached_search[2];
 			}
-
-			// Reset: we've investigated these and don't need to JOIN them for
-			// searching's sake
-			$field_ids = array();
 		}
 
 		foreach ($this->builder->getFilters() as $filter)
