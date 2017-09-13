@@ -55,7 +55,20 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 		ee()->session->set_cache(__CLASS__, $this->name(), $data);
 
-		return ' ';
+		$compiled_data_for_search = array();
+
+		foreach ($data['fields'] as $field_data)
+		{
+			foreach ($field_data as $key => $value)
+			{
+				if (strpos($key, '_id_'))
+				{
+					$compiled_data_for_search[] = $value;
+				}
+			}
+		}
+
+		return implode(' ', $compiled_data_for_search);
 	}
 
 	public function post_save($data)
