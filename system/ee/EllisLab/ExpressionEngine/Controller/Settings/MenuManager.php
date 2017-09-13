@@ -500,14 +500,19 @@ class MenuManager extends Settings {
 					'type' => array(
 						'type' => 'radio',
 						'choices' => $type_options,
-						'value' => $item->type
+						'value' => $item->type,
+						'group_toggle' => [
+							'addon' => 'addon',
+							'link' => 'link',
+							'submenu' => 'submenu',
+						]
 					)
 				)
 			),
 			array(
 				'title' => 'menu_label',
 				'desc' => 'menu_label_desc',
-				'group' => 'name',
+				'group' => ['link', 'submenu'],
 				'fields' => array(
 					'name' => array(
 						'type' => 'text',
