@@ -273,6 +273,8 @@ class FieldFacade {
 
 	public function replaceTag($tagdata, $params = array(), $modifier = '')
 	{
+		$ft = $this->getNativeField();
+
 		$this->initField();
 
 		$data = $this->getItem('row');
@@ -288,8 +290,6 @@ class FieldFacade {
 		));
 
 		$parse_fnc = ($modifier) ? 'replace_'.$modifier : 'replace_tag';
-
-		$ft = $this->getNativeField();
 
 		$output = '';
 
