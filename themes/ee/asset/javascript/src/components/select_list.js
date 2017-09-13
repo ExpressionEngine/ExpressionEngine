@@ -86,13 +86,6 @@ var SelectList = function (_React$Component) {
       if (_this.props.groupToggle) EE.cp.form_group_toggle(event.target);
     };
 
-    _this.handleRemove = function (event, item) {
-      _this.props.selectionChanged(_this.props.items.filter(function (thisItem) {
-        return thisItem.value != item.value;
-      }));
-      event.preventDefault();
-    };
-
     _this.clearSelection = function (event) {
       _this.props.selectionChanged([]);
       event.preventDefault();
@@ -329,7 +322,9 @@ var SelectList = function (_React$Component) {
               removable: _this7.props.removable,
               editable: _this7.props.editable,
               handleSelect: _this7.handleSelect,
-              handleRemove: _this7.handleRemove,
+              handleRemove: function handleRemove(e, item) {
+                return _this7.props.handleRemove(e, item);
+              },
               groupToggle: _this7.props.groupToggle
             });
           })
@@ -532,7 +527,10 @@ var SelectItem = function (_React$Component2) {
             props.item.children.map(function (item, index) {
               return React.createElement(SelectItem, _extends({}, props, {
                 key: item.value,
-                item: item
+                item: item,
+                handleRemove: function handleRemove(e, item) {
+                  return props.handleRemove(e, item);
+                }
               }));
             })
           )

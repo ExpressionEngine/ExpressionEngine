@@ -220,15 +220,6 @@ class SelectList extends React.Component {
     return items
   }
 
-  handleRemove = (event, item) => {
-    this.props.selectionChanged(
-      this.props.items.filter((thisItem) => {
-        return thisItem.value != item.value
-      })
-    )
-    event.preventDefault()
-  }
-
   clearSelection = (event) => {
     this.props.selectionChanged([])
     event.preventDefault()
@@ -303,7 +294,7 @@ class SelectList extends React.Component {
               removable={this.props.removable}
               editable={this.props.editable}
               handleSelect={this.handleSelect}
-              handleRemove={this.handleRemove}
+              handleRemove={(e, item) => this.props.handleRemove(e, item)}
               groupToggle={this.props.groupToggle}
             />
           )}
@@ -413,6 +404,7 @@ class SelectItem extends React.Component {
                 <SelectItem {...props}
                   key={item.value}
                   item={item}
+                  handleRemove={(e, item) => props.handleRemove(e, item)}
                 />
               )}
             </ul>

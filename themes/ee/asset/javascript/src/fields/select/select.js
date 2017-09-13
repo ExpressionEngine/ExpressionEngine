@@ -38,6 +38,11 @@ var SelectField = function (_React$Component) {
       });
     };
 
+    _this.handleRemove = function (event, item) {
+      event.preventDefault();
+      $(event.target).closest('li[data-id]').trigger('select:removeItem', [item]);
+    };
+
     _this.initialItems = SelectList.formatItems(props.items);
     _this.state = {
       selected: SelectList.formatItems(props.selected, null, props.multi),
@@ -85,6 +90,9 @@ var SelectField = function (_React$Component) {
         filterable: this.countItems() > SelectList.defaultProps.tooMany,
         reorderable: this.props.reorderable || this.state.editing,
         removable: this.props.removable || this.state.editing,
+        handleRemove: function handleRemove(e, item) {
+          return _this3.handleRemove(e, item);
+        },
         editable: this.props.editable || this.state.editing,
         selectable: this.props.selectable,
         groupToggle: this.props.groupToggle,

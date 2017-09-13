@@ -39,6 +39,13 @@ var Relationship = function (_React$Component) {
       });
     };
 
+    _this.handleRemove = function (event, item) {
+      _this.selectionChanged(_this.state.selected.filter(function (thisItem) {
+        return thisItem.value != item.value;
+      }));
+      event.preventDefault();
+    };
+
     _this.state = {
       selected: SelectList.formatItems(props.selected)
     };
@@ -70,10 +77,7 @@ var Relationship = function (_React$Component) {
           filterable: true,
           filters: this.props.select_filters,
           filterUrl: this.props.filter_url,
-          toggleAll: this.props.multi && this.props.items.length > SelectList.defaultProps.tooMany ? true : null,
-          onToggleAll: function onToggleAll(e) {
-            return _this2.handleToggleAll(true);
-          }
+          toggleAll: this.props.multi && this.props.items.length > SelectList.defaultProps.tooMany ? true : null
         }),
         this.props.multi && React.createElement(SelectedFilterableSelectList, {
           items: this.state.selectedVisible,
@@ -82,12 +86,12 @@ var Relationship = function (_React$Component) {
           selectable: false,
           reorderable: true,
           removable: true,
+          handleRemove: function handleRemove(e, item) {
+            return _this2.handleRemove(e, item);
+          },
           selectionChanged: this.selectionChanged,
           noResults: this.props.no_related,
-          toggleAll: this.props.items.length > SelectList.defaultProps.tooMany ? false : null,
-          onToggleAll: function onToggleAll(e) {
-            return _this2.handleToggleAll(false);
-          }
+          toggleAll: this.props.items.length > SelectList.defaultProps.tooMany ? false : null
         })
       );
     }

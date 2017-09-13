@@ -41,6 +41,15 @@ class Relationship extends React.Component {
     })
   }
 
+  handleRemove = (event, item) => {
+    this.selectionChanged(
+      this.state.selected.filter((thisItem) => {
+        return thisItem.value != item.value
+      })
+    )
+    event.preventDefault()
+  }
+
   render () {
     // Force the selected pane to re-render because we need to pass in new
     // items as props which the filterable component doesn't expect...
@@ -60,7 +69,6 @@ class Relationship extends React.Component {
           filters={this.props.select_filters}
           filterUrl={this.props.filter_url}
           toggleAll={this.props.multi && this.props.items.length > SelectList.defaultProps.tooMany ? true : null}
-          onToggleAll={(e) => this.handleToggleAll(true)}
         />
 
         {this.props.multi &&
@@ -71,10 +79,10 @@ class Relationship extends React.Component {
             selectable={false}
             reorderable={true}
             removable={true}
+            handleRemove={(e, item) => this.handleRemove(e, item)}
             selectionChanged={this.selectionChanged}
             noResults={this.props.no_related}
             toggleAll={this.props.items.length > SelectList.defaultProps.tooMany ? false : null}
-            onToggleAll={(e) => this.handleToggleAll(false)}
           />
         }
       </div>

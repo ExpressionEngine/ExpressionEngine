@@ -53,6 +53,11 @@ class SelectField extends React.Component {
     return count
   }
 
+  handleRemove = (event, item) => {
+    event.preventDefault()
+    $(event.target).closest('li[data-id]').trigger('select:removeItem', [item])
+  }
+
   render () {
     let selectItem = <FilterableSelectList items={this.initialItems}
       limit={this.props.limit}
@@ -69,6 +74,7 @@ class SelectField extends React.Component {
       filterable={this.countItems() > SelectList.defaultProps.tooMany}
       reorderable={this.props.reorderable || this.state.editing}
       removable={this.props.removable || this.state.editing}
+      handleRemove={(e, item) => this.handleRemove(e, item)}
       editable={this.props.editable || this.state.editing}
       selectable={this.props.selectable}
       groupToggle={this.props.groupToggle}
