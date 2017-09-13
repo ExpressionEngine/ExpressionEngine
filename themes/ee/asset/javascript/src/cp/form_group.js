@@ -125,8 +125,8 @@ EE.cp.form_group_toggle = function(element) {
 	};
 
 	var toggle = function (key, data) {
-		var field_targets = $('*[data-group="'+data+'"]');
-		var section_targets = $('*[data-section-group="'+data+'"]');
+		var field_targets = $('*[data-group*="'+data+'"]');
+		var section_targets = $('*[data-section-group*="'+data+'"]');
 
 		if (states[data] == undefined || states[data] == false) {
 			states[data] = (key == value);

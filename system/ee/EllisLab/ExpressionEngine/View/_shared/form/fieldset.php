@@ -76,6 +76,10 @@ if (isset($setting['group']))
 {
 	$setting_group = $setting['group'];
 }
+if (is_array($setting_group))
+{
+	$setting_group = implode('|', $setting_group);
+}
 
 // Grids have to be in a div for an overflow bug in Firefox
 $element = ($grid) ? 'div' : 'fieldset'; ?>
