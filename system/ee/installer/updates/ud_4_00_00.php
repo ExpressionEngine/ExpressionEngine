@@ -737,7 +737,8 @@ class Updater {
 			)
 		);
 
-		ee()->dbforge->add_key(array('block_id', 'entry_id'), TRUE);
+		ee()->dbforge->add_key('id', TRUE);
+		ee()->dbforge->add_key(array('block_id', 'entry_id'));
 		ee()->smartforge->create_table('fluid_block_data');
 	}
 }
