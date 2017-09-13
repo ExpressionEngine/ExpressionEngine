@@ -102,10 +102,10 @@ class SelectList extends React.Component {
   bindNestable () {
     $(this.container).nestable({
       listNodeName: 'ul',
-      listClass: 'field-inputs.field-nested',
+      listClass: 'field-nested',
       itemClass: 'nestable-item',
       rootClass: 'field-select',
-      dragClass: 'field-reorder-drag',
+      dragClass: 'field-inputs.field-reorder-drag',
       handleClass: 'icon-reorder',
       placeElement: $('<li class="field-reorder-placeholder"></li>'),
       expandBtnHTML: '',
@@ -408,7 +408,7 @@ class SelectItem extends React.Component {
         <li className="nestable-item" data-id={props.item.value}>
           {listItem}
           {props.item.children &&
-            <ul className="field-inputs field-nested">
+            <ul className="field-nested">
               {props.item.children.map((item, index) =>
                 <SelectItem {...props}
                   key={item.value}

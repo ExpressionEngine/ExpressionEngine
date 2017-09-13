@@ -179,10 +179,10 @@ var SelectList = function (_React$Component) {
 
       $(this.container).nestable({
         listNodeName: 'ul',
-        listClass: 'field-inputs.field-nested',
+        listClass: 'field-nested',
         itemClass: 'nestable-item',
         rootClass: 'field-select',
-        dragClass: 'field-reorder-drag',
+        dragClass: 'field-inputs.field-reorder-drag',
         handleClass: 'icon-reorder',
         placeElement: $('<li class="field-reorder-placeholder"></li>'),
         expandBtnHTML: '',
@@ -528,7 +528,7 @@ var SelectItem = function (_React$Component2) {
           listItem,
           props.item.children && React.createElement(
             'ul',
-            { className: 'field-inputs field-nested' },
+            { className: 'field-nested' },
             props.item.children.map(function (item, index) {
               return React.createElement(SelectItem, _extends({}, props, {
                 key: item.value,
