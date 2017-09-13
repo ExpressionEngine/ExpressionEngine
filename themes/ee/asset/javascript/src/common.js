@@ -360,6 +360,10 @@ $(document).ready(function(){
 					// Remove viewport scroll
 					$('body').css('overflow','hidden');
 				}
+
+				var button = $('.form-ctrls input.btn, .form-ctrls button.btn', this);
+				button.removeClass('work');
+				button.val(button.data('submit-text'));
 			}
 		});
 
