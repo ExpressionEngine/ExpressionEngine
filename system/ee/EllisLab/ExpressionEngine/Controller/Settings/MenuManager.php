@@ -427,6 +427,8 @@ class MenuManager extends Settings {
 
 		$item = $item ?: ee('Model')->make('MenuItem', array('sort' => 1));
 
+		$vars = array('sections' => array());
+
 		if ( ! empty($_POST))
 		{
 			if (isset($set))
@@ -446,7 +448,7 @@ class MenuManager extends Settings {
 				case 'link':
 					$item->type = 'link';
 					$item->name = ee('Request')->post('name');
-					$item->data = $this->processURL(ee('Request')->post('url'));
+					$item->data = $this->processURL(ee('Request')->post('data'));
 					break;
 				case 'submenu':
 					$item->type = 'submenu';
@@ -462,14 +464,18 @@ class MenuManager extends Settings {
 				return ee()->output->send_ajax_response($response);
 			}
 
-			if (isset($set) && ! $set->isNew())
+			if ($result->isValid() && isset($set))
 			{
 				$item->save();
-			}
 
-			ee()->output->send_ajax_response(array(
-				'reorder_list' => $this->reorderList($set, TRUE)
-			));
+				ee()->output->send_ajax_response(array(
+					'reorder_list' => $this->reorderList($set, TRUE)
+				));
+			}
+			elseif ($result->isNotValid())
+			{
+				$vars['errors'] = $result;
+			}
 		}
 
 		$grid = $this->getSubmenuGrid($set, $item);
@@ -487,7 +493,6 @@ class MenuManager extends Settings {
 			);
 		}
 
-		$vars = array('sections' => array());
 		$vars['sections'][] = array(
 			array(
 				'title' => 'menu_type',
@@ -515,7 +520,7 @@ class MenuManager extends Settings {
 				'desc' => 'menu_url_desc',
 				'group' => 'link',
 				'fields' => array(
-					'url' => array(
+					'data' => array(
 						'type' => 'text',
 						'value' => ($item->type == 'link') ? $item->data : NULL
 					)
@@ -640,7 +645,7 @@ class MenuManager extends Settings {
 				$sub = $children[str_replace('row_id_', '', $row_id)];
 				$sub->type = 'link';
 				$sub->name = $columns['name'];
-				$sub->data = $this->processURL($columns['url']);
+				$sub->data = $this->processURL($columns['data']);
 				$sub->sort = $i++;
 			}
 			else
@@ -648,7 +653,7 @@ class MenuManager extends Settings {
 				$sub = ee('Model')->make('MenuItem');
 				$sub->type = 'link';
 				$sub->name = $columns['name'];
-				$sub->data = $this->processURL($columns['url']);
+				$sub->data = $this->processURL($columns['data']);
 				$sub->sort = $i++;
 				$item->Children[] = $sub;
 			}
@@ -754,7 +759,7 @@ class MenuManager extends Settings {
 				'error' => ''
 			),
 			array(
-				'html' => form_input('url', $item->data),
+				'html' => form_input('data', $item->data),
 				'error' => ''
 			)
 		);
