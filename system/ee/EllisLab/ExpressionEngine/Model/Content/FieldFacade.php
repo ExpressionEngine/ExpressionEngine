@@ -75,7 +75,7 @@ class FieldFacade {
 		$this->content_type = $type;
 	}
 
-	public function getContentType($type)
+	public function getContentType()
 	{
 		return $this->content_type;
 	}
