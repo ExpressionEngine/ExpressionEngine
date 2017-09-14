@@ -89,7 +89,7 @@ var Relationship = function (_React$Component) {
           handleRemove: function handleRemove(e, item) {
             return _this2.handleRemove(e, item);
           },
-          selectionChanged: this.selectionChanged,
+          itemsChanged: this.selectionChanged,
           noResults: this.props.no_related,
           toggleAll: this.props.items.length > SelectList.defaultProps.tooMany ? false : null
         })

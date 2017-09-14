@@ -156,7 +156,7 @@ var SelectList = function (_React$Component) {
             ui.item.removeClass('field-reorder-drop');
           }, 1000);
 
-          _this2.props.selectionChanged(items.map(function (element) {
+          _this2.props.itemsChanged(items.map(function (element) {
             return _this2.props.items[element.dataset.sortableIndex];
           }));
         }

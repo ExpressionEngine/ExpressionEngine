@@ -91,7 +91,7 @@ class SelectList extends React.Component {
           ui.item.removeClass('field-reorder-drop')
         }, 1000)
 
-        this.props.selectionChanged(items.map((element) => {
+        this.props.itemsChanged(items.map((element) => {
           return this.props.items[element.dataset.sortableIndex]
         }))
       }

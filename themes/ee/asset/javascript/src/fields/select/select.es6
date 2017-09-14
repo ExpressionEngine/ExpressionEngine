@@ -27,6 +27,10 @@ class SelectField extends React.Component {
     })
   }
 
+  itemsReordered = (items) => {
+    this.initialItems = items
+  }
+
   selectionChanged = (selected) => {
     this.setState({
       selected: selected
@@ -67,6 +71,7 @@ class SelectField extends React.Component {
       autoSelectParents={this.props.autoSelectParents}
       selected={this.state.selected}
       filterUrl={this.props.filterUrl}
+      itemsChanged={this.itemsReordered}
       selectionChanged={this.selectionChanged}
       noResults={this.props.noResults}
       filters={this.props.filters}

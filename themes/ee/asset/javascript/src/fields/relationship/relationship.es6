@@ -80,7 +80,7 @@ class Relationship extends React.Component {
             reorderable={true}
             removable={true}
             handleRemove={(e, item) => this.handleRemove(e, item)}
-            selectionChanged={this.selectionChanged}
+            itemsChanged={this.selectionChanged}
             noResults={this.props.no_related}
             toggleAll={this.props.items.length > SelectList.defaultProps.tooMany ? false : null}
           />

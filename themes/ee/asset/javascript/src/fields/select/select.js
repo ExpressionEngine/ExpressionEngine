@@ -26,6 +26,10 @@ var SelectField = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (SelectField.__proto__ || Object.getPrototypeOf(SelectField)).call(this, props));
 
+    _this.itemsReordered = function (items) {
+      _this.initialItems = items;
+    };
+
     _this.selectionChanged = function (selected) {
       _this.setState({
         selected: selected
@@ -83,6 +87,7 @@ var SelectField = function (_React$Component) {
         autoSelectParents: this.props.autoSelectParents,
         selected: this.state.selected,
         filterUrl: this.props.filterUrl,
+        itemsChanged: this.itemsReordered,
         selectionChanged: this.selectionChanged,
         noResults: this.props.noResults,
         filters: this.props.filters,
