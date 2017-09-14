@@ -83,26 +83,27 @@ $(document).ready(function () {
 EE.cp.Modal = {
 
 	/**
-	 * Opens a confirm remova; modal created and inserted into the DOM by the
-	 * CP/Modal service, and then does the form and view manipulation for the
-	 * current item being deleted. Only supports one item at the moment.
+	 * Opens the confirm removal modal and does the form and view manipulation
+	 * for the current item being deleted. Only supports one item at the moment.
 	 *
-	 * @param  {string}   rel      Modal name
-	 * @param  {string}   input    Input name in the modal to inject a value
-	 * @param  {string}   label    Label of item being deleted
-	 * @param  {mixed}    value    Value, typically an ID, of item being deleted
-	 * @param  {Function} callback Callback on deletion of item
+	 * @param  {string}   actionUrl Form action URL for removal
+	 * @param  {string}   label     Label of item being deleted
+	 * @param  {mixed}    value     Value, typically an ID, of item being deleted
+	 * @param  {Function} callback  Callback on deletion of item
 	 * @return {void}
 	 */
-	openConfirmRemove: function(rel, input, label, value, callback) {
-		var modal = $('.'+rel)
+	openConfirmRemove: function(actionUrl, label, value, callback) {
+		var modal = $('.modal-default-confirm-remove'),
+			form = modal.find('form'),
+			input = modal.find('input[name="content_id"]')
 
 		// Add the name of the item we're deleting to the modal
 		$('.checklist', modal)
 			.html('')
 			.append('<li>' + label + '</li>')
 
-		$('input[name="'+input+'"]', modal).val(value)
+		input.val(value)
+		form.attr('action', actionUrl)
 
 		modal.trigger('modal:open')
 
@@ -115,4 +116,4 @@ EE.cp.Modal = {
 			return false
 		})
 	}
-}
+};

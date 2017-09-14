@@ -254,29 +254,16 @@ class MenuManager extends Settings {
 
 		$grid->loadAssets();
 
-		ee()->javascript->set_global(array(
-			'item_create_url' =>
+		ee()->javascript->set_global([
+			'menuSetsItem.createUrl' =>
 			ee('CP/URL')->make('settings/menu-manager/create-item/'.$set_id)->compile(),
-			'item_edit_url' =>
+			'menuSetsItem.editUrl' =>
 			ee('CP/URL')->make('settings/menu-manager/edit-item/'.$set_id.'/###/')->compile(), // ### is replaced in JS. Can't append to S= urls
-		));
+			'menuSetsItem.removeUrl' =>
+			ee('CP/URL')->make('settings/menu-manager/remove-item')->compile(),
+		]);
 
-		ee()->cp->add_js_script('file', 'cp/form_group');
-		ee()->cp->add_js_script('file', 'cp/modal_form');
-		ee()->cp->add_js_script('file', 'cp/confirm_remove');
 		ee()->cp->add_js_script('file', 'cp/settings/menu-manager/edit');
-
-		$modal_vars = array(
-			'name'		=> 'modal-menu-confirm-remove',
-			'form_url'	=> ee('CP/URL')->make('settings/menu-manager/remove-item', ee()->cp->get_url_state()),
-			'hidden'	=> array(
-				'bulk_action'	=> 'remove',
-				'item_id' => ''
-			)
-		);
-
-		$modal = ee('View')->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
-		ee('CP/Modal')->addModal('remove', $modal);
 
 		ee()->view->cp_page_title = is_null($set_id) ? lang('create_menu_set') : lang('edit_menu_set');
 		ee()->view->ajax_validate = TRUE;
@@ -415,7 +402,7 @@ class MenuManager extends Settings {
 
 	public function removeItem()
 	{
-		$item_id = ee('Request')->post('item_id');
+		$item_id = ee('Request')->post('content_id');
 
 		$item = ee('Model')->get('MenuItem', $item_id)->first();
 		$set_id = $item->set_id;
@@ -425,7 +412,7 @@ class MenuManager extends Settings {
 		$set = ee('Model')->get('MenuSet', $set_id)->first();
 
 		ee()->output->send_ajax_response(array(
-			'reorder_list' => $this->reorderList($set, TRUE)
+			'selectList' => $this->reorderList($set, TRUE)
 		));
 	}
 
@@ -483,7 +470,7 @@ class MenuManager extends Settings {
 				$item->save();
 
 				ee()->output->send_ajax_response(array(
-					'reorder_list' => $this->reorderList($set, TRUE)
+					'selectList' => $this->reorderList($set, TRUE)
 				));
 			}
 			elseif ($result->isNotValid())
