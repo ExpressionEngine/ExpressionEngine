@@ -47,7 +47,7 @@ class SelectField extends React.Component {
   countItems(items) {
     items = items || this.initialItems
 
-    count = items.length + items.reduce((sum, item) => {
+    let count = items.length + items.reduce((sum, item) => {
       if (item.children) {
         return sum + this.countItems(item.children)
       }
