@@ -59,7 +59,7 @@ class SelectField extends React.Component {
 
   handleRemove = (event, item) => {
     event.preventDefault()
-    $(event.target).closest('li[data-id]').trigger('select:removeItem', [item])
+    $(event.target).closest('[data-id]').trigger('select:removeItem', [item])
   }
 
   render () {
@@ -68,6 +68,7 @@ class SelectField extends React.Component {
       name={this.props.name}
       multi={this.props.multi}
       nested={this.props.nested}
+      nestableReorder={this.props.nestableReorder}
       autoSelectParents={this.props.autoSelectParents}
       selected={this.state.selected}
       filterUrl={this.props.filterUrl}
@@ -109,16 +110,16 @@ $(document).ready(function () {
 
 Grid.bind('relationship', 'displaySettings', function(cell) {
   SelectField.renderFields(cell)
-});
+})
 
 Grid.bind('checkboxes', 'display', function(cell) {
   SelectField.renderFields(cell)
-});
+})
 
 Grid.bind('radio', 'display', function(cell) {
   SelectField.renderFields(cell)
-});
+})
 
 Grid.bind('multi_select', 'display', function(cell) {
   SelectField.renderFields(cell)
-});
+})

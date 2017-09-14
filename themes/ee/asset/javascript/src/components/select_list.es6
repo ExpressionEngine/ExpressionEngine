@@ -10,6 +10,7 @@ class SelectList extends React.Component {
   static defaultProps = {
     filterable: false,
     reorderable: false,
+    nestableReorder: false,
     removable: false,
     selectable: true,
     tooMany: 8
@@ -58,8 +59,11 @@ class SelectList extends React.Component {
   }
 
   componentDidMount () {
-    if (this.props.reorderable && ! this.props.nested) this.bindSortable()
-    if (this.props.nested && this.props.reorderable) this.bindNestable()
+    if (this.props.nestableReorder) {
+      this.bindNestable()
+    } else if (this.props.reorderable) {
+      this.bindSortable()
+    }
   }
 
   componentDidUpdate (prevProps, prevState) {
@@ -67,17 +71,21 @@ class SelectList extends React.Component {
       $(this.input).trigger('change')
     }
 
-    if (this.props.nested && this.props.reorderable) this.bindNestable()
+    if (this.props.nestableReorder) {
+      this.bindNestable()
+    }
   }
 
-  // Sorting for nested lists
   bindSortable () {
-    $('.field-inputs', this.container).sortable({
+    let selector = this.props.nested ? '.field-nested' : '.field-inputs'
+
+    $(selector, this.container).sortable({
       axis: 'y',
       containment: 'parent',
       handle: '.icon-reorder',
-      items: 'label',
+      items: this.props.nested ? '> li' : 'label',
       placeholder: 'field-reorder-placeholder',
+      sort: EE.sortable_sort_helper,
       start: (event, ui) => {
         ui.helper.addClass('field-reorder-drag')
       },
@@ -98,7 +106,6 @@ class SelectList extends React.Component {
     })
   }
 
-  // Sorting for non-nested lists
   bindNestable () {
     $(this.container).nestable({
       listNodeName: 'ul',

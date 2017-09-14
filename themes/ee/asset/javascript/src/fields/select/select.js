@@ -44,7 +44,7 @@ var SelectField = function (_React$Component) {
 
     _this.handleRemove = function (event, item) {
       event.preventDefault();
-      $(event.target).closest('li[data-id]').trigger('select:removeItem', [item]);
+      $(event.target).closest('[data-id]').trigger('select:removeItem', [item]);
     };
 
     _this.initialItems = SelectList.formatItems(props.items);
@@ -65,7 +65,7 @@ var SelectField = function (_React$Component) {
 
       items = items || this.initialItems;
 
-      count = items.length + items.reduce(function (sum, item) {
+      var count = items.length + items.reduce(function (sum, item) {
         if (item.children) {
           return sum + _this2.countItems(item.children);
         }
@@ -84,6 +84,7 @@ var SelectField = function (_React$Component) {
         name: this.props.name,
         multi: this.props.multi,
         nested: this.props.nested,
+        nestableReorder: this.props.nestableReorder,
         autoSelectParents: this.props.autoSelectParents,
         selected: this.state.selected,
         filterUrl: this.props.filterUrl,

@@ -75,6 +75,7 @@ else:
 		'selected' => $value,
 		'multi' => $multi,
 		'nested' => $nested,
+		'nestableReorder' => isset($nestable_reorder) ? $nestable_reorder : FALSE,
 		'disabled' => isset($disabled) ? $disabled : FALSE,
 		'autoSelectParents' => isset($auto_select_parents) ? $auto_select_parents : NULL,
 		'tooMany' => $too_many,
