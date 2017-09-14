@@ -136,8 +136,8 @@ class Tag {
 	{
 		foreach ($this->getSingleTags($tagdata) as $tag)
 		{
-			$tag = LD.$tag.RD;
 			$field_output = $this->replaceSingle($field, $tag);
+			$tag = LD.$tag.RD;
 			$tagdata = str_replace($tag, $field_output, $tagdata);
 		}
 
