@@ -284,7 +284,10 @@ class Fluid_block_parser {
 			{
 				$field = $block->getField();
 
-				$field->setItem('row', array_merge($channel_row, $block->getFieldData()->getValues()));
+				$row = array_merge($channel_row, $block->getFieldData()->getValues());
+				$row['entry_id'] = $entry_id; // the merge can sometimes wipe this out
+
+				$field->setItem('row', $row);
 
 				$output .=  $tag->parse($field);
 			}
