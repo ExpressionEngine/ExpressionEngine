@@ -148,7 +148,13 @@ class Grid_model extends CI_Model {
 					'type'				=> 'int',
 					'constraint'		=> 10,
 					'unsigned'			=> TRUE
-				)
+				),
+				'block_dagt_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'default'           => 0
+				),
 			);
 
 			ee()->dbforge->add_field($db_columns);
@@ -338,7 +344,7 @@ class Grid_model extends CI_Model {
 	 * @param	boolean	Whether or not to get fresh data on this call instead of from the _grid_data cache
 	 * @return	array	Row data
 	 */
-	public function get_entry_rows($entry_ids, $field_id, $content_type, $options = array(), $reset_cache = FALSE)
+	public function get_entry_rows($entry_ids, $field_id, $content_type, $options = array(), $reset_cache = FALSE, $block_data_id = 0)
 	{
 		if ( ! is_array($entry_ids))
 		{
@@ -397,8 +403,9 @@ class Grid_model extends CI_Model {
 				$orderby = 'row_order';
 			}
 
-			ee()->db->where_in('entry_id', $entry_ids)
-				->order_by($orderby, element('sort', $options, 'asc'));
+			ee()->db->where_in('entry_id', $entry_ids);
+			ee()->db->where('block_data_id', $block_data_id);
+			ee()->db->order_by($orderby, element('sort', $options, 'asc'));
 
 			// -------------------------------------------
 			// 'grid_query' hook.
@@ -698,7 +705,7 @@ class Grid_model extends CI_Model {
 	 * @param	int	Entry ID to assign the row to
 	 * @return	array	IDs of rows to be deleted
 	 */
-	public function save_field_data($data, $field_id, $content_type, $entry_id)
+	public function save_field_data($data, $field_id, $content_type, $entry_id, $block_data_id = NULL)
 	{
 		// Keep track of which rows are updated and which are new, and the
 		// order they are received
@@ -714,6 +721,11 @@ class Grid_model extends CI_Model {
 		{
 			// Each row gets its order updated
 			$columns['row_order'] = $order;
+
+			if ( ! is_null($block_data_id))
+			{
+				$columns['block_data_id'] = $block_data_id;
+			}
 
 			// New rows
 			if (strpos($row_id, 'new_row_') !== FALSE)
@@ -739,8 +751,14 @@ class Grid_model extends CI_Model {
 		// the data array, they are to be deleted
 		$deleted_rows = ee()->db->select('row_id')
 			->where('entry_id', $entry_id)
-			->where_not_in('row_id', $row_ids)
-			->get($table_name)
+			->where_not_in('row_id', $row_ids);
+
+		if ( ! is_null($block_data_id))
+		{
+			$deleted_rows->where('block_data_id', $block_data_id);
+		}
+
+		$deleted_rows = $deleted_rows->get($table_name)
 			->result_array();
 
 		// Put rows into an array for easy passing and returning for the hook

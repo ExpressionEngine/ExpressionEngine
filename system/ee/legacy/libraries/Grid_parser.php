@@ -116,7 +116,7 @@ class Grid_parser {
 	 * @param	string	Tag data of our field pair
 	 * @return	string	Parsed field data
 	 */
-	public function parse($channel_row, $field_id, $params, $tagdata, $content_type = 'channel')
+	public function parse($channel_row, $field_id, $params, $tagdata, $content_type = 'channel', $block_data_id = 0)
 	{
 		if (empty($tagdata))
 		{
@@ -126,7 +126,8 @@ class Grid_parser {
 		$entry_id = $channel_row['entry_id'];
 
 		ee()->load->model('grid_model');
-		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $field_id, $content_type, $params);
+		$reset_cache = (bool) $block_data_id;
+		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $field_id, $content_type, $params, $reset_cache, $block_data_id);
 
 		// Bail out if no entry data
 		if ($entry_data === FALSE OR ! isset($entry_data[$entry_id]))

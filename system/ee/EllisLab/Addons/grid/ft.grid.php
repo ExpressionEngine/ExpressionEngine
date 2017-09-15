@@ -69,7 +69,9 @@ class Grid_ft extends EE_Fieldtype {
 		{
 			$this->_load_grid_lib();
 
-			ee()->grid_lib->save($data);
+			$block_data_id = (isset($this->settings['block_data_id'])) ? $this->settings['block_data_id'] : 0;
+
+			ee()->grid_lib->save($data, $block_data_id);
 		}
 	}
 
@@ -131,7 +133,9 @@ class Grid_ft extends EE_Fieldtype {
 
 		$this->_load_grid_lib();
 
-	 	$field = ee()->grid_lib->display_field($grid, $data);
+		$block_data_id = (isset($this->settings['block_data_id'])) ? $this->settings['block_data_id'] : 0;
+
+	 	$field = ee()->grid_lib->display_field($grid, $data, $block_data_id);
 
 		if (REQ != 'CP')
 		{
@@ -158,7 +162,9 @@ class Grid_ft extends EE_Fieldtype {
 			ee()->grid_parser->grid_field_names[$this->id()] = $this->name();
 		}
 
-		return ee()->grid_parser->parse($this->row, $this->id(), $params, $tagdata, $this->content_type());
+		$block_data_id = (isset($this->settings['block_data_id'])) ? $this->settings['block_data_id'] : 0;
+
+		return ee()->grid_parser->parse($this->row, $this->id(), $params, $tagdata, $this->content_type(), $block_data_id);
 	}
 
 	/**

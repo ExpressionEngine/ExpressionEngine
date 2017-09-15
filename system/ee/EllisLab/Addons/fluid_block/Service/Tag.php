@@ -138,7 +138,18 @@ class Tag {
 		foreach ($pairs as $chk_data)
 		{
 			list($modifier, $content, $params, $chunk) = $chk_data;
-			$tpl_chunk = $this->parseSingle($field, $content);
+
+			if ($field->getType() == 'grid')
+			{
+				ee()->load->library('grid_parser');
+				ee()->grid_parser->grid_field_names[$field->getId()] = $field->getName();
+				$tpl_chunk = $field->replaceTag($content);
+			}
+			else
+			{
+				$tpl_chunk = $this->parseSingle($field, $content);
+			}
+
 			$tagdata = str_replace($chunk, $tpl_chunk, $tagdata);
 		}
 

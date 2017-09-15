@@ -36,7 +36,7 @@ class Grid_lib {
 	 * @param	array	Field data to display prepopulated in publish field
 	 * @return	string	HTML of publish field
 	 */
-	public function display_field($grid, $data)
+	public function display_field($grid, $data, $block_data_id = 0)
 	{
 		// Get columns just for this field
 		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->content_type);
@@ -55,7 +55,8 @@ class Grid_lib {
 		// Otherwise, we're editing or creating a new entry
 		else
 		{
-			$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type);
+			$reset_cache = (bool) $block_data_id;
+			$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type, array(), $reset_cache, $block_data_id);
 			$rows = (isset($rows[$this->entry_id])) ? $rows[$this->entry_id] : array();
 		}
 
@@ -283,7 +284,7 @@ class Grid_lib {
 	 * @param	array	Validated Grid publish form data
 	 * @return	boolean
 	 */
-	public function save($data)
+	public function save($data, $block_data_id = NULL)
 	{
 		$field_data = $this->_process_field_data('save', $data);
 
@@ -291,13 +292,14 @@ class Grid_lib {
 			$field_data['value'],
 			$this->field_id,
 			$this->content_type,
-			$this->entry_id
+			$this->entry_id,
+			$block_data_id
 		);
 
 		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->content_type);
 
 		// Get row data to send back to fieldtypes with new row IDs
-		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type, array(), TRUE);
+		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type, array(), TRUE, $block_data_id);
 		$rows = $rows[$this->entry_id];
 
 		// Remove deleted rows from $rows

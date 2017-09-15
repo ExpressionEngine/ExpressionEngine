@@ -753,6 +753,29 @@ class Updater {
 				)
 			)
 		);
+
+		ee()->db->from('channel_fields');
+		ee()->db->select('field_id');
+		ee()->db->where('field_type', 'grid');
+
+		$grids = ee()->db->get();
+
+		foreach ($grids->result_array() as $row)
+		{
+			$table = 'channel_grid_field_' . $row['field_id'];
+			ee()->smartforge->add_column(
+				$table,
+				array(
+					'block_data_id' => array(
+						'type'       => 'int',
+						'constraint' => 10,
+						'default'    => 0,
+						'unsigned'   => TRUE,
+						'null'       => FALSE,
+					)
+				)
+			);
+		}
 	}
 }
 
