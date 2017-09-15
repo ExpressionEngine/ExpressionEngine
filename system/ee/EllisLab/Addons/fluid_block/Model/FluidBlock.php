@@ -137,6 +137,9 @@ class FluidBlock extends Model {
 			$field->setTimezone($format);
 		}
 
+		$field->setName('content');
+		$field->setItem('block_data_id', $this->getId());
+
 		return $field;
 	}
 }
