@@ -129,6 +129,11 @@ class Relationship_ft extends EE_Fieldtype {
 			'field_id' => $field_id
 		);
 
+		if (isset($this->settings['block_data_id']))
+		{
+			$all_rows_where['block_data_id'] = $this->settings['block_data_id'];
+		}
+
 		if (isset($this->settings['grid_field_id']))
 		{
 			// grid takes the parent grid's field id and sticks it into "grid_field_id"
@@ -262,15 +267,17 @@ class Relationship_ft extends EE_Fieldtype {
 		if ($get_related)
 		{
 			$wheres = array(
-				'parent_id' => $entry_id,
-				'field_id' => $this->field_id,
+				'parent_id'     => $entry_id,
+				'field_id'      => $this->field_id,
+				'block_data_id' => (isset($this->settings['block_data_id'])) ? $this->settings['block_data_id'] : 0
+
 			);
 
 			if (isset($this->settings['grid_row_id']))
 			{
-				$wheres['grid_col_id'] = $this->settings['col_id'];
+				$wheres['grid_col_id']   = $this->settings['col_id'];
 				$wheres['grid_field_id'] = $this->settings['grid_field_id'];
-				$wheres['grid_row_id'] = $this->settings['grid_row_id'];
+				$wheres['grid_row_id']   = $this->settings['grid_row_id'];
 			}
 
 			ee()->db

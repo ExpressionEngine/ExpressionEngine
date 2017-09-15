@@ -96,6 +96,25 @@ class Tag {
 	{
 		$tagdata = $this->getTagdata();
 
+		if ($field->getType() == 'relationship')
+		{
+			ee()->load->library('relationships_parser');
+
+			$relationship_parser = ee()->relationships_parser->create(
+				array($field->getName() => $field->getId()),
+				array($field->getContentId()),
+				$tagdata,
+				array(),
+				NULL,
+				$field->getItem('block_data_id')
+			);
+
+			$channel = ee()->session->cache('mod_channel', 'active');
+			$tagdata = $relationship_parser->parse($field->getContentId(), $tagdata, $channel);
+
+			return $field->replaceTag($tagdata);
+		}
+
 		if ($this->hasPair())
 		{
 			$tagdata = $this->parsePairs($field);

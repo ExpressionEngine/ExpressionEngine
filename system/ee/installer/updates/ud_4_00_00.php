@@ -740,6 +740,19 @@ class Updater {
 		ee()->dbforge->add_key('id', TRUE);
 		ee()->dbforge->add_key(array('block_id', 'entry_id'));
 		ee()->smartforge->create_table('fluid_block_data');
+
+		ee()->smartforge->add_column(
+			'relationships',
+			array(
+				'block_data_id' => array(
+					'type'       => 'int',
+					'constraint' => 10,
+					'default'    => 0,
+					'unsigned'   => TRUE,
+					'null'       => FALSE,
+				)
+			)
+		);
 	}
 }
 

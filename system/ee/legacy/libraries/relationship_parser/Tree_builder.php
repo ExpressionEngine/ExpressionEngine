@@ -25,10 +25,12 @@ class EE_relationship_tree_builder {
 	protected $grid_relationship_names = NULL;			// grid_field_id => gridprefix:field_name
 	protected $grid_field_id = NULL;
 
+	protected $block_data_id = NULL;
+
 	/**
 	 * Create a tree builder for the given relationship fields
 	 */
-	public function __construct(array $relationship_fields, array $grid_relationships = array(), $grid_field_id = NULL)
+	public function __construct(array $relationship_fields, array $grid_relationships = array(), $grid_field_id = NULL, $block_data_id = NULL)
 	{
 		foreach ($relationship_fields as $site_id => $fields)
 		{
@@ -47,6 +49,8 @@ class EE_relationship_tree_builder {
 		$this->grid_relationship_ids = $grid_relationships;
 		$this->grid_relationship_names = array_flip($grid_relationships);
 		$this->grid_field_id = $grid_field_id;
+
+		$this->block_data_id = $block_data_id;
 	}
 
 	/**
@@ -123,7 +127,7 @@ class EE_relationship_tree_builder {
 			// Store flattened ids for the big entry query
 			$all_entry_ids[] = $this->_propagate_ids(
 				$node,
-				ee()->relationship_model->node_query($node, $entry_ids, $this->grid_field_id)
+				ee()->relationship_model->node_query($node, $entry_ids, $this->grid_field_id, $this->block_data_id)
 			);
 		}
 
