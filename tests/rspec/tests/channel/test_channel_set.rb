@@ -340,6 +340,45 @@ feature 'Channel Sets' do
       url['settings']['allowed_url_schemes'].should == ["http://", "https://", "//", "ftp://", "sftp://", "ssh://"]
     end
 
+    it 'exports a channel with a fluid block' do
+      @importer.fluid_block
+      download_channel_set(3)
+
+      # Check to see if the file exists
+      @page.load
+      name = @page.channel_names[2].text
+      path = File.expand_path("../../system/user/cache/cset/#{name}.zip")
+      File.exist?(path).should == true
+      no_php_js_errors
+
+      expected_files = %w(
+        /custom_fields/a_date.date
+        /custom_fields/checkboxes.checkboxes
+        /custom_fields/corpse.fluid_block
+        /custom_fields/electronic_mail_address.email_address
+        /custom_fields/home_page.url
+        /custom_fields/image.file
+        /custom_fields/middle_class_text.rte
+        /custom_fields/multi_select.multi_select
+        /custom_fields/radio.radio
+        /custom_fields/rel_item.relationship
+        /custom_fields/selection.select
+        /custom_fields/stupid_grid.grid
+        /custom_fields/text.textarea
+        /custom_fields/truth_or_dare.toggle
+        /custom_fields/youtube_url.text
+        channel_set.json
+      )
+      found_files = []
+      Zip::File.open(path) do |zipfile|
+        zipfile.each do |file|
+          found_files << file
+        end
+      end
+
+      found_files.sort.map(&:name) == expected_files.sort.should
+    end
+
     context 'with grid fields' do
       it 'exports without a relationship column' do
         import_channel_set 'grid-no-relationships'
