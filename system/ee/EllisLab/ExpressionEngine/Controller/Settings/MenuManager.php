@@ -275,6 +275,51 @@ class MenuManager extends Settings {
 	}
 
 	/**
+	 * AJAX endpoint to reorder a menu set's items
+	 */
+	public function itemReorder()
+	{
+		$order = 1;
+		$flattened = [];
+		foreach (ee('Request')->post('order') as $item)
+		{
+			$flattened += $this->flattenItemsTree($item, 0, $order);
+			$order++;
+		}
+
+		$items = ee('Model')->get('MenuItem', array_keys($flattened))->all();
+		foreach ($items as $item)
+		{
+			$item->sort = $flattened[$item->getId()];
+		}
+
+		$items->save();
+
+		return ['success'];
+	}
+
+	/**
+	 * Recursive function to flatten the item tree we get back from the SelectField
+	 */
+	private function flattenItemsTree($item, $parent_id, $order)
+	{
+		$flattened = [$item['id'] => $order];
+
+		// Has children? Flatten them to same array
+		if (isset($item['children']))
+		{
+			$order = 1;
+			foreach ($item['children'] as $child)
+			{
+				$flattened += $this->flattenItemsTree($child, $item['id'], $order);
+				$order++;
+			}
+		}
+
+		return $flattened;
+	}
+
+	/**
 	 * Show the upper half of the create/edit form for a menu set. This includes
 	 * the name and selected member groups.
 	 *
@@ -365,7 +410,8 @@ class MenuManager extends Settings {
 			'selectable'  => FALSE,
 			'reorderable' => TRUE,
 			'removable'   => TRUE,
-			'editable'    => TRUE
+			'editable'    => TRUE,
+			'reorder_ajax_url'    => ee('CP/URL', 'settings/menu-manager/item-reorder')->compile(),
 		]);
 	}
 
