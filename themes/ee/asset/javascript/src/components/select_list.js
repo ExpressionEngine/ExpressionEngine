@@ -153,20 +153,48 @@ var SelectList = function (_React$Component) {
           ui.helper.addClass('field-reorder-drag');
         },
         stop: function stop(event, ui) {
-          var items = ui.item.closest('.field-inputs').find('label').toArray();
-
           ui.item.removeClass('field-reorder-drag').addClass('field-reorder-drop');
 
           setTimeout(function () {
             ui.item.removeClass('field-reorder-drop');
           }, 1000);
 
-          _this2.props.itemsChanged(items.map(function (element) {
-            return _this2.props.items[element.dataset.sortableIndex];
-          }));
+          var getNestedItems = function getNestedItems(nodes) {
+            var serialized = [];
+            nodes.forEach(function (node) {
+              var item = {
+                id: node.dataset.id
+              };
+              var children = $(node).find('> ul > [data-id]');
+              if (children.size()) {
+                item['children'] = getNestedItems(children.toArray());
+              }
+              serialized.push(item);
+            });
+            return serialized;
+          };
+
+          var items = ui.item.closest('.field-inputs').find('> [data-id]').toArray();
+          var itemsHash = _this2.getItemsHash(_this2.props.items);
+          var nestedItems = getNestedItems(items);
+
+          _this2.props.itemsChanged(_this2.getItemsArrayForNestable(itemsHash, nestedItems));
+
+          if (_this2.props.reorderAjaxUrl) {
+            $.ajax({
+              url: _this2.props.reorderAjaxUrl,
+              data: { 'order': nestedItems },
+              type: 'POST',
+              dataType: 'json'
+            });
+          }
         }
       });
     }
+
+    // Allows for changing of parents and children, whereas sortable() will only
+    // let you change the order constrained to a level
+
   }, {
     key: 'bindNestable',
     value: function bindNestable() {
@@ -194,6 +222,8 @@ var SelectList = function (_React$Component) {
 
         var itemsHash = _this3.getItemsHash(_this3.props.items);
         var nestableData = $(event.target).nestable('serialize');
+
+        _this3.props.itemsChanged(_this3.getItemsArrayForNestable(itemsHash, nestableData));
 
         if (_this3.props.reorderAjaxUrl) {
           $.ajax({
@@ -313,7 +343,6 @@ var SelectList = function (_React$Component) {
           this.props.loading && React.createElement(Loading, { text: EE.lang.loading }),
           !this.props.loading && props.items.map(function (item, index) {
             return React.createElement(SelectItem, { key: item.value ? item.value : item.section,
-              sortableIndex: index,
               item: item,
               name: props.name,
               selected: props.selected,
@@ -450,20 +479,8 @@ var SelectItem = function (_React$Component2) {
       });
     }
   }, {
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      if (this.props.reorderable) this.node.dataset.sortableIndex = this.props.sortableIndex;
-    }
-  }, {
-    key: 'componentDidUpdate',
-    value: function componentDidUpdate() {
-      this.componentDidMount();
-    }
-  }, {
     key: 'render',
     value: function render() {
-      var _this9 = this;
-
       var props = this.props;
       var checked = this.checked(props.item.value);
 
@@ -477,9 +494,8 @@ var SelectItem = function (_React$Component2) {
 
       var listItem = React.createElement(
         'label',
-        { className: checked ? 'act' : '', ref: function ref(label) {
-            _this9.node = label;
-          } },
+        { className: checked ? 'act' : '',
+          'data-id': props.reorderable && !props.nested ? props.item.value : null },
         props.reorderable && React.createElement(
           'span',
           { className: 'icon-reorder' },
@@ -566,7 +582,7 @@ var SelectedItem = function (_React$Component3) {
   }, {
     key: 'render',
     value: function render() {
-      var _this11 = this;
+      var _this10 = this;
 
       var props = this.props;
       return React.createElement(
@@ -580,7 +596,7 @@ var SelectedItem = function (_React$Component3) {
           props.item.label,
           React.createElement('input', { type: 'hidden', name: props.name, value: props.item.value,
             ref: function ref(input) {
-              _this11.input = input;
+              _this10.input = input;
             } }),
           React.createElement(
             'ul',

@@ -38,6 +38,10 @@ function makeFilterableComponent(WrappedComponent) {
         _this.setState({
           items: items
         });
+
+        if (_this.props.itemsChanged) {
+          _this.props.itemsChanged(items);
+        }
       };
 
       _this.filterChange = function (name, value) {
@@ -120,7 +124,8 @@ function makeFilterableComponent(WrappedComponent) {
             return _this3.filterChange(name, value);
           },
           initialItems: this.initialItems,
-          items: this.state.items
+          items: this.state.items,
+          itemsChanged: this.initialItemsChanged
         }));
       }
     }]);

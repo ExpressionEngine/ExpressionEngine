@@ -26,10 +26,6 @@ var SelectField = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (SelectField.__proto__ || Object.getPrototypeOf(SelectField)).call(this, props));
 
-    _this.itemsReordered = function (items) {
-      _this.initialItems = items;
-    };
-
     _this.selectionChanged = function (selected) {
       _this.setState({
         selected: selected
@@ -47,7 +43,7 @@ var SelectField = function (_React$Component) {
       $(event.target).closest('[data-id]').trigger('select:removeItem', [item]);
     };
 
-    _this.initialItems = SelectList.formatItems(props.items);
+    _this.props.items = SelectList.formatItems(props.items);
     _this.state = {
       selected: SelectList.formatItems(props.selected, null, props.multi),
       editing: false
@@ -63,7 +59,7 @@ var SelectField = function (_React$Component) {
     value: function countItems(items) {
       var _this2 = this;
 
-      items = items || this.initialItems;
+      items = items || this.props.items;
 
       var count = items.length + items.reduce(function (sum, item) {
         if (item.children) {
@@ -79,7 +75,7 @@ var SelectField = function (_React$Component) {
     value: function render() {
       var _this3 = this;
 
-      var selectItem = React.createElement(FilterableSelectList, { items: this.initialItems,
+      var selectItem = React.createElement(FilterableSelectList, { items: this.props.items,
         limit: this.props.limit,
         name: this.props.name,
         multi: this.props.multi,
@@ -88,7 +84,6 @@ var SelectField = function (_React$Component) {
         autoSelectParents: this.props.autoSelectParents,
         selected: this.state.selected,
         filterUrl: this.props.filterUrl,
-        itemsChanged: this.itemsReordered,
         selectionChanged: this.selectionChanged,
         noResults: this.props.noResults,
         filters: this.props.filters,

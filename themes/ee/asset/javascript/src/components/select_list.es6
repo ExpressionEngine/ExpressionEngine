@@ -90,8 +90,6 @@ class SelectList extends React.Component {
         ui.helper.addClass('field-reorder-drag')
       },
       stop: (event, ui) => {
-        let items = ui.item.closest('.field-inputs').find('label').toArray()
-
         ui.item.removeClass('field-reorder-drag')
           .addClass('field-reorder-drop')
 
@@ -99,13 +97,43 @@ class SelectList extends React.Component {
           ui.item.removeClass('field-reorder-drop')
         }, 1000)
 
-        this.props.itemsChanged(items.map((element) => {
-          return this.props.items[element.dataset.sortableIndex]
-        }))
+        let getNestedItems = (nodes) => {
+          let serialized = []
+          nodes.forEach(node => {
+            let item = {
+              id: node.dataset.id
+            }
+            let children = $(node).find('> ul > [data-id]')
+            if (children.size()) {
+              item['children'] = getNestedItems(children.toArray())
+            }
+            serialized.push(item)
+          })
+          return serialized
+        }
+
+        let items = ui.item.closest('.field-inputs').find('> [data-id]').toArray()
+        let itemsHash = this.getItemsHash(this.props.items)
+        let nestedItems = getNestedItems(items)
+
+        this.props.itemsChanged(
+          this.getItemsArrayForNestable(itemsHash, nestedItems)
+        )
+
+        if (this.props.reorderAjaxUrl) {
+          $.ajax({
+            url: this.props.reorderAjaxUrl,
+            data: {'order': nestedItems},
+            type: 'POST',
+            dataType: 'json'
+          })
+        }
       }
     })
   }
 
+  // Allows for changing of parents and children, whereas sortable() will only
+  // let you change the order constrained to a level
   bindNestable () {
     $(this.container).nestable({
       listNodeName: 'ul',
@@ -129,6 +157,10 @@ class SelectList extends React.Component {
 
       let itemsHash = this.getItemsHash(this.props.items)
       var nestableData = $(event.target).nestable('serialize')
+
+      this.props.itemsChanged(
+        this.getItemsArrayForNestable(itemsHash, nestableData)
+      )
 
       if (this.props.reorderAjaxUrl) {
         $.ajax({
@@ -290,7 +322,6 @@ class SelectList extends React.Component {
           }
           { ! this.props.loading && props.items.map((item, index) =>
             <SelectItem key={item.value ? item.value : item.section}
-              sortableIndex={index}
               item={item}
               name={props.name}
               selected={props.selected}
@@ -351,14 +382,6 @@ class SelectItem extends React.Component {
     })
   }
 
-  componentDidMount () {
-    if (this.props.reorderable) this.node.dataset.sortableIndex = this.props.sortableIndex
-  }
-
-  componentDidUpdate () {
-    this.componentDidMount()
-  }
-
   render() {
     let props = this.props
     let checked = this.checked(props.item.value)
@@ -372,7 +395,8 @@ class SelectItem extends React.Component {
     }
 
     let listItem = (
-      <label className={(checked ? 'act' : '')} ref={(label) => { this.node = label }}>
+      <label className={(checked ? 'act' : '')}
+          data-id={props.reorderable && ! props.nested ? props.item.value : null}>
         {props.reorderable && (
           <span className="icon-reorder"> </span>
         )}

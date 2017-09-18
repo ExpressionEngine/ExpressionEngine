@@ -12,7 +12,7 @@ class SelectField extends React.Component {
   constructor (props) {
     super(props)
 
-    this.initialItems = SelectList.formatItems(props.items)
+    this.props.items = SelectList.formatItems(props.items)
     this.state = {
       selected: SelectList.formatItems(props.selected, null, props.multi),
       editing: false
@@ -25,10 +25,6 @@ class SelectField extends React.Component {
       props.name = $(this).data('inputValue')
       ReactDOM.render(React.createElement(SelectField, props, null), this)
     })
-  }
-
-  itemsReordered = (items) => {
-    this.initialItems = items
   }
 
   selectionChanged = (selected) => {
@@ -45,7 +41,7 @@ class SelectField extends React.Component {
 
   // Get count of all items including nested
   countItems(items) {
-    items = items || this.initialItems
+    items = items || this.props.items
 
     let count = items.length + items.reduce((sum, item) => {
       if (item.children) {
@@ -63,7 +59,7 @@ class SelectField extends React.Component {
   }
 
   render () {
-    let selectItem = <FilterableSelectList items={this.initialItems}
+    let selectItem = <FilterableSelectList items={this.props.items}
       limit={this.props.limit}
       name={this.props.name}
       multi={this.props.multi}
@@ -72,7 +68,6 @@ class SelectField extends React.Component {
       autoSelectParents={this.props.autoSelectParents}
       selected={this.state.selected}
       filterUrl={this.props.filterUrl}
-      itemsChanged={this.itemsReordered}
       selectionChanged={this.selectionChanged}
       noResults={this.props.noResults}
       filters={this.props.filters}

@@ -33,6 +33,10 @@ function makeFilterableComponent(WrappedComponent) {
       this.setState({
         items: items
       })
+
+      if (this.props.itemsChanged) {
+        this.props.itemsChanged(items)
+      }
     }
 
     filterItems (items, searchTerm) {
@@ -93,6 +97,7 @@ function makeFilterableComponent(WrappedComponent) {
         filterChange={(name, value) => this.filterChange(name, value)}
         initialItems={this.initialItems}
         items={this.state.items}
+        itemsChanged={this.initialItemsChanged}
       />
     }
   }
