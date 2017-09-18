@@ -155,7 +155,13 @@ return array(
 
 		'Format' => function($ee)
 		{
-			return new Formatter\FormatterFactory(ee()->lang);
+			static $format_opts;
+			if ($format_opts === NULL)
+			{
+				$format_opts += (extension_loaded('intl')) ? 0b00000001 : 0;
+			}
+
+			return new Formatter\FormatterFactory(ee()->lang, $format_opts);
 		},
 
 		'Curl' => function($ee)

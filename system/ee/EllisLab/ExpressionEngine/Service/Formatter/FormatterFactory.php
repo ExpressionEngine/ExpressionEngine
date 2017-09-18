@@ -23,14 +23,30 @@ class FormatterFactory {
 	private $lang;
 
 	/**
+	 * @var boolean $intl_loaded Whether or not the intl extension is loaded
+	 */
+	protected $intl_loaded = FALSE;
+
+	/**
+	 * @var binary (1) Bitwise options make for intl_loaded. Can't use const until PHP 5.6
+	 */
+	private $OPT_INTL_LOADED = 0b00000001;
+
+	/**
 	 * Constructor
 	 *
 	 * @param object EllisLab\ExpressionEngine\Core\Provider
+	 * @param integer bitwise-defined options
 	 * @param object EE_Lang
 	 */
-	public function __construct(EE_Lang $lang)
+	public function __construct(EE_Lang $lang, $options)
 	{
 		$this->lang = $lang;
+
+		if ($options & $this->OPT_INTL_LOADED)
+		{
+			$this->intl_loaded = TRUE;
+		}
 	}
 
 	/**
