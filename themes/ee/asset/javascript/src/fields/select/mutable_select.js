@@ -51,7 +51,7 @@ var MutableSelectField = function () {
     value: function bindEdit() {
       var _this2 = this;
 
-      this.field.on('click', 'label > a', function (e) {
+      this.field.parent().on('click', 'label > a', function (e) {
         e.preventDefault();
         var itemId = $(e.target).closest('[data-id]').data('id');
         _this2.openForm(_this2.options.editUrl.replace('###', itemId));
@@ -62,7 +62,7 @@ var MutableSelectField = function () {
     value: function bindRemove() {
       var _this3 = this;
 
-      this.field.on('select:removeItem', '[data-id]', function (e, item) {
+      this.field.parent().on('select:removeItem', '[data-id]', function (e, item) {
         EE.cp.Modal.openConfirmRemove(_this3.options.removeUrl, item.label, item.value, function (result) {
           _this3.replaceField(result.selectList);
         });

@@ -34,7 +34,7 @@ class MutableSelectField {
   }
 
   bindEdit () {
-    this.field.on('click', 'label > a', (e) => {
+    this.field.parent().on('click', 'label > a', (e) => {
       e.preventDefault()
       let itemId = $(e.target).closest('[data-id]').data('id')
       this.openForm(this.options.editUrl.replace('###', itemId))
@@ -42,7 +42,7 @@ class MutableSelectField {
   }
 
   bindRemove () {
-    this.field.on('select:removeItem', '[data-id]', (e, item) => {
+    this.field.parent().on('select:removeItem', '[data-id]', (e, item) => {
       EE.cp.Modal.openConfirmRemove(
         this.options.removeUrl,
         item.label,
