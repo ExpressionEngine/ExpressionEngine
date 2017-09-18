@@ -647,6 +647,38 @@ feature 'Channel Sets' do
 			fields_assinged_to_group('FG One', ['checkboxes'])
 			fields_assinged_to_group('FG Two', ['electronic_mail_address'])
 		end
+
+        it 'imports a channel with a fluid block' do
+			import_channel_set 'channel-with-fluid-block', method: 'issue_duplicate'
+
+            @page.find('input[name="ee:UploadDestination[Images][server_path]"]').set '../images/uploads'
+            @page.find('input[name="ee:UploadDestination[Images][url]"]').set '/images/uploads'
+            @page.find('input[name="ee:UploadDestination[Images][url]"]').trigger 'blur'
+            @page.submit
+
+			check_success
+			channel_id = @page.get_channel_id_from_name('fluid_blocks')
+
+			fields_assigned_to_channel(channel_id, 2)
+			field_groups_assigned_to_channel(channel_id, 0)
+			fields_created [
+                'a_date',
+                'checkboxes',
+                'corpse',
+                'electronic_mail_address',
+                'home_page',
+                'image',
+                'middle_class_text',
+                'multi_select',
+                'radio',
+                'rel_item',
+                'selection',
+                'stupid_grid',
+                'text',
+                'truth_or_dare',
+                'youtube_url',
+			]
+        end
 	end
 
     it 'shows errors when the channel set cannot be imported' do
