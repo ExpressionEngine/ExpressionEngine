@@ -575,79 +575,79 @@ feature 'Channel Sets' do
       check_success
     end
 
-		context 'v4 channel sets' do
-			it 'imports a channel with 2 field groups' do
-				import_channel_set 'channel-with-two-field-groups'
+	context 'v4 channel sets' do
+		it 'imports a channel with 2 field groups' do
+			import_channel_set 'channel-with-two-field-groups'
 
-				check_success
-				channel_id = @page.get_channel_id_from_name('channel_w_two_field_groups')
+			check_success
+			channel_id = @page.get_channel_id_from_name('channel_w_two_field_groups')
 
-				fields_assigned_to_channel(channel_id, 0)
-				field_groups_assigned_to_channel(channel_id, 2)
-				fields_created ['checkboxes', 'electronic_mail_address']
-				field_groups_created ['FG One', 'FG Two']
+			fields_assigned_to_channel(channel_id, 0)
+			field_groups_assigned_to_channel(channel_id, 2)
+			fields_created ['checkboxes', 'electronic_mail_address']
+			field_groups_created ['FG One', 'FG Two']
 
-				fields_assinged_to_group('FG One', ['checkboxes'])
-				fields_assinged_to_group('FG Two', ['electronic_mail_address'])
-			end
-
-			it 'imports a channel with fields but no field group' do
-				import_channel_set 'channel-with-fields'
-
-				check_success
-				channel_id = @page.get_channel_id_from_name('channel_w_fields')
-
-				fields_assigned_to_channel(channel_id, 2)
-				field_groups_assigned_to_channel(channel_id, 0)
-				fields_created ['checkboxes', 'electronic_mail_address']
-			end
-
-			it 'imports a channel with fields and field groups' do
-				import_channel_set 'channel-with-field-groups-and-fields'
-
-				check_success
-				channel_id = @page.get_channel_id_from_name('channel_w_field_groups_and_fields')
-
-				fields_assigned_to_channel(channel_id, 2)
-				field_groups_assigned_to_channel(channel_id, 2)
-				fields_created ['checkboxes', 'electronic_mail_address', 'youtube_url', 'text']
-				field_groups_created ['FG One', 'FG Two']
-
-				fields_assinged_to_group('FG One', ['checkboxes'])
-				fields_assinged_to_group('FG Two', ['electronic_mail_address'])
-			end
-
-			it 'imports a channel with a field in two field groups' do
-				import_channel_set 'channel-with-field-in-two-groups'
-
-				check_success
-				channel_id = @page.get_channel_id_from_name('channel_w_field_in_two_groups')
-
-				fields_assigned_to_channel(channel_id, 0)
-				field_groups_assigned_to_channel(channel_id, 3)
-				fields_created ['checkboxes', 'electronic_mail_address', 'a_date']
-				field_groups_created ['FG One', 'FG Two', 'FG Three']
-
-				fields_assinged_to_group('FG One', ['checkboxes'])
-				fields_assinged_to_group('FG Two', ['electronic_mail_address'])
-				fields_assinged_to_group('FG Three', ['checkboxes', 'a_date'])
-			end
-
-			it 'imports a channel with a field already in an assigned field group' do
-				import_channel_set 'channel-with-field-in-a-group'
-
-				check_success
-				channel_id = @page.get_channel_id_from_name('channel_w_field_in_a_group')
-
-				fields_assigned_to_channel(channel_id, 1)
-				field_groups_assigned_to_channel(channel_id, 2)
-				fields_created ['checkboxes', 'electronic_mail_address']
-				field_groups_created ['FG One', 'FG Two']
-
-				fields_assinged_to_group('FG One', ['checkboxes'])
-				fields_assinged_to_group('FG Two', ['electronic_mail_address'])
-			end
+			fields_assinged_to_group('FG One', ['checkboxes'])
+			fields_assinged_to_group('FG Two', ['electronic_mail_address'])
 		end
+
+		it 'imports a channel with fields but no field group' do
+			import_channel_set 'channel-with-fields'
+
+			check_success
+			channel_id = @page.get_channel_id_from_name('channel_w_fields')
+
+			fields_assigned_to_channel(channel_id, 2)
+			field_groups_assigned_to_channel(channel_id, 0)
+			fields_created ['checkboxes', 'electronic_mail_address']
+		end
+
+		it 'imports a channel with fields and field groups' do
+			import_channel_set 'channel-with-field-groups-and-fields'
+
+			check_success
+			channel_id = @page.get_channel_id_from_name('channel_w_field_groups_and_fields')
+
+			fields_assigned_to_channel(channel_id, 2)
+			field_groups_assigned_to_channel(channel_id, 2)
+			fields_created ['checkboxes', 'electronic_mail_address', 'youtube_url', 'text']
+			field_groups_created ['FG One', 'FG Two']
+
+			fields_assinged_to_group('FG One', ['checkboxes'])
+			fields_assinged_to_group('FG Two', ['electronic_mail_address'])
+		end
+
+		it 'imports a channel with a field in two field groups' do
+			import_channel_set 'channel-with-field-in-two-groups'
+
+			check_success
+			channel_id = @page.get_channel_id_from_name('channel_w_field_in_two_groups')
+
+			fields_assigned_to_channel(channel_id, 0)
+			field_groups_assigned_to_channel(channel_id, 3)
+			fields_created ['checkboxes', 'electronic_mail_address', 'a_date']
+			field_groups_created ['FG One', 'FG Two', 'FG Three']
+
+			fields_assinged_to_group('FG One', ['checkboxes'])
+			fields_assinged_to_group('FG Two', ['electronic_mail_address'])
+			fields_assinged_to_group('FG Three', ['checkboxes', 'a_date'])
+		end
+
+		it 'imports a channel with a field already in an assigned field group' do
+			import_channel_set 'channel-with-field-in-a-group'
+
+			check_success
+			channel_id = @page.get_channel_id_from_name('channel_w_field_in_a_group')
+
+			fields_assigned_to_channel(channel_id, 1)
+			field_groups_assigned_to_channel(channel_id, 2)
+			fields_created ['checkboxes', 'electronic_mail_address']
+			field_groups_created ['FG One', 'FG Two']
+
+			fields_assinged_to_group('FG One', ['checkboxes'])
+			fields_assinged_to_group('FG Two', ['electronic_mail_address'])
+		end
+	end
 
     it 'shows errors when the channel set cannot be imported' do
       import_channel_set('no-json') do
@@ -840,6 +840,7 @@ feature 'Channel Sets' do
         import_channel_set 'simple'
       end
     end
+
     context 'with grid fields' do
       it 'imports without a relationship column' do
         import_channel_set 'grid-no-relationships'
