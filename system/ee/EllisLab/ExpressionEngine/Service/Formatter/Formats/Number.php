@@ -67,6 +67,33 @@ class Number extends Formatter {
 		$this->content = number_format($memory, $precision).$unit;
 		return $this;
 	}
+
+	public function currency($options = [])
+	{
+		$options = [
+			'currency' => (isset($options['currency'])) ? $options['currency'] : 'USD',
+			'locale' => (isset($options['locale'])) ? $options['locale'] : 'en_US.UTF-8',
+		];
+
+		if ($this->intl_loaded)
+		{
+			$fmt = new \NumberFormatter($options['locale'], \NumberFormatter::CURRENCY);
+			$this->content = $fmt->formatCurrency((float) $this->content, $options['currency']);
+			return $this;
+		}
+
+		// modest fallback, won't get the separators or position of the currency marker correct for non-US locales
+		if (function_exists('money_format'))
+		{
+			$sys_locale = setlocale(LC_MONETARY, 0);
+			setlocale(LC_MONETARY, $options['locale']);
+			$this->content = money_format('%.2n', (float) $this->content);
+			setlocale(LC_MONETARY, $sys_locale);
+			return $this;
+		}
+
+		throw new \Exception('<code>{...:currency}</code> modifier error: Environment does not support any known currency formatters, please install the PHP <b>intl</b> extension.');
+	}
 }
 
 // EOF
