@@ -23,9 +23,9 @@ class FormatterFactory {
 	private $lang;
 
 	/**
-	 * @var boolean $intl_loaded Whether or not the intl extension is loaded
+	 * @var int bitwise mask of options
 	 */
-	protected $intl_loaded = FALSE;
+	protected $options;
 
 	/**
 	 * @var binary (1) Bitwise options make for intl_loaded. Can't use const until PHP 5.6
@@ -42,11 +42,7 @@ class FormatterFactory {
 	public function __construct(EE_Lang $lang, $options)
 	{
 		$this->lang = $lang;
-
-		if ($options & $this->OPT_INTL_LOADED)
-		{
-			$this->intl_loaded = TRUE;
-		}
+		$this->options = $options;
 	}
 
 	/**
@@ -64,7 +60,7 @@ class FormatterFactory {
 
 		if (class_exists($class))
 		{
-			return new $class($content, $this->lang);
+			return new $class($content, $this->lang, $this->options);
 		}
 
 		throw new \Exception("Unknown formatter: `{$formatter_name}`.");
