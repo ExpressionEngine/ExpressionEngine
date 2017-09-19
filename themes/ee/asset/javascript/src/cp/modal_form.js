@@ -22,8 +22,8 @@ EE.cp.ModalForm = {
 	openForm: function(options) {
 		var that = this
 
-		this.modal.trigger('modal:open');
-		this.modalContentsContainer.load(options.url, function() {
+		this.modal.trigger('modal:open')
+		this.modalContentsContainer.html('').load(options.url, function() {
 			that._bindForm(options)
 			options.load(that.modalContentsContainer)
 		})
