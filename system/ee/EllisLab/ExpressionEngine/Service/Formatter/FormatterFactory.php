@@ -27,10 +27,6 @@ class FormatterFactory {
 	 */
 	protected $options;
 
-	/**
-	 * @var binary (1) Bitwise options make for intl_loaded. Can't use const until PHP 5.6
-	 */
-	private $OPT_INTL_LOADED = 0b00000001;
 
 	/**
 	 * Constructor
