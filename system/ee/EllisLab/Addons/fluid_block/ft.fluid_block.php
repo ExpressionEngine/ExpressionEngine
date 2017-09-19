@@ -304,25 +304,55 @@ class Fluid_block_ft extends EE_Fieldtype {
 			$field->createTable();
 		}
 
-		$removed_fields = (array_diff($this->settings['field_channel_fields'], $data['field_channel_fields']));
-
-		if ( ! empty($removed_fields))
+		if (isset($this->settings['field_channel_fields']))
 		{
-			$blockData = ee('Model')->get('fluid_block:FluidBlock')
-				->filter('block_id', $this->field_id)
-				->filter('field_id', 'IN', $removed_fields)
-				->all()
-				->delete();
+			$removed_fields = (array_diff($this->settings['field_channel_fields'], $data['field_channel_fields']));
 
-			$fields = ee('Model')->get('ChannelField', $removed_fields)
-				->fields('field_label')
-				->all()
-				->pluck('field_label');
+			if ( ! empty($removed_fields))
+			{
+				$blockData = ee('Model')->get('fluid_block:FluidBlock')
+					->filter('block_id', $this->field_id)
+					->filter('field_id', 'IN', $removed_fields)
+					->all()
+					->delete();
 
-			ee()->logger->log_action(sprintf(lang('removed_fields_from_fluid_block'), $this->settings['field_label'], '<b>' . implode('</b>, <b>', $fields) . '</b>'));
+				$fields = ee('Model')->get('ChannelField', $removed_fields)
+					->fields('field_label')
+					->all()
+					->pluck('field_label');
+
+				ee()->logger->log_action(sprintf(lang('removed_fields_from_fluid_block'), $this->settings['field_label'], '<b>' . implode('</b>, <b>', $fields) . '</b>'));
+			}
 		}
 
 		return array_intersect_key($all, $defaults);
+	}
+
+	public function settings_modify_column($data)
+	{
+		if (isset($data['ee_action']) && $data['ee_action'] == 'delete')
+		{
+			$blockData = ee('Model')->get('fluid_block:FluidBlock')
+				->filter('block_id', $data['field_id'])
+				->all()
+				->delete();
+		}
+
+		return array();
+	}
+
+	/**
+	 * Called when entries are deleted
+	 *
+	 * @param	array	Entry IDs to delete data for
+	 */
+	public function delete($entry_ids)
+	{
+		$blockData = ee('Model')->get('fluid_block:FluidBlock')
+			->filter('block_id', $this->field_id)
+			->filter('entry_id', 'IN', $entry_ids)
+			->all()
+			->delete();
 	}
 
 	/**
