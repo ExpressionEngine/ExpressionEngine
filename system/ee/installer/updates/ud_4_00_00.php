@@ -698,10 +698,11 @@ class Updater {
 		ee()->dbforge->add_field(
 			array(
 				'id' => array(
-					'type'       => 'int',
-					'constraint' => 11,
-					'unsigned'   => TRUE,
-					'null'       => FALSE
+					'type'           => 'int',
+					'constraint'     => 11,
+					'unsigned'       => TRUE,
+					'null'           => FALSE,
+					'auto_increment' => TRUE
 				),
 				'block_id' => array(
 					'type'       => 'int',
