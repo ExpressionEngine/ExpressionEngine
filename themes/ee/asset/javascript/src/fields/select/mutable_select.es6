@@ -59,6 +59,10 @@ class MutableSelectField {
       url: url,
       load: (modal) => {
         EE.cp.form_group_toggle(modal.find('[data-group-toggle]:input:checked'))
+
+        SelectField.renderFields(modal)
+        Dropdown.renderFields(modal)
+
         if (this.options.onFormLoad) {
           this.options.onFormLoad(modal)
         }

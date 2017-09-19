@@ -77,6 +77,10 @@ var MutableSelectField = function () {
         url: url,
         load: function load(modal) {
           EE.cp.form_group_toggle(modal.find('[data-group-toggle]:input:checked'));
+
+          SelectField.renderFields(modal);
+          Dropdown.renderFields(modal);
+
           if (_this4.options.onFormLoad) {
             _this4.options.onFormLoad(modal);
           }
