@@ -397,8 +397,13 @@ abstract class FieldModel extends Model {
 	/**
 	 * Create the table for the field
 	 */
-	private function createTable()
+	public function createTable()
 	{
+		if (ee()->db->table_exists($this->getTableName()))
+		{
+			return;
+		}
+
 		$fields = array(
 			'id' => array(
 				'type'           => 'int',
