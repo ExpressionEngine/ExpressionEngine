@@ -321,7 +321,10 @@ class Fluid_block_ft extends EE_Fieldtype {
 					->all()
 					->pluck('field_label');
 
-				ee()->logger->log_action(sprintf(lang('removed_fields_from_fluid_block'), $this->settings['field_label'], '<b>' . implode('</b>, <b>', $fields) . '</b>'));
+				if ( ! empty($fields))
+				{
+					ee()->logger->log_action(sprintf(lang('removed_fields_from_fluid_block'), $this->settings['field_label'], '<b>' . implode('</b>, <b>', $fields) . '</b>'));
+				}
 			}
 		}
 
