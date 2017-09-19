@@ -117,6 +117,10 @@ function toggleSections(sections, show, key) {
 
 EE.cp.form_group_toggle = function(element) {
 
+	if ( ! $(element).size()) {
+		return;
+	}
+
 	var config = $(element).data('groupToggle'),
 		value  = $(element).val();
 
@@ -125,8 +129,14 @@ EE.cp.form_group_toggle = function(element) {
 	};
 
 	var toggle = function (key, data) {
-		var field_targets = $('*[data-group*="'+data+'"]');
-		var section_targets = $('*[data-section-group*="'+data+'"]');
+		// Fields can belong to multiple groups, separated by pipes in the data
+		// attributes; drill down into those attributes
+		var field_targets = $('*[data-group*="'+data+'"]').filter(function(el) {
+			return $(this).data('group').split('|').includes(data)
+		});
+		var section_targets = $('*[data-section-group*="'+data+'"]').filter(function() {
+			return $(this).data('sectionGroup').split('|').includes(data)
+		});
 
 		if (states[data] == undefined || states[data] == false) {
 			states[data] = (key == value);
