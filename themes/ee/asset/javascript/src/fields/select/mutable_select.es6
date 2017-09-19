@@ -19,7 +19,7 @@ class MutableSelectField {
   }
 
   setField () {
-    this.field = $('[data-select-react][data-input-value="'+this.fieldName+'"]')
+    this.field = $('[data-input-value="'+this.fieldName+'"]')
   }
 
   setAddButton (button) {

@@ -29,7 +29,7 @@ var MutableSelectField = function () {
   _createClass(MutableSelectField, [{
     key: 'setField',
     value: function setField() {
-      this.field = $('[data-select-react][data-input-value="' + this.fieldName + '"]');
+      this.field = $('[data-input-value="' + this.fieldName + '"]');
     }
   }, {
     key: 'setAddButton',
