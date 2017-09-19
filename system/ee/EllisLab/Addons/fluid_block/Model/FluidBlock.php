@@ -68,12 +68,22 @@ class FluidBlock extends Model {
 		)
 	);
 
+	protected static $_events = array(
+		'afterDelete'
+	);
+
 	protected $id;
 	protected $block_id;
 	protected $entry_id;
 	protected $field_id;
 	protected $field_data_id;
 	protected $order;
+
+	public function onAfterDelete()
+	{
+		ee()->db->where('id', $this->field_data_id);
+		ee()->db->delete('channel_data_field_' . $this->field_id);
+	}
 
 	protected function getSessionCacheKey()
 	{

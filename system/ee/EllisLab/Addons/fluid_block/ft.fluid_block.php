@@ -304,6 +304,24 @@ class Fluid_block_ft extends EE_Fieldtype {
 			$field->createTable();
 		}
 
+		$removed_fields = (array_diff($this->settings['field_channel_fields'], $data['field_channel_fields']));
+
+		if ( ! empty($removed_fields))
+		{
+			$blockData = ee('Model')->get('fluid_block:FluidBlock')
+				->filter('block_id', $this->field_id)
+				->filter('field_id', 'IN', $removed_fields)
+				->all()
+				->delete();
+
+			$fields = ee('Model')->get('ChannelField', $removed_fields)
+				->fields('field_label')
+				->all()
+				->pluck('field_label');
+
+			ee()->logger->log_action(sprintf(lang('removed_fields_from_fluid_block'), $this->settings['field_label'], '<b>' . implode('</b>, <b>', $fields) . '</b>'));
+		}
+
 		return array_intersect_key($all, $defaults);
 	}
 
