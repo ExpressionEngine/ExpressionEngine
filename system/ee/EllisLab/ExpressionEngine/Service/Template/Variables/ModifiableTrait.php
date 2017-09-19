@@ -108,6 +108,14 @@ trait ModifiableTrait {
 	}
 
 	/**
+	 * :spellout modifier
+	 */
+	public function replace_spellout($data, $params = array(), $tagdata = FALSE)
+	{
+		return (string) ee('Format')->make('Number', $data)->spellout($params);
+	}
+
+	/**
 	 * :url_decode modifier
 	 */
 	public function replace_url_decode($data, $params = array(), $tagdata = FALSE)
