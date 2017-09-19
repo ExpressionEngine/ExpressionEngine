@@ -295,6 +295,15 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 		$all = array_merge($defaults, $data);
 
+		$fields = ee('Model')->get('ChannelField', $data['field_channel_fields'])
+			->filter('legacy_field_data', 'y')
+			->all();
+
+		foreach ($fields as $field)
+		{
+			$field->createTable();
+		}
+
 		return array_intersect_key($all, $defaults);
 	}
 
