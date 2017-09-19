@@ -34,7 +34,9 @@ class Dropdown extends React.Component {
       open: false
     })
 
-    if (this.props.groupToggle) EE.cp.form_group_toggle(this.input)
+    if (this.props.groupToggle) {
+      EE.cp.form_group_toggle(this.input)
+    }
   }
 
   componentDidUpdate (prevProps, prevState) {
@@ -42,9 +44,17 @@ class Dropdown extends React.Component {
         (prevState.selected && prevState.selected.value != this.state.selected.value)
       ) {
 
-      if (this.props.groupToggle) EE.cp.form_group_toggle(this.input)
+      if (this.props.groupToggle) {
+        EE.cp.form_group_toggle(this.input)
+      }
 
       $(this.input).trigger('change')
+    }
+  }
+
+  componentDidMount () {
+    if (this.props.groupToggle) {
+      EE.cp.form_group_toggle(this.input)
     }
   }
 

@@ -30,7 +30,9 @@ var Dropdown = function (_React$Component) {
         open: false
       });
 
-      if (_this.props.groupToggle) EE.cp.form_group_toggle(_this.input);
+      if (_this.props.groupToggle) {
+        EE.cp.form_group_toggle(_this.input);
+      }
     };
 
     _this.toggleOpen = function () {
@@ -53,9 +55,18 @@ var Dropdown = function (_React$Component) {
     value: function componentDidUpdate(prevProps, prevState) {
       if (!prevState.selected && this.state.selected || prevState.selected && prevState.selected.value != this.state.selected.value) {
 
-        if (this.props.groupToggle) EE.cp.form_group_toggle(this.input);
+        if (this.props.groupToggle) {
+          EE.cp.form_group_toggle(this.input);
+        }
 
         $(this.input).trigger('change');
+      }
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      if (this.props.groupToggle) {
+        EE.cp.form_group_toggle(this.input);
       }
     }
   }, {
