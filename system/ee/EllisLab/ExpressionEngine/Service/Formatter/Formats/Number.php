@@ -116,6 +116,43 @@ class Number extends Formatter {
 	}
 
 	/**
+	 * Ordinal Formatter
+	 *
+	 * Locales other than English require the intl extension
+	 *
+	 * @param  array  $options (string) locale
+	 * @return self This returns a reference to itself
+	 */
+	public function ordinal($options = [])
+	{
+		$options = [
+			'locale' => (isset($options['locale'])) ? $options['locale'] : 'en_US.UTF-8',
+		];
+
+		if ($this->intl_loaded)
+		{
+			$fmt = new \NumberFormatter($options['locale'], \NumberFormatter::ORDINAL);
+			$this->content = $fmt->format($this->content);
+			return $this;
+		}
+
+		// fallback will only work for English ordinal indicators
+		$indicators = ['th','st','nd','rd','th','th','th','th','th','th'];
+
+		$mod = $this->content % 100;
+		if (($mod >= 11) && ($mod <= 13))
+		{
+			$indicator = $indicator[0];
+		}
+		else
+		{
+			$indicator = $indicators[$this->content % 10];
+		}
+
+		$this->content = number_format((float) $this->content).$indicator;
+	}
+
+	/**
 	 * Spell Out Formatter
 	 *
 	 * Requires the PHP intl extension to be available
@@ -151,43 +188,6 @@ class Number extends Formatter {
 		}
 
 		return $this;
-	}
-
-	/**
-	 * Ordinal Formatter
-	 *
-	 * Locales other than English require the intl extension
-	 *
-	 * @param  array  $options (string) locale
-	 * @return self This returns a reference to itself
-	 */
-	public function ordinal($options = [])
-	{
-		$options = [
-			'locale' => (isset($options['locale'])) ? $options['locale'] : 'en_US.UTF-8',
-		];
-
-		if ($this->intl_loaded)
-		{
-			$fmt = new \NumberFormatter($options['locale'], \NumberFormatter::ORDINAL);
-			$this->content = $fmt->format($this->content);
-			return $this;
-		}
-
-		// fallback will only work for English ordinal indicators
-		$indicators = ['th','st','nd','rd','th','th','th','th','th','th'];
-
-		$mod = $this->content % 100;
-		if (($mod >= 11) && ($mod <= 13))
-		{
-			$indicator = $indicator[0];
-		}
-		else
-		{
-			$indicator = $indicators[$this->content % 10];
-		}
-
-		$this->content = number_format((float) $this->content).$indicator;
 	}
 }
 
