@@ -380,6 +380,8 @@ $lang = array(
 
 'relationship' => 'Relationship',
 
+'removed_fields' => 'The following fields were removed and their data was deleted: %s',
+
 'require_field_desc' => 'When set to <b>yes</b>, this field will be required to submit the publish form.',
 
 'reserved_word' => 'The field name you have chosen is a reserved word and cannot be used. Please see the user guide for more information.',
