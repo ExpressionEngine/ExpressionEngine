@@ -146,9 +146,10 @@ abstract class FieldModel extends Model {
 	public function onAfterDelete()
 	{
 		$ft = $this->getFieldtypeInstance();
-				$data = $this->getValues();
-				$data['ee_action'] = 'delete';
-				$columns = $ft->settings_modify_column($data);
+		$data = $this->getValues();
+		$data['ee_action'] = 'delete';
+		$columns = $ft->settings_modify_column($data);
+
 		$this->dropTable();
 
 		if ( ! $this->hasProperty($this->getColumnPrefix().'legacy_field_data')
