@@ -456,6 +456,8 @@ class Fields extends AbstractChannelsController {
 			->addToBody(lang('fields_removed_desc'))
 			->addToBody($field_names)
 			->defer();
+
+		ee()->logger->log_action(sprintf(lang('removed_fields'), '<b>' . implode('</b>, <b>', $field_names) . '</b>'));
 	}
 
 }
