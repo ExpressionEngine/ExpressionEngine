@@ -145,12 +145,10 @@ abstract class FieldModel extends Model {
 	 */
 	public function onAfterDelete()
 	{
-		if ($this->hasProperty($this->getColumnPrefix().'legacy_field_data')
-			&& $this->getProperty($this->getColumnPrefix().'legacy_field_data') == FALSE)
-		{
-			$this->dropTable();
-		}
-		else
+		$this->dropTable();
+
+		if ( ! $this->hasProperty($this->getColumnPrefix().'legacy_field_data')
+			|| $this->getProperty($this->getColumnPrefix().'legacy_field_data') == TRUE)
 		{
 			$this->dropColumns($this->getColumns());
 		}
