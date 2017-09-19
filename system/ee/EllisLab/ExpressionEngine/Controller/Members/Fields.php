@@ -124,8 +124,6 @@ class Fields extends Members\Members {
 			'url' => lang('url')
 		);
 
-		$fields = $fields->all();
-
 		foreach ($fields as $field)
 		{
 			$edit_url = ee('CP/URL')->make('members/fields/edit/' . $field->m_field_id);
