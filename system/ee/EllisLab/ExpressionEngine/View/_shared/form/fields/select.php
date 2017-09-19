@@ -30,9 +30,9 @@ if (ee('View/Helpers')->countChoices($normalized_choices) <= $too_many && ! $nes
 		$keys = array_keys($choices);
 		$value = $keys[0];
 	}
-	if ( ! isset($scalar) && $multi) $field_name .= '[]';
 	?>
-	<div class="fields-select">
+	<div class="fields-select" data-input-value="<?=$field_name?>">
+		<?php if ( ! isset($scalar) && $multi) $field_name .= '[]'; ?>
 		<div class="field-inputs">
 			<?php foreach ($choices as $key => $choice):
 				$label = isset($choice['label'])

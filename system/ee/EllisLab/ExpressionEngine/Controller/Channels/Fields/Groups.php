@@ -110,7 +110,7 @@ class Groups extends AbstractChannelsController {
 			$field_group->site_id = ee()->config->item('site_id');
 			$result = $field_group->validate();
 
-			if ($response = $this->ajaxValidation($result))
+			if (isset($_POST['ee_fv_field']) && $response = $this->ajaxValidation($result))
 			{
 			    return $response;
 			}
@@ -118,6 +118,11 @@ class Groups extends AbstractChannelsController {
 			if ($result->isValid())
 			{
 				$field_group->save();
+
+				if (AJAX_REQUEST)
+				{
+					return ['saveId' => $field_group->getId()];
+				}
 
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
@@ -141,6 +146,11 @@ class Groups extends AbstractChannelsController {
 		}
 
 		ee()->view->cp_page_title = lang('create_field_group');
+
+		if (AJAX_REQUEST)
+		{
+			return ee()->cp->render('_shared/form', $vars);
+		}
 
 		ee()->cp->render('settings/form', $vars);
 	}

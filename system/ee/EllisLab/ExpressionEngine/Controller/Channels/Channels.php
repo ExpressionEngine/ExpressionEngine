@@ -170,18 +170,13 @@ class Channels extends AbstractChannelsController {
 			{
 				$channel = $this->saveChannel($channel);
 
-				if (is_null($channel_id))
-				{
-					ee()->session->set_flashdata('highlight_id', $channel->getId());
-				}
-
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('channel_'.$alert_key))
 					->addToBody(sprintf(lang('channel_'.$alert_key.'_desc'), $channel->channel_title))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL')->make('channels'));
+				ee()->functions->redirect(ee('CP/URL')->make('channels/layouts/'.$channel->getId()));
 			}
 			else
 			{
@@ -205,6 +200,14 @@ class Channels extends AbstractChannelsController {
 			'statuses' => $this->renderStatusesTab($channel, $vars['errors']),
 			'settings' => $this->renderSettingsTab($channel, $vars['errors']),
 		];
+
+		ee()->javascript->set_global([
+			'channelManager.fieldGroup.createUrl' => ee('CP/URL')->make('channels/fields/groups/create')->compile(),
+			'channelManager.fieldGroup.fieldUrl' => ee('CP/URL')->make('channels/render-field-groups-field')->compile(),
+			'channelManager.fields.createUrl' => ee('CP/URL')->make('channels/fields/create')->compile()
+		]);
+
+		ee()->cp->add_js_script('file', 'cp/channel/channel_manager');
 
 		ee()->view->header = array(
 			'title' => lang('channel_manager'),
@@ -315,13 +318,6 @@ class Channels extends AbstractChannelsController {
 	 */
 	private function renderFieldsTab($channel, $errors)
 	{
-		$field_group_options = ee('Model')->get('ChannelFieldGroup')
-			->fields('group_name')
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('group_name')
-			->all()
-			->getDictionary('group_id', 'group_name');
-
 		$custom_field_options = ee('Model')->get('ChannelField')
 			->fields('field_label')
 			->filter('site_id', ee()->config->item('site_id'))
@@ -349,14 +345,8 @@ class Channels extends AbstractChannelsController {
 				],
 				'fields' => array(
 					'field_groups' => array(
-						'type' => 'checkbox',
-						'choices' => $field_group_options,
-						'value' => $channel->FieldGroups->pluck('group_id'),
-						'no_results' => array(
-							'text' => 'custom_field_groups_not_found',
-							'link_text' => 'create_new_field_group',
-							'link_href' => ee('CP/URL')->make('channels/groups/create')
-						)
+						'type' => 'html',
+						'content' => $this->renderFieldGroupsField($channel)
 					)
 				)
 			),
@@ -369,15 +359,8 @@ class Channels extends AbstractChannelsController {
 				],
 				'fields' => array(
 					'custom_fields' => array(
-						'type' => 'checkbox',
-						'wrap' => TRUE,
-						'choices' => $custom_field_options,
-						'value' => $channel->CustomFields->pluck('field_id'),
-						'no_results' => [
-							'text' => sprintf(lang('no_found'), lang('fields')),
-							'link_text' => 'add_new',
-							'link_href' => ee('CP/URL')->make('channels/fields/create')
-						]
+						'type' => 'html',
+						'content' => $this->renderFieldsField($channel)
 					)
 				)
 			),
@@ -385,6 +368,76 @@ class Channels extends AbstractChannelsController {
 
 		return ee('View')->make('_shared/form/section')
 				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
+	}
+
+	/**
+	 * Renders the Field Groups selection form for the channel create/edit form
+	 *
+	 * @param Channel $channel A Channel entity, optional
+	 * @return string HTML
+	 */
+	public function renderFieldGroupsField($channel = NULL)
+	{
+		$field_group_options = ee('Model')->get('ChannelFieldGroup')
+			->fields('group_name')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_name')
+			->all()
+			->getDictionary('group_id', 'group_name');
+
+		$selected = ee('Request')->post('field_groups') ?: [];
+
+		if ($channel)
+		{
+			$selected = $channel->FieldGroups->pluck('group_id');
+		}
+
+		return ee('View')->make('ee:_shared/form/fields/select')->render([
+			'field_name' => 'field_groups',
+			'choices'    => $field_group_options,
+			'value'      => $selected,
+			'multi'      => TRUE,
+			'no_results' => [
+				'text' => 'custom_field_groups_not_found',
+				'link_text' => 'create_new_field_group',
+				'link_href' => ee('CP/URL')->make('channels/groups/create')
+			]
+		]);
+	}
+
+	/**
+	 * Renders the Fields selection form for the channel create/edit form
+	 *
+	 * @param Channel $channel A Channel entity, optional
+	 * @return string HTML
+	 */
+	public function renderFieldsField($channel = NULL)
+	{
+		$custom_field_options = ee('Model')->get('ChannelField')
+			->fields('field_label')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('field_label')
+			->all()
+			->getDictionary('field_id', 'field_label');
+
+		$selected = ee('Request')->post('custom_fields') ?: [];
+
+		if ($channel)
+		{
+			$selected = $channel->CustomFields->pluck('field_id');
+		}
+
+		return ee('View')->make('ee:_shared/form/fields/select')->render([
+			'field_name' => 'custom_fields',
+			'choices'    => $custom_field_options,
+			'value'      => $selected,
+			'multi'      => TRUE,
+			'no_results' => [
+				'text' => sprintf(lang('no_found'), lang('fields')),
+				'link_text' => 'add_new',
+				'link_href' => ee('CP/URL')->make('channels/fields/create')
+			]
+		]);
 	}
 
 	/**
