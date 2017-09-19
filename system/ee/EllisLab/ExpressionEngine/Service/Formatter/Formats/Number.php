@@ -116,6 +116,44 @@ class Number extends Formatter {
 	}
 
 	/**
+	 * Spell Out Formatter
+	 *
+	 * Requires the PHP intl extension to be available
+	 *
+	 * @param  array  $options (string) capitalize, (string) locale
+	 * @return self This returns a reference to itself
+	 */
+	public function spellout($options = [])
+	{
+		if (! $this->intl_loaded)
+		{
+			throw new \Exception('<code>{...:spellout}</code> modifier error: This modifier requires the PHP <b>intl</b> extension to be installed.');
+		}
+
+		$options = [
+			'capitalize' => (isset($options['capitalize'])) ? $options['capitalize'] : FALSE,
+			'locale' => (isset($options['locale'])) ? $options['locale'] : 'en_US.UTF-8',
+		];
+
+		$fmt = new \NumberFormatter($options['locale'], \NumberFormatter::SPELLOUT);
+		$this->content = $fmt->format($this->content);
+
+		switch ($options['capitalize'])
+		{
+			case 'ucfirst':
+				$this->content = ucfirst($this->content);
+				break;
+			case 'ucwords':
+				$this->content = ucwords($this->content);
+				break;
+			default:
+				// nada
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Ordinal Formatter
 	 *
 	 * Locales other than English require the intl extension
@@ -150,7 +188,6 @@ class Number extends Formatter {
 		}
 
 		$this->content = number_format((float) $this->content).$indicator;
-		return $this;
 	}
 }
 
