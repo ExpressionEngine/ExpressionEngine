@@ -68,7 +68,24 @@ class MutableSelectField {
         }
       },
       success: (result) => {
-        this.replaceField(result.selectList)
+        // A selectList key should contain the field markup
+        if (result.selectList) {
+          this.replaceField(result.selectList)
+        // Otherwise, we have to fetch the field markup ourselves
+        } else if (result.saveId && this.options.fieldUrl) {
+          // Gather the current field selection so that it may be applied to the
+          // field upon reload; we may need this for the above condition too
+          let selected = [result.saveId]
+          $('input[name="'+this.fieldName+'[]"]:checked').each(function(){
+            selected.push($(this).val());
+          });
+
+          let postdata = {}
+          postdata[this.fieldName] = selected
+          $.post(this.options.fieldUrl, postdata, (result) => {
+            this.replaceField(result)
+          })
+        }
       }
     })
   }
