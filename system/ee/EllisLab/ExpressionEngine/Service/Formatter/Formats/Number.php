@@ -67,6 +67,53 @@ class Number extends Formatter {
 		$this->content = number_format($memory, $precision).$unit;
 		return $this;
 	}
+
+	/**
+	 * Currency Formatter
+	 *
+	 * Greatest accuracy requires the PHP intl extension to be available
+	 *
+	 * @param  array  $options (string) currency, (string) locale
+	 * @return self This returns a reference to itself
+	 */
+	public function currency($options = [])
+	{
+		$options = [
+			'currency' => (isset($options['currency'])) ? $options['currency'] : 'USD',
+			'locale' => (isset($options['locale'])) ? $options['locale'] : 'en_US.UTF-8',
+		];
+
+		// best option, will display the currency correctly based on the locale
+		// e.g. $112,358.13 and €112,358.13 in the US; 112.358,13 $ and 112.358,13 € in Germany
+		if ($this->intl_loaded)
+		{
+			$fmt = new \NumberFormatter($options['locale'], \NumberFormatter::CURRENCY);
+			$this->content = $fmt->formatCurrency((float) $this->content, $options['currency']);
+			return $this;
+		}
+
+		// This PHP function is a wrapper for strfmon, so isn't available on all systems, e.g. Windows
+		// Won't get the position of the currency marker correct for non-US locales.
+		// This is intentionally a 20% effort, 80% solution situation rather than maintaining our own
+		// localization formatting lookup tables. The 100% solution is easily achieved by ensuring
+		// that the intl extension is loaded in PHP, handled above.
+		if (function_exists('money_format'))
+		{
+			// grab the current monetary locale to reset after formatting
+			$sys_locale = setlocale(LC_MONETARY, 0);
+
+			// set the monetary locale to the specified option
+			setlocale(LC_MONETARY, $options['locale']);
+
+			$this->content = money_format('%.2n', (float) $this->content);
+
+			// set the monetary locale back to normal
+			setlocale(LC_MONETARY, $sys_locale);
+			return $this;
+		}
+
+		throw new \Exception('<code>{...:currency}</code> modifier error: Environment does not support any known currency formatters, please install the PHP <b>intl</b> extension.');
+	}
 }
 
 // EOF
