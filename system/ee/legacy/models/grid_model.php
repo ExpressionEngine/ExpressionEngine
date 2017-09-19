@@ -149,7 +149,7 @@ class Grid_model extends CI_Model {
 					'constraint'		=> 10,
 					'unsigned'			=> TRUE
 				),
-				'block_dagt_id' => array(
+				'block_data_id' => array(
 					'type'				=> 'int',
 					'constraint'		=> 10,
 					'unsigned'			=> TRUE,
