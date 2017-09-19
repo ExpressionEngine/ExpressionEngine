@@ -35,6 +35,9 @@ trait ModifiableTrait {
 		return (string) ee('Format')->make('Text', $data)->censor();
 	}
 
+	/**
+	 * :currency modifier
+	 */
 	public function replace_currency($data, $params = array(), $tagdata = FALSE)
 	{
 		return (string) ee('Format')->make('Number', $data)->currency($params);
