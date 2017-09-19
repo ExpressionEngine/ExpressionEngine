@@ -84,6 +84,14 @@ trait ModifiableTrait {
 	}
 
 	/**
+	 * :ordinal modifier
+	 */
+	public function replace_ordinal($data, $params = array(), $tagdata = FALSE)
+	{
+		return (string) ee('Format')->make('Number', $data)->ordinal($params);
+	}
+
+	/**
 	 * :raw_content modifier
 	 */
 	public function replace_raw_content($data, $params = array(), $tagdata = FALSE)
