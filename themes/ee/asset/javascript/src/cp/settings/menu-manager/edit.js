@@ -8,7 +8,7 @@
 
 (function($) {
 
-options = {
+var options = {
 	onFormLoad: function(modal) {
 		EE.grid(document.getElementById('submenu'), EE.grid_field_settings['submenu'])
 	}
