@@ -393,7 +393,7 @@ class Member_settings extends Member {
 										);
 
 
-		$vars = ee()->functions->assign_variables($content, '/');
+		$vars = ee('Variables/Parser')->extractVariables($content, '/');
 		$this->var_single	= $vars['var_single'];
 		$this->var_pair		= $vars['var_pair'];
 

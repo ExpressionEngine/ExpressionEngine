@@ -112,6 +112,177 @@ class LegacyParser {
 
 		return FALSE;
 	}
+
+	/**
+	 * Extract Variables from Tagdata
+	 *
+	 * This function extracts the variables contained within the current tag
+	 * being parsed and assigns them to one of three arrays.
+	 *
+	 * There are two types of variables:
+	 *
+	 * Single variables: {some_variable}
+	 *
+	 * Pair variables: {variable} stuff... {/variable}
+	 *
+	 * Each of the two variables is parsed slightly different and appears in its own array
+	 *
+	 * This legacy method was originally Functions::assign_variables()
+	 *
+	 * @param	string $tagdata The Tagdata to extract variables from
+	 * @param	string $slash '/' - customizable because of legacy? We never use anything but a '/'
+	 * @return	array array('var_single' => ..., 'var_pair' => ..., )
+	 */
+	public function extractVariables($tagdata, $slash = '/')
+	{
+		$return['var_single']	= array();
+		$return['var_pair']		= array();
+
+		if ($tagdata == '')
+		{
+			return $return;
+		}
+
+		// No variables?  No reason to continue...
+		if (strpos($tagdata, '{') === FALSE OR ! preg_match_all("/".LD."(.+?)".RD."/", $tagdata, $matches))
+		{
+			return $return;
+		}
+
+		$temp_close = array();
+		$temp_misc  = array();
+		$slash_length = strlen($slash);
+
+		foreach($matches[1] as $key => $val)
+		{
+			if (strncmp($val, 'if ', 3) !== 0 &&
+				strncmp($val, 'if:', 3) !== 0 &&
+				substr($val, 0, $slash_length+2) != $slash."if")
+			{
+				if (strpos($val, '{') !== FALSE)
+				{
+					if (preg_match("/(.+?)".LD."(.*)/s", $val, $matches2))
+					{
+						$temp_misc[$key] = $matches2[2];
+					}
+				}
+				elseif (strncmp($val, $slash, $slash_length) === 0)
+				{
+					$temp_close[$key] = str_replace($slash, '', $val);
+				}
+				else
+				{
+					$temp_misc[$key] = $val;
+				}
+			}
+			elseif (strpos($val, '{') !== FALSE) // Variable in conditional.  ::sigh::
+			{
+				$full_conditional = substr($this->full_tag($matches[0][$key], $tagdata), 1, -1);
+
+				// We only need the first match here, all others will get caught by our
+				// previous code as they won't start with if.
+
+				if (preg_match("/".LD."(.*?)".RD."/s", $full_conditional, $cond_vars))
+				{
+					$temp_misc[$key] = $cond_vars[1];
+				}
+			}
+		}
+
+		// $temp_misc contains all (opening) tags
+		// $temp_close contains all closing tags
+
+		// In 1.x we assumed that a closing tag meant that the variable was
+		// a tag pair.  We now have variables that output as pairs and single tags
+		// so we need to properly match the pairs.
+
+		// In order to find proper pairs, we need to find equivalent opening and
+		// closing tags that are closest together (no nesting).
+		// The easiest way to go about this is to find all opening tags up to a
+		// closing tag - and then just take the last one.
+
+		$temp_pair = array();
+		$temp_single = array();
+
+		$open_stack = array();
+
+		foreach($temp_misc as $open_key => $open_tag)
+		{
+
+			if (preg_match("#(.+?)(\s+|=)(.+?)#", $open_tag, $matches))
+			{
+				$open_tag = $matches[1];
+			}
+
+			foreach($temp_close as $close_key => $close_tag)
+			{
+
+				// Find the closest (potential) closing tag following it
+				if (($close_key > $open_key) && $open_tag == $close_tag)
+				{
+					// There could be another opening tag between these
+					// so we create a stack of opening tag values
+					$open_stack[$close_key][] = $open_key;
+					continue;
+				}
+			}
+		}
+
+		// Pop the last item off each stack of opening tags - these are pairs
+		foreach($open_stack as $potential_openings)
+		{
+			$open_tag_key = array_pop($potential_openings);
+
+			if (isset($temp_misc[$open_tag_key]))
+			{
+				$temp_pair[] = $temp_misc[$open_tag_key];
+				unset($temp_misc[$open_tag_key]);
+			}
+		}
+
+		// The rest of them are single tags
+		$temp_single = array_values($temp_misc);
+
+		// Weed out the duplicatess
+		$temp_single	= array_unique($temp_single);
+		$temp_pair		= array_unique($temp_pair);
+
+
+		// Assign Single Variables
+		$var_single = array();
+
+		foreach($temp_single as $val)
+		{
+			// simple conditionals
+			if (stristr($val, '\|') && substr($val, 0, 6) != 'switch' && substr($val, 0, 11) != 'multi_field')
+			{
+				$var_single[$val] = $this->fetch_simple_conditions($val);
+			}
+
+			// date variables
+			elseif (strpos($val, 'format') !== FALSE && preg_match("/.+?\s+?format/", $val))
+			{
+				$var_single[$val] = $this->fetch_date_variables($val);
+			}
+			else  // single variables
+			{
+				$var_single[$val] = $val;
+			}
+		}
+
+		// Assign Variable Pairs
+		$var_pair = array();
+
+		foreach($temp_pair as $val)
+		{
+			$var_pair[$val] = ee('Variables/Parser')->parseTagParameters($val);
+		}
+
+		$return['var_single']	= $var_single;
+		$return['var_pair']		= $var_pair;
+
+		return $return;
+	}
 }
 // END CLASS
 

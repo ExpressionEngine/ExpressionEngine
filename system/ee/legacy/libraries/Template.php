@@ -1579,7 +1579,7 @@ class EE_Template {
 				// Hopefully, with Jones' new parsing code we should be able to stop using the
 				// assign_variables and assign_conditional_variables() methods entirely. -Paul
 
-				$vars = ee()->functions->assign_variables($this->tag_data[$i]['block']);
+				$vars = ee('Variables/Parser')->extractVariables($this->tag_data[$i]['block']);
 
 				$this->var_single	= $vars['var_single'];
 				$this->var_pair		= $vars['var_pair'];
@@ -3221,7 +3221,7 @@ class EE_Template {
 
 				$this->tagdata = $match[3][$i];
 
-				$vars = ee()->functions->assign_variables($match[3][$i], '/');
+				$vars = ee('Variables/Parser')->extractVariables($match[3][$i], '/');
 				$this->var_single	= $vars['var_single'];
 				$this->var_pair		= $vars['var_pair'];
 
@@ -3260,7 +3260,7 @@ class EE_Template {
 
 				$this->tagdata = $match[2][$i];
 
-				$vars = ee()->functions->assign_variables($match[2][$i], '/');
+				$vars = ee('Variables/Parser')->extractVariables($match[2][$i], '/');
 				$this->var_single	= $vars['var_single'];
 				$this->var_pair		= $vars['var_pair'];
 

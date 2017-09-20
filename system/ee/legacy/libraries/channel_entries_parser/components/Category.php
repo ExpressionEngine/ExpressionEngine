@@ -214,7 +214,7 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 						$temp = str_replace(LD.$cat_var.RD, $cat_val, $temp);
 					}
 
-					$variables = ee()->functions->assign_variables($temp);
+					$variables = ee('Variables/Parser')->extractVariables($temp);
 					$temp = $obj->channel()->parseCategoryFields($v[0], $v, $temp, array_keys($variables['var_single']));
 
 					$cats .= $temp;
