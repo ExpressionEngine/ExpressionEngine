@@ -311,7 +311,11 @@ class FieldFacade {
 	public function getNativeField()
 	{
 		$data = $this->initField();
-		return $this->api->setup_handler($this->getType(), TRUE);
+		$ft = $this->api->setup_handler($this->getType(), TRUE);
+		ee()->api_channel_fields->field_type = $this->api->field_type;
+		ee()->api_channel_fields->field_types = array_merge(ee()->api_channel_fields->field_types, $this->api->field_types);
+		ee()->api_channel_fields->ft_paths = array_merge(ee()->api_channel_fields->ft_paths, $this->api->ft_paths);
+		return $ft;
 	}
 
 
