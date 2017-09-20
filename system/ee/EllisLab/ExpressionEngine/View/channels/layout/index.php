@@ -2,27 +2,31 @@
 
 <div class="box table-list-wrap">
 	<div class="tbl-ctrls">
-		<?=form_open($base_url)?>
-			<fieldset class="tbl-search right">
-				<a class="btn action" href="<?=$create_url?>"><?=lang('new_layout')?></a>
-			</fieldset>
-			<h1>
-				<?=$cp_page_title?>
-				<ul class="toolbar">
-					<li class="download"><a href="<?=$export_url?>" title="<?=$channel_title?>"></a></li>
-				</ul>
-			</h1>
-			<?=ee('CP/Alert')->getAllInlines()?>
-			<?php $this->embed('_shared/table-list', ['data' => $layouts]); ?>
-			<?php if (isset($pagination)) echo $pagination; ?>
-			<fieldset class="tbl-bulk-act hidden">
-				<select name="bulk_action">
-					<option>-- <?=lang('with_selected')?> --</option>
-					<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
-				</select>
-				<input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
-			</fieldset>
-		</form>
+		<?php if (empty($layouts)): ?>
+			<?php $this->embed('_shared/table-list', ['data' => []]); ?>
+		<?php else: ?>
+			<?=form_open($base_url)?>
+				<fieldset class="tbl-search right">
+					<a class="btn action" href="<?=$create_url?>"><?=lang('new_layout')?></a>
+				</fieldset>
+				<h1>
+					<?=$cp_page_title?>
+					<ul class="toolbar">
+						<li class="download"><a href="<?=$export_url?>" title="<?=$channel_title?>"></a></li>
+					</ul>
+				</h1>
+				<?=ee('CP/Alert')->getAllInlines()?>
+				<?php $this->embed('_shared/table-list', ['data' => $layouts]); ?>
+				<?php if (isset($pagination)) echo $pagination; ?>
+				<fieldset class="tbl-bulk-act hidden">
+					<select name="bulk_action">
+						<option>-- <?=lang('with_selected')?> --</option>
+						<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+					</select>
+					<input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
+				</fieldset>
+			</form>
+		<?php endif?>
 	</div>
 </div>
 

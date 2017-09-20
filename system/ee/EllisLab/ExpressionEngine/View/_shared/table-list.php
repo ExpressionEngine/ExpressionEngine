@@ -42,7 +42,7 @@
 			<li>
 				<div class="tbl-row no-results">
 					<div class="none">
-						<p><?=$no_results['text']?> <a href="<?=$no_results['href']?>"><?=lang('add_new')?></a></p>
+						<p><?=$no_results['text']?><?php if (isset($no_results['href'])): ?> <a href="<?=$no_results['href']?>"><?=lang('add_new')?></a><?php endif ?></p>
 					</div>
 				</div>
 			</li>

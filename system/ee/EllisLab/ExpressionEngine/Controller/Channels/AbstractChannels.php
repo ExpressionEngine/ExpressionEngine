@@ -86,13 +86,23 @@ abstract class AbstractChannels extends CP_Controller {
 				)
 			)
 		);
+
+		ee()->javascript->set_global(
+			'sets.importUrl',
+			ee('CP/URL', 'channels/sets')->compile()
+		);
+
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/channel/menu'),
+		));
 	}
 
 	protected function generateSidebar($active = NULL)
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$list = $sidebar->addFolderList('channels');
+		$list = $sidebar->addFolderList('channels')
+			->withNoResultsText(sprintf(lang('no_found'), lang('channels')));
 
 		if (ee()->cp->allowed_group('can_delete_channels'))
 		{
@@ -150,15 +160,6 @@ abstract class AbstractChannels extends CP_Controller {
 				NULL,
 				'import-channel'
 			);
-
-		ee()->javascript->set_global(
-			'sets.importUrl',
-			ee('CP/URL', 'channels/sets')->compile()
-		);
-
-		ee()->cp->add_js_script(array(
-			'file' => array('cp/channel/menu'),
-		));
 	}
 
 	/**

@@ -40,7 +40,7 @@ $(document).ready(function () {
 			channelSetForm.submit()
 		})
 
-		$('.sidebar .actions a[rel="import-channel"]').click(function(e) {
+		$('a[rel="import-channel"]').click(function(e) {
 			e.preventDefault()
 			fileInput.click()
 		}).after(channelSetForm)

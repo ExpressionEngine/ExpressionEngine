@@ -47,7 +47,15 @@ class Layouts extends AbstractChannelsController {
 
 		if ( ! $channel)
 		{
-			show_error(lang('unauthorized_access'), 403);
+			$vars = [
+				'no_results' => [
+					'text' => sprintf(lang('no_found'), lang('channels'))
+						.' <a href="'.ee('CP/URL', 'channels/create').'">'.lang('add_new').'</a> '
+						.lang('or').' <a href="#" rel="import-channel">'.lang('import').'</a>'
+				],
+				'channel_id' => ''
+			];
+			return ee()->cp->render('channels/layout/index', $vars);
 		}
 
 		$this->generateSidebar($channel->getId());
