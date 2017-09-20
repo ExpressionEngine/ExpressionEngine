@@ -411,9 +411,9 @@ class Channels extends AbstractChannelsController {
 			'value'      => $selected,
 			'multi'      => TRUE,
 			'no_results' => [
-				'text' => 'custom_field_groups_not_found',
-				'link_text' => 'create_new_field_group',
-				'link_href' => ee('CP/URL')->make('channels/groups/create')
+				'text' => sprintf(lang('no_found'), lang('field_groups')),
+				'link_text' => 'add_new',
+				'link_href' => ee('CP/URL')->make('channels/fields/groups/create')
 			]
 		]);
 	}
@@ -513,11 +513,11 @@ class Channels extends AbstractChannelsController {
 			'choices'    => $cat_group_options,
 			'value'      => $selected,
 			'multi'      => TRUE,
-			'no_results' => array(
-				'text' => 'category_groups_not_found',
-				'link_text' => 'create_new_category_group',
+			'no_results' => [
+				'text' => sprintf(lang('no_found'), lang('category_groups')),
+				'link_text' => 'add_new',
 				'link_href' => ee('CP/URL')->make('channels/cat/create')
-			)
+			]
 		]);
 	}
 
