@@ -204,8 +204,12 @@ class Channels extends AbstractChannelsController {
 		ee()->javascript->set_global([
 			'channelManager.fieldGroup.createUrl' => ee('CP/URL')->make('channels/fields/groups/create')->compile(),
 			'channelManager.fieldGroup.fieldUrl' => ee('CP/URL')->make('channels/render-field-groups-field')->compile(),
+
 			'channelManager.fields.createUrl' => ee('CP/URL')->make('channels/fields/create')->compile(),
-			'channelManager.fields.fieldUrl' => ee('CP/URL')->make('channels/render-fields-field')->compile()
+			'channelManager.fields.fieldUrl' => ee('CP/URL')->make('channels/render-fields-field')->compile(),
+
+			'channelManager.catGroup.createUrl' => ee('CP/URL')->make('channels/cat/create')->compile(),
+			'channelManager.catGroup.fieldUrl' => ee('CP/URL')->make('channels/render-category-groups-field')->compile()
 		]);
 
 		$fieldtypes = ee('Model')->get('Fieldtype')
@@ -332,13 +336,6 @@ class Channels extends AbstractChannelsController {
 	 */
 	private function renderFieldsTab($channel, $errors)
 	{
-		$custom_field_options = ee('Model')->get('ChannelField')
-			->fields('field_label')
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('field_label')
-			->all()
-			->getDictionary('field_id', 'field_label');
-
 		$section = array(
 			array(
 				'title' => 'title_field_label',
@@ -465,14 +462,6 @@ class Channels extends AbstractChannelsController {
 	 */
 	private function renderCategoriesTab($channel, $errors)
 	{
-		$cat_group_options = ee('Model')->get('CategoryGroup')
-			->fields('group_name')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('exclude_group', '!=', 1)
-			->order('group_name')
-			->all()
-			->getDictionary('group_id', 'group_name');
-
 		$section = array(
 			array(
 				'title' => 'category_groups',
@@ -483,14 +472,8 @@ class Channels extends AbstractChannelsController {
 				],
 				'fields' => array(
 					'cat_group' => array(
-						'type' => 'checkbox',
-						'choices' => $cat_group_options,
-						'value' => explode('|', $channel->cat_group),
-						'no_results' => array(
-							'text' => 'category_groups_not_found',
-							'link_text' => 'create_new_category_group',
-							'link_href' => ee('CP/URL')->make('channels/cat/create')
-						)
+						'type' => 'html',
+						'content' => $this->renderCategoryGroupsField($channel)
 					)
 				)
 			)
@@ -498,6 +481,42 @@ class Channels extends AbstractChannelsController {
 
 		return ee('View')->make('_shared/form/section')
 				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
+	}
+
+	/**
+	 * Renders the Category Groups selection form for the channel create/edit form
+	 *
+	 * @param Channel $channel A Channel entity, optional
+	 * @return string HTML
+	 */
+	public function renderCategoryGroupsField($channel = NULL)
+	{
+		$cat_group_options = ee('Model')->get('CategoryGroup')
+			->fields('group_name')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('exclude_group', '!=', 1)
+			->order('group_name')
+			->all()
+			->getDictionary('group_id', 'group_name');
+
+		$selected = ee('Request')->post('cat_group') ?: [];
+
+		if ($channel)
+		{
+			$selected = explode('|', $channel->cat_group);
+		}
+
+		return ee('View')->make('ee:_shared/form/fields/select')->render([
+			'field_name' => 'cat_group',
+			'choices'    => $cat_group_options,
+			'value'      => $selected,
+			'multi'      => TRUE,
+			'no_results' => array(
+				'text' => 'category_groups_not_found',
+				'link_text' => 'create_new_category_group',
+				'link_href' => ee('CP/URL')->make('channels/cat/create')
+			)
+		]);
 	}
 
 	/**

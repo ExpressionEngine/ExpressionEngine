@@ -22,4 +22,6 @@ var options = {
 
 var fieldsForm = new MutableSelectField('custom_fields', Object.assign(EE.channelManager.fields, options))
 
+var catGroupsForm = new MutableSelectField('cat_group', EE.channelManager.catGroup)
+
 })(jQuery);

@@ -133,7 +133,7 @@ class Cat extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$this->form();
+		return $this->form();
 	}
 
 	/**
@@ -146,7 +146,7 @@ class Cat extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$this->form($group_id);
+		return $this->form($group_id);
 	}
 
 	/**
@@ -294,7 +294,7 @@ class Cat extends AbstractChannelsController {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		if (AJAX_REQUEST)
+		if (isset($_POST['ee_fv_field']) && AJAX_REQUEST)
 		{
 			ee()->form_validation->run_ajax();
 			exit;
@@ -302,6 +302,11 @@ class Cat extends AbstractChannelsController {
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			$group = $this->saveCategoryGroup($group_id);
+
+			if (AJAX_REQUEST)
+			{
+				return ['saveId' => $group->getId()];
+			}
 
 			if (is_null($group_id))
 			{
@@ -328,6 +333,11 @@ class Cat extends AbstractChannelsController {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('category_group'));
 		ee()->view->save_btn_text_working = 'btn_saving';
+
+		if (AJAX_REQUEST)
+		{
+			return ee()->cp->render('_shared/form', $vars);
+		}
 
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels/cat'), lang('category_groups'));
 
