@@ -292,8 +292,10 @@ class Channels extends AbstractChannelsController {
 			)
 		);
 
-		// Only show duplicate channel option for new channels
-		if ($channel->isNew())
+		// Only show duplicate channel option for new channels and if channels exist
+		if ($channel->isNew() && ee('Model')->get('Channel')
+			->filter('site_id', ee()->config->item('site_id'))
+			->count())
 		{
 			// Channel duplicate preferences menu
 			$channels = ee('Model')->get('Channel')
