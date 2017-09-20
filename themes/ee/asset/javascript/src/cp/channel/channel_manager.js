@@ -9,6 +9,17 @@
 (function($) {
 
 var fieldGroupsForm = new MutableSelectField('field_groups', EE.channelManager.fieldGroup)
-var fieldsForm = new MutableSelectField('custom_fields', EE.channelManager.fields)
+
+var options = {
+	onFormLoad: function(modal) {
+		ChannelManager.fireEvent('fieldModalDisplay', modal)
+
+		$('input[name=field_label]', modal).bind("keyup keydown", function() {
+			$(this).ee_url_title('input[name=field_name]', true);
+		});
+	}
+}
+
+var fieldsForm = new MutableSelectField('custom_fields', Object.assign(EE.channelManager.fields, options))
 
 })(jQuery);
