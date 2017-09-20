@@ -204,9 +204,23 @@ class Channels extends AbstractChannelsController {
 		ee()->javascript->set_global([
 			'channelManager.fieldGroup.createUrl' => ee('CP/URL')->make('channels/fields/groups/create')->compile(),
 			'channelManager.fieldGroup.fieldUrl' => ee('CP/URL')->make('channels/render-field-groups-field')->compile(),
-			'channelManager.fields.createUrl' => ee('CP/URL')->make('channels/fields/create')->compile()
+			'channelManager.fields.createUrl' => ee('CP/URL')->make('channels/fields/create')->compile(),
+			'channelManager.fields.fieldUrl' => ee('CP/URL')->make('channels/render-fields-field')->compile()
 		]);
 
+		$fieldtypes = ee('Model')->get('Fieldtype')
+			->fields('name')
+			->all();
+
+		// Call fieldtypes' display_settings methods to load any needed JS
+		foreach ($fieldtypes as $fieldtype)
+		{
+			$dummy_field = ee('Model')->make('ChannelField');
+			$dummy_field->field_type = $fieldtype->name;
+			$dummy_field->getSettingsForm();
+		}
+
+		ee()->cp->add_js_script('plugin', 'ee_url_title');
 		ee()->cp->add_js_script('file', 'cp/channel/channel_manager');
 
 		ee()->view->header = array(
