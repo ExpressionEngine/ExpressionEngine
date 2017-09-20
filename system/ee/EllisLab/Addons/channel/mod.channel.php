@@ -4051,7 +4051,7 @@ class Channel {
 
 		foreach ($variables as $tag)
 		{
-			$tag = ee()->api_channel_fields->get_single_field($tag);
+			$tag = ee('Variables/Parser')->parseVariableProperties($tag);
 			$field_name = $tag['field_name'];
 
 			if ( ! isset($field_index[$field_name]))
@@ -4107,7 +4107,7 @@ class Channel {
 		// Get field names present in the template, sans modifiers
 		$clean_field_names = array_map(function($field)
 		{
-			$field = ee()->api_channel_fields->get_single_field($field);
+			$field = ee('Variables/Parser')->parseVariableProperties($field);
 			return $field['field_name'];
 		}, array_flip(ee()->TMPL->var_single));
 

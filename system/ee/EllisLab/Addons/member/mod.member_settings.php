@@ -712,7 +712,7 @@ class Member_settings extends Member {
 			{
 
 				// Custom member fields
-				$field = ee()->api_channel_fields->get_single_field($key);
+				$field = ee('Variables/Parser')->parseVariableProperties($key);
 				$fval = $field['field_name'];
 
 				// parse custom member fields

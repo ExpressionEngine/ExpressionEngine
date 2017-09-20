@@ -1835,6 +1835,9 @@ class Api_channel_fields extends Api {
 	 */
 	public function get_single_field($tag, $prefix = '')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('4.0', "ee('Variables/Parser')->parseVariableProperties()");
+
 		return ee('Variables/Parser')->parseVariableProperties($tag, $prefix);
 	}
 
