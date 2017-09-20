@@ -33,7 +33,7 @@ use EllisLab\ExpressionEngine\Service\Theme;
 use EllisLab\ExpressionEngine\Service\Thumbnail;
 use EllisLab\ExpressionEngine\Service\URL;
 use EllisLab\ExpressionEngine\Service\Validation;
-use EllisLab\ExpressionEngine\Service\Template\Variables;
+use EllisLab\ExpressionEngine\Service\Template;
 use EllisLab\ExpressionEngine\Service\View;
 use EllisLab\Addons\Spam\Service\Spam;
 use EllisLab\Addons\FilePicker\Service\FilePicker;
@@ -226,7 +226,7 @@ return array(
 
 		'Variables/Parser' => function ($ee)
 		{
-			return new Variables\LegacyParser();
+			return new Template\Variables\LegacyParser();
 		},
 	),
 
