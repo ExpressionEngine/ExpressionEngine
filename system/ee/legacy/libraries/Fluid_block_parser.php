@@ -206,7 +206,9 @@ class Fluid_block_parser {
 			->filter('block_id', 'IN', $block_ids)
 			->filter('entry_id', 'IN', $entry_ids)
 			->filter('field_id', 'IN', $field_ids)
-			->order('block_id', 'entry_id', 'order')
+			->order('block_id')
+			->order('entry_id')
+			->order('order')
 			->all();
 
 		// Since we store the data in the field's table, and each field has its
