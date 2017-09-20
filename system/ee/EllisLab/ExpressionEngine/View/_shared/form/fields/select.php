@@ -1,7 +1,14 @@
 <?php
 $too_many = 8;
 
-if (count($choices) == 0) return;
+if (count($choices) == 0)
+{
+	if (isset($no_results))
+	{
+		echo $this->make('ee:_shared/form/no_results')->render($no_results);
+	}
+	return;
+};
 
 $nested = isset($nested) ? $nested : FALSE;
 $encode = isset($encode) ? $encode : TRUE;

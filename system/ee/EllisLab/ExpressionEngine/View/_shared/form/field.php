@@ -44,7 +44,7 @@ if (isset($field['placeholder']))
 }
 $has_note = isset($field['note']);
 
-$no_results = (in_array($field['type'], array('checkbox', 'radio', 'select')) &&
+$no_results = (in_array($field['type'], array('select')) &&
 	isset($field['no_results']) &&
 	count($field['choices']) == 0);
 
