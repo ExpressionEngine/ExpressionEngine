@@ -73,10 +73,13 @@ class MutableSelectField {
           this.replaceField(result.selectList)
         // Otherwise, we have to fetch the field markup ourselves
         } else if (result.saveId && this.options.fieldUrl) {
-          // Gather the current field selection so that it may be applied to the
-          // field upon reload; we may need this for the above condition too
+
           let selected = [result.saveId]
-          $('input[name="'+this.fieldName+'[]"]:checked').each(function(){
+
+          // Gather the current field selection so that it may be applied to the
+          // field upon reload. Checkboxes for server-rendered fields, hidden
+          // inputs for the React fields.
+          $('input[type=checkbox][name="'+this.fieldName+'[]"]:checked, input[type=hidden][name="'+this.fieldName+'[]"]').each(function(){
             selected.push($(this).val());
           });
 
