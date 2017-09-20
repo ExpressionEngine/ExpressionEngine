@@ -126,6 +126,8 @@ class Fluid_block_ft extends EE_Fieldtype {
 		$field_data = $block->getFieldData();
 		$field_data->set($values);
 		$field = $block->getField($field_data);
+		$field->setItem('block_data_id', $this->field_id);
+		$field->validate($field->getData());
 		$field->save();
 
 		$values['field_id_' . $field->getId()] = $field->getData();
