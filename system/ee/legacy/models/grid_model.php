@@ -438,7 +438,7 @@ class Grid_model extends CI_Model {
 	 * Assigns some default parameters and makes sure parameters can be
 	 * safely used in an SQL query or otherwise used to help parsing
 	 *
-	 * @param	array	Array of parameters from Functions::assign_parameters
+	 * @param	array	Array of parameters from ee('Variables/Parser')->parseTagParameters()
 	 * @param	int		Field ID of field being parsed so we can make sure
 	 *					the orderby parameter is ordering via a real column
 	 * @return	array	Array of validated and default parameters to use for parsing
