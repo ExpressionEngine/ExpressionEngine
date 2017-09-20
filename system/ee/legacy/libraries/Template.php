@@ -768,7 +768,7 @@ class EE_Template {
 
 		$parts = preg_split("/\s+/", $layout[2], 2);
 
-		$layout_vars = (isset($parts[1])) ? ee('Variables/Parser')->assignTagParameters($parts[1]) : array();
+		$layout_vars = (isset($parts[1])) ? ee('Variables/Parser')->parseTagParameters($parts[1]) : array();
 
 		if ($layout_vars === FALSE)
 		{
@@ -794,7 +794,7 @@ class EE_Template {
 		while ($pos !== FALSE)
 		{
 			$tag = ee()->functions->full_tag(substr($template, $pos, $open_tag_len), $template);
-			$params = ee('Variables/Parser')->assignTagParameters(substr($tag, $open_tag_len));
+			$params = ee('Variables/Parser')->parseTagParameters(substr($tag, $open_tag_len));
 
 			if ($params['name'] == 'contents')
 			{
@@ -914,7 +914,7 @@ class EE_Template {
 		{
 			$parts = preg_split("/\s+/", $val, 2);
 
-			$this->embed_vars = (isset($parts[1])) ? ee('Variables/Parser')->assignTagParameters($parts[1]) : array();
+			$this->embed_vars = (isset($parts[1])) ? ee('Variables/Parser')->parseTagParameters($parts[1]) : array();
 
 			if ($this->embed_vars === FALSE)
 			{
@@ -1160,7 +1160,7 @@ class EE_Template {
 				// -----------------------------------------
 
 				// Assign parameters based on the arguments from the tag
-				$args  = ee('Variables/Parser')->assignTagParameters($args);
+				$args  = ee('Variables/Parser')->parseTagParameters($args);
 
 				// standardized mechanism for "search" type parameters get some extra lovin'
 				$search_fields = array();
@@ -3225,7 +3225,7 @@ class EE_Template {
 				$this->var_single	= $vars['var_single'];
 				$this->var_pair		= $vars['var_pair'];
 
-				$this->tagparams = ee('Variables/Parser')->assignTagParameters($match[2][$i]);
+				$this->tagparams = ee('Variables/Parser')->parseTagParameters($match[2][$i]);
 
 				$this->var_cond = ee()->functions->assign_conditional_variables($match[3][$i], '/', LD, RD);
 
@@ -3264,7 +3264,7 @@ class EE_Template {
 				$this->var_single	= $vars['var_single'];
 				$this->var_pair		= $vars['var_pair'];
 
-				$this->tagparams = ee('Variables/Parser')->assignTagParameters($match[1][$i]);
+				$this->tagparams = ee('Variables/Parser')->parseTagParameters($match[1][$i]);
 
 				// Assign sites for the tag
 				$this->_fetch_site_ids();
@@ -3547,7 +3547,7 @@ class EE_Template {
 		{
 			foreach ($matches as $match)
 			{
-				$sparam = ee('Variables/Parser')->assignTagParameters($match[1]);
+				$sparam = ee('Variables/Parser')->parseTagParameters($match[1]);
 
 				if (isset($sparam['switch']))
 				{
@@ -3568,7 +3568,7 @@ class EE_Template {
 		{
 			if (strpos($variable, ':') !== FALSE)
 			{
-				$this->modified_vars[$variable] = ee('Variables/Parser')->getSingleVariable($variable);
+				$this->modified_vars[$variable] = ee('Variables/Parser')->parseVariableProperties($variable);
 			}
 		}
 
@@ -3872,7 +3872,7 @@ class EE_Template {
 			// Get parameters of variable pair
 			if (preg_match_all("|".LD.$name.'(.*?)'.RD."|s", $matches[0][$k], $param_matches))
 			{
-				$parameters = ee('Variables/Parser')->assignTagParameters($param_matches[1][0]);
+				$parameters = ee('Variables/Parser')->parseTagParameters($param_matches[1][0]);
 			}
 
 			// Limit parameter
@@ -4058,7 +4058,7 @@ class EE_Template {
 					if ($timestamp !== '')
 					{
 						$parts = preg_split("/\s+/", $val, 2);
-						$args = (isset($parts[1])) ? ee('Variables/Parser')->assignTagParameters($parts[1]) : array();
+						$args = (isset($parts[1])) ? ee('Variables/Parser')->parseTagParameters($parts[1]) : array();
 						if (strpos($val, ':relative') !== FALSE) {
 							$relative = TRUE;
 						}

@@ -1835,7 +1835,7 @@ class Api_channel_fields extends Api {
 	 */
 	public function get_single_field($tag, $prefix = '')
 	{
-		return ee('Variables/Parser')->getSingleVariable($tag, $prefix);
+		return ee('Variables/Parser')->parseVariableProperties($tag, $prefix);
 	}
 
 	/**

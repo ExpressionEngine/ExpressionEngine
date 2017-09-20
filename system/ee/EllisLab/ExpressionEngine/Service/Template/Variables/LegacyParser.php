@@ -15,13 +15,34 @@ namespace EllisLab\ExpressionEngine\Service\Template\Variables;
  */
 class LegacyParser {
 
-	public function getSingleVariable($tag, $prefix = '')
+	/**
+	 * Given a template variable string, this parses out parameters and modifiers
+	 * e.g. {variable:modifier param1='foo' param2='bar'} returns:
+	 *
+	 * 		array(
+	 * 			'field_name' => 'variable',
+	 * 			'params' => array(
+	 * 				'param1' => 'foo',
+	 * 				'param2' => 'bar',
+	 * 			),
+	 * 			'modifier' => 'modifier'
+	 * 		)
+	 *
+	 * Note: 'field_name' is used instead of just 'name' or 'variable_name' as this was
+	 * originally a method of the legacy Channel Fields API, and the LegacyParser
+	 * is a non-breaking API change
+	 *
+	 * @param  string $template_var Template variable to get the name, modifier, and parameters from
+	 * @param  string $prefix Options prefix
+	 * @return array Variable name, modifier, and parameters
+	 */
+	public function parseVariableProperties($template_var, $prefix = '')
 	{
-		$field_info = array();
+		$props = array();
 
-		$unprefixed_tag	= preg_replace('/^'.$prefix.'/', '', $tag);
-		$field_name 	= substr($unprefixed_tag.' ', 0, strpos($unprefixed_tag.' ', ' '));
-		$param_string	= substr($unprefixed_tag.' ', strlen($field_name));
+		$unprefixed_var	= preg_replace('/^'.$prefix.'/', '', $template_var);
+		$field_name 	= substr($unprefixed_var.' ', 0, strpos($unprefixed_var.' ', ' '));
+		$param_string	= substr($unprefixed_var.' ', strlen($field_name));
 
 		$modifier = '';
 		$modifier_loc = strpos($field_name, ':');
@@ -32,14 +53,21 @@ class LegacyParser {
 			$field_name = substr($field_name, 0, $modifier_loc);
 		}
 
-		$field_info['field_name'] = $field_name;
-		$field_info['params'] = (trim($param_string)) ? $this->assignTagParameters($param_string) : array();
-		$field_info['modifier'] = $modifier;
+		$props['field_name'] = $field_name;
+		$props['params'] = (trim($param_string)) ? $this->parseTagParameters($param_string) : array();
+		$props['modifier'] = $modifier;
 
-		return $field_info;
+		return $props;
 	}
 
-	public function assignTagParameters($param_string, array $defaults = [])
+	/**
+	 * Parse Tag Parameters
+	 *
+	 * @param  string $param_string A string of parameters, e.g. param1='foo' param2='bar'
+	 * @param  array  $defaults     Optional default values
+	 * @return array Parameters in key (parameter) => value form. FALSE when no parameters exist
+	 */
+	public function parseTagParameters($param_string, array $defaults = [])
 	{
 		if ($param_string == "")
 		{

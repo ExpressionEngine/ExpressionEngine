@@ -1823,7 +1823,7 @@ class EE_Functions {
 	 */
 	public function assign_parameters($str, $defaults = array())
 	{
-		return ee('Variables/Parser')->assignTagParameters($str, $defaults);
+		return ee('Variables/Parser')->parseTagParameters($str, $defaults);
 	}
 
 	/**
