@@ -1829,9 +1829,9 @@ class Api_channel_fields extends Api {
 	/**
 	 * Gets information for a single variable field in a template
 	 *
-	 * @param	string	Tag to get field name, modifier and params from
-	 * @param	string	Optional prefix
-	 * @return	array	Field name, modifier and params for field
+	 * Deprecated in 4.0.0
+	 *
+	 * @see	EllisLab\ExpressionEngine\Service\Template\Variables\LegacyParser::parseVariableProperties()
 	 */
 	public function get_single_field($tag, $prefix = '')
 	{

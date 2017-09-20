@@ -1654,15 +1654,9 @@ class EE_Functions {
 	/**
 	 * Return parameters as an array
 	 *
-	 * Creates an associative array from a string
-	 * of parameters: sort="asc" limit="2" etc.
+	 * Deprecated in 4.0.0
 	 *
-	 * @access	public
-	 * @param String $str String of parameters (e.g. sort="asc" limit="2")
-	 * @param array $defaults Associative array of defaults with the name as the
-	 *                        key and the value as the default value
-	 * @return Mixed FALSE if there's no matches, otherwise the associative
-	 *               array containing the parameters and their values
+	 * @see	EllisLab\ExpressionEngine\Service\Template\Variables\LegacyParser::parseTagParameters()
 	 */
 	public function assign_parameters($str, $defaults = array())
 	{
