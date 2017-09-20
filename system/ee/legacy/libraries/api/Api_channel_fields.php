@@ -1835,26 +1835,7 @@ class Api_channel_fields extends Api {
 	 */
 	public function get_single_field($tag, $prefix = '')
 	{
-		$field_info = array();
-
-		$unprefixed_tag	= preg_replace('/^'.$prefix.'/', '', $tag);
-		$field_name 	= substr($unprefixed_tag.' ', 0, strpos($unprefixed_tag.' ', ' '));
-		$param_string	= substr($unprefixed_tag.' ', strlen($field_name));
-
-		$modifier = '';
-		$modifier_loc = strpos($field_name, ':');
-
-		if ($modifier_loc !== FALSE)
-		{
-			$modifier = substr($field_name, $modifier_loc + 1);
-			$field_name = substr($field_name, 0, $modifier_loc);
-		}
-
-		$field_info['field_name'] = $field_name;
-		$field_info['params'] = (trim($param_string)) ? ee()->functions->assign_parameters($param_string) : array();
-		$field_info['modifier'] = $modifier;
-
-		return $field_info;
+		return ee('Variables/Parser')->getSingleVariable($tag, $prefix);
 	}
 
 	/**

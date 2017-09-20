@@ -1823,52 +1823,7 @@ class EE_Functions {
 	 */
 	public function assign_parameters($str, $defaults = array())
 	{
-		if ($str == "")
-		{
-			return FALSE;
-		}
-
-		// remove comments before assigning
-		$str = preg_replace("/\{!--.*?--\}/s", '', $str);
-
-		// \047 - Single quote octal
-		// \042 - Double quote octal
-
-		// I don't know for sure, but I suspect using octals is more reliable
-		// than ASCII. I ran into a situation where a quote wasn't being matched
-		// until I switched to octal. I have no idea why, so just to be safe I
-		// used them here. - Rick
-
-		// matches[0] => attribute and value
-		// matches[1] => attribute name
-		// matches[2] => single or double quote
-		// matches[3] => attribute value
-
-		$bs = '\\'; // single backslash
-		preg_match_all("/(\S+?)\s*=\s*($bs$bs?)(\042|\047)([^\\3]*?)\\2\\3/is", $str, $matches, PREG_SET_ORDER);
-
-		if (count($matches) > 0)
-		{
-			$result = array();
-
-			foreach($matches as $match)
-			{
-				$result[$match[1]] = (trim($match[4]) == '') ? $match[4] : trim($match[4]);
-			}
-
-			foreach ($defaults as $name => $default_value)
-			{
-				if ( ! isset($result[$name])
-					OR (is_numeric($default_value) && ! is_numeric($result[$name])))
-				{
-					$result[$name] = $default_value;
-				}
-			}
-
-			return $result;
-		}
-
-		return FALSE;
+		return ee('Variables/Parser')->assignTagParameters($str, $defaults);
 	}
 
 	/**
