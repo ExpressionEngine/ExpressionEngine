@@ -8,7 +8,7 @@
 		<a class="fluid-remove" href="" title=""></a>
 		<?=$filters?>
 	</div>
-	<div class="fluid-field">
+	<div class="fluid-field <?php if ($field->field_type == 'grid') echo 'grid-publish'; ?>">
 		<div class="field-instruct">
 			<em><?=$field->field_instructions?></em>
 		</div>
