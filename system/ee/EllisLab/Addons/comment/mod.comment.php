@@ -816,7 +816,7 @@ class Comment {
 
 				if (strncmp($key, 'switch', 6) == 0)
 				{
-					$sparam = ee()->functions->assign_parameters($key);
+					$sparam = ee('Variables/Parser')->parseTagParameters($key);
 
 					$sw = '';
 

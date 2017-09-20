@@ -13,7 +13,7 @@
 class Member {
 
 	var $trigger			= 'member';
-	var $member_template	= TRUE;	
+	var $member_template	= TRUE;
 	var $theme_class		= 'profile_theme';
 	var $request			= 'public_profile';
 	var $no_menu 			= array(
@@ -2033,7 +2033,7 @@ class Member {
 		{
 			foreach ($matches as $match)
 			{
-				$sparam = ee()->functions->assign_parameters($match[1]);
+				$sparam = ee('Variables/Parser')->parseTagParameters($match[1]);
 
 				if (isset($sparam['switch']))
 				{

@@ -90,7 +90,7 @@ class EE_Functions {
 		}
 
 		$full_segment = $segment;
-		$parts = $this->assign_parameters($tag);
+		$parts = ee('Variables/Parser')->parseTagParameters($tag);
 
 		$template = $parts['route'];
 		$template = trim($template, '"\' ');
@@ -1724,7 +1724,7 @@ class EE_Functions {
 
 		foreach($temp_pair as $val)
 		{
-			$var_pair[$val] = $this->assign_parameters($val);
+			$var_pair[$val] = ee('Variables/Parser')->parseTagParameters($val);
 		}
 
 		$return['var_single']	= $var_single;
@@ -1823,6 +1823,9 @@ class EE_Functions {
 	 */
 	public function assign_parameters($str, $defaults = array())
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('4.0', "ee('Variables/Parser')->parseTagParameters()");
+
 		return ee('Variables/Parser')->parseTagParameters($str, $defaults);
 	}
 

@@ -287,7 +287,7 @@ class Updater {
 			{
 				foreach ($matches as $match)
 				{
-					$params = ee()->functions->assign_parameters($match[2]);
+					$params = ee('Variables/Parser')->parseTagParameters($match[2]);
 
 					// If any of the parameters indicate it's trying to
 					// set the contents variable, log the template name

@@ -449,7 +449,7 @@ class Grid_model extends CI_Model {
 
 		if (is_string($params))
 		{
-			$params = ee()->functions->assign_parameters($params);
+			$params = ee('Variables/Parser')->parseTagParameters($params);
 		}
 
 		// dynamic_parameters

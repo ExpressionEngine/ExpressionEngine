@@ -56,7 +56,7 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 			{
 				$cat_chunk[] = array(
 					$matches[2][$j],
-					ee()->functions->assign_parameters($matches[1][$j]),
+					ee('Variables/Parser')->parseTagParameters($matches[1][$j]),
 					$matches[0][$j]
 				);
 			}

@@ -285,7 +285,7 @@ class Installer_Template {
 															'var_single'		=> $vars['var_single'],
 															'var_pair' 			=> $vars['var_pair'],
 															'var_cond'			=> ee()->functions->assign_conditional_variables($matches[2][$j], '\/', LD, RD),
-															'params'			=> ee()->functions->assign_parameters($matches[1][$j]),
+															'params'			=> ee('Variables/Parser')->parseTagParameters($matches[1][$j]),
 															'no_rev_content'	=> $no_rev_content
 														);
 

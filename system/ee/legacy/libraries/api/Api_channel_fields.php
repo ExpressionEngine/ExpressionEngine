@@ -1807,7 +1807,7 @@ class Api_channel_fields extends Api {
 					$content = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.RD));
 				}
 
-				$params = ee()->functions->assign_parameters($params);
+				$params = ee('Variables/Parser')->parseTagParameters($params);
 				$params = $params ? $params : array();
 
 				$chunk_array = array(

@@ -491,7 +491,7 @@ class Forum_Core extends Forum {
 			{
 				// author, date parameters
 				// We do the str_replace because of the XHTML Typography that converts quotes
-				$tagparams = ee()->functions->assign_parameters(trim(str_replace(array('&#8220;', '&#8221;'), '"', $matches['1'][$i])));
+				$tagparams = ee('Variables/Parser')->parseTagParameters(trim(str_replace(array('&#8220;', '&#8221;'), '"', $matches['1'][$i])));
 
 				$author	= ( ! isset($tagparams['author'])) ? '' : $tagparams['author'];
 				$time	= ( ! isset($tagparams['date'])) ? '' : $tagparams['date'];
@@ -6335,7 +6335,7 @@ class Forum_Core extends Forum {
 						continue;
 					}
 
-					$params = ee()->functions->assign_parameters($full_tag_inner);
+					$params = ee('Variables/Parser')->parseTagParameters($full_tag_inner);
 
 					if (isset($params['char_limit']) && is_numeric($params['char_limit']))
 					{
@@ -10719,7 +10719,7 @@ class Forum_Core extends Forum {
 						  'cnonce'		=> 1,
 						  'qop'			=> 1);
 
-		$params = ee()->functions->assign_parameters($_SERVER['PHP_AUTH_DIGEST']);
+		$params = ee('Variables/Parser')->parseTagParameters($_SERVER['PHP_AUTH_DIGEST']);
 
 		extract($required);
 		extract($params);
