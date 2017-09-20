@@ -143,12 +143,9 @@ class Tag {
 			{
 				ee()->load->library('grid_parser');
 				ee()->grid_parser->grid_field_names[$field->getId()] = $field->getName();
-				$tpl_chunk = $field->replaceTag($content);
 			}
-			else
-			{
-				$tpl_chunk = $this->parseSingle($field, $content);
-			}
+
+			$tpl_chunk = $field->replaceTag($content);
 
 			$tagdata = str_replace($chunk, $tpl_chunk, $tagdata);
 		}
