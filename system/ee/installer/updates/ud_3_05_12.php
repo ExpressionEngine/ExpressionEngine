@@ -23,7 +23,7 @@ class Updater {
 	{
 		$steps = new ProgressIterator(
 			array(
-				'alterCpLogTable'
+				'alterUsernameFields'
 			)
 		);
 
@@ -34,12 +34,13 @@ class Updater {
 		return TRUE;
 	}
 
-	private function alterCpLogTable()
+	private function alterUsernameFields()
 	{
 		$fields = array(
 			'username'	=> array('type' => 'text',	'constraint' => '75',	'null' => FALSE)
 		);
 			ee()->smartforge->modify_column('cp_log', $fields);
+			ee()->smartforge->modify_column('password_lockout', $fields);
 	}
 }
 // EOF
