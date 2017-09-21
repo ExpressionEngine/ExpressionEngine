@@ -466,9 +466,11 @@ $lang = array(
 
 'category_group_updated_desc' => 'The category group <b>%s</b> has been updated.',
 
-'category_groups_removed' => 'Category groups removed',
+'category_groups_removed' => 'Category group removed',
 
-'category_groups_removed_desc' => '%d category groups were removed.',
+'category_groups_removed_desc' => 'The category group <b>%s</b> has been removed.',
+
+'category_manager' => 'Category Manager',
 
 'category_not_created' => 'Cannot Create Category',
 
@@ -492,7 +494,7 @@ $lang = array(
 
 'create_category_field' => 'Create Category Field',
 
-'create_category_group' => 'Create Category Group',
+'create_category_group' => 'New Category Group',
 
 'delete_categories' => 'Delete Categories',
 
