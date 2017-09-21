@@ -2,7 +2,7 @@
 
 <div class="box table-list-wrap">
 	<div class="tbl-ctrls">
-		<?php if (empty($layouts)): ?>
+		<?php if (empty($layouts) && empty($channel_id)): ?>
 			<?php $this->embed('_shared/table-list', ['data' => []]); ?>
 		<?php else: ?>
 			<?=form_open($base_url)?>
