@@ -155,6 +155,8 @@ $lang = array(
 
 'save' => 'Save',
 
+'save_and_new' => 'Save & New',
+
 'save_changes' => 'Save changes',
 
 'submit' => 'Submit',
