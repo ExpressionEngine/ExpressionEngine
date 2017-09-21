@@ -23,7 +23,7 @@
 				radios.hide();
 			}
 
-			$('input[value=choose], li.edit a', context)
+			$('fieldset input[value=choose], fieldset li.edit a', context)
 				.addClass('m-link')
 				.attr('rel', 'modal-file')
 				.attr('href', EE.category_edit.filepicker_url)
