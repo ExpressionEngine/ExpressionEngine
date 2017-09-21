@@ -215,8 +215,7 @@ class EE_Menu {
 		{
 			$sections = array(
 				'channels' => 'channels/layouts',
-				'channel_fields' => 'channels/fields/groups',
-				'statuses' => 'channels/status',
+				'channel_fields' => 'channels/fields',
 				'categories' => 'channels/cat'
 			);
 
@@ -228,8 +227,8 @@ class EE_Menu {
 					"can_delete_{$name}"
 				))
 				{
-					$menu['channel_manager'] = ee('CP/URL')->make($path);
-					break;
+					$name = $name == 'channel_fields' ? 'fields' : $name;
+					$menu[$name] = ee('CP/URL')->make($path);
 				}
 			}
 		}
