@@ -115,9 +115,29 @@ class Duration_Ft extends EE_Fieldtype {
 
 		$data = ee('Format')->make('Number', $data)->duration($params);
 
-		if (isset($params['include_seconds']) && get_bool_from_string($params['include_seconds']) === FALSE)
+		// Duration formatter could return one of ## sec., ##:##, or ##:##:##
+		$parts = explode(':', $data);
+
+		if (isset($params['format']))
 		{
-			$parts = explode(':', $data);
+			switch (count($parts))
+			{
+				case 3:
+					$units = ['%h' => $parts[0], '%m' => $parts[1], '%s' => $parts[2]];
+					break;
+				case 2:
+					$units = ['%h' => 0, '%m' => $parts[0], '%s' => $parts[1]];
+					break;
+				case 1:
+				default:
+					$units = ['%h' => 0, '%m' => 0, '%s' => (int) $parts[0]];
+					break;
+			}
+
+			$data = str_replace(array_keys($units), array_values($units), $params['format']);
+		}
+		elseif (isset($params['include_seconds']) && get_bool_from_string($params['include_seconds']) === FALSE)
+		{
 			array_pop($parts);
 			$data = implode(':', $parts);
 		}
