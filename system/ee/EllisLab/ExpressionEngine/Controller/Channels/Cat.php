@@ -303,21 +303,30 @@ class Cat extends AbstractChannelsController {
 		{
 			$group = $this->saveCategoryGroup($group_id);
 
-			if (AJAX_REQUEST)
-			{
-				return ['saveId' => $group->getId()];
-			}
-
-			if (is_null($group_id))
-			{
-				ee()->session->set_flashdata('highlight_id', $group->getId());
-			}
-
 			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('category_group_'.$alert_key))
 				->addToBody(sprintf(lang('category_group_'.$alert_key.'_desc'), $group->group_name))
 				->defer();
+
+			if (AJAX_REQUEST)
+			{
+				return ['saveId' => $group->getId()];
+			}
+
+			if (ee('Request')->post('submit') == 'save_and_new')
+			{
+				ee()->functions->redirect(ee('CP/URL')->make('channels/cat/create'));
+			}
+			else
+			{
+				if (is_null($group_id))
+				{
+					ee()->session->set_flashdata('highlight_id', $group->getId());
+				}
+
+				ee()->functions->redirect(ee('CP/URL')->make('channels/cat'));
+			}
 
 			ee()->functions->redirect(ee('CP/URL')->make('channels/cat'));
 		}
@@ -333,6 +342,23 @@ class Cat extends AbstractChannelsController {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('category_group'));
 		ee()->view->save_btn_text_working = 'btn_saving';
+
+		$vars['buttons'] = [
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save',
+				'text' => 'save',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_new',
+				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			]
+		];
 
 		if (AJAX_REQUEST)
 		{

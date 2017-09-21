@@ -125,20 +125,27 @@ class Fields extends AbstractChannelsController {
 			{
 				$field->save();
 
-				if (AJAX_REQUEST)
-				{
-					return ['saveId' => $field->getId()];
-				}
-
-				ee()->session->set_flashdata('field_id', $field->field_id);
-
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('create_field_success'))
 					->addToBody(sprintf(lang('create_field_success_desc'), $field->field_label))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL')->make('channels/fields'));
+				if (AJAX_REQUEST)
+				{
+					return ['saveId' => $field->getId()];
+				}
+
+				if (ee('Request')->post('submit') == 'save_and_new')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('channels/fields/create'));
+				}
+				else
+				{
+					ee()->session->set_flashdata('field_id', $field->field_id);
+
+					ee()->functions->redirect(ee('CP/URL')->make('channels/fields'));
+				}
 			}
 			else
 			{
@@ -157,15 +164,29 @@ class Fields extends AbstractChannelsController {
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL')->make('channels/fields/create'),
 			'sections' => $this->form($field),
-			'save_btn_text' => sprintf(lang('btn_save'), lang('field')),
-			'save_btn_text_working' => 'btn_saving',
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				]
+			],
 			'form_hidden' => array(
 				'field_id' => NULL,
 				'site_id' => ee()->config->item('site_id')
 			),
 		);
 
-		ee()->view->cp_page_title = lang('new_field');
+		ee()->view->cp_page_title = lang('create_new_field');
 
 		ee()->cp->add_js_script('plugin', 'ee_url_title');
 

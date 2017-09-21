@@ -176,7 +176,14 @@ class Channels extends AbstractChannelsController {
 					->addToBody(sprintf(lang('channel_'.$alert_key.'_desc'), $channel->channel_title))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL')->make('channels/layouts/'.$channel->getId()));
+				if (ee('Request')->post('submit') == 'save_and_new')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('channels/create'));
+				}
+				else
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('channels/layouts/'.$channel->getId()));
+				}
 			}
 			else
 			{
@@ -240,9 +247,26 @@ class Channels extends AbstractChannelsController {
 
 		ee()->view->cp_page_title = is_null($channel_id) ? lang('create_channel') : lang('edit_channel');
 		ee()->view->ajax_validate = TRUE;
-		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('channel'));
+		ee()->view->save_btn_text = lang('save');
 		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels'), lang('channel_manager'));
+
+		$vars['buttons'] = [
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save',
+				'text' => 'save',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_new',
+				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			]
+		];
 
 		ee()->cp->render('settings/form', $vars);
 	}

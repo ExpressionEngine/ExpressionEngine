@@ -100,8 +100,22 @@ class Groups extends AbstractChannelsController {
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL')->make('channels/fields/groups/create'),
 			'sections' => $this->form(),
-			'save_btn_text' => sprintf(lang('btn_save'), lang('field_group')),
-			'save_btn_text_working' => 'btn_saving'
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				]
+			]
 		);
 
 		if ( ! empty($_POST))
@@ -119,20 +133,27 @@ class Groups extends AbstractChannelsController {
 			{
 				$field_group->save();
 
-				if (AJAX_REQUEST)
-				{
-					return ['saveId' => $field_group->getId()];
-				}
-
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('create_field_group_success'))
 					->addToBody(sprintf(lang('create_field_group_success_desc'), $field_group->group_name))
 					->defer();
 
-				ee()->session->set_flashdata('group_id', $field_group->group_id);
+				if (AJAX_REQUEST)
+				{
+					return ['saveId' => $field_group->getId()];
+				}
 
-				ee()->functions->redirect(ee('CP/URL')->make('channels/fields/groups'));
+				if (ee('Request')->post('submit') == 'save_and_new')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('channels/fields/groups/create'));
+				}
+				else
+				{
+					ee()->session->set_flashdata('group_id', $field_group->group_id);
+
+					ee()->functions->redirect(ee('CP/URL')->make('channels/fields/groups'));
+				}
 			}
 			else
 			{
@@ -177,8 +198,22 @@ class Groups extends AbstractChannelsController {
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL')->make('channels/fields/groups/edit/' . $id),
 			'sections' => $this->form($field_group),
-			'save_btn_text' => sprintf(lang('btn_save'), lang('field_group')),
-			'save_btn_text_working' => 'btn_saving'
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				]
+			]
 		);
 
 		if ( ! empty($_POST))
@@ -201,7 +236,14 @@ class Groups extends AbstractChannelsController {
 					->addToBody(sprintf(lang('edit_field_group_success_desc'), $field_group->group_name))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'channels/fields/groups'));
+				if (ee('Request')->post('submit') == 'save_and_new')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('channels/fields/groups/create'));
+				}
+				else
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('channels/fields/groups'));
+				}
 			}
 			else
 			{
