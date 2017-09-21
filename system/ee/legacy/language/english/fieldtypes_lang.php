@@ -67,11 +67,17 @@ $lang = array(
 'rel_ft_statuses_desc' => 'Choose statuses to limit the entries in this relationships field.',
 
 /* Duration */
+'duration_ft_hh' => 'hh',
+
+'duration_ft_hhmm' => 'hh:mm',
+
+'duration_ft_hhmmss' => 'hh:mm:ss',
+
 'duration_ft_hours' => 'Hours',
 
 'duration_ft_minutes' => 'Minutes',
 
-'duration_ft_placeholder' => 'Duration, in %s',
+'duration_ft_placeholder' => 'Duration, in %s (or %s)',
 
 'duration_ft_seconds' => 'Seconds',
 

@@ -40,6 +40,11 @@ class Duration_Ft extends EE_Fieldtype {
 			return TRUE;
 		}
 
+		if (strpos($data, ':'))
+		{
+			$data = $this->convertFromColonNotation($data);
+		}
+
 		if ( ! is_numeric($data))
 		{
 			return lang('numeric');
@@ -76,7 +81,11 @@ class Duration_Ft extends EE_Fieldtype {
 		$field = array(
 			'name'        => $this->field_name,
 			'value'       => $data,
-			'placeholder' => sprintf(lang('duration_ft_placeholder'), lang('duration_ft_'.$this->settings['units'])),
+			'placeholder' => sprintf(
+				lang('duration_ft_placeholder'),
+				lang('duration_ft_'.$this->settings['units']),
+				$this->getColonNotationFormat()
+			),
 		);
 
 		if ($this->get_setting('field_disabled'))
@@ -97,21 +106,14 @@ class Duration_Ft extends EE_Fieldtype {
 	 */
 	public function replace_tag($data, $params = array(), $tagdata = FALSE)
 	{
-		switch ($this->settings['units'])
+		if (strpos($data, ':'))
 		{
-			case 'hours':
-				$multiplier = 3600;
-				break;
-			case 'minutes':
-				$multiplier = 60;
-				break;
-			case 'seconds':
-			default:
-				$multiplier = 1;
-				break;
+			$data = $this->convertFromColonNotation($data);
 		}
-
-		$data = $data * $multiplier;
+		else
+		{
+			$data = $this->applyMultiplier($data);
+		}
 
 		$data = ee('Format')->make('Number', $data)->duration($params);
 
@@ -221,6 +223,83 @@ class Duration_Ft extends EE_Fieldtype {
 			'minutes' => lang('duration_ft_minutes'),
 			'hours' => lang('duration_ft_hours'),
 		];
+	}
+
+	/**
+	 * Convert from ##:##:## notation
+	 * @param  string $duration Duration, in ##:##:## notation
+	 * @return int Duration, in terms of the field's units
+	 */
+	private function convertFromColonNotation($duration)
+	{
+		$parts = explode(':', $duration);
+
+		switch (count($parts))
+		{
+			case 3:
+				$seconds = ($parts[0] * 3600) + ($parts[1] * 60) + $parts[2];
+				break;
+			case 2:
+				$seconds = ($parts[0] * 60) + $parts[1];
+
+				// if they input ##:## with a "minutes" field, the implied format is hh:mm rather than mm:ss
+				if ($this->settings['units'] == 'minutes')
+				{
+					$seconds = $seconds * 60;
+				}
+				break;
+			case 1:
+			default:
+				$seconds = $parts[0];
+				break;
+		}
+
+		return $seconds;
+	}
+
+	/**
+	 * Apply a multiplier based on the field's units setting
+	 *
+	 * @param  int $number Number to apply the multiplier to
+	 * @return int Duration, in terms of the field's units
+	 */
+	private function applyMultiplier($number)
+	{
+		switch ($this->settings['units'])
+		{
+			case 'hours':
+				$multiplier = 3600;
+				break;
+			case 'minutes':
+				$multiplier = 60;
+				break;
+			case 'seconds':
+			default:
+				$multiplier = 1;
+				break;
+		}
+
+		return $number * $multiplier;
+	}
+
+	/**
+	 * Get the colon notation format based on field's units setting
+	 * e.g. hh:mm, hh:mm:ss, etc.
+	 *
+	 * @return string colon notation format
+	 */
+	private function getColonNotationFormat()
+	{
+		switch ($this->settings['units'])
+		{
+			case 'hours':
+				return lang('duration_ft_hh');
+			case 'minutes':
+				return lang('duration_ft_hhmm');
+			case 'seconds':
+			default:
+				return lang('duration_ft_hhmmss');
+		}
 	}
 }
 // END CLASS
