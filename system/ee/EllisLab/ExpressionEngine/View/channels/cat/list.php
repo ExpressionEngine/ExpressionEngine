@@ -24,7 +24,7 @@
 						<li>
 							<div class="tbl-row no-results">
 								<div class="none">
-									<p><?=lang('categories_not_found')?> <a class="btn action" href="<?=ee('CP/URL')->make('channels/cat/create-cat/'.$cat_group->group_id)?>"><?=lang('create_category_btn')?></a></p>
+									<p><?=lang('categories_not_found')?> <a href="<?=ee('CP/URL')->make('channels/cat/create-cat/'.$cat_group->group_id)?>"><?=lang('add_new')?></a></p>
 								</div>
 							</div>
 						</li>
