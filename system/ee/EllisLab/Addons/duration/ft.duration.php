@@ -40,7 +40,7 @@ class Duration_Ft extends EE_Fieldtype {
 			return TRUE;
 		}
 
-		if ( ! ctype_digit($data))
+		if ( ! is_numeric($data))
 		{
 			return lang('numeric');
 		}
@@ -76,7 +76,7 @@ class Duration_Ft extends EE_Fieldtype {
 		$field = array(
 			'name'        => $this->field_name,
 			'value'       => $data,
-			'placeholder' => 'Duration, in minutes'
+			'placeholder' => sprintf(lang('duration_ft_placeholder'), lang('duration_ft_'.$this->settings['units'])),
 		);
 
 		if ($this->get_setting('field_disabled'))
@@ -100,7 +100,7 @@ class Duration_Ft extends EE_Fieldtype {
 		switch ($this->settings['units'])
 		{
 			case 'hours':
-				$multiplier = 360;
+				$multiplier = 3600;
 				break;
 			case 'minutes':
 				$multiplier = 60;
@@ -113,7 +113,16 @@ class Duration_Ft extends EE_Fieldtype {
 
 		$data = $data * $multiplier;
 
-		return ee('Format')->make('Number', $data)->duration($params);
+		$data = ee('Format')->make('Number', $data)->duration($params);
+
+		if (isset($params['include_seconds']) && get_bool_from_string($params['include_seconds']) === FALSE)
+		{
+			$parts = explode(':', $data);
+			array_pop($parts);
+			$data = implode(':', $parts);
+		}
+
+		return $data;
 	}
 
 	/**
@@ -190,7 +199,7 @@ class Duration_Ft extends EE_Fieldtype {
 		return [
 			'seconds' => lang('duration_ft_seconds'),
 			'minutes' => lang('duration_ft_minutes'),
-			'days' => lang('duration_ft_days'),
+			'hours' => lang('duration_ft_hours'),
 		];
 	}
 }
