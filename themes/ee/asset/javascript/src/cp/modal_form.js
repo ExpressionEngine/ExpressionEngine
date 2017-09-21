@@ -10,6 +10,7 @@ EE.cp.ModalForm = {
 
 	modal: $('div[rel="modal-form"]'),
 	modalContentsContainer: $('div.contents', this.modal),
+	saveAndNew: false,
 
 	/**
 	 * Opens a modal form
@@ -23,9 +24,33 @@ EE.cp.ModalForm = {
 		var that = this
 
 		this.modal.trigger('modal:open')
-		this.modalContentsContainer.html('').load(options.url, function() {
-			that._bindForm(options)
-			options.load(that.modalContentsContainer)
+		this._loadModalContents(options)
+		this._bindSaveAndNew()
+	},
+
+	/**
+	 * Loads the modal form with the specified contents
+	 */
+	_loadModalContents: function(options) {
+		var that = this
+
+		this.modalContentsContainer
+			.html('<span class="btn work">Loading</span>')
+			.load(options.url, function() {
+				that._bindForm(options)
+				options.load(that.modalContentsContainer)
+			})
+	},
+
+	/**
+	 * Tracks when Save & New is clicked so that we don't close the modal form
+	 */
+	_bindSaveAndNew: function(modal) {
+		var that = this
+
+		this.modal.on('click', 'button[value="save_and_new"]', function() {
+			console.log('click')
+			that.saveAndNew = true
 		})
 	},
 
@@ -47,8 +72,15 @@ EE.cp.ModalForm = {
 					options.load(that.modalContentsContainer)
 				} else {
 					options.success(result)
+				}
+
+				if (that.saveAndNew) {
+					that._loadModalContents(options)
+				} else {
 					that.modal.trigger('modal:close')
 				}
+
+				that.saveAndNew = false
 			})
 
 			return false;
