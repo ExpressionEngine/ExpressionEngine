@@ -3,10 +3,11 @@ $too_many = 8;
 
 if (count($choices) == 0)
 {
-	if (isset($no_results))
-	{
-		echo $this->make('ee:_shared/form/no_results')->render($no_results);
-	}
+	if (isset($no_results)): ?>
+		<div data-input-value="<?=$field_name?>">
+			<?=$this->make('ee:_shared/form/no_results')->render($no_results)?>
+		</div>
+	<?php endif;
 	return;
 };
 

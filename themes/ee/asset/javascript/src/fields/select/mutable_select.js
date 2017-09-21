@@ -19,8 +19,9 @@ var MutableSelectField = function () {
     this.fieldName = fieldName;
     this.options = options;
     this.setField();
-    this.setAddButton(this.field.parent().find('a.btn.action'));
+    this.setAddButton(this.field.parent().find('a[rel="add_new"]'));
 
+    this.toggleAddButton();
     this.bindAdd();
     this.bindEdit();
     this.bindRemove();
@@ -35,6 +36,20 @@ var MutableSelectField = function () {
     key: 'setAddButton',
     value: function setAddButton(button) {
       this.addButton = button;
+    }
+
+    // Don't show blue action button if there are no results
+
+  }, {
+    key: 'toggleAddButton',
+    value: function toggleAddButton() {
+      if (this.field.find('.field-no-results').size()) {
+        this.addButton.filter(function (i, el) {
+          return $(el).hasClass('btn');
+        }).hide();
+      } else {
+        this.addButton.show();
+      }
     }
   }, {
     key: 'bindAdd',
@@ -116,6 +131,7 @@ var MutableSelectField = function () {
       this.field.replaceWith(html);
       this.setField();
       SelectField.renderFields(this.field.parent());
+      this.toggleAddButton();
     }
   }]);
 

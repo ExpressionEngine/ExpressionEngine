@@ -354,7 +354,7 @@ class Channels extends AbstractChannelsController {
 				'desc' => 'field_groups_desc',
 				'button' => [
 					'text' => 'add_group',
-					'rel' => 'add-field-group'
+					'rel' => 'add_new'
 				],
 				'fields' => array(
 					'field_groups' => array(
@@ -368,7 +368,7 @@ class Channels extends AbstractChannelsController {
 				'desc' => 'fields_desc',
 				'button' => [
 					'text' => 'add_field',
-					'rel' => 'add-field'
+					'rel' => 'add_new'
 				],
 				'fields' => array(
 					'custom_fields' => array(
@@ -470,7 +470,7 @@ class Channels extends AbstractChannelsController {
 				'desc' => 'category_groups_desc',
 				'button' => [
 					'text' => 'add_group',
-					'rel' => 'add-cat-group'
+					'rel' => 'add_new'
 				],
 				'fields' => array(
 					'cat_group' => array(
