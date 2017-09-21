@@ -12,7 +12,7 @@ $(document).ready(function () {
 
 		$(modalIs + " .checklist").html(''); // Reset it
 		$(modalIs + " .checklist").append('<li>' + $(this).data('confirm') + '</li>');
-		$(modalIs + " input[name='channel_id']").val($(this).data('channel_id'));
+		$(modalIs + " input[name='content_id']").val($(this).data('content_id'));
 
 		e.preventDefault();
 	})

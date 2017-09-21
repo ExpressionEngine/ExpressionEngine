@@ -107,7 +107,7 @@ abstract class AbstractChannels extends CP_Controller {
 		if (ee()->cp->allowed_group('can_delete_channels'))
 		{
 			$list->withRemoveUrl(ee('CP/URL')->make('channels/remove'))
-				->withRemovalKey('channel_id');
+				->withRemovalKey('content_id');
 		}
 
 		$imported_channels = ee()->session->flashdata('imported_channels') ?: [];

@@ -40,14 +40,14 @@ class Channels extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$channel_id = ee()->input->post('channel_id');
+		$channel_id = ee()->input->post('content_id');
 		$channel = ee('Model')->get('Channel', $channel_id)->first();
 
 		if ($channel)
 		{
 			$channel->delete();
 
-			ee('CP/Alert')->makeInline('sites')
+			ee('CP/Alert')->makeInline('channels')
 				->asSuccess()
 				->withTitle(lang('channels_removed'))
 				->addToBody(sprintf(
