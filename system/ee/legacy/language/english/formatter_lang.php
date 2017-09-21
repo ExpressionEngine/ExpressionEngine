@@ -8,6 +8,8 @@ $lang = array(
 
 'formatter_bytes_abbr_html' => '<abbr title="Bytes">B</abbr>',
 
+'formatter_duration_seconds_only' => '%d sec.',
+
 'formatter_gigabytes' => 'gigabytes',
 
 'formatter_gigabytes_abbr' => 'GB',
