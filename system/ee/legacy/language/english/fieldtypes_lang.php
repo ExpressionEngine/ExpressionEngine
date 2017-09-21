@@ -77,7 +77,7 @@ $lang = array(
 
 'duration_ft_minutes' => 'Minutes',
 
-'duration_ft_placeholder' => 'Duration, in %s (or %s)',
+'duration_ft_placeholder' => 'Duration in %s (or %s)',
 
 'duration_ft_seconds' => 'Seconds',
 
