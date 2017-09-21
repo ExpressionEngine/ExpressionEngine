@@ -909,7 +909,7 @@ class EE_Schema {
 			id int(10) NOT NULL auto_increment,
 			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 			member_id int(10) unsigned NOT NULL,
-			username varchar(75) NOT NULL,
+			username varchar(32) NOT NULL,
 			ip_address varchar(45) default '0' NOT NULL,
 			act_date int(10) NOT NULL,
 			action varchar(200) NOT NULL,
