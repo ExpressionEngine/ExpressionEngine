@@ -66,6 +66,13 @@ $lang = array(
 
 'rel_ft_statuses_desc' => 'Choose statuses to limit the entries in this relationships field.',
 
+/* Duration */
+'duration_ft_units' => 'Units',
+
+'duration_ft_seconds' => 'Seconds',
+'duration_ft_minutes' => 'Minutes',
+'duration_ft_hours' => 'Hours',
+'duration_ft_days' => 'Days',
 
 /* File */
 'file_ft_allowed_dirs' => 'Allowed Directory',
