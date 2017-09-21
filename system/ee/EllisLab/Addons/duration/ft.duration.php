@@ -124,14 +124,18 @@ class Duration_Ft extends EE_Fieldtype {
 		{
 			switch (count($parts))
 			{
+				// hh:mm:ss
 				case 3:
 					$units = ['%h' => $parts[0], '%m' => $parts[1], '%s' => $parts[2]];
 					break;
+				// mm:ss
 				case 2:
 					$units = ['%h' => 0, '%m' => $parts[0], '%s' => $parts[1]];
 					break;
+				// ss sec.
 				case 1:
 				default:
+					// cast to int because the Number formatter will include a seconds abbreviation based on the locale
 					$units = ['%h' => 0, '%m' => 0, '%s' => (int) $parts[0]];
 					break;
 			}
@@ -236,9 +240,11 @@ class Duration_Ft extends EE_Fieldtype {
 
 		switch (count($parts))
 		{
+			// hh:mm:ss
 			case 3:
 				$seconds = ($parts[0] * 3600) + ($parts[1] * 60) + $parts[2];
 				break;
+			// mm:ss
 			case 2:
 				$seconds = ($parts[0] * 60) + $parts[1];
 
@@ -248,6 +254,7 @@ class Duration_Ft extends EE_Fieldtype {
 					$seconds = $seconds * 60;
 				}
 				break;
+			// ss
 			case 1:
 			default:
 				$seconds = $parts[0];
