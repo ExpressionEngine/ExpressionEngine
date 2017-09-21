@@ -54,8 +54,14 @@ class Duration_Ft extends EE_Fieldtype {
 	 * @param  array   $data  Field data
 	 * @return string  Prepped Form field
 	 */
-	public function osave($data)
+	public function save($data)
 	{
+		// Make sure empty is truly empty
+		if (trim($data) == '')
+		{
+			$data = NULL;
+		}
+
 		return $data;
 	}
 
