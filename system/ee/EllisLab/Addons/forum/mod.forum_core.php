@@ -8404,6 +8404,7 @@ class Forum_Core extends Forum {
 	 */
 	public function visitor_stats()
 	{
+		ee()->stats->load_stats();
 		$statdata = ee()->stats->statdata();
 
 		if (empty($statdata))
