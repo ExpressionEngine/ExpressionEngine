@@ -35,6 +35,7 @@ class Updater {
 				'addSpamModerationPermissions',
 				'runSpamModuleUpdate',
 				'addPrimaryKeyToFileCategoryTable',
+				'addDurationField',
 			)
 		);
 
@@ -680,6 +681,21 @@ class Updater {
 		// Finally create the primary key
 		ee()->smartforge->add_key('file_categories', array('file_id', 'cat_id'), 'PRIMARY');
 	}
+
+	/**
+	 * New "Duration" Field Type
+	 */
+	private function addDurationField()
+	{
+		ee()->db->insert('fieldtypes', array(
+				'name' => 'duration',
+				'version' => '1.0.0',
+				'settings' => base64_encode(serialize(array())),
+				'has_global_settings' => 'n'
+			)
+		);
+	}
 }
+// END CLASS
 
 // EOF
