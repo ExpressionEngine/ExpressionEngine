@@ -463,7 +463,7 @@ class EE_Core {
 		}
 
 		// Load common helper files
-		ee()->load->helper(array('url', 'form', 'quicktab'));
+		ee()->load->helper(array('url', 'form', 'quicktab', 'file'));
 
 		// Certain variables will be included in every page, so we make sure they are set here
 		// Prevents possible PHP errors, if a developer forgets to set it explicitly.

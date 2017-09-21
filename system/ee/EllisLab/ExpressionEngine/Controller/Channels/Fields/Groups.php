@@ -32,6 +32,7 @@ class Groups extends AbstractChannelsController {
 		}
 
 		$this->generateSidebar('field');
+		$this->base_url = ee('CP/URL')->make('channels/fields/groups');
 
 		ee()->lang->loadfile('admin');
 		ee()->lang->loadfile('admin_content');
@@ -46,21 +47,30 @@ class Groups extends AbstractChannelsController {
 		}
 
 		$groups = ee('Model')->get('ChannelFieldGroup')
-			->filter('site_id', ee()->config->item('site_id'));
+			->filter('site_id', 'IN', array(ee()->config->item('site_id'), 0));
+
+		$total_rows = $groups->count();
 
 		$vars = array(
 			'create_url' => ee('CP/URL')->make('channels/fields/groups/create')
 		);
 
+		$filters = ee('CP/Filter')
+					->add('Perpage', $total_rows, 'show_all_field_groups');
+
+		// Before pagination so perpage is set correctly
+		$this->renderFilters($filters);
+
 		$table = $this->buildTableFromChannelGroupsQuery($groups, array(), ee()->cp->allowed_group('can_delete_channel_fields'));
 
-		$vars['table'] = $table->viewData(ee('CP/URL')->make('channels/fields/groups'));
+		$vars['table'] = $table->viewData($this->base_url);
 		$vars['show_create_button'] = ee()->cp->allowed_group('can_create_channel_fields');
 
-		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-			->perPage($vars['table']['limit'])
-			->currentPage($vars['table']['page'])
-			->render($vars['table']['base_url']);
+
+		$vars['pagination'] = ee('CP/Pagination', $total_rows)
+			->perPage($this->perpage)
+			->currentPage($this->page)
+			->render($this->base_url);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('group') . ': <b>### ' . lang('groups') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -201,7 +211,8 @@ class Groups extends AbstractChannelsController {
 
 	private function setWithPost(ChannelFieldGroup $field_group)
 	{
-		$field_group->group_name = ee()->input->post('group_name');
+		$field_group->set($_POST);
+		$field_group->ChannelFields = ee('Model')->get('ChannelField', ee()->input->post('channel_fields'))->all();
 		return $field_group;
 	}
 
@@ -210,7 +221,15 @@ class Groups extends AbstractChannelsController {
 		if ( ! $field_group)
 		{
 			$field_group = ee('Model')->make('ChannelFieldGroup');
+            $field_group->ChannelFields = NULL;
 		}
+
+		$custom_field_options = ee('Model')->get('ChannelField')
+			->fields('field_id', 'field_label')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('field_label')
+			->all()
+			->getDictionary('field_id', 'field_label');
 
 		$sections = array(
 			array(
@@ -224,7 +243,18 @@ class Groups extends AbstractChannelsController {
 							'required' => TRUE
 						)
 					)
-				)
+				),
+				array(
+					'title' => 'custom_fields',
+					'fields' => array(
+						'channel_fields' => array(
+							'type' => 'checkbox',
+							'wrap' => TRUE,
+							'choices' => $custom_field_options,
+							'value' => $field_group->ChannelFields->pluck('field_id'),
+						)
+					)
+				),
 			)
 		);
 

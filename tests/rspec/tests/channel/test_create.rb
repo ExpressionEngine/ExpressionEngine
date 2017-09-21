@@ -83,7 +83,7 @@ feature 'Channel Create/Edit' do
 
     @page.duplicate_channel_prefs.select 'News'
     @page.status_group.select 'Default'
-    @page.field_group.select 'About'
+    @page.field_groups[0].click
 
     # Check both category groups
     @page.cat_group[0].click
@@ -101,7 +101,7 @@ feature 'Channel Create/Edit' do
     @page.channel_name.value.should == 'test test'
     @page.duplicate_channel_prefs.value.should == '1'
     @page.status_group.value.should == '1'
-    @page.field_group.value.should == '2'
+    @page.field_groups[0].checked?.should == true
 
     @page.cat_group[0].checked?.should == true
     @page.cat_group[1].checked?.should == true
@@ -114,7 +114,7 @@ feature 'Channel Create/Edit' do
     @page.channel_name.value.should == 'test'
 
     @page.status_group.select 'Default'
-    @page.field_group.select 'About'
+    @page.field_groups[0].click
 
     # Check both category groups
     @page.cat_group[0].click
@@ -139,7 +139,7 @@ feature 'Channel Create/Edit' do
     @page.channel_title.value.should == 'Test'
     @page.channel_name.value.should == 'test'
     @page.status_group.value.should == '1'
-    @page.field_group.value.should == '2'
+    @page.field_groups[0].checked?.should == true
 
     @page.cat_group[0].checked?.should == true
     @page.cat_group[1].checked?.should == true
@@ -177,7 +177,6 @@ feature 'Channel Create/Edit' do
     no_php_js_errors
 
     @page.status_group.select 'None'
-    @page.field_group.select 'None'
 
     @page.submit
     no_php_js_errors
@@ -186,7 +185,6 @@ feature 'Channel Create/Edit' do
     no_php_js_errors
 
     @page.status_group.value.should == ''
-    @page.field_group.value.should == ''
   end
 
   it 'should duplicate an existing channel' do
@@ -256,7 +254,8 @@ feature 'Channel Create/Edit' do
     @page.channel_name.value.should == 'test'
 
     @page.status_group.value.should == '1'
-    @page.field_group.value.should == '1'
+    @page.field_groups[0].checked?.should == false
+    @page.field_groups[1].checked?.should == true
 
     @page.cat_group[0].checked?.should == false
     @page.cat_group[1].checked?.should == true

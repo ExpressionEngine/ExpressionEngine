@@ -10,6 +10,7 @@
 namespace EllisLab\ExpressionEngine\Model\Channel;
 
 use EllisLab\ExpressionEngine\Model\Content\StructureModel;
+use EllisLab\ExpressionEngine\Library\Data\Collection;
 
 /**
  * Channel Model
@@ -38,11 +39,12 @@ class Channel extends StructureModel {
 	);
 
 	protected static $_relationships = array(
-		'FieldGroup' => array(
-			'type' => 'belongsTo',
+		'FieldGroups' => array(
+			'type' => 'hasAndBelongsToMany',
 			'model' => 'ChannelFieldGroup',
-			'from_key' => 'field_group',
-			'to_key' => 'group_id',
+			'pivot' => array(
+				'table' => 'channels_channel_field_groups'
+			),
 			'weak' => TRUE,
 		),
 		'StatusGroup' => array(
@@ -52,10 +54,11 @@ class Channel extends StructureModel {
 			'weak' => TRUE
 		),
 		'CustomFields' => array(
-			'type' => 'hasMany',
+			'type' => 'hasAndBelongsToMany',
 			'model' => 'ChannelField',
-			'from_key' => 'field_group',
-			'to_key' => 'group_id',
+			'pivot' => array(
+				'table' => 'channels_channel_fields'
+			),
 			'weak' => TRUE
 		),
 		'Entries' => array(
@@ -153,7 +156,6 @@ class Channel extends StructureModel {
 	protected $cat_group;
 	protected $status_group;
 	protected $deft_status;
-	protected $field_group;
 	protected $search_excerpt;
 	protected $deft_category;
 	protected $deft_comments;
@@ -270,7 +272,6 @@ class Channel extends StructureModel {
 					}
 					break;
 				case 'status_group':
-				case 'field_group':
 					if ( ! isset($this->{$property}))
 					{
 						$this->setRawProperty($property, $channel->{$property});
@@ -286,12 +287,6 @@ class Channel extends StructureModel {
 						$this->setRawProperty($property, $channel->{$property});
 					}
 					break;
-				case 'search_excerpt':
-					if ( ! isset($this->field_group) OR $this->field_group == $channel->field_group )
-					{
-						$this->setRawProperty($property, $channel->{$property});
-					}
-					break;
 				case 'deft_category':
 					if ( ! isset($this->cat_group) OR count(array_diff(explode('|', $this->cat_group), explode('|', $channel->cat_group ))) == 0)
 					{
@@ -303,6 +298,9 @@ class Channel extends StructureModel {
 					break;
 			}
 		}
+
+		$this->FieldGroups = clone $channel->FieldGroups;
+		$this->CustomFields = clone $channel->CustomFields;
 	}
 
 	public function onBeforeSave()
@@ -520,6 +518,46 @@ class Channel extends StructureModel {
 		$last_entry_date = ($last_entry) ? $last_entry->entry_date : 0;
 		$this->setProperty('last_entry_date', $last_entry_date);
 		$this->save();
+	}
+
+	/**
+	 * Returns a collection of all the channel fields available for this channel
+	 *
+	 * @return Collection A collection of fields
+	 */
+	public function getAllCustomFields()
+	{
+		$fields = $this->CustomFields->indexBy('field_name');
+
+		foreach ($this->FieldGroups->pluck('group_id') as $group_id)
+		{
+			$field_group = $this->getFieldGroup($group_id);
+
+			foreach($field_group->ChannelFields as $field)
+			{
+				$fields[$field->field_name] = $field;
+			}
+		}
+
+		return new Collection($fields);
+	}
+
+	private function getFieldGroup($id)
+	{
+		$cache_key = "ChannelFieldGroup/{$id}/";
+
+		if (($group = ee()->session->cache(__CLASS__, $cache_key, FALSE)) === FALSE)
+		{
+			$group = $this->getModelFacade()->get('ChannelFieldGroup', $id)
+				->with('ChannelFields')
+				->all();
+
+			$group = $group[0];
+
+			ee()->session->set_cache(__CLASS__, $cache_key, $group);
+		}
+
+		return $group;
 	}
 }
 

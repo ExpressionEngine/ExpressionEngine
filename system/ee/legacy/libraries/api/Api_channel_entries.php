@@ -283,22 +283,9 @@ class Api_channel_entries extends Api {
 	 */
 	function delete_entry($entry_ids)
 	{
-		ee()->load->library('api');
-		ee()->load->library('addons');
-		ee()->legacy_api->instantiate('channel_fields');
-
 		if ( ! is_array($entry_ids))
 		{
 			$entry_ids = array($entry_ids);
-		}
-
-		if (array_key_exists('comment', ee()->addons->get_installed('modules')))
-		{
-			$comments_installed = TRUE;
-		}
-		else
-		{
-			$comments_installed = FALSE;
 		}
 
 		// grab entry meta data
@@ -310,8 +297,6 @@ class Api_channel_entries extends Api {
 
 		// Check permissions
 		$allowed_channels = ee()->functions->fetch_assigned_channels();
-		$authors = array();
-		$channel_ids = array();
 
 		foreach ($query->result_array() as $row)
 		{
@@ -337,169 +322,9 @@ class Api_channel_entries extends Api {
 					return $this->_set_error('unauthorized_to_delete_others');
 				}
 			}
-
-			$authors[$row['entry_id']] = $row['author_id'];
 		}
 
-
-		// grab channel field groups
-		ee()->db->select('channel_id, field_group');
-		$cquery = ee()->db->get('channels');
-
-		$channel_groups = array();
-
-		foreach($cquery->result_array() as $row)
-		{
-			$channel_groups[$row['channel_id']] = $row['field_group'];
-		}
-
-
-		// grab fields and order by group
-		ee()->db->select('field_id, field_type, group_id');
-		$fquery = ee()->db->get('channel_fields');
-
-		$group_fields = array();
-
-		foreach($fquery->result_array() as $row)
-		{
-			$group_fields[$row['group_id']][] = $row['field_id'];
-		}
-
-
-		// Delete primary data
-		ee()->db->where_in('entry_id', $entry_ids);
-		ee()->db->delete(array('channel_titles', 'channel_data', 'category_posts'));
-
-		// Get a listing of relationship fields and their settings so we can
-		// correctly run the relationship cleanup for entries that are related
-		// to other channels
-		$relationship_fields = ee()->db->select('field_id, field_settings')
-			->get_where(
-				'channel_fields',
-				array('field_type' => 'relationship')
-			)
-			->result_array();
-
-		$entries = array();
-		$ft_to_ids = array();
-
-		foreach($query->result_array() as $row)
-		{
-			$val = $row['entry_id'];
-			$channel_id = $row['channel_id'];
-			$channel_ids[$row['channel_id']] = $row['channel_id'];
-
-			// No field group- skip this bit
-			if ( ! isset($channel_groups[$channel_id]) OR ! isset($group_fields[$channel_groups[$channel_id]]))
-			{
-				continue;
-			}
-
-			// Map entry id to fieldtype
-			$group_id = $channel_groups[$channel_id];
-			$field_type = $group_fields[$group_id];
-
-			foreach($field_type as $ft)
-			{
-				if ( ! isset($ft_to_ids[$ft]))
-				{
-					$ft_to_ids[$ft] = array($val);
-				}
-				else if ( ! in_array($val, $ft_to_ids[$ft]))
-				{
-					$ft_to_ids[$ft][] = $val;
-				}
-			}
-
-			// Add all relationship fields
-			foreach ($relationship_fields as $field)
-			{
-				$ft_to_ids[$field['field_id']][] = $val;
-			}
-
-			// Correct member post count
-			ee()->db->select('total_entries');
-			$mquery = ee()->db->get_where('members', array('member_id' => $authors[$val]));
-
-			$tot = 0;
-
-			if ($mquery->num_rows() > 0)
-			{
-				$tot = $mquery->row('total_entries');
-			}
-
-			if ($tot > 0)
-			{
-				$tot -= 1;
-			}
-
-			ee()->db->where('member_id', $authors[$val]);
-			ee()->db->update('members', array('total_entries' => $tot));
-
-
-			// -------------------------------------------
-			// 'delete_entries_loop' hook.
-			//  - Add additional processing for entry deletion in loop
-			//  - Added: 1.4.1
-			//
-				ee()->extensions->call('delete_entries_loop', $val, $channel_id);
-				if (ee()->extensions->end_script === TRUE) return;
-			//
-			// -------------------------------------------
-
-			$entries[] = $val;
-		}
-
-		if ($comments_installed)
-		{
-			// Remove comments for deleted entries
-			ee()->db->where_in('entry_id', $entries)
-					 ->delete('comments');
-
-			// Remove comment subscriptions for deleted entries
-			ee()->db->where_in('entry_id', $entries)
-					 ->delete('comment_subscriptions');
-		}
-
-		// Delete entries in the channel_entries_autosave table
-		ee()->db->where_in('original_entry_id', $entries)
-					 ->delete('channel_entries_autosave');
-
-		// Delete entries from the versions table
-		ee()->db->where_in('entry_id', $entries)
-					 ->delete('entry_versioning');
-
-		// Let's run through some stats updates
-		foreach ($channel_ids as $channel_id)
-		{
-			ee()->stats->update_channel_stats($channel_id);
-
-			if ($comments_installed)
-			{
-				ee()->stats->update_comment_stats($channel_id);
-			}
-		}
-
-		if ($comments_installed)
-		{
-			ee()->stats->update_authors_comment_stats(array_unique($authors));
-		}
-
-
-		$fts = ee()->api_channel_fields->fetch_custom_channel_fields();
-
-		// Pass to custom fields
-		foreach($ft_to_ids as $fieldtype => $ids)
-		{
-			ee()->api_channel_fields->setup_handler($fieldtype);
-			ee()->api_channel_fields->apply('delete', array($ids));
-		}
-
-		// Pass to module defined fields
-		$methods = array('publish_data_delete_db');
-		$params = array('publish_data_delete_db' => array('entry_ids' => $entry_ids));
-
-		ee()->api_channel_fields->get_module_methods($methods, $params);
+		ee('Model')->get('ChannelEntry', $entry_ids)->delete();
 
 		// Clear caches
 		ee()->functions->clear_caching('all', '');
@@ -735,7 +560,7 @@ class Api_channel_entries extends Api {
 	{
 		if (isset($data['new_channel']) && $data['new_channel'] && $data['new_channel'] != $this->channel_id)
 		{
-			ee()->db->select('status_group, cat_group, field_group, channel_id');
+			ee()->db->select('status_group, cat_group, channel_id');
 			ee()->db->where_in('channel_id', array($this->channel_id, $data['new_channel']));
 			$query = ee()->db->get('channels');
 
@@ -745,8 +570,7 @@ class Api_channel_entries extends Api {
 				$result_one = $query->row(1);
 
 				if ($result_zero->status_group == $result_one->status_group &&
-					$result_zero->cat_group == $result_one->cat_group &&
-					$result_zero->field_group == $result_one->field_group)
+					$result_zero->cat_group == $result_one->cat_group)
 				{
 					if (ee()->session->userdata('group_id') == 1 OR in_array($data['new_channel'], $this->_cache['assigned_channels']))
 					{
@@ -1717,8 +1541,8 @@ class Api_channel_entries extends Api {
 	private function _get_custom_fields()
 	{
 		ee()->db->select('field_id, field_name, field_label, field_type, field_required');
-		ee()->db->join('channels', 'channels.field_group = channel_fields.group_id', 'left');
-		ee()->db->where('channel_id', $this->channel_id);
+		ee()->db->join('exp_channels_channel_field_groups', 'exp_channels_channel_field_groups.group_id = channel_fields.group_id', 'left');
+		ee()->db->where('exp_channels_channel_field_groups.channel_id', $this->channel_id);
 		$query = ee()->db->get('channel_fields');
 		$result = $query->result_array();
 

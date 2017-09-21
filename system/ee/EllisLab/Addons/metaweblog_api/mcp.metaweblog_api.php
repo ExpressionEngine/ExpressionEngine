@@ -317,19 +317,19 @@ class Metaweblog_api_mcp {
 		}
 		$vars['sections'][0][] = $form_element;
 
-		$field_group_options = ee('Model')->get('ChannelFieldGroup')->all()->getDictionary('group_id', 'group_name');
-		if (empty($field_group_options))
+		$channel_options = ee('Model')->get('Channel')->all()->getDictionary('channel_id', 'channel_title');
+		if (empty($channel_options))
 		{
-			$field_group_options = array('0' => lang('none'));
+			$channel_options = array('0' => lang('none'));
 		}
 
 		$form_element = array(
 			'title' => 'metaweblog_channel',
 			'desc' => 'metaweblog_channel_desc',
 			'fields' => array(
-				'field_group_id' => array(
+				'channel_id' => array(
 					'type' => 'select',
-					'choices' => $field_group_options
+					'choices' => $channel_options
 				)
 			)
 		);
@@ -341,9 +341,11 @@ class Metaweblog_api_mcp {
 
 		$field_group_keys = array_keys($field_group_options);
 
-		$fields_list = ee('Model')->get('ChannelField')
-			->filter('group_id', isset($values['field_group_id']) ? $values['field_group_id'] : $field_group_keys[0])
-			->all()
+		$group_id = isset($values['field_group_id']) ? $values['field_group_id'] : $field_group_keys[0];
+
+		$fields_list = ee('Model')->get('ChannelFieldGroup', $group_id)
+			->first()
+			->ChannelFields
 			->getDictionary('field_id', 'field_label');
 
 		$form_element = array(
@@ -566,152 +568,50 @@ class Metaweblog_api_mcp {
 			$groups_exist = FALSE;
 		}
 
-		/*
+		$channels = ee('Model')->get('Channel')
+			->with('StatusGroup');
 
-		// -----------------------------------
-		//  Determine Available Groups
-		//
-		//  We only allow them to specify
-		//  groups that to which they have access
-		//  or that are used by a channel currently
-		// -----------------------------------
-
-		$groups = array();
-
-		$sql = "SELECT field_group FROM exp_channels ";
-
-		$query = ee()->db->query($sql);
-
-		if ($query->num_rows() > 0)
+		if (ee()->config->item('multiple_sites_enabled') !== 'y')
 		{
-			foreach ($query->result_array() as $row)
-			{
-				$groups[] = $row['field_group'];
-			}
+			$channels->filter('site_id', '1');
 		}
-
-		$xql = "WHERE group_id IN ('".implode("','", $groups)."'";
-
-
-		/** -----------------------------
-		/**  Channel Field Groups
-		/** -----------------------------*/
-
-		ee()->db->select('field_group');
-		ee()->db->from('exp_channels');
 
 		if ( ! ee()->cp->allowed_group('can_edit_other_entries'))
 		{
-			ee()->db->where_in('channel_id', $allowed_channels);
+			$channels->filter('channel_id', 'IN', $allowed_channels);
 		}
 
-		$query = ee()->db->get();
-
-		if ($groups_exist && $query->num_rows() > 0)
-		{
-			foreach ($query->result_array() as $row)
-			{
-				$allowed_groups[] = $row['field_group'];
-			}
-
-			ee()->db->select('group_id, group_name, site_label');
-			ee()->db->from('field_groups');
-			ee()->db->where_in('group_id', $allowed_groups);
-			ee()->db->join('sites', 'sites.site_id = field_groups.site_id');
-
-			if (ee()->config->item('multiple_sites_enabled') !== 'y')
-			{
-				ee()->db->where('field_groups.site_id', '1');
-			}
-
-			$query = ee()->db->get();
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$label = (ee()->config->item('multiple_sites_enabled') === 'y') ? $row['site_label'].NBS.'-'.NBS.$row['group_name'] : $row['group_name'];
-					$this->group_array[$row['group_id']] = array(str_replace('"','',$label), $row['group_name']);
-				}
-			}
-		}  // End gather groups
-
-		/** -----------------------------
-		/**  Entry Statuses
-		/** -----------------------------*/
-
-		ee()->db->select('group_id, status');
-		ee()->db->where_not_in('status', array('open', 'closed'));
-		ee()->db->order_by('status_order');
-		$query = ee()->db->get('statuses');
-
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result_array() as $row)
-			{
-				$this->status_array[]  = array($row['group_id'], $row['status']);
-			}
-		}
-
-		/** -----------------------------
-		/**  Custom Channel Fields
-		/** -----------------------------*/
-
-		ee()->db->select('group_id, field_label, field_id');
-		ee()->db->order_by('field_label');
-
-		ee()->db->where_in('channel_fields.field_type', array('textarea', 'text', 'rte'));
-
-		$query = ee()->db->get('channel_fields');
-
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result_array() as $row)
-			{
-				$this->field_array[]  = array($row['group_id'], $row['field_id'], str_replace('"','',$row['field_label']));
-			}
-		}
-
-		ee()->lang->loadfile('content');
 		$channel_info = array();
 
-		foreach ($this->group_array as $key => $val)
+		foreach ($channels->all() as $channel)
 		{
+			/* We aren't using this right now...
 			$statuses = array(
 				array('null', lang('do_not_set')),
-				array('open', lang('open')),
-				array('closed', lang('closed'))
 			);
 
-			if (count($this->status_array) > 0)
+			if ($channel->StatusGroup && $channel->StatusGroup->Statuses)
 			{
-				foreach ($this->status_array as $k => $v)
+				foreach ($channel->StatusGroup->Statuses as $status)
 				{
-					if ($v['0'] == $key)
-					{
-						$statuses[] = array($v['1'], $v['1']);
-					}
+					$statuses[] = array($status->status, lang($status->status));
 				}
 			}
+			*/
 
-			$channel_info[$key]['statuses'] = $statuses;
+			$fields = array(
+				array('0', lang('none'))
+			);
 
-			$fields = array();
-
-			$fields[] = array('0', lang('none'));
-
-			if (count($this->field_array) > 0)
+			foreach ($channel->getAllCustomFields() as $field)
 			{
-				foreach ($this->field_array as $k => $v)
-				{
-					if ($v['0'] == $key)
-					{
-						$fields[] = array($v['1'], $v['2']);
-					}
-				}
+				$fields[] = array($field->field_id, $field->field_label);
 			}
 
-			$channel_info[$key]['fields'] = $fields;
+			$channel_info[$channel->getId()] = array(
+				// 'statuses' => $statuses,
+				'fields' => $fields
+			);
 		}
 
 		$channel_info = json_encode($channel_info);
