@@ -13,6 +13,7 @@ if (count($choices) == 0)
 
 $nested = isset($nested) ? $nested : FALSE;
 $encode = isset($encode) ? $encode : TRUE;
+$force_react = isset($force_react) ? $force_react : FALSE;
 
 // Normalize choices into an array to keep order of items, order cannot be
 // counted on in a JavaScript object
@@ -32,7 +33,11 @@ foreach ($normalized_choices as $key => $choice)
 }
 
 // If it's a small list, just render it server-side
-if (ee('View/Helpers')->countChoices($normalized_choices) <= $too_many && ! $nested && ! $has_groupings):
+if (ee('View/Helpers')->countChoices($normalized_choices) <= $too_many
+	&& ! $nested
+	&& ! $has_groupings
+	&& ! $force_react):
+
 	// For radios with no value, set value to first choice
 	if ( ! $multi && ! $value) {
 		$keys = array_keys($choices);
