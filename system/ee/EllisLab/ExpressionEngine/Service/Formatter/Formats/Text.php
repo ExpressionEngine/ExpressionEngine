@@ -264,7 +264,8 @@ class Text extends Formatter {
 
 	/**
 	 * JSON encoding
-	 * @param  array  $options Options: (bool) double_encode, (bool) enclose_with_quotes, (string) options, pipedelimited list of PHP JSON bitmask constants
+	 *
+	 * @param  array  $options Options: (bool) double_encode, (bool) enclose_with_quotes, (string) options, pipe-delimited list of PHP JSON bitmask constants
 	 * @return self $this
 	 */
 	public function json($options = [])
@@ -332,7 +333,8 @@ class Text extends Formatter {
 
 	/**
 	 * String replacement
-	 * @param  array  $options Options: (string) find, (string) (replace), (bool) regex
+	 *
+	 * @param  array  $options Options: (string) find, (string) (replace), (bool) regex, (bool) case_sensitive
 	 * @return object $this
 	 */
 	public function replace($options = [])
@@ -373,26 +375,8 @@ class Text extends Formatter {
 	}
 
 	/**
-	 * URL Encode
-	 * @param  array  $options Options: (bool) plus_encoded_spaces
-	 * @return object $this
-	 */
-	public function urlEncode($options = [])
-	{
-		if (isset($options['plus_encoded_spaces']) && get_bool_from_string($options['plus_encoded_spaces']))
-		{
-			$this->content = urlencode($this->content);
-		}
-		else
-		{
-			$this->content = rawurlencode($this->content);
-		}
-
-		return $this;
-	}
-
-	/**
 	 * URL Decode
+	 *
 	 * @param  array  $options Options: (bool) plus_encoded_spaces
 	 * @return object $this
 	 */
@@ -405,6 +389,26 @@ class Text extends Formatter {
 		else
 		{
 			$this->content = rawurldecode($this->content);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * URL Encode
+	 *
+	 * @param  array  $options Options: (bool) plus_encoded_spaces
+	 * @return object $this
+	 */
+	public function urlEncode($options = [])
+	{
+		if (isset($options['plus_encoded_spaces']) && get_bool_from_string($options['plus_encoded_spaces']))
+		{
+			$this->content = urlencode($this->content);
+		}
+		else
+		{
+			$this->content = rawurlencode($this->content);
 		}
 
 		return $this;
