@@ -282,6 +282,20 @@ class Fluid_block_ft extends EE_Fieldtype {
 			),
 		);
 
+		if ( ! $this->isNew())
+		{
+			ee()->javascript->set_global(array(
+				'fields.fluid_block.fields' => $data['field_channel_fields']
+			));
+
+			ee()->cp->add_js_script(array(
+				'file' => 'fields/fluid_block/settings',
+			));
+
+			$modal = ee('View')->make('fluid_block:modal')->render();
+			ee('CP/Modal')->addModal('remove-field', $modal);
+		}
+
 		return array('field_options_fluid_block' => array(
 			'label' => 'field_options',
 			'group' => 'fluid_block',
