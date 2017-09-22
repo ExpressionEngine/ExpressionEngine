@@ -227,13 +227,13 @@ class Text extends Formatter {
 	{
 		$key = (isset($options['key'])) ? $options['key'] : NULL;
 
-		if (isset($options['encode']) && get_bool_from_string($options['encode']))
+		if (isset($options['encode']) && get_bool_from_string($options['encode']) === FALSE)
 		{
-			$this->content = ee('Encrypt', $key)->encode($this->content);
+			$this->content = ee('Encrypt', $key)->encrypt($this->content);
 		}
 		else
 		{
-			$this->content = ee('Encrypt', $key)->encrypt($this->content);
+			$this->content = ee('Encrypt', $key)->encode($this->content);
 		}
 
 		return $this;
