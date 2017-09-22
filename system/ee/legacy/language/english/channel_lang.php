@@ -398,7 +398,7 @@ $lang = array(
 
 'cat_field_ajax_reorder_fail_desc' => 'We failed to save your new category fields order. Refresh the page and make sure you\'re logged in.',
 
-'cat_group_no_member_groups_found' => 'No <b>member groups</b> with permissions found',
+'cat_group_no_member_groups_found' => 'No <b>member groups</b> with permissions exist.',
 
 'cat_image_choose' => 'Choose from directory',
 
@@ -443,6 +443,8 @@ $lang = array(
 'category_field_updated_desc' => 'The category field <b>%s</b> has been updated.',
 
 'category_fields' => 'Category Fields',
+
+'category_fields_desc' => 'Assign fields to this group.',
 
 'category_fields_removed' => 'Category fields removed',
 

@@ -51,6 +51,8 @@ $lang = array(
 
 'custom_limit' => 'custom limit',
 
+'details' => 'Details',
+
 'e_no_css' => 'The requested CSS file could not be opened.',
 
 'edit_quicklinks' => 'Edit Quick Links',
