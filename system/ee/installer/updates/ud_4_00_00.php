@@ -36,6 +36,7 @@ class Updater {
 				'runSpamModuleUpdate',
 				'addPrimaryKeyToFileCategoryTable',
 				'addFluidBlockField',
+				'addDurationField',
 			)
 		);
 
@@ -778,6 +779,21 @@ class Updater {
 			);
 		}
 	}
+
+	/**
+	 * New "Duration" Field Type
+	 */
+	private function addDurationField()
+	{
+		ee()->db->insert('fieldtypes', array(
+				'name' => 'duration',
+				'version' => '1.0.0',
+				'settings' => base64_encode(serialize(array())),
+				'has_global_settings' => 'n'
+			)
+		);
+	}
 }
+// END CLASS
 
 // EOF
