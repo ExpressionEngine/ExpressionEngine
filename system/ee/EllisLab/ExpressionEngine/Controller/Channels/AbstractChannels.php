@@ -376,11 +376,18 @@ abstract class AbstractChannels extends CP_Controller {
 
 			if ($mutable)
 			{
+				$channels = array();
+
+				foreach ($field->Channels->pluck('channel_title') as $title)
+				{
+					$channels[] = htmlentities($title, ENT_QUOTES, 'UTF-8');
+				}
+
 				$column[] = array(
 					'name' => 'selection[]',
 					'value' => $field->field_id,
 					'data' => array(
-						'confirm' => lang('field') . ': <b>' . htmlentities($field->field_label, ENT_QUOTES, 'UTF-8') . '</b>'
+						'confirm' => lang('field') . ': <b>' . htmlentities($field->field_label, ENT_QUOTES, 'UTF-8') . '</b> (Channels: <b>' . implode(', ', $channels). '</b>)'
 					)
 				);
 			}
