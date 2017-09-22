@@ -288,7 +288,6 @@ class SelectList extends React.Component {
     let props = this.props
     let tooMany = props.items.length > props.tooMany && ! props.loading
     let shouldShowToggleAll = (props.multi || ! props.selectable) && props.toggleAll !== null
-    let shouldShowFieldTools = props.items.length > props.tooMany
 
     return (
       <div className={"fields-select" + (tooMany ? ' field-resizable' : '')}
@@ -337,7 +336,7 @@ class SelectList extends React.Component {
             />
           )}
         </FieldInputs>
-        { ! props.multi && props.selected[0] &&
+        { ! props.multi && tooMany && props.selected[0] &&
           <SelectedItem name={props.name}
             item={props.selected[0]}
             clearSelection={this.clearSelection}

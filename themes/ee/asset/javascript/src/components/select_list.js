@@ -302,7 +302,6 @@ var SelectList = function (_React$Component) {
       var props = this.props;
       var tooMany = props.items.length > props.tooMany && !props.loading;
       var shouldShowToggleAll = (props.multi || !props.selectable) && props.toggleAll !== null;
-      var shouldShowFieldTools = props.items.length > props.tooMany;
 
       return React.createElement(
         'div',
@@ -360,7 +359,7 @@ var SelectList = function (_React$Component) {
             });
           })
         ),
-        !props.multi && props.selected[0] && React.createElement(SelectedItem, { name: props.name,
+        !props.multi && tooMany && props.selected[0] && React.createElement(SelectedItem, { name: props.name,
           item: props.selected[0],
           clearSelection: this.clearSelection
         }),
