@@ -157,7 +157,7 @@ var ChannelManager = window.ChannelManager = {
 	 * @param	{object}	element	Element object to pass along to the callback
 	 */
 	fireEvent: function(action, element) {
-		var handlers = this._eventHandlers[action]
+		var handlers = this._eventHandlers[action] || []
 
 		for (var i = 0; i < handlers.length; i++) {
 			handlers[i](element)
