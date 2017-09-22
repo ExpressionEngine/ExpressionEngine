@@ -417,7 +417,7 @@ class Text extends Formatter {
 	/**
 	 * Make a URL slug from the text
 	 *
-	 * @param  array  $options Options: (string) separator, (bool) lowercase
+	 * @param  array  $options Options: (string) separator, (bool) lowercase, (bool) remove_stopwords
 	 * @return self $this
 	 */
 	public function urlSlug($options = [])
@@ -456,6 +456,20 @@ class Text extends Formatter {
 		if ($lowercase === TRUE)
 		{
 			$this->content = strtolower($this->content);
+		}
+
+		if (isset($options['remove_stopwords']) && get_bool_from_string($options['remove_stopwords']))
+		{
+			$stopwords = ee()->config->loadFile('stopwords');
+
+			foreach ($stopwords as $stopword)
+			{
+				$this->content = preg_replace("/\b".preg_quote($stopword, '/')."\b/iu","", $this->content);
+			}
+
+			// reduce any multiples this left behind, and any end bits
+			$this->content = preg_replace('#'.$options['separator'].'+#i', $options['separator'], $this->content);
+			$this->content = trim(stripslashes($this->content), '-_.');
 		}
 
 		return $this;
