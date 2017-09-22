@@ -137,7 +137,7 @@ class CategoryGroup extends StructureModel {
 			'populateCallback'		=> array($this, 'populateCategories'),
 			'manage_toggle_label'	=> lang('manage_categories'),
 			'content_item_label'	=> lang('category'),
-			'reorder_ajax_url'		=> ee('CP/URL')->make('channels/cat/cat-reorder/'.$this->getId())->compile(),
+			'reorder_ajax_url'		=> ee('CP/URL')->make('categories/reorder/'.$this->getId())->compile(),
 			'auto_select_parents'	=> ee()->config->item('auto_assign_cat_parents') == 'y'
 		);
 

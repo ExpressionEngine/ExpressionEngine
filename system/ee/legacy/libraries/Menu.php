@@ -216,7 +216,7 @@ class EE_Menu {
 			$sections = array(
 				'channels' => 'channels/layouts',
 				'channel_fields' => 'channels/fields',
-				'categories' => 'channels/cat'
+				'categories' => 'categories'
 			);
 
 			foreach ($sections as $name => $path)

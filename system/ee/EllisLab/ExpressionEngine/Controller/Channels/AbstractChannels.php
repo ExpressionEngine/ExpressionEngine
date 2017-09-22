@@ -60,10 +60,7 @@ abstract class AbstractChannels extends CP_Controller {
 				'can_delete_channel_fields',
 				'can_create_statuses',
 				'can_delete_statuses',
-				'can_edit_statuses',
-				'can_create_categories',
-				'can_edit_categories',
-				'can_delete_categories'
+				'can_edit_statuses'
 				))
 			{
 				show_error(lang('unauthorized_access'), 403);
@@ -517,7 +514,7 @@ abstract class AbstractChannels extends CP_Controller {
 		$table->setNoResultsText(
 			'no_category_groups',
 			'create_category_group',
-			ee('CP/URL')->make('channels/cat/create')
+			ee('CP/URL')->make('categories/groups/create')
 		);
 
 		$sort_map = array(
@@ -533,7 +530,7 @@ abstract class AbstractChannels extends CP_Controller {
 		$data = array();
 		foreach ($cat_groups as $group)
 		{
-			$view_url = ee('CP/URL')->make('channels/cat/cat-list/'.$group->getId());
+			$view_url = ee('CP/URL')->make('categories/group/'.$group->getId());
 
 			$columns = array(
 				$group->getId(),
@@ -547,11 +544,11 @@ abstract class AbstractChannels extends CP_Controller {
 						'title' => lang('view')
 					),
 					'edit' => array(
-						'href' => ee('CP/URL')->make('channels/cat/edit/'.$group->getId()),
+						'href' => ee('CP/URL')->make('categories/groups/edit/'.$group->getId()),
 						'title' => lang('edit')
 					),
 					'txt-only' => array(
-						'href' => ee('CP/URL')->make('channels/cat/field/'.$group->getId()),
+						'href' => ee('CP/URL')->make('categories/fields/'.$group->getId()),
 						'title' => strtolower(lang('custom_fields')),
 						'content' => strtolower(lang('fields'))
 					)
@@ -629,7 +626,7 @@ abstract class AbstractChannels extends CP_Controller {
 		$data = array();
 		foreach ($categories as $category)
 		{
-			$edit_url = ee('CP/URL')->make('channels/cat/edit-cat/'.$category->group_id.'/'.$category->cat_id);
+			$edit_url = ee('CP/URL')->make('categories/edit/'.$category->group_id.'/'.$category->cat_id);
 
 			$data[] = array(
 				$category->getId(),

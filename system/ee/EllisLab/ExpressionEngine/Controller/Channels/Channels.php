@@ -215,7 +215,7 @@ class Channels extends AbstractChannelsController {
 			'channelManager.fields.createUrl' => ee('CP/URL')->make('channels/fields/create')->compile(),
 			'channelManager.fields.fieldUrl' => ee('CP/URL')->make('channels/render-fields-field')->compile(),
 
-			'channelManager.catGroup.createUrl' => ee('CP/URL')->make('channels/cat/create')->compile(),
+			'channelManager.catGroup.createUrl' => ee('CP/URL')->make('categories/groups/create')->compile(),
 			'channelManager.catGroup.fieldUrl' => ee('CP/URL')->make('channels/render-category-groups-field')->compile()
 		]);
 
@@ -540,7 +540,7 @@ class Channels extends AbstractChannelsController {
 			'no_results' => [
 				'text' => sprintf(lang('no_found'), lang('category_groups')),
 				'link_text' => 'add_new',
-				'link_href' => ee('CP/URL')->make('channels/cat/create')
+				'link_href' => ee('CP/URL')->make('categories/groups/create')
 			]
 		]);
 	}
