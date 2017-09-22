@@ -86,6 +86,8 @@ feature 'Fluid Block Field' do
       find("input[type='checkbox'][name='field_channel_fields[]'][value='7']").click
       @page.submit
 
+      @list.alert.has_content?('The field Fluid Block Body has been').should == true
+
       @page.load_edit_for_custom_field('Fluid Block Body')
       # confirm our state
       find("input[type='checkbox'][name='field_channel_fields[]'][value='1']").checked?.should == true
@@ -98,6 +100,8 @@ feature 'Fluid Block Field' do
 
       find("input[type='checkbox'][name='field_channel_fields[]'][value='2']").click
       @page.submit
+      @page.wait_for_modal_submit_button
+      @page.modal_submit_button.click
 
       @page.load_edit_for_custom_field('Fluid Block Body')
       find("input[type='checkbox'][name='field_channel_fields[]'][value='1']").checked?.should == true
