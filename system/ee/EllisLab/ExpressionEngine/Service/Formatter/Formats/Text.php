@@ -17,6 +17,36 @@ use EllisLab\ExpressionEngine\Service\Formatter\Formatter;
 class Text extends Formatter {
 
 	/**
+	 * Converts accented / multi-byte characters, e.g. ü, é, ß to ASCII transliterations
+	 * Uses foreign_chars.php config, either the default or user override, as a map
+	 *
+	 * @return self $this
+	 */
+	public function accentsToAscii()
+	{
+		$accent_map = ee()->config->loadFile('foreign_chars');
+
+		if (empty($accent_map))
+		{
+			return $this;
+		}
+
+		$this->content = utf8_decode($this->content);
+		$chars = preg_split('//', $this->content, NULL, PREG_SPLIT_NO_EMPTY);
+
+		foreach ($chars as $index => $char)
+		{
+			$ord = ord($char);
+			if (isset($accent_map[$ord]))
+			{
+				$this->content[$index] = $accent_map[$ord];
+			}
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Escapes a string for use in an HTML attribute
 	 *
 	 * @param bool $double_encode Whether to double encode existing HTML entities
@@ -88,83 +118,6 @@ class Text extends Formatter {
 	}
 
 	/**
-	 * Make a URL slug from the text
-	 *
-	 * @param  array  $options Options: (string) separator, (bool) lowercase
-	 * @return self $this
-	 */
-	public function urlSlug($options = [])
-	{
-		if ( ! isset($options['separator']))
-		{
-			$options['separator'] = (ee()->config->item('word_separator') == 'underscore') ? '_' : '-';
-		}
-
-		$lowercase = (isset($options['lowercase']) && $options['lowercase'] === FALSE) ? FALSE : TRUE;
-
-		$this->accentsToAscii();
-
-		// order here is important
-		$replace = [
-			// remove numeric entities
-			'#&\#\d+?;#i' => '',
-			// remove named entities
-			'#&\S+?;#i' => '',
-			// replace whitespace and forward slashes with the separator
-			'#\s+|/+#i' => $options['separator'],
-			// only allow low ascii letters, numbers, dash, dot, and underscore
-			'#[^a-z0-9\-\._]#i' => '',
-			// no dot-then-separator (in case multiple sentences were passed)
-			'#\.'.$options['separator'].'#i' => $options['separator'],
-			// reduce multiple instances of the separator to a single
-			'#'.$options['separator'].'+#i' => $options['separator'],
-		];
-
-		$this->content = strip_tags($this->content);
-		$this->content = preg_replace(array_keys($replace), array_values($replace), $this->content);
-
-		// don't allow separators or dots at the beginning or end of the string, and remove slashes if they exist
-		$this->content = trim(stripslashes($this->content), '-_.');
-
-		if ($lowercase === TRUE)
-		{
-			$this->content = strtolower($this->content);
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Converts accented / multi-byte characters, e.g. ü, é, ß to ASCII transliterations
-	 * Uses foreign_chars.php config, either the default or user override, as a map
-	 *
-	 * @return self $this
-	 */
-	public function accentsToAscii()
-	{
-		$accent_map = ee()->config->loadFile('foreign_chars');
-
-		if (empty($accent_map))
-		{
-			return $this;
-		}
-
-		$this->content = utf8_decode($this->content);
-		$chars = preg_split('//', $this->content, NULL, PREG_SPLIT_NO_EMPTY);
-
-		foreach ($chars as $index => $char)
-		{
-			$ord = ord($char);
-			if (isset($accent_map[$ord]))
-			{
-				$this->content[$index] = $accent_map[$ord];
-			}
-		}
-
-		return $this;
-	}
-
-	/**
 	 * Censor naughty words, respects application preferences
 	 *
 	 * @return self $this
@@ -223,74 +176,13 @@ class Text extends Formatter {
 	}
 
 	/**
-	 * Limit to X characters, with an optional end character. Strips HTML.
-	 *
-	 * @param  array  $options Options: (int) characters, (string) end_char
-	 * @return self $this
-	 */
-	public function limitChars($options = [])
-	{
-		$limit = (isset($options['characters'])) ? (int) $options['characters'] : 500;
-		$end_char = (isset($options['end_char'])) ? $options['end_char'] : '&#8230;';
-		$this->content = strip_tags($this->content);
-
-		if (strlen($this->content) < $limit)
-		{
-			return $this;
-		}
-
-		$this->content = preg_replace(
-			"/\s+/",
-			' ',
-			str_replace(
-				array("\r\n", "\r", "\n"),
-				' ',
-				$this->content
-			)
-		);
-
-		if (strlen($this->content) <= $limit)
-		{
-			return $this;
-		}
-
-		$cut = substr($this->content, 0, $limit);
-		$this->content = (strlen($cut) == strlen($this->content)) ? $cut : $cut.$end_char;
-
-		return $this;
-	}
-
-	/**
-	 * Preps the content for use in a form field
+	 * Converts all applicable characters to HTML entities
 	 *
 	 * @return self $this
 	 */
-	public function formPrep()
+	public function convertToEntities()
 	{
-		ee()->load->helper('form');
-		$this->content = form_prep($this->content);
-		return $this;
-	}
-
-	/**
-	 * Encrypt the text
-	 *
-	 * @param  array  $options Options: (string) key, (bool) encode
-	 * @return self $this
-	 */
-	public function encrypt($options = [])
-	{
-		$key = (isset($options['key'])) ? $options['key'] : NULL;
-
-		if (isset($options['encode']) && get_bool_from_string($options['encode']))
-		{
-			$this->content = ee('Encrypt', $key)->encode($this->content);
-		}
-		else
-		{
-			$this->content = ee('Encrypt', $key)->encrypt($this->content);
-		}
-
+		$this->content = htmlentities($this->content, ENT_QUOTES, 'UTF-8');
 		return $this;
 	}
 
@@ -326,6 +218,51 @@ class Text extends Formatter {
 	}
 
 	/**
+	 * Encrypt the text
+	 *
+	 * @param  array  $options Options: (string) key, (bool) encode
+	 * @return self $this
+	 */
+	public function encrypt($options = [])
+	{
+		$key = (isset($options['key'])) ? $options['key'] : NULL;
+
+		if (isset($options['encode']) && get_bool_from_string($options['encode']))
+		{
+			$this->content = ee('Encrypt', $key)->encode($this->content);
+		}
+		else
+		{
+			$this->content = ee('Encrypt', $key)->encrypt($this->content);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Preps the content for use in a form field
+	 *
+	 * @return self $this
+	 */
+	public function formPrep()
+	{
+		ee()->load->helper('form');
+		$this->content = form_prep($this->content);
+		return $this;
+	}
+
+	/**
+	 * Get the length of the string
+	 *
+	 * @return self $this
+	 */
+	public function getLength()
+	{
+		$this->content = (extension_loaded('mbstring')) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
+		return $this;
+	}
+
+	/**
 	 * JSON encoding
 	 * @param  array  $options Options: (bool) double_encode, (bool) enclose_with_quotes, (string) options, pipedelimited list of PHP JSON bitmask constants
 	 * @return self $this
@@ -351,6 +288,44 @@ class Text extends Formatter {
 		{
 			$this->content = trim($this->content, '"');
 		}
+
+		return $this;
+	}
+
+	/**
+	 * Limit to X characters, with an optional end character. Strips HTML.
+	 *
+	 * @param  array  $options Options: (int) characters, (string) end_char
+	 * @return self $this
+	 */
+	public function limitChars($options = [])
+	{
+		$limit = (isset($options['characters'])) ? (int) $options['characters'] : 500;
+		$end_char = (isset($options['end_char'])) ? $options['end_char'] : '&#8230;';
+		$this->content = strip_tags($this->content);
+
+		if (strlen($this->content) < $limit)
+		{
+			return $this;
+		}
+
+		$this->content = preg_replace(
+			"/\s+/",
+			' ',
+			str_replace(
+				array("\r\n", "\r", "\n"),
+				' ',
+				$this->content
+			)
+		);
+
+		if (strlen($this->content) <= $limit)
+		{
+			return $this;
+		}
+
+		$cut = substr($this->content, 0, $limit);
+		$this->content = (strlen($cut) == strlen($this->content)) ? $cut : $cut.$end_char;
 
 		return $this;
 	}
@@ -435,26 +410,50 @@ class Text extends Formatter {
 		return $this;
 	}
 
-
 	/**
-	 * Get the length of the string
+	 * Make a URL slug from the text
 	 *
+	 * @param  array  $options Options: (string) separator, (bool) lowercase
 	 * @return self $this
 	 */
-	public function getLength()
+	public function urlSlug($options = [])
 	{
-		$this->content = (extension_loaded('mbstring')) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
-		return $this;
-	}
+		if ( ! isset($options['separator']))
+		{
+			$options['separator'] = (ee()->config->item('word_separator') == 'underscore') ? '_' : '-';
+		}
 
-	/**
-	 * Converts all applicable characters to HTML entities
-	 *
-	 * @return self $this
-	 */
-	public function convertToEntities()
-	{
-		$this->content = htmlentities($this->content, ENT_QUOTES, 'UTF-8');
+		$lowercase = (isset($options['lowercase']) && $options['lowercase'] === FALSE) ? FALSE : TRUE;
+
+		$this->accentsToAscii();
+
+		// order here is important
+		$replace = [
+			// remove numeric entities
+			'#&\#\d+?;#i' => '',
+			// remove named entities
+			'#&\S+?;#i' => '',
+			// replace whitespace and forward slashes with the separator
+			'#\s+|/+#i' => $options['separator'],
+			// only allow low ascii letters, numbers, dash, dot, and underscore
+			'#[^a-z0-9\-\._]#i' => '',
+			// no dot-then-separator (in case multiple sentences were passed)
+			'#\.'.$options['separator'].'#i' => $options['separator'],
+			// reduce multiple instances of the separator to a single
+			'#'.$options['separator'].'+#i' => $options['separator'],
+		];
+
+		$this->content = strip_tags($this->content);
+		$this->content = preg_replace(array_keys($replace), array_values($replace), $this->content);
+
+		// don't allow separators or dots at the beginning or end of the string, and remove slashes if they exist
+		$this->content = trim(stripslashes($this->content), '-_.');
+
+		if ($lowercase === TRUE)
+		{
+			$this->content = strtolower($this->content);
+		}
+
 		return $this;
 	}
 }
