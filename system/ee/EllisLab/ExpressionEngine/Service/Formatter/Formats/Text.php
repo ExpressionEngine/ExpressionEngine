@@ -362,7 +362,6 @@ class Text extends Formatter {
 			return $this;
 		}
 
-		$orig = $this->content;
 		$valid = @preg_match($find, NULL);
 
 		// valid regex only, unless DEBUG is enabled
