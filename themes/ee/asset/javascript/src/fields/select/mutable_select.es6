@@ -10,8 +10,8 @@ class MutableSelectField {
   constructor (fieldName, options) {
     this.fieldName = fieldName
     this.options = options
+    this.addButton = 'a[rel="add_new"]'
     this.setField()
-    this.setAddButton(this.field.parent().find('a[rel="add_new"]'))
 
     this.toggleAddButton()
     this.bindAdd()
@@ -23,23 +23,21 @@ class MutableSelectField {
     this.field = $('[data-input-value="'+this.fieldName+'"]')
   }
 
-  setAddButton (button) {
-    this.addButton = button
-  }
-
   // Don't show blue action button if there are no results
   toggleAddButton() {
+    let addButtons = this.field.parent().find(this.addButton)
+
     if (this.field.find('.field-no-results').size()) {
-      this.addButton.filter((i, el) => {
+      addButtons.filter((i, el) => {
         return $(el).hasClass('btn')
       }).hide()
     } else {
-      this.addButton.show()
+      addButtons.show()
     }
   }
 
   bindAdd () {
-    this.addButton.on('click', (e) => {
+    this.field.parent().on('click', this.addButton, (e) => {
       e.preventDefault()
       this.openForm(this.options.createUrl)
     })
@@ -59,9 +57,7 @@ class MutableSelectField {
         this.options.removeUrl,
         item.label,
         item.value,
-        (result) => {
-          this.replaceField(result.selectList)
-        }
+        (result) => this.handleResponse(result)
       )
     })
   }
@@ -79,30 +75,32 @@ class MutableSelectField {
           this.options.onFormLoad(modal)
         }
       },
-      success: (result) => {
-        // A selectList key should contain the field markup
-        if (result.selectList) {
-          this.replaceField(result.selectList)
-        // Otherwise, we have to fetch the field markup ourselves
-        } else if (result.saveId && this.options.fieldUrl) {
-
-          let selected = [result.saveId]
-
-          // Gather the current field selection so that it may be applied to the
-          // field upon reload. Checkboxes for server-rendered fields, hidden
-          // inputs for the React fields.
-          $('input[type=checkbox][name="'+this.fieldName+'[]"]:checked, input[type=hidden][name="'+this.fieldName+'[]"]').each(function(){
-            selected.push($(this).val());
-          });
-
-          let postdata = {}
-          postdata[this.fieldName] = selected
-          $.post(this.options.fieldUrl, postdata, (result) => {
-            this.replaceField(result)
-          })
-        }
-      }
+      success: (result) => this.handleResponse(result)
     })
+  }
+
+  handleResponse(result) {
+    // A selectList key should contain the field markup
+    if (result.selectList) {
+      this.replaceField(result.selectList)
+    // Otherwise, we have to fetch the field markup ourselves
+    } else if (this.options.fieldUrl) {
+
+      let selected = result.saveId ? [result.saveId] : []
+
+      // Gather the current field selection so that it may be applied to the
+      // field upon reload. Checkboxes for server-rendered fields, hidden
+      // inputs for the React fields.
+      $('input[type=checkbox][name="'+this.fieldName+'[]"]:checked, input[type=hidden][name="'+this.fieldName+'[]"]').each(function(){
+          selected.push($(this).val());
+      });
+
+      let postdata = {}
+      postdata[this.fieldName] = selected
+      $.post(this.options.fieldUrl, postdata, (result) => {
+        this.replaceField(result)
+      })
+    }
   }
 
   replaceField (html) {

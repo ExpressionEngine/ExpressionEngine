@@ -18,8 +18,8 @@ var MutableSelectField = function () {
 
     this.fieldName = fieldName;
     this.options = options;
+    this.addButton = 'a[rel="add_new"]';
     this.setField();
-    this.setAddButton(this.field.parent().find('a[rel="add_new"]'));
 
     this.toggleAddButton();
     this.bindAdd();
@@ -32,23 +32,20 @@ var MutableSelectField = function () {
     value: function setField() {
       this.field = $('[data-input-value="' + this.fieldName + '"]');
     }
-  }, {
-    key: 'setAddButton',
-    value: function setAddButton(button) {
-      this.addButton = button;
-    }
 
     // Don't show blue action button if there are no results
 
   }, {
     key: 'toggleAddButton',
     value: function toggleAddButton() {
+      var addButtons = this.field.parent().find(this.addButton);
+
       if (this.field.find('.field-no-results').size()) {
-        this.addButton.filter(function (i, el) {
+        addButtons.filter(function (i, el) {
           return $(el).hasClass('btn');
         }).hide();
       } else {
-        this.addButton.show();
+        addButtons.show();
       }
     }
   }, {
@@ -56,7 +53,7 @@ var MutableSelectField = function () {
     value: function bindAdd() {
       var _this = this;
 
-      this.addButton.on('click', function (e) {
+      this.field.parent().on('click', this.addButton, function (e) {
         e.preventDefault();
         _this.openForm(_this.options.createUrl);
       });
@@ -79,7 +76,7 @@ var MutableSelectField = function () {
 
       this.field.parent().on('select:removeItem', '[data-id]', function (e, item) {
         EE.cp.Modal.openConfirmRemove(_this3.options.removeUrl, item.label, item.value, function (result) {
-          _this3.replaceField(result.selectList);
+          return _this3.handleResponse(result);
         });
       });
     }
@@ -101,29 +98,36 @@ var MutableSelectField = function () {
           }
         },
         success: function success(result) {
-          // A selectList key should contain the field markup
-          if (result.selectList) {
-            _this4.replaceField(result.selectList);
-            // Otherwise, we have to fetch the field markup ourselves
-          } else if (result.saveId && _this4.options.fieldUrl) {
-
-            var selected = [result.saveId];
-
-            // Gather the current field selection so that it may be applied to the
-            // field upon reload. Checkboxes for server-rendered fields, hidden
-            // inputs for the React fields.
-            $('input[type=checkbox][name="' + _this4.fieldName + '[]"]:checked, input[type=hidden][name="' + _this4.fieldName + '[]"]').each(function () {
-              selected.push($(this).val());
-            });
-
-            var postdata = {};
-            postdata[_this4.fieldName] = selected;
-            $.post(_this4.options.fieldUrl, postdata, function (result) {
-              _this4.replaceField(result);
-            });
-          }
+          return _this4.handleResponse(result);
         }
       });
+    }
+  }, {
+    key: 'handleResponse',
+    value: function handleResponse(result) {
+      var _this5 = this;
+
+      // A selectList key should contain the field markup
+      if (result.selectList) {
+        this.replaceField(result.selectList);
+        // Otherwise, we have to fetch the field markup ourselves
+      } else if (this.options.fieldUrl) {
+
+        var selected = result.saveId ? [result.saveId] : [];
+
+        // Gather the current field selection so that it may be applied to the
+        // field upon reload. Checkboxes for server-rendered fields, hidden
+        // inputs for the React fields.
+        $('input[type=checkbox][name="' + this.fieldName + '[]"]:checked, input[type=hidden][name="' + this.fieldName + '[]"]').each(function () {
+          selected.push($(this).val());
+        });
+
+        var postdata = {};
+        postdata[this.fieldName] = selected;
+        $.post(this.options.fieldUrl, postdata, function (result) {
+          _this5.replaceField(result);
+        });
+      }
     }
   }, {
     key: 'replaceField',
