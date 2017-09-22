@@ -38,6 +38,13 @@ class CategoryGroup extends StructureModel {
 		),
 	);
 
+	protected static $_validation_rules = array(
+		'group_name'            => 'required|unique[site_id]',
+		'sort_order'            => 'isNatural',
+		'field_html_formatting' => 'enum[all,safe,none]',
+		'exclude_group'         => 'enum[0,1,2]'
+	);
+
 	// Properties
 	protected $group_id;
 	protected $site_id;
