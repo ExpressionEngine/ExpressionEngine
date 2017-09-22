@@ -146,7 +146,12 @@ class Number extends Formatter {
 		}
 
 		$seconds = $this->content % 60;
-		if ($seconds < 10) { $seconds = '0'.$seconds; }
+
+		// NumberFormatter::DURATION zero pads everything but the left-most digit
+		if ($seconds < 10)
+		{
+			$seconds = '0'.$seconds;
+		}
 
 		$remainder = ($this->content - $seconds) / 60;
 		$minutes = $remainder % 60;
@@ -159,7 +164,11 @@ class Number extends Formatter {
 			return $this->content;
 		}
 
-		if ($minutes < 10) { $minutes = '0'.$minutes; }
+		if ($minutes < 10)
+		{
+			$minutes = '0'.$minutes;
+		}
+
 		$remainder = $remainder / 60;
 		$hours = number_format($remainder);
 
