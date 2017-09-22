@@ -51,6 +51,8 @@ feature 'Fluid Block Field' do
       find("input[type='checkbox'][name='field_channel_fields[]'][value='7']").click
       @page.submit
 
+      @list.alert.has_content?('The field Fluid Block Body has been').should == true
+
       @page.load_edit_for_custom_field('Fluid Block Body')
       # confirm our state
       find("input[type='checkbox'][name='field_channel_fields[]'][value='1']").checked?.should == false
@@ -115,6 +117,32 @@ feature 'Fluid Block Field' do
   end
 
   it 'deletes a fluid block field' do
+    @page.field_type.select 'Fluid Block'
+    @page.field_label.set 'Fluid Block Body'
+    @page.field_name.set 'fluid_block_body'
+    find("input[type='checkbox'][name='field_channel_fields[]'][value='1']").click
+    find("input[type='checkbox'][name='field_channel_fields[]'][value='2']").click
+    find("input[type='checkbox'][name='field_channel_fields[]'][value='3']").click
+    find("input[type='checkbox'][name='field_channel_fields[]'][value='5']").click
+    find("input[type='checkbox'][name='field_channel_fields[]'][value='6']").click
+    find("input[type='checkbox'][name='field_channel_fields[]'][value='7']").click
+    @page.submit
+
+    @list.alert.has_content?('The field Fluid Block Body has been').should == true
+
+    @list.fields_checkboxes[7].click
+    @list.wait_for_bulk_action
+
+    @list.has_bulk_action?.should == true
+    @list.has_action_submit_button?.should == true
+
+    @list.bulk_action.select 'Remove'
+    @list.action_submit_button.click
+
+    @list.wait_for_modal_submit_button
+    @list.modal_submit_button.click
+
+    @list.fields[0].text.should_not include 'Fluid Block Body'
   end
 
 end
