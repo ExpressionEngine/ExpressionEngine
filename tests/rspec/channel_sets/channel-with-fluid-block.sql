@@ -411,7 +411,7 @@ CREATE TABLE `exp_channel_grid_field_19` (
   `row_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `entry_id` int(10) unsigned DEFAULT NULL,
   `row_order` int(10) unsigned DEFAULT NULL,
-  `block_dagt_id` int(10) unsigned DEFAULT '0',
+  `block_data_id` int(10) unsigned DEFAULT '0',
   `col_id_1` text COLLATE utf8_unicode_ci,
   `col_id_2` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`row_id`),
