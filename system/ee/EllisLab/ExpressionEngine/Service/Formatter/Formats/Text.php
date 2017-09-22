@@ -252,17 +252,6 @@ class Text extends Formatter {
 	}
 
 	/**
-	 * Get the length of the string
-	 *
-	 * @return self $this
-	 */
-	public function getLength()
-	{
-		$this->content = (extension_loaded('mbstring')) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
-		return $this;
-	}
-
-	/**
 	 * JSON encoding
 	 *
 	 * @param  array  $options Options: (bool) double_encode, (bool) enclose_with_quotes, (string) options, pipe-delimited list of PHP JSON bitmask constants
@@ -290,6 +279,17 @@ class Text extends Formatter {
 			$this->content = trim($this->content, '"');
 		}
 
+		return $this;
+	}
+
+	/**
+	 * Get the length of the string
+	 *
+	 * @return self $this
+	 */
+	public function length()
+	{
+		$this->content = (extension_loaded('mbstring')) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
 		return $this;
 	}
 
