@@ -430,7 +430,7 @@ abstract class FieldModel extends Model {
 		ee()->dbforge->add_field($fields);
 		ee()->dbforge->add_key('id', TRUE);
 		ee()->dbforge->add_key($this->getForeignKey());
-		ee()->smartforge->create_table($this->getTableName());
+		ee()->dbforge->create_table($this->getTableName(), TRUE);
 
 		// Pre-populate the cache...
 		$this->getColumnNames();
