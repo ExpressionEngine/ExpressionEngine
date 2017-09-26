@@ -172,7 +172,6 @@ class Relationship_ft extends EE_Fieldtype {
 		//
 		// -------------------------------------------
 
-
 		// If child_id is empty, they are deleting a single relationship
 		if (count($ships))
 		{
@@ -266,7 +265,6 @@ class Relationship_ft extends EE_Fieldtype {
 				'parent_id'     => $entry_id,
 				'field_id'      => $this->field_id,
 				'block_data_id' => (isset($this->settings['block_data_id'])) ? $this->settings['block_data_id'] : 0
-
 			);
 
 			if (isset($this->settings['grid_row_id']))
