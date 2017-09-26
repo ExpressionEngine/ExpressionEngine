@@ -257,6 +257,8 @@ class General extends Settings {
 	 */
 	public function versionCheck()
 	{
+		ee()->cache->delete('current_version', \Cache::GLOBAL_SCOPE);
+
 		ee()->load->library('el_pings');
 		$version_info = ee()->el_pings->get_version_info();
 		$latest_version = $version_info['latest_version'];
