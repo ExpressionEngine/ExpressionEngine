@@ -299,7 +299,9 @@ class General extends Settings {
 			}
 		}
 
-		ee()->functions->redirect(ee('CP/URL', 'settings/general'));
+		$redirect = ee('Request')->get('redirect') ?: ee('CP/URL', 'settings/general');
+
+		ee()->functions->redirect($redirect);
 	}
 }
 // END CLASS
