@@ -171,6 +171,8 @@ class Fluid_block_ft extends EE_Fieldtype {
 		$block->entry_id = $this->content_id;
 		$block->field_id = $field_id;
 		$block->order = $order;
+		$block->field_data_id = 0;
+		$block->save();
 
 		$values = $this->prepareData($block, $values);
 
