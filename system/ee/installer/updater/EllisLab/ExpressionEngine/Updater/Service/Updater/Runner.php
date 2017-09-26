@@ -269,6 +269,12 @@ class Runner {
 
 			throw $e;
 		}
+
+		// We may have shifted files around
+		if (function_exists('opcache_reset'))
+		{
+			opcache_reset();
+		}
 	}
 
 	/**
