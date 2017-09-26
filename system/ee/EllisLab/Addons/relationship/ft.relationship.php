@@ -126,13 +126,9 @@ class Relationship_ft extends EE_Fieldtype {
 
 		$all_rows_where = array(
 			'parent_id' => $entry_id,
-			'field_id' => $field_id
+			'field_id' => $field_id,
+			'block_data_id' => (isset($this->settings['block_data_id'])) ? $this->settings['block_data_id'] : 0
 		);
-
-		if (isset($this->settings['block_data_id']))
-		{
-			$all_rows_where['block_data_id'] = $this->settings['block_data_id'];
-		}
 
 		if (isset($this->settings['grid_field_id']))
 		{
