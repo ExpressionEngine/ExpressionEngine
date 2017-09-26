@@ -13,7 +13,17 @@
 			<em><?=$field->field_instructions?></em>
 		</div>
 		<div class="field-control">
-			<?=$field->getField()->getForm()?>
+			<?php
+				$field_name = $field->getField()->getName();
+				$form = $field->getField()->getForm();
+
+				if (strpos($form, 'name="' . $field_name . '"') === FALSE)
+				{
+					echo form_hidden($field_name, 1);
+				}
+
+				echo $form;
+			?>
 		</div>
 	</div>
 </div>
