@@ -41,15 +41,15 @@ var Updater = {
 	},
 
 	runStep: function(step) {
+		if (step === undefined) {
+			return;
+		}
+
 		$('.box.updating').removeClass('hidden');
 		$('.box.updater-stopped').addClass('hidden');
 
 		var that = this,
-			action = EE.BASE + '&C=updater&M=run';
-
-		if (step !== undefined) {
-			action = action + '&step='+step;
-		}
+			action = EE.BASE + '&C=updater&M=run&step='+step;
 
 		$.ajax({
 			type: 'POST',
@@ -58,13 +58,12 @@ var Updater = {
 			headers: { 'X-CSRF-TOKEN': EE.CSRF_TOKEN },
 			success: function(result) {
 				if (result.messageType == 'success') {
-					if (result.hasRemainingSteps) {
+					if (result.nextStep !== undefined && result.nextStep !== false) {
 						that._updateStatus(result.message);
-						that.runStep();
+						that.runStep(result.nextStep);
 
-						// If the updater is in place, we'll consider all
-						// errors afterwards as 'issues'
-						if (result.updaterInPlace) {
+						// If the updater is in place, we'll consider all errors 'issues'
+						if ( ! that._updaterInPlace && result.nextStep == 'updateFiles') {
 							that._updaterInPlace = true;
 						}
 					} else {

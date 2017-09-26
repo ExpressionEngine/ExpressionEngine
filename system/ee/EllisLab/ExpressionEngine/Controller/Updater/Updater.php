@@ -64,22 +64,14 @@ class Updater extends CP_Controller {
 		ee()->load->helper('text');
 
 		$next_step = $runner->getNextStep();
-
-		if (session_status() == PHP_SESSION_NONE)
-		{
-			session_start();
-		}
-
-		$_SESSION['update_step'] = $next_step;
-		session_write_close();
-
 		$vars = [
 			'cp_page_title'   => lang('updating'),
 			'site_name'       => ee()->config->item('site_name'),
 			'current_version' => formatted_version(APP_VER),
 			'to_version'      => formatted_version($to_version),
 			'warn_message'    => $preflight_error,
-			'first_step'      => $runner->getLanguageForStep($next_step)
+			'first_step'      => $runner->getLanguageForStep($next_step),
+			'next_step'       => $next_step
 		];
 
 		ee()->javascript->set_global([
@@ -93,16 +85,11 @@ class Updater extends CP_Controller {
 	/**
 	 * AJAX endpoint for the updater
 	 */
-	public function run($step = NULL)
+	public function run()
 	{
-		if (session_status() == PHP_SESSION_NONE)
-		{
-			session_start();
-		}
+		$step = ee()->input->get('step');
 
-		$step = isset($_SESSION['update_step']) ? $_SESSION['update_step'] : FALSE;
-
-		if ($step === FALSE)
+		if ($step === FALSE OR $step == 'undefined')
 		{
 			return;
 		}
@@ -111,16 +98,14 @@ class Updater extends CP_Controller {
 		$runner->runStep($step);
 
 		// If there is no next step, 'updateFiles' should be next in the micro app
-		$_SESSION['update_step'] = $runner->getNextStep() ?: 'updateFiles';
-		session_write_close();
+		$next_step = $runner->getNextStep() ?: 'updateFiles';
 
 		ee()->lang->loadfile('updater');
 
 		return [
 			'messageType' => 'success',
-			'message' => $runner->getLanguageForStep($_SESSION['update_step']),
-			'hasRemainingSteps' => TRUE,
-			'updaterInPlace' => $_SESSION['update_step'] == 'updateFiles'
+			'message' => $runner->getLanguageForStep($next_step),
+			'nextStep' => $next_step
 		];
 	}
 }

@@ -21,14 +21,11 @@ class Updater {
 	 */
 	public function run()
 	{
-		// We only support the 'rollback' step from the query string
 		$step = isset($_GET['step']) ? $_GET['step'] : FALSE;
-		if ($step != 'rollback')
-		{
-			$step = isset($_SESSION['update_step']) ? $_SESSION['update_step'] : FALSE;
-		}
 
-		if ($step === FALSE OR strtoupper($_SERVER['REQUEST_METHOD']) !== 'POST')
+		if ($step === FALSE OR
+			$step == 'undefined' OR
+			strtoupper($_SERVER['REQUEST_METHOD']) !== 'POST')
 		{
 			return 'The updater folder is still present. Delete the folder at system/ee/updater to access the control panel.';
 		}
@@ -36,26 +33,12 @@ class Updater {
 		$runner = new Runner();
 		$runner->runStep($step);
 
-		if (session_status() == PHP_SESSION_NONE)
-		{
-			session_start();
-		}
-
-		$_SESSION['update_step'] = $runner->getNextStep();
-		$next_step = $_SESSION['update_step'];
-
-		if ( ! $_SESSION['update_step'])
-		{
-			unset($_SESSION['update_step']);
-		}
-
-		session_write_close();
+		$next_step = $runner->getNextStep();
 
 		return json_encode([
 			'messageType' => 'success',
 			'message' => $runner->getLanguageForStep($next_step),
-			'hasRemainingSteps' => isset($_SESSION['update_step']),
-			'updaterInPlace' => TRUE
+			'nextStep' => $next_step
 		]);
 	}
 }

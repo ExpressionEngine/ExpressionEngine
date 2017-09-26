@@ -35,7 +35,7 @@
 
 <script type="text/javascript">
 	Updater.init();
-	<?php if ( ! $warn_message): ?>
-		Updater.runStep();
+	<?php if ( ! $warn_message && $next_step): ?>
+		Updater.runStep('<?=$next_step?>');
 	<?php endif ?>
 </script>
