@@ -10,7 +10,7 @@ if (file_exists(SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php') &&
 		strpos($_GET['step'], 'updateDatabase') === 0 OR
 		$_GET['step'] == 'checkForDbUpdates' OR
 		$_GET['step'] == 'restoreDatabase' OR
-		$_GET['step'] == 'selfDestruct'))
+		strpos($_GET['step'], 'selfDestruct') === 0))
 {
 	define('BOOT_ONLY', TRUE);
 	include_once SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php';
