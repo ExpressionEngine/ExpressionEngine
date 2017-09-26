@@ -277,10 +277,10 @@ class General extends Settings {
 			// New version available
 			if (version_compare(ee()->config->item('app_version'), $latest_version, '<'))
 			{
-				$download_url = ee()->cp->masked_url('https://expressionengine.com/store/purchases');
+				$upgrade_url = ee('CP/URL', 'updater')->compile();
 				$instruct_url = ee()->cp->masked_url(DOC_URL.'installation/update.html');
 
-				$desc = sprintf(lang('version_update_inst'), $latest_version, $download_url, $instruct_url);
+				$desc = sprintf(lang('version_update_inst'), $latest_version, $upgrade_url, $instruct_url);
 
 				ee('CP/Alert')->makeBanner('version-update-available')
 					->asWarning()
