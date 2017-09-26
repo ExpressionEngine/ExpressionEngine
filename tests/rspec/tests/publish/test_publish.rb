@@ -157,50 +157,51 @@ feature 'Publish Page - Create' do
       @page.fluid_block.actions_menu.name.click
     end
 
-    def add_content(item)
+    def add_content(item, skew = 0)
       field_type = item.root_element['data-field-type']
       field = item.field
 
       case field_type
         when 'date'
-          field.find('input[type=text][rel=date-picker]').set '9/14/2017 2:56 PM'
+          field.find('input[type=text][rel=date-picker]').set (9 + skew).to_s + '/14/2017 2:56 PM'
           @page.title.click # Dismiss the date picker
         when 'checkboxes'
-          field.first('input[type=checkbox]').set true
+          field.all('input[type=checkbox]')[0 + skew].set true
         when 'email_address'
-          field.find('input').set 'rspec@example.com'
+          field.find('input').set 'rspec-' + skew.to_s + '@example.com'
         when 'url'
-          field.find('input').set 'http://www.example.com'
+          field.find('input').set 'http://www.example.com/page/' + skew.to_s
         when 'file'
           field.find('a.file-field-filepicker').click
           @page.wait_until_modal_visible
           @page.file_modal.wait_for_files
 
-          @page.file_modal.files[0].click
+          @page.file_modal.files[0 + skew].click
 
           @page.wait_until_modal_invisible
         when 'relationship'
-          field.first('input[type=radio]').set true
+          field.all('input[type=radio]')[0 + skew].set true
         when 'rte'
           field.find('.WysiHat-editor').send_keys Forgery(:lorem_ipsum).paragraphs(
-            rand(1..3),
+            rand(1..(3 + skew)),
             :html => false,
             :sentences => rand(3..5),
             :separator => "\n\n"
           )
         when 'multi_select'
-          field.first('input[type=checkbox]').set true
+          field.all('input[type=checkbox]')[0 + skew].set true
         when 'radio'
-          field.all('input[type=radio]')[1].set true
+          field.all('input[type=radio]')[1 + skew].set true
         when 'select'
-          field.find('select').select 'Corndog'
+          if skew == 0 then field.find('select').select 'Corndog' end
+          if skew == 1 then field.find('select').select 'Burrito' end
         when 'grid'
           field.find('a.btn.action').click
-          field.all('input')[0].set 'Lorem'
-          field.all('input')[1].set 'ipsum'
+          field.all('input')[0].set 'Lorem' + skew.to_s
+          field.all('input')[1].set 'ipsum' + skew.to_s
         when 'textarea'
           field.find('textarea').set Forgery(:lorem_ipsum).paragraphs(
-            rand(1..3),
+            rand(1..(3 + skew)),
             :html => false,
             :sentences => rand(3..5),
             :separator => "\n\n"
@@ -208,44 +209,45 @@ feature 'Publish Page - Create' do
         when 'toggle'
           field.find('.toggle-btn').click
         when 'text'
-          field.find('input').set 'Lorem ipsum dolor sit amet'
+          field.find('input').set 'Lorem ipsum dolor sit amet' + skew.to_s
       end
     end
 
-    def check_content(item)
+    def check_content(item, skew = 0)
       field_type = item.root_element['data-field-type']
       field = item.field
 
       case field_type
         when 'date'
-          field.find('input[type=text][rel=date-picker]').value.should eq '9/14/2017 2:56 PM'
+          field.find('input[type=text][rel=date-picker]').value.should eq (9 + skew).to_s + '/14/2017 2:56 PM'
         when 'checkboxes'
-          field.first('input[type=checkbox]').checked?.should == true
+          field.all('input[type=checkbox]')[0 + skew].checked?.should == true
         when 'email_address'
-          field.find('input').value.should eq 'rspec@example.com'
+          field.find('input').value.should eq 'rspec-' + skew.to_s + '@example.com'
         when 'url'
-          field.find('input').value.should eq 'http://www.example.com'
+          field.find('input').value.should eq 'http://www.example.com/page/' + skew.to_s
         when 'file'
           field.should have_content('staff_jane')
         when 'relationship'
-          field.first('input[type=radio]').checked?.should == true
+          field.all('input[type=radio]')[0 + skew].checked?.should == true
         when 'rte'
           field.find('textarea', {:visible => false}).value.should have_content('Lorem ipsum')
         when 'multi_select'
-          field.first('input[type=checkbox]').checked?.should == true
+          field.all('input[type=checkbox]')[0 + skew].checked?.should == true
         when 'radio'
-          field.all('input[type=radio]')[1].checked?.should == true
+          field.all('input[type=radio]')[1 + skew].checked?.should == true
         when 'select'
-          field.find('select').value.should eq 'Corndog'
+          if skew == 0 then field.find('select').value.should eq 'Corndog' end
+          if skew == 1 then field.find('select').value.should eq 'Burrito' end
         when 'grid'
-          field.all('input')[0].value.should eq 'Lorem'
-          field.all('input')[1].value.should eq 'ipsum'
+          field.all('input')[0].value.should eq 'Lorem' + skew.to_s
+          field.all('input')[1].value.should eq 'ipsum' + skew.to_s
         when 'textarea'
           field.find('textarea').value.should have_content('Lorem ipsum')
         when 'toggle'
           field.find('.toggle-btn').click
         when 'text'
-          field.find('input').value.should eq 'Lorem ipsum dolor sit amet'
+          field.find('input').value.should eq 'Lorem ipsum dolor sit amet' + skew.to_s
       end
     end
 
@@ -288,7 +290,7 @@ feature 'Publish Page - Create' do
       @available_fields.each_with_index do |field, index|
         @page.fluid_block.actions_menu.name.click
         @page.fluid_block.actions_menu.fields[index].click
-        add_content(@page.fluid_block.items[index + number_of_fields])
+        add_content(@page.fluid_block.items[index + number_of_fields], 1)
 
         @page.fluid_block.items[index + number_of_fields].title.should have_content(field)
       end
@@ -302,7 +304,7 @@ feature 'Publish Page - Create' do
         check_content(@page.fluid_block.items[index])
 
         @page.fluid_block.items[index + number_of_fields].title.should have_content(field)
-        check_content(@page.fluid_block.items[index + number_of_fields])
+        check_content(@page.fluid_block.items[index + number_of_fields], 1)
       end
     end
 
