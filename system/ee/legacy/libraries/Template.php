@@ -426,6 +426,7 @@ class EE_Template {
 					foreach ($val as $item)
 					{
 						$variables[] = [
+							'index' => $i,
 							'count' => ++$i,
 							'reverse_count' => $total_items - $i,
 							'total_results' => $total_items,
@@ -436,12 +437,38 @@ class EE_Template {
 					$this->template = $this->_parse_var_pair('layout:'.$key, $variables, $this->template);
 
 					// catch-all, if a layout array is used as a single variable, output the last one in
-					$this->template = $this->_parse_var_single('layout:'.$key, $item, $this->template);
+					if (strpos($this->template, 'layout:'.$key))
+					{
+						$this->template = $this->_parse_var_single('layout:'.$key, $item, $this->template);
+					}
 				}
 				else
 				{
 					$layout_conditionals['layout:'.$key] = $val;
 					$this->template = $this->_parse_var_single('layout:'.$key, $val, $this->template);
+				}
+			}
+
+			// parse index-specified items, e.g.: {layout:titles index='4'}
+			if (strpos($this->template, LD.'layout:'))
+			{
+				// prototype:
+				// array (size=1)
+				//   0 =>
+				//     array (size=4)
+				//       0 => string '{layout:titles index='4'}' (length=25)
+				//       1 => string 'titles' (length=6)
+				//       2 => string ''' (length=1)
+				//       3 => string '4' (length=1)
+				preg_match_all("/".LD."layout:(.+?)\s+index\s*=\s*(\042|\047)([^\\2]*?)\\2\s*".RD."/si", $this->template, $matches, PREG_SET_ORDER);
+
+				foreach ($matches as $match)
+				{
+					if (isset($this->layout_vars[$match[1]]))
+					{
+						$value = (isset($this->layout_vars[$match[1]][$match[3]])) ? $this->layout_vars[$match[1]][$match[3]] : '';
+						$this->template = str_replace($match[0], $value, $this->template);
+					}
 				}
 			}
 		}
