@@ -40,6 +40,9 @@
 								<div class="status out"><?=lang('out_of_date')?></div>
 							<?php else: ?>
 								<a href="" class="close">&#10006;</a>
+								<?php if (ee()->session->userdata('group_id') == 1): ?>
+									<p class="update-btn"><a class="btn action" href="<?=ee('CP/URL')->make('settings/general/version-check', ['redirect' => ee('CP/URL')->getCurrentUrl()->compile()])?>">Check for Update</a></p>
+								<?php endif ?>
 								<div class="status"><?=lang('current')?></div>
 							<?php endif ?>
 						</div>
