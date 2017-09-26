@@ -353,6 +353,26 @@ feature 'Publish Page - Create' do
 
       @page.fluid_block.items.length.should == 0
     end
+
+    it 'keeps data when the entry is invalid' do
+      @available_fields.each_with_index do |field, index|
+        @page.fluid_block.actions_menu.name.click
+        @page.fluid_block.actions_menu.fields[index].click
+        add_content(@page.fluid_block.items[index])
+
+        @page.fluid_block.items[index].title.should have_content(field)
+      end
+
+      @page.title.set ""
+
+      @page.save.click
+
+      @available_fields.each_with_index do |field, index|
+        check_content(@page.fluid_block.items[index])
+      end
+    end
+
+
   end
 
 end

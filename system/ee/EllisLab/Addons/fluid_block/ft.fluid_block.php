@@ -206,27 +206,65 @@ class Fluid_block_ft extends EE_Fieldtype {
 	 * @param string $data Stored data for the field
 	 * @return string Field display
 	 */
-	public function display_field($data)
+	public function display_field($field_data)
 	{
 		$fields = '';
 
 		$fieldTemplates = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
 			->order('field_label')
-			->all();
+			->all()
+			->indexByIds();
 
 		$filters = ee('View')->make('fluid_block:filters')->render(array('fields' => $fieldTemplates));
 
-		if ($this->content_id)
+		if ( ! is_array($field_data))
 		{
-			$blockData = $this->getBlockData();
-
-			foreach ($blockData as $data)
+			if ($this->content_id)
 			{
-				$field = $data->getField();
+				$blockData = $this->getBlockData();
 
-				$field->setName($this->name() . '[fields][field_' . $data->getId() . '][field_id_' . $field->getId() . ']');
+				foreach ($blockData as $data)
+				{
+					$field = $data->getField();
 
-				$fields .= ee('View')->make('fluid_block:field')->render(array('field' => $data->ChannelField, 'filters' => $filters));
+					$field->setName($this->name() . '[fields][field_' . $data->getId() . '][field_id_' . $field->getId() . ']');
+
+					$fields .= ee('View')->make('fluid_block:field')->render(array('field' => $data->ChannelField, 'filters' => $filters));
+				}
+			}
+
+		}
+		else
+		{
+			foreach ($field_data['fields'] as $key => $data)
+			{
+				$field_id = NULL;
+
+				foreach (array_keys($data) as $datum)
+				{
+					if (strpos($datum, 'field_id_') === 0)
+					{
+						$field_id = str_replace('field_id_', '', $datum);
+						break;
+					}
+				}
+
+				$field = clone $fieldTemplates[$field_id];
+
+				$f = $field->getField();
+
+				$f->setData($data['field_id_' . $field_id]);
+				if (isset($data['field_ft_' . $field_id]))
+				{
+					$f->setFormat($data['field_ft_' . $field_id]);
+				}
+				if (isset($data['field_dt_' . $field_id]))
+				{
+					$f->setTimezone($data['field_dt_' . $field_id]);
+				}
+				$f->setName($this->name() . '[fields][new_field_0][field_id_' . $field->getId() . ']');
+
+				$fields .= ee('View')->make('fluid_block:field')->render(array('field' => $field, 'filters' => $filters));
 			}
 		}
 
