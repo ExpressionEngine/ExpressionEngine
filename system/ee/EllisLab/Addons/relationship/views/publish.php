@@ -1,8 +1,8 @@
 <?php if ($multiple): ?>
-<div data-field="<?=$field_name?>" data-settings='<?=$settings?>' class="col w-8 relate-wrap<?php if (empty($entries)) echo " empty"; ?>">
+<div data-field="<?=$field_name?>" data-settings='<?=$settings?>' class=" w-8 relate-wrap<?php if (empty($entries)) echo " empty"; ?>">
 	<h4><?=lang('items_to_relate_with')?></h4>
 <?php else: ?>
-<div data-field="<?=$field_name?>" data-settings='<?=$settings?>' class="col w-16 relate-wrap<?php if (empty($entries) || empty($related)) echo " empty"; ?>">
+<div data-field="<?=$field_name?>" data-settings='<?=$settings?>' class=" w-16 relate-wrap<?php if (empty($entries) || empty($related)) echo " empty"; ?>">
 	<h4><?=lang('item_to_relate_with')?></h4>
 <?php endif; ?>
 	<div class="relate-actions">
@@ -102,7 +102,7 @@
 	<?php endif;?>
 </div>
 <?php if ($multiple): ?>
-<div class="col w-8 relate-wrap<?php if ( ! count($related)) echo " empty"; ?> last">
+<div class=" w-8 relate-wrap<?php if ( ! count($related)) echo " empty"; ?> last">
 	<h4><?=lang('items_related_to')?></h4>
 	<div class="relate-actions">
 		<input class="relate-search" name="search_related" type="text" placeholder="<?=lang('search_related_entries')?>" data-ajax-validate="no">
