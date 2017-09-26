@@ -596,7 +596,7 @@ class Grid_parser {
 	 * @param	int		Entry ID being processed or parsed
 	 * @return	object	Fieldtype object
 	 */
-	public function instantiate_fieldtype($column, $row_name = NULL, $field_id = 0, $entry_id = 0, $content_type = 'channel')
+	public function instantiate_fieldtype($column, $row_name = NULL, $field_id = 0, $entry_id = 0, $content_type = 'channel', $block_data_id = 0)
 	{
 		if ( ! isset(ee()->api_channel_fields->field_types[$column['col_type']]))
 		{
@@ -620,7 +620,7 @@ class Grid_parser {
 				'field_id'		=> $column['col_id'],
 				'field_name'	=> 'col_id_'.$column['col_id'],
 				'content_id'	=> $entry_id,
-				'content_type'	=> 'grid'
+				'content_type'	=> 'grid',
 			)
 		);
 
@@ -637,7 +637,8 @@ class Grid_parser {
 				'entry_id'			=> $entry_id,
 				'grid_field_id'		=> $field_id,
 				'grid_row_name'		=> $row_name,
-				'grid_content_type'	=> $content_type
+				'grid_content_type'	=> $content_type,
+				'block_data_id'     => $block_data_id
 			)
 		);
 

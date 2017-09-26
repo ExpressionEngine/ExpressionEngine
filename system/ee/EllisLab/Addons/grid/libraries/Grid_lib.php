@@ -18,6 +18,7 @@ class Grid_lib {
 	public $field_name;
 	public $content_type;
 	public $entry_id;
+	public $block_data_id = 0;
 
 	protected $_fieldtypes = array();
 	protected $_validated = array();
@@ -36,16 +37,16 @@ class Grid_lib {
 	 * @param	array	Field data to display prepopulated in publish field
 	 * @return	string	HTML of publish field
 	 */
-	public function display_field($grid, $data, $block_data_id = 0)
+	public function display_field($grid, $data)
 	{
 		// Get columns just for this field
 		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->content_type);
 
 		// If validation data is set, we're likely coming back to the form on a
 		// validation error
-		if (isset($this->_validated[$this->field_id]['value']))
+		if (isset($this->_validated[$this->field_id.','.$this->block_data_id]['value']))
 		{
-			$rows = $this->_validated[$this->field_id]['value'];
+			$rows = $this->_validated[$this->field_id.','.$this->block_data_id]['value'];
 		}
 		// Load autosaved/revision data
 		elseif (is_array($data))
@@ -55,8 +56,8 @@ class Grid_lib {
 		// Otherwise, we're editing or creating a new entry
 		else
 		{
-			$reset_cache = (bool) $block_data_id;
-			$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type, array(), $reset_cache, $block_data_id);
+			$reset_cache = (bool) $this->block_data_id;
+			$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type, array(), $reset_cache, $this->block_data_id);
 			$rows = (isset($rows[$this->entry_id])) ? $rows[$this->entry_id] : array();
 		}
 
@@ -225,7 +226,7 @@ class Grid_lib {
 	public function validate($data)
 	{
 		// Get row data for this entry
-		$rows = ee()->grid_model->get_entry($this->entry_id, $this->field_id, $this->content_type);
+		$rows = ee()->grid_model->get_entry($this->entry_id, $this->field_id, $this->content_type, $this->block_data_id);
 
 		// Check that we're editing a row that actually belongs to this entry
 		$valid_rows = array();
@@ -265,17 +266,17 @@ class Grid_lib {
 		}
 
 		// Return from cache if exists
-		if (isset($this->_validated[$this->field_id]))
+		if (isset($this->_validated[$this->field_id.','.$this->block_data_id]))
 		{
-			return $this->_validated[$this->field_id];
+			return $this->_validated[$this->field_id.','.$this->block_data_id];
 		}
 
 		$this->_searchable_data[$this->field_id] = [];
 
 		// Process the posted data and cache
-		$this->_validated[$this->field_id] = $this->_process_field_data('validate', $data);
+		$this->_validated[$this->field_id.','.$this->block_data_id] = $this->_process_field_data('validate', $data);
 
-		return $this->_validated[$this->field_id];
+		return $this->_validated[$this->field_id.','.$this->block_data_id];
 	}
 
 	/**
@@ -284,7 +285,7 @@ class Grid_lib {
 	 * @param	array	Validated Grid publish form data
 	 * @return	boolean
 	 */
-	public function save($data, $block_data_id = NULL)
+	public function save($data)
 	{
 		$field_data = $this->_process_field_data('save', $data);
 
@@ -293,13 +294,13 @@ class Grid_lib {
 			$this->field_id,
 			$this->content_type,
 			$this->entry_id,
-			$block_data_id
+			$this->block_data_id
 		);
 
 		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->content_type);
 
 		// Get row data to send back to fieldtypes with new row IDs
-		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type, array(), TRUE, $block_data_id);
+		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type, array(), TRUE, $this->block_data_id);
 		$rows = $rows[$this->entry_id];
 
 		// Remove deleted rows from $rows
@@ -323,7 +324,8 @@ class Grid_lib {
 					$row_name,
 					$this->field_id,
 					$this->entry_id,
-					$this->content_type
+					$this->content_type,
+					$this->block_data_id
 				);
 
 				if ( ! empty($rows[$i]['row_id']))
@@ -471,7 +473,8 @@ class Grid_lib {
 					$row_id,
 					$this->field_id,
 					$this->entry_id,
-					$this->content_type
+					$this->content_type,
+					$this->block_data_id
 				);
 
 				// Pass Grid row ID to fieldtype if it's an existing row

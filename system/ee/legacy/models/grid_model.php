@@ -326,10 +326,11 @@ class Grid_model extends CI_Model {
 	 * @param	string	Content type to get data for
 	 * @return	array	Row data
 	 */
-	public function get_entry($entry_id, $field_id, $content_type)
+	public function get_entry($entry_id, $field_id, $content_type, $block_data_id = 0)
 	{
 		$table = $this->_data_table($content_type, $field_id);
 		ee()->db->where('entry_id', $entry_id);
+		ee()->db->where('block_data_id', $block_data_id);
 		return ee()->db->get($table)->result_array();
 	}
 
