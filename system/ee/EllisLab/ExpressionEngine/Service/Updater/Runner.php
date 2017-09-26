@@ -58,7 +58,7 @@ class Runner {
 	public function download()
 	{
 		ee('Updater/Downloader')->downloadPackage(
-			'https://expressionengine.com/index.php?ACT=269'
+			'https://update.expressionengine.com'
 		);
 	}
 

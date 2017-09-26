@@ -94,7 +94,7 @@ class El_pings {
 		if ( ! $cached)
 		{
 			$version_file = ee('Curl')->post(
-				'https://expressionengine.com/index.php?ACT=269',
+				'https://update.expressionengine.com',
 				[
 					'action' => 'check_new_version',
 					'license' => ee('License')->getEELicense()->getRawLicense(),
