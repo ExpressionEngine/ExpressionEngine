@@ -16,8 +16,6 @@ use CP_Controller;
  */
 class Create extends Members {
 
-	private $base_url = 'members/create';
-
 	/**
 	 * Create Member Form
 	 */
@@ -33,7 +31,7 @@ class Create extends Members {
 			show_error(lang('maximum_members_reached'));
 		}
 
-		$this->base_url = ee('CP/URL')->make($this->base_url);
+		$this->base_url = ee('CP/URL')->make('members/create');
 		$groups = ee('Model')->get('MemberGroup')->order('group_title', 'asc')->all();
 		$choices = array();
 

@@ -223,7 +223,7 @@ class Bookmarks extends Settings {
 
 		if ( ! empty($channel))
 		{
-			$fields = $channel->CustomFields->getDictionary('field_id', 'field_label');
+			$fields = $channel->getAllCustomFields()->getDictionary('field_id', 'field_label');
 		}
 
 		if ($channels)

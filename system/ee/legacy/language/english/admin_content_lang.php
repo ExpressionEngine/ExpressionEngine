@@ -406,6 +406,8 @@ $lang = array(
 
 'select_related_channel' => 'Select the channel you wish to create a relationship with:',
 
+'show_all_channels' => 'All %d channels',
+
 'show_formatting_buttons' => 'Allow override on publish page?',
 
 'single_word_no_spaces' => 'single word, no spaces',
@@ -572,6 +574,8 @@ $lang = array(
 
 'no_category_message' => 'There are currently no categories assigned to this group',
 
+'show_all_category_groups' => 'All %d category groups',
+
 'taken_category_group_name' => 'This group name is already taken.',
 
 'unable_to_create_cat_url_title' => 'Unable to create valid Category URL Title for your Category',
@@ -684,6 +688,10 @@ $lang = array(
 
 'select_list' => 'Select List',
 
+'show_all_field_groups' => 'All %d field groups',
+
+'show_all_fields' => 'All %d fields',
+
 'show_file_selector' => 'Show File Chooser',
 
 'show_formatting_btns' => 'Show Formatting Buttons',
@@ -765,6 +773,10 @@ $lang = array(
 'no_status_group_message' => 'There are currently no custom statuses',
 
 'rtl' => 'Right to Left',
+
+'show_all_status_groups' => 'All %d status groups',
+
+'show_all_statuses' => 'All %d statuses',
 
 'show_pages_cluster' => 'Display Pages Submission Fields',
 

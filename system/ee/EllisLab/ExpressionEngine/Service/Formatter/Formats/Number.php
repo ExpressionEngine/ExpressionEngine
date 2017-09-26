@@ -67,6 +67,24 @@ class Number extends Formatter {
 		$this->content = number_format($memory, $precision).$unit;
 		return $this;
 	}
+
+	/**
+	 * Duration Formatter
+	 *
+	 * @param  array  $options (string) locale
+	 * @return self This returns a reference to itself
+	 */
+	public function duration($options = [])
+	{
+		$options = [
+			'locale' => (isset($options['locale'])) ? $options['locale'] : 'en_US.UTF-8',
+		];
+
+		// @todo needs fallback for when intl extension isn't available
+		$fmt = new \NumberFormatter($options['locale'], \NumberFormatter::DURATION);
+		$this->content = $fmt->format($this->content);
+		return $this;
+	}
 }
 
 // EOF
