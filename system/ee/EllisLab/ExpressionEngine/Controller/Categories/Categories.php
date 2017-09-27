@@ -474,8 +474,6 @@ class Categories extends AbstractCategoriesController {
 		}
 
 		ee()->view->ajax_validate = TRUE;
-		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('category'));
-		ee()->view->save_btn_text_working = 'btn_saving';
 
 		if ( ! empty($_POST))
 		{
@@ -513,18 +511,25 @@ class Categories extends AbstractCategoriesController {
 			{
 				$category = $category->save();
 
-				if (is_null($category_id))
-				{
-					ee()->session->set_flashdata('highlight_id', $category->getId());
-				}
-
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('category_'.$alert_key))
 					->addToBody(sprintf(lang('category_'.$alert_key.'_desc'), $category->cat_name))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL')->make('categories/group/'.$cat_group->group_id));
+				if (ee('Request')->post('submit') == 'save_and_new')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('categories/create/'.$cat_group->group_id));
+				}
+				else
+				{
+					if (is_null($category_id))
+					{
+						ee()->session->set_flashdata('highlight_id', $category->getId());
+					}
+
+					ee()->functions->redirect(ee('CP/URL')->make('categories/group/'.$cat_group->group_id));
+				}
 			}
 			else
 			{
@@ -537,6 +542,23 @@ class Categories extends AbstractCategoriesController {
 					->now();
 			}
 		}
+
+		$vars['buttons'] = [
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save',
+				'text' => 'save',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_new',
+				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			]
+		];
 
 		if (AJAX_REQUEST)
 		{
