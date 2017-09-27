@@ -199,6 +199,11 @@ class Fluid_block_parser {
 	 */
 	private function fetchFieldBlocks(array $entry_ids, array $block_ids, array $field_ids)
 	{
+		if (empty($entry_ids) || empty($block_ids) || empty($field_ids))
+		{
+			return new EllisLab\ExpressionEngine\Library\Data\Collection(array());
+		}
+
 		$data = array();
 
 		$blockData = ee('Model')->get('fluid_block:FluidBlock')
