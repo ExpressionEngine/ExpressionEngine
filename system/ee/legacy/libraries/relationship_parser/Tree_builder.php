@@ -111,6 +111,7 @@ class EE_relationship_tree_builder {
 		// down onto their subtrees.
 		foreach ($query_node_iterator as $node)
 		{
+			$block_data_id = ($node->is_root()) ? $this->block_data_id : NULL;
 			// the root uses the main entry ids, all others use all
 			// of the parent's child ids. These form all of their potential
 			// parents, and thus the where_in for our query.
@@ -127,7 +128,7 @@ class EE_relationship_tree_builder {
 			// Store flattened ids for the big entry query
 			$all_entry_ids[] = $this->_propagate_ids(
 				$node,
-				ee()->relationship_model->node_query($node, $entry_ids, $this->grid_field_id, $this->block_data_id)
+				ee()->relationship_model->node_query($node, $entry_ids, $this->grid_field_id, $block_data_id)
 			);
 		}
 

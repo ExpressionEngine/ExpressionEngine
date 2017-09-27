@@ -100,8 +100,26 @@ class Tag {
 		{
 			ee()->load->library('relationships_parser');
 
+			$channel = ee()->session->cache('mod_channel', 'active');
+
+			$rel_fields = array();
+
+			foreach ($channel->rfields as $site_id => $rfields)
+			{
+				$rel_fields[$site_id] = array();
+				foreach ($rfields as $rel_name => $rel_id)
+				{
+					if ($rel_id == $field->getId())
+					{
+						$rel_name = $field->getName();
+					}
+
+					$rel_fields[$site_id][$rel_name] = $rel_id;
+				}
+			}
+
 			$relationship_parser = ee()->relationships_parser->create(
-				array($field->getName() => $field->getId()),
+				$rel_fields,
 				array($field->getContentId()),
 				$tagdata,
 				array(),
@@ -109,7 +127,6 @@ class Tag {
 				$field->getItem('block_data_id')
 			);
 
-			$channel = ee()->session->cache('mod_channel', 'active');
 			$tagdata = $relationship_parser->parse($field->getContentId(), $tagdata, $channel);
 
 			return $field->replaceTag($tagdata);
