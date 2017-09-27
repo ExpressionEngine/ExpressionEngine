@@ -144,10 +144,11 @@ class Relationships_ft_cp {
 	/**
 	 * Grab all possible authors (individuals and member groups)
 	 *
+	 * @param	string $search	Optional string to search members by
 	 * @return	array
 	 *		id => name (id can either be g_# or m_# for group or member ids)
 	 */
-	public function all_authors()
+	public function all_authors($search = NULL)
 	{
 		if (isset($this->all_authors))
 		{
@@ -177,11 +178,19 @@ class Relationships_ft_cp {
 			->fields('member_id', 'group_id', 'screen_name', 'username')
 			->filter('in_authorlist', 'y')
 			->order('screen_name', 'asc')
-			->order('username', 'asc');
+			->order('username', 'asc')
+			->limit(100);
 
 		if ($groups->count())
 		{
 			$members->orFilter('group_id', 'IN', $group_ids);
+		}
+
+		if ($search)
+		{
+			$members->search(
+				['screen_name', 'username', 'email', 'member_id'], $search
+			);
 		}
 
 		$group_to_member = array_fill_keys($group_ids, array());
@@ -206,6 +215,13 @@ class Relationships_ft_cp {
 				$authors['g_'.$group->group_id]['children']['m_'.$m->member_id] = $m->getMemberName();
 			}
 		}
+
+		$authors = array_filter($authors, function($group)
+		{
+			return ! empty($group['children']);
+		});
+
+		ee()->lang->loadfile('fieldtypes');
 
 		$this->all_authors = array(
 			'--' => array(

@@ -616,6 +616,7 @@ class Relationship_ft extends EE_Fieldtype {
 						'attrs' => 'data-any="y"',
 						'choices' => $util->all_authors(),
 						'value' => ($values['authors']) ?: '--',
+						'filter_url' => ee('CP/URL')->make('fields/relationship-member-filter')->compile(),
 						'no_results' => [
 							'text' => sprintf(lang('no_found'), lang('authors'))
 						]
