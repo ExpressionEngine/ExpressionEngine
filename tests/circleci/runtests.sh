@@ -100,6 +100,9 @@ do
 		# We'll store our build artifacts under the name of the current PHP version
 		mkdir -p $CIRCLE_ARTIFACTS/$PHPVERSION/
 
+		# Clear cache
+		rm -rf system/user/cache/*
+
 		pushd tests/rspec
 			# Run the tests, outputting the results in the artifacts directory.
 			printf "Running Rspec tests\n\n"
