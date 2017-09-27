@@ -52,7 +52,8 @@ var Toggle = function (_React$Component) {
 var _initialiseProps = function _initialiseProps() {
   var _this2 = this;
 
-  this.handleClick = function () {
+  this.handleClick = function (event) {
+    event.preventDefault();
     _this2.setState(function (prevState, props) {
       if (props.handleToggle) props.handleToggle(!prevState.on);
       return {

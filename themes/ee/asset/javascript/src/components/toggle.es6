@@ -16,7 +16,8 @@ class Toggle extends React.Component {
     }
   }
 
-  handleClick = () => {
+  handleClick = (event) => {
+    event.preventDefault()
     this.setState((prevState, props) => {
       if (props.handleToggle) props.handleToggle( ! prevState.on)
       return {
