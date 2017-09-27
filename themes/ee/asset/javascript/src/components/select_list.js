@@ -10,6 +10,14 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
 var SelectList = function (_React$Component) {
   _inherits(SelectList, _React$Component);
 
@@ -78,13 +86,6 @@ var SelectList = function (_React$Component) {
       if (_this.props.groupToggle) EE.cp.form_group_toggle(event.target);
     };
 
-    _this.handleRemove = function (event, item) {
-      _this.props.selectionChanged(_this.props.items.filter(function (thisItem) {
-        return thisItem.value != item.value;
-      }));
-      event.preventDefault();
-    };
-
     _this.clearSelection = function (event) {
       _this.props.selectionChanged([]);
       event.preventDefault();
@@ -117,7 +118,11 @@ var SelectList = function (_React$Component) {
   _createClass(SelectList, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      if (this.props.reorderable && !this.props.nested) this.bindSortable();
+      if (this.props.nestableReorder) {
+        this.bindNestable();
+      } else if (this.props.reorderable) {
+        this.bindSortable();
+      }
     }
   }, {
     key: 'componentDidUpdate',
@@ -126,42 +131,69 @@ var SelectList = function (_React$Component) {
         $(this.input).trigger('change');
       }
 
-      if (this.props.nested && this.props.reorderable) this.bindNestable();
+      if (this.props.nestableReorder) {
+        this.bindNestable();
+      }
     }
-
-    // Sorting for nested lists
-
   }, {
     key: 'bindSortable',
     value: function bindSortable() {
       var _this2 = this;
 
-      $('.field-inputs', this.container).sortable({
+      var selector = this.props.nested ? '.field-nested' : '.field-inputs';
+
+      $(selector, this.container).sortable({
         axis: 'y',
         containment: 'parent',
         handle: '.icon-reorder',
-        items: 'label',
+        items: this.props.nested ? '> li' : 'label',
         placeholder: 'field-reorder-placeholder',
+        sort: EE.sortable_sort_helper,
         start: function start(event, ui) {
           ui.helper.addClass('field-reorder-drag');
         },
         stop: function stop(event, ui) {
-          var items = ui.item.closest('.field-inputs').find('label').toArray();
-
           ui.item.removeClass('field-reorder-drag').addClass('field-reorder-drop');
 
           setTimeout(function () {
             ui.item.removeClass('field-reorder-drop');
           }, 1000);
 
-          _this2.props.selectionChanged(items.map(function (element) {
-            return _this2.props.items[element.dataset.sortableIndex];
-          }));
+          var getNestedItems = function getNestedItems(nodes) {
+            var serialized = [];
+            nodes.forEach(function (node) {
+              var item = {
+                id: node.dataset.id
+              };
+              var children = $(node).find('> ul > [data-id]');
+              if (children.size()) {
+                item['children'] = getNestedItems(children.toArray());
+              }
+              serialized.push(item);
+            });
+            return serialized;
+          };
+
+          var items = ui.item.closest('.field-inputs').find('> [data-id]').toArray();
+          var itemsHash = _this2.getItemsHash(_this2.props.items);
+          var nestedItems = getNestedItems(items);
+
+          _this2.props.itemsChanged(_this2.getItemsArrayForNestable(itemsHash, nestedItems));
+
+          if (_this2.props.reorderAjaxUrl) {
+            $.ajax({
+              url: _this2.props.reorderAjaxUrl,
+              data: { 'order': nestedItems },
+              type: 'POST',
+              dataType: 'json'
+            });
+          }
         }
       });
     }
 
-    // Sorting for non-nested lists
+    // Allows for changing of parents and children, whereas sortable() will only
+    // let you change the order constrained to a level
 
   }, {
     key: 'bindNestable',
@@ -170,10 +202,10 @@ var SelectList = function (_React$Component) {
 
       $(this.container).nestable({
         listNodeName: 'ul',
-        listClass: 'field-inputs.field-nested',
+        listClass: 'field-nested',
         itemClass: 'nestable-item',
         rootClass: 'field-select',
-        dragClass: 'field-reorder-drag',
+        dragClass: 'field-inputs.field-reorder-drag',
         handleClass: 'icon-reorder',
         placeElement: $('<li class="field-reorder-placeholder"></li>'),
         expandBtnHTML: '',
@@ -270,7 +302,6 @@ var SelectList = function (_React$Component) {
       var props = this.props;
       var tooMany = props.items.length > props.tooMany && !props.loading;
       var shouldShowToggleAll = (props.multi || !props.selectable) && props.toggleAll !== null;
-      var shouldShowFieldTools = props.items.length > props.tooMany;
 
       return React.createElement(
         'div',
@@ -311,7 +342,6 @@ var SelectList = function (_React$Component) {
           this.props.loading && React.createElement(Loading, { text: EE.lang.loading }),
           !this.props.loading && props.items.map(function (item, index) {
             return React.createElement(SelectItem, { key: item.value ? item.value : item.section,
-              sortableIndex: index,
               item: item,
               name: props.name,
               selected: props.selected,
@@ -320,13 +350,16 @@ var SelectList = function (_React$Component) {
               selectable: _this7.props.selectable,
               reorderable: _this7.props.reorderable,
               removable: _this7.props.removable,
+              editable: _this7.props.editable,
               handleSelect: _this7.handleSelect,
-              handleRemove: _this7.handleRemove,
+              handleRemove: function handleRemove(e, item) {
+                return _this7.props.handleRemove(e, item);
+              },
               groupToggle: _this7.props.groupToggle
             });
           })
         ),
-        !props.multi && props.selected[0] && React.createElement(SelectedItem, { name: props.name,
+        !props.multi && tooMany && props.selected[0] && React.createElement(SelectedItem, { name: props.name,
           item: props.selected[0],
           clearSelection: this.clearSelection
         }),
@@ -405,6 +438,7 @@ var SelectList = function (_React$Component) {
 SelectList.defaultProps = {
   filterable: false,
   reorderable: false,
+  nestableReorder: false,
   removable: false,
   selectable: true,
   tooMany: 8
@@ -444,20 +478,8 @@ var SelectItem = function (_React$Component2) {
       });
     }
   }, {
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      if (this.props.reorderable) this.node.dataset.sortableIndex = this.props.sortableIndex;
-    }
-  }, {
-    key: 'componentDidUpdate',
-    value: function componentDidUpdate() {
-      this.componentDidMount();
-    }
-  }, {
     key: 'render',
     value: function render() {
-      var _this9 = this;
-
       var props = this.props;
       var checked = this.checked(props.item.value);
 
@@ -471,9 +493,8 @@ var SelectItem = function (_React$Component2) {
 
       var listItem = React.createElement(
         'label',
-        { className: checked ? 'act' : '', ref: function ref(label) {
-            _this9.node = label;
-          } },
+        { className: checked ? 'act' : '',
+          'data-id': props.reorderable && !props.nested ? props.item.value : null },
         props.reorderable && React.createElement(
           'span',
           { className: 'icon-reorder' },
@@ -488,7 +509,13 @@ var SelectItem = function (_React$Component2) {
           'data-group-toggle': props.groupToggle ? JSON.stringify(props.groupToggle) : '[]',
           disabled: props.disabled || props.reorderable ? 'disabled' : ''
         }),
-        props.item.label + " ",
+        props.editable && React.createElement(
+          'a',
+          { href: '#' },
+          props.item.label
+        ),
+        !props.editable && props.item.label,
+        " ",
         props.item.instructions && React.createElement(
           'i',
           null,
@@ -514,11 +541,14 @@ var SelectItem = function (_React$Component2) {
           listItem,
           props.item.children && React.createElement(
             'ul',
-            { className: 'field-inputs field-nested' },
+            { className: 'field-nested' },
             props.item.children.map(function (item, index) {
               return React.createElement(SelectItem, _extends({}, props, {
                 key: item.value,
-                item: item
+                item: item,
+                handleRemove: function handleRemove(e, item) {
+                  return props.handleRemove(e, item);
+                }
               }));
             })
           )
@@ -551,7 +581,7 @@ var SelectedItem = function (_React$Component3) {
   }, {
     key: 'render',
     value: function render() {
-      var _this11 = this;
+      var _this10 = this;
 
       var props = this.props;
       return React.createElement(
@@ -565,7 +595,7 @@ var SelectedItem = function (_React$Component3) {
           props.item.label,
           React.createElement('input', { type: 'hidden', name: props.name, value: props.item.value,
             ref: function ref(input) {
-              _this11.input = input;
+              _this10.input = input;
             } }),
           React.createElement(
             'ul',

@@ -110,7 +110,7 @@ class Channel extends StructureModel {
 	protected static $_validation_rules = array(
 		'site_id'                    => 'required|isNatural',
 		'channel_title'              => 'required|unique[site_id]|xss',
-		'channel_name'               => 'required|unique[site_id]|validateShortName',
+		'channel_name'               => 'required|unique[site_id]|alphaDash',
 		'deft_comments'              => 'enum[y,n]',
 		'channel_require_membership' => 'enum[y,n]',
 		'channel_allow_img_urls'     => 'enum[y,n]',
@@ -125,7 +125,14 @@ class Channel extends StructureModel {
 		'comment_notify'             => 'enum[y,n]',
 		'comment_notify_authors'     => 'enum[y,n]',
 		'enable_versioning'          => 'enum[y,n]',
-		'max_entries'                => 'isNatural'
+		'max_entries'                => 'isNatural',
+		'max_revisions'              => 'isNatural',
+		'max_characters'             => 'isNatural',
+		'comment_timelock'           => 'isNatural',
+		'comment_expiration'         => 'isNatural',
+		'url_title_prefix'           => 'alphaDash',
+		'channel_notify_emails'      => 'validateEmails',
+		'comment_notify_emails'      => 'validateEmails'
 	);
 
 	protected static $_events = array(
@@ -191,6 +198,31 @@ class Channel extends StructureModel {
 	protected $url_title_prefix;
 	protected $live_look_template;
 	protected $max_entries;
+
+	/**
+	 * Custom validation callback to validate a comma-separated list of email
+	 * addresses
+	 */
+	public function validateEmails($key, $value, $params, $rule)
+	{
+		if (empty($value))
+		{
+			return TRUE;
+		}
+
+		$emails = explode(',', $value);
+
+		foreach ($emails as $email)
+		{
+			if ($value != filter_var($value, FILTER_SANITIZE_EMAIL) OR ! filter_var($value, FILTER_VALIDATE_EMAIL))
+			{
+				$rule->stop();
+				return 'valid_email';
+			}
+		}
+
+		return TRUE;
+	}
 
 	/**
 	 * Parses URL properties for any config variables
@@ -473,16 +505,6 @@ class Channel extends StructureModel {
 				$this->Site->save();
 			}
 		}
-	}
-
-	public function validateShortName($key, $value, $params, $rule)
-	{
-		if (preg_match('/[^a-z0-9\-\_]/i', $value))
-		{
-			return 'invalid_short_name';
-		}
-
-		return TRUE;
 	}
 
 	public function getCategoryGroups()

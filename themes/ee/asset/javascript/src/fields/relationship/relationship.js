@@ -8,6 +8,14 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
 var FilterableSelectList = makeFilterableComponent(SelectList);
 
 var Relationship = function (_React$Component) {
@@ -29,6 +37,13 @@ var Relationship = function (_React$Component) {
         selected: selected,
         selectedVisible: selected
       });
+    };
+
+    _this.handleRemove = function (event, item) {
+      _this.selectionChanged(_this.state.selected.filter(function (thisItem) {
+        return thisItem.value != item.value;
+      }));
+      event.preventDefault();
     };
 
     _this.state = {
@@ -62,10 +77,7 @@ var Relationship = function (_React$Component) {
           filterable: true,
           filters: this.props.select_filters,
           filterUrl: this.props.filter_url,
-          toggleAll: this.props.multi && this.props.items.length > SelectList.defaultProps.tooMany ? true : null,
-          onToggleAll: function onToggleAll(e) {
-            return _this2.handleToggleAll(true);
-          }
+          toggleAll: this.props.multi && this.props.items.length > SelectList.defaultProps.tooMany ? true : null
         }),
         this.props.multi && React.createElement(SelectedFilterableSelectList, {
           items: this.state.selectedVisible,
@@ -74,12 +86,12 @@ var Relationship = function (_React$Component) {
           selectable: false,
           reorderable: true,
           removable: true,
-          selectionChanged: this.selectionChanged,
+          handleRemove: function handleRemove(e, item) {
+            return _this2.handleRemove(e, item);
+          },
+          itemsChanged: this.selectionChanged,
           noResults: this.props.no_related,
-          toggleAll: this.props.items.length > SelectList.defaultProps.tooMany ? false : null,
-          onToggleAll: function onToggleAll(e) {
-            return _this2.handleToggleAll(false);
-          }
+          toggleAll: this.props.items.length > SelectList.defaultProps.tooMany ? false : null
         })
       );
     }

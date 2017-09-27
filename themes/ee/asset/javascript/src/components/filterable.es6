@@ -1,3 +1,11 @@
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
 function makeFilterableComponent(WrappedComponent) {
   return class extends React.Component {
     constructor(props) {
@@ -25,6 +33,10 @@ function makeFilterableComponent(WrappedComponent) {
       this.setState({
         items: items
       })
+
+      if (this.props.itemsChanged) {
+        this.props.itemsChanged(items)
+      }
     }
 
     filterItems (items, searchTerm) {
@@ -85,6 +97,7 @@ function makeFilterableComponent(WrappedComponent) {
         filterChange={(name, value) => this.filterChange(name, value)}
         initialItems={this.initialItems}
         items={this.state.items}
+        itemsChanged={this.initialItemsChanged}
       />
     }
   }

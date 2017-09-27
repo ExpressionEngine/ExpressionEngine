@@ -596,7 +596,7 @@ $lang = array(
 
 'create_new_custom_field' => 'Create a New Channel Field',
 
-'create_new_field' => 'Create a New Field',
+'create_new_field' => 'New Field',
 
 'create_new_field_group' => 'Create a New Channel Field Group',
 

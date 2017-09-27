@@ -278,8 +278,14 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 		$grid = $this->getValueLabelMiniGrid($data);
 
 		ee()->javascript->output("
+			var miniGridInit = function(context) {
+				$('.fields-keyvalue', context).miniGrid({grid_min_rows:0,grid_max_rows:''});
+			}
 			Grid.bind('".$field_type."', 'displaySettings', function(column) {
-				$('.fields-keyvalue', column).miniGrid({grid_min_rows:0,grid_max_rows:''});
+				miniGridInit(column);
+			});
+			ChannelManager.on('fieldModalDisplay', function(modal) {
+				miniGridInit(modal);
 			});
 		");
 

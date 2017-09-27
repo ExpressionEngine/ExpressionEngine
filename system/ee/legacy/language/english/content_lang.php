@@ -638,8 +638,6 @@ $lang = array(
 
 'select_action' => 'Select Your Placement Options',
 
-'select_all' => 'Select/Deselect All',
-
 'select_channel_to_edit' => 'Choose a channel to view',
 
 'select_channel_to_post_in' => 'Choose a channel to post in',

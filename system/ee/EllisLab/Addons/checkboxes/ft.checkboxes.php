@@ -130,6 +130,7 @@ class Checkboxes_ft extends OptionFieldtype {
 				'value'               => $values,
 				'multi'               => TRUE,
 				'nested'              => TRUE,
+				'nestable_reorder'    => TRUE,
 				'manageable'          => $this->get_setting('editable'),
 				'manage_label'        => $this->get_setting('manage_toggle_label', lang('manage')),
 				'reorder_ajax_url'    => $this->get_setting('reorder_ajax_url', NULL),

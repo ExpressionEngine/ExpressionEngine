@@ -79,3 +79,41 @@ $(document).ready(function () {
 		}
 	})
 });
+
+EE.cp.Modal = {
+
+	/**
+	 * Opens the confirm removal modal and does the form and view manipulation
+	 * for the current item being deleted. Only supports one item at the moment.
+	 *
+	 * @param  {string}   actionUrl Form action URL for removal
+	 * @param  {string}   label     Label of item being deleted
+	 * @param  {mixed}    value     Value, typically an ID, of item being deleted
+	 * @param  {Function} callback  Callback on deletion of item
+	 * @return {void}
+	 */
+	openConfirmRemove: function(actionUrl, label, value, callback) {
+		var modal = $('.modal-default-confirm-remove'),
+			form = modal.find('form'),
+			input = modal.find('input[name="content_id"]')
+
+		// Add the name of the item we're deleting to the modal
+		$('.checklist', modal)
+			.html('')
+			.append('<li>' + label + '</li>')
+
+		input.val(value)
+		form.attr('action', actionUrl)
+
+		modal.trigger('modal:open')
+
+		modal.find('form').submit(function() {
+			$.post(this.action, $(this).serialize(), function(result) {
+				modal.trigger('modal:close')
+				callback(result)
+			})
+
+			return false
+		})
+	}
+};

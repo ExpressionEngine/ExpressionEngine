@@ -10,6 +10,14 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
 function makeFilterableComponent(WrappedComponent) {
   return function (_React$Component) {
     _inherits(_class2, _React$Component);
@@ -30,6 +38,10 @@ function makeFilterableComponent(WrappedComponent) {
         _this.setState({
           items: items
         });
+
+        if (_this.props.itemsChanged) {
+          _this.props.itemsChanged(items);
+        }
       };
 
       _this.filterChange = function (name, value) {
@@ -112,7 +124,8 @@ function makeFilterableComponent(WrappedComponent) {
             return _this3.filterChange(name, value);
           },
           initialItems: this.initialItems,
-          items: this.state.items
+          items: this.state.items,
+          itemsChanged: this.initialItemsChanged
         }));
       }
     }]);

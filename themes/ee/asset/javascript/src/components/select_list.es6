@@ -1,7 +1,16 @@
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
 class SelectList extends React.Component {
   static defaultProps = {
     filterable: false,
     reorderable: false,
+    nestableReorder: false,
     removable: false,
     selectable: true,
     tooMany: 8
@@ -50,7 +59,11 @@ class SelectList extends React.Component {
   }
 
   componentDidMount () {
-    if (this.props.reorderable && ! this.props.nested) this.bindSortable()
+    if (this.props.nestableReorder) {
+      this.bindNestable()
+    } else if (this.props.reorderable) {
+      this.bindSortable()
+    }
   }
 
   componentDidUpdate (prevProps, prevState) {
@@ -58,23 +71,25 @@ class SelectList extends React.Component {
       $(this.input).trigger('change')
     }
 
-    if (this.props.nested && this.props.reorderable) this.bindNestable()
+    if (this.props.nestableReorder) {
+      this.bindNestable()
+    }
   }
 
-  // Sorting for nested lists
   bindSortable () {
-    $('.field-inputs', this.container).sortable({
+    let selector = this.props.nested ? '.field-nested' : '.field-inputs'
+
+    $(selector, this.container).sortable({
       axis: 'y',
       containment: 'parent',
       handle: '.icon-reorder',
-      items: 'label',
+      items: this.props.nested ? '> li' : 'label',
       placeholder: 'field-reorder-placeholder',
+      sort: EE.sortable_sort_helper,
       start: (event, ui) => {
         ui.helper.addClass('field-reorder-drag')
       },
       stop: (event, ui) => {
-        let items = ui.item.closest('.field-inputs').find('label').toArray()
-
         ui.item.removeClass('field-reorder-drag')
           .addClass('field-reorder-drop')
 
@@ -82,21 +97,50 @@ class SelectList extends React.Component {
           ui.item.removeClass('field-reorder-drop')
         }, 1000)
 
-        this.props.selectionChanged(items.map((element) => {
-          return this.props.items[element.dataset.sortableIndex]
-        }))
+        let getNestedItems = (nodes) => {
+          let serialized = []
+          nodes.forEach(node => {
+            let item = {
+              id: node.dataset.id
+            }
+            let children = $(node).find('> ul > [data-id]')
+            if (children.size()) {
+              item['children'] = getNestedItems(children.toArray())
+            }
+            serialized.push(item)
+          })
+          return serialized
+        }
+
+        let items = ui.item.closest('.field-inputs').find('> [data-id]').toArray()
+        let itemsHash = this.getItemsHash(this.props.items)
+        let nestedItems = getNestedItems(items)
+
+        this.props.itemsChanged(
+          this.getItemsArrayForNestable(itemsHash, nestedItems)
+        )
+
+        if (this.props.reorderAjaxUrl) {
+          $.ajax({
+            url: this.props.reorderAjaxUrl,
+            data: {'order': nestedItems},
+            type: 'POST',
+            dataType: 'json'
+          })
+        }
       }
     })
   }
 
-  // Sorting for non-nested lists
+  // Allows for changing of parents and children, whereas sortable() will only
+  // let you change the order constrained to a level
   bindNestable () {
     $(this.container).nestable({
       listNodeName: 'ul',
-      listClass: 'field-inputs.field-nested',
+      listClass: 'field-nested',
       itemClass: 'nestable-item',
       rootClass: 'field-select',
-      dragClass: 'field-reorder-drag',
+      dragClass: 'field-inputs.field-reorder-drag',
       handleClass: 'icon-reorder',
       placeElement: $('<li class="field-reorder-placeholder"></li>'),
       expandBtnHTML: '',
@@ -215,15 +259,6 @@ class SelectList extends React.Component {
     return items
   }
 
-  handleRemove = (event, item) => {
-    this.props.selectionChanged(
-      this.props.items.filter((thisItem) => {
-        return thisItem.value != item.value
-      })
-    )
-    event.preventDefault()
-  }
-
   clearSelection = (event) => {
     this.props.selectionChanged([])
     event.preventDefault()
@@ -253,7 +288,6 @@ class SelectList extends React.Component {
     let props = this.props
     let tooMany = props.items.length > props.tooMany && ! props.loading
     let shouldShowToggleAll = (props.multi || ! props.selectable) && props.toggleAll !== null
-    let shouldShowFieldTools = props.items.length > props.tooMany
 
     return (
       <div className={"fields-select" + (tooMany ? ' field-resizable' : '')}
@@ -287,7 +321,6 @@ class SelectList extends React.Component {
           }
           { ! this.props.loading && props.items.map((item, index) =>
             <SelectItem key={item.value ? item.value : item.section}
-              sortableIndex={index}
               item={item}
               name={props.name}
               selected={props.selected}
@@ -296,13 +329,14 @@ class SelectList extends React.Component {
               selectable={this.props.selectable}
               reorderable={this.props.reorderable}
               removable={this.props.removable}
+              editable={this.props.editable}
               handleSelect={this.handleSelect}
-              handleRemove={this.handleRemove}
+              handleRemove={(e, item) => this.props.handleRemove(e, item)}
               groupToggle={this.props.groupToggle}
             />
           )}
         </FieldInputs>
-        { ! props.multi && props.selected[0] &&
+        { ! props.multi && tooMany && props.selected[0] &&
           <SelectedItem name={props.name}
             item={props.selected[0]}
             clearSelection={this.clearSelection}
@@ -347,14 +381,6 @@ class SelectItem extends React.Component {
     })
   }
 
-  componentDidMount () {
-    if (this.props.reorderable) this.node.dataset.sortableIndex = this.props.sortableIndex
-  }
-
-  componentDidUpdate () {
-    this.componentDidMount()
-  }
-
   render() {
     let props = this.props
     let checked = this.checked(props.item.value)
@@ -368,7 +394,8 @@ class SelectItem extends React.Component {
     }
 
     let listItem = (
-      <label className={(checked ? 'act' : '')} ref={(label) => { this.node = label }}>
+      <label className={(checked ? 'act' : '')}
+          data-id={props.reorderable && ! props.nested ? props.item.value : null}>
         {props.reorderable && (
           <span className="icon-reorder"> </span>
         )}
@@ -381,7 +408,11 @@ class SelectItem extends React.Component {
             disabled={props.disabled || props.reorderable ? 'disabled' : ''}
            />
         )}
-        {props.item.label+" "}
+        {props.editable && (
+            <a href="#">{props.item.label}</a>
+        )}
+        { ! props.editable && props.item.label}
+        {" "}
         {props.item.instructions && (
           <i>{props.item.instructions}</i>
         )}
@@ -398,11 +429,12 @@ class SelectItem extends React.Component {
         <li className="nestable-item" data-id={props.item.value}>
           {listItem}
           {props.item.children &&
-            <ul className="field-inputs field-nested">
+            <ul className="field-nested">
               {props.item.children.map((item, index) =>
                 <SelectItem {...props}
                   key={item.value}
                   item={item}
+                  handleRemove={(e, item) => props.handleRemove(e, item)}
                 />
               )}
             </ul>

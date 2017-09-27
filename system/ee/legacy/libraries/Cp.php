@@ -171,13 +171,24 @@ class Cp {
 
 		$js_scripts = array(
 			'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog', 'button'),
-			'plugin'	=> array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
+			'plugin'	=> array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all', 'nestable'),
 			'file'		=> array('react/react.min', 'react/react-dom.min', 'json2',
-			'underscore', 'cp/global_start', 'cp/form_validation', 'cp/sort_helper', 'cp/fuzzy_filters',
+			'underscore', 'cp/global_start', 'cp/form_validation', 'cp/sort_helper', 'cp/form_group',
+			'cp/modal_form', 'cp/confirm_remove', 'cp/fuzzy_filters',
 			'components/no_results', 'components/loading', 'components/filters',
 			'components/filterable', 'components/toggle', 'components/select_list',
-			'fields/select/select', 'fields/dropdown/dropdown')
+			'fields/select/select', 'fields/select/mutable_select', 'fields/dropdown/dropdown')
 		);
+
+		$modal = ee('View')->make('ee:_shared/modal_confirm_remove')->render([
+			'name'		=> 'modal-default-confirm-remove',
+			'form_url'	=> '#',
+			'hidden'	=> [
+				'bulk_action'	=> 'remove',
+				'content_id' => ''
+			]
+		]);
+		ee('CP/Modal')->addModal('default-remove', $modal);
 
 		$this->add_js_script($js_scripts);
 		$this->_seal_combo_loader();

@@ -97,6 +97,7 @@
 			</section>
 		</footer>
 		<div class="overlay"></div>
+		<div class="app-overlay"></div>
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->view->script_tag('common.js')?>
 		<?php
@@ -116,6 +117,7 @@
 		{
 			echo $item."\n";
 		}
+
 		?>
 		<div id="idle-modal" class="modal-wrap modal-timeout hidden">
 			<div class="modal">

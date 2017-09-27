@@ -128,6 +128,43 @@ window.Grid = {
 	}
 };
 
+// Handles events for the channel manager channel create/edit form
+var ChannelManager = window.ChannelManager = {
+
+	_eventHandlers: [],
+
+	/**
+	 * Binds an event
+	 *
+	 * Available events are:
+	 * 'fieldModalDisplay' - When the new field modal form is displayed
+	 *
+	 * @param	{string}	action	Name of action
+	 * @param	{func}		func	Callback function for event
+	 */
+	on: function(action, func) {
+		if (this._eventHandlers[action] == undefined) {
+			this._eventHandlers[action] = []
+		}
+
+		this._eventHandlers[action].push(func)
+	},
+
+	/**
+	 * Fires an event
+	 *
+	 * @param	{string}	action	Name of action
+	 * @param	{object}	element	Element object to pass along to the callback
+	 */
+	fireEvent: function(action, element) {
+		var handlers = this._eventHandlers[action] || []
+
+		for (var i = 0; i < handlers.length; i++) {
+			handlers[i](element)
+		}
+	}
+};
+
 
 // Setup Base EE Control Panel
 $(document).ready(function () {

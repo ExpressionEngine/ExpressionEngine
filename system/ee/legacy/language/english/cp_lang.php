@@ -51,6 +51,8 @@ $lang = array(
 
 'custom_limit' => 'custom limit',
 
+'details' => 'Details',
+
 'e_no_css' => 'The requested CSS file could not be opened.',
 
 'edit_quicklinks' => 'Edit Quick Links',
@@ -155,6 +157,8 @@ $lang = array(
 
 'save' => 'Save',
 
+'save_and_new' => 'Save & New',
+
 'save_changes' => 'Save changes',
 
 'submit' => 'Submit',
@@ -242,7 +246,7 @@ $lang = array(
 
 'recent_entries' => 'Recent Entries',
 
-'select_all' => 'Select All',
+'select_all' => 'select all',
 
 'site' => 'Site',
 
@@ -407,6 +411,8 @@ $lang = array(
 'form_validation_error' => 'There was a problem processing your submission, please check below and fix all errors.',
 
 'image' => 'Image',
+
+'keyword_filter' => 'keywords, hit enter',
 
 'log_out' => 'log out',
 

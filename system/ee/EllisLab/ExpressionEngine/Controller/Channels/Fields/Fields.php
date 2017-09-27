@@ -97,25 +97,15 @@ class Fields extends AbstractChannelsController {
 		ee()->cp->render('channels/fields/index', $vars);
 	}
 
-	public function create($group_id)
+	public function create()
 	{
 		if ( ! ee()->cp->allowed_group('can_create_channel_fields'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$group = ee('Model')->get('ChannelFieldGroup')
-			->filter('group_id', $group_id)
-			->first();
-
-		if ( ! $group)
-		{
-			show_404();
-		}
-
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('channels/fields/groups')->compile() => lang('field_groups'),
-			ee('CP/URL')->make('channels/fields/' . $group_id)->compile() => $group->group_name . ' &mdash; ' . lang('fields'),
+			ee('CP/URL')->make('channels/fields')->compile() => lang('field_manager')
 		);
 
 		$errors = NULL;
@@ -124,14 +114,9 @@ class Fields extends AbstractChannelsController {
 		if ( ! empty($_POST))
 		{
 			$field = $this->setWithPost($field);
-
-			$field->ChannelFieldGroups = ee('Model')->get('ChannelFieldGroup')
-				->filter('group_id', $group_id)
-				->all();
-
 			$result = $field->validate();
 
-			if ($response = $this->ajaxValidation($result))
+			if (isset($_POST['ee_fv_field']) && $response = $this->ajaxValidation($result))
 			{
 			    return $response;
 			}
@@ -140,15 +125,27 @@ class Fields extends AbstractChannelsController {
 			{
 				$field->save();
 
-				ee()->session->set_flashdata('field_id', $field->field_id);
-
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('create_field_success'))
 					->addToBody(sprintf(lang('create_field_success_desc'), $field->field_label))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL')->make('channels/fields/'.$group_id));
+				if (AJAX_REQUEST)
+				{
+					return ['saveId' => $field->getId()];
+				}
+
+				if (ee('Request')->post('submit') == 'save_and_new')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('channels/fields/create'));
+				}
+				else
+				{
+					ee()->session->set_flashdata('field_id', $field->field_id);
+
+					ee()->functions->redirect(ee('CP/URL')->make('channels/fields'));
+				}
 			}
 			else
 			{
@@ -165,17 +162,31 @@ class Fields extends AbstractChannelsController {
 		$vars = array(
 			'errors' => $errors,
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL')->make('channels/fields/create/' . $group_id),
+			'base_url' => ee('CP/URL')->make('channels/fields/create'),
 			'sections' => $this->form($field),
-			'save_btn_text' => sprintf(lang('btn_save'), lang('field')),
-			'save_btn_text_working' => 'btn_saving',
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				]
+			],
 			'form_hidden' => array(
 				'field_id' => NULL,
 				'site_id' => ee()->config->item('site_id')
 			),
 		);
 
-		ee()->view->cp_page_title = sprintf(lang('create_field'), $group->group_name);
+		ee()->view->cp_page_title = lang('create_new_field');
 
 		ee()->cp->add_js_script('plugin', 'ee_url_title');
 
@@ -184,6 +195,11 @@ class Fields extends AbstractChannelsController {
 				$(this).ee_url_title("input[name=field_name]", true);
 			});
 		');
+
+		if (AJAX_REQUEST)
+		{
+			return ee()->cp->render('_shared/form', $vars);
+		}
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -424,8 +440,7 @@ class Fields extends AbstractChannelsController {
 
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/form_group',
-				'cp/channel/fields'
+				'cp/form_group'
 			),
 		));
 

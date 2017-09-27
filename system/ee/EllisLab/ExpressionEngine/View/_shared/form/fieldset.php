@@ -35,11 +35,11 @@ foreach ($setting['fields'] as $field_name => $field)
 }
 if (isset($setting['security']) && $setting['security'] == TRUE)
 {
-	$fieldset_classes .= ' security-enhance';
+	$fieldset_classes .= ' fieldset-security-enhance';
 }
 if (isset($setting['caution']) && $setting['caution'] == TRUE)
 {
-	$fieldset_classes .= ' security-caution';
+	$fieldset_classes .= ' fieldset-security-caution';
 }
 if (isset($setting['hide']) && $setting['hide'] == TRUE)
 {
@@ -76,6 +76,10 @@ if (isset($setting['group']))
 {
 	$setting_group = $setting['group'];
 }
+if (is_array($setting_group))
+{
+	$setting_group = implode('|', $setting_group);
+}
 
 // Grids have to be in a div for an overflow bug in Firefox
 $element = ($grid) ? 'div' : 'fieldset'; ?>
@@ -92,13 +96,6 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 		<?php endif; ?>
 		<?php if (isset($setting['example'])): ?>
 		<p><?=$setting['example']?></p>
-		<?php endif; ?>
-		<?php if (isset($setting['button'])): ?>
-		<?php
-			$button = $setting['button'];
-			$rel = isset($button['rel']) ? $button['rel'] : '';
-		?>
-		<p><button class="btn action submit mf-link" type="button" rel="<?=$rel?>"><?=lang($button['text'])?></button></p>
 		<?php endif; ?>
 	</div>
 	<div class="field-control">
@@ -140,5 +137,12 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 				$this->embed('ee:_shared/form/field', $vars);
 			}
 		?>
+		<?php if (isset($setting['button'])): ?>
+		<?php
+			$button = $setting['button'];
+			$rel = isset($button['rel']) ? $button['rel'] : '';
+		?>
+		<a class="btn action submit js-modal-link--side" rel="<?=$rel?>" href="#"><?=lang($button['text'])?></a>
+		<?php endif; ?>
 	</div>
 </<?=$element?>>

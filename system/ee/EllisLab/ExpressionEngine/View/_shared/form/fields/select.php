@@ -1,10 +1,19 @@
 <?php
 $too_many = 8;
 
-if (count($choices) == 0) return;
+if (count($choices) == 0)
+{
+	if (isset($no_results)): ?>
+		<div data-input-value="<?=$field_name?>">
+			<?=$this->make('ee:_shared/form/no_results')->render($no_results)?>
+		</div>
+	<?php endif;
+	return;
+};
 
 $nested = isset($nested) ? $nested : FALSE;
 $encode = isset($encode) ? $encode : TRUE;
+$force_react = isset($force_react) ? $force_react : FALSE;
 
 // Normalize choices into an array to keep order of items, order cannot be
 // counted on in a JavaScript object
@@ -24,15 +33,19 @@ foreach ($normalized_choices as $key => $choice)
 }
 
 // If it's a small list, just render it server-side
-if (ee('View/Helpers')->countChoices($normalized_choices) <= $too_many && ! $nested && ! $has_groupings):
+if (ee('View/Helpers')->countChoices($normalized_choices) <= $too_many
+	&& ! $nested
+	&& ! $has_groupings
+	&& ! $force_react):
+
 	// For radios with no value, set value to first choice
 	if ( ! $multi && ! $value) {
 		$keys = array_keys($choices);
 		$value = $keys[0];
 	}
-	if ( ! isset($scalar) && $multi) $field_name .= '[]';
 	?>
-	<div class="fields-select">
+	<div class="fields-select" data-input-value="<?=$field_name?>">
+		<?php if ( ! isset($scalar) && $multi) $field_name .= '[]'; ?>
 		<div class="field-inputs">
 			<?php foreach ($choices as $key => $choice):
 				$label = isset($choice['label'])
@@ -75,6 +88,7 @@ else:
 		'selected' => $value,
 		'multi' => $multi,
 		'nested' => $nested,
+		'nestableReorder' => isset($nestable_reorder) ? $nestable_reorder : FALSE,
 		'disabled' => isset($disabled) ? $disabled : FALSE,
 		'autoSelectParents' => isset($auto_select_parents) ? $auto_select_parents : NULL,
 		'tooMany' => $too_many,
@@ -83,6 +97,10 @@ else:
 		'toggleAll' => NULL,
 		'groupToggle' => isset($group_toggle) ? $group_toggle : NULL,
 		'manageable' => isset($manageable) ? $manageable : NULL,
+		'selectable' => isset($selectable) ? $selectable : TRUE,
+		'reorderable' => isset($reorderable) ? $reorderable : FALSE,
+		'removable' => isset($removable) ? $removable : FALSE,
+		'editable' => isset($editable) ? $editable : FALSE,
 		'manageLabel' => isset($manage_label) ? $manage_label : NULL,
 		'reorderAjaxUrl' => isset($reorder_ajax_url) ? $reorder_ajax_url : NULL,
 		'noResults' => isset($no_results['text']) ? lang($no_results['text']) : NULL
