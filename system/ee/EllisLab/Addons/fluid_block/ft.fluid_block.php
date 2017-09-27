@@ -262,7 +262,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 				{
 					$f->setTimezone($data['field_dt_' . $field_id]);
 				}
-				$f->setName($this->name() . '[fields][new_field_0][field_id_' . $field->getId() . ']');
+				$f->setName($this->name() . '[fields][' . $key . '][field_id_' . $field->getId() . ']');
 
 				$fields .= ee('View')->make('fluid_block:field')->render(array('field' => $field, 'filters' => $filters));
 			}
