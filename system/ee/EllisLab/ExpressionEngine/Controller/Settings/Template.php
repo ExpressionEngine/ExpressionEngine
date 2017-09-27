@@ -58,9 +58,7 @@ class Template extends Settings {
 							'type' => 'radio',
 							'choices' => $this->templateListSearch(),
 							'filter_url' => ee('CP/URL', 'settings/template/search-templates')->compile(),
-							'value' => [
-								ee()->config->item('site_404') => ee()->config->item('site_404')
-							],
+							'value' => ee()->config->item('site_404'),
 							'no_results' => array(
 								'text' => 'no_templates_found',
 								'link_text' => 'create_new_template',
