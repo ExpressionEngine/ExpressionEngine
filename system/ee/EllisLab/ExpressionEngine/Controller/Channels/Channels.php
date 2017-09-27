@@ -695,23 +695,6 @@ class Channels extends AbstractChannelsController {
 			$channel_form = ee('Model')->make('ChannelFormSettings');
 		}
 
-		ee()->load->model('member_model');
-		$authors = ee()->member_model->get_authors()->result();
-
-		$all_authors = array();
-		foreach ($authors as $author)
-		{
-			$all_authors[$author->member_id] = $author->username;
-		}
-
-		if (empty($all_authors))
-		{
-			foreach ($this->member_model->get_members(1)->result_array() as $member)
-			{
-				$all_authors[$member['member_id']] = $member['username'];
-			}
-		}
-
 		// Add "Use Channel Default" option for channel form default status
 		$channel_form_statuses = array('' => lang('channel_form_default_status_empty'));
 		$channel_form_statuses = array_merge($channel_form_statuses, $deft_status_options);
@@ -923,7 +906,8 @@ class Channels extends AbstractChannelsController {
 					'fields' => array(
 						'default_author' => array(
 							'type' => 'radio',
-							'choices' => $all_authors,
+							'choices' => $this->authorList(),
+							'filter_url' => ee('CP/URL')->make('channels/author-list')->compile(),
 							'value' => $channel_form->default_author,
 							'no_results' => [
 								'text' => sprintf(lang('no_found'), lang('authors'))
@@ -1165,7 +1149,63 @@ class Channels extends AbstractChannelsController {
 	}
 
 	/**
+	 * Populates the default author list in Channel Settings, also serves as
+	 * AJAX endpoint for that filtering
+	 *
+	 * @param Channel $channel A Channel entity
+	 * @return Modifed Channel entity
+	 */
+	public function authorList()
+	{
+		$from_all_sites = (ee()->config->item('multiple_sites_enabled') == 'y');
+
+		// First the author groups
+		$groups = ee('Model')->get('MemberGroup')
+			->fields('group_id', 'group_title')
+			->filter('include_in_authorlist', 'y')
+			->order('group_title', 'asc');
+
+		if ( ! bool_config_item('multiple_sites_enabled'))
+		{
+			$groups->filter('site_id', '1');
+		}
+
+		$groups = $groups->all();
+		$group_ids = $groups->pluck('group_id');
+
+		// Then all authors who are in those groups or who have author access
+		$members = ee('Model')->get('Member')
+			->fields('member_id', 'group_id', 'screen_name', 'username')
+			->filter('in_authorlist', 'y')
+			->order('screen_name', 'asc')
+			->order('username', 'asc')
+			->limit(100);
+
+		if ($groups->count())
+		{
+			$members->orFilter('group_id', 'IN', $group_ids);
+		}
+
+		if ($search = ee('Request')->get('search'))
+		{
+			$members->search(
+				['screen_name', 'username', 'email', 'member_id'], $search
+			);
+		}
+
+		$authors = $members->all()->getDictionary('member_id', 'screen_name');
+
+		if (AJAX_REQUEST)
+		{
+			return ee('View/Helpers')->normalizedChoices($authors);
+		}
+
+		return $authors;
+	}
+
+	/**
 	 * Sets channel object data with normalized POST values
+	 *
 	 * @param Channel $channel A Channel entity
 	 * @return Modifed Channel entity
 	 */
