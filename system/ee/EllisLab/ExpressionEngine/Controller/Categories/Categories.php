@@ -307,7 +307,7 @@ class Categories extends AbstractCategoriesController {
 		if (is_null($category_id))
 		{
 			$alert_key = 'created';
-			ee()->view->cp_page_title = lang('create_category');
+			ee()->view->cp_page_title = lang('new_category');
 			$create_url = 'categories/create/'.$group_id;
 			if ($editing)
 			{

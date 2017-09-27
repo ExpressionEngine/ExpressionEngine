@@ -4,7 +4,7 @@
 	<?=form_open($base_url)?>
 		<?php if ($can_create_categories):?>
 		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=ee('CP/URL')->make('categories/create/'.$cat_group->group_id)?>"><?=lang('create_new')?></a>
+			<a class="btn tn action" href="<?=ee('CP/URL')->make('categories/create/'.$cat_group->group_id)?>"><?=lang('new_category')?></a>
 		</fieldset>
 		<?php endif; ?>
 		<h1><?=$cp_page_title?></h1>

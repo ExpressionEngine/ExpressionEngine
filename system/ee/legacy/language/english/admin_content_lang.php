@@ -334,7 +334,7 @@ $lang = array(
 
 'multiselect_options_desc' => '<em><i>Each item in the textarea will be included in a multi-select in the publish form.</i>',
 
-'new_category' => 'Create a New Category',
+'new_category' => 'New Category',
 
 'new_channel' => 'New Channel',
 
