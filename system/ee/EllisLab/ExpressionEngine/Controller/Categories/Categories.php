@@ -237,17 +237,15 @@ class Categories extends AbstractCategoriesController {
 	 * Category create
 	 *
 	 * @param	int		$group_id	ID of category group category is to be in
-	 * @param	bool	$editing	If coming from the publish form, indicates whether
-	 *	or not the category list is in an editing state
 	 */
-	public function create($group_id, $editing = FALSE)
+	public function create($group_id)
 	{
 		if ( ! ee()->cp->allowed_group('can_create_categories'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		return $this->categoryForm($group_id, NULL, (bool) $editing);
+		return $this->categoryForm($group_id, NULL);
 	}
 
 	/**
@@ -269,12 +267,10 @@ class Categories extends AbstractCategoriesController {
 	/**
 	 * Category creation/edit form
 	 *
-	 * @param	int		$group_id	ID of category group category is (to be) in
-	 * @param	int	$	category_id	ID of category to edit
-	 * @param	bool	$editing	If coming from the publish form, indicates whether or
-	 *	or not the category list is in an editing state
+	 * @param	int	$group_id		ID of category group category is (to be) in
+	 * @param	int	$category_id	ID of category to edit
 	 */
-	private function categoryForm($group_id, $category_id = NULL, $editing = FALSE)
+	private function categoryForm($group_id, $category_id = NULL)
 	{
 		if (empty($group_id) OR ! is_numeric($group_id))
 		{
@@ -294,7 +290,7 @@ class Categories extends AbstractCategoriesController {
 
 		//  Check discrete privileges when editig (we have no discrete create
 		//  permissions)
-		if (AJAX_REQUEST && $editing)
+		if (AJAX_REQUEST)
 		{
 			$can_edit = explode('|', rtrim($cat_group->can_edit_categories, '|'));
 
@@ -309,10 +305,7 @@ class Categories extends AbstractCategoriesController {
 			$alert_key = 'created';
 			ee()->view->cp_page_title = lang('new_category');
 			$create_url = 'categories/create/'.$group_id;
-			if ($editing)
-			{
-				$create_url .= '/editing';
-			}
+
 			ee()->view->base_url = ee('CP/URL')->make($create_url);
 
 			$category = ee('Model')->make('Category');
@@ -481,29 +474,7 @@ class Categories extends AbstractCategoriesController {
 			$category->set($_POST);
 			$result = $category->validate();
 
-			// Handles saving from the category modal on the publish form
-			if (isset($_POST['save_modal']))
-			{
-				if ($result->isValid())
-				{
-					$category->save();
-					return array(
-						'messageType' => 'success',
-						'body' => $this->categoryGroupPublishField($group_id, $editing)
-					);
-				}
-				else
-				{
-					ee()->load->library('form_validation');
-					ee()->form_validation->_error_array = $result->renderErrors();
-					return array(
-						'messageType' => 'error',
-						'body' => ee()->cp->render('_shared/form', $vars, TRUE)
-					);
-				}
-			}
-
-			if ($response = $this->ajaxValidation($result))
+			if (isset($_POST['ee_fv_field']) && $response = $this->ajaxValidation($result))
 			{
 				return $response;
 			}
@@ -511,6 +482,11 @@ class Categories extends AbstractCategoriesController {
 			if ($result->isValid())
 			{
 				$category = $category->save();
+
+				if (AJAX_REQUEST)
+				{
+					return ['selectList' => $this->categoryGroupPublishField($group_id)];
+				}
 
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
@@ -589,10 +565,8 @@ class Categories extends AbstractCategoriesController {
 	 * new category is added, we have to refresh the category list
 	 *
 	 * @param	int		$group_id	Category group ID
-	 * @param	bool	$editing	If coming from the publish form, indicates whether or
-	 *	or not the category list is in an editing state
 	 */
-	private function categoryGroupPublishField($group_id, $editing = FALSE)
+	private function categoryGroupPublishField($group_id)
 	{
 		$group = ee('Model')->get('CategoryGroup', $group_id)->first();
 
@@ -601,7 +575,6 @@ class Categories extends AbstractCategoriesController {
 
 		// Initialize a new category group field so we can return its publish form
 		$category_group_field = $group->getFieldMetadata();
-		$category_group_field['editing'] = $editing;
 		$category_group_field['categorized_object'] = $entry;
 
 		$field_id = 'categories[cat_group_id_'.$group_id.']';
