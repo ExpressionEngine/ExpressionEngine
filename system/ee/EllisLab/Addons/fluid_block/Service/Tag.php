@@ -180,7 +180,7 @@ class Tag {
 	protected function replaceSingle(FieldFacade $field, $tag)
 	{
 		$tag_info = $this->channel_fields_delegate->get_single_field($tag);
-		return $field->replaceTag($tag, $tag_info['params'], $tag_info['modifier']);
+		return $field->replaceTag(FALSE, $tag_info['params'], $tag_info['modifier']);
 	}
 
 	/**
