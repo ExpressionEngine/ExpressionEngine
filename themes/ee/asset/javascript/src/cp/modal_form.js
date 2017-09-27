@@ -49,7 +49,6 @@ EE.cp.ModalForm = {
 		var that = this
 
 		this.modal.on('click', 'button[value="save_and_new"]', function() {
-			console.log('click')
 			that.saveAndNew = true
 		})
 	},
