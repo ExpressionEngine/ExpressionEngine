@@ -449,8 +449,9 @@ class Categories extends AbstractCategoriesController {
 			'fields' => array(
 				'parent_id' => array(
 					'type' => 'radio',
-					'value' => $category->parent_id,
+					'value' => $category->parent_id === NULL ? 0 : $category->parent_id,
 					'choices' => $parent_id_options,
+					'disabled_choices' => $category->isNew() ? [] : [$category->getId()],
 					'no_results' => [
 						'text' => sprintf(lang('no_found'), lang('categories'))
 					]
