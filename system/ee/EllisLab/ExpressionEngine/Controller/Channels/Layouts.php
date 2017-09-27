@@ -421,7 +421,11 @@ class Layouts extends AbstractChannelsController {
 		{
 			foreach ($other_layout->MemberGroups as $group)
 			{
-				$member_groups[$group->group_id] = '<s>' . htmlentities($group->group_title, ENT_QUOTES, 'UTF-8') . '</s> <i>&mdash; ' . lang('assigned_to') . ' <a href="' . ee('CP/URL', 'channels/layouts/edit/' . $other_layout->layout_id) . '">' . $other_layout->layout_name . '</a></i>';
+				$member_groups[$group->group_id] = [
+					'label' => $group->group_title,
+					'value' => $group->group_id,
+					'instructions' => lang('assigned_to') . ' ' . $other_layout->layout_name
+				];
 				$disabled_choices[] = $group->group_id;
 			}
 		}

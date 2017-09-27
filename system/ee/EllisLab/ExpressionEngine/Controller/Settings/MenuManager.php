@@ -350,7 +350,11 @@ class MenuManager extends Settings {
 			{
 				if ($group->can_access_cp)
 				{
-					$member_groups[$group->group_id] = '<s>' . $group->group_title . '</s> <i>&mdash; ' . lang('assigned_to') . ' <a href="' . ee('CP/URL', 'settings/menu-manager/edit-set/' . $other_set->set_id) . '">' . $other_set->name . '</a></i>';
+					$member_groups[$group->group_id] = [
+						'label' => $group->group_title,
+						'value' => $group->group_id,
+						'instructions' => lang('assigned_to') . ' ' . $other_set->name
+					];
 					$disabled_choices[] = $group->group_id;
 				}
 			}
