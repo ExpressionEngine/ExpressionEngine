@@ -28,6 +28,8 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 	public $has_array_data = TRUE;
 
+	private $errors;
+
 	/**
 	 * Fetch the fieldtype's name and version from it's addon.setup.php file.
 	 */
@@ -38,11 +40,78 @@ class Fluid_block_ft extends EE_Fieldtype {
 			'name'    => $addon->getName(),
 			'version' => $addon->getVersion()
 		);
+		$this->errors = new \EllisLab\ExpressionEngine\Service\Validation\Result;
 	}
 
-	public function validate($data)
+	public function validate($field_data)
 	{
-		return TRUE;
+		$valid = TRUE;
+
+		$fieldTemplates = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
+			->order('field_label')
+			->all()
+			->indexByIds();
+
+		foreach ($field_data['fields'] as $key => $data)
+		{
+			$field_id = NULL;
+
+			foreach (array_keys($data) as $datum)
+			{
+				if (strpos($datum, 'field_id_') === 0)
+				{
+					$field_id = str_replace('field_id_', '', $datum);
+					break;
+				}
+			}
+
+			$field = clone $fieldTemplates[$field_id];
+
+			$f = $field->getField();
+
+			if ($f->getNativeField()->has_array_data && ! is_array($data['field_id_' . $field_id]))
+			{
+				$data['field_id_' . $field_id] = array();
+			}
+
+			$f->setData($data['field_id_' . $field_id]);
+			if (isset($data['field_ft_' . $field_id]))
+			{
+				$f->setFormat($data['field_ft_' . $field_id]);
+			}
+			if (isset($data['field_dt_' . $field_id]))
+			{
+				$f->setTimezone($data['field_dt_' . $field_id]);
+			}
+			$f->setName($this->name() . '[fields][' . $key . '][field_id_' . $field->getId() . ']');
+
+			$validator = ee('Validation')->make();
+			$validator->defineRule('validateField', function($key, $value, $parameters, $rule) use ($f) {
+				$result = $f->validate($value);
+				return $result;
+			});
+
+			$validator->setRules(array(
+				$f->getName() => 'validateField'
+			));
+
+			$result = $validator->validate(array($f->getName() => $f->getData()));
+
+			if ($result->isNotValid())
+			{
+				$valid = FALSE;
+
+				foreach($result->getFailed() as $field_name => $rules)
+				{
+					foreach ($rules as $rule)
+					{
+						$this->errors->addFailed($field_name, $rule);
+					}
+				}
+			}
+		}
+
+		return ($valid) ? TRUE : 'form_validation_error';
 	}
 
 	// Actual saving takes place in post_save so we have an entry_id
@@ -127,7 +196,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 		$field_data->set($values);
 		$field = $block->getField($field_data);
 		$field->setItem('block_data_id', $block->getId());
-		$field->validate($field->getData());
+		// $field->validate($field->getData());
 		$field->save();
 
 		$values['field_id_' . $field->getId()] = $field->getData();
@@ -229,7 +298,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 					$field->setName($this->name() . '[fields][field_' . $data->getId() . '][field_id_' . $field->getId() . ']');
 
-					$fields .= ee('View')->make('fluid_block:field')->render(array('field' => $data->ChannelField, 'filters' => $filters));
+					$fields .= ee('View')->make('fluid_block:field')->render(array('field' => $data->ChannelField, 'filters' => $filters, 'errors' => $this->errors));
 				}
 			}
 
@@ -264,7 +333,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 				}
 				$f->setName($this->name() . '[fields][' . $key . '][field_id_' . $field->getId() . ']');
 
-				$fields .= ee('View')->make('fluid_block:field')->render(array('field' => $field, 'filters' => $filters));
+				$fields .= ee('View')->make('fluid_block:field')->render(array('field' => $field, 'filters' => $filters, 'errors' => $this->errors));
 			}
 		}
 
@@ -275,7 +344,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 			$f = $field->getField();
 			$f->setName($this->name() . '[fields][new_field_0][field_id_' . $field->getId() . ']');
 
-			$templates .= ee('View')->make('fluid_block:field')->render(array('field' => $field, 'filters' => $filters));
+			$templates .= ee('View')->make('fluid_block:field')->render(array('field' => $field, 'filters' => $filters, 'errors' => $this->errors));
 		}
 
 		if (REQ == 'CP')

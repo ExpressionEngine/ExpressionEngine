@@ -24,6 +24,7 @@
 
 				echo $form;
 			?>
+			<?=$errors->renderError($field_name)?>
 		</div>
 	</div>
 </div>
