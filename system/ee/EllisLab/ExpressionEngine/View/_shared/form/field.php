@@ -83,6 +83,7 @@ if ($field['type'] == 'checkbox' && ! $value) $value = [];
 	<?php $this->embed('ee:_shared/form/fields/select', [
 		'field_name' => $field_name,
 		'choices' => $field['choices'],
+		'disabled_choices' => isset($field['disabled_choices']) ? $field['disabled_choices'] : NULL,
 		'value' => $value,
 		'scalar' => isset($field['scalar']) ? $field['scalar'] : NULL,
 		'multi' => ($field['type'] == 'checkbox'),
@@ -98,6 +99,7 @@ if ($field['type'] == 'checkbox' && ! $value) $value = [];
 		'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : NULL,
 		'auto_select_parents' => isset($field['auto_select_parents']) ? $field['auto_select_parents'] : FALSE,
 		'encode' => isset($field['encode']) ? $field['encode'] : TRUE,
+		'force_react' => isset($field['force_react']) ? $field['force_react'] : FALSE,
 	]); ?>
 <?php break;
 

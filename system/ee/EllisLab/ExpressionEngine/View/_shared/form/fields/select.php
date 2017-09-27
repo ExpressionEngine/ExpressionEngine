@@ -14,6 +14,7 @@ if (count($choices) == 0)
 $nested = isset($nested) ? $nested : FALSE;
 $encode = isset($encode) ? $encode : TRUE;
 $force_react = isset($force_react) ? $force_react : FALSE;
+$disabled_choices = isset($disabled_choices) ? $disabled_choices : [];
 
 // Normalize choices into an array to keep order of items, order cannot be
 // counted on in a JavaScript object
@@ -60,10 +61,11 @@ if (ee('View/Helpers')->countChoices($normalized_choices) <= $too_many
 				}
 				$checked = ((is_bool($value) && get_bool_from_string($key) === $value)
 					OR ( is_array($value) && in_array($key, $value))
-					OR ( ! is_bool($value) && $key == $value)); ?>
+					OR ( ! is_bool($value) && $key == $value));
+				$disabled = in_array($key, $disabled_choices) ? ' disabled' : ''; ?>
 
 				<label<?php if ($checked): ?> class="act"<?php endif ?>>
-					<input type="<?=($multi) ? 'checkbox' : 'radio'?>" name="<?=$field_name?>" value="<?=htmlentities($key, ENT_QUOTES, 'UTF-8')?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=isset($attrs) ? $attrs : ''?>> <?=$label?>
+					<input type="<?=($multi) ? 'checkbox' : 'radio'?>" name="<?=$field_name?>" value="<?=htmlentities($key, ENT_QUOTES, 'UTF-8')?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=isset($attrs) ? $attrs : ''?><?=$disabled?>> <?=$label?>
 						<?php if ($instructions): ?><i><?=$instructions?></i><?php endif ?>
 				</label>
 			<?php endforeach; ?>
@@ -72,7 +74,7 @@ if (ee('View/Helpers')->countChoices($normalized_choices) <= $too_many
 <?php
 // Large list, render it using React
 else:
-	if ($value && ! is_array($value) && ! $multi)
+	if ($value !== FALSE && $value !== NULL && ! is_array($value) && ! $multi)
 	{
 		$label = ee('View/Helpers')->findLabelForValue($value, $normalized_choices);
 		$value = [$value => $label];
@@ -90,6 +92,7 @@ else:
 		'nested' => $nested,
 		'nestableReorder' => isset($nestable_reorder) ? $nestable_reorder : FALSE,
 		'disabled' => isset($disabled) ? $disabled : FALSE,
+		'disabledChoices' => isset($disabled_choices) ? $disabled_choices : FALSE,
 		'autoSelectParents' => isset($auto_select_parents) ? $auto_select_parents : NULL,
 		'tooMany' => $too_many,
 		'filterUrl' => isset($filter_url) ? $filter_url : NULL,

@@ -345,6 +345,7 @@ var SelectList = function (_React$Component) {
               item: item,
               name: props.name,
               selected: props.selected,
+              disabled: props.disabledChoices && props.disabledChoices.includes(item.value),
               multi: props.multi,
               nested: props.nested,
               selectable: _this7.props.selectable,

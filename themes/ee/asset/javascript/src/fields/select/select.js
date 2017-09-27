@@ -81,6 +81,7 @@ var SelectField = function (_React$Component) {
         multi: this.props.multi,
         nested: this.props.nested,
         nestableReorder: this.props.nestableReorder,
+        disabledChoices: this.props.disabledChoices,
         autoSelectParents: this.props.autoSelectParents,
         selected: this.state.selected,
         filterUrl: this.props.filterUrl,
