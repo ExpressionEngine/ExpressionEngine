@@ -201,7 +201,7 @@ class Fluid_block_parser {
 	{
 		if (empty($entry_ids) || empty($block_ids) || empty($field_ids))
 		{
-			return new EllisLab\ExpressionEngine\Library\Data\Collection(array());
+			return new \EllisLab\ExpressionEngine\Library\Data\Collection(array());
 		}
 
 		$data = array();
