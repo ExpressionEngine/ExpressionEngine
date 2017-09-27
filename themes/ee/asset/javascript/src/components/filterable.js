@@ -84,7 +84,7 @@ function makeFilterableComponent(WrappedComponent) {
         loading: false
       };
 
-      _this.ajaxFilter = _this.initialItems.length >= props.limit && props.filterUrl;
+      _this.ajaxFilter = SelectList.countItems(_this.initialItems) >= props.limit && props.filterUrl;
       _this.ajaxTimer = null;
       _this.ajaxRequest = null;
       _this.filterState = {};

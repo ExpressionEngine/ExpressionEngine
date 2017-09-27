@@ -300,7 +300,7 @@ var SelectList = function (_React$Component) {
       var _this7 = this;
 
       var props = this.props;
-      var tooMany = props.items.length > props.tooMany && !props.loading;
+      var tooMany = SelectList.countItems(props.items) > props.tooMany && !props.loading;
       var shouldShowToggleAll = (props.multi || !props.selectable) && props.toggleAll !== null;
 
       return React.createElement(
@@ -429,6 +429,23 @@ var SelectList = function (_React$Component) {
       }
 
       return itemsArray;
+    }
+
+    // Counts items including any nested items to get a total count for the field
+
+  }, {
+    key: 'countItems',
+    value: function countItems(items) {
+      var count = 0;
+
+      items.forEach(function (item) {
+        count++;
+        if (item.children) {
+          count = count + SelectList.countItems(item.children);
+        }
+      });
+
+      return count;
     }
   }]);
 

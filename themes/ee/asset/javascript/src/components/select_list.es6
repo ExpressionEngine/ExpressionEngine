@@ -58,6 +58,20 @@ class SelectList extends React.Component {
     return itemsArray
   }
 
+  // Counts items including any nested items to get a total count for the field
+  static countItems (items) {
+    let count = 0
+
+    items.forEach(item => {
+      count++
+      if (item.children) {
+        count = count + SelectList.countItems(item.children)
+      }
+    })
+
+    return count
+  }
+
   componentDidMount () {
     if (this.props.nestableReorder) {
       this.bindNestable()
@@ -286,7 +300,7 @@ class SelectList extends React.Component {
 
   render () {
     let props = this.props
-    let tooMany = props.items.length > props.tooMany && ! props.loading
+    let tooMany = SelectList.countItems(props.items) > props.tooMany && ! props.loading
     let shouldShowToggleAll = (props.multi || ! props.selectable) && props.toggleAll !== null
 
     return (
