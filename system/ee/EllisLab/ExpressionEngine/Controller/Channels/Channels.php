@@ -362,6 +362,21 @@ class Channels extends AbstractChannelsController {
 	 */
 	private function renderFieldsTab($channel, $errors)
 	{
+		$add_groups_button = NULL;
+		$add_fields_button = NULL;
+
+		if (ee()->cp->allowed_group('can_create_channel_fields'))
+		{
+			$add_groups_button = [
+				'text' => 'add_group',
+				'rel' => 'add_new'
+			];
+			$add_fields_button = [
+				'text' => 'add_field',
+				'rel' => 'add_new'
+			];
+		}
+
 		$section = array(
 			array(
 				'title' => 'title_field_label',
@@ -376,10 +391,7 @@ class Channels extends AbstractChannelsController {
 			array(
 				'title' => 'field_groups',
 				'desc' => 'field_groups_desc',
-				'button' => [
-					'text' => 'add_group',
-					'rel' => 'add_new'
-				],
+				'button' => $add_groups_button,
 				'fields' => array(
 					'field_groups' => array(
 						'type' => 'html',
@@ -390,10 +402,7 @@ class Channels extends AbstractChannelsController {
 			array(
 				'title' => 'fields',
 				'desc' => 'fields_desc',
-				'button' => [
-					'text' => 'add_field',
-					'rel' => 'add_new'
-				],
+				'button' => $add_fields_button,
 				'fields' => array(
 					'custom_fields' => array(
 						'type' => 'html',
@@ -488,14 +497,21 @@ class Channels extends AbstractChannelsController {
 	 */
 	private function renderCategoriesTab($channel, $errors)
 	{
+		$add_groups_button = NULL;
+
+		if (ee()->cp->allowed_group('can_create_categories'))
+		{
+			$add_groups_button = [
+				'text' => 'add_group',
+				'rel' => 'add_new'
+			];
+		}
+
 		$section = array(
 			array(
 				'title' => 'category_groups',
 				'desc' => 'category_groups_desc',
-				'button' => [
-					'text' => 'add_group',
-					'rel' => 'add_new'
-				],
+				'button' => $add_groups_button,
 				'fields' => array(
 					'cat_group' => array(
 						'type' => 'html',
@@ -1152,8 +1168,7 @@ class Channels extends AbstractChannelsController {
 	 * Populates the default author list in Channel Settings, also serves as
 	 * AJAX endpoint for that filtering
 	 *
-	 * @param Channel $channel A Channel entity
-	 * @return Modifed Channel entity
+	 * @return array ID => Screen name array of authors
 	 */
 	public function authorList()
 	{
