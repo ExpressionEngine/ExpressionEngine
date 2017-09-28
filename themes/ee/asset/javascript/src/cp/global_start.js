@@ -128,8 +128,8 @@ window.Grid = {
 	}
 };
 
-// Handles events for the channel manager channel create/edit form
-var ChannelManager = window.ChannelManager = {
+// Handles events for the field manager channel create/edit form
+var FieldManager = window.FieldManager = {
 
 	_eventHandlers: [],
 

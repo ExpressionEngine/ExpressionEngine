@@ -517,7 +517,7 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->cp->add_js_script('file', 'cp/grid');
 
 		ee()->javascript->output('EE.grid_settings();');
-		ee()->javascript->output('ChannelManager.on("fieldModalDisplay", function(modal) {
+		ee()->javascript->output('FieldManager.on("fieldModalDisplay", function(modal) {
 			EE.grid_settings();
 		});');
 

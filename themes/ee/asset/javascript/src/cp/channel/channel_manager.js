@@ -12,7 +12,7 @@ var fieldGroupsForm = new MutableSelectField('field_groups', EE.channelManager.f
 
 var options = {
 	onFormLoad: function(modal) {
-		ChannelManager.fireEvent('fieldModalDisplay', modal)
+		FieldManager.fireEvent('fieldModalDisplay', modal)
 
 		$('input[name=field_label]', modal).bind("keyup keydown", function() {
 			$(this).ee_url_title('input[name=field_name]', true);

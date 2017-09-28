@@ -284,7 +284,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 			Grid.bind('".$field_type."', 'displaySettings', function(column) {
 				miniGridInit(column);
 			});
-			ChannelManager.on('fieldModalDisplay', function(modal) {
+			FieldManager.on('fieldModalDisplay', function(modal) {
 				miniGridInit(modal);
 			});
 		");

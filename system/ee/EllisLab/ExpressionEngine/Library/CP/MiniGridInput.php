@@ -45,7 +45,7 @@ class MiniGridInput extends GridInput {
 			$this->javascript->output('
 				$(".fields-keyvalue").miniGrid('.json_encode($settings).');
 
-				ChannelManager.on("fieldModalDisplay", function(modal) {
+				FieldManager.on("fieldModalDisplay", function(modal) {
 					$(".fields-keyvalue").miniGrid('.json_encode($settings).');
 				});
 			');

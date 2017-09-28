@@ -10,7 +10,7 @@
 
 var options = {
 	onFormLoad: function(modal) {
-		ChannelManager.fireEvent('fieldModalDisplay', modal)
+		FieldManager.fireEvent('fieldModalDisplay', modal)
 
 		// Only bind ee_url_title for new fields
 		if ($('input[name=field_name]').val() == '') {
