@@ -303,6 +303,10 @@ EE.cp.formValidation = {
 			errorClass = 'em.ee-form-error-message',
 			grid = false;
 
+		if (fieldset.hasClass('fieldset-faux-fluid')) {
+			fieldset = container.parent();
+		}
+
 		// Tabs
 		var tab_container = field.parents('.tab'),
 			tab_rel = (tab_container.size() > 0) ? tab_container.attr('class').match(/t-\d+/) : '', // Grabs the tab identifier (ex: t-2)

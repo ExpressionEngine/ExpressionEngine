@@ -70,6 +70,15 @@ class Fluid_block_ft extends EE_Fieldtype {
 				}
 			}
 
+			$field_name = $this->name() . '[fields][' . $key . '][field_id_' . $field_id . ']';
+
+			// Is this AJAX validation? If so, just return the result for the field
+			// we're validating by skipping the others
+			if (ee()->input->is_ajax_request() && strpos(ee()->input->post('ee_fv_field'), $field_name) === FALSE)
+			{
+				continue;
+			}
+
 			$field = clone $fieldTemplates[$field_id];
 
 			$f = $field->getField();
@@ -88,12 +97,11 @@ class Fluid_block_ft extends EE_Fieldtype {
 			{
 				$f->setTimezone($data['field_dt_' . $field_id]);
 			}
-			$f->setName($this->name() . '[fields][' . $key . '][field_id_' . $field->getId() . ']');
+			$f->setName($field_name);
 
 			$validator = ee('Validation')->make();
 			$validator->defineRule('validateField', function($key, $value, $parameters, $rule) use ($f) {
-				$result = $f->validate($value);
-				return $result;
+				return $f->validate($value);
 			});
 
 			$validator->setRules(array(
@@ -114,6 +122,12 @@ class Fluid_block_ft extends EE_Fieldtype {
 					}
 				}
 			}
+		}
+
+		if (ee()->input->is_ajax_request())
+		{
+			$errors = $this->errors->getErrors($field_name);
+			return $errors['callback'];
 		}
 
 		return ($valid) ? TRUE : 'form_validation_error';
