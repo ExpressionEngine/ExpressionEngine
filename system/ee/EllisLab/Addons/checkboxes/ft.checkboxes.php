@@ -131,10 +131,13 @@ class Checkboxes_ft extends OptionFieldtype {
 				'multi'               => TRUE,
 				'nested'              => TRUE,
 				'nestable_reorder'    => TRUE,
-				'manageable'          => $this->get_setting('editable'),
+				'manageable'          => $this->get_setting('editable', FALSE),
+				'add_btn_label'       => $this->get_setting('add_btn_label', NULL),
+				'editing'             => $this->get_setting('editing', FALSE),
 				'manage_label'        => $this->get_setting('manage_toggle_label', lang('manage')),
 				'reorder_ajax_url'    => $this->get_setting('reorder_ajax_url', NULL),
-				'auto_select_parents' => $this->get_setting('auto_select_parents', FALSE)
+				'auto_select_parents' => $this->get_setting('auto_select_parents', FALSE),
+				'no_results'          => $this->get_setting('no_results', NULL)
 			]);
 		}
 

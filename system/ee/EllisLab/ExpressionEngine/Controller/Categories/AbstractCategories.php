@@ -26,7 +26,10 @@ abstract class AbstractCategories extends CP_Controller {
 		ee('CP/Alert')->makeDeprecationNotice()->now();
 
 		// Allow AJAX requests for category editing
-		if (AJAX_REQUEST && in_array(ee()->router->method, array('createCat', 'editCat')))
+		if (AJAX_REQUEST && in_array(
+			ee()->router->method,
+			['createCat', 'editCat', 'categoryGroupPublishField']
+		))
 		{
 			if ( ! ee()->cp->allowed_group_any(
 				'can_create_categories',

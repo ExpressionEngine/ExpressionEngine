@@ -8,8 +8,6 @@ $lang = array(
 
 'action_can_not_be_undone' => 'THIS ACTION CANNOT BE UNDONE',
 
-'add_new' => 'Add New',
-
 'add_a_row' => 'Add A Row',
 
 'add_preset_button' => 'Add Preset Button:',

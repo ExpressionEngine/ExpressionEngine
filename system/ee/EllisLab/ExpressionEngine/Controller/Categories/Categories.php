@@ -219,18 +219,26 @@ class Categories extends AbstractCategoriesController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		// Response for publish form category management
-		if (AJAX_REQUEST)
-		{
-			return array(
-				'messageType' => 'success',
-				'body' => $this->categoryGroupPublishField($group_id, TRUE)
-			);
-		}
-
 		ee()->functions->redirect(
 			ee('CP/URL')->make('categories/group/'.ee()->input->post('cat_group_id'))
 		);
+	}
+
+	/**
+	 * Category removal handler
+	 */
+	public function removeSingle()
+	{
+		if ( ! ee()->cp->allowed_group('can_delete_categories'))
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+
+		$cat_id = ee('Request')->post('content_id');
+
+		$item = ee('Model')->get('Category', $cat_id)->delete();
+
+		return ['success'];
 	}
 
 	/**
@@ -356,23 +364,6 @@ class Categories extends AbstractCategoriesController {
 			ee()->view->base_url = ee('CP/URL')->make('categories/edit/'.$group_id.'/'.$category_id);
 		}
 
-		ee()->load->library('api');
-		ee()->legacy_api->instantiate('channel_categories');
-		ee()->api_channel_categories->category_tree($group_id, $category->parent_id);
-
-		$parent_id_options[0] = lang('none');
-		foreach(ee()->api_channel_categories->categories as $cat)
-		{
-			// Don't give option to set self as parent
-			if ( ! is_null($category_id) && $category_id == $cat[0])
-			{
-				continue;
-			}
-
-			$indent = ($cat[5] != 1) ? str_repeat(NBS.NBS.NBS.NBS, $cat[5]) : '';
-			$parent_id_options[$cat[0]] = $indent.$cat[1];
-		}
-
 		ee()->load->library('file_field');
 
 		$vars['sections'] = array(
@@ -472,6 +463,7 @@ class Categories extends AbstractCategoriesController {
 		if ( ! empty($_POST))
 		{
 			$category->set($_POST);
+			$category->parent_id = $_POST['parent_id'];
 			$result = $category->validate();
 
 			if (isset($_POST['ee_fv_field']) && $response = $this->ajaxValidation($result))
@@ -481,11 +473,14 @@ class Categories extends AbstractCategoriesController {
 
 			if ($result->isValid())
 			{
+				$is_new = $category->isNew();
 				$category = $category->save();
 
 				if (AJAX_REQUEST)
 				{
-					return ['selectList' => $this->categoryGroupPublishField($group_id)];
+					// Don't select category if editing
+					$save_id = $is_new ? $category->getId() : 0;
+					return ['saveId' => $save_id];
 				}
 
 				ee('CP/Alert')->makeInline('shared-form')
@@ -566,7 +561,7 @@ class Categories extends AbstractCategoriesController {
 	 *
 	 * @param	int		$group_id	Category group ID
 	 */
-	private function categoryGroupPublishField($group_id)
+	public function categoryGroupPublishField($group_id)
 	{
 		$group = ee('Model')->get('CategoryGroup', $group_id)->first();
 
@@ -583,9 +578,13 @@ class Categories extends AbstractCategoriesController {
 
 		$group->populateCategories($field);
 
+		$selected = ee('Request')->post('categories');
+
 		// Reset the categories they already have selected
-		$selected_cats = ee('Model')->get('Category')->filter('cat_id', 'IN', ee()->input->post('categories'))->all();
-		$field->setData(implode('|', $selected_cats->pluck('cat_name')));
+		$selected_cats = ee('Model')->get('Category')
+			->filter('cat_id', 'IN', $selected['cat_group_id_'.$group_id])
+			->all();
+		$field->setData(implode('|', $selected_cats->pluck('cat_id')));
 
 		return $field->getForm();
 	}

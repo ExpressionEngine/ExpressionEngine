@@ -120,6 +120,16 @@ class CategoryGroup extends StructureModel {
 				$deletable = TRUE;
 			}
 
+		$no_results = [
+			'text' => sprintf(lang('no_found'), lang('categories'))
+		];
+
+		if (ee()->cp->allowed_group('can_create_categories'))
+		{
+			$no_results['link_text'] = 'add_new';
+			$no_results['link_href'] = ee('CP/URL')->make('categories/create/'.$this->getId());
+		}
+
 		$metadata = array(
 			'field_id'				=> 'categories',
 			'group_id'				=> $this->getId(),
@@ -132,13 +142,17 @@ class CategoryGroup extends StructureModel {
 			'field_list_items'      => '',
 			'field_maxl'			=> 100,
 			'editable'				=> $editable,
-			'editing'				=> FALSE, // Not currently in editing state
+			'editing'				=> AJAX_REQUEST,
 			'deletable'				=> $deletable,
 			'populateCallback'		=> array($this, 'populateCategories'),
 			'manage_toggle_label'	=> lang('manage_categories'),
+			'add_btn_label'	        => ee()->cp->allowed_group('can_create_categories')
+				? lang('add_category')
+				: NULL,
 			'content_item_label'	=> lang('category'),
 			'reorder_ajax_url'		=> ee('CP/URL')->make('categories/reorder/'.$this->getId())->compile(),
-			'auto_select_parents'	=> ee()->config->item('auto_assign_cat_parents') == 'y'
+			'auto_select_parents'	=> ee()->config->item('auto_assign_cat_parents') == 'y',
+			'no_results'			=> $no_results
 		);
 
 		return $metadata;
