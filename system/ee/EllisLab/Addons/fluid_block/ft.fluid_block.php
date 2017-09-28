@@ -45,6 +45,11 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 	public function validate($field_data)
 	{
+		if (empty($field_data))
+		{
+			return TRUE;
+		}
+
 		$valid = TRUE;
 
 		$fieldTemplates = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
