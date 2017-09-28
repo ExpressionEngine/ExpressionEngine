@@ -171,6 +171,7 @@ class Wizard extends CI_Controller {
 		$this->load->driver('cache');
 		$this->load->helper('language');
 		$this->lang->loadfile('installer');
+		$this->load->library('progress');
 
 		$this->load->model('installer_template_model', 'template_model');
 
@@ -283,44 +284,6 @@ class Wizard extends CI_Controller {
 			);
 		}
 
-		// Check for minimum version of PHP
-		// Comes after including the config because that gives us an idea if
-		// this is a new install or an update
-		if (is_php($this->minimum_php) == FALSE)
-		{
-			$this->is_installed = isset($config);
-			$this->set_output('error', array(
-				'error' => sprintf(
-					lang('version_warning'),
-					$this->minimum_php,
-					phpversion()
-				)
-			));
-			return FALSE;
-		}
-
-		// Check for PDO
-		if ( ! class_exists('PDO'))
-		{
-			$this->set_output('error', array('error' => lang('database_no_pdo')));
-			return FALSE;
-		}
-
-		// Check for JSON encode/decode
-		$json_errors = array();
-		if ( ! function_exists('json_encode') OR ! function_exists('json_decode'))
-		{
-			$this->set_output('error', array('error' => lang('json_parser_missing')));
-			return FALSE;
-		}
-
-		// Check for finfo_open
-		if ( ! function_exists('finfo_open'))
-		{
-			$this->set_output('error', array('error' => lang('fileinfo_missing')));
-			return FALSE;
-		}
-
 		// Is the config file writable?
 		if ( ! is_really_writable($this->config->config_path))
 		{
@@ -380,6 +343,22 @@ class Wizard extends CI_Controller {
 		if ($this->db_connect($db) !== TRUE)
 		{
 			$this->set_output('error', array('error' => lang('database_no_config')));
+			return FALSE;
+		}
+
+		// Try to include the RequirementsChecker class and check server requirements
+		require_once(APPPATH.'updater/EllisLab/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php');
+
+		$this->requirements = new RequirementsChecker($db);
+
+		if (($result = $this->requirements->check()) !== TRUE)
+		{
+			$failed = array_map(function($requirement) {
+				return $requirement->getMessage();
+			}, $result);
+
+			$this->is_installed = isset($config);
+			$this->set_output('error', array('error' => implode('<br>', $failed)));
 			return FALSE;
 		}
 
@@ -1076,8 +1055,6 @@ class Wizard extends CI_Controller {
 
 		$this->load->library('javascript');
 
-		$this->load->library('progress');
-
 		// if any of the underlying code uses caching, make sure we do nothing
 		ee()->config->set_item('cache_driver', 'dummy');
 
@@ -1114,7 +1091,16 @@ class Wizard extends CI_Controller {
 		@set_time_limit(0);
 
 		// Instantiate the updater class
-		$UD = new Updater;
+		if (class_exists('Updater'))
+		{
+			$UD = new Updater;
+		}
+		else
+		{
+			$class = '\EllisLab\ExpressionEngine\Updater\Version_' . str_replace('.', '_', $next_version) . '\Updater';
+			$UD = new $class;
+		}
+
 		$method = 'do_update';
 
 		$this->load->library('smartforge');

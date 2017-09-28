@@ -17,8 +17,8 @@ module Installer
     def enable_installer
       swap(
         @boot,
-        "if (FALSE && defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'ee/installer/'))",
-        "if (defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'ee/installer/'))"
+        "if (FALSE && defined('REQ') && in_array(REQ, ['CP', 'CLI']) && is_dir(SYSPATH.'ee/installer/'))",
+        "if (defined('REQ') && in_array(REQ, ['CP', 'CLI']) && is_dir(SYSPATH.'ee/installer/'))"
       )
     end
 
@@ -26,8 +26,8 @@ module Installer
     def disable_installer
       swap(
         @boot,
-        "if (defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'ee/installer/'))",
-        "if (FALSE && defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'ee/installer/'))"
+        "if (defined('REQ') && in_array(REQ, ['CP', 'CLI']) && is_dir(SYSPATH.'ee/installer/'))",
+        "if (FALSE && defined('REQ') && in_array(REQ, ['CP', 'CLI']) && is_dir(SYSPATH.'ee/installer/'))"
       )
     end
 
@@ -178,20 +178,6 @@ module Installer
           @current_templates
         )
       end
-    end
-
-    private
-
-    # Swaps on piece of text for another given a file
-    #
-    # @param [File] file File object
-    # @param [String] pattern Text to find
-    # @param [String] replacement Replacement of above text
-    # @return [void]
-    def swap(file, pattern, replacement)
-      file = File.expand_path(file)
-      temp = File.read(file).gsub(pattern, replacement)
-      File.open(file, 'w') { |f| f.puts temp }
     end
   end
 end

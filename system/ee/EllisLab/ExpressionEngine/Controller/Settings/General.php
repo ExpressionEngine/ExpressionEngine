@@ -257,11 +257,14 @@ class General extends Settings {
 	 */
 	public function versionCheck()
 	{
+		ee()->cache->delete('current_version', \Cache::GLOBAL_SCOPE);
+
 		ee()->load->library('el_pings');
-		$details = ee()->el_pings->get_version_info();
+		$version_info = ee()->el_pings->get_version_info();
+		$latest_version = $version_info['latest_version'];
 
 		// Error getting version
-		if ( ! $details)
+		if ( ! $latest_version)
 		{
 			ee('CP/Alert')->makeBanner('error-getting-version')
 				->asIssue()
@@ -271,16 +274,13 @@ class General extends Settings {
 		}
 		else
 		{
-			end($details);
-			$latest_version = current($details);
-
 			// New version available
-			if ($latest_version[0] > APP_VER)
+			if (version_compare(ee()->config->item('app_version'), $latest_version, '<'))
 			{
-				$download_url = ee()->cp->masked_url('https://expressionengine.com/store/purchases');
+				$upgrade_url = ee('CP/URL', 'updater')->compile();
 				$instruct_url = ee()->cp->masked_url(DOC_URL.'installation/update.html');
 
-				$desc = sprintf(lang('version_update_inst'), $latest_version[0], $download_url, $instruct_url);
+				$desc = sprintf(lang('version_update_inst'), $latest_version, $upgrade_url, $instruct_url);
 
 				ee('CP/Alert')->makeBanner('version-update-available')
 					->asWarning()
@@ -299,7 +299,9 @@ class General extends Settings {
 			}
 		}
 
-		ee()->functions->redirect(ee('CP/URL', 'settings/general'));
+		$redirect = ee('Request')->get('redirect') ?: ee('CP/URL', 'settings/general');
+
+		ee()->functions->redirect($redirect);
 	}
 }
 // END CLASS

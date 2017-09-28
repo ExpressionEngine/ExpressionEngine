@@ -192,17 +192,19 @@ class Cp {
 
 		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
 
+		ee()->load->helper('text');
+
 		if (ee()->config->item('new_version_check') == 'y' &&
 			$new_version = $this->_version_check())
 		{
-			$new_version['version'] = $this->formatted_version($new_version['version']);
+			$new_version['version'] = formatted_version($new_version['version']);
 			$new_version['build'] = ee()->localize->format_date($date_format, $this->_parse_build_date($new_version['build']), TRUE);
 			ee()->view->new_version = $new_version;
 		}
 
 		$this->_notices();
 
-		ee()->view->formatted_version = $this->formatted_version(APP_VER);
+		ee()->view->formatted_version = formatted_version(APP_VER);
 
 		$data['_extra_library_src'] = implode('', ee()->jquery->jquery_code_for_load);
 
@@ -279,21 +281,6 @@ class Cp {
 		$string = $year . '-' . $month . '-' . $day;
 
 		return ee()->localize->string_to_timestamp($string, TRUE, '%Y-%m-%d');
-	}
-
-	/**
-	 * Takes an app version string and formats it for the CP, which entails
-	 * putting bold tags around the first number and dropping the third
-	 * digit if it is a zero
-	 *
-	 * @param	string	$version	App version string, like 3.0.0
-	 * @return	string	Formatted app version string, like <b>3</b>.0
-	 */
-	public function formatted_version($version)
-	{
-		$version = explode('.', $version);
-
-		return preg_replace('/^(\d)\./', '<b>$1</b>.', implode('.', $version));
 	}
 
 	/**
@@ -476,12 +463,18 @@ class Cp {
 		}
 
 		$version_info = array(
-			'version' => $version_file[0][0],
-			'build' => $version_file[0][1],
-			'security' => $version_file[0][2] == 'high',
+			'version' => $version_file['latest_version'],
+			'build' => $version_file['build_date'],
+			'security' => $version_file['severity'] == 'high'
 		);
 
-		if (version_compare($version_info['version'], APP_VER) < 1)
+		// Upgrading form Core to Pro?
+		if (IS_CORE && $version_file['license_type'] == 'pro')
+		{
+			return $version_info;
+		}
+
+		if (version_compare($version_info['version'], ee()->config->item('app_version')) < 1)
 		{
 			return FALSE;
 		}

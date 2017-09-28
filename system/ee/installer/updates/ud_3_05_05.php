@@ -1,5 +1,7 @@
 <?php
 
+namespace EllisLab\ExpressionEngine\Updater\Version_3_5_5;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -34,7 +36,7 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'normalizeFieldLayoutData',
 				'addSessionCryptKey'
