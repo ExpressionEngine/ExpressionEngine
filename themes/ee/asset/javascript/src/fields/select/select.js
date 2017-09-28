@@ -46,7 +46,7 @@ var SelectField = function (_React$Component) {
     _this.props.items = SelectList.formatItems(props.items);
     _this.state = {
       selected: SelectList.formatItems(props.selected, null, props.multi),
-      editing: false
+      editing: props.editing || false
     };
     return _this;
   }
@@ -108,10 +108,15 @@ var SelectField = function (_React$Component) {
           'div',
           null,
           selectItem,
+          this.props.addLabel && React.createElement(
+            'a',
+            { 'class': 'btn action submit', rel: 'add_new', href: '#' },
+            this.props.addLabel
+          ),
           React.createElement(
             ToggleTools,
             { label: this.props.manageLabel },
-            React.createElement(Toggle, { on: false, handleToggle: function handleToggle(toggle) {
+            React.createElement(Toggle, { on: this.props.editing, handleToggle: function handleToggle(toggle) {
                 return _this3.setEditingMode(toggle);
               } })
           )

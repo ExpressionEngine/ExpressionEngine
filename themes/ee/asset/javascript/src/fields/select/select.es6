@@ -15,7 +15,7 @@ class SelectField extends React.Component {
     this.props.items = SelectList.formatItems(props.items)
     this.state = {
       selected: SelectList.formatItems(props.selected, null, props.multi),
-      editing: false
+      editing: props.editing || false
     }
   }
 
@@ -89,8 +89,11 @@ class SelectField extends React.Component {
       return (
         <div>
           {selectItem}
+          {this.props.addLabel &&
+              <a class="btn action submit" rel="add_new" href="#">{this.props.addLabel}</a>
+          }
           <ToggleTools label={this.props.manageLabel}>
-            <Toggle on={false} handleToggle={(toggle) => this.setEditingMode(toggle)} />
+            <Toggle on={this.props.editing} handleToggle={(toggle) => this.setEditingMode(toggle)} />
           </ToggleTools>
         </div>
       )
