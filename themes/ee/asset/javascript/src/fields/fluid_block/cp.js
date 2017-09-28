@@ -49,6 +49,11 @@
 				$(this).closest('.fluid-item').after(fieldClone);
 			}
 
+			// Bind the new field's inputs to AJAX form validation
+			if (EE.cp && EE.cp.formValidation !== undefined) {
+				EE.cp.formValidation.bindInputs(fieldClone);
+			}
+
 			e.preventDefault();
 			fluidBlock.find('.open').trigger('click');
 
