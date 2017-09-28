@@ -27,6 +27,8 @@ $lang = array(
 /* Control Panel */
 'action_can_not_be_undone' => 'THIS ACTION CANNOT BE UNDONE',
 
+'add_new' => 'Add New',
+
 'all' => 'All',
 
 'any' => 'Any',

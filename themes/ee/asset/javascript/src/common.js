@@ -485,14 +485,10 @@ $(document).ready(function(){
 	// publish collapse -> WIP
 	// =======================
 
-		// listen for clicks on .sub-arrows
-		$('div.publish form').on('click', '.setting-txt .sub-arrow', function(e) {
-			// toggle the .setting-field and .setting-text
-			$(this).parents('.setting-txt').siblings('.setting-field').toggle();
-			// toggle the instructions
-			$(this).parents('h3').siblings('em').toggle();
-			// toggle a class of .field-closed on the h3
-			$(this).parents('h3').toggleClass('field-closed');
+		$('.js-toggle-field').on('click',function(){
+			$(this)
+				.parents('fieldset,.fieldset-faux-fluid,.fieldset-faux')
+				.toggleClass('fieldset---closed');
 		});
 
 	// ===================

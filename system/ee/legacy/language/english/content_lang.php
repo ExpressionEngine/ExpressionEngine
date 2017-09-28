@@ -214,7 +214,13 @@ $lang = array(
 
 'autosaved' => 'Auto saved',
 
-'autosaved_entries' => 'Auto saved Entries',
+'autosaved_entries' => 'Auto-saved Entries',
+
+'autosaved_versions' => 'Auto-saved versions',
+
+'autosaved_versions_desc' => 'Below is a list of auto-saved versions of this entry.',
+
+'autosaves' => 'Auto Saves',
 
 'blockquote' => 'Blockquote',
 
