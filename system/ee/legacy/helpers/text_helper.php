@@ -522,4 +522,22 @@ if ( ! function_exists('ellipsize'))
 	}
 }
 
+/**
+ * Takes an app version string and formats it for the CP, which entails
+ * putting bold tags around the first number and dropping the third
+ * digit if it is a zero
+ *
+ * @param	string	$version	App version string, like 3.0.0
+ * @return	string	Formatted app version string, like <b>3</b>.0
+ */
+if ( ! function_exists('formatted_version'))
+{
+	function formatted_version($version)
+	{
+		$version = explode('.', $version);
+
+		return preg_replace('/^(\d)\./', '<b>$1</b>.', implode('.', $version));
+	}
+}
+
 // EOF

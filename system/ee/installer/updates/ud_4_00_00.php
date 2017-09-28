@@ -7,6 +7,8 @@
  * @license   https://expressionengine.com/license
  */
 
+namespace EllisLab\ExpressionEngine\Updater\Version_4_0_0;
+
 /**
  * Update
  */
@@ -21,7 +23,7 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'emancipateTheFields',
 				'addFieldDataFlag',
@@ -29,6 +31,7 @@ class Updater {
 				'moveMemberFields',
 				'warnAboutBirthdayTag',
 				'globalizeSave_tmpl_files',
+				'clearCurrentVersionCache',
 				'nullOutRelationshipChannelDataFields',
 				'addSortIndexToChannelTitles',
 				'addImageQualityColumn',
@@ -458,11 +461,11 @@ class Updater {
 
 		ee()->remove('template');
 		require_once(APPPATH . 'libraries/Template.php');
-		ee()->set('template', new Installer_Template());
+		ee()->set('template', new \Installer_Template());
 
 		$installer_config = ee()->config;
 		ee()->remove('config');
-		ee()->set('config', new MSM_Config());
+		ee()->set('config', new \MSM_Config());
 
 		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
 
@@ -531,7 +534,7 @@ class Updater {
 	{
 		// Do we need to override?
 		$save_as_file = FALSE;
-		$msm_config = new MSM_Config();
+		$msm_config = new \MSM_Config();
 
 		$all_site_ids_query = ee()->db->select('site_id')
 			->get('sites')
@@ -557,6 +560,15 @@ class Updater {
 			// Add config override
 			ee()->config->_update_config(array('save_tmpl_files' => 'n'));
 		}
+	}
+
+	/**
+	 * Clear old current_version cache, version info for 4.0 is in a different
+	 * format
+	 */
+	private function clearCurrentVersionCache()
+	{
+		ee()->cache->delete('current_version', \Cache::GLOBAL_SCOPE);
 	}
 
 	/**

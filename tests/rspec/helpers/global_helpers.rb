@@ -25,9 +25,6 @@ end
 # Runs when a page is visted and after every example to ensure no
 # PHP or JavaScript errors are present
 def no_php_js_errors
-  # Open stack traces for screenshots
-  click_link('show') unless page.has_no_css?('.err-wrap h3 a.toggle')
-
   # Search for "on line" or "Line Number:" since they're in pretty much
   # in every PHP error
   if not page.current_url.include? 'logs/developer'
@@ -218,4 +215,16 @@ def ee_config(site_id: nil, item: nil, value: nil)
       return value
     end
   end
+end
+
+# Swaps on piece of text for another given a file
+#
+# @param [File] file File object
+# @param [String] pattern Text to find
+# @param [String] replacement Replacement of above text
+# @return [void]
+def swap(file, pattern, replacement)
+  file = File.expand_path(file)
+  temp = File.read(file).gsub(pattern, replacement)
+  File.open(file, 'w') { |f| f.puts temp }
 end

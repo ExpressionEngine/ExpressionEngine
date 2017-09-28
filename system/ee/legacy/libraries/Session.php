@@ -1098,6 +1098,26 @@ class EE_Session {
 	}
 
 	/**
+	 * Reverse-age flashdata. This is useful when redirecting but knowing we'll
+	 * need to preserve flashdata to the next screen.
+	 */
+	public function benjaminButtonFlashdata()
+	{
+		foreach($this->flashdata as $key => $val)
+		{
+			if (strpos($key, ':new:') === FALSE &&
+				strpos($key, ':old:') === FALSE)
+			{
+				$this->flashdata[':new:'.$key] = $val;
+			}
+
+			unset($this->flashdata[$key]);
+		}
+
+		$this->_set_flash_cookie();
+	}
+
+	/**
 	 * Do ban Check
 	 *
 	 * @return 	boolean
