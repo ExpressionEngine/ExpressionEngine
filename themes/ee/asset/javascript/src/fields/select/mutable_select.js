@@ -87,6 +87,7 @@ var MutableSelectField = function () {
 
       EE.cp.ModalForm.openForm({
         url: url,
+        createUrl: this.options.createUrl,
         load: function load(modal) {
           EE.cp.form_group_toggle(modal.find('[data-group-toggle]:input:checked'));
 

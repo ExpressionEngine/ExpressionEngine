@@ -16,6 +16,7 @@ EE.cp.ModalForm = {
 	 * Opens a modal form
 	 * @param  {object} options Object of options:
 	 *   url - URL of form to load into the modal
+	 *   createUrl - URL of creation form for Save & New, if different than `url`
 	 *   load - Callback to call on load of the URL contents into the modal
 	 *   success - Callback to call on successful form submission
 	 * @return {void}
@@ -74,6 +75,10 @@ EE.cp.ModalForm = {
 				}
 
 				if (that.saveAndNew) {
+					// In case create form URL is different than original URL
+					if (options.createUrl) {
+						options.url = options.createUrl
+					}
 					that._loadModalContents(options)
 				} else {
 					that.modal.trigger('modal:close')

@@ -65,6 +65,7 @@ class MutableSelectField {
   openForm (url) {
     EE.cp.ModalForm.openForm({
       url: url,
+      createUrl: this.options.createUrl,
       load: (modal) => {
         EE.cp.form_group_toggle(modal.find('[data-group-toggle]:input:checked'))
 
