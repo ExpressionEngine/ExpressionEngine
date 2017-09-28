@@ -368,8 +368,8 @@ var SelectList = function (_React$Component) {
           ref: function ref(input) {
             _this7.input = input;
           } }),
-        props.multi && this.props.selectable && props.selected.map(function (item) {
-          return React.createElement('input', { type: 'hidden', key: item.value, name: props.name + '[]', value: item.value,
+        this.props.selectable && props.selected.map(function (item) {
+          return React.createElement('input', { type: 'hidden', key: item.value, name: props.multi ? props.name + '[]' : props.name, value: item.value,
             ref: function ref(input) {
               _this7.input = input;
             } });

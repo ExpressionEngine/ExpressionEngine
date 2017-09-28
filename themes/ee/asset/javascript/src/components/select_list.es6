@@ -362,9 +362,9 @@ class SelectList extends React.Component {
           <input type="hidden" name={props.name + '[]'} value=''
             ref={(input) => { this.input = input }} />
         }
-        {props.multi && this.props.selectable &&
+        {this.props.selectable &&
           props.selected.map(item =>
-            <input type="hidden" key={item.value} name={props.name + '[]'} value={item.value}
+            <input type="hidden" key={item.value} name={props.multi ? props.name + '[]' : props.name} value={item.value}
               ref={(input) => { this.input = input }} />
           )
         }
