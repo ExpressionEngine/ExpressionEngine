@@ -1165,50 +1165,13 @@ class Channels extends AbstractChannelsController {
 	}
 
 	/**
-	 * Populates the default author list in Channel Settings, also serves as
-	 * AJAX endpoint for that filtering
+	 * AJAX endpoint for author list filtering
 	 *
 	 * @return array ID => Screen name array of authors
 	 */
 	public function authorList()
 	{
-		$from_all_sites = (ee()->config->item('multiple_sites_enabled') == 'y');
-
-		// First the author groups
-		$groups = ee('Model')->get('MemberGroup')
-			->fields('group_id', 'group_title')
-			->filter('include_in_authorlist', 'y')
-			->order('group_title', 'asc');
-
-		if ( ! bool_config_item('multiple_sites_enabled'))
-		{
-			$groups->filter('site_id', '1');
-		}
-
-		$groups = $groups->all();
-		$group_ids = $groups->pluck('group_id');
-
-		// Then all authors who are in those groups or who have author access
-		$members = ee('Model')->get('Member')
-			->fields('member_id', 'group_id', 'screen_name', 'username')
-			->filter('in_authorlist', 'y')
-			->order('screen_name', 'asc')
-			->order('username', 'asc')
-			->limit(100);
-
-		if ($groups->count())
-		{
-			$members->orFilter('group_id', 'IN', $group_ids);
-		}
-
-		if ($search = ee('Request')->get('search'))
-		{
-			$members->search(
-				['screen_name', 'username', 'email', 'member_id'], $search
-			);
-		}
-
-		$authors = $members->all()->getDictionary('member_id', 'screen_name');
+		$authors = ee('Member')->getAuthors(ee('Request')->get('search'));
 
 		if (AJAX_REQUEST)
 		{

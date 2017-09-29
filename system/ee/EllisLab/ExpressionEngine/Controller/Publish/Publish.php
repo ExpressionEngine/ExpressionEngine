@@ -55,6 +55,24 @@ class Publish extends AbstractPublishController {
 	}
 
 	/**
+	 * Populates the default author list in Channel Settings, also serves as
+	 * AJAX endpoint for that filtering
+	 *
+	 * @return array ID => Screen name array of authors
+	 */
+	public function authorList()
+	{
+		$authors = ee('Member')->getAuthors(ee('Request')->get('search'));
+
+		if (AJAX_REQUEST)
+		{
+			return ee('View/Helpers')->normalizedChoices($authors);
+		}
+
+		return $authors;
+	}
+
+	/**
 	 * AJAX end-point for relationship field filtering
 	 */
 	public function relationshipFilter()
