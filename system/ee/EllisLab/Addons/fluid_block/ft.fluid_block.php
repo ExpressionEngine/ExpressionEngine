@@ -60,6 +60,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 		foreach ($field_data['fields'] as $key => $data)
 		{
 			$field_id = NULL;
+			$block_data_id = NULL;
 
 			foreach (array_keys($data) as $datum)
 			{
@@ -79,6 +80,11 @@ class Fluid_block_ft extends EE_Fieldtype {
 				continue;
 			}
 
+			if (strpos($key, 'field_') === 0)
+			{
+				$block_data_id = (int) str_replace('field_', '', $key);
+			}
+
 			$field = clone $fieldTemplates[$field_id];
 
 			$f = $field->getField();
@@ -88,16 +94,8 @@ class Fluid_block_ft extends EE_Fieldtype {
 				$data['field_id_' . $field_id] = array();
 			}
 
-			$f->setData($data['field_id_' . $field_id]);
-			if (isset($data['field_ft_' . $field_id]))
-			{
-				$f->setFormat($data['field_ft_' . $field_id]);
-			}
-			if (isset($data['field_dt_' . $field_id]))
-			{
-				$f->setTimezone($data['field_dt_' . $field_id]);
-			}
 			$f->setName($field_name);
+			$f = $this->setupFieldInstance($f, $data, $block_data_id);
 
 			$validator = ee('Validation')->make();
 			$validator->defineRule('validateField', function($key, $value, $parameters, $rule) use ($f) {
@@ -215,7 +213,6 @@ class Fluid_block_ft extends EE_Fieldtype {
 		$field_data->set($values);
 		$field = $block->getField($field_data);
 		$field->setItem('block_data_id', $block->getId());
-		// $field->validate($field->getData());
 		$field->save();
 
 		$values['field_id_' . $field->getId()] = $field->getData();
@@ -341,16 +338,9 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 				$f = $field->getField();
 
-				$f->setData($data['field_id_' . $field_id]);
-				if (isset($data['field_ft_' . $field_id]))
-				{
-					$f->setFormat($data['field_ft_' . $field_id]);
-				}
-				if (isset($data['field_dt_' . $field_id]))
-				{
-					$f->setTimezone($data['field_dt_' . $field_id]);
-				}
 				$f->setName($this->name() . '[fields][' . $key . '][field_id_' . $field->getId() . ']');
+
+				$f = $this->setupFieldInstance($f, $data);
 
 				$fields .= ee('View')->make('fluid_block:field')->render(array('field' => $field, 'filters' => $filters, 'errors' => $this->errors));
 			}
@@ -552,6 +542,39 @@ class Fluid_block_ft extends EE_Fieldtype {
 		}
 
 		return $blockData;
+	}
+
+	/**
+	 * Sets the data, format, and timzeone for a field
+	 *
+	 * @param FieldFacade $field The field
+	 * @param array $data An associative array containing the data to set
+	 * @return FieldFacade The field.
+	 */
+	private function setupFieldInstance($field, array $data, $block_data_id = NULL)
+	{
+		$field_id = $field->getId();
+
+		$field->setContentId($this->content_id);
+
+		$field->setData($data['field_id_' . $field_id]);
+
+		if (isset($data['field_ft_' . $field_id]))
+		{
+			$field->setFormat($data['field_ft_' . $field_id]);
+		}
+
+		if (isset($data['field_dt_' . $field_id]))
+		{
+			$field->setTimezone($data['field_dt_' . $field_id]);
+		}
+
+		if ( ! is_null($block_data_id))
+		{
+			$field->setItem('block_data_id', $block_data_id);
+		}
+
+		return $field;
 	}
 
 	/**

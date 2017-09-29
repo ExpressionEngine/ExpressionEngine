@@ -284,7 +284,8 @@ class Grid_parser {
 					$row_ids, // array(#, #, #)
 					$tagdata,
 					$relationships, // field_name => field_id
-					$field_id
+					$field_id,
+					$block_data_id
 				);
 			}
 			else
