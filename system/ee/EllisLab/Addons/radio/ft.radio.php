@@ -113,7 +113,9 @@ class Radio_ft extends OptionFieldtype {
 				'choices'    => $field_options,
 				'value'      => $data,
 				'multi'      => FALSE,
-				'disabled'   => $this->get_setting('field_disabled')
+				'disabled'   => $this->get_setting('field_disabled'),
+				'filter_url' => $this->get_setting('filter_url', NULL),
+				'no_results' => $this->get_setting('no_results', NULL)
 			]);
 		}
 
