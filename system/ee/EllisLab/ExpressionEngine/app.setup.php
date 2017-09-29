@@ -25,6 +25,7 @@ use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\Formatter;
 use EllisLab\ExpressionEngine\Service\License;
 use EllisLab\ExpressionEngine\Service\Logger;
+use EllisLab\ExpressionEngine\Service\Member;
 use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Permission;
@@ -376,6 +377,11 @@ return array(
 			$default_key = (is_readable($default_key_path)) ? file_get_contents($default_key_path) : '';
 
 			return new License\LicenseFactory($default_key);
+		},
+
+		'Member' => function($ee)
+		{
+			return new Member\Member();
 		},
 
 		'Model/Datastore' => function($ee)
