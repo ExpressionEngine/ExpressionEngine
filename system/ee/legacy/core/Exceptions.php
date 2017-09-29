@@ -83,6 +83,14 @@ class EE_Exceptions {
 
 		list($error_constant, $error_category) = $this->lookupSeverity($severity);
 
+		if (REQ == 'CLI')
+		{
+			stdout('PHP '.$error_category.':', CLI_STDOUT_FAILURE);
+			echo $message . "\n";
+			echo $filepath . ": $line\n\n";
+			return;
+		}
+
 		$filepath = str_replace("\\", "/", $filepath);
 		$filepath = str_replace(SYSPATH, '', $filepath);
 
@@ -244,6 +252,18 @@ class EE_Exceptions {
 		{
 			$location_parts = explode(DIRECTORY_SEPARATOR, $location);
 			$location = array_pop($location_parts);
+		}
+
+		if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+			$_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
+		{
+			$return = [
+				'messageType' => 'error',
+				'message' => $message,
+				'trace' => $trace
+			];
+			echo json_encode($return);
+			exit;
 		}
 
 		if (ob_get_level() > $this->ob_level + 1)

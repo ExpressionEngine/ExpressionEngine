@@ -73,6 +73,8 @@ $lang = array(
 
 'update' => 'Update',
 
+'updating' => 'Updating',
+
 'yes' => 'Yes',
 
 

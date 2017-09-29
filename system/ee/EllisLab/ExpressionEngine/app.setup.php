@@ -24,6 +24,7 @@ use EllisLab\ExpressionEngine\Service\File;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\Formatter;
 use EllisLab\ExpressionEngine\Service\License;
+use EllisLab\ExpressionEngine\Service\Logger;
 use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Permission;
@@ -32,6 +33,7 @@ use EllisLab\ExpressionEngine\Service\Sidebar;
 use EllisLab\ExpressionEngine\Service\Theme;
 use EllisLab\ExpressionEngine\Service\Thumbnail;
 use EllisLab\ExpressionEngine\Service\URL;
+use EllisLab\ExpressionEngine\Service\Updater;
 use EllisLab\ExpressionEngine\Service\Validation;
 use EllisLab\ExpressionEngine\Service\View;
 use EllisLab\Addons\Spam\Service\Spam;
@@ -143,6 +145,26 @@ return array(
 			return $ee->make('Database')->newQuery();
 		},
 
+		'Database/Backup' => function($ee, $file_path)
+		{
+			$filesystem = $ee->make('Filesystem');
+			$backup_query = $ee->make('Database/Backup/Query');
+
+			return new Database\Backup\Backup($filesystem, $backup_query, $file_path);
+		},
+
+		'Database/Backup/Query' => function($ee)
+		{
+			return new Database\Backup\Query($ee->make('db'));
+		},
+
+		'Database/Restore' => function($ee)
+		{
+			$filesystem = $ee->make('Filesystem');
+
+			return new Database\Backup\Restore($ee->make('db'), $filesystem);
+		},
+
 		'Event' => function($ee)
 		{
 			return new Event\Emitter();
@@ -213,6 +235,54 @@ return array(
 			return new Permission\Permission($userdata);
 		},
 
+		'Updater/Runner' => function($ee)
+		{
+			return new Updater\Runner();
+		},
+
+		'Updater/Downloader' => function($ee)
+		{
+			return new Updater\Downloader\Downloader(
+				$ee->make('License')->getEELicense(),
+				$ee->make('Curl'),
+				$ee->make('Filesystem'),
+				$ee->make('Updater/Logger'),
+				$ee->make('Config')->getFile()
+			);
+		},
+
+		'Updater/Preflight' => function($ee)
+		{
+			return new Updater\Downloader\Preflight(
+				$ee->make('Filesystem'),
+				$ee->make('Updater/Logger'),
+				$ee->make('Config')->getFile(),
+				$ee->make('Model')->get('Site')->all()
+			);
+		},
+
+		'Updater/Unpacker' => function($ee)
+		{
+			$filesystem = $ee->make('Filesystem');
+
+			return new Updater\Downloader\Unpacker(
+				$filesystem,
+				new \ZipArchive(),
+				new Updater\Verifier($filesystem),
+				$ee->make('Updater/Logger'),
+				new Updater\RequirementsCheckerLoader($filesystem)
+			);
+		},
+
+		'Updater/Logger' => function($ee)
+		{
+			return new Updater\Logger(
+				PATH_CACHE.'ee_update/update.log',
+				$ee->make('Filesystem'),
+				php_sapi_name() === 'cli'
+			);
+		},
+
 		'Encrypt' => function($ee, $key = NULL)
 		{
 			if (empty($key))
@@ -221,6 +291,7 @@ return array(
 			}
 
 			return new Encrypt\Encrypt($key);
+
 		}
 	),
 

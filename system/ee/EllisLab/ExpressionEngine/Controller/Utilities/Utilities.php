@@ -94,9 +94,10 @@ class Utilities extends CP_Controller {
 
 		if (ee()->cp->allowed_group('can_access_sql_manager'))
 		{
-			$sidebar->addHeader(lang('sql_manager_abbr'), ee('CP/URL')->make('utilities/sql'))
-			->addBasicList()
-				->addItem(lang('query_form'), ee('CP/URL')->make('utilities/query'));
+			$db_list = $sidebar->addHeader(lang('database'))->addBasicList();
+			$db_list->addItem(lang('backup_utility'), ee('CP/URL')->make('utilities/db-backup'));
+			$db_list->addItem(lang('sql_manager_abbr'), ee('CP/URL')->make('utilities/sql'));
+			$db_list->addItem(lang('query_form'), ee('CP/URL')->make('utilities/query'));
 		}
 
 		if (ee()->cp->allowed_group('can_access_data'))

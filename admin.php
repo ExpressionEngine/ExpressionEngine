@@ -131,12 +131,20 @@
  * And away we go...
  *
  */
-	if ( ! file_exists(SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php'))
+	// Load the updater package if it's here
+	if (file_exists(SYSPATH.'ee/updater/boot.php'))
+	{
+		require_once SYSPATH.'ee/updater/boot.php';
+	}
+	// Is the system path correct?
+	elseif ( ! file_exists(SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php'))
 	{
 		header('HTTP/1.1 503 Service Unavailable.', TRUE, '503');
 		exit("Your system folder path does not appear to be set correctly. Please open the following file and correct this: ".pathinfo(__FILE__, PATHINFO_BASENAME));
 	}
-
-	require_once SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php';
+	else
+	{
+		require_once SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php';
+	}
 
 // EOF

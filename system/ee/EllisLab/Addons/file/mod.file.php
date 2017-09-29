@@ -194,7 +194,7 @@ class File {
 		}
 
 		// Set order and sort
-		$allowed_orders	= array('date', 'upload_date', 'random');
+		$allowed_orders	= array('title', 'date', 'upload_date', 'random');
 		$order_by		= strtolower(ee()->TMPL->fetch_param('orderby', 'upload_date'));
 		$order_by		= ($order_by == 'date' OR ! in_array($order_by, $allowed_orders)) ? 'upload_date' : $order_by;
 		$random			= ($order_by == 'random') ? TRUE : FALSE;
