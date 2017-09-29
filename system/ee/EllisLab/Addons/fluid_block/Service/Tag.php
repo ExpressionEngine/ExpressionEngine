@@ -159,7 +159,7 @@ class Tag {
 			if ($field->getType() == 'grid')
 			{
 				ee()->load->library('grid_parser');
-				ee()->grid_parser->grid_field_names[$field->getId()] = $field->getName();
+				ee()->grid_parser->grid_field_names[$field->getId()][$field->getItem('block_data_id')] = $field->getName();
 			}
 
 			$tpl_chunk = $field->replaceTag($content);

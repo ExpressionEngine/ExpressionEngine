@@ -95,7 +95,7 @@ class Grid_parser {
 			$field_name = rtrim(str_replace($pre_parser->prefix(), '', $match[1]), ':');
 			$params = $match[2];
 			$field_id = $grid_fields[$field_name];
-			$this->grid_field_names[$field_id] = rtrim($match[1], ':');
+			$this->grid_field_names[$field_id] = array(rtrim($match[1], ':'));
 
 			ee()->grid_model->get_entry_rows($pre_parser->entry_ids(), $field_id, $content_type, $params);
 		}
@@ -128,8 +128,6 @@ class Grid_parser {
 		ee()->load->model('grid_model');
 		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $field_id, $content_type, $params, FALSE, $block_data_id);
 
-		var_dump($tagdata, $block_data_id, $entry_data);
-
 		// Bail out if no entry data
 		if ($entry_data === FALSE OR ! isset($entry_data[$entry_id]))
 		{
@@ -138,7 +136,7 @@ class Grid_parser {
 
 		$params = $entry_data['params'];
 		$entry_data = $entry_data[$entry_id];
-		$field_name = $this->grid_field_names[$field_id];
+		$field_name = $this->grid_field_names[$field_id][$block_data_id];
 
 		// Fix for when there is a Grid field in a Channel Entries loop, but
 		// the same Grid field is also being brought in via a Relationships
@@ -150,7 +148,7 @@ class Grid_parser {
 		if (strpos($tagdata, $field_name) === FALSE && strpos($field_name, ':') !== FALSE)
 		{
 			$field_name = substr($field_name, strrpos($field_name, ':') + 1);
-			$this->grid_field_names[$field_id] = $field_name;
+			$this->grid_field_names[$field_id][$block_data_id] = $field_name;
 		}
 
 		// Add field_row_index and field_row_count variables to get the index
@@ -375,14 +373,14 @@ class Grid_parser {
 
 					// Send the next or previous row to _parse_row for parsing
 					$replace_data = ( ! empty($next_prev_row))
-						? $this->_parse_row($channel_row, $field_id, $content, $next_prev_row, $content_type) : '';
+						? $this->_parse_row($channel_row, $field_id, $content, $next_prev_row, $content_type, $block_data_id) : '';
 
 					// Replace tag pair
 					$grid_row = str_replace($chunk, $replace_data, $grid_row);
 				}
 			}
 
-			$grid_tagdata .= $this->_parse_row($channel_row, $field_id, $grid_row, $row, $content_type);
+			$grid_tagdata .= $this->_parse_row($channel_row, $field_id, $grid_row, $row, $content_type, $block_data_id);
 		}
 
 		// Backspace parameter
@@ -403,10 +401,10 @@ class Grid_parser {
 	 * @param	array	Grid single row data
 	 * @return	string	Parsed field data
 	 */
-	private function _parse_row($channel_row, $field_id, $tagdata, $row, $content_type = 'channel')
+	private function _parse_row($channel_row, $field_id, $tagdata, $row, $content_type = 'channel', $block_data_id = 0)
 	{
 		$grid_row = $tagdata;
-		$field_name = $this->grid_field_names[$field_id];
+		$field_name = $this->grid_field_names[$field_id][$block_data_id];
 		$entry_id = $channel_row['entry_id'];
 
 		// Gather the variables to parse
