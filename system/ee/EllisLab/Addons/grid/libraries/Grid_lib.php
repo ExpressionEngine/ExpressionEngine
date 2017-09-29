@@ -56,8 +56,7 @@ class Grid_lib {
 		// Otherwise, we're editing or creating a new entry
 		else
 		{
-			$reset_cache = (bool) $this->block_data_id;
-			$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type, array(), $reset_cache, $this->block_data_id);
+			$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type, array(), FALSE, $this->block_data_id);
 			$rows = (isset($rows[$this->entry_id])) ? $rows[$this->entry_id] : array();
 		}
 

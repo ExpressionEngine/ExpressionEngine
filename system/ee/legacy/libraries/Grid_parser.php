@@ -126,8 +126,9 @@ class Grid_parser {
 		$entry_id = $channel_row['entry_id'];
 
 		ee()->load->model('grid_model');
-		$reset_cache = (bool) $block_data_id;
-		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $field_id, $content_type, $params, $reset_cache, $block_data_id);
+		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $field_id, $content_type, $params, FALSE, $block_data_id);
+
+		var_dump($tagdata, $block_data_id, $entry_data);
 
 		// Bail out if no entry data
 		if ($entry_data === FALSE OR ! isset($entry_data[$entry_id]))

@@ -357,6 +357,12 @@ class Grid_model extends CI_Model {
 		$options = $this->_validate_params($options, $field_id, $content_type);
 		$marker = $this->_get_tag_marker($options);
 
+		if (isset($this->_grid_data[$content_type][$field_id][$marker]['block_data_id'])
+			&& $this->_grid_data[$content_type][$field_id][$marker]['block_data_id'] != $block_data_id)
+		{
+			$reset_cache = TRUE;
+		}
+
 		foreach ($entry_ids as $key => $entry_id)
 		{
 			// If we already have data for this particular tag configuation
@@ -368,6 +374,7 @@ class Grid_model extends CI_Model {
 		}
 
 		$this->_grid_data[$content_type][$field_id][$marker]['params'] = $options;
+		$this->_grid_data[$content_type][$field_id][$marker]['block_data_id'] = $block_data_id;
 
 		if ( ! empty($entry_ids))
 		{
