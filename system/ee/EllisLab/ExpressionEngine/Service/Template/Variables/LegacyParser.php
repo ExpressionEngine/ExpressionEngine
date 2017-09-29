@@ -262,7 +262,7 @@ class LegacyParser {
 			// date variables
 			elseif (strpos($val, 'format') !== FALSE && preg_match("/.+?\s+?format/", $val))
 			{
-				$var_single[$val] = $this->fetch_date_variables($val);
+				$var_single[$val] = $this->extractDateFormat($val);
 			}
 			else  // single variables
 			{
@@ -282,6 +282,33 @@ class LegacyParser {
 		$return['var_pair']		= $var_pair;
 
 		return $return;
+	}
+
+	/**
+	 * Fetch date variables
+	 *
+	 * This function looks within a variable for this prototype:
+	 *
+	 * 		{date format="%Y %m %d"}
+	 *
+	 * If found, returns only the date format codes: %Y %m %d
+	 *
+	 * @param string the date variable
+	 * @return string the date format parameter
+	 */
+	public function extractDateFormat($date_string)
+	{
+		if ($date_string == '')
+		{
+			return;
+		}
+
+		if ( ! preg_match("/format\s*=\s*[\'|\"](.*?)[\'|\"]/s", $date_string, $match))
+		{
+			return FALSE;
+		}
+
+		return $match[1];
 	}
 }
 // END CLASS

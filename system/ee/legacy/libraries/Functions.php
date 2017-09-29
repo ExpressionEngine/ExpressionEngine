@@ -1628,27 +1628,15 @@ class EE_Functions {
 	}
 
 	/**
-	 * Fetch date variables
+	 * Extract format= code from date variable
 	 *
-	 *  This function looks for a variable that has this prototype:
+	 * Deprecated in 4.0.0
 	 *
-	 * {date format="%Y %m %d"}
-	 *
-	 * If found, returns only the datecodes: %Y %m %d
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	string
+	 * @see	EllisLab\ExpressionEngine\Service\Template\Variables\LegacyParser::extractDateFormat()
 	 */
 	public function fetch_date_variables($datestr)
 	{
-		if ($datestr == '')
-			return;
-
-		if ( ! preg_match("/format\s*=\s*[\'|\"](.*?)[\'|\"]/s", $datestr, $match))
-				return FALSE;
-
-		return $match[1];
+		return ee('Variables/Parser')->extractDateFormat($datestr);
 	}
 
 	/**
