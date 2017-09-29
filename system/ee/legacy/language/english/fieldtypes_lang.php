@@ -70,6 +70,23 @@ $lang = array(
 
 'rel_ft_unrelated_only' => 'Unrelated only',
 
+/* Duration */
+'duration_ft_hh' => 'hh',
+
+'duration_ft_hhmm' => 'hh:mm',
+
+'duration_ft_hhmmss' => 'hh:mm:ss',
+
+'duration_ft_hours' => 'Hours',
+
+'duration_ft_minutes' => 'Minutes',
+
+'duration_ft_placeholder' => 'Duration in %s (or %s)',
+
+'duration_ft_seconds' => 'Seconds',
+
+'duration_ft_units' => 'Units',
+
 
 /* File */
 'file_ft_allowed_dirs' => 'Allowed Directory',

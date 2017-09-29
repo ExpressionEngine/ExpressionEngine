@@ -21,6 +21,14 @@ class Select extends Query {
 	protected $aliases = array();
 	protected $relations = array();
 	protected $model_fields = array();
+	protected $searched_fields = array();
+	protected $additional_search = array();
+
+	/**
+	 * @var int $table_join_limit MySQL only allows 61 tables in a single
+	 *   statement. We'll keep our joins nunder that.
+	 */
+	private $table_join_limit = 59;
 
 	protected function getClass($alias = '')
 	{
@@ -284,7 +292,7 @@ class Select extends Query {
 				return $column[$item_key_column];
 			}, $result_array);
 
-			$chunks = array_chunk($fields, 59);
+			$chunks = array_chunk($fields, $this->table_join_limit);
 
 			foreach ($chunks as $fields)
 			{
@@ -311,9 +319,9 @@ class Select extends Query {
 
 				$query->where_in("{$parent_key}", $entry_ids);
 
-				$data = $query->get()->result_array();
+				$data = $query->get();
 
-				foreach ($data as $row)
+				foreach ($data->result_array() as $row)
 				{
 					array_walk($result_array, function (&$data, $key, $field_data) use ($item_key_column){
 						if ($data[$item_key_column] == $field_data[$item_key_column])
@@ -322,10 +330,29 @@ class Select extends Query {
 						}
 					}, $row);
 				}
+				$data->free_result();
 			}
 		}
 
 		return $result_array;
+	}
+
+	private function getCustomFields($model_name, $column_prefix, $field_ids)
+	{
+		$cache_key = "CustomFields/{$model_name}/" . implode(',', $field_ids);
+
+		if (($fields = ee()->session->cache(__CLASS__, $cache_key, FALSE)) === FALSE)
+		{
+			$fields = ee('Model')->get($model_name)
+				->fields($column_prefix.'field_id')
+				->filter($column_prefix.'field_id', 'IN', $field_ids)
+				->filter($column_prefix.'legacy_field_data', 'n')
+				->all();
+
+			ee()->session->set_cache(__CLASS__, $cache_key, $fields);
+		}
+
+		return $fields;
 	}
 
 	protected function augmentQuery($query)
@@ -346,17 +373,84 @@ class Select extends Query {
 
 		$field_ids = array();
 
-		foreach ($this->builder->getFilters() as $filter)
+		// It's possible we'll be asked to search across more tables than we can
+		// JOIN in a single query. In such cases we can simply search each of the
+		// tables individually and build up a list of primary keys to filter on
+		foreach ($this->builder->getSearch() as $field => $words)
 		{
-			$field = $filter[0];
 			if (strpos($field, $column_prefix.'field_id') === 0)
 			{
 				$field_ids[] = str_replace($column_prefix.'field_id_', '', $field);
 			}
 		}
 
-		foreach (array_keys($this->builder->getSearch()) as $field)
+		if ( ! empty($field_ids))
 		{
+			$cache_key = "Query/Select/additionalSearch/" . md5(json_encode($field_ids));
+
+			if (($cached_search = ee()->session->cache(__CLASS__, $cache_key, FALSE)) === FALSE)
+			{
+				$pks = array();
+
+				$fields = $this->getCustomFields($meta_field_data['field_model'], $column_prefix, $field_ids);
+
+				// If we have fewer than our table limit we'll just keep on keeping on.
+				if ($fields->count() > $this->table_join_limit)
+				{
+					$search = $this->builder->getSearch();
+
+					foreach ($fields->pluck('field_id') as $field_id)
+					{
+						$field = "field_id_{$field_id}";
+						$words = $search[$field];
+
+						$sq = ee('Model/Datastore')->rawQuery();
+						$sq->select($primary_key);
+						$sq->from("{$join_table_prefix}{$field_id}");
+
+						$sq->or_start_like_group();
+						foreach ($words as $word => $include)
+						{
+							$fn = $include ? 'like' : 'not_like';
+							$sq->$fn($field, $word);
+						}
+						$sq->end_like_group();
+
+						$data = $sq->get();
+						foreach ($data->result_array() as $row)
+						{
+							$pks[] = $row[$primary_key];
+						}
+						$data->free_result();
+
+						$this->searched_fields[] = "{$column_prefix}field_id_{$field_id}";
+					}
+
+					if ( ! empty($pks))
+					{
+						$pks = array_unique($pks);
+						$tables = array_keys($meta->getTables());
+						$this->additional_search = array("{$table_prefix}_{$tables[0]}.{$primary_key}", $pks);
+					}
+
+					// Reset: we've investigated these and don't need to JOIN them for
+					// searching's sake
+					$field_ids = array();
+				}
+
+				ee()->session->set_cache(__CLASS__, $cache_key, array($this->additional_search, $this->searched_fields, $field_ids));
+			}
+			else
+			{
+				$this->additional_search = $cached_search[0];
+				$this->searched_fields = $cached_search[1];
+				$field_ids = $cached_search[2];
+			}
+		}
+
+		foreach ($this->builder->getFilters() as $filter)
+		{
+			$field = $filter[0];
 			if (strpos($field, $column_prefix.'field_id') === 0)
 			{
 				$field_ids[] = str_replace($column_prefix.'field_id_', '', $field);
@@ -377,11 +471,7 @@ class Select extends Query {
 		{
 			$field_ids = array_unique($field_ids);
 
-			$fields = ee('Model')->get($meta_field_data['field_model'])
-				->fields($column_prefix.'field_id')
-				->filter($column_prefix.'field_id', 'IN', $field_ids)
-				->filter($column_prefix.'legacy_field_data', 'n')
-				->all();
+			$fields = $this->getCustomFields($meta_field_data['field_model'], $column_prefix, $field_ids);
 
 			foreach ($fields->pluck('field_id') as $field_id)
 			{
@@ -560,6 +650,11 @@ class Select extends Query {
 	{
 		foreach ($search as $field => $words)
 		{
+			if (in_array($field, $this->searched_fields))
+			{
+				continue;
+			}
+
 			$field = $this->translateProperty($field);
 
 			$query->or_start_like_group();
@@ -571,6 +666,14 @@ class Select extends Query {
 			}
 
 			$query->end_like_group();
+		}
+
+		if ( ! empty($this->additional_search))
+		{
+			// We need to add this WHERE inside the LIKE group else the query doesn't work
+			$query->or_where_in($this->additional_search[0], $this->additional_search[1]);
+			$where = array_pop($query->ar_where);
+			$query->ar_like[] = $where;
 		}
 	}
 

@@ -188,6 +188,9 @@ class Settings extends Profile {
 			)
 		);
 
+		// date fields need some lang values from the content lang
+		ee()->lang->loadfile('content');
+
 		foreach ($this->member->getDisplay()->getFields() as $field)
 		{
 			$vars['sections']['custom_fields'][] = array(

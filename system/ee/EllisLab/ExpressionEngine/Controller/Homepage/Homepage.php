@@ -182,6 +182,17 @@ class Homepage extends CP_Controller {
 
 			if ($member_home_url->path != 'homepage')
 			{
+				// Preserve updater result status messages
+				if (ee('Request')->get('update'))
+				{
+					$member_home_url->setQueryStringVariable(
+						'update',
+						ee('Request')->get('update')
+					);
+				}
+
+				ee()->session->benjaminButtonFlashdata();
+
 				$this->functions->redirect($member_home_url);
 			}
 		}

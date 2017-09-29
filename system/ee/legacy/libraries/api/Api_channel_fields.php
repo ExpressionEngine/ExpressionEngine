@@ -1623,7 +1623,7 @@ class Api_channel_fields extends Api {
 		//  - Can be used to modify the fieldtype prior to most fieldtype functions
 		//  - Please be careful with that second option.
 		//
-			if (ee()->extensions->active_hook('custom_field_modify_data') === TRUE)
+			if (isset(ee()->extensions) && ee()->extensions->active_hook('custom_field_modify_data') === TRUE)
 			{
 				return ee()->extensions->call('custom_field_modify_data', $obj, $method, $parameters);
 			}

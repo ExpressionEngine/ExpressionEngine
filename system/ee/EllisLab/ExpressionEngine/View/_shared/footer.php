@@ -35,15 +35,17 @@
 								ExpressionEngine <?=$new_version['version']?><br>
 								<em><?=lang('build') . ' ' . $new_version['build']?></em>
 							</p>
-								<div class="status out">
-									<a href="" class="close"></a>
-									<?=lang('out_of_date')?>
-								</div>
+								<a href="" class="close">&#10006;</a>
+								<?php if (ee()->session->userdata('group_id') == 1): ?>
+									<div class="update-btn"><a class="btn submit" data-post-url="<?=ee('CP/URL', 'updater')?>">Update Now</a></div>
+								<?php endif ?>
+								<div class="status out"><?=lang('out_of_date')?></div>
 							<?php else: ?>
-								<div class="status">
-									<a href="" class="close"></a>
-									<?=lang('current')?>
-								</div>
+								<a href="" class="close">&#10006;</a>
+								<?php if (ee()->session->userdata('group_id') == 1): ?>
+									<div class="update-btn"><a class="btn action" href="<?=ee('CP/URL')->make('settings/general/version-check', ['redirect' => ee('CP/URL')->getCurrentUrl()->compile()])?>">Check for Update</a></div>
+								<?php endif ?>
+								<div class="status"><?=lang('current')?></div>
 							<?php endif ?>
 						</div>
 					</div>
