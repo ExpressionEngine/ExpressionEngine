@@ -425,10 +425,11 @@ class EE_Template {
 
 					foreach ($val as $item)
 					{
+						// order is important in this array, since $i is incremented, then used in other calculations
 						$variables[] = [
 							'index' => $i,
 							'count' => ++$i,
-							'reverse_count' => $total_items - $i,
+							'reverse_count' => $total_items - $i + 1,
 							'total_results' => $total_items,
 							'value' => $item,
 						];
