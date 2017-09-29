@@ -124,7 +124,10 @@ class Grid_ft extends EE_Fieldtype {
 			'field_name' 	=> $this->name(),
 			'lang_cols' 	=> FALSE,
 			'grid_min_rows' => $this->settings['grid_min_rows'],
-			'grid_max_rows' => $this->settings['grid_max_rows']
+			'grid_max_rows' => $this->settings['grid_max_rows'],
+			'reorder'		=> isset($this->settings['allow_reorder'])
+				? get_bool_from_string($this->settings['allow_reorder'])
+				: TRUE
 		));
 		$grid->loadAssets();
 		$grid->setNoResultsText('no_rows_created', 'add_new_row');
@@ -498,6 +501,15 @@ class Grid_ft extends EE_Fieldtype {
 								'value' => isset($data['grid_max_rows']) ? $data['grid_max_rows'] : ''
 							)
 						)
+					),
+					array(
+						'title' => 'grid_allow_reorder',
+						'fields' => array(
+							'allow_reorder' => array(
+								'type' => 'yes_no',
+								'value' => isset($data['allow_reorder']) ? $data['allow_reorder'] : 'y'
+							)
+						)
 					)
 				)
 			),
@@ -648,7 +660,8 @@ class Grid_ft extends EE_Fieldtype {
 		// Make sure grid_min_rows is at least zero
 		return array(
 			'grid_min_rows' => empty($data['grid_min_rows']) ? 0 : $data['grid_min_rows'],
-			'grid_max_rows' => empty($data['grid_max_rows']) ? '' : $data['grid_max_rows']
+			'grid_max_rows' => empty($data['grid_max_rows']) ? '' : $data['grid_max_rows'],
+			'allow_reorder' => empty($data['allow_reorder']) ? 'y' : $data['allow_reorder']
 		);
 	}
 

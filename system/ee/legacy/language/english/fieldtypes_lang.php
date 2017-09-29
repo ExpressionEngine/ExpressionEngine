@@ -121,6 +121,8 @@ $lang = array(
 
 'grid_add_some_data' => 'You have not added any rows of data yet. <a href="#" class="grid_link_add">Add some data?</a>',
 
+'grid_allow_reorder' => 'Allow reordering of rows?',
+
 'grid_chars_allowed' => 'Characters allowed.',
 
 'grid_col_instr' => 'Instructions',
@@ -163,11 +165,11 @@ $lang = array(
 
 'grid_limit_input' => 'Limit input?',
 
-'grid_max_rows' => 'Maximum Rows',
+'grid_max_rows' => 'Maximum rows',
 
 'grid_max_rows_desc' => 'Sets the maximum amount of data rows this grid will accept',
 
-'grid_min_rows' => 'Minimum Rows',
+'grid_min_rows' => 'Minimum rows',
 
 'grid_min_rows_desc' => 'Sets the minumum amount of data rows this grid will accept',
 
