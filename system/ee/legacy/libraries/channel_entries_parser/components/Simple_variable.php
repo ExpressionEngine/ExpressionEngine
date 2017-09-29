@@ -12,6 +12,9 @@
  */
 class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
+	// bring in the :modifier methods
+	use EllisLab\ExpressionEngine\Service\Template\Variables\ModifiableTrait;
+
 	/**
 	 * There are always simple variables. Let me tell you ...
 	 *
@@ -424,11 +427,25 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 	 */
 	protected function _basic($data, $tagdata, $key, $val, $prefix)
 	{
-		$raw_val = preg_replace('/^'.$prefix.'/', '', $val);
-
-		if ($raw_val AND array_key_exists($raw_val, $data))
+		if ($raw_val = preg_replace('/^'.$prefix.'/', '', $val))
 		{
-			$tagdata = str_replace(LD.$val.RD, $data[$raw_val], $tagdata);
+			if (array_key_exists($raw_val, $data))
+			{
+				$tagdata = str_replace(LD.$val.RD, $data[$raw_val], $tagdata);
+			}
+			else
+			{
+				$field = ee('Variables/Parser')->parseVariableProperties($key, $prefix);
+				$method = 'replace_'.$field['modifier'];
+
+				if (array_key_exists($field['field_name'], $data) && method_exists($this, $method))
+				{
+					$content = $this->$method($data[$field['field_name']], $field['params']);
+					$this->conditional_vars[$key] = $content;
+
+					$tagdata = str_replace(LD.$val.RD, $content, $tagdata);
+				}
+			}
 		}
 
 		return $tagdata;
