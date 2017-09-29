@@ -111,7 +111,6 @@ class EE_relationship_tree_builder {
 		// down onto their subtrees.
 		foreach ($query_node_iterator as $node)
 		{
-			$block_data_id = ($node->is_root()) ? $this->block_data_id : NULL;
 			// the root uses the main entry ids, all others use all
 			// of the parent's child ids. These form all of their potential
 			// parents, and thus the where_in for our query.
@@ -128,7 +127,7 @@ class EE_relationship_tree_builder {
 			// Store flattened ids for the big entry query
 			$all_entry_ids[] = $this->_propagate_ids(
 				$node,
-				ee()->relationship_model->node_query($node, $entry_ids, $this->grid_field_id, $block_data_id)
+				ee()->relationship_model->node_query($node, $entry_ids, $this->grid_field_id, $this->block_data_id)
 			);
 		}
 
@@ -264,6 +263,7 @@ class EE_relationship_tree_builder {
 
 			$tag_name = rtrim($relationship_prefix, ':');
 			$in_grid = array_key_exists($relationship_prefix, $this->grid_relationship_ids);
+			$in_fluid_block = (bool) ($this->block_data_id && $this->block_data_id > 0);
 
 			if ($in_grid && $match[2])
 			{
@@ -340,6 +340,7 @@ class EE_relationship_tree_builder {
 				'shortcut'	  => $is_only_relationship ? FALSE : ltrim($tag, ':'),
 				'open_tag'	  => $match[0],
 				'in_grid'	  => $in_grid,
+				'in_fluid_block' => $in_fluid_block,
 				'in_cond' => $type == 'conditional' ? TRUE : FALSE
 			));
 
