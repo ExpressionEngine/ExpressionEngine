@@ -188,7 +188,8 @@ class Grid_lib {
 			NULL,
 			$this->field_id,
 			$this->entry_id,
-			$this->content_type
+			$this->content_type,
+			$this->block_data_id
 		);
 
 		$row_data = (isset($row['col_id_'.$column['col_id']]))
