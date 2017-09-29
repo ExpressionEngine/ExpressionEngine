@@ -72,7 +72,7 @@ trait ModifiableTrait {
 	 */
 	public function replace_length($data, $params = array(), $tagdata = FALSE)
 	{
-		return (string) ee('Format')->make('Text', $data)->getLength();
+		return (string) ee('Format')->make('Text', $data)->length();
 	}
 
 	/**

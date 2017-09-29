@@ -6,6 +6,9 @@ $lang = array(
 
 
 /* Menu */
+
+'backup_utility' => 'Backup Utility',
+
 'cache_manager' => 'Cache Manager',
 
 'communicate' => 'Communicate',
@@ -337,6 +340,26 @@ $lang = array(
 'xml_parse_error' => 'Unable to parse XML',
 
 'xml_parse_error_desc' => 'Check the XML file for any incorrect syntax.',
+
+
+/* Database Backup Utility */
+'backing_up' => 'Backing up...',
+
+'backup_database' => 'Backup Database',
+
+'backup_error' => 'Cannot Make Backup',
+
+'backup_success' => 'Backup Succeeded',
+
+'backup_success_desc' => 'Your backup has been stored in your system folder at: <b>%s</b>',
+
+'backup_tables' => 'Backup tables',
+
+'cache_path_not_writable' => 'Your cache path is not writable. This folder must be writable to write your backup.',
+
+'not_enough_free_disk_space' => 'There is not enough free disk space to write your backup. %s needed.',
+
+'table_count' => '<b>%s</b> tables',
 
 
 /* SQL Query Form */

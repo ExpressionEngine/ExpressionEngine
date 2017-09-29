@@ -7,6 +7,8 @@
  * @license   https://expressionengine.com/license
  */
 
+namespace EllisLab\ExpressionEngine\Updater\Version_3_4_2;
+
 /**
  * Update
  */
@@ -21,7 +23,7 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'add_enable_devlog_alerts',
                 'addImageQualityColumn',

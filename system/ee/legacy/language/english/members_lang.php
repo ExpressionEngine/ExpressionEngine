@@ -926,6 +926,14 @@ $lang = array(
 
 'settings' => 'Settings',
 
+'show_all_banned' => 'All %d banned',
+
+'show_all_member_groups' => 'All %d member groups',
+
+'show_all_members' => 'All %d members',
+
+'show_all_pending' => 'All %d pending',
+
 'template_groups' => 'Template groups',
 
 'template_partials' => 'Template partials',

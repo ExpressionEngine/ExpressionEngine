@@ -94,6 +94,11 @@ abstract class Core {
 
 		$application = $this->loadApplicationCore();
 
+		if (defined('BOOT_ONLY'))
+		{
+			return $this->bootOnly($request);
+		}
+
 		$routing = $this->getRouting($request);
 		$routing = $this->loadController($routing);
 		$routing = $this->validateRequest($routing);
@@ -104,6 +109,31 @@ abstract class Core {
 		$this->runController($routing);
 
 		return $application->getResponse();
+	}
+
+	/**
+	 * Loads ExpressionEngine without running a controller method
+	 */
+	protected function bootOnly(Request $request)
+	{
+		// Boot installer instead of Core?
+		if (INSTALLER)
+		{
+			$routing = [
+				'directory' => '',
+				'class' => 'wizard',
+				'method' => 'index',
+				'segments' => []
+			];
+			$routing = $this->loadController($routing);
+			\Wizard::_setFacade($this->legacy->getFacade());
+			new \Wizard();
+			return;
+		}
+
+		$this->legacy->includeBaseController();
+		\Base_Controller::_setFacade($this->legacy->getFacade());
+		new \Base_Controller();
 	}
 
 	/**

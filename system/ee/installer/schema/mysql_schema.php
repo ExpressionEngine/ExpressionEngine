@@ -550,7 +550,6 @@ class EE_Schema {
 			cat_group varchar(255) NULL DEFAULT NULL,
 			status_group int(4) unsigned NULL DEFAULT NULL,
 			deft_status varchar(50) NOT NULL default 'open',
-			field_group int(4) unsigned NULL DEFAULT NULL,
 			search_excerpt int(4) unsigned NULL DEFAULT NULL,
 			deft_category varchar(60) NULL DEFAULT NULL,
 			deft_comments char(1) NOT NULL default 'y',
@@ -589,7 +588,6 @@ class EE_Schema {
 			PRIMARY KEY `channel_id` (`channel_id`),
 			KEY `cat_group` (`cat_group`),
 			KEY `status_group` (`status_group`),
-			KEY `field_group` (`field_group`),
 			KEY `channel_name` (`channel_name`),
 			KEY `site_id` (`site_id`)
 		)";
@@ -689,18 +687,23 @@ class EE_Schema {
 
 		$Q[] = "CREATE TABLE exp_field_groups (
 			group_id int(4) unsigned NOT NULL auto_increment,
-			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
+			site_id INT(4) UNSIGNED NULL DEFAULT 1,
 			group_name varchar(50) NOT NULL,
 			PRIMARY KEY `group_id` (`group_id`),
 			KEY `site_id` (`site_id`)
+		)";
+
+		$Q[] = "CREATE TABLE exp_channels_channel_field_groups (
+			channel_id int(4) unsigned NOT NULL,
+			group_id int(4) unsigned NOT NULL,
+			PRIMARY KEY `channel_id_group_id` (`channel_id`, `group_id`)
 		)";
 
 		// Channel Custom Field Definitions
 
 		$Q[] = "CREATE TABLE exp_channel_fields (
 			field_id int(6) unsigned NOT NULL auto_increment,
-			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
-			group_id int(4) unsigned NOT NULL,
+			site_id INT(4) UNSIGNED NULL DEFAULT 1,
 			field_name varchar(32) NOT NULL,
 			field_label varchar(50) NOT NULL,
 			field_instructions TEXT NULL,
@@ -722,9 +725,20 @@ class EE_Schema {
 			field_settings text NULL,
 			legacy_field_data char(1) NOT NULL default 'n',
 			PRIMARY KEY `field_id` (`field_id`),
-			KEY `group_id` (`group_id`),
 			KEY `field_type` (`field_type`),
 			KEY `site_id` (`site_id`)
+		)";
+
+		$Q[] = "CREATE TABLE exp_channels_channel_fields (
+			channel_id int(4) unsigned NOT NULL,
+			field_id int(6) unsigned NOT NULL,
+			PRIMARY KEY `channel_id_field_id` (`channel_id`, `field_id`)
+		)";
+
+		$Q[] = "CREATE TABLE exp_channel_field_groups_fields (
+			field_id int(6) unsigned NOT NULL,
+			group_id int(4) unsigned NOT NULL,
+			PRIMARY KEY `field_id_group_id` (`field_id`, `group_id`)
 		)";
 
 		// Frontend Channel Form Settings

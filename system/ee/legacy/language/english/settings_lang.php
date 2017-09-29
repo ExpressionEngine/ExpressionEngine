@@ -79,10 +79,6 @@ $lang = array(
 
 'online' => 'Online',
 
-'running_current' => 'ExpressionEngine is up to date',
-
-'running_current_desc' => 'ExpressionEngine %s is the latest version.',
-
 'site_default' => 'Use site default',
 
 'site_name' => 'Name',
@@ -100,10 +96,6 @@ $lang = array(
 'version_autocheck' => 'New version auto check',
 
 'version_autocheck_desc' => 'When set to <b>auto</b>, ExpressionEngine will automatically check for newer versions of the software.',
-
-'version_update_available' => 'A newer version of ExpressionEngine is available',
-
-'version_update_inst' => 'ExpressionEngine %s is available. <a href="%s" rel="external">Download the latest version</a> and follow the <a href="%s" rel="external">update instructions</a>.',
 
 
 /* License & Registration */

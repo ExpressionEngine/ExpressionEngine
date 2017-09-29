@@ -7,6 +7,8 @@
  * @license   https://expressionengine.com/license
  */
 
+namespace EllisLab\ExpressionEngine\Updater\Version_3_4_3;
+
 /**
  * Update
  */

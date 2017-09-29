@@ -116,6 +116,67 @@ class Number extends Formatter {
 	}
 
 	/**
+	 * Duration Formatter
+	 *
+	 * @param  array  $options (string) locale
+	 * @return self This returns a reference to itself
+	 */
+	public function duration($options = [])
+	{
+		$this->content = round($this->content);
+
+		$options = [
+			'locale' => (isset($options['locale'])) ? $options['locale'] : 'en_US.UTF-8',
+		];
+
+		if ($this->intl_loaded)
+		{
+			$fmt = new \NumberFormatter($options['locale'], \NumberFormatter::DURATION);
+			$this->content = $fmt->format($this->content);
+			return $this;
+		}
+
+		// the following is a fallback that follows the NumberFormatter::DURATION
+		// output pattern if the intl extension isn't available
+
+		if ($this->content < 60)
+		{
+			$this->content = sprintf(lang('formatter_duration_seconds_only'), $this->content);
+			return $this;
+		}
+
+		$seconds = $this->content % 60;
+
+		// NumberFormatter::DURATION zero pads everything but the left-most digit
+		if ($seconds < 10)
+		{
+			$seconds = '0'.$seconds;
+		}
+
+		$remainder = ($this->content - $seconds) / 60;
+		$minutes = $remainder % 60;
+
+		$remainder = $remainder - $minutes;
+
+		if ($remainder <= 0)
+		{
+			$this->content = $minutes.':'.$seconds;
+			return $this->content;
+		}
+
+		if ($minutes < 10)
+		{
+			$minutes = '0'.$minutes;
+		}
+
+		$remainder = $remainder / 60;
+		$hours = number_format($remainder);
+
+		$this->content = $hours.':'.$minutes.':'.$seconds;
+		return $this;
+	}
+
+	/**
 	 * Ordinal Formatter
 	 *
 	 * Locales other than English require the intl extension

@@ -34,9 +34,15 @@
 								<em><?=lang('build') . ' ' . $new_version['build']?></em>
 							</p>
 								<a href="" class="close">&#10006;</a>
+								<?php if (ee()->session->userdata('group_id') == 1): ?>
+									<p class="update-btn"><a class="btn submit" data-post-url="<?=ee('CP/URL', 'updater')?>">Update Now</a></p>
+								<?php endif ?>
 								<div class="status out"><?=lang('out_of_date')?></div>
 							<?php else: ?>
 								<a href="" class="close">&#10006;</a>
+								<?php if (ee()->session->userdata('group_id') == 1): ?>
+									<p class="update-btn"><a class="btn action" href="<?=ee('CP/URL')->make('settings/general/version-check', ['redirect' => ee('CP/URL')->getCurrentUrl()->compile()])?>">Check for Update</a></p>
+								<?php endif ?>
 								<div class="status"><?=lang('current')?></div>
 							<?php endif ?>
 						</div>
@@ -91,6 +97,30 @@
 			</section>
 		</footer>
 		<div class="overlay"></div>
+
+		<div class="update-overlay">
+			<div class="update-content">
+				<small>Updating <b><?=ee()->config->item('site_name')?></b> from <?=$formatted_version?> to <?=isset($new_version['version']) ? $new_version['version'] : '?'?></small>
+				<div class="update-process">
+					<p class="update-status1">Requesting update<span>...</span></p>
+					<p class="update-status2"></p>
+				</div>
+			</div>
+		</div>
+		<div class="update-success-overlay">
+			<div class="update-content">
+				<small>Site updated!</small>
+				<p>Congrats!</p>
+				<p><a class="btn action update-close" href="#">Check it out</a></p>
+			</div>
+		</div>
+		<div class="update-issue-overlay">
+			<div class="update-content">
+				<small>Update stopped</small>
+				<p>Don't Panic!</p>
+				<p><a class="btn action update-close" href="#">Roll back to version <b>3</b>.0.1</a></p>
+			</div>
+		</div>
 
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->view->script_tag('common.js')?>

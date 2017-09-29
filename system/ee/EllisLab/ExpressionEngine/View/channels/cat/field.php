@@ -7,6 +7,7 @@
 		</fieldset>
 		<h1><?=$cp_page_title?></h1>
 		<?=ee('CP/Alert')->getAllInlines()?>
+		<?php if (isset($filters)) echo $filters; ?>
 		<?php $this->embed('_shared/table', $table); ?>
 		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">

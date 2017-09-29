@@ -698,5 +698,4 @@ EE.cp.broadcastEvents = (function() {
 
 })();
 
-
 })(jQuery);

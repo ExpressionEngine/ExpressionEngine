@@ -47,6 +47,8 @@ $lang = array(
 
 'copyright' => 'Copyright',
 
+'custom_limit' => 'custom limit',
+
 'e_no_css' => 'The requested CSS file could not be opened.',
 
 'edit_quicklinks' => 'Edit Quick Links',
@@ -111,6 +113,10 @@ $lang = array(
 
 'rights_reserved' => 'All Rights Reserved',
 
+'running_current' => 'ExpressionEngine is up to date',
+
+'running_current_desc' => 'ExpressionEngine %s is the latest version.',
+
 'session_idle' => 'Idle session detected',
 
 'session_idle_description' => 'You\'ve gone idle, please enter your password to continue.',
@@ -136,6 +142,10 @@ $lang = array(
 'username_filter' => 'username',
 
 'version_identifier' => 'identifier:',
+
+'version_update_available' => 'A newer version of ExpressionEngine is available',
+
+'version_update_inst' => "ExpressionEngine %s is available. <a href='#' data-post-url='%s'>Click here to upgrade</a> or follow the <a href='%s' rel='external'>manual upgrade instructions</a>.",
 
 
 /* Buttons */

@@ -7,6 +7,8 @@
  * @license   https://expressionengine.com/license
  */
 
+namespace EllisLab\ExpressionEngine\Updater\Version_4_0_0;
+
 /**
  * Update
  */
@@ -21,19 +23,22 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
+				'emancipateTheFields',
 				'addFieldDataFlag',
 				'removeMemberHomepageTable',
 				'moveMemberFields',
 				'warnAboutBirthdayTag',
 				'globalizeSave_tmpl_files',
+				'clearCurrentVersionCache',
 				'nullOutRelationshipChannelDataFields',
 				'addSortIndexToChannelTitles',
 				'addImageQualityColumn',
 				'addSpamModerationPermissions',
 				'runSpamModuleUpdate',
 				'addPrimaryKeyToFileCategoryTable',
+				'addDurationField',
 			)
 		);
 
@@ -43,6 +48,129 @@ class Updater {
 		}
 
 		return TRUE;
+	}
+
+	private function emancipateTheFields()
+	{
+		// Fields can span Sites and do not need Groups
+		ee()->smartforge->modify_column('channel_fields', array(
+			'site_id' => array(
+				'type'     => 'int',
+				'unsigned' => TRUE,
+				'null'     => TRUE,
+			),
+			'group_id' => array(
+				'type'     => 'int',
+				'unsigned' => TRUE,
+				'null'     => TRUE,
+			),
+		));
+
+		// Field groups can span Sites
+		ee()->smartforge->modify_column('field_groups', array(
+			'site_id' => array(
+				'type'     => 'int',
+				'unsigned' => TRUE,
+				'null'     => TRUE,
+			),
+		));
+
+		// Add the Many-to-Many tables
+		ee()->dbforge->add_field(
+			array(
+				'channel_id' => array(
+					'type'       => 'int',
+					'constraint' => 4,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				),
+				'group_id' => array(
+					'type'       => 'int',
+					'constraint' => 4,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				)
+			)
+		);
+		ee()->dbforge->add_key(array('channel_id', 'group_id'), TRUE);
+		ee()->smartforge->create_table('channels_channel_field_groups');
+
+		ee()->dbforge->add_field(
+			array(
+				'channel_id' => array(
+					'type'       => 'int',
+					'constraint' => 4,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				),
+				'field_id' => array(
+					'type'       => 'int',
+					'constraint' => 6,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				)
+			)
+		);
+		ee()->dbforge->add_key(array('channel_id', 'field_id'), TRUE);
+		ee()->smartforge->create_table('channels_channel_fields');
+
+		ee()->dbforge->add_field(
+			array(
+				'field_id' => array(
+					'type'       => 'int',
+					'constraint' => 6,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				),
+				'group_id' => array(
+					'type'       => 'int',
+					'constraint' => 4,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				)
+			)
+		);
+		ee()->dbforge->add_key(array('field_id', 'group_id'), TRUE);
+		ee()->smartforge->create_table('channel_field_groups_fields');
+
+		// Convert the one-to-one channel to field group assignment to the
+		// many-to-many structure
+		if (ee()->db->field_exists('field_group', 'channels'))
+		{
+			$channels = ee()->db->select('channel_id, field_group')
+				->where('field_group IS NOT NULL')
+				->get('channels')
+				->result();
+
+			foreach ($channels as $channel)
+			{
+				ee()->db->insert('channels_channel_field_groups', array(
+					'channel_id' => $channel->channel_id,
+					'group_id' => $channel->field_group
+				));
+			}
+
+			ee()->smartforge->drop_column('channels', 'field_group');
+		}
+
+		// Convert the one-to-one field to field group assignment to the
+		// many-to-many structure
+		if (ee()->db->field_exists('group_id', 'channel_fields'))
+		{
+			$fields = ee()->db->select('field_id, group_id')
+				->get('channel_fields')
+				->result();
+
+			foreach ($fields as $field)
+			{
+				ee()->db->insert('channel_field_groups_fields', array(
+					'field_id' => $field->field_id,
+					'group_id' => $field->group_id
+				));
+			}
+
+			ee()->smartforge->drop_column('channel_fields', 'group_id');
+		}
 	}
 
 	/**
@@ -333,11 +461,11 @@ class Updater {
 
 		ee()->remove('template');
 		require_once(APPPATH . 'libraries/Template.php');
-		ee()->set('template', new Installer_Template());
+		ee()->set('template', new \Installer_Template());
 
 		$installer_config = ee()->config;
 		ee()->remove('config');
-		ee()->set('config', new MSM_Config());
+		ee()->set('config', new \MSM_Config());
 
 		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
 
@@ -406,7 +534,7 @@ class Updater {
 	{
 		// Do we need to override?
 		$save_as_file = FALSE;
-		$msm_config = new MSM_Config();
+		$msm_config = new \MSM_Config();
 
 		$all_site_ids_query = ee()->db->select('site_id')
 			->get('sites')
@@ -432,6 +560,15 @@ class Updater {
 			// Add config override
 			ee()->config->_update_config(array('save_tmpl_files' => 'n'));
 		}
+	}
+
+	/**
+	 * Clear old current_version cache, version info for 4.0 is in a different
+	 * format
+	 */
+	private function clearCurrentVersionCache()
+	{
+		ee()->cache->delete('current_version', \Cache::GLOBAL_SCOPE);
 	}
 
 	/**
@@ -556,6 +693,21 @@ class Updater {
 		// Finally create the primary key
 		ee()->smartforge->add_key('file_categories', array('file_id', 'cat_id'), 'PRIMARY');
 	}
+
+	/**
+	 * New "Duration" Field Type
+	 */
+	private function addDurationField()
+	{
+		ee()->db->insert('fieldtypes', array(
+				'name' => 'duration',
+				'version' => '1.0.0',
+				'settings' => base64_encode(serialize(array())),
+				'has_global_settings' => 'n'
+			)
+		);
+	}
 }
+// END CLASS
 
 // EOF
