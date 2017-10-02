@@ -42,15 +42,21 @@ class Comment_ext {
 			ee('CP/URL')->make('publish/comments', array('filter_by_status' => 'p'))
 		);
 
-		$spam_comments = ee('Model')->get('Comment')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('status', 's')
-			->count();
+		$spam_addon = ee('Addon')->get('spam');
+		if ($spam_addon->isInstalled())
+		{
+			ee()->lang->load('spam');
 
-		$sub->addItem(
-			lang('spam') . " ({$spam_comments})",
-			ee('CP/URL')->make('addons/settings/spam', array('content_type' => 'comment'))
-		);
+			$spam_comments = ee('Model')->get('Comment')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('status', 's')
+				->count();
+
+			$sub->addItem(
+				lang('spam') . " ({$spam_comments})",
+				ee('CP/URL')->make('addons/settings/spam', array('content_type' => 'comment'))
+			);
+		}
 
 		$sub->addItem(
 			lang('view_all'),
