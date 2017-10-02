@@ -80,7 +80,7 @@ abstract class AbstractCategories extends CP_Controller {
 
 		if (ee()->cp->allowed_group('can_delete_categories'))
 		{
-			$list->withRemoveUrl(ee('CP/URL')->make('categories/remove'))
+			$list->withRemoveUrl(ee('CP/URL')->make('categories/groups/remove'))
 				->withRemovalKey('content_id');
 		}
 
