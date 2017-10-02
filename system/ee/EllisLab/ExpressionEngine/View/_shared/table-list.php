@@ -12,6 +12,9 @@
 					<div class="txt">
 						<div class="main">
 							<a href="<?=$row['href']?>"><b><?=ee('Format')->make('Text', $row['label'])->convertToEntities()?></b></a>
+							<?php if (isset($row['faded'])): ?>
+								<span class="faded"><?=$row['faded']?></span>
+							<?php endif ?>
 						</div>
 						<div class="secondary">
 							<span class="faded">ID#</span> <?=$row['id']?> <?php if ( ! empty($row['extra'])):?> <span class="faded">/</span> <?=ee('Format')->make('Text', $row['extra'])->convertToEntities()?><?php endif ?>
