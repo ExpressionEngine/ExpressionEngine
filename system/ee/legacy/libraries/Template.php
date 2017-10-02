@@ -419,17 +419,15 @@ class EE_Template {
 				{
 					$layout_conditionals['layout:'.$key] = TRUE;
 
-					$i = 0;
 					$total_items = count($val);
 					$variables = [];
 
-					foreach ($val as $item)
+					foreach ($val as $idx => $item)
 					{
-						// order is important in this array, since $i is incremented, then used in other calculations
 						$variables[] = [
-							'index' => $i,
-							'count' => ++$i,
-							'reverse_count' => $total_items - $i + 1,
+							'index' => $idx,
+							'count' => $idx + 1,
+							'reverse_count' => $total_items - $idx,
 							'total_results' => $total_items,
 							'value' => $item,
 						];
@@ -438,7 +436,7 @@ class EE_Template {
 					$this->template = $this->_parse_var_pair('layout:'.$key, $variables, $this->template);
 
 					// catch-all, if a layout array is used as a single variable, output the last one in
-					if (strpos($this->template, 'layout:'.$key))
+					if (strpos($this->template, 'layout:'.$key) !== FALSE)
 					{
 						$this->template = $this->_parse_var_single('layout:'.$key, $item, $this->template);
 					}
@@ -451,7 +449,7 @@ class EE_Template {
 			}
 
 			// parse index-specified items, e.g.: {layout:titles index='4'}
-			if (strpos($this->template, LD.'layout:'))
+			if (strpos($this->template, LD.'layout:') !== FALSE)
 			{
 				// prototype:
 				// array (size=1)
