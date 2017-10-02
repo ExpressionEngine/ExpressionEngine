@@ -1002,10 +1002,11 @@ class Member_auth extends Member {
 		/* 'member_process_reset_password' hook.
 		/*  - Additional processing after user resets password
 		/*  - Added EE 2.9.3
+		/*  - Member ID parameter added 4.0.0
 		*/
 			if (ee()->extensions->active_hook('member_process_reset_password') === TRUE)
 			{
-				$data = ee()->extensions->call('member_process_reset_password', $data);
+				$data = ee()->extensions->call('member_process_reset_password', $data, $member_id_query->row('member_id'));
 				if (ee()->extensions->end_script === TRUE) return;
 			}
 		/*
