@@ -459,12 +459,19 @@ class Channels extends AbstractChannelsController {
 	 */
 	public function renderFieldsField($channel = NULL)
 	{
-		$custom_field_options = ee('Model')->get('ChannelField')
-			->fields('field_label')
+		$fields = ee('Model')->get('ChannelField')
+			->fields('field_label', 'field_name')
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('field_label')
-			->all()
-			->getDictionary('field_id', 'field_label');
+			->all();
+
+		$custom_field_options = $fields->map(function($field) {
+			return [
+				'label' => $field->field_label,
+				'value' => $field->getId(),
+				'instructions' => LD.$field->field_name.RD
+			];
+		});
 
 		$selected = ee('Request')->post('custom_fields') ?: [];
 
