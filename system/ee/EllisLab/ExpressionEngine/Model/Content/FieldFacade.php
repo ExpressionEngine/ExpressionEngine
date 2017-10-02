@@ -306,6 +306,12 @@ class FieldFacade {
 		return $output;
 	}
 
+	public function acceptsContentType($name)
+	{
+		$ft = $this->getNativeField();
+		return $ft->accepts_content_type($name);
+	}
+
 
 	// TODO THIS WILL MOST DEFINITELY GO AWAY! BAD DEVELOPER!
 	public function getNativeField()

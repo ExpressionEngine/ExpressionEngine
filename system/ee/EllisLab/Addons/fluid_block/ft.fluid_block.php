@@ -379,11 +379,13 @@ class Fluid_block_ft extends EE_Fieldtype {
 	public function display_settings($data)
 	{
 		$custom_field_options = ee('Model')->get('ChannelField')
-			->fields('field_id', 'field_label')
 			->filter('site_id', 'IN', array(0, ee()->config->item('site_id')))
 			->filter('field_type', '!=', 'fluid_block')
 			->order('field_label')
 			->all()
+			->filter(function($field) {
+				return $field->getField()->acceptsContentType('fluid_block');
+			})
 			->getDictionary('field_id', 'field_label');
 
 		$settings = array(
