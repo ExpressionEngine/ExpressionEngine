@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Extension for the Spam Module to add a user-friendly application sub nav
+ * Extension for the Comment Module to add a user-friendly application sub nav
  */
 class Comment_ext {
 
