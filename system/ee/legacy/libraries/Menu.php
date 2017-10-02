@@ -215,7 +215,7 @@ class EE_Menu {
 		{
 			$sections = array(
 				'channels' => 'channels/layouts',
-				'channel_fields' => 'channels/fields',
+				'channel_fields' => 'fields',
 				'categories' => 'categories'
 			);
 

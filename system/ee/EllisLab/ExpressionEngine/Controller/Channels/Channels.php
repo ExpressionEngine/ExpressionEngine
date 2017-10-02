@@ -209,10 +209,10 @@ class Channels extends AbstractChannelsController {
 		];
 
 		ee()->javascript->set_global([
-			'channelManager.fieldGroup.createUrl' => ee('CP/URL')->make('channels/fields/groups/create')->compile(),
+			'channelManager.fieldGroup.createUrl' => ee('CP/URL')->make('fields/groups/create')->compile(),
 			'channelManager.fieldGroup.fieldUrl' => ee('CP/URL')->make('channels/render-field-groups-field')->compile(),
 
-			'channelManager.fields.createUrl' => ee('CP/URL')->make('channels/fields/create')->compile(),
+			'channelManager.fields.createUrl' => ee('CP/URL')->make('fields/create')->compile(),
 			'channelManager.fields.fieldUrl' => ee('CP/URL')->make('channels/render-fields-field')->compile(),
 
 			'channelManager.catGroup.createUrl' => ee('CP/URL')->make('categories/groups/create')->compile(),
@@ -446,7 +446,7 @@ class Channels extends AbstractChannelsController {
 			'no_results' => [
 				'text' => sprintf(lang('no_found'), lang('field_groups')),
 				'link_text' => 'add_new',
-				'link_href' => ee('CP/URL')->make('channels/fields/groups/create')
+				'link_href' => ee('CP/URL')->make('fields/groups/create')
 			]
 		]);
 	}
@@ -488,7 +488,7 @@ class Channels extends AbstractChannelsController {
 			'no_results' => [
 				'text' => sprintf(lang('no_found'), lang('fields')),
 				'link_text' => 'add_new',
-				'link_href' => ee('CP/URL')->make('channels/fields/create')
+				'link_href' => ee('CP/URL')->make('fields/create')
 			]
 		]);
 	}

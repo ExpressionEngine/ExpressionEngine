@@ -41,6 +41,8 @@ $lang = array(
 
 'captcha_explanation' => 'A CAPTCHA is an image containing a security code that users have to submit. Please consult the user guide for more info.',
 
+'categories' => 'Categories',
+
 'choose_wisely' => 'Choose wisely',
 
 'click_to_edit' => 'Click to Edit',
@@ -58,6 +60,8 @@ $lang = array(
 'e_no_css' => 'The requested CSS file could not be opened.',
 
 'edit_quicklinks' => 'Edit Quick Links',
+
+'fields' => 'Fields',
 
 'forgot_password' => 'Forgot your password?',
 

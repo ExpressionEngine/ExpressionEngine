@@ -162,6 +162,11 @@ class Sets extends AbstractChannelsController {
 				$set->getIdsForElementType('category_groups')
 			);
 
+			ee()->session->set_flashdata(
+				'imported_field_groups',
+				$set->getIdsForElementType('field_groups')
+			);
+
 			$alert = ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('channel_set_imported'))

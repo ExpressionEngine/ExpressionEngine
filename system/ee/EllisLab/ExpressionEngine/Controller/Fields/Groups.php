@@ -7,16 +7,15 @@
  * @license   https://expressionengine.com/license
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Channels\Fields;
+namespace EllisLab\ExpressionEngine\Controller\Fields;
 
-use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
+use EllisLab\ExpressionEngine\Controller\Fields\AbstractFields as AbstractFieldsController;
 use EllisLab\ExpressionEngine\Model\Channel\ChannelFieldGroup;
 
 /**
  * Channel\Fields\Groups Controller
 */
-class Groups extends AbstractChannelsController {
+class Groups extends AbstractFieldsController {
 
 	public function __construct()
 	{
@@ -31,58 +30,10 @@ class Groups extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$this->generateSidebar('field');
-		$this->base_url = ee('CP/URL')->make('channels/fields/groups');
+		$this->generateSidebar();
 
 		ee()->lang->loadfile('admin');
 		ee()->lang->loadfile('admin_content');
-	}
-
-	public function groups()
-	{
-		if (ee()->input->post('bulk_action') == 'remove')
-		{
-			$this->remove(ee()->input->post('selection'));
-			ee()->functions->redirect(ee('CP/URL')->make('channels/fields/groups/groups'));
-		}
-
-		$groups = ee('Model')->get('ChannelFieldGroup')
-			->filter('site_id', 'IN', array(ee()->config->item('site_id'), 0));
-
-		$total_rows = $groups->count();
-
-		$vars = array(
-			'create_url' => ee('CP/URL')->make('channels/fields/groups/create')
-		);
-
-		$filters = ee('CP/Filter')
-					->add('Perpage', $total_rows, 'show_all_field_groups');
-
-		// Before pagination so perpage is set correctly
-		$this->renderFilters($filters);
-
-		$table = $this->buildTableFromChannelGroupsQuery($groups, array(), ee()->cp->allowed_group('can_delete_channel_fields'));
-
-		$vars['table'] = $table->viewData($this->base_url);
-		$vars['show_create_button'] = ee()->cp->allowed_group('can_create_channel_fields');
-
-
-		$vars['pagination'] = ee('CP/Pagination', $total_rows)
-			->perPage($this->perpage)
-			->currentPage($this->page)
-			->render($this->base_url);
-
-		ee()->javascript->set_global('lang.remove_confirm', lang('group') . ': <b>### ' . lang('groups') . '</b>');
-		ee()->cp->add_js_script(array(
-			'file' => array(
-				'cp/confirm_remove',
-			),
-		));
-
-		ee()->view->cp_page_title = lang('field_groups');
-		ee()->view->cp_page_title_desc = lang('field_groups_desc');
-
-		ee()->cp->render('channels/fields/groups/index', $vars);
 	}
 
 	public function create()
@@ -93,12 +44,12 @@ class Groups extends AbstractChannelsController {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('channels/fields/groups')->compile() => lang('field_groups'),
+			ee('CP/URL')->make('fields')->compile() => lang('field_manager'),
 		);
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL')->make('channels/fields/groups/create'),
+			'base_url' => ee('CP/URL')->make('fields/groups/create'),
 			'sections' => $this->form(),
 			'buttons' => [
 				[
@@ -146,13 +97,15 @@ class Groups extends AbstractChannelsController {
 
 				if (ee('Request')->post('submit') == 'save_and_new')
 				{
-					ee()->functions->redirect(ee('CP/URL')->make('channels/fields/groups/create'));
+					ee()->functions->redirect(ee('CP/URL')->make('fields/groups/create'));
 				}
 				else
 				{
-					ee()->session->set_flashdata('group_id', $field_group->group_id);
+					ee()->session->set_flashdata('group_id', $field_group->getId());
 
-					ee()->functions->redirect(ee('CP/URL')->make('channels/fields/groups'));
+					ee()->functions->redirect(
+						ee('CP/URL')->make('fields', ['group_id' => $field_group->getId()])
+					);
 				}
 			}
 			else
@@ -191,12 +144,12 @@ class Groups extends AbstractChannelsController {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('channels/fields/groups')->compile() => lang('field_groups'),
+			ee('CP/URL')->make('fields')->compile() => lang('field_manager'),
 		);
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL')->make('channels/fields/groups/edit/' . $id),
+			'base_url' => ee('CP/URL')->make('fields/groups/edit/' . $id),
 			'sections' => $this->form($field_group),
 			'buttons' => [
 				[
@@ -238,11 +191,13 @@ class Groups extends AbstractChannelsController {
 
 				if (ee('Request')->post('submit') == 'save_and_new')
 				{
-					ee()->functions->redirect(ee('CP/URL')->make('channels/fields/groups/create'));
+					ee()->functions->redirect(ee('CP/URL')->make('fields/groups/create'));
 				}
 				else
 				{
-					ee()->functions->redirect(ee('CP/URL')->make('channels/fields/groups'));
+					ee()->functions->redirect(
+						ee('CP/URL')->make('fields', ['group_id' => $field_group->getId()])
+					);
 				}
 			}
 			else
@@ -276,12 +231,18 @@ class Groups extends AbstractChannelsController {
             $field_group->ChannelFields = NULL;
 		}
 
-		$custom_field_options = ee('Model')->get('ChannelField')
-			->fields('field_id', 'field_label')
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('field_label')
-			->all()
-			->getDictionary('field_id', 'field_label');
+		// If it's an AJAX request, we're probably in a modal; we currently
+		// can't open a modal from a modal, lest inception
+		$should_allow_field_creation = ! AJAX_REQUEST;
+
+		$add_fields_button = NULL;
+		if ($should_allow_field_creation)
+		{
+			$add_fields_button = [
+				'text' => 'add_field',
+				'rel' => 'add_new'
+			];
+		}
 
 		$sections = array(
 			array(
@@ -297,65 +258,98 @@ class Groups extends AbstractChannelsController {
 					)
 				),
 				array(
-					'title' => 'custom_fields',
+					'title' => 'fields',
+					'desc' => 'fields_assign_to_group',
+					'button' => $add_fields_button,
 					'fields' => array(
 						'channel_fields' => array(
-							'type' => 'checkbox',
-							'wrap' => TRUE,
-							'choices' => $custom_field_options,
-							'value' => $field_group->ChannelFields->pluck('field_id'),
+							'type' => 'html',
+							'content' => $this->renderFieldsField($field_group, $should_allow_field_creation)
 						)
 					)
 				),
 			)
 		);
 
+		$fieldtypes = ee('Model')->get('Fieldtype')
+			->fields('name')
+			->all();
+
+		// Call fieldtypes' display_settings methods to load any needed JS
+		foreach ($fieldtypes as $fieldtype)
+		{
+			$dummy_field = ee('Model')->make('ChannelField');
+			$dummy_field->field_type = $fieldtype->name;
+			$dummy_field->getSettingsForm();
+		}
+
+		ee()->javascript->set_global([
+			'fieldManager.fields.createUrl' => ee('CP/URL')->make('fields/create')->compile(),
+			'fieldManager.fields.fieldUrl' => ee('CP/URL')->make('fields/groups/render-fields-field')->compile()
+		]);
+
+		ee()->cp->add_js_script('plugin', 'ee_url_title');
+		ee()->cp->add_js_script('file', 'cp/fields/field_manager');
+
 		return $sections;
 	}
 
 	/**
-	  *	 Check Field Group Name
-	  */
-	public function _field_group_name_checks($str, $group_id)
+	 * Renders the Field Groups selection form for the channel create/edit form
+	 *
+	 * @param Channel $channel A Channel entity, optional
+	 * @return string HTML
+	 */
+	public function renderFieldsField($field_group = NULL, $allow_add = TRUE)
 	{
-		if ( ! preg_match("#^[a-zA-Z0-9_\-/\s]+$#i", $str))
-		{
-			ee()->lang->loadfile('admin');
-			ee()->form_validation->set_message('_field_group_name_checks', lang('illegal_characters'));
-			return FALSE;
-		}
-
-		$group = ee('Model')->get('ChannelFieldGroup')
+		$fields = ee('Model')->get('ChannelField')
+			->fields('field_label', 'field_name')
 			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_name', $str);
+			->order('field_label')
+			->all();
 
-		if ($group_id)
+		$custom_field_options = $fields->map(function($field) {
+			return [
+				'label' => $field->field_label,
+				'value' => $field->getId(),
+				'instructions' => LD.$field->field_name.RD
+			];
+		});
+
+		$selected = ee('Request')->post('channel_fields') ?: [];
+
+		if ($field_group)
 		{
-			$group->filter('group_id', '!=', $group_id);
+			$selected = $field_group->ChannelFields->pluck('field_id');
 		}
 
-		if ($group->count())
+		$no_results = ['text' => sprintf(lang('no_found'), lang('fields'))];
+
+		if ($allow_add)
 		{
-			ee()->form_validation->set_message('_field_group_name_checks', lang('taken_field_group_name'));
-			return FALSE;
+			$no_results['link_text'] = 'add_new';
+			$no_results['link_href'] = ee('CP/URL')->make('fields/groups/create');
 		}
 
-		return TRUE;
+		return ee('View')->make('ee:_shared/form/fields/select')->render([
+			'field_name' => 'channel_fields',
+			'choices'    => $custom_field_options,
+			'value'      => $selected,
+			'multi'      => TRUE,
+			'no_results' => $no_results
+		]);
 	}
 
-	private function remove($group_ids)
+	public function remove()
 	{
 		if ( ! ee()->cp->allowed_group('can_delete_channel_fields'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		if ( ! is_array($group_ids))
-		{
-			$group_ids = array($group_ids);
-		}
+		$group_id = ee()->input->post('content_id');
 
-		$field_groups = ee('Model')->get('ChannelFieldGroup', $group_ids)
+		$field_groups = ee('Model')->get('ChannelFieldGroup', $group_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
@@ -368,8 +362,9 @@ class Groups extends AbstractChannelsController {
 			->addToBody(lang('field_groups_removed_desc'))
 			->addToBody($group_names)
 			->defer();
-	}
 
+		ee()->functions->redirect(ee('CP/URL')->make('fields', ee()->cp->get_url_state()));
+	}
 }
 
 // EOF

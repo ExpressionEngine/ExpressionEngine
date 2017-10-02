@@ -12,6 +12,8 @@ $lang = array(
 
 'add_preset_button' => 'Add Preset Button:',
 
+'all_fields' => 'All Fields',
+
 'allow_all_html' => 'Allow ALL HTML',
 
 'allow_all_html_not_recommended' => 'Allow all HTML (not recommended)',
@@ -142,7 +144,7 @@ $lang = array(
 
 'create_field_error_desc' => 'We were unable to create this field, please review and fix errors below.',
 
-'create_field_group' => 'Create Field Group',
+'create_field_group' => 'New Field Group',
 
 'create_field_group_error' => 'Cannot Create Field Group',
 
@@ -230,11 +232,13 @@ $lang = array(
 
 'field' => 'Field',
 
+'fields_assign_to_group' => 'Assign one of more fields to this group.',
+
 'field_content_text' => 'Allowed content',
 
 'field_content_text_desc' => 'Type of content this field can contain.',
 
-'field_groups' => 'Field Groups',
+'field_groups_uc' => 'Field Groups',
 
 'field_groups_desc' => 'Used to group together related custom fields.',
 
@@ -243,6 +247,8 @@ $lang = array(
 'field_is_hidden' => 'Show this field by default?',
 
 'field_label_info' => 'This is the name that will appear in the PUBLISH page',
+
+'field_manager' => 'Field Manager',
 
 'field_options' => 'Field Options',
 
@@ -335,6 +341,8 @@ $lang = array(
 'new_category' => 'New Category',
 
 'new_channel' => 'New Channel',
+
+'new_field' => 'New Field',
 
 'new_group_instructions' => 'Field is required if you are creating a new group',
 
