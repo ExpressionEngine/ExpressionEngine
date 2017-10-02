@@ -14,6 +14,11 @@
 				<div class="section-header__title">
 					<?=$header['title']?>
 				</div>
+				<?php if (isset($header['action_button'])): ?>
+					<div class="section-header__controls">
+						<a class="btn action" href="<?=$header['action_button']['href']?>"><?=$header['action_button']['text']?></a>
+					</div>
+				<?php endif ?>
 			</header>
 		</div>
 	</div>
@@ -21,12 +26,14 @@
 
 <div class="col-group">
 	<?php if (isset($left_nav)): ?>
-	<?=$left_nav?>
+		<div class="col w-4">
+			<?=$left_nav?>
+		</div>
 	<?php endif; ?>
 	<?php if (isset($left_nav)): ?>
-	<div class="col w-12 last">
+		<div class="col w-12 last">
 	<?php else: ?>
-	<div class="col w-16 last">
+		<div class="col w-16 last">
 	<?php endif; ?>
 		<?php if (count($cp_breadcrumbs)): ?>
 			<ul class="breadcrumb">

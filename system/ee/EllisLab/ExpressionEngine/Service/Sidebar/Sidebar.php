@@ -37,6 +37,11 @@ class Sidebar {
 	protected $action_bar;
 
 	/**
+	 * @var string $class Any extra classes to apply to the containing div
+	 */
+	protected $class;
+
+	/**
 	 * Constructor: sets the ViewFactory property
 	 *
 	 * @param ViewFactory $view A ViewFactory object to use with rendering
@@ -52,6 +57,14 @@ class Sidebar {
 	public function make()
 	{
 		return $this;
+	}
+
+	/**
+	 * Creates a new Sidebar object for when the singleton won't do
+	 */
+	public function makeNew()
+	{
+		return new static($this->view);
 	}
 
 	/**
@@ -84,7 +97,10 @@ class Sidebar {
 		}
 
 		return $this->view->make('_shared/sidebar/sidebar')
-			     ->render(array('sidebar' => $output));
+			     ->render([
+					'class' => $this->class,
+					'sidebar' => $output,
+				]);
 	}
 
 	/**
@@ -103,7 +119,7 @@ class Sidebar {
 	}
 
 	/**
-	 * Adds a folder list under this header
+	 * Adds a folder list to the sidebar, without a header
 	 *
 	 * @param string $name The name of the folder list
 	 * @return FolderList A new FolderList object
@@ -124,6 +140,17 @@ class Sidebar {
 	{
 		$this->action_bar = new ActionBar();
 		return $this->action_bar;
+	}
+
+	/**
+	 * Adds some bottom margin to this sidebar
+	 *
+	 * @return self
+	 */
+	public function addMarginBottom()
+	{
+		$this->class = ' mb';
+		return $this;
 	}
 }
 
