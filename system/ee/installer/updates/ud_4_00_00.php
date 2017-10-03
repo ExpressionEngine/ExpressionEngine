@@ -40,6 +40,7 @@ class Updater {
 				'runSpamModuleUpdate',
 				'addPrimaryKeyToFileCategoryTable',
 				'addDurationField',
+				'addCommentMenuExtension',
 			)
 		);
 
@@ -740,6 +741,20 @@ class Updater {
 				'has_global_settings' => 'n'
 			)
 		);
+	}
+
+	private function addCommentMenuExtension()
+	{
+		$data = array(
+			'class'		=> 'Comment_ext',
+			'method'	=> 'addCommentMenu',
+			'hook'		=> 'cp_custom_menu',
+			'settings'	=> serialize([]),
+			'version'	=> '2.3.3',
+			'enabled'	=> 'y'
+		);
+
+		ee()->db->insert('extensions', $data);
 	}
 }
 // END CLASS

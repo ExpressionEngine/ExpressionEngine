@@ -12,11 +12,11 @@
  */
 class Comment_upd {
 
-	var $version = '2.3.2';
-
 	function __construct()
 	{
 		ee()->load->dbforge();
+		$addon = ee('Addon')->get('comment');
+		$this->version = $addon->getVersion();
 	}
 
 	function tabs()
@@ -123,6 +123,18 @@ class Comment_upd {
 
 		ee()->load->library('layout');
 		ee()->layout->add_layout_fields($this->tabs());
+
+		// add menu extension
+		$data = array(
+			'class'		=> 'Comment_ext',
+			'method'	=> 'addCommentMenu',
+			'hook'		=> 'cp_custom_menu',
+			'settings'	=> serialize(array()),
+			'version'	=> $this->version,
+			'enabled'	=> 'y'
+		);
+
+		ee()->db->insert('extensions', $data);
 
 		return TRUE;
 	}

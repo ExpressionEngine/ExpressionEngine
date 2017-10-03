@@ -26,7 +26,7 @@
 					<p<?php if ( ! $can_moderate_comments): ?> class="last"<?php endif; ?>>
 						<?=lang('there_were')?> <b><?=$number_of_new_comments?></b>
 						<?php if ($can_edit_comments): ?>
-							<a href="<?=ee('CP/URL', 'publish/comments')?>"><?=lang('new_comments')?></a>
+							<a href="<?=ee('CP/URL')->make('publish/comments', array('filter_by_date' => ee()->localize->now - ee()->session->userdata['last_visit']))?>"><?=lang('new_comments')?></a>
 						<?php else: ?>
 							<?=lang('new_comments') ?>
 						<?php endif; ?>
