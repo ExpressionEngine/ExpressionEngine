@@ -30,8 +30,6 @@ class Uploads extends AbstractFilesController {
 	{
 		parent::__construct();
 
-		$this->stdHeader();
-
 		ee()->load->library('form_validation');
 	}
 
@@ -62,6 +60,7 @@ class Uploads extends AbstractFilesController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
+		$this->stdHeader($upload_id);
 		$this->generateSidebar($upload_id);
 		return $this->form($upload_id);
 	}
@@ -695,6 +694,7 @@ class Uploads extends AbstractFilesController {
 			ee()->functions->redirect(ee('CP/URL')->make('files/uploads'));
 		}
 
+		$this->stdHeader($upload_id);
 		$this->generateSidebar($upload_id);
 		ee()->load->model('file_upload_preferences_model');
 
