@@ -117,7 +117,6 @@ class Edit extends AbstractPublishController {
 		if ($channel_id)
 		{
 			$channel = $entry_listing->getChannelModelFromFilter();
-			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel->channel_title).'</a>';
 
 			// Have we reached the max entries limit for this channel?
 			if ($channel->max_entries != 0 && $count >= $channel->max_entries)
@@ -133,10 +132,6 @@ class Edit extends AbstractPublishController {
 					->addToBody(sprintf(lang($desc_key), $channel->max_entries))
 					->now();
 			}
-		}
-		else
-		{
-			$vars['create_button'] = ee('View')->make('publish/partials/create_new_menu')->render(array('button_text' => lang('btn_create_new')));
 		}
 
 		$page = ((int) ee()->input->get('page')) ?: 1;
@@ -317,10 +312,20 @@ class Edit extends AbstractPublishController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 
+		$menu = ee()->menu->generate_menu();
+		$choices = [];
+		foreach ($menu['channels']['create'] as $text => $link) {
+			$choices[$link->compile()] = $text;
+		}
+
 		ee()->view->header = array(
 			'title' => lang('entry_manager'),
-			'form_url' => $vars['form_url'],
-			'search_button_value' => lang('btn_search_entries')
+			'action_button' => ee()->cp->allowed_group('can_create_entries') ? [
+				'text' => lang('new'),
+				'href' => ee('CP/URL', 'publish/create/' . $channel_id)->compile(),
+				'filter_placeholder' => lang('filter_channels'),
+				'choices' => $channel_id ? NULL : $choices
+			] : NULL
 		);
 
 		$vars['pagination'] = ee('CP/Pagination', $count)
