@@ -44,6 +44,21 @@ class Response {
 		$this->body .= $str;
 	}
 
+	public function hasHeader($header)
+	{
+		return array_key_exists($header, $this->headers);
+	}
+
+	public function getHeader($header)
+	{
+		if ($this->hasHeader($header))
+		{
+			return $this->headers[$header];
+		}
+
+		return NULL;
+	}
+
 	/**
 	 *
 	 */
