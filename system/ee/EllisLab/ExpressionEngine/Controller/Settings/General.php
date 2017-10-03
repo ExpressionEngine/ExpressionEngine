@@ -105,7 +105,7 @@ class General extends Settings {
 					'desc' => 'used_in_cp_only',
 					'fields' => array(
 						'deft_lang' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => ee()->lang->language_pack_names(),
 							'value' => ee()->config->item('deft_lang') ?: 'english'
 						)
@@ -127,11 +127,11 @@ class General extends Settings {
 					'desc' => 'used_in_cp_only',
 					'fields' => array(
 						'date_format' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $localization_fields['fields']['date_format']['value']
 						),
 						'time_format' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'24' => lang('24_hour'),
 								'12' => lang('12_hour')

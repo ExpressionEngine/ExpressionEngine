@@ -565,9 +565,12 @@ class Simple_commerce_mcp {
 					'desc' => 'admin_email_template_desc',
 					'fields' => array(
 						$prefix.'[admin_email_template]' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $email_templates,
-							'value' => $item->admin_email_template
+							'value' => $item->admin_email_template,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('email_templates'))
+							]
 						)
 					)
 				),
@@ -576,9 +579,12 @@ class Simple_commerce_mcp {
 					'desc' => 'customer_email_template_desc',
 					'fields' => array(
 						$prefix.'[customer_email_template]' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $email_templates,
-							'value' => $item->customer_email_template
+							'value' => $item->customer_email_template,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('email_templates'))
+							]
 						)
 					)
 				),
@@ -587,9 +593,12 @@ class Simple_commerce_mcp {
 					'desc' => 'new_member_group_desc',
 					'fields' => array(
 						$prefix.'[new_member_group]' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $member_groups,
-							'value' => $item->new_member_group
+							'value' => $item->new_member_group,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+							]
 						)
 					)
 				),
@@ -598,9 +607,12 @@ class Simple_commerce_mcp {
 					'desc' => 'admin_email_template_unsubscribe_desc',
 					'fields' => array(
 						$prefix.'[admin_email_template_unsubscribe]' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $email_templates,
-							'value' => $item->admin_email_template_unsubscribe
+							'value' => $item->admin_email_template_unsubscribe,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('email_templates'))
+							]
 						)
 					)
 				),
@@ -609,9 +621,12 @@ class Simple_commerce_mcp {
 					'desc' => 'customer_email_unsubscribe_desc',
 					'fields' => array(
 						$prefix.'[customer_email_template_unsubscribe]' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $email_templates,
-							'value' => $item->customer_email_template_unsubscribe
+							'value' => $item->customer_email_template_unsubscribe,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('email_templates'))
+							]
 						)
 					)
 				),
@@ -620,9 +635,12 @@ class Simple_commerce_mcp {
 					'desc' => 'member_group_unsubscribe_desc',
 					'fields' => array(
 						$prefix.'[member_group_unsubscribe]' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $member_groups,
-							'value' => $item->member_group_unsubscribe
+							'value' => $item->member_group_unsubscribe,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+							]
 						)
 					)
 				),
@@ -647,7 +665,7 @@ class Simple_commerce_mcp {
 							'value' => $item->subscription_frequency
 						),
 						$prefix.'[subscription_frequency_unit]' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'day' => lang('days'),
 								'week' => lang('weeks'),
@@ -910,7 +928,7 @@ class Simple_commerce_mcp {
 					'desc' => 'item_purchased',
 					'fields' => array(
 						'item_id' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $item_choices,
 							'value' => $purchase->item_id,
 							'required' => TRUE,

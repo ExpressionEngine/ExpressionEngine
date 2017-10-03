@@ -21,7 +21,6 @@ class Factory {
 	{
 		ee()->cp->add_js_script(array(
 			'plugin' => array(
-				'nestable',
 				'ee_url_title'
 			),
 			'file' => array(
@@ -29,13 +28,12 @@ class Factory {
 			)
 		));
 
-		ee()->javascript->set_global(array(
-			'category.add.URL'             => ee('CP/URL')->make('channels/cat/createCat/###')->compile(),
-			'category.edit.URL'            => ee('CP/URL')->make('channels/cat/editCat/###')->compile(),
-			'category.reorder.URL'         => ee('CP/URL')->make('channels/cat/cat-reorder/###')->compile(),
-			'category.auto_assign_parents' => ee()->config->item('auto_assign_cat_parents'),
-			'category.manage_categories_toggle' => FALSE,
-		));
+		ee()->javascript->set_global([
+			'categories.createUrl' => ee('CP/URL')->make('categories/create/###')->compile(),
+			'categories.editUrl'   => ee('CP/URL')->make('categories/edit/###')->compile(),
+			'categories.removeUrl' => ee('CP/URL')->make('categories/remove-single/###')->compile(),
+			'categories.fieldUrl' => ee('CP/URL')->make('categories/category-group-publish-field/###')->compile()
+		]);
 	}
 
 	/**
@@ -61,7 +59,7 @@ class Factory {
 
 		$cat_remove_modal = ee('View')->make('ee:_shared/modal_confirm_remove')->render(array(
 			'name'		=> 'modal-checkboxes-confirm-remove',
-			'form_url'	=> ee('CP/URL')->make('channels/cat/removeCat'),
+			'form_url'	=> ee('CP/URL')->make('categories/remove'),
 			'hidden'	=> array(
 				'bulk_action'	=> 'remove',
 				'categories[]'	=> ''

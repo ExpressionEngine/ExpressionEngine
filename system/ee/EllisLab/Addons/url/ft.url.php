@@ -155,7 +155,7 @@ class Url_Ft extends EE_Fieldtype {
 				'desc' => 'url_ft_url_scheme_placeholder_desc',
 				'fields' => array(
 					'url_scheme_placeholder' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => $this->getSchemes(),
 						'value' => (isset($data['url_scheme_placeholder'])) ? $data['url_scheme_placeholder'] : '',
 						'required' => TRUE

@@ -122,6 +122,13 @@ class Category extends ContentModel {
 				->count();
 			$this->setProperty('cat_order', $count + 1);
 		}
+
+		$parent_id = $this->getProperty('parent_id');
+
+		if (empty($parent_id))
+		{
+			$this->setProperty('parent_id', 0);
+		}
 	}
 
 	/**

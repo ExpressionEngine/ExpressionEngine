@@ -138,8 +138,11 @@ class Rte_mcp {
 						'desc' => '',
 						'fields' => array(
 							'rte_default_toolset_id' => array(
-								'type' => 'select',
-								'choices' => $toolset_opts
+								'type' => 'radio',
+								'choices' => $toolset_opts,
+								'no_results' => [
+									'text' => sprintf(lang('no_found'), lang('toolsets'))
+								]
 							)
 						)
 					)

@@ -52,7 +52,7 @@ class Messages extends Settings {
 					'title' => 'prv_msg_html_format',
 					'fields' => array(
 						'prv_msg_html_format' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'safe' => lang('html_safe'),
 								'none' => lang('html_none'),

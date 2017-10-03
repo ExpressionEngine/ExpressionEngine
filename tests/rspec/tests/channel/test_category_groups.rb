@@ -123,6 +123,6 @@ feature 'Category Groups' do
     @page.group_names.count.should == 0
 
     @page.table.should have_text 'No Category Groups'
-    @page.table.should have_text 'CREATE CATEGORY GROUP'
+    @page.table.should have_text 'Create Category Group'
   end
 end

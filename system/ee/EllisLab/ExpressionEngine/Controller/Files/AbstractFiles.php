@@ -118,7 +118,7 @@ abstract class AbstractFiles extends CP_Controller {
 			'title' => lang('file_manager'),
 			'form_url' => ee('CP/URL')->make('files'),
 			'toolbar_items' => array(
-				'download' => array(
+				'export' => array(
 					'href' => ee('CP/URL')->make('files/export'),
 					'title' => lang('export_all')
 				)

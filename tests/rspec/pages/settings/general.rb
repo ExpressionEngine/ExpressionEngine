@@ -7,14 +7,13 @@ class GeneralSettings < ControlPanelPage
   element :new_version_check_y, 'input[name=new_version_check][value=y]'
   element :new_version_check_n, 'input[name=new_version_check][value=n]'
   element :check_version_btn, 'a.version-check'
-  # element :cp_theme, 'select[name=cp_theme]'
   element :language, 'select[name=deft_lang]'
   element :tz_country, 'select[name=tz_country]'
   element :timezone, 'select[name=default_site_timezone]'
   element :date_format, 'select[name=date_format]'
   element :time_format, 'select[name=time_format]'
-  element :include_seconds_y, 'input[name=include_seconds][value=y]'
-  element :include_seconds_n, 'input[name=include_seconds][value=n]'
+  element :include_seconds, 'input[name=include_seconds]', :visible => false
+  element :include_seconds_toggle, 'a[data-toggle-for=include_seconds]'
 
   def load
     settings_btn.click

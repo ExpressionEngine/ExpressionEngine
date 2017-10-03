@@ -55,6 +55,24 @@ class Publish extends AbstractPublishController {
 	}
 
 	/**
+	 * Populates the default author list in Channel Settings, also serves as
+	 * AJAX endpoint for that filtering
+	 *
+	 * @return array ID => Screen name array of authors
+	 */
+	public function authorList()
+	{
+		$authors = ee('Member')->getAuthors(ee('Request')->get('search'));
+
+		if (AJAX_REQUEST)
+		{
+			return ee('View/Helpers')->normalizedChoices($authors);
+		}
+
+		return $authors;
+	}
+
+	/**
 	 * AJAX end-point for relationship field filtering
 	 */
 	public function relationshipFilter()
@@ -199,16 +217,32 @@ class Publish extends AbstractPublishController {
 		ee()->view->cp_page_title = sprintf(lang('create_entry_with_channel_name'), $channel->channel_title);
 
 		$form_attributes = array(
-			'class' => 'settings ajax-validate',
+			'class' => 'ajax-validate',
 		);
 
 		$vars = array(
 			'form_url' => ee('CP/URL')->make('publish/create/' . $channel_id),
 			'form_attributes' => $form_attributes,
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
-			'button_text' => lang('btn_publish'),
 			'revisions' => $this->getRevisionsTable($entry),
-			'extra_publish_controls' => $channel->extra_publish_controls
+			'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
+			'extra_publish_controls' => $channel->extra_publish_controls,
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				]
+			]
 		);
 
 		if ($autosave_id)

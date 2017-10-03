@@ -413,15 +413,31 @@ class Edit extends AbstractPublishController {
 		ee()->view->cp_page_title = sprintf(lang('edit_entry_with_title'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
 
 		$form_attributes = array(
-			'class' => 'settings ajax-validate',
+			'class' => 'ajax-validate',
 		);
 
 		$vars = array(
 			'form_url' => ee('CP/URL')->make('publish/edit/entry/' . $id),
 			'form_attributes' => $form_attributes,
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
-			'button_text' => lang('btn_publish'),
-			'extra_publish_controls' => $entry->Channel->extra_publish_controls
+			'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
+			'extra_publish_controls' => $entry->Channel->extra_publish_controls,
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				]
+			]
 		);
 
 		$version_id = ee()->input->get('version');

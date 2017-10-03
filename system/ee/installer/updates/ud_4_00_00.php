@@ -33,6 +33,7 @@ class Updater {
 				'globalizeSave_tmpl_files',
 				'clearCurrentVersionCache',
 				'nullOutRelationshipChannelDataFields',
+				'addNewsViewsTable',
 				'addSortIndexToChannelTitles',
 				'addImageQualityColumn',
 				'addSpamModerationPermissions',
@@ -594,6 +595,39 @@ class Updater {
 				[$field_name => '']
 			);
 		}
+	}
+
+	/**
+	* Adds member_news_views, see Member\NewsViews model
+	*/
+	private function addNewsViewsTable()
+	{
+		ee()->dbforge->add_field(
+			array(
+				'news_id' => array(
+					'type'           => 'int',
+					'constraint'     => 10,
+					'null'           => FALSE,
+					'unsigned'       => TRUE,
+					'auto_increment' => TRUE
+				),
+					'version' => array(
+					'type'       => 'varchar',
+					'constraint' => 10
+				),
+					'member_id' => array(
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => FALSE,
+					'default'    => 0
+				)
+			)
+		);
+
+		ee()->dbforge->add_key('news_id', TRUE);
+		ee()->dbforge->add_key('member_id');
+		ee()->smartforge->create_table('member_news_views');
 	}
 
 	/**

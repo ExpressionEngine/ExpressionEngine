@@ -25,6 +25,7 @@ use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\Formatter;
 use EllisLab\ExpressionEngine\Service\License;
 use EllisLab\ExpressionEngine\Service\Logger;
+use EllisLab\ExpressionEngine\Service\Member;
 use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Permission;
@@ -378,6 +379,11 @@ return array(
 			return new License\LicenseFactory($default_key);
 		},
 
+		'Member' => function($ee)
+		{
+			return new Member\Member();
+		},
+
 		'Model/Datastore' => function($ee)
 		{
 			$app = $ee->make('App');
@@ -418,6 +424,11 @@ return array(
 		{
 			return new Validation\Factory();
 		},
+
+		'View/Helpers' => function($ee)
+		{
+			return new View\ViewHelpers();
+		}
 	),
 
 	// models exposed on the model service
@@ -491,6 +502,7 @@ return array(
 			'Member' => 'Model\Member\Member',
 			'MemberField' => 'Model\Member\MemberField',
 			'MemberGroup' => 'Model\Member\MemberGroup',
+			'MemberNewsView' => 'Model\Member\NewsView',
 
 			// ..\Menu
 			'MenuSet' => 'Model\Menu\MenuSet',

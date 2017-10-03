@@ -131,9 +131,12 @@ class Routes extends AbstractDesignController {
 				->render(array(
 					'field_name' => "template_id",
 					'field' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => $this->getTemplatesWithoutRoutes(),
-						'value' => ($route->Template) ? $route->Template->template_id : ''
+						'value' => ($route->Template) ? $route->Template->template_id : '',
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('templates'))
+						]
 					),
 					'grid' => TRUE,
 				));

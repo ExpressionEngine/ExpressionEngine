@@ -81,7 +81,7 @@ class Sets extends AbstractChannelsController {
 		);
 
 		ee()->view->cp_page_title = lang('import_channel');
-		ee()->cp->render('channels/sets/index', $vars);
+		ee()->cp->render('settings/form', $vars);
 	}
 
 	/**
@@ -152,6 +152,21 @@ class Sets extends AbstractChannelsController {
 		{
 			$set->save();
 
+			ee()->session->set_flashdata(
+				'imported_channels',
+				$set->getIdsForElementType('channels')
+			);
+
+			ee()->session->set_flashdata(
+				'imported_category_groups',
+				$set->getIdsForElementType('category_groups')
+			);
+
+			ee()->session->set_flashdata(
+				'imported_field_groups',
+				$set->getIdsForElementType('field_groups')
+			);
+
 			$alert = ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('channel_set_imported'))
@@ -202,7 +217,7 @@ class Sets extends AbstractChannelsController {
 		);
 
 		ee()->view->cp_page_title = lang('import_channel');
-		ee()->cp->render('channels/sets/index', $vars);
+		ee()->cp->render('settings/form', $vars);
 	}
 
 	private function createAliasForm($set, $result)

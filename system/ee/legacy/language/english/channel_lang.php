@@ -2,6 +2,10 @@
 
 $lang = array(
 
+'add_field' => 'Add Field',
+
+'add_group' => 'Add Group',
+
 'add_tab' => 'Add Tab',
 
 'assigned_to' => 'assigned to',
@@ -10,11 +14,13 @@ $lang = array(
 
 'btn_preview_layout' => 'Preview Layout',
 
-'category_groups' => 'Category Groups',
+'category_groups' => 'Category groups',
+
+'category_groups_desc' => 'Assign one of more category groups to this channel.',
 
 'channel' => 'Channel',
 
-'channel_form_layouts' => '%s &ndash; Form Layouts',
+'channel_form_layouts' => '%s &ndash; Publish Layouts',
 
 'channel_manager' => 'Channel Manager',
 
@@ -50,19 +56,19 @@ $lang = array(
 
 'channels_removed' => 'Channels removed',
 
-'channels_removed_desc' => '%d channels were removed.',
+'channels_removed_desc' => 'The <b>%s</b> channel has been removed.',
 
-'create_channel' => 'Create Channel',
+'create_channel' => 'New Channel',
 
-'create_form_layout' => 'Create Form Layout',
+'create_form_layout' => 'New Publish Layout',
 
-'create_layout_error' => 'Cannot Create Form Layout',
+'create_layout_error' => 'Cannot Create Publish Layout',
 
 'create_layout_error_desc' => 'We were unable to update this group, please review and fix errors below.',
 
-'create_layout_success' => 'Form Layout Created',
+'create_layout_success' => 'Publish Layout Created',
 
-'create_layout_success_desc' => 'The form layout <b>%s</b> has been created.',
+'create_layout_success_desc' => 'The publish layout <b>%s</b> has been created.',
 
 'custom_fields' => 'Custom Fields',
 
@@ -72,15 +78,15 @@ $lang = array(
 
 'edit' => 'edit',
 
-'edit_form_layout' => 'Edit Form Layout &ndash; %s',
+'edit_form_layout' => 'Edit Publish Layout',
 
-'edit_layout_error' => 'Cannot Update Form Layout',
+'edit_layout_error' => 'Cannot Update Publish Layout',
 
 'edit_layout_error_desc' => 'We were unable to update this group, please review and fix errors below.',
 
-'edit_layout_success' => 'Form Layout Updated',
+'edit_layout_success' => 'Publish Layout Updated',
 
-'edit_layout_success_desc' => 'The form layout <b>%s</b> has been updated.',
+'edit_layout_success_desc' => 'The publish layout <b>%s</b> has been updated.',
 
 'error_cannot_hide_tab' => 'Cannot Hide Tab',
 
@@ -94,9 +100,13 @@ $lang = array(
 
 'field_group' => 'Field Group',
 
-'field_groups' => 'Field Groups',
+'field_groups' => 'Field groups',
 
-'form_layouts' => 'Form Layouts',
+'field_groups_desc' => 'Assign one of more field groups to this channel.',
+
+'fields_desc' => 'Assign one of more fields to this channel.',
+
+'form_layouts' => 'Publish Layouts',
 
 'illegal_tab_name' => 'Tab names may not contain the following characters: *, >, :, +, (, ), [, ], =, |, ", \', ., #, or $',
 
@@ -112,7 +122,7 @@ $lang = array(
 
 'layouts' => 'Layouts',
 
-'layouts_removed_desc' => 'The following form layouts were removed',
+'layouts_removed_desc' => 'The following publish layouts were removed',
 
 'manage_channels' => 'Manage Channels',
 
@@ -122,15 +132,17 @@ $lang = array(
 
 'member_groups_desc' => 'Choose the member group(s) to apply this layout to.',
 
+'new_layout' => 'New Layout',
+
 'no_channels' => 'No <b>Channels</b> found.',
 
-'no_layouts' => 'No Layouts',
+'no_layouts' => 'No <b>Layouts</b> found.',
 
 'search_for' => 'Search for "%s"',
 
 'section_search_results' => 'results for the search term <mark>%s</mark>',
 
-'settings' => 'settings',
+'settings' => 'Settings',
 
 'short_name' => 'Short name',
 
@@ -245,16 +257,6 @@ $lang = array(
 'channel_form_default_status_empty' => '-- Use Channel Default --',
 
 'channel_form_status_desc' => 'Default status for forms in this channel.',
-
-'channel_settings' => 'Channel Settings',
-
-'channel_settings_not_saved' => 'Cannot Save Channel Settings',
-
-'channel_settings_not_saved_desc' => 'We were unable to save this channel\'s settings, please review and fix errors below.',
-
-'channel_settings_saved' => 'Channel Settings Saved',
-
-'channel_settings_saved_desc' => 'The settings for channel <b>%s</b> have been saved.',
 
 'channel_url_desc' => '<abbr title="Unified Resource Locator">URL</abbr> location of this channel.',
 
@@ -396,7 +398,7 @@ $lang = array(
 
 'cat_field_ajax_reorder_fail_desc' => 'We failed to save your new category fields order. Refresh the page and make sure you\'re logged in.',
 
-'cat_group_no_member_groups_found' => 'No <b>member groups</b> with permissions found',
+'cat_group_no_member_groups_found' => 'No <b>member groups</b> with permissions exist.',
 
 'cat_image_choose' => 'Choose from directory',
 
@@ -442,6 +444,8 @@ $lang = array(
 
 'category_fields' => 'Category Fields',
 
+'category_fields_desc' => 'Assign fields to this group.',
+
 'category_fields_removed' => 'Category fields removed',
 
 'category_fields_removed_desc' => '%d category fields were removed.',
@@ -464,9 +468,11 @@ $lang = array(
 
 'category_group_updated_desc' => 'The category group <b>%s</b> has been updated.',
 
-'category_groups_removed' => 'Category groups removed',
+'category_groups_removed' => 'Category group removed',
 
-'category_groups_removed_desc' => '%d category groups were removed.',
+'category_groups_removed_desc' => 'The category group <b>%s</b> has been removed.',
+
+'category_manager' => 'Category Manager',
 
 'category_not_created' => 'Cannot Create Category',
 
@@ -490,7 +496,7 @@ $lang = array(
 
 'create_category_field' => 'Create Category Field',
 
-'create_category_group' => 'Create Category Group',
+'create_category_group' => 'New Category Group',
 
 'delete_categories' => 'Delete Categories',
 
