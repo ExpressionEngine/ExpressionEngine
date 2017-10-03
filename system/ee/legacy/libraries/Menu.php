@@ -235,7 +235,7 @@ class EE_Menu {
 
 		if (ee()->cp->allowed_group('can_access_design'))
 		{
-			$menu['template_manager'] = ee('CP/URL')->make('design');
+			$menu['templates'] = ee('CP/URL')->make('design');
 		}
 
 		if (ee()->config->item('multiple_sites_enabled') == 'y' && ee()->cp->allowed_group('can_admin_sites'))
@@ -245,7 +245,7 @@ class EE_Menu {
 
 		if (ee()->cp->allowed_group('can_access_addons'))
 		{
-			$menu['addon_manager'] = ee('CP/URL')->make('addons');
+			$menu['addons'] = ee('CP/URL')->make('addons');
 		}
 
 		if (ee()->cp->allowed_group('can_access_utilities'))

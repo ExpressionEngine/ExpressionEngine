@@ -434,8 +434,6 @@ $lang = array(
 
 'addon_access' => 'Add-On Access Permissions',
 
-'addons' => 'Add-ons',
-
 'addons_access' => 'Allowed add-on access',
 
 'addons_access_desc' => 'Users can access all of the selected add-ons.',
@@ -941,6 +939,8 @@ $lang = array(
 'template_partials' => 'Template partials',
 
 'template_permissions_desc' => 'Users can perform all the selected actions on all below selected template groups.',
+
+'template_variables' => 'Template variables',
 
 'templates' => 'Templates',
 

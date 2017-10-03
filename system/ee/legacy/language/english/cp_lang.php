@@ -29,6 +29,8 @@ $lang = array(
 
 'add_new' => 'Add New',
 
+'addons' => 'Add-Ons',
+
 'all' => 'All',
 
 'any' => 'Any',
@@ -42,6 +44,8 @@ $lang = array(
 'captcha_explanation' => 'A CAPTCHA is an image containing a security code that users have to submit. Please consult the user guide for more info.',
 
 'categories' => 'Categories',
+
+'channels' => 'Channels',
 
 'choose_wisely' => 'Choose wisely',
 
@@ -138,6 +142,8 @@ $lang = array(
 'show_hide' => 'Show/Hide All',
 
 'submit_email_address' => 'Submit your email address',
+
+'templates' => 'Templates',
 
 'unauthorized' => 'Unauthorized',
 
