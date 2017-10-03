@@ -129,7 +129,7 @@ class Comment_upd {
 			'class'		=> 'Comment_ext',
 			'method'	=> 'addCommentMenu',
 			'hook'		=> 'cp_custom_menu',
-			'settings'	=> [],
+			'settings'	=> serialize(array()),
 			'version'	=> $this->version,
 			'enabled'	=> 'y'
 		);
