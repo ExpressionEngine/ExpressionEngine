@@ -166,9 +166,20 @@ class EE_Output {
 		{
 			$this->set_status_header(200);
 
-			$this->set_header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-			$this->set_header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
-			$this->set_header("Pragma: no-cache");
+			if ( ! ee('Response')->hasHeader('Expires'))
+			{
+				ee('Response')->setHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
+			}
+
+			if ( ! ee('Response')->hasHeader('Last-Modified'))
+			{
+				ee('Response')->setHeader('Last-Modified', gmdate("D, d M Y H:i:s") . ' GMT');
+			}
+
+			if ( ! ee('Response')->hasHeader('Pragma'))
+			{
+				ee('Response')->setHeader('Pragma', 'no-cache');
+			}
 		}
 
 
