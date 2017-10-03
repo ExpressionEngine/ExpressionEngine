@@ -69,7 +69,6 @@ class Profile extends CP_Controller {
 			'title' => sprintf(lang('profile_header'),
 				htmlentities($this->member->username, ENT_QUOTES, 'UTF-8'),
 				htmlentities($this->member->email, ENT_QUOTES, 'UTF-8'),
-				htmlentities($this->member->email, ENT_QUOTES, 'UTF-8'),
 				$this->member->ip_address
 			)
 		);

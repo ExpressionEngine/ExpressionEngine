@@ -383,7 +383,9 @@ $lang = array(
 
 'profile_form' => 'Profile Form',
 
-'profile_header' => '%s Profile<br><i><b>Email</b>: <a href="mailto:%s">%s</a> / <b><abbr title="Internet Protocol">IP</abbr>:</b> <span class="ban-options"><b>%s</b></span></i>',
+'profile_header' => '%s Profile<div class="section-header__subtitle">
+    <b>Email</b>: %s / <b>IP</b>: %s
+</div>',
 
 'profile_updated' => 'Profile Updated',
 
