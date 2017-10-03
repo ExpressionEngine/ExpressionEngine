@@ -140,9 +140,29 @@ class Http_header {
 		return TRUE;
 	}
 
-	// private function set_expires($value)
+	/**
+	 * Attempts to set the Expires header with the proper date format.
+	 *
+	 * @param string $value The value of the expires parameter
+	 * @param bool TRUE if a header needs to be set; FALSE if not
+	 */
+	private function set_expires($value)
+	{
+		ee('Response')->setHeader('Expires', $this->parseDateString($value));
+		return FALSE;
+	}
 
-	// private function set_last_modified($value)
+	/**
+	 * Attempts to set the Last-Modified header with the proper date format.
+	 *
+	 * @param string $value The value of the last_modified parameter
+	 * @param bool TRUE if a header needs to be set; FALSE if not
+	 */
+	private function set_last_modified($value)
+	{
+		ee('Response')->setHeader('Last-Modified', $this->parseDateString($value));
+		return FALSE;
+	}
 
 	/**
 	 * If the 'url' part of the Refresh header is missing
@@ -173,7 +193,24 @@ class Http_header {
 		return TRUE;
 	}
 
-	// private function set_retry_after($value)
+	/**
+	 * The Retry-After header can either be a number of seconds or a discrete date.
+	 * If we were not supplied with a number we'll attempt to set the header with
+	 * the proper date format.
+	 *
+	 * @param string $value The value of the retry_after parameter
+	 * @param bool TRUE if a header needs to be set; FALSE if not
+	 */
+	private function set_retry_after($value)
+	{
+		if ( ! is_numeric($value))
+		{
+			ee('Response')->setHeader('Retry-After', $this->parseDateString($value));
+			return FALSE;
+		}
+
+		return TRUE;
+	}
 
 	/**
 	 * If the $value is numeric then we'll use EE's set_status_header, which will supply
@@ -212,6 +249,25 @@ class Http_header {
 		}
 
 		return TRUE;
+	}
+
+	/**
+	 * Takes a string and attempts to convert it to an HTTP-date (RFC-7231)
+	 *
+	 * @param string $string The date string
+	 * @return string An RFC-7231 formatted date or the $string if it could not be
+	 *   parsed.
+	 */
+	private function parseDateString($string)
+	{
+		$timestamp = strtotime($string);
+
+		if ($timestamp === FALSE)
+		{
+			return $timestamp;
+		}
+
+		return gmdate("D, d M Y H:i:s", $timestamp) . ' GMT';
 	}
 
 	/**
