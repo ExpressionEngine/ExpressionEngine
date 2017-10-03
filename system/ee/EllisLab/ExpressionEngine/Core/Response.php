@@ -79,6 +79,11 @@ class Response {
 	{
 		if ( ! $this->body)
 		{
+			foreach ($this->headers as $name => $value)
+			{
+				$GLOBALS['OUT']->headers[] = array($name.': '.$value, TRUE);
+			}
+
 			// smoke and mirrors to support the old style
 			return $GLOBALS['OUT']->_display();
 		}
