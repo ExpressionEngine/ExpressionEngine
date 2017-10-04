@@ -41,7 +41,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 		$valid = TRUE;
 
-		$fieldTemplates = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
+		$field_templates = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
 			->order('field_label')
 			->all()
 			->indexByIds();
@@ -74,7 +74,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 				$block_data_id = (int) str_replace('field_', '', $key);
 			}
 
-			$field = clone $fieldTemplates[$field_id];
+			$field = clone $field_templates[$field_id];
 
 			$f = $field->getField();
 
@@ -284,12 +284,12 @@ class Fluid_block_ft extends EE_Fieldtype {
 	{
 		$fields = '';
 
-		$fieldTemplates = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
+		$field_templates = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
 			->order('field_label')
 			->all()
 			->indexByIds();
 
-		$filters = ee('View')->make('fluid_block:filters')->render(array('fields' => $fieldTemplates));
+		$filters = ee('View')->make('fluid_block:filters')->render(array('fields' => $field_templates));
 
 		if ( ! is_array($field_data))
 		{
@@ -323,7 +323,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 					}
 				}
 
-				$field = clone $fieldTemplates[$field_id];
+				$field = clone $field_templates[$field_id];
 
 				$f = $field->getField();
 
@@ -337,7 +337,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 		$templates = '';
 
-		foreach ($fieldTemplates as $field)
+		foreach ($field_templates as $field)
 		{
 			$f = $field->getField();
 			$f->setName($this->name() . '[fields][new_field_0][field_id_' . $field->getId() . ']');
