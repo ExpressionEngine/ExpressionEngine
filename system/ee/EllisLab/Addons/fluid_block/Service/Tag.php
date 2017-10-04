@@ -217,7 +217,7 @@ class Tag {
 
 		foreach ($this->getSingleTags($tagdata) as $tag)
 		{
-			$vars[$tag] = $this->replaceSingle($field, $tag);
+			$vars[$tag] = $field->getData();
 		}
 
 		return $this->function_delegate->prep_conditionals($tagdata, $vars);
