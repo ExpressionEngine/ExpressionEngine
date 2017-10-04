@@ -69,64 +69,16 @@
 			{
 				$this->embed('_shared/form/section', array('name' => $name, 'settings' => $settings));
 			}
-
-			// Set invalid class on secure form controls down below if it contains an invalid field
-			$fieldset_classes = '';
-			if (isset($errors) OR validation_errors())
-			{
-				foreach ($secure_form_ctrls as $setting)
-				{
-					if (validation_errors())
-					{
-						$fieldset_classes = form_error_class(array_keys($setting['fields']));
-
-						if ( ! empty($fieldset_classes))
-						{
-							break;
-						}
-					}
-					else
-					{
-						foreach (array_keys($setting['fields']) as $field)
-						{
-							if ($errors->hasErrors($field))
-							{
-								$fieldset_classes = 'invalid';
-								break;
-							}
-						}
-					}
-				}
-			}
 			?>
 
-			<?php foreach ($secure_form_ctrls as $setting): ?>
-				<fieldset class="form-ctrls <?=$fieldset_classes?>">
-					<div class="password-req required"<?php if (isset($setting['group'])): ?> data-group="<?=$setting['group']?>"<?php endif ?>>
-						<div class="setting-txt col w-8">
-							<h3><?=lang($setting['title'])?></h3>
-							<em><?=lang($setting['desc'])?></em>
-						</div>
-						<div class="setting-field col w-8 last">
-							<?php foreach ($setting['fields'] as $field_name => $field)
-							{
-								$vars = array(
-									'field_name' => $field_name,
-									'field' => $field,
-									'setting' => $setting,
-									'grid' => FALSE
-								);
+			<div class="form-btns<?php if (count($secure_form_ctrls)): ?> form-btns-auth<?php endif ?>">
+				<?php foreach ($secure_form_ctrls as $setting):
+					$this->embed('ee:_shared/form/fieldset', ['setting' => $setting, 'group' => FALSE]); ?>
+				<?php endforeach ?>
 
-								$this->embed('ee:_shared/form/field', $vars);
-							}
-						?>
-						</div>
-					</div>
-				</fieldset>
-			<?php endforeach ?>
-			<div class="form-btns">
 				<?php $this->embed('ee:_shared/form/buttons'); ?>
 			</div>
+
 		<?php if (isset($tabs)):?>
 		</div>
 		<?php endif; ?>
