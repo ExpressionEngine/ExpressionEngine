@@ -152,7 +152,7 @@ class EE_Output {
 	 * @access	public
 	 * @return	void
 	 */
-	function _display($output = '')
+	function _display($output = '', $status = 200)
 	{
 		if ($output == '')
 		{
@@ -164,7 +164,7 @@ class EE_Output {
 
 		if (ee()->config->item('send_headers') == 'y' && $this->out_type != 'feed' && $this->out_type != '404' && $this->out_type != 'cp_asset')
 		{
-			$this->set_status_header(200);
+			$this->set_status_header($status);
 
 			if ( ! ee('Response')->hasHeader('Expires'))
 			{

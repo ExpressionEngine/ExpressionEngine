@@ -73,6 +73,24 @@ class Response {
 	}
 
 	/**
+	 * Sets the status
+	 *
+	 * @throws TypeError
+	 * @param int $status The status code
+	 * @return void
+	 */
+	public function setStatus($status)
+	{
+		if (is_numeric($status))
+		{
+			$this->status = $status;
+			return;
+		}
+
+		throw new \TypeError("setStatus expects a number");
+	}
+
+	/**
 	 *
 	 */
 	public function send()
@@ -85,7 +103,7 @@ class Response {
 			}
 
 			// smoke and mirrors to support the old style
-			return $GLOBALS['OUT']->_display();
+			return $GLOBALS['OUT']->_display('', $this->status);
 		}
 
 		$this->sendHeaders();
