@@ -65,11 +65,6 @@ if (isset($errors))
 		}
 	}
 }
-if ($setting == end($settings))
-{
-	$fieldset_classes .= ' last';
-}
-
 // Individual settings can have their own groups
 $setting_group = $group;
 if (isset($setting['group']))
