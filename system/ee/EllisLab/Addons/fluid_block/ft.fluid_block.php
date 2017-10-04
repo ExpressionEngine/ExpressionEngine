@@ -28,11 +28,12 @@ class Fluid_block_ft extends EE_Fieldtype {
 			'name'    => $addon->getName(),
 			'version' => $addon->getVersion()
 		);
-		$this->errors = new \EllisLab\ExpressionEngine\Service\Validation\Result;
 	}
 
 	public function validate($field_data)
 	{
+		$this->errors = new \EllisLab\ExpressionEngine\Service\Validation\Result;
+
 		if (empty($field_data))
 		{
 			return TRUE;
