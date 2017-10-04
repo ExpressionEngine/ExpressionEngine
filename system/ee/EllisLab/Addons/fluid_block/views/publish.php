@@ -4,6 +4,6 @@
 		<?=$filters?>
 	</div>
 	<div class="fluid-field-templates hidden">
-		<?=$fieldTemplates?>
+		<?=$field_templates?>
 	</div>
 </div>
