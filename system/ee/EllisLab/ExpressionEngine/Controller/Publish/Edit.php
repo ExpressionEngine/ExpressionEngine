@@ -509,11 +509,6 @@ class Edit extends AbstractPublishController {
 			ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => $entry->Channel->channel_title,
 		);
 
-		if ($entry->Channel->CategoryGroups)
-		{
-			ee('Category')->addCategoryModals();
-		}
-
 		ee()->cp->render('publish/entry', $vars);
 	}
 

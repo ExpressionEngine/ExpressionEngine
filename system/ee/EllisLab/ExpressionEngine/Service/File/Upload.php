@@ -171,7 +171,6 @@ class Upload {
 		}
 
 		ee('Category')->addCategoryJS();
-		ee('Category')->addCategoryModals();
 
 		return $html;
 	}
