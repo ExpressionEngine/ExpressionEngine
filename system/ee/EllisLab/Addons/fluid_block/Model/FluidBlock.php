@@ -1,10 +1,4 @@
 <?php
-
-namespace EllisLab\Addons\FluidBlock\Model;
-
-use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Model\Content\FieldData;
-
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -16,6 +10,11 @@ use EllisLab\ExpressionEngine\Model\Content\FieldData;
  * @since		Version 3.0
  * @filesource
  */
+
+namespace EllisLab\Addons\FluidBlock\Model;
+
+use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Model\Content\FieldData;
 
 /**
  * ExpressionEngine Fluid Block Model
