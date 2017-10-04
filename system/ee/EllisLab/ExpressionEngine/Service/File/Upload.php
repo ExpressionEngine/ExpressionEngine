@@ -156,11 +156,6 @@ class Upload {
 				)
 			);
 
-			if (ee()->cp->allowed_group('can_create_categories'))
-			{
-				$field['example'] = '<a class="btn action submit m-link" rel="modal-checkboxes-edit" data-group-id="'.$cat_group->getId().'" href="#">'.lang('btn_add_category').'</a>';
-			}
-
 			$sections[0][] = $field;
 		}
 
