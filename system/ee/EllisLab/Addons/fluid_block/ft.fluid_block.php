@@ -382,7 +382,6 @@ class Fluid_block_ft extends EE_Fieldtype {
 				'fields'    => array(
 					'field_channel_fields' => array(
 						'type' => 'checkbox',
-						'wrap' => TRUE,
 						'choices' => $custom_field_options,
 						'value' => isset($data['field_channel_fields']) ? $data['field_channel_fields'] : array()
 					)
