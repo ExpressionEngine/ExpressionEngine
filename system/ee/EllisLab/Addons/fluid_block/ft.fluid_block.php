@@ -385,7 +385,12 @@ class Fluid_block_ft extends EE_Fieldtype {
 					'field_channel_fields' => array(
 						'type' => 'checkbox',
 						'choices' => $custom_field_options,
-						'value' => isset($data['field_channel_fields']) ? $data['field_channel_fields'] : array()
+						'value' => isset($data['field_channel_fields']) ? $data['field_channel_fields'] : array(),
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('fields')),
+							'link_text' => 'add_new',
+							'link_href' => ee('CP/URL')->make('fields/create')
+						]
 					)
 				)
 			),
