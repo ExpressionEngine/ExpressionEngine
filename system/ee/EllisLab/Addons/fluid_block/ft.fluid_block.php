@@ -482,7 +482,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 	}
 
 	/**
-	 * Accept all content types.
+	 * Accept all but grid and fluid_block content types.
 	 *
 	 * @param string  The name of the content type
 	 * @return bool   Accepts all content types
