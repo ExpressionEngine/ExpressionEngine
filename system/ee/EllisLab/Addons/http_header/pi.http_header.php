@@ -162,6 +162,22 @@ class Http_header {
 	}
 
 	/**
+	 * Uses the redirect method inside EE for consistency's sake
+	 *
+	 * @param string $value The value of the last_modified parameter
+	 * @param bool TRUE if a header needs to be set; FALSE if not
+	 */
+	private function set_location($value)
+	{
+		$status = ee()->TMPL->fetch_param('status', NULL);
+
+		ee()->functions->redirect($value, FALSE, $status);
+
+		// Yes, the redirect method currently ends with `exit;` but: defensive coding
+		return FALSE;
+	}
+
+	/**
 	 * If the 'url' part of the Refresh header is missing
 	 * we'll look for a parameter and set the header. Otherwise we'll simply
 	 * regurgitate the value
