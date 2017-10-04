@@ -119,9 +119,6 @@ class Http_header {
 	 */
 	private function set_content_type($value)
 	{
-		// @TODO Avoid this hack for the content type header
-		ee()->TMPL->template_type = 'webpage-with-custom-headers';
-
 		$parts = explode('; ', $value);
 
 		// Check to see if the charset was supplied in the value. If not look for
