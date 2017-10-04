@@ -77,8 +77,11 @@ class Fluid_block_ft extends EE_Fieldtype {
 			$field = clone $field_templates[$field_id];
 
 			$f = $field->getField();
+			$ft_instance = $f->getNativeField();
 
-			if ($f->getNativeField()->has_array_data && ! is_array($data['field_id_' . $field_id]))
+			if (isset($ft_instance->has_array_data)
+				&& $ft_instance->has_array_data
+				&& ! is_array($data['field_id_' . $field_id]))
 			{
 				$data['field_id_' . $field_id] = array();
 			}
