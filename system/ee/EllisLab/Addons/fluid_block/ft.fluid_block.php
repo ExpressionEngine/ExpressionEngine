@@ -231,7 +231,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 		$block->order = $order;
 		$block->save();
 
-		$query = ee('Model/Datastore')->rawQuery();
+		$query = ee('db');
 		$query->set($values);
 		$query->where('id', $block->field_data_id);
 		$query->update($block->ChannelField->getTableName());
@@ -255,7 +255,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 		$field = ee('Model')->get('ChannelField', $field_id)->first();
 
-		$query = ee('Model/Datastore')->rawQuery();
+		$query = ee('db');
 		$query->set($values);
 		$query->insert($field->getTableName());
 		$id = $query->insert_id();
@@ -266,7 +266,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 	private function removeField($block)
 	{
-		$query = ee('Model/Datastore')->rawQuery();
+		$query = ee('db');
 		$query->where('id', $block->field_data_id);
 		$query->delete($block->ChannelField->getTableName());
 
