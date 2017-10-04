@@ -220,28 +220,7 @@ class Http_header {
 	{
 		if (is_numeric($value))
 		{
-			// The Output class always sets the status header, so if we want a custom
-			// header we'll need to disable that
-			// @TODO Avoid this hack
-			ee()->config->set_item('send_headers', FALSE);
-
-			// We don't want to override these if they've already been set
-			if ( ! ee('Response')->hasHeader('Expires'))
-			{
-				ee('Response')->setHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
-			}
-
-			if ( ! ee('Response')->hasHeader('Last-Modified'))
-			{
-				ee('Response')->setHeader('Last-Modified', gmdate("D, d M Y H:i:s") . ' GMT');
-			}
-
-			if ( ! ee('Response')->hasHeader('Pragma'))
-			{
-				ee('Response')->setHeader('Pragma', 'no-cache');
-			}
-
-			set_status_header($value);
+			ee('Response')->setStatus($value);
 			return FALSE;
 		}
 
