@@ -39,8 +39,6 @@ class Fluid_block_ft extends EE_Fieldtype {
 			return TRUE;
 		}
 
-		$valid = TRUE;
-
 		$field_templates = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
 			->order('field_label')
 			->all()
@@ -102,8 +100,6 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 			if ($result->isNotValid())
 			{
-				$valid = FALSE;
-
 				foreach($result->getFailed() as $field_name => $rules)
 				{
 					foreach ($rules as $rule)
@@ -120,7 +116,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 			return $errors['callback'];
 		}
 
-		return ($valid) ? TRUE : 'form_validation_error';
+		return ($this->errors->isValid()) ? TRUE : 'form_validation_error';
 	}
 
 	// Actual saving takes place in post_save so we have an entry_id
