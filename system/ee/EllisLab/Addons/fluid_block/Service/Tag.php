@@ -162,7 +162,7 @@ class Tag {
 				ee()->grid_parser->grid_field_names[$field->getId()][$field->getItem('block_data_id')] = $field->getName();
 			}
 
-			$tpl_chunk = $field->replaceTag($content);
+			$tpl_chunk = $field->replaceTag($content, $params, $modifier);
 
 			$tagdata = str_replace($chunk, $tpl_chunk, $tagdata);
 		}
