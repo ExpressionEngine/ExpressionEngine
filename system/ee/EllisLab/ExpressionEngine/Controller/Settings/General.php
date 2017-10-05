@@ -68,6 +68,10 @@ class General extends Settings {
 				array(
 					'title' => 'version_autocheck',
 					'desc' => 'version_autocheck_desc',
+					'button' => array(
+						'text' => 'check_now',
+						'href' => ee('CP/URL', 'settings/general/version-check')
+					),
 					'fields' => array(
 						'new_version_check' => array(
 							'type' => 'inline_radio',
@@ -75,13 +79,6 @@ class General extends Settings {
 								'y' => 'auto',
 								'n' => 'manual'
 							)
-						),
-						'action_button' => array(
-							'type' => 'action_button',
-							'text' => 'check_now',
-							'link' => ee('CP/URL', 'settings/general/version-check'),
-							'class' => 'version-check',
-							'save_in_config' => FALSE
 						)
 					)
 				),
