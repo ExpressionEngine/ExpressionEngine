@@ -20,9 +20,11 @@
 							<div class="filter-item filter-item--right">
 								<a href="#" class="js-filter-link filter-item__link filter-item__link--has-submenu filter-item__link--action"><?=$header['action_button']['text']?></a>
 								<div class="filter-submenu">
-									<div class="filter-submenu__search">
-										<input type="text" value="" data-fuzzy-filter="true" autofocus="autofocus" placeholder="<?=$header['action_button']['filter_placeholder']?>">
-									</div>
+									<?php if (count($header['action_button']['choices']) > 8): ?>
+										<div class="filter-submenu__search">
+											<input type="text" value="" data-fuzzy-filter="true" autofocus="autofocus" placeholder="<?=$header['action_button']['filter_placeholder']?>">
+										</div>
+									<?php endif ?>
 									<div class="filter-submenu__scroll">
 										<?php foreach ($header['action_button']['choices'] as $link => $text): ?>
 											<a href="<?=$link?>" class="filter-submenu__link"><?=$text?></a>
