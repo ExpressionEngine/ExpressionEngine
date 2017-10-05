@@ -133,6 +133,7 @@ class Upload {
 			$metadata = $cat_group->getFieldMetadata();
 			$metadata['categorized_object'] = $file;
 			$metadata['field_instructions'] = lang('file_categories_desc');
+			$metadata['editable'] = FALSE;
 
 			if ($cat_groups->count() == 1)
 			{
