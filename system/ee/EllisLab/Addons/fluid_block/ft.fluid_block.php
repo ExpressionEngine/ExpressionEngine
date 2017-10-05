@@ -359,9 +359,9 @@ class Fluid_block_ft extends EE_Fieldtype {
 			));
 
 			return ee('View')->make('fluid_block:publish')->render(array(
-				'fields'         => $fields,
-				'fieldTemplates' => $templates,
-				'filters'        => $filters,
+				'fields'          => $fields,
+				'field_templates' => $templates,
+				'filters'         => $filters,
 			));
 		}
 	}
