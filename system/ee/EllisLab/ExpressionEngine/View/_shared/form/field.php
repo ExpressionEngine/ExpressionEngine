@@ -136,12 +136,14 @@ case 'textarea': ?>
 <?php break;
 
 case 'multiselect': ?>
-	<div class="scroll-wrap">
-		<?php foreach ($field['choices'] as $field_name => $options): ?>
-			<label class="choice block chosen"><?=$options['label']?>
-				<?=form_dropdown($field_name, $options['choices'], $options['value'])?>
-			</label>
-		<?php endforeach ?>
+	<div class="fields-select">
+		<div class="field-inputs">
+			<?php foreach ($field['choices'] as $field_name => $options): ?>
+				<label><?=$options['label']?>
+					<?=form_dropdown($field_name, $options['choices'], $options['value'])?>
+				</label>
+			<?php endforeach ?>
+		</div>
 	</div>
 <?php break;
 
