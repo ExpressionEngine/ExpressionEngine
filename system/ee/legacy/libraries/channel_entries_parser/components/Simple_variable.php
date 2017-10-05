@@ -438,17 +438,74 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 				$field = ee('Variables/Parser')->parseVariableProperties($key, $prefix);
 				$method = 'replace_'.$field['modifier'];
 
-				if (array_key_exists($field['field_name'], $data) && method_exists($this, $method))
+				if ( ! method_exists($this, $method))
+				{
+					return $tagdata;
+				}
+
+				// some variables like {channel_short_name} don't directly map to the schema, so we can define
+				// methods here like getChannelShortName() to provide the correct content
+				$mismatch_getter = 'get'.str_replace(' ', '', ucwords(str_replace('_', ' ', $field['field_name'])));
+
+				if (array_key_exists($field['field_name'], $data))
 				{
 					$content = $this->$method($data[$field['field_name']], $field['params']);
-					$this->conditional_vars[$key] = $content;
-
-					$tagdata = str_replace(LD.$val.RD, $content, $tagdata);
 				}
+				elseif (method_exists($this, $mismatch_getter))
+				{
+					$content = $this->$method($this->$mismatch_getter($data), $field['params']);
+				}
+				else
+				{
+					// variable must not exist
+					return $tagdata;
+				}
+
+				$this->conditional_vars[$key] = $content;
+
+				$tagdata = str_replace(LD.$val.RD, $content, $tagdata);
 			}
 		}
 
 		return $tagdata;
+	}
+
+	/**
+	 * {channel} variable/schema mismatch getter
+	 *
+	 * @param  array $data Channel entry row
+	 * @return string the Channel name
+	 */
+	private function getChannel($data)
+	{
+		return (isset($data['channel_title'])) ? $data['channel_title'] : '';
+	}
+
+	/**
+	 * {channel_short_name} variable/schema mismatch getter
+	 *
+	 * @param  array $data Channel entry row
+	 * @return string the Channel short name
+	 */
+	private function getChannelShortName($data)
+	{
+		return (isset($data['channel_name'])) ? $data['channel_name'] : '';
+	}
+
+	/**
+	 * {author} variable/schema mismatch getter
+	 *
+	 * @param  array $data Channel entry row
+	 * @return string the Channel name
+	 */
+	private function getAuthor($data)
+	{
+		if ( ! empty($data['screen_name']))
+		{
+			return $data['screen_name'];
+		}
+
+		return (isset($data['username'])) ? $data['username'] : '';
 	}
 }
 
