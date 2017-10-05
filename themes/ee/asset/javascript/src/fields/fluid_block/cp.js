@@ -57,13 +57,15 @@
 			e.preventDefault();
 			fluidBlock.find('.open').trigger('click');
 
-			$(fluidBlock).trigger('fluidBlock:addField', [fieldClone, fieldToClone]);
+			FluidBlock.fireEvent($(fieldClone).data('field-type'), 'add', [fieldClone, fieldToClone]);
 	    };
 
 		$('a[data-field-name]').click(addField);
 
 		$('.fluid-wrap').on('click', 'a.fluid-remove', function(e) {
-			$(this).closest('.fluid-item').remove();
+			var el = $(this).closest('.fluid-item');
+			FluidBlock.fireEvent($(el).data('field-type'), 'remove', el);
+			el.remove();
 			e.preventDefault();
 		});
 
@@ -72,7 +74,13 @@
 			containment: 'parent',			// Contain to parent
 			handle: 'span.reorder',			// Set drag handle to the top box
 			items: '.fluid-item',			// Only allow these to be sortable
-			sort: EE.sortable_sort_helper	// Custom sort handler
+			sort: EE.sortable_sort_helper,	// Custom sort handler
+			start: function (event, ui) {
+				FluidBlock.fireEvent($(ui.item).data('field-type'), 'beforeSort', ui.item)
+			},
+			stop: function (event, ui) {
+				FluidBlock.fireEvent($(ui.item).data('field-type'), 'afterSort', ui.item)
+			}
 		})
 	});
 })(jQuery);

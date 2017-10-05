@@ -912,13 +912,11 @@ if (typeof _ !== 'undefined' && EE.grid_cache !== 'undefined') {
 }
 
 $(document).ready(function () {
-  $('.fluid-wrap').on('fluidBlock:addField', function(e, el, cloned_from) {
-  	if ($(el).data('field-type') == 'grid') {
+	FluidBlock.on('grid', 'add', function(el, cloned_from) {
   		var cloned_grid_id = $('table', cloned_from).attr('id');
   		$(el).addClass('grid-publish');
   		EE.grid($(el).find('.fluid-field').eq(0), EE.grid_field_settings[cloned_grid_id]);
-  	}
-  });
+	});
 });
 
 })(jQuery);
