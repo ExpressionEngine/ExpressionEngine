@@ -397,7 +397,7 @@ class File {
 			{
 				for ($j = 0; $j < count($matches[0]); $j++)
 				{
-					$cat_chunk[] = array($matches[2][$j], ee()->functions->assign_parameters($matches[1][$j]), $matches[0][$j]);
+					$cat_chunk[] = array($matches[2][$j], ee('Variables/Parser')->parseTagParameters($matches[1][$j]), $matches[0][$j]);
 				}
 			}
 		}

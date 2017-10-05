@@ -64,7 +64,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 			return $tagdata;
 		}
 
-		$field = ee()->api_channel_fields->get_single_field($tag, $prefix);
+		$field = ee('Variables/Parser')->parseVariableProperties($tag, $prefix);
 
 		if (isset($cfields[$field['field_name']]))
 		{

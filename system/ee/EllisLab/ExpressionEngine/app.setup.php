@@ -35,6 +35,7 @@ use EllisLab\ExpressionEngine\Service\Thumbnail;
 use EllisLab\ExpressionEngine\Service\URL;
 use EllisLab\ExpressionEngine\Service\Updater;
 use EllisLab\ExpressionEngine\Service\Validation;
+use EllisLab\ExpressionEngine\Service\Template;
 use EllisLab\ExpressionEngine\Service\View;
 use EllisLab\Addons\Spam\Service\Spam;
 use EllisLab\Addons\FilePicker\Service\FilePicker;
@@ -291,8 +292,12 @@ return array(
 			}
 
 			return new Encrypt\Encrypt($key);
+		},
 
-		}
+		'Variables/Parser' => function ($ee)
+		{
+			return new Template\Variables\LegacyParser();
+		},
 	),
 
 	'services.singletons' => array(

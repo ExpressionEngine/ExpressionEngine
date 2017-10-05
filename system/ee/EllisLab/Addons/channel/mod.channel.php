@@ -4068,42 +4068,58 @@ class Channel {
 			$variables = ee()->TMPL->var_single;
 		}
 
+		// native metadata fields with modifiers will pass through here. We will treat them as text.
+		ee()->api_channel_fields->include_handler('text');
+		$fieldtype = ee()->api_channel_fields->setup_handler('text', TRUE);
+		ee()->api_channel_fields->field_types['text'] = $fieldtype;
+
 		foreach ($variables as $tag)
 		{
-			$tag = ee()->api_channel_fields->get_single_field($tag);
-			$field_name = $tag['field_name'];
+			$var_props = ee('Variables/Parser')->parseVariableProperties($tag);
+			$field_name = $var_props['field_name'];
 
-			if ( ! isset($field_index[$field_name]))
+			if (isset($field_index[$field_name]) && isset($data['field_id_'.$field_index[$field_name]]))
 			{
-				continue;
-			}
-
-			$field_id = $field_index[$field_name];
-
-			if (isset($data['field_id_'.$field_id]))
-			{
+				$field_id = $field_index[$field_name];
 				$cat_field = $this->cat_field_models[$field_id];
 
 				$chunk = $cat_field->parse(
 					$data['field_id_'.$field_id],
 					$category_id,
 					'category',
-					$tag['modifier'],
+					$var_props,
 					$chunk,
 					array(
 						'channel_html_formatting' => $data['field_html_formatting'],
 						'channel_auto_link_urls' => 'n',
 						'channel_allow_img_urls' => 'y',
 						'field_ft_'.$field_id => $data['field_ft_'.$field_id]
-					)
+					),
+					$tag
 				);
+			}
+			elseif (isset($data[$field_name]))
+			{
+				$content = $data[$field_name];
+				$parse_fnc = ($var_props['modifier']) ? 'replace_'.$var_props['modifier'] : 'replace_tag';
+
+				if (method_exists($fieldtype, $parse_fnc))
+				{
+					$content = ee()->api_channel_fields->apply($parse_fnc, array(
+						$content,
+						$var_props['params'],
+						FALSE
+					));
+				}
+
+				$chunk = str_replace(LD.$tag.RD, $content, $chunk);
 			}
 			// Garbage collection
 			else
 			{
-				if ($tag['modifier'])
+				if ($var_props['modifier'])
 				{
-					$field_name = $field_name.':'.$tag['modifier'];
+					$field_name = $field_name.':'.$var_props['modifier'];
 				}
 				$chunk = str_replace(LD.$field_name.RD, '', $chunk);
 			}
@@ -4126,7 +4142,7 @@ class Channel {
 		// Get field names present in the template, sans modifiers
 		$clean_field_names = array_map(function($field)
 		{
-			$field = ee()->api_channel_fields->get_single_field($field);
+			$field = ee('Variables/Parser')->parseVariableProperties($field);
 			return $field['field_name'];
 		}, array_flip(ee()->TMPL->var_single));
 
