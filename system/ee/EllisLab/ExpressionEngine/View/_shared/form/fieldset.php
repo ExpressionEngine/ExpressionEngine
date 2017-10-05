@@ -136,8 +136,9 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 		<?php
 			$button = $setting['button'];
 			$rel = isset($button['rel']) ? $button['rel'] : '';
+			$href = isset($button['href']) ? $button['href'] : '#';
 		?>
-		<a class="btn action submit js-modal-link--side" rel="<?=$rel?>" href="#"><?=lang($button['text'])?></a>
+		<a class="btn action submit js-modal-link--side" rel="<?=$rel?>" href="<?=$href?>"><?=lang($button['text'])?></a>
 		<?php endif; ?>
 	</div>
 </<?=$element?>>
