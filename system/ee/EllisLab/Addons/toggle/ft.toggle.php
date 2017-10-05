@@ -39,6 +39,11 @@ class Toggle_ft extends EE_Fieldtype {
 	 */
 	public function validate($data)
 	{
+		if ($this->get_setting('yes_no', FALSE))
+		{
+			return in_array($data, ['y', 'n']);
+		}
+
 		if ($data === FALSE
 			|| $data == ''
 			|| $data == '1'
@@ -92,7 +97,8 @@ class Toggle_ft extends EE_Fieldtype {
 			return ee('View')->make('ee:_shared/form/fields/toggle')->render(array(
 				'field_name' => $this->field_name,
 				'value'      => $data,
-				'disabled'   => $this->get_setting('field_disabled')
+				'disabled'   => $this->get_setting('field_disabled'),
+				'yes_no'     => $this->get_setting('yes_no', FALSE)
 			));
 		}
 
