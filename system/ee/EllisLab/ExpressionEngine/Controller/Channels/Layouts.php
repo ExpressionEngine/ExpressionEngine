@@ -265,12 +265,12 @@ class Layouts extends AbstractChannelsController {
 			'layout' => $entry->getDisplay($channel_layout),
 			'channel_layout' => $channel_layout,
 			'form' => $this->getForm($channel_layout),
-			'submit_button_text' => sprintf(lang('btn_save'), lang('layout'))
+			'submit_button_text' => lang('save')
 		);
 
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('channels')->compile() => lang('channels'),
-			ee('CP/URL')->make('channels/layouts/' . $channel_id)->compile() => lang('form_layouts')
+			ee('CP/URL')->make('channels/layouts/' . $channel_id)->compile() => ee('Format')->make('Text', $channel->channel_title)->convertToEntities()
 		);
 
 		ee()->view->cp_page_title = lang('create_form_layout');
@@ -363,12 +363,12 @@ class Layouts extends AbstractChannelsController {
 			'layout' => $entry->getDisplay($channel_layout),
 			'channel_layout' => $channel_layout,
 			'form' => $this->getForm($channel_layout),
-			'submit_button_text' => sprintf(lang('btn_save'), lang('layout'))
+			'submit_button_text' => lang('save')
 		);
 
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('channels')->compile() => lang('channels'),
-			ee('CP/URL')->make('channels/layouts/' . $channel_layout->channel_id)->compile() => lang('form_layouts')
+			ee('CP/URL')->make('channels/layouts/' . $channel_layout->channel_id)->compile() => ee('Format')->make('Text', $channel->channel_title)->convertToEntities()
 		);
 
 		ee()->view->cp_page_title = lang('edit_form_layout');
