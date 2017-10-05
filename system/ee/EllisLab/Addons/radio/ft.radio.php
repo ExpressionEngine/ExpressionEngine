@@ -91,7 +91,7 @@ class Radio_ft extends OptionFieldtype {
 		$field_options = $this->_get_field_options($data);
 
 		// Is this new entry?  Set a default
-		if ( ! $this->content_id AND empty($data))
+		if ( ! $this->content_id AND is_null($data))
 		{
 			reset($field_options);
 			$data = key($field_options);
