@@ -857,7 +857,8 @@ class ChannelEntry extends ContentModel {
 					'field_show_fmt'		=> 'n',
 					'field_instructions'	=> lang('sticky_desc'),
 					'field_text_direction'	=> 'ltr',
-					'field_type'			=> 'radio',
+					'field_type'			=> 'toggle',
+					'yes_no'				=> TRUE,
 					'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
 					'field_maxl'			=> 100
 				),
@@ -868,7 +869,8 @@ class ChannelEntry extends ContentModel {
 					'field_show_fmt'		=> 'n',
 					'field_instructions'	=> lang('allow_comments_desc'),
 					'field_text_direction'	=> 'ltr',
-					'field_type'			=> 'radio',
+					'field_type'			=> 'toggle',
+					'yes_no'				=> TRUE,
 					'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
 					'field_maxl'			=> 100,
 					'populateCallback'		=> array($this, 'populateAllowComments')
