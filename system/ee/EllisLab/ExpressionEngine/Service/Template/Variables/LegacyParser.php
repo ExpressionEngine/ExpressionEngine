@@ -15,6 +15,9 @@ namespace EllisLab\ExpressionEngine\Service\Template\Variables;
  */
 class LegacyParser {
 
+	// bring in the :modifier methods
+	use ModifiableTrait;
+
 	/**
 	 * Given a template variable string, this parses out parameters and modifiers
 	 * e.g. {variable:modifier param1='foo' param2='bar'} returns:
@@ -130,10 +133,10 @@ class LegacyParser {
 	 * This legacy method was originally Functions::assign_variables()
 	 *
 	 * @param	string $tagdata The Tagdata to extract variables from
-	 * @param	string $slash '/' - customizable because of legacy? We never use anything but a '/'
+	 * @param	string $target A specific variable to target for extraction. Default NULL (all variables)
 	 * @return	array array('var_single' => ..., 'var_pair' => ..., )
 	 */
-	public function extractVariables($tagdata, $slash = '/')
+	public function extractVariables($tagdata, $target = NULL)
 	{
 		$return['var_single']	= array();
 		$return['var_pair']		= array();
@@ -144,20 +147,28 @@ class LegacyParser {
 		}
 
 		// No variables?  No reason to continue...
-		if (strpos($tagdata, '{') === FALSE OR ! preg_match_all("/".LD."(.+?)".RD."/", $tagdata, $matches))
+		if (strpos($tagdata, '{') === FALSE)
 		{
 			return $return;
 		}
 
+		if ($target)
+		{
+			preg_match_all('/'.LD.'('.preg_quote($target, '/').'.*?)'.RD.'/', $tagdata, $matches);
+		}
+		else
+		{
+			preg_match_all('/'.LD.'(.+?)'.RD.'/', $tagdata, $matches);
+		}
+
 		$temp_close = array();
 		$temp_misc  = array();
-		$slash_length = strlen($slash);
 
 		foreach($matches[1] as $key => $val)
 		{
 			if (strncmp($val, 'if ', 3) !== 0 &&
 				strncmp($val, 'if:', 3) !== 0 &&
-				substr($val, 0, $slash_length+2) != $slash."if")
+				substr($val, 0, 3) != '/if')
 			{
 				if (strpos($val, '{') !== FALSE)
 				{
@@ -166,9 +177,9 @@ class LegacyParser {
 						$temp_misc[$key] = $matches2[2];
 					}
 				}
-				elseif (strncmp($val, $slash, $slash_length) === 0)
+				elseif (strncmp($val, '/', 1) === 0)
 				{
-					$temp_close[$key] = str_replace($slash, '', $val);
+					$temp_close[$key] = str_replace('/', '', $val);
 				}
 				else
 				{
@@ -309,6 +320,57 @@ class LegacyParser {
 		}
 
 		return $match[1];
+	}
+
+	/**
+	 * Parse modified variables {variable:modifier}
+	 *
+	 * @param  string $str the string to parse
+	 * @param  array  $vars Variables source: 'variable_name' => 'content'
+	 * @return string the string, parsed
+	 */
+	public function parseModifiedVariables($str, $vars = [])
+	{
+		$conditionals = [];
+
+		foreach ($vars as $name => $value)
+		{
+			if (strpos($str, $name.':') !== FALSE)
+			{
+				$prefix = '';
+
+				// embed, layout, etc. will have prefixes
+				if (($prefix_pos = strpos($name, ':')) !== FALSE)
+				{
+					$prefix = substr($name, 0, $prefix_pos + 1);
+				}
+
+				$extracted_vars = $this->extractVariables($str, $name);
+
+				foreach ($extracted_vars['var_single'] as $modified_var)
+				{
+					$var_props = $this->parseVariableProperties($modified_var, $prefix);
+
+					// is the modifier valid?
+					$method = 'replace_'.$var_props['modifier'];
+					if ( ! method_exists($this, $method))
+					{
+						continue;
+					}
+
+					$content = $this->$method($value, $var_props['params']);
+					$str = str_replace(LD.$modified_var.RD, $content, $str);
+					$conditionals[$modified_var] = $content;
+				}
+			}
+		}
+
+		$str = ee()->functions->prep_conditionals(
+			$str,
+			$conditionals
+		);
+
+		return $str;
 	}
 }
 // END CLASS

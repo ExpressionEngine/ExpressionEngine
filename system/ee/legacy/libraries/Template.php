@@ -426,13 +426,6 @@ class EE_Template {
 
 		$this->layout_conditionals = $layout_conditionals;
 
-		// cleanup of leftover/undeclared embed variables
-		// don't worry with undeclared embed: vars in conditionals as the conditionals processor will handle that adequately
-		if (strpos($this->template, LD.'embed:') !== FALSE)
-		{
-			$this->template = preg_replace('/'.LD.'embed:([^!]+?)'.RD.'/', '', $this->template);
-		}
-
 		// Cache the name of the layout. We do this here so that we can force
 		// layouts to be declared before module or plugin tags. That is the only
 		// reasonable way of using these - right at the top.
@@ -512,23 +505,34 @@ class EE_Template {
 			}
 		}
 
-		// Smite Our Enemies:  Conditionals
+		// Smite Our Enemies:  Conditionals & Modifiers
 		$this->log_item("Parsing Segment, Embed, Layout, logged_in_*, and Global Vars Conditionals");
+
+		$all_early_vars = array_merge(
+			$this->segment_vars,
+			$this->template_route_vars,
+			$this->embed_vars,
+			$layout_conditionals,
+			array('layout:contents' => $this->layout_contents),
+			$logged_in_user_cond,
+			ee()->config->_global_vars
+		);
 
 		$this->template = ee()->functions->prep_conditionals(
 			$this->template,
-			array_merge(
-				$this->segment_vars,
-				$this->template_route_vars,
-				$this->embed_vars,
-				$layout_conditionals,
-				array('layout:contents' => $this->layout_contents),
-				$logged_in_user_cond,
-				ee()->config->_global_vars
-			)
+			$all_early_vars
 		);
 
-		// Assign Variables
+		$this->template = ee('Variables/Parser')->parseModifiedVariables($this->template, $all_early_vars);
+
+		// cleanup of leftover/undeclared embed variables
+		// don't worry with undeclared embed: vars in conditionals as the conditionals processor will handle that adequately
+		if (strpos($this->template, LD.'embed:') !== FALSE)
+		{
+			$this->template = preg_replace('/'.LD.'embed:([^!]+?)'.RD.'/', '', $this->template);
+		}
+
+		// Preload Replacements
 		if (strpos($this->template, 'preload_replace') !== FALSE)
 		{
 			if (preg_match_all("/".LD."preload_replace:(.+?)=([\"\'])([^\\2]*?)\\2".RD."/i", $this->template, $matches))
