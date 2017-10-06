@@ -7,13 +7,15 @@
  * @license   https://expressionengine.com/license
  */
 
+use EllisLab\ExpressionEngine\Service\Template;
+
 /**
  * Template Parser
  */
 class EE_Template {
 
 	// bring in the :modifier methods
-	use EllisLab\ExpressionEngine\Service\Template\Variables\ModifiableTrait;
+	use Template\Variables\ModifiableTrait;
 
 	public $loop_count           = 0;			// Main loop counter.
 	public $depth                = 0;			// Sub-template loop depth
@@ -3085,55 +3087,22 @@ class EE_Template {
 		// Restore XML declaration if it was encoded
 		$str = $this->restore_xml_declaration($str);
 
-		//  Parse User-defined Global Variables first so that
-		//  they can use other standard globals
-		$variables = ee('Model')->make('GlobalVariable')->loadAll();
+		ee()->session->userdata['member_group'] = ee()->session->userdata['group_id'];
+		$this->user_vars[] = 'member_group';
 
-		foreach ($variables as $var)
+		// parse all standard global variables
+		$globals = new Template\Variables\StandardGlobals($this);
+		$variables = $globals->getTemplateVariables();
+
+		foreach ($variables as $variable => $value)
 		{
-			$str = str_replace(LD.$var->variable_name.RD, $var->variable_data, $str);
+			$str = str_replace(LD.$variable.RD, $value, $str);
 		}
 
-		// {hits}
-		$str = str_replace(LD.'hits'.RD, $this->template_hits, $str);
+		// one note, conditionals won't work here, they will have already have been parsed with a final pass by parse()
+		$str = ee('Variables/Parser')->parseModifiedVariables($str, $variables);
 
-		// {ip_address} and {ip_hostname}
-		$str = str_replace(LD.'ip_address'.RD, ee()->input->ip_address(), $str);
-
-		// Turns out gethostbyaddr() is WAY SLOW on many systems so I'm killing it.
-		// $str = str_replace(LD.'ip_hostname'.RD, @gethostbyaddr(ee()->input->ip_address()), $str);
-
-		$str = str_replace(LD.'ip_hostname'.RD, ee()->input->ip_address(), $str);
-
-		// {homepage}
-		$str = str_replace(LD.'homepage'.RD, ee()->functions->fetch_site_index(), $str);
-
-		//  {cp_url}
-		if (ee()->session->access_cp === TRUE)
-		{
-			$str = str_replace(LD.'cp_url'.RD, ee()->config->item('cp_url'), $str);
-		}
-		else
-		{
-			$str = str_replace(LD.'cp_url'.RD, '', $str);
-		}
-
-		// {cp_session_id}
-		if (ee()->session->access_cp === TRUE)
-		{
-			$str = str_replace(LD.'cp_session_id'.RD, ee()->session->session_id(), $str);
-		}
-		else
-		{
-			$str = str_replace(LD.'cp_session_id'.RD, '0', $str);
-		}
-
-		// {site_name} {site_url} {site_description} {site_index} {webmaster_email}
-		$str = str_replace(LD.'site_name'.RD, stripslashes(ee()->config->item('site_name')), $str);
-		$str = str_replace(LD.'site_url'.RD, stripslashes(ee()->config->item('site_url')), $str);
-		$str = str_replace(LD.'site_description'.RD, stripslashes(ee()->config->item('site_description')), $str);
-		$str = str_replace(LD.'site_index'.RD, stripslashes(ee()->config->item('site_index')), $str);
-		$str = str_replace(LD.'webmaster_email'.RD, stripslashes(ee()->config->item('webmaster_email')), $str);
+		// now we can hit our path= type variables and some other non-cached items
 
 		// Stylesheet variable: {stylesheet=group/template}
 		if (strpos($str, 'stylesheet=') !== FALSE && preg_match_all("/".LD."\s*stylesheet=[\042\047]?(.*?)[\042\047]?".RD."/", $str, $css_matches))
@@ -3216,78 +3185,6 @@ class EE_Template {
 			}
 		}
 
-		// Debug mode: {debug_mode}
-		$str = str_replace(LD.'debug_mode'.RD, (ee()->config->item('debug') > 0) ? ee()->lang->line('on') : ee()->lang->line('off'), $str);
-
-		// GZip mode: {gzip_mode}
-		$str = str_replace(LD.'gzip_mode'.RD, (ee()->config->item('gzip_output') == 'y') ? ee()->lang->line('enabled') : ee()->lang->line('disabled'), $str);
-
-		// App version: {version}
-		$str = str_replace(LD.'app_version'.RD, APP_VER, $str);
-		$str = str_replace(LD.'version'.RD, APP_VER, $str);
-
-		// App version: {build}
-		$str = str_replace(LD.'app_build'.RD, APP_BUILD, $str);
-		$str = str_replace(LD.'build'.RD, APP_BUILD, $str);
-
-		// App version: {version_identifier}
-		$str = str_replace(LD.'version_identifier'.RD, APP_VER_ID, $str);
-
-		// {charset} and {lang}
-		$str = str_replace(LD.'charset'.RD, ee()->config->item('output_charset'), $str);
-		$str = str_replace(LD.'lang'.RD, ee()->config->item('xml_lang'), $str);
-
-		// {doc_url}
-		$str = str_replace(LD.'doc_url'.RD, DOC_URL, $str);
-
-		// {username_max_length}
-		$str = str_replace(LD.'username_max_length'.RD, USERNAME_MAX_LENGTH, $str);
-
-		// {password_max_length}
-		$str = str_replace(LD.'password_max_length'.RD, PASSWORD_MAX_LENGTH, $str);
-
-		// {theme_folder_url}
-		$str = str_replace(LD.'theme_folder_url'.RD, URL_THEMES, $str);
-
-		// {member_profile_link}
-		if (ee()->session->userdata('member_id') != 0)
-		{
-			$name = (ee()->session->userdata['screen_name'] == '') ? ee()->session->userdata['username'] : ee()->session->userdata['screen_name'];
-
-			$path = "<a href='".ee()->functions->create_url('/member/'.ee()->session->userdata('member_id'))."'>".$name."</a>";
-
-			$str = str_replace(LD.'member_profile_link'.RD, $path, $str);
-		}
-		else
-		{
-			$str = str_replace(LD.'member_profile_link'.RD, '', $str);
-		}
-
-		// Fetch CAPTCHA
-		if (strpos($str, "{captcha}") !== FALSE)
-		{
-			$str = str_replace("{captcha}", ee('Captcha')->create(), $str);
-		}
-
-		// Add security hashes to forms
-		// We do this here to keep the security hashes from being cached
-
-		$str = ee()->functions->add_form_security_hash($str);
-
-		// Parse non-cachable variables
-		ee()->session->userdata['member_group'] = ee()->session->userdata['group_id'];
-
-		foreach (array_merge($this->user_vars, array('member_group')) as $val)
-		{
-			$replace = (isset(ee()->session->userdata[$val]) && strval(ee()->session->userdata[$val]) != '') ?
-				ee()->session->userdata[$val] : '';
-
-			$str = str_replace(LD.$val.RD, $replace, $str);
-			$str = str_replace('{out_'.$val.'}', $replace, $str);
-			$str = str_replace('{global->'.$val.'}', $replace, $str);
-			$str = str_replace('{logged_in_'.$val.'}', $replace, $str);
-		}
-
 		// Path variable: {path=group/template}
 		if (strpos($str, 'path=') !== FALSE)
 		{
@@ -3300,12 +3197,25 @@ class EE_Template {
 			$str = preg_replace_callback("/".LD."\s*route=(.*?)".RD."/", array(&ee()->functions, 'create_route'), $str);
 		}
 
+		// Add security hashes to forms
+		// We do this here to keep the security hashes from being cached
+		$str = ee()->functions->add_form_security_hash($str);
+
 		// Add Action IDs form forms and links
 		$str = ee()->functions->insert_action_ids($str);
 
 		// and once again just in case global vars introduce EE comments,
 		// and to remove any runtime annotations.
 		return $this->remove_ee_comments($str);
+	}
+
+	/**
+	 * Getter for $this->user_vars
+	 * @return array User variables that will be parsed
+	 */
+	public function getUserVars()
+	{
+		return $this->user_vars;
 	}
 
 	/**
