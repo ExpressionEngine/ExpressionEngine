@@ -410,73 +410,11 @@ class EE_Template {
 			}
 		}
 
-		$layout_conditionals = array();
-
 		// Parse {layout} tag variables
 		if ($parse_layout_vars)
 		{
-			$this->log_item("layout Variables:", $this->layout_vars);
-
-			foreach ($this->layout_vars as $key => $val)
-			{
-				if (is_array($val))
-				{
-					$layout_conditionals['layout:'.$key] = TRUE;
-
-					$total_items = count($val);
-					$variables = [];
-
-					foreach ($val as $idx => $item)
-					{
-						$variables[] = [
-							'index' => $idx,
-							'count' => $idx + 1,
-							'reverse_count' => $total_items - $idx,
-							'total_results' => $total_items,
-							'value' => $item,
-						];
-					}
-
-					$this->template = $this->_parse_var_pair('layout:'.$key, $variables, $this->template);
-
-					// catch-all, if a layout array is used as a single variable, output the last one in
-					if (strpos($this->template, 'layout:'.$key) !== FALSE)
-					{
-						$this->template = $this->_parse_var_single('layout:'.$key, $item, $this->template);
-					}
-				}
-				else
-				{
-					$layout_conditionals['layout:'.$key] = $val;
-					$this->template = $this->_parse_var_single('layout:'.$key, $val, $this->template);
-				}
-			}
-
-			// parse index-specified items, e.g.: {layout:titles index='4'}
-			if (strpos($this->template, LD.'layout:') !== FALSE)
-			{
-				// prototype:
-				// array (size=1)
-				//   0 =>
-				//     array (size=4)
-				//       0 => string '{layout:titles index='4'}' (length=25)
-				//       1 => string 'titles' (length=6)
-				//       2 => string ''' (length=1)
-				//       3 => string '4' (length=1)
-				preg_match_all("/".LD."layout:(.+?)\s+index\s*=\s*(\042|\047)([^\\2]*?)\\2\s*".RD."/si", $this->template, $matches, PREG_SET_ORDER);
-
-				foreach ($matches as $match)
-				{
-					if (isset($this->layout_vars[$match[1]]))
-					{
-						$value = (isset($this->layout_vars[$match[1]][$match[3]])) ? $this->layout_vars[$match[1]][$match[3]] : '';
-						$this->template = str_replace($match[0], $value, $this->template);
-					}
-				}
-			}
+			$this->template = $this->parseLayoutVariables($str, $this->layout_vars);
 		}
-
-		$this->layout_conditionals = $layout_conditionals;
 
 		// Cache the name of the layout. We do this here so that we can force
 		// layouts to be declared before module or plugin tags. That is the only
@@ -564,7 +502,7 @@ class EE_Template {
 			$this->segment_vars,
 			$this->template_route_vars,
 			$this->embed_vars,
-			$layout_conditionals,
+			$this->layout_conditionals,
 			array('layout:contents' => $this->layout_contents),
 			$logged_in_user_cond,
 			ee()->config->_global_vars
@@ -653,6 +591,104 @@ class EE_Template {
 			$this->final_template = $this->template;
 			$this->_cleanup_layout_tags();
 		}
+	}
+
+	/**
+	 * Parse Layout variables
+	 *
+	 * Also sets the $layout_conditionals class property, which is used to handle conditionals
+	 * for early parsed variables in one sweep
+	 *
+	 * @param  string $str The template/string to parse
+	 * @param  array $layout_vars Layout variables to parser, 'variable_name' => 'content'
+	 * @return string The parsed template/string
+	 */
+	private function parseLayoutVariables($str, $layout_vars)
+	{
+		$this->log_item("layout Variables:", $layout_vars);
+		$this->layout_conditionals = [];
+
+		foreach ($layout_vars as $key => $val)
+		{
+			if (is_array($val))
+			{
+				$layout_conditionals['layout:'.$key] = TRUE;
+
+				$total_items = count($val);
+				$variables = [];
+
+				foreach ($val as $idx => $item)
+				{
+					$variables[] = [
+						'index' => $idx,
+						'count' => $idx + 1,
+						'reverse_count' => $total_items - $idx,
+						'total_results' => $total_items,
+						'value' => $item,
+					];
+				}
+
+				$str = $this->_parse_var_pair('layout:'.$key, $variables, $str);
+
+				// catch-all, if a layout array is used as a single variable, output the last one in
+				if (strpos($str, 'layout:'.$key) !== FALSE)
+				{
+					$str = $this->_parse_var_single('layout:'.$key, $item, $str);
+				}
+			}
+			else
+			{
+				$layout_conditionals['layout:'.$key] = $val;
+				$str = $this->_parse_var_single('layout:'.$key, $val, $str);
+			}
+		}
+
+		// parse index-specified items, e.g.: {layout:titles index='4'}
+		if (strpos($str, LD.'layout:') !== FALSE)
+		{
+			// prototype:
+			// array (size=1)
+			//   0 =>
+			//     array (size=4)
+			//       0 => string '{layout:titles index='4'}' (length=25)
+			//       1 => string 'titles' (length=6)
+			//       2 => string ''' (length=1)
+			//       3 => string '4' (length=1)
+			preg_match_all("/".LD."layout:(.+?)\s+index\s*=\s*(\042|\047)([^\\2]*?)\\2\s*".RD."/si", $str, $matches, PREG_SET_ORDER);
+
+			foreach ($matches as $match)
+			{
+				if (isset($layout_vars[$match[1]]))
+				{
+					$value = (isset($layout_vars[$match[1]][$match[3]])) ? $layout_vars[$match[1]][$match[3]] : '';
+					$str = str_replace($match[0], $value, $str);
+				}
+				// check for :modifers
+				elseif (($prefix_pos = strpos($match[1], ':')) !== FALSE)
+				{
+					$var = substr($match[1], 0, $prefix_pos);
+
+					if (isset($layout_vars[$var]))
+					{
+						// need to rewrite the variable internally, or multiple modified index='' vars will all have the same value
+						// {layout:titles[3]:length index='3'}
+						$idx = '['.$match[3].']';
+						$rewritten_tag = substr_replace($match[0], $var.$idx, 8, $prefix_pos);
+						$str = str_replace($match[0], $rewritten_tag, $str);
+
+						$modified_vars['layout:'.$var.$idx] = (isset($layout_vars[$var][$match[3]])) ? $layout_vars[$var][$match[3]] : '';
+					}
+				}
+			}
+
+			if ( ! empty($modified_vars))
+			{
+				$str = ee('Variables/Parser')->parseModifiedVariables($str, $modified_vars);
+			}
+		}
+
+		$this->layout_conditionals = $layout_conditionals;
+		return $str;
 	}
 
 	/**
@@ -3994,6 +4030,10 @@ class EE_Template {
 
 				// Prep conditionals
 				$temp = ee()->functions->prep_conditionals($temp, $set);
+
+				// handle any :modifiers
+				$temp = ee('Variables/Parser')->parseModifiedVariables($temp, $set);
+
 				$str .= $temp;
 
 				// Break if we're past the limit

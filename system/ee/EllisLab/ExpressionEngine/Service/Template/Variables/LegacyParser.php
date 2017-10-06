@@ -365,10 +365,13 @@ class LegacyParser {
 			}
 		}
 
-		$str = ee()->functions->prep_conditionals(
-			$str,
-			$conditionals
-		);
+		if ( ! empty($conditionals))
+		{
+			$str = ee()->functions->prep_conditionals(
+				$str,
+				$conditionals
+			);
+		}
 
 		return $str;
 	}
