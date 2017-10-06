@@ -3225,7 +3225,7 @@ class EE_Template {
 
 				$this->tagdata = $match[3][$i];
 
-				$vars = ee('Variables/Parser')->extractVariables($match[3][$i], '/');
+				$vars = ee('Variables/Parser')->extractVariables($match[3][$i]);
 				$this->var_single	= $vars['var_single'];
 				$this->var_pair		= $vars['var_pair'];
 
@@ -3264,7 +3264,7 @@ class EE_Template {
 
 				$this->tagdata = $match[2][$i];
 
-				$vars = ee('Variables/Parser')->extractVariables($match[2][$i], '/');
+				$vars = ee('Variables/Parser')->extractVariables($match[2][$i]);
 				$this->var_single	= $vars['var_single'];
 				$this->var_pair		= $vars['var_pair'];
 

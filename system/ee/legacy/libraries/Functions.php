@@ -1573,7 +1573,7 @@ class EE_Functions {
 		ee()->load->library('logger');
 		ee()->logger->deprecated('4.0', "ee('Variables/Parser')->extractVariables()");
 
-		return ee('Variables/Parser')->extractVariables($str, $slash);
+		return ee('Variables/Parser')->extractVariables($str);
 	}
 
 	/**
