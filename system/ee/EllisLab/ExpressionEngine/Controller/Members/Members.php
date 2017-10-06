@@ -1170,23 +1170,62 @@ class Members extends CP_Controller {
 		{
 			$group_ids = ee()->member_model->get_members_group_ids($selected);
 
-			// Find Valid Member Replacements
-			ee()->db->select('member_id, username, screen_name')
-				->from('members')
-				->where_in('group_id', $group_ids)
-				->where_not_in('member_id', $selected)
-				->order_by('screen_name');
-			$heirs = ee()->db->get();
+			$vars['heirs'] = $this->heirFilter($group_ids, $selected);
 
-			foreach ($heirs->result() as $heir)
-			{
-				$name_to_use = ($heir->screen_name != '') ? $heir->screen_name : $heir->username;
-				$vars['heirs'][$heir->member_id] = $name_to_use;
-			}
+			$vars['fields'] = array(
+				'heir' => array(
+					'type' => 'radio',
+					'choices' => $vars['heirs'],
+					'filter_url' => ee('CP/URL')->make(
+						'members/heir-filter',
+						[
+							'group_ids' => implode('|', $group_ids),
+							'selected' => implode('|', $selected)
+						]
+					)->compile(),
+					'no_results' => ['text' => 'no_members_found'],
+					'margin_top' => TRUE,
+					'margin_left' => TRUE
+				)
+			);
 		}
 
 		ee()->view->cp_page_title = lang('delete_member');
 		ee()->cp->render('members/delete_confirm', $vars);
+	}
+
+	/**
+	 * AJAX endpoint for filtering heir selection
+	 *
+	 * @param array $group_ids Group IDs to search
+	 * @param array $selected Members to exclude from search
+	 * @return array List of members normalized for SelectField
+	 */
+	public function heirFilter($group_ids = NULL, $selected = NULL)
+	{
+		$search_term = ee('Request')->get('search') ?: '';
+		$group_ids = $group_ids ?: explode('|', ee('Request')->get('group_ids'));
+		$selected = $selected ?: explode('|', ee('Request')->get('selected'));
+
+		$members = ee('Model')->get('Member')
+			->fields('screen_name', 'username')
+			->search(
+				['screen_name', 'username', 'email', 'member_id'], $search_term
+			)
+			->filter('group_id', 'IN', $group_ids)
+			->filter('member_id', 'NOT IN', $selected)
+			->order('screen_name')
+			->limit(100)
+			->all();
+
+		$heirs = [];
+		foreach($members as $heir)
+		{
+			$name = ($heir->screen_name != '') ? 'screen_name' : 'username';
+			$heirs[$heir->getId()] = $heir->$name;
+		}
+
+		return ee('View/Helpers')->normalizedChoices($heirs);
 	}
 
 	/**

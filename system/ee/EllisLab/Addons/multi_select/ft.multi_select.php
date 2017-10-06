@@ -70,12 +70,13 @@ class Multi_select_ft extends OptionFieldtype {
 
 		if (REQ == 'CP')
 		{
-			return ee('View')->make('multi_select:publish')->render(array(
+			return ee('View')->make('ee:_shared/form/fields/select')->render([
 				'field_name' => $this->field_name,
-				'values'     => $values,
-				'options'    => $field_options,
-				'extra'      => $extra
-			));
+				'choices'    => $field_options,
+				'value'      => $values,
+				'multi'      => TRUE,
+				'disabled'   => $this->get_setting('field_disabled')
+			]);
 		}
 
 		$extra .= ' dir="'.$this->get_setting('field_text_direction', 'ltr').'" class="multiselect_input"';

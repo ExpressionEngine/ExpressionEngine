@@ -44,6 +44,21 @@ class Response {
 		$this->body .= $str;
 	}
 
+	public function hasHeader($header)
+	{
+		return array_key_exists($header, $this->headers);
+	}
+
+	public function getHeader($header)
+	{
+		if ($this->hasHeader($header))
+		{
+			return $this->headers[$header];
+		}
+
+		return NULL;
+	}
+
 	/**
 	 *
 	 */
@@ -58,14 +73,37 @@ class Response {
 	}
 
 	/**
+	 * Sets the status
+	 *
+	 * @throws TypeError
+	 * @param int $status The status code
+	 * @return void
+	 */
+	public function setStatus($status)
+	{
+		if (is_numeric($status))
+		{
+			$this->status = $status;
+			return;
+		}
+
+		throw new \TypeError("setStatus expects a number");
+	}
+
+	/**
 	 *
 	 */
 	public function send()
 	{
 		if ( ! $this->body)
 		{
+			foreach ($this->headers as $name => $value)
+			{
+				$GLOBALS['OUT']->headers[] = array($name.': '.$value, TRUE);
+			}
+
 			// smoke and mirrors to support the old style
-			return $GLOBALS['OUT']->_display();
+			return $GLOBALS['OUT']->_display('', $this->status);
 		}
 
 		$this->sendHeaders();

@@ -13,7 +13,7 @@
 		</div>
 		<?php if ($can_edit_categories): ?>
 		<ul class="toolbar">
-			<li class="edit"><a href="<?=ee('CP/URL')->make('channels/cat/edit-cat/'.$category->data->group_id.'/'.$category->data->cat_id)?>"></a></li>
+			<li class="edit"><a href="<?=ee('CP/URL')->make('categories/edit/'.$category->data->group_id.'/'.$category->data->cat_id)?>"></a></li>
 		</ul>
 		<?php endif; ?>
 		<?php if ($can_delete_categories): ?>

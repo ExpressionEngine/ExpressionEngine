@@ -32,6 +32,8 @@ class EntryList {
 		$entry_id = $settings['entry_id'];
 		$search = isset($settings['search']) ? $settings['search'] : NULL;
 		$channel_id = isset($settings['channel_id']) ? $settings['channel_id'] : NULL;
+		$related = isset($settings['related']) ? $settings['related'] : NULL;
+		$show_selected = isset($settings['selected']) ? $settings['selected'] : NULL;
 
 		// Create a cache ID based on the query criteria for this field so fields
 		// with similar entry listings can share data that's already been queried
@@ -48,6 +50,15 @@ class EntryList {
 			->with('Channel')
 			->fields('Channel.*', 'entry_id', 'title', 'channel_id')
 			->order($order_field, $order_dir);
+
+		if ($related == 'related')
+		{
+			$entries->filter('entry_id', 'IN', $show_selected);
+		}
+		elseif ($related == 'unrelated')
+		{
+			$entries->filter('entry_id', 'NOT IN', $show_selected);
+		}
 
 		if ( ! empty($search))
 		{
@@ -199,7 +210,7 @@ class EntryList {
 	public function ajaxFilter()
 	{
 		$settings = ee('Encrypt')->decode(
-			ee('Request')->post('settings'),
+			ee('Request')->get('settings'),
 			ee()->config->item('session_crypt_key')
 		);
 		$settings = json_decode($settings, TRUE);
@@ -209,8 +220,10 @@ class EntryList {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$settings['search'] = ee('Request')->post('search');
-		$settings['channel_id'] = ee('Request')->post('channel_id');
+		$settings['search'] = ee('Request')->get('search');
+		$settings['channel_id'] = ee('Request')->get('channel_id');
+		$settings['related'] = ee('Request')->get('related');
+		$settings['selected'] = ee('Request')->get('selected');
 
 		if ( ! AJAX_REQUEST OR ! ee()->session->userdata('member_id'))
 		{
@@ -220,12 +233,11 @@ class EntryList {
 		$response = array();
 		foreach ($this->query($settings) as $entry)
 		{
-			$response[] = array(
-				'entry_id'     => $entry->getId(),
-				'title'        => htmlentities($entry->title, ENT_QUOTES, 'UTF-8'),
-				'channel_id'   => $entry->Channel->getId(),
-				'channel_name' => htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8')
-			);
+			$response[] = [
+				'value' => $entry->getId(),
+				'label' => $entry->title,
+				'instructions' => $entry->Channel->channel_title
+			];
 		}
 
 		return $response;

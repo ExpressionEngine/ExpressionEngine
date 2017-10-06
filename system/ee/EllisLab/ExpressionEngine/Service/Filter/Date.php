@@ -98,10 +98,23 @@ class Date extends Filter {
 		$value = $this->value();
 		if ($value && ! array_key_exists($value, $this->options))
 		{
-			$date = ee()->localize->string_to_timestamp($value);
-			$this->timestamp = $date;
-			$this->display_value = ee()->localize->format_date($date_format, $date);
-			$this->selected_value = array($date, $date+86400);
+			if (is_numeric($value))
+			{
+		        ee()->load->library('relative_date');
+
+		        $relative_date = ee()->relative_date->create(ee()->localize->now - $value);
+				$relative_date->past = lang('last').' %s';
+				$relative_date->about = '';
+				$relative_date->calculate();
+				$this->display_value = $relative_date->render();
+			}
+			else
+			{
+				$date = ee()->localize->string_to_timestamp($value);
+				$this->timestamp = $date;
+				$this->display_value = ee()->localize->format_date($date_format, $date);
+				$this->selected_value = array($date, $date+86400);
+			}
 		}
 	}
 

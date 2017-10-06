@@ -1,9 +1,10 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
-<div class="box has-tabs publish">
-	<h1>
-		<?=$cp_page_title?> <span class="req-title"><?=lang('required_fields')?></span>
-	</h1>
+<div class="form-standard has-tabs publish">
+	<div class="form-btns form-btns-top">
+		<h1><?=$cp_page_title?></h1>
+		<?=cp_form_submit($submit_button_text, lang('btn_saving'))?>
+	</div>
 	<div class="tab-wrap">
 		<ul class="tabs layout">
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
@@ -28,8 +29,8 @@
 			<li><a<?php if ($index == 0): ?> class="act"<?php endif; ?> href="" rel="t-<?=$index?>"><?=lang($tab->title)?></a> <?php if ($tab->title != 'publish'): ?><?=$icon?></span><?php endif; ?></li>
 			<?php endforeach; ?>
 		</ul>
-		<a class="btn action add-tab m-link" rel="modal-add-new-tab" href="#"><?=lang('add_tab')?></a>
-		<?=form_open($form_url, 'class="settings ajax-validate"')?>
+		<a class="add-tab m-link" rel="modal-add-new-tab" href="#"><?=lang('add_tab')?></a>
+		<?=form_open($form_url, 'class="ajax-validate"')?>
 			<input type="hidden" name="field_layout" value="<?=json_encode($channel_layout->field_layout)?>">
 			<?=ee('CP/Alert')->get('layout-form')?>
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
@@ -60,9 +61,9 @@
 
 			<?=$form?>
 
-			<fieldset class="form-ctrls">
+			<div class="form-btns">
 				<?=cp_form_submit($submit_button_text, lang('btn_saving'))?>
-			</fieldset>
+			</div>
 		</form>
 	</div>
 </div>

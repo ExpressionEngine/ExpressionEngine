@@ -146,7 +146,6 @@ class Ip_to_nation_mcp {
 								'type' => 'checkbox',
 								'choices' => $country_list,
 								'value' => $selected,
-								'wrap' => TRUE,
 								'no_results' => array(
 									'text' => lang('no_countries')
 								)

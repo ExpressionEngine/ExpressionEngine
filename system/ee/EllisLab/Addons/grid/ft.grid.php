@@ -19,7 +19,7 @@ class Grid_ft extends EE_Fieldtype {
 
 	var $has_array_data = TRUE;
 
-	private $error_fields = array();
+	private $errors;
 
 	public function __construct()
 	{
@@ -124,7 +124,10 @@ class Grid_ft extends EE_Fieldtype {
 			'field_name' 	=> $this->name(),
 			'lang_cols' 	=> FALSE,
 			'grid_min_rows' => $this->settings['grid_min_rows'],
-			'grid_max_rows' => $this->settings['grid_max_rows']
+			'grid_max_rows' => $this->settings['grid_max_rows'],
+			'reorder'		=> isset($this->settings['allow_reorder'])
+				? get_bool_from_string($this->settings['allow_reorder'])
+				: TRUE
 		));
 		$grid->loadAssets();
 		$grid->setNoResultsText('no_rows_created', 'add_new_row');
@@ -444,10 +447,7 @@ class Grid_ft extends EE_Fieldtype {
 			foreach ($columns as $field_name => &$column)
 			{
 				$column['col_id'] = $field_name;
-				$column['col_required'] = isset($column['col_required']) ? 'y' : 'n';
-				$column['col_search'] = isset($column['col_search']) ? 'y' : 'n';
-
-				$vars['columns'][] = ee()->grid_lib->get_column_view($column, $this->error_fields);
+				$vars['columns'][] = ee()->grid_lib->get_column_view($column, $this->errors);
 			}
 		}
 		elseif ( ! empty($field_id))
@@ -509,13 +509,22 @@ class Grid_ft extends EE_Fieldtype {
 								'value' => isset($data['grid_max_rows']) ? $data['grid_max_rows'] : ''
 							)
 						)
+					),
+					array(
+						'title' => 'grid_allow_reorder',
+						'fields' => array(
+							'allow_reorder' => array(
+								'type' => 'yes_no',
+								'value' => isset($data['allow_reorder']) ? $data['allow_reorder'] : 'y'
+							)
+						)
 					)
 				)
 			),
 			'grid_fields' => array(
 				'label' => 'grid_fields',
 				'group' => 'grid',
-				'settings' => array($grid_alert, ee()->load->view('settings', $vars, TRUE))
+				'settings' => array($grid_alert, ee('View')->make('grid:settings')->render($vars))
 			)
 		);
 
@@ -528,103 +537,130 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->cp->add_js_script('file', 'cp/grid');
 
 		ee()->javascript->output('EE.grid_settings();');
+		ee()->javascript->output('FieldManager.on("fieldModalDisplay", function(modal) {
+			EE.grid_settings();
+		});');
 
 		return $settings;
 	}
 
+	/**
+	 * Called by FieldModel to validate the fieldtype's settings
+	 */
 	public function validate_settings($data)
 	{
-		$validator = ee('Validation')->make(array(
+		$rules = [
 			'grid_min_rows' => 'isNatural',
 			'grid_max_rows' => 'isNaturalNoZero',
-			'grid' => 'validGridSettings'
-		));
+			'fieldtype_errors' => 'ensureNoFieldtypeErrors'
+		];
 
-		$validator->defineRule('validGridSettings', array($this, '_validate_grid'));
+		$grid_settings = ee('Request')->post('grid');
+		$col_labels = [];
+		$col_names = [];
 
-		return $validator->validate($data);
-	}
-
-	/**
-	 * Callback for validation service
-	 *
-	 * @return	mixed	Boolean, whether or not the settings passed validation,
-	 *   or string of errors
-	 */
-	public function _validate_grid($key, $value, $params, $rule)
-	{
-		$this->_load_grid_lib();
-
-		$validate = ee()->grid_lib->validate_settings(array('grid' => ee()->input->post('grid')));
-
-		$this->error_fields = array();
-
-		$ajax_field = ee()->input->post('ee_fv_field');
-
-		if ($validate !== TRUE)
+		// Create a flattened version of the grid settings data to pass to the
+		// validator, but also assign rules to the dynamic field names
+		foreach ($grid_settings['cols'] as $column_id => $column)
 		{
-			$errors = array();
+			// We'll look at these later to see if there are any duplicates
+			$col_labels[] = $column['col_label'];
+			$col_names[] = $column['col_name'];
 
-			// Gather error messages and fields with errors so that we can
-			// display the error messages and highlight the fields that
-			// have errors
-			foreach ($validate as $column => $fields)
+			foreach ($column as $field => $value)
 			{
-				foreach ($fields as $field => $error)
-				{
-					$field_name = 'grid[cols]['.$column.']['.$field.']';
+				$field_name = 'grid[cols]['.$column_id.']['.$field.']';
+				$data[$field_name] = $value;
 
-					if (AJAX_REQUEST && $ajax_field && $ajax_field == $field_name)
-					{
-						$rule->stop();
-						return lang($error);
-					}
-
-					if (is_numeric($column))
-					{
-						$column = 'col_id_'.$column;
-					}
-
-					if ( ! isset($errors[$field]))
-					{
-						$errors[$field] = array(
-							'message' => $error,
-							'columns' => array('['.$column.']')
-						);
-					}
-					else
-					{
-						$errors[$field]['columns'][] = '['.$column.']';
-					}
-
-					$this->error_fields[] = $field_name;
+				switch ($field) {
+					case 'col_label':
+						$rules[$field_name] = 'required|validGridColLabel';
+						break;
+					case 'col_name':
+						$rules[$field_name] = 'required|alphaDash|validGridColName';
+						break;
+					case 'col_width':
+						$rules[$field_name] = 'whenPresent|isNatural';
+						break;
+					case 'col_required':
+						$rules[$field_name] = 'enum[y,n]';
+						break;
+					case 'col_search':
+						$rules[$field_name] = 'enum[y,n]';
+						break;
+					default:
+						break;
 				}
 			}
-
-			// If we got here on AJAX validation, return that we passed, because the
-			// single field we're validating must be valid
-			if (AJAX_REQUEST && $ajax_field)
-			{
-				return TRUE;
-			}
-
-			// Make error messages unique and convert to a string to pass
-			// to form validaiton library
-			$this->error_string = '';
-			foreach ($errors as $field => $error)
-			{
-				// Custom span for use with Grid settings validation callbacks
-				$this->error_string .= '<span
-					style="display: block"
-					data-field="['.$field.']"
-					data-columns="'.implode('', $error['columns']).'">'.lang($error['message']).'</span>';
-			}
-
-			$rule->stop();
-			return $this->error_string;
 		}
 
-		return TRUE;
+		$col_label_count = array_count_values($col_labels);
+		$col_name_count = array_count_values($col_names);
+
+		$validator = ee('Validation')->make($rules);
+
+		$validator->defineRule(
+			'validGridColLabel',
+			function ($key, $value, $params, $rule) use ($col_label_count)
+		{
+			if ($col_label_count[$value] > 1)
+			{
+				$rule->stop();
+				return lang('grid_duplicate_col_label');
+			}
+
+			return TRUE;
+		});
+
+		$validator->defineRule(
+			'validGridColName',
+			function ($key, $value, $params, $rule) use ($col_name_count)
+		{
+			ee()->load->library('grid_parser');
+			if (in_array($value, ee()->grid_parser->reserved_names))
+			{
+				$rule->stop();
+				return lang('grid_col_name_reserved');
+			}
+
+			if ($col_name_count[$value] > 1)
+			{
+				$rule->stop();
+				return lang('grid_duplicate_col_name');
+			}
+
+			return TRUE;
+		});
+
+		$this->_load_grid_lib();
+		$fieldtype_errors = ee()->grid_lib->validate_settings($grid_settings);
+
+		$validator->defineRule(
+			'ensureNoFieldtypeErrors',
+			function ($key, $value, $params, $rule) use ($fieldtype_errors)
+		{
+			if ( ! empty($fieldtype_errors)) $rule->stop();
+
+			return TRUE;
+		});
+
+		$this->errors = $validator->validate($data);
+
+		// Add any failed rules from fieldtypes as a top-level fields on our
+		// result object so that AJAX validation can pick it up
+		foreach ($fieldtype_errors as $field_name => $error)
+		{
+			foreach ($error->getFailed() as $field => $rules)
+			{
+				$field_name = 'grid[cols]['.$field_name.'][col_settings]['.$field.']';
+				foreach ($rules as $rule)
+				{
+					$this->errors->addFailed($field_name, $rule);
+				}
+			}
+		}
+
+		return $this->errors;
 	}
 
 	public function save_settings($data)
@@ -632,7 +668,8 @@ class Grid_ft extends EE_Fieldtype {
 		// Make sure grid_min_rows is at least zero
 		return array(
 			'grid_min_rows' => empty($data['grid_min_rows']) ? 0 : $data['grid_min_rows'],
-			'grid_max_rows' => empty($data['grid_max_rows']) ? '' : $data['grid_max_rows']
+			'grid_max_rows' => empty($data['grid_max_rows']) ? '' : $data['grid_max_rows'],
+			'allow_reorder' => empty($data['allow_reorder']) ? 'y' : $data['allow_reorder']
 		);
 	}
 

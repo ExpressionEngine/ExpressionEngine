@@ -611,7 +611,10 @@ class Status extends AbstractChannelsController {
 						'status_access' => array(
 							'type' => 'checkbox',
 							'choices' => $member_groups,
-							'value' => $allowed_groups
+							'value' => $allowed_groups,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+							]
 						)
 					)
 				)

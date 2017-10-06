@@ -8,6 +8,19 @@
 	</p>
 	<ul>
 		<li><label class="notice"><?=form_radio('heir_action', 'delete', 'n')?> <?= lang('member_delete_dont_reassign_entries') ?></label></li>
-		<li><label><?=form_radio('heir_action', 'assign', 'y')?> <?= lang('member_delete_reassign_entries')?> <?= form_dropdown('heir', $heirs, $selected) ?></label></li>
+		<li><label><?=form_radio('heir_action', 'assign', 'y')?> <?= lang('member_delete_reassign_entries')?> </label>
 	</ul>
+
+	<?php
+	foreach ($fields as $field_name => $field)
+	{
+		$vars = array(
+			'field_name' => $field_name,
+			'field' => $field,
+			'grid' => FALSE
+		);
+
+		$this->embed('ee:_shared/form/field', $vars);
+	}
+	?>
 <?php endif; ?>

@@ -146,6 +146,12 @@ class Cp {
 			'search'				=> lang('search'),
 			'session_idle'			=> lang('session_idle'),
 			'btn_fix_errors'		=> lang('btn_fix_errors'),
+			'btn_fix_errors'		=> lang('btn_fix_errors'),
+			'check_all'				=> lang('check_all'),
+			'clear_all'				=> lang('clear_all'),
+			'keyword_search'		=> lang('keyword_search'),
+			'loading'				=> lang('loading'),
+			'searching'				=> lang('searching')
 		);
 
 		ee()->javascript->set_global(array(
@@ -165,9 +171,24 @@ class Cp {
 
 		$js_scripts = array(
 			'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog', 'button'),
-			'plugin'	=> array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
-			'file'		=> array('json2', 'underscore', 'cp/global_start', 'cp/form_validation', 'cp/sort_helper', 'cp/fuzzy_filters')
+			'plugin'	=> array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all', 'nestable'),
+			'file'		=> array('react/react.min', 'react/react-dom.min', 'json2',
+			'underscore', 'cp/global_start', 'cp/form_validation', 'cp/sort_helper', 'cp/form_group',
+			'cp/modal_form', 'cp/confirm_remove', 'cp/fuzzy_filters',
+			'components/no_results', 'components/loading', 'components/filters',
+			'components/filterable', 'components/toggle', 'components/select_list',
+			'fields/select/select', 'fields/select/mutable_select', 'fields/dropdown/dropdown')
 		);
+
+		$modal = ee('View')->make('ee:_shared/modal_confirm_remove')->render([
+			'name'		=> 'modal-default-confirm-remove',
+			'form_url'	=> '#',
+			'hidden'	=> [
+				'bulk_action'	=> 'remove',
+				'content_id' => ''
+			]
+		]);
+		ee('CP/Modal')->addModal('default-remove', $modal);
 
 		$this->add_js_script($js_scripts);
 		$this->_seal_combo_loader();
@@ -214,6 +235,7 @@ class Cp {
 
 		ee()->view->ee_build_date = ee()->localize->format_date($date_format, $this->_parse_build_date(), TRUE);
 		ee()->view->version_identifier = APP_VER_ID;
+		ee()->view->show_news_button = $this->shouldShowNewsButton();
 
 		$license = $this->validateLicense();
 		ee()->view->ee_license = $license;
@@ -225,6 +247,21 @@ class Cp {
 		}
 
 		return ee()->view->render($view, $data, $return);
+	}
+
+	/**
+	 * Determines whether or not the news button beside the version number
+	 * should be shown
+	 *
+	 * @return boolean
+	 */
+	protected function shouldShowNewsButton()
+	{
+		$news_view = ee('Model')->get('MemberNewsView')
+			->filter('member_id', ee()->session->userdata('member_id'))
+			->first();
+
+		return ( ! $news_view OR version_compare(APP_VER, $news_view->version, '>'));
 	}
 
 	protected function validateLicense()

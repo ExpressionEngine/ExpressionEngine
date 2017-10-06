@@ -58,12 +58,12 @@ class Date extends Settings {
 					'group' => 'localize',
 					'fields' => array(
 						'date_format' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $fields['date_format']['value'],
 							'value' => $this->member->date_format
 						),
 						'time_format' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(12 => '12 hour', 24 => '24 hour'),
 							'value' => $this->member->time_format
 						)

@@ -22,7 +22,7 @@ class MenuItem extends Model {
 	protected static $_validation_rules = array(
 		'type' => 'required|enum[link,addon,submenu]',
 		'name' => 'validateWhenTypeIs[link,submenu]|noHtml|required',
-		'data' => 'required'
+		'data' => 'validateWhenTypeIs[link,addon]|required'
 	);
 
 	protected static $_relationships = array(

@@ -19,9 +19,10 @@ class Grid_lib {
 	public $content_type;
 	public $entry_id;
 
-	protected $_fieldtypes = array();
-	protected $_validated = array();
-	protected $_searchable_data = array();
+	protected $_fieldtypes = [];
+	protected $_validated = [];
+	protected $error_objects = [];
+	protected $_searchable_data = [];
 
 	public function __construct()
 	{
@@ -668,92 +669,37 @@ class Grid_lib {
 	 * Validates settings before form is saved
 	 *
 	 * @param	array	POSTed column settings from field settings page
-	 * @return	mixed	Array of errors or TRUE for successful validation
+	 * @return	array	Array of failed result objects
 	 */
 	public function validate_settings($settings)
 	{
-		$errors = array();
-		$col_labels = array();
-		$col_names = array();
-
-		// Create an array of column names and labels for counting to see if
-		//  there are duplicates; they should be unique
-		foreach ($settings['grid']['cols'] as $col_field => $column)
+		foreach ($settings['cols'] as $col_field => $column)
 		{
-			$col_labels[] = $column['col_label'];
-			$col_names[] = $column['col_name'];
-		}
-
-		$col_label_count = array_count_values($col_labels);
-		$col_name_count = array_count_values($col_names);
-
-		ee()->load->library('grid_parser');
-
-		foreach ($settings['grid']['cols'] as $col_field => $column)
-		{
-			// Column labels are required
-			if (empty($column['col_label']))
-			{
-				$errors[$col_field]['col_label'] = 'grid_col_label_required';
-			}
-			// There cannot be duplicate column labels
-			elseif ($col_label_count[$column['col_label']] > 1)
-			{
-				$errors[$col_field]['col_label'] = 'grid_duplicate_col_label';
-			}
-
-			// Column names are required
-			if (empty($column['col_name']))
-			{
-				$errors[$col_field]['col_name'] = 'grid_col_name_required';
-			}
-			// Columns cannot be the same name as our protected modifiers
-			elseif (in_array($column['col_name'], ee()->grid_parser->reserved_names))
-			{
-				$errors[$col_field]['col_name'] = 'grid_col_name_reserved';
-			}
-			// There cannot be duplicate column names
-			elseif ($col_name_count[$column['col_name']] > 1)
-			{
-				$errors[$col_field]['col_name'] = 'grid_duplicate_col_name';
-			}
-
-			// Column names must contain only alpha-numeric characters and no spaces
-			if (preg_match('/[^a-z0-9\-\_]/i', $column['col_name']))
-			{
-				$errors[$col_field]['col_name'] = 'grid_invalid_column_name';
-			}
-
-			// Column widths, if specified, must be numeric
-			if ( ! empty($column['col_width']) &&
-				 ! is_numeric(str_replace('%', '', $column['col_width'])))
-			{
-				$errors[$col_field]['col_width'] = 'grid_numeric_percentage';
-			}
-
 			$column['col_id'] = (strpos($col_field, 'new_') === FALSE)
 				? str_replace('col_id_', '', $col_field) : FALSE;
-			$column['col_required'] = isset($column['col_required']) ? 'y' : 'n';
 			$column['col_settings']['field_required'] = $column['col_required'];
 
-			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0, $this->content_type);
+			ee()->grid_parser->instantiate_fieldtype(
+				$column,
+				NULL,
+				$this->field_id,
+				0,
+				$this->content_type
+			);
 
 			// Let fieldtypes validate their Grid column settings
-			$ft_validate = ee()->grid_parser->call('validate_settings', $column['col_settings']);
+			$ft_validate = ee()->grid_parser->call(
+				'validate_settings',
+				$column['col_settings']
+			);
 
 			if ($ft_validate instanceof Result && $ft_validate->isNotValid())
 			{
-				foreach ($ft_validate->getAllErrors() as $field => $field_errors)
-				{
-					foreach ($field_errors as $rule => $error)
-					{
-						$errors[$col_field][$field.'_'.$rule] = $error;
-					}
-				}
+				$this->error_objects[$col_field] = $ft_validate;
 			}
 		}
 
-		return (empty($errors)) ? TRUE : $errors;
+		return $this->error_objects;
 	}
 
 	/**
@@ -782,7 +728,6 @@ class Grid_lib {
 			$column['col_id'] = (strpos($col_field, 'new_') === FALSE)
 				? str_replace('col_id_', '', $col_field) : FALSE;
 
-			$column['col_required'] = isset($column['col_required']) ? 'y' : 'n';
 			$column['col_settings'] = $this->_save_settings($column);
 			$column['col_settings']['field_required'] = $column['col_required'];
 
@@ -801,7 +746,7 @@ class Grid_lib {
 				'col_name'			=> $column['col_name'],
 				'col_instructions'	=> $column['col_instructions'],
 				'col_required'		=> $column['col_required'],
-				'col_search'		=> isset($column['col_search']) ? 'y' : 'n',
+				'col_search'		=> $column['col_search'],
 				'col_width'			=> str_replace('%', '', $column['col_width']),
 				'col_settings'		=> json_encode($column['col_settings'])
 			);
@@ -870,7 +815,150 @@ class Grid_lib {
 	 *	that have validation errors
 	 * @return	string	Rendered column view for settings page
 	 */
-	public function get_column_view($column = NULL, $error_fields = array())
+	public function get_column_view($column = NULL, $errors = NULL)
+	{
+		// Column ID could be a string if we're coming back from a valdiation error
+		// in order to preserve original namespacing
+		if ( ! empty($column['col_id']) && is_string($column['col_id']))
+		{
+			$field_name = $column['col_id'];
+		}
+		else
+		{
+			$field_name = (empty($column)) ? 'new_0' : 'col_id_'.$column['col_id'];
+		}
+
+		if (empty($column))
+		{
+			$column = array(
+				'col_id' => NULL,
+				'col_type' => NULL,
+				'col_label' => '',
+				'col_name' => '',
+				'col_instructions' => '',
+				'col_required' => 'n',
+				'col_search' => 'n',
+				'col_width' => '',
+				'col_settings' => array()
+			);
+		}
+
+		$sections = [
+			[
+				[
+					'title' => 'type',
+					'desc' => '',
+					'fields' => [
+						'grid[cols]['.$field_name.'][col_type]' => [
+							'type' => 'dropdown',
+							'choices' => $this->getGridFieldtypeDropdownForColumn($column['col_type']),
+							'value' => $column['col_type'] ?: 'text',
+							'no_results' => ['text' => sprintf(lang('no_found'), lang('fieldtypes'))]
+						]
+					]
+				],
+				[
+					'title' => 'name',
+					'fields' => [
+						'grid[cols]['.$field_name.'][col_label]' => [
+							'type' => 'text',
+							'value' => $column['col_label'],
+							'required' => TRUE
+						]
+					]
+				],
+				[
+					'title' => 'short_name',
+					'desc' => 'alphadash_desc',
+					'fields' => [
+						'grid[cols]['.$field_name.'][col_name]' => [
+							'type' => 'text',
+							'value' => $column['col_name'],
+							'required' => TRUE
+						]
+					]
+				],
+				[
+					'title' => 'instructions',
+					'desc' => 'instructions_desc',
+					'fields' => [
+						'grid[cols]['.$field_name.'][col_instructions]' => [
+							'type' => 'textarea',
+							'value' => $column['col_instructions'],
+						]
+					]
+				],
+			],
+			'fieldset_group' => [
+				[
+					'title' => 'require_field',
+					'desc' => 'require_field_desc',
+					'columns' => '3rds',
+					'fields' => [
+						'grid[cols]['.$field_name.'][col_required]' => [
+							'type' => 'yes_no',
+							'value' => $column['col_required'],
+						]
+					]
+				],
+				[
+					'title' => 'include_in_search',
+					'desc' => 'include_in_search_desc',
+					'columns' => '3rds',
+					'fields' => [
+						'grid[cols]['.$field_name.'][col_search]' => [
+							'type' => 'yes_no',
+							'value' => $column['col_search'],
+						]
+					]
+				],
+				[
+					'title' => 'grid_col_width',
+					'desc' => 'grid_col_width_desc',
+					'columns' => '3rds',
+					'fields' => [
+						'grid[cols]['.$field_name.'][col_width]' => [
+							'type' => 'text',
+							'value' => $column['col_width'],
+						]
+					]
+				],
+			]
+		];
+
+		$column['top_form'] = '';
+		foreach ($sections as $name => $settings)
+		{
+			$column['top_form'] .= ee('View')->make('_shared/form/section')
+				->render(['name' => $name, 'settings' => $settings, 'errors' => $errors]);
+		}
+
+		$column['settings_form'] = ( ! isset($column['col_type']))
+			? $this->get_settings_form('text', $field_name) : $this->get_settings_form($column['col_type'], $field_name, $column);
+
+		if (isset($column['col_width']) && $column['col_width'] == 0)
+		{
+			$column['col_width'] = '';
+		}
+
+		return ee('View')->make('grid:col_tmpl')
+			->render(
+			array(
+				'field_name'	=> $field_name,
+				'column'		=> $column
+			),
+			TRUE
+		);
+	}
+
+	/**
+	 * Create a dropdown-frieldly array of available fieldtypes based on
+	 * compatibility of passed column type
+	 *
+	 * @param	string	Short name of fieldtype
+	 * @return	array	Key/value array of compatible fieldtypes
+	 */
+	private function getGridFieldtypeDropdownForColumn($col_type = NULL)
 	{
 		$fieldtype_data = $this->get_grid_fieldtypes();
 		$fieldtypes = $fieldtype_data['fieldtypes'];
@@ -878,17 +966,15 @@ class Grid_lib {
 
 		// Create a dropdown-frieldly array of available fieldtypes based on
 		// compatibility if this column already has a type.
-		if (isset($column['col_type']))
+		if ($col_type)
 		{
-			$type = $column['col_type'];
-
-			if ( ! isset($compatibility[$type]))
+			if ( ! isset($compatibility[$col_type]))
 			{
-				$fieldtypes_dropdown = array($type => $fieldtypes[$type]);
+				$fieldtypes_dropdown = array($col_type => $fieldtypes[$col_type]);
 			}
 			else
 			{
-				$my_type = $compatibility[$type];
+				$my_type = $compatibility[$col_type];
 
 				$compatible = array_filter($compatibility, function($v) use($my_type)
 				{
@@ -903,46 +989,19 @@ class Grid_lib {
 			$fieldtypes_dropdown = $fieldtypes;
 		}
 
-		// Column ID could be a string if we're coming back from a valdiation error
-		// in order to preserve original namespacing
-		if ( ! empty($column['col_id']) && is_string($column['col_id']))
-		{
-			$field_name = $column['col_id'];
-		}
-		else
-		{
-			$field_name = (empty($column)) ? 'new_0' : 'col_id_'.$column['col_id'];
-		}
-
-		$column['settings_form'] = (empty($column))
-			? $this->get_settings_form('text') : $this->get_settings_form($column['col_type'], $column);
-
-		if (isset($column['col_width']) && $column['col_width'] == 0)
-		{
-			$column['col_width'] = '';
-		}
-
-		return ee('View')->make('grid:col_tmpl')
-			->render(
-			array(
-				'field_name'	=> $field_name,
-				'column'		=> $column,
-				'fieldtypes'	=> $fieldtypes_dropdown,
-				'error_fields'  => $error_fields
-			),
-			TRUE
-		);
+		return $fieldtypes_dropdown;
 	}
 
 	/**
 	 * Returns rendered HTML for the custom settings form of a grid column type
 	 *
 	 * @param	string	Name of fieldtype to get settings form for
+	 * @param	string	Name of field in POST for accessing validation errors
 	 * @param	array	Column data from database to populate settings form
 	 * @return	array	Rendered HTML settings form for given fieldtype and
 	 * 					column data
 	 */
-	public function get_settings_form($type, $column = NULL)
+	public function get_settings_form($type, $field_name = NULL, $column = NULL)
 	{
 		$ft_api = ee()->api_channel_fields;
 		$settings = NULL;
@@ -967,7 +1026,10 @@ class Grid_lib {
 			(isset($column['col_settings'])) ? $column['col_settings'] : array()
 		);
 
-		return $this->_view_for_col_settings($type, $settings, $column['col_id']);
+		$fieldtype_errors = isset($this->error_objects[$field_name])
+			? $this->error_objects[$field_name] : NULL;
+
+		return $this->_view_for_col_settings($type, $settings, $column['col_id'], $fieldtype_errors);
 	}
 
 	/**
@@ -977,10 +1039,11 @@ class Grid_lib {
 	 * @param	string	Name of fieldtype to get settings form for
 	 * @param	array	Column data from database to populate settings form
 	 * @param	int		Column ID for field naming
+	 * @param	Validation\Result	Validation result object for this column
 	 * @return	array	Rendered HTML settings form for given fieldtype and
 	 * 					column data
 	 */
-	protected function _view_for_col_settings($col_type, $col_settings, $col_id = NULL)
+	protected function _view_for_col_settings($col_type, $col_settings, $col_id = NULL, $fieldtype_errors = NULL)
 	{
 		// shared form does a set_value() by default, but since we're dealing with
 		// un-namespaced fields here and namespaced fields in POST that can lead
@@ -994,7 +1057,8 @@ class Grid_lib {
 			->render(
 			array(
 				'col_type'		=> $col_type,
-				'col_settings'	=> (empty($col_settings)) ? array() : $col_settings
+				'col_settings'	=> (empty($col_settings)) ? [] : $col_settings,
+				'errors' 		=> $fieldtype_errors
 			)
 		);
 
@@ -1006,9 +1070,15 @@ class Grid_lib {
 		$_POST = $post;
 
 		// Namespace form field names
-		return $this->_namespace_inputs(
+		$view_namespaced = $this->_namespace_inputs(
 			$settings_view,
 			'$1name="grid[cols]['.$col_id.'][col_settings][$2]$3"'
+		);
+
+		return preg_replace(
+			'/data-input-value=["\']([^"\'\[\]]+)([^"\']*)["\']/',
+			'data-input-value="grid[cols]['.$col_id.'][col_settings][$1]$2"',
+			$view_namespaced
 		);
 	}
 

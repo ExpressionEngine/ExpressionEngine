@@ -70,9 +70,12 @@ class Group extends Profile {
 					'caution' => TRUE,
 					'fields' => array(
 						'group_id' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $choices,
-							'value' => $this->member->group_id
+							'value' => $this->member->group_id,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+							]
 						)
 					)
 				)

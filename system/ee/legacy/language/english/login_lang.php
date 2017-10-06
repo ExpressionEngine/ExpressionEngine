@@ -28,12 +28,11 @@ $lang = array(
 'unauthorized_request' => 'You are not authorized to perform this action',
 
 
-/* Reset Password */
-'email_address' => 'Email address',
+'email_address' => 'e-mail address',
 
 'enter_new_password' => 'Enter a New Password',
 
-'forgotten_password' => 'I forgot my password',
+'remind_me' => 'Remind me',
 
 'id_not_found' => 'The code number you submitted was not found in the database.',
 

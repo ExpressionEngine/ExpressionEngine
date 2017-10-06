@@ -419,8 +419,60 @@ class EE_Template {
 
 			foreach ($this->layout_vars as $key => $val)
 			{
-				$layout_conditionals['layout:'.$key] = $val;
-				$this->template = $this->_parse_var_single('layout:'.$key, $val, $this->template);
+				if (is_array($val))
+				{
+					$layout_conditionals['layout:'.$key] = TRUE;
+
+					$total_items = count($val);
+					$variables = [];
+
+					foreach ($val as $idx => $item)
+					{
+						$variables[] = [
+							'index' => $idx,
+							'count' => $idx + 1,
+							'reverse_count' => $total_items - $idx,
+							'total_results' => $total_items,
+							'value' => $item,
+						];
+					}
+
+					$this->template = $this->_parse_var_pair('layout:'.$key, $variables, $this->template);
+
+					// catch-all, if a layout array is used as a single variable, output the last one in
+					if (strpos($this->template, 'layout:'.$key) !== FALSE)
+					{
+						$this->template = $this->_parse_var_single('layout:'.$key, $item, $this->template);
+					}
+				}
+				else
+				{
+					$layout_conditionals['layout:'.$key] = $val;
+					$this->template = $this->_parse_var_single('layout:'.$key, $val, $this->template);
+				}
+			}
+
+			// parse index-specified items, e.g.: {layout:titles index='4'}
+			if (strpos($this->template, LD.'layout:') !== FALSE)
+			{
+				// prototype:
+				// array (size=1)
+				//   0 =>
+				//     array (size=4)
+				//       0 => string '{layout:titles index='4'}' (length=25)
+				//       1 => string 'titles' (length=6)
+				//       2 => string ''' (length=1)
+				//       3 => string '4' (length=1)
+				preg_match_all("/".LD."layout:(.+?)\s+index\s*=\s*(\042|\047)([^\\2]*?)\\2\s*".RD."/si", $this->template, $matches, PREG_SET_ORDER);
+
+				foreach ($matches as $match)
+				{
+					if (isset($this->layout_vars[$match[1]]))
+					{
+						$value = (isset($this->layout_vars[$match[1]][$match[3]])) ? $this->layout_vars[$match[1]][$match[3]] : '';
+						$this->template = str_replace($match[0], $value, $this->template);
+					}
+				}
 			}
 		}
 
@@ -805,10 +857,20 @@ class EE_Template {
 				show_error(lang('layout_contents_reserved'));
 			}
 
+			// suss out if this was layout:set, layout:set:append, or layout:set:prepend
+			// first remove the parameters from the full tag so we can split by :
+			$args_str = trim((preg_match("/\s+.*/", $tag, $matches))) ? $matches[0] : '';
+			$setvar = trim(str_replace($args_str, '', $tag), '{}');
+			$setvar_parts = explode(':', $setvar);
+			$command = array_pop($setvar_parts);
+
+			$closing_tag = LD.'/layout:'.(($command == 'set') ? 'set' : 'set:'.$command).RD;
+			$close_tag_len = strlen($closing_tag);
+
 			// If there is a closing tag and it's before the next open, then this will
 			// be treated as a tag pair.
 			$next = strpos($template, $open_tag, $pos + $open_tag_len);
-			$close = strpos($template, LD.'/layout:set', $pos + $open_tag_len);
+			$close = strpos($template, $closing_tag, $pos + $open_tag_len);
 
 			if ($close && ( ! $next || $close < $next))
 			{
@@ -826,7 +888,23 @@ class EE_Template {
 			// Remove the setter from the template
 			$template = substr_replace($template, '', $pos, $replace_len);
 
-			$this->layout_vars[$params['name']] = $value;
+			switch ($command)
+			{
+				case 'append':
+					$this->layout_vars[$params['name']][] = $value;
+					break;
+				case 'prepend':
+					if ( ! isset($this->layout_vars[$params['name']]))
+					{
+						$this->layout_vars[$params['name']] = [];
+					}
+					array_unshift($this->layout_vars[$params['name']], $value);
+					break;
+				case 'set':
+					$this->layout_vars[$params['name']] = $value;
+				default:
+					break;
+			}
 
 			$pos = $next;
 

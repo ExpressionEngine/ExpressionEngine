@@ -95,16 +95,18 @@ class Files extends AbstractFilesController {
 
 		$vars['form_url'] = $vars['table']['base_url'];
 		$vars['dir_id'] = $id;
-		$vars['can_upload_files'] = ee()->cp->allowed_group('can_upload_new_files');
 
 		$this->generateSidebar($id);
-		$this->stdHeader();
 		ee()->view->cp_page_title = lang('file_manager');
 		ee()->view->cp_heading = sprintf(lang('files_in_directory'), $dir->name);
 
 		// Check to see if they can sync the directory
 		ee()->view->can_sync_directory = ee()->cp->allowed_group('can_upload_new_files')
 			&& $dir->memberGroupHasAccess(ee()->session->userdata('group_id'));
+
+		$this->stdHeader(
+			ee()->view->can_sync_directory ? $id : NULL
+		);
 
 		ee()->cp->render('files/directory', $vars);
 	}
@@ -172,7 +174,7 @@ class Files extends AbstractFilesController {
 		);
 
 		$this->generateSidebar($dir_id);
-		$this->stdHeader();
+		$this->stdHeader($dir_id);
 		ee()->view->cp_page_title = lang('file_upload');
 
 		ee()->cp->render('settings/form', $vars);

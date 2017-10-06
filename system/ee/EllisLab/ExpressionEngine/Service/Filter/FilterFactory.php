@@ -154,7 +154,10 @@ class FilterFactory {
 			$html = $filter->render($this->view, $url);
 			if ( ! empty($html))
 			{
-				$filters[] = $html;
+				$filters[] = [
+					'html' => $html,
+					'class' => $filter->list_class
+				];
 			}
 		}
 
@@ -214,6 +217,16 @@ class FilterFactory {
 	protected function createDefaultDate()
 	{
 		return new Filter\Date();
+	}
+
+	/**
+	 * This will instantiate and return a default Keyword filter
+	 *
+	 * @return Filter\Keyword a Keyword Filter object
+	 */
+	protected function createDefaultKeyword()
+	{
+		return new Filter\Keyword();
 	}
 
 	/**

@@ -76,6 +76,11 @@ abstract class Filter {
 	protected $view = 'filter';
 
 	/**
+	 * @var string Class to apply to parent list element
+	 */
+	public $list_class = '';
+
+	/**
 	 * Determines the value of this filter. If a selected_value was set, that
 	 * is used. Otherwise we'll determine the value by using the POST value, GET
 	 * vale or default value (in that order).

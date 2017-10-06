@@ -8,15 +8,16 @@
 
 $(document).ready(function () {
 
-	var publishForm = $("div.publish form");
+	var publishForm = $(".form-standard > form");
 
 	if (EE.publish.title_focus == true) {
-		$("div.publish form input[name=title]").focus();
+		publishForm.find("input[name=title]").focus();
 	}
 
 	if (EE.publish.which == 'new') {
-		$("div.publish form input[name=title]").bind("keyup blur", function() {
-			$('div.publish form input[name=title]').ee_url_title($('div.publish form input[name=url_title]'));
+		publishForm.find("input[name=title]").bind("keyup blur", function() {
+			publishForm.find('input[name=title]')
+				.ee_url_title(publishForm.find('input[name=url_title]'));
 		});
 	}
 

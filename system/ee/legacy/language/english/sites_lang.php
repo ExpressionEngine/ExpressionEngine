@@ -2,9 +2,7 @@
 
 $lang = array(
 
-'btn_create_site' => 'Create Site',
-
-'btn_edit_site' => 'Edit Site',
+'add_site' => 'Add Site',
 
 'btn_site_limit_reached' => 'Site Limit reached',
 
