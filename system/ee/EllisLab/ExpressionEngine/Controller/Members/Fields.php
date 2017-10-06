@@ -308,7 +308,7 @@ class Fields extends Members\Members {
 					'desc' => '',
 					'fields' => array(
 						'm_field_type' => array(
-							'type' => 'select',
+							'type' => 'dropdown',
 							'choices' => array(
 								'date'     => lang('date'),
 								'text'     => lang('text_input'),

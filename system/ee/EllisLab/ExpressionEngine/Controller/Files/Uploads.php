@@ -30,8 +30,6 @@ class Uploads extends AbstractFilesController {
 	{
 		parent::__construct();
 
-		$this->stdHeader();
-
 		ee()->load->library('form_validation');
 	}
 
@@ -62,6 +60,7 @@ class Uploads extends AbstractFilesController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
+		$this->stdHeader($upload_id);
 		$this->generateSidebar($upload_id);
 		return $this->form($upload_id);
 	}
@@ -195,7 +194,7 @@ class Uploads extends AbstractFilesController {
 					'desc' => '',
 					'fields' => array(
 						'allowed_types' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'img' => lang('upload_allowed_types_opt_images'),
 								'all' => lang('upload_allowed_types_opt_all')
@@ -281,9 +280,11 @@ class Uploads extends AbstractFilesController {
 				'fields' => array(
 					'upload_member_groups' => array(
 						'type' => 'checkbox',
-						'wrap' => TRUE,
 						'choices' => $member_groups,
-						'value' => $allowed_groups
+						'value' => $allowed_groups,
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('member_groups'))
+						]
 					)
 				)
 			)
@@ -312,9 +313,11 @@ class Uploads extends AbstractFilesController {
 			'fields' => array(
 				'cat_group' => array(
 					'type' => 'checkbox',
-					'wrap' => TRUE,
 					'choices' => $cat_group_options,
-					'value' => ($upload_destination) ? explode('|', $upload_destination->cat_group) : array()
+					'value' => ($upload_destination) ? explode('|', $upload_destination->cat_group) : array(),
+					'no_results' => [
+						'text' => sprintf(lang('no_found'), lang('category_groups'))
+					]
 				)
 			)
 		);
@@ -520,17 +523,12 @@ class Uploads extends AbstractFilesController {
 	 */
 	private function getAllowedGroups($upload_destination = NULL)
 	{
-		$groups = ee('Model')->get('MemberGroup')
+		$member_groups = ee('Model')->get('MemberGroup')
 			->filter('group_id', 'NOT IN', array(1,2,3,4))
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('group_title')
-			->all();
-
-		$member_groups = array();
-		foreach ($groups as $group)
-		{
-			$member_groups[$group->group_id] = htmlentities($group->group_title, ENT_QUOTES, 'UTF-8');
-		}
+			->all()
+			->getDictionary('group_id', 'group_title');
 
 		if ( ! empty($_POST))
 		{
@@ -696,6 +694,7 @@ class Uploads extends AbstractFilesController {
 			ee()->functions->redirect(ee('CP/URL')->make('files/uploads'));
 		}
 
+		$this->stdHeader($upload_id);
 		$this->generateSidebar($upload_id);
 		ee()->load->model('file_upload_preferences_model');
 
@@ -771,7 +770,10 @@ class Uploads extends AbstractFilesController {
 				'fields' => array(
 					'sizes' => array(
 						'type' => 'checkbox',
-						'choices' => $size_choices
+						'choices' => $size_choices,
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('image_manipulations'))
+						]
 					)
 				)
 			);

@@ -69,7 +69,6 @@ class Profile extends CP_Controller {
 			'title' => sprintf(lang('profile_header'),
 				htmlentities($this->member->username, ENT_QUOTES, 'UTF-8'),
 				htmlentities($this->member->email, ENT_QUOTES, 'UTF-8'),
-				htmlentities($this->member->email, ENT_QUOTES, 'UTF-8'),
 				$this->member->ip_address
 			)
 		);
@@ -178,10 +177,13 @@ class Profile extends CP_Controller {
 					$heirs_view = '';
 					if (ee('Model')->get('ChannelEntry')->filter('author_id', $this->member->getId())->count() > 0)
 					{
+						$group_ids = array(1, $this->member->MemberGroup->getId());
+
 						$heirs = ee('Model')->get('Member')
 							->fields('username', 'screen_name')
-							->filter('group_id', 'IN', array(1, $this->member->MemberGroup->getId()))
+							->filter('group_id', 'IN', $group_ids)
 							->filter('member_id', '!=', $this->member->getId())
+							->order('screen_name')
 							->all();
 
 						foreach ($heirs as $heir)
@@ -190,6 +192,23 @@ class Profile extends CP_Controller {
 						}
 
 						$vars['selected'] = array($this->member->getId());
+
+						$vars['fields'] = array(
+							'heir' => array(
+								'type' => 'radio',
+								'choices' => $vars['heirs'],
+								'filter_url' => ee('CP/URL')->make(
+									'members/heir-filter',
+									[
+										'group_ids' => implode('|', $group_ids),
+										'selected' => $this->member->getId()
+									]
+								)->compile(),
+								'no_results' => ['text' => 'no_members_found'],
+								'margin_top' => TRUE,
+								'margin_left' => TRUE
+							)
+						);
 
 						$heirs_view = ee('View')->make('members/delete_confirm')->render($vars);
 					}

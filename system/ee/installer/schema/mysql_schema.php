@@ -12,13 +12,14 @@
  */
 class EE_Schema {
 
-	// All of these variables are set dyncamically
+	// All of these variables are set dynamically
 	var $now;
 	var $year;
 	var $month;
 	var $day;
 	var $default_entry	= '';
 	var $theme_path		= '';
+	var $version;
 
 	private $default_engine = 'InnoDB';
 
@@ -528,6 +529,16 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE exp_member_data (
 			member_id int(10) unsigned NOT NULL,
 			PRIMARY KEY `member_id` (`member_id`)
+		)";
+
+		// Changelog view tracking for members
+
+		$Q[] = "CREATE TABLE exp_member_news_views (
+			news_id int(10) unsigned NOT NULL auto_increment,
+			version varchar(10) NULL,
+			member_id int(10) unsigned NOT NULL DEFAULT '0',
+			PRIMARY KEY `news_id` (`news_id`),
+			KEY `member_id` (`member_id`)
 		)";
 
 		// Channel Table
@@ -1436,6 +1447,8 @@ class EE_Schema {
 				'".ee()->db->escape_str($this->userdata['deft_lang'])."')";
 
 		$Q[] = "INSERT INTO exp_member_data (member_id) VALUES ('1')";
+
+		$Q[] = "INSERT INTO exp_member_news_views (member_id, version) VALUES ('1', '".$this->version."')";
 
 		// Default system stats
 

@@ -229,7 +229,22 @@ class MenuManager extends Settings {
 
 		if (isset($set_id))
 		{
-			$vars['sections']['menu_options'] = $this->reorderList($set);
+			$vars['sections']['menu_options'] = array(
+				array(
+					'title' => 'menu_items',
+					'desc' => 'menu_items_desc',
+					'button' => array(
+						'text' => 'add_menu_item',
+						'rel' => 'modal-menu-item'
+					),
+					'fields' => array(
+						'menu_items' => array(
+							'type' => 'html',
+							'content' => $this->reorderList($set)
+						)
+					)
+				)
+			);;
 		}
 
 		$grid = ee('CP/GridInput', array(
@@ -239,14 +254,15 @@ class MenuManager extends Settings {
 
 		$grid->loadAssets();
 
-		ee()->javascript->set_global(array(
-			'item_create_url' =>
+		ee()->javascript->set_global([
+			'menuSetsItem.createUrl' =>
 			ee('CP/URL')->make('settings/menu-manager/create-item/'.$set_id)->compile(),
-			'item_edit_url' =>
+			'menuSetsItem.editUrl' =>
 			ee('CP/URL')->make('settings/menu-manager/edit-item/'.$set_id.'/###/')->compile(), // ### is replaced in JS. Can't append to S= urls
-		));
+			'menuSetsItem.removeUrl' =>
+			ee('CP/URL')->make('settings/menu-manager/remove-item')->compile(),
+		]);
 
-		ee()->cp->add_js_script('plugin', 'nestable');
 		ee()->cp->add_js_script('file', 'cp/settings/menu-manager/edit');
 
 		ee()->view->cp_page_title = is_null($set_id) ? lang('create_menu_set') : lang('edit_menu_set');
@@ -256,6 +272,51 @@ class MenuManager extends Settings {
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('settings/menu-manager'), lang('menu_sets'));
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * AJAX endpoint to reorder a menu set's items
+	 */
+	public function itemReorder()
+	{
+		$order = 1;
+		$flattened = [];
+		foreach (ee('Request')->post('order') as $item)
+		{
+			$flattened += $this->flattenItemsTree($item, 0, $order);
+			$order++;
+		}
+
+		$items = ee('Model')->get('MenuItem', array_keys($flattened))->all();
+		foreach ($items as $item)
+		{
+			$item->sort = $flattened[$item->getId()];
+		}
+
+		$items->save();
+
+		return ['success'];
+	}
+
+	/**
+	 * Recursive function to flatten the item tree we get back from the SelectField
+	 */
+	private function flattenItemsTree($item, $parent_id, $order)
+	{
+		$flattened = [$item['id'] => $order];
+
+		// Has children? Flatten them to same array
+		if (isset($item['children']))
+		{
+			$order = 1;
+			foreach ($item['children'] as $child)
+			{
+				$flattened += $this->flattenItemsTree($child, $item['id'], $order);
+				$order++;
+			}
+		}
+
+		return $flattened;
 	}
 
 	/**
@@ -289,7 +350,11 @@ class MenuManager extends Settings {
 			{
 				if ($group->can_access_cp)
 				{
-					$member_groups[$group->group_id] = '<s>' . $group->group_title . '</s> <i>&mdash; ' . lang('assigned_to') . ' <a href="' . ee('CP/URL', 'settings/menu-manager/edit-set/' . $other_set->set_id) . '">' . $other_set->name . '</a></i>';
+					$member_groups[$group->group_id] = [
+						'label' => $group->group_title,
+						'value' => $group->group_id,
+						'instructions' => lang('assigned_to') . ' ' . $other_set->name
+					];
 					$disabled_choices[] = $group->group_id;
 				}
 			}
@@ -317,6 +382,9 @@ class MenuManager extends Settings {
 						'choices' => $member_groups,
 						'disabled_choices' => $disabled_choices,
 						'value' => $selected_member_groups,
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('member_groups'))
+						]
 					)
 				)
 			),
@@ -328,43 +396,27 @@ class MenuManager extends Settings {
 	/**
 	 * Create the nested list of menu items for a given set
 	 *
-	 * @return Array of form sections or the rendered html
+	 * @return Rendered HTML of selection form
 	 */
-	private function reorderList(MenuSet $set, $html_only = FALSE)
+	private function reorderList(MenuSet $set)
 	{
 		// annoying model issue where partial sets are not fully reloaded
 		// which can happen with submenus. Need to fix that in the model code,
 		// but for now ...
 		$set = ee('Model')->get('MenuSet', $set->getId())->first();
 
-		$out = ee('View')->make('settings/menu-manager/reorder')->render(array(
-			'field_name'          => 'fieldname',
-			'options'             => $set->Items->filter('parent_id', 0)->sortBy('sort'),
-			'set_id'              => $set->getId(),
-			'content_item_label'  => $set->name
-		));
-
-		if ($html_only)
-		{
-			return $out;
-		}
-
-		return array(
-			array(
-				'title' => 'menu_items',
-				'desc' => 'menu_items_desc',
-				'button' => array(
-					'text' => 'add_menu_item',
-					'rel' => 'modal-menu-item'
-				),
-				'fields' => array(
-					'menu_items' => array(
-						'type' => 'html',
-						'content' => $out
-					)
-				)
-			)
-		);
+		return ee('View')->make('ee:_shared/form/fields/select')->render([
+			'field_name'  => 'menu_items',
+			'choices'     => $set->buildItemsTree(),
+			'value'       => NULL,
+			'multi'       => FALSE,
+			'nested'      => TRUE,
+			'selectable'  => FALSE,
+			'reorderable' => TRUE,
+			'removable'   => TRUE,
+			'editable'    => TRUE,
+			'reorder_ajax_url'    => ee('CP/URL', 'settings/menu-manager/item-reorder')->compile(),
+		]);
 	}
 
 	public function createItem($set_id = NULL)
@@ -400,7 +452,7 @@ class MenuManager extends Settings {
 
 	public function removeItem()
 	{
-		$item_id = ee('Request')->post('item_id');
+		$item_id = ee('Request')->post('content_id');
 
 		$item = ee('Model')->get('MenuItem', $item_id)->first();
 		$set_id = $item->set_id;
@@ -410,7 +462,7 @@ class MenuManager extends Settings {
 		$set = ee('Model')->get('MenuSet', $set_id)->first();
 
 		ee()->output->send_ajax_response(array(
-			'reorder_list' => $this->reorderList($set, TRUE)
+			'selectList' => $this->reorderList($set, TRUE)
 		));
 	}
 
@@ -425,6 +477,8 @@ class MenuManager extends Settings {
 		}
 
 		$item = $item ?: ee('Model')->make('MenuItem', array('sort' => 1));
+
+		$vars = array('sections' => array());
 
 		if ( ! empty($_POST))
 		{
@@ -445,7 +499,7 @@ class MenuManager extends Settings {
 				case 'link':
 					$item->type = 'link';
 					$item->name = ee('Request')->post('name');
-					$item->data = $this->processURL(ee('Request')->post('url'));
+					$item->data = $this->processURL(ee('Request')->post('data'));
 					break;
 				case 'submenu':
 					$item->type = 'submenu';
@@ -461,14 +515,18 @@ class MenuManager extends Settings {
 				return ee()->output->send_ajax_response($response);
 			}
 
-			if (isset($set) && ! $set->isNew())
+			if ($result->isValid() && isset($set))
 			{
 				$item->save();
-			}
 
-			ee()->output->send_ajax_response(array(
-				'reorder_list' => $this->reorderList($set, TRUE)
-			));
+				ee()->output->send_ajax_response(array(
+					'selectList' => $this->reorderList($set, TRUE)
+				));
+			}
+			elseif ($result->isNotValid())
+			{
+				$vars['errors'] = $result;
+			}
 		}
 
 		$grid = $this->getSubmenuGrid($set, $item);
@@ -486,22 +544,26 @@ class MenuManager extends Settings {
 			);
 		}
 
-		$vars = array('sections' => array());
 		$vars['sections'][] = array(
 			array(
 				'title' => 'menu_type',
 				'fields' => array(
 					'type' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => $type_options,
-						'value' => $item->type
+						'value' => $item->type,
+						'group_toggle' => [
+							'addon' => 'addon',
+							'link' => 'link',
+							'submenu' => 'submenu',
+						]
 					)
 				)
 			),
 			array(
 				'title' => 'menu_label',
 				'desc' => 'menu_label_desc',
-				'group' => 'name',
+				'group' => ['link', 'submenu'],
 				'fields' => array(
 					'name' => array(
 						'type' => 'text',
@@ -514,7 +576,7 @@ class MenuManager extends Settings {
 				'desc' => 'menu_url_desc',
 				'group' => 'link',
 				'fields' => array(
-					'url' => array(
+					'data' => array(
 						'type' => 'text',
 						'value' => ($item->type == 'link') ? $item->data : NULL
 					)
@@ -639,7 +701,7 @@ class MenuManager extends Settings {
 				$sub = $children[str_replace('row_id_', '', $row_id)];
 				$sub->type = 'link';
 				$sub->name = $columns['name'];
-				$sub->data = $this->processURL($columns['url']);
+				$sub->data = $this->processURL($columns['data']);
 				$sub->sort = $i++;
 			}
 			else
@@ -647,7 +709,7 @@ class MenuManager extends Settings {
 				$sub = ee('Model')->make('MenuItem');
 				$sub->type = 'link';
 				$sub->name = $columns['name'];
-				$sub->data = $this->processURL($columns['url']);
+				$sub->data = $this->processURL($columns['data']);
 				$sub->sort = $i++;
 				$item->Children[] = $sub;
 			}
@@ -753,7 +815,7 @@ class MenuManager extends Settings {
 				'error' => ''
 			),
 			array(
-				'html' => form_input('url', $item->data),
+				'html' => form_input('data', $item->data),
 				'error' => ''
 			)
 		);

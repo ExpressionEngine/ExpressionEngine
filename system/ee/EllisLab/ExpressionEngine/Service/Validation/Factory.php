@@ -53,17 +53,20 @@ class Factory {
 		{
 			$field = ee()->input->post('ee_fv_field');
 
+			if ($result->hasErrors($field))
+			{
+				return ['error' => $result->renderError($field)];
+			}
+
 			// Get the parent field name
 			$field = preg_replace('/\[.+?\]/', '', $field);
 
 			if ($result->hasErrors($field))
 			{
-				return array('error' => $result->renderError($field));
+				return ['error' => $result->renderError($field)];
 			}
-			else
-			{
-				return array('success');
-			}
+
+			return ['success'];
 		}
 
 		return NULL;

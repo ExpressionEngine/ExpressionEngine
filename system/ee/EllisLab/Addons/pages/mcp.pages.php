@@ -340,9 +340,12 @@ class Pages_mcp {
 					'desc' => 'pages_channel_desc',
 					'fields' => array(
 						'default_channel' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $channels_dropdown,
-							'value' => (int) $config['default_channel']
+							'value' => (int) $config['default_channel'],
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('channels'))
+							]
 						)
 					)
 				),
@@ -381,7 +384,7 @@ class Pages_mcp {
 			'breadcrumb' => array(
 				ee('CP/URL')->make('addons/settings/pages')->compile() => lang('pages_manager')
 			),
-			'body' => ee('View')->make('pages:form')->render($vars)
+			'body' => ee('View')->make('ee:_shared/form')->render($vars)
 		);
 	}
 

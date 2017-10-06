@@ -68,6 +68,10 @@ class General extends Settings {
 				array(
 					'title' => 'version_autocheck',
 					'desc' => 'version_autocheck_desc',
+					'button' => array(
+						'text' => 'check_now',
+						'href' => ee('CP/URL', 'settings/general/version-check')
+					),
 					'fields' => array(
 						'new_version_check' => array(
 							'type' => 'inline_radio',
@@ -75,13 +79,6 @@ class General extends Settings {
 								'y' => 'auto',
 								'n' => 'manual'
 							)
-						),
-						'action_button' => array(
-							'type' => 'action_button',
-							'text' => 'check_now',
-							'link' => ee('CP/URL', 'settings/general/version-check'),
-							'class' => 'version-check',
-							'save_in_config' => FALSE
 						)
 					)
 				),
@@ -90,11 +87,7 @@ class General extends Settings {
 					'desc' => 'enable_msm_desc',
 					'fields' => array(
 						'multiple_sites_enabled' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							)
+							'type' => 'yes_no',
 						)
 					)
 				),
@@ -105,7 +98,7 @@ class General extends Settings {
 					'desc' => 'used_in_cp_only',
 					'fields' => array(
 						'deft_lang' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => ee()->lang->language_pack_names(),
 							'value' => ee()->config->item('deft_lang') ?: 'english'
 						)
@@ -127,11 +120,11 @@ class General extends Settings {
 					'desc' => 'used_in_cp_only',
 					'fields' => array(
 						'date_format' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $localization_fields['fields']['date_format']['value']
 						),
 						'time_format' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'24' => lang('24_hour'),
 								'12' => lang('12_hour')

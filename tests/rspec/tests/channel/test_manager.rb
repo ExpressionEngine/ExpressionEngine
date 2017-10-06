@@ -121,6 +121,6 @@ feature 'Channel Manager' do
     @page.channel_names.count.should == 0
 
     @page.table.should have_text 'No Channels'
-    @page.table.should have_text 'CREATE CHANNEL'
+    @page.table.should have_text 'Create Channel'
   end
 end

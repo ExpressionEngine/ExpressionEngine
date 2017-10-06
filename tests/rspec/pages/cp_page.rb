@@ -1,7 +1,7 @@
 class ControlPanelPage < SitePrism::Page
 
   section :main_menu, MenuSection, 'div.nav-main-wrap'
-  elements :submit_buttons, '.form-ctrls .btn'
+  elements :submit_buttons, '.form-btns .btn'
   element :fieldset_errors, '.invalid'
   element :settings_btn, '.nav-main-develop a.nav-settings'
   elements :error_messages, 'em.ee-form-error-message'

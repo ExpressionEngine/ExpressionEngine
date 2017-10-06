@@ -117,7 +117,6 @@ class Edit extends AbstractPublishController {
 		if ($channel_id)
 		{
 			$channel = $entry_listing->getChannelModelFromFilter();
-			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel->channel_title).'</a>';
 
 			// Have we reached the max entries limit for this channel?
 			if ($channel->max_entries != 0 && $count >= $channel->max_entries)
@@ -133,10 +132,6 @@ class Edit extends AbstractPublishController {
 					->addToBody(sprintf(lang($desc_key), $channel->max_entries))
 					->now();
 			}
-		}
-		else
-		{
-			$vars['create_button'] = ee('View')->make('publish/partials/create_new_menu')->render(array('button_text' => lang('btn_create_new')));
 		}
 
 		$page = ((int) ee()->input->get('page')) ?: 1;
@@ -317,10 +312,20 @@ class Edit extends AbstractPublishController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 
+		$menu = ee()->menu->generate_menu();
+		$choices = [];
+		foreach ($menu['channels']['create'] as $text => $link) {
+			$choices[$link->compile()] = $text;
+		}
+
 		ee()->view->header = array(
 			'title' => lang('entry_manager'),
-			'form_url' => $vars['form_url'],
-			'search_button_value' => lang('btn_search_entries')
+			'action_button' => ee()->cp->allowed_group('can_create_entries') ? [
+				'text' => lang('new'),
+				'href' => ee('CP/URL', 'publish/create/' . $channel_id)->compile(),
+				'filter_placeholder' => lang('filter_channels'),
+				'choices' => $channel_id ? NULL : $choices
+			] : NULL
 		);
 
 		$vars['pagination'] = ee('CP/Pagination', $count)
@@ -413,15 +418,31 @@ class Edit extends AbstractPublishController {
 		ee()->view->cp_page_title = sprintf(lang('edit_entry_with_title'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
 
 		$form_attributes = array(
-			'class' => 'settings ajax-validate',
+			'class' => 'ajax-validate',
 		);
 
 		$vars = array(
 			'form_url' => ee('CP/URL')->make('publish/edit/entry/' . $id),
 			'form_attributes' => $form_attributes,
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
-			'button_text' => lang('btn_publish'),
-			'extra_publish_controls' => $entry->Channel->extra_publish_controls
+			'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
+			'extra_publish_controls' => $entry->Channel->extra_publish_controls,
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				]
+			]
 		);
 
 		$version_id = ee()->input->get('version');
@@ -487,11 +508,6 @@ class Edit extends AbstractPublishController {
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => $entry->Channel->channel_title,
 		);
-
-		if ($entry->Channel->CategoryGroups)
-		{
-			ee('Category')->addCategoryModals();
-		}
 
 		ee()->cp->render('publish/entry', $vars);
 	}
