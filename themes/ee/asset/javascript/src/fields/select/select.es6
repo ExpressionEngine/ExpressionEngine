@@ -59,30 +59,14 @@ class SelectField extends React.Component {
   }
 
   render () {
-    let selectItem = <FilterableSelectList items={this.props.items}
-      limit={this.props.limit}
-      name={this.props.name}
-      multi={this.props.multi}
-      nested={this.props.nested}
-      nestableReorder={this.props.nestableReorder}
-      disabledChoices={this.props.disabledChoices}
-      autoSelectParents={this.props.autoSelectParents}
+    let selectItem = <FilterableSelectList {...this.props}
       selected={this.state.selected}
-      filterUrl={this.props.filterUrl}
       selectionChanged={this.selectionChanged}
-      noResults={this.props.noResults}
-      filters={this.props.filters}
-      toggleAll={this.props.toggleAll}
       filterable={this.countItems() > SelectList.defaultProps.tooMany}
       reorderable={this.props.reorderable || this.state.editing}
       removable={this.props.removable || this.state.editing}
       handleRemove={(e, item) => this.handleRemove(e, item)}
       editable={this.props.editable || this.state.editing}
-      selectable={this.props.selectable}
-      groupToggle={this.props.groupToggle}
-      manageLabel={this.props.manageLabel}
-      reorderAjaxUrl={this.props.reorderAjaxUrl}
-      loading={this.props.loading}
     />
 
     if (this.props.manageable) {
