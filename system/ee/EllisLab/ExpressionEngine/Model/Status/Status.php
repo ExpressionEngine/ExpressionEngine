@@ -26,8 +26,13 @@ class Status extends Model {
 	);
 
 	protected static $_relationships = array(
-		'StatusGroup' => array(
-			'type' => 'BelongsTo'
+		'Channels' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Channel',
+			'pivot' => array(
+				'table' => 'channels_statuses'
+			),
+			'weak' => TRUE,
 		),
 		'Site' => array(
 			'type' => 'BelongsTo'
@@ -44,6 +49,7 @@ class Status extends Model {
 	);
 
 	protected static $_validation_rules = array(
+		'status' => 'required|unique',
 		'highlight' => 'required|hexColor'
 	);
 
@@ -52,8 +58,6 @@ class Status extends Model {
 	);
 
 	protected $status_id;
-	protected $site_id;
-	protected $group_id;
 	protected $status;
 	protected $status_order;
 	protected $highlight;
@@ -81,9 +85,7 @@ class Status extends Model {
 
 		if (empty($status_order))
 		{
-			$count = $this->getModelFacade()->get('Status')
-				->filter('group_id', $this->getProperty('group_id'))
-				->count();
+			$count = $this->getModelFacade()->get('Status')->count();
 			$this->setProperty('status_order', $count + 1);
 		}
 	}

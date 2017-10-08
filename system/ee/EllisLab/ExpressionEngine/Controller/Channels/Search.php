@@ -68,12 +68,6 @@ class Search extends AbstractChannelsController {
 					->orFilter('cat_description', 'LIKE', '%' . $search_terms . '%')
 					->endFilterGroup(),
 				'table_create_method' => 'buildTableFromCategoriesQuery',
-			),
-			'status_groups' => array(
-				'query' => ee('Model')->get('StatusGroup')
-					->filter('site_id', ee()->config->item('site_id'))
-					->filter('group_name', 'LIKE', '%' . $search_terms . '%'),
-				'table_create_method' => 'buildTableFromStatusGroupsQuery',
 			)
 		);
 

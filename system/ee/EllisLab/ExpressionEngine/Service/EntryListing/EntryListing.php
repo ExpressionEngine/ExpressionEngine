@@ -339,17 +339,18 @@ class EntryListing {
 	 */
 	private function createStatusFilter($channel = NULL)
 	{
-		$statuses = ee('Model')->get('Status')
-			->filter('site_id', ee()->config->item('site_id'));
-
 		if ($channel)
 		{
-			$statuses->filter('group_id', $channel->status_group);
+			$statuses = $channel->Statuses;
+		}
+		else
+		{
+			$statuses = ee('Model')->get('Status')->all();
 		}
 
 		$status_options = array();
 
-		foreach ($statuses->all() as $status)
+		foreach ($statuses as $status)
 		{
 			$status_name = ($status->status == 'closed' OR $status->status == 'open') ?  lang($status->status) : $status->status;
 			$status_options[$status->status] = $status_name;

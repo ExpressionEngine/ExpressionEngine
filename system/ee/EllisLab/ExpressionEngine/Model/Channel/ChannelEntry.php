@@ -1046,15 +1046,9 @@ class ChannelEntry extends ContentModel {
 
 	public function populateStatus($field)
 	{
-		$statuses = $this->getModelFacade()->get('Status')
-			->with('NoAccess')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_id', $this->Channel->status_group)
-			->order('status_order');
+		$all_statuses = $this->Channel->Statuses->sortBy('status_order');
 
 		$status_options = array();
-
-		$all_statuses = $statuses->all();
 
 		if ( ! count($all_statuses))
 		{
@@ -1073,7 +1067,9 @@ class ChannelEntry extends ContentModel {
 				continue;
 			}
 
-			$status_name = ($status->status == 'closed' OR $status->status == 'open') ?  lang($status->status) : $status->status;
+			$status_name = ($status->status == 'closed' OR $status->status == 'open')
+				? lang($status->status)
+				: $status->status;
 			$status_options[$status->status] = $status_name;
 		}
 
