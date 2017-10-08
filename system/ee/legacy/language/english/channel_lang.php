@@ -198,8 +198,6 @@ $lang = array(
 
 'create_new_field_group' => 'Create New Field Group',
 
-'create_new_status_group' => 'Create New Status Group',
-
 'custom_field_group' => 'Custom field group',
 
 'custom_field_groups' => 'Custom field groups',
@@ -208,13 +206,9 @@ $lang = array(
 
 'custom_fields_desc' => 'Choose the fields you would like to include in this field group.',
 
-'default_status_group' => 'Default Statuses',
-
 'edit_channel' => 'Edit Channel',
 
 'invalid_short_name' => 'Your channel name must contain only alpha-numeric characters and no spaces.',
-
-'status_groups_not_found' => 'No <b>status groups</b> found',
 
 'taken_channel_name' => 'This channel name is already taken.',
 
@@ -560,8 +554,6 @@ $lang = array(
 
 'edit_status' => 'Edit Status',
 
-'edit_status_group' => 'Edit Status Group',
-
 'highlight_color' => 'Highlight color',
 
 'highlight_color_desc' => 'Text color for this status. Accepts HEX codes.',
@@ -581,30 +573,6 @@ $lang = array(
 'status_created' => 'Status Created',
 
 'status_created_desc' => 'The status <b>%s</b> has been created.',
-
-'status_group' => 'Status Group',
-
-'status_group_created' => 'Status Group Created',
-
-'status_group_created_desc' => 'The status group <b>%s</b> has been created.',
-
-'status_group_not_created' => 'Cannot Create Status Group',
-
-'status_group_not_created_desc' => 'We were unable to create this status group, please review and fix errors below.',
-
-'status_group_not_updated' => 'Cannot Update Status Group',
-
-'status_group_not_updated_desc' => 'We were unable to update this status group, please review and fix errors below.',
-
-'status_group_updated' => 'Status Group Updated',
-
-'status_group_updated_desc' => 'The status group <b>%s</b> has been updated.',
-
-'status_groups' => 'Status Groups',
-
-'status_groups_removed' => 'Status groups removed',
-
-'status_groups_removed_desc' => '%d status groups were removed.',
 
 'status_name' => 'Status Name',
 
