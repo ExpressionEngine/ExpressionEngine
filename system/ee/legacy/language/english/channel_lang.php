@@ -6,6 +6,8 @@ $lang = array(
 
 'add_group' => 'Add Group',
 
+'add_status' => 'Add Status',
+
 'add_tab' => 'Add Tab',
 
 'assigned_to' => 'assigned to',
@@ -551,12 +553,8 @@ $lang = array(
 'textarea' => 'Textarea',
 
 
-/* Status Groups */
-'create_status' => 'Create Status',
-
-'create_status_group' => 'Create Status Group',
-
-'duplicate_status_group_name' => 'A status group already exists with the same name.',
+/* Statuses */
+'create_status' => 'New Status',
 
 'duplicate_status_name' => 'A status already exists with the same name.',
 
@@ -625,6 +623,8 @@ $lang = array(
 'status_updated_desc' => 'The status <b>%s</b> has been updated.',
 
 'statuses' => 'Statuses',
+
+'statuses_desc' => 'Assign one of more statuses to this channel.',
 
 'statuses_removed' => 'Statuses removed',
 
