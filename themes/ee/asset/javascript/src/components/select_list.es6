@@ -306,7 +306,7 @@ class SelectList extends React.Component {
     return (
       <div className={"fields-select" + (tooMany ? ' field-resizable' : '')}
         ref={(container) => { this.container = container }} key={this.version}>
-        {this.props.filterable &&
+        {props.filterable &&
           <FieldTools>
             <FilterBar>
               {props.filters && props.filters.map(filter =>
@@ -327,13 +327,13 @@ class SelectList extends React.Component {
           </FieldTools>
         }
         <FieldInputs nested={props.nested}>
-          { ! this.props.loading && props.items.length == 0 &&
+          { ! props.loading && props.items.length == 0 &&
             <NoResults text={props.noResults} />
           }
-          {this.props.loading &&
+          {props.loading &&
             <Loading text={EE.lang.loading} />
           }
-          { ! this.props.loading && props.items.map((item, index) =>
+          { ! props.loading && props.items.map((item, index) =>
             <SelectItem key={item.value ? item.value : item.section}
               item={item}
               name={props.name}
@@ -341,13 +341,13 @@ class SelectList extends React.Component {
               disabled={props.disabledChoices && props.disabledChoices.includes(item.value)}
               multi={props.multi}
               nested={props.nested}
-              selectable={this.props.selectable}
-              reorderable={this.props.reorderable}
-              removable={this.props.removable}
-              editable={this.props.editable}
+              selectable={props.selectable}
+              reorderable={props.reorderable}
+              removable={props.removable && ( ! props.unremovableChoices || ! props.unremovableChoices.includes(item.value))}
+              editable={props.editable}
               handleSelect={this.handleSelect}
-              handleRemove={(e, item) => this.props.handleRemove(e, item)}
-              groupToggle={this.props.groupToggle}
+              handleRemove={(e, item) => props.handleRemove(e, item)}
+              groupToggle={props.groupToggle}
             />
           )}
         </FieldInputs>
@@ -358,11 +358,11 @@ class SelectList extends React.Component {
           />
         }
         {/* Maintain a blank input to easily know when field is empty */}
-        {props.multi && this.props.selectable && props.selected.length == 0 &&
+        {props.multi && props.selectable && props.selected.length == 0 &&
           <input type="hidden" name={props.name + '[]'} value=''
             ref={(input) => { this.input = input }} />
         }
-        {this.props.selectable &&
+        {props.selectable &&
           props.selected.map(item =>
             <input type="hidden" key={item.value} name={props.multi ? props.name + '[]' : props.name} value={item.value}
               ref={(input) => { this.input = input }} />

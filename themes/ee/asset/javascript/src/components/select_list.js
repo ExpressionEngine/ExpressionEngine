@@ -309,7 +309,7 @@ var SelectList = function (_React$Component) {
           ref: function ref(container) {
             _this7.container = container;
           }, key: this.version },
-        this.props.filterable && React.createElement(
+        props.filterable && React.createElement(
           FieldTools,
           null,
           React.createElement(
@@ -338,9 +338,9 @@ var SelectList = function (_React$Component) {
         React.createElement(
           FieldInputs,
           { nested: props.nested },
-          !this.props.loading && props.items.length == 0 && React.createElement(NoResults, { text: props.noResults }),
-          this.props.loading && React.createElement(Loading, { text: EE.lang.loading }),
-          !this.props.loading && props.items.map(function (item, index) {
+          !props.loading && props.items.length == 0 && React.createElement(NoResults, { text: props.noResults }),
+          props.loading && React.createElement(Loading, { text: EE.lang.loading }),
+          !props.loading && props.items.map(function (item, index) {
             return React.createElement(SelectItem, { key: item.value ? item.value : item.section,
               item: item,
               name: props.name,
@@ -348,15 +348,15 @@ var SelectList = function (_React$Component) {
               disabled: props.disabledChoices && props.disabledChoices.includes(item.value),
               multi: props.multi,
               nested: props.nested,
-              selectable: _this7.props.selectable,
-              reorderable: _this7.props.reorderable,
-              removable: _this7.props.removable,
-              editable: _this7.props.editable,
+              selectable: props.selectable,
+              reorderable: props.reorderable,
+              removable: props.removable && (!props.unremovableChoices || !props.unremovableChoices.includes(item.value)),
+              editable: props.editable,
               handleSelect: _this7.handleSelect,
               handleRemove: function handleRemove(e, item) {
-                return _this7.props.handleRemove(e, item);
+                return props.handleRemove(e, item);
               },
-              groupToggle: _this7.props.groupToggle
+              groupToggle: props.groupToggle
             });
           })
         ),
@@ -364,11 +364,11 @@ var SelectList = function (_React$Component) {
           item: props.selected[0],
           clearSelection: this.clearSelection
         }),
-        props.multi && this.props.selectable && props.selected.length == 0 && React.createElement('input', { type: 'hidden', name: props.name + '[]', value: '',
+        props.multi && props.selectable && props.selected.length == 0 && React.createElement('input', { type: 'hidden', name: props.name + '[]', value: '',
           ref: function ref(input) {
             _this7.input = input;
           } }),
-        this.props.selectable && props.selected.map(function (item) {
+        props.selectable && props.selected.map(function (item) {
           return React.createElement('input', { type: 'hidden', key: item.value, name: props.multi ? props.name + '[]' : props.name, value: item.value,
             ref: function ref(input) {
               _this7.input = input;
