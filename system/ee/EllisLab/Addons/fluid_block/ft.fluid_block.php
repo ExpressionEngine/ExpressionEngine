@@ -114,8 +114,13 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 		if (ee()->input->is_ajax_request())
 		{
-			$errors = $this->errors->getErrors($field_name);
-			return $errors['callback'];
+			if ($this->errors->hasErrors($field_name))
+			{
+				$errors = $this->errors->getErrors($field_name);
+				return $errors['callback'];
+			}
+
+			return TRUE;
 		}
 
 		return ($this->errors->isValid()) ? TRUE : 'form_validation_error';
