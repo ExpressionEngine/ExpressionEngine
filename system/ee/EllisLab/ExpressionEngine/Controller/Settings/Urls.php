@@ -104,7 +104,7 @@ class Urls extends Settings {
 					'desc' => 'url_title_separator_desc',
 					'fields' => array(
 						'word_separator' =>	array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'dash' => lang('url_title_separator_opt_hyphen'),
 								'underscore' => lang('url_title_separator_opt_under')

@@ -152,7 +152,7 @@ class EE_Output {
 	 * @access	public
 	 * @return	void
 	 */
-	function _display($output = '')
+	function _display($output = '', $status = 200)
 	{
 		if ($output == '')
 		{
@@ -164,11 +164,22 @@ class EE_Output {
 
 		if (ee()->config->item('send_headers') == 'y' && $this->out_type != 'feed' && $this->out_type != '404' && $this->out_type != 'cp_asset')
 		{
-			$this->set_status_header(200);
+			$this->set_status_header($status);
 
-			$this->set_header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-			$this->set_header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
-			$this->set_header("Pragma: no-cache");
+			if ( ! ee('Response')->hasHeader('Expires'))
+			{
+				$this->set_header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+			}
+
+			if ( ! ee('Response')->hasHeader('Last-Modified'))
+			{
+				$this->set_header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
+			}
+
+			if ( ! ee('Response')->hasHeader('Pragma'))
+			{
+				$this->set_header("Pragma: no-cache");
+			}
 		}
 
 
@@ -177,20 +188,38 @@ class EE_Output {
 
 		switch ($this->out_type)
 		{
-			case 'webpage':	$this->set_header("Content-Type: text/html; charset=".ee()->config->item('charset'));
+			case 'webpage':
+				if ( ! ee('Response')->hasHeader('Content-Type'))
+				{
+					$this->set_header("Content-Type: text/html; charset=".ee()->config->item('charset'));
+				}
 				break;
-			case 'css':		$this->set_header("Content-type: text/css");
+			case 'css':
+				if ( ! ee('Response')->hasHeader('Content-Type'))
+				{
+					$this->set_header("Content-type: text/css");
+				}
 				break;
-			case 'js':		$this->set_header("Content-type: text/javascript");
-							$this->enable_profiler = FALSE;
+			case 'js':
+				if ( ! ee('Response')->hasHeader('Content-Type'))
+				{
+					$this->set_header("Content-type: text/javascript");
+				}
+				$this->enable_profiler = FALSE;
 				break;
-			case '404':		$this->set_status_header(404);
-							$this->set_header("Date: ".gmdate("D, d M Y H:i:s")." GMT");
+			case '404':
+				$this->set_status_header(404);
+				$this->set_header("Date: ".gmdate("D, d M Y H:i:s")." GMT");
 				break;
-			case 'xml':		$this->set_header("Content-Type: text/xml");
-							$output = trim($output);
+			case 'xml':
+				if ( ! ee('Response')->hasHeader('Content-Type'))
+				{
+					$this->set_header("Content-Type: text/xml");
+				}
+				$output = trim($output);
 				break;
-			case 'feed':	$this->_send_feed($output);
+			case 'feed':
+				$this->_send_feed($output);
 				break;
 			default: // Likely a custom template type
 				// -------------------------------------------

@@ -59,7 +59,7 @@ class Email extends Settings {
 					'desc' => 'mail_protocol_desc',
 					'fields' => array(
 						'mail_protocol' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'mail' => lang('php_mail'),
 								'sendmail' => lang('sendmail'),
@@ -76,7 +76,7 @@ class Email extends Settings {
 					'desc' => 'email_newline_desc',
 					'fields' => array(
 						'email_newline' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'\n' => '\n',
 								'\r\n' => '\r\n',
@@ -121,7 +121,7 @@ class Email extends Settings {
 						'desc' => 'email_smtp_crypto_desc',
 						'fields' => array(
 							'email_smtp_crypto' => array(
-								'type' => 'select',
+								'type' => 'radio',
 								'choices' => array(
 									'ssl' => lang('ssl'),
 									'tls' => lang('tls'),
@@ -138,7 +138,7 @@ class Email extends Settings {
 					'desc' => 'mail_format_desc',
 					'fields' => array(
 						'mail_format' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'plain' => lang('plain_text'),
 								'html' => lang('html')

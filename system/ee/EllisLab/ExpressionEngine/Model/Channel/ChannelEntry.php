@@ -819,7 +819,7 @@ class ChannelEntry extends ContentModel {
 					'field_show_fmt'		=> 'n',
 					'field_instructions'	=> lang('channel_desc'),
 					'field_text_direction'	=> 'ltr',
-					'field_type'			=> 'select',
+					'field_type'			=> 'radio',
 					'field_list_items'      => array(),
 					'field_maxl'			=> 100,
 					'populateCallback'		=> array($this, 'populateChannels')
@@ -831,7 +831,7 @@ class ChannelEntry extends ContentModel {
 					'field_show_fmt'		=> 'n',
 					'field_instructions'	=> lang('entry_status_desc'),
 					'field_text_direction'	=> 'ltr',
-					'field_type'			=> 'select',
+					'field_type'			=> 'radio',
 					'field_list_items'      => array(),
 					'field_maxl'			=> 100,
 					'populateCallback'		=> array($this, 'populateStatus')
@@ -843,10 +843,12 @@ class ChannelEntry extends ContentModel {
 					'field_show_fmt'		=> 'n',
 					'field_instructions'	=> lang('author_desc'),
 					'field_text_direction'	=> 'ltr',
-					'field_type'			=> 'select',
+					'field_type'			=> 'radio',
 					'field_list_items'      => array(),
 					'field_maxl'			=> 100,
-					'populateCallback'		=> array($this, 'populateAuthors')
+					'populateCallback'		=> array($this, 'populateAuthors'),
+					'filter_url' 			=> ee('CP/URL')->make('publish/author-list')->compile(),
+					'no_results'			=> ['text' => sprintf(lang('no_found'), lang('members'))]
 				),
 				'sticky' => array(
 					'field_id'				=> 'sticky',
@@ -855,7 +857,8 @@ class ChannelEntry extends ContentModel {
 					'field_show_fmt'		=> 'n',
 					'field_instructions'	=> lang('sticky_desc'),
 					'field_text_direction'	=> 'ltr',
-					'field_type'			=> 'radio',
+					'field_type'			=> 'toggle',
+					'yes_no'				=> TRUE,
 					'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
 					'field_maxl'			=> 100
 				),
@@ -866,7 +869,8 @@ class ChannelEntry extends ContentModel {
 					'field_show_fmt'		=> 'n',
 					'field_instructions'	=> lang('allow_comments_desc'),
 					'field_text_direction'	=> 'ltr',
-					'field_type'			=> 'radio',
+					'field_type'			=> 'toggle',
+					'yes_no'				=> TRUE,
 					'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
 					'field_maxl'			=> 100,
 					'populateCallback'		=> array($this, 'populateAllowComments')
@@ -1026,30 +1030,7 @@ class ChannelEntry extends ContentModel {
 			ee()->session->userdata('screen_name') ?: ee()->session->userdata('username');
 		}
 
-		// First, get member groups who should be in the list
-		$member_groups = $this->getModelFacade()->get('MemberGroup')
-			->filter('include_in_authorlist', 'y')
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
-
-		// Then authors who are individually selected to appear in author list
-		$authors = $this->getModelFacade()->get('Member')
-			->fields('username', 'screen_name')
-			->filter('in_authorlist', 'y');
-
-		// Then grab any members that are part of the member groups we found
-		if ($member_groups->count())
-		{
-			$authors->orFilter('group_id', 'IN', $member_groups->pluck('group_id'));
-		}
-
-		$authors->order('screen_name');
-		$authors->order('username');
-
-		foreach ($authors->all() as $author)
-		{
-			$author_options[$author->getId()] = $author->getMemberName();
-		}
+		$author_options += ee('Member')->getAuthors();
 
 		$field->setItem('field_list_items', $author_options);
 	}

@@ -133,6 +133,7 @@ class Upload {
 			$metadata = $cat_group->getFieldMetadata();
 			$metadata['categorized_object'] = $file;
 			$metadata['field_instructions'] = lang('file_categories_desc');
+			$metadata['editable'] = FALSE;
 
 			if ($cat_groups->count() == 1)
 			{
@@ -156,11 +157,6 @@ class Upload {
 				)
 			);
 
-			if (ee()->cp->allowed_group('can_create_categories'))
-			{
-				$field['example'] = '<a class="btn action submit m-link" rel="modal-checkboxes-edit" data-group-id="'.$cat_group->getId().'" href="#">'.lang('btn_add_category').'</a>';
-			}
-
 			$sections[0][] = $field;
 		}
 
@@ -171,7 +167,6 @@ class Upload {
 		}
 
 		ee('Category')->addCategoryJS();
-		ee('Category')->addCategoryModals();
 
 		return $html;
 	}

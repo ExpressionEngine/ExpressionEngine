@@ -4,7 +4,7 @@
 	<?=form_open($table['base_url'])?>
 		<?php if ($can_create_categories):?>
 		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=ee('CP/URL')->make('channels/cat/create')?>"><?=lang('create_new')?></a>
+			<a class="btn tn action" href="<?=ee('CP/URL')->make('categories/groups/create')?>"><?=lang('create_new')?></a>
 		</fieldset>
 		<?php endif; ?>
 		<h1><?=$cp_page_title?></h1>
@@ -28,7 +28,7 @@
 
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove',
-	'form_url'	=> ee('CP/URL')->make('channels/cat/remove', ee()->cp->get_url_state()),
+	'form_url'	=> ee('CP/URL')->make('categories/remove', ee()->cp->get_url_state()),
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)

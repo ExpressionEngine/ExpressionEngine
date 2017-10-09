@@ -1712,9 +1712,12 @@ class Addons extends CP_Controller {
 					}
 
 					$element['fields'][$key] = array(
-						'type' => 'select',
+						'type' => 'radio',
 						'value' => $value,
-						'choices' => $choices
+						'choices' => $choices,
+						'no_results' => [
+							'text' => 'no_rows_returned'
+						]
 					);
 					break;
 
@@ -1728,7 +1731,10 @@ class Addons extends CP_Controller {
 					$element['fields'][$key] = array(
 						'type' => 'radio',
 						'value' => $value,
-						'choices' => $choices
+						'choices' => $choices,
+						'no_results' => [
+							'text' => 'no_rows_returned'
+						]
 					);
 					break;
 
@@ -1744,7 +1750,9 @@ class Addons extends CP_Controller {
 						'type' => 'checkbox',
 						'value' => $value,
 						'choices' => $choices,
-						'wrap' => TRUE,
+						'no_results' => [
+							'text' => 'no_rows_returned'
+						]
 					);
 					break;
 

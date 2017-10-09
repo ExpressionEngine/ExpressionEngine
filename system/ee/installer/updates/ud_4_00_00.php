@@ -33,6 +33,7 @@ class Updater {
 				'globalizeSave_tmpl_files',
 				'clearCurrentVersionCache',
 				'nullOutRelationshipChannelDataFields',
+				'addNewsViewsTable',
 				'addSortIndexToChannelTitles',
 				'addImageQualityColumn',
 				'addSpamModerationPermissions',
@@ -40,6 +41,7 @@ class Updater {
 				'addPrimaryKeyToFileCategoryTable',
 				'addFluidBlockField',
 				'addDurationField',
+				'addCommentMenuExtension',
 			)
 		);
 
@@ -598,6 +600,39 @@ class Updater {
 	}
 
 	/**
+	* Adds member_news_views, see Member\NewsViews model
+	*/
+	private function addNewsViewsTable()
+	{
+		ee()->dbforge->add_field(
+			array(
+				'news_id' => array(
+					'type'           => 'int',
+					'constraint'     => 10,
+					'null'           => FALSE,
+					'unsigned'       => TRUE,
+					'auto_increment' => TRUE
+				),
+					'version' => array(
+					'type'       => 'varchar',
+					'constraint' => 10
+				),
+					'member_id' => array(
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => FALSE,
+					'default'    => 0
+				)
+			)
+		);
+
+		ee()->dbforge->add_key('news_id', TRUE);
+		ee()->dbforge->add_key('member_id');
+		ee()->smartforge->create_table('member_news_views');
+	}
+
+	/**
 	 * Adds an index to exp_channel_titles for optimizing our channel entry tags
 	 */
 	private function addSortIndexToChannelTitles()
@@ -804,6 +839,20 @@ class Updater {
 				'has_global_settings' => 'n'
 			)
 		);
+	}
+
+	private function addCommentMenuExtension()
+	{
+		$data = array(
+			'class'		=> 'Comment_ext',
+			'method'	=> 'addCommentMenu',
+			'hook'		=> 'cp_custom_menu',
+			'settings'	=> serialize([]),
+			'version'	=> '2.3.3',
+			'enabled'	=> 'y'
+		);
+
+		ee()->db->insert('extensions', $data);
 	}
 }
 // END CLASS

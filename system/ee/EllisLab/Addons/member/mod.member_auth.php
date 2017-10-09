@@ -854,9 +854,18 @@ class Member_auth extends Member {
 
 		$this->_set_page_title(lang('mbr_reset_password'));
 
+		// fetch the member for variables in the template
+		$member = ee('Model')->get('Member', $member_id_query->row('member_id'))->first();
+
+		$variables = [
+			'username' => $member->username,
+			'screen_name' => $member->screen_name,
+			'form_declaration' => ee()->functions->form_declaration($data),
+		];
+
 		return $this->_var_swap(
 			$this->_load_element('reset_password_form'),
-			array('form_declaration' => ee()->functions->form_declaration($data))
+			$variables
 		);
 	}
 
@@ -993,10 +1002,11 @@ class Member_auth extends Member {
 		/* 'member_process_reset_password' hook.
 		/*  - Additional processing after user resets password
 		/*  - Added EE 2.9.3
+		/*  - Member ID parameter added 4.0.0
 		*/
 			if (ee()->extensions->active_hook('member_process_reset_password') === TRUE)
 			{
-				$data = ee()->extensions->call('member_process_reset_password', $data);
+				$data = ee()->extensions->call('member_process_reset_password', $data, $member_id_query->row('member_id'));
 				if (ee()->extensions->end_script === TRUE) return;
 			}
 		/*

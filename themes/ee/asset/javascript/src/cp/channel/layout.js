@@ -112,7 +112,7 @@ $(document).ready(function () {
 	makeTabsDroppable();
 
 	var sortable_options_for_sheets = {
-		appendTo: "div.box.publish",
+		appendTo: "div.form-standard",
 		connectWith: "div.tab",
 		cursor: "move",
 		forceHelperSize: true,

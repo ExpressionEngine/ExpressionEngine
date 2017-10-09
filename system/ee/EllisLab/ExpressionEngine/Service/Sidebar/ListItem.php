@@ -137,6 +137,25 @@ abstract class ListItem {
 		return $this->removeClass('act');
 	}
 
+	/**
+	 * Marks the item as selected
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function isSelected()
+	{
+		return $this->addClass('selected');
+	}
+
+	/**
+	 * Marks the item as not selected
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function isDeselected()
+	{
+		return $this->removeClass('selected');
+	}
 }
 
 // EOF

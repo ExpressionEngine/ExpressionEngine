@@ -14,7 +14,9 @@
 							}
 						}
 						?>
-						<p><a class="brand-link" href="https://expressionengine.com" rel="external"><b>ExpressionEngine</b></a> <span class="version<?php if (isset($new_version)): ?> out-of-date<?php if ($new_version['security']): ?>-vital<?php endif; endif ?>" title="<?=$ver_title?>"><?=$formatted_version?></span></p>
+						<p>
+							<a class="brand-link" href="https://expressionengine.com" rel="external"><b>ExpressionEngine</b></a><span class="version<?php if ($show_news_button): ?> has-new<?php endif ?><?php if (isset($new_version)): ?> out-of-date<?php if ($new_version['security']): ?>-vital<?php endif; endif ?>" title="<?=$ver_title?>"><?=$formatted_version?></span><?php if ($show_news_button): ?><a class="ee-new" href="<?=ee('CP/URL')->make('homepage/show-changelog')?>" rel="external"></a><?php endif ?>
+						</p>
 						<div class="version-info">
 							<?php if (isset($new_version) && $new_version['security']): ?>
 								<p class="alert inline warn"><?=lang('recommended_upgrade')?></p>
@@ -35,13 +37,13 @@
 							</p>
 								<a href="" class="close">&#10006;</a>
 								<?php if (ee()->session->userdata('group_id') == 1): ?>
-									<p class="update-btn"><a class="btn submit" data-post-url="<?=ee('CP/URL', 'updater')?>">Update Now</a></p>
+									<div class="update-btn"><a class="btn submit" data-post-url="<?=ee('CP/URL', 'updater')?>">Update Now</a></div>
 								<?php endif ?>
 								<div class="status out"><?=lang('out_of_date')?></div>
 							<?php else: ?>
 								<a href="" class="close">&#10006;</a>
 								<?php if (ee()->session->userdata('group_id') == 1): ?>
-									<p class="update-btn"><a class="btn action" href="<?=ee('CP/URL')->make('settings/general/version-check', ['redirect' => ee('CP/URL')->getCurrentUrl()->compile()])?>">Check for Update</a></p>
+									<div class="update-btn"><a class="btn action" href="<?=ee('CP/URL')->make('settings/general/version-check', ['redirect' => ee('CP/URL')->getCurrentUrl()->compile()])?>">Check for Update</a></div>
 								<?php endif ?>
 								<div class="status"><?=lang('current')?></div>
 							<?php endif ?>
@@ -97,31 +99,7 @@
 			</section>
 		</footer>
 		<div class="overlay"></div>
-
-		<div class="update-overlay">
-			<div class="update-content">
-				<small>Updating <b><?=ee()->config->item('site_name')?></b> from <?=$formatted_version?> to <?=isset($new_version['version']) ? $new_version['version'] : '?'?></small>
-				<div class="update-process">
-					<p class="update-status1">Requesting update<span>...</span></p>
-					<p class="update-status2"></p>
-				</div>
-			</div>
-		</div>
-		<div class="update-success-overlay">
-			<div class="update-content">
-				<small>Site updated!</small>
-				<p>Congrats!</p>
-				<p><a class="btn action update-close" href="#">Check it out</a></p>
-			</div>
-		</div>
-		<div class="update-issue-overlay">
-			<div class="update-content">
-				<small>Update stopped</small>
-				<p>Don't Panic!</p>
-				<p><a class="btn action update-close" href="#">Roll back to version <b>3</b>.0.1</a></p>
-			</div>
-		</div>
-
+		<div class="app-overlay"></div>
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->view->script_tag('common.js')?>
 		<?php
@@ -141,6 +119,7 @@
 		{
 			echo $item."\n";
 		}
+
 		?>
 		<div id="idle-modal" class="modal-wrap modal-timeout hidden">
 			<div class="modal">

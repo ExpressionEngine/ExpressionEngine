@@ -39,17 +39,28 @@ class Msm extends CP_Controller {
 
 	protected function stdHeader()
 	{
-		ee()->view->header = array(
+		$license = ee('License')->getEELicense();
+		$can_add = $license->canAddSites(ee('Model')->get('Site')->count());
+
+		$header = array(
 			'title' => lang('msm_manager'),
-			'form_url' => ee('CP/URL')->make('msm'),
 			'toolbar_items' => array(
 				'settings' => array(
 					'href' => ee('CP/URL')->make('settings/general'),
 					'title' => lang('settings')
 				)
-			),
-			'search_button_value' => lang('search')
+			)
 		);
+
+		if ($can_add)
+		{
+			$header['action_button'] = [
+				'text' => lang('add_site'),
+				'href' => ee('CP/URL')->make('msm/create')
+			];
+		}
+
+		ee()->view->header = $header;
 	}
 
 	public function index()
@@ -67,12 +78,10 @@ class Msm extends CP_Controller {
 
 		$base_url = ee('CP/URL')->make('msm');
 
-		$vars['create_url'] = ee('CP/URL')->make('msm/create');
-
 		$license = ee('License')->getEELicense();
-		$vars['can_add'] = $license->canAddSites(ee('Model')->get('Site')->count());
+		$can_add = $license->canAddSites(ee('Model')->get('Site')->count());
 
-		if ( ! $vars['can_add'])
+		if ( ! $can_add)
 		{
 			ee('CP/Alert')->makeInline('site-limit-reached')
 				->asIssue()

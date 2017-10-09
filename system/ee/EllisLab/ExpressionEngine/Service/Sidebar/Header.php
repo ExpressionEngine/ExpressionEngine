@@ -104,6 +104,17 @@ class Header {
 	}
 
 	/**
+	 * Marks the header as inactive
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function isInactive()
+	{
+		$this->class = str_replace('act', '', $this->class);
+		return $this;
+	}
+
+	/**
 	 * Sets the button property of the header
 	 *
 	 * @param string $text The text of the button

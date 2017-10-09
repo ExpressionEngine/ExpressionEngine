@@ -108,11 +108,10 @@ class Rte_lib {
 			$tool_name = (lang($name_key) != $name_key) ? lang($name_key) : $tool['name'];
 			$tool_desc = (lang($desc_key) != $desc_key) ? lang($desc_key) : '';
 
-			$tools[$tool['tool_id']] = $tool_name;
-			if ($tool_desc)
-			{
-				$tools[$tool['tool_id']] .= ' <i>&mdash; ' . $tool_desc . '</i>';
-			}
+			$tools[$tool['tool_id']] = [
+				'label' => $tool_name,
+				'instructions' => $tool_desc
+			];
 		}
 
 		$vars['sections'] = array(
@@ -134,7 +133,7 @@ class Rte_lib {
 							'type' => 'checkbox',
 							'choices' => $tools,
 							'value' => $toolset['tools'],
-							'wrap' => FALSE
+							'no_results' => ['text' => sprintf(lang('no_found'), lang('tools'))]
 						)
 					)
 				)

@@ -64,6 +64,16 @@ class Select_ft extends OptionFieldtype {
 			$extra .= ' disabled';
 		}
 
+		if (REQ == 'CP')
+		{
+			return ee('View')->make('ee:_shared/form/fields/dropdown')->render([
+				'field_name' => $this->field_name,
+				'choices' => $this->_get_field_options($data),
+				'value' => $data,
+				'empty_text' => lang('choose_wisely')
+			]);
+		}
+
 		$field = form_dropdown(
 			$this->field_name,
 			$this->_get_field_options($data, '--'),

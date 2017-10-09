@@ -100,20 +100,38 @@ class Settings extends Profile {
 
 			$dirs[] = $link->render();
 
-			$avatar_choices = array(
-				'upload' => array(
-					'label' => 'upload_avatar',
-					'html' => form_upload('upload_avatar')
-				),
-				'choose' => array(
-					'label' => 'choose_avatar',
-					'html' => ul($dirs, array('class' => 'arrow-list'))
-				)
-			);
+			$avatar_choices = [
+				'avatar_picker_upload' => [
+					'type' => 'radio',
+					'name' => 'avatar_picker',
+					'choices' => [
+						'upload' => lang('upload_avatar')
+					],
+					'value' => 'choose'
+				],
+				'upload_avatar' => [
+					'type' => 'html',
+					'margin_left' => TRUE,
+					'content' => form_upload('upload_avatar')
+				],
+				'avatar_picker_choose' => [
+					'type' => 'radio',
+					'name' => 'avatar_picker',
+					'choices' => [
+						'choose' => lang('choose_avatar')
+					],
+					'value' => 'choose'
+				],
+				'choose_avatar' => [
+					'type' => 'html',
+					'margin_left' => TRUE,
+					'content' => ul($dirs, array('class' => 'arrow-list'))
+				],
+			];
 		}
 
 		$avatar_choose_lang_desc = lang('change_avatar_desc');
-		if (count($avatar_choices) == 1)
+		if (count($avatar_choices) == 0)
 		{
 			$avatar_choose_lang_desc .= sprintf(lang('update_avatar_path'), ee('CP/URL', 'settings/avatars'));
 		}
@@ -126,7 +144,7 @@ class Settings extends Profile {
 					'desc' => 'language_desc',
 					'fields' => array(
 						'language' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => ee()->lang->language_pack_names(),
 							'value' => $this->member->language ?: ee()->config->item('deft_lang')
 						)
@@ -165,13 +183,7 @@ class Settings extends Profile {
 				array(
 					'title' => 'change_avatar',
 					'desc' => $avatar_choose_lang_desc,
-					'fields' => array(
-						'avatar_picker' => array(
-							'type' => 'radio_block',
-							'choices' => $avatar_choices,
-							'value' => (count($avatar_choices) == 1) ? 'link' : 'choose'
-						)
-					)
+					'fields' => $avatar_choices
 				)
 			)
 		);

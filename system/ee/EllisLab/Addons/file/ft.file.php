@@ -536,7 +536,7 @@ JSC;
 						'desc' => 'file_ft_content_type_desc',
 						'fields' => array(
 							'field_content_type' => array(
-								'type' => 'select',
+								'type' => 'radio',
 								'choices' => $this->_field_content_options(),
 								'value' => isset($data['field_content_type']) ? $data['field_content_type'] : 'all'
 							)
@@ -547,7 +547,7 @@ JSC;
 						'desc' => 'file_ft_allowed_dirs_desc',
 						'fields' => array(
 							'allowed_directories' => array(
-								'type' => 'select',
+								'type' => 'radio',
 								'choices' => $directory_choices,
 								'value' => $allowed_directories
 							)

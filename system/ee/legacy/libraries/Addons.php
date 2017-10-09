@@ -25,7 +25,6 @@ class EE_Addons {
 	{
 		$this->_exclusions = array(
 			'channel',
-			'comment',
 		);
 	}
 

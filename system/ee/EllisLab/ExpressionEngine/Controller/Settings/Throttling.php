@@ -77,7 +77,7 @@ class Throttling extends Settings {
 					'title' => 'banishment_type',
 					'fields' => array(
 						'banishment_type' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'404' => lang('banish_404'),
 								'redirect' => lang('banish_redirect'),

@@ -394,7 +394,10 @@ EOT;
 						'moblog_categories' => array(
 							'type' => 'checkbox',
 							'choices' => ee('Model')->get('Category')->fields('cat_id', 'cat_name')->all()->getDictionary('cat_id', 'cat_name'),
-							'value' => $moblog->moblog_categories
+							'value' => $moblog->moblog_categories,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('categories'))
+							]
 						)
 					)
 				),
@@ -403,7 +406,7 @@ EOT;
 					'fields' => array(
 						'moblog_field_id' => array(
 							'type' => 'select',
-							'choices' => ee('Model')->get('ChannelField')->fields('field_id', 'label')->all()->getDictionary('field_id', 'field_label'),
+							'choices' => ee('Model')->get('ChannelField')->fields('field_id', 'field_label')->all()->getDictionary('field_id', 'field_label'),
 							'value' => $moblog->moblog_field_id
 						)
 					)
@@ -462,7 +465,7 @@ EOT;
 					'title' => 'moblog_email_type',
 					'fields' => array(
 						'moblog_email_type' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array('pop3' => lang('pop3')),
 							'value' => $moblog->moblog_email_type
 						)
