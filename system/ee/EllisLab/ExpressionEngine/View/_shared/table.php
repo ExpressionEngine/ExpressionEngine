@@ -23,7 +23,7 @@ if ($wrap): ?>
 		</tr>
 	</table>
 <?php else: ?>
-	<table cellspacing="0"<?php if ($grid_input): $class .= ' grid-input-form'; ?> id="<?=$grid_field_name?>"<?php endif?> <?php if ($class): ?>class="<?=$class?>"<?php endif ?> <?php foreach ($table_attrs as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
+	<table cellspacing="0"<?php if ($grid_input): $class .= ' grid-input-form'; ?> id="<?=$grid_field_name?>"<?php endif?> <?php if ($class): ?>class="<?=$class?>"<?php endif ?> <?php foreach ($table_attrs as $key => $value):?> <?=$key?>='<?=$value?>'<?php endforeach; ?>>
 		<thead>
 			<tr>
 				<?php
