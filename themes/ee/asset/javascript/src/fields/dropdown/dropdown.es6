@@ -148,4 +148,8 @@ Grid.bind('select', 'display', function(cell) {
   Dropdown.renderFields(cell)
 });
 
+FluidBlock.on('select', 'add', function(field) {
+  Dropdown.renderFields(field)
+});
+
 const FilterableDropdown = makeFilterableComponent(Dropdown)
