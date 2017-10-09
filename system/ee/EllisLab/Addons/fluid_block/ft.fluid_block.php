@@ -376,7 +376,13 @@ class Fluid_block_ft extends EE_Fieldtype {
 			->filter(function($field) {
 				return $field->getField()->acceptsContentType('fluid_block');
 			})
-			->getDictionary('field_id', 'field_label');
+			->map(function($field) {
+				return [
+					'label' => $field->field_label,
+					'value' => $field->getId(),
+					'instructions' => LD.$field->field_name.RD
+				];
+			});
 
 		$settings = array(
 			array(
