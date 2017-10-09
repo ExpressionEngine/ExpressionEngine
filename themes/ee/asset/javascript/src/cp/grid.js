@@ -830,6 +830,10 @@ Grid.Settings.prototype = {
  * Public method to instantiate Grid field
  */
 EE.grid = function(field, settings) {
+	if (settings == undefined) {
+		settings = $(field).data('grid-settings');
+	}
+
 	return new Grid.Publish(field, settings);
 };
 
