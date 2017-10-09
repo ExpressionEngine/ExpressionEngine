@@ -852,7 +852,7 @@ if (typeof _ !== 'undefined' && EE.grid_cache !== 'undefined') {
 
 $(document).ready(function () {
 	FluidBlock.on('grid', 'add', function(el) {
-  		var f = EE.grid($('table', el));
+  		EE.grid($('table', el));
 	});
 });
 
