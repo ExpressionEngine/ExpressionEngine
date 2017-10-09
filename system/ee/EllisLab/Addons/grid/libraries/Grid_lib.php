@@ -144,8 +144,16 @@ class Grid_lib {
 		}
 
 		$grid->setData($data);
+		$vars = $grid->viewData();
 
-		return ee('View')->make('ee:_shared/table')->render($grid->viewData());
+		$vars['table_attrs'] = [
+			'data-grid-settings' => json_encode([
+				'grid_min_rows' => $grid->config['grid_min_rows'],
+				'grid_max_rows' => $grid->config['grid_max_rows']
+			])
+		];
+
+		return ee('View')->make('ee:_shared/table')->render($vars);
 	}
 
 	protected function get_class_for_column($column)
