@@ -57,7 +57,7 @@
 			e.preventDefault();
 			fluidBlock.find('.open').trigger('click');
 
-			FluidBlock.fireEvent($(fieldClone).data('field-type'), 'add', [fieldClone, fieldToClone]);
+			FluidBlock.fireEvent($(fieldClone).data('field-type'), 'add', [fieldClone]);
 	    };
 
 		$('a[data-field-name]').click(addField);

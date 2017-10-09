@@ -851,10 +851,9 @@ if (typeof _ !== 'undefined' && EE.grid_cache !== 'undefined') {
 }
 
 $(document).ready(function () {
-	FluidBlock.on('grid', 'add', function(el, cloned_from) {
-  		var cloned_grid_id = $('table', cloned_from).attr('id');
+	FluidBlock.on('grid', 'add', function(el) {
   		$(el).addClass('grid-publish');
-  		EE.grid($(el).find('.fluid-field').eq(0), EE.grid_field_settings[cloned_grid_id]);
+  		EE.grid($('table', el));
 	});
 });
 
