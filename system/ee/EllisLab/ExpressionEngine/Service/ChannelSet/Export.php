@@ -110,6 +110,11 @@ class Export {
 		{
 			foreach ($channel->Statuses->sortBy('status_order') as $status)
 			{
+				if (in_array($status->status, ['open', 'closed']))
+				{
+					continue;
+				}
+
 				$status = $this->exportStatus($status);
 				$result->statuses[] = $status->name;
 			}
