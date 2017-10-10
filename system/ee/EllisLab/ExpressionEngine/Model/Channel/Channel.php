@@ -139,6 +139,7 @@ class Channel extends StructureModel {
 
 	protected static $_events = array(
 		'beforeSave',
+		'afterInsert',
 		'afterUpdate',
 		'beforeDelete'
 	);
@@ -334,9 +335,24 @@ class Channel extends StructureModel {
 		}
 	}
 
+	public function onAfterInsert()
+	{
+		$statuses = $this->Statuses->pluck('status');
+
+		// Ensure default statuses are assigned
+		if ( ! in_array('open', $statuses) OR ! in_array('closed', $statuses))
+		{
+			$this->Statuses[] = $this->getModelFacade()->get('Status')
+				->filter('status', 'IN', ['open', 'closed'])
+				->all();
+
+			$this->save();
+		}
+	}
+
 	public function onAfterUpdate($previous)
 	{
-		// Only scnchronize if the category groups changed and we have a layout
+		// Only synchronize if the category groups changed and we have a layout
 		if (isset($previous['cat_group']) && count($this->ChannelLayouts))
 		{
 			$this->syncCatGroupsWithLayouts();
