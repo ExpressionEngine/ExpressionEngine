@@ -39,7 +39,7 @@ class ThemeInstaller {
 
 	/**
 	 * @var array Multidimensional associative array containing model data for
-	 * 	- status_group
+	 * 	- statuses
 	 * 	- cat_group
 	 * 	- upload_destination
 	 * 	- field_group

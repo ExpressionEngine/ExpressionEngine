@@ -641,7 +641,7 @@ EOT;
 		if (count($allowed_channels) > 0)
 		{
 			$channels = ee('Model')->get('Channel')
-				->with('StatusGroup')
+				->with('Statuses')
 				->order('channel_title');
 
 			if ( ! ee()->cp->allowed_group('can_edit_other_entries'))
@@ -668,9 +668,9 @@ EOT;
 					array('none', lang('none'))
 				);
 
-				if ($channel->StatusGroup && $channel->StatusGroup->Statuses)
+				if ($channel->Statuses)
 				{
-					foreach ($channel->StatusGroup->Statuses as $status)
+					foreach ($channel->Statuses as $status)
 					{
 						$statuses[] = array($status->status, lang($status->status));
 					}
