@@ -190,7 +190,7 @@ class Sets extends AbstractChannelsController {
 		{
 			$errors = $result->getErrors();
 			$model_errors = $result->getModelErrors();
-			foreach (array('Channel Field', 'Category') as $type)
+			foreach (array('Channel Field', 'Category', 'Category Group', 'Status') as $type)
 			{
 				if (isset($model_errors[$type]))
 				{
