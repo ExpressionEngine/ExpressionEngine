@@ -110,7 +110,8 @@ class Export {
 		{
 			foreach ($channel->Statuses->sortBy('status_order') as $status)
 			{
-				$result->statuses[] = $this->exportStatus($status);
+				$status = $this->exportStatus($status);
+				$result->statuses[] = $status->name;
 			}
 		}
 
