@@ -36,8 +36,10 @@ class Sets extends AbstractChannelsController {
 					array(
 						'title' => 'file_upload',
 						'fields' => array(
-							'set_file' => array('type' => 'file'),
-							'required' => TRUE
+							'set_file' => array(
+								'type' => 'file',
+								'required' => TRUE
+							)
 						)
 					),
 				)
