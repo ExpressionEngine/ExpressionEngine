@@ -2177,17 +2177,16 @@ GRID_FALLBACK;
 		//If two forms are on the same template, $this->channel needs to be redefined
 
 		$query = ee('Model')->get('Channel')
-			->with('ChannelFormSettings');
+			->with('ChannelFormSettings')
+			->with('Statuses');
 
 		if ($channel_id)
 		{
 			$query->filter('channel_id', $channel_id);
-		//	ee()->db->where('exp_channels.channel_id', ee('Security/XSS')->clean($channel_id));
 		}
 		elseif ($channel_name)
 		{
 			$query->filter('channel_name', $channel_name);
-		//	ee()->db->where('exp_channels.channel_name', ee('Security/XSS')->clean($channel_name));
 		}
 		else
 		{
@@ -2198,11 +2197,6 @@ GRID_FALLBACK;
 		$query->filter('Channel.site_id', $this->site_id);
 
 		$channel = $query->first();
-
-		// ee()->db->where('channels.site_id', $this->site_id);
-		// ee()->db->limit(1);
-
-		// $query = ee()->db->get('channels');
 
 		if ( ! isset($channel))
 		{
@@ -2424,24 +2418,21 @@ GRID_FALLBACK;
 	public function fetch_statuses()
 	{
 		//exit if already loaded, or if there is no status group
-		if ($this->statuses || ! $this->channel('status_group'))
+		if ($this->statuses || ! $this->channel->Statuses->count())
 		{
 			return;
 		}
 
-		ee()->load->model('channel_model');
-
-		$query = ee()->channel_model->get_channel_statuses($this->channel('status_group'));
-
-		$this->statuses = $query->result_array();
-
 		ee()->lang->loadfile('content');
 
-		foreach ($this->statuses as $index => $status)
+		foreach ($this->channel->Statuses as $index => $status)
 		{
-			$this->statuses[$index]['name'] = lang($status['status']);
-			$this->statuses[$index]['selected'] = ($status['status'] == $this->entry('status')) ? ' selected="selected"' : '';
-			$this->statuses[$index]['checked'] = ($status['status'] == $this->entry('status')) ? ' checked="checked"' : '';
+			$this->statuses[$index]['status_id'] = $status->getId();
+			$this->statuses[$index]['status'] = $status->status;
+			$this->statuses[$index]['selected'] = ($status->status == $this->entry('status'))
+				? ' selected="selected"' : '';
+			$this->statuses[$index]['checked'] = ($status->status == $this->entry('status'))
+				? ' checked="checked"' : '';
 		}
 
 		$member_group_id = $this->member->MemberGroup->getId();
