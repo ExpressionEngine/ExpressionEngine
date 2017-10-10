@@ -42,7 +42,12 @@ class Set {
 	private $category_groups = array();
 
 	/**
-	 * @var Array of status groups [group_name => StatusGroupModel, ...]
+	 * @var Array of statuses [statuses => StatusModel, ...]
+	 */
+	private $statuses = array();
+
+	/**
+	 * @var Array of statuses [status group name => [StatusModel, ...]]
 	 */
 	private $status_groups = array();
 
@@ -70,7 +75,7 @@ class Set {
 		'channels',
 		'fields',
 		'field_groups',
-		'status_groups',
+		'statuses',
 		'category_groups'
 	);
 
@@ -238,6 +243,7 @@ class Set {
 		$this->assignFieldsToFieldGroups();
 		$this->assignFieldGroupsToChannels();
 		$this->assignFieldsToChannels();
+		$this->assignStatusesToChannels();
 
 		$this->deleteFiles();
 	}
@@ -321,6 +327,23 @@ class Set {
 	}
 
 	/**
+	 * Saves the Channel -> Statuses relationshp
+	 */
+	private function assignStatusesToChannels()
+	{
+		$statuses_to_assign = ['open', 'closed'];
+
+		foreach ($this->assignments['statuses'] as $channel_name => $statuses)
+		{
+			$channel = $this->channels[$channel_name];
+			$channel->Statuses = ee('Model')->get('Status')
+				->filter('status', 'IN', array_merge($statuses_to_assign, $statuses))
+				->all();
+			$channel->save();
+		}
+	}
+
+	/**
 	 * Set manual overrides
 	 *
 	 * @return void
@@ -344,13 +367,18 @@ class Set {
 		}
 
 		$data = json_decode(file_get_contents($this->path.'/channel_set.json'));
-		$field_groups = (isset($data->field_groups)) ? $data->field_groups : array();
+		$field_groups = (isset($data->field_groups)) ? $data->field_groups : [];
+
+		// Pre-4.0 sets will have status groups, post-4.0 sets will only have statuses
+		$status_groups = isset($data->status_groups) ? $data->status_groups : [];
+		$statuses = isset($data->statuses) ? $data->statuses : [];
 
 		try
 		{
 			$this->loadUploadDestinations($data->upload_destinations);
 			$this->loadFieldsAndGroups($field_groups);
-			$this->loadStatusGroups($data->status_groups);
+			$this->loadStatusGroups($status_groups);
+			$this->loadStatuses($statuses);
 			$this->loadCategoryGroups($data->category_groups);
 			$this->loadCategoryFields();
 			$this->loadChannels($data->channels);
@@ -466,7 +494,12 @@ class Set {
 
 			if (isset($channel_data->status_group))
 			{
-				$channel->StatusGroup = $this->status_groups[$channel_data->status_group];
+				$this->assignments['statuses'][$channel_title] = $this->status_groups[$channel_data->status_group];
+			}
+
+			if (isset($channel_data->statuses))
+			{
+				$this->assignments['statuses'][$channel_title] = $channel_data->statuses;
 			}
 
 			if (isset($channel_data->cat_groups))
@@ -543,7 +576,10 @@ class Set {
 						foreach ($category->CategoryGroup->CategoryFields as $field)
 						{
 							$property = 'field_id_' . $field->getId();
-							$category->$property = $category_data->{$field->field_name};
+							if (isset($category_data->{$field->field_name}))
+							{
+								$category->$property = $category_data->{$field->field_name};
+							}
 						}
 					};
 
@@ -558,7 +594,7 @@ class Set {
 	}
 
 	/**
-	 * Instantiate the status group models
+	 * Import statuses nested inside legacy status group structure
 	 *
 	 * @param Array $status_groups Status groups as described in channel_set.json
 	 * @return void
@@ -567,46 +603,45 @@ class Set {
 	{
 		foreach ($status_groups as $status_group_data)
 		{
-			$group_name = $status_group_data->name;
-
-			if ($group_name == 'Default')
-			{
-				$status_group = $this->getDefaultStatusGroup();
-			}
-			else
-			{
-				$status_group = ee('Model')->make('StatusGroup');
-				$status_group->site_id = $this->site_id;
-				$status_group->group_name = $group_name;
-			}
-
-			foreach ($status_group_data->statuses as $status_data)
-			{
-				// Ensure status doesn't already exist
-				if ($group_name == 'Default')
-				{
-					$statuses = $status_group->Statuses->pluck('status');
-
-					if (in_array($status_data->name, $statuses))
-					{
-						continue;
-					}
-				}
-
-				$status = ee('Model')->make('Status');
-				$status->site_id = $this->site_id;
-				$status->status = $status_data->name;
-
-				if ( ! empty($status_data->highlight))
-				{
-					$status->highlight = $status_data->highlight;
-				}
-
-				$status_group->Statuses[] = $status;
-			}
-
-			$this->status_groups[$group_name] = $status_group;
+			$this->status_groups[$status_group_data->name] = $this->loadStatuses($status_group_data->statuses);
 		}
+	}
+
+	/**
+	 * Import status data into model objects
+	 *
+	 * @param Array $statuses Statuses as described in channel_set.json
+	 * @return void
+	 */
+	private function loadStatuses($statuses)
+	{
+		$existing_statuses = ee('Model')->get('Status')->all()->pluck('status');
+
+		// Keep track of statuses brought in by this single call to map them
+		// to old channel sets that contain status groups
+		$status_group = [];
+
+		foreach ($statuses as $status_data)
+		{
+			$status_group[] = $status_data->name;
+
+			if (in_array($status_data->name, $existing_statuses))
+			{
+				continue;
+			}
+
+			$status = ee('Model')->make('Status');
+			$status->status = $status_data->name;
+
+			if ( ! empty($status_data->highlight))
+			{
+				$status->highlight = $status_data->highlight;
+			}
+
+			$this->statuses[] = $status;
+		}
+
+		return $status_group;
 	}
 
 	private function loadCategoryFields()
@@ -636,29 +671,6 @@ class Set {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Gets the default status group for this site, and if it isn't there we'll
-	 * create it
-	 *
-	 * @return obj A Status Group object
-	 */
-	private function getDefaultStatusGroup()
-	{
-		$status_group = ee('Model')->get('StatusGroup')
-			->filter('group_name', 'Default')
-			->filter('site_id', $this->site_id)
-			->first();
-
-		if ( ! $status_group)
-		{
-			$site = ee('Model')->get('Site', $this->site_id)->first();
-			$site->createDefaultStatuses();
-			return $this->getDefaultStatusGroup(); // recursion FTW!
-		}
-
-		return $status_group;
 	}
 
 	/**
