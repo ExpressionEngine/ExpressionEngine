@@ -817,6 +817,17 @@ class Updater {
 					];
 				}
 			}
+			else
+			{
+				$channels_statuses[] = [
+					'channel_id' => $channel->channel_id,
+					'status_id' => $keep['open']
+				];
+				$channels_statuses[] = [
+					'channel_id' => $channel->channel_id,
+					'status_id' => $keep['closed']
+				];
+			}
 		}
 
 		ee()->dbforge->add_field(
