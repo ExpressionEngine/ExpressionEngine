@@ -124,7 +124,7 @@ class CategoryGroup extends StructureModel {
 			'text' => sprintf(lang('no_found'), lang('categories'))
 		];
 
-		if (ee()->cp->allowed_group('can_create_categories'))
+		if ( ! INSTALLER && ee()->cp->allowed_group('can_create_categories'))
 		{
 			$no_results['link_text'] = 'add_new';
 			$no_results['link_href'] = ee('CP/URL')->make('categories/create/'.$this->getId());
@@ -150,7 +150,9 @@ class CategoryGroup extends StructureModel {
 				? lang('add_category')
 				: NULL,
 			'content_item_label'	=> lang('category'),
-			'reorder_ajax_url'		=> ee('CP/URL')->make('categories/reorder/'.$this->getId())->compile(),
+			'reorder_ajax_url'		=> ! INSTALLER
+				? ee('CP/URL')->make('categories/reorder/'.$this->getId())->compile()
+				: '',
 			'auto_select_parents'	=> ee()->config->item('auto_assign_cat_parents') == 'y',
 			'no_results'			=> $no_results
 		);

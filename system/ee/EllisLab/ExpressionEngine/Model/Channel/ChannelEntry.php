@@ -847,7 +847,9 @@ class ChannelEntry extends ContentModel {
 					'field_list_items'      => array(),
 					'field_maxl'			=> 100,
 					'populateCallback'		=> array($this, 'populateAuthors'),
-					'filter_url' 			=> ee('CP/URL')->make('publish/author-list')->compile(),
+					'filter_url' 			=> ! INSTALLER
+						? ee('CP/URL')->make('publish/author-list')->compile()
+						: '',
 					'no_results'			=> ['text' => sprintf(lang('no_found'), lang('members'))]
 				),
 				'sticky' => array(
@@ -1046,7 +1048,8 @@ class ChannelEntry extends ContentModel {
 
 	public function populateStatus($field)
 	{
-		$all_statuses = $this->Channel->Statuses->sortBy('status_order');
+		// This generates an instrutible error when installing the default theme, bail out
+		$all_statuses = ! INSTALLER ? $this->Channel->Statuses->sortBy('status_order') : [];
 
 		$status_options = array();
 

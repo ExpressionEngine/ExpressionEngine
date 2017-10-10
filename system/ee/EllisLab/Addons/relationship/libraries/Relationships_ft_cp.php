@@ -246,15 +246,8 @@ class Relationships_ft_cp {
 			return $this->all_statuses;
 		}
 
-		$from_all_sites = (ee()->config->item('multiple_sites_enabled') == 'y');
-
 		$statuses = ee('Model')->get('Status')
 			->order('status_id', 'asc');
-
-		if ( ! $from_all_sites)
-		{
-			$statuses->filter('site_id', 1);
-		}
 
 		$status_options = array();
 
