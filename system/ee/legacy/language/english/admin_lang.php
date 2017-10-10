@@ -900,8 +900,6 @@ $lang = array(
 
 'template_updated' => 'Template Updated',
 
-'templates' => 'In ALL Templates',
-
 'theme_folder_path' => 'Theme Folder Path',
 
 'theme_folder_url' => 'URL to your \'themes\' folder',
