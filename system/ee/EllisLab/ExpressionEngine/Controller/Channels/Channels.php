@@ -634,13 +634,19 @@ class Channels extends AbstractChannelsController {
 			$selected = $channel->Statuses->pluck('status_id');
 		}
 
+		$default = ee('Model')->get('Status')
+			->filter('status', 'IN', ['open', 'closed'])
+			->all()
+			->pluck('status_id');
+
+		// Make sure open and closed are always selected
+		$selected = array_merge($selected, $default);
+
 		return ee('View')->make('ee:_shared/form/fields/select')->render([
 			'field_name'       => 'statuses',
 			'choices'          => $statuses,
-			'unremovable_choices' => ee('Model')->get('Status')
-				->filter('status', 'IN', ['open', 'closed'])
-				->all()
-				->pluck('status_id'),
+			'disabled_choices' => $default,
+			'unremovable_choices' => $default,
 			'value'            => $selected,
 			'multi'            => TRUE,
 			'force_react'      => TRUE,
