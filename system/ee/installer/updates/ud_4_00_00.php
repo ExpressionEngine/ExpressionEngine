@@ -581,6 +581,7 @@ class Updater {
 	private function nullOutRelationshipChannelDataFields()
 	{
 		$channel_fields = ee()->db->where('field_type', 'relationship')
+			->where('legacy_field_data', 'y')
 			->get('channel_fields');
 
 		$update = [];
