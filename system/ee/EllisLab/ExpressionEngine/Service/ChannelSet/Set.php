@@ -918,14 +918,6 @@ class Set {
 
 				foreach ($column as $col_label => $col_value)
 				{
-					// Grid is expecting a POSTed checkbox, so if it's in POST at all
-					// this value will be set to 'y'
-					// @todo Fieldtypes should receive data, not reach into POST
-					if ($col_label == 'required' && $col_value == 'n')
-					{
-						continue;
-					}
-
 					$_POST['grid']['cols']["new_{$i}"]['col_'.$col_label] = $col_value;
 				}
 			}
