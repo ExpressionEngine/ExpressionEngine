@@ -54,6 +54,11 @@ class Updater {
 
 	private function emancipateTheFields()
 	{
+		if (ee()->db->table_exists('channels_channel_field_groups'))
+		{
+			return;
+		}
+
 		// Fields can span Sites and do not need Groups
 		ee()->smartforge->modify_column('channel_fields', array(
 			'site_id' => array(
