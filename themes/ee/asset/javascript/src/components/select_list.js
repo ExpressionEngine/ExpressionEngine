@@ -300,16 +300,15 @@ var SelectList = function (_React$Component) {
       var _this7 = this;
 
       var props = this.props;
-      var tooMany = SelectList.countItems(props.items) > props.tooMany && !props.loading;
       var shouldShowToggleAll = (props.multi || !props.selectable) && props.toggleAll !== null;
 
       return React.createElement(
         'div',
-        { className: "fields-select" + (tooMany ? ' field-resizable' : ''),
+        { className: "fields-select" + (props.items.length > SelectList.defaultProps.tooManyLimit ? ' field-resizable' : ''),
           ref: function ref(container) {
             _this7.container = container;
           }, key: this.version },
-        props.filterable && React.createElement(
+        props.tooMany && React.createElement(
           FieldTools,
           null,
           React.createElement(
@@ -360,7 +359,7 @@ var SelectList = function (_React$Component) {
             });
           })
         ),
-        !props.multi && tooMany && props.selected[0] && React.createElement(SelectedItem, { name: props.name,
+        !props.multi && props.tooMany && props.selected[0] && React.createElement(SelectedItem, { name: props.name,
           item: props.selected[0],
           clearSelection: this.clearSelection
         }),
@@ -454,12 +453,11 @@ var SelectList = function (_React$Component) {
 }(React.Component);
 
 SelectList.defaultProps = {
-  filterable: false,
   reorderable: false,
   nestableReorder: false,
   removable: false,
   selectable: true,
-  tooMany: 8
+  tooManyLimit: 8
 };
 
 

@@ -8,12 +8,11 @@
 
 class SelectList extends React.Component {
   static defaultProps = {
-    filterable: false,
     reorderable: false,
     nestableReorder: false,
     removable: false,
     selectable: true,
-    tooMany: 8
+    tooManyLimit: 8
   }
 
   constructor (props) {
@@ -300,13 +299,12 @@ class SelectList extends React.Component {
 
   render () {
     let props = this.props
-    let tooMany = SelectList.countItems(props.items) > props.tooMany && ! props.loading
     let shouldShowToggleAll = (props.multi || ! props.selectable) && props.toggleAll !== null
 
     return (
-      <div className={"fields-select" + (tooMany ? ' field-resizable' : '')}
+      <div className={"fields-select" + (props.items.length > SelectList.defaultProps.tooManyLimit ? ' field-resizable' : '')}
         ref={(container) => { this.container = container }} key={this.version}>
-        {props.filterable &&
+        {props.tooMany &&
           <FieldTools>
             <FilterBar>
               {props.filters && props.filters.map(filter =>
@@ -351,7 +349,7 @@ class SelectList extends React.Component {
             />
           )}
         </FieldInputs>
-        { ! props.multi && tooMany && props.selected[0] &&
+        { ! props.multi && props.tooMany && props.selected[0] &&
           <SelectedItem name={props.name}
             item={props.selected[0]}
             clearSelection={this.clearSelection}

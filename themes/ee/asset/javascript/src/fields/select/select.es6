@@ -62,7 +62,7 @@ class SelectField extends React.Component {
     let selectItem = <FilterableSelectList {...this.props}
       selected={this.state.selected}
       selectionChanged={this.selectionChanged}
-      filterable={this.countItems() > SelectList.defaultProps.tooMany}
+      tooMany={this.countItems() > SelectList.defaultProps.tooManyLimit}
       reorderable={this.props.reorderable || this.state.editing}
       removable={this.props.removable || this.state.editing}
       handleRemove={(e, item) => this.handleRemove(e, item)}
