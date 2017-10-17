@@ -34,6 +34,11 @@ class Status extends Model {
 			),
 			'weak' => TRUE,
 		),
+		'ChannelEntries' => [
+			'type' => 'hasMany',
+			'model' => 'ChannelEntry',
+			'weak' => TRUE
+		],
 		'Site' => array(
 			'type' => 'BelongsTo'
 		),

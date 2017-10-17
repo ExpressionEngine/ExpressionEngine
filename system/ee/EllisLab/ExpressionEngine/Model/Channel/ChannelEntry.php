@@ -56,6 +56,10 @@ class ChannelEntry extends ContentModel {
 			'model' => 'Member',
 			'from_key' 	=> 'author_id'
 		),
+		'Status' => [
+			'type' => 'belongsTo',
+			'weak' => TRUE
+		],
 		'Categories' => array(
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'Category',
@@ -144,6 +148,7 @@ class ChannelEntry extends ContentModel {
 	protected $title;
 	protected $url_title;
 	protected $status;
+	protected $status_id;
 	protected $versioning_enabled;
 	protected $view_count_one;
 	protected $view_count_two;

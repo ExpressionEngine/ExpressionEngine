@@ -865,6 +865,34 @@ class Updater {
 			ee()->db->where_in('status_id', $delete);
 			ee()->db->delete('statuses');
 		}
+
+		ee()->smartforge->add_column(
+			'channel_titles',
+			array(
+				'status_id' => array(
+					'type'       => 'int',
+					'constraint' => 4,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				)
+			),
+			'status'
+		);
+
+		// Fill in status_id for any that we have
+		$update_batch = [];
+		foreach ($keep as $status => $status_id)
+		{
+			$update_batch[] = [
+				'status' => $status,
+				'status_id' => $status_id
+			];
+		}
+
+		if ( ! empty($update_batch))
+		{
+			ee()->db->update_batch('channel_titles', $update_batch, 'status');
+		}
 	}
 }
 // END CLASS

@@ -614,6 +614,7 @@ class EE_Schema {
 			title varchar(200) NOT NULL,
 			url_title varchar(200) NOT NULL,
 			status varchar(50) NOT NULL,
+			status_id int(4) unsigned NOT NULL,
 			versioning_enabled char(1) NOT NULL default 'n',
 			view_count_one int(10) unsigned NOT NULL default 0,
 			view_count_two int(10) unsigned NOT NULL default 0,
