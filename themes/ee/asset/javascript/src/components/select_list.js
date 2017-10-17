@@ -31,11 +31,16 @@ var SelectList = function (_React$Component) {
 
     _this.handleSelect = function (event, item) {
       var selected = [],
-          checked = event.target.checked;
+          checked = event.target.checked,
+          XORvalue = '--';
 
-      if (_this.props.multi) {
+      if (_this.props.multi && item.value != XORvalue) {
         if (checked) {
-          selected = _this.props.selected.concat([item]);
+
+          selected = _this.props.selected.concat([item]).filter(function (item) {
+            return item.value != XORvalue;
+          }); // uncheck XOR value
+
           if (item.parent && _this.props.autoSelectParents) {
             selected = selected.concat(_this.diffItems(_this.props.selected, _this.getFlattenedParentsOfItem(item)));
           }
@@ -47,7 +52,7 @@ var SelectList = function (_React$Component) {
           selected = _this.diffItems(deselect, _this.props.selected);
         }
       } else {
-        selected = [item];
+        selected = checked ? [item] : [];
       }
 
       _this.props.selectionChanged(selected);

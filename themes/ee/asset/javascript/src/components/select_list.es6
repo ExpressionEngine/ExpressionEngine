@@ -206,11 +206,16 @@ class SelectList extends React.Component {
 
   handleSelect = (event, item) => {
     var selected = [],
-        checked = event.target.checked
+        checked = event.target.checked,
+        XORvalue = '--'
 
-    if (this.props.multi) {
+    if (this.props.multi && item.value != XORvalue) {
       if (checked) {
-        selected = this.props.selected.concat([item])
+
+        selected = this.props.selected
+            .concat([item])
+            .filter(item => item.value != XORvalue) // uncheck XOR value
+
         if (item.parent && this.props.autoSelectParents) {
           selected = selected.concat(this.diffItems(this.props.selected, this.getFlattenedParentsOfItem(item)))
         }
@@ -222,7 +227,7 @@ class SelectList extends React.Component {
         selected = this.diffItems(deselect, this.props.selected)
       }
     } else {
-      selected = [item]
+      selected = checked ? [item] : []
     }
 
     this.props.selectionChanged(selected)
