@@ -183,7 +183,7 @@ class Builder {
 	 *
 	 * @param Mixed  $properties  Relationship.columnname [array|string]
 	 * @param Mixed   $value      Value to search for
-	 * @return Query  $this
+	 * @return Builder  $this
 	 */
 	public function search($properties, $value)
 	{
@@ -293,7 +293,7 @@ class Builder {
 	 * @param String  $property  Relationship.columnname
 	 * @param String  $operator  Comparison operator [default: ==]
 	 * @param Mixed   $value     Value to compare to
-	 * @return Query  $this
+	 * @return Builder  $this
 	 */
 	public function filter($property, $operator, $value = FALSE)
 	{
@@ -307,7 +307,7 @@ class Builder {
 	 * @param String  $property  Relationship.columnname
 	 * @param String  $operator  Comparison operator [default: ==]
 	 * @param Mixed   $value     Value to compare to
-	 * @return Query  $this
+	 * @return Builder  $this
 	 */
 	public function orFilter($property, $operator, $value = FALSE)
 	{
