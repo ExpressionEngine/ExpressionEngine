@@ -59,16 +59,12 @@ class SelectList extends React.Component {
 
   // Counts items including any nested items to get a total count for the field
   static countItems (items) {
-    let count = 0
-
-    items.forEach(item => {
-      count++
+    return items.length + items.reduce((sum, item) => {
       if (item.children) {
-        count = count + SelectList.countItems(item.children)
+        return sum + SelectList.countItems(item.children)
       }
-    })
-
-    return count
+      return sum
+    }, 0)
   }
 
   componentDidMount () {

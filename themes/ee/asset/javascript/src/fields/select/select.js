@@ -54,37 +54,18 @@ var SelectField = function (_React$Component) {
   }
 
   _createClass(SelectField, [{
-    key: 'countItems',
-
-
-    // Get count of all items including nested
-    value: function countItems(items) {
-      var _this2 = this;
-
-      items = items || this.props.items;
-
-      var count = items.length + items.reduce(function (sum, item) {
-        if (item.children) {
-          return sum + _this2.countItems(item.children);
-        }
-        return sum;
-      }, 0);
-
-      return count;
-    }
-  }, {
     key: 'render',
     value: function render() {
-      var _this3 = this;
+      var _this2 = this;
 
       var selectItem = React.createElement(FilterableSelectList, _extends({}, this.props, {
         selected: this.state.selected,
         selectionChanged: this.selectionChanged,
-        tooMany: this.countItems() > SelectList.defaultProps.tooManyLimit,
+        tooMany: SelectList.countItems(this.props.items) > SelectList.defaultProps.tooManyLimit,
         reorderable: this.props.reorderable || this.state.editing,
         removable: this.props.removable || this.state.editing,
         handleRemove: function handleRemove(e, item) {
-          return _this3.handleRemove(e, item);
+          return _this2.handleRemove(e, item);
         },
         editable: this.props.editable || this.state.editing
       }));
@@ -103,7 +84,7 @@ var SelectField = function (_React$Component) {
             ToggleTools,
             { label: this.props.manageLabel },
             React.createElement(Toggle, { on: this.props.editing, handleToggle: function handleToggle(toggle) {
-                return _this3.setEditingMode(toggle);
+                return _this2.setEditingMode(toggle);
               } })
           )
         );

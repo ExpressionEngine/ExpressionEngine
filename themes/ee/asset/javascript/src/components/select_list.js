@@ -436,16 +436,12 @@ var SelectList = function (_React$Component) {
   }, {
     key: 'countItems',
     value: function countItems(items) {
-      var count = 0;
-
-      items.forEach(function (item) {
-        count++;
+      return items.length + items.reduce(function (sum, item) {
         if (item.children) {
-          count = count + SelectList.countItems(item.children);
+          return sum + SelectList.countItems(item.children);
         }
-      });
-
-      return count;
+        return sum;
+      }, 0);
     }
   }]);
 
