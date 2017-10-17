@@ -1048,7 +1048,7 @@ class ChannelEntry extends ContentModel {
 
 	public function populateStatus($field)
 	{
-		// This generates an instrutible error when installing the default theme, bail out
+		// This generates an inscrutable error when installing the default theme, bail out
 		$all_statuses = ! INSTALLER ? $this->Channel->Statuses->sortBy('status_order') : [];
 
 		$status_options = array();
