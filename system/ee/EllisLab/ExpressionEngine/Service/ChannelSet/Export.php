@@ -66,7 +66,7 @@ class Export {
 		$base->version = ee()->config->item('app_version');
 		$base->channels = array_values($this->channels);
 		$base->field_groups = array_values($this->field_groups);
-		$base->statuses = $this->statuses;
+		$base->statuses = array_values($this->statuses);
 		$base->category_groups = $this->category_groups;
 		$base->upload_destinations = array_values($this->upload_destinations);
 
@@ -164,7 +164,7 @@ class Export {
 		$result->name = $status->status;
 		$result->highlight = $status->highlight;
 
-		$this->statuses[] = $result;
+		$this->statuses[$status->status] = $result;
 
 		return $result;
 	}
