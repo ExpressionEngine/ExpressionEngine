@@ -129,7 +129,9 @@ class ChannelEntry extends ContentModel {
 
 	protected static $_events = array(
 		'beforeDelete',
+		'beforeInsert',
 		'beforeSave',
+		'beforeUpdate',
 		'afterDelete',
 		'afterInsert',
 		'afterSave',
@@ -376,6 +378,32 @@ class ChannelEntry extends ContentModel {
 				$this->Channel->getId(),
 				$this->getId()
 			);
+		}
+	}
+
+	public function onBeforeInsert()
+	{
+		parent::onBeforeInsert();
+
+		$this->ensureStatusSynced(TRUE);
+	}
+
+	public function onBeforeUpdate($changed)
+	{
+		$this->ensureStatusSynced(isset($changed['status']));
+	}
+
+	private function ensureStatusSynced($update_by_name)
+	{
+		if ($update_by_name)
+		{
+			$this->Status = $this->getModelFacade()->get('Status')
+				->filter('status', $this->getProperty('status'))
+				->first();
+		}
+		else
+		{
+			$this->setProperty('status', $this->Status->status);
 		}
 	}
 
