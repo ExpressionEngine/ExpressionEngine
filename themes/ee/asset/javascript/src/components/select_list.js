@@ -36,46 +36,15 @@ var SelectList = function (_React$Component) {
       if (_this.props.multi) {
         if (checked) {
           selected = _this.props.selected.concat([item]);
-          if (_this.props.autoSelectParents) {
-            // Select all parents
-            selected = selected.concat(_this.getRelativesForItemSelection(item, true));
+          if (item.parent && _this.props.autoSelectParents) {
+            selected = selected.concat(_this.diffItems(_this.props.selected, _this.getFlattenedParentsOfItem(item)));
           }
         } else {
-          var values = [item.value];
-          if (_this.props.autoSelectParents) {
-            // De-select all children
-            values = values.concat(_this.getRelativesForItemSelection(item, false));
+          var deselect = [item];
+          if (item.children && _this.props.autoSelectParents) {
+            deselect = deselect.concat(_this.getFlattenedChildrenOfItem(item));
           }
-          selected = _this.props.selected.filter(function (thisItem) {
-            // Would use .includes() here but we can't rely on types being
-            // the same, so we need to do a manual loose type check
-            var _iteratorNormalCompletion = true;
-            var _didIteratorError = false;
-            var _iteratorError = undefined;
-
-            try {
-              for (var _iterator = values[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                value = _step.value;
-
-                if (value == thisItem.value) return false;
-              }
-            } catch (err) {
-              _didIteratorError = true;
-              _iteratorError = err;
-            } finally {
-              try {
-                if (!_iteratorNormalCompletion && _iterator.return) {
-                  _iterator.return();
-                }
-              } finally {
-                if (_didIteratorError) {
-                  throw _iteratorError;
-                }
-              }
-            }
-
-            return true;
-          });
+          selected = _this.diffItems(deselect, _this.props.selected);
         }
       } else {
         selected = [item];
@@ -263,35 +232,44 @@ var SelectList = function (_React$Component) {
       return items;
     }
   }, {
-    key: 'getRelativesForItemSelection',
-    value: function getRelativesForItemSelection(item, checked) {
+    key: 'diffItems',
+
+
+    // Returns all items in items2 that aren't present in items1
+    value: function diffItems(items1, items2) {
+      var values = items1.map(function (item) {
+        return item.value;
+      });
+      return items2.filter(function (item) {
+        // Would use .includes() here but we can't rely on types being
+        // the same, so we need to do a manual loose type check
+        return values.every(function (value) {
+          return value != item.value;
+        });
+      });
+    }
+  }, {
+    key: 'getFlattenedParentsOfItem',
+    value: function getFlattenedParentsOfItem(item) {
+      var items = [];
+      while (item.parent) {
+        items.push(item.parent);
+        item = item.parent;
+      }
+      return items;
+    }
+  }, {
+    key: 'getFlattenedChildrenOfItem',
+    value: function getFlattenedChildrenOfItem(item) {
       var _this6 = this;
 
       var items = [];
-      // If checking, we need to find all unchecked parents
-      if (checked && item.parent) {
-        while (item.parent) {
-          // Prevent duplicates
-          // This works ok unless items are selected and then the hierarchy is
-          // changed, selected item objects don't have their parents updated
-          found = this.props.selected.find(function (thisItem) {
-            return thisItem.value == item.parent.value;
-          });
-          if (found) break;
-
-          items.push(item.parent);
-          item = item.parent;
+      item.children.forEach(function (child) {
+        items.push(child);
+        if (child.children) {
+          items = items.concat(_this6.getFlattenedChildrenOfItem(child));
         }
-        // If unchecking, we need to find values of all children as opposed to
-        // objects because we filter the selection based on value to de-select
-      } else if (!checked && item.children) {
-        item.children.forEach(function (child) {
-          items.push(child.value);
-          if (child.children) {
-            items = items.concat(_this6.getRelativesForItemSelection(child, checked));
-          }
-        });
-      }
+      });
       return items;
     }
   }, {
@@ -304,7 +282,7 @@ var SelectList = function (_React$Component) {
 
       return React.createElement(
         'div',
-        { className: "fields-select" + (props.items.length > SelectList.defaultProps.tooManyLimit ? ' field-resizable' : ''),
+        { className: "fields-select" + (SelectList.countItems(props.items) > props.tooManyLimit ? ' field-resizable' : ''),
           ref: function ref(container) {
             _this7.container = container;
           }, key: this.version },
@@ -381,13 +359,13 @@ var SelectList = function (_React$Component) {
       if (!items) return [];
 
       var itemsArray = [];
-      var _iteratorNormalCompletion2 = true;
-      var _didIteratorError2 = false;
-      var _iteratorError2 = undefined;
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
 
       try {
-        for (var _iterator2 = Object.keys(items)[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          key = _step2.value;
+        for (var _iterator = Object.keys(items)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          key = _step.value;
 
           if (items[key].section) {
             itemsArray.push({
@@ -414,16 +392,16 @@ var SelectList = function (_React$Component) {
           }
         }
       } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
+        _didIteratorError = true;
+        _iteratorError = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion2 && _iterator2.return) {
-            _iterator2.return();
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
           }
         } finally {
-          if (_didIteratorError2) {
-            throw _iteratorError2;
+          if (_didIteratorError) {
+            throw _iteratorError;
           }
         }
       }

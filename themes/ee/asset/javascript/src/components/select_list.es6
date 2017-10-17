@@ -211,24 +211,15 @@ class SelectList extends React.Component {
     if (this.props.multi) {
       if (checked) {
         selected = this.props.selected.concat([item])
-        if (this.props.autoSelectParents) {
-          // Select all parents
-          selected = selected.concat(this.getRelativesForItemSelection(item, true))
+        if (item.parent && this.props.autoSelectParents) {
+          selected = selected.concat(this.diffItems(this.props.selected, this.getFlattenedParentsOfItem(item)))
         }
       } else {
-        var values = [item.value]
-        if (this.props.autoSelectParents) {
-          // De-select all children
-          values = values.concat(this.getRelativesForItemSelection(item, false))
+        let deselect = [item]
+        if (item.children && this.props.autoSelectParents) {
+          deselect = deselect.concat(this.getFlattenedChildrenOfItem(item))
         }
-        selected = this.props.selected.filter(thisItem => {
-          // Would use .includes() here but we can't rely on types being
-          // the same, so we need to do a manual loose type check
-          for (value of values) {
-            if (value == thisItem.value) return false
-          }
-          return true
-        })
+        selected = this.diffItems(deselect, this.props.selected)
       }
     } else {
       selected = [item]
@@ -239,32 +230,33 @@ class SelectList extends React.Component {
     if (this.props.groupToggle) EE.cp.form_group_toggle(event.target)
   }
 
-  getRelativesForItemSelection(item, checked) {
-    var items = []
-    // If checking, we need to find all unchecked parents
-    if (checked && item.parent) {
-      while (item.parent) {
-        // Prevent duplicates
-        // This works ok unless items are selected and then the hierarchy is
-        // changed, selected item objects don't have their parents updated
-        found = this.props.selected.find(thisItem => {
-          return thisItem.value == item.parent.value
-        })
-        if (found) break
+  // Returns all items in items2 that aren't present in items1
+  diffItems(items1, items2) {
+    let values = items1.map(item => item.value)
+    return items2.filter(item => {
+      // Would use .includes() here but we can't rely on types being
+      // the same, so we need to do a manual loose type check
+      return values.every(value => value != item.value)
+    })
+  }
 
-        items.push(item.parent)
-        item = item.parent
-      }
-    // If unchecking, we need to find values of all children as opposed to
-    // objects because we filter the selection based on value to de-select
-    } else if ( ! checked && item.children) {
-      item.children.forEach(child => {
-        items.push(child.value)
-        if (child.children) {
-          items = items.concat(this.getRelativesForItemSelection(child, checked))
-        }
-      })
+  getFlattenedParentsOfItem(item) {
+    var items = []
+    while (item.parent) {
+      items.push(item.parent)
+      item = item.parent
     }
+    return items
+  }
+
+  getFlattenedChildrenOfItem(item) {
+    var items = []
+    item.children.forEach(child => {
+      items.push(child)
+      if (child.children) {
+        items = items.concat(this.getFlattenedChildrenOfItem(child))
+      }
+    })
     return items
   }
 
@@ -298,7 +290,7 @@ class SelectList extends React.Component {
     let shouldShowToggleAll = (props.multi || ! props.selectable) && props.toggleAll !== null
 
     return (
-      <div className={"fields-select" + (props.items.length > SelectList.defaultProps.tooManyLimit ? ' field-resizable' : '')}
+      <div className={"fields-select" + (SelectList.countItems(props.items) > props.tooManyLimit ? ' field-resizable' : '')}
         ref={(container) => { this.container = container }} key={this.version}>
         {props.tooMany &&
           <FieldTools>
