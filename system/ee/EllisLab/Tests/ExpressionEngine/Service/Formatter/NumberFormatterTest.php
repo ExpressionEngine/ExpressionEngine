@@ -10,15 +10,14 @@
 namespace EllisLab\Tests\ExpressionEngine\Service\Formatter;
 
 use Mockery as m;
-use EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory;
+use EllisLab\ExpressionEngine\Service\Formatter\Formats\Number;
 
 class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
 		$this->lang = m::mock('EE_Lang');
-		$options = (extension_loaded('intl')) ? 0b00000001 : 0;
-		$this->factory = new FormatterFactory($this->lang, $options);
+		$this->sess = m::mock('EE_Session');
 	}
 
 	/**
@@ -27,7 +26,7 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 	public function testByte($content, $abbr, $include_markup, $expected)
 	{
 		$this->lang->shouldReceive('load')->once();
-		$number = (string) $this->factory->make('Number', $content)->bytes($abbr, $include_markup);
+		$number = (string) $this->format($content)->bytes($abbr, $include_markup);
 		$this->assertEquals($expected, $number);
 	}
 
@@ -80,7 +79,7 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 			'locale' => $locale,
 		];
 
-		$number = (string) $this->factory->make('Number', $content)->currency($opts);
+		$number = (string) $this->format($content)->currency($opts);
 		$this->assertEquals($expected, $number);
 	}
 
@@ -116,6 +115,12 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 	public function tearDown()
 	{
 		$this->factory = NULL;
+	}
+
+	public function format($content, $config = [])
+	{
+		$options = (extension_loaded('intl')) ? 0b00000001 : 0;
+		return new Number($content, $this->lang, $this->sess, $config, $options);
 	}
 }
 

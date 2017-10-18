@@ -10,11 +10,17 @@
 namespace EllisLab\ExpressionEngine\Service\Formatter;
 
 use EE_Lang;
+use EE_Session;
 
 /**
  * Formatter
  */
 class Formatter {
+
+	/**
+	 * @var array Any needed app config settings
+	 */
+	protected $config;
 
 	/**
 	 * @var mixed $content Content to be formatted, typically a string or int
@@ -25,6 +31,11 @@ class Formatter {
 	 * @var object $lang EE_Lang
 	 **/
 	protected $lang;
+
+	/**
+	 * @var object $session EE_Session
+	 */
+	protected $session;
 
 	/**
 	 * @var boolean $intl_loaded Whether or not the intl extension is loaded
@@ -42,16 +53,28 @@ class Formatter {
 	 * @param mixed $content Content to be formatted, typically a string or int
 	 * @param object EE_Lang
 	 */
-	public function __construct($content, EE_Lang $lang, $options)
+	public function __construct($content, EE_Lang $lang, EE_Session $session, $config, $options)
 	{
+		$this->config = $config;
 		$this->content = $content;
 		$this->lang = $lang;
+		$this->session = $session;
 		$this->lang->load('formatter');
 
 		if ($options & $this->OPT_INTL_LOADED)
 		{
 			$this->intl_loaded = TRUE;
 		}
+	}
+
+	/**
+	 * Config getter
+	 * @param  string $item Name of the config item
+	 * @return mixed Config item value, or FALSE if it does not exist
+	 */
+	protected function getConfig($item)
+	{
+		return (isset($this->config[$item])) ? $this->config[$item] : FALSE;
 	}
 
 	/**

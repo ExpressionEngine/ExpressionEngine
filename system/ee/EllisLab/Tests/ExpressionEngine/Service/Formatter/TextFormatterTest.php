@@ -10,14 +10,14 @@
 namespace EllisLab\Tests\ExpressionEngine\Service\Formatter;
 
 use Mockery as m;
-use EllisLab\ExpressionEngine\Service\Formatter\FormatterFactory;
+use EllisLab\ExpressionEngine\Service\Formatter\Formats\Text;
 
 class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
 		$this->lang = m::mock('EE_Lang');
-		$this->factory = new FormatterFactory($this->lang);
+		$this->sess = m::mock('EE_Session');
 	}
 
 	/**
@@ -26,7 +26,7 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 	public function testAttributeEscape($content, $expected)
 	{
 		$this->lang->shouldReceive('load')->once();
-		$text = (string) $this->factory->make('Text', $content)->attributeEscape();
+		$text = (string) $this->format($content)->attributeEscape();
 		$this->assertEquals($expected, $text);
 	}
 
@@ -44,6 +44,12 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 	public function tearDown()
 	{
 		$this->factory = NULL;
+	}
+
+	public function format($content, $config = [])
+	{
+		$options = (extension_loaded('intl')) ? 0b00000001 : 0;
+		return new Text($content, $this->lang, $this->sess, $config, $options);
 	}
 }
 

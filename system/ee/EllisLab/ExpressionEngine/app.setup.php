@@ -185,7 +185,15 @@ return array(
 				$format_opts += (extension_loaded('intl')) ? 0b00000001 : 0;
 			}
 
-			return new Formatter\FormatterFactory(ee()->lang, $format_opts);
+			$config_items = [
+				'censor_replacement' => ee()->config->item('censor_replacement'),
+				'censored_words' => ee()->config->item('censored_words'),
+				'foreign_chars' => ee()->config->loadFile('foreign_chars'),
+				'stopwords' => ee()->config->item('stopwords'),
+				'word_separator' => ee()->config->item('word_separator'),
+			];
+
+			return new Formatter\FormatterFactory(ee()->lang, ee()->session, $config_items, $format_opts);
 		},
 
 		'Curl' => function($ee)

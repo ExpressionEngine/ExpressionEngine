@@ -24,7 +24,7 @@ class Text extends Formatter {
 	 */
 	public function accentsToAscii()
 	{
-		$accent_map = ee()->config->loadFile('foreign_chars');
+		$accent_map = $this->getConfig('foreign_chars');
 
 		if (empty($accent_map))
 		{
@@ -124,16 +124,16 @@ class Text extends Formatter {
 	 */
 	public function censor()
 	{
-		$censored = ee()->session->cache(__CLASS__, 'censored_words');
+		$censored = $this->session->cache(__CLASS__, 'censored_words');
 
 		// setup censored words regex
 		if ( ! is_array($censored))
 		{
-			$censored = ee()->config->item('censored_words');
+			$censored = $this->getConfig('censored_words');
 
 			if (empty($censored))
 			{
-				ee()->session->set_cache(__CLASS__, 'censored_words', []);
+				$this->session->set_cache(__CLASS__, 'censored_words', []);
 				return $this;
 			}
 
@@ -148,10 +148,10 @@ class Text extends Formatter {
 				$censored[$key] = str_replace('\*', '(\w*)', $bad);
 			}
 
-			ee()->session->set_cache(__CLASS__, 'censored_words', $censored);
+			$this->session->set_cache(__CLASS__, 'censored_words', $censored);
 		}
 
-		$replace = ee()->config->item('censor_replacement');
+		$replace = $this->getConfig('censor_replacement');
 
 		foreach ($censored as $bad)
 		{
@@ -427,7 +427,7 @@ class Text extends Formatter {
 	{
 		if ( ! isset($options['separator']))
 		{
-			$options['separator'] = (ee()->config->item('word_separator') == 'underscore') ? '_' : '-';
+			$options['separator'] = ($this->getConfig('word_separator') == 'underscore') ? '_' : '-';
 		}
 
 		$lowercase = (isset($options['lowercase']) && $options['lowercase'] === FALSE) ? FALSE : TRUE;
