@@ -29,6 +29,7 @@ class ChannelTitleGateway extends Gateway {
 	public $title;
 	public $url_title;
 	public $status;
+	public $status_id;
 	public $versioning_enabled;
 	public $view_count_one;
 	public $view_count_two;
