@@ -41,7 +41,7 @@ class LegacyParser {
 	 */
 	public function parseVariableProperties($template_var, $prefix = '')
 	{
-		$props = array();
+		$props = [];
 
 		$unprefixed_var	= preg_replace('/^'.$prefix.'/', '', $template_var);
 		$field_name 	= substr($unprefixed_var.' ', 0, strpos($unprefixed_var.' ', ' '));
@@ -57,7 +57,7 @@ class LegacyParser {
 		}
 
 		$props['field_name'] = $field_name;
-		$props['params'] = (trim($param_string)) ? $this->parseTagParameters($param_string) : array();
+		$props['params'] = (trim($param_string)) ? $this->parseTagParameters($param_string) : [];
 		$props['modifier'] = $modifier;
 
 		return $props;
@@ -138,8 +138,8 @@ class LegacyParser {
 	 */
 	public function extractVariables($tagdata, $target = NULL)
 	{
-		$return['var_single']	= array();
-		$return['var_pair']		= array();
+		$return['var_single'] = [];
+		$return['var_pair']   = [];
 
 		if ($tagdata == '')
 		{
@@ -161,8 +161,8 @@ class LegacyParser {
 			preg_match_all('/'.LD.'(.+?)'.RD.'/', $tagdata, $matches);
 		}
 
-		$temp_close = array();
-		$temp_misc  = array();
+		$temp_close = [];
+		$temp_misc  = [];
 
 		foreach($matches[1] as $key => $val)
 		{
@@ -212,10 +212,10 @@ class LegacyParser {
 		// The easiest way to go about this is to find all opening tags up to a
 		// closing tag - and then just take the last one.
 
-		$temp_pair = array();
-		$temp_single = array();
+		$temp_pair = [];
+		$temp_single = [];
 
-		$open_stack = array();
+		$open_stack = [];
 
 		foreach($temp_misc as $open_key => $open_tag)
 		{
@@ -255,12 +255,12 @@ class LegacyParser {
 		$temp_single = array_values($temp_misc);
 
 		// Weed out the duplicatess
-		$temp_single	= array_unique($temp_single);
-		$temp_pair		= array_unique($temp_pair);
+		$temp_single = array_unique($temp_single);
+		$temp_pair   = array_unique($temp_pair);
 
 
 		// Assign Single Variables
-		$var_single = array();
+		$var_single = [];
 
 		foreach($temp_single as $val)
 		{
@@ -282,15 +282,15 @@ class LegacyParser {
 		}
 
 		// Assign Variable Pairs
-		$var_pair = array();
+		$var_pair = [];
 
 		foreach($temp_pair as $val)
 		{
 			$var_pair[$val] = ee('Variables/Parser')->parseTagParameters($val);
 		}
 
-		$return['var_single']	= $var_single;
-		$return['var_pair']		= $var_pair;
+		$return['var_single'] = $var_single;
+		$return['var_pair']   = $var_pair;
 
 		return $return;
 	}
