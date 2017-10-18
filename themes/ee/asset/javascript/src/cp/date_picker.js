@@ -438,10 +438,4 @@ $(document).ready(function () {
 			$('.date-picker-wrap').hide();
 		}
 	});
-
-	$('.fluid-wrap').on('fluidBlock:addField', function(e, el) {
-		if ($(el).data('field-type') == 'date') {
-			EE.cp.datePicker.bind(el);
-		}
-	});
 });
