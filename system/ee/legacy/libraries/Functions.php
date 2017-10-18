@@ -1651,7 +1651,10 @@ class EE_Functions {
 		ee()->load->library('logger');
 		ee()->logger->deprecated('4.0', "ee('Variables/Parser')->parseTagParameters()");
 
-		return ee('Variables/Parser')->parseTagParameters($str, $defaults);
+		$params = ee('Variables/Parser')->parseTagParameters($str, $defaults);
+
+		// this legacy method returned FALSE with no parameters, the new method always return an array
+		return (empty($params)) ? FALSE : $params;
 	}
 
 	/**

@@ -68,13 +68,13 @@ class LegacyParser {
 	 *
 	 * @param  string $param_string A string of parameters, e.g. param1='foo' param2='bar'
 	 * @param  array  $defaults     Optional default values
-	 * @return array Parameters in key (parameter) => value form. FALSE when no parameters exist
+	 * @return array Parameters in key (parameter) => value form.
 	 */
 	public function parseTagParameters($param_string, array $defaults = [])
 	{
 		if ($param_string == "")
 		{
-			return FALSE;
+			return [];
 		}
 
 		// remove comments before assigning
@@ -113,7 +113,7 @@ class LegacyParser {
 			return $result;
 		}
 
-		return FALSE;
+		return [];
 	}
 
 	/**
