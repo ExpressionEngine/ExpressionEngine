@@ -196,7 +196,7 @@ Grid.bind('select', 'display', function (cell) {
   Dropdown.renderFields(cell);
 });
 
-FluidBlock.on('select', 'add', function (field) {
+FluidField.on('select', 'add', function (field) {
   Dropdown.renderFields(field);
 });
 

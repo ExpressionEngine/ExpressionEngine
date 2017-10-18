@@ -851,7 +851,7 @@ if (typeof _ !== 'undefined' && EE.grid_cache !== 'undefined') {
 }
 
 $(document).ready(function () {
-	FluidBlock.on('grid', 'add', function(el) {
+	FluidField.on('grid', 'add', function(el) {
   		EE.grid($('table', el));
 	});
 });

@@ -57,14 +57,14 @@
 			e.preventDefault();
 			fluidBlock.find('.open').trigger('click');
 
-			FluidBlock.fireEvent($(fieldClone).data('field-type'), 'add', [fieldClone]);
+			FluidField.fireEvent($(fieldClone).data('field-type'), 'add', [fieldClone]);
 	    };
 
 		$('a[data-field-name]').click(addField);
 
 		$('.fluid-wrap').on('click', 'a.fluid-remove', function(e) {
 			var el = $(this).closest('.fluid-item');
-			FluidBlock.fireEvent($(el).data('field-type'), 'remove', el);
+			FluidField.fireEvent($(el).data('field-type'), 'remove', el);
 			el.remove();
 			e.preventDefault();
 		});
@@ -76,10 +76,10 @@
 			items: '.fluid-item',			// Only allow these to be sortable
 			sort: EE.sortable_sort_helper,	// Custom sort handler
 			start: function (event, ui) {
-				FluidBlock.fireEvent($(ui.item).data('field-type'), 'beforeSort', ui.item)
+				FluidField.fireEvent($(ui.item).data('field-type'), 'beforeSort', ui.item)
 			},
 			stop: function (event, ui) {
-				FluidBlock.fireEvent($(ui.item).data('field-type'), 'afterSort', ui.item)
+				FluidField.fireEvent($(ui.item).data('field-type'), 'afterSort', ui.item)
 			}
 		})
 	});

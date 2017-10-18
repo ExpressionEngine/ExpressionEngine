@@ -417,9 +417,9 @@ $(document).ready(function () {
 	}
 
 	// Date fields inside a Fluid Block need to be bound when a new field is added
-	if (FluidBlock !== undefined)
+	if (FluidField !== undefined)
 	{
-		FluidBlock.on('date', 'add', function(field)
+		FluidField.on('date', 'add', function(field)
 		{
 			EE.cp.datePicker.bind($('input[rel="date-picker"]', field));
 		});

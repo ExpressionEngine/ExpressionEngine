@@ -68,7 +68,7 @@
 
 		setupFileField();
 
-		FluidBlock.on('file', 'add', function(el) {
+		FluidField.on('file', 'add', function(el) {
 			sanitizeFileField(el);
 			setupFileField(el);
 		});

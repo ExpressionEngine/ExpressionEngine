@@ -74,7 +74,7 @@ class Textarea_ft extends EE_Fieldtype {
 					});
 				});
 
-				FluidBlock.on("textarea", "add", function(field)
+				FluidField.on("textarea", "add", function(field)
 				{
 					$("textarea[data-markitup]", field).markItUp(EE.markitup.settings);
 

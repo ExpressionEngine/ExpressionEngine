@@ -129,7 +129,7 @@ window.Grid = {
 };
 
 // Handles events for the field manager channel create/edit form
-var FluidBlock = window.FluidBlock = {
+var FluidField = window.FluidField = {
 
 	_eventHandlers: [],
 
