@@ -132,6 +132,37 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 		}
 	}
 
+	/**
+	 * @dataProvider ordinalProvider
+	 */
+	public function testOrdinal($content, $locale, $expected)
+	{
+		$this->lang->shouldReceive('load')->once();
+
+		$number = (string) $this->format($content)->ordinal(['locale' => $locale]);
+		$this->assertEquals($expected, $number);
+	}
+
+	public function ordinalProvider()
+	{
+		if (extension_loaded('intl'))
+		{
+			return [
+				[11235813, NULL, '11,235,813th'],
+				[11235813, 'de', '11.235.813.'],
+				[11235813, 'fr', '11 235 813e'],
+				['fake', NULL, '0th'],
+			];
+		}
+
+		return [
+			[11235813, NULL, '11,235,813th'],
+			[11235813, 'de', '11,235,813th'],
+			[11235813, 'fr', '11,235,813th'],
+			['fake', NULL, '0th'],
+		];
+	}
+
 	public function tearDown()
 	{
 		$this->factory = NULL;

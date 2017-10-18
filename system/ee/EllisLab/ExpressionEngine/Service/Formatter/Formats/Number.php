@@ -203,7 +203,7 @@ class Number extends Formatter {
 		$mod = $this->content % 100;
 		if (($mod >= 11) && ($mod <= 13))
 		{
-			$indicator = $indicator[0];
+			$indicator = $indicators[0];
 		}
 		else
 		{
@@ -211,6 +211,7 @@ class Number extends Formatter {
 		}
 
 		$this->content = number_format((float) $this->content).$indicator;
+		return $this;
 	}
 
 	/**
