@@ -5,8 +5,8 @@ use EllisLab\Addons\FluidBlock\Service\Tag;
 return array(
 	'author'         => 'EllisLab',
 	'author_url'     => 'https://ellislab.com/',
-	'name'           => 'Fluid Block',
-	'description'    => 'Fluid Blocks',
+	'name'           => 'Fluid Field',
+	'description'    => 'Fluid Fields',
 	'version'        => '1.0.0',
 	'namespace'      => 'EllisLab\Addons\FluidBlock',
 	'settings_exist' => FALSE,

@@ -132,7 +132,7 @@ feature 'Publish Page - Create' do
       @importer.fluid_block
       @page.load(channel_id: 3)
 
-      @page.title.set "Fluid Block Test the First"
+      @page.title.set "Fluid Field Test the First"
       @page.url_title.set "fluid-block-test-first"
 
       @available_fields = [
