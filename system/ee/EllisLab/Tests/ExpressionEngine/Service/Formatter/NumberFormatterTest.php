@@ -17,7 +17,8 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 	public function setUp()
 	{
 		$this->lang = m::mock('EE_Lang');
-		$this->factory = new FormatterFactory($this->lang);
+		$options = (extension_loaded('intl')) ? 0b00000001 : 0;
+		$this->factory = new FormatterFactory($this->lang, $options);
 	}
 
 	/**
@@ -65,6 +66,51 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * @dataProvider currencyProvider
+	 */
+	public function testCurrency($content, $currency, $locale, $expected)
+	{
+		$this->lang->shouldReceive('load')->once();
+
+		$opts = [
+			'currency' => $currency,
+			'locale' => $locale,
+		];
+
+		$number = (string) $this->factory->make('Number', $content)->currency($opts);
+		$this->assertEquals($expected, $number);
+	}
+
+	public function currencyProvider()
+	{
+		if (extension_loaded('intl'))
+		{
+			return [
+				[112358.13, NULL, NULL, '$112,358.13'],
+				[112358.13, 'EUR', 'de_DE', '112.358,13 €'],
+				[112358.13, 'GBP', 'en_UK', '£112,358.13'],
+				[112358.13, 'AUD', 'en_US.UTF-8', 'A$112,358.13'],
+				[112358.13, 'AUD', 'de_DE', '112.358,13 AU$'],
+				[112358.13, 'RUR', 'ru', '112 358,13 р.'],
+				[112358.13, 'UAH', 'uk', '112 358,13 ₴'],
+				[112358.13, 'UAH', 'en', (version_compare(INTL_ICU_VERSION, '4.8', '>') ? 'UAH112,358.13' : '₴1,234,567.89')],
+			];
+		}
+
+		// no intl extension means installed locales and money_format() will be used. Inaccurate for non-US locales.
+		return [
+			[112358.13, NULL, NULL, '$112,358.13'],
+			[112358.13, 'EUR', 'de_DE', 'Eu112.358,13'],
+			[112358.13, 'GBP', 'en_UK', '112358.13'],
+			[112358.13, 'AUD', 'en_US.UTF-8', '$112,358.13'],
+			[112358.13, 'AUD', 'de_DE', 'Eu112.358,13'],
+			[112358.13, 'RUR', 'ru', '112358.13'],
+			[112358.13, 'UAH', 'uk', '112358.13'],
+			[112358.13, 'UAH', 'en', '112358.13'],
+		];
 	}
 
 	public function tearDown()
