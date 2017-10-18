@@ -112,6 +112,24 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 		];
 	}
 
+	public function testDuration()
+	{
+		$assertions = [
+			112358 => '31:12:38',
+			-112358 => '-32:-13:-38',
+			1123 => '18:43',
+			11 => '11 sec.',
+			'fake' => '0 sec.',
+		];
+
+		foreach ($assertions as $test => $expected)
+		{
+			$this->lang->shouldReceive('load');
+			$val = (string) $this->format($test)->duration();
+			$this->assertEquals($expected, $val);
+		}
+	}
+
 	public function tearDown()
 	{
 		$this->factory = NULL;
