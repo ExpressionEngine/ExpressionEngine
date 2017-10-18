@@ -96,6 +96,7 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 				[112358.13, 'RUR', 'ru', '112 358,13 р.'],
 				[112358.13, 'UAH', 'uk', '112 358,13 ₴'],
 				[112358.13, 'UAH', 'en', (version_compare(INTL_ICU_VERSION, '4.8', '>') ? 'UAH112,358.13' : '₴1,234,567.89')],
+				['fake', NULL, NULL, '$0.00'],
 			];
 		}
 
@@ -109,6 +110,7 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 			[112358.13, 'RUR', 'ru', '112358.13'],
 			[112358.13, 'UAH', 'uk', '112358.13'],
 			[112358.13, 'UAH', 'en', '112358.13'],
+			['fake', NULL, NULL, '$0.00'],
 		];
 	}
 
