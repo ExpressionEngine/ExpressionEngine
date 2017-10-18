@@ -555,7 +555,7 @@ class Grid_ft extends EE_Fieldtype {
 			'fieldtype_errors' => 'ensureNoFieldtypeErrors'
 		];
 
-		$grid_settings = ee('Request')->post('grid');
+		$grid_settings = ee()->input->post('grid');
 		$col_labels = [];
 		$col_names = [];
 

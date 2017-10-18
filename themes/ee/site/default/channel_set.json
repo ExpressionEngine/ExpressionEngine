@@ -2,7 +2,9 @@
 	"channels": [
 		{
 			"channel_title": "About",
-			"status_group": "About",
+			"statuses": [
+				"Default Page"
+			],
 			"field_group": "common"
 		},
 		{
@@ -16,15 +18,10 @@
 			"field_group": "common"
 		}
 	],
-	"status_groups": [
+	"statuses": [
 		{
-			"name": "About",
-			"statuses": [
-				{
-					"status": "Default Page",
-					"highlight": "2051B3"
-				}
-			]
+			"status": "Default Page",
+			"highlight": "2051B3"
 		}
 	],
 	"category_groups": [

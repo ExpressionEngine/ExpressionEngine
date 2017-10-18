@@ -123,21 +123,11 @@ class Channels extends AbstractChannelsController {
 			$channel = ee('Model')->make('Channel');
 			$channel->title_field_label = lang('title');
 
-			$default_status_group = ee('Model')->get('StatusGroup')
-				->fields('group_id')
-				->filter('site_id', ee()->config->item('site_id'))
-				->filter('group_name', 'Default')
-				->first();
-
-			if ($default_status_group)
-			{
-				$channel->status_group = $default_status_group->group_id;
-			}
-
             // For some reason, not setting these to NULL can result in in pre-populated
             // selections. @TODO find and fix the bug
             $channel->FieldGroups = NULL;
             $channel->CustomFields = NULL;
+            $channel->Statuses = NULL;
 		}
 		else
 		{
@@ -216,7 +206,12 @@ class Channels extends AbstractChannelsController {
 			'channelManager.fields.fieldUrl' => ee('CP/URL')->make('channels/render-fields-field')->compile(),
 
 			'channelManager.catGroup.createUrl' => ee('CP/URL')->make('categories/groups/create')->compile(),
-			'channelManager.catGroup.fieldUrl' => ee('CP/URL')->make('channels/render-category-groups-field')->compile()
+			'channelManager.catGroup.fieldUrl' => ee('CP/URL')->make('channels/render-category-groups-field')->compile(),
+
+			'channelManager.statuses.createUrl' => ee('CP/URL')->make('channels/status/create')->compile(),
+			'channelManager.statuses.editUrl' => ee('CP/URL')->make('channels/status/edit/###')->compile(),
+			'channelManager.statuses.removeUrl' => ee('CP/URL')->make('channels/status/remove')->compile(),
+			'channelManager.statuses.fieldUrl' => ee('CP/URL')->make('channels/render-statuses-field')->compile()
 		]);
 
 		$fieldtypes = ee('Model')->get('Fieldtype')
@@ -233,6 +228,10 @@ class Channels extends AbstractChannelsController {
 
 		ee()->cp->add_js_script('plugin', 'ee_url_title');
 		ee()->cp->add_js_script('file', 'cp/channel/channel_manager');
+
+		ee()->javascript->set_global('status.default_name', lang('status'));
+		ee()->javascript->set_global('status.foreground_color_url', ee('CP/URL', 'channels/status/get-foreground-color')->compile());
+		ee()->cp->add_js_script('plugin', 'minicolors');
 
 		ee()->view->header = array(
 			'title' => lang('channel_manager'),
@@ -579,29 +578,25 @@ class Channels extends AbstractChannelsController {
 	 */
 	private function renderStatusesTab($channel, $errors)
 	{
-		$status_group_options[''] = lang('none');
-		$status_groups = ee('Model')->get('StatusGroup')
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('group_name')
-			->all();
-		foreach ($status_groups as $group)
+		$add_status_button = NULL;
+
+		if (ee()->cp->allowed_group('can_create_statuses'))
 		{
-			$status_group_options[$group->group_id] = $group->group_name;
+			$add_status_button = [
+				'text' => 'add_status',
+				'rel' => 'add_new'
+			];
 		}
 
 		$section = array(
 			array(
-				'title' => ucfirst(strtolower(lang('status_groups'))),
+				'title' => 'statuses',
+				'desc' => 'statuses_desc',
+				'button' => $add_status_button,
 				'fields' => array(
-					'status_group' => array(
-						'type' => 'radio',
-						'choices' => $status_group_options,
-						'value' => $channel->status_group,
-						'no_results' => array(
-							'text' => 'status_groups_not_found',
-							'link_text' => 'create_new_status_group',
-							'link_href' => ee('CP/URL')->make('channels/status/create')
-						)
+					'statuses' => array(
+						'type' => 'html',
+						'content' => $this->renderStatusesField($channel)
 					)
 				)
 			)
@@ -609,6 +604,62 @@ class Channels extends AbstractChannelsController {
 
 		return ee('View')->make('_shared/form/section')
 				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
+	}
+
+	/**
+	 * Renders the Category Groups selection form for the channel create/edit form
+	 *
+	 * @param Channel $channel A Channel entity, optional
+	 * @return string HTML
+	 */
+	public function renderStatusesField($channel = NULL)
+	{
+		$statuses = ee('Model')->get('Status')
+			->order('status_order')
+			->all()
+			->getDictionary('status_id', 'status');
+
+		foreach ($statuses as $status_id => $status)
+		{
+			if (in_array($status, ['open', 'closed']))
+			{
+				$statuses[$status_id] = lang($status);
+			}
+		}
+
+		$selected = ee('Request')->post('statuses') ?: [];
+
+		if ($channel)
+		{
+			$selected = $channel->Statuses->pluck('status_id');
+		}
+
+		$default = ee('Model')->get('Status')
+			->filter('status', 'IN', ['open', 'closed'])
+			->all()
+			->pluck('status_id');
+
+		// Make sure open and closed are always selected
+		$selected = array_merge($selected, $default);
+
+		return ee('View')->make('ee:_shared/form/fields/select')->render([
+			'field_name'       => 'statuses',
+			'choices'          => $statuses,
+			'disabled_choices' => $default,
+			'unremovable_choices' => $default,
+			'value'            => $selected,
+			'multi'            => TRUE,
+			'force_react'      => TRUE,
+			'reorderable'      => TRUE,
+			'removable'        => TRUE,
+			'editable'         => TRUE,
+			'reorder_ajax_url' => ee('CP/URL', 'channels/status/reorder')->compile(),
+			'no_results' => [
+				'text' => sprintf(lang('no_found'), lang('status')),
+				'link_text' => 'add_new',
+				'link_href' => ee('CP/URL')->make('channels/status/create')
+			]
+		]);
 	}
 
 	/**
@@ -640,29 +691,12 @@ class Channels extends AbstractChannelsController {
 		}
 
 		// Default status menu
-		$statuses = ee('Model')->get('Status')
-			->with('StatusGroup')
-			->filter('Status.group_id', $channel->status_group)
-			->all();
+		$deft_status_options = ['' => lang('none')];
+		$deft_status_options += $channel->Statuses
+			->sortBy('status_order')
+			->getDictionary('status', 'status');
 
-		// These will always be there, and also need extra processing.
-		$deft_status_options['open'] = lang('open');
-		$deft_status_options['closed'] = lang('closed');
-		if (count($statuses) > 0)
-		{
-			foreach ($statuses as $status)
-			{
-				// We already did these ones, so skip em.
-				if ($status->status == 'open' || $status->status == 'closed')
-				{
-					continue;
-				}
-
-				$deft_status_options[$status->status] = $status->status;
-			}
-		}
-
-		$deft_category_options[''] = lang('none');
+		$deft_category_options = ['' => lang('none')];
 
 		$category_group_ids = $channel->cat_group ? explode('|', $channel->cat_group) : array();
 
@@ -1216,9 +1250,7 @@ class Channels extends AbstractChannelsController {
 		$channel->CustomFields = ee('Model')->get('ChannelField', ee()->input->post('custom_fields'))->all();
 
 		// Make sure these are the correct NULL value if they are not set.
-		$channel->status_group = ($channel->status_group !== FALSE
-			&& $channel->status_group != '')
-			? $channel->status_group : NULL;
+		$channel->Statuses = ee('Model')->get('Status', ee()->input->post('statuses'))->all();
 
 		foreach (['max_entries', 'max_revisions', 'comment_max_chars',
 			'comment_timelock'] as $field)

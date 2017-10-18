@@ -559,7 +559,6 @@ class EE_Schema {
 			last_entry_date int(10) unsigned default '0' NOT NULL,
 			last_comment_date int(10) unsigned default '0' NOT NULL,
 			cat_group varchar(255) NULL DEFAULT NULL,
-			status_group int(4) unsigned NULL DEFAULT NULL,
 			deft_status varchar(50) NOT NULL default 'open',
 			search_excerpt int(4) unsigned NULL DEFAULT NULL,
 			deft_category varchar(60) NULL DEFAULT NULL,
@@ -598,7 +597,6 @@ class EE_Schema {
 			max_entries int(10) unsigned NOT NULL DEFAULT '0',
 			PRIMARY KEY `channel_id` (`channel_id`),
 			KEY `cat_group` (`cat_group`),
-			KEY `status_group` (`status_group`),
 			KEY `channel_name` (`channel_name`),
 			KEY `site_id` (`site_id`)
 		)";
@@ -616,6 +614,7 @@ class EE_Schema {
 			title varchar(200) NOT NULL,
 			url_title varchar(200) NOT NULL,
 			status varchar(50) NOT NULL,
+			status_id int(4) unsigned NOT NULL,
 			versioning_enabled char(1) NOT NULL default 'n',
 			view_count_one int(10) unsigned NOT NULL default 0,
 			view_count_two int(10) unsigned NOT NULL default 0,
@@ -752,6 +751,12 @@ class EE_Schema {
 			PRIMARY KEY `field_id_group_id` (`field_id`, `group_id`)
 		)";
 
+		$Q[] = "CREATE TABLE exp_channels_statuses (
+			channel_id int(4) unsigned NOT NULL,
+			status_id int(4) unsigned NOT NULL,
+			PRIMARY KEY `channel_id_status_id` (`channel_id`, `status_id`)
+		)";
+
 		// Frontend Channel Form Settings
 
 		$Q[] = "CREATE TABLE `exp_channel_form_settings` (
@@ -794,28 +799,14 @@ class EE_Schema {
 			KEY `site_id` (`site_id`)
 		)";
 
-		// Status Groups
-
-		$Q[] = "CREATE TABLE exp_status_groups (
-			group_id int(4) unsigned NOT NULL auto_increment,
-			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
-			group_name varchar(50) NOT NULL,
-			PRIMARY KEY `group_id` (`group_id`),
-			KEY `site_id` (`site_id`)
-		)";
-
 		// Status data
 
 		$Q[] = "CREATE TABLE exp_statuses (
 			status_id int(6) unsigned NOT NULL auto_increment,
-			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
-			group_id int(4) unsigned NOT NULL,
 			status varchar(50) NOT NULL,
 			status_order int(3) unsigned NOT NULL,
 			highlight varchar(30) NOT NULL default '000000',
-			PRIMARY KEY `status_id` (`status_id`),
-			KEY `group_id` (`group_id`),
-			KEY `site_id` (`site_id`)
+			PRIMARY KEY `status_id` (`status_id`)
 		)";
 
 		// Status "no access"
@@ -1626,9 +1617,8 @@ class EE_Schema {
 		}
 
 		// default statuses - these are really always needed
-		$Q[] = "INSERT INTO `exp_status_groups` (`group_id`, `site_id`, `group_name`) VALUES (1, 1, 'Default')";
-		$Q[] = "INSERT INTO exp_statuses (group_id, status, status_order, highlight) VALUES ('1', 'open', '1', '009933')";
-		$Q[] = "INSERT INTO exp_statuses (group_id, status, status_order, highlight) VALUES ('1', 'closed', '2', '990000')";
+		$Q[] = "INSERT INTO exp_statuses (status, status_order, highlight) VALUES ('open', '1', '009933')";
+		$Q[] = "INSERT INTO exp_statuses (status, status_order, highlight) VALUES ('closed', '2', '990000')";
 
 		$button_config = ee()->config->loadFile('html_buttons');
 

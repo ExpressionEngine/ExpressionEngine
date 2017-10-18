@@ -236,7 +236,10 @@ class Categories extends AbstractCategoriesController {
 
 		$cat_id = ee('Request')->post('content_id');
 
-		$item = ee('Model')->get('Category', $cat_id)->delete();
+		if ( ! empty($cat_id))
+		{
+			ee('Model')->get('Category', $cat_id)->delete();
+		}
 
 		return ['success'];
 	}

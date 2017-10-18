@@ -487,7 +487,6 @@ return array(
 
 			// ..\Status
 			'Status' => 'Model\Status\Status',
-			'StatusGroup' => 'Model\Status\StatusGroup',
 
 			// ..\Template
 			'Template' => 'Model\Template\Template',

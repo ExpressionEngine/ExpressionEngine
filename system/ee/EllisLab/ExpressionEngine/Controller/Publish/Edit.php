@@ -145,9 +145,7 @@ class Edit extends AbstractPublishController {
 
 		$entry_id = ee()->session->flashdata('entry_id');
 
-		$statuses = ee('Model')->get('Status')
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
+		$statuses = ee('Model')->get('Status')->all()->indexBy('status');
 
 		foreach ($entries->all() as $entry)
 		{
@@ -245,9 +243,7 @@ class Edit extends AbstractPublishController {
 			$disabled_checkbox = ! $can_delete;
 
 			// Display status highlight if one exists
-			$status = $statuses->filter('group_id', $entry->Channel->status_group)
-				->filter('status', $entry->status)
-				->first();
+			$status = isset($statuses[$entry->status]) ? $statuses[$entry->status] : NULL;
 
 			if ($status)
 			{

@@ -560,7 +560,7 @@ class Api_channel_entries extends Api {
 	{
 		if (isset($data['new_channel']) && $data['new_channel'] && $data['new_channel'] != $this->channel_id)
 		{
-			ee()->db->select('status_group, cat_group, channel_id');
+			ee()->db->select('cat_group, channel_id');
 			ee()->db->where_in('channel_id', array($this->channel_id, $data['new_channel']));
 			$query = ee()->db->get('channels');
 
@@ -569,8 +569,7 @@ class Api_channel_entries extends Api {
 				$result_zero = $query->row(0);
 				$result_one = $query->row(1);
 
-				if ($result_zero->status_group == $result_one->status_group &&
-					$result_zero->cat_group == $result_one->cat_group)
+				if ($result_zero->cat_group == $result_one->cat_group)
 				{
 					if (ee()->session->userdata('group_id') == 1 OR in_array($data['new_channel'], $this->_cache['assigned_channels']))
 					{
@@ -810,17 +809,13 @@ class Api_channel_entries extends Api {
 		if (ee()->session->userdata('group_id') != 1)
 		{
 			$disallowed_statuses = array();
-			$valid_statuses = array();
+			$valid_statuses = ee('Model')->get('Channel', $this->channel_id)->first()
+				->Statuses
+				->getDictionary('status_id', 'status');
 
-			ee()->load->model('status_model');
-			$query = ee()->status_model->get_statuses('', $this->channel_id);
-
-			if ($query->num_rows() > 0)
+			foreach ($valid_statuses as $status_id => $status)
 			{
-				foreach ($query->result_array() as $row)
-				{
-					$valid_statuses[$row['status_id']] = strtolower($row['status']); // lower case to match MySQL's case-insensitivity
-				}
+				$valid_statuses[$status_id] = strtolower($status); // lower case to match MySQL's case-insensitivity
 			}
 
 			$query = ee()->status_model->get_disallowed_statuses(ee()->session->userdata('group_id'));

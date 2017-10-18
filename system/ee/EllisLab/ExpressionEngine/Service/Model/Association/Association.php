@@ -180,7 +180,10 @@ class Association {
 
 		foreach ($items as $model)
 		{
-			$this->removeFromRelated($model);
+			if ($model instanceOf Model)
+			{
+				$this->removeFromRelated($model);
+			}
 		}
 	}
 

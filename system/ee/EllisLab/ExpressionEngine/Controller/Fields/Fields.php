@@ -166,7 +166,7 @@ class Fields extends AbstractFieldsController {
 					'name' => 'selection[]',
 					'value' => $field->getId(),
 					'data' => [
-						'confirm' => lang('layout') . ': <b>' . ee('Format')->make('Text', $field->field_label)->convertToEntities() . '</b>'
+						'confirm' => lang('field') . ': <b>' . ee('Format')->make('Text', $field->field_label)->convertToEntities() . '</b>'
 					]
 				] : NULL
 			];
@@ -174,7 +174,7 @@ class Fields extends AbstractFieldsController {
 
 		if (ee()->cp->allowed_group('can_delete_channel_fields'))
 		{
-			ee()->javascript->set_global('lang.remove_confirm', lang('layout') . ': <b>### ' . lang('layouts') . '</b>');
+			ee()->javascript->set_global('lang.remove_confirm', lang('field') . ': <b>### ' . lang('fields') . '</b>');
 			ee()->cp->add_js_script(array(
 				'file' => array(
 					'cp/confirm_remove',

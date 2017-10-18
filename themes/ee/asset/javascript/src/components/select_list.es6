@@ -8,12 +8,11 @@
 
 class SelectList extends React.Component {
   static defaultProps = {
-    filterable: false,
     reorderable: false,
     nestableReorder: false,
     removable: false,
     selectable: true,
-    tooMany: 8
+    tooManyLimit: 8
   }
 
   constructor (props) {
@@ -60,16 +59,12 @@ class SelectList extends React.Component {
 
   // Counts items including any nested items to get a total count for the field
   static countItems (items) {
-    let count = 0
-
-    items.forEach(item => {
-      count++
+    return items.length + items.reduce((sum, item) => {
       if (item.children) {
-        count = count + SelectList.countItems(item.children)
+        return sum + SelectList.countItems(item.children)
       }
-    })
-
-    return count
+      return sum
+    }, 0)
   }
 
   componentDidMount () {
@@ -211,32 +206,28 @@ class SelectList extends React.Component {
 
   handleSelect = (event, item) => {
     var selected = [],
-        checked = event.target.checked
+        checked = event.target.checked,
+        XORvalue = '--'
 
-    if (this.props.multi) {
+    if (this.props.multi && item.value != XORvalue) {
       if (checked) {
-        selected = this.props.selected.concat([item])
-        if (this.props.autoSelectParents) {
-          // Select all parents
-          selected = selected.concat(this.getRelativesForItemSelection(item, true))
+
+        selected = this.props.selected
+            .concat([item])
+            .filter(item => item.value != XORvalue) // uncheck XOR value
+
+        if (item.parent && this.props.autoSelectParents) {
+          selected = selected.concat(this.diffItems(this.props.selected, this.getFlattenedParentsOfItem(item)))
         }
       } else {
-        var values = [item.value]
-        if (this.props.autoSelectParents) {
-          // De-select all children
-          values = values.concat(this.getRelativesForItemSelection(item, false))
+        let deselect = [item]
+        if (item.children && this.props.autoSelectParents) {
+          deselect = deselect.concat(this.getFlattenedChildrenOfItem(item))
         }
-        selected = this.props.selected.filter(thisItem => {
-          // Would use .includes() here but we can't rely on types being
-          // the same, so we need to do a manual loose type check
-          for (value of values) {
-            if (value == thisItem.value) return false
-          }
-          return true
-        })
+        selected = this.diffItems(deselect, this.props.selected)
       }
     } else {
-      selected = [item]
+      selected = checked ? [item] : []
     }
 
     this.props.selectionChanged(selected)
@@ -244,32 +235,33 @@ class SelectList extends React.Component {
     if (this.props.groupToggle) EE.cp.form_group_toggle(event.target)
   }
 
-  getRelativesForItemSelection(item, checked) {
-    var items = []
-    // If checking, we need to find all unchecked parents
-    if (checked && item.parent) {
-      while (item.parent) {
-        // Prevent duplicates
-        // This works ok unless items are selected and then the hierarchy is
-        // changed, selected item objects don't have their parents updated
-        found = this.props.selected.find(thisItem => {
-          return thisItem.value == item.parent.value
-        })
-        if (found) break
+  // Returns all items in items2 that aren't present in items1
+  diffItems(items1, items2) {
+    let values = items1.map(item => item.value)
+    return items2.filter(item => {
+      // Would use .includes() here but we can't rely on types being
+      // the same, so we need to do a manual loose type check
+      return values.every(value => value != item.value)
+    })
+  }
 
-        items.push(item.parent)
-        item = item.parent
-      }
-    // If unchecking, we need to find values of all children as opposed to
-    // objects because we filter the selection based on value to de-select
-    } else if ( ! checked && item.children) {
-      item.children.forEach(child => {
-        items.push(child.value)
-        if (child.children) {
-          items = items.concat(this.getRelativesForItemSelection(child, checked))
-        }
-      })
+  getFlattenedParentsOfItem(item) {
+    var items = []
+    while (item.parent) {
+      items.push(item.parent)
+      item = item.parent
     }
+    return items
+  }
+
+  getFlattenedChildrenOfItem(item) {
+    var items = []
+    item.children.forEach(child => {
+      items.push(child)
+      if (child.children) {
+        items = items.concat(this.getFlattenedChildrenOfItem(child))
+      }
+    })
     return items
   }
 
@@ -300,13 +292,12 @@ class SelectList extends React.Component {
 
   render () {
     let props = this.props
-    let tooMany = SelectList.countItems(props.items) > props.tooMany && ! props.loading
     let shouldShowToggleAll = (props.multi || ! props.selectable) && props.toggleAll !== null
 
     return (
-      <div className={"fields-select" + (tooMany ? ' field-resizable' : '')}
+      <div className={"fields-select" + (SelectList.countItems(props.items) > props.tooManyLimit ? ' field-resizable' : '')}
         ref={(container) => { this.container = container }} key={this.version}>
-        {this.props.filterable &&
+        {props.tooMany &&
           <FieldTools>
             <FilterBar>
               {props.filters && props.filters.map(filter =>
@@ -327,13 +318,13 @@ class SelectList extends React.Component {
           </FieldTools>
         }
         <FieldInputs nested={props.nested}>
-          { ! this.props.loading && props.items.length == 0 &&
+          { ! props.loading && props.items.length == 0 &&
             <NoResults text={props.noResults} />
           }
-          {this.props.loading &&
+          {props.loading &&
             <Loading text={EE.lang.loading} />
           }
-          { ! this.props.loading && props.items.map((item, index) =>
+          { ! props.loading && props.items.map((item, index) =>
             <SelectItem key={item.value ? item.value : item.section}
               item={item}
               name={props.name}
@@ -341,28 +332,28 @@ class SelectList extends React.Component {
               disabled={props.disabledChoices && props.disabledChoices.includes(item.value)}
               multi={props.multi}
               nested={props.nested}
-              selectable={this.props.selectable}
-              reorderable={this.props.reorderable}
-              removable={this.props.removable}
-              editable={this.props.editable}
+              selectable={props.selectable}
+              reorderable={props.reorderable}
+              removable={props.removable && ( ! props.unremovableChoices || ! props.unremovableChoices.includes(item.value))}
+              editable={props.editable}
               handleSelect={this.handleSelect}
-              handleRemove={(e, item) => this.props.handleRemove(e, item)}
-              groupToggle={this.props.groupToggle}
+              handleRemove={(e, item) => props.handleRemove(e, item)}
+              groupToggle={props.groupToggle}
             />
           )}
         </FieldInputs>
-        { ! props.multi && tooMany && props.selected[0] &&
+        { ! props.multi && props.tooMany && props.selected[0] &&
           <SelectedItem name={props.name}
             item={props.selected[0]}
             clearSelection={this.clearSelection}
           />
         }
         {/* Maintain a blank input to easily know when field is empty */}
-        {props.multi && this.props.selectable && props.selected.length == 0 &&
+        {props.multi && props.selectable && props.selected.length == 0 &&
           <input type="hidden" name={props.name + '[]'} value=''
             ref={(input) => { this.input = input }} />
         }
-        {this.props.selectable &&
+        {props.selectable &&
           props.selected.map(item =>
             <input type="hidden" key={item.value} name={props.multi ? props.name + '[]' : props.name} value={item.value}
               ref={(input) => { this.input = input }} />
@@ -420,7 +411,7 @@ class SelectItem extends React.Component {
             onChange={(e) => props.handleSelect(e, props.item)}
             checked={(checked ? 'checked' : '')}
             data-group-toggle={(props.groupToggle ? JSON.stringify(props.groupToggle) : '[]')}
-            disabled={props.disabled || props.reorderable ? 'disabled' : ''}
+            disabled={props.disabled ? 'disabled' : ''}
            />
         )}
         {props.editable && (

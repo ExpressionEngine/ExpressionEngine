@@ -47,11 +47,13 @@ class Channel extends StructureModel {
 			),
 			'weak' => TRUE,
 		),
-		'StatusGroup' => array(
-			'type' => 'belongsTo',
-			'from_key' => 'status_group',
-			'to_key' => 'group_id',
-			'weak' => TRUE
+		'Statuses' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Status',
+			'pivot' => array(
+				'table' => 'channels_statuses'
+			),
+			'weak' => TRUE,
 		),
 		'CustomFields' => array(
 			'type' => 'hasAndBelongsToMany',
@@ -137,6 +139,7 @@ class Channel extends StructureModel {
 
 	protected static $_events = array(
 		'beforeSave',
+		'afterInsert',
 		'afterUpdate',
 		'beforeDelete'
 	);
@@ -161,7 +164,6 @@ class Channel extends StructureModel {
 	protected $last_entry_date;
 	protected $last_comment_date;
 	protected $cat_group;
-	protected $status_group;
 	protected $deft_status;
 	protected $search_excerpt;
 	protected $deft_category;
@@ -303,22 +305,6 @@ class Channel extends StructureModel {
 						$this->setRawProperty($property, $channel->{$property});
 					}
 					break;
-				case 'status_group':
-					if ( ! isset($this->{$property}))
-					{
-						$this->setRawProperty($property, $channel->{$property});
-					}
-					elseif ($this->{$property} == '')
-					{
-						 $this->setRawProperty($property, NULL);
-					}
-					break;
-				case 'deft_status':
-					if ( ! isset($this->status_group) OR $this->status_group == $channel->status_group )
-					{
-						$this->setRawProperty($property, $channel->{$property});
-					}
-					break;
 				case 'deft_category':
 					if ( ! isset($this->cat_group) OR count(array_diff(explode('|', $this->cat_group), explode('|', $channel->cat_group ))) == 0)
 					{
@@ -333,6 +319,7 @@ class Channel extends StructureModel {
 
 		$this->FieldGroups = clone $channel->FieldGroups;
 		$this->CustomFields = clone $channel->CustomFields;
+		$this->Statuses = clone $channel->Statuses;
 	}
 
 	public function onBeforeSave()
@@ -348,9 +335,24 @@ class Channel extends StructureModel {
 		}
 	}
 
+	public function onAfterInsert()
+	{
+		$statuses = $this->Statuses->pluck('status');
+
+		// Ensure default statuses are assigned
+		if ( ! in_array('open', $statuses) OR ! in_array('closed', $statuses))
+		{
+			$this->Statuses[] = $this->getModelFacade()->get('Status')
+				->filter('status', 'IN', ['open', 'closed'])
+				->all();
+
+			$this->save();
+		}
+	}
+
 	public function onAfterUpdate($previous)
 	{
-		// Only scnchronize if the category groups changed and we have a layout
+		// Only synchronize if the category groups changed and we have a layout
 		if (isset($previous['cat_group']) && count($this->ChannelLayouts))
 		{
 			$this->syncCatGroupsWithLayouts();

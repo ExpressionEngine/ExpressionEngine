@@ -1,5 +1,7 @@
 'use strict';
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -52,56 +54,21 @@ var SelectField = function (_React$Component) {
   }
 
   _createClass(SelectField, [{
-    key: 'countItems',
-
-
-    // Get count of all items including nested
-    value: function countItems(items) {
-      var _this2 = this;
-
-      items = items || this.props.items;
-
-      var count = items.length + items.reduce(function (sum, item) {
-        if (item.children) {
-          return sum + _this2.countItems(item.children);
-        }
-        return sum;
-      }, 0);
-
-      return count;
-    }
-  }, {
     key: 'render',
     value: function render() {
-      var _this3 = this;
+      var _this2 = this;
 
-      var selectItem = React.createElement(FilterableSelectList, { items: this.props.items,
-        limit: this.props.limit,
-        name: this.props.name,
-        multi: this.props.multi,
-        nested: this.props.nested,
-        nestableReorder: this.props.nestableReorder,
-        disabledChoices: this.props.disabledChoices,
-        autoSelectParents: this.props.autoSelectParents,
+      var selectItem = React.createElement(FilterableSelectList, _extends({}, this.props, {
         selected: this.state.selected,
-        filterUrl: this.props.filterUrl,
         selectionChanged: this.selectionChanged,
-        noResults: this.props.noResults,
-        filters: this.props.filters,
-        toggleAll: this.props.toggleAll,
-        filterable: this.countItems() > SelectList.defaultProps.tooMany,
+        tooMany: SelectList.countItems(this.props.items) > SelectList.defaultProps.tooManyLimit,
         reorderable: this.props.reorderable || this.state.editing,
         removable: this.props.removable || this.state.editing,
         handleRemove: function handleRemove(e, item) {
-          return _this3.handleRemove(e, item);
+          return _this2.handleRemove(e, item);
         },
-        editable: this.props.editable || this.state.editing,
-        selectable: this.props.selectable,
-        groupToggle: this.props.groupToggle,
-        manageLabel: this.props.manageLabel,
-        reorderAjaxUrl: this.props.reorderAjaxUrl,
-        loading: this.props.loading
-      });
+        editable: this.props.editable || this.state.editing
+      }));
 
       if (this.props.manageable) {
         return React.createElement(
@@ -117,7 +84,7 @@ var SelectField = function (_React$Component) {
             ToggleTools,
             { label: this.props.manageLabel },
             React.createElement(Toggle, { on: this.props.editing, handleToggle: function handleToggle(toggle) {
-                return _this3.setEditingMode(toggle);
+                return _this2.setEditingMode(toggle);
               } })
           )
         );

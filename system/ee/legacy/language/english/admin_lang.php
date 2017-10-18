@@ -894,13 +894,9 @@ $lang = array(
 
 'tag_caching' => 'Tag cache files',
 
-'taken_status_group_name' => 'This status group name is already taken.',
-
 'template_cfg' => 'Template Preferences',
 
 'template_updated' => 'Template Updated',
-
-'templates' => 'In ALL Templates',
 
 'theme_folder_path' => 'Theme Folder Path',
 

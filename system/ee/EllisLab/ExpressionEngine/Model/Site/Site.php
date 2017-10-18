@@ -47,14 +47,6 @@ class Site extends Model {
 		'Stats' => array(
 			'type' => 'HasOne'
 		),
-		'Statuses' => array(
-			'model' => 'Status',
-			'type' => 'hasMany'
-		),
-		'StatusGroups' => array(
-			'model' => 'StatusGroup',
-			'type' => 'hasMany'
-		),
 		'TemplateGroups' => array(
 			'model' => 'TemplateGroup',
 			'type' => 'hasMany'
@@ -161,7 +153,6 @@ class Site extends Model {
 		$this->createHTMLButtons();
 		$this->createSpecialtyTemplates();
 		$this->createMemberGroups();
-		$this->createDefaultStatuses();
     }
 
 	/**
@@ -270,52 +261,6 @@ class Site extends Model {
 			$data['site_id'] = $this->site_id;
 
 			$this->getModelFacade()->make('MemberGroup', $data)->save();
-		}
-	}
-
-	/**
-	 * Creates a "Default" status group and the "open" and "closed" statuses
-	 * in that group as needed.
-	 *
-	 * @return void
-	 */
-	public function createDefaultStatuses()
-	{
-		$group = $this->getModelFacade()->get('StatusGroup')
-			->filter('site_id', $this->site_id)
-			->filter('group_name', 'Default')
-			->first();
-
-		if ( ! $group)
-		{
-			$group = $this->getModelFacade()->make('StatusGroup', array(
-				'site_id'    => $this->site_id,
-				'group_name' => 'Default'
-			))->save();
-		}
-
-		$statuses = ($group->Statuses) ? $group->Statuses->indexBy('status') : array();
-
-		if ( ! array_key_exists('open', $statuses))
-		{
-			$this->getModelFacade()->make('Status', array(
-				'site_id'      => $this->site_id,
-				'group_id'     => $group->group_id,
-				'status'       => 'open',
-				'status_order' => 1,
-				'highlight'    => '009933',
-			))->save();
-		}
-
-		if ( ! array_key_exists('closed', $statuses))
-		{
-			$this->getModelFacade()->make('Status', array(
-				'site_id'      => $this->site_id,
-				'group_id'     => $group->group_id,
-				'status'       => 'closed',
-				'status_order' => 2,
-				'highlight'    => '990000',
-			))->save();
 		}
 	}
 }

@@ -40,7 +40,7 @@ if (ee('View/Helpers')->countChoices($normalized_choices) <= $too_many
 	&& ! $force_react):
 
 	// For radios with no value, set value to first choice
-	if ( ! $multi && ! $value) {
+	if ($value !== FALSE && empty($value) && ! $multi) {
 		$keys = array_keys($choices);
 		$value = $keys[0];
 	}
@@ -93,6 +93,7 @@ else:
 		'nestableReorder' => isset($nestable_reorder) ? $nestable_reorder : FALSE,
 		'disabled' => isset($disabled) ? $disabled : FALSE,
 		'disabledChoices' => isset($disabled_choices) ? $disabled_choices : FALSE,
+		'unremovableChoices' => isset($unremovable_choices) ? $unremovable_choices : FALSE,
 		'autoSelectParents' => isset($auto_select_parents) ? $auto_select_parents : NULL,
 		'tooMany' => $too_many,
 		'filterUrl' => isset($filter_url) ? $filter_url : NULL,

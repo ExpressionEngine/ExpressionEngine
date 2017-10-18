@@ -36,8 +36,10 @@ class Sets extends AbstractChannelsController {
 					array(
 						'title' => 'file_upload',
 						'fields' => array(
-							'set_file' => array('type' => 'file'),
-							'required' => TRUE
+							'set_file' => array(
+								'type' => 'file',
+								'required' => TRUE
+							)
 						)
 					),
 				)
@@ -188,7 +190,7 @@ class Sets extends AbstractChannelsController {
 		{
 			$errors = $result->getErrors();
 			$model_errors = $result->getModelErrors();
-			foreach (array('Channel Field', 'Category') as $type)
+			foreach (array('Channel Field', 'Category', 'Category Group', 'Status') as $type)
 			{
 				if (isset($model_errors[$type]))
 				{
