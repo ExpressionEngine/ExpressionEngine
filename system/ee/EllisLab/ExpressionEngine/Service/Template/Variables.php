@@ -71,7 +71,7 @@ abstract class Variables {
 	public function getVariable($name)
 	{
 		$variables = $this->getTemplateVariables();
-		return (isset($variables[$name])) ? $variables[$name] : FALSE;
+		return (array_key_exists($name, $variables)) ? $variables[$name] : FALSE;
 	}
 
 	/**
