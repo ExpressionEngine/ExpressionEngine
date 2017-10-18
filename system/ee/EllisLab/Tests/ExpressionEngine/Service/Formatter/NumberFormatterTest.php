@@ -70,96 +70,101 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider currencyProvider
 	 */
-	public function testCurrency($content, $currency, $locale, $expected)
+	public function testCurrency($content, $currency, $locale, $expected, $opts)
 	{
 		$this->lang->shouldReceive('load')->once();
 
-		$opts = [
+		$params = [
 			'currency' => $currency,
 			'locale' => $locale,
 		];
 
-		$number = (string) $this->format($content)->currency($opts);
+		$number = (string) $this->format($content, $opts)->currency($params);
 		$this->assertEquals($expected, $number);
 	}
 
 	public function currencyProvider()
 	{
-		if (extension_loaded('intl'))
-		{
-			return [
-				[112358.13, NULL, NULL, '$112,358.13'],
-				[112358.13, 'EUR', 'de_DE', '112.358,13 €'],
-				[112358.13, 'GBP', 'en_UK', '£112,358.13'],
-				[112358.13, 'AUD', 'en_US.UTF-8', 'A$112,358.13'],
-				[112358.13, 'AUD', 'de_DE', '112.358,13 AU$'],
-				[112358.13, 'RUR', 'ru', '112 358,13 р.'],
-				[112358.13, 'UAH', 'uk', '112 358,13 ₴'],
-				[112358.13, 'UAH', 'en', (version_compare(INTL_ICU_VERSION, '4.8', '>') ? 'UAH112,358.13' : '₴1,234,567.89')],
-				['fake', NULL, NULL, '$0.00'],
-			];
-		}
-
-		// no intl extension means installed locales and money_format() will be used. Inaccurate for non-US locales.
 		return [
-			[112358.13, NULL, NULL, '$112,358.13'],
-			[112358.13, 'EUR', 'de_DE', 'Eu112.358,13'],
-			[112358.13, 'GBP', 'en_UK', '112358.13'],
-			[112358.13, 'AUD', 'en_US.UTF-8', '$112,358.13'],
-			[112358.13, 'AUD', 'de_DE', 'Eu112.358,13'],
-			[112358.13, 'RUR', 'ru', '112358.13'],
-			[112358.13, 'UAH', 'uk', '112358.13'],
-			[112358.13, 'UAH', 'en', '112358.13'],
-			['fake', NULL, NULL, '$0.00'],
-		];
-	}
+			// with intl extension
+			[112358.13, NULL, NULL, '$112,358.13', 0b00000001],
+			[112358.13, 'EUR', 'de_DE', '112.358,13 €', 0b00000001],
+			[112358.13, 'GBP', 'en_UK', '£112,358.13', 0b00000001],
+			[112358.13, 'AUD', 'en_US.UTF-8', 'A$112,358.13', 0b00000001],
+			[112358.13, 'AUD', 'de_DE', '112.358,13 AU$', 0b00000001],
+			[112358.13, 'RUR', 'ru', '112 358,13 р.', 0b00000001],
+			[112358.13, 'UAH', 'uk', '112 358,13 ₴', 0b00000001],
+			[112358.13, 'UAH', 'en', (version_compare(INTL_ICU_VERSION, '4.8', '>') ? 'UAH112,358.13' : '₴1,234,567.89'), 0b00000001],
+			['fake', NULL, NULL, '$0.00', 0b00000001],
 
-	public function testDuration()
-	{
-		$assertions = [
-			112358 => '31:12:38',
-			-112358 => '-32:-13:-38',
-			1123 => '18:43',
-			11 => '11 sec.',
-			'fake' => '0 sec.',
+			// no intl extension
+			[112358.13, NULL, NULL, '$112,358.13', 0],
+			[112358.13, 'EUR', 'de_DE', 'Eu112.358,13', 0],
+			[112358.13, 'GBP', 'en_UK', '112358.13', 0],
+			[112358.13, 'AUD', 'en_US.UTF-8', '$112,358.13', 0],
+			[112358.13, 'AUD', 'de_DE', 'Eu112.358,13', 0],
+			[112358.13, 'RUR', 'ru', '112358.13', 0],
+			[112358.13, 'UAH', 'uk', '112358.13', 0],
+			[112358.13, 'UAH', 'en', '112358.13', 0],
+			['fake', NULL, NULL, '$0.00', 0],
 		];
-
-		foreach ($assertions as $test => $expected)
-		{
-			$this->lang->shouldReceive('load');
-			$val = (string) $this->format($test)->duration();
-			$this->assertEquals($expected, $val);
-		}
 	}
 
 	/**
+	 * @dataProvider durationProvider
+	 */
+	public function testDuration($content, $expected, $opts)
+	{
+		$this->lang->shouldReceive('load')->once();
+		$val = (string) $this->format($content, $opts)->duration();
+		$this->assertEquals($expected, $val);
+	}
+
+	public function durationProvider()
+	{
+		return [
+			// with intl extension
+			[112358, '31:12:38', 0b00000001],
+			[-112358, '-32:-13:-38', 0b00000001],
+			[1123, '18:43', 0b00000001],
+			[11, '11 sec.', 0b00000001],
+			['fake', '0 sec.', 0b00000001],
+
+			// no intl extension
+			// don't have a good way to test the output of a sprintf()'d language variable
+			[112358, '31:12:38', 0],
+			[-112358, 'formatter_duration_seconds_only', 0],
+			[1123, '18:43', 0],
+			[11, 'formatter_duration_seconds_only', 0],
+			['fake', 'formatter_duration_seconds_only', 0],
+		];
+	}
+	/**
 	 * @dataProvider ordinalProvider
 	 */
-	public function testOrdinal($content, $locale, $expected)
+	public function testOrdinal($content, $locale, $expected, $opts)
 	{
 		$this->lang->shouldReceive('load')->once();
 
-		$number = (string) $this->format($content)->ordinal(['locale' => $locale]);
+		$number = (string) $this->format($content, $opts)->ordinal(['locale' => $locale]);
 		$this->assertEquals($expected, $number);
 	}
 
 	public function ordinalProvider()
 	{
-		if (extension_loaded('intl'))
-		{
-			return [
-				[11235813, NULL, '11,235,813th'],
-				[11235813, 'de', '11.235.813.'],
-				[11235813, 'fr', '11 235 813e'],
-				['fake', NULL, '0th'],
-			];
-		}
 
 		return [
-			[11235813, NULL, '11,235,813th'],
-			[11235813, 'de', '11,235,813th'],
-			[11235813, 'fr', '11,235,813th'],
-			['fake', NULL, '0th'],
+			// with intl extension
+			[11235813, NULL, '11,235,813th', 0b00000001],
+			[11235813, 'de', '11.235.813.', 0b00000001],
+			[11235813, 'fr', '11 235 813e', 0b00000001],
+			['fake', NULL, '0th', 0b00000001],
+
+			// no intl extension
+			[11235813, NULL, '11,235,813th', 0],
+			[11235813, 'de', '11,235,813th', 0],
+			[11235813, 'fr', '11,235,813th', 0],
+			['fake', NULL, '0th', 0],
 		];
 	}
 
@@ -168,10 +173,9 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 		$this->factory = NULL;
 	}
 
-	public function format($content, $config = [])
+	public function format($content, $options = 0b00000001)
 	{
-		$options = (extension_loaded('intl')) ? 0b00000001 : 0;
-		return new Number($content, $this->lang, $this->sess, $config, $options);
+		return new Number($content, $this->lang, $this->sess, [], $options);
 	}
 }
 
