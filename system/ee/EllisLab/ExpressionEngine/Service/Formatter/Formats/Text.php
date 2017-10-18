@@ -305,7 +305,9 @@ class Text extends Formatter {
 		$end_char = (isset($options['end_char'])) ? $options['end_char'] : '&#8230;';
 		$this->content = strip_tags($this->content);
 
-		if (strlen($this->content) < $limit)
+		$length = (extension_loaded('mbstring')) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
+
+		if ($length < $limit)
 		{
 			return $this;
 		}
@@ -320,7 +322,9 @@ class Text extends Formatter {
 			)
 		);
 
-		if (strlen($this->content) <= $limit)
+		$length = (extension_loaded('mbstring')) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
+
+		if ($length <= $limit)
 		{
 			return $this;
 		}
