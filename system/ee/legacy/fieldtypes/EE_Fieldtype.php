@@ -7,8 +7,6 @@
  * @license   https://expressionengine.com/license
  */
 
-use EllisLab\ExpressionEngine\Service\Encrypt;
-
 /**
  * EE_Fieldtype
  */
