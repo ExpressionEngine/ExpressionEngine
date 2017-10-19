@@ -275,6 +275,65 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals('SampTEST', $text);
 	}
 
+	/**
+	 * @dataProvider replaceProvider
+	 */
+	public function testReplace($content, $params, $expected)
+	{
+		if ( ! defined('DEBUG'))
+		{
+			define('DEBUG', 0);
+		}
+
+		$text = (string) $this->format($content)->replace($params);
+		$this->assertEquals($expected, $text);
+	}
+
+	public function replaceProvider()
+	{
+		// <li><b>Replace:</b> {a_number:replace find="/(foo)/i" replace="bar$1bat" regex="yes"}
+		$sample = 'Foo food battletanks.';
+
+		return [
+			[
+				$sample,
+				[
+					'find' => 'foo',
+					'replace' => 'bar',
+				],
+				'Foo bard battletanks.'
+			],
+			[
+				$sample,
+				[
+					'find' => 'foo',
+					'replace' => 'bar',
+					'case_sensitive' => 'no',
+				],
+				'bar bard battletanks.'
+			],
+			[
+				$sample,
+				[
+					'find' => '/(foo)/i',
+					'replace' => 'bar$1bat',
+					'regex' => 'yes'
+				],
+				'barFoobat barfoobatd battletanks.'
+			],
+			[
+				$sample,
+				[
+					// intentionally invalid regex
+					'find' => '/(foo)i',
+					'replace' => 'bar$1bat',
+					'regex' => 'yes'
+				],
+				'Foo food battletanks.'
+			],
+		];
+	}
+
 	public function tearDown()
 	{
 		$this->factory = NULL;
