@@ -215,7 +215,7 @@ class Text extends Formatter {
 				$this->content = preg_replace("/\{path:(.+?)\}/", "&#123;path:\\1&#125;", $this->content);
 				$this->content = preg_replace("/\{redirect=(.+?)\}/", "&#123;redirect=\\1&#125;", $this->content);
 				$this->content = str_replace(array('{if', '{/if'), array('&#123;if', '&#123;/if'), $this->content);
-				$this->content = preg_replace("/\{layout:(.+?)\}/", "&#123;layout:\\1&#125;", $this->content);
+				$this->content = preg_replace("/\{(\/)?layout:(.+?)\}/", "&#123;\\1layout:\\2&#125;", $this->content);
 			}
 		}
 

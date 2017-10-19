@@ -148,6 +148,42 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 		];
 	}
 
+	public function testEncodeEETags()
+	{
+		$sample = "
+{some_variable}
+{exp:query sql='SELECT * FROM exp_members'}{email}{/exp:query}
+{embed='foo/bar'}
+{path:foo}
+{redirect='404'}
+{if some_conditional}content{/if}
+{layout:variable}
+{layout:set name='foo'}bar{/layout:set}";
+
+		$text = (string) $this->format($sample)->encodeEETags();
+		$this->assertEquals("
+&#123;some_variable&#125;
+&#123;exp:query sql='SELECT * FROM exp_members'&#125;&#123;email&#125;&#123;/exp:query&#125;
+&#123;embed='foo/bar'&#125;
+&#123;path:foo&#125;
+&#123;redirect='404'&#125;
+&#123;if some_conditional&#125;content&#123;/if&#125;
+&#123;layout:variable&#125;
+&#123;layout:set name='foo'&#125;bar&#123;/layout:set&#125;", $text);
+
+		$text = (string) $this->format($sample)->encodeEETags(['encode_vars' => FALSE]);
+
+		$this->assertEquals("
+{some_variable}
+&#123;exp:query sql='SELECT * FROM exp_members'&#125;{email}&#123;/exp:query&#125;
+&#123;embed='foo/bar'&#125;
+&#123;path:foo&#125;
+&#123;redirect='404'&#125;
+&#123;if some_conditional}content&#123;/if}
+&#123;layout:variable&#125;
+&#123;layout:set name='foo'&#125;bar&#123;/layout:set&#125;", $text);
+	}
+
 	public function tearDown()
 	{
 		$this->factory = NULL;
