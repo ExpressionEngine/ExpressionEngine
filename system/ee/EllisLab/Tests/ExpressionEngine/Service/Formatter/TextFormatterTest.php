@@ -334,6 +334,54 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 		];
 	}
 
+	public function testUrlEncode()
+	{
+		$sample = ' !"#$%&\'()*+,-./0123456789:;<=>?'
+			. '@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_'
+			. '`abcdefghijklmnopqrstuvwxyz{|}~'
+			. "\0";
+
+		$plus_encoded = '+%21%22%23%24%25%26%27%28%29%2A%2B%2C-.%2F0123456789%3A%3B%3C%3D%3E%3F'
+			. '%40ABCDEFGHIJKLMNOPQRSTUVWXYZ%5B%5C%5D%5E_'
+			. '%60abcdefghijklmnopqrstuvwxyz%7B%7C%7D%7E'
+			. '%00';
+
+		$raw_encoded = '%20%21%22%23%24%25%26%27%28%29%2A%2B%2C-.%2F0123456789%3A%3B%3C%3D%3E%3F'
+			. '%40ABCDEFGHIJKLMNOPQRSTUVWXYZ%5B%5C%5D%5E_'
+			. '%60abcdefghijklmnopqrstuvwxyz%7B%7C%7D~'
+			. '%00';
+
+		$text = (string) $this->format($sample)->urlEncode();
+		$this->assertEquals($raw_encoded, $text);
+
+		$text = (string) $this->format($sample)->urlEncode(['plus_encoded_spaces' => 'yes']);
+		$this->assertEquals($plus_encoded, $text);
+	}
+
+	public function testUrlDecode()
+	{
+		$sample = ' !"#$%&\'()*+,-./0123456789:;<=>?'
+			. '@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_'
+			. '`abcdefghijklmnopqrstuvwxyz{|}~'
+			. "\0";
+
+		$plus_encoded = '+%21%22%23%24%25%26%27%28%29%2A%2B%2C-.%2F0123456789%3A%3B%3C%3D%3E%3F'
+			. '%40ABCDEFGHIJKLMNOPQRSTUVWXYZ%5B%5C%5D%5E_'
+			. '%60abcdefghijklmnopqrstuvwxyz%7B%7C%7D%7E'
+			. '%00';
+
+		$raw_encoded = '%20%21%22%23%24%25%26%27%28%29%2A%2B%2C-.%2F0123456789%3A%3B%3C%3D%3E%3F'
+			. '%40ABCDEFGHIJKLMNOPQRSTUVWXYZ%5B%5C%5D%5E_'
+			. '%60abcdefghijklmnopqrstuvwxyz%7B%7C%7D~'
+			. '%00';
+
+		$text = (string) $this->format($raw_encoded)->urlDecode();
+		$this->assertEquals($sample, $text);
+
+		$text = (string) $this->format($plus_encoded)->urlDecode(['plus_encoded_spaces' => 'yes']);
+		$this->assertEquals($sample, $text);
+	}
+
 	public function tearDown()
 	{
 		$this->factory = NULL;
