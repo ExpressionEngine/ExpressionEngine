@@ -270,6 +270,9 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 			$text = (string) $this->format($sample)->limitChars(['characters' => 12]);
 			$this->assertEquals('ßaeiouãê'.chr(195).'&#8230;', $text);
 		}
+
+		$text = (string) $this->format('Sample Text')->limitChars(['characters' => 4, 'end_char' => 'TEST']);
+		$this->assertEquals('SampTEST', $text);
 	}
 
 	public function tearDown()
