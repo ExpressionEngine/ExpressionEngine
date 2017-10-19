@@ -42,6 +42,7 @@ class Updater {
 				'addFluidBlockField',
 				'addDurationField',
 				'addCommentMenuExtension',
+				'emancipateStatuses'
 			)
 		);
 
@@ -55,6 +56,11 @@ class Updater {
 
 	private function emancipateTheFields()
 	{
+		if (ee()->db->table_exists('channels_channel_field_groups'))
+		{
+			return;
+		}
+
 		// Fields can span Sites and do not need Groups
 		ee()->smartforge->modify_column('channel_fields', array(
 			'site_id' => array(
@@ -581,6 +587,7 @@ class Updater {
 	private function nullOutRelationshipChannelDataFields()
 	{
 		$channel_fields = ee()->db->where('field_type', 'relationship')
+			->where('legacy_field_data', 'y')
 			->get('channel_fields');
 
 		$update = [];
@@ -853,6 +860,142 @@ class Updater {
 		);
 
 		ee()->db->insert('extensions', $data);
+	}
+
+	/**
+	 * Gets rid of status groups, makes statuses install-wide, deletes duplicate
+	 * status names, and assigns statuses to channels
+	 */
+	private function emancipateStatuses()
+	{
+		if (ee()->db->table_exists('channels_statuses'))
+		{
+			return;
+		}
+
+		$statuses = ee()->db->get('statuses')->result();
+
+		// Here, we'll decide which statuses to keep, we'll just keep the first of
+		// a name we come across and delete the rest, keeping all statuses unique
+		$keep = [];
+		$delete = [];
+		foreach ($statuses as $status)
+		{
+			if (isset($keep[$status->status]))
+			{
+				$delete[] = $status->status_id;
+				continue;
+			}
+
+			$keep[$status->status] = $status->status_id;
+		}
+
+		$channels_status_groups = ee()->db->select('channel_id, status_group')
+			->get('channels')
+			->result();
+
+		// Create an easily indexable array to see which statuses need to be
+		// re-assigned to a channel
+		$statuses_by_group = [];
+		foreach ($statuses as $status)
+		{
+			if ( ! isset($statuses_by_group[$status->group_id]))
+			{
+				$statuses_by_group[$status->group_id] = [];
+			}
+
+			$statuses_by_group[$status->group_id][] = $status;
+		}
+
+		// Create a new association of channels to statuses
+		$channels_statuses = [];
+		foreach ($channels_status_groups as $channel)
+		{
+			if (isset($statuses_by_group[$channel->status_group]))
+			{
+				foreach ($statuses_by_group[$channel->status_group] as $status)
+				{
+					$channels_statuses[] = [
+						'channel_id' => $channel->channel_id,
+						'status_id' => $keep[$status->status]
+					];
+				}
+			}
+			else
+			{
+				$channels_statuses[] = [
+					'channel_id' => $channel->channel_id,
+					'status_id' => $keep['open']
+				];
+				$channels_statuses[] = [
+					'channel_id' => $channel->channel_id,
+					'status_id' => $keep['closed']
+				];
+			}
+		}
+
+		ee()->dbforge->add_field(
+			array(
+				'channel_id' => array(
+					'type'       => 'int',
+					'constraint' => 4,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				),
+				'status_id' => array(
+					'type'       => 'int',
+					'constraint' => 4,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				)
+			)
+		);
+		ee()->dbforge->add_key(array('channel_id', 'status_id'), TRUE);
+		ee()->smartforge->create_table('channels_statuses');
+
+		if ( ! empty($channels_statuses))
+		{
+			ee()->db->insert_batch('channels_statuses', $channels_statuses);
+		}
+
+		ee()->smartforge->drop_column('channels', 'status_group');
+		ee()->smartforge->drop_column('statuses', 'group_id');
+		ee()->smartforge->drop_column('statuses', 'site_id');
+		ee()->smartforge->drop_table('status_groups');
+
+		if ( ! empty($delete))
+		{
+			ee()->db->where_in('status_id', $delete);
+			ee()->db->delete('statuses');
+		}
+
+		ee()->smartforge->add_column(
+			'channel_titles',
+			array(
+				'status_id' => array(
+					'type'       => 'int',
+					'constraint' => 4,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				)
+			),
+			'status'
+		);
+
+		// Fill in status_id for any that we have
+		$update_batch = [];
+		foreach ($keep as $status => $status_id)
+		{
+			$update_batch[] = [
+				'status' => $status,
+				'status_id' => $status_id
+			];
+		}
+
+		if ( ! empty($update_batch))
+		{
+			ee()->db->update_batch('channel_titles', $update_batch, 'status');
+		}
 	}
 }
 // END CLASS

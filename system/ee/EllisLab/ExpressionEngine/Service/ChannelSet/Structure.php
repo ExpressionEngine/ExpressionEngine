@@ -19,7 +19,6 @@ class Structure {
 		'ee:Channel' => array(),
 		'ee:ChannelFieldGroup' => array('ChannelFields' => 'ee:ChannelField'),
 		'ee:CategoryGroup' => array('Categories' => 'ee:Category'),
-		'ee:StatusGroup' => array('Statuses' => 'ee:Status'),
 		'ee:UploadDestination' => array(),
 	);
 

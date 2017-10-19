@@ -1,6 +1,6 @@
 EE.cp.DbBackup = {
 
-	button: document.querySelectorAll('form.settings input.btn')[0],
+	button: document.querySelectorAll('form input.btn')[0],
 
 	init: function() {
 		EE.cp.DbBackup._init();

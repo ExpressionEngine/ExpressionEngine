@@ -6,6 +6,8 @@ $lang = array(
 
 'add_group' => 'Add Group',
 
+'add_status' => 'Add Status',
+
 'add_tab' => 'Add Tab',
 
 'assigned_to' => 'assigned to',
@@ -196,8 +198,6 @@ $lang = array(
 
 'create_new_field_group' => 'Create New Field Group',
 
-'create_new_status_group' => 'Create New Status Group',
-
 'custom_field_group' => 'Custom field group',
 
 'custom_field_groups' => 'Custom field groups',
@@ -206,13 +206,9 @@ $lang = array(
 
 'custom_fields_desc' => 'Choose the fields you would like to include in this field group.',
 
-'default_status_group' => 'Default Statuses',
-
 'edit_channel' => 'Edit Channel',
 
 'invalid_short_name' => 'Your channel name must contain only alpha-numeric characters and no spaces.',
-
-'status_groups_not_found' => 'No <b>status groups</b> found',
 
 'taken_channel_name' => 'This channel name is already taken.',
 
@@ -551,18 +547,12 @@ $lang = array(
 'textarea' => 'Textarea',
 
 
-/* Status Groups */
-'create_status' => 'Create Status',
-
-'create_status_group' => 'Create Status Group',
-
-'duplicate_status_group_name' => 'A status group already exists with the same name.',
+/* Statuses */
+'create_status' => 'New Status',
 
 'duplicate_status_name' => 'A status already exists with the same name.',
 
 'edit_status' => 'Edit Status',
-
-'edit_status_group' => 'Edit Status Group',
 
 'highlight_color' => 'Highlight color',
 
@@ -584,30 +574,6 @@ $lang = array(
 
 'status_created_desc' => 'The status <b>%s</b> has been created.',
 
-'status_group' => 'Status Group',
-
-'status_group_created' => 'Status Group Created',
-
-'status_group_created_desc' => 'The status group <b>%s</b> has been created.',
-
-'status_group_not_created' => 'Cannot Create Status Group',
-
-'status_group_not_created_desc' => 'We were unable to create this status group, please review and fix errors below.',
-
-'status_group_not_updated' => 'Cannot Update Status Group',
-
-'status_group_not_updated_desc' => 'We were unable to update this status group, please review and fix errors below.',
-
-'status_group_updated' => 'Status Group Updated',
-
-'status_group_updated_desc' => 'The status group <b>%s</b> has been updated.',
-
-'status_groups' => 'Status Groups',
-
-'status_groups_removed' => 'Status groups removed',
-
-'status_groups_removed_desc' => '%d status groups were removed.',
-
 'status_name' => 'Status Name',
 
 'status_name_desc' => 'Descriptive name of this status.',
@@ -625,6 +591,8 @@ $lang = array(
 'status_updated_desc' => 'The status <b>%s</b> has been updated.',
 
 'statuses' => 'Statuses',
+
+'statuses_desc' => 'Assign one of more statuses to this channel.',
 
 'statuses_removed' => 'Statuses removed',
 

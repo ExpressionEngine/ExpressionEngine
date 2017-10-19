@@ -83,7 +83,7 @@ class Fields extends AbstractFieldsController {
 		{
 			$fields = $group->ChannelFields->sortBy('field_label')->asArray();
 
-			if ($search = ee('Request')->get('filter_by_keyword'))
+			if ($search = ee()->input->get_post('filter_by_keyword'))
 			{
 				$fields = array_filter($fields, function($field) use ($search) {
 					return strpos(
@@ -103,11 +103,10 @@ class Fields extends AbstractFieldsController {
 		}
 		else
 		{
-
 			$fields = ee('Model')->get('ChannelField')
 				->filter('site_id', ee()->config->item('site_id'));
 
-			if ($search = ee('Request')->get('filter_by_keyword'))
+			if ($search = ee()->input->get_post('filter_by_keyword'))
 			{
 				$fields->search(['field_label', 'field_name'], $search);
 			}
@@ -166,7 +165,7 @@ class Fields extends AbstractFieldsController {
 					'name' => 'selection[]',
 					'value' => $field->getId(),
 					'data' => [
-						'confirm' => lang('layout') . ': <b>' . ee('Format')->make('Text', $field->field_label)->convertToEntities() . '</b>'
+						'confirm' => lang('field') . ': <b>' . ee('Format')->make('Text', $field->field_label)->convertToEntities() . '</b>'
 					]
 				] : NULL
 			];
@@ -174,7 +173,7 @@ class Fields extends AbstractFieldsController {
 
 		if (ee()->cp->allowed_group('can_delete_channel_fields'))
 		{
-			ee()->javascript->set_global('lang.remove_confirm', lang('layout') . ': <b>### ' . lang('layouts') . '</b>');
+			ee()->javascript->set_global('lang.remove_confirm', lang('field') . ': <b>### ' . lang('fields') . '</b>');
 			ee()->cp->add_js_script(array(
 				'file' => array(
 					'cp/confirm_remove',

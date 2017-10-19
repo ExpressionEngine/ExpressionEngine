@@ -317,7 +317,6 @@ class Template extends AbstractDesignController {
 		$this->loadCodeMirrorAssets();
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), $group->group_name . '/' . $template->template_name);
-		ee()->view->cp_page_title_alt = ee()->view->cp_page_title . ' <a class="btn action ta" href="' . ee()->cp->masked_url($view_url) . '" rel="external">' . lang('view_rendered') . '</a>';
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('design')->compile() => lang('template_manager'),
 			ee('CP/URL')->make('design/manager/' . $group->group_name)->compile() => sprintf(lang('breadcrumb_group'), $group->group_name)

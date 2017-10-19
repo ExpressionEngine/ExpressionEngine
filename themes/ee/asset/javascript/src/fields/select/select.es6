@@ -39,20 +39,6 @@ class SelectField extends React.Component {
     })
   }
 
-  // Get count of all items including nested
-  countItems(items) {
-    items = items || this.props.items
-
-    let count = items.length + items.reduce((sum, item) => {
-      if (item.children) {
-        return sum + this.countItems(item.children)
-      }
-      return sum
-    }, 0)
-
-    return count
-  }
-
   handleRemove = (event, item) => {
     event.preventDefault()
     $(event.target).closest('[data-id]').trigger('select:removeItem', [item])
@@ -62,7 +48,7 @@ class SelectField extends React.Component {
     let selectItem = <FilterableSelectList {...this.props}
       selected={this.state.selected}
       selectionChanged={this.selectionChanged}
-      filterable={this.countItems() > SelectList.defaultProps.tooMany}
+      tooMany={SelectList.countItems(this.props.items) > SelectList.defaultProps.tooManyLimit}
       reorderable={this.props.reorderable || this.state.editing}
       removable={this.props.removable || this.state.editing}
       handleRemove={(e, item) => this.handleRemove(e, item)}

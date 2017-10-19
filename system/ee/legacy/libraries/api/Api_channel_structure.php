@@ -303,15 +303,9 @@ class Api_channel_structure extends Api {
 									${$key} = $val;
 								}
 								break;
-							case 'status_group':
 							case 'field_group':
-								if ( ! isset(${$key}) OR ${$key} == '')
-								{
-									${$key} = $val;
-								}
-								break;
 							case 'deft_status':
-								if ( ! isset($status_group) OR $status_group == $query->row('status_group'))
+								if ( ! isset(${$key}) OR ${$key} == '')
 								{
 									${$key} = $val;
 								}

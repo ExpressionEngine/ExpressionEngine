@@ -40,7 +40,7 @@ if (ee('View/Helpers')->countChoices($normalized_choices) <= $too_many
 	&& ! $force_react):
 
 	// For radios with no value, set value to first choice
-	if ( ! $multi && ! $value) {
+	if ($value !== FALSE && empty($value) && ! $multi) {
 		$keys = array_keys($choices);
 		$value = $keys[0];
 	}

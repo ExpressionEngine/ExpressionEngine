@@ -742,23 +742,15 @@ $lang = array(
 
 'create_new_status' => 'Create a New Status',
 
-'create_new_status_group' => 'Create New Status Group',
-
 'default_entry_title' => 'Default Entry Title',
 
 'delete_status' => 'Delete Status',
 
 'delete_status_confirmation' => 'Are you sure you want to delete the following status?',
 
-'delete_status_group' => 'Delete Status Group',
-
-'delete_status_group_confirmation' => 'Are you sure you want to permanently delete this Status Group?',
-
 'duplicate_status_name' => 'A status already exists with the same name.',
 
 'edit_status' => 'Edit Status',
-
-'edit_status_group_name' => 'Rename',
 
 'field_instructions' => 'Field Instructions',
 
@@ -784,31 +776,17 @@ $lang = array(
 
 'no_live_look_template' => '- No Live Look Template -',
 
-'no_status_group_message' => 'There are currently no custom statuses',
-
 'rtl' => 'Right to Left',
-
-'show_all_status_groups' => 'All %d status groups',
 
 'show_all_statuses' => 'All %d statuses',
 
 'show_pages_cluster' => 'Display Pages Submission Fields',
-
-'status_group' => 'Status Groups',
-
-'status_group_created' => 'Status Group Created:',
-
-'status_group_deleted' => 'Status Group Deleted:',
-
-'status_group_updated' => 'Status Group Updated:',
 
 'status_name' => 'Status Name',
 
 'status_order' => 'Status Order',
 
 'statuses' => 'Statuses',
-
-'taken_status_group_name' => 'This status group name is already taken.',
 
 'text_direction' => 'Text Direction',
 

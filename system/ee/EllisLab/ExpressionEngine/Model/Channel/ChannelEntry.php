@@ -56,6 +56,10 @@ class ChannelEntry extends ContentModel {
 			'model' => 'Member',
 			'from_key' 	=> 'author_id'
 		),
+		'Status' => [
+			'type' => 'belongsTo',
+			'weak' => TRUE
+		],
 		'Categories' => array(
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'Category',
@@ -125,7 +129,9 @@ class ChannelEntry extends ContentModel {
 
 	protected static $_events = array(
 		'beforeDelete',
+		'beforeInsert',
 		'beforeSave',
+		'beforeUpdate',
 		'afterDelete',
 		'afterInsert',
 		'afterSave',
@@ -144,6 +150,7 @@ class ChannelEntry extends ContentModel {
 	protected $title;
 	protected $url_title;
 	protected $status;
+	protected $status_id;
 	protected $versioning_enabled;
 	protected $view_count_one;
 	protected $view_count_two;
@@ -371,6 +378,32 @@ class ChannelEntry extends ContentModel {
 				$this->Channel->getId(),
 				$this->getId()
 			);
+		}
+	}
+
+	public function onBeforeInsert()
+	{
+		parent::onBeforeInsert();
+
+		$this->ensureStatusSynced(TRUE);
+	}
+
+	public function onBeforeUpdate($changed)
+	{
+		$this->ensureStatusSynced(isset($changed['status']));
+	}
+
+	private function ensureStatusSynced($update_by_name)
+	{
+		if ($update_by_name)
+		{
+			$this->Status = $this->getModelFacade()->get('Status')
+				->filter('status', $this->getProperty('status'))
+				->first();
+		}
+		else
+		{
+			$this->setProperty('status', $this->Status->status);
 		}
 	}
 
@@ -847,7 +880,9 @@ class ChannelEntry extends ContentModel {
 					'field_list_items'      => array(),
 					'field_maxl'			=> 100,
 					'populateCallback'		=> array($this, 'populateAuthors'),
-					'filter_url' 			=> ee('CP/URL')->make('publish/author-list')->compile(),
+					'filter_url' 			=> ! INSTALLER
+						? ee('CP/URL')->make('publish/author-list')->compile()
+						: '',
 					'no_results'			=> ['text' => sprintf(lang('no_found'), lang('members'))]
 				),
 				'sticky' => array(
@@ -1046,15 +1081,10 @@ class ChannelEntry extends ContentModel {
 
 	public function populateStatus($field)
 	{
-		$statuses = $this->getModelFacade()->get('Status')
-			->with('NoAccess')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_id', $this->Channel->status_group)
-			->order('status_order');
+		// This generates an inscrutable error when installing the default theme, bail out
+		$all_statuses = ! INSTALLER ? $this->Channel->Statuses->sortBy('status_order') : [];
 
 		$status_options = array();
-
-		$all_statuses = $statuses->all();
 
 		if ( ! count($all_statuses))
 		{
@@ -1073,7 +1103,9 @@ class ChannelEntry extends ContentModel {
 				continue;
 			}
 
-			$status_name = ($status->status == 'closed' OR $status->status == 'open') ?  lang($status->status) : $status->status;
+			$status_name = ($status->status == 'closed' OR $status->status == 'open')
+				? lang($status->status)
+				: $status->status;
 			$status_options[$status->status] = $status_name;
 		}
 

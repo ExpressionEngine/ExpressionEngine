@@ -574,8 +574,7 @@ class Metaweblog_api_mcp {
 			$groups_exist = FALSE;
 		}
 
-		$channels = ee('Model')->get('Channel')
-			->with('StatusGroup');
+		$channels = ee('Model')->get('Channel');
 
 		if (ee()->config->item('multiple_sites_enabled') !== 'y')
 		{
@@ -591,20 +590,6 @@ class Metaweblog_api_mcp {
 
 		foreach ($channels->all() as $channel)
 		{
-			/* We aren't using this right now...
-			$statuses = array(
-				array('null', lang('do_not_set')),
-			);
-
-			if ($channel->StatusGroup && $channel->StatusGroup->Statuses)
-			{
-				foreach ($channel->StatusGroup->Statuses as $status)
-				{
-					$statuses[] = array($status->status, lang($status->status));
-				}
-			}
-			*/
-
 			$fields = array(
 				array('0', lang('none'))
 			);

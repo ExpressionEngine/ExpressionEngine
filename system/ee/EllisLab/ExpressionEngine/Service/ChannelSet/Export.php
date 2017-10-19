@@ -23,7 +23,7 @@ class Export {
 	private $channels = array();
 	private $fields = array();
 	private $field_groups = array();
-	private $status_groups = array();
+	private $statuses = array();
 	private $category_groups = array();
 	private $upload_destinations = array();
 
@@ -66,7 +66,7 @@ class Export {
 		$base->version = ee()->config->item('app_version');
 		$base->channels = array_values($this->channels);
 		$base->field_groups = array_values($this->field_groups);
-		$base->status_groups = $this->status_groups;
+		$base->statuses = array_values($this->statuses);
 		$base->category_groups = $this->category_groups;
 		$base->upload_destinations = array_values($this->upload_destinations);
 
@@ -106,13 +106,18 @@ class Export {
 		// are ids (that's what relationships store)
 		$this->channels[$channel->getId()] = $result;
 
-		if ($channel->StatusGroup)
+		if ($channel->Statuses)
 		{
-			$group = $this->exportStatusGroup(
-				$channel->StatusGroup,
-				($channel->StatusGroup->group_name != 'Default')
-			);
-			$result->status_group = $group->name;
+			foreach ($channel->Statuses->sortBy('status_order') as $status)
+			{
+				if (in_array($status->status, ['open', 'closed']))
+				{
+					continue;
+				}
+
+				$status = $this->exportStatus($status);
+				$result->statuses[] = $status->name;
+			}
 		}
 
 		if ($channel->FieldGroups)
@@ -147,38 +152,6 @@ class Export {
 	}
 
 	/**
-	 * Export a status group and its statuses
-	 *
-	 * @param Model $group Status group to export
-	 * @param bool $include_defaults Whether to include Open and Closed
-	 * @return StdClass Group description
-	 */
-	private function exportStatusGroup($group, $include_defaults = TRUE)
-	{
-		$result = new StdClass();
-		$result->name = $group->group_name;
-
-		$result->statuses = array();
-		$statuses = $group->Statuses->sortBy('status_order');
-
-		if ($include_defaults == FALSE)
-		{
-			$statuses = $statuses->filter(function($status) {
-				return ( ! in_array($status->status, array('open', 'closed')));
-			});
-		}
-
-		foreach ($statuses as $status)
-		{
-			$result->statuses[] = $this->exportStatus($status);
-		}
-
-		$this->status_groups[] = $result;
-
-		return $result;
-	}
-
-	/**
 	 * Export a status
 	 *
 	 * @param Model $status Status to export
@@ -190,6 +163,8 @@ class Export {
 
 		$result->name = $status->status;
 		$result->highlight = $status->highlight;
+
+		$this->statuses[$status->status] = $result;
 
 		return $result;
 	}
