@@ -249,6 +249,29 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 		}
 	}
 
+	public function testLimitChars()
+	{
+		$sample = 'ßaeiouãêëæ漢字';
+
+		if (extension_loaded('mbstring'))
+		{
+			$text = (string) $this->format($sample)->limitChars(['characters' => 12]);
+			$this->assertEquals($sample, $text);
+
+			$text = (string) $this->format($sample)->limitChars(['characters' => 10]);
+			$this->assertEquals('ßaeiouãêëæ&#8230;', $text);
+		}
+		else
+		{
+
+			$text = (string) $this->format($sample)->limitChars(['characters' => 21]);
+			$this->assertEquals('ßaeiouãêëæ漢字', $text);
+
+			$text = (string) $this->format($sample)->limitChars(['characters' => 12]);
+			$this->assertEquals('ßaeiouãê'.chr(195).'&#8230;', $text);
+		}
+	}
+
 	public function tearDown()
 	{
 		$this->factory = NULL;

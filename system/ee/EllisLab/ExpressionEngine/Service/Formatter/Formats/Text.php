@@ -17,6 +17,17 @@ use EllisLab\ExpressionEngine\Service\Formatter\Formatter;
 class Text extends Formatter {
 
 	/**
+	 * @var boolean Whether multibyte string methods are available
+	 */
+	protected $multibyte;
+
+	public function __construct($content, $lang, $session, $config, $options)
+	{
+		$this->multibyte = extension_loaded('mbstring');
+		parent::__construct($content, $lang, $session, $config, $options);
+	}
+
+	/**
 	 * Converts accented / multi-byte characters, e.g. ü, é, ß to ASCII transliterations
 	 * Uses foreign_chars.php config, either the default or user override, as a map
 	 *
@@ -294,7 +305,7 @@ class Text extends Formatter {
 	 */
 	public function length()
 	{
-		$this->content = (extension_loaded('mbstring')) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
+		$this->content = ($this->multibyte) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
 		return $this;
 	}
 
@@ -306,11 +317,13 @@ class Text extends Formatter {
 	 */
 	public function limitChars($options = [])
 	{
+
+
 		$limit = (isset($options['characters'])) ? (int) $options['characters'] : 500;
 		$end_char = (isset($options['end_char'])) ? $options['end_char'] : '&#8230;';
 		$this->content = strip_tags($this->content);
 
-		$length = (extension_loaded('mbstring')) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
+		$length = ($this->multibyte) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
 
 		if ($length < $limit)
 		{
@@ -327,14 +340,14 @@ class Text extends Formatter {
 			)
 		);
 
-		$length = (extension_loaded('mbstring')) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
+		$length = ($this->multibyte) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
 
 		if ($length <= $limit)
 		{
 			return $this;
 		}
 
-		$cut = substr($this->content, 0, $limit);
+		$cut = ($this->multibyte) ? mb_substr($this->content, 0, $limit, 'utf8') : substr($this->content, 0, $limit);
 		$this->content = (strlen($cut) == strlen($this->content)) ? $cut : $cut.$end_char;
 
 		return $this;
