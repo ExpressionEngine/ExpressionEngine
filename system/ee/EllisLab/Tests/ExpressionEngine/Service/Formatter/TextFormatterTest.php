@@ -133,6 +133,25 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals('This is a NOT-IN-MY-HOUSE test!', $text);
 	}
 
+	/**
+	 * @dataProvider convertToEntitiesProvider
+	 */
+	public function testConvertToEntities($content, $expected)
+	{
+		$this->lang->shouldReceive('load')->once();
+		$text = (string) $this->format($content)->convertToEntities();
+		$this->assertEquals($expected, $text);
+	}
+
+	public function convertToEntitiesProvider()
+	{
+		return [
+			['<script>alert("hi");</script>', '&lt;script&gt;alert(&quot;hi&quot;);&lt;/script&gt;'],
+			['&"\'<>', '&amp;&quot;&#039;&lt;&gt;'],
+			['©$*@¢£', '&copy;$*@&cent;&pound;'],
+		];
+	}
+
 	public function tearDown()
 	{
 		$this->factory = NULL;
