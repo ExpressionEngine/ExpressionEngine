@@ -217,6 +217,23 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 		];
 	}
 
+	public function testJson()
+	{
+		$sample = '"Hello"	<b>World</b>		&quot;period&quot;.
+';
+		$text = (string) $this->format($sample)->json();
+		$this->assertEquals('"&quot;Hello&quot;\t&lt;b&gt;World&lt;\/b&gt;\t\t&amp;quot;period&amp;quot;.\n"', $text);
+
+		$text = (string) $this->format($sample)->json(['double_encode' => FALSE]);
+		$this->assertEquals('"&quot;Hello&quot;\t&lt;b&gt;World&lt;\/b&gt;\t\t&quot;period&quot;.\n"', $text);
+
+		$text = (string) $this->format($sample)->json(['enclose_with_quotes' => FALSE]);
+		$this->assertEquals('&quot;Hello&quot;\t&lt;b&gt;World&lt;\/b&gt;\t\t&amp;quot;period&amp;quot;.\n', $text);
+
+		$text = (string) $this->format($sample)->json(['options' => 'JSON_HEX_AMP|JSON_HEX_TAG']);
+		$this->assertEquals('"\u0026quot;Hello\u0026quot;\t\u0026lt;b\u0026gt;World\u0026lt;\/b\u0026gt;\t\t\u0026amp;quot;period\u0026amp;quot;.\n"', $text);
+	}
+
 	public function tearDown()
 	{
 		$this->factory = NULL;
