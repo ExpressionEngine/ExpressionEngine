@@ -234,6 +234,21 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals('"\u0026quot;Hello\u0026quot;\t\u0026lt;b\u0026gt;World\u0026lt;\/b\u0026gt;\t\t\u0026amp;quot;period\u0026amp;quot;.\n"', $text);
 	}
 
+	public function testLength()
+	{
+		$sample = 'ßaeiouãêëæ漢字';
+		$text = (string) $this->format($sample)->length();
+
+		if (extension_loaded('mbstring'))
+		{
+			$this->assertEquals('12', $text);
+		}
+		else
+		{
+			$this->assertEquals('21', $text);
+		}
+	}
+
 	public function tearDown()
 	{
 		$this->factory = NULL;
