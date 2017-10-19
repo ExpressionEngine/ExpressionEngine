@@ -18,6 +18,8 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 	{
 		$this->lang = m::mock('EE_Lang');
 		$this->sess = m::mock('EE_Session');
+
+		$this->lang->shouldReceive('load');
 	}
 
 	/**
@@ -25,7 +27,6 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testByte($content, $abbr, $include_markup, $expected)
 	{
-		$this->lang->shouldReceive('load')->once();
 		$number = (string) $this->format($content)->bytes($abbr, $include_markup);
 		$this->assertEquals($expected, $number);
 	}
@@ -72,8 +73,6 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testCurrency($content, $currency, $locale, $expected, $opts)
 	{
-		$this->lang->shouldReceive('load')->once();
-
 		$params = [
 			'currency' => $currency,
 			'locale' => $locale,
@@ -115,7 +114,6 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testDuration($content, $expected, $opts)
 	{
-		$this->lang->shouldReceive('load')->once();
 		$val = (string) $this->format($content, $opts)->duration();
 		$this->assertEquals($expected, $val);
 	}
@@ -144,8 +142,6 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testOrdinal($content, $locale, $expected, $opts)
 	{
-		$this->lang->shouldReceive('load')->once();
-
 		$number = (string) $this->format($content, $opts)->ordinal(['locale' => $locale]);
 		$this->assertEquals($expected, $number);
 	}
@@ -173,8 +169,6 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testSpellout($locale, $capitalize, $expected)
 	{
-		$this->lang->shouldReceive('load')->once();
-
 		$params = [
 			'capitalize' => $capitalize,
 			'locale' => $locale,
@@ -186,8 +180,6 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 
 	public function testSpelloutNoIntl()
 	{
-		$this->lang->shouldReceive('load')->once();
-
 		$this->expectException(\Exception::class);
 		$number = (string) $this->format(11234813, 0)->spellout();
 

@@ -18,12 +18,12 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 	{
 		$this->lang = m::mock('EE_Lang');
 		$this->sess = m::mock('EE_Session');
+
+		$this->lang->shouldReceive('load');
 	}
 
 	public function testAccentsToAscii()
 	{
-		$this->lang->shouldReceive('load')->once();
-
 		// minimal map
 		$config['foreign_chars'] = [
 			'223'	=>	"ss", // ß
@@ -50,7 +50,6 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testAttributeEscape($content, $expected)
 	{
-		$this->lang->shouldReceive('load')->once();
 		$text = (string) $this->format($content)->attributeEscape();
 		$this->assertEquals($expected, $text);
 	}
@@ -71,7 +70,6 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testAttributeSafe($content, $params, $expected)
 	{
-		$this->lang->shouldReceive('load')->once();
 		$text = (string) $this->format($content)->attributeSafe($params);
 		$this->assertEquals($expected, $text);
 	}
@@ -118,7 +116,6 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 
 	public function testCensor()
 	{
-		$this->lang->shouldReceive('load');
 		$this->sess->shouldReceive('cache')->andReturn(FALSE);
 		$this->sess->shouldReceive('set_cache');
 
@@ -138,7 +135,6 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testConvertToEntities($content, $expected)
 	{
-		$this->lang->shouldReceive('load')->once();
 		$text = (string) $this->format($content)->convertToEntities();
 		$this->assertEquals($expected, $text);
 	}
