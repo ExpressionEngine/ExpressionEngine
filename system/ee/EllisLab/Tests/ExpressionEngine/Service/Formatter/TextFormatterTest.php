@@ -184,6 +184,39 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 &#123;layout:set name='foo'&#125;bar&#123;/layout:set&#125;", $text);
 	}
 
+	public function testEncrypt()
+	{
+		$this->markTestSkipped('This is a gateway to the Encrypt service, cannot unit test in this context');
+	}
+
+	/**
+	 * @dataProvider formPrepProvider
+	 */
+	public function testFormPrep($content, $expected)
+	{
+		if ( ! defined('REQ'))
+		{
+			define('REQ', 'PAGE');
+		}
+
+		require_once __DIR__.'/../../../../../legacy/helpers/form_helper.php';
+
+		$text = (string) $this->format($content)->formPrep();
+		$this->assertEquals($expected, $text);
+	}
+
+	public function formPrepProvider()
+	{
+		return [
+			['<script>alert("hi");</script>', '&lt;script&gt;alert(&quot;hi&quot;);&lt;/script&gt;'],
+			['&"\'<>', '&amp;&quot;&#039;&lt;&gt;'],
+			// form_prep tracks prepped strings so this should *not* double-encode things
+			['&amp;&quot;&#039;&lt;&gt;', '&amp;&quot;&#039;&lt;&gt;'],
+			// and this should be left alone
+			['©$*@¢£', '©$*@¢£'],
+		];
+	}
+
 	public function tearDown()
 	{
 		$this->factory = NULL;

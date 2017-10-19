@@ -63,3 +63,27 @@ function get_bool_from_string($value)
 		break;
 	}
 }
+
+// Below allows ee()-> singleton mocks to allow unit testing of methods that rely on it.
+// For instance, a test could a require helper file directly, bypassing ee()->load->helper()
+// while retaining the necessary functionality.
+function ee()
+{
+	static $ee;
+	return ($ee) ?: new eeSingletonMock;
+}
+
+class eeSingletonMock {
+	public $load;
+	public function __construct()
+	{
+		$this->load = new eeSingletonLoadMock;
+	}
+}
+
+class eeSingletonLoadMock {
+	public function helper()
+	{
+		return;
+	}
+}
