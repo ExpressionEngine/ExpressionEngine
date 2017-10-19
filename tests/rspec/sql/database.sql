@@ -55,6 +55,7 @@ DROP TABLE IF EXISTS `exp_member_groups`;
 DROP TABLE IF EXISTS `exp_member_fields`;
 DROP TABLE IF EXISTS `exp_member_data_field_1`;
 DROP TABLE IF EXISTS `exp_member_data`;
+DROP TABLE IF EXISTS `exp_member_news_views`;
 DROP TABLE IF EXISTS `exp_member_bulletin_board`;
 DROP TABLE IF EXISTS `exp_layout_publish_member_groups`;
 DROP TABLE IF EXISTS `exp_layout_publish`;
@@ -777,6 +778,13 @@ CREATE TABLE `exp_member_data` (
   PRIMARY KEY (`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE exp_member_news_views (
+	news_id int(10) unsigned NOT NULL auto_increment,
+	version varchar(10) NULL,
+	member_id int(10) unsigned NOT NULL DEFAULT '0',
+	PRIMARY KEY `news_id` (`news_id`),
+	KEY `member_id` (`member_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `exp_member_data_field_1` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
