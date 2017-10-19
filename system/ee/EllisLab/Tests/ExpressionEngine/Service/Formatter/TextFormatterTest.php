@@ -20,6 +20,31 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 		$this->sess = m::mock('EE_Session');
 	}
 
+	public function testAccentsToAscii()
+	{
+		$this->lang->shouldReceive('load')->once();
+
+		// minimal map
+		$config['foreign_chars'] = [
+			'223'	=>	"ss", // ß
+			'224'	=>  "a",
+			'225'	=>  "a",
+			'226'	=>	"a",
+			'229'	=>	"a",
+			'227'	=>	"ae", // ã
+			'228'	=>	"ae", // ä
+			'230'	=>	"ae", // æ
+			'231'	=>	"c",
+			'232'	=>	"e",  // è
+			'233'	=>	"e",  // é
+			'234'	=>	"e",  // ê
+			'235'	=>	"e",  // ë
+		];
+
+		$text = (string) $this->format('ßaeiouãêëæ ærstlnãêëß', $config)->accentsToAscii();
+		$this->assertEquals('ssaeiouaeeeae aerstlnaeeess', $text);
+	}
+
 	/**
 	 * @dataProvider attributeEscapeProvider
 	 */
@@ -48,8 +73,7 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 
 	public function format($content, $config = [])
 	{
-		$options = (extension_loaded('intl')) ? 0b00000001 : 0;
-		return new Text($content, $this->lang, $this->sess, $config, $options);
+		return new Text($content, $this->lang, $this->sess, $config, 0b00000001);
 	}
 }
 

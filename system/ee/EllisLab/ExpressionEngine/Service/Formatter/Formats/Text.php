@@ -34,12 +34,17 @@ class Text extends Formatter {
 		$this->content = utf8_decode($this->content);
 		$chars = preg_split('//', $this->content, NULL, PREG_SPLIT_NO_EMPTY);
 
+		$this->content = '';
 		foreach ($chars as $index => $char)
 		{
 			$ord = ord($char);
 			if (isset($accent_map[$ord]))
 			{
-				$this->content[$index] = $accent_map[$ord];
+				$this->content .= $accent_map[$ord];
+			}
+			else
+			{
+				$this->content .= $char;
 			}
 		}
 
