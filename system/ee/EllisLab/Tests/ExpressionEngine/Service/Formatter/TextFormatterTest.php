@@ -85,6 +85,13 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 			[
 				$sample,
 				[
+					'limit' => 20,
+				],
+				'Some text with…'
+			],
+			[
+				$sample,
+				[
 					'limit' => 10,
 					'end_char' => 'TEST'
 				],
