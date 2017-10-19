@@ -189,7 +189,7 @@ return array(
 				'censor_replacement' => ee()->config->item('censor_replacement'),
 				'censored_words' => ee()->config->item('censored_words'),
 				'foreign_chars' => ee()->config->loadFile('foreign_chars'),
-				'stopwords' => ee()->config->item('stopwords'),
+				'stopwords' => ee()->config->loadFile('stopwords'),
 				'word_separator' => ee()->config->item('word_separator'),
 			];
 

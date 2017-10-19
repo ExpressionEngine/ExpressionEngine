@@ -481,7 +481,7 @@ class Text extends Formatter {
 
 		if (isset($options['remove_stopwords']) && get_bool_from_string($options['remove_stopwords']))
 		{
-			$stopwords = ee()->config->loadFile('stopwords');
+			$stopwords = $this->getConfig('stopwords');
 
 			foreach ($stopwords as $stopword)
 			{
