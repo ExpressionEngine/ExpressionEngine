@@ -224,7 +224,7 @@ class Number extends Formatter {
 	 */
 	public function spellout($options = [])
 	{
-		if (! $this->intl_loaded)
+		if ( ! $this->intl_loaded)
 		{
 			throw new \Exception('<code>{...:spellout}</code> modifier error: This modifier requires the PHP <b>intl</b> extension to be installed.');
 		}

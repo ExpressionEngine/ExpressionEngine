@@ -168,6 +168,41 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 		];
 	}
 
+	/**
+	 * @dataProvider spelloutProvider
+	 */
+	public function testSpellout($locale, $capitalize, $expected)
+	{
+		$this->lang->shouldReceive('load')->once();
+
+		$params = [
+			'capitalize' => $capitalize,
+			'locale' => $locale,
+		];
+
+		$number = (string) $this->format(11234813)->spellout($params);
+		$this->assertEquals($expected, $number);
+	}
+
+	public function testSpelloutNoIntl()
+	{
+		$this->lang->shouldReceive('load')->once();
+
+		$this->expectException(\Exception::class);
+		$number = (string) $this->format(11234813, 0)->spellout();
+
+	}
+
+	public function spelloutProvider()
+	{
+		return [
+			[NULL, NULL, 'eleven million two hundred thirty-four thousand eight hundred thirteen'],
+			[NULL, 'ucfirst', 'Eleven million two hundred thirty-four thousand eight hundred thirteen'],
+			[NULL, 'ucwords', 'Eleven Million Two Hundred Thirty-four Thousand Eight Hundred Thirteen'],
+			['de', NULL, 'elf Millionen zwei­hundert­vier­und­dreißig­tausend­acht­hundert­dreizehn'],
+			['fr', NULL, 'onze millions deux cent trente-quatre mille huit cent treize'],
+		];
+	}
 	public function tearDown()
 	{
 		$this->factory = NULL;
