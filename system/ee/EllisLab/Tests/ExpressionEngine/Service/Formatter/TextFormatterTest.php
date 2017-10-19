@@ -116,6 +116,23 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 		];
 	}
 
+	public function testCensor()
+	{
+		$this->lang->shouldReceive('load');
+		$this->sess->shouldReceive('cache')->andReturn(FALSE);
+		$this->sess->shouldReceive('set_cache');
+
+		$config['censored_words'] = "bleeping\nblarping";
+
+		$text = (string) $this->format('This is a bLeEPing test!', $config)->censor();
+		$this->assertEquals('This is a ######## test!', $text);
+
+		$config['censor_replacement'] = 'NOT-IN-MY-HOUSE';
+
+		$text = (string) $this->format('This is a bLeEPing test!', $config)->censor();
+		$this->assertEquals('This is a NOT-IN-MY-HOUSE test!', $text);
+	}
+
 	public function tearDown()
 	{
 		$this->factory = NULL;
