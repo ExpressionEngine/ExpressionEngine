@@ -57,13 +57,56 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 
 	public function attributeEscapeProvider()
 	{
-		return array(
-			array('<script>alert("hi");</script>', '&lt;script&gt;alert(&quot;hi&quot;);&lt;/script&gt;'),
-			array('&"\'<>', '&amp;&quot;&#039;&lt;&gt;'),
+		return [
+			['<script>alert("hi");</script>', '&lt;script&gt;alert(&quot;hi&quot;);&lt;/script&gt;'],
+			['&"\'<>', '&amp;&quot;&#039;&lt;&gt;'],
 
 			// these should be left alone, would be converted only by htmlentities()
-			array('©$*@¢£', '©$*@¢£')
-		);
+			['©$*@¢£', '©$*@¢£'],
+		];
+	}
+
+	/**
+	 * @dataProvider attributeSafeProvider
+	 */
+	public function testAttributeSafe($content, $params, $expected)
+	{
+		$this->lang->shouldReceive('load')->once();
+		$text = (string) $this->format($content)->attributeSafe($params);
+		$this->assertEquals($expected, $text);
+	}
+
+	public function attributeSafeProvider()
+	{
+		$sample = 'Some text with "double quotes", <samp>tags</samp>, and some &#8220;typographical quotes&#8221; and &quot;quote entities&quot; that is a bit long';
+		return [
+			['<script>alert("hi");</script>', [], 'alert(&quot;hi&quot;);'],
+			['&"\'<>', [], '&amp;&quot;&#039;'],
+			[
+				$sample,
+				[
+					'limit' => 10,
+					'end_char' => 'TEST'
+				],
+				'SomeTEST'
+			],
+			[
+				$sample,
+				[
+					'double_encode' => TRUE,
+				],
+				'Some text with &quot;double quotes&quot;, tags, and some “typographical quotes” and &amp;quot;quote entities&amp;quot; that is a bit long'
+			],
+			[
+				$sample,
+				[
+					'unicode_punctuation' => FALSE,
+				],
+				'Some text with &quot;double quotes&quot;, tags, and some &#8220;typographical quotes&#8221; and &quot;quote entities&quot; that is a bit long'
+			],
+			// these should be left alone, would be converted only by htmlentities()
+			['©$*@¢£', [], '©$*@¢£'],
+		];
 	}
 
 	public function tearDown()
