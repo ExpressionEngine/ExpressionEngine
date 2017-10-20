@@ -85,7 +85,7 @@ Grid.bind('checkboxes', 'display', function(cell) {
   SelectField.renderFields(cell)
 })
 
-FluidBlock.on('checkboxes', 'add', function(field) {
+FluidField.on('checkboxes', 'add', function(field) {
   SelectField.renderFields(field)
 });
 
@@ -93,7 +93,7 @@ Grid.bind('radio', 'display', function(cell) {
   SelectField.renderFields(cell)
 })
 
-FluidBlock.on('radio', 'add', function(field) {
+FluidField.on('radio', 'add', function(field) {
   SelectField.renderFields(field)
 });
 
@@ -101,6 +101,6 @@ Grid.bind('multi_select', 'display', function(cell) {
   SelectField.renderFields(cell)
 })
 
-FluidBlock.on('multi_select', 'add', function(field) {
+FluidField.on('multi_select', 'add', function(field) {
   SelectField.renderFields(field)
 });

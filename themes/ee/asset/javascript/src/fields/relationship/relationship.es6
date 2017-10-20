@@ -100,6 +100,6 @@ Grid.bind('relationship', 'display', function(cell) {
   Relationship.renderFields(cell)
 });
 
-FluidBlock.on('relationship', 'add', function(field) {
+FluidField.on('relationship', 'add', function(field) {
   Relationship.renderFields(field)
 });

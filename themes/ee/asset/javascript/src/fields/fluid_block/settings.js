@@ -17,7 +17,7 @@
 		});
 
 		$('form.settings.ajax-validate').on('submit', function(e) {
-			var existing_fields = EE.fields.fluid_block.fields;
+			var existing_fields = EE.fields.fluid_field.fields;
 			var field;
 			var showModal = false;
 
