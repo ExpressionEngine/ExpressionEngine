@@ -18,9 +18,9 @@
 		$('.fluid-field-templates :input').attr('disabled', 'disabled');
 
 	    var addField = function(e) {
-			var fluidBlock   = $(this).closest('.fluid-wrap'),
+			var fluidField   = $(this).closest('.fluid-wrap'),
 			    fieldToAdd   = $(this).data('field-name'),
-			    fieldCount   = fluidBlock.data('field-count'),
+			    fieldCount   = fluidField.data('field-count'),
 			    fieldToClone = $('.fluid-field-templates .fluid-item[data-field-name="' + fieldToAdd + '"]'),
 			    fieldClone   = fieldToClone.clone();
 
@@ -33,7 +33,7 @@
 				)
 			);
 
-			fluidBlock.data('field-count', fieldCount);
+			fluidField.data('field-count', fieldCount);
 
 			// Enable inputs
 			fieldClone.find(':input').removeAttr('disabled');
@@ -44,7 +44,7 @@
 			// Insert it
 			if ( ! $(this).parents('.fluid-item').length) {
 				// the button at the bottom of the form was used.
-				$('.fluid-actions', fluidBlock).before(fieldClone);
+				$('.fluid-actions', fluidField).before(fieldClone);
 			} else {
 				$(this).closest('.fluid-item').after(fieldClone);
 			}
@@ -55,7 +55,7 @@
 			}
 
 			e.preventDefault();
-			fluidBlock.find('.open').trigger('click');
+			fluidField.find('.open').trigger('click');
 
 			FluidField.fireEvent($(fieldClone).data('field-type'), 'add', [fieldClone]);
 	    };
