@@ -2,7 +2,7 @@
 	<div class="fluid-ctrls">
 		<span class="reorder"></span>
 		<h3>
-			<span class="ico sub-arrow"></span><?=$field->field_label?>
+			<span class="ico sub-arrow js-toggle-field"></span><?=$field->field_label?>
 			<span class="faded">(<?=$field->field_type?>)</span>
 		</h3>
 		<a class="fluid-remove" href="" title=""></a>

@@ -81,6 +81,12 @@
 			stop: function (event, ui) {
 				FluidField.fireEvent($(ui.item).data('field-type'), 'afterSort', ui.item)
 			}
-		})
+		});
+
+		$('.fieldset-faux-fluid').on('click', '.js-toggle-field', function(){
+			$(this)
+				.parents('.fluid-item')
+				.toggleClass('fluid-closed');
+		});
 	});
 })(jQuery);
