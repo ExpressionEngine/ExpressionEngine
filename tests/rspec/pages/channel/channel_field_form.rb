@@ -4,11 +4,11 @@ class ChannelFieldForm < ControlPanelPage
   element :field_name, 'input[name=field_name]'
 
   def load
-    visit '/system/index.php?/cp/channels/fields/create/1'
+    visit '/system/index.php?/cp/fields/create'
   end
 
   def load_edit_for_custom_field(name)
-    visit '/system/index.php?/cp/channels/fields/1'
+    visit '/system/index.php?/cp/fields'
 
     all('table tbody tr').each do |row|
       cell = row.find('td:nth-child(2)')
@@ -37,7 +37,7 @@ class ChannelFieldForm < ControlPanelPage
     }
     options = defaults.merge(options)
 
-    visit "/system/index.php?/cp/channels/fields/create/#{options[:group_id]}"
+    visit "/system/index.php?/cp/fields/create/#{options[:group_id]}"
 
     field_type.select options[:type]
     field_label.set options[:label]
