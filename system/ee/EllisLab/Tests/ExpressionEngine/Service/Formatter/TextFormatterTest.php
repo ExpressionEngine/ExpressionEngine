@@ -148,6 +148,11 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 		];
 	}
 
+	public function testDecrypt()
+	{
+		$this->markTestSkipped('This is a gateway to the Encrypt service, cannot unit test in this context');
+	}
+
 	public function testEncodeEETags()
 	{
 		$sample = "
