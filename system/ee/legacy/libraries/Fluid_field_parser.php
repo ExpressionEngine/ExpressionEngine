@@ -86,17 +86,17 @@ class Fluid_field_parser {
 			$fluid_field_ids[] = $fluid_field_fields[$field_name];
 		}
 
-		$block_fields = ee('Model')->get('ChannelField', $fluid_field_ids)
+		$fluid_field_fields = ee('Model')->get('ChannelField', $fluid_field_ids)
 			->fields('field_id', 'field_settings', 'field_name')
 			->all();
 
 		$found_fields = array();
 
-		foreach ($block_fields as $block_field)
+		foreach ($fluid_field_fields as $fluid_field_field)
 		{
-			$returned = $this->lexTagdata($tagdata, $block_field);
+			$returned = $this->lexTagdata($tagdata, $fluid_field_field);
 
-			$this->tags[$block_field->field_id] = $returned['tags'];
+			$this->tags[$fluid_field_field->field_id] = $returned['tags'];
 			$found_fields = array_merge($found_fields, $returned['fields_found']);
 		}
 
@@ -131,28 +131,28 @@ class Fluid_field_parser {
 	 * Goes through the tag data finding the field tags used in this block.
 	 *
 	 * @param string $tagdata Tag data for entire channel entries loop
-	 * @param obj $block_field A ChannelField instance for a field block
+	 * @param obj $fluid_field_field A ChannelField instance for a field block
 	 * @return array An associateive array of tag objects and a list of found fields
 	 */
-	private function lexTagdata($tagdata, $block_field)
+	private function lexTagdata($tagdata, $fluid_field_field)
 	{
-		$possible_fields = $this->getPossibleFields($block_field->field_settings['field_channel_fields']);
+		$possible_fields = $this->getPossibleFields($fluid_field_field->field_settings['field_channel_fields']);
 
 		$tags = array();
 		$fields_found = array();
 
-		$block_name = $block_field->field_name;
+		$fluid_field_name = $fluid_field_field->field_name;
 
 		foreach($possible_fields as $field_id => $field_name)
 		{
 			$tags[$field_name] = array();
 
-			$tag_variable = $block_name . ':' . $field_name;
+			$tag_variable = $fluid_field_name . ':' . $field_name;
 
 			$pchunks = ee()->api_channel_fields->get_pair_field(
 				$tagdata,
 				$field_name,
-				$block_name . ':'
+				$fluid_field_name . ':'
 			);
 
 			foreach ($pchunks as $chk_data)
@@ -193,7 +193,7 @@ class Fluid_field_parser {
 
 		$data = array();
 
-		$blockData = ee('Model')->get('fluid_field:FluidField')
+		$fluid_field_data = ee('Model')->get('fluid_field:FluidField')
 			->with('ChannelField')
 			->filter('fluid_field_id', 'IN', $fluid_field_ids)
 			->filter('entry_id', 'IN', $entry_ids)
@@ -209,19 +209,19 @@ class Fluid_field_parser {
 		// all the blocks & entries for each field.
 		$fields = array();
 
-		foreach ($blockData as $block)
+		foreach ($fluid_field_data as $fluid_field)
 		{
-			if ( ! array_key_exists($block->field_id, $fields))
+			if ( ! array_key_exists($fluid_field->field_id, $fields))
 			{
-				$fields[$block->field_id] = array();
+				$fields[$fluid_field->field_id] = array();
 			}
 
-			$fields[$block->field_id][$block->field_data_id] = $block;
+			$fields[$fluid_field->field_id][$fluid_field->field_data_id] = $fluid_field;
 		}
 
-		foreach ($fields as $field_id => $blocks)
+		foreach ($fields as $field_id => $fluid_fields)
 		{
-			$field_data_ids = array_keys($blocks);
+			$field_data_ids = array_keys($fluid_fields);
 
 			// Captain Obvious says: here we be gettin' the data, Arrrr!
 			ee()->db->where_in('id', $field_data_ids);
@@ -229,11 +229,11 @@ class Fluid_field_parser {
 
 			foreach($rows as $row)
 			{
-				$blocks[$row['id']]->setFieldData($row);
+				$fluid_fields[$row['id']]->setFieldData($row);
 			}
 		}
 
-		return $blockData;
+		return $fluid_field_data;
 	}
 
 	/**
@@ -255,18 +255,18 @@ class Fluid_field_parser {
 
 		$entry_id = $channel_row['entry_id'];
 
-		$blockData = $this->data->filter(function($block) use($entry_id, $fluid_field_id)
+		$fluid_field_data = $this->data->filter(function($fluid_field) use($entry_id, $fluid_field_id)
 		{
-			return ($block->entry_id == $entry_id && $block->fluid_field_id == $fluid_field_id);
+			return ($fluid_field->entry_id == $entry_id && $fluid_field->fluid_field_id == $fluid_field_id);
 		});
 
 		$output = '';
 
-		foreach ($blockData as $block)
+		foreach ($fluid_field_data as $fluid_field)
 		{
-			$tags = $this->tags[$block->fluid_field_id];
+			$tags = $this->tags[$fluid_field->fluid_field_id];
 
-			$field_name = $block->ChannelField->field_name;
+			$field_name = $fluid_field->ChannelField->field_name;
 
 			// Have no tags for this field?
 			if ( ! array_key_exists($field_name, $tags))
@@ -276,9 +276,9 @@ class Fluid_field_parser {
 
 			foreach ($tags[$field_name] as $tag)
 			{
-				$field = $block->getField();
+				$field = $fluid_field->getField();
 
-				$row = array_merge($channel_row, $block->getFieldData()->getValues());
+				$row = array_merge($channel_row, $fluid_field->getFieldData()->getValues());
 				$row['entry_id'] = $entry_id; // the merge can sometimes wipe this out
 
 				$field->setItem('row', $row);

@@ -8,7 +8,7 @@
  */
 
 /**
- * Fluid Block Fieldtype
+ * Fluid Field Fieldtype
  */
 class Fluid_field_ft extends EE_Fieldtype {
 
@@ -161,7 +161,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 			return;
 		}
 
-		$blockData = $this->getBlockData()->indexBy('id');
+		$fluid_field_data = $this->getFieldData()->indexBy('id');
 
 		$i = 1;
 		foreach ($data['fields'] as $key => $value)
@@ -175,8 +175,8 @@ class Fluid_field_ft extends EE_Fieldtype {
 			if (strpos($key, 'field_') === 0)
 			{
 				$id = str_replace('field_', '', $key);
-				$this->updateField($blockData[$id], $i, $value);
-				unset($blockData[$id]);
+				$this->updateField($fluid_field_data[$id], $i, $value);
+				unset($fluid_field_data[$id]);
 			}
 			// New field
 			elseif (strpos($key, 'new_field_') === 0)
@@ -196,18 +196,18 @@ class Fluid_field_ft extends EE_Fieldtype {
 		}
 
 		// Remove fields
-		foreach ($blockData as $block)
+		foreach ($fluid_field_data as $fluid_field)
 		{
-			$this->removeField($block);
+			$this->removeField($fluid_field);
 		}
 	}
 
-	private function prepareData($block, array $values)
+	private function prepareData($fluid_field, array $values)
 	{
-		$field_data = $block->getFieldData();
+		$field_data = $fluid_field->getFieldData();
 		$field_data->set($values);
-		$field = $block->getField($field_data);
-		$field->setItem('fluid_field_data_id', $block->getId());
+		$field = $fluid_field->getField($field_data);
+		$field->setItem('fluid_field_data_id', $fluid_field->getId());
 		$field->save();
 
 		$values['field_id_' . $field->getId()] = $field->getData();
@@ -231,30 +231,30 @@ class Fluid_field_ft extends EE_Fieldtype {
 		return $values;
 	}
 
-	private function updateField($block, $order, array $values)
+	private function updateField($fluid_field, $order, array $values)
 	{
-		$values = $this->prepareData($block, $values);
+		$values = $this->prepareData($fluid_field, $values);
 
-		$block->order = $order;
-		$block->save();
+		$fluid_field->order = $order;
+		$fluid_field->save();
 
 		$query = ee('db');
 		$query->set($values);
-		$query->where('id', $block->field_data_id);
-		$query->update($block->ChannelField->getTableName());
+		$query->where('id', $fluid_field->field_data_id);
+		$query->update($fluid_field->ChannelField->getTableName());
 	}
 
 	private function addField($order, $field_id, array $values)
 	{
-		$block = ee('Model')->make('fluid_field:FluidField');
-		$block->fluid_field_id = $this->field_id;
-		$block->entry_id = $this->content_id;
-		$block->field_id = $field_id;
-		$block->order = $order;
-		$block->field_data_id = 0;
-		$block->save();
+		$fluid_field = ee('Model')->make('fluid_field:FluidField');
+		$fluid_field->fluid_field_id = $this->field_id;
+		$fluid_field->entry_id = $this->content_id;
+		$fluid_field->field_id = $field_id;
+		$fluid_field->order = $order;
+		$fluid_field->field_data_id = 0;
+		$fluid_field->save();
 
-		$values = $this->prepareData($block, $values);
+		$values = $this->prepareData($fluid_field, $values);
 
 		$values = array_merge($values, array(
 			'entry_id' => 0,
@@ -267,17 +267,17 @@ class Fluid_field_ft extends EE_Fieldtype {
 		$query->insert($field->getTableName());
 		$id = $query->insert_id();
 
-		$block->field_data_id = $id;
-		$block->save();
+		$fluid_field->field_data_id = $id;
+		$fluid_field->save();
 	}
 
-	private function removeField($block)
+	private function removeField($fluid_field)
 	{
 		$query = ee('db');
-		$query->where('id', $block->field_data_id);
-		$query->delete($block->ChannelField->getTableName());
+		$query->where('id', $fluid_field->field_data_id);
+		$query->delete($fluid_field->ChannelField->getTableName());
 
-		$block->delete();
+		$fluid_field->delete();
 	}
 
 	/**
@@ -301,9 +301,9 @@ class Fluid_field_ft extends EE_Fieldtype {
 		{
 			if ($this->content_id)
 			{
-				$blockData = $this->getBlockData();
+				$fluid_field_data = $this->getFieldData();
 
-				foreach ($blockData as $data)
+				foreach ($fluid_field_data as $data)
 				{
 					$field = $data->getField();
 
@@ -451,7 +451,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 
 			if ( ! empty($removed_fields))
 			{
-				$blockData = ee('Model')->get('fluid_field:FluidField')
+				$fluid_field_data = ee('Model')->get('fluid_field:FluidField')
 					->filter('fluid_field_id', $this->field_id)
 					->filter('field_id', 'IN', $removed_fields)
 					->all()
@@ -476,7 +476,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 	{
 		if (isset($data['ee_action']) && $data['ee_action'] == 'delete')
 		{
-			$blockData = ee('Model')->get('fluid_field:FluidField')
+			$fluid_field_data = ee('Model')->get('fluid_field:FluidField')
 				->filter('fluid_field_id', $data['field_id'])
 				->all()
 				->delete();
@@ -492,7 +492,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 	 */
 	public function delete($entry_ids)
 	{
-		$blockData = ee('Model')->get('fluid_field:FluidField')
+		$fluid_field_data = ee('Model')->get('fluid_field:FluidField')
 			->filter('fluid_field_id', $this->field_id)
 			->filter('entry_id', 'IN', $entry_ids)
 			->all()
@@ -529,26 +529,26 @@ class Fluid_field_ft extends EE_Fieldtype {
 	 * @param int $entry_id The id for the entry
 	 * @return obj A Collection of FluidField objects
 	 */
-	private function getBlockData($fluid_field_id = '', $entry_id = '')
+	private function getFieldData($fluid_field_id = '', $entry_id = '')
 	{
 		$fluid_field_id = ($fluid_field_id) ?: $this->field_id;
 		$entry_id = ($entry_id) ?: $this->content_id;
 
 		$cache_key = "FluidField/{$fluid_field_id}/{$entry_id}";
 
-		if (($blockData = ee()->session->cache("FluidField", $cache_key, FALSE)) === FALSE)
+		if (($fluid_field_data = ee()->session->cache("FluidField", $cache_key, FALSE)) === FALSE)
 		{
-			$blockData = ee('Model')->get('fluid_field:FluidField')
+			$fluid_field_data = ee('Model')->get('fluid_field:FluidField')
 				->with('ChannelField')
 				->filter('fluid_field_id', $fluid_field_id)
 				->filter('entry_id', $entry_id)
 				->order('order')
 				->all();
 
-			ee()->session->set_cache("FluidField", $cache_key, $blockData);
+			ee()->session->set_cache("FluidField", $cache_key, $fluid_field_data);
 		}
 
-		return $blockData;
+		return $fluid_field_data;
 	}
 
 	/**
@@ -585,7 +585,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 	}
 
 	/**
-	 * Replace Fluid Block template tags
+	 * Replace Fluid Field template tags
 	 */
 	public function replace_tag($data, $params = '', $tagdata = '')
 	{

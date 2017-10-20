@@ -232,22 +232,22 @@ class ChannelField extends FieldModel {
 		{
 			// Bulk remove all pivot references to this field from all fluid blocks
 			// though: @TODO Model relationships should have taken care of this...
-			$blockData = ee('Model')->get('fluid_field:FluidField')
+			$fluid_field_data = ee('Model')->get('fluid_field:FluidField')
 				->filter('field_id', $this->getId())
 				->delete();
 		}
 
-		foreach ($fluid_fields as $block)
+		foreach ($fluid_fields as $fluid_field)
 		{
-			if (in_array($this->getId(), $block->field_settings['field_channel_fields']))
+			if (in_array($this->getId(), $fluid_field->field_settings['field_channel_fields']))
 			{
 				$field_id = $this->getId();
-				$settings = $block->field_settings;
+				$settings = $fluid_field->field_settings;
 				$settings['field_channel_fields'] = array_filter($settings['field_channel_fields'], function ($var) use($field_id){
 					return ($var != $field_id);
 				});
-				$block->field_settings = $settings;
-				$block->save();
+				$fluid_field->field_settings = $settings;
+				$fluid_field->save();
 			}
 		}
 	}
