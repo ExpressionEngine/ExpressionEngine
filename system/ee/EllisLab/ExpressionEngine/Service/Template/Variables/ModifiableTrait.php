@@ -44,6 +44,14 @@ trait ModifiableTrait {
 	}
 
 	/**
+	 * :decrypt modifier
+	 */
+	public function replace_decrypt($data, $params = array(), $tagdata = FALSE)
+	{
+		return (string) ee('Format')->make('Text', $data)->decrypt($params);
+	}
+
+	/**
 	 * :encrypt modifier
 	 */
 	public function replace_encrypt($data, $params = array(), $tagdata = FALSE)

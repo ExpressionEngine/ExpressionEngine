@@ -203,6 +203,28 @@ class Text extends Formatter {
 	}
 
 	/**
+	 * Decrypt the text
+	 *
+	 * @param  array  $options Options: (string) key, (bool) encode
+	 * @return self $this
+	 */
+	public function decrypt($options = [])
+	{
+		$key = (isset($options['key'])) ? $options['key'] : NULL;
+
+		if (isset($options['encode']) && get_bool_from_string($options['encode']) === FALSE)
+		{
+			$this->content = ee('Encrypt', $key)->decrypt($this->content);
+		}
+		else
+		{
+			$this->content = ee('Encrypt', $key)->decode($this->content);
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Encode ExpressionEngine Tags. By default encodes all curly braces so variables are also protected.
 	 *
 	 * @param  array  $options Options: (bool) encode_vars
