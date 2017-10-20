@@ -37,15 +37,15 @@ class Fluid_block_parser {
 	 *
 	 * @param string $tagdata Tag data for entire channel entries loop
 	 * @param object $pre_parser Channel preparser object
-	 * @param array $fluid_block_fields An array of fluid block fields
+	 * @param array $fluid_field_fields An array of fluid block fields
 	 * @param string $content_type The type of content being processed
 	 * @param array	Array of known Fluid Block fields in this channel
 	 */
-	public function pre_process($tagdata, $pre_parser, $fluid_block_fields, $content_type = 'channel')
+	public function pre_process($tagdata, $pre_parser, $fluid_field_fields, $content_type = 'channel')
 	{
 		// Bail out if there are no fluid block fields present to parse
 		if ( ! preg_match_all(
-				"/".LD.'\/?('.preg_quote($pre_parser->prefix()).'(?:(?:'.implode('|', array_flip($fluid_block_fields)).'):?))\b([^}{]*)?'.RD."/",
+				"/".LD.'\/?('.preg_quote($pre_parser->prefix()).'(?:(?:'.implode('|', array_flip($fluid_field_fields)).'):?))\b([^}{]*)?'.RD."/",
 				$tagdata,
 				$matches,
 				PREG_SET_ORDER)
@@ -77,13 +77,13 @@ class Fluid_block_parser {
 			$field_name = rtrim($field_name, ':');
 
 			// Make sure the supposed field name is an actual Fluid Block field
-			if ( ! isset($fluid_block_fields[$field_name]))
+			if ( ! isset($fluid_field_fields[$field_name]))
 			{
 				return FALSE;
 			}
 
 			// Collect field IDs so we can gather the column data for these fields
-			$block_ids[] = $fluid_block_fields[$field_name];
+			$block_ids[] = $fluid_field_fields[$field_name];
 		}
 
 		$block_fields = ee('Model')->get('ChannelField', $block_ids)
@@ -159,7 +159,7 @@ class Fluid_block_parser {
 			{
 				list($modifier, $content, $params, $chunk) = $chk_data;
 
-				$tags[$field_name][] = ee('fluid_block:Tag', $content);
+				$tags[$field_name][] = ee('fluid_field:Tag', $content);
 				$fields_found[] = $field_id;
 			}
 		}
@@ -182,7 +182,7 @@ class Fluid_block_parser {
 	 * @param array $entry_id A list of entry ids
 	 * @param array $block_ids A list of block ids
 	 * @param array $field_ids A list of field ids
-	 * @return obj A Colletion of FluidBlock model entities
+	 * @return obj A Colletion of FluidField model entities
 	 */
 	private function fetchFieldBlocks(array $entry_ids, array $block_ids, array $field_ids)
 	{
@@ -193,7 +193,7 @@ class Fluid_block_parser {
 
 		$data = array();
 
-		$blockData = ee('Model')->get('fluid_block:FluidBlock')
+		$blockData = ee('Model')->get('fluid_field:FluidField')
 			->with('ChannelField')
 			->filter('block_id', 'IN', $block_ids)
 			->filter('entry_id', 'IN', $entry_ids)
@@ -237,7 +237,7 @@ class Fluid_block_parser {
 	}
 
 	/**
-	 * Handles ft.fluid_block.php's replace_tag(), called with each loop of the
+	 * Handles ft.fluid_field.php's replace_tag(), called with each loop of the
 	 * channel entries parser
 	 *
 	 * @param	array	Channel entry row data typically sent to fieldtypes

@@ -263,7 +263,7 @@ class EE_relationship_tree_builder {
 
 			$tag_name = rtrim($relationship_prefix, ':');
 			$in_grid = array_key_exists($relationship_prefix, $this->grid_relationship_ids);
-			$in_fluid_block = (bool) ($this->block_data_id && $this->block_data_id > 0);
+			$in_fluid_field = (bool) ($this->block_data_id && $this->block_data_id > 0);
 
 			if ($in_grid && $match[2])
 			{
@@ -340,7 +340,7 @@ class EE_relationship_tree_builder {
 				'shortcut'	  => $is_only_relationship ? FALSE : ltrim($tag, ':'),
 				'open_tag'	  => $match[0],
 				'in_grid'	  => $in_grid,
-				'in_fluid_block' => $in_fluid_block,
+				'in_fluid_field' => $in_fluid_field,
 				'in_cond' => $type == 'conditional' ? TRUE : FALSE
 			));
 

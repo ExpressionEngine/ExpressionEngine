@@ -23,7 +23,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 	 */
 	public function __construct()
 	{
-		$addon = ee('Addon')->get('fluid_block');
+		$addon = ee('Addon')->get('fluid_field');
 		$this->info = array(
 			'name'    => $addon->getName(),
 			'version' => $addon->getVersion()
@@ -246,7 +246,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 	private function addField($order, $field_id, array $values)
 	{
-		$block = ee('Model')->make('fluid_block:FluidBlock');
+		$block = ee('Model')->make('fluid_field:FluidField');
 		$block->block_id = $this->field_id;
 		$block->entry_id = $this->content_id;
 		$block->field_id = $field_id;
@@ -295,7 +295,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 			->all()
 			->indexByIds();
 
-		$filters = ee('View')->make('fluid_block:filters')->render(array('fields' => $field_templates));
+		$filters = ee('View')->make('fluid_field:filters')->render(array('fields' => $field_templates));
 
 		if ( ! is_array($field_data))
 		{
@@ -309,7 +309,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 					$field->setName($this->name() . '[fields][field_' . $data->getId() . '][field_id_' . $field->getId() . ']');
 
-					$fields .= ee('View')->make('fluid_block:field')->render(array('field' => $data->ChannelField, 'filters' => $filters, 'errors' => $this->errors));
+					$fields .= ee('View')->make('fluid_field:field')->render(array('field' => $data->ChannelField, 'filters' => $filters, 'errors' => $this->errors));
 				}
 			}
 
@@ -337,7 +337,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 				$f = $this->setupFieldInstance($f, $data);
 
-				$fields .= ee('View')->make('fluid_block:field')->render(array('field' => $field, 'filters' => $filters, 'errors' => $this->errors));
+				$fields .= ee('View')->make('fluid_field:field')->render(array('field' => $field, 'filters' => $filters, 'errors' => $this->errors));
 			}
 		}
 
@@ -348,7 +348,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 			$f = $field->getField();
 			$f->setName($this->name() . '[fields][new_field_0][field_id_' . $field->getId() . ']');
 
-			$templates .= ee('View')->make('fluid_block:field')->render(array('field' => $field, 'filters' => $filters, 'errors' => $this->errors));
+			$templates .= ee('View')->make('fluid_field:field')->render(array('field' => $field, 'filters' => $filters, 'errors' => $this->errors));
 		}
 
 		if (REQ == 'CP')
@@ -358,12 +358,12 @@ class Fluid_block_ft extends EE_Fieldtype {
 					'sortable'
 				),
 				'file' => array(
-					'fields/fluid_block/cp',
+					'fields/fluid_field/cp',
 					'cp/sort_helper'
 				),
 			));
 
-			return ee('View')->make('fluid_block:publish')->render(array(
+			return ee('View')->make('fluid_field:publish')->render(array(
 				'fields'          => $fields,
 				'field_templates' => $templates,
 				'filters'         => $filters,
@@ -375,11 +375,11 @@ class Fluid_block_ft extends EE_Fieldtype {
 	{
 		$custom_field_options = ee('Model')->get('ChannelField')
 			->filter('site_id', 'IN', array(0, ee()->config->item('site_id')))
-			->filter('field_type', '!=', 'fluid_block')
+			->filter('field_type', '!=', 'fluid_field')
 			->order('field_label')
 			->all()
 			->filter(function($field) {
-				return $field->getField()->acceptsContentType('fluid_block');
+				return $field->getField()->acceptsContentType('fluid_field');
 			})
 			->map(function($field) {
 				return [
@@ -410,20 +410,20 @@ class Fluid_block_ft extends EE_Fieldtype {
 		if ( ! $this->isNew())
 		{
 			ee()->javascript->set_global(array(
-				'fields.fluid_block.fields' => $data['field_channel_fields']
+				'fields.fluid_field.fields' => $data['field_channel_fields']
 			));
 
 			ee()->cp->add_js_script(array(
-				'file' => 'fields/fluid_block/settings',
+				'file' => 'fields/fluid_field/settings',
 			));
 
-			$modal = ee('View')->make('fluid_block:modal')->render();
+			$modal = ee('View')->make('fluid_field:modal')->render();
 			ee('CP/Modal')->addModal('remove-field', $modal);
 		}
 
-		return array('field_options_fluid_block' => array(
+		return array('field_options_fluid_field' => array(
 			'label' => 'field_options',
-			'group' => 'fluid_block',
+			'group' => 'fluid_field',
 			'settings' => $settings
 		));
 	}
@@ -451,7 +451,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 			if ( ! empty($removed_fields))
 			{
-				$blockData = ee('Model')->get('fluid_block:FluidBlock')
+				$blockData = ee('Model')->get('fluid_field:FluidField')
 					->filter('block_id', $this->field_id)
 					->filter('field_id', 'IN', $removed_fields)
 					->all()
@@ -464,7 +464,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 
 				if ( ! empty($fields))
 				{
-					ee()->logger->log_action(sprintf(lang('removed_fields_from_fluid_block'), $this->settings['field_label'], '<b>' . implode('</b>, <b>', $fields) . '</b>'));
+					ee()->logger->log_action(sprintf(lang('removed_fields_from_fluid_field'), $this->settings['field_label'], '<b>' . implode('</b>, <b>', $fields) . '</b>'));
 				}
 			}
 		}
@@ -476,7 +476,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 	{
 		if (isset($data['ee_action']) && $data['ee_action'] == 'delete')
 		{
-			$blockData = ee('Model')->get('fluid_block:FluidBlock')
+			$blockData = ee('Model')->get('fluid_field:FluidField')
 				->filter('block_id', $data['field_id'])
 				->all()
 				->delete();
@@ -492,7 +492,7 @@ class Fluid_block_ft extends EE_Fieldtype {
 	 */
 	public function delete($entry_ids)
 	{
-		$blockData = ee('Model')->get('fluid_block:FluidBlock')
+		$blockData = ee('Model')->get('fluid_field:FluidField')
 			->filter('block_id', $this->field_id)
 			->filter('entry_id', 'IN', $entry_ids)
 			->all()
@@ -500,14 +500,14 @@ class Fluid_block_ft extends EE_Fieldtype {
 	}
 
 	/**
-	 * Accept all but grid and fluid_block content types.
+	 * Accept all but grid and fluid_field content types.
 	 *
 	 * @param string  The name of the content type
 	 * @return bool   Accepts all content types
 	 */
 	public function accepts_content_type($name)
 	{
-		$incompatible = array('grid', 'fluid_block');
+		$incompatible = array('grid', 'fluid_field');
 		return ( ! in_array($name, $incompatible));
 	}
 
@@ -527,25 +527,25 @@ class Fluid_block_ft extends EE_Fieldtype {
 	 *
 	 * @param int $block_id The id for the block
 	 * @param int $entry_id The id for the entry
-	 * @return obj A Collection of FluidBlock objects
+	 * @return obj A Collection of FluidField objects
 	 */
 	private function getBlockData($block_id = '', $entry_id = '')
 	{
 		$block_id = ($block_id) ?: $this->field_id;
 		$entry_id = ($entry_id) ?: $this->content_id;
 
-		$cache_key = "FluidBlock/{$block_id}/{$entry_id}";
+		$cache_key = "FluidField/{$block_id}/{$entry_id}";
 
-		if (($blockData = ee()->session->cache("FluidBlock", $cache_key, FALSE)) === FALSE)
+		if (($blockData = ee()->session->cache("FluidField", $cache_key, FALSE)) === FALSE)
 		{
-			$blockData = ee('Model')->get('fluid_block:FluidBlock')
+			$blockData = ee('Model')->get('fluid_field:FluidField')
 				->with('ChannelField')
 				->filter('block_id', $block_id)
 				->filter('entry_id', $entry_id)
 				->order('order')
 				->all();
 
-			ee()->session->set_cache("FluidBlock", $cache_key, $blockData);
+			ee()->session->set_cache("FluidField", $cache_key, $blockData);
 		}
 
 		return $blockData;
@@ -589,17 +589,17 @@ class Fluid_block_ft extends EE_Fieldtype {
 	 */
 	public function replace_tag($data, $params = '', $tagdata = '')
 	{
-		ee()->load->library('fluid_block_parser');
+		ee()->load->library('fluid_field_parser');
 
 		// not in a channel scope? pre-process may not have been run.
 		if ($this->content_type() != 'channel')
 		{
 			ee()->load->library('api');
 			ee()->legacy_api->instantiate('channel_fields');
-			ee()->grid_parser->fluid_block_field_names[$this->id()] = $this->name();
+			ee()->grid_parser->fluid_field_field_names[$this->id()] = $this->name();
 		}
 
-		return ee()->fluid_block_parser->parse($this->row, $this->id(), $params, $tagdata, $this->content_type());
+		return ee()->fluid_field_parser->parse($this->row, $this->id(), $params, $tagdata, $this->content_type());
 	}
 
 }

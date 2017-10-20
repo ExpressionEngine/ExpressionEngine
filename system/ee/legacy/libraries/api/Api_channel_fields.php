@@ -201,7 +201,7 @@ class Api_channel_fields extends Api {
 			{
 				$gfields[$row['site_id']][$row['field_name']] = $row['field_id'];
 			}
-			elseif ($row['field_type'] == 'fluid_block')
+			elseif ($row['field_type'] == 'fluid_field')
 			{
 				$fbfields[$row['site_id']][$row['field_name']] = $row['field_id'];
 			}
@@ -215,7 +215,7 @@ class Api_channel_fields extends Api {
 			'relationship_fields'   => $rfields,
 			'grid_fields'           => $gfields,
 			'pair_custom_fields'    => $pfields,
-			'fluid_block_fields'    => $fbfields,
+			'fluid_field_fields'    => $fbfields,
 		);
 	}
 

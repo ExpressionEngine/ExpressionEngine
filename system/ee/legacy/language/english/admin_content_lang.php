@@ -390,7 +390,7 @@ $lang = array(
 
 'removed_fields' => 'The following fields were removed and their data was deleted: %s',
 
-'removed_fields_from_fluid_block' => 'The following fields were removed from the Fluid Block <b>%s</b> and their data was deleted: %s',
+'removed_fields_from_fluid_field' => 'The following fields were removed from the Fluid Block <b>%s</b> and their data was deleted: %s',
 
 'require_field_desc' => 'When set to <b>yes</b>, this field will be required to submit the publish form.',
 

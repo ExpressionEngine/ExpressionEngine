@@ -845,9 +845,9 @@ class Set {
 		{
 			$field_data = $this->importRelationshipField($field, $field_data);
 		}
-        elseif ($type == 'fluid_block')
+        elseif ($type == 'fluid_field')
 		{
-			$this->importFluidBlockField($field, $field_data);
+			$this->importFluidFieldField($field, $field_data);
 		}
 
 		$field->set($field_data);
@@ -1045,7 +1045,7 @@ class Set {
 	 * @param Array $field_data The field data that will be set() on the field
 	 * @return void
 	 */
-	private function importFluidBlockField($field, $field_data)
+	private function importFluidFieldField($field, $field_data)
 	{
 		$fn = function() use ($field, $field_data)
 		{

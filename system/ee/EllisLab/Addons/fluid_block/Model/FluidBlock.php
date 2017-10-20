@@ -7,7 +7,7 @@
  * @license   https://expressionengine.com/license
  */
 
-namespace EllisLab\Addons\FluidBlock\Model;
+namespace EllisLab\Addons\FluidField\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 use EllisLab\ExpressionEngine\Model\Content\FieldData;
@@ -15,10 +15,10 @@ use EllisLab\ExpressionEngine\Model\Content\FieldData;
 /**
  * ExpressionEngine Fluid Block Model
  */
-class FluidBlock extends Model {
+class FluidField extends Model {
 
 	protected static $_primary_key = 'id';
-	protected static $_table_name = 'fluid_block_data';
+	protected static $_table_name = 'fluid_field_data';
 
 	protected static $_typed_columns = array(
 		'block_id'      => 'int',
@@ -34,7 +34,7 @@ class FluidBlock extends Model {
 			'model' => 'ee:ChannelEntry',
 			'weak' => TRUE,
 			'inverse' => array(
-				'name' => 'FluidBlock',
+				'name' => 'FluidField',
 				'type' => 'hasMany',
 				'weak' => TRUE
 			)
@@ -44,7 +44,7 @@ class FluidBlock extends Model {
 			'model' => 'ee:ChannelField',
 			'weak' => TRUE,
 			'inverse' => array(
-				'name' => 'FluidBlock',
+				'name' => 'FluidField',
 				'type' => 'hasMany',
 				'weak' => TRUE
 			)
@@ -56,7 +56,7 @@ class FluidBlock extends Model {
 			'model' => 'ee:ChannelField',
 			'weak' => TRUE,
 			'inverse' => array(
-				'name' => 'FluidBlock',
+				'name' => 'FluidField',
 				'type' => 'hasOne',
 				'weak' => TRUE
 			)

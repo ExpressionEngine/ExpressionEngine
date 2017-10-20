@@ -11,7 +11,7 @@
 /**
  * Fluid block parser class
  */
-class EE_Channel_fluid_block_parser implements EE_Channel_parser_component {
+class EE_Channel_fluid_field_parser implements EE_Channel_parser_component {
 
 	/**
 	 * Check if Fluid Block is enabled
@@ -21,7 +21,7 @@ class EE_Channel_fluid_block_parser implements EE_Channel_parser_component {
 	 */
 	public function disabled(array $disabled, EE_Channel_preparser $pre)
 	{
-		return empty($pre->channel()->fbfields) OR in_array('fluid_blocks', $disabled);
+		return empty($pre->channel()->fbfields) OR in_array('fluid_fields', $disabled);
 	}
 
 	// --------------------------------------------------------------------
@@ -37,7 +37,7 @@ class EE_Channel_fluid_block_parser implements EE_Channel_parser_component {
 	 */
 	public function pre_process($tagdata, EE_Channel_preparser $pre)
 	{
-		$fluid_block_field_names = array();
+		$fluid_field_field_names = array();
 
 		// Run the preprocessor for each site
 		foreach ($pre->site_ids() as $site_id)
@@ -50,10 +50,10 @@ class EE_Channel_fluid_block_parser implements EE_Channel_parser_component {
 				continue;
 			}
 
-			$fluid_block_field_names = array_merge($fluid_block_field_names, array_values(array_flip($fbfields[$site_id])));
+			$fluid_field_field_names = array_merge($fluid_field_field_names, array_values(array_flip($fbfields[$site_id])));
 
-			ee()->load->library('fluid_block_parser');
-			ee()->fluid_block_parser->pre_process($tagdata, $pre, $fbfields[$site_id]);
+			ee()->load->library('fluid_field_parser');
+			ee()->fluid_field_parser->pre_process($tagdata, $pre, $fbfields[$site_id]);
 		}
 
 		return NULL;
@@ -70,7 +70,7 @@ class EE_Channel_fluid_block_parser implements EE_Channel_parser_component {
 	 *
 	 * @return String	The processed tagdata
 	 */
-	public function replace($tagdata, EE_Channel_data_parser $obj, $fluid_block_parser)
+	public function replace($tagdata, EE_Channel_data_parser $obj, $fluid_field_parser)
 	{
 		return $tagdata;
 	}

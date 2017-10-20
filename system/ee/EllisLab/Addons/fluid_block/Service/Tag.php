@@ -7,7 +7,7 @@
  * @license   https://expressionengine.com/license
  */
 
-namespace EllisLab\Addons\FluidBlock\Service;
+namespace EllisLab\Addons\FluidField\Service;
 
 use EllisLab\ExpressionEngine\Model\Content\FieldFacade;
 

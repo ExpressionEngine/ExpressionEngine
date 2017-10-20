@@ -879,7 +879,7 @@ class Relationship_ft extends EE_Fieldtype {
 	 */
 	public function accepts_content_type($name)
 	{
-		return ($name == 'channel' || $name == 'grid' || $name == 'fluid_block');
+		return ($name == 'channel' || $name == 'grid' || $name == 'fluid_field');
 	}
 
 	/**

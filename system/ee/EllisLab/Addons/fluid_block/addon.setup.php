@@ -1,6 +1,6 @@
 <?php
 
-use EllisLab\Addons\FluidBlock\Service\Tag;
+use EllisLab\Addons\FluidField\Service\Tag;
 
 return array(
 	'author'         => 'EllisLab',
@@ -8,7 +8,7 @@ return array(
 	'name'           => 'Fluid Field',
 	'description'    => 'Fluid Fields',
 	'version'        => '1.0.0',
-	'namespace'      => 'EllisLab\Addons\FluidBlock',
+	'namespace'      => 'EllisLab\Addons\FluidField',
 	'settings_exist' => FALSE,
 	'built_in'       => TRUE,
 
@@ -20,11 +20,11 @@ return array(
 	),
 
 	'models' => array(
-		'FluidBlock' => 'Model\FluidBlock',
+		'FluidField' => 'Model\FluidField',
 	),
 
 	'models.dependencies' => array(
-		'FluidBlock' => array(
+		'FluidField' => array(
 			'ee:ChannelEntry',
 			'ee:ChannelField'
 		),

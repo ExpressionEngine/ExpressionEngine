@@ -367,9 +367,9 @@ class Export {
 		{
 			$result->ta_rows = $field->field_ta_rows;
 		}
-		elseif ($field->field_type == 'fluid_block')
+		elseif ($field->field_type == 'fluid_field')
 		{
-			$result->settings = $this->exportFluidBlockField($field);
+			$result->settings = $this->exportFluidFieldField($field);
 		}
 
 		$field_json = json_encode($result, JSON_PRETTY_PRINT);
@@ -585,7 +585,7 @@ class Export {
 	 * @param Model $field Channel field
 	 * @return StdClass Fluid block settings description
 	 */
-	private function exportFluidBlockField($field)
+	private function exportFluidFieldField($field)
 	{
 		$settings = $field->field_settings;
 
