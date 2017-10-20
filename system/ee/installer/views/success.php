@@ -1,22 +1,19 @@
-<div class="alert inline success">
-	<h3><?=$success_note?></h3>
-	<p><?=lang('success_delete')?></p>
+<div class="box <?=empty($update_notices) ? 'success' : 'warn'?>">
+	<h1><?=lang('install_complete')?><span class="icon-success"></span></h1>
+	<div class="updater-msg">
+		<p><?=$success_note?></p>
+		<p><?=lang('success_delete')?></p>
+		<?php if ( ! empty($update_notices)): ?>
+			<div class="alert-notice">
+				<?php foreach ($update_notices as $notice): ?>
+					<?php if ($notice->is_header): ?>
+						<p><b><?=$notice->message?></b></p>
+					<?php else: ?>
+						<p><?=$notice->message?></p>
+					<?php endif?>
+				<?php endforeach;?>
+			</div>
+		<?php endif ?>
+		<p class="msg-choices"><a href="<?=$cp_login_url?>"><?=lang('cp_login')?></a></p>
+	</div>
 </div>
-
-<?php if ( ! empty($update_notices)): ?>
-<h2>Update Notices</h2>
-	<?php foreach ($update_notices as $notice): ?>
-		<?php if ($notice->is_header): ?>
-			<h4><?=$notice->message?></h4>
-		<?php else: ?>
-			<p><?=$notice->message?></p>
-		<?php endif?>
-	<?php endforeach;?>
-<?php endif;?>
-
-<fieldset class="install-btn">
-	<a class="btn" href="<?=$cp_login_url?>"><?=lang('cp_login')?></a>
-	<?php if ($mailing_list): ?>
-		<input class="btn action" type="submit" name="download" value="<?=lang('download_mailing_list')?>">
-	<?php endif; ?>
-</fieldset>
