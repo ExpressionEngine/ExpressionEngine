@@ -485,7 +485,7 @@ class Wizard extends CI_Controller {
 
 		// Display the form and pass the userdata array to it
 		$this->title = sprintf(lang('install_title'), '');
-		$this->header = sprintf(lang('install_title'), $this->version).'<br />'.lang('install_note');
+		$this->header = sprintf(lang('install_title'), $this->version);
 		$this->set_output('install_form', array_merge($vars, $this->userdata));
 	}
 
@@ -1073,8 +1073,8 @@ class Wizard extends CI_Controller {
 			// End URL
 			$this->refresh = TRUE;
 			$this->refresh_url = $this->set_qstr('do_update&agree=yes');
-			$this->title = sprintf(lang('updating_title'), $this->installed_version, $this->version);
-			$this->subtitle = lang('processing');
+			$this->title = sprintf(lang('updating_title'), $this->version);
+			$this->subtitle = sprintf(lang('running_updates'), $this->installed_version);
 			return $this->set_output(
 				'update_msg',
 				array(
@@ -1210,8 +1210,8 @@ class Wizard extends CI_Controller {
 			$this->refresh = FALSE;
 		}
 
-		$this->title = sprintf(lang('updating_title'), $this->installed_version, $this->version);
-		$this->subtitle = lang('processing');
+		$this->title = sprintf(lang('updating_title'), $this->version);
+		$this->subtitle = sprintf(lang('running_updates'), $this->installed_version);
 		$this->set_output(
 			'update_msg',
 			array(
@@ -1359,19 +1359,12 @@ class Wizard extends CI_Controller {
 		// If we're dealing with an error, change the title to indicate that
 		if ($view == "error")
 		{
-			$this->title = ($this->is_installed)
+			$this->title = $this->is_installed
+				? lang('update_failed')
+				: lang('install_failed');
+			$this->subtitle = $this->is_installed
 				? sprintf(lang('error_updating'), $this->installed_version, $this->version)
 				: sprintf(lang('error_installing'), $this->version);
-			$this->subtitle = lang('stopped');
-		}
-
-		// Only show steps during upgrades
-		if ($this->is_installed)
-		{
-			$suffix = sprintf(lang('subtitle_step'), $this->current_step, $this->steps);
-			$this->subtitle .= (empty($this->subtitle))
-				? $suffix
-				: ' <span class="faded">|</span> '.$suffix;
 		}
 
 		$javascript_basepath = $this->set_path('themes/ee/asset/javascript/');
@@ -1400,7 +1393,8 @@ class Wizard extends CI_Controller {
 			'is_core'           => (IS_CORE) ? 'Core' : '',
 
 			'action'            => '',
-			'method'            => 'post'
+			'method'            => 'post',
+			'retry_link'        => $this->is_installed ? $this->set_qstr('do_update') : $this->set_qstr('do_install')
 		);
 
 		if ($this->is_installed)
