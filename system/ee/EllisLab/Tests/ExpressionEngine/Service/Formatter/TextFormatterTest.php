@@ -377,6 +377,7 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 
 		return [[$sample, $plus_encoded, $raw_encoded]];
 	}
+
 	/**
 	 * @dataProvider urlSlugProvider
 	 */
