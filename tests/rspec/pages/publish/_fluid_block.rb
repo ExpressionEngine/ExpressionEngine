@@ -4,7 +4,7 @@ class FluidActionMenu < SitePrism::Section
   elements :fields, '.sub-menu li'
 end
 
-class FluidBlock < SitePrism::Section
+class FluidField < SitePrism::Section
   section :actions_menu, FluidActionMenu, '.fluid-actions .filters'
 
   sections :items, '.fluid-item' do

@@ -186,7 +186,7 @@ module ChannelSets
     # Create all other custom fields for export testing
     #
     # @return [void]
-    def fluid_block
+    def fluid_field
       $db.query(IO.read('channel_sets/channel-with-fluid-block.sql'))
       clear_db_result
     end

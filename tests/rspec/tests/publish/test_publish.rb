@@ -126,14 +126,14 @@ feature 'Publish Page - Create' do
     end
   end
 
-  context 'when using fluid block fields' do
+  context 'when using fluid fields' do
     before :each do
       @importer = ChannelSets::Importer.new(@page, debug: false)
-      @importer.fluid_block
+      @importer.fluid_field
       @page.load(channel_id: 3)
 
       @page.title.set "Fluid Field Test the First"
-      @page.url_title.set "fluid-block-test-first"
+      @page.url_title.set "fluid-field-test-first"
 
       @available_fields = [
         "A Date",
@@ -152,9 +152,9 @@ feature 'Publish Page - Create' do
         "YouTube URL"
       ]
 
-      @page.fluid_block.actions_menu.name.click
-      @page.fluid_block.actions_menu.fields.map {|field| field.text}.should == @available_fields
-      @page.fluid_block.actions_menu.name.click
+      @page.fluid_field.actions_menu.name.click
+      @page.fluid_field.actions_menu.fields.map {|field| field.text}.should == @available_fields
+      @page.fluid_field.actions_menu.name.click
     end
 
     def add_content(item, skew = 0)
@@ -253,10 +253,10 @@ feature 'Publish Page - Create' do
 
     it 'adds a field' do
       @available_fields.each_with_index do |field, index|
-        @page.fluid_block.actions_menu.name.click
-        @page.fluid_block.actions_menu.fields[index].click
+        @page.fluid_field.actions_menu.name.click
+        @page.fluid_field.actions_menu.fields[index].click
 
-        @page.fluid_block.items[index].title.should have_content(field)
+        @page.fluid_field.items[index].title.should have_content(field)
       end
 
       @page.save.click
@@ -264,15 +264,15 @@ feature 'Publish Page - Create' do
 
       # Make sure the fields stuck around after save
       @available_fields.each_with_index do |field, index|
-        @page.fluid_block.items[index].title.should have_content(field)
-        add_content(@page.fluid_block.items[index])
+        @page.fluid_field.items[index].title.should have_content(field)
+        add_content(@page.fluid_field.items[index])
       end
 
       @page.save.click
       @page.alert.has_content?('Entry Updated').should == true
 
       @available_fields.each_with_index do |field, index|
-        check_content(@page.fluid_block.items[index])
+        check_content(@page.fluid_field.items[index])
       end
     end
 
@@ -280,19 +280,19 @@ feature 'Publish Page - Create' do
       number_of_fields = @available_fields.length
 
       @available_fields.each_with_index do |field, index|
-        @page.fluid_block.actions_menu.name.click
-        @page.fluid_block.actions_menu.fields[index].click
-        add_content(@page.fluid_block.items[index])
+        @page.fluid_field.actions_menu.name.click
+        @page.fluid_field.actions_menu.fields[index].click
+        add_content(@page.fluid_field.items[index])
 
-        @page.fluid_block.items[index].title.should have_content(field)
+        @page.fluid_field.items[index].title.should have_content(field)
       end
 
       @available_fields.each_with_index do |field, index|
-        @page.fluid_block.actions_menu.name.click
-        @page.fluid_block.actions_menu.fields[index].click
-        add_content(@page.fluid_block.items[index + number_of_fields], 1)
+        @page.fluid_field.actions_menu.name.click
+        @page.fluid_field.actions_menu.fields[index].click
+        add_content(@page.fluid_field.items[index + number_of_fields], 1)
 
-        @page.fluid_block.items[index + number_of_fields].title.should have_content(field)
+        @page.fluid_field.items[index + number_of_fields].title.should have_content(field)
       end
 
       @page.save.click
@@ -300,11 +300,11 @@ feature 'Publish Page - Create' do
 
       # Make sure the fields stuck around after save
       @available_fields.each_with_index do |field, index|
-        @page.fluid_block.items[index].title.should have_content(field)
-        check_content(@page.fluid_block.items[index])
+        @page.fluid_field.items[index].title.should have_content(field)
+        check_content(@page.fluid_field.items[index])
 
-        @page.fluid_block.items[index + number_of_fields].title.should have_content(field)
-        check_content(@page.fluid_block.items[index + number_of_fields], 1)
+        @page.fluid_field.items[index + number_of_fields].title.should have_content(field)
+        check_content(@page.fluid_field.items[index + number_of_fields], 1)
       end
     end
 
@@ -315,52 +315,52 @@ feature 'Publish Page - Create' do
     it 'removes fields' do
       # First: without saving
       @available_fields.each_with_index do |field, index|
-        @page.fluid_block.actions_menu.name.click
-        @page.fluid_block.actions_menu.fields[index].click
-        add_content(@page.fluid_block.items[index])
+        @page.fluid_field.actions_menu.name.click
+        @page.fluid_field.actions_menu.fields[index].click
+        add_content(@page.fluid_field.items[index])
 
-        @page.fluid_block.items[index].title.should have_content(field)
+        @page.fluid_field.items[index].title.should have_content(field)
       end
 
-      @page.fluid_block.items.length.should == @available_fields.length
+      @page.fluid_field.items.length.should == @available_fields.length
 
-      @page.fluid_block.items.each do |field|
+      @page.fluid_field.items.each do |field|
           field.remove.click
       end
 
-      @page.fluid_block.items.length.should == 0
+      @page.fluid_field.items.length.should == 0
 
       # Second: after saving
       @available_fields.each_with_index do |field, index|
-        @page.fluid_block.actions_menu.name.click
-        @page.fluid_block.actions_menu.fields[index].click
-        add_content(@page.fluid_block.items[index])
+        @page.fluid_field.actions_menu.name.click
+        @page.fluid_field.actions_menu.fields[index].click
+        add_content(@page.fluid_field.items[index])
 
-        @page.fluid_block.items[index].title.should have_content(field)
+        @page.fluid_field.items[index].title.should have_content(field)
       end
 
       @page.save.click
       @page.alert.has_content?('Entry Created').should == true
 
-      @page.fluid_block.items.length.should == @available_fields.length
+      @page.fluid_field.items.length.should == @available_fields.length
 
-      @page.fluid_block.items.each do |field|
+      @page.fluid_field.items.each do |field|
         field.remove.click
       end
 
       @page.save.click
       @page.alert.has_content?('Entry Updated').should == true
 
-      @page.fluid_block.items.length.should == 0
+      @page.fluid_field.items.length.should == 0
     end
 
     it 'keeps data when the entry is invalid' do
       @available_fields.each_with_index do |field, index|
-        @page.fluid_block.actions_menu.name.click
-        @page.fluid_block.actions_menu.fields[index].click
-        add_content(@page.fluid_block.items[index])
+        @page.fluid_field.actions_menu.name.click
+        @page.fluid_field.actions_menu.fields[index].click
+        add_content(@page.fluid_field.items[index])
 
-        @page.fluid_block.items[index].title.should have_content(field)
+        @page.fluid_field.items[index].title.should have_content(field)
       end
 
       @page.title.set ""
@@ -368,7 +368,7 @@ feature 'Publish Page - Create' do
       @page.save.click
 
       @available_fields.each_with_index do |field, index|
-        check_content(@page.fluid_block.items[index])
+        check_content(@page.fluid_field.items[index])
       end
     end
 

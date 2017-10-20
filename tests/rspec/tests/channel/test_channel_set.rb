@@ -341,7 +341,7 @@ feature 'Channel Sets' do
     end
 
     it 'exports a channel with a fluid block' do
-      @importer.fluid_block
+      @importer.fluid_field
       download_channel_set(3)
 
       # Check to see if the file exists
@@ -354,7 +354,7 @@ feature 'Channel Sets' do
       expected_files = %w(
         /custom_fields/a_date.date
         /custom_fields/checkboxes.checkboxes
-        /custom_fields/corpse.fluid_block
+        /custom_fields/corpse.fluid_field
         /custom_fields/electronic_mail_address.email_address
         /custom_fields/home_page.url
         /custom_fields/image.file
@@ -657,7 +657,7 @@ feature 'Channel Sets' do
             @page.submit
 
 			check_success
-			channel_id = @page.get_channel_id_from_name('fluid_blocks')
+			channel_id = @page.get_channel_id_from_name('fluid_fields')
 
 			fields_assigned_to_channel(channel_id, 2)
 			field_groups_assigned_to_channel(channel_id, 0)

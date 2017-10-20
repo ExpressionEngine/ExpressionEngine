@@ -14,5 +14,5 @@ class Publish < ControlPanelPage
 
   section :file_modal, FileModal, '.modal-file'
   section :forum_tab, ForumTab, 'body'
-  section :fluid_block, FluidBlock, '.fluid-wrap'
+  section :fluid_field, FluidField, '.fluid-wrap'
 end

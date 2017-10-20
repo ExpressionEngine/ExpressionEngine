@@ -384,7 +384,7 @@ VALUES
 	(7,1,'about_extended','Extended','','textarea','','n',0,0,6,128,'n','ltr','y','y','xhtml','y',7,'any','YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30=','y'),
 	(8,1,'a_date','A Date','','date','','n',NULL,NULL,8,NULL,'n','ltr','n','n','xhtml','y',11,'any','YTowOnt9','n'),
 	(9,1,'checkboxes','Checkboxes','','checkboxes','One\nUno\nEin','n',NULL,NULL,8,NULL,'n','ltr','n','n','none','y',10,'any','YTowOnt9','n'),
-	(10,1,'corpse','Corpse','','fluid_block','','n',NULL,NULL,8,NULL,'n','ltr','n','n','xhtml','y',19,'any','YToxOntzOjIwOiJmaWVsZF9jaGFubmVsX2ZpZWxkcyI7YToxNDp7aTowO2k6ODtpOjE7aTo5O2k6MjtpOjExO2k6MztpOjEyO2k6NDtpOjEzO2k6NTtpOjE0O2k6NjtpOjE1O2k6NztpOjE2O2k6ODtpOjE3O2k6OTtpOjE4O2k6MTA7aToxOTtpOjExO2k6MjA7aToxMjtpOjIxO2k6MTM7aToyMjt9fQ==','n'),
+	(10,1,'corpse','Corpse','','fluid_field','','n',NULL,NULL,8,NULL,'n','ltr','n','n','xhtml','y',19,'any','YToxOntzOjIwOiJmaWVsZF9jaGFubmVsX2ZpZWxkcyI7YToxNDp7aTowO2k6ODtpOjE7aTo5O2k6MjtpOjExO2k6MztpOjEyO2k6NDtpOjEzO2k6NTtpOjE0O2k6NjtpOjE1O2k6NztpOjE2O2k6ODtpOjE3O2k6OTtpOjE4O2k6MTA7aToxOTtpOjExO2k6MjA7aToxMjtpOjIxO2k6MTM7aToyMjt9fQ==','n'),
 	(11,1,'electronic_mail_address','Electronic-Mail Address','','email_address','','n',NULL,NULL,8,NULL,'n','ltr','n','n','xhtml','y',12,'any','YTowOnt9','n'),
 	(12,1,'home_page','Home Page','','url','','n',NULL,NULL,8,NULL,'n','ltr','n','n','xhtml','y',18,'any','YToyOntzOjE5OiJhbGxvd2VkX3VybF9zY2hlbWVzIjthOjI6e2k6MDtzOjc6Imh0dHA6Ly8iO2k6MTtzOjg6Imh0dHBzOi8vIjt9czoyMjoidXJsX3NjaGVtZV9wbGFjZWhvbGRlciI7czo3OiJodHRwOi8vIjt9','n'),
 	(13,1,'image','Image','','file','','n',NULL,NULL,8,NULL,'n','ltr','n','n','none','y',2,'image','YTo1OntzOjE4OiJmaWVsZF9jb250ZW50X3R5cGUiO3M6NToiaW1hZ2UiO3M6MTk6ImFsbG93ZWRfZGlyZWN0b3JpZXMiO3M6MzoiYWxsIjtzOjEzOiJzaG93X2V4aXN0aW5nIjtzOjE6InkiO3M6MTI6Im51bV9leGlzdGluZyI7czoyOiI1MCI7czo5OiJmaWVsZF9mbXQiO3M6NDoibm9uZSI7fQ==','n'),
@@ -490,7 +490,7 @@ INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_ti
 VALUES
 	(1,1,'news','News','http://ee2/index.php/news',NULL,'en',3,0,0,1409242030,0,'1',1,'open',2,'2','y','y',0,'all','n','y','y','n','','http://ee2/index.php/news/comments','y','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','',0,0),
 	(2,1,'about','Information Pages','http://ee2/index.php/about',NULL,'en',7,0,0,1409242030,0,'2',1,'open',7,'','y','y',0,'all','n','y','n','n','','http://ee2/index.php/news/comments','n','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','',0,0),
-	(3,1,'fluid_blocks','Fluid Blocks','',NULL,'en',0,0,0,0,0,NULL,1,'open',NULL,NULL,'y','y',NULL,'all','n','y','n','n',NULL,NULL,'y','n','n',5000,0,'y','xhtml','safe','n','y','n','n',NULL,0,NULL,NULL,'n',10,NULL,'Title',NULL,0,0);
+	(3,1,'fluid_fields','Fluid Blocks','',NULL,'en',0,0,0,0,0,NULL,1,'open',NULL,NULL,'y','y',NULL,'all','n','y','n','n',NULL,NULL,'y','n','n',5000,0,'y','xhtml','safe','n','y','n','n',NULL,0,NULL,NULL,'n',10,NULL,'Title',NULL,0,0);
 
 /*!40000 ALTER TABLE `exp_channels` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -600,7 +600,7 @@ VALUES
 	(12,'url','1.0.0','YTowOnt9','n'),
 	(13,'email_address','1.0.0','YTowOnt9','n'),
 	(14,'toggle','1.0.0','YTowOnt9','n'),
-	(15,'fluid_block','1.0.0','YTowOnt9','n');
+	(15,'fluid_field','1.0.0','YTowOnt9','n');
 
 /*!40000 ALTER TABLE `exp_fieldtypes` ENABLE KEYS */;
 UNLOCK TABLES;

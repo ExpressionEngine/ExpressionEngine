@@ -62,7 +62,7 @@ DROP TABLE IF EXISTS `exp_layout_publish`;
 DROP TABLE IF EXISTS `exp_html_buttons`;
 DROP TABLE IF EXISTS `exp_grid_columns`;
 DROP TABLE IF EXISTS `exp_global_variables`;
-DROP TABLE IF EXISTS `exp_fluid_block_data`;
+DROP TABLE IF EXISTS `exp_fluid_field_data`;
 DROP TABLE IF EXISTS `exp_files`;
 DROP TABLE IF EXISTS `exp_file_watermarks`;
 DROP TABLE IF EXISTS `exp_file_dimensions`;
@@ -679,7 +679,7 @@ CREATE TABLE `exp_files` (
 ) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `exp_fluid_block_data` (
+CREATE TABLE `exp_fluid_field_data` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `block_id` int(11) unsigned NOT NULL,
   `entry_id` int(11) unsigned NOT NULL,
@@ -1845,7 +1845,7 @@ INSERT INTO `exp_fieldtypes` (`fieldtype_id`, `name`, `version`, `settings`, `ha
 	(12,'url','1.0.0','YTowOnt9','n'),
 	(13,'email_address','1.0.0','YTowOnt9','n'),
 	(14,'toggle','1.0.0','YTowOnt9','n'),
-	(15,'fluid_block','1.0.0','YTowOnt9','n');
+	(15,'fluid_field','1.0.0','YTowOnt9','n');
 ALTER TABLE `exp_fieldtypes` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -1900,9 +1900,9 @@ ALTER TABLE `exp_files` ENABLE KEYS;
 UNLOCK TABLES;
 
 
-LOCK TABLES `exp_fluid_block_data` WRITE;
-ALTER TABLE `exp_fluid_block_data` DISABLE KEYS;
-ALTER TABLE `exp_fluid_block_data` ENABLE KEYS;
+LOCK TABLES `exp_fluid_field_data` WRITE;
+ALTER TABLE `exp_fluid_field_data` DISABLE KEYS;
+ALTER TABLE `exp_fluid_field_data` ENABLE KEYS;
 UNLOCK TABLES;
 
 
