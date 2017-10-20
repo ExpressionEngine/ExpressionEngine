@@ -1376,13 +1376,13 @@ class EE_Schema {
 
 		$Q[] = "CREATE TABLE `exp_fluid_field_data` (
 			`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-			`block_id` int(11) unsigned NOT NULL,
+			`fluid_field_id` int(11) unsigned NOT NULL,
 			`entry_id` int(11) unsigned NOT NULL,
 			`field_id` int(11) unsigned NOT NULL,
 			`field_data_id` int(11) unsigned NOT NULL,
 			`order` int(5) unsigned NOT NULL DEFAULT '0',
 			PRIMARY KEY (`id`),
-			KEY `block_id_entry_id` (`block_id`,`entry_id`)
+			KEY `fluid_field_id_entry_id` (`fluid_field_id`,`entry_id`)
 		)";
 
 		$Q[] = "CREATE TABLE `exp_menu_sets` (

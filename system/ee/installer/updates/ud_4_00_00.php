@@ -759,7 +759,7 @@ class Updater {
 					'null'           => FALSE,
 					'auto_increment' => TRUE
 				),
-				'block_id' => array(
+				'fluid_field_id' => array(
 					'type'       => 'int',
 					'constraint' => 11,
 					'unsigned'   => TRUE,
@@ -794,7 +794,7 @@ class Updater {
 		);
 
 		ee()->dbforge->add_key('id', TRUE);
-		ee()->dbforge->add_key(array('block_id', 'entry_id'));
+		ee()->dbforge->add_key(array('fluid_field_id', 'entry_id'));
 		ee()->smartforge->create_table('fluid_field_data');
 
 		ee()->smartforge->add_column(

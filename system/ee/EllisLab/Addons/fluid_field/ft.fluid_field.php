@@ -247,7 +247,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 	private function addField($order, $field_id, array $values)
 	{
 		$block = ee('Model')->make('fluid_field:FluidField');
-		$block->block_id = $this->field_id;
+		$block->fluid_field_id = $this->field_id;
 		$block->entry_id = $this->content_id;
 		$block->field_id = $field_id;
 		$block->order = $order;
@@ -452,7 +452,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 			if ( ! empty($removed_fields))
 			{
 				$blockData = ee('Model')->get('fluid_field:FluidField')
-					->filter('block_id', $this->field_id)
+					->filter('fluid_field_id', $this->field_id)
 					->filter('field_id', 'IN', $removed_fields)
 					->all()
 					->delete();
@@ -477,7 +477,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 		if (isset($data['ee_action']) && $data['ee_action'] == 'delete')
 		{
 			$blockData = ee('Model')->get('fluid_field:FluidField')
-				->filter('block_id', $data['field_id'])
+				->filter('fluid_field_id', $data['field_id'])
 				->all()
 				->delete();
 		}
@@ -493,7 +493,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 	public function delete($entry_ids)
 	{
 		$blockData = ee('Model')->get('fluid_field:FluidField')
-			->filter('block_id', $this->field_id)
+			->filter('fluid_field_id', $this->field_id)
 			->filter('entry_id', 'IN', $entry_ids)
 			->all()
 			->delete();
@@ -525,22 +525,22 @@ class Fluid_field_ft extends EE_Fieldtype {
 	/**
 	 * Gets the fluid block's data for a given block and entry
 	 *
-	 * @param int $block_id The id for the block
+	 * @param int $fluid_field_id The id for the block
 	 * @param int $entry_id The id for the entry
 	 * @return obj A Collection of FluidField objects
 	 */
-	private function getBlockData($block_id = '', $entry_id = '')
+	private function getBlockData($fluid_field_id = '', $entry_id = '')
 	{
-		$block_id = ($block_id) ?: $this->field_id;
+		$fluid_field_id = ($fluid_field_id) ?: $this->field_id;
 		$entry_id = ($entry_id) ?: $this->content_id;
 
-		$cache_key = "FluidField/{$block_id}/{$entry_id}";
+		$cache_key = "FluidField/{$fluid_field_id}/{$entry_id}";
 
 		if (($blockData = ee()->session->cache("FluidField", $cache_key, FALSE)) === FALSE)
 		{
 			$blockData = ee('Model')->get('fluid_field:FluidField')
 				->with('ChannelField')
-				->filter('block_id', $block_id)
+				->filter('fluid_field_id', $fluid_field_id)
 				->filter('entry_id', $entry_id)
 				->order('order')
 				->all();

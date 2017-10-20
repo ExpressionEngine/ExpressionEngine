@@ -681,13 +681,13 @@ CREATE TABLE `exp_files` (
 
 CREATE TABLE `exp_fluid_field_data` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `block_id` int(11) unsigned NOT NULL,
+  `fluid_field_id` int(11) unsigned NOT NULL,
   `entry_id` int(11) unsigned NOT NULL,
   `field_id` int(11) unsigned NOT NULL,
   `field_data_id` int(11) unsigned NOT NULL,
   `order` int(5) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY `block_id` (`block_id`),
+  KEY `fluid_field_id` (`fluid_field_id`),
   KEY `entry_id` (`entry_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 

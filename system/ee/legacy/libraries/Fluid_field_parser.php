@@ -54,7 +54,7 @@ class Fluid_field_parser {
 			return FALSE;
 		}
 
-		$block_ids = array();
+		$fluid_field_ids = array();
 
 		// Validate matches
 		foreach ($matches as $key => $match)
@@ -83,10 +83,10 @@ class Fluid_field_parser {
 			}
 
 			// Collect field IDs so we can gather the column data for these fields
-			$block_ids[] = $fluid_field_fields[$field_name];
+			$fluid_field_ids[] = $fluid_field_fields[$field_name];
 		}
 
-		$block_fields = ee('Model')->get('ChannelField', $block_ids)
+		$block_fields = ee('Model')->get('ChannelField', $fluid_field_ids)
 			->fields('field_id', 'field_settings', 'field_name')
 			->all();
 
@@ -100,7 +100,7 @@ class Fluid_field_parser {
 			$found_fields = array_merge($found_fields, $returned['fields_found']);
 		}
 
-		$this->data = $this->fetchFieldBlocks($pre_parser->entry_ids(), $block_ids, $found_fields);
+		$this->data = $this->fetchFieldBlocks($pre_parser->entry_ids(), $fluid_field_ids, $found_fields);
 
 		return TRUE;
 	}
@@ -180,13 +180,13 @@ class Fluid_field_parser {
 	 * those fields. Thus, we pass in an array of field ids.
 	 *
 	 * @param array $entry_id A list of entry ids
-	 * @param array $block_ids A list of block ids
+	 * @param array $fluid_field_ids A list of block ids
 	 * @param array $field_ids A list of field ids
 	 * @return obj A Colletion of FluidField model entities
 	 */
-	private function fetchFieldBlocks(array $entry_ids, array $block_ids, array $field_ids)
+	private function fetchFieldBlocks(array $entry_ids, array $fluid_field_ids, array $field_ids)
 	{
-		if (empty($entry_ids) || empty($block_ids) || empty($field_ids))
+		if (empty($entry_ids) || empty($fluid_field_ids) || empty($field_ids))
 		{
 			return new \EllisLab\ExpressionEngine\Library\Data\Collection(array());
 		}
@@ -195,10 +195,10 @@ class Fluid_field_parser {
 
 		$blockData = ee('Model')->get('fluid_field:FluidField')
 			->with('ChannelField')
-			->filter('block_id', 'IN', $block_ids)
+			->filter('fluid_field_id', 'IN', $fluid_field_ids)
 			->filter('entry_id', 'IN', $entry_ids)
 			->filter('field_id', 'IN', $field_ids)
-			->order('block_id')
+			->order('fluid_field_id')
 			->order('entry_id')
 			->order('order')
 			->all();
@@ -246,7 +246,7 @@ class Fluid_field_parser {
 	 * @param	string	Tag data of our field pair
 	 * @return	string	Parsed field data
 	 */
-	public function parse($channel_row, $block_id, $params, $tagdata, $content_type = 'channel')
+	public function parse($channel_row, $fluid_field_id, $params, $tagdata, $content_type = 'channel')
 	{
 		if (empty($tagdata))
 		{
@@ -255,16 +255,16 @@ class Fluid_field_parser {
 
 		$entry_id = $channel_row['entry_id'];
 
-		$blockData = $this->data->filter(function($block) use($entry_id, $block_id)
+		$blockData = $this->data->filter(function($block) use($entry_id, $fluid_field_id)
 		{
-			return ($block->entry_id == $entry_id && $block->block_id == $block_id);
+			return ($block->entry_id == $entry_id && $block->fluid_field_id == $fluid_field_id);
 		});
 
 		$output = '';
 
 		foreach ($blockData as $block)
 		{
-			$tags = $this->tags[$block->block_id];
+			$tags = $this->tags[$block->fluid_field_id];
 
 			$field_name = $block->ChannelField->field_name;
 

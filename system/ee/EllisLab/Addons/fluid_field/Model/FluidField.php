@@ -21,7 +21,7 @@ class FluidField extends Model {
 	protected static $_table_name = 'fluid_field_data';
 
 	protected static $_typed_columns = array(
-		'block_id'      => 'int',
+		'fluid_field_id'      => 'int',
 		'entry_id'      => 'int',
 		'field_id'      => 'int',
 		'field_data_id' => 'int',
@@ -51,7 +51,7 @@ class FluidField extends Model {
 		),
 		'BlockField' => array(
 			'type' => 'belongsTo',
-			'from_key' => 'block_id',
+			'from_key' => 'fluid_field_id',
 			'to_key'   => 'field_id',
 			'model' => 'ee:ChannelField',
 			'weak' => TRUE,
@@ -68,7 +68,7 @@ class FluidField extends Model {
 	);
 
 	protected $id;
-	protected $block_id;
+	protected $fluid_field_id;
 	protected $entry_id;
 	protected $field_id;
 	protected $field_data_id;
