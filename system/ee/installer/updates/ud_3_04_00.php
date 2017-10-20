@@ -32,7 +32,6 @@ class Updater {
 				'add_menu_tables',
 				'add_channel_max_entries_columns',
 				'fix_channel_total_entries_count',
-				'add_missing_default_status_groups',
 				'extend_max_username_length'
 			)
 		);
@@ -103,18 +102,6 @@ class Updater {
 		foreach (ee('Model')->get('Channel')->all() as $channel)
 		{
 			$channel->updateEntryStats();
-		}
-	}
-
-	/**
-	 * Loops through all our sites and adds the default status group to any
-	 * site that does not already have one.
-	 */
-	private function add_missing_default_status_groups()
-	{
-		foreach (ee('Model')->get('Site')->all() as $site)
-		{
-			$site->createDefaultStatuses();
 		}
 	}
 
