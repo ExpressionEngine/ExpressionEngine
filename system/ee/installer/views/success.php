@@ -1,5 +1,5 @@
 <div class="box <?=empty($update_notices) ? 'success' : 'warn'?>">
-	<h1><?=lang('install_complete')?><span class="icon-success"></span></h1>
+	<h1><?=$title?><span class="icon-success"></span></h1>
 	<div class="updater-msg">
 		<p><?=$success_note?></p>
 		<p><?=lang('success_delete')?></p>

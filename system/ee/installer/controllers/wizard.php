@@ -1073,8 +1073,8 @@ class Wizard extends CI_Controller {
 			// End URL
 			$this->refresh = TRUE;
 			$this->refresh_url = $this->set_qstr('do_update&agree=yes');
-			$this->title = sprintf(lang('updating_title'), $this->installed_version, $this->version);
-			$this->subtitle = lang('processing');
+			$this->title = sprintf(lang('updating_title'), $this->version);
+			$this->subtitle = sprintf(lang('running_updates'), $this->installed_version);
 			return $this->set_output(
 				'update_msg',
 				array(
@@ -1210,8 +1210,8 @@ class Wizard extends CI_Controller {
 			$this->refresh = FALSE;
 		}
 
-		$this->title = sprintf(lang('updating_title'), $this->installed_version, $this->version);
-		$this->subtitle = lang('processing');
+		$this->title = sprintf(lang('updating_title'), $this->version);
+		$this->subtitle = sprintf(lang('running_updates'), $this->installed_version);
 		$this->set_output(
 			'update_msg',
 			array(
@@ -1367,15 +1367,6 @@ class Wizard extends CI_Controller {
 				: sprintf(lang('error_installing'), $this->version);
 		}
 
-		// Only show steps during upgrades
-		if ($this->is_installed)
-		{
-			$suffix = sprintf(lang('subtitle_step'), $this->current_step, $this->steps);
-			$this->subtitle .= (empty($this->subtitle))
-				? $suffix
-				: ' <span class="faded">|</span> '.$suffix;
-		}
-
 		$javascript_basepath = $this->set_path('themes/ee/asset/javascript/');
 		$javascript_dir = (is_dir($javascript_basepath.'src/'))
 			? 'src/'
@@ -1402,7 +1393,8 @@ class Wizard extends CI_Controller {
 			'is_core'           => (IS_CORE) ? 'Core' : '',
 
 			'action'            => '',
-			'method'            => 'post'
+			'method'            => 'post',
+			'retry_link'        => $this->is_installed ? $this->set_qstr('do_update') : $this->set_qstr('do_install')
 		);
 
 		if ($this->is_installed)

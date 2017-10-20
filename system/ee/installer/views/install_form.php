@@ -6,18 +6,17 @@
 			<p><?=lang('install_note')?></p>
 		</div>
 	</div>
-	<form action="<?=$action?>" method="<?=$method?>">
-		<?php if ( ! empty($errors)): ?>
-			<div class="alert inline issue">
-				<span class="icon-issue"></span>
-				<h3><?=lang('error_occurred')?></h3>
-				<div class="alert-content">
-					<?php foreach ($errors as $error): ?>
-						<p><?=$error?></p>
-					<?php endforeach ?>
-				</div>
+	<?php if ( ! empty($errors)): ?>
+		<div class="alert inline issue">
+			<span class="icon-issue"></span>
+			<div class="alert-content">
+				<?php foreach ($errors as $error): ?>
+					<p><?=$error?></p>
+				<?php endforeach ?>
 			</div>
-		<?php endif ?>
+		</div>
+	<?php endif ?>
+	<form action="<?=$action?>" method="<?=$method?>">
 		<fieldset class="<?=form_error_class('db_hostname')?>">
 			<label><?=lang('db_hostname')?></label>
 			<em><?=lang('db_hostname_note')?></em>
@@ -68,10 +67,10 @@
 		</fieldset>
 		<fieldset class="options <?=form_error_class('license_agreement')?>">
 			<label><input type="checkbox" name="license_agreement" value="y" <?=set_checkbox('license_agreement', 'y')?>> <?=lang('license_agreement')?></label>
+			<?=form_error('license_agreement')?>
 		</fieldset>
 		<fieldset class="form-ctrls">
 			<input class="btn" type="submit" value="<?=lang('start_installation')?>" tabindex="11">
 		</fieldset>
-
 	</form>
 </div>

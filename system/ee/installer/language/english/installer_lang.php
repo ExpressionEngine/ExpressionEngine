@@ -43,12 +43,13 @@ $lang = array(
 	'start_installation'         => 'Install',
 
 // Update Form
-	'update_title'   => "Update ExpressionEngine %s to %s",
-	'start_update'   => 'Start Update',
+	'update_title'   => "Update ExpressionEngine from %s to %s",
+	'start_update'   => 'Update',
 	'update_note'    => '<b>Please</b> read <a href="'.DOC_URL.'installation/update.html" rel="external">Updating ExpressionEngine</a> <strong>before</strong> starting.',
 	'update_backup'  => 'Please <b>back up</b> your database before updating ExpressionEngine',
-	'updating_title' => "Updating ExpressionEngine %s to %s",
-	'updating'       => 'Updating',
+	'updating_title' => "Updating ExpressionEngine to %s",
+	'running_updates' => "Running updates for %s",
+	'updating'       => 'Updating ExpressionEngine',
 
 'error'               => 'ERROR',
 'submit'              => 'Submit',
@@ -94,10 +95,9 @@ $lang = array(
 'requirements_checker_not_loaded'    => 'Could not load RequirementsChecker class.',
 
 // Install/Upgrade Success
-'install_complete'      => 'Install Complete!',
-'install_success'       => "ExpressionEngine %s Installed",
+'install_success'       => "Install Complete!",
 'install_success_note'  => '<b>ExpressionEngine</b> has been installed.',
-'update_success'        => "ExpressionEngine Updated to %s",
+'update_success'        => "Update Complete!",
 'update_success_note'   => '<b>ExpressionEngine</b> has been updated.',
 'success_delete'        => 'Please delete the <kbd>system/ee/installer</kbd> folder from your server before proceeding.',
 'success_moved'         => 'The installer folder has been renamed to <kbd>system/ee/installer_%s</kbd>.',
