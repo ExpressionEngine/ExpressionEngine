@@ -1374,7 +1374,7 @@ class EE_Schema {
 			KEY `field_id` (`field_id`)
 		)";
 
-		$Q[] = "CREATE TABLE `exp_fluid_block_data` (
+		$Q[] = "CREATE TABLE `exp_fluid_field_data` (
 			`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 			`block_id` int(11) unsigned NOT NULL,
 			`entry_id` int(11) unsigned NOT NULL,
@@ -1647,7 +1647,7 @@ class EE_Schema {
 		}
 
 		// Default field types
-		$default_fts = array('select', 'text', 'textarea', 'date', 'email_address', 'file', 'fluid_blocks', 'grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'toggle', 'url');
+		$default_fts = array('select', 'text', 'textarea', 'date', 'email_address', 'file', 'fluid_fields', 'grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'toggle', 'url');
 
 		foreach($default_fts as $name)
 		{

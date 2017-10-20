@@ -11,7 +11,7 @@
 /**
  * Fluid Block Parser
  */
-class Fluid_block_parser {
+class Fluid_field_parser {
 
 	public $modifiers = array();
 	public $reserved_names = array();

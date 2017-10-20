@@ -12,7 +12,7 @@ require_once APPPATH.'libraries/channel_entries_parser/components/Custom_field.p
 require_once APPPATH.'libraries/channel_entries_parser/components/Custom_field_pair.php';
 require_once APPPATH.'libraries/channel_entries_parser/components/Custom_member_field.php';
 require_once APPPATH.'libraries/channel_entries_parser/components/Date.php';
-require_once APPPATH.'libraries/channel_entries_parser/components/Fluid_block.php';
+require_once APPPATH.'libraries/channel_entries_parser/components/Fluid_field.php';
 require_once APPPATH.'libraries/channel_entries_parser/components/Grid.php';
 require_once APPPATH.'libraries/channel_entries_parser/components/Header_and_footer.php';
 require_once APPPATH.'libraries/channel_entries_parser/components/Relationship.php';

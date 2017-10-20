@@ -39,7 +39,7 @@ class Updater {
 				'addSpamModerationPermissions',
 				'runSpamModuleUpdate',
 				'addPrimaryKeyToFileCategoryTable',
-				'addFluidBlockField',
+				'addFluidFieldField',
 				'addDurationField',
 				'addCommentMenuExtension',
 				'emancipateStatuses'
@@ -740,10 +740,10 @@ class Updater {
 	/**
 	 * New "Fluid Block" Field Type in 4.0.0
 	 */
-	private function addFluidBlockField()
+	private function addFluidFieldField()
 	{
 		ee()->db->insert('fieldtypes', array(
-				'name' => 'fluid_block',
+				'name' => 'fluid_field',
 				'version' => '1.0.0',
 				'settings' => base64_encode(serialize(array())),
 				'has_global_settings' => 'n'
@@ -795,7 +795,7 @@ class Updater {
 
 		ee()->dbforge->add_key('id', TRUE);
 		ee()->dbforge->add_key(array('block_id', 'entry_id'));
-		ee()->smartforge->create_table('fluid_block_data');
+		ee()->smartforge->create_table('fluid_field_data');
 
 		ee()->smartforge->add_column(
 			'relationships',

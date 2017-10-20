@@ -10,7 +10,7 @@
 /**
  * Fluid Block Fieldtype
  */
-class Fluid_block_ft extends EE_Fieldtype {
+class Fluid_field_ft extends EE_Fieldtype {
 
 	public $info = array();
 
