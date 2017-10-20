@@ -80,7 +80,7 @@ class File_ft extends EE_Fieldtype {
 					// Are we validating on grid data?
 					if (isset($this->settings['grid_row_id']))
 					{
-						$block_data_id = (isset($this->settings['block_data_id'])) ? $this->settings['block_data_id'] : 0;
+						$fluid_field_data_id = (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0;
 
 						ee()->load->model('grid_model');
 						$rows = ee()->grid_model->get_entry_rows(
@@ -89,7 +89,7 @@ class File_ft extends EE_Fieldtype {
 							$this->settings['grid_content_type'],
 							array(),
 							FALSE,
-							$block_data_id
+							$fluid_field_data_id
 						);
 
 						// If this filed was we need to check permissions.

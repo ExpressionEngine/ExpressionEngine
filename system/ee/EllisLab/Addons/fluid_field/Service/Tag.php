@@ -119,7 +119,7 @@ class Tag {
 				$tagdata,
 				array(),
 				NULL,
-				$field->getItem('block_data_id')
+				$field->getItem('fluid_field_data_id')
 			);
 
 			$tagdata = $relationship_parser->parse($field->getContentId(), $tagdata, $channel);
@@ -154,7 +154,7 @@ class Tag {
 			if ($field->getType() == 'grid')
 			{
 				ee()->load->library('grid_parser');
-				ee()->grid_parser->grid_field_names[$field->getId()][$field->getItem('block_data_id')] = $field->getName();
+				ee()->grid_parser->grid_field_names[$field->getId()][$field->getItem('fluid_field_data_id')] = $field->getName();
 			}
 
 			$tpl_chunk = $field->replaceTag($content, $params, $modifier);

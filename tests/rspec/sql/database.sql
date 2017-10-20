@@ -1189,7 +1189,7 @@ CREATE TABLE `exp_relationships` (
   `grid_col_id` int(10) unsigned NOT NULL DEFAULT '0',
   `grid_row_id` int(10) unsigned NOT NULL DEFAULT '0',
   `order` int(10) unsigned NOT NULL DEFAULT '0',
-  `block_data_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `fluid_field_data_id` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`relationship_id`),
   KEY `parent_id` (`parent_id`),
   KEY `child_id` (`child_id`),

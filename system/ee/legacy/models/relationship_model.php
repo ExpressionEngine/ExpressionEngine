@@ -22,7 +22,7 @@ class Relationship_model extends CI_Model {
 	/**
 	 *
 	 */
-	public function node_query($node, $entry_ids, $grid_field_id = NULL, $block_data_id = NULL)
+	public function node_query($node, $entry_ids, $grid_field_id = NULL, $fluid_field_data_id = NULL)
 	{
 		if ($node->field_name() == 'siblings')
 		{
@@ -35,13 +35,13 @@ class Relationship_model extends CI_Model {
 		}
 
 		$entry_ids = array_unique($entry_ids);
-		return $this->_run_node_query($node, $entry_ids, $grid_field_id, $block_data_id);
+		return $this->_run_node_query($node, $entry_ids, $grid_field_id, $fluid_field_data_id);
 	}
 
 	/**
 	 *
 	 */
-	protected function _run_node_query($node, $entry_ids, $grid_field_id, $block_data_id = NULL)
+	protected function _run_node_query($node, $entry_ids, $grid_field_id, $fluid_field_data_id = NULL)
 	{
 		$shortest_branch_length = 0;
 		$longest_branch_length = $this->_find_longest_branch($node);
@@ -82,13 +82,13 @@ class Relationship_model extends CI_Model {
 		$db->select('L0.order');
 		$db->from($this->_table.' as L0');
 
-		if ( ! is_null($block_data_id))
+		if ( ! is_null($fluid_field_data_id))
 		{
-			$db->where('L0.block_data_id', $block_data_id);
+			$db->where('L0.fluid_field_data_id', $fluid_field_data_id);
 		}
 		else
 		{
-			$db->where('L0.block_data_id', 0);
+			$db->where('L0.fluid_field_data_id', 0);
 		}
 
 		if ($type == self::GRID)

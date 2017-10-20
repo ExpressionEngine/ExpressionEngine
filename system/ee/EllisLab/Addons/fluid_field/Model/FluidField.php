@@ -148,7 +148,7 @@ class FluidField extends Model {
 		}
 
 		$field->setName('content');
-		$field->setItem('block_data_id', $this->getId());
+		$field->setItem('fluid_field_data_id', $this->getId());
 
 		return $field;
 	}

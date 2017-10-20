@@ -800,7 +800,7 @@ class Updater {
 		ee()->smartforge->add_column(
 			'relationships',
 			array(
-				'block_data_id' => array(
+				'fluid_field_data_id' => array(
 					'type'       => 'int',
 					'constraint' => 10,
 					'default'    => 0,
@@ -822,7 +822,7 @@ class Updater {
 			ee()->smartforge->add_column(
 				$table,
 				array(
-					'block_data_id' => array(
+					'fluid_field_data_id' => array(
 						'type'       => 'int',
 						'constraint' => 10,
 						'default'    => 0,

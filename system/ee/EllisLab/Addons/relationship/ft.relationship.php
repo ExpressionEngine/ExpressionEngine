@@ -127,7 +127,7 @@ class Relationship_ft extends EE_Fieldtype {
 		$all_rows_where = array(
 			'parent_id' => $entry_id,
 			'field_id' => $field_id,
-			'block_data_id' => (isset($this->settings['block_data_id'])) ? $this->settings['block_data_id'] : 0
+			'fluid_field_data_id' => (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0
 		);
 
 		if (isset($this->settings['grid_field_id']))
@@ -264,7 +264,7 @@ class Relationship_ft extends EE_Fieldtype {
 			$wheres = array(
 				'parent_id'     => $entry_id,
 				'field_id'      => $this->field_id,
-				'block_data_id' => (isset($this->settings['block_data_id'])) ? $this->settings['block_data_id'] : 0
+				'fluid_field_data_id' => (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0
 			);
 
 			if (isset($this->settings['grid_row_id']))

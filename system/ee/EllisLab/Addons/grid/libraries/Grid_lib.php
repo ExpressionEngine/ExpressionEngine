@@ -18,7 +18,7 @@ class Grid_lib {
 	public $field_name;
 	public $content_type;
 	public $entry_id;
-	public $block_data_id = 0;
+	public $fluid_field_data_id = 0;
 
 	protected $_fieldtypes = [];
 	protected $_validated = [];
@@ -45,9 +45,9 @@ class Grid_lib {
 
 		// If validation data is set, we're likely coming back to the form on a
 		// validation error
-		if (isset($this->_validated[$this->field_id.','.$this->block_data_id]['value']))
+		if (isset($this->_validated[$this->field_id.','.$this->fluid_field_data_id]['value']))
 		{
-			$rows = $this->_validated[$this->field_id.','.$this->block_data_id]['value'];
+			$rows = $this->_validated[$this->field_id.','.$this->fluid_field_data_id]['value'];
 		}
 		// Load autosaved/revision data
 		elseif (is_array($data))
@@ -57,7 +57,7 @@ class Grid_lib {
 		// Otherwise, we're editing or creating a new entry
 		else
 		{
-			$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type, array(), FALSE, $this->block_data_id);
+			$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type, array(), FALSE, $this->fluid_field_data_id);
 			$rows = (isset($rows[$this->entry_id])) ? $rows[$this->entry_id] : array();
 		}
 
@@ -197,7 +197,7 @@ class Grid_lib {
 			$this->field_id,
 			$this->entry_id,
 			$this->content_type,
-			$this->block_data_id
+			$this->fluid_field_data_id
 		);
 
 		$row_data = (isset($row['col_id_'.$column['col_id']]))
@@ -235,7 +235,7 @@ class Grid_lib {
 	public function validate($data)
 	{
 		// Get row data for this entry
-		$rows = ee()->grid_model->get_entry($this->entry_id, $this->field_id, $this->content_type, $this->block_data_id);
+		$rows = ee()->grid_model->get_entry($this->entry_id, $this->field_id, $this->content_type, $this->fluid_field_data_id);
 
 		// Check that we're editing a row that actually belongs to this entry
 		$valid_rows = array();
@@ -275,17 +275,17 @@ class Grid_lib {
 		}
 
 		// Return from cache if exists
-		if (isset($this->_validated[$this->field_id.','.$this->block_data_id]))
+		if (isset($this->_validated[$this->field_id.','.$this->fluid_field_data_id]))
 		{
-			return $this->_validated[$this->field_id.','.$this->block_data_id];
+			return $this->_validated[$this->field_id.','.$this->fluid_field_data_id];
 		}
 
 		$this->_searchable_data[$this->field_id] = [];
 
 		// Process the posted data and cache
-		$this->_validated[$this->field_id.','.$this->block_data_id] = $this->_process_field_data('validate', $data);
+		$this->_validated[$this->field_id.','.$this->fluid_field_data_id] = $this->_process_field_data('validate', $data);
 
-		return $this->_validated[$this->field_id.','.$this->block_data_id];
+		return $this->_validated[$this->field_id.','.$this->fluid_field_data_id];
 	}
 
 	/**
@@ -303,13 +303,13 @@ class Grid_lib {
 			$this->field_id,
 			$this->content_type,
 			$this->entry_id,
-			$this->block_data_id
+			$this->fluid_field_data_id
 		);
 
 		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->content_type);
 
 		// Get row data to send back to fieldtypes with new row IDs
-		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type, array(), TRUE, $this->block_data_id);
+		$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type, array(), TRUE, $this->fluid_field_data_id);
 		$rows = $rows[$this->entry_id];
 
 		// Remove deleted rows from $rows
@@ -334,7 +334,7 @@ class Grid_lib {
 					$this->field_id,
 					$this->entry_id,
 					$this->content_type,
-					$this->block_data_id
+					$this->fluid_field_data_id
 				);
 
 				if ( ! empty($rows[$i]['row_id']))
@@ -483,7 +483,7 @@ class Grid_lib {
 					$this->field_id,
 					$this->entry_id,
 					$this->content_type,
-					$this->block_data_id
+					$this->fluid_field_data_id
 				);
 
 				// Pass Grid row ID to fieldtype if it's an existing row

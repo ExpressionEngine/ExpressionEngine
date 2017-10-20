@@ -778,7 +778,7 @@ class EE_Schema {
 			parent_id int(10) UNSIGNED NOT NULL default 0,
 			child_id int(10) UNSIGNED NOT NULL default 0,
 			field_id int(10) UNSIGNED NOT NULL default 0,
-			block_data_id int(10) UNSIGNED NOT NULL default 0,
+			fluid_field_data_id int(10) UNSIGNED NOT NULL default 0,
 			grid_field_id int(10) UNSIGNED NOT NULL default 0,
 			grid_col_id int(10) UNSIGNED NOT NULL default 0,
 			grid_row_id int(10) UNSIGNED NOT NULL default 0,
@@ -787,7 +787,7 @@ class EE_Schema {
 			KEY `parent_id` (`parent_id`),
 			KEY `child_id` (`child_id`),
 			KEY `field_id` (`field_id`),
-			KEY `block_data_id` (`block_data_id`)
+			KEY `fluid_field_data_id` (`fluid_field_data_id`)
 			KEY `grid_row_id` (`grid_row_id`)
 		)";
 

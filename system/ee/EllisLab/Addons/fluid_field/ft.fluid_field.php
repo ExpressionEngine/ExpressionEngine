@@ -49,7 +49,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 		foreach ($field_data['fields'] as $key => $data)
 		{
 			$field_id = NULL;
-			$block_data_id = NULL;
+			$fluid_field_data_id = NULL;
 
 			foreach (array_keys($data) as $datum)
 			{
@@ -71,7 +71,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 
 			if (strpos($key, 'field_') === 0)
 			{
-				$block_data_id = (int) str_replace('field_', '', $key);
+				$fluid_field_data_id = (int) str_replace('field_', '', $key);
 			}
 
 			$field = clone $field_templates[$field_id];
@@ -87,7 +87,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 			}
 
 			$f->setName($field_name);
-			$f = $this->setupFieldInstance($f, $data, $block_data_id);
+			$f = $this->setupFieldInstance($f, $data, $fluid_field_data_id);
 
 			$validator = ee('Validation')->make();
 			$validator->defineRule('validateField', function($key, $value, $parameters, $rule) use ($f) {
@@ -207,7 +207,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 		$field_data = $block->getFieldData();
 		$field_data->set($values);
 		$field = $block->getField($field_data);
-		$field->setItem('block_data_id', $block->getId());
+		$field->setItem('fluid_field_data_id', $block->getId());
 		$field->save();
 
 		$values['field_id_' . $field->getId()] = $field->getData();
@@ -558,7 +558,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 	 * @param array $data An associative array containing the data to set
 	 * @return FieldFacade The field.
 	 */
-	private function setupFieldInstance($field, array $data, $block_data_id = NULL)
+	private function setupFieldInstance($field, array $data, $fluid_field_data_id = NULL)
 	{
 		$field_id = $field->getId();
 
@@ -576,9 +576,9 @@ class Fluid_field_ft extends EE_Fieldtype {
 			$field->setTimezone($data['field_dt_' . $field_id]);
 		}
 
-		if ( ! is_null($block_data_id))
+		if ( ! is_null($fluid_field_data_id))
 		{
-			$field->setItem('block_data_id', $block_data_id);
+			$field->setItem('fluid_field_data_id', $fluid_field_data_id);
 		}
 
 		return $field;
