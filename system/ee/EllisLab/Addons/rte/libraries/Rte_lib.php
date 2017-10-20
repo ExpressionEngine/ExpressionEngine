@@ -422,13 +422,11 @@ class Rte_lib {
 						buttons: '.json_encode($bits['buttons']).'
 					});
 
-				$(".fluid-wrap").on("fluidBlock:addField", function(e, el) {
-					if ($(el).data("field-type") == "rte") {
-						$("' . $selector . '", el).addClass("WysiHat-field")
-							.wysihat({
-								buttons: '.json_encode($bits['buttons']).'
-							});
-					}
+				FluidFiueld.on("rte", "add" function(e, el) {
+					$("' . $selector . '", el).addClass("WysiHat-field")
+						.wysihat({
+							buttons: '.json_encode($bits['buttons']).'
+						});
 				});
 
 				if (typeof Grid === "object")
