@@ -12,15 +12,12 @@ use EllisLab\ExpressionEngine\Service\Encrypt;
 define('MB_ENABLED', FALSE);
 include_once(APPPATH.'libraries/Encrypt.php');
 
-function ee($str)
-{
-	return new Encrypt\Encrypt("ADefaultKey");
-}
-
 class EncryptTest extends \PHPUnit_Framework_TestCase {
 
 	public function testDecodeOfMcryptedData()
 	{
+		ee()->setMock('Encrypt', new Encrypt\Encrypt('ADefaultKey'));
+
 		$text = "ExpressionEngine";
 		$key = "EllisLab";
 

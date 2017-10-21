@@ -37,47 +37,48 @@ function lang($str)
 	return $str;
 }
 
-function get_bool_from_string($value)
+// Below allows both ee()-> singleton mocks to allow unit testing of methods that rely on it
+// as well as ee('Foo') dependency container objects.
+//
+// Singleton:
+// load/config/etc can be stub classes with stub methods
+//
+// App container:
+// In your test, you must define the return value for requested object:
+//
+// 		ee()->setMock('Encrypt', new Encrypt\Encrypt('ADefaultKey'));
+//
+// Then any calls from the application to ee('Encrypt') will return the object / return value you specified.
+function ee($mock = '')
 {
-	if (is_bool($value))
-	{
-		return $value;
-	}
-
-	switch(strtolower($value))
-	{
-		case 'yes':
-		case 'y':
-		case 'on':
-			return TRUE;
-		break;
-
-		case 'no':
-		case 'n':
-		case 'off':
-			return FALSE;
-		break;
-
-		default:
-			return NULL;
-		break;
-	}
-}
-
-// Below allows ee()-> singleton mocks to allow unit testing of methods that rely on it.
-// For instance, a test could a require helper file directly, bypassing ee()->load->helper()
-// while retaining the necessary functionality.
-function ee()
-{
-	static $ee;
-	return ($ee) ?: new eeSingletonMock;
+	return new eeSingletonMock($mock);
 }
 
 class eeSingletonMock {
 	public $load;
-	public function __construct()
+	public $config;
+
+	protected $mock;
+	protected static $mocks = [];
+
+	public function __construct($mock = '')
 	{
 		$this->load = new eeSingletonLoadMock;
+		$this->config = new eeSingletonConfigMock;
+		$this->mock = $mock;
+	}
+
+	public function setMock($name, $return)
+	{
+		self::$mocks[$name] = $return;
+	}
+
+	public function __call($name, $args)
+	{
+		if (array_key_exists($this->mock, self::$mocks) && method_exists(self::$mocks[$this->mock], $name))
+		{
+			return call_user_func_array([self::$mocks[$this->mock], $name], $args);
+		}
 	}
 }
 
@@ -85,5 +86,12 @@ class eeSingletonLoadMock {
 	public function helper()
 	{
 		return;
+	}
+}
+
+class eeSingletonConfigMock {
+	public function item($name, $value = NULL)
+	{
+		return ($value) ?: $name;
 	}
 }
