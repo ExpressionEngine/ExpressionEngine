@@ -33,7 +33,6 @@ class eeSingletonMock {
 		$this->load = new eeSingletonLoadMock;
 		$this->config = new eeSingletonConfigMock;
 		$this->mock = $mock;
-		var_dump($this);
 	}
 
 	public function setMock($name, $return)
