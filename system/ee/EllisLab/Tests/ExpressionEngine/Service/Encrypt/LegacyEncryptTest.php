@@ -26,4 +26,9 @@ class EncryptTest extends \PHPUnit_Framework_TestCase {
 		$encoded = base64_encode($legacy->mcrypt_encode($text, md5($key)));
 		$this->assertEquals($legacy->decode($encoded, $key), $text);
 	}
+
+	public function tearDown()
+	{
+		ee()->resetMocks();
+	}
 }
