@@ -58,8 +58,6 @@ class Layouts extends AbstractChannelsController {
 			return ee()->cp->render('channels/layout/index', $vars);
 		}
 
-		$this->generateSidebar($channel->getId());
-
 		$vars['channel_id'] = $channel_id;
 		$vars['create_url'] = ee('CP/URL')->make('channels/layouts/create/' . $channel->getId());
 		$vars['base_url'] = ee('CP/URL', 'channels/layouts/' . $channel->getId());
@@ -158,11 +156,13 @@ class Layouts extends AbstractChannelsController {
 			->currentPage($page)
 			->render($vars['base_url']);
 
+		$vars['breadcrumb_title'] = '';
 		$vars['cp_page_title'] = sprintf(lang('channel_form_layouts'), $channel->channel_title);
-		$vars['export_url'] = ee('CP/URL', 'channels/sets/export/' . $channel->getId());
 		$vars['channel_title'] = ee('Format')->make('Text', $channel->channel_title)->convertToEntities();
 		$vars['layouts'] = $data;
 		$vars['no_results'] = ['text' => lang('no_layouts'), 'href' => $vars['create_url']];
+
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels'), lang('channel_manager'));
 
 		ee()->cp->render('channels/layout/index', $vars);
 	}

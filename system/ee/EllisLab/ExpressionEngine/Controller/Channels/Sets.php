@@ -21,7 +21,6 @@ class Sets extends AbstractChannelsController {
 	 */
 	public function index()
 	{
-		$this->generateSidebar('channel');
 		$base_url = ee('CP/URL', 'channels/sets');
 
 		$vars = array(
@@ -209,8 +208,6 @@ class Sets extends AbstractChannelsController {
 
 			ee()->functions->redirect(ee('CP/URL', 'channels/sets'));
 		}
-
-		$this->generateSidebar('channel');
 
 		$vars = $this->createAliasForm($set, $result);
 

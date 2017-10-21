@@ -9,12 +9,7 @@
 				<fieldset class="tbl-search right">
 					<a class="btn action" href="<?=$create_url?>"><?=lang('new_layout')?></a>
 				</fieldset>
-				<h1>
-					<?=$cp_page_title?>
-					<ul class="toolbar">
-						<li class="download"><a href="<?=$export_url?>" title="<?=$channel_title?>"></a></li>
-					</ul>
-				</h1>
+				<h1><?=$cp_page_title?></h1>
 				<?=ee('CP/Alert')->getAllInlines()?>
 				<?php $this->embed('_shared/table-list', ['data' => $layouts]); ?>
 				<?php if (isset($pagination)) echo $pagination; ?>

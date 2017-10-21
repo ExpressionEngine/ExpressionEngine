@@ -75,6 +75,7 @@ var Relationship = function (_React$Component) {
           selectionChanged: this.selectionChanged,
           noResults: this.props.no_results,
           filterable: true,
+          tooMany: true,
           filters: this.props.select_filters,
           filterUrl: this.props.filter_url,
           toggleAll: this.props.multi && this.props.items.length > SelectList.defaultProps.tooMany ? true : null
@@ -83,6 +84,7 @@ var Relationship = function (_React$Component) {
           items: this.state.selectedVisible,
           selected: [],
           filterable: true,
+          tooMany: true,
           selectable: false,
           reorderable: true,
           removable: true,

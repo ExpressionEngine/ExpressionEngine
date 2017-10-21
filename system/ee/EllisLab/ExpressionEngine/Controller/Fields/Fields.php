@@ -83,7 +83,7 @@ class Fields extends AbstractFieldsController {
 		{
 			$fields = $group->ChannelFields->sortBy('field_label')->asArray();
 
-			if ($search = ee('Request')->get('filter_by_keyword'))
+			if ($search = ee()->input->get_post('filter_by_keyword'))
 			{
 				$fields = array_filter($fields, function($field) use ($search) {
 					return strpos(
@@ -103,11 +103,10 @@ class Fields extends AbstractFieldsController {
 		}
 		else
 		{
-
 			$fields = ee('Model')->get('ChannelField')
 				->filter('site_id', ee()->config->item('site_id'));
 
-			if ($search = ee('Request')->get('filter_by_keyword'))
+			if ($search = ee()->input->get_post('filter_by_keyword'))
 			{
 				$fields->search(['field_label', 'field_name'], $search);
 			}

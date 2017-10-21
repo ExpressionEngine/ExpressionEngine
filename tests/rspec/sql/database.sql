@@ -54,6 +54,7 @@ DROP TABLE IF EXISTS `exp_member_search`;
 DROP TABLE IF EXISTS `exp_member_groups`;
 DROP TABLE IF EXISTS `exp_member_fields`;
 DROP TABLE IF EXISTS `exp_member_data`;
+DROP TABLE IF EXISTS `exp_member_news_views`;
 DROP TABLE IF EXISTS `exp_member_bulletin_board`;
 DROP TABLE IF EXISTS `exp_member_news_views`;
 DROP TABLE IF EXISTS `exp_layout_publish_member_groups`;
@@ -87,6 +88,7 @@ DROP TABLE IF EXISTS `exp_channel_member_groups`;
 DROP TABLE IF EXISTS `exp_channel_form_settings`;
 DROP TABLE IF EXISTS `exp_channel_fields`;
 DROP TABLE IF EXISTS `exp_channel_field_groups_fields`;
+DROP TABLE IF EXISTS `exp_channels_statuses`;
 DROP TABLE IF EXISTS `exp_channel_entries_autosave`;
 DROP TABLE IF EXISTS `exp_channel_data`;
 DROP TABLE IF EXISTS `exp_category_posts`;
@@ -257,6 +259,11 @@ CREATE TABLE `exp_channel_field_groups_fields` (
   PRIMARY KEY (`field_id`,`group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+CREATE TABLE exp_channels_statuses (
+	channel_id int(4) unsigned NOT NULL,
+	status_id int(4) unsigned NOT NULL,
+	PRIMARY KEY `channel_id_status_id` (`channel_id`, `status_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `exp_channel_fields` (
   `field_id` int(6) unsigned NOT NULL AUTO_INCREMENT,
@@ -763,6 +770,13 @@ CREATE TABLE `exp_member_data` (
   PRIMARY KEY (`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE exp_member_news_views (
+	news_id int(10) unsigned NOT NULL auto_increment,
+	version varchar(10) NULL,
+	member_id int(10) unsigned NOT NULL DEFAULT '0',
+	PRIMARY KEY `news_id` (`news_id`),
+	KEY `member_id` (`member_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `exp_member_fields` (
   `m_field_id` int(4) unsigned NOT NULL AUTO_INCREMENT,

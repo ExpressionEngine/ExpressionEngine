@@ -990,12 +990,12 @@ if ( ! function_exists('form_error'))
  *
  * @access	public
  * @param	array	$field	Array of field names, or string of single field name
- * @param	string	$class	Class name to return, defaults to 'invalid'
+ * @param	string	$class	Class name to return, defaults to 'fieldset-invalid'
  * @return	string	Empty string if no error, class name if error
  */
 if ( ! function_exists('form_error_class'))
 {
-	function form_error_class($fields = '', $class = 'invalid')
+	function form_error_class($fields = '', $class = 'fieldset-invalid')
 	{
 		if ( ! is_array($fields))
 		{

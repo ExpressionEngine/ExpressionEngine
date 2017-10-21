@@ -58,7 +58,7 @@
 				<?php foreach ($cp_breadcrumbs as $link => $title): ?>
 					<li><a href="<?=$link?>"><?=$title?></a></li>
 				<?php endforeach ?>
-				<li class="last"><?=$cp_page_title?></li>
+				<li class="last"><?=isset($breadcrumb_title) ? $breadcrumb_title : $cp_page_title?></li>
 			</ul>
 		<?php endif ?>
 		<?php if ($this->enabled('outer_box')) :?>
