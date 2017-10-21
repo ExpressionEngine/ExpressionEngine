@@ -63,8 +63,20 @@ class eeSingletonLoadMock {
 }
 
 class eeSingletonConfigMock {
-	public function item($name, $value = NULL)
+	protected static $config = [];
+
+	public function item($item, $index = '', $raw_value = FALSE)
 	{
-		return ($value) ?: $name;
+		return (isset(self::$config[$item])) ? self::$config[$item] : FALSE;
+	}
+
+	public function setItem($item, $value)
+	{
+		self::$config[$item] = $value;
+	}
+
+	public function resetConfig()
+	{
+		self::$config = [];
 	}
 }
