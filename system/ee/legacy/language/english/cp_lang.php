@@ -420,6 +420,8 @@ $lang = array(
 
 'disable' => 'Disable',
 
+'edit' => 'Edit',
+
 'enable' => 'Enable',
 
 'filter_categories' => 'filter categories',

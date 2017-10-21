@@ -20,14 +20,102 @@ class Channels extends AbstractChannelsController {
 	public function __construct()
 	{
 		parent::__construct();
-
-		$this->generateSidebar('channel');
 	}
 
 	public function index()
 	{
-		ee()->session->benjaminButtonFlashdata();
-		ee()->functions->redirect(ee('CP/URL')->make('channels/layouts'));
+		if (ee()->input->post('bulk_action') == 'remove')
+		{
+			$this->remove(ee()->input->post('selection'));
+			ee()->functions->redirect(ee('CP/URL')->make('channels'));
+		}
+
+		$vars['base_url'] = ee('CP/URL', 'channels');
+
+		$channels = ee('Model')->get('Channel')
+			->filter('site_id', ee()->config->item('site_id'));
+
+		if ($search = ee()->input->get_post('filter_by_keyword'))
+		{
+			$channels = $channels->search('channel_title', $search);
+		}
+
+		$total_channels = $channels->count();
+
+		$filters = ee('CP/Filter');
+		$filters->add('Keyword');
+		$filters->add('Perpage', $total_channels, 'all_channels', TRUE);
+		$filter_values = $filters->values();
+
+		$page = ee('Request')->get('page') ?: 1;
+		$per_page = $filter_values['perpage'];
+
+		$channels = $channels->offset(($page - 1) * $per_page)
+			->limit($per_page)
+			->order('channel_title')
+			->all();
+
+		// Only show filters if there is data to filter or we are currently filtered
+		if ($search OR $channels->count() > 0)
+		{
+			$vars['filters'] = $filters->render($vars['base_url']);
+		}
+
+		$highlight_id = ee()->session->flashdata('highlight_id');
+		$imported_channels = ee()->session->flashdata('imported_channels') ?: [];
+		$data = [];
+		foreach ($channels as $channel)
+		{
+			$edit_url = ee('CP/URL')->make('channels/edit/' . $channel->getId());
+
+			$data[] = [
+				'id' => $channel->getId(),
+				'label' => $channel->channel_title,
+				'href' => $edit_url,
+				'extra' => LD.$channel->channel_name.RD,
+				'selected' => ($highlight_id && $channel->getId() == $highlight_id) OR in_array($channel->getId(), $imported_channels),
+				'toolbar_items' => [
+					'edit' => [
+						'href' => $edit_url,
+						'title' => lang('edit')
+					],
+					'download' => [
+						'href' => ee('CP/URL', 'channels/sets/export/' . $channel->getId()),
+						'title' => lang('export')
+					],
+					'layout-set' => [
+						'href' => ee('CP/URL', 'channels/layouts/' . $channel->getId()),
+						'title' => lang('export')
+					]
+				],
+				'selection' => [
+					'name' => 'selection[]',
+					'value' => $channel->getId(),
+					'data' => [
+						'confirm' => lang('channel') . ': <b>' . ee('Format')->make('Text', $channel->channel_title)->convertToEntities() . '</b>'
+					]
+				]
+			];
+		}
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('layout') . ': <b>### ' . lang('channels') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/confirm_remove',
+			),
+		));
+
+		$vars['pagination'] = ee('CP/Pagination', $total_channels)
+			->perPage($per_page)
+			->currentPage($page)
+			->render(ee('CP/URL')->make('channels', $filter_values));
+
+		$vars['cp_page_title'] = lang('all_channels');
+		$vars['channels'] = $data;
+		$vars['create_url'] = ee('CP/URL', 'channels/create');
+		$vars['no_results'] = ['text' => lang('no_channels'), 'href' => $vars['create_url']];
+
+		ee()->cp->render('channels/index', $vars);
 	}
 
 	/**
@@ -40,20 +128,17 @@ class Channels extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$channel_id = ee()->input->post('content_id');
-		$channel = ee('Model')->get('Channel', $channel_id)->first();
+		$channel_ids = ee()->input->post('selection');
+		$channels = ee('Model')->get('Channel', $channel_ids)->all();
 
-		if ($channel)
+		if ($channels->count() > 0 && ee()->input->post('bulk_action') == 'remove')
 		{
-			$channel->delete();
+			$channels->delete();
 
 			ee('CP/Alert')->makeInline('channels')
 				->asSuccess()
 				->withTitle(lang('channels_removed'))
-				->addToBody(sprintf(
-					lang('channels_removed_desc'),
-					htmlentities($channel->channel_title, ENT_QUOTES, 'UTF-8')
-				))
+				->addToBody(sprintf(lang('channels_removed_desc'), count($channel_ids)))
 				->defer();
 		}
 		else
@@ -140,6 +225,7 @@ class Channels extends AbstractChannelsController {
 
 			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_channel');
+			ee()->view->breadcrumb_title = lang('edit').' '.$channel->channel_title;
 			ee()->view->base_url = ee('CP/URL')->make('channels/edit/'.$channel_id);
 		}
 
@@ -160,6 +246,11 @@ class Channels extends AbstractChannelsController {
 			{
 				$channel = $this->saveChannel($channel);
 
+				if (is_null($channel_id))
+				{
+					ee()->session->set_flashdata('highlight_id', $channel->getId());
+				}
+
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('channel_'.$alert_key))
@@ -172,7 +263,7 @@ class Channels extends AbstractChannelsController {
 				}
 				else
 				{
-					ee()->functions->redirect(ee('CP/URL')->make('channels/layouts/'.$channel->getId()));
+					ee()->functions->redirect(ee('CP/URL')->make('channels'));
 				}
 			}
 			else

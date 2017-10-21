@@ -1,33 +1,32 @@
-<?php $this->extend('_templates/default-nav-table'); ?>
+<?php $this->extend('_templates/default-nav', [], 'outer_box'); ?>
 
-<div class="tbl-ctrls">
-	<?=form_open($table['base_url'])?>
-		<?php if ($show_new_channel_button): ?>
-		<fieldset class="tbl-search right">
-			<a class="btn tn action <?=$disable?>" href="<?=ee('CP/URL')->make('channels/create')?>"><?=lang('create_new')?></a>
-			<a class="btn tn action <?=$disable?>" href="<?=ee('CP/URL')->make('channels/sets')?>"><?=lang('import')?></a>
-		</fieldset>
-		<?php endif; ?>
-		<h1><?=$cp_page_title?></h1>
-		<?=ee('CP/Alert')->getAllInlines()?>
-		<?php if (isset($filters)) echo $filters; ?>
-		<?php $this->embed('_shared/table', $table); ?>
-		<?=$pagination?>
-		<fieldset class="tbl-bulk-act hidden">
-			<select name="bulk_action">
-				<option>-- <?=lang('with_selected')?> --</option>
-				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
-			</select>
-			<input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
-		</fieldset>
-	</form>
+<div class="box table-list-wrap">
+	<div class="tbl-ctrls">
+		<?=form_open($base_url)?>
+			<fieldset class="tbl-search right">
+				<a class="btn action" href="<?=$create_url?>"><?=lang('new')?></a>
+				<a class="btn action" href="#" rel="import-channel"><?=lang('import')?></a>
+			</fieldset>
+			<h1><?=$cp_page_title?></h1>
+			<?=ee('CP/Alert')->getAllInlines()?>
+			<?php $this->embed('_shared/table-list', ['data' => $channels]); ?>
+			<?php if (isset($pagination)) echo $pagination; ?>
+			<fieldset class="tbl-bulk-act hidden">
+				<select name="bulk_action">
+					<option>-- <?=lang('with_selected')?> --</option>
+					<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+				</select>
+				<input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
+			</fieldset>
+		</form>
+	</div>
 </div>
 
 <?php
 
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove',
-	'form_url'	=> ee('CP/URL')->make('channels/remove', ee()->cp->get_url_state()),
+	'form_url'	=> ee('CP/URL')->make('channels', ee()->cp->get_url_state()),
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)

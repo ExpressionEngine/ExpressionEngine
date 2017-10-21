@@ -58,7 +58,7 @@ $lang = array(
 
 'channels_removed' => 'Channels removed',
 
-'channels_removed_desc' => 'The <b>%s</b> channel has been removed.',
+'channels_removed_desc' => '%d channels were removed.',
 
 'create_channel' => 'New Channel',
 
@@ -77,8 +77,6 @@ $lang = array(
 'custom_fields_for' => 'Custom Fields for %s',
 
 'duplicate_tab_name' => 'A tab with this name already exists.',
-
-'edit' => 'edit',
 
 'edit_form_layout' => 'Edit Publish Layout',
 
