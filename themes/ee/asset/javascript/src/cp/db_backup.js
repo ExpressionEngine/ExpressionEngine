@@ -1,6 +1,6 @@
 EE.cp.DbBackup = {
 
-	button: document.querySelectorAll('form input.btn')[0],
+	buttons: $('.form-btns input.btn:visible'),
 
 	init: function() {
 		EE.cp.DbBackup._init();
@@ -17,7 +17,7 @@ EE.cp.DbBackup = {
 	_bindButton: function() {
 		var that = this;
 
-		this.button.addEventListener('click', function(event) {
+		this.buttons.on('click', function(event) {
 			event.preventDefault();
 			that._disableButton(true);
 			that._sendAjaxRequest();
@@ -30,12 +30,12 @@ EE.cp.DbBackup = {
 	 * @param	boolean	work	Whether or not to put the button in a working state
 	 */
 	_disableButton: function(work) {
-		this.button.disabled = true;
+		this.buttons.attr('disabled', true)
 
 		if (work) {
-			this.button.className += ' work';
+			this.buttons.addClass('work')
 		} else {
-			this.button.className += ' disable';
+			this.buttons.addClass('disable')
 		}
 	},
 
@@ -43,9 +43,9 @@ EE.cp.DbBackup = {
 	 * Re-enables a button after it has been disabled
 	 */
 	_enableButton: function() {
-		this.button.disabled = false;
-		this.button.className = this.button.className.replace('work', '');
-		this.button.className = this.button.className.replace('disable', '');
+		this.buttons.attr('disabled', false)
+			.removeClass('work')
+			.removeClass('disable')
 	},
 
 	/**
