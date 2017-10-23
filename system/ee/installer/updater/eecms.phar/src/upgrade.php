@@ -116,6 +116,11 @@ class Command {
 	 */
 	public function showError($code, $error, $file = NULL, $line = NULL)
 	{
+		if (error_reporting() === 0)
+		{
+			return;
+		}
+
 		$message = "We could not complete the update because an error has occured:\n\033[0m";
 		$message .= strip_tags($error);
 
