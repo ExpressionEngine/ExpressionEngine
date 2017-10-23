@@ -705,9 +705,12 @@ class Wizard extends CI_Controller {
 			'db_debug' => TRUE, // We show our own errors
 			'cache_on' => FALSE,
 			'autoinit' => FALSE, // We'll initialize the DB manually
-			'char_set' => 'utf8',
-			'dbcollat' => 'utf8_unicode_ci'
+			'char_set' => 'utf8mb4',
+			'dbcollat' => 'utf8mb4_unicode_ci',
 		);
+
+		// Need to reset the connection based on the above settings.
+		ee('Database')->closeConnection();
 
 		$this->db_connect_attempt = $this->db_connect($db);
 		if ($this->db_connect_attempt === 1044 OR $this->db_connect_attempt === 1045)
