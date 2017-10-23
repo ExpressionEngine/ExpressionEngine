@@ -787,7 +787,7 @@ class EE_Schema {
 			KEY `parent_id` (`parent_id`),
 			KEY `child_id` (`child_id`),
 			KEY `field_id` (`field_id`),
-			KEY `fluid_field_data_id` (`fluid_field_data_id`)
+			KEY `fluid_field_data_id` (`fluid_field_data_id`),
 			KEY `grid_row_id` (`grid_row_id`)
 		)";
 
@@ -1647,7 +1647,7 @@ class EE_Schema {
 		}
 
 		// Default field types
-		$default_fts = array('select', 'text', 'textarea', 'date', 'email_address', 'file', 'fluid_fields', 'grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'toggle', 'url');
+		$default_fts = array('select', 'text', 'textarea', 'date', 'email_address', 'file', 'fluid_field', 'grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'toggle', 'url');
 
 		foreach($default_fts as $name)
 		{
