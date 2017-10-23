@@ -155,7 +155,7 @@ class Api_channel_fields extends Api {
 		$rfields  = array();
 		$gfields  = array();
 		$pfields  = array();
-		$fbfields = array();
+		$ffields = array();
 
 		foreach ($query->result_array() as $row)
 		{
@@ -203,7 +203,7 @@ class Api_channel_fields extends Api {
 			}
 			elseif ($row['field_type'] == 'fluid_field')
 			{
-				$fbfields[$row['site_id']][$row['field_name']] = $row['field_id'];
+				$ffields[$row['site_id']][$row['field_name']] = $row['field_id'];
 			}
 
 			$cfields[$row['site_id']][$row['field_name']] = $row['field_id'];
@@ -215,7 +215,7 @@ class Api_channel_fields extends Api {
 			'relationship_fields'   => $rfields,
 			'grid_fields'           => $gfields,
 			'pair_custom_fields'    => $pfields,
-			'fluid_field_fields'    => $fbfields,
+			'fluid_field_fields'    => $ffields,
 		);
 	}
 
