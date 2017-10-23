@@ -416,6 +416,15 @@ $(document).ready(function () {
 		});
 	}
 
+	// Date fields inside a Fluid Field need to be bound when a new field is added
+	if (FluidField !== undefined)
+	{
+		FluidField.on('date', 'add', function(field)
+		{
+			EE.cp.datePicker.bind($('input[rel="date-picker"]', field));
+		});
+	}
+
 	$(document).on('focus', 'input,select,button', function(e) {
 		if ( ! ($(e.target).attr('rel') == 'date-picker')
 			&&  ! $(e.target).closest('.date-picker-wrap').length) {

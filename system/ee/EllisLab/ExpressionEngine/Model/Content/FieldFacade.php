@@ -75,7 +75,7 @@ class FieldFacade {
 		$this->content_type = $type;
 	}
 
-	public function getContentType($type)
+	public function getContentType()
 	{
 		return $this->content_type;
 	}
@@ -271,12 +271,57 @@ class FieldFacade {
 		return $this->api->apply('get_field_status', array($field_value));
 	}
 
+	public function replaceTag($tagdata, $params = array(), $modifier = '')
+	{
+		$ft = $this->getNativeField();
+
+		$this->initField();
+
+		$data = $this->getItem('row');
+
+		$this->api->apply('_init', array(array(
+			'row'          => $data,
+			'content_id'   => $this->content_id,
+			'content_type' => $this->content_type,
+		)));
+
+		$data = $this->api->apply('pre_process', array(
+			$data['field_id_'.$this->getId()]
+		));
+
+		$parse_fnc = ($modifier) ? 'replace_'.$modifier : 'replace_tag';
+
+		$output = '';
+
+		if (method_exists($ft, $parse_fnc))
+		{
+			$output = $this->api->apply($parse_fnc, array($data, $params, $tagdata));
+		}
+		// Go to catchall and include modifier
+		elseif (method_exists($ft, 'replace_tag_catchall') AND $modifier !== '')
+		{
+			$output = $this->api->apply('replace_tag_catchall', array($data, $params, $tagdata, $modifier));
+		}
+
+		return $output;
+	}
+
+	public function acceptsContentType($name)
+	{
+		$ft = $this->getNativeField();
+		return $ft->accepts_content_type($name);
+	}
+
 
 	// TODO THIS WILL MOST DEFINITELY GO AWAY! BAD DEVELOPER!
 	public function getNativeField()
 	{
 		$data = $this->initField();
-		return $this->api->setup_handler($this->getType(), TRUE);
+		$ft = $this->api->setup_handler($this->getType(), TRUE);
+		ee()->api_channel_fields->field_type = $this->api->field_type;
+		ee()->api_channel_fields->field_types = array_merge(ee()->api_channel_fields->field_types, $this->api->field_types);
+		ee()->api_channel_fields->ft_paths = array_merge(ee()->api_channel_fields->ft_paths, $this->api->ft_paths);
+		return $ft;
 	}
 
 
@@ -294,7 +339,7 @@ class FieldFacade {
          $info = $this->metadata;
          $info = array_merge($defaults, $info);
 
-         if (is_null($this->format) && isset($info['field_fmt']))
+         if (is_null($this->getFormat()) && isset($info['field_fmt']))
          {
              $this->setFormat($info['field_fmt']);
          }
@@ -318,7 +363,7 @@ class FieldFacade {
 	protected function setupField()
 	{
 		$field_dt = $this->timezone;
-		$field_fmt = $this->format;
+		$field_fmt = $this->getFormat();
 		$field_data = $this->data;
 		$field_name = $this->getName();
 

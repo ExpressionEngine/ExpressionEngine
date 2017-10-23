@@ -113,6 +113,11 @@ abstract class EE_Fieldtype {
 		return $this->id;
 	}
 
+	public function isNew()
+	{
+		return is_null($this->id);
+	}
+
 	/**
 	 * Name getter
 	 *

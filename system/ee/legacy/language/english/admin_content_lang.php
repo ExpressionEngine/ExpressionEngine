@@ -8,6 +8,8 @@ $lang = array(
 
 'action_can_not_be_undone' => 'THIS ACTION CANNOT BE UNDONE',
 
+'add' => 'Add',
+
 'add_a_row' => 'Add A Row',
 
 'add_preset_button' => 'Add Preset Button:',
@@ -387,6 +389,8 @@ $lang = array(
 'relationship' => 'Relationship',
 
 'removed_fields' => 'The following fields were removed and their data was deleted: %s',
+
+'removed_fields_from_fluid_field' => 'The following fields were removed from the Fluid Field <b>%s</b> and their data was deleted: %s',
 
 'require_field_desc' => 'When set to <b>yes</b>, this field will be required to submit the publish form.',
 

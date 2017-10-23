@@ -56,7 +56,7 @@ Grid.Publish = function(field, settings) {
 	this.blankRow = $('tr.grid-blank-row', this.root);
 	this.emptyField = $('tr.no-results', this.root);
 	this.tableActions = $('tr.tbl-action', this.root);
-	this.rowContainer = this.root.children('tbody');
+	this.rowContainer = this.root.find('tbody');
 	this.addButtonToolbar = $('ul.toolbar:has(li.add)', this.parentContainer);
 	this.header = null;
 
@@ -830,6 +830,10 @@ Grid.Settings.prototype = {
  * Public method to instantiate Grid field
  */
 EE.grid = function(field, settings) {
+	if (settings == undefined) {
+		settings = $(field).data('grid-settings');
+	}
+
 	return new Grid.Publish(field, settings);
 };
 
@@ -845,5 +849,11 @@ if (typeof _ !== 'undefined' && EE.grid_cache !== 'undefined') {
 		Grid.bind.apply(Grid, args);
 	});
 }
+
+$(document).ready(function () {
+	FluidField.on('grid', 'add', function(el) {
+  		EE.grid($('table', el));
+	});
+});
 
 })(jQuery);

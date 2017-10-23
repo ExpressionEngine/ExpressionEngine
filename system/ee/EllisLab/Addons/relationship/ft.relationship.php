@@ -126,7 +126,8 @@ class Relationship_ft extends EE_Fieldtype {
 
 		$all_rows_where = array(
 			'parent_id' => $entry_id,
-			'field_id' => $field_id
+			'field_id' => $field_id,
+			'fluid_field_data_id' => (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0
 		);
 
 		if (isset($this->settings['grid_field_id']))
@@ -170,7 +171,6 @@ class Relationship_ft extends EE_Fieldtype {
 			}
 		//
 		// -------------------------------------------
-
 
 		// If child_id is empty, they are deleting a single relationship
 		if (count($ships))
@@ -262,15 +262,16 @@ class Relationship_ft extends EE_Fieldtype {
 		if ($get_related)
 		{
 			$wheres = array(
-				'parent_id' => $entry_id,
-				'field_id' => $this->field_id,
+				'parent_id'     => $entry_id,
+				'field_id'      => $this->field_id,
+				'fluid_field_data_id' => (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0
 			);
 
 			if (isset($this->settings['grid_row_id']))
 			{
-				$wheres['grid_col_id'] = $this->settings['col_id'];
+				$wheres['grid_col_id']   = $this->settings['col_id'];
 				$wheres['grid_field_id'] = $this->settings['grid_field_id'];
-				$wheres['grid_row_id'] = $this->settings['grid_row_id'];
+				$wheres['grid_row_id']   = $this->settings['grid_row_id'];
 			}
 
 			ee()->db
@@ -878,7 +879,7 @@ class Relationship_ft extends EE_Fieldtype {
 	 */
 	public function accepts_content_type($name)
 	{
-		return ($name == 'channel' || $name == 'grid');
+		return ($name == 'channel' || $name == 'grid' || $name == 'fluid_field');
 	}
 
 	/**

@@ -1,6 +1,6 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
-<div class="form-standard">
+<div class="form-standard" data-publish>
 	<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 	<div class="form-btns form-btns-top">
 		<h1><?=$cp_page_title?></h1>
@@ -60,6 +60,10 @@
 				if ($field->isCollapsed())
 				{
 					$field_class .= ' fieldset---closed';
+				}
+				if ($field->getType() == 'fluid_field')
+				{
+					$field_class .= ' fieldset-faux-fluid';
 				}
 			?>
 			<?php if ($field->getType() == 'grid'): ?>

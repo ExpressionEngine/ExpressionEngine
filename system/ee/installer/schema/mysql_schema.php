@@ -778,6 +778,7 @@ class EE_Schema {
 			parent_id int(10) UNSIGNED NOT NULL default 0,
 			child_id int(10) UNSIGNED NOT NULL default 0,
 			field_id int(10) UNSIGNED NOT NULL default 0,
+			fluid_field_data_id int(10) UNSIGNED NOT NULL default 0,
 			grid_field_id int(10) UNSIGNED NOT NULL default 0,
 			grid_col_id int(10) UNSIGNED NOT NULL default 0,
 			grid_row_id int(10) UNSIGNED NOT NULL default 0,
@@ -786,6 +787,7 @@ class EE_Schema {
 			KEY `parent_id` (`parent_id`),
 			KEY `child_id` (`child_id`),
 			KEY `field_id` (`field_id`),
+			KEY `fluid_field_data_id` (`fluid_field_data_id`)
 			KEY `grid_row_id` (`grid_row_id`)
 		)";
 
@@ -1372,6 +1374,17 @@ class EE_Schema {
 			KEY `field_id` (`field_id`)
 		)";
 
+		$Q[] = "CREATE TABLE `exp_fluid_field_data` (
+			`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+			`fluid_field_id` int(11) unsigned NOT NULL,
+			`entry_id` int(11) unsigned NOT NULL,
+			`field_id` int(11) unsigned NOT NULL,
+			`field_data_id` int(11) unsigned NOT NULL,
+			`order` int(5) unsigned NOT NULL DEFAULT '0',
+			PRIMARY KEY (`id`),
+			KEY `fluid_field_id_entry_id` (`fluid_field_id`,`entry_id`)
+		)";
+
 		$Q[] = "CREATE TABLE `exp_menu_sets` (
   			`set_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   			`name` varchar(50) DEFAULT NULL,
@@ -1634,7 +1647,7 @@ class EE_Schema {
 		}
 
 		// Default field types
-		$default_fts = array('select', 'text', 'textarea', 'date', 'email_address', 'file', 'grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'toggle', 'url');
+		$default_fts = array('select', 'text', 'textarea', 'date', 'email_address', 'file', 'fluid_fields', 'grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'toggle', 'url');
 
 		foreach($default_fts as $name)
 		{

@@ -1,6 +1,6 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
-<div class="form-standard has-tabs publish">
+<div class="form-standard has-tabs publish" data-publish>
 	<div class="form-btns form-btns-top">
 		<h1><?=$cp_page_title?></h1>
 		<?=cp_form_submit($submit_button_text, lang('btn_saving'))?>

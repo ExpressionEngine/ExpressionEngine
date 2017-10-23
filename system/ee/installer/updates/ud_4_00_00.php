@@ -39,6 +39,7 @@ class Updater {
 				'addSpamModerationPermissions',
 				'runSpamModuleUpdate',
 				'addPrimaryKeyToFileCategoryTable',
+				'addFluidFieldField',
 				'addDurationField',
 				'addCommentMenuExtension',
 				'emancipateStatuses'
@@ -734,6 +735,103 @@ class Updater {
 
 		// Finally create the primary key
 		ee()->smartforge->add_key('file_categories', array('file_id', 'cat_id'), 'PRIMARY');
+	}
+
+	/**
+	 * New "Fluid Field" Field Type in 4.0.0
+	 */
+	private function addFluidFieldField()
+	{
+		ee()->db->insert('fieldtypes', array(
+				'name' => 'fluid_field',
+				'version' => '1.0.0',
+				'settings' => base64_encode(serialize(array())),
+				'has_global_settings' => 'n'
+			)
+		);
+
+		ee()->dbforge->add_field(
+			array(
+				'id' => array(
+					'type'           => 'int',
+					'constraint'     => 11,
+					'unsigned'       => TRUE,
+					'null'           => FALSE,
+					'auto_increment' => TRUE
+				),
+				'fluid_field_id' => array(
+					'type'       => 'int',
+					'constraint' => 11,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				),
+				'entry_id' => array(
+					'type'       => 'int',
+					'constraint' => 11,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				),
+				'field_id' => array(
+					'type'       => 'int',
+					'constraint' => 11,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				),
+				'field_data_id' => array(
+					'type'       => 'int',
+					'constraint' => 11,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				),
+				'order' => array(
+					'type'       => 'int',
+					'constraint' => 5,
+					'unsigned'   => TRUE,
+					'null'       => FALSE,
+					'default'    => 0
+				)
+			)
+		);
+
+		ee()->dbforge->add_key('id', TRUE);
+		ee()->dbforge->add_key(array('fluid_field_id', 'entry_id'));
+		ee()->smartforge->create_table('fluid_field_data');
+
+		ee()->smartforge->add_column(
+			'relationships',
+			array(
+				'fluid_field_data_id' => array(
+					'type'       => 'int',
+					'constraint' => 10,
+					'default'    => 0,
+					'unsigned'   => TRUE,
+					'null'       => FALSE,
+				)
+			)
+		);
+
+		ee()->db->from('channel_fields');
+		ee()->db->select('field_id');
+		ee()->db->where('field_type', 'grid');
+
+		$grids = ee()->db->get();
+
+		foreach ($grids->result_array() as $row)
+		{
+			$table = 'channel_grid_field_' . $row['field_id'];
+			ee()->smartforge->add_column(
+				$table,
+				array(
+					'fluid_field_data_id' => array(
+						'type'       => 'int',
+						'constraint' => 10,
+						'default'    => 0,
+						'unsigned'   => TRUE,
+						'null'       => FALSE,
+					)
+				)
+			);
+		}
 	}
 
 	/**

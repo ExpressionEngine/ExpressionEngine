@@ -30,6 +30,7 @@ class Channel {
 	public $gfields					= array();
 	public $mfields					= array();
 	public $pfields					= array();
+	public $ffields                = array();
 	public $categories				= array();
 	public $catfields				= array();
 	public $channel_name	 		= array();
@@ -335,13 +336,15 @@ class Channel {
 			isset(ee()->session->cache['channel']['date_fields']) &&
 			isset(ee()->session->cache['channel']['relationship_fields']) &&
 			isset(ee()->session->cache['channel']['grid_fields']) &&
-			isset(ee()->session->cache['channel']['pair_custom_fields']))
+			isset(ee()->session->cache['channel']['pair_custom_fields']) &&
+			isset(ee()->session->cache['channel']['fluid_field_fields']))
 		{
-			$this->cfields = ee()->session->cache['channel']['custom_channel_fields'];
-			$this->dfields = ee()->session->cache['channel']['date_fields'];
-			$this->rfields = ee()->session->cache['channel']['relationship_fields'];
-			$this->gfields = ee()->session->cache['channel']['grid_fields'];
-			$this->pfields = ee()->session->cache['channel']['pair_custom_fields'];
+			$this->cfields  = ee()->session->cache['channel']['custom_channel_fields'];
+			$this->dfields  = ee()->session->cache['channel']['date_fields'];
+			$this->rfields  = ee()->session->cache['channel']['relationship_fields'];
+			$this->gfields  = ee()->session->cache['channel']['grid_fields'];
+			$this->pfields  = ee()->session->cache['channel']['pair_custom_fields'];
+			$this->ffields = ee()->session->cache['channel']['fluid_field_fields'];
 			return;
 		}
 
@@ -350,17 +353,19 @@ class Channel {
 
 		$fields = ee()->api_channel_fields->fetch_custom_channel_fields();
 
-		$this->cfields = $fields['custom_channel_fields'];
-		$this->dfields = $fields['date_fields'];
-		$this->rfields = $fields['relationship_fields'];
-		$this->gfields = $fields['grid_fields'];
-		$this->pfields = $fields['pair_custom_fields'];
+		$this->cfields  = $fields['custom_channel_fields'];
+		$this->dfields  = $fields['date_fields'];
+		$this->rfields  = $fields['relationship_fields'];
+		$this->gfields  = $fields['grid_fields'];
+		$this->pfields  = $fields['pair_custom_fields'];
+		$this->ffields = $fields['fluid_field_fields'];
 
-		ee()->session->cache['channel']['custom_channel_fields']	= $this->cfields;
-		ee()->session->cache['channel']['date_fields']				= $this->dfields;
-		ee()->session->cache['channel']['relationship_fields']		= $this->rfields;
-		ee()->session->cache['channel']['grid_fields']				= $this->gfields;
-		ee()->session->cache['channel']['pair_custom_fields']		= $this->pfields;
+		ee()->session->cache['channel']['custom_channel_fields'] = $this->cfields;
+		ee()->session->cache['channel']['date_fields']           = $this->dfields;
+		ee()->session->cache['channel']['relationship_fields']   = $this->rfields;
+		ee()->session->cache['channel']['grid_fields']           = $this->gfields;
+		ee()->session->cache['channel']['pair_custom_fields']    = $this->pfields;
+		ee()->session->cache['channel']['fluid_field_fields']    = $this->ffields;
 	}
 
 	/**
@@ -2347,7 +2352,7 @@ class Channel {
 
 		$chunks = array_chunk($fields, 50);
 
-		$chunk = array_shift($chunks);
+		$chunk = (array_shift($chunks)) ?: array();
 
 		if ( ! empty($chunks))
 		{

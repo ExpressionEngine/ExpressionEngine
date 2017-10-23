@@ -121,3 +121,7 @@ $(document).ready(function () {
 Grid.bind('relationship', 'display', function (cell) {
   Relationship.renderFields(cell);
 });
+
+FluidField.on('relationship', 'add', function (field) {
+  Relationship.renderFields(field);
+});

@@ -183,6 +183,14 @@ module ChannelSets
       end
     end
 
+    # Create all other custom fields for export testing
+    #
+    # @return [void]
+    def fluid_field
+      $db.query(IO.read('channel_sets/channel-with-fluid-field.sql'))
+      clear_db_result
+    end
+
     # Prepare our grid test data for comparison to JSON
     def prepare_test_data(data)
       case data[:type][1]

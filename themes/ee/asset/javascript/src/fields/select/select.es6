@@ -85,10 +85,22 @@ Grid.bind('checkboxes', 'display', function(cell) {
   SelectField.renderFields(cell)
 })
 
+FluidField.on('checkboxes', 'add', function(field) {
+  SelectField.renderFields(field)
+});
+
 Grid.bind('radio', 'display', function(cell) {
   SelectField.renderFields(cell)
 })
 
+FluidField.on('radio', 'add', function(field) {
+  SelectField.renderFields(field)
+});
+
 Grid.bind('multi_select', 'display', function(cell) {
   SelectField.renderFields(cell)
 })
+
+FluidField.on('multi_select', 'add', function(field) {
+  SelectField.renderFields(field)
+});

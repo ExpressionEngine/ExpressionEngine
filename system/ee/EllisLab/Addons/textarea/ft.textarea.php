@@ -56,7 +56,7 @@ class Textarea_ft extends EE_Fieldtype {
 			ee()->cp->add_js_script(array('plugin' => array('markitup')));
 			ee()->javascript->output('
 				$("textarea[data-markitup]")
-					.not(".grid-textarea textarea")
+					.not(".grid-textarea textarea, .fluid-item textarea")
 					.markItUp(EE.markitup.settings);
 
 				$("li.html-upload").addClass("m-link").attr({
@@ -69,6 +69,16 @@ class Textarea_ft extends EE_Fieldtype {
 					$("textarea[data-markitup]", cell).markItUp(EE.markitup.settings);
 
 					$("li.html-upload", cell).addClass("m-link").attr({
+						rel: "modal-file",
+						href: "'.ee('CP/URL')->make('addons/settings/filepicker/modal', array('directory' => 'all')).'"
+					});
+				});
+
+				FluidField.on("textarea", "add", function(field)
+				{
+					$("textarea[data-markitup]", field).markItUp(EE.markitup.settings);
+
+					$("li.html-upload", field).addClass("m-link").attr({
 						rel: "modal-file",
 						href: "'.ee('CP/URL')->make('addons/settings/filepicker/modal', array('directory' => 'all')).'"
 					});

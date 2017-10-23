@@ -59,9 +59,9 @@ class Category extends ContentModel {
 	);
 
 	protected static $_field_data = array(
-		'field_model'  => 'CategoryField',
+		'field_model'     => 'CategoryField',
+		'group_column'    => 'Category__group_id',
 		'structure_model' => 'CategoryGroup',
-		'group_column' => 'Category__group_id'
 	);
 
 	protected static $_validation_rules = array(

@@ -20,6 +20,7 @@ if (isset($settings['field_disabled']) && $settings['field_disabled'] == 'y')
 ?>
 <?=form_textarea($attributes);?>
 <?php if ($toolbar || ( ! $toolbar && isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y')): ?>
+	<?php $format_name = str_replace('field_id_' . $settings['field_id'], 'field_ft_' . $settings['field_id'], $name); ?>
 	<div class="format-options">
 		<?php if ($toolbar): ?>
 			<ul class="toolbar">
@@ -31,14 +32,14 @@ if (isset($settings['field_disabled']) && $settings['field_disabled'] == 'y')
 				<?php endif; ?>
 				<?php if (isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y'): ?>
 				<li class="form-element">
-					<?=form_dropdown('field_ft_'.$settings['field_id'], $format_options, $settings['field_fmt'])?>
+					<?=form_dropdown($format_name, $format_options, $settings['field_fmt'])?>
 				</li>
 				<?php endif; ?>
 			</ul>
 		<?php endif ?>
 
 		<?php if (isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y' && ! $toolbar): ?>
-			<?=form_dropdown('field_ft_'.$settings['field_id'], $format_options, $settings['field_fmt'])?>
+			<?=form_dropdown($format_name, $format_options, $settings['field_fmt'])?>
 		<?php endif ?>
 
 		<?php if ($smileys_enabled && isset($settings['field_show_smileys']) && $settings['field_show_smileys'] == 'y'): ?>

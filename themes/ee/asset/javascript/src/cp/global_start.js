@@ -129,6 +129,54 @@ window.Grid = {
 };
 
 // Handles events for the field manager channel create/edit form
+var FluidField = window.FluidField = {
+
+	_eventHandlers: [],
+
+	/**
+	 * Binds an event
+	 *
+	 * Available events are:
+	 * 'add' - When a field is added
+	 * 'remove' - When a field is removed
+	 * 'beforeSort' - Before sort starts
+	 * 'afterSort' - After sort ends
+	 *
+	 * @param	{string}	fieldtypeName	Class name of fieldtype
+	 * @param	{string}	action	Name of action
+	 * @param	{func}		func	Callback function for event
+	 */
+	on: function(fieldtypeName, action, func) {
+		if (this._eventHandlers[action] == undefined) {
+			this._eventHandlers[action] = []
+		}
+
+		// Each fieldtype gets one method per handler
+		this._eventHandlers[action][fieldtypeName] = func;
+	},
+
+	/**
+	 * Fires an event
+	 *
+	 * @param	{string}	action	Name of action
+	 * @param	{object}	element	Element object to pass along to the callback
+	 */
+	fireEvent: function(fieldtypeName, action, args) {
+		// If no events regsitered, don't bother
+		if (this._eventHandlers[action] === undefined) {
+			return;
+		}
+
+		// If no events regsitered, don't bother
+		if (this._eventHandlers[action][fieldtypeName] === undefined) {
+			return;
+		}
+
+		this._eventHandlers[action][fieldtypeName].apply(this, args);
+	}
+};
+
+// Handles events for the field manager channel create/edit form
 var FieldManager = window.FieldManager = {
 
 	_eventHandlers: [],
@@ -164,7 +212,6 @@ var FieldManager = window.FieldManager = {
 		}
 	}
 };
-
 
 // Setup Base EE Control Panel
 $(document).ready(function () {

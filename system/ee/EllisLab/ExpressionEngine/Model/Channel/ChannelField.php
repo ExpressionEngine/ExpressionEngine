@@ -158,6 +158,7 @@ class ChannelField extends FieldModel {
 	public function onBeforeDelete()
 	{
 		$this->removeFromLayouts();
+		$this->removeFromFluidFields();
 	}
 
 	private function getRelatedChannelIds()
@@ -218,6 +219,36 @@ class ChannelField extends FieldModel {
 
 			$channel_layout->field_layout = $field_layout;
 			$channel_layout->save();
+		}
+	}
+
+	private function removeFromFluidFields()
+	{
+		$fluid_fields = $this->getModelFacade()->get('ChannelField')
+			->filter('field_type', 'fluid_field')
+			->all();
+
+		if ( ! empty($fluid_fields))
+		{
+			// Bulk remove all pivot references to this field from all fluid fields
+			// though: @TODO Model relationships should have taken care of this...
+			$fluid_field_data = ee('Model')->get('fluid_field:FluidField')
+				->filter('field_id', $this->getId())
+				->delete();
+		}
+
+		foreach ($fluid_fields as $fluid_field)
+		{
+			if (in_array($this->getId(), $fluid_field->field_settings['field_channel_fields']))
+			{
+				$field_id = $this->getId();
+				$settings = $fluid_field->field_settings;
+				$settings['field_channel_fields'] = array_filter($settings['field_channel_fields'], function ($var) use($field_id){
+					return ($var != $field_id);
+				});
+				$fluid_field->field_settings = $settings;
+				$fluid_field->save();
+			}
 		}
 	}
 

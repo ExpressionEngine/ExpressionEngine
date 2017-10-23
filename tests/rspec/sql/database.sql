@@ -1,7 +1,7 @@
 #
 # SQL Export
 # Created by Querious (1068)
-# Created: August 24, 2017 at 9:07:58 AM PDT
+# Created: September 18, 2017 at 11:28:08 AM PDT
 # Encoding: Unicode (UTF-8)
 #
 
@@ -53,15 +53,16 @@ DROP TABLE IF EXISTS `exp_members`;
 DROP TABLE IF EXISTS `exp_member_search`;
 DROP TABLE IF EXISTS `exp_member_groups`;
 DROP TABLE IF EXISTS `exp_member_fields`;
+DROP TABLE IF EXISTS `exp_member_data_field_1`;
 DROP TABLE IF EXISTS `exp_member_data`;
 DROP TABLE IF EXISTS `exp_member_news_views`;
 DROP TABLE IF EXISTS `exp_member_bulletin_board`;
-DROP TABLE IF EXISTS `exp_member_news_views`;
 DROP TABLE IF EXISTS `exp_layout_publish_member_groups`;
 DROP TABLE IF EXISTS `exp_layout_publish`;
 DROP TABLE IF EXISTS `exp_html_buttons`;
 DROP TABLE IF EXISTS `exp_grid_columns`;
 DROP TABLE IF EXISTS `exp_global_variables`;
+DROP TABLE IF EXISTS `exp_fluid_field_data`;
 DROP TABLE IF EXISTS `exp_files`;
 DROP TABLE IF EXISTS `exp_file_watermarks`;
 DROP TABLE IF EXISTS `exp_file_dimensions`;
@@ -607,7 +608,7 @@ CREATE TABLE `exp_fieldtypes` (
   `settings` text,
   `has_global_settings` char(1) DEFAULT 'n',
   PRIMARY KEY (`fieldtype_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_file_categories` (
@@ -682,6 +683,19 @@ CREATE TABLE `exp_files` (
   KEY `upload_location_id` (`upload_location_id`),
   KEY `site_id` (`site_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `exp_fluid_field_data` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `fluid_field_id` int(11) unsigned NOT NULL,
+  `entry_id` int(11) unsigned NOT NULL,
+  `field_id` int(11) unsigned NOT NULL,
+  `field_data_id` int(11) unsigned NOT NULL,
+  `order` int(5) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `fluid_field_id` (`fluid_field_id`),
+  KEY `entry_id` (`entry_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 CREATE TABLE `exp_global_variables` (
@@ -778,6 +792,17 @@ CREATE TABLE exp_member_news_views (
 	KEY `member_id` (`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `exp_member_data_field_1` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `member_id` int(10) unsigned NOT NULL,
+  `m_field_id_1` int(10) DEFAULT '0',
+  `m_field_dt_1` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `m_field_ft_1` tinytext COLLATE utf8_unicode_ci,
+  PRIMARY KEY (`id`),
+  KEY `member_id` (`member_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
 CREATE TABLE `exp_member_fields` (
   `m_field_id` int(4) unsigned NOT NULL AUTO_INCREMENT,
   `m_field_name` varchar(32) NOT NULL,
@@ -800,7 +825,7 @@ CREATE TABLE `exp_member_fields` (
   `m_field_settings` text,
   `m_legacy_field_data` char(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`m_field_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_member_groups` (
@@ -913,13 +938,6 @@ CREATE TABLE `exp_member_groups` (
   PRIMARY KEY (`group_id`,`site_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE exp_member_news_views (
-    news_id int(10) unsigned NOT NULL auto_increment,
-    version varchar(10) NULL,
-    member_id int(10) unsigned NOT NULL DEFAULT '0',
-    PRIMARY KEY `news_id` (`news_id`),
-    KEY `member_id` (`member_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `exp_member_search` (
   `search_id` varchar(32) NOT NULL,
@@ -948,18 +966,6 @@ CREATE TABLE `exp_members` (
   `crypt_key` varchar(40) DEFAULT NULL,
   `authcode` varchar(10) DEFAULT NULL,
   `email` varchar(75) NOT NULL,
-  `url` varchar(150) DEFAULT NULL,
-  `location` varchar(50) DEFAULT NULL,
-  `occupation` varchar(80) DEFAULT NULL,
-  `interests` varchar(120) DEFAULT NULL,
-  `bday_d` int(2) DEFAULT NULL,
-  `bday_m` int(2) DEFAULT NULL,
-  `bday_y` int(4) DEFAULT NULL,
-  `aol_im` varchar(50) DEFAULT NULL,
-  `yahoo_im` varchar(50) DEFAULT NULL,
-  `msn_im` varchar(50) DEFAULT NULL,
-  `icq` varchar(50) DEFAULT NULL,
-  `bio` text,
   `signature` text,
   `avatar_filename` varchar(120) DEFAULT NULL,
   `avatar_width` int(4) unsigned DEFAULT NULL,
@@ -1189,6 +1195,7 @@ CREATE TABLE `exp_relationships` (
   `grid_col_id` int(10) unsigned NOT NULL DEFAULT '0',
   `grid_row_id` int(10) unsigned NOT NULL DEFAULT '0',
   `order` int(10) unsigned NOT NULL DEFAULT '0',
+  `fluid_field_data_id` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`relationship_id`),
   KEY `parent_id` (`parent_id`),
   KEY `child_id` (`child_id`),
@@ -1494,7 +1501,7 @@ CREATE TABLE `exp_update_log` (
   `line` int(10) unsigned DEFAULT NULL,
   `file` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`log_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 CREATE TABLE `exp_update_notices` (
@@ -1503,7 +1510,7 @@ CREATE TABLE `exp_update_notices` (
   `version` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `is_header` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`notice_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 CREATE TABLE `exp_upload_no_access` (
@@ -1843,7 +1850,8 @@ INSERT INTO `exp_fieldtypes` (`fieldtype_id`, `name`, `version`, `settings`, `ha
 	(11,'rte','1.0.0','YTowOnt9','n'),
 	(12,'url','1.0.0','YTowOnt9','n'),
 	(13,'email_address','1.0.0','YTowOnt9','n'),
-	(14,'toggle','1.0.0','YTowOnt9','n');
+	(14,'toggle','1.0.0','YTowOnt9','n'),
+	(15,'fluid_field','1.0.0','YTowOnt9','n');
 ALTER TABLE `exp_fieldtypes` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -1895,6 +1903,12 @@ INSERT INTO `exp_files` (`file_id`, `site_id`, `title`, `upload_location_id`, `m
 	(24,1,'sneak_squirrel.jpg',3,'image/jpeg','sneak_squirrel.jpg',19542,NULL,NULL,NULL,1,1432910425,1,1432910425,''),
 	(25,1,'zombie_bunny.png',3,'image/png','zombie_bunny.png',6830,NULL,NULL,NULL,1,1432910425,1,1432910425,'');
 ALTER TABLE `exp_files` ENABLE KEYS;
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_fluid_field_data` WRITE;
+ALTER TABLE `exp_fluid_field_data` DISABLE KEYS;
+ALTER TABLE `exp_fluid_field_data` ENABLE KEYS;
 UNLOCK TABLES;
 
 
@@ -1969,8 +1983,24 @@ ALTER TABLE `exp_member_data` ENABLE KEYS;
 UNLOCK TABLES;
 
 
+LOCK TABLES `exp_member_data_field_1` WRITE;
+ALTER TABLE `exp_member_data_field_1` DISABLE KEYS;
+INSERT INTO `exp_member_data_field_1` (`id`, `member_id`, `m_field_id_1`, `m_field_dt_1`, `m_field_ft_1`) VALUES
+	(1,1,0,NULL,NULL),
+	(2,2,-24966000,NULL,NULL),
+	(3,3,0,NULL,NULL),
+	(4,4,0,NULL,NULL),
+	(5,5,0,NULL,NULL),
+	(6,6,0,NULL,NULL),
+	(7,7,0,NULL,NULL);
+ALTER TABLE `exp_member_data_field_1` ENABLE KEYS;
+UNLOCK TABLES;
+
+
 LOCK TABLES `exp_member_fields` WRITE;
 ALTER TABLE `exp_member_fields` DISABLE KEYS;
+INSERT INTO `exp_member_fields` (`m_field_id`, `m_field_name`, `m_field_label`, `m_field_description`, `m_field_type`, `m_field_list_items`, `m_field_ta_rows`, `m_field_maxl`, `m_field_width`, `m_field_search`, `m_field_required`, `m_field_public`, `m_field_reg`, `m_field_cp_reg`, `m_field_fmt`, `m_field_show_fmt`, `m_field_order`, `m_field_text_direction`, `m_field_settings`, `m_legacy_field_data`) VALUES
+	(1,'birthday','Birthday','','date','',8,NULL,NULL,'y','n','y','n','n','none','y',1,'ltr',NULL,'n');
 ALTER TABLE `exp_member_fields` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -1995,14 +2025,14 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_members` WRITE;
 ALTER TABLE `exp_members` DISABLE KEYS;
-INSERT INTO `exp_members` (`member_id`, `group_id`, `username`, `screen_name`, `password`, `salt`, `unique_id`, `crypt_key`, `authcode`, `email`, `url`, `location`, `occupation`, `interests`, `bday_d`, `bday_m`, `bday_y`, `aol_im`, `yahoo_im`, `msn_im`, `icq`, `bio`, `signature`, `avatar_filename`, `avatar_width`, `avatar_height`, `photo_filename`, `photo_width`, `photo_height`, `sig_img_filename`, `sig_img_width`, `sig_img_height`, `ignore_list`, `private_messages`, `accept_messages`, `last_view_bulletins`, `last_bulletin_date`, `ip_address`, `join_date`, `last_visit`, `last_activity`, `total_entries`, `total_comments`, `total_forum_topics`, `total_forum_posts`, `last_entry_date`, `last_comment_date`, `last_forum_post_date`, `last_email_date`, `in_authorlist`, `accept_admin_email`, `accept_user_email`, `notify_by_default`, `notify_of_pm`, `display_avatars`, `display_signatures`, `parse_smileys`, `smart_notifications`, `language`, `timezone`, `time_format`, `date_format`, `include_seconds`, `cp_theme`, `profile_theme`, `forum_theme`, `tracker`, `template_size`, `notepad`, `notepad_size`, `bookmarklets`, `quick_links`, `quick_tabs`, `show_sidebar`, `pmember_id`, `rte_enabled`, `rte_toolset_id`, `cp_homepage`, `cp_homepage_channel`, `cp_homepage_custom`) VALUES
-	(1,1,'admin','Admin','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bc62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'kevin.cupp@gmail.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1409242030,0,0,10,0,0,0,1409242030,0,0,0,'n','y','y','y','y','y','y','y','y','english','America/New_York','12','%n/%j/%Y','n',NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,'',NULL,'n',0,'y',0,NULL,NULL,NULL),
-	(2,1,'robin','Robin Screen','5zaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bz62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'mediacow@localhost','','',NULL,NULL,18,3,1969,NULL,NULL,NULL,NULL,'',NULL,'procotopus.png',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'4',1,'y',0,0,'127.0.0.1',1465853984,1491259180,1491324114,83,10,7,4,0,1469650137,1487020433,0,'n','y','y','y','y','y','y','n','y','english','America/New_York','12','%n/%j/%Y','n',NULL,NULL,'Shares',NULL,'28',NULL,'18',NULL,'Query Results|index.php?/cp/utilities/query|1\nOffsite 2|http://test.com|4',NULL,'n',0,'y',0,'entries_edit','{"1":"1","2":"14","3":"8"}',''),
-	(3,2,'banned1','Banned 1','5aaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','by62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'edit2@localhost',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1484840926,0,0,2,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','y','english',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,NULL,NULL,'n',0,'y',0,NULL,NULL,NULL),
-	(4,4,'pending1','Pending 1','5daa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bx62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'edit5@localhost',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1484841088,0,0,2,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','y','english',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,NULL,NULL,'n',0,'y',0,NULL,NULL,NULL),
-	(5,4,'pending2','Pending 2','5eaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bm62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'edit6@localhost',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1485306436,0,0,0,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','y','english',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,NULL,NULL,'n',0,'y',0,NULL,NULL,NULL),
-	(6,5,'member1','Member 1','5faa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bn62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'editor7@localhost',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1485306584,0,0,0,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','y','english',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,NULL,NULL,'n',0,'y',0,NULL,NULL,NULL),
-	(7,5,'member2','Member 2','5gaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bo62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'editor8@localhost',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1485307720,0,0,0,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','y','english',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,NULL,NULL,'n',0,'y',0,NULL,NULL,NULL);
+INSERT INTO `exp_members` (`member_id`, `group_id`, `username`, `screen_name`, `password`, `salt`, `unique_id`, `crypt_key`, `authcode`, `email`, `signature`, `avatar_filename`, `avatar_width`, `avatar_height`, `photo_filename`, `photo_width`, `photo_height`, `sig_img_filename`, `sig_img_width`, `sig_img_height`, `ignore_list`, `private_messages`, `accept_messages`, `last_view_bulletins`, `last_bulletin_date`, `ip_address`, `join_date`, `last_visit`, `last_activity`, `total_entries`, `total_comments`, `total_forum_topics`, `total_forum_posts`, `last_entry_date`, `last_comment_date`, `last_forum_post_date`, `last_email_date`, `in_authorlist`, `accept_admin_email`, `accept_user_email`, `notify_by_default`, `notify_of_pm`, `display_avatars`, `display_signatures`, `parse_smileys`, `smart_notifications`, `language`, `timezone`, `time_format`, `date_format`, `include_seconds`, `cp_theme`, `profile_theme`, `forum_theme`, `tracker`, `template_size`, `notepad`, `notepad_size`, `bookmarklets`, `quick_links`, `quick_tabs`, `show_sidebar`, `pmember_id`, `rte_enabled`, `rte_toolset_id`, `cp_homepage`, `cp_homepage_channel`, `cp_homepage_custom`) VALUES
+	(1,1,'admin','Admin','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bc62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'kevin.cupp@gmail.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1409242030,0,0,10,0,0,0,1409242030,0,0,0,'n','y','y','y','y','y','y','y','y','english','America/New_York','12','%n/%j/%Y','n',NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,'',NULL,'n',0,'y',0,NULL,NULL,NULL),
+	(2,1,'robin','Robin Screen','5zaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bz62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'mediacow@localhost',NULL,'procotopus.png',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'4',1,'y',0,0,'127.0.0.1',1465853984,1491259180,1491324114,83,10,7,4,0,1469650137,1487020433,0,'n','y','y','y','y','y','y','n','y','english','America/New_York','12','%n/%j/%Y','n',NULL,NULL,'Shares',NULL,'28',NULL,'18',NULL,'Query Results|index.php?/cp/utilities/query|1\nOffsite 2|http://test.com|4',NULL,'n',0,'y',0,'entries_edit','{"1":"1","2":"14","3":"8"}',''),
+	(3,2,'banned1','Banned 1','5aaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','by62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'edit2@localhost',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1484840926,0,0,2,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','y','english',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,NULL,NULL,'n',0,'y',0,NULL,NULL,NULL),
+	(4,4,'pending1','Pending 1','5daa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bx62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'edit5@localhost',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1484841088,0,0,2,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','y','english',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,NULL,NULL,'n',0,'y',0,NULL,NULL,NULL),
+	(5,4,'pending2','Pending 2','5eaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bm62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'edit6@localhost',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1485306436,0,0,0,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','y','english',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,NULL,NULL,'n',0,'y',0,NULL,NULL,NULL),
+	(6,5,'member1','Member 1','5faa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bn62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'editor7@localhost',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1485306584,0,0,0,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','y','english',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,NULL,NULL,'n',0,'y',0,NULL,NULL,NULL),
+	(7,5,'member2','Member 2','5gaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bo62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'editor8@localhost',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1485307720,0,0,0,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','y','english',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,NULL,NULL,'n',0,'y',0,NULL,NULL,NULL);
 ALTER TABLE `exp_members` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -2018,9 +2048,6 @@ ALTER TABLE `exp_menu_sets` DISABLE KEYS;
 ALTER TABLE `exp_menu_sets` ENABLE KEYS;
 UNLOCK TABLES;
 
-LOCK TABLES `exp_member_news_views` WRITE;
-INSERT INTO `exp_member_news_views` (`member_id`, `version`) VALUES (1, '4.0.0');
-UNLOCK TABLES;
 
 LOCK TABLES `exp_message_attachments` WRITE;
 ALTER TABLE `exp_message_attachments` DISABLE KEYS;
@@ -2337,13 +2364,31 @@ ALTER TABLE `exp_update_log` DISABLE KEYS;
 INSERT INTO `exp_update_log` (`log_id`, `timestamp`, `message`, `method`, `line`, `file`) VALUES
 	(1,1503524902,'Updating to 4.0.0',NULL,NULL,NULL),
 	(2,1503524902,'Could not add column \'exp_file_dimensions.quality\'. Column already exists.','Smartforge::add_column',305,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
-	(3,1503524904,'Update complete. Now running version 4.0.0.',NULL,NULL,NULL);
+	(3,1503524904,'Update complete. Now running version 4.0.0.',NULL,NULL,NULL),
+	(4,1505759243,'Updating to 4.0.0',NULL,NULL,NULL),
+	(5,1505759243,'Could not modify column \'exp_channel_fields.group_id\'. Column does not exist.','Smartforge::modify_column',54,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(6,1505759243,'Could not create table \'exp_channels_channel_field_groups\'. Table already exists.','Smartforge::create_table',93,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(7,1505759243,'Could not create table \'exp_channels_channel_fields\'. Table already exists.','Smartforge::create_table',112,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(8,1505759243,'Could not create table \'exp_channel_field_groups_fields\'. Table already exists.','Smartforge::create_table',131,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(9,1505759243,'Smartforge::drop_table failed. Table \'exp_member_homepage\' does not exist.','Smartforge::drop_table',228,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(10,1505759243,'Could not drop column \'exp_members.birthday\'. Column does not exist.','Smartforge::drop_column',449,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(11,1505759243,'Could not create key \'sticky_date_id_idx\' on table \'exp_channel_titles\'. Key already exists.','Smartforge::add_key',592,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(12,1505759243,'Could not add column \'exp_file_dimensions.quality\'. Column already exists.','Smartforge::add_column',603,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(13,1505759243,'Could not add column \'exp_member_groups.can_moderate_spam\'. Column already exists.','Smartforge::add_column',618,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(14,1505759243,'Could not drop key \'file_id\' from table \'exp_file_categories\'. Key does not exist.','Smartforge::drop_key',679,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(15,1505759243,'Could not create key \'PRIMARY\' on table \'exp_file_categories\'. Key already exists.','Smartforge::add_key',682,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(16,1505759245,'Update complete. Now running version 4.0.0.',NULL,NULL,NULL);
 ALTER TABLE `exp_update_log` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_update_notices` WRITE;
 ALTER TABLE `exp_update_notices` DISABLE KEYS;
+INSERT INTO `exp_update_notices` (`notice_id`, `message`, `version`, `is_header`) VALUES
+	(1,'{birthday} member field variable is now a date type variable','4.0',1),
+	(2,' Checking for templates to review ...','4.0',0),
+	(3,'No templates contain the {birthday} variable.','4.0',0),
+	(4,'Done.','4.0',0);
 ALTER TABLE `exp_update_notices` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -2370,3 +2415,5 @@ UNLOCK TABLES;
 
 
 SET FOREIGN_KEY_CHECKS = @PREVIOUS_FOREIGN_KEY_CHECKS;
+
+

@@ -150,11 +150,12 @@ class Api_channel_fields extends Api {
 		ee()->db->select('field_id, field_type, field_fmt, field_name, site_id, field_settings');
 		$query = ee()->db->get('channel_fields');
 
-		$cfields = array();
-		$dfields = array();
-		$rfields = array();
-		$gfields = array();
-		$pfields = array();
+		$cfields  = array();
+		$dfields  = array();
+		$rfields  = array();
+		$gfields  = array();
+		$pfields  = array();
+		$ffields = array();
 
 		foreach ($query->result_array() as $row)
 		{
@@ -200,17 +201,21 @@ class Api_channel_fields extends Api {
 			{
 				$gfields[$row['site_id']][$row['field_name']] = $row['field_id'];
 			}
-
+			elseif ($row['field_type'] == 'fluid_field')
+			{
+				$ffields[$row['site_id']][$row['field_name']] = $row['field_id'];
+			}
 
 			$cfields[$row['site_id']][$row['field_name']] = $row['field_id'];
 		}
 
 		return array(
-			'custom_channel_fields'	=> $cfields,
-			'date_fields'			=> $dfields,
-			'relationship_fields'	=> $rfields,
-			'grid_fields'			=> $gfields,
-			'pair_custom_fields'	=> $pfields
+			'custom_channel_fields' => $cfields,
+			'date_fields'           => $dfields,
+			'relationship_fields'   => $rfields,
+			'grid_fields'           => $gfields,
+			'pair_custom_fields'    => $pfields,
+			'fluid_field_fields'    => $ffields,
 		);
 	}
 

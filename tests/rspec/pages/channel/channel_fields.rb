@@ -5,6 +5,6 @@ class ChannelFields < ControlPanelPage
   elements :fields_checkboxes, '.w-12 table tbody tr input[type="checkbox"]'
 
   def load
-    visit '/system/index.php?/cp/channels/fields/1'
+    visit '/system/index.php?/cp/fields'
   end
 end

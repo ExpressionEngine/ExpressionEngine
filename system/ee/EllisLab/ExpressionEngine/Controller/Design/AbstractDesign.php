@@ -501,7 +501,7 @@ abstract class AbstractDesign extends CP_Controller {
 
 			if (strncmp($template->template_name, $hidden_indicator, $hidden_indicator_length) == 0)
 			{
-				$template_name = '<span class="hidden">' . $template_name . '</span>';
+				$template_name = '<span class="hidden-tmp">' . $template_name . '</span>';
 			}
 
 			if ($template->template_name == 'index')

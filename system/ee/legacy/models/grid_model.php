@@ -148,7 +148,13 @@ class Grid_model extends CI_Model {
 					'type'				=> 'int',
 					'constraint'		=> 10,
 					'unsigned'			=> TRUE
-				)
+				),
+				'fluid_field_data_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'default'           => 0
+				),
 			);
 
 			ee()->dbforge->add_field($db_columns);
@@ -320,10 +326,11 @@ class Grid_model extends CI_Model {
 	 * @param	string	Content type to get data for
 	 * @return	array	Row data
 	 */
-	public function get_entry($entry_id, $field_id, $content_type)
+	public function get_entry($entry_id, $field_id, $content_type, $fluid_field_data_id = 0)
 	{
 		$table = $this->_data_table($content_type, $field_id);
 		ee()->db->where('entry_id', $entry_id);
+		ee()->db->where('fluid_field_data_id', $fluid_field_data_id);
 		return ee()->db->get($table)->result_array();
 	}
 
@@ -338,7 +345,7 @@ class Grid_model extends CI_Model {
 	 * @param	boolean	Whether or not to get fresh data on this call instead of from the _grid_data cache
 	 * @return	array	Row data
 	 */
-	public function get_entry_rows($entry_ids, $field_id, $content_type, $options = array(), $reset_cache = FALSE)
+	public function get_entry_rows($entry_ids, $field_id, $content_type, $options = array(), $reset_cache = FALSE, $fluid_field_data_id = 0)
 	{
 		if ( ! is_array($entry_ids))
 		{
@@ -349,6 +356,12 @@ class Grid_model extends CI_Model {
 		// specific parameters so we know not to query for them again
 		$options = $this->_validate_params($options, $field_id, $content_type);
 		$marker = $this->_get_tag_marker($options);
+
+		if (isset($this->_grid_data[$content_type][$field_id][$marker]['fluid_field_data_id'])
+			&& $this->_grid_data[$content_type][$field_id][$marker]['fluid_field_data_id'] != $fluid_field_data_id)
+		{
+			$reset_cache = TRUE;
+		}
 
 		foreach ($entry_ids as $key => $entry_id)
 		{
@@ -361,6 +374,7 @@ class Grid_model extends CI_Model {
 		}
 
 		$this->_grid_data[$content_type][$field_id][$marker]['params'] = $options;
+		$this->_grid_data[$content_type][$field_id][$marker]['fluid_field_data_id'] = $fluid_field_data_id;
 
 		if ( ! empty($entry_ids))
 		{
@@ -397,8 +411,9 @@ class Grid_model extends CI_Model {
 				$orderby = 'row_order';
 			}
 
-			ee()->db->where_in('entry_id', $entry_ids)
-				->order_by($orderby, element('sort', $options, 'asc'));
+			ee()->db->where_in('entry_id', $entry_ids);
+			ee()->db->where('fluid_field_data_id', $fluid_field_data_id);
+			ee()->db->order_by($orderby, element('sort', $options, 'asc'));
 
 			// -------------------------------------------
 			// 'grid_query' hook.
@@ -698,7 +713,7 @@ class Grid_model extends CI_Model {
 	 * @param	int	Entry ID to assign the row to
 	 * @return	array	IDs of rows to be deleted
 	 */
-	public function save_field_data($data, $field_id, $content_type, $entry_id)
+	public function save_field_data($data, $field_id, $content_type, $entry_id, $fluid_field_data_id = NULL)
 	{
 		// Keep track of which rows are updated and which are new, and the
 		// order they are received
@@ -714,6 +729,11 @@ class Grid_model extends CI_Model {
 		{
 			// Each row gets its order updated
 			$columns['row_order'] = $order;
+
+			if ( ! is_null($fluid_field_data_id))
+			{
+				$columns['fluid_field_data_id'] = $fluid_field_data_id;
+			}
 
 			// New rows
 			if (strpos($row_id, 'new_row_') !== FALSE)
@@ -739,8 +759,14 @@ class Grid_model extends CI_Model {
 		// the data array, they are to be deleted
 		$deleted_rows = ee()->db->select('row_id')
 			->where('entry_id', $entry_id)
-			->where_not_in('row_id', $row_ids)
-			->get($table_name)
+			->where_not_in('row_id', $row_ids);
+
+		if ( ! is_null($fluid_field_data_id))
+		{
+			$deleted_rows->where('fluid_field_data_id', $fluid_field_data_id);
+		}
+
+		$deleted_rows = $deleted_rows->get($table_name)
 			->result_array();
 
 		// Put rows into an array for easy passing and returning for the hook

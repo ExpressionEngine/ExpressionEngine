@@ -20,7 +20,7 @@ abstract class FieldModel extends Model {
 	protected static $_events = array(
 		'afterInsert',
 		'afterUpdate',
-		'afterDelete'
+		'afterDelete',
 	);
 
 
@@ -145,12 +145,13 @@ abstract class FieldModel extends Model {
 	 */
 	public function onAfterDelete()
 	{
-		if ($this->hasProperty($this->getColumnPrefix().'legacy_field_data')
-			&& $this->getProperty($this->getColumnPrefix().'legacy_field_data') == FALSE)
-		{
-			$this->dropTable();
-		}
-		else
+		$ft = $this->getFieldtypeInstance();
+		$this->callSettingsModify($ft, 'delete');
+
+		$this->dropTable();
+
+		if ( ! $this->hasProperty($this->getColumnPrefix().'legacy_field_data')
+			|| $this->getProperty($this->getColumnPrefix().'legacy_field_data') == TRUE)
 		{
 			$this->dropColumns($this->getColumns());
 		}
@@ -399,8 +400,13 @@ abstract class FieldModel extends Model {
 	/**
 	 * Create the table for the field
 	 */
-	private function createTable()
+	public function createTable()
 	{
+		if (ee()->db->table_exists($this->getTableName()))
+		{
+			return;
+		}
+
 		$fields = array(
 			'id' => array(
 				'type'           => 'int',
@@ -424,7 +430,7 @@ abstract class FieldModel extends Model {
 		ee()->dbforge->add_field($fields);
 		ee()->dbforge->add_key('id', TRUE);
 		ee()->dbforge->add_key($this->getForeignKey());
-		ee()->smartforge->create_table($this->getTableName());
+		ee()->dbforge->create_table($this->getTableName(), TRUE);
 
 		// Pre-populate the cache...
 		$this->getColumnNames();
@@ -441,7 +447,7 @@ abstract class FieldModel extends Model {
 		ee()->cache->delete($this->getCacheKey());
 	}
 
-/**
+	/**
 	 * TEMPORARY, VOLATILE, DO NOT USE
 	 *
 	 * @param	mixed	$data			Data for this field

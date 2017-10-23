@@ -355,20 +355,21 @@ class Export {
 		{
 			$result->settings = $this->exportFileFieldSettings($field);
 		}
-
-		if ($field->field_type == 'grid')
+		elseif ($field->field_type == 'grid')
 		{
 			$result->columns = $this->exportGridFieldColumns($field);
 		}
-
-		if ($field->field_type == 'relationship')
+		elseif ($field->field_type == 'relationship')
 		{
 			$result->settings = $this->exportRelationshipField($field);
 		}
-
-		if (in_array($field->field_type, array('textarea', 'rte')))
+		elseif (in_array($field->field_type, array('textarea', 'rte')))
 		{
 			$result->ta_rows = $field->field_ta_rows;
+		}
+		elseif ($field->field_type == 'fluid_field')
+		{
+			$result->settings = $this->exportFluidFieldField($field);
 		}
 
 		$field_json = json_encode($result, JSON_PRETTY_PRINT);
@@ -578,4 +579,26 @@ class Export {
 		}
 	}
 
+	/**
+	 * Does some extra work for fluid field field exports
+	 *
+	 * @param Model $field Channel field
+	 * @return StdClass Fluid Field settings description
+	 */
+	private function exportFluidFieldField($field)
+	{
+		$settings = $field->field_settings;
+
+		$result = new StdClass();
+		$result->field_channel_fields = array();
+
+		foreach ($settings['field_channel_fields'] as $field_id)
+		{
+			$field = ee('Model')->get('ChannelField', $field_id)->first();
+			$result->field_channel_fields[] = $field->field_name;
+			$this->exportField($field);
+		}
+
+		return $result;
+	}
 }
