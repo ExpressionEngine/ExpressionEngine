@@ -12,6 +12,9 @@
  */
 class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
+	// bring in the :modifier methods
+	use EllisLab\ExpressionEngine\Service\Template\Variables\ModifiableTrait;
+
 	/**
 	 * There are always simple variables. Let me tell you ...
 	 *
@@ -424,14 +427,85 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 	 */
 	protected function _basic($data, $tagdata, $key, $val, $prefix)
 	{
-		$raw_val = preg_replace('/^'.$prefix.'/', '', $val);
-
-		if ($raw_val AND array_key_exists($raw_val, $data))
+		if ($raw_val = preg_replace('/^'.$prefix.'/', '', $val))
 		{
-			$tagdata = str_replace(LD.$val.RD, $data[$raw_val], $tagdata);
+			if (array_key_exists($raw_val, $data))
+			{
+				$tagdata = str_replace(LD.$val.RD, $data[$raw_val], $tagdata);
+			}
+			else
+			{
+				$field = ee('Variables/Parser')->parseVariableProperties($key, $prefix);
+				$method = 'replace_'.$field['modifier'];
+
+				if ( ! method_exists($this, $method))
+				{
+					return $tagdata;
+				}
+
+				// some variables like {channel_short_name} don't directly map to the schema, so we can define
+				// methods here like getChannelShortName() to provide the correct content
+				$mismatch_getter = 'get'.str_replace(' ', '', ucwords(str_replace('_', ' ', $field['field_name'])));
+
+				if (array_key_exists($field['field_name'], $data))
+				{
+					$content = $this->$method($data[$field['field_name']], $field['params']);
+				}
+				elseif (method_exists($this, $mismatch_getter))
+				{
+					$content = $this->$method($this->$mismatch_getter($data), $field['params']);
+				}
+				else
+				{
+					// variable must not exist
+					return $tagdata;
+				}
+
+				$this->conditional_vars[$key] = $content;
+
+				$tagdata = str_replace(LD.$val.RD, $content, $tagdata);
+			}
 		}
 
 		return $tagdata;
+	}
+
+	/**
+	 * {channel} variable/schema mismatch getter
+	 *
+	 * @param  array $data Channel entry row
+	 * @return string the Channel name
+	 */
+	private function getChannel($data)
+	{
+		return (isset($data['channel_title'])) ? $data['channel_title'] : '';
+	}
+
+	/**
+	 * {channel_short_name} variable/schema mismatch getter
+	 *
+	 * @param  array $data Channel entry row
+	 * @return string the Channel short name
+	 */
+	private function getChannelShortName($data)
+	{
+		return (isset($data['channel_name'])) ? $data['channel_name'] : '';
+	}
+
+	/**
+	 * {author} variable/schema mismatch getter
+	 *
+	 * @param  array $data Channel entry row
+	 * @return string the Channel name
+	 */
+	private function getAuthor($data)
+	{
+		if ( ! empty($data['screen_name']))
+		{
+			return $data['screen_name'];
+		}
+
+		return (isset($data['username'])) ? $data['username'] : '';
 	}
 }
 

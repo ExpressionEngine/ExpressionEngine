@@ -1091,7 +1091,7 @@ class Moblog {
 		{
 			for($i=0; $i < count($matches['0']) ; $i++)
 			{
-				$params = $this->assign_parameters($matches['1'][$i]);
+				$params = ee('Variables/Parser')->parseTagParameters($matches['1'][$i]);
 
 				$params['format']	= ( ! isset($params['format'])) ? '' : $params['format'];
 				$params['name'] 	= ( ! isset($params['name'])) 	? '' : $params['name'];
@@ -1209,31 +1209,10 @@ class Moblog {
 	 */
 	function assign_parameters($str)
 	{
-		if ($str == "")
-		{
-			return FALSE;
-		}
+		ee()->load->library('logger');
+		ee()->logger->deprecated('4.0', "ee('Variables/Parser')->parseTagParameters()");
 
-		// \047 - Single quote octal
-		// \042 - Double quote octal
-
-		// I don't know for sure, but I suspect using octals is more reliable than ASCII.
-		// I ran into a situation where a quote wasn't being matched until I switched to octal.
-		// I have no idea why, so just to be safe I used them here. - Rick
-
-		if (preg_match_all("/(\S+?)\s*=[\042\047](\s*.+?\s*)[\042\047]\s*/", $str, $matches))
-		{
-			$result = array();
-
-			for ($i = 0; $i < count($matches['1']); $i++)
-			{
-				$result[$matches['1'][$i]] = $matches['2'][$i];
-			}
-
-			return $result;
-		}
-
-		return FALSE;
+		return ee('Variables/Parser')->parseTagParameters($str);
 	}
 
 	/**
@@ -1380,7 +1359,7 @@ class Moblog {
 				// Assign parameters, if any
 				if(isset($matches['1'][$i]) && trim($matches['1'][$i]) != '')
 				{
-					$params = $this->assign_parameters(trim($matches['1'][$i]));
+					$params = ee('Variables/Parser')->parseTagParameters(trim($matches['1'][$i]));
 				}
 
 				$params['match'] = ( ! isset($params['match'])) ? '' : $params['match'];

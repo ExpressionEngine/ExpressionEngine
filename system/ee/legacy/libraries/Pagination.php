@@ -508,7 +508,7 @@ class Pagination_object {
 			// Grab the parameters from {pagination_links}
 			if (preg_match("/".LD."pagination_links(.*)".RD."/", $template, $pagination_links_match))
 			{
-				$parameters = ee()->functions->assign_parameters($pagination_links_match[1]);
+				$parameters = ee('Variables/Parser')->parseTagParameters($pagination_links_match[1]);
 
 				// Check for page_padding
 				if (isset($parameters['page_padding']))

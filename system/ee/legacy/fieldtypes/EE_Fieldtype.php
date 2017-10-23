@@ -12,6 +12,9 @@
  */
 abstract class EE_Fieldtype {
 
+	// bring in the :modifier methods
+	use EllisLab\ExpressionEngine\Service\Template\Variables\ModifiableTrait;
+
 	// Old identifiers for backwards compatibility.
 	// @deprecated
 	public $field_id;
@@ -40,7 +43,7 @@ abstract class EE_Fieldtype {
 	protected $content_id = NULL;
 	protected $content_type = 'channel';
 
-	public function __construct() {}
+	public function __construct(){}
 
 	/**
 	 * Re-initialize the class.

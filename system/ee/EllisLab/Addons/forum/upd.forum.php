@@ -723,10 +723,8 @@ class Forum_upd {
 				$data['board_'.substr($key, 5)] = $value;
 			}
 
-			$word_separator = ee()->config->item('word_separator');
-
 			$data['board_label']			= $query->row('pref_forum_name') ;
-			$data['board_name']				= url_title($query->row('pref_forum_name'), $word_separator);
+			$data['board_name']				= ee('Format')->make('Text', $query->row('pref_forum_name'))->urlSlug();
 			$data['board_enabled']			= $query->row('pref_forum_enabled') ;
 			$data['board_forum_trigger']	= ee()->config->item('forum_trigger');
 

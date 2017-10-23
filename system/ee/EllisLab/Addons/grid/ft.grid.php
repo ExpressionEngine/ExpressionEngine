@@ -167,6 +167,14 @@ class Grid_ft extends EE_Fieldtype {
 	}
 
 	/**
+	 * :length modifier
+	 */
+	public function replace_length($data, $params = array(), $tagdata = FALSE)
+	{
+		return $this->replace_total_rows($data, $params, $tagdata);
+	}
+
+	/**
 	 * :total_rows modifier
 	 */
 	public function replace_total_rows($data, $params = '', $tagdata = '')

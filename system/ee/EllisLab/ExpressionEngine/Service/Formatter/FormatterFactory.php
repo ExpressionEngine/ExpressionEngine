@@ -10,6 +10,7 @@
 namespace EllisLab\ExpressionEngine\Service\Formatter;
 
 use EE_Lang;
+use EE_Session;
 use EllisLab\ExpressionEngine\Core\Provider;
 
 /**
@@ -18,19 +19,38 @@ use EllisLab\ExpressionEngine\Core\Provider;
 class FormatterFactory {
 
 	/**
+	 * @var array Any needed app config settings
+	 */
+	protected $config;
+
+	/**
 	 * @var object $lang EE_Lang
 	 **/
 	private $lang;
 
 	/**
+	 * @var int bitwise mask of options
+	 */
+	protected $options;
+
+	/**
+	 * @var object $session EE_Session
+	 */
+	protected $session;
+
+	/**
 	 * Constructor
 	 *
 	 * @param object EllisLab\ExpressionEngine\Core\Provider
+	 * @param integer bitwise-defined options
 	 * @param object EE_Lang
 	 */
-	public function __construct(EE_Lang $lang)
+	public function __construct(EE_Lang $lang, EE_Session $session, $config, $options)
 	{
 		$this->lang = $lang;
+		$this->session = $session;
+		$this->config = $config;
+		$this->options = $options;
 	}
 
 	/**
@@ -48,7 +68,7 @@ class FormatterFactory {
 
 		if (class_exists($class))
 		{
-			return new $class($content, $this->lang);
+			return new $class($content, $this->lang, $this->session, $this->config, $this->options);
 		}
 
 		throw new \Exception("Unknown formatter: `{$formatter_name}`.");

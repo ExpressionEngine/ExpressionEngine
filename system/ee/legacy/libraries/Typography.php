@@ -230,9 +230,9 @@ class EE_Typography {
 		/**  Fetch word censoring prefs
 		/** -------------------------------------*/
 
-		if (ee()->config->item('enable_censoring') == 'y')
+		if (bool_config_item('enable_censoring'))
 		{
-			$this->_fetch_word_censor_prefs();
+			$this->word_censor = TRUE;
 		}
 
 		/** -------------------------------------
@@ -742,11 +742,7 @@ class EE_Typography {
 		$str = $this->emoticon_replace($str);
 
 		//  Parse censored words
-		if ($this->word_censor === TRUE && count($this->censored_words > 0))
-		{
-			ee()->load->helper('text');
-			$str = word_censor($str, $this->censored_words, $this->censored_replace);
-		}
+		$str = $this->filter_censored_words($str);
 
 		// Decode {encode=...} only in the CP since the template parser handles
 		// this for page requets
@@ -2185,8 +2181,7 @@ class EE_Typography {
 			return $str;
 		}
 
-		ee()->load->helper('text');
-		return word_censor($str, $this->censored_words, $this->censored_replace);
+		return (string) ee('Format')->make('Text', $str)->censor();
 	}
 
 	/**
@@ -2387,40 +2382,6 @@ while (--j >= 0)
 				$this->smiley_array = $smileys;
 				$this->emoticon_url = ee()->config->slash_item('emoticon_url');
 			}
-		}
-	}
-
-	/**
-	 * Fetch Word Censor Preferences
-	 */
-	private function _fetch_word_censor_prefs()
-	{
-		$this->word_censor = TRUE;
-
-		if ($this->word_censor == TRUE && ee()->config->item('censored_words') != '')
-		{
-			if (ee()->config->item('censor_replacement') !== FALSE)
-			{
-				$this->censored_replace = ee()->config->item('censor_replacement');
-			}
-
-			$words = str_replace('OR', '|', trim(ee()->config->item('censored_words')));
-
-			if (substr($words, -1) == "|")
-			{
-				$words = substr($words, 0, -1);
-			}
-
-			$this->censored_words = explode("|", $words);
-
-			if (count($this->censored_words) == 0)
-			{
-				$this->word_censor = FALSE;
-			}
-		}
-		else
-		{
-			$this->word_censor = FALSE;
 		}
 	}
 

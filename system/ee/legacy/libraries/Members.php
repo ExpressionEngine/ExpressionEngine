@@ -566,7 +566,7 @@ class Members {
 						$result_ids[$channel_keys[$row['entry_id']]] = array(
 												'title' => $row['title'],
 												'active_date' => $row['recent_comment_date'],
-												'url_title' => url_title($row['title']),
+												'url_title' => ee('Format')->make('Text', $row['title'])->urlSlug(),
 												'path' => ee()->functions->fetch_site_index().$qm.'URL='.$path,
 												'id'	=> 'b'.$row['entry_id'],
 												'type'	=> lang('comment')
@@ -612,7 +612,7 @@ class Members {
 						$result_ids[$forum_keys[$row['topic_id']]] = array(
 												'title' => $row['title'],
 												'active_date' => $row['last_post_date'],
-												'url_title' => url_title($row['title']),
+												'url_title' => ee('Format')->make('Text', $row['title'])->urlSlug(),
 												'path' => ee()->functions->fetch_site_index().$qm.'URL='.$path,
 												'id'	=> 'f'.$row['topic_id'],
 												'type'	=> lang('forum_post')

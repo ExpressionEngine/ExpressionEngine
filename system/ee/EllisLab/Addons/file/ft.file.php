@@ -430,6 +430,110 @@ JSC;
 	}
 
 	/**
+	 * :length modifier
+	 */
+	public function replace_length($data, $params = array(), $tagdata = FALSE)
+	{
+		return $data['file_size'];
+	}
+
+	/**
+	 * :raw_content modifier
+	 */
+	public function replace_raw_content($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_raw_content($data['raw_output'], $params, $tagdata);
+	}
+
+	/**
+	 * :attr_safe modifier
+	 */
+	public function replace_attr_safe($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_attr_safe($data['url'], $params, $tagdata);
+	}
+
+	/**
+	 * :limit modifier
+	 */
+	public function replace_limit($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_limit($data['url'], $params, $tagdata);
+	}
+
+	/**
+	 * :form_prep modifier
+	 */
+	public function replace_form_prep($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_form_prep($data['url'], $params, $tagdata);
+	}
+
+	/**
+	 * :rot13 modifier (for Seth)
+	 */
+	public function replace_rot13($data, $params = array(), $tagdata = FALSE)
+	{
+		return str_rot13($data['url']);
+	}
+
+	/**
+	 * :encrypt modifier
+	 */
+	public function replace_encrypt($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_encrypt($data['url'], $params, $tagdata);
+	}
+
+	/**
+	 * :url_slug modifier
+	 */
+	public function replace_url_slug($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_url_slug($data['filename'], $params, $tagdata);
+	}
+
+	/**
+	 * :censor modifier
+	 */
+	public function replace_censor($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_censor($data['title'], $params, $tagdata);
+	}
+
+	/**
+	 * :json modifier
+	 */
+	public function replace_json($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_json($data['url'], $params, $tagdata);
+	}
+
+	/**
+	 * :replace modifier
+	 */
+	public function replace_replace($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_replace($data['url'], $params, $tagdata);
+	}
+
+	/**
+	 * :url_encode modifier
+	 */
+	public function replace_url_encode($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_url_encode($data['url'], $params, $tagdata);
+	}
+
+	/**
+	 * :url_decode modifier
+	 */
+	public function replace_url_decode($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_url_decode($data['url'], $params, $tagdata);
+	}
+
+	/**
 	 * Replace frontend tag (with a modifier catchall)
 	 *
 	 * Here, the modifier is the short name of the image manipulation,

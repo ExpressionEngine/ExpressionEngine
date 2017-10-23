@@ -271,11 +271,11 @@ class Member_memberlist extends Member {
 		/** ----------------------------------------*/
 
 		$template = $this->_load_element('memberlist');
-		$vars = ee()->functions->assign_variables($template, '/');
+		$vars = ee('Variables/Parser')->extractVariables($template);
 		$var_cond = ee()->functions->assign_conditional_variables($template, '/');
 
 		$memberlist_rows = $this->_load_element('memberlist_rows');
-		$mvars = ee()->functions->assign_variables($memberlist_rows, '/');
+		$mvars = ee('Variables/Parser')->extractVariables($memberlist_rows);
 		$mvar_cond = ee()->functions->assign_conditional_variables($memberlist_rows, '/');
 
 		$this->var_cond   = array_merge($var_cond, $mvar_cond);

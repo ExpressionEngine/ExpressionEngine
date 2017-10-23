@@ -64,6 +64,14 @@ class Toggle_ft extends EE_Fieldtype {
 	}
 
 	/**
+	 * :length modifier
+	 */
+	public function replace_length($data, $params = array(), $tagdata = FALSE)
+	{
+		return (int) $data;
+	}
+
+	/**
 	 * @see EE_Fieldtype::display_field()
 	 */
 	public function display_field($data)

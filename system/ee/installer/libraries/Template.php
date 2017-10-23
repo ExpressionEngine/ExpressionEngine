@@ -241,7 +241,7 @@ class Installer_Template {
 				}
 
 				$this->related_markers[] = $matches[1][$j];
-				$vars = ee()->functions->assign_variables($matches[2][$j]);
+				$vars = ee('Variables/Parser')->extractVariables($matches[2][$j]);
 				$this->related_id = $matches[1][$j];
 				$this->related_data[$rand] = array(
 											'marker'			=> $rand,
@@ -263,7 +263,7 @@ class Installer_Template {
 			{
 				$rand = ee()->functions->random('alnum', 8);
 				$marker = LD.'REV_REL['.$rand.']REV_REL'.RD;
-				$vars = ee()->functions->assign_variables($matches[2][$j]);
+				$vars = ee('Variables/Parser')->extractVariables($matches[2][$j]);
 
 				$no_rev_content = '';
 
@@ -285,7 +285,7 @@ class Installer_Template {
 															'var_single'		=> $vars['var_single'],
 															'var_pair' 			=> $vars['var_pair'],
 															'var_cond'			=> ee()->functions->assign_conditional_variables($matches[2][$j], '\/', LD, RD),
-															'params'			=> ee()->functions->assign_parameters($matches[1][$j]),
+															'params'			=> ee('Variables/Parser')->parseTagParameters($matches[1][$j]),
 															'no_rev_content'	=> $no_rev_content
 														);
 

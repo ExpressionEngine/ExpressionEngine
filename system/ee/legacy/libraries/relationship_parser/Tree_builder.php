@@ -317,7 +317,7 @@ class EE_relationship_tree_builder {
 
 			// prep parameters
 			list($tag, $parameters) = preg_split("/\s+/", $match[2].' ', 2);
-			$params = ee()->functions->assign_parameters($parameters);
+			$params = ee('Variables/Parser')->parseTagParameters($parameters);
 			$params = $params ? $params : array();
 
 

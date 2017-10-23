@@ -51,39 +51,12 @@ if ( ! function_exists('url_title'))
 {
 	function url_title($str, $separator = 'dash', $lowercase = FALSE)
 	{
-		if (UTF8_ENABLED)
-		{
-			ee()->load->helper('text');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('4.0.0', "ee('Format')->make('Text', \$str)->urlSlug()");
 
-			$str = utf8_decode($str);
-			$str = preg_replace_callback('/(.)/', 'convert_accented_characters', $str);
-		}
-
+		// to not break legacy code using this function, invalid separators will map to an underscore
 		$separator = ($separator == 'dash') ? '-' : '_';
-
-		$trans = array(
-						'&\#\d+?;'					=> '',
-						'&\S+?;'					=> '',
-						'\s+|/+'					=> $separator,
-						'[^a-z0-9\-\._]'			=> '',
-						$separator.'+'				=> $separator,
-						'^[-_]+|[-_]+$'				=> '',
-						'\.+$'						=> ''
-					  );
-
-		$str = strip_tags($str);
-
-		foreach ($trans as $key => $val)
-		{
-			$str = preg_replace("#".$key."#i", $val, $str);
-		}
-
-		if ($lowercase === TRUE)
-		{
-			$str = strtolower($str);
-		}
-
-		return trim(stripslashes($str));
+		return (string) ee('Format')->make('Text', $str)->urlSlug(['separator' => $separator, 'lowercase' => $lowercase]);
 	}
 }
 

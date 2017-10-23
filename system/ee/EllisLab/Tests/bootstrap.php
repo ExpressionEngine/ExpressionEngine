@@ -36,3 +36,5 @@ function lang($str)
 {
 	return $str;
 }
+
+require_once 'eeObjectMock.php';

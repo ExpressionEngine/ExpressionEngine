@@ -36,6 +36,7 @@ use EllisLab\ExpressionEngine\Service\Thumbnail;
 use EllisLab\ExpressionEngine\Service\URL;
 use EllisLab\ExpressionEngine\Service\Updater;
 use EllisLab\ExpressionEngine\Service\Validation;
+use EllisLab\ExpressionEngine\Service\Template;
 use EllisLab\ExpressionEngine\Service\View;
 use EllisLab\Addons\Spam\Service\Spam;
 use EllisLab\Addons\FilePicker\Service\FilePicker;
@@ -45,7 +46,7 @@ return array(
 
 	'author' => 'EllisLab',
 	'name' => 'ExpressionEngine',
-	'description' => 'The worlds most flexible content management system.',
+	'description' => "The world's most flexible content management system.",
 
 	'namespace' => 'EllisLab\ExpressionEngine',
 
@@ -178,7 +179,21 @@ return array(
 
 		'Format' => function($ee)
 		{
-			return new Formatter\FormatterFactory(ee()->lang);
+			static $format_opts;
+			if ($format_opts === NULL)
+			{
+				$format_opts += (extension_loaded('intl')) ? 0b00000001 : 0;
+			}
+
+			$config_items = [
+				'censor_replacement' => ee()->config->item('censor_replacement'),
+				'censored_words' => ee()->config->item('censored_words'),
+				'foreign_chars' => ee()->config->loadFile('foreign_chars'),
+				'stopwords' => ee()->config->loadFile('stopwords'),
+				'word_separator' => ee()->config->item('word_separator'),
+			];
+
+			return new Formatter\FormatterFactory(ee()->lang, ee()->session, $config_items, $format_opts);
 		},
 
 		'Curl' => function($ee)
@@ -278,13 +293,20 @@ return array(
 			);
 		},
 
-		'Encrypt' => function($ee)
+		'Encrypt' => function($ee, $key = NULL)
 		{
-			$key = (ee()->config->item('encryption_key')) ?: ee()->db->username.ee()->db->password;
+			if (empty($key))
+			{
+				$key = (ee()->config->item('encryption_key')) ?: ee()->db->username.ee()->db->password;
+			}
 
 			return new Encrypt\Encrypt($key);
+		},
 
-		}
+		'Variables/Parser' => function ($ee)
+		{
+			return new Template\Variables\LegacyParser();
+		},
 	),
 
 	'services.singletons' => array(

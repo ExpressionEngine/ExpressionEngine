@@ -199,6 +199,86 @@ class Checkboxes_ft extends OptionFieldtype {
 		}
 	}
 
+	/**
+	 * :length modifier
+	 */
+	public function replace_length($data, $params = array(), $tagdata = FALSE)
+	{
+		return count(decode_multi_field($data));
+	}
+
+	/**
+	 * :attr_safe modifier
+	 */
+	public function replace_attr_safe($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_attr_safe($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :limit modifier
+	 */
+	public function replace_limit($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_limit($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :encrypt modifier
+	 */
+	public function replace_encrypt($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_encrypt($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :url_slug modifier
+	 */
+	public function replace_url_slug($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_url_slug($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :censor modifier
+	 */
+	public function replace_censor($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_censor($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :json modifier
+	 */
+	public function replace_json($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_json($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :replace modifier
+	 */
+	public function replace_replace($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_replace($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :url_encode modifier
+	 */
+	public function replace_url_encode($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_url_encode($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :url_decode modifier
+	 */
+	public function replace_url_decode($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_url_decode($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
 	function display_settings($data)
 	{
 		$settings = $this->getSettingsForm(

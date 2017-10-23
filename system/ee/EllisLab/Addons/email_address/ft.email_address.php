@@ -117,6 +117,15 @@ class Email_address_Ft extends EE_Fieldtype {
 	}
 
 	/**
+	 * :url_slug modifier
+	 */
+	public function replace_url_slug($data, $params = array(), $tagdata = FALSE)
+	{
+		$email = str_replace(['@','.','+'], [' at ', ' dot ', ' plus '], $data);
+		return parent::replace_url_slug($email, $params, $tagdata);
+	}
+
+	/**
 	 * Accept all content types.
 	 *
 	 * @param  string  The name of the content type

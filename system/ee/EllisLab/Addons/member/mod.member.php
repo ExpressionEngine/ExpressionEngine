@@ -13,7 +13,7 @@
 class Member {
 
 	var $trigger			= 'member';
-	var $member_template	= TRUE;	
+	var $member_template	= TRUE;
 	var $theme_class		= 'profile_theme';
 	var $request			= 'public_profile';
 	var $no_menu 			= array(
@@ -2033,7 +2033,7 @@ class Member {
 		{
 			foreach ($matches as $match)
 			{
-				$sparam = ee()->functions->assign_parameters($match[1]);
+				$sparam = ee('Variables/Parser')->parseTagParameters($match[1]);
 
 				if (isset($sparam['switch']))
 				{
@@ -2351,7 +2351,7 @@ class Member {
 		// Get field names present in the template, sans modifiers
 		$clean_field_names = array_map(function($field)
 		{
-			$field = ee()->api_channel_fields->get_single_field($field);
+			$field = ee('Variables/Parser')->parseVariableProperties($field);
 
 			return $field['field_name'];
 		}, array_flip(ee()->TMPL->var_single));
@@ -2492,7 +2492,7 @@ class Member {
 				}
 
 				// Custom member fields
-				$field = ee()->api_channel_fields->get_single_field($key);
+				$field = ee('Variables/Parser')->parseVariableProperties($key);
 				$val = $field['field_name'];
 
 				// parse custom member fields
@@ -2529,7 +2529,7 @@ class Member {
 	 * Parse a custom member field
 	 *
 	 * @param	int		$field_id	Member field ID
-	 * @param	array	$field		Tag information as parsed by Api_channel_fields::get_single_field
+	 * @param	array	$field		Tag information as parsed by ee('Variables/Parser')->parseVariableProperties()
 	 * @param	mixed	$data		Data for this field
 	 * @param	string	$tagdata	Tagdata to perform the replacement in
 	 * @param	string	$member_id	ID for the member this data is associated

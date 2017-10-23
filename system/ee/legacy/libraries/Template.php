@@ -7,10 +7,15 @@
  * @license   https://expressionengine.com/license
  */
 
+use EllisLab\ExpressionEngine\Service\Template;
+
 /**
  * Template Parser
  */
 class EE_Template {
+
+	// bring in the :modifier methods
+	use Template\Variables\ModifiableTrait;
 
 	public $loop_count           = 0;			// Main loop counter.
 	public $depth                = 0;			// Sub-template loop depth
@@ -126,6 +131,7 @@ class EE_Template {
 		);
 
 		$this->marker = md5(ee()->config->site_url().$this->marker);
+		$this->mb_available = extension_loaded('mbstring');
 	}
 
 	/**
@@ -406,79 +412,10 @@ class EE_Template {
 			}
 		}
 
-		$layout_conditionals = array();
-
 		// Parse {layout} tag variables
 		if ($parse_layout_vars)
 		{
-			$this->log_item("layout Variables:", $this->layout_vars);
-
-			foreach ($this->layout_vars as $key => $val)
-			{
-				if (is_array($val))
-				{
-					$layout_conditionals['layout:'.$key] = TRUE;
-
-					$total_items = count($val);
-					$variables = [];
-
-					foreach ($val as $idx => $item)
-					{
-						$variables[] = [
-							'index' => $idx,
-							'count' => $idx + 1,
-							'reverse_count' => $total_items - $idx,
-							'total_results' => $total_items,
-							'value' => $item,
-						];
-					}
-
-					$this->template = $this->_parse_var_pair('layout:'.$key, $variables, $this->template);
-
-					// catch-all, if a layout array is used as a single variable, output the last one in
-					if (strpos($this->template, 'layout:'.$key) !== FALSE)
-					{
-						$this->template = $this->_parse_var_single('layout:'.$key, $item, $this->template);
-					}
-				}
-				else
-				{
-					$layout_conditionals['layout:'.$key] = $val;
-					$this->template = $this->_parse_var_single('layout:'.$key, $val, $this->template);
-				}
-			}
-
-			// parse index-specified items, e.g.: {layout:titles index='4'}
-			if (strpos($this->template, LD.'layout:') !== FALSE)
-			{
-				// prototype:
-				// array (size=1)
-				//   0 =>
-				//     array (size=4)
-				//       0 => string '{layout:titles index='4'}' (length=25)
-				//       1 => string 'titles' (length=6)
-				//       2 => string ''' (length=1)
-				//       3 => string '4' (length=1)
-				preg_match_all("/".LD."layout:(.+?)\s+index\s*=\s*(\042|\047)([^\\2]*?)\\2\s*".RD."/si", $this->template, $matches, PREG_SET_ORDER);
-
-				foreach ($matches as $match)
-				{
-					if (isset($this->layout_vars[$match[1]]))
-					{
-						$value = (isset($this->layout_vars[$match[1]][$match[3]])) ? $this->layout_vars[$match[1]][$match[3]] : '';
-						$this->template = str_replace($match[0], $value, $this->template);
-					}
-				}
-			}
-		}
-
-		$this->layout_conditionals = $layout_conditionals;
-
-		// cleanup of leftover/undeclared embed variables
-		// don't worry with undeclared embed: vars in conditionals as the conditionals processor will handle that adequately
-		if (strpos($this->template, LD.'embed:') !== FALSE)
-		{
-			$this->template = preg_replace('/'.LD.'embed:([^!]+?)'.RD.'/', '', $this->template);
+			$this->template = $this->parseLayoutVariables($str, $this->layout_vars);
 		}
 
 		// Cache the name of the layout. We do this here so that we can force
@@ -560,23 +497,34 @@ class EE_Template {
 			}
 		}
 
-		// Smite Our Enemies:  Conditionals
+		// Smite Our Enemies:  Conditionals & Modifiers
 		$this->log_item("Parsing Segment, Embed, Layout, logged_in_*, and Global Vars Conditionals");
+
+		$all_early_vars = array_merge(
+			$this->segment_vars,
+			$this->template_route_vars,
+			$this->embed_vars,
+			$this->layout_conditionals,
+			array('layout:contents' => $this->layout_contents),
+			$logged_in_user_cond,
+			ee()->config->_global_vars
+		);
 
 		$this->template = ee()->functions->prep_conditionals(
 			$this->template,
-			array_merge(
-				$this->segment_vars,
-				$this->template_route_vars,
-				$this->embed_vars,
-				$layout_conditionals,
-				array('layout:contents' => $this->layout_contents),
-				$logged_in_user_cond,
-				ee()->config->_global_vars
-			)
+			$all_early_vars
 		);
 
-		// Assign Variables
+		$this->template = ee('Variables/Parser')->parseModifiedVariables($this->template, $all_early_vars);
+
+		// cleanup of leftover/undeclared embed variables
+		// don't worry with undeclared embed: vars in conditionals as the conditionals processor will handle that adequately
+		if (strpos($this->template, LD.'embed:') !== FALSE)
+		{
+			$this->template = preg_replace('/'.LD.'embed:([^!]+?)'.RD.'/', '', $this->template);
+		}
+
+		// Preload Replacements
 		if (strpos($this->template, 'preload_replace') !== FALSE)
 		{
 			if (preg_match_all("/".LD."preload_replace:(.+?)=([\"\'])([^\\2]*?)\\2".RD."/i", $this->template, $matches))
@@ -645,6 +593,104 @@ class EE_Template {
 			$this->final_template = $this->template;
 			$this->_cleanup_layout_tags();
 		}
+	}
+
+	/**
+	 * Parse Layout variables
+	 *
+	 * Also sets the $layout_conditionals class property, which is used to handle conditionals
+	 * for early parsed variables in one sweep
+	 *
+	 * @param  string $str The template/string to parse
+	 * @param  array $layout_vars Layout variables to parser, 'variable_name' => 'content'
+	 * @return string The parsed template/string
+	 */
+	private function parseLayoutVariables($str, $layout_vars)
+	{
+		$this->log_item("layout Variables:", $layout_vars);
+		$this->layout_conditionals = [];
+
+		foreach ($layout_vars as $key => $val)
+		{
+			if (is_array($val))
+			{
+				$layout_conditionals['layout:'.$key] = TRUE;
+
+				$total_items = count($val);
+				$variables = [];
+
+				foreach ($val as $idx => $item)
+				{
+					$variables[] = [
+						'index' => $idx,
+						'count' => $idx + 1,
+						'reverse_count' => $total_items - $idx,
+						'total_results' => $total_items,
+						'value' => $item,
+					];
+				}
+
+				$str = $this->_parse_var_pair('layout:'.$key, $variables, $str);
+
+				// catch-all, if a layout array is used as a single variable, output the last one in
+				if (strpos($str, 'layout:'.$key) !== FALSE)
+				{
+					$str = $this->_parse_var_single('layout:'.$key, $item, $str);
+				}
+			}
+			else
+			{
+				$layout_conditionals['layout:'.$key] = $val;
+				$str = $this->_parse_var_single('layout:'.$key, $val, $str);
+			}
+		}
+
+		// parse index-specified items, e.g.: {layout:titles index='4'}
+		if (strpos($str, LD.'layout:') !== FALSE)
+		{
+			// prototype:
+			// array (size=1)
+			//   0 =>
+			//     array (size=4)
+			//       0 => string '{layout:titles index='4'}' (length=25)
+			//       1 => string 'titles' (length=6)
+			//       2 => string ''' (length=1)
+			//       3 => string '4' (length=1)
+			preg_match_all("/".LD."layout:(.+?)\s+index\s*=\s*(\042|\047)([^\\2]*?)\\2\s*".RD."/si", $str, $matches, PREG_SET_ORDER);
+
+			foreach ($matches as $match)
+			{
+				if (isset($layout_vars[$match[1]]))
+				{
+					$value = (isset($layout_vars[$match[1]][$match[3]])) ? $layout_vars[$match[1]][$match[3]] : '';
+					$str = str_replace($match[0], $value, $str);
+				}
+				// check for :modifers
+				elseif (($prefix_pos = strpos($match[1], ':')) !== FALSE)
+				{
+					$var = substr($match[1], 0, $prefix_pos);
+
+					if (isset($layout_vars[$var]))
+					{
+						// need to rewrite the variable internally, or multiple modified index='' vars will all have the same value
+						// {layout:titles[3]:length index='3'}
+						$idx = '['.$match[3].']';
+						$rewritten_tag = substr_replace($match[0], $var.$idx, 8, $prefix_pos);
+						$str = str_replace($match[0], $rewritten_tag, $str);
+
+						$modified_vars['layout:'.$var.$idx] = (isset($layout_vars[$var][$match[3]])) ? $layout_vars[$var][$match[3]] : '';
+					}
+				}
+			}
+
+			if ( ! empty($modified_vars))
+			{
+				$str = ee('Variables/Parser')->parseModifiedVariables($str, $modified_vars);
+			}
+		}
+
+		$this->layout_conditionals = $layout_conditionals;
+		return $str;
 	}
 
 	/**
@@ -816,7 +862,7 @@ class EE_Template {
 
 		$parts = preg_split("/\s+/", $layout[2], 2);
 
-		$layout_vars = (isset($parts[1])) ? ee()->functions->assign_parameters($parts[1]) : array();
+		$layout_vars = (isset($parts[1])) ? ee('Variables/Parser')->parseTagParameters($parts[1]) : array();
 
 		if ($layout_vars === FALSE)
 		{
@@ -842,7 +888,7 @@ class EE_Template {
 		while ($pos !== FALSE)
 		{
 			$tag = ee()->functions->full_tag(substr($template, $pos, $open_tag_len), $template);
-			$params = ee()->functions->assign_parameters(substr($tag, $open_tag_len));
+			$params = ee('Variables/Parser')->parseTagParameters(substr($tag, $open_tag_len));
 
 			if ($params['name'] == 'contents')
 			{
@@ -988,7 +1034,7 @@ class EE_Template {
 		{
 			$parts = preg_split("/\s+/", $val, 2);
 
-			$this->embed_vars = (isset($parts[1])) ? ee()->functions->assign_parameters($parts[1]) : array();
+			$this->embed_vars = (isset($parts[1])) ? ee('Variables/Parser')->parseTagParameters($parts[1]) : array();
 
 			if ($this->embed_vars === FALSE)
 			{
@@ -1234,7 +1280,7 @@ class EE_Template {
 				// -----------------------------------------
 
 				// Assign parameters based on the arguments from the tag
-				$args  = ee()->functions->assign_parameters($args);
+				$args  = ee('Variables/Parser')->parseTagParameters($args);
 
 				// standardized mechanism for "search" type parameters get some extra lovin'
 				$search_fields = array();
@@ -1653,7 +1699,7 @@ class EE_Template {
 				// Hopefully, with Jones' new parsing code we should be able to stop using the
 				// assign_variables and assign_conditional_variables() methods entirely. -Paul
 
-				$vars = ee()->functions->assign_variables($this->tag_data[$i]['block']);
+				$vars = ee('Variables/Parser')->extractVariables($this->tag_data[$i]['block']);
 
 				$this->var_single	= $vars['var_single'];
 				$this->var_pair		= $vars['var_pair'];
@@ -3041,55 +3087,22 @@ class EE_Template {
 		// Restore XML declaration if it was encoded
 		$str = $this->restore_xml_declaration($str);
 
-		//  Parse User-defined Global Variables first so that
-		//  they can use other standard globals
-		$variables = ee('Model')->make('GlobalVariable')->loadAll();
+		ee()->session->userdata['member_group'] = ee()->session->userdata['group_id'];
+		$this->user_vars[] = 'member_group';
 
-		foreach ($variables as $var)
+		// parse all standard global variables
+		$globals = new Template\Variables\StandardGlobals($this);
+		$variables = $globals->getTemplateVariables();
+
+		foreach ($variables as $variable => $value)
 		{
-			$str = str_replace(LD.$var->variable_name.RD, $var->variable_data, $str);
+			$str = str_replace(LD.$variable.RD, $value, $str);
 		}
 
-		// {hits}
-		$str = str_replace(LD.'hits'.RD, $this->template_hits, $str);
+		// one note, conditionals won't work here, they will have already have been parsed with a final pass by parse()
+		$str = ee('Variables/Parser')->parseModifiedVariables($str, $variables);
 
-		// {ip_address} and {ip_hostname}
-		$str = str_replace(LD.'ip_address'.RD, ee()->input->ip_address(), $str);
-
-		// Turns out gethostbyaddr() is WAY SLOW on many systems so I'm killing it.
-		// $str = str_replace(LD.'ip_hostname'.RD, @gethostbyaddr(ee()->input->ip_address()), $str);
-
-		$str = str_replace(LD.'ip_hostname'.RD, ee()->input->ip_address(), $str);
-
-		// {homepage}
-		$str = str_replace(LD.'homepage'.RD, ee()->functions->fetch_site_index(), $str);
-
-		//  {cp_url}
-		if (ee()->session->access_cp === TRUE)
-		{
-			$str = str_replace(LD.'cp_url'.RD, ee()->config->item('cp_url'), $str);
-		}
-		else
-		{
-			$str = str_replace(LD.'cp_url'.RD, '', $str);
-		}
-
-		// {cp_session_id}
-		if (ee()->session->access_cp === TRUE)
-		{
-			$str = str_replace(LD.'cp_session_id'.RD, ee()->session->session_id(), $str);
-		}
-		else
-		{
-			$str = str_replace(LD.'cp_session_id'.RD, '0', $str);
-		}
-
-		// {site_name} {site_url} {site_description} {site_index} {webmaster_email}
-		$str = str_replace(LD.'site_name'.RD, stripslashes(ee()->config->item('site_name')), $str);
-		$str = str_replace(LD.'site_url'.RD, stripslashes(ee()->config->item('site_url')), $str);
-		$str = str_replace(LD.'site_description'.RD, stripslashes(ee()->config->item('site_description')), $str);
-		$str = str_replace(LD.'site_index'.RD, stripslashes(ee()->config->item('site_index')), $str);
-		$str = str_replace(LD.'webmaster_email'.RD, stripslashes(ee()->config->item('webmaster_email')), $str);
+		// now we can hit our path= type variables and some other non-cached items
 
 		// Stylesheet variable: {stylesheet=group/template}
 		if (strpos($str, 'stylesheet=') !== FALSE && preg_match_all("/".LD."\s*stylesheet=[\042\047]?(.*?)[\042\047]?".RD."/", $str, $css_matches))
@@ -3172,78 +3185,6 @@ class EE_Template {
 			}
 		}
 
-		// Debug mode: {debug_mode}
-		$str = str_replace(LD.'debug_mode'.RD, (ee()->config->item('debug') > 0) ? ee()->lang->line('on') : ee()->lang->line('off'), $str);
-
-		// GZip mode: {gzip_mode}
-		$str = str_replace(LD.'gzip_mode'.RD, (ee()->config->item('gzip_output') == 'y') ? ee()->lang->line('enabled') : ee()->lang->line('disabled'), $str);
-
-		// App version: {version}
-		$str = str_replace(LD.'app_version'.RD, APP_VER, $str);
-		$str = str_replace(LD.'version'.RD, APP_VER, $str);
-
-		// App version: {build}
-		$str = str_replace(LD.'app_build'.RD, APP_BUILD, $str);
-		$str = str_replace(LD.'build'.RD, APP_BUILD, $str);
-
-		// App version: {version_identifier}
-		$str = str_replace(LD.'version_identifier'.RD, APP_VER_ID, $str);
-
-		// {charset} and {lang}
-		$str = str_replace(LD.'charset'.RD, ee()->config->item('output_charset'), $str);
-		$str = str_replace(LD.'lang'.RD, ee()->config->item('xml_lang'), $str);
-
-		// {doc_url}
-		$str = str_replace(LD.'doc_url'.RD, DOC_URL, $str);
-
-		// {username_max_length}
-		$str = str_replace(LD.'username_max_length'.RD, USERNAME_MAX_LENGTH, $str);
-
-		// {password_max_length}
-		$str = str_replace(LD.'password_max_length'.RD, PASSWORD_MAX_LENGTH, $str);
-
-		// {theme_folder_url}
-		$str = str_replace(LD.'theme_folder_url'.RD, URL_THEMES, $str);
-
-		// {member_profile_link}
-		if (ee()->session->userdata('member_id') != 0)
-		{
-			$name = (ee()->session->userdata['screen_name'] == '') ? ee()->session->userdata['username'] : ee()->session->userdata['screen_name'];
-
-			$path = "<a href='".ee()->functions->create_url('/member/'.ee()->session->userdata('member_id'))."'>".$name."</a>";
-
-			$str = str_replace(LD.'member_profile_link'.RD, $path, $str);
-		}
-		else
-		{
-			$str = str_replace(LD.'member_profile_link'.RD, '', $str);
-		}
-
-		// Fetch CAPTCHA
-		if (strpos($str, "{captcha}") !== FALSE)
-		{
-			$str = str_replace("{captcha}", ee('Captcha')->create(), $str);
-		}
-
-		// Add security hashes to forms
-		// We do this here to keep the security hashes from being cached
-
-		$str = ee()->functions->add_form_security_hash($str);
-
-		// Parse non-cachable variables
-		ee()->session->userdata['member_group'] = ee()->session->userdata['group_id'];
-
-		foreach (array_merge($this->user_vars, array('member_group')) as $val)
-		{
-			$replace = (isset(ee()->session->userdata[$val]) && strval(ee()->session->userdata[$val]) != '') ?
-				ee()->session->userdata[$val] : '';
-
-			$str = str_replace(LD.$val.RD, $replace, $str);
-			$str = str_replace('{out_'.$val.'}', $replace, $str);
-			$str = str_replace('{global->'.$val.'}', $replace, $str);
-			$str = str_replace('{logged_in_'.$val.'}', $replace, $str);
-		}
-
 		// Path variable: {path=group/template}
 		if (strpos($str, 'path=') !== FALSE)
 		{
@@ -3256,12 +3197,25 @@ class EE_Template {
 			$str = preg_replace_callback("/".LD."\s*route=(.*?)".RD."/", array(&ee()->functions, 'create_route'), $str);
 		}
 
+		// Add security hashes to forms
+		// We do this here to keep the security hashes from being cached
+		$str = ee()->functions->add_form_security_hash($str);
+
 		// Add Action IDs form forms and links
 		$str = ee()->functions->insert_action_ids($str);
 
 		// and once again just in case global vars introduce EE comments,
 		// and to remove any runtime annotations.
 		return $this->remove_ee_comments($str);
+	}
+
+	/**
+	 * Getter for $this->user_vars
+	 * @return array User variables that will be parsed
+	 */
+	public function getUserVars()
+	{
+		return $this->user_vars;
 	}
 
 	/**
@@ -3295,11 +3249,11 @@ class EE_Template {
 
 				$this->tagdata = $match[3][$i];
 
-				$vars = ee()->functions->assign_variables($match[3][$i], '/');
+				$vars = ee('Variables/Parser')->extractVariables($match[3][$i]);
 				$this->var_single	= $vars['var_single'];
 				$this->var_pair		= $vars['var_pair'];
 
-				$this->tagparams = ee()->functions->assign_parameters($match[2][$i]);
+				$this->tagparams = ee('Variables/Parser')->parseTagParameters($match[2][$i]);
 
 				$this->var_cond = ee()->functions->assign_conditional_variables($match[3][$i], '/', LD, RD);
 
@@ -3334,11 +3288,11 @@ class EE_Template {
 
 				$this->tagdata = $match[2][$i];
 
-				$vars = ee()->functions->assign_variables($match[2][$i], '/');
+				$vars = ee('Variables/Parser')->extractVariables($match[2][$i]);
 				$this->var_single	= $vars['var_single'];
 				$this->var_pair		= $vars['var_pair'];
 
-				$this->tagparams = ee()->functions->assign_parameters($match[1][$i]);
+				$this->tagparams = ee('Variables/Parser')->parseTagParameters($match[1][$i]);
 
 				// Assign sites for the tag
 				$this->_fetch_site_ids();
@@ -3621,7 +3575,7 @@ class EE_Template {
 		{
 			foreach ($matches as $match)
 			{
-				$sparam = ee()->functions->assign_parameters($match[1]);
+				$sparam = ee('Variables/Parser')->parseTagParameters($match[1]);
 
 				if (isset($sparam['switch']))
 				{
@@ -3636,6 +3590,15 @@ class EE_Template {
 		$str = '';
 		$count = 0;
 		$total_results = count($variables);
+
+		$this->modified_vars = [];
+		foreach ($this->var_single as $variable)
+		{
+			if (strpos($variable, ':') !== FALSE)
+			{
+				$this->modified_vars[$variable] = ee('Variables/Parser')->parseVariableProperties($variable);
+			}
+		}
 
 		while (($row = array_shift($variables)) !== NULL)
 		{
@@ -3734,19 +3697,60 @@ class EE_Template {
 			$tagdata = $this->_parse_var_single($name, $value, $tagdata);
 		}
 
+		// now hit modifiers, we do this after the data loop in case the add-on has defined "modified" variables in their data
+		foreach ($this->modified_vars as $tag => $var)
+		{
+			// if the variable doesn't exist, don't bother
+			if ( ! isset($variables[$var['field_name']]))
+			{
+				continue;
+			}
+
+			// is the modifier valid?
+			$method = 'replace_'.$var['modifier'];
+			if ( ! method_exists($this, $method))
+			{
+				continue;
+			}
+
+			// Process *just* this variable so we can send its content off to modifier methods
+			$original = $variables[$var['field_name']];
+			$tagname = $var['field_name'].':'.$var['modifier'];
+			$content = $this->_parse_var_single($var['field_name'], $original, LD.$var['field_name'].RD);
+
+			// we need to send just the content without any metadata to our modifiers
+			if (is_array($original))
+			{
+				// both typography and path will be an array, but path is only useful as a URL, so which is it?
+				if (isset($original[1]['path_variable']))
+				{
+					$raw = $content;
+				}
+				elseif (is_scalar($original[0]))
+				{
+					$raw = $original[0];
+				}
+				else
+				{
+					$raw = '';
+				}
+			}
+			else
+			{
+				$raw = $original;
+			}
+			$content = ($method == 'replace_raw_content') ? $raw : $content;
+			$content = $this->$method($content, $var['params']);
+			$this->conditional_vars[$tagname] = $content;
+
+			$tagdata = $this->_parse_var_single($tag, $content, $tagdata);
+		}
+
 		// Prep conditionals
 		$tagdata = ee()->functions->prep_conditionals($tagdata, $this->conditional_vars);
 
 		return $tagdata;
 	}
-
-	function create_url_check($matches)
-	{
-
-		print_r($matches);
-
-	}
-
 
 	/**
 	 * Parse Var Single
@@ -3896,7 +3900,7 @@ class EE_Template {
 			// Get parameters of variable pair
 			if (preg_match_all("|".LD.$name.'(.*?)'.RD."|s", $matches[0][$k], $param_matches))
 			{
-				$parameters = ee()->functions->assign_parameters($param_matches[1][0]);
+				$parameters = ee('Variables/Parser')->parseTagParameters($param_matches[1][0]);
 			}
 
 			// Limit parameter
@@ -3936,6 +3940,10 @@ class EE_Template {
 
 				// Prep conditionals
 				$temp = ee()->functions->prep_conditionals($temp, $set);
+
+				// handle any :modifiers
+				$temp = ee('Variables/Parser')->parseModifiedVariables($temp, $set);
+
 				$str .= $temp;
 
 				// Break if we're past the limit
@@ -4082,7 +4090,7 @@ class EE_Template {
 					if ($timestamp !== '')
 					{
 						$parts = preg_split("/\s+/", $val, 2);
-						$args = (isset($parts[1])) ? ee()->functions->assign_parameters($parts[1]) : array();
+						$args = (isset($parts[1])) ? ee('Variables/Parser')->parseTagParameters($parts[1]) : array();
 						if (strpos($val, ':relative') !== FALSE) {
 							$relative = TRUE;
 						}

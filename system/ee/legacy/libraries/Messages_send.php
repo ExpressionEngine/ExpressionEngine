@@ -864,13 +864,11 @@ class EE_Messages_send extends EE_Messages {
  				 				'highlight_code'	=> TRUE)
  				 				);
 
-				if (ee()->config->item('enable_censoring') == 'y' AND ee()->config->item('censored_words') != '')
+				$subject = ee('Security/XSS')->clean(ee()->input->get_post('subject'));
+
+				if (bool_config_item('enable_censoring'))
         		{
-					$subject = ee()->typography->filter_censored_words(ee('Security/XSS')->clean(ee()->input->get_post('subject')));
-				}
-				else
-				{
-					$subject = ee('Security/XSS')->clean(ee()->input->get_post('subject'));
+        			$subject = ee('Format')->make('Text', $subject)->censor();
 				}
 
 				$body = ee()->typography->parse_type(stripslashes(ee('Security/XSS')->clean(ee()->input->get_post('body'))),

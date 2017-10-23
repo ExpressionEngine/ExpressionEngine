@@ -75,7 +75,7 @@ class EE_Channel_custom_member_field_parser implements EE_Channel_parser_compone
 
 		$key = preg_replace('/^'.$prefix.'/', '', $key);
 
-		$field = ee()->api_channel_fields->get_single_field($key);
+		$field = ee('Variables/Parser')->parseVariableProperties($key);
 
 		if ( ! isset($mfields[$field['field_name']]))
 		{

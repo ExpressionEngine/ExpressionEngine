@@ -141,7 +141,7 @@ class EE_Relationship_data_parser {
 				// here because the parser only gets one entry for shortcut
 				// pairs. It's also much faster compared to spinning up the
 				// channel entries parser.
-				if ($node->shortcut == 'total_results')
+				if ($node->shortcut == 'total_results' OR $node->shortcut == 'length')
 				{
 					$total_results = count($entry_ids);
 

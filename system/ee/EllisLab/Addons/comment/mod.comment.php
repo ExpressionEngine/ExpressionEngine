@@ -816,7 +816,7 @@ class Comment {
 
 				if (strncmp($key, 'switch', 6) == 0)
 				{
-					$sparam = ee()->functions->assign_parameters($key);
+					$sparam = ee('Variables/Parser')->parseTagParameters($key);
 
 					$sw = '';
 
@@ -1188,7 +1188,7 @@ class Comment {
 				/**  parse custom member fields
 				/** ----------------------------------------*/
 
-				$field = ee()->api_channel_fields->get_single_field($key);
+				$field = ee('Variables/Parser')->parseVariableProperties($key);
 				$val2 = $field['field_name'];
 
 				// parse custom member fields
@@ -1271,7 +1271,7 @@ class Comment {
 		$clean_field_names = array_map(function($field)
 		{
 
-			$field = ee()->api_channel_fields->get_single_field($field);
+			$field = ee('Variables/Parser')->parseVariableProperties($field);
 
 			return $field['field_name'];
 		}, array_flip(ee()->TMPL->var_single));
@@ -1301,7 +1301,7 @@ class Comment {
 	 * Parse a custom member field
 	 *
 	 * @param	int		$field_id	Member field ID
-	 * @param	array	$field		Tag information as parsed by Api_channel_fields::get_single_field
+	 * @param	array	$field		Tag information as parsed by ee('Variables/Parser')->parseVariableProperties()
 	 * @param	mixed	$data		Data for this field
 	 * @param	string	$tagdata	Tagdata to perform the replacement in
 	 * @param	string	$member_id	ID for the member this data is associated

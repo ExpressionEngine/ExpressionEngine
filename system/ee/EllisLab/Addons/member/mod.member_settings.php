@@ -393,7 +393,7 @@ class Member_settings extends Member {
 										);
 
 
-		$vars = ee()->functions->assign_variables($content, '/');
+		$vars = ee('Variables/Parser')->extractVariables($content);
 		$this->var_single	= $vars['var_single'];
 		$this->var_pair		= $vars['var_pair'];
 
@@ -712,7 +712,7 @@ class Member_settings extends Member {
 			{
 
 				// Custom member fields
-				$field = ee()->api_channel_fields->get_single_field($key);
+				$field = ee('Variables/Parser')->parseVariableProperties($key);
 				$fval = $field['field_name'];
 
 				// parse custom member fields

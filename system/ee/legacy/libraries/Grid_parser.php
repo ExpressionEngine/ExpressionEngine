@@ -60,7 +60,7 @@ class Grid_parser {
 
 			// Analyze the field to see if its modifier matches any of our
 			// reserved modifier names
-			$field = ee()->api_channel_fields->get_single_field($match[2], $field_name);
+			$field = ee('Variables/Parser')->parseVariableProperties($match[2], $field_name);
 
 			// Throw out variables and closing tags, we'll deal with them
 			// in the parsing stage
@@ -439,7 +439,7 @@ class Grid_parser {
 		{
 
 			// Get tag name, modifier and params for this tag
-			$field = ee()->api_channel_fields->get_single_field($match[2], $field_name.':');
+			$field = ee('Variables/Parser')->parseVariableProperties($match[2], $field_name.':');
 
 			// Get any field pairs
 			$pchunks = ee()->api_channel_fields->get_pair_field(

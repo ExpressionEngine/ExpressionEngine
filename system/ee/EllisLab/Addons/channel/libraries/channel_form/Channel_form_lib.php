@@ -1465,12 +1465,8 @@ GRID_FALLBACK;
 
 			if (ee()->input->post('unique_url_title', TRUE))
 			{
-				$url_title = $this->_meta['url_title'] ?
-					$this->_meta['url_title'] : url_title(
-						ee()->input->post('title', TRUE),
-						ee()->config->item('word_separator'),
-						TRUE
-					);
+				$title = ee()->input->post('title', TRUE);
+				$url_title = ($this->_meta['url_title']) ?: ee('Format')->make('Text', $title)->urlSlug();
 
 				// Max URL title length, minus uniqid length, minus separator
 				$url_title = substr($url_title, 0, 200-23-1);
@@ -1732,10 +1728,7 @@ GRID_FALLBACK;
 
 		if ( ! isset($_POST['url_title']))
 		{
-			$_POST['url_title'] = url_title(
-						ee()->input->post('title', TRUE),
-						ee()->config->item('word_separator'),
-						TRUE);
+			$_POST['url_title'] = ee('Format')->make('Text', ee()->input->post('title', TRUE))->urlSlug();
 		}
 
 		//temporarily change site_id for cross-site forms

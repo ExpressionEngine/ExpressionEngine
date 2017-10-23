@@ -491,7 +491,7 @@ class Forum_Core extends Forum {
 			{
 				// author, date parameters
 				// We do the str_replace because of the XHTML Typography that converts quotes
-				$tagparams = ee()->functions->assign_parameters(trim(str_replace(array('&#8220;', '&#8221;'), '"', $matches['1'][$i])));
+				$tagparams = ee('Variables/Parser')->parseTagParameters(trim(str_replace(array('&#8220;', '&#8221;'), '"', $matches['1'][$i])));
 
 				$author	= ( ! isset($tagparams['author'])) ? '' : $tagparams['author'];
 				$time	= ( ! isset($tagparams['date'])) ? '' : $tagparams['date'];
@@ -1336,7 +1336,14 @@ class Forum_Core extends Forum {
 				ee()->typography->parse_smileys = FALSE;
 			}
 
-			$title = trim($this->_convert_special_chars(ee()->typography->format_characters(ee()->typography->filter_censored_words($row['title']))));
+			$title = $row['title'];
+
+			if (bool_config_item('enable_censoring'))
+			{
+				$title = ee('Format')->make('Text', $title)->censor();
+			}
+
+			$title = trim($this->_convert_special_chars(ee()->typography->format_characters($title)));
 
 			$body = $this->_quote_decode(ee()->typography->parse_type($row['body'],
 					  array(
@@ -1524,7 +1531,11 @@ class Forum_Core extends Forum {
 			}
 			else
 			{
-				$row['forum_last_post_title'] = ee()->typography->filter_censored_words($row['forum_last_post_title']);
+				if (bool_config_item('enable_censoring'))
+				{
+					$row['forum_last_post_title'] = ee('Format')->make('Text', $row['forum_last_post_title'])->censor();
+				}
+
 				$return .= $this->main_forum_table_rows($row, $markers, $read_topics);
 
 				if ($row['forum_enable_rss'] == 'y')
@@ -2341,13 +2352,18 @@ class Forum_Core extends Forum {
 
 			$title = ' '.$row['title'].' ';
 
+			if (bool_config_item('enable_censoring'))
+			{
+				$title = ee('Format')->make('Text', $title)->censor();
+			}
+
 			// Finalize the result
 			$temp = $this->var_swap($temp,
 							array(
 									'topic_marker'			=>	$topic_marker,
 									'topic_type'			=>  $topic_type,
 									'topic_class'			=>  $topic_class,
-									'topic_title'			=>	trim($this->_convert_special_chars(ee()->typography->format_characters(ee()->typography->filter_censored_words($title)))),
+									'topic_title'			=>	trim($this->_convert_special_chars(ee()->typography->format_characters($title))),
 									'author'				=>	$row['author'],
 									'total_views'			=>	$row['thread_views'],
 									'total_replies'			=>	$row['thread_total'] - 1,
@@ -3043,13 +3059,18 @@ class Forum_Core extends Forum {
 		$title = ' '.$tquery->row('title') .' ';
 		$title = $this->convert_forum_tags($title);
 
+		if (bool_config_item('enable_censoring'))
+		{
+			$title = ee('Format')->make('Text', $title)->censor();
+		}
+
 		// Finalize the result
 		$thread = ($is_split == FALSE ) ? 'thread_rows' : 'split_thread_rows';
 
 		$str = ee()->TMPL->parse_date_variables($str, array('topic_date' => $tquery->row('date')));
 
 		return $this->var_swap($str, array(
-			'topic_title'                => trim($this->_convert_special_chars(ee()->typography->format_characters(ee()->typography->filter_censored_words($title)))),
+			'topic_title'                => trim($this->_convert_special_chars(ee()->typography->format_characters($title))),
 			'include:'.$thread           => $thread_rows,
 			'include:thread_review_rows' => $thread_review_rows,
 			'path:new_topic'             => $this->forum_path('/newtopic/'.$this->current_id.'/'),
@@ -3146,7 +3167,12 @@ class Forum_Core extends Forum {
 				// Security fix
 				$val['answer'] = $this->convert_forum_tags($val['answer']);
 
-				$temp = str_replace('{poll_choice}', $this->_convert_special_chars(ee()->typography->filter_censored_words($val['answer'])), $temp);
+				if (bool_config_item('enable_censoring'))
+				{
+					$val['answer'] = ee('Format')->make('Text', $val['answer'])->censor();
+				}
+
+				$temp = str_replace('{poll_choice}', $this->_convert_special_chars($val['answer']), $temp);
 
 				if ($checked == FALSE)
 				{
@@ -3164,6 +3190,10 @@ class Forum_Core extends Forum {
 			// Security fix
 			$question = $this->convert_forum_tags($question);
 
+			if (bool_config_item('enable_censoring'))
+			{
+				$question = ee('Format')->make('Text', $question)->censor();
+			}
 
 			$form_declaration = ee()->functions->form_declaration(array(
 												'action' => $this->forum_path('viewthread/'.$this->current_id)
@@ -3172,7 +3202,7 @@ class Forum_Core extends Forum {
 
 			$template = $this->var_swap($template,
 									array(
-											'poll_question'	=> $this->_convert_special_chars(ee()->typography->filter_censored_words($question)),
+											'poll_question'	=> $this->_convert_special_chars($question),
 											'form_declaration'	=> $form_declaration,
 											'include:poll_question_rows' => $rows
 										)
@@ -3194,7 +3224,12 @@ class Forum_Core extends Forum {
 
 				$img = $img_l;
 
-				$temp = str_replace('{poll_choice}', $this->_convert_special_chars(ee()->typography->filter_censored_words($val['answer'])), $temp);
+				if (bool_config_item('enable_censoring'))
+				{
+					$val['answer'] = ee('Format')->make('Text', $val['answer'])->censor();
+				}
+
+				$temp = str_replace('{poll_choice}', $this->_convert_special_chars($val['answer']), $temp);
 				$temp = str_replace('{votes}', $val['votes'], $temp);
 
 				$percent = 0;
@@ -3218,9 +3253,14 @@ class Forum_Core extends Forum {
 			// Security fix
 			$question = $this->convert_forum_tags($question);
 
+			if (bool_config_item('enable_censoring'))
+			{
+				$question = ee('Format')->make('Text', $question)->censor();
+			}
+
 			$template = $this->var_swap($template,
 									array(
-											'poll_question'	=> $this->_convert_special_chars(ee()->typography->filter_censored_words($question)),
+											'poll_question'	=> $this->_convert_special_chars($question),
 											'include:poll_answer_rows' => $rows,
 											'total_votes' => $total_votes,
 											'lang:voter_message' => (ee()->session->userdata('member_id') == 0) ? lang('must_be_logged_to_vote') : lang('you_have_voted')
@@ -6295,7 +6335,7 @@ class Forum_Core extends Forum {
 						continue;
 					}
 
-					$params = ee()->functions->assign_parameters($full_tag_inner);
+					$params = ee('Variables/Parser')->parseTagParameters($full_tag_inner);
 
 					if (isset($params['char_limit']) && is_numeric($params['char_limit']))
 					{
@@ -9514,10 +9554,15 @@ class Forum_Core extends Forum {
 
 				$snippet = substr($snippet, 0, 30);
 
+				if (bool_config_item('enable_censoring'))
+				{
+					$snippet = ee('Format')->make('Text', $snippet)->censor();
+				}
+
 				$reply_info[$row['post_id']] = array(
 														'member_id' => $row['member_id'],
 														'screen_name' => $row['screen_name'],
-														'snippet' => ee()->typography->filter_censored_words($snippet)
+														'snippet' => $snippet
 													);
 			}
 		}
@@ -9640,11 +9685,18 @@ class Forum_Core extends Forum {
 				$temp = str_replace('{include:reply_results}', $reply_results, $temp);
 			}
 
+			$title = $this->_convert_special_chars($row['title']);
+
+			if (bool_config_item('enable_censoring'))
+			{
+				$title = ee('Format')->make('Text', $title)->censor();
+			}
+
 			$temp = $this->var_swap($temp,
 					array(
 							'topic_marker'			=>	$topic_marker,
 							'topic_type'			=>  $topic_type,
-							'topic_title'			=>	ee()->typography->filter_censored_words($this->_convert_special_chars($row['title'])),
+							'topic_title'			=>	$title,
 							'forum_name'			=>  $tquery->row('forum_name') ,
 							'author'				=>	$row['author'],
 							'total_views'			=>	$row['thread_views'],
@@ -9874,6 +9926,13 @@ class Forum_Core extends Forum {
 		$str = $pagination->render($str);
 		$str = str_replace('{include:thread_result_rows}', $topics, $str);
 
+		$topic_title = $this->_convert_special_chars($topic_title);
+
+		if (bool_config_item('enable_censoring'))
+		{
+			$topic_title = ee('Format')->make('Text', $topic_title)->censor();
+		}
+
 		// Parse the template
 		return $this->var_swap(
 			$this->load_element('search_thread_page'),
@@ -9881,9 +9940,7 @@ class Forum_Core extends Forum {
 				'include:thread_search_results'	=> $str,
 				'keywords'					=> $keywords,
 				'total_results'				=> $total_rows,
-				'topic_title'				=> ee()->typography->filter_censored_words(
-					$this->_convert_special_chars($topic_title)
-				)
+				'topic_title'				=> $topic_title
 			)
 		);
 	}
@@ -9990,7 +10047,14 @@ class Forum_Core extends Forum {
 
 			$temp = $template;
 
-			$temp = str_replace('{title}', ee()->typography->filter_censored_words($this->_convert_special_chars($row['title'])), $temp);
+			$title = $this->_convert_special_chars($row['title']);
+
+			if (bool_config_item('enable_censoring'))
+			{
+				$title = ee('Format')->make('Text', $title)->censor();
+			}
+
+			$temp = str_replace('{title}', $title, $temp);
 			$temp = str_replace('{replies}', $row['thread_total']-1, $temp);
 			$temp = str_replace('{views}', $row['thread_views'], $temp);
 			$temp = str_replace('{author}', $this->_convert_special_chars($member_name[$row['author_id']]), $temp);
@@ -10131,7 +10195,14 @@ class Forum_Core extends Forum {
 
 			$temp = $template;
 
-			$temp = str_replace('{title}', ee()->typography->filter_censored_words($this->_convert_special_chars($row['title'])), $temp);
+			$title = $this->_convert_special_chars($row['title']);
+
+			if (bool_config_item('enable_censoring'))
+			{
+				$title = ee('Format')->make('Text', $title)->censor();
+			}
+
+			$temp = str_replace('{title}', $title, $temp);
 			$temp = str_replace('{replies}', $row['thread_total']-1, $temp);
 			$temp = str_replace('{views}', $row['thread_views'], $temp);
 			$temp = str_replace('{path:member_profile}',  $this->profile_path($row['author_id']), $temp);
@@ -10438,8 +10509,10 @@ class Forum_Core extends Forum {
 				continue;
 			}
 
-
-			$row['title'] = ee()->typography->filter_censored_words($row['title']);
+			if (bool_config_item('enable_censoring'))
+			{
+				$row['title'] = ee('Format')->make('Text', $row['title'])->censor();
+			}
 
 			$tagdata = ee()->TMPL->tagdata;
 
@@ -10647,7 +10720,7 @@ class Forum_Core extends Forum {
 						  'cnonce'		=> 1,
 						  'qop'			=> 1);
 
-		$params = ee()->functions->assign_parameters($_SERVER['PHP_AUTH_DIGEST']);
+		$params = ee('Variables/Parser')->parseTagParameters($_SERVER['PHP_AUTH_DIGEST']);
 
 		extract($required);
 		extract($params);
