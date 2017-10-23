@@ -62,7 +62,7 @@ class EE_Channel_fluid_field_parser implements EE_Channel_parser_component {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Replace all of the Fliud Block fields in one fell swoop.
+	 * Replace all of the Fluid Block fields in one fell swoop.
 	 *
 	 * @param String	The tagdata to be parsed
 	 * @param Object	The channel parser object
