@@ -362,7 +362,7 @@ class Set {
 	{
 		if ( ! file_exists($this->path.'/channel_set.json'))
 		{
-			$this->result->addError('Not a valid channel set. Missing channel_set.json file.');
+			$this->result->addError(lang('channel_set_invalid'));
 			return;
 		}
 
@@ -372,6 +372,17 @@ class Set {
 		// Pre-4.0 sets will have status groups, post-4.0 sets will only have statuses
 		$status_groups = isset($data->status_groups) ? $data->status_groups : [];
 		$statuses = isset($data->statuses) ? $data->statuses : [];
+
+		// Version check: v3 installs cannot import v4 exports
+		$version = (isset($data->version)) ? $data->version : '3.0.0';
+		$version = explode('.', $version);
+
+		$app_version = explode('.', ee()->config->item('app_version'));
+		if ($app_version[0] == 3 && $version[0] > $app_version[0])
+		{
+			$this->result->addError(sprintf(lang('channel_set_incompatible'), $version[0]));
+			return;
+		}
 
 		try
 		{

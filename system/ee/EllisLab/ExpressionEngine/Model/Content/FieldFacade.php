@@ -82,7 +82,7 @@ class FieldFacade {
 
 	public function setTimezone($tz)
 	{
-		$this->timezone = $timezone;
+		$this->timezone = $tz;
 	}
 
 	public function getTimezone()

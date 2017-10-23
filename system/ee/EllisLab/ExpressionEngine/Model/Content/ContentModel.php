@@ -334,6 +334,18 @@ abstract class ContentModel extends VariableColumnModel {
 				continue;
 			}
 
+			if (strpos($name, 'field_dt_') !== FALSE)
+			{
+				$name = str_replace('field_dt_', 'field_id_', $name);
+
+				if ($this->hasCustomField($name))
+				{
+					$this->getCustomField($name)->setTimezone($value);
+				}
+
+				continue;
+			}
+
 			if ($this->hasCustomField($name))
 			{
 				$this->getCustomField($name)->setData($value);

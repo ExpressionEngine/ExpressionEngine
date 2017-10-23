@@ -2,11 +2,11 @@
 	<?php $extra = ($disabled) ? 'disabled' : '' ?>
 	<div class="field-option">
 		<label>
-			<?= form_radio($localize_option_name, 'y', ($localized == 'y'), $extra) ?>
+			<?= form_radio($localize_option_name, '', ($localized == 'y'), $extra) ?>
 			<?=lang('localized_date')?>
 		</label>
 		<label>
-			<?= form_radio($localize_option_name, 'n', ($localized == 'n'), $extra) ?>
+			<?= form_radio($localize_option_name, ee()->session->userdata('timezone', ee()->config->item('default_site_timezone')), ($localized == 'n'), $extra) ?>
 			<?=lang('fixed_date')?>
 		</label>
 	</div>
