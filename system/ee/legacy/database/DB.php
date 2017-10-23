@@ -24,9 +24,12 @@ function DB($params = NULL)
 		$database_config->set('password', $params['password']);
 		$database_config->set('dbprefix', $params['dbprefix']);
 
-		if (isset($params['port']))
+		foreach (['char_set', 'dbcollat', 'port'] as $key)
 		{
-			$database_config->set('port', $params['port']);
+			if (isset($params[$key]))
+			{
+				$database_config->set($key, $params[$key]);
+			}
 		}
 
 		$database->setConfig($database_config);
