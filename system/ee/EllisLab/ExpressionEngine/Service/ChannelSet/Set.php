@@ -1037,8 +1037,8 @@ class Set {
 	}
 
 	/**
-	 * Helper function for fluid block imports. We need to associate the correct field
-	 * ids to our fluid block field. Since those don't exist until after saving has begun,
+	 * Helper function for fluid field imports. We need to associate the correct field
+	 * ids to our fluid field field. Since those don't exist until after saving has begun,
 	 * we'll just capture the identifying names in a closure and query for 'em.
 	 *
 	 * @param ChannelFieldModel $field Field instance

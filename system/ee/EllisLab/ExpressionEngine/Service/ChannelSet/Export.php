@@ -580,7 +580,7 @@ class Export {
 	}
 
 	/**
-	 * Does some extra work for fluid block field exports
+	 * Does some extra work for fluid field field exports
 	 *
 	 * @param Model $field Channel field
 	 * @return StdClass Fluid block settings description

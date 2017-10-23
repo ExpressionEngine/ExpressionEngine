@@ -37,13 +37,13 @@ class Fluid_field_parser {
 	 *
 	 * @param string $tagdata Tag data for entire channel entries loop
 	 * @param object $pre_parser Channel preparser object
-	 * @param array $fluid_field_fields An array of fluid block fields
+	 * @param array $fluid_field_fields An array of fluid field fields
 	 * @param string $content_type The type of content being processed
 	 * @param array	Array of known Fluid Field fields in this channel
 	 */
 	public function pre_process($tagdata, $pre_parser, $fluid_field_fields, $content_type = 'channel')
 	{
-		// Bail out if there are no fluid block fields present to parse
+		// Bail out if there are no fluid field fields present to parse
 		if ( ! preg_match_all(
 				"/".LD.'\/?('.preg_quote($pre_parser->prefix()).'(?:(?:'.implode('|', array_flip($fluid_field_fields)).'):?))\b([^}{]*)?'.RD."/",
 				$tagdata,
@@ -171,10 +171,10 @@ class Fluid_field_parser {
 	}
 
 	/**
-	 * Given a list of entry ids, fluid block ids, and field ids used in the
+	 * Given a list of entry ids, fluid field ids, and field ids used in the
 	 * blocks, this bulk-fetches all the needed data for the field blocks.
 	 *
-	 * A fluid block is a collection of individual fieldtypes. We store the
+	 * A fluid field is a collection of individual fieldtypes. We store the
 	 * data for the blocks in the fields's tables. Because of this, since we know
 	 * which fields have tags (see lexTagdata()) we will only fetch data for
 	 * those fields. Thus, we pass in an array of field ids.

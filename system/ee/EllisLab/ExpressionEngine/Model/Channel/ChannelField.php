@@ -230,7 +230,7 @@ class ChannelField extends FieldModel {
 
 		if ( ! empty($fluid_fields))
 		{
-			// Bulk remove all pivot references to this field from all fluid blocks
+			// Bulk remove all pivot references to this field from all fluid fields
 			// though: @TODO Model relationships should have taken care of this...
 			$fluid_field_data = ee('Model')->get('fluid_field:FluidField')
 				->filter('field_id', $this->getId())
