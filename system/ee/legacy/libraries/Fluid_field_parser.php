@@ -100,7 +100,7 @@ class Fluid_field_parser {
 			$found_fields = array_merge($found_fields, $returned['fields_found']);
 		}
 
-		$this->data = $this->fetchFieldBlocks($pre_parser->entry_ids(), $fluid_field_ids, $found_fields);
+		$this->data = $this->fetchFluidFields($pre_parser->entry_ids(), $fluid_field_ids, $found_fields);
 
 		return TRUE;
 	}
@@ -128,10 +128,10 @@ class Fluid_field_parser {
 	}
 
 	/**
-	 * Goes through the tag data finding the field tags used in this block.
+	 * Goes through the tag data finding the field tags used in this fluid field.
 	 *
 	 * @param string $tagdata Tag data for entire channel entries loop
-	 * @param obj $fluid_field_field A ChannelField instance for a field block
+	 * @param obj $fluid_field_field A ChannelField instance for a fluid field
 	 * @return array An associateive array of tag objects and a list of found fields
 	 */
 	private function lexTagdata($tagdata, $fluid_field_field)
@@ -172,19 +172,19 @@ class Fluid_field_parser {
 
 	/**
 	 * Given a list of entry ids, fluid field ids, and field ids used in the
-	 * blocks, this bulk-fetches all the needed data for the field blocks.
+	 * fluid fields, this bulk-fetches all the needed data for the field fields.
 	 *
 	 * A fluid field is a collection of individual fieldtypes. We store the
-	 * data for the blocks in the fields's tables. Because of this, since we know
+	 * data for the fields in the fields's tables. Because of this, since we know
 	 * which fields have tags (see lexTagdata()) we will only fetch data for
 	 * those fields. Thus, we pass in an array of field ids.
 	 *
 	 * @param array $entry_id A list of entry ids
-	 * @param array $fluid_field_ids A list of block ids
+	 * @param array $fluid_field_ids A list of fluid field ids
 	 * @param array $field_ids A list of field ids
 	 * @return obj A Colletion of FluidField model entities
 	 */
-	private function fetchFieldBlocks(array $entry_ids, array $fluid_field_ids, array $field_ids)
+	private function fetchFluidFields(array $entry_ids, array $fluid_field_ids, array $field_ids)
 	{
 		if (empty($entry_ids) || empty($fluid_field_ids) || empty($field_ids))
 		{
@@ -204,9 +204,9 @@ class Fluid_field_parser {
 			->all();
 
 		// Since we store the data in the field's table, and each field has its
-		// own table, we'll group our block data by the field_id. This will
+		// own table, we'll group our fluid field data by the field_id. This will
 		// allow us to run one query per field, fetching all the data across
-		// all the blocks & entries for each field.
+		// all the fluid fields & entries for each field.
 		$fields = array();
 
 		foreach ($fluid_field_data as $fluid_field)

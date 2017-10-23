@@ -583,7 +583,7 @@ class Export {
 	 * Does some extra work for fluid field field exports
 	 *
 	 * @param Model $field Channel field
-	 * @return StdClass Fluid block settings description
+	 * @return StdClass Fluid Field settings description
 	 */
 	private function exportFluidFieldField($field)
 	{

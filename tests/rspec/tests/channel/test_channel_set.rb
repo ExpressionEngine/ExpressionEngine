@@ -649,7 +649,7 @@ feature 'Channel Sets' do
 		end
 
         it 'imports a channel with a fluid field' do
-			import_channel_set 'channel-with-fluid-block', method: 'issue_duplicate'
+			import_channel_set 'channel-with-fluid-field', method: 'issue_duplicate'
 
             @page.find('input[name="ee:UploadDestination[Images][server_path]"]').set '../images/uploads'
             @page.find('input[name="ee:UploadDestination[Images][url]"]').set '/images/uploads'

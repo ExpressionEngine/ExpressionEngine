@@ -187,7 +187,7 @@ module ChannelSets
     #
     # @return [void]
     def fluid_field
-      $db.query(IO.read('channel_sets/channel-with-fluid-block.sql'))
+      $db.query(IO.read('channel_sets/channel-with-fluid-field.sql'))
       clear_db_result
     end
 

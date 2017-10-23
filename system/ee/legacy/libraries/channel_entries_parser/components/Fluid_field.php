@@ -9,7 +9,7 @@
  */
 
 /**
- * Fluid block parser class
+ * Fluid Field parser class
  */
 class EE_Channel_fluid_field_parser implements EE_Channel_parser_component {
 

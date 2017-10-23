@@ -523,9 +523,9 @@ class Fluid_field_ft extends EE_Fieldtype {
 	}
 
 	/**
-	 * Gets the fluid field's data for a given block and entry
+	 * Gets the fluid field's data for a given field and entry
 	 *
-	 * @param int $fluid_field_id The id for the block
+	 * @param int $fluid_field_id The id for the field
 	 * @param int $entry_id The id for the entry
 	 * @return obj A Collection of FluidField objects
 	 */
