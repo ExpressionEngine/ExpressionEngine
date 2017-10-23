@@ -9,7 +9,7 @@
  */
 
 /**
- * Fluid Block Parser
+ * Fluid Field Parser
  */
 class Fluid_field_parser {
 
@@ -33,13 +33,13 @@ class Fluid_field_parser {
 
 	/**
 	 * Called before each channel entries loop to gather the information
-	 * needed to efficiently query the Fluid Block data we need
+	 * needed to efficiently query the Fluid Field data we need
 	 *
 	 * @param string $tagdata Tag data for entire channel entries loop
 	 * @param object $pre_parser Channel preparser object
 	 * @param array $fluid_field_fields An array of fluid block fields
 	 * @param string $content_type The type of content being processed
-	 * @param array	Array of known Fluid Block fields in this channel
+	 * @param array	Array of known Fluid Field fields in this channel
 	 */
 	public function pre_process($tagdata, $pre_parser, $fluid_field_fields, $content_type = 'channel')
 	{
@@ -76,7 +76,7 @@ class Fluid_field_parser {
 
 			$field_name = rtrim($field_name, ':');
 
-			// Make sure the supposed field name is an actual Fluid Block field
+			// Make sure the supposed field name is an actual Fluid Field field
 			if ( ! isset($fluid_field_fields[$field_name]))
 			{
 				return FALSE;

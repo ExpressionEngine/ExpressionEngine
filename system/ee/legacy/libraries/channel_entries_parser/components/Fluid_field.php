@@ -14,7 +14,7 @@
 class EE_Channel_fluid_field_parser implements EE_Channel_parser_component {
 
 	/**
-	 * Check if Fluid Block is enabled
+	 * Check if Fluid Field is enabled
 	 *
 	 * @param array		A list of "disabled" features
 	 * @return Boolean	Is disabled?
@@ -27,7 +27,7 @@ class EE_Channel_fluid_field_parser implements EE_Channel_parser_component {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Gather the data needed to process all Fluid Block fields
+	 * Gather the data needed to process all Fluid Field fields
 	 *
 	 * The returned object will be passed to replace() as a third parameter.
 	 *
@@ -44,7 +44,7 @@ class EE_Channel_fluid_field_parser implements EE_Channel_parser_component {
 		{
 			$ffields = $pre->channel()->ffields;
 
-			// Skip a site if it has no Fluid Block fields
+			// Skip a site if it has no Fluid Field fields
 			if ( ! isset($ffields[$site_id]) OR empty($ffields[$site_id]))
 			{
 				continue;

@@ -490,7 +490,7 @@ INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_ti
 VALUES
 	(1,1,'news','News','http://ee2/index.php/news',NULL,'en',3,0,0,1409242030,0,'1',1,'open',2,'2','y','y',0,'all','n','y','y','n','','http://ee2/index.php/news/comments','y','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','',0,0),
 	(2,1,'about','Information Pages','http://ee2/index.php/about',NULL,'en',7,0,0,1409242030,0,'2',1,'open',7,'','y','y',0,'all','n','y','n','n','','http://ee2/index.php/news/comments','n','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','',0,0),
-	(3,1,'fluid_fields','Fluid Blocks','',NULL,'en',0,0,0,0,0,NULL,1,'open',NULL,NULL,'y','y',NULL,'all','n','y','n','n',NULL,NULL,'y','n','n',5000,0,'y','xhtml','safe','n','y','n','n',NULL,0,NULL,NULL,'n',10,NULL,'Title',NULL,0,0);
+	(3,1,'fluid_fields','Fluid Fields','',NULL,'en',0,0,0,0,0,NULL,1,'open',NULL,NULL,'y','y',NULL,'all','n','y','n','n',NULL,NULL,'y','n','n',5000,0,'y','xhtml','safe','n','y','n','n',NULL,0,NULL,NULL,'n',10,NULL,'Title',NULL,0,0);
 
 /*!40000 ALTER TABLE `exp_channels` ENABLE KEYS */;
 UNLOCK TABLES;

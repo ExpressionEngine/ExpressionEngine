@@ -738,7 +738,7 @@ class Updater {
 	}
 
 	/**
-	 * New "Fluid Block" Field Type in 4.0.0
+	 * New "Fluid Field" Field Type in 4.0.0
 	 */
 	private function addFluidFieldField()
 	{

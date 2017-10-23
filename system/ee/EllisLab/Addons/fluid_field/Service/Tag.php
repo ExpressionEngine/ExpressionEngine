@@ -12,7 +12,7 @@ namespace EllisLab\Addons\FluidField\Service;
 use EllisLab\ExpressionEngine\Model\Content\FieldFacade;
 
 /**
- * A tag for a fieldtype within a Fluid Block
+ * A tag for a fieldtype within a Fluid Field
  */
 class Tag {
 

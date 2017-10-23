@@ -13,7 +13,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 use EllisLab\ExpressionEngine\Model\Content\FieldData;
 
 /**
- * ExpressionEngine Fluid Block Model
+ * ExpressionEngine Fluid Field Model
  */
 class FluidField extends Model {
 
@@ -49,7 +49,7 @@ class FluidField extends Model {
 				'weak' => TRUE
 			)
 		),
-		'BlockField' => array(
+		'FieldField' => array(
 			'type' => 'belongsTo',
 			'from_key' => 'fluid_field_id',
 			'to_key'   => 'field_id',

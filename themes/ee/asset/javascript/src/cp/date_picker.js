@@ -416,7 +416,7 @@ $(document).ready(function () {
 		});
 	}
 
-	// Date fields inside a Fluid Block need to be bound when a new field is added
+	// Date fields inside a Fluid Field need to be bound when a new field is added
 	if (FluidField !== undefined)
 	{
 		FluidField.on('date', 'add', function(field)

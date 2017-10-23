@@ -7,7 +7,7 @@
 					<h1><?=lang('confirm_removal')?></h1>
 					<?=form_open('', 'class="settings"', (isset($hidden)) ? $hidden : array())?>
 						<div class="alert inline issue">
-							<p>Removing fields from this Fluid Block will result in data loss.</p>
+							<p>Removing fields from this Fluid Field will result in data loss.</p>
 						</div>
 						<fieldset class="form-ctrls">
 							<?=cp_form_submit('btn_confirm_and_remove', 'btn_confirm_and_remove_working')?>
