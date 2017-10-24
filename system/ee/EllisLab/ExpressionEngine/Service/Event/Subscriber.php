@@ -34,7 +34,7 @@ interface Subscriber {
 	/**
 	 * Get a list of subscribed event names
 	 *
-	 * @return Array of event names (e.g. ['beforeSave', 'afterSave'])
+	 * @return array of event names (e.g. ['beforeSave', 'afterSave'])
 	 */
 	public function getSubscribedEvents();
 

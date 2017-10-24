@@ -316,7 +316,7 @@ class Validator {
 	 * Split up the validation rule and its parameters
 	 *
 	 * @param String $string Validation rule
-	 * @return Array [rule name, [...parameters]]
+	 * @return array [rule name, [...parameters]]
 	 */
 	protected function parseRuleString($string)
 	{

@@ -68,7 +68,7 @@ class Structure {
 	 * weird nested arrays that are hard to process so we do it manually.
 	 *
 	 * @param Model $model The model instance to start from
-	 * @return Array List of relationship names to process next
+	 * @return array List of relationship names to process next
 	 */
 	public static function getValidateRelationships($model)
 	{

@@ -71,7 +71,7 @@ class Menu {
 	/**
 	 * Get all items in the menu
 	 *
-	 * @return Array of Link|Submenu Objects
+	 * @return array of Link|Submenu Objects
 	 */
 	public function getItems()
 	{

@@ -110,7 +110,7 @@ abstract class VariableColumnModel extends Model {
 	/**
 	 * Get values as an array
 	 *
-	 * @return Array of values
+	 * @return array of values
 	 */
 	public function getValues()
 	{

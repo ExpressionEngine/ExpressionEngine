@@ -809,7 +809,7 @@ class Set {
 	 *
 	 * @param ChannelFieldModel $field Field instance
 	 * @param Array $field_data The field data that will be set() on the field
-	 * @return Array Modified $field_data
+	 * @return array Modified $field_data
 	 */
 	private function importRelationshipField($field, $field_data)
 	{

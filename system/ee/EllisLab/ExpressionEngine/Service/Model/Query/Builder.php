@@ -224,7 +224,7 @@ class Builder {
 	/**
 	 * Get the current search data
 	 *
-	 * @return Array of search data [field1 => [word1 => include?, ...]]
+	 * @return array of search data [field1 => [word1 => include?, ...]]
 	 */
 	public function getSearch()
 	{
@@ -240,7 +240,7 @@ class Builder {
 	 *    Negation of either of the above
 	 *
 	 * @param String $str Search string
-	 * @return Array of search terms, possibly prefixed with a - for negation
+	 * @return array of search terms, possibly prefixed with a - for negation
 	 */
 	private function prepSearch($str)
 	{

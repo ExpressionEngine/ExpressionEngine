@@ -172,7 +172,7 @@ class Quicklinks extends Settings {
 	/**
 	 * Reorder quicklinks
 	 *
-	 * @return Array Success or error array. On success returns the new quicklinks table
+	 * @return array Success or error array. On success returns the new quicklinks table
 	 */
 	public function order()
 	{

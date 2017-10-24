@@ -105,7 +105,7 @@ class Runner {
 	 * Apply our prefix to all variables
 	 *
 	 * @param Array $vars  All passed in variables
-	 * @return Array       $vars but with the keys prefixed
+	 * @return array       $vars but with the keys prefixed
 	 */
 	private function prefixVariables(array $vars)
 	{
