@@ -183,7 +183,7 @@ class Builder {
 	 *
 	 * @param Mixed  $properties  Relationship.columnname [array|string]
 	 * @param Mixed   $value      Value to search for
-	 * @return Query  $this
+	 * @return Builder  $this
 	 */
 	public function search($properties, $value)
 	{
@@ -224,7 +224,7 @@ class Builder {
 	/**
 	 * Get the current search data
 	 *
-	 * @return Array of search data [field1 => [word1 => include?, ...]]
+	 * @return array of search data [field1 => [word1 => include?, ...]]
 	 */
 	public function getSearch()
 	{
@@ -240,7 +240,7 @@ class Builder {
 	 *    Negation of either of the above
 	 *
 	 * @param String $str Search string
-	 * @return Array of search terms, possibly prefixed with a - for negation
+	 * @return array of search terms, possibly prefixed with a - for negation
 	 */
 	private function prepSearch($str)
 	{
@@ -293,7 +293,7 @@ class Builder {
 	 * @param String  $property  Relationship.columnname
 	 * @param String  $operator  Comparison operator [default: ==]
 	 * @param Mixed   $value     Value to compare to
-	 * @return Query  $this
+	 * @return Builder  $this
 	 */
 	public function filter($property, $operator, $value = FALSE)
 	{
@@ -307,7 +307,7 @@ class Builder {
 	 * @param String  $property  Relationship.columnname
 	 * @param String  $operator  Comparison operator [default: ==]
 	 * @param Mixed   $value     Value to compare to
-	 * @return Query  $this
+	 * @return Builder  $this
 	 */
 	public function orFilter($property, $operator, $value = FALSE)
 	{

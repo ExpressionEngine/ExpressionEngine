@@ -213,7 +213,7 @@ class Channel extends StructureModel {
 	 * Display the CP entry form
 	 *
 	 * @param Content $content  An object implementing the Content interface
-	 * @return Array of HTML field elements for the entry / edit form
+	 * @return array of HTML field elements for the entry / edit form
 	 */
 	public function getPublishForm($content = NULL)
 	{

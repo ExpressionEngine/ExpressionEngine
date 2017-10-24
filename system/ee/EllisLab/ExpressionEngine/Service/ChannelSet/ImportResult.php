@@ -68,7 +68,7 @@ class ImportResult {
     /**
      * Get fatal errors
      *
-     * @return Array Fatal errors
+     * @return array Fatal errors
      */
 	public function getErrors()
 	{
@@ -78,7 +78,7 @@ class ImportResult {
     /**
      * Get model errors that were not recoverable
      *
-     * @return Array Model errors
+     * @return array Model errors
      */
     public function getModelErrors()
     {
@@ -88,7 +88,7 @@ class ImportResult {
     /**
      * Get recoverable errors
      *
-     * @return Array Recoverable errors
+     * @return array Recoverable errors
      */
     public function getRecoverableErrors()
     {

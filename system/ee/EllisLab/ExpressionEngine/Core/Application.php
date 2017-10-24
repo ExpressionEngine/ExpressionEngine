@@ -137,7 +137,7 @@ class Application {
 	/**
 	 * Get prefixes
 	 *
-	 * @return Array of all prefixes
+	 * @return array of all prefixes
 	 */
 	public function getPrefixes()
 	{
@@ -147,7 +147,7 @@ class Application {
 	/**
 	 * Get namespaces
 	 *
-	 * @return Array [prefix => namespace]
+	 * @return array [prefix => namespace]
 	 */
 	public function getNamespaces()
 	{
@@ -157,7 +157,7 @@ class Application {
 	/**
 	 * Get namespaces
 	 *
-	 * @return Array [prefix => product name]
+	 * @return array [prefix => product name]
 	 */
 	public function getProducts()
 	{
@@ -167,7 +167,7 @@ class Application {
 	/**
 	 * List vendors
 	 *
-	 * @return Array off vendor names
+	 * @return array off vendor names
 	 */
 	public function getVendors()
 	{
@@ -177,7 +177,7 @@ class Application {
 	/**
 	* Get all providers
 	*
-	* @return Array of all providers [prefix => object]
+	* @return array of all providers [prefix => object]
 	*/
 	public function getProviders()
 	{
@@ -187,7 +187,7 @@ class Application {
 	/**
 	 * Get all models
 	 *
-	 * @return Array [prefix:model-alias => fqcn]
+	 * @return array [prefix:model-alias => fqcn]
 	 */
 	public function getModels()
 	{
@@ -229,7 +229,7 @@ class Application {
 	 * Helper function to collect data from all providers
 	 *
 	 * @param String $method Method to forward to
-	 * @return Array Array of method results, nested arrays are flattened
+	 * @return array Array of method results, nested arrays are flattened
 	 */
 	public function forward($method)
 	{

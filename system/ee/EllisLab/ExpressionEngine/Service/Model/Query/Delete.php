@@ -203,7 +203,7 @@ class Delete extends Query {
 	 * );
 	 *
 	 * @param String  $model  Model to delete from
-	 * @return Array  [name => withs, ...] as described above
+	 * @return array  [name => withs, ...] as described above
 	 */
 	protected function getDeleteList($model, $delete_alias)
 	{
