@@ -20,7 +20,7 @@
 		<fieldset class="<?=form_error_class('db_hostname')?>">
 			<label><?=lang('db_hostname')?></label>
 			<em><?=lang('db_hostname_note')?></em>
-			<input name="db_hostname" type="text" autofocus="autofocus" tabindex="1" value="<?=set_value('db_hostname', 'localhost')?>">
+			<input name="db_hostname" type="text" autofocus="autofocus" value="<?=set_value('db_hostname', 'localhost')?>">
 			<?=form_error('db_hostname')?>
 		</fieldset>
 		<fieldset class="<?=form_error_class('db_name')?>">
@@ -73,7 +73,7 @@
 			<?=form_error('license_agreement')?>
 		</fieldset>
 		<fieldset class="form-ctrls">
-			<input class="btn" type="submit" value="<?=lang('start_installation')?>" tabindex="11">
+			<input class="btn" type="submit" value="<?=lang('start_installation')?>">
 		</fieldset>
 	</form>
 </div>
