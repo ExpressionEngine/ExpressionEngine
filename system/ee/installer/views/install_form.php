@@ -47,7 +47,10 @@
 		</fieldset>
 		<h2><?=lang('default_theme')?></h2>
 		<fieldset class="<?=form_error_class('install_default_theme')?>">
-			<label><input type="checkbox" tabindex="6" name="install_default_theme" value="y" <?=set_checkbox('install_default_theme', 'y')?>> <?=lang('install_default_theme')?></label>
+			<label>
+				<input type="checkbox" name="install_default_theme" value="y" <?=set_checkbox('install_default_theme', 'y')?>> <?=lang('install_default_theme')?>
+				<?=form_error('install_default_theme')?>
+			</label>
 		</fieldset>
 		<h2><?=lang('administrator_account')?></h2>
 		<fieldset class="<?=form_error_class('email_address')?>">
