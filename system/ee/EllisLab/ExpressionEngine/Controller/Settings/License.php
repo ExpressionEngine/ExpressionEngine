@@ -109,8 +109,10 @@ class License extends Settings {
 						'title' => 'license_file',
 						'desc' => sprintf(lang('license_file_desc'), 'https://expressionengine.com/store/purchases'),
 						'fields' => array(
-							'license_file' => array('type' => 'file'),
-							'required' => TRUE
+							'license_file' => [
+								'type' => 'file',
+								'required' => TRUE
+							],
 						)
 					),
 				)
