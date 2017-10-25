@@ -224,15 +224,13 @@ class Create extends Members {
 				ee()->logger->log_action(lang('new_member_added').NBS.$member->username);
 				ee()->stats->update_member_stats();
 
-				ee()->session->set_flashdata('highlight_id', $member->getId());
-
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('member_created'))
 					->addToBody(sprintf(lang('member_created_desc'), $member->username))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL')->make('members', array('sort_col' => 'member_id', 'sort_dir' => 'desc')));
+				ee()->functions->redirect(ee('CP/URL')->make('members/create'));
 			}
 			else
 			{
@@ -252,8 +250,15 @@ class Create extends Members {
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('register_member');
-		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('member'));
-		ee()->view->save_btn_text_working = 'btn_saving';
+		ee()->view->buttons = [
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_new',
+				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			]
+		];
 		ee()->cp->render('settings/form', $vars);
 	}
 }
