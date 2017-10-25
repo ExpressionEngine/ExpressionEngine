@@ -18,7 +18,15 @@ class AlphaDashPeriod extends ValidationRule {
 
 	public function validate($key, $value)
 	{
-		return (bool) preg_match("/^([-a-z0-9_.-])+$/i", $this->stripEmojis($value));
+		$emojiless = $this->stripEmojis($value);
+
+		// If the only value we were given were emoji(s) then it's valid
+		if (strlen($value) > 0 && strlen($emojiless) < 1)
+		{
+			return TRUE;
+		}
+
+		return (bool) preg_match("/^([-a-z0-9_.-])+$/i", $emojiless);
 	}
 
 	protected function stripEmojis($value)
