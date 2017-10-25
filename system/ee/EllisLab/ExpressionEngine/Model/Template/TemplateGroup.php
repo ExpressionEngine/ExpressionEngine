@@ -49,7 +49,7 @@ class TemplateGroup extends Model {
 
 	protected static $_validation_rules = array(
 		'is_site_default' => 'enum[y,n]',
-		'group_name' => 'required|is_valid_group_name|unique',
+		'group_name' => 'required|alphaDashPeriod|validateTemplateGroupName|unique',
 	);
 
 	protected static $_events = array(
@@ -196,6 +196,21 @@ class TemplateGroup extends Model {
 		{
 			$fs->deleteDir($path);
 		}
+	}
+
+	/**
+	 * Validates the template name checking for reserved names.
+	 */
+	public function validateTemplateGroupName($key, $value, $params, $rule)
+	{
+		$reserved_names = array('act', 'css');
+
+		if (in_array($value, $reserved_names))
+		{
+			return 'reserved_name';
+		}
+
+		return TRUE;
 	}
 
 }
