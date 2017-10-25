@@ -580,12 +580,11 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	{
 		$hook_basename = $this->getMetaData('hook_id');
 
-		$lc_event = ucfirst($event);
-		$uc_first_event = ucfirst($lc_event);
+		$uc_first_event = ucfirst($event);
 
 		$forwarded = array(
-			'before'.$uc_first_event => 'before_'.$hook_basename.'_'.$lc_event,
-			'after'.$uc_first_event => 'after_'.$hook_basename.'_'.$lc_event
+			'before'.$uc_first_event => 'before_'.$hook_basename.'_'.$event,
+			'after'.$uc_first_event => 'after_'.$hook_basename.'_'.$event
 		);
 
 		$that = $this;
