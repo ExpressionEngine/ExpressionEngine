@@ -114,6 +114,7 @@ class Edit extends AbstractPublishController {
 		$table->setColumns($columns);
 		$table->setNoResultsText(lang('no_entries_exist'));
 
+		$show_new_button = TRUE;
 		if ($channel_id)
 		{
 			$channel = $entry_listing->getChannelModelFromFilter();
@@ -121,8 +122,8 @@ class Edit extends AbstractPublishController {
 			// Have we reached the max entries limit for this channel?
 			if ($channel->max_entries != 0 && $count >= $channel->max_entries)
 			{
-				// Don't show create button
-				$vars['create_button'] = '';
+				// Don't show New button
+				$show_new_button = FALSE;
 
 				$desc_key = ($channel->max_entries == 1)
 					? 'entry_limit_reached_one_desc' : 'entry_limit_reached_desc';
@@ -316,7 +317,7 @@ class Edit extends AbstractPublishController {
 
 		ee()->view->header = array(
 			'title' => lang('entry_manager'),
-			'action_button' => ee()->cp->allowed_group('can_create_entries') ? [
+			'action_button' => ee()->cp->allowed_group('can_create_entries') && $show_new_button ? [
 				'text' => lang('new'),
 				'href' => ee('CP/URL', 'publish/create/' . $channel_id)->compile(),
 				'filter_placeholder' => lang('filter_channels'),
