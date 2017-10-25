@@ -404,30 +404,30 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 
 	public function urlSlugProvider()
 	{
-		$sample = 'Sample Title to Turn Into a Slug, including <samp>tags</samp>, &quot;quotes and high ascii: ßæ and----seps____in....content....';
+		$sample = 'Sample Title to Turn Into a Slug, including 💩, <samp>tags</samp>, &quot;quotes and high ascii: ßæ and----seps____in....content....';
 
 		return [
-			[$sample, [], 'sample-title-to-turn-into-a-slug-including-tags-quotes-and-high-ascii-ssae-and-seps____in....content'],
+			[$sample, [], 'sample-title-to-turn-into-a-slug-including-💩-tags-quotes-and-high-ascii-ssae-and-seps____in....content'],
 			[
 				$sample,
 				[
 					'separator' => '_',
 				],
-				'sample_title_to_turn_into_a_slug_including_tags_quotes_and_high_ascii_ssae_and----seps_in....content'
+				'sample_title_to_turn_into_a_slug_including_💩_tags_quotes_and_high_ascii_ssae_and----seps_in....content'
 			],
 			[
 				$sample,
 				[
 					'remove_stopwords' => 'yes',
 				],
-				'sample-title-turn-slug-including-tags-quotes-high-ascii-ssae-seps____in....content'
+				'sample-title-turn-slug-including-💩-tags-quotes-high-ascii-ssae-seps____in....content'
 			],
 			[
 				$sample,
 				[
 					'lowercase' => FALSE,
 				],
-				'Sample-Title-to-Turn-Into-a-Slug-including-tags-quotes-and-high-ascii-ssae-and-seps____in....content'
+				'Sample-Title-to-Turn-Into-a-Slug-including-💩-tags-quotes-and-high-ascii-ssae-and-seps____in....content'
 			],
 		];
 	}
