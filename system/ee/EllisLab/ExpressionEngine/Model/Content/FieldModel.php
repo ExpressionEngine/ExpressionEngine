@@ -274,7 +274,7 @@ abstract class FieldModel extends Model {
 			return;
 		}
 
-		$data_table = $this->getDataTable();
+		$data_table = $this->getTableName();
 
 		foreach ($columns as $name => &$column)
 		{
@@ -303,7 +303,7 @@ abstract class FieldModel extends Model {
 
 		$columns = array_keys($columns);
 
-		$data_table = $this->getDataTable();
+		$data_table = $this->getTableName();
 
 		ee()->load->dbforge();
 
