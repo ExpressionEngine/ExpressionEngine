@@ -374,7 +374,7 @@ abstract class AbstractPublish extends CP_Controller {
 
 		if (ee()->input->post('submit') == 'save')
 		{
-			$redirect_url = ee('CP/URL')->make('publish/edit/entry/' . $entry->channel_id);
+			$redirect_url = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
 
 			/* -------------------------------------
 			/*  'entry_submission_end' hook.
