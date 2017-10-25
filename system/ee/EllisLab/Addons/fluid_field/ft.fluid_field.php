@@ -436,7 +436,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 
 		$all = array_merge($defaults, $data);
 
-		$fields = ee('Model')->get('ChannelField', $data['field_channel_fields'])
+		$fields = ee('Model')->get('ChannelField', $all['field_channel_fields'])
 			->filter('legacy_field_data', 'y')
 			->all();
 
@@ -447,7 +447,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 
 		if (isset($this->settings['field_channel_fields']))
 		{
-			$removed_fields = (array_diff($this->settings['field_channel_fields'], $data['field_channel_fields']));
+			$removed_fields = (array_diff($this->settings['field_channel_fields'], $all['field_channel_fields']));
 
 			if ( ! empty($removed_fields))
 			{
