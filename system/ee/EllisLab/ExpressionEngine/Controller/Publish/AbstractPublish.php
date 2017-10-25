@@ -111,6 +111,7 @@ abstract class AbstractPublish extends CP_Controller {
 			'publish.autosave.URL'           => ee('CP/URL')->make('publish/autosave/' . $channel_id . '/' . $entry_id)->compile(),
 			'publish.default_entry_title'    => $entry->Channel->default_entry_title,
 			'publish.foreignChars'           => $foreign_characters,
+			'publish.urlLength'              => URL_TITLE_MAX_LENGTH,
 			'publish.lang.no_member_groups'  => lang('no_member_groups'),
 			'publish.lang.refresh_layout'    => lang('refresh_layout'),
 			'publish.lang.tab_count_zero'    => lang('tab_count_zero'),

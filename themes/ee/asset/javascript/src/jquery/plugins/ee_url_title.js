@@ -26,6 +26,7 @@
 			var defaultTitle  = (EE.publish.default_entry_title) ? EE.publish.default_entry_title : '',
 				separator     = (EE.publish.word_separator) ? EE.publish.word_separator : '_',
 				foreignChars  = (EE.publish.foreignChars) ? EE.publish.foreignChars : {},
+				urlLength     = (EE.publish.url_length) ? EE.publish.url_length : 200,
 				newText       = $(this).val() || '',
 				multiReg      = new RegExp(separator + '{2,}', 'g'),
 				separatorReg  = (separator !== '_') ? (/\_/g) : (/\-/g),
@@ -79,7 +80,7 @@
 			};
 
 			if (url_title) {
-				$(url_title).val(newText.substring(0, 75));
+				$(url_title).val(newText.substring(0, urlLength));
 				$(url_title).trigger('change');
 			}
 		});

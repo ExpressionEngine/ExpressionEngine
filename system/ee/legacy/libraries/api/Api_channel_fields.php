@@ -1076,7 +1076,7 @@ class Api_channel_fields extends Api {
 				'field_show_fmt'		=> 'n',
 				'field_text_direction'	=> 'ltr',
 				'field_type'			=> 'text',
-				'field_maxl'			=> 75
+				'field_maxl'			=> URL_TITLE_MAX_LENGTH
 			),
 			'entry_date'	=> array(
 				'field_id'				=> 'entry_date',
