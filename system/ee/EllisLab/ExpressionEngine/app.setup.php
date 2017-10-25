@@ -191,6 +191,7 @@ return array(
 				'foreign_chars' => ee()->config->loadFile('foreign_chars'),
 				'stopwords' => ee()->config->loadFile('stopwords'),
 				'word_separator' => ee()->config->item('word_separator'),
+				'emoji_regex' => EMOJI_REGEX,
 			];
 
 			return new Formatter\FormatterFactory(ee()->lang, ee()->session, $config_items, $format_opts);
