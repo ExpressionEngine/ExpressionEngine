@@ -742,6 +742,11 @@ class Updater {
 	 */
 	private function addFluidFieldField()
 	{
+		if (ee()->db->where('name', 'fluid_field')->get('fieldtypes')->num_rows() > 0)
+		{
+			return;
+		}
+
 		ee()->db->insert('fieldtypes', array(
 				'name' => 'fluid_field',
 				'version' => '1.0.0',
@@ -839,6 +844,11 @@ class Updater {
 	 */
 	private function addDurationField()
 	{
+		if (ee()->db->where('name', 'duration')->get('fieldtypes')->num_rows() > 0)
+		{
+			return;
+		}
+
 		ee()->db->insert('fieldtypes', array(
 				'name' => 'duration',
 				'version' => '1.0.0',
@@ -850,6 +860,14 @@ class Updater {
 
 	private function addCommentMenuExtension()
 	{
+		if (ee()->db
+			->where('class', 'Comment_ext')
+			->where('hook', 'cp_custom_menu')
+			->get('extensions')->num_rows() > 0)
+		{
+			return;
+		}
+
 		$data = array(
 			'class'		=> 'Comment_ext',
 			'method'	=> 'addCommentMenu',
