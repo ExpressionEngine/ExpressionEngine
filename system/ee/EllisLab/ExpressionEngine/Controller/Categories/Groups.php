@@ -144,7 +144,7 @@ class Groups extends AbstractCategoriesController {
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('category_group_'.$alert_key))
-					->addToBody(sprintf(lang('category_group_'.$alert_key.'_desc'), $group->group_name))
+					->addToBody(sprintf(lang('category_group_'.$alert_key.'_desc'), $cat_group->group_name))
 					->defer();
 
 				if (AJAX_REQUEST)
@@ -160,13 +160,11 @@ class Groups extends AbstractCategoriesController {
 				{
 					if (is_null($group_id))
 					{
-						ee()->session->set_flashdata('highlight_id', $group->getId());
+						ee()->session->set_flashdata('highlight_id', $cat_group->getId());
 					}
 
-					ee()->functions->redirect(ee('CP/URL')->make('categories'));
+					ee()->functions->redirect(ee('CP/URL')->make('categories/groups/edit/'.$cat_group->getId()));
 				}
-
-				ee()->functions->redirect(ee('CP/URL')->make('categories'));
 			}
 			else
 			{

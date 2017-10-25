@@ -101,11 +101,7 @@ class Groups extends AbstractFieldsController {
 				}
 				else
 				{
-					ee()->session->set_flashdata('group_id', $field_group->getId());
-
-					ee()->functions->redirect(
-						ee('CP/URL')->make('fields', ['group_id' => $field_group->getId()])
-					);
+					ee()->functions->redirect(ee('CP/URL')->make('fields/groups/edit/'.$field_group->getId()));
 				}
 			}
 			else
@@ -195,9 +191,7 @@ class Groups extends AbstractFieldsController {
 				}
 				else
 				{
-					ee()->functions->redirect(
-						ee('CP/URL')->make('fields', ['group_id' => $field_group->getId()])
-					);
+					ee()->functions->redirect(ee('CP/URL')->make('fields/groups/edit/'.$field_group->getId()));
 				}
 			}
 			else

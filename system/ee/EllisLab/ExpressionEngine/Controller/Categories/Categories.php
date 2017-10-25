@@ -498,12 +498,7 @@ class Categories extends AbstractCategoriesController {
 				}
 				else
 				{
-					if (is_null($category_id))
-					{
-						ee()->session->set_flashdata('highlight_id', $category->getId());
-					}
-
-					ee()->functions->redirect(ee('CP/URL')->make('categories/group/'.$cat_group->group_id));
+					ee()->functions->redirect(ee('CP/URL')->make('categories/edit/'.$cat_group->group_id.'/'.$category->getId()));
 				}
 			}
 			else

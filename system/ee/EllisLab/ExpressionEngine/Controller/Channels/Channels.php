@@ -263,7 +263,7 @@ class Channels extends AbstractChannelsController {
 				}
 				else
 				{
-					ee()->functions->redirect(ee('CP/URL')->make('channels'));
+					ee()->functions->redirect(ee('CP/URL')->make('channels/edit/'.$channel->getId()));
 				}
 			}
 			else

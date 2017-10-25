@@ -242,9 +242,7 @@ class Fields extends AbstractFieldsController {
 				}
 				else
 				{
-					ee()->session->set_flashdata('field_id', $field->field_id);
-
-					ee()->functions->redirect(ee('CP/URL')->make('fields'));
+					ee()->functions->redirect(ee('CP/URL')->make('fields/edit/'.$field->getId()));
 				}
 			}
 			else
@@ -362,9 +360,7 @@ class Fields extends AbstractFieldsController {
 				}
 				else
 				{
-					ee()->session->set_flashdata('field_id', $field->field_id);
-
-					ee()->functions->redirect(ee('CP/URL')->make('fields'));
+					ee()->functions->redirect(ee('CP/URL')->make('fields/edit/'.$field->getId()));
 				}
 			}
 			else
