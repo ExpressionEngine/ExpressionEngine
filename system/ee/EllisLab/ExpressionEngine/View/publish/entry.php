@@ -71,7 +71,7 @@
 			<?php else: ?>
 			<fieldset class="<?=$field_class?>">
 			<?php endif; ?>
-				<div class="field-instruct<?=$field_class?>">
+				<div class="field-instruct">
 					<label><span class="ico sub-arrow js-toggle-field"></span><?=$field->getLabel()?></label>
 					<em><?=$field->getInstructions()?></em>
 				</div>

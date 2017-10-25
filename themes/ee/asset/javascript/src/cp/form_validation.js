@@ -309,7 +309,7 @@ EE.cp.formValidation = {
 
 		// If we're in a Grid input, re-assign some things to apply classes
 		// and show error messages in the proper places
-		if (fieldset.hasClass('grid-publish'))
+		if (fieldset.hasClass('fieldset-faux'))
 		{
 			fieldset = fieldset.find('div.field-instruct');
 			container = field.parents('td');
@@ -322,7 +322,7 @@ EE.cp.formValidation = {
 			// For Grid, we also need to remove the class on the cell and do some
 			// special handling of the invalid class on the Grid field label
 			if (grid) {
-				container.removeClass('invalid');
+				container.removeClass('fieldset-invalid');
 
 				// For Grid, only remove the invalid class from the label if no
 				// more errors exist in the Grid
