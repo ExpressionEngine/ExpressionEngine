@@ -126,6 +126,14 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 		$this->addFilter('set', array('this', 'typedSetAndForeignKeys'));
 		$this->addFilter('fill', array('this', 'typedLoad'));
 		$this->addFilter('store', array('this', 'typedStore'));
+
+		// Need to set these up here instead of on-demand because the model delete
+		// routine will create a collection with new model objects to delete,
+		// thus ignoring any previously-set up events; plus, cascading deletes
+		if ($this->getMetaData('hook_id'))
+		{
+			$this->forwardEventToHooks('delete');
+		}
 	}
 
 	/**
@@ -380,7 +388,6 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 
 		$this->constrainQueryToSelf($qb);
 
-		$this->forwardEventToHooks('delete');
 		$qb->delete();
 
 		$this->setId(NULL);
