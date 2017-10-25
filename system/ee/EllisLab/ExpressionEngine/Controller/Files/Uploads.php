@@ -130,7 +130,14 @@ class Uploads extends AbstractFilesController {
 					->addToBody(lang('directory_saved_desc'))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $new_upload_id));
+				if (ee('Request')->post('submit') == 'save_and_new')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('files/uploads/create'));
+				}
+				else
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('files/uploads/edit/'.$new_upload_id));
+				}
 			}
 			else
 			{
@@ -323,8 +330,22 @@ class Uploads extends AbstractFilesController {
 		);
 
 		ee()->view->ajax_validate = TRUE;
-		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('upload_directory'));
-		ee()->view->save_btn_text_working = 'btn_saving';
+		ee()->view->buttons = [
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save',
+				'text' => 'save',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_new',
+				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			]
+		];
 
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('files'), lang('file_manager'));
 
