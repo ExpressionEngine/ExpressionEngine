@@ -422,7 +422,7 @@ class Rte_lib {
 						buttons: '.json_encode($bits['buttons']).'
 					});
 
-				FluidFiueld.on("rte", "add" function(e, el) {
+				FluidFiueld.on("rte", "add", function(e, el) {
 					$("' . $selector . '", el).addClass("WysiHat-field")
 						.wysihat({
 							buttons: '.json_encode($bits['buttons']).'
