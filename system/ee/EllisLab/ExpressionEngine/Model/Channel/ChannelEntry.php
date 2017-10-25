@@ -383,8 +383,6 @@ class ChannelEntry extends ContentModel {
 
 	public function onBeforeInsert()
 	{
-		parent::onBeforeInsert();
-
 		$this->ensureStatusSynced(TRUE);
 	}
 
