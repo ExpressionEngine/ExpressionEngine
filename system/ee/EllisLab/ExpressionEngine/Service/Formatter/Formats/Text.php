@@ -42,13 +42,20 @@ class Text extends Formatter {
 			return $this;
 		}
 
-		$this->content = utf8_decode($this->content);
-		$chars = preg_split('//', $this->content, NULL, PREG_SPLIT_NO_EMPTY);
+		$chars = preg_split('//u', $this->content, NULL, PREG_SPLIT_NO_EMPTY);
 
 		$this->content = '';
 		foreach ($chars as $index => $char)
 		{
+			$decoded = utf8_decode($char);
+
+			if ($decoded != '?')
+			{
+				$char = $decoded;
+			}
+
 			$ord = ord($char);
+
 			if (isset($accent_map[$ord]))
 			{
 				$this->content .= $accent_map[$ord];
