@@ -316,12 +316,14 @@ require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/rand
 			case 'yes':
 			case 'y':
 			case 'on':
+			case '1':
 				return TRUE;
 			break;
 
 			case 'no':
 			case 'n':
 			case 'off':
+			case '0':
 				return FALSE;
 			break;
 
