@@ -70,7 +70,8 @@ class General extends Settings {
 					'desc' => 'version_autocheck_desc',
 					'button' => array(
 						'text' => 'check_now',
-						'href' => ee('CP/URL', 'settings/general/version-check')
+						'href' => ee('CP/URL', 'settings/general/version-check'),
+						'for' => 'version-check'
 					),
 					'fields' => array(
 						'new_version_check' => array(

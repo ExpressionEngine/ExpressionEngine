@@ -43,8 +43,8 @@ feature 'General Settings' do
       @page.is_system_on_n.click
       @page.new_version_check_n.click
       @page.should have_check_version_btn
-      @page.date_format.select 'yyyy-mm-dd'
-      @page.time_format.select '24-hour'
+      @page.date_format_yyyy_mm_dd.click
+      @page.time_format_24_hr.click
       @page.include_seconds_toggle.click
 
       # Only field that's required, will be our test case
@@ -60,8 +60,8 @@ feature 'General Settings' do
       should_have_error_text(@page.site_short_name, @error_text)
       @page.is_system_on_n.checked?.should == true
       @page.new_version_check_n.checked?.should == true
-      @page.date_format.value.should == '%Y-%m-%d'
-      @page.time_format.value.should == '24'
+      @page.date_format_yyyy_mm_dd.checked?.should == true
+      @page.time_format_24_hr.checked?.should == true
       @page.include_seconds.value.should == 'y'
     end
 
@@ -72,8 +72,8 @@ feature 'General Settings' do
       should_have_no_error_text(@page.site_name)
       @page.is_system_on_y.checked?.should == true
       @page.new_version_check_y.checked?.should == true
-      @page.date_format.value.should == '%n/%j/%Y'
-      @page.time_format.value.should == '12'
+      @page.date_format_mm_dd_yyyy.checked?.should == true
+      @page.time_format_12_hr.checked?.should == true
       @page.include_seconds.value.should == 'n'
 
       # Blank Title
@@ -135,8 +135,8 @@ feature 'General Settings' do
     @page.is_system_on_n.click
     @page.new_version_check_n.click
     @page.should have_check_version_btn
-    @page.date_format.select 'yyyy-mm-dd'
-    @page.time_format.select '24-hour'
+    @page.date_format_yyyy_mm_dd.click
+    @page.time_format_24_hr.click
     @page.include_seconds_toggle.click
     @page.submit
 
@@ -149,8 +149,8 @@ feature 'General Settings' do
     @page.is_system_on_n.checked?.should == true
     @page.new_version_check_n.checked?.should == true
     @page.should have_check_version_btn
-    @page.date_format.value.should == '%Y-%m-%d'
-    @page.time_format.value.should == '24'
+    @page.date_format_yyyy_mm_dd.checked?.should == true
+    @page.time_format_24_hr.checked?.should == true
     @page.include_seconds.value.should == 'y'
   end
 
