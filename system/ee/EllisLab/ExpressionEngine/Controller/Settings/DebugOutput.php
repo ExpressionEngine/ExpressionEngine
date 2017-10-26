@@ -30,8 +30,9 @@ class DebugOutput extends Settings {
 						'debug' => array(
 							'type' => 'inline_radio',
 							'choices' => array(
-								'1' => 'enable',
-								'0' => 'disable'
+								'0' => 'debug_0',
+								'1' => 'debug_1',
+								'2' => 'debug_2',
 							)
 						)
 					)
@@ -40,13 +41,7 @@ class DebugOutput extends Settings {
 					'title' => 'show_profiler',
 					'desc' => 'show_profiler_desc',
 					'fields' => array(
-						'show_profiler' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							)
-						)
+						'show_profiler' => array('type' => 'yes_no')
 					)
 				),
 				array(
@@ -57,13 +52,7 @@ class DebugOutput extends Settings {
 						ee('Model')->get('DeveloperLog')->count()
 						),
 					'fields' => array(
-						'enable_devlog_alerts' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							)
-						)
+						'enable_devlog_alerts' => array('type' => 'yes_no')
 					)
 				)
 			),

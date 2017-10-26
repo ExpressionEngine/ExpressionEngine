@@ -267,15 +267,21 @@ $lang = array(
 
 'caching_driver_file_fail' => 'Cannot use %s driver, check cache path permissions.',
 
+'debug_0' => 'Hidden',
+
+'debug_1' => 'Shown to Super Admins only (recommended)',
+
+'debug_2' => 'Visible to everyone (not secure)',
+
 'disable_caching' => 'Disable Caching',
 
 'enable_devlog_alerts' => 'Enable Developer Log Alerts?',
 
 'enable_devlog_alerts_desc' => 'When set to <b>enable</b>, super admins will see control panel alerts when new <a href="%s">Developer Log</a> items need action. Currently <b>%s item(s)</b> are logged.',
 
-'enable_errors' => 'Enable error reporting?',
+'enable_errors' => 'Error Visibility',
 
-'enable_errors_desc' => 'When set to <b>enable</b>, super admins will see PHP/MySQL errors when they occur.',
+'enable_errors_desc' => 'Determines who can see PHP/MySQL errors when they occur.',
 
 'force_query_string' => 'Force <abbr title="Uniform Resource Location">URL</abbr> query strings?',
 

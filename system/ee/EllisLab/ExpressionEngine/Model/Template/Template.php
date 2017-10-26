@@ -79,7 +79,7 @@ class Template extends FileSyncedModel {
 	protected static $_validation_rules = array(
 		'site_id'            => 'required|isNatural',
 		'group_id'           => 'required|isNatural',
-		'template_name'      => 'required|unique[group_id]|alphaDashPeriod|validateTemplateName',
+		'template_name'      => 'required|unique[group_id]|alphaDashPeriodEmoji|validateTemplateName',
 		'template_type'      => 'required',
 		'cache'              => 'enum[y,n]',
 		'refresh'            => 'isNatural',

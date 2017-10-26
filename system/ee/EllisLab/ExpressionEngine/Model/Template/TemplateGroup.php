@@ -49,7 +49,7 @@ class TemplateGroup extends Model {
 
 	protected static $_validation_rules = array(
 		'is_site_default' => 'enum[y,n]',
-		'group_name' => 'required|alphaDashPeriod|validateTemplateGroupName|unique',
+		'group_name' => 'required|alphaDashPeriodEmoji|validateTemplateGroupName|unique',
 	);
 
 	protected static $_events = array(

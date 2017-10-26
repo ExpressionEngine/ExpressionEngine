@@ -10,7 +10,6 @@
 namespace EllisLab\ExpressionEngine\Service\Formatter\Formats;
 
 use EllisLab\ExpressionEngine\Service\Formatter\Formatter;
-use EllisLab\ExpressionEngine\Service\Validation\Rule\AlphaDashPeriod;
 
 /**
  * Formatter\Text
@@ -490,6 +489,8 @@ class Text extends Formatter {
 			'#&\S+?;#i' => '',
 			// replace whitespace and forward slashes with the separator
 			'#\s+|/+#i' => $options['separator'],
+			// only allow low ascii letters, numbers, dash, dot, underscore, and emoji
+			 '#[^a-z0-9\-\._'.$this->getConfig('emoji_regex').']#iu' => '',
 			// no dot-then-separator (in case multiple sentences were passed)
 			'#\.'.$options['separator'].'#i' => $options['separator'],
 			// reduce multiple instances of the separator to a single
@@ -498,16 +499,6 @@ class Text extends Formatter {
 
 		$this->content = strip_tags($this->content);
 		$this->content = preg_replace(array_keys($replace), array_values($replace), $this->content);
-
-		// @TODO Inject this
-		$rule = new AlphaDashPeriod();
-
-		$replace = '';
-		foreach (preg_split('//u', $this->content) as $char)
-		{
-			$replace .= ($rule->validate('', $char)) ? $char : '';
-		}
-		$this->content = $replace;
 
 		// don't allow separators or dots at the beginning or end of the string, and remove slashes if they exist
 		$this->content = trim(stripslashes($this->content), '-_.');
