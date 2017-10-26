@@ -17,6 +17,9 @@
 		</div>
 	<?php endif ?>
 	<form action="<?=$action?>" method="<?=$method?>">
+		<?php if( ! is_null($utf8mb4_supported)): ?>
+		<input type="hidden" name="utf8mb4_supported" value="n">
+		<?php endif; ?>
 		<fieldset class="<?=form_error_class('db_hostname')?>">
 			<label><?=lang('db_hostname')?></label>
 			<em><?=lang('db_hostname_note')?></em>

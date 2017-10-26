@@ -110,7 +110,8 @@ class Wizard extends CI_Controller {
 		'captcha_path'          => '../images/captchas/',
 		'theme_folder_path'     => '../themes/',
 		'modules'               => array(),
-		'install_default_theme' => 'n'
+		'install_default_theme' => 'n',
+		'utf8mb4_supported'     => NULL
 	);
 
 	// These are the default values for the config array.  Since the
@@ -757,25 +758,28 @@ class Wizard extends CI_Controller {
 			$db['char_set'] = 'utf8';
 			$db['dbcollat'] = 'utf8_unicode_ci';
 
-			$which = '';
-
-			if ( ! $this->clientSupportsUtf8mb4())
+			if (is_null($this->userdata['utf8mb4_supported']))
 			{
-				$which = lang('client');
+				$which = '';
+
+				if ( ! $this->clientSupportsUtf8mb4())
+				{
+					$which = lang('client');
+
+					if ( ! $this->serverSupportsUtf8mb4())
+					{
+						$which .= ' ' . lang('and') . ' ';
+					}
+				}
 
 				if ( ! $this->serverSupportsUtf8mb4())
 				{
-					$which .= ' ' . lang('and') . ' ';
+					$which .= lang('server');
 				}
+
+				$this->userdata['utf8mb4_supported'] = FALSE;
+				$errors[] = sprintf(lang('utf8mb4_not_supported'), $which);
 			}
-
-			if ( ! $this->serverSupportsUtf8mb4())
-			{
-				$which .= lang('server');
-			}
-
-
-			$errors[] = sprintf(lang('utf8mb4_not_supported'), $which);
 		}
 
 		// Need to reset the connection based on the above settings.
