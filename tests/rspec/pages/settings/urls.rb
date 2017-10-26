@@ -10,7 +10,7 @@ class UrlsSettings < ControlPanelPage
   element :profile_trigger, 'input[name=profile_trigger]'
   element :category_segment_trigger, 'input[name=reserved_category_word]'
   elements :use_category_name, 'input[name=use_category_name]'
-  element :url_title_separator, 'select[name=word_separator]'
+  elements :url_title_separator, 'input[name=word_separator]'
 
   def load
     settings_btn.click
