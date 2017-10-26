@@ -26,6 +26,11 @@ $lang = array(
 	'db_prefix'             => 'Table Prefix',
 	'db_prefix_note'        => 'Use <b>exp</b> unless you require/prefer a different prefix.',
 
+	'utf8mb4_not_supported' => 'Your MySQL %s does not support Emoji 😞. Click install if you would like to install anyway, or <a href="">read how to fix this before installing</a>.',
+	'client'                => 'client',
+	'server'                => 'server',
+	'and'                   => 'and',
+
 	// Account Creation
 	'administrator_account' => 'Administrator Account',
 	'username'              => 'Username',

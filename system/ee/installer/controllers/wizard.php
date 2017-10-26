@@ -565,26 +565,46 @@ class Wizard extends CI_Controller {
 		return ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']);
 	}
 
-	public function isUtf8mb4Supported()
+	private function serverSupportsUtf8mb4()
 	{
-		$msyql_server_version = ee('Database')->getConnection()->getNative()->getAttribute(PDO::ATTR_SERVER_VERSION);
+		static $supported;
 
-		$server_is_compatible = version_compare($msyql_server_version, '5.5.3', '>=');
-
-		$client_info = ee('Database')->getConnection()->getNative()->getAttribute(PDO::ATTR_CLIENT_VERSION);
-
-		if (strpos($client_info, 'mysqlnd') === 0)
+		if (is_null($supported))
 		{
-			$msyql_client_version = preg_replace('/^mysqlnd ([\d.]+).*/', '$1', $client_info);
-			$client_is_compatible = version_compare($msyql_client_version, '5.0.9', '>=');
-		}
-		else
-		{
-			$msyql_client_version = $client_info;
-			$client_is_compatible = version_compare($msyql_client_version, '5.5.3', '>=');
+			$msyql_server_version = ee('Database')->getConnection()->getNative()->getAttribute(PDO::ATTR_SERVER_VERSION);
+
+			$supported = version_compare($msyql_server_version, '5.5.3', '>=');
 		}
 
-		return ($server_is_compatible && $client_is_compatible);
+		return $supported;
+	}
+
+	private function clientSupportsUtf8mb4()
+	{
+		static $supported;
+
+		if (is_null($supported))
+		{
+			$client_info = ee('Database')->getConnection()->getNative()->getAttribute(PDO::ATTR_CLIENT_VERSION);
+
+			if (strpos($client_info, 'mysqlnd') === 0)
+			{
+				$msyql_client_version = preg_replace('/^mysqlnd ([\d.]+).*/', '$1', $client_info);
+				$supported = version_compare($msyql_client_version, '5.0.9', '>=');
+			}
+			else
+			{
+				$msyql_client_version = $client_info;
+				$supported = version_compare($msyql_client_version, '5.5.3', '>=');
+			}
+		}
+
+		return $supported;
+	}
+
+	private function isUtf8mb4Supported()
+	{
+		return ($this->serverSupportsUtf8mb4() && $this->clientSupportsUtf8mb4());
 	}
 
 	/**
@@ -736,6 +756,26 @@ class Wizard extends CI_Controller {
 		{
 			$db['char_set'] = 'utf8';
 			$db['dbcollat'] = 'utf8_unicode_ci';
+
+			$which = '';
+
+			if ( ! $this->clientSupportsUtf8mb4())
+			{
+				$which = lang('client');
+
+				if ( ! $this->serverSupportsUtf8mb4())
+				{
+					$which .= ' ' . lang('and') . ' ';
+				}
+			}
+
+			if ( ! $this->serverSupportsUtf8mb4())
+			{
+				$which .= lang('server');
+			}
+
+
+			$errors[] = sprintf(lang('utf8mb4_not_supported'), $which);
 		}
 
 		// Need to reset the connection based on the above settings.
