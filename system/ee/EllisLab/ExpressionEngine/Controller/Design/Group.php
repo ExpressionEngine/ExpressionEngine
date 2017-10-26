@@ -355,7 +355,7 @@ class Group extends AbstractDesignController {
 	  */
 	public function _group_name_checks($str)
 	{
-		$result = ee('Validation')->make(array('group_name' => 'alphaDashPeriod'))->validate(array('group_name' => $str));
+		$result = ee('Validation')->make(array('group_name' => 'alphaDashPeriodEmoji'))->validate(array('group_name' => $str));
 
 		if ( ! $result->isValid())
 		{

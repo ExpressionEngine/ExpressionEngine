@@ -119,7 +119,7 @@ class ChannelEntry extends ContentModel {
 		'channel_id'         => 'required|validateMaxEntries',
 		'ip_address'         => 'ip_address',
 		'title'              => 'required|maxLength[200]|limitHtml[b,cite,code,del,em,i,ins,markspan,strong,sub,sup]',
-		'url_title'          => 'required|maxLength[200]|alphaDashPeriod|validateUniqueUrlTitle[channel_id]',
+		'url_title'          => 'required|maxLength[200]|alphaDashPeriodEmoji|validateUniqueUrlTitle[channel_id]',
 		'status'             => 'required',
 		'entry_date'         => 'required',
 		'versioning_enabled' => 'enum[y,n]',
