@@ -11,7 +11,7 @@ feature 'CAPTCHA Settings' do
     @upload_path = File.expand_path('../../images')
   end
 
-  it 'shows the Avatar Settings page' do
+  it 'shows the CAPTCHA Settings page' do
     @page.all_there?.should == true
   end
 
@@ -21,14 +21,10 @@ feature 'CAPTCHA Settings' do
     captcha_rand = ee_config(item: 'captcha_rand')
     captcha_require_members = ee_config(item: 'captcha_require_members')
 
-    @page.require_captcha_y.checked?.should == (require_captcha == 'y')
-    @page.require_captcha_n.checked?.should == (require_captcha == 'n')
-    @page.captcha_font_y.checked?.should == (captcha_font == 'y')
-    @page.captcha_font_n.checked?.should == (captcha_font == 'n')
-    @page.captcha_rand_y.checked?.should == (captcha_rand == 'y')
-    @page.captcha_rand_n.checked?.should == (captcha_rand == 'n')
-    @page.captcha_require_members_y.checked?.should == (captcha_require_members == 'y')
-    @page.captcha_require_members_n.checked?.should == (captcha_require_members == 'n')
+    @page.require_captcha.value.should == require_captcha
+    @page.captcha_font.value.should == captcha_font
+    @page.captcha_rand.value.should == captcha_rand
+    @page.captcha_require_members.value.should == captcha_require_members
     @page.captcha_url.value.should == ee_config(item: 'captcha_url')
     @page.captcha_path.value.should == ee_config(item: 'captcha_path')
   end
@@ -77,19 +73,24 @@ feature 'CAPTCHA Settings' do
   end
 
   it 'should save and load the settings' do
-    @page.require_captcha_y.click
-    @page.captcha_font_n.click
-    @page.captcha_rand_n.click
-    @page.captcha_require_members_y.click
+    require_captcha = ee_config(item: 'require_captcha')
+    captcha_font = ee_config(item: 'captcha_font')
+    captcha_rand = ee_config(item: 'captcha_rand')
+    captcha_require_members = ee_config(item: 'captcha_require_members')
+
+    @page.require_captcha_toggle.click
+    @page.captcha_font_toggle.click
+    @page.captcha_rand_toggle.click
+    @page.captcha_require_members_toggle.click
     @page.captcha_url.set 'http://hello'
     @page.captcha_path.set @upload_path
     @page.submit
 
     @page.should have_text 'Preferences updated'
-    @page.require_captcha_y.checked?.should == true
-    @page.captcha_font_n.checked?.should == true
-    @page.captcha_rand_n.checked?.should == true
-    @page.captcha_require_members_y.checked?.should == true
+    @page.require_captcha.value.should_not == require_captcha
+    @page.captcha_font.value.should_not == captcha_font
+    @page.captcha_rand.value.should_not == captcha_rand
+    @page.captcha_require_members.value.should_not == captcha_require_members
     @page.captcha_url.value.should == 'http://hello'
     @page.captcha_path.value.should == @upload_path
   end
