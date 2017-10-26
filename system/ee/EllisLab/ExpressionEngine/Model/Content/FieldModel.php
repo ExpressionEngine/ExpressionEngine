@@ -276,6 +276,12 @@ abstract class FieldModel extends Model {
 
 		$data_table = $this->getTableName();
 
+		if ( ! $this->hasProperty($this->getColumnPrefix().'legacy_field_data')
+			|| $this->getProperty($this->getColumnPrefix().'legacy_field_data') == TRUE)
+		{
+			$data_table = $this->getDataTable();
+		}
+
 		foreach ($columns as $name => &$column)
 		{
 			if ( ! isset($column['name']))
@@ -303,7 +309,7 @@ abstract class FieldModel extends Model {
 
 		$columns = array_keys($columns);
 
-		$data_table = $this->getTableName();
+		$data_table = $this->getDataTable();
 
 		ee()->load->dbforge();
 
