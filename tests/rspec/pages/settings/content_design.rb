@@ -1,16 +1,20 @@
 class ContentDesign < ControlPanelPage
 
-  element :new_posts_clear_caches_y, 'input[name=new_posts_clear_caches][value=y]'
-  element :new_posts_clear_caches_n, 'input[name=new_posts_clear_caches][value=n]'
-  element :enable_sql_caching_y, 'input[name=enable_sql_caching][value=y]'
-  element :enable_sql_caching_n, 'input[name=enable_sql_caching][value=n]'
-  element :auto_assign_cat_parents_y, 'input[name=auto_assign_cat_parents][value=y]'
-  element :auto_assign_cat_parents_n, 'input[name=auto_assign_cat_parents][value=n]'
-  element :image_resize_protocol, 'select[name=image_resize_protocol]'
+  element :new_posts_clear_caches_toggle, 'a[data-toggle-for=new_posts_clear_caches]'
+  element :new_posts_clear_caches, 'input[name=new_posts_clear_caches]', :visible => false
+  element :enable_sql_caching_toggle, 'a[data-toggle-for=enable_sql_caching]'
+  element :enable_sql_caching, 'input[name=enable_sql_caching]', :visible => false
+  element :auto_assign_cat_parents_toggle, 'a[data-toggle-for=auto_assign_cat_parents]'
+  element :auto_assign_cat_parents, 'input[name=auto_assign_cat_parents]', :visible => false
+  elements :image_resize_protocol, 'input[name=image_resize_protocol]'
+  element :image_resize_protocol_checked, 'input[name=image_resize_protocol][checked=checked]'
+  element :image_resize_protocol_imagemagick, 'input[name=image_resize_protocol][value="imagemagick"]'
+  element :image_resize_protocol_netpbm, 'input[name=image_resize_protocol][value="netpbm"]'
+  element :image_resize_protocol_gd, 'input[name=image_resize_protocol][value="gd"]'
   element :image_library_path, 'input[name=image_library_path]'
   element :thumbnail_suffix, 'input[name=thumbnail_prefix]'
-  element :enable_emoticons_y, 'input[name=enable_emoticons][value=y]'
-  element :enable_emoticons_n, 'input[name=enable_emoticons][value=n]'
+  element :enable_emoticons_toggle, 'a[data-toggle-for=enable_emoticons]'
+  element :enable_emoticons, 'input[name=enable_emoticons]', :visible => false
   element :emoticon_url, 'input[name=emoticon_url]'
 
   def load
