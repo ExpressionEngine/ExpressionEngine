@@ -565,6 +565,28 @@ class Wizard extends CI_Controller {
 		return ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']);
 	}
 
+	public function isUtf8mb4Supported()
+	{
+		$msyql_server_version = ee('Database')->getConnection()->getNative()->getAttribute(PDO::ATTR_SERVER_VERSION);
+
+		$server_is_compatible = version_compare($msyql_server_version, '5.5.3', '>=');
+
+		$client_info = ee('Database')->getConnection()->getNative()->getAttribute(PDO::ATTR_CLIENT_VERSION);
+
+		if (strpos($client_info, 'mysqlnd') === 0)
+		{
+			$msyql_client_version = preg_replace('/^mysqlnd ([\d.]+).*/', '$1', $client_info);
+			$client_is_compatible = version_compare($msyql_client_version, '5.0.9', '>=');
+		}
+		else
+		{
+			$msyql_client_version = $client_info;
+			$client_is_compatible = version_compare($msyql_client_version, '5.5.3', '>=');
+		}
+
+		return ($server_is_compatible && $client_is_compatible);
+	}
+
 	/**
 	 * Form validation callback for checking DB prefixes
 	 *
@@ -708,6 +730,13 @@ class Wizard extends CI_Controller {
 			'char_set' => 'utf8mb4',
 			'dbcollat' => 'utf8mb4_unicode_ci',
 		);
+
+		// Fallback to UTF8 if we cannot do UTF8MB4
+		if ( ! $this->isUtf8mb4Supported())
+		{
+			$db['char_set'] = 'utf8';
+			$db['dbcollat'] = 'utf8_unicode_ci';
+		}
 
 		// Need to reset the connection based on the above settings.
 		ee('Database')->closeConnection();
