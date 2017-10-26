@@ -140,7 +140,7 @@ class Wizard extends CI_Controller {
 		define('PASSWORD_MAX_LENGTH', 72);
 		define('PATH_CACHE',  SYSPATH.'user/cache/');
 		define('PATH_TMPL',   SYSPATH.'user/templates/');
-		define('DOC_URL', 'https://docs.expressionengine.com/v3/');
+		define('DOC_URL', 'https://docs.expressionengine.com/v4/');
 
 		// Third party constants
 		define('PATH_THIRD',  SYSPATH.'user/addons/');
