@@ -22,12 +22,11 @@ feature 'Debugging & Output Settings' do
     send_headers = ee_config(item: 'send_headers')
 
     # This is ridiculous -- testing *each* radio button's status
-    @page.debug_y.checked?.should == (debug == '1')
-    @page.debug_n.checked?.should == (debug == '0')
-    @page.show_profiler_y.checked?.should == (show_profiler == 'y')
-    @page.show_profiler_n.checked?.should == (show_profiler == 'n')
-    @page.enable_devlog_alerts_y.checked?.should == (enable_devlog_alerts == 'y')
-    @page.enable_devlog_alerts_n.checked?.should == (enable_devlog_alerts == 'n' || enable_devlog_alerts == '')
+    @page.debug_2.checked?.should == (debug == '2')
+    @page.debug_1.checked?.should == (debug == '1')
+    @page.debug_0.checked?.should == (debug == '0')
+    @page.show_profiler.value.should == show_profiler
+    @page.enable_devlog_alerts.value.should == enable_devlog_alerts
     @page.gzip_output.value.should == gzip_output
     @page.force_query_string.value.should == force_query_string
     @page.send_headers.value.should == send_headers
@@ -62,13 +61,15 @@ feature 'Debugging & Output Settings' do
   end
 
   it 'should save and load the settings' do
+    show_profiler = ee_config(item: 'show_profiler')
+    enable_devlog_alerts = ee_config(item: 'enable_devlog_alerts')
     gzip_output = ee_config(item: 'gzip_output')
     force_query_string = ee_config(item: 'force_query_string')
     send_headers = ee_config(item: 'send_headers')
 
-    @page.debug_n.click
-    @page.show_profiler_y.click
-    @page.enable_devlog_alerts_n.click
+    @page.debug_0.click
+    @page.show_profiler_toggle.click
+    @page.enable_devlog_alerts_toggle.click
     @page.gzip_output_toggle.click
     @page.force_query_string_toggle.click
     @page.send_headers_toggle.click
@@ -77,9 +78,9 @@ feature 'Debugging & Output Settings' do
     @page.submit
 
     @page.should have_text 'Preferences updated'
-    @page.debug_n.checked?.should == true
-    @page.show_profiler_y.checked?.should == true
-    @page.enable_devlog_alerts_n.checked?.should == true
+    @page.debug_0.checked?.should == true
+    @page.show_profiler.value.should_not == show_profiler
+    @page.enable_devlog_alerts.value.should_not == enable_devlog_alerts
     @page.gzip_output.value.should_not == gzip_output
     @page.force_query_string.value.should_not == force_query_string
     @page.send_headers.value.should_not == send_headers

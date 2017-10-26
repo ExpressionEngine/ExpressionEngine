@@ -1,12 +1,13 @@
 class DebugOutput < ControlPanelPage
 
   # This is ridiculous
-  element :debug_y, 'input[name=debug][value="1"]'
-  element :debug_n, 'input[name=debug][value="0"]'
-  element :show_profiler_y, 'input[name=show_profiler][value=y]'
-  element :show_profiler_n, 'input[name=show_profiler][value=n]'
-  element :enable_devlog_alerts_y, 'input[name=enable_devlog_alerts][value=y]'
-  element :enable_devlog_alerts_n, 'input[name=enable_devlog_alerts][value=n]'
+  element :debug_2, 'input[name=debug][value="2"]'
+  element :debug_1, 'input[name=debug][value="1"]'
+  element :debug_0, 'input[name=debug][value="0"]'
+  element :show_profiler_toggle, 'a[data-toggle-for=show_profiler]'
+  element :show_profiler, 'input[name=show_profiler]', :visible => false
+  element :enable_devlog_alerts_toggle, 'a[data-toggle-for=enable_devlog_alerts]'
+  element :enable_devlog_alerts, 'input[name=enable_devlog_alerts]', :visible => false
   element :gzip_output_toggle, 'a[data-toggle-for=gzip_output]'
   element :gzip_output, 'input[name=gzip_output]', :visible => false
   element :force_query_string_toggle, 'a[data-toggle-for=force_query_string]'
