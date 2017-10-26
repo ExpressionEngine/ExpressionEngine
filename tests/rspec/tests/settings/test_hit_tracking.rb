@@ -38,20 +38,21 @@ feature 'Hit Tracking' do
   end
 
   it 'saves settings on page load' do
-    @page.enable_online_user_tracking[1].click
-    @page.enable_hit_tracking[0].click
-    @page.enable_entry_view_tracking[0].click
+    enable_online_user_tracking = ee_config(item: 'enable_online_user_tracking')
+    enable_hit_tracking = ee_config(item: 'enable_hit_tracking')
+    enable_entry_view_tracking = ee_config(item: 'enable_entry_view_tracking')
+
+    @page.enable_online_user_tracking_toggle.click
+    @page.enable_hit_tracking_toggle.click
+    @page.enable_entry_view_tracking_toggle.click
     @page.dynamic_tracking_disabling.set '360'
     @page.submit
 
     no_php_js_errors
     @page.should_not have_text 'Attention: Settings not saved'
-    @page.enable_online_user_tracking[0].checked?.should == false
-    @page.enable_online_user_tracking[1].checked?.should == true
-    @page.enable_hit_tracking[0].checked?.should == true
-    @page.enable_hit_tracking[1].checked?.should == false
-    @page.enable_entry_view_tracking[0].checked?.should == true
-    @page.enable_entry_view_tracking[1].checked?.should == false
+    @page.enable_online_user_tracking.value.should_not == enable_online_user_tracking
+    @page.enable_hit_tracking.value.should_not == enable_hit_tracking
+    @page.enable_entry_view_tracking.value.should_not == enable_entry_view_tracking
     @page.dynamic_tracking_disabling.value.should == '360'
   end
 end
