@@ -22,8 +22,7 @@ feature 'Comment Settings' do
     @page.enable_comments_n.checked?.should == (enable_comments == 'n')
     @page.comment_word_censoring_y.checked?.should == (comment_word_censoring == 'y')
     @page.comment_word_censoring_n.checked?.should == (comment_word_censoring == 'n')
-    @page.comment_moderation_override_y.checked?.should == (comment_moderation_override == 'y')
-    @page.comment_moderation_override_n.checked?.should == (comment_moderation_override == 'n')
+    @page.comment_moderation_override.value.should == comment_moderation_override
 
     @page.comment_edit_time_limit.value.should == '0'
   end
@@ -54,16 +53,18 @@ feature 'Comment Settings' do
   end
 
   it 'should save and load the settings' do
+    comment_moderation_override = ee_config(item: 'comment_moderation_override')
+
     @page.enable_comments_n.click
     @page.comment_word_censoring_y.click
-    @page.comment_moderation_override_y.click
+    @page.comment_moderation_override_toggle.click
     @page.comment_edit_time_limit.set '300'
     @page.submit
 
     @page.should have_text 'Preferences updated'
     @page.enable_comments_n.checked?.should == true
     @page.comment_word_censoring_y.checked?.should == true
-    @page.comment_moderation_override_y.checked?.should == true
+    @page.comment_moderation_override.value.should_not == comment_moderation_override
     @page.comment_edit_time_limit.value.should == '300'
   end
 end
