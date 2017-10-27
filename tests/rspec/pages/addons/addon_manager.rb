@@ -1,9 +1,8 @@
 class AddonManager < ControlPanelPage
   set_url_matcher /addons/
 
-  element :title, 'div.box.full.mb form h1'
+  element :title, '.section-header__title'
 
-  element :phrase_search, 'fieldset.tbl-search input[name=search]'
   element :search_submit_button, 'fieldset.tbl-search input.submit'
 
   # First Party Add-Ons

@@ -10,7 +10,6 @@ feature 'Add-On Manager' do
 
     @page.displayed?
     @page.title.text.should eq 'Add-On Manager'
-    @page.should have_phrase_search
 
     @page.should have_first_party_section
     @page.first_party_heading.text.should eq 'Add-Ons'
@@ -93,8 +92,8 @@ feature 'Add-On Manager' do
 
       @page.first_party_status_filter.text.should eq "status (uninstalled)"
       @page.should have_css 'tr.not-installed'
-      @page.all('tr.not-installed').count().should == 19
-      @page.should have(19).first_party_addons
+      @page.all('tr.not-installed').count().should == 20
+      @page.should have(20).first_party_addons
 
       # By 'needs updates'
       @page.first_party_status_filter.click
@@ -160,78 +159,6 @@ feature 'Add-On Manager' do
       sorted_versions[-1].should == '1.0.0'
     end
 
-    it 'retains filters on searching' do
-      # First by installed
-      @page.first_party_status_filter.click
-      @page.wait_until_first_party_status_filter_menu_visible
-      @page.first_party_status_filter_menu.click_link "installed"
-      no_php_js_errors
-
-      addon_name = @page.first_party_addon_names[0].text
-      @page.phrase_search.set addon_name
-      @page.search_submit_button.click
-      no_php_js_errors
-
-      # The filter should not change
-      @page.first_party_status_filter.text.should eq "status (installed)"
-      @page.first_party_heading.text.should eq 'Search Results we found 1 results for "' + addon_name + '"'
-      @page.phrase_search.value.should eq addon_name
-      @page.should have_text addon_name
-      @page.should have(1).first_party_addons
-    end
-
-    it 'retains sort on searching' do
-      # Sort by Version
-      versions = @page.first_party_versions.map {|version| version.text}
-
-      @page.first_party_version_header.find('a.sort').click
-      no_php_js_errors
-
-      addon_name = @page.first_party_addon_names[0].text
-      @page.phrase_search.set addon_name
-      @page.search_submit_button.click
-      no_php_js_errors
-
-      # The filter should not change
-      @page.first_party_version_header[:class].should eq 'highlight'
-      @page.first_party_heading.text.should eq 'Search Results we found 1 results for "' + addon_name + '"'
-      @page.phrase_search.value.should eq addon_name
-      @page.should have_text addon_name
-      @page.should have(1).first_party_addons
-    end
-
-    # it 'can combine filters' do
-    #   # First by installed
-    #   @page.first_party_status_filter.click
-    #   @page.wait_until_first_party_status_filter_menu_visible
-    #   @page.first_party_status_filter_menu.click_link "uninstalled"
-    #   no_php_js_errors
-    #
-    #   @page.should have_css 'tr.not-installed'
-    # end
-
-    it 'can search by phrases' do
-      @page.phrase_search.set 'RSS'
-      @page.search_submit_button.click
-      no_php_js_errors
-
-      @page.first_party_heading.text.should eq 'Search Results we found 2 results for "RSS"'
-      @page.phrase_search.value.should eq 'RSS'
-      @page.should have_text 'RSS'
-      @page.should have(2).first_party_addons
-    end
-
-    it 'shows no results on a failed search' do
-      @page.phrase_search.set 'NoSuchAddOn'
-      @page.search_submit_button.click
-
-      @page.first_party_heading.text.should eq 'Search Results we found 0 results for "NoSuchAddOn"'
-      @page.phrase_search.value.should eq 'NoSuchAddOn'
-      @page.should have_first_party_no_results
-      @page.should_not have_first_party_pagination
-      @page.should_not have_first_party_bulk_action
-    end
-
     it 'can install a single add-on' do
       # First by uninstalled
       @page.first_party_status_filter.click
@@ -251,27 +178,6 @@ feature 'Add-On Manager' do
       @page.first_party_alert.text.should include "Add-Ons Installed"
       @page.first_party_alert.text.should include addon_name
       @page.first_party_addons.should_not have_text addon_name
-    end
-
-    it 'retains search results after installing' do
-      addon_name = @page.first_party_addon_names[0].text
-
-      # Search
-      @page.phrase_search.set addon_name
-      @page.search_submit_button.click
-      no_php_js_errors
-
-      @page.first_party_heading.text.should eq 'Search Results we found 1 results for "' + addon_name + '"'
-      @page.phrase_search.value.should eq addon_name
-      @page.should have_text addon_name
-
-      # Install
-      @page.first_party_addons[0].find('ul.toolbar li.txt-only a.add').click
-      no_php_js_errors
-
-      @page.first_party_heading.text.should eq 'Search Results we found 1 results for "' + addon_name + '"'
-      @page.phrase_search.value.should eq addon_name
-      @page.should have_text addon_name
     end
 
     it 'can bulk-install add-ons' do
@@ -367,21 +273,14 @@ feature 'Add-On Manager' do
 
     # The settings buttons "work" (200 response)
     it 'can navigate to a settings page' do
-      @page.phrase_search.set 'Rich Text Editor'
-      @page.search_submit_button.click
-      no_php_js_errors
-
-      @page.find('ul.toolbar li.settings a').click
+      @page.first('ul.toolbar li.settings a[title="Settings"]').click
       no_php_js_errors
     end
 
     # The guide buttons "work" (200 response)
     it 'can navigate to a manual page' do
-      @page.phrase_search.set 'Rich Text Editor'
-      @page.search_submit_button.click
+      @page.first('ul.toolbar li.manual a[title="Manual"]').click
       no_php_js_errors
-
-      @page.find('ul.toolbar li.manual a').click
     end
 
     # @TODO - Test updating a single add-on
@@ -563,45 +462,6 @@ feature 'Add-On Manager' do
         @page.third_party_version_header[:class].should eq 'highlight'
       end
 
-      it 'retains filters on searching' do
-        # First by installed
-        @page.third_party_status_filter.click
-        @page.wait_until_third_party_status_filter_menu_visible
-        @page.third_party_status_filter_menu.click_link "uninstalled"
-        no_php_js_errors
-
-        addon_name = @page.third_party_addon_names[0].text
-        @page.phrase_search.set addon_name
-        @page.search_submit_button.click
-        no_php_js_errors
-
-        # The filter should not change
-        @page.third_party_status_filter.text.should eq "status (uninstalled)"
-        @page.third_party_heading.text.should eq 'Search Results we found 1 results for "' + addon_name + '"'
-        @page.phrase_search.value.should eq addon_name
-        @page.should have_text addon_name
-        @page.should have(1).third_party_addons
-      end
-
-      it 'retains sort on searching' do
-        versions = @page.third_party_versions.map {|version| version.text}
-
-        @page.third_party_version_header.find('a.sort').click
-        no_php_js_errors
-
-        addon_name = @page.third_party_addon_names[0].text
-        @page.phrase_search.set addon_name
-        @page.search_submit_button.click
-        no_php_js_errors
-
-        # The filter should not change
-        @page.third_party_version_header[:class].should eq 'highlight'
-        @page.third_party_heading.text.should eq 'Search Results we found 1 results for "' + addon_name + '"'
-        @page.phrase_search.value.should eq addon_name
-        @page.should have_text addon_name
-        @page.should have(1).third_party_addons
-      end
-
       it 'can combine filters' do
         # First by installed
         @page.third_party_status_filter.click
@@ -621,28 +481,6 @@ feature 'Add-On Manager' do
         @page.third_party_developer_filter.text.should eq 'developer (Test LLC)'
       end
 
-      it 'can search by phrases' do
-        @page.phrase_search.set 'Test F'
-        @page.search_submit_button.click
-        no_php_js_errors
-
-        @page.third_party_heading.text.should eq 'Search Results we found 2 results for "Test F"'
-        @page.phrase_search.value.should eq 'Test F'
-        @page.should have_text 'Test F'
-        @page.should have(2).third_party_addons
-      end
-
-      it 'shows no results on a failed search' do
-        @page.phrase_search.set 'NoSuchAddOn'
-        @page.search_submit_button.click
-
-        @page.third_party_heading.text.should eq 'Search Results we found 0 results for "NoSuchAddOn"'
-        @page.phrase_search.value.should eq 'NoSuchAddOn'
-        @page.should have_third_party_no_results
-        @page.should_not have_third_party_pagination
-        @page.should_not have_third_party_bulk_action
-      end
-
       it 'can install a single add-on' do
         addon_name = @page.third_party_addon_names[0].text
 
@@ -656,27 +494,6 @@ feature 'Add-On Manager' do
         @page.third_party_alert.text.should include "Add-Ons Installed"
         @page.third_party_alert.text.should include addon_name
         @page.third_party_addons.should_not have_text addon_name
-      end
-
-      it 'retains search results after installing' do
-        addon_name = @page.third_party_addon_names[0].text
-
-        # Search
-        @page.phrase_search.set addon_name
-        @page.search_submit_button.click
-        no_php_js_errors
-
-        @page.third_party_heading.text.should eq 'Search Results we found 1 results for "' + addon_name + '"'
-        @page.phrase_search.value.should eq addon_name
-        @page.should have_text addon_name
-
-        # Install
-        @page.third_party_addons[0].find('ul.toolbar li.txt-only a.add').click
-        no_php_js_errors
-
-        @page.third_party_heading.text.should eq 'Search Results we found 1 results for "' + addon_name + '"'
-        @page.phrase_search.value.should eq addon_name
-        @page.should have_text addon_name
       end
 
       it 'can bulk-install add-ons' do
@@ -819,17 +636,6 @@ feature 'Add-On Manager' do
 
         @page.first_party_version_header[:class].should eq 'highlight'
         @page.third_party_version_header[:class].should eq 'highlight'
-      end
-
-      it "searches both tables" do
-        @page.phrase_search.set 'Test'
-        @page.search_submit_button.click
-        no_php_js_errors
-
-        @page.first_party_heading.text.should eq 'Search Results we found 1 results for "Test"'
-        @page.third_party_heading.text.should eq 'Search Results we found 6 results for "Test"'
-        @page.phrase_search.value.should eq 'Test'
-        @page.should have_text 'Test'
       end
 
       describe "keeps sort when paging the other table" do
