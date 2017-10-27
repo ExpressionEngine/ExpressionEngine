@@ -272,7 +272,7 @@ abstract class AbstractDesign extends CP_Controller {
 			->filter('site_id', ee()->config->item('site_id'))
 			->count() > 0)
 		{
-			$header['toolbar_items']['download'] =array(
+			$header['toolbar_items']['export'] =array(
 				'href' => ee('CP/URL', 'design/export'),
 				'title' => lang('export_all')
 			);
