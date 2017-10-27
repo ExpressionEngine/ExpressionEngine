@@ -38,6 +38,7 @@
 
 			// Bind validation
 			EE.cp.formValidation.init(modal);
+			SelectField.renderFields(modal);
 
 			$('form', modal).on('submit', function() {
 				$.ajax({

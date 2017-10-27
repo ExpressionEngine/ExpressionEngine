@@ -1007,7 +1007,7 @@ class Template extends AbstractDesignController {
 						'no_auth_bounce' => array(
 							'type' => 'radio',
 							'choices' => $existing_templates,
-							'value' => $template->no_auth_bounce,
+							'value' => $template->no_auth_bounce ?: NULL,
 							'no_results' => [
 								'text' => sprintf(lang('no_found'), lang('templates'))
 							]
