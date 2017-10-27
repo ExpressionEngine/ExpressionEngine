@@ -33,10 +33,8 @@ feature 'URL and Path Settings' do
     @page.theme_folder_path.value.should == @theme_folder_path
     @page.profile_trigger.value.should == @profile_trigger
     @page.category_segment_trigger.value.should == @reserved_category_word
-    @page.use_category_name[0].checked?.should == (@use_category_name == 'y')
-    @page.use_category_name[1].checked?.should == (@use_category_name == 'n')
-    @page.url_title_separator[0].checked?.should == (@word_separator == 'dash')
-    @page.url_title_separator[1].checked?.should == (@word_separator == 'underscore')
+    @page.use_category_name.has_checked_radio(@use_category_name).should == true
+    @page.url_title_separator.has_checked_radio(@word_separator).should == true
   end
 
   it 'should validate the form' do
