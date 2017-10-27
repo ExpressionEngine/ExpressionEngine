@@ -137,13 +137,7 @@ class SecurityPrivacy extends Settings {
 					'title' => 'password_lockout',
 					'desc' => 'password_lockout_desc',
 					'fields' => array(
-						'password_lockout' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => lang('enable'),
-								'n' => lang('disable')
-							)
-						)
+						'password_lockout' => array('type' => 'yes_no')
 					)
 				),
 				array(
@@ -208,13 +202,7 @@ class SecurityPrivacy extends Settings {
 					'title' => 'enable_rank_denial',
 					'desc' => sprintf(lang('enable_rank_denial_desc'), 'https://support.google.com/webmasters/answer/96569?hl=en'),
 					'fields' => array(
-						'redirect_submitted_links' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => lang('enable'),
-								'n' => lang('disable')
-							)
-						)
+						'redirect_submitted_links' => array('type' => 'yes_no')
 					)
 				)
 			)
