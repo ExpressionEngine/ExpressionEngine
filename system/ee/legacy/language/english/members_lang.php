@@ -320,7 +320,7 @@ $lang = array(
 
 'profile_templates' => 'Member Profile Templates',
 
-'register_member' => 'Register a New Member',
+'register_member' => 'New Member',
 
 'resend' => 'Resend Activation Email',
 
