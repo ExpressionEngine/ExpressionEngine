@@ -7,10 +7,6 @@ class ContentDesign < ControlPanelPage
   element :auto_assign_cat_parents_toggle, 'a[data-toggle-for=auto_assign_cat_parents]'
   element :auto_assign_cat_parents, 'input[name=auto_assign_cat_parents]', :visible => false
   elements :image_resize_protocol, 'input[name=image_resize_protocol]'
-  element :image_resize_protocol_checked, 'input[name=image_resize_protocol][checked=checked]'
-  element :image_resize_protocol_imagemagick, 'input[name=image_resize_protocol][value="imagemagick"]'
-  element :image_resize_protocol_netpbm, 'input[name=image_resize_protocol][value="netpbm"]'
-  element :image_resize_protocol_gd, 'input[name=image_resize_protocol][value="gd"]'
   element :image_library_path, 'input[name=image_library_path]'
   element :thumbnail_suffix, 'input[name=thumbnail_prefix]'
   element :enable_emoticons_toggle, 'a[data-toggle-for=enable_emoticons]'

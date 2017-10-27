@@ -22,7 +22,7 @@ feature 'Content & Design Settings' do
     @page.new_posts_clear_caches.value.should == new_posts_clear_caches
     @page.enable_sql_caching.value.should == enable_sql_caching
     @page.auto_assign_cat_parents.value.should == auto_assign_cat_parents
-    @page.image_resize_protocol_checked.value.should == ee_config(item: 'image_resize_protocol')
+    @page.image_resize_protocol.has_checked_radio(ee_config(item: 'image_resize_protocol')).should == true
     @page.image_library_path.value.should == ee_config(item: 'image_library_path')
     @page.thumbnail_suffix.value.should == ee_config(item: 'thumbnail_prefix')
     @page.enable_emoticons.value.should == enable_emoticons
@@ -42,7 +42,7 @@ feature 'Content & Design Settings' do
 
     it 'validates image resize protocol when using ImageMagick' do
       # Should only show an error for image library path if ImageMagick or NetPBM are selected
-      @page.image_resize_protocol_imagemagick.click
+      @page.image_resize_protocol.choose_radio_option('imagemagick')
       @page.image_library_path.set ''
       @page.image_library_path.trigger 'blur'
       @page.wait_for_error_message_count(1)
@@ -51,7 +51,7 @@ feature 'Content & Design Settings' do
     end
 
     it 'validates image resize protocol when using NetPBM' do
-      @page.image_resize_protocol_netpbm.click
+      @page.image_resize_protocol.choose_radio_option('netpbm')
       @page.image_library_path.set ''
       @page.image_library_path.trigger 'blur'
       @page.wait_for_error_message_count(1, 10)
@@ -60,7 +60,7 @@ feature 'Content & Design Settings' do
     end
 
     it 'validates a nonsense image library path' do
-      @page.image_resize_protocol_netpbm.click
+      @page.image_resize_protocol.choose_radio_option('netpbm')
       @page.image_library_path.set 'dfsdf'
       @page.image_library_path.trigger 'blur'
       @page.wait_for_error_message_count(1)
@@ -69,7 +69,7 @@ feature 'Content & Design Settings' do
     end
 
     it 'validates a valid set of library and path' do
-      @page.image_resize_protocol_gd.click
+      @page.image_resize_protocol.choose_radio_option('gd')
       @page.image_library_path.set ''
       @page.image_library_path.trigger 'blur'
       @page.wait_for_error_message_count(0)
@@ -107,7 +107,7 @@ feature 'Content & Design Settings' do
     @page.new_posts_clear_caches_toggle.click
     @page.enable_sql_caching_toggle.click
     @page.auto_assign_cat_parents_toggle.click
-    @page.image_resize_protocol_imagemagick.click
+    @page.image_resize_protocol.choose_radio_option('imagemagick')
     @page.image_library_path.set '/'
     @page.thumbnail_suffix.set 'mysuffix'
     @page.enable_emoticons_toggle.click
@@ -118,7 +118,7 @@ feature 'Content & Design Settings' do
     @page.new_posts_clear_caches.value.should_not == new_posts_clear_caches
     @page.enable_sql_caching.value.should_not == enable_sql_caching
     @page.auto_assign_cat_parents.value.should_not == auto_assign_cat_parents
-    @page.image_resize_protocol_imagemagick.checked?.should == true
+    @page.image_resize_protocol.has_checked_radio('imagemagick').should == true
     @page.image_library_path.value.should == '/'
     @page.thumbnail_suffix.value.should == 'mysuffix'
     @page.enable_emoticons.value.should_not == enable_emoticons
