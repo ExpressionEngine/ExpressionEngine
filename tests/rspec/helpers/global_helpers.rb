@@ -218,24 +218,28 @@ def ee_config(site_id: nil, item: nil, value: nil)
 end
 
 # Make some methods available to help us with radio group selection
-class Object
+module Capybara
 
-  def choose_radio_option(value)
-    self.each do |el|
-      if el.value == value
-        el.set(true)
-      end
-    end
-  end
+  class Result
 
-  def has_checked_radio(value)
-    self.each do |el|
-      if el.value == value
-        return el[:checked] == "true"
+    def choose_radio_option(value)
+      self.each do |el|
+        if el.value == value
+          el.set(true)
+        end
       end
     end
 
-    return false
+    def has_checked_radio(value)
+      self.each do |el|
+        if el.value == value
+          return el[:checked] == "true"
+        end
+      end
+
+      return false
+    end
+
   end
 
 end
