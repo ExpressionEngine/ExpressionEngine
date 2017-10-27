@@ -16,6 +16,5 @@
 	</div>
 </div>
 <?php endif; ?>
-<div class="box">
-	<?php $this->embed('_shared/form'); ?>
-</div>
+
+<?php $this->embed('_shared/form'); ?>
