@@ -69,6 +69,6 @@ class AddonManager < ControlPanelPage
 
   def load
     self.open_dev_menu
-    click_link 'Add-On Manager'
+    click_link 'Add-Ons'
   end
 end
