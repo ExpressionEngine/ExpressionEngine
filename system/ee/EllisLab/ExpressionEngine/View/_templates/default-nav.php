@@ -4,7 +4,7 @@
 	<div class="col-group">
 		<div class="col w-16 last">
 			<header class="section-header">
-				<?php if (isset($header['toolbar_items'])): ?>
+				<?php if (isset($header['toolbar_items']) && $header['toolbar_items']): ?>
 					<div class="section-header__options">
 						<?php foreach ($header['toolbar_items'] as $name => $item): ?>
 							<a class="icon--<?=$name?>" href="<?=$item['href']?>" title="<?=$item['title']?>"></a>
