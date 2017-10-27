@@ -41,13 +41,7 @@ class Template extends Settings {
 					'title' => 'strict_urls',
 					'desc' => 'strict_urls_desc',
 					'fields' => array(
-						'strict_urls' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							)
-						)
+						'strict_urls' => array('type' => 'yes_no')
 					)
 				),
 				array(
