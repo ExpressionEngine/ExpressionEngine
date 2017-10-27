@@ -313,6 +313,14 @@ class Template extends AbstractDesignController {
 			$view_url .= $group->group_name.(($template->template_name == 'index') ? '' : '/'.$template->template_name);
 		}
 
+		$vars['action_button'] = [
+			'text' => 'view_rendered',
+			'href' => $view_url,
+			'rel' => 'external'
+		];
+
+		$vars['view_url'] = $view_url;
+
 		$this->stdHeader();
 		$this->loadCodeMirrorAssets();
 
