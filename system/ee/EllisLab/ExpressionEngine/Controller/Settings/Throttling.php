@@ -34,13 +34,7 @@ class Throttling extends Settings {
 					'title' => 'enable_throttling',
 					'desc' => 'enable_throttling_desc',
 					'fields' => array(
-						'enable_throttling' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => lang('enable'),
-								'n' => lang('disable')
-							)
-						)
+						'enable_throttling' => array('type' => 'yes_no')
 					)
 				),
 				array(

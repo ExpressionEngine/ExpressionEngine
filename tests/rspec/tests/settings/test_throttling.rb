@@ -14,17 +14,12 @@ feature 'Access Throttling Settings' do
   end
 
   it 'should load current settings into form fields' do
-    enable_throttling = ee_config(item: 'enable_throttling')
-    banish_masked_ips = ee_config(item: 'banish_masked_ips')
-
-    @page.enable_throttling_y.checked?.should == (enable_throttling == 'y')
-    @page.enable_throttling_n.checked?.should == (enable_throttling == 'n')
-    @page.banish_masked_ips_y.checked?.should == (banish_masked_ips == 'y')
-    @page.banish_masked_ips_n.checked?.should == (banish_masked_ips == 'n')
+    @page.enable_throttling.value.should == ee_config(item: 'enable_throttling')
+    @page.banish_masked_ips.value.should == ee_config(item: 'banish_masked_ips')
     @page.lockout_time.value.should == ee_config(item: 'lockout_time')
     @page.max_page_loads.value.should == ee_config(item: 'max_page_loads')
     @page.time_interval.value.should == ee_config(item: 'time_interval')
-    @page.banishment_type.value.should == ee_config(item: 'banishment_type')
+    @page.banishment_type.has_checked_radio(ee_config(item: 'banishment_type')).should == true
     @page.banishment_url.value.should == ee_config(item: 'banishment_url')
     @page.banishment_message.value.should == ee_config(item: 'banishment_message')
   end
@@ -96,22 +91,22 @@ feature 'Access Throttling Settings' do
   end
 
   it 'should save and load the settings' do
-    @page.enable_throttling_y.click
-    @page.banish_masked_ips_n.click
+    @page.enable_throttling_toggle.click
+    @page.banish_masked_ips_toggle.click
     @page.lockout_time.set '60'
     @page.max_page_loads.set '40'
     @page.time_interval.set '30'
-    @page.banishment_type.select 'Send to 404'
+    @page.banishment_type.choose_radio_option('404')
     @page.banishment_url.set 'http://yahoo.com'
     @page.banishment_message.set 'You are banned'
     @page.submit
 
-    @page.enable_throttling_y.checked?.should == true
-    @page.banish_masked_ips_n.checked?.should == true
+    @page.enable_throttling.value.should == 'y'
+    @page.banish_masked_ips.value.should == 'n'
     @page.lockout_time.value.should == '60'
     @page.max_page_loads.value.should == '40'
     @page.time_interval.value.should == '30'
-    @page.banishment_type.value.should == '404'
+    @page.banishment_type.has_checked_radio('404').should == true
     @page.banishment_url.value.should == 'http://yahoo.com'
     @page.banishment_message.value.should == 'You are banned'
   end
