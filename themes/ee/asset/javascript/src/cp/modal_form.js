@@ -70,6 +70,7 @@ EE.cp.ModalForm = {
 					that.modalContentsContainer.html(result)
 					that._bindForm(options)
 					options.load(that.modalContentsContainer)
+					return
 				} else {
 					options.success(result)
 				}
