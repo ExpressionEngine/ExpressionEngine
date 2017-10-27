@@ -127,10 +127,6 @@ abstract class AbstractFields extends CP_Controller {
 			->withLeftButton(
 				lang('new'),
 				ee('CP/URL')->make('fields/groups/create')
-			)->withRightButton(
-				lang('import'),
-				NULL,
-				'import-channel'
 			);
 
 		ee()->view->left_nav = $all_fields->render().$sidebar->render();
