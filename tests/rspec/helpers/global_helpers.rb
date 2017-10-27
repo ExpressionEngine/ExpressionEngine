@@ -228,10 +228,10 @@ class Object
     end
   end
 
-  def should_have_checked_radio(value)
+  def has_checked_radio(value)
     self.each do |el|
       if el.value == value
-        return el[:checked] == true
+        return el[:checked] == "true"
       end
     end
 

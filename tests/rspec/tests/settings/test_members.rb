@@ -22,12 +22,12 @@ feature 'Member Settings' do
     @page.allow_member_registration.value.should == allow_member_registration
     @page.require_terms_of_service.value.should == require_terms_of_service
     @page.allow_member_localization.value.should == allow_member_localization
-    @page.req_mbr_activation.should_have_checked_radio(ee_config(item: 'req_mbr_activation'))
-    @page.default_member_group.should_have_checked_radio(ee_config(item: 'default_member_group'))
-    @page.member_theme.should_have_checked_radio(ee_config(item: 'member_theme'))
-    @page.memberlist_order_by.should_have_checked_radio(ee_config(item: 'memberlist_order_by'))
-    @page.memberlist_sort_order.should_have_checked_radio(ee_config(item: 'memberlist_sort_order'))
-    @page.memberlist_row_limit.should_have_checked_radio(ee_config(item: 'memberlist_row_limit'))
+    @page.req_mbr_activation.has_checked_radio(ee_config(item: 'req_mbr_activation')).should == true
+    @page.default_member_group.has_checked_radio(ee_config(item: 'default_member_group')).should == true
+    @page.member_theme.has_checked_radio(ee_config(item: 'member_theme')).should == true
+    @page.memberlist_order_by.has_checked_radio(ee_config(item: 'memberlist_order_by')).should == true
+    @page.memberlist_sort_order.has_checked_radio(ee_config(item: 'memberlist_sort_order')).should == true
+    @page.memberlist_row_limit.has_checked_radio(ee_config(item: 'memberlist_row_limit')).should == true
     @page.new_member_notification.value.should == new_member_notification
     @page.mbr_notification_emails.value.should == ee_config(item: 'mbr_notification_emails')
   end
@@ -68,25 +68,25 @@ feature 'Member Settings' do
     @page.req_mbr_activation.choose_radio_option('none')
     @page.require_terms_of_service_toggle.click
     @page.allow_member_localization_toggle.click
-    @page.default_member_group.choose_radio_option(1)
+    @page.default_member_group.choose_radio_option('1')
     @page.member_theme.choose_radio_option('default')
     @page.memberlist_order_by.choose_radio_option('dates')
     @page.memberlist_sort_order.choose_radio_option('asc')
-    @page.memberlist_row_limit.choose_radio_option(50)
+    @page.memberlist_row_limit.choose_radio_option('50')
     @page.new_member_notification_toggle.click
     @page.mbr_notification_emails.set 'test@test.com'
     @page.submit
 
     @page.should have_text 'Preferences Updated'
     @page.allow_member_registration.value.should_not == allow_member_registration
-    @page.req_mbr_activation.should_have_checked_radio('none')
+    @page.req_mbr_activation.has_checked_radio('none').should == true
     @page.require_terms_of_service.value.should_not == require_terms_of_service
     @page.allow_member_localization.value.should_not == allow_member_localization
-    @page.default_member_group.should_have_checked_radio('1')
-    @page.member_theme.should_have_checked_radio('default')
-    @page.memberlist_order_by.should_have_checked_radio('dates')
-    @page.memberlist_sort_order.should_have_checked_radio('asc')
-    @page.memberlist_row_limit.should_have_checked_radio('50')
+    @page.default_member_group.has_checked_radio('1').should == true
+    @page.member_theme.has_checked_radio('default').should == true
+    @page.memberlist_order_by.has_checked_radio('dates').should == true
+    @page.memberlist_sort_order.has_checked_radio('asc').should == true
+    @page.memberlist_row_limit.has_checked_radio('50').should == true
     @page.new_member_notification.value.should_not == new_member_notification
     @page.mbr_notification_emails.value.should == 'test@test.com'
   end
