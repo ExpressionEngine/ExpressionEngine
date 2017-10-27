@@ -42,6 +42,11 @@ class Collection extends CoreCollection {
 	{
 		$this->elements[] = $model;
 
+		if (isset($this->association))
+		{
+			$this->association->add($model);
+		}
+
 		return $this;
 	}
 
