@@ -97,7 +97,7 @@ class Fields extends Members\Members {
 
 		$table->setNoResultsText(
 			sprintf(lang('no_found'), lang('custom_member_fields')),
-			'create_new',
+			'add_new',
 			ee('CP/URL')->make('members/fields/create')
 		);
 
