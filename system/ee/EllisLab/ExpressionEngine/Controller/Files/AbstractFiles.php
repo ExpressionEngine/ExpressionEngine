@@ -140,12 +140,19 @@ abstract class AbstractFiles extends CP_Controller {
 			}
 		}
 
-		$toolbar_items = [
-			'export'    => [
-				'href'  => ee('CP/URL')->make('files/export'),
-				'title' => lang('export_all')
-			]
-		];
+		$toolbar_items = [];
+		if ($active)
+		{
+			$dir = ee('Model')->get('UploadDestination', $active)->first();
+
+			if ($dir && $dir->Files->count())
+			{
+				$toolbar_items['export'] = [
+					'href'  => ee('CP/URL')->make('files/export'),
+					'title' => lang('export_all')
+				];
+			}
+		}
 
 		if ($active !== NULL)
 		{
