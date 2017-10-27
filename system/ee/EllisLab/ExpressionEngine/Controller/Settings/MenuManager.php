@@ -235,7 +235,7 @@ class MenuManager extends Settings {
 					'desc' => 'menu_items_desc',
 					'button' => array(
 						'text' => 'add_menu_item',
-						'rel' => 'modal-menu-item'
+						'rel' => 'add_new'
 					),
 					'fields' => array(
 						'menu_items' => array(
@@ -416,6 +416,11 @@ class MenuManager extends Settings {
 			'removable'   => TRUE,
 			'editable'    => TRUE,
 			'reorder_ajax_url'    => ee('CP/URL', 'settings/menu-manager/item-reorder')->compile(),
+			'no_results' => [
+				'text' => sprintf(lang('no_found'), lang('menu_items')),
+				'link_text' => 'add_new',
+				'link_href' => '#'
+			]
 		]);
 	}
 
