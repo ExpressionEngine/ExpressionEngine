@@ -43,6 +43,7 @@ class Uploads extends AbstractFilesController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
+		$this->stdHeader();
 		$this->generateSidebar(NULL);
 		return $this->form();
 	}
