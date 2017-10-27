@@ -326,6 +326,9 @@ class Groups extends AbstractCategoriesController {
 			$can_delete_categories[$member_group->group_id] = $member_group->group_title;
 		}
 
+		// If it's an AJAX request, we're probably in a modal
+		$should_allow_member_group_creation = ! AJAX_REQUEST;
+
 		$section = array(
 			ee('CP/Alert')->makeInline('permissions-warn')
 				->asWarning()
@@ -348,7 +351,9 @@ class Groups extends AbstractCategoriesController {
 						'no_results' => array(
 							'text' => 'cat_group_no_member_groups_found',
 							'link_text' => 'add_new',
-							'link_href' => ee('CP/URL')->make('members/groups')
+							'link_href' => $should_allow_member_group_creation
+								? ee('CP/URL')->make('members/groups')
+								: NULL
 						)
 					)
 				)
@@ -365,7 +370,9 @@ class Groups extends AbstractCategoriesController {
 						'no_results' => array(
 							'text' => 'cat_group_no_member_groups_found',
 							'link_text' => 'add_new',
-							'link_href' => ee('CP/URL')->make('members/groups')
+							'link_href' => $should_allow_member_group_creation
+								? ee('CP/URL')->make('members/groups')
+								: NULL
 						)
 					)
 				)
