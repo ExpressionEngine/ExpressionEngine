@@ -217,6 +217,29 @@ def ee_config(site_id: nil, item: nil, value: nil)
   end
 end
 
+# Make some methods available to help us with radio group selection
+class Object
+
+  def choose_radio_option(value)
+    self.each do |el|
+      if el.value == value
+        el.set(true)
+      end
+    end
+  end
+
+  def should_have_checked_radio(value)
+    self.each do |el|
+      if el.value == value
+        return el[:checked] == true
+      end
+    end
+
+    return false
+  end
+
+end
+
 # Swaps on piece of text for another given a file
 #
 # @param [File] file File object
