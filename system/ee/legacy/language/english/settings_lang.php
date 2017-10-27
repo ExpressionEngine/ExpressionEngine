@@ -633,7 +633,7 @@ $lang = array(
 
 'prv_msg_upload_path' => 'Upload path',
 
-'prv_msg_upload_path_desc' => 'Full path location for your <mark>attachement</mark> directory.',
+'prv_msg_upload_path_desc' => 'Full path location for your <mark>attachment</mark> directory.',
 
 'prv_msg_upload_url' => 'Upload directory',
 
