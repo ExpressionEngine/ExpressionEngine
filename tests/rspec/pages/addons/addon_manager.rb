@@ -3,8 +3,6 @@ class AddonManager < ControlPanelPage
 
   element :title, '.section-header__title'
 
-  element :search_submit_button, 'fieldset.tbl-search input.submit'
-
   # First Party Add-Ons
   first_party_prefix = 'body section.wrap div.col-group + div.col-group div.col.w-16.last div.box:first-child '
 
