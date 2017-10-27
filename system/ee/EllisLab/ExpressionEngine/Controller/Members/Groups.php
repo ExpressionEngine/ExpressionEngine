@@ -723,6 +723,19 @@ class Groups extends Members\Members {
 				->all()
 				->getDictionary('channel_id', 'channel_title');
 
+			$default_homepage_choices = array(
+				'overview' => lang('cp_overview').' &mdash; <i>'.lang('default').'</i>',
+				'entries_edit' => lang('edit_listing')
+			);
+
+			if (count($allowed_channels))
+			{
+				$default_homepage_choices['publish_form'] = lang('publish_form').' &mdash; '.
+					form_dropdown('cp_homepage_channel', $allowed_channels, element('cp_homepage_channel', $values));
+			}
+
+			$default_homepage_choices['custom'] = lang('custom_uri');
+
 			$vars = array(
 				array(
 					array(
@@ -971,13 +984,7 @@ class Groups extends Members\Members {
 						'fields' => array(
 							'cp_homepage' => array(
 								'type' => 'radio',
-								'choices' => array(
-									'overview' => lang('cp_overview').' &mdash; <i>'.lang('default').'</i>',
-									'entries_edit' => lang('edit_listing'),
-									'publish_form' => lang('publish_form').' &mdash; '.
-										form_dropdown('cp_homepage_channel', $allowed_channels, element('cp_homepage_channel', $values)),
-									'custom' => lang('custom_uri'),
-								),
+								'choices' => $default_homepage_choices,
 								'value' => element('cp_homepage', $values, 'overview'),
 								'encode' => FALSE
 							),
