@@ -38,7 +38,9 @@ class Fields extends AbstractFieldsController {
 
 		$this->generateSidebar($group_id);
 
-		$vars['create_url'] = ee('CP/URL')->make('fields/create/');
+		$vars['create_url'] = $group_id
+			? ee('CP/URL')->make('fields/create/'.$group_id)
+			: ee('CP/URL')->make('fields/create');
 		$vars['base_url'] = $base_url;
 
 		$data = array();
@@ -195,11 +197,16 @@ class Fields extends AbstractFieldsController {
 		ee()->cp->render('fields/index', $vars);
 	}
 
-	public function create()
+	public function create($group_id = NULL)
 	{
 		if ( ! ee()->cp->allowed_group('can_create_channel_fields'))
 		{
 			show_error(lang('unauthorized_access'), 403);
+		}
+
+		if (ee('Request')->post('group_id'))
+		{
+			$group_id = ee('Request')->post('group_id');
 		}
 
 		ee()->view->cp_breadcrumbs = array(
@@ -224,6 +231,16 @@ class Fields extends AbstractFieldsController {
 			if ($result->isValid())
 			{
 				$field->save();
+
+				if ($group_id)
+				{
+					$field_group = ee('Model')->get('ChannelFieldGroup', $group_id)->first();
+					if ($field_group)
+					{
+						$field_group->ChannelFields->getAssociation()->add($field);
+						$field_group->save();
+					}
+				}
 
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
@@ -260,7 +277,9 @@ class Fields extends AbstractFieldsController {
 		$vars = array(
 			'errors' => $errors,
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL')->make('fields/create'),
+			'base_url' => $group_id
+				? ee('CP/URL')->make('fields/create/'.$group_id)
+				: ee('CP/URL')->make('fields/create'),
 			'sections' => $this->form($field),
 			'buttons' => [
 				[
