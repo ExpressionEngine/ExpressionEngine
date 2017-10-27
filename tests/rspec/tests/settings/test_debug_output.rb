@@ -22,21 +22,14 @@ feature 'Debugging & Output Settings' do
     send_headers = ee_config(item: 'send_headers')
 
     # This is ridiculous -- testing *each* radio button's status
-    @page.debug_y.checked?.should == (debug == '1')
-    @page.debug_n.checked?.should == (debug == '0')
-    @page.show_profiler_y.checked?.should == (show_profiler == 'y')
-    @page.show_profiler_n.checked?.should == (show_profiler == 'n')
-    @page.enable_devlog_alerts_y.checked?.should == (enable_devlog_alerts == 'y')
-    @page.enable_devlog_alerts_n.checked?.should == (enable_devlog_alerts == 'n' || enable_devlog_alerts == '')
-    @page.gzip_output_y.checked?.should == (gzip_output == 'y')
-    @page.gzip_output_n.checked?.should == (gzip_output == 'n')
-    @page.force_query_string_y.checked?.should == (force_query_string == 'y')
-    @page.force_query_string_n.checked?.should == (force_query_string == 'n')
-    @page.send_headers_y.checked?.should == (send_headers == 'y')
-    @page.send_headers_n.checked?.should == (send_headers == 'n')
-
-    @page.redirect_method.value.should == ee_config(item: 'redirect_method')
-    @page.cache_driver.value.should == ee_config(item: 'cache_driver')
+    @page.debug.has_checked_radio(debug)
+    @page.show_profiler.value.should == show_profiler
+    @page.enable_devlog_alerts.value.should == enable_devlog_alerts
+    @page.gzip_output.value.should == gzip_output
+    @page.force_query_string.value.should == force_query_string
+    @page.send_headers.value.should == send_headers
+    @page.redirect_method.has_checked_radio(ee_config(item: 'redirect_method'))
+    @page.cache_driver.has_checked_radio(ee_config(item: 'cache_driver'))
     @page.max_caches.value.should == ee_config(item: 'max_caches')
   end
 
@@ -66,24 +59,30 @@ feature 'Debugging & Output Settings' do
   end
 
   it 'should save and load the settings' do
-    @page.debug_n.click
-    @page.show_profiler_y.click
-    @page.enable_devlog_alerts_n.click
-    @page.gzip_output_y.click
-    @page.force_query_string_y.click
-    @page.send_headers_y.click
-    @page.cache_driver.select 'Memcached'
+    show_profiler = ee_config(item: 'show_profiler')
+    enable_devlog_alerts = ee_config(item: 'enable_devlog_alerts')
+    gzip_output = ee_config(item: 'gzip_output')
+    force_query_string = ee_config(item: 'force_query_string')
+    send_headers = ee_config(item: 'send_headers')
+
+    @page.debug.choose_radio_option('0')
+    @page.show_profiler_toggle.click
+    @page.enable_devlog_alerts_toggle.click
+    @page.gzip_output_toggle.click
+    @page.force_query_string_toggle.click
+    @page.send_headers_toggle.click
+    @page.cache_driver.choose_radio_option('memcached')
     @page.max_caches.set '300'
     @page.submit
 
     @page.should have_text 'Preferences updated'
-    @page.debug_n.checked?.should == true
-    @page.show_profiler_y.checked?.should == true
-    @page.enable_devlog_alerts_n.checked?.should == true
-    @page.gzip_output_y.checked?.should == true
-    @page.force_query_string_y.checked?.should == true
-    @page.send_headers_y.checked?.should == true
-    @page.cache_driver.value.should == 'memcached'
+    @page.debug.has_checked_radio('0')
+    @page.show_profiler.value.should_not == show_profiler
+    @page.enable_devlog_alerts.value.should_not == enable_devlog_alerts
+    @page.gzip_output.value.should_not == gzip_output
+    @page.force_query_string.value.should_not == force_query_string
+    @page.send_headers.value.should_not == send_headers
+    @page.cache_driver.has_checked_radio('memcached')
     @page.max_caches.value.should == '300'
 
     # Should show a message when the selected caching driver

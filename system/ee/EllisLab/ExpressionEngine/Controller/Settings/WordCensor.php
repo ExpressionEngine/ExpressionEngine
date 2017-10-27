@@ -29,13 +29,7 @@ class WordCensor extends Settings {
 					'title' => 'enable_censoring',
 					'desc' => 'enable_censoring_desc',
 					'fields' => array(
-						'enable_censoring' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							)
-						)
+						'enable_censoring' => array('type' => 'yes_no')
 					)
 				),
 				array(

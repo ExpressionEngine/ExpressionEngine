@@ -78,9 +78,9 @@ class Email extends Settings {
 						'email_newline' => array(
 							'type' => 'radio',
 							'choices' => array(
-								'\n' => '\n',
-								'\r\n' => '\r\n',
-								'\r' => '\r'
+								'\n' => '\\\n',
+								'\r\n' => '\\\r\\\n',
+								'\r' => '\\\r'
 							),
 							// email_newline is converted to double-quoted representation on load
 							'value' => ee()->config->item('email_newline_form_safe')

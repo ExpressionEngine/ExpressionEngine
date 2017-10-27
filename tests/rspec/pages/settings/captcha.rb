@@ -1,13 +1,13 @@
 class CaptchaSettings < ControlPanelPage
 
-  element :require_captcha_y, 'input[name=require_captcha][value=y]'
-  element :require_captcha_n, 'input[name=require_captcha][value=n]'
-  element :captcha_font_y, 'input[name=captcha_font][value=y]'
-  element :captcha_font_n, 'input[name=captcha_font][value=n]'
-  element :captcha_rand_y, 'input[name=captcha_rand][value=y]'
-  element :captcha_rand_n, 'input[name=captcha_rand][value=n]'
-  element :captcha_require_members_y, 'input[name=captcha_require_members][value=y]'
-  element :captcha_require_members_n, 'input[name=captcha_require_members][value=n]'
+  element :require_captcha_toggle, 'a[data-toggle-for=require_captcha]'
+  element :require_captcha, 'input[name=require_captcha]', :visible => false
+  element :captcha_font_toggle, 'a[data-toggle-for=captcha_font]'
+  element :captcha_font, 'input[name=captcha_font]', :visible => false
+  element :captcha_rand_toggle, 'a[data-toggle-for=captcha_rand]'
+  element :captcha_rand, 'input[name=captcha_rand]', :visible => false
+  element :captcha_require_members_toggle, 'a[data-toggle-for=captcha_require_members]'
+  element :captcha_require_members, 'input[name=captcha_require_members]', :visible => false
   element :captcha_url, 'input[name=captcha_url]'
   element :captcha_path, 'input[name=captcha_path]'
 

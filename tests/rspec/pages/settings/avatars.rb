@@ -1,9 +1,10 @@
 class AvatarSettings < ControlPanelPage
 
-  element :enable_avatars_y, 'input[name=enable_avatars][value=y]'
-  element :enable_avatars_n, 'input[name=enable_avatars][value=n]'
-  element :allow_avatar_uploads_y, 'input[name=allow_avatar_uploads][value=y]'
-  element :allow_avatar_uploads_n, 'input[name=allow_avatar_uploads][value=n]'
+
+  element :enable_avatars, 'input[name=enable_avatars]', :visible => false
+  element :enable_avatars_toggle, 'a[data-toggle-for=enable_avatars]'
+  element :allow_avatar_uploads, 'input[name=allow_avatar_uploads]', :visible => false
+  element :allow_avatar_uploads_toggle, 'a[data-toggle-for=allow_avatar_uploads]'
   element :avatar_url, 'input[name=avatar_url]'
   element :avatar_path, 'input[name=avatar_path]'
   element :avatar_max_width, 'input[name=avatar_max_width]'

@@ -169,13 +169,7 @@ class Members extends Settings {
 					'title' => 'new_member_notification',
 					'desc' => 'new_member_notification_desc',
 					'fields' => array(
-						'new_member_notification' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							)
-						)
+						'new_member_notification' => array('type' => 'yes_no')
 					)
 				),
 				array(

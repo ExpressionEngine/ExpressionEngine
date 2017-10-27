@@ -1,21 +1,19 @@
 class DebugOutput < ControlPanelPage
 
   # This is ridiculous
-  element :debug_y, 'input[name=debug][value="1"]'
-  element :debug_n, 'input[name=debug][value="0"]'
-  element :show_profiler_y, 'input[name=show_profiler][value=y]'
-  element :show_profiler_n, 'input[name=show_profiler][value=n]'
-  element :enable_devlog_alerts_y, 'input[name=enable_devlog_alerts][value=y]'
-  element :enable_devlog_alerts_n, 'input[name=enable_devlog_alerts][value=n]'
-  element :gzip_output_y, 'input[name=gzip_output][value=y]'
-  element :gzip_output_n, 'input[name=gzip_output][value=n]'
-  element :force_query_string_y, 'input[name=force_query_string][value=y]'
-  element :force_query_string_n, 'input[name=force_query_string][value=n]'
-  element :send_headers_y, 'input[name=send_headers][value=y]'
-  element :send_headers_n, 'input[name=send_headers][value=n]'
-
-  element :redirect_method, 'select[name=redirect_method]'
-  element :cache_driver, 'select[name=cache_driver]'
+  elements :debug, 'input[name=debug]'
+  element :show_profiler_toggle, 'a[data-toggle-for=show_profiler]'
+  element :show_profiler, 'input[name=show_profiler]', :visible => false
+  element :enable_devlog_alerts_toggle, 'a[data-toggle-for=enable_devlog_alerts]'
+  element :enable_devlog_alerts, 'input[name=enable_devlog_alerts]', :visible => false
+  element :gzip_output_toggle, 'a[data-toggle-for=gzip_output]'
+  element :gzip_output, 'input[name=gzip_output]', :visible => false
+  element :force_query_string_toggle, 'a[data-toggle-for=force_query_string]'
+  element :force_query_string, 'input[name=force_query_string]', :visible => false
+  element :send_headers_toggle, 'a[data-toggle-for=send_headers]'
+  element :send_headers, 'input[name=send_headers]', :visible => false
+  elements :redirect_method, 'input[name=redirect_method]'
+  elements :cache_driver, 'input[name=cache_driver]'
   element :max_caches, 'input[name=max_caches]'
 
   def load

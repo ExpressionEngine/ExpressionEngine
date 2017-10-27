@@ -1,10 +1,10 @@
 class TemplateSettings < ControlPanelPage
 
-  element :strict_urls_y, 'input[name=strict_urls][value=y]'
-  element :strict_urls_n, 'input[name=strict_urls][value=n]'
+  element :strict_urls, 'input[name=strict_urls]', :visible => false
+  element :strict_urls_toggle, 'a[data-toggle-for=strict_urls]'
   element :site_404, 'select[name=site_404]'
-  element :save_tmpl_revisions_y, 'input[name=save_tmpl_revisions][value=y]'
-  element :save_tmpl_revisions_n, 'input[name=save_tmpl_revisions][value=n]'
+  element :save_tmpl_revisions, 'input[name=save_tmpl_revisions]', :visible => false
+  element :save_tmpl_revisions_toggle, 'a[data-toggle-for=save_tmpl_revisions]'
   element :max_tmpl_revisions, 'input[name=max_tmpl_revisions]'
 
   def load

@@ -1,9 +1,9 @@
 class MessagingSettings < ControlPanelPage
 
   element :prv_msg_max_chars, 'input[name=prv_msg_max_chars]'
-  element :prv_msg_html_format, 'select[name=prv_msg_html_format]'
-  element :prv_msg_auto_links_y, 'input[name=prv_msg_auto_links][value=y]'
-  element :prv_msg_auto_links_n, 'input[name=prv_msg_auto_links][value=n]'
+  elements :prv_msg_html_format, 'input[name=prv_msg_html_format]'
+  element :prv_msg_auto_links, 'input[name=prv_msg_auto_links]', :visible => false
+  element :prv_msg_auto_links_toggle, 'a[data-toggle-for=prv_msg_auto_links]'
   element :prv_msg_upload_url, 'input[name=prv_msg_upload_url]'
   element :prv_msg_upload_path, 'input[name=prv_msg_upload_path]'
   element :prv_msg_max_attachments, 'input[name=prv_msg_max_attachments]'

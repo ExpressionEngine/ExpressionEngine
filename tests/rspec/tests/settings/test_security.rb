@@ -27,39 +27,27 @@ feature 'Security & Privacy Settings' do
     xss_clean_uploads = ee_config(item: 'xss_clean_uploads')
     redirect_submitted_links = ee_config(item: 'redirect_submitted_links')
 
-    @page.cp_session_type.value.should == ee_config(item: 'cp_session_type')
-    @page.website_session_type.value.should == ee_config(item: 'website_session_type')
+    @page.cp_session_type.has_checked_radio(ee_config(item: 'cp_session_type')).should == true
+    @page.website_session_type.has_checked_radio(ee_config(item: 'website_session_type')).should == true
     @page.cookie_domain.value.should == ee_config(item: 'cookie_domain')
     @page.cookie_path.value.should == ee_config(item: 'cookie_path')
     @page.cookie_prefix.value.should == ee_config(item: 'cookie_prefix')
-    @page.cookie_httponly_y.checked?.should == (cookie_httponly == 'y')
-    @page.cookie_httponly_n.checked?.should == (cookie_httponly == 'n')
-    @page.cookie_secure_y.checked?.should == (cookie_secure == 'y')
-    @page.cookie_secure_n.checked?.should == (cookie_secure == 'n')
-    @page.allow_username_change_y.checked?.should == (allow_username_change == 'y')
-    @page.allow_username_change_n.checked?.should == (allow_username_change == 'n')
+    @page.cookie_httponly.value.should == cookie_httponly
+    @page.cookie_secure.value.should == cookie_secure
+    @page.allow_username_change.value.should == allow_username_change
     @page.un_min_len.value.should == ee_config(item: 'un_min_len')
-    @page.allow_multi_logins_y.checked?.should == (allow_multi_logins == 'y')
-    @page.allow_multi_logins_n.checked?.should == (allow_multi_logins == 'n')
-    @page.require_ip_for_login_y.checked?.should == (require_ip_for_login == 'y')
-    @page.require_ip_for_login_n.checked?.should == (require_ip_for_login == 'n')
-    @page.password_lockout_y.checked?.should == (password_lockout == 'y')
-    @page.password_lockout_n.checked?.should == (password_lockout == 'n')
+    @page.allow_multi_logins.value.should == allow_multi_logins
+    @page.require_ip_for_login.value.should == require_ip_for_login
+    @page.password_lockout.value.should == password_lockout
     @page.password_lockout_interval.value.should == ee_config(item: 'password_lockout_interval')
-    @page.require_secure_passwords_y.checked?.should == (require_secure_passwords == 'y')
-    @page.require_secure_passwords_n.checked?.should == (require_secure_passwords == 'n')
+    @page.require_secure_passwords.value.should == require_secure_passwords
     @page.pw_min_len.value.should == ee_config(item: 'pw_min_len')
-    @page.allow_dictionary_pw_y.checked?.should == (allow_dictionary_pw == 'y')
-    @page.allow_dictionary_pw_n.checked?.should == (allow_dictionary_pw == 'n')
+    @page.allow_dictionary_pw.value.should == allow_dictionary_pw
     @page.name_of_dictionary_file.value.should == ee_config(item: 'name_of_dictionary_file')
-    @page.deny_duplicate_data_y.checked?.should == (deny_duplicate_data == 'y')
-    @page.deny_duplicate_data_n.checked?.should == (deny_duplicate_data == 'n')
-    @page.require_ip_for_posting_y.checked?.should == (require_ip_for_posting == 'y')
-    @page.require_ip_for_posting_n.checked?.should == (require_ip_for_posting == 'n')
-    @page.xss_clean_uploads_y.checked?.should == (xss_clean_uploads == 'y')
-    @page.xss_clean_uploads_n.checked?.should == (xss_clean_uploads == 'n')
-    @page.redirect_submitted_links_y.checked?.should == (redirect_submitted_links == 'y')
-    @page.redirect_submitted_links_n.checked?.should == (redirect_submitted_links == 'n')
+    @page.deny_duplicate_data.value.should == deny_duplicate_data
+    @page.require_ip_for_posting.value.should == require_ip_for_posting
+    @page.xss_clean_uploads.value.should == xss_clean_uploads
+    @page.redirect_submitted_links.value.should == redirect_submitted_links
   end
 
   it 'should validate the form' do
@@ -114,32 +102,32 @@ feature 'Security & Privacy Settings' do
   end
 
   it 'should save and load the settings' do
-    @page.cp_session_type.select 'Cookies and session ID'
+    @page.cp_session_type.choose_radio_option('cs')
     @page.submit
 
     cp_session
     @page.load
 
-    @page.cp_session_type.select 'Session ID only'
-    @page.website_session_type.select 'Session ID only'
+    @page.cp_session_type.choose_radio_option('s')
+    @page.website_session_type.choose_radio_option('s')
     @page.cookie_domain.set '.yourdomain.com'
     @page.cookie_path.set 'blog'
-    @page.cookie_httponly_n.click
+    @page.cookie_httponly_toggle.click
     # Changing cookie_secure will boot us out of the CP
-    @page.allow_username_change_n.click
+    @page.allow_username_change_toggle.click
     @page.un_min_len.set '5'
-    @page.allow_multi_logins_n.click
-    @page.require_ip_for_login_n.click
-    @page.password_lockout_n.click
+    @page.allow_multi_logins_toggle.click
+    @page.require_ip_for_login_toggle.click
+    @page.password_lockout_toggle.click
     @page.password_lockout_interval.set '15'
-    @page.require_secure_passwords_y.click
+    @page.require_secure_passwords_toggle.click
     @page.pw_min_len.set '8'
-    @page.allow_dictionary_pw_n.click
+    @page.allow_dictionary_pw_toggle.click
     @page.name_of_dictionary_file.set 'http://dictionary'
-    @page.deny_duplicate_data_n.click
-    @page.require_ip_for_posting_n.click
-    @page.xss_clean_uploads_n.click
-    @page.redirect_submitted_links_y.click
+    @page.deny_duplicate_data_toggle.click
+    @page.require_ip_for_posting_toggle.click
+    @page.xss_clean_uploads_toggle.click
+    @page.redirect_submitted_links_toggle.click
     @page.submit
 
     # Since we changed session settings, login again
@@ -147,24 +135,24 @@ feature 'Security & Privacy Settings' do
     @page.load
 
     @page.should have_text 'Preferences updated'
-    @page.cp_session_type.value.should == 's'
-    @page.website_session_type.value.should == 's'
+    @page.cp_session_type.has_checked_radio('s').should == true
+    @page.website_session_type.has_checked_radio('s').should == true
     @page.cookie_domain.value.should == '.yourdomain.com'
     @page.cookie_path.value.should == 'blog'
-    @page.cookie_httponly_n.checked?.should == true
-    @page.allow_username_change_n.checked?.should == true
+    @page.cookie_httponly.value.should == 'n'
+    @page.allow_username_change.value.should == 'n'
     @page.un_min_len.value.should == '5'
-    @page.allow_multi_logins_n.checked?.should == true
-    @page.require_ip_for_login_n.checked?.should == true
-    @page.password_lockout_n.checked?.should == true
+    @page.allow_multi_logins.value.should == 'n'
+    @page.require_ip_for_login.value.should == 'n'
+    @page.password_lockout.value.should == 'n'
     @page.password_lockout_interval.value.should == '15'
-    @page.require_secure_passwords_y.checked?.should == true
+    @page.require_secure_passwords.value.should == 'y'
     @page.pw_min_len.value.should == '8'
-    @page.allow_dictionary_pw_n.checked?.should == true
+    @page.allow_dictionary_pw.value.should == 'n'
     @page.name_of_dictionary_file.value.should == 'http://dictionary'
-    @page.deny_duplicate_data_n.checked?.should == true
-    @page.require_ip_for_posting_n.checked?.should == true
-    @page.xss_clean_uploads_n.checked?.should == true
-    @page.redirect_submitted_links_y.checked?.should == true
+    @page.deny_duplicate_data.value.should == 'n'
+    @page.require_ip_for_posting.value.should == 'n'
+    @page.xss_clean_uploads.value.should == 'n'
+    @page.redirect_submitted_links.value.should == 'y'
   end
 end

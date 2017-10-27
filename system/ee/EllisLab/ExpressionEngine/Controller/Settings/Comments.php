@@ -37,14 +37,8 @@ class Comments extends Settings {
 					'title' => 'enable_comments',
 					'desc' => 'enable_comments_desc',
 					'fields' => array(
-						'enable_comments' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							)
-						)
-					)
+						'enable_comments' => array('type' => 'yes_no')
+					),
 				)
 			),
 			'options' => array(
@@ -52,14 +46,8 @@ class Comments extends Settings {
 					'title' => 'comment_word_censoring',
 					'desc' => sprintf(lang('comment_word_censoring_desc'), ee('CP/URL')->make('settings/word-censor')),
 					'fields' => array(
-						'comment_word_censoring' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							)
-						)
-					)
+						'comment_word_censoring' => array('type' => 'yes_no')
+					),
 				),
 				array(
 					'title' => 'comment_moderation_override',

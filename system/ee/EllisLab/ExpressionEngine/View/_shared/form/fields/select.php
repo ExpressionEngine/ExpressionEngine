@@ -56,7 +56,7 @@ if (ee('View/Helpers')->countChoices($normalized_choices) <= $too_many
 				$instructions = isset($choice['instructions']) ? $choice['instructions'] : NULL;
 				if ($encode)
 				{
-					$label = ee('Format')->make('Text', lang($label))->convertToEntities();
+					$label = ee('Format')->make('Text', $label)->convertToEntities();
 					$instructions = ee('Format')->make('Text', $instructions)->convertToEntities();
 				}
 				$checked = ((is_bool($value) && get_bool_from_string($key) === $value)
