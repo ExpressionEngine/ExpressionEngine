@@ -27,7 +27,7 @@ class MemberField extends FieldModel {
 	);
 
 	protected static $_validation_rules = array(
-    'm_field_type'        => 'required|enum[text,textarea,select,date]',
+    'm_field_type'        => 'required|enum[text,textarea,select,date,url]',
     'm_field_label'       => 'required|xss|noHtml|maxLength[50]',
     'm_field_name'        => 'required|alphaDash|unique|validateNameIsNotReserved|maxLength[32]',
 		'm_legacy_field_data' => 'enum[y,n]'
