@@ -643,6 +643,8 @@ class Groups extends Members\Members {
 
 	private function buildForm($values)
 	{
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('members'), lang('member_manager'));
+
 		// @TODO: This should be refactored to remove the need for the
 		// `element()` method
 		ee()->load->helper('array');
