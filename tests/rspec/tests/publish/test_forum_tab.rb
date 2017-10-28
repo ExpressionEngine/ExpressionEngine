@@ -105,7 +105,7 @@ feature 'Forum Tab' do
     should_have_form_errors(@page)
     should_have_error_text(
       @page.forum_tab.forum_body,
-      'no_forum_body'
+      'You cannot create a forum topic without content.'
     )
 
     @page.forum_tab.forum_title.set ''
@@ -122,7 +122,7 @@ feature 'Forum Tab' do
     should_have_form_errors(@page)
     should_have_error_text(
       @page.forum_tab.forum_title,
-      'no_forum_title'
+      'You must give the forum topic a title.'
     )
   end
 
