@@ -126,6 +126,21 @@ feature 'Forum Tab' do
     )
   end
 
+  # https://expressionengine.com/support/bugs/23253/editing-entry-with-forum-post
+  it 'edits an entry successfully that has forum content in the forum tab' do
+    create_entry
+
+    edit = EntryManager.new
+    edit.load
+    edit.entry_rows[0].find('.toolbar-wrap a[href*="publish/edit/entry"]').click
+
+    @page.title.set title + " Edited"
+    @page.submit_buttons[1].click
+
+    @page.all_there?.should == false
+    @page.alert.has_content?("The entry #{title} Edited has been updated.").should == true
+  end
+
   def create_entry
     @page.title.set title
     @page.tab_links[4].click

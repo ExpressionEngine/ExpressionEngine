@@ -146,11 +146,7 @@ class Forum_tab {
 		{
 			$settings['forum_id']['field_disabled'] = 'y';
 			$settings['forum_body']['field_disabled'] = 'y';
-
-			if ($forum_title == '')
-			{
-				$settings['forum_title']['field_disabled'] = 'y';
-			}
+			$settings['forum_title']['field_disabled'] = 'y';
 		}
 
 		foreach ($settings as $k => $v)
