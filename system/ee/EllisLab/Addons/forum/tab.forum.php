@@ -175,7 +175,7 @@ class Forum_tab {
 			if (empty($value) && ! empty($values['forum_body']))
 			{
 				$rule->stop();
-				return lang('no_forum_title');
+				return lang('forum_no_forum_title');
 			}
 
 			return TRUE;
@@ -185,7 +185,7 @@ class Forum_tab {
 			if (empty($value) && ! empty($values['forum_title']))
 			{
 				$rule->stop();
-				return lang('no_forum_body');
+				return lang('forum_no_forum_body');
 			}
 
 			return TRUE;
