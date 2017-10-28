@@ -85,7 +85,7 @@ class Channels extends AbstractChannelsController {
 					],
 					'layout-set' => [
 						'href' => ee('CP/URL', 'channels/layouts/' . $channel->getId()),
-						'title' => lang('export')
+						'title' => lang('layouts')
 					]
 				],
 				'selection' => [
