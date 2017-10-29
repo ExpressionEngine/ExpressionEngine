@@ -3562,7 +3562,7 @@ class EE_Template {
 		}
 
 		// Reset and Match date variables
-		$this->date_vars = array();
+		$this->date_vars = FALSE;
 		$this->_match_date_vars($tagdata);
 
 		// Unfound Variables that We Need Not Parse - Reset
