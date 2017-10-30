@@ -340,7 +340,7 @@ $lang = array(
 
 'moderate_comments' => 'Moderate comments?',
 
-'moderate_comments_desc' => 'When set to <b>yes</b>, submitted comments will be put into a moderation queue, and must be approved by a super admin or other member group with moderation permissions.',
+'moderate_comments_desc' => 'When set to <b>yes</b>, submitted comments will be put into a moderation queue, and must be approved by a Super Admin or other member group with moderation permissions.',
 
 'no_live_look_template' => 'No template chosen',
 

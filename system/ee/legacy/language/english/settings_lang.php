@@ -63,7 +63,7 @@ $lang = array(
 
 'enable_msm' => 'Enable Site Manager?',
 
-'enable_msm_desc' => 'When set to <b>enable</b>, super admins and member groups with permissions will be able to manage additional websites from the <abbr title="Control Panel">CP</abbr>.',
+'enable_msm_desc' => 'When set to <b>enable</b>, Super Admins and member groups with permissions will be able to manage additional websites from the <abbr title="Control Panel">CP</abbr>.',
 
 'error_getting_version' => 'You are using ExpressionEngine %s. Unable to determine if a newer version is available at this time.',
 
@@ -85,7 +85,7 @@ $lang = array(
 
 'site_online' => 'Website online?',
 
-'site_online_desc' => 'When set to <b>offline</b>, only super admins and member groups with permissions will be able to browse your website.',
+'site_online_desc' => 'When set to <b>offline</b>, only Super Admins and member groups with permissions will be able to browse your website.',
 
 'site_short_name' => 'Short name',
 
@@ -277,7 +277,7 @@ $lang = array(
 
 'enable_devlog_alerts' => 'Enable Developer Log Alerts?',
 
-'enable_devlog_alerts_desc' => 'When set to <b>enable</b>, super admins will see control panel alerts when new <a href="%s">Developer Log</a> items need action. Currently <b>%s item(s)</b> are logged.',
+'enable_devlog_alerts_desc' => 'When set to <b>enable</b>, Super Admins will see control panel alerts when new <a href="%s">Developer Log</a> items need action. Currently <b>%s item(s)</b> are logged.',
 
 'enable_errors' => 'Error Visibility',
 
@@ -317,7 +317,7 @@ $lang = array(
 
 'show_profiler' => 'Enable debugging?',
 
-'show_profiler_desc' => 'When set to <b>enable</b>, super admins will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
+'show_profiler_desc' => 'When set to <b>enable</b>, Super Admins will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
 
 'use_newrelic' => 'Enable New Relic RUM JavaScript?',
 
