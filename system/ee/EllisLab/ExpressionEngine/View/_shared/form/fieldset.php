@@ -127,7 +127,10 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 					$vars['field']['margin_top'] = TRUE;
 				}
 
-				$count++;
+				if ($field['type'] != 'hidden')
+				{
+					$count++;
+				}
 
 				$this->embed('ee:_shared/form/field', $vars);
 			}
