@@ -890,11 +890,7 @@ class Template extends AbstractDesignController {
 					'desc' => 'enable_caching_desc',
 					'fields' => array(
 						'cache' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $template->cache
 						)
 					)

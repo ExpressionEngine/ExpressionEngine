@@ -130,7 +130,7 @@ $lang = array(
 
 'enable_php' => 'Allow PHP?',
 
-'enable_php_desc' => 'Allows the use of standard PHP within this template.',
+'enable_php_desc' => 'When enabled, you can use standard PHP within this template. <a href="'.DOC_URL.'templates/php.html" rel="external">Read about the implications before enabling</a>.',
 
 'enable_template_variable_on_all_sites' => 'Enable on all sites?',
 
