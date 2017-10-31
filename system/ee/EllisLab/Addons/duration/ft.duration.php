@@ -169,7 +169,8 @@ class Duration_Ft extends EE_Fieldtype {
 					'units' => array(
 						'type' => 'radio',
 						'choices' => $this->getUnits(),
-						'value' => (isset($data['units'])) ? $data['units'] : 'minutes'
+						'value' => (isset($data['units'])) ? $data['units'] : 'minutes',
+						'required' => TRUE
 					)
 				)
 			),
