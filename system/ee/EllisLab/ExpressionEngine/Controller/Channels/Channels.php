@@ -1080,11 +1080,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'enable_versioning_desc',
 					'fields' => array(
 						'enable_versioning' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $channel->enable_versioning
 						)
 					)
@@ -1110,11 +1106,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'enable_author_notification_desc',
 					'fields' => array(
 						'comment_notify_authors' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $channel->comment_notify_authors
 						)
 					)
@@ -1124,11 +1116,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'enable_channel_entry_notification_desc',
 					'fields' => array(
 						'channel_notify' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $channel->channel_notify
 						),
 						'channel_notify_emails' => array(
@@ -1142,11 +1130,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'enable_comment_notification_desc',
 					'fields' => array(
 						'comment_notify' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $channel->comment_notify
 						),
 						'comment_notify_emails' => array(
