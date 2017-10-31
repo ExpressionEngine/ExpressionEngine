@@ -299,12 +299,13 @@ class Set {
 		{
 			$channel = ee('Model')->make('Channel');
 			$channel_title = $channel_data->channel_title;
+			$channel_name = (isset($channel_data->channel_name)) ? $channel_data->channel_name : strtolower(str_replace(' ', '_', $channel_data->channel_title));
 
 			$channel->title_field_label = (isset($channel_data->title_field_label))
 				? $channel_data->title_field_label
 				: lang('title');
 			$channel->site_id = $this->site_id;
-			$channel->channel_name = strtolower(str_replace(' ', '_', $channel_data->channel_title));
+			$channel->channel_name = $channel_name;
 			$channel->channel_title = $channel_data->channel_title;
 			$channel->channel_lang = 'en';
 
