@@ -33,7 +33,9 @@ class MinLength extends ValidationRule {
 	{
 		list($length) = $this->assertParameters('length');
 
-		if (preg_match("/[^0-9]/", $length))
+		$length = $this->numericOrConstantParameter($length);
+
+		if ($length === FALSE)
 		{
 			return FALSE;
 		}
