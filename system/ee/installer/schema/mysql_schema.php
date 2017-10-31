@@ -673,7 +673,7 @@ class EE_Schema {
 			forum_topic_id int(10) unsigned NULL DEFAULT NULL,
 			ip_address varchar(45) default '0' NOT NULL,
 			title varchar(100) NOT NULL,
-			url_title varchar(75) NOT NULL,
+			url_title varchar(".URL_TITLE_MAX_LENGTH.") NOT NULL,
 			status varchar(50) NOT NULL,
 			versioning_enabled char(1) NOT NULL default 'n',
 			view_count_one int(10) unsigned NOT NULL default 0,
