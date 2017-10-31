@@ -164,7 +164,7 @@ $lang = array(
 
 'last_visit' => 'Last Visit',
 
-'lock_description' => 'When set to enable, only Super Admins can add or remove members from this group.',
+'lock_description' => 'When enabled, only Super Admins can add or remove members from this group.',
 
 'locked' => 'Locked',
 

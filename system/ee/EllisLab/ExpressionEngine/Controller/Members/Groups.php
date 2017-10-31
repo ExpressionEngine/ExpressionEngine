@@ -762,11 +762,7 @@ class Groups extends Members\Members {
 						'desc' => 'lock_description',
 						'fields' => array(
 							'is_locked' => array(
-								'type' => 'inline_radio',
-								'choices' => array(
-									'y' => 'enable',
-									'n' => 'disable'
-								),
+								'type' => 'yes_no',
 								'value' => element('is_locked', $values)
 							)
 						)
