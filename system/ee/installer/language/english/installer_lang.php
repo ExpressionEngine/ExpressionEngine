@@ -40,7 +40,7 @@ $lang = array(
 	// Default Theme
 	'default_theme'              => 'Default theme',
 	'install_default_theme'      => 'Install default theme?',
-	'install_default_theme_info' => 'When set to <b>yes</b>, ExpressionEngine will install a default theme.',
+	'install_default_theme_info' => 'When enabled, ExpressionEngine will install a default theme.',
 
 	// License Agreement
 	'license_agreement'          => 'I agree to the license <a href="https://expressionengine.com/license/" rel="external">Terms and Conditions</a>',

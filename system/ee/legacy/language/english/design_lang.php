@@ -118,15 +118,15 @@ $lang = array(
 
 'enable_caching' => 'Enable Caching?',
 
-'enable_caching_desc' => 'When set to <b>enable</b>, ExpressionEngine will cache this template.',
+'enable_caching_desc' => 'When enabled, ExpressionEngine will cache this template.',
 
 'enable_http_authentication' => 'Enable HTTP Authentication?',
 
-'enable_http_authentication_desc' => 'When set to <b>enable</b>, users with permissions will have to login to view this template.',
+'enable_http_authentication_desc' => 'When enabled, users with permissions will have to login to view this template.',
 
 'enable_partial_on_all_sites' => 'Enable on all sites?',
 
-'enable_partial_on_all_sites_desc' => 'When set to <b>enable</b>, this partial will be available for use in all sites.',
+'enable_partial_on_all_sites_desc' => 'When enabled, this partial will be available for use in all sites.',
 
 'enable_php' => 'Allow PHP?',
 
@@ -134,7 +134,7 @@ $lang = array(
 
 'enable_template_variable_on_all_sites' => 'Enable on all sites?',
 
-'enable_template_variable_on_all_sites_desc' => 'When set to <b>enable</b>, this variable will be available for use in all sites.',
+'enable_template_variable_on_all_sites_desc' => 'When enabled, this variable will be available for use in all sites.',
 
 'error_cannot_create_zip' => 'Cannot create a .zip file',
 
@@ -164,7 +164,7 @@ $lang = array(
 
 'make_default_group' => 'Make default group?',
 
-'make_default_group_desc' => 'When set to <b>yes</b>, this group will become the default group for this website.',
+'make_default_group_desc' => 'When enabled, this group will become the default group for this website.',
 
 'messages' => 'Messages',
 
@@ -198,7 +198,7 @@ $lang = array(
 
 'require_all_segments' => 'Require all variables?',
 
-'require_all_segments_desc' => 'When set to <b>yes</b>, all variables must be present in the request <abbr title="Unified Resource Identifier">URI</abbr>.',
+'require_all_segments_desc' => 'When enabled, all variables must be present in the request <abbr title="Unified Resource Identifier">URI</abbr>.',
 
 'reserved_name' => 'The name you have chosen is a reserved word that cannot be used.',
 
@@ -304,7 +304,7 @@ $lang = array(
 
 'enable_template' => 'Enable template?',
 
-'enable_template_desc' => 'When set to <b>enable</b>, this template will be used, in place of an auto generated Email in the users language.',
+'enable_template_desc' => 'When enabled, this template will be used, in place of an auto generated Email in the users language.',
 
 'forums' => 'Forums',
 

@@ -84,7 +84,7 @@ $lang = array(
 
 'metaweblog_parse_type' => 'Use default text formatting preferences?',
 
-'metaweblog_parse_type_desc' => 'When set to <b>yes</b>, content will be sent with custom field text formatting intact.',
+'metaweblog_parse_type_desc' => 'When enabled, content will be sent with custom field text formatting intact.',
 
 'metaweblog_pref_name' => 'Name',
 

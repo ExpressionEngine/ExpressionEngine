@@ -24,7 +24,7 @@ $lang = array(
 
 'rel_ft_allow_multi' => 'Allow multiple relationships?',
 
-'rel_ft_allow_multi_desc' => 'When set to <b>yes</b>, authors will be allowed to create multiple relationships.',
+'rel_ft_allow_multi_desc' => 'When enabled, authors will be allowed to create multiple relationships.',
 
 'rel_ft_authors' => 'Authors',
 
@@ -113,7 +113,7 @@ $lang = array(
 
 'file_ft_show_files' => 'Show existing files?',
 
-'file_ft_show_files_desc' => 'When set to <b>yes</b>, a drop down with existing files will be shown to authors.',
+'file_ft_show_files_desc' => 'When enabled, a drop down with existing files will be shown to authors.',
 
 
 /* Grid */
