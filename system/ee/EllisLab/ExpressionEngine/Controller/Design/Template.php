@@ -1015,11 +1015,7 @@ class Template extends AbstractDesignController {
 					'desc' => 'enable_http_authentication_desc',
 					'fields' => array(
 						'enable_http_auth' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $template->enable_http_auth
 						)
 					)
