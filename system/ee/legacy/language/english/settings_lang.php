@@ -85,7 +85,7 @@ $lang = array(
 
 'site_online' => 'Website online?',
 
-'site_online_desc' => 'When set to <b>offline</b>, only Super Admins and member groups with permissions will be able to browse your website.',
+'site_online_desc' => 'When disabled, only Super Admins and member groups with permissions will be able to browse your website.',
 
 'site_short_name' => 'Short name',
 
