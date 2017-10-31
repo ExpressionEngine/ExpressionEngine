@@ -28,8 +28,7 @@ feature 'Outgoing Email Settings' do
       # SMTP fields are hidden unless SMTP is selected
 
       word_wrap = ee_config(item: 'word_wrap')
-      @page.word_wrap_y.checked?.should == (word_wrap == 'y')
-      @page.word_wrap_n.checked?.should == (word_wrap == 'n')
+      @page.word_wrap.value.should == word_wrap
     end
 
     it 'validates SMTP server when that is the selected protocol' do
@@ -53,7 +52,7 @@ feature 'Outgoing Email Settings' do
       @page.smtp_username.set 'username'
       @page.smtp_password.set 'password'
       @page.mail_format.select 'HTML'
-      @page.word_wrap_n.click
+      @page.word_wrap_toggle.click
       @page.submit
 
       @page.should have_text 'Preferences updated'
@@ -66,8 +65,7 @@ feature 'Outgoing Email Settings' do
       @page.smtp_username.value.should == 'username'
       @page.smtp_password.value.should == 'password'
       @page.mail_format.value.should == 'html'
-      @page.word_wrap_y.checked?.should == false
-      @page.word_wrap_n.checked?.should == true
+      @page.word_wrap.value.should == 'n'
     end
   end
 

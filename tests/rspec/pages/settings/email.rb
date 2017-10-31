@@ -11,8 +11,8 @@ class EmailSettings < ControlPanelPage
   element :smtp_password, 'input[name=smtp_password]'
   element :email_smtp_crypto, 'select[name=email_smtp_crypto]'
   element :mail_format, 'select[name=mail_format]'
-  element :word_wrap_y, 'input[name=word_wrap][value=y]'
-  element :word_wrap_n, 'input[name=word_wrap][value=n]'
+  element :word_wrap, 'input[name=word_wrap]', :visible => false
+  element :word_wrap_toggle, 'a[data-toggle-for=word_wrap]'
 
   def load
     settings_btn.click
