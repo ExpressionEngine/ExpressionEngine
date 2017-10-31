@@ -38,11 +38,11 @@ class Collection extends CoreCollection {
 	/**
 	 *
 	 */
-	public function add(Model $model)
+	public function add(Model $model, $propagate = TRUE)
 	{
 		$this->elements[] = $model;
 
-		if (isset($this->association))
+		if (isset($this->association) && $propagate)
 		{
 			$this->association->add($model);
 		}

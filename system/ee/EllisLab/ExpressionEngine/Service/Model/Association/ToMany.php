@@ -62,7 +62,7 @@ class ToMany extends Association {
 
 		if ( ! $this->has($model))
 		{
-			$this->related->add($model);
+			$this->related->add($model, FALSE);
 			parent::ensureExists($model);
 		}
 	}
