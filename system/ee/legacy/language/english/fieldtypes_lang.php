@@ -87,6 +87,7 @@ $lang = array(
 
 'duration_ft_units' => 'Units',
 
+'duration_ft_units_desc' => 'Determines the length of time being described when a content author enters a whole number like “42”.',
 
 /* File */
 'file_ft_allowed_dirs' => 'Allowed Directory',

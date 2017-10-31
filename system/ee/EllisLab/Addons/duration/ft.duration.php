@@ -164,12 +164,12 @@ class Duration_Ft extends EE_Fieldtype {
 		$settings = array(
 			array(
 				'title' => 'duration_ft_units',
+				'desc' => 'duration_ft_units_desc',
 				'fields' => array(
 					'units' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => $this->getUnits(),
-						'value' => (isset($data['units'])) ? $data['units'] : 'minutes',
-						'required' => TRUE
+						'value' => (isset($data['units'])) ? $data['units'] : 'minutes'
 					)
 				)
 			),
