@@ -33,7 +33,9 @@ class LessThan extends ValidationRule {
 	{
 		list($compare) = $this->assertParameters('compare_to');
 
-		if ( ! is_numeric($compare))
+		$compare = $this->numericOrConstantParameter($compare);
+
+		if ($compare === FALSE)
 		{
 			return FALSE;
 		}
