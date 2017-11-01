@@ -105,6 +105,8 @@ class EE_Template {
 	private $user_vars            = array();
 	private $globals_regex;
 
+	protected $modified_vars      = FALSE;
+
 	/**
 	 * Constructor
 	 *
@@ -3591,14 +3593,7 @@ class EE_Template {
 		$count = 0;
 		$total_results = count($variables);
 
-		$this->modified_vars = [];
-		foreach ($this->var_single as $variable)
-		{
-			if (strpos($variable, ':') !== FALSE)
-			{
-				$this->modified_vars[$variable] = ee('Variables/Parser')->parseVariableProperties($variable);
-			}
-		}
+		$this->modified_vars = $this->getModifiedVariables();
 
 		while (($row = array_shift($variables)) !== NULL)
 		{
@@ -3663,6 +3658,12 @@ class EE_Template {
 		if (empty($this->date_vars) && $this->date_vars !== FALSE)
 		{
 			$this->_match_date_vars($tagdata);
+		}
+
+		// same with modified, sometimes devs run this method themselves instead of a full parse_variables()
+		if ($this->modified_vars === FALSE)
+		{
+			$this->modified_vars = $this->getModifiedVariables();
 		}
 
 		$this->conditional_vars = $variables;
@@ -4013,6 +4014,19 @@ class EE_Template {
 				$this->date_vars = array_unique($this->date_vars);
 			}
 		}
+	}
+
+	private function getModifiedVariables()
+	{
+		$modified_vars = [];
+		foreach ($this->var_single as $variable)
+		{
+			if (strpos($variable, ':') !== FALSE)
+			{
+				$modified_vars[$variable] = ee('Variables/Parser')->parseVariableProperties($variable);
+			}
+		}
+		return $modified_vars;
 	}
 
 	/**
