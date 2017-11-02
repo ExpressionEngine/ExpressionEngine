@@ -233,9 +233,11 @@ class Snippets extends AbstractDesignController {
 					'site_id' => array(
 						'type' => 'inline_radio',
 						'choices' => array(
-							'0' => 'enable',
-							ee()->config->item('site_id') => 'disable'
-						)
+							'0' => 'all_sites',
+							ee()->config->item('site_id') => ee()->config->item('site_label').' '.lang('only')
+						),
+						'encode' => FALSE,
+						'value' => '0',
 					)
 				)
 			);
@@ -367,10 +369,11 @@ class Snippets extends AbstractDesignController {
 					'site_id' => array(
 						'type' => 'inline_radio',
 						'choices' => array(
-							'0' => 'enable',
-							ee()->config->item('site_id') => 'disable'
+							'0' => 'all_sites',
+							ee()->config->item('site_id') => ee()->config->item('site_label').' '.lang('only')
 						),
-						'value' => $snippet->site_id
+						'value' => $snippet->site_id,
+						'encode' => FALSE
 					)
 				)
 			);

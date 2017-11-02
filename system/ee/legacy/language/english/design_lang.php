@@ -186,6 +186,8 @@ $lang = array(
 
 'notes' => 'Notes',
 
+'only' => '<strong>only</strong>',
+
 'parse_stage' => 'PHP Parsing Stage',
 
 'parse_stage_desc' => 'When set to <b>output</b>, PHP will be parsed after the template.',
