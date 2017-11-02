@@ -4068,10 +4068,10 @@ class Channel {
 			$variables = ee()->TMPL->var_single;
 		}
 
-		// native metadata fields with modifiers will pass through here. We will treat them as text and fake the row.
+		// native metadata fields with modifiers will pass through here. Thos without modifiers
+		// will have already been handled with a simple string replace by EE_Channel_category_parser
 		ee()->api_channel_fields->include_handler('text');
 		$fieldtype = ee()->api_channel_fields->setup_handler('text', TRUE);
-		$fieldtype->_init(['row' => []]);
 		ee()->api_channel_fields->field_types['text'] = $fieldtype;
 
 		foreach ($variables as $tag)
@@ -4099,10 +4099,10 @@ class Channel {
 					$tag
 				);
 			}
-			elseif (isset($data[$field_name]))
+			elseif (isset($data[$field_name]) && ! empty($var_props['modifier']))
 			{
 				$content = $data[$field_name];
-				$parse_fnc = ($var_props['modifier']) ? 'replace_'.$var_props['modifier'] : 'replace_tag';
+				$parse_fnc = 'replace_'.$var_props['modifier'];
 
 				if (method_exists($fieldtype, $parse_fnc))
 				{
