@@ -4068,9 +4068,10 @@ class Channel {
 			$variables = ee()->TMPL->var_single;
 		}
 
-		// native metadata fields with modifiers will pass through here. We will treat them as text.
+		// native metadata fields with modifiers will pass through here. We will treat them as text and fake the row.
 		ee()->api_channel_fields->include_handler('text');
 		$fieldtype = ee()->api_channel_fields->setup_handler('text', TRUE);
+		$fieldtype->_init(['row' => []]);
 		ee()->api_channel_fields->field_types['text'] = $fieldtype;
 
 		foreach ($variables as $tag)
