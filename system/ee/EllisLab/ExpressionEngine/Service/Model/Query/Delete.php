@@ -385,6 +385,12 @@ class Delete extends Query {
 				return array();
 			}
 
+			if (($relation->getTargetModel() == 'MemberGroup' || $relation->getTargetModel() == 'ee:MemberGroup') &&
+				($relation->getPivot() != array()))
+			{
+				return array();
+			}
+
 			$name = $relation->getName();
 			$models = $query->with($withs)->all();
 
