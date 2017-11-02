@@ -87,7 +87,7 @@ $lang = array(
 
 'allow_image_hotlinking' => 'Allow image hot-linking?',
 
-'allow_image_hotlinking_desc' => 'When set to <b>yes</b>, users will be allowed to hot-link an image in a forum post.',
+'allow_image_hotlinking_desc' => 'When enabled, users will be allowed to hot-link an image in a forum post.',
 
 'allow_php' => 'Allow PHP?',
 
@@ -107,7 +107,7 @@ $lang = array(
 
 'autolink_urls' => 'Render <abbr title="Unified Resource Locator">URL</abbr>s and e-mail addresses as links?',
 
-'autolink_urls_desc' => "When set to <b>yes</b>, <abbr title=\"Unified Resource Locator\">URL</abbr>s and e-mail address will be rendered as links in this forum's posts.",
+'autolink_urls_desc' => "When enabled, <abbr title=\"Unified Resource Locator\">URL</abbr>s and e-mail address will be rendered as links in this forum's posts.",
 
 'board' => 'Board',
 
@@ -141,23 +141,23 @@ $lang = array(
 
 'enable_board' => 'Enable board',
 
-'enable_board_desc' => 'When set to <b>enable</b>, this forum board will be accessible to member groups with proper permissions.',
+'enable_board_desc' => 'When enabled, this forum board will be accessible to member groups with proper permissions.',
 
 'enable_default_permissions' => 'Enable Default Permissions?',
 
-'enable_default_permissions_desc' => 'When set to <b>enable</b>, these permissions will be the default permissions for all created forums.',
+'enable_default_permissions_desc' => 'When enabled, these permissions will be the default permissions for all created forums.',
 
 'enable_http_auth_for_rss' => 'Enable <abbr title="Hyper Text Transfer Protocol">HTTP</abbr> authentication for <abbr title="Really Simple Syndication">RSS</abbr>?',
 
-'enable_http_auth_for_rss_desc' => 'When set to <b>enable</b>, users will need to enter authentication to access <abbr title="Really Simple Syndication">RSS</abbr> for forums.',
+'enable_http_auth_for_rss_desc' => 'When enabled, users will need to enter authentication to access <abbr title="Really Simple Syndication">RSS</abbr> for forums.',
 
 'enable_rss' => 'Enable <abbr title="Really Simple Syndication">RSS</abbr>?',
 
-'enable_rss_desc' => 'When set to <b>enable</b>, <abbr title="Really Simple Syndication">RSS</abbr> will be available for forums.',
+'enable_rss_desc' => 'When enabled, <abbr title="Really Simple Syndication">RSS</abbr> will be available for forums.',
 
 'enable_thumbnail_creation' => 'Enable thumbnail creation?',
 
-'enable_thumbnail_creation_desc' => 'When set to <b>enable</b>, clickable thumbnails will be shown in posts.',
+'enable_thumbnail_creation_desc' => 'When enabled, clickable thumbnails will be shown in posts.',
 
 'file_size' => 'File size',
 
@@ -271,7 +271,7 @@ $lang = array(
 
 'show_editing_dates' => 'Show editing dates?',
 
-'show_editing_dates_desc' => 'When set to <b>yes</b>, the date and time a post was edited will be shown in the post.',
+'show_editing_dates_desc' => 'When enabled, the date and time a post was edited will be shown in the post.',
 
 'site' => 'Site',
 

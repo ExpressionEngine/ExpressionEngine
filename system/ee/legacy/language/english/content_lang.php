@@ -12,7 +12,7 @@ $lang = array(
 
 'allow_comments' => 'Allow comments?',
 
-'allow_comments_desc' => 'When set to <b>yes</b>, members with permissions will be able to post comments to this entry.',
+'allow_comments_desc' => 'When enabled, members with permissions will be able to post comments to this entry.',
 
 'author' => 'Author',
 
@@ -168,7 +168,7 @@ $lang = array(
 
 'sticky' => 'Make entry sticky?',
 
-'sticky_desc' => 'When set to <b>yes</b>, this entry will be given preference in sorted listings.',
+'sticky_desc' => 'When enabled, this entry will be given preference in sorted listings.',
 
 'url_title' => '<abbr title="Unified Resource Locator">URL</abbr> title',
 
@@ -742,7 +742,7 @@ $lang = array(
 
 'versioning_enabled' => 'Enable entry revisions?',
 
-'versioning_enabled_desc' => 'When set to <b>yes</b>, you can store up to %d revisions of this entry.',
+'versioning_enabled_desc' => 'When enabled, you can store up to %d revisions of this entry.',
 
 'view' => 'View',
 

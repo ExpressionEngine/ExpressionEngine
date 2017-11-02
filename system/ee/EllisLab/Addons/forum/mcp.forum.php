@@ -632,11 +632,7 @@ class Forum_mcp extends CP_Controller {
 					'desc' => 'enable_board_desc',
 					'fields' => array(
 						'board_enabled' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $board->board_enabled,
 						)
 					)
@@ -801,11 +797,7 @@ class Forum_mcp extends CP_Controller {
 					'desc' => 'enable_thumbnail_creation_desc',
 					'fields' => array(
 						'board_use_img_thumbs' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $board->board_use_img_thumbs,
 						)
 					)
@@ -1018,11 +1010,7 @@ class Forum_mcp extends CP_Controller {
 					'desc' => 'enable_rss_desc',
 					'fields' => array(
 						'board_enable_rss' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $board->board_enable_rss,
 						)
 					)
@@ -1032,11 +1020,7 @@ class Forum_mcp extends CP_Controller {
 					'desc' => 'enable_http_auth_for_rss_desc',
 					'fields' => array(
 						'board_use_http_auth' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $board->board_use_http_auth,
 						)
 					)
@@ -1081,11 +1065,7 @@ class Forum_mcp extends CP_Controller {
 					'desc' => 'enable_default_permissions_desc',
 					'fields' => array(
 						'board_use_deft_permissions' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $board->board_use_deft_permissions,
 						)
 					)
@@ -1400,11 +1380,7 @@ class Forum_mcp extends CP_Controller {
 					'desc' => 'enable_board_desc',
 					'fields' => array(
 						'board_enabled' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $alias->board_enabled,
 						)
 					)
@@ -2240,11 +2216,7 @@ class Forum_mcp extends CP_Controller {
 					'desc' => 'enable_rss_desc',
 					'fields' => array(
 						'forum_enable_rss' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $forum->forum_enable_rss,
 						)
 					)
@@ -2254,11 +2226,7 @@ class Forum_mcp extends CP_Controller {
 					'desc' => 'enable_http_auth_for_rss_desc',
 					'fields' => array(
 						'forum_use_http_auth' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $forum->forum_use_http_auth,
 						)
 					)
