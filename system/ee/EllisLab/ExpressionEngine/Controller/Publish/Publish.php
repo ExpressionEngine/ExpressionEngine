@@ -227,22 +227,7 @@ class Publish extends AbstractPublishController {
 			'revisions' => $this->getRevisionsTable($entry),
 			'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
 			'extra_publish_controls' => $channel->extra_publish_controls,
-			'buttons' => [
-				[
-					'name' => 'submit',
-					'type' => 'submit',
-					'value' => 'save',
-					'text' => 'save',
-					'working' => 'btn_saving'
-				],
-				[
-					'name' => 'submit',
-					'type' => 'submit',
-					'value' => 'save_and_new',
-					'text' => 'save_and_new',
-					'working' => 'btn_saving'
-				]
-			]
+			'buttons' => $this->getPublishFormButtons($entry)
 		);
 
 		if ($autosave_id)
