@@ -18,8 +18,10 @@
 			{
 				$class .= ' ' . $button['class'];
 			}
+
+			$button['attr'] = (isset($button['attr'])) ? $button['attr'] : '';
 		?>
-		<button class="<?=$class?>" <?=$disabled?> name="<?=$button['name']?>" type="<?=$button['type']?>" value="<?=$button['value']?>" data-submit-text="<?=lang($button['text'])?>" data-work-text="<?=lang($button['working'])?>"><?=$button_text?></button>
+		<button class="<?=$class?>" <?=$button['attr']?> <?=$disabled?> name="<?=$button['name']?>" type="<?=$button['type']?>" value="<?=$button['value']?>" data-submit-text="<?=lang($button['text'])?>" data-work-text="<?=lang($button['working'])?>"><?=$button_text?></button>
 	<?php endforeach; ?>
 <?php else: ?>
 	<?=cp_form_submit($save_btn_text, $save_btn_text_working, NULL, (isset($errors) && $errors->isNotValid()))?>
