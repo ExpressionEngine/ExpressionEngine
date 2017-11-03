@@ -424,23 +424,16 @@ class Edit extends AbstractPublishController {
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
 			'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
 			'extra_publish_controls' => $entry->Channel->extra_publish_controls,
-			'buttons' => [
-				[
-					'name' => 'submit',
-					'type' => 'submit',
-					'value' => 'save',
-					'text' => 'save',
-					'working' => 'btn_saving'
-				],
-				[
-					'name' => 'submit',
-					'type' => 'submit',
-					'value' => 'save_and_new',
-					'text' => 'save_and_new',
-					'working' => 'btn_saving'
-				]
-			]
+			'buttons' => $this->getPublishFormButtons($entry)
 		);
+
+		if ($entry->Channel->LiveLookTemplate)
+		{
+			$modal = ee('View')->make('publish/live-preview-modal')->render([
+				'preview_url' => ee('CP/URL')->make('publish/preview/' . $entry->channel_id)
+			]);
+			ee('CP/Modal')->addModal('live-preview', $modal);
+		}
 
 		$version_id = ee()->input->get('version');
 

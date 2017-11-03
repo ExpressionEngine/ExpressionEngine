@@ -74,4 +74,8 @@ $(document).ready(function () {
 		changeable.on('change', function(){publishForm.trigger("entry:startAutosave")});
 	}
 
+	$('button[rel="live-preview"]').click(function(e) {
+		$('.app-modal--live-preview .form-standard').empty().append($(publishForm).clone());
+	});
+
 });
