@@ -2426,6 +2426,23 @@ class Channel {
 		return $offset;
 	}
 
+	private function overrideWithPreviewData($result_array)
+	{
+		if (($data = ee()->session->cache('channel_entry', 'live-preview', FALSE)) !== FALSE)
+		{
+			foreach ($result_array as $i => $row)
+			{
+				if ($row['entry_id'] == $data['entry_id'])
+				{
+					$result_array[$i] = $data;
+					break;
+				}
+			}
+		}
+
+		return $result_array;
+	}
+
 	/**
 	  *  Parse channel entries
 	  *  @param Callable $per_row_callback A callable to send each row's tagdata
@@ -2442,6 +2459,8 @@ class Channel {
 		{
 			$query_result = $this->getExtraData($query_result);
 		}
+
+		$query_result = $this->overrideWithPreviewData($query_result);
 
 		// Ditch everything else
 		$this->query->free_result();
