@@ -184,4 +184,28 @@ abstract class ValidationRule {
 
 		throw new \Exception("Missing {$init} and {$last} parameters for {$rule_id}.");
 	}
+
+	protected function numericOrConstantParameter($param)
+	{
+		if (is_numeric($param))
+		{
+			return $param;
+		}
+
+		if (defined($param))
+		{
+			$value = constant($param);
+			foreach ($this->parameters as $i => $p)
+			{
+				if ($p === $param)
+				{
+					$this->parameters[$i] = $value;
+				}
+			}
+
+			return $value;
+		}
+
+		return FALSE;
+	}
 }

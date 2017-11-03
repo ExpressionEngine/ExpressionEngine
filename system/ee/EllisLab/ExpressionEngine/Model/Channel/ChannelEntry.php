@@ -99,7 +99,7 @@ class ChannelEntry extends ContentModel {
 		'channel_id'         => 'required|validateMaxEntries',
 		'ip_address'         => 'ip_address',
 		'title'              => 'required|maxLength[200]|limitHtml[b,cite,code,del,em,i,ins,markspan,strong,sub,sup]',
-		'url_title'          => 'required|maxLength[200]|validateUrlTitle|validateUniqueUrlTitle[channel_id]',
+		'url_title'          => 'required|maxLength[URL_TITLE_MAX_LENGTH]|validateUrlTitle|validateUniqueUrlTitle[channel_id]',
 		'status'             => 'required',
 		'entry_date'         => 'required',
 		'versioning_enabled' => 'enum[y,n]',
@@ -745,7 +745,7 @@ class ChannelEntry extends ContentModel {
 					'field_show_fmt'		=> 'n',
 					'field_text_direction'	=> 'ltr',
 					'field_type'			=> 'text',
-					'field_maxl'			=> 200
+					'field_maxl'			=> URL_TITLE_MAX_LENGTH
 				),
 				'entry_date' => array(
 					'field_id'				=> 'entry_date',

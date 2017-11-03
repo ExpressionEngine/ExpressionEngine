@@ -14,7 +14,8 @@ class MemberGroup extends StructureModel {
 	protected static $_events = array(
 		'beforeInsert',
 		'afterInsert',
-		'afterUpdate'
+		'afterUpdate',
+		'afterDelete'
 	);
 
 	protected static $_typed_columns = array(
@@ -316,6 +317,38 @@ class MemberGroup extends StructureModel {
 		{
 			$id = ee('db')->query('SELECT MAX(group_id) as id FROM exp_member_groups')->row('id');
 			$this->setRawProperty('group_id', $id + 1);
+		}
+	}
+
+	public function onAfterDelete()
+	{
+		$this->prunePivotTables();
+	}
+
+	protected function prunePivotTables()
+	{
+		foreach (self::$_relationships as $name => $info)
+		{
+			if (array_key_exists('pivot', $info))
+			{
+				$table = 'exp_' . $info['pivot']['table'];
+				$column = (array_key_exists('left', $info['pivot'])) ? $info['pivot']['left'] : 'group_id';
+
+				$sql = "SELECT DISTINCT({$table}.{$column}) AS group_id FROM {$table} LEFT JOIN exp_member_groups ON {$table}.{$column} = exp_member_groups.group_id WHERE exp_member_groups.group_id is NULL;";
+				$query = ee('db')->query($sql);
+
+				$groups = array();
+
+				foreach ($query->result_array() as $row)
+				{
+					$groups[] = $row['group_id'];
+				}
+
+				if ( ! empty($groups))
+				{
+					ee('db')->query("DELETE FROM {$table} WHERE {$column} IN (" . implode(',', $groups) . ")");
+				}
+			}
 		}
 	}
 

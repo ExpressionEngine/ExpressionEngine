@@ -166,7 +166,7 @@ class Provider extends InjectionBindingDecorator {
 	/**
 	 * Get the 'services' key
 	 *
-	 * @return Array [name => closure]
+	 * @return array [name => closure]
 	 */
 	public function getServices()
 	{
@@ -176,7 +176,7 @@ class Provider extends InjectionBindingDecorator {
 	/**
 	 * Get the 'services.singletons' key
 	 *
-	 * @return Array [name => closure]
+	 * @return array [name => closure]
 	 */
 	public function getSingletons()
 	{
@@ -186,7 +186,7 @@ class Provider extends InjectionBindingDecorator {
 	/**
 	 * Get the 'models' key
 	 *
-	 * @return Array [name => class-name-in-namespace]
+	 * @return array [name => class-name-in-namespace]
 	 */
 	public function getModels()
 	{
@@ -207,7 +207,7 @@ class Provider extends InjectionBindingDecorator {
 	/**
 	 * Get the 'models.dependencies' key
 	 *
-	 * @return Array [model => [ee:foo, ee:bar]]
+	 * @return array [model => [ee:foo, ee:bar]]
 	 */
 	public function getModelDependencies()
 	{

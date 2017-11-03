@@ -1479,7 +1479,7 @@ class Search {
 	 * Retrieve the Member Path tags for a set of tagdata
 	 *
 	 * @param String $tagdata The tagdata to get member_path tags from
-	 * @return Array Nested array containing tag and resulting paths for member
+	 * @return array Nested array containing tag and resulting paths for member
 	 *               path tags (e.g. {member_path="member/index"})
 	 */
 	private function get_member_path_tags($tagdata = NULL)

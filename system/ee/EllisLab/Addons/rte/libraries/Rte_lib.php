@@ -378,7 +378,7 @@ class Rte_lib {
 		}
 
 		// potentially required assets
-		$jquery = URL_THEMES.'javascript/'.PATH_JS.'/jquery/jquery.js';
+		$jquery = URL_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/jquery/jquery.js';
 
 		ee()->load->library('javascript');
 

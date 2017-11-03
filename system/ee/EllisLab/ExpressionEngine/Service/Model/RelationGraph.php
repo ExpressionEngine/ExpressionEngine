@@ -296,7 +296,7 @@ class RelationGraph {
 	 *
 	 * @param String $model_name Model alias
 	 * @param String $name Relationship name to fetch
-	 * @return Array of relationships data
+	 * @return array of relationships data
 	 */
 	private function fetchRelationship($model, $name)
 	{
@@ -314,7 +314,7 @@ class RelationGraph {
 	 * Fetch the entire relationship meta array.
 	 *
 	 * @param String $model_name Model alias
-	 * @return Array of relationships as defined on the model
+	 * @return array of relationships as defined on the model
 	 */
 	private function fetchRelationships($model_name)
 	{

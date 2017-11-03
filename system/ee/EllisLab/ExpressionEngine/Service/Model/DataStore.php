@@ -200,7 +200,7 @@ class DataStore {
 	 * Get all relations for a model
 	 *
 	 * @param String $model_name  Name of the model
-	 * @return Array of relations
+	 * @return array of relations
 	 */
 	public function getAllRelations($model_name)
 	{

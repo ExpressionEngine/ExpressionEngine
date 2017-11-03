@@ -415,8 +415,27 @@ class Groups extends Members\Members {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$this->load->model('member_model');
-		$this->member_model->delete_member_group($group_id, $replacement);
+		if ($replacement)
+		{
+			ee('Model')->get('Member')
+				->filter('group_id', $group_id)
+				->set('group_id', $replacement)
+				->update();
+		}
+
+		$sites = ee('Model')->get('Site')
+			->fields('site_id')
+			->all()
+			->pluck('site_id');
+
+		foreach ($sites as $site_id)
+		{
+			$groups = ee('Model')->get('MemberGroup')
+				->filter('group_id', $group_id)
+				->filter('site_id', $site_id)
+				->all()
+				->delete();
+		}
 	}
 
 	private function form($vars = array(), $values = array())

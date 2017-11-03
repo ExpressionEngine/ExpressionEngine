@@ -172,7 +172,7 @@ class Table {
 		}
 
 		$defaults = array_map(function($value) {
-			return htmlentities($value, ENT_QUOTES, 'UTF-8');
+			return htmlentities($value, ENT_NOQUOTES, 'UTF-8');
 		}, $defaults);
 
 		return new static(array_merge($config, $defaults));

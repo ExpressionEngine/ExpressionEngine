@@ -76,7 +76,7 @@ class Factory {
 	 * should be looking at.
 	 *
 	 * @param String $item Config item name, prefixes allowed (e.g. "rte:item")
-	 * @return Array [Directory, un-prefixed item]
+	 * @return array [Directory, un-prefixed item]
 	 */
 	private function expandPrefixToDirectory($item)
 	{

@@ -81,6 +81,7 @@ class Export {
 		$result = new StdClass();
 
 		$result->channel_title = $channel->channel_title;
+		$result->channel_name = $channel->channel_name;
 
 		if ($channel->title_field_label != 'Title')
 		{

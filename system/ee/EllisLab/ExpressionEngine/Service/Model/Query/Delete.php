@@ -203,7 +203,7 @@ class Delete extends Query {
 	 * );
 	 *
 	 * @param String  $model  Model to delete from
-	 * @return Array  [name => withs, ...] as described above
+	 * @return array  [name => withs, ...] as described above
 	 */
 	protected function getDeleteList($model, $delete_alias)
 	{
@@ -381,6 +381,12 @@ class Delete extends Query {
 		{
 			if (($relation->getSourceModel() == 'MemberGroup' || $relation->getSourceModel() == 'ee:MemberGroup') &&
 				($relation->getTargetModel() == 'Member' || $relation->getTargetModel() == 'ee:Member'))
+			{
+				return array();
+			}
+
+			if (($relation->getTargetModel() == 'MemberGroup' || $relation->getTargetModel() == 'ee:MemberGroup') &&
+				($relation->getPivot() != array()))
 			{
 				return array();
 			}
