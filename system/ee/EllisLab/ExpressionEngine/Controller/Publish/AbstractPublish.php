@@ -413,6 +413,41 @@ abstract class AbstractPublish extends CP_Controller {
 			->filter('edit_date', '<', $cutoff)
 			->delete();
 	}
+
+	protected function getPublishFormButtons($entry)
+	{
+		$buttons = [
+			[
+				'name'    => 'submit',
+				'type'    => 'submit',
+				'value'   => 'save',
+				'text'    => 'save',
+				'working' => 'btn_saving'
+			],
+			[
+				'name'    => 'submit',
+				'type'    => 'submit',
+				'value'   => 'save_and_new',
+				'text'    => 'save_and_new',
+				'working' => 'btn_saving'
+			]
+		];
+
+		if ($entry->Channel->LiveLookTemplate)
+		{
+			$buttons[] = [
+				'name'    => 'submit',
+				'type'    => 'submit',
+				'value'   => 'preview',
+				'text'    => 'preview',
+				'class'   => 'action js-modal-link--side',
+				'attr'    => 'rel=live-preview',
+				'working' => 'btn_previewing'
+			];
+		}
+
+		return $buttons;
+	}
 }
 
 // EOF
