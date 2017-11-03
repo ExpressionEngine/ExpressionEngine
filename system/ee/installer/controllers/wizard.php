@@ -752,37 +752,7 @@ class Wizard extends CI_Controller {
 			'dbcollat' => 'utf8mb4_unicode_ci',
 		);
 
-		// Fallback to UTF8 if we cannot do UTF8MB4
-		if ( ! $this->isUtf8mb4Supported())
-		{
-			$db['char_set'] = 'utf8';
-			$db['dbcollat'] = 'utf8_unicode_ci';
-
-			if (is_null($this->userdata['utf8mb4_supported']))
-			{
-				$which = '';
-
-				if ( ! $this->clientSupportsUtf8mb4())
-				{
-					$which = lang('client');
-
-					if ( ! $this->serverSupportsUtf8mb4())
-					{
-						$which .= ' ' . lang('and') . ' ';
-					}
-				}
-
-				if ( ! $this->serverSupportsUtf8mb4())
-				{
-					$which .= lang('server');
-				}
-
-				$this->userdata['utf8mb4_supported'] = FALSE;
-				$errors[] = sprintf(lang('utf8mb4_not_supported'), $which);
-			}
-		}
-
-		// Need to reset the connection based on the above settings.
+		// we did some db connections on form validation callbacks so let's reset here to test specific compatibilities
 		ee('Database')->closeConnection();
 
 		$this->db_connect_attempt = $this->db_connect($db);
@@ -790,9 +760,45 @@ class Wizard extends CI_Controller {
 		{
 			$errors[] = lang('database_invalid_user');
 		}
-		else if ($this->db_connect_attempt === FALSE)
+		elseif ($this->db_connect_attempt === FALSE)
 		{
 			$errors[] = lang('database_no_connect');
+		}
+		elseif($this->db_connect_attempt === TRUE)
+		{
+			// Fallback to UTF8 if we cannot do UTF8MB4
+			if ( ! $this->isUtf8mb4Supported())
+			{
+				$db['char_set'] = 'utf8';
+				$db['dbcollat'] = 'utf8_unicode_ci';
+
+				if (is_null($this->userdata['utf8mb4_supported']))
+				{
+					$which = '';
+
+					if ( ! $this->clientSupportsUtf8mb4())
+					{
+						$which = lang('client');
+
+						if ( ! $this->serverSupportsUtf8mb4())
+						{
+							$which .= ' ' . lang('and') . ' ';
+						}
+					}
+
+					if ( ! $this->serverSupportsUtf8mb4())
+					{
+						$which .= lang('server');
+					}
+
+					$this->userdata['utf8mb4_supported'] = FALSE;
+					$errors[] = sprintf(lang('utf8mb4_not_supported'), $which);
+				}
+
+				// Need to reset the connection based on the above settings.
+				ee('Database')->closeConnection();
+				$this->db_connect($db);
+			}
 		}
 
 		// Does the specified database schema type exist?
