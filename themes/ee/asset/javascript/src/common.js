@@ -340,6 +340,12 @@ $(document).ready(function(){
 					$('.app-modal---open').removeClass('app-modal---open');
 				}, 500);
 
+				// disappear the preview
+				$('.live-preview---open').addClass('live-preview---closed');
+				setTimeout(function() {
+					$('.live-preview---open').removeClass('live-preview---open');
+				}, 500);
+
 				// distract the actor
 				$('.app-overlay---open').addClass('app-overlay---closed');
 				setTimeout(function() {
@@ -378,6 +384,61 @@ $(document).ready(function(){
 			e.preventDefault();
 		});
 
+		$('body').on('click', '[class*="js-modal-link"]', function(e){
+			var modalIs = $(this).attr('rel');
+			var linkIs = $(this).attr('class');
+			var isDisabled = $(this).attr('disabled');
+
+			// check for disabled status
+			if(isDisabled === 'disabled'){
+				// stop THIS href from loading
+				// in the source window
+				e.preventDefault();
+			}
+			else{
+				// focus the actor
+				$('.app-overlay')
+					.removeClass('app-overlay---closed')
+					.addClass('app-overlay---open');
+
+				// strongly warn the actor of their potential future mistakes
+				if(linkIs.indexOf('js-modal--destruct') !== -1){
+					$('.app-overlay')
+						.addClass('app-overlay--destruct');
+				}
+
+				// warn the actor of their potential future mistakes
+				if(linkIs.indexOf('js-modal--warning') !== -1){
+					$('.app-overlay')
+						.addClass('app-overlay--warning');
+				}
+
+				// reveal the modal
+				$('[rev='+modalIs+']')
+					.removeClass('app-modal---closed')
+					.addClass('app-modal---open');
+
+				// remove viewport scroll for --side
+				if(linkIs.indexOf('js-modal-link--side') !== -1){
+					$('body').css('overflow','hidden');
+				}
+
+				if(modalIs == 'live-preview'){
+					$('.live-preview')
+						.removeClass('live-preview---closed')
+						.addClass('live-preview---open');
+				}
+
+				// scroll up, if needed
+				$('body,html').animate({ scrollTop: 0 }, 100);
+
+				// stop page from reloading
+				// the source window and appending # to the URI
+				e.preventDefault();
+			}
+		});
+
+
 		// listen for clicks on the element with a class of overlay
 		$('body').on('click', '.m-close, .js-modal-close', function(e) {
 			$(this).closest('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
@@ -386,7 +447,7 @@ $(document).ready(function(){
 			e.preventDefault();
 		});
 
-		$('body').on('click', '.overlay, .app-overlay---open', function() {
+		$('body').on('click', '.overlay, .app-overlay---open, .js-modal-close', function() {
 			$('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
 		});
 
