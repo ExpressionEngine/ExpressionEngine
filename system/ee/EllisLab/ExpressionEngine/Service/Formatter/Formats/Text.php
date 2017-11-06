@@ -232,6 +232,76 @@ class Text extends Formatter {
 	}
 
 	/**
+	 * Replace Emoji shorthand with HTML entities
+	 *
+	 * @return self $this
+	 */
+	public function emojiShorthand()
+	{
+		static $emoji_map;
+		static $shorthand_regex;
+
+		// setup our regex and our map just once, pretty intensive
+		if (empty($shorthand_regex))
+		{
+			$emoji_map = $this->getConfig('emoji_map');
+			$short_names = array_keys($emoji_map);
+			array_walk($short_names,
+				function(&$item) use ($emoji_map)
+				{
+					$emoji_map[$item]->preg_quoted_name = preg_quote($item, '/');
+					$item = $emoji_map[$item]->preg_quoted_name;
+				}
+			);
+
+			$shorthand_regex = '/:('.implode('|', $short_names).'):/';
+		}
+
+		// save some cycles if we know we can't possibly find a match
+		if (substr_count($this->content, ':') < 2)
+		{
+			return $this;
+		}
+
+		// grab 'em!
+		preg_match_all($shorthand_regex, $this->content, $matches, PREG_SET_ORDER);
+
+		if (empty($matches))
+		{
+			return $this;
+		}
+
+		// save some cycles if we don't need to worry about code blocks
+		$use_regex = (stripos($this->content, '[code') !== FALSE OR stripos($this->content, '<code') !== FALSE);
+
+		// array (size=2)
+		//   0 => string ':rabbit:' (length=8)
+		//   1 => string 'rabbit' (length=6)
+		foreach ($matches as $match)
+		{
+			if (isset($emoji_map[$match[1]]))
+			{
+				if ($use_regex)
+				{
+					// This regex says "match our emoji shorthand that are not followed by ...[/code] without a [code] inbetween"
+					// essentially ignoring all matches inside of [code][/code]/<code></code> blocks
+					$this->content = preg_replace(
+						"/(:{$emoji_map[$match[1]]->preg_quoted_name}:)(?!(.(?![<\[]code))*[<\[]\/code[>\]])/is",
+						$emoji_map[$match[1]]->html_entity,
+						$this->content
+					);
+				}
+				else
+				{
+					$this->content = str_replace($match[0], $emoji_map[$match[1]]->html_entity, $this->content);
+				}
+			}
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Encode ExpressionEngine Tags. By default encodes all curly braces so variables are also protected.
 	 *
 	 * @param  array  $options Options: (bool) encode_vars
@@ -525,5 +595,6 @@ class Text extends Formatter {
 		return $this;
 	}
 }
+// END CLASS
 
 // EOF
