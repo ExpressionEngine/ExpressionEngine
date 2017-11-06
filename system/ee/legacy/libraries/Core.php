@@ -83,6 +83,7 @@ class EE_Core {
 		define('USERNAME_MAX_LENGTH', 75);
 		define('PASSWORD_MAX_LENGTH', 72);
 		define('DOC_URL',       'https://docs.expressionengine.com/v4/');
+		define('URL_TITLE_MAX_LENGTH', 200);
 
 		ee()->load->helper('language');
 		ee()->load->helper('string');

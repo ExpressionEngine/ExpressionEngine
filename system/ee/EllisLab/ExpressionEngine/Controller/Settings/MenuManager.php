@@ -323,7 +323,7 @@ class MenuManager extends Settings {
 	 * Show the upper half of the create/edit form for a menu set. This includes
 	 * the name and selected member groups.
 	 *
-	 * @return Array of shared form sections
+	 * @return array of shared form sections
 	 */
 	private function mainForm(MenuSet $set)
 	{
@@ -396,7 +396,7 @@ class MenuManager extends Settings {
 	/**
 	 * Create the nested list of menu items for a given set
 	 *
-	 * @return Rendered HTML of selection form
+	 * @return array of form sections or the rendered html
 	 */
 	private function reorderList(MenuSet $set)
 	{

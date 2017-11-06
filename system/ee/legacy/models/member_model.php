@@ -1020,11 +1020,7 @@ class Member_model extends CI_Model {
 			$this->db->update('members');
 		}
 
-		// remove the group
-		$this->db->delete('member_groups', array('group_id' => $group_id));
-
-		// remove them from uploads table
-		$this->db->delete('upload_no_access', array('member_group' => $group_id));
+		ee('Model')->get('MemberGroup', $group_id)->first()->delete();
 	}
 
 	/**

@@ -471,12 +471,13 @@ class Set {
 		{
 			$channel = ee('Model')->make('Channel');
 			$channel_title = $channel_data->channel_title;
+			$channel_name = (isset($channel_data->channel_name)) ? $channel_data->channel_name : strtolower(str_replace(' ', '_', $channel_data->channel_title));
 
 			$channel->title_field_label = (isset($channel_data->title_field_label))
 				? $channel_data->title_field_label
 				: lang('title');
 			$channel->site_id = $this->site_id;
-			$channel->channel_name = url_title($channel_data->channel_title, '_', TRUE);
+			$channel->channel_name = $channel_name;
 			$channel->channel_title = $channel_data->channel_title;
 			$channel->channel_lang = 'en';
 
@@ -1002,7 +1003,7 @@ class Set {
 	 *
 	 * @param ChannelFieldModel $field Field instance
 	 * @param Array $field_data The field data that will be set() on the field
-	 * @return Array Modified $field_data
+	 * @return array Modified $field_data
 	 */
 	private function importRelationshipField($field, $field_data)
 	{

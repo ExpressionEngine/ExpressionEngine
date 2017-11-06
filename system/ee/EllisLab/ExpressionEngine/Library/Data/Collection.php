@@ -64,7 +64,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 *
 	 * @param String $method   Method name
 	 * @param Array $arguments List of arguments
-	 * @return Array of esults
+	 * @return array of esults
 	 */
 	public function __call($method, $arguments)
 	{
@@ -126,7 +126,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 * Get a given value for all elements
 	 *
 	 * @param String $key The key to get from each element
-	 * @return Array of values
+	 * @return array of values
 	 */
 	public function pluck($key)
 	{
@@ -142,7 +142,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 * that can take both.
 	 *
 	 * @param Closure|String $collector Property name or callback used to extract
-	 * @return Array Collected values
+	 * @return array Collected values
 	 */
 	public function collect($collector)
 	{
@@ -195,7 +195,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 * the callback for each element
 	 *
 	 * @param Closure|String $collector Property name or callback to extract keys
-	 * @return Array of [Collector keys => Collection elements]
+	 * @return array of [Collector keys => Collection elements]
 	 */
 	public function indexBy($collector)
 	{

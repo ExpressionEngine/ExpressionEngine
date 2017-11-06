@@ -133,11 +133,7 @@ class Forum_tab {
 		{
 			$settings['forum_id']['field_disabled'] = 'y';
 			$settings['forum_body']['field_disabled'] = 'y';
-
-			if ($forum_title == '')
-			{
-				$settings['forum_title']['field_disabled'] = 'y';
-			}
+			$settings['forum_title']['field_disabled'] = 'y';
 		}
 
 		foreach ($settings as $k => $v)
@@ -164,7 +160,7 @@ class Forum_tab {
 			if (empty($value) && ! empty($values['forum_body']))
 			{
 				$rule->stop();
-				return lang('no_forum_title');
+				return lang('forum_no_forum_title');
 			}
 
 			return TRUE;
@@ -174,7 +170,7 @@ class Forum_tab {
 			if (empty($value) && ! empty($values['forum_title']))
 			{
 				$rule->stop();
-				return lang('no_forum_body');
+				return lang('forum_no_forum_body');
 			}
 
 			return TRUE;

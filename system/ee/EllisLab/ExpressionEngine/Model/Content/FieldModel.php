@@ -323,7 +323,7 @@ abstract class FieldModel extends Model {
 	 * Add the default columns if they don't exist
 	 *
 	 * @param Array $columns Column definitions
-	 * @return Array Updated column definitions
+	 * @return array Updated column definitions
 	 */
 	private function ensureDefaultColumns($columns)
 	{

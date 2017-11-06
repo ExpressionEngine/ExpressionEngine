@@ -144,7 +144,7 @@ abstract class Entity extends MixableImpl implements Publisher {
 	 * Access all static metadata, grouped by class name.
 	 *
 	 * @param String $key Metadata name
-	 * @return Array [class => value] for all classes that define the metadata
+	 * @return array [class => value] for all classes that define the metadata
 	 */
 	protected static function getMetaDataByClass($key, $class)
 	{
@@ -204,7 +204,7 @@ abstract class Entity extends MixableImpl implements Publisher {
 	 * Get all known filters of a given type
 	 *
 	 * @param String $type Filter type
-	 * @return Array of callables
+	 * @return array of callables
 	 */
 	protected function getFilters($type)
 	{
@@ -346,7 +346,7 @@ abstract class Entity extends MixableImpl implements Publisher {
 	/**
 	 * Get the list of original values that have changed.
 	 *
-	 * @return Array of old values
+	 * @return array of old values
 	 */
 	public function getOriginal()
 	{

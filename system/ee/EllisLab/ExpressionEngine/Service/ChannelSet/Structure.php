@@ -51,7 +51,7 @@ class Structure {
 	);
 
 	public static $short_names = array(
-		'ee:Channel' => array('channel_name' => 'channel_title'),
+		'ee:Channel' => array('channel_name' => 'channel_name'),
 		'ee:ChannelField' => array('field_name' => 'field_label')
 	);
 
@@ -75,7 +75,7 @@ class Structure {
 	 * weird nested arrays that are hard to process so we do it manually.
 	 *
 	 * @param Model $model The model instance to start from
-	 * @return Array List of relationship names to process next
+	 * @return array List of relationship names to process next
 	 */
 	public static function getValidateRelationships($model)
 	{
