@@ -341,7 +341,7 @@ $lang = array(
 
 'enable_emoticons' => 'Enable emoticons?',
 
-'enable_emoticons_desc' => 'When enabled, text based emoticons will be converted to image based emoticons.',
+'enable_emoticons_desc' => 'When enabled, text based emoticons like <samp>;)</samp> will be converted to emoji &#x1F609;.',
 
 'enable_sql_caching' => 'Cache dynamic channel queries?',
 
