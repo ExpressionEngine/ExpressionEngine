@@ -49,7 +49,7 @@ abstract class ContentModel extends VariableColumnModel {
 	/**
 	 * Optionally return an array of default fields.
 	 *
-	 * @return Array of field definitions
+	 * @return array of field definitions
 	 */
 	protected function getDefaultFields()
 	{
@@ -308,6 +308,18 @@ abstract class ContentModel extends VariableColumnModel {
 				if ($this->hasCustomField($name))
 				{
 					$this->getCustomField($name)->setFormat($value);
+				}
+
+				continue;
+			}
+
+			if (strpos($name, 'field_dt_') !== FALSE)
+			{
+				$name = str_replace('field_dt_', 'field_id_', $name);
+
+				if ($this->hasCustomField($name))
+				{
+					$this->getCustomField($name)->setTimezone($value);
 				}
 
 				continue;

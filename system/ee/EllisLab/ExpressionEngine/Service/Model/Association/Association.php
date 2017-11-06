@@ -319,7 +319,7 @@ class Association {
 	 * datastructure into a plain array.
 	 *
 	 * @param Mixed Model(s)
-	 * @return Array of Models
+	 * @return array of Models
 	 */
 	protected function toModelArray($item)
 	{

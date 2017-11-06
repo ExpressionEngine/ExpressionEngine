@@ -166,7 +166,7 @@ class EntryListing {
 	{
 		$entries = ee('Model')->get('ChannelEntry')
 			->with('Channel', 'Author')
-			->fields('entry_id', 'title', 'Author.screen_name', 'Author.username', 'Channel.channel_title', 'author_id', 'comment_total', 'entry_date', 'status')
+			->fields('entry_id', 'title', 'Author.screen_name', 'Author.username', 'Channel.channel_title', 'Channel.live_look_template', 'Channel.status_group', 'author_id', 'comment_total', 'entry_date', 'status')
 			->filter('site_id', $this->site_id);
 
 		// We need to filter by Channel first (if necissary) as that will

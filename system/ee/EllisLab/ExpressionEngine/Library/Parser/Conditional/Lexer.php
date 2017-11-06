@@ -169,7 +169,7 @@ class Lexer extends AbstractLexer {
 	 * conditional specific tokens.
 	 *
 	 * @param $str The template chunk to look through
-	 * @return Array [new chunk, new variables]
+	 * @return array [new chunk, new variables]
 	 */
 	public function tokenize($str)
 	{

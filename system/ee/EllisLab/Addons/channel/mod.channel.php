@@ -3376,11 +3376,6 @@ class Channel {
 			$sql = "SELECT DISTINCT (c.cat_id), c.group_id, c.cat_name, c.cat_url_title, c.cat_description, c.cat_image, c.parent_id, c.cat_order {$field_sqla}
 					FROM (exp_categories AS c";
 
-			if (ee()->TMPL->fetch_param('show_empty') != 'no' AND count($channel_ids))
-			{
-				$sql .= ", exp_category_posts ";
-			}
-
 			$sql .= ") {$field_sqlb}";
 
 			if (ee()->TMPL->fetch_param('show_empty') == 'no')

@@ -213,11 +213,22 @@ class Set {
 	{
 		if ( ! file_exists($this->path.'/channel_set.json'))
 		{
-			$this->result->addError('Not a valid channel set. Missing channel_set.json file.');
+			$this->result->addError(lang('channel_set_invalid'));
 			return;
 		}
 
 		$data = json_decode(file_get_contents($this->path.'/channel_set.json'));
+
+		// Version check: v3 installs cannot import v4 exports
+		$version = (isset($data->version)) ? $data->version : '3.0.0';
+		$version = explode('.', $version);
+
+		$app_version = explode('.', ee()->config->item('app_version'));
+		if ($app_version[0] == 3 && $version[0] > $app_version[0])
+		{
+			$this->result->addError(sprintf(lang('channel_set_incompatible'), $version[0]));
+			return;
+		}
 
 		try
 		{
@@ -288,12 +299,13 @@ class Set {
 		{
 			$channel = ee('Model')->make('Channel');
 			$channel_title = $channel_data->channel_title;
+			$channel_name = (isset($channel_data->channel_name)) ? $channel_data->channel_name : strtolower(str_replace(' ', '_', $channel_data->channel_title));
 
 			$channel->title_field_label = (isset($channel_data->title_field_label))
 				? $channel_data->title_field_label
 				: lang('title');
 			$channel->site_id = $this->site_id;
-			$channel->channel_name = strtolower(str_replace(' ', '_', $channel_data->channel_title));
+			$channel->channel_name = $channel_name;
 			$channel->channel_title = $channel_data->channel_title;
 			$channel->channel_lang = 'en';
 
@@ -798,7 +810,7 @@ class Set {
 	 *
 	 * @param ChannelFieldModel $field Field instance
 	 * @param Array $field_data The field data that will be set() on the field
-	 * @return Array Modified $field_data
+	 * @return array Modified $field_data
 	 */
 	private function importRelationshipField($field, $field_data)
 	{

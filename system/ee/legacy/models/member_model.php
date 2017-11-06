@@ -1088,11 +1088,19 @@ class Member_model extends CI_Model {
 			$this->db->update('members');
 		}
 
-		// remove the group
-		$this->db->delete('member_groups', array('group_id' => $group_id));
+		$sites = ee('Model')->get('Site')
+			->fields('site_id')
+			->all()
+			->pluck('site_id');
 
-		// remove them from uploads table
-		$this->db->delete('upload_no_access', array('member_group' => $group_id));
+		foreach ($sites as $site_id)
+		{
+			$groups = ee('Model')->get('MemberGroup')
+				->filter('group_id', $group_id)
+				->filter('site_id', $site_id)
+				->all()
+				->delete();
+		}
 	}
 
 	// --------------------------------------------------------------------

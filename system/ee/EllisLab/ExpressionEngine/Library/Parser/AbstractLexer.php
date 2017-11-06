@@ -43,7 +43,7 @@ abstract class AbstractLexer {
 	 * All lexers must implement their own tokenizing method.
 	 *
 	 * @param String $str The string to tokenize
-	 * @return Array of tokens
+	 * @return array of tokens
 	 */
 	abstract public function tokenize($str);
 

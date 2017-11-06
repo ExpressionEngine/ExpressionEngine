@@ -277,6 +277,8 @@ class Select extends Query {
 				$operator = '';
 		}
 
+		$comparison = "{$property} {$operator}";
+
 		if (is_null($value) || (is_string($value) && strtoupper($value) == 'NULL'))
 		{
 			switch ($operator)
@@ -290,12 +292,16 @@ class Select extends Query {
 					break;
 			}
 
-			$query->$fn("{$property} {$operator} NULL", NULL, TRUE, $binary);
+			$comparison = "{$property} {$operator} NULL";
 		}
-		else
+
+		if (in_array($fn, array('where_in', 'or_where_in')))
 		{
-			$query->$fn("{$property} {$operator}", $value, TRUE, $binary);
+			$query->$fn($comparison, $value, $binary);
+			return;
 		}
+
+		$query->$fn($comparison, $value, TRUE, $binary);
 	}
 
 	/**

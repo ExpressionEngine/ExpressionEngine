@@ -69,7 +69,7 @@ $referrer_parts = isset($_SERVER['HTTP_REFERER'])
 	: FALSE;
 
 if ($force_redirect == TRUE
-	OR ( ! $referrer_parts OR $referrer_parts['host'] !== $host))
+	OR ( ! $referrer_parts OR ! stristr($referrer_parts['host'], $host)))
 {
 	// Possibly not from our site, so we give the user the option
 	// Of clicking the link or not

@@ -390,6 +390,10 @@ $lang = array(
 
 'forum_body' => 'Forum Topic Text',
 
+'forum_no_forum_body' => 'You cannot create a forum topic without content.',
+
+'forum_no_forum_title' => 'You must give the forum topic a title.',
+
 'forum_title' => 'Forum Topic Title',
 
 'forum_topic_id' => 'Forum Topic ID',

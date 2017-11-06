@@ -51,7 +51,22 @@ class Textarea_ft extends EE_Fieldtype {
 		{
 			$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))
 				->first();
-			$buttons = $member->getHTMLButtonsForSite(ee()->config->item('site_id'));
+
+			// channel form only uses formatting buttons in the {custom_fields}{/custom_fields}
+			// tag pair which does NOT call this method. This method is still called with {field:my_textarea}, though,
+			// so we do need to at least avoid a fatal error if that tag exists and the form allows guest authors.
+			if ($member)
+			{
+				$buttons = $member->getHTMLButtonsForSite(ee()->config->item('site_id'));
+			}
+			else
+			{
+				$buttons = ee('Model')->get('HTMLButton')
+					->filter('site_id', ee()->config->item('site_id'))
+					->filter('member_id', 0)
+					->order('tag_order')
+					->all();
+			}
 
 			$markItUp = array(
 				'nameSpace' => 'html',

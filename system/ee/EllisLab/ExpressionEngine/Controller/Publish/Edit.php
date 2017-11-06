@@ -227,7 +227,7 @@ class Edit extends AbstractPublishController {
 
 			$toolbar = array();
 
-			$live_look_template = $entry->getChannel()->getLiveLookTemplate();
+			$live_look_template = $entry->Channel->LiveLookTemplate;
 
 			if ($live_look_template)
 			{

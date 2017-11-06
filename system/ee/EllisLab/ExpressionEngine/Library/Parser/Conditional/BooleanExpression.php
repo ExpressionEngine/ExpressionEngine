@@ -139,7 +139,7 @@ class BooleanExpression {
 	 * correctly in the evaluation phase.
 	 *
 	 * @param Array $tokens List of tokens in the expression
-	 * @return Array of tokens in RPN format.
+	 * @return array of tokens in RPN format.
 	 */
 	protected function convertToRPN($tokens)
 	{
