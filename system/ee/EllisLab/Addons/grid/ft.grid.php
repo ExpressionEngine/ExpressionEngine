@@ -58,6 +58,8 @@ class Grid_ft extends EE_Fieldtype {
 
 		ee()->load->helper('custom_field_helper');
 
+		$this->_load_grid_lib();
+
 		return encode_multi_field(ee()->grid_lib->getSearchableData());
 	}
 
