@@ -288,7 +288,7 @@ class EE_Relationship_data_parser {
 		{
 			if (stristr($match[1], LD.'if'))
 			{
-				$match[0] = ee()->functions->full_tag($match[0], $node_tagdata, LD.'if', LD.'\/'."if".RD);
+				$match[0] = ee('Variables/Parser')->getFullTag($node_tagdata, $match[0], LD.'if', LD.'/if'.RD);
 			}
 
 			if ($whole_tag)
