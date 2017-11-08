@@ -58,7 +58,9 @@ class Radio_ft extends OptionFieldtype {
 			}
 		}
 
-		if ( ! $valid)
+		// We can't validate based on the fields original options if they've
+		// changed via AJAX, so skip if filter_url is defined
+		if ( ! $valid && ! $this->get_setting('filter_url', NULL))
 		{
 			return ee()->lang->line('invalid_selection');
 		}
