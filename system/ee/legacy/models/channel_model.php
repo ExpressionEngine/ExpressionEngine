@@ -49,7 +49,7 @@ class Channel_model extends CI_Model {
 		}
 		else
 		{
-			$this->db->select('channel_title, channel_name, channel_id, cat_group, field_group');
+			$this->db->select('channel_title, channel_name, channel_id, cat_group');
 		}
 
 		foreach ($additional_where as $where)
@@ -89,7 +89,6 @@ class Channel_model extends CI_Model {
 		$this->db->select('channel_id, channel_title');
 		$this->db->from('channels');
 		$this->db->where('cat_group', $cat_group);
-		$this->db->where('field_group', $field_group);
 		$this->db->where('site_id', $this->config->item('site_id'));
 		$this->db->order_by('channel_title');
 
