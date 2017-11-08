@@ -506,6 +506,8 @@ class Search {
 		/** ---------------------------------------*/
 
 		$fields = array();
+		$legacy_fields = array();
+		$joins = '';
 
 		// no need to do this unless there are keywords to search
 		if (trim($this->keywords) != '')
@@ -519,14 +521,22 @@ class Search {
     			$custom_fields = array();
     			foreach ($channels as $channel)
     			{
-    				$custom_fields = array_merge($custom_fields, $channel->getAllCustomFields());
+    				$custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
     			}
 
                 foreach ($custom_fields as $field)
                 {
                     if ($field->field_search)
                     {
-                        $fields[] = $field->field_id;
+						if ( ! isset($fields[$field->field_id]))
+						{
+	                        $fields[$field->field_id] = $field->field_id;
+							$legacy_fields[$field->field_id] = $field->legacy_field_data;
+							if ( ! $field->legacy_field_data)
+							{
+								$joins .= "\nLEFT JOIN exp_channel_data_field_{$field->field_id} ON exp_channel_data_field_{$field->field_id}.entry_id = exp_channel_titles.entry_id ";
+							}
+						}
                     }
 
 					$this->fields[$field->field_name] = array($field->field_id, $field->field_search);
@@ -545,6 +555,8 @@ class Search {
 			FROM exp_channel_titles
 			LEFT JOIN exp_channels ON exp_channel_titles.channel_id = exp_channels.channel_id
 			LEFT JOIN exp_channel_data ON exp_channel_titles.entry_id = exp_channel_data.entry_id ";
+
+		$sql .= $joins;
 
 		// is the comment module installed?
 		if (ee()->addons_model->module_installed('comment'))
@@ -760,9 +772,11 @@ class Search {
 				{
 					foreach ($fields as $val)
 					{
+						$table = ($legacy_fields[$val]) ? "exp_channel_data" : "exp_channel_data_field_{$val}";
+
 						if (count($terms) == 1 && isset($this->_meta['where']) && $this->_meta['where'] == 'word')
 						{
-							$sql .= "\nOR ((exp_channel_data.field_id_".$val." LIKE '".$terms_like['0']." %' OR exp_channel_data.field_id_".$val." LIKE '% ".$terms_like['0']." %' OR exp_channel_data.field_id_".$val." LIKE '% ".$terms_like['0']."' OR exp_channel_data.field_id_".$val." = '".$terms['0']."') ";
+							$sql .= "\nOR (({$table}.field_id_".$val." LIKE '".$terms_like['0']." %' OR {$table}.field_id_".$val." LIKE '% ".$terms_like['0']." %' OR {$table}.field_id_".$val." LIKE '% ".$terms_like['0']."' OR {$table}.field_id_".$val." = '".$terms['0']."') ";
 
 							// and close up the member clause
 							if ($member_ids != '')
@@ -782,7 +796,7 @@ class Search {
 							// Since Title is always required in a search we use OR
 							// And then three parentheses just like above in case
 							// there are any NOT LIKE's being used and to allow for a member clause
-							$sql .= "\nOR (((exp_channel_data.field_id_".$val." $mysql_function '%".$search_term."%' ";
+							$sql .= "\nOR ((({$table}.field_id_".$val." $mysql_function '%".$search_term."%' ";
 
 							for ($i=1; $i < count($terms); $i++)
 							{
@@ -790,7 +804,7 @@ class Search {
 								$mysql_function	= (substr($terms[$i], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';
 								$search_term	= (substr($terms[$i], 0,1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
 
-								$sql .= "$mysql_criteria exp_channel_data.field_id_".$val." $mysql_function '%".$search_term."%' ";
+								$sql .= "$mysql_criteria {$table}.field_id_".$val." $mysql_function '%".$search_term."%' ";
 							}
 
 							$sql .= ")) ";
@@ -809,7 +823,7 @@ class Search {
 						else
 						{
 							$search_term = (count($terms) == 1) ? $terms_like[0] : ee()->db->escape_str($this->keywords);
-							$sql .= "\nOR (exp_channel_data.field_id_".$val." LIKE '%".$search_term."%' ";
+							$sql .= "\nOR ({$table}.field_id_".$val." LIKE '%".$search_term."%' ";
 
 							// and close up the member clause
 							if ($member_ids != '')
