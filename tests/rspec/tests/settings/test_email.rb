@@ -7,7 +7,7 @@ feature 'Outgoing Email Settings' do
   let(:natural_number)  { 'This field must contain a number greater than zero.' }
 
   before :each do
-    skip "waiting on es6 solution for Capybara" do
+    skip $react_es6_skip_message do
     end
     cp_session
     @page = EmailSettings.new

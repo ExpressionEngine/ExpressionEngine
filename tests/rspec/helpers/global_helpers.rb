@@ -16,6 +16,8 @@ $unique = 'This field must be unique.'
 $xss_error = 'The data you submitted did not pass our security check.'
 $xss_vector = '"><script>alert(\'stored xss\')<%2fscript>'
 
+$react_es6_skip_message = "Waiting on a React / ES6 solution for Capybara"
+
 # Use this to visit pages no ensure to PHP errors exist on page load
 def go_to(url)
   Capybara.current_session.visit url

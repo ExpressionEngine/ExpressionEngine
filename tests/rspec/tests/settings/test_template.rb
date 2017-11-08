@@ -3,7 +3,7 @@ require './bootstrap.rb'
 feature 'Template Settings' do
 
   before(:each) do
-    skip "waiting on es6 solution for Capybara" do
+    skip $react_es6_skip_message do
     end
     cp_session
     @page = TemplateSettings.new
