@@ -298,7 +298,7 @@ class Groups extends AbstractFieldsController {
 	{
 		$fields = ee('Model')->get('ChannelField')
 			->fields('field_label', 'field_name')
-			->filter('site_id', ee()->config->item('site_id'))
+			->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
 			->order('field_label')
 			->all();
 
@@ -343,9 +343,7 @@ class Groups extends AbstractFieldsController {
 
 		$group_id = ee()->input->post('content_id');
 
-		$field_groups = ee('Model')->get('ChannelFieldGroup', $group_id)
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
+		$field_groups = ee('Model')->get('ChannelFieldGroup', $group_id)->all();
 
 		$group_names = $field_groups->pluck('group_name');
 

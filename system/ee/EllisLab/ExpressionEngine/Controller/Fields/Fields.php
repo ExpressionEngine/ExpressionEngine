@@ -106,7 +106,7 @@ class Fields extends AbstractFieldsController {
 		else
 		{
 			$fields = ee('Model')->get('ChannelField')
-				->filter('site_id', ee()->config->item('site_id'));
+				->filter('site_id', 'IN', [ee()->config->item('site_id'), 0]);
 
 			if ($search = ee()->input->get_post('filter_by_keyword'))
 			{
@@ -299,7 +299,7 @@ class Fields extends AbstractFieldsController {
 			],
 			'form_hidden' => array(
 				'field_id' => NULL,
-				'site_id' => ee()->config->item('site_id')
+				'site_id' => 0
 			),
 		);
 
@@ -417,7 +417,7 @@ class Fields extends AbstractFieldsController {
 			],
 			'form_hidden' => array(
 				'field_id' => $id,
-				'site_id' => ee()->config->item('site_id')
+				'site_id' => 0
 			),
 		);
 
@@ -599,9 +599,7 @@ class Fields extends AbstractFieldsController {
 			$field_ids = array($field_ids);
 		}
 
-		$fields = ee('Model')->get('ChannelField', $field_ids)
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
+		$fields = ee('Model')->get('ChannelField', $field_ids)->all();
 
 		$field_names = $fields->pluck('field_label');
 
