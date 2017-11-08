@@ -344,7 +344,7 @@ class Channel {
 			$this->rfields  = ee()->session->cache['channel']['relationship_fields'];
 			$this->gfields  = ee()->session->cache['channel']['grid_fields'];
 			$this->pfields  = ee()->session->cache['channel']['pair_custom_fields'];
-			$this->ffields = ee()->session->cache['channel']['fluid_field_fields'];
+			$this->ffields  = ee()->session->cache['channel']['fluid_field_fields'];
 			return;
 		}
 
@@ -358,7 +358,7 @@ class Channel {
 		$this->rfields  = $fields['relationship_fields'];
 		$this->gfields  = $fields['grid_fields'];
 		$this->pfields  = $fields['pair_custom_fields'];
-		$this->ffields = $fields['fluid_field_fields'];
+		$this->ffields  = $fields['fluid_field_fields'];
 
 		ee()->session->cache['channel']['custom_channel_fields'] = $this->cfields;
 		ee()->session->cache['channel']['date_fields']           = $this->dfields;
