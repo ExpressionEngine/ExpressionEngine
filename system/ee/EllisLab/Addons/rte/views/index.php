@@ -1,4 +1,4 @@
-<div class="box mb">
+<div class="mb">
 	<?php $this->embed('ee:_shared/form')?>
 </div>
 <div class="box snap table-list-wrap">
