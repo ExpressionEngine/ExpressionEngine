@@ -124,13 +124,7 @@ class Rte_mcp {
 						'title' => 'enable_rte',
 						'desc' => 'enable_rte_desc',
 						'fields' => array(
-							'rte_enabled' => array(
-								'type' => 'inline_radio',
-								'choices' => array(
-									'y' => 'enable',
-									'n' => 'disable'
-								)
-							)
+							'rte_enabled' => array('type' => 'yes_no')
 						)
 					),
 					array(
