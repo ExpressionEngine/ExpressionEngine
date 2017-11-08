@@ -245,6 +245,8 @@ class Create extends Members {
 
 		$this->generateSidebar('all_members');
 
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('members'), lang('member_manager'));
+
 		ee()->cp->add_js_script('file', 'cp/form_group');
 
 		ee()->view->base_url = $this->base_url;

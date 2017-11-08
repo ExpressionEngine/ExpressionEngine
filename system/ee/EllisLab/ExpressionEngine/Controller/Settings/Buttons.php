@@ -177,6 +177,8 @@ class Buttons extends Settings {
 
 		$vars['cp_page_title'] = lang('create_html_button');
 
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('settings/buttons'), lang('html_buttons'));
+
 		$this->form($vars, $values);
 	}
 
@@ -196,6 +198,8 @@ class Buttons extends Settings {
 		);
 
 		$this->button = ee('Model')->get('HTMLButton', $id)->first();
+
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('settings/buttons'), lang('html_buttons'));
 
 		$this->form($vars, $this->button->getValues());
 	}

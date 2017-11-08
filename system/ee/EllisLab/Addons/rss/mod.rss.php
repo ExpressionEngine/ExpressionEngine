@@ -346,7 +346,7 @@ class Rss {
 		{
 			if (stristr($match[1], LD.'if'))
 			{
-				$match[0] = ee()->functions->full_tag($match[0], ee()->TMPL->tagdata, LD.'if', LD.'\/'."if".RD);
+				$match[0] = ee('Variables/Parser')->getFullTag(ee()->TMPL->tagdata, $match[0], LD.'if', LD.'/if'.RD);
 			}
 
 			$empty_feed = substr($match[0], strlen(LD."if empty_feed".RD), -strlen(LD.'/'."if".RD));

@@ -38,7 +38,9 @@ class Fields extends AbstractFieldsController {
 
 		$this->generateSidebar($group_id);
 
-		$vars['create_url'] = ee('CP/URL')->make('fields/create/');
+		$vars['create_url'] = $group_id
+			? ee('CP/URL')->make('fields/create/'.$group_id)
+			: ee('CP/URL')->make('fields/create');
 		$vars['base_url'] = $base_url;
 
 		$data = array();
@@ -104,7 +106,7 @@ class Fields extends AbstractFieldsController {
 		else
 		{
 			$fields = ee('Model')->get('ChannelField')
-				->filter('site_id', ee()->config->item('site_id'));
+				->filter('site_id', 'IN', [ee()->config->item('site_id'), 0]);
 
 			if ($search = ee()->input->get_post('filter_by_keyword'))
 			{
@@ -195,11 +197,16 @@ class Fields extends AbstractFieldsController {
 		ee()->cp->render('fields/index', $vars);
 	}
 
-	public function create()
+	public function create($group_id = NULL)
 	{
 		if ( ! ee()->cp->allowed_group('can_create_channel_fields'))
 		{
 			show_error(lang('unauthorized_access'), 403);
+		}
+
+		if (ee('Request')->post('group_id'))
+		{
+			$group_id = ee('Request')->post('group_id');
 		}
 
 		ee()->view->cp_breadcrumbs = array(
@@ -224,6 +231,16 @@ class Fields extends AbstractFieldsController {
 			if ($result->isValid())
 			{
 				$field->save();
+
+				if ($group_id)
+				{
+					$field_group = ee('Model')->get('ChannelFieldGroup', $group_id)->first();
+					if ($field_group)
+					{
+						$field_group->ChannelFields->getAssociation()->add($field);
+						$field_group->save();
+					}
+				}
 
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
@@ -260,7 +277,9 @@ class Fields extends AbstractFieldsController {
 		$vars = array(
 			'errors' => $errors,
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL')->make('fields/create'),
+			'base_url' => $group_id
+				? ee('CP/URL')->make('fields/create/'.$group_id)
+				: ee('CP/URL')->make('fields/create'),
 			'sections' => $this->form($field),
 			'buttons' => [
 				[
@@ -280,7 +299,7 @@ class Fields extends AbstractFieldsController {
 			],
 			'form_hidden' => array(
 				'field_id' => NULL,
-				'site_id' => ee()->config->item('site_id')
+				'site_id' => 0
 			),
 		);
 
@@ -398,7 +417,7 @@ class Fields extends AbstractFieldsController {
 			],
 			'form_hidden' => array(
 				'field_id' => $id,
-				'site_id' => ee()->config->item('site_id')
+				'site_id' => 0
 			),
 		);
 
@@ -580,9 +599,7 @@ class Fields extends AbstractFieldsController {
 			$field_ids = array($field_ids);
 		}
 
-		$fields = ee('Model')->get('ChannelField', $field_ids)
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
+		$fields = ee('Model')->get('ChannelField', $field_ids)->all();
 
 		$field_names = $fields->pluck('field_label');
 

@@ -224,13 +224,13 @@ $lang = array(
 
 'allow_comments_checked' => 'Allow comments default?',
 
-'allow_comments_checked_desc' => 'When set to <b>yes</b>, the "Allow comments" option will be set to "yes" by default',
+'allow_comments_checked_desc' => 'When enabled, the "Allow comments" option will be set to "yes" by default',
 
-'allow_comments_desc' => 'When set to <b>yes</b>, members can submit comments to this channel\'s entries.',
+'allow_comments_desc' => 'When enabled, members can submit comments to this channel\'s entries.',
 
 'allow_guest_submission' => 'Allow guest submissions?',
 
-'allow_guest_submission_desc' => 'When set to <b>yes</b>, unregistered users will be able to submit forms for this channel.',
+'allow_guest_submission_desc' => 'When enabled, unregistered users will be able to submit forms for this channel.',
 
 'allow_safe_html' => 'Allow only safe HTML',
 
@@ -262,9 +262,9 @@ $lang = array(
 
 'closed' => 'Closed',
 
-'comment_convert_image_urls_desc' => 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s to image resources will be automagically rendered as images in this channel\'s comments.',
+'comment_convert_image_urls_desc' => 'When enabled, <abbr title="Unified Resource Locator">URL</abbr>s to image resources will be automagically rendered as images in this channel\'s comments.',
 
-'comment_convert_urls_emails_to_links_desc' => 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s and Email address will be rendered as links in this channel\'s comments.',
+'comment_convert_urls_emails_to_links_desc' => 'When enabled, <abbr title="Unified Resource Locator">URL</abbr>s and Email address will be rendered as links in this channel\'s comments.',
 
 'comment_expiration' => 'Comment expiration',
 
@@ -282,13 +282,13 @@ $lang = array(
 
 'convert_image_urls' => 'Allow image <abbr title="Unified Resource Locator">URL</abbr>s?',
 
-'convert_image_urls_desc' => 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s to image resources will be automagically rendered as images in this channel\'s entries.',
+'convert_image_urls_desc' => 'When enabled, <abbr title="Unified Resource Locator">URL</abbr>s to image resources will be automagically rendered as images in this channel\'s entries.',
 
 'convert_to_entities' => 'Convert to HTML entities',
 
 'convert_urls_emails_to_links' => 'Render <abbr title="Unified Resource Locator">URL</abbr>s and Email addresses as links?',
 
-'convert_urls_emails_to_links_desc' => 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s and Email address will be rendered as links in this channel\'s entries.',
+'convert_urls_emails_to_links_desc' => 'When enabled, <abbr title="Unified Resource Locator">URL</abbr>s and Email address will be rendered as links in this channel\'s entries.',
 
 'default_category' => 'Category',
 
@@ -304,23 +304,23 @@ $lang = array(
 
 'enable_author_notification' => 'Enable author notification?',
 
-'enable_author_notification_desc' => 'When set to <b>enable</b>, the author of an entry will be notified when someone comments on their entry.',
+'enable_author_notification_desc' => 'When enabled, the author of an entry will be notified when someone comments on their entry.',
 
 'enable_channel_entry_notification' => 'Enable channel entry notification?',
 
-'enable_channel_entry_notification_desc' => 'When set to <b>enable</b>, all recipients listed will receive Email notification when a new entry is published to this channel.</em><br /><em>Separate multiple Emails with a <mark>comma (,)</mark>.',
+'enable_channel_entry_notification_desc' => 'When enabled, all recipients listed will receive Email notification when a new entry is published to this channel.</em><br /><em>Separate multiple Emails with a <mark>comma (,)</mark>.',
 
 'enable_comment_notification' => 'Enable comment notification?',
 
-'enable_comment_notification_desc' => 'When set to <b>enable</b>, all recipients listed will receive Email notification when a new comment is submitted to this channel.</em><br /><em>Separate multiple Emails with a <mark>comma (,)</mark>.',
+'enable_comment_notification_desc' => 'When enabled, all recipients listed will receive Email notification when a new comment is submitted to this channel.</em><br /><em>Separate multiple Emails with a <mark>comma (,)</mark>.',
 
 'enable_versioning' => 'Enable entry versioning?',
 
-'enable_versioning_desc' => 'When set to <b>enable</b>, ExpressinEngine will save revisions of each entry for this channel.',
+'enable_versioning_desc' => 'When enabled, ExpressinEngine will save revisions of each entry for this channel.',
 
 'extra_publish_controls' => 'Show extra publish controls?',
 
-'extra_publish_controls_desc' => 'When set to <b>yes</b>, a second set of publish controls will appear at the top of the publish form for this channel.',
+'extra_publish_controls_desc' => 'When enabled, a second set of publish controls will appear at the top of the publish form for this channel.',
 
 'html_formatting' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> formatting',
 
@@ -340,7 +340,7 @@ $lang = array(
 
 'moderate_comments' => 'Moderate comments?',
 
-'moderate_comments_desc' => 'When set to <b>yes</b>, submitted comments will be put into a moderation queue, and must be approved by a super admin or other member group with moderation permissions.',
+'moderate_comments_desc' => 'When enabled, submitted comments will be put into a moderation queue, and must be approved by a Super Admin or other member group with moderation permissions.',
 
 'no_live_look_template' => 'No template chosen',
 
@@ -352,11 +352,11 @@ $lang = array(
 
 'require_email' => 'Require Email?',
 
-'require_email_desc'=> 'When set to <b>yes</b>, a member must provide a valid Email address to submit comments to this channel\'s entries.',
+'require_email_desc'=> 'When enabled, a member must provide a valid Email address to submit comments to this channel\'s entries.',
 
 'require_membership' => 'Require membership?',
 
-'require_membership_desc' => 'When set to <b>yes</b>, only registered members can submit comments to this channel\'s entries.',
+'require_membership_desc' => 'When enabled, only registered members can submit comments to this channel\'s entries.',
 
 'rss_feed' => '<abbr title="Really Simple Syndication">RSS</abbr> feed',
 
@@ -402,7 +402,7 @@ $lang = array(
 
 'cat_image_none' => 'None <i>&mdash; no image</i>',
 
-'cat_require_field_desc' => 'When set to <b>yes</b>, this field will be required to submit the publish form.',
+'cat_require_field_desc' => 'When enabled, this field will be required to submit the publish form.',
 
 'categories' => 'Categories',
 

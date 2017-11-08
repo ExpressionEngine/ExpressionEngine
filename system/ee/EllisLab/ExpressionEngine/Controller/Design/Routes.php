@@ -180,7 +180,10 @@ class Routes extends AbstractDesignController {
 				'html' => $route_field,
 				'error' => (isset($errors) && $errors->hasErrors("routes[rows][{$id}][route]")) ? implode('<br>', $errors->getErrors("routes[rows][{$id}][route]")) : NULL
 			),
-			$required,
+			array(
+				'html' => $required,
+				'attrs' => ['class' => 'grid-toggle']
+			)
 		);
 		$row['attrs']['class'] = 'setting-field';
 

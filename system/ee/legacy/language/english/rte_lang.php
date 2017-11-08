@@ -70,7 +70,7 @@ $lang = array(
 
 'enable_rte' => 'Enable rich text editor?',
 
-'enable_rte_desc' => 'When set to <b>enable</b>, registered users will be able to use the Rich Text Editor to create new content.',
+'enable_rte_desc' => 'When enabled, registered users will be able to use the Rich Text Editor to create new content.',
 
 'enabled' => 'Enabled',
 

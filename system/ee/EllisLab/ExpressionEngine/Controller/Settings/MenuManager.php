@@ -235,7 +235,7 @@ class MenuManager extends Settings {
 					'desc' => 'menu_items_desc',
 					'button' => array(
 						'text' => 'add_menu_item',
-						'rel' => 'modal-menu-item'
+						'rel' => 'add_new'
 					),
 					'fields' => array(
 						'menu_items' => array(
@@ -323,7 +323,7 @@ class MenuManager extends Settings {
 	 * Show the upper half of the create/edit form for a menu set. This includes
 	 * the name and selected member groups.
 	 *
-	 * @return Array of shared form sections
+	 * @return array of shared form sections
 	 */
 	private function mainForm(MenuSet $set)
 	{
@@ -396,7 +396,7 @@ class MenuManager extends Settings {
 	/**
 	 * Create the nested list of menu items for a given set
 	 *
-	 * @return Rendered HTML of selection form
+	 * @return array of form sections or the rendered html
 	 */
 	private function reorderList(MenuSet $set)
 	{
@@ -416,6 +416,11 @@ class MenuManager extends Settings {
 			'removable'   => TRUE,
 			'editable'    => TRUE,
 			'reorder_ajax_url'    => ee('CP/URL', 'settings/menu-manager/item-reorder')->compile(),
+			'no_results' => [
+				'text' => sprintf(lang('no_found'), lang('menu_items')),
+				'link_text' => 'add_new',
+				'link_href' => '#'
+			]
 		]);
 	}
 

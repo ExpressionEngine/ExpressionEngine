@@ -129,10 +129,6 @@ abstract class AbstractCategories extends CP_Controller {
 			->withLeftButton(
 				lang('new'),
 				ee('CP/URL')->make('categories/groups/create')
-			)->withRightButton(
-				lang('import'),
-				NULL,
-				'import-channel'
 			);
 	}
 }

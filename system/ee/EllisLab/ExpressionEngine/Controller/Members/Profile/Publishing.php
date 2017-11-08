@@ -45,11 +45,7 @@ class Publishing extends Profile {
 					'desc' => 'rte_enabled_desc',
 					'fields' => array(
 						'rte_enabled' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $this->member->rte_enabled
 						)
 					)

@@ -15,7 +15,7 @@ if (isset($field['name']))
 $value = set_value($field_name);
 if ($value == '')
 {
-	$value = isset($field['value']) ? $field['value'] : ee()->config->item($field_name, '', TRUE);
+	$value = array_key_exists('value', $field) ? $field['value'] : ee()->config->item($field_name, '', TRUE);
 }
 // Escape output
 if (is_string($value))
@@ -62,7 +62,10 @@ case 'text': ?>
 	<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
 <?php break;
 case 'short-text': ?>
-	<label class="short-txt"><input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>> <?=lang($field['label'])?></label>
+	<label class="flex-input">
+		<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
+		<span class="label-txt"><?=lang($field['label'])?></span>
+	</label>
 <?php break;
 case 'file': ?>
 	<input type="file" name="<?=$field_name?>"<?=$attrs?>>

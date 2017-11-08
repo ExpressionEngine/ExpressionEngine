@@ -4,7 +4,9 @@
 	<div class="md-wrap">
 		<ul class="list-data">
 			<?php foreach ($items as $item => $value): ?>
-				<li><b><?=lang($item)?></b> <span><?=($value)?:'&mdash;'?></span></li>
+				<li<?php if (end($items) === $value): ?> class="last"<?php endif ?>>
+					<b><?=lang($item)?></b> <span><?=($value)?:'&mdash;'?></span>
+				</li>
 			<?php endforeach; ?>
 		</ul>
 	</div>

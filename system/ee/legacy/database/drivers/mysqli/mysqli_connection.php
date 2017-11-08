@@ -237,7 +237,7 @@ class CI_DB_mysqli_connection {
 		$collation = $this->config['dbcollat'];
 
 		$find = '/(DEFAULT\s+)?(CHARACTER\s+SET\s+|CHARSET\s*=\s*)\w+(\s+COLLATE\s+\w+)?/';
-		$want = "DEFAULT CHARACTER SET {$charset} COLLATE {$collation}";
+		$want = "\\1CHARACTER SET {$charset} COLLATE {$collation}";
 
 		if (preg_match($find, $query))
 		{

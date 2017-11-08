@@ -346,9 +346,7 @@ class Groups extends AbstractCategoriesController {
 						'choices' => $can_edit_categories,
 						'value' => explode('|', rtrim($cat_group->can_edit_categories, '|')),
 						'no_results' => array(
-							'text' => 'cat_group_no_member_groups_found',
-							'link_text' => 'add_new',
-							'link_href' => ee('CP/URL')->make('members/groups')
+							'text' => 'cat_group_no_member_groups_found'
 						)
 					)
 				)
@@ -363,9 +361,7 @@ class Groups extends AbstractCategoriesController {
 						'choices' => $can_delete_categories,
 						'value' => explode('|', rtrim($cat_group->can_edit_categories, '|')),
 						'no_results' => array(
-							'text' => 'cat_group_no_member_groups_found',
-							'link_text' => 'add_new',
-							'link_href' => ee('CP/URL')->make('members/groups')
+							'text' => 'cat_group_no_member_groups_found'
 						)
 					)
 				)

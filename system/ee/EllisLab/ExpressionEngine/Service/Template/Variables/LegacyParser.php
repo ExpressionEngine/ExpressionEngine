@@ -188,7 +188,7 @@ class LegacyParser {
 			}
 			elseif (strpos($val, '{') !== FALSE) // Variable in conditional.  ::sigh::
 			{
-				$full_conditional = substr($this->full_tag($matches[0][$key], $tagdata), 1, -1);
+				$full_conditional = substr($this->getFullTag($tagdata, $matches[0][$key]), 1, -1);
 
 				// We only need the first match here, all others will get caught by our
 				// previous code as they won't start with if.
@@ -320,6 +320,45 @@ class LegacyParser {
 		}
 
 		return $match[1];
+	}
+
+	/**
+	 * Get Full Tag
+	 *
+	 * Useful when tags are nested or split, to make sure you've got the full chunk that you want.
+	 * Example:
+	 *
+	 * 	[quote]This is a BBCode style quote. [quote]What kind of quote is this?[/quote] It's still pretty common online.[/quote]
+	 *
+	 * A simpler regex may have grabbed only to the first closing tag, resulting in a partially matched tag:
+	 *
+	 * 	[quote]This is a BBCode style quote. [quote]What kind of quote is this?[/quote]
+	 *
+	 * This method will start with your partial match, and expand it to make sure that any matching nested tags that were opened inside
+	 * of this one are fully closed, so you are left with the complete outer tag's contents.
+	 *
+	 * @param string $str The source string / template
+	 * @param string $partial_tag The partial tag, that might include a nested tag.
+	 * @param string $opening The opening tag identifier
+	 * @param string $closing The closing tag identifier
+	 * @return string The full tag match
+	 */
+	public function getFullTag($str, $partial_tag, $opening = '{', $closing = '}')
+	{
+		// Warning: preg_match() Compilation failed: regular expression is too large at offset #
+		// This error will occur if someone tries to stick over 30k-ish strings as tag parameters that also happen to include curley brackets.
+		// Instead of preventing the error, we let it take place, so the user will hopefully visit the forums seeking assistance
+		if ( ! preg_match("/".preg_quote($partial_tag, '/')."(.*?)".preg_quote($closing, '/')."/s", $str, $matches))
+		{
+			return $partial_tag;
+		}
+
+		if (isset($matches[1]) && $matches[1] != '' && stristr($matches[1], $opening) !== FALSE)
+		{
+			$matches[0] = $this->getFullTag($str, $matches[0], $opening, $closing);
+		}
+
+		return $matches[0];
 	}
 
 	/**

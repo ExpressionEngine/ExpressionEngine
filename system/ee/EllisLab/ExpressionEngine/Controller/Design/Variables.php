@@ -235,9 +235,11 @@ class Variables extends AbstractDesignController {
 					'site_id' => array(
 						'type' => 'inline_radio',
 						'choices' => array(
-							'0' => 'enable',
-							ee()->config->item('site_id') => 'disable'
-						)
+							'0' => 'all_sites',
+							ee()->config->item('site_id') => ee()->config->item('site_label').' '.lang('only')
+						),
+						'encode' => FALSE,
+						'value' => '0',
 					)
 				)
 			);
@@ -369,10 +371,11 @@ class Variables extends AbstractDesignController {
 					'site_id' => array(
 						'type' => 'inline_radio',
 						'choices' => array(
-							'0' => 'enable',
-							ee()->config->item('site_id') => 'disable'
+							'0' => 'all_sites',
+							ee()->config->item('site_id') => ee()->config->item('site_label').' '.lang('only')
 						),
-						'value' => $variable->site_id
+						'value' => $variable->site_id,
+						'encode' => FALSE,
 					)
 				)
 			);

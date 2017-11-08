@@ -7,6 +7,16 @@
  */
 
 $(document).ready(function () {
+	$('.sidebar .folder-list .remove a.m-link').click(function (e) {
+		var modalIs = '.' + $(this).attr('rel');
+
+		$(modalIs + " .checklist").html(''); // Reset it
+		$(modalIs + " .checklist").append('<li>' + $(this).data('confirm') + '</li>');
+		$(modalIs + " input[name='content_id']").val($(this).data('content_id'));
+
+		e.preventDefault();
+	})
+
 	bindChannelSetImport()
 
 	function bindChannelSetImport() {

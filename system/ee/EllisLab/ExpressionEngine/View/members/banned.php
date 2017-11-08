@@ -1,6 +1,6 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
-<div class="box snap mb table-list-wrap">
+<div class="box snap table-list-wrap">
 	<div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
 		<h1>
@@ -28,9 +28,7 @@
 	</div>
 </div>
 
-<div class="box snap">
-	<?php $this->embed('_shared/form', $form); ?>
-</div>
+<?php $this->embed('_shared/form', $form); ?>
 
 <?php
 

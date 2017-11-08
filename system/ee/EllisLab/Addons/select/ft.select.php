@@ -64,7 +64,7 @@ class Select_ft extends OptionFieldtype {
 			$extra .= ' disabled';
 		}
 
-		if (REQ == 'CP')
+		if (REQ == 'CP' && $this->content_type() !== 'grid')
 		{
 			return ee('View')->make('ee:_shared/form/fields/dropdown')->render([
 				'field_name' => $this->field_name,

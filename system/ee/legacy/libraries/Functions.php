@@ -1579,33 +1579,24 @@ class EE_Functions {
 	/**
 	 * Find the Full Opening Tag
 	 *
-	 * @access	public
-	 * @param	string
-	 * @param	string
-	 * @param	string
-	 * @param	string
-	 * @return	string
+	 * Deprecated in 4.0.0
+	 *
+	 * @see	EllisLab\ExpressionEngine\Service\Template\Variables\LegacyParser::getFullTag()
 	 */
 	public function full_tag($str, $chunk='', $open='', $close='')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('4.0', "ee('Variables/Parser')->getFullTag()");
+
+		// LegacyParser::getFullTag() responsibly preg_quote()s whereas this old method put
+		// the impetus on the developer to send a slash-quoted closing tag.
+		$close = stripslashes($close);
+
 		if ($chunk == '') $chunk = (isset(ee()->TMPL) && is_object(ee()->TMPL)) ? ee()->TMPL->fl_tmpl : '';
 		if ($open == '')  $open  = LD;
 		if ($close == '') $close = RD;
 
-		// Warning: preg_match() Compilation failed: regular expression is too large at offset #
-		// This error will occur if someone tries to stick over 30k-ish strings as tag parameters that also happen to include curley brackets.
-		// Instead of preventing the error, we let it take place, so the user will hopefully visit the forums seeking assistance
-		if ( ! preg_match("/".preg_quote($str, '/')."(.*?)".$close."/s", $chunk, $matches))
-		{
-			return $str;
-		}
-
-		if (isset($matches[1]) && $matches[1] != '' && stristr($matches[1], $open) !== false)
-		{
-			$matches[0] = $this->full_tag($matches[0], $chunk, $open, $close);
-		}
-
-		return $matches[0];
+		return ee('Variables/Parser')->getFullTag($chunk, $str, $open, $close);
 	}
 
 	/**

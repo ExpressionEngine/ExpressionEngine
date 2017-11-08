@@ -43,7 +43,8 @@
             group           : 0,
             maxDepth        : 5,
             threshold       : 20,
-            constrainToRoot	: false
+            constrainToRoot	: false,
+            onDragStart: function(l, e, p) {}
         };
 
     function Plugin(element, options)
@@ -260,7 +261,17 @@
         {
             var mouse    = this.mouse,
                 target   = $(e.target),
-                dragItem = target.closest(this.options.itemNodeName+'.'+this.options.itemClass);
+                dragItem = target.closest(this.options.itemNodeName+'.'+this.options.itemClass),
+                position = {
+                    top  : e.pageY,
+                    left : e.pageX
+                };
+
+            var continueExecution = this.options.onDragStart.call(this, this.el, dragItem, position);
+
+            if (typeof continueExecution !== 'undefined' && continueExecution === false) {
+                return;
+            }
 
             this.placeEl.css('height', dragItem.height());
             this.placeEl.css('box-sizing', 'border-box');

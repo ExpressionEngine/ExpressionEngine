@@ -1105,12 +1105,6 @@ abstract class EE_Fieldtype {
 			}
 		}
 
-		// No Channel fields available
-		if (empty($channels_options))
-		{
-			$channels_options[''] = lang('no_fields');
-		}
-
 		ee()->cache->save('fieldtype/channel-field-list', $channels_options);
 
 		return $channels_options;

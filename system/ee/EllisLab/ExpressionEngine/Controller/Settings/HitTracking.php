@@ -48,7 +48,7 @@ class HitTracking extends Settings {
 					'title' => 'dynamic_tracking_disabling',
 					'desc' => sprintf(
 						lang('dynamic_tracking_disabling_desc'),
-						'https://docs.expressionengine.com/v3/cp/settings/hit-tracking.html#suspend-threshold'
+						'https://docs.expressionengine.com/v4/cp/settings/hit-tracking.html#suspend-threshold'
 					),
 					'fields' => array(
 						'dynamic_tracking_disabling' => array('type' => 'text')

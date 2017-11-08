@@ -4,7 +4,7 @@
 	<div class="col-group">
 		<div class="col w-16 last">
 			<header class="section-header">
-				<?php if (isset($header['toolbar_items'])): ?>
+				<?php if (isset($header['toolbar_items']) && $header['toolbar_items']): ?>
 					<div class="section-header__options">
 						<?php foreach ($header['toolbar_items'] as $name => $item): ?>
 							<a class="icon--<?=$name?>" href="<?=$item['href']?>" title="<?=$item['title']?>"></a>
@@ -42,16 +42,11 @@
 	</div>
 <?php endif ?>
 
-<div class="col-group">
+<div class="col-group align-right">
 	<?php if (isset($left_nav)): ?>
-		<div class="col w-4">
-			<?=$left_nav?>
-		</div>
-	<?php endif; ?>
-	<?php if (isset($left_nav)): ?>
-		<div class="col w-12 last">
+		<div class="col w-12">
 	<?php else: ?>
-		<div class="col w-16 last">
+		<div class="col w-16">
 	<?php endif; ?>
 		<?php if (count($cp_breadcrumbs)): ?>
 			<ul class="breadcrumb">
@@ -68,7 +63,12 @@
 		<?php if ($this->enabled('outer_box')) :?>
 			</div>
 		<?php endif ?>
-	</div>
+		</div>
+	<?php if (isset($left_nav)): ?>
+		<div class="col w-4">
+			<?=$left_nav?>
+		</div>
+	<?php endif; ?>
 </div>
 
 <?php if (isset($blocks['modals'])) echo $blocks['modals']; ?>

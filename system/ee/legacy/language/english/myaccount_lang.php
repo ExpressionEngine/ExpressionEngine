@@ -200,7 +200,7 @@ $lang = array(
 
 'include_in_author_list' => 'Include in author list?',
 
-'include_in_author_list_desc' => 'When set to <b>yes</b>, this user will appear in the author listing for channel entries.',
+'include_in_author_list_desc' => 'When enabled, this user will appear in the author listing for channel entries.',
 
 'include_seconds' => 'Show seconds?',
 
@@ -421,7 +421,7 @@ $lang = array(
 
 'rte_enabled' => 'Enable Rich Text Editor?',
 
-'rte_enabled_desc' => 'When set to <b>enable</b>, the below chosen RTE will appear in publishing forms for this user.',
+'rte_enabled_desc' => 'When enabled, the below chosen RTE will appear in publishing forms for this user.',
 
 'rte_settings' => 'RTE Settings',
 
@@ -463,7 +463,7 @@ $lang = array(
 
 'smart_notifications' => 'Enable smart notifications',
 
-'smart_notifications_desc' => 'When set to <b>enable</b>, smart notifications will be possible.',
+'smart_notifications_desc' => 'When enabled, smart notifications will be possible.',
 
 'subscriptions' => 'Current Subscriptions',
 

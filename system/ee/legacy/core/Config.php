@@ -363,6 +363,11 @@ class EE_Config {
 		$config['output_charset'] = strtolower($this->item('charset'));
 
 		// translate more portable newline character representation into the real things
+		if ( ! array_key_exists('email_newline', $config))
+		{
+			$config['email_newline'] = '\n';
+		}
+
 		$config['email_newline_form_safe'] = $config['email_newline'];
 		$config['email_newline'] = $this->setEmailNewline($config['email_newline']);
 

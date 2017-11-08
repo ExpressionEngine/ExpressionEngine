@@ -9546,7 +9546,7 @@ class Forum_Core extends Forum {
 					// Match the entirety of the quote block
 					if (stristr($match['1'], '[quote'))
 					{
-						$match['0'] = ee()->functions->full_tag($match['0'], $snippet, '[quote', '\[\/quote\]');
+						$match[0] = ee('Variables/Parser')->getFullTag($snippet, $match[0], '[quote', '[/quote]');
 					}
 
 					$snippet = str_replace($match['0'], '', $snippet);
@@ -9896,7 +9896,7 @@ class Forum_Core extends Forum {
 				// Match the entirety of the quote block
 				if (stristr($match['1'], '[quote'))
 				{
-					$match['0'] = ee()->functions->full_tag($match['0'], $snippet, '[quote', '\[\/quote\]');
+					$match[0] = ee('Variables/Parser')->getFullTag($snippet, $match[0], '[quote', '[/quote]');
 				}
 
 				$snippet = str_replace($match['0'], '', $snippet);

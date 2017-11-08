@@ -150,13 +150,7 @@ class Email extends Settings {
 					'title' => 'word_wrap',
 					'desc' => 'word_wrap_desc',
 					'fields' => array(
-						'word_wrap' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							)
-						)
+						'word_wrap' => array('type' => 'yes_no')
 					)
 				),
 			)

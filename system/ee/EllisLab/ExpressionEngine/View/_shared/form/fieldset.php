@@ -35,7 +35,7 @@ foreach ($setting['fields'] as $field_name => $field)
 }
 if (isset($setting['security']) && $setting['security'] == TRUE)
 {
-	$fieldset_classes .= ' fieldset-security-enhance';
+	$fieldset_classes .= ' fieldset-security-enhanced';
 }
 if (isset($setting['caution']) && $setting['caution'] == TRUE)
 {
@@ -127,7 +127,10 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 					$vars['field']['margin_top'] = TRUE;
 				}
 
-				$count++;
+				if ($field['type'] != 'hidden')
+				{
+					$count++;
+				}
 
 				$this->embed('ee:_shared/form/field', $vars);
 			}

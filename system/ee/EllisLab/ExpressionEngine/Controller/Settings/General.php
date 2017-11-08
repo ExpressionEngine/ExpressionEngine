@@ -57,11 +57,7 @@ class General extends Settings {
 					'desc' => 'site_online_desc',
 					'fields' => array(
 						'is_system_on' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'online',
-								'n' => 'offline'
-							)
+							'type' => 'yes_no',
 						)
 					)
 				),

@@ -1469,7 +1469,7 @@ GRID_FALLBACK;
 				$url_title = ($this->_meta['url_title']) ?: ee('Format')->make('Text', $title)->urlSlug();
 
 				// Max URL title length, minus uniqid length, minus separator
-				$url_title = substr($url_title, 0, 200-23-1);
+				$url_title = substr($url_title, 0, URL_TITLE_MAX_LENGTH-23-1);
 
 				$separator = (ee()->config->item('word_separator') == 'dash') ? '-' : '_';
 

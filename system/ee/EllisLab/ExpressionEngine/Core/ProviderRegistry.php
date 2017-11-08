@@ -74,7 +74,7 @@ class ProviderRegistry {
 	/**
 	 * Get all providers
 	 *
-	 * @return Array [prefix => Provider]
+	 * @return array [prefix => Provider]
 	 */
 	public function all()
 	{

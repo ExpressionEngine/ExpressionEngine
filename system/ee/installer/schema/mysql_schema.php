@@ -596,7 +596,7 @@ class EE_Schema {
 			live_look_template int(10) UNSIGNED NOT NULL default 0,
 			max_entries int(10) unsigned NOT NULL DEFAULT '0',
 			PRIMARY KEY `channel_id` (`channel_id`),
-			KEY `cat_group` (`cat_group`),
+			KEY `cat_group` (`cat_group`(191)),
 			KEY `channel_name` (`channel_name`),
 			KEY `site_id` (`site_id`)
 		)";
@@ -653,7 +653,7 @@ class EE_Schema {
 			forum_topic_id int(10) unsigned NULL DEFAULT NULL,
 			ip_address varchar(45) default '0' NOT NULL,
 			title varchar(100) NOT NULL,
-			url_title varchar(75) NOT NULL,
+			url_title varchar(".URL_TITLE_MAX_LENGTH.") NOT NULL,
 			status varchar(50) NOT NULL,
 			versioning_enabled char(1) NOT NULL default 'n',
 			view_count_one int(10) unsigned NOT NULL default 0,

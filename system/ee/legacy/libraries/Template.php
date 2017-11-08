@@ -105,6 +105,8 @@ class EE_Template {
 	private $user_vars            = array();
 	private $globals_regex;
 
+	protected $modified_vars      = FALSE;
+
 	/**
 	 * Constructor
 	 *
@@ -857,7 +859,7 @@ class EE_Template {
 
 		$this->depth++;
 
-		$layout[0] = ee()->functions->full_tag($layout[0], $template);
+		$layout[0] = ee('Variables/Parser')->getFullTag($template, $layout[0]);
 		$layout[2] = substr(str_replace($layout[1], '', $layout[0]), 0, -1);
 
 		$parts = preg_split("/\s+/", $layout[2], 2);
@@ -887,7 +889,7 @@ class EE_Template {
 		// As long as we have opening tags we need to continue looking
 		while ($pos !== FALSE)
 		{
-			$tag = ee()->functions->full_tag(substr($template, $pos, $open_tag_len), $template);
+			$tag = ee('Variables/Parser')->getFullTag($template, substr($template, $pos, $open_tag_len));
 			$params = ee('Variables/Parser')->parseTagParameters(substr($tag, $open_tag_len));
 
 			if ($params['name'] == 'contents')
@@ -1024,7 +1026,7 @@ class EE_Template {
 		{
 			if (strpos($val, LD) !== FALSE)
 			{
-				$matches[0][$key] = ee()->functions->full_tag($matches[0][$key], $temp);
+				$matches[0][$key] = ee('Variables/Parser')->getFullTag($temp, $matches[0][$key]);
 				$matches[2][$key] = substr(str_replace($matches[1][$key], '', $matches[0][$key]), 0, -1);
 				$temp = str_replace($matches[0][$key], '', $temp);
 			}
@@ -1233,7 +1235,7 @@ class EE_Template {
 				// {exp:channel:entries channel="{master_channel_name}"}
 				if (stristr(substr($matches[0], 1), LD) !== FALSE)
 				{
-					$matches[0] = ee()->functions->full_tag($matches[0]);
+					$matches[0] = ee('Variables/Parser')->getFullTag($this->fl_tmpl, $matches[0]);
 				}
 
 				$raw_tag = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $matches[0]);
@@ -1328,7 +1330,7 @@ class EE_Template {
 
 						if (stristr($match[1], LD.'if'))
 						{
-							$match[0] = ee()->functions->full_tag($match[0], $block_temp, LD.'if', LD.'\/'."if".RD);
+							$match[0] = ee('Variables/Parser')->getFullTag($block_temp, $match[0], LD.'if', LD.'/if'.RD);
 						}
 
 						$no_results = substr($match[0], strlen(LD."if no_results".RD), -strlen(LD.'/'."if".RD));
@@ -3562,7 +3564,7 @@ class EE_Template {
 		}
 
 		// Reset and Match date variables
-		$this->date_vars = array();
+		$this->date_vars = FALSE;
 		$this->_match_date_vars($tagdata);
 
 		// Unfound Variables that We Need Not Parse - Reset
@@ -3591,14 +3593,7 @@ class EE_Template {
 		$count = 0;
 		$total_results = count($variables);
 
-		$this->modified_vars = [];
-		foreach ($this->var_single as $variable)
-		{
-			if (strpos($variable, ':') !== FALSE)
-			{
-				$this->modified_vars[$variable] = ee('Variables/Parser')->parseVariableProperties($variable);
-			}
-		}
+		$this->modified_vars = $this->getModifiedVariables();
 
 		while (($row = array_shift($variables)) !== NULL)
 		{
@@ -3663,6 +3658,12 @@ class EE_Template {
 		if (empty($this->date_vars) && $this->date_vars !== FALSE)
 		{
 			$this->_match_date_vars($tagdata);
+		}
+
+		// same with modified, sometimes devs run this method themselves instead of a full parse_variables()
+		if ($this->modified_vars === FALSE)
+		{
+			$this->modified_vars = $this->getModifiedVariables();
 		}
 
 		$this->conditional_vars = $variables;
@@ -4013,6 +4014,19 @@ class EE_Template {
 				$this->date_vars = array_unique($this->date_vars);
 			}
 		}
+	}
+
+	private function getModifiedVariables()
+	{
+		$modified_vars = [];
+		foreach ($this->var_single as $variable)
+		{
+			if (strpos($variable, ':') !== FALSE)
+			{
+				$modified_vars[$variable] = ee('Variables/Parser')->parseVariableProperties($variable);
+			}
+		}
+		return $modified_vars;
 	}
 
 	/**

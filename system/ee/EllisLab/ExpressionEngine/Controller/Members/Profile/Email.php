@@ -66,11 +66,7 @@ class Email extends Settings {
 					'desc' => 'smart_notifications_desc',
 					'fields' => array(
 						'smart_notifications' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $this->member->smart_notifications
 						)
 					)
