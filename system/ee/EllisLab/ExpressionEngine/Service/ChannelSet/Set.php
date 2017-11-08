@@ -331,7 +331,7 @@ class Set {
 			$field_ids = array();
 			foreach ($fields as $field_name)
 			{
-				$field = $this->fields[$field_name];
+				$field = $this->getFieldByName($field_name);
 				$field_ids[] = $field->getId();
 			}
 
@@ -434,6 +434,16 @@ class Set {
 				$model->$field = $value;
 			}
 		}
+	}
+
+	private function getFieldByName($field_name)
+	{
+		if (isset($this->aliases['ee:ChannelField'][$field_name]['field_name']))
+		{
+			$field_name = $this->aliases['ee:ChannelField'][$field_name]['field_name'];
+		}
+
+		return $this->fields[$field_name];
 	}
 
 	/**
@@ -776,7 +786,7 @@ class Set {
 
 		$this->applyOverrides($group, $group_name);
 
-		$this->field_groups[$group_name] = $group;
+		$this->field_groups[$group->group_name] = $group;
 		return $group;
 	}
 

@@ -344,7 +344,7 @@ class Channel {
 			$this->rfields  = ee()->session->cache['channel']['relationship_fields'];
 			$this->gfields  = ee()->session->cache['channel']['grid_fields'];
 			$this->pfields  = ee()->session->cache['channel']['pair_custom_fields'];
-			$this->ffields = ee()->session->cache['channel']['fluid_field_fields'];
+			$this->ffields  = ee()->session->cache['channel']['fluid_field_fields'];
 			return;
 		}
 
@@ -358,7 +358,7 @@ class Channel {
 		$this->rfields  = $fields['relationship_fields'];
 		$this->gfields  = $fields['grid_fields'];
 		$this->pfields  = $fields['pair_custom_fields'];
-		$this->ffields = $fields['fluid_field_fields'];
+		$this->ffields  = $fields['fluid_field_fields'];
 
 		ee()->session->cache['channel']['custom_channel_fields'] = $this->cfields;
 		ee()->session->cache['channel']['date_fields']           = $this->dfields;
@@ -595,7 +595,7 @@ class Channel {
 	 *
 	 * 	search:field="not IS_EMPTY|words"
 	 */
-	private function _generate_field_search_sql($search_fields, $site_ids)
+	private function _generate_field_search_sql($search_fields, $legacy_fields, $site_ids)
 	{
 		$sql = '';
 
@@ -638,7 +638,9 @@ class Channel {
 					continue;
 				}
 
-				$table = "exp_channel_data_field_{$this->cfields[$site_id][$field_name]}";
+				$field_id = $this->cfields[$site_id][$field_name];
+
+				$table = (isset($legacy_fields[$field_id])) ? "wd" : "exp_channel_data_field_{$field_id}";
 
 				$search_column_name = $table . '.field_id_'.$this->cfields[$site_id][$field_name];
 
@@ -1910,6 +1912,7 @@ class Channel {
 		if ( ! empty(ee()->TMPL->search_fields))
 		{
 			$joins = '';
+			$legacy_fields = array();
 			foreach (array_keys(ee()->TMPL->search_fields) as $field_name)
 			{
 				$sites = (ee()->TMPL->site_ids ? ee()->TMPL->site_ids : array(ee()->config->item('site_id')));
@@ -1918,7 +1921,17 @@ class Channel {
 					if (isset($this->cfields[$site_id][$field_name]))
 					{
 						$field_id = $this->cfields[$site_id][$field_name];
-						$joins .= "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
+						$field = ee('Model')->get('ChannelField', $field_id)
+							->fields('legacy_field_data')
+							->first();
+						if ( ! $field->legacy_field_data)
+						{
+							$joins .= "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
+						}
+						else
+						{
+							$legacy_fields[$field_id] = $field_name;
+						}
 					}
 				}
 			}
@@ -1928,7 +1941,7 @@ class Channel {
 				$sql = str_replace('WHERE ', $joins . 'WHERE ', $sql);
 			}
 
-			$sql .= $this->_generate_field_search_sql(ee()->TMPL->search_fields, ee()->TMPL->site_ids);
+			$sql .= $this->_generate_field_search_sql(ee()->TMPL->search_fields, $legacy_fields, ee()->TMPL->site_ids);
 		}
 
 		/**----------
