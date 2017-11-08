@@ -79,33 +79,36 @@ class Communicate extends Utilities {
 		}
 
 		// Set up member group emailing options
-		if ( ! ee()->cp->allowed_group('can_email_member_groups'))
-		{
-			$vars['member_groups'] = FALSE;
-		}
-		else
+		if (ee()->cp->allowed_group('can_email_member_groups'))
 		{
 			$groups = ee('Model')->get('MemberGroup')
 				->filter('site_id', ee()->config->item('site_id'))
 				->all();
 
+			$member_groups = [];
+			$checked_groups = [];
+			$disabled_groups = [];
 			foreach ($groups as $group)
 			{
 				$checked = (ee()->input->post('group_'.$group->group_id) !== FALSE OR in_array($group->group_id, $member_groups));
-				$group_title = htmlentities($group->group_title, ENT_QUOTES, 'UTF-8');
 
-				$vars['member_groups'][$group_title]['attrs'] = array('name' => 'group_'.$group->group_id, 'value' => $group->group_id, 'checked' => $checked);
-				$vars['member_groups'][$group_title]['members'] = ee('Model')->get('Member')
-					->filter('group_id', $group->group_id)
-					->count();
-				if ($vars['member_groups'][$group_title]['members'] == 0)
+				$member_groups['group_'.$group->group_id] = $group->group_title;
+
+				if (ee()->input->post('group_'.$group->group_id) !== FALSE OR in_array($group->group_id, $member_groups))
 				{
-					$vars['member_groups'][$group_title]['attrs']['disabled'] = 'disabled';
+					$checked_groups[] = 'group_'.$group->group_id;
+				}
+
+				if (ee('Model')->get('Member')
+					->filter('group_id', $group->group_id)
+					->count() == 0)
+				{
+					$disabled_groups[] = 'group_'.$group->group_id;
 				}
 			}
 		}
 
-		ee()->view->cp_page_title = lang('communicate');
+		$vars['cp_page_title'] = lang('communicate');
 
 		if ($default['mailtype'] != 'html')
 		{
@@ -123,7 +126,115 @@ class Communicate extends Utilities {
 			}
 		');
 
-		ee()->cp->render('utilities/communicate/index', $vars + $default);
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'email_subject',
+					'fields' => array(
+						'subject' => array(
+							'type' => 'text',
+							'required' => TRUE,
+							'value' => $default['subject']
+						)
+					)
+				),
+				array(
+					'title' => 'email_body',
+					'fields' => array(
+						'message' => array(
+							'type' => 'html',
+							'content' => ee('View')->make('utilities/communicate/body-field')
+								->render($default + $vars),
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'plaintext_body',
+					'desc' => 'plaintext_alt',
+					'fields' => array(
+						'plaintext_alt' => array(
+							'type' => 'textarea',
+							'value' => $default['plaintext_alt'],
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'your_email',
+					'fields' => array(
+						'from' => array(
+							'type' => 'text',
+							'value' => $default['from'],
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'attachment',
+					'desc' => 'attachment_desc',
+					'fields' => array(
+						'attachment' => array(
+							'type' => 'file'
+						)
+					)
+				)
+			),
+			'recipient_options' => array(
+				array(
+					'title' => 'primary_recipients',
+					'desc' => 'primary_recipients_desc',
+					'fields' => array(
+						'recipient' => array(
+							'type' => 'text',
+							'value' => $default['recipient']
+						)
+					)
+				),
+				array(
+					'title' => 'cc_recipients',
+					'desc' => 'cc_recipients_desc',
+					'fields' => array(
+						'cc' => array(
+							'type' => 'text',
+							'value' => $default['cc']
+						)
+					)
+				),
+				array(
+					'title' => 'bcc_recipients',
+					'desc' => 'bcc_recipients_desc',
+					'fields' => array(
+						'bcc' => array(
+							'type' => 'text',
+							'value' => $default['bcc']
+						)
+					)
+				)
+			)
+		);
+
+		if (ee()->cp->allowed_group('can_email_member_groups'))
+		{
+			$vars['sections']['recipient_options'][] = array(
+				'title' => 'add_member_groups',
+				'desc' => 'add_member_groups_desc',
+				'fields' => array(
+					'bcc' => array(
+						'type' => 'checkbox',
+						'choices' => $member_groups,
+						'disabled_choices' => $disabled_groups,
+						'value' => $checked_groups
+					)
+				)
+			);
+		}
+
+		$vars['base_url'] = ee('CP/URL')->make('utilities/communicate/send');
+		$vars['save_btn_text'] = 'btn_send_email';
+		$vars['save_btn_text_working'] = 'btn_send_email_working';
+
+		return ee()->cp->render('settings/form', $vars);
 	}
 
 	/**
