@@ -21,7 +21,7 @@
 			<?php if (isset($action_button)):
 				$rel = isset($action_button['rel']) ? $action_button['rel'] : ''; ?>
 				<a class="btn action" href="<?=$action_button['href']?>" rel="<?=$rel?>"><?=lang($action_button['text'])?></a>
-			<?php else: ?>
+			<?php elseif (isset($hide_top_buttons) && ! $hide_top_buttons): ?>
 				<?php $this->embed('ee:_shared/form/buttons'); ?>
 			<?php endif ?>
 		</div>
