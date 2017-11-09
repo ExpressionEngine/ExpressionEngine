@@ -14,10 +14,6 @@
 		<p><?=lang('import_password_warning')?></p>
 	</div>
 
-	<div class="form-btns form-btns-top">
-		<?=cp_form_submit('btn_assign_fields', 'btn_saving')?>
-	</div>
-
 	<?php
 	$i = 0;
 	foreach ($fields[0] as $field): ?>

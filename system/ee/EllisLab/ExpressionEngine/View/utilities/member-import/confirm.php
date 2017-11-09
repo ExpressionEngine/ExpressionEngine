@@ -1,8 +1,8 @@
 <?php $this->extend('_templates/default-nav'); ?>
 
+<h1><?=$cp_page_title?></h1>
 <div class="tbl-ctrls">
 	<?=form_open(ee('CP/URL')->make('utilities/member-import/process-xml'), '', $form_hidden)?>
-		<h1><?=$cp_page_title?></h1>
 		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php if ($added_fields && count($added_fields) > 0):?>
 			<div class="alert inline success">
@@ -12,9 +12,6 @@
 		<?php endif;?>
 		<div class="alert inline warn">
 			<?=lang(lang('confirm_import_warning'))?>
-		</div>
-		<div class="form-btns form-btns-top">
-			<?=cp_form_submit('confirm_import', 'btn_confirm_import_working')?>
 		</div>
 		<table cellspacing="0">
 			<thead>
