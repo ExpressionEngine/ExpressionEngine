@@ -13,6 +13,11 @@
 	<div class="alert inline warn">
 		<p><?=lang('import_password_warning')?></p>
 	</div>
+
+	<div class="form-btns form-btns-top">
+		<?=cp_form_submit('btn_assign_fields', 'btn_saving')?>
+	</div>
+
 	<?php
 	$i = 0;
 	foreach ($fields[0] as $field): ?>
@@ -35,7 +40,7 @@
 			<label class="choice no"><input type="radio" name="encrypt" value="n" <?=set_radio('encrypt', 'n')?>> <?=lang('no')?></label>
 		</div>
 	</fieldset>
-	<fieldset class="form-ctrls">
+	<div class="form-btns">
 		<?=cp_form_submit('btn_assign_fields', 'btn_saving')?>
-	</fieldset>
+	</div>
 </form>

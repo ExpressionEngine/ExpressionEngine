@@ -10,6 +10,9 @@
 				<p><?=lang('encrypted_passwords')?></p>
 			<?php endif ?>
 		</div>
+		<div class="form-btns form-btns-top">
+			<?=cp_form_submit('btn_assign_fields', 'btn_saving')?>
+		</div>
 		<table cellspacing="0">
 			<thead>
 				<tr>
@@ -27,8 +30,8 @@
 			</tbody>
 		</table>
 
-		<fieldset class="form-ctrls">
-			<?=cp_form_submit('btn_create_file', 'btn_create_file_working')?>
-		</fieldset>
+		<div class="form-btns">
+			<?=cp_form_submit('btn_assign_fields', 'btn_saving')?>
+		</div>
 	</form>
 </div>
