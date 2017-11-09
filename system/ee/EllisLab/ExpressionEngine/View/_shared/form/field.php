@@ -127,7 +127,8 @@ case 'dropdown': ?>
 		'limit' => isset($field['limit']) ? $field['limit'] : 100,
 		'no_results' => isset($field['no_results']) ? $field['no_results'] : NULL,
 		'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : NULL,
-		'empty_text' => isset($field['empty_text']) ? lang($field['empty_text']) : lang('choose_wisely')
+		'empty_text' => isset($field['empty_text']) ? lang($field['empty_text']) : lang('choose_wisely'),
+		'class' => $class,
 	]); ?>
 <?php break;
 
