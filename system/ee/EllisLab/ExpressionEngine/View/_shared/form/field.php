@@ -58,8 +58,16 @@ $mr_class = ( ! isset($mr) OR (isset($mr) && $mr)) ? 'mr' : '';
 	<div class="setting-note">
 <?php endif ?>
 <?php switch ($field['type']):
-case 'text': ?>
-	<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?> class="<?=$class?>">
+case 'text':
+	if ($class): ?>
+		<div class="<?=$class?>">
+	<?php endif ?>
+
+			<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
+
+	<?php if ($margin_top OR $margin_left): ?>
+		</div>
+	<?php endif ?>
 <?php break;
 case 'short-text': ?>
 	<label class="flex-input">
@@ -134,10 +142,18 @@ case 'toggle': ?>
 	]); ?>
 <?php break;
 
-case 'textarea': ?>
-	<textarea name="<?=$field_name?>" cols="" rows=""<?=$attrs?> class="<?=$class?>">
-<?=(isset($field['kill_pipes']) && $field['kill_pipes'] === TRUE) ? str_replace('|', NL, $value) : $value?>
-</textarea>
+case 'textarea':
+	if ($class): ?>
+		<div class="<?=$class?>">
+	<?php endif ?>
+
+			<textarea name="<?=$field_name?>" cols="" rows=""<?=$attrs?>>
+				<?=(isset($field['kill_pipes']) && $field['kill_pipes'] === TRUE) ? str_replace('|', NL, $value) : $value?>
+			</textarea>
+
+	<?php if ($margin_top OR $margin_left): ?>
+		</div>
+	<?php endif ?>
 <?php break;
 
 case 'multiselect': ?>
