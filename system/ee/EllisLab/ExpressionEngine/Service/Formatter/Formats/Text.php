@@ -241,6 +241,12 @@ class Text extends Formatter {
 		static $emoji_map;
 		static $shorthand_regex;
 
+		// save some cycles if we know we can't possibly find a match
+		if (substr_count($this->content, ':') < 2)
+		{
+			return $this;
+		}
+
 		// setup our regex and our map just once, pretty intensive
 		if (empty($shorthand_regex))
 		{
@@ -255,12 +261,6 @@ class Text extends Formatter {
 			);
 
 			$shorthand_regex = '/:('.implode('|', $short_names).'):/';
-		}
-
-		// save some cycles if we know we can't possibly find a match
-		if (substr_count($this->content, ':') < 2)
-		{
-			return $this;
 		}
 
 		// grab 'em!
