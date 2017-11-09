@@ -344,7 +344,7 @@ class Channel {
 			$this->rfields  = ee()->session->cache['channel']['relationship_fields'];
 			$this->gfields  = ee()->session->cache['channel']['grid_fields'];
 			$this->pfields  = ee()->session->cache['channel']['pair_custom_fields'];
-			$this->ffields = ee()->session->cache['channel']['fluid_field_fields'];
+			$this->ffields  = ee()->session->cache['channel']['fluid_field_fields'];
 			return;
 		}
 
@@ -358,7 +358,7 @@ class Channel {
 		$this->rfields  = $fields['relationship_fields'];
 		$this->gfields  = $fields['grid_fields'];
 		$this->pfields  = $fields['pair_custom_fields'];
-		$this->ffields = $fields['fluid_field_fields'];
+		$this->ffields  = $fields['fluid_field_fields'];
 
 		ee()->session->cache['channel']['custom_channel_fields'] = $this->cfields;
 		ee()->session->cache['channel']['date_fields']           = $this->dfields;
@@ -595,7 +595,7 @@ class Channel {
 	 *
 	 * 	search:field="not IS_EMPTY|words"
 	 */
-	private function _generate_field_search_sql($search_fields, $site_ids)
+	private function _generate_field_search_sql($search_fields, $legacy_fields, $site_ids)
 	{
 		$sql = '';
 
@@ -638,7 +638,9 @@ class Channel {
 					continue;
 				}
 
-				$table = "exp_channel_data_field_{$this->cfields[$site_id][$field_name]}";
+				$field_id = $this->cfields[$site_id][$field_name];
+
+				$table = (isset($legacy_fields[$field_id])) ? "wd" : "exp_channel_data_field_{$field_id}";
 
 				$search_column_name = $table . '.field_id_'.$this->cfields[$site_id][$field_name];
 
@@ -1910,6 +1912,7 @@ class Channel {
 		if ( ! empty(ee()->TMPL->search_fields))
 		{
 			$joins = '';
+			$legacy_fields = array();
 			foreach (array_keys(ee()->TMPL->search_fields) as $field_name)
 			{
 				$sites = (ee()->TMPL->site_ids ? ee()->TMPL->site_ids : array(ee()->config->item('site_id')));
@@ -1918,7 +1921,17 @@ class Channel {
 					if (isset($this->cfields[$site_id][$field_name]))
 					{
 						$field_id = $this->cfields[$site_id][$field_name];
-						$joins .= "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
+						$field = ee('Model')->get('ChannelField', $field_id)
+							->fields('legacy_field_data')
+							->first();
+						if ( ! $field->legacy_field_data)
+						{
+							$joins .= "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
+						}
+						else
+						{
+							$legacy_fields[$field_id] = $field_name;
+						}
 					}
 				}
 			}
@@ -1928,7 +1941,7 @@ class Channel {
 				$sql = str_replace('WHERE ', $joins . 'WHERE ', $sql);
 			}
 
-			$sql .= $this->_generate_field_search_sql(ee()->TMPL->search_fields, ee()->TMPL->site_ids);
+			$sql .= $this->_generate_field_search_sql(ee()->TMPL->search_fields, $legacy_fields, ee()->TMPL->site_ids);
 		}
 
 		/**----------
@@ -2296,7 +2309,26 @@ class Channel {
 		$entries = array_unique($entries);
 		$channel_ids = array_unique($channel_ids);
 
-		$this->sql .= " t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
+		$this->sql .= $this->generateSQLForEntries($entries, $channel_ids);
+
+		//cache the entry_id
+		ee()->session->cache['channel']['entry_ids'] = $entries;
+
+		$end = "ORDER BY FIELD(t.entry_id, " . implode($entries, ',') . ")";
+
+		// modify the ORDER BY if displaying by week
+		if ($this->display_by == 'week' && isset($yearweek))
+		{
+			$weeksort = (ee()->TMPL->fetch_param('week_sort') == 'desc') ? 'DESC' : 'ASC';
+			$end = str_replace('ORDER BY ', 'ORDER BY yearweek '.$weeksort.', ', $end);
+		}
+
+		$this->sql .= $end;
+	}
+
+	public function generateSQLForEntries(array $entries, array $channel_ids)
+	{
+		$sql = " t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
 						w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled,
 						m.username, m.email, m.screen_name, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id,
 						wd.*";
@@ -2308,7 +2340,7 @@ class Channel {
 
 		if ( ! empty($this->mfields))
 		{
-			$this->sql .= ", md.* ";
+			$sql .= ", md.* ";
 			$from .= "LEFT JOIN exp_member_data	AS md ON md.member_id = m.member_id ";
 
 			foreach ($this->mfields as $mfield)
@@ -2318,12 +2350,11 @@ class Channel {
 				{
 					$field_id = $mfield[0];
 					$table = "exp_member_data_field_{$field_id}";
-					$this->sql .= ", {$table}.*";
+					$sql .= ", {$table}.*";
 					$from .= "LEFT JOIN	{$table} ON m.member_id = {$table}.member_id ";
 				}
 			}
 		}
-
 
 		$cache_key = "mod.channel/Channels/" . implode(',' ,$channel_ids);
 
@@ -2368,30 +2399,17 @@ class Channel {
 
 				foreach ($field->getColumnNames() as $column)
 				{
-					$this->sql .= ", {$table}.{$column}";
+					$sql .= ", {$table}.{$column}";
 				}
 
 				$from .= "LEFT JOIN	{$table} ON t.entry_id = {$table}.entry_id ";
 			}
 		}
 
-		$this->sql .= $from;
+		$sql .= $from;
 
-		$this->sql .= "WHERE t.entry_id IN (" . implode($entries, ',') . ")";
-
-		//cache the entry_id
-		ee()->session->cache['channel']['entry_ids'] = $entries;
-
-		$end = "ORDER BY FIELD(t.entry_id, " . implode($entries, ',') . ")";
-
-		// modify the ORDER BY if displaying by week
-		if ($this->display_by == 'week' && isset($yearweek))
-		{
-			$weeksort = (ee()->TMPL->fetch_param('week_sort') == 'desc') ? 'DESC' : 'ASC';
-			$end = str_replace('ORDER BY ', 'ORDER BY yearweek '.$weeksort.', ', $end);
-		}
-
-		$this->sql .= $end;
+		$sql .= "WHERE t.entry_id IN (" . implode($entries, ',') . ")";
+		return $sql;
 	}
 
 	/**

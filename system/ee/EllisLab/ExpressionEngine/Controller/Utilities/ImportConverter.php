@@ -50,10 +50,14 @@ class ImportConverter extends Utilities {
 								'pipe' => lang('pipe_delimit') . ' <i>|</i>',
 								'other' => lang('other_delimit')
 							),
+							'group_toggle' => ['other' => 'other'],
 							'encode' => FALSE,
 							'value' => 'comma'
 						),
-						'delimiter_special' => array('type' => 'text')
+						'delimiter_special' => [
+							'type' => 'text',
+							'group' => 'other'
+						]
 					)
 				),
 				array(

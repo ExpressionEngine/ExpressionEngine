@@ -42,6 +42,10 @@ if (isset($field['placeholder']))
 {
 	$attrs .= ' placeholder="'.$field['placeholder'].'"';
 }
+if (isset($field['group']))
+{
+	$attrs .= ' data-group="'.$field['group'].'"';
+}
 $has_note = isset($field['note']);
 
 $no_results = (in_array($field['type'], array('select')) &&
@@ -60,7 +64,7 @@ $mr_class = ( ! isset($mr) OR (isset($mr) && $mr)) ? 'mr' : '';
 <?php switch ($field['type']):
 case 'text':
 	if ($class): ?>
-		<div class="<?=$class?>">
+		<div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="'.$field['group'].'"' : ''?>>
 	<?php endif ?>
 
 			<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
@@ -145,7 +149,7 @@ case 'toggle': ?>
 
 case 'textarea':
 	if ($class): ?>
-		<div class="<?=$class?>">
+		<div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="'.$field['group'].'"' : ''?>>
 	<?php endif ?>
 
 			<textarea name="<?=$field_name?>" cols="" rows=""<?=$attrs?>>

@@ -22,6 +22,7 @@ class DbBackup extends Utilities {
 			'cp_page_title' => lang('backup_utility'),
 			'save_btn_text' => 'backup_database',
 			'save_btn_text_working' => 'backing_up',
+			'hide_top_buttons' => TRUE,
 			'base_url' => '#',
 			'sections' => [
 				[
