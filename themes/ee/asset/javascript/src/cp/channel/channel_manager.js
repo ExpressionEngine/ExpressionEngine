@@ -14,6 +14,8 @@ var options = {
 	onFormLoad: function(modal) {
 		FieldManager.fireEvent('fieldModalDisplay', modal)
 
+		EE.cp.fieldToggleDisable(modal)
+
 		$('input[name=field_label]', modal).bind("keyup keydown", function() {
 			$(this).ee_url_title('input[name=field_name]', true);
 		});
