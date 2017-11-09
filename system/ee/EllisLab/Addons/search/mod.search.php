@@ -1371,7 +1371,7 @@ class Search {
 					'text_format'	=> $format,
 					'html_format'	=> 'safe',
 					'auto_links'	=> 'y',
-					'allow_omg_url' => 'n'
+					'allow_img_url' => 'n'
 				)
 			);
 
