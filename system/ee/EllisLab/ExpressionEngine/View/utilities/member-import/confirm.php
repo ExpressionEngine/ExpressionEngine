@@ -13,6 +13,9 @@
 		<div class="alert inline warn">
 			<?=lang(lang('confirm_import_warning'))?>
 		</div>
+		<div class="form-btns form-btns-top">
+			<?=cp_form_submit('confirm_import', 'btn_confirm_import_working')?>
+		</div>
 		<table cellspacing="0">
 			<thead>
 				<tr>
@@ -51,9 +54,8 @@
 				</tr>
 			</tbody>
 		</table>
-
-		<fieldset class="form-ctrls">
+		<div class="form-btns">
 			<?=cp_form_submit('confirm_import', 'btn_confirm_import_working')?>
-		</fieldset>
+		</div>
 	</form>
 </div>
