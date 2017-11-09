@@ -73,15 +73,26 @@ var SelectList = function (_React$Component) {
       // If checking, merge the newly-selected items on to the existing stack
       // in case the current view is limited by a filter
       if (check) {
-        newly_selected = _this.props.items.filter(function (thisItem) {
+        newlySelected = _this.props.items.filter(function (thisItem) {
+          // Do not attempt to select disabled choices
+          if (_this.props.disabledChoices && _this.props.disabledChoices.includes(thisItem.value)) {
+            return false;
+          }
           found = _this.props.selected.find(function (item) {
             return item.value == thisItem.value;
           });
           return !found;
         });
-        _this.props.selectionChanged(_this.props.selected.concat(newly_selected));
+        _this.props.selectionChanged(_this.props.selected.concat(newlySelected));
       } else {
-        _this.props.selectionChanged([]);
+        // Do not uncheck disabled choices if they are selected
+        if (_this.props.disabledChoices) {
+          _this.props.selectionChanged(_this.props.selected.filter(function (item) {
+            return _this.props.disabledChoices.includes(item.value);
+          }));
+        } else {
+          _this.props.selectionChanged([]);
+        }
       }
     };
 
@@ -291,10 +302,10 @@ var SelectList = function (_React$Component) {
           ref: function ref(container) {
             _this7.container = container;
           }, key: this.version },
-        props.tooMany && React.createElement(
+        (shouldShowToggleAll || props.tooMany) && React.createElement(
           FieldTools,
           null,
-          React.createElement(
+          props.tooMany && React.createElement(
             FilterBar,
             null,
             props.filters && props.filters.map(function (filter) {
@@ -312,7 +323,7 @@ var SelectList = function (_React$Component) {
                 return _this7.filterChange('search', e.target.value);
               } })
           ),
-          shouldShowToggleAll && React.createElement('hr', null),
+          shouldShowToggleAll && props.tooMany && React.createElement('hr', null),
           shouldShowToggleAll && React.createElement(FilterToggleAll, { checkAll: props.toggleAll, onToggleAll: function onToggleAll(check) {
               return _this7.handleToggleAll(check);
             } })
@@ -436,7 +447,8 @@ SelectList.defaultProps = {
   nestableReorder: false,
   removable: false,
   selectable: true,
-  tooManyLimit: 8
+  tooManyLimit: 8,
+  toggleAllLimit: 3
 };
 
 
