@@ -90,7 +90,11 @@ $(document).ready(function () {
 			}
 		});
 
-		$('.app-modal--live-preview .form-standard').empty().append($(publishForm).clone());
+		$('.app-modal--live-preview .form-standard').append($(publishForm));
+	});
+
+	$('.app-modal--live-preview').on('modal:close', function(e) {
+		$('[data-publish]').append($('.app-modal--live-preview .form-standard > form'));
 	});
 
 });
