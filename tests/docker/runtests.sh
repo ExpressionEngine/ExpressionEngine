@@ -45,6 +45,10 @@ pushd /var/www/html/ > /dev/null
 	chmod 777 tests/rspec/support/tmp
 	chmod -R 777 tests/rspec/support/file-sync/uploads
 	chmod -R 777 images
+	# JS Shim for ES5/ES6 with Capybara
+	cp themes/ee/asset/javascript/src/cp/global_start.js themes/ee/asset/javascript/src/cp/global_start~orig.js
+	cat tests/rspec/shim.min.js themes/ee/asset/javascript/src/cp/global_start.js > themes/ee/asset/javascript/src/cp/global_start-shimmed.js
+	mv themes/ee/asset/javascript/src/cp/global_start-shimmed.js themes/ee/asset/javascript/src/cp/global_start.js
 popd > /dev/null
 
 rm /app/ee.tar
@@ -96,3 +100,5 @@ if [ "${COMMAND}" == "test" ]; then
 		cp -r /var/www/html/tests/rspec/screenshots/* .
 	popd > /dev/null
 fi
+
+
