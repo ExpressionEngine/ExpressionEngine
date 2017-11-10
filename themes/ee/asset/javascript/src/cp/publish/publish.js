@@ -74,7 +74,7 @@ $(document).ready(function () {
 		changeable.on('change', function(){publishForm.trigger("entry:startAutosave")});
 	}
 
-	$('button[rel="live-preview"]').click(function(e) {
+	$('body').on('click', 'button[rel="live-preview"]', function(e) {
 		var iframe      = $('iframe.live-preview__frame')[0],
 		    preview_url = $(iframe).data('url');
 
