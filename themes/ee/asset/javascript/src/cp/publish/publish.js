@@ -75,6 +75,19 @@ $(document).ready(function () {
 	}
 
 	$('button[rel="live-preview"]').click(function(e) {
+		var iframe      = $('iframe.live-preview__frame')[0],
+		    preview_url = $(iframe).data('url');
+
+		$.ajax({
+			type: "POST",
+			dataType: 'html',
+			url: preview_url,
+			data: publishForm.serialize(),
+			success: function(result) {
+				iframe.contentDocument.body.innerHTML = result;
+			}
+		});
+
 		$('.app-modal--live-preview .form-standard').empty().append($(publishForm).clone());
 	});
 
