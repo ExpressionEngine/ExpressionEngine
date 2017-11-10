@@ -176,7 +176,7 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 // larger sample with multi-line code samples
 'Unlike :lock:, emoji in [code]code samples :lock:[/code] should be left alone.
 
-:rabbit: starts as sentence.
+:rabbit: starts as sentence. :+1:
 
 [code=markdown]
 Another code block with a :rabbit::hole:.
@@ -188,7 +188,7 @@ And if you made it to this :hole: you did pretty good.',
 // expected rendering, [code] blocks are ignored
 'Unlike &#x1F512;, emoji in [code]code samples :lock:[/code] should be left alone.
 
-&#x1F430; starts as sentence.
+&#x1F430; starts as sentence. &#x1F44D;
 
 [code=markdown]
 Another code block with a :rabbit::hole:.

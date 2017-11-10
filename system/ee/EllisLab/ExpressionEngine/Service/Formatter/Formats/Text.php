@@ -252,12 +252,14 @@ class Text extends Formatter {
 		{
 			$emoji_map = $this->getConfig('emoji_map');
 			$short_names = array_keys($emoji_map);
-			array_walk($short_names,
-				function(&$item) use ($emoji_map)
+
+			// preg_quote the short names for our regex, and store the preg_quoted version with each symbol for later use
+			$short_names = array_map(
+				function($item) use ($emoji_map)
 				{
-					$emoji_map[$item]->preg_quoted_name = preg_quote($item, '/');
-					$item = $emoji_map[$item]->preg_quoted_name;
-				}
+			    	return $emoji_map[$item]->preg_quoted_name = preg_quote($item, '/');
+				},
+				$short_names
 			);
 
 			$shorthand_regex = '/:('.implode('|', $short_names).'):/';
