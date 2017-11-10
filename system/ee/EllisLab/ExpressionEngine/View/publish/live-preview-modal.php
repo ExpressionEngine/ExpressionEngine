@@ -2,7 +2,7 @@
 <div class="app-modal app-modal--side app-modal--live-preview" rev="live-preview">
 	<div class="app-modal__content">
 		<div class="app-modal__dismiss">
-			<a class="js-modal-close" rel="modal-side" href="#"><?=lang('cancel_preivew')?></a> <span class="txt-fade">[<?=lang('esc')?>]</span>
+			<a class="js-modal-close" rel="modal-side" href="#"><?=lang('cancel_preview')?></a> <span class="txt-fade">[<?=lang('esc')?>]</span>
 		</div>
 
 		<div class="form-standard form-standard--stacked">

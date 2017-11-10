@@ -230,6 +230,8 @@ $lang = array(
 
 'calendar' => 'Calendar',
 
+'cancel_preview' => 'Cancel Preview',
+
 'category' => 'Category',
 
 'channel_name' => 'Channel:',
