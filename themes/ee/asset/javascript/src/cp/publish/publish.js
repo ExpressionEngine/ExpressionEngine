@@ -78,6 +78,8 @@ $(document).ready(function () {
 		var iframe      = $('iframe.live-preview__frame')[0],
 		    preview_url = $(iframe).data('url');
 
+		iframe.contentDocument.body.innerHTML = '';
+
 		$.ajax({
 			type: "POST",
 			dataType: 'html',
