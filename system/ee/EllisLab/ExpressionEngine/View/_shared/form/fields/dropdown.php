@@ -1,6 +1,7 @@
 <?php
 $too_many = 8;
 $empty_text = isset($empty_text) ? $empty_text : lang('choose_wisely');
+$class = isset($class) ? $class : '';
 
 $component = [
 	'name' => $field_name,
@@ -16,7 +17,7 @@ $component = [
 ];
 
 ?>
-<div data-dropdown-react="<?=base64_encode(json_encode($component))?>" data-input-value="<?=$field_name?>">
+<div data-dropdown-react="<?=base64_encode(json_encode($component))?>" data-input-value="<?=$field_name?>" class="<?=$class?>">
 	<div class="fields-select-drop">
 		<div class="field-drop-selected">
 			<label>

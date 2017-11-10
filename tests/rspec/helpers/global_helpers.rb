@@ -66,9 +66,12 @@ def should_have_show_error(message)
 end
 
 def should_have_error_text(node, text)
-  node.first(:xpath, ".//ancestor::fieldset[1]")[:class].should include 'invalid'
-  node.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
-  node.first(:xpath, ".//..").should have_text text
+  fieldset = node.first(:xpath, ".//ancestor::fieldset[1]")
+  fieldctrl =  fieldset.first(:xpath, ".//div[@class='field-control']")
+
+  fieldset[:class].should include 'invalid'
+  fieldctrl.should have_css 'em.ee-form-error-message'
+  fieldctrl.should have_text text
 end
 
 def should_have_no_error_text(node)

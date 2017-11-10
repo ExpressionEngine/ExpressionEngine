@@ -27,6 +27,7 @@ class Cache extends Utilities {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
+		$vars['hide_top_buttons'] = TRUE;
 		$vars['sections'] = array(
 			array(
 				array(

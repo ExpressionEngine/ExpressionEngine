@@ -4,7 +4,6 @@
 	<?=form_open(ee('CP/URL')->make('utilities/query'), 'class="ajax-validate"')?>
 		<div class="form-btns form-btns-top">
 			<h1><?=lang('sql_query_form_abbr')?></h1>
-			<?=cp_form_submit('query_btn', 'query_btn_saving')?>
 		</div>
 		<div class="alert inline warn">
 			<?=lang('sql_warning')?>

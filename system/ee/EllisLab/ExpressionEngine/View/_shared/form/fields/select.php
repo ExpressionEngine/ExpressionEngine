@@ -4,13 +4,14 @@ $too_many = 8;
 if (count($choices) == 0)
 {
 	if (isset($no_results)): ?>
-		<div data-input-value="<?=$field_name?>">
+		<div data-input-value="<?=$field_name?>" class="<?=$class?>">
 			<?=$this->make('ee:_shared/form/no_results')->render($no_results)?>
 		</div>
 	<?php endif;
 	return;
 };
 
+$class = isset($class) ? $class : '';
 $nested = isset($nested) ? $nested : FALSE;
 $encode = isset($encode) ? $encode : TRUE;
 $force_react = isset($force_react) ? $force_react : FALSE;
@@ -48,7 +49,7 @@ if ($count <= $too_many
 		$value = $keys[0];
 	}
 	?>
-	<div class="fields-select" data-input-value="<?=$field_name?>">
+	<div class="fields-select <?=$class?>" data-input-value="<?=$field_name?>">
 		<?php if ( ! isset($scalar) && $multi) $field_name .= '[]'; ?>
 		<div class="field-inputs">
 			<?php foreach ($choices as $key => $choice):
@@ -115,7 +116,7 @@ else:
 		'noResults' => isset($no_results['text']) ? lang($no_results['text']) : NULL
 	];
 	?>
-	<div data-select-react="<?=base64_encode(json_encode($component))?>" data-input-value="<?=$field_name?>">
+	<div data-select-react="<?=base64_encode(json_encode($component))?>" data-input-value="<?=$field_name?>" class="<?=$class?>">
 		<div class="fields-select">
 			<div class="field-inputs">
 				<label class="field-loading">

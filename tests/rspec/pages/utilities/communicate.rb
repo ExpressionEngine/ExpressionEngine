@@ -1,7 +1,7 @@
 class Communicate < ControlPanelPage
   set_url_matcher /utilities\/communicate/
 
-  element :heading, 'div.w-12 div.box h1'
+  element :heading, 'div.w-12 form h1'
 
   element :subject, 'input[name="subject"]'
   element :body , 'textarea[name="message"]'
@@ -13,8 +13,8 @@ class Communicate < ControlPanelPage
   element :recipient, 'input[name="recipient"]'
   element :cc, 'input[name="cc"]'
   element :bcc, 'input[name="bcc"]'
-  elements :member_groups, 'input[name^="group_"]'
-  element :submit_button, 'input[type="submit"]'
+  elements :member_groups, 'div[data-input-value="member_groups"] input'
+  element :submit_button, 'div.form-btns.form-btns-top input[type="submit"]'
 
   def load
     self.open_dev_menu
