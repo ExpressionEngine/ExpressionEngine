@@ -551,7 +551,7 @@ class Set {
 						$cat_group_ids[] = $cat_group->getId();
 					}
 
-					$channel->cat_group = implode('|', $cat_group_ids);
+					$channel->cat_group = rtrim(implode('|', $cat_group_ids), '|');
 					$channel->save();
 				};
 
