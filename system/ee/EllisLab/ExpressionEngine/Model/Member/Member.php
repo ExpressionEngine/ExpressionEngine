@@ -139,7 +139,6 @@ class Member extends ContentModel {
 
 	protected static $_events = array(
 		'beforeInsert',
-		'afterInsert',
 		'beforeUpdate',
 		'beforeDelete'
 	);
@@ -220,12 +219,6 @@ class Member extends ContentModel {
 	{
 		$this->setProperty('unique_id', ee('Encrypt')->generateKey());
 		$this->setProperty('crypt_key', ee('Encrypt')->generateKey());
-	}
-
-	public function onAfterInsert()
-	{
-		$this->NewsView = ee('Model')->make('MemberNewsView');
-		$this->NewsView->save();
 	}
 
 	/**
