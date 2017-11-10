@@ -238,47 +238,50 @@ class Channel {
 			}
 		}
 
-		if ($this->sql == '')
+		if ( ! $this->isLivePreviewEntry())
 		{
-			$this->build_sql_query();
-		}
-
-		if ($this->sql == '')
-		{
-			return ee()->TMPL->no_results();
-		}
-
-		if ($save_cache == TRUE)
-		{
-			$this->save_cache($this->sql);
-			if ( ! empty($this->chunks))
+			if ($this->sql == '')
 			{
-				$this->save_cache($this->chunks, 'chunks');
+				$this->build_sql_query();
 			}
-		}
 
-		$this->query = ee()->db->query($this->sql);
+			if ($this->sql == '')
+			{
+				return ee()->TMPL->no_results();
+			}
 
-		// -------------------------------------
-		//  "Relaxed" View Tracking
-		//
-		//  Some people have tags that are used to mimic a single-entry
-		//  page without it being dynamic. This allows Entry View Tracking
-		//  to work for ANY combination that results in only one entry
-		//  being returned by the tag, including channel query caching.
-		//
-		//  Hidden Configuration Variable
-		//  - relaxed_track_views => Allow view tracking on non-dynamic
-		//  	single entries (y/n)
-		// -------------------------------------
-		if (ee()->config->item('relaxed_track_views') === 'y' && $this->query->num_rows() == 1)
-		{
-			$this->hit_tracking_id = $this->query->row('entry_id') ;
-		}
+			if ($save_cache == TRUE)
+			{
+				$this->save_cache($this->sql);
+				if ( ! empty($this->chunks))
+				{
+					$this->save_cache($this->chunks, 'chunks');
+				}
+			}
 
-		if ($this->enable['categories'] == TRUE)
-		{
-			$this->fetch_categories();
+			$this->query = ee()->db->query($this->sql);
+
+			// -------------------------------------
+			//  "Relaxed" View Tracking
+			//
+			//  Some people have tags that are used to mimic a single-entry
+			//  page without it being dynamic. This allows Entry View Tracking
+			//  to work for ANY combination that results in only one entry
+			//  being returned by the tag, including channel query caching.
+			//
+			//  Hidden Configuration Variable
+			//  - relaxed_track_views => Allow view tracking on non-dynamic
+			//  	single entries (y/n)
+			// -------------------------------------
+			if (ee()->config->item('relaxed_track_views') === 'y' && $this->query->num_rows() == 1)
+			{
+				$this->hit_tracking_id = $this->query->row('entry_id') ;
+			}
+
+			if ($this->enable['categories'] == TRUE)
+			{
+				$this->fetch_categories();
+			}
 		}
 
 		$this->parse_channel_entries();
@@ -2443,6 +2446,19 @@ class Channel {
 		return $result_array;
 	}
 
+	private function isLivePreviewEntry()
+	{
+		// return FALSE;
+		if (($data = ee()->session->cache('channel_entry', 'live-preview', FALSE)) !== FALSE)
+		{
+			return (ee()->TMPL->fetch_param('limit') == '1' && $this->query_string == $data['entry_id'] && $data['entry_id'] == PHP_INT_MAX);
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
+
 	/**
 	  *  Parse channel entries
 	  *  @param Callable $per_row_callback A callable to send each row's tagdata
@@ -2452,19 +2468,26 @@ class Channel {
 	  */
 	public function parse_channel_entries($per_row_callback = NULL)
 	{
-		// For our hook to work, we need to grab the result array
-		$query_result = $this->query->result_array();
-
-		if ( ! empty($this->chunks))
+		if ($this->isLivePreviewEntry())
 		{
-			$query_result = $this->getExtraData($query_result);
+			$query_result = [ee()->session->cache('channel_entry', 'live-preview', FALSE)];
 		}
+		else
+		{
+			// For our hook to work, we need to grab the result array
+			$query_result = $this->query->result_array();
 
-		$query_result = $this->overrideWithPreviewData($query_result);
+			if ( ! empty($this->chunks))
+			{
+				$query_result = $this->getExtraData($query_result);
+			}
 
-		// Ditch everything else
-		$this->query->free_result();
-		unset($this->query);
+			$query_result = $this->overrideWithPreviewData($query_result);
+
+			// Ditch everything else
+			$this->query->free_result();
+			unset($this->query);
+		}
 
 		// -------------------------------------------
 		// 'channel_entries_query_result' hook.
