@@ -313,6 +313,54 @@ class Publish extends AbstractPublishController {
 
 		$entry->set($data);
 	}
+
+	public function preview($channel_id, $entry_id = NULL)
+	{
+		if (empty($_POST))
+		{
+			return;
+		}
+
+		$channel = ee('Model')->get('Channel', $channel_id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
+
+		if ($entry_id)
+		{
+			$entry = ee('Model')->get('ChannelEntry', $entry_id)
+				->with('Channel', 'Author')
+				->first();
+		}
+		else
+		{
+			$entry = ee('Model')->make('ChannelEntry');
+			$entry->entry_id = PHP_INT_MAX;
+			$entry->Channel = $channel;
+			$entry->site_id =  ee()->config->item('site_id');
+			$entry->author_id = ee()->session->userdata('member_id');
+			$entry->ip_address = ee()->session->userdata['ip_address'];
+			$entry->versioning_enabled = $channel->enable_versioning;
+			$entry->sticky = FALSE;
+		}
+
+		$entry->set($_POST);
+		$data = array_merge($entry->getValues(), $channel->getValues(), $entry->Author->getValues());
+		$data['entry_site_id'] = $entry->site_id;
+
+		ee()->session->set_cache('channel_entry', 'live-preview', $data);
+
+		ee()->load->library('template', NULL, 'TMPL');
+		$template_group = $channel->LiveLookTemplate->TemplateGroup->group_name;
+		$template = $channel->LiveLookTemplate->template_name;
+
+		ee()->uri->segments = [$template_group, $template, $entry->entry_id];
+		ee()->uri->uri_string = implode('/', ee()->uri->segments);
+		ee()->uri->query_string = $entry->entry_id;
+
+		ee()->core->loadSnippets();
+
+		ee()->TMPL->run_template_engine($template_group, $template);
+	}
 }
 
 // EOF
