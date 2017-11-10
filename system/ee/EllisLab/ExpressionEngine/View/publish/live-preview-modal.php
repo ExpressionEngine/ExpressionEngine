@@ -11,5 +11,5 @@
 </div>
 <!-- Website iframe -->
 <div class="live-preview">
-	<iframe src="<?=$preview_url?>" class="live-preview__frame"></iframe>
+	<iframe src="" data-url="<?=$preview_url?>" class="live-preview__frame"></iframe>
 </div>
