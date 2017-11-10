@@ -192,6 +192,7 @@ return array(
 				'stopwords' => ee()->config->loadFile('stopwords'),
 				'word_separator' => ee()->config->item('word_separator'),
 				'emoji_regex' => EMOJI_REGEX,
+				'emoji_map' => ee()->config->loadFile('emoji'),
 			];
 
 			return new Formatter\FormatterFactory(ee()->lang, ee()->session, $config_items, $format_opts);

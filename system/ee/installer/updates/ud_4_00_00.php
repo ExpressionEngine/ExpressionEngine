@@ -755,6 +755,10 @@ class Updater {
 			)
 		);
 
+		ee()->db->insert('content_types', array(
+			'name' => 'fluid_field'
+		));
+
 		ee()->dbforge->add_field(
 			array(
 				'id' => array(
@@ -815,15 +819,18 @@ class Updater {
 			)
 		);
 
-		ee()->db->from('channel_fields');
-		ee()->db->select('field_id');
-		ee()->db->where('field_type', 'grid');
+		$sql = "SHOW TABLES FROM " . ee()->db->_escape_char . ee()->db->database . ee()->db->_escape_char . " LIKE '%_grid_field_%'";
+		$query = ee()->db->query($sql);
 
-		$grids = ee()->db->get();
+		$tables = [];
 
-		foreach ($grids->result_array() as $row)
+		foreach ($query->result_array() as $row)
 		{
-			$table = 'channel_grid_field_' . $row['field_id'];
+			$tables[] = array_shift($row);
+		}
+
+		foreach ($tables as $table)
+		{
 			ee()->smartforge->add_column(
 				$table,
 				array(
