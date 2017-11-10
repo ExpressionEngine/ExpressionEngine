@@ -755,6 +755,10 @@ class Updater {
 			)
 		);
 
+		ee()->db->insert('content_types', array(
+			'name' => 'fluid_field'
+		));
+
 		ee()->dbforge->add_field(
 			array(
 				'id' => array(
