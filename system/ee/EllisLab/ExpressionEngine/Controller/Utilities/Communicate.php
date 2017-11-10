@@ -86,24 +86,16 @@ class Communicate extends Utilities {
 				->all();
 
 			$member_groups = [];
-			$checked_groups = [];
 			$disabled_groups = [];
 			foreach ($groups as $group)
 			{
-				$checked = (ee()->input->post('group_'.$group->group_id) !== FALSE OR in_array($group->group_id, $member_groups));
-
-				$member_groups['group_'.$group->group_id] = $group->group_title;
-
-				if (ee()->input->post('group_'.$group->group_id) !== FALSE OR in_array($group->group_id, $member_groups))
-				{
-					$checked_groups[] = 'group_'.$group->group_id;
-				}
+				$member_groups[$group->group_id] = $group->group_title;
 
 				if (ee('Model')->get('Member')
 					->filter('group_id', $group->group_id)
 					->count() == 0)
 				{
-					$disabled_groups[] = 'group_'.$group->group_id;
+					$disabled_groups[] = $group->group_id;
 				}
 			}
 		}
@@ -220,11 +212,10 @@ class Communicate extends Utilities {
 				'title' => 'add_member_groups',
 				'desc' => 'add_member_groups_desc',
 				'fields' => array(
-					'bcc' => array(
+					'member_groups' => array(
 						'type' => 'checkbox',
 						'choices' => $member_groups,
 						'disabled_choices' => $disabled_groups,
-						'value' => $checked_groups
 					)
 				)
 			);
@@ -293,9 +284,9 @@ class Communicate extends Utilities {
 
 		foreach ($_POST as $key => $val)
 		{
-			if (substr($key, 0, 6) == 'group_')
+			if ($key == 'member_groups')
 			{
-				$groups[] = ee()->input->post($key);
+				$groups = ee()->input->post($key);
 			}
 			elseif (in_array($key, $form_fields))
 			{
