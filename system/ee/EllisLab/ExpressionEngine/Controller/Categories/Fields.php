@@ -290,13 +290,6 @@ class Fields extends AbstractCategoriesController {
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('categories'), lang('category_manager'));
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('categories/fields/'.$group_id), lang('category_fields'));
 
-		ee()->cp->add_js_script(array(
-			'file' => array(
-				'cp/form_group',
-				'cp/channel/fields'
-			)
-		));
-
 		$this->generateSidebar();
 
 		ee()->cp->render('settings/form', $vars);

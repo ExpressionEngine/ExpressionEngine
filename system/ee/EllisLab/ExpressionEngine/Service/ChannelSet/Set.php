@@ -331,7 +331,7 @@ class Set {
 			$field_ids = array();
 			foreach ($fields as $field_name)
 			{
-				$field = $this->fields[$field_name];
+				$field = $this->getFieldByName($field_name);
 				$field_ids[] = $field->getId();
 			}
 
@@ -436,6 +436,16 @@ class Set {
 		}
 	}
 
+	private function getFieldByName($field_name)
+	{
+		if (isset($this->aliases['ee:ChannelField'][$field_name]['field_name']))
+		{
+			$field_name = $this->aliases['ee:ChannelField'][$field_name]['field_name'];
+		}
+
+		return $this->fields[$field_name];
+	}
+
 	/**
 	 * Instantiate the upload destination models
 	 *
@@ -480,6 +490,8 @@ class Set {
 			$channel->channel_name = $channel_name;
 			$channel->channel_title = $channel_data->channel_title;
 			$channel->channel_lang = 'en';
+
+			$this->assignments['statuses'][$channel_title] = [];
 
 			foreach ($channel_data as $pref_key => $pref_value)
 			{
@@ -539,7 +551,7 @@ class Set {
 						$cat_group_ids[] = $cat_group->getId();
 					}
 
-					$channel->cat_group = implode('|', $cat_group_ids);
+					$channel->cat_group = rtrim(implode('|', $cat_group_ids), '|');
 					$channel->save();
 				};
 
@@ -776,7 +788,7 @@ class Set {
 
 		$this->applyOverrides($group, $group_name);
 
-		$this->field_groups[$group_name] = $group;
+		$this->field_groups[$group->group_name] = $group;
 		return $group;
 	}
 

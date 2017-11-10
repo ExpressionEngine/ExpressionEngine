@@ -159,6 +159,22 @@ EE.cp.form_group_toggle = function(element) {
 	var form = $(element).closest('form');
 }
 
+EE.cp.fieldToggleDisable = function(context, fieldName) {
+	$('fieldset :input:hidden', context)
+		.not('.filter-item__search input')
+		.attr('disabled', true);
+	$('fieldset:visible input[type=hidden]', context).attr('disabled', false);
+
+	fieldName = fieldName || 'field_type';
+	$('input[name="'+fieldName+'"]', context).on('change', function() {
+		$('fieldset :input', context)
+			.not('.filter-item__search input')
+			.attr('disabled', true);
+		$('fieldset:visible :input', context)
+			.attr('disabled', false);
+	});
+}
+
 // This all kind of came about from needing to preserve radio button
 // state for radio buttons but identical names across various groups.
 // In an effort not to need to prefix those input names, we'll handle

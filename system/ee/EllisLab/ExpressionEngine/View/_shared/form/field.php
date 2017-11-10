@@ -3,7 +3,7 @@ $margin_top = isset($field['margin_top']) ? $field['margin_top'] : FALSE;
 $margin_left = isset($field['margin_left']) ? $field['margin_left'] : FALSE;
 
 if ($margin_top OR $margin_left): ?>
-	<div class="<?=$margin_top ? 'add-mrg-top' : '' ?> <?=$margin_left ? 'add-mrg-left' : '' ?>">
+	<div class="<?=$margin_top ? 'add-mrg-top' : '' ?> <?=$margin_left ? 'add-mrg-left' : '' ?>"<?=isset($field['group']) ? ' data-group="'.$field['group'].'"' : ''?>>
 <?php endif;
 
 // Check for a field name override
@@ -41,6 +41,10 @@ if (isset($field['maxlength']))
 if (isset($field['placeholder']))
 {
 	$attrs .= ' placeholder="'.$field['placeholder'].'"';
+}
+if (isset($field['group']))
+{
+	$attrs .= ' data-group="'.$field['group'].'"';
 }
 $has_note = isset($field['note']);
 

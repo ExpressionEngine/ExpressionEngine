@@ -33,8 +33,11 @@ foreach ($normalized_choices as $key => $choice)
 	}
 }
 
+$count = ee('View/Helpers')->countChoices($normalized_choices);
+
 // If it's a small list, just render it server-side
-if (ee('View/Helpers')->countChoices($normalized_choices) <= $too_many
+if ($count <= $too_many
+	&& ! ($count > 2 && $multi)
 	&& ! $nested
 	&& ! $has_groupings
 	&& ! $force_react):
@@ -98,7 +101,7 @@ else:
 		'tooMany' => $too_many,
 		'filterUrl' => isset($filter_url) ? $filter_url : NULL,
 		'limit' => isset($limit) ? $limit : 100,
-		'toggleAll' => NULL,
+		'toggleAll' => ($count > 2 && $multi) ?: NULL,
 		'groupToggle' => isset($group_toggle) ? $group_toggle : NULL,
 		'editing' => isset($editing) ? $editing : NULL,
 		'manageable' => isset($manageable) ? $manageable : NULL,

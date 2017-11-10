@@ -790,7 +790,7 @@ $lang = array(
 /* Relationships */
 'add_new_html_button' => 'Add New HTML button',
 
-'add_new_row' => 'add new row',
+'add_new_row' => 'Add new row',
 
 'hide' => 'Hide',
 

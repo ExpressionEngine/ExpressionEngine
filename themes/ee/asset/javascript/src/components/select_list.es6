@@ -12,7 +12,8 @@ class SelectList extends React.Component {
     nestableReorder: false,
     removable: false,
     selectable: true,
-    tooManyLimit: 8
+    tooManyLimit: 8,
+    toggleAllLimit: 3
   }
 
   constructor (props) {
@@ -278,15 +279,27 @@ class SelectList extends React.Component {
     // If checking, merge the newly-selected items on to the existing stack
     // in case the current view is limited by a filter
     if (check) {
-      newly_selected = this.props.items.filter((thisItem) => {
-        found = this.props.selected.find((item) => {
+      newlySelected = this.props.items.filter(thisItem => {
+        // Do not attempt to select disabled choices
+        if (this.props.disabledChoices &&
+            this.props.disabledChoices.includes(thisItem.value)) {
+          return false
+        }
+        found = this.props.selected.find(item => {
           return item.value == thisItem.value
         })
         return ! found
       })
-      this.props.selectionChanged(this.props.selected.concat(newly_selected))
+      this.props.selectionChanged(this.props.selected.concat(newlySelected))
     } else {
-      this.props.selectionChanged([])
+      // Do not uncheck disabled choices if they are selected
+      if (this.props.disabledChoices) {
+        this.props.selectionChanged(this.props.selected.filter(item => {
+          return this.props.disabledChoices.includes(item.value)
+        }))
+      } else {
+        this.props.selectionChanged([])
+      }
     }
   }
 
@@ -297,21 +310,23 @@ class SelectList extends React.Component {
     return (
       <div className={"fields-select" + (SelectList.countItems(props.items) > props.tooManyLimit ? ' field-resizable' : '')}
         ref={(container) => { this.container = container }} key={this.version}>
-        {props.tooMany &&
+        {(shouldShowToggleAll || props.tooMany) &&
           <FieldTools>
-            <FilterBar>
-              {props.filters && props.filters.map(filter =>
-                <FilterSelect key={filter.name}
-                  name={filter.name}
-                  title={filter.title}
-                  placeholder={filter.placeholder}
-                  items={filter.items}
-                  onSelect={(value) => this.filterChange(filter.name, value)}
-                />
-              )}
-              <FilterSearch onSearch={(e) => this.filterChange('search', e.target.value)} />
-            </FilterBar>
-            {shouldShowToggleAll && <hr />}
+            {props.tooMany &&
+              <FilterBar>
+                {props.filters && props.filters.map(filter =>
+                  <FilterSelect key={filter.name}
+                    name={filter.name}
+                    title={filter.title}
+                    placeholder={filter.placeholder}
+                    items={filter.items}
+                    onSelect={(value) => this.filterChange(filter.name, value)}
+                  />
+                )}
+                <FilterSearch onSearch={(e) => this.filterChange('search', e.target.value)} />
+              </FilterBar>
+            }
+            {shouldShowToggleAll && props.tooMany && <hr />}
             {shouldShowToggleAll &&
               <FilterToggleAll checkAll={props.toggleAll} onToggleAll={(check) => this.handleToggleAll(check)} />
             }

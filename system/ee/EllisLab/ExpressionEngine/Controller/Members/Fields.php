@@ -464,9 +464,9 @@ class Fields extends Members\Members {
 		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('members/fields'), lang('custom_profile_fields'));
 
-		ee()->cp->add_js_script(array(
-			'file' => array('cp/form_group', 'cp/members/fields')
-		));
+		ee()->javascript->output('$(document).ready(function () {
+			EE.cp.fieldToggleDisable(null, "m_field_type");
+		});');
 
 		ee()->cp->render('settings/form', $vars);
 	}

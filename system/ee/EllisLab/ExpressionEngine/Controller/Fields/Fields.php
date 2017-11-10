@@ -578,11 +578,9 @@ class Fields extends AbstractFieldsController {
 			}
 		}
 
-		ee()->cp->add_js_script(array(
-			'file' => array(
-				'cp/form_group'
-			),
-		));
+		ee()->javascript->output('$(document).ready(function () {
+			EE.cp.fieldToggleDisable();
+		});');
 
 		return $sections;
 	}

@@ -207,15 +207,6 @@ class EE_Typography {
 			}
 		}
 
-		/** -------------------------------------
-		/**  Fetch emoticon prefs
-		/** -------------------------------------*/
-
-		if (ee()->config->item('enable_emoticons') == 'y')
-		{
-			$this->_fetch_emotions_prefs();
-		}
-
 		/* -------------------------------------------
 		/*	Hidden Configuration Variables
 		/*	- popup_link => Have links created by Typography class open in a new window (y/n)
@@ -656,7 +647,7 @@ class EE_Typography {
 		}
 
 		//  Fix emoticon bug
-		$str = str_replace(array('>:-(', '>:('), array(':angry:', ':mad:'), $str);
+		$str = str_replace(array('>:-(', '>:('), array(':rage:', ':angry:'), $str);
 
 		//  Highlight text within [code] tags
 		// If highlighting is enabled, we'll highlight <pre> tags as well.
@@ -740,6 +731,9 @@ class EE_Typography {
 
 		//  Parse emoticons
 		$str = $this->emoticon_replace($str);
+
+		// Parse emoji
+		$str = ee('Format')->make('Text', $str)->emojiShortHand();
 
 		//  Parse censored words
 		$str = $this->filter_censored_words($str);
@@ -1457,6 +1451,9 @@ class EE_Typography {
 		// Put back old format
 		$this->html_format = $existing_format;
 
+		// hit emoji shortands
+		$title = ee('Format')->make('Text', $title)->emojiShortHand();
+
 		// and finally some basic curly quotes, em dashes, etc.
 		$title = $this->format_characters($title);
 
@@ -2121,54 +2118,39 @@ class EE_Typography {
 
 	/**
 	 * Emoticon replacement
+	 *
+	 * v4 change: just remap text smileys to emoji, forget the rest, gross
 	 */
 	public function emoticon_replace($str)
 	{
-		if ($this->smiley_array === FALSE OR $this->parse_smileys === FALSE OR ee()->session->userdata('parse_smileys') == 'n')
+		if (ee()->config->item('enable_emoticons') == 'n' OR $this->parse_smileys === FALSE OR ee()->session->userdata('parse_smileys') == 'n')
 		{
 			return $str;
 		}
 
-		$counter = 0;
+		// remap text faces to emoji, is mo betta
+		// somewhat arbitrary, based on what some apps auto-convert for you
+		$emoji_remap = [
+			':-)'     => ':blush:',
+			':)'      => ':blush:',
+			';-)'     => ':wink:',
+			';)'      => ':wink:',
+			':-S'     => ':confounded:',
+			':-P'     => ':stuck_out_tongue:',
+			'%-P'     => ':stuck_out_tongue_closed_eyes:',
+			';-P'     => ':stuck_out_tongue_winking_eye:',
+			':P'      => ':stuck_out_tongue:',
+			'8-/'     => ':face_with_rolling_eyes:',
+			':-/'     => ':confused:',
+			':mad:'   => ':angry:',
+		];
 
-		// Find any code and pre tags to exclude
-		if (strpos($str, '<pre>') !== FALSE OR strpos($str, '<code>') !== FALSE)
+		foreach ($emoji_remap as $smiley => $short_name)
 		{
-			if (preg_match_all("/(<pre>(.+?)<\/pre>)|(<code>(.+?)<\/code>)/si", $str, $matches))
-			{
-				for ($counter = 0, $total = count($matches[0]); $counter < $total; $counter++)
-				{
-					$code_chunk[$counter] = $matches[0][$counter];
-					$str = str_replace($matches[0][$counter], '{'.$counter.'xyH45k02wsSdrp}', $str);
-				}
-			}
+			$str = str_replace($smiley, $short_name, $str);
 		}
 
-		$str = ' '.$str;
-
-		foreach ($this->smiley_array as $key => $val)
-		{
-			if (strpos($str, $key) !== FALSE)
-			{
-				$img = "<img src=\"".$this->emoticon_url.$this->smiley_array[$key]['0']."\" width=\"".$this->smiley_array[$key]['1']."\" height=\"".$this->smiley_array[$key]['2']."\" alt=\"".$this->smiley_array[$key]['3']."\" style=\"border:0;\" />";
-
-				foreach(array(' ', "\t", "\n", "\r", '.', ',', '>') as $char)
-				{
-					$str = str_replace($char.$key, $char.$img, $str);
-				}
-			}
-		}
-
-		// Flip code chunks back in
-		if ($counter > 0)
-		{
-			foreach ($code_chunk as $key => $val)
-			{
-				$str = str_replace('{'.$key.'xyH45k02wsSdrp}', $val, $str);
-			}
-		}
-
-		return ltrim($str);
+		return $str;
 	}
 
 	/**
@@ -2366,23 +2348,6 @@ while (--j >= 0)
 		ob_end_clean();
 
 		return str_replace(array("\n", "\t"), '', $buffer);
-	}
-
-	/**
-	 * Fetch Emotions Preferences
-	 */
-	private function _fetch_emotions_prefs()
-	{
-		if (is_file(PATH_ADDONS.'emoticon/emoticons.php'))
-		{
-			require PATH_ADDONS.'emoticon/emoticons.php';
-
-			if (is_array($smileys))
-			{
-				$this->smiley_array = $smileys;
-				$this->emoticon_url = ee()->config->slash_item('emoticon_url');
-			}
-		}
 	}
 
 	/**
