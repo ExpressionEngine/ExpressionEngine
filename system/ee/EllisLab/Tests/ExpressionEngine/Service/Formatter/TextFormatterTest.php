@@ -155,6 +155,51 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 		$this->markTestSkipped('This is a gateway to the Encrypt service, cannot unit test in this context');
 	}
 
+	/**
+	 * @dataProvider emojiShorthandProvider
+	 */
+	public function testEmojiShorthand($content, $expected)
+	{
+		$config['emoji_map'] = include SYSPATH.'ee/EllisLab/ExpressionEngine/Config/emoji.php';
+		$text = (string) $this->format($content, $config)->emojiShorthand();
+		$this->assertEquals($expected, $text);
+	}
+
+	public function emojiShorthandProvider()
+	{
+		return [
+			['Flying a :rocket: to Mars with my :moneybag: and Elon Musk', 'Flying a &#x1F680; to Mars with my &#x1F4B0; and Elon Musk'],
+			['Emoji aliases like :moon: and :waxing_gibbous_moon: work', 'Emoji aliases like &#x1F314; and &#x1F314; work'],
+			['Handle multi-character emoji like :man-woman-girl-boy:', 'Handle multi-character emoji like &#x1F468;&#x200D;&#x1F469;&#x200D;&#x1F467;&#x200D;&#x1F466;'],
+			['Newer emoji like :fu: and :merman: are sadly not yet supported', 'Newer emoji like :fu: and :merman: are sadly not yet supported'],
+			[
+// larger sample with multi-line code samples
+'Unlike :lock:, emoji in [code]code samples :lock:[/code] should be left alone.
+
+:rabbit: starts as sentence. :+1:
+
+[code=markdown]
+Another code block with a :rabbit::hole:.
+
+We don\'t want this parsed.
+[/code]
+
+And if you made it to this :hole: you did pretty good.',
+// expected rendering, [code] blocks are ignored
+'Unlike &#x1F512;, emoji in [code]code samples :lock:[/code] should be left alone.
+
+&#x1F430; starts as sentence. &#x1F44D;
+
+[code=markdown]
+Another code block with a :rabbit::hole:.
+
+We don\'t want this parsed.
+[/code]
+
+And if you made it to this &#x1F573; you did pretty good.']
+		];
+	}
+
 	public function testEncodeEETags()
 	{
 		$sample = "
