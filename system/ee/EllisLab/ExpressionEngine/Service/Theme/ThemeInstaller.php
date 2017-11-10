@@ -114,14 +114,15 @@ class ThemeInstaller {
 			$theme_name = 'default';
 		}
 
-		$channel_set = $this->loadChannelSet($theme_name);
+		$set = ee('ChannelSet')->importDir($this->getChannelSetPath($theme_name));
+		$set->setSiteId(1);
+		$set->validate();
+		$set->save();
+
+		$channel_set = $this->loadExtraData($theme_name);
 
 		$this->createTemplates($theme_name, $channel_set->template_preferences);
-		$this->createStatuses($channel_set->statuses);
-		$this->createCategoryGroups($channel_set->category_groups);
 		$this->createUploadDestinations($theme_name, $channel_set->upload_destinations);
-		$this->createFieldGroups($theme_name);
-		$this->createChannels($channel_set->channels);
 		$this->createEntries($theme_name);
 		$this->setConfigItems($channel_set->config);
 		$this->setMemberTheme($theme_name);
@@ -129,13 +130,25 @@ class ThemeInstaller {
 	}
 
 	/**
-	 * Load the Channel Set data from the theme
+	 * Get the Channel Set path for the theme
+	 *
+	 * @param string $theme_name The theme name
+	 * @return string Path to theme's channel set directory
+	 */
+	private function getChannelSetPath($theme_name)
+	{
+		return $this->theme_path.'ee/site/'.$theme_name;
+	}
+
+	/**
+	 * Load the extra theme data Channel Sets does not support
+	 *
 	 * @param string $theme_name The theme name
 	 * @return Object json_decoded()'ed object
 	 */
-	private function loadChannelSet($theme_name)
+	private function loadExtraData($theme_name)
 	{
-		return json_decode(file_get_contents($this->theme_path.'ee/site/'.$theme_name.'/channel_set.json'));
+		return json_decode(file_get_contents($this->getChannelSetPath($theme_name).'/extra.json'));
 	}
 
 	/**
@@ -157,7 +170,7 @@ class ThemeInstaller {
 			umask($old_umask);
 		}
 
-		chmod($path_tmpl.'default_site', DIR_WRITE_MODE);
+		@chmod($path_tmpl.'default_site', DIR_WRITE_MODE);
 
 		$theme_template_dir = $this->theme_path."ee/site/{$theme_name}/templates/";
 		foreach (directory_map($theme_template_dir) as $directory => $contents)
@@ -279,72 +292,6 @@ class ThemeInstaller {
 	}
 
 	/**
-	 * Create the statuses
-	 * @param array $statuses Array of objects representing the statuses
-	 * 	supplied by loadChannelSet
-	 * @return void
-	 */
-	private function createStatuses($statuses)
-	{
-		foreach ($statuses as $status_data)
-		{
-			$status = ee('Model')->make('Status');
-			$status->status = $status_data->status;
-
-			if ( ! empty($status_data->highlight))
-			{
-				$status->highlight = $status_data->highlight;
-			}
-
-			$result = $status->validate();
-
-			if ($result->isValid())
-			{
-				$status->save();
-			}
-		}
-	}
-
-	/**
-	 * Create the category groups
-	 * @param array $category_groups Array of objects representing the category
-	 * 	groups supplied by loadChannelSet
-	 * @return void
-	 */
-	private function createCategoryGroups($category_groups)
-	{
-		foreach ($category_groups as $category_group_data)
-		{
-			$cat_group = ee('Model')->make('CategoryGroup');
-			$cat_group->site_id = 1;
-			$cat_group->sort_order = (isset($category_group_data->sort_order))
-				? $category_group_data->sort_order
-				: 'a';
-			$cat_group->group_name = $category_group_data->name;
-			$cat_group->save();
-
-			$this->model_data['cat_group'][$cat_group->group_name] = $cat_group;
-
-			foreach ($category_group_data->categories as $index => $category_name)
-			{
-				$category = ee('Model')->make('Category');
-				$category->group_id = $cat_group->group_id;
-				$category->site_id = 1;
-				$category->cat_name = $category_name;
-				$category->cat_url_title = strtolower(str_replace(' ', '-', $category_name));
-				$category->parent_id = 0;
-
-				if ($cat_group->sort_order == 'c')
-				{
-					$category->cat_order = $index + 1;
-				}
-
-				$category->save();
-			}
-		}
-	}
-
-	/**
 	 * Create the upload locations
 	 * @param string $theme_name The name of the theme, used for pulling in
 	 * 	images and files
@@ -394,167 +341,6 @@ class ThemeInstaller {
 	}
 
 	/**
-	 * Create the field groups and fields
-	 * @param string $theme_name The name of the theme, used for pulling in
-	 * 	custom fields
-	 * @return void
-	 */
-	private function createFieldGroups($theme_name)
-	{
-		$field_group_path = $this->theme_path."ee/site/{$theme_name}/custom_fields/";
-		$field_groups = directory_map($field_group_path);
-
-		// Sorting file listing as a temporary workaround where the order of
-		// files may cause an exception
-		ksort($field_groups);
-
-		foreach ($field_groups as $group_name => $fields)
-		{
-			$field_group = ee('Model')->make('ChannelFieldGroup');
-			$field_group->group_name = $group_name;
-			$field_group->save();
-
-			$this->model_data['field_group'][$field_group->group_name] = $field_group;
-
-			sort($fields);
-			foreach ($fields as $file_name)
-			{
-				// reset for Grid fields
-				unset($_POST['grid']);
-
-				$file_path = $field_group_path.$group_name.'/'.$file_name;
-
-				$parts = explode('.', $file_name);
-				$field_type = array_pop($parts);
-				$field_name = implode('.', $parts);
-
-				if (file_exists($file_path))
-				{
-					$field_details = json_decode(file_get_contents($file_path), TRUE);
-				}
-				else
-				{
-					// shouldn't ever happen, but just in case...
-					continue;
-				}
-
-				$field = ee('Model')->make('ChannelField');
-
-				$field->site_id = 1;
-				$field->field_name = $field_name;
-				$field->field_type = $field_type;
-
-				$data = array('group_id' => $field_group->group_id);
-				$i = 0;
-
-				foreach ($field_details as $key => $val)
-				{
-					if ($key == 'columns')
-					{
-						// grid[cols][new_0][col_label]
-						foreach ($val as $column)
-						{
-							foreach ($column as $col_label => $col_value)
-							{
-								$_POST['grid']['cols']["new_{$i}"]['col_'.$col_label] = $col_value;
-							}
-
-							$i++;
-						}
-					}
-					else
-					{
-						$data['field_'.$key] = $val;
-					}
-				}
-
-				// unusual item that has no defaults
-				if ( ! isset($data['field_list_items']))
-				{
-					$data['field_list_items'] = '';
-				}
-
-				$field->set($data);
-				$field->save();
-
-				// cache our grid field column names and id's
-				if (isset($_POST['grid']))
-				{
-					ee()->load->model('grid_model');
-					$columns = ee()->grid_model->get_columns_for_field($field->field_id, 'channel');
-
-					foreach ($columns as $column)
-					{
-						$this->model_data['grid_field'][$field->field_id][$column['col_name']] = $column['col_id'];
-					}
-				}
-
-				$this->model_data['custom_field'][$field->field_name] = $field->field_id;
-			}
-		}
-	}
-
-	/**
-	 * Create the channels
-	 * @param array $channels Array of objects representing the channels
-	 * 	supplied by loadChannelSet
-	 * @return void
-	 */
-	private function createChannels($channels)
-	{
-		foreach ($channels as $channel_data)
-		{
-			$channel = ee('Model')->make('Channel');
-			$channel->title_field_label = lang('title');
-			$channel->channel_name = strtolower($channel_data->channel_title);
-			$channel->channel_title = $channel_data->channel_title;
-			$channel->channel_lang = 'en';
-			unset($channel_data->channel_title);
-
-			foreach (array('cat_group') as $group_type)
-			{
-				if (isset($channel_data->$group_type))
-				{
-					$channel->$group_type = $this->model_data[$group_type][$channel_data->$group_type]->group_id;
-					unset($channel_data->$group_type);
-				}
-			}
-
-			if (isset($channel_data->field_group))
-			{
-				$group_id = $this->model_data['field_group'][$channel_data->field_group]->group_id;
-				$field_group = ee('Model')->get('ChannelFieldGroup', $group_id)->all();
-
-				if ($field_group)
-				{
-					$channel->FieldGroups = $field_group;
-				}
-
-				unset($channel_data->field_group);
-			}
-
-			if (isset($channel_data->statuses))
-			{
-				$statuses = array_merge(['open', 'closed'], $channel_data->statuses);
-				$channel->Statuses = ee('Model')->get('Status')
-					->filter('status', 'IN', $statuses)
-					->all();
-
-				unset($channel_data->statuses);
-			}
-
-			foreach ($channel_data as $pref_key => $pref_value)
-			{
-				$channel->$pref_key = $pref_value;
-			}
-
-			$channel->save();
-
-			$this->model_data['channel'][$channel->channel_name] = $channel;
-		}
-	}
-
-	/**
 	 * Create the channel entries
 	 * @param string $theme_name The name of the theme, used for pulling in
 	 * 	channel entries
@@ -567,18 +353,48 @@ class ThemeInstaller {
 
 		$entry_data_path = $this->theme_path."ee/site/{$theme_name}/channel_entries/";
 
+		$custom_fields = ee('Model')->get('ChannelField')
+			->fields('field_name')
+			->all()
+			->getDictionary('field_name', 'field_id');
+
+		$grid_fields = ee('Model')->get('ChannelField')
+			->fields('field_type')
+			->filter('field_type', 'grid')
+			->all();
+
+		$grid_column_index = [];
+		$grid_columns = ee()->db->select('field_id, col_id, col_name')->get('grid_columns')->result();
+		foreach ($grid_fields as $field)
+		{
+			$grid_column_index[$field->getId()] = [];
+
+			foreach ($grid_columns as $column)
+			{
+				if ($column->field_id == $field->getId())
+				{
+					$grid_column_index[$field->getId()][$column->col_name] = $column->col_id;
+				}
+			}
+		}
+
 		foreach (directory_map($entry_data_path) as $channel_name => $channel_entries)
 		{
+			$channel = ee('Model')->get('Channel')
+				->with('CategoryGroups')
+				->filter('channel_name', $channel_name)
+				->first();
+
 			foreach ($channel_entries as $filename)
 			{
 				$entry_data = json_decode(file_get_contents($entry_data_path.$channel_name.'/'.$filename));
 
 				$entry = ee('Model')->make('ChannelEntry');
-				$entry->setChannel($this->model_data['channel'][$channel_name]);
+				$entry->setChannel($channel);
 				$entry->site_id =  1;
 				$entry->author_id = 1;
 				$entry->ip_address = ee()->input->ip_address();
-				$entry->versioning_enabled = $this->model_data['channel'][$channel_name]->enable_versioning;
+				$entry->versioning_enabled = $channel->enable_versioning;
 				$entry->sticky = FALSE;
 				$entry->allow_comments = (isset($entry_data->allow_comments))
 					? $entry_data->allow_comments
@@ -599,7 +415,7 @@ class ThemeInstaller {
 				{
 					if (is_string($val))
 					{
-						$field_col_name = "field_id_{$this->model_data['custom_field'][$key]}";
+						$field_col_name = "field_id_{$custom_fields[$key]}";
 						$post_mock[$field_col_name] = $this->replaceUploadDestination($val);
 					}
 					else
@@ -609,8 +425,8 @@ class ThemeInstaller {
 							$row_index = $row_index + 1;
 							foreach ($grid_row as $col_name => $col_value)
 							{
-								$column_id = 'col_id_'.$this->model_data['grid_field'][$this->model_data['custom_field'][$key]][$col_name];
-								$post_mock["field_id_{$this->model_data['custom_field'][$key]}"]
+								$column_id = 'col_id_'.$grid_column_index[$custom_fields[$key]][$col_name];
+								$post_mock["field_id_{$custom_fields[$key]}"]
 										["rows"]
 										["new_row_{$row_index}"]
 										[$column_id]
@@ -623,9 +439,7 @@ class ThemeInstaller {
 				if (isset($entry_data->categories))
 				{
 					$categories = array();
-					$cat_groups = $this->model_data['channel'][$channel_name]
-						->CategoryGroups
-						->pluck('group_id');
+					$cat_groups = $channel->CategoryGroups->pluck('group_id');
 
 					$categories = ee('Model')->get('Category')
 						->filter('cat_name', 'IN', $entry_data->categories)

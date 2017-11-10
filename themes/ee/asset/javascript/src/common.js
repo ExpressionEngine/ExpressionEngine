@@ -431,7 +431,9 @@ $(document).ready(function(){
 
 		// Check a table list row's checkbox when its item body is clicked
 		$('body').on('click', '.tbl-row', function() {
-			$(this).find('> .check-ctrl input').click();
+			if (event.target.nodeName == 'DIV') {
+				$(this).find('> .check-ctrl input').click()
+			}
 		});
 
 		// "Table" lists

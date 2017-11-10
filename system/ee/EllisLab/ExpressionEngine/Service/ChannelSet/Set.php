@@ -491,6 +491,8 @@ class Set {
 			$channel->channel_title = $channel_data->channel_title;
 			$channel->channel_lang = 'en';
 
+			$this->assignments['statuses'][$channel_title] = [];
+
 			foreach ($channel_data as $pref_key => $pref_value)
 			{
 				if ( ! $channel->hasProperty($pref_key))
@@ -549,7 +551,7 @@ class Set {
 						$cat_group_ids[] = $cat_group->getId();
 					}
 
-					$channel->cat_group = implode('|', $cat_group_ids);
+					$channel->cat_group = rtrim(implode('|', $cat_group_ids), '|');
 					$channel->save();
 				};
 
