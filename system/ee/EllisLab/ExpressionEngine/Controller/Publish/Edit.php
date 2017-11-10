@@ -430,7 +430,7 @@ class Edit extends AbstractPublishController {
 		if ($entry->Channel->LiveLookTemplate)
 		{
 			$modal = ee('View')->make('publish/live-preview-modal')->render([
-				'preview_url' => ee('CP/URL')->make('publish/preview/' . $entry->channel_id)
+				'preview_url' => ee('CP/URL')->make('publish/preview/' . $entry->channel_id . '/' . $entry->entry_id)
 			]);
 			ee('CP/Modal')->addModal('live-preview', $modal);
 		}
