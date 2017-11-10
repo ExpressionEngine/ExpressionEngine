@@ -230,6 +230,14 @@ class Publish extends AbstractPublishController {
 			'buttons' => $this->getPublishFormButtons($entry)
 		);
 
+		if ($entry->Channel->LiveLookTemplate)
+		{
+			$modal = ee('View')->make('publish/live-preview-modal')->render([
+				'preview_url' => ee('CP/URL')->make('publish/preview/' . $entry->channel_id)
+			]);
+			ee('CP/Modal')->addModal('live-preview', $modal);
+		}
+
 		if ($autosave_id)
 		{
 			$autosaved = ee('Model')->get('ChannelEntryAutosave', $autosave_id)
