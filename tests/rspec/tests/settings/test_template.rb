@@ -3,8 +3,6 @@ require './bootstrap.rb'
 feature 'Template Settings' do
 
   before(:each) do
-    skip $react_es6_skip_message do
-    end
     cp_session
     @page = TemplateSettings.new
     @page.load
@@ -19,9 +17,9 @@ feature 'Template Settings' do
     strict_urls = ee_config(item: 'strict_urls')
     save_tmpl_revisions = ee_config(item: 'save_tmpl_revisions')
 
-    @page.strict_urls.value.should = strict_urls
-    @page.site_404.value.should == ee_config(item: 'site_404')
-    @page.save_tmpl_revisions.value.should = save_tmpl_revisions
+    @page.strict_urls.value.should == strict_urls
+    @page.site_404.find('div.field-input-selected').should have_text ee_config(item: 'site_404')
+    @page.save_tmpl_revisions.value.should == save_tmpl_revisions
   end
 
   it 'should validate the form' do
@@ -49,14 +47,14 @@ feature 'Template Settings' do
 
   it 'should save and load the settings' do
     @page.strict_urls_toggle.click
-    @page.site_404.select 'search/index'
+    @page.site_404_options.choose_radio_option('search/index')
     @page.save_tmpl_revisions_toggle.click
     @page.max_tmpl_revisions.set '300'
     @page.submit
 
     @page.should have_text 'Preferences Updated'
     @page.strict_urls.value.should == 'n'
-    @page.site_404.value.should == 'search/index'
+    @page.site_404.find('div.field-input-selected').should have_text 'search/index'
     @page.save_tmpl_revisions.value.should == 'y'
     @page.max_tmpl_revisions.value.should == '300'
   end
