@@ -57,8 +57,6 @@ feature 'RTE Settings' do
   end
 
   before(:each, :stage => 'toolset') do
-    skip $react_es6_skip_message do
-    end
     @page.create_new_button.click
     no_php_js_errors
     @page.displayed?
@@ -326,8 +324,6 @@ feature 'RTE Settings' do
   end
 
   it 'can edit a tool set', :stage => 'settings' do
-    skip $react_es6_skip_message do
-    end
     @page.tool_sets[1].find('li.edit a').click
     no_php_js_errors
     @page.displayed?
