@@ -246,6 +246,20 @@ module Capybara
 
   end
 
+  # Selenium doesn't support trigger, so use this override to workaround
+  module Driver
+    class Node
+      def trigger(event)
+        if event == 'blur'
+          Capybara.page.find('body').click
+        end
+        if event == 'click'
+          self.click
+        end
+      end
+    end
+  end
+
 end
 
 # Swaps on piece of text for another given a file
