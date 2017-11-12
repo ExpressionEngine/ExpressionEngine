@@ -40,8 +40,9 @@ def no_php_js_errors
   # Capybara makes JS error messages available in this array,
   # let's make sure it's empty; we can also check for any console
   # message but we're just checking for errors now
-  if page.driver.error_messages.any?
-    raise StandardError, "JS Error: " + page.driver.error_messages.join(" ")
+  errors = page.driver.browser.manage.logs.get(:browser)
+  if errors.any?
+    raise StandardError, "JS Error: " + errors.map(&:message).join("\n\n")
   end
 end
 

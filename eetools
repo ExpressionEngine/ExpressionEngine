@@ -14,18 +14,20 @@ git archive --format=tar -o ee.tar $STASH_NAME
 #	find ./tests -name "*.rb" | sort | parallel -j10 docker run --rm -v /Users/ubuntu/ExpressionEngine/:/app ellislab/eecms-test ./run.sh {}
 #popd
 
+IMAGE_NAME="ellislab/eecms-test:headless-chrome"
+
 # Open a prompt on the Docker container to fiddle
 if [ "$1" == "prompt" ]; then
-	docker run -t -i -p 8080:80 -v $(pwd):/app ellislab/eecms-test /bin/bash
+	docker run -t -i -p 8080:80 -v $(pwd):/app $IMAGE_NAME /bin/bash
 # Install or update gems
 elif [ "$1" == "updategems" ]; then
-	docker run -t -i -v $(pwd):/app ellislab/eecms-test ./updategems.sh
+	docker run -t -i -v $(pwd):/app $IMAGE_NAME ./updategems.sh
 	# TODO: abstract container commitment and removal into function
 	CONTAINER_ID=`docker ps -l -q`
-	docker commit $CONTAINER_ID ellislab/eecms-test
+	docker commit $CONTAINER_ID $IMAGE_NAME
 	docker rm $CONTAINER_ID
 else
 	# Have to quote this to get multiple arguments working for run.sh
-	DOCKER_CMD="docker run --rm -t -i -v $(pwd):/app ellislab/eecms-test /bin/bash -c \"./run.sh $@\""
+	DOCKER_CMD="docker run --rm -t -i -v $(pwd):/app $IMAGE_NAME /bin/bash -c \"./run.sh $@\""
 	eval $DOCKER_CMD
 fi
