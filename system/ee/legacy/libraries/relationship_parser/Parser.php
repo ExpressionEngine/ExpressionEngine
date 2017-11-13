@@ -117,6 +117,14 @@ class EE_Relationship_data_parser {
 			return $this->clear_node_tagdata($node, $tagdata);
 		}
 
+		// {if relationship_field}
+		if ($node->in_cond && ! $node->shortcut)
+		{
+			return ee()->functions->prep_conditionals($tagdata, array(
+				$node->open_tag => count($node->entry_ids())
+			));
+		}
+
 		$tag = preg_quote($node->name(), '/');
 		$open_tag = preg_quote($node->open_tag, '/');
 

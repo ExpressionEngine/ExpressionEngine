@@ -524,7 +524,7 @@ class EE_Channel_data_parser {
 							if (isset($channel->gfields[$row['site_id']][$key]) &&
 								$modifier == 'total_rows')
 							{
-								$cond[$key] = $result;
+								$cond[$key] = (int) $result;
 							}
 						}
 					}
