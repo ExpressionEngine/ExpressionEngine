@@ -46,7 +46,7 @@ class Developer extends Logs {
 
 		$logs = ee('Model')->get('DeveloperLog');
 
-		if ( ! empty(ee()->view->search_value))
+		if ($search = ee()->input->get_post('filter_by_keyword'))
 		{
 			/* The following SQL is an example of how to build the localized
 			 * deprecation log for searching.
@@ -89,7 +89,7 @@ class Developer extends Logs {
 			// @TODO refactor to eliminate this query
 			ee()->load->dbforge();
 			$results = ee()->db->select('log_id')
-				->where($localized_description . " LIKE '%" . ee()->db->escape_like_str(ee()->view->search_value) . "%'")
+				->where($localized_description . " LIKE '%" . ee()->db->escape_like_str($search) . "%'")
 				->get('developer_log')
 				->result_array();
 
@@ -107,15 +107,13 @@ class Developer extends Logs {
 			$logs = $logs->filter('log_id', 'IN', $ids);
 		}
 
-		if ($logs->count() > 10)
-		{
-			$filters = ee('CP/Filter')
-				->add('Date')
-				->add('Perpage', $logs->count(), 'all_developer_logs');
-			ee()->view->filters = $filters->render($this->base_url);
-			$this->params = $filters->values();
-			$this->base_url->addQueryStringVariables($this->params);
-		}
+		$filters = ee('CP/Filter')
+			->add('Date')
+			->add('Perpage', $logs->count(), 'all_developer_logs')
+			->add('Keyword');
+		ee()->view->filters = $filters->render($this->base_url);
+		$this->params = $filters->values();
+		$this->base_url->addQueryStringVariables($this->params);
 
 		$page = ((int) ee()->input->get('page')) ?: 1;
 		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
@@ -136,9 +134,13 @@ class Developer extends Logs {
 		$count = $logs->count();
 
 		// Set the page heading
-		if ( ! empty(ee()->view->search_value))
+		if ( ! empty($search))
 		{
-			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+			ee()->view->cp_heading = sprintf(
+				lang('search_results_heading'),
+				$count,
+				ee('Format')->make('Text', $search)->convertToEntities()
+			);
 		}
 
 		ee()->view->header = array(

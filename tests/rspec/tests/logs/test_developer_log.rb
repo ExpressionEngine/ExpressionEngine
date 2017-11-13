@@ -3,7 +3,7 @@ require './bootstrap.rb'
 def confirm (page)
   page.displayed?
   page.heading.text.should eq 'Developer Logs'
-  page.should have_phrase_search
+  page.should have_keyword_search
   page.should have_submit_button
   page.should have_date_filter
   page.should have_perpage_filter
@@ -36,20 +36,6 @@ feature 'Developer Log' do
     @page.should have(25).items # Default is 25 per page
   end
 
-  it 'does not show filters at 10 items' do
-    @page.generate_data(count: 10)
-    @page.load
-    no_php_js_errors
-
-    @page.displayed?
-    @page.heading.text.should eq 'Developer Logs'
-    @page.should have_phrase_search
-    @page.should have_submit_button
-    @page.should_not have_date_filter
-    @page.should_not have_perpage_filter
-    @page.should_not have_pagination
-  end
-
   # Confirming phrase search
   it 'searches by phrases' do
     our_desc = "Rspec entry for search"
@@ -64,11 +50,11 @@ feature 'Developer Log' do
     # Be sane and make sure it's there before we search for it
     @page.should have_text our_desc
 
-    @page.phrase_search.set "Rspec"
-    @page.submit_button.click
+    @page.keyword_search.set "Rspec"
+    @page.keyword_search.send_keys(:enter)
 
     @page.heading.text.should eq 'Search Results we found 1 results for "Rspec"'
-    @page.phrase_search.value.should eq "Rspec"
+    @page.keyword_search.value.should eq "Rspec"
     @page.should have_text our_desc
     @page.should have(1).items
   end
@@ -85,8 +71,8 @@ feature 'Developer Log' do
     # Be sane and make sure it's there before we search for it
     @page.should have_text our_phrase
 
-    @page.phrase_search.set our_phrase
-    @page.submit_button.click
+    @page.keyword_search.set our_phrase
+    @page.keyword_search.send_keys(:enter)
 
     @page.should have_text our_phrase
     @page.should_not have_no_results
@@ -101,17 +87,17 @@ feature 'Developer Log' do
 
     confirm @page
 
-    @page.phrase_search.set our_desc
-    @page.submit_button.click
+    @page.keyword_search.set our_desc
+    @page.keyword_search.send_keys(:enter)
 
     @page.heading.text.should eq 'Search Results we found 0 results for "' + our_desc + '"'
-    @page.phrase_search.value.should eq our_desc
+    @page.keyword_search.value.should eq our_desc
     @page.should have_text our_desc
+    @page.should have_date_filter
+    @page.should have_perpage_filter
 
     @page.should have_no_results
 
-    @page.should_not have_date_filter
-    @page.should_not have_perpage_filter
     @page.should_not have_pagination
     @page.should_not have_remove_all
   end
@@ -216,12 +202,12 @@ feature 'Developer Log' do
     @page.date_filter_menu.click_link "Last 24 Hours"
     no_php_js_errors
 
-    @page.phrase_search.set "Rspec"
-    @page.submit_button.click
+    @page.keyword_search.set "Rspec"
+    @page.keyword_search.send_keys(:enter)
 
     @page.date_filter.text.should eq "date (Last 24 Hours)"
     @page.heading.text.should eq 'Search Results we found 5 results for "Rspec"'
-    @page.phrase_search.value.should eq "Rspec"
+    @page.keyword_search.value.should eq "Rspec"
     @page.should have_text our_desc
     @page.should have(5).items
     @page.should_not have_pagination
@@ -341,13 +327,13 @@ feature 'Developer Log' do
     @page.perpage_filter_menu.click_link "25"
     no_php_js_errors
 
-    @page.phrase_search.set "Visible"
-    @page.submit_button.click
+    @page.keyword_search.set "Visible"
+    @page.keyword_search.send_keys(:enter)
     no_php_js_errors
 
     # Page 1
     @page.heading.text.should eq 'Search Results we found 35 results for "Visible"'
-    @page.phrase_search.value.should eq "Visible"
+    @page.keyword_search.value.should eq "Visible"
     @page.items.should_not have_text "Hidden"
     @page.perpage_filter.text.should eq "show (25)"
     @page.should have(25).items
@@ -359,7 +345,7 @@ feature 'Developer Log' do
 
     # Page 2
     @page.heading.text.should eq 'Search Results we found 35 results for "Visible"'
-    @page.phrase_search.value.should eq "Visible"
+    @page.keyword_search.value.should eq "Visible"
     @page.items.should_not have_text "Hidden"
     @page.perpage_filter.text.should eq "show (25)"
     @page.should have(10).items
