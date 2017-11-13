@@ -176,6 +176,16 @@ class Forum_tab {
 			return TRUE;
 		});
 
+		$validator->defineRule('has_forum_id', function($key, $value, $parameters, $rule) use ($values) {
+			if (empty($value) && (! empty($values['forum_title']) || ! empty($values['forum_body'])))
+			{
+				$rule->stop();
+				return lang('forum_no_forum_id');
+			}
+
+			return TRUE;
+		});
+
 		$validator->defineRule('valid_forum_id', function($key, $value, $parameters) use ($allowed) {
 			return in_array($value, $allowed);
 		});
@@ -209,7 +219,7 @@ class Forum_tab {
 		$validator->setRules(array(
 			'forum_title'    => 'valid_forum_title|maxLength[150]',
 			'forum_body'     => 'valid_forum_body',
-			'forum_id'       => 'isNatural|valid_forum_id',
+			'forum_id'       => 'isNatural|has_forum_id|valid_forum_id',
 			'forum_topic_id' => 'whenPresent|valid_forum_topic_id'
 		));
 
