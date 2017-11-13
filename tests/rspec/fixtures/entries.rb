@@ -97,6 +97,7 @@ options[:number].to_i.times do
     title:              title[0..99],
     url_title:          title[0..70].downcase.gsub(' ', '-'),
     status:             'open',
+    status_id:          1,
     versioning_enabled: 'y',
     entry_date:         time.to_i,
     edit_date:          time.strftime('%Y%m%d%H%M%S'),
