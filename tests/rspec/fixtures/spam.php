@@ -26,7 +26,7 @@ EOF;
 $total = isset($options['total']) ? $options['total'] : 5;
 
 
-$entry = $api->get('ChannelEntry');
+$entry =ee('Model')->get('ChannelEntry');
 if (isset($options['entry-id']))
 {
 	$entry->filter('entry_id', $options['entry-id']);
@@ -39,7 +39,7 @@ if ( ! $entry)
 	exit('Spam Fixture requires the existence of at least one entry');
 }
 
-$member = $api->get('Member')->first();
+$member =ee('Model')->get('Member')->first();
 
 $faker = Faker\Factory::create();
 
@@ -79,7 +79,7 @@ for ($i = 0; $i < $total; $i++)
 			break;
 	}
 
-	$comment = $api->make('Comment', $comment_data)->save();
+	$comment =ee('Model')->make('Comment', $comment_data)->save();
 
 	$spam_data = [
 		'content_type'  => 'comment',
@@ -91,6 +91,6 @@ for ($i = 0; $i < $total; $i++)
 		'optional_data' => '/fake/uri',
 	];
 
-	$trap = $api->make('spam:SpamTrap', $spam_data);
+	$trap =ee('Model')->make('spam:SpamTrap', $spam_data);
 	$trap->save();
 }
