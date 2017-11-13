@@ -41,33 +41,27 @@ class Cp extends Logs {
 
 		$logs = ee('Model')->get('CpLog')->with('Site');
 
-		if ( ! empty(ee()->view->search_value))
+		if ($search = ee()->input->get_post('filter_by_keyword'))
 		{
-			$logs = $logs->filterGroup()
-			               ->filter('action', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('username', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('ip_address', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('Site.site_label', 'LIKE', '%' . ee()->view->search_value . '%')
-						 ->endFilterGroup();
+			$logs->search(['action', 'username', 'ip_address', 'Site.site_label'], $search);
 		}
 
-		if ($logs->count() > 10)
-		{
-			$filters = ee('CP/Filter')
-				->add('Username')
-				->add('Site')
-				->add('Date')
-				->add('Perpage', $logs->count(), 'all_cp_logs');
-			ee()->view->filters = $filters->render($this->base_url);
-			$this->params = $filters->values();
-			$this->base_url->addQueryStringVariables($this->params);
-		}
+		$filters = ee('CP/Filter')
+			->add('Username')
+			->add('Site')
+			->add('Date')
+			->add('Perpage', $logs->count(), 'all_cp_logs')
+			->add('Keyword');
+		ee()->view->filters = $filters->render($this->base_url);
+		$this->params = $filters->values();
+		$this->base_url->addQueryStringVariables($this->params);
 
 		$page = ((int) ee()->input->get('page')) ?: 1;
 		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
 
 		if ( ! empty($this->params['filter_by_username']))
 		{
+			echo 'hi';
 			$logs = $logs->filter('member_id', 'IN', $this->params['filter_by_username']);
 		}
 
@@ -92,15 +86,18 @@ class Cp extends Logs {
 		$count = $logs->count();
 
 		// Set the page heading
-		if ( ! empty(ee()->view->search_value))
+		if ( ! empty($search))
 		{
-			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+			ee()->view->cp_heading = sprintf(
+				lang('search_results_heading'),
+				$count,
+				ee('Format')->make('Text', $search)->convertToEntities()
+			);
 		}
 
 		ee()->view->header = array(
 			'title' => lang('system_logs'),
 			'form_url' => $this->base_url->compile(),
-			'search_button_value' => lang('search_logs_button')
 		);
 
 		$logs = $logs->order('act_date', 'desc')
