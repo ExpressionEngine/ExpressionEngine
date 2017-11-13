@@ -146,7 +146,10 @@ feature 'Forum Tab' do
     @page.tab_links[4].click
     @page.forum_tab.forum_title.set title
     @page.forum_tab.forum_body.set body
-    @page.submit_buttons[1].click
+    @page.forum_tab.forum_id.click
+    @page.forum_tab.forum_id_choices[0].click
+
+    @page.submit_buttons[2].click
 
     @page.all_there?.should == false
     @page.alert.has_content?("The entry #{title} has been created.").should == true

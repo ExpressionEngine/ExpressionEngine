@@ -1,7 +1,8 @@
 class ForumTab < SitePrism::Section
   element :forum_title, 'input[name="forum__forum_title"]'
   element :forum_body, 'textarea[name="forum__forum_body"]'
-  element :forum_id, 'div[data-dropdown-react][data-input-value="forum__forum_id"]'
+  element :forum_id, 'div[data-input-value="forum__forum_id"]'
+  elements :forum_id_choices, 'div[data-input-value="forum__forum_id"] .field-drop-choices label'
   element :forum_topic_id, 'input[name="forum__forum_topic_id"]'
 
   # Install forum, create a board, category, and forum
