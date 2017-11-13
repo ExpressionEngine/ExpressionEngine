@@ -21,8 +21,9 @@ feature 'Throttling Log' do
     # These should always be true at all times if not something has gone wrong
     @page.displayed?
     @page.heading.text.should eq 'Access Throttling Logs'
-    @page.should have_phrase_search
-    @page.should have_submit_button
+
+    @page.should_not have_keyword_search
+    @page.should_not have_submit_button
     @page.should_not have_perpage_filter
   end
 
@@ -34,7 +35,7 @@ feature 'Throttling Log' do
     # These should always be true at all times if not something has gone wrong
     @page.displayed?
     @page.heading.text.should eq 'Access Throttling Logs'
-    @page.should have_phrase_search
+    @page.should have_keyword_search
     @page.should have_submit_button
     @page.should have_perpage_filter
   end
@@ -42,7 +43,7 @@ feature 'Throttling Log' do
   context 'when throttling is disabled' do
     it 'shows the Turn Throttling On button', :enabled => false, :pregen => true do
       @page.should have_no_results
-      @page.should have_selector('a.action', :text => 'Turn Throttling On')
+      @page.should have_selector('a', :text => 'Turn Throttling On')
     end
   end
 
@@ -59,19 +60,6 @@ feature 'Throttling Log' do
       @page.should have(25).items # Default is 25 per page
     end
 
-    it 'does not show filters at 10 items', :pregen => false do
-      @page.generate_data(count: 10)
-      ee_config(item: 'enable_throttling', value: 'y')
-      @page.load
-
-      # These should always be true at all times if not something has gone wrong
-      @page.displayed?
-      @page.heading.text.should eq 'Access Throttling Logs'
-      @page.should have_phrase_search
-      @page.should have_submit_button
-      @page.should_not have_perpage_filter
-    end
-
     # Confirming phrase search
     it 'searches by phrases', :enabled => true, :pregen => true do
       our_ip = "172.16.11.42"
@@ -82,11 +70,11 @@ feature 'Throttling Log' do
       # Be sane and make sure it's there before we search for it
       @page.should have_text our_ip
 
-      @page.phrase_search.set "172.16.11"
-      @page.submit_button.click
+      @page.keyword_search.set "172.16.11"
+      @page.keyword_search.send_keys(:enter)
 
       @page.heading.text.should eq 'Search Results we found 1 results for "172.16.11"'
-      @page.phrase_search.value.should eq "172.16.11"
+      @page.keyword_search.value.should eq "172.16.11"
       @page.should have_text our_ip
       @page.should have(1).items
     end
@@ -94,15 +82,16 @@ feature 'Throttling Log' do
     it 'shows no results on a failed search', :enabled => true, :pregen => true do
       our_ip = "NotFoundHere"
 
-      @page.phrase_search.set our_ip
-      @page.submit_button.click
+      @page.keyword_search.set our_ip
+      @page.keyword_search.send_keys(:enter)
 
       @page.heading.text.should eq 'Search Results we found 0 results for "' + our_ip + '"'
-      @page.phrase_search.value.should eq our_ip
+      @page.keyword_search.value.should eq our_ip
       @page.should have_text our_ip
+      @page.should have_perpage_filter
 
       @page.should have_no_results
-      @page.should_not have_perpage_filter
+
       @page.should_not have_pagination
       @page.should_not have_remove_all
     end
@@ -144,12 +133,12 @@ feature 'Throttling Log' do
       @page.perpage_filter_menu.click_link "25"
       no_php_js_errors
 
-      @page.phrase_search.set "172.16.11"
-      @page.submit_button.click
+      @page.keyword_search.set "172.16.11"
+      @page.keyword_search.send_keys(:enter)
 
       @page.perpage_filter.text.should eq "show (25)"
       @page.heading.text.should eq 'Search Results we found 27 results for "172.16.11"'
-      @page.phrase_search.value.should eq "172.16.11"
+      @page.keyword_search.value.should eq "172.16.11"
       @page.should have_text our_ip
       @page.should have(25).items
       @page.should have_pagination
@@ -232,13 +221,13 @@ feature 'Throttling Log' do
       @page.perpage_filter_menu.click_link "25"
       no_php_js_errors
 
-      @page.phrase_search.set "172.16.11"
-      @page.submit_button.click
+      @page.keyword_search.set "172.16.11"
+      @page.keyword_search.send_keys(:enter)
       no_php_js_errors
 
       # Page 1
       @page.heading.text.should eq 'Search Results we found 35 results for "172.16.11"'
-      @page.phrase_search.value.should eq "172.16.11"
+      @page.keyword_search.value.should eq "172.16.11"
       @page.items.should_not have_text "10.0"
       @page.perpage_filter.text.should eq "show (25)"
       @page.should have(25).items
@@ -250,7 +239,7 @@ feature 'Throttling Log' do
 
       # Page 2
       @page.heading.text.should eq 'Search Results we found 35 results for "172.16.11"'
-      @page.phrase_search.value.should eq "172.16.11"
+      @page.keyword_search.value.should eq "172.16.11"
       @page.items.should_not have_text "10.0"
       @page.perpage_filter.text.should eq "show (25)"
       @page.should have(10).items
