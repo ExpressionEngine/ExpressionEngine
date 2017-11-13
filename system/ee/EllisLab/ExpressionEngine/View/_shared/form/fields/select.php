@@ -44,7 +44,7 @@ if ($count <= $too_many
 	&& ! $force_react):
 
 	// For radios with no value, set value to first choice
-	if ($value !== FALSE && empty($value) && ! $multi) {
+	if ($value !== FALSE && $value !== '0' && empty($value) && ! $multi) {
 		$keys = array_keys($choices);
 		$value = $keys[0];
 	}
