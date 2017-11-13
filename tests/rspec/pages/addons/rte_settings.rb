@@ -2,7 +2,7 @@ class RTESettings < ControlPanelPage
   set_url_matcher /addons\/settings\/rte/
 
   element :title, '.section-header__title'
-  elements :headings, 'div.col.w-16.last h1'
+  elements :headings, 'form h1'
 
   # Settings View
   element :rte_enabled, 'input[name=rte_enabled]', :visible => false
@@ -25,8 +25,8 @@ class RTESettings < ControlPanelPage
 
   # Tool Set View
   element :tool_set_name, 'input[name="toolset_name"]'
-  elements :choose_tools, 'form fieldset.col-group div.setting-field label.choice.block input'
-  element :tool_set_submit_button, 'form.settings fieldset.form-ctrls input.btn[type="submit"]'
+  elements :choose_tools, 'div[data-input-value="tools"] input[type="checkbox"]'
+  element :tool_set_submit_button, 'div.form-btns.form-btns-top input.btn[type="submit"]'
 
   def load
     self.open_dev_menu

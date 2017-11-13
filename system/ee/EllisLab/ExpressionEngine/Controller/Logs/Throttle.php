@@ -75,32 +75,45 @@ class Throttle extends Logs {
 					->endFilterGroup()
 				->endFilterGroup();
 
-			if ( ! empty(ee()->view->search_value))
+			if ($search = ee()->input->get_post('filter_by_keyword'))
 			{
-				$logs = $logs->filterGroup()
-				               ->filter('ip_address', 'LIKE', '%' . ee()->view->search_value . '%')
-				               ->orFilter('hits', 'LIKE', '%' . ee()->view->search_value . '%')
-							 ->endFilterGroup();
+				$logs->search(['ip_address', 'hits'], $search);
 			}
 
-			$count = $logs->count();
-
-			if ($count > 10)
-			{
-				$filters = ee('CP/Filter')
-					->add('Perpage', $count, 'all_throttle_logs');
-				ee()->view->filters = $filters->render($this->base_url);
-				$this->params = $filters->values();
-				$this->base_url->addQueryStringVariables($this->params);
-			}
+			$filters = ee('CP/Filter')
+				->add('Date')
+				->add('Perpage', $logs->count(), 'all_throttle_logs')
+				->add('Keyword');
+			ee()->view->filters = $filters->render($this->base_url);
+			$this->params = $filters->values();
+			$this->base_url->addQueryStringVariables($this->params);
 
 			$page = ((int) ee()->input->get('page')) ?: 1;
 			$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
 
-			// Set the page heading
-			if ( ! empty(ee()->view->search_value))
+			if ( ! empty($this->params['filter_by_date']))
 			{
-				ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+				if (is_array($this->params['filter_by_date']))
+				{
+					$logs = $logs->filter('last_activity', '>=', $this->params['filter_by_date'][0]);
+					$logs = $logs->filter('last_activity', '<', $this->params['filter_by_date'][1]);
+				}
+				else
+				{
+					$logs = $logs->filter('last_activity', '>=', ee()->localize->now - $this->params['filter_by_date']);
+				}
+			}
+
+			$count = $logs->count();
+
+			// Set the page heading
+			if ( ! empty($search))
+			{
+				ee()->view->cp_heading = sprintf(
+					lang('search_results_heading'),
+					$count,
+					ee('Format')->make('Text', $search)->convertToEntities()
+				);
 			}
 
 			$logs = $logs->order('last_activity', 'desc')

@@ -511,7 +511,7 @@ class ChannelEntry extends ContentModel {
 			return;
 		}
 
-		$data = $this->getValues();
+		$data = $_POST ?: $this->getValues();
 
 		$last_version = $this->Versions->sortBy('version_date')->reverse()->first();
 

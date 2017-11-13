@@ -484,6 +484,12 @@ class EE_Channel_data_parser {
 			{
 				$cond[$key] = ( ! isset($row['field_id_'.$value])) ? '' : $row['field_id_'.$value];
 
+				// Make sure Toggle fields are the proper integers they're supposed to be
+				if (isset($channel->tfields[$row['site_id']][$key]))
+				{
+					$cond[$key] = (int) $cond[$key];
+				}
+
 				// Is this field used with a modifier anywhere?
 				if (isset($pre->modified_conditionals[$key]) && count($pre->modified_conditionals[$key]))
 				{
@@ -518,7 +524,7 @@ class EE_Channel_data_parser {
 							if (isset($channel->gfields[$row['site_id']][$key]) &&
 								$modifier == 'total_rows')
 							{
-								$cond[$key] = $result;
+								$cond[$key] = (int) $result;
 							}
 						}
 					}
