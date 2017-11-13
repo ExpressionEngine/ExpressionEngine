@@ -142,7 +142,8 @@ class Template extends AbstractDesignController {
 						'fields' => array(
 							'template_type' => array(
 								'type' => 'radio',
-								'choices' => $this->getTemplateTypes()
+								'choices' => $this->getTemplateTypes(),
+								'value' => NULL
 							)
 						)
 					),
