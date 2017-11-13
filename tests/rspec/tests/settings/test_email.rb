@@ -7,8 +7,6 @@ feature 'Outgoing Email Settings' do
   let(:natural_number)  { 'This field must contain a number greater than zero.' }
 
   before :each do
-    skip $react_es6_skip_message do
-    end
     cp_session
     @page = EmailSettings.new
     @page.load
@@ -18,12 +16,14 @@ feature 'Outgoing Email Settings' do
   context 'when validating with page loads' do
 
     it 'should load current email settings into form fields' do
+      email_newline = ee_config(item: 'email_newline')
+
       @page.webmaster_email.value.should == ee_config(item: 'webmaster_email')
       @page.webmaster_name.value.should == ee_config(item: 'webmaster_name')
       @page.email_charset.value.should == ee_config(item: 'email_charset')
-      @page.mail_protocol.value.should == ee_config(item: 'mail_protocol')
-      @page.email_newline.value.sub(/\\n/, "\n").should == ee_config(item: 'email_newline')
-      @page.mail_format.value.should == ee_config(item: 'mail_format')
+      @page.mail_protocol.has_checked_radio(ee_config(item: 'mail_protocol')).should == true
+      @page.email_newline.has_checked_radio(email_newline.sub(/\n/, "\\n")).should == true
+      @page.mail_format.has_checked_radio(ee_config(item: 'mail_format')).should == true
 
       # SMTP fields are hidden unless SMTP is selected
 
@@ -32,8 +32,7 @@ feature 'Outgoing Email Settings' do
     end
 
     it 'validates SMTP server when that is the selected protocol' do
-      @page.mail_protocol.select 'SMTP'
-      @page.smtp_server.set ''
+      @page.mail_protocol.choose_radio_option('smtp')
       @page.submit
 
       no_php_js_errors
@@ -46,12 +45,12 @@ feature 'Outgoing Email Settings' do
       @page.webmaster_email.set 'test@test.com'
       @page.webmaster_name.set 'Trey Anastasio'
       @page.email_charset.set 'somecharset'
-      @page.mail_protocol.select 'SMTP'
+      @page.mail_protocol.choose_radio_option('smtp')
       @page.smtp_server.set 'google.com'
       @page.smtp_port.set '587'
       @page.smtp_username.set 'username'
       @page.smtp_password.set 'password'
-      @page.mail_format.select 'HTML'
+      @page.mail_format.choose_radio_option('html')
       @page.word_wrap_toggle.click
       @page.submit
 
@@ -59,19 +58,19 @@ feature 'Outgoing Email Settings' do
       @page.webmaster_email.value.should == 'test@test.com'
       @page.webmaster_name.value.should == 'Trey Anastasio'
       @page.email_charset.value.should == 'somecharset'
-      @page.mail_protocol.value.should == 'smtp'
+      @page.mail_protocol.has_checked_radio('smtp').should == true
       @page.smtp_server.value.should == 'google.com'
       @page.smtp_port.value.should == '587'
       @page.smtp_username.value.should == 'username'
       @page.smtp_password.value.should == 'password'
-      @page.mail_format.value.should == 'html'
+      @page.mail_format.has_checked_radio('html').should == true
       @page.word_wrap.value.should == 'n'
     end
   end
 
   context 'when validating using Ajax' do
     it 'validates mail protocol' do
-      @page.mail_protocol.select 'SMTP'
+      @page.mail_protocol.choose_radio_option('smtp')
 
       @page.wait_until_smtp_server_visible
       @page.wait_until_smtp_port_visible
@@ -125,14 +124,14 @@ feature 'Outgoing Email Settings' do
     end
 
     it 'validates mail protocol when using PHP mail' do
-      @page.mail_protocol.select 'PHP mail'
-      @page.mail_protocol.trigger 'blur'
+      @page.mail_protocol.choose_radio_option('mail')
+      @page.mail_protocol[0].trigger 'blur'
       @page.wait_for_error_message_count(0)
       should_have_no_form_errors(@page)
     end
 
     it 'validates SMTP port' do
-      @page.mail_protocol.select 'SMTP'
+      @page.mail_protocol.choose_radio_option('smtp')
 
       @page.wait_until_smtp_server_visible
       @page.wait_until_smtp_port_visible
