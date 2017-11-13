@@ -37,7 +37,7 @@ class SpamTrap < ControlPanelPage
 
   def load
     self.open_dev_menu
-    click_link 'Add-On Manager'
+    click_link 'Add-Ons'
     self.find('fieldset.tbl-search input[name=search]').set 'Spam'
     self.find('fieldset.tbl-search input.submit').click
     self.find('ul.toolbar li.settings a').click
