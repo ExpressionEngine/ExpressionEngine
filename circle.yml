@@ -12,6 +12,9 @@ machine:
 dependencies:
   pre:
     - npm install -g gulp
+    - sudo apt-get -y install xvfb chromium-chromedriver
+    - sudo cp /usr/lib/chromium-browser/chromedriver /usr/local/bin/
+
   override:
     - "cd tests/rspec && bundle install --without development --deployment"
     - "cd system/ee/EllisLab/Tests && composer install --prefer-source --no-interaction"
