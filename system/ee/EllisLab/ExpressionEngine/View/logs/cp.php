@@ -34,7 +34,7 @@
 				<?=$pagination?>
 
 				<fieldset class="tbl-bulk-act">
-					<button class="btn remove m-link" rel="modal-confirm-all"><?=lang('clear_cp_logs')?></button>
+					<button class="btn action m-link" rel="modal-confirm-all"><?=lang('clear_cp_logs')?></button>
 				</fieldset>
 			<?php endif; ?>
 		</section>
