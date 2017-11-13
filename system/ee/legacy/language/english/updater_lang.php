@@ -105,6 +105,11 @@ Status code returned: %s',
 
 Correct the issues above and try updating again.',
 
+'out_of_date_admin_php' =>
+'It looks like your ExpressionEngine installation is using an out-of-date /admin.php or /system/index.php file.
+
+Please make sure you have the latest version of each file in place and then try upgrading again.',
+
 'update_completed' =>
 'ExpressionEngine has been successfully updated to version %s!',
 
