@@ -52,6 +52,7 @@ class Query {
 	 */
 	public function __construct(\EllisLab\ExpressionEngine\Service\Database\Query $query)
 	{
+		$query->dbprefix = '';
 		$this->query = $query;
 	}
 
