@@ -400,7 +400,7 @@ $lang = array(
 
 'forum_no_forum_title' => 'You must give the forum topic a title.',
 
-'forum_no_forum_title' => 'You must choose a forum.',
+'forum_no_forum_id' => 'You must choose a forum.',
 
 'forum_title' => 'Forum Topic Title',
 
