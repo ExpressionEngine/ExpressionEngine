@@ -407,7 +407,19 @@ class Groups extends Members\Members {
 				->update();
 		}
 
-		ee('Model')->get('MemberGroup', $group_id)->first()->delete();
+		$sites = ee('Model')->get('Site')
+			->fields('site_id')
+			->all()
+			->pluck('site_id');
+
+		foreach ($sites as $site_id)
+		{
+			$groups = ee('Model')->get('MemberGroup')
+				->filter('group_id', $group_id)
+				->filter('site_id', $site_id)
+				->all()
+				->delete();
+		}
 	}
 
 	private function form($vars = array(), $values = array())

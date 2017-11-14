@@ -51,7 +51,7 @@ class Structure {
 	);
 
 	public static $short_names = array(
-		'ee:Channel' => array('channel_name' => 'channel_name'),
+		'ee:Channel' => array('channel_name' => 'channel_title'),
 		'ee:ChannelField' => array('field_name' => 'field_label')
 	);
 
