@@ -246,6 +246,24 @@ module Capybara
 
 end
 
+# Monkey patch so SitePrism's all_there? gives a more explicit and useful failure
+# See https://github.com/natritmeyer/site_prism/issues/146
+module SitePrism
+  module ElementChecker
+    def all_there?
+      Capybara.using_wait_time(0) do
+        self.class.mapped_items.all? do |element|
+          if ! send "has_#{element}?"
+            raise "Missing element '#{element}'"
+          else
+            return true
+          end
+        end
+      end
+    end
+  end
+end
+
 # Swaps on piece of text for another given a file
 #
 # @param [File] file File object
