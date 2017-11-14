@@ -394,7 +394,7 @@ $lang = array(
 
 'ban_options_desc' => 'You can prevent access completely by forwarding them to another website, or show them an unavailable message, or allow them to access the website in view only mode.',
 
-'ban_settings_updated' => 'Banned Settings Updated',
+'ban_settings_updated' => 'Ban Settings updated',
 
 'banned_members' => 'Banned Members',
 
