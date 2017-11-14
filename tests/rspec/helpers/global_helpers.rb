@@ -58,7 +58,6 @@ end
 
 # Checks for show_error()
 def should_have_show_error(message)
-  page.has_content?('An Error Was Encountered').should == true
   page.has_content?(message).should == true
   page.status_code.should == 500
 end
