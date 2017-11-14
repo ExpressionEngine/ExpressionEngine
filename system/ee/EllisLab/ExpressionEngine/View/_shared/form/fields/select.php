@@ -1,5 +1,6 @@
 <?php
 $too_many = 8;
+$class = isset($class) ? $class : '';
 
 if (count($choices) == 0)
 {
@@ -11,7 +12,6 @@ if (count($choices) == 0)
 	return;
 };
 
-$class = isset($class) ? $class : '';
 $nested = isset($nested) ? $nested : FALSE;
 $encode = isset($encode) ? $encode : TRUE;
 $force_react = isset($force_react) ? $force_react : FALSE;
