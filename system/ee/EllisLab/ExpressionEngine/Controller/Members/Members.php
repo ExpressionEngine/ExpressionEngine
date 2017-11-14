@@ -82,7 +82,7 @@ class Members extends CP_Controller {
 
 		if (ee()->cp->allowed_group('can_ban_users'))
 		{
-			$list->addItem(lang('manage_bans'), ee('CP/URL')->make('members/bans'));
+			$list->addItem(lang('manage_bans'), ee('CP/URL')->make('members/ban-settings'));
 		}
 
 		if (ee()->cp->allowed_group('can_admin_mbr_groups'))
@@ -124,11 +124,7 @@ class Members extends CP_Controller {
 	 */
 	public function index()
 	{
-		if ( ! ($member_name = $this->input->post('search')) &&
-			 ! ($member_name = $this->input->get('search')))
-		{
-			$member_name = '';
-		}
+		$member_name = $this->input->get_post('filter_by_keyword');
 
 		$table = $this->initializeTable();
 
@@ -261,12 +257,12 @@ class Members extends CP_Controller {
 
 		// Allow them to tokenize searches
 		// possible tokens: id, member_id, username, screen_name, email
-		$search_terms = $this->_check_search_tokens(ee()->input->get_post('search'));
+		$search_terms = $this->_check_search_tokens(ee()->input->get_post('filter_by_keyword'));
 
 		if ( ! empty($search_terms))
 		{
-			$keywords = ee()->input->get_post('search');
-			$vars['search_terms'] = htmlentities($keywords, ENT_QUOTES, 'UTF-8');
+			$keywords = ee()->input->get_post('filter_by_keyword');
+			$vars['search_terms'] = ee('Format')->make('Text', $keywords)->convertToEntities();
 
 			if ( ! is_array($search_terms))
 			{
@@ -291,7 +287,8 @@ class Members extends CP_Controller {
 		$total = $members->count();
 
 		$filter = ee('CP/Filter')
-				->add('Perpage', $total, 'show_all_banned');
+				->add('Perpage', $total, 'show_all_banned')
+				->add('Keyword');
 
 		$this->renderFilters($filter);
 		$members->limit($this->perpage)
@@ -315,41 +312,12 @@ class Members extends CP_Controller {
 	}
 
 
-	public function bans()
+	public function banSettings()
 	{
-		if ( ! ee()->cp->allowed_group('can_ban_users'))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
-		if (ee()->input->post('bulk_action') == 'remove')
-		{
-			// @TODO: refactor the delete method so it doesn't need this property
-			$this->base_url = ee('CP/URL', 'members/bans');
-			$this->delete();
-		}
-
 		$this->generateSidebar('ban');
 
-		$vars = array(
-			'cp_page_title' => lang('banned_members'),
-			'can_delete' => ee()->cp->allowed_group('can_delete_members')
-		);
-
-		$this->base_url = ee('CP/URL', 'members/bans');
+		$this->base_url = ee('CP/URL', 'members/ban-settings');
 		$this->set_view_header($this->base_url);
-
-		$members = ee('Model')->get('Member')
-			->with('MemberGroup')
-			->filter('group_id', 2)
-			->filter('MemberGroup.site_id', ee()->config->item('site_id'));
-
-		$listings = $this->listingsPage($members, $this->base_url, 'no_banned_members_found');
-
-		$vars = array_merge($listings, $vars);
-
-		$this->set_view_header($this->base_url);
-
 
 		$values = array(
 			'banned_ips' => '',
@@ -376,7 +344,7 @@ class Members extends CP_Controller {
 		$vars['form'] = array(
 			'ajax_validate' => TRUE,
 			'base_url'      => $this->base_url,
-			'cp_page_title' => lang('user_banning'),
+			'cp_page_title' => lang('manage_bans'),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('settings')),
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
@@ -518,12 +486,7 @@ class Members extends CP_Controller {
 				->now();
 		}
 
-		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
-		ee()->cp->add_js_script(array(
-			'file' => array('cp/confirm_remove'),
-		));
-
-		ee()->cp->render('members/banned', $vars);
+		ee()->cp->render('members/ban_settings', $vars);
 	}
 
 	private function initializeTable($checkboxes = NULL)
@@ -554,6 +517,7 @@ class Members extends CP_Controller {
 			'sort_col' => $sort_col,
 			'sort_dir' => $sort_dir,
 			'limit' => ee()->config->item('memberlist_row_limit'),
+			'search' => ee()->input->get_post('filter_by_keyword'),
 		));
 
 		$table->setNoResultsText('no_members_found');
@@ -739,8 +703,8 @@ class Members extends CP_Controller {
 
 		// Create filter object
 		$group_ids = ee('Model')->get('MemberGroup')
-			// Banned & Pending have their own views
-			->filter('group_id', 'NOT IN', array(2, 4))
+			// Pending has its own view
+			->filter('group_id', 'NOT IN', array(4))
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('group_title', 'asc')
 			->all()
@@ -756,7 +720,8 @@ class Members extends CP_Controller {
 
 		$filters = ee('CP/Filter')
 				->add($group)
-				->add('Perpage', $total_rows, 'show_all_members');
+				->add('Perpage', $total_rows, 'show_all_members')
+				->add('Keyword');
 
 		$this->renderFilters($filters);
 
