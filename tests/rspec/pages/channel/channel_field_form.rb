@@ -1,5 +1,6 @@
 class ChannelFieldForm < ControlPanelPage
-  element :field_type, 'select[name=field_type]'
+  element :field_type, 'div[data-input-value="field_type"]'
+  elements :field_type_choices, 'div[data-input-value="field_type"] .field-drop-choices label'
   element :field_label, 'input[name=field_label]'
   element :field_name, 'input[name=field_name]'
 
@@ -39,7 +40,9 @@ class ChannelFieldForm < ControlPanelPage
 
     visit "/system/index.php?/cp/fields/create/#{options[:group_id]}"
 
-    field_type.select options[:type]
+    field_type.click
+    find('div[data-input-value="field_type"] .field-drop-choices label', text: options[:type]).click
+
     field_label.set options[:label]
     field_name.set options[:name] if options.key? :name
 

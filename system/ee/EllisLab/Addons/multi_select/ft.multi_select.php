@@ -35,7 +35,7 @@ class Multi_select_ft extends OptionFieldtype {
 	function validate($data)
 	{
 		$selected = decode_multi_field($data);
-		$selected = empty($selected) ? array() : (array) $selected;
+		$selected = (empty($selected) || $selected == array('')) ? array() : (array) $selected;
 
 		// in case another field type was here
 		$field_options = $this->_get_field_options($data);
