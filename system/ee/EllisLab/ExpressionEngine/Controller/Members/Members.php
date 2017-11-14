@@ -474,7 +474,7 @@ class Members extends CP_Controller {
 		// @TODO: Stop using form_validation
 		ee()->form_validation->set_rules(array(
 			array(
-				 'field'   => 'banned_username',
+				 'field'   => 'banned_usernames',
 				 'label'   => 'lang:banned_usernames',
 				 'rules'   => 'valid_xss_check'
 			),
