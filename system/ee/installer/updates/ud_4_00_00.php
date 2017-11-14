@@ -543,7 +543,7 @@ class Updater {
 	{
 		// Do we need to override?
 		$save_as_file = FALSE;
-		$msm_config = new \MSM_Config();
+		$update_config = FALSE;
 
 		$all_site_ids_query = ee()->db->select('site_id')
 			->get('sites')
@@ -554,17 +554,23 @@ class Updater {
 			$config = ee()->config->site_prefs('', $site->site_id, FALSE);
 
 			// If ANY sites save as file, they all must
-			if (isset($config['save_tmpl_files']) && $config['save_tmpl_files'] == 'y')
+			if (isset($config['save_tmpl_files']))
 			{
-				$save_as_file = TRUE;
-				break;
+				// Only update config if the key still exists
+				$update_config = TRUE;
+
+				if ($config['save_tmpl_files'] == 'y')
+				{
+					$save_as_file = TRUE;
+					break;
+				}
 			}
 
 		}
 
 		ee()->config->remove_config_item(array('save_tmpl_files'));
 
-		if ($save_as_file == FALSE)
+		if ($update_config && $save_as_file == FALSE)
 		{
 			// Add config override
 			ee()->config->_update_config(array('save_tmpl_files' => 'n'));
