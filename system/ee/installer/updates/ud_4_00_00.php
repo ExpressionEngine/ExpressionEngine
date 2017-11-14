@@ -829,8 +829,15 @@ class Updater {
 			$tables[] = array_shift($row);
 		}
 
+		$dbprefix = ee()->db->dbprefix;
+
 		foreach ($tables as $table)
 		{
+			if (strpos($table, $dbprefix) === 0)
+			{
+				$table = substr($table, strlen($dbprefix));
+			}
+
 			ee()->smartforge->add_column(
 				$table,
 				array(
