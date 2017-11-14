@@ -254,7 +254,8 @@ module SitePrism
       Capybara.using_wait_time(0) do
         self.class.mapped_items.all? do |element|
           if ! send "has_#{element}?"
-            raise "Missing element '#{element}'"
+            warn "Missing element '#{element}'"
+            return false
           else
             return true
           end
