@@ -130,14 +130,21 @@ class Table {
 		$defaults = array();
 
 		// Look for search in POST first, then GET
-		$defaults['search'] = FALSE;
-		if (isset($_POST['search']))
+		if (isset($config['search']))
+		{
+			$defaults['search'] = $config['search'];
+		}
+		elseif (isset($_POST['search']))
 		{
 			$defaults['search'] = $_POST['search'];
 		}
-		else if (isset($_GET['search']))
+		elseif (isset($_GET['search']))
 		{
 			$defaults['search'] = $_GET['search'];
+		}
+		else
+		{
+			$defaults['search'] = FALSE;
 		}
 
 		if (isset($_GET[$sort_col]))
