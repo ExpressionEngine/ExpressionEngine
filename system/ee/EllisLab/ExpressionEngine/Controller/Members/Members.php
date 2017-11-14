@@ -314,6 +314,11 @@ class Members extends CP_Controller {
 
 	public function banSettings()
 	{
+		if ( ! ee()->cp->allowed_group('can_ban_users'))
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+
 		$this->generateSidebar('ban');
 
 		$this->base_url = ee('CP/URL', 'members/ban-settings');
