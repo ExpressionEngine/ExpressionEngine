@@ -537,12 +537,10 @@ abstract class ContentModel extends VariableColumnModel {
 			$tables[] = $field->getTableName();
 		}
 
-		$key = ($this instanceof \EllisLab\ExpressionEngine\Model\Member\Member) ? 'member_id' : 'entry_id';
-
 		if ( ! empty($tables))
 		{
 			ee('Model/Datastore')->rawQuery()
-				->where($key, $this->getId())
+				->where($this->getPrimaryKey(), $this->getId())
 				->delete($tables);
 		}
 	}
