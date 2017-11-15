@@ -60,7 +60,8 @@ class Groups extends Members\Members {
 		$table = ee('CP/Table', array(
 			'sort_col' => $sort_col,
 			'sort_dir' => $sort_dir,
-			'limit' => $this->perpage
+			'limit' => $this->perpage,
+			'search' => ee()->input->get_post('filter_by_keyword'),
 		));
 
 		$columns = array(
@@ -98,7 +99,9 @@ class Groups extends Members\Members {
 			->filter('site_id', ee()->config->item('site_id'))
 			->count();
 
-		$filter = ee('CP/Filter')->add('Perpage', $total, 'show_all_member_groups');
+		$filter = ee('CP/Filter')
+			->add('Perpage', $total, 'show_all_member_groups')
+			->add('Keyword');
 
 		$this->renderFilters($filter);
 
@@ -108,11 +111,11 @@ class Groups extends Members\Members {
 			->limit($this->perpage)
 			->offset($this->offset);
 
-		$search = ee()->input->post('search');
+		$search = ee()->input->post('filter_by_keyword');
 
 		if ( ! empty($search))
 		{
-			$groups = $groups->filter('group_title', 'LIKE', "%$search%");
+			$groups = $groups->search('group_title', $search);
 		}
 
 		$groups = $groups->all();
