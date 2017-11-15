@@ -14,6 +14,36 @@ feature 'Member Group List' do
     @page.list.should have_groups
   end
 
+  # Confirming phrase search
+  it 'searches by phrases' do
+    # Be sane and make sure it's there before we search for it
+    @page.should have_text 'Super Admin'
+
+    @page.keyword_search.set "Super Admin"
+    @page.keyword_search.send_keys(:enter)
+
+    @page.heading.text.should eq 'Search Results we found 1 results for "Super Admin"'
+    @page.keyword_search.value.should eq "Super Admin"
+    @page.should have_text 'Super Admin'
+    @page.list.should have(1).groups
+  end
+
+  it 'shows no results on a failed search' do
+    our_action = 'BadMemberGroup'
+    @page.keyword_search.set our_action
+    @page.keyword_search.send_keys(:enter)
+
+    @page.heading.text.should eq 'Search Results we found 0 results for "' + our_action + '"'
+    @page.keyword_search.value.should eq our_action
+    @page.should have_text our_action
+
+    @page.list.should have_no_results
+    @page.should have_keyword_search
+    @page.should have_perpage_filter
+
+    @page.should_not have_pagination
+  end
+
   context 'when creating a member group' do
     before :each do
       create_member_group
@@ -22,33 +52,33 @@ feature 'Member Group List' do
     it 'creates a group successfully' do
       @page.edit.name.value.should == 'Moderators'
       @page.edit.description.value.should == 'Moderators description.'
-      @page.edit.security_lock[0].checked?.should == true
+      @page.edit.is_locked.value.should == 'y'
       @page.edit.website_access.each { |e| e.checked?.should == true }
-      @page.edit.can_view_profiles[0].checked?.should == true
-      @page.edit.can_delete_self[0].checked?.should == true
+      @page.edit.can_view_profiles.value.should == 'y'
+      @page.edit.can_delete_self.value.should == 'y'
       @page.edit.mbr_delete_notify_emails.value.should == 'team@ellislab.com'
       @page.edit.include_members_in.each { |e| e.checked?.should == true }
-      @page.edit.can_post_comments[0].checked?.should == true
-      @page.edit.exclude_from_moderation[0].checked?.should == true
+      @page.edit.can_post_comments.value.should == 'y'
+      @page.edit.exclude_from_moderation.value.should == 'y'
       @page.edit.comment_actions.each { |e| e.checked?.should == true }
-      @page.edit.can_search[0].checked?.should == true
+      @page.edit.can_search.value.should == 'y'
       @page.edit.search_flood_control.value.should == '60'
-      @page.edit.can_send_private_messages[0].checked?.should == true
+      @page.edit.can_send_private_messages.value.should == 'y'
       @page.edit.prv_msg_send_limit.value.should == '50'
       @page.edit.prv_msg_storage_limit.value.should == '100'
-      @page.edit.can_attach_in_private_messages[0].checked?.should == true
-      @page.edit.can_send_bulletins[0].checked?.should == true
-      @page.edit.can_access_cp[0].checked?.should == true
+      @page.edit.can_attach_in_private_messages.value.should == 'y'
+      @page.edit.can_send_bulletins.value.should == 'y'
+      @page.edit.can_access_cp.value.should == 'y'
       @page.edit.cp_homepage[1].checked?.should == true
-      @page.edit.footer_helper_links.each { |e| e.checked?.should == true }
-      @page.edit.channel_entry_actions.each { |e| e.checked?.should == true }
-      @page.edit.member_actions.each { |e| e.checked?.should == true }
-      @page.edit.allowed_channels.each { |e| e.checked?.should == true }
-      @page.edit.can_admin_design[0].checked?.should == true
-      @page.edit.allowed_template_groups.each { |e| e.checked?.should == true }
-      @page.edit.can_admin_addons[0].checked?.should == true
-      @page.edit.addons_access.each { |e| e.checked?.should == true }
-      @page.edit.access_tools.each { |e| e.checked?.should == true }
+      @page.edit.footer_helper_links_options.each { |e| e.checked?.should == true }
+      @page.edit.channel_entry_actions_options.each { |e| e.checked?.should == true }
+      @page.edit.member_actions_options.each { |e| e.checked?.should == true }
+      @page.edit.allowed_channels_options.each { |e| e.checked?.should == true }
+      @page.edit.can_admin_design.value.should == 'y'
+      @page.edit.allowed_template_groups_options.each { |e| e.checked?.should == true }
+      @page.edit.can_admin_addons.value.should == 'y'
+      @page.edit.addons_access_options.each { |e| e.checked?.should == true }
+      @page.edit.access_tools_options.each { |e| e.checked?.should == true }
     end
   end
 
@@ -58,14 +88,13 @@ feature 'Member Group List' do
 
       @page.edit.name.set 'Editors'
       @page.edit.description.set 'Editors description.'
-      @page.edit.security_lock[1].click
+      @page.edit.is_locked_toggle.click
 
       submit_form
 
       @page.edit.name.value.should == 'Editors'
       @page.edit.description.value.should == 'Editors description.'
-      @page.edit.security_lock[0].checked?.should == false
-      @page.edit.security_lock[1].checked?.should == true
+      @page.edit.is_locked.value.should == 'n'
     end
 
     it 'toggles member group checkbox permissions' do
@@ -74,26 +103,26 @@ feature 'Member Group List' do
       checkboxes = %w(
         website_access
         include_members_in
-        comment_actions
-        footer_helper_links
-        channel_permissions
-        channel_field_permissions
-        channel_category_permissions
-        channel_status_permissions
-        channel_entry_actions
-        allowed_channels
-        file_upload_directories
-        files
-        member_group_actions
-        member_actions
-        template_groups
-        template_partials
-        template_variables
-        template_permissions
-        allowed_template_groups
-        addons_access
-        rte_toolsets
-        access_tools
+        comment_actions_options
+        footer_helper_links_options
+        channel_permissions_options
+        channel_field_permissions_options
+        channel_category_permissions_options
+        channel_status_permissions_options
+        channel_entry_actions_options
+        allowed_channels_options
+        file_upload_directories_options
+        files_options
+        member_group_actions_options
+        member_actions_options
+        template_groups_options
+        template_partials_options
+        template_variables_options
+        template_permissions_options
+        allowed_template_groups_options
+        addons_access_options
+        rte_toolsets_options
+        access_tools_options
       )
 
       checkboxes.each do |permission_name|
@@ -241,50 +270,50 @@ feature 'Member Group List' do
   def create_member_group
     @page.new_group.click
 
-    @page.all_there?.should == true
+    @page.edit.all_there?.should == true
     @page.edit.should have_name
     @page.edit.should have_description
-    @page.edit.should have_security_lock
+    @page.edit.should have_is_locked
 
     @page.edit.name.set 'Moderators'
     @page.edit.description.set 'Moderators description.'
-    @page.edit.security_lock[0].click
+    @page.edit.is_locked_toggle.click
     @page.edit.website_access[1].click
-    @page.edit.can_view_profiles[0].click
-    @page.edit.can_delete_self[0].click
+    @page.edit.can_view_profiles_toggle.click
+    @page.edit.can_delete_self_toggle.click
     @page.edit.mbr_delete_notify_emails.set 'team@ellislab.com'
     @page.edit.include_members_in.each(&:click)
-    @page.edit.can_post_comments[0].click
-    @page.edit.exclude_from_moderation[0].click
-    @page.edit.comment_actions.each(&:click)
-    @page.edit.can_search[0].click
+    @page.edit.can_post_comments_toggle.click
+    @page.edit.exclude_from_moderation_toggle.click
+    @page.edit.comment_actions_options.each(&:click)
+    @page.edit.can_search_toggle.click
     @page.edit.search_flood_control.set '60'
-    @page.edit.can_send_private_messages[0].click
+    @page.edit.can_send_private_messages_toggle.click
     @page.edit.prv_msg_send_limit.set '50'
     @page.edit.prv_msg_storage_limit.set '100'
-    @page.edit.can_attach_in_private_messages[0].click
-    @page.edit.can_send_bulletins[0].click
-    @page.edit.can_access_cp[0].click
+    @page.edit.can_attach_in_private_messages_toggle.click
+    @page.edit.can_send_bulletins_toggle.click
+    @page.edit.can_access_cp_toggle.click
     @page.edit.cp_homepage[1].click
-    @page.edit.footer_helper_links.each(&:click)
-    @page.edit.can_admin_channels[0].click
-    @page.edit.channel_permissions.each(&:click)
-    @page.edit.channel_category_permissions.each(&:click)
-    @page.edit.channel_entry_actions.each(&:click)
-    @page.edit.can_access_files[0].click
-    @page.edit.can_access_members[0].click
-    @page.edit.member_actions.each(&:click)
-    @page.edit.allowed_channels.each(&:click)
-    @page.edit.can_access_design[0].click
-    @page.edit.can_admin_design[0].click
-    @page.edit.template_groups.each(&:click)
-    @page.edit.allowed_template_groups.each(&:click)
-    @page.edit.can_access_addons[0].click
-    @page.edit.can_admin_addons[0].click
-    @page.edit.addons_access.each(&:click)
-    @page.edit.can_access_utilities[0].click
-    @page.edit.access_tools.each(&:click)
-    @page.edit.can_access_sys_prefs[0].click
+    @page.edit.footer_helper_links_options.each(&:click)
+    @page.edit.can_admin_channels_toggle.click
+    @page.edit.channel_permissions_options.each(&:click)
+    @page.edit.channel_category_permissions_options.each(&:click)
+    @page.edit.channel_entry_actions_options.each(&:click)
+    @page.edit.can_access_files_toggle.click
+    @page.edit.can_access_members_toggle.click
+    @page.edit.member_actions_options.each(&:click)
+    @page.edit.allowed_channels_options.each(&:click)
+    @page.edit.can_access_design_toggle.click
+    @page.edit.can_admin_design_toggle.click
+    @page.edit.template_groups_options.each(&:click)
+    @page.edit.allowed_template_groups_options.each(&:click)
+    @page.edit.can_access_addons_toggle.click
+    @page.edit.can_admin_addons_toggle.click
+    @page.edit.addons_access_options.each(&:click)
+    @page.edit.can_access_utilities_toggle.click
+    @page.edit.access_tools_options.each(&:click)
+    @page.edit.can_access_sys_prefs_toggle.click
     @page.edit.submit.click
 
     @page.list.groups.last.find('li.edit a').click
@@ -292,13 +321,13 @@ feature 'Member Group List' do
     @page.list.all_there?.should == false
     @page.edit.should have_name
     @page.edit.should have_description
-    @page.edit.should have_security_lock
+    @page.edit.should have_is_locked
   end
 
   def edit_member_group
     @page.edit.name.set 'Editors'
     @page.edit.description.set 'Editors description.'
-    @page.edit.security_lock[1].click
+    @page.edit.is_locked[1].click
     @page.edit.template_groups.each(&:click)
     @page.edit.allowed_template_groups.each(&:click)
     @page.edit.access_tools[0].click
@@ -310,12 +339,12 @@ feature 'Member Group List' do
     @page.list.all_there?.should == false
     @page.edit.should have_name
     @page.edit.should have_description
-    @page.edit.should have_security_lock
+    @page.edit.should have_is_locked
 
     @page.edit.name.value.should == 'Editors'
     @page.edit.description.value.should == 'Editors description.'
-    @page.edit.security_lock[0].checked?.should == false
-    @page.edit.security_lock[1].checked?.should == true
+    @page.edit.is_locked[0].checked?.should == false
+    @page.edit.is_locked[1].checked?.should == true
     @page.edit.template_groups.each { |e| e.checked?.should == false }
     @page.edit.allowed_template_groups.each { |e| e.checked?.should == false }
     @page.edit.access_tools[0].checked?.should == false
@@ -332,7 +361,7 @@ feature 'Member Group List' do
     @page.list.all_there?.should == false
     @page.edit.should have_name
     @page.edit.should have_description
-    @page.edit.should have_security_lock
+    @page.edit.should have_is_locked
   end
 
   def create_msm_site
