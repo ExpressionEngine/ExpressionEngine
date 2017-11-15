@@ -312,6 +312,8 @@ class File extends AbstractFilesController {
 			ee('CP/URL')->make('files/file/edit/' . $id)->compile() => sprintf(lang('edit_file_name'), $file->file_name)
 		);
 
+		$this->stdHeader();
+
 		$vars = [
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL')->make('files/file/crop/' . $id),
