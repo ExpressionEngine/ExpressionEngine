@@ -609,7 +609,10 @@ class Fields extends AbstractFieldsController {
 			->addToBody($field_names)
 			->defer();
 
-		ee()->logger->log_action(sprintf(lang('removed_fields'), '<b>' . implode('</b>, <b>', $field_names) . '</b>'));
+		foreach ($field_names as $field_name)
+		{
+			ee()->logger->log_action(sprintf(lang('removed_field'), '<b>' . $field_name . '</b>'));
+		}
 	}
 }
 

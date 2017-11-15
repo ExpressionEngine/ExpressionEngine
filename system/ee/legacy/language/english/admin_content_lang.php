@@ -388,7 +388,7 @@ $lang = array(
 
 'relationship' => 'Relationship',
 
-'removed_fields' => 'The following fields were removed and their data was deleted: %s',
+'removed_field' => 'The following field was removed and its data was deleted: %s',
 
 'removed_fields_from_fluid_field' => 'The following fields were removed from the Fluid Field <b>%s</b> and their data was deleted: %s',
 
