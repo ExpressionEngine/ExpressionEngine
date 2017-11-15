@@ -26,7 +26,7 @@ feature 'General Settings' do
 
     it 'should validate with submit' do
       # Set other random things to make sure they're repopulated
-      @page.is_system_on.choose_radio_option('n')
+      @page.is_system_on_toggle.click
       @page.new_version_check.choose_radio_option('n')
       @page.should have_check_version_btn
       @page.date_format.choose_radio_option('%Y-%m-%d')
@@ -44,7 +44,7 @@ feature 'General Settings' do
       @page.should have_text 'Attention: Settings not saved'
       should_have_error_text(@page.site_name, @error_text)
       should_have_error_text(@page.site_short_name, @error_text)
-      @page.is_system_on.has_checked_radio('n').should == true
+      @page.is_system_on.value.should == 'n'
       @page.new_version_check.has_checked_radio('n').should == true
       @page.date_format.has_checked_radio('%Y-%m-%d').should == true
       @page.time_format.has_checked_radio('24').should == true
@@ -56,7 +56,7 @@ feature 'General Settings' do
       # Make sure old values didn't save after validation error
       should_have_no_form_errors(@page)
       should_have_no_error_text(@page.site_name)
-      @page.is_system_on.has_checked_radio('y').should == true
+      @page.is_system_on.value.should == 'y'
       @page.new_version_check.has_checked_radio('y').should == true
       @page.date_format.has_checked_radio('%n/%j/%Y').should == true
       @page.time_format.has_checked_radio('12').should == true
@@ -118,7 +118,7 @@ feature 'General Settings' do
     # Save new settings
     @page.site_name.set 'My sweet site'
     @page.site_short_name.set 'my_sweet_site'
-    @page.is_system_on.choose_radio_option('n')
+    @page.is_system_on_toggle.click
     @page.new_version_check.choose_radio_option('n')
     @page.should have_check_version_btn
     @page.date_format.choose_radio_option('%Y-%m-%d')
@@ -132,7 +132,7 @@ feature 'General Settings' do
     @page.should have_text 'Preferences updated'
     @page.site_name.value.should == 'My sweet site'
     @page.site_short_name.value.should == 'my_sweet_site'
-    @page.is_system_on.has_checked_radio('n').should == true
+    @page.is_system_on.value.should == 'n'
     @page.new_version_check.has_checked_radio('n').should == true
     @page.should have_check_version_btn
     @page.date_format.has_checked_radio('%Y-%m-%d').should == true
