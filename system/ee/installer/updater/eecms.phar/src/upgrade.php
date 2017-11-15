@@ -30,7 +30,7 @@ class Command {
 				return $this->updaterMicroapp('rollback');
 			}
 
-			$this->start();
+			$this->start( ! isset($params['y']));
 		}
 		catch (\Exception $e)
 		{
@@ -42,7 +42,7 @@ class Command {
 	/**
 	 * Kicks off a new upgrade
 	 */
-	public function start()
+	public function start($interactive = TRUE)
 	{
 		ee()->load->library('el_pings');
 		$version_file = ee()->el_pings->get_version_info();
@@ -55,11 +55,15 @@ class Command {
 		}
 
 		echo "There is a new version of ExpressionEngine available: " . $to_version . "\n";
-		echo "Would you like to upgrade? (y/n): ";
-		$stdin = trim(fgets(STDIN));
-		if ( ! in_array($stdin, ['yes', 'y']))
+
+		if ($interactive)
 		{
-			exit;
+			echo "Would you like to upgrade? (y/n): ";
+			$stdin = trim(fgets(STDIN));
+			if ( ! in_array($stdin, ['yes', 'y']))
+			{
+				exit;
+			}
 		}
 
 		// Preflight checks, download and unpack update

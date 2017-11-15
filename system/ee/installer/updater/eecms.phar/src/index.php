@@ -23,6 +23,7 @@ $args = parseArguments();
 define('SELF', basename(__FILE__));
 define('SYSPATH', $project_base);
 define('SYSDIR', basename($project_base));
+define('FCPATH', dirname(SELF));
 define('DEBUG', 1);
 define('REQ', 'CLI');
 define('CLI_VERBOSE', isset($args['v']) OR isset($args['verbose']));
