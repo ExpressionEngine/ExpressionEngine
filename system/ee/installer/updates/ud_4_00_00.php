@@ -425,34 +425,48 @@ class Updater {
 			ee()->db->query($sql);
 		}
 
+		$data = [];
 		if ($birthday AND ee()->db->count_all_results('member_data_field_'.$map['birthday']) == 0)
 		{
-			ee()->db->select('member_id, bday_d, bday_m, bday_y');
-			$query = ee()->db->get('members');
+			$total_members = ee()->db->count_all_results('members');
+			$limit = 5000;
+			$offset = 0;
 
-			foreach ($query->result() as $row)
+			while ($offset + $limit <= $total_members)
 			{
-				if (empty($row->bday_y) AND empty($row->bday_m) AND empty($row->bday_d))
+				$data = [];
+
+				$query = ee()->db->select('member_id, bday_d, bday_m, bday_y')
+					->limit($limit)
+					->offset($offset)
+					->get('members');
+
+				foreach ($query->result() as $row)
 				{
-					$r['member_id'] = $row->member_id;
-					$r['m_field_id_'.$map['birthday']] = 0;
+					if (empty($row->bday_y) AND empty($row->bday_m) AND empty($row->bday_d))
+					{
+						$r['member_id'] = $row->member_id;
+						$r['m_field_id_'.$map['birthday']] = 0;
+					}
+					else
+					{
+						$year = ( ! empty($row->bday_y) AND strlen($row->bday_y) == 4) ? $row->bday_y : '1900';
+						$month = ( ! empty($row->bday_m)) ? str_pad($row->bday_m, 2,"0", STR_PAD_LEFT) : '01';
+						$day = ( ! empty($row->bday_d)) ? str_pad($row->bday_d, 2,"0", STR_PAD_LEFT) : '01';
+
+						$r['member_id'] = $row->member_id;
+						$r['m_field_id_'.$map['birthday']] = ee()->localize->string_to_timestamp($year.'-'.$month.'-'.$day.' 01:00 AM');;
+
+					}
+					$data[] = $r;
 				}
-				else
-				{
-					$year = ( ! empty($row->bday_y) AND strlen($row->bday_y) == 4) ? $row->bday_y : '1900';
-					$month = ( ! empty($row->bday_m)) ? str_pad($row->bday_m, 2,"0", STR_PAD_LEFT) : '01';
-					$day = ( ! empty($row->bday_d)) ? str_pad($row->bday_d, 2,"0", STR_PAD_LEFT) : '01';
 
-					$r['member_id'] = $row->member_id;
-					$r['m_field_id_'.$map['birthday']] = ee()->localize->string_to_timestamp($year.'-'.$month.'-'.$day.' 01:00 AM');
-
-				}
-				$data[] = $r;
-			}
-
-			ee()->db->insert_batch(
-				'member_data_field_'.$map['birthday'], $data
+				ee()->db->insert_batch(
+					'member_data_field_'.$map['birthday'], $data
 				);
+
+				$offset += $limit;
+			}
 		}
 
 		// Drop columns from exp_members
