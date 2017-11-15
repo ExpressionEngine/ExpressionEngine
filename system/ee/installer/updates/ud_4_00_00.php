@@ -454,8 +454,22 @@ class Updater {
 						$month = ( ! empty($row->bday_m)) ? str_pad($row->bday_m, 2,"0", STR_PAD_LEFT) : '01';
 						$day = ( ! empty($row->bday_d)) ? str_pad($row->bday_d, 2,"0", STR_PAD_LEFT) : '01';
 
+						$bday_timestamp = ee()->localize->string_to_timestamp($year.'-'.$month.'-'.$day.' 01:00 AM');
+						$bday_timestamp = (int) $bday_timestamp;
+
+						// Sorry, people born <= 1901 or >= 2038
+						$max_32bit_int = 2147483648;
+						if ($bday_timestamp > $max_32bit_int)
+						{
+							$bday_timestamp = $max_32bit_int;
+						}
+						elseif ($bday_timestamp < -$max_32bit_int)
+						{
+							$bday_timestamp = -$max_32bit_int;
+						}
+
 						$r['member_id'] = $row->member_id;
-						$r['m_field_id_'.$map['birthday']] = ee()->localize->string_to_timestamp($year.'-'.$month.'-'.$day.' 01:00 AM');;
+						$r['m_field_id_'.$map['birthday']] = $bday_timestamp;
 
 					}
 					$data[] = $r;
