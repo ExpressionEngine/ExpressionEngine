@@ -312,7 +312,145 @@ class File extends AbstractFilesController {
 			ee('CP/URL')->make('files/file/edit/' . $id)->compile() => sprintf(lang('edit_file_name'), $file->file_name)
 		);
 
-		ee()->cp->render('files/crop', $vars);
+		$vars = [
+			'ajax_validate' => TRUE,
+			'base_url' => ee('CP/URL')->make('files/file/crop/' . $id),
+			'tabs' => [
+				'crop'   => $this->renderCropForm($file, $info),
+				'rotate' => $this->renderRotateForm($file),
+				'resize' => $this->renderResizeForm($file, $info)
+			],
+			'buttons' => [
+				[
+					'name'    => 'submit',
+					'type'    => 'submit',
+					'value'   => 'save',
+					'text'    => 'save',
+					'working' => 'btn_saving'
+				]
+			],
+			'sections' => []
+		];
+
+		ee()->cp->render('settings/form', $vars);
+	}
+
+	protected function renderCropForm($file, $info)
+	{
+		$section = [
+			[
+				'title' => 'constraints',
+				'desc' => 'crop_constraints_desc',
+				'fields' => [
+					'crop_width' => [
+						'type' => 'short-text',
+						'label' => 'crop_width',
+						'value' => ee('Request')->post('crop_width', $info['width'])
+					],
+					'crop_height' => [
+						'type' => 'short-text',
+						'label' => 'crop_height',
+						'value' => ee('Request')->post('crop_height', $info['height'])
+					]
+				]
+			],
+			[
+				'title' => 'coordinates',
+				'desc' => 'coordiantes_desc',
+				'fields' => [
+					'crop_x' => [
+						'type' => 'short-text',
+						'label' => 'x_axis',
+						'value' => ee('Request')->post('crop_x', 0)
+					],
+					'crop_y' => [
+						'type' => 'short-text',
+						'label' => 'y-axis',
+						'value' => ee('Request')->post('crop_y', 0)
+					]
+				]
+			],
+			[
+				'title' => '',
+				'fields' => [
+					'img_preview' => [
+						'type' => 'html',
+						'content' => '<figure class="img-preview"><img src="' . $file->getAbsoluteURL() . '"></figure>'
+					]
+				]
+			]
+		];
+
+		return ee('View')->make('_shared/form/section')
+				->render(array('name' => NULL, 'settings' => $section));
+	}
+
+	protected function renderRotateForm($file)
+	{
+		$section = [
+			[
+				'title' => 'rotation',
+				'desc' => 'rotation_desc',
+				'fields' => [
+					'rotate' => [
+						'type' => 'radio',
+						'choices' => [
+							'270' => lang('90_degrees_right'),
+							'90' => lang('90_degrees_left'),
+							'vrt' => lang('flip_vertically'),
+							'hor' => lang('flip_horizontally'),
+						],
+						'value' => ee('Request')->post('rotate')
+					],
+				]
+			],
+			[
+				'title' => '',
+				'fields' => [
+					'img_preview' => [
+						'type' => 'html',
+						'content' => '<figure class="img-preview"><img src="' . $file->getAbsoluteURL() . '"></figure>'
+					]
+				]
+			]
+		];
+
+		return ee('View')->make('_shared/form/section')
+				->render(array('name' => NULL, 'settings' => $section));
+	}
+
+	protected function renderResizeForm($file, $info)
+	{
+		$section = [
+			[
+				'title' => 'constraints',
+				'desc' => 'crop_constraints_desc',
+				'fields' => [
+					'resize_width' => [
+						'type' => 'short-text',
+						'label' => 'resize_width',
+						'value' => ee('Request')->post('resize_width', $info['width'])
+					],
+					'resize_height' => [
+						'type' => 'short-text',
+						'label' => 'resize_height',
+						'value' => ee('Request')->post('resize_height', $info['height'])
+					]
+				]
+			],
+			[
+				'title' => '',
+				'fields' => [
+					'img_preview' => [
+						'type' => 'html',
+						'content' => '<figure class="img-preview"><img src="' . $file->getAbsoluteURL() . '"></figure>'
+					]
+				]
+			]
+		];
+
+		return ee('View')->make('_shared/form/section')
+				->render(array('name' => NULL, 'settings' => $section));
 	}
 
 	public function download($id)
