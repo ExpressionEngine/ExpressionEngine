@@ -398,6 +398,17 @@ abstract class FieldModel extends Model {
 		return $this->getDataTable() . '_field_' . $this->getId();
 	}
 
+	public function getDataStorageTable()
+	{
+		if ( ! $this->hasProperty($this->getColumnPrefix().'legacy_field_data')
+			|| $this->getProperty($this->getColumnPrefix().'legacy_field_data') == TRUE)
+		{
+			return $this->getDataTable();
+		}
+
+		return $this->getTableName();
+	}
+
 	protected function getForeignKey()
 	{
 		return 'entry_id';
