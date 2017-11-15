@@ -171,6 +171,8 @@ class File extends AbstractFilesController {
 			ee()->image_lib->error_msg = array(); // Reset any erorrs
 		}
 
+		$active_tab = 0;
+
 		ee()->load->library('form_validation');
 		if (isset($_POST['crop_width']))
 		{
@@ -186,6 +188,7 @@ class File extends AbstractFilesController {
 			ee()->form_validation->set_rules('rotate', 'lang:rotate', 'required');
 			$action = "rotate";
 			$action_desc = "rotated";
+			$active_tab = 1;
 		}
 		else if (isset($_POST['resize_width']))
 		{
@@ -194,6 +197,7 @@ class File extends AbstractFilesController {
 
 			$action = "resize";
 			$action_desc = "resized";
+			$active_tab = 2;
 		}
 
 		if (AJAX_REQUEST)
@@ -318,6 +322,7 @@ class File extends AbstractFilesController {
 				'rotate' => $this->renderRotateForm($file),
 				'resize' => $this->renderResizeForm($file, $info)
 			],
+			'active_tab' => $active_tab,
 			'buttons' => [
 				[
 					'name'    => 'submit',

@@ -26,12 +26,13 @@
 			<?php endif ?>
 		</div>
 		<?php if (isset($tabs)):?>
+			<?php $active_tab = (isset($active_tab)) ? $active_tab : 0; ?>
 			<div class="tab-wrap">
 				<ul class="tabs">
 					<?php
 						foreach (array_keys($tabs) as $i => $name):
 							$class = '';
-							if ($i == 0)
+							if ($i == $active_tab)
 							{
 								$class = 'act';
 							}
@@ -58,7 +59,7 @@
 			if (isset($tabs)):
 				foreach (array_values($tabs) as $i => $html):
 			?>
-				<div class="tab t-<?=$i?><?php if ($i == 0) echo ' tab-open'?>"><?=$html?></div>
+				<div class="tab t-<?=$i?><?php if ($i == $active_tab) echo ' tab-open'?>"><?=$html?></div>
 			<?php
 				endforeach;
 			endif;
