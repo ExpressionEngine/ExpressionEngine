@@ -12,8 +12,9 @@ machine:
 dependencies:
   pre:
     - npm install -g gulp
-    - sudo apt-get -y install xvfb chromium-chromedriver
-    - sudo cp /usr/lib/chromium-browser/chromedriver /usr/local/bin/
+    - wget https://chromedriver.storage.googleapis.com/2.9/chromedriver_linux64.zip
+    - unzip chromedriver_linux64.zip
+    - sudo cp chromedriver /usr/local/bin/chromedriver
 
   override:
     - "cd tests/rspec && bundle install --without development --deployment"
