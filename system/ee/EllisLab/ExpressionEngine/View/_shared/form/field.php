@@ -74,7 +74,7 @@ case 'text':
 	<?php endif ?>
 <?php break;
 case 'short-text': ?>
-	<label class="flex-input">
+	<label class="flex-input <?=$class?>">
 		<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
 		<span class="label-txt"><?=lang($field['label'])?></span>
 	</label>
