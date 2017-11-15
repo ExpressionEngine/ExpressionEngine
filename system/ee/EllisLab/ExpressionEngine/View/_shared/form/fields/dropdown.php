@@ -11,7 +11,7 @@ $display_text = $empty_text;
 if ($field_disabled)
 {
 	$sub_class .= ' field-disabled';
-	$display_text = $choices[$value];
+	$display_text = isset($choices[$value]) ? $choices[$value] : $empty_text;
 }
 else
 {
