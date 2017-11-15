@@ -11,7 +11,8 @@
 (function ($) {
 	$(document).ready(function () {
 		$('.form-standard form').on('submit', function (e) {
-			$('.form-standard form input:not(:visible)').not('[type="hidden"]').attr('disabled', 'disabled');
+			// Only submit the inputs in the visible tab (by removing the other tab's inputs)
+			$('.form-standard form input:not(:visible)').not('[type="hidden"]').remove();
 		});
 	});
 })(jQuery);
