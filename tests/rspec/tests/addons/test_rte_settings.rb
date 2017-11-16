@@ -92,14 +92,14 @@ feature 'RTE Settings' do
   end
 
   it 'only accepts "y" or "n" for enabled setting', :stage => 'settings' do
-    @page.rte_enabled.set '1'
+    @page.execute_script("$('input[name=rte_enabled]').val('1');")
     @page.save_settings_button.click
     no_php_js_errors
 
     @page.should have_alert
     @page.alert[:class].should include "issue"
 
-    @page.rte_enabled.set 'yes'
+    @page.execute_script("$('input[name=rte_enabled]').val('yes');")
     @page.save_settings_button.click
     no_php_js_errors
 
@@ -116,10 +116,8 @@ feature 'RTE Settings' do
   end
 
   it 'cannot set a default tool set to an nonexistent tool set', :stage => 'settings' do
-    skip "cannot figure out how to change a radio's value in Capybara, el.set() does not work" do
-    end
-
-    @page.default_tool_set[0].set '999'
+    @page.execute_script("$('input[name=\"rte_default_toolset_id\"]:first').val('999');")
+    @page.default_tool_set[0].click
     @page.save_settings_button.click
     no_php_js_errors
 
@@ -211,7 +209,7 @@ feature 'RTE Settings' do
     @page.wait_until_modal_visible
 
     tool_set_id = @page.tool_sets[2].find('input[type="checkbox"]').value
-    @page.modal.find('input[name="selection[]"]', :visible => :hidden).set tool_set_id
+    @page.execute_script("$('input[name=\"selection[]\"]').val('" + tool_set_id + "');")
 
     @page.modal_submit_button.click # Submits a form
     no_php_js_errors
