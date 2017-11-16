@@ -250,7 +250,10 @@ module Capybara
     class Node
       def trigger(event)
         if event == 'blur'
-          Capybara.page.find('body').click
+          # If js with xpath is slow or gives us fits, we can click a neutral area,
+          # but then need to deal with the screenshot scrolling to the top of the page
+          # Capybara.page.find('.nav-global-wrap').click
+          Capybara.page.evaluate_script('document.evaluate("' + self.path + '", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.blur()')
         end
         if event == 'click'
           self.click
