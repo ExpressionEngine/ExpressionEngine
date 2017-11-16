@@ -24,6 +24,7 @@ feature 'Watermark Create/Edit' do
     # AJAX validation
     # Required name
     @page.load
+    @page.wm_name.set ''
     @page.wm_name.trigger 'blur'
     @page.wait_for_error_message_count(1)
     should_have_error_text(@page.wm_name, $required_error)
