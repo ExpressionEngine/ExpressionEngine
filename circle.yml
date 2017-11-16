@@ -12,6 +12,10 @@ machine:
 dependencies:
   pre:
     - npm install -g gulp
+    - wget https://chromedriver.storage.googleapis.com/2.9/chromedriver_linux64.zip
+    - unzip chromedriver_linux64.zip
+    - sudo cp chromedriver /usr/local/bin/chromedriver
+
   override:
     - "cd tests/rspec && bundle install --without development --deployment"
     - "cd system/ee/EllisLab/Tests && composer install --prefer-source --no-interaction"
