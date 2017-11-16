@@ -75,9 +75,6 @@ RSpec.configure do |config|
 
   # After each example...
   config.after(:each) do
-    # Open stack traces for screenshots
-    click_link('show') unless page.has_no_css?('.err-wrap h3 a.toggle')
-
     example = RSpec.current_example
     # If the example failed, take a screenshot to help us spot the problem
     unless example.exception.nil?
