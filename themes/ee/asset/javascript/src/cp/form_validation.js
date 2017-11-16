@@ -323,6 +323,7 @@ EE.cp.formValidation = {
 			// special handling of the invalid class on the Grid field label
 			if (grid) {
 				container.removeClass('fieldset-invalid');
+				container.removeClass('invalid');
 
 				// For Grid, only remove the invalid class from the label if no
 				// more errors exist in the Grid
