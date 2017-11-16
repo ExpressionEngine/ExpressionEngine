@@ -35,7 +35,6 @@ feature 'General Settings' do
 
       # Only field that's required, will be our test case
       @page.site_name.set ''
-      @page.site_short_name.set ''
 
       @page.submit
 
@@ -43,7 +42,6 @@ feature 'General Settings' do
       should_have_form_errors(@page)
       @page.should have_text 'Attention: Settings not saved'
       should_have_error_text(@page.site_name, @error_text)
-      should_have_error_text(@page.site_short_name, @error_text)
       @page.is_system_on.value.should == 'n'
       @page.new_version_check.has_checked_radio('n').should == true
       @page.date_format.has_checked_radio('%Y-%m-%d').should == true
