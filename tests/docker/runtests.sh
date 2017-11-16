@@ -93,9 +93,11 @@ if [ "${COMMAND}" == "test" ]; then
 		xvfb-run -a bundle exec rspec -c -fd $FILES
 	popd > /dev/null
 
-	mkdir /app/tests/rspec/screenshots
-	pushd /app/tests/rspec/screenshots > /dev/null
-		#rm -rf *
-		cp -r /var/www/html/tests/rspec/screenshots/* .
-	popd > /dev/null
+	if [ -d "/var/www/html/tests/rspec/screenshots" ]; then
+		mkdir -p /app/tests/rspec/screenshots
+		pushd /app/tests/rspec/screenshots > /dev/null
+			#rm -rf *
+			cp -r /var/www/html/tests/rspec/screenshots/* .
+		popd > /dev/null
+	fi
 fi
