@@ -21,7 +21,7 @@ $(document).ready(function() {
 });
 
 EE.file_manager.sync_listen = function() {
-	$('form.settings input.btn').click(function(event) {
+	$('.form-standard form input.btn').click(function(event) {
 		event.preventDefault();
 
 		// Get array of files
