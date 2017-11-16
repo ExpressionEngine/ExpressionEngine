@@ -3,11 +3,11 @@ module Installer
     set_url '/system/index.php'
 
     element :header, 'h1'
+    element :updater_steps, 'ul.updater-steps'
     element :error, 'div.issue'
 
     element :submit, 'form input[type=submit]'
-    element :login, 'form a.btn'
-    element :download, 'form input[name=download]'
+    elements :success_actions, 'p.msg-choices a'
 
     elements :inline_errors, '.fieldset-invalid em'
 
