@@ -32,7 +32,8 @@ feature 'Content & Design Settings' do
   context 'when validating the form' do
     let(:image_library_path_error) { 'This field must contain a valid path to an image processing library if ImageMagick or NetPBM is the selected protocol.' }
 
-    after :each do
+    # before instead of after, as after will change contents prior to screenshots
+    before :each do
       @page.image_library_path.set '/'
       @page.image_library_path.trigger 'blur'
       @page.wait_for_error_message_count(0)
