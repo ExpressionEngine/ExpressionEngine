@@ -34,8 +34,6 @@ feature 'File Manager' do
 		@page.manager_title.text.should eq 'File Manager'
 		@page.should have_title_toolbar
 		@page.should have_download_all
-		@page.should have_phrase_search
-		@page.should have_search_submit_button
 
 		# Check that we have a sidebar
 		@page.should have_sidebar
@@ -50,7 +48,7 @@ feature 'File Manager' do
 		@page.should_not have_breadcrumb
 		@page.should_not have_sync_button
 		@page.heading.text.should eq 'All Files'
-		@page.should_not have_upload_new_file_button
+		@page.should have_upload_new_file_button
 		@page.should have_upload_new_file_filter
 		@page.should have_files
 		@page.should_not have_no_results
@@ -93,17 +91,6 @@ feature 'File Manager' do
 	end
 
 	# General Tests
-
-	it 'can search files by phrase', :all_files => true do
-		@page.phrase_search.set 'map'
-		@page.search_submit_button.click
-		no_php_js_errors
-
-		@page.heading.text.should eq 'Search Results we found 2 results for "map"'
-		@page.phrase_search.value.should eq 'map'
-		@page.should have_text 'map'
-		@page.should have(3).files
-	end
 
 	it 'can change the page size using the menu', :all_files => true do
 		@page.perpage_filter.click

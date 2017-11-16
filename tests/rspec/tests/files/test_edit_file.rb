@@ -26,8 +26,6 @@ feature 'File Manager / Edit File' do
     @page.manager_title.text.should eq 'File Manager'
     @page.should have_title_toolbar
     @page.should have_download_all
-    @page.should have_phrase_search
-    @page.should have_search_submit_button
 
     # Check that we have a sidebar
     @page.should have_sidebar
@@ -40,7 +38,6 @@ feature 'File Manager / Edit File' do
     @page.breadcrumb.text.should include "File Manager"
     @page.breadcrumb.text.should include "Meta Data"
     @page.heading.text.should include "Meta Data"
-    @page.should have_crop_button
     @page.should have_title_input
     @page.should have_description_input
     @page.should have_credit_input
@@ -97,26 +94,6 @@ feature 'File Manager / Edit File' do
     @return.displayed?
     @return.alert.text.should include "The meta data for the file"
     @return.alert.text.should include "has been updated."
-  end
-
-  it 'can search files' do
-    @page.phrase_search.set 'map'
-    @page.search_submit_button.click
-    no_php_js_errors
-
-    @return.displayed?
-    @return.heading.text.should eq 'Search Results we found 2 results for "map"'
-    @return.phrase_search.value.should eq 'map'
-    @return.should have_text 'map'
-    @return.should have(3).files
-  end
-
-  it 'can navigate to the crop form' do
-    @page.crop_button.click
-    no_php_js_errors
-
-    crop_page = CropFile.new
-    crop_page.displayed?
   end
 
   it 'can navigate back to the filemanger' do

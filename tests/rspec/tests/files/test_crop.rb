@@ -25,8 +25,6 @@ feature 'File Manager / Crop File' do
     # Check that the heder data is intact
     @page.should_not have_title_toolbar
     @page.should_not have_download_all
-    @page.should_not have_phrase_search
-    @page.should_not have_search_submit_button
 
     # Check that we do not have a sidebar
     @page.should_not have_sidebar

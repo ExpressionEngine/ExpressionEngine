@@ -3,12 +3,7 @@ class FileManager < FileManagerPage
 
   # Main box elements
   element :heading, 'div.col.w-12 div.box form h1'
-  element :sync_button, 'div.col.w-12 div.box form h1 ul.toolbar li.sync'
-  element :upload_new_file_button, 'div.col.w-12 div.box form fieldset.tbl-search.right a.action'
-  element :upload_new_file_filter, 'div.col.w-12 div.box form fieldset.tbl-search.right div.filters ul li a.has-sub'
-  element :upload_new_file_filter_menu, 'div.col.w-12 div.box form fieldset.tbl-search.right div.filters ul li div.sub-menu'
-  element :upload_new_file_manual_filter, 'div.col.w-12 div.box form fieldset.tbl-search.right div.filters ul li div.sub-menu fieldset.filter-search input'
-  elements :upload_new_file_filter_menu_items, 'div.col.w-12 div.box form fieldset.tbl-search.right div.filters ul li div.sub-menu ul li'
+  element :sync_button, 'a.icon--sync'
 
   element :perpage_filter, 'div.col.w-12 div.box form h1 + div.filters ul li:first-child'
   element :perpage_filter_menu, 'div.col.w-12 div.box form h1 + div.filters ul li:first-child div.sub-menu ul'

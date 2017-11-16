@@ -29,7 +29,7 @@ class ControlPanelPage < SitePrism::Page
   element :modal_submit_button, 'div.modal .form-ctrls input.btn'
 
   # Grid
-  element :grid_add_no_results, 'tr.no-results a.btn'
+  element :grid_add_no_results, 'tr.no-results a[rel="add_row"]'
   element :grid_add, 'ul.toolbar li.add a'
 
   # Breadcrumb

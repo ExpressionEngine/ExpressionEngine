@@ -240,7 +240,7 @@ feature 'Upload Directory Sync' do
 
     new_upload = UploadEdit.new
     new_upload.load_edit_for_dir(2)
-    new_upload.allowed_types.select 'All file types'
+    new_upload.allowed_types.choose_radio_option 'all'
     new_upload.submit
     new_upload.should have_text 'Upload directory saved'
     no_php_js_errors
@@ -264,7 +264,7 @@ feature 'Upload Directory Sync' do
 
     new_upload = UploadEdit.new
     new_upload.load_edit_for_dir(2)
-    new_upload.allowed_types.select 'All file types'
+    new_upload.allowed_types.choose_radio_option 'all'
     new_upload.submit
     new_upload.should have_text 'Upload directory saved'
     no_php_js_errors

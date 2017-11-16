@@ -3,7 +3,7 @@ class UploadEdit < FileManagerPage
   element :name, 'input[name=name]'
   element :url, 'input[name=url]'
   element :server_path, 'input[name=server_path]'
-  element :allowed_types, 'select[name=allowed_types]'
+  elements :allowed_types, 'input[name=allowed_types]'
   element :max_size, 'input[name=max_size]'
   element :max_width, 'input[name=max_width]'
   element :max_height, 'input[name=max_height]'

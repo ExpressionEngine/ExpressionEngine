@@ -1,6 +1,7 @@
 class UploadSync < FileManagerPage
 
   element :progress_bar, '.progress-bar .progress'
+  element :submit, 'div.form-standard form div.form-btns-top input.btn'
   elements :sizes, 'input[name="sizes[]"]'
   elements :submit_buttons, '.w-12 .form-ctrls input.btn'
 
@@ -9,7 +10,7 @@ class UploadSync < FileManagerPage
     click_link 'Files'
 
     find('div.sidebar .folder-list > li:nth-child('+number.to_s+') > a').click
-    find('li.sync a').click
+    find('a.icon--sync').click
   end
 
   # Each time the progress bar changes, logs the percentage value
