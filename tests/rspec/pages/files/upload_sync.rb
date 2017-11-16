@@ -1,9 +1,8 @@
 class UploadSync < FileManagerPage
 
   element :progress_bar, '.progress-bar .progress'
-  element :submit, 'div.form-standard form div.form-btns-top input.btn'
+  element :sync_button, 'div.form-standard form div.form-btns-top input.btn'
   elements :sizes, 'input[name="sizes[]"]'
-  elements :submit_buttons, '.w-12 .form-ctrls input.btn'
 
   # Load the sync screen for the nth directory listed
   def load_sync_for_dir(number)
