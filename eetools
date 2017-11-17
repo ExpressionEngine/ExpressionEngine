@@ -27,7 +27,9 @@ elif [ "$1" == "updategems" ]; then
 	docker commit $CONTAINER_ID $IMAGE_NAME
 	docker rm $CONTAINER_ID
 else
+	[ ! "$(docker ps -a | grep eecms-test-vol)" ] && docker create -v /app --name eecms-test-vol $IMAGE_NAME /bin/true
+	docker cp $(pwd)/. eecms-test-vol:/app
 	# Have to quote this to get multiple arguments working for run.sh
-	DOCKER_CMD="docker run --rm -t -i -v $(pwd):/app $IMAGE_NAME /bin/bash -c \"./run.sh $@\""
+	DOCKER_CMD="docker run --rm -t -i -v /app --volumes-from eecms-test-vol $IMAGE_NAME /bin/bash -c \"./run.sh $@\""
 	eval $DOCKER_CMD
 fi

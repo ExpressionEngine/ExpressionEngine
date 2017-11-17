@@ -6,10 +6,17 @@ jobs:
     steps:
       - setup_remote_docker
       - checkout
+      - run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
       - run:
-          name: Grab our Docker Container
+          name: Log in for Docker
           command: |
             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      - run: |
+          apk update
+          apk upgrade
+          apk add bash
       - run: chmod +x ./eetools
       - run:
           name: Start Tests
