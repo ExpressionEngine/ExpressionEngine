@@ -184,23 +184,23 @@ module GridSettings
 
   # Get nth column
   def self.column(number)
-    node = find('.grid-wrap .grid-item:nth-child('+number.to_s+')')
+    node = find('.fields-grid-setup .fields-grid-item:nth-child('+number.to_s+')')
     GridSettingsColumn.new(node)
   end
 
   # Clicks the button to add a new column to the settings view, and
   # returns a new GridSettingsColumn object representing the column
   def self.add_column
-    find('.grid-wrap .grid-item:last-child li.add a').click
+    find('.fields-grid-setup .fields-grid-item:last-child > .fields-grid-tools > a.fields-grid-tool-add').click
     sleep 0.2 # Wait for DOM
-    node = find('.grid-wrap .grid-item:last-child')
+    node = find('.fields-grid-setup .fields-grid-item:last-child')
     GridSettingsColumn.new(node)
   end
 
   # Clicks the Copy button on a Grid settings column and returns the
   # newly cloned column as a GridSettingsColumn object
   def self.clone_column(number)
-    self::column(number).node.find('li.copy a').click
+    self::column(number).node.find('.fields-grid-tools:last-child > a.fields-grid-tool-copy').click
     self::column(number + 1)
   end
 
@@ -230,18 +230,24 @@ class GridSettingsColumn
 
   def initialize(node)
     @node = node
+    if ! node[:class].include?("fields-grid-item---open")
+      node.find('a.fields-grid-tool-expand').click
+    end
     self.load_elements
   end
 
   # Finds elements and assigns them to instance variables so we're
   # not constantly finding them using selectors
   def load_elements
-    @type = @node.find('select.grid_col_select')
+    @col_type = @node.find('div[data-input-value*="col_type"]')
+    @type = @node.find('[name*="col_type"]', visible: false)
     @label = @node.find('[name*="col_label"]')
     @name = @node.find('[name*="col_name"]')
     @instructions = @node.find('[name*="col_instructions"]')
-    @required = @node.find('[name*="col_required"]')
-    @searchable = @node.find('[name*="col_search"]')
+    @required = @node.find('[data-toggle-for*="col_required"]')
+    @required_input = @node.find('[name*="col_required"]', visible: false)
+    @searchable = @node.find('[data-toggle-for*="col_search"]')
+    @searchable_input = @node.find('[name*="col_search"]', visible: false)
     @width = @node.find('[name*="col_width"]')
 
     set_type_obj(@type.value)
@@ -249,11 +255,16 @@ class GridSettingsColumn
 
   # Given a hash of data, fills the various form fields
   def fill_data(data)
-    @type.select data[:type][0]
+    @col_type.click
+    @col_type.find('.field-drop-choices label', text: data[:type][0]).click
     @label.set data[:label]
     @instructions.set data[:instructions]
-    @required.set data[:required]
-    @searchable.set data[:searchable]
+    if data[:required] == 'y'
+      @required.click
+    end
+    if data[:searchable] == 'y'
+      @searchable.click
+    end
     @width.set data[:width]
 
     set_type_obj(data[:type][1])
@@ -268,8 +279,8 @@ class GridSettingsColumn
     @name.value.should == data[:name]
     @instructions.value.should == data[:instructions]
     @width.value.should == data[:width]
-    @required.checked?.should == data[:required]
-    @searchable.checked?.should == data[:searchable]
+    @required_input.value.should == data[:required]
+    @searchable_input.value.should == data[:searchable]
 
     @type_obj.validate(data)
   end
@@ -317,21 +328,23 @@ class GridSettingsColumnTypeDate
   end
 
   def load_elements
-    @localized_y = @node.find('[name*="localize"][value=y]')
-    @localized_n = @node.find('[name*="localize"][value=n]')
+    @localized = @node.find('[data-toggle-for*="localize"]')
+    @localized_input = @node.find('[name*="localize"]', visible: false)
   end
 
   def fill_data(data)
-    if data[:localized]
-      @localized_y.click
-    else
-      @localized_n.click
+    if ! data[:localized] # On by default, so only click to turn off
+      @localized.click
     end
   end
 
   def validate(data)
-    @localized_y.checked?.should == data[:localized]
-    @localized_n.checked?.should == !data[:localized]
+    if data[:localized]
+      @localized[:class].include?('on').should == true
+    else
+      @localized[:class].include?('off').should == true
+    end
+    @localized_input.value.should == data[:localized]
   end
 end
 
@@ -343,30 +356,32 @@ class GridSettingsColumnTypeFile
   end
 
   def load_elements
-    @file_type = @node.find('[name*="field_content_type"]')
-    @allowed_dirs = @node.find('[name*="allowed_directories"]')
-    @show_existing_y = @node.find('[name*="show_existing"][value=y]')
-    @show_existing_n = @node.find('[name*="show_existing"][value=n]')
+    @show_existing = @node.find('[data-toggle-for*="show_existing"]')
+    @show_existing_input = @node.find('[name*="show_existing"]', visible: false)
     @num_existing = @node.find('[name*="num_existing"]')
   end
 
   def fill_data(data)
-    @file_type.select data[:file_type][0]
-    @allowed_dirs.select data[:allowed_dirs][0]
-    if data[:show_existing]
-      @show_existing_y.click
-    else
-      @show_existing_n.click
+    @file_type = @node.find('[name*="field_content_type"][value="'+data[:file_type][1]+'"]')
+    @file_type.click
+    @allowed_dirs = @node.find('[name*="allowed_directories"][value="'+data[:allowed_dirs][1]+'"]')
+    @allowed_dirs.click
+    if ! data[:show_existing] # On by default, so only click to turn off
+      @show_existing.click
     end
     @num_existing.set data[:num_existing]
   end
 
   def validate(data)
-    @file_type.value.should == data[:file_type][1]
-    @allowed_dirs.value.should == data[:allowed_dirs][1]
+    @file_type.checked?.should == true
+    @allowed_dirs.checked?.should == true
     @num_existing.value.should == data[:num_existing]
-    @show_existing_y.checked?.should == data[:show_existing]
-    @show_existing_n.checked?.should == !data[:show_existing]
+    if data[:show_existing]
+      @show_existing[:class].include?('on').should == true
+    else
+      @show_existing[:class].include?('off').should == true
+    end
+    @show_existing_input.value.should == data[:show_existing]
   end
 end
 
@@ -449,23 +464,23 @@ class GridSettingsColumnTypeTextInput
   end
 
   def load_elements
-    @field_fmt = @node.find('[name*="field_fmt"]')
-    @field_content_type = @node.find('[name*="field_content_type"]')
-    @field_text_direction = @node.find('[name*="field_text_direction"]')
     @field_maxl = @node.find('[name*="field_maxl"]')
   end
 
   def fill_data(data)
-    @field_fmt.select data[:field_fmt][0]
-    @field_content_type.select data[:field_content_type][0]
-    @field_text_direction.select data[:field_text_direction][0]
+    @field_fmt = @node.find('[name*="field_fmt"][value="'+data[:field_fmt][0]+'"]')
+    @field_fmt.click
+    @field_content_type = @node.find('[name*="field_content_type"][value="'+data[:field_content_type][0]+'"]')
+    @field_content_type.click
+    @field_text_direction = @node.find('[name*="field_text_direction"][value="'+data[:field_text_direction][0]+'"]')
+    @field_text_direction.click
     @field_maxl.set data[:field_maxl]
   end
 
   def validate(data)
-    @field_fmt.value.should == data[:field_fmt][1]
-    @field_content_type.value.should == data[:field_content_type][1]
-    @field_text_direction.value.should == data[:field_text_direction][1]
+    @field_fmt.checked?.should == true
+    @field_content_type.checked?.should == true
+    @field_text_direction.checked?.should == true
     @field_maxl.value.should == data[:field_maxl]
   end
 end

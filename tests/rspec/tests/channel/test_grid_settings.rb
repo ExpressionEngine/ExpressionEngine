@@ -17,7 +17,8 @@ feature 'Grid Field Settings' do
 
     @page.field_label.set 'Test Grid'
 
-    @page.field_type.select 'Grid'
+    @page.field_type.click
+    @page.field_type.find('.field-drop-choices label', text: 'Grid').click
   end
 
   it 'shows the Grid field settings' do
@@ -56,27 +57,27 @@ feature 'Grid Field Settings' do
     column.name.set 'test_column'
     no_php_js_errors
     @page.submit
-    @page.should have_text('There are one or more columns without a column label.')
+    column = GridSettings::column(1)
+    should_have_error_text(column.label, $required_error)
     no_php_js_errors
 
     # No column label and duplicate column label
     column = GridSettings::add_column
     column.label.set 'Test column'
     column.name.value.should eq 'test_column'
-    column.name.trigger 'blur'
-    sleep 2
-    @page.should have_text('There are one or more columns without a column label.')
-    @page.should have_text('Column field names must be unique.')
+    column.name.click
+    column.label.click # Blur, .trigger('blur') isn't working
+    @page.wait_for_error_message_count(2)
+    should_have_error_text(column.name, 'Column field names must be unique.')
 
     # No column name, duplicate column label, and no column name
     column = GridSettings::add_column
     column.label.set 'Test column no name'
     column.name.set ''
-    column.name.trigger 'blur'
-    sleep 2
-    @page.should have_text('There are one or more columns without a column label.')
-    @page.should have_text('Column field names must be unique.')
-    @page.should have_text('There are one or more columns without a column name.')
+    column.name.click
+    column.label.click
+    @page.wait_for_error_message_count(3)
+    should_have_error_text(column.name, $required_error)
   end
 
   it 'should only duplicate columns once' do

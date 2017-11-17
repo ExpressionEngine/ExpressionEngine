@@ -11,10 +11,10 @@ class ChannelFieldForm < ControlPanelPage
   def load_edit_for_custom_field(name)
     visit '/system/index.php?/cp/fields'
 
-    all('table tbody tr').each do |row|
-      cell = row.find('td:nth-child(2)')
-      if cell.text == name
-        row.find('li.edit a').click
+    all('.tbl-row').each do |row|
+      link = row.find('.main > a')
+      if link.text == name
+        link.click
         break
       end
     end
