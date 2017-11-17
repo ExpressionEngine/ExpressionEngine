@@ -1,0 +1,27 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: ellislab/eecms-test:headless-chrome
+        auth:
+          username: $DOCKER_USERNAME
+          password: $DOCKER_PASSWORD
+    steps:
+      - checkout
+      - run: chmod +x ./eetools
+
+  test:
+    steps:
+      - checkout
+      - run:
+        name: Run rSpec Tests
+        command: ./eetools test
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test:
+        requires:
+          - build
