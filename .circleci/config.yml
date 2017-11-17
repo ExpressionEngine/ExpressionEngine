@@ -8,10 +8,10 @@ jobs:
           password: $DOCKER_PASSWORD
     steps:
       - checkout
-      - run: chmod +x ./eetools
+      - run: chmod +x ./project/eetools
       - run:
           name: Run rSpec Tests
-          command: ./eetools test
+          command: ./project/eetools test
 
 workflows:
   version: 2
