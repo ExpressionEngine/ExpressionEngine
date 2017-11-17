@@ -10,8 +10,7 @@ jobs:
           name: Grab our Docker Container
           command: |
             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-            docker pull ellislab/eecms-test:headless-chrome
-      - run: chmod +x ./project/eetools
+      - run: chmod +x ./eetools
       - run:
           name: Start Tests
           command: ./eetools test
