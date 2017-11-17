@@ -563,6 +563,7 @@ class Relationship_ft extends EE_Fieldtype {
 						'attrs' => 'data-any="y"',
 						'choices' => $util->all_channels(),
 						'value' => ($values['channels']) ?: '--',
+						'toggle_all' => FALSE,
 						'no_results' => [
 							'text' => sprintf(lang('no_found'), lang('channels'))
 						]
@@ -601,6 +602,7 @@ class Relationship_ft extends EE_Fieldtype {
 						'attrs' => 'data-any="y"',
 						'choices' => $util->all_categories(),
 						'value' => ($values['categories']) ?: '--',
+						'toggle_all' => FALSE,
 						'no_results' => [
 							'text' => sprintf(lang('no_found'), lang('categories'))
 						]
@@ -618,6 +620,7 @@ class Relationship_ft extends EE_Fieldtype {
 						'choices' => $util->all_authors(),
 						'value' => ($values['authors']) ?: '--',
 						'filter_url' => ee('CP/URL')->make('fields/relationship-member-filter')->compile(),
+						'toggle_all' => FALSE,
 						'no_results' => [
 							'text' => sprintf(lang('no_found'), lang('authors'))
 						]
@@ -634,6 +637,7 @@ class Relationship_ft extends EE_Fieldtype {
 						'attrs' => 'data-any="y"',
 						'choices' => $util->all_statuses(),
 						'value' => ($values['statuses']) ?: '--',
+						'toggle_all' => FALSE,
 						'no_results' => [
 							'text' => sprintf(lang('no_found'), lang('statuses'))
 						]
