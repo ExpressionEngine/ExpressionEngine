@@ -1,11 +1,10 @@
 class FieldGroups < ControlPanelPage
-  element :create_new, '.w-12 .tbl-ctrls a.btn'
-  elements :field_groups, '.w-12 table tbody tr'
-  elements :field_groups_edit, '.w-12 table tbody tr .edit a'
-  elements :field_groups_fields, '.w-12 table tbody tr .txt-only a'
-  elements :field_groups_checkboxes, '.w-12 table tbody tr input[type="checkbox"]'
+  element :create_new, '.sidebar a.btn.left'
+  elements :field_groups, '.folder-list > li'
+  elements :field_groups_edit, '.folder-list li.edit a'
+  elements :field_groups_fields, '.folder-list > li > a'
 
   def load
-    visit '/system/index.php?/cp/channels/fields/groups/'
+    visit '/system/index.php?/cp/fields'
   end
 end
