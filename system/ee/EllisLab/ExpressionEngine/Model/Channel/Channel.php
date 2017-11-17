@@ -216,7 +216,7 @@ class Channel extends StructureModel {
 
 		foreach ($emails as $email)
 		{
-			if ($value != filter_var($value, FILTER_SANITIZE_EMAIL) OR ! filter_var($value, FILTER_VALIDATE_EMAIL))
+			if ($email != filter_var($email, FILTER_SANITIZE_EMAIL) OR ! filter_var($email, FILTER_VALIDATE_EMAIL))
 			{
 				$rule->stop();
 				return 'valid_email';
