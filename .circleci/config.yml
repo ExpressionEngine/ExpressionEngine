@@ -2,16 +2,19 @@ version: 2
 jobs:
   rspec:
     docker:
-      - image: ellislab/eecms-test:headless-chrome
-        auth:
-          username: $DOCKER_USERNAME
-          password: $DOCKER_PASSWORD
+      - image: docker:stable-git
     steps:
+      - setup_remote_docker
       - checkout
+      - run:
+          name: Grab our Docker Container
+          command: |
+            docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+            docker pull ellislab/eecms-test:headless-chrome
       - run: chmod +x ./project/eetools
       - run:
-          name: Run rSpec Tests
-          command: ./project/eetools test
+          name: Start Tests
+          command: ./eetools test
 
 workflows:
   version: 2
