@@ -346,6 +346,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 		foreach ($field_templates as $field)
 		{
 			$f = $field->getField();
+			$f->setItem('fluid_field_data_id', NULL);
 			$f->setName($this->name() . '[fields][new_field_0][field_id_' . $field->getId() . ']');
 
 			$templates .= ee('View')->make('fluid_field:field')->render(array('field' => $field, 'filters' => $filters, 'errors' => $this->errors));
@@ -576,10 +577,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 			$field->setTimezone($data['field_dt_' . $field_id]);
 		}
 
-		if ( ! is_null($fluid_field_data_id))
-		{
-			$field->setItem('fluid_field_data_id', $fluid_field_data_id);
-		}
+		$field->setItem('fluid_field_data_id', $fluid_field_data_id);
 
 		return $field;
 	}
