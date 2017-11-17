@@ -544,7 +544,7 @@ $lang = array(
 
 'can_edit_all_comments' => 'Edit comments by others',
 
-'can_edit_html_buttons' => 'Can edit own <abbr title=\'Hyper-Text Markup Language\'>HTML</abbr> formatting buttons',
+'can_edit_html_buttons' => 'Can edit own HTML formatting buttons',
 
 'can_edit_other_entries' => 'Edit entries, by others',
 
