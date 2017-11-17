@@ -8,27 +8,25 @@ feature 'Channel Fields' do
     no_php_js_errors
   end
 
-  it 'has three fields' do
+  it 'has seven fields' do
     @page.all_there?.should == true
 
-    @page.fields.should have(3).items
-    @page.fields_edit.should have(3).items
-    @page.fields_checkboxes.should have(3).items
+    @page.fields.should have(7).items
+    @page.fields_edit.should have(7).items
+    @page.fields_checkboxes.should have(7).items
   end
 
   context 'when creating or editing fields' do
     def save_field
       form = ChannelFieldForm.new
       form.all_there?.should == true
-      form.field_type.select 'Text Input'
-      form.field_label.set 'Shipping Method'
-      form.field_name.set 'shipping_method'
-      form.submit
+      form.create_field(
+        type: 'Text Input',
+        label: 'Shipping Method'
+      )
 
-      @page.alert.has_content?('The field Shipping Method has been').should == true
-
-      @page.fields.any? { |f| f.text.include?('Shipping Method') }.should == true
-      @page.fields.any? { |f| f.text.include?('{shipping_method}') }.should == true
+      @page.should have_alert
+      @page.alert[:class].should include 'success'
     end
 
     it 'creates a field' do
@@ -45,10 +43,10 @@ feature 'Channel Fields' do
       @page.create_new.click
       form = ChannelFieldForm.new
       form.all_there?.should == true
-      form.field_type.select 'Date'
-      form.field_label.set 'Date'
-      form.field_name.set 'date'
-      form.submit
+      form.create_field(
+        type: 'Date',
+        label: 'Date'
+      )
 
       @page.alert.has_content?('Cannot Create Field').should == true
     end
@@ -67,8 +65,8 @@ feature 'Channel Fields' do
     @page.wait_for_modal_submit_button
     @page.modal_submit_button.click
 
-    @page.fields.should have(2).items
-    @page.fields[0].text.should include 'Body'
-    @page.fields[1].text.should include 'News Image'
+    @page.should have_alert
+    @page.alert[:class].should include 'success'
+    @page.fields.should have(6).items
   end
 end

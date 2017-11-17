@@ -1,8 +1,8 @@
 class ChannelFields < ControlPanelPage
-  element :create_new, '.w-12 .tbl-ctrls a.btn'
-  elements :fields, '.w-12 table tbody tr'
-  elements :fields_edit, '.w-12 table tbody tr .edit a'
-  elements :fields_checkboxes, '.w-12 table tbody tr input[type="checkbox"]'
+  element :create_new, '.section-header a.btn.action'
+  elements :fields, '.tbl-list > li'
+  elements :fields_edit, '.tbl-list > li .main > a'
+  elements :fields_checkboxes, '.tbl-list > li input[type="checkbox"]'
 
   def load
     visit '/system/index.php?/cp/fields'
