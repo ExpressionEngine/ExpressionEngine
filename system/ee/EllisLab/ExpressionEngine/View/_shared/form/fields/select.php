@@ -102,7 +102,7 @@ else:
 		'tooMany' => $too_many,
 		'filterUrl' => isset($filter_url) ? $filter_url : NULL,
 		'limit' => isset($limit) ? $limit : 100,
-		'toggleAll' => ($count > 2 && $multi) ?: NULL,
+		'toggleAll' => isset($toggle_all) ? $toggle_all : $count > 2 && $multi,
 		'groupToggle' => isset($group_toggle) ? $group_toggle : NULL,
 		'editing' => isset($editing) ? $editing : NULL,
 		'manageable' => isset($manageable) ? $manageable : NULL,

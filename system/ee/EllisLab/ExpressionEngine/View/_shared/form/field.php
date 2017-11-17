@@ -116,6 +116,7 @@ if ($field['type'] == 'checkbox' && ! $value) $value = [];
 		'encode' => isset($field['encode']) ? $field['encode'] : TRUE,
 		'force_react' => isset($field['force_react']) ? $field['force_react'] : FALSE,
 		'class' => $class,
+		'toggle_all' => isset($field['toggle_all']) ? $field['toggle_all'] : NULL
 	]); ?>
 <?php break;
 
