@@ -782,7 +782,11 @@ class Channels extends AbstractChannelsController {
 		}
 
 		// Default status menu
-		$deft_status_options = ['' => lang('none')];
+		$deft_status_options = [
+			'' => lang('none'),
+			'open' => lang('open'),
+			'closed' => lang('closed')
+		];
 		$deft_status_options += $channel->Statuses
 			->sortBy('status_order')
 			->getDictionary('status', 'status');
