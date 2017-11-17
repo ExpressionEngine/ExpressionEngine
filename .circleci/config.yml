@@ -11,6 +11,8 @@ jobs:
       - run: chmod +x ./eetools
 
   test:
+    docker:
+      - image: ellislab/eecms-test:headless-chrome
     steps:
       - checkout
       - run:
