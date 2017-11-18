@@ -32,4 +32,6 @@ else
 	# Have to quote this to get multiple arguments working for run.sh
 	DOCKER_CMD="docker run --rm -t -i -v /app --volumes-from eecms-test-vol $IMAGE_NAME /bin/bash -c \"./run.sh $@\""
 	eval $DOCKER_CMD
+	docker cp eecms-test-vol:/app/tests/artifacts/$PHP_VERSION /tmp/artifacts
+	docker cp eecms-test-vol:/app/tests/rspec/screenshots /tmp/artifacts/$PHP_VERSION
 fi

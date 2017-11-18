@@ -21,6 +21,8 @@ jobs:
       - run:
           name: Start Tests
           command: ./eetools test
+      - store_artifacts:
+          path: /tmp/artifacts
 
 workflows:
   version: 2

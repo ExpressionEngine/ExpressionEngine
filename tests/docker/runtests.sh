@@ -29,6 +29,8 @@ while [[ $# > 0 ]]
 	shift # past argument or value
 done
 
+export PHP_VERSION
+
 cp /app/ee.tar /var/www/html/
 
 pushd /var/www/html/ > /dev/null
@@ -90,7 +92,7 @@ if [ "${COMMAND}" == "test" ]; then
 
 	pushd /var/www/html/tests/rspec > /dev/null
 		bundle install --no-deployment --path=~/gems/ > /dev/null
-		xvfb-run -a bundle exec rspec -c -fd $FILES
+		xvfb-run -a bundle exec rspec -c -fd -fh -o /app/tests/artifacts/${PHP_VERSION}/rspec.html $FILES
 	popd > /dev/null
 
 	if [ -d "/var/www/html/tests/rspec/screenshots" ]; then
