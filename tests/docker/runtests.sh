@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Increment this to indicate exit status
+STATUS=0
+
 # Container's nameservers keep getting reset, putting this here
 # until we figure out how to fix
 echo "domain local" > /etc/resolv.conf
@@ -79,11 +82,59 @@ service mysql start > /dev/null
 
 if [ "${COMMAND}" == "test" ]; then
 
+	mkdir -p /app/tests/artifacts/${PHP_VERSION}
+
+	# Lint
+	pushd /var/www/html/ > /dev/null
+		for file in `find -L . -type f -name "*.php" -not -path "./system/ee/EllisLab/Tests/vendor/*" -not -path "./node_modules/*" -not -name "config_tmpl.php"`; do
+			RESULTS=`php -l $file`
+
+			if [ "$RESULTS" != "No syntax errors detected in $file" ] ; then
+				echo $RESULTS >> /app/tests/artifacts/$PHP_VERSION/phplint.txt
+				((STATUS+=1))
+			fi
+		done
+	popd > /dev/null
+
+	# Bail early if PHP Linting failed
+	if [ "${STATUS}" -gt "0" ]; then
+		exit $STATUS
+	fi
+
+	# PHPUnit tests
+	pushd /app/system/ee/EllisLab/Tests/
+		printf "Running PHPUnit tests\n\n"
+		composer install --prefer-source --no-interaction
+		vendor/bin/phpunit ExpressionEngine/ > /app/tests/artifacts/$PHP_VERSION/phpunit.txt
+
+		# Save our exit status code
+		((STATUS+=$?))
+
+		# Remove CLI colors
+		sed -i -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})*)?m//g" /app/tests/artifacts/$PHP_VERSION/phpunit.txt
+	popd
+
+	# Updater microapp unit tests
+	pushd /app/system/ee/installer/updater/EllisLab/Tests/
+		printf "Running PHPUnit tests\n\n"
+		composer install --prefer-source --no-interaction
+		vendor/bin/phpunit ExpressionEngine/ > /app/tests/artifacts/$PHP_VERSION/phpunit-updater.txt
+
+		# Save our exit status code
+		((STATUS+=$?))
+
+		# Remove CLI colors
+		sed -i -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})*)?m//g" /app/tests/artifacts/$PHP_VERSION/phpunit-updater.txt
+	popd
+
+	# Bail early if PHP Unit tests failed
+	if [ "${STATUS}" -gt "0" ]; then
+		exit $STATUS
+	fi
+
 	if [ "${FILES}" == "" ]; then
 		FILES="tests/**/*.rb"
 	fi
-
-	# TODO: Run PHP lint and PHP Unit first, bail out if they fail
 
 	mysql -u root -e 'CREATE DATABASE `ee-test`;' > /dev/null
 	mysql -u root -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION";'
@@ -93,6 +144,9 @@ if [ "${COMMAND}" == "test" ]; then
 	pushd /var/www/html/tests/rspec > /dev/null
 		bundle install --no-deployment --path=~/gems/ > /dev/null
 		xvfb-run -a bundle exec rspec -c -fd -fh -o /app/tests/artifacts/${PHP_VERSION}/rspec.html $FILES
+
+		# Append status code for this test
+		((STATUS+=$?))
 	popd > /dev/null
 
 	if [ -d "/var/www/html/tests/rspec/screenshots" ]; then
@@ -103,3 +157,5 @@ if [ "${COMMAND}" == "test" ]; then
 		popd > /dev/null
 	fi
 fi
+
+exit $STATUS
