@@ -428,11 +428,10 @@ class Fields extends AbstractFieldsController {
 
 	private function setWithPost(ChannelField $field)
 	{
-		$field->site_id = (int) ee()->config->item('site_id');
+		$field->site_id = 0;
 		$field->field_list_items = ($field->field_list_items) ?: '';
 		$field->field_order = ($field->field_order) ?: 0;
 
-		unset($_POST['site_id']);
 		$field->set($_POST);
 
 		if ($field->field_pre_populate)
