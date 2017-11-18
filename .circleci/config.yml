@@ -20,7 +20,7 @@ jobs:
       - run: chmod +x ./eetools
       - run:
           name: Start Tests
-          command: ./eetools test
+          command: ./eetools test tests/logs/test_cp_log.rb:29
       - store_artifacts:
           path: /tmp/artifacts
 
