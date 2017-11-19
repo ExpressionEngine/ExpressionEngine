@@ -14,6 +14,14 @@ include_once(APPPATH.'libraries/Encrypt.php');
 
 class EncryptTest extends \PHPUnit_Framework_TestCase {
 
+	public function setUp()
+	{
+		if (version_compare(PHP_VERSION, '7.1.0', '>='))
+		{
+			PHPUnit_Framework_Error_Deprecated::$enabled = FALSE;
+		}
+	}
+
 	public function testDecodeOfMcryptedData()
 	{
 		ee()->setMock('Encrypt', new Encrypt\Encrypt('ADefaultKey'));
@@ -23,12 +31,19 @@ class EncryptTest extends \PHPUnit_Framework_TestCase {
 
 		$legacy = new EE_Encrypt();
 
+		// deprecations in 7.1.0 will still throw visible errors here, but the test will pass
 		$encoded = base64_encode($legacy->mcrypt_encode($text, md5($key)));
+
 		$this->assertEquals($legacy->decode($encoded, $key), $text);
 	}
 
 	public function tearDown()
 	{
 		ee()->resetMocks();
+
+		if (version_compare(PHP_VERSION, '7.1.0', '>='))
+		{
+			PHPUnit_Framework_Error_Deprecated::$enabled = TRUE;
+		}
 	}
 }

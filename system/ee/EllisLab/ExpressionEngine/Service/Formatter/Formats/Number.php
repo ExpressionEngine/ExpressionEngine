@@ -200,14 +200,14 @@ class Number extends Formatter {
 		// fallback will only work for English ordinal indicators
 		$indicators = ['th','st','nd','rd','th','th','th','th','th','th'];
 
-		$mod = $this->content % 100;
+		$mod = (int) $this->content % 100;
 		if (($mod >= 11) && ($mod <= 13))
 		{
 			$indicator = $indicators[0];
 		}
 		else
 		{
-			$indicator = $indicators[$this->content % 10];
+			$indicator = $indicators[(int) $this->content % 10];
 		}
 
 		$this->content = number_format((float) $this->content).$indicator;
