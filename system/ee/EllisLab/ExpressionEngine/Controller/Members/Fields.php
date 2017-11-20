@@ -106,15 +106,26 @@ class Fields extends Members\Members {
 
 		$total = ee('Model')->get('MemberField')->count();
 
-		$filter = ee('CP/Filter')->add('Perpage', $total, 'show_all_member_fields');
+		$filter = ee('CP/Filter')
+			->add('Keyword')
+			->add('Perpage', $total, 'show_all_member_fields');
 
 		$this->renderFilters($filter);
 
 		$fields = ee('Model')->get('MemberField')
 			->order($sort_col, $sort_dir)
 			->limit($this->perpage)
-			->offset($this->offset)
-			->all();
+			->offset($this->offset);
+
+		if (isset($this->params['filter_by_keyword']))
+		{
+			$fields->filterGroup()
+				->filter('m_field_name', $this->params['filter_by_keyword'])
+				->orFilter('m_field_label', $this->params['filter_by_keyword'])
+			->endFilterGroup();
+		}
+
+		$fields = $fields->all();
 
 		$type_map = array(
 			'text' => lang('text_input'),
