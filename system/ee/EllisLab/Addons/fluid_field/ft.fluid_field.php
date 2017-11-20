@@ -375,7 +375,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 	public function display_settings($data)
 	{
 		$custom_field_options = ee('Model')->get('ChannelField')
-			->filter('site_id', 'IN', array(0, ee()->config->item('site_id')))
+			->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
 			->filter('field_type', '!=', 'fluid_field')
 			->order('field_label')
 			->all()

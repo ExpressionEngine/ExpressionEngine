@@ -554,7 +554,7 @@ class Variables extends AbstractDesignController {
 		$variables = ee('Model')->get('GlobalVariable');
 		if ($this->msm)
 		{
-			$variables->filter('site_id', 'IN', array(0, ee()->config->item('site_id')));
+			$variables->filter('site_id', 'IN', [ee()->config->item('site_id'), 0]);
 		}
 		else
 		{

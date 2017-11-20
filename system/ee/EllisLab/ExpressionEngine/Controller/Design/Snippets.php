@@ -538,7 +538,7 @@ class Snippets extends AbstractDesignController {
 		$snippets = ee('Model')->get('Snippet');
 		if ($this->msm)
 		{
-			$snippets->filter('site_id', 'IN', array(0, ee()->config->item('site_id')));
+			$snippets->filter('site_id', 'IN', [ee()->config->item('site_id'), 0]);
 		}
 		else
 		{
