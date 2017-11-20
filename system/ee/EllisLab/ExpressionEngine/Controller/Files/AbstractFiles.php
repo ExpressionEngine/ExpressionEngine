@@ -371,18 +371,12 @@ abstract class AbstractFiles extends CP_Controller {
 	protected function listingsPage($files, $base_url)
 	{
 		$vars = array();
-		$search_terms = ee()->input->get_post('search');
+		$search_terms = ee()->input->get_post('filter_by_keyword');
 
 		if ($search_terms)
 		{
-			$base_url->setQueryStringVariable('search', $search_terms);
-			$files
-				->filterGroup()
-				->filter('title', 'LIKE', '%' . $search_terms . '%')
-				->orFilter('file_name', 'LIKE', '%' . $search_terms . '%')
-				->orFilter('mime_type', 'LIKE', '%' . $search_terms . '%')
-				->endFilterGroup();
-
+			$base_url->setQueryStringVariable('fliter_by_keyword', $search_terms);
+			$files->search(['title', 'file_name', 'mime_type'], $search_terms);
 			$vars['search_terms'] = htmlentities($search_terms, ENT_QUOTES, 'UTF-8');
 		}
 
