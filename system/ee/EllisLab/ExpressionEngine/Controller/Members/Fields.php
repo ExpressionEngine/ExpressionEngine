@@ -119,10 +119,7 @@ class Fields extends Members\Members {
 
 		if (isset($this->params['filter_by_keyword']))
 		{
-			$fields->filterGroup()
-				->filter('m_field_name', $this->params['filter_by_keyword'])
-				->orFilter('m_field_label', $this->params['filter_by_keyword'])
-			->endFilterGroup();
+			$fields->search(['m_field_name', 'm_field_label'], $this->params['filter_by_keyword']);
 		}
 
 		$fields = $fields->all();
