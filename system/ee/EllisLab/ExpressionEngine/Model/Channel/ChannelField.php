@@ -57,7 +57,7 @@ class ChannelField extends FieldModel {
 
 	protected static $_validation_rules = array(
 		'site_id'              => 'required|integer',
-		'field_name'           => 'required|unique[site_id]|validateNameIsNotReserved|maxLength[32]',
+		'field_name'           => 'required|unique|validateNameIsNotReserved|maxLength[32]',
 		'field_label'          => 'required|maxLength[50]',
 		'field_type'           => 'validateIsCompatibleWithPreviousValue',
 	//	'field_list_items'     => 'required',
