@@ -114,8 +114,9 @@ feature 'Grid Field Settings' do
     column = GridSettings::column(1)
     column.name.set ''
     @page.submit
+    column = GridSettings::column(1)
+    should_have_error_text(column.name, $required_error)
     no_php_js_errors
-    @page.should have_text('There are one or more columns without a column name.')
 
     # Put back the column name for validation
     column = GridSettings::column(1)

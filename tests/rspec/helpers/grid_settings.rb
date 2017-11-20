@@ -259,10 +259,10 @@ class GridSettingsColumn
     @col_type.find('.field-drop-choices label', text: data[:type][0]).click
     @label.set data[:label]
     @instructions.set data[:instructions]
-    if data[:required] == 'y'
+    if data[:required]
       @required.click
     end
-    if data[:searchable] == 'y'
+    if data[:searchable]
       @searchable.click
     end
     @width.set data[:width]
@@ -279,8 +279,20 @@ class GridSettingsColumn
     @name.value.should == data[:name]
     @instructions.value.should == data[:instructions]
     @width.value.should == data[:width]
-    @required_input.value.should == data[:required]
-    @searchable_input.value.should == data[:searchable]
+
+    if data[:required]
+      @required[:class].include?('on').should == true
+    else
+      @required[:class].include?('off').should == true
+    end
+    @required_input.value.should == (data[:required] ? 'y' : 'n')
+
+    if data[:searchable]
+      @searchable[:class].include?('on').should == true
+    else
+      @searchable[:class].include?('off').should == true
+    end
+    @searchable_input.value.should == (data[:searchable] ? 'y' : 'n')
 
     @type_obj.validate(data)
   end
@@ -315,7 +327,7 @@ class GridSettingsColumn
 
   # Clicks the delete link on the current settings column
   def delete
-    @node.find('li.remove a').click
+    @node.find('.fields-grid-tools:last-child > a.fields-grid-tool-remove').click
     sleep 0.5 # Wait for DOM animation
   end
 end
@@ -344,7 +356,7 @@ class GridSettingsColumnTypeDate
     else
       @localized[:class].include?('off').should == true
     end
-    @localized_input.value.should == data[:localized]
+    @localized_input.value.should == (data[:localized] ? 'y' : 'n')
   end
 end
 
@@ -373,7 +385,9 @@ class GridSettingsColumnTypeFile
   end
 
   def validate(data)
+    @file_type = @node.find('[name*="field_content_type"][value="'+data[:file_type][1]+'"]')
     @file_type.checked?.should == true
+    @allowed_dirs = @node.find('[name*="allowed_directories"][value="'+data[:allowed_dirs][1]+'"]')
     @allowed_dirs.checked?.should == true
     @num_existing.value.should == data[:num_existing]
     if data[:show_existing]
@@ -381,7 +395,7 @@ class GridSettingsColumnTypeFile
     else
       @show_existing[:class].include?('off').should == true
     end
-    @show_existing_input.value.should == data[:show_existing]
+    @show_existing_input.value.should == (data[:show_existing] ? 'y' : 'n')
   end
 end
 
@@ -400,9 +414,10 @@ class GridSettingsColumnTypeRelationships
     @authors = @node.all('[name*="authors"]')
     @statuses = @node.all('[name*="statuses"]')
     @limit = @node.find('[name*="limit"]')
-    @order_field = @node.find('[name*="order_field"]')
-    @order_dir = @node.find('[name*="order_dir"]')
-    @allow_multiple = @node.all('[name*="allow_multiple"]')
+    @order_field = @node.all('[name*="order_field"]')
+    @order_dir = @node.all('[name*="order_dir"]')
+    @allow_multiple = @node.find('[data-toggle-for*="allow_multiple"]')
+    @allow_multiple_input = @node.find('[name*="allow_multiple"]', visible: false)
   end
 
   def fill_data(data)
@@ -431,13 +446,11 @@ class GridSettingsColumnTypeRelationships
     end
 
     @limit.set data[:limit]
-    @order_field.select data[:order_field][0]
-    @order_dir.select data[:order_dir][0]
+    @order_field.choose_radio_option(data[:order_field][1])
+    @order_dir.choose_radio_option(data[:order_dir][1])
 
-    if data[:allow_multiple]
-      @allow_multiple[0].click
-    else
-      @allow_multiple[1].click
+    if ! data[:allow_multiple] # On by default, so only click to turn off
+      @allow_multiple.click
     end
   end
 
@@ -447,12 +460,17 @@ class GridSettingsColumnTypeRelationships
     GridSettings::checkboxes_should_have_checked_values(@authors, data[:authors][1])
     GridSettings::checkboxes_should_have_checked_values(@statuses, data[:statuses][1])
     @limit.value.should == data[:limit]
-    @order_field.value.should == data[:order_field][1]
-    @order_dir.value.should == data[:order_dir][1]
+    @order_field.has_checked_radio(data[:order_field][1]).should == true
+    @order_dir.has_checked_radio(data[:order_dir][1]).should == true
     @expired.checked?.should == data[:expired]
     @future.checked?.should == data[:future]
-    @allow_multiple[0].checked?.should == data[:allow_multiple]
-    @allow_multiple[1].checked?.should == !data[:allow_multiple]
+
+    if data[:allow_multiple]
+      @allow_multiple[:class].include?('on').should == true
+    else
+      @allow_multiple[:class].include?('off').should == true
+    end
+    @allow_multiple_input.value.should == (data[:allow_multiple] ? 'y' : 'n')
   end
 end
 
@@ -464,23 +482,23 @@ class GridSettingsColumnTypeTextInput
   end
 
   def load_elements
+    @field_fmt = @node.all('[name*="field_fmt"]')
+    @field_content_type = @node.all('[name*="field_content_type"]')
+    @field_text_direction = @node.all('[name*="field_text_direction"]')
     @field_maxl = @node.find('[name*="field_maxl"]')
   end
 
   def fill_data(data)
-    @field_fmt = @node.find('[name*="field_fmt"][value="'+data[:field_fmt][0]+'"]')
-    @field_fmt.click
-    @field_content_type = @node.find('[name*="field_content_type"][value="'+data[:field_content_type][0]+'"]')
-    @field_content_type.click
-    @field_text_direction = @node.find('[name*="field_text_direction"][value="'+data[:field_text_direction][0]+'"]')
-    @field_text_direction.click
+    @field_fmt.choose_radio_option(data[:field_fmt][1])
+    @field_content_type.choose_radio_option(data[:field_content_type][1])
+    @field_text_direction.choose_radio_option(data[:field_text_direction][1])
     @field_maxl.set data[:field_maxl]
   end
 
   def validate(data)
-    @field_fmt.checked?.should == true
-    @field_content_type.checked?.should == true
-    @field_text_direction.checked?.should == true
+    @field_fmt.has_checked_radio(data[:field_fmt][1]).should == true
+    @field_content_type.has_checked_radio(data[:field_content_type][1]).should == true
+    @field_text_direction.has_checked_radio(data[:field_text_direction][1]).should == true
     @field_maxl.value.should == data[:field_maxl]
   end
 end
@@ -493,23 +511,23 @@ class GridSettingsColumnTypeTextarea
   end
 
   def load_elements
-    @field_fmt = @node.find('[name*="field_fmt"]')
+    @field_fmt = @node.all('[name*="field_fmt"]')
     @field_ta_rows = @node.find('[name*="field_ta_rows"]')
-    @field_text_direction = @node.find('[name*="field_text_direction"]')
+    @field_text_direction = @node.all('[name*="field_text_direction"]')
     @show_formatting_buttons = @node.find('[name*="show_formatting_btns"]')
   end
 
   def fill_data(data)
-    @field_fmt.select data[:field_fmt][0]
+    @field_fmt.choose_radio_option(data[:field_fmt][1])
     @field_ta_rows.set data[:field_ta_rows]
-    @field_text_direction.select data[:field_text_direction][0]
+    @field_text_direction.choose_radio_option(data[:field_text_direction][1])
     @show_formatting_buttons.set data[:show_formatting_buttons]
   end
 
   def validate(data)
-    @field_fmt.value.should == data[:field_fmt][1]
+    @field_fmt.has_checked_radio(data[:field_fmt][1]).should == true
     @field_ta_rows.value.should == data[:field_ta_rows]
-    @field_text_direction.value.should == data[:field_text_direction][1]
+    @field_text_direction.has_checked_radio(data[:field_text_direction][1]).should == true
     @show_formatting_buttons.checked?.should == data[:show_formatting_buttons]
   end
 end
@@ -523,17 +541,17 @@ class GridSettingsColumnTypeRichTextarea
 
   def load_elements
     @field_ta_rows = @node.find('[name*="field_ta_rows"]')
-    @field_text_direction = @node.find('[name*="field_text_direction"]')
+    @field_text_direction = @node.all('[name*="field_text_direction"]')
   end
 
   def fill_data(data)
     @field_ta_rows.set data[:field_ta_rows]
-    @field_text_direction.select data[:field_text_direction][0]
+    @field_text_direction.choose_radio_option(data[:field_text_direction][1])
   end
 
   def validate(data)
     @field_ta_rows.value.should == data[:field_ta_rows]
-    @field_text_direction.value.should == data[:field_text_direction][1]
+    @field_text_direction.has_checked_radio(data[:field_text_direction][1]).should == true
   end
 end
 
@@ -544,27 +562,21 @@ class GridSettingsColumnTypeMuliselect
   end
 
   def load_elements
-    @field_fmt = @node.find('[name*="field_fmt"]')
+    @field_fmt = @node.all('[name*="field_fmt"]')
     @field_list_items = @node.find('[name*="field_list_items"]')
-    @field_pre_populate_v = @node.find('[name*="field_pre_populate"][value=v]')
-    @field_pre_populate_n = @node.find('[name*="field_pre_populate"][value=n]')
+    @field_pre_populate = @node.all('[name*="field_pre_populate"]')
   end
 
   def fill_data(data)
-    @field_fmt.select data[:field_fmt][0]
+    @field_fmt.choose_radio_option(data[:field_fmt][1])
     @field_list_items.set data[:field_list_items]
-    if data[:field_pre_populate] == 'v'
-      @field_pre_populate_v.click
-    else
-      @field_pre_populate_n.click
-    end
+    @field_pre_populate.choose_radio_option(data[:field_pre_populate])
   end
 
   def validate(data)
-    @field_fmt.value.should == data[:field_fmt][1]
+    @field_fmt.has_checked_radio(data[:field_fmt][1]).should == true
     @field_list_items.value.should == data[:field_list_items]
-    @field_pre_populate_v.checked?.should == (data[:field_pre_populate] == 'v')
-    @field_pre_populate_n.checked?.should == (data[:field_pre_populate] == 'n')
+    @field_pre_populate.has_checked_radio(data[:field_pre_populate]).should == true
   end
 end
 
@@ -575,23 +587,23 @@ class GridSettingsColumnTypeToggle
   end
 
   def load_elements
-    @field_default_value = @node.find('[name*="field_default_value"]', :visible => false)
-    @field_default_value_btn = @node.find('.toggle-btn')
+    @field_default_value = @node.find('[data-toggle-for*="field_default_value"]')
+    @field_default_value_input = @node.find('[name*="field_default_value"]', visible: false)
   end
 
   def fill_data(data)
     if data[:field_default_value] == '1'
-      @field_default_value_btn.click
+      @field_default_value.click
     end
   end
 
   def validate(data)
-    @field_default_value.value.should == data[:field_default_value]
-    if data[:field_default_value] == '1'
-      @node.find('.toggle-btn.on').should_not == nil
+    if data[:field_default_value]
+      @field_default_value[:class].include?('on').should == true
     else
-      @node.find('.toggle-btn.off').should_not == nil
+      @field_default_value[:class].include?('off').should == true
     end
+    @field_default_value_input.value.should == data[:field_default_value]
   end
 end
 
@@ -618,7 +630,7 @@ class GridSettingsColumnTypeUrl
 
   def load_elements
     @allowed_url_schemes = @node.all('[name*="allowed_url_schemes"]')
-    @url_scheme_placeholder = @node.find('[name*="url_scheme_placeholder"]')
+    @url_scheme_placeholder = @node.all('[name*="url_scheme_placeholder"]')
   end
 
   def fill_data(data)
@@ -626,15 +638,15 @@ class GridSettingsColumnTypeUrl
       checkbox.set(false)
     end
     data[:allowed_url_schemes].each do |scheme|
-      @node.find("[name*='allowed_url_schemes'][value='#{scheme}']").set(true)
+      @node.find("[data-input-value*='allowed_url_schemes'] [value='#{scheme}']").set(true)
     end
-    @url_scheme_placeholder.set data[:url_scheme_placeholder]
+    @url_scheme_placeholder.choose_radio_option(data[:url_scheme_placeholder])
   end
 
   def validate(data)
     data[:allowed_url_schemes].each do |scheme|
-      @node.find("[name*='allowed_url_schemes'][value='#{scheme}']").checked?.should == true
+      @node.find("[data-input-value*='allowed_url_schemes'] [value='#{scheme}']").checked?.should == true
     end
-    @url_scheme_placeholder.value.should == data[:url_scheme_placeholder]
+    @url_scheme_placeholder.has_checked_radio(data[:url_scheme_placeholder]).should == true
   end
 end
