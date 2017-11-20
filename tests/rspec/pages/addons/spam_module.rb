@@ -1,8 +1,7 @@
 class SpamTrap < ControlPanelPage
   set_url_matcher /addons\/settings\/spam/
 
-  element :phrase_search, '.align-right fieldset.tbl-search input[name=search]'
-  element :search_submit_button, '.align-right fieldset.tbl-search input.submit'
+  element :keyword_search, 'div.filters input[name=filter_by_keyword]'
 
   # Main box elements
   element :heading, '.align-right div.col.w-16 div.box form h1'
@@ -38,9 +37,7 @@ class SpamTrap < ControlPanelPage
   def load
     self.open_dev_menu
     click_link 'Add-Ons'
-    self.find('fieldset.tbl-search input[name=search]').set 'Spam'
-    self.find('fieldset.tbl-search input.submit').click
-    self.find('ul.toolbar li.settings a').click
+    self.find('div.tbl-wrap table tr a', :text => 'Spam').click
   end
 
 end

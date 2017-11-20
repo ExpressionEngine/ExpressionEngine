@@ -8,11 +8,9 @@ feature 'Spam Module' do
       cp_session
       @page = AddonManager.new
       @page.load
-      @page.phrase_search.set 'spam'
-      @page.search_submit_button.click
-      no_php_js_errors
+      spam_row = @page.find('div.tbl-wrap table tr', :text => 'Spam')
+      spam_row.find('a', :text => 'Install').click
 
-      @page.first_party_addons[0].find('ul.toolbar li.txt-only a.add').click
       no_php_js_errors
     end
   end
@@ -31,16 +29,16 @@ feature 'Spam Module' do
 
       @page.displayed?
       @page.heading.text.should have_text 'All SPAM'
-      @page.should have_phrase_search
+      @page.should have_keyword_search
     end
 
     it 'can search by phrases' do
-      @page.phrase_search.set 'about'
-      @page.search_submit_button.click
+      @page.keyword_search.set 'about'
+      @page.keyword_search.send_keys(:enter)
       no_php_js_errors
 
       @page.heading.text.should eq 'Search Results we found 5 results for "about"'
-      @page.phrase_search.value.should eq 'about'
+      @page.keyword_search.value.should eq 'about'
       @page.should have_text 'about'
     end
 
