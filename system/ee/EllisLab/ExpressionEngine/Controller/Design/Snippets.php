@@ -76,9 +76,7 @@ class Snippets extends AbstractDesignController {
 
 		$data = array();
 		$snippets = ee('Model')->get('Snippet')
-			->filterGroup()
-				->filter('site_id', ee()->config->item('site_id'))
-				->orFilter('site_id', 0)
+			->filter('site_id', 'IN', array(0, ee()->config->item('site_id')))
 			->endFilterGroup();
 
 		$this->base_url = ee('CP/URL')->make('design/snippets');
