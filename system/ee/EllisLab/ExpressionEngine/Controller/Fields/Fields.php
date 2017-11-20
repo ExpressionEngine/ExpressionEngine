@@ -49,7 +49,6 @@ class Fields extends AbstractFieldsController {
 
 		// Set up filters
 		$group_ids = ee('Model')->get('ChannelFieldGroup')
-			->filter('site_id', ee()->config->item('site_id'))
 			->order('group_name')
 			->all()
 			->getDictionary('group_id', 'group_name');
@@ -105,8 +104,7 @@ class Fields extends AbstractFieldsController {
 		}
 		else
 		{
-			$fields = ee('Model')->get('ChannelField')
-				->filter('site_id', 'IN', [ee()->config->item('site_id'), 0]);
+			$fields = ee('Model')->get('ChannelField');
 
 			if ($search = ee()->input->get_post('filter_by_keyword'))
 			{
@@ -428,11 +426,10 @@ class Fields extends AbstractFieldsController {
 
 	private function setWithPost(ChannelField $field)
 	{
-		$field->site_id = (int) ee()->config->item('site_id');
+		$field->site_id = 0;
 		$field->field_list_items = ($field->field_list_items) ?: '';
 		$field->field_order = ($field->field_order) ?: 0;
 
-		unset($_POST['site_id']);
 		$field->set($_POST);
 
 		if ($field->field_pre_populate)
