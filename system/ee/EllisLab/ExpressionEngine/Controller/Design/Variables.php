@@ -77,14 +77,14 @@ class Variables extends AbstractDesignController {
 		$data = array();
 
 		$variables = ee('Model')->get('GlobalVariable')
-			->filter('site_id', 'IN', array(0, ee()->config->item('site_id')))
-			->endFilterGroup();
+			->filter('site_id', 'IN', array(0, ee()->config->item('site_id')));
 
 		$this->base_url = ee('CP/URL')->make('design/variables');
 
 		$total = $variables->count();
 
 		$filters = ee('CP/Filter')
+			->add('Keyword')
 			->add('Perpage', $variables->count(), 'show_all_variables');
 
 		// Before pagination so perpage is set correctly
@@ -104,8 +104,14 @@ class Variables extends AbstractDesignController {
 
 		$variable_data = $variables->order($sort_map[$sort_col], $table->sort_dir)
 			->limit($this->perpage)
-			->offset($this->offset)
-			->all();
+			->offset($this->offset);
+
+		if (isset($this->params['filter_by_keyword']))
+		{
+			$variable_data->search(['variable_name', 'variable_data'], $this->params['filter_by_keyword']);
+		}
+
+		$variable_data = $variable_data->all();
 
 		foreach($variable_data as $variable)
 		{

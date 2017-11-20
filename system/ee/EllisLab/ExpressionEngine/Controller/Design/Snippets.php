@@ -76,14 +76,14 @@ class Snippets extends AbstractDesignController {
 
 		$data = array();
 		$snippets = ee('Model')->get('Snippet')
-			->filter('site_id', 'IN', array(0, ee()->config->item('site_id')))
-			->endFilterGroup();
+			->filter('site_id', 'IN', array(0, ee()->config->item('site_id')));
 
 		$this->base_url = ee('CP/URL')->make('design/snippets');
 
 		$total = $snippets->count();
 
 		$filters = ee('CP/Filter')
+			->add('Keyword')
 			->add('Perpage', $total, 'show_all_partials');
 
 		// Before pagination so perpage is set correctly
@@ -103,8 +103,14 @@ class Snippets extends AbstractDesignController {
 
 		$snippet_data = $snippets->order($sort_map[$sort_col], $table->sort_dir)
 			->limit($this->perpage)
-			->offset($this->offset)
-			->all();
+			->offset($this->offset);
+
+		if (isset($this->params['filter_by_keyword']))
+		{
+			$snippet_data->search(['snippet_name', 'snippet_contents'], $this->params['filter_by_keyword']);
+		}
+
+		$snippet_data = $snippet_data->all();
 
 		foreach ($snippet_data as $snippet)
 		{
