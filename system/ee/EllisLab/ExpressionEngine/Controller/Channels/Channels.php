@@ -42,9 +42,9 @@ class Channels extends AbstractChannelsController {
 
 		$total_channels = $channels->count();
 
-		$filters = ee('CP/Filter');
-		$filters->add('Keyword');
-		$filters->add('Perpage', $total_channels, 'all_channels', TRUE);
+		$filters = ee('CP/Filter')
+			->add('Keyword')
+			->add('Perpage', $total_channels, 'all_channels', TRUE);
 		$filter_values = $filters->values();
 
 		$page = ee('Request')->get('page') ?: 1;
