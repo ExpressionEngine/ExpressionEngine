@@ -102,7 +102,7 @@ if [ "${COMMAND}" == "test" ]; then
 	fi
 
 	# PHPUnit tests
-	pushd /app/system/ee/EllisLab/Tests/
+	pushd /var/www/html/system/ee/EllisLab/Tests/
 		printf "Running PHPUnit tests\n\n"
 		composer install --prefer-source --no-interaction
 		vendor/bin/phpunit ExpressionEngine/ > /app/tests/artifacts/$PHP_VERSION/phpunit.txt
@@ -115,7 +115,7 @@ if [ "${COMMAND}" == "test" ]; then
 	popd
 
 	# Updater microapp unit tests
-	pushd /app/system/ee/installer/updater/EllisLab/Tests/
+	pushd /var/www/html/system/ee/installer/updater/EllisLab/Tests/
 		printf "Running PHPUnit tests\n\n"
 		composer install --prefer-source --no-interaction
 		vendor/bin/phpunit ExpressionEngine/ > /app/tests/artifacts/$PHP_VERSION/phpunit-updater.txt
