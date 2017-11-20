@@ -417,7 +417,6 @@ class Fields extends AbstractFieldsController {
 			],
 			'form_hidden' => array(
 				'field_id' => $id,
-				'site_id' => 0
 			),
 		);
 
@@ -428,7 +427,6 @@ class Fields extends AbstractFieldsController {
 
 	private function setWithPost(ChannelField $field)
 	{
-		$field->site_id = 0;
 		$field->field_list_items = ($field->field_list_items) ?: '';
 		$field->field_order = ($field->field_order) ?: 0;
 
