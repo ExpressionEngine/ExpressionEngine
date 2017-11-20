@@ -59,7 +59,7 @@ class Comments extends AbstractPublishController {
 		$comments = ee('Model')->get('Comment')
 			->filter('site_id', ee()->config->item('site_id'));
 
-		$channel_filter = ee('CP/EntryListing', ee()->input->get_post('search'))->createChannelFilter();
+		$channel_filter = ee('CP/EntryListing', ee()->input->get_post('filter_by_keyword'))->createChannelFilter();
 		if ($channel_filter->value())
 		{
 			$comments->filter('channel_id', $channel_filter->value());
@@ -75,17 +75,18 @@ class Comments extends AbstractPublishController {
 		// never show Spam here, that needs to be dealt with in the Spam module
 		$comments->filter('status', '!=', 's');
 
-		ee()->view->search_value = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
+		ee()->view->search_value = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
 		if ( ! empty(ee()->view->search_value))
 		{
-			$base_url->setQueryStringVariable('search', ee()->view->search_value);
+			$base_url->setQueryStringVariable('filter_by_keyword', ee()->view->search_value);
 			$comments->filter('comment', 'LIKE', '%' . ee()->view->search_value . '%');
 		}
 
 		$filters = ee('CP/Filter')
 			->add($channel_filter)
 			->add($status_filter)
-			->add('Date');
+			->add('Date')
+			->add('Keyword');
 
 		$filter_values = $filters->values();
 
@@ -216,16 +217,17 @@ class Comments extends AbstractPublishController {
 			$comments->filter('status', $status_filter->value());
 		}
 
-		ee()->view->search_value = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
+		ee()->view->search_value = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
 		if ( ! empty(ee()->view->search_value))
 		{
-			$base_url->setQueryStringVariable('search', ee()->view->search_value);
+			$base_url->setQueryStringVariable('filter_by_keyword', ee()->view->search_value);
 			$comments->filter('comment', 'LIKE', '%' . ee()->view->search_value . '%');
 		}
 
 		$filters = ee('CP/Filter')
 			->add($status_filter)
-			->add('Date');
+			->add('Date')
+			->add('Keyword');
 
 		$filter_values = $filters->values();
 
