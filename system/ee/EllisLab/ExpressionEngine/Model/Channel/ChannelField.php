@@ -145,7 +145,7 @@ class ChannelField extends FieldModel {
 		}
 
 		$this->field_order = $this->getModelFacade()->get('ChannelField')
-			->filter('site_id', $this->site_id)
+			->filter('site_id', 'IN', array(0, $this->site_id))
 			->count() + 1;
 	}
 

@@ -40,7 +40,7 @@ class Search extends AbstractChannelsController {
 			),
 			'custom_fields' => array(
 				'query' => ee('Model')->get('ChannelField')
-					->filter('site_id', ee()->config->item('site_id'))
+					->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
 					->filterGroup()
 					->filter('field_label', 'LIKE', '%' . $search_terms . '%')
 					->orFilter('field_name', 'LIKE', '%' . $search_terms . '%')

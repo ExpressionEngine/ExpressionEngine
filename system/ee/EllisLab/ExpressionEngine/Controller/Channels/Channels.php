@@ -551,7 +551,7 @@ class Channels extends AbstractChannelsController {
 	{
 		$fields = ee('Model')->get('ChannelField')
 			->fields('field_label', 'field_name')
-			->filter('site_id', ee()->config->item('site_id'))
+			->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
 			->order('field_label')
 			->all();
 
