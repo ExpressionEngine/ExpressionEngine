@@ -60,11 +60,6 @@ class Edit extends AbstractPublishController {
 
 		$count = $entry_listing->getEntryCount();
 
-		if ( ! empty(ee()->view->search_value))
-		{
-			$base_url->setQueryStringVariable('filter_by_keyword', ee()->view->search_value);
-		}
-
 		$vars['filters'] = $filters->render($base_url);
 		$vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
 
@@ -339,9 +334,9 @@ class Edit extends AbstractPublishController {
 		));
 
 		ee()->view->cp_page_title = lang('edit_channel_entries');
-		if ( ! empty(ee()->view->search_value))
+		if ( ! empty($filter_values['filter_by_keyword']))
 		{
-			$vars['cp_heading'] = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+			$vars['cp_heading'] = sprintf(lang('search_results_heading'), $count, $filter_values['filter_by_keyword']);
 		}
 		else
 		{
