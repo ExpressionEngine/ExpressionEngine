@@ -49,7 +49,7 @@ class Search extends AbstractChannelsController {
 			),
 			'field_groups' => array(
 				'query' => ee('Model')->get('ChannelFieldGroup')
-					->filter('site_id', ee()->config->item('site_id'))
+					->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
 					->filter('group_name', 'LIKE', '%' . $search_terms . '%'),
 				'table_create_method' => 'buildTableFromChannelGroupsQuery',
 			),

@@ -49,7 +49,7 @@ class Fields extends AbstractFieldsController {
 
 		// Set up filters
 		$group_ids = ee('Model')->get('ChannelFieldGroup')
-			->filter('site_id', ee()->config->item('site_id'))
+			->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
 			->order('group_name')
 			->all()
 			->getDictionary('group_id', 'group_name');
