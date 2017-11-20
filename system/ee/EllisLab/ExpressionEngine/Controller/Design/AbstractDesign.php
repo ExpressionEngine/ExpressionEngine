@@ -253,7 +253,7 @@ abstract class AbstractDesign extends CP_Controller {
 
 		$header = array(
 			'title' => lang('template_manager'),
-			'form_url' => ee('CP/URL')->make('design/template/search', array('return' => $return)),
+			'search_form_url' => ee('CP/URL')->make('design/template/search', array('return' => $return)),
 			'toolbar_items' => array(
 				'settings' => array(
 					'href' => ee('CP/URL')->make('settings/template'),
