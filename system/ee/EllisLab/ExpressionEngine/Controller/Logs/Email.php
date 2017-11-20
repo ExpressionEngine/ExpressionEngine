@@ -56,8 +56,8 @@ class Email extends Logs {
 		$filters = ee('CP/Filter')
 			->add('Username')
 			->add('Date')
-			->add('Perpage', $logs->count(), 'all_email_logs')
-			->add('Keyword');
+			->add('Keyword')
+			->add('Perpage', $logs->count(), 'all_email_logs');
 		ee()->view->filters = $filters->render($this->base_url);
 		$this->params = $filters->values();
 		$this->base_url->addQueryStringVariables($this->params);

@@ -390,8 +390,8 @@ abstract class AbstractFiles extends CP_Controller {
 		$vars['total_files'] = $total_files;
 
 		$filters = ee('CP/Filter')
-			->add('Perpage', $total_files, 'show_all_files')
-			->add('Keyword');
+			->add('Keyword')
+			->add('Perpage', $total_files, 'show_all_files');
 
 		$filter_values = $filters->values();
 

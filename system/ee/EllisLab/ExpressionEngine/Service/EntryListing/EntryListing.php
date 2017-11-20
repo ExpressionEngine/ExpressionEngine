@@ -117,7 +117,6 @@ class EntryListing {
 
 		// Add this last to get the right $count
 		$this->filters->add('Perpage', $count, 'all_entries');
-		$this->filters->add('Keyword');
 
 		return $this->filters;
 	}
@@ -166,7 +165,8 @@ class EntryListing {
 			->add($this->channel_filter)
 			->add($this->category_filter)
 			->add($this->status_filter)
-			->add('Date');
+			->add('Date')
+			->add('Keyword');
 	}
 
 	/**

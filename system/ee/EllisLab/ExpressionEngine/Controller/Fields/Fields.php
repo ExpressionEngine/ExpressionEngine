@@ -121,8 +121,8 @@ class Fields extends AbstractFieldsController {
 			$total_fields = $fields->count();
 		}
 
-		$filters->add('Perpage', $total_fields, 'all_fields', TRUE)
-			->add('Keyword');
+		$filters->add('Keyword')
+			->add('Perpage', $total_fields, 'all_fields', TRUE);
 
 		$filter_values = $filters->values();
 		$per_page = $filter_values['perpage'];

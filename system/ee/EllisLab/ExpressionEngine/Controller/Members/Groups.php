@@ -100,8 +100,8 @@ class Groups extends Members\Members {
 			->count();
 
 		$filter = ee('CP/Filter')
-			->add('Perpage', $total, 'show_all_member_groups')
-			->add('Keyword');
+			->add('Keyword')
+			->add('Perpage', $total, 'show_all_member_groups');
 
 		$this->renderFilters($filter);
 
