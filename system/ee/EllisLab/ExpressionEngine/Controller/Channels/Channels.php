@@ -516,6 +516,7 @@ class Channels extends AbstractChannelsController {
 	{
 		$field_group_options = ee('Model')->get('ChannelFieldGroup')
 			->fields('group_name')
+			->filter('site_id', ee()->config->item('site_id'))
 			->order('group_name')
 			->all()
 			->getDictionary('group_id', 'group_name');
@@ -550,6 +551,7 @@ class Channels extends AbstractChannelsController {
 	{
 		$fields = ee('Model')->get('ChannelField')
 			->fields('field_label', 'field_name')
+			->filter('site_id', ee()->config->item('site_id'))
 			->order('field_label')
 			->all();
 
