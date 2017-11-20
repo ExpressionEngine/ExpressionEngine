@@ -117,6 +117,7 @@ class EntryListing {
 
 		// Add this last to get the right $count
 		$this->filters->add('Perpage', $count, 'all_entries');
+		$this->filters->add('Keyword');
 
 		return $this->filters;
 	}

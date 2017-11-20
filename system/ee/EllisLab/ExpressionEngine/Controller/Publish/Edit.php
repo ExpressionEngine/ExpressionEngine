@@ -48,7 +48,7 @@ class Edit extends AbstractPublishController {
 		$vars = array();
 		$base_url = ee('CP/URL')->make('publish/edit');
 
-		$entry_listing = ee('CP/EntryListing', ee()->input->get_post('search'));
+		$entry_listing = ee('CP/EntryListing', ee()->input->get_post('filter_by_keyword'));
 		$entries = $entry_listing->getEntries();
 		$filters = $entry_listing->getFilters();
 		$channel_id = $entry_listing->channel_filter->value();
@@ -62,11 +62,11 @@ class Edit extends AbstractPublishController {
 
 		if ( ! empty(ee()->view->search_value))
 		{
-			$base_url->setQueryStringVariable('search', ee()->view->search_value);
+			$base_url->setQueryStringVariable('filter_by_keyword', ee()->view->search_value);
 		}
 
 		$vars['filters'] = $filters->render($base_url);
-		$vars['search_value'] = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
+		$vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
 
 		$filter_values = $filters->values();
 		$base_url->addQueryStringVariables($filter_values);
