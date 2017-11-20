@@ -1,11 +1,8 @@
 class ChannelManager < ControlPanelPage
 
-  element :table, 'table'
-  element :sort_col, 'table th.highlight'
-  element :import, '.tbl-search .action[href*=sets]'
-  elements :channels, 'table tr'
-  elements :channel_titles, 'table tr td:nth-child(2)'
-  elements :channel_names, 'table tr td:nth-child(3)'
+  elements :channels, '.tbl-list > li .main > a'
+  elements :channels_checkboxes, '.tbl-list > li input[type="checkbox"]'
+  element :select_all, '.ctrl-all input'
 
   # Get a channel ID from a channel name or title
   #
@@ -22,6 +19,6 @@ class ChannelManager < ControlPanelPage
 
   def load
     self.open_dev_menu
-    click_link 'Channel Manager'
+    click_link 'Channels'
   end
 end
