@@ -294,7 +294,7 @@ var SelectList = function (_React$Component) {
       var _this7 = this;
 
       var props = this.props;
-      var shouldShowToggleAll = (props.multi || !props.selectable) && props.toggleAll;
+      var shouldShowToggleAll = (props.multi || !props.selectable) && props.toggleAll !== null;
 
       return React.createElement(
         'div',

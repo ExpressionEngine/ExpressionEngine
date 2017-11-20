@@ -305,7 +305,7 @@ class SelectList extends React.Component {
 
   render () {
     let props = this.props
-    let shouldShowToggleAll = (props.multi || ! props.selectable) && props.toggleAll
+    let shouldShowToggleAll = (props.multi || ! props.selectable) && props.toggleAll !== null
 
     return (
       <div className={"fields-select" + (SelectList.countItems(props.items) > props.tooManyLimit ? ' field-resizable' : '')}

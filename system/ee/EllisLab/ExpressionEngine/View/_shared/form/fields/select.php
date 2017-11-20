@@ -88,6 +88,17 @@ else:
 		$value = [$value];
 	}
 
+	// This is a little confusing. Basically, here's what $toggle_all can be and
+	// what each state does:
+	//   TRUE - Shows "Check All"
+	//   FALSE - Shows "Clear All", only used in Relationships
+	//   NULL - No toggle-all functionality
+	// If it has explicitly been set to FALSE in the field definition, set it
+	// to NULL and don't allow it to be shown based on number of items. Otherwise,
+	// allow the number of items to decide whether or not to show the option.
+	$toggle_all = (isset($toggle_all) && $toggle_all === FALSE) ? NULL : TRUE;
+	$toggle_all = ($toggle_all !== NULL && $count > 2 && $multi) ? TRUE : NULL;
+
 	$component = [
 		'name' => $field_name,
 		'items' => $normalized_choices,
@@ -102,7 +113,7 @@ else:
 		'tooMany' => $too_many,
 		'filterUrl' => isset($filter_url) ? $filter_url : NULL,
 		'limit' => isset($limit) ? $limit : 100,
-		'toggleAll' => isset($toggle_all) ? $toggle_all : $count > 2 && $multi,
+		'toggleAll' => $toggle_all,
 		'groupToggle' => isset($group_toggle) ? $group_toggle : NULL,
 		'editing' => isset($editing) ? $editing : NULL,
 		'manageable' => isset($manageable) ? $manageable : NULL,
