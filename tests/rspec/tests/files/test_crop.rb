@@ -23,8 +23,8 @@ feature 'File Manager / Crop File' do
     @page.displayed?
 
     # Check that the heder data is intact
-    @page.should_not have_title_toolbar
-    @page.should_not have_download_all
+    @page.should have_title_toolbar
+    @page.should have_download_all
 
     # Check that we do not have a sidebar
     @page.should_not have_sidebar
