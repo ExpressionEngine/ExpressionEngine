@@ -236,7 +236,7 @@ module Capybara
     def has_checked_radio(value)
       self.each do |el|
         if el.value == value
-          return el[:checked] == "true"
+          return el.checked?
         end
       end
 
