@@ -11,13 +11,12 @@ feature 'Channel Layouts: Create/Edit' do
 
   it 'display the Create Form Layout view' do
     @page.should have_breadcrumb
-    @page.should have_sidebar
     @page.should have_heading
     @page.should have_add_tab_button
     @page.should have_tabs
     @page.should have_publish_tab
     @page.should have_date_tab
-    @page.should have_hide_date_tab
+    # @page.should have_hide_date_tab
     @page.should have_layout_name
     @page.should have_member_groups
     @page.should have_submit_button
@@ -112,7 +111,7 @@ feature 'Channel Layouts: Create/Edit' do
     end
   end
 
-  it 'can move a field out the Options tab' do
+  it 'can move a field out of the Options tab' do
     @page.options_tab.click
     field = @page.fields[0]
     field_text = field.text
@@ -329,7 +328,7 @@ feature 'Channel Layouts: Create/Edit' do
       end
     end
 
-    it 'can move a field out the Options tab' do
+    it 'can move a field out of the Options tab' do
     end
   end
 
