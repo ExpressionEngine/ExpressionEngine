@@ -769,8 +769,10 @@ class Uploads extends AbstractFilesController {
 		foreach ($sizes as $size)
 		{
 			// For checkboxes
-			$size_choices[$size->id] = $size->short_name .
-				' <i>' . lang($size->resize_type) . ', ' . $size->width . 'px ' . lang('by') . ' ' . $size->height . 'px</i>';
+			$size_choices[$size->id] = [
+				'label' => $size->short_name,
+				'instructions' => lang($size->resize_type) . ', ' . $size->width . 'px ' . lang('by') . ' ' . $size->height . 'px'
+			];
 
 			// For JS sync script
 			$js_size[$size->upload_location_id][$size->id] = array(
