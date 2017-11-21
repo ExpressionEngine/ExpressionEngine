@@ -1,5 +1,6 @@
 class ChannelFieldForm < ControlPanelPage
   element :field_type, 'div[data-input-value="field_type"]'
+  element :field_type_input, 'input[name=field_type]', visible: false
   elements :field_type_choices, 'div[data-input-value="field_type"] .field-drop-choices label'
   element :field_label, 'input[name=field_label]'
   element :field_name, 'input[name=field_name]'
