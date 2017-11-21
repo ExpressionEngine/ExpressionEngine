@@ -138,7 +138,7 @@ EE.file_manager.finish_sync = function(upload_directory_id) {
 			// If there are errors, pass them through POST, there may be too
 			// many to store in a flashdata cookie
 			var input = $('<input>', { type: 'hidden', name: 'errors', value: JSON.stringify(EE.file_manager.sync_errors) });
-			$('.w-12 form.settings').append(input).submit();
+			$('.form-standard form').append(input).submit();
 		}
 	};
 };
