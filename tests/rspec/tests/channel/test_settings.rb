@@ -259,6 +259,8 @@ feature 'Channel Settings' do
     no_php_js_errors
     @page.should have_text 'Channel Updated'
 
+    @page.find('.tabs li', {text: 'Settings'}).click
+
     @page.channel_description.value.should == 'Some description'
     @page.channel_lang.has_checked_radio('english').should == true
 
