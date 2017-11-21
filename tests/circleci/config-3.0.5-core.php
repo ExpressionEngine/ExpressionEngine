@@ -13,7 +13,8 @@
 
 $config['app_version'] = '3.0.5';
 $config['debug'] = '1';
-$config['cp_url'] = 'http://ee.core/system/index.php';
+$config['cp_url'] = 'http://localhost/system/index.php';
+$config['theme_folder_url'] = 'http://localhost/themes/';
 $config['doc_url'] = 'https://ellislab.com/expressionengine/user-guide/';
 $config['is_system_on'] = 'y';
 $config['allow_extensions'] = 'y';

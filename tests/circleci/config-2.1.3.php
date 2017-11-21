@@ -15,6 +15,7 @@ $config['install_lock'] = "";
 $config['license_number'] = '1123-5813-2134-5589';
 $config['debug'] = '1';
 $config['cp_url'] = '/admin.php';
+$config['theme_folder_url'] = 'http://localhost/themes/';
 $config['doc_url'] = 'http://expressionengine.com/user_guide/';
 $config['is_system_on'] = 'y';
 $config['site_label'] = 'ExpressionEngine 2.1.3';
