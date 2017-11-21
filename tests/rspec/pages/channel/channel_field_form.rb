@@ -68,4 +68,9 @@ class ChannelFieldForm < ControlPanelPage
     # Should have some kind of alert
     alert.visible?.should == true
   end
+
+  def select_field_type(type)
+    field_type.click
+    find('div[data-input-value="field_type"] .field-drop-choices label', text: type).click
+  end
 end

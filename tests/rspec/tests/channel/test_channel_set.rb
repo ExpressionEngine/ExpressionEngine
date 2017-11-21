@@ -11,15 +11,11 @@ feature 'Channel Sets' do
     no_php_js_errors
   end
 
-  # Download a channel set using Ajax
+  # Download a channel set
   #
   # @param Integer id The ID of the channel to download
-  # @return Boolean TRUE if the download was successful
   def download_channel_set(id)
-    @page.execute_script("window.downloadCSVXHR = function(){ var url = window.location.protocol + '//' + window.location.host + '//system/index.php?/cp/channels/sets/export/#{id}'; return getFile(url); }")
-    @page.execute_script('window.getFile = function(url) { var xhr = new XMLHttpRequest();  xhr.open("GET", url, false);  xhr.send(null); return xhr.responseText; }')
-    data = @page.evaluate_script('downloadCSVXHR()')
-    data.should start_with('PK')
+    visit "/system/index.php?/cp/channels/sets/export/#{id}"
   end
 
   # Import a given channel set
@@ -31,9 +27,9 @@ feature 'Channel Sets' do
     @page.import.click
     @page.attach_file(
       'set_file',
-      File.expand_path("./channel_sets/#{name}.zip")
+      File.expand_path("./channel_sets/#{name}.zip"),
+      visible: false
     )
-    @page.submit
 
     if block_given?
       no_php_js_errors
@@ -121,8 +117,7 @@ feature 'Channel Sets' do
       download_channel_set(1)
 
       # Check to see if the file exists
-      name = @page.channel_names[0].text
-      path = File.expand_path("../../system/user/cache/cset/#{name}.zip")
+      path = File.expand_path("../../system/user/cache/cset/news.zip")
       File.exist?(path).should == true
       no_php_js_errors
 
@@ -157,10 +152,8 @@ feature 'Channel Sets' do
       channel_set['channels'][0]['channel_title'].should == 'News'
       channel_set['channels'][0]['field_groups'][0].should == 'News'
       channel_set['channels'][0]['cat_groups'][0].should == 'News Categories'
-      channel_set['status_groups'].size.should == 1
-      channel_set['status_groups'][0]['name'].should == 'Default'
-      channel_set['status_groups'][0]['statuses'].size.should == 1
-      channel_set['status_groups'][0]['statuses'][0]['name'].should == 'Featured'
+      channel_set['statuses'].size.should == 1
+      channel_set['statuses'][0]['name'].should == 'Featured'
       channel_set['category_groups'].size.should == 1
       channel_set['category_groups'][0]['name'].should == 'News Categories'
       channel_set['category_groups'][0]['sort_order'].should == 'a'
@@ -180,7 +173,8 @@ feature 'Channel Sets' do
     it 'exports all category groups for the channel' do
       # First add a second category to the News channel
       @channel = ChannelCreate.new
-      @channel.load_edit_for_channel(1)
+      @channel.load_edit_for_channel(2)
+      @channel.click_link 'Categories'
       @channel.cat_group[0].click
       @channel.submit
 
@@ -188,8 +182,7 @@ feature 'Channel Sets' do
       download_channel_set(1)
 
       # Check to see if the file exists
-      name = @page.channel_names[0].text
-      path = File.expand_path("../../system/user/cache/cset/#{name}.zip")
+      path = File.expand_path("../../system/user/cache/cset/news.zip")
       File.exist?(path).should == true
       no_php_js_errors
 
@@ -212,8 +205,7 @@ feature 'Channel Sets' do
         download_channel_set(1)
 
         # Check to see if the file exists
-        name = @page.channel_names[0].text
-        path = File.expand_path("../../system/user/cache/cset/#{name}.zip")
+        path = File.expand_path("../../system/user/cache/cset/news.zip")
         File.exist?(path).should == true
         no_php_js_errors
 
@@ -242,8 +234,7 @@ feature 'Channel Sets' do
         download_channel_set(1)
 
         # Check to see if the file exists
-        name = @page.channel_names[0].text
-        path = File.expand_path("../../system/user/cache/cset/#{name}.zip")
+        path = File.expand_path("../../system/user/cache/cset/news.zip")
         File.exist?(path).should == true
         no_php_js_errors
 
@@ -273,8 +264,7 @@ feature 'Channel Sets' do
       download_channel_set(1)
 
       # Check to see if the file exists
-      name = @page.channel_names[0].text
-      path = File.expand_path("../../system/user/cache/cset/#{name}.zip")
+      path = File.expand_path("../../system/user/cache/cset/news.zip")
       File.exist?(path).should == true
       no_php_js_errors
 
@@ -346,8 +336,7 @@ feature 'Channel Sets' do
 
       # Check to see if the file exists
       @page.load
-      name = @page.channel_names[2].text
-      path = File.expand_path("../../system/user/cache/cset/#{name}.zip")
+      path = File.expand_path("../../system/user/cache/cset/news.zip")
       File.exist?(path).should == true
       no_php_js_errors
 
@@ -437,32 +426,33 @@ feature 'Channel Sets' do
       end
 
       it 'exports grid colums with settings' do
-        # Create a "Gridlocked" group
-        page = FieldGroups.new
-        page.load
-        page.create_new.click
-
-        field_group_form = FieldGroupForm.new
-        field_group_form.name.set 'Gridlocked'
-        field_group_form.submit.click
-
-        page.find('a', :text => 'Gridlocked').click
-
-        # Create the "Zen" grid field
-        page = ChannelFields.new
-        page.all('.w-12 .tbl-ctrls a.btn')[0].click
         channel_fields = ChannelFieldForm.new
+        channel_fields.load
         channel_fields.field_label.set 'Zen'
-        channel_fields.field_type.select 'Grid'
-
+        channel_fields.select_field_type 'Grid'
         GridSettings::populate_grid_settings
         channel_fields.submit
+
+        # Create a "Gridlocked" group
+        field_group_form = FieldGroupForm.new
+        field_group_form.load
+        field_group_form.name.set 'Gridlocked'
+        field_group_form.all('.field-inputs label').each do |field|
+          if field.text.include? 'Zen'
+            field.find('input[type=checkbox]').click
+            break
+          end
+        end
+        field_group_form.submit[0].click
 
         # Create the "Big Grid" channel
         page = ChannelCreate.new
         page.load
         page.channel_title.set 'Big Grid'
+        page.click_link 'Fields'
+        page.field_groups[0].click
         page.field_groups[1].click
+        page.field_groups[2].click
         page.title_field_label.set '¯\_(ツ)_/¯'
         page.submit
 
@@ -699,14 +689,8 @@ feature 'Channel Sets' do
       def import_default_statuses(channel_set, status_name, status_count)
         import_channel_set channel_set
 
-        # Assure there's still only one default status group
-        $db.query('SELECT count(*) AS count FROM exp_status_groups WHERE group_name = "Default"').each do |row|
-          number_of_status_groups = row['count']
-          number_of_status_groups.should == 1
-        end
-
         # Assure there's now THREE statuses in that group and one of them is the new status_name
-        $db.query('SELECT count(*) AS count FROM exp_statuses WHERE group_id = 1').each do |row|
+        $db.query('SELECT count(*) AS count FROM exp_statuses').each do |row|
           number_of_default_statuses = row['count']
           number_of_default_statuses.should == status_count
         end

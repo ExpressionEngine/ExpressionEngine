@@ -1680,6 +1680,14 @@ INSERT INTO `exp_channel_field_groups_fields` (`field_id`, `group_id`) VALUES
 ALTER TABLE `exp_channel_field_groups_fields` ENABLE KEYS;
 UNLOCK TABLES;
 
+LOCK TABLES `exp_channels_statuses` WRITE;
+ALTER TABLE `exp_channels_statuses` DISABLE KEYS;
+INSERT INTO `exp_channels_statuses` (`channel_id`, `status_id`) VALUES
+	(1,1),
+	(1,2),
+	(1,3);
+ALTER TABLE `exp_channels_statuses` ENABLE KEYS;
+UNLOCK TABLES;
 
 LOCK TABLES `exp_channel_fields` WRITE;
 ALTER TABLE `exp_channel_fields` DISABLE KEYS;
@@ -2416,5 +2424,3 @@ UNLOCK TABLES;
 
 
 SET FOREIGN_KEY_CHECKS = @PREVIOUS_FOREIGN_KEY_CHECKS;
-
-

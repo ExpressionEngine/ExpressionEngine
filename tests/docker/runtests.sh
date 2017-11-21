@@ -84,7 +84,7 @@ if [ "${COMMAND}" == "test" ]; then
 	# TODO: Run PHP lint and PHP Unit first, bail out if they fail
 
 	mysql -u root -e 'CREATE DATABASE `ee-test`;' > /dev/null
-	mysql -u root -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION";'
+	#mysql -u root -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION";'
 
 	source /usr/local/rvm/scripts/rvm
 
