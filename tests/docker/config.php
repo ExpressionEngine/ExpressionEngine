@@ -18,14 +18,16 @@ if (function_exists('opcache_reset'))
     opcache_reset();
 }
 
-$config['site_url'] = 'http://localhost/';
+$config['base_url'] = 'http://localhost/';
+$config['site_url'] = $config['base_url'];
 $config['app_version'] = '4.0.0-dp.5';
 $config['license_contact'] = 'ellislab.devleopers@gmail.com';
 $config['license_number'] = '1234-5678-9123-4567';
 $config['debug'] = '1';
-$config['cp_url'] = 'http://localhost/system/index.php';
-$config['theme_folder_url'] = 'http://localhost/themes/';
+$config['cp_url'] = '{base_url}system/index.php';
+$config['theme_folder_url'] = '{base_url}themes/';
 $config['theme_folder_path'] = '/var/www/html/themes/';
+$config['emoticon_url'] = '{base_url}images/smileys/';
 $config['doc_url'] = 'https://ellislab.com/expressionengine/user-guide/';
 $config['is_system_on'] = 'y';
 $config['allow_extensions'] = 'y';
