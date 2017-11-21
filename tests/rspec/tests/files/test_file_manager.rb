@@ -61,8 +61,6 @@ feature 'File Manager' do
 
 		@page.should_not have_breadcrumb
 		@page.should have_sync_button
-		@page.should have_upload_new_file_button
-		@page.should_not have_upload_new_file_filter
 		@page.should have_files
 	end
 
@@ -394,13 +392,6 @@ feature 'File Manager' do
 		no_php_js_errors
 
 		@page.current_url.should include 'files/uploads/sync'
-	end
-
-	it 'can upload a new file into the currently displayed directory', :all_files => false do
-		@page.upload_new_file_button.click
-		no_php_js_errors
-
-		@page.current_url.should include 'files/upload'
 	end
 
 	it 'marks all missing files in index view', :all_files => false do
