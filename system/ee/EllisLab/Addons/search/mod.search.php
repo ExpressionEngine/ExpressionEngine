@@ -1004,7 +1004,27 @@ class Search {
 
 					$this->num_rows = $query->num_rows();
 
-					return $sql;
+					$return = array(
+						'entries' => array(),
+						'channel_ids' => array(),
+						'end' => ''
+					);
+
+					foreach ($query->result_array() as $row)
+					{
+						$return['entries'][] = $row['entry_id'];
+						$return['channel_ids'][] = $row['channel_id'];
+					}
+
+					$return['channel_ids'] = array_unique($return['channel_ids']);
+
+					if (stripos($sql, ' ORDER BY ') !== FALSE)
+					{
+						list($before, $end) = explode(' ORDER BY ', $sql);
+						$return['end'] = ' ORDER BY ' . $end;
+					}
+
+					return $return;
 				}
 			}
 		//
