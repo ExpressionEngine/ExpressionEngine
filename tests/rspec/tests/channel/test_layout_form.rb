@@ -233,7 +233,7 @@ feature 'Channel Layouts: Create/Edit' do
   context '(Bug #21191) Channel has no Categories' do
     before(:each) do
       visit '/system/index.php?/cp/channels/edit/1'
-      channel = ChannelCreate.new
+      channel = Channel.new
       channel.cat_group.each {|cat| cat.set false}
       channel.submit
       @page.load

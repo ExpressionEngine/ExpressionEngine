@@ -175,7 +175,7 @@ feature 'Channel Sets' do
 
     it 'exports all category groups for the channel' do
       # First add a second category to the News channel
-      @channel = ChannelCreate.new
+      @channel = Channel.new
       @channel.load_edit_for_channel(2)
       @channel.click_link 'Categories'
       @channel.cat_group[0].click
@@ -449,7 +449,7 @@ feature 'Channel Sets' do
         field_group_form.submit[0].click
 
         # Create the "Big Grid" channel
-        page = ChannelCreate.new
+        page = Channel.new
         page.load
         page.channel_title.set 'Big Grid'
         page.click_link 'Fields'
