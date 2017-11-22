@@ -17,8 +17,7 @@ feature 'Grid Field Settings' do
 
     @page.field_label.set 'Test Grid'
 
-    @page.field_type.click
-    @page.field_type.find('.field-drop-choices label', text: 'Grid').click
+    @page.select_field_type 'Grid'
   end
 
   it 'shows the Grid field settings' do

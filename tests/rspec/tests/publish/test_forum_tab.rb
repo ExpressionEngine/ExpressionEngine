@@ -147,6 +147,7 @@ feature 'Forum Tab' do
     @page.forum_tab.forum_title.set title
     @page.forum_tab.forum_body.set body
     @page.forum_tab.forum_id.click
+    @page.forum_tab.wait_until_forum_id_choices_visible
     @page.forum_tab.forum_id_choices[0].click
 
     @page.submit_buttons[2].click
