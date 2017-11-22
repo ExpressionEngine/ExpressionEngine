@@ -45,7 +45,11 @@
 							<div class="field-instruct">
 								<label><?=$field->getLabel()?> <span class="faded">(<?=$field->getTypeName()?>)</label>
 								<div class="field-options">
+									<?php if ($field->isRequired()): ?>
+									<label class="field-option-required"><?=ucwords(lang('required_field'))?></label>
+									<?php else: ?>
 									<label class="field-option-hide"><input type="checkbox"<?php if ( ! $field->isVisible()): ?> checked="checked"<?php endif ?>><?=lang('hide')?></label>
+									<?php endif; ?>
 									<label class="field-option-collapse"><input type="checkbox"<?php if ($field->collapse()):?> checked="checked"<?php endif ?>><?=lang('collapse')?></label>
 								</div>
 							</div>
