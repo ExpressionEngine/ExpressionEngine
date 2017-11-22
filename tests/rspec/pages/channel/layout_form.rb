@@ -60,6 +60,3 @@ class ChannelLayoutForm < ControlPanelPage
   end
 
 end
-
-class LayoutItem < SitePrism::Section
-end
