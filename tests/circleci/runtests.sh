@@ -48,9 +48,9 @@ setpermissions() {
 
 # JS Shim for ES5/ES6 with Capybara
 addjsshim() {
-	cp themes/ee/asset/javascript/src/cp/global_start.js themes/ee/asset/javascript/src/cp/global_start~orig.js
-	cat tests/rspec/shim.min.js themes/ee/asset/javascript/src/cp/global_start.js > themes/ee/asset/javascript/src/cp/global_start-shimmed.js
-	mv themes/ee/asset/javascript/src/cp/global_start-shimmed.js themes/ee/asset/javascript/src/cp/global_start.js
+	cp themes/ee/asset/javascript/src/react/react.min.js themes/ee/asset/javascript/src/react/react.min~orig.js
+	cat tests/rspec/shim.min.js themes/ee/asset/javascript/src/react/react.min.js > themes/ee/asset/javascript/src/react/react.min-shimmed.js
+	mv themes/ee/asset/javascript/src/react/react.min-shimmed.js themes/ee/asset/javascript/src/react/react.min.js
 }
 
 # Explode php_versions environment variable since we can't assign
