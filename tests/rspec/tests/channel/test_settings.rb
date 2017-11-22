@@ -4,7 +4,7 @@ feature 'Channel Settings' do
 
   before(:each) do
     cp_session
-    @page = ChannelCreate.new
+    @page = Channel.new
   end
 
   it 'shows the Channel Settings page' do

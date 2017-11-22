@@ -4,7 +4,7 @@ feature 'Channel Create/Edit' do
 
   before(:each) do
     cp_session
-    @page = ChannelCreate.new
+    @page = Channel.new
     @page.load
     no_php_js_errors
 
@@ -194,7 +194,7 @@ feature 'Channel Create/Edit' do
 
   it 'should duplicate an existing channel' do
     # Set some arbitrary settings on the News channel
-    channel_settings = ChannelCreate.new
+    channel_settings = Channel.new
     channel_settings.load_edit_for_channel(2) # 2nd row, not channel id 2
     channel_settings.settings_tab.click
     channel_settings.channel_description.set 'Some description'

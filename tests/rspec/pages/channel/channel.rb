@@ -1,4 +1,4 @@
-class ChannelCreate < ControlPanelPage
+class Channel < ControlPanelPage
 
   element :save_button, 'form .form-btns-top button[type=submit][value=save]'
   element :save_and_new_button, 'form .form-btns-top button[type=submit][value=save_and_new]'
