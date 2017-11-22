@@ -13,7 +13,14 @@ class ChannelLayoutForm < ControlPanelPage
   element :options_tab, 'ul.tabs a[rel="t-3"]'
   element :hide_options_tab, 'ul.tabs a[rel="t-3"] + span'
 
-  elements :fields, 'div.tab .layout-item'
+  sections :fields, 'div.tab .layout-item' do
+    element :reorder, '.reorder'
+    element :name, '.field-instruct > label'
+    element :field_type, '.field-instruct > label span'
+    element :hide, '.field-option-hide input'
+    element :collapse, '.field-option-collapse input'
+    element :required, '.field-option-required'
+  end
 
   # Layout Options
   element :layout_name, 'form input[name=layout_name]'
@@ -33,19 +40,26 @@ class ChannelLayoutForm < ControlPanelPage
   end
 
   def minimize_tool(node)
-    return node.find('.field-option-collapse inputspan')
+    return node.find('.field-option-collapse input')
+  end
+
+  def field_is_required?(node)
+    return node.has_selector?('.field-option-required')
   end
 
   def load
     self.create(1)
   end
 
-    def create(number)
-    visit '/system/index.php?/cp/channels/layouts/create/' + number.to_s
-    end
+  def create(number)
+  visit '/system/index.php?/cp/channels/layouts/create/' + number.to_s
+  end
 
-    def edit(number)
-    visit '/system/index.php?/cp/channels/layouts/edit/' + number.to_s
-    end
+  def edit(number)
+  visit '/system/index.php?/cp/channels/layouts/edit/' + number.to_s
+  end
 
+end
+
+class LayoutItem < SitePrism::Section
 end

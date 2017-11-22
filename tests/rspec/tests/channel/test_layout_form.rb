@@ -66,14 +66,10 @@ feature 'Channel Layouts: Create/Edit' do
 
     it 'should still be hidden with an invalid form' do
       field = @page.fields[0]
-      hide_tool = @page.visibiltiy_tool(field)
 
       # Confirm the tool is for hiding
-      hide_tool[:class].should eq 'hide'
-      hide_tool.find('a').click
-
-      # Confirm the tool is for unhiding
-      hide_tool[:class].should eq 'unhide'
+      field.hide.checked?.should == false
+      field.hide.set(true)
 
       @page.submit_button.click
       no_php_js_errors
@@ -82,20 +78,15 @@ feature 'Channel Layouts: Create/Edit' do
       @page.options_tab.click
 
       field = @page.fields[0]
-      hide_tool = @page.visibiltiy_tool(field)
-      hide_tool[:class].should eq 'unhide'
+      field.hide.checked?.should == true
     end
 
     it 'should be hidden when saved' do
       field = @page.fields[0]
-      hide_tool = @page.visibiltiy_tool(field)
 
       # Confirm the tool is for hiding
-      hide_tool[:class].should eq 'hide'
-      hide_tool.find('a').click
-
-      # Confirm the tool is for unhiding
-      hide_tool[:class].should eq 'unhide'
+      field.hide.checked?.should == false
+      field.hide.set(true)
 
       @page.layout_name.set 'Default'
       @page.submit_button.click
@@ -106,8 +97,7 @@ feature 'Channel Layouts: Create/Edit' do
       @page.options_tab.click
 
       field = @page.fields[0]
-      hide_tool = @page.visibiltiy_tool(field)
-      hide_tool[:class].should eq 'unhide'
+      field.hide.checked?.should == true
     end
   end
 
@@ -115,9 +105,8 @@ feature 'Channel Layouts: Create/Edit' do
     @page.options_tab.click
     field = @page.fields[0]
     field_text = field.text
-    move_tool = @page.move_tool(field)
 
-    move_tool.drag_to(@page.publish_tab)
+    field.reorder.drag_to(@page.publish_tab)
 
     @page.publish_tab[:class].should include 'act'
     @page.options_tab[:class].should_not include 'act'
@@ -161,9 +150,8 @@ feature 'Channel Layouts: Create/Edit' do
 
     field = @page.fields[0]
     field_text = field.text
-    move_tool = @page.move_tool(field)
 
-    move_tool.drag_to(new_tab)
+    field.reorder.drag_to(new_tab)
     new_tab[:class].should include 'act'
     @page.fields[0].text.should eq field_text
   end
@@ -183,9 +171,8 @@ feature 'Channel Layouts: Create/Edit' do
 
     field = @page.fields[0]
     field_text = field.text
-    move_tool = @page.move_tool(field)
 
-    move_tool.drag_to(new_tab)
+    field.reorder.drag_to(new_tab)
     new_tab[:class].should include 'act'
     @page.fields[0].text.should eq field_text
 
@@ -210,10 +197,9 @@ feature 'Channel Layouts: Create/Edit' do
     @page.hide_options_tab[:class].should eq 'tab-off'
 
     field = @page.fields[0]
-    field[:class].should include 'required'
-    move_tool = @page.move_tool(field)
+    @page.field_is_required?(field).should == true
 
-    move_tool.drag_to(@page.options_tab)
+    field.reorder.drag_to(@page.options_tab)
     @page.hide_options_tab[:class].should eq 'tab-on'
   end
 
@@ -233,6 +219,7 @@ feature 'Channel Layouts: Create/Edit' do
     before(:each) do
       visit '/system/index.php?/cp/channels/edit/1'
       channel = Channel.new
+      channel.categories_tab.click
       channel.cat_group.each {|cat| cat.set false}
       channel.submit
       @page.load
@@ -283,14 +270,10 @@ feature 'Channel Layouts: Create/Edit' do
 
       it 'should still be hidden with an invalid form' do
         field = @page.fields[0]
-        hide_tool = @page.visibiltiy_tool(field)
 
         # Confirm the tool is for hiding
-        hide_tool[:class].should eq 'hide'
-        hide_tool.find('a').click
-
-        # Confirm the tool is for unhiding
-        hide_tool[:class].should eq 'unhide'
+        field.hide.checked?.should == false
+        field.hide.set(true)
 
         @page.submit_button.click
         no_php_js_errors
@@ -299,20 +282,15 @@ feature 'Channel Layouts: Create/Edit' do
         @page.options_tab.click
 
         field = @page.fields[0]
-        hide_tool = @page.visibiltiy_tool(field)
-        hide_tool[:class].should eq 'unhide'
+        field.hide.checked?.should == true
       end
 
       it 'should be hidden when saved' do
         field = @page.fields[0]
-        hide_tool = @page.visibiltiy_tool(field)
 
         # Confirm the tool is for hiding
-        hide_tool[:class].should eq 'hide'
-        hide_tool.find('a').click
-
-        # Confirm the tool is for unhiding
-        hide_tool[:class].should eq 'unhide'
+        field.hide.checked?.should == false
+        field.hide.set(true)
 
         @page.layout_name.set 'Default'
         @page.submit_button.click
@@ -323,8 +301,7 @@ feature 'Channel Layouts: Create/Edit' do
         @page.options_tab.click
 
         field = @page.fields[0]
-        hide_tool = @page.visibiltiy_tool(field)
-        hide_tool[:class].should eq 'unhide'
+        field.hide.checked?.should == true
       end
     end
 
@@ -338,13 +315,12 @@ feature 'Channel Layouts: Create/Edit' do
 
     field = @page.fields[0]
     # Confirm we have the right field
-    field.text.should include 'Entry date'
-    field[:class].should include 'required'
-    move_tool = @page.move_tool(field)
+    field.name.text.should include 'Entry date'
+    field.should have_required
 
-    move_tool.drag_to(@page.publish_tab)
-    @page.fields[0].text.should include 'Entry date'
-    @page.fields[0][:class].should include 'required'
+    field.reorder.drag_to(@page.publish_tab)
+    @page.fields[0].name.text.should include 'Entry date'
+    @page.fields[0].should have_required
   end
 
 end
