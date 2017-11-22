@@ -41,8 +41,7 @@ class ChannelFieldForm < ControlPanelPage
 
     visit "/system/index.php?/cp/fields/create/#{options[:group_id]}"
 
-    field_type.click
-    find('div[data-input-value="field_type"] .field-drop-choices label', text: options[:type]).click
+    select_field_type(options[:type])
 
     field_label.set options[:label]
     field_name.set options[:name] if options.key? :name
@@ -71,7 +70,7 @@ class ChannelFieldForm < ControlPanelPage
   end
 
   def select_field_type(type)
-    field_type.click
+    field_type.find('.field-drop-selected').click
     wait_until_field_type_choices_visible
     find('div[data-input-value="field_type"] .field-drop-choices label', text: type).click
   end
