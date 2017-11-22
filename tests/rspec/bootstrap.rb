@@ -1,10 +1,9 @@
 require 'rspec/collection_matchers'
 require 'capybara/rspec'
-require 'selenium-webdriver'
+require 'capybara/webkit'
 require 'mysql2'
 require 'site_prism'
 require 'image_size'
-require 'open3'
 require './config.rb'
 require './config.local.rb' if File.exist?('./config.local.rb')
 
@@ -27,20 +26,8 @@ Dir['./pages/**/*.rb'].sort.each {|file| require file }
 
 Encoding.default_external = "UTF-8"
 
-Capybara.register_driver(:headless_chrome) do |app|
-  capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
-    chromeOptions: { args: %w[headless disable-gpu no-sandbox window-size=1400,900] }
-  )
-
-  Capybara::Selenium::Driver.new(
-    app,
-    browser: :chrome,
-    desired_capabilities: capabilities
-  )
-end
-
-Capybara.default_driver = :headless_chrome
-Capybara.javascript_driver = :headless_chrome
+Capybara.default_driver = :webkit
+Capybara.javascript_driver = :webkit
 Capybara.app_host = $test_config[:app_host]
 Capybara.run_server = false
 
@@ -55,6 +42,17 @@ def sanitize_filename(filename)
    name.gsub!(/[^0-9A-Za-z.\-]/, '_')
 
    return name
+end
+
+Capybara::Webkit.configure do |config|
+  # Whitelist URLs
+  config.block_unknown_urls
+  config.allow_url $test_config[:app_host]
+  config.allow_url 'ee'
+  config.allow_url 'ee.*'
+  config.allow_url 'ellislab.com'
+  config.allow_url 'google-analytics.com'
+  config.allow_url 'cdnjs.cloudflare.com'
 end
 
 # Configure hook to run after each example

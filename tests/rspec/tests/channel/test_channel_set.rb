@@ -15,7 +15,10 @@ feature 'Channel Sets' do
   #
   # @param Integer id The ID of the channel to download
   def download_channel_set(id)
-    visit "/system/index.php?/cp/channels/sets/export/#{id}"
+    @page.execute_script("window.downloadCSVXHR = function(){ var url = window.location.protocol + '//' + window.location.host + '//system/index.php?/cp/channels/sets/export/#{id}'; return getFile(url); }")
+    @page.execute_script('window.getFile = function(url) { var xhr = new XMLHttpRequest();  xhr.open("GET", url, false);  xhr.send(null); return xhr.responseText; }')
+    data = @page.evaluate_script('downloadCSVXHR()')
+    data.should start_with('PK')
   end
 
   # Import a given channel set

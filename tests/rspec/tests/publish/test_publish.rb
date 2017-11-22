@@ -8,12 +8,10 @@ feature 'Publish Page - Create' do
     no_php_js_errors
   end
 
-  # Headless Chrome puts a JS error into the console for a 404 and then
-  # no_php_js_errors complains, commenting out for now
-  #it 'shows a 404 if there is no channel id' do
-  #  @page.load
-  #  @page.is_404?.should == true
-  #end
+  it 'shows a 404 if there is no channel id' do
+    @page.load
+    @page.is_404?.should == true
+  end
 
   it 'shows comment fields when comments are enabled by system and channel allows comments' do
     ee_config(item: 'enable_comments', value: 'y')
