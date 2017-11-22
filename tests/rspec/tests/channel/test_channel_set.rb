@@ -558,7 +558,6 @@ feature 'Channel Sets' do
 
       @page.find('input[name="ee:Channel[news][channel_title]"]').set 'Event'
       @page.find('input[name="ee:Channel[news][channel_name]"]').set 'event'
-      @page.find('input[name="ee:ChannelFieldGroup[News][group_name]"]').set 'Event'
       @page.find('input[name="ee:ChannelField[news_body][field_name]"]').set 'event_body'
       @page.find('input[name="ee:ChannelField[news_extended][field_name]"]').set 'event_extended'
       @page.find('input[name="ee:ChannelField[news_image][field_name]"]').set 'event_image'
@@ -573,7 +572,7 @@ feature 'Channel Sets' do
 			import_channel_set 'channel-with-two-field-groups'
 
 			check_success
-			channel_id = @page.get_channel_id_from_name('channel_w_two_field_groups')
+			channel_id = @page.get_channel_id_from_name('channel_with_two_field_groups')
 
 			fields_assigned_to_channel(channel_id, 0)
 			field_groups_assigned_to_channel(channel_id, 2)
@@ -588,7 +587,7 @@ feature 'Channel Sets' do
 			import_channel_set 'channel-with-fields'
 
 			check_success
-			channel_id = @page.get_channel_id_from_name('channel_w_fields')
+			channel_id = @page.get_channel_id_from_name('channel_with_fields')
 
 			fields_assigned_to_channel(channel_id, 2)
 			field_groups_assigned_to_channel(channel_id, 0)
@@ -599,7 +598,7 @@ feature 'Channel Sets' do
 			import_channel_set 'channel-with-field-groups-and-fields'
 
 			check_success
-			channel_id = @page.get_channel_id_from_name('channel_w_field_groups_and_fields')
+			channel_id = @page.get_channel_id_from_name('channel_with_field_groups_and_fields')
 
 			fields_assigned_to_channel(channel_id, 2)
 			field_groups_assigned_to_channel(channel_id, 2)
@@ -614,7 +613,7 @@ feature 'Channel Sets' do
 			import_channel_set 'channel-with-field-in-two-groups'
 
 			check_success
-			channel_id = @page.get_channel_id_from_name('channel_w_field_in_two_groups')
+			channel_id = @page.get_channel_id_from_name('channel_with_field_in_two_groups')
 
 			fields_assigned_to_channel(channel_id, 0)
 			field_groups_assigned_to_channel(channel_id, 3)
@@ -630,7 +629,7 @@ feature 'Channel Sets' do
 			import_channel_set 'channel-with-field-in-a-group'
 
 			check_success
-			channel_id = @page.get_channel_id_from_name('channel_w_field_in_a_group')
+			channel_id = @page.get_channel_id_from_name('channel_with_field_in_a_group')
 
 			fields_assigned_to_channel(channel_id, 1)
 			field_groups_assigned_to_channel(channel_id, 2)
