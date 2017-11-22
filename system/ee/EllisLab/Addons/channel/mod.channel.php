@@ -2270,7 +2270,7 @@ class Channel {
 
 		if ($join_member_table)
 		{
-			$sql = str_replace(' WHERE ', $member_join . ' WHERE ', $sql);
+			$sql = str_replace(' WHERE ', ' ' . $member_join . ' WHERE ', $sql);
 		}
 
 		$query = ee()->db->query($sql_a.$sql_b.$sql);
