@@ -26,7 +26,7 @@ class TemplateEdit < ControlPanelPage
   element :edit_tab, 'ul.tabs a[rel="t-0"]'
   element :notes_tab, 'ul.tabs a[rel="t-1"]'
   element :settings_tab, 'ul.tabs a[rel="t-2"]'
-  element :access_tab 'ul.tabs a[rel="t-3"]'
+  element :access_tab, 'ul.tabs a[rel="t-3"]'
 
   # Edit Tab
   element :codemirror, '.CodeMirror'
