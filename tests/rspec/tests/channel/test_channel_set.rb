@@ -27,7 +27,9 @@ feature 'Channel Sets' do
   # @param [Boolean] failure = false Set to true to check for failure
   # @return [void]
   def import_channel_set(name, method: 'success')
-    @page.import.click
+    #@page.import.click
+    # Capybara-webkit isn't happy about the file field being hidden
+    @page.execute_script('$("input[name=set_file]").parent().show()')
     @page.attach_file(
       'set_file',
       File.expand_path("./channel_sets/#{name}.zip"),
