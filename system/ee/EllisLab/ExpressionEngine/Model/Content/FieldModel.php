@@ -503,9 +503,6 @@ abstract class FieldModel extends Model {
 		$parse_fnc = ($modifier) ? 'replace_'.$modifier : 'replace_tag';
 		if (method_exists($fieldtype, $parse_fnc))
 		{
-			ee()->api_channel_fields->include_handler($this->field_type);
-			ee()->api_channel_fields->setup_handler($this->field_type, TRUE);
-			ee()->api_channel_fields->field_types[$this->field_type] = $fieldtype;
 			$data = ee()->api_channel_fields->apply($parse_fnc, array(
 				$data,
 				$params,
