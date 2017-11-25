@@ -9,11 +9,11 @@
 
 namespace EllisLab\ExpressionEngine\Controller\Publish;
 
-use EllisLab\ExpressionEngine\Library\CP\Table;
-use Mexitek\PHPColors\Color;
-
 use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPublishController;
+use EllisLab\ExpressionEngine\Library\CP\Table;
+use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry as ChannelEntry;
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
+use Mexitek\PHPColors\Color;
 
 /**
  * Publish/Edit Controller
@@ -419,29 +419,7 @@ class Edit extends AbstractPublishController {
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
 			'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
 			'extra_publish_controls' => $entry->Channel->extra_publish_controls,
-			'buttons' => [
-				[
-					'name' => 'submit',
-					'type' => 'submit',
-					'value' => 'save',
-					'text' => 'save',
-					'working' => 'btn_saving'
-				],
-				[
-					'name' => 'submit',
-					'type' => 'submit',
-					'value' => 'save_and_new',
-					'text' => 'save_and_new',
-					'working' => 'btn_saving'
-				],
-				[
-					'name' => 'submit',
-					'type' => 'submit',
-					'value' => 'save_and_close',
-					'text' => 'save_and_close',
-					'working' => 'btn_saving'
-				]
-			]
+			'buttons' => $this->getSubmitButtons($entry),
 		);
 
 		$version_id = ee()->input->get('version');
@@ -509,6 +487,46 @@ class Edit extends AbstractPublishController {
 		);
 
 		ee()->cp->render('publish/entry', $vars);
+	}
+
+	/**
+	 * Get Submit Buttons for Publish Edit Form
+	 * @param  ChannelEntry $entry ChannelEntry model entity
+	 * @return array Submit button array
+	 */
+	private function getSubmitButtons(ChannelEntry $entry)
+	{
+		$buttons = [
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save',
+				'text' => 'save',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_new',
+				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_close',
+				'text' => 'save_and_close',
+				'working' => 'btn_saving'
+			]
+		];
+
+		// get rid of Save & New button if we've reached the max entries for this channel
+		if ($entry->Channel->max_entries != 0 && $entry->Channel->total_records >= $entry->Channel->max_entries)
+		{
+			unset($buttons[1]);
+		}
+
+		return $buttons;
 	}
 
 	private function remove($entry_ids)
