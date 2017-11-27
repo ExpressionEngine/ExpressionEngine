@@ -10,6 +10,7 @@
 namespace EllisLab\ExpressionEngine\Model\Channel;
 
 use EllisLab\ExpressionEngine\Model\Content\FieldModel;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 /**
  * Channel Field Model
@@ -161,24 +162,25 @@ class ChannelField extends FieldModel {
 		$this->removeFromFluidFields();
 	}
 
-	private function getRelatedChannelIds()
+	public function getAllChannels()
 	{
-		$channel_ids = $this->Channels->pluck('channel_id');
+		$channels = $this->Channels->indexByIds();
+
 		foreach ($this->ChannelFieldGroups as $field_group)
 		{
 			foreach ($field_group->Channels as $channel)
 			{
-				$channel_ids[] = $channel->getId();
+				$channels[$channel->getId()] = $channel;
 			}
 		}
 
-		return array_unique($channel_ids);
+		return new Collection($channels);
 	}
 
 	private function getRelatedChannelLayouts()
 	{
 		return $this->getModelFacade()->get('ChannelLayout')
-			->filter('channel_id', $this->getRelatedChannelIds())
+			->filter('channel_id', $this->getAllChannels()->getIds())
 			->all();
 	}
 
