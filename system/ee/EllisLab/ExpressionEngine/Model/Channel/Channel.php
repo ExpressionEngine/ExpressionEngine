@@ -10,7 +10,7 @@
 namespace EllisLab\ExpressionEngine\Model\Channel;
 
 use EllisLab\ExpressionEngine\Model\Content\StructureModel;
-use EllisLab\ExpressionEngine\Library\Data\Collection;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 /**
  * Channel Model
