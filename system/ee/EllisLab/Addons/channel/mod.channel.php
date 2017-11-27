@@ -2170,6 +2170,11 @@ class Channel {
 			$this->pagination->per_page  = ( ! is_numeric(ee()->TMPL->fetch_param('limit')))  ? $this->limit : ee()->TMPL->fetch_param('limit');
 		}
 
+		if ($join_member_table)
+		{
+			$sql = str_replace(' WHERE ', ' ' . $member_join . ' WHERE ', $sql);
+		}
+
 		/**------
 		/**  Is there an offset?
 		/**------*/
@@ -2267,11 +2272,6 @@ class Channel {
 		/**------
 		/**  Fetch the entry_id numbers
 		/**------*/
-
-		if ($join_member_table)
-		{
-			$sql = str_replace(' WHERE ', ' ' . $member_join . ' WHERE ', $sql);
-		}
 
 		$query = ee()->db->query($sql_a.$sql_b.$sql);
 
