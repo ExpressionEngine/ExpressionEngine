@@ -3,8 +3,8 @@ $margin_top = isset($field['margin_top']) ? $field['margin_top'] : FALSE;
 $margin_left = isset($field['margin_left']) ? $field['margin_left'] : FALSE;
 
 $class = (isset($field['class'])) ? $field['class'] : '';
-$class .= ($margin_top) ? 'add-mrg-top' : '';
-$class .= ($margin_left) ? 'add-mrg-left' : '';
+$class .= ($margin_top) ? ' add-mrg-top' : '';
+$class .= ($margin_left) ? ' add-mrg-left' : '';
 
 // Check for a field name override
 if (isset($field['name']))
@@ -206,8 +206,14 @@ case 'action_button': ?>
 	<a class="btn tn action <?=$class?>" href="<?=$field['link']?>"><?=lang($field['text'])?></a>
 <?php break;
 
-case 'html': ?>
-	<?=$field['content']?>
+case 'html':
+	if ($class): ?>
+		<div class="<?=$class?>">
+	<?php endif ?>
+		<?=$field['content']?>
+	<?php if ($class): ?>
+		</div>
+	<?php endif ?>
 <?php endswitch ?>
 <?php if ($has_note): ?>
 	<em><?=$field['note']?></em>
