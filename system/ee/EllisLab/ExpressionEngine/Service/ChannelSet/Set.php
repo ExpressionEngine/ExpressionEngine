@@ -155,7 +155,6 @@ class Set {
 
 		if ( ! $this->result->isValid())
 		{
-			$this->deleteFiles();
 			return $this->result;
 		}
 
@@ -173,7 +172,7 @@ class Set {
 	/**
 	 * Deletes the source files used in the import
 	 */
-	protected function deleteFiles()
+	public function cleanUpSourceFiles()
 	{
 		$filesystem = new Filesystem();
 		$filesystem->delete($this->getPath());
@@ -258,8 +257,6 @@ class Set {
                 $fn();
             }
         }
-
-		$this->deleteFiles();
 	}
 
 	/**
