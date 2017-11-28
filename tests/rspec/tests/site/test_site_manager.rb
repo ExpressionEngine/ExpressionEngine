@@ -60,6 +60,12 @@ feature 'Site Manager' do
     end
 
     it 'can switch sites' do
+      @page.find('.nav-sites a.nav-has-sub').click
+      @page.find('a[href*="cp/msm/switch_to/2"]').click
+
+      no_php_js_errors
+
+      @page.find('.nav-sites a.nav-has-sub').text.should eq 'Rspec Site'
     end
   end
 end
