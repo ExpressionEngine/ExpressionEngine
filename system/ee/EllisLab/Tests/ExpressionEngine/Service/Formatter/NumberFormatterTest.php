@@ -182,9 +182,16 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 
 	public function testSpelloutNoIntl()
 	{
-		$this->expectException(\Exception::class);
-		$number = (string) $this->format(11234813, 0)->spellout();
+		try
+		{
+			$number = (string) $this->format(11234813, 0)->spellout();
+		}
+		catch (\Exception  $e)
+		{
+			return;
+		}
 
+		$this->fail('Exception was not raised');
 	}
 
 	public function spelloutProvider()
