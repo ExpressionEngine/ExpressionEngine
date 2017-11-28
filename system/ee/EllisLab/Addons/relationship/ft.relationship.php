@@ -220,6 +220,7 @@ class Relationship_ft extends EE_Fieldtype {
 	 */
 	public function display_field($data)
 	{
+		ee()->lang->loadfile('fieldtypes');
 		$field_name = $this->field_name;
 
 		$entry_id = ($this->content_id) ?: ee()->input->get('entry_id');
