@@ -19,34 +19,35 @@ feature 'Channel Fields' do
   context 'when creating or editing fields' do
     def save_field
       form = ChannelFieldForm.new
-      form.all_there?.should == true
       form.create_field(
         type: 'Text Input',
         label: 'Shipping Method'
       )
+      form.all_there?.should == true
 
       @page.should have_alert
       @page.alert[:class].should include 'success'
     end
 
     it 'creates a field' do
-      @page.create_new.click
       save_field
     end
 
     it 'saves a field' do
       @page.fields_edit[1].click
-      save_field
+      @page.submit
+
+      @page.should have_alert
+      @page.alert[:class].should include 'success'
     end
 
     it 'invalidates reserved words used in field_name' do
-      @page.create_new.click
       form = ChannelFieldForm.new
-      form.all_there?.should == true
       form.create_field(
         type: 'Date',
         label: 'Date'
       )
+      form.all_there?.should == true
 
       @page.alert.has_content?('Cannot Create Field').should == true
     end

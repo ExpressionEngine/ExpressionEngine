@@ -17,9 +17,6 @@ feature 'Fluid Fields' do
   end
 
   it 'creates a fluid field' do
-    @page.select_field_type 'Fluid Field'
-    @page.field_label.set 'Fluid Field Body'
-    @page.field_name.set 'fluid_field_body'
     @fields.find("[value='1']").click
     @fields.find("[value='2']").click
     @fields.find("[value='3']").click
@@ -28,10 +25,9 @@ feature 'Fluid Fields' do
     @fields.find("[value='7']").click
     @page.submit
 
-    @list.alert.has_content?('The field Fluid Field Body has been').should == true
+    @page.alert.has_content?('The field Fluid Field Body has been').should == true
 
     @list.load
-
     @list.fields.any? { |f| f.text.include?('Fluid Field Body') }.should == true
     @list.fields.any? { |f| f.text.include?('{fluid_field_body}') }.should == true
 
@@ -62,7 +58,6 @@ feature 'Fluid Fields' do
 
       @list.alert.has_content?('The field Fluid Field Body has been').should == true
 
-      @page.load_edit_for_custom_field('Fluid Field Body')
       # confirm our state
       @fields.find("[value='1']").checked?.should == false
       @fields.find("[value='2']").checked?.should == true
@@ -75,7 +70,6 @@ feature 'Fluid Fields' do
       @fields.find("[value='1']").click
       @page.submit
 
-      @page.load_edit_for_custom_field('Fluid Field Body')
       @fields.find("[value='1']").checked?.should == true
       @fields.find("[value='2']").checked?.should == true
       @fields.find("[value='3']").checked?.should == true
@@ -86,9 +80,6 @@ feature 'Fluid Fields' do
     end
 
     it 'can remove a field from the fluid field' do
-      @page.select_field_type 'Fluid Field'
-      @page.field_label.set 'Fluid Field Body'
-      @page.field_name.set 'fluid_field_body'
       @fields.find("[value='1']").click
       @fields.find("[value='2']").click
       @fields.find("[value='3']").click
@@ -99,7 +90,6 @@ feature 'Fluid Fields' do
 
       @list.alert.has_content?('The field Fluid Field Body has been').should == true
 
-      @page.load_edit_for_custom_field('Fluid Field Body')
       # confirm our state
       @fields.find("[value='1']").checked?.should == true
       @fields.find("[value='2']").checked?.should == true
@@ -114,7 +104,6 @@ feature 'Fluid Fields' do
       @page.wait_for_modal_submit_button
       @page.modal_submit_button.click
 
-      @page.load_edit_for_custom_field('Fluid Field Body')
       @fields.find("[value='1']").checked?.should == true
       @fields.find("[value='2']").checked?.should == false
       @fields.find("[value='3']").checked?.should == true
@@ -126,9 +115,6 @@ feature 'Fluid Fields' do
   end
 
   it 'deletes a fluid field' do
-    @page.select_field_type 'Fluid Field'
-    @page.field_label.set 'Fluid Field Body'
-    @page.field_name.set 'fluid_field_body'
     @fields.find("[value='1']").click
     @fields.find("[value='2']").click
     @fields.find("[value='3']").click

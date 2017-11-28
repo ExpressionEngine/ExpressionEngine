@@ -132,9 +132,6 @@ feature 'Channel Create/Edit' do
 
     @page.should have_text 'Channel Created'
 
-    @page.load_edit_for_channel(3)
-    no_php_js_errors
-
     @page.should have_text 'Edit Channel'
 
     # These should be gone on edit
@@ -173,10 +170,6 @@ feature 'Channel Create/Edit' do
     no_php_js_errors
 
     @page.should have_text 'Channel Updated'
-
-    @page.load_edit_for_channel(1)
-    no_php_js_errors
-
     @page.channel_title.value.should == 'New channel'
   end
 
@@ -186,10 +179,6 @@ feature 'Channel Create/Edit' do
     no_php_js_errors
 
     @page.submit
-    no_php_js_errors
-
-    @page.load_edit_for_channel(1)
-    no_php_js_errors
   end
 
   it 'should duplicate an existing channel' do
