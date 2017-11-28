@@ -22,7 +22,6 @@ DROP TABLE IF EXISTS `exp_template_member_groups`;
 DROP TABLE IF EXISTS `exp_template_groups`;
 DROP TABLE IF EXISTS `exp_statuses`;
 DROP TABLE IF EXISTS `exp_status_no_access`;
-DROP TABLE IF EXISTS `exp_status_groups`;
 DROP TABLE IF EXISTS `exp_stats`;
 DROP TABLE IF EXISTS `exp_specialty_templates`;
 DROP TABLE IF EXISTS `exp_snippets`;
@@ -368,7 +367,6 @@ CREATE TABLE `exp_channels` (
   `last_entry_date` int(10) unsigned NOT NULL DEFAULT '0',
   `last_comment_date` int(10) unsigned NOT NULL DEFAULT '0',
   `cat_group` varchar(255) DEFAULT NULL,
-  `status_group` int(4) unsigned DEFAULT NULL,
   `deft_status` varchar(50) NOT NULL DEFAULT 'open',
   `search_excerpt` int(4) unsigned DEFAULT NULL,
   `deft_category` varchar(60) DEFAULT NULL,
@@ -407,7 +405,6 @@ CREATE TABLE `exp_channels` (
   `max_entries` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`channel_id`),
   KEY `cat_group` (`cat_group`),
-  KEY `status_group` (`status_group`),
   KEY `channel_name` (`channel_name`),
   KEY `site_id` (`site_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
@@ -1388,15 +1385,6 @@ CREATE TABLE `exp_stats` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `exp_status_groups` (
-  `group_id` int(4) unsigned NOT NULL AUTO_INCREMENT,
-  `site_id` int(4) unsigned NOT NULL DEFAULT '1',
-  `group_name` varchar(50) NOT NULL,
-  PRIMARY KEY (`group_id`),
-  KEY `site_id` (`site_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
-
-
 CREATE TABLE `exp_status_no_access` (
   `status_id` int(6) unsigned NOT NULL,
   `member_group` smallint(4) unsigned NOT NULL,
@@ -1406,14 +1394,10 @@ CREATE TABLE `exp_status_no_access` (
 
 CREATE TABLE `exp_statuses` (
   `status_id` int(6) unsigned NOT NULL AUTO_INCREMENT,
-  `site_id` int(4) unsigned NOT NULL DEFAULT '1',
-  `group_id` int(4) unsigned NOT NULL,
   `status` varchar(50) NOT NULL,
   `status_order` int(3) unsigned NOT NULL,
   `highlight` varchar(30) NOT NULL,
-  PRIMARY KEY (`status_id`),
-  KEY `group_id` (`group_id`),
-  KEY `site_id` (`site_id`)
+  PRIMARY KEY (`status_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 
@@ -1734,9 +1718,9 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_channels` WRITE;
 ALTER TABLE `exp_channels` DISABLE KEYS;
-INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_title`, `channel_url`, `channel_description`, `channel_lang`, `total_entries`, `total_records`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `status_group`, `deft_status`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`, `extra_publish_controls`, `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `title_field_label`, `url_title_prefix`, `live_look_template`, `max_entries`) VALUES
-	(1,1,'news','News','http://ee2/index.php/news',NULL,'en',3,0,0,1409242030,0,'1',1,'open',2,'2','y','y',0,'all','n','y','y','n','','http://ee2/index.php/news/comments','y','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','',0,0),
-	(2,1,'about','Information Pages','http://ee2/index.php/about',NULL,'en',7,0,0,1409242030,0,'2',1,'open',7,'','y','y',0,'all','n','y','n','n','','http://ee2/index.php/news/comments','n','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','',0,0);
+INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_title`, `channel_url`, `channel_description`, `channel_lang`, `total_entries`, `total_records`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `deft_status`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`, `extra_publish_controls`, `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `title_field_label`, `url_title_prefix`, `live_look_template`, `max_entries`) VALUES
+	(1,1,'news','News','http://ee2/index.php/news',NULL,'en',3,0,0,1409242030,0,'1','open',2,'2','y','y',0,'all','n','y','y','n','','http://ee2/index.php/news/comments','y','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','',0,0),
+	(2,1,'about','Information Pages','http://ee2/index.php/about',NULL,'en',7,0,0,1409242030,0,'2','open',7,'','y','y',0,'all','n','y','n','n','','http://ee2/index.php/news/comments','n','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','',0,0);
 ALTER TABLE `exp_channels` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -2259,14 +2243,6 @@ ALTER TABLE `exp_stats` ENABLE KEYS;
 UNLOCK TABLES;
 
 
-LOCK TABLES `exp_status_groups` WRITE;
-ALTER TABLE `exp_status_groups` DISABLE KEYS;
-INSERT INTO `exp_status_groups` (`group_id`, `site_id`, `group_name`) VALUES
-	(1,1,'Default');
-ALTER TABLE `exp_status_groups` ENABLE KEYS;
-UNLOCK TABLES;
-
-
 LOCK TABLES `exp_status_no_access` WRITE;
 ALTER TABLE `exp_status_no_access` DISABLE KEYS;
 ALTER TABLE `exp_status_no_access` ENABLE KEYS;
@@ -2275,10 +2251,10 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_statuses` WRITE;
 ALTER TABLE `exp_statuses` DISABLE KEYS;
-INSERT INTO `exp_statuses` (`status_id`, `site_id`, `group_id`, `status`, `status_order`, `highlight`) VALUES
-	(1,1,1,'open',1,'009933'),
-	(2,1,1,'closed',2,'990000'),
-	(3,1,1,'Featured',3,'000000');
+INSERT INTO `exp_statuses` (`status_id`, `status`, `status_order`, `highlight`) VALUES
+	(1,'open',1,'009933'),
+	(2,'closed',2,'990000'),
+	(3,'Featured',3,'000000');
 ALTER TABLE `exp_statuses` ENABLE KEYS;
 UNLOCK TABLES;
 
