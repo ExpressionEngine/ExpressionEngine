@@ -1,9 +1,15 @@
 class TemplateManager < ControlPanelPage
   set_url_matcher /design/
 
+  element :settings_icon, '.section-header__options a.icon--settings'
+  element :export_icon, '.section-header__options a.icon--export'
+
+  element :phrase_search, '.section-header__controls input[name="search"]'
+  element :search_submit_button, '.section-header__controls input[type="submit"]'
+
   element :create_new_template_button, 'fieldset.right a.btn.action'
 
-  element :prepage_filter, '.filters ul li:first-child a'
+  element :perpage_filter, '.filters ul li:first-child a'
 
   sections :template_groups, '.sidebar .scroll-wrap ul.folder-list[data-name="template-group"] > li' do
     element :name, 'a[href*="cp/design/manager"]'
@@ -12,6 +18,7 @@ class TemplateManager < ControlPanelPage
   end
 
   element :default_template_group, '.sidebar .scroll-wrap ul.folder-list[data-name="template-group"] > li.default'
+  element :active_template_group, '.sidebar .scroll-wrap ul.folder-list[data-name="template-group"] > li.act'
 
   sections :templates, '.tbl-wrap table tbody tr' do
     element :name, 'td:first-child'

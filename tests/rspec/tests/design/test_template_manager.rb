@@ -145,4 +145,91 @@ feature 'Template Manager' do
     end
   end
 
+  context 'Templates' do
+    before(:each) do
+      @page.load
+      no_php_js_errors
+    end
+
+    it 'can view a template' do
+      template_group = @page.active_template_group.text
+      template = @page.templates[0].name.text
+
+      visit(@page.templates[0].manage.view[:href])
+
+      no_php_js_errors
+
+      @page.text.should include "#{template_group}/#{template}"
+    end
+
+    it 'can change the settings for a template' do
+      @page.templates[0].manage.settings.click
+      @page.wait_for_modal
+
+      form = TemplateEdit.new
+      form.name.set 'archives-and-stuff'
+      form.type.choose_radio_option('feed')
+      form.enable_caching.click
+      form.refresh_interval.set '5'
+      form.allow_php.click
+      form.php_parse_stage.choose_radio_option('i')
+      form.hit_counter.set '10'
+
+      find('.modal form .form-btns-top input.btn[type="submit"]').click
+
+      @page.templates[0].manage.settings.click
+      @page.wait_for_modal
+
+      form.name.value.should eq 'archives-and-stuff'
+      form.type.has_checked_radio('feed')
+      form.enable_caching[:class].should include 'on'
+      form.refresh_interval.value.should eq '5'
+      form.allow_php[:class].should include 'on'
+      form.php_parse_stage.has_checked_radio('i')
+      form.hit_counter.value.should eq '10'
+    end
+
+    it 'should validate the settings form' do
+      @page.templates[0].manage.settings.click
+      @page.wait_for_modal
+
+      form = TemplateEdit.new
+      form.name.set 'archives and stuff'
+      form.name.trigger 'blur'
+      form.wait_for_error_message_count(1)
+      should_have_error_text(form.name, 'This field may only contain alpha-numeric characters, underscores, dashes, periods, and emojis.')
+      should_have_form_errors(form)
+    end
+
+    it 'can export some templates' do
+      skip "need to handle download via POST" do
+      end
+    end
+  end
+
+  it 'can export all templates' do
+    @page.load
+    no_php_js_errors
+
+    url = @page.export_icon[:href]
+
+    @page.execute_script("window.downloadCSVXHR = function(){ var url = '#{url}'; return getFile(url); }")
+    @page.execute_script('window.getFile = function(url) { var xhr = new XMLHttpRequest();  xhr.open("GET", url, false);  xhr.send(null); return xhr.responseText; }')
+    data = @page.evaluate_script('downloadCSVXHR()')
+    data.should start_with('PK')
+  end
+
+  it 'can search templates' do
+    @page.load
+    no_php_js_errors
+
+    @page.phrase_search.set 'Recent News'
+    @page.search_submit_button.click
+
+    no_php_js_errors
+
+    @page.page_title.text.should include "Search Results"
+    @page.templates.should have(4).items
+  end
+
 end
