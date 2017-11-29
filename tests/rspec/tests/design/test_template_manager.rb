@@ -10,6 +10,7 @@ feature 'Template Manager' do
     @page.load
     no_php_js_errors
     @page.all_there?.should == true
+    @page.templates.should have(6).items
   end
 
   context 'Template Groups' do
@@ -204,6 +205,26 @@ feature 'Template Manager' do
     it 'can export some templates' do
       skip "need to handle download via POST" do
       end
+    end
+
+    it 'can remove a template' do
+      @page.templates[0].bulk_action_checkbox.click
+      @page.wait_for_bulk_action
+
+      @page.has_bulk_action?.should == true
+      @page.has_action_submit_button?.should == true
+
+      @page.bulk_action.select 'Remove'
+      @page.action_submit_button.click
+
+      @page.wait_for_modal_submit_button
+      @page.modal_submit_button.click
+
+      no_php_js_errors
+
+      @page.should have_alert
+      @page.alert[:class].should include 'success'
+      @page.templates.should have(5).items
     end
   end
 
