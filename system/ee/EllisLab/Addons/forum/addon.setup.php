@@ -5,7 +5,7 @@ return array(
 	'author_url'     => 'https://ellislab.com/',
 	'name'           => 'Forum',
 	'description'    => '',
-	'version'        => '3.1.21',
+	'version'        => '4.0.0',
 	'namespace'      => 'EllisLab\Addons\Forum',
 	'settings_exist' => TRUE,
 
