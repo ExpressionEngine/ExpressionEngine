@@ -98,17 +98,18 @@ $.fn.toggleCodeMirror = function () {
 			initialized = textarea.data('codemirror.initialized'),
 			editor = textarea.data('codemirror.editor');
 
-		if (( ! initialized && ! disabled) || (initialized && disabled))
-		{
+		if (( ! initialized && ! disabled) || (initialized && disabled)) {
 			editor = createCodeMirror(textarea);
 			store.removeItem('codemirror.disabled');
 			textarea.data('codemirror.editor', editor);
-		}
-		else if (initialized)
-		{
+		} else if (initialized) {
 			editor.toTextArea();
 			textarea.data('codemirror.editor', false);
 			store.setItem('codemirror.disabled', true);
+		}
+
+		if (EE.editor.height) {
+			editor.setSize(null, EE.editor.height);
 		}
 
 		// first call complete

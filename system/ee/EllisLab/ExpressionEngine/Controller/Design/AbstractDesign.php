@@ -322,6 +322,15 @@ abstract class AbstractDesign extends CP_Controller {
 			'editor.lint', $this->_get_installed_plugins_and_modules()
 		);
 
+		$height = ee()->config->item('codemirror_height');
+
+		if ($height !== FALSE)
+		{
+			ee()->javascript->set_global(
+				'editor.height', $height
+			);
+		}
+
 		ee()->cp->add_to_head(ee()->view->head_link('css/codemirror.css'));
 		ee()->cp->add_to_head(ee()->view->head_link('css/codemirror-additions.css'));
 		ee()->cp->add_js_script(array(
