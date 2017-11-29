@@ -222,6 +222,7 @@ class Variables extends AbstractDesignController {
 						'fields' => array(
 							'variable_data' => array(
 								'type' => 'textarea',
+								'attrs' => 'class="textarea-medium"',
 								'required' => TRUE
 							)
 						)
@@ -357,6 +358,7 @@ class Variables extends AbstractDesignController {
 						'fields' => array(
 							'variable_data' => array(
 								'type' => 'textarea',
+								'attrs' => 'class="textarea-medium"',
 								'required' => TRUE,
 								'value' => $variable->variable_data
 							)
