@@ -3,8 +3,8 @@ class TemplatePartials < ControlPanelPage
 
   element :create_new_button, 'fieldset.right a.btn.action'
 
-  element :keyword_filter, '.filters ul li:first-child input'
-  element :prepage_filter, '.filters ul li:nth-child(2) a'
+  element :keyword_search, '.filters ul li:first-child input'
+  element :perpage_filter, '.filters ul li:nth-child(2) a'
 
   sections :partials, '.tbl-wrap table tbody tr' do
     element :name, 'td:first-child'

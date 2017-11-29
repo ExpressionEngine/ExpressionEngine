@@ -220,6 +220,7 @@ class Snippets extends AbstractDesignController {
 						'fields' => array(
 							'snippet_contents' => array(
 								'type' => 'textarea',
+								'attrs' => 'class="textarea-medium"',
 								'required' => TRUE
 							)
 						)
@@ -355,6 +356,7 @@ class Snippets extends AbstractDesignController {
 						'fields' => array(
 							'snippet_contents' => array(
 								'type' => 'textarea',
+								'attrs' => 'class="textarea-medium"',
 								'required' => TRUE,
 								'value' => $snippet->snippet_contents
 							)
