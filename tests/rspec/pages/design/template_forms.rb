@@ -1,8 +1,8 @@
 class TemplateCreate < ControlPanelPage
   set_url_matcher /design\/template\/create/
 
-  element :save_button, '.form-btns-top input.btn[value="finish"]'
-  element :save_and_edit_button, '.form-btns-top input.btn[value="edit"]'
+  element :save_button, '.form-btns-top button.btn[value="finish"]'
+  element :save_and_edit_button, '.form-btns-top button.btn[value="edit"]'
 
   element :name, 'input[name="template_name"]'
   elements :type, 'input[name="template_type"]'
@@ -18,9 +18,9 @@ end
 class TemplateEdit < ControlPanelPage
   set_url_matcher /design\/template\/edit/
 
-  element :view_rendered_button, '.form-btns-top input.btn.action'
-  element :save_button, '.form-btns input.btn[value="edit"]'
-  element :save_and_close_button, '.form-btns input.btn[value="finish"]'
+  element :view_rendered_button, '.form-btns-top a.btn.action'
+  element :save_button, '.form-btns button.btn[value="edit"]'
+  element :save_and_close_button, '.form-btns button.btn[value="finish"]'
 
   # Tabs
   element :edit_tab, 'ul.tabs a[rel="t-0"]'
@@ -30,6 +30,7 @@ class TemplateEdit < ControlPanelPage
 
   # Edit Tab
   element :codemirror, '.CodeMirror'
+  element :template_data, 'textarea[name="template_data"]', :visible => false
 
   # Notes Tab
   element :template_notes, 'textarea[name="template_notes"]', :visible => false
@@ -53,6 +54,6 @@ class TemplateEdit < ControlPanelPage
   def load_edit_for_template(id)
     self.open_dev_menu
     click_link 'Templates'
-    find('a[href*="cp/design/template/edit/' + id + '"]').click
+    find('.edit a[href*="cp/design/template/edit/' + id + '"]').click
   end
 end
