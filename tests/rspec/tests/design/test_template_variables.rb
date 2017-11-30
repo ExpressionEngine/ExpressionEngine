@@ -2,6 +2,7 @@ require './bootstrap.rb'
 
 feature 'Template Variables' do
   before(:each) do
+    ee_config(item: 'save_tmpl_files', value: 'n')
     ee_config(item: 'multiple_sites_enabled', value: 'y')
     cp_session
     @page = TemplateVariables.new

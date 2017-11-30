@@ -3,6 +3,7 @@ require './bootstrap.rb'
 feature 'Template Partials' do
   before(:each) do
     ee_config(item: 'multiple_sites_enabled', value: 'y')
+    ee_config(item: 'save_tmpl_files', value: 'n')
     cp_session
     @page = TemplatePartials.new
     @page.load
