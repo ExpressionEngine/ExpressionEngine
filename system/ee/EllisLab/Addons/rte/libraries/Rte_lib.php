@@ -422,12 +422,15 @@ class Rte_lib {
 						buttons: '.json_encode($bits['buttons']).'
 					});
 
-				FluidField.on("rte", "add", function(el) {
-					$("' . $selector . '", el).addClass("WysiHat-field")
-						.wysihat({
-							buttons: '.json_encode($bits['buttons']).'
-						});
-				});
+				if (typeof FluidField === "object")
+				{
+					FluidField.on("rte", "add", function(el) {
+						$("' . $selector . '", el).addClass("WysiHat-field")
+							.wysihat({
+								buttons: '.json_encode($bits['buttons']).'
+							});
+					});
+				}
 
 				if (typeof Grid === "object")
 				{
