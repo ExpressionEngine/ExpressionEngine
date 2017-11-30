@@ -10,6 +10,7 @@ jobs:
     docker:
       - image: docker:stable-git
     steps:
+      - setup_remote_docker
       - checkout
       - run: |
           git config --global user.email "you@example.com"
@@ -26,6 +27,7 @@ jobs:
     docker:
       - image: docker:stable-git
     steps:
+      - setup_remote_docker
       - checkout
       - run: |
           git config --global user.email "you@example.com"
@@ -42,6 +44,7 @@ jobs:
     docker:
       - image: docker:stable-git
     steps:
+      - setup_remote_docker
       - checkout
       - run: |
           git config --global user.email "you@example.com"
@@ -58,6 +61,7 @@ jobs:
     docker:
       - image: docker:stable-git
     steps:
+      - setup_remote_docker
       - checkout
       - run: |
           git config --global user.email "you@example.com"
@@ -74,6 +78,7 @@ jobs:
     docker:
       - image: docker:stable-git
     steps:
+      - setup_remote_docker
       - checkout
       - run: |
           git config --global user.email "you@example.com"
