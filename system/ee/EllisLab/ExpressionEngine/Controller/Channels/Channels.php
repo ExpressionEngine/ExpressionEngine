@@ -528,16 +528,22 @@ class Channels extends AbstractChannelsController {
 			$selected = $channel->FieldGroups->pluck('group_id');
 		}
 
+		$no_results = [
+			'text' => sprintf(lang('no_found'), lang('field_groups'))
+		];
+
+		if (ee()->cp->allowed_group('can_create_channel_fields'))
+		{
+			$no_results['link_text'] = 'add_new';
+			$no_results['link_href'] = ee('CP/URL')->make('fields/groups/create');
+		}
+
 		return ee('View')->make('ee:_shared/form/fields/select')->render([
 			'field_name' => 'field_groups',
 			'choices'    => $field_group_options,
 			'value'      => $selected,
 			'multi'      => TRUE,
-			'no_results' => [
-				'text' => sprintf(lang('no_found'), lang('field_groups')),
-				'link_text' => 'add_new',
-				'link_href' => ee('CP/URL')->make('fields/groups/create')
-			]
+			'no_results' => $no_results
 		]);
 	}
 
@@ -570,16 +576,22 @@ class Channels extends AbstractChannelsController {
 			$selected = $channel->CustomFields->pluck('field_id');
 		}
 
+		$no_results = [
+			'text' => sprintf(lang('no_found'), lang('fields'))
+		];
+
+		if (ee()->cp->allowed_group('can_create_channel_fields'))
+		{
+			$no_results['link_text'] = 'add_new';
+			$no_results['link_href'] = ee('CP/URL')->make('fields/create');
+		}
+
 		return ee('View')->make('ee:_shared/form/fields/select')->render([
 			'field_name' => 'custom_fields',
 			'choices'    => $custom_field_options,
 			'value'      => $selected,
 			'multi'      => TRUE,
-			'no_results' => [
-				'text' => sprintf(lang('no_found'), lang('fields')),
-				'link_text' => 'add_new',
-				'link_href' => ee('CP/URL')->make('fields/create')
-			]
+			'no_results' => $no_results
 		]);
 	}
 
@@ -645,16 +657,22 @@ class Channels extends AbstractChannelsController {
 			$selected = explode('|', $channel->cat_group);
 		}
 
+		$no_results = [
+			'text' => sprintf(lang('no_found'), lang('category_groups'))
+		];
+
+		if (ee()->cp->allowed_group('can_create_categories'))
+		{
+			$no_results['link_text'] = 'add_new';
+			$no_results['link_href'] = ee('CP/URL')->make('categories/groups/create');
+		}
+
 		return ee('View')->make('ee:_shared/form/fields/select')->render([
 			'field_name' => 'cat_group',
 			'choices'    => $cat_group_options,
 			'value'      => $selected,
 			'multi'      => TRUE,
-			'no_results' => [
-				'text' => sprintf(lang('no_found'), lang('category_groups')),
-				'link_text' => 'add_new',
-				'link_href' => ee('CP/URL')->make('categories/groups/create')
-			]
+			'no_results' => $no_results
 		]);
 	}
 
@@ -741,15 +759,10 @@ class Channels extends AbstractChannelsController {
 			'value'            => $selected,
 			'multi'            => TRUE,
 			'force_react'      => TRUE,
-			'reorderable'      => TRUE,
-			'removable'        => TRUE,
-			'editable'         => TRUE,
-			'reorder_ajax_url' => ee('CP/URL', 'channels/status/reorder')->compile(),
-			'no_results' => [
-				'text' => sprintf(lang('no_found'), lang('status')),
-				'link_text' => 'add_new',
-				'link_href' => ee('CP/URL')->make('channels/status/create')
-			]
+			'reorderable'      => ee()->cp->allowed_group('can_edit_statuses'),
+			'removable'        => ee()->cp->allowed_group('can_delete_statuses'),
+			'editable'         => ee()->cp->allowed_group('can_edit_statuses'),
+			'reorder_ajax_url' => ee('CP/URL', 'channels/status/reorder')->compile()
 		]);
 	}
 
