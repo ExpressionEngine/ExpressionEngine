@@ -19,6 +19,10 @@ jobs:
     docker:
       - image: docker:stable-git
     steps:
+      - run: |
+          apk update
+          apk upgrade
+          apk add bash
       - run: bash ./eetools circleci -p 5.4.46
       - store_artifacts:
           path: /tmp/artifacts
@@ -26,6 +30,10 @@ jobs:
     docker:
       - image: docker:stable-git
     steps:
+      - run: |
+          apk update
+          apk upgrade
+          apk add bash
       - run: bash ./eetools circleci -p 5.5.38
       - store_artifacts:
           path: /tmp/artifacts
@@ -33,6 +41,10 @@ jobs:
     docker:
       - image: docker:stable-git
     steps:
+      - run: |
+          apk update
+          apk upgrade
+          apk add bash
       - run: bash ./eetools circleci -p 5.6.32
       - store_artifacts:
           path: /tmp/artifacts
@@ -40,6 +52,10 @@ jobs:
     docker:
       - image: docker:stable-git
     steps:
+      - run: |
+          apk update
+          apk upgrade
+          apk add bash
       - run: bash ./eetools circleci -p 7.0.25
       - store_artifacts:
           path: /tmp/artifacts
@@ -47,6 +63,10 @@ jobs:
     docker:
       - image: docker:stable-git
     steps:
+      - run: |
+          apk update
+          apk upgrade
+          apk add bash
       - run: bash ./eetools circleci -p 7.1.11
       - store_artifacts:
           path: /tmp/artifacts
