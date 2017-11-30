@@ -9,11 +9,11 @@
 
 namespace EllisLab\ExpressionEngine\Controller\Publish;
 
-use EllisLab\ExpressionEngine\Library\CP\Table;
-use Mexitek\PHPColors\Color;
-
 use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPublishController;
+use EllisLab\ExpressionEngine\Library\CP\Table;
+use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry as ChannelEntry;
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
+use Mexitek\PHPColors\Color;
 
 /**
  * Publish/Edit Controller
@@ -48,7 +48,7 @@ class Edit extends AbstractPublishController {
 		$vars = array();
 		$base_url = ee('CP/URL')->make('publish/edit');
 
-		$entry_listing = ee('CP/EntryListing', ee()->input->get_post('search'));
+		$entry_listing = ee('CP/EntryListing', ee()->input->get_post('filter_by_keyword'));
 		$entries = $entry_listing->getEntries();
 		$filters = $entry_listing->getFilters();
 		$channel_id = $entry_listing->channel_filter->value();
@@ -60,13 +60,8 @@ class Edit extends AbstractPublishController {
 
 		$count = $entry_listing->getEntryCount();
 
-		if ( ! empty(ee()->view->search_value))
-		{
-			$base_url->setQueryStringVariable('search', ee()->view->search_value);
-		}
-
 		$vars['filters'] = $filters->render($base_url);
-		$vars['search_value'] = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
+		$vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
 
 		$filter_values = $filters->values();
 		$base_url->addQueryStringVariables($filter_values);
@@ -339,9 +334,9 @@ class Edit extends AbstractPublishController {
 		));
 
 		ee()->view->cp_page_title = lang('edit_channel_entries');
-		if ( ! empty(ee()->view->search_value))
+		if ( ! empty($filter_values['filter_by_keyword']))
 		{
-			$vars['cp_heading'] = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+			$vars['cp_heading'] = sprintf(lang('search_results_heading'), $count, $filter_values['filter_by_keyword']);
 		}
 		else
 		{
@@ -424,29 +419,7 @@ class Edit extends AbstractPublishController {
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
 			'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
 			'extra_publish_controls' => $entry->Channel->extra_publish_controls,
-			'buttons' => [
-				[
-					'name' => 'submit',
-					'type' => 'submit',
-					'value' => 'save',
-					'text' => 'save',
-					'working' => 'btn_saving'
-				],
-				[
-					'name' => 'submit',
-					'type' => 'submit',
-					'value' => 'save_and_new',
-					'text' => 'save_and_new',
-					'working' => 'btn_saving'
-				],
-				[
-					'name' => 'submit',
-					'type' => 'submit',
-					'value' => 'save_and_close',
-					'text' => 'save_and_close',
-					'working' => 'btn_saving'
-				]
-			]
+			'buttons' => $this->getSubmitButtons($entry),
 		);
 
 		$version_id = ee()->input->get('version');
@@ -514,6 +487,46 @@ class Edit extends AbstractPublishController {
 		);
 
 		ee()->cp->render('publish/entry', $vars);
+	}
+
+	/**
+	 * Get Submit Buttons for Publish Edit Form
+	 * @param  ChannelEntry $entry ChannelEntry model entity
+	 * @return array Submit button array
+	 */
+	private function getSubmitButtons(ChannelEntry $entry)
+	{
+		$buttons = [
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save',
+				'text' => 'save',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_new',
+				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_close',
+				'text' => 'save_and_close',
+				'working' => 'btn_saving'
+			]
+		];
+
+		// get rid of Save & New button if we've reached the max entries for this channel
+		if ($entry->Channel->max_entries != 0 && $entry->Channel->total_records >= $entry->Channel->max_entries)
+		{
+			unset($buttons[1]);
+		}
+
+		return $buttons;
 	}
 
 	private function remove($entry_ids)

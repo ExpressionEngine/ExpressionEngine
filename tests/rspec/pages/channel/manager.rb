@@ -1,11 +1,9 @@
 class ChannelManager < ControlPanelPage
 
-  element :table, 'table'
-  element :sort_col, 'table th.highlight'
-  element :import, '.tbl-search .action[href*=sets]'
-  elements :channels, 'table tr'
-  elements :channel_titles, 'table tr td:nth-child(2)'
-  elements :channel_names, 'table tr td:nth-child(3)'
+  elements :channels, '.tbl-list > li .main > a'
+  elements :channels_checkboxes, '.tbl-list > li input[type="checkbox"]'
+  element :select_all, '.ctrl-all input'
+  element :import, 'a[rel=import-channel]'
 
   # Get a channel ID from a channel name or title
   #
@@ -13,8 +11,8 @@ class ChannelManager < ControlPanelPage
   # @raise [RuntimeError] if the channel name does not exist
   # @return [Integer] The channel's ID
   def get_channel_id_from_name(name)
-    channels.each do |element|
-      return element.find('td:nth-child(1)').text.to_i if element.text.downcase.include? name.downcase
+    $db.query('SELECT channel_id FROM exp_channels WHERE channel_name = "'+name+'"').each(:as => :array) do |row|
+      return row[0]
     end
 
     raise 'No known channel'
@@ -22,6 +20,6 @@ class ChannelManager < ControlPanelPage
 
   def load
     self.open_dev_menu
-    click_link 'Channel Manager'
+    click_link 'Channels'
   end
 end

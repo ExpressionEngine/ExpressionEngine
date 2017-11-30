@@ -42,6 +42,7 @@ EE.cp.formValidation = {
 
 		// These are the text input selectors we listen to for activity
 		this._textInputSelectors = 'input[type=text], input[type=number], input[type=password], textarea';
+		this._buttonSelector = '.form-btns .btn';
 
 		form.each(function(index, el) {
 
@@ -62,6 +63,11 @@ EE.cp.formValidation = {
 	bindInputs: function(container) {
 
 		var that = this;
+
+		// Don't fire AJAX when submit button pressed
+		$(container).on('mousedown', this._buttonSelector, function() {
+			that.pause()
+		})
 
 		$(this._textInputSelectors, container)
 			.not('*[data-ajax-validate=no]')
@@ -165,7 +171,8 @@ EE.cp.formValidation = {
 	 */
 	_bindButtonStateChange: function(form) {
 
-		var $button = $('.form-btns input.btn, .form-btns button.btn', form);
+		var $button = $(this._buttonSelector, form),
+			that = this
 
 		// Bind form submission to update button text
 		form.submit(function(event) {
@@ -303,9 +310,9 @@ EE.cp.formValidation = {
 			tab_rel = (tab_container.size() > 0) ? tab_container.attr('class').match(/t-\d+/) : '', // Grabs the tab identifier (ex: t-2)
 			tab = $(tab_container).parents('.tab-wrap').find('a[rel="'+tab_rel+'"]'), // Tab link
 			// See if this tab has its own submit button
-			tab_has_own_button = (tab_container.size() > 0 && tab_container.find('.form-btns input.btn').size() > 0),
+			tab_has_own_button = (tab_container.size() > 0 && tab_container.find(this._buttonSelector).size() > 0),
 			// Finally, grab the button of the current form
-			button = (tab_has_own_button) ? tab_container.find('.form-btns .btn') : form.find('.form-btns .btn');
+			button = (tab_has_own_button) ? tab_container.find(this._buttonSelector) : form.find(this._buttonSelector);
 
 		// If we're in a Grid input, re-assign some things to apply classes
 		// and show error messages in the proper places

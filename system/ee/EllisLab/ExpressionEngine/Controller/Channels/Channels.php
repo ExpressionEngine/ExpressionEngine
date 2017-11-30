@@ -42,9 +42,9 @@ class Channels extends AbstractChannelsController {
 
 		$total_channels = $channels->count();
 
-		$filters = ee('CP/Filter');
-		$filters->add('Keyword');
-		$filters->add('Perpage', $total_channels, 'all_channels', TRUE);
+		$filters = ee('CP/Filter')
+			->add('Keyword')
+			->add('Perpage', $total_channels, 'all_channels', TRUE);
 		$filter_values = $filters->values();
 
 		$page = ee('Request')->get('page') ?: 1;
@@ -516,7 +516,7 @@ class Channels extends AbstractChannelsController {
 	{
 		$field_group_options = ee('Model')->get('ChannelFieldGroup')
 			->fields('group_name')
-			->filter('site_id', ee()->config->item('site_id'))
+			->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
 			->order('group_name')
 			->all()
 			->getDictionary('group_id', 'group_name');
@@ -551,7 +551,7 @@ class Channels extends AbstractChannelsController {
 	{
 		$fields = ee('Model')->get('ChannelField')
 			->fields('field_label', 'field_name')
-			->filter('site_id', ee()->config->item('site_id'))
+			->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
 			->order('field_label')
 			->all();
 
@@ -782,7 +782,11 @@ class Channels extends AbstractChannelsController {
 		}
 
 		// Default status menu
-		$deft_status_options = ['' => lang('none')];
+		$deft_status_options = [
+			'' => lang('none'),
+			'open' => lang('open'),
+			'closed' => lang('closed')
+		];
 		$deft_status_options += $channel->Statuses
 			->sortBy('status_order')
 			->getDictionary('status', 'status');

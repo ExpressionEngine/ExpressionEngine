@@ -1,10 +1,6 @@
 <div class="box table-list-wrap">
 	<div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
-		<fieldset class="tbl-search right">
-			<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
-			<input class="btn submit" type="submit" value="<?=lang('search_spam')?>">
-		</fieldset>
 		<h1>
 			<ul class="toolbar">
 				<li class="settings">

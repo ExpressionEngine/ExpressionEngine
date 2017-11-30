@@ -218,12 +218,6 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 
 					$temp = ee()->functions->prep_conditionals($temp, $cond);
 
-					// and parse the variables
-					foreach ($cat_vars as $cat_var => $cat_val)
-					{
-						$temp = str_replace(LD.$cat_var.RD, $cat_val, $temp);
-					}
-
 					$variables = ee('Variables/Parser')->extractVariables($temp);
 					$temp = $obj->channel()->parseCategoryFields($v[0], array_merge($v, $cat_vars), $temp, array_keys($variables['var_single']));
 

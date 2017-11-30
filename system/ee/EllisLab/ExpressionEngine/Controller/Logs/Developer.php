@@ -109,8 +109,8 @@ class Developer extends Logs {
 
 		$filters = ee('CP/Filter')
 			->add('Date')
-			->add('Perpage', $logs->count(), 'all_developer_logs')
-			->add('Keyword');
+			->add('Keyword')
+			->add('Perpage', $logs->count(), 'all_developer_logs');
 		ee()->view->filters = $filters->render($this->base_url);
 		$this->params = $filters->values();
 		$this->base_url->addQueryStringVariables($this->params);

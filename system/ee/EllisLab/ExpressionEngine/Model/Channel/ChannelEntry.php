@@ -106,11 +106,9 @@ class ChannelEntry extends ContentModel {
 		)
 	);
 
-	protected static $_auto_join = array('Channel');
-
 	protected static $_field_data = array(
 		'field_model'     => 'ChannelField',
-		'group_column'    => 'Channel__channel_id',
+		'group_column'    => 'ChannelEntry__channel_id',
 		'structure_model' => 'Channel',
 	);
 

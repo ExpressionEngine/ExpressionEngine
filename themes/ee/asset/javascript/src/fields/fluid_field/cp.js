@@ -44,7 +44,7 @@
 			// Insert it
 			if ( ! $(this).parents('.fluid-item').length) {
 				// the button at the bottom of the form was used.
-				$('.fluid-actions', fluidField).before(fieldClone);
+				fluidField.find('.js-sorting-container').append(fieldClone);
 			} else {
 				$(this).closest('.fluid-item').after(fieldClone);
 			}
@@ -69,7 +69,7 @@
 			e.preventDefault();
 		});
 
-		$('.fluid-wrap').sortable({
+		$('.js-sorting-container').sortable({
 			axis: 'y',						// Only allow horizontal dragging
 			containment: 'parent',			// Contain to parent
 			handle: 'span.reorder',			// Set drag handle to the top box
@@ -82,6 +82,9 @@
 				FluidField.fireEvent($(ui.item).data('field-type'), 'afterSort', ui.item)
 			}
 		});
+
+		// Remove the toggle event found in common.js
+		$('.fieldset-faux-fluid .js-toggle-field').off('click');
 
 		$('.fieldset-faux-fluid').on('click', '.js-toggle-field', function(){
 			$(this)

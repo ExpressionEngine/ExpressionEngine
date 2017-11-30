@@ -60,7 +60,9 @@ class Spam_mcp {
 			}
 		}
 
-		$table = ee('CP/Table', array('sort_col' => 'trap_date', 'sort_dir' => 'desc'));
+		$search = ee()->input->get_post('filter_by_keyword');
+
+		$table = ee('CP/Table', array('search' => $search, 'sort_col' => 'trap_date', 'sort_dir' => 'desc'));
 
 		$data = array();
 
@@ -74,13 +76,13 @@ class Spam_mcp {
 		$filters = ee('CP/Filter')
 			->add($types)
 			->add('Date', 'trap_date')
+			->add('Keyword')
 			->add('Perpage', $total, 'show_all_spam');
 
 		$data['filters'] = $filters->render($this->base_url);
 
 		$filter_values = $filters->values();
 		$filter_fields = array();
-		$search = ee()->input->post('search');
 		$this->base_url->addQueryStringVariables($filter_values);
 
 		if ( ! empty($filter_values['content_type']))

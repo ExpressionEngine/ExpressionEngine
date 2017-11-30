@@ -32,15 +32,6 @@ feature 'Content & Design Settings' do
   context 'when validating the form' do
     let(:image_library_path_error) { 'This field must contain a valid path to an image processing library if ImageMagick or NetPBM is the selected protocol.' }
 
-    # before instead of after, as after will change contents prior to screenshots
-    before :each do
-      @page.image_library_path.set '/'
-      @page.image_library_path.trigger 'blur'
-      @page.wait_for_error_message_count(0)
-      should_have_no_form_errors(@page)
-      should_have_no_error_text(@page.image_library_path)
-    end
-
     it 'validates image resize protocol when using ImageMagick' do
       # Should only show an error for image library path if ImageMagick or NetPBM are selected
       @page.image_resize_protocol.choose_radio_option('imagemagick')
@@ -112,7 +103,8 @@ feature 'Content & Design Settings' do
     @page.image_library_path.set '/'
     @page.thumbnail_suffix.set 'mysuffix'
     @page.enable_emoticons_toggle.click
-    @page.emoticon_url.set 'http://myemoticons/'
+    # Don't test this, we manually override this path in config.php for the tests
+    #@page.emoticon_url.set 'http://myemoticons/'
     @page.submit
 
     @page.should have_text 'Preferences updated'
@@ -123,6 +115,6 @@ feature 'Content & Design Settings' do
     @page.image_library_path.value.should == '/'
     @page.thumbnail_suffix.value.should == 'mysuffix'
     @page.enable_emoticons.value.should_not == enable_emoticons
-    @page.emoticon_url.value.should == 'http://myemoticons/'
+    #@page.emoticon_url.value.should == 'http://myemoticons/'
   end
 end

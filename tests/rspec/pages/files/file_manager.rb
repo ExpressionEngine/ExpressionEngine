@@ -5,8 +5,8 @@ class FileManager < FileManagerPage
   element :heading, 'div.col.w-12 div.box form h1'
   element :sync_button, 'a.icon--sync'
 
-  element :perpage_filter, 'div.col.w-12 div.box form h1 + div.filters ul li:first-child'
-  element :perpage_filter_menu, 'div.col.w-12 div.box form h1 + div.filters ul li:first-child div.sub-menu ul'
+  element :perpage_filter, 'div.col.w-12 div.box form h1 + div.filters ul li:nth-child(2)'
+  element :perpage_filter_menu, 'div.col.w-12 div.box form h1 + div.filters ul li:nth-child(2) div.sub-menu ul'
   element :perpage_manual_filter, 'input[name="perpage"]'
 
   # Main box's table elements

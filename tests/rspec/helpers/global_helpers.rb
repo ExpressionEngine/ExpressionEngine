@@ -40,9 +40,8 @@ def no_php_js_errors
   # Capybara makes JS error messages available in this array,
   # let's make sure it's empty; we can also check for any console
   # message but we're just checking for errors now
-  errors = page.driver.browser.manage.logs.get(:browser)
-  if errors.any?
-    raise StandardError, "JS Error: " + errors.map(&:message).join("\n\n")
+  if page.driver.error_messages.any?
+    raise StandardError, "JS Error: " + page.driver.error_messages.join(" ")
   end
 end
 
@@ -236,30 +235,13 @@ module Capybara
     def has_checked_radio(value)
       self.each do |el|
         if el.value == value
-          return el[:checked] == "true"
+          return el.checked?
         end
       end
 
       return false
     end
 
-  end
-
-  # Selenium doesn't support trigger, so use this override to workaround
-  module Driver
-    class Node
-      def trigger(event)
-        if event == 'blur'
-          # If js with xpath is slow or gives us fits, we can click a neutral area,
-          # but then need to deal with the screenshot scrolling to the top of the page
-          # Capybara.page.find('.nav-global-wrap').click
-          Capybara.page.evaluate_script('document.evaluate("' + self.path + '", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.blur()')
-        end
-        if event == 'click'
-          self.click
-        end
-      end
-    end
   end
 
 end

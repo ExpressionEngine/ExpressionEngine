@@ -1,8 +1,9 @@
 <style type="text/css">
 /* Hack for capybara-webkit, leave in place for now */
-a.sort {
+a.sort,
+a.icon--sync {
 	display: inline-block;
-	width: 1px;
+	min-width: 1px;
 }
 </style>
 

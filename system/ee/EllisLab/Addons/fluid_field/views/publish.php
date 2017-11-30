@@ -1,5 +1,7 @@
 <div class="fluid-wrap" data-field-count="0">
-	<?=$fields?>
+	<div class="js-sorting-container">
+		<?=$fields?>
+	</div>
 	<div class="fluid-actions">
 		<?=$filters?>
 	</div>

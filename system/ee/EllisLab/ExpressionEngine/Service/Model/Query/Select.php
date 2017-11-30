@@ -719,17 +719,6 @@ class Select extends Query {
 	 */
 	protected function processWiths($query, $from, $from_alias)
 	{
-		$class = $this->getClass();
-
-		$extra_withs = $class::getMetaData('auto_join');
-		if ($extra_withs)
-		{
-			foreach ($extra_withs as $with)
-			{
-				$this->builder->with($with);
-			}
-		}
-
 		$withs = $this->builder->getWiths();
 		$this->recurseWiths($query, $from, $from_alias, $withs);
 	}

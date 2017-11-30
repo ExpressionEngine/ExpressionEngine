@@ -46,6 +46,13 @@ setpermissions() {
 	chmod +x tests/circleci/runtests.sh
 }
 
+# JS Shim for ES5/ES6 with Capybara
+addjsshim() {
+	cp themes/ee/asset/javascript/src/react/react.min.js themes/ee/asset/javascript/src/react/react.min~orig.js
+	cat tests/rspec/shim.min.js themes/ee/asset/javascript/src/react/react.min.js > themes/ee/asset/javascript/src/react/react.min-shimmed.js
+	mv themes/ee/asset/javascript/src/react/react.min-shimmed.js themes/ee/asset/javascript/src/react/react.min.js
+}
+
 # Explode php_versions environment variable since we can't assign
 # arrays in the YML
 PHP_VERSIONS_ARRAY=(${php_versions// / })
@@ -81,6 +88,8 @@ do
 		echo "LoadModule php${PHP_MAJOR_VERSION}_module /home/ubuntu/.phpenv/versions/${PHPVERSION}/libexec/apache2/libphp${PHP_MAJOR_VERSION}.so" > /etc/apache2/mods-available/php5.load
 
 		setpermissions
+
+		addjsshim
 
 		if [ $CIRCLE_NODE_INDEX -eq 2 ]
 		then

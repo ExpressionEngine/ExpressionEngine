@@ -253,7 +253,7 @@ abstract class AbstractDesign extends CP_Controller {
 
 		$header = array(
 			'title' => lang('template_manager'),
-			'form_url' => ee('CP/URL')->make('design/template/search', array('return' => $return)),
+			'search_form_url' => ee('CP/URL')->make('design/template/search', array('return' => $return)),
 			'toolbar_items' => array(
 				'settings' => array(
 					'href' => ee('CP/URL')->make('settings/template'),
@@ -321,6 +321,15 @@ abstract class AbstractDesign extends CP_Controller {
 		ee()->javascript->set_global(
 			'editor.lint', $this->_get_installed_plugins_and_modules()
 		);
+
+		$height = ee()->config->item('codemirror_height');
+
+		if ($height !== FALSE)
+		{
+			ee()->javascript->set_global(
+				'editor.height', $height
+			);
+		}
 
 		ee()->cp->add_to_head(ee()->view->head_link('css/codemirror.css'));
 		ee()->cp->add_to_head(ee()->view->head_link('css/codemirror-additions.css'));

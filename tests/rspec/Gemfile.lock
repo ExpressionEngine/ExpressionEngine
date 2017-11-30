@@ -24,10 +24,10 @@ GEM
       rack (>= 1.0.0)
       rack-test (>= 0.5.4)
       xpath (~> 2.0)
-    childprocess (0.8.0)
-      ffi (~> 1.0, >= 1.0.11)
+    capybara-webkit (1.11.1)
+      capybara (>= 2.3.0, < 2.8.0)
+      json
     diff-lcs (1.2.5)
-    ffi (1.9.18)
     forgery (0.6.0)
     i18n (0.7.0)
     image_size (1.4.2)
@@ -62,9 +62,6 @@ GEM
       rspec-support (~> 3.4.0)
     rspec-support (3.4.1)
     rubyzip (1.2.0)
-    selenium-webdriver (3.7.0)
-      childprocess (~> 0.5)
-      rubyzip (~> 1.0)
     site_prism (2.9)
       addressable (>= 2.3.3, < 3.0)
       capybara (>= 2.1, < 3.0)
@@ -81,6 +78,7 @@ PLATFORMS
 DEPENDENCIES
   activerecord
   capybara
+  capybara-webkit
   forgery
   image_size
   mail
@@ -89,9 +87,5 @@ DEPENDENCIES
   rspec
   rspec-collection_matchers
   rubyzip
-  selenium-webdriver
   site_prism
   syntax
-
-BUNDLED WITH
-   1.16.0

@@ -50,6 +50,10 @@ pushd /var/www/html/ > /dev/null
 	chmod 777 tests/rspec/support/tmp
 	chmod -R 777 tests/rspec/support/file-sync/uploads
 	chmod -R 777 images
+	# JS Shim for ES5/ES6 with Capybara
+	cp themes/ee/asset/javascript/src/react/react.min.js themes/ee/asset/javascript/src/react/react.min~orig.js
+	cat tests/rspec/shim.min.js themes/ee/asset/javascript/src/react/react.min.js > themes/ee/asset/javascript/src/react/react.min-shimmed.js
+	mv themes/ee/asset/javascript/src/react/react.min-shimmed.js themes/ee/asset/javascript/src/react/react.min.js
 popd > /dev/null
 
 rm /app/ee.tar
@@ -73,9 +77,6 @@ if [ "${COMMAND}" == "lint" ]; then
 	popd
 	exit
 fi
-
-# https://github.com/docker/for-linux/issues/72
-find /var/lib/mysql -type f -exec touch {} \;
 
 service apache2 start > /dev/null
 service mysql start > /dev/null
@@ -137,7 +138,7 @@ if [ "${COMMAND}" == "test" ]; then
 	fi
 
 	mysql -u root -e 'CREATE DATABASE `ee-test`;' > /dev/null
-	mysql -u root -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION";'
+	#mysql -u root -e 'SET GLOBAL sql_mode="ONLY_FULL_GROUP_BY,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION";'
 
 	source /usr/local/rvm/scripts/rvm
 

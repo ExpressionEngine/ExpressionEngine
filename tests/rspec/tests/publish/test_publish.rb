@@ -78,7 +78,7 @@ feature 'Publish Page - Create' do
     end
 
     it 'the file field restricts you to the chosen directory' do
-      @page.file_fields[1].click
+      @page.file_fields[0].click
 
       @page.wait_until_modal_visible
       @page.file_modal.wait_for_filters
@@ -196,6 +196,7 @@ feature 'Publish Page - Create' do
           field.find('div[data-dropdown-react]').click
           if skew == 0 then choice = 'Corndog' end
           if skew == 1 then choice = 'Burrito' end
+          sleep 0.1
           find('div[data-dropdown-react] .field-drop-choices label', text: choice).click
         when 'grid'
           field.find('a[rel="add_row"]').click

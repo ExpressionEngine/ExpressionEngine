@@ -2170,6 +2170,11 @@ class Channel {
 			$this->pagination->per_page  = ( ! is_numeric(ee()->TMPL->fetch_param('limit')))  ? $this->limit : ee()->TMPL->fetch_param('limit');
 		}
 
+		if ($join_member_table)
+		{
+			$sql = str_replace(' WHERE ', ' ' . $member_join . ' WHERE ', $sql);
+		}
+
 		/**------
 		/**  Is there an offset?
 		/**------*/
@@ -2267,11 +2272,6 @@ class Channel {
 		/**------
 		/**  Fetch the entry_id numbers
 		/**------*/
-
-		if ($join_member_table)
-		{
-			$sql = str_replace(' WHERE ', $member_join . ' WHERE ', $sql);
-		}
 
 		$query = ee()->db->query($sql_a.$sql_b.$sql);
 
@@ -4090,8 +4090,7 @@ class Channel {
 			$variables = ee()->TMPL->var_single;
 		}
 
-		// native metadata fields with modifiers will pass through here. Thos without modifiers
-		// will have already been handled with a simple string replace by EE_Channel_category_parser
+		// native metadata fields with will pass through here, treat them like text fields
 		ee()->api_channel_fields->include_handler('text');
 		$fieldtype = ee()->api_channel_fields->setup_handler('text', TRUE);
 		ee()->api_channel_fields->field_types['text'] = $fieldtype;
@@ -4100,6 +4099,12 @@ class Channel {
 		{
 			$var_props = ee('Variables/Parser')->parseVariableProperties($tag);
 			$field_name = $var_props['field_name'];
+
+			// only deal with variables we own
+			if ( ! isset($data[$field_name]))
+			{
+				continue;
+			}
 
 			if (isset($field_index[$field_name]) && isset($data['field_id_'.$field_index[$field_name]]))
 			{
@@ -4121,18 +4126,22 @@ class Channel {
 					$tag
 				);
 			}
-			elseif (isset($data[$field_name]) && ! empty($var_props['modifier']))
+			elseif (isset($data[$field_name]))
 			{
 				$content = $data[$field_name];
-				$parse_fnc = 'replace_'.$var_props['modifier'];
 
-				if (method_exists($fieldtype, $parse_fnc))
+				if ( ! empty($var_props['modifier']))
 				{
-					$content = ee()->api_channel_fields->apply($parse_fnc, array(
-						$content,
-						$var_props['params'],
-						FALSE
-					));
+					$parse_fnc = 'replace_'.$var_props['modifier'];
+
+					if (method_exists($fieldtype, $parse_fnc))
+					{
+						$content = ee()->api_channel_fields->apply($parse_fnc, array(
+							$content,
+							$var_props['params'],
+							FALSE
+						));
+					}
 				}
 
 				$chunk = str_replace(LD.$tag.RD, $content, $chunk);

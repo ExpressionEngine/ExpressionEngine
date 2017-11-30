@@ -508,12 +508,13 @@ class Msm extends CP_Controller {
 
 		$site_names = $sites->pluck('site_label');
 
+		$sites->delete();
+
 		foreach ($site_names as $site_name)
 		{
 			ee()->logger->log_action(lang('site_deleted') . ': ' . $site_name);
 		}
 
-		$sites->delete();
 		ee('CP/Alert')->makeInline('sites')
 			->asSuccess()
 			->withTitle(lang('success'))

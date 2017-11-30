@@ -162,6 +162,7 @@ EE.cp.form_group_toggle = function(element) {
 EE.cp.fieldToggleDisable = function(context, fieldName) {
 	$('fieldset :input:hidden', context)
 		.not('.filter-item__search input')
+		.not('.fields-grid-item:visible :input') // Don't disable collapsed Grid settings
 		.attr('disabled', true);
 	$('fieldset:visible input[type=hidden]', context).attr('disabled', false);
 

@@ -15,11 +15,11 @@ class Emoji {
 	public $return_data = '';
 
 	/**
-	  *  {exp:emoji:list}
+	  *  {exp:emoji:emoji_list}
 	  *
 	  *  Outputs all available emoji
 	  */
-	public function list()
+	public function emoji_list()
 	{
 		$emoji = ee()->config->loadFile('emoji');
 

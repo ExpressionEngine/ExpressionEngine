@@ -49,7 +49,7 @@ class Fields extends AbstractFieldsController {
 
 		// Set up filters
 		$group_ids = ee('Model')->get('ChannelFieldGroup')
-			->filter('site_id', ee()->config->item('site_id'))
+			->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
 			->order('group_name')
 			->all()
 			->getDictionary('group_id', 'group_name');
@@ -121,8 +121,8 @@ class Fields extends AbstractFieldsController {
 			$total_fields = $fields->count();
 		}
 
-		$filters->add('Perpage', $total_fields, 'all_fields', TRUE)
-			->add('Keyword');
+		$filters->add('Keyword')
+			->add('Perpage', $total_fields, 'all_fields', TRUE);
 
 		$filter_values = $filters->values();
 		$per_page = $filter_values['perpage'];
@@ -298,8 +298,7 @@ class Fields extends AbstractFieldsController {
 				]
 			],
 			'form_hidden' => array(
-				'field_id' => NULL,
-				'site_id' => 0
+				'field_id' => NULL
 			),
 		);
 
@@ -417,7 +416,6 @@ class Fields extends AbstractFieldsController {
 			],
 			'form_hidden' => array(
 				'field_id' => $id,
-				'site_id' => 0
 			),
 		);
 
@@ -428,11 +426,10 @@ class Fields extends AbstractFieldsController {
 
 	private function setWithPost(ChannelField $field)
 	{
-		$field->site_id = (int) ee()->config->item('site_id');
 		$field->field_list_items = ($field->field_list_items) ?: '';
 		$field->field_order = ($field->field_order) ?: 0;
+		$field->site_id = ($field->site_id) ?: 0;
 
-		unset($_POST['site_id']);
 		$field->set($_POST);
 
 		if ($field->field_pre_populate)

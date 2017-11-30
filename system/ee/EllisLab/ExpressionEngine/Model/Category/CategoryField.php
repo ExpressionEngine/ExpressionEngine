@@ -132,7 +132,7 @@ class CategoryField extends FieldModel {
 	public function updateFormattingOnExisting()
 	{
 		ee()->db->update(
-			$this->getDataTable(),
+			$this->getDataStorageTable(),
 			array('field_ft_'.$this->field_id => $this->field_default_fmt)
 		);
 	}

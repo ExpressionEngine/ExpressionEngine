@@ -794,6 +794,8 @@ $lang = array(
 
 'add_new_row' => 'Add new row',
 
+'collapse' => 'Collapse',
+
 'hide' => 'Hide',
 
 'item_to_relate_with' => 'Item to <strong>relate with</strong> this entry.',

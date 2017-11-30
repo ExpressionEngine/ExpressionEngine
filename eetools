@@ -14,7 +14,7 @@ git archive --format=tar -o ee.tar $STASH_NAME
 #	find ./tests -name "*.rb" | sort | parallel -j10 docker run --rm -v /Users/ubuntu/ExpressionEngine/:/app ellislab/eecms-test ./run.sh {}
 #popd
 
-IMAGE_NAME="ellislab/eecms-test:headless-chrome"
+IMAGE_NAME="ellislab/eecms-test:latest"
 
 # Open a prompt on the Docker container to fiddle
 if [ "$1" == "prompt" ]; then

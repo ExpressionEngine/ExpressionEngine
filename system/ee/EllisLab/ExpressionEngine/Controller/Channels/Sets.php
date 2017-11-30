@@ -152,6 +152,7 @@ class Sets extends AbstractChannelsController {
 		if ($result->isValid())
 		{
 			$set->save();
+			$set->cleanUpSourceFiles();
 
 			ee()->session->set_flashdata(
 				'imported_channels',
@@ -187,6 +188,7 @@ class Sets extends AbstractChannelsController {
 		}
 		else
 		{
+			$set->cleanUpSourceFiles();
 			$errors = $result->getErrors();
 			$model_errors = $result->getModelErrors();
 			foreach (array('Channel Field', 'Category', 'Category Group', 'Status') as $type)

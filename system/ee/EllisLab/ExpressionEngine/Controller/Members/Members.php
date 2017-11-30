@@ -287,8 +287,8 @@ class Members extends CP_Controller {
 		$total = $members->count();
 
 		$filter = ee('CP/Filter')
-				->add('Perpage', $total, 'show_all_banned')
-				->add('Keyword');
+				->add('Keyword')
+				->add('Perpage', $total, 'show_all_banned');
 
 		$this->renderFilters($filter);
 		$members->limit($this->perpage)
@@ -725,8 +725,8 @@ class Members extends CP_Controller {
 
 		$filters = ee('CP/Filter')
 				->add($group)
-				->add('Perpage', $total_rows, 'show_all_members')
-				->add('Keyword');
+				->add('Keyword')
+				->add('Perpage', $total_rows, 'show_all_members');
 
 		$this->renderFilters($filters);
 

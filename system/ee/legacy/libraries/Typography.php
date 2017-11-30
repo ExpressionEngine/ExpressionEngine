@@ -733,7 +733,7 @@ class EE_Typography {
 		$str = $this->emoticon_replace($str);
 
 		// Parse emoji
-		$str = ee('Format')->make('Text', $str)->emojiShortHand();
+		$str = ee('Format')->make('Text', $str)->emojiShorthand();
 
 		//  Parse censored words
 		$str = $this->filter_censored_words($str);
@@ -1452,7 +1452,7 @@ class EE_Typography {
 		$this->html_format = $existing_format;
 
 		// hit emoji shortands
-		$title = ee('Format')->make('Text', $title)->emojiShortHand();
+		$title = ee('Format')->make('Text', $title)->emojiShorthand();
 
 		// and finally some basic curly quotes, em dashes, etc.
 		$title = $this->format_characters($title);

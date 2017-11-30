@@ -15,8 +15,8 @@ $(document).ready(function () {
 	// somehow still there.  Doppelt gemoppelt hält besser.
 	// This will also speed up the code - we don't want to keep asking the dom
 	// for elements
-	var tabs = $('.wrap ul.tabs');
-	var sheets = $('.wrap div.tab');
+	var tabs = $('form .tab-wrap ul.tabs');
+	var sheets = $('form .tab-wrap div.tab');
 
 	function getTabIndex()
 	{
@@ -26,8 +26,8 @@ $(document).ready(function () {
 
 	function getFieldIndex(element)
 	{
-		var field = $(element).parents('fieldset').eq(0);
-		return $('div.tab-open fieldset').index(field);
+		var field = $(element).parents('.layout-item').eq(0);
+		return $('div.tab-open .layout-item').index(field);
 	}
 
 	var field;
@@ -50,18 +50,13 @@ $(document).ready(function () {
 		}
 	});
 
-	// Prevent clicking the move icon from refreshing
-	$('.move a').on('click', function() {
-		return(false);
-	});
-
 	var spring;
 	var spring_delay = 500;
 
 	function makeTabsDroppable()
 	{
 		tabs.find('li a').droppable({
-			accept: "fieldset.sortable",
+			accept: ".layout-grid-wrap .col-group",
 			hoverClass: "highlight",
 			tolerance: "pointer",
 			drop: function(e, ui) {
@@ -75,10 +70,9 @@ $(document).ready(function () {
 				ui.draggable.remove();
 
 				// Add the fieldset to the new tab
-				$('<fieldset class="col-group sortable"></fieldset>').append(ui.draggable.html()).prependTo($('div.tab-open'));
+				$('<div class="col-group"></div>').append(ui.draggable.html()).prependTo($('div.tab-open .layout-grid-wrap'));
 
-				if ($(ui.draggable).hasClass('required')) {
-					$('div.tab-open fieldset:first-child').addClass('required');
+				if ($(ui.draggable).has('.field-option-required')) {
 					var tab = $(this).closest('li');
 					if ($(tab).find('.tab-off').length > 0) {
 						$(tab).find('.tab-off').trigger('click');
@@ -88,10 +82,6 @@ $(document).ready(function () {
 				// Add the field to the publish_layout array
 				EE.publish_layout[getTabIndex()].fields.unshift(field);
 				field = null;
-
-				// Make sure the last element has the last class
-				$('fieldset.sortable').removeClass('last');
-				$('fieldset.sortable:last-child').addClass('last');
 			},
 			over: function(e, ui) {
 				tab = this;
@@ -117,12 +107,12 @@ $(document).ready(function () {
 		cursor: "move",
 		forceHelperSize: true,
 		forcePlaceholderSize: true,
-		handle: "li.move a",
+		handle: ".layout-item .reorder",
 		helper: "clone",
-		items: "fieldset.sortable",
+		items: ".layout-grid-wrap .col-group",
 		placeholder: "drag-placeholder",
 		start: function (event, ui) {
-			var fieldIndex = sheets.filter('.tab-open').find('fieldset').index(ui.item[0]);
+			var fieldIndex = sheets.filter('.tab-open').find('.layout-grid-wrap .col-group').index(ui.item[0]);
 			field = EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 1)[0];
 			ui.placeholder.append('<div class="none"></div>');
 		},
@@ -132,14 +122,11 @@ $(document).ready(function () {
 			}
 
 			if (field != null) {
-				var fieldIndex = sheets.filter('.tab-open').find('fieldset').index(ui.item[0]);
+				var fieldIndex = sheets.filter('.tab-open').find('.layout-grid-wrap .layout-item').index(ui.item[0]);
 
 				EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 0, field);
 				field = null;
 			}
-
-			$('fieldset.sortable').removeClass('last');
-			$('fieldset.sortable:last-child').addClass('last');
 		}
 	};
 
@@ -152,7 +139,7 @@ $(document).ready(function () {
 		var index = tabs.find('li').index(tab);
 		var tabContents = sheets.filter('.' + $(tab).find('a').eq(0).attr('rel'));
 
-		if (EE.publish_layout[index].visible && tabContents.has('.required').length > 0) {
+		if (EE.publish_layout[index].visible && tabContents.has('.field-option-required').length > 0) {
 			$('body').prepend(EE.alert.required.replace('%s', tab.text()));
 			return;
 		}
@@ -204,17 +191,17 @@ $(document).ready(function () {
 				};
 				EE.publish_layout.push(tab);
 
-				var index = $('ul.tabs li').length;
+				var index = $('form .tab-wrap ul.tabs li').length;
 
 				tabs.find('li a').droppable("destroy");
 
 				tabs.append('<li><a href="" rel="t-' + index + '">' + tab_name + '</a> <span class="tab-remove"></span></li>');
-				sheets.filter('.t-' + (index - 1)).after('<div class="tab t-' + index + '"></div>');
+				sheets.filter('.t-' + (index - 1)).after('<div class="tab t-' + index + '"><div class="layout-grid-wrap"></div></div>');
 
 				makeTabsDroppable();
 
 				// Update tabs
-				sheets = $('.wrap div.tab');
+				sheets = $('form .tab-wrap div.tab');
 				sheets.eq(-1).sortable(sortable_options_for_sheets);
 
 				$('.modal-add-new-tab .m-close').trigger('click');
@@ -253,19 +240,17 @@ $(document).ready(function () {
 	});
 
 	// Saving the hide/unhide state of fields
-	$('[data-publish] form').on('click', 'li.hide a, li.unhide a', function(e) {
+	$('[data-publish] form').on('click', '.field-option-hide input', function(e) {
 		var tab = getTabIndex();
 		var field = getFieldIndex(this);
 
 		EE.publish_layout[tab].fields[field].visible = ! EE.publish_layout[tab].fields[field].visible;
 
-		$(this).parents('li').eq(0).toggleClass('hide unhide');
-
 		e.preventDefault();
 	});
 
 	// Saving the collapsed state
-	$('[data-publish] form').on('click', '.sub-arrow', function(e) {
+	$('[data-publish] form').on('click', '.field-option-collapse input', function(e) {
 		var tab = getTabIndex();
 		var field = getFieldIndex(this);
 
