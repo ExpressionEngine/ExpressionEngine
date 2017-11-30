@@ -44,7 +44,7 @@ abstract class AbstractFields extends CP_Controller {
 		{
 			$header['action_button'] = [
 				'text' => lang('new_field'),
-				'href' => ee('CP/URL')->make('fields/create')
+				'href' => ee('CP/URL')->make('fields/create/'.ee('Request')->get('group_id') ?: '')
 			];
 		}
 
