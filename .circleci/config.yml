@@ -14,7 +14,7 @@ jobs:
           apk upgrade
           apk add bash
       - run: chmod +x ./eetools
-      - run: bash ./eetools circleci -p 5.4.46
+      - run: bash ./eetools circleci -p 5.4.45
       - store_artifacts:
           path: /tmp/artifacts
   test_php_55:
