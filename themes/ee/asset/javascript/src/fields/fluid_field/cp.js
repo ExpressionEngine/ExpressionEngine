@@ -76,10 +76,10 @@
 			items: '.fluid-item',			// Only allow these to be sortable
 			sort: EE.sortable_sort_helper,	// Custom sort handler
 			start: function (event, ui) {
-				FluidField.fireEvent($(ui.item).data('field-type'), 'beforeSort', ui.item)
+				FluidField.fireEvent($(ui.item).data('field-type'), 'beforeSort', $(ui.item))
 			},
 			stop: function (event, ui) {
-				FluidField.fireEvent($(ui.item).data('field-type'), 'afterSort', ui.item)
+				FluidField.fireEvent($(ui.item).data('field-type'), 'afterSort', $(ui.item))
 			}
 		});
 
