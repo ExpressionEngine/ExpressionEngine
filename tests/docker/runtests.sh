@@ -68,8 +68,6 @@ function setup_permissions {
 	popd > /dev/null
 }
 
-setup_permissions
-
 ARTIFACTS_DIR="/app/artifacts/${PHP_VERSION}"
 mkdir -p $ARTIFACTS_DIR
 
@@ -100,6 +98,10 @@ function lint_php_files {
 }
 
 function run_unit_tests {
+	pushd /var/www/html/ > /dev/null
+		cp tests/docker/config.php system/user/config/
+	popd
+
 	# PHPUnit tests
 	pushd /var/www/html/system/ee/EllisLab/Tests/
 		printf "Running PHPUnit tests\n\n"
@@ -161,9 +163,11 @@ function run_rspec_tests {
 if [ "${COMMAND}" == "circleci" ]; then
 	lint_php_files
 	run_unit_tests
+	setup_permissions
 	start_apache_mysql
 	run_rspec_tests
 elif [ "${COMMAND}" == "test" ]; then
+	setup_permissions
 	start_apache_mysql
 	run_rspec_tests
 elif [ "${COMMAND}" == "unittest" ]; then
