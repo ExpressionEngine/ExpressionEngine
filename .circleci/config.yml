@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  rspec:
+  build:
     docker:
       - image: docker:stable-git
     steps:
@@ -9,18 +9,45 @@ jobs:
       - run: |
           git config --global user.email "you@example.com"
           git config --global user.name "Your Name"
-      - run:
-          name: Log in for Docker
-          command: |
-            docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
       - run: |
           apk update
           apk upgrade
           apk add bash
+      - run: docker pull ellislab/eecms-test:upgraded
       - run: chmod +x ./eetools
-      - run:
-          name: Start Tests
-          command: ./eetools test tests/logs/test_cp_log.rb:29
+  test_php_54:
+    docker:
+      - image: docker:stable-git
+    steps:
+      - run: bash ./eetools circleci -p 5.4.46
+      - store_artifacts:
+          path: /tmp/artifacts
+  test_php_55:
+    docker:
+      - image: docker:stable-git
+    steps:
+      - run: bash ./eetools circleci -p 5.5.38
+      - store_artifacts:
+          path: /tmp/artifacts
+  test_php_56:
+    docker:
+      - image: docker:stable-git
+    steps:
+      - run: bash ./eetools circleci -p 5.6.32
+      - store_artifacts:
+          path: /tmp/artifacts
+  test_php_70:
+    docker:
+      - image: docker:stable-git
+    steps:
+      - run: bash ./eetools circleci -p 7.0.25
+      - store_artifacts:
+          path: /tmp/artifacts
+  test_php_71:
+    docker:
+      - image: docker:stable-git
+    steps:
+      - run: bash ./eetools circleci -p 7.1.11
       - store_artifacts:
           path: /tmp/artifacts
 
@@ -28,4 +55,19 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - rspec
+      - build
+      - test_php_54:
+          requires:
+            - build
+      - test_php_55:
+          requires:
+            - build
+      - test_php_56:
+          requires:
+            - build
+      - test_php_70:
+          requires:
+            - build
+      - test_php_71:
+          requires:
+            - build
