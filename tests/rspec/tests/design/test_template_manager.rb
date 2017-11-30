@@ -2,6 +2,7 @@ require './bootstrap.rb'
 
 feature 'Template Manager' do
   before(:each) do
+    ee_config(item: 'save_tmpl_files', value: 'n')
     cp_session
     @page = TemplateManager.new
   end
