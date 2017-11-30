@@ -1,11 +1,5 @@
 version: 2
 jobs:
-  build:
-    docker:
-      - image: docker:stable-git
-    steps:
-      - setup_remote_docker
-      - run: docker pull ellislab/eecms-test:upgraded
   test_php_54:
     docker:
       - image: docker:stable-git
@@ -96,19 +90,8 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - build
-      - test_php_54:
-          requires:
-            - build
-      - test_php_55:
-          requires:
-            - build
-      - test_php_56:
-          requires:
-            - build
-      - test_php_70:
-          requires:
-            - build
-      - test_php_71:
-          requires:
-            - build
+      - test_php_54
+      - test_php_55
+      - test_php_56
+      - test_php_70
+      - test_php_71
