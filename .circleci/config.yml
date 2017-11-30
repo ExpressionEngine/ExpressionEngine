@@ -5,6 +5,11 @@ jobs:
       - image: docker:stable-git
     steps:
       - setup_remote_docker
+      - run: docker pull ellislab/eecms-test:upgraded
+  test_php_54:
+    docker:
+      - image: docker:stable-git
+    steps:
       - checkout
       - run: |
           git config --global user.email "you@example.com"
@@ -13,16 +18,7 @@ jobs:
           apk update
           apk upgrade
           apk add bash
-      - run: docker pull ellislab/eecms-test:upgraded
       - run: chmod +x ./eetools
-  test_php_54:
-    docker:
-      - image: docker:stable-git
-    steps:
-      - run: |
-          apk update
-          apk upgrade
-          apk add bash
       - run: bash ./eetools circleci -p 5.4.46
       - store_artifacts:
           path: /tmp/artifacts
@@ -30,10 +26,15 @@ jobs:
     docker:
       - image: docker:stable-git
     steps:
+      - checkout
+      - run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
       - run: |
           apk update
           apk upgrade
           apk add bash
+      - run: chmod +x ./eetools
       - run: bash ./eetools circleci -p 5.5.38
       - store_artifacts:
           path: /tmp/artifacts
@@ -41,10 +42,15 @@ jobs:
     docker:
       - image: docker:stable-git
     steps:
+      - checkout
+      - run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
       - run: |
           apk update
           apk upgrade
           apk add bash
+      - run: chmod +x ./eetools
       - run: bash ./eetools circleci -p 5.6.32
       - store_artifacts:
           path: /tmp/artifacts
@@ -52,10 +58,15 @@ jobs:
     docker:
       - image: docker:stable-git
     steps:
+      - checkout
+      - run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
       - run: |
           apk update
           apk upgrade
           apk add bash
+      - run: chmod +x ./eetools
       - run: bash ./eetools circleci -p 7.0.25
       - store_artifacts:
           path: /tmp/artifacts
@@ -63,10 +74,15 @@ jobs:
     docker:
       - image: docker:stable-git
     steps:
+      - checkout
+      - run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
       - run: |
           apk update
           apk upgrade
           apk add bash
+      - run: chmod +x ./eetools
       - run: bash ./eetools circleci -p 7.1.11
       - store_artifacts:
           path: /tmp/artifacts
