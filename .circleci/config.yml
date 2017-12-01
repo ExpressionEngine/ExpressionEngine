@@ -5,11 +5,6 @@ jobs:
       - image: circleci/node:4
     steps:
       - checkout
-      # Cache for faster checkout in subsequent jobs
-      - save_cache:
-          key: repo-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/project
       # Cache node dependencies
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
@@ -31,8 +26,7 @@ jobs:
       - image: docker:stable-git
     steps:
       - setup_remote_docker
-      - restore_cache:
-          key: repo-{{ .Environment.CIRCLE_SHA1 }}
+      - checkout
       - run: |
           git config --global user.email "you@example.com"
           git config --global user.name "Your Name"
@@ -49,8 +43,7 @@ jobs:
       - image: docker:stable-git
     steps:
       - setup_remote_docker
-      - restore_cache:
-          key: repo-{{ .Environment.CIRCLE_SHA1 }}
+      - checkout
       - run: |
           git config --global user.email "you@example.com"
           git config --global user.name "Your Name"
@@ -67,8 +60,7 @@ jobs:
       - image: docker:stable-git
     steps:
       - setup_remote_docker
-      - restore_cache:
-          key: repo-{{ .Environment.CIRCLE_SHA1 }}
+      - checkout
       - run: |
           git config --global user.email "you@example.com"
           git config --global user.name "Your Name"
@@ -85,8 +77,7 @@ jobs:
       - image: docker:stable-git
     steps:
       - setup_remote_docker
-      - restore_cache:
-          key: repo-{{ .Environment.CIRCLE_SHA1 }}
+      - checkout
       - run: |
           git config --global user.email "you@example.com"
           git config --global user.name "Your Name"
@@ -103,8 +94,7 @@ jobs:
       - image: docker:stable-git
     steps:
       - setup_remote_docker
-      - restore_cache:
-          key: repo-{{ .Environment.CIRCLE_SHA1 }}
+      - checkout
       - run: |
           git config --global user.email "you@example.com"
           git config --global user.name "Your Name"
