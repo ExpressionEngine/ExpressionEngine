@@ -17,6 +17,9 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y php5
       - run: |
           cp tests/docker/EllisLabUpdate.pub system/ee/EllisLab/ExpressionEngine
+          cp themes/ee/asset/javascript/src/react/react.min.js themes/ee/asset/javascript/src/react/react.min~orig.js
+      		cat tests/rspec/shim.min.js themes/ee/asset/javascript/src/react/react.min.js > themes/ee/asset/javascript/src/react/react.min-shimmed.js
+      		mv themes/ee/asset/javascript/src/react/react.min-shimmed.js themes/ee/asset/javascript/src/react/react.min.js
           git config --global user.email "you@example.com"
           git config --global user.name "Your Name"
           APP_VERSION=`cat system/ee/legacy/libraries/Core.php | perl -ne '/'\''APP_VER'\'',\s+'\''(.*)'\''/g && print $1'`
