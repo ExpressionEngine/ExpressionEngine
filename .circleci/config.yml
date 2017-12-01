@@ -1,11 +1,38 @@
 version: 2
 jobs:
+  build_and_upload:
+    docker:
+      - image: circleci/node:4
+    steps:
+      - checkout
+      # Cache for faster checkout in subsequent jobs
+      - save_cache:
+          key: repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/project
+      # Cache node dependencies
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      # Needed for build signing :-/
+      - run: sudo apt-get update && sudo apt-get install -y php5
+      - run: |
+          cp tests/docker/EllisLabUpdate.pub system/ee/EllisLab/ExpressionEngine
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+          APP_VERSION=`cat system/ee/legacy/libraries/Core.php | perl -ne '/'\''APP_VER'\'',\s+'\''(.*)'\''/g && print $1'`
+          ./node_modules/.bin/gulp app --archive --dirty --skip-lint --local-key --upload-circle-build --version=$APP_VERSION
   test_php_54:
     docker:
       - image: docker:stable-git
     steps:
       - setup_remote_docker
-      - checkout
+      - restore_cache:
+          key: repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: |
           git config --global user.email "you@example.com"
           git config --global user.name "Your Name"
@@ -22,7 +49,8 @@ jobs:
       - image: docker:stable-git
     steps:
       - setup_remote_docker
-      - checkout
+      - restore_cache:
+          key: repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: |
           git config --global user.email "you@example.com"
           git config --global user.name "Your Name"
@@ -39,7 +67,8 @@ jobs:
       - image: docker:stable-git
     steps:
       - setup_remote_docker
-      - checkout
+      - restore_cache:
+          key: repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: |
           git config --global user.email "you@example.com"
           git config --global user.name "Your Name"
@@ -56,7 +85,8 @@ jobs:
       - image: docker:stable-git
     steps:
       - setup_remote_docker
-      - checkout
+      - restore_cache:
+          key: repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: |
           git config --global user.email "you@example.com"
           git config --global user.name "Your Name"
@@ -73,7 +103,8 @@ jobs:
       - image: docker:stable-git
     steps:
       - setup_remote_docker
-      - checkout
+      - restore_cache:
+          key: repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: |
           git config --global user.email "you@example.com"
           git config --global user.name "Your Name"
@@ -90,8 +121,19 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - test_php_54
-      - test_php_55
-      - test_php_56
-      - test_php_70
-      - test_php_71
+      - build_and_upload
+      - test_php_54:
+        requires:
+          - build_and_upload
+      - test_php_55:
+        requires:
+          - build_and_upload
+      - test_php_56:
+        requires:
+          - build_and_upload
+      - test_php_70:
+        requires:
+          - build_and_upload
+      - test_php_71:
+        requires:
+          - build_and_upload
