@@ -409,9 +409,11 @@ EE.cp.formValidation = {
 
 		// There may be callbacks for fields that need to do extra processing
 		// on validation; check for those and call them
-		var cleanField = field.attr('name').replace(/\[.+?\]/g, '');
-		if (this._validationCallbacks[cleanField] !== undefined) {
-			this._validationCallbacks[cleanField](message == 'success', message.error, field);
+		if (field.attr('name')) {
+			var cleanField = field.attr('name').replace(/\[.+?\]/g, '');
+			if (this._validationCallbacks[cleanField] !== undefined) {
+				this._validationCallbacks[cleanField](message == 'success', message.error, field);
+			}
 		}
 	},
 
