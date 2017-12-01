@@ -123,17 +123,17 @@ workflows:
     jobs:
       - build_and_upload
       - test_php_54:
-        requires:
-          - build_and_upload
+          requires:
+            - build_and_upload
       - test_php_55:
-        requires:
-          - build_and_upload
+          requires:
+            - build_and_upload
       - test_php_56:
-        requires:
-          - build_and_upload
+          requires:
+            - build_and_upload
       - test_php_70:
-        requires:
-          - build_and_upload
+          requires:
+            - build_and_upload
       - test_php_71:
-        requires:
-          - build_and_upload
+          requires:
+            - build_and_upload
