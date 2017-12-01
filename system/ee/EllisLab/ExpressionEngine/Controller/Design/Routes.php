@@ -133,6 +133,7 @@ class Routes extends AbstractDesignController {
 					'field' => array(
 						'type' => 'radio',
 						'choices' => $this->getTemplatesWithoutRoutes(),
+						'filter_url' => ee('CP/URL', 'design/routes/search-templates')->compile(),
 						'value' => ($route->Template) ? $route->Template->template_id : '',
 						'no_results' => [
 							'text' => sprintf(lang('no_found'), lang('templates'))
@@ -324,16 +325,7 @@ class Routes extends AbstractDesignController {
 	 */
 	private function getTemplatesWithoutRoutes()
 	{
-		static $existing_templates;
-
-		if ($existing_templates)
-		{
-			return $existing_templates;
-		}
-
-		$existing_templates = array(
-			'0' => '-- ' . strtolower(lang('none')) . ' --'
-		);
+		$search_query = ee('Request')->get('search');
 
 		$all_templates = ee('Model')->get('Template')
 			->filter('site_id', ee()->config->item('site_id'))
@@ -353,16 +345,29 @@ class Routes extends AbstractDesignController {
 			$all_templates->filter('template_id', 'NOT IN', $template_ids);
 		}
 
-		foreach ($all_templates->all() as $template)
+		if ($search_query)
 		{
-			if ( ! isset($existing_templates[$template->TemplateGroup->group_name]))
-			{
-				$existing_templates[$template->TemplateGroup->group_name] = array();
-			}
-			$existing_templates[$template->TemplateGroup->group_name][$template->template_id] = $template->template_name;
+			$templates = $all_templates->all()->filter(function($template) use ($search_query) {
+				return strpos(strtolower($template->getPath()), strtolower($search_query)) !== FALSE;
+			});
+		}
+		else
+		{
+			$templates = $all_templates->limit(100)->all();
 		}
 
-		return $existing_templates;
+		$results = [];
+		foreach ($templates as $template)
+		{
+			$results[$template->getId()] = $template->getPath();
+		}
+
+		return $results;
+	}
+
+	public function searchTemplates()
+	{
+		return json_encode($this->getTemplatesWithoutRoutes());
 	}
 
 	private function transferErrors($field_prefix, ValidationResult $result, ValidationResult $errors)

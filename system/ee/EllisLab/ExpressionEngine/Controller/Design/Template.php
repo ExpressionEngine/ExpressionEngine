@@ -55,12 +55,6 @@ class Template extends AbstractDesignController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$existing_templates = array(
-			'0' => '-- ' . strtolower(lang('none')) . ' --'
-		);
-
-		$existing_templates = array_merge($existing_templates, $this->getExistingTemplates());
-
 		$template = ee('Model')->make('Template');
 		$template->site_id = ee()->config->item('site_id');
 		$template->TemplateGroup = $group;
@@ -153,7 +147,8 @@ class Template extends AbstractDesignController {
 						'fields' => array(
 							'template_id' => array(
 								'type' => 'radio',
-								'choices' => $existing_templates,
+								'choices' => $this->getExistingTemplates(),
+								'filter_url' => ee('CP/URL', 'design/template/search-templates')->compile(),
 								'no_results' => [
 									'text' => sprintf(lang('no_found'), lang('templates'))
 								]
@@ -1080,26 +1075,38 @@ class Template extends AbstractDesignController {
 	 */
 	private function getExistingTemplates()
 	{
-		$existing_templates = array();
+		$search_query = ee('Request')->get('search');
 
-		$all_templates = ee('Model')->get('Template')
-			->filter('site_id', ee()->config->item('site_id'))
+		$templates = ee('Model')->get('Template')
 			->with('TemplateGroup')
 			->order('TemplateGroup.group_name')
-			->order('template_name')
-			->all();
+			->order('Template.template_name');
 
-		foreach ($all_templates as $template)
+		if ($search_query)
 		{
-			if ( ! isset($existing_templates[$template->TemplateGroup->group_name]))
-			{
-				$existing_templates[$template->TemplateGroup->group_name] = array();
-			}
-			$existing_templates[$template->TemplateGroup->group_name][$template->template_id] = $template->template_name;
+			$templates = $templates->all()->filter(function($template) use ($search_query) {
+				return strpos(strtolower($template->getPath()), strtolower($search_query)) !== FALSE;
+			});
+		}
+		else
+		{
+			$templates = $templates->limit(100)->all();
 		}
 
-		return $existing_templates;
+		$results = [];
+		foreach ($templates as $template)
+		{
+			$results[$template->getId()] = $template->getPath();
+		}
+
+		return $results;
 	}
+
+	public function searchTemplates()
+	{
+		return json_encode($this->getExistingTemplates());
+	}
+
 }
 
 // EOF
