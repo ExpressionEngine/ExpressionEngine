@@ -331,14 +331,16 @@ $(document).ready(function(){
 			if ($(e.target).is(":visible")) {
 				// fade out the overlay
 				$('.overlay').fadeOut('slow');
-				// fade out the modal
-				$('.modal-wrap, .modal-form-wrap').fadeOut('fast');
 
-				// disappear the app modal
-				$(this).addClass('app-modal---closed');
-				setTimeout(function() {
-					$('.app-modal---open').removeClass('app-modal---open');
-				}, 500);
+				if ($(this).hasClass('modal-wrap')) {
+					$(this).fadeOut('fast');
+				} else {
+					// disappear the app modal
+					$(this).addClass('app-modal---closed');
+					setTimeout(function() {
+						$('.app-modal---open').removeClass('app-modal---open');
+					}, 500);
+				}
 
 				// distract the actor
 				$('.app-overlay---open').addClass('app-overlay---closed');
