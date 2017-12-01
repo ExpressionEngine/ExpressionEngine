@@ -581,7 +581,7 @@ class Uploads extends AbstractFilesController {
 	{
 		$upload_destination->set($_POST);
 
-		if ((count($this->input->post('cat_group')) > 0) && $this->input->post('cat_group'))
+		if ( ! empty($this->input->post('cat_group')) && $this->input->post('cat_group'))
 		{
 			if ($_POST['cat_group'][0] == 0)
 			{
