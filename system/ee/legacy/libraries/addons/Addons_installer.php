@@ -189,11 +189,6 @@ class Addons_installer {
 		{
 			ee()->load->dbforge();
 
-			$fields = ee('Model')->get('ChannelField')
-				->filter('field_type', $fieldtype)
-				->all()
-				->delete();
-
 			// Uninstall
 			$FT = ee()->api_channel_fields->setup_handler($fieldtype, TRUE);
 			$FT->uninstall();
