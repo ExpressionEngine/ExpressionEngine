@@ -11,8 +11,15 @@ git archive --format=tar -o ee.tar $STASH_NAME
 
 IMAGE_NAME="ellislab/eecms-test:upgraded"
 
+function remove_app_volume {
+	CONTAINER_ID=`docker ps -a | grep eecms-test-vol | cut -d " " -f 1`
+	docker rm $CONTAINER_ID
+}
+
 function create_app_volume {
-	[ ! "$(docker ps -a | grep eecms-test-vol)" ] && docker create -v /app --name eecms-test-vol $IMAGE_NAME /bin/true
+	[ "$(docker ps -a | grep eecms-test-vol)" ] && remove_app_volume
+
+	docker create -v /app --name eecms-test-vol $IMAGE_NAME /bin/true
 }
 
 function commit_container_changes {
