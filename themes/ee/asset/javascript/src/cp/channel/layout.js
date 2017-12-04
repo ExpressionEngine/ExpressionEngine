@@ -122,7 +122,7 @@ $(document).ready(function () {
 			}
 
 			if (field != null) {
-				var fieldIndex = sheets.filter('.tab-open').find('.layout-grid-wrap .layout-item').index(ui.item[0]);
+				var fieldIndex = sheets.filter('.tab-open').find('.layout-grid-wrap .col-group').index(ui.item[0]);
 
 				EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 0, field);
 				field = null;
