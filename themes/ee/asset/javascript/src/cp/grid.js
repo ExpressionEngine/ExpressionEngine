@@ -655,7 +655,7 @@ Grid.Settings.prototype = {
 	},
 
 	/**
-	 * Builts new column from scratch or based on an existing column
+	 * Builds new column from scratch or based on an existing column
 	 *
 	 * @param	{jQuery Object}	el	Column to base new column off of, when
 	 *				copying an existing column for example; if left blank,
@@ -668,6 +668,10 @@ Grid.Settings.prototype = {
 		} else {
 			// Clone our example column
 			el = this._cloneWithFormValues(el);
+
+			// Make sure Dropdown component initializes with cloned selection
+			var colType = el.find('input[name*=col_type]').val()
+			el.find('div[data-dropdown-react]').attr('data-initial-value', colType)
 		}
 
 		// Clear out column name field in new column because it has to be unique
