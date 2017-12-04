@@ -1,0 +1,132 @@
+version: 2
+jobs:
+  build_and_upload:
+    docker:
+      - image: circleci/node:4
+    steps:
+      - checkout
+      # Cache node dependencies
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      # Needed for build signing :-/
+      - run: sudo apt-get update && sudo apt-get install -y php5
+      - run: |
+          cp tests/docker/EllisLabUpdate.pub system/ee/EllisLab/ExpressionEngine
+          cp themes/ee/asset/javascript/src/react/react.min.js themes/ee/asset/javascript/src/react/react.min~orig.js
+          cat tests/rspec/shim.min.js themes/ee/asset/javascript/src/react/react.min.js > themes/ee/asset/javascript/src/react/react.min-shimmed.js
+          mv themes/ee/asset/javascript/src/react/react.min-shimmed.js themes/ee/asset/javascript/src/react/react.min.js
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+          APP_VERSION=`cat system/ee/legacy/libraries/Core.php | perl -ne '/'\''APP_VER'\'',\s+'\''(.*)'\''/g && print $1'`
+          ./node_modules/.bin/gulp app --archive --dirty --skip-lint --local-key --upload-circle-build --version=$APP_VERSION
+  test_php_54:
+    docker:
+      - image: docker:stable-git
+    steps:
+      - setup_remote_docker
+      - checkout
+      - run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+      - run: |
+          apk update
+          apk upgrade
+          apk add bash
+      - run: chmod +x ./eetools
+      - run: bash ./eetools circleci -p 5.4.45
+      - store_artifacts:
+          path: /tmp/artifacts
+  test_php_55:
+    docker:
+      - image: docker:stable-git
+    steps:
+      - setup_remote_docker
+      - checkout
+      - run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+      - run: |
+          apk update
+          apk upgrade
+          apk add bash
+      - run: chmod +x ./eetools
+      - run: bash ./eetools circleci -p 5.5.38
+      - store_artifacts:
+          path: /tmp/artifacts
+  test_php_56:
+    docker:
+      - image: docker:stable-git
+    steps:
+      - setup_remote_docker
+      - checkout
+      - run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+      - run: |
+          apk update
+          apk upgrade
+          apk add bash
+      - run: chmod +x ./eetools
+      - run: bash ./eetools circleci -p 5.6.32
+      - store_artifacts:
+          path: /tmp/artifacts
+  test_php_70:
+    docker:
+      - image: docker:stable-git
+    steps:
+      - setup_remote_docker
+      - checkout
+      - run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+      - run: |
+          apk update
+          apk upgrade
+          apk add bash
+      - run: chmod +x ./eetools
+      - run: bash ./eetools circleci -p 7.0.25
+      - store_artifacts:
+          path: /tmp/artifacts
+  test_php_71:
+    docker:
+      - image: docker:stable-git
+    steps:
+      - setup_remote_docker
+      - checkout
+      - run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
+      - run: |
+          apk update
+          apk upgrade
+          apk add bash
+      - run: chmod +x ./eetools
+      - run: bash ./eetools circleci -p 7.1.11
+      - store_artifacts:
+          path: /tmp/artifacts
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build_and_upload
+      - test_php_54:
+          requires:
+            - build_and_upload
+      - test_php_55:
+          requires:
+            - build_and_upload
+      - test_php_56:
+          requires:
+            - build_and_upload
+      - test_php_70:
+          requires:
+            - build_and_upload
+      - test_php_71:
+          requires:
+            - build_and_upload
