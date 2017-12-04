@@ -145,8 +145,15 @@ abstract class FieldModel extends Model {
 	 */
 	public function onAfterDelete()
 	{
-		$ft = $this->getFieldtypeInstance();
-		$this->callSettingsModify($ft, 'delete');
+		$installed = $this->getModelFacade()->get('Fieldtype')
+			->filter('name', $this->getFieldType())
+			->count();
+
+		if ($installed)
+		{
+			$ft = $this->getFieldtypeInstance();
+			$this->callSettingsModify($ft, 'delete');
+		}
 
 		$this->dropTable();
 
