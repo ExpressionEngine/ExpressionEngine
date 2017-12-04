@@ -146,6 +146,13 @@ var Dropdown = function (_React$Component) {
       $('div[data-dropdown-react]', context).each(function () {
         var props = JSON.parse(window.atob($(this).data('dropdownReact')));
         props.name = $(this).data('inputValue');
+
+        // In the case a Dropdown has been dynamically created, allow an initial
+        // value to be set other than the one in the initial config
+        if ($(this).data('initialValue')) {
+          props.selected = $(this).data('initialValue');
+        }
+
         ReactDOM.render(React.createElement(FilterableDropdown, props, null), this);
       });
     }
