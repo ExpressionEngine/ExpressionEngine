@@ -245,8 +245,6 @@ $(document).ready(function () {
 		var field = getFieldIndex(this);
 
 		EE.publish_layout[tab].fields[field].visible = ! EE.publish_layout[tab].fields[field].visible;
-
-		e.preventDefault();
 	});
 
 	// Saving the collapsed state
@@ -255,8 +253,6 @@ $(document).ready(function () {
 		var field = getFieldIndex(this);
 
 		EE.publish_layout[tab].fields[field].collapsed = ! EE.publish_layout[tab].fields[field].collapsed;
-
-		e.preventDefault();
 	});
 
 	$('[data-publish] form').on('submit', function(e) {
