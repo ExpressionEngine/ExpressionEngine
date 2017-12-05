@@ -675,7 +675,7 @@ class EE_Schema {
 			PRIMARY KEY `entry_id` (`entry_id`),
 			KEY `channel_id` (`channel_id`),
 			KEY `author_id` (`author_id`),
-			KEY `url_title` (`url_title`),
+			KEY `url_title` (`url_title`(191)),
 			KEY `status` (`status`),
 			KEY `entry_date` (`entry_date`),
 			KEY `expiration_date` (`expiration_date`),
