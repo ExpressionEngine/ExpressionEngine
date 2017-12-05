@@ -377,6 +377,11 @@ class Channel extends StructureModel {
 				$this->removeRevisionTab();
 			}
 		}
+
+		foreach ($this->ChannelLayouts as $layout)
+		{
+			$layout->synchronize($this->getAllCustomFields());
+		}
 	}
 
 	/**

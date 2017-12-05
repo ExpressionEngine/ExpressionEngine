@@ -177,6 +177,7 @@ class Groups extends AbstractFieldsController {
 			if ($result->isValid())
 			{
 				$field_group->save();
+				$field_group->onAfterUpdate([]);
 
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
