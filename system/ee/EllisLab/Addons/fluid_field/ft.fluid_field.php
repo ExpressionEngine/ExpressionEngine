@@ -335,7 +335,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 
 				$f->setName($this->name() . '[fields][' . $key . '][field_id_' . $field->getId() . ']');
 
-				$f = $this->setupFieldInstance($f, $data);
+				$f = $this->setupFieldInstance($f, $data, $field_id);
 
 				$fields .= ee('View')->make('fluid_field:field')->render(array('field' => $field, 'filters' => $filters, 'errors' => $this->errors));
 			}
