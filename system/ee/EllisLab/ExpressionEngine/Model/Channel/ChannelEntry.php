@@ -1124,7 +1124,10 @@ class ChannelEntry extends ContentModel {
 	{
 		$data = array_merge($this->getValues(), $this->Channel->getValues(), $this->Author->getValues());
 		$data['entry_site_id'] = $this->site_id;
-		$data['edit_date'] = $this->edit_date->format('U');
+		if ($this->edit_date)
+		{
+			$data['edit_date'] = $this->edit_date->format('U');
+		}
 		if ($this->recent_comment_date)
 		{
 			$data['recent_comment_date'] = $this->recent_comment_date->format('U');
