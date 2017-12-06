@@ -63,7 +63,8 @@ class Set {
 	private $assignments = array(
 		'channel_field_groups' => array(),
 		'channel_fields'       => array(),
-		'field_group_fields'   => array()
+		'field_group_fields'   => array(),
+		'statuses'             => array(),
 	);
 
 	/**
