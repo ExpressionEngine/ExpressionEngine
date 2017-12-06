@@ -80,13 +80,11 @@ abstract class ContentModel extends VariableColumnModel {
 
 	public function onAfterInsert()
 	{
-		$this->_was_new = TRUE;
 		$this->saveFieldData($this->getValues());
 	}
 
 	public function onAfterUpdate($changed)
 	{
-		$this->_was_new = FALSE;
 		$this->saveFieldData($changed);
 	}
 
@@ -460,8 +458,6 @@ abstract class ContentModel extends VariableColumnModel {
 
 			$values = array();
 
-			$update = ! $this->_was_new;
-
 			foreach ($field->getColumnNames() as $column)
 			{
 				if (array_key_exists($column, $dirty))
@@ -480,17 +476,21 @@ abstract class ContentModel extends VariableColumnModel {
 
 			$key_column = $this->getPrimaryKey();
 
-			if ($update)
-			{
-				$query->set($values);
-				$query->where($key_column, $this->getId());
-				$query->update($field->getTableName());
-			}
-			else
+			// When a new entity is saved, this will be triggered by an
+			// onAfterInsert event (else, we won't have id to link to).
+			// The primary key can only be marked dirty on an insert event,
+			// not an update.
+			if (array_key_exists($key_column, $dirty))
 			{
 				$values[$key_column] = $this->getId();
 				$query->set($values);
 				$query->insert($field->getTableName());
+			}
+			else
+			{
+				$query->set($values);
+				$query->where($key_column, $this->getId());
+				$query->update($field->getTableName());
 			}
 		}
 	}
