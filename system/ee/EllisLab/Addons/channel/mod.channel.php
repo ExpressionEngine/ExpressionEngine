@@ -363,6 +363,39 @@ class Channel {
 		$this->ffields  = $fields['fluid_field_fields'];
 		$this->tfields  = $fields['toggle_fields'];
 
+		// If there are install-wide fields, make them available to each site
+		if (isset($this->cfields[0]))
+		{
+			$site_ids = ee('Model')->get('Site')
+				->fields('site_id')
+				->all()
+				->getIds();
+
+			foreach (['cfields', 'dfields', 'rfields', 'gfields',
+				'pfields', 'ffields', 'tfields'] as $custom_fields)
+			{
+				if ( ! isset($this->$custom_fields[0]))
+				{
+					continue;
+				}
+
+				foreach ($site_ids as $site_id)
+				{
+					if ( ! isset($this->$custom_fields[$site_id]))
+					{
+						$this->$custom_fields[$site_id] = $this->$custom_fields[0];
+					}
+					else
+					{
+						$this->$custom_fields[$site_id] = array_merge(
+							$this->$custom_fields[0],
+							$this->$custom_fields[$site_id]
+						);
+					}
+				}
+			}
+		}
+
 		ee()->session->cache['channel']['custom_channel_fields'] = $this->cfields;
 		ee()->session->cache['channel']['date_fields']           = $this->dfields;
 		ee()->session->cache['channel']['relationship_fields']   = $this->rfields;
