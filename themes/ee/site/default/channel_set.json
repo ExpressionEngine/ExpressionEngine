@@ -5,11 +5,18 @@
 			"statuses": [
 				"Default Page"
 			],
-			"field_group": "common"
+			"field_groups": [
+				"about",
+				"common",
+				"seo"
+			]
 		},
 		{
 			"channel_title": "Blog",
-			"field_group": "blog",
+			"field_groups": [
+				"blog",
+				"seo"
+			],
 			"cat_groups": [
 				"Blog"
 			],
@@ -17,7 +24,11 @@
 		},
 		{
 			"channel_title": "Contact",
-			"field_group": "common"
+			"field_groups": [
+				"contact",
+				"common",
+				"seo"
+			]
 		}
 	],
 	"statuses": [

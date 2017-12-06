@@ -35,13 +35,13 @@
 		{!-- require_entry makes it so if someone types the wrong URL, they will get a 404 page --}
 		{exp:channel:entries channel='{ch}' disable='{ch_disable}' limit='1' require_entry='yes'}
 			{!-- layout vars, dynamic, not output --}
-			{layout:set name='title' value='{blog_seo_title}{gv_sep}{p_title}{gv_sep}'}
-			{layout:set name='description' value='{blog_seo_desc}'}
+			{layout:set name='title' value='{seo_title}{gv_sep}{p_title}{gv_sep}'}
+			{layout:set name='description' value='{seo_desc}'}
 			{layout:set name='entry_ch' value='{ch}'}
 			{!-- OpenGraph meta output --}
-			{layout:set name='og_title' value='{blog_seo_title}'}
+			{layout:set name='og_title' value='{seo_title}'}
 			{layout:set name='og_url'}{path='{p_url}'}{/layout:set}
-			{layout:set name='og_description' value='{blog_seo_desc}'}
+			{layout:set name='og_description' value='{seo_desc}'}
 			{!-- /layout vars, dynamic, not output --}
 
 			{!-- content output --}
