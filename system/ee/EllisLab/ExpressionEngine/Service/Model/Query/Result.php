@@ -1,31 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
 use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Query Result
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Query Result
  */
 class Result {
 
@@ -68,11 +55,11 @@ class Result {
 		}
 
 
-		$this->collectColumnsByAliasPrefix($this->db_result[0]);
 		$this->initializeResultArray();
 
 		foreach ($this->db_result as $row)
 		{
+			$this->collectColumnsByAliasPrefix($row);
 			$this->parseRow($row);
 		}
 

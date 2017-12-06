@@ -9,6 +9,8 @@ feature 'License Settings' do
     no_php_js_errors
   end
 
-  it 'shows the License settings page'
+  it 'shows the License settings page' do
+    @page.all_there?.should == true
+  end
 
 end

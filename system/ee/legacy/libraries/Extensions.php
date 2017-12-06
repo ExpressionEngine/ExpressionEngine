@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Core Extensions Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Extensions
  */
 class EE_Extensions {
 
@@ -72,8 +60,6 @@ class EE_Extensions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Universal caller, was used for php 4 compatibility
 	 *
@@ -86,8 +72,6 @@ class EE_Extensions {
 
 		return call_user_func_array(array($this, 'call'), func_get_args());
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Extension Hook Method
@@ -248,8 +232,6 @@ class EE_Extensions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Active Hook Info
 	 *
@@ -267,8 +249,6 @@ class EE_Extensions {
 
 		return $this->extensions[$hook];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Active Hook

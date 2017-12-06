@@ -474,7 +474,7 @@ $lang = array(
 
 'watermark_text_dropshadow_color' => 'Dropshadow color',
 
-'watermark_text_dropshadow_desc' => 'When set to <b>yes</b>, a drop-shadow will be rendered.',
+'watermark_text_dropshadow_desc' => 'When enabled, a drop-shadow will be rendered.',
 
 'watermark_text_dropshadow_distance' => 'Dropshadow distance',
 
@@ -494,7 +494,7 @@ $lang = array(
 
 'watermarks_true_type' => 'Enable True Type?',
 
-'watermarks_true_type_desc' => 'When set to <b>yes</b>, text watermarks will be rendered with True Type.',
+'watermarks_true_type_desc' => 'When enabled, text watermarks will be rendered with True Type.',
 
 
 /* 2.x */
@@ -541,6 +541,10 @@ $lang = array(
 'image_editor' => 'Image Editor',
 
 'kind' => 'Kind',
+
+'image_manip_quality' => 'Quality',
+
+'image_manip_quality_desc' => 'Final quality of image',
 
 'no_upload_dirs' => 'You have no upload directories defined',
 

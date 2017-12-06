@@ -1,26 +1,14 @@
 <?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Grid Field Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Grid Field Model
  */
 class Grid_model extends CI_Model {
 
@@ -102,8 +90,6 @@ class Grid_model extends CI_Model {
 		ee()->db->insert('content_types', array('name' => 'grid'));
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Performs fieldtype uninstall
 	 *
@@ -129,8 +115,6 @@ class Grid_model extends CI_Model {
 
 		ee()->db->delete('content_types', array('name' => 'grid'));
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Creates data table for a new Grid field
@@ -164,7 +148,13 @@ class Grid_model extends CI_Model {
 					'type'				=> 'int',
 					'constraint'		=> 10,
 					'unsigned'			=> TRUE
-				)
+				),
+				'fluid_field_data_id' => array(
+					'type'				=> 'int',
+					'constraint'		=> 10,
+					'unsigned'			=> TRUE,
+					'default'           => 0
+				),
 			);
 
 			ee()->dbforge->add_field($db_columns);
@@ -177,8 +167,6 @@ class Grid_model extends CI_Model {
 
 		return FALSE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Performs cleanup on our end if a Grid field is deleted from a channel:
@@ -200,8 +188,6 @@ class Grid_model extends CI_Model {
 		ee()->db->delete($this->_table, array('field_id' => $field_id));
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Performs cleanup on our end if a grid field's parent content type is deleted.
 	 * Removes all associated tables and drops all entry rows.
@@ -222,8 +208,6 @@ class Grid_model extends CI_Model {
 
 		ee()->db->delete($this->_table, array('content_type' => $content_type));
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Adds a new column to the columns table or updates an existing one; also
@@ -271,8 +255,6 @@ class Grid_model extends CI_Model {
 		return $col_id;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Deletes columns from grid settings and drops columns from their
 	 * respective field tables
@@ -302,8 +284,6 @@ class Grid_model extends CI_Model {
 			);
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Typically used when a fieldtype is uninstalled, removes all columns of
@@ -338,8 +318,6 @@ class Grid_model extends CI_Model {
 		}
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Returns the row data for a single entry ID and field ID
 	 *
@@ -348,14 +326,13 @@ class Grid_model extends CI_Model {
 	 * @param	string	Content type to get data for
 	 * @return	array	Row data
 	 */
-	public function get_entry($entry_id, $field_id, $content_type)
+	public function get_entry($entry_id, $field_id, $content_type, $fluid_field_data_id = 0)
 	{
 		$table = $this->_data_table($content_type, $field_id);
 		ee()->db->where('entry_id', $entry_id);
+		ee()->db->where('fluid_field_data_id', $fluid_field_data_id);
 		return ee()->db->get($table)->result_array();
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Returns entry row data for a given entry ID and field ID, caches data
@@ -368,7 +345,7 @@ class Grid_model extends CI_Model {
 	 * @param	boolean	Whether or not to get fresh data on this call instead of from the _grid_data cache
 	 * @return	array	Row data
 	 */
-	public function get_entry_rows($entry_ids, $field_id, $content_type, $options = array(), $reset_cache = FALSE)
+	public function get_entry_rows($entry_ids, $field_id, $content_type, $options = array(), $reset_cache = FALSE, $fluid_field_data_id = 0)
 	{
 		if ( ! is_array($entry_ids))
 		{
@@ -379,6 +356,12 @@ class Grid_model extends CI_Model {
 		// specific parameters so we know not to query for them again
 		$options = $this->_validate_params($options, $field_id, $content_type);
 		$marker = $this->_get_tag_marker($options);
+
+		if (isset($this->_grid_data[$content_type][$field_id][$marker]['fluid_field_data_id'])
+			&& $this->_grid_data[$content_type][$field_id][$marker]['fluid_field_data_id'] != $fluid_field_data_id)
+		{
+			$reset_cache = TRUE;
+		}
 
 		foreach ($entry_ids as $key => $entry_id)
 		{
@@ -391,6 +374,7 @@ class Grid_model extends CI_Model {
 		}
 
 		$this->_grid_data[$content_type][$field_id][$marker]['params'] = $options;
+		$this->_grid_data[$content_type][$field_id][$marker]['fluid_field_data_id'] = $fluid_field_data_id;
 
 		if ( ! empty($entry_ids))
 		{
@@ -427,8 +411,9 @@ class Grid_model extends CI_Model {
 				$orderby = 'row_order';
 			}
 
-			ee()->db->where_in('entry_id', $entry_ids)
-				->order_by($orderby, element('sort', $options, 'asc'));
+			ee()->db->where_in('entry_id', $entry_ids);
+			ee()->db->where('fluid_field_data_id', $fluid_field_data_id);
+			ee()->db->order_by($orderby, element('sort', $options, 'asc'));
 
 			// -------------------------------------------
 			// 'grid_query' hook.
@@ -464,13 +449,11 @@ class Grid_model extends CI_Model {
 		return isset($this->_grid_data[$content_type][$field_id][$marker]) ? $this->_grid_data[$content_type][$field_id][$marker] : FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Assigns some default parameters and makes sure parameters can be
 	 * safely used in an SQL query or otherwise used to help parsing
 	 *
-	 * @param	array	Array of parameters from Functions::assign_parameters
+	 * @param	array	Array of parameters from ee('Variables/Parser')->parseTagParameters()
 	 * @param	int		Field ID of field being parsed so we can make sure
 	 *					the orderby parameter is ordering via a real column
 	 * @return	array	Array of validated and default parameters to use for parsing
@@ -481,7 +464,7 @@ class Grid_model extends CI_Model {
 
 		if (is_string($params))
 		{
-			$params = ee()->functions->assign_parameters($params);
+			$params = ee('Variables/Parser')->parseTagParameters($params);
 		}
 
 		// dynamic_parameters
@@ -555,8 +538,6 @@ class Grid_model extends CI_Model {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Creates a unique marker for this tag configuration based on its
 	 * parameters so we can match up the field data later in parse();
@@ -582,8 +563,6 @@ class Grid_model extends CI_Model {
 
 		return md5(json_encode($db_params));
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Constructs query for search params and adds it to the current
@@ -631,8 +610,6 @@ class Grid_model extends CI_Model {
 		}
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Public getter for $_grid_data property
 	 *
@@ -642,8 +619,6 @@ class Grid_model extends CI_Model {
 	{
 		return $this->_grid_data;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Gets array of all columns and settings for a given field ID
@@ -710,8 +685,6 @@ class Grid_model extends CI_Model {
 		return ($multi_column) ? $this->_columns[$content_type] : $this->_columns[$content_type][$field_id];
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Returns settings we need to pass along to the channel fields API when
 	 * working with managing the data columns for our fieldtypes
@@ -731,8 +704,6 @@ class Grid_model extends CI_Model {
 		);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Saves an data for a given Grid field using an array generated by the
 	 * Grid libary's data processing method
@@ -742,7 +713,7 @@ class Grid_model extends CI_Model {
 	 * @param	int	Entry ID to assign the row to
 	 * @return	array	IDs of rows to be deleted
 	 */
-	public function save_field_data($data, $field_id, $content_type, $entry_id)
+	public function save_field_data($data, $field_id, $content_type, $entry_id, $fluid_field_data_id = NULL)
 	{
 		// Keep track of which rows are updated and which are new, and the
 		// order they are received
@@ -758,6 +729,11 @@ class Grid_model extends CI_Model {
 		{
 			// Each row gets its order updated
 			$columns['row_order'] = $order;
+
+			if ( ! is_null($fluid_field_data_id))
+			{
+				$columns['fluid_field_data_id'] = $fluid_field_data_id;
+			}
 
 			// New rows
 			if (strpos($row_id, 'new_row_') !== FALSE)
@@ -783,8 +759,14 @@ class Grid_model extends CI_Model {
 		// the data array, they are to be deleted
 		$deleted_rows = ee()->db->select('row_id')
 			->where('entry_id', $entry_id)
-			->where_not_in('row_id', $row_ids)
-			->get($table_name)
+			->where_not_in('row_id', $row_ids);
+
+		if ( ! is_null($fluid_field_data_id))
+		{
+			$deleted_rows->where('fluid_field_data_id', $fluid_field_data_id);
+		}
+
+		$deleted_rows = $deleted_rows->get($table_name)
 			->result_array();
 
 		// Put rows into an array for easy passing and returning for the hook
@@ -827,8 +809,6 @@ class Grid_model extends CI_Model {
 		return $data['deleted_rows'];
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Deletes Grid data for given row IDs
 	 *
@@ -842,8 +822,6 @@ class Grid_model extends CI_Model {
 				->delete($this->_data_table($content_type, $field_id));
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Create the data table name given the content type and field id.

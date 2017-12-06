@@ -1,29 +1,16 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 require_once SYSPATH.'ee/legacy/fieldtypes/OptionFieldtype.php';
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// --------------------------------------------------------------------
-
-/**
- * ExpressionEngine Option Group Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Option Group Fieldtype
  */
 class Checkboxes_ft extends OptionFieldtype {
 
@@ -55,8 +42,6 @@ class Checkboxes_ft extends OptionFieldtype {
 		ee()->load->helper('custom_field');
 	}
 
-	// --------------------------------------------------------------------
-
 	function validate($data)
 	{
 		$selected = decode_multi_field($data);
@@ -73,7 +58,7 @@ class Checkboxes_ft extends OptionFieldtype {
 				$selected = array($selected);
 			}
 
-			$unknown = array_diff($selected, array_keys($field_options));
+			$unknown = array_filter(array_diff($selected, array_keys($field_options)));
 
 			if (count($unknown) > 0)
 			{
@@ -83,8 +68,6 @@ class Checkboxes_ft extends OptionFieldtype {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	protected function _flatten($options)
 	{
@@ -110,21 +93,15 @@ class Checkboxes_ft extends OptionFieldtype {
 		return $out;
 	}
 
-	// --------------------------------------------------------------------
-
 	function display_field($data)
 	{
 		return $this->_display_field($data);
 	}
 
-	// --------------------------------------------------------------------
-
 	function grid_display_field($data)
 	{
 		return $this->_display_field(form_prep($data), 'grid');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Displays the field for the CP or Frontend, and accounts for grid
@@ -147,18 +124,21 @@ class Checkboxes_ft extends OptionFieldtype {
 
 		if (REQ == 'CP')
 		{
-			return ee('View')->make('checkboxes:publish')->render(array(
+			return ee('View')->make('ee:_shared/form/fields/select')->render([
 				'field_name'          => $this->field_name,
-				'values'              => $values,
-				'options'             => $field_options,
-				'editable'            => $this->get_setting('editable'),
-				'editing'             => $this->get_setting('editing'),
-				'disabled'            => ($this->get_setting('field_disabled')) ? 'disabled' : NULL,
-				'deletable'           => $this->get_setting('deletable'),
-				'group_id'            => $this->get_setting('group_id', 0),
-				'manage_toggle_label' => $this->get_setting('manage_toggle_label', lang('manage')),
-				'content_item_label'  => $this->get_setting('content_item_label', '')
-			));
+				'choices'             => $field_options,
+				'value'               => $values,
+				'multi'               => TRUE,
+				'nested'              => TRUE,
+				'nestable_reorder'    => TRUE,
+				'manageable'          => $this->get_setting('editable', FALSE),
+				'add_btn_label'       => $this->get_setting('add_btn_label', NULL),
+				'editing'             => $this->get_setting('editing', FALSE),
+				'manage_label'        => $this->get_setting('manage_toggle_label', lang('manage')),
+				'reorder_ajax_url'    => $this->get_setting('reorder_ajax_url', NULL),
+				'auto_select_parents' => $this->get_setting('auto_select_parents', FALSE),
+				'no_results'          => $this->get_setting('no_results', NULL)
+			]);
 		}
 
 		$r = '<div class="scroll-wrap pr">';
@@ -204,8 +184,6 @@ class Checkboxes_ft extends OptionFieldtype {
 		return $out;
 	}
 
-	// --------------------------------------------------------------------
-
 	function replace_tag($data, $params = array(), $tagdata = FALSE)
 	{
 		ee()->load->helper('custom_field');
@@ -221,7 +199,85 @@ class Checkboxes_ft extends OptionFieldtype {
 		}
 	}
 
-	// --------------------------------------------------------------------
+	/**
+	 * :length modifier
+	 */
+	public function replace_length($data, $params = array(), $tagdata = FALSE)
+	{
+		return count(decode_multi_field($data));
+	}
+
+	/**
+	 * :attr_safe modifier
+	 */
+	public function replace_attr_safe($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_attr_safe($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :limit modifier
+	 */
+	public function replace_limit($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_limit($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :encrypt modifier
+	 */
+	public function replace_encrypt($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_encrypt($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :url_slug modifier
+	 */
+	public function replace_url_slug($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_url_slug($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :censor modifier
+	 */
+	public function replace_censor($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_censor($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :json modifier
+	 */
+	public function replace_json($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_json($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :replace modifier
+	 */
+	public function replace_replace($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_replace($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :url_encode modifier
+	 */
+	public function replace_url_encode($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_url_encode($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :url_decode modifier
+	 */
+	public function replace_url_decode($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_url_decode($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
 
 	function display_settings($data)
 	{
@@ -249,8 +305,6 @@ class Checkboxes_ft extends OptionFieldtype {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Accept all content types.
 	 *
@@ -272,8 +326,6 @@ class Checkboxes_ft extends OptionFieldtype {
 
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

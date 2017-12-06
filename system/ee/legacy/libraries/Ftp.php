@@ -1,28 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * CodeIgniter
+ * ExpressionEngine (https://expressionengine.com)
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * FTP Class
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Libraries
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/ftp.html
  */
 class EE_FTP {
 
@@ -50,8 +36,6 @@ class EE_FTP {
 		log_message('debug', "FTP Class Initialized");
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Initialize preferences
 	 *
@@ -72,8 +56,6 @@ class EE_FTP {
 		// Prep the hostname
 		$this->hostname = preg_replace('|.+?://|', '', $this->hostname);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * FTP Connect
@@ -116,8 +98,6 @@ class EE_FTP {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * FTP Login
 	 *
@@ -128,8 +108,6 @@ class EE_FTP {
 	{
 		return @ftp_login($this->conn_id, $this->username, $this->password);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Validates the connection ID
@@ -149,8 +127,6 @@ class EE_FTP {
 		}
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 
 	/**
@@ -188,8 +164,6 @@ class EE_FTP {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create a directory
 	 *
@@ -223,8 +197,6 @@ class EE_FTP {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Upload a file to the server
@@ -278,8 +250,6 @@ class EE_FTP {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Download a file from a remote server to the local server
 	 *
@@ -320,8 +290,6 @@ class EE_FTP {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Rename (or move) a file
 	 *
@@ -354,8 +322,6 @@ class EE_FTP {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Move a file
 	 *
@@ -368,8 +334,6 @@ class EE_FTP {
 	{
 		return $this->rename($old_file, $new_file, TRUE);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Rename (or move) a file
@@ -398,8 +362,6 @@ class EE_FTP {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete a folder and recursively delete everything (including sub-folders)
@@ -453,8 +415,6 @@ class EE_FTP {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set file permissions
 	 *
@@ -494,8 +454,6 @@ class EE_FTP {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * FTP List files in the specified directory
 	 *
@@ -511,8 +469,6 @@ class EE_FTP {
 
 		return ftp_nlist($this->conn_id, $path);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Read a directory and recreate it remotely
@@ -569,8 +525,6 @@ class EE_FTP {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Extract the file extension
 	 *
@@ -589,8 +543,6 @@ class EE_FTP {
 		return end($x);
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set the upload type
@@ -621,8 +573,6 @@ class EE_FTP {
 		return (in_array($ext, $text_types)) ? 'ascii' : 'binary';
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Close the connection
 	 *
@@ -640,8 +590,6 @@ class EE_FTP {
 
 		@ftp_close($this->conn_id);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Display error message

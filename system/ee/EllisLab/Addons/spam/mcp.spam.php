@@ -1,32 +1,19 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\Data\Collection as CoreCollection;
+use EllisLab\Addons\Spam\Service\SpamModerationInterface;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
+ * Spam Module control panel
  */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Spam Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- */
-
 class Spam_mcp {
 
 	public $stop_words_path = "spam/training/stopwords.txt";
@@ -73,50 +60,39 @@ class Spam_mcp {
 			}
 		}
 
-		$table = ee('CP/Table');
+		$search = ee()->input->get_post('filter_by_keyword');
+
+		$table = ee('CP/Table', array('search' => $search, 'sort_col' => 'trap_date', 'sort_dir' => 'desc'));
+
 		$data = array();
-		$trapped = array();
-
-		$content_type = array(
-			'Comment' => 'comment',
-			'Email' => 'email',
-			'Forum_core' => 'forum_post',
-			'Wiki' => 'wiki_post',
-		);
-
-		$options = array(
-			'all' => lang('all'),
-			'Comment' => lang('comment'),
-			'Email' => lang('email'),
-			'Forum_core' => lang('forum_post'),
-			'Wiki' => lang('wiki_post')
-		);
 
 		$total = ee('Model')->get('spam:SpamTrap')->count();
-		$types = ee('CP/Filter')->make('content_type', 'content_type', $options);
+
+		$content_types = $this->getContentTypes();
+		$types = ee('CP/Filter')->make('content_type', 'content_type', $content_types);
 		$types->setPlaceholder(lang('all'));
 		$types->disableCustomValue();
 
 		$filters = ee('CP/Filter')
 			->add($types)
-			->add('Date', 'date')
+			->add('Date', 'trap_date')
+			->add('Keyword')
 			->add('Perpage', $total, 'show_all_spam');
 
 		$data['filters'] = $filters->render($this->base_url);
 
 		$filter_values = $filters->values();
 		$filter_fields = array();
-		$search = ee()->input->post('search');
 		$this->base_url->addQueryStringVariables($filter_values);
 
 		if ( ! empty($filter_values['content_type']))
 		{
-			$filter_fields['class'] = $filter_values['content_type'];
+			$filter_fields['content_type'] = $filter_values['content_type'];
 		}
 
 		if ( ! empty($filter_values['filter_by_date']))
 		{
-			$filter_fields['date'] = $filter_values['filter_by_date'];
+			$filter_fields['trap_date'] = $filter_values['filter_by_date'];
 		}
 
 		$table->setColumns(
@@ -124,7 +100,7 @@ class Spam_mcp {
 				'spam_content' => array(
 					'encode' => FALSE
 				),
-				'date',
+				'trap_date',
 				'ip',
 				'spam_type',
 				'manage' => array(
@@ -138,6 +114,8 @@ class Spam_mcp {
 
 		$trap = $this->getSpamTrap($filter_fields, $table->sort_col, $table->sort_dir, $search, $filter_values['perpage'], ($table->config['page'] - 1) * $filter_values['perpage']);
 
+		$trapped = array();
+
 		foreach ($trap as $spam)
 		{
 			$toolbar = array('toolbar_items' => array(
@@ -147,13 +125,13 @@ class Spam_mcp {
 					'rel' => 'spam-modal',
 					'title' => strtolower(lang('edit')),
 					'data-content' => htmlentities(nl2br($spam->document), ENT_QUOTES, 'UTF-8'),
-					'data-type' => htmlentities($spam->class, ENT_QUOTES, 'UTF-8'),
-					'data-date' => ee()->localize->human_time($spam->date->getTimestamp()),
+					'data-type' => htmlentities($spam->content_type, ENT_QUOTES, 'UTF-8'),
+					'data-date' => ee()->localize->human_time($spam->trap_date->getTimestamp()),
 					'data-ip' => htmlentities($spam->ip_address, ENT_QUOTES, 'UTF-8'),
 				)
 			));
 
-			if ( ! empty($spam->Author))
+			if ($spam->author_id != 0)
 			{
 				$author = $spam->Author->getMemberName();
 			}
@@ -168,9 +146,9 @@ class Spam_mcp {
 
 			$trapped[] = array(
 				'content' => $title,
-				'date' => ee()->localize->human_time($spam->date->getTimestamp()),
+				'date' => ee()->localize->human_time($spam->trap_date->getTimestamp()),
 				'ip' => $spam->ip_address,
-				'type' => lang($content_type[$spam->class]),
+				'type' => $content_types[$spam->content_type],
 				$toolbar,
 				array(
 					'name' => 'selection[]',
@@ -392,25 +370,50 @@ class Spam_mcp {
 	 */
 	private function approve($trapped)
 	{
+		$exceptions = [];
+
 		foreach ($trapped as $spam)
 		{
-			if ( ! class_exists($spam->class))
+			$addon = ee('Addon')->get($spam->content_type);
+
+			if ( ! $addon OR ! $addon->hasSpam())
 			{
-				ee()->load->file($spam->file);
+				continue;
 			}
 
-			$class = $spam->class;
-			$class = new $class();
+			$fqcn = $addon->getSpamClass();
 
-			$data = unserialize($spam->data);
-			call_user_func_array(array($class, $spam->approve), $data);
+			try {
+				$approver = new $fqcn;
+
+				if ( ! $approver instanceof SpamModerationInterface)
+				{
+					throw new \Exception('Skipped approval action: '.get_class($approver).' must implement <code>SpamModerationInterface</code>');
+				}
+
+				$approver->approve($spam->entity, $spam->optional_data);
+			}
+			catch (\Exception $e)
+			{
+				$exceptions[] = $this->prepErrorExceptionMessage($e);
+			}
 		}
 
-		ee('CP/Alert')->makeInline('spam')
+		$alert = ee('CP/Alert')->makeInline('spam')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(sprintf(lang('spam_trap_approved'), count($trapped)))
-			->defer();
+			->addToBody(sprintf(lang('spam_trap_approved'), count($trapped)));
+
+		if ( ! empty($exceptions))
+		{
+			$except = ee('CP/Alert')->makeInline('spam_errors')
+				->asWarning()
+				->addToBody($exceptions);
+
+			$alert->setSubAlert($except);
+		}
+
+		$alert->defer();
 
 		$this->moderate($trapped, 'ham');
 		ee()->functions->redirect($this->base_url);
@@ -426,28 +429,67 @@ class Spam_mcp {
 	 */
 	public function remove($trapped)
 	{
+		$exceptions = [];
+
 		foreach ($trapped as $spam)
 		{
-			if ( ! class_exists($spam->class))
+			$addon = ee('Addon')->get($spam->content_type);
+
+			if ( ! $addon OR ! $addon->hasSpam())
 			{
-				ee()->load->file($spam->file);
+				continue;
 			}
 
-			$class = $spam->class;
-			$class = new $class();
+			$fqcn = $addon->getSpamClass();
 
-			$data = unserialize($spam->data);
-			call_user_func_array(array($class, $spam->remove), $data);
+			try {
+				$rejecter = new $fqcn;
+
+				if ( ! $rejecter instanceof SpamModerationInterface)
+				{
+					throw new \Exception('Skipped reject action: '.get_class($rejecter).' must implement <code>SpamModerationInterface</code>');
+				}
+
+				$rejecter->reject($spam->entity, $spam->optional_data);
+			}
+			catch (\Exception $e)
+			{
+				$exceptions[] = $this->prepErrorExceptionMessage($e);
+			}
 		}
 
-		ee('CP/Alert')->makeInline('spam')
+		$alert = ee('CP/Alert')->makeInline('spam')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(sprintf(lang('spam_trap_removed'), count($trapped)))
-			->defer();
+			->addToBody(sprintf(lang('spam_trap_removed'), count($trapped)));
+
+			if ( ! empty($exceptions))
+			{
+				$except = ee('CP/Alert')->makeInline('spam_errors')
+					->asWarning()
+					->addToBody($exceptions);
+
+				$alert->setSubAlert($except);
+			}
+
+		$alert->defer();
 
 		$this->moderate($trapped, 'spam');
 		ee()->functions->redirect($this->base_url);
+	}
+
+	/**
+	 * Prepare message from an Exception
+	 * @param  \Exception $e Exception object
+	 * @return string Compiled error message
+	 */
+	private function prepErrorExceptionMessage(\Exception $e)
+	{
+		$message = str_replace("\\", "/", $e->getMessage());
+		$message = str_replace(SYSPATH, '', $message);
+		$file = str_replace("\\", "/", $e->getFile());
+		$file = str_replace(SYSPATH, '', $file).':'.$e->getLine();
+		return $message.' '.lang('in').' '.$file;
 	}
 
 	public function download()
@@ -609,6 +651,22 @@ class Spam_mcp {
 		return ee('Model')->get('spam:SpamKernel')->filter('name', $name)->first();
 	}
 
+	private function getContentTypes()
+	{
+		$content_types = array();
+
+		// Query Builder instead of model here as we need aggregation for simplicity and performance
+		$query = ee()->db->select('DISTINCT(content_type)')->get('spam_trap');
+
+		foreach ($query->result() as $row)
+		{
+			ee()->lang->load($row->content_type);
+			$content_types[$row->content_type] = lang($row->content_type);
+		}
+
+		return $content_types;
+	}
+
 	/**
 	 * Returns an array of content flagged as spam
 	 *
@@ -626,7 +684,22 @@ class Spam_mcp {
 			{
 				if ( ! empty($filter))
 				{
-					$result->filter($key, $filter);
+					if ($key == 'trap_date')
+					{
+						if (is_array($filter))
+						{
+							$result->filter('trap_date', '>=', $filter[0]);
+							$result->filter('trap_date', '<', $filter[1]);
+						}
+						else
+						{
+							$result->filter('trap_date', '>=', ee()->localize->now - $filter);
+						}
+					}
+					else
+					{
+						$result->filter($key, $filter);
+					}
 				}
 			}
 		}
@@ -641,7 +714,7 @@ class Spam_mcp {
 			$options = array(
 				'content_type' => 'class',
 				'spam_content' => 'document',
-				'date' => 'date',
+				'trap_date' => 'trap_date',
 			);
 			$result->order($options[$sort], $direction);
 		}

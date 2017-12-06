@@ -1,4 +1,12 @@
 /**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
+/**
  * Fixes an issue in jQuery UI's Sortable implementation of it's
  * tolerance: 'intercect' option not working correctly; this fix
  * ensures once an item overlaps by 50%, the sort happens, and does

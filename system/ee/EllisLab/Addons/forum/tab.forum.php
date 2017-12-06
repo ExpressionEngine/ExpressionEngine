@@ -1,27 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
- * ExpressionEngine Discussion Forum Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Discussion Forum Module Tab
  */
 class Forum_tab {
 
@@ -157,8 +144,6 @@ class Forum_tab {
 		return $settings;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Validate Publish
 	 *
@@ -186,6 +171,16 @@ class Forum_tab {
 			{
 				$rule->stop();
 				return lang('forum_no_forum_body');
+			}
+
+			return TRUE;
+		});
+
+		$validator->defineRule('has_forum_id', function($key, $value, $parameters, $rule) use ($values) {
+			if (empty($value) && (! empty($values['forum_title']) || ! empty($values['forum_body'])))
+			{
+				$rule->stop();
+				return lang('forum_no_forum_id');
 			}
 
 			return TRUE;
@@ -224,14 +219,12 @@ class Forum_tab {
 		$validator->setRules(array(
 			'forum_title'    => 'valid_forum_title|maxLength[150]',
 			'forum_body'     => 'valid_forum_body',
-			'forum_id'       => 'isNatural|valid_forum_id',
+			'forum_id'       => 'isNatural|has_forum_id|valid_forum_id',
 			'forum_topic_id' => 'whenPresent|valid_forum_topic_id'
 		));
 
 		return $validator->validate($values);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Insert Tab Data
@@ -358,8 +351,6 @@ class Forum_tab {
 		}
 	}
 
-	// -------------------------------------------------------------------------
-
 	function _allowed_forums()
 	{
 		$allowed = array();
@@ -411,8 +402,6 @@ class Forum_tab {
 
 		return $allowed;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Convert forum special characters

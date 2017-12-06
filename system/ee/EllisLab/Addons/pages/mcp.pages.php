@@ -1,30 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
-
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Pages Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Pages Module control panel
  */
 class Pages_mcp {
 
@@ -66,8 +52,6 @@ class Pages_mcp {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	  *  Pages Main page
@@ -356,9 +340,12 @@ class Pages_mcp {
 					'desc' => 'pages_channel_desc',
 					'fields' => array(
 						'default_channel' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $channels_dropdown,
-							'value' => (int) $config['default_channel']
+							'value' => (int) $config['default_channel'],
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('channels'))
+							]
 						)
 					)
 				),
@@ -397,7 +384,7 @@ class Pages_mcp {
 			'breadcrumb' => array(
 				ee('CP/URL')->make('addons/settings/pages')->compile() => lang('pages_manager')
 			),
-			'body' => ee('View')->make('pages:form')->render($vars)
+			'body' => ee('View')->make('ee:_shared/form')->render($vars)
 		);
 	}
 

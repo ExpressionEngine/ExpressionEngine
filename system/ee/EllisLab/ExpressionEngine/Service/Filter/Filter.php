@@ -1,32 +1,19 @@
 <?php
-namespace EllisLab\ExpressionEngine\Service\Filter;
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+namespace EllisLab\ExpressionEngine\Service\Filter;
 
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine abstract Filter Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * abstract Filter
  */
 abstract class Filter {
 
@@ -87,6 +74,11 @@ abstract class Filter {
 	 * @var string The name of the view to use when rendering
 	 */
 	protected $view = 'filter';
+
+	/**
+	 * @var string Class to apply to parent list element
+	 */
+	public $list_class = '';
 
 	/**
 	 * Determines the value of this filter. If a selected_value was set, that

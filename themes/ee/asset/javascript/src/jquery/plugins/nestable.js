@@ -43,7 +43,8 @@
             group           : 0,
             maxDepth        : 5,
             threshold       : 20,
-            constrainToRoot	: false
+            constrainToRoot	: false,
+            onDragStart: function(l, e, p) {}
         };
 
     function Plugin(element, options)
@@ -260,9 +261,20 @@
         {
             var mouse    = this.mouse,
                 target   = $(e.target),
-                dragItem = target.closest(this.options.itemNodeName+'.'+this.options.itemClass);
+                dragItem = target.closest(this.options.itemNodeName+'.'+this.options.itemClass),
+                position = {
+                    top  : e.pageY,
+                    left : e.pageX
+                };
+
+            var continueExecution = this.options.onDragStart.call(this, this.el, dragItem, position);
+
+            if (typeof continueExecution !== 'undefined' && continueExecution === false) {
+                return;
+            }
 
             this.placeEl.css('height', dragItem.height());
+            this.placeEl.css('box-sizing', 'border-box');
 
             mouse.offsetX = e.offsetX !== undefined ? e.offsetX : e.pageX - target.offset().left;
             mouse.offsetY = e.offsetY !== undefined ? e.offsetY : e.pageY - target.offset().top;
@@ -271,7 +283,7 @@
 
             this.dragRootEl = this.el;
 
-            this.dragEl = $(document.createElement(this.options.listNodeName)).addClass(this.options.listClass + ' ' + this.options.dragClass.replace('.', ' '));
+            this.dragEl = $(document.createElement(this.options.listNodeName)).addClass(this.options.listClass.replace('.', ' ') + ' ' + this.options.dragClass.replace('.', ' '));
             this.dragEl.css('width', dragItem.width());
 
             dragItem.after(this.placeEl);
@@ -397,7 +409,7 @@
                     if (depth + this.dragDepth <= opt.maxDepth) {
                         // create new sub-level if one doesn't exist
                         if (!list.length) {
-                            list = $('<' + opt.listNodeName + '/>').addClass(opt.listClass);
+                            list = $('<' + opt.listNodeName + '/>').addClass(opt.listClass.replace('.', ' '));
                             list.append(this.placeEl);
                             prev.append(list);
                             this.setParent(prev);
@@ -463,7 +475,7 @@
                     parent = this.placeEl.parent();
                 // if empty create new list to replace empty placeholder
                 if (isEmpty) {
-                    list = $(document.createElement(opt.listNodeName)).addClass(opt.listClass);
+                    list = $(document.createElement(opt.listNodeName)).addClass(opt.listClass.replace('.', ' '));
                     list.append(this.placeEl);
                     this.pointEl.replaceWith(list);
                 }

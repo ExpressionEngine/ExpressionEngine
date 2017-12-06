@@ -13,18 +13,23 @@ $lang = array(
 
 // Install Form
 'install_title' => 'Install ExpressionEngine %s',
-'install_note' => '<i><b>Please</b> read <a href="'.DOC_URL.'installation/installation.html" rel="external">Installing ExpressionEngine</a> <strong>before</strong> starting.</i>',
+'install_note' => 'Read <a href="'.DOC_URL.'installation/installation.html" rel="external">Installing ExpressionEngine</a> <strong>before</strong> starting.',
 
 	// Database Server
 	'db_settings'           => 'Database Settings',
 	'db_hostname'           => 'Server Address',
 	'db_hostname_note'  => 'Commonly <b>localhost</b>, but your host may require something else.',
-	'db_name'               => 'Name',
+	'db_name'               => 'DB Name',
 	'db_name_note'          => 'Make sure the database exists, the installer will <b>not</b> create it.',
-	'db_username'           => 'Username',
-	'db_password'           => 'Password',
+	'db_username'           => 'DB Username',
+	'db_password'           => 'DB Password',
 	'db_prefix'             => 'Table Prefix',
 	'db_prefix_note'        => 'Use <b>exp</b> unless you require/prefer a different prefix.',
+
+	'utf8mb4_not_supported' => 'Your MySQL %s does not support Emoji 😞. Click install if you would like to install anyway, or <a href="'.DOC_URL.'troubleshooting/install_and_update/emoji_support.html" rel="external">read how to fix this before installing</a>.',
+	'client'                => 'client',
+	'server'                => 'server',
+	'and'                   => 'and',
 
 	// Account Creation
 	'administrator_account' => 'Administrator Account',
@@ -35,24 +40,28 @@ $lang = array(
 	// Default Theme
 	'default_theme'              => 'Default theme',
 	'install_default_theme'      => 'Install default theme?',
-	'install_default_theme_info' => 'When set to <b>yes</b>, ExpressionEngine will install a default theme.',
+	'install_default_theme_info' => 'When enabled, ExpressionEngine will install a default theme.',
 
 	// License Agreement
 	'license_agreement'          => 'I agree to the license <a href="https://expressionengine.com/license/" rel="external">Terms and Conditions</a>',
 
-	'start_installation'         => 'Start Installation',
+	'start_installation'         => 'Install',
 
 // Update Form
-	'update_title'   => "Update ExpressionEngine %s to %s",
-	'start_update'   => 'Start Update',
+	'update_title'   => "Update ExpressionEngine from %s to %s",
+	'start_update'   => 'Update',
 	'update_note'    => '<b>Please</b> read <a href="'.DOC_URL.'installation/update.html" rel="external">Updating ExpressionEngine</a> <strong>before</strong> starting.',
 	'update_backup'  => 'Please <b>back up</b> your database before updating ExpressionEngine',
-	'updating_title' => "Updating ExpressionEngine %s to %s",
-	'updating'       => 'Updating',
+	'updating_title' => "Updating ExpressionEngine to %s",
+	'running_updates' => "Running updates for %s",
+	'updating'       => 'Updating ExpressionEngine',
 
 'error'               => 'ERROR',
 'submit'              => 'Submit',
-'error_occurred'      => 'Oops, there was an error',
+'install_failed'      => 'Install Failed',
+'update_failed'       => 'Update Failed',
+'error_occurred'      => 'Oops, looks like the install couldn\'t&nbsp;complete.',
+'retry'               => 'Retry',
 'version_update_text' => 'Running update...',
 
 // Errors
@@ -85,17 +94,19 @@ $lang = array(
 'update_step_error'                  => 'An unexpected error occured while performing the update. Could not find update step: %x',
 'install_detected_msg'               => 'ExpressionEngine appears to already be installed on your database, even though your config file is blank. If you are attempting to <b><i>update</i></b> ExpressionEngine from a previous version restore your config file first, then run this installation wizard again.',
 'version_warning'                    => 'In order to install ExpressionEngine, your server must be running PHP version <mark><b>%s</b></mark> or newer. Your server is current running PHP version: <b>%s</b>. Contact your hosting provider to see if newer software is available for your server.',
-'error_installing'                   => 'Error While Installing %s',
-'error_updating'                     => 'Error While Updating %s to %s',
+'error_installing'                   => 'There was an error while installing %s',
+'error_updating'                     => 'There was an error while updating %s to %s',
+'requirements_checker_not_found'     => 'Could not find RequirementsChecker file.',
+'requirements_checker_not_loaded'    => 'Could not load RequirementsChecker class.',
 
 // Install/Upgrade Success
-'install_success'       => "ExpressionEngine %s Installed",
-'install_success_note'  => '<b>Yay!</b> ExpressionEngine %s is now installed.',
-'update_success'        => "ExpressionEngine Updated to %s",
-'update_success_note'   => '<b>Yay!</b> ExpressionEngine is now updated to %s.',
+'install_success'       => "Install Complete!",
+'install_success_note'  => '<b>ExpressionEngine</b> has been installed.',
+'update_success'        => "Update Complete!",
+'update_success_note'   => '<b>ExpressionEngine</b> has been updated.',
 'success_delete'        => 'Please delete the <kbd>system/ee/installer</kbd> folder from your server before proceeding.',
 'success_moved'         => 'The installer folder has been renamed to <kbd>system/ee/installer_%s</kbd>.',
-'cp_login'              => 'Control Panel login',
+'cp_login'              => 'Log In',
 'download_mailing_list' => 'Download Mailing List',
 
 // Surveys

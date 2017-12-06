@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------------
-
 /**
- * ExpressionEngine IP to Nation Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * IP to Nation Module control panel
  */
 class Ip_to_nation_mcp {
 
@@ -34,8 +22,6 @@ class Ip_to_nation_mcp {
 
 		$this->base_url = ee('CP/URL')->make('addons/settings/ip_to_nation')->compile();
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	  * Nation Home Page
@@ -160,7 +146,6 @@ class Ip_to_nation_mcp {
 								'type' => 'checkbox',
 								'choices' => $country_list,
 								'value' => $selected,
-								'wrap' => TRUE,
 								'no_results' => array(
 									'text' => lang('no_countries')
 								)
@@ -231,8 +216,6 @@ class Ip_to_nation_mcp {
 		return $this->index();
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	  * Update Ban List
 	  */
@@ -256,8 +239,6 @@ class Ip_to_nation_mcp {
 
 		ee()->functions->redirect($this->base_url);
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Download new data files
@@ -317,8 +298,6 @@ class Ip_to_nation_mcp {
 		));
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Extract all data files
 	 */
@@ -346,8 +325,6 @@ class Ip_to_nation_mcp {
 		));
 	}
 
-	// ----------------------------------------------------------------------
-
 	function insert_data()
 	{
 		if ( ! AJAX_REQUEST)
@@ -368,8 +345,6 @@ class Ip_to_nation_mcp {
 		));
 	}
 
-	// ----------------------------------------------------------------------
-
 	function _cache_files($extensions)
 	{
 		$extensions = str_replace(' ', '', $extensions);
@@ -388,8 +363,6 @@ class Ip_to_nation_mcp {
 		return $matches;
 	}
 
-	// ----------------------------------------------------------------------
-
 	function _cache_path()
 	{
 		$cache_path = PATH_CACHE.'ip2nation/';
@@ -402,8 +375,6 @@ class Ip_to_nation_mcp {
 
 		return $cache_path;
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Extract gz file
@@ -422,8 +393,6 @@ class Ip_to_nation_mcp {
 		file_put_contents($cache_path.$outname, $file_contents);
 		@chmod($cache_path.$outname, FILE_WRITE_MODE);
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Extract zip archive
@@ -459,8 +428,6 @@ class Ip_to_nation_mcp {
 		}
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Grab the country name file
 	 */
@@ -469,8 +436,6 @@ class Ip_to_nation_mcp {
 		$conf = ee()->config->loadFile('countries');
 		return $conf['countries'];
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Easier superobject access

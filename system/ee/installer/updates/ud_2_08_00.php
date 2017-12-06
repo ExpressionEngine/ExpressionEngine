@@ -1,27 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.8.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Update Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Update
  */
 class Updater {
 
@@ -63,8 +50,6 @@ class Updater {
 		}
 		return TRUE;
 	}
-
-	// -------------------------------------------------------------------
 
 	/**
 	 * Update Specialty Templates
@@ -108,8 +93,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 
 	}
 
-	// -------------------------------------------------------------------------
-
 	private function _update_extension_quick_tabs()
 	{
 		$members = ee()->db->select('member_id, quick_tabs')
@@ -129,8 +112,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			ee()->db->update_batch('members', $members, 'member_id');
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Make sure server_offset is set in config.php and not in the
@@ -194,8 +175,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		}
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Add new Template Routes config item
 	 *
@@ -220,8 +199,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			);
 		}
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Add new Template Routes table
@@ -269,8 +246,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->smartforge->create_table('template_routes');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Clear the cache, we have a new folder structure for the cache
 	 * directory with the introduction of caching drivers
@@ -280,8 +255,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->load->helper('file');
 		delete_files(PATH_CACHE, TRUE, 0, array('.htaccess', 'index.html'));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update Config to Add cookie_httponly
@@ -297,8 +270,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update security hashes table and set new config item.
@@ -331,8 +302,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->smartforge->add_key('security_hashes', 'session_id');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remove session ttl configs in favor of a single "log out when browser
 	 * closes" config, which is the only safe change that should be made to
@@ -357,8 +326,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		);
 
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Update Localization Config
@@ -397,8 +364,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			}
 		}
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Update Member Table
@@ -453,8 +418,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		$include_seconds = ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n';
 		ee()->db->update('members', array('include_seconds' => $include_seconds));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Renames admin_session_type and user_session_type in the site system
@@ -520,8 +483,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		ee()->config->_update_config($new_config_items, $remove_config_items);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Replaces old style pagination in search results tags
 	 *
@@ -553,8 +514,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		);
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Replaces old style pagination in specialty (Wiki, Forum, Profile)
 	 * templates
@@ -583,8 +542,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			"{pagination_links}"
 		);
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Update outdated doc_url config item so overview help links are relevant

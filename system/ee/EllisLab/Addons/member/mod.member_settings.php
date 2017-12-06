@@ -1,29 +1,15 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
- * Member Management Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Management Settings
  */
-
 class Member_settings extends Member {
 
 
@@ -128,15 +114,14 @@ class Member_settings extends Member {
 		/** ----------------------------------------
 		/**  Fetch the member data
 		/** ----------------------------------------*/
-
+/*
 		$select = 'm.member_id, m.group_id, m.username, m.screen_name, m.email, m.signature,
 					m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename,
-					m.photo_width, m.photo_height, m.url, m.location, m.occupation, m.interests,
-					m.icq, m.aol_im, m.yahoo_im, m.msn_im, m.bio, m.join_date, m.last_visit,
+					m.photo_width, m.photo_height, m.join_date, m.last_visit,
 					m.last_activity, m.last_entry_date, m.last_comment_date, m.last_forum_post_date,
 					m.total_entries, m.total_comments, m.total_forum_topics,
 					m.total_forum_posts, m.language, m.timezone,
-					m.bday_d, m.bday_m, m.bday_y, m.accept_user_email, m.accept_messages,
+					m.accept_user_email, m.accept_messages,
 					g.group_title, g.can_send_private_messages';
 
 		ee()->db->select($select);
@@ -144,24 +129,33 @@ class Member_settings extends Member {
 		ee()->db->where('m.member_id', (int)$this->cur_id);
 		ee()->db->where('g.site_id', ee()->config->item('site_id'));
 		ee()->db->where('m.group_id', 'g.group_id', FALSE);
+*/
+
+		// Default Member Data
+		$not_in = array(3, 4);
 
 		if ($this->is_admin == FALSE OR ee()->session->userdata('group_id') != 1)
 		{
-			ee()->db->where('m.group_id !=', 2);
+    		$not_in[] = 2;
 		}
 
-		ee()->db->where('m.group_id !=', 3);
-		ee()->db->where('m.group_id !=', 4);
+		ee()->load->model('member_model');
 
-		$query = ee()->db->get();
+		$member = ee('Model')->get('Member', (int)$this->cur_id)
+    		->with('MemberGroup')
+    		->filter('group_id', 'NOT IN', $not_in)
+			->filter('MemberGroup.site_id', ee()->config->item('site_id'))
+    		->first();
 
-		if ($query->num_rows() == 0)
+		$total_results = count($member);
+
+		if ($total_results == 0)
 		{
 			return ee()->output->show_user_error('general', array(ee()->lang->line('profile_not_available')));
 		}
 
 		// Fetch the row
-		$row = $query->row_array();
+		$row = array_merge($member->getValues(), $member->MemberGroup->getValues());
 
 		/** ----------------------------------------
 		/**  Fetch the template
@@ -380,9 +374,6 @@ class Member_settings extends Member {
 
 		$content = $this->_var_swap($content,
 										array(
-												'aim_console'			=> "onclick=\"window.open('".$this->_member_path('aim_console/'.$this->cur_id)."', '_blank', 'width=240,height=360,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
-												'icq_console'			=> "onclick=\"window.open('".$this->_member_path('icq_console/'.$this->cur_id)."', '_blank', 'width=650,height=580,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
-												'yahoo_console'			=> "http://edit.yahoo.com/config/send_webmesg?.target=".ee()->functions->encode_ee_tags(htmlentities($row['yahoo_im'], ENT_QUOTES, 'UTF-8'), TRUE) ."&amp;.src=pg",
 												'email_console'			=> "onclick=\"window.open('".$this->_member_path('email_console/'.$this->cur_id)."', '_blank', 'width=650,height=600,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
 												'send_private_message'	=> $this->_member_path('messages/pm/'.$this->cur_id),
 												'search_path'			=> $search_path,
@@ -402,11 +393,13 @@ class Member_settings extends Member {
 										);
 
 
-		$vars = ee()->functions->assign_variables($content, '/');
+		$vars = ee('Variables/Parser')->extractVariables($content);
 		$this->var_single	= $vars['var_single'];
 		$this->var_pair		= $vars['var_pair'];
 
 		$this->var_cond = ee()->functions->assign_conditional_variables($content, '/');
+
+
 
 		/** ----------------------------------------
 		/**  Parse conditional pairs
@@ -498,6 +491,10 @@ class Member_settings extends Member {
 			/** ----------------------------------------
 			/**  Format URLs
 			/** ----------------------------------------*/
+// need exception
+/*
+
+
 			if ($key == 'url')
 			{
 				if (strncmp($row['url'], 'http', 4) != 0 && strpos($row['url'], '://') === FALSE)
@@ -505,6 +502,8 @@ class Member_settings extends Member {
 					$row['url'] = "http://".$row['url'] ;
 				}
 			}
+
+*/
 
 			/** ----------------------------------------
 			/**  "last_visit"
@@ -582,45 +581,6 @@ class Member_settings extends Member {
 				$content = $this->_var_swap_single($val, ee()->typography->encode_email($row['email'] ), $content);
 			}
 
-			/** ----------------------
-			/**  {birthday}
-			/** ----------------------*/
-
-			if ($key == "birthday")
-			{
-				$birthday = '';
-
-				if ($row['bday_m']  != '' AND $row['bday_m']  != 0)
-				{
-					$month = (strlen($row['bday_m'] ) == 1) ? '0'.$row['bday_m'] : $row['bday_m'];
-
-					$m = ee()->localize->localize_month($month);
-
-					$birthday .= ee()->lang->line($m['1']);
-
-					if ($row['bday_d'] != '' AND $row['bday_d']  != 0)
-					{
-						$birthday .= ' '.$row['bday_d'] ;
-					}
-				}
-
-				if ($row['bday_y']  != '' AND $row['bday_y']  != 0)
-				{
-					if ($birthday != '')
-					{
-						$birthday .= ', ';
-					}
-
-					$birthday .= $row['bday_y'] ;
-				}
-
-				if ($birthday == '')
-				{
-					$birthday = '';
-				}
-
-				$content = $this->_var_swap_single($val, $birthday, $content);
-			}
 
 			/** ----------------------
 			/**  {timezone}
@@ -642,24 +602,6 @@ class Member_settings extends Member {
 					ee()->localize->format_date($val, NULL, $timezone),
 					$content
 				);
-			}
-
-			/** ----------------------
-			/**  {bio}
-			/** ----------------------*/
-
-			if ($key == 'bio')
-			{
-				$bio = ee()->typography->parse_type($row[$val],
-															 array(
-																		'text_format'	=> 'xhtml',
-																		'html_format'	=> 'safe',
-																		'auto_links'	=> 'y',
-																		'allow_img_url' => 'n'
-																	)
-															);
-
-				$content = $this->_var_swap_single($key, $bio, $content);
 			}
 
 			// Special consideration for {total_forum_replies}, and
@@ -687,39 +629,49 @@ class Member_settings extends Member {
 			}
 		}
 
-
 		/** -------------------------------------
 		/**  Do we have custom fields to show?
 		/** ------------------------------------*/
 		// Grab the data for the particular member
 
-		$sql = "SELECT m_field_id, m_field_name, m_field_label, m_field_description, m_field_fmt FROM  exp_member_fields ";
-
+		ee()->db->select('m_field_id, m_field_name, m_field_label, m_field_description, m_field_fmt, m_field_type');
 		if (ee()->session->userdata['group_id'] != 1)
 		{
-			$sql .= " WHERE m_field_public = 'y' ";
+			ee()->db->where('m_field_public = "y"');
 		}
-
-		$sql .= " ORDER BY m_field_order";
-
-		$query = ee()->db->query($sql);
+		ee()->db->order_by('m_field_order');
+		$query = ee()->db->get('member_fields');
 
 		if ($query->num_rows() > 0)
 		{
 			$fnames = array();
 
+			$result_row = $row;
+			$member_field_ids = array();
+
 			foreach ($query->result_array() as $row)
 			{
-				$fnames[$row['m_field_name']] = $row['m_field_id'];
+				$fnames[$row['m_field_name']] = array($row['m_field_id'], $row['m_field_fmt'], $row['m_field_type']);
+				$member_field_ids[] = $row['m_field_id'];
 			}
 
-			$result = ee()->db->query("SELECT * FROM exp_member_data WHERE member_id = '{$this->cur_id}'");
+			ee()->load->library('typography');
+			ee()->typography->initialize();
+
+			ee()->load->library('api');
+			ee()->legacy_api->instantiate('channel_fields');
+
+			// Cache member fields here before we start parsing
+			if ( ! empty($member_field_ids))
+			{
+				$this->member_fields = ee('Model')->get('MemberField', array_unique($member_field_ids))
+					->all()
+					->indexBy('field_id');
+			}
 
 			/** ----------------------------------------
 			/**  Parse conditionals for custom fields
 			/** ----------------------------------------*/
-
-			$result_row = $result->row_array();
 
 			foreach ($this->var_cond as $val)
 			{
@@ -756,40 +708,34 @@ class Member_settings extends Member {
 			/** ----------------------------------------
 			/**  Parse single variables
 			/** ----------------------------------------*/
-
-			$member_field_ids = array();
-			foreach ($query->result_array() as $row)
-			{
-				$member_field_ids[] = $row['m_field_id'];
-			}
-
-			$this->member_fields = ee('Model')->get('MemberField', $member_field_ids)
-				->all()
-				->indexBy('m_field_id');
-
-			ee()->load->library('api');
-			ee()->legacy_api->instantiate('channel_fields');
-
 			foreach ($this->var_single as $key => $val)
 			{
-				$field = ee()->api_channel_fields->get_single_field($key);
 
-				foreach ($query->result_array() as $row)
+				// Custom member fields
+				$field = ee('Variables/Parser')->parseVariableProperties($key);
+				$fval = $field['field_name'];
+
+				// parse custom member fields
+				if (isset($fnames[$fval]))
 				{
-					if ($row['m_field_name'] == $field['field_name'])
+					if (array_key_exists('m_field_id_'.$fnames[$fval]['0'], $result_row))
 					{
-						$field_data = (isset($result_row['m_field_id_'.$row['m_field_id']])) ? $result_row['m_field_id_'.$row['m_field_id']] : '';
-
-						$content = $this->parseField(
-							$row['m_field_id'],
+						ee()->TMPL->tagdata = $this->parseField(
+							$fields[$val]['0'],
 							$field,
-							$field_data,
-							$content,
-							$this->cur_id,
-							array(
-								'channel_html_formatting' => 'none',
-								'channel_auto_link_urls' => 'n'
-							)
+							$result_row['m_field_id_'.$fnames[$fval]['0']],
+							ee()->TMPL->tagdata,
+							$member_id,
+							array(),
+							$key
+						);
+					}
+					else
+					{
+						ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
+						$key,
+						'',
+						ee()->TMPL->tagdata
 						);
 					}
 				}
@@ -801,59 +747,56 @@ class Member_settings extends Member {
 
 			$field_chunk = $this->_load_element('public_custom_profile_fields');
 
-			// Is there a chunk to parse?
 
+			// Is there a chunk to parse?
 			if ($query->num_rows() == 0)
 			{
 				$content = str_replace("/{custom_profile_fields}/s", '', $content);
 			}
 			else
 			{
-				ee()->load->library('typography');
-				ee()->typography->initialize();
-
 				$str = '';
 				$var_conds = ee()->functions->assign_conditional_variables($field_chunk);
 
-				foreach ($query->result_array() as $row)
+				foreach ($query->result_array() as $field_row)
 				{
 					$temp = $field_chunk;
 
-					$field_data = (isset($result_row['m_field_id_'.$row['m_field_id']])) ? $result_row['m_field_id_'.$row['m_field_id']] : '';
-
 					// enables conditionals on these variables
-					$row['field_label'] = $row['m_field_label'];
-					$row['field_description'] = $row['m_field_description'];
-					$row['field_data'] = $field_data;
+					$field_row['field_label'] = $field_row['m_field_label'];
+					$field_row['field_description'] = $field_row['m_field_description'];
 
-					if ($field_data != '')
+					// Custom member fields
+
+					// We fake the template data and make it simply be the tag
+					$temp_string = LD.$field_row['m_field_name'].RD;
+
+					if (array_key_exists('m_field_id_'.$field_row['m_field_id'], $result_row))
 					{
-						$field_data = ee()->typography->parse_type($field_data,
-							 array(
-										'text_format'   => $row['m_field_fmt'],
-										'html_format'   => 'safe',
-										'auto_links'    => 'y',
-										'allow_img_url' => 'n'
-									)
-							);
+						// Hard code date field modifier because this doesn't use real variables
+						$params = ($field_row['m_field_type'] == 'date') ? "%Y %m %d" : '';
+						$field = array(
+							'field_name' => $field_row['m_field_name'],
+							'params' => array('format' => $params, 'modifier' => '')
+						);
+
+						$field_data = $this->parseField(
+							$field_row['m_field_id'],
+							$field,
+							$result_row['m_field_id_'.$field_row['m_field_id']],
+							$temp_string,
+							$result_row['member_id']
+						);
+					}
+					else
+					{
+						$field_data = '';
 					}
 
-					$member_field = $this->member_fields[$row['m_field_id']];
-					$temp_string = LD.$member_field->field_name.RD;
-					$field_data = $this->parseField(
-						$row['m_field_id'],
-						array('field_name' => 'field_data', 'modifier' => ''),
-						$field_data,
-						$temp_string,
-						$this->cur_id,
-						array(
-							'channel_html_formatting' => 'none',
-							'channel_auto_link_urls' => 'n'
-						)
-					);
+					$field_row['field_data'] = $field_data;
 
-					$temp = str_replace('{field_name}', $row['m_field_label'], $temp);
-					$temp = str_replace('{field_description}', $row['m_field_description'], $temp);
+					$temp = str_replace('{field_name}', $field_row['m_field_label'], $temp);
+					$temp = str_replace('{field_description}', $field_row['m_field_description'], $temp);
 					$temp = str_replace('{field_data}', $field_data, $temp);
 
 					foreach ($var_conds as $val)
@@ -865,9 +808,9 @@ class Member_settings extends Member {
 						$lcond	= substr($cond, 0, strpos($cond, ' '));
 						$rcond	= substr($cond, strpos($cond, ' '));
 
-						if (array_key_exists($val['3'], $row))
+						if (array_key_exists($val['3'], $field_row))
 						{
-							$lcond = str_replace($val['3'], "\$row['".$val['3'] ."']", $lcond);
+							$lcond = str_replace($val['3'], "\$field_row['".$val['3'] ."']", $lcond);
 							$cond = $lcond.' '.$rcond;
 							$cond = str_replace("\|", "|", $cond);
 
@@ -882,16 +825,13 @@ class Member_settings extends Member {
 								$temp = preg_replace("/".LD.$val['0'].RD."(.*?)".LD.'\/if'.RD."/s", "", $temp);
 							}
 						}
-
 					}
 
 					$str .= $temp;
-
 				}
 
 				$content = str_replace("{custom_profile_fields}", $str, $content);
 			}
-
 		}
 		// END  if ($quey->num_rows() > 0)
 
@@ -913,27 +853,16 @@ class Member_settings extends Member {
 		// Load the form helper
 		ee()->load->helper('form');
 
+		// UGH- we need these 3 to get the data js or it throws a Legacy\Facade error
+		ee()->router->set_class('cp');
+		ee()->load->library('cp');
+		ee()->load->library('javascript');
+
 		/** ----------------------------------------
 		/**  Build the custom profile fields
 		/** ----------------------------------------*/
 
 		$tmpl = $this->_load_element('custom_profile_fields');
-
-		/** ----------------------------------------
-		/**  Fetch the data
-		/** ----------------------------------------*/
-
-		$sql = "SELECT * FROM exp_member_data WHERE member_id = '".ee()->session->userdata('member_id')."'";
-
-		$result = ee()->db->query($sql);
-
-		if ($result->num_rows() > 0)
-		{
-			foreach ($result->row_array() as $key => $val)
-			{
-				$$key = $val;
-			}
-		}
 
 		/** ----------------------------------------
 		/**  Fetch the field definitions
@@ -952,13 +881,15 @@ class Member_settings extends Member {
 
 		$query = ee()->db->query($sql);
 
-		$result_row = $result->row_array();
+//		$result_row = $result->row_array()
 
-		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+		$this->member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+
+		$result_row = $this->member->getValues();
 
 		if ($query->num_rows() > 0)
 		{
-			foreach ($member->getDisplay()->getFields() as $field)
+			foreach ($this->member->getDisplay()->getFields() as $field)
 			{
 				if (ee()->session->userdata['group_id'] != 1 && $field->get('field_public') != 'y')
 				{
@@ -995,7 +926,6 @@ class Member_settings extends Member {
 		/** ----------------------------------------
 		/**  Build the output data
 		/** ----------------------------------------*/
-		$query = ee()->db->query("SELECT bday_y, bday_m, bday_d, url, location, occupation, interests, aol_im, icq, yahoo_im, msn_im, bio FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
 
 		return  $this->_var_swap(
 			$this->_load_element('edit_profile_form'),
@@ -1004,19 +934,6 @@ class Member_settings extends Member {
 					array('action' => $this->_member_path('update_profile'))
 				),
 				'path:update_profile'	=> $this->_member_path('update_profile'),
-				'form:birthday_year'	=> $this->_birthday_year($query->row('bday_y') ),
-				'form:birthday_month'	=> $this->_birthday_month($query->row('bday_m') ),
-				'form:birthday_day'		=> $this->_birthday_day($query->row('bday_d') ),
-				'url'					=> ($query->row('url')  == '') ? 'http://' : $this->_form_prep_encoded($query->row('url') ),
-				'location'				=> $this->_form_prep_encoded($query->row('location') ),
-				'occupation'			=> $this->_form_prep_encoded($query->row('occupation') ),
-				'interests'				=> $this->_form_prep_encoded($query->row('interests') ),
-				'aol_im'				=> $this->_form_prep_encoded($query->row('aol_im') ),
-				'icq'					=> $this->_form_prep_encoded($query->row('icq') ),
-				'icq_im'				=> $this->_form_prep_encoded($query->row('icq') ),
-				'yahoo_im'				=> $this->_form_prep_encoded($query->row('yahoo_im') ),
-				'msn_im'				=> $this->_form_prep_encoded($query->row('msn_im') ),
-				'bio'					=> $this->_form_prep_encoded($query->row('bio') ),
 				'custom_profile_fields'	=> $r
 			)
 		);
@@ -1047,24 +964,6 @@ class Member_settings extends Member {
 			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
 		}
 
-		// Are any required custom fields empty?
-		ee()->db->select('m_field_id, m_field_label');
-		ee()->db->where('m_field_required = "y"');
-		$query = ee()->db->get('member_fields');
-
-		 $errors = array();
-
-		 if ($query->num_rows() > 0)
-		 {
-			foreach ($query->result_array() as $row)
-			{
-				if (isset($_POST['m_field_id_'.$row['m_field_id']]) AND $_POST['m_field_id_'.$row['m_field_id']] == '')
-				{
-					$errors[] = ee()->lang->line('mbr_custom_field_empty').'&nbsp;'.$row['m_field_label'];
-				}
-			}
-		 }
-
 		/** ----------------------------------------
 		/**  Blacklist/Whitelist Check
 		/** ----------------------------------------*/
@@ -1074,108 +973,60 @@ class Member_settings extends Member {
 			return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
 		}
 
-		/** -------------------------------------
-		/**  Show errors
-		/** -------------------------------------*/
-		 if (count($errors) > 0)
+
+		ee()->db->select('m_field_id, m_field_label, m_field_type, m_field_name');
+		ee()->db->where('m_field_public = "y"');
+		$query = ee()->db->get('member_fields');
+
+		 $errors = array();
+
+		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+		//$member->set($data);
+
+		 if ($query->num_rows() > 0)
 		 {
-			return ee()->output->show_user_error('submission', $errors);
-		 }
-
-		/** -------------------------------------
-		/**  Build query
-		/** -------------------------------------*/
-
-		if (isset($_POST['url']) AND $_POST['url'] == 'http://')
-		{
-			$_POST['url'] = '';
-		}
-
-		$fields = array(
-			'bday_y',
-			'bday_m',
-			'bday_d',
-			'url',
-			'location',
-			'occupation',
-			'interests',
-			'aol_im',
-			'icq',
-			'yahoo_im',
-			'msn_im',
-			'bio'
-		);
-
-		$data = array();
-
-		foreach ($fields as $val)
-		{
-			$data[$val] = (isset($_POST[$val])) ? ee('Security/XSS')->clean($_POST[$val]) : '';
-			unset($_POST[$val]);
-		}
-
-		ee()->load->helper('url');
-		$data['url'] = preg_replace('/[\'"]/is', '', $data['url']);
-		$data['url'] = prep_url($data['url']);
-
-		if (is_numeric($data['bday_d']) AND is_numeric($data['bday_m']))
-		{
-			ee()->load->helper('date');
-			$year = ($data['bday_y'] != '') ? $data['bday_y'] : date('Y');
-			$mdays = days_in_month($data['bday_m'], $year);
-
-			if ($data['bday_d'] > $mdays)
+			foreach ($query->result_array() as $row)
 			{
-				$data['bday_d'] = $mdays;
+				$fname = 'm_field_id_'.$row['m_field_id'];
+				$post = ee()->input->post($fname);
+
+				// Handle arrays of checkboxes as a special case;
+				if ($row['m_field_type'] == 'checkbox')
+				{
+					foreach ($row['choices']  as $property => $label)
+					{
+						$member->$fname = in_array($property, $post) ? 'y' : 'n';
+					}
+				}
+				else
+				{
+					if ($post !== FALSE)
+					{
+						// Check with Seth
+						$member->$fname = ee('Security/XSS')->clean($post);
+						//$member->$fname = $post;
+					}
+				}
+
+				// Set custom field format override if available, too
+				$ft_name = 'm_field_ft_'.$row['m_field_id'];
+				if (ee()->input->post($ft_name))
+				{
+					$member->{$ft_name} = ee()->input->post($ft_name);
+				}
 			}
-		}
+		 }
 
 		unset($_POST['HTTP_REFERER']);
 
-		if (count($data) > 0)
+		$result = $member->validate();
+
+		if ($result->failed())
 		{
-			ee()->member_model->update_member(ee()->session->userdata('member_id'), $data);
+			return ee()->output->show_user_error('general', $result->renderErrors());
 		}
 
-		/** -------------------------------------
-		/**  Update the custom fields
-		/** -------------------------------------*/
-
-		$m_data = array();
-
-		if (count($_POST) > 0)
-		{
-			foreach ($_POST as $key => $val)
-			{
-				if (strncmp($key, 'm_field_id_', 11) == 0)
-				{
-					$m_data[$key] = ee('Security/XSS')->clean($val);
-				}
-			}
-
-			if (count($m_data) > 0)
-			{
-				ee()->member_model->update_member_data(ee()->session->userdata('member_id'), $m_data);
-			}
-		}
-
-		/** -------------------------------------
-		/**  Update comments
-		/** -------------------------------------*/
-
-		if ($data['location'] != "" OR $data['url'] != "")
-		{
-			if (ee()->db->table_exists('comments'))
-			{
-				$d = array(
-					'location'	=> $data['location'],
-					'url'		=> $data['url']
-				);
-
-				ee()->db->where('author_id', ee()->session->userdata('member_id'));
-				ee()->db->update('comments', $d);
-			}
-	  	}
+		$member->save();
 
 		/** -------------------------------------
 		/**  Success message
@@ -1188,8 +1039,6 @@ class Member_settings extends Member {
 			)
 		);
 	}
-
-
 
 	/** ----------------------------------------
 	/**  Forum Preferences
@@ -1417,8 +1266,6 @@ class Member_settings extends Member {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Username/Password Update

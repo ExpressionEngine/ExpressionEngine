@@ -1,31 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-/**
- * CodeIgniter
- *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
 
 /**
- * CodeIgniter Cookie Helpers
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		CodeIgniter
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/helpers/cookie_helper.html
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
+/**
+ * Cookie Helpers
+ */
 
 /**
  * Set cookie
@@ -51,8 +36,6 @@ if ( ! function_exists('set_cookie'))
 	}
 }
 
-// --------------------------------------------------------------------
-
 /**
  * Fetch an item from the COOKIE array
  *
@@ -75,8 +58,6 @@ if ( ! function_exists('get_cookie'))
 		return ee()->input->cookie($prefix.$index, $xss_clean);
 	}
 }
-
-// --------------------------------------------------------------------
 
 /**
  * Delete a COOKIE

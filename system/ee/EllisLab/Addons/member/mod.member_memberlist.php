@@ -1,29 +1,15 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
- * Member Management Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Management Memberlist
  */
-
 class Member_memberlist extends Member {
 
 	var $is_search			= FALSE;
@@ -266,87 +252,6 @@ class Member_memberlist extends Member {
 	}
 
 
-
-
-	/** ----------------------------------
-	/**  AIM Console
-	/** ----------------------------------*/
-	function aim_console()
-	{
-		$query = ee()->db->query("SELECT aol_im FROM exp_members WHERE member_id = '".ee()->db->escape_str($this->cur_id)."'");
-
-		if ($query->num_rows() == 0)
-		{
-			return;
-		}
-
-		$this->_set_page_title(ee()->lang->line('mbr_aim_console'));
-
-		return $this->_var_swap(
-			$this->_load_element('aim_console'),
-			array(
-				'aol_im'			=>	ee()->functions->encode_ee_tags($query->row('aol_im'), TRUE) ,
-				'lang:close_window'	=>	ee()->lang->line('mbr_close_window')
-			 )
-		);
-	}
-
-
-
-
-
-	/** ----------------------------------
-	/**  ICQ Console
-	/** ----------------------------------*/
-
-	function icq_console()
-	{
-		/** ---------------------------------
-		/**  Is the user logged in?
-		/** ---------------------------------*/
-
-		if (ee()->session->userdata('member_id') == 0)
-		{
-			return $this->profile_login_form($this->_member_path('self'));
-		}
-
-		$query = ee()->db->query("SELECT screen_name, icq FROM exp_members WHERE member_id = '{$this->cur_id}'");
-
-		if ($query->num_rows() == 0)
-		{
-			return FALSE;
-		}
-
-		$data = array(
-			'hidden_fields' => array(
-				'to'		=> ee()->functions->encode_ee_tags($query->row('icq'), TRUE) ,
-				'from'		=> ee()->session->userdata['screen_name'],
-				'fromemail'	=> ''
-			),
-			'action' 		=> 'http://wwp.icq.com/scripts/WWPMsg.dll',
-			'secure' 		=> FALSE
-		);
-
-
-		$this->_set_page_title(ee()->lang->line('mbr_icq_console'));
-
-		return $this->_var_swap(
-			$this->_load_element('icq_console'),
-			array(
-				'form_declaration'	=>	ee()->functions->form_declaration($data),
-				'name'				=>	$query->row('screen_name') ,
-				'icq'				=>	ee()->functions->encode_ee_tags($query->row('icq'), TRUE),
-				'icq_im'			=>	ee()->functions->encode_ee_tags($query->row('icq'), TRUE),
-				'lang:recipient'	=>	ee()->lang->line('mbr_icq_recipient'),
-				'lang:subject'		=>	ee()->lang->line('mbr_icq_subject'),
-				'lang:message'		=>	ee()->lang->line('mbr_icq_message')
-			)
-		);
-	}
-
-
-
-
 	/** ----------------------------------------
 	/**  Member List
 	/** ----------------------------------------*/
@@ -366,11 +271,11 @@ class Member_memberlist extends Member {
 		/** ----------------------------------------*/
 
 		$template = $this->_load_element('memberlist');
-		$vars = ee()->functions->assign_variables($template, '/');
+		$vars = ee('Variables/Parser')->extractVariables($template);
 		$var_cond = ee()->functions->assign_conditional_variables($template, '/');
 
 		$memberlist_rows = $this->_load_element('memberlist_rows');
-		$mvars = ee()->functions->assign_variables($memberlist_rows, '/');
+		$mvars = ee('Variables/Parser')->extractVariables($memberlist_rows);
 		$mvar_cond = ee()->functions->assign_conditional_variables($memberlist_rows, '/');
 
 		$this->var_cond   = array_merge($var_cond, $mvar_cond);
@@ -505,7 +410,7 @@ class Member_memberlist extends Member {
 			$mcf_sql = '';
 		}
 
-		$f_sql	= "SELECT m.member_id, m.username, m.screen_name, m.email, m.url, m.location, m.icq, m.aol_im, m.yahoo_im, m.msn_im, m.location, m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date, m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts, m.language, m.timezone, m.bday_d, m.bday_m, m.bday_y, m.accept_user_email, m.avatar_filename, m.avatar_width, m.avatar_height, (m.total_forum_topics + m.total_forum_posts) AS total_posts, g.group_title as member_group {$mcf_select} ";
+		$f_sql	= "SELECT m.member_id, m.username, m.screen_name, m.email, m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date, m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts, m.language, m.timezone, m.accept_user_email, m.avatar_filename, m.avatar_width, m.avatar_height, (m.total_forum_topics + m.total_forum_posts) AS total_posts, g.group_title as member_group {$mcf_select} ";
 		$p_sql	= "SELECT COUNT(m.member_id) AS count ";
 		$sql	= "FROM exp_members m
 					LEFT JOIN exp_member_groups g ON g.group_id = m.group_id
@@ -646,17 +551,9 @@ class Member_memberlist extends Member {
 				$temp = str_replace("{member_css}", $style, $temp);
 				$temp = str_replace("{path:profile}", $this->_member_path($row['member_id']), $temp);
 
-				if ($row['url'] != '' AND substr($row['url'], 0, 4) != "http")
-				{
-					$row['url'] = "http://".$row['url'];
-				}
-
 				$temp = $this->_var_swap(
 					$temp,
 					array(
-						'aim_console'	=> "onclick=\"window.open('".$this->_member_path('aim_console/'.$row['member_id'])."', '_blank', 'width=240,height=360,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
-						'icq_console'	=> "onclick=\"window.open('".$this->_member_path('icq_console/'.$row['member_id'])."', '_blank', 'width=650,height=580,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
-						'yahoo_console'	=> "http://edit.yahoo.com/config/send_webmesg?.target=".ee()->functions->encode_ee_tags($row['yahoo_im'], TRUE)."&amp;.src=pg",
 						'email_console'	=> "onclick=\"window.open('".$this->_member_path('email_console/'.$row['member_id'])."', '_blank', 'width=650,height=600,scrollbars=yes,resizable=yes,status=yes,screenx=5,screeny=5');\"",
 					)
 				);
@@ -1154,9 +1051,7 @@ class Member_memberlist extends Member {
 		/**  Valid Fields for Searching
 		/** ----------------------------------------*/
 
-		$valid = array('screen_name', 'email', 'url', 'location', 'occupation',
-			'interests', 'aol_im', 'yahoo_im', 'msn_im', 'icq', 'bio',
-			'signature');
+		$valid = array('screen_name', 'email', 'signature');
 
 		$custom_fields = FALSE;
 		$query = ee()->db->query("SELECT m_field_id, m_field_label FROM exp_member_fields WHERE m_field_public = 'y' ORDER BY m_field_order");

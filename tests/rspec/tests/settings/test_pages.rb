@@ -26,27 +26,30 @@ feature 'Pages Settings' do
   end
 
   it 'should show the Pages Settings screen' do
+    @page.should have_homepage_display
+    @page.should have_default_channel
+    @page.should have_channel_default_template
+
     @page.all_there?.should == true
 
-    @page.nested.checked?.should == false
-    @page.not_nested.checked?.should == true
-    @page.default_channel.value.should == '0'
+    @page.homepage_display.has_checked_radio('not_nested').should == true
+
+    @page.default_channel.has_checked_radio('0').should == true
     @page.channel_default_template[0].value.should == '0'
     @page.channel_default_template[1].value.should == '0'
   end
 
   it 'should save new Pages settings' do
-    @page.nested.click
-    @page.default_channel.select 'News'
+    @page.homepage_display.choose_radio_option('nested')
+    @page.default_channel.choose_radio_option('1')
     @page.channel_default_template[0].select 'about/404'
     @page.channel_default_template[1].select 'news/index'
     @page.submit
 
     no_php_js_errors
     @page.should have_text 'Preferences updated'
-    @page.nested.checked?.should == true
-    @page.not_nested.checked?.should == false
-    @page.default_channel.value.should == '1'
+    @page.homepage_display.has_checked_radio('nested').should == true
+    @page.default_channel.has_checked_radio('1').should == true
     @page.channel_default_template[0].value.should == '2'
     @page.channel_default_template[1].value.should == '10'
   end

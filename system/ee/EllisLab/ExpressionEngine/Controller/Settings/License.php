@@ -1,28 +1,16 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
 namespace EllisLab\ExpressionEngine\Controller\Settings;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP License Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * License Controller
  */
 class License extends Settings {
 
@@ -59,8 +47,11 @@ class License extends Settings {
 				$license = ee('License')->getEELicense($license_file['tmp_name']);
 				if ($license->isValid())
 				{
-					if (rename($license_file['tmp_name'], SYSPATH.'user/config/license.key'))
+					if (@rename($license_file['tmp_name'], SYSPATH.'user/config/license.key'))
 					{
+						// Trigger new version check for new license
+						ee()->cache->delete('current_version', \Cache::GLOBAL_SCOPE);
+
 						$alert = ee('CP/Alert')->makeInline('shared-form')
 							->asSuccess()
 							->withTitle(lang('license_updated'))
@@ -118,8 +109,10 @@ class License extends Settings {
 						'title' => 'license_file',
 						'desc' => sprintf(lang('license_file_desc'), 'https://expressionengine.com/store/purchases'),
 						'fields' => array(
-							'license_file' => array('type' => 'file'),
-							'required' => TRUE
+							'license_file' => [
+								'type' => 'file',
+								'required' => TRUE
+							],
 						)
 					),
 				)

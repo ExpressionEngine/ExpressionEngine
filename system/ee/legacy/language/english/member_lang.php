@@ -424,6 +424,8 @@ $lang = array(
 
 'medium' => 'Medium',
 
+'mbr_your_stats' => 'Your Account Statistics',
+
 'member_login' => 'Member Login',
 
 'member_module_description' => 'Member management system',
@@ -480,6 +482,8 @@ $lang = array(
 
 'photo_removed' => 'Photo has been removed',
 
+'mbr_email_member' => 'Email Console',
+
 'photo_updated' => 'Member photo has been updated',
 
 'photos_not_enabled' => 'Member Photos are not currently enabled.',
@@ -495,6 +499,7 @@ $lang = array(
 'private_messages' => 'Private Messages',
 
 'profile_not_available' => 'The member profile you requested is currently not available',
+
 
 'purple' => 'Purple',
 
@@ -519,6 +524,8 @@ $lang = array(
 'search_field' => 'Search Field',
 
 'search_glass' => 'Search Glass',
+
+'mbr_not_allowed_to_use_email_console' => 'You are not allowed to use the Email Console',
 
 'search_results' => 'Search Results',
 

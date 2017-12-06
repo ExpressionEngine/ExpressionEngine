@@ -1,6 +1,6 @@
 <?php
 
-require('config.php');
+require('bootstrap.php');
 
 $command = array_shift($argv);
 
@@ -32,7 +32,7 @@ $username = isset($options['username']) ? $options['username'] : 'johndoe';
 $screen_name = isset($options['screen-name']) ? $options['screen-name'] : 'John Doe';
 $email = isset($options['email']) ? $options['email'] : 'john@nomail.com';
 
-$member = $api->make('Member');
+$member = ee('Model')->make('Member');
 $member->group_id = $group_id;
 $member->username = $username;
 $member->screen_name = $screen_name;
@@ -42,3 +42,4 @@ $member->language = 'english';
 $member->timezone = 'America/New_York';
 $member->email = $email;
 $member->save();
+

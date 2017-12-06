@@ -1,30 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * CodeIgniter
+ * ExpressionEngine (https://expressionengine.com)
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * User Agent Class
  *
  * Identifies the platform, browser, robot, or mobile devise of the browsing agent
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	User Agent
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/user_agent.html
  */
 class EE_User_agent {
 
@@ -74,8 +60,6 @@ class EE_User_agent {
 		log_message('debug', "User Agent Class Initialized");
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Compile the User Agent Data
 	 *
@@ -96,8 +80,6 @@ class EE_User_agent {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Compile the User Agent Data
 	 *
@@ -116,8 +98,6 @@ class EE_User_agent {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set the Platform
@@ -140,8 +120,6 @@ class EE_User_agent {
 		}
 		$this->platform = 'Unknown Platform';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set the Browser
@@ -168,8 +146,6 @@ class EE_User_agent {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the Robot
 	 *
@@ -192,8 +168,6 @@ class EE_User_agent {
 		}
 		return FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set the Mobile Device
@@ -218,8 +192,6 @@ class EE_User_agent {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the accepted languages
 	 *
@@ -240,8 +212,6 @@ class EE_User_agent {
 			$this->languages = array('Undefined');
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set the accepted character sets
@@ -264,8 +234,6 @@ class EE_User_agent {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Is Browser
 	 *
@@ -276,8 +244,6 @@ class EE_User_agent {
 	{
 		return $this->is_browser;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Is Robot
@@ -290,8 +256,6 @@ class EE_User_agent {
 		return $this->is_robot;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Is Mobile
 	 *
@@ -302,8 +266,6 @@ class EE_User_agent {
 	{
 		return $this->is_mobile;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Is this a referral from another site?
@@ -316,8 +278,6 @@ class EE_User_agent {
 		return ( ! isset($_SERVER['HTTP_REFERER']) OR $_SERVER['HTTP_REFERER'] == '') ? FALSE : TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Agent String
 	 *
@@ -328,8 +288,6 @@ class EE_User_agent {
 	{
 		return $this->agent;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Platform
@@ -342,8 +300,6 @@ class EE_User_agent {
 		return $this->platform;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Browser Name
 	 *
@@ -354,8 +310,6 @@ class EE_User_agent {
 	{
 		return $this->browser;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get the Browser Version
@@ -368,8 +322,6 @@ class EE_User_agent {
 		return $this->version;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get The Robot Name
 	 *
@@ -380,8 +332,6 @@ class EE_User_agent {
 	{
 		return $this->robot;
 	}
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the Mobile Device
 	 *
@@ -393,8 +343,6 @@ class EE_User_agent {
 		return $this->mobile;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the referrer
 	 *
@@ -405,8 +353,6 @@ class EE_User_agent {
 	{
 		return ( ! isset($_SERVER['HTTP_REFERER']) OR $_SERVER['HTTP_REFERER'] == '') ? '' : trim($_SERVER['HTTP_REFERER']);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get the accepted languages
@@ -424,8 +370,6 @@ class EE_User_agent {
 		return $this->languages;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the accepted Character Sets
 	 *
@@ -442,8 +386,6 @@ class EE_User_agent {
 		return $this->charsets;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Test for a particular language
 	 *
@@ -454,8 +396,6 @@ class EE_User_agent {
 	{
 		return (in_array(strtolower($lang), $this->languages(), TRUE)) ? TRUE : FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Test for a particular character set

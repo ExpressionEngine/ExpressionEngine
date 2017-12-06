@@ -1,33 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Members\Profile;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Member Profile Publishing Settings Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Profile Publishing Settings Controller
  */
 class Publishing extends Profile {
 
@@ -60,11 +45,7 @@ class Publishing extends Profile {
 					'desc' => 'rte_enabled_desc',
 					'fields' => array(
 						'rte_enabled' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $this->member->rte_enabled
 						)
 					)
@@ -74,7 +55,7 @@ class Publishing extends Profile {
 					'desc' => 'rte_toolset_desc',
 					'fields' => array(
 						'rte_toolset_id' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								0 => lang('default')
 							),

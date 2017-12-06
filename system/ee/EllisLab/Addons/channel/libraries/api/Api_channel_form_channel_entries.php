@@ -1,7 +1,17 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 require_once APPPATH.'libraries/api/Api_channel_entries.php';
 
+/**
+ * Channel Form Channel Entries API
+ */
 class Api_channel_form_channel_entries extends Api_channel_entries
 {
 	/**
@@ -14,8 +24,6 @@ class Api_channel_form_channel_entries extends Api_channel_entries
 		parent::_prepare_data($data, $mod_data);
 		$this->_post_prepare_data($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Pre Prepare Data
@@ -38,8 +46,6 @@ class Api_channel_form_channel_entries extends Api_channel_entries
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Post Prepare Data

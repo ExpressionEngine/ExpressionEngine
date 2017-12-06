@@ -1,26 +1,14 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Members library
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Libraries
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Members library
  */
 class Members {
 
@@ -413,8 +401,6 @@ class Members {
 		return array('success', $edit_image, $updated);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 *	Resize Member Images
 	 *
@@ -458,8 +444,6 @@ class Members {
 
 		return ( ! ee()->image_lib->resize()) ? FALSE : TRUE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 *	Get formatted list of member subscriptions
@@ -582,7 +566,7 @@ class Members {
 						$result_ids[$channel_keys[$row['entry_id']]] = array(
 												'title' => $row['title'],
 												'active_date' => $row['recent_comment_date'],
-												'url_title' => url_title($row['title']),
+												'url_title' => ee('Format')->make('Text', $row['title'])->urlSlug(),
 												'path' => ee()->functions->fetch_site_index().$qm.'URL='.$path,
 												'id'	=> 'b'.$row['entry_id'],
 												'type'	=> lang('comment')
@@ -628,7 +612,7 @@ class Members {
 						$result_ids[$forum_keys[$row['topic_id']]] = array(
 												'title' => $row['title'],
 												'active_date' => $row['last_post_date'],
-												'url_title' => url_title($row['title']),
+												'url_title' => ee('Format')->make('Text', $row['title'])->urlSlug(),
 												'path' => ee()->functions->fetch_site_index().$qm.'URL='.$path,
 												'id'	=> 'f'.$row['topic_id'],
 												'type'	=> lang('forum_post')

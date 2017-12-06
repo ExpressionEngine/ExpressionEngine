@@ -1,3 +1,11 @@
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
 (function($) {
 
 /**
@@ -44,11 +52,11 @@ Grid.Publish = function(field, settings) {
 		return;
 	}
 	this.root = $(field);
-	this.parentContainer = this.root.parents('.grid-publish');
+	this.parentContainer = this.root.parents('.fieldset-faux');
 	this.blankRow = $('tr.grid-blank-row', this.root);
 	this.emptyField = $('tr.no-results', this.root);
 	this.tableActions = $('tr.tbl-action', this.root);
-	this.rowContainer = this.root.children('tbody');
+	this.rowContainer = this.root.find('tbody');
 	this.addButtonToolbar = $('ul.toolbar:has(li.add)', this.parentContainer);
 	this.header = null;
 
@@ -70,14 +78,14 @@ Grid.MiniField = function(field, settings) {
 	this.root.data('gridInitialized', true);
 	this.parentContainer = this.root;
 	this.blankRow = $('.grid-blank-row', this.root);
-	this.emptyField = $('.keyvalue-empty', this.root);
+	this.emptyField = $('.field-no-results', this.root);
 	this.tableActions = null;
 	this.rowContainer = $('.keyvalue-item-container', this.root);
-	this.addButtonToolbar = $('> ul.toolbar', this.parentContainer);
-	this.header = $('.keyvalue-header', this.root);
+	this.addButtonToolbar = $('> [rel=add_row]', this.parentContainer);
+	this.header = $('.fields-keyvalue-header', this.root);
 
-	this.rowSelector = '.keyvalue-item';
-	this.cellSelector = '.keyvalue-field';
+	this.rowSelector = '.fields-keyvalue-item';
+	this.cellSelector = '.field-control';
 	this.reorderHandleContainerSelector = 'ul.toolbar:has(li.reorder)';
 	this.deleteContainerHeaderSelector = null;
 	this.deleteButtonsSelector = 'ul.toolbar:has(li.remove)';
@@ -85,7 +93,7 @@ Grid.MiniField = function(field, settings) {
 		sortableContainer: '.keyvalue-item-container',
 		handle: 'li.reorder',
 		cancel: 'li.sort-cancel',
-		item: '.keyvalue-item'
+		item: '.fields-keyvalue-item'
 	},
 
 	this.settings = settings;
@@ -380,11 +388,9 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
  * Grid Settings class
  */
 Grid.Settings = function(settings) {
-	this.root = $('.grid-wrap');
-	this.settingsScroller = this.root.find('.grid-clip');
-	this.settingsContainer = this.root.find('.grid-clip-inner');
+	this.root = $('.fields-grid-setup');
 	this.colTemplateContainer = $('#grid_col_settings_elements');
-	this.blankColumn = this.colTemplateContainer.find('.grid-item');
+	this.blankColumn = this.colTemplateContainer.find('.fields-grid-item');
 	this.settings = settings;
 
 	this.init();
@@ -393,16 +399,16 @@ Grid.Settings = function(settings) {
 Grid.Settings.prototype = {
 
 	init: function() {
-		this._bindResize();
 		this._bindSortable();
+		this._bindExpandButton();
+		this._expandErroredColumns();
 		this._bindActionButtons(this.root);
 		this._toggleDeleteButtons();
 		this._bindColTypeChange();
-		this._bindValidationCallback();
 
 		// If this is a new field, bind the automatic column title plugin
 		// to the first column
-		this._bindAutoColName(this.root.find('div.grid-item[data-field-name^="new_"]'));
+		this._bindAutoColName(this.root.find('div.fields-grid-item[data-field-name^="new_"]'));
 
 		// Fire displaySettings event
 		this._settingsDisplay();
@@ -413,149 +419,73 @@ Grid.Settings.prototype = {
 	},
 
 	/**
-	 * Since the Grid settings form is laid out differently than most forms, we
-	 * need to do some extra DOM handling when a Grid settings field is validated
-	 */
-	_bindValidationCallback: function() {
-		EE.cp.formValidation.bindCallbackForField('grid', function(result, error, field) {
-			var alert = $('div.grid-wrap').prev(),
-				fieldName = field.attr('name'),
-				columnId = '['+field.parents('.grid-item').attr('data-field-name')+']';
-
-			// Get the last segment of the fieldname so we don't show duplicate errors
-			// if multiple columns have the same error; instead we'll keep track of
-			// the columns that have the error and keep it persisting while those errors
-			// still exist
-			if (fieldName.indexOf('[') > -1) {
-				fieldName = fieldName.substr(-(fieldName.length - fieldName.lastIndexOf('[')));
-			}
-
-			// Isolate the error text from the <em>
-			var errorText = $('<div/>').html(error).contents().html(),
-				existingError;
-
-			// If validation failed, get the error element based on current error text
-			if (error !== undefined) {
-				existingError = $('span[data-field="'+fieldName+'"]:contains("'+errorText+'")', alert);
-			// If validation passed, get the error element associated with our column and field
-			} else {
-				existingError = $('span[data-field="'+fieldName+'"][data-columns*="'+columnId+'"]', alert);
-			}
-
-			// Get the error element for this field and error if we've already created it
-			var existingErrorColumns = existingError.attr('data-columns');
-
-			// On validation failure
-			if (result === false) {
-				// Remove the inline error set by the form validation JS library,
-				// it doesn't work with the design here
-				field.parents('fieldset').find('em.ee-form-error-message').remove();
-
-				// Create a span for the error message with some data attributes
-				// that we'll use later to see if we need to remove the message
-				// or make sure there are no duplicate error messages
-				var errorSpan = $('<span/>').attr({
-							'data-field': fieldName,
-							'data-columns': columnId,
-							'style': 'display: block'
-						}).text(errorText);
-
-				// Alert not already there? Add it and add our error message
-				if ( ! alert.hasClass('alert')) {
-					var alert = $('<div/>').html(EE.alert.grid_error).contents();
-					alert.html('<p>'+errorSpan.prop('outerHTML')+'</p>');
-					alert.insertBefore($('div.grid-wrap'));
-				// Alert already exists
-				} else {
-					// There isn't an error span for this error yet, add it anew
-					if (existingError.size() == 0) {
-						$('p', alert).append(errorSpan);
-					// Otherwise, there's already an error for this, keep track of
-					// which columns have this error
-					} else {
-						if (existingErrorColumns.indexOf(columnId) == -1) {
-							existingError.attr('data-columns', existingErrorColumns + columnId);
-						}
-					}
-				}
-			// Validation succeeded? Sweet, remove the error
-			} else if (alert.hasClass('alert')) {
-
-				// If the error exists, we need to remove the column ID of the column
-				// that validated successfully for this field, and if the error doesn't
-				// exist for any more columns, remove the error entirely
-				if (existingError.size() > 0) {
-					existingError.attr('data-columns', existingErrorColumns.replace(columnId, ''));
-					if (existingError.attr('data-columns') == '') {
-						existingError.remove();
-					}
-				}
-				// No more errors? Get rid of the alert
-				if ($('span', alert).size() == 0) {
-					alert.remove();
-				}
-			}
-		});
-	},
-
-	/**
-	 * Upon page load, we need to resize the column container to fit the number
-	 * of columns we have
-	 */
-	_bindResize: function() {
-		var that = this;
-
-		$(document).ready(function() {
-			that._resizeColContainer();
-		});
-	},
-
-	/**
-	 * Resizes column container based on how many columns it contains
-	 *
-	 * @param	{boolean}	animated	Whether or not to animate the resize
-	 */
-	_resizeColContainer: function(animated) {
-		this.settingsContainer.animate( {
-			width: this._getColumnsWidth()
-		},
-		(animated == true) ? 400 : 0);
-	},
-
-	/**
-	 * Calculates total width the columns in the container should take up,
-	 * plus a little padding for the Add button
-	 *
-	 * @return	{int}	Calculated width
-	 */
-	_getColumnsWidth: function() {
-		var columns = this.root.find('.grid-item');
-
-		// Actual width of column is width + 32
-		return columns.size() * (columns.width() + 32);
-	},
-
-	/**
 	 * Allows columns to be reordered
 	 */
 	_bindSortable: function() {
-		this.settingsContainer.sortable({
-			axis: 'x',						// Only allow horizontal dragging
-			containment: 'parent',			// Contain to parent
-			handle: 'li.reorder',			// Set drag handle to the top box
-			items: '.grid-item',			// Only allow these to be sortable
-			sort: EE.sortable_sort_helper	// Custom sort handler
+		this.root.sortable({
+			axis: 'y',
+			containment: 'parent',
+			handle: '.fields-grid-tool-reorder',
+			items: '.fields-grid-item',
+			sort: EE.sortable_sort_helper
 		});
-		this.settingsContainer.find('li.reorder a').on('click', function(e){
+
+		$('.fields-grid-tool-reorder', this.root).on('click', function(e){
 			e.preventDefault();
 		});
+	},
+
+	/**
+	 * Binds expand button in column toolbar
+	 */
+	_bindExpandButton: function() {
+		var that = this;
+		$(this.root).on('click', '.fields-grid-tool-expand', function(e) {
+			that._toggleColumnExpand($(this).parents('.fields-grid-item'))
+			e.preventDefault()
+		});
+	},
+
+	/**
+	 * For any columns that have validation errors, expand them
+	 */
+	_expandErroredColumns: function() {
+		var that = this;
+		$('.fields-grid-item', this.root).each(function(i, column) {
+			if ($('.fieldset-invalid', column).size()) {
+				that._toggleColumnExpand($(column), true)
+			}
+		})
+	},
+
+	/**
+	 * Toggle collapsed state of column settings
+	 *
+	 * @param	{jQuery Object}	column	Object to find action buttons in to bind
+	 * @param	{boolean}		state	Optional, whether or not to expand (true) or collapse (false)
+	 */
+	_toggleColumnExpand: function(column, state) {
+		var openClass = 'fields-grid-item---open',
+			isOpen = column.hasClass(openClass),
+			toggleHeader = $('.toggle-header', column),
+			toggleHeaderFieldName = $('b', toggleHeader),
+			toggleHeaderFieldType = $('span.txt-fade', toggleHeader),
+			colLabel = $('input[name$="[col_label]"]', column).val(),
+			colType = $('input[name$="[col_type]"]', column).val()
+
+		if (isOpen) {
+			toggleHeaderFieldName.html(colLabel)
+			toggleHeaderFieldType.html('('+colType+')')
+		}
+
+		column.toggleClass(openClass, state !== undefined ? state : ! isOpen)
 	},
 
 	/**
 	 * Convenience method for binding column manipulation buttons (add, copy, remove)
 	 * for a given context
 	 *
-	 * @param	{jQuery Object}	context		Object to find action buttons in to bind
+	 * @param	{jQuery Object}	context	Object to find action buttons in to bind
 	 */
 	_bindActionButtons: function(context) {
 		this._bindAddButton(context);
@@ -572,10 +502,10 @@ Grid.Settings.prototype = {
 	_bindAddButton: function(context) {
 		var that = this;
 
-		context.find('.grid-tools li.add a').on('click', function(event) {
+		context.find('.fields-grid-tool-add').on('click', function(event) {
 			event.preventDefault();
 
-			var parentCol = $(this).parents('.grid-item');
+			var parentCol = $(this).parents('.fields-grid-item');
 
 			that._insertColumn(that._buildNewColumn(), parentCol);
 		});
@@ -590,10 +520,13 @@ Grid.Settings.prototype = {
 	_bindCopyButton: function(context) {
 		var that = this;
 
-		context.find('.grid-tools li.copy a').off('click').on('click', function(event) {
+		context.find('.fields-grid-tool-copy').off('click').on('click', function(event) {
 			event.preventDefault();
 
-			var parentCol = $(this).parents('.grid-item');
+			var parentCol = $(this).parents('.fields-grid-item');
+
+			// Collapse cloned column
+			that._toggleColumnExpand(parentCol, false)
 
 			that._insertColumn(
 				// Build new column based on current column
@@ -612,15 +545,14 @@ Grid.Settings.prototype = {
 	_bindDeleteButton: function(context) {
 		var that = this;
 
-		context.on('click', '.grid-tools li.remove a', function(event) {
+		context.on('click', '.fields-grid-tool-remove', function(event) {
 			event.preventDefault();
 
-			var settings = $(this).parents('.grid-item');
+			var settings = $(this).parents('.fields-grid-item');
 
 			// Only animate column deletion if we're not deleting the last column
-			if (settings.index() == $('.grid-item:last', that.root).index()) {
+			if (settings.index() == $('.fields-grid-item:last', that.root).index()) {
 				settings.remove();
-				that._resizeColContainer(true);
 				that._toggleDeleteButtons();
 			} else {
 				settings.animate({
@@ -631,10 +563,9 @@ Grid.Settings.prototype = {
 					settings.html('');
 
 					settings.animate({
-						width: 0
+						height: 0
 					}, 200, function() {
 						settings.remove();
-						that._resizeColContainer(true);
 						that._toggleDeleteButtons();
 					});
 				});
@@ -642,7 +573,7 @@ Grid.Settings.prototype = {
 
 			// Trigger validation on any invalid inputs in case the validaiton
 			// errors were due to a duplicate column name/label in this column
-			$('fieldset.invalid input', that.root).trigger('change');
+			$('fieldset.fieldset-invalid input', that.root).trigger('change');
 		});
 	},
 
@@ -652,12 +583,10 @@ Grid.Settings.prototype = {
 	 * only one column
 	 */
 	_toggleDeleteButtons: function() {
-		var multiCol = this.root.find('.grid-item').size() > 1,
-			deleteButtons = this.root.find('.grid-tools li.remove'),
-			addButton = this.root.find('.grid-tools li.add');
+		var multiCol = this.root.find('.fields-grid-item').size() > 1,
+			deleteButtons = this.root.find('.fields-grid-tool-remove');
 
 		deleteButtons.toggle(multiCol);
-		addButton.toggleClass('last', ! multiCol);
 	},
 
 	/**
@@ -668,7 +597,7 @@ Grid.Settings.prototype = {
 	 *				after; if left blank, defaults to last column
 	 */
 	_insertColumn: function(column, insertAfter) {
-		var lastColumn = $('.grid-item:last', this.root);
+		var lastColumn = $('.fields-grid-item:last', this.root);
 
 		// Default to inserting after the last column
 		if (insertAfter == undefined) {
@@ -683,17 +612,7 @@ Grid.Settings.prototype = {
 
 		column.insertAfter(insertAfter);
 
-		this._resizeColContainer();
 		this._toggleDeleteButtons();
-
-		// If we are inserting a column after the last column, scroll to
-		// the end of the column container
-		if (insertAfter.index() == lastColumn.index()) {
-			// Scroll container to the very end
-			this.settingsScroller.animate({
-				scrollLeft: this._getColumnsWidth()
-			}, 700);
-		}
 
 		column.animate({
 			opacity: 1
@@ -708,6 +627,15 @@ Grid.Settings.prototype = {
 		// Bind AJAX form validation
 		EE.cp.formValidation.bindInputs(column);
 
+		// Bind column type dropdown component
+		Dropdown.renderFields(column)
+
+		// Expand column
+		this._toggleColumnExpand(column, true)
+
+		// Scroll to new element
+		$('body').animate({ scrollTop: column.offset().top - 10 }, 500)
+
 		// Fire displaySettings event
 		this._fireEvent('displaySettings', $('.grid-col-settings-custom > div', column));
 	},
@@ -720,14 +648,14 @@ Grid.Settings.prototype = {
 	 */
 	_bindAutoColName: function(columns) {
 		columns.each(function(index, column) {
-			$('input.grid_col_field_label', column).bind("keyup keydown", function() {
-				$(this).ee_url_title($(column).find('input.grid_col_field_name'), true);
+			$('input[name$="\\[col_label\\]"]', column).bind('keyup keydown', function() {
+				$(this).ee_url_title($(column).find('input[name$="\\[col_name\\]"]'), true);
 			});
 		});
 	},
 
 	/**
-	 * Builts new column from scratch or based on an existing column
+	 * Builds new column from scratch or based on an existing column
 	 *
 	 * @param	{jQuery Object}	el	Column to base new column off of, when
 	 *				copying an existing column for example; if left blank,
@@ -740,21 +668,22 @@ Grid.Settings.prototype = {
 		} else {
 			// Clone our example column
 			el = this._cloneWithFormValues(el);
+
+			// Make sure Dropdown component initializes with cloned selection
+			var colType = el.find('input[name*=col_type]').val()
+			el.find('div[data-dropdown-react]').attr('data-initial-value', colType)
 		}
 
 		// Clear out column name field in new column because it has to be unique
 		el.find('input[name$="\\[col_name\\]"]').attr('value', '');
 
 		// Need to make sure the new column's field names are unique
-		var new_namespace = 'new_' + $('.grid-item', this.root).size();
+		var new_namespace = 'new_' + $('.fields-grid-item', this.root).size();
 		var old_namespace = el.data('field-name');
 
 		el.html(
-			el.html().replace(
-				RegExp('name="grid\\[cols\\]\\[' + old_namespace + '\\]', 'g'),
-				'name="grid[cols][' + new_namespace + ']'
-			)
-		);
+			this._swapNamespace(el.html(), old_namespace, new_namespace)
+		)
 
 		el.attr('data-field-name', new_namespace);
 
@@ -771,7 +700,7 @@ Grid.Settings.prototype = {
 	_bindColTypeChange: function() {
 		var that = this;
 
-		this.root.on('change', 'select.grid_col_select', function(event) {
+		this.root.on('change', 'input[name$="\\[col_type\\]"]', function(event) {
 			// New, fresh settings form
 			var settings = that.colTemplateContainer
 				.find('.grid_col_settings_custom_field_'+$(this).val()+':last')
@@ -781,19 +710,18 @@ Grid.Settings.prototype = {
 			settings.find(':input').removeAttr('disabled');
 
 			var customSettingsContainer = $(this)
-				.parents('.grid-item')
+				.parents('.fields-grid-item')
 				.find('.grid-col-settings-custom');
 
-			var new_namespace = customSettingsContainer.parents('.grid-item').attr('data-field-name');
+			var new_namespace = customSettingsContainer
+				.parents('.fields-grid-item')
+				.attr('data-field-name');
 			var old_namespace = '(new_)?[0-9]{1,}';
 
 			// Namespace fieldnames for the current column
 			settings.html(
-				settings.html().replace(
-					RegExp('name="grid\\[cols\\]\\[' + old_namespace + '\\]', 'g'),
-					'name="grid[cols][' + new_namespace + ']'
-				)
-			);
+				that._swapNamespace(settings.html(), old_namespace, new_namespace)
+			)
 
 			// Find the container holding the settings form, replace its contents
 			customSettingsContainer.html(settings);
@@ -801,6 +729,25 @@ Grid.Settings.prototype = {
 			// Fire displaySettings event
 			that._fireEvent('displaySettings', settings);
 		});
+	},
+
+	/**
+	 * Clones an element and copies over any form input values because
+	 * normal cloning won't handle that
+	 *
+	 * @param	{string}	html			HTML on which to perform the replacement
+	 * @param	{string}	oldNamespace	Old namespace
+	 * @param	{string}	newNamespace	New namespace
+	 * @return	{string}	HTML with new namespaces in place
+	 */
+	_swapNamespace: function(html, oldNamespace, newNamespace) {
+		return html.replace(
+				RegExp('name="grid\\[cols\\]\\[' + oldNamespace + '\\]', 'g'),
+				'name="grid[cols][' + newNamespace + ']'
+			).replace(
+				RegExp('data-input-value="grid\\[cols\\]\\[' + oldNamespace + '\\]', 'g'),
+				'data-input-value="grid[cols][' + newNamespace + ']'
+			)
 	},
 
 	/**
@@ -858,7 +805,7 @@ Grid.Settings.prototype = {
 	 */
 	_settingsDisplay: function() {
 		var that = this;
-		this.root.find('.grid-item').each(function() {
+		this.root.find('.fields-grid-item').each(function() {
 			// Fire displaySettings event
 			that._fireEvent('displaySettings', $('.grid-col-settings-custom > div', this));
 		});
@@ -887,6 +834,10 @@ Grid.Settings.prototype = {
  * Public method to instantiate Grid field
  */
 EE.grid = function(field, settings) {
+	if (settings == undefined) {
+		settings = $(field).data('grid-settings');
+	}
+
 	return new Grid.Publish(field, settings);
 };
 
@@ -902,5 +853,11 @@ if (typeof _ !== 'undefined' && EE.grid_cache !== 'undefined') {
 		Grid.bind.apply(Grid, args);
 	});
 }
+
+$(document).ready(function () {
+	FluidField.on('grid', 'add', function(el) {
+  		EE.grid($('table', el));
+	});
+});
 
 })(jQuery);

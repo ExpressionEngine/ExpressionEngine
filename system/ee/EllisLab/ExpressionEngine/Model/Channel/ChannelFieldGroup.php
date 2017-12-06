@@ -1,9 +1,19 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Channel;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
+/**
+ * Channel Field Group Model
+ */
 class ChannelFieldGroup extends Model {
 
 	protected static $_primary_key 	= 'group_id';
@@ -14,18 +24,28 @@ class ChannelFieldGroup extends Model {
 	protected static $_relationships = array(
 		'Channels' => array(
 			'weak' => TRUE,
-			'type' => 'hasMany',
+			'type' => 'hasAndBelongsToMany',
 			'model' => 'Channel',
-			'to_key' => 'field_group',
+			'pivot' => array(
+				'table' => 'channels_channel_field_groups'
+			),
 		),
 		'ChannelFields' => array(
-			'type' => 'hasMany',
-			'model' => 'ChannelField'
+			'weak' => TRUE,
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'ChannelField',
+			'pivot' => array(
+				'table' => 'channel_field_groups_fields'
+			)
 		)
 	);
 
 	protected static $_validation_rules = array(
 		'group_name' => 'required|unique[site_id]|validateName'
+	);
+
+	protected static $_events = array(
+		'afterUpdate',
 	);
 
 	protected $group_id;
@@ -48,6 +68,17 @@ class ChannelFieldGroup extends Model {
 		}
 
 		return TRUE;
+	}
+
+	public function onAfterUpdate($previous)
+	{
+		foreach ($this->Channels as $channel)
+		{
+			foreach ($channel->ChannelLayouts as $layout)
+			{
+				$layout->synchronize();
+			}
+		}
 	}
 
 }

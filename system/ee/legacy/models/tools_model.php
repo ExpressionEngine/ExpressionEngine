@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Tools Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Tools Model
  */
 class Tools_model extends CI_Model {
 
@@ -49,17 +37,16 @@ class Tools_model extends CI_Model {
 
 		// channel fields
 
-		$this->db->select('fg.group_name, cf.field_id, cf.field_label, s.site_label');
-		$this->db->from('field_groups AS fg');
-		$this->db->join('sites AS s', 's.site_id = fg.site_id');
-		$this->db->join('channel_fields AS cf', 'cf.group_id = fg.group_id');
+		$this->db->select('cf.field_id, cf.field_label, cf.field_name, s.site_label');
+		$this->db->from('channel_fields AS cf');
+		$this->db->join('sites AS s', 's.site_id = cf.site_id');
 
 		if ($this->config->item('multiple_sites_enabled') !== 'y')
 		{
 			$this->db->where('cf.site_id', 1);
 		}
 
-		$this->db->order_by('s.site_label, fg.group_id, cf.field_label');
+		$this->db->order_by('s.site_label, cf.field_label, cf.field_name');
 
 		$query = $this->db->get();
 
@@ -67,16 +54,13 @@ class Tools_model extends CI_Model {
 
 		$fields = array();
 
+		$display_site = ($this->config->item('multiple_sites_enabled') == 'y');
+
 		foreach($query->result() as $row)
 		{
-			if ($this->config->item('multiple_sites_enabled') == 'y')
-			{
-				$fields["field_id_{$row->field_id}"] = $row->site_label.' - '.$row->field_label.' ('.$row->group_name.')';
-			}
-			else
-			{
-				$fields["field_id_{$row->field_id}"] = $row->field_label.' ('.$row->group_name.')';
-			}
+			$prefix = ($display_site) ? $row->site_label . ' - ' : '';
+
+			$fields["field_id_{$row->field_id}"] = $prefix . $row->field_label .' {' . $row->field_name . '}';
 		}
 
 		$options['channel_fields'] = array('name' => $this->lang->line('channel_fields'), 'choices' => $fields);
@@ -118,8 +102,6 @@ class Tools_model extends CI_Model {
 		return $options;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Control Panel Log
 	 *
@@ -148,8 +130,6 @@ class Tools_model extends CI_Model {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Search Log
 	 *
@@ -177,8 +157,6 @@ class Tools_model extends CI_Model {
 
 		return $this->db->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Throttle Log
@@ -210,8 +188,6 @@ class Tools_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get items in the Developer Log
 	 *
@@ -242,8 +218,6 @@ class Tools_model extends CI_Model {
 		return $this->db->get('developer_log');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns number of unviewed items in the developer log to display in
 	 * a notice on the CP home screen
@@ -256,8 +230,6 @@ class Tools_model extends CI_Model {
 
 		return $this->db->count_all_results('developer_log');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Marks developer logs as viewed
@@ -289,8 +261,6 @@ class Tools_model extends CI_Model {
 			$this->db->update('developer_log', array('viewed' => 'y'));
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete logs
@@ -324,8 +294,6 @@ class Tools_model extends CI_Model {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Blacklist IP addresses
 	 *
@@ -357,8 +325,6 @@ class Tools_model extends CI_Model {
 		return $this->db->affected_rows();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Email Logs
 	 *
@@ -385,8 +351,6 @@ class Tools_model extends CI_Model {
 		$this->db->limit($limit, $offset);
 		return $this->db->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Language Filelist
@@ -426,8 +390,6 @@ class Tools_model extends CI_Model {
 
 		return $languages;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Language List
@@ -485,8 +447,6 @@ class Tools_model extends CI_Model {
 		return $lang_list;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Image Properties
 	 *
@@ -514,8 +474,6 @@ class Tools_model extends CI_Model {
 			return FALSE;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get SQL Info
@@ -588,8 +546,6 @@ class Tools_model extends CI_Model {
 		return $info;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Table Status
 	 *
@@ -634,8 +590,6 @@ class Tools_model extends CI_Model {
 
 		return array('status' => $status, 'records' => $records, 'total_size' => byte_format($totsize), 'tables' => $tables);
 	}
-
-	// --------------------------------------------------------------------
 
 }
 

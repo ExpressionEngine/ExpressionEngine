@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Content;
 
@@ -14,11 +21,12 @@ use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
  * set data: $entry->title = "Foo"; $entry->getForm();
  * mass set: $entry->set(array); $entry->getForm();
  */
-
 abstract class ContentModel extends VariableColumnModel {
 
 	protected static $_events = array(
 		'afterSave',
+		'afterInsert',
+		'afterUpdate',
 		'beforeDelete'
 	);
 
@@ -70,16 +78,28 @@ abstract class ContentModel extends VariableColumnModel {
 		$this->_field_was_saved = array();
 	}
 
+	public function onAfterInsert()
+	{
+		$this->saveFieldData($this->getValues());
+	}
+
+	public function onAfterUpdate($changed)
+	{
+		$this->saveFieldData($changed);
+	}
+
 	/**
 	 * Cascade the delete to the fieldtypes
 	 */
-	 public function onBeforeDelete()
-	 {
-		 foreach ($this->getCustomFields() as $field)
-		 {
-			 $field->delete();
-		 }
-	 }
+	public function onBeforeDelete()
+	{
+		foreach ($this->getCustomFields() as $field)
+		{
+			$field->delete();
+		}
+
+		$this->deleteFieldData();
+	}
 
 	/**
 	 * Check if a custom field of $name exists
@@ -186,8 +206,9 @@ abstract class ContentModel extends VariableColumnModel {
 	 */
 	public function save()
 	{
-		foreach ($this->getCustomFields() as $name => $field)
+		foreach ($this->getCustomFields() as $field)
 		{
+			$name = $field->getName();
 			if ($this->isDirty($name))
 			{
 				$this->setRawProperty($name, $field->save($this));
@@ -354,19 +375,19 @@ abstract class ContentModel extends VariableColumnModel {
 			return;
 		}
 
-		$native_fields = $this->getStructure()->getCustomFields();
+		$native_fields = $this->getStructure()->getAllCustomFields();
 		$native_prefix = $this->getCustomFieldPrefix();
 
 		foreach ($native_fields as $field)
-        {
-            $settings = array_merge($field->getSettingsValues(), $field->toArray());
+		{
+			$settings = array_merge($field->getSettingsValues(), $field->toArray());
 
-            $this->addFacade(
-                $field->getId(),
-                $settings,
-                $native_prefix
-            );
-        }
+			$this->addFacade(
+				$field->getId(),
+				$settings,
+				$native_prefix
+			);
+		}
 
 		$this->setDataOnCustomFields($this->getValues());
 
@@ -407,6 +428,97 @@ abstract class ContentModel extends VariableColumnModel {
 		}
 
 		$this->_field_facades[$name] = $facade;
+	}
+
+	/**
+	 * Find all the fields that are stored in their own tables. For those that
+	 * are dirty (have changed) we update or insert the changes into their
+	 * tables. If the list of changed properties is not supplied we will get
+	 * the list of dirty properties.
+	 *
+	 * @param array $changed An associative array of class properties that have changed
+	 */
+	protected function saveFieldData($changed = NULL)
+	{
+		$dirty = ($changed) ?: $this->getDirty();
+
+		// Optimization: if there are no dirty fields, there's nothing to do
+		if (empty($dirty))
+		{
+			return;
+		}
+
+		foreach ($this->getStructure()->getAllCustomFields() as $field)
+		{
+			// Skip this field if it is in `exp_channel_data`
+			if ($field->legacy_field_data)
+			{
+				continue;
+			}
+
+			$values = array();
+
+			foreach ($field->getColumnNames() as $column)
+			{
+				if (array_key_exists($column, $dirty))
+				{
+					$values[$column] = $this->$column;
+				}
+			}
+
+			// Skip this field if neither it nor its meta data changed
+			if (empty($values))
+			{
+				continue;
+			}
+
+			$query = ee('Model/Datastore')->rawQuery();
+
+			$key_column = $this->getPrimaryKey();
+
+			// When a new entity is saved, this will be triggered by an
+			// onAfterInsert event (else, we won't have id to link to).
+			// The primary key can only be marked dirty on an insert event,
+			// not an update.
+			if (array_key_exists($key_column, $dirty))
+			{
+				$values[$key_column] = $this->getId();
+				$query->set($values);
+				$query->insert($field->getTableName());
+			}
+			else
+			{
+				$query->set($values);
+				$query->where($key_column, $this->getId());
+				$query->update($field->getTableName());
+			}
+		}
+	}
+
+	/**
+	 * Deletes entry data in the field tables.
+	 */
+	protected function deleteFieldData()
+	{
+		$tables = array();
+
+		foreach ($this->getStructure()->getAllCustomFields() as $field)
+		{
+			// Skip this field if it is in `exp_channel_data`
+			if ($field->legacy_field_data)
+			{
+				continue;
+			}
+
+			$tables[] = $field->getTableName();
+		}
+
+		if ( ! empty($tables))
+		{
+			ee('Model/Datastore')->rawQuery()
+				->where($this->getPrimaryKey(), $this->getId())
+				->delete($tables);
+		}
 	}
 
 }

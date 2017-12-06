@@ -42,8 +42,8 @@ feature 'Installer' do
       @page.install_form.install_submit.click
 
       no_php_js_errors
-      @page.req_title.text.should eq 'Completed'
-      @page.install_success.success_header.text.should match /ExpressionEngine (\d+\.\d+\.\d+) is now installed/
+      @page.header.text.should eq 'Install Complete!'
+      @page.install_success.updater_msg.text.should match /ExpressionEngine has been installed/
       @page.install_success.all_there?.should == true
     end
 
@@ -59,8 +59,8 @@ feature 'Installer' do
       @page.install_form.install_submit.click
 
       no_php_js_errors
-      @page.req_title.text.should eq 'Completed'
-      @page.install_success.success_header.text.should match /ExpressionEngine (\d+\.\d+\.\d+) is now installed/
+      @page.header.text.should eq 'Install Complete!'
+      @page.install_success.updater_msg.text.should match /ExpressionEngine has been installed/
       @page.install_success.all_there?.should == true
     end
 
@@ -71,7 +71,8 @@ feature 'Installer' do
       @page.install_form.db_name.set $test_config[:db_name]
       @page.install_form.db_username.set $test_config[:db_username]
       @page.install_form.db_password.set $test_config[:db_password]
-      @page.install_form.install_default_theme[0].click
+
+      @page.install_form.install_default_theme.click
       @page.install_form.username.set 'admin'
       @page.install_form.email_address.set 'hello@ellislab.com'
       @page.install_form.password.set 'password'
@@ -79,8 +80,8 @@ feature 'Installer' do
       @page.install_form.install_submit.click
 
       no_php_js_errors
-      @page.req_title.text.should eq 'Completed'
-      @page.install_success.success_header.text.should match /ExpressionEngine (\d+\.\d+\.\d+) is now installed/
+      @page.header.text.should eq 'Install Complete!'
+      @page.install_success.updater_msg.text.should match /ExpressionEngine has been installed/
       @page.install_success.all_there?.should == true
 
       @installer.restore_templates
@@ -98,8 +99,8 @@ feature 'Installer' do
       @page.install_form.install_submit.click
 
       no_php_js_errors
-      @page.req_title.text.should eq 'Completed'
-      @page.install_success.success_header.text.should match /ExpressionEngine (\d+\.\d+\.\d+) is now installed/
+      @page.header.text.should eq 'Install Complete!'
+      @page.install_success.updater_msg.text.should match /ExpressionEngine has been installed/
       @page.install_success.all_there?.should == true
 
       installed_modules = []
@@ -130,7 +131,7 @@ feature 'Installer' do
 
       no_php_js_errors
       @installer.disable_installer
-      @page.find('.btn').click
+      @page.install_success.login_button.click
       cp_session
 
       @settings = UrlsSettings.new

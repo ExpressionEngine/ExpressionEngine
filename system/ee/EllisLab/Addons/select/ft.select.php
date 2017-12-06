@@ -1,29 +1,16 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 require_once SYSPATH.'ee/legacy/fieldtypes/OptionFieldtype.php';
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// --------------------------------------------------------------------
-
-/**
- * ExpressionEngine Select Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Select Fieldtype
  */
 class Select_ft extends OptionFieldtype {
 
@@ -68,8 +55,6 @@ class Select_ft extends OptionFieldtype {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	function display_field($data)
 	{
 		$extra = 'dir="'.$this->get_setting('field_text_direction', 'ltr').'"';
@@ -77,6 +62,17 @@ class Select_ft extends OptionFieldtype {
 		if ($this->get_setting('field_disabled'))
 		{
 			$extra .= ' disabled';
+		}
+
+		if (REQ == 'CP' && $this->content_type() !== 'grid')
+		{
+			return ee('View')->make('ee:_shared/form/fields/dropdown')->render([
+				'field_name'     => $this->field_name,
+				'choices'        => $this->_get_field_options($data),
+				'value'          => $data,
+				'empty_text'     => lang('choose_wisely'),
+				'field_disabled' => $this->get_setting('field_disabled')
+			]);
 		}
 
 		$field = form_dropdown(
@@ -89,14 +85,10 @@ class Select_ft extends OptionFieldtype {
 		return $field;
 	}
 
-	// --------------------------------------------------------------------
-
 	function grid_display_field($data)
 	{
 		return $this->display_field($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	function display_settings($data)
 	{
@@ -148,8 +140,6 @@ class Select_ft extends OptionFieldtype {
 		return $this->replace_tag($data, $params, $tagdata);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Accept all content types.
 	 *
@@ -160,8 +150,6 @@ class Select_ft extends OptionFieldtype {
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

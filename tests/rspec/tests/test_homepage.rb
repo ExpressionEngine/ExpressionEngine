@@ -30,12 +30,12 @@ feature 'Homepage' do
 
   def toggle_spam(state)
     @page.open_dev_menu
-    click_link 'Add-On Manager'
+    click_link 'Add-Ons'
 
-    can_install = @page.has_selector?('a[href*="cp/addons/install/spam"]')
+    can_install = @page.has_selector?('a[data-post-url*="cp/addons/install/spam"]')
 
     if state == :on && can_install
-      find('a[href*="cp/addons/install/spam"]').click
+      find('a[data-post-url*="cp/addons/install/spam"]').click
     elsif state == :off && can_install == false
       find('input[value="spam"]').click
       find('select[name="bulk_action"]').set 'remove'

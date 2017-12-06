@@ -1,3 +1,11 @@
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
 (function($) {
 
 /**
@@ -13,7 +21,7 @@ function FuzzyListSearch(ul, options) {
 	this.ul = ul;
 	this.keep = $();
 
-	var lis = ul.find('li');
+	var lis = ul.find('li, > a');
 
 	if (options.keep) {
 		this.keep = this.ul.find(options.keep);
@@ -124,7 +132,7 @@ FuzzyListSearch.prototype = {
  */
 function ListFocus(ul) {
 	this.ul = ul;
-	this.items = ul.find('li');
+	this.items = ul.find('li, > a');
 	this.isNav = !! ul.closest('.nav-main').length;
 
 	this.scrollWrap = this.getScrollWrap();
@@ -143,7 +151,7 @@ ListFocus.prototype = {
 			return this.ul;
 		}
 
-		return this.ul.closest('.scroll-wrap');
+		return this.ul.closest('.scroll-wrap, .filter-submenu__scroll');
 	},
 
 	/**
@@ -225,7 +233,8 @@ $.fn.fuzzyFilter = function() {
 		$(this).data('fuzzyFilterActive', true);
 
 		var input = $(this);
-		var list = $(this).closest('.sub-menu, .nav-sub-menu').find('ul');
+		var list = $(this).closest('.sub-menu, .nav-sub-menu, .filter-submenu')
+			.find('ul, .filter-submenu__scroll');
 
 		var focusBar = new ListFocus(list);
 		var fuzzyList = new FuzzyListSearch(list, {
@@ -275,7 +284,7 @@ $.fn.fuzzyFilter = function() {
 };
 
 $.fuzzyFilter = function() {
-	$('.nav-filter input, .filters input[data-fuzzy-filter=true]').fuzzyFilter();
+	$('.nav-filter input, input[data-fuzzy-filter=true]').fuzzyFilter();
 };
 
 // and create the defaults, third parties can call this to "refresh"

@@ -1,25 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Model;
 
 use EllisLab\ExpressionEngine\Service\Validation\Factory as ValidationFactory;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Model Facade
+ * Model Service Facade
  *
  * This is the only way the datastore should be communicated with. Either via
  * the query builder using get() or by creating new instances via make().
@@ -27,12 +20,6 @@ use EllisLab\ExpressionEngine\Service\Validation\Factory as ValidationFactory;
  * Manually working with instances of the datastore is *not* supported.
  * All other public methods on it should be considered internal and
  * subject to change.
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Facade {
 
@@ -61,7 +48,7 @@ class Facade {
 		{
 			$shortname = $this->removeAlias($name);
 
-			if (count($default_ids) == 0)
+			if (empty($default_ids))
 			{
 				$builder->markAsFutile();
 			}

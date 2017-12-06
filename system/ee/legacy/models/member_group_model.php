@@ -1,23 +1,11 @@
-<?PHP
-
-if (!defined('BASEPATH')) {
-	 exit('No direct script access allowed');
-}
-
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Model to manage Member Groups.  Manages the following
@@ -26,14 +14,7 @@ if (!defined('BASEPATH')) {
  * 	exp_channel_member_groups
  * 	exp_module_member_groups
  * 	exp_template_member_groups
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
-
 class Member_group_model extends CI_Model
 {
 

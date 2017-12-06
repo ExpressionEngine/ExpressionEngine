@@ -1,27 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Channel Parser
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Parser
  */
 class EE_Channel_data_parser {
 
@@ -46,8 +33,6 @@ class EE_Channel_data_parser {
 		$this->_channel = $pre->channel();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Preparser accessor
 	 *
@@ -57,8 +42,6 @@ class EE_Channel_data_parser {
 	{
 		return $this->_preparser;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Parser channel accessor
@@ -70,8 +53,6 @@ class EE_Channel_data_parser {
 		return $this->_channel;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Iterator row accessor
 	 *
@@ -81,8 +62,6 @@ class EE_Channel_data_parser {
 	{
 		return $this->_row;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Data object accessor
@@ -101,8 +80,6 @@ class EE_Channel_data_parser {
 		return isset($data[$key]) ? $data[$key] : $default;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Iterator count accessor
 	 *
@@ -112,8 +89,6 @@ class EE_Channel_data_parser {
 	{
 		return $this->_count;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * TMPL->var_(pair|single) key accessor
@@ -125,8 +100,6 @@ class EE_Channel_data_parser {
 		return $this->_tag;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * TMPL->var_(pair|single) value accessor
 	 *
@@ -137,8 +110,6 @@ class EE_Channel_data_parser {
 		return $this->_tag_options;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prefix accessor
 	 *
@@ -148,8 +119,6 @@ class EE_Channel_data_parser {
 	{
 		return $this->_prefix;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Run the main parsing loop.
@@ -387,8 +356,6 @@ class EE_Channel_data_parser {
 		return $result;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Sends custom field data to fieldtypes before the entries loop runs.
 	 * This is particularly helpful to fieldtypes that need to query the database
@@ -446,8 +413,6 @@ class EE_Channel_data_parser {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prepare the row for conditionals
@@ -519,6 +484,12 @@ class EE_Channel_data_parser {
 			{
 				$cond[$key] = ( ! isset($row['field_id_'.$value])) ? '' : $row['field_id_'.$value];
 
+				// Make sure Toggle fields are the proper integers they're supposed to be
+				if (isset($channel->tfields[$row['site_id']][$key]))
+				{
+					$cond[$key] = (int) $cond[$key];
+				}
+
 				// Is this field used with a modifier anywhere?
 				if (isset($pre->modified_conditionals[$key]) && count($pre->modified_conditionals[$key]))
 				{
@@ -553,7 +524,7 @@ class EE_Channel_data_parser {
 							if (isset($channel->gfields[$row['site_id']][$key]) &&
 								$modifier == 'total_rows')
 							{
-								$cond[$key] = $result;
+								$cond[$key] = (int) $result;
 							}
 						}
 					}
@@ -583,8 +554,6 @@ class EE_Channel_data_parser {
 
 		return $prefixed_cond;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Is commenting on this row allowed?

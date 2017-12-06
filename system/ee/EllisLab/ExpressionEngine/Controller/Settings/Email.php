@@ -1,33 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Settings;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Outgoing Email Settings Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Outgoing Email Settings Controller
  */
 class Email extends Settings {
 
@@ -74,7 +59,7 @@ class Email extends Settings {
 					'desc' => 'mail_protocol_desc',
 					'fields' => array(
 						'mail_protocol' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'mail' => lang('php_mail'),
 								'sendmail' => lang('sendmail'),
@@ -91,11 +76,11 @@ class Email extends Settings {
 					'desc' => 'email_newline_desc',
 					'fields' => array(
 						'email_newline' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
-								'\n' => '\n',
-								'\r\n' => '\r\n',
-								'\r' => '\r'
+								'\n' => '\\\n',
+								'\r\n' => '\\\r\\\n',
+								'\r' => '\\\r'
 							),
 							// email_newline is converted to double-quoted representation on load
 							'value' => ee()->config->item('email_newline_form_safe')
@@ -136,7 +121,7 @@ class Email extends Settings {
 						'desc' => 'email_smtp_crypto_desc',
 						'fields' => array(
 							'email_smtp_crypto' => array(
-								'type' => 'select',
+								'type' => 'radio',
 								'choices' => array(
 									'ssl' => lang('ssl'),
 									'tls' => lang('tls'),
@@ -153,7 +138,7 @@ class Email extends Settings {
 					'desc' => 'mail_format_desc',
 					'fields' => array(
 						'mail_format' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'plain' => lang('plain_text'),
 								'html' => lang('html')
@@ -165,13 +150,7 @@ class Email extends Settings {
 					'title' => 'word_wrap',
 					'desc' => 'word_wrap_desc',
 					'fields' => array(
-						'word_wrap' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							)
-						)
+						'word_wrap' => array('type' => 'yes_no')
 					)
 				),
 			)
@@ -234,8 +213,6 @@ class Email extends Settings {
 		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->render('settings/form', $vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * A validation callback for required email configuration strings only

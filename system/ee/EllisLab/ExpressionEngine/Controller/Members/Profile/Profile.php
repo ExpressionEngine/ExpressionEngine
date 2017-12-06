@@ -1,8 +1,13 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Members\Profile;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
@@ -10,27 +15,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Members Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Members Profile Controller
  */
 class Profile extends CP_Controller {
 
@@ -83,7 +68,6 @@ class Profile extends CP_Controller {
 		ee()->view->header = array(
 			'title' => sprintf(lang('profile_header'),
 				htmlentities($this->member->username, ENT_QUOTES, 'UTF-8'),
-				htmlentities($this->member->email, ENT_QUOTES, 'UTF-8'),
 				htmlentities($this->member->email, ENT_QUOTES, 'UTF-8'),
 				$this->member->ip_address
 			)
@@ -193,10 +177,13 @@ class Profile extends CP_Controller {
 					$heirs_view = '';
 					if (ee('Model')->get('ChannelEntry')->filter('author_id', $this->member->getId())->count() > 0)
 					{
+						$group_ids = array(1, $this->member->MemberGroup->getId());
+
 						$heirs = ee('Model')->get('Member')
 							->fields('username', 'screen_name')
-							->filter('group_id', 'IN', array(1, $this->member->MemberGroup->getId()))
+							->filter('group_id', 'IN', $group_ids)
 							->filter('member_id', '!=', $this->member->getId())
+							->order('screen_name')
 							->all();
 
 						foreach ($heirs as $heir)
@@ -205,6 +192,23 @@ class Profile extends CP_Controller {
 						}
 
 						$vars['selected'] = array($this->member->getId());
+
+						$vars['fields'] = array(
+							'heir' => array(
+								'type' => 'radio',
+								'choices' => $vars['heirs'],
+								'filter_url' => ee('CP/URL')->make(
+									'members/heir-filter',
+									[
+										'group_ids' => implode('|', $group_ids),
+										'selected' => $this->member->getId()
+									]
+								)->compile(),
+								'no_results' => ['text' => 'no_members_found'],
+								'margin_top' => TRUE,
+								'margin_left' => TRUE
+							)
+						);
 
 						$heirs_view = ee('View')->make('members/delete_confirm')->render($vars);
 					}
@@ -236,8 +240,6 @@ class Profile extends CP_Controller {
 		ee()->functions->redirect($this->base_url);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Generic method for saving member settings given an expected array
 	 * of fields.
@@ -257,12 +259,6 @@ class Profile extends CP_Controller {
 					foreach ($setting['fields'] as $field_name => $field)
 					{
 						$post = ee()->input->post($field_name);
-
-						// birthday fields must be NULL if blank
-						if (in_array($field_name, array('bday_d', 'bday_m', 'bday_y')))
-						{
-							$post = ($post == '') ? NULL : $post;
-						}
 
 						// Handle arrays of checkboxes as a special case;
 						if ($field['type'] == 'checkbox')

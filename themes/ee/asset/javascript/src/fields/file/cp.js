@@ -1,13 +1,9 @@
-/*!
- * ExpressionEngine - by EllisLab
+/**
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 "use strict";
@@ -48,29 +44,37 @@
 					input.siblings('em').remove();
 				}
 			});
+
+			$('li.remove a').click(function (e) {
+				var figure_container = $(this).closest('.fields-upload-chosen');
+				figure_container.addClass('hidden');
+				figure_container.siblings('em').remove(); // Hide the "missing file" erorr
+				figure_container.siblings('input[type="hidden"]').val('').trigger('change');
+				figure_container.siblings('.fields-upload-btn').removeClass('hidden');
+				e.preventDefault();
+			});
 		}
 
-		setupFileField();
-
-		$('body').on('click', '.fields-upload-chosen li.remove a', function (e) {
-			var figure_container = $(this).closest('.fields-upload-chosen');
-			figure_container.addClass('hidden');
-			figure_container.siblings('em').remove(); // Hide the "missing file" erorr
-			figure_container.siblings('input[type="hidden"]').val('').trigger('change');
-			figure_container.siblings('.fields-upload-btn').removeClass('hidden');
-			e.preventDefault();
-		});
-
-		Grid.bind('file', 'display', function(cell) {
-			var button = $('.file-field-filepicker', cell),
-				input = $('input[type="hidden"]', cell),
+		function sanitizeFileField(el) {
+			var button = $('.file-field-filepicker', el),
+				input = $('input[type="hidden"]', el),
 				safe_name = input.attr('name').replace(/[\[\]']+/g, '_');
 
 			button.attr('data-input-value', input.attr('name'));
 			button.attr('data-input-image', safe_name);
 
-			$('.fields-upload-chosen img', cell).attr('id', safe_name);
+			$('.fields-upload-chosen img', el).attr('id', safe_name);
+		}
 
+		setupFileField();
+
+		FluidField.on('file', 'add', function(el) {
+			sanitizeFileField(el);
+			setupFileField(el);
+		});
+
+		Grid.bind('file', 'display', function(cell) {
+			sanitizeFileField(cell);
 			setupFileField(cell);
 		});
 	});

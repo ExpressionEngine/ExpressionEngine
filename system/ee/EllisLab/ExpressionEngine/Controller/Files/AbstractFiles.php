@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Files;
 
@@ -12,27 +19,7 @@ use EllisLab\ExpressionEngine\Model\Content\FieldFacade;
 use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Abstract Files Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Abstract Files Controller
  */
 abstract class AbstractFiles extends CP_Controller {
 
@@ -125,18 +112,61 @@ abstract class AbstractFiles extends CP_Controller {
 		));
 	}
 
-	protected function stdHeader()
+	protected function stdHeader($active = NULL)
 	{
+		$upload_destinations = [];
+		if (ee()->cp->allowed_group('can_upload_new_files'))
+		{
+			$upload_destinations = ee('Model')->get('UploadDestination')
+				->with('NoAccess')
+				->fields('id', 'name')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('module_id', 0)
+				->all();
+
+			if (ee()->session->userdata['group_id'] != 1)
+			{
+				$member_group = ee()->session->userdata['group_id'];
+				$upload_destinations = $upload_destinations->filter(function($dir) use ($member_group)
+				{
+					return $dir->memberGroupHasAccess($member_group);
+				});
+			}
+
+			$choices = [];
+			foreach ($upload_destinations as $upload)
+			{
+				$choices[ee('CP/URL')->make('files/upload/' . $upload->getId())->compile()] = $upload->name;
+			}
+		}
+
+		$toolbar_items = [];
+
+		if (ee('Model')->get('File')->count())
+		{
+			$toolbar_items['export'] = [
+				'href'  => ee('CP/URL')->make('files/export'),
+				'title' => lang('export_all')
+			];
+		}
+
+		if ($active !== NULL)
+		{
+			$toolbar_items['sync'] = [
+				'href'  => ee('CP/URL')->make('files/uploads/sync/' . $active),
+				'title' => lang('sync')
+			];
+		}
+
 		ee()->view->header = array(
 			'title' => lang('file_manager'),
-			'form_url' => ee('CP/URL')->make('files'),
-			'toolbar_items' => array(
-				'download' => array(
-					'href' => ee('CP/URL')->make('files/export'),
-					'title' => lang('export_all')
-				)
-			),
-			'search_button_value' => lang('search_files')
+			'toolbar_items' => $toolbar_items,
+			'action_button' => ee()->cp->allowed_group('can_upload_new_files') && $upload_destinations->count() ? [
+				'text' => lang('upload_file'),
+				'filter_placeholder' => lang('filter_upload_directories'),
+				'choices' => count($choices) > 1 ? $choices : NULL,
+				'href' => ee('CP/URL')->make('files/upload/' . $upload_destinations->first()->getId())->compile()
+			] : NULL
 		);
 	}
 
@@ -341,18 +371,12 @@ abstract class AbstractFiles extends CP_Controller {
 	protected function listingsPage($files, $base_url)
 	{
 		$vars = array();
-		$search_terms = ee()->input->get_post('search');
+		$search_terms = ee()->input->get_post('filter_by_keyword');
 
 		if ($search_terms)
 		{
-			$base_url->setQueryStringVariable('search', $search_terms);
-			$files
-				->filterGroup()
-				->filter('title', 'LIKE', '%' . $search_terms . '%')
-				->orFilter('file_name', 'LIKE', '%' . $search_terms . '%')
-				->orFilter('mime_type', 'LIKE', '%' . $search_terms . '%')
-				->endFilterGroup();
-
+			$base_url->setQueryStringVariable('fliter_by_keyword', $search_terms);
+			$files->search(['title', 'file_name', 'mime_type'], $search_terms);
 			$vars['search_terms'] = htmlentities($search_terms, ENT_QUOTES, 'UTF-8');
 		}
 
@@ -360,6 +384,7 @@ abstract class AbstractFiles extends CP_Controller {
 		$vars['total_files'] = $total_files;
 
 		$filters = ee('CP/Filter')
+			->add('Keyword')
 			->add('Perpage', $total_files, 'show_all_files');
 
 		$filter_values = $filters->values();
@@ -383,25 +408,6 @@ abstract class AbstractFiles extends CP_Controller {
 			->perPage($perpage)
 			->currentPage($page)
 			->render($base_url);
-
-		$upload_destinations = ee('Model')->get('UploadDestination')
-			->with('NoAccess')
-			->fields('id', 'name')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('module_id', 0);
-
-		$upload_destinations = $upload_destinations->all();
-
-		if (ee()->session->userdata['group_id'] != 1)
-		{
-			$member_group = ee()->session->userdata['group_id'];
-			$upload_destinations = $upload_destinations->filter(function($dir) use ($member_group)
-			{
-				return $dir->memberGroupHasAccess($member_group);
-			});
-		}
-
-		$vars['directories'] = $upload_destinations;
 
 		ee()->javascript->set_global('file_view_url', ee('CP/URL')->make('files/file/view/###')->compile());
 		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');

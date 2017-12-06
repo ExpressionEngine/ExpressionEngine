@@ -1,30 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team,
- * 		- Original Development by Barrett Newton -- http://barrettnewton.com
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 require_once PATH_ADDONS.'channel/libraries/channel_form/Channel_form_exception.php';
 
 /**
- * ExpressionEngine Channel From Module Library
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Form Library
  */
 class Channel_form_lib
 {
@@ -101,8 +87,6 @@ class Channel_form_lib
 		ee()->set('channel_form', $this);
 		ee()->lang->loadfile('channel_form');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Creates the entry form
@@ -836,8 +820,6 @@ class Channel_form_lib
 		return $return;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Build the javascript output
 	 *
@@ -1163,8 +1145,6 @@ GRID_FALLBACK;
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create the custom field variables rows
 	 *
@@ -1255,8 +1235,6 @@ GRID_FALLBACK;
 		return $custom_field_variables;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add global and field errors
 	 *
@@ -1319,8 +1297,6 @@ GRID_FALLBACK;
 
 		return $conditional_errors;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Creates or edits an entry
@@ -1489,12 +1465,8 @@ GRID_FALLBACK;
 
 			if (ee()->input->post('unique_url_title', TRUE))
 			{
-				$url_title = $this->_meta['url_title'] ?
-					$this->_meta['url_title'] : url_title(
-						ee()->input->post('title', TRUE),
-						ee()->config->item('word_separator'),
-						TRUE
-					);
+				$title = ee()->input->post('title', TRUE);
+				$url_title = ($this->_meta['url_title']) ?: ee('Format')->make('Text', $title)->urlSlug();
 
 				// Max URL title length, minus uniqid length, minus separator
 				$url_title = substr($url_title, 0, URL_TITLE_MAX_LENGTH-23-1);
@@ -1756,10 +1728,7 @@ GRID_FALLBACK;
 
 		if ( ! isset($_POST['url_title']))
 		{
-			$_POST['url_title'] = url_title(
-						ee()->input->post('title', TRUE),
-						ee()->config->item('word_separator'),
-						TRUE);
+			$_POST['url_title'] = ee('Format')->make('Text', ee()->input->post('title', TRUE))->urlSlug();
 		}
 
 		//temporarily change site_id for cross-site forms
@@ -1777,51 +1746,52 @@ GRID_FALLBACK;
 
 		if (in_array($this->channel('channel_id'), $this->member->MemberGroup->AssignedChannels->pluck('channel_id')) OR (int) $this->member->MemberGroup->getId() == 1)
 		{
-			// Lastly we check for spam before inserting the data
-			$is_spam = ee('Spam')->isSpam($spam_content);
+			$entry_data = array_filter(
+				$_POST,
+				function($v) { return ! is_null($v); }
+			);
 
-			if ($is_spam === FALSE)
+			$this->entry->set($entry_data);
+			$this->entry->edit_date = ee()->localize->now;
+
+			if ( ! isset($_POST['category']) OR empty($_POST['category']))
 			{
-				$entry_data = array_filter(
-					$_POST,
-					function($v) { return ! is_null($v); }
-				);
+				$this->entry->Categories = NULL;
+			}
 
-				$this->entry->set($entry_data);
-				$this->entry->edit_date = ee()->localize->now;
+			$result = $this->entry->validate();
 
-				if ( ! isset($_POST['category']) OR empty($_POST['category']))
+			if (empty($this->field_errors) && empty($this->errors) && $result->isValid())
+			{
+				// Lastly we check for spam before saving a new entry
+				if ( ! $this->entry('entry_id'))
 				{
-					$this->entry->Categories = NULL;
-				}
+					// set the real group ID or 3 for guests for spam exemption check
+					// can't trust group_id on the session object due to _member_group_override()
+					$real_group_id = (ee()->session->userdata('member_id')) ? ee()->session->userdata('group_id') : 3;
+					$is_spam = $real_group_id != 1 && ee('Spam')->isSpam($spam_content);
 
-				$result = $this->entry->validate();
-
-				if (empty($this->field_errors) && empty($this->errors) && $result->isValid())
-				{
-					$this->entry->save();
+					if ($is_spam)
+					{
+						ee('Spam')->moderate('channel', $this->entry, $spam_content, $entry_data);
+					}
+					else
+					{
+						$this->entry->save();
+					}
 				}
 				else
 				{
-					$errors = $result->getAllErrors();
-
-					// only show the first error for each field to match CI's old behavior
-					$current_errors = array_map('current', $errors);
-					$this->field_errors = array_merge($this->field_errors, $current_errors);
+					$this->entry->save();
 				}
 			}
 			else
 			{
-				if ($this->entry('entry_id'))
-				{
-					$spam_data = array($_POST, NULL, $this->entry('entry_id'));
-				}
-				else
-				{
-					$spam_data = array($_POST, $this->channel('channel_id'));
-				}
+				$errors = $result->getAllErrors();
 
-				ee('Spam')->moderate(__FILE__, 'api_channel_form_channel_entries', 'save_entry', NULL, $spam_data, $spam_content);
+				// only show the first error for each field to match CI's old behavior
+				$current_errors = array_map('current', $errors);
+				$this->field_errors = array_merge($this->field_errors, $current_errors);
 			}
 		}
 		else
@@ -1971,8 +1941,6 @@ GRID_FALLBACK;
 		ee()->functions->redirect($return);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Converts text-based template parameter to boolean
 	 *
@@ -1994,8 +1962,6 @@ GRID_FALLBACK;
 
 		return $default;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Filters and sorts the categories
@@ -2050,8 +2016,6 @@ GRID_FALLBACK;
 		return array_merge($categories);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Retrieves current channel data
 	 *
@@ -2063,8 +2027,6 @@ GRID_FALLBACK;
 		return $this->channel->getProperty($key);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Clears the library's entry
 	 *
@@ -2074,8 +2036,6 @@ GRID_FALLBACK;
 	{
 		$this->entry = FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Display a custom field
@@ -2121,8 +2081,6 @@ GRID_FALLBACK;
 		return ee()->api_channel_fields->apply('display_field', array('data' => $this->entry('field_id_'.$field_id)));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Retrieves current entry data
 	 *
@@ -2137,8 +2095,6 @@ GRID_FALLBACK;
 		}
 
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load categories
@@ -2200,8 +2156,6 @@ GRID_FALLBACK;
 		$this->categories = $categories;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load channel
 	 *
@@ -2216,17 +2170,16 @@ GRID_FALLBACK;
 		//If two forms are on the same template, $this->channel needs to be redefined
 
 		$query = ee('Model')->get('Channel')
-			->with('ChannelFormSettings');
+			->with('ChannelFormSettings')
+			->with('Statuses');
 
 		if ($channel_id)
 		{
 			$query->filter('channel_id', $channel_id);
-		//	ee()->db->where('exp_channels.channel_id', ee('Security/XSS')->clean($channel_id));
 		}
 		elseif ($channel_name)
 		{
 			$query->filter('channel_name', $channel_name);
-		//	ee()->db->where('exp_channels.channel_name', ee('Security/XSS')->clean($channel_name));
 		}
 		else
 		{
@@ -2237,11 +2190,6 @@ GRID_FALLBACK;
 		$query->filter('Channel.site_id', $this->site_id);
 
 		$channel = $query->first();
-
-		// ee()->db->where('channels.site_id', $this->site_id);
-		// ee()->db->limit(1);
-
-		// $query = ee()->db->get('channels');
 
 		if ( ! isset($channel))
 		{
@@ -2258,8 +2206,6 @@ GRID_FALLBACK;
 		$this->fetch_custom_fields();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load custom fields
 	 *
@@ -2267,7 +2213,7 @@ GRID_FALLBACK;
 	 */
 	public function fetch_custom_fields()
 	{
-		$fields = $this->channel->getCustomFields();
+		$fields = $this->channel->getAllCustomFields();
 
 		foreach ($fields as $field)
 		{
@@ -2280,8 +2226,6 @@ GRID_FALLBACK;
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load entry
@@ -2353,8 +2297,6 @@ GRID_FALLBACK;
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load logged out member data
 	 *
@@ -2392,8 +2334,6 @@ GRID_FALLBACK;
 			$this->logged_out_group_id = $query->row('group_id');
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load settings
@@ -2444,8 +2384,6 @@ GRID_FALLBACK;
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load site
 	 *
@@ -2465,8 +2403,6 @@ GRID_FALLBACK;
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load statuses
 	 *
@@ -2475,24 +2411,21 @@ GRID_FALLBACK;
 	public function fetch_statuses()
 	{
 		//exit if already loaded, or if there is no status group
-		if ($this->statuses || ! $this->channel('status_group'))
+		if ($this->statuses || ! $this->channel->Statuses->count())
 		{
 			return;
 		}
 
-		ee()->load->model('channel_model');
-
-		$query = ee()->channel_model->get_channel_statuses($this->channel('status_group'));
-
-		$this->statuses = $query->result_array();
-
 		ee()->lang->loadfile('content');
 
-		foreach ($this->statuses as $index => $status)
+		foreach ($this->channel->Statuses as $index => $status)
 		{
-			$this->statuses[$index]['name'] = lang($status['status']);
-			$this->statuses[$index]['selected'] = ($status['status'] == $this->entry('status')) ? ' selected="selected"' : '';
-			$this->statuses[$index]['checked'] = ($status['status'] == $this->entry('status')) ? ' checked="checked"' : '';
+			$this->statuses[$index]['status_id'] = $status->getId();
+			$this->statuses[$index]['status'] = $status->status;
+			$this->statuses[$index]['selected'] = ($status->status == $this->entry('status'))
+				? ' selected="selected"' : '';
+			$this->statuses[$index]['checked'] = ($status->status == $this->entry('status'))
+				? ' checked="checked"' : '';
 		}
 
 		$member_group_id = $this->member->MemberGroup->getId();
@@ -2515,8 +2448,6 @@ GRID_FALLBACK;
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add a form attribute to entry form
@@ -2544,8 +2475,6 @@ GRID_FALLBACK;
 
 		$this->_form_attributes[$name] = $value;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add a hidden field to entry form
@@ -2659,8 +2588,6 @@ GRID_FALLBACK;
 	}
 
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * get Meta vars
 	 *
@@ -2731,8 +2658,6 @@ GRID_FALLBACK;
 		return $this->custom_fields[$field_name];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Retrieve field data
 	 * Returns array of all field data if no key specified
@@ -2765,8 +2690,6 @@ GRID_FALLBACK;
 		return array();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Gets the field id of a field
 	 *
@@ -2778,8 +2701,6 @@ GRID_FALLBACK;
 		return $this->get_field_data($field_name, 'field_id');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Gets the field name of a field
 	 *
@@ -2790,8 +2711,6 @@ GRID_FALLBACK;
 	{
 		return (isset($this->custom_field_names[$field_id])) ? $this->custom_field_names[$field_id] : FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Gets a field's options
@@ -3052,8 +2971,6 @@ GRID_FALLBACK;
 		return $options;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Gets a field's settings
 	 *
@@ -3071,8 +2988,6 @@ GRID_FALLBACK;
 		return $field_settings;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Gets the type of a field
 	 *
@@ -3083,8 +2998,6 @@ GRID_FALLBACK;
 	{
 		return $this->get_field_data($field_name, 'field_type');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Initialize the library properties
@@ -3269,8 +3182,6 @@ GRID_FALLBACK;
 	*/
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Replaces a tag
 	 *
@@ -3314,8 +3225,6 @@ GRID_FALLBACK;
 		return ee()->api_channel_fields->apply('replace_tag', array('data' => $data, 'params' => $params, 'tagdata' => $tagdata));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Clean an ID
 	 *
@@ -3333,8 +3242,6 @@ GRID_FALLBACK;
 
 		return ($data) ? $data : FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	public function send_ajax_response($msg, $error = FALSE)
 	{
@@ -3360,8 +3267,6 @@ GRID_FALLBACK;
 		ee()->output->send_ajax_response($msg, $error);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * swap_conditionals
 	 *
@@ -3379,8 +3284,6 @@ GRID_FALLBACK;
 
 		return $tagdata;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * swap_var_pair
@@ -3427,8 +3330,6 @@ GRID_FALLBACK;
 		return $tagdata;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * unserialize
 	 *
@@ -3447,8 +3348,6 @@ GRID_FALLBACK;
 
 		return (is_array($data)) ? $data : array();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * SAEF URL Title Javascript
@@ -3575,8 +3474,6 @@ SCRIPT;
 		return $ret;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Assigns proper group id to logged out users

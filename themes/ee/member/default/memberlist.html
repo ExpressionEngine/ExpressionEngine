@@ -6,10 +6,6 @@
 <td class='memberlistHead' style="width:21%;">{lang:name}</td>
 <td class='memberlistHead' style="width:13%;">{lang:forum_posts}</td>
 <td class='memberlistHead' style="width:8%;">{lang:email_short}</td>
-<td class='memberlistHead' style="width:8%;">{lang:url}</td>
-<td class='memberlistHead' style="width:8%;">{lang:aol}</td>
-<td class='memberlistHead' style="width:8%;">{lang:icq}</td>
-<td class='memberlistHead' style="width:8%;">{lang:yahoo_short}</td>
 <td class='memberlistHead' style="width:13%;">{lang:join_date}</td>
 <td class='memberlistHead' style="width:13%;">{lang:last_visit}</td>
 </tr>
@@ -18,7 +14,7 @@
 {member_rows}
 
 <tr>
-<td class='memberlistFooter' colspan="9" align='center' valign='middle'>
+<td class='memberlistFooter' colspan="5" align='center' valign='middle'>
 
 <div class="defaultSmall">
 <b>{lang:show}</b>
@@ -126,8 +122,6 @@ function delete_search_field(obj)
 		<option value='screen_name'>{lang:search_field}</option>
 		<option value='screen_name'>{lang:mbr_screen_name}</option>
 		<option value='email'>{lang:mbr_email_address}</option>
-		<option value='url'>{lang:mbr_url}</option>
-		<option value='location'>{lang:mbr_location}</option>
 		{custom_profile_field_options}
 		</select>
 		<a href="#" onclick="add_search_field(); return false;" class="defaultBold">+</a>

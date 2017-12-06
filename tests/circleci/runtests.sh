@@ -32,6 +32,27 @@ installmysql() {
 	set +x
 }
 
+setpermissions() {
+	cp tests/circleci/config.php system/user/config/
+	cp tests/circleci/license.key system/user/config/
+	cp tests/docker/EllisLabUpdate.pub system/ee/EllisLab/ExpressionEngine
+	chmod 666 system/user/config/config.php
+	chmod -R 777 system/user
+	chmod -R 777 system/ee/legacy/translations
+	chmod 777 tests/rspec/support/tmp
+	mkdir -p tests/rspec/support/file-sync/uploads
+	chmod -R 777 tests/rspec/support/file-sync/uploads
+	chmod -R 777 images
+	chmod +x tests/circleci/runtests.sh
+}
+
+# JS Shim for ES5/ES6 with Capybara
+addjsshim() {
+	cp themes/ee/asset/javascript/src/react/react.min.js themes/ee/asset/javascript/src/react/react.min~orig.js
+	cat tests/rspec/shim.min.js themes/ee/asset/javascript/src/react/react.min.js > themes/ee/asset/javascript/src/react/react.min-shimmed.js
+	mv themes/ee/asset/javascript/src/react/react.min-shimmed.js themes/ee/asset/javascript/src/react/react.min.js
+}
+
 # Explode php_versions environment variable since we can't assign
 # arrays in the YML
 PHP_VERSIONS_ARRAY=(${php_versions// / })
@@ -66,17 +87,35 @@ do
 		phpenv global $PHPVERSION
 		echo "LoadModule php${PHP_MAJOR_VERSION}_module /home/ubuntu/.phpenv/versions/${PHPVERSION}/libexec/apache2/libphp${PHP_MAJOR_VERSION}.so" > /etc/apache2/mods-available/php5.load
 
+		setpermissions
+
+		addjsshim
+
+		if [ $CIRCLE_NODE_INDEX -eq 2 ]
+		then
+			APP_VERSION=`cat system/ee/legacy/libraries/Core.php | perl -ne '/'\''APP_VER'\'',\s+'\''(.*)'\''/g && print $1'`
+			gulp app --archive --dirty --local-key --upload-circle-build --version=$APP_VERSION
+		fi
+
 		# Disable opcode cache
 		echo -e "\n[opcache]\nopcache.enable=0" | sudo sh -c "cat >> /home/ubuntu/.phpenv/versions/${PHPVERSION}/etc/php.ini"
+
+		# Get rid of ridiculous warning in PHP 5.6, we don't even use $HTTP_RAW_POST_DATA
+		# http://stackoverflow.com/questions/26261001/warning-about-http-raw-post-data-being-deprecated
+		echo -e "\n[PHP]\nalways_populate_raw_post_data=-1" | sudo sh -c "cat >> /home/ubuntu/.phpenv/versions/${PHPVERSION}/etc/php.ini"
 
 		sudo service apache2 restart
 
 		# We'll store our build artifacts under the name of the current PHP version
 		mkdir -p $CIRCLE_ARTIFACTS/$PHPVERSION/
 
+		# Clear cache
+		rm -rf system/user/cache/*
+
 		pushd tests/rspec
 			# Run the tests, outputting the results in the artifacts directory.
 			printf "Running Rspec tests\n\n"
+			bundle install --without development --deployment
 			bundle exec rspec -c -fd -fh -o $CIRCLE_ARTIFACTS/$PHPVERSION/rspec.html tests/**/*.rb
 
 			# Append status code for this test
@@ -90,17 +129,34 @@ do
 			fi
 		popd
 
+		# Repo was likely clobbered by upgrade, reset
+		sudo chown -R ubuntu *
+		git reset HEAD --hard
+
 		# PHPUnit tests
 		pushd system/ee/EllisLab/Tests/
 			printf "Running PHPUnit tests\n\n"
-			phpunit ExpressionEngine/ > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit.txt
+			composer install --prefer-source --no-interaction
+			vendor/bin/phpunit ExpressionEngine/ > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit.txt
 
 			# Save our exit status code
 			((STATUS+=$?))
 
 			# Remove CLI colors
 			sed -i -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})*)?m//g" $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit.txt
+		popd
 
+		# Updater microapp unit tests
+		pushd system/ee/installer/updater/EllisLab/Tests/
+			printf "Running PHPUnit tests\n\n"
+			composer install --prefer-source --no-interaction
+			vendor/bin/phpunit ExpressionEngine/ > $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit-updater.txt
+
+			# Save our exit status code
+			((STATUS+=$?))
+
+			# Remove CLI colors
+			sed -i -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})*)?m//g" $CIRCLE_ARTIFACTS/$PHPVERSION/phpunit-updater.txt
 		popd
 	fi
 	((i++))

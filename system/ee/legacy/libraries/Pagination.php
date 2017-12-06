@@ -1,29 +1,15 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.4
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Pagination Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Pagination
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Pagination
  */
-
 class EE_Pagination {
 
 	var $base_url			= ''; // The page we are linking to
@@ -80,8 +66,6 @@ class EE_Pagination {
 		log_message('debug', "Pagination Class Initialized");
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * This is the method you want.
 	 */
@@ -89,8 +73,6 @@ class EE_Pagination {
 	{
 		return new Pagination_object();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Initialize Preferences
@@ -112,8 +94,6 @@ class EE_Pagination {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generate the pagination links
@@ -191,8 +171,6 @@ class EE_Pagination {
 
 		return $output;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create's an array of pagination links including the first, previous,
@@ -366,8 +344,6 @@ class EE_Pagination {
 		return $link_array;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remove doubles lashes from URLs
 	 *
@@ -391,8 +367,6 @@ class EE_Pagination {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Determine's the current page number using either the query string
@@ -467,8 +441,6 @@ class Pagination_object {
 		ee()->load->library('template', NULL, 'TMPL');
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Retrieve non-public properties
 	 * @param  string $name  Name of the property
@@ -481,8 +453,6 @@ class Pagination_object {
 			return $this->{'_'.$name};
 		}
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Sets non-public properties
@@ -499,8 +469,6 @@ class Pagination_object {
 			$this->{'_'.$name} = $value;
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Prepare the pagination template
@@ -540,7 +508,7 @@ class Pagination_object {
 			// Grab the parameters from {pagination_links}
 			if (preg_match("/".LD."pagination_links(.*)".RD."/", $template, $pagination_links_match))
 			{
-				$parameters = ee()->functions->assign_parameters($pagination_links_match[1]);
+				$parameters = ee('Variables/Parser')->parseTagParameters($pagination_links_match[1]);
 
 				// Check for page_padding
 				if (isset($parameters['page_padding']))
@@ -598,8 +566,6 @@ class Pagination_object {
 
 		return $template;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Build the pagination out, storing it in the Pagination_object
@@ -801,8 +767,6 @@ class Pagination_object {
 		return TRUE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Renders all of the pagination data in the current template.
 	 *
@@ -926,8 +890,6 @@ class Pagination_object {
 				break;
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Parse {if previous_page} and {if next_page}

@@ -1,31 +1,19 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
 use LogicException;
+use EllisLab\ExpressionEngine\Model\Content\ContentModel;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Select Query
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Select Query
  */
 class Select extends Query {
 
@@ -33,6 +21,22 @@ class Select extends Query {
 	protected $aliases = array();
 	protected $relations = array();
 	protected $model_fields = array();
+	protected $searched_fields = array();
+	protected $additional_search = array();
+
+	/**
+	 * @var int $table_join_limit MySQL only allows 61 tables in a single
+	 *   statement. We'll keep our joins nunder that.
+	 */
+	private $table_join_limit = 59;
+
+	protected function getClass($alias = '')
+	{
+		$alias = ($alias) ?: $this->root_alias;
+		$model = $this->expandAlias($alias);
+		$meta = $this->store->getMetaDataReader($model);
+		return $meta->getClass();
+	}
 
 	/**
 	 *
@@ -41,11 +45,35 @@ class Select extends Query {
 	{
 		$query = $this->buildQuery();
 
-		return new Result(
-			$query->get()->result_array(),
+		$result_array = $query->get()->result_array();
+
+		if ( ! empty($result_array))
+		{
+			$withs = $this->builder->getWiths();
+			$aliases = array_merge(array($this->root_alias), array_keys($withs));
+			foreach ($aliases as $alias)
+			{
+				if (stripos($alias, ' as ') !== FALSE)
+				{
+					$parts = explode(' ', $alias);
+					$alias = end($parts);
+				}
+
+				$class = $this->getClass($alias);
+				if ( ! is_null($class::getMetaData('field_data')))
+				{
+					$result_array = $this->getExtraData($alias, $result_array);
+				}
+			}
+		}
+
+		$result = new Result(
+			$result_array,
 			$this->aliases,
 			$this->relations
 		);
+
+		return $result;
 	}
 
 	/**
@@ -61,6 +89,14 @@ class Select extends Query {
 
 		$this->root_alias = $alias;
 		$this->selectModel($query, $from, $alias);
+
+		$class = $this->getClass();
+
+		if ( ! is_null($class::getMetaData('field_data')))
+		{
+			$this->augmentQuery($query);
+		}
+
 		$this->processWiths($query, $from, $alias);
 
 		// lazy load adds a where condition
@@ -173,6 +209,278 @@ class Select extends Query {
 		}
 
 		return $queued_joins;
+	}
+
+	protected function getExtraData($alias, $result_array)
+	{
+		$meta  = $this->store->getMetaDataReader($this->expandAlias($alias));
+		$class = $meta->getClass();
+
+		$fields = $this->getFields();
+
+		// Bail if this query is selecting specific fields and none of those
+		// fields would be found in the field data tables
+		if ( ! empty($fields))
+		{
+			$found = FALSE;
+			foreach ($fields as $field)
+			{
+				if (strpos($field, 'field_id_') !== FALSE)
+				{
+					$found = TRUE;
+				}
+			}
+
+			if ( ! $found)
+			{
+				return $result_array;
+			}
+		}
+
+		$meta_field_data = $class::getMetaData('field_data');
+
+		$field_model     = ee('Model')->make($meta_field_data['field_model']);
+
+		// let's make life a bit easier
+		$item_key_column   = $alias . '__' . $meta->getPrimaryKey();
+		$table_prefix      = $alias;
+		$join_table_prefix = $field_model->getTableName();
+		$column_prefix     = $field_model->getColumnPrefix();
+		$primary_key       = $meta->getPrimaryKey();
+		$table_name        = $class::getMetaData('table_name');
+		$parent_key        = "{$table_name}.{$primary_key}";
+
+		if (array_key_exists('group_column', $meta_field_data))
+		{
+			$meta_field_data['group_column'] = $alias . '__' . $meta_field_data['group_column'];
+			$structure_ids = array_map(function($column) use($meta_field_data){
+				if (array_key_exists($meta_field_data['group_column'], $column))
+				{
+					return $column[$meta_field_data['group_column']];
+				}
+			}, $result_array);
+
+			$structure_ids = array_unique($structure_ids);
+			$structure_models = ee('Model')->get($meta_field_data['structure_model'], $structure_ids)->all();
+
+			$fields = array();
+			foreach ($structure_models as $model)
+			{
+				foreach ($model->getAllCustomFields() as $f)
+				{
+					if ( ! $f->legacy_field_data)
+					{
+						$fields[$f->field_id] = $f;
+					}
+				}
+			}
+			$fields = array_values($fields);
+		}
+		else
+		{
+			$fields = ee('Model')->get($meta_field_data['field_model'])
+				->filter($column_prefix.'legacy_field_data', 'n')
+				->all()
+				->asArray();
+		}
+
+		if ( ! empty($fields))
+		{
+			$entry_ids = array_map(function($column) use ($item_key_column) {
+				return $column[$item_key_column];
+			}, $result_array);
+
+			$chunks = array_chunk($fields, $this->table_join_limit);
+
+			foreach ($chunks as $fields)
+			{
+				$query = ee('Model/Datastore')->rawQuery();
+
+				$main_table = "{$table_prefix}_field_id_{$fields[0]->field_id}";
+
+				$query->from($table_name);
+				$query->select("{$parent_key} as {$item_key_column}", FALSE);
+
+				foreach ($fields as $field)
+				{
+					$field_id = $field->getId();
+
+					$table_alias = "{$table_prefix}_field_id_{$field_id}";
+
+					foreach ($field->getColumnNames() as $column)
+					{
+						$query->select("{$table_alias}.{$column} as {$table_prefix}__{$column}", FALSE);
+					}
+
+					$query->join("{$join_table_prefix}{$field_id} AS {$table_alias}", "{$table_alias}.{$primary_key} = {$parent_key}", 'LEFT');
+				}
+
+				$query->where_in("{$parent_key}", $entry_ids);
+
+				$data = $query->get();
+
+				foreach ($data->result_array() as $row)
+				{
+					array_walk($result_array, function (&$data, $key, $field_data) use ($item_key_column){
+						if ($data[$item_key_column] == $field_data[$item_key_column])
+						{
+							$data = array_merge($data, $field_data);
+						}
+					}, $row);
+				}
+				$data->free_result();
+			}
+		}
+
+		return $result_array;
+	}
+
+	private function getCustomFields($model_name, $column_prefix, $field_ids)
+	{
+		$cache_key = "CustomFields/{$model_name}/" . implode(',', $field_ids);
+
+		if (($fields = ee()->session->cache(__CLASS__, $cache_key, FALSE)) === FALSE)
+		{
+			$fields = ee('Model')->get($model_name)
+				->fields($column_prefix.'field_id')
+				->filter($column_prefix.'field_id', 'IN', $field_ids)
+				->filter($column_prefix.'legacy_field_data', 'n')
+				->all();
+
+			ee()->session->set_cache(__CLASS__, $cache_key, $fields);
+		}
+
+		return $fields;
+	}
+
+	protected function augmentQuery($query)
+	{
+		$meta  = $this->store->getMetaDataReader($this->expandAlias($this->root_alias));
+		$class = $meta->getClass();
+
+		$meta_field_data = $class::getMetaData('field_data');
+
+		$field_model = ee('Model')->make($meta_field_data['field_model']);
+
+		// let's make life a bit easier
+		$table_prefix      = $meta->getName();
+		$join_table_prefix = $field_model->getTableName();
+		$column_prefix     = $field_model->getColumnPrefix();
+		$primary_key       = $meta->getPrimaryKey();
+		$parent_key        = "{$table_prefix}__{$primary_key}";
+
+		$field_ids = array();
+
+		// It's possible we'll be asked to search across more tables than we can
+		// JOIN in a single query. In such cases we can simply search each of the
+		// tables individually and build up a list of primary keys to filter on
+		foreach ($this->builder->getSearch() as $field => $words)
+		{
+			if (strpos($field, $column_prefix.'field_id') === 0)
+			{
+				$field_ids[] = str_replace($column_prefix.'field_id_', '', $field);
+			}
+		}
+
+		if ( ! empty($field_ids))
+		{
+			$cache_key = "Query/Select/additionalSearch/" . md5(json_encode($field_ids));
+
+			if (($cached_search = ee()->session->cache(__CLASS__, $cache_key, FALSE)) === FALSE)
+			{
+				$pks = array();
+
+				$fields = $this->getCustomFields($meta_field_data['field_model'], $column_prefix, $field_ids);
+
+				// If we have fewer than our table limit we'll just keep on keeping on.
+				if ($fields->count() > $this->table_join_limit)
+				{
+					$search = $this->builder->getSearch();
+
+					foreach ($fields->pluck('field_id') as $field_id)
+					{
+						$field = "field_id_{$field_id}";
+						$words = $search[$field];
+
+						$sq = ee('Model/Datastore')->rawQuery();
+						$sq->select($primary_key);
+						$sq->from("{$join_table_prefix}{$field_id}");
+
+						$sq->or_start_like_group();
+						foreach ($words as $word => $include)
+						{
+							$fn = $include ? 'like' : 'not_like';
+							$sq->$fn($field, $word);
+						}
+						$sq->end_like_group();
+
+						$data = $sq->get();
+						foreach ($data->result_array() as $row)
+						{
+							$pks[] = $row[$primary_key];
+						}
+						$data->free_result();
+
+						$this->searched_fields[] = "{$column_prefix}field_id_{$field_id}";
+					}
+
+					if ( ! empty($pks))
+					{
+						$pks = array_unique($pks);
+						$tables = array_keys($meta->getTables());
+						$this->additional_search = array("{$table_prefix}_{$tables[0]}.{$primary_key}", $pks);
+					}
+
+					// Reset: we've investigated these and don't need to JOIN them for
+					// searching's sake
+					$field_ids = array();
+				}
+
+				ee()->session->set_cache(__CLASS__, $cache_key, array($this->additional_search, $this->searched_fields, $field_ids));
+			}
+			else
+			{
+				$this->additional_search = $cached_search[0];
+				$this->searched_fields = $cached_search[1];
+				$field_ids = $cached_search[2];
+			}
+		}
+
+		foreach ($this->builder->getFilters() as $filter)
+		{
+			$field = $filter[0];
+			if (strpos($field, $column_prefix.'field_id') === 0)
+			{
+				$field_ids[] = str_replace($column_prefix.'field_id_', '', $field);
+			}
+		}
+
+		foreach ($this->builder->getOrders() as $order)
+		{
+			$field = $order[0];
+
+			if (strpos($field, $column_prefix.'field_id') === 0)
+			{
+				$field_ids[] = str_replace($column_prefix.'field_id_', '', $field);
+			}
+		}
+
+		if ( ! empty($field_ids))
+		{
+			$field_ids = array_unique($field_ids);
+
+			$fields = $this->getCustomFields($meta_field_data['field_model'], $column_prefix, $field_ids);
+
+			foreach ($fields->pluck('field_id') as $field_id)
+			{
+				$table_alias = "{$table_prefix}_field_id_{$field_id}";
+				$column_alias = "{$table_prefix}__{$column_prefix}field_id_{$field_id}";
+
+				$query->select("{$table_alias}.{$column_prefix}field_id_{$field_id} as {$column_alias}", FALSE);
+				$query->join("{$join_table_prefix}{$field_id} AS {$table_alias}", "{$table_alias}.{$primary_key} = {$this->model_fields[$table_prefix][$parent_key]}", 'LEFT');
+				$this->model_fields[$table_prefix][$column_alias] = $table_alias . ".{$column_prefix}field_id_{$field_id}";
+			}
+		}
 	}
 
 	/**
@@ -346,6 +654,11 @@ class Select extends Query {
 	{
 		foreach ($search as $field => $words)
 		{
+			if (in_array($field, $this->searched_fields))
+			{
+				continue;
+			}
+
 			$field = $this->translateProperty($field);
 
 			$query->or_start_like_group();
@@ -357,6 +670,14 @@ class Select extends Query {
 			}
 
 			$query->end_like_group();
+		}
+
+		if ( ! empty($this->additional_search))
+		{
+			// We need to add this WHERE inside the LIKE group else the query doesn't work
+			$query->or_where_in($this->additional_search[0], $this->additional_search[1]);
+			$where = array_pop($query->ar_where);
+			$query->ar_like[] = $where;
 		}
 	}
 

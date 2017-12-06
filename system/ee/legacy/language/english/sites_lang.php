@@ -2,9 +2,7 @@
 
 $lang = array(
 
-'btn_create_site' => 'Create Site',
-
-'btn_edit_site' => 'Edit Site',
+'add_site' => 'Add Site',
 
 'btn_site_limit_reached' => 'Site Limit reached',
 
@@ -56,7 +54,7 @@ $lang = array(
 
 'site_online' => 'Website online?',
 
-'site_online_desc' => 'When set to <b>offline</b>, only super admins and member groups with permissions will be able to browse this website.',
+'site_online_desc' => 'When disabled, only Super Admins and member groups with permissions will be able to browse this website.',
 
 'site_updated' => 'Site Updated',
 

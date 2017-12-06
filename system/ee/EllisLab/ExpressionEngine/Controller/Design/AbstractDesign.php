@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Design;
 
@@ -13,27 +20,7 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 use EllisLab\ExpressionEngine\Service\Model\Query\Builder as QueryBuilder;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Abstract Design Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Abstract Design Controller
  */
 abstract class AbstractDesign extends CP_Controller {
 
@@ -266,7 +253,7 @@ abstract class AbstractDesign extends CP_Controller {
 
 		$header = array(
 			'title' => lang('template_manager'),
-			'form_url' => ee('CP/URL')->make('design/template/search', array('return' => $return)),
+			'search_form_url' => ee('CP/URL')->make('design/template/search', array('return' => $return)),
 			'toolbar_items' => array(
 				'settings' => array(
 					'href' => ee('CP/URL')->make('settings/template'),
@@ -285,7 +272,7 @@ abstract class AbstractDesign extends CP_Controller {
 			->filter('site_id', ee()->config->item('site_id'))
 			->count() > 0)
 		{
-			$header['toolbar_items']['download'] =array(
+			$header['toolbar_items']['export'] =array(
 				'href' => ee('CP/URL', 'design/export'),
 				'title' => lang('export_all')
 			);
@@ -334,6 +321,15 @@ abstract class AbstractDesign extends CP_Controller {
 		ee()->javascript->set_global(
 			'editor.lint', $this->_get_installed_plugins_and_modules()
 		);
+
+		$height = ee()->config->item('codemirror_height');
+
+		if ($height !== FALSE)
+		{
+			ee()->javascript->set_global(
+				'editor.height', $height
+			);
+		}
 
 		ee()->cp->add_to_head(ee()->view->head_link('css/codemirror.css'));
 		ee()->cp->add_to_head(ee()->view->head_link('css/codemirror-additions.css'));
@@ -514,7 +510,7 @@ abstract class AbstractDesign extends CP_Controller {
 
 			if (strncmp($template->template_name, $hidden_indicator, $hidden_indicator_length) == 0)
 			{
-				$template_name = '<span class="hidden">' . $template_name . '</span>';
+				$template_name = '<span class="hidden-tmp">' . $template_name . '</span>';
 			}
 
 			if ($template->template_name == 'index')

@@ -3,7 +3,9 @@
 	<b><?=lang('filters')?>: </b>
 	<ul>
 	<?php foreach ($filters as $filter): ?>
-		<li><?=$filter?></li>
+		<li<?php if ( ! empty($filter['class'])):?> class="<?=$filter['class']?>"<?php endif ?>>
+			<?=$filter['html']?>
+		</li>
 	<?php endforeach; ?>
 	<?php if ($has_reset): ?>
 		<li class="filter-clear"><a href="<?=$reset_url?>"><?=lang('clear_filters')?></a></li>

@@ -1,31 +1,17 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\Addons\Spam\Service;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
+ * Spam Training
  */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Spam Module
- *
- * @package		ExpressionEngine
- * @subpackage	Extensions
- * @category	Extensions
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- */
-
 class Training {
 
 	public $stop_words_path = 'spam/training/stopwords.txt';
@@ -42,8 +28,6 @@ class Training {
 		$this->kernel = $this->getKernel($kernel);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Close the shared memory segment if we're using it.
 	 *
@@ -57,8 +41,6 @@ class Training {
 			shmop_close($this->shm_id);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load the classifier object from memory if available, otherwise construct
@@ -104,8 +86,6 @@ class Training {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Deletes the shared memory segment containing our classifier
 	 *
@@ -138,8 +118,6 @@ class Training {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns a new classifier based on our training data.
 	 *
@@ -160,8 +138,6 @@ class Training {
 		return ee('spam:Classifier', $training, $collection, $stop_words);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns an array of all the parameters for a class
 	 *
@@ -171,15 +147,15 @@ class Training {
 	 */
 	private function getParameters($class)
 	{
-		ee()->db->select('mean, variance');
-		ee()->db->from('spam_parameters');
-		ee()->db->where('class', $class);
-		ee()->db->where('kernel_id', $this->kernel->kernel_id);
-		$query = ee()->db->get();
+		$parameters = ee('Model')->get('spam:SpamParameter')
+			->fields('mean', 'variance')
+			->filter('class', $class)
+			->filter('kernel_id', $this->kernel->kernel_id)
+			->all();
 
 		$result = array();
 
-		foreach ($query->result() as $parameter)
+		foreach ($parameters as $parameter)
 		{
 				$result[] = ee('spam:Distribution', $parameter->mean, $parameter->variance);
 		}
@@ -195,16 +171,15 @@ class Training {
 	 */
 	public function getVocabulary()
 	{
-		$kernel = $this->getKernel($this->kernel);
-		ee()->db->select('term, count');
-		ee()->db->from('spam_vocabulary');
-		ee()->db->where('kernel_id', $kernel->kernel_id);
-		ee()->db->limit(ee()->config->item('spam_word_limit') ?: 5000);
-		$query = ee()->db->get();
+		$vocab = ee('Model')->get('spam:SpamVocabulary')
+			->fields('term', 'count')
+			->filter('kernel_id', $this->kernel->kernel_id)
+			->limit(ee()->config->item('spam_word_limit') ?: 5000)
+			->all();
 
 		$result = array();
 
-		foreach ($query->result() as $word)
+		foreach ($vocab as $word)
 		{
 			$result[$word->term] = $word->count;
 		}
@@ -212,18 +187,15 @@ class Training {
 		return $result;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns the total document count for the current kernel
 	 *
 	 * @access public
 	 * @return array
 	 */
-	public function getDocumentCount($kernel = "")
+	public function getDocumentCount()
 	{
-		$kernel = $this->getKernel($kernel) ?: $this->kernel;
-		return $kernel->count;
+		return $this->kernel->count;
 	}
 
 	/**
@@ -235,7 +207,9 @@ class Training {
 	 */
 	private function getKernel($name)
 	{
-		$kernel = ee('Model')->get('spam:SpamKernel')->first();
+		$kernel = ee('Model')->get('spam:SpamKernel')
+			->filter('name', $name)
+			->first();
 
 		if (empty($kernel))
 		{

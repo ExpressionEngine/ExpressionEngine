@@ -1,34 +1,19 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Channels;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Channel Manager Search Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channels\Search Controller
  */
 class Search extends AbstractChannelsController {
 
@@ -55,7 +40,7 @@ class Search extends AbstractChannelsController {
 			),
 			'custom_fields' => array(
 				'query' => ee('Model')->get('ChannelField')
-					->filter('site_id', ee()->config->item('site_id'))
+					->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
 					->filterGroup()
 					->filter('field_label', 'LIKE', '%' . $search_terms . '%')
 					->orFilter('field_name', 'LIKE', '%' . $search_terms . '%')
@@ -64,7 +49,7 @@ class Search extends AbstractChannelsController {
 			),
 			'field_groups' => array(
 				'query' => ee('Model')->get('ChannelFieldGroup')
-					->filter('site_id', ee()->config->item('site_id'))
+					->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
 					->filter('group_name', 'LIKE', '%' . $search_terms . '%'),
 				'table_create_method' => 'buildTableFromChannelGroupsQuery',
 			),
@@ -83,12 +68,6 @@ class Search extends AbstractChannelsController {
 					->orFilter('cat_description', 'LIKE', '%' . $search_terms . '%')
 					->endFilterGroup(),
 				'table_create_method' => 'buildTableFromCategoriesQuery',
-			),
-			'status_groups' => array(
-				'query' => ee('Model')->get('StatusGroup')
-					->filter('site_id', ee()->config->item('site_id'))
-					->filter('group_name', 'LIKE', '%' . $search_terms . '%'),
-				'table_create_method' => 'buildTableFromStatusGroupsQuery',
 			)
 		);
 

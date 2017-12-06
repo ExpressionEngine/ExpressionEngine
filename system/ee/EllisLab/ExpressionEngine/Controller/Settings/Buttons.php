@@ -1,31 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Settings;
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP HTML Buttons Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * HTML Buttons Controller
  */
 class Buttons extends Settings {
 
@@ -190,6 +177,8 @@ class Buttons extends Settings {
 
 		$vars['cp_page_title'] = lang('create_html_button');
 
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('settings/buttons'), lang('html_buttons'));
+
 		$this->form($vars, $values);
 	}
 
@@ -209,6 +198,8 @@ class Buttons extends Settings {
 		);
 
 		$this->button = ee('Model')->get('HTMLButton', $id)->first();
+
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('settings/buttons'), lang('html_buttons'));
 
 		$this->form($vars, $this->button->getValues());
 	}

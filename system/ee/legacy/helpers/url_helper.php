@@ -1,31 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-/**
- * CodeIgniter
- *
- * An open source application development framework for PHP 4.3.2 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2006, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
 
 /**
- * ExpressionEngine URL Helper
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
+/**
+ * URL Helper
+ */
 
 /**
  * Create a CP Path
@@ -48,8 +33,6 @@ function cp_url($path, $qs = '')
 	return $url->compile();
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Create URL Title
  *
@@ -68,43 +51,14 @@ if ( ! function_exists('url_title'))
 {
 	function url_title($str, $separator = 'dash', $lowercase = FALSE)
 	{
-		if (UTF8_ENABLED)
-		{
-			ee()->load->helper('text');
+		ee()->load->library('logger');
+		ee()->logger->deprecated('4.0.0', "ee('Format')->make('Text', \$str)->urlSlug()");
 
-			$str = utf8_decode($str);
-			$str = preg_replace_callback('/(.)/', 'convert_accented_characters', $str);
-		}
-
+		// to not break legacy code using this function, invalid separators will map to an underscore
 		$separator = ($separator == 'dash') ? '-' : '_';
-
-		$trans = array(
-						'&\#\d+?;'					=> '',
-						'&\S+?;'					=> '',
-						'\s+|/+'					=> $separator,
-						'[^a-z0-9\-\._]'			=> '',
-						$separator.'+'				=> $separator,
-						'^[-_]+|[-_]+$'				=> '',
-						'\.+$'						=> ''
-					  );
-
-		$str = strip_tags($str);
-
-		foreach ($trans as $key => $val)
-		{
-			$str = preg_replace("#".$key."#i", $val, $str);
-		}
-
-		if ($lowercase === TRUE)
-		{
-			$str = strtolower($str);
-		}
-
-		return trim(stripslashes($str));
+		return (string) ee('Format')->make('Text', $str)->urlSlug(['separator' => $separator, 'lowercase' => $lowercase]);
 	}
 }
-
-// --------------------------------------------------------------------
 
 /**
  * Anchor Link
@@ -142,8 +96,6 @@ function anchor($uri = '', $title = '', $attributes = '')
 }
 
 
-// ------------------------------------------------------------------------
-
 /**
  * Site URL
  *
@@ -162,8 +114,6 @@ if ( ! function_exists('site_url'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Base URL
  *
@@ -179,8 +129,6 @@ if ( ! function_exists('base_url'))
 		return ee()->config->slash_item('base_url');
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Current URL
@@ -198,8 +146,6 @@ if ( ! function_exists('current_url'))
 		return ee()->config->site_url(ee()->uri->uri_string());
 	}
 }
-
-// ------------------------------------------------------------------------
 /**
  * URL String
  *
@@ -216,8 +162,6 @@ if ( ! function_exists('uri_string'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Index page
  *
@@ -233,8 +177,6 @@ if ( ! function_exists('index_page'))
 		return ee()->config->item('index_page');
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Anchor Link - Pop-up version
@@ -286,8 +228,6 @@ if ( ! function_exists('anchor_popup'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Mailto Link
  *
@@ -313,8 +253,6 @@ if ( ! function_exists('mailto'))
 		return '<a href="mailto:'.$email.'"'.$attributes.'>'.$title.'</a>';
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Encoded Mailto Link
@@ -426,8 +364,6 @@ if ( ! function_exists('safe_mailto'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Auto-linker
  *
@@ -496,8 +432,6 @@ if ( ! function_exists('auto_link'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Prep URL
  *
@@ -526,8 +460,6 @@ if ( ! function_exists('prep_url'))
 		return $str;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Header Redirect
@@ -578,8 +510,6 @@ if ( ! function_exists('redirect'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Parse out the attributes
  *
@@ -620,7 +550,5 @@ if ( ! function_exists('_parse_attributes'))
 		return $att;
 	}
 }
-
-// --------------------------------------------------------------------
 
 // EOF

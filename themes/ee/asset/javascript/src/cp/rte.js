@@ -1,7 +1,15 @@
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
 (function($) {
 
 	var	$toolset_editor = $('<div id="rte_toolset_editor_modal"><div class="contents"/></div>');
-	
+
 	// make the modal
 	$toolset_editor.dialog({
 		width: 600,
@@ -16,16 +24,16 @@
 		}
 	});
 
-	
+
 	// My Account - Toolset dropdown
 	$('body').on('change', '#toolset_id', function() {
-	
+
 		var toolset_id = $(this).val();
 
 		if (toolset_id == '0' || toolset_id == EE.rte.my_toolset_id) {
 			$('#edit_toolset').show();
 
-			// show the toolset editor if creating a custom toolset for the first time 
+			// show the toolset editor if creating a custom toolset for the first time
 			if (toolset_id == '0') {
 				load_rte_builder(EE.rte.url.edit_my_toolset.replace(/&amp;/g,'&'));
 			}
@@ -43,7 +51,7 @@
 	$('#edit_toolset').click(function(){
 		load_rte_builder(EE.rte.url.edit_my_toolset.replace(/&amp;/g,'&'), EE.rte.lang.edit_my_toolset)
 	});
-	
+
 
 	// Load the RTE Builder
 	function load_rte_builder(url, dialog_title)
@@ -54,12 +62,12 @@
 				$.ee_notice(data.error, {type: 'error'});
 				return;
 			}
-			
+
 			// populate dialog innards
 			$toolset_editor.find('.contents').html(data.success);
-			
+
 			// show dialog
-			$toolset_editor			
+			$toolset_editor
 				.dialog('option', 'title', dialog_title)
 				.dialog('open');
 		});
@@ -70,12 +78,12 @@
 		e.preventDefault();
 
 		// Editing or Creating?
-		var title = (this.id == 'create_toolset') ? EE.rte.lang.create_toolset : EE.rte.lang.edit_toolset;		
+		var title = (this.id == 'create_toolset') ? EE.rte.lang.create_toolset : EE.rte.lang.edit_toolset;
 
 		// Load the RTE Builder
 		load_rte_builder($(this).attr('href'), title);
 	});
-	
+
 
 	// Enable toolset item selection/de-selection
 	$toolset_editor.on('click', '.rte-tool', function() {
@@ -104,7 +112,7 @@
 			helper: function(e, ui) {
 				// Make sure only items in *this* ul are highlighted
 				$('.rte-tools-connected').not($(this)).children().removeClass('rte-tool-active');
-				
+
 				// Then make sure the item being dragged is actually highlighted
 				// Shouldn't this use ui.item? May be a bug.
 				ui.addClass('rte-tool-active');
@@ -112,12 +120,12 @@
 				// jQuery UI doesn't (yet) provide a way to move multiple items, but
 				// we can achieve it by wrapping highlighted items as the helper
 				var $selected = $('.rte-tool-active');
-	
+
 				if ( ! $selected.length) {
 					// Shouldn't this use ui.item? May be a bug.
 					$selected = ui.addClass('rte-tool-active');
 				}
-	
+
 				return $('<div/>')
 					.attr('id', 'rte-drag-helper')
 					.css('opacity', 0.7)
@@ -135,7 +143,7 @@
 			stop: function() {
 				// Remove items that are marked for removal
 				$('.rte-tool-remove').remove();
-				
+
 				// Remove placeholder fix element* and re-add at end of both lists
 				$('.rte-placeholder-fix').remove();
 				$('.rte-tools-connected').append('<li class="rte-placeholder-fix"/>');
@@ -153,16 +161,16 @@
 		$toolset_editor.find('form').submit(function(e) {
 
 			e.preventDefault();
-			
+
 			var tool_ids = [];
-	
+
 			$('#rte-tools-selected .rte-tool').each(function() {
 				tool_ids.push($(this).data('tool-id'));
 			});
-	
+
 			// populate field with selected tool ids
 			$('#rte-toolset-tools').val(tool_ids.join('|'));
-			
+
 			$.post($(this).attr('action'), $(this).serialize(), function(data) {
 
 				if (data.error) {
@@ -180,5 +188,5 @@
 			},'json');
 		});
 	}
-	
+
 })(jQuery);

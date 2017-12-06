@@ -1,4 +1,12 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
 namespace EllisLab\ExpressionEngine\Service\EntryListing;
 
 use Serializable;
@@ -7,26 +15,7 @@ use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Service\View\View;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Entry Listing Service
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * CP Entry Listing Service
  */
 class EntryListing {
 
@@ -124,12 +113,39 @@ class EntryListing {
 	 */
 	public function getFilters()
 	{
-		$count = $this->getEntries()->count();
+		$count = $this->getEntryCount();
 
 		// Add this last to get the right $count
 		$this->filters->add('Perpage', $count, 'all_entries');
 
 		return $this->filters;
+	}
+
+	public function getEntryCount()
+	{
+		static $count;
+
+		if (is_null($count))
+		{
+			$count = $this->getEntries()->count();
+		}
+
+		return $count;
+	}
+
+	public function getChannelModelFromFilter()
+	{
+		static $channel = NULL;
+
+		if (is_null($channel)
+			&& $this->channel_filter
+			&& $this->channel_filter->value())
+		{
+			$channel = ee('Model')->get('Channel', $this->channel_filter->value())
+				->first();
+		}
+
+		return $channel;
 	}
 
 	/**
@@ -138,15 +154,9 @@ class EntryListing {
 	 */
 	private function setupFilters()
 	{
-		$channel = NULL;
-
 		$this->channel_filter = $this->createChannelFilter();
 
-		if ($this->channel_filter->value())
-		{
-			$channel = ee('Model')->get('Channel', $this->channel_filter->value())
-				->first();
-		}
+		$channel = $this->getChannelModelFromFilter();
 
 		$this->category_filter = $this->createCategoryFilter($channel);
 		$this->status_filter = $this->createStatusFilter($channel);
@@ -155,7 +165,8 @@ class EntryListing {
 			->add($this->channel_filter)
 			->add($this->category_filter)
 			->add($this->status_filter)
-			->add('Date');
+			->add('Date')
+			->add('Keyword');
 	}
 
 	/**
@@ -182,8 +193,7 @@ class EntryListing {
 			if ($this->is_admin || in_array($channel_id, $this->allowed_channels))
 			{
 				$entries->filter('channel_id', $channel_id);
-				$channel = ee('Model')->get('Channel', $channel_id)
-					->first();
+				$channel = $this->getChannelModelFromFilter();
 
 				$channel_name = $channel->channel_title;
 			}
@@ -224,17 +234,16 @@ class EntryListing {
 
 			if (isset($channel))
 			{
-				$custom_fields = $channel->CustomFields;
+				$custom_fields = $channel->getAllCustomFields();
 			}
 			else
 			{
-				$channels = $this->getChannels();
-				$field_groups = $channels->pluck('field_group');
+				$custom_fields = array();
 
-				$custom_fields = ee('Model')->get('ChannelField')
-					->fields('field_id')
-					->filter('group_id', 'IN', $field_groups)
-					->all();
+				foreach ($this->getChannels() as $channel)
+				{
+					$custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
+				}
 			}
 
 			foreach ($custom_fields as $cf)
@@ -244,7 +253,6 @@ class EntryListing {
 
 			$entries->search($search_fields, $this->search_value);
 		}
-
 
 		$filter_values = $this->filters->values();
 
@@ -289,7 +297,7 @@ class EntryListing {
 		{
 			$allowed_channel_ids = ($this->is_admin) ? NULL : $this->allowed_channels;
 			$this->channels = ee('Model')->get('Channel', $allowed_channel_ids)
-				->fields('channel_id', 'channel_title', 'field_group')
+				->fields('channel_id', 'channel_title')
 				->filter('site_id', ee()->config->item('site_id'))
 				->order('channel_title', 'asc')
 				->all();
@@ -332,17 +340,18 @@ class EntryListing {
 	 */
 	private function createStatusFilter($channel = NULL)
 	{
-		$statuses = ee('Model')->get('Status')
-			->filter('site_id', ee()->config->item('site_id'));
-
 		if ($channel)
 		{
-			$statuses->filter('group_id', $channel->status_group);
+			$statuses = $channel->Statuses;
+		}
+		else
+		{
+			$statuses = ee('Model')->get('Status')->all();
 		}
 
 		$status_options = array();
 
-		foreach ($statuses->all() as $status)
+		foreach ($statuses as $status)
 		{
 			$status_name = ($status->status == 'closed' OR $status->status == 'open') ?  lang($status->status) : $status->status;
 			$status_options[$status->status] = $status_name;

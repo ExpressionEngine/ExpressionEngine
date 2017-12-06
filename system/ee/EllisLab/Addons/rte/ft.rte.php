@@ -1,26 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
- * ExpressionEngine Rich Text Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Rich Text Fieldtype
  */
 class Rte_ft extends EE_Fieldtype {
 
@@ -30,8 +18,6 @@ class Rte_ft extends EE_Fieldtype {
 	);
 
 	var $has_array_data = FALSE;
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Accept all content types.
@@ -43,8 +29,6 @@ class Rte_ft extends EE_Fieldtype {
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	function validate($data)
 	{
@@ -58,16 +42,12 @@ class Rte_ft extends EE_Fieldtype {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	function display_field($data)
 	{
 		ee()->load->library('rte_lib');
 
 		return ee()->rte_lib->display_field($data, $this->field_name, $this->settings);
 	}
-
-	// --------------------------------------------------------------------
 
 	function grid_display_field($data)
 	{
@@ -76,16 +56,12 @@ class Rte_ft extends EE_Fieldtype {
 		return ee()->rte_lib->display_field($data, $this->field_name, $this->settings, 'grid');
 	}
 
-	// --------------------------------------------------------------------
-
 	function save($data)
 	{
 		ee()->load->library('rte_lib');
 
 		return ee()->rte_lib->save_field($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	function replace_tag($data, $params = '', $tagdata = '')
 	{
@@ -113,8 +89,6 @@ class Rte_ft extends EE_Fieldtype {
 		return str_replace('&nbsp;', ' ', $str);
 	}
 
-	// --------------------------------------------------------------------
-
 	function display_settings($data)
 	{
 		$settings = array(
@@ -132,7 +106,7 @@ class Rte_ft extends EE_Fieldtype {
 				'title' => 'field_text_direction',
 				'fields' => array(
 					'field_text_direction' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => array(
 							'ltr' => lang('field_text_direction_ltr'),
 							'rtl' => lang('field_text_direction_rtl')
@@ -155,8 +129,6 @@ class Rte_ft extends EE_Fieldtype {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	function save_settings($data)
 	{
 		return array(
@@ -165,14 +137,10 @@ class Rte_ft extends EE_Fieldtype {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	function grid_save_settings($data)
 	{
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

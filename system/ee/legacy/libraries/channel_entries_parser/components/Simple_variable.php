@@ -1,29 +1,19 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Channel Parser Component (Basic Varaibles)
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Parser Component (Basic Variables)
  */
 class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
+
+	// bring in the :modifier methods
+	use EllisLab\ExpressionEngine\Service\Template\Variables\ModifiableTrait;
 
 	/**
 	 * There are always simple variables. Let me tell you ...
@@ -35,8 +25,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 	{
 		return FALSE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Parse out $search_link for the {member_search_path} variable
@@ -53,8 +41,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
 		return ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace all variables.
@@ -86,14 +72,12 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
 		if (strpos($tag, 'url') !== FALSE)
 		{
-			return $this->_urls($data, $tagdata, $tag, $tag_options, $prefix);
+			return $this->_urls($data, $tagdata, $tag, $tag_options, $prefix, $obj->channel()->mfields);
 		}
-
 
 		// @todo remove
 		$key = $tag;
 		$val = $tag_options;
-
 
 		//  parse {title}
 		if ($key == $prefix.'title')
@@ -158,8 +142,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
 		return $tagdata;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Handle variables that end in _path or contain "permalink".
@@ -289,8 +271,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		return $tagdata;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Handle variables that end in _url.
 	 *
@@ -302,8 +282,11 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 	 *
 	 * @return String	The processed tagdata
 	 */
-	protected function _urls($data, $tagdata, $key, $val, $prefix)
+	protected function _urls($data, $tagdata, $key, $val, $prefix, $mfields)
 	{
+			// URL was moved to a custom member field or dropped
+			$member_url = (isset($mfields['url'])) ? $data['m_field_id_'.$mfields['url'][0]] : '';
+
 		if ($key == $prefix.'url_title')
 		{
 			$tagdata = str_replace(LD.$val.RD, $data['url_title'], $tagdata);
@@ -340,7 +323,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		//  {url_or_email}
 		elseif ($key == $prefix."url_or_email")
 		{
-			$tagdata = str_replace(LD.$val.RD, ($data['url'] != '') ? $data['url'] : $data['email'], $tagdata);
+			$tagdata = str_replace(LD.$val.RD, ($member_url != '') ? $member_url : $data['email'], $tagdata);
 		}
 
 		//  {url_or_email_as_author}
@@ -348,9 +331,9 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		{
 			$name = ($data['screen_name'] != '') ? $data['screen_name'] : $data['username'];
 
-			if ($data['url'] != '')
+			if ($member_url != '')
 			{
-				$tagdata = str_replace(LD.$val.RD, "<a href=\"".$data['url']."\">".$name."</a>", $tagdata);
+				$tagdata = str_replace(LD.$val.RD, "<a href=\"".$member_url."\">".$name."</a>", $tagdata);
 			}
 			else
 			{
@@ -361,9 +344,9 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		//  {url_or_email_as_link}
 		elseif ($key == $prefix."url_or_email_as_link")
 		{
-			if ($data['url'] != '')
+			if ($member_url != '')
 			{
-				$tagdata = str_replace(LD.$val.RD, "<a href=\"".$data['url']."\">".$data['url']."</a>", $tagdata);
+				$tagdata = str_replace(LD.$val.RD, "<a href=\"".$member_url."\">".$member_url."</a>", $tagdata);
 			}
 			else
 			{
@@ -427,8 +410,6 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 		return $tagdata;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Handle regular fields as basic replacements.
 	 *
@@ -446,14 +427,85 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 	 */
 	protected function _basic($data, $tagdata, $key, $val, $prefix)
 	{
-		$raw_val = preg_replace('/^'.$prefix.'/', '', $val);
-
-		if ($raw_val AND array_key_exists($raw_val, $data))
+		if ($raw_val = preg_replace('/^'.$prefix.'/', '', $val))
 		{
-			$tagdata = str_replace(LD.$val.RD, $data[$raw_val], $tagdata);
+			if (array_key_exists($raw_val, $data))
+			{
+				$tagdata = str_replace(LD.$val.RD, $data[$raw_val], $tagdata);
+			}
+			else
+			{
+				$field = ee('Variables/Parser')->parseVariableProperties($key, $prefix);
+				$method = 'replace_'.$field['modifier'];
+
+				if ( ! method_exists($this, $method))
+				{
+					return $tagdata;
+				}
+
+				// some variables like {channel_short_name} don't directly map to the schema, so we can define
+				// methods here like getChannelShortName() to provide the correct content
+				$mismatch_getter = 'get'.str_replace(' ', '', ucwords(str_replace('_', ' ', $field['field_name'])));
+
+				if (array_key_exists($field['field_name'], $data))
+				{
+					$content = $this->$method($data[$field['field_name']], $field['params']);
+				}
+				elseif (method_exists($this, $mismatch_getter))
+				{
+					$content = $this->$method($this->$mismatch_getter($data), $field['params']);
+				}
+				else
+				{
+					// variable must not exist
+					return $tagdata;
+				}
+
+				$this->conditional_vars[$key] = $content;
+
+				$tagdata = str_replace(LD.$val.RD, $content, $tagdata);
+			}
 		}
 
 		return $tagdata;
+	}
+
+	/**
+	 * {channel} variable/schema mismatch getter
+	 *
+	 * @param  array $data Channel entry row
+	 * @return string the Channel name
+	 */
+	private function getChannel($data)
+	{
+		return (isset($data['channel_title'])) ? $data['channel_title'] : '';
+	}
+
+	/**
+	 * {channel_short_name} variable/schema mismatch getter
+	 *
+	 * @param  array $data Channel entry row
+	 * @return string the Channel short name
+	 */
+	private function getChannelShortName($data)
+	{
+		return (isset($data['channel_name'])) ? $data['channel_name'] : '';
+	}
+
+	/**
+	 * {author} variable/schema mismatch getter
+	 *
+	 * @param  array $data Channel entry row
+	 * @return string the Channel name
+	 */
+	private function getAuthor($data)
+	{
+		if ( ! empty($data['screen_name']))
+		{
+			return $data['screen_name'];
+		}
+
+		return (isset($data['username'])) ? $data['username'] : '';
 	}
 }
 

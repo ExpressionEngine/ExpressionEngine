@@ -1,27 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Settings;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Security & Privacy Settings Class
+ * Security & Privacy Settings Controller
  *
  * @package		ExpressionEngine
  * @subpackage	Control Panel
@@ -50,7 +41,7 @@ class SecurityPrivacy extends Settings {
 					'desc' => '',
 					'fields' => array(
 						'cp_session_type' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'cs' => lang('cs_session'),
 								'c' => lang('c_session'),
@@ -64,7 +55,7 @@ class SecurityPrivacy extends Settings {
 					'desc' => '',
 					'fields' => array(
 						'website_session_type' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'cs' => lang('cs_session'),
 								'c' => lang('c_session'),
@@ -84,7 +75,7 @@ class SecurityPrivacy extends Settings {
 				),
 				array(
 					'title' => 'cookie_path',
-					'desc' => sprintf(lang('cookie_path_desc'), ee()->cp->masked_url('https://docs.expressionengine.com/v3/cp/settings/security-privacy.html#path')),
+					'desc' => sprintf(lang('cookie_path_desc'), ee()->cp->masked_url('https://docs.expressionengine.com/v4/cp/settings/security-privacy.html#path')),
 					'fields' => array(
 						'cookie_path' => array('type' => 'text')
 					)
@@ -146,13 +137,7 @@ class SecurityPrivacy extends Settings {
 					'title' => 'password_lockout',
 					'desc' => 'password_lockout_desc',
 					'fields' => array(
-						'password_lockout' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => lang('enable'),
-								'n' => lang('disable')
-							)
-						)
+						'password_lockout' => array('type' => 'yes_no')
 					)
 				),
 				array(
@@ -217,13 +202,7 @@ class SecurityPrivacy extends Settings {
 					'title' => 'enable_rank_denial',
 					'desc' => sprintf(lang('enable_rank_denial_desc'), 'https://support.google.com/webmasters/answer/96569?hl=en'),
 					'fields' => array(
-						'redirect_submitted_links' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => lang('enable'),
-								'n' => lang('disable')
-							)
-						)
+						'redirect_submitted_links' => array('type' => 'yes_no')
 					)
 				)
 			)

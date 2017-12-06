@@ -1,13 +1,9 @@
-/*!
- * ExpressionEngine - by EllisLab
+/**
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 (function($) {
@@ -132,6 +128,90 @@ window.Grid = {
 	}
 };
 
+// Handles events for the field manager channel create/edit form
+var FluidField = window.FluidField = {
+
+	_eventHandlers: [],
+
+	/**
+	 * Binds an event
+	 *
+	 * Available events are:
+	 * 'add' - When a field is added
+	 * 'remove' - When a field is removed
+	 * 'beforeSort' - Before sort starts
+	 * 'afterSort' - After sort ends
+	 *
+	 * @param	{string}	fieldtypeName	Class name of fieldtype
+	 * @param	{string}	action	Name of action
+	 * @param	{func}		func	Callback function for event
+	 */
+	on: function(fieldtypeName, action, func) {
+		if (this._eventHandlers[action] == undefined) {
+			this._eventHandlers[action] = []
+		}
+
+		// Each fieldtype gets one method per handler
+		this._eventHandlers[action][fieldtypeName] = func;
+	},
+
+	/**
+	 * Fires an event
+	 *
+	 * @param	{string}	action	Name of action
+	 * @param	{object}	element	Element object to pass along to the callback
+	 */
+	fireEvent: function(fieldtypeName, action, args) {
+		// If no events regsitered, don't bother
+		if (this._eventHandlers[action] === undefined) {
+			return;
+		}
+
+		// If no events regsitered, don't bother
+		if (this._eventHandlers[action][fieldtypeName] === undefined) {
+			return;
+		}
+
+		this._eventHandlers[action][fieldtypeName].apply(this, args);
+	}
+};
+
+// Handles events for the field manager channel create/edit form
+var FieldManager = window.FieldManager = {
+
+	_eventHandlers: [],
+
+	/**
+	 * Binds an event
+	 *
+	 * Available events are:
+	 * 'fieldModalDisplay' - When the new field modal form is displayed
+	 *
+	 * @param	{string}	action	Name of action
+	 * @param	{func}		func	Callback function for event
+	 */
+	on: function(action, func) {
+		if (this._eventHandlers[action] == undefined) {
+			this._eventHandlers[action] = []
+		}
+
+		this._eventHandlers[action].push(func)
+	},
+
+	/**
+	 * Fires an event
+	 *
+	 * @param	{string}	action	Name of action
+	 * @param	{object}	element	Element object to pass along to the callback
+	 */
+	fireEvent: function(action, element) {
+		var handlers = this._eventHandlers[action] || []
+
+		for (var i = 0; i < handlers.length; i++) {
+			handlers[i](element)
+		}
+	}
+};
 
 // Setup Base EE Control Panel
 $(document).ready(function () {
@@ -701,6 +781,5 @@ EE.cp.broadcastEvents = (function() {
 	return Events;
 
 })();
-
 
 })(jQuery);

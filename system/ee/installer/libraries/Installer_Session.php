@@ -1,43 +1,44 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.4.5
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Mock Session Class
- *
- * @package		ExpressionEngine
- * @subpackage	Installer
- * @category	Session
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Installer Session
  */
-
 class Installer_Session {
+
+	public $userdata = array();
+	protected $cache = array();
 
 	public function cache($class, $key, $default = FALSE)
 	{
-		return FALSE;
+		return (isset($this->cache[$class][$key])) ? $this->cache[$class][$key] : $default;
 	}
 
 	public function set_cache($class, $key, $val)
 	{
+		if ( ! isset($this->cache[$class]))
+		{
+			$this->cache[$class] = array();
+		}
+
+		$this->cache[$class][$key] = $val;
 		return $this;
 	}
 
 	public function userdata($which, $default = FALSE)
 	{
-		return FALSE;
+		return ( ! isset($this->userdata[$which])) ? $default : $this->userdata[$which];
+	}
+
+	public function session_id($which = '')
+	{
+		return 0;
 	}
 }
 // END CLASS

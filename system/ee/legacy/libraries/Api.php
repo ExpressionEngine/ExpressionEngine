@@ -1,29 +1,17 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine API Class
+ * API
  *
  * Parent class to unify code for accessing and modifying data in EE
  * The parent class handles tasks common to many child classes including returning output
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Api {
 
@@ -65,8 +53,6 @@ class Api {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Initialize
 	 *
@@ -86,8 +72,6 @@ class Api {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Error Count
 	 *
@@ -100,8 +84,6 @@ class Api {
 	{
 		return count($this->errors);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Error
@@ -117,8 +99,6 @@ class Api {
 		$this->errors[] = (ee()->lang->line($error_msg) != '') ? ee()->lang->line($error_msg) : str_replace('_', ' ', ucfirst($error_msg));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Make URL Safe
 	 *
@@ -133,8 +113,6 @@ class Api {
 		return preg_replace("/[^a-zA-Z0-9_\-\.]+$/i", '', $str);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Is URL Safe?
 	 *
@@ -147,8 +125,6 @@ class Api {
 	{
 		return preg_match("/^[a-zA-Z0-9_\-\.]+$/i", $str) ? TRUE : FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Unique URL Title
@@ -264,8 +240,6 @@ class Api {
 
 		return $url_title;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Magic Get Method

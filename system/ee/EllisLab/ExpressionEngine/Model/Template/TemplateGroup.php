@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Template;
 
@@ -7,27 +14,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Template Group Model
- *
- * @package		ExpressionEngine
- * @subpackage	TemplateGroup
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Template Group Model
  */
 class TemplateGroup extends Model {
 
@@ -62,7 +49,7 @@ class TemplateGroup extends Model {
 
 	protected static $_validation_rules = array(
 		'is_site_default' => 'enum[y,n]',
-		'group_name' => 'required|is_valid_group_name|unique',
+		'group_name' => 'required|alphaDashPeriodEmoji|validateTemplateGroupName|unique',
 	);
 
 	protected static $_events = array(
@@ -87,7 +74,7 @@ class TemplateGroup extends Model {
 		$group_order = $this->getProperty('group_order');
 		if (empty($group_order))
 		{
-			$count = $this->getFrontend()->get('TemplateGroup')
+			$count = $this->getModelFacade()->get('TemplateGroup')
 				->count();
 			$this->setProperty('group_order', $count + 1);
 		}
@@ -136,7 +123,7 @@ class TemplateGroup extends Model {
 	{
 		if ($this->getProperty('is_site_default'))
 		{
-			$template_groups = $this->getFrontend()->get('TemplateGroup')
+			$template_groups = $this->getModelFacade()->get('TemplateGroup')
 				->filter('site_id', $this->site_id)
 				->filter('is_site_default', 'y')
 				->filter('group_id', '!=', $this->group_id)
@@ -186,7 +173,7 @@ class TemplateGroup extends Model {
 		// Cache the sites as we query
 		if ( ! $site = ee()->session->cache('site/id/' . $this->site_id, 'site'))
 		{
-			$site = $this->getFrontend()->get('Site')
+			$site = $this->getModelFacade()->get('Site')
 				->fields('site_name')
 				->filter('site_id', $this->site_id)
 				->first();
@@ -209,6 +196,21 @@ class TemplateGroup extends Model {
 		{
 			$fs->deleteDir($path);
 		}
+	}
+
+	/**
+	 * Validates the template name checking for reserved names.
+	 */
+	public function validateTemplateGroupName($key, $value, $params, $rule)
+	{
+		$reserved_names = array('act', 'css');
+
+		if (in_array($value, $reserved_names))
+		{
+			return 'reserved_name';
+		}
+
+		return TRUE;
 	}
 
 }

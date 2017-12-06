@@ -24,7 +24,7 @@ $lang = array(
 
 'rel_ft_allow_multi' => 'Allow multiple relationships?',
 
-'rel_ft_allow_multi_desc' => 'When set to <b>yes</b>, authors will be allowed to create multiple relationships.',
+'rel_ft_allow_multi_desc' => 'When enabled, authors will be allowed to create multiple relationships.',
 
 'rel_ft_authors' => 'Authors',
 
@@ -62,10 +62,32 @@ $lang = array(
 
 'rel_ft_order_title' => 'Title',
 
+'rel_ft_related_only' => 'Related only',
+
 'rel_ft_statuses' => 'Limit by status',
 
 'rel_ft_statuses_desc' => 'Choose statuses to limit the entries in this relationships field.',
 
+'rel_ft_unrelated_only' => 'Unrelated only',
+
+/* Duration */
+'duration_ft_hh' => 'hh',
+
+'duration_ft_hhmm' => 'hh:mm',
+
+'duration_ft_hhmmss' => 'hh:mm:ss',
+
+'duration_ft_hours' => 'Hours',
+
+'duration_ft_minutes' => 'Minutes',
+
+'duration_ft_placeholder' => 'Duration in %s (or %s)',
+
+'duration_ft_seconds' => 'Seconds',
+
+'duration_ft_units' => 'Units',
+
+'duration_ft_units_desc' => 'Determines the length of time being described when a content author enters a whole number like “42”.',
 
 /* File */
 'file_ft_allowed_dirs' => 'Allowed Directory',
@@ -92,7 +114,7 @@ $lang = array(
 
 'file_ft_show_files' => 'Show existing files?',
 
-'file_ft_show_files_desc' => 'When set to <b>yes</b>, a drop down with existing files will be shown to authors.',
+'file_ft_show_files_desc' => 'When enabled, a drop down with existing files will be shown to authors.',
 
 
 /* Grid */
@@ -100,27 +122,25 @@ $lang = array(
 
 'grid_add_some_data' => 'You have not added any rows of data yet. <a href="#" class="grid_link_add">Add some data?</a>',
 
+'grid_allow_reorder' => 'Allow reordering of rows?',
+
 'grid_chars_allowed' => 'Characters allowed.',
 
 'grid_col_instr' => 'Instructions',
 
 'grid_col_label' => 'Publish label',
 
-'grid_col_label_required' => 'There are one or more columns without a column label.',
-
 'grid_col_name' => 'Field name',
 
-'grid_col_name_required' => 'There are one or more columns without a column name.',
-
-'grid_col_name_reserved' => 'One or more columns are using a column name reserved for other template functionality.',
+'grid_col_name_reserved' => 'This column is using a column name reserved for other template functionality.',
 
 'grid_col_options' => 'Is this data',
 
 'grid_col_type' => 'Data type?',
 
-'grid_col_width' => 'Column width',
+'grid_col_width' => 'Column minimum width',
 
-'grid_col_width_desc' => 'Set the width of this column in the publish form.',
+'grid_col_width_desc' => 'Set the minimum width (in pixels) of this column in the publish form.',
 
 'grid_col_width_percent' => 'Percentage.',
 
@@ -134,6 +154,8 @@ $lang = array(
 
 'grid_duplicate_col_name' => 'Column field names must be unique.',
 
+'grid_expand_field' => 'expand field',
+
 'grid_field_required' => 'This field is required',
 
 'grid_fields' => 'Grid Fields',
@@ -142,19 +164,15 @@ $lang = array(
 
 'grid_in_this_field_desc' => 'Make this field required, or searchable.',
 
-'grid_invalid_column_name' => 'Column names must contain only alpha-numeric characters and no spaces.',
-
 'grid_limit_input' => 'Limit input?',
 
-'grid_max_rows' => 'Maximum Rows',
+'grid_max_rows' => 'Maximum rows',
 
 'grid_max_rows_desc' => 'Sets the maximum amount of data rows this grid will accept',
 
-'grid_min_rows' => 'Minimum Rows',
+'grid_min_rows' => 'Minimum rows',
 
 'grid_min_rows_desc' => 'Sets the minumum amount of data rows this grid will accept',
-
-'grid_numeric_percentage' => 'Column widths must be numeric.',
 
 'grid_order_by' => 'Order by',
 

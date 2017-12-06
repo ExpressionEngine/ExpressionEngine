@@ -1,26 +1,23 @@
-/*!
- * ExpressionEngine - by EllisLab
+/**
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 $(document).ready(function () {
 
-	var publishForm = $("div.publish form");
+	var publishForm = $(".form-standard > form");
 
 	if (EE.publish.title_focus == true) {
-		$("div.publish form input[name=title]").focus();
+		publishForm.find("input[name=title]").focus();
 	}
 
 	if (EE.publish.which == 'new') {
-		$("div.publish form input[name=title]").bind("keyup blur", function() {
-			$('div.publish form input[name=title]').ee_url_title($('div.publish form input[name=url_title]'));
+		publishForm.find("input[name=title]").bind("keyup blur", function() {
+			publishForm.find('input[name=title]')
+				.ee_url_title(publishForm.find('input[name=url_title]'));
 		});
 	}
 
@@ -57,7 +54,7 @@ $(document).ready(function () {
 							console.log(result.error);
 						}
 						else if (result.success) {
-							publishForm.prepend(result.success);
+							publishForm.find('ul.tabs').after(result.success);
 						}
 						else {
 							console.log('Autosave Failed');

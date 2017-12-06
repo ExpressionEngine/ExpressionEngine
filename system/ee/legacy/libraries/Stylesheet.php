@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Stylesheet Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Stylesheet
  */
 class EE_Stylesheet {
 
@@ -104,8 +92,6 @@ class EE_Stylesheet {
 		$this->_send_css($this->style_cache[$stylesheet], $row['edit_date']);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * EE Channel:form CSS
 	 *
@@ -131,8 +117,6 @@ class EE_Stylesheet {
 
 		$this->_send_css($out, time());
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Send CSS
@@ -181,8 +165,6 @@ class EE_Stylesheet {
 		header("Content-type: text/css");
 		exit($stylesheet);
 	}
-
-	// --------------------------------------------------------------------
 
 }
 // END CLASS

@@ -5,6 +5,6 @@ module Profile
     set_url '/system/index.php?/cp/members/profile/settings'
     section :profile_form,
       Profile::ProfileForm,
-      'form.settings[action*="cp/members/profile"]'
+      'form[action*="cp/members/profile"]'
   end
 end

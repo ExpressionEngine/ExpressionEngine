@@ -40,7 +40,7 @@ $locked_out = isset($options['locked-out']) ? TRUE : FALSE;
 
 for ($x = 0; $x < $count; $x++)
 {
-	$fixture = $api->make('Throttle');
+	$fixture = ee('Model')->make('Throttle');
 	$fixture->ip_address = ($ip_address !== FALSE) ? $ip_address : '10.0.' . rand(0,253) . '.' . rand(1,253);
 	$fixture->last_activity = strtotime("-" . rand($timestamp_min*60, $timestamp_max*60) . " minutes");
 	$fixture->hits = ($hits !== FALSE) ? $hits : rand(10, 100);

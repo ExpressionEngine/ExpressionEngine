@@ -1,35 +1,20 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Utilities;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use ZipArchive;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Translate Manager Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Translate Manager Controller
  */
 class Translate extends Utilities {
 
@@ -305,26 +290,32 @@ class Translate extends Utilities {
 		$keys = array();
 
 		ee()->lang->load($file);
+		$vars['sections'] = [[]];
 		foreach ($M as $key => $val)
 		{
 			if ($key != '')
 			{
-				$trans = ( ! isset($lang[$key])) ? '' : $lang[$key];
-				$keys[$key]['original'] = htmlentities(lang($key), ENT_QUOTES, 'UTF-8');
-				$keys[$key]['trans'] = str_replace("'", "&#39;", $trans);
-				$keys[$key]['type'] = (strlen($val) > 100) ? 'textarea' : 'text';
+				$vars['sections'][0][] = [
+					'title' => htmlentities(lang($key), ENT_QUOTES, 'UTF-8'),
+					'fields' => [
+						$key => [
+							'type' => (strlen($val) > 100) ? 'textarea' : 'text',
+							'value' => $val
+						]
+					]
+				];
 			}
 		}
-
-		$vars = array(
-			'language'  => $language,
-			'file'		=> $file,
-			'keys'		=> $keys
-		);
 
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('utilities/translate/' . $language)->compile() => ucfirst($language) . ' ' . lang('language_files')
 		);
+
+		$vars['base_url'] = ee('CP/URL')->make('utilities/translate/' . $language . '/save/' . $file);
+		$vars['save_btn_text'] = 'translate_btn';
+		$vars['save_btn_text_working'] = 'btn_saving';
+
+		return ee()->cp->render('settings/form', $vars);
 
 		ee()->cp->render('utilities/translate/edit', $vars);
 	}

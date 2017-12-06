@@ -1,26 +1,19 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+namespace EllisLab\Addons\Comment;
+
+use EllisLab\Addons\Comment\Service\Notifications;
+
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Comment Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Comment Module
  */
 class Comment {
 
@@ -67,8 +60,6 @@ class Comment {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Retrieve the disable parameter from the template and parse it
@@ -571,57 +562,7 @@ class Comment {
 
 		$results = $result_ids;
 		$mfields = array();
-
-		/** ----------------------------------------
-		/**  "Search by Member" link
-		/** ----------------------------------------*/
-		// We use this with the {member_search_path} variable
-
-		$result_path = (preg_match("/".LD."member_search_path\s*=(.*?)".RD."/s", ee()->TMPL->tagdata, $match)) ? $match['1'] : 'search/results';
-		$result_path = str_replace("\"", "", $result_path);
-		$result_path = str_replace("'",  "", $result_path);
-
-		$search_link = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
-
-		ee()->db->select('comments.comment_id, comments.entry_id, comments.channel_id, comments.author_id, comments.name, comments.email, comments.url, comments.location AS c_location, comments.ip_address, comments.comment_date, comments.edit_date, comments.comment, comments.site_id AS comment_site_id,
-			members.username, members.group_id, members.location, members.occupation, members.interests, members.aol_im, members.yahoo_im, members.msn_im, members.icq, members.group_id, members.member_id, members.signature, members.sig_img_filename, members.sig_img_width, members.sig_img_height, members.avatar_filename, members.avatar_width, members.avatar_height, members.photo_filename, members.photo_width, members.photo_height,
-			member_data.*,
-			channel_titles.title, channel_titles.url_title, channel_titles.author_id AS entry_author_id, channel_titles.allow_comments, channel_titles.comment_expiration_date,
-			channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls, channels.channel_url, channels.comment_url, channels.channel_title, channels.channel_name AS channel_short_name, channels.comment_system_enabled'
-		);
-
-		ee()->db->join('channels',			'comments.channel_id = channels.channel_id',	'left');
-		ee()->db->join('channel_titles',	'comments.entry_id = channel_titles.entry_id',	'left');
-		ee()->db->join('members',			'members.member_id = comments.author_id',		'left');
-		ee()->db->join('member_data',		'member_data.member_id = members.member_id',	'left');
-
-		ee()->db->where_in('comments.comment_id', $result_ids);
-		ee()->db->order_by($order_by, $this_sort);
-
-		$query = ee()->db->get('comments');
-
-		$total_results = $query->num_rows();
-
-		if ($query->num_rows() > 0)
-		{
-			$results = $query->result_array();
-
-			// Potentially a lot of information
-			$query->free_result();
-
-			// -------------------------------------------
-			// 'comment_entries_query_result' hook.
-			//  - Take the whole query result array, do what you wish
-			//  - Added 3.1.0
-			//
-				if (ee()->extensions->active_hook('comment_entries_query_result') === TRUE)
-				{
-					$results = ee()->extensions->call('comment_entries_query_result', $results);
-					if (ee()->extensions->end_script === TRUE) return ee()->TMPL->tagdata;
-				}
-			//
-			// -------------------------------------------
-		}
+		$mfields_data = array();
 
 		/** ----------------------------------------
 		/**  Fetch custom member field IDs
@@ -635,6 +576,52 @@ class Comment {
 			foreach ($query->result_array() as $row)
 			{
 				$mfields[$row['m_field_name']] = $row['m_field_id'];
+			}
+		}
+
+		/** ----------------------------------------
+		/**  "Search by Member" link
+		/** ----------------------------------------*/
+		// We use this with the {member_search_path} variable
+
+		$result_path = (preg_match("/".LD."member_search_path\s*=(.*?)".RD."/s", ee()->TMPL->tagdata, $match)) ? $match['1'] : 'search/results';
+		$result_path = str_replace("\"", "", $result_path);
+		$result_path = str_replace("'",  "", $result_path);
+
+		$search_link = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
+
+		$comments = ee('Model')->get('Comment', $result_ids)
+			->with('Author', 'Channel')
+			->order($order_by, $this_sort)
+			->all();
+
+		$total_results = count($comments);
+
+		if ($total_results)
+		{
+			$results = array();
+			foreach ($comments as $comment)
+			{
+				$values = array_merge($comment->getValues(), $comment->Channel->getValues());
+				unset($values['location'], $values['site_id']);
+				$values['c_location'] = $comment->location;
+				$values['comment_site_id'] = $comment->site_id;
+
+				$author = ($comment->Author) ?: ee('Model')->make('Member');
+				$author = $author->getValues();
+
+				if (isset($values['url']) && ! empty($values['url']))
+				{
+					unset($author['url']);
+				}
+
+				$results[] = array_merge($values, $author);
+			}
+
+			if (ee()->extensions->active_hook('comment_entries_query_result') === TRUE)
+			{
+				$results = ee()->extensions->call('comment_entries_query_result', $results);
+				if (ee()->extensions->end_script === TRUE) return ee()->TMPL->tagdata;
 			}
 		}
 
@@ -658,8 +645,7 @@ class Comment {
 		// left-over unparsed junk.  The $member_vars array is all of those
 		// member related variables that should be removed.
 
-		$member_vars = array('location', 'occupation', 'interests', 'aol_im', 'yahoo_im', 'msn_im', 'icq',
-			'signature', 'sig_img_filename', 'sig_img_width', 'sig_img_height',
+		$member_vars = array('signature', 'sig_img_filename', 'sig_img_width', 'sig_img_height',
 			'avatar_filename', 'avatar_width', 'avatar_height',
 			'photo_filename', 'photo_width', 'photo_height');
 
@@ -670,6 +656,21 @@ class Comment {
 			$member_cond_vars[$var] = '';
 		}
 
+		// Fetch the custom member field definitions
+		$m_fields = array();
+
+		ee()->db->select('m_field_id, m_field_name, m_field_fmt');
+		$query = ee()->db->get('member_fields');
+
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result_array() as $row)
+			{
+				$m_fields[$row['m_field_name']] = array($row['m_field_id'], $row['m_field_fmt']);
+			}
+		}
+
+		$this->cacheMemberFieldModels($m_fields);
 
 		/** ----------------------------------------
 		/**  Start the processing loop
@@ -714,6 +715,19 @@ class Comment {
 				if ($row['author_id'] == 0)
 				{
 					$row['location'] = $row['c_location'];
+				}
+				else
+				{
+					// location and url set based on member custom field if it exists
+					if (isset($mfields['url']) && array_key_exists('m_field_id_'.$m_fields['url']['0'], $row))
+					{
+						$row['url'] = $row['m_field_id_'.$m_fields['url']['0']];
+					}
+
+					if (isset($mfields['location']) && array_key_exists('m_field_id_'.$m_fields['location']['0'], $row))
+					{
+						$row['location'] = $row['m_field_id_'.$m_fields['location']['0']];
+					}
 				}
 			}
 
@@ -790,19 +804,19 @@ class Comment {
 
 			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('gmt_comment_date' => $row['comment_date']), FALSE);
 
+
 			/** ----------------------------------------
 			/**  Parse "single" variables
 			/** ----------------------------------------*/
 			foreach (ee()->TMPL->var_single as $key => $val)
 			{
-
 				/** ----------------------------------------
 				/**  parse {switch} variable
 				/** ----------------------------------------*/
 
 				if (strncmp($key, 'switch', 6) == 0)
 				{
-					$sparam = ee()->functions->assign_parameters($key);
+					$sparam = ee('Variables/Parser')->parseTagParameters($key);
 
 					$sw = '';
 
@@ -901,16 +915,15 @@ class Comment {
 				/**  {url_or_email} - Uses Raw Email Address, Like Channel Module
 				/** ----------------------------------------*/
 
-				if ($key == "url_or_email" AND isset($row['url']))
+				if ($key == "url_or_email" AND array_key_exists('url', $row))
 				{
 					$tagdata = ee()->TMPL->swap_var_single($val, ($row['url'] != '') ? $row['url'] : $row['email'], $tagdata);
 				}
 
-
 				/** ----------------------------------------
 				/**  {url_as_author}
 				/** ----------------------------------------*/
-				if ($key == "url_as_author" AND isset($row['url']))
+				if ($key == "url_as_author" AND array_key_exists('url', $row))
 				{
 					if ($row['url'] != '')
 					{
@@ -926,7 +939,7 @@ class Comment {
 				/**  {url_or_email_as_author}
 				/** ----------------------------------------*/
 
-				if ($key == "url_or_email_as_author" AND isset($row['url']))
+				if ($key == "url_or_email_as_author" AND array_key_exists('url', $row))
 				{
 					if ($row['url'] != '')
 					{
@@ -949,7 +962,7 @@ class Comment {
 				/**  {url_or_email_as_link}
 				/** ----------------------------------------*/
 
-				if ($key == "url_or_email_as_link" AND isset($row['url']))
+				if ($key == "url_or_email_as_link" AND array_key_exists('url', $row))
 				{
 					if ($row['url'] != '')
 					{
@@ -1175,19 +1188,32 @@ class Comment {
 				/**  parse custom member fields
 				/** ----------------------------------------*/
 
-				if ( isset($mfields[$val]))
+				$field = ee('Variables/Parser')->parseVariableProperties($key);
+				$val2 = $field['field_name'];
+
+				// parse custom member fields
+				if (isset($m_fields[$val2]))
 				{
-					// Since comments do not necessarily require registration, and since
-					// you are allowed to put custom member variables in comments,
-					// we delete them if no such row exists
-
-					$return_val = (isset($row['m_field_id_'.$mfields[$val]])) ? $row['m_field_id_'.$mfields[$val]] : '';
-
-					$tagdata = ee()->TMPL->swap_var_single(
-						$val,
-						$return_val,
+					if (array_key_exists('m_field_id_'.$m_fields[$val2]['0'], $row))
+					{
+						$tagdata = $this->parseField(
+							$m_fields[$val2]['0'],
+							$field,
+							$row['m_field_id_'.$m_fields[$val2]['0']],
+							$tagdata,
+							$row['author_id'],
+							array(),
+							$key
+						);
+					}
+					else
+					{
+						$tagdata = ee()->TMPL->swap_var_single(
+						$key,
+						'',
 						$tagdata
-					);
+						);
+					}
 				}
 
 				/** ----------------------------------------
@@ -1230,8 +1256,81 @@ class Comment {
 		}
 	}
 
+	/**
+	 * Called after $m_fields is populated, caches associated MemberField models
+	 */
+	private function cacheMemberFieldModels($m_fields)
+	{
+		$this->member_field_models = ee()->session->cache(__CLASS__, 'member_field_models') ?: array();
 
-	// --------------------------------------------------------------------
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+		$single_field_data = array();
+
+		// Get field names present in the template, sans modifiers
+		$clean_field_names = array_map(function($field)
+		{
+
+			$field = ee('Variables/Parser')->parseVariableProperties($field);
+
+			return $field['field_name'];
+		}, array_flip(ee()->TMPL->var_single));
+
+		// Get field IDs for the member fields we need to fetch
+		$member_field_ids = array();
+		foreach ($clean_field_names as $field_name)
+		{
+			if (isset($m_fields[$field_name][0]))
+			{
+				$member_field_ids[] = $m_fields[$field_name][0];
+			}
+		}
+
+		// Cache member fields here before we start parsing
+		if ( ! empty($member_field_ids))
+		{
+			$this->member_field_models = ee('Model')->get('MemberField', array_unique($member_field_ids))
+				->all()
+				->indexBy('field_id');
+		}
+
+		ee()->session->set_cache(__CLASS__, 'member_field_models', $this->member_field_models);
+	}
+
+	/**
+	 * Parse a custom member field
+	 *
+	 * @param	int		$field_id	Member field ID
+	 * @param	array	$field		Tag information as parsed by ee('Variables/Parser')->parseVariableProperties()
+	 * @param	mixed	$data		Data for this field
+	 * @param	string	$tagdata	Tagdata to perform the replacement in
+	 * @param	string	$member_id	ID for the member this data is associated
+	 * @return	string	String with variable parsed
+	 */
+	protected function parseField($field_id, $field, $data, $tagdata, $member_id, $row = array(), $tag = FALSE)
+	{
+
+		if ( ! isset($this->member_field_models[$field_id]))
+		{
+
+			return $tagdata;
+		}
+
+		$member_field = $this->member_field_models[$field_id];
+
+
+		$default_row = array(
+			'channel_html_formatting' => 'safe',
+			'channel_auto_link_urls' => 'y',
+			'channel_allow_img_urls' => 'n'
+		);
+		$row = array_merge($default_row, $row);
+
+
+		return $member_field->parse($data, $member_id, 'member', $field, $tagdata, $row, $tag);
+	}
+
+
 
 
 	/**
@@ -1260,8 +1359,6 @@ class Comment {
 		return $entry_ids;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Comment Submission Form
@@ -1736,8 +1833,6 @@ class Comment {
 		return $res;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Preview
 	 *
@@ -1978,8 +2073,6 @@ class Comment {
 		return $tagdata;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Preview Handler
 	 *
@@ -2033,8 +2126,6 @@ class Comment {
 		ee()->TMPL->parse_template_uri();
 		ee()->TMPL->run_template_engine($group, $templ);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Insert New Comment
@@ -2302,34 +2393,21 @@ class Comment {
 		/** ----------------------------------------
 		/**  Assign data
 		/** ----------------------------------------*/
-		$author_id				= $query->row('author_id') ;
-		$entry_title			= $query->row('title') ;
-		$url_title				= $query->row('url_title') ;
-		$channel_title		 	= $query->row('channel_title') ;
-		$channel_id			  	= $query->row('channel_id') ;
-		$require_membership 	= $query->row('comment_require_membership') ;
-		$comment_moderate		= (ee()->session->userdata['group_id'] == 1 OR ee()->session->userdata['exclude_from_moderation'] == 'y') ? 'n' : $force_moderation;
-		$author_notify			= $query->row('comment_notify_authors') ;
 
-		$overrides = ee()->config->get_cached_site_prefs($query->row('site_id'));
-		$comment_url			= parse_config_variables($query->row('comment_url'), $overrides);
-		$channel_url			= parse_config_variables($query->row('channel_url'), $overrides);
-		$entry_id				= $query->row('entry_id');
-		$comment_site_id		= $query->row('site_id');
+		$channel_id         = $query->row('channel_id') ;
+		$require_membership = $query->row('comment_require_membership') ;
+		$comment_moderate   = (ee()->session->userdata['group_id'] == 1 OR ee()->session->userdata['exclude_from_moderation'] == 'y') ? 'n' : $force_moderation;
+		$entry_id           = $query->row('entry_id');
+		$comment_site_id    = $query->row('site_id');
 
-
-		$notify_address = ($query->row('comment_notify')  == 'y' AND $query->row('comment_notify_emails')  != '') ? $query->row('comment_notify_emails')  : '';
-
-
-		// Force comment moderation if spam
 		$comment_string = ee('Security/XSS')->clean($_POST['comment']);
-		$is_spam = ee('Spam')->isSpam($comment_string);
+
+		$is_spam = ee()->session->userdata('group_id') != 1 && ee('Spam')->isSpam($comment_string);
 
 		if ($is_spam === TRUE)
 		{
 			$comment_moderate = 'y';
 		}
-
 
 		/** ----------------------------------------
 		/**  Start error trapping
@@ -2491,20 +2569,20 @@ class Comment {
 
 		$data = array(
 			'channel_id'	=> $channel_id,
-			'entry_id'		=> $_POST['entry_id'],
+			'entry_id'		=> $entry_id,
 			'author_id'		=> ee()->session->userdata('member_id'),
 			'name'			=> $cmtr_name,
 			'email'			=> $cmtr_email,
 			'url'			=> $cmtr_url,
 			'location'		=> $cmtr_loc,
-			'comment'		=> ee('Security/XSS')->clean($_POST['comment']),
+			'comment'		=> $comment_string,
 			'comment_date'	=> ee()->localize->now,
 			'ip_address'	=> ee()->input->ip_address(),
 			'status'		=> ($comment_moderate == 'y') ? 'p' : 'o',
 			'site_id'		=> $comment_site_id
 		);
 
-		if ($is_spam == TRUE)
+		if ($is_spam === TRUE)
 		{
 			$data['status'] = 's';
 		}
@@ -2524,14 +2602,15 @@ class Comment {
 		$return_link = ( ! stristr($_POST['RET'],'http://') && ! stristr($_POST['RET'],'https://')) ? ee()->functions->create_url($_POST['RET']) : $_POST['RET'];
 
 		//  Insert data
-		$comment_id = ee('Model')->make('Comment', $data)->save()->getId();
+		$comment = ee('Model')->make('Comment', $data)->save();
+		$comment_id = $comment->getId();
 
 		if ($is_spam == TRUE)
 		{
-			$spam_data = array($comment_id, 'o');
-			ee('Spam')->moderate(__FILE__, 'Comment', 'moderate_comment', 'remove_comment', $spam_data, $comment_string);
+			ee('Spam')->moderate('comment', $comment, $comment->comment, $_POST['URI']);
 		}
 
+		// update their subscription
 		if ($notify == 'y')
 		{
 			ee()->load->library('subscription');
@@ -2547,280 +2626,15 @@ class Comment {
 			}
 		}
 
-
-		if ($comment_moderate == 'n')
+		// send notifications
+		if ( ! $is_spam)
 		{
-			/** ------------------------------------------------
-			/**  Update comment total and "recent comment" date
-			/** ------------------------------------------------*/
+			$notify = new Notifications($comment, $_POST['URI']);
+			$notify->sendAdminNotifications();
 
-			ee()->db->set('recent_comment_date', ee()->localize->now);
-			ee()->db->where('entry_id', $_POST['entry_id']);
-
-			ee()->db->update('channel_titles');
-
-			/** ----------------------------------------
-			/**  Update member comment total and date
-			/** ----------------------------------------*/
-
-			if (ee()->session->userdata('member_id') != 0)
+			if ($comment_moderate == 'n')
 			{
-				ee()->db->select('total_comments');
-				ee()->db->where('member_id', ee()->session->userdata('member_id'));
-
-				$query = ee()->db->get('members');
-
-				ee()->db->set('total_comments', $query->row('total_comments') + 1);
-				ee()->db->set('last_comment_date', ee()->localize->now);
-				ee()->db->where('member_id', ee()->session->userdata('member_id'));
-
-				ee()->db->update('members');
-			}
-
-			/** ----------------------------------------
-			/**  Update comment stats
-			/** ----------------------------------------*/
-
-			ee()->stats->update_comment_stats($channel_id, ee()->localize->now);
-
-			/** ----------------------------------------
-			/**  Fetch email notification addresses
-			/** ----------------------------------------*/
-
-			ee()->load->library('subscription');
-			ee()->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
-
-			// Remove the current user
-			$ignore = (ee()->session->userdata('member_id') != 0) ? ee()->session->userdata('member_id') : ee()->input->post('email');
-
-			// Grab them all
-			$subscriptions = ee()->subscription->get_subscriptions($ignore);
-			ee()->load->model('comment_model');
-			ee()->comment_model->recount_entry_comments(array($entry_id));
-			$recipients = ee()->comment_model->fetch_email_recipients($_POST['entry_id'], $subscriptions);
-		}
-
-		/** ----------------------------------------
-		/**  Fetch Author Notification
-		/** ----------------------------------------*/
-
-		if ($author_notify == 'y')
-		{
-			ee()->db->select('email');
-			ee()->db->where('member_id', $author_id);
-
-			$result = ee()->db->get('members');
-
-			$notify_address	.= ','.$result->row('email');
-		}
-
-		/** ----------------------------------------
-		/**  Instantiate Typography class
-		/** ----------------------------------------*/
-
-		ee()->load->library('typography');
-		ee()->typography->initialize(array(
-			'parse_images'		=> FALSE,
-			'allow_headings'	=> FALSE,
-			'smileys'			=> FALSE,
-			'word_censor'		=> (ee()->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
-		);
-
-		$comment = ee('Security/XSS')->clean($_POST['comment']);
-		$comment = ee()->typography->parse_type(
-			$comment,
-			array(
-				'text_format'	=> 'none',
-				'html_format'	=> 'none',
-				'auto_links'	=> 'n',
-				'allow_img_url' => 'n'
-			)
-		);
-
-		$path = ($comment_url == '') ? $channel_url : $comment_url;
-
-		$comment_url_title_auto_path = reduce_double_slashes($path.'/'.$url_title);
-
-		/** ----------------------------
-		/**  Send admin notification
-		/** ----------------------------*/
-
-		if ($notify_address != '')
-		{
-			$cp_url = ee()->config->item('cp_url').'?S=0&D=cp&C=addons_modules&M=show_module_cp&module=comment';
-
-			$swap = array(
-				'name'				=> $cmtr_name,
-				'name_of_commenter'	=> $cmtr_name,
-				'email'				=> $cmtr_email,
-				'url'				=> $cmtr_url,
-				'location'			=> $cmtr_loc,
-				'channel_name'		=> $channel_title,
-				'entry_title'		=> $entry_title,
-				'comment_id'		=> $comment_id,
-				'comment'			=> $comment,
-				'comment_url'		=> reduce_double_slashes(ee()->input->remove_session_id(ee()->functions->fetch_site_index().'/'.$_POST['URI'])),
-				'delete_link'		=> $cp_url.'&method=delete_comment_confirm&comment_id='.$comment_id,
-				'approve_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=o',
-				'close_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=c',
-				'channel_id'		=> $channel_id,
-				'entry_id'			=> $entry_id,
-				'url_title'			=> $url_title,
-				'comment_url_title_auto_path' => $comment_url_title_auto_path
-			);
-
-			$template = ee()->functions->fetch_email_template('admin_notify_comment');
-
-			$email_tit = ee()->functions->var_swap($template['title'], $swap);
-			$email_msg = ee()->functions->var_swap($template['data'], $swap);
-
-			// We don't want to send an admin notification if the person
-			// leaving the comment is an admin in the notification list
-			// For added security, we only trust the post email if the
-			// commenter is logged in.
-
-			if (ee()->session->userdata('member_id') != 0 && $_POST['email'] != '')
-			{
-				if (strpos($notify_address, $_POST['email']) !== FALSE)
-				{
-					$notify_address = str_replace($_POST['email'], '', $notify_address);
-				}
-			}
-
-			// Remove multiple commas
-			$notify_address = reduce_multiples($notify_address, ',', TRUE);
-
-			if ($notify_address != '')
-			{
-				/** ----------------------------
-				/**  Send email
-				/** ----------------------------*/
-
-				ee()->load->library('email');
-
-				$replyto = ($data['email'] == '') ? ee()->config->item('webmaster_email') : $data['email'];
-
-				$sent = array();
-
-				// Load the text helper
-				ee()->load->helper('text');
-
-				foreach (explode(',', $notify_address) as $addy)
-				{
-					if (in_array($addy, $sent))
-					{
-						continue;
-					}
-
-					ee()->email->EE_initialize();
-					ee()->email->wordwrap = false;
-					ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
-					ee()->email->to($addy);
-					ee()->email->reply_to($replyto);
-					ee()->email->subject($email_tit);
-					ee()->email->message(entities_to_ascii($email_msg));
-					ee()->email->send();
-
-					$sent[] = $addy;
-				}
-			}
-		}
-
-
-		/** ----------------------------------------
-		/**  Send user notifications
-		/** ----------------------------------------*/
-
-		if ($comment_moderate == 'n')
-		{
-			$email_msg = '';
-
-			if (count($recipients) > 0)
-			{
-				$action_id  = ee()->functions->fetch_action_id('Comment_mcp', 'delete_comment_notification');
-
-				$swap = array(
-					'name_of_commenter'	=> $cmtr_name,
-					'channel_name'		=> $channel_title,
-					'entry_title'		=> $entry_title,
-					'site_name'			=> stripslashes(ee()->config->item('site_name')),
-					'site_url'			=> ee()->config->item('site_url'),
-					'comment_url'		=> reduce_double_slashes(ee()->input->remove_session_id(ee()->functions->fetch_site_index().'/'.$_POST['URI'])),
-					'comment_id'		=> $comment_id,
-					'comment'			=> $comment,
-					'channel_id'		=> $channel_id,
-					'entry_id'			=> $entry_id,
-					'url_title'			=> $url_title,
-					'comment_url_title_auto_path' => $comment_url_title_auto_path
-				);
-
-
-				$template = ee()->functions->fetch_email_template('comment_notification');
-				$email_tit = ee()->functions->var_swap($template['title'], $swap);
-				$email_msg = ee()->functions->var_swap($template['data'], $swap);
-
-				/** ----------------------------
-				/**  Send email
-				/** ----------------------------*/
-
-				ee()->load->library('email');
-				ee()->email->wordwrap = true;
-
-				$cur_email = ($_POST['email'] == '') ? FALSE : $_POST['email'];
-
-				if ( ! isset($sent)) $sent = array();
-
-				// Load the text helper
-				ee()->load->helper('text');
-
-				foreach ($recipients as $val)
-				{
-					// We don't notify the person currently commenting.  That would be silly.
-
-					if ( ! in_array($val['0'], $sent))
-					{
-						$title	 = $email_tit;
-						$message = $email_msg;
-
-						$sub	= $subscriptions[$val['1']];
-						$sub_qs	= 'id='.$sub['subscription_id'].'&hash='.$sub['hash'];
-
-						// Deprecate the {name} variable at some point
-						$title	 = str_replace('{name}', $val['2'], $title);
-						$message = str_replace('{name}', $val['2'], $message);
-
-						$title	 = str_replace('{name_of_recipient}', $val['2'], $title);
-						$message = str_replace('{name_of_recipient}', $val['2'], $message);
-
-						$title	 = str_replace('{notification_removal_url}', ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&'.$sub_qs, $title);
-						$message = str_replace('{notification_removal_url}', ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&'.$sub_qs, $message);
-
-						ee()->email->EE_initialize();
-						ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
-						ee()->email->to($val['0']);
-						ee()->email->subject($title);
-						ee()->email->message(entities_to_ascii($message));
-						ee()->email->send();
-
-						$sent[] = $val['0'];
-					}
-				}
-			}
-
-			/** ----------------------------------------
-			/**  Clear cache files
-			/** ----------------------------------------*/
-
-			ee()->functions->clear_caching('all', ee()->functions->fetch_site_index().$_POST['URI']);
-
-			// clear out the entry_id version if the url_title is in the URI, and vice versa
-			if (preg_match("#\/".preg_quote($url_title)."\/#", $_POST['URI'], $matches))
-			{
-				ee()->functions->clear_caching('all', ee()->functions->fetch_site_index().preg_replace("#".preg_quote($matches['0'])."#", "/{$data['entry_id']}/", $_POST['URI']));
-			}
-			else
-			{
-				ee()->functions->clear_caching('all', ee()->functions->fetch_site_index().preg_replace("#{$data['entry_id']}#", $url_title, $_POST['URI']));
+				$notify->sendUserNotifications();
 			}
 		}
 
@@ -2887,41 +2701,6 @@ class Comment {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-     * remove_comment is used by the spam module to delete comments that are
-	 * flagged as spam from the spam trap
-	 *
-	 * @param integer $comment_id  The ID of the comment
-	 * @access public
-	 * @return void
-	 */
-	function remove_comment($id)
-	{
-		ee()->db->delete('comments', array('comment_id' => $id));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-     * moderate_comment simply sets a particular status given a comment id.
-     * This is used by the Spam Module for showing comments after they are
-     * flagged as a false positive in the spam trap.
-	 *
-	 * @param integer $comment_id  The ID of the comment
-	 * @param string  $status  The status to set
-	 * @access public
-	 * @return void
-	 */
-	function moderate_comment($comment_id, $status)
-	{
-		ee()->db->where('comment_id', $comment_id);
-		ee()->db->update('comments', array('status' => $status));
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Comment subscription tag
 	 *
@@ -2962,8 +2741,6 @@ class Comment {
 		$tagdata = ee()->TMPL->tagdata;
 		return ee()->TMPL->parse_variables($tagdata, $data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * List of subscribers to an entry
@@ -3038,8 +2815,6 @@ class Comment {
 
 		return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Comment subscription w/out commenting
@@ -3119,8 +2894,6 @@ class Comment {
 
 		ee()->output->show_message($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Frontend comment editing
@@ -3204,9 +2977,6 @@ class Comment {
 
 				if ($edited_status != FALSE & $can_moderate != FALSE)
 				{
-					// We closed an entry, update our stats
-					$this->_update_comment_stats($entry_id, $channel_id, $author_id);
-
 					// Send back the updated comment
 					ee()->output->send_ajax_response(array('moderated' => ee()->lang->line('closed')));
 				}
@@ -3231,8 +3001,6 @@ class Comment {
 		ee()->output->send_ajax_response(array('error' => $unauthorized));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Edit Comment Script
 	 *
@@ -3246,8 +3014,6 @@ class Comment {
 		$src = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT=comment_editor';
 		return $this->return_data = '<script type="text/javascript" charset="utf-8" src="'.$src.'"></script>';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Comment Editor
@@ -3349,8 +3115,6 @@ CMT_EDIT_SCR;
 		exit($script);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * AJAX Edit URL
 	 *
@@ -3363,8 +3127,6 @@ CMT_EDIT_SCR;
 
 		return $url;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Discover the entry ID for the current entry
@@ -3422,23 +3184,6 @@ CMT_EDIT_SCR;
 		}
 
 		return ee()->session->cache['comment']['entry_id'][$qstring_hash] = $entry_id;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Update Entry and Channel Stats
-	 *
-	 * @return	void
-	 */
-	private function _update_comment_stats($entry_id, $channel_id, $author_id)
-	{
-		ee()->stats->update_channel_title_comment_stats(array($entry_id));
-		ee()->stats->update_comment_stats($channel_id, '', FALSE);
-		ee()->stats->update_comment_stats();
-		ee()->stats->update_authors_comment_stats(array($author_id));
-
-		return;
 	}
 
 }

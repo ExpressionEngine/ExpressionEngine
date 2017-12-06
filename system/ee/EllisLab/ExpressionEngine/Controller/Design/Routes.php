@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Design;
 
@@ -9,27 +16,7 @@ use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Design\Routes Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Design\Routes Controller
  */
 class Routes extends AbstractDesignController {
 
@@ -144,9 +131,13 @@ class Routes extends AbstractDesignController {
 				->render(array(
 					'field_name' => "template_id",
 					'field' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => $this->getTemplatesWithoutRoutes(),
-						'value' => ($route->Template) ? $route->Template->template_id : ''
+						'filter_url' => ee('CP/URL', 'design/routes/search-templates')->compile(),
+						'value' => ($route->Template) ? $route->Template->template_id : '',
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('templates'))
+						]
 					),
 					'grid' => TRUE,
 				));
@@ -190,7 +181,10 @@ class Routes extends AbstractDesignController {
 				'html' => $route_field,
 				'error' => (isset($errors) && $errors->hasErrors("routes[rows][{$id}][route]")) ? implode('<br>', $errors->getErrors("routes[rows][{$id}][route]")) : NULL
 			),
-			$required,
+			array(
+				'html' => $required,
+				'attrs' => ['class' => 'grid-toggle']
+			)
 		);
 		$row['attrs']['class'] = 'setting-field';
 
@@ -331,16 +325,7 @@ class Routes extends AbstractDesignController {
 	 */
 	private function getTemplatesWithoutRoutes()
 	{
-		static $existing_templates;
-
-		if ($existing_templates)
-		{
-			return $existing_templates;
-		}
-
-		$existing_templates = array(
-			'0' => '-- ' . strtolower(lang('none')) . ' --'
-		);
+		$search_query = ee('Request')->get('search');
 
 		$all_templates = ee('Model')->get('Template')
 			->filter('site_id', ee()->config->item('site_id'))
@@ -360,16 +345,29 @@ class Routes extends AbstractDesignController {
 			$all_templates->filter('template_id', 'NOT IN', $template_ids);
 		}
 
-		foreach ($all_templates->all() as $template)
+		if ($search_query)
 		{
-			if ( ! isset($existing_templates[$template->TemplateGroup->group_name]))
-			{
-				$existing_templates[$template->TemplateGroup->group_name] = array();
-			}
-			$existing_templates[$template->TemplateGroup->group_name][$template->template_id] = $template->template_name;
+			$templates = $all_templates->all()->filter(function($template) use ($search_query) {
+				return strpos(strtolower($template->getPath()), strtolower($search_query)) !== FALSE;
+			});
+		}
+		else
+		{
+			$templates = $all_templates->limit(100)->all();
 		}
 
-		return $existing_templates;
+		$results = [];
+		foreach ($templates as $template)
+		{
+			$results[$template->getId()] = $template->getPath();
+		}
+
+		return $results;
+	}
+
+	public function searchTemplates()
+	{
+		return json_encode($this->getTemplatesWithoutRoutes());
 	}
 
 	private function transferErrors($field_prefix, ValidationResult $result, ValidationResult $errors)

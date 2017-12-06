@@ -1,27 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package     ExpressionEngine
- * @author      EllisLab Dev Team
- * @copyright   Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license     https://expressionengine.com/license
- * @link        https://ellislab.com
- * @since       Version 3.2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
- * ExpressionEngine Email Fieldtype Class
- *
- * @package     ExpressionEngine
- * @subpackage  Fieldtypes
- * @category    Fieldtypes
- * @author      EllisLab Dev Team
- * @link        https://ellislab.com
+ * Email Fieldtype
  */
 class Email_address_Ft extends EE_Fieldtype {
 
@@ -64,8 +51,6 @@ class Email_address_Ft extends EE_Fieldtype {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Display Field
 	 *
@@ -88,8 +73,6 @@ class Email_address_Ft extends EE_Fieldtype {
 		return form_input($field);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Replace Tag
 	 *
@@ -102,8 +85,6 @@ class Email_address_Ft extends EE_Fieldtype {
 	{
 		return ee()->functions->encode_ee_tags($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Replace Tag :mailto
@@ -135,7 +116,14 @@ class Email_address_Ft extends EE_Fieldtype {
 		return $mailto;
 	}
 
-	// --------------------------------------------------------------------
+	/**
+	 * :url_slug modifier
+	 */
+	public function replace_url_slug($data, $params = array(), $tagdata = FALSE)
+	{
+		$email = str_replace(['@','.','+'], [' at ', ' dot ', ' plus '], $data);
+		return parent::replace_url_slug($email, $params, $tagdata);
+	}
 
 	/**
 	 * Accept all content types.
@@ -147,8 +135,6 @@ class Email_address_Ft extends EE_Fieldtype {
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

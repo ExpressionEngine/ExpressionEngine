@@ -25,9 +25,6 @@ end
 # Runs when a page is visted and after every example to ensure no
 # PHP or JavaScript errors are present
 def no_php_js_errors
-  # Open stack traces for screenshots
-  click_link('show') unless page.has_no_css?('.err-wrap h3 a.toggle')
-
   # Search for "on line" or "Line Number:" since they're in pretty much
   # in every PHP error
   if not page.current_url.include? 'logs/developer'
@@ -61,15 +58,17 @@ end
 
 # Checks for show_error()
 def should_have_show_error(message)
-  page.has_content?('An Error Was Encountered').should == true
   page.has_content?(message).should == true
   page.status_code.should == 500
 end
 
 def should_have_error_text(node, text)
-  node.first(:xpath, ".//ancestor::fieldset[1]")[:class].should include 'invalid'
-  node.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
-  node.first(:xpath, ".//..").should have_text text
+  fieldset = node.first(:xpath, ".//ancestor::fieldset[1]")
+  fieldctrl =  fieldset.first(:xpath, ".//div[@class='field-control']")
+
+  fieldset[:class].should include 'invalid'
+  fieldctrl.should have_css 'em.ee-form-error-message'
+  fieldctrl.should have_text text
 end
 
 def should_have_no_error_text(node)
@@ -218,4 +217,62 @@ def ee_config(site_id: nil, item: nil, value: nil)
       return value
     end
   end
+end
+
+# Make some methods available to help us with radio group selection
+module Capybara
+
+  class Result
+
+    def choose_radio_option(value)
+      self.each do |el|
+        if el.value == value
+          el.set(true)
+        end
+      end
+    end
+
+    def has_checked_radio(value)
+      self.each do |el|
+        if el.value == value
+          return el.checked?
+        end
+      end
+
+      return false
+    end
+
+  end
+
+end
+
+# Monkey patch so SitePrism's all_there? gives a more explicit and useful failure
+# See https://github.com/natritmeyer/site_prism/issues/146
+module SitePrism
+  module ElementChecker
+    def all_there?
+      Capybara.using_wait_time(0) do
+        self.class.mapped_items.all? do |element|
+          if ! send "has_#{element}?"
+            warn "Missing element '#{element}'"
+            return false
+          else
+            return true
+          end
+        end
+      end
+    end
+  end
+end
+
+# Swaps on piece of text for another given a file
+#
+# @param [File] file File object
+# @param [String] pattern Text to find
+# @param [String] replacement Replacement of above text
+# @return [void]
+def swap(file, pattern, replacement)
+  file = File.expand_path(file)
+  temp = File.read(file).gsub(pattern, replacement)
+  File.open(file, 'w') { |f| f.puts temp }
 end

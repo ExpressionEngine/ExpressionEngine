@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Publish;
 
@@ -7,27 +14,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 
 use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry;
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Abstract Publish Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Abstract Publish Controller
  */
 abstract class AbstractPublish extends CP_Controller {
 
@@ -227,6 +214,89 @@ abstract class AbstractPublish extends CP_Controller {
 		return ee('View')->make('_shared/table')->render($table->viewData(''));
 	}
 
+	protected function getAutosavesTable($entry, $autosave_id = FALSE)
+	{
+		$table = ee('CP/Table');
+
+		$table->setColumns(
+			array(
+				'rev_id',
+				'rev_date',
+				'rev_author',
+				'manage' => array(
+					'encode' => FALSE
+				)
+			)
+		);
+
+		$data = array();
+		$authors = array();
+		$i = 1;
+
+		foreach ($entry->getAutosaves()->sortBy('edit_date') as $autosave)
+		{
+			if ( ! isset($authors[$autosave->author_id]))
+			{
+				$authors[$autosave->author_id] = $autosave->Author->getMemberName();
+			}
+
+			$toolbar = ee('View')->make('_shared/toolbar')->render(array(
+				'toolbar_items' => array(
+						'txt-only' => array(
+							'href' => $entry->entry_id
+								? ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id . '/' . $autosave->entry_id)
+								: ee('CP/URL')->make('publish/create/' . $entry->Channel->channel_id . '/' . $autosave->entry_id),
+							'title' => lang('view'),
+							'content' => lang('view')
+						),
+					)
+				)
+			);
+
+			$attrs = ($autosave->getId() == $autosave_id) ? array('class' => 'selected') : array();
+
+			$data[] = array(
+				'attrs'   => $attrs,
+				'columns' => array(
+					$i,
+					ee()->localize->human_time($autosave->edit_date),
+					$authors[$autosave->author_id],
+					$toolbar
+				)
+			);
+			$i++;
+		}
+
+		if ( ! $entry->isNew())
+		{
+			$attrs = ( ! $autosave_id) ? ['class' => 'selected'] : [];
+
+			if ( ! isset($authors[$entry->author_id]))
+			{
+				$authors[$entry->author_id] = $entry->getAuthorName();
+			}
+
+			// Current
+			$edit_date = ($entry->edit_date)
+				? ee()->localize->human_time($entry->edit_date->format('U'))
+				: NULL;
+
+			$data[] = array(
+				'attrs'   => $attrs,
+				'columns' => array(
+					$i,
+					$edit_date,
+					$authors[$entry->author_id],
+					'<span class="st-open">' . lang('current') . '</span>'
+				)
+			);
+		}
+
+		$table->setData($data);
+
+		return ee('View')->make('_shared/table')->render($table->viewData(''));
+	}
+
 	protected function validateEntry(ChannelEntry $entry, $layout)
 	{
 		if (empty($_POST))
@@ -303,13 +373,31 @@ abstract class AbstractPublish extends CP_Controller {
 			->addToBody(sprintf(lang($action . '_entry_success_desc'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8')))
 			->defer();
 
-		if (ee()->input->post('submit') == 'finish')
+		if (ee()->input->post('submit') == 'save')
 		{
-			ee()->functions->redirect(ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id)));
+			ee()->functions->redirect(ee('CP/URL')->make('publish/edit/entry/' . $entry->getId()));
+		}
+		elseif (ee()->input->post('submit') == 'save_and_close')
+		{
+			$redirect_url = ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id));
+
+			/* -------------------------------------
+			/*  'entry_save_and_close_redirect' hook.
+			/*  - Redirect to a different URL when "Save & Close" is clicked
+			/*  - Added 4.0.0
+			*/
+				if (ee()->extensions->active_hook('entry_save_and_close_redirect'))
+				{
+					$redirect_url = ee()->extensions->call('entry_save_and_close_redirect', $entry);
+				}
+			/*
+			/* -------------------------------------*/
+
+			ee()->functions->redirect($redirect_url);
 		}
 		else
 		{
-			ee()->functions->redirect(ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id));
+			ee()->functions->redirect(ee('CP/URL')->make('publish/create/' . $entry->channel_id));
 		}
 	}
 

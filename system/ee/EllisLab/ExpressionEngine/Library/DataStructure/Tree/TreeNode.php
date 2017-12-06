@@ -1,16 +1,16 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Library\DataStructure\Tree;
 
-
 /**
- * ExpressionEngine Tree Node Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core Datastructures
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Tree Node
  *
  * If you're completely new to this ideas:
  * @see http://xlinux.nist.gov/dads/HTML/tree.html
@@ -35,8 +35,6 @@ class TreeNode {
 		$this->children_names = array();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Retrieve the payload data.
 	 *
@@ -59,8 +57,6 @@ class TreeNode {
 
 		throw new \InvalidArgumentException('Payload cannot be retrieved for key: "' . $key . '" in node "' . $this->getName() . '".');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Change the payload data.
@@ -92,8 +88,6 @@ class TreeNode {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Post-process node cloning
 	 *
@@ -108,8 +102,6 @@ class TreeNode {
 	}
 
 	// Public Setters
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add a child node to the current node.
@@ -140,8 +132,6 @@ class TreeNode {
 
 	// Getters
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the node's name
 	 *
@@ -152,8 +142,6 @@ class TreeNode {
 		return $this->name;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the node's payload
 	 *
@@ -163,8 +151,6 @@ class TreeNode {
 	{
 		return $this->data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get the node's depth relative to its root, where the root's
@@ -183,8 +169,6 @@ class TreeNode {
 	}
 
 	// Traversal
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get the tree's root node
@@ -206,8 +190,6 @@ class TreeNode {
 		return $root;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get all of the node's children
 	 *
@@ -217,8 +199,6 @@ class TreeNode {
 	{
 		return $this->children;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get the node's first child
@@ -230,8 +210,6 @@ class TreeNode {
 		return $this->children[0];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the node's parent
 	 *
@@ -241,8 +219,6 @@ class TreeNode {
 	{
 		return $this->parent;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get all of a node's siblings
@@ -269,8 +245,6 @@ class TreeNode {
 
 	// Utility
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check if the node has parents
 	 *
@@ -281,8 +255,6 @@ class TreeNode {
 		return ! isset($this->parent);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check if the node has children
 	 *
@@ -292,8 +264,6 @@ class TreeNode {
 	{
 		return count($this->children) == 0;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Freeze the node
@@ -308,8 +278,6 @@ class TreeNode {
 		$this->_frozen = TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get a child by name
 	 *
@@ -323,8 +291,6 @@ class TreeNode {
 	{
 		return $this->children_names[$name];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create a subtree on this node.
@@ -344,8 +310,6 @@ class TreeNode {
 		$root->parent = NULL;
 		return $root;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create a full subtree copy from this node down.
@@ -369,8 +333,6 @@ class TreeNode {
 		return $root;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Preorder Tree Iterator
 	 *
@@ -385,8 +347,6 @@ class TreeNode {
 			\RecursiveIteratorIterator::SELF_FIRST
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Postorder Tree Iterator
@@ -403,8 +363,6 @@ class TreeNode {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Leaf Iterator
 	 *
@@ -420,8 +378,6 @@ class TreeNode {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Breadth First Iterator
 	 *
@@ -435,8 +391,6 @@ class TreeNode {
 			new TreeIterator(array($this))
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set parent

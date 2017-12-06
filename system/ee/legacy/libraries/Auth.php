@@ -1,65 +1,48 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine Authentication Library
+ * ExpressionEngine User Classes (* = current):
  *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ *   1. Session
+ *   2. Authentication*
+ *   3. Permissions
+ *
+ * Doing authentication securely relies heavily on handling user
+ * passwords responsibly. Thanks to steadily increasing computing
+ * power, cryptographic hashing algorithms evolve continuously.
+ *
+ * To deal with this we continually try to upgrade the user. The
+ * general authentication flow therefore becomes:
+ *
+ *   1. Grab user info using a unique identifier.
+ *
+ *   2. Determine the function used for their stored password.
+ * 	 We do this by looking at the length of the hash. This
+ * 	 also means that we can never support two algorithms of
+ * 	 the same length. Not a big problem.
+ *
+ *   3. Determine if their old password hash was salted.
+ * 	 This is easy; we store the salt with their userdata.
+ *
+ *   4. Hash the input password with the old salt and hash function.
+ * 	 If this fails we're done, the password was incorrect.
+ *
+ *   5. Check if we can improve security of their password.
+ * 	 If it wasn't salted, we salt it. If we support a newer
+ * 	 hash function, we create a new salt and rehash the password.
+ *
+ * EE Dev Note: In EE's db the password and salt column
+ * should always be as long as the best available hash.
+ *
  */
-
-// ------------------------------------------------------------------------
-
-/*
-ExpressionEngine User Classes (* = current):
-
-  1. Session
-  2. Authentication*
-  3. Permissions
-
-Doing authentication securely relies heavily on handling user
-passwords responsibly. Thanks to steadily increasing computing
-power, cryptographic hashing algorithms evolve continuously.
-
-To deal with this we continually try to upgrade the user. The
-general authentication flow therefore becomes:
-
-  1. Grab user info using a unique identifier.
-
-  2. Determine the function used for their stored password.
-	 We do this by looking at the length of the hash. This
-	 also means that we can never support two algorithms of
-	 the same length. Not a big problem.
-
-  3. Determine if their old password hash was salted.
-	 This is easy; we store the salt with their userdata.
-
-  4. Hash the input password with the old salt and hash function.
-	 If this fails we're done, the password was incorrect.
-
-  5. Check if we can improve security of their password.
-	 If it wasn't salted, we salt it. If we support a newer
-	 hash function, we create a new salt and rehash the password.
-
-EE Dev Note: In EE's db the password and salt column
-should always be as long as the best available hash.
-
-*/
 class Auth {
 
 	public $errors = array();
@@ -87,8 +70,6 @@ class Auth {
 		$this->hash_algos = array_intersect($this->hash_algos, hash_algos());
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Authenticate with an id
 	 *
@@ -99,8 +80,6 @@ class Auth {
 		$member = ee()->db->get_where('members', array('member_id' => $id));
 		return $this->_authenticate($member, $password);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Authenticate with email
@@ -113,8 +92,6 @@ class Auth {
 		return $this->_authenticate($member, $password);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Authenticate with username
 	 *
@@ -125,8 +102,6 @@ class Auth {
 		$member = ee()->db->get_where('members', array('username' => $username));
 		return $this->_authenticate($member, $password);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Authenticate from basic http auth
@@ -161,8 +136,6 @@ class Auth {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Authenticate from digest http auth
 	 *
@@ -172,8 +145,6 @@ class Auth {
 	{
 		die('@todo');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Run through the majority of the authentication checks
@@ -305,8 +276,6 @@ class Auth {
 		return array($username, $password, $incoming);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check Required IP
 	 *
@@ -326,8 +295,6 @@ class Auth {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Hash Password
@@ -390,8 +357,6 @@ class Auth {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Username
 	 *
@@ -405,8 +370,6 @@ class Auth {
 
 		return (bool) ee()->db->affected_rows();
 	}
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Password
 	 *
@@ -440,8 +403,6 @@ class Auth {
 
 		return (bool) ee()->db->affected_rows();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Authenticate
@@ -497,8 +458,6 @@ class Auth {
 
 		return $authed;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Retrieve Basic HTTP Credentials
@@ -627,8 +586,6 @@ class Auth_result {
 		$this->member = $member;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Group data getter
 	 *
@@ -650,8 +607,6 @@ class Auth_result {
 
 		return isset($this->group->$key) ? $this->group->$key : $default;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Multi-login check
@@ -690,8 +645,6 @@ class Auth_result {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Simplified permission checks
 	 *
@@ -701,8 +654,6 @@ class Auth_result {
 	{
 		return ($this->group($perm) === 'y');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Ban check
@@ -719,8 +670,6 @@ class Auth_result {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Member data getter
 	 *
@@ -731,8 +680,6 @@ class Auth_result {
 		return isset($this->member->$key) ? $this->member->$key : $default;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Anon setter
 	 *
@@ -742,8 +689,6 @@ class Auth_result {
 	{
 		$this->anon = $anon;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Start session
@@ -848,8 +793,6 @@ class Auth_result {
 		ee()->session->delete_password_lockout();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Session id getter session
 	 *
@@ -861,8 +804,6 @@ class Auth_result {
 	{
 		return $this->session_id;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Session id setter
@@ -877,8 +818,6 @@ class Auth_result {
 		$this->session_id = $session_id;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Remember me
 	 *
@@ -890,8 +829,6 @@ class Auth_result {
 	{
 		$this->remember_me = ($remember) ? TRUE : FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Hook data utility method
@@ -911,6 +848,6 @@ class Auth_result {
 		return $obj;
 	}
 }
-// END Auth_member class
+// END CLASS
 
 // EOF

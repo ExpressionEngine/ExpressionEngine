@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Publish;
 
@@ -8,27 +15,7 @@ use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPubl
 use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Publish/Comments Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Publish/Comments Controller
  */
 class Comments extends AbstractPublishController {
 
@@ -72,7 +59,7 @@ class Comments extends AbstractPublishController {
 		$comments = ee('Model')->get('Comment')
 			->filter('site_id', ee()->config->item('site_id'));
 
-		$channel_filter = ee('CP/EntryListing', ee()->input->get_post('search'))->createChannelFilter();
+		$channel_filter = ee('CP/EntryListing', ee()->input->get_post('filter_by_keyword'))->createChannelFilter();
 		if ($channel_filter->value())
 		{
 			$comments->filter('channel_id', $channel_filter->value());
@@ -85,17 +72,21 @@ class Comments extends AbstractPublishController {
 			$comments->filter('status', $status_filter->value());
 		}
 
-		ee()->view->search_value = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
-		if ( ! empty(ee()->view->search_value))
+		// never show Spam here, that needs to be dealt with in the Spam module
+		$comments->filter('status', '!=', 's');
+
+		$search_value = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
+		if ( ! empty($search_value))
 		{
-			$base_url->setQueryStringVariable('search', ee()->view->search_value);
-			$comments->filter('comment', 'LIKE', '%' . ee()->view->search_value . '%');
+			$base_url->setQueryStringVariable('filter_by_keyword', $search_value);
+			$comments->filter('comment', 'LIKE', '%' . $search_value . '%');
 		}
 
 		$filters = ee('CP/Filter')
 			->add($channel_filter)
 			->add($status_filter)
-			->add('Date');
+			->add('Date')
+			->add('Keyword');
 
 		$filter_values = $filters->values();
 
@@ -158,12 +149,29 @@ class Comments extends AbstractPublishController {
 			);
 		}
 
+		// if there are Spam comments, and the user can access them, give them a link
+		if (ee()->cp->allowed_group('can_moderate_spam') && ee('Addon')->get('spam')->isInstalled())
+		{
+			$spam_total = ee('Model')->get('Comment')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('status', 's')
+				->count();
+
+			$spam_link = ee('CP/URL')->make('addons/settings/spam', array('content_type' => 'comment'));
+
+			ee('CP/Alert')->makeInline('comments-form')
+				->asWarning()
+				->withTitle(lang('spam_comments_header'))
+				->addToBody(sprintf(lang('spam_comments'), $spam_total, $spam_link))
+				->now();
+		}
+
 		ee()->view->cp_page_title = lang('all_comments');
 
 		// Set the page heading
-		if ( ! empty(ee()->view->search_value))
+		if ( ! empty($search_value))
 		{
-			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, $search_value);
 		}
 		else
 		{
@@ -209,16 +217,17 @@ class Comments extends AbstractPublishController {
 			$comments->filter('status', $status_filter->value());
 		}
 
-		ee()->view->search_value = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
-		if ( ! empty(ee()->view->search_value))
+		$search_value = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
+		if ( ! empty($search_value))
 		{
-			$base_url->setQueryStringVariable('search', ee()->view->search_value);
-			$comments->filter('comment', 'LIKE', '%' . ee()->view->search_value . '%');
+			$base_url->setQueryStringVariable('filter_by_keyword', $search_value);
+			$comments->filter('comment', 'LIKE', '%' . $search_value . '%');
 		}
 
 		$filters = ee('CP/Filter')
 			->add($status_filter)
-			->add('Date');
+			->add('Date')
+			->add('Keyword');
 
 		$filter_values = $filters->values();
 
@@ -275,9 +284,9 @@ class Comments extends AbstractPublishController {
 		ee()->view->cp_page_title = sprintf(lang('all_comments_for_entry'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
 
 		// Set the page heading
-		if ( ! empty(ee()->view->search_value))
+		if ( ! empty($search_value))
 		{
-			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, htmlentities(ee()->view->search_value));
+			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, htmlentities($search_value));
 		}
 		else
 		{
@@ -360,7 +369,7 @@ class Comments extends AbstractPublishController {
 						'desc' => 'comment_status_desc',
 						'fields' => array(
 							'status' => array(
-								'type' => 'select',
+								'type' => 'radio',
 								'choices' => array(
 									'o' => lang('open'),
 									'c' => lang('closed'),
@@ -567,8 +576,7 @@ class Comments extends AbstractPublishController {
 		$status = ee('CP/Filter')->make('filter_by_status', 'filter_by_status', array(
 			'o' => lang('open'),
 			'c' => lang('closed'),
-			'p' => lang('pending'),
-			's' => lang('spam')
+			'p' => lang('pending')
 		));
 		$status->disableCustomValue();
 		return $status;

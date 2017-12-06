@@ -1,33 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Members\Profile;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Member Profile Date Settings Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Profile Date Settings Controller
  */
 class Date extends Settings {
 
@@ -73,12 +58,12 @@ class Date extends Settings {
 					'group' => 'localize',
 					'fields' => array(
 						'date_format' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $fields['date_format']['value'],
 							'value' => $this->member->date_format
 						),
 						'time_format' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(12 => '12 hour', 24 => '24 hour'),
 							'value' => $this->member->time_format
 						)

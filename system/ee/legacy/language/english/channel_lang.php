@@ -2,6 +2,12 @@
 
 $lang = array(
 
+'add_field' => 'Add Field',
+
+'add_group' => 'Add Group',
+
+'add_status' => 'Add Status',
+
 'add_tab' => 'Add Tab',
 
 'assigned_to' => 'assigned to',
@@ -10,11 +16,13 @@ $lang = array(
 
 'btn_preview_layout' => 'Preview Layout',
 
-'category_groups' => 'Category Groups',
+'category_groups' => 'Category groups',
+
+'category_groups_desc' => 'Assign one of more category groups to this channel.',
 
 'channel' => 'Channel',
 
-'channel_form_layouts' => '%s &ndash; Form Layouts',
+'channel_form_layouts' => '%s &ndash; Publish Layouts',
 
 'channel_manager' => 'Channel Manager',
 
@@ -56,17 +64,17 @@ $lang = array(
 
 'channels_removed_desc' => '%d channels were removed.',
 
-'create_channel' => 'Create Channel',
+'create_channel' => 'New Channel',
 
-'create_form_layout' => 'Create Form Layout',
+'create_form_layout' => 'New Publish Layout',
 
-'create_layout_error' => 'Cannot Create Form Layout',
+'create_layout_error' => 'Cannot Create Publish Layout',
 
 'create_layout_error_desc' => 'We were unable to update this group, please review and fix errors below.',
 
-'create_layout_success' => 'Form Layout Created',
+'create_layout_success' => 'Publish Layout Created',
 
-'create_layout_success_desc' => 'The form layout <b>%s</b> has been created.',
+'create_layout_success_desc' => 'The publish layout <b>%s</b> has been created.',
 
 'custom_fields' => 'Custom Fields',
 
@@ -74,17 +82,15 @@ $lang = array(
 
 'duplicate_tab_name' => 'A tab with this name already exists.',
 
-'edit' => 'edit',
+'edit_form_layout' => 'Edit Publish Layout',
 
-'edit_form_layout' => 'Edit Form Layout &ndash; %s',
-
-'edit_layout_error' => 'Cannot Update Form Layout',
+'edit_layout_error' => 'Cannot Update Publish Layout',
 
 'edit_layout_error_desc' => 'We were unable to update this group, please review and fix errors below.',
 
-'edit_layout_success' => 'Form Layout Updated',
+'edit_layout_success' => 'Publish Layout Updated',
 
-'edit_layout_success_desc' => 'The form layout <b>%s</b> has been updated.',
+'edit_layout_success_desc' => 'The publish layout <b>%s</b> has been updated.',
 
 'error_cannot_hide_tab' => 'Cannot Hide Tab',
 
@@ -98,9 +104,13 @@ $lang = array(
 
 'field_group' => 'Field Group',
 
-'field_groups' => 'Field Groups',
+'field_groups' => 'Field groups',
 
-'form_layouts' => 'Form Layouts',
+'field_groups_desc' => 'Assign one of more field groups to this channel.',
+
+'fields_desc' => 'Assign one of more fields to this channel.',
+
+'form_layouts' => 'Publish Layouts',
 
 'illegal_tab_name' => 'Tab names may not contain the following characters: *, >, :, +, (, ), [, ], =, |, ", \', ., #, or $',
 
@@ -116,7 +126,7 @@ $lang = array(
 
 'layouts' => 'Layouts',
 
-'layouts_removed_desc' => 'The following form layouts were removed',
+'layouts_removed_desc' => 'The following publish layouts were removed',
 
 'manage_channels' => 'Manage Channels',
 
@@ -126,15 +136,17 @@ $lang = array(
 
 'member_groups_desc' => 'Choose the member group(s) to apply this layout to.',
 
+'new_layout' => 'New Layout',
+
 'no_channels' => 'No <b>Channels</b> found.',
 
-'no_layouts' => 'No Layouts',
+'no_layouts' => 'No <b>Layouts</b> found.',
 
 'search_for' => 'Search for "%s"',
 
 'section_search_results' => 'results for the search term <mark>%s</mark>',
 
-'settings' => 'settings',
+'settings' => 'Settings',
 
 'short_name' => 'Short name',
 
@@ -188,21 +200,17 @@ $lang = array(
 
 'create_new_field_group' => 'Create New Field Group',
 
-'create_new_status_group' => 'Create New Status Group',
-
 'custom_field_group' => 'Custom field group',
+
+'custom_field_groups' => 'Custom field groups',
 
 'custom_field_groups_not_found' => 'No <b>custom field groups</b> found',
 
 'custom_fields_desc' => 'Choose the fields you would like to include in this field group.',
 
-'default_status_group' => 'Default Statuses',
-
 'edit_channel' => 'Edit Channel',
 
 'invalid_short_name' => 'Your channel name must contain only alpha-numeric characters and no spaces.',
-
-'status_groups_not_found' => 'No <b>status groups</b> found',
 
 'taken_channel_name' => 'This channel name is already taken.',
 
@@ -216,13 +224,13 @@ $lang = array(
 
 'allow_comments_checked' => 'Allow comments default?',
 
-'allow_comments_checked_desc' => 'When set to <b>yes</b>, the "Allow comments" option will be set to "yes" by default',
+'allow_comments_checked_desc' => 'When enabled, the "Allow comments" option will be set to "yes" by default',
 
-'allow_comments_desc' => 'When set to <b>yes</b>, members can submit comments to this channel\'s entries.',
+'allow_comments_desc' => 'When enabled, members can submit comments to this channel\'s entries.',
 
 'allow_guest_submission' => 'Allow guest submissions?',
 
-'allow_guest_submission_desc' => 'When set to <b>yes</b>, unregistered users will be able to submit forms for this channel.',
+'allow_guest_submission_desc' => 'When enabled, unregistered users will be able to submit forms for this channel.',
 
 'allow_safe_html' => 'Allow only safe HTML',
 
@@ -248,25 +256,15 @@ $lang = array(
 
 'channel_form_status_desc' => 'Default status for forms in this channel.',
 
-'channel_settings' => 'Channel Settings',
-
-'channel_settings_not_saved' => 'Cannot Save Channel Settings',
-
-'channel_settings_not_saved_desc' => 'We were unable to save this channel\'s settings, please review and fix errors below.',
-
-'channel_settings_saved' => 'Channel Settings Saved',
-
-'channel_settings_saved_desc' => 'The settings for channel <b>%s</b> have been saved.',
-
 'channel_url_desc' => '<abbr title="Unified Resource Locator">URL</abbr> location of this channel.',
 
 'clear_versioning_data' => 'Delete all existing revision data in this channel?',
 
 'closed' => 'Closed',
 
-'comment_convert_image_urls_desc' => 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s to image resources will be automagically rendered as images in this channel\'s comments.',
+'comment_convert_image_urls_desc' => 'When enabled, <abbr title="Unified Resource Locator">URL</abbr>s to image resources will be automagically rendered as images in this channel\'s comments.',
 
-'comment_convert_urls_emails_to_links_desc' => 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s and Email address will be rendered as links in this channel\'s comments.',
+'comment_convert_urls_emails_to_links_desc' => 'When enabled, <abbr title="Unified Resource Locator">URL</abbr>s and Email address will be rendered as links in this channel\'s comments.',
 
 'comment_expiration' => 'Comment expiration',
 
@@ -284,13 +282,13 @@ $lang = array(
 
 'convert_image_urls' => 'Allow image <abbr title="Unified Resource Locator">URL</abbr>s?',
 
-'convert_image_urls_desc' => 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s to image resources will be automagically rendered as images in this channel\'s entries.',
+'convert_image_urls_desc' => 'When enabled, <abbr title="Unified Resource Locator">URL</abbr>s to image resources will be automagically rendered as images in this channel\'s entries.',
 
 'convert_to_entities' => 'Convert to HTML entities',
 
 'convert_urls_emails_to_links' => 'Render <abbr title="Unified Resource Locator">URL</abbr>s and Email addresses as links?',
 
-'convert_urls_emails_to_links_desc' => 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s and Email address will be rendered as links in this channel\'s entries.',
+'convert_urls_emails_to_links_desc' => 'When enabled, <abbr title="Unified Resource Locator">URL</abbr>s and Email address will be rendered as links in this channel\'s entries.',
 
 'default_category' => 'Category',
 
@@ -306,23 +304,23 @@ $lang = array(
 
 'enable_author_notification' => 'Enable author notification?',
 
-'enable_author_notification_desc' => 'When set to <b>enable</b>, the author of an entry will be notified when someone comments on their entry.',
+'enable_author_notification_desc' => 'When enabled, the author of an entry will be notified when someone comments on their entry.',
 
 'enable_channel_entry_notification' => 'Enable channel entry notification?',
 
-'enable_channel_entry_notification_desc' => 'When set to <b>enable</b>, all recipients listed will receive Email notification when a new entry is published to this channel.</em><br /><em>Separate multiple Emails with a <mark>comma (,)</mark>.',
+'enable_channel_entry_notification_desc' => 'When enabled, all recipients listed will receive Email notification when a new entry is published to this channel.</em><br /><em>Separate multiple Emails with a <mark>comma (,)</mark>.',
 
 'enable_comment_notification' => 'Enable comment notification?',
 
-'enable_comment_notification_desc' => 'When set to <b>enable</b>, all recipients listed will receive Email notification when a new comment is submitted to this channel.</em><br /><em>Separate multiple Emails with a <mark>comma (,)</mark>.',
+'enable_comment_notification_desc' => 'When enabled, all recipients listed will receive Email notification when a new comment is submitted to this channel.</em><br /><em>Separate multiple Emails with a <mark>comma (,)</mark>.',
 
 'enable_versioning' => 'Enable entry versioning?',
 
-'enable_versioning_desc' => 'When set to <b>enable</b>, ExpressinEngine will save revisions of each entry for this channel.',
+'enable_versioning_desc' => 'When enabled, ExpressinEngine will save revisions of each entry for this channel.',
 
 'extra_publish_controls' => 'Show extra publish controls?',
 
-'extra_publish_controls_desc' => 'When set to <b>yes</b>, a second set of publish controls will appear at the top of the publish form for this channel.',
+'extra_publish_controls_desc' => 'When enabled, a second set of publish controls will appear at the top of the publish form for this channel.',
 
 'html_formatting' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> formatting',
 
@@ -342,7 +340,7 @@ $lang = array(
 
 'moderate_comments' => 'Moderate comments?',
 
-'moderate_comments_desc' => 'When set to <b>yes</b>, submitted comments will be put into a moderation queue, and must be approved by a super admin or other member group with moderation permissions.',
+'moderate_comments_desc' => 'When enabled, submitted comments will be put into a moderation queue, and must be approved by a Super Admin or other member group with moderation permissions.',
 
 'no_live_look_template' => 'No template chosen',
 
@@ -354,11 +352,11 @@ $lang = array(
 
 'require_email' => 'Require Email?',
 
-'require_email_desc'=> 'When set to <b>yes</b>, a member must provide a valid Email address to submit comments to this channel\'s entries.',
+'require_email_desc'=> 'When enabled, a member must provide a valid Email address to submit comments to this channel\'s entries.',
 
 'require_membership' => 'Require membership?',
 
-'require_membership_desc' => 'When set to <b>yes</b>, only registered members can submit comments to this channel\'s entries.',
+'require_membership_desc' => 'When enabled, only registered members can submit comments to this channel\'s entries.',
 
 'rss_feed' => '<abbr title="Really Simple Syndication">RSS</abbr> feed',
 
@@ -398,13 +396,13 @@ $lang = array(
 
 'cat_field_ajax_reorder_fail_desc' => 'We failed to save your new category fields order. Refresh the page and make sure you\'re logged in.',
 
-'cat_group_no_member_groups_found' => 'No <b>member groups</b> with permissions found',
+'cat_group_no_member_groups_found' => 'No <b>member groups</b> with permissions exist.',
 
 'cat_image_choose' => 'Choose from directory',
 
 'cat_image_none' => 'None <i>&mdash; no image</i>',
 
-'cat_require_field_desc' => 'When set to <b>yes</b>, this field will be required to submit the publish form.',
+'cat_require_field_desc' => 'When enabled, this field will be required to submit the publish form.',
 
 'categories' => 'Categories',
 
@@ -444,6 +442,8 @@ $lang = array(
 
 'category_fields' => 'Category Fields',
 
+'category_fields_desc' => 'Assign fields to this group.',
+
 'category_fields_removed' => 'Category fields removed',
 
 'category_fields_removed_desc' => '%d category fields were removed.',
@@ -466,9 +466,11 @@ $lang = array(
 
 'category_group_updated_desc' => 'The category group <b>%s</b> has been updated.',
 
-'category_groups_removed' => 'Category groups removed',
+'category_groups_removed' => 'Category group removed',
 
-'category_groups_removed_desc' => '%d category groups were removed.',
+'category_groups_removed_desc' => 'The category group <b>%s</b> has been removed.',
+
+'category_manager' => 'Category Manager',
 
 'category_not_created' => 'Cannot Create Category',
 
@@ -492,7 +494,7 @@ $lang = array(
 
 'create_category_field' => 'Create Category Field',
 
-'create_category_group' => 'Create Category Group',
+'create_category_group' => 'New Category Group',
 
 'delete_categories' => 'Delete Categories',
 
@@ -547,18 +549,12 @@ $lang = array(
 'textarea' => 'Textarea',
 
 
-/* Status Groups */
-'create_status' => 'Create Status',
-
-'create_status_group' => 'Create Status Group',
-
-'duplicate_status_group_name' => 'A status group already exists with the same name.',
+/* Statuses */
+'create_status' => 'New Status',
 
 'duplicate_status_name' => 'A status already exists with the same name.',
 
 'edit_status' => 'Edit Status',
-
-'edit_status_group' => 'Edit Status Group',
 
 'highlight_color' => 'Highlight color',
 
@@ -580,30 +576,6 @@ $lang = array(
 
 'status_created_desc' => 'The status <b>%s</b> has been created.',
 
-'status_group' => 'Status Group',
-
-'status_group_created' => 'Status Group Created',
-
-'status_group_created_desc' => 'The status group <b>%s</b> has been created.',
-
-'status_group_not_created' => 'Cannot Create Status Group',
-
-'status_group_not_created_desc' => 'We were unable to create this status group, please review and fix errors below.',
-
-'status_group_not_updated' => 'Cannot Update Status Group',
-
-'status_group_not_updated_desc' => 'We were unable to update this status group, please review and fix errors below.',
-
-'status_group_updated' => 'Status Group Updated',
-
-'status_group_updated_desc' => 'The status group <b>%s</b> has been updated.',
-
-'status_groups' => 'Status Groups',
-
-'status_groups_removed' => 'Status groups removed',
-
-'status_groups_removed_desc' => '%d status groups were removed.',
-
 'status_name' => 'Status Name',
 
 'status_name_desc' => 'Descriptive name of this status.',
@@ -621,6 +593,8 @@ $lang = array(
 'status_updated_desc' => 'The status <b>%s</b> has been updated.',
 
 'statuses' => 'Statuses',
+
+'statuses_desc' => 'Assign one of more statuses to this channel.',
 
 'statuses_removed' => 'Statuses removed',
 

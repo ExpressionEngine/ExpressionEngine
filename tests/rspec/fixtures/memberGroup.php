@@ -32,13 +32,13 @@ $title = isset($options['title']) ? $options['title'] : 'Some Group';
 $description = isset($options['description']) ? $options['description'] : '';
 $channel_id = isset($options['channel-id']) && is_numeric($options['channel-id']) ? (int) $options['channel-id'] : NULL;
 
-$new_group_id = $api->get('MemberGroup')
+$new_group_id = ee('Model')->get('MemberGroup')
 	->order('group_id', 'desc')
 	->limit(1)
 	->first()
 	->group_id + 1;
 
-$group = $api->make('MemberGroup');
+$group = ee('Model')->make('MemberGroup');
 $group->group_id = $new_group_id;
 $group->site_id = $site_id;
 $group->group_title = $title;
@@ -47,6 +47,6 @@ $group->save();
 
 if ($channel_id)
 {
-	$channels = $api->get('Channel', $channel_id)->all();
+	$channels = ee('Model')->get('Channel', $channel_id)->all();
 	$group->setAssignedChannels($channels);
 }

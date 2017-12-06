@@ -1,27 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.8
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine File Caching Class
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * File Caching
  */
 class EE_Cache_file extends CI_Driver {
 
@@ -42,8 +29,6 @@ class EE_Cache_file extends CI_Driver {
 		ee()->load->helper('file');
 		$this->_cache_path = PATH_CACHE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Look for a value in the cache. If it exists, return the data
@@ -73,8 +58,6 @@ class EE_Cache_file extends CI_Driver {
 
 		return $data['data'];
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Save value to cache
@@ -135,8 +118,6 @@ class EE_Cache_file extends CI_Driver {
 		return FALSE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Delete from cache
 	 *
@@ -175,8 +156,6 @@ class EE_Cache_file extends CI_Driver {
 		return file_exists($path) ? unlink($path) : FALSE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Clean the cache
 	 *
@@ -203,8 +182,6 @@ class EE_Cache_file extends CI_Driver {
 		return $result;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Cache Info
 	 *
@@ -214,8 +191,6 @@ class EE_Cache_file extends CI_Driver {
 	{
 		return get_dir_file_info($this->_cache_path, FALSE);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Get Cache Metadata
@@ -255,8 +230,6 @@ class EE_Cache_file extends CI_Driver {
 		return FALSE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Is supported
 	 *
@@ -268,8 +241,6 @@ class EE_Cache_file extends CI_Driver {
 	{
 		return is_really_writable($this->_cache_path);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * If a namespace was specified, prefixes the key with it
@@ -290,6 +261,12 @@ class EE_Cache_file extends CI_Driver {
 
 		// Replace all namespace separators with the system's directory separator
 		$key = str_replace(Cache::NAMESPACE_SEPARATOR, DIRECTORY_SEPARATOR, $key);
+
+		// Replace \ with _ if on Windows
+		if (DIRECTORY_SEPARATOR == '\\')
+		{
+			$key = str_replace('\\', '_', $key);
+		}
 
 		// For locally-cached items, separate by site name
 		if ($scope == Cache::LOCAL_SCOPE)

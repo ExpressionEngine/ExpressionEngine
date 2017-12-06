@@ -1,29 +1,15 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.7
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Grid parser Class
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Grid parser
  */
-
 class Grid_parser {
 
 	public $modifiers = array();
@@ -43,8 +29,6 @@ class Grid_parser {
 			array('switch', 'count', 'index', 'field_total_rows')
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Called before each channel entries loop to gather the information
@@ -76,7 +60,7 @@ class Grid_parser {
 
 			// Analyze the field to see if its modifier matches any of our
 			// reserved modifier names
-			$field = ee()->api_channel_fields->get_single_field($match[2], $field_name);
+			$field = ee('Variables/Parser')->parseVariableProperties($match[2], $field_name);
 
 			// Throw out variables and closing tags, we'll deal with them
 			// in the parsing stage
@@ -111,7 +95,7 @@ class Grid_parser {
 			$field_name = rtrim(str_replace($pre_parser->prefix(), '', $match[1]), ':');
 			$params = $match[2];
 			$field_id = $grid_fields[$field_name];
-			$this->grid_field_names[$field_id] = rtrim($match[1], ':');
+			$this->grid_field_names[$field_id] = array(rtrim($match[1], ':'));
 
 			ee()->grid_model->get_entry_rows($pre_parser->entry_ids(), $field_id, $content_type, $params);
 		}
@@ -121,8 +105,6 @@ class Grid_parser {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Handles ft.grid.php's replace_tag(), called with each loop of the
@@ -134,7 +116,7 @@ class Grid_parser {
 	 * @param	string	Tag data of our field pair
 	 * @return	string	Parsed field data
 	 */
-	public function parse($channel_row, $field_id, $params, $tagdata, $content_type = 'channel')
+	public function parse($channel_row, $field_id, $params, $tagdata, $content_type = 'channel', $fluid_field_data_id = 0)
 	{
 		if (empty($tagdata))
 		{
@@ -144,7 +126,7 @@ class Grid_parser {
 		$entry_id = $channel_row['entry_id'];
 
 		ee()->load->model('grid_model');
-		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $field_id, $content_type, $params);
+		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $field_id, $content_type, $params, FALSE, $fluid_field_data_id);
 
 		// Bail out if no entry data
 		if ($entry_data === FALSE OR ! isset($entry_data[$entry_id]))
@@ -154,7 +136,7 @@ class Grid_parser {
 
 		$params = $entry_data['params'];
 		$entry_data = $entry_data[$entry_id];
-		$field_name = $this->grid_field_names[$field_id];
+		$field_name = $this->grid_field_names[$field_id][$fluid_field_data_id];
 
 		// Fix for when there is a Grid field in a Channel Entries loop, but
 		// the same Grid field is also being brought in via a Relationships
@@ -166,7 +148,7 @@ class Grid_parser {
 		if (strpos($tagdata, $field_name) === FALSE && strpos($field_name, ':') !== FALSE)
 		{
 			$field_name = substr($field_name, strrpos($field_name, ':') + 1);
-			$this->grid_field_names[$field_id] = $field_name;
+			$this->grid_field_names[$field_id][$fluid_field_data_id] = $field_name;
 		}
 
 		// Add field_row_index and field_row_count variables to get the index
@@ -301,7 +283,8 @@ class Grid_parser {
 					$row_ids, // array(#, #, #)
 					$tagdata,
 					$relationships, // field_name => field_id
-					$field_id
+					$field_id,
+					$fluid_field_data_id
 				);
 			}
 			else
@@ -390,14 +373,14 @@ class Grid_parser {
 
 					// Send the next or previous row to _parse_row for parsing
 					$replace_data = ( ! empty($next_prev_row))
-						? $this->_parse_row($channel_row, $field_id, $content, $next_prev_row, $content_type) : '';
+						? $this->_parse_row($channel_row, $field_id, $content, $next_prev_row, $content_type, $fluid_field_data_id) : '';
 
 					// Replace tag pair
 					$grid_row = str_replace($chunk, $replace_data, $grid_row);
 				}
 			}
 
-			$grid_tagdata .= $this->_parse_row($channel_row, $field_id, $grid_row, $row, $content_type);
+			$grid_tagdata .= $this->_parse_row($channel_row, $field_id, $grid_row, $row, $content_type, $fluid_field_data_id);
 		}
 
 		// Backspace parameter
@@ -409,8 +392,6 @@ class Grid_parser {
 		return $grid_tagdata;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Parses individual row in Grid field
 	 *
@@ -420,10 +401,10 @@ class Grid_parser {
 	 * @param	array	Grid single row data
 	 * @return	string	Parsed field data
 	 */
-	private function _parse_row($channel_row, $field_id, $tagdata, $row, $content_type = 'channel')
+	private function _parse_row($channel_row, $field_id, $tagdata, $row, $content_type = 'channel', $fluid_field_data_id = 0)
 	{
 		$grid_row = $tagdata;
-		$field_name = $this->grid_field_names[$field_id];
+		$field_name = $this->grid_field_names[$field_id][$fluid_field_data_id];
 		$entry_id = $channel_row['entry_id'];
 
 		// Gather the variables to parse
@@ -458,7 +439,7 @@ class Grid_parser {
 		{
 
 			// Get tag name, modifier and params for this tag
-			$field = ee()->api_channel_fields->get_single_field($match[2], $field_name.':');
+			$field = ee('Variables/Parser')->parseVariableProperties($match[2], $field_name.':');
 
 			// Get any field pairs
 			$pchunks = ee()->api_channel_fields->get_pair_field(
@@ -538,8 +519,6 @@ class Grid_parser {
 		return $grid_row;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Handle EE_Fieldtype::pre_loop() so fieldtypes can query more efficiently
 	 *
@@ -608,8 +587,6 @@ class Grid_parser {
 		}
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Instantiates fieldtype handler and assigns information to the object
 	 *
@@ -619,7 +596,7 @@ class Grid_parser {
 	 * @param	int		Entry ID being processed or parsed
 	 * @return	object	Fieldtype object
 	 */
-	public function instantiate_fieldtype($column, $row_name = NULL, $field_id = 0, $entry_id = 0, $content_type = 'channel')
+	public function instantiate_fieldtype($column, $row_name = NULL, $field_id = 0, $entry_id = 0, $content_type = 'channel', $fluid_field_data_id = 0)
 	{
 		if ( ! isset(ee()->api_channel_fields->field_types[$column['col_type']]))
 		{
@@ -643,7 +620,7 @@ class Grid_parser {
 				'field_id'		=> $column['col_id'],
 				'field_name'	=> 'col_id_'.$column['col_id'],
 				'content_id'	=> $entry_id,
-				'content_type'	=> 'grid'
+				'content_type'	=> 'grid',
 			)
 		);
 
@@ -660,14 +637,13 @@ class Grid_parser {
 				'entry_id'			=> $entry_id,
 				'grid_field_id'		=> $field_id,
 				'grid_row_name'		=> $row_name,
-				'grid_content_type'	=> $content_type
+				'grid_content_type'	=> $content_type,
+				'fluid_field_data_id'     => $fluid_field_data_id
 			)
 		);
 
 		return $fieldtype;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Calls a method on a fieldtype and returns the result. If the method
@@ -703,8 +679,6 @@ class Grid_parser {
 
 		return $result;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Calls fieldtype's grid_replace_tag/replace_tag given tag properties

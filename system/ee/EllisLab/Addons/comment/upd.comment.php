@@ -1,35 +1,22 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Comment Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Comment Module update class
  */
-
 class Comment_upd {
-
-	var $version = '2.3.2';
 
 	function __construct()
 	{
 		ee()->load->dbforge();
+		$addon = ee('Addon')->get('comment');
+		$this->version = $addon->getVersion();
 	}
 
 	function tabs()
@@ -46,8 +33,6 @@ class Comment_upd {
 		return $tabs;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Installer
@@ -139,10 +124,20 @@ class Comment_upd {
 		ee()->load->library('layout');
 		ee()->layout->add_layout_fields($this->tabs());
 
+		// add menu extension
+		$data = array(
+			'class'		=> 'Comment_ext',
+			'method'	=> 'addCommentMenu',
+			'hook'		=> 'cp_custom_menu',
+			'settings'	=> serialize(array()),
+			'version'	=> $this->version,
+			'enabled'	=> 'y'
+		);
+
+		ee()->db->insert('extensions', $data);
+
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Uninstaller
@@ -182,8 +177,6 @@ class Comment_upd {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Updater

@@ -1,37 +1,23 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Utilities;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Model\Email\EmailCache;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Communicate Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Communicate Controller
  */
 class Communicate extends Utilities {
+
 	private $attachments = array();
 
 	/**
@@ -46,8 +32,6 @@ class Communicate extends Utilities {
 			show_error(lang('unauthorized_access'), 403);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Index
@@ -95,33 +79,28 @@ class Communicate extends Utilities {
 		}
 
 		// Set up member group emailing options
-		if ( ! ee()->cp->allowed_group('can_email_member_groups'))
-		{
-			$vars['member_groups'] = FALSE;
-		}
-		else
+		if (ee()->cp->allowed_group('can_email_member_groups'))
 		{
 			$groups = ee('Model')->get('MemberGroup')
 				->filter('site_id', ee()->config->item('site_id'))
 				->all();
 
+			$member_groups = [];
+			$disabled_groups = [];
 			foreach ($groups as $group)
 			{
-				$checked = (ee()->input->post('group_'.$group->group_id) !== FALSE OR in_array($group->group_id, $member_groups));
-				$group_title = htmlentities($group->group_title, ENT_QUOTES, 'UTF-8');
+				$member_groups[$group->group_id] = $group->group_title;
 
-				$vars['member_groups'][$group_title]['attrs'] = array('name' => 'group_'.$group->group_id, 'value' => $group->group_id, 'checked' => $checked);
-				$vars['member_groups'][$group_title]['members'] = ee('Model')->get('Member')
+				if (ee('Model')->get('Member')
 					->filter('group_id', $group->group_id)
-					->count();
-				if ($vars['member_groups'][$group_title]['members'] == 0)
+					->count() == 0)
 				{
-					$vars['member_groups'][$group_title]['attrs']['disabled'] = 'disabled';
+					$disabled_groups[] = $group->group_id;
 				}
 			}
 		}
 
-		ee()->view->cp_page_title = lang('communicate');
+		$vars['cp_page_title'] = lang('communicate');
 
 		if ($default['mailtype'] != 'html')
 		{
@@ -139,7 +118,114 @@ class Communicate extends Utilities {
 			}
 		');
 
-		ee()->cp->render('utilities/communicate/index', $vars + $default);
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'email_subject',
+					'fields' => array(
+						'subject' => array(
+							'type' => 'text',
+							'required' => TRUE,
+							'value' => $default['subject']
+						)
+					)
+				),
+				array(
+					'title' => 'email_body',
+					'fields' => array(
+						'message' => array(
+							'type' => 'html',
+							'content' => ee('View')->make('utilities/communicate/body-field')
+								->render($default + $vars),
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'plaintext_body',
+					'desc' => 'plaintext_alt',
+					'fields' => array(
+						'plaintext_alt' => array(
+							'type' => 'textarea',
+							'value' => $default['plaintext_alt'],
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'your_email',
+					'fields' => array(
+						'from' => array(
+							'type' => 'text',
+							'value' => $default['from'],
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'attachment',
+					'desc' => 'attachment_desc',
+					'fields' => array(
+						'attachment' => array(
+							'type' => 'file'
+						)
+					)
+				)
+			),
+			'recipient_options' => array(
+				array(
+					'title' => 'primary_recipients',
+					'desc' => 'primary_recipients_desc',
+					'fields' => array(
+						'recipient' => array(
+							'type' => 'text',
+							'value' => $default['recipient']
+						)
+					)
+				),
+				array(
+					'title' => 'cc_recipients',
+					'desc' => 'cc_recipients_desc',
+					'fields' => array(
+						'cc' => array(
+							'type' => 'text',
+							'value' => $default['cc']
+						)
+					)
+				),
+				array(
+					'title' => 'bcc_recipients',
+					'desc' => 'bcc_recipients_desc',
+					'fields' => array(
+						'bcc' => array(
+							'type' => 'text',
+							'value' => $default['bcc']
+						)
+					)
+				)
+			)
+		);
+
+		if (ee()->cp->allowed_group('can_email_member_groups'))
+		{
+			$vars['sections']['recipient_options'][] = array(
+				'title' => 'add_member_groups',
+				'desc' => 'add_member_groups_desc',
+				'fields' => array(
+					'member_groups' => array(
+						'type' => 'checkbox',
+						'choices' => $member_groups,
+						'disabled_choices' => $disabled_groups,
+					)
+				)
+			);
+		}
+
+		$vars['base_url'] = ee('CP/URL')->make('utilities/communicate/send');
+		$vars['save_btn_text'] = 'btn_send_email';
+		$vars['save_btn_text_working'] = 'btn_send_email_working';
+
+		return ee()->cp->render('settings/form', $vars);
 	}
 
 	/**
@@ -198,9 +284,9 @@ class Communicate extends Utilities {
 
 		foreach ($_POST as $key => $val)
 		{
-			if (substr($key, 0, 6) == 'group_')
+			if ($key == 'member_groups')
 			{
-				$groups[] = ee()->input->post($key);
+				$groups = ee()->input->post($key);
 			}
 			elseif (in_array($key, $form_fields))
 			{
@@ -396,8 +482,6 @@ class Communicate extends Utilities {
 		ee()->functions->redirect(ee('CP/URL')->make('utilities/communicate'));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Batch Email Send
 	 *
@@ -458,8 +542,6 @@ class Communicate extends Utilities {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetches an email from the cache and presents it to the user for re-sending
 	 *
@@ -485,8 +567,6 @@ class Communicate extends Utilities {
 
 		$this->index($email);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Sends a single email handling errors
@@ -535,8 +615,6 @@ class Communicate extends Utilities {
 		return $debug_msg;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Sends multiple emails handling errors
 	 *
@@ -583,8 +661,6 @@ class Communicate extends Utilities {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delivers an email
 	 *
@@ -623,8 +699,6 @@ class Communicate extends Utilities {
 		return ee()->email->send(FALSE);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Formats the message of an email based on the text format type
 	 *
@@ -656,7 +730,7 @@ class Communicate extends Utilities {
 	}
 
 	/**
-	 * Censors the subject of an email if necissary
+	 * Censors the subject of an email if necessary
 	 *
 	 * @param	obj	$email	An EmailCache object
 	 * @return	string		The censored subject
@@ -665,23 +739,13 @@ class Communicate extends Utilities {
 	{
 		$subject = $email->subject;
 
-		if (ee()->config->item('enable_censoring') == 'y' &&
-			ee()->config->item('censored_words') != '')
+		if (bool_config_item('enable_censoring'))
     	{
-			ee()->load->library('typography');
-			ee()->typography->initialize(array(
-				'bbencode_links' => FALSE,
-				'parse_images'	=> FALSE,
-				'parse_smileys'	=> FALSE
-			));
-
-			$subject = ee()->typography->filter_censored_words($email->subject);
+			$subject = (string) ee('Format')->make('Text', $subject)->censor();
 		}
 
 		return $subject;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * View sent emails
@@ -832,8 +896,6 @@ class Communicate extends Utilities {
 		ee()->cp->render('utilities/communicate/sent', $vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check for recipients
 	 *
@@ -852,8 +914,6 @@ class Communicate extends Utilities {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Attachment Handler
@@ -889,8 +949,6 @@ class Communicate extends Utilities {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete Attachments

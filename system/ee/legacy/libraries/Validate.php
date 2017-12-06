@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Core Validation Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Validation
  */
 class EE_Validate {
 
@@ -67,8 +55,6 @@ class EE_Validate {
 		if ($this->require_cpw == TRUE)		$this->password_safety_check();
 	}
 
-	// ----------------------------------------------------------------
-
 	/**
 	 * Password safety check
 	 *
@@ -100,8 +86,6 @@ class EE_Validate {
 			$this->errors[] = ee()->lang->line('invalid_password');
 		}
 	}
-
-	// ----------------------------------------------------------------
 
 	/**
 	 * Validate Username
@@ -173,8 +157,6 @@ class EE_Validate {
 		}
 	}
 
-	// ----------------------------------------------------------------
-
 	/**
 	 * Validate screen name
 	 */
@@ -209,8 +191,6 @@ class EE_Validate {
 			return $this->errors[] = ee()->lang->line('screen_name_taken');
 		}
 	}
-
-	// ----------------------------------------------------------------
 
 	/**
 	 * Validate Password
@@ -321,8 +301,6 @@ class EE_Validate {
 		}
 	}
 
-	// ----------------------------------------------------------------
-
 	/**
 	 * Validate Email
 	 *
@@ -390,8 +368,6 @@ class EE_Validate {
 		}
 	}
 
-	// ----------------------------------------------------------------
-
 	/**
 	 * Show Errors
 	 *
@@ -411,8 +387,6 @@ class EE_Validate {
 			return $msg;
 		 }
 	}
-
-	// ----------------------------------------------------------------
 
   	/**
 	 * Lookup word in dictionary file

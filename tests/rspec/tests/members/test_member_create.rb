@@ -21,10 +21,9 @@ feature 'Member Registration' do
     @page.submit
 
     no_php_js_errors
-    @page.all_there?.should == false
-
-    @page.load
+    # Save and New is the only action
     @page.all_there?.should == true
+
     @page.email.set 't.e.s.t@gmail.com'
     @page.email.trigger 'blur'
     @page.wait_for_error_message_count(1)

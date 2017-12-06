@@ -26,8 +26,8 @@ feature 'Member Import' do
     @page.should have_timezone
     @page.should have_date_format
     @page.should have_time_format
-    @page.should have_custom_yes
-    @page.should have_custom_no
+    @page.should have_auto_custom_field
+    @page.should have_include_seconds
   end
 
   it 'should validate the file location' do
@@ -74,14 +74,14 @@ feature 'Member Import' do
 
   it 'should show the confirm import screen' do
     @page.file_location.set @members_xml
-    @page.member_group.select 'Members'
-    @page.language.select 'English'
+    @page.member_group.choose_radio_option('5')
+    @page.language.choose_radio_option('english')
     @page.tz_country.select 'United States'
     @page.timezone.select 'New York'
-    @page.date_format.select 'yyyy-mm-dd'
-    @page.time_format.select '24-hour'
-    @page.include_seconds_y.click
-    @page.custom_no.click
+    @page.date_format.choose_radio_option('%Y-%m-%d')
+    @page.time_format.choose_radio_option('24')
+    @page.include_seconds_toggle.click
+    @page.auto_custom_field_toggle.click
     @page.submit
 
     @page.options.map {|option| option.text}.should ==
@@ -94,13 +94,13 @@ feature 'Member Import' do
 
   it 'should import basic member import file' do
     @page.file_location.set @members_xml
-    @page.member_group.select 'Members'
-    @page.language.select 'English'
+    @page.member_group.choose_radio_option('5')
+    @page.language.choose_radio_option('english')
     @page.tz_country.select 'United States'
     @page.timezone.select 'New York'
-    @page.date_format.select 'yyyy-mm-dd'
-    @page.time_format.select '24-hour'
-    @page.custom_no.click
+    @page.date_format.choose_radio_option('%Y-%m-%d')
+    @page.time_format.choose_radio_option('24')
+    @page.auto_custom_field_toggle.click
     @page.submit
     no_php_js_errors
 
@@ -140,7 +140,6 @@ feature 'Member Import' do
     # If our XML does not contain any extra fields but Yes is selected
     # for custom field creation:
     @page.file_location.set @members_xml
-    @page.custom_yes.click
     @page.submit
 
     @page.should have_text 'Confirm Import'
@@ -149,7 +148,7 @@ feature 'Member Import' do
     # If our XML contains extra field but we elect not to bother:
     @page.load
     @page.file_location.set @members_xml_custom
-    @page.custom_no.click
+    @page.auto_custom_field_toggle.click
     @page.submit
 
     @page.should have_text 'Confirm Import'
@@ -157,13 +156,12 @@ feature 'Member Import' do
 
   it 'should create custom fields' do
     @page.file_location.set @members_xml_custom
-    @page.member_group.select 'Members'
-    @page.language.select 'English'
+    @page.member_group.choose_radio_option('5')
+    @page.language.choose_radio_option('english')
     @page.tz_country.select 'United States'
     @page.timezone.select 'New York'
-    @page.date_format.select 'yyyy-mm-dd'
-    @page.time_format.select '24-hour'
-    @page.custom_yes.click
+    @page.date_format.choose_radio_option('%Y-%m-%d')
+    @page.time_format.choose_radio_option('24')
     @page.submit
 
     no_php_js_errors

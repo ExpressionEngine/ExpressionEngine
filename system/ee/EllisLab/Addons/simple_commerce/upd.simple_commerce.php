@@ -1,28 +1,15 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Simple Commerce Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Update File
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Simple Commerce Module update class
  */
-
 class Simple_commerce_upd {
 
 	var $version			= '2.2.0';
@@ -64,7 +51,7 @@ class Simple_commerce_upd {
 
   PRIMARY KEY `item_id` (`item_id`),
   KEY `entry_id` (`entry_id`)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci";
+) DEFAULT CHARACTER SET ".ee()->db->escape_str(ee()->db->char_set)." COLLATE ".ee()->db->escape_str(ee()->db->dbcollat);
 
 		$sql[] = "CREATE TABLE IF NOT EXISTS `exp_simple_commerce_purchases` (
   `purchase_id` int(8) unsigned NOT NULL auto_increment,
@@ -80,7 +67,7 @@ class Simple_commerce_upd {
   KEY `item_id` (`item_id`),
   KEY `member_id` (`member_id`),
   KEY `txn_id` (`txn_id`)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci";
+) DEFAULT CHARACTER SET ".ee()->db->escape_str(ee()->db->char_set)." COLLATE ".ee()->db->escape_str(ee()->db->dbcollat);
 
 		$sql[] = "CREATE TABLE IF NOT EXISTS `exp_simple_commerce_emails` (
   `email_id` int(8) unsigned NOT NULL auto_increment,
@@ -88,7 +75,7 @@ class Simple_commerce_upd {
   `email_subject` varchar(125) NOT NULL default '',
   `email_body` text NOT NULL,
   PRIMARY KEY `email_id` (`email_id`)
-) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci";
+) DEFAULT CHARACTER SET ".ee()->db->escape_str(ee()->db->char_set)." COLLATE ".ee()->db->escape_str(ee()->db->dbcollat);
 
 
 		foreach ($sql as $query)
@@ -124,8 +111,6 @@ class Simple_commerce_upd {
 	}
 
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Uninstaller
@@ -165,8 +150,6 @@ class Simple_commerce_upd {
 		return TRUE;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Updater

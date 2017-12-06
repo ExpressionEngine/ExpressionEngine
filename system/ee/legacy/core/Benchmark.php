@@ -1,37 +1,21 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * CodeIgniter
+ * ExpressionEngine (https://expressionengine.com)
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * CodeIgniter Benchmark Class
+ * Benchmark Class
  *
  * This class enables you to mark points and calculate the time difference
  * between them.  Memory consumption can also be displayed.
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Libraries
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/benchmark.html
  */
 class EE_Benchmark {
 
 	var $marker = array();
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set a benchmark marker
@@ -47,8 +31,6 @@ class EE_Benchmark {
 	{
 		$this->marker[$name] = microtime();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Calculates the time difference between two marked points.
@@ -86,8 +68,6 @@ class EE_Benchmark {
 
 		return number_format(($em + $es) - ($sm + $ss), $decimals);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Memory Usage

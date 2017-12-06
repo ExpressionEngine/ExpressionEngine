@@ -1,33 +1,17 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Library\CP;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
+ * CP Table
  */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Table Class
- *
- * @package		ExpressionEngine
- * @subpackage	Library
- * @category	CP
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- */
-
 class Table {
 
 	const COL_TEXT = 1;
@@ -146,14 +130,21 @@ class Table {
 		$defaults = array();
 
 		// Look for search in POST first, then GET
-		$defaults['search'] = FALSE;
-		if (isset($_POST['search']))
+		if (isset($config['search']))
+		{
+			$defaults['search'] = $config['search'];
+		}
+		elseif (isset($_POST['search']))
 		{
 			$defaults['search'] = $_POST['search'];
 		}
-		else if (isset($_GET['search']))
+		elseif (isset($_GET['search']))
 		{
 			$defaults['search'] = $_GET['search'];
+		}
+		else
+		{
+			$defaults['search'] = FALSE;
 		}
 
 		if (isset($_GET[$sort_col]))

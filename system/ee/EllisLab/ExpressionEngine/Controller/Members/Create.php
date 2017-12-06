@@ -1,33 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Members;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Member Create Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Create Controller
  */
 class Create extends Members {
 
@@ -36,8 +21,6 @@ class Create extends Members {
 	 */
 	public function index()
 	{
-		$this->base_url = ee('CP/URL')->make('members/create');
-
 		if ( ! ee()->cp->allowed_group('can_create_members'))
 		{
 			show_error(lang('unauthorized_access'), 403);
@@ -48,7 +31,8 @@ class Create extends Members {
 			show_error(lang('maximum_members_reached'));
 		}
 
-		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
+		$this->base_url = ee('CP/URL')->make('members/create');
+		$groups = ee('Model')->get('MemberGroup')->order('group_title', 'asc')->all();
 		$choices = array();
 
 		if (ee()->session->userdata('group_id') != 1)
@@ -76,11 +60,14 @@ class Create extends Members {
 					'desc' => 'member_group_desc',
 					'fields' => array(
 						'group_id' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $choices,
 							'group_toggle' => $group_toggle,
 							'value' => (isset($choices[5]) && $choices[5] == 'Members') ? 5 : '',
-							'required' => TRUE
+							'required' => TRUE,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+							]
 						)
 					)
 				),
@@ -237,15 +224,13 @@ class Create extends Members {
 				ee()->logger->log_action(lang('new_member_added').NBS.$member->username);
 				ee()->stats->update_member_stats();
 
-				ee()->session->set_flashdata('highlight_id', $member->getId());
-
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('member_created'))
 					->addToBody(sprintf(lang('member_created_desc'), $member->username))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL')->make('members', array('sort_col' => 'member_id', 'sort_dir' => 'desc')));
+				ee()->functions->redirect(ee('CP/URL')->make('members/create'));
 			}
 			else
 			{
@@ -260,13 +245,22 @@ class Create extends Members {
 
 		$this->generateSidebar('all_members');
 
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('members'), lang('member_manager'));
+
 		ee()->cp->add_js_script('file', 'cp/form_group');
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('register_member');
-		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('member'));
-		ee()->view->save_btn_text_working = 'btn_saving';
+		ee()->view->buttons = [
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_new',
+				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			]
+		];
 		ee()->cp->render('settings/form', $vars);
 	}
 }

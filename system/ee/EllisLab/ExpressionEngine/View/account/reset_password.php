@@ -1,11 +1,12 @@
 <?php $this->extend('_templates/login'); ?>
 
-<div class="box snap">
-	<h1><?=lang('new_password')?> <span class="ico locked"></span></h1>
+<div class="box">
+	<h1><?=lang('reset_password')?><span class="icon-reset"></span></h1>
 	<?php if ( ! empty($messages)):?>
 		<div class="alert inline <?=$message_status?>">
+			<span class="icon-<?=$message_status?>"></span>
 			<?php foreach ($messages as $message): ?>
-				<p><?php if ($message_status != 'success'): ?><b>!!</b> <?php endif ?><?=$message?></p>
+				<p><?=$message?></p>
 			<?php endforeach ?>
 		</div>
 	<?php endif;?>

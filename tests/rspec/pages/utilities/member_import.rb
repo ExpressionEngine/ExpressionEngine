@@ -1,16 +1,16 @@
 class MemberImport < ControlPanelPage
 
   element :file_location, 'input[name=xml_file]'
-  element :member_group, 'select[name=group_id]'
-  element :language, 'select[name=language]'
+  elements :member_group, 'input[name=group_id]'
+  elements :language, 'input[name=language]'
   element :tz_country, 'select[name=tz_country]'
   element :timezone, 'select[name=timezones]'
-  element :date_format, 'select[name=date_format]'
-  element :time_format, 'select[name=time_format]'
-  element :custom_yes, 'input[name=auto_custom_field][value=y]'
-  element :custom_no, 'input[name=auto_custom_field][value=n]'
-  element :include_seconds_y, 'input[name=include_seconds][value=y]'
-  element :include_seconds_n, 'input[name=include_seconds][value=n]'
+  elements :date_format, 'input[name=date_format]'
+  elements :time_format, 'input[name=time_format]'
+  element :auto_custom_field, 'input[name=auto_custom_field]', :visible => false
+  element :auto_custom_field_toggle, 'a[data-toggle-for=auto_custom_field]'
+  element :include_seconds, 'input[name=include_seconds]', :visible => false
+  element :include_seconds_toggle, 'a[data-toggle-for=include_seconds]'
 
   element :table, 'table'
   elements :options, 'table tr td:first-child'

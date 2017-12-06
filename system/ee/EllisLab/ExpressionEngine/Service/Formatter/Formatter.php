@@ -1,32 +1,26 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Formatter;
 
 use EE_Lang;
+use EE_Session;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Formatter Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Formatter
  */
 class Formatter {
+
+	/**
+	 * @var array Any needed app config settings
+	 */
+	protected $config;
 
 	/**
 	 * @var mixed $content Content to be formatted, typically a string or int
@@ -39,16 +33,48 @@ class Formatter {
 	protected $lang;
 
 	/**
+	 * @var object $session EE_Session
+	 */
+	protected $session;
+
+	/**
+	 * @var boolean $intl_loaded Whether or not the intl extension is loaded
+	 */
+	protected $intl_loaded = FALSE;
+
+	/**
+	 * @var binary (1) Bitwise options mask for intl_loaded. Can't use const until PHP 5.6
+	 */
+	private $OPT_INTL_LOADED = 0b00000001;
+
+	/**
 	 * Constructor
 	 *
 	 * @param mixed $content Content to be formatted, typically a string or int
 	 * @param object EE_Lang
 	 */
-	public function __construct($content, EE_Lang $lang)
+	public function __construct($content, EE_Lang $lang, EE_Session $session, $config, $options)
 	{
+		$this->config = $config;
 		$this->content = $content;
 		$this->lang = $lang;
+		$this->session = $session;
 		$this->lang->load('formatter');
+
+		if ($options & $this->OPT_INTL_LOADED)
+		{
+			$this->intl_loaded = TRUE;
+		}
+	}
+
+	/**
+	 * Config getter
+	 * @param  string $item Name of the config item
+	 * @return mixed Config item value, or FALSE if it does not exist
+	 */
+	protected function getConfig($item)
+	{
+		return (isset($this->config[$item])) ? $this->config[$item] : FALSE;
 	}
 
 	/**

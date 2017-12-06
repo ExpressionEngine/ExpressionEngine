@@ -1,8 +1,9 @@
 <style type="text/css">
 /* Hack for capybara-webkit, leave in place for now */
-a.sort {
+a.sort,
+a.icon--sync {
 	display: inline-block;
-	width: 1px;
+	min-width: 1px;
 }
 </style>
 
@@ -17,13 +18,13 @@ if ($wrap): ?>
 			<td>
 				<?=lang($no_results['text'])?>
 				<?php if ( ! empty($no_results['action_text'])): ?>
-					<a class="btn action" <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>>
+					<a <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>>
 				<?php endif ?>
 			</td>
 		</tr>
 	</table>
 <?php else: ?>
-	<table cellspacing="0"<?php if ($grid_input): $class .= ' grid-input-form'; ?> id="<?=$grid_field_name?>"<?php endif?> <?php if ($class): ?>class="<?=$class?>"<?php endif ?> <?php foreach ($table_attrs as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
+	<table cellspacing="0"<?php if ($grid_input): $class .= ' grid-input-form'; ?> id="<?=$grid_field_name?>"<?php endif?> <?php if ($class): ?>class="<?=$class?>"<?php endif ?> <?php foreach ($table_attrs as $key => $value):?> <?=$key?>='<?=$value?>'<?php endforeach; ?>>
 		<thead>
 			<tr>
 				<?php
@@ -102,7 +103,7 @@ if ($wrap): ?>
 					<td class="solo" colspan="<?=$colspan?>">
 						<?=lang($no_results['text'])?>
 						<?php if ( ! empty($no_results['action_text'])): ?>
-							<a class="btn action" rel="add_row" <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
+							<a rel="add_row" <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
 						<?php endif ?>
 					</td>
 				</tr>

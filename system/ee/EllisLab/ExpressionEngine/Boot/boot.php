@@ -1,15 +1,10 @@
 <?php  if ( ! defined('SYSPATH')) exit('No direct script access allowed');
-
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 /*
@@ -70,7 +65,7 @@
  */
 	use EllisLab\ExpressionEngine\Core;
 
-	if (FALSE && defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'ee/installer/'))
+	if (FALSE && defined('REQ') && in_array(REQ, ['CP', 'CLI']) && is_dir(SYSPATH.'ee/installer/'))
 	{
 		$core = new Core\Installer();
 	}
@@ -155,6 +150,9 @@
  *  Send the response
  * ------------------------------------------------------
  */
-	$response->send();
+	if ($response)
+	{
+		$response->send();
+	}
 
 // EOF

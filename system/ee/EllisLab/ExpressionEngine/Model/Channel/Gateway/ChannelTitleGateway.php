@@ -1,9 +1,19 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Channel\Gateway;
 
 use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
+/**
+ * Channel Title Gateway
+ */
 class ChannelTitleGateway extends Gateway {
 
 	protected static $_table_name = 'channel_titles';
@@ -19,6 +29,7 @@ class ChannelTitleGateway extends Gateway {
 	public $title;
 	public $url_title;
 	public $status;
+	public $status_id;
 	public $versioning_enabled;
 	public $view_count_one;
 	public $view_count_two;

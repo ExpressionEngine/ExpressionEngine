@@ -1,31 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Design;
 
 use EllisLab\ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Design\Group Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Design\Group Controller
  */
 class Group extends AbstractDesignController {
 
@@ -87,8 +74,11 @@ class Group extends AbstractDesignController {
 						'desc' => 'duplicate_group_desc',
 						'fields' => array(
 							'duplicate_group' => array(
-								'type' => 'select',
-								'choices' => $groups
+								'type' => 'radio',
+								'choices' => $groups,
+								'no_results' => [
+									'text' => sprintf(lang('no_found'), lang('template_groups'))
+								]
 							)
 						)
 					),
@@ -365,11 +355,12 @@ class Group extends AbstractDesignController {
 	  */
 	public function _group_name_checks($str)
 	{
-		if ( ! preg_match("#^[a-zA-Z0-9_\-/]+$#i", $str))
+		$result = ee('Validation')->make(array('group_name' => 'alphaDashPeriodEmoji'))->validate(array('group_name' => $str));
+
+		if ( ! $result->isValid())
 		{
-			ee()->lang->loadfile('admin');
-			ee()->form_validation->set_message('_group_name_checks', lang('illegal_characters'));
-			return FALSE;
+			$error = $result->getErrors('group_name');
+			return $error['group_name'];
 		}
 
 		$reserved_names = array('act', 'css');

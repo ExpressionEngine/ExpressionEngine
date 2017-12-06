@@ -1,26 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Core Addons Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Addons
  */
 class EE_Addons {
 
@@ -37,11 +25,8 @@ class EE_Addons {
 	{
 		$this->_exclusions = array(
 			'channel',
-			'comment',
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Addon File Handler
@@ -147,8 +132,6 @@ class EE_Addons {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create package array
 	 *
@@ -247,8 +230,6 @@ class EE_Addons {
 		}
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get information on what's installed
@@ -354,8 +335,6 @@ class EE_Addons {
 		return $_installed[$type];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Install a given list of first-party modules
 	 *
@@ -404,8 +383,6 @@ class EE_Addons {
 		return $module_install_errors;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Is package
 	 *
@@ -418,8 +395,6 @@ class EE_Addons {
 		$this->get_files('');	// blank key lets us skip first party
 		return array_key_exists($name, $this->_packages);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Package

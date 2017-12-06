@@ -1,26 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Core File Integrity Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core File Integrity
  */
 class File_integrity {
 
@@ -143,8 +131,6 @@ class File_integrity {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add a bootstrap file we didn't know about, or explicitly update
 	 * a checksum (when accepting a change).
@@ -180,8 +166,6 @@ class File_integrity {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add a bootstrap file we didn't know about, or explicitly update
 	 * a checksum (when accepting a change).
@@ -208,8 +192,6 @@ class File_integrity {
 			$this->_update_config($checksums, $site_id);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the bootstrap column in the db

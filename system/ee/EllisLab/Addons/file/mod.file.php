@@ -1,29 +1,15 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
- * ExpressionEngine File Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * File Module
  */
-
 class File {
 
 	var $reserved_cat_segment	= '';
@@ -45,8 +31,6 @@ class File {
 		}
 
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Files tag
@@ -89,8 +73,6 @@ class File {
 
 		return $this->return_data;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Build SQL Query
@@ -212,7 +194,7 @@ class File {
 		}
 
 		// Set order and sort
-		$allowed_orders	= array('date', 'upload_date', 'random');
+		$allowed_orders	= array('title', 'date', 'upload_date', 'random');
 		$order_by		= strtolower(ee()->TMPL->fetch_param('orderby', 'upload_date'));
 		$order_by		= ($order_by == 'date' OR ! in_array($order_by, $allowed_orders)) ? 'upload_date' : $order_by;
 		$random			= ($order_by == 'random') ? TRUE : FALSE;
@@ -248,8 +230,6 @@ class File {
 			->order_by($order_by, $sort);
 		return ee()->db->get('files');
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Fetch categories
@@ -351,8 +331,6 @@ class File {
 		unset($this->cat_array);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Process Subcategories
 	  */
@@ -367,8 +345,6 @@ class File {
 			}
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  *  Fetch Valid Thumbs
@@ -401,8 +377,6 @@ class File {
 
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Parse file entries
 	  */
@@ -423,7 +397,7 @@ class File {
 			{
 				for ($j = 0; $j < count($matches[0]); $j++)
 				{
-					$cat_chunk[] = array($matches[2][$j], ee()->functions->assign_parameters($matches[1][$j]), $matches[0][$j]);
+					$cat_chunk[] = array($matches[2][$j], ee('Variables/Parser')->parseTagParameters($matches[1][$j]), $matches[0][$j]);
 				}
 			}
 		}
@@ -534,8 +508,6 @@ class File {
 		$this->return_data = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $parse_data);
 	}
 
-	// -------------------------------------------------------------------------
-
 	function is_viewable_image($file)
 	{
 		$viewable_image = array('bmp','gif','jpeg','jpg','jpe','png');
@@ -546,8 +518,6 @@ class File {
 		$viewable = (in_array($ext, $viewable_image)) ? TRUE : FALSE;
 		return $viewable;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Gets File Metadata- may move to db
@@ -577,8 +547,6 @@ class File {
 		return $filedata;
 	}
 
-
-	// ------------------------------------------------------------------------
 
 	/**
 	  * Fetch Disable Parameter

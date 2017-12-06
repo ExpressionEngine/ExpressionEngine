@@ -1,30 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * CodeIgniter
+ * ExpressionEngine (https://expressionengine.com)
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Router Class
  *
  * Parses URIs and determines routing
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @author		EllisLab Dev Team
- * @category	Libraries
- * @link		http://codeigniter.com/user_guide/general/routing.html
  */
 class EE_Router {
 
@@ -47,8 +33,6 @@ class EE_Router {
 		$this->uri = load_class('URI', 'core');
 		log_message('debug', "Router Class Initialized");
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set the route mapping
@@ -131,8 +115,6 @@ class EE_Router {
 		$this->uri->_reindex_segments();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the default controller
 	 *
@@ -167,8 +149,6 @@ class EE_Router {
 
 		log_message('debug', "No URI present. Default controller set.");
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set the Route
@@ -209,8 +189,6 @@ class EE_Router {
 		// identical to $this->uri->segments
 		$this->uri->rsegments = $segments;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Validates the supplied segments.  Attempts to determine the path to
@@ -358,8 +336,6 @@ class EE_Router {
 
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 *  Parse Routes
 	 *
@@ -405,8 +381,6 @@ class EE_Router {
 		$this->_set_request($this->uri->segments);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the class name
 	 *
@@ -418,8 +392,6 @@ class EE_Router {
 	{
 		$this->class = str_replace(array('/', '.'), '', $class);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch the current class
@@ -443,8 +415,6 @@ class EE_Router {
 		return $class;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 *  Set the method name
 	 *
@@ -456,8 +426,6 @@ class EE_Router {
 	{
 		$this->method = $method;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 *  Fetch the current method
@@ -486,8 +454,6 @@ class EE_Router {
 		return $method;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 *  Set the directory name
 	 *
@@ -507,8 +473,6 @@ class EE_Router {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 *  Fetch the sub-directory (if any) that contains the requested controller class
 	 *
@@ -519,8 +483,6 @@ class EE_Router {
 	{
 		return $this->directory;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 *  Set the controller overrides

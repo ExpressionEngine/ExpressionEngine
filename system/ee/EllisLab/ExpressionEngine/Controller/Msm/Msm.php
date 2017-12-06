@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Msm;
 
@@ -7,27 +14,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Multiple Site Manager Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Multiple Site Manager Controller
  */
 class Msm extends CP_Controller {
 
@@ -52,17 +39,28 @@ class Msm extends CP_Controller {
 
 	protected function stdHeader()
 	{
-		ee()->view->header = array(
+		$license = ee('License')->getEELicense();
+		$can_add = $license->canAddSites(ee('Model')->get('Site')->count());
+
+		$header = array(
 			'title' => lang('msm_manager'),
-			'form_url' => ee('CP/URL')->make('msm'),
 			'toolbar_items' => array(
 				'settings' => array(
 					'href' => ee('CP/URL')->make('settings/general'),
 					'title' => lang('settings')
 				)
-			),
-			'search_button_value' => lang('search')
+			)
 		);
+
+		if ($can_add)
+		{
+			$header['action_button'] = [
+				'text' => lang('add_site'),
+				'href' => ee('CP/URL')->make('msm/create')
+			];
+		}
+
+		ee()->view->header = $header;
 	}
 
 	public function index()
@@ -80,12 +78,10 @@ class Msm extends CP_Controller {
 
 		$base_url = ee('CP/URL')->make('msm');
 
-		$vars['create_url'] = ee('CP/URL')->make('msm/create');
-
 		$license = ee('License')->getEELicense();
-		$vars['can_add'] = $license->canAddSites(ee('Model')->get('Site')->count());
+		$can_add = $license->canAddSites(ee('Model')->get('Site')->count());
 
-		if ( ! $vars['can_add'])
+		if ( ! $can_add)
 		{
 			ee('CP/Alert')->makeInline('site-limit-reached')
 				->asIssue()
@@ -416,11 +412,7 @@ class Msm extends CP_Controller {
 				'desc' => 'site_online_desc',
 				'fields' => array(
 					'is_site_on' => array(
-						'type' => 'inline_radio',
-						'choices' => array(
-							'y' => 'online',
-							'n' => 'offline'
-						),
+						'type' => 'yes_no',
 						'value' => $site->site_system_preferences->is_site_on
 					)
 				)
@@ -516,12 +508,13 @@ class Msm extends CP_Controller {
 
 		$site_names = $sites->pluck('site_label');
 
+		$sites->delete();
+
 		foreach ($site_names as $site_name)
 		{
 			ee()->logger->log_action(lang('site_deleted') . ': ' . $site_name);
 		}
 
-		$sites->delete();
 		ee('CP/Alert')->makeInline('sites')
 			->asSuccess()
 			->withTitle(lang('success'))

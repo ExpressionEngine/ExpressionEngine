@@ -1,27 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
- * Member Management Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Management Images
  */
 class Member_images extends Member {
 
@@ -98,8 +85,6 @@ class Member_images extends Member {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Signature
 	 */
@@ -152,8 +137,6 @@ class Member_images extends Member {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Avatar Edit Form
@@ -302,8 +285,6 @@ class Member_images extends Member {
 			);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Browse Avatars
 	 */
@@ -410,8 +391,6 @@ class Member_images extends Member {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Select Avatar From  Library
 	 */
@@ -471,8 +450,6 @@ class Member_images extends Member {
 								);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * List all Images in a Folder
 	 */
@@ -506,8 +483,6 @@ class Member_images extends Member {
 	    return $avatars;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Upload Avatar or Profile Photo
 	 */
@@ -515,8 +490,6 @@ class Member_images extends Member {
 	{
 		return $this->_upload_image('avatar');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Upload Photo
@@ -526,8 +499,6 @@ class Member_images extends Member {
 		return $this->_upload_image('photo');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Upload Signature
 	 */
@@ -535,8 +506,6 @@ class Member_images extends Member {
 	{
 		return $this->_upload_image('sig_img');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Upload Image
@@ -575,8 +544,6 @@ class Member_images extends Member {
 									 )
 								);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Photo Edit Form

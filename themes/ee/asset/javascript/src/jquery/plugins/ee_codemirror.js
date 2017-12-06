@@ -1,13 +1,9 @@
-/*!
- * ExpressionEngine - by EllisLab
+/**
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.9.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 (function ($) {
@@ -102,17 +98,18 @@ $.fn.toggleCodeMirror = function () {
 			initialized = textarea.data('codemirror.initialized'),
 			editor = textarea.data('codemirror.editor');
 
-		if (( ! initialized && ! disabled) || (initialized && disabled))
-		{
+		if (( ! initialized && ! disabled) || (initialized && disabled)) {
 			editor = createCodeMirror(textarea);
 			store.removeItem('codemirror.disabled');
 			textarea.data('codemirror.editor', editor);
-		}
-		else if (initialized)
-		{
+		} else if (initialized) {
 			editor.toTextArea();
 			textarea.data('codemirror.editor', false);
 			store.setItem('codemirror.disabled', true);
+		}
+
+		if (EE.editor.height) {
+			editor.setSize(null, EE.editor.height);
 		}
 
 		// first call complete

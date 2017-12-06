@@ -1,31 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Category;
 
 use EllisLab\ExpressionEngine\Model\Content\FieldModel;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Category Field Model
- *
- * @package		ExpressionEngine
- * @subpackage	Category
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Category Field Model
  */
 class CategoryField extends FieldModel {
 
@@ -35,12 +22,13 @@ class CategoryField extends FieldModel {
 	protected static $_hook_id = 'category_field';
 
 	protected static $_typed_columns = array(
-		'field_ta_rows'        => 'int',
-		'field_maxl'           => 'int',
-		'field_required'       => 'boolString',
-		'field_show_fmt'       => 'boolString',
-		'field_order'          => 'int',
-		'field_settings'       => 'json'
+		'field_ta_rows'     => 'int',
+		'field_maxl'        => 'int',
+		'field_required'    => 'boolString',
+		'field_show_fmt'    => 'boolString',
+		'field_order'       => 'int',
+		'field_settings'    => 'json',
+		'legacy_field_data' => 'boolString',
 	);
 
 	protected static $_relationships = array(
@@ -54,14 +42,15 @@ class CategoryField extends FieldModel {
 	);
 
 	protected static $_validation_rules = array(
-		'field_type'     => 'required|enum[text,textarea,select]',
-		'field_label'    => 'required|xss|noHtml|maxLength[50]',
-		'field_name'     => 'required|alphaDash|unique[site_id]|validateNameIsNotReserved|maxLength[32]',
-		'field_ta_rows'  => 'integer',
-		'field_maxl'     => 'integer',
-		'field_required' => 'enum[y,n]',
-		'field_show_fmt' => 'enum[y,n]',
-		'field_order'    => 'integer',
+		'field_type'        => 'required|enum[text,textarea,select]',
+		'field_label'       => 'required|xss|noHtml|maxLength[50]',
+		'field_name'        => 'required|alphaDash|unique[site_id]|validateNameIsNotReserved|maxLength[32]',
+		'field_ta_rows'     => 'integer',
+		'field_maxl'        => 'integer',
+		'field_required'    => 'enum[y,n]',
+		'field_show_fmt'    => 'enum[y,n]',
+		'field_order'       => 'integer',
+		'legacy_field_data' => 'enum[y,n]'
 	);
 
 	protected $field_id;
@@ -79,6 +68,7 @@ class CategoryField extends FieldModel {
 	protected $field_required;
 	protected $field_order;
 	protected $field_settings;
+	protected $legacy_field_data;
 
 	public function getSettingsValues()
 	{
@@ -108,6 +98,11 @@ class CategoryField extends FieldModel {
 		return 'category';
 	}
 
+	protected function getForeignKey()
+	{
+		return 'cat_id';
+	}
+
 	/**
 	 * New fields get appended
 	 */
@@ -122,7 +117,7 @@ class CategoryField extends FieldModel {
 
 		if (empty($field_order))
 		{
-			$count = $this->getFrontend()->get('CategoryField')
+			$count = $this->getModelFacade()->get('CategoryField')
 				->filter('group_id', $this->getProperty('group_id'))
 				->count();
 			$this->setProperty('field_order', $count + 1);
@@ -137,7 +132,7 @@ class CategoryField extends FieldModel {
 	public function updateFormattingOnExisting()
 	{
 		ee()->db->update(
-			$this->getDataTable(),
+			$this->getDataStorageTable(),
 			array('field_ft_'.$this->field_id => $this->field_default_fmt)
 		);
 	}

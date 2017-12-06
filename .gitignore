@@ -64,6 +64,9 @@ system/user/cache/*
 system/user/config/*
 system/user/config/config.php
 system/user/config/database.php
+!system/user/config/.htaccess
+!system/user/config/license.key
+!system/user/config/license.dp.key
 !system/user/config/index.html
 
 system/user/language/*
@@ -84,9 +87,13 @@ system/ee/EllisLab/Tests/phpunit/composer.lock
 tests/rspec/config.local.rb
 tests/rspec/screenshots/*
 tests/rspec/support/file-sync/uploads/*
+tests/rspec/fixtures/vendor/
+tests/rspec/fixtures/composer.lock
 
 system/ee/EllisLab/Tests/vendor/*
 system/ee/EllisLab/Tests/composer.lock
+system/ee/installer/updater/EllisLab/Tests/vendor/*
+system/ee/installer/updater/EllisLab/Tests/composer.lock
 
 
 # Themes/Images ================================================================
@@ -140,3 +147,18 @@ themes/solspace_themes/
 themes/third_party/
 
 asset/*
+
+# Updater dependencies =================================================
+
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Boot/boot.common.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Core/Autoloader.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Library/Filesystem/Filesystem.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Library/Filesystem/FilesystemException.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Protocol/Config/Config.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Config/ConfigWithDefaults.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Config/Directory.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Config/Factory.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Config/File.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Logger/File.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/Logger.php
+system/ee/installer/updater/EllisLab/ExpressionEngine/Updater/Service/Updater/Verifier.php

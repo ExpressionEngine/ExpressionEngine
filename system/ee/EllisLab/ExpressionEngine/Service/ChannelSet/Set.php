@@ -1,9 +1,20 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\ChannelSet;
 
+use Closure;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
+/**
+ * Channel Set Service: Set
+ */
 class Set {
 
 	/**
@@ -12,9 +23,14 @@ class Set {
 	private $site_id = 1;
 
 	/**
-	 * @var Array of channels
+	 * @var Array of channels [channel_title => ChannelModel, ...]
 	 */
 	private $channels = array();
+
+	/**
+	 * @var Array of fields [group_name => ChannelFieldModel, ...]
+	 */
+	private $fields = array();
 
 	/**
 	 * @var Array of field groups [group_name => FieldGroupModel, ...]
@@ -27,7 +43,12 @@ class Set {
 	private $category_groups = array();
 
 	/**
-	 * @var Array of status groups [group_name => StatusGroupModel, ...]
+	 * @var Array of statuses [statuses => StatusModel, ...]
+	 */
+	private $statuses = array();
+
+	/**
+	 * @var Array of statuses [status group name => [StatusModel, ...]]
 	 */
 	private $status_groups = array();
 
@@ -37,6 +58,16 @@ class Set {
 	private $upload_destinations = array();
 
 	/**
+	 * @var Array of model relationships to be assigned after the saves
+	 */
+	private $assignments = array(
+		'channel_field_groups' => array(),
+		'channel_fields'       => array(),
+		'field_group_fields'   => array(),
+		'statuses'             => array(),
+	);
+
+	/**
 	 * @var Array of top level containers. These are the properties of this
 	 *      class that we have to loop through for validation and save. Order
 	 *      matters - upload destinations must be in place for fields.
@@ -44,10 +75,26 @@ class Set {
 	private $top_level_elements = array(
 		'upload_destinations',
 		'channels',
+		'fields',
 		'field_groups',
-		'status_groups',
+		'statuses',
 		'category_groups'
 	);
+
+    /**
+     * @var String containing the path to the channel set
+     */
+    private $path;
+
+    /**
+     * @var ImportResult containing the result of the import
+     */
+    private $result;
+
+    /**
+     * @var Array A queue of closures to call after all the saving
+     */
+    private $post_save_queue = array();
 
 	/**
 	 * @var Array of things that would create duplicates and need to be renamed
@@ -61,6 +108,12 @@ class Set {
 	 * never be used for identification. Do not trust `$model->shortname`.
 	 */
 	private $aliases = array();
+
+	/**
+	 * @var Associative array of top level element types and the IDs of the
+	 *      newly-created elements
+	 */
+	private $insert_ids = [];
 
 	/**
 	 * @param String $path Path to the channel set
@@ -103,7 +156,6 @@ class Set {
 
 		if ( ! $this->result->isValid())
 		{
-			$this->deleteFiles();
 			return $this->result;
 		}
 
@@ -121,7 +173,7 @@ class Set {
 	/**
 	 * Deletes the source files used in the import
 	 */
-	protected function deleteFiles()
+	public function cleanUpSourceFiles()
 	{
 		$filesystem = new Filesystem();
 		$filesystem->delete($this->getPath());
@@ -185,13 +237,122 @@ class Set {
 	{
 		foreach ($this->top_level_elements as $property)
 		{
+			$this->insert_ids[$property] = [];
+
 			foreach ($this->$property as $model)
 			{
 				$model->save();
+				$this->insert_ids[$property][] = $model->getId();
 			}
 		}
 
-		$this->deleteFiles();
+		$this->assignFieldsToFieldGroups();
+		$this->assignFieldGroupsToChannels();
+		$this->assignFieldsToChannels();
+		$this->assignStatusesToChannels();
+
+        foreach ($this->post_save_queue as $fn)
+        {
+            if ($fn instanceOf Closure)
+            {
+                $fn();
+            }
+        }
+	}
+
+	/**
+	 * Get array of IDs for newly-inserted items
+	 *
+	 * @param string $element_type Element type to grab IDs for
+	 * @return array Array of database IDs for given element type
+	 */
+	public function getIdsForElementType($element_type)
+	{
+		if (empty($this->insert_ids[$element_type]))
+		{
+			return [];
+		}
+
+		return $this->insert_ids[$element_type];
+	}
+
+	/**
+	 * Saves the Channel -> FieldGroups relationshp
+	 */
+	private function assignFieldGroupsToChannels()
+	{
+		foreach ($this->assignments['channel_field_groups'] as $channel_title => $field_groups)
+		{
+			$channel = $this->channels[$channel_title];
+
+			$field_group_ids = array();
+			foreach ($field_groups as $field_group)
+			{
+				$field_group_ids[] = $field_group->getId();
+			}
+
+			$channel->FieldGroups = ee('Model')->get('ChannelFieldGroup', $field_group_ids)->all();
+			$channel->save();
+		}
+	}
+
+	/**
+	 * Saves the Channel -> CustomFields relationshp
+	 */
+	private function assignFieldsToChannels()
+	{
+		foreach ($this->assignments['channel_fields'] as $channel_title => $fields)
+		{
+			$channel = $this->channels[$channel_title];
+
+			$field_ids = array();
+			foreach ($fields as $field_name)
+			{
+				$field = $this->fields[$field_name];
+				$field_ids[] = $field->getId();
+			}
+
+			$channel->CustomFields = ee('Model')->get('ChannelField', $field_ids)->all();
+			$channel->save();
+		}
+	}
+
+	/**
+	 * Saves the FieldGroup -> CustomFields relationshp
+	 */
+	private function assignFieldsToFieldGroups()
+	{
+		foreach ($this->assignments['field_group_fields'] as $group_name => $fields)
+		{
+			$field_group = $this->field_groups[$group_name];
+
+			$field_ids = array();
+			foreach ($fields as $field_name)
+			{
+				$field = $this->getFieldByName($field_name);
+				$field_ids[] = $field->getId();
+			}
+
+			$field_group->ChannelFields = ee('Model')->get('ChannelField', $field_ids)->all();
+			$field_group->save();
+		}
+	}
+
+	/**
+	 * Saves the Channel -> Statuses relationshp
+	 */
+	private function assignStatusesToChannels()
+	{
+		$statuses_to_assign = ['open', 'closed'];
+
+		foreach ($this->assignments['statuses'] as $channel_name => $statuses)
+		{
+			$channel = $this->channels[$channel_name];
+			$channel->Statuses = ee('Model')->get('Status')
+				->filter('status', 'IN', array_merge($statuses_to_assign, $statuses))
+				->all();
+			$channel->save();
+		}
 	}
 
 	/**
@@ -218,6 +379,11 @@ class Set {
 		}
 
 		$data = json_decode(file_get_contents($this->path.'/channel_set.json'));
+		$field_groups = (isset($data->field_groups)) ? $data->field_groups : [];
+
+		// Pre-4.0 sets will have status groups, post-4.0 sets will only have statuses
+		$status_groups = isset($data->status_groups) ? $data->status_groups : [];
+		$statuses = isset($data->statuses) ? $data->statuses : [];
 
 		// Version check: v3 installs cannot import v4 exports
 		$version = (isset($data->version)) ? $data->version : '3.0.0';
@@ -233,8 +399,9 @@ class Set {
 		try
 		{
 			$this->loadUploadDestinations($data->upload_destinations);
-			$this->loadFieldsAndGroups();
-			$this->loadStatusGroups($data->status_groups);
+			$this->loadFieldsAndGroups($field_groups);
+			$this->loadStatusGroups($status_groups);
+			$this->loadStatuses($statuses);
 			$this->loadCategoryGroups($data->category_groups);
 			$this->loadCategoryFields();
 			$this->loadChannels($data->channels);
@@ -267,6 +434,16 @@ class Set {
 		}
 	}
 
+	private function getFieldByName($field_name)
+	{
+		if (isset($this->aliases['ee:ChannelField'][$field_name]['field_name']))
+		{
+			$field_name = $this->aliases['ee:ChannelField'][$field_name]['field_name'];
+		}
+
+		return $this->fields[$field_name];
+	}
+
 	/**
 	 * Instantiate the upload destination models
 	 *
@@ -295,6 +472,9 @@ class Set {
 	 */
 	private function loadChannels($channels)
 	{
+		// @TODO Use the Format service's urlSlug instead
+		ee()->load->helper('url_helper');
+
 		foreach ($channels as $channel_data)
 		{
 			$channel = ee('Model')->make('Channel');
@@ -309,6 +489,8 @@ class Set {
 			$channel->channel_title = $channel_data->channel_title;
 			$channel->channel_lang = 'en';
 
+			$this->assignments['statuses'][$channel_title] = [];
+
 			foreach ($channel_data as $pref_key => $pref_value)
 			{
 				if ( ! $channel->hasProperty($pref_key))
@@ -321,14 +503,39 @@ class Set {
 
 			$this->applyOverrides($channel, $channel->channel_name);
 
+			$field_groups = array();
+
 			if (isset($channel_data->field_group))
 			{
-				$channel->FieldGroup = $this->field_groups[$channel_data->field_group];
+				$field_groups[] = $this->field_groups[$channel_data->field_group];
+			}
+
+			if (isset($channel_data->field_groups))
+			{
+				foreach ($channel_data->field_groups as $field_group)
+				{
+					$field_groups[] = $this->field_groups[$field_group];
+				}
+			}
+
+			if ( ! empty($field_groups))
+			{
+				$this->assignments['channel_field_groups'][$channel_title] = $field_groups;
+			}
+
+			if (isset($channel_data->fields))
+			{
+				$this->assignments['channel_fields'][$channel_title] = $channel_data->fields;
 			}
 
 			if (isset($channel_data->status_group))
 			{
-				$channel->StatusGroup = $this->status_groups[$channel_data->status_group];
+				$this->assignments['statuses'][$channel_title] = $this->status_groups[$channel_data->status_group];
+			}
+
+			if (isset($channel_data->statuses))
+			{
+				$this->assignments['statuses'][$channel_title] = $channel_data->statuses;
 			}
 
 			if (isset($channel_data->cat_groups))
@@ -342,7 +549,7 @@ class Set {
 						$cat_group_ids[] = $cat_group->getId();
 					}
 
-					$channel->cat_group = implode('|', $cat_group_ids);
+					$channel->cat_group = rtrim(implode('|', $cat_group_ids), '|');
 					$channel->save();
 				};
 
@@ -405,7 +612,10 @@ class Set {
 						foreach ($category->CategoryGroup->CategoryFields as $field)
 						{
 							$property = 'field_id_' . $field->getId();
-							$category->$property = $category_data->{$field->field_name};
+							if (isset($category_data->{$field->field_name}))
+							{
+								$category->$property = $category_data->{$field->field_name};
+							}
 						}
 					};
 
@@ -420,7 +630,7 @@ class Set {
 	}
 
 	/**
-	 * Instantiate the status group models
+	 * Import statuses nested inside legacy status group structure
 	 *
 	 * @param Array $status_groups Status groups as described in channel_set.json
 	 * @return void
@@ -429,46 +639,45 @@ class Set {
 	{
 		foreach ($status_groups as $status_group_data)
 		{
-			$group_name = $status_group_data->name;
-
-			if ($group_name == 'Default')
-			{
-				$status_group = $this->getDefaultStatusGroup();
-			}
-			else
-			{
-				$status_group = ee('Model')->make('StatusGroup');
-				$status_group->site_id = $this->site_id;
-				$status_group->group_name = $group_name;
-			}
-
-			foreach ($status_group_data->statuses as $status_data)
-			{
-				// Ensure status doesn't already exist
-				if ($group_name == 'Default')
-				{
-					$statuses = $status_group->Statuses->pluck('status');
-
-					if (in_array($status_data->name, $statuses))
-					{
-						continue;
-					}
-				}
-
-				$status = ee('Model')->make('Status');
-				$status->site_id = $this->site_id;
-				$status->status = $status_data->name;
-
-				if ( ! empty($status_data->highlight))
-				{
-					$status->highlight = $status_data->highlight;
-				}
-
-				$status_group->Statuses[] = $status;
-			}
-
-			$this->status_groups[$group_name] = $status_group;
+			$this->status_groups[$status_group_data->name] = $this->loadStatuses($status_group_data->statuses);
 		}
+	}
+
+	/**
+	 * Import status data into model objects
+	 *
+	 * @param Array $statuses Statuses as described in channel_set.json
+	 * @return void
+	 */
+	private function loadStatuses($statuses)
+	{
+		$existing_statuses = ee('Model')->get('Status')->all()->pluck('status');
+
+		// Keep track of statuses brought in by this single call to map them
+		// to old channel sets that contain status groups
+		$status_group = [];
+
+		foreach ($statuses as $status_data)
+		{
+			$status_group[] = $status_data->name;
+
+			if (in_array($status_data->name, $existing_statuses))
+			{
+				continue;
+			}
+
+			$status = ee('Model')->make('Status');
+			$status->status = $status_data->name;
+
+			if ( ! empty($status_data->highlight))
+			{
+				$status->highlight = $status_data->highlight;
+			}
+
+			$this->statuses[] = $status;
+		}
+
+		return $status_group;
 	}
 
 	private function loadCategoryFields()
@@ -501,34 +710,11 @@ class Set {
 	}
 
 	/**
-	 * Gets the default status group for this site, and if it isn't there we'll
-	 * create it
-	 *
-	 * @return obj A Status Group object
-	 */
-	private function getDefaultStatusGroup()
-	{
-		$status_group = ee('Model')->get('StatusGroup')
-			->filter('group_name', 'Default')
-			->filter('site_id', $this->site_id)
-			->first();
-
-		if ( ! $status_group)
-		{
-			$site = ee('Model')->get('Site', $this->site_id)->first();
-			$site->createDefaultStatuses();
-			return $this->getDefaultStatusGroup(); // recursion FTW!
-		}
-
-		return $status_group;
-	}
-
-	/**
 	 * Instantiate the field and field group models
 	 *
 	 * @return void
 	 */
-	private function loadFieldsAndGroups()
+	private function loadFieldsAndGroups($field_groups = array())
 	{
 		if ( ! is_dir($this->path.'/custom_fields'))
 		{
@@ -545,42 +731,63 @@ class Set {
 			// fieldgroups are directories
 			if ($item->isDir())
 			{
-				$this->loadFieldGroup($it);
+				$group_name = $it->getFilename();
+				$group = $this->loadFieldGroup($group_name);
+				$fields = array();
+
+				foreach ($it->getChildren() as $field)
+				{
+					if ($field->isFile())
+					{
+						$field_model = $this->loadChannelField($field);
+						$this->fields[$field_model->field_name] = $field_model;
+						$fields[] = $field_model;
+					}
+				}
+
+				$fn = function() use ($group, $fields)
+				{
+					$field_ids = array();
+					foreach ($fields as $field)
+					{
+						$field_ids[] = $field->getId();
+					}
+					$group->ChannelFields = ee('Model')->get('ChannelField', $field_ids)->all();
+					$group->save();
+				};
+
+				$group->on('afterInsert', $fn);
 			}
-			/* lone fields for future compatibility
 			elseif ($item->isFile())
 			{
-				$this->fields[] = $this->loadField($item);
+				$field_model = $this->loadChannelField($item);
+				$this->fields[$field_model->field_name] = $field_model;
 			}
-			*/
+		}
+
+		foreach ($field_groups as $field_group)
+		{
+			$group = $this->loadFieldGroup($field_group->name);
+			$this->assignments['field_group_fields'][$group->group_name] = $field_group->fields;
 		}
 	}
 
 	/**
 	 * Instantiate a field group model
 	 *
-	 * @param Iterator $it Filesystem iterator with its cursor on the field group folder
-	 * @return void
+	 * @param String $group_name The name of the group to be added
+	 * @return ChannelFieldGroupModel
 	 */
-	private function loadFieldGroup($it)
+	private function loadFieldGroup($group_name)
 	{
-		$group_name = $it->getFilename();
-
 		$group = ee('Model')->make('ChannelFieldGroup');
-		$group->site_id = $this->site_id;
+		$group->site_id = 0;
 		$group->group_name = $group_name;
 
 		$this->applyOverrides($group, $group_name);
 
-		foreach ($it->getChildren() as $field)
-		{
-			if ($field->isFile())
-			{
-				$group->ChannelFields[] = $this->loadChannelField($field);
-			}
-		}
-
-		$this->field_groups[$group_name] = $group;
+		$this->field_groups[$group->group_name] = $group;
+		return $group;
 	}
 
 	/**
@@ -621,7 +828,7 @@ class Set {
 		}
 
 		$field = ee('Model')->make('ChannelField');
-		$field->site_id = $this->site_id;
+		$field->site_id = 0;
 		$field->field_name = $name;
 		$field->field_type = $type;
 
@@ -660,6 +867,10 @@ class Set {
 		{
 			$field_data = $this->importRelationshipField($field, $field_data);
 		}
+        elseif ($type == 'fluid_field')
+		{
+			$this->importFluidFieldField($field, $field_data);
+		}
 
 		$field->set($field_data);
 
@@ -672,7 +883,7 @@ class Set {
 	 * Instantiate a field model
 	 *
 	 * @param SplFileInfo $file File instance for the field.fieldtype file
-	 * @return ChannelFieldModel
+	 * @return CategoryFieldModel
 	 */
 	private function loadCategoryField(\SplFileInfo $file)
 	{
@@ -747,14 +958,6 @@ class Set {
 
 				foreach ($column as $col_label => $col_value)
 				{
-					// Grid is expecting a POSTed checkbox, so if it's in POST at all
-					// this value will be set to 'y'
-					// @todo Fieldtypes should receive data, not reach into POST
-					if ($col_label == 'required' && $col_value == 'n')
-					{
-						continue;
-					}
-
 					$_POST['grid']['cols']["new_{$i}"]['col_'.$col_label] = $col_value;
 				}
 			}
@@ -853,5 +1056,33 @@ class Set {
 
 		return $field_data;
 
+	}
+
+	/**
+	 * Helper function for fluid field imports. We need to associate the correct field
+	 * ids to our fluid field field. Since those don't exist until after saving has begun,
+	 * we'll just capture the identifying names in a closure and query for 'em.
+	 *
+	 * @param ChannelFieldModel $field Field instance
+	 * @param Array $field_data The field data that will be set() on the field
+	 * @return void
+	 */
+	private function importFluidFieldField($field, $field_data)
+	{
+		$fn = function() use ($field, $field_data)
+		{
+			$settings = $field_data;
+
+			$settings['field_channel_fields'] = ee('Model')->get('ChannelField')
+				->fields('field_id')
+				->filter('field_name', 'IN', $field_data['field_channel_fields'])
+				->all()
+				->pluck('field_id');
+
+			$field->set($settings);
+			$field->save();
+		};
+
+        $this->post_save_queue[] = $fn;
 	}
 }

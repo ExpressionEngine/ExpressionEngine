@@ -1,8 +1,13 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Members;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
@@ -10,27 +15,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Controller\Members;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Members Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Groups Controller
  */
 class Groups extends Members\Members {
 
@@ -75,7 +60,8 @@ class Groups extends Members\Members {
 		$table = ee('CP/Table', array(
 			'sort_col' => $sort_col,
 			'sort_dir' => $sort_dir,
-			'limit' => $this->perpage
+			'limit' => $this->perpage,
+			'search' => ee()->input->get_post('filter_by_keyword'),
 		));
 
 		$columns = array(
@@ -109,26 +95,27 @@ class Groups extends Members\Members {
 
 		$data = array();
 		$groupData = array();
-		$total = ee()->api->get('MemberGroup')
+		$total = ee('Model')->get('MemberGroup')
 			->filter('site_id', ee()->config->item('site_id'))
 			->count();
 
 		$filter = ee('CP/Filter')
-						->add('Perpage', $total, 'show_all_member_groups');
+			->add('Keyword')
+			->add('Perpage', $total, 'show_all_member_groups');
 
 		$this->renderFilters($filter);
 
-		$groups = ee()->api->get('MemberGroup')
+		$groups = ee('Model')->get('MemberGroup')
 			->filter('site_id', ee()->config->item('site_id'))
 			->order($sort_col, $sort_dir)
 			->limit($this->perpage)
 			->offset($this->offset);
 
-		$search = ee()->input->post('search');
+		$search = ee()->input->post('filter_by_keyword');
 
 		if ( ! empty($search))
 		{
-			$groups = $groups->filter('group_title', 'LIKE', "%$search%");
+			$groups = $groups->search('group_title', $search);
 		}
 
 		$groups = $groups->all();
@@ -546,7 +533,7 @@ class Groups extends Members\Members {
 							);
 							foreach ($iterator as $choice => $lang)
 							{
-								if ($choice == 'name' OR $choice == 'children') continue;
+								if (in_array($choice, ['name', 'children', 'label', 'instructions'])) continue;
 
 								if ($result[$choice] === TRUE)
 								{
@@ -630,7 +617,7 @@ class Groups extends Members\Members {
 							);
 							foreach ($iterator as $key => $value)
 							{
-								if ($key == 'name' OR $key == 'children') continue;
+								if (in_array($key, ['name', 'children', 'label', 'instructions'])) continue;
 
 								$choices[] = $key;
 							}
@@ -678,6 +665,8 @@ class Groups extends Members\Members {
 
 	private function buildForm($values)
 	{
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('members'), lang('member_manager'));
+
 		// @TODO: This should be refactored to remove the need for the
 		// `element()` method
 		ee()->load->helper('array');
@@ -756,6 +745,19 @@ class Groups extends Members\Members {
 				->all()
 				->getDictionary('channel_id', 'channel_title');
 
+			$default_homepage_choices = array(
+				'overview' => lang('cp_overview').' &mdash; <i>'.lang('default').'</i>',
+				'entries_edit' => lang('edit_listing')
+			);
+
+			if (count($allowed_channels))
+			{
+				$default_homepage_choices['publish_form'] = lang('publish_form').' &mdash; '.
+					form_dropdown('cp_homepage_channel', $allowed_channels, element('cp_homepage_channel', $values));
+			}
+
+			$default_homepage_choices['custom'] = lang('custom_uri');
+
 			$vars = array(
 				array(
 					array(
@@ -782,11 +784,7 @@ class Groups extends Members\Members {
 						'desc' => 'lock_description',
 						'fields' => array(
 							'is_locked' => array(
-								'type' => 'inline_radio',
-								'choices' => array(
-									'y' => 'enable',
-									'n' => 'disable'
-								),
+								'type' => 'yes_no',
 								'value' => element('is_locked', $values)
 							)
 						)
@@ -803,7 +801,8 @@ class Groups extends Members\Members {
 									'can_view_online_system' => lang('can_view_online_system'),
 									'can_view_offline_system' => lang('can_view_offline_system')
 								),
-								'value' => element('website_access', $values)
+								'value' => element('website_access', $values),
+								'encode' => FALSE
 							),
 						)
 					),
@@ -1003,18 +1002,13 @@ class Groups extends Members\Members {
 						'fields' => array(
 							'cp_homepage' => array(
 								'type' => 'radio',
-								'choices' => array(
-									'overview' => lang('cp_overview').' &mdash; <i>'.lang('default').'</i>',
-									'entries_edit' => lang('edit_listing'),
-									'publish_form' => lang('publish_form').' &mdash; '.
-										form_dropdown('cp_homepage_channel', $allowed_channels, element('cp_homepage_channel', $values)),
-									'custom' => lang('custom_uri'),
-								),
-								'value' => element('cp_homepage', $values, 'overview')
+								'choices' => $default_homepage_choices,
+								'value' => element('cp_homepage', $values, 'overview'),
+								'encode' => FALSE
 							),
 							'cp_homepage_custom' => array(
 								'type' => 'text',
-								'value' => element('cp_homepage_custom', $values)
+								'value' => element('cp_homepage_custom', $values),
 							)
 						)
 					),
@@ -1156,7 +1150,10 @@ class Groups extends Members\Members {
 							'allowed_channels' => array(
 								'type' => 'checkbox',
 								'choices' => $allowed_channels,
-								'value' => element('allowed_channels', $values)
+								'value' => element('allowed_channels', $values),
+								'no_results' => [
+									'text' => sprintf(lang('no_found'), lang('channels'))
+								]
 							),
 						)
 					)
@@ -1272,7 +1269,8 @@ class Groups extends Members\Members {
 										'can_email_from_profile' => lang('can_email_from_profile'),
 										'can_edit_html_buttons' => lang('can_edit_html_buttons')
 									),
-									'value' => element('member_actions', $values)
+									'value' => element('member_actions', $values),
+									'encode' => FALSE
 								)
 							)
 						)
@@ -1382,7 +1380,10 @@ class Groups extends Members\Members {
 								'allowed_template_groups' => array(
 									'type' => 'checkbox',
 									'choices' => $template_groups,
-									'value' => element('template_groups', $values)
+									'value' => element('template_groups', $values),
+									'no_results' => [
+										'text' => sprintf(lang('no_found'), lang('template_groups'))
+									]
 								),
 							)
 						)
@@ -1425,7 +1426,10 @@ class Groups extends Members\Members {
 								'addons_access' => array(
 									'type' => 'checkbox',
 									'choices' => $addons,
-									'value' => element('addons_access', $values)
+									'value' => element('addons_access', $values),
+									'no_results' => [
+										'text' => sprintf(lang('no_found'), lang('addons'))
+									]
 								)
 							)
 						),
@@ -1473,19 +1477,33 @@ class Groups extends Members\Members {
 								'access_tools' => array(
 									'type' => 'checkbox',
 									'nested' => TRUE,
-									'choices' => array(
-										'can_access_comm' => array(
-											'name' => lang('can_access_communicate'),
-											'children' => array(
+									'auto_select_parents' => TRUE,
+									'choices' => [
+										'can_access_comm' => [
+											'label' => lang('can_access_communicate'),
+											'instructions' => lang('utility'),
+											'children' => [
 												'can_email_member_groups' => lang('can_email_member_groups'),
 												'can_send_cached_email' => lang('can_send_cached_email'),
-											)
-										),
-										'can_access_translate' => lang('can_access_translate'),
-										'can_access_import' => lang('can_access_import'),
-										'can_access_sql_manager' => lang('can_access_sql'),
-										'can_access_data' => lang('can_access_data')
-									),
+											]
+										],
+										'can_access_translate' => [
+											'label' => lang('can_access_translate'),
+											'instructions' => lang('utility')
+										],
+										'can_access_import' => [
+											'label' => lang('can_access_import'),
+											'instructions' => lang('utility')
+										],
+										'can_access_sql_manager' => [
+											'label' => lang('can_access_sql'),
+											'instructions' => lang('utility')
+										],
+										'can_access_data' => [
+											'label' => lang('can_access_data'),
+											'instructions' => lang('utility')
+										]
+									],
 									'value' => element('access_tools', $values)
 								)
 							)

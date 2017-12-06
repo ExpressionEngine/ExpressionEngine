@@ -1,38 +1,24 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Metaweblog API Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Update File
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Metaweblog API Module update class
  */
 class Metaweblog_api_upd {
 
-	var $version = '2.2.0';
+	var $version = '2.3.0';
 
 	function __construct()
 	{
 		ee()->load->dbforge();
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Installer
@@ -57,73 +43,73 @@ class Metaweblog_api_upd {
 		ee()->db->insert('actions', $data);
 
 		$fields = array(
-						'metaweblog_id'	=> array(
-													'type'				=> 'int',
-													'constraint'		=> 5,
-													'unsigned'			=> TRUE,
-													'null'				=> FALSE,
-													'auto_increment'	=> TRUE
-												),
-						'metaweblog_pref_name'  => array(
-													'type' 				=> 'varchar',
-													'constraint'		=> '80',
-													'null'				=> FALSE,
-													'default'			=> ''
-												),
-						'metaweblog_parse_type'  => array(
-													'type' 				=> 'varchar',
-													'constraint'		=> '1',
-													'null'				=> FALSE,
-													'default'			=> 'y'
-												),
-						'entry_status'  => array(
-													'type' 				=> 'varchar',
-													'constraint'		=> '50',
-													'null'				=> FALSE,
-													'default'			=> 'NULL'
-												),
-						'field_group_id'  => array(
-													'type' 				=> 'int',
-													'constraint'		=> '5',
-													'unsigned'			=> TRUE,
-													'null'				=> FALSE,
-													'default'			=> 0
-												),
-						'excerpt_field_id'	=> array(
-													'type'				=> 'int',
-													'constraint'		=> 7,
-													'unsigned'			=> TRUE,
-													'null'				=> FALSE,
-													'default'			=> 0
-												),
-						'content_field_id'	=> array(
-													'type'				=> 'int',
-													'constraint'		=> 7,
-													'unsigned'			=> TRUE,
-													'null'				=> FALSE,
-													'default'			=> 0
-												),
-						'more_field_id'	=> array(
-													'type'				=> 'int',
-													'constraint'		=> 7,
-													'unsigned'			=> TRUE,
-													'null'				=> FALSE,
-													'default'			=> 0
-												),
-						'keywords_field_id'	=> array(
-													'type'				=> 'int',
-													'constraint'		=> 7,
-													'unsigned'			=> TRUE,
-													'null'				=> FALSE,
-													'default'			=> 0
-												),
-						'upload_dir'	=> array(
-													'type'				=> 'int',
-													'constraint'		=> 5,
-													'unsigned'			=> TRUE,
-													'null'				=> FALSE,
-													'default'			=> 1
-												),
+			'metaweblog_id'         => array(
+										'type'           => 'int',
+										'constraint'     => 5,
+										'unsigned'       => TRUE,
+										'null'           => FALSE,
+										'auto_increment' => TRUE
+									),
+			'metaweblog_pref_name'  => array(
+										'type'           => 'varchar',
+										'constraint'     => '80',
+										'null'           => FALSE,
+										'default'        => ''
+									),
+			'metaweblog_parse_type' => array(
+										'type'           => 'varchar',
+										'constraint'     => '1',
+										'null'           => FALSE,
+										'default'        => 'y'
+									),
+			'entry_status'          => array(
+										'type'           => 'varchar',
+										'constraint'     => '50',
+										'null'           => FALSE,
+										'default'        => 'NULL'
+									),
+			'channel_id'            => array(
+										'type'           => 'int',
+										'constraint'     => '5',
+										'unsigned'       => TRUE,
+										'null'           => FALSE,
+										'default'        => 0
+									),
+			'excerpt_field_id'      => array(
+										'type'           => 'int',
+										'constraint'     => 7,
+										'unsigned'       => TRUE,
+										'null'           => FALSE,
+										'default'        => 0
+									),
+			'content_field_id'      => array(
+										'type'           => 'int',
+										'constraint'     => 7,
+										'unsigned'       => TRUE,
+										'null'           => FALSE,
+										'default'        => 0
+									),
+			'more_field_id'         => array(
+										'type'           => 'int',
+										'constraint'     => 7,
+										'unsigned'       => TRUE,
+										'null'           => FALSE,
+										'default'        => 0
+									),
+			'keywords_field_id'     => array(
+										'type'           => 'int',
+										'constraint'     => 7,
+										'unsigned'       => TRUE,
+										'null'           => FALSE,
+										'default'        => 0
+									),
+			'upload_dir'            => array(
+										'type'           => 'int',
+										'constraint'     => 5,
+										'unsigned'       => TRUE,
+										'null'           => FALSE,
+										'default'        => 1
+									),
 		);
 
 		ee()->dbforge->add_field($fields);
@@ -132,7 +118,7 @@ class Metaweblog_api_upd {
 
 		$data = array(
 			'metaweblog_pref_name' 	=> 'Default',
-			'field_group_id' 	=> 1,
+			'channel_id' 	=> 1,
 			'content_field_id' 	=> 2
 		);
 		ee()->db->insert('metaweblog_api', $data);
@@ -141,8 +127,6 @@ class Metaweblog_api_upd {
 	}
 
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Uninstaller
@@ -168,8 +152,6 @@ class Metaweblog_api_upd {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Updater
@@ -211,6 +193,21 @@ class Metaweblog_api_upd {
 			ee()->db->where('class', 'Metaweblog_api');
 			ee()->db->where('method', 'incoming');
 			ee()->db->update('actions', $data);
+		}
+
+		if (version_compare($version, '2.3', '<'))
+		{
+			ee()->load->library('smartforge');
+			ee()->smartforge->modify_column('metaweblog_api', array(
+				'field_group_id' => array(
+					'name'       => 'channel_id',
+					'type'       => 'int',
+					'constraint' => '5',
+					'unsigned'   => TRUE,
+					'null'       => FALSE,
+					'default'    => 0
+				)
+			));
 		}
 
 		return TRUE;

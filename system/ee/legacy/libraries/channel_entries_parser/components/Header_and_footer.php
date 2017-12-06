@@ -1,27 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Channel Parser Component (Header and Footer)
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Parser Component (Header and Footer)
  */
 class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component {
 
@@ -35,8 +22,6 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 	{
 		return ! ($pre->has_tag_pair('date_heading') OR $pre->has_tag_pair('date_footer'));
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Reset flags for this tag chunk. Using an object so that we can
@@ -61,8 +46,6 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 		$c->heading_flag_yearly  = 0;
 		return $c;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace all of the header/footer chunks.

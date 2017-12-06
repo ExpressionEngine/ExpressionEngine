@@ -1,28 +1,15 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Email Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Update File
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Email Module update class
  */
-
 class Email_upd {
 
 	var $version = '2.1.0';
@@ -38,14 +25,14 @@ class Email_upd {
 		$sql[] = "INSERT INTO exp_modules (module_name, module_version, has_cp_backend) VALUES ('Email', '$this->version', 'n')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Email', 'send_email')";
 		$sql[] = "CREATE TABLE IF NOT EXISTS exp_email_tracker (
-		email_id int(10) unsigned NOT NULL auto_increment,
-		email_date int(10) unsigned default '0' NOT NULL,
-		sender_ip varchar(45) NOT NULL,
-		sender_email varchar(75) NOT NULL ,
-		sender_username varchar(50) NOT NULL ,
-		number_recipients int(4) unsigned default '1' NOT NULL,
-		PRIMARY KEY `email_id` (`email_id`)
-	) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci";
+			email_id int(10) unsigned NOT NULL auto_increment,
+			email_date int(10) unsigned default '0' NOT NULL,
+			sender_ip varchar(45) NOT NULL,
+			sender_email varchar(75) NOT NULL ,
+			sender_username varchar(50) NOT NULL ,
+			number_recipients int(4) unsigned default '1' NOT NULL,
+			PRIMARY KEY `email_id` (`email_id`)
+		) DEFAULT CHARACTER SET ".ee()->db->escape_str(ee()->db->char_set)." COLLATE ".ee()->db->escape_str(ee()->db->dbcollat);
 
 		foreach ($sql as $query)
 		{
@@ -56,8 +43,6 @@ class Email_upd {
 	}
 
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Uninstaller
@@ -82,8 +67,6 @@ class Email_upd {
 		return TRUE;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Updater

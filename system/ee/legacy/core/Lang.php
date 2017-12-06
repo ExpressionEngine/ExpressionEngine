@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Core Language Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Language
  */
 class EE_Lang {
 
@@ -54,8 +42,6 @@ class EE_Lang {
 		$this->load($which, $idiom, FALSE, TRUE, PATH_THIRD.$package.'/', $show_errors);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the idiom for the current user/situation
 	 * @return string The idiom to load
@@ -69,8 +55,6 @@ class EE_Lang {
 
 		return ee()->config->item('deft_lang') ?: 'english';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load a language file
@@ -175,8 +159,6 @@ class EE_Lang {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 *   Fetch a specific line of text
 	 *
@@ -199,8 +181,6 @@ class EE_Lang {
 			return stripslashes($line);
 		}
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Get a list of available language packs

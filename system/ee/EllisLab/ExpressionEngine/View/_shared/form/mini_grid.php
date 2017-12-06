@@ -1,14 +1,14 @@
-<div class="keyvalue">
-	<div class="keyvalue-empty hidden">
+<div class="fields-keyvalue<?=(isset($classes)) ? $classes : ''?>">
+	<div class="field-no-results hidden">
 		<p><?=lang($no_results['text'])?>
 			<?php if ( ! empty($no_results['action_text'])): ?>
 				<a<?=$no_results['external'] ? ' rel="external"' : '' ?> rel="add_row" href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
 			<?php endif ?>
 		</p>
 	</div>
-	<div class="keyvalue-header">
+	<div class="fields-keyvalue-header">
 		<?php foreach ($columns as $settings): ?>
-			<div class="keyvalue-title">
+			<div class="field-instruct">
 				<label><?=$settings['label']?></label>
 			</div>
 		<?php endforeach ?>
@@ -22,7 +22,7 @@
 				{
 					$row['attrs']['class'] = '';
 				}
-				$row['attrs']['class'] .= ' keyvalue-item';
+				$row['attrs']['class'] .= ' fields-keyvalue-item';
 				?>
 				<div<?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach ?>>
 					<?php if ($reorder): ?>
@@ -31,7 +31,7 @@
 						</ul>
 					<?php endif ?>
 					<?php foreach ($row['columns'] as $column): ?>
-						<div class="keyvalue-field">
+						<div class="field-control">
 							<?=$column['html']?>
 						</div>
 					<?php endforeach ?>
@@ -42,7 +42,5 @@
 			<?php endforeach ?>
 		<?php endforeach ?>
 	</div>
-	<ul class="toolbar">
-		<li class="add"><a href="#" rel="add_row" title="add new row"></a></li>
-	</ul>
+	<a class="btn action add-mrg-left" rel="add_row" href=""><?=lang('add_a_row')?></a>
 </div>
