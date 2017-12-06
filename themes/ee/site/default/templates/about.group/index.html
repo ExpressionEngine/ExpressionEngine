@@ -28,12 +28,12 @@
 		{!-- channel entries tag --}
 		{exp:channel:entries channel='{ch}' disable='{ch_disable}' limit='1'{if segment_2} require_entry='yes'{if:else} status='Default Page'{/if}}
 			{!-- layout vars, dynamic, not output --}
-			{layout:set name='title' value='{if p_seo_title}{p_seo_title}{if:else}{p_title}{/if}{gv_sep}'}
-			{layout:set name='description' value='{if p_seo_desc}{p_seo_desc}{if:else}{p_description}{/if}'}
+			{layout:set name='title' value='{if seo_title}{seo_title}{if:else}{p_title}{/if}{gv_sep}'}
+			{layout:set name='description' value='{if seo_desc}{seo_desc}{if:else}{p_description}{/if}'}
 			{!-- OpenGraph meta output --}
-			{layout:set name='og_title' value='{if p_seo_title}{p_seo_title}{if:else}{p_title}{/if}'}
+			{layout:set name='og_title' value='{if seo_title}{seo_title}{if:else}{p_title}{/if}'}
 			{layout:set name='og_url'}{path='{p_url}'}{/layout:set}
-			{layout:set name='og_description' value='{if p_seo_desc}{p_seo_desc}{if:else}{p_description}{/if}'}
+			{layout:set name='og_description' value='{if seo_desc}{seo_desc}{if:else}{p_description}{/if}'}
 			{!-- /layout vars, dynamic, not output --}
 
 			{!-- content output --}
@@ -47,8 +47,8 @@
 					</figure>
 				{/about_image}
 			{/if}
-			{!-- p_content is a textarea with HTML output we don't need to wrap this tag with HTML as that is already included in it's output. --}
-			{p_content}
+			{!-- page_content is a textarea with HTML output we don't need to wrap this tag with HTML as that is already included in it's output. --}
+			{page_content}
 			{!-- /content output --}
 
 			{!--
