@@ -42,24 +42,6 @@ jobs:
       - run: bash ./eetools circleci -p 5.4.45
       - store_artifacts:
           path: /tmp/artifacts
-  test_php_55:
-    docker:
-      - image: docker:stable-git
-    steps:
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - checkout
-      - run: |
-          git config --global user.email "you@example.com"
-          git config --global user.name "Your Name"
-      - run: |
-          apk update
-          apk upgrade
-          apk add bash
-      - run: chmod +x ./eetools
-      - run: bash ./eetools circleci -p 5.5.38
-      - store_artifacts:
-          path: /tmp/artifacts
   test_php_56:
     docker:
       - image: docker:stable-git
@@ -76,24 +58,6 @@ jobs:
           apk add bash
       - run: chmod +x ./eetools
       - run: bash ./eetools circleci -p 5.6.32
-      - store_artifacts:
-          path: /tmp/artifacts
-  test_php_70:
-    docker:
-      - image: docker:stable-git
-    steps:
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - checkout
-      - run: |
-          git config --global user.email "you@example.com"
-          git config --global user.name "Your Name"
-      - run: |
-          apk update
-          apk upgrade
-          apk add bash
-      - run: chmod +x ./eetools
-      - run: bash ./eetools circleci -p 7.0.25
       - store_artifacts:
           path: /tmp/artifacts
   test_php_71:
@@ -123,13 +87,7 @@ workflows:
       - test_php_54:
           requires:
             - build_and_upload
-      - test_php_55:
-          requires:
-            - build_and_upload
       - test_php_56:
-          requires:
-            - build_and_upload
-      - test_php_70:
           requires:
             - build_and_upload
       - test_php_71:
