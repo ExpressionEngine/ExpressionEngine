@@ -10,7 +10,7 @@ feature 'Fluid Fields' do
   end
 
   before :each do
-    @page.select_field_type 'Fluid Field'
+    @page.select_field_type 'Fluid'
     @page.field_label.set 'Fluid Field Body'
     @page.field_name.set 'fluid_field_body'
     @fields = @page.find('[data-input-value*="field_channel_fields"]')
@@ -46,7 +46,7 @@ feature 'Fluid Fields' do
 
   context 'when editing a fluid field' do
     it 'can add a new field to the fluid field' do
-      @page.select_field_type 'Fluid Field'
+      @page.select_field_type 'Fluid'
       @page.field_label.set 'Fluid Field Body'
       @page.field_name.set 'fluid_field_body'
       @fields.find("[value='2']").click
