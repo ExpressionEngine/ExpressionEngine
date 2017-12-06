@@ -1,17 +1,11 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine Spam Module
@@ -28,17 +22,13 @@ $lang = array(
 
 'approve_spam' => 'NOT SPAM, then approve',
 
-'comment' => 'comment',
-
 'content_type' => 'content type',
 
 'deny_spam' => 'SPAM, then remove from spam trap',
 
-'email' => 'email',
-
 'engine_training' => 'Engine Training',
 
-'forum_post' => 'forum post',
+'filter_by_type' => 'filter by type&hellip;',
 
 'mark_selected' => 'mark selected',
 
@@ -57,6 +47,8 @@ $lang = array(
 'spam_module_description' => 'Spam filter for comments and forum posts',
 
 'spam_module_name' => 'Spam',
+
+'spam_queue' => 'Spam Queue',
 
 'spam_sensitivity' => 'Sensitivity',
 
@@ -86,6 +78,8 @@ $lang = array(
 
 'training_update_failed' => 'Could not update training data',
 
+'trap_date' => 'Date',
+
 'update_training' => 'Update Training',
 
 'update_training_desc' => 'This will download up-to-date training data from EllisLab and update your database.',
@@ -93,8 +87,6 @@ $lang = array(
 'updating_parameters' => 'Updating Parameters',
 
 'updating_vocabulary' => 'Updating Vocabulary',
-
-'wiki_post' => 'wiki post',
 
 );
 

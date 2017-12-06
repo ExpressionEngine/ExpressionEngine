@@ -1,4 +1,4 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 
 $active_group = 'expressionengine';
 $active_record = TRUE;

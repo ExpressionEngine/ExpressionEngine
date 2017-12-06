@@ -1,29 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-/**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
 
 /**
- * ExpressionEngine Text Helper
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
+/**
+ * Text Helper
+ */
 
 
  /**
@@ -37,6 +24,9 @@ if ( ! function_exists('convert_accented_characters'))
 {
 	function convert_accented_characters($match)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('4.0.0', "ee('Format')->make('Text', \$str)->accentsToAscii()");
+
         $foreign_characters = ee()->config->loadFile('foreign_chars');
 
 		/* -------------------------------------
@@ -70,8 +60,6 @@ if ( ! function_exists('convert_accented_characters'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Word Limiter
  *
@@ -102,8 +90,6 @@ if ( ! function_exists('word_limiter'))
 		return rtrim($matches[0]).$end_char;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Character Limiter
@@ -146,8 +132,6 @@ if ( ! function_exists('character_limiter'))
 		}
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * High ASCII to Entities
@@ -208,8 +192,6 @@ if ( ! function_exists('ascii_to_entities'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Entities to ASCII
  *
@@ -264,8 +246,6 @@ if ( ! function_exists('entities_to_ascii'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Word Censoring Function
  *
@@ -283,6 +263,9 @@ if ( ! function_exists('word_censor'))
 {
 	function word_censor($str, $censored, $replacement = '')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('4.0.0', "ee('Format')->make('Text', \$str)->censor()");
+
 		if ( ! is_array($censored))
 		{
 			return $str;
@@ -318,8 +301,6 @@ if ( ! function_exists('word_censor'))
 		return trim($str);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Code Highlighter
@@ -373,8 +354,6 @@ if ( ! function_exists('highlight_code'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Phrase Highlighter
  *
@@ -405,8 +384,6 @@ if ( ! function_exists('highlight_phrase'))
 	}
 }
 
-
-// ------------------------------------------------------------------------
 
 /**
  * Word Wrap
@@ -510,8 +487,6 @@ if ( ! function_exists('word_wrap'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Ellipsize String
  *
@@ -550,6 +525,24 @@ if ( ! function_exists('ellipsize'))
 		}
 
 		return $beg.$ellipsis.$end;
+	}
+}
+
+/**
+ * Takes an app version string and formats it for the CP, which entails
+ * putting bold tags around the first number and dropping the third
+ * digit if it is a zero
+ *
+ * @param	string	$version	App version string, like 3.0.0
+ * @return	string	Formatted app version string, like <b>3</b>.0
+ */
+if ( ! function_exists('formatted_version'))
+{
+	function formatted_version($version)
+	{
+		$version = explode('.', $version);
+
+		return preg_replace('/^(\d)\./', '<b>$1</b>.', implode('.', $version));
 	}
 }
 

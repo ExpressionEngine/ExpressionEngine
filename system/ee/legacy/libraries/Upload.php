@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Core Upload Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Upload
  */
 class EE_Upload {
 
@@ -83,8 +71,6 @@ class EE_Upload {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Take raw file data and populate our tmp directory and FILES array and
 	 * then pass it through the normal do_upload routine.
@@ -116,8 +102,6 @@ class EE_Upload {
 
 		return $this->do_upload();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Perform the file upload
@@ -346,8 +330,6 @@ class EE_Upload {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Finalized Data Array
 	 *
@@ -376,8 +358,6 @@ class EE_Upload {
 					);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set Upload Path
 	 *
@@ -389,8 +369,6 @@ class EE_Upload {
 		// Make sure it has a trailing slash
 		$this->upload_path = rtrim($path, '/').'/';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set the file name
@@ -430,8 +408,6 @@ class EE_Upload {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set Maximum File Size
 	 *
@@ -442,8 +418,6 @@ class EE_Upload {
 	{
 		$this->max_size = ((int) $n < 0) ? 0: (int) $n;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Maximum File Name Length
@@ -456,8 +430,6 @@ class EE_Upload {
 		$this->max_filename = ((int) $n < 0) ? 0: (int) $n;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set Maximum Image Width
 	 *
@@ -469,8 +441,6 @@ class EE_Upload {
 		$this->max_width = ((int) $n < 0) ? 0: (int) $n;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set Maximum Image Height
 	 *
@@ -481,8 +451,6 @@ class EE_Upload {
 	{
 		$this->max_height = ((int) $n < 0) ? 0: (int) $n;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Allowed File Types
@@ -499,8 +467,6 @@ class EE_Upload {
 		}
 		$this->allowed_types = explode('|', $types);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Image Properties
@@ -531,8 +497,6 @@ class EE_Upload {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set XSS Clean
 	 *
@@ -547,8 +511,6 @@ class EE_Upload {
 		$this->xss_clean = ($flag == TRUE) ? TRUE : FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Validate the image
 	 *
@@ -558,8 +520,6 @@ class EE_Upload {
 	{
 		return ee()->mime_type->fileIsImage($this->file_temp);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Verify that the filetype is allowed
@@ -593,8 +553,6 @@ class EE_Upload {
 		return ee()->mime_type->fileIsSafeForUpload($this->file_temp);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Verify that the file is within the allowed size
 	 *
@@ -611,8 +569,6 @@ class EE_Upload {
 			return TRUE;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Verify that the image is within the allowed width/height
@@ -646,8 +602,6 @@ class EE_Upload {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Extract the file extension
 	 *
@@ -659,8 +613,6 @@ class EE_Upload {
 		$x = explode('.', $filename);
 		return '.'.end($x);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Clean the file name for security
@@ -704,8 +656,6 @@ class EE_Upload {
 		return stripslashes($filename);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Limit the File Name Length
 	 *
@@ -729,8 +679,6 @@ class EE_Upload {
 
 		return substr($filename, 0, ($length - strlen($ext))).$ext;
 	}
-
-	// --------------------------------------------------------------------
 
     /**
      * If possible, will increase PHP's memory limit by the specified number of
@@ -852,8 +800,6 @@ class EE_Upload {
 		return (strpos($data, '<?php') === FALSE);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set an error message
 	 *
@@ -881,8 +827,6 @@ class EE_Upload {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Display the error message
 	 *
@@ -901,8 +845,6 @@ class EE_Upload {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * List of Mime Types
 	 *
@@ -917,8 +859,6 @@ class EE_Upload {
 		ee()->load->library('mime_type');
 		return ee()->mime_type->isSafeForUpload($mime);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep Filename
@@ -974,8 +914,6 @@ class EE_Upload {
 		return ($by_legacy OR $this->mimes_types($extension));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Overwrite OR Rename Files Manually
 	 *
@@ -1025,8 +963,6 @@ class EE_Upload {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Validate Upload Path
@@ -1078,8 +1014,6 @@ class EE_Upload {
 		$this->upload_path = preg_replace("/(.+?)\/*$/", "\\1/",  $this->upload_path);
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Keep the file in the temp directory?
@@ -1150,8 +1084,6 @@ class EE_Upload {
 		// supplied file name for all uploads until initialized again
 		$this->_file_name_override = $this->file_name;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Find a valid temp directory?

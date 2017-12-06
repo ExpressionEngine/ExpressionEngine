@@ -1,19 +1,20 @@
 <?php $this->extend('_templates/login'); ?>
 
 <div class="box snap">
-	<h1><?=lang('reset_password')?> <span class="ico locked"></span></h1>
+	<h1><?=lang('reset_password')?> <span class="icon-reset"></span></h1>
 	<?php if ($message != ''):?>
 		<div class="alert inline <?=$message_status?>">
-			<p><?php if ($message_status != 'success'): ?><b>!!</b> <?php endif ?><?=$message?></p>
+			<span class="icon-<?=$message_status?>"></span>
+			<p><?=$message?></p>
 		</div>
 	<?php endif;?>
 	<?=form_open(ee('CP/URL')->make('/cp/login/send_reset_token'))?>
 		<fieldset class="last">
 			<?=lang('email_address', 'email')?>
-			<?=form_input(array('dir' => 'ltr', 'name' => "email", 'id' => "email", 'maxlength' => 80, 'autocomplete' => 'off'))?>
+			<?=form_input(array('dir' => 'ltr', 'name' => "email", 'id' => "email", 'maxlength' => 80, 'autocomplete' => 'off', 'tabindex' => 1))?>
 		</fieldset>
 		<fieldset class="form-ctrls">
-			<?=form_submit('submit', 'Send Request', 'class="btn" data-work-text="sending..."')?>
+			<?=form_submit('submit', 'Send Request', 'class="btn" data-work-text="sending..." tabindex="2"')?>
 		</fieldset>
 	<?=form_close()?>
 </div>

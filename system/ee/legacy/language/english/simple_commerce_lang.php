@@ -38,7 +38,7 @@ $lang = array(
 
 'commerce_encrypt_paypal' => 'Encrypt PayPal buttons and links?',
 
-'commerce_encrypt_paypal_desc' => 'When set to <b>yes</b>, PayPal buttons and links will be JavaScript encrypted.',
+'commerce_encrypt_paypal_desc' => 'When enabled, PayPal buttons and links will be JavaScript encrypted.',
 
 'commerce_ipn_notice' => 'Instant Payment Notification is a PayPal service that allows the processing of transactions on their site and then notifying ExpressionEngine when the transaction is complete and accepted. This allows purchases to not be stored and recorded in the Simple Commerce module until the transaction is finalized. ExpressionEngine\'s Simple Commerce module automates all of this behind the scenes so all you have to do is activate Instant Payment Notification on the PayPal site and provide them with the URL below. <a href="%s" rel="external">Learn More</a>',
 
@@ -160,7 +160,7 @@ $lang = array(
 
 'enable_item' => 'Enable item?',
 
-'enable_item_desc' => 'When set to <b>yes</b>, this item will be purchasable.',
+'enable_item_desc' => 'When enabled, this item will be purchasable.',
 
 'encrypt_buttons_links' => 'Encrypt PayPal buttons and links?',
 
@@ -306,7 +306,7 @@ $lang = array(
 
 'recurring' => 'Recurring subscription?',
 
-'recurring_desc' => 'When set to <b>yes</b>, member will be charged until they cancel.',
+'recurring_desc' => 'When enabled, member will be charged until they cancel.',
 
 'recurring_purchase_warning' => "Recurring purchases must be set up through PayPal for full functionality.",
 

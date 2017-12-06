@@ -1,30 +1,19 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
 namespace EllisLab\ExpressionEngine\Service\License;
 
 use Exception;
 use InvalidArgumentException;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine License Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * License Service
  */
 class License {
 
@@ -88,6 +77,22 @@ class License {
 	}
 
 	/**
+	 * Reads and returns the raw contents of the license file
+	 *
+	 * @return string Contents of license file
+	 */
+	public function getRawLicense()
+	{
+		if ( ! is_readable($this->path_to_license))
+		{
+			$this->errors['missing_license'] = "Cannot read your license file: {$this->path_to_license}";
+			return;
+		}
+
+		return file_get_contents($this->path_to_license);
+	}
+
+	/**
 	 * Attempts the load the license file from disk and parse it. It adds errors
 	 * to $this->errors if it cannot read the license file or cannot find the
 	 * data in the license file.
@@ -105,14 +110,7 @@ class License {
 		unset($this->errors['missing_license']);
 		unset($this->errors['corrupt_license_file']);
 
-		if ( ! is_readable($this->path_to_license))
-		{
-			$this->errors['missing_license'] = "Cannot read your license file: {$this->path_to_license}";
-			return;
-		}
-
-		$license = file_get_contents($this->path_to_license);
-		$license = json_decode(base64_decode($license), TRUE);
+		$license = json_decode(base64_decode($this->getRawLicense()), TRUE);
 
 		if ( ! isset($license['data']))
 		{

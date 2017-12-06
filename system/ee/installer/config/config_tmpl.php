@@ -14,6 +14,8 @@ $config['database'] = array(
 		'username' => '{db_username}',
 		'password' => '{db_password}',
 		'dbprefix' => '{db_dbprefix}',
+		'char_set' => 'utf8mb4',
+		'dbcollat' => 'utf8mb4_unicode_ci',
 		'port'     => '{db_port}'
 	),
 );

@@ -70,7 +70,7 @@ $lang = array(
 
 'enable_rte' => 'Enable rich text editor?',
 
-'enable_rte_desc' => 'When set to <b>enable</b>, registered users will be able to use the Rich Text Editor to create new content.',
+'enable_rte_desc' => 'When enabled, registered users will be able to use the Rich Text Editor to create new content.',
 
 'enabled' => 'Enabled',
 
@@ -182,31 +182,31 @@ $lang = array(
 /* Tool names (based on class name) */
 'blockquote_rte' => 'Quote',
 
-'blockquote_rte_desc' => 'uses &lt;blockquote&gt;',
+'blockquote_rte_desc' => 'uses <blockquote>',
 
 'bold_rte' => 'Bold',
 
-'bold_rte_desc' => 'uses &lt;b&gt;',
+'bold_rte_desc' => 'uses <b>',
 
 'headings_rte' => 'Headings',
 
-'headings_rte_desc' => 'uses &lt;h*&gt;',
+'headings_rte_desc' => 'uses <h*>',
 
 'image_rte' => 'Image',
 
-'image_rte_desc' => 'uses &lt;img&gt;',
+'image_rte_desc' => 'uses <img>',
 
 'italic_rte' => 'Italic',
 
-'italic_rte_desc' => 'uses &lt;i&gt;',
+'italic_rte_desc' => 'uses <i>',
 
 'link_rte' => 'Link',
 
-'link_rte_desc' => '&lt;a href=""&gt;',
+'link_rte_desc' => '<a href="">',
 
 'ordered_list_rte' => 'Numbered List',
 
-'ordered_list_rte_desc' => 'uses &lt;ol&gt;',
+'ordered_list_rte_desc' => 'uses <ol>',
 
 'preferences_rte' => 'Preferences',
 
@@ -214,11 +214,11 @@ $lang = array(
 
 'underline_rte' => 'Underline',
 
-'underline_rte_desc' => 'uses &lt;u&gt;',
+'underline_rte_desc' => 'uses <u>',
 
 'unordered_list_rte' => 'Bulleted List',
 
-'unordered_list_rte_desc' => 'uses &lt;ul&gt;',
+'unordered_list_rte_desc' => 'uses <ul>',
 
 'view_source_rte' => 'View Code',
 

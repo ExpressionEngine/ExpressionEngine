@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Update Progress Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Update Progress
  */
 class Progress {
 
@@ -49,8 +37,6 @@ class Progress {
 		session_write_close();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get State
 	 *
@@ -63,8 +49,6 @@ class Progress {
 		session_start();
 		return isset($_SESSION['_progress_state']) ? $this->prefix.$_SESSION['_progress_state'] : FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Clear State
@@ -79,8 +63,6 @@ class Progress {
 		unset ($_SESSION['_progress_state']);
 		session_write_close();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Gets the proper js and meta tag
@@ -110,7 +92,10 @@ class ProgressIterator extends ArrayIterator {
 		$current_step = $this->key();
 		$total_steps = $this->count();
 
-		ee()->progress->update_state("Step $current_step of $total_steps");
+		if (isset(ee()->progress) && php_sapi_name() !== 'cli')
+		{
+			ee()->progress->update_state("Step $current_step of $total_steps");
+		}
 
 		return parent::current();
 	}

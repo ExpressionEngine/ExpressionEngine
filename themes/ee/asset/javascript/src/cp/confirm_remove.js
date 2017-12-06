@@ -1,13 +1,9 @@
-/*!
- * ExpressionEngine - by EllisLab
+/**
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 $(document).ready(function () {
@@ -69,6 +65,7 @@ $(document).ready(function () {
 			if (typeof ajax_url != 'undefined') {
 				$.post(ajax_url, $(modalIs + " form").serialize(), function(data) {
 					$(modalIs + " .ajax").html(data);
+					SelectField.renderFields();
 				});
 			}
 
@@ -82,3 +79,41 @@ $(document).ready(function () {
 		}
 	})
 });
+
+EE.cp.Modal = {
+
+	/**
+	 * Opens the confirm removal modal and does the form and view manipulation
+	 * for the current item being deleted. Only supports one item at the moment.
+	 *
+	 * @param  {string}   actionUrl Form action URL for removal
+	 * @param  {string}   label     Label of item being deleted
+	 * @param  {mixed}    value     Value, typically an ID, of item being deleted
+	 * @param  {Function} callback  Callback on deletion of item
+	 * @return {void}
+	 */
+	openConfirmRemove: function(actionUrl, label, value, callback) {
+		var modal = $('.modal-default-confirm-remove'),
+			form = modal.find('form'),
+			input = modal.find('input[name="content_id"]')
+
+		// Add the name of the item we're deleting to the modal
+		$('.checklist', modal)
+			.html('')
+			.append('<li>' + label + '</li>')
+
+		input.val(value)
+		form.attr('action', actionUrl)
+
+		modal.trigger('modal:open')
+
+		modal.find('form').submit(function() {
+			$.post(this.action, $(this).serialize(), function(result) {
+				modal.trigger('modal:close')
+				callback(result)
+			})
+
+			return false
+		})
+	}
+};

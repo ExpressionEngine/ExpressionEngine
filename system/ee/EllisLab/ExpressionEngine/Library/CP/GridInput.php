@@ -1,31 +1,17 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Library\CP;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
+ * CP Grid Input Table
  */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Grid Input Class
- *
- * @package		ExpressionEngine
- * @subpackage	Library
- * @category	CP
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- */
-
 class GridInput extends Table {
 
 	protected $cp;
@@ -224,6 +210,7 @@ class GridInput extends Table {
 		{
 			$this->cp->add_js_script('ui', 'sortable');
 			$this->cp->add_js_script('file', 'cp/sort_helper');
+			$this->cp->add_js_script('plugin', 'ui.touch.punch');
 			$this->cp->add_js_script('plugin', 'ee_table_reorder');
 			$this->cp->add_js_script('file', 'cp/grid');
 

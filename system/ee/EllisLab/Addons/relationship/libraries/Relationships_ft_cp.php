@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Relationship Fieldtype Settings Helper Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Relationship Fieldtype Settings Helper Class
  */
 class Relationships_ft_cp {
 
@@ -41,8 +29,6 @@ class Relationships_ft_cp {
 	{
 		return new Relationship_settings_form($data, $prefix);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Grab all channels, across sites if appropriate.
@@ -70,12 +56,13 @@ class Relationships_ft_cp {
 
 		if ($from_all_sites)
 		{
-			$channel_choices = array();
-
-			foreach ($channels->all() as $channel)
-			{
-				$channel_choices[$channel->channel_id] = $channel->channel_title . '<i>&mdash; ' . $channel->Site->site_label . '</i>';
-			}
+			$channel_choices = $channels->all()->map(function($channel) {
+				return [
+					'value' => $channel->getId(),
+					'label' => $channel->channel_title,
+					'instructions' => $channel->Site->site_label
+				];
+			});
 		}
 		else
 		{
@@ -91,8 +78,6 @@ class Relationships_ft_cp {
 
 		return $this->all_channels;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Grab all categories, across sites if appropriate.
@@ -156,15 +141,14 @@ class Relationships_ft_cp {
 		return $choices;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Grab all possible authors (individuals and member groups)
 	 *
+	 * @param	string $search	Optional string to search members by
 	 * @return	array
 	 *		id => name (id can either be g_# or m_# for group or member ids)
 	 */
-	public function all_authors()
+	public function all_authors($search = NULL)
 	{
 		if (isset($this->all_authors))
 		{
@@ -194,11 +178,19 @@ class Relationships_ft_cp {
 			->fields('member_id', 'group_id', 'screen_name', 'username')
 			->filter('in_authorlist', 'y')
 			->order('screen_name', 'asc')
-			->order('username', 'asc');
+			->order('username', 'asc')
+			->limit(100);
 
 		if ($groups->count())
 		{
 			$members->orFilter('group_id', 'IN', $group_ids);
+		}
+
+		if ($search)
+		{
+			$members->search(
+				['screen_name', 'username', 'email', 'member_id'], $search
+			);
 		}
 
 		$group_to_member = array_fill_keys($group_ids, array());
@@ -224,6 +216,13 @@ class Relationships_ft_cp {
 			}
 		}
 
+		$authors = array_filter($authors, function($group)
+		{
+			return ! empty($group['children']);
+		});
+
+		ee()->lang->loadfile('fieldtypes');
+
 		$this->all_authors = array(
 			'--' => array(
 				'name' => lang('any_author'),
@@ -233,8 +232,6 @@ class Relationships_ft_cp {
 
 		return $this->all_authors;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Grab all statuses
@@ -249,15 +246,8 @@ class Relationships_ft_cp {
 			return $this->all_statuses;
 		}
 
-		$from_all_sites = (ee()->config->item('multiple_sites_enabled') == 'y');
-
 		$statuses = ee('Model')->get('Status')
 			->order('status_id', 'asc');
-
-		if ( ! $from_all_sites)
-		{
-			$statuses->filter('site_id', 1);
-		}
 
 		$status_options = array();
 
@@ -277,8 +267,6 @@ class Relationships_ft_cp {
 		return $this->all_statuses;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns our possible ordering columns
 	 *
@@ -291,8 +279,6 @@ class Relationships_ft_cp {
 			'entry_date' => lang('rel_ft_order_date')
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Returns our possible ordering directions
@@ -307,8 +293,6 @@ class Relationships_ft_cp {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Default multiselect data (-- Any --)
 	 *
@@ -320,8 +304,6 @@ class Relationships_ft_cp {
 	}
 }
 
-
-// ------------------------------------------------------------------------
 
 /**
  * Settings Form Class
@@ -342,8 +324,6 @@ class Relationship_settings_form {
 		$this->_prefix = $prefix ? $prefix.'_' : '';
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the current form values for all fields
 	 *
@@ -353,8 +333,6 @@ class Relationship_settings_form {
 	{
 		return $this->_selected;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Populate the form with values
@@ -397,8 +375,6 @@ class Relationship_settings_form {
 		return $this;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set possible options for dropdowns and multiselects
 	 *
@@ -411,8 +387,6 @@ class Relationship_settings_form {
 		$this->_options = array_intersect_key($data, $this->_fields);
 		return $this;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Pass calls to form names on to the form helper for html generation

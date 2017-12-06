@@ -1,15 +1,25 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
-
+/**
+ * Schema Class
+ */
 class EE_Schema {
 
-	// All of these variables are set dyncamically
+	// All of these variables are set dynamically
 	var $now;
 	var $year;
 	var $month;
 	var $day;
 	var $default_entry	= '';
 	var $theme_path		= '';
+	var $version;
 
 	private $default_engine = 'InnoDB';
 
@@ -23,8 +33,6 @@ class EE_Schema {
 	{
 		return "SHOW tables LIKE '".ee()->db->escape_like_str($this->userdata['db_prefix'])."%'";
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Installs the DB tables and data
@@ -285,18 +293,6 @@ class EE_Schema {
 			crypt_key varchar(40) NULL DEFAULT NULL,
 			authcode varchar(10) NULL DEFAULT NULL,
 			email varchar(".USERNAME_MAX_LENGTH.") NOT NULL,
-			url varchar(150) NULL DEFAULT NULL,
-			location varchar(50) NULL DEFAULT NULL,
-			occupation varchar(80) NULL DEFAULT NULL,
-			interests varchar(120) NULL DEFAULT NULL,
-			bday_d int(2) NULL DEFAULT NULL,
-			bday_m int(2) NULL DEFAULT NULL,
-			bday_y int(4) NULL DEFAULT NULL,
-			aol_im varchar(50) NULL DEFAULT NULL,
-			yahoo_im varchar(50) NULL DEFAULT NULL,
-			msn_im varchar(50) NULL DEFAULT NULL,
-			icq varchar(50) NULL DEFAULT NULL,
-			bio text NULL,
 			signature text NULL,
 			avatar_filename varchar(120) NULL DEFAULT NULL,
 			avatar_width int(4) unsigned NULL DEFAULT NULL,
@@ -359,32 +355,6 @@ class EE_Schema {
 			KEY `unique_id` (`unique_id`),
 			KEY `password` (`password`)
 		)";
-
-		// CP homepage layout
-		// Each member can have their own control panel layout.
-		// We store their preferences here.
-
-		$Q[] = "CREATE TABLE exp_member_homepage (
-			member_id int(10) unsigned NOT NULL,
-			recent_entries char(1) NOT NULL default 'l',
-			recent_entries_order int(3) unsigned NOT NULL default '0',
-			recent_comments char(1) NOT NULL default 'l',
-			recent_comments_order int(3) unsigned NOT NULL default '0',
-			recent_members char(1) NOT NULL default 'n',
-			recent_members_order int(3) unsigned NOT NULL default '0',
-			site_statistics char(1) NOT NULL default 'r',
-			site_statistics_order int(3) unsigned NOT NULL default '0',
-			member_search_form char(1) NOT NULL default 'n',
-			member_search_form_order int(3) unsigned NOT NULL default '0',
-			notepad char(1) NOT NULL default 'r',
-			notepad_order int(3) unsigned NOT NULL default '0',
-			bulletin_board char(1) NOT NULL default 'r',
-			bulletin_board_order int(3) unsigned NOT NULL default '0',
-			pmachine_news_feed char(1) NOT NULL default 'n',
-			pmachine_news_feed_order int(3) unsigned NOT NULL default '0',
-			PRIMARY KEY `member_id` (`member_id`)
-		)";
-
 
 		// Member Groups table
 
@@ -494,6 +464,7 @@ class EE_Schema {
 			`can_access_translate` char(1) NOT NULL DEFAULT 'n',
 			`can_access_import` char(1) NOT NULL DEFAULT 'n',
 			`can_access_sql_manager` char(1) NOT NULL DEFAULT 'n',
+			`can_moderate_spam` char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY `group_id_site_id` (`group_id`, `site_id`)
 		)";
 
@@ -548,6 +519,7 @@ class EE_Schema {
 			m_field_order int(3) unsigned NULL DEFAULT NULL,
 			m_field_text_direction char(3) DEFAULT 'ltr',
 			m_field_settings text NULL,
+			m_legacy_field_data char(1) NOT NULL default 'n',
 			PRIMARY KEY `m_field_id` (`m_field_id`)
 			)";
 
@@ -557,6 +529,16 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE exp_member_data (
 			member_id int(10) unsigned NOT NULL,
 			PRIMARY KEY `member_id` (`member_id`)
+		)";
+
+		// Changelog view tracking for members
+
+		$Q[] = "CREATE TABLE exp_member_news_views (
+			news_id int(10) unsigned NOT NULL auto_increment,
+			version varchar(10) NULL,
+			member_id int(10) unsigned NOT NULL DEFAULT '0',
+			PRIMARY KEY `news_id` (`news_id`),
+			KEY `member_id` (`member_id`)
 		)";
 
 		// Channel Table
@@ -577,9 +559,7 @@ class EE_Schema {
 			last_entry_date int(10) unsigned default '0' NOT NULL,
 			last_comment_date int(10) unsigned default '0' NOT NULL,
 			cat_group varchar(255) NULL DEFAULT NULL,
-			status_group int(4) unsigned NULL DEFAULT NULL,
 			deft_status varchar(50) NOT NULL default 'open',
-			field_group int(4) unsigned NULL DEFAULT NULL,
 			search_excerpt int(4) unsigned NULL DEFAULT NULL,
 			deft_category varchar(60) NULL DEFAULT NULL,
 			deft_comments char(1) NOT NULL default 'y',
@@ -616,9 +596,7 @@ class EE_Schema {
 			live_look_template int(10) UNSIGNED NOT NULL default 0,
 			max_entries int(10) unsigned NOT NULL DEFAULT '0',
 			PRIMARY KEY `channel_id` (`channel_id`),
-			KEY `cat_group` (`cat_group`),
-			KEY `status_group` (`status_group`),
-			KEY `field_group` (`field_group`),
+			KEY `cat_group` (`cat_group`(191)),
 			KEY `channel_name` (`channel_name`),
 			KEY `site_id` (`site_id`)
 		)";
@@ -634,8 +612,9 @@ class EE_Schema {
 			forum_topic_id int(10) unsigned NULL DEFAULT NULL,
 			ip_address varchar(45) default '0' NOT NULL,
 			title varchar(200) NOT NULL,
-			url_title varchar(200) NOT NULL,
+			url_title varchar(".URL_TITLE_MAX_LENGTH.") NOT NULL,
 			status varchar(50) NOT NULL,
+			status_id int(4) unsigned NOT NULL,
 			versioning_enabled char(1) NOT NULL default 'n',
 			view_count_one int(10) unsigned NOT NULL default 0,
 			view_count_two int(10) unsigned NOT NULL default 0,
@@ -655,11 +634,12 @@ class EE_Schema {
 			PRIMARY KEY `entry_id` (`entry_id`),
 			KEY `channel_id` (`channel_id`),
 			KEY `author_id` (`author_id`),
-			KEY `url_title` (`url_title`),
+			KEY `url_title` (`url_title`(191)),
 			KEY `status` (`status`),
 			KEY `entry_date` (`entry_date`),
 			KEY `expiration_date` (`expiration_date`),
-			KEY `site_id` (`site_id`)
+			KEY `site_id` (`site_id`),
+			KEY `sticky_date_id_idx` (`sticky`,`entry_date`,`entry_id`)
 		)";
 
 		// Channel Titles Autosave
@@ -695,7 +675,7 @@ class EE_Schema {
 			PRIMARY KEY `entry_id` (`entry_id`),
 			KEY `channel_id` (`channel_id`),
 			KEY `author_id` (`author_id`),
-			KEY `url_title` (`url_title`),
+			KEY `url_title` (`url_title`(191)),
 			KEY `status` (`status`),
 			KEY `entry_date` (`entry_date`),
 			KEY `expiration_date` (`expiration_date`),
@@ -717,18 +697,23 @@ class EE_Schema {
 
 		$Q[] = "CREATE TABLE exp_field_groups (
 			group_id int(4) unsigned NOT NULL auto_increment,
-			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
+			site_id INT(4) UNSIGNED NULL DEFAULT 1,
 			group_name varchar(50) NOT NULL,
 			PRIMARY KEY `group_id` (`group_id`),
 			KEY `site_id` (`site_id`)
+		)";
+
+		$Q[] = "CREATE TABLE exp_channels_channel_field_groups (
+			channel_id int(4) unsigned NOT NULL,
+			group_id int(4) unsigned NOT NULL,
+			PRIMARY KEY `channel_id_group_id` (`channel_id`, `group_id`)
 		)";
 
 		// Channel Custom Field Definitions
 
 		$Q[] = "CREATE TABLE exp_channel_fields (
 			field_id int(6) unsigned NOT NULL auto_increment,
-			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
-			group_id int(4) unsigned NOT NULL,
+			site_id INT(4) UNSIGNED NULL DEFAULT 1,
 			field_name varchar(32) NOT NULL,
 			field_label varchar(50) NOT NULL,
 			field_instructions TEXT NULL,
@@ -748,10 +733,28 @@ class EE_Schema {
 			field_order int(3) unsigned NOT NULL,
 			field_content_type varchar(20) NOT NULL default 'any',
 			field_settings text NULL,
+			legacy_field_data char(1) NOT NULL default 'n',
 			PRIMARY KEY `field_id` (`field_id`),
-			KEY `group_id` (`group_id`),
 			KEY `field_type` (`field_type`),
 			KEY `site_id` (`site_id`)
+		)";
+
+		$Q[] = "CREATE TABLE exp_channels_channel_fields (
+			channel_id int(4) unsigned NOT NULL,
+			field_id int(6) unsigned NOT NULL,
+			PRIMARY KEY `channel_id_field_id` (`channel_id`, `field_id`)
+		)";
+
+		$Q[] = "CREATE TABLE exp_channel_field_groups_fields (
+			field_id int(6) unsigned NOT NULL,
+			group_id int(4) unsigned NOT NULL,
+			PRIMARY KEY `field_id_group_id` (`field_id`, `group_id`)
+		)";
+
+		$Q[] = "CREATE TABLE exp_channels_statuses (
+			channel_id int(4) unsigned NOT NULL,
+			status_id int(4) unsigned NOT NULL,
+			PRIMARY KEY `channel_id_status_id` (`channel_id`, `status_id`)
 		)";
 
 		// Frontend Channel Form Settings
@@ -775,6 +778,7 @@ class EE_Schema {
 			parent_id int(10) UNSIGNED NOT NULL default 0,
 			child_id int(10) UNSIGNED NOT NULL default 0,
 			field_id int(10) UNSIGNED NOT NULL default 0,
+			fluid_field_data_id int(10) UNSIGNED NOT NULL default 0,
 			grid_field_id int(10) UNSIGNED NOT NULL default 0,
 			grid_col_id int(10) UNSIGNED NOT NULL default 0,
 			grid_row_id int(10) UNSIGNED NOT NULL default 0,
@@ -783,6 +787,7 @@ class EE_Schema {
 			KEY `parent_id` (`parent_id`),
 			KEY `child_id` (`child_id`),
 			KEY `field_id` (`field_id`),
+			KEY `fluid_field_data_id` (`fluid_field_data_id`),
 			KEY `grid_row_id` (`grid_row_id`)
 		)";
 
@@ -796,28 +801,14 @@ class EE_Schema {
 			KEY `site_id` (`site_id`)
 		)";
 
-		// Status Groups
-
-		$Q[] = "CREATE TABLE exp_status_groups (
-			group_id int(4) unsigned NOT NULL auto_increment,
-			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
-			group_name varchar(50) NOT NULL,
-			PRIMARY KEY `group_id` (`group_id`),
-			KEY `site_id` (`site_id`)
-		)";
-
 		// Status data
 
 		$Q[] = "CREATE TABLE exp_statuses (
 			status_id int(6) unsigned NOT NULL auto_increment,
-			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
-			group_id int(4) unsigned NOT NULL,
 			status varchar(50) NOT NULL,
 			status_order int(3) unsigned NOT NULL,
 			highlight varchar(30) NOT NULL default '000000',
-			PRIMARY KEY `status_id` (`status_id`),
-			KEY `group_id` (`group_id`),
-			KEY `site_id` (`site_id`)
+			PRIMARY KEY `status_id` (`status_id`)
 		)";
 
 		// Status "no access"
@@ -878,6 +869,7 @@ class EE_Schema {
 			`field_required` char(1) NOT NULL default 'n',
 			`field_order` int(3) unsigned NOT NULL,
 			`field_settings` text NULL,
+			`legacy_field_data` char(1) NOT NULL default 'n',
 			PRIMARY KEY `field_id` (`field_id`),
 			KEY `site_id` (`site_id`),
 			KEY `group_id` (`group_id`)
@@ -1282,11 +1274,11 @@ class EE_Schema {
 
 
 		$Q[] = "CREATE TABLE `exp_file_categories` (
-			`file_id` int(10) unsigned DEFAULT NULL,
-			`cat_id` int(10) unsigned DEFAULT NULL,
+			`file_id` int(10) unsigned NOT NULL,
+			`cat_id` int(10) unsigned NOT NULL,
 			`sort` int(10) unsigned DEFAULT '0',
 			`is_cover` char(1) DEFAULT 'n',
-			KEY `file_id` (`file_id`),
+			PRIMARY KEY (`file_id`, `cat_id`),
 			KEY `cat_id` (`cat_id`)
 		)";
 
@@ -1294,11 +1286,12 @@ class EE_Schema {
 			`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`site_id` int(4) unsigned NOT NULL DEFAULT '1',
 			`upload_location_id` int(4) unsigned DEFAULT NULL,
-				`title` varchar(255) DEFAULT '',
+			`title` varchar(255) DEFAULT '',
 			`short_name` varchar(255) DEFAULT '',
 			`resize_type` varchar(50) DEFAULT '',
 			`width` int(10) DEFAULT '0',
 			`height` int(10) DEFAULT '0',
+			`quality` tinyint(1) unsigned DEFAULT '90',
 			`watermark_id` int(4) unsigned DEFAULT NULL,
 			PRIMARY KEY (`id`),
 			KEY `upload_location_id` (`upload_location_id`)
@@ -1381,6 +1374,17 @@ class EE_Schema {
 			KEY `field_id` (`field_id`)
 		)";
 
+		$Q[] = "CREATE TABLE `exp_fluid_field_data` (
+			`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+			`fluid_field_id` int(11) unsigned NOT NULL,
+			`entry_id` int(11) unsigned NOT NULL,
+			`field_id` int(11) unsigned NOT NULL,
+			`field_data_id` int(11) unsigned NOT NULL,
+			`order` int(5) unsigned NOT NULL DEFAULT '0',
+			PRIMARY KEY (`id`),
+			KEY `fluid_field_id_entry_id` (`fluid_field_id`,`entry_id`)
+		)";
+
 		$Q[] = "CREATE TABLE `exp_menu_sets` (
   			`set_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   			`name` varchar(50) DEFAULT NULL,
@@ -1424,12 +1428,7 @@ class EE_Schema {
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('private_message_notification', 'email', 'private_messages', " . time() . ", '".addslashes(trim(private_message_notification_title()))."', '".addslashes(private_message_notification())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('pm_inbox_full', 'email', 'private_messages', " . time() . ", '".addslashes(trim(pm_inbox_full_title()))."', '".addslashes(pm_inbox_full())."')";
 
-
-		// --------------------------------------------------------------------
-		// --------------------------------------------------------------------
 		//  Default Site Data - CANNOT BE CHANGED
-		// --------------------------------------------------------------------
-		// --------------------------------------------------------------------
 
 		// Register the default admin
 		//		$quick_link = 'My Site|'.$this->userdata['site_url'].$this->userdata['site_index'].'|1';
@@ -1451,21 +1450,16 @@ class EE_Schema {
 				'$quick_link',
 				'".ee()->db->escape_str($this->userdata['deft_lang'])."')";
 
-		$Q[] = "INSERT INTO exp_member_homepage (member_id, recent_entries_order, recent_comments_order, site_statistics_order, notepad_order, pmachine_news_feed)
-			VALUES ('1', '1', '2', '1', '2', 'l')";
-
 		$Q[] = "INSERT INTO exp_member_data (member_id) VALUES ('1')";
+
+		$Q[] = "INSERT INTO exp_member_news_views (member_id, version) VALUES ('1', '".$this->version."')";
 
 		// Default system stats
 
 		$Q[] = "INSERT INTO exp_stats (total_members, total_entries, last_entry_date, recent_member, recent_member_id, last_cache_clear)
 			VALUES ('1', '0', '".$this->now."', '".ee()->db->escape_str($this->userdata['screen_name'])."', '1', '".$this->now."')";
 
-		// --------------------------------------------------------------------
-		// --------------------------------------------------------------------
 		//  Customizable Site Data, Woot!
-		// --------------------------------------------------------------------
-		// --------------------------------------------------------------------
 
 		// Default Site
 		$site = array(
@@ -1578,6 +1572,7 @@ class EE_Schema {
 				'can_access_translate'           => 'y',
 				'can_access_import'              => 'y',
 				'can_access_sql_manager'         => 'y',
+				'can_moderate_spam'              => 'y',
 				'search_flood_control'           => '0'
 			),
 			array(
@@ -1635,9 +1630,8 @@ class EE_Schema {
 		}
 
 		// default statuses - these are really always needed
-		$Q[] = "INSERT INTO `exp_status_groups` (`group_id`, `site_id`, `group_name`) VALUES (1, 1, 'Default')";
-		$Q[] = "INSERT INTO exp_statuses (group_id, status, status_order, highlight) VALUES ('1', 'open', '1', '009933')";
-		$Q[] = "INSERT INTO exp_statuses (group_id, status, status_order, highlight) VALUES ('1', 'closed', '2', '990000')";
+		$Q[] = "INSERT INTO exp_statuses (status, status_order, highlight) VALUES ('open', '1', '009933')";
+		$Q[] = "INSERT INTO exp_statuses (status, status_order, highlight) VALUES ('closed', '2', '990000')";
 
 		$button_config = ee()->config->loadFile('html_buttons');
 
@@ -1653,7 +1647,7 @@ class EE_Schema {
 		}
 
 		// Default field types
-		$default_fts = array('select', 'text', 'textarea', 'date', 'email_address', 'file', 'grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'toggle', 'url');
+		$default_fts = array('select', 'text', 'textarea', 'date', 'duration', 'email_address', 'file', 'fluid_field', 'grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'toggle', 'url');
 
 		foreach($default_fts as $name)
 		{
@@ -1667,11 +1661,7 @@ class EE_Schema {
 		// Add Grid as a content type
 		$Q[] = "INSERT INTO `exp_content_types` (`name`) VALUES ('grid')";
 
-		// --------------------------------------------------------------------
-		// --------------------------------------------------------------------
 		//  Create DB tables and insert data
-		// --------------------------------------------------------------------
-		// --------------------------------------------------------------------
 
 		foreach(ee()->db->list_tables(TRUE) as $kill)
 		{

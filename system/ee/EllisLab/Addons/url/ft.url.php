@@ -1,27 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package     ExpressionEngine
- * @author      EllisLab Dev Team
- * @copyright   Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license     https://expressionengine.com/license
- * @link        https://ellislab.com
- * @since       Version 3.2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
- * ExpressionEngine URL Fieldtype Class
- *
- * @package     ExpressionEngine
- * @subpackage  Fieldtypes
- * @category    Fieldtypes
- * @author      EllisLab Dev Team
- * @link        https://ellislab.com
+ * URL Fieldtype
  */
 class Url_Ft extends EE_Fieldtype {
 
@@ -93,8 +80,6 @@ class Url_Ft extends EE_Fieldtype {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Save Field
 	 *
@@ -105,8 +90,6 @@ class Url_Ft extends EE_Fieldtype {
 	{
 		return $this->prepForStorage($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Display Field
@@ -132,8 +115,6 @@ class Url_Ft extends EE_Fieldtype {
 		return form_input($field);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Replace Tag
 	 *
@@ -146,8 +127,6 @@ class Url_Ft extends EE_Fieldtype {
 	{
 		return ee()->functions->encode_ee_tags($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Display Settings
@@ -176,7 +155,7 @@ class Url_Ft extends EE_Fieldtype {
 				'desc' => 'url_ft_url_scheme_placeholder_desc',
 				'fields' => array(
 					'url_scheme_placeholder' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => $this->getSchemes(),
 						'value' => (isset($data['url_scheme_placeholder'])) ? $data['url_scheme_placeholder'] : '',
 						'required' => TRUE
@@ -197,8 +176,6 @@ class Url_Ft extends EE_Fieldtype {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Save Settings
 	 *
@@ -217,8 +194,6 @@ class Url_Ft extends EE_Fieldtype {
 		return array_intersect_key($all, $defaults);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Accept all content types.
 	 *
@@ -229,8 +204,6 @@ class Url_Ft extends EE_Fieldtype {
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Schemes
@@ -260,8 +233,6 @@ class Url_Ft extends EE_Fieldtype {
 		return $protocols;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prep For Storage
 	 *
@@ -273,8 +244,6 @@ class Url_Ft extends EE_Fieldtype {
 		// disable $double_encode so entities don't bubble out of control on edits
 		return htmlspecialchars($url, ENT_QUOTES, 'UTF-8', FALSE);
 	}
-
-	// --------------------------------------------------------------------
 }
 // END CLASS
 

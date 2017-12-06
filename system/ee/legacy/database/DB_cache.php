@@ -1,33 +1,19 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * CodeIgniter
+ * ExpressionEngine (https://expressionengine.com)
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Database Cache Class
- *
- * @category	Database
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
  */
 class CI_DB_Cache {
 
 	// Namespace cache items will be stored in
 	private $_cache_namespace = 'db_cache';
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Retrieve a cached query
@@ -39,8 +25,6 @@ class CI_DB_Cache {
 	{
 		return ee()->cache->get('/'.$this->_cache_namespace.'/'.$this->_prefixed_key($sql));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Write a query to a cache file
@@ -58,8 +42,6 @@ class CI_DB_Cache {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete all existing cache files
 	 *
@@ -69,8 +51,6 @@ class CI_DB_Cache {
 	{
 		return ee()->cache->clear_namespace($this->_cache_namespace);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Takes a cache key and gets it ready for storage or retrieval, which

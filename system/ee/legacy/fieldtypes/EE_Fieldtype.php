@@ -1,28 +1,19 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
- * ExpressionEngine EE_Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * EE_Fieldtype
  */
 abstract class EE_Fieldtype {
+
+	// bring in the :modifier methods
+	use EllisLab\ExpressionEngine\Service\Template\Variables\ModifiableTrait;
 
 	// Old identifiers for backwards compatibility.
 	// @deprecated
@@ -52,7 +43,7 @@ abstract class EE_Fieldtype {
 	protected $content_id = NULL;
 	protected $content_type = 'channel';
 
-	public function __construct() {}
+	public function __construct(){}
 
 	/**
 	 * Re-initialize the class.
@@ -110,8 +101,6 @@ abstract class EE_Fieldtype {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Field id getter
 	 *
@@ -127,7 +116,10 @@ abstract class EE_Fieldtype {
 		return $this->id;
 	}
 
-	// --------------------------------------------------------------------
+	public function isNew()
+	{
+		return is_null($this->id);
+	}
 
 	/**
 	 * Name getter
@@ -142,8 +134,6 @@ abstract class EE_Fieldtype {
 		return $this->name;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Grab the content id
 	 *
@@ -157,8 +147,6 @@ abstract class EE_Fieldtype {
 		return $this->content_id;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Grab the content type
 	 *
@@ -171,8 +159,6 @@ abstract class EE_Fieldtype {
 	{
 		return $this->content_type;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Row accessor
@@ -191,8 +177,6 @@ abstract class EE_Fieldtype {
 		return array_key_exists($key, $this->row) ? $this->row[$key] : $default;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Register a new content type
 	 *
@@ -205,8 +189,6 @@ abstract class EE_Fieldtype {
 	{
 		return;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Unregister a content type
@@ -222,8 +204,6 @@ abstract class EE_Fieldtype {
 		return;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check if the fieldtype will accept a certain content type
 	 *
@@ -238,8 +218,6 @@ abstract class EE_Fieldtype {
 	{
 		return ($name == 'channel');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Replace the field tag on the frontend.
@@ -259,8 +237,6 @@ abstract class EE_Fieldtype {
 		return $data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Pre process the stored data.
 	 *
@@ -275,8 +251,6 @@ abstract class EE_Fieldtype {
 		return $data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Validate the settings
 	 *
@@ -289,8 +263,6 @@ abstract class EE_Fieldtype {
 	{
 		return;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Validate the field data
@@ -311,8 +283,6 @@ abstract class EE_Fieldtype {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Mark the field as having a certain status. Different statuses *may*
 	 * cause changes in the appearance of the field or it's elements. For
@@ -330,8 +300,6 @@ abstract class EE_Fieldtype {
 		return 'ok';
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Display the field. You *must* implement this method to satisfy the
 	 * fieldtype protocol. You can leave out everything else, but this is
@@ -341,8 +309,6 @@ abstract class EE_Fieldtype {
 	 * @return string Field display
 	 */
 	abstract public function display_field($data);
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Display the publish field. This is publish specific, it will add
@@ -358,8 +324,6 @@ abstract class EE_Fieldtype {
 	{
 		return $this->display_field($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Save the field
@@ -379,8 +343,6 @@ abstract class EE_Fieldtype {
 		return $data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Called after field is saved
 	 *
@@ -397,8 +359,6 @@ abstract class EE_Fieldtype {
 		return;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Called when entries are deleted.
 	 *
@@ -411,8 +371,6 @@ abstract class EE_Fieldtype {
 	{
 		return;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get a given setting for the Fieldtype. Returns TRUE/FALSE for values that
@@ -451,8 +409,6 @@ abstract class EE_Fieldtype {
 		return $this->settings[$key];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Display Field Settings
 	 *
@@ -464,8 +420,6 @@ abstract class EE_Fieldtype {
 		return '';
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Save Settings
 	 *
@@ -476,8 +430,6 @@ abstract class EE_Fieldtype {
 	{
 		return array();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Save Global Settings
@@ -493,8 +445,6 @@ abstract class EE_Fieldtype {
 		return array();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Post Save Settings
 	 *
@@ -508,8 +458,6 @@ abstract class EE_Fieldtype {
 	{
 		return;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Settings Modify Column
@@ -538,8 +486,6 @@ abstract class EE_Fieldtype {
 		return $fields;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Grid Settings Modify Column
 	 *
@@ -557,8 +503,6 @@ abstract class EE_Fieldtype {
 		return $fields;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Install
 	 *
@@ -574,8 +518,6 @@ abstract class EE_Fieldtype {
 		return array();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Uninstall
 	 *
@@ -588,8 +530,6 @@ abstract class EE_Fieldtype {
 	{
 		return;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Helper method to show the field formatting row
@@ -639,8 +579,6 @@ abstract class EE_Fieldtype {
 		');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Helper method to show the text direction row
 	 *
@@ -666,8 +604,6 @@ abstract class EE_Fieldtype {
 				lang('rtl', $prefix.'field_text_direction_rtl')
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Helper method to show the content type row
@@ -705,8 +641,6 @@ abstract class EE_Fieldtype {
 		');
 
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Helper method for fields that request a custom list of options.
@@ -752,8 +686,6 @@ abstract class EE_Fieldtype {
 			});
 		');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Helper methods for our yes/no checkbox rows
@@ -848,8 +780,6 @@ abstract class EE_Fieldtype {
 		return;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Helper method to create a yes/no row.
 	 *
@@ -883,8 +813,6 @@ abstract class EE_Fieldtype {
 
 		ee()->table->add_row('<strong>'.lang($lang).'</strong>', $yes_no_string);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Creates an array of field options
@@ -952,8 +880,6 @@ abstract class EE_Fieldtype {
 		return $field_options;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Creates a generic settings row in Grid
 	 *
@@ -969,8 +895,6 @@ abstract class EE_Fieldtype {
 	{
 		return $this->_yes_no_row($data, $label, $name, FALSE, TRUE);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Creates a generic settings row in Grid
@@ -989,8 +913,6 @@ abstract class EE_Fieldtype {
 				array('class' => $label_class)
 			).$content;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Creates a dropdown formatted for a Grid columns settings field
@@ -1018,8 +940,6 @@ abstract class EE_Fieldtype {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Creates a checkbox row in a Grid column settings field
 	 *
@@ -1035,8 +955,6 @@ abstract class EE_Fieldtype {
 			).$label
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Field formatting row for Grid column settings
@@ -1055,8 +973,6 @@ abstract class EE_Fieldtype {
 			(isset($data['field_fmt'])) ? $data['field_fmt'] : 'none'
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Text direction row for Grid column settings
@@ -1077,8 +993,6 @@ abstract class EE_Fieldtype {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Field max length row for Grid column settings
 	 *
@@ -1095,8 +1009,6 @@ abstract class EE_Fieldtype {
 			)).NBS.NBS.NBS.
 			'<i class="instruction_text">'.lang('grid_chars_allowed').'</i>';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Multiitem row for Grid column settings
@@ -1116,8 +1028,6 @@ abstract class EE_Fieldtype {
 			form_label(lang('multi_list_items')).'<br>'.
 			'<i class="instruction_text">'.lang('field_list_instructions').'</i>';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Max textarea rows for Grid column settings
@@ -1139,8 +1049,6 @@ abstract class EE_Fieldtype {
 			));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Wraps a field in a DIV with a little extra padding rather than a
 	 * Grid cell's default 5px
@@ -1151,8 +1059,6 @@ abstract class EE_Fieldtype {
 	{
 		return '<div class="grid_padding">'.$string.'</div>';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Wraps a field in a DIV that will ignore default Grid cell padding
@@ -1193,16 +1099,10 @@ abstract class EE_Fieldtype {
 
 		foreach ($channels as $channel)
 		{
-			foreach ($channel->CustomFields as $field)
+			foreach ($channel->getAllCustomFields() as $field)
 			{
 				$channels_options[$channel->channel_title][$channel->channel_id . '_' . $field->field_id] = htmlentities($field->field_label, ENT_QUOTES, 'UTF-8');
 			}
-		}
-
-		// No Channel fields available
-		if (empty($channels_options))
-		{
-			$channels_options[''] = lang('no_fields');
 		}
 
 		ee()->cache->save('fieldtype/channel-field-list', $channels_options);

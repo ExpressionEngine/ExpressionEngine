@@ -1,31 +1,23 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
- * @since		Version 3.40
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
+namespace EllisLab\ExpressionEngine\Updater\Version_3_4_0;
 
 /**
- * ExpressionEngine Update Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * Update
  */
 class Updater {
 
 	var $version_suffix = '';
+
+	// This isn't complete, more for testing
+	public $affected_tables = ['exp_member_groups', 'exp_channels'];
 
 	/**
 	 * Do Update
@@ -34,13 +26,12 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = new ProgressIterator(
+		$steps = new \ProgressIterator(
 			array(
 				'add_can_view_homepage_news_permission',
 				'add_menu_tables',
 				'add_channel_max_entries_columns',
 				'fix_channel_total_entries_count',
-				'add_missing_default_status_groups',
 				'extend_max_username_length'
 			)
 		);
@@ -111,18 +102,6 @@ class Updater {
 		foreach (ee('Model')->get('Channel')->all() as $channel)
 		{
 			$channel->updateEntryStats();
-		}
-	}
-
-	/**
-	 * Loops through all our sites and adds the default status group to any
-	 * site that does not already have one.
-	 */
-	private function add_missing_default_status_groups()
-	{
-		foreach (ee('Model')->get('Site')->all() as $site)
-		{
-			$site->createDefaultStatuses();
 		}
 	}
 

@@ -54,7 +54,7 @@ feature 'Upload Directory Sync' do
   it 'should sync the directory' do
     @page.should have_text $images_count.to_s + ' image files'
 
-    @page.submit
+    @page.sync_button.click
 
     no_php_js_errors
 
@@ -66,6 +66,8 @@ feature 'Upload Directory Sync' do
     #progress_bar_values.should == @page.progress_bar_moves_for_file_count($images_count)
 
     @page.wait_for_alert
+
+    @page.alert.should have_text 'Upload directory synchronized'
 
     no_php_js_errors
 
@@ -123,7 +125,7 @@ feature 'Upload Directory Sync' do
     @page.sizes[0].checked?.should == false
     @page.sizes[1].checked?.should == false
 
-    @page.submit
+    @page.sync_button.click
 
     no_php_js_errors
 
@@ -175,7 +177,7 @@ feature 'Upload Directory Sync' do
     create_manipulation
 
     @page.load_sync_for_dir(2)
-    @page.submit
+    @page.sync_button.click
     @page.wait_for_alert
     no_php_js_errors
 
@@ -187,7 +189,7 @@ feature 'Upload Directory Sync' do
     sleep 1
 
     # Submit again with no manipulations checked
-    @page.submit
+    @page.sync_button.click
     @page.wait_for_alert
 
     # Modification time should be the exact same
@@ -199,7 +201,7 @@ feature 'Upload Directory Sync' do
     create_manipulation
 
     @page.load_sync_for_dir(2)
-    @page.submit
+    @page.sync_button.click
     @page.wait_for_alert
     no_php_js_errors
 
@@ -213,7 +215,7 @@ feature 'Upload Directory Sync' do
     # Submit again with manipulations checked
     @page.sizes[0].click
     @page.sizes[1].click
-    @page.submit
+    @page.sync_button.click
     @page.wait_for_alert
 
     # Modification time should be different as the file was overwritten
@@ -228,7 +230,7 @@ feature 'Upload Directory Sync' do
     # Page should still only report the number of images and sync successfully
     @page.should have_text $images_count.to_s + ' image files'
 
-    @page.submit
+    @page.sync_button.click
     @page.wait_for_alert
     @page.alert.should have_text 'Upload directory synchronized'
   end
@@ -240,7 +242,7 @@ feature 'Upload Directory Sync' do
 
     new_upload = UploadEdit.new
     new_upload.load_edit_for_dir(2)
-    new_upload.allowed_types.select 'All file types'
+    new_upload.allowed_types.choose_radio_option 'all'
     new_upload.submit
     new_upload.should have_text 'Upload directory saved'
     no_php_js_errors
@@ -250,7 +252,7 @@ feature 'Upload Directory Sync' do
     # Page should show file count for all files now
     @page.should have_text file_count.to_s + ' files'
 
-    @page.submit
+    @page.sync_button.click
     @page.wait_for_alert(10)
     @page.alert.should have_text 'Upload directory synchronized'
 
@@ -264,7 +266,7 @@ feature 'Upload Directory Sync' do
 
     new_upload = UploadEdit.new
     new_upload.load_edit_for_dir(2)
-    new_upload.allowed_types.select 'All file types'
+    new_upload.allowed_types.choose_radio_option 'all'
     new_upload.submit
     new_upload.should have_text 'Upload directory saved'
     no_php_js_errors
@@ -274,7 +276,7 @@ feature 'Upload Directory Sync' do
     # Page should show file count for all files now
     @page.should have_text file_count.to_s + ' files'
 
-    @page.submit
+    @page.sync_button.click
     @page.wait_for_alert
     @page.alert.should have_text 'Some files could not be synchronized'
     @page.alert.should have_text 'script copy 2.sh: The file type you are attempting to upload is not allowed. script copy 3.sh: The file type you are attempting to upload is not allowed. script copy 4.sh: The file type you are attempting to upload is not allowed. script copy.sh: The file type you are attempting to upload is not allowed. script.sh: The file type you are attempting to upload is not allowed.'

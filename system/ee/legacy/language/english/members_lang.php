@@ -26,7 +26,7 @@ $lang = array(
 
 'can_attach_in_private_messages' => 'Allow attachments',
 
-'can_attach_in_private_messages_desc' => 'When set to <b>yes</b>, users assigned to this group may attach files to personal messages.',
+'can_attach_in_private_messages_desc' => 'When enabled, users assigned to this group may attach files to personal messages.',
 
 'can_delete_categories' => 'Can delete categories',
 
@@ -38,7 +38,7 @@ $lang = array(
 
 'can_send_private_messages' => 'Access personal messages',
 
-'can_send_private_messages_desc' => 'When set to <b>yes</b>, users assigned to this group may send and receive personal messages.',
+'can_send_private_messages_desc' => 'When enabled, users assigned to this group may send and receive personal messages.',
 
 'channel_entries' => 'Channel Entries',
 
@@ -58,7 +58,7 @@ $lang = array(
 
 'create_member' => 'Create Member',
 
-'create_member_group' => 'Create a Member Group',
+'create_member_group' => 'Create Member Group',
 
 'create_new_member_group' => 'Create a New Member Group',
 
@@ -104,7 +104,7 @@ $lang = array(
 
 'exclude_from_moderation' => 'Bypass moderation',
 
-'exclude_from_moderation_desc' => 'When set to <b>yes</b>, users assigned to this group may comment without being restricted by the default <a href="%s">comment settings</a>.',
+'exclude_from_moderation_desc' => 'When enabled, users assigned to this group may comment without being restricted by the default <a href="%s">comment settings</a>.',
 
 'field_description' => 'Instructions',
 
@@ -164,7 +164,7 @@ $lang = array(
 
 'last_visit' => 'Last Visit',
 
-'lock_description' => 'When set to enable, only Super Admins can add or remove members from this group.',
+'lock_description' => 'When enabled, only Super Admins can add or remove members from this group.',
 
 'locked' => 'Locked',
 
@@ -172,7 +172,7 @@ $lang = array(
 
 'login_as_user' => 'SuperAdmin Logging In as User',
 
-'manage_bans' => 'Manage Bans',
+'manage_bans' => 'Ban Settings',
 
 'maximum_members_reached' => 'You have reached the maximum number of Members allowed.',
 
@@ -320,7 +320,7 @@ $lang = array(
 
 'profile_templates' => 'Member Profile Templates',
 
-'register_member' => 'Register a New Member',
+'register_member' => 'New Member',
 
 'resend' => 'Resend Activation Email',
 
@@ -394,7 +394,7 @@ $lang = array(
 
 'ban_options_desc' => 'You can prevent access completely by forwarding them to another website, or show them an unavailable message, or allow them to access the website in view only mode.',
 
-'ban_settings_updated' => 'Banned Settings Updated',
+'ban_settings_updated' => 'Ban Settings updated',
 
 'banned_members' => 'Banned Members',
 
@@ -430,11 +430,9 @@ $lang = array(
 
 'access_utilities' => 'Access system utilities',
 
-'access_utilities_desc' => 'When set to <b>yes</b>, users assigned to this group may access the system utilities section.',
+'access_utilities_desc' => 'When enabled, users assigned to this group may access the system utilities section.',
 
 'addon_access' => 'Add-On Access Permissions',
-
-'addons' => 'Add-ons',
 
 'addons_access' => 'Allowed add-on access',
 
@@ -458,25 +456,25 @@ $lang = array(
 
 'can_access_addons' => 'Access add-ons',
 
-'can_access_addons_desc' => 'When set to <b>yes</b>, users assigned to this group may access the add-on manager.',
+'can_access_addons_desc' => 'When enabled, users assigned to this group may access the add-on manager.',
 
-'can_access_communicate' => 'Communicate <i>— Utility</i>',
+'can_access_communicate' => 'Communicate',
 
 'can_access_cp' => 'Access control panel',
 
-'can_access_cp_desc' => 'When set to <b>yes</b>, users assigned to this group may access the control panel.',
+'can_access_cp_desc' => 'When enabled, users assigned to this group may access the control panel.',
 
-'can_access_data' => 'Data Operations<i>— Utility</i>',
+'can_access_data' => 'Data Operations',
 
 'can_access_design' => 'Access template manager',
 
-'can_access_design_desc' => 'When set to <b>yes</b>, users assigned to this group may access the template manager.',
+'can_access_design_desc' => 'When enabled, users assigned to this group may access the template manager.',
 
 'can_access_file_manager' => 'Access file manager',
 
 'can_access_files' => 'File Manager',
 
-'can_access_import' => 'Import <i>— Utility</i>',
+'can_access_import' => 'Import',
 
 'can_access_logs' => 'Logs',
 
@@ -484,37 +482,37 @@ $lang = array(
 
 'can_access_members' => 'Access members',
 
-'can_access_members_desc' => 'When set to <b>yes</b>, users assigned to this group may access the member section of the control panel.',
+'can_access_members_desc' => 'When enabled, users assigned to this group may access the member section of the control panel.',
 
 'can_access_mod' => 'Can access module:',
 
-'can_access_sql' => ' SQL Management <i>— Utility</i>',
+'can_access_sql' => 'SQL Management',
 
 'can_access_sys_prefs' => 'Access settings',
 
-'can_access_sys_prefs_desc' => 'When set to <b>yes</b>, users assigned to this group may access the software settings.',
+'can_access_sys_prefs_desc' => 'When enabled, users assigned to this group may access the software settings.',
 
 'can_access_tg' => 'Can edit templates in this group:',
 
-'can_access_translate' => 'Translation <i>— Utility</i>',
+'can_access_translate' => 'Translation',
 
 'can_access_utilities' => 'Utilities',
 
 'can_admin_addons' => 'Install or remove add-ons',
 
-'can_admin_addons_desc' => 'When set to <b>yes</b>, users assigned to this group may install and remove add-ons.',
+'can_admin_addons_desc' => 'When enabled, users assigned to this group may install and remove add-ons.',
 
 'can_admin_channels' => 'Access channel manager',
 
-'can_admin_channels_desc' => 'When set to <b>yes</b>, users can access the channel manager.',
+'can_admin_channels_desc' => 'When enabled, users can access the channel manager.',
 
 'can_admin_design' => 'Global template settings',
 
-'can_admin_design_desc' => 'When set to <b>yes</b>, users assigned to this group may access the global template settings and template routes.',
+'can_admin_design_desc' => 'When enabled, users assigned to this group may access the global template settings and template routes.',
 
 'can_admin_mbr_groups' => 'Access member groups',
 
-'can_admin_mbr_groups_desc' => 'When set to <b>yes</b>, users assigned to this group may access member group settings in the software.',
+'can_admin_mbr_groups_desc' => 'When enabled, users assigned to this group may access member group settings in the software.',
 
 'can_admin_mbr_templates' => 'Can administrate member profile templates',
 
@@ -522,7 +520,7 @@ $lang = array(
 
 'can_admin_templates' => 'Can administrate template groups and templates',
 
-'can_admin_templates_desc' => 'When set to <b>yes</b>, users assigned to this group may manage template groups and templates.',
+'can_admin_templates_desc' => 'When enabled, users assigned to this group may manage template groups and templates.',
 
 'can_admin_upload_prefs' => 'Can administrate file upload preferences',
 
@@ -540,13 +538,13 @@ $lang = array(
 
 'can_delete_self' => 'Delete account',
 
-'can_delete_self_desc' => 'When set to <b>yes</b>, users assigned to this group may delete their own accounts without approval',
+'can_delete_self_desc' => 'When enabled, users assigned to this group may delete their own accounts without approval',
 
 'can_delete_self_entries' => 'Delete own entries',
 
 'can_edit_all_comments' => 'Edit comments by others',
 
-'can_edit_html_buttons' => 'Can edit own <abbr title=\'Hyper-Text Markup Language\'>HTML</abbr> formatting buttons',
+'can_edit_html_buttons' => 'Can edit own HTML formatting buttons',
 
 'can_edit_other_entries' => 'Edit entries, by others',
 
@@ -558,13 +556,13 @@ $lang = array(
 
 'can_post_comments' => 'Submit comments',
 
-'can_post_comments_desc' => 'When set to <b>yes</b>, users assigned to this group may submit comments to the website.',
+'can_post_comments_desc' => 'When enabled, users assigned to this group may submit comments to the website.',
 
 'can_post_in' => 'Can post and edit entries in:',
 
 'can_search' => 'Access search utility',
 
-'can_search_desc' => 'When set to <b>yes</b>, users assigned to this group may use the search functionality of the website.',
+'can_search_desc' => 'When enabled, users assigned to this group may use the search functionality of the website.',
 
 'can_send_cached_email' => 'View/Send cached email',
 
@@ -578,7 +576,7 @@ $lang = array(
 
 'can_view_profiles' => 'Access public profiles',
 
-'can_view_profiles_desc' => 'When set to <b>yes</b>, users assigned to this group may view public profiles of other members.',
+'can_view_profiles_desc' => 'When enabled, users assigned to this group may view public profiles of other members.',
 
 'category_actions' => 'Categories',
 
@@ -634,7 +632,7 @@ $lang = array(
 
 'file_manager' => 'File Manager',
 
-'file_manager_desc' => 'When set to <b>yes</b>, users assigned to this group may access the file manager.',
+'file_manager_desc' => 'When enabled, users assigned to this group may access the file manager.',
 
 'footer_helper_links' => 'Access footer helper links',
 
@@ -650,7 +648,7 @@ $lang = array(
 
 'homepage_news' => 'Show news on CP homepage',
 
-'homepage_news_desc' => 'When set to <b>yes</b>, users assigned to this group will see ExpressionEngine news on the CP homepage.',
+'homepage_news_desc' => 'When enabled, users assigned to this group will see ExpressionEngine news on the CP homepage.',
 
 'include_members_in' => 'Include members in',
 
@@ -706,6 +704,8 @@ $lang = array(
 
 'utilities_section_desc' => 'Users can access all selected sections.',
 
+'utility' => 'Utility',
+
 'warning' => 'WARNING:',
 
 
@@ -722,7 +722,7 @@ $lang = array(
 
 'can_access_security_settings' => 'Security &amp; Privacy',
 
-'can_access_security_settings_desc' => 'When set to <b>yes</b> members of this group will be able to access the system security and privacy settings.',
+'can_access_security_settings_desc' => 'When enabled members of this group will be able to access the system security and privacy settings.',
 
 'can_access_site' => 'Can Access Site',
 
@@ -734,7 +734,7 @@ $lang = array(
 
 'can_send_bulletins' => 'Access bulletins',
 
-'can_send_bulletins_desc' => 'When set to <b>yes</b>, users assigned to this group may send and receive bulletins.',
+'can_send_bulletins_desc' => 'When enabled, users assigned to this group may send and receive bulletins.',
 
 'cannot_change_your_group' => 'Super Admins cannot change their member group assignment. Please have another Super Admin reassign you.',
 
@@ -868,11 +868,11 @@ $lang = array(
 
 'is_field_public' => 'Show in profile?',
 
-'is_field_public_cont' => 'When set to <b>yes</b>, this field will be shown in public profiles.',
+'is_field_public_cont' => 'When enabled, this field will be shown in public profiles.',
 
 'is_field_reg' => 'Show in registration?',
 
-'is_field_reg_cont' => 'When set to <b>yes</b>, this field will be shown in registration forms.',
+'is_field_reg_cont' => 'When enabled, this field will be shown in registration forms.',
 
 'm_max_length' => 'Maxlength',
 
@@ -882,7 +882,7 @@ $lang = array(
 
 'member_delete_dont_reassign_entries' => 'Delete the member\'s entries',
 
-'member_delete_reassign_entries' => 'Reassign the member\'s entries to ',
+'member_delete_reassign_entries' => 'Reassign the member\'s entries to:',
 
 'member_search_instructions' => 'Fill out at least one field. You can submit partial or full words.',
 
@@ -939,6 +939,8 @@ $lang = array(
 'template_partials' => 'Template partials',
 
 'template_permissions_desc' => 'Users can perform all the selected actions on all below selected template groups.',
+
+'template_variables' => 'Template variables',
 
 'templates' => 'Templates',
 

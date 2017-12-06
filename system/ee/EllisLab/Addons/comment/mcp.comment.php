@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Comment Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Comment Module control panel
  */
 class Comment_mcp {
 
@@ -58,8 +46,6 @@ class Comment_mcp {
 			));
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Comments Home Page
@@ -141,8 +127,6 @@ class Comment_mcp {
 		return ee()->load->view('index', $data, TRUE);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Comment Index Datasource
 	 *
@@ -183,8 +167,6 @@ class Comment_mcp {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Date Select Options
 	 *
@@ -202,8 +184,6 @@ class Comment_mcp {
 		);
 	 }
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Status Select Options
 	 *
@@ -219,8 +199,6 @@ class Comment_mcp {
 			'c'		=> lang('closed')
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Channel filter select options
@@ -269,8 +247,6 @@ class Comment_mcp {
 
 		return $opts;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Merge Comment Data
@@ -384,8 +360,6 @@ class Comment_mcp {
 		return $comments;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get comment author information
 	 *
@@ -415,8 +389,6 @@ class Comment_mcp {
 			->where_in('member_id', $ids)
 			->get('members');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get channel info.
@@ -451,8 +423,6 @@ class Comment_mcp {
 			->where_in('entry_id', $ids)
 			->get('channel_titles');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Setup query
@@ -521,8 +491,6 @@ class Comment_mcp {
 		return array($count, $base_results);
 	}
 
-	// --------------------------------------------------------------------
-
 	protected function _query_filters()
 	{
 		// If the can ONLY edit their own comments- need to
@@ -557,8 +525,6 @@ class Comment_mcp {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Setup Query Filters
 	 *
@@ -585,8 +551,6 @@ class Comment_mcp {
 
 		$this->_limit = ($per_page = ee()->input->get('per_page')) ? $per_page : $params['perpage'];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete Comment Notification
@@ -625,8 +589,6 @@ class Comment_mcp {
 
 		ee()->output->show_message($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Edit Comment Form
@@ -733,8 +695,6 @@ class Comment_mcp {
 		return ee()->load->view('edit', $vars, TRUE);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * This permissions check is used in several places.
 	 */
@@ -747,8 +707,6 @@ class Comment_mcp {
 			show_error(lang('unauthorized_access'), 403);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update Comment
@@ -1002,8 +960,6 @@ class Comment_mcp {
 		ee()->functions->redirect($url);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Email Check
 	 *
@@ -1050,8 +1006,6 @@ class Comment_mcp {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Move check -- form_validation callback
 	 *
@@ -1066,8 +1020,6 @@ class Comment_mcp {
 
 		return FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Modify Comments
@@ -1102,8 +1054,6 @@ class Comment_mcp {
 			break;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete Comments Confirmation
@@ -1205,8 +1155,6 @@ class Comment_mcp {
 
 		return ee()->load->view('delete_comments', $vars, TRUE);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Change Comment Status
@@ -1331,8 +1279,6 @@ class Comment_mcp {
 		ee()->functions->redirect($url);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete Comment
 	 *
@@ -1452,8 +1398,6 @@ class Comment_mcp {
 
 		ee()->functions->redirect($this->base_url);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Send Notification Emails
@@ -1615,8 +1559,6 @@ class Comment_mcp {
 		return;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Entry and Channel Stats
 	 *
@@ -1639,8 +1581,6 @@ class Comment_mcp {
 
 		return;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Settings page
@@ -1668,8 +1608,6 @@ class Comment_mcp {
 
 		return ee()->load->view('settings', $vars, TRUE);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update Comment Settings

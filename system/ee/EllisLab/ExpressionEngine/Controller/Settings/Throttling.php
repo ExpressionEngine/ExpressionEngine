@@ -1,33 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Settings;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Access Throttling Settings Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Access Throttling Settings Controller
  */
 class Throttling extends Settings {
 
@@ -49,13 +34,7 @@ class Throttling extends Settings {
 					'title' => 'enable_throttling',
 					'desc' => 'enable_throttling_desc',
 					'fields' => array(
-						'enable_throttling' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => lang('enable'),
-								'n' => lang('disable')
-							)
-						)
+						'enable_throttling' => array('type' => 'yes_no')
 					)
 				),
 				array(
@@ -92,7 +71,7 @@ class Throttling extends Settings {
 					'title' => 'banishment_type',
 					'fields' => array(
 						'banishment_type' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'404' => lang('banish_404'),
 								'redirect' => lang('banish_redirect'),

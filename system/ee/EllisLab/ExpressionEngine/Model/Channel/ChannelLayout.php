@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Channel;
 
@@ -8,6 +15,9 @@ use EllisLab\ExpressionEngine\Model\Content\Display\LayoutDisplay;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutTab;
 
+/**
+ * Channel Layout Model
+ */
 class ChannelLayout extends Model implements LayoutInterface {
 
 	protected static $_primary_key = 'layout_id';
@@ -169,6 +179,63 @@ class ChannelLayout extends Model implements LayoutInterface {
 		}
 
 		return $display;
+	}
+
+	public function synchronize($fields = [])
+	{
+		$fields = ($fields) ?: $this->Channel->getAllCustomFields();
+		$fields = $fields->indexBy('field_id');
+
+		$field_layout = $this->field_layout;
+
+		foreach ($field_layout as $i => $section)
+		{
+			foreach ($section['fields'] as $j => $field_info)
+			{
+				$field_name = $field_info['field'];
+
+				if (strpos('field_id_', $field_name) !== 0)
+				{
+					continue;
+				}
+
+				$field_id = str_replace('field_id_', '', $field_name);
+
+				if (array_key_exists($field_id, $fields))
+				{
+					unset($fields[$field_id]);
+				}
+				else
+				{
+					unset($field_layout[$i]['fields'][$j]);
+
+					// Re-index to ensure flat, zero-indexed array
+					$field_layout[$i]['fields'] = array_values($field_layout[$i]['fields']);
+				}
+			}
+		}
+
+		$this->setProperty('field_layout', $field_layout);
+
+		foreach ($fields as $field)
+		{
+			$this->addField($field);
+		}
+
+		$this->save();
+	}
+
+	protected function addField($field)
+	{
+		$field_layout = $this->field_layout;
+		$field_info = array(
+			'field'     => 'field_id_' . $field->field_id,
+			'visible'   => TRUE,
+			'collapsed' => $field->getProperty('field_is_hidden')
+		);
+		$field_layout[0]['fields'][] = $field_info;
+
+		$this->setProperty('field_layout', $field_layout);
 	}
 
 }

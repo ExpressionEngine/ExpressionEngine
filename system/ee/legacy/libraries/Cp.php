@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine CP Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * CP
  */
 class Cp {
 
@@ -66,8 +54,6 @@ class Cp {
 		// Make sure all requests to iframe the CP are denied
 		ee()->output->set_header('X-Frame-Options: SAMEORIGIN');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Certain Default Control Panel View Variables
@@ -160,6 +146,12 @@ class Cp {
 			'search'				=> lang('search'),
 			'session_idle'			=> lang('session_idle'),
 			'btn_fix_errors'		=> lang('btn_fix_errors'),
+			'btn_fix_errors'		=> lang('btn_fix_errors'),
+			'check_all'				=> lang('check_all'),
+			'clear_all'				=> lang('clear_all'),
+			'keyword_search'		=> lang('keyword_search'),
+			'loading'				=> lang('loading'),
+			'searching'				=> lang('searching')
 		);
 
 		ee()->javascript->set_global(array(
@@ -179,9 +171,24 @@ class Cp {
 
 		$js_scripts = array(
 			'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog', 'button'),
-			'plugin'	=> array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
-			'file'		=> array('json2', 'underscore', 'cp/global_start', 'cp/form_validation', 'cp/sort_helper', 'cp/fuzzy_filters')
+			'plugin'	=> array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all', 'nestable'),
+			'file'		=> array('react/react.min', 'react/react-dom.min', 'json2',
+			'underscore', 'cp/global_start', 'cp/form_validation', 'cp/sort_helper', 'cp/form_group',
+			'cp/modal_form', 'cp/confirm_remove', 'cp/fuzzy_filters',
+			'components/no_results', 'components/loading', 'components/filters',
+			'components/filterable', 'components/toggle', 'components/select_list',
+			'fields/select/select', 'fields/select/mutable_select', 'fields/dropdown/dropdown')
 		);
+
+		$modal = ee('View')->make('ee:_shared/modal_confirm_remove')->render([
+			'name'		=> 'modal-default-confirm-remove',
+			'form_url'	=> '#',
+			'hidden'	=> [
+				'bulk_action'	=> 'remove',
+				'content_id' => ''
+			]
+		]);
+		ee('CP/Modal')->addModal('default-remove', $modal);
 
 		$this->add_js_script($js_scripts);
 		$this->_seal_combo_loader();
@@ -193,8 +200,6 @@ class Cp {
 
 		ee()->load->vars($vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Render output (html)
@@ -208,17 +213,22 @@ class Cp {
 
 		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
 
+		ee()->load->helper('text');
+
 		if (ee()->config->item('new_version_check') == 'y' &&
 			$new_version = $this->_version_check())
 		{
-			$new_version['version'] = $this->formatted_version($new_version['version']);
+			$new_version['version'] = formatted_version($new_version['version']);
 			$new_version['build'] = ee()->localize->format_date($date_format, $this->_parse_build_date($new_version['build']), TRUE);
 			ee()->view->new_version = $new_version;
 		}
 
 		$this->_notices();
 
-		ee()->view->formatted_version = $this->formatted_version(APP_VER);
+		$formatted_version = formatted_version(APP_VER);
+		ee()->view->formatted_version = strpos($formatted_version, '-') !== FALSE
+			? substr($formatted_version, 0, strpos($formatted_version, '-'))
+			: $formatted_version;
 
 		$data['_extra_library_src'] = implode('', ee()->jquery->jquery_code_for_load);
 
@@ -228,6 +238,7 @@ class Cp {
 
 		ee()->view->ee_build_date = ee()->localize->format_date($date_format, $this->_parse_build_date(), TRUE);
 		ee()->view->version_identifier = APP_VER_ID;
+		ee()->view->show_news_button = $this->shouldShowNewsButton();
 
 		$license = $this->validateLicense();
 		ee()->view->ee_license = $license;
@@ -239,6 +250,21 @@ class Cp {
 		}
 
 		return ee()->view->render($view, $data, $return);
+	}
+
+	/**
+	 * Determines whether or not the news button beside the version number
+	 * should be shown
+	 *
+	 * @return boolean
+	 */
+	protected function shouldShowNewsButton()
+	{
+		$news_view = ee('Model')->get('MemberNewsView')
+			->filter('member_id', ee()->session->userdata('member_id'))
+			->first();
+
+		return ( ! $news_view OR version_compare(APP_VER, $news_view->version, '>'));
 	}
 
 	protected function validateLicense()
@@ -297,25 +323,6 @@ class Cp {
 		return ee()->localize->string_to_timestamp($string, TRUE, '%Y-%m-%d');
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Takes an app version string and formats it for the CP, which entails
-	 * putting bold tags around the first number and dropping the third
-	 * digit if it is a zero
-	 *
-	 * @param	string	$version	App version string, like 3.0.0
-	 * @return	string	Formatted app version string, like <b>3</b>.0
-	 */
-	public function formatted_version($version)
-	{
-		$version = explode('.', $version);
-
-		return preg_replace('/^(\d)\./', '<b>$1</b>.', implode('.', $version));
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load up the menu for our view
 	 *
@@ -331,8 +338,6 @@ class Cp {
 
 		ee()->view->cp_main_menu = ee()->menu->generate_menu();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Run a number of checks/tests and display any notices
@@ -498,20 +503,24 @@ class Cp {
 		}
 
 		$version_info = array(
-			'version' => $version_file[0][0],
-			'build' => $version_file[0][1],
-			'security' => $version_file[0][2] == 'high',
+			'version' => $version_file['latest_version'],
+			'build' => $version_file['build_date'],
+			'security' => $version_file['severity'] == 'high'
 		);
 
-		if (version_compare($version_info['version'], APP_VER) < 1)
+		// Upgrading form Core to Pro?
+		if (IS_CORE && $version_file['license_type'] == 'pro')
+		{
+			return $version_info;
+		}
+
+		if (version_compare($version_info['version'], ee()->config->item('app_version')) < 1)
 		{
 			return FALSE;
 		}
 
 		return $version_info;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Mask URL.
@@ -526,8 +535,6 @@ class Cp {
 	{
 		return ee()->functions->fetch_site_index(0,0).QUERY_MARKER.'URL='.urlencode($url);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add JS Script
@@ -574,8 +581,6 @@ class Cp {
 		return $this->js_files;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Render Footer Javascript
 	 *
@@ -598,8 +603,6 @@ class Cp {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Seal the current combo loader and reopen a new one.
@@ -645,8 +648,6 @@ class Cp {
 
 		return $this->requests;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get last modification time of a js file.
@@ -699,8 +700,6 @@ class Cp {
 		return file_exists($file) ? filemtime($file) : 0;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the right navigation
 	 *
@@ -712,8 +711,6 @@ class Cp {
 	{
 		ee()->view->cp_right_nav = array_reverse($nav);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * URL to the current page unless POST data exists - in which case it
@@ -780,8 +777,6 @@ class Cp {
 		return $url;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns GET variables from the current CP URL. Useful for replicating
 	 * the state of a view if you need to go away from it, POST requests for
@@ -797,8 +792,6 @@ class Cp {
 
 		return array_intersect_key($_GET, array_flip($filtered_get));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * 	Get Quicklinks
@@ -849,8 +842,6 @@ class Cp {
 		return $link;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Abstracted Way to Add a Breadcrumb Links
 	 *
@@ -869,8 +860,6 @@ class Cp {
 		ee()->view->cp_breadcrumbs = $_crumbs;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load Package JS
 	 *
@@ -886,8 +875,6 @@ class Cp {
 
 		$this->add_js_script(array('package' => $package.':'.$file));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load Package CSS
@@ -914,8 +901,6 @@ class Cp {
 		$this->add_to_head('<link type="text/css" rel="stylesheet" href="'.$url.'" />');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add Header Data
 	 *
@@ -937,8 +922,6 @@ class Cp {
 		$this->its_all_in_your_head[] = $data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns the array of items to be added in the header
 	 *
@@ -948,8 +931,6 @@ class Cp {
 	{
 		return $this->its_all_in_your_head;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add Footer Data
@@ -964,8 +945,6 @@ class Cp {
 		$this->footer_item[] = $data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns the array of items to be added in the footer
 	 *
@@ -975,8 +954,6 @@ class Cp {
 	{
 		return $this->footer_item;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Allowed Group
@@ -1016,14 +993,11 @@ class Cp {
 		return $result;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Allowed Group
 	 *
 	 * Member access validation
 	 *
-	 * @param	string  any number of permission names
 	 * @return	bool    TRUE if member has all permissions
 	 */
 	public function allowed_group()
@@ -1054,8 +1028,6 @@ class Cp {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Is Module Installed?
 	 *
@@ -1085,8 +1057,6 @@ class Cp {
 		return $this->installed_modules;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Invalid Custom Field Names
 	 *
@@ -1104,16 +1074,14 @@ class Cp {
 		}
 
 		$channel_vars = array(
-			'aol_im', 'author', 'author_id', 'avatar_image_height',
-			'avatar_image_width', 'avatar_url', 'bday_d', 'bday_m',
-			'bday_y', 'bio', 'comment_auto_path',
-			'comment_entry_id_auto_path',
-			'comment_total', 'comment_url_title_path', 'count',
+			'author', 'author_id', 'avatar_image_height',
+			'avatar_image_width', 'avatar_url', 'comment_auto_path',
+			'comment_entry_id_auto_path', 'comment_total', 'comment_url_title_path', 'count',
 			'edit_date', 'email', 'entry_date', 'entry_id',
 			'entry_id_path', 'expiration_date', 'forum_topic_id',
-			'gmt_edit_date', 'gmt_entry_date', 'icq', 'interests',
-			'ip_address', 'location', 'member_search_path', 'month',
-			'msn_im', 'occupation', 'permalink', 'photo_image_height',
+			'gmt_edit_date', 'gmt_entry_date',
+			'ip_address', 'member_search_path', 'month',
+			'permalink', 'photo_image_height',
 			'photo_image_width', 'photo_url', 'profile_path',
 			'recent_comment_date', 'relative_date', 'relative_url',
 			'screen_name', 'signature', 'signature_image_height',
@@ -1121,7 +1089,7 @@ class Cp {
 			'switch', 'title', 'title_permalink', 'total_results',
 			'trimmed_url', 'url', 'url_as_email_as_link', 'url_or_email',
 			'url_or_email_as_author', 'url_title', 'url_title_path',
-			'username', 'channel', 'channel_id', 'yahoo_im', 'year'
+			'username', 'channel', 'channel_id', 'year'
 		);
 
 		$global_vars = array(
@@ -1160,8 +1128,6 @@ class Cp {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * 	Fetch Action IDs
 	 *
@@ -1183,8 +1149,6 @@ class Cp {
 
 		return $query->row('action_id');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Site Switching Logic

@@ -1,13 +1,10 @@
 <?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 /*
@@ -134,12 +131,20 @@
  * And away we go...
  *
  */
-	if ( ! file_exists(SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php'))
+	// Load the updater package if it's here
+	if (file_exists(SYSPATH.'ee/updater/boot.php'))
+	{
+		require_once SYSPATH.'ee/updater/boot.php';
+	}
+	// Is the system path correct?
+	elseif ( ! file_exists(SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php'))
 	{
 		header('HTTP/1.1 503 Service Unavailable.', TRUE, '503');
 		exit("Your system folder path does not appear to be set correctly. Please open the following file and correct this: ".pathinfo(__FILE__, PATHINFO_BASENAME));
 	}
-
-	require_once SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php';
+	else
+	{
+		require_once SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php';
+	}
 
 // EOF

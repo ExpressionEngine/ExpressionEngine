@@ -1,19 +1,11 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * CodeIgniter
+ * ExpressionEngine (https://expressionengine.com)
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Zip Compression Class
@@ -23,12 +15,6 @@
  *
  * The original library is a little rough around the edges so I
  * refactored it and added several additional methods -- Rick Ellis
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Encryption
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/zip.html
  */
 class EE_Zip  {
 
@@ -48,8 +34,6 @@ class EE_Zip  {
 
 		$this->now = time();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add Directory
@@ -75,8 +59,6 @@ class EE_Zip  {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 *	Get file/directory modification time
 	 *
@@ -95,8 +77,6 @@ class EE_Zip  {
 
 		return $time;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add Directory
@@ -144,8 +124,6 @@ class EE_Zip  {
 		$this->entries++;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add Data to Zip
 	 *
@@ -176,8 +154,6 @@ class EE_Zip  {
 			$this->_add_data($filepath, $data, $file_data['file_mtime'], $file_data['file_mdate']);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add Data to Zip
@@ -231,8 +207,6 @@ class EE_Zip  {
 		$this->file_num++;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Read the contents of a file and add it to the zip
 	 *
@@ -260,8 +234,6 @@ class EE_Zip  {
 		}
 		return FALSE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Read a directory and add it to the zip.
@@ -317,8 +289,6 @@ class EE_Zip  {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the Zip file
 	 *
@@ -344,8 +314,6 @@ class EE_Zip  {
 		return $zip_data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Write File to the specified directory
 	 *
@@ -370,8 +338,6 @@ class EE_Zip  {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Download
 	 *
@@ -395,8 +361,6 @@ class EE_Zip  {
 
 		force_download($filename, $zip_content);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Initialize Data

@@ -1,31 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-/**
- * CodeIgniter
- *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
 
 /**
- * CodeIgniter Typography Helpers
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		CodeIgniter
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/helpers/typography_helper.html
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
+/**
+ * Typography Helpers
+ */
 
 /**
  * Convert newlines to HTML line breaks except within PRE tags
@@ -43,8 +28,6 @@ if ( ! function_exists('nl2br_except_pre'))
 		return ee()->typography->nl2br_except_pre($str);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Auto Typography Wrapper Function
@@ -65,8 +48,6 @@ if ( ! function_exists('auto_typography'))
 	}
 }
 
-
-// --------------------------------------------------------------------
 
 /**
  * HTML Entities Decode

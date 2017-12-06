@@ -1,33 +1,19 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Design;
 
 use EllisLab\ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
-
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Design\Members Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Design\Members Controller
  */
 class Members extends AbstractDesignController {
 
@@ -50,7 +36,6 @@ class Members extends AbstractDesignController {
 		ee()->lang->loadfile('specialty_tmp');
 
 		$this->template_group_map = array(
-			'aim_console.html' => 'profile',
 			'avatar_folder_list.html' => 'profile',
 			'basic_profile.html' => 'profile',
 			'breadcrumb.html' => 'breadcrumb',
@@ -82,7 +67,6 @@ class Members extends AbstractDesignController {
 			'home_page.html' => 'profile',
 			'html_footer.html' => 'common',
 			'html_header.html' => 'common',
-			'icq_console.html' => 'profile',
 			'localization_form.html' => 'account',
 			'login_form.html' => 'registration',
 			'member_page.html' => 'member',

@@ -1,17 +1,6 @@
 <?php
 
 require('bootstrap.php');
-require(BASEPATH.'helpers/string_helper.php');
-require(BASEPATH.'core/Config.php');
-
-$constants = require SYSPATH.'ee/EllisLab/ExpressionEngine/Config/constants.php';
-
-foreach ($constants as $k => $v)
-{
-	define($k, $v);
-}
-
-ee()->config = new EE_Config();
 
 $command = array_shift($argv);
 

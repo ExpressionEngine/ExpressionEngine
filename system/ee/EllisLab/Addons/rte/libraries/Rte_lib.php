@@ -1,29 +1,15 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine RTE Module Library
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * RTE Module Library
  */
-
 class Rte_lib {
 
 	// We consider the editor empty in these cases
@@ -40,8 +26,6 @@ class Rte_lib {
 	{
 		ee()->lang->loadfile('rte');
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Provides Edit Toolset Screen HTML
@@ -124,11 +108,10 @@ class Rte_lib {
 			$tool_name = (lang($name_key) != $name_key) ? lang($name_key) : $tool['name'];
 			$tool_desc = (lang($desc_key) != $desc_key) ? lang($desc_key) : '';
 
-			$tools[$tool['tool_id']] = $tool_name;
-			if ($tool_desc)
-			{
-				$tools[$tool['tool_id']] .= ' <i>&mdash; ' . $tool_desc . '</i>';
-			}
+			$tools[$tool['tool_id']] = [
+				'label' => $tool_name,
+				'instructions' => $tool_desc
+			];
 		}
 
 		$vars['sections'] = array(
@@ -150,7 +133,7 @@ class Rte_lib {
 							'type' => 'checkbox',
 							'choices' => $tools,
 							'value' => $toolset['tools'],
-							'wrap' => FALSE
+							'no_results' => ['text' => sprintf(lang('no_found'), lang('tools'))]
 						)
 					)
 				)
@@ -161,10 +144,8 @@ class Rte_lib {
 		$vars['save_btn_text'] = sprintf(lang('btn_save'), lang('tool_set'));
 		$vars['save_btn_text_working'] = 'btn_saving';
 
-		return ee('View')->make('rte:box_wrapper')->render($vars);
+		return ee('View')->make('ee:_shared/form')->render($vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Saves a toolset
@@ -269,8 +250,6 @@ class Rte_lib {
 
 		ee()->functions->redirect($success_url);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Build RTE JS
@@ -437,10 +416,21 @@ class Rte_lib {
 				// RTE editor setup for this page
 				$("' . $selector . '")
 					.not(".grid-input-form ' . $selector . '")
+					.not(".fluid-field-templates ' . $selector . '")
 					.addClass("WysiHat-field")
 					.wysihat({
 						buttons: '.json_encode($bits['buttons']).'
 					});
+
+				if (typeof FluidField === "object")
+				{
+					FluidField.on("rte", "add", function(el) {
+						$("' . $selector . '", el).addClass("WysiHat-field")
+							.wysihat({
+								buttons: '.json_encode($bits['buttons']).'
+							});
+					});
+				}
 
 				if (typeof Grid === "object")
 				{
@@ -458,8 +448,6 @@ class Rte_lib {
 
 		return $js;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Save RTE field
@@ -498,8 +486,6 @@ class Rte_lib {
 
 		return $data;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Display an RTE field
@@ -573,8 +559,6 @@ class Rte_lib {
 		return $return_data;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Check whether the specified data is empty html
 	 *
@@ -586,8 +570,6 @@ class Rte_lib {
 	{
 		return in_array($data, $this->_empty);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Loads JS library files
@@ -668,8 +650,6 @@ class Rte_lib {
 		return $contents;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Prep global variables for JS
 	 *
@@ -701,8 +681,6 @@ class Rte_lib {
 		return $temp;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Manage the assignment of global JS
 	 *
@@ -724,8 +702,6 @@ class Rte_lib {
 		return $js;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Tool Set Valid Name handler
 	 *
@@ -744,8 +720,6 @@ class Rte_lib {
 
 		return TRUE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Tool Set Unique Name handler

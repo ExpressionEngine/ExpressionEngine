@@ -3,6 +3,8 @@ class Publish < ControlPanelPage
 
   element :title, 'input[name=title]'
   element :url_title, 'input[name=url_title]'
+  element :save, '.form-btns-top button[name=submit][value=save]'
+  element :save_and_close, '.form-btns-top button[name=submit][value=save_and_close]'
 
   elements :file_fields, 'a.file-field-filepicker'
   elements :chosen_files, '.fields-upload-chosen img'
@@ -12,4 +14,5 @@ class Publish < ControlPanelPage
 
   section :file_modal, FileModal, '.modal-file'
   section :forum_tab, ForumTab, 'body'
+  section :fluid_field, FluidField, '.fluid-wrap'
 end

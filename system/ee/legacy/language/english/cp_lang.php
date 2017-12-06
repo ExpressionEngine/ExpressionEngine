@@ -27,6 +27,10 @@ $lang = array(
 /* Control Panel */
 'action_can_not_be_undone' => 'THIS ACTION CANNOT BE UNDONE',
 
+'add_new' => 'Add New',
+
+'addons' => 'Add-Ons',
+
 'all' => 'All',
 
 'any' => 'Any',
@@ -39,6 +43,12 @@ $lang = array(
 
 'captcha_explanation' => 'A CAPTCHA is an image containing a security code that users have to submit. Please consult the user guide for more info.',
 
+'categories' => 'Categories',
+
+'channels' => 'Channels',
+
+'choose_wisely' => 'Choose wisely',
+
 'click_to_edit' => 'Click to Edit',
 
 'consult_user_guide' => 'Consult User Guide',
@@ -49,9 +59,13 @@ $lang = array(
 
 'custom_limit' => 'custom limit',
 
+'details' => 'Details',
+
 'e_no_css' => 'The requested CSS file could not be opened.',
 
 'edit_quicklinks' => 'Edit Quick Links',
+
+'fields' => 'Fields',
 
 'forgot_password' => 'Forgot your password?',
 
@@ -113,6 +127,12 @@ $lang = array(
 
 'rights_reserved' => 'All Rights Reserved',
 
+'running_current' => 'ExpressionEngine is up to date',
+
+'running_current_desc' => 'ExpressionEngine %s is the latest version.',
+
+'searching' => 'Searching',
+
 'session_idle' => 'Idle session detected',
 
 'session_idle_description' => 'You\'ve gone idle, please enter your password to continue.',
@@ -122,6 +142,8 @@ $lang = array(
 'show_hide' => 'Show/Hide All',
 
 'submit_email_address' => 'Submit your email address',
+
+'templates' => 'Templates',
 
 'unauthorized' => 'Unauthorized',
 
@@ -139,6 +161,10 @@ $lang = array(
 
 'version_identifier' => 'identifier:',
 
+'version_update_available' => 'A newer version of ExpressionEngine is available',
+
+'version_update_inst' => "ExpressionEngine %s is available. <a href='#' data-post-url='%s'>Click here to upgrade</a> or follow the <a href='%s' rel='external'>manual upgrade instructions</a>.",
+
 
 /* Buttons */
 'cancel' => 'Cancel',
@@ -150,6 +176,10 @@ $lang = array(
 'preview' => 'Preview',
 
 'save' => 'Save',
+
+'save_and_new' => 'Save & New',
+
+'save_and_close' => 'Save & Close',
 
 'save_changes' => 'Save changes',
 
@@ -199,6 +229,10 @@ $lang = array(
 
 'channel' => 'Channel',
 
+'check_all' => 'Check All',
+
+'clear_all' => 'Clear All',
+
 'create' => 'Create',
 
 'create_and_edit' => 'Create and Edit',
@@ -212,6 +246,9 @@ $lang = array(
 'entry' => 'Entry',
 
 'limit_by' => 'limit by',
+
+'keyword_search' =>
+'Keyword Search',
 
 'manage' => 'Manage',
 
@@ -231,7 +268,7 @@ $lang = array(
 
 'recent_entries' => 'Recent Entries',
 
-'select_all' => 'Select All',
+'select_all' => 'select all',
 
 'site' => 'Site',
 
@@ -385,6 +422,8 @@ $lang = array(
 
 'disable' => 'Disable',
 
+'edit' => 'Edit',
+
 'enable' => 'Enable',
 
 'filter_categories' => 'filter categories',
@@ -396,6 +435,8 @@ $lang = array(
 'form_validation_error' => 'There was a problem processing your submission, please check below and fix all errors.',
 
 'image' => 'Image',
+
+'keyword_filter' => 'keywords, hit enter',
 
 'log_out' => 'log out',
 

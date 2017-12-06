@@ -1,27 +1,14 @@
 <?php
-
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.5.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
- * ExpressionEngine OptionFieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Option Field type
  */
 abstract class OptionFieldtype extends EE_Fieldtype {
 
@@ -40,7 +27,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 			'Value',
 			'Label'
 		));
-		$grid->setNoResultsText(lang('no_value_label_pairs'), lang('add'));
+		$grid->setNoResultsText(lang('no_value_label_pairs'), lang('add_new'));
 		$grid->setBlankRow(array(
 			array('html' => form_input('value', '')),
 			array('html' => form_input('label', ''))
@@ -182,7 +169,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 				'title' => 'field_fmt',
 				'fields' => array(
 					'field_fmt' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => $format_options,
 						'value' => $data['field_fmt'],
 						'note' => form_label(
@@ -206,6 +193,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 					),
 					'value_label_pairs' => array(
 						'type' =>'html',
+						'margin_left' => TRUE,
 						'content' => ee('View')->make('ee:_shared/form/mini_grid')
 							->render($grid->viewData())
 					),
@@ -219,6 +207,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 					),
 					'field_list_items' => array(
 						'type' => 'textarea',
+						'margin_left' => TRUE,
 						'value' => $data['field_list_items']
 					)
 				)
@@ -237,9 +226,14 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 			);
 
 			$settings[1]['fields']['field_pre_populate_id'] = array(
-				'type' => 'select',
+				'type' => 'radio',
+				'margin_left' => TRUE,
 				'choices' => $this->get_channel_field_list(),
-				'value' => $data['field_pre_channel_id'] . '_' . $data['field_pre_field_id']
+				'value' => ($data['field_pre_channel_id'] != 0)
+					? $data['field_pre_channel_id'] . '_' . $data['field_pre_field_id'] : NULL,
+				'no_results' => [
+					'text' => sprintf(lang('no_found'), lang('fields'))
+				]
 			);
 		}
 
@@ -284,8 +278,14 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 		$grid = $this->getValueLabelMiniGrid($data);
 
 		ee()->javascript->output("
+			var miniGridInit = function(context) {
+				$('.fields-keyvalue', context).miniGrid({grid_min_rows:0,grid_max_rows:''});
+			}
 			Grid.bind('".$field_type."', 'displaySettings', function(column) {
-				$('.keyvalue', column).miniGrid({grid_min_rows:0,grid_max_rows:''});
+				miniGridInit(column);
+			});
+			FieldManager.on('fieldModalDisplay', function(modal) {
+				miniGridInit(modal);
 			});
 		");
 
@@ -295,7 +295,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 					'title' => 'field_fmt',
 					'fields' => array(
 						'field_fmt' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $format_options,
 							'value' => isset($data['field_fmt']) ? $data['field_fmt'] : 'none',
 						)
@@ -315,6 +315,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 						),
 						'value_label_pairs' => array(
 							'type' =>'html',
+							'margin_left' => TRUE,
 							'content' => ee('View')->make('ee:_shared/form/mini_grid')
 								->render($grid->viewData())
 						),
@@ -328,6 +329,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 						),
 						'field_list_items' => array(
 							'type' => 'textarea',
+							'margin_left' => TRUE,
 							'value' => isset($data['field_list_items']) ? $data['field_list_items'] : ''
 						)
 					)

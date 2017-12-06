@@ -1,35 +1,19 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Utilities;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
-
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Extensions CP Controller Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ *Extensions Controller
  */
 class Extensions extends Utilities {
 
@@ -53,9 +37,6 @@ class Extensions extends Utilities {
 		ee()->lang->loadfile('addons');
 
 		$this->params['perpage'] = $this->perpage; // Set a default
-
-		// Add in any submitted search phrase
-		ee()->view->search_value = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
 
 		$this->base_url = ee('CP/URL')->make('utilities/extensions');
 
@@ -83,11 +64,6 @@ class Extensions extends Utilities {
 		ee()->view->cp_heading = lang('manage_addon_extensions');
 
 		$vars = array();
-
-		if ( ! empty(ee()->view->search_value))
-		{
-			$this->base_url->setQueryStringVariable('search', ee()->view->search_value);
-		}
 
 		$data = array();
 

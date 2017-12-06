@@ -1,30 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
 
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Segment Helper
- *
- * @package		ExpressionEngine
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Custom Field Helper
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Encode multi select field data
@@ -45,14 +31,14 @@ function encode_multi_field($data = array())
 	// Escape pipes
 	foreach($data as $key => $val)
 	{
-		$data[$key] = str_replace(array('\\', '|'), array('\\\\', '\|'), $val);
+		$data[$key] = is_array($val)
+		    ? encode_multi_field($val)
+		    : str_replace(array('\\', '|'), array('\\\\', '\|'), $val);
 	}
 
 	// Implode on seperator
 	return implode('|', $data);
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Decode multi select field data

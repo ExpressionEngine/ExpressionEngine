@@ -1,27 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Channel Parser Component (Switch)
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Parser Component (Switch)
  */
 class EE_Channel_switch_parser implements EE_Channel_parser_component {
 
@@ -36,8 +23,6 @@ class EE_Channel_switch_parser implements EE_Channel_parser_component {
 		return ! $pre->has_tag('switch');
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * No preprocessing required.
 	 *
@@ -49,8 +34,6 @@ class EE_Channel_switch_parser implements EE_Channel_parser_component {
 	{
 		return NULL;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace the switch tag based on what step of the loop we're in.

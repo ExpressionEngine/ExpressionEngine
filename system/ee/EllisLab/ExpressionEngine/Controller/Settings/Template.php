@@ -1,33 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Settings;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Template Settings Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Template Settings Controller
  */
 class Template extends Settings {
 
@@ -56,13 +41,7 @@ class Template extends Settings {
 					'title' => 'strict_urls',
 					'desc' => 'strict_urls_desc',
 					'fields' => array(
-						'strict_urls' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							)
-						)
+						'strict_urls' => array('type' => 'yes_no')
 					)
 				),
 				array(
@@ -70,8 +49,10 @@ class Template extends Settings {
 					'desc' => 'site_404_desc',
 					'fields' => array(
 						'site_404' => array(
-							'type' => 'select',
-							'choices' => (ee()->admin_model->get_template_list()) ?: array(),
+							'type' => 'radio',
+							'choices' => $this->templateListSearch(),
+							'filter_url' => ee('CP/URL', 'settings/template/search-templates')->compile(),
+							'value' => ee()->config->item('site_404'),
 							'no_results' => array(
 								'text' => 'no_templates_found',
 								'link_text' => 'create_new_template',
@@ -92,13 +73,6 @@ class Template extends Settings {
 					'desc' => 'max_tmpl_revisions_desc',
 					'fields' => array(
 						'max_tmpl_revisions' => array('type' => 'text')
-					)
-				),
-				array(
-					'title' => 'save_tmpl_files',
-					'desc' => 'save_tmpl_files_desc',
-					'fields' => array(
-						'save_tmpl_files' => array('type' => 'yes_no')
 					)
 				),
 			)
@@ -128,8 +102,6 @@ class Template extends Settings {
 				ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), TRUE);
 			}
 
-			$this->updateTemplateFiles();
-
 			ee()->functions->redirect($base_url);
 		}
 		elseif (ee()->form_validation->errors_exist())
@@ -148,27 +120,38 @@ class Template extends Settings {
 		ee()->cp->render('settings/form', $vars);
 	}
 
-	/**
-	 * If templates need to be saved as files, then write them.
-	 */
-	protected function updateTemplateFiles()
+	private function templateListSearch()
 	{
-		$save_template_files = ee()->input->post('save_tmpl_files');
+		$search_query = ee('Request')->get('search');
 
-		if ($save_template_files == 'y')
+		$templates = ee('Model')->get('Template')
+			->with('TemplateGroup')
+			->order('TemplateGroup.group_name')
+			->order('Template.template_name');
+
+		if ($search_query)
 		{
-			$tgs = ee('Model')->get('TemplateGroup')->with('Templates')->all();
-			$tgs->Templates->save();
-			$tgs = NULL;
-
-			$snippets = ee('Model')->get('Snippet')->all();
-			$snippets->save();
-			$snippets = NULL;
-
-			$variables = ee('Model')->get('GlobalVariable')->all();
-			$variables->save();
-			$variables = NULL;
+			$templates = $templates = $templates->all()->filter(function($template) use ($search_query) {
+				return strpos(strtolower($template->getPath()), strtolower($search_query)) !== FALSE;
+			});
 		}
+		else
+		{
+			$templates = $templates->limit(100)->all();
+		}
+
+		$results = [];
+		foreach ($templates as $template)
+		{
+			$results[$template->getPath()] = $template->getPath();
+		}
+
+		return $results;
+	}
+
+	public function searchTemplates()
+	{
+		return json_encode($this->templateListSearch());
 	}
 }
 // END CLASS

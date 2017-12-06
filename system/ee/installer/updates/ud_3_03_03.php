@@ -1,27 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
- * @since		Version 3.3.3
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Update Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		http://ellislab.com
+ * Update
  */
 class Updater {
 
@@ -77,16 +64,16 @@ class Updater {
 	 */
 	private function update_category_fields()
 	{
-		$category_fields = ee('Model')->get('CategoryField')
-			->all()
-			->indexBy('field_id');
+		$category_fields = ee()->db->select('field_id', 'field_default_fmt')
+			->get('category_fields')
+			->result_array();
 
-		foreach ($category_fields as $id => $field)
+		foreach ($category_fields as $row)
 		{
 			ee()->db->update(
 				'category_field_data',
-				array('field_ft_'.$id => $field->field_default_fmt),
-				array('field_ft_'.$id => NULL)
+				array('field_ft_'.$row['field_id'] => $row['field_default_fmt']),
+				array('field_ft_'.$row['field_id'] => NULL)
 			);
 		}
 	}

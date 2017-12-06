@@ -1,23 +1,16 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Validation;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Validation Rule Base Class
+ * Validation Rule Base
  *
  * Represents a Validation Rule that can be applied to a value during any
  * Validation stage.  This can be either form validation or validation of data
@@ -30,12 +23,6 @@ namespace EllisLab\ExpressionEngine\Service\Validation;
  * this::
  *
  * 	class Required extends ValidationRule { ... }
- *
- * @package		ExpressionEngine
- * @subpackage	Validation
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 abstract class ValidationRule {
 

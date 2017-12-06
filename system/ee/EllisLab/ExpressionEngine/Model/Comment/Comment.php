@@ -1,33 +1,20 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Comment;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Comment Model
+ * Comment Model
  *
  * A model representing a comment on a Channel entry.
- *
- * @package		ExpressionEngine
- * @subpackage	Comment Module
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Comment extends Model {
 
@@ -68,7 +55,7 @@ class Comment extends Model {
 	protected static $_events = array(
 		'afterInsert',
 		'afterDelete',
-		'afterSave',
+		'afterUpdate',
 	);
 
 	protected $comment_id;
@@ -88,10 +75,22 @@ class Comment extends Model {
 
 	public function onAfterInsert()
 	{
-		if ($this->Author)
+		// only update stats for open comments
+		if ($this->status == 'o')
 		{
-			$this->Author->updateAuthorStats();
+			$this->updateCommentStats();
 		}
+
+		ee()->functions->clear_caching('all');
+	}
+
+	public function onAfterUpdate($changed)
+	{
+		if (isset($changed['status']) && $changed['status'] !== NULL)
+		{
+			$this->updateCommentStats();
+		}
+		ee()->functions->clear_caching('all');
 	}
 
 	public function onAfterDelete()
@@ -111,18 +110,12 @@ class Comment extends Model {
 		ee()->functions->clear_caching('all');
 	}
 
-	public function onAfterSave()
-	{
-		$this->updateCommentStats();
-		ee()->functions->clear_caching('all');
-	}
-
 	private function updateCommentStats()
 	{
 		$site_id = ($this->site_id) ?: ee()->config->item('site_id');
 		$now = ee()->localize->now;
 
-		$comments = $this->getFrontend()->get('Comment')
+		$comments = $this->getModelFacade()->get('Comment')
 			->filter('site_id', $site_id);
 
 		$total_comments = $comments->count();
@@ -134,7 +127,7 @@ class Comment extends Model {
 
 		$last_comment_date = ($last_comment) ? $last_comment->comment_date : 0;
 
-		$stats = $this->getFrontend()->get('Stats')
+		$stats = $this->getModelFacade()->get('Stats')
 			->filter('site_id', $site_id)
 			->first();
 
@@ -142,12 +135,16 @@ class Comment extends Model {
 		$stats->last_comment_date = $last_comment_date;
 		$stats->save();
 
-		// Update comment count for the entry
-		$total_entry_comments = $comments->filter('entry_id', $this->entry_id)->count();
-
 		// entry won't exist if we deleted comments because we deleted the entry
 		if ($this->Entry)
 		{
+			$entry_comments = $comments->filter('entry_id', $this->entry_id);
+
+			// Update comment count and most recent date for the entry
+			$total_entry_comments = $entry_comments->count();
+			$recent_comment = $entry_comments->fields('comment_date')
+				->order('comment_date', 'desc')
+				->first();
 
 			// There are times, espcially when deleting a ChannelEntry, that
 			// the related entry object isn't fully loaded, so we'll need
@@ -158,7 +155,14 @@ class Comment extends Model {
 			}
 
 			$this->Entry->comment_total = $total_entry_comments;
+			$this->Entry->recent_comment_date = ($recent_comment) ? $recent_comment->comment_date : 0;
 			$this->Entry->save();
+		}
+
+		// update member stats
+		if ($this->Author)
+		{
+			$this->Author->updateAuthorStats();
 		}
 	}
 

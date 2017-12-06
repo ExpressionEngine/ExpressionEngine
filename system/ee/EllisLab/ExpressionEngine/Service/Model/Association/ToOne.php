@@ -1,9 +1,19 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Model\Association;
 
 use EllisLab\ExpressionEngine\Service\Model\Collection;
 
+/**
+ * Model Service: To One Association
+ */
 class ToOne extends Association {
 
 	private $fk_value = NULL;

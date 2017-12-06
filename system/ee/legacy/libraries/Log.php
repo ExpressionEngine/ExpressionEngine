@@ -1,28 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * CodeIgniter
+ * ExpressionEngine (https://expressionengine.com)
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Logging Class
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Logging
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/general/errors.html
  */
 class EE_Log {
 
@@ -56,8 +42,6 @@ class EE_Log {
 			$this->_date_fmt = $config['log_date_format'];
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Write Log File

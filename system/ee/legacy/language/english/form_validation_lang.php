@@ -6,7 +6,7 @@ $lang = array(
 
 'alpha_dash' => 'This field may only contain alpha-numeric characters, underscores, and dashes.',
 
-'alpha_dash_period' => 'This field may only contain alpha-numeric characters, underscores, dashes, and periods.',
+'alpha_dash_period' => 'This field may only contain alpha-numeric characters, underscores, dashes, periods, and emojis.',
 
 'alpha_dash_space' => 'This field may only contain alpha-numeric characters, underscores, dashes, and spaces.',
 

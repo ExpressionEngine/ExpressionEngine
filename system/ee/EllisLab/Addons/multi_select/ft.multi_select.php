@@ -1,29 +1,16 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 require_once SYSPATH.'ee/legacy/fieldtypes/OptionFieldtype.php';
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// --------------------------------------------------------------------
-
-/**
- * ExpressionEngine Multi-Select Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Multi-Select Fieldtype
  */
 class Multi_select_ft extends OptionFieldtype {
 
@@ -45,12 +32,10 @@ class Multi_select_ft extends OptionFieldtype {
 		ee()->load->helper('custom_field');
 	}
 
-	// --------------------------------------------------------------------
-
 	function validate($data)
 	{
 		$selected = decode_multi_field($data);
-		$selected = empty($selected) ? array() : (array) $selected;
+		$selected = (empty($selected) || $selected == array('')) ? array() : (array) $selected;
 
 		// in case another field type was here
 		$field_options = $this->_get_field_options($data);
@@ -85,12 +70,13 @@ class Multi_select_ft extends OptionFieldtype {
 
 		if (REQ == 'CP')
 		{
-			return ee('View')->make('multi_select:publish')->render(array(
+			return ee('View')->make('ee:_shared/form/fields/select')->render([
 				'field_name' => $this->field_name,
-				'values'     => $values,
-				'options'    => $field_options,
-				'extra'      => $extra
-			));
+				'choices'    => $field_options,
+				'value'      => $values,
+				'multi'      => TRUE,
+				'disabled'   => $this->get_setting('field_disabled')
+			]);
 		}
 
 		$extra .= ' dir="'.$this->get_setting('field_text_direction', 'ltr').'" class="multiselect_input"';
@@ -103,14 +89,10 @@ class Multi_select_ft extends OptionFieldtype {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	function grid_display_field($data)
 	{
 		return $this->display_field(form_prep($data));
 	}
-
-	// --------------------------------------------------------------------
 
 	function replace_tag($data, $params = array(), $tagdata = FALSE)
 	{
@@ -125,6 +107,86 @@ class Multi_select_ft extends OptionFieldtype {
 		{
 			return $this->_parse_single($data, $params);
 		}
+	}
+
+	/**
+	 * :length modifier
+	 */
+	public function replace_length($data, $params = array(), $tagdata = FALSE)
+	{
+		return count(decode_multi_field($data));
+	}
+
+	/**
+	 * :attr_safe modifier
+	 */
+	public function replace_attr_safe($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_attr_safe($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :limit modifier
+	 */
+	public function replace_limit($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_limit($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :encrypt modifier
+	 */
+	public function replace_encrypt($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_encrypt($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :url_slug modifier
+	 */
+	public function replace_url_slug($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_url_slug($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :censor modifier
+	 */
+	public function replace_censor($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_censor($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :json modifier
+	 */
+	public function replace_json($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_json($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :replace modifier
+	 */
+	public function replace_replace($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_replace($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :url_encode modifier
+	 */
+	public function replace_url_encode($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_url_encode($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
+	}
+
+	/**
+	 * :url_decode modifier
+	 */
+	public function replace_url_decode($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_url_decode($this->replace_tag($data, $params, $tagdata), $params, $tagdata);
 	}
 
 	function display_settings($data)
@@ -153,8 +215,6 @@ class Multi_select_ft extends OptionFieldtype {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Accept all content types.
 	 *
@@ -176,8 +236,6 @@ class Multi_select_ft extends OptionFieldtype {
 
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

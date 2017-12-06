@@ -1,33 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Settings;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Debugging & Output Settings Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Debugging & Output Settings Controller
  */
 class DebugOutput extends Settings {
 
@@ -45,8 +30,9 @@ class DebugOutput extends Settings {
 						'debug' => array(
 							'type' => 'inline_radio',
 							'choices' => array(
-								'1' => 'enable',
-								'0' => 'disable'
+								'0' => 'debug_0',
+								'1' => 'debug_1',
+								'2' => 'debug_2',
 							)
 						)
 					)
@@ -55,13 +41,7 @@ class DebugOutput extends Settings {
 					'title' => 'show_profiler',
 					'desc' => 'show_profiler_desc',
 					'fields' => array(
-						'show_profiler' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							)
-						)
+						'show_profiler' => array('type' => 'yes_no')
 					)
 				),
 				array(
@@ -72,13 +52,7 @@ class DebugOutput extends Settings {
 						ee('Model')->get('DeveloperLog')->count()
 						),
 					'fields' => array(
-						'enable_devlog_alerts' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							)
-						)
+						'enable_devlog_alerts' => array('type' => 'yes_no')
 					)
 				)
 			),
@@ -109,7 +83,7 @@ class DebugOutput extends Settings {
 					'desc' => 'redirect_method_desc',
 					'fields' => array(
 						'redirect_method' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'redirect' => lang('redirect_method_opt_location'),
 								'refresh' => lang('redirect_method_opt_refresh')

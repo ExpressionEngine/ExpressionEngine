@@ -1,31 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Channels;
 
 use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Channel Set Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Set Controller
  */
 class Sets extends AbstractChannelsController {
 
@@ -34,7 +21,6 @@ class Sets extends AbstractChannelsController {
 	 */
 	public function index()
 	{
-		$this->generateSidebar('channel');
 		$base_url = ee('CP/URL', 'channels/sets');
 
 		$vars = array(
@@ -49,8 +35,10 @@ class Sets extends AbstractChannelsController {
 					array(
 						'title' => 'file_upload',
 						'fields' => array(
-							'set_file' => array('type' => 'file'),
-							'required' => TRUE
+							'set_file' => array(
+								'type' => 'file',
+								'required' => TRUE
+							)
 						)
 					),
 				)
@@ -94,7 +82,7 @@ class Sets extends AbstractChannelsController {
 		);
 
 		ee()->view->cp_page_title = lang('import_channel');
-		ee()->cp->render('channels/sets/index', $vars);
+		ee()->cp->render('settings/form', $vars);
 	}
 
 	/**
@@ -164,6 +152,22 @@ class Sets extends AbstractChannelsController {
 		if ($result->isValid())
 		{
 			$set->save();
+			$set->cleanUpSourceFiles();
+
+			ee()->session->set_flashdata(
+				'imported_channels',
+				$set->getIdsForElementType('channels')
+			);
+
+			ee()->session->set_flashdata(
+				'imported_category_groups',
+				$set->getIdsForElementType('category_groups')
+			);
+
+			ee()->session->set_flashdata(
+				'imported_field_groups',
+				$set->getIdsForElementType('field_groups')
+			);
 
 			$alert = ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
@@ -184,9 +188,10 @@ class Sets extends AbstractChannelsController {
 		}
 		else
 		{
+			$set->cleanUpSourceFiles();
 			$errors = $result->getErrors();
 			$model_errors = $result->getModelErrors();
-			foreach (array('Channel Field', 'Category') as $type)
+			foreach (array('Channel Field', 'Category', 'Category Group', 'Status') as $type)
 			{
 				if (isset($model_errors[$type]))
 				{
@@ -206,8 +211,6 @@ class Sets extends AbstractChannelsController {
 			ee()->functions->redirect(ee('CP/URL', 'channels/sets'));
 		}
 
-		$this->generateSidebar('channel');
-
 		$vars = $this->createAliasForm($set, $result);
 
 		ee()->view->cp_breadcrumbs = array(
@@ -215,7 +218,7 @@ class Sets extends AbstractChannelsController {
 		);
 
 		ee()->view->cp_page_title = lang('import_channel');
-		ee()->cp->render('channels/sets/index', $vars);
+		ee()->cp->render('settings/form', $vars);
 	}
 
 	private function createAliasForm($set, $result)
@@ -263,17 +266,20 @@ class Sets extends AbstractChannelsController {
 				if (isset($long_field))
 				{
 					$key = $model_name.'['.$ident.']['.$long_field.']';
-					$vars['sections'][$section.': '.$model->$title_field][] = array(
-						'title' => $long_field,
-						'fields' => array(
-							$key => array(
-								'type' => 'text',
-								'value' => $model->$long_field,
-								// 'required' => TRUE
+					if (isset($hidden[$key]))
+					{
+						$vars['sections'][$section.': '.$model->$title_field][] = array(
+							'title' => $long_field,
+							'fields' => array(
+								$key => array(
+									'type' => 'text',
+									'value' => $model->$long_field,
+									// 'required' => TRUE
+								)
 							)
-						)
-					);
-					unset($hidden[$key]);
+						);
+						unset($hidden[$key]);
+					}
 				}
 
 				$key = $model_name.'['.$ident.']['.$field.']';

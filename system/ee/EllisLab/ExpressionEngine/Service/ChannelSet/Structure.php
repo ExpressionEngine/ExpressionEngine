@@ -1,8 +1,16 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\ChannelSet;
 
 /**
+ * Channel Set Service
  * Helper class for all the crazy mixing and matching we have to do.
  */
 class Structure {
@@ -11,7 +19,6 @@ class Structure {
 		'ee:Channel' => array(),
 		'ee:ChannelFieldGroup' => array('ChannelFields' => 'ee:ChannelField'),
 		'ee:CategoryGroup' => array('Categories' => 'ee:Category'),
-		'ee:StatusGroup' => array('Statuses' => 'ee:Status'),
 		'ee:UploadDestination' => array(),
 	);
 

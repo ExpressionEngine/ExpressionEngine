@@ -1,27 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.8
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Dummy Caching Class
- *
- * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Dummy Caching
  */
 class EE_Cache_dummy extends CI_Driver {
 
@@ -38,8 +25,6 @@ class EE_Cache_dummy extends CI_Driver {
 		return FALSE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Cache Save
 	 *
@@ -53,8 +38,6 @@ class EE_Cache_dummy extends CI_Driver {
 		return TRUE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Delete from Cache
 	 *
@@ -66,8 +49,6 @@ class EE_Cache_dummy extends CI_Driver {
 		return TRUE;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Clean the cache
 	 *
@@ -77,8 +58,6 @@ class EE_Cache_dummy extends CI_Driver {
 	{
 		return TRUE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Cache Info
@@ -90,8 +69,6 @@ class EE_Cache_dummy extends CI_Driver {
 		 return FALSE;
 	 }
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Get Cache Metadata
 	 *
@@ -102,8 +79,6 @@ class EE_Cache_dummy extends CI_Driver {
 	{
 		return FALSE;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Is this caching driver supported on the system?

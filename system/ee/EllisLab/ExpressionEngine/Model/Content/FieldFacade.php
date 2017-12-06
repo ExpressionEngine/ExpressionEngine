@@ -1,7 +1,17 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Content;
 
+/**
+ * Content Field Facade
+ */
 class FieldFacade {
 
 	private $id;
@@ -14,6 +24,7 @@ class FieldFacade {
 	private $content_id;
 	private $content_type;
 	private $value;
+	private $api;
 
 	/**
 	 * @var Flag to ensure defaults are only loaded once
@@ -22,6 +33,9 @@ class FieldFacade {
 
 	public function __construct($field_id, array $metadata)
 	{
+		ee()->legacy_api->instantiate('channel_fields');
+		$this->api = clone ee()->api_channel_fields;
+
 		$this->id = $field_id;
 		$this->metadata = $metadata;
 	}
@@ -61,7 +75,7 @@ class FieldFacade {
 		$this->content_type = $type;
 	}
 
-	public function getContentType($type)
+	public function getContentType()
 	{
 		return $this->content_type;
 	}
@@ -145,8 +159,7 @@ class FieldFacade {
 
 	public function getTypeName()
 	{
-		ee()->legacy_api->instantiate('channel_fields');
-		$fts = ee()->api_channel_fields->fetch_all_fieldtypes();
+		$fts = $this->api->fetch_all_fieldtypes();
 		$type = $this->getType();
 		return $fts[$type]['name'];
 	}
@@ -155,7 +168,7 @@ class FieldFacade {
 	{
 		$this->initField();
 
-		$result = ee()->api_channel_fields->apply('validate', array($value));
+		$result = $this->api->apply('validate', array($value));
 
 		if (is_array($result))
 		{
@@ -186,14 +199,14 @@ class FieldFacade {
 
 		$value = $this->data;
 		$this->initField();
-		return $this->data = ee()->api_channel_fields->apply('save', array($value, $model));
+		return $this->data = $this->api->apply('save', array($value, $model));
 	}
 
 	public function postSave()
 	{
 		$value = $this->data;
 		$this->initField();
-		return $this->data = ee()->api_channel_fields->apply('post_save', array($value));
+		return $this->data = $this->api->apply('post_save', array($value));
 	}
 
 	public function getForm()
@@ -202,14 +215,14 @@ class FieldFacade {
 
 		$field_value = $data['field_data'];
 
-		return ee()->api_channel_fields->apply('display_publish_field', array($field_value));
+		return $this->api->apply('display_publish_field', array($field_value));
 	}
 
 	public function getSettingsForm()
 	{
 		ee()->load->library('table');
 		$data = $this->initField();
-		$out = ee()->api_channel_fields->apply('display_settings', array($data));
+		$out = $this->api->apply('display_settings', array($data));
 
 		if ($out == '')
 		{
@@ -222,13 +235,13 @@ class FieldFacade {
 	public function validateSettingsForm($settings)
 	{
 		$this->initField();
-		return ee()->api_channel_fields->apply('validate_settings', array($settings));
+		return $this->api->apply('validate_settings', array($settings));
 	}
 
 	public function saveSettingsForm($data)
 	{
 		$this->initField();
-		return ee()->api_channel_fields->apply('save_settings', array($data));
+		return $this->api->apply('save_settings', array($data));
 	}
 
 	/**
@@ -237,13 +250,13 @@ class FieldFacade {
 	public function postSaveSettings($data)
 	{
 		$this->initField();
-		return ee()->api_channel_fields->apply('post_save_settings', array($data));
+		return $this->api->apply('post_save_settings', array($data));
 	}
 
 	public function delete()
 	{
 		$this->initField();
-		return ee()->api_channel_fields->apply('delete', array(array($this->getContentId())));
+		return $this->api->apply('delete', array(array($this->getContentId())));
 	}
 
 	public function getStatus()
@@ -255,7 +268,48 @@ class FieldFacade {
 			$data['field_data']
 		);
 
-		return ee()->api_channel_fields->apply('get_field_status', array($field_value));
+		return $this->api->apply('get_field_status', array($field_value));
+	}
+
+	public function replaceTag($tagdata, $params = array(), $modifier = '')
+	{
+		$ft = $this->getNativeField();
+
+		$this->initField();
+
+		$data = $this->getItem('row');
+
+		$this->api->apply('_init', array(array(
+			'row'          => $data,
+			'content_id'   => $this->content_id,
+			'content_type' => $this->content_type,
+		)));
+
+		$data = $this->api->apply('pre_process', array(
+			$data['field_id_'.$this->getId()]
+		));
+
+		$parse_fnc = ($modifier) ? 'replace_'.$modifier : 'replace_tag';
+
+		$output = '';
+
+		if (method_exists($ft, $parse_fnc))
+		{
+			$output = $this->api->apply($parse_fnc, array($data, $params, $tagdata));
+		}
+		// Go to catchall and include modifier
+		elseif (method_exists($ft, 'replace_tag_catchall') AND $modifier !== '')
+		{
+			$output = $this->api->apply('replace_tag_catchall', array($data, $params, $tagdata, $modifier));
+		}
+
+		return $output;
+	}
+
+	public function acceptsContentType($name)
+	{
+		$ft = $this->getNativeField();
+		return $ft->accepts_content_type($name);
 	}
 
 
@@ -263,7 +317,11 @@ class FieldFacade {
 	public function getNativeField()
 	{
 		$data = $this->initField();
-		return ee()->api_channel_fields->setup_handler($this->getType(), TRUE);
+		$ft = $this->api->setup_handler($this->getType(), TRUE);
+		ee()->api_channel_fields->field_type = $this->api->field_type;
+		ee()->api_channel_fields->field_types = array_merge(ee()->api_channel_fields->field_types, $this->api->field_types);
+		ee()->api_channel_fields->ft_paths = array_merge(ee()->api_channel_fields->ft_paths, $this->api->ft_paths);
+		return $ft;
 	}
 
 
@@ -281,7 +339,7 @@ class FieldFacade {
          $info = $this->metadata;
          $info = array_merge($defaults, $info);
 
-         if (is_null($this->format) && isset($info['field_fmt']))
+         if (is_null($this->getFormat()) && isset($info['field_fmt']))
          {
              $this->setFormat($info['field_fmt']);
          }
@@ -293,8 +351,8 @@ class FieldFacade {
 
 		$data = $this->setupField();
 
-		ee()->api_channel_fields->setup_handler($data['field_id']);
-		ee()->api_channel_fields->apply('_init', array(array(
+		$this->api->setup_handler($data['field_id']);
+		$this->api->apply('_init', array(array(
 			'content_id' => $this->content_id,
 			'content_type' => $this->content_type
 		)));
@@ -305,7 +363,7 @@ class FieldFacade {
 	protected function setupField()
 	{
 		$field_dt = $this->timezone;
-		$field_fmt = $this->format;
+		$field_fmt = $this->getFormat();
 		$field_data = $this->data;
 		$field_name = $this->getName();
 
@@ -332,8 +390,7 @@ class FieldFacade {
 
 		$settings = array_merge($info, $settings, $field_settings);
 
-		ee()->legacy_api->instantiate('channel_fields');
-		ee()->api_channel_fields->set_settings($info['field_id'], $settings);
+		$this->api->set_settings($info['field_id'], $settings);
 
 		return $settings;
 	}

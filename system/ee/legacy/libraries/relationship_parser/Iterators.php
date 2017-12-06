@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Parse Node Iteratior
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Parse Node Iteratior
  *
  * Does not go the into query node's children.
  */
@@ -46,8 +34,6 @@ class ParseNodeIterator extends EE_TreeIterator {
 
 		return FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Override RecursiveArrayIterator's get child method to make sure
@@ -77,18 +63,10 @@ class ParseNodeIterator extends EE_TreeIterator {
 		return $this->ref->newInstance($children);
 	}
 }
-
-
-// ------------------------------------------------------------------------
+// END CLASS
 
 /**
  * ExpressionEngine Query Node Iteratior
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  *
  * Iterates all of the tree's query nodes even if there are parse
  * nodes in between.
@@ -116,8 +94,6 @@ class QueryNodeIterator extends EE_TreeIterator {
 		return ! empty($children);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Override RecursiveArrayIterator's get child method to skip
 	 * ahead into the __children__ array and not try to iterate
@@ -139,5 +115,6 @@ class QueryNodeIterator extends EE_TreeIterator {
 		return $this->ref->newInstance($children);
 	}
 }
+// END CLASS
 
 // EOF

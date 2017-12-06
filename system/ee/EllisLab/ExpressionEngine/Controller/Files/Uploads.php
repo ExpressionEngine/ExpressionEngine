@@ -1,8 +1,13 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Files;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 
@@ -11,27 +16,7 @@ use EllisLab\ExpressionEngine\Service\Model\Collection;
 use EllisLab\ExpressionEngine\Controller\Files\AbstractFiles as AbstractFilesController;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Uploads Directories Settings Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Uploads Directories Settings Controller
  */
 class Uploads extends AbstractFilesController {
 
@@ -44,8 +29,6 @@ class Uploads extends AbstractFilesController {
 	function __construct()
 	{
 		parent::__construct();
-
-		$this->stdHeader();
 
 		ee()->load->library('form_validation');
 	}
@@ -60,6 +43,7 @@ class Uploads extends AbstractFilesController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
+		$this->stdHeader();
 		$this->generateSidebar(NULL);
 		return $this->form();
 	}
@@ -77,6 +61,7 @@ class Uploads extends AbstractFilesController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
+		$this->stdHeader($upload_id);
 		$this->generateSidebar($upload_id);
 		return $this->form($upload_id);
 	}
@@ -146,7 +131,14 @@ class Uploads extends AbstractFilesController {
 					->addToBody(lang('directory_saved_desc'))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $new_upload_id));
+				if (ee('Request')->post('submit') == 'save_and_new')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('files/uploads/create'));
+				}
+				else
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('files/uploads/edit/'.$new_upload_id));
+				}
 			}
 			else
 			{
@@ -210,7 +202,7 @@ class Uploads extends AbstractFilesController {
 					'desc' => '',
 					'fields' => array(
 						'allowed_types' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'img' => lang('upload_allowed_types_opt_images'),
 								'all' => lang('upload_allowed_types_opt_all')
@@ -296,9 +288,11 @@ class Uploads extends AbstractFilesController {
 				'fields' => array(
 					'upload_member_groups' => array(
 						'type' => 'checkbox',
-						'wrap' => TRUE,
 						'choices' => $member_groups,
-						'value' => $allowed_groups
+						'value' => $allowed_groups,
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('member_groups'))
+						]
 					)
 				)
 			)
@@ -327,16 +321,32 @@ class Uploads extends AbstractFilesController {
 			'fields' => array(
 				'cat_group' => array(
 					'type' => 'checkbox',
-					'wrap' => TRUE,
 					'choices' => $cat_group_options,
-					'value' => ($upload_destination) ? explode('|', $upload_destination->cat_group) : array()
+					'value' => ($upload_destination) ? explode('|', $upload_destination->cat_group) : array(),
+					'no_results' => [
+						'text' => sprintf(lang('no_found'), lang('category_groups'))
+					]
 				)
 			)
 		);
 
 		ee()->view->ajax_validate = TRUE;
-		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('upload_directory'));
-		ee()->view->save_btn_text_working = 'btn_saving';
+		ee()->view->buttons = [
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save',
+				'text' => 'save',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_new',
+				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			]
+		];
 
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('files'), lang('file_manager'));
 
@@ -371,6 +381,9 @@ class Uploads extends AbstractFilesController {
 				'image_manip_height' => array(
 					'desc'  => 'image_manip_height_desc'
 				),
+				'image_manip_quality' => array(
+					'desc'  => 'image_manip_quality_desc'
+				),
 				'image_manip_watermark' => array(
 					'desc'  => 'image_manip_watermark_desc'
 				)
@@ -402,6 +415,7 @@ class Uploads extends AbstractFilesController {
 					'resize_type'  => $columns['resize_type'],
 					'width'        => $columns['width'],
 					'height'       => $columns['height'],
+					'quality'      => $columns['quality'],
 					'watermark_id' => $columns['watermark_id'],
 				);
 			}
@@ -454,10 +468,11 @@ class Uploads extends AbstractFilesController {
 	private function getGridRow($watermarks_choices, $size = array())
 	{
 		$defaults = array(
-			'short_name' => '',
-			'resize_type' => '',
-			'width' => '',
-			'height' => '',
+			'short_name'   => '',
+			'resize_type'  => '',
+			'width'        => '',
+			'height'       => '',
+			'quality'      => 90,
 			'watermark_id' => ''
 		);
 
@@ -487,6 +502,10 @@ class Uploads extends AbstractFilesController {
 			array(
 				'html' => form_input('height', $size['height']),
 				'error' => $this->getGridFieldError($size, 'height')
+			),
+			array(
+				'html' => form_input('quality', $size['quality']),
+				'error' => $this->getGridFieldError($size, 'quality')
 			),
 			array(
 				'html' => form_dropdown(
@@ -526,17 +545,12 @@ class Uploads extends AbstractFilesController {
 	 */
 	private function getAllowedGroups($upload_destination = NULL)
 	{
-		$groups = ee('Model')->get('MemberGroup')
+		$member_groups = ee('Model')->get('MemberGroup')
 			->filter('group_id', 'NOT IN', array(1,2,3,4))
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('group_title')
-			->all();
-
-		$member_groups = array();
-		foreach ($groups as $group)
-		{
-			$member_groups[$group->group_id] = htmlentities($group->group_title, ENT_QUOTES, 'UTF-8');
-		}
+			->all()
+			->getDictionary('group_id', 'group_title');
 
 		if ( ! empty($_POST))
 		{
@@ -670,6 +684,11 @@ class Uploads extends AbstractFilesController {
 				$model->width = 0;
 			}
 
+			if ($model->quality === '')
+			{
+				$model->quality = 90;
+			}
+
 			$result = $model->validate();
 
 			if ( ! $result->isValid())
@@ -698,6 +717,7 @@ class Uploads extends AbstractFilesController {
 			ee()->functions->redirect(ee('CP/URL')->make('files/uploads'));
 		}
 
+		$this->stdHeader($upload_id);
 		$this->generateSidebar($upload_id);
 		ee()->load->model('file_upload_preferences_model');
 
@@ -750,8 +770,10 @@ class Uploads extends AbstractFilesController {
 		foreach ($sizes as $size)
 		{
 			// For checkboxes
-			$size_choices[$size->id] = $size->short_name .
-				' <i>' . lang($size->resize_type) . ', ' . $size->width . 'px ' . lang('by') . ' ' . $size->height . 'px</i>';
+			$size_choices[$size->id] = [
+				'label' => $size->short_name,
+				'instructions' => lang($size->resize_type) . ', ' . $size->width . 'px ' . lang('by') . ' ' . $size->height . 'px'
+			];
 
 			// For JS sync script
 			$js_size[$size->upload_location_id][$size->id] = array(
@@ -759,6 +781,7 @@ class Uploads extends AbstractFilesController {
 				'resize_type'  => $size->resize_type,
 				'width'        => $size->width,
 				'height'       => $size->height,
+				'quality'      => $size->quality,
 				'watermark_id' => $size->watermark_id
 			);
 		}
@@ -772,7 +795,10 @@ class Uploads extends AbstractFilesController {
 				'fields' => array(
 					'sizes' => array(
 						'type' => 'checkbox',
-						'choices' => $size_choices
+						'choices' => $size_choices,
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('image_manipulations'))
+						]
 					)
 				)
 			);

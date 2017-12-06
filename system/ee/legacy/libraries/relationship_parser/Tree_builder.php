@@ -1,33 +1,18 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
  require_once APPPATH.'libraries/datastructures/Tree.php';
  require_once APPPATH.'libraries/relationship_parser/Nodes.php';
  require_once APPPATH.'libraries/relationship_parser/Iterators.php';
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Tree Builder Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Tree Builder
  */
 class EE_relationship_tree_builder {
 
@@ -40,10 +25,12 @@ class EE_relationship_tree_builder {
 	protected $grid_relationship_names = NULL;			// grid_field_id => gridprefix:field_name
 	protected $grid_field_id = NULL;
 
+	protected $fluid_field_data_id = NULL;
+
 	/**
 	 * Create a tree builder for the given relationship fields
 	 */
-	public function __construct(array $relationship_fields, array $grid_relationships = array(), $grid_field_id = NULL)
+	public function __construct(array $relationship_fields, array $grid_relationships = array(), $grid_field_id = NULL, $fluid_field_data_id = NULL)
 	{
 		foreach ($relationship_fields as $site_id => $fields)
 		{
@@ -62,9 +49,9 @@ class EE_relationship_tree_builder {
 		$this->grid_relationship_ids = $grid_relationships;
 		$this->grid_relationship_names = array_flip($grid_relationships);
 		$this->grid_field_id = $grid_field_id;
-	}
 
-	// --------------------------------------------------------------------
+		$this->fluid_field_data_id = $fluid_field_data_id;
+	}
 
 	/**
 	 * Find All Relationships of the Given Entries in the Template
@@ -140,7 +127,7 @@ class EE_relationship_tree_builder {
 			// Store flattened ids for the big entry query
 			$all_entry_ids[] = $this->_propagate_ids(
 				$node,
-				ee()->relationship_model->node_query($node, $entry_ids, $this->grid_field_id)
+				ee()->relationship_model->node_query($node, $entry_ids, $this->grid_field_id, $this->fluid_field_data_id)
 			);
 		}
 
@@ -151,8 +138,6 @@ class EE_relationship_tree_builder {
 
 		return $root;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create a parser from our collected tree.
@@ -211,8 +196,6 @@ class EE_relationship_tree_builder {
 
 		return new EE_Relationship_data_parser($root, $entry_lookup, $category_lookup);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Turn the tagdata hierarchy into a tree
@@ -280,6 +263,7 @@ class EE_relationship_tree_builder {
 
 			$tag_name = rtrim($relationship_prefix, ':');
 			$in_grid = array_key_exists($relationship_prefix, $this->grid_relationship_ids);
+			$in_fluid_field = (bool) ($this->fluid_field_data_id && $this->fluid_field_data_id > 0);
 
 			if ($in_grid && $match[2])
 			{
@@ -333,7 +317,7 @@ class EE_relationship_tree_builder {
 
 			// prep parameters
 			list($tag, $parameters) = preg_split("/\s+/", $match[2].' ', 2);
-			$params = ee()->functions->assign_parameters($parameters);
+			$params = ee('Variables/Parser')->parseTagParameters($parameters);
 			$params = $params ? $params : array();
 
 
@@ -356,10 +340,11 @@ class EE_relationship_tree_builder {
 				'shortcut'	  => $is_only_relationship ? FALSE : ltrim($tag, ':'),
 				'open_tag'	  => $match[0],
 				'in_grid'	  => $in_grid,
+				'in_fluid_field' => $in_fluid_field,
 				'in_cond' => $type == 'conditional' ? TRUE : FALSE
 			));
 
-			if ($is_only_relationship)
+			if ($is_only_relationship && ! $node->in_cond)
 			{
 				$open_nodes[$tag_name] = $node;
 			}
@@ -376,8 +361,6 @@ class EE_relationship_tree_builder {
 
 		return $root;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Push the id graph onto the tag graph.
@@ -514,8 +497,6 @@ class EE_relationship_tree_builder {
 
 		return call_user_func_array('array_merge', $all_entry_ids);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Parse Paths to Leaves

@@ -1,26 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Core Table Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Table
  */
 class EE_Table {
 
@@ -64,8 +52,6 @@ class EE_Table {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the base url
 	 *
@@ -79,8 +65,6 @@ class EE_Table {
 	{
 		$this->base_url = $url;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Force non-ajax behvavior
@@ -96,8 +80,6 @@ class EE_Table {
 	{
 		$this->no_ajax = TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Setup the datasource
@@ -208,8 +190,6 @@ class EE_Table {
 		return $data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Setup columns
 	 *
@@ -252,8 +232,6 @@ class EE_Table {
 		$this->column_config = $cols;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set data
 	 *
@@ -293,8 +271,6 @@ class EE_Table {
 
 		$this->rows = $table_data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Setup columns
@@ -392,8 +368,6 @@ class EE_Table {
 		$this->template['table_open'] = $open_bak;
 		return $table;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generate the table
@@ -576,8 +550,6 @@ class EE_Table {
 		return $out;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Clears the table arrays.  Useful if multiple tables are being generated
 	 *
@@ -600,8 +572,6 @@ class EE_Table {
 		$this->auto_heading		= TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the template
 	 *
@@ -619,8 +589,6 @@ class EE_Table {
 		$this->template = $template;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the table heading
 	 *
@@ -636,8 +604,6 @@ class EE_Table {
 		$this->heading = $this->_prep_args($args);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the table footer
 	 *
@@ -652,8 +618,6 @@ class EE_Table {
 		$args = func_get_args();
 		$this->footer = $this->_prep_args($args);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set columns.  Takes a one-dimensional array as input and creates
@@ -701,8 +665,6 @@ class EE_Table {
 		return $new;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set "empty" cells
 	 *
@@ -716,8 +678,6 @@ class EE_Table {
 	{
 		$this->empty_cells = $value;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add a table row
@@ -733,8 +693,6 @@ class EE_Table {
 		$args = func_get_args();
 		$this->rows[] = $this->_prep_args($args);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep Args
@@ -782,8 +740,6 @@ class EE_Table {
 		return $args;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add a table caption
 	 *
@@ -795,8 +751,6 @@ class EE_Table {
 	{
 		$this->caption = $caption;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set table data from a database result object
@@ -834,8 +788,6 @@ class EE_Table {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set table data from an array
 	 *
@@ -866,8 +818,6 @@ class EE_Table {
 			$i++;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Compile Template
@@ -905,8 +855,6 @@ class EE_Table {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Default Template
@@ -946,8 +894,6 @@ class EE_Table {
 			'table_close'        => '</table>'
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Setup table pagination

@@ -1,34 +1,20 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Stats Library
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Libraries
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Stats Library
  */
-
 class EE_Stats {
 
 	protected $_statdata	= array();
 
 	var $stats_cache = array();
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update statistics
@@ -228,8 +214,6 @@ class EE_Stats {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch Channel Ids
 	 *
@@ -258,8 +242,6 @@ class EE_Stats {
 
 		return $channel_ids;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update Member Stats
@@ -292,8 +274,6 @@ class EE_Stats {
 
 		ee()->db->update('stats', $data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update Channel Stats
@@ -384,8 +364,6 @@ class EE_Stats {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Comment Stats
 	 *
@@ -470,8 +448,6 @@ class EE_Stats {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Channel's Comment Stats
 	 *
@@ -534,8 +510,6 @@ class EE_Stats {
 
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Channel Title Stats
 	 *
@@ -574,8 +548,6 @@ class EE_Stats {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Author's Comment Stats
 	 *
@@ -605,8 +577,6 @@ class EE_Stats {
 							->update('members');
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load Stats
@@ -736,8 +706,6 @@ class EE_Stats {
 		unset($query);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Statdata
 	 *
@@ -762,8 +730,6 @@ class EE_Stats {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set statdata
 	 *
@@ -777,8 +743,6 @@ class EE_Stats {
 	{
 		$this->_statdata[$key] = $val;
 	}
-
-	// --------------------------------------------------------------------
 
 }
 // END CLASS

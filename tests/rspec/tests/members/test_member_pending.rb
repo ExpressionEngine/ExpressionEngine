@@ -9,29 +9,29 @@ feature 'Pending Member List' do
   end
 
   it 'shows the Pending Member List page' do
-    @page.should have_member_search
+    @page.should have_keyword_search
     @page.should have_member_table
     @page.should have(2).members
   end
 
   # Confirming phrase search
   it 'searches by phrases' do
-    @page.phrase_search.set 'pending1'
-    @page.search_submit_button.click
+    @page.keyword_search.set 'pending1'
+    @page.keyword_search.send_keys(:enter)
     no_php_js_errors
 
     @page.heading.text.should eq 'Search Results we found 1 results for "pending1"'
-    @page.phrase_search.value.should eq 'pending1'
+    @page.keyword_search.value.should eq 'pending1'
     @page.should have_text 'pending1'
     @page.should have(1).members
   end
 
   it 'shows no results on a failed search'  do
-    @page.phrase_search.set 'admin'
-    @page.search_submit_button.click
+    @page.keyword_search.set 'admin'
+    @page.keyword_search.send_keys(:enter)
 
     @page.heading.text.should eq 'Search Results we found 0 results for "admin"'
-    @page.phrase_search.value.should eq 'admin'
+    @page.keyword_search.value.should eq 'admin'
     @page.should have_no_results
     @page.should_not have_pagination
   end

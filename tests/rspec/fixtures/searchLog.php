@@ -63,7 +63,7 @@ $default_terms = array(
 
 for ($x = 0; $x < $count; $x++)
 {
-	$fixture = $api->make('SearchLog');
+	$fixture = ee('Model')->make('SearchLog');
 	$fixture->site_id = $site_id;
 	$fixture->member_id = $member_id;
 	$fixture->screen_name = $screen_name;

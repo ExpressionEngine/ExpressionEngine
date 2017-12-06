@@ -1,29 +1,16 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 use EllisLab\Addons\FilePicker\FilePicker;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// --------------------------------------------------------------------
-
-/**
- * ExpressionEngine Textarea Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Textarea Fieldtype
  */
 class Textarea_ft extends EE_Fieldtype {
 
@@ -34,14 +21,10 @@ class Textarea_ft extends EE_Fieldtype {
 
 	var $has_array_data = FALSE;
 
-	// --------------------------------------------------------------------
-
 	function validate($data)
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	function display_field($data)
 	{
@@ -50,6 +33,7 @@ class Textarea_ft extends EE_Fieldtype {
 			&& ! ee()->session->cache(__CLASS__, 'markitup_initialized'))
 		{
 			$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))
+				->fields('member_id')
 				->first();
 
 			// channel form only uses formatting buttons in the {custom_fields}{/custom_fields}
@@ -87,7 +71,7 @@ class Textarea_ft extends EE_Fieldtype {
 			ee()->cp->add_js_script(array('plugin' => array('markitup')));
 			ee()->javascript->output('
 				$("textarea[data-markitup]")
-					.not(".grid-textarea textarea")
+					.not(".grid-textarea textarea, .fluid-item textarea")
 					.markItUp(EE.markitup.settings);
 
 				$("li.html-upload").addClass("m-link").attr({
@@ -100,6 +84,16 @@ class Textarea_ft extends EE_Fieldtype {
 					$("textarea[data-markitup]", cell).markItUp(EE.markitup.settings);
 
 					$("li.html-upload", cell).addClass("m-link").attr({
+						rel: "modal-file",
+						href: "'.ee('CP/URL')->make('addons/settings/filepicker/modal', array('directory' => 'all')).'"
+					});
+				});
+
+				FluidField.on("textarea", "add", function(field)
+				{
+					$("textarea[data-markitup]", field).markItUp(EE.markitup.settings);
+
+					$("li.html-upload", field).addClass("m-link").attr({
 						rel: "modal-file",
 						href: "'.ee('CP/URL')->make('addons/settings/filepicker/modal', array('directory' => 'all')).'"
 					});
@@ -200,8 +194,6 @@ class Textarea_ft extends EE_Fieldtype {
 		return form_textarea($params);
 	}
 
-	// --------------------------------------------------------------------
-
 	function replace_tag($data, $params = '', $tagdata = '')
 	{
 		// Experimental parameter, do not use
@@ -222,8 +214,6 @@ class Textarea_ft extends EE_Fieldtype {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Accept all content types.
 	 *
@@ -234,8 +224,6 @@ class Textarea_ft extends EE_Fieldtype {
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	function display_settings($data)
 	{
@@ -257,7 +245,7 @@ class Textarea_ft extends EE_Fieldtype {
 				'title' => 'field_fmt',
 				'fields' => array(
 					'field_fmt' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => $format_options,
 						'value' => isset($data['field_fmt']) ? $data['field_fmt'] : 'none',
 						'note' => form_label(
@@ -293,7 +281,7 @@ class Textarea_ft extends EE_Fieldtype {
 			'title' => 'field_text_direction',
 			'fields' => array(
 				'field_text_direction' => array(
-					'type' => 'select',
+					'type' => 'radio',
 					'choices' => array(
 						'ltr' => lang('field_text_direction_ltr'),
 						'rtl' => lang('field_text_direction_rtl')
@@ -338,11 +326,7 @@ class Textarea_ft extends EE_Fieldtype {
 				)
 			);
 
-			$emoticons_installed = ee('Model')->get('Module')
-				->filter('module_name', 'Emoticon')
-				->count();
-
-			if ( ! $emoticons_installed)
+			if ( ! ee('Addon')->get('emoticon')->isInstalled())
 			{
 				unset($field_tools['fields']['field_show_smileys']);
 			}
@@ -362,14 +346,10 @@ class Textarea_ft extends EE_Fieldtype {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	function grid_save_settings($data)
 	{
 		return array_merge($this->save_settings($data), $data);
 	}
-
-	// --------------------------------------------------------------------
 
 	function save_settings($data)
 	{
@@ -383,8 +363,6 @@ class Textarea_ft extends EE_Fieldtype {
 
 		return array_intersect_key($all, $defaults);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

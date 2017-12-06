@@ -1,26 +1,17 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 require_once APPPATH.'libraries/relationship_parser/Exceptions.php';
 require_once APPPATH.'libraries/relationship_parser/Tree_builder.php';
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Relationship Class
+ * Relationship
  *
  *
  * Takes an array of field_ids that correspond to the ids of the
@@ -94,13 +85,6 @@ require_once APPPATH.'libraries/relationship_parser/Tree_builder.php';
  * of which may not be on the current tree, we cannot rely on the tree to
  * provide us with parent information. Instead we add a query with an inverted
  * tree at those edge-case locations.
- *
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class EE_Relationships_parser {
 
@@ -108,8 +92,6 @@ class EE_Relationships_parser {
 	{
 		ee()->load->model('relationship_model');
 	}
-
- 	// --------------------------------------------------------------------
 
 	/**
 	 * Get a relationship parser and query object, populated with the
@@ -120,7 +102,7 @@ class EE_Relationships_parser {
 	 * @return Relationship_Parser	The parser object with the parsed out
 	 *								hierarchy and all of the entry data.
 	 */
-	public function create(array $relationship_fields, array $entry_ids, $tagdata = NULL, array $grid_relationships = array(), $grid_field_id = NULL)
+	public function create(array $relationship_fields, array $entry_ids, $tagdata = NULL, array $grid_relationships = array(), $grid_field_id = NULL, $fluid_field_data_id = NULL)
 	{
 		if ( ! empty($relationship_fields) && ! is_array(current($relationship_fields)))
 		{
@@ -132,7 +114,7 @@ class EE_Relationships_parser {
 			$tagdata = ee()->TMPL->tagdata;
 		}
 
-		$builder = new EE_relationship_tree_builder($relationship_fields, $grid_relationships, $grid_field_id);
+		$builder = new EE_relationship_tree_builder($relationship_fields, $grid_relationships, $grid_field_id, $fluid_field_data_id);
 
 		$tree = $builder->build_tree($entry_ids, $tagdata);
 

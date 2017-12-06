@@ -1,31 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Menu;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.4
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Menu Set Model
- *
- * @package		ExpressionEngine
- * @subpackage	Session
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Menu Set Model
  */
 class MenuSet extends Model {
 
@@ -52,4 +39,46 @@ class MenuSet extends Model {
 	protected $set_id;
 	protected $name;
 
+	/**
+	 * Builds a tree of menu set items in the current menu set for use in a
+	 * SelectField form
+	 *
+	 * @param array Items tree
+	 */
+	public function buildItemsTree()
+	{
+		return $this->buildTreeForItems(
+			$this->Items->filter('parent_id', 0)->sortBy('sort')
+		);
+	}
+
+	/**
+	 * Turn the items collection into a nested array of ids => names
+	 *
+	 * @param Collection $items Top level items to construct tree out of
+	 * @return array Items tree
+	 */
+	protected function buildTreeForItems($items)
+	{
+		$list = array();
+
+		foreach ($items as $item)
+		{
+			$children = $item->Children->sortBy('sort');
+
+			if (count($children))
+			{
+				$list[$item->getId()] = array(
+					'name' => $item->name,
+					'children' => $this->buildTreeForItems($children)
+				);
+
+				continue;
+			}
+
+			$list[$item->getId()] = $item->name;
+		}
+
+		return $list;
+	}
 }

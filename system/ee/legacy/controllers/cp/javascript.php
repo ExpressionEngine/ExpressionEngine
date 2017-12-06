@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine CP Javascript Loading Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Javascript Loading Controller
  */
 class Javascript extends CI_Controller {
 
@@ -38,8 +26,6 @@ class Javascript extends CI_Controller {
 		$this->load->library('javascript_loader');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Index function
 	 *
@@ -51,8 +37,6 @@ class Javascript extends CI_Controller {
 		// use view->script_tag() instead
 		// $this->load('jquery');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Spellcheck iFrame
@@ -74,8 +58,6 @@ class Javascript extends CI_Controller {
 		return EE_Spellcheck::iframe();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Spellcheck
 	 *
@@ -95,8 +77,6 @@ class Javascript extends CI_Controller {
 
 		return EE_Spellcheck::check();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load
@@ -171,8 +151,6 @@ class Javascript extends CI_Controller {
 		$this->output->set_output($contents);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Javascript from extensions
 	 *
@@ -201,8 +179,6 @@ class Javascript extends CI_Controller {
 		$this->output->set_output($str);
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Javascript Combo Loader

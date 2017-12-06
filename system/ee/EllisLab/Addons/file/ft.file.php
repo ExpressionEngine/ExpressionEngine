@@ -1,29 +1,16 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 use EllisLab\Addons\FilePicker\FilePicker;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// --------------------------------------------------------------------
-
-/**
- * ExpressionEngine File Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * File Fieldtype
  */
 class File_ft extends EE_Fieldtype {
 
@@ -46,8 +33,6 @@ class File_ft extends EE_Fieldtype {
 		parent::__construct();
 		ee()->load->library('file_field');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Validate the upload
@@ -95,8 +80,17 @@ class File_ft extends EE_Fieldtype {
 					// Are we validating on grid data?
 					if (isset($this->settings['grid_row_id']))
 					{
+						$fluid_field_data_id = (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0;
+
 						ee()->load->model('grid_model');
-						$rows = ee()->grid_model->get_entry_rows($this->content_id, $this->settings['grid_field_id'], $this->settings['grid_content_type']);
+						$rows = ee()->grid_model->get_entry_rows(
+							$this->content_id,
+							$this->settings['grid_field_id'],
+							$this->settings['grid_content_type'],
+							array(),
+							FALSE,
+							$fluid_field_data_id
+						);
 
 						// If this filed was we need to check permissions.
 						if ($rows[$this->content_id][$this->settings['grid_row_id']] != $data)
@@ -134,8 +128,6 @@ class File_ft extends EE_Fieldtype {
 		return array('value' => '', 'error' => lang('invalid_selection'));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Save the correct value {fieldir_\d}filename.ext
 	 *
@@ -146,8 +138,6 @@ class File_ft extends EE_Fieldtype {
 		// validate does all of the work.
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Show the publish field
@@ -296,8 +286,6 @@ class File_ft extends EE_Fieldtype {
 		return $file;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Basic javascript interaction on the frontend
 	 *
@@ -369,8 +357,6 @@ JSC;
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prep the publish data
 	 *
@@ -380,8 +366,6 @@ JSC;
 	{
 		return ee()->file_field->parse_field($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Runs before the channel entries loop on the front end
@@ -393,8 +377,6 @@ JSC;
 	{
 		ee()->file_field->cache_data($data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Replace frontend tag
@@ -447,7 +429,109 @@ JSC;
 		}
 	}
 
-	// --------------------------------------------------------------------
+	/**
+	 * :length modifier
+	 */
+	public function replace_length($data, $params = array(), $tagdata = FALSE)
+	{
+		return $data['file_size'];
+	}
+
+	/**
+	 * :raw_content modifier
+	 */
+	public function replace_raw_content($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_raw_content($data['raw_output'], $params, $tagdata);
+	}
+
+	/**
+	 * :attr_safe modifier
+	 */
+	public function replace_attr_safe($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_attr_safe($data['url'], $params, $tagdata);
+	}
+
+	/**
+	 * :limit modifier
+	 */
+	public function replace_limit($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_limit($data['url'], $params, $tagdata);
+	}
+
+	/**
+	 * :form_prep modifier
+	 */
+	public function replace_form_prep($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_form_prep($data['url'], $params, $tagdata);
+	}
+
+	/**
+	 * :rot13 modifier (for Seth)
+	 */
+	public function replace_rot13($data, $params = array(), $tagdata = FALSE)
+	{
+		return str_rot13($data['url']);
+	}
+
+	/**
+	 * :encrypt modifier
+	 */
+	public function replace_encrypt($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_encrypt($data['url'], $params, $tagdata);
+	}
+
+	/**
+	 * :url_slug modifier
+	 */
+	public function replace_url_slug($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_url_slug($data['filename'], $params, $tagdata);
+	}
+
+	/**
+	 * :censor modifier
+	 */
+	public function replace_censor($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_censor($data['title'], $params, $tagdata);
+	}
+
+	/**
+	 * :json modifier
+	 */
+	public function replace_json($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_json($data['url'], $params, $tagdata);
+	}
+
+	/**
+	 * :replace modifier
+	 */
+	public function replace_replace($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_replace($data['url'], $params, $tagdata);
+	}
+
+	/**
+	 * :url_encode modifier
+	 */
+	public function replace_url_encode($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_url_encode($data['url'], $params, $tagdata);
+	}
+
+	/**
+	 * :url_decode modifier
+	 */
+	public function replace_url_decode($data, $params = array(), $tagdata = FALSE)
+	{
+		return parent::replace_url_decode($data['url'], $params, $tagdata);
+	}
 
 	/**
 	 * Replace frontend tag (with a modifier catchall)
@@ -490,8 +574,6 @@ JSC;
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Wrap it helper function
 	 *
@@ -519,8 +601,6 @@ JSC;
 		return $full_path;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Display settings screen
 	 *
@@ -541,6 +621,7 @@ JSC;
 		$num_existing = ( ! isset($data['num_existing'])) ? 50 : $data['num_existing'];
 
 		$directory_choices = array('all' => lang('all'));
+
 		$directory_choices += ee('Model')->get('UploadDestination')
 			->fields('id', 'name')
 			->filter('site_id', ee()->config->item('site_id'))
@@ -559,7 +640,7 @@ JSC;
 						'desc' => 'file_ft_content_type_desc',
 						'fields' => array(
 							'field_content_type' => array(
-								'type' => 'select',
+								'type' => 'radio',
 								'choices' => $this->_field_content_options(),
 								'value' => isset($data['field_content_type']) ? $data['field_content_type'] : 'all'
 							)
@@ -570,7 +651,7 @@ JSC;
 						'desc' => 'file_ft_allowed_dirs_desc',
 						'fields' => array(
 							'allowed_directories' => array(
-								'type' => 'select',
+								'type' => 'radio',
 								'choices' => $directory_choices,
 								'value' => $allowed_directories
 							)
@@ -609,8 +690,6 @@ JSC;
 		return $settings;
 	}
 
-	// --------------------------------------------------------------------
-
 	public function grid_display_settings($data)
 	{
 		$settings = $this->display_settings($data);
@@ -624,7 +703,25 @@ JSC;
 		return $grid_settings;
 	}
 
-	// --------------------------------------------------------------------
+	/**
+	 * Returns cached dropdown-ready array of upload directories
+	 */
+	private function getDirectories()
+	{
+		static $directories;
+
+		if (empty($directories))
+		{
+			$directories = ee('Model')->get('UploadDestination')
+				->fields('id', 'name')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('module_id', 0)
+				->all()
+				->getDictionary('id', 'name');
+		}
+
+		return $directories;
+	}
 
 	/**
 	 * Returns dropdown-ready array of allowed file types for upload
@@ -633,8 +730,6 @@ JSC;
 	{
 		return array('all' => lang('all'), 'image' => lang('type_image'));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Table row helper
@@ -665,8 +760,6 @@ JSC;
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	function validate_settings($settings)
 	{
 		$validator = ee('Validation')->make(array(
@@ -677,8 +770,6 @@ JSC;
 
 		return $validator->validate($settings);
 	}
-
-	// --------------------------------------------------------------------
 
 	function save_settings($data)
 	{
@@ -695,8 +786,6 @@ JSC;
 		return array_intersect_key($all, $defaults);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Form Validation callback
 	 *
@@ -706,8 +795,6 @@ JSC;
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Accept all content types.
@@ -719,8 +806,6 @@ JSC;
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

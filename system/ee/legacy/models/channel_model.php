@@ -1,26 +1,14 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Channel Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Model
  */
 class Channel_model extends CI_Model {
 
@@ -61,7 +49,7 @@ class Channel_model extends CI_Model {
 		}
 		else
 		{
-			$this->db->select('channel_title, channel_name, channel_id, cat_group, status_group, field_group');
+			$this->db->select('channel_title, channel_name, channel_id, cat_group');
 		}
 
 		foreach ($additional_where as $where)
@@ -89,8 +77,6 @@ class Channel_model extends CI_Model {
 		return $this->db->get('channels');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Channel Menu
 	 *
@@ -102,16 +88,12 @@ class Channel_model extends CI_Model {
 	{
 		$this->db->select('channel_id, channel_title');
 		$this->db->from('channels');
-		$this->db->where('status_group', $status_group);
 		$this->db->where('cat_group', $cat_group);
-		$this->db->where('field_group', $field_group);
 		$this->db->where('site_id', $this->config->item('site_id'));
 		$this->db->order_by('channel_title');
 
 		return $this->db->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Channel Info
@@ -133,8 +115,6 @@ class Channel_model extends CI_Model {
 		return $this->db->get('channels');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Channel Statuses
 	 *
@@ -146,12 +126,9 @@ class Channel_model extends CI_Model {
 	 */
 	function get_channel_statuses($status_group)
 	{
-		$this->db->where('group_id', $status_group);
 		$this->db->order_by('status_order');
 		return $this->db->get('statuses');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Channel Fields
@@ -176,8 +153,6 @@ class Channel_model extends CI_Model {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Required Fields
 	 *
@@ -195,8 +170,6 @@ class Channel_model extends CI_Model {
 		$this->db->order_by('field_order');
 		return $this->db->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get most recent entry/comment id
@@ -251,8 +224,6 @@ class Channel_model extends CI_Model {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create Channel
 	 *
@@ -267,8 +238,6 @@ class Channel_model extends CI_Model {
 		$this->db->insert('channels', $data);
 		return $this->db->insert_id();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update Channel
@@ -285,8 +254,6 @@ class Channel_model extends CI_Model {
 		$this->db->update('channels', $data);
 		return $this->db->affected_rows();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete Channel
@@ -399,8 +366,6 @@ class Channel_model extends CI_Model {
 		$this->stats->update_comment_stats('', '', TRUE);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Comment Expiration
 	 *
@@ -427,8 +392,6 @@ class Channel_model extends CI_Model {
 		$this->db->update('channel_titles');
 		return $this->db->affected_rows();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update Allowed Comments
@@ -458,8 +421,6 @@ class Channel_model extends CI_Model {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Clear Versioning Data
 	 *
@@ -473,8 +434,6 @@ class Channel_model extends CI_Model {
 		$this->db->delete('entry_versioning');
 		return $this->db->affected_rows();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generates SQL for a field search
@@ -504,28 +463,33 @@ class Channel_model extends CI_Model {
 		return $this->$search_method($terms, $col_name, $site_id);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Generate the SQL for a numeric comparison search
 	 * <, >, <=, >= operators
 	 *
-	 * search:field=">=20"
+	 * search:field='>=20'
+	 * search:field='>3|<5'
 	 */
 	private function _numeric_comparison_search($terms, $col_name, $site_id)
 	{
-		if ( ! preg_match('/^([<>]=?)(\d+)/', $terms, $match))
+		preg_match_all('/([<>]=?)(\d+)/', $terms, $matches, PREG_SET_ORDER);
+
+		if (empty($matches))
 		{
 			return $this->_field_search($terms, $col_name, $site_id);
 		}
 
-		$site_id = ($site_id !== FALSE) ? 'wd.site_id=' . $site_id . ' AND ' : '';
+		$terms = array();
 
-		// col_name >= 20
-		return '(' . $site_id . ' ' . $col_name . ' ' . $match[1] . ' ' . $match[2] . ')';
+		foreach ($matches as $match)
+		{
+			// col_name >= 20
+			$terms[] = "{$col_name} {$match[1]} {$match[2]}";
+		}
+
+		$site_id = ($site_id !== FALSE) ? "( wd.site_id = {$site_id} AND " : '(';
+		return $site_id.implode(' AND ', $terms).')';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Generate the SQL for an exact query in field search.
@@ -586,8 +550,6 @@ class Channel_model extends CI_Model {
 
 		return $add_search.' '.$conj.' (' . $site_id . $col_name . ' = "")';
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Generate the SQL for a LIKE query in field search.

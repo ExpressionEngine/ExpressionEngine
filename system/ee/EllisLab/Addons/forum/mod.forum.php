@@ -1,29 +1,15 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
- * ExpressionEngine Discussion Forum Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Discussion Forum Module
  */
-
 class Forum {
 
 
@@ -171,8 +157,6 @@ class Forum {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load Base Forum Wrapper Functions
 	 */
@@ -249,8 +233,6 @@ class Forum {
 		$this->_check_theme_path();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Display Forum Handler
 	 *
@@ -324,8 +306,6 @@ class Forum {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	public function submit_post() { return $this->forum_core->submit_post(); }
 	public function delete_post() { return $this->forum_core->delete_post(); }
 	public function change_status() { return $this->forum_core->change_status(); }
@@ -350,8 +330,6 @@ class Forum {
 		if ( ! is_object($this->forum_core)) return;
 		return $this->forum_core->topic_titles();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Parse URI
@@ -467,8 +445,6 @@ class Forum {
 			$this->current_id = '';
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch the Trigger Status
 	 *
@@ -490,8 +466,6 @@ class Forum {
 
 		return FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Recursively Fetch Template Elements
@@ -576,8 +550,6 @@ class Forum {
 		return $this->return_data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Forum CSS
 	 *
@@ -591,8 +563,6 @@ class Forum {
 		$str = preg_replace("/\}\s+/s", "}\n", $str);
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load a Theme Element
@@ -646,8 +616,6 @@ class Forum {
 		return $this->_prep_element(trim(file_get_contents($full_path)));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Prep Element Data
 	 *
@@ -676,8 +644,6 @@ class Forum {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load Forum Preference
@@ -774,8 +740,6 @@ class Forum {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Instantiates the Member Profile Class
 	 *
@@ -823,8 +787,6 @@ class Forum {
 		return $template;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch Preference item
 	 *
@@ -835,8 +797,6 @@ class Forum {
 	{
 		return ( ! isset($this->preferences[$which])) ? '' : parse_config_variables($this->preferences[$which]);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Check the theme folder path
@@ -891,8 +851,6 @@ class Forum {
 		// Set path to the image folder for the particular theme
 		$this->image_url = ee('Theme')->getUrl('forum/'.$this->theme.'/images/');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Build Form Declaration
@@ -973,8 +931,6 @@ class Forum {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Build Profile Path with member ID
 	 *
@@ -986,8 +942,6 @@ class Forum {
 		return $this->fetch_pref('member_profile_path').$id.'/';
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Build Search Path with sting
 	 *
@@ -997,8 +951,6 @@ class Forum {
 	{
 		return $this->forum_path('/search/');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Sets the forum basepath
@@ -1023,8 +975,6 @@ class Forum {
 		$this->basepath = ee()->functions->create_url($trigger).'/';
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Compiles a path string
 	 */
@@ -1037,8 +987,6 @@ class Forum {
 
 		return reduce_double_slashes($this->basepath.$uri.'/');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Replace variables
@@ -1058,8 +1006,6 @@ class Forum {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Helpers for "if" conditions
 	 */
@@ -1068,14 +1014,10 @@ class Forum {
 		return str_replace("{if {$cond}}", "{if FALSE}", $str);
 	}
 
-	// --------------------------------------------------------------------
-
 	public function allow_if($cond, $str)
 	{
 		return str_replace("{if {$cond}}", "{if TRUE}", $str);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Convert special characters
@@ -1095,8 +1037,6 @@ class Forum {
 				$str);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Convert forum tags
 	 */
@@ -1108,8 +1048,6 @@ class Forum {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Final Template Parsing
@@ -1284,8 +1222,6 @@ class Forum {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch classname
 	 *
@@ -1434,8 +1370,6 @@ class Forum {
 		return ( ! isset($matrix[$index])) ? FALSE : $matrix[$index];
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Is the user authorized for the specfic page?
 	 * @return TRUE
@@ -1444,8 +1378,6 @@ class Forum {
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Trigger Error
@@ -1461,8 +1393,6 @@ class Forum {
 		return $this->display_forum('error_page');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Trigger the log-in page
 	 *
@@ -1476,8 +1406,6 @@ class Forum {
 		$this->trigger_login_page = TRUE;
 		return FALSE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Is a particular user an admin?
@@ -1531,8 +1459,6 @@ class Forum {
 		return FALSE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Individual Member's Last Visit
 	 */
@@ -1542,8 +1468,6 @@ class Forum {
 						ee()->session->userdata('total_forum_posts'),
 						lang('your_post_total'));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Quick Search Form
@@ -1564,8 +1488,6 @@ class Forum {
 							);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Quick Search Form - restricts to current forum
 	 */
@@ -1584,8 +1506,6 @@ class Forum {
 								)
 							);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Page subheader
@@ -1606,8 +1526,6 @@ class Forum {
 		return $template;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Finalize the Crumbs
 	 *
@@ -1623,8 +1541,6 @@ class Forum {
 
 		return str_replace('{breadcrumb_links}', $crumbs, $this->load_element('breadcrumb'));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Breadcrumb
@@ -1960,8 +1876,6 @@ class Forum {
 		return $this->_build_crumbs('', $crumbs, lang('error'));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Sets Page Title
 	 *
@@ -1975,8 +1889,6 @@ class Forum {
 			$this->current_page_name = $title;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Breadcrumb trail links
@@ -1997,8 +1909,6 @@ class Forum {
 		return $crumbs;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Theme Option List
 	 */
@@ -2017,8 +1927,6 @@ class Forum {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set the theme
@@ -2063,8 +1971,6 @@ class Forum {
 		ee()->functions->redirect($this->forum_path());
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch installed themes
 	 */
@@ -2072,8 +1978,6 @@ class Forum {
 	{
 		return ee('ee:Theme')->listThemes('forum');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Private Message Box in header
@@ -2107,8 +2011,6 @@ class Forum {
 								);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Base IFRAME for Spell Check
 	 */
@@ -2127,8 +2029,6 @@ class Forum {
 		return EE_Spellcheck::iframe();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Spell Check for Textareas
 	 */
@@ -2141,8 +2041,6 @@ class Forum {
 
 		return EE_Spellcheck::check();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * SpellCheck - JS
@@ -2165,8 +2063,6 @@ class Forum {
 		return $this->SPELL->JavaScript($this->forum_path('/spellcheck/'), TRUE);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Parse PHP in template
 	 */
@@ -2188,8 +2084,6 @@ class Forum {
 
 		return $str;
 	 }
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Removes slashes from array

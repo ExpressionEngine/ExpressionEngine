@@ -3,7 +3,7 @@ module Member
   class Create < ControlPanelPage
     set_url '/system/index.php?/cp/members/create'
 
-    element :member_group, 'select[name=group_id]'
+    elements :member_groups, 'input[name=group_id]'
     element :username, 'input[name=username]'
     element :email, 'input[name=email]'
     element :password, 'input[name=password]'

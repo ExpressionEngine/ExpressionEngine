@@ -1,3 +1,11 @@
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
 if (EE.cp === undefined) {
 	EE.cp = {};
 }
@@ -15,7 +23,9 @@ EE.cp.datePicker = {
 			day = date.getDate(),
 			dow = date.getDay(),
 			hour = date.getHours(),
-			minute = date.getMinutes();
+			minute = date.getMinutes(),
+      suffix = 'th',
+      days_in_month;
 
 		hour = ((hour + 11) % 12) + 1;
 
@@ -31,8 +41,8 @@ EE.cp.datePicker = {
 		}
 
 		// Calculate day of year
-		diff = date - new Date(date.getFullYear(), 0, 0);
-		doy = Math.ceil(diff / 86400000) - 1;
+		var diff = date - new Date(date.getFullYear(), 0, 0);
+		var doy = Math.ceil(diff / 86400000) - 1;
 
 		// Calculate days in this month
 		if (month == 2) {
@@ -403,6 +413,15 @@ $(document).ready(function () {
 		Grid.bind('date', 'display', function(cell)
 		{
 			EE.cp.datePicker.bind($('input[rel="date-picker"]', cell));
+		});
+	}
+
+	// Date fields inside a Fluid Field need to be bound when a new field is added
+	if (typeof FluidField === "object")
+	{
+		FluidField.on('date', 'add', function(field)
+		{
+			EE.cp.datePicker.bind($('input[rel="date-picker"]', field));
 		});
 	}
 

@@ -1,28 +1,15 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Email Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Update File
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Email Module
  */
-
 class Email {
 
 	var $email_time_interval = '20'; // In seconds
@@ -39,8 +26,6 @@ class Email {
 	{
 		$this->use_captchas = ee('Captcha')->shouldRequireCaptcha() ? 'y' : 'n';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Contact Form
@@ -178,8 +163,6 @@ class Email {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Show an email preview for different emails
 	 * @return string Parsed tagdata with relevant fields available for parsing
@@ -212,8 +195,6 @@ class Email {
 		return ee()->TMPL->parse_variables_row(ee()->TMPL->tagdata, $data);
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Load up the preview template and render it
 	 * @return void
@@ -242,8 +223,6 @@ class Email {
 		ee()->TMPL->parse_template_uri();
 		ee()->TMPL->run_template_engine($segments[0], $segments[1]);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Tell a friend form
@@ -455,8 +434,6 @@ class Email {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Strips fields of HTML based on $allow_html
 	 *
@@ -492,8 +469,6 @@ class Email {
 
 		return $template;
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Send Email
@@ -723,7 +698,11 @@ class Email {
 
 		$subject = ee()->input->post('subject', TRUE);
 		$subject = entities_to_ascii($subject);
-		$subject = ee()->typography->filter_censored_words($subject);
+
+		if (bool_config_item('enable_censoring'))
+		{
+			$subject = ee('Format')->make('Text', $subject)->censor();
+		}
 
 		// Retrieve message
 		$message = ee()->input->post('message', TRUE);
@@ -742,13 +721,15 @@ class Email {
 		}
 
 		$message = entities_to_ascii($message);
-		$message = ee()->typography->filter_censored_words($message);
+
+		if (bool_config_item('enable_censoring'))
+		{
+			$message = ee('Format')->make('Text', $message)->censor();
+		}
 
 		// Send mail
 		$this->mail_recipients($subject, $message, $approved_recipients, $approved_tos, $_POST);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * mail_recipients
@@ -772,7 +753,7 @@ class Email {
 		}
 		else
 		{
-			$mail_type = 'plain';
+			$mail_type = 'text';
 		}
 
 		// Return Variables
@@ -805,6 +786,20 @@ class Email {
 		if (isset($_POST['charset']) && $_POST['charset'] != '')
 		{
 			ee()->email->charset = $_POST['charset'];
+		}
+
+		// add attachments, if authorized
+		if ( ! empty($_FILES) && isset($_POST['allow_attachments'])
+			 && get_bool_from_string(
+			 		// decrypted text will be "allow_attachments_[y/n]"
+					substr($this->_decrypt($_POST['allow_attachments']), -1)
+			 	)
+			)
+		{
+			if (isset($_FILES['attachment']['name']) && isset($_FILES['attachment']['tmp_name']))
+			{
+				ee()->email->attach($_FILES['attachment']['tmp_name'], '', $_FILES['attachment']['name']);
+			}
 		}
 
 		if ( count($approved_recipients) == 0 && count($approved_tos) > 0) // No Hidden Recipients
@@ -923,8 +918,6 @@ class Email {
 		ee()->output->show_message($data);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Validate List of Emails
 	 */
@@ -976,8 +969,6 @@ class Email {
 		return array('approved' => $approved_emails, 'error' => $error);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Setup forms
 	 *
@@ -1007,12 +998,15 @@ class Email {
 		$uri_string = (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string;
 		$url = ee()->functions->fetch_site_index(0,0).'/'.$uri_string;
 
+		$allow_attachments = get_bool_from_string(ee()->TMPL->fetch_param('allow_attachments')) ? 'y' : 'n';
+
 		$data = array(
 			'action'        => reduce_double_slashes($url),
 			'id'            => (ee()->TMPL->form_id == '')
 				? $options['form_id']
 				: ee()->TMPL->form_id,
 			'class'         => ee()->TMPL->form_class,
+			'enctype'       => ($allow_attachments == 'y') ? 'multipart/form-data' : '',
 			'hidden_fields' => array(
 				'ACT'             => ee()->functions->fetch_action_id('Email', 'send_email'),
 				'RET'             => ee()->TMPL->fetch_param('return', ee()->uri->uri_string),
@@ -1023,6 +1017,7 @@ class Email {
 				'recipients'      => $this->_encrypt($recipients),
 				'user_recipients' => $this->_encrypt(($this->_user_recipients) ? 'y' : 'n'),
 				'charset'         => $charset,
+				'allow_attachments' => $this->_encrypt('allow_attachments_'.$allow_attachments),
 				'redirect'        => ee()->TMPL->fetch_param('redirect', ''),
 				'replyto'         => ee()->TMPL->fetch_param('replyto', ''),
 				'markdown'        => $this->_encrypt(($options['markdown']) ? 'y' : 'n')
@@ -1047,8 +1042,6 @@ class Email {
 		return $res;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Encrypt a given string of data
 	 * @param string $data Raw data to encrypt
@@ -1058,8 +1051,6 @@ class Email {
 	{
 		return ee('Encrypt')->encode($data, ee()->config->item('session_crypt_key'));
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Decrypt a given string of data, assumed to be base64_encoded

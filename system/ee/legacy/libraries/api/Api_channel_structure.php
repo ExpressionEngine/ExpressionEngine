@@ -1,26 +1,14 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Channel Structure API Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Structure API
  */
 class Api_channel_structure extends Api {
 
@@ -39,8 +27,6 @@ class Api_channel_structure extends Api {
 		parent::__construct();
 		ee()->load->model('channel_model');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Channel Info
@@ -77,8 +63,6 @@ class Api_channel_structure extends Api {
 		return $query;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Channels
 	 *
@@ -111,8 +95,6 @@ class Api_channel_structure extends Api {
 		$this->channels[$site_id] = $query;
 		return $query;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete Channel
@@ -169,8 +151,6 @@ class Api_channel_structure extends Api {
 
 		return $channel_title;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create Channel
@@ -323,15 +303,9 @@ class Api_channel_structure extends Api {
 									${$key} = $val;
 								}
 								break;
-							case 'status_group':
 							case 'field_group':
-								if ( ! isset(${$key}) OR ${$key} == '')
-								{
-									${$key} = $val;
-								}
-								break;
 							case 'deft_status':
-								if ( ! isset($status_group) OR $status_group == $query->row('status_group'))
+								if ( ! isset(${$key}) OR ${$key} == '')
 								{
 									${$key} = $val;
 								}
@@ -454,8 +428,6 @@ class Api_channel_structure extends Api {
 
 		return $channel_id;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Modify Channel
@@ -588,8 +560,6 @@ class Api_channel_structure extends Api {
 
 		return $channel_id;
 	}
-
-	// --------------------------------------------------------------------
 
 }
 // END CLASS

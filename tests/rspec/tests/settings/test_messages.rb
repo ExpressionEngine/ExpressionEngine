@@ -17,9 +17,8 @@ feature 'Messaging Settings' do
     prv_msg_auto_links = ee_config(item: 'prv_msg_auto_links')
 
     @page.prv_msg_max_chars.value.should == ee_config(item: 'prv_msg_max_chars')
-    @page.prv_msg_html_format.value.should == ee_config(item: 'prv_msg_html_format')
-    @page.prv_msg_auto_links_y.checked?.should == (prv_msg_auto_links == 'y')
-    @page.prv_msg_auto_links_n.checked?.should == (prv_msg_auto_links == 'n')
+    @page.prv_msg_html_format.has_checked_radio(ee_config(item: 'prv_msg_html_format')).should == true
+    @page.prv_msg_auto_links.value.should == prv_msg_auto_links
     @page.prv_msg_upload_path.value.should == ee_config(item: 'prv_msg_upload_path')
     @page.prv_msg_max_attachments.value.should == ee_config(item: 'prv_msg_max_attachments')
     @page.prv_msg_attach_maxsize.value.should == ee_config(item: 'prv_msg_attach_maxsize')
@@ -119,8 +118,8 @@ feature 'Messaging Settings' do
 
   it 'should save and load the settings' do
     @page.prv_msg_max_chars.set '100'
-    @page.prv_msg_html_format.select 'Convert HTML'
-    @page.prv_msg_auto_links_n.click
+    @page.prv_msg_html_format.choose_radio_option('none')
+    @page.prv_msg_auto_links_toggle.click
     @page.prv_msg_upload_path.set File.expand_path('support/tmp')
     @page.prv_msg_max_attachments.set '101'
     @page.prv_msg_attach_maxsize.set '102'
@@ -129,8 +128,8 @@ feature 'Messaging Settings' do
 
     @page.should have_text 'Preferences updated'
     @page.prv_msg_max_chars.value.should == '100'
-    @page.prv_msg_html_format.value.should == 'none'
-    @page.prv_msg_auto_links_n.checked?.should == true
+    @page.prv_msg_html_format.has_checked_radio('none').should == true
+    @page.prv_msg_auto_links.value.should == 'n'
     @page.prv_msg_upload_path.value.should == File.expand_path('support/tmp')
     @page.prv_msg_max_attachments.value.should == '101'
     @page.prv_msg_attach_maxsize.value.should == '102'

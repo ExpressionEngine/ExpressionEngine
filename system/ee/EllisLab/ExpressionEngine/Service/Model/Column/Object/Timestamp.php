@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Model\Column\Object;
 
@@ -6,27 +13,7 @@ use DateTime;
 use EllisLab\ExpressionEngine\Service\Model\Column\SerializedType;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Model Base64 Encoded Typed Column
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Model Service Timestamp Typed Column
  */
 class Timestamp extends SerializedType {
 

@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Model;
 
@@ -14,27 +21,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationAware;
 use EllisLab\ExpressionEngine\Service\Event\Subscriber;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Model
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Model Service
  */
 class Model extends SerializableEntity implements Subscriber, ValidationAware {
 
@@ -140,9 +127,12 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 		$this->addFilter('fill', array('this', 'typedLoad'));
 		$this->addFilter('store', array('this', 'typedStore'));
 
-		if ($publish_as = $this->getMetaData('hook_id'))
+		// Need to set these up here instead of on-demand because the model delete
+		// routine will create a collection with new model objects to delete,
+		// thus ignoring any previously-set up events; plus, cascading deletes
+		if ($this->getMetaData('hook_id'))
 		{
-			$this->forwardEventsToHooks($publish_as);
+			$this->forwardEventToHooks('delete');
 		}
 	}
 
@@ -356,13 +346,17 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	{
 		$qb = $this->newSelfReferentialQuery();
 
+		$this->forwardEventToHooks('save');
+
 		if ($this->isNew())
 		{
+			$this->forwardEventToHooks('insert');
 			$qb->insert();
 		}
 		else
 		{
 			$this->constrainQueryToSelf($qb);
+			$this->forwardEventToHooks('update');
 			$qb->update();
 		}
 
@@ -393,6 +387,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 		$qb = $this->newSelfReferentialQuery();
 
 		$this->constrainQueryToSelf($qb);
+
 		$qb->delete();
 
 		$this->setId(NULL);
@@ -586,24 +581,21 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	 * This is fired automatically from initialize() if `hook_id` is
 	 * given in the model metadata.
 	 *
-	 * @param String $hook_basename The name that identifies the subject of the hook
+	 * @param String $event Event name, either 'insert', 'update', 'save', or 'delete'
 	 */
-	protected function forwardEventsToHooks($hook_basename)
+	protected function forwardEventToHooks($event)
 	{
-		$trigger = $this->getHookTrigger();
+		$hook_basename = $this->getMetaData('hook_id');
+
+		$uc_first_event = ucfirst($event);
 
 		$forwarded = array(
-			'beforeInsert' => 'before_'.$hook_basename.'_insert',
-			'afterInsert' => 'after_'.$hook_basename.'_insert',
-			'beforeUpdate' => 'before_'.$hook_basename.'_update',
-			'afterUpdate' => 'after_'.$hook_basename.'_update',
-			'beforeSave' => 'before_'.$hook_basename.'_save',
-			'afterSave' => 'after_'.$hook_basename.'_save',
-			'beforeDelete' => 'before_'.$hook_basename.'_delete',
-			'afterDelete' => 'after_'.$hook_basename.'_delete'
+			'before'.$uc_first_event => 'before_'.$hook_basename.'_'.$event,
+			'after'.$uc_first_event => 'after_'.$hook_basename.'_'.$event
 		);
 
 		$that = $this;
+		$trigger = $this->getHookTrigger();
 
 		foreach ($forwarded as $event => $hook)
 		{
@@ -737,12 +729,13 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 	public function createTypeFor($name)
 	{
 		$columns = $this->getMetadata('typed_columns') ?: array();
-		$types = $this->getMetadata('type_classes');
 
 		if ( ! array_key_exists($name, $columns))
 		{
 			return NULL;
 		}
+
+		$types = $this->getMetadata('type_classes');
 
 		$type = $columns[$name];
 		$class = $types[$type];

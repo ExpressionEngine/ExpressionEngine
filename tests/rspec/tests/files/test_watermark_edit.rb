@@ -24,6 +24,7 @@ feature 'Watermark Create/Edit' do
     # AJAX validation
     # Required name
     @page.load
+    @page.wm_name.set ''
     @page.wm_name.trigger 'blur'
     @page.wait_for_error_message_count(1)
     should_have_error_text(@page.wm_name, $required_error)
@@ -68,7 +69,7 @@ feature 'Watermark Create/Edit' do
     should_have_error_text(@page.wm_font_color, $hex_color)
     should_have_form_errors(@page)
 
-    @page.wm_type.select 'Image'
+    @page.wm_type.choose_radio_option 'image'
 
     @page.wait_until_wm_image_path_visible
     @page.wait_until_wm_opacity_visible
@@ -94,16 +95,16 @@ feature 'Watermark Create/Edit' do
 
   it 'should save and load a text watermark' do
     @page.wm_name.set 'Test'
-    @page.wm_vrt_alignment.select 'Middle'
-    @page.wm_hor_alignment.select 'Right'
+    @page.wm_vrt_alignment.choose_radio_option 'middle'
+    @page.wm_hor_alignment.choose_radio_option 'right'
     @page.wm_padding.set 10
     @page.wm_hor_offset.set 20
     @page.wm_vrt_offset.set 30
-    @page.wm_use_font[1].click
+    @page.wm_use_font.click
     @page.wm_text.set 'Test text'
     @page.wm_font_size.set 18
     @page.wm_font_color.set 'ccc'
-    @page.wm_use_drop_shadow[1].click
+    @page.wm_use_drop_shadow.click
     @page.wm_shadow_distance.set 50
     @page.wm_shadow_color.set '000'
     @page.submit
@@ -116,35 +117,33 @@ feature 'Watermark Create/Edit' do
     no_php_js_errors
 
     @page.wm_name.value.should == 'Test'
-    @page.wm_type.value.should == 'text'
-    @page.wm_vrt_alignment.value.should == 'middle'
-    @page.wm_hor_alignment.value.should == 'right'
+    @page.wm_type.has_checked_radio('text').should == true
+    @page.wm_vrt_alignment.has_checked_radio('middle').should == true
+    @page.wm_hor_alignment.has_checked_radio('right').should == true
     @page.wm_padding.value.should == '10'
     @page.wm_hor_offset.value.should == '20'
     @page.wm_vrt_offset.value.should == '30'
-    @page.wm_use_font[0].checked?.should == false
-    @page.wm_use_font[1].checked?.should == true
+    @page.wm_use_font[:class].should include "on"
     @page.wm_text.value.should == 'Test text'
-    @page.wm_font.value.should == 'texb.ttf'
+    @page.wm_font.has_checked_radio('texb.ttf').should == true
     @page.wm_font_size.value.should == '18'
     @page.wm_font_color.value.should == 'ccc'
-    @page.wm_use_drop_shadow[0].checked?.should == false
-    @page.wm_use_drop_shadow[1].checked?.should == true
+    @page.wm_use_drop_shadow[:class].should include "on"
     @page.wm_shadow_distance.value.should == '50'
     @page.wm_shadow_color.value.should == '000'
   end
 
   it 'should save and load an image watermark' do
     @page.wm_name.set 'Test'
-    @page.wm_type.select 'Image'
+    @page.wm_type.choose_radio_option 'image'
 
     @page.wait_until_wm_image_path_visible
     @page.wait_until_wm_opacity_visible
     @page.wait_until_wm_x_transp_visible
     @page.wait_until_wm_y_transp_visible
 
-    @page.wm_vrt_alignment.select 'Bottom'
-    @page.wm_hor_alignment.select 'Center'
+    @page.wm_vrt_alignment.choose_radio_option 'bottom'
+    @page.wm_hor_alignment.choose_radio_option 'center'
     @page.wm_padding.set 10
     @page.wm_hor_offset.set 20
     @page.wm_vrt_offset.set 30
@@ -164,9 +163,9 @@ feature 'Watermark Create/Edit' do
     no_php_js_errors
 
     @page.wm_name.value.should == 'Test'
-    @page.wm_type.value.should == 'image'
-    @page.wm_vrt_alignment.value.should == 'bottom'
-    @page.wm_hor_alignment.value.should == 'center'
+    @page.wm_type.has_checked_radio('image').should == true
+    @page.wm_vrt_alignment.has_checked_radio('bottom').should == true
+    @page.wm_hor_alignment.has_checked_radio('center').should == true
     @page.wm_padding.value.should == '10'
     @page.wm_hor_offset.value.should == '20'
     @page.wm_vrt_offset.value.should == '30'

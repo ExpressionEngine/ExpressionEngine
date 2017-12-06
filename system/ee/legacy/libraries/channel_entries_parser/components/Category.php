@@ -1,27 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Channel Parser Component (Categories)
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Parser Component (Categories)
  */
 class EE_Channel_category_parser implements EE_Channel_parser_component {
 
@@ -35,8 +22,6 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 	{
 		return in_array('categories', $disabled) OR ! $pre->has_tag_pair('categories');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Before the parser runs, this will gather all category tag pairs that
@@ -52,8 +37,6 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 	{
 		return $this->_get_cat_chunks($tagdata, $pre->prefix());
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Find any {category} {/category} tag pair chunks in the template and
@@ -73,7 +56,7 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 			{
 				$cat_chunk[] = array(
 					$matches[2][$j],
-					ee()->functions->assign_parameters($matches[1][$j]),
+					ee('Variables/Parser')->parseTagParameters($matches[1][$j]),
 					$matches[0][$j]
 				);
 			}
@@ -81,8 +64,6 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 
 		return $cat_chunk;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Replace all of the category pairs with the correct data.
@@ -198,6 +179,15 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 						$temp = preg_replace("#".LD."path=.+?".RD."#", ee()->functions->create_url("SITE_INDEX"), $temp);
 					}
 
+					// super confusing, so documenting this legacy array here:
+					// $v[0] = cat_id
+					// $v[1] = parent_id
+					// $v[2] = cat_name
+					// $v[3] = cat_image
+					// $v[4] = cat_description
+					// $v[5] = group_id
+					// $v[6] = cat_url_title
+
 					ee()->load->library('file_field');
 					$cat_image = ee()->file_field->parse_field($v[3]);
 
@@ -219,22 +209,17 @@ class EE_Channel_category_parser implements EE_Channel_parser_component {
 
 					$cond = $cat_vars;
 
-					// add custom fields for conditionals prep
+					// add custom fields for conditionals prep and parsing
 					foreach ($obj->channel()->catfields as $cv)
 					{
 						$cond[$cv['field_name']] = ( ! isset($v['field_id_'.$cv['field_id']])) ? '' : $v['field_id_'.$cv['field_id']];
+						$cat_vars[$cv['field_name']] = $cond[$cv['field_name']];
 					}
 
 					$temp = ee()->functions->prep_conditionals($temp, $cond);
 
-					// and parse the variables
-					foreach ($cat_vars as $cat_var => $cat_val)
-					{
-						$temp = str_replace(LD.$cat_var.RD, $cat_val, $temp);
-					}
-
-					$variables = ee()->functions->assign_variables($temp);
-					$temp = $obj->channel()->parseCategoryFields($v[0], $v, $temp, array_keys($variables['var_single']));
+					$variables = ee('Variables/Parser')->extractVariables($temp);
+					$temp = $obj->channel()->parseCategoryFields($v[0], array_merge($v, $cat_vars), $temp, array_keys($variables['var_single']));
 
 					$cats .= $temp;
 

@@ -6,7 +6,7 @@ module Profile
 
     section :profile_form,
       Profile::ProfileForm,
-      'form.settings[action*="cp/members/profile"]'
+      'form[action*="cp/members/profile"]'
 
     element :username, 'input[name=username]'
     element :screen_name, 'input[name=screen_name]'

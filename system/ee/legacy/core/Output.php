@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Output Display Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Output Display
  */
 class EE_Output {
 
@@ -38,16 +26,12 @@ class EE_Output {
 
 	var $_zlib_oc			= FALSE;
 
-	// --------------------------------------------------------------------
-
 	function __construct()
 	{
 		$this->_zlib_oc = @ini_get('zlib.output_compression');
 
 		log_message('debug', "Output Class Initialized");
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Output
@@ -61,8 +45,6 @@ class EE_Output {
 	{
 		return $this->final_output;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Output
@@ -78,8 +60,6 @@ class EE_Output {
 		$this->final_output = $output;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Append Output
 	 *
@@ -93,8 +73,6 @@ class EE_Output {
 	{
 		$this->final_output .= $output;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Header
@@ -130,8 +108,6 @@ class EE_Output {
 		$this->headers[] = array($header, $replace);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set HTTP Status Header
 	 * moved to Common procedural functions in 1.7.2
@@ -146,8 +122,6 @@ class EE_Output {
 		set_status_header($code, $text);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Enable/disable Profiler
 	 *
@@ -159,8 +133,6 @@ class EE_Output {
 	{
 		$this->enable_profiler = (is_bool($val)) ? $val : TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Cache
@@ -174,15 +146,13 @@ class EE_Output {
 		$this->cache_expiration = ( ! is_numeric($time)) ? 0 : $time;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Display the final output
 	 *
 	 * @access	public
 	 * @return	void
 	 */
-	function _display($output = '')
+	function _display($output = '', $status = 200)
 	{
 		if ($output == '')
 		{
@@ -194,11 +164,22 @@ class EE_Output {
 
 		if (ee()->config->item('send_headers') == 'y' && $this->out_type != 'feed' && $this->out_type != '404' && $this->out_type != 'cp_asset')
 		{
-			$this->set_status_header(200);
+			$this->set_status_header($status);
 
-			$this->set_header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-			$this->set_header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
-			$this->set_header("Pragma: no-cache");
+			if ( ! ee('Response')->hasHeader('Expires'))
+			{
+				$this->set_header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+			}
+
+			if ( ! ee('Response')->hasHeader('Last-Modified'))
+			{
+				$this->set_header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
+			}
+
+			if ( ! ee('Response')->hasHeader('Pragma'))
+			{
+				$this->set_header("Pragma: no-cache");
+			}
 		}
 
 
@@ -207,20 +188,38 @@ class EE_Output {
 
 		switch ($this->out_type)
 		{
-			case 'webpage':	$this->set_header("Content-Type: text/html; charset=".ee()->config->item('charset'));
+			case 'webpage':
+				if ( ! ee('Response')->hasHeader('Content-Type'))
+				{
+					$this->set_header("Content-Type: text/html; charset=".ee()->config->item('charset'));
+				}
 				break;
-			case 'css':		$this->set_header("Content-type: text/css");
+			case 'css':
+				if ( ! ee('Response')->hasHeader('Content-Type'))
+				{
+					$this->set_header("Content-type: text/css");
+				}
 				break;
-			case 'js':		$this->set_header("Content-type: text/javascript");
-							$this->enable_profiler = FALSE;
+			case 'js':
+				if ( ! ee('Response')->hasHeader('Content-Type'))
+				{
+					$this->set_header("Content-type: text/javascript");
+				}
+				$this->enable_profiler = FALSE;
 				break;
-			case '404':		$this->set_status_header(404);
-							$this->set_header("Date: ".gmdate("D, d M Y H:i:s")." GMT");
+			case '404':
+				$this->set_status_header(404);
+				$this->set_header("Date: ".gmdate("D, d M Y H:i:s")." GMT");
 				break;
-			case 'xml':		$this->set_header("Content-Type: text/xml");
-							$output = trim($output);
+			case 'xml':
+				if ( ! ee('Response')->hasHeader('Content-Type'))
+				{
+					$this->set_header("Content-Type: text/xml");
+				}
+				$output = trim($output);
 				break;
-			case 'feed':	$this->_send_feed($output);
+			case 'feed':
+				$this->_send_feed($output);
 				break;
 			default: // Likely a custom template type
 				// -------------------------------------------
@@ -410,8 +409,6 @@ class EE_Output {
 		log_message('debug', "Total execution time: ".$elapsed);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Do extra processing for feeds
 	 *
@@ -467,8 +464,6 @@ class EE_Output {
 		$output = preg_replace("/{\?xml(.+?)\?}/", "<?xml\\1?".">", $output);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Display fatal error message
 	 *
@@ -488,8 +483,6 @@ class EE_Output {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * System is off message
 	 *
@@ -506,8 +499,6 @@ class EE_Output {
 		echo $query->row('template_data') ;
 		exit;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Show message
@@ -606,8 +597,6 @@ class EE_Output {
 		exit;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Show user error
 	 *
@@ -620,6 +609,7 @@ class EE_Output {
 	function show_user_error($type = 'submission', $errors, $heading = '')
 	{
 		$this->set_header("Content-Type: text/html; charset=".ee()->config->item('charset'));
+		$this->set_status_header(403);
 
 		if ($type != 'off')
 		{
@@ -660,8 +650,6 @@ class EE_Output {
 		$this->show_message($data, 0);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Send AJAX response
 	 *
@@ -699,8 +687,6 @@ class EE_Output {
 
 		exit(json_encode($msg));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Send Cache Headers
@@ -756,8 +742,6 @@ class EE_Output {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Setter for the remove_unparsed_variables class var
 	 *
@@ -769,8 +753,6 @@ class EE_Output {
 	{
 		$this->remove_unparsed_variables = $remove_unparsed_vars;
 	}
-
-	// --------------------------------------------------------------------
 }
 // END CLASS
 

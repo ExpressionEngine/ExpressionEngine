@@ -9,7 +9,11 @@ $project_base = realpath(dirname(__FILE__).'/../../../').'/';
 // Path constants
 define('SYSPATH', $project_base);
 define('BASEPATH', SYSPATH.'ee/legacy/');
+define('PATH_CACHE', SYSPATH.'user/cache/');
 define('APPPATH',  BASEPATH);
+define('APP_VER',  '4.0.0');
+define('PATH_THEMES', realpath(SYSPATH.'/../themes').'/');
+define('DOC_URL', 'http://our.doc.url/');
 
 // application constants
 define('AMP', '&amp;');
@@ -17,7 +21,12 @@ define('SELF', 'index.php');
 define('LD', '{');
 define('RD', '}');
 
-require '../ExpressionEngine/Config/constants.php';
+$constants = require '../ExpressionEngine/Config/constants.php';
+
+foreach ($constants as $name => $val)
+{
+	define($name, $val);
+}
 
 // Minor CI annoyance
 function log_message() {}
@@ -32,3 +41,5 @@ function lang($str)
 {
 	return $str;
 }
+
+require_once 'eeObjectMock.php';

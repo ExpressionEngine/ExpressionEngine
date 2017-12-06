@@ -1,30 +1,18 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine Installation and Update Wizard
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '3.5.12';	// The version being installed
+	public $version           = '4.0.0';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -122,11 +110,12 @@ class Wizard extends CI_Controller {
 		'captcha_path'          => '../images/captchas/',
 		'theme_folder_path'     => '../themes/',
 		'modules'               => array(),
-		'install_default_theme' => 'n'
+		'install_default_theme' => 'n',
+		'utf8mb4_supported'     => NULL
 	);
 
-	// These are the default values for the CodeIgniter config array.  Since the
-	// EE and CI config files are one in the same now we use this data when we
+	// These are the default values for the config array.  Since the
+	// EE and legacy CI config files are one in the same now we use this data when we
 	// write the initial config file using $this->write_config_data()
 	public $ci_config = array(
 		'subclass_prefix'    => 'EE_',
@@ -137,8 +126,6 @@ class Wizard extends CI_Controller {
 		// Enabled for cleaner view files and compatibility
 		'rewrite_short_tags' => TRUE
 	);
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Constructor
@@ -154,7 +141,7 @@ class Wizard extends CI_Controller {
 		define('URL_TITLE_MAX_LENGTH', 200);
 		define('PATH_CACHE',  SYSPATH.'user/cache/');
 		define('PATH_TMPL',   SYSPATH.'user/templates/');
-		define('DOC_URL', 'https://docs.expressionengine.com/v3/');
+		define('DOC_URL', 'https://docs.expressionengine.com/v4/');
 
 		// Third party constants
 		define('PATH_THIRD',  SYSPATH.'user/addons/');
@@ -186,6 +173,7 @@ class Wizard extends CI_Controller {
 		$this->load->driver('cache');
 		$this->load->helper('language');
 		$this->lang->loadfile('installer');
+		$this->load->library('progress');
 
 		$this->load->model('installer_template_model', 'template_model');
 
@@ -228,8 +216,6 @@ class Wizard extends CI_Controller {
 		$this->month = gmdate('m', $this->now);
 		$this->day   = gmdate('d', $this->now);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Remap - Intercepts the request and dynamically determines what we should
@@ -278,8 +264,6 @@ class Wizard extends CI_Controller {
 		$this->$action();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Pre-flight Tests - Does all of our error checks
 	 * @return void
@@ -300,44 +284,6 @@ class Wizard extends CI_Controller {
 				'.',
 				str_split($this->installed_version)
 			);
-		}
-
-		// Check for minimum version of PHP
-		// Comes after including the config because that gives us an idea if
-		// this is a new install or an update
-		if (is_php($this->minimum_php) == FALSE)
-		{
-			$this->is_installed = isset($config);
-			$this->set_output('error', array(
-				'error' => sprintf(
-					lang('version_warning'),
-					$this->minimum_php,
-					phpversion()
-				)
-			));
-			return FALSE;
-		}
-
-		// Check for PDO
-		if ( ! class_exists('PDO'))
-		{
-			$this->set_output('error', array('error' => lang('database_no_pdo')));
-			return FALSE;
-		}
-
-		// Check for JSON encode/decode
-		$json_errors = array();
-		if ( ! function_exists('json_encode') OR ! function_exists('json_decode'))
-		{
-			$this->set_output('error', array('error' => lang('json_parser_missing')));
-			return FALSE;
-		}
-
-		// Check for finfo_open
-		if ( ! function_exists('finfo_open'))
-		{
-			$this->set_output('error', array('error' => lang('fileinfo_missing')));
-			return FALSE;
 		}
 
 		// Is the config file writable?
@@ -399,6 +345,22 @@ class Wizard extends CI_Controller {
 		if ($this->db_connect($db) !== TRUE)
 		{
 			$this->set_output('error', array('error' => lang('database_no_config')));
+			return FALSE;
+		}
+
+		// Try to include the RequirementsChecker class and check server requirements
+		require_once(APPPATH.'updater/EllisLab/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php');
+
+		$this->requirements = new RequirementsChecker($db);
+
+		if (($result = $this->requirements->check()) !== TRUE)
+		{
+			$failed = array_map(function($requirement) {
+				return $requirement->getMessage();
+			}, $result);
+
+			$this->is_installed = isset($config);
+			$this->set_output('error', array('error' => implode('<br>', $failed)));
 			return FALSE;
 		}
 
@@ -499,8 +461,6 @@ class Wizard extends CI_Controller {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * New installation form
 	 * @return void
@@ -527,11 +487,9 @@ class Wizard extends CI_Controller {
 
 		// Display the form and pass the userdata array to it
 		$this->title = sprintf(lang('install_title'), '');
-		$this->header = sprintf(lang('install_title'), $this->version).'<br />'.lang('install_note');
+		$this->header = sprintf(lang('install_title'), $this->version);
 		$this->set_output('install_form', array_merge($vars, $this->userdata));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Checks if the database host is valid
@@ -548,8 +506,6 @@ class Wizard extends CI_Controller {
 		});
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Check if the database given is valid
 	 *
@@ -564,8 +520,6 @@ class Wizard extends CI_Controller {
 			);
 		});
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Given a MySQL error number, will check to see if that error was thrown
@@ -605,8 +559,6 @@ class Wizard extends CI_Controller {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Abstraction to retrieve the default or user over-ridden database prefix
 	 */
@@ -615,7 +567,47 @@ class Wizard extends CI_Controller {
 		return ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']);
 	}
 
-	// --------------------------------------------------------------------
+	private function serverSupportsUtf8mb4()
+	{
+		static $supported;
+
+		if (is_null($supported))
+		{
+			$msyql_server_version = ee('Database')->getConnection()->getNative()->getAttribute(PDO::ATTR_SERVER_VERSION);
+
+			$supported = version_compare($msyql_server_version, '5.5.3', '>=');
+		}
+
+		return $supported;
+	}
+
+	private function clientSupportsUtf8mb4()
+	{
+		static $supported;
+
+		if (is_null($supported))
+		{
+			$client_info = ee('Database')->getConnection()->getNative()->getAttribute(PDO::ATTR_CLIENT_VERSION);
+
+			if (strpos($client_info, 'mysqlnd') === 0)
+			{
+				$msyql_client_version = preg_replace('/^mysqlnd ([\d.]+).*/', '$1', $client_info);
+				$supported = version_compare($msyql_client_version, '5.0.9', '>=');
+			}
+			else
+			{
+				$msyql_client_version = $client_info;
+				$supported = version_compare($msyql_client_version, '5.5.3', '>=');
+			}
+		}
+
+		return $supported;
+	}
+
+	private function isUtf8mb4Supported()
+	{
+		return ($this->serverSupportsUtf8mb4() && $this->clientSupportsUtf8mb4());
+	}
 
 	/**
 	 * Form validation callback for checking DB prefixes
@@ -648,8 +640,6 @@ class Wizard extends CI_Controller {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	public function license_agreement($value)
 	{
 		if ($value !== 'y')
@@ -663,8 +653,6 @@ class Wizard extends CI_Controller {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Perform the installation
@@ -761,18 +749,57 @@ class Wizard extends CI_Controller {
 			'db_debug' => TRUE, // We show our own errors
 			'cache_on' => FALSE,
 			'autoinit' => FALSE, // We'll initialize the DB manually
-			'char_set' => 'utf8',
-			'dbcollat' => 'utf8_unicode_ci'
+			'char_set' => 'utf8mb4',
+			'dbcollat' => 'utf8mb4_unicode_ci',
 		);
+
+		// we did some db connections on form validation callbacks so let's reset here to test specific compatibilities
+		ee('Database')->closeConnection();
 
 		$this->db_connect_attempt = $this->db_connect($db);
 		if ($this->db_connect_attempt === 1044 OR $this->db_connect_attempt === 1045)
 		{
 			$errors[] = lang('database_invalid_user');
 		}
-		else if ($this->db_connect_attempt === FALSE)
+		elseif ($this->db_connect_attempt === FALSE)
 		{
 			$errors[] = lang('database_no_connect');
+		}
+		elseif($this->db_connect_attempt === TRUE)
+		{
+			// Fallback to UTF8 if we cannot do UTF8MB4
+			if ( ! $this->isUtf8mb4Supported())
+			{
+				$db['char_set'] = 'utf8';
+				$db['dbcollat'] = 'utf8_unicode_ci';
+
+				if (is_null($this->userdata['utf8mb4_supported']))
+				{
+					$which = '';
+
+					if ( ! $this->clientSupportsUtf8mb4())
+					{
+						$which = lang('client');
+
+						if ( ! $this->serverSupportsUtf8mb4())
+						{
+							$which .= ' ' . lang('and') . ' ';
+						}
+					}
+
+					if ( ! $this->serverSupportsUtf8mb4())
+					{
+						$which .= lang('server');
+					}
+
+					$this->userdata['utf8mb4_supported'] = FALSE;
+					$errors[] = sprintf(lang('utf8mb4_not_supported'), $which);
+				}
+
+				// Need to reset the connection based on the above settings.
+				ee('Database')->closeConnection();
+				$this->db_connect($db);
+			}
 		}
 
 		// Does the specified database schema type exist?
@@ -798,6 +825,7 @@ class Wizard extends CI_Controller {
 		// Load the DB schema
 		require APPPATH.'schema/mysqli_schema.php';
 		$this->schema = new EE_Schema();
+		$this->schema->version = $this->version;
 
 		// Assign the userdata array to the schema class
 		$this->schema->userdata   =& $this->userdata;
@@ -910,8 +938,6 @@ class Wizard extends CI_Controller {
 		$this->show_success('install', $vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	public function template_path_writeable($radio)
 	{
 		if ( ! is_really_writable(PATH_TMPL))
@@ -925,8 +951,6 @@ class Wizard extends CI_Controller {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Split off the port, if given one (e.g. 192.168.10.2:4055)
@@ -947,8 +971,6 @@ class Wizard extends CI_Controller {
 			$this->userdata['db_port'] = NULL;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get the DB Config, whether it's from database.php or config.php
@@ -980,8 +1002,6 @@ class Wizard extends CI_Controller {
 			throw new \Exception(lang('database_no_data'));
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Show installation or upgrade succes page
@@ -1031,8 +1051,6 @@ class Wizard extends CI_Controller {
 
 		$this->set_output('success', $template_variables);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Assigns the values submitted in the settings form
@@ -1096,8 +1114,6 @@ class Wizard extends CI_Controller {
 		$this->userdata['site_url'] = preg_replace("#([^/])/*$#", "\\1/", $this->userdata['site_url']);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Show the update form
 	 * @return void
@@ -1108,8 +1124,6 @@ class Wizard extends CI_Controller {
 		$vars['action'] = $this->set_qstr('do_update');
 		$this->set_output('update_form', $vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Perform the update
@@ -1124,8 +1138,6 @@ class Wizard extends CI_Controller {
 		$this->load->library('extensions');
 
 		$this->load->library('javascript');
-
-		$this->load->library('progress');
 
 		// if any of the underlying code uses caching, make sure we do nothing
 		ee()->config->set_item('cache_driver', 'dummy');
@@ -1144,8 +1156,8 @@ class Wizard extends CI_Controller {
 			// End URL
 			$this->refresh = TRUE;
 			$this->refresh_url = $this->set_qstr('do_update&agree=yes');
-			$this->title = sprintf(lang('updating_title'), $this->installed_version, $this->version);
-			$this->subtitle = lang('processing');
+			$this->title = sprintf(lang('updating_title'), $this->version);
+			$this->subtitle = sprintf(lang('running_updates'), $this->installed_version);
 			return $this->set_output(
 				'update_msg',
 				array(
@@ -1163,7 +1175,16 @@ class Wizard extends CI_Controller {
 		@set_time_limit(0);
 
 		// Instantiate the updater class
-		$UD = new Updater;
+		if (class_exists('Updater'))
+		{
+			$UD = new Updater;
+		}
+		else
+		{
+			$class = '\EllisLab\ExpressionEngine\Updater\Version_' . str_replace('.', '_', $next_version) . '\Updater';
+			$UD = new $class;
+		}
+
 		$method = 'do_update';
 
 		$this->load->library('smartforge');
@@ -1272,8 +1293,8 @@ class Wizard extends CI_Controller {
 			$this->refresh = FALSE;
 		}
 
-		$this->title = sprintf(lang('updating_title'), $this->installed_version, $this->version);
-		$this->subtitle = lang('processing');
+		$this->title = sprintf(lang('updating_title'), $this->version);
+		$this->subtitle = sprintf(lang('running_updates'), $this->installed_version);
 		$this->set_output(
 			'update_msg',
 			array(
@@ -1282,8 +1303,6 @@ class Wizard extends CI_Controller {
 			)
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Determine which update should be performed - Reads though the "updates"
@@ -1336,8 +1355,6 @@ class Wizard extends CI_Controller {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Connect to the database
 	 *
@@ -1384,8 +1401,6 @@ class Wizard extends CI_Controller {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get an actual path to certain items, namely global images, themes, and
 	 * javascript.
@@ -1403,8 +1418,6 @@ class Wizard extends CI_Controller {
 
 		return $path;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set output
@@ -1429,19 +1442,12 @@ class Wizard extends CI_Controller {
 		// If we're dealing with an error, change the title to indicate that
 		if ($view == "error")
 		{
-			$this->title = ($this->is_installed)
+			$this->title = $this->is_installed
+				? lang('update_failed')
+				: lang('install_failed');
+			$this->subtitle = $this->is_installed
 				? sprintf(lang('error_updating'), $this->installed_version, $this->version)
 				: sprintf(lang('error_installing'), $this->version);
-			$this->subtitle = lang('stopped');
-		}
-
-		// Only show steps during upgrades
-		if ($this->is_installed)
-		{
-			$suffix = sprintf(lang('subtitle_step'), $this->current_step, $this->steps);
-			$this->subtitle .= (empty($this->subtitle))
-				? $suffix
-				: ' <span class="faded">|</span> '.$suffix;
 		}
 
 		$javascript_basepath = $this->set_path('themes/ee/asset/javascript/');
@@ -1470,7 +1476,8 @@ class Wizard extends CI_Controller {
 			'is_core'           => (IS_CORE) ? 'Core' : '',
 
 			'action'            => '',
-			'method'            => 'post'
+			'method'            => 'post',
+			'retry_link'        => $this->is_installed ? $this->set_qstr('do_update') : $this->set_qstr('do_install')
 		);
 
 		if ($this->is_installed)
@@ -1494,8 +1501,6 @@ class Wizard extends CI_Controller {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set the base URL and index values so our links work properly
 	 * @return void
@@ -1515,8 +1520,6 @@ class Wizard extends CI_Controller {
 		$this->config->set_item('site_index', SELF); // Same with the CI site_index
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create the query string needed for form actions
 	 * @param string  $method The method name for the action
@@ -1526,8 +1529,6 @@ class Wizard extends CI_Controller {
 		$query_string = 'C=wizard&M='.$method.'&language='.$this->mylang;
 		return site_url($query_string);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Install the default site theme
@@ -1557,21 +1558,18 @@ class Wizard extends CI_Controller {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Install the Modules
 	 * @return boolean  TRUE if successful, FALSE if not
 	 */
 	private function install_modules()
 	{
+		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
 		ee()->load->library('addons');
 		$this->module_install_errors = ee()->addons->install_modules($this->required_modules);
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Write the config file
@@ -1620,7 +1618,7 @@ class Wizard extends CI_Controller {
 			'show_profiler'             => 'n',
 			'include_seconds'           => 'n',
 			'cookie_domain'             => '',
-			'cookie_path'               => '',
+			'cookie_path'               => '/',
 			'cookie_prefix'             => '',
 			'website_session_type'      => 'c',
 			'cp_session_type'           => 'c',
@@ -1709,7 +1707,7 @@ class Wizard extends CI_Controller {
 			'site_404'                  => '',
 			'save_tmpl_revisions'       => 'n',
 			'max_tmpl_revisions'        => '5',
-			'save_tmpl_files'           => 'n',
+			'save_tmpl_files'           => 'y',
 			'deny_duplicate_data'       => 'y',
 			'redirect_submitted_links'  => 'n',
 			'enable_censoring'          => 'n',
@@ -1919,7 +1917,6 @@ class Wizard extends CI_Controller {
 			'site_404',
 			'save_tmpl_revisions',
 			'max_tmpl_revisions',
-			'save_tmpl_files',
 		);
 		$site_prefs = array();
 
@@ -1972,8 +1969,6 @@ class Wizard extends CI_Controller {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Write config file from the template file
@@ -2090,8 +2085,6 @@ class Wizard extends CI_Controller {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update modules (first party only)
 	 * @return void
@@ -2145,8 +2138,6 @@ class Wizard extends CI_Controller {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get the default channel entry data
 	 * @return string
@@ -2155,8 +2146,6 @@ class Wizard extends CI_Controller {
 	{
 		return read_file(APPPATH.'language/'.$this->userdata['deft_lang'].'/channel_entry_lang.php');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Checks to see if we're allowed to automatically rename the installer dir

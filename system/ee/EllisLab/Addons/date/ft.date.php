@@ -1,26 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
- * ExpressionEngine Date Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Date Fieldtype
  */
 class Date_ft extends EE_Fieldtype {
 
@@ -53,8 +41,6 @@ class Date_ft extends EE_Fieldtype {
 		return $timestamp ?: NULL;
 	}
 
-	// --------------------------------------------------------------------
-
 	function save($data)
 	{
 		if ( ! is_numeric($data))
@@ -64,8 +50,6 @@ class Date_ft extends EE_Fieldtype {
 
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	function grid_save($data)
 	{
@@ -81,8 +65,6 @@ class Date_ft extends EE_Fieldtype {
 
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Validate Field
@@ -105,8 +87,6 @@ class Date_ft extends EE_Fieldtype {
 
 		return array('value' => $data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Display Field
@@ -241,14 +221,10 @@ class Date_ft extends EE_Fieldtype {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	function pre_process($data)
 	{
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	function replace_tag($date, $params = array(), $tagdata = FALSE)
 	{
@@ -261,8 +237,6 @@ class Date_ft extends EE_Fieldtype {
 		return ee()->TMPL->process_date($date, $params, FALSE, $localize);
 	}
 
-	// --------------------------------------------------------------------
-
 	function replace_relative($date, $params = array(), $tagdata = FALSE)
 	{
 		$localize = TRUE;
@@ -273,8 +247,6 @@ class Date_ft extends EE_Fieldtype {
 
 		return ee()->TMPL->process_date($date, $params, TRUE, $localize);
 	}
-
-	// --------------------------------------------------------------------
 
 	public function grid_replace_tag($data, $params = array(), $tagdata = FALSE)
 	{
@@ -301,8 +273,6 @@ class Date_ft extends EE_Fieldtype {
 		return $date[0];
 	}
 
-	// --------------------------------------------------------------------
-
 	public function grid_display_settings($data)
 	{
 		return array(
@@ -321,16 +291,12 @@ class Date_ft extends EE_Fieldtype {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	function grid_save_settings($data)
 	{
 		return array(
 			'localize' => get_bool_from_string($data['localize'])
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	function settings_modify_column($data)
 	{
@@ -348,8 +314,6 @@ class Date_ft extends EE_Fieldtype {
 		return $fields;
 	}
 
-	// --------------------------------------------------------------------
-
 	public function grid_settings_modify_column($data)
 	{
 		return array('col_id_'.$data['col_id'] =>
@@ -361,8 +325,6 @@ class Date_ft extends EE_Fieldtype {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Accept all content types.
 	 *
@@ -373,8 +335,6 @@ class Date_ft extends EE_Fieldtype {
 	{
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

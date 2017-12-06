@@ -1,31 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Member\Gateway;
 
 use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Member Table
- *
- * @package		ExpressionEngine
- * @subpackage	Category\Gateway
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Table
  */
 class MemberGateway extends Gateway {
 
@@ -43,18 +30,6 @@ class MemberGateway extends Gateway {
 	protected $crypt_key;
 	protected $authcode;
 	protected $email;
-	protected $url;
-	protected $location;
-	protected $occupation;
-	protected $interests;
-	protected $bday_d;
-	protected $bday_m;
-	protected $bday_y;
-	protected $aol_im;
-	protected $yahoo_im;
-	protected $msn_im;
-	protected $icq;
-	protected $bio;
 	protected $signature;
 	protected $avatar_filename;
 	protected $avatar_width;

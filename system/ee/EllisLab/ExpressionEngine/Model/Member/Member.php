@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Member;
 
@@ -106,7 +113,16 @@ class Member extends ContentModel {
 		'CommentSubscriptions' => array(
 			'type' => 'hasMany',
 			'model' => 'CommentSubscription'
-		)
+		),
+		'NewsView' => array(
+			'type' => 'hasOne',
+			'model' => 'MemberNewsView'
+		),
+	);
+
+	protected static $_field_data = array(
+		'field_model'     => 'MemberField',
+		'structure_model' => 'MemberGroup',
 	);
 
 	protected static $_validation_rules = array(
@@ -119,12 +135,6 @@ class Member extends ContentModel {
 		'date_format'     => 'validateDateFormat',
 		'time_format'     => 'enum[12,24]',
 		'include_seconds' => 'enum[y,n]',
-		'url'             => 'url',
-		'location'        => 'xss',
-		'bio'             => 'xss',
-		'bday_d'          => 'xss',
-		'bday_m'          => 'xss',
-		'bday_y'          => 'xss'
 	);
 
 	protected static $_events = array(
@@ -144,18 +154,6 @@ class Member extends ContentModel {
 	protected $crypt_key;
 	protected $authcode;
 	protected $email;
-	protected $url;
-	protected $location;
-	protected $occupation;
-	protected $interests;
-	protected $bday_d;
-	protected $bday_m;
-	protected $bday_y;
-	protected $aol_im;
-	protected $yahoo_im;
-	protected $msn_im;
-	protected $icq;
-	protected $bio;
 	protected $signature;
 	protected $avatar_filename;
 	protected $avatar_width;
@@ -267,6 +265,8 @@ class Member extends ContentModel {
 	 */
 	public function onBeforeDelete()
 	{
+		parent::onBeforeDelete();
+
 		$this->UploadedFiles->uploaded_by_member_id = 0;
 		$this->UploadedFiles->save();
 
@@ -328,16 +328,41 @@ class Member extends ContentModel {
 	 */
 	public function updateAuthorStats()
 	{
-		$total_entries = $this->getModelFacade()->get('ChannelEntry')
+		// open, non-expired entries only
+		$entries = $this->getModelFacade()->get('ChannelEntry')
 			->filter('author_id', $this->member_id)
-			->count();
+			->filter('status', '!=', 'closed')
+			->filterGroup()
+				->filter('expiration_date', 0)
+				->orFilter('expiration_date', '>', ee()->localize->now)
+			->endFilterGroup()
+			->fields('entry_date');
 
-		$total_comments = $this->getModelFacade()->get('Comment')
+		$total_entries = $entries->count();
+
+		$recent_entry = $entries->order('entry_date', 'desc')
+			->first();
+
+		$last_entry_date = ($recent_entry) ? $recent_entry->entry_date : 0;
+
+		// open comments only
+		$comments = $this->getModelFacade()->get('Comment')
 			->filter('author_id', $this->member_id)
-			->count();
+			->filter('status', 'o')
+			->fields('comment_date');
 
-		$this->setProperty('total_entries', $total_entries);
+		$total_comments = $comments->count();
+
+		$recent_comment = $comments->order('comment_date', 'desc')
+			->first();
+
+		$last_comment_date = ($recent_comment) ? $recent_comment->comment_date : 0;
+
+		$this->setProperty('last_comment_date', $last_comment_date);
+		$this->setProperty('last_entry_date', $last_entry_date);
 		$this->setProperty('total_comments', $total_comments);
+		$this->setProperty('total_entries', $total_entries);
+
 		$this->save();
 	}
 
@@ -360,7 +385,7 @@ class Member extends ContentModel {
 		}
 
 		// Make sure to get the correct site, revert once issue #1285 is fixed
-		$member_group = ee('Model')->get('MemberGroup')
+		$member_group = $this->getModelFacade()->get('MemberGroup')
 			->filter('group_id', $this->group_id)
 			->filter('site_id', $site_id)
 			->first();
@@ -372,13 +397,17 @@ class Member extends ContentModel {
 			$cp_homepage_custom = $this->cp_homepage_custom;
 
 			// Site created after setting was saved, no channel setting will be available
-			if ($this->cp_homepage == 'publish_form' && ! isset($cp_homepage_channel[$site_id]))
+			if ($this->cp_homepage == 'publish_form')
 			{
-				$cp_homepage = '';
-			}
-			else
-			{
-				$cp_homepage_channel = $cp_homepage_channel[$site_id];
+				// No channels or bad channel? Can't go to the publish page
+				if ( ! isset($cp_homepage_channel[$site_id]))
+				{
+					$cp_homepage = '';
+				}
+				else
+				{
+					$cp_homepage_channel = $cp_homepage_channel[$site_id];
+				}
 			}
 		}
 		elseif ( ! empty($member_group->cp_homepage))

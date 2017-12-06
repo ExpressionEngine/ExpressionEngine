@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Model\Mixin;
 
@@ -6,32 +13,11 @@ use EllisLab\ExpressionEngine\Library\Mixin\Mixin;
 use EllisLab\ExpressionEngine\Service\Model\Association\Association;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
+ * This is NOT the class you're looking for. Just some leftover dust.
  */
 
 /**
- * This is NOT the class you're looking for. It will be removed before
- * release. Pardon our dust.
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Model Relationship Mixin
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Model Service Relationship Mixin
  */
 class Relationship implements Mixin {
 

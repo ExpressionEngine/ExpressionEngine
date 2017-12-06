@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Channels;
 
@@ -9,27 +16,7 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
 use EllisLab\ExpressionEngine\Service\Filter\FilterFactory;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Abstract Channel Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Abstract Channels
  */
 abstract class AbstractChannels extends CP_Controller {
 
@@ -73,10 +60,7 @@ abstract class AbstractChannels extends CP_Controller {
 				'can_delete_channel_fields',
 				'can_create_statuses',
 				'can_delete_statuses',
-				'can_edit_statuses',
-				'can_create_categories',
-				'can_edit_categories',
-				'can_delete_categories'
+				'can_edit_statuses'
 				))
 			{
 				show_error(lang('unauthorized_access'), 403);
@@ -99,87 +83,15 @@ abstract class AbstractChannels extends CP_Controller {
 				)
 			)
 		);
-	}
 
-	protected function generateSidebar($active = NULL)
-	{
-		$sidebar = ee('CP/Sidebar')->make();
+		ee()->javascript->set_global(
+			'sets.importUrl',
+			ee('CP/URL', 'channels/sets')->compile()
+		);
 
-		if (ee()->cp->allowed_group_any(
-			'can_create_channels',
-			'can_edit_channels',
-			'can_delete_channels'
-		))
-		{
-			$header = $sidebar->addHeader(lang('channels'), ee('CP/URL')->make('channels'));
-
-			if (ee()->cp->allowed_group('can_create_channels'))
-			{
-				$header->withButton(lang('new'), ee('CP/URL')->make('channels/create'));
-			}
-
-			if ($active == 'channel')
-			{
-				$header->isActive();
-			}
-		}
-
-		if (ee()->cp->allowed_group_any(
-			'can_create_channel_fields',
-			'can_edit_channel_fields',
-			'can_delete_channel_fields'
-		))
-		{
-			$header = $sidebar->addHeader(lang('field_groups'), ee('CP/URL')->make('channels/fields/groups'));
-
-			if (ee()->cp->allowed_group('can_create_channel_fields'))
-			{
-				$header->withButton(lang('new'), ee('CP/URL')->make('channels/fields/groups/create'));
-			}
-
-			if ($active == 'field')
-			{
-				$header->isActive();
-			}
-		}
-
-		if (ee()->cp->allowed_group_any(
-			'can_create_categories',
-			'can_edit_categories',
-			'can_delete_categories'
-		))
-		{
-			$header = $sidebar->addHeader(lang('category_groups'), ee('CP/URL')->make('channels/cat'));
-
-			if (ee()->cp->allowed_group('can_create_categories'))
-			{
-				$header->withButton(lang('new'), ee('CP/URL')->make('channels/cat/create'));
-			}
-
-			if ($active == 'category')
-			{
-				$header->isActive();
-			}
-		}
-
-		if (ee()->cp->allowed_group_any(
-			'can_create_statuses',
-			'can_delete_statuses',
-			'can_edit_statuses'
-		))
-		{
-			$header = $sidebar->addHeader(lang('status_groups'), ee('CP/URL')->make('channels/status'));
-
-			if (ee()->cp->allowed_group('can_create_statuses'))
-			{
-				$header->withButton(lang('new'), ee('CP/URL')->make('channels/status/create'));
-			}
-
-			if ($active == 'status')
-			{
-				$header->isActive();
-			}
-		}
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/channel/menu'),
+		));
 	}
 
 	/**
@@ -389,11 +301,18 @@ abstract class AbstractChannels extends CP_Controller {
 
 			if ($mutable)
 			{
+				$channels = array();
+
+				foreach ($field->Channels->pluck('channel_title') as $title)
+				{
+					$channels[] = htmlentities($title, ENT_QUOTES, 'UTF-8');
+				}
+
 				$column[] = array(
 					'name' => 'selection[]',
 					'value' => $field->field_id,
 					'data' => array(
-						'confirm' => lang('field') . ': <b>' . htmlentities($field->field_label, ENT_QUOTES, 'UTF-8') . '</b>'
+						'confirm' => lang('field') . ': <b>' . htmlentities($field->field_label, ENT_QUOTES, 'UTF-8') . '</b> (Channels: <b>' . implode(', ', $channels). '</b>)'
 					)
 				);
 			}
@@ -537,7 +456,7 @@ abstract class AbstractChannels extends CP_Controller {
 		$table->setNoResultsText(
 			'no_category_groups',
 			'create_category_group',
-			ee('CP/URL')->make('channels/cat/create')
+			ee('CP/URL')->make('categories/groups/create')
 		);
 
 		$sort_map = array(
@@ -553,7 +472,7 @@ abstract class AbstractChannels extends CP_Controller {
 		$data = array();
 		foreach ($cat_groups as $group)
 		{
-			$view_url = ee('CP/URL')->make('channels/cat/cat-list/'.$group->getId());
+			$view_url = ee('CP/URL')->make('categories/group/'.$group->getId());
 
 			$columns = array(
 				$group->getId(),
@@ -567,11 +486,11 @@ abstract class AbstractChannels extends CP_Controller {
 						'title' => lang('view')
 					),
 					'edit' => array(
-						'href' => ee('CP/URL')->make('channels/cat/edit/'.$group->getId()),
+						'href' => ee('CP/URL')->make('categories/groups/edit/'.$group->getId()),
 						'title' => lang('edit')
 					),
 					'txt-only' => array(
-						'href' => ee('CP/URL')->make('channels/cat/field/'.$group->getId()),
+						'href' => ee('CP/URL')->make('categories/fields/'.$group->getId()),
 						'title' => strtolower(lang('custom_fields')),
 						'content' => strtolower(lang('fields'))
 					)
@@ -649,7 +568,7 @@ abstract class AbstractChannels extends CP_Controller {
 		$data = array();
 		foreach ($categories as $category)
 		{
-			$edit_url = ee('CP/URL')->make('channels/cat/edit-cat/'.$category->group_id.'/'.$category->cat_id);
+			$edit_url = ee('CP/URL')->make('categories/edit/'.$category->group_id.'/'.$category->cat_id);
 
 			$data[] = array(
 				$category->getId(),
@@ -664,103 +583,6 @@ abstract class AbstractChannels extends CP_Controller {
 						'title' => lang('edit')
 					)
 				))
-			);
-		}
-
-		$table->setData($data);
-
-		return $table;
-	}
-
-	/**
-	 * Builds and returns a Table object for use of displaying a list of status groups
-	 *
-	 * @param	Builder 	$status_groups	Query builder object for status groups
-	 * @param	array 		$config			Optional Table class config overrides
-	 * @param	boolean 	$mutable		Whether or not the data in the table is mutable,
-	 *	currently determines whether or not checkboxes will be shown
-	 */
-	protected function buildTableFromStatusGroupsQuery(Builder $status_groups, $config = array(), $mutable = TRUE)
-	{
-		$table = ee('CP/Table', $config);
-
-		$columns = array(
-			'col_id',
-			'group_name',
-			'manage' => array(
-				'type'	=> Table::COL_TOOLBAR
-			)
-		);
-
-		if ($mutable)
-		{
-			$columns[] = array(
-				'type'	=> Table::COL_CHECKBOX
-			);
-		}
-
-		$table->setColumns($columns);
-
-		$sort_map = array(
-			'col_id' => 'group_id',
-			'group_name' => 'group_name'
-		);
-
-		$status_groups = $status_groups->order($sort_map[$table->sort_col], $table->sort_dir)
-			->limit($this->perpage)
-			->offset($this->offset)
-			->all();
-
-		$data = array();
-		foreach ($status_groups as $group)
-		{
-			$view_url = ee('CP/URL')->make('channels/status/status-list/'.$group->getId());
-			$columns = array(
-				$group->getId(),
-				array(
-					'content' => $group->group_name,
-					'href' => $view_url
-				),
-				array('toolbar_items' => array(
-					'edit' => array(
-						'href' => ee('CP/URL')->make('channels/status/edit/'.$group->getId()),
-						'title' => lang('edit')
-					),
-					'txt-only' => array(
-						'href' => $view_url,
-						'title' => lang('statuses'),
-						'content' => strtolower(lang('statuses'))
-					)
-				))
-			);
-
-			if ( ! ee()->cp->allowed_group('can_edit_statuses'))
-			{
-				unset($columns[2]['toolbar_items']['edit']);
-			}
-
-			if ($mutable)
-			{
-				$columns[] = array(
-					'name' => 'status_groups[]',
-					'value' => $group->getId(),
-					'data'	=> array(
-						'confirm' => lang('status_group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES, 'UTF-8') . '</b>'
-					),
-					// Cannot delete default group
-					'disabled' => ($group->group_name == 'Default') ? 'disabled' : NULL
-				);
-			}
-
-			$attrs = array();
-			if (ee()->session->flashdata('highlight_id') == $group->getId())
-			{
-				$attrs = array('class' => 'selected');
-			}
-
-			$data[] = array(
-				'attrs' => $attrs,
-				'columns' => $columns
 			);
 		}
 

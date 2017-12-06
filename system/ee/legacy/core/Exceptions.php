@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Exceptions Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Exceptions
  */
 class EE_Exceptions {
 
@@ -54,8 +42,6 @@ class EE_Exceptions {
 		log_message('error', 'Severity: '.$error_constant.'  --> '.$message. ' '.$filepath.' '.$line, TRUE);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * 404 Page Not Found Handler
 	 *
@@ -82,8 +68,6 @@ class EE_Exceptions {
 		exit;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Native PHP error handler
 	 *
@@ -98,6 +82,14 @@ class EE_Exceptions {
 		$this->php_errors_output = TRUE;
 
 		list($error_constant, $error_category) = $this->lookupSeverity($severity);
+
+		if (REQ == 'CLI')
+		{
+			stdout('PHP '.$error_category.':', CLI_STDOUT_FAILURE);
+			echo $message . "\n";
+			echo $filepath . ": $line\n\n";
+			return;
+		}
 
 		$filepath = str_replace("\\", "/", $filepath);
 		$filepath = str_replace(SYSPATH, '', $filepath);
@@ -118,8 +110,6 @@ class EE_Exceptions {
 		ob_end_clean();
 		echo $buffer;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Has output PHP errors?
@@ -262,6 +252,18 @@ class EE_Exceptions {
 		{
 			$location_parts = explode(DIRECTORY_SEPARATOR, $location);
 			$location = array_pop($location_parts);
+		}
+
+		if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+			$_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')
+		{
+			$return = [
+				'messageType' => 'error',
+				'message' => $message,
+				'trace' => $trace
+			];
+			echo json_encode($return);
+			exit;
 		}
 
 		if (ob_get_level() > $this->ob_level + 1)

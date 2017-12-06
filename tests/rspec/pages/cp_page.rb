@@ -1,8 +1,8 @@
 class ControlPanelPage < SitePrism::Page
 
   section :main_menu, MenuSection, 'div.nav-main-wrap'
-  elements :submit_buttons, '.form-ctrls .btn'
-  element :fieldset_errors, '.invalid'
+  elements :submit_buttons, '.form-btns .btn'
+  element :fieldset_errors, '.fieldset-invalid'
   element :settings_btn, '.nav-main-develop a.nav-settings'
   elements :error_messages, 'em.ee-form-error-message'
 
@@ -29,7 +29,7 @@ class ControlPanelPage < SitePrism::Page
   element :modal_submit_button, 'div.modal .form-ctrls input.btn'
 
   # Grid
-  element :grid_add_no_results, 'tr.no-results a.btn'
+  element :grid_add_no_results, 'tr.no-results a[rel="add_row"]'
   element :grid_add, 'ul.toolbar li.add a'
 
   # Breadcrumb

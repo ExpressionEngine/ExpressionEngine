@@ -1,35 +1,20 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Addons;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 use Michelf\MarkdownExtra;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Home Page Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Addons Controller
  */
 class Addons extends CP_Controller {
 
@@ -68,9 +53,6 @@ class Addons extends CP_Controller {
 
 		$this->params['perpage'] = $this->perpage; // Set a default
 
-		// Add in any submitted search phrase
-		ee()->view->search_value = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
-
 		$this->base_url = ee('CP/URL')->make('addons');
 
 		ee()->load->library('addons');
@@ -88,8 +70,6 @@ class Addons extends CP_Controller {
 			$this->assigned_modules[] = ee('Model')->get('Module')->filter('module_name', 'Filepicker')->first()->getId();
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Sets up the display filters
@@ -110,7 +90,8 @@ class Addons extends CP_Controller {
 		$status->disableCustomValue();
 
 		$first_filters = ee('CP/Filter')
-			->add($status);
+			->add($status)
+			->add('Keyword')->withName('filter_by_first_keyword');
 
 		// Third Party Add-on Filters
 
@@ -133,7 +114,8 @@ class Addons extends CP_Controller {
 
 		$third_filters = ee('CP/Filter')
 			->add($status)
-			->add($developer);
+			->add($developer)
+				->add('Keyword')->withName('filter_by_third_keyword');
 
 		// When filtering the first party table keep the third party filter values
 		$filter_base_url['first'] = clone $this->base_url;
@@ -168,8 +150,6 @@ class Addons extends CP_Controller {
 		return strtolower(str_replace(' ', '_', $str));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Index function
 	 *
@@ -202,11 +182,6 @@ class Addons extends CP_Controller {
 				'third' => NULL
 			)
 		);
-
-		if ( ! empty(ee()->view->search_value))
-		{
-			$this->base_url->setQueryStringVariable('search', ee()->view->search_value);
-		}
 
 		$addons = $this->getAllAddons();
 
@@ -249,10 +224,6 @@ class Addons extends CP_Controller {
 		), $developers);
 
 		$return_url = ee('CP/URL')->getCurrentUrl();
-		if (ee()->view->search_value)
-		{
-			$return_url->setQueryStringVariable('search', ee()->view->search_value);
-		}
 
 		foreach (array('first', 'third') as $party)
 		{
@@ -267,6 +238,7 @@ class Addons extends CP_Controller {
 			$config = array(
 				'autosort' => TRUE,
 				'autosearch' => TRUE,
+				'search' => $this->params["filter_by_{$party}_keyword"],
 				'sort_col' => ee()->input->get($party . '_sort_col') ?: NULL,
 				'sort_col_qs_var' => $party . '_sort_col',
 				'sort_dir' => ee()->input->get($party . '_sort_dir') ?: 'asc',
@@ -509,8 +481,6 @@ class Addons extends CP_Controller {
 		return $addons;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Updates an add-on
 	 *
@@ -675,8 +645,6 @@ class Addons extends CP_Controller {
 		ee()->functions->redirect($return);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Installs an add-on
 	 *
@@ -788,8 +756,6 @@ class Addons extends CP_Controller {
 		ee()->functions->redirect($return);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Uninstalls an add-on
 	 *
@@ -888,8 +854,6 @@ class Addons extends CP_Controller {
 
 		ee()->functions->redirect($return);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Display add-on settings
@@ -997,8 +961,6 @@ class Addons extends CP_Controller {
 
 		ee()->cp->render('addons/settings', $vars);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Display plugin manual/documentation
@@ -1127,8 +1089,6 @@ class Addons extends CP_Controller {
 		ee()->cp->render('addons/manual', $vars);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get data on a module
 	 *
@@ -1207,8 +1167,6 @@ class Addons extends CP_Controller {
 		return $data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get data on a plugin
 	 *
@@ -1263,8 +1221,6 @@ class Addons extends CP_Controller {
 
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get data on a fieldtype
@@ -1331,8 +1287,6 @@ class Addons extends CP_Controller {
 
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get data on an extension
@@ -1432,8 +1386,6 @@ class Addons extends CP_Controller {
 		return $data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Installs an extension
 	 *
@@ -1454,8 +1406,6 @@ class Addons extends CP_Controller {
 		return $name;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Uninstalls a an extension
 	 *
@@ -1475,8 +1425,6 @@ class Addons extends CP_Controller {
 
 		return $name;
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Installs a module
@@ -1508,8 +1456,6 @@ class Addons extends CP_Controller {
 		return $name;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Uninstalls a module
 	 *
@@ -1540,8 +1486,6 @@ class Addons extends CP_Controller {
 		return $name;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Installs a fieldtype
 	 *
@@ -1563,8 +1507,6 @@ class Addons extends CP_Controller {
 		return $name;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Uninstalls a fieldtype
 	 *
@@ -1585,8 +1527,6 @@ class Addons extends CP_Controller {
 
 		return $name;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Render module-specific settings
@@ -1763,9 +1703,12 @@ class Addons extends CP_Controller {
 					}
 
 					$element['fields'][$key] = array(
-						'type' => 'select',
+						'type' => 'radio',
 						'value' => $value,
-						'choices' => $choices
+						'choices' => $choices,
+						'no_results' => [
+							'text' => 'no_rows_returned'
+						]
 					);
 					break;
 
@@ -1779,7 +1722,10 @@ class Addons extends CP_Controller {
 					$element['fields'][$key] = array(
 						'type' => 'radio',
 						'value' => $value,
-						'choices' => $choices
+						'choices' => $choices,
+						'no_results' => [
+							'text' => 'no_rows_returned'
+						]
 					);
 					break;
 
@@ -1795,7 +1741,9 @@ class Addons extends CP_Controller {
 						'type' => 'checkbox',
 						'value' => $value,
 						'choices' => $choices,
-						'wrap' => TRUE,
+						'no_results' => [
+							'text' => 'no_rows_returned'
+						]
 					);
 					break;
 

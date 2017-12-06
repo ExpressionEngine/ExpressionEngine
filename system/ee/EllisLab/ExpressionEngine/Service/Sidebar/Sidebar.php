@@ -1,29 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
 namespace EllisLab\ExpressionEngine\Service\Sidebar;
 
 use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Sidebar Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Sidebar Service
  */
 class Sidebar {
 
@@ -36,6 +25,21 @@ class Sidebar {
 	 * @var ViewFactory $view A ViewFactory object with which we will render the sidebar.
 	 */
 	protected $view;
+
+	/**
+	 * @var FolderList $list Primary folder list for this sidebar
+	 */
+	protected $list;
+
+	/**
+	 * @var ActionBar $action_bar Primary action bar for this sidebar
+	 */
+	protected $action_bar;
+
+	/**
+	 * @var string $class Any extra classes to apply to the containing div
+	 */
+	protected $class;
 
 	/**
 	 * Constructor: sets the ViewFactory property
@@ -56,6 +60,14 @@ class Sidebar {
 	}
 
 	/**
+	 * Creates a new Sidebar object for when the singleton won't do
+	 */
+	public function makeNew()
+	{
+		return new static($this->view);
+	}
+
+	/**
 	 * Renders the sidebar
 	 *
 	 * @return string The rendered HTML of the sidebar
@@ -64,9 +76,19 @@ class Sidebar {
 	{
 		$output = '';
 
+		if ( ! empty($this->list))
+		{
+			$output .= $this->list->render($this->view);
+		}
+
 		foreach ($this->headers as $header)
 		{
 			$output .= $header->render($this->view);
+		}
+
+		if ( ! empty($this->action_bar))
+		{
+			$output .= $this->action_bar->render($this->view);
 		}
 
 		if (empty($output))
@@ -75,7 +97,10 @@ class Sidebar {
 		}
 
 		return $this->view->make('_shared/sidebar/sidebar')
-			     ->render(array('sidebar' => $output));
+			     ->render([
+					'class' => $this->class,
+					'sidebar' => $output,
+				]);
 	}
 
 	/**
@@ -93,6 +118,40 @@ class Sidebar {
 		return $header;
 	}
 
+	/**
+	 * Adds a folder list to the sidebar, without a header
+	 *
+	 * @param string $name The name of the folder list
+	 * @return FolderList A new FolderList object
+	 */
+	public function addFolderList($name)
+	{
+		$this->list = new FolderList($name);
+		return $this->list;
+	}
+
+	/**
+	 * Adds a folder list under this header
+	 *
+	 * @param string $name The name of the folder list
+	 * @return FolderList A new FolderList object
+	 */
+	public function addActionBar()
+	{
+		$this->action_bar = new ActionBar();
+		return $this->action_bar;
+	}
+
+	/**
+	 * Adds some bottom margin to this sidebar
+	 *
+	 * @return self
+	 */
+	public function addMarginBottom()
+	{
+		$this->class = ' mb';
+		return $this;
+	}
 }
 
 // EOF

@@ -1,22 +1,15 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Site;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
-
-/**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine Site Table
@@ -24,12 +17,6 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * The Site model stores preference sets for each site in this installation
  * of ExpressionEngine.  Each site can have a completely different set of
  * settings and prefereces.
- *
- * @package		ExpressionEngine
- * @subpackage	Site
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Site extends Model {
 
@@ -59,14 +46,6 @@ class Site extends Model {
 		),
 		'Stats' => array(
 			'type' => 'HasOne'
-		),
-		'Statuses' => array(
-			'model' => 'Status',
-			'type' => 'hasMany'
-		),
-		'StatusGroups' => array(
-			'model' => 'StatusGroup',
-			'type' => 'hasMany'
 		),
 		'TemplateGroups' => array(
 			'model' => 'TemplateGroup',
@@ -174,7 +153,6 @@ class Site extends Model {
 		$this->createHTMLButtons();
 		$this->createSpecialtyTemplates();
 		$this->createMemberGroups();
-		$this->createDefaultStatuses();
     }
 
 	/**
@@ -191,12 +169,6 @@ class Site extends Model {
 		foreach(ee()->config->divination($type) as $value)
 		{
 			$prefs->$value = ee()->config->item($value);
-		}
-
-		if ($type == 'template')
-		{
-			$prefs->save_tmpl_files    = 'n';
-			$prefs->tmpl_file_basepath = '';
 		}
 	}
 
@@ -289,52 +261,6 @@ class Site extends Model {
 			$data['site_id'] = $this->site_id;
 
 			$this->getModelFacade()->make('MemberGroup', $data)->save();
-		}
-	}
-
-	/**
-	 * Creates a "Default" status group and the "open" and "closed" statuses
-	 * in that group as needed.
-	 *
-	 * @return void
-	 */
-	public function createDefaultStatuses()
-	{
-		$group = $this->getModelFacade()->get('StatusGroup')
-			->filter('site_id', $this->site_id)
-			->filter('group_name', 'Default')
-			->first();
-
-		if ( ! $group)
-		{
-			$group = $this->getModelFacade()->make('StatusGroup', array(
-				'site_id'    => $this->site_id,
-				'group_name' => 'Default'
-			))->save();
-		}
-
-		$statuses = ($group->Statuses) ? $group->Statuses->indexBy('status') : array();
-
-		if ( ! array_key_exists('open', $statuses))
-		{
-			$this->getModelFacade()->make('Status', array(
-				'site_id'      => $this->site_id,
-				'group_id'     => $group->group_id,
-				'status'       => 'open',
-				'status_order' => 1,
-				'highlight'    => '009933',
-			))->save();
-		}
-
-		if ( ! array_key_exists('closed', $statuses))
-		{
-			$this->getModelFacade()->make('Status', array(
-				'site_id'      => $this->site_id,
-				'group_id'     => $group->group_id,
-				'status'       => 'closed',
-				'status_order' => 2,
-				'highlight'    => '990000',
-			))->save();
 		}
 	}
 }

@@ -1,17 +1,11 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * ExpressionEngine IP To Nation Module
@@ -34,8 +28,6 @@ class Ip_to_nation_upd {
 	{
 		ee()->load->dbforge();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Installer
@@ -110,8 +102,6 @@ class Ip_to_nation_upd {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Uninstaller
 	 *
@@ -152,8 +142,6 @@ class Ip_to_nation_upd {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Updater

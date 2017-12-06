@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\File\Column;
 
@@ -6,27 +13,7 @@ use EllisLab\ExpressionEngine\Service\Model\Column\SerializedType;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Local Path Column
- *
- * @package		ExpressionEngine
- * @subpackage	Site\Preferences
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Local Path Column
  */
 class LocalPath extends SerializedType {
 

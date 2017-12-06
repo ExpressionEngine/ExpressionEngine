@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Files;
 
@@ -11,27 +18,7 @@ use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Files Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Files Controller
  */
 class Files extends AbstractFilesController {
 
@@ -108,16 +95,18 @@ class Files extends AbstractFilesController {
 
 		$vars['form_url'] = $vars['table']['base_url'];
 		$vars['dir_id'] = $id;
-		$vars['can_upload_files'] = ee()->cp->allowed_group('can_upload_new_files');
 
 		$this->generateSidebar($id);
-		$this->stdHeader();
 		ee()->view->cp_page_title = lang('file_manager');
 		ee()->view->cp_heading = sprintf(lang('files_in_directory'), $dir->name);
 
 		// Check to see if they can sync the directory
 		ee()->view->can_sync_directory = ee()->cp->allowed_group('can_upload_new_files')
 			&& $dir->memberGroupHasAccess(ee()->session->userdata('group_id'));
+
+		$this->stdHeader(
+			ee()->view->can_sync_directory ? $id : NULL
+		);
 
 		ee()->cp->render('files/directory', $vars);
 	}
@@ -185,7 +174,7 @@ class Files extends AbstractFilesController {
 		);
 
 		$this->generateSidebar($dir_id);
-		$this->stdHeader();
+		$this->stdHeader($dir_id);
 		ee()->view->cp_page_title = lang('file_upload');
 
 		ee()->cp->render('settings/form', $vars);

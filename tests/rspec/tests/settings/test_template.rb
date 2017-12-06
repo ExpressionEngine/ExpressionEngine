@@ -16,16 +16,10 @@ feature 'Template Settings' do
   it 'should load current settings into form fields' do
     strict_urls = ee_config(item: 'strict_urls')
     save_tmpl_revisions = ee_config(item: 'save_tmpl_revisions')
-    save_tmpl_files = ee_config(item: 'save_tmpl_files')
 
-    @page.strict_urls_y.checked?.should == (strict_urls == 'y')
-    @page.strict_urls_n.checked?.should == (strict_urls == 'n')
-    @page.site_404.value.should == ee_config(item: 'site_404')
-    @page.save_tmpl_revisions_y.checked?.should == (save_tmpl_revisions == 'y')
-    @page.save_tmpl_revisions_n.checked?.should == (save_tmpl_revisions == 'n')
-    @page.max_tmpl_revisions.value.should == ee_config(item: 'max_tmpl_revisions')
-    @page.save_tmpl_files_y.checked?.should == (save_tmpl_files == 'y')
-    @page.save_tmpl_files_n.checked?.should == (save_tmpl_files == 'n')
+    @page.strict_urls.value.should == strict_urls
+    @page.site_404.find('div.field-input-selected').should have_text ee_config(item: 'site_404')
+    @page.save_tmpl_revisions.value.should == save_tmpl_revisions
   end
 
   it 'should validate the form' do
@@ -52,18 +46,16 @@ feature 'Template Settings' do
   end
 
   it 'should save and load the settings' do
-    @page.strict_urls_n.click
-    @page.site_404.select 'search/index'
-    @page.save_tmpl_revisions_y.click
+    @page.strict_urls_toggle.click
+    @page.site_404_options.choose_radio_option('search/index')
+    @page.save_tmpl_revisions_toggle.click
     @page.max_tmpl_revisions.set '300'
-    @page.save_tmpl_files_y.click
     @page.submit
 
     @page.should have_text 'Preferences Updated'
-    @page.strict_urls_n.checked?.should == true
-    @page.site_404.value.should == 'search/index'
-    @page.save_tmpl_revisions_y.checked?.should == true
+    @page.strict_urls.value.should == 'n'
+    @page.site_404.find('div.field-input-selected').should have_text 'search/index'
+    @page.save_tmpl_revisions.value.should == 'y'
     @page.max_tmpl_revisions.value.should == '300'
-    @page.save_tmpl_files_y.checked?.should == true
   end
 end

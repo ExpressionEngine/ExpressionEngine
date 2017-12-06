@@ -1,34 +1,21 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\File;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine File Dimension Model
+ * File Dimension Model
  *
  * A model representing one of image manipulations that can be applied on
  * images uploaded to its corresponting upload destination.
- *
- * @package		ExpressionEngine
- * @subpackage	File
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class FileDimension extends Model {
 
@@ -38,6 +25,7 @@ class FileDimension extends Model {
 	protected static $_typed_columns = array(
 		//'width'  => 'int',
 		//'height' => 'int'
+		'quality' => 'int',
 	);
 
 	protected static $_relationships = array(
@@ -56,7 +44,8 @@ class FileDimension extends Model {
 		'short_name'  => 'required|xss|alphaDash|uniqueWithinSiblings[UploadDestination,FileDimensions]',
 		'resize_type' => 'enum[crop,constrain]',
 		'width'       => 'isNatural|validateDimension',
-		'height'      => 'isNatural|validateDimension'
+		'height'      => 'isNatural|validateDimension',
+		'quality'     => 'isNatural|lessThan[101]'
 	);
 
 	protected $id;
@@ -68,6 +57,7 @@ class FileDimension extends Model {
 	protected $width;
 	protected $height;
 	protected $watermark_id;
+	protected $quality;
 
 	/**
 	 * At least a height OR a width must be specified if there is no watermark selected

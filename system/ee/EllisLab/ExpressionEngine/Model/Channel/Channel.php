@@ -1,9 +1,20 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Channel;
 
 use EllisLab\ExpressionEngine\Model\Content\StructureModel;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 
+/**
+ * Channel Model
+ */
 class Channel extends StructureModel {
 
 	protected static $_primary_key = 'channel_id';
@@ -28,24 +39,28 @@ class Channel extends StructureModel {
 	);
 
 	protected static $_relationships = array(
-		'FieldGroup' => array(
-			'type' => 'belongsTo',
+		'FieldGroups' => array(
+			'type' => 'hasAndBelongsToMany',
 			'model' => 'ChannelFieldGroup',
-			'from_key' => 'field_group',
-			'to_key' => 'group_id',
+			'pivot' => array(
+				'table' => 'channels_channel_field_groups'
+			),
 			'weak' => TRUE,
 		),
-		'StatusGroup' => array(
-			'type' => 'belongsTo',
-			'from_key' => 'status_group',
-			'to_key' => 'group_id',
-			'weak' => TRUE
+		'Statuses' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Status',
+			'pivot' => array(
+				'table' => 'channels_statuses'
+			),
+			'weak' => TRUE,
 		),
 		'CustomFields' => array(
-			'type' => 'hasMany',
+			'type' => 'hasAndBelongsToMany',
 			'model' => 'ChannelField',
-			'from_key' => 'field_group',
-			'to_key' => 'group_id',
+			'pivot' => array(
+				'table' => 'channels_channel_fields'
+			),
 			'weak' => TRUE
 		),
 		'Entries' => array(
@@ -96,7 +111,11 @@ class Channel extends StructureModel {
 
 	protected static $_validation_rules = array(
 		'site_id'                    => 'required|isNatural',
-		'channel_name'               => 'required|unique[site_id]|validateShortName',
+		'channel_title'              => 'required|unique[site_id]|xss',
+		'channel_name'               => 'required|unique[site_id]|alphaDash',
+		'channel_url'                => 'xss',
+		'comment_url'                => 'xss',
+		'channel_description'        => 'xss',
 		'deft_comments'              => 'enum[y,n]',
 		'channel_require_membership' => 'enum[y,n]',
 		'channel_allow_img_urls'     => 'enum[y,n]',
@@ -112,10 +131,22 @@ class Channel extends StructureModel {
 		'comment_notify_authors'     => 'enum[y,n]',
 		'enable_versioning'          => 'enum[y,n]',
 		'max_entries'                => 'isNatural',
+		'max_revisions'              => 'isNatural',
+		'max_characters'             => 'isNatural',
+		'comment_max_chars'          => 'isNatural',
+		'comment_timelock'           => 'isNatural',
+		'comment_expiration'         => 'isNatural',
+		'search_results_url'         => 'xss',
+		'rss_url'                    => 'xss',
+		'default_entry_title'        => 'xss',
+		'url_title_prefix'           => 'alphaDash|xss',
+		'channel_notify_emails'      => 'validateEmails',
+		'comment_notify_emails'      => 'validateEmails'
 	);
 
 	protected static $_events = array(
 		'beforeSave',
+		'afterInsert',
 		'afterUpdate',
 		'beforeDelete'
 	);
@@ -140,9 +171,7 @@ class Channel extends StructureModel {
 	protected $last_entry_date;
 	protected $last_comment_date;
 	protected $cat_group;
-	protected $status_group;
 	protected $deft_status;
-	protected $field_group;
 	protected $search_excerpt;
 	protected $deft_category;
 	protected $deft_comments;
@@ -178,6 +207,31 @@ class Channel extends StructureModel {
 	protected $url_title_prefix;
 	protected $live_look_template;
 	protected $max_entries;
+
+	/**
+	 * Custom validation callback to validate a comma-separated list of email
+	 * addresses
+	 */
+	public function validateEmails($key, $value, $params, $rule)
+	{
+		if (empty($value))
+		{
+			return TRUE;
+		}
+
+		$emails = explode(',', $value);
+
+		foreach ($emails as $email)
+		{
+			if ($email != filter_var($email, FILTER_SANITIZE_EMAIL) OR ! filter_var($email, FILTER_VALIDATE_EMAIL))
+			{
+				$rule->stop();
+				return 'valid_email';
+			}
+		}
+
+		return TRUE;
+	}
 
 	/**
 	 * Parses URL properties for any config variables
@@ -219,7 +273,7 @@ class Channel extends StructureModel {
 	{
 		if ( ! isset($content))
 		{
-			$content = $this->getFrontend()->make('ChannelEntry');
+			$content = $this->getModelFacade()->make('ChannelEntry');
 			$content->setChannel($this);
 		}
 		elseif ($content->getChannel()->channel_id != $this->channel_id)
@@ -258,29 +312,6 @@ class Channel extends StructureModel {
 						$this->setRawProperty($property, $channel->{$property});
 					}
 					break;
-				case 'status_group':
-				case 'field_group':
-					if ( ! isset($this->{$property}))
-					{
-						$this->setRawProperty($property, $channel->{$property});
-					}
-					elseif ($this->{$property} == '')
-					{
-						 $this->setRawProperty($property, NULL);
-					}
-					break;
-				case 'deft_status':
-					if ( ! isset($this->status_group) OR $this->status_group == $channel->status_group )
-					{
-						$this->setRawProperty($property, $channel->{$property});
-					}
-					break;
-				case 'search_excerpt':
-					if ( ! isset($this->field_group) OR $this->field_group == $channel->field_group )
-					{
-						$this->setRawProperty($property, $channel->{$property});
-					}
-					break;
 				case 'deft_category':
 					if ( ! isset($this->cat_group) OR count(array_diff(explode('|', $this->cat_group), explode('|', $channel->cat_group ))) == 0)
 					{
@@ -292,6 +323,11 @@ class Channel extends StructureModel {
 					break;
 			}
 		}
+
+		$this->FieldGroups = clone $channel->FieldGroups;
+		$this->CustomFields = clone $channel->CustomFields;
+		$this->Statuses = clone $channel->Statuses;
+		$this->ChannelFormSettings = clone $channel->ChannelFormSettings;
 	}
 
 	public function onBeforeSave()
@@ -307,9 +343,24 @@ class Channel extends StructureModel {
 		}
 	}
 
+	public function onAfterInsert()
+	{
+		$statuses = $this->Statuses->pluck('status');
+
+		// Ensure default statuses are assigned
+		if ( ! in_array('open', $statuses) OR ! in_array('closed', $statuses))
+		{
+			$this->Statuses[] = $this->getModelFacade()->get('Status')
+				->filter('status', 'IN', ['open', 'closed'])
+				->all();
+
+			$this->save();
+		}
+	}
+
 	public function onAfterUpdate($previous)
 	{
-		// Only scnchronize if the category groups changed and we have a layout
+		// Only synchronize if the category groups changed and we have a layout
 		if (isset($previous['cat_group']) && count($this->ChannelLayouts))
 		{
 			$this->syncCatGroupsWithLayouts();
@@ -325,6 +376,11 @@ class Channel extends StructureModel {
 			{
 				$this->removeRevisionTab();
 			}
+		}
+
+		foreach ($this->ChannelLayouts as $layout)
+		{
+			$layout->synchronize($this->getAllCustomFields());
 		}
 	}
 
@@ -443,7 +499,7 @@ class Channel extends StructureModel {
 		$site_pages = ee()->config->item('site_pages');
 		$site_id = ee()->config->item('site_id');
 
-		$entries = $this->getFrontend()->get('ChannelEntry')
+		$entries = $this->getModelFacade()->get('ChannelEntry')
 			->fields('entry_id', 'author_id')
 			->filter('channel_id', $this->channel_id)
 			->all();
@@ -464,26 +520,6 @@ class Channel extends StructureModel {
 				$this->Site->save();
 			}
 		}
-	}
-
-	public function validateShortName($key, $value, $params, $rule)
-	{
-		if (preg_match('/[^a-z0-9\-\_]/i', $value))
-		{
-			return 'invalid_short_name';
-		}
-
-		$channel = $this->getModelFacade()->get('Channel')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('channel_name', $value)
-			->filter('channel_id', '!=', $this->channel_id);
-
-		if ($channel->count() > 0)
-		{
-			return 'taken_channel_name';
-		}
-
-		return TRUE;
 	}
 
 	public function getCategoryGroups()
@@ -519,6 +555,46 @@ class Channel extends StructureModel {
 		$last_entry_date = ($last_entry) ? $last_entry->entry_date : 0;
 		$this->setProperty('last_entry_date', $last_entry_date);
 		$this->save();
+	}
+
+	/**
+	 * Returns a collection of all the channel fields available for this channel
+	 *
+	 * @return Collection A collection of fields
+	 */
+	public function getAllCustomFields()
+	{
+		$fields = $this->CustomFields->indexBy('field_name');
+
+		foreach ($this->FieldGroups->pluck('group_id') as $group_id)
+		{
+			$field_group = $this->getFieldGroup($group_id);
+
+			foreach($field_group->ChannelFields as $field)
+			{
+				$fields[$field->field_name] = $field;
+			}
+		}
+
+		return new Collection($fields);
+	}
+
+	private function getFieldGroup($id)
+	{
+		$cache_key = "ChannelFieldGroup/{$id}/";
+
+		if (($group = ee()->session->cache(__CLASS__, $cache_key, FALSE)) === FALSE)
+		{
+			$group = $this->getModelFacade()->get('ChannelFieldGroup', $id)
+				->with('ChannelFields')
+				->all();
+
+			$group = $group[0];
+
+			ee()->session->set_cache(__CLASS__, $cache_key, $group);
+		}
+
+		return $group;
 	}
 }
 

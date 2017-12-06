@@ -1,26 +1,15 @@
-<?php
-/**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
 
-// ------------------------------------------------------------------------
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 /**
  * ExpressionEngine HTML Glossary for Control Panel Publish Page
- *
- * @package		ExpressionEngine
- * @subpackage	Config
- * @category	Config
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 
 // The left side of the array is the text that appears in the link

@@ -1,34 +1,19 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Logs;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterFactory;
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Home Page Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Logs\Search Controller
  */
 class Search extends Logs {
 
@@ -68,28 +53,20 @@ class Search extends Logs {
 
 		$logs = ee('Model')->get('SearchLog')->with('Site');
 
-		if ( ! empty(ee()->view->search_value))
+		if ($search = ee()->input->get_post('filter_by_keyword'))
 		{
-			$logs = $logs->filterGroup()
-			               ->filter('screen_name', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('ip_address', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('search_type', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('search_terms', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('Site.site_label', 'LIKE', '%' . ee()->view->search_value . '%')
-						 ->endFilterGroup();
+			$logs->search(['screen_name', 'ip_address', 'search_type', 'search_terms', 'Site.site_label'], $search);
 		}
 
-		if ($logs->count() > 10)
-		{
-			$filters = ee('CP/Filter')
-				->add('Username')
-				->add('Site')
-				->add('Date')
-				->add('Perpage', $logs->count(), 'all_search_logs');
-			ee()->view->filters = $filters->render($this->base_url);
-			$this->params = $filters->values();
-			$this->base_url->addQueryStringVariables($this->params);
-		}
+		$filters = ee('CP/Filter')
+			->add('Username')
+			->add('Site')
+			->add('Date')
+			->add('Keyword')
+			->add('Perpage', $logs->count(), 'all_search_logs');
+		ee()->view->filters = $filters->render($this->base_url);
+		$this->params = $filters->values();
+		$this->base_url->addQueryStringVariables($this->params);
 
 		$page = ((int) ee()->input->get('page')) ?: 1;
 		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
@@ -120,9 +97,13 @@ class Search extends Logs {
 		$count = $logs->count();
 
 		// Set the page heading
-		if ( ! empty(ee()->view->search_value))
+		if ( ! empty($search))
 		{
-			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+			ee()->view->cp_heading = sprintf(
+				lang('search_results_heading'),
+				$count,
+				ee('Format')->make('Text', $search)->convertToEntities()
+			);
 		}
 
 		ee()->view->header = array(

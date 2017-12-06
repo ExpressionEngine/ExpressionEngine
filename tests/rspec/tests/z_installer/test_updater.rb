@@ -39,13 +39,13 @@ feature 'Updater' do
   it 'appears when using a database.php file' do
     @page.load
     @page.should have(0).inline_errors
-    @page.header.text.should match /ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
+    @page.header.text.should match /ExpressionEngine from \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
   end
 
   it 'shows an error when no database information exists at all' do
     @installer.delete_database_config
     @page.load
-    @page.header.text.should match /Error While Installing \d+\.\d+\.\d+/
+    @page.header.text.should == 'Install Failed'
     @page.error.text.should include 'Unable to locate any database connection information.'
   end
 
@@ -188,7 +188,7 @@ feature 'Updater' do
     # Wait a second and try loading the page again in case we're not seeing the
     # correct page
     attempts = 0
-    header_step_1 = /ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
+    header_step_1 = /ExpressionEngine to \d+\.\d+\.\d+/
     while @page.header.text.match(header_step_1) == false && attempts < 5
       sleep 1
       @page.load
@@ -196,26 +196,29 @@ feature 'Updater' do
     end
 
     @page.should have(0).inline_errors
-    @page.header.text.should match /ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
+    @page.header.text.should match /ExpressionEngine from \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
     @page.submit.click
+    no_php_js_errors
 
-    @page.header.text.should match /ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
-    @page.req_title.text.should include 'Processing | Step 2 of 3'
+    @page.header.text.should match /ExpressionEngine to \d+\.\d+\.\d+/
+    @page.updater_steps.text.should include 'Running'
 
     # Sleep until ready
-    while @page.req_title.text.include? 'Processing'
+    while (@page.has_updater_steps? && (@page.updater_steps.text.include? 'Running'))
+      no_php_js_errors
       sleep 1
     end
 
-    @page.header.text.should match /ExpressionEngine Updated to \d+\.\d+\.\d+/
-    @page.req_title.text.should include 'Completed'
+    @page.header.text.should == 'Update Complete!'
 
-    @page.has_login?.should == true
+    @page.has_success_actions?.should == true
+    @page.success_actions[0].text.should == 'Log In'
 
     if mailinglist == false
-      @page.has_download?.should == false
+      @page.should have(1).success_actions
     else
-      @page.has_download?.should == true
+      @page.should have(2).success_actions
+      @page.success_actions[1].text.should == 'Download Mailing List'
       File.exist?(mailing_list_zip).should == true
     end
 
@@ -229,7 +232,13 @@ feature 'Updater' do
       File.open(File.expand_path('../../system/ee/installer/controllers/wizard.php'), 'r') do |file|
         wizard_version = file.read.match(/public \$version\s+=\s+["'](.*?)["'];/)[1]
 
-        config_version.should == wizard_version
+        # @TODO UD files don't account for -dp.#, so just compare the first three segs
+        conf = config_version.split(/[\.\-]/)
+        wiz = wizard_version.split(/[\.\-]/)
+
+        conf[0].should == wiz[0]
+        conf[1].should == wiz[1]
+        conf[2].should == wiz[2]
       end
     end
   end

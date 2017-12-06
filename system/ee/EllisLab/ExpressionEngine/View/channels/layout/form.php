@@ -1,9 +1,11 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
-<div class="box has-tabs publish">
-	<h1>
-		<?=$cp_page_title?> <span class="req-title"><?=lang('required_fields')?></span>
-	</h1>
+<div class="form-standard has-tabs publish" data-publish>
+	<?=form_open($form_url, 'class="ajax-validate"')?>
+	<div class="form-btns form-btns-top">
+		<h1><?=$cp_page_title?></h1>
+		<?=cp_form_submit($submit_button_text, lang('btn_saving'))?>
+	</div>
 	<div class="tab-wrap">
 		<ul class="tabs layout">
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
@@ -28,41 +30,42 @@
 			<li><a<?php if ($index == 0): ?> class="act"<?php endif; ?> href="" rel="t-<?=$index?>"><?=lang($tab->title)?></a> <?php if ($tab->title != 'publish'): ?><?=$icon?></span><?php endif; ?></li>
 			<?php endforeach; ?>
 		</ul>
-		<a class="btn action add-tab m-link" rel="modal-add-new-tab" href="#"><?=lang('add_tab')?></a>
-		<?=form_open($form_url, 'class="settings ajax-validate"')?>
+		<a class="add-tab m-link" rel="modal-add-new-tab" href="#"><?=lang('add_tab')?></a>
 			<input type="hidden" name="field_layout" value="<?=json_encode($channel_layout->field_layout)?>">
 			<?=ee('CP/Alert')->get('layout-form')?>
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
 			<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
+				<div class="layout-grid-wrap">
 			<?php $fields = $tab->getFields();
 			foreach ($fields as $field): ?>
-				<fieldset class="col-group sortable<?php if ($field->isRequired()) echo ' required'; ?><?php if (end($fields) == $field) echo' last'?>">
-					<div class="layout-tools col w-2">
-						<ul class="toolbar vertical">
-							<li class="move"><a href=""></a></li>
-							<?php if ( ! $field->isRequired()): ?>
-								<?php if ($field->isVisible()): ?>
-									<li class="hide"><a href=""></a></li>
-								<?php else: ?>
-									<li class="unhide"><a href=""></a></li>
-								<?php endif; ?>
-							<?php endif; ?>
-						</ul>
+				<div class="col-group">
+					<div class="col w-16">
+						<div class="layout-item">
+							<span class="reorder"></span>
+							<div class="field-instruct">
+								<label><?=$field->getLabel()?> <span class="faded">(<?=$field->getTypeName()?>)</label>
+								<div class="field-options">
+									<?php if ($field->isRequired()): ?>
+									<label class="field-option-required"><?=ucwords(lang('required_field'))?></label>
+									<?php else: ?>
+									<label class="field-option-hide"><input type="checkbox"<?php if ( ! $field->isVisible()): ?> checked="checked"<?php endif ?>><?=lang('hide')?></label>
+									<?php endif; ?>
+									<label class="field-option-collapse"><input type="checkbox"<?php if ($field->isCollapsed()):?> checked="checked"<?php endif ?>><?=lang('collapse')?></label>
+								</div>
+							</div>
+						</div>
 					</div>
-					<div class="setting-txt col w-14">
-						<h3<?php if ($field->isCollapsed()): ?> class="field-closed"<?php endif; ?>><span class="ico sub-arrow"></span><?=$field->getLabel()?></h3>
-						<em<?php if ($field->isCollapsed()): ?> style="display: none"<?php endif; ?>><?=$field->getTypeName()?></em>
-					</div>
-				</fieldset>
+				</div>
 			<?php endforeach; ?>
+				</div>
 			</div>
 			<?php endforeach; ?>
 
 			<?=$form?>
 
-			<fieldset class="form-ctrls">
+			<div class="form-btns">
 				<?=cp_form_submit($submit_button_text, lang('btn_saving'))?>
-			</fieldset>
+			</div>
 		</form>
 	</div>
 </div>

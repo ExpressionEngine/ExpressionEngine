@@ -1,26 +1,14 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Pages Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Pages Model
  */
 class Pages_model extends CI_Model {
 
@@ -42,8 +30,6 @@ class Pages_model extends CI_Model {
 		return $this->db->get();
     }
 
-// ------------------------------------------------------------------------
-
     /**
      * Fetch Pages Configuration
      *
@@ -60,8 +46,6 @@ class Pages_model extends CI_Model {
         return $this->db->get('pages_configuration');
 	}
 
-// ------------------------------------------------------------------------
-
 	/**
 	 * Fetch Site Pages
 	 *
@@ -75,8 +59,6 @@ class Pages_model extends CI_Model {
 		$site = ee('Model')->get('Site', $this->config->item('site_id'))->first();
 		return $site->site_pages;
 	}
-
-// ------------------------------------------------------------------------
 
 	/**
 	 * Update Pages Configuration
@@ -101,8 +83,6 @@ class Pages_model extends CI_Model {
 			$this->db->insert('pages_configuration', $config);
 		}
 	}
-
-// ------------------------------------------------------------------------
 
     /**
      * Update Pages Array

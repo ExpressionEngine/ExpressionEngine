@@ -1,4 +1,12 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
 namespace EllisLab\Tests\ExpressionEngine\Controllers\Design;
 
 class TemplateTest extends \PHPUnit_Framework_TestCase {
@@ -23,7 +31,7 @@ class TemplateTest extends \PHPUnit_Framework_TestCase {
 
 		sort($controller_methods);
 
-		$this->assertEquals(array('create', 'edit', 'search', 'settings'), $controller_methods);
+		$this->assertEquals(array('create', 'edit', 'search', 'searchtemplates', 'settings'), $controller_methods);
 	}
 
 }

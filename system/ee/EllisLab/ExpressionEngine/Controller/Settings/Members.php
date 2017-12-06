@@ -1,33 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Settings;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Members Settings Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Members Settings Controller
  */
 class Members extends Settings {
 
@@ -77,7 +62,7 @@ class Members extends Settings {
 					'desc' => 'req_mbr_activation_desc',
 					'fields' => array(
 						'req_mbr_activation' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'none' => lang('req_mbr_activation_opt_none'),
 								'email' => lang('req_mbr_activation_opt_email'),
@@ -118,8 +103,11 @@ class Members extends Settings {
 					'title' => 'default_member_group',
 					'fields' => array(
 						'default_member_group' => array(
-							'type' => 'select',
-							'choices' => $member_groups
+							'type' => 'radio',
+							'choices' => $member_groups,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+							]
 						)
 					)
 				),
@@ -128,7 +116,7 @@ class Members extends Settings {
 					'desc' => 'member_theme_desc',
 					'fields' => array(
 						'member_theme' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $member_themes
 						)
 					)
@@ -140,7 +128,7 @@ class Members extends Settings {
 					'desc' => 'memberlist_order_by_desc',
 					'fields' => array(
 						'memberlist_order_by' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'member_id'    => lang('id'),
 								'username'     => lang('username'),
@@ -155,7 +143,7 @@ class Members extends Settings {
 					'desc' => 'memberlist_sort_order_desc',
 					'fields' => array(
 						'memberlist_sort_order' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								'asc' => lang('memberlist_sort_order_opt_asc'),
 								'desc' => lang('memberlist_sort_order_opt_desc')
@@ -168,7 +156,7 @@ class Members extends Settings {
 					'desc' => 'memberlist_row_limit_desc',
 					'fields' => array(
 						'memberlist_row_limit' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array('10' => '10', '20' => '20',
 								'30' => '30', '40' => '40', '50' => '50',
 								'75' => '75', '100' => '100')
@@ -181,13 +169,7 @@ class Members extends Settings {
 					'title' => 'new_member_notification',
 					'desc' => 'new_member_notification_desc',
 					'fields' => array(
-						'new_member_notification' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							)
-						)
+						'new_member_notification' => array('type' => 'yes_no')
 					)
 				),
 				array(

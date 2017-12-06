@@ -19,22 +19,27 @@ if (isset($setting['attrs']['class']))
 	unset($setting['attrs']['class']);
 }
 
+if (isset($setting['columns']))
+{
+	$fieldset_classes = 'w-'.$setting['columns'];
+}
+
 // Any fields required?
 foreach ($setting['fields'] as $field_name => $field)
 {
 	if (isset($field['required']) && $field['required'] == TRUE)
 	{
-		$fieldset_classes .= ' required';
+		$fieldset_classes .= ' fieldset-required';
 		break;
 	}
 }
 if (isset($setting['security']) && $setting['security'] == TRUE)
 {
-	$fieldset_classes .= ' security-enhance';
+	$fieldset_classes .= ' fieldset-security-enhanced';
 }
 if (isset($setting['caution']) && $setting['caution'] == TRUE)
 {
-	$fieldset_classes .= ' security-caution';
+	$fieldset_classes .= ' fieldset-security-caution';
 }
 if (isset($setting['hide']) && $setting['hide'] == TRUE)
 {
@@ -42,11 +47,11 @@ if (isset($setting['hide']) && $setting['hide'] == TRUE)
 }
 if ($grid)
 {
-	$fieldset_classes .= ' grid-publish';
+	$fieldset_classes .= ' fieldset-faux';
 }
 else
 {
-	$fieldset_classes .= ' '.form_error_class(array_keys($setting['fields']));
+	$fieldset_classes .= ' '.form_error_class(array_keys($setting['fields']), 'fieldset-invalid');
 }
 // If a validation result object is set, see if any of our fields have errors
 if (isset($errors))
@@ -55,29 +60,28 @@ if (isset($errors))
 	{
 		if ($errors->hasErrors($field))
 		{
-			$fieldset_classes .= ' invalid';
+			$fieldset_classes .= ' fieldset-invalid';
 			break;
 		}
 	}
 }
-if ($setting == end($settings))
-{
-	$fieldset_classes .= ' last';
-}
-
 // Individual settings can have their own groups
 $setting_group = $group;
 if (isset($setting['group']))
 {
 	$setting_group = $setting['group'];
 }
+if (is_array($setting_group))
+{
+	$setting_group = implode('|', $setting_group);
+}
 
 // Grids have to be in a div for an overflow bug in Firefox
 $element = ($grid) ? 'div' : 'fieldset'; ?>
-<<?=$element?> class="col-group<?=$fieldset_classes?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?><?php if (isset($setting['attrs'])): foreach ($setting['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
-	<div class="setting-txt col <?=($grid) ? form_error_class(array_keys($setting['fields'])) : '' ?> <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?>">
+<<?=$element?> class="<?=$fieldset_classes?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?><?php if (isset($setting['attrs'])): foreach ($setting['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
+	<div class="field-instruct <?=($grid) ? form_error_class(array_keys($setting['fields'])) : '' ?>">
 		<?php if (isset($setting['title'])): ?>
-		<h3><?=lang($setting['title'])?></h3>
+		<label><?=lang($setting['title'])?></label>
 		<?php endif; ?>
 		<?php if (isset($setting['desc'])): ?>
 		<em><?=lang($setting['desc'])?></em>
@@ -88,18 +92,16 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 		<?php if (isset($setting['example'])): ?>
 		<p><?=$setting['example']?></p>
 		<?php endif; ?>
-		<?php if (isset($setting['button'])): ?>
-		<?php
-			$button = $setting['button'];
-			$rel = isset($button['rel']) ? $button['rel'] : '';
-		?>
-		<p><button class="btn action submit mf-link" type="button" rel="<?=$rel?>"><?=lang($button['text'])?></button></p>
-		<?php endif; ?>
 	</div>
-	<div class="setting-field col <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?> last">
+	<div class="field-control">
 		<?php
+			$count = 0;
+			$values = [];
 			foreach ($setting['fields'] as $field_name => $field)
 			{
+				$field_name = isset($field['name'])
+					? $field['name'] : $field_name;
+
 				$vars = array(
 					'field_name' => $field_name,
 					'field' => $field,
@@ -107,8 +109,40 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 					'grid' => $grid
 				);
 
+				// If there are multiple fields with the same name, such as
+				// radio options with fields in between, persist the value
+				// across them, otherwise the first value in each will be checked
+				if (isset($values[$field_name]) && ! isset($field['value']))
+				{
+					$vars['field']['value'] = $values[$field_name];
+				}
+				elseif (isset($field['value']))
+				{
+					$values[$field_name] = $field['value'];
+				}
+
+				// Add top margin to sequential fields
+				if ($count > 0 && ! isset($field['margin_top']))
+				{
+					$vars['field']['margin_top'] = TRUE;
+				}
+
+				if ($field['type'] != 'hidden')
+				{
+					$count++;
+				}
+
 				$this->embed('ee:_shared/form/field', $vars);
 			}
 		?>
+		<?php if (isset($setting['button'])): ?>
+		<?php
+			$button = $setting['button'];
+			$rel = isset($button['rel']) ? $button['rel'] : '';
+			$href = isset($button['href']) ? $button['href'] : '#';
+			$for = isset($button['for']) ? $button['for'] : '';
+		?>
+		<a class="btn action submit js-modal-link--side" rel="<?=$rel?>" href="<?=$href?>" data-for="<?=$for?>"><?=lang($button['text'])?></a>
+		<?php endif; ?>
 	</div>
 </<?=$element?>>

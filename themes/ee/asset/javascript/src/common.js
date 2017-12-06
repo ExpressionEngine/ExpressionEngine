@@ -1,3 +1,11 @@
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
 $(document).ready(function(){
 
 	// =============================================
@@ -279,46 +287,85 @@ $(document).ready(function(){
 			return false;
 		});
 
-		$('body').on('modal:open', '.modal-wrap, .modal-form-wrap', function(e) {
+		$('body').on('modal:open', '.modal-wrap, .modal-form-wrap, .app-modal', function(e) {
 			// set the heightIs variable
 			// this allows the overlay to be scrolled
 			var heightIs = $(document).height();
 
 			// fade in the overlay
-			$('.overlay').fadeIn('fast').css('height', heightIs);
-			// fade in modal
-			$(this).fadeIn('slow');
+			$('.app-overlay')
+				.removeClass('app-overlay---closed')
+				.addClass('app-overlay---open')
+				.css('height', heightIs);
+
+			if ($(this).hasClass('modal-wrap')) {
+				$(this).fadeIn('slow');
+			} else {
+				$(this).removeClass('app-modal---closed')
+					.addClass('app-modal---open');
+			}
 
 			// remember the scroll location on open
 			$(this).data('scroll', $(document).scrollTop());
 
 			// scroll up, if needed, but only do so after a significant
 			// portion of the overlay is show so as not to disorient the user
-			if ( ! $(this).is('.modal-form-wrap'))
+			if ( ! $(this).is('.modal-form-wrap, .app-modal'))
 			{
 				setTimeout(function() {
 					$(document).scrollTop(0);
 				}, 100);
+			} else {
+				// Remove viewport scroll
+				$('body').css('overflow','hidden');
 			}
 
 			$(document).one('keydown', function(e) {
 				if (e.keyCode === 27) {
-					$('.modal-wrap, .modal-form-wrap').trigger('modal:close');
+					$('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
 				}
 			});
 		});
 
-		$('body').on('modal:close', '.modal-wrap, .modal-form-wrap', function(e) {
+		$('body').on('modal:close', '.modal-wrap, .modal-form-wrap, .app-modal', function(e) {
 			if ($(e.target).is(":visible")) {
 				// fade out the overlay
 				$('.overlay').fadeOut('slow');
-				// fade out the modal
-				$('.modal-wrap, .modal-form-wrap').fadeOut('fast');
 
-				if ( ! $(this).is('.modal-form-wrap'))
+				if ($(this).hasClass('modal-wrap')) {
+					$(this).fadeOut('fast');
+				} else {
+					// disappear the app modal
+					$(this).addClass('app-modal---closed');
+					setTimeout(function() {
+						$('.app-modal---open').removeClass('app-modal---open');
+					}, 500);
+				}
+
+				// distract the actor
+				$('.app-overlay---open').addClass('app-overlay---closed');
+				setTimeout(function() {
+					$('.app-overlay---open').removeClass('app-overlay---open')
+						.removeClass('app-overlay--destruct')
+						.removeClass('app-overlay--warning');
+				}, 500);
+
+				// replace the viewport scroll, if needed
+				setTimeout(function() {
+					$('body').css('overflow','');
+				}, 200);
+
+				if ( ! $(this).is('.modal-form-wrap, .app-modal'))
 				{
 					$(document).scrollTop($(this).data('scroll'));
+				} else {
+					// Remove viewport scroll
+					$('body').css('overflow','hidden');
 				}
+
+				var button = $('.form-ctrls input.btn, .form-ctrls button.btn', this);
+				button.removeClass('work');
+				button.val(button.data('submit-text'));
 			}
 		});
 
@@ -334,27 +381,20 @@ $(document).ready(function(){
 		});
 
 		// listen for clicks on the element with a class of overlay
-		$('body').on('click', '.m-close', function(e) {
-			$(this).closest('.modal-wrap, .modal-form-wrap').trigger('modal:close');
+		$('body').on('click', '.m-close, .js-modal-close', function(e) {
+			$(this).closest('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
 
 			// stop THIS from reloading the source window
 			e.preventDefault();
 		});
 
-		$('body').on('click', '.overlay', function() {
-			$('.modal-wrap, .modal-form-wrap').trigger('modal:close');
+		$('body').on('click', '.overlay, .app-overlay---open', function() {
+			$('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
 		});
 
 	// ==================================
 	// highlight checks and radios -> WIP
 	// ==================================
-
-		// listen for clicks on inputs within a choice classed label
-		$('body').on('click change', '.choice input', function() {
-			$('.choice input[name="'+$(this).attr('name')+'"]').each(function(index, el) {
-				$(this).parents('.choice').toggleClass('chosen', $(this).is(':checked'));
-			});
-		});
 
 		$('body').on('click', '.multi-select .ctrl-all input', function(){
 			$(this).closest('.multi-select')
@@ -362,6 +402,12 @@ $(document).ready(function(){
 				.prop('checked', $(this).is(':checked'))
 				.trigger('change');
 		});
+
+		$('body').on('click', '.field-inputs label input', function(){
+			$('input[name="'+$(this).attr('name')+'"]').each(function(index, el) {
+				$(this).parents('label').toggleClass('act', $(this).is(':checked'))
+			})
+		})
 
 		// Highlight table rows when checked
 		$('body').on('click', 'table tr', function(event) {
@@ -382,6 +428,13 @@ $(document).ready(function(){
 				$(this).parents('.tbl-wrap').siblings('.tbl-bulk-act').hide();
 			} else {
 				$(this).parents('.tbl-wrap').siblings('.tbl-bulk-act').show();
+			}
+		});
+
+		// Check a table list row's checkbox when its item body is clicked
+		$('body').on('click', '.tbl-row', function() {
+			if (event.target.nodeName == 'DIV') {
+				$(this).find('> .check-ctrl input').click()
 			}
 		});
 
@@ -441,14 +494,10 @@ $(document).ready(function(){
 	// publish collapse -> WIP
 	// =======================
 
-		// listen for clicks on .sub-arrows
-		$('div.publish form').on('click', '.setting-txt .sub-arrow', function(e) {
-			// toggle the .setting-field and .setting-text
-			$(this).parents('.setting-txt').siblings('.setting-field').toggle();
-			// toggle the instructions
-			$(this).parents('h3').siblings('em').toggle();
-			// toggle a class of .field-closed on the h3
-			$(this).parents('h3').toggleClass('field-closed');
+		$('.js-toggle-field').on('click',function(){
+			$(this)
+				.parents('fieldset,.fieldset-faux-fluid,.fieldset-faux')
+				.toggleClass('fieldset---closed');
 		});
 
 	// ===================
@@ -469,10 +518,84 @@ $(document).ready(function(){
 	// filters custom input submission
 	// ===============================
 
-		$('.filters .filter-search input[type="text"]').keypress(function(e) {
+		$('.filters .filter-search input[type="text"], .filters .filter-search-form input[type="text"]').keypress(function(e) {
 			if (e.which == 10 || e.which == 13) {
 				$(this).closest('form').submit();
 			}
 		});
 
+	// =================
+	// non-React toggles
+	// =================
+
+		$('body').on('click', 'a.toggle-btn', function (e) {
+			if ($(this).hasClass('disabled') ||
+				$(this).parents('.toggle-tools').size() > 0 ||
+				$(this).parents('[data-reactroot]').size() > 0) {
+				return;
+			}
+
+			var input = $(this).find('input[type="hidden"]'),
+				yes_no = $(this).hasClass('yes_no');
+
+			if ($(this).hasClass('off')){
+				$(this).removeClass('off');
+				$(this).addClass('on');
+				$(input).val(yes_no ? 'y' : 1);
+			} else {
+				$(this).removeClass('on');
+				$(this).addClass('off');
+				$(input).val(yes_no ? 'n' : 0);
+			}
+
+			if ($(input).data('groupToggle')) EE.cp.form_group_toggle(input)
+
+			e.preventDefault();
+		});
+
+	// =============
+	// filter-bar
+	// =============
+
+		// listen for clicks on elements with a class of has-sub
+		$('body').on('click', '.js-filter-link', function(){
+			// close OTHER open sub menus
+			// when clicking THIS sub menu trigger
+			// thanks me :D
+			$('.filter-item__link---active').not(this)
+				// remove the class of open
+				.removeClass('filter-item__link---active')
+				// hide all siblings of open with a class of sub-menu
+				.siblings('.filter-submenu').hide();
+
+			// toggles THIS sub menu
+			// thanks pascal
+			$(this)
+				// toggle of siblings of THIS
+				// with a class of sub-menu
+				.siblings('.filter-submenu').toggle()
+				// go back to THIS and...
+				.end()
+				// toggle a class of open on THIS
+				.toggleClass('filter-item__link---active');
+			// stop THIS from reloading
+			// the source window and appending to the URI
+			// and stop propagation up to document
+			return false;
+		});
+
+		// listen for clicks to the document
+		$(document).on('click',function(e){
+			// check to see if we are inside a sub-menu or not.
+			if(!$(e.target).closest('.filter-submenu').length){
+				// close OTHER open sub menus
+				// when clicking outside ANY sub menu trigger
+				// thanks me :D
+				$('.filter-item__link---active')
+					// remove the class of open
+					.removeClass('filter-item__link---active')
+					// hide all siblings of open with a class of sub-menu
+					.siblings('.filter-submenu').hide();
+			}
+		});
 }); // close (document).ready

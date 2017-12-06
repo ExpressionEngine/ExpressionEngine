@@ -1,13 +1,9 @@
-/*!
- * ExpressionEngine - by EllisLab
+/**
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 "use strict";
@@ -27,7 +23,7 @@
 				radios.hide();
 			}
 
-			$('input[value=choose], li.edit a', context)
+			$('fieldset input[value=choose], fieldset li.edit a', context)
 				.addClass('m-link')
 				.attr('rel', 'modal-file')
 				.attr('href', EE.category_edit.filepicker_url)

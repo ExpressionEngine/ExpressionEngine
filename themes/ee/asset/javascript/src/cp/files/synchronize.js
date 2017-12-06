@@ -1,13 +1,9 @@
-/*!
- * ExpressionEngine - by EllisLab
+/**
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 EE.file_manager = EE.file_manager || {};
@@ -25,7 +21,7 @@ $(document).ready(function() {
 });
 
 EE.file_manager.sync_listen = function() {
-	$('form.settings input.btn').click(function(event) {
+	$('.form-standard form input.btn').click(function(event) {
 		event.preventDefault();
 
 		// Get array of files
@@ -142,7 +138,7 @@ EE.file_manager.finish_sync = function(upload_directory_id) {
 			// If there are errors, pass them through POST, there may be too
 			// many to store in a flashdata cookie
 			var input = $('<input>', { type: 'hidden', name: 'errors', value: JSON.stringify(EE.file_manager.sync_errors) });
-			$('.w-12 form.settings').append(input).submit();
+			$('.form-standard form').append(input).submit();
 		}
 	};
 };

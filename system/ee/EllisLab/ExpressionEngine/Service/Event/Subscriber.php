@@ -1,33 +1,20 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Event;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Event Subscriber Interface
+ * Event Subscriber Interface
  *
  * Interface to implement if you want to subscribe your class to an event
  * emitter, where an event fired is automatically forwarded to on<EventName>
  * on your object.
- *
- * @package		ExpressionEngine
- * @subpackage	Event
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 interface Subscriber {
 

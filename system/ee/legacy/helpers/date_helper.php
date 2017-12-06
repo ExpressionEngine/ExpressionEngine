@@ -1,31 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-/**
- * CodeIgniter
- *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
 
 /**
- * CodeIgniter Date Helpers
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		CodeIgniter
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/helpers/date_helper.html
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
+/**
+ * Date Helpers
+ */
 
 /**
  * Get "now" time
@@ -59,8 +44,6 @@ if ( ! function_exists('now'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Convert MySQL Style Datecodes
  *
@@ -92,8 +75,6 @@ if ( ! function_exists('mdate'))
 		return date($datestr, $time);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Standard Date
@@ -129,8 +110,6 @@ if ( ! function_exists('standard_date'))
 		return mdate($formats[$fmt], $time);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Timespan
@@ -251,8 +230,6 @@ if ( ! function_exists('timespan'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Number of days in a month
  *
@@ -291,8 +268,6 @@ if ( ! function_exists('days_in_month'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Converts a local Unix timestamp to GMT
  *
@@ -310,8 +285,6 @@ if ( ! function_exists('local_to_gmt'))
 		return mktime( gmdate("H", $time), gmdate("i", $time), gmdate("s", $time), gmdate("m", $time), gmdate("d", $time), gmdate("Y", $time));
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Converts GMT time to a localized value
@@ -346,8 +319,6 @@ if ( ! function_exists('gmt_to_local'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Converts a MySQL Timestamp to Unix
  *
@@ -378,8 +349,6 @@ if ( ! function_exists('mysql_to_unix'))
 						);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Unix to "Human"
@@ -420,8 +389,6 @@ if ( ! function_exists('unix_to_human'))
 		return $r;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Convert "human" date to GMT
@@ -490,8 +457,6 @@ if ( ! function_exists('human_to_unix'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Timezone Menu
  *
@@ -532,8 +497,6 @@ if ( ! function_exists('timezone_menu'))
 		return $menu;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Timezones

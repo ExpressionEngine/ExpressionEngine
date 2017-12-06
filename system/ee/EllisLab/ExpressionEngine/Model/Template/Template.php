@@ -1,35 +1,22 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Template;
 
 use EllisLab\ExpressionEngine\Service\Model\FileSyncedModel;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Template Model
+ * Template Model
  *
  * A model representing a template.  Templates contain a mix of EECode and HTML
  * and are parsed to become the front end pages of sites built with
  * ExpressionEngine.
- *
- * @package		ExpressionEngine
- * @subpackage	Template
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Template extends FileSyncedModel {
 
@@ -92,7 +79,7 @@ class Template extends FileSyncedModel {
 	protected static $_validation_rules = array(
 		'site_id'            => 'required|isNatural',
 		'group_id'           => 'required|isNatural',
-		'template_name'      => 'required|unique[group_id]|validateTemplateName',
+		'template_name'      => 'required|unique[group_id]|alphaDashPeriodEmoji|validateTemplateName',
 		'template_type'      => 'required',
 		'cache'              => 'enum[y,n]',
 		'refresh'            => 'isNatural',
@@ -232,7 +219,7 @@ class Template extends FileSyncedModel {
 		if ($parts['group_id'] != $this->group_id)
 		{
 			// TODO there must be a better way
-			$group = $this->getFrontend()->get('TemplateGroup', $parts['group_id'])->first();
+			$group = $this->getModelFacade()->get('TemplateGroup', $parts['group_id'])->first();
 		}
 		else
 		{
@@ -252,16 +239,10 @@ class Template extends FileSyncedModel {
 	}
 
 	/**
-	 * Validates the template name checking for illegal characters and
-	 * reserved names.
+	 * Validates the template name checking for reserved names.
 	 */
 	public function validateTemplateName($key, $value, $params, $rule)
 	{
-		if ( ! preg_match("#^[a-zA-Z0-9_\.\-/]+$#i", $value))
-		{
-			return 'illegal_characters';
-		}
-
 		$reserved_names = array('act', 'css');
 
 		if (in_array($value, $reserved_names))

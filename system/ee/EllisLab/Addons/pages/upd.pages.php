@@ -1,27 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
- * ExpressionEngine Discussion Pages Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Pages Module update class
  */
 class Pages_upd {
 
@@ -49,8 +36,6 @@ class Pages_upd {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Installer
 	 *
@@ -72,7 +57,7 @@ class Pages_upd {
 				`site_id` INT( 8 ) UNSIGNED NOT NULL DEFAULT '1',
 				`configuration_name` VARCHAR( 60 ) NOT NULL ,
 				`configuration_value` VARCHAR( 100 ) NOT NULL
-				) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci";
+				) DEFAULT CHARACTER SET ".ee()->db->escape_str(ee()->db->char_set)." COLLATE ".ee()->db->escape_str(ee()->db->dbcollat);
 
 		foreach ($sql as $query)
 		{
@@ -85,8 +70,6 @@ class Pages_upd {
 		return TRUE;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Module Uninstaller
@@ -117,8 +100,6 @@ class Pages_upd {
 
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Updater
 	 *
@@ -144,8 +125,6 @@ class Pages_upd {
 			$this->_do_22_update();
 		}
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * This is basically identical to the forum update script.

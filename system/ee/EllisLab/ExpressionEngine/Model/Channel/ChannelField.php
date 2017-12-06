@@ -1,31 +1,19 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Channel;
 
 use EllisLab\ExpressionEngine\Model\Content\FieldModel;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Channel Field Model
- *
- * @package		ExpressionEngine
- * @subpackage	Category
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Channel Field Model
  */
 class ChannelField extends FieldModel {
 
@@ -46,24 +34,31 @@ class ChannelField extends FieldModel {
 		'field_show_fmt'       => 'boolString',
 		'field_order'          => 'int',
 		'field_settings'       => 'base64Serialized',
+		'legacy_field_data'    => 'boolString',
 	);
 
 	protected static $_relationships = array(
-		'ChannelFieldGroup' => array(
-			'type' => 'belongsTo'
+		'ChannelFieldGroups' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'ChannelFieldGroup',
+			'pivot' => array(
+				'table' => 'channel_field_groups_fields'
+			),
+			'weak' => TRUE
 		),
-		'Channel' => array(
-			'type' => 'belongsTo',
-			'from_key' => 'group_id',
-			'to_key' => 'field_group',
+		'Channels' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Channel',
+			'pivot' => array(
+				'table' => 'channels_channel_fields'
+			),
 			'weak' => TRUE
 		),
 	);
 
 	protected static $_validation_rules = array(
 		'site_id'              => 'required|integer',
-//		'group_id'             => 'required|integer',
-		'field_name'           => 'required|unique[site_id]|validateNameIsNotReserved|maxLength[32]',
+		'field_name'           => 'required|unique|validateNameIsNotReserved|maxLength[32]',
 		'field_label'          => 'required|maxLength[50]',
 		'field_type'           => 'validateIsCompatibleWithPreviousValue',
 	//	'field_list_items'     => 'required',
@@ -77,6 +72,7 @@ class ChannelField extends FieldModel {
 		'field_is_hidden'      => 'enum[y,n]',
 		'field_show_fmt'       => 'enum[y,n]',
 		'field_order'          => 'integer',
+		'legacy_field_data'    => 'enum[y,n]',
 	);
 
 	protected static $_events = array(
@@ -87,7 +83,6 @@ class ChannelField extends FieldModel {
 
 	protected $field_id;
 	protected $site_id;
-	protected $group_id;
 	protected $field_name;
 	protected $field_label;
 	protected $field_instructions;
@@ -107,10 +102,11 @@ class ChannelField extends FieldModel {
 	protected $field_order;
 	protected $field_content_type;
 	protected $field_settings;
+	protected $legacy_field_data;
 
 	public function getStructure()
 	{
-		return $this->getChannelFieldGroup();
+		return $this->getChannelFieldGroups()->first();
 	}
 
 	public function getDataTable()
@@ -149,56 +145,111 @@ class ChannelField extends FieldModel {
 			return;
 		}
 
-		$this->field_order = $this->getFrontend()->get('ChannelField')
-			->filter('group_id', $this->group_id)
-			->filter('site_id', $this->site_id)
+		$this->field_order = $this->getModelFacade()->get('ChannelField')
+			->filter('site_id', 'IN', array(0, $this->site_id))
 			->count() + 1;
 	}
 
 	public function onAfterInsert()
 	{
 		parent::onAfterInsert();
-
-		foreach ($this->ChannelFieldGroup->Channels as $channel)
-		{
-			foreach ($channel->ChannelLayouts as $channel_layout)
-			{
-				$field_layout = $channel_layout->field_layout;
-				$field_info = array(
-					'field'     => 'field_id_' . $this->field_id,
-					'visible'   => TRUE,
-					'collapsed' => $this->getProperty('field_is_hidden')
-				);
-				$field_layout[0]['fields'][] = $field_info;
-
-				$channel_layout->field_layout = $field_layout;
-				$channel_layout->save();
-			}
-		}
+		$this->addToLayouts();
 	}
 
 	public function onBeforeDelete()
 	{
-		foreach ($this->ChannelFieldGroup->Channels as $channel)
-		{
-			foreach ($channel->ChannelLayouts as $channel_layout)
-			{
-				$field_layout = $channel_layout->field_layout;
+		$this->removeFromLayouts();
+		$this->removeFromFluidFields();
+	}
 
-				foreach ($field_layout as $i => $section)
+	public function getAllChannels()
+	{
+		$channels = $this->Channels->indexByIds();
+
+		foreach ($this->ChannelFieldGroups as $field_group)
+		{
+			foreach ($field_group->Channels as $channel)
+			{
+				$channels[$channel->getId()] = $channel;
+			}
+		}
+
+		return new Collection($channels);
+	}
+
+	private function getRelatedChannelLayouts()
+	{
+		return $this->getModelFacade()->get('ChannelLayout')
+			->filter('channel_id', $this->getAllChannels()->getIds())
+			->all();
+	}
+
+	private function addToLayouts()
+	{
+		foreach ($this->getRelatedChannelLayouts() as $channel_layout)
+		{
+			$field_layout = $channel_layout->field_layout;
+			$field_info = array(
+				'field'     => 'field_id_' . $this->field_id,
+				'visible'   => TRUE,
+				'collapsed' => $this->getProperty('field_is_hidden')
+			);
+			$field_layout[0]['fields'][] = $field_info;
+
+			$channel_layout->field_layout = $field_layout;
+			$channel_layout->save();
+		}
+	}
+
+	private function removeFromLayouts()
+	{
+		foreach ($this->getRelatedChannelLayouts() as $channel_layout)
+		{
+			$field_layout = $channel_layout->field_layout;
+
+			foreach ($field_layout as $i => $section)
+			{
+				foreach ($section['fields'] as $j => $field_info)
 				{
-					foreach ($section['fields'] as $j => $field_info)
+					if ($field_info['field'] == 'field_id_' . $this->field_id)
 					{
-						if ($field_info['field'] == 'field_id_' . $this->field_id)
-						{
-							array_splice($field_layout[$i]['fields'], $j, 1);
-							break 2;
-						}
+						array_splice($field_layout[$i]['fields'], $j, 1);
+						break 2;
 					}
 				}
+			}
 
-				$channel_layout->field_layout = $field_layout;
-				$channel_layout->save();
+			$channel_layout->field_layout = $field_layout;
+			$channel_layout->save();
+		}
+	}
+
+	private function removeFromFluidFields()
+	{
+		$fluid_fields = $this->getModelFacade()->get('ChannelField')
+			->filter('field_type', 'fluid_field')
+			->all();
+
+		if ( ! empty($fluid_fields))
+		{
+			// Bulk remove all pivot references to this field from all fluid fields
+			// though: @TODO Model relationships should have taken care of this...
+			$fluid_field_data = ee('Model')->get('fluid_field:FluidField')
+				->filter('field_id', $this->getId())
+				->delete();
+		}
+
+		foreach ($fluid_fields as $fluid_field)
+		{
+			if (in_array($this->getId(), $fluid_field->field_settings['field_channel_fields']))
+			{
+				$field_id = $this->getId();
+				$settings = $fluid_field->field_settings;
+				$settings['field_channel_fields'] = array_filter($settings['field_channel_fields'], function ($var) use($field_id){
+					return ($var != $field_id);
+				});
+				$fluid_field->field_settings = $settings;
+				$fluid_field->save();
 			}
 		}
 	}

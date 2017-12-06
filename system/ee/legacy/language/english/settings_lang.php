@@ -63,13 +63,13 @@ $lang = array(
 
 'enable_msm' => 'Enable Site Manager?',
 
-'enable_msm_desc' => 'When set to <b>enable</b>, super admins and member groups with permissions will be able to manage additional websites from the <abbr title="Control Panel">CP</abbr>.',
+'enable_msm_desc' => 'When enabled, Super Admins and member groups with permissions will be able to manage additional websites from the <abbr title="Control Panel">CP</abbr>.',
 
 'error_getting_version' => 'You are using ExpressionEngine %s. Unable to determine if a newer version is available at this time.',
 
 'include_seconds' => 'Show seconds?',
 
-'include_seconds_desc' => 'When set to <b>yes</b>, date output will include seconds for display.',
+'include_seconds_desc' => 'When enabled, date output will include seconds for display.',
 
 'language' => 'Language',
 
@@ -79,17 +79,13 @@ $lang = array(
 
 'online' => 'Online',
 
-'running_current' => 'ExpressionEngine is up to date',
-
-'running_current_desc' => 'ExpressionEngine %s is the latest version.',
-
 'site_default' => 'Use site default',
 
 'site_name' => 'Name',
 
 'site_online' => 'Website online?',
 
-'site_online_desc' => 'When set to <b>offline</b>, only super admins and member groups with permissions will be able to browse your website.',
+'site_online_desc' => 'When disabled, only Super Admins and member groups with permissions will be able to browse your website.',
 
 'site_short_name' => 'Short name',
 
@@ -100,10 +96,6 @@ $lang = array(
 'version_autocheck' => 'New version auto check',
 
 'version_autocheck_desc' => 'When set to <b>auto</b>, ExpressionEngine will automatically check for newer versions of the software.',
-
-'version_update_available' => 'A newer version of ExpressionEngine is available',
-
-'version_update_inst' => 'ExpressionEngine %s is available. <a href="%s" rel="external">Download the latest version</a> and follow the <a href="%s" rel="external">update instructions</a>.',
 
 
 /* License & Registration */
@@ -263,7 +255,7 @@ $lang = array(
 
 'word_wrap' => 'Enable word-wrapping?',
 
-'word_wrap_desc' => 'When set to <b>enable</b>, the system will wrap long lines of text to a more readable width.',
+'word_wrap_desc' => 'When enabled, the system will wrap long lines of text to a more readable width.',
 
 
 /* Debugging & Output */
@@ -275,23 +267,29 @@ $lang = array(
 
 'caching_driver_file_fail' => 'Cannot use %s driver, check cache path permissions.',
 
+'debug_0' => 'Hidden',
+
+'debug_1' => 'Shown to Super Admins only (recommended)',
+
+'debug_2' => 'Visible to everyone (not secure)',
+
 'disable_caching' => 'Disable Caching',
 
 'enable_devlog_alerts' => 'Enable Developer Log Alerts?',
 
-'enable_devlog_alerts_desc' => 'When set to <b>enable</b>, super admins will see control panel alerts when new <a href="%s">Developer Log</a> items need action. Currently <b>%s item(s)</b> are logged.',
+'enable_devlog_alerts_desc' => 'When enabled, Super Admins will see control panel alerts when new <a href="%s">Developer Log</a> items need action. Currently <b>%s item(s)</b> are logged.',
 
-'enable_errors' => 'Enable error reporting?',
+'enable_errors' => 'Error Visibility',
 
-'enable_errors_desc' => 'When set to <b>enable</b>, super admins will see PHP/MySQL errors when they occur.',
+'enable_errors_desc' => 'Determines who can see PHP/MySQL errors when they occur.',
 
 'force_query_string' => 'Force <abbr title="Uniform Resource Location">URL</abbr> query strings?',
 
-'force_query_string_desc' => 'When set to <b>yes</b>, servers that do not support <mark>PATH_INFO</mark> will use query string URLs instead.',
+'force_query_string_desc' => 'When enabled, servers that do not support <mark>PATH_INFO</mark> will use query string URLs instead.',
 
 'gzip_output' => 'Enable <abbr title="GNU Zip Compression">GZIP</abbr> compression?',
 
-'gzip_output_desc' => 'When set to <b>yes</b>, your website will be compressed using GZIP compression, this will decrease page load times.',
+'gzip_output_desc' => 'When enabled, your website will be compressed using GZIP compression, this will decrease page load times.',
 
 'max_caches' => 'Cachable <abbr title="Uniform Resource Identifier">URI</abbr>s',
 
@@ -315,21 +313,21 @@ $lang = array(
 
 'send_headers' => 'Use <abbr title="Hypertext Transfer Protocol">HTTP</abbr> page headers?',
 
-'send_headers_desc' => 'When set to <b>yes</b>, your website will generate <abbr title="Hypertext Transfer Protocol">HTTP</abbr> headers for all pages.',
+'send_headers_desc' => 'When enabled, your website will generate <abbr title="Hypertext Transfer Protocol">HTTP</abbr> headers for all pages.',
 
 'show_profiler' => 'Enable debugging?',
 
-'show_profiler_desc' => 'When set to <b>enable</b>, super admins will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
+'show_profiler_desc' => 'When enabled, Super Admins will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
 
 'use_newrelic' => 'Enable New Relic RUM JavaScript?',
 
-'use_newrelic_desc' => 'When set to <b>yes</b>, New Relic will add <a href="https://docs.newrelic.com/docs/browser/new-relic-browser/page-load-timing-resources/instrumentation-browser-monitoring" rel="external">Real User Monitoring JavaScript</a> to all of your web pages.',
+'use_newrelic_desc' => 'When enabled, New Relic will add <a href="https://docs.newrelic.com/docs/browser/new-relic-browser/page-load-timing-resources/instrumentation-browser-monitoring" rel="external">Real User Monitoring JavaScript</a> to all of your web pages.',
 
 
 /* Content & Design */
 'auto_assign_cat_parents' => 'Assign category parents?',
 
-'auto_assign_cat_parents_desc' => 'When set to <b>yes</b>, ExpressionEngine will automatically set the parent category when choosing a child category.',
+'auto_assign_cat_parents_desc' => 'When enabled, ExpressionEngine will automatically set the parent category when choosing a child category.',
 
 'categories_section' => 'Categories',
 
@@ -343,11 +341,11 @@ $lang = array(
 
 'enable_emoticons' => 'Enable emoticons?',
 
-'enable_emoticons_desc' => 'When set to <b>yes</b>, text based emoticons will be converted to image based emoticons.',
+'enable_emoticons_desc' => 'When enabled, text based emoticons like <samp>;)</samp> will be converted to emoji &#x1F609;.',
 
 'enable_sql_caching' => 'Cache dynamic channel queries?',
 
-'enable_sql_caching_desc' => 'When set to <b>yes</b>, the speed of dynamic channel pages will be improved. do <b>not</b> use if you need the "future entries" or "expiring entries" features.',
+'enable_sql_caching_desc' => 'When enabled, the speed of dynamic channel pages will be improved. do <b>not</b> use if you need the "future entries" or "expiring entries" features.',
 
 'gd' => 'GD',
 
@@ -371,7 +369,7 @@ $lang = array(
 
 'new_posts_clear_caches' => 'Clear cache for new entries?',
 
-'new_posts_clear_caches_desc' => 'When set to <b>yes</b>, all caches will be cleared when authors publish new entries.',
+'new_posts_clear_caches_desc' => 'When enabled, all caches will be cleared when authors publish new entries.',
 
 'thumbnail_suffix' => 'Thumbnail suffix',
 
@@ -387,15 +385,15 @@ $lang = array(
 
 'comment_moderation_override' => 'Moderate after comments expire?',
 
-'comment_moderation_override_desc' => 'When set to <b>yes</b>, comments made on an entry with comments expired will be submitted as closed and require review by a moderator.',
+'comment_moderation_override_desc' => 'When enabled, comments made on an entry with comments expired will be submitted as closed and require review by a moderator.',
 
 'comment_word_censoring' => 'Enable word censoring?',
 
-'comment_word_censoring_desc' => 'When set to <b>enable</b>, commenting will use the <a href="%s">word censoring</a> filters.',
+'comment_word_censoring_desc' => 'When enabled, commenting will use the <a href="%s">word censoring</a> filters.',
 
 'enable_comments' => 'Enable comment module?',
 
-'enable_comments_desc' => 'When set to <b>enable</b>, channels will be able to use the comment module.',
+'enable_comments_desc' => 'When enabled, channels will be able to use the comment module.',
 
 'options' => 'Options',
 
@@ -411,7 +409,7 @@ $lang = array(
 
 'save_tmpl_revisions' => 'Save template revisions?',
 
-'save_tmpl_revisions_desc' => 'When set to <b>yes</b>, ExpressionEngine will save up to <b>5</b> template revisions in the database.',
+'save_tmpl_revisions_desc' => 'When enabled, ExpressionEngine will save up to <b>5</b> template revisions in the database.',
 
 'site_404' => '404 page',
 
@@ -419,7 +417,7 @@ $lang = array(
 
 'strict_urls' => 'Enable strict <abbr title="Uniform Resource Location">URL</abbr>s?',
 
-'strict_urls_desc' => 'When set to <b>enable</b>, ExpressioneEngine will apply stricter rules to <abbr title="Uniform Resource Location">URL</abbr> handling.',
+'strict_urls_desc' => 'When enabled, ExpressioneEngine will apply stricter rules to <abbr title="Uniform Resource Location">URL</abbr> handling.',
 
 'template_manager' => 'Template Manager',
 
@@ -431,19 +429,19 @@ $lang = array(
 
 'enable_entry_view_tracking' => 'Enable entry view tracking?',
 
-'enable_entry_view_tracking_desc' => 'When set to <b>yes</b>, ExpressionEngine will count how many times a channel entry is viewed.',
+'enable_entry_view_tracking_desc' => 'When enabled, ExpressionEngine will count how many times a channel entry is viewed.',
 
 'enable_hit_tracking' => 'Enable template hit tracking?',
 
-'enable_hit_tracking_desc' => 'When set to <b>yes</b>, ExpressionEngine will count how many times a template is viewed.',
+'enable_hit_tracking_desc' => 'When enabled, ExpressionEngine will count how many times a template is viewed.',
 
 'enable_online_user_tracking' => 'Enable online user tracking?',
 
-'enable_online_user_tracking_desc' => 'When set to <b>yes</b>, ExpressionEngine will track logged in users.',
+'enable_online_user_tracking_desc' => 'When enabled, ExpressionEngine will track logged in users.',
 
 'log_referrers' => 'Enable referrer tracking?',
 
-'log_referrers_desc' => 'When set to <b>yes</b>, ExpressionEngine will track all incoming links.',
+'log_referrers_desc' => 'When enabled, ExpressionEngine will track all incoming links.',
 
 'max_referrers' => 'Maximum recent referrers to save',
 
@@ -459,25 +457,25 @@ $lang = array(
 
 'enable_censoring' => 'Enable censorship?',
 
-'enable_censoring_desc' => 'When set to <b>enable</b>, words listed will be replaced with the specified replacement characters.',
+'enable_censoring_desc' => 'When enabled, words listed will be replaced with the specified replacement characters.',
 
 
 /* Member Settings */
 'allow_member_localization' => 'Allow members to set time preferences?',
 
-'allow_member_localization_desc' => 'When set to <b>yes</b>, members will be able to set a specific time and date localization for their account.',
+'allow_member_localization_desc' => 'When enabled, members will be able to set a specific time and date localization for their account.',
 
 'allow_member_registration' => 'Allow registrations?',
 
-'allow_member_registration_desc' => 'When set to <b>yes</b>, users will be able to register member accounts.',
+'allow_member_registration_desc' => 'When enabled, users will be able to register member accounts.',
 
 'approved_member_notification' => 'Notify members when approved?',
 
-'approved_member_notification_desc' => 'When set to <b>yes</b>, members will receive an email notification when their member registration is approved.',
+'approved_member_notification_desc' => 'When enabled, members will receive an email notification when their member registration is approved.',
 
 'declined_member_notification' => 'Notify members when declined?',
 
-'declined_member_notification_desc' => 'When set to <b>yes</b>, members will receive an email notification when their member registration is declined.',
+'declined_member_notification_desc' => 'When enabled, members will receive an email notification when their member registration is declined.',
 
 'default_member_group' => 'Default member group',
 
@@ -513,7 +511,7 @@ $lang = array(
 
 'new_member_notification' => 'Enable new member notifications?',
 
-'new_member_notification_desc' => 'When set to <b>enable</b>, the following Email addresses will be notified anytime a new registration occurs.',
+'new_member_notification_desc' => 'When enabled, the following Email addresses will be notified anytime a new registration occurs.',
 
 'registration_notify_settings' => 'Registration Notification Settings',
 
@@ -529,7 +527,7 @@ $lang = array(
 
 'require_terms_of_service' => 'Require terms of service?',
 
-'require_terms_of_service_desc' => 'When set to <b>yes</b>, users must agree to terms of service during registration.',
+'require_terms_of_service_desc' => 'When enabled, users must agree to terms of service during registration.',
 
 
 /* Menu Manager */
@@ -625,7 +623,7 @@ $lang = array(
 
 'prv_msg_auto_links' => 'Convert <abbr title="Uniform Resource Location">URL</abbr>s and Emails into links?',
 
-'prv_msg_auto_links_desc' => 'When set to <b>yes</b>, All <abbr title="Uniform Resource Location">URL</abbr>s and Emails will be auto converted into hyper links.',
+'prv_msg_auto_links_desc' => 'When enabled, All <abbr title="Uniform Resource Location">URL</abbr>s and Emails will be auto converted into hyper links.',
 
 'prv_msg_html_format' => 'Formatting',
 
@@ -635,7 +633,7 @@ $lang = array(
 
 'prv_msg_upload_path' => 'Upload path',
 
-'prv_msg_upload_path_desc' => 'Full path location for your <mark>attachement</mark> directory.',
+'prv_msg_upload_path_desc' => 'Full path location for your <mark>attachment</mark> directory.',
 
 'prv_msg_upload_url' => 'Upload directory',
 
@@ -645,7 +643,7 @@ $lang = array(
 /* Avatars */
 'allow_avatar_uploads' => 'Allow avatar uploads?',
 
-'allow_avatar_uploads_desc' => 'When set to <b>yes</b>, members will be able to upload their own avatars (representative images).',
+'allow_avatar_uploads_desc' => 'When enabled, members will be able to upload their own avatars (representative images).',
 
 'avatar_file_restrictions' => 'Avatar File Restrictions',
 
@@ -667,13 +665,13 @@ $lang = array(
 
 'enable_avatars' => 'Allow avatars?',
 
-'enable_avatars_desc' => 'When set to <b>yes</b>, members will be able to use avatars (representative images) in comments and forums.',
+'enable_avatars_desc' => 'When enabled, members will be able to use avatars (representative images) in comments and forums.',
 
 
 /* CAPTCHA */
 'captcha_font' => 'Use TrueType font?',
 
-'captcha_font_desc' => 'When set to <b>yes</b>, <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> fields will use a TrueType font for display.',
+'captcha_font_desc' => 'When enabled, <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> fields will use a TrueType font for display.',
 
 'captcha_path' => '<abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> path',
 
@@ -681,11 +679,11 @@ $lang = array(
 
 'captcha_rand' => 'Add random number?',
 
-'captcha_rand_desc' => 'When set to <b>yes</b>, <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> fields will randomly generate numbers as well as letters.',
+'captcha_rand_desc' => 'When enabled, <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> fields will randomly generate numbers as well as letters.',
 
 'captcha_require_members' => 'Require <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> while logged in?',
 
-'captcha_require_members_desc' => 'When set to <b>no</b>, logged in members will not be required to fill in <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> fields.',
+'captcha_require_members_desc' => 'When disabled, logged in members will not be required to fill in <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> fields.',
 
 'captcha_settings' => 'CAPTCHA Settings',
 
@@ -697,21 +695,21 @@ $lang = array(
 
 'require_captcha' => 'Require <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr>?',
 
-'require_captcha_desc' => 'When set to <b>yes</b>, visitors will be required to fill in a <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> field for all front-end forms.',
+'require_captcha_desc' => 'When enabled, visitors will be required to fill in a <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> field for all front-end forms.',
 
 
 /* Security & Privacy */
 'allow_dictionary_pw' => 'Allow dictionary words in passwords?',
 
-'allow_dictionary_pw_desc' => 'When set to <b>yes</b>, members will be able to use common dictionary words in their password. <mark>requires dictionary file to be installed to enforce.</mark>',
+'allow_dictionary_pw_desc' => 'When enabled, members will be able to use common dictionary words in their password. <mark>requires dictionary file to be installed to enforce.</mark>',
 
 'allow_multi_logins' => 'Allow multiple sessions?',
 
-'allow_multi_logins_desc' => 'When set to <b>no</b>, members will not be able to log in from another location or browser if they already have an active session.',
+'allow_multi_logins_desc' => 'When disabled, members will not be able to log in from another location or browser if they already have an active session.',
 
 'allow_username_change' => 'Allow members to change username?',
 
-'allow_username_change_desc' => 'When set to <b>yes</b>, members will be able to change their username.',
+'allow_username_change_desc' => 'When enabled, members will be able to change their username.',
 
 'c_session' => 'Cookies only',
 
@@ -721,7 +719,7 @@ $lang = array(
 
 'cookie_httponly' => 'Send cookies over <abbr title="Hyper Text Transfer Protocol">HTTP</abbr> only?',
 
-'cookie_httponly_desc' => 'When set to <b>yes</b>, cookies will <b>not</b> be accessible through JavaScript.',
+'cookie_httponly_desc' => 'When enabled, cookies will <b>not</b> be accessible through JavaScript.',
 
 'cookie_path' => 'Path',
 
@@ -733,7 +731,7 @@ $lang = array(
 
 'cookie_secure' => 'Send cookies securely?',
 
-'cookie_secure_desc' => 'When set to <b>yes</b>, cookies will only be transmitted over a secure <abbr title="Hyper Text Transfer Protocol with Secure Sockets Layer">HTTPS</abbr> connection.</em><em>Your site <b>must</b> use <abbr title="Secure Sockets Layer">SSL</abbr> everywhere for this to work.',
+'cookie_secure_desc' => 'When enabled, cookies will only be transmitted over a secure <abbr title="Hyper Text Transfer Protocol with Secure Sockets Layer">HTTPS</abbr> connection.</em><em>Your site <b>must</b> use <abbr title="Secure Sockets Layer">SSL</abbr> everywhere for this to work.',
 
 'cookie_settings' => 'Cookie Settings',
 
@@ -743,11 +741,11 @@ $lang = array(
 
 'deny_duplicate_data' => 'Deny duplicate data?',
 
-'deny_duplicate_data_desc' => 'When set to <b>yes</b>, forms will disregard any submission that is an exact duplicate of existing data.',
+'deny_duplicate_data_desc' => 'When enabled, forms will disregard any submission that is an exact duplicate of existing data.',
 
 'enable_rank_denial' => 'Enable Rank Denial to submitted links?',
 
-'enable_rank_denial_desc' => 'When set to <b>enable</b>, all outgoing links are sent to a redirect page. This prevents spammers from <a href="%s" rel="external">gaining page rank</a>.',
+'enable_rank_denial_desc' => 'When enabled, all outgoing links are sent to a redirect page. This prevents spammers from <a href="%s" rel="external">gaining page rank</a>.',
 
 'form_security_settings' => 'Content Submission Settings',
 
@@ -759,7 +757,7 @@ $lang = array(
 
 'password_lockout' => 'Enable password lock out?',
 
-'password_lockout_desc' => 'When set to <b>enable</b>, members will be locked out of the system after failed log in attempts.',
+'password_lockout_desc' => 'When enabled, members will be locked out of the system after failed log in attempts.',
 
 'password_lockout_interval' => 'Password lock out interval',
 
@@ -771,15 +769,15 @@ $lang = array(
 
 'require_ip_for_login' => 'Require user agent and <abbr title="Internet Protocol">IP</abbr> for login?',
 
-'require_ip_for_login_desc' => 'When set to <b>yes</b>, members will be unable to login without a valid user agent and <abbr title="Internet Protocol">IP</abbr> address.',
+'require_ip_for_login_desc' => 'When enabled, members will be unable to login without a valid user agent and <abbr title="Internet Protocol">IP</abbr> address.',
 
 'require_ip_for_posting' => 'Require user agent and <abbr title="Internet Protocol">IP</abbr> for posting?',
 
-'require_ip_for_posting_desc' => 'When set to <b>yes</b>, members will be unable to post without a valid user agent and <abbr title="Internet Protocol">IP</abbr> address.',
+'require_ip_for_posting_desc' => 'When enabled, members will be unable to post without a valid user agent and <abbr title="Internet Protocol">IP</abbr> address.',
 
 'require_secure_passwords' => 'Require secure passwords?',
 
-'require_secure_passwords_desc' => 'When set to <b>yes</b>, members will be required to choose passwords containing at least one uppercase, one lowercase, and one numeric character.',
+'require_secure_passwords_desc' => 'When enabled, members will be required to choose passwords containing at least one uppercase, one lowercase, and one numeric character.',
 
 's_session' => 'Session ID only',
 
@@ -795,7 +793,7 @@ $lang = array(
 
 'xss_clean_uploads' => 'Apply <abbr title="Cross Site Scripting">XSS</abbr> filtering?',
 
-'xss_clean_uploads_desc' => 'When set to <b>yes</b>, forms will apply <abbr title="Cross Site Scripting">XSS</abbr> filtering to submissions.',
+'xss_clean_uploads_desc' => 'When enabled, forms will apply <abbr title="Cross Site Scripting">XSS</abbr> filtering to submissions.',
 
 
 /* Access Throttling */
@@ -803,7 +801,7 @@ $lang = array(
 
 'banish_masked_ips' => 'Require <abbr title="Internet Protocol">IP</abbr>?',
 
-'banish_masked_ips_desc' => 'When set to <b>yes</b>, members will be denied access if they do not have a valid <abbr title="Internet Protocol">IP</abbr> address.',
+'banish_masked_ips_desc' => 'When enabled, members will be denied access if they do not have a valid <abbr title="Internet Protocol">IP</abbr> address.',
 
 'banish_message' => 'Display message',
 
@@ -819,7 +817,7 @@ $lang = array(
 
 'enable_throttling' => 'Enable throttling?',
 
-'enable_throttling_desc' => 'When set to <b>enable</b>, members will be locked out of the system when they meet the lock out requirement.',
+'enable_throttling_desc' => 'When enabled, members will be locked out of the system when they meet the lock out requirement.',
 
 'lockout_time' => 'Lockout time',
 

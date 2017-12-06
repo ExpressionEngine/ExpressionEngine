@@ -1,27 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.5
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine View Source RTE Tool
- *
- * @package		ExpressionEngine
- * @subpackage	RTE
- * @category	RTE
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * View Source RTE Tool
  */
 class View_source_rte {
 
@@ -49,8 +36,6 @@ class View_source_rte {
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Styles
 	 *
@@ -68,8 +53,6 @@ class View_source_rte {
 		ob_end_clean();
 		return $buffer;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Javascript Definition

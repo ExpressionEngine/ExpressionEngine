@@ -1,34 +1,19 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Logs;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Home Page Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Logs Controller
  */
 class Logs extends CP_Controller {
 
@@ -62,13 +47,6 @@ class Logs extends CP_Controller {
 		$this->params['perpage'] = $this->perpage; // Set a default
 
 		$this->generateSidebar();
-
-		// Add in any submitted search phrase
-		ee()->view->search_value = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
-		if ( ! empty(ee()->view->search_value))
-		{
-			$this->base_url->setQueryStringVariable('search', ee()->input->get_post('search'));
-		}
 	}
 
 	protected function generateSidebar()
@@ -110,8 +88,6 @@ class Logs extends CP_Controller {
 			ee()->functions->redirect(ee('CP/URL')->make('logs/cp'));
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Deletes log entries, either all at once, or one at a time

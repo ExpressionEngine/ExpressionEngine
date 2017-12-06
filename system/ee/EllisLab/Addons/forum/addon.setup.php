@@ -5,7 +5,7 @@ return array(
 	'author_url'     => 'https://ellislab.com/',
 	'name'           => 'Forum',
 	'description'    => '',
-	'version'        => '4.0.0',
+	'version'        => '5.0.0',
 	'namespace'      => 'EllisLab\Addons\Forum',
 	'settings_exist' => TRUE,
 
@@ -68,7 +68,7 @@ return array(
 		'Topic'   => array(
 			'ee:Member'
 		),
-	)
+	),
 );
 
 // EOF

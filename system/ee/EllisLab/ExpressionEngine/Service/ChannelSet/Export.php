@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\ChannelSet;
 
@@ -6,12 +13,17 @@ use StdClass;
 use ZipArchive;
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
+/**
+ * Channel Set Service: Export
+ */
 class Export {
 
 	private $zip;
 
 	private $channels = array();
-	private $status_groups = array();
+	private $fields = array();
+	private $field_groups = array();
+	private $statuses = array();
 	private $category_groups = array();
 	private $upload_destinations = array();
 
@@ -51,8 +63,10 @@ class Export {
 			$this->exportChannel($channel);
 		}
 
+		$base->version = ee()->config->item('app_version');
 		$base->channels = array_values($this->channels);
-		$base->status_groups = $this->status_groups;
+		$base->field_groups = array_values($this->field_groups);
+		$base->statuses = array_values($this->statuses);
 		$base->category_groups = $this->category_groups;
 		$base->upload_destinations = array_values($this->upload_destinations);
 
@@ -93,18 +107,37 @@ class Export {
 		// are ids (that's what relationships store)
 		$this->channels[$channel->getId()] = $result;
 
-		if ($channel->StatusGroup)
+		if ($channel->Statuses)
 		{
-			$group = $this->exportStatusGroup(
-				$channel->StatusGroup,
-				($channel->StatusGroup->group_name != 'Default')
-			);
-			$result->status_group = $group->name;
+			foreach ($channel->Statuses->sortBy('status_order') as $status)
+			{
+				if (in_array($status->status, ['open', 'closed']))
+				{
+					continue;
+				}
+
+				$status = $this->exportStatus($status);
+				$result->statuses[] = $status->name;
+			}
 		}
 
-		if ($channel->FieldGroup)
+		if ($channel->FieldGroups)
 		{
-			$result->field_group = $this->exportFieldGroup($channel->FieldGroup);
+			$result->field_groups = array();
+			foreach ($channel->FieldGroups as $group)
+			{
+				$result->field_groups[] = $this->exportFieldGroup($group);
+			}
+		}
+
+		if ($channel->CustomFields)
+		{
+			$result->fields = array();
+			foreach ($channel->CustomFields as $field)
+			{
+				$this->exportField($field);
+				$result->fields[] = $field->field_name;
+			}
 		}
 
 		if ($channel->getCategoryGroups())
@@ -120,38 +153,6 @@ class Export {
 	}
 
 	/**
-	 * Export a status group and its statuses
-	 *
-	 * @param Model $group Status group to export
-	 * @param bool $include_defaults Whether to include Open and Closed
-	 * @return StdClass Group description
-	 */
-	private function exportStatusGroup($group, $include_defaults = TRUE)
-	{
-		$result = new StdClass();
-		$result->name = $group->group_name;
-
-		$result->statuses = array();
-		$statuses = $group->Statuses->sortBy('status_order');
-
-		if ($include_defaults == FALSE)
-		{
-			$statuses = $statuses->filter(function($status) {
-				return ( ! in_array($status->status, array('open', 'closed')));
-			});
-		}
-
-		foreach ($statuses as $status)
-		{
-			$result->statuses[] = $this->exportStatus($status);
-		}
-
-		$this->status_groups[] = $result;
-
-		return $result;
-	}
-
-	/**
 	 * Export a status
 	 *
 	 * @param Model $status Status to export
@@ -163,6 +164,8 @@ class Export {
 
 		$result->name = $status->status;
 		$result->highlight = $status->highlight;
+
+		$this->statuses[$status->status] = $result;
 
 		return $result;
 	}
@@ -229,16 +232,27 @@ class Export {
 	 */
 	private function exportFieldGroup($group)
 	{
-		$name = $group->group_name;
+		// already in process
+		if (isset($this->field_groups[$group->getId()]))
+		{
+			return;
+		}
+
+		$result = new StdClass();
+		$result->name = $group->group_name;
+		$result->fields = array();
+
+		$this->field_groups[$group->getId()] = $result;
 
 		$fields = $group->ChannelFields;
 
 		foreach ($fields as $field)
 		{
-			$this->exportField($field, $name);
+			$result->fields[] = $field->field_name;
+			$this->exportField($field);
 		}
 
-		return $name;
+		return $group->group_name;
 	}
 
 	/**
@@ -248,9 +262,17 @@ class Export {
 	 * @param String $group Group name
 	 * @return void
 	 */
-	private function exportField($field, $group, $type = 'custom')
+	private function exportField($field, $type = 'custom')
 	{
-		$file = '/' . $type . '_fields/'.$group.'/'.$field->field_name.'.'.$field->field_type;
+		// already in process
+		if (isset($this->fields[$field->getId()]))
+		{
+			return;
+		}
+
+		$this->fields[$field->getId()] = TRUE;
+
+		$file = '/' . $type . '_fields/'.$field->field_name.'.'.$field->field_type;
 
 		$result = new StdClass();
 
@@ -334,20 +356,21 @@ class Export {
 		{
 			$result->settings = $this->exportFileFieldSettings($field);
 		}
-
-		if ($field->field_type == 'grid')
+		elseif ($field->field_type == 'grid')
 		{
 			$result->columns = $this->exportGridFieldColumns($field);
 		}
-
-		if ($field->field_type == 'relationship')
+		elseif ($field->field_type == 'relationship')
 		{
 			$result->settings = $this->exportRelationshipField($field);
 		}
-
-		if (in_array($field->field_type, array('textarea', 'rte')))
+		elseif (in_array($field->field_type, array('textarea', 'rte')))
 		{
 			$result->ta_rows = $field->field_ta_rows;
+		}
+		elseif ($field->field_type == 'fluid_field')
+		{
+			$result->settings = $this->exportFluidFieldField($field);
 		}
 
 		$field_json = json_encode($result, JSON_PRETTY_PRINT);
@@ -557,4 +580,26 @@ class Export {
 		}
 	}
 
+	/**
+	 * Does some extra work for fluid field field exports
+	 *
+	 * @param Model $field Channel field
+	 * @return StdClass Fluid Field settings description
+	 */
+	private function exportFluidFieldField($field)
+	{
+		$settings = $field->field_settings;
+
+		$result = new StdClass();
+		$result->field_channel_fields = array();
+
+		foreach ($settings['field_channel_fields'] as $field_id)
+		{
+			$field = ee('Model')->get('ChannelField', $field_id)->first();
+			$result->field_channel_fields[] = $field->field_name;
+			$this->exportField($field);
+		}
+
+		return $result;
+	}
 }

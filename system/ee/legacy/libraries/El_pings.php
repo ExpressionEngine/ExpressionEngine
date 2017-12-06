@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine EllisLab Pings Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * EllisLab Pings
  */
 
 class El_pings {
@@ -90,8 +78,6 @@ class El_pings {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * EE Version Check function
 	 *
@@ -107,28 +93,16 @@ class El_pings {
 
 		if ( ! $cached)
 		{
-			$version_file = array();
+			$version_file = ee('Curl')->post(
+				'https://update.expressionengine.com',
+				[
+					'action' => 'check_new_version',
+					'license' => ee('License')->getEELicense()->getRawLicense(),
+					'version' => ee()->config->item('app_version'),
+				]
+			)->exec();
 
-			if ( ! $version_info = $this->_do_ping('https://versions.ellislab.com/versions_ee3.txt'))
-			{
-				$version_file['error'] = TRUE;
-			}
-			else
-			{
-				$version_info = explode("\n", trim($version_info));
-
-				if (empty($version_info))
-				{
-					$version_file['error'] = TRUE;
-				}
-				else
-				{
-					foreach ($version_info as $version)
-					{
-						$version_file[] = explode('|', $version);
-					}
-				}
-			}
+			$version_file = json_decode($version_file, TRUE);
 
 			// Cache version information for a day
 			ee()->cache->save(
@@ -157,8 +131,6 @@ class El_pings {
 		return $version_file;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Validate version file
 	 * Prototype:
@@ -173,31 +145,21 @@ class El_pings {
 	 */
 	private function _is_valid_version_file($version_file)
 	{
-		if ( ! is_array($version_file))
+		if ( ! is_array($version_file) OR ! isset($version_file['latest_version']))
 		{
 			return FALSE;
 		}
 
-		foreach ($version_file as $version)
+		foreach ($version_file as $val)
 		{
-			if ( ! is_array($version) OR count($version) != 3)
+			if ( ! is_string($val))
 			{
 				return FALSE;
-			}
-
-			foreach ($version as $val)
-			{
-				if ( ! is_string($val))
-				{
-					return FALSE;
-				}
 			}
 		}
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Do the Ping
@@ -258,8 +220,6 @@ class El_pings {
 
 		return $response;
 	}
-
-	// --------------------------------------------------------------------
 }
 // END CLASS
 

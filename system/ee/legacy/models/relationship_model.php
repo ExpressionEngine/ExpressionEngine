@@ -1,26 +1,14 @@
 <?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Relationship Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Relationship Model
  */
 class Relationship_model extends CI_Model {
 
@@ -31,12 +19,10 @@ class Relationship_model extends CI_Model {
 
 	protected $_table = 'relationships';
 
- 	// --------------------------------------------------------------------
-
 	/**
 	 *
 	 */
-	public function node_query($node, $entry_ids, $grid_field_id = NULL)
+	public function node_query($node, $entry_ids, $grid_field_id = NULL, $fluid_field_data_id = NULL)
 	{
 		if ($node->field_name() == 'siblings')
 		{
@@ -49,15 +35,13 @@ class Relationship_model extends CI_Model {
 		}
 
 		$entry_ids = array_unique($entry_ids);
-		return $this->_run_node_query($node, $entry_ids, $grid_field_id);
+		return $this->_run_node_query($node, $entry_ids, $grid_field_id, $fluid_field_data_id);
 	}
-
- 	// --------------------------------------------------------------------
 
 	/**
 	 *
 	 */
-	protected function _run_node_query($node, $entry_ids, $grid_field_id)
+	protected function _run_node_query($node, $entry_ids, $grid_field_id, $fluid_field_data_id = NULL)
 	{
 		$shortest_branch_length = 0;
 		$longest_branch_length = $this->_find_longest_branch($node);
@@ -97,6 +81,15 @@ class Relationship_model extends CI_Model {
 		$db->select($relative_child.' as L0_id');
 		$db->select('L0.order');
 		$db->from($this->_table.' as L0');
+
+		if ( ! is_null($fluid_field_data_id))
+		{
+			$db->where('L0.fluid_field_data_id', $fluid_field_data_id);
+		}
+		else
+		{
+			$db->where('L0.fluid_field_data_id', 0);
+		}
 
 		if ($type == self::GRID)
 		{
@@ -182,8 +175,6 @@ class Relationship_model extends CI_Model {
 		return $result;
 	}
 
-
- 	// --------------------------------------------------------------------
 
 	/**
 	 * Branch length utility method.

@@ -1,13 +1,9 @@
-/*!
- * ExpressionEngine - by EllisLab
+/**
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 (function($) {
@@ -46,6 +42,7 @@ EE.cp.formValidation = {
 
 		// These are the text input selectors we listen to for activity
 		this._textInputSelectors = 'input[type=text], input[type=number], input[type=password], textarea';
+		this._buttonSelector = '.form-btns .btn';
 
 		form.each(function(index, el) {
 
@@ -67,6 +64,11 @@ EE.cp.formValidation = {
 
 		var that = this;
 
+		// Don't fire AJAX when submit button pressed
+		$(container).on('mousedown', this._buttonSelector, function() {
+			that.pause()
+		})
+
 		$(this._textInputSelectors, container)
 			.not('*[data-ajax-validate=no]')
 			.blur(function() {
@@ -80,11 +82,11 @@ EE.cp.formValidation = {
 			}, 0);
 		});
 
-		$('input[type=checkbox], input[type=radio], input[type=hidden], select', container)
-			.not('*[data-ajax-validate=no]')
-			.change(function() {
+		$(container).on('change', 'input[type=checkbox], input[type=radio], input[type=hidden], select', function() {
 
 			var element = $(this);
+
+			if (element.data('ajaxValidate') == 'no') return
 
 			setTimeout(function() {
 				that._sendAjaxRequest(element);
@@ -94,7 +96,7 @@ EE.cp.formValidation = {
 		// Upon loading the page with invalid fields, bind the text field
 		// timer to correct the validation as the user types (for AJAX
 		// validation only)
-		$('form.ajax-validate fieldset.invalid, form.ajax-validate div.grid-publish:has(div.invalid)').each(function() {
+		$('form.ajax-validate .fieldset-invalid, form.ajax-validate div.grid-publish:has(div.invalid)').each(function() {
 			that._bindTextFieldTimer($(this));
 		});
 	},
@@ -124,7 +126,7 @@ EE.cp.formValidation = {
 
 		// Get the first container that has a text input inside it, then get
 		// the first text input
-		var textInput = $('.invalid')
+		var textInput = $('.fieldset-invalid')
 			.has(this._textInputSelectors)
 			.first()
 			.find(this._textInputSelectors)
@@ -169,7 +171,8 @@ EE.cp.formValidation = {
 	 */
 	_bindButtonStateChange: function(form) {
 
-		var $button = $('.form-ctrls input.btn, .form-ctrls button.btn', form);
+		var $button = $(this._buttonSelector, form),
+			that = this
 
 		// Bind form submission to update button text
 		form.submit(function(event) {
@@ -211,8 +214,7 @@ EE.cp.formValidation = {
 	},
 
 	/**
-	 * Binds forms with a class of 'ajax-validate' to the AJAX
-	 * validation routines
+	 * Binds forms to the AJAX validation routines
 	 *
 	 * @param	{jQuery object}	form	Optional jQuery object of form
 	 */
@@ -220,12 +222,8 @@ EE.cp.formValidation = {
 
 		var that = this;
 
-		form.has('.form-ctrls .btn').each(function(index, el) {
-
-			var form = $(this),
-				button = form.find('.form-ctrls input.btn');
-
-			that.bindInputs(form);
+		form.each(function(index, el) {
+			that.bindInputs($(this));
 		});
 	},
 
@@ -236,7 +234,7 @@ EE.cp.formValidation = {
 	 */
 	_errorsExist: function(form) {
 
-		return ($('fieldset.invalid:visible, td.invalid:visible', form).size() != 0);
+		return ($('.fieldset-invalid:visible, td.invalid:visible', form).size() != 0);
 	},
 
 	/**
@@ -302,7 +300,7 @@ EE.cp.formValidation = {
 	_toggleErrorForFields: function(field, message) {
 
 		var form = field.parents('form'),
-			container = field.parents('div[class*=setting]').not('div[class=setting-note]'),
+			container = field.parents('.field-control'),
 			fieldset = (container.parents('fieldset').size() > 0) ? container.parents('fieldset') : container.parent(),
 			errorClass = 'em.ee-form-error-message',
 			grid = false;
@@ -312,15 +310,15 @@ EE.cp.formValidation = {
 			tab_rel = (tab_container.size() > 0) ? tab_container.attr('class').match(/t-\d+/) : '', // Grabs the tab identifier (ex: t-2)
 			tab = $(tab_container).parents('.tab-wrap').find('a[rel="'+tab_rel+'"]'), // Tab link
 			// See if this tab has its own submit button
-			tab_has_own_button = (tab_container.size() > 0 && tab_container.find('.form-ctrls input.btn').size() > 0),
+			tab_has_own_button = (tab_container.size() > 0 && tab_container.find(this._buttonSelector).size() > 0),
 			// Finally, grab the button of the current form
-			button = (tab_has_own_button) ? tab_container.find('.form-ctrls .btn') : form.find('.form-ctrls .btn');
+			button = (tab_has_own_button) ? tab_container.find(this._buttonSelector) : form.find(this._buttonSelector);
 
 		// If we're in a Grid input, re-assign some things to apply classes
 		// and show error messages in the proper places
-		if (fieldset.hasClass('grid-publish'))
+		if (fieldset.hasClass('fieldset-faux'))
 		{
-			fieldset = fieldset.find('div.setting-txt');
+			fieldset = fieldset.find('div.field-instruct');
 			container = field.parents('td');
 			grid = true;
 		}
@@ -331,18 +329,19 @@ EE.cp.formValidation = {
 			// For Grid, we also need to remove the class on the cell and do some
 			// special handling of the invalid class on the Grid field label
 			if (grid) {
+				container.removeClass('fieldset-invalid');
 				container.removeClass('invalid');
 
 				// For Grid, only remove the invalid class from the label if no
 				// more errors exist in the Grid
 				if (fieldset.parent().find('td.invalid').size() == 0) {
-					fieldset.removeClass('invalid');
+					fieldset.removeClass('fieldset-invalid');
 
 					// Remove error message below Grid field
-					container.parents('div.setting-field').find('> ' + errorClass).remove();
+					container.parents('div.field-control').find('> ' + errorClass).remove();
 				}
 			} else {
-				fieldset.removeClass('invalid');
+				fieldset.removeClass('fieldset-invalid');
 			}
 
 			container.find('> ' + errorClass).remove();
@@ -374,7 +373,7 @@ EE.cp.formValidation = {
 			// Bind timer for text fields to validate field while typing
 			this._bindTextFieldTimer(container);
 
-			fieldset.addClass('invalid');
+			fieldset.addClass('fieldset-invalid');
 
 			// Specify the Grid cell the error is in
 			if (grid) {
@@ -410,9 +409,11 @@ EE.cp.formValidation = {
 
 		// There may be callbacks for fields that need to do extra processing
 		// on validation; check for those and call them
-		var cleanField = field.attr('name').replace(/\[.+?\]/g, '');
-		if (this._validationCallbacks[cleanField] !== undefined) {
-			this._validationCallbacks[cleanField](message == 'success', message.error, field);
+		if (field.attr('name')) {
+			var cleanField = field.attr('name').replace(/\[.+?\]/g, '');
+			if (this._validationCallbacks[cleanField] !== undefined) {
+				this._validationCallbacks[cleanField](message == 'success', message.error, field);
+			}
 		}
 	},
 

@@ -16,21 +16,7 @@ feature 'General Settings' do
 
   it 'shows the General Settings page' do
     @page.should have_text 'General Settings'
-    @page.should have_site_name
-    @page.should have_site_short_name
-    @page.should have_is_system_on_y
-    @page.should have_is_system_on_n
-    @page.should have_new_version_check_y
-    @page.should have_new_version_check_n
-    # @page.should have_cp_theme
-    @page.should have_language
-    @page.should have_tz_country
-    @page.should have_timezone
-    @page.should have_date_format
-    @page.should have_time_format
-    @page.should have_no_check_version_btn
-    @page.should have_include_seconds_y
-    @page.should have_include_seconds_n
+    @page.all_there?.should == true
   end
 
   describe "form validation" do
@@ -40,16 +26,15 @@ feature 'General Settings' do
 
     it 'should validate with submit' do
       # Set other random things to make sure they're repopulated
-      @page.is_system_on_n.click
-      @page.new_version_check_n.click
+      @page.is_system_on_toggle.click
+      @page.new_version_check.choose_radio_option('n')
       @page.should have_check_version_btn
-      @page.date_format.select 'yyyy-mm-dd'
-      @page.time_format.select '24-hour'
-      @page.include_seconds_y.click
+      @page.date_format.choose_radio_option('%Y-%m-%d')
+      @page.time_format.choose_radio_option('24')
+      @page.include_seconds_toggle.click
 
       # Only field that's required, will be our test case
       @page.site_name.set ''
-      @page.site_short_name.set ''
 
       @page.submit
 
@@ -57,12 +42,11 @@ feature 'General Settings' do
       should_have_form_errors(@page)
       @page.should have_text 'Attention: Settings not saved'
       should_have_error_text(@page.site_name, @error_text)
-      should_have_error_text(@page.site_short_name, @error_text)
-      @page.is_system_on_n.checked?.should == true
-      @page.new_version_check_n.checked?.should == true
-      @page.date_format.value.should == '%Y-%m-%d'
-      @page.time_format.value.should == '24'
-      @page.include_seconds_y.checked?.should == true
+      @page.is_system_on.value.should == 'n'
+      @page.new_version_check.has_checked_radio('n').should == true
+      @page.date_format.has_checked_radio('%Y-%m-%d').should == true
+      @page.time_format.has_checked_radio('24').should == true
+      @page.include_seconds.value.should == 'y'
     end
 
     # AJAX validation
@@ -70,11 +54,11 @@ feature 'General Settings' do
       # Make sure old values didn't save after validation error
       should_have_no_form_errors(@page)
       should_have_no_error_text(@page.site_name)
-      @page.is_system_on_y.checked?.should == true
-      @page.new_version_check_y.checked?.should == true
-      @page.date_format.value.should == '%n/%j/%Y'
-      @page.time_format.value.should == '12'
-      @page.include_seconds_n.checked?.should == true
+      @page.is_system_on.value.should == 'y'
+      @page.new_version_check.has_checked_radio('y').should == true
+      @page.date_format.has_checked_radio('%n/%j/%Y').should == true
+      @page.time_format.has_checked_radio('12').should == true
+      @page.include_seconds.value.should == 'n'
 
       # Blank Title
       test_field(@page.site_name, '', @error_text)
@@ -132,12 +116,12 @@ feature 'General Settings' do
     # Save new settings
     @page.site_name.set 'My sweet site'
     @page.site_short_name.set 'my_sweet_site'
-    @page.is_system_on_n.click
-    @page.new_version_check_n.click
+    @page.is_system_on_toggle.click
+    @page.new_version_check.choose_radio_option('n')
     @page.should have_check_version_btn
-    @page.date_format.select 'yyyy-mm-dd'
-    @page.time_format.select '24-hour'
-    @page.include_seconds_y.click
+    @page.date_format.choose_radio_option('%Y-%m-%d')
+    @page.time_format.choose_radio_option('24')
+    @page.include_seconds_toggle.click
     @page.submit
 
     # Make sure they stuck, also test Check Now button visibility
@@ -146,16 +130,16 @@ feature 'General Settings' do
     @page.should have_text 'Preferences updated'
     @page.site_name.value.should == 'My sweet site'
     @page.site_short_name.value.should == 'my_sweet_site'
-    @page.is_system_on_n.checked?.should == true
-    @page.new_version_check_n.checked?.should == true
+    @page.is_system_on.value.should == 'n'
+    @page.new_version_check.has_checked_radio('n').should == true
     @page.should have_check_version_btn
-    @page.date_format.value.should == '%Y-%m-%d'
-    @page.time_format.value.should == '24'
-    @page.include_seconds_y.checked?.should == true
+    @page.date_format.has_checked_radio('%Y-%m-%d').should == true
+    @page.time_format.has_checked_radio('24').should == true
+    @page.include_seconds.value.should == 'y'
   end
 
   it 'should check for new versions of EE manually' do
-    @page.new_version_check_n.click
+    @page.new_version_check.choose_radio_option('n')
     @page.should have_check_version_btn
     @page.check_version_btn.click
 

@@ -1,29 +1,16 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Config;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package   ExpressionEngine
- * @author    EllisLab Dev Team
- * @copyright Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license   https://expressionengine.com/license
- * @link      https://ellislab.com
- * @since     Version 3.0.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Config File Class
- *
- * @package    ExpressionEngine
- * @subpackage Core
- * @category   Core
- * @author     EllisLab Dev Team
- * @link       https://ellislab.com
+ * Config File
  */
 class File extends ConfigWithDefaults {
 
@@ -127,9 +114,16 @@ class File extends ConfigWithDefaults {
 	 * @param  mixed  $value   The value to set
 	 * @return void
 	 */
-	public function set($path, $value)
+	public function set($path, $value, $write_to_file = FALSE)
 	{
-		$this->setArrayValue($this->config, $path, $value);
+		$this->config = $this->setArrayValue($path, $value, $this->config);
+
+		if ($write_to_file)
+		{
+			ee()->config->_update_config(
+				$this->setArrayValue($path, $value)
+			);
+		}
 	}
 
 	/**
@@ -157,11 +151,12 @@ class File extends ConfigWithDefaults {
 	/**
 	 * Set a nested array value given a dot-separated path
 	 *
-	 * @param array &$array  Array to traverse and set value in
-	 * @param string $path   Dot-separated path
-	 * @param mixed  $value  Value to set, pass in NULL to unset
+	 * @param  string $path   Dot-separated path
+	 * @param  mixed  $value  Value to set, pass in NULL to unset
+	 * @param  array  $array  Array to traverse and set value in
+	 * @return array  Resulting array
 	 */
-	private function setArrayValue(&$array, $path, $value)
+	private function setArrayValue($path, $value, $array = [])
 	{
 		$path = explode('.', $path);
 
@@ -186,6 +181,8 @@ class File extends ConfigWithDefaults {
 		{
 			$i = $value;
 		}
+
+		return $array;
 	}
 }
 

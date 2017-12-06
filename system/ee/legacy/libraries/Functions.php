@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Core Functions Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Functions
  */
 class EE_Functions {
 
@@ -77,8 +65,6 @@ class EE_Functions {
 		return $url;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create a URL for a Template Route
 	 *
@@ -104,7 +90,7 @@ class EE_Functions {
 		}
 
 		$full_segment = $segment;
-		$parts = $this->assign_parameters($tag);
+		$parts = ee('Variables/Parser')->parseTagParameters($tag);
 
 		$template = $parts['route'];
 		$template = trim($template, '"\' ');
@@ -134,8 +120,6 @@ class EE_Functions {
 
 		return $out;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create a custom URL
@@ -192,8 +176,6 @@ class EE_Functions {
 		return $out;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Creates a url for Pages links
 	 *
@@ -225,8 +207,6 @@ class EE_Functions {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch site index with URI query string
 	 *
@@ -239,8 +219,6 @@ class EE_Functions {
 		$url = str_replace(array('"', "'"), array('%22', '%27'), $url);
 		return $url;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep Query String
@@ -274,8 +252,6 @@ class EE_Functions {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Convert EE Tags to Entities
 	 *
@@ -289,28 +265,8 @@ class EE_Functions {
 	 */
 	public function encode_ee_tags($str, $convert_curly = FALSE)
 	{
-		if ($str != '' && strpos($str, '{') !== FALSE)
-		{
-			if ($convert_curly === TRUE)
-			{
-				$str = str_replace(array('{', '}'), array('&#123;', '&#125;'), $str);
-			}
-			else
-			{
-				$str = preg_replace("/\{(\/){0,1}exp:(.+?)\}/", "&#123;\\1exp:\\2&#125;", $str);
-				$str = str_replace(array('{exp:', '{/exp'), array('&#123;exp:', '&#123;\exp'), $str);
-				$str = preg_replace("/\{embed=(.+?)\}/", "&#123;embed=\\1&#125;", $str);
-				$str = preg_replace("/\{path:(.+?)\}/", "&#123;path:\\1&#125;", $str);
-				$str = preg_replace("/\{redirect=(.+?)\}/", "&#123;redirect=\\1&#125;", $str);
-				$str = str_replace(array('{if', '{/if'), array('&#123;if', '&#123;/if'), $str);
-				$str = preg_replace("/\{layout:(.+?)\}/", "&#123;layout:\\1&#125;", $str);
-			}
-		}
-
-		return $str;
+		return (string) ee('Format')->make('Text', $str)->encodeEETags(['encode_vars' => $convert_curly]);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Extract path info
@@ -355,8 +311,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Replace variables
 	 *
@@ -379,8 +333,6 @@ class EE_Functions {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Redirect
@@ -443,8 +395,6 @@ class EE_Functions {
 		exit;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Random number/password generator
 	 *
@@ -457,8 +407,6 @@ class EE_Functions {
 	{
 		return random_string($type, $len);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Form declaration
@@ -572,8 +520,6 @@ class EE_Functions {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Form backtrack
 	 *
@@ -666,8 +612,6 @@ class EE_Functions {
 		return reduce_double_slashes($ret);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * eval()
 	 *
@@ -681,8 +625,6 @@ class EE_Functions {
 	{
 		return eval('?'.'>'.$str.'<?php ');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Encode email from template callback
@@ -718,8 +660,6 @@ class EE_Functions {
 
 		return $encoded;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Character limiter
@@ -760,8 +700,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Word limiter
 	 *
@@ -792,8 +730,6 @@ class EE_Functions {
 
 		return trim($str).'&#8230;';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch Email Template
@@ -866,8 +802,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create pull-down optios from dirctory map
 	 *
@@ -907,8 +841,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch names of installed language packs
 	 *
@@ -924,8 +856,6 @@ class EE_Functions {
 		$dirs = ee()->lang->language_pack_names();
 		return form_dropdown('language', $dirs, $default);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete cache files
@@ -951,8 +881,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete Direcories
 	 *
@@ -965,8 +893,6 @@ class EE_Functions {
 	{
 		return ee('Filesystem')->deleteDir($path, ! $del_root);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch allowed channels
@@ -1035,8 +961,6 @@ class EE_Functions {
 		return array_values($allowed_channels);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Log Search terms
 	 *
@@ -1084,8 +1008,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch Action ID
 	 *
@@ -1105,8 +1027,6 @@ class EE_Functions {
 
 		return LD.'AID:'.ucfirst($class).':'.$method.RD;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Insert Action IDs
@@ -1144,8 +1064,6 @@ class EE_Functions {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Categories for Channel Entry/Entries
@@ -1229,8 +1147,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Process Subcategories
 	 *
@@ -1250,8 +1166,6 @@ class EE_Functions {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Add security hashes to forms
 	 *
@@ -1268,8 +1182,6 @@ class EE_Functions {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Generate CAPTCHA
 	 *
@@ -1283,8 +1195,6 @@ class EE_Functions {
 		ee()->logger->deprecated('3.0', "ee('Captcha')->create()");
 		return ee('Captcha')->create($old_word, $force_word);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * SQL "AND" or "OR" string for conditional tag parameters
@@ -1370,8 +1280,6 @@ class EE_Functions {
 
 		return $sql;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * AR "AND" or "OR" string for conditional tag parameters
@@ -1480,8 +1388,6 @@ class EE_Functions {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Assign Conditional Variables
@@ -1655,215 +1561,43 @@ class EE_Functions {
 		return $final_conds;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Assign Tag Variables
 	 *
-	 * This function extracts the variables contained within the current tag
-	 * being parsed and assigns them to one of three arrays.
+	 * Deprecated in 4.0.0
 	 *
-	 * There are three types of variables:
-	 *
-	 * Simple variables: {some_variable}
-	 *
-	 * Paired variables: {variable} stuff... {/variable}
-	 *
-	 * Contidionals: {if something != 'val'} stuff... {if something}
-	 *
-	 * Each of the three variables is parsed slightly different and appears in its own array
-	 *
-	 * @access	public
-	 * @param	string
-	 * @param	string
-	 * @return	array
+	 * @see	EllisLab\ExpressionEngine\Service\Template\Variables\LegacyParser::extractVariables()
 	 */
 	public function assign_variables($str = '', $slash = '/')
 	{
-		$return['var_single']	= array();
-		$return['var_pair']		= array();
+		ee()->load->library('logger');
+		ee()->logger->deprecated('4.0', "ee('Variables/Parser')->extractVariables()");
 
-		if ($str == '')
-		{
-			return $return;
-		}
-
-		// No variables?  No reason to continue...
-		if (strpos($str, '{') === FALSE OR ! preg_match_all("/".LD."(.+?)".RD."/", $str, $matches))
-		{
-			return $return;
-		}
-
-		$temp_close = array();
-		$temp_misc  = array();
-		$slash_length = strlen($slash);
-
-		foreach($matches[1] as $key => $val)
-		{
-			if (strncmp($val, 'if ', 3) !== 0 &&
-				strncmp($val, 'if:', 3) !== 0 &&
-				substr($val, 0, $slash_length+2) != $slash."if")
-			{
-				if (strpos($val, '{') !== FALSE)
-				{
-					if (preg_match("/(.+?)".LD."(.*)/s", $val, $matches2))
-					{
-						$temp_misc[$key] = $matches2[2];
-					}
-				}
-				elseif (strncmp($val, $slash, $slash_length) === 0)
-				{
-					$temp_close[$key] = str_replace($slash, '', $val);
-				}
-				else
-				{
-					$temp_misc[$key] = $val;
-				}
-			}
-			elseif (strpos($val, '{') !== FALSE) // Variable in conditional.  ::sigh::
-			{
-				$full_conditional = substr($this->full_tag($matches[0][$key], $str), 1, -1);
-
-				// We only need the first match here, all others will get caught by our
-				// previous code as they won't start with if.
-
-				if (preg_match("/".LD."(.*?)".RD."/s", $full_conditional, $cond_vars))
-				{
-					$temp_misc[$key] = $cond_vars[1];
-				}
-			}
-		}
-
-		// $temp_misc contains all (opening) tags
-		// $temp_close contains all closing tags
-
-		// In 1.x we assumed that a closing tag meant that the variable was
-		// a tag pair.  We now have variables that output as pairs and single tags
-		// so we need to properly match the pairs.
-
-		// In order to find proper pairs, we need to find equivalent opening and
-		// closing tags that are closest together (no nesting).
-		// The easiest way to go about this is to find all opening tags up to a
-		// closing tag - and then just take the last one.
-
-		$temp_pair = array();
-		$temp_single = array();
-
-		$open_stack = array();
-
-		foreach($temp_misc as $open_key => $open_tag)
-		{
-
-			if (preg_match("#(.+?)(\s+|=)(.+?)#", $open_tag, $matches))
-			{
-				$open_tag = $matches[1];
-			}
-
-			foreach($temp_close as $close_key => $close_tag)
-			{
-
-				// Find the closest (potential) closing tag following it
-				if (($close_key > $open_key) && $open_tag == $close_tag)
-				{
-					// There could be another opening tag between these
-					// so we create a stack of opening tag values
-					$open_stack[$close_key][] = $open_key;
-					continue;
-				}
-			}
-		}
-
-		// Pop the last item off each stack of opening tags - these are pairs
-		foreach($open_stack as $potential_openings)
-		{
-			$open_tag_key = array_pop($potential_openings);
-
-			if (isset($temp_misc[$open_tag_key]))
-			{
-				$temp_pair[] = $temp_misc[$open_tag_key];
-				unset($temp_misc[$open_tag_key]);
-			}
-		}
-
-		// The rest of them are single tags
-		$temp_single = array_values($temp_misc);
-
-		// Weed out the duplicatess
-		$temp_single	= array_unique($temp_single);
-		$temp_pair		= array_unique($temp_pair);
-
-
-		// Assign Single Variables
-		$var_single = array();
-
-		foreach($temp_single as $val)
-		{
-			// simple conditionals
-			if (stristr($val, '\|') && substr($val, 0, 6) != 'switch' && substr($val, 0, 11) != 'multi_field')
-			{
-				$var_single[$val] = $this->fetch_simple_conditions($val);
-			}
-
-			// date variables
-			elseif (strpos($val, 'format') !== FALSE && preg_match("/.+?\s+?format/", $val))
-			{
-				$var_single[$val] = $this->fetch_date_variables($val);
-			}
-			else  // single variables
-			{
-				$var_single[$val] = $val;
-			}
-		}
-
-		// Assign Variable Pairs
-		$var_pair = array();
-
-		foreach($temp_pair as $val)
-		{
-			$var_pair[$val] = $this->assign_parameters($val);
-		}
-
-		$return['var_single']	= $var_single;
-		$return['var_pair']		= $var_pair;
-
-		return $return;
+		return ee('Variables/Parser')->extractVariables($str);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Find the Full Opening Tag
 	 *
-	 * @access	public
-	 * @param	string
-	 * @param	string
-	 * @param	string
-	 * @param	string
-	 * @return	string
+	 * Deprecated in 4.0.0
+	 *
+	 * @see	EllisLab\ExpressionEngine\Service\Template\Variables\LegacyParser::getFullTag()
 	 */
 	public function full_tag($str, $chunk='', $open='', $close='')
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('4.0', "ee('Variables/Parser')->getFullTag()");
+
+		// LegacyParser::getFullTag() responsibly preg_quote()s whereas this old method put
+		// the impetus on the developer to send a slash-quoted closing tag.
+		$close = stripslashes($close);
+
 		if ($chunk == '') $chunk = (isset(ee()->TMPL) && is_object(ee()->TMPL)) ? ee()->TMPL->fl_tmpl : '';
 		if ($open == '')  $open  = LD;
 		if ($close == '') $close = RD;
 
-		// Warning: preg_match() Compilation failed: regular expression is too large at offset #
-		// This error will occur if someone tries to stick over 30k-ish strings as tag parameters that also happen to include curley brackets.
-		// Instead of preventing the error, we let it take place, so the user will hopefully visit the forums seeking assistance
-		if ( ! preg_match("/".preg_quote($str, '/')."(.*?)".$close."/s", $chunk, $matches))
-		{
-			return $str;
-		}
-
-		if (isset($matches[1]) && $matches[1] != '' && stristr($matches[1], $open) !== false)
-		{
-			$matches[0] = $this->full_tag($matches[0], $chunk, $open, $close);
-		}
-
-		return $matches[0];
+		return ee('Variables/Parser')->getFullTag($chunk, $str, $open, $close);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch simple conditionals
@@ -1884,98 +1618,35 @@ class EE_Functions {
 		return explode('|', $str);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
-	 * Fetch date variables
+	 * Extract format= code from date variable
 	 *
-	 *  This function looks for a variable that has this prototype:
+	 * Deprecated in 4.0.0
 	 *
-	 * {date format="%Y %m %d"}
-	 *
-	 * If found, returns only the datecodes: %Y %m %d
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	string
+	 * @see	EllisLab\ExpressionEngine\Service\Template\Variables\LegacyParser::extractDateFormat()
 	 */
 	public function fetch_date_variables($datestr)
 	{
-		if ($datestr == '')
-			return;
-
-		if ( ! preg_match("/format\s*=\s*[\'|\"](.*?)[\'|\"]/s", $datestr, $match))
-				return FALSE;
-
-		return $match[1];
+		return ee('Variables/Parser')->extractDateFormat($datestr);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Return parameters as an array
 	 *
-	 * Creates an associative array from a string
-	 * of parameters: sort="asc" limit="2" etc.
+	 * Deprecated in 4.0.0
 	 *
-	 * @access	public
-	 * @param String $str String of parameters (e.g. sort="asc" limit="2")
-	 * @param array $defaults Associative array of defaults with the name as the
-	 *                        key and the value as the default value
-	 * @return Mixed FALSE if there's no matches, otherwise the associative
-	 *               array containing the parameters and their values
+	 * @see	EllisLab\ExpressionEngine\Service\Template\Variables\LegacyParser::parseTagParameters()
 	 */
 	public function assign_parameters($str, $defaults = array())
 	{
-		if ($str == "")
-		{
-			return FALSE;
-		}
+		ee()->load->library('logger');
+		ee()->logger->deprecated('4.0', "ee('Variables/Parser')->parseTagParameters()");
 
-		// remove comments before assigning
-		$str = preg_replace("/\{!--.*?--\}/s", '', $str);
+		$params = ee('Variables/Parser')->parseTagParameters($str, $defaults);
 
-		// \047 - Single quote octal
-		// \042 - Double quote octal
-
-		// I don't know for sure, but I suspect using octals is more reliable
-		// than ASCII. I ran into a situation where a quote wasn't being matched
-		// until I switched to octal. I have no idea why, so just to be safe I
-		// used them here. - Rick
-
-		// matches[0] => attribute and value
-		// matches[1] => attribute name
-		// matches[2] => single or double quote
-		// matches[3] => attribute value
-
-		$bs = '\\'; // single backslash
-		preg_match_all("/(\S+?)\s*=\s*($bs$bs?)(\042|\047)([^\\3]*?)\\2\\3/is", $str, $matches, PREG_SET_ORDER);
-
-		if (count($matches) > 0)
-		{
-			$result = array();
-
-			foreach($matches as $match)
-			{
-				$result[$match[1]] = (trim($match[4]) == '') ? $match[4] : trim($match[4]);
-			}
-
-			foreach ($defaults as $name => $default_value)
-			{
-				if ( ! isset($result[$name])
-					OR (is_numeric($default_value) && ! is_numeric($result[$name])))
-				{
-					$result[$name] = $default_value;
-				}
-			}
-
-			return $result;
-		}
-
-		return FALSE;
+		// this legacy method returned FALSE with no parameters, the new method always return an array
+		return (empty($params)) ? FALSE : $params;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep conditional
@@ -2010,8 +1681,6 @@ class EE_Functions {
 		return trim($cond);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Reverse Key Sort
 	 *
@@ -2021,8 +1690,6 @@ class EE_Functions {
 	 * @return	string
 	 */
 	public function reverse_key_sort($a, $b) {return strlen($b) > strlen($a);}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep conditionals
@@ -2111,8 +1778,6 @@ class EE_Functions {
 		return $prepped_string;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch file upload paths
 	 *
@@ -2128,8 +1793,6 @@ class EE_Functions {
 		$this->file_paths = ee()->file_upload_preferences_model->get_paths();
 		return $this->file_paths;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * bookmarklet qstr decode
@@ -2156,8 +1819,6 @@ class EE_Functions {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 }
 // END CLASS

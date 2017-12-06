@@ -1,28 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * CodeIgniter
+ * ExpressionEngine (https://expressionengine.com)
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * MySQLi Database Adapter Class
- *
- * @package		CodeIgniter
- * @subpackage	Drivers
- * @category	Database
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
+ * MySQLi Database Connection
  */
 class CI_DB_mysqli_connection {
 
@@ -37,6 +23,11 @@ class CI_DB_mysqli_connection {
 	protected $connection;
 
 	/**
+	 * @var Do we have MySQLnd?
+	 */
+	protected $mysqlnd;
+
+	/**
 	 * Create a conneciton
 	 *
 	 * @param Array $config Config values
@@ -44,6 +35,7 @@ class CI_DB_mysqli_connection {
 	public function __construct($config)
 	{
 		$this->config = $config;
+		$this->mysqlnd = extension_loaded('pdo_mysql') && extension_loaded('mysqlnd');
 	}
 
 	/**
@@ -72,11 +64,13 @@ class CI_DB_mysqli_connection {
 
 		$dsn = "mysql:dbname={$database};host={$hostname};port={$port};charset={$char_set}";
 
+		// If we have MySQLnd then we can set ATTR_STRINGIFY_FETCHES to FALSE
+		// otherwise we should set it to TRUE to improve memory performance.
 		$options = array(
 			PDO::ATTR_PERSISTENT => $pconnect,
 			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 			PDO::ATTR_CASE => PDO::CASE_NATURAL,
-			PDO::ATTR_STRINGIFY_FETCHES => FALSE
+			PDO::ATTR_STRINGIFY_FETCHES => ! $this->mysqlnd
 		);
 
 		$this->connection = @new PDO(
@@ -211,8 +205,11 @@ class CI_DB_mysqli_connection {
 	 */
 	private function setEmulatePrepares($query)
 	{
-		$on = strncasecmp($query, 'SELECT', 6) != 0;
-		$this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, $on);
+		if ($this->mysqlnd)
+		{
+			$on = strncasecmp($query, 'SELECT', 6) != 0;
+			$this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, $on);
+		}
 	}
 
 	/**
@@ -240,7 +237,7 @@ class CI_DB_mysqli_connection {
 		$collation = $this->config['dbcollat'];
 
 		$find = '/(DEFAULT\s+)?(CHARACTER\s+SET\s+|CHARSET\s*=\s*)\w+(\s+COLLATE\s+\w+)?/';
-		$want = "DEFAULT CHARACTER SET {$charset} COLLATE {$collation}";
+		$want = "\\1CHARACTER SET {$charset} COLLATE {$collation}";
 
 		if (preg_match($find, $query))
 		{

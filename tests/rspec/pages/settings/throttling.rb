@@ -1,13 +1,13 @@
 class ThrottlingSettings < ControlPanelPage
 
-  element :enable_throttling_y, 'input[name=enable_throttling][value=y]'
-  element :enable_throttling_n, 'input[name=enable_throttling][value=n]'
-  element :banish_masked_ips_y, 'input[name=banish_masked_ips][value=y]'
-  element :banish_masked_ips_n, 'input[name=banish_masked_ips][value=n]'
+  element :enable_throttling, 'input[name=enable_throttling]', :visible => false
+  element :enable_throttling_toggle, 'a[data-toggle-for=enable_throttling]'
+  element :banish_masked_ips, 'input[name=banish_masked_ips]', :visible => false
+  element :banish_masked_ips_toggle, 'a[data-toggle-for=banish_masked_ips]'
   element :lockout_time, 'input[name=lockout_time]'
   element :max_page_loads, 'input[name=max_page_loads]'
   element :time_interval, 'input[name=time_interval]'
-  element :banishment_type, 'select[name=banishment_type]'
+  elements :banishment_type, 'input[name=banishment_type]'
   element :banishment_url, 'input[name=banishment_url]'
   element :banishment_message, 'textarea[name=banishment_message]'
 

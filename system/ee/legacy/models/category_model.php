@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Category Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Category Model
  */
 class Category_model extends CI_Model {
 
@@ -57,8 +45,6 @@ class Category_model extends CI_Model {
 
 		return $result;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get category groups
@@ -113,8 +99,6 @@ class Category_model extends CI_Model {
 						->get();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Channel Categories
 	 *
@@ -166,8 +150,6 @@ class Category_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete Category
 	 *
@@ -209,8 +191,6 @@ class Category_model extends CI_Model {
 		return $group_id;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Category Group Name
 	 *
@@ -233,8 +213,6 @@ class Category_model extends CI_Model {
 		return $this->db->get('category_groups');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Category Parent ID
 	 *
@@ -251,8 +229,6 @@ class Category_model extends CI_Model {
 		return $query->row('parent_id');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Category Label Name
 	 *
@@ -267,8 +243,6 @@ class Category_model extends CI_Model {
 		return $this->db->get('category_fields');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Category Name
 	 *
@@ -281,8 +255,6 @@ class Category_model extends CI_Model {
 		$this->db->where('cat_id', $cat_id);
 		return $this->db->get('categories');
 	}
-
-	// --------------------------------------------------------------------
 
 	public function get_category_id($url_title, $site_ids = array())
 	{
@@ -308,8 +280,6 @@ class Category_model extends CI_Model {
 		return $result->row('cat_id');
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Category Group
 	 *
@@ -321,8 +291,6 @@ class Category_model extends CI_Model {
 		$this->db->where('group_id', $group_id);
 		$this->db->update('category_groups', $data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Insert Category Group
@@ -339,8 +307,6 @@ class Category_model extends CI_Model {
 
 		$this->db->insert('category_groups', $data);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Delete Category Group
@@ -443,8 +409,6 @@ class Category_model extends CI_Model {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Duplicate Category Name Check
 	 *
@@ -469,8 +433,6 @@ class Category_model extends CI_Model {
 		return ($count > 0);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Duplicate Category Group Check
 	 *
@@ -494,8 +456,6 @@ class Category_model extends CI_Model {
 		return ($count > 0);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete Custom Category Field
 	 *
@@ -509,8 +469,6 @@ class Category_model extends CI_Model {
 		$this->db->query("ALTER TABLE exp_category_field_data DROP COLUMN field_id_{$field_id}");
 		$this->db->query("ALTER TABLE exp_category_field_data DROP COLUMN field_ft_{$field_id}");
 	}
-
-	// --------------------------------------------------------------------
 
 }
 

@@ -1,31 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Model\Status;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Status Model
- *
- * @package		ExpressionEngine
- * @subpackage	Status
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Status Model
  */
 class Status extends Model {
 
@@ -39,9 +26,19 @@ class Status extends Model {
 	);
 
 	protected static $_relationships = array(
-		'StatusGroup' => array(
-			'type' => 'BelongsTo'
+		'Channels' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Channel',
+			'pivot' => array(
+				'table' => 'channels_statuses'
+			),
+			'weak' => TRUE,
 		),
+		'ChannelEntries' => [
+			'type' => 'hasMany',
+			'model' => 'ChannelEntry',
+			'weak' => TRUE
+		],
 		'Site' => array(
 			'type' => 'BelongsTo'
 		),
@@ -57,6 +54,7 @@ class Status extends Model {
 	);
 
 	protected static $_validation_rules = array(
+		'status' => 'required|unique',
 		'highlight' => 'required|hexColor'
 	);
 
@@ -65,8 +63,6 @@ class Status extends Model {
 	);
 
 	protected $status_id;
-	protected $site_id;
-	protected $group_id;
 	protected $status;
 	protected $status_order;
 	protected $highlight;
@@ -94,9 +90,7 @@ class Status extends Model {
 
 		if (empty($status_order))
 		{
-			$count = $this->getFrontend()->get('Status')
-				->filter('group_id', $this->getProperty('group_id'))
-				->count();
+			$count = $this->getModelFacade()->get('Status')->count();
 			$this->setProperty('status_order', $count + 1);
 		}
 	}

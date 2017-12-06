@@ -1,34 +1,19 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Logs;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterFactory;
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Home Page Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Logs\Developer Controller
  */
 class Developer extends Logs {
 
@@ -61,7 +46,7 @@ class Developer extends Logs {
 
 		$logs = ee('Model')->get('DeveloperLog');
 
-		if ( ! empty(ee()->view->search_value))
+		if ($search = ee()->input->get_post('filter_by_keyword'))
 		{
 			/* The following SQL is an example of how to build the localized
 			 * deprecation log for searching.
@@ -104,7 +89,7 @@ class Developer extends Logs {
 			// @TODO refactor to eliminate this query
 			ee()->load->dbforge();
 			$results = ee()->db->select('log_id')
-				->where($localized_description . " LIKE '%" . ee()->db->escape_like_str(ee()->view->search_value) . "%'")
+				->where($localized_description . " LIKE '%" . ee()->db->escape_like_str($search) . "%'")
 				->get('developer_log')
 				->result_array();
 
@@ -122,15 +107,13 @@ class Developer extends Logs {
 			$logs = $logs->filter('log_id', 'IN', $ids);
 		}
 
-		if ($logs->count() > 10)
-		{
-			$filters = ee('CP/Filter')
-				->add('Date')
-				->add('Perpage', $logs->count(), 'all_developer_logs');
-			ee()->view->filters = $filters->render($this->base_url);
-			$this->params = $filters->values();
-			$this->base_url->addQueryStringVariables($this->params);
-		}
+		$filters = ee('CP/Filter')
+			->add('Date')
+			->add('Keyword')
+			->add('Perpage', $logs->count(), 'all_developer_logs');
+		ee()->view->filters = $filters->render($this->base_url);
+		$this->params = $filters->values();
+		$this->base_url->addQueryStringVariables($this->params);
 
 		$page = ((int) ee()->input->get('page')) ?: 1;
 		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
@@ -151,9 +134,13 @@ class Developer extends Logs {
 		$count = $logs->count();
 
 		// Set the page heading
-		if ( ! empty(ee()->view->search_value))
+		if ( ! empty($search))
 		{
-			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+			ee()->view->cp_heading = sprintf(
+				lang('search_results_heading'),
+				$count,
+				ee('Format')->make('Text', $search)->convertToEntities()
+			);
 		}
 
 		ee()->view->header = array(

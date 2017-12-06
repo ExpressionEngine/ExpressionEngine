@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Config Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Config
  */
 class EE_Config {
 
@@ -55,8 +43,6 @@ class EE_Config {
 
 		$this->_initialize();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load the EE config file and set the initial values
@@ -131,8 +117,6 @@ class EE_Config {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set configuration overrides
 	 *
@@ -174,8 +158,6 @@ class EE_Config {
 		unset($params);
 		unset($exceptions);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Load Config File
@@ -273,8 +255,6 @@ class EE_Config {
 
 		return $out;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Site Preferences
@@ -383,6 +363,11 @@ class EE_Config {
 		$config['output_charset'] = strtolower($this->item('charset'));
 
 		// translate more portable newline character representation into the real things
+		if ( ! array_key_exists('email_newline', $config))
+		{
+			$config['email_newline'] = '\n';
+		}
+
 		$config['email_newline_form_safe'] = $config['email_newline'];
 		$config['email_newline'] = $this->setEmailNewline($config['email_newline']);
 
@@ -405,8 +390,6 @@ class EE_Config {
 			return $config;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get config for another site, but do not mutate the active global config
@@ -435,8 +418,6 @@ class EE_Config {
 
 		return $site_configs[$site_id];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch a config file item
@@ -483,8 +464,6 @@ class EE_Config {
 		return $raw_value ? $pref : parse_config_variables($pref);
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Decodes and returns Pages information for sites
@@ -553,8 +532,6 @@ class EE_Config {
 		return $site_pages;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Disable tracking
 	 *
@@ -569,8 +546,6 @@ class EE_Config {
 		$this->config['enable_hit_tracking'] = 'n';
 		$this->config['enable_entry_view_tracking'] = 'n';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Preference Divination
@@ -731,7 +706,6 @@ class EE_Config {
 			'site_404',
 			'save_tmpl_revisions',
 			'max_tmpl_revisions',
-			'save_tmpl_files',
 			'strict_urls',
 			'enable_template_routes'
 		);
@@ -756,8 +730,6 @@ class EE_Config {
 
 		return ${$name};
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the Site Preferences
@@ -864,8 +836,6 @@ class EE_Config {
 		return $this->_config_path_errors;
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Check that reserved_category_word isn't the same thing as a template_name
 	 * @param  int 		$site_id    ID of the site to upate
@@ -892,8 +862,6 @@ class EE_Config {
 			}
 		}
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Check paths in site preference array
@@ -931,8 +899,6 @@ class EE_Config {
 		}
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Rename the site if MSM is not on
 	 * @param  int 		$site_id    ID of the site to upate
@@ -957,8 +923,6 @@ class EE_Config {
 
 		return $site_prefs;
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Update Pages for individual site
@@ -989,8 +953,6 @@ class EE_Config {
 			}
 		}
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Updates preference columns in exp_sites
@@ -1046,8 +1008,6 @@ class EE_Config {
 		return $site_prefs;
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Validates config values when updating site preferences and adds them to
 	 * the config file
@@ -1078,8 +1038,6 @@ class EE_Config {
 			}
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the config file
@@ -1270,8 +1228,6 @@ class EE_Config {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Database Config File
 	 *
@@ -1332,8 +1288,6 @@ class EE_Config {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	* Clear the opcode cache
 	*
@@ -1356,8 +1310,6 @@ class EE_Config {
 			@apc_delete_file($path) || apc_clear_cache();
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Config Fields
@@ -1514,7 +1466,6 @@ class EE_Config {
 				'site_404'               => array('f', 'site_404'),
 				'save_tmpl_revisions'    => array('r', array('y' => 'yes', 'n' => 'no')),
 				'max_tmpl_revisions'     => array('i', ''),
-				'save_tmpl_files'        => array('r', array('y' => 'yes', 'n' => 'no')),
 			),
 
 			'censoring_cfg'		=>	array(
@@ -1579,8 +1530,6 @@ class EE_Config {
 
 		return $f_data[$type];
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep View Vars
@@ -1751,8 +1700,6 @@ class EE_Config {
 		return $vars;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Configuration Subtext
 	 *
@@ -1809,7 +1756,6 @@ class EE_Config {
 			'strict_urls'				=> array('strict_urls_info'),
 			'enable_template_routes'	=> array('enable_template_routes_exp'),
 			'tmpl_display_mode'			=> array('tmpl_display_mode_exp'),
-			'save_tmpl_files'			=> array('save_tmpl_files_exp'),
 			'site_404'					=> array('site_404_exp'),
 			'channel_nomenclature'		=> array('channel_nomenclature_exp'),
 			'enable_sql_caching'		=> array('enable_sql_caching_exp'),
@@ -1829,8 +1775,6 @@ class EE_Config {
 			'dynamic_tracking_disabling'=> array('dynamic_tracking_disabling_info')
 		);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Site URL
@@ -1890,8 +1834,6 @@ class EE_Config {
 		}
 	}
 
-	// -------------------------------------------------------------------------
-
 	/**
 	 * Fetch a config item and add a slash after it
 	 *
@@ -1924,8 +1866,6 @@ class EE_Config {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * System URL
 	 *
@@ -1937,8 +1877,6 @@ class EE_Config {
 		$x = explode("/", preg_replace("|/*(.+?)/*$|", "\\1", BASEPATH));
 		return $this->slash_item('base_url').end($x).'/';
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set a config file item
@@ -1952,8 +1890,6 @@ class EE_Config {
 	{
 		$this->config[$item] = $value;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Assign to Config

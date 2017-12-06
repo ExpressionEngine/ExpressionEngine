@@ -1,29 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Moblog Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Moblog Module control panel
  */
 class Moblog_mcp {
 
@@ -58,8 +45,6 @@ class Moblog_mcp {
 EOT;
 
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Moblog Homepage
@@ -303,7 +288,7 @@ EOT;
 		foreach ($channels as $channel)
 		{
 			$channels_options[$channel->channel_id] = (ee()->config->item('multiple_sites_enabled') === 'y')
-				? $channel->Site->site_label.NBS.'-'.NBS.$channel->channel_title : $channel->channel_title;
+				? $channel->Site->site_label.' - '.$channel->channel_title : $channel->channel_title;
 		}
 
 		$author_options = array();
@@ -409,7 +394,10 @@ EOT;
 						'moblog_categories' => array(
 							'type' => 'checkbox',
 							'choices' => ee('Model')->get('Category')->fields('cat_id', 'cat_name')->all()->getDictionary('cat_id', 'cat_name'),
-							'value' => $moblog->moblog_categories
+							'value' => $moblog->moblog_categories,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('categories'))
+							]
 						)
 					)
 				),
@@ -418,7 +406,7 @@ EOT;
 					'fields' => array(
 						'moblog_field_id' => array(
 							'type' => 'select',
-							'choices' => ee('Model')->get('ChannelField')->fields('field_id', 'label')->all()->getDictionary('field_id', 'field_label'),
+							'choices' => ee('Model')->get('ChannelField')->fields('field_id', 'field_label')->all()->getDictionary('field_id', 'field_label'),
 							'value' => $moblog->moblog_field_id
 						)
 					)
@@ -477,7 +465,7 @@ EOT;
 					'title' => 'moblog_email_type',
 					'fields' => array(
 						'moblog_email_type' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array('pop3' => lang('pop3')),
 							'value' => $moblog->moblog_email_type
 						)
@@ -629,8 +617,6 @@ EOT;
 		);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * JavaScript filtering code
 	 *
@@ -650,220 +636,83 @@ EOT;
 		/** -----------------------------*/
 
 		$allowed_channels = ee()->functions->fetch_assigned_channels(TRUE);
+		$channel_info = array();
 
 		if (count($allowed_channels) > 0)
 		{
-			// Fetch channel titles
-			ee()->db->select('channel_title, channel_id, cat_group, status_group, field_group');
+			$channels = ee('Model')->get('Channel')
+				->with('Statuses')
+				->order('channel_title');
 
 			if ( ! ee()->cp->allowed_group('can_edit_other_entries'))
 			{
-				ee()->db->where_in('channel_id', $allowed_channels);
+				$channels->filter('channel_id', 'IN', $allowed_channels);
 			}
 
-			ee()->db->order_by('channel_title');
-			$query = ee()->db->get('channels');
+			$authors = array(
+				array('0', lang('none'))
+			);
 
-			foreach ($query->result_array() as $row)
+			$super_admins = ee('Model')->get('Member')
+				->filter('group_id', 1)
+				->all();
+
+			foreach ($super_admins as $admin)
 			{
-				$this->channel_array[$row['channel_id']] = array(str_replace('"','',$row['channel_title']), $row['cat_group'], $row['status_group'], $row['field_group']);
+				$authors[] = array($admin->getId(), $admin->getMemberName());
 			}
-		}
 
-		ee()->legacy_api->instantiate('channel_categories');
-
-		//  Category Tree
-		$cat_array = ee()->api_channel_categories->category_form_tree('y', FALSE, 'all');
-
-		/** -----------------------------
-		/**  Entry Statuses
-		/** -----------------------------*/
-
-		ee()->db->select('group_id, status');
-		ee()->db->order_by('status_order');
-		$query = ee()->db->get('statuses');
-
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result_array() as $row)
+			foreach ($channels->all() as $channel)
 			{
-				$this->status_array[]  = array($row['group_id'], $row['status']);
-			}
-		}
+				$statuses = array(
+					array('none', lang('none'))
+				);
 
-		/** -----------------------------
-		/**  Custom Channel Fields
-		/** -----------------------------*/
-
-		/* -------------------------------------
-		/*  Hidden Configuration Variable
-		/*  - moblog_allow_nontextareas => Removes the textarea only restriction
-		/*	for custom fields in the moblog module (y/n)
-		/* -------------------------------------*/
-
-		ee()->db->select('group_id, field_label, field_id');
-		ee()->db->order_by('field_label');
-
-		if (ee()->config->item('moblog_allow_nontextareas') != 'y')
-		{
-			ee()->db->where('channel_fields.field_type', 'textarea');
-		}
-
-		$query = ee()->db->get('channel_fields');
-
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result_array() as $row)
-			{
-				$this->field_array[]  = array($row['group_id'], $row['field_id'], str_replace('"','',$row['field_label']));
-			}
-		}
-
-		/** -----------------------------
-		/**  SuperAdmins
-		/** -----------------------------*/
-
-		ee()->db->select('member_id, username, screen_name');
-		ee()->db->where('group_id', '1');
-		$query = ee()->db->get('members');
-
-		foreach ($query->result_array() as $row)
-			{
-				$author = ($row['screen_name'] == '') ? $row['username'] : $row['screen_name'];
-
-				foreach($this->channel_array as $key => $value)
+				if ($channel->Statuses)
 				{
-					$this->author_array[]  = array($key, $row['member_id'], str_replace('"','',$author));
-				}
-			}
-
-		/** -----------------------------
-		/**  Assignable Channel Authors
-		/** -----------------------------*/
-		$dbp = ee()->db->dbprefix;
-
-		ee()->db->select('channels.channel_id, members.member_id, members.group_id, members.username, members.screen_name');
-		ee()->db->from(array('channels', 'members', 'channel_member_groups'));
-		ee()->db->where("({$dbp}channel_member_groups.channel_id = {$dbp}channels.channel_id OR {$dbp}channel_member_groups.channel_id IS NULL)");
-		ee()->db->where("{$dbp}members.group_id", "{$dbp}channel_member_groups.group_id", FALSE);
-
-		$query = ee()->db->get();
-
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result_array() as $row)
-			{
-				$author = ($row['screen_name'] == '') ? $row['username'] : $row['screen_name'];
-
-				$this->author_array[]  = array($row['channel_id'], $row['member_id'], str_replace('"','',$author));
-			}
-		}
-
-		// Create JSON Reference
-
-		// Mixing php with output buffering was ugly, so we'll build out a js objects with
-		// all the information we need and then manipulate that in javascript
-
-		$channel_info = array();
-
-		foreach ($this->channel_array as $key => $val)
-		{
-			$any = 0;
-			$cats = array();
-
-			if (count($cat_array) > 0)
-			{
-				$last_group = 0;
-
-				foreach ($cat_array as $k => $v)
-				{
-					if (in_array($v['0'], explode('|', $val['1'])))
+					foreach ($channel->Statuses as $status)
 					{
-						if ( ! isset($set))
-						{
-							$cats[] = array('', lang('all'));
-
-							$set = 'y';
-						}
-
-						if ($last_group == 0 OR $last_group != $v['0'])
-						{
-							$last_group = $v['0'];
-						}
-
-						$cats[] = array($v['1'], $v['2']);
+						$statuses[] = array($status->status, lang($status->status));
 					}
 				}
 
-				if ( ! isset($set))
-		        {
-					$cats[] = array('none', lang('none'));
-		        }
-				unset($set);
-			}
+				$categories = array(
+					array('', lang('all'))
+				);
 
-			$channel_info[$key]['moblog_categories'] = $cats;
-
-			$statuses = array();
-
-			$statuses[] = array('none', lang('none'));
-
-			if (count($this->status_array) > 0)
-			{
-				foreach ($this->status_array as $k => $v)
+				foreach ($channel->getCategoryGroups() as $cat_group)
 				{
-					if ($v['0'] == $val['2'])
+					foreach ($cat_group->Categories as $category)
 					{
-						$status_name = ($v['1'] == 'closed' OR $v['1'] == 'open') ?  lang($v['1']) : $v['1'];
-						$statuses[] = array($v['1'], $status_name);
+						$categories[] = array($category->cat_id, $category->cat_name);
 					}
 				}
-			}
-			else
-			{
-				$statuses[] = array($v['1'], lang('open'));
-				$statuses[] = array($v['1'], lang('closed'));
-			}
 
-			$channel_info[$key]['moblog_status'] = $statuses;
+				$fields = array(
+					array('none', lang('none'))
+				);
 
-			$fields = array();
-
-			$fields[] = array('none', lang('none'));
-
-
-			if (count($this->field_array) > 0)
-			{
-				foreach ($this->field_array as $k => $v)
+				foreach ($channel->getAllCustomFields() as $field)
 				{
-					if ($v['0'] == $val['3'])
+					$fields[] = array($field->field_id, $field->field_label);
+				}
+
+				$channel_info[$channel->getId()] = array(
+					'moblog_categories' => $categories,
+					'moblog_status' => $statuses,
+					'moblog_field_id' => $fields,
+					'moblog_author_id' => $authors,
+				);
+
+				foreach ($channel->AssignedMemberGroups as $member_group)
+				{
+					foreach ($member_group->Members as $member)
 					{
-						$fields[] = array($v['1'], $v['2']);
+						$channel_info[$channel->getId()]['moblog_author_id'][] = array($member->getId(), $member->getMemberName());
 					}
 				}
+
 			}
-
-			$channel_info[$key]['moblog_field_id'] = $fields;
-
-			$authors = array();
-
-			$authors[] = array('0', lang('none'));
-
-			if (count($this->author_array) > 0)
-			{
-				$inserted_authors = array();
-
-				foreach ($this->author_array as $k => $v)
-				{
-					if ($v['0'] == $key && ! in_array($v['1'],$inserted_authors))
-					{
-						$inserted_authors[] = $v['1'];
-						$authors[] = array($v['1'], $v['2']);
-					}
-				}
-			}
-
-			$channel_info[$key]['moblog_author_id'] = $authors;
 		}
 
 		$channel_info = json_encode($channel_info);

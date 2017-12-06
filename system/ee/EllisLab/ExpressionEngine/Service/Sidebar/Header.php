@@ -1,30 +1,19 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
 namespace EllisLab\ExpressionEngine\Service\Sidebar;
 
 use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Header Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Sidebar Header
  */
 class Header {
 
@@ -111,6 +100,17 @@ class Header {
 	public function isActive()
 	{
 		$this->class .= 'act ';
+		return $this;
+	}
+
+	/**
+	 * Marks the header as inactive
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function isInactive()
+	{
+		$this->class = str_replace('act', '', $this->class);
 		return $this;
 	}
 

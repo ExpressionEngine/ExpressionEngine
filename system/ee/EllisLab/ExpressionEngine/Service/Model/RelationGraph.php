@@ -1,25 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Relation\Relation;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.5
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Model Relation Graph
+ * Model Service Relation Graph
  *
  * Relations are the edges of the relationship graph. The node of the graph
  * are static (classes, not objects). Usually relations are lazily created
@@ -27,12 +20,6 @@ use EllisLab\ExpressionEngine\Service\Model\Relation\Relation;
  * cache all relation information, so over the time of a request we build up
  * a more and more complete view of the graph. A full subgraph can also be
  * constructed on the fly to do things like cascade deletes.
- *
- * @package		ExpressionEngine
- * @category	Service
- * @subpackage	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class RelationGraph {
 

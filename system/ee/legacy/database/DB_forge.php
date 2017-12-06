@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * Code Igniter
+ * ExpressionEngine (https://expressionengine.com)
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Database Utility Class
- *
- * @category	Database
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/database/
  */
 class CI_DB_forge {
 
@@ -39,8 +27,6 @@ class CI_DB_forge {
 	{
 		$this->db = ee('db');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create database
@@ -61,8 +47,6 @@ class CI_DB_forge {
 		return $this->db->query($sql);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Drop database
 	 *
@@ -81,8 +65,6 @@ class CI_DB_forge {
 
 		return $this->db->query($sql);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add Key
@@ -118,8 +100,6 @@ class CI_DB_forge {
 			$this->keys[] = $key;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Add Field
@@ -166,8 +146,6 @@ class CI_DB_forge {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Create Table
 	 *
@@ -201,8 +179,6 @@ class CI_DB_forge {
 		return $this->db->query($sql);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Drop Table
 	 *
@@ -222,8 +198,6 @@ class CI_DB_forge {
 		return $this->db->query($sql);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Rename Table
 	 *
@@ -242,8 +216,6 @@ class CI_DB_forge {
 		$sql = $this->_rename_table($this->db->dbprefix.$table_name, $this->db->dbprefix.$new_table_name);
 		return $this->db->query($sql);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Column Add
@@ -292,8 +264,6 @@ class CI_DB_forge {
 
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Column Drop
 	 *
@@ -321,8 +291,6 @@ class CI_DB_forge {
 
 		return $this->db->query($sql);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Column Modify
@@ -368,8 +336,6 @@ class CI_DB_forge {
 
 		return TRUE;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Reset

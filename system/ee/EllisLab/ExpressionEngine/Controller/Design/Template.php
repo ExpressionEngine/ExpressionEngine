@@ -1,4 +1,11 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Design;
 
@@ -10,27 +17,7 @@ use EllisLab\ExpressionEngine\Model\Template\Template as TemplateModel;
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Design\Template Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ *Design\Template Controller
  */
 class Template extends AbstractDesignController {
 
@@ -67,12 +54,6 @@ class Template extends AbstractDesignController {
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
-
-		$existing_templates = array(
-			'0' => '-- ' . strtolower(lang('none')) . ' --'
-		);
-
-		$existing_templates = array_merge($existing_templates, $this->getExistingTemplates());
 
 		$template = ee('Model')->make('Template');
 		$template->site_id = ee()->config->item('site_id');
@@ -154,8 +135,9 @@ class Template extends AbstractDesignController {
 						'title' => 'template_type',
 						'fields' => array(
 							'template_type' => array(
-								'type' => 'select',
-								'choices' => $this->getTemplateTypes()
+								'type' => 'radio',
+								'choices' => $this->getTemplateTypes(),
+								'value' => NULL
 							)
 						)
 					),
@@ -164,8 +146,12 @@ class Template extends AbstractDesignController {
 						'desc' => 'duplicate_existing_template_desc',
 						'fields' => array(
 							'template_id' => array(
-								'type' => 'select',
-								'choices' => $existing_templates
+								'type' => 'radio',
+								'choices' => $this->getExistingTemplates(),
+								'filter_url' => ee('CP/URL', 'design/template/search-templates')->compile(),
+								'no_results' => [
+									'text' => sprintf(lang('no_found'), lang('templates'))
+								]
 							)
 						)
 					),
@@ -323,11 +309,18 @@ class Template extends AbstractDesignController {
 			$view_url .= $group->group_name.(($template->template_name == 'index') ? '' : '/'.$template->template_name);
 		}
 
+		$vars['action_button'] = [
+			'text' => 'view_rendered',
+			'href' => $view_url,
+			'rel' => 'external'
+		];
+
+		$vars['view_url'] = $view_url;
+
 		$this->stdHeader();
 		$this->loadCodeMirrorAssets();
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), $group->group_name . '/' . $template->template_name);
-		ee()->view->cp_page_title_alt = ee()->view->cp_page_title . ' <a class="btn action ta" href="' . ee()->cp->masked_url($view_url) . '" rel="external">' . lang('view_rendered') . '</a>';
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('design')->compile() => lang('template_manager'),
 			ee('CP/URL')->make('design/manager/' . $group->group_name)->compile() => sprintf(lang('breadcrumb_group'), $group->group_name)
@@ -882,7 +875,7 @@ class Template extends AbstractDesignController {
 					'title' => 'template_type',
 					'fields' => array(
 						'template_type' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $this->getTemplateTypes(),
 							'value' => $template->template_type
 						)
@@ -893,11 +886,7 @@ class Template extends AbstractDesignController {
 					'desc' => 'enable_caching_desc',
 					'fields' => array(
 						'cache' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $template->cache
 						)
 					)
@@ -981,10 +970,6 @@ class Template extends AbstractDesignController {
 			->filter('group_id', '!=', 1)
 			->all();
 
-		$member_group_options = array_map(function($group_name) {
-			return htmlentities($group_name, ENT_QUOTES, 'UTF-8');
-		}, $member_groups->getDictionary('group_id', 'group_title'));
-
 		$allowed_member_groups = array_diff(
 			$member_groups->pluck('group_id'),
 			$template->getNoAccess()->pluck('group_id')
@@ -999,9 +984,11 @@ class Template extends AbstractDesignController {
 					'fields' => array(
 						'allowed_member_groups' => array(
 							'type' => 'checkbox',
-							'wrap' => TRUE,
-							'choices' => $member_group_options,
-							'value' => $allowed_member_groups
+							'choices' => $member_groups->getDictionary('group_id', 'group_title'),
+							'value' => $allowed_member_groups,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+							]
 						)
 					)
 				),
@@ -1010,9 +997,12 @@ class Template extends AbstractDesignController {
 					'desc' => 'no_access_redirect_desc',
 					'fields' => array(
 						'no_auth_bounce' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => $existing_templates,
-							'value' => $template->no_auth_bounce
+							'value' => $template->no_auth_bounce ?: NULL,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('templates'))
+							]
 						)
 					)
 				),
@@ -1021,11 +1011,7 @@ class Template extends AbstractDesignController {
 					'desc' => 'enable_http_authentication_desc',
 					'fields' => array(
 						'enable_http_auth' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $template->enable_http_auth
 						)
 					)
@@ -1089,26 +1075,38 @@ class Template extends AbstractDesignController {
 	 */
 	private function getExistingTemplates()
 	{
-		$existing_templates = array();
+		$search_query = ee('Request')->get('search');
 
-		$all_templates = ee('Model')->get('Template')
-			->filter('site_id', ee()->config->item('site_id'))
+		$templates = ee('Model')->get('Template')
 			->with('TemplateGroup')
 			->order('TemplateGroup.group_name')
-			->order('template_name')
-			->all();
+			->order('Template.template_name');
 
-		foreach ($all_templates as $template)
+		if ($search_query)
 		{
-			if ( ! isset($existing_templates[$template->TemplateGroup->group_name]))
-			{
-				$existing_templates[$template->TemplateGroup->group_name] = array();
-			}
-			$existing_templates[$template->TemplateGroup->group_name][$template->template_id] = $template->template_name;
+			$templates = $templates->all()->filter(function($template) use ($search_query) {
+				return strpos(strtolower($template->getPath()), strtolower($search_query)) !== FALSE;
+			});
+		}
+		else
+		{
+			$templates = $templates->limit(100)->all();
 		}
 
-		return $existing_templates;
+		$results = [];
+		foreach ($templates as $template)
+		{
+			$results[$template->getId()] = $template->getPath();
+		}
+
+		return $results;
 	}
+
+	public function searchTemplates()
+	{
+		return json_encode($this->getExistingTemplates());
+	}
+
 }
 
 // EOF

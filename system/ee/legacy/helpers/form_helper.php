@@ -1,30 +1,16 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed.');
 
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Form Helper
- *
- * @package		ExpressionEngine
- * @subpackage	Helpers
- * @category	Helpers
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Form Helper
  */
-
-// ------------------------------------------------------------------------
 
 
 /**
@@ -121,8 +107,6 @@ else
 	}
 }
 
-// ------------------------------------------------------------------------
-
 if (REQ == 'CP')
 {
 	/**
@@ -153,8 +137,6 @@ if (REQ == 'CP')
 			lang('no', $name_no);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Parses the data from ee()->config->prep_view_vars() and returns
@@ -233,8 +215,6 @@ function form_preference($name, $details)
 	return $pref;
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Outputs a standard CP form submit button in the current state of the
  * form validation result. If there are errors, this button will be in a
@@ -271,8 +251,6 @@ function cp_form_submit($value, $work_text, $name = NULL, $invalid = FALSE)
 
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Form Declaration - Multipart type
  *
@@ -300,8 +278,6 @@ if ( ! function_exists('form_open_multipart'))
 		return form_open($action, $attributes, $hidden);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Hidden Input Field
@@ -351,8 +327,6 @@ if ( ! function_exists('form_hidden'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Text Input Field
  *
@@ -371,8 +345,6 @@ if ( ! function_exists('form_input'))
 		return "<input "._parse_form_attributes($data, $defaults).$extra." />";
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Password Field
@@ -399,8 +371,6 @@ if ( ! function_exists('form_password'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Upload Field
  *
@@ -425,8 +395,6 @@ if ( ! function_exists('form_upload'))
 		return form_input($data, $value, $extra);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Textarea field
@@ -458,8 +426,6 @@ if ( ! function_exists('form_textarea'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Multi-select menu
  *
@@ -483,8 +449,6 @@ if ( ! function_exists('form_multiselect'))
 		return form_dropdown($name, $options, $selected, $extra, $form_prep);
 	}
 }
-
-// --------------------------------------------------------------------
 
 /**
  * Drop-down Menu
@@ -563,8 +527,6 @@ if ( ! function_exists('form_dropdown'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Checkbox Field
  *
@@ -608,8 +570,6 @@ if ( ! function_exists('form_checkbox'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Radio Button
  *
@@ -634,8 +594,6 @@ if ( ! function_exists('form_radio'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Submit Button
  *
@@ -655,8 +613,6 @@ if ( ! function_exists('form_submit'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Reset Button
  *
@@ -675,8 +631,6 @@ if ( ! function_exists('form_reset'))
 		return "<input "._parse_form_attributes($data, $defaults).$extra." />";
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Form Button
@@ -702,8 +656,6 @@ if ( ! function_exists('form_button'))
 		return "<button "._parse_form_attributes($data, $defaults).$extra.">".$content."</button>";
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Form Label Tag
@@ -739,8 +691,6 @@ if ( ! function_exists('form_label'))
 		return $label;
 	}
 }
-
-// ------------------------------------------------------------------------
 /**
  * Fieldset Tag
  *
@@ -771,8 +721,6 @@ if ( ! function_exists('form_fieldset'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Fieldset Close Tag
  *
@@ -788,8 +736,6 @@ if ( ! function_exists('form_fieldset_close'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Form Close Tag
  *
@@ -804,8 +750,6 @@ if ( ! function_exists('form_close'))
 		return "</form>".$extra;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Form Prep
@@ -851,8 +795,6 @@ if ( ! function_exists('form_prep'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Form Value
  *
@@ -881,8 +823,6 @@ if ( ! function_exists('set_value'))
 		return form_prep($OBJ->set_value($field, $default), $field);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Set Select
@@ -937,8 +877,6 @@ if ( ! function_exists('set_select'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Set Checkbox
  *
@@ -992,8 +930,6 @@ if ( ! function_exists('set_checkbox'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Set Radio
  *
@@ -1013,8 +949,6 @@ if ( ! function_exists('set_radio'))
 		return set_checkbox($field, $value, $default);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Form Error
@@ -1048,8 +982,6 @@ if ( ! function_exists('form_error'))
 	}
 }
 
-// ------------------------------------------------------------------------
-
 /**
  * Form Error Class
  *
@@ -1058,12 +990,12 @@ if ( ! function_exists('form_error'))
  *
  * @access	public
  * @param	array	$field	Array of field names, or string of single field name
- * @param	string	$class	Class name to return, defaults to 'invalid'
+ * @param	string	$class	Class name to return, defaults to 'fieldset-invalid'
  * @return	string	Empty string if no error, class name if error
  */
 if ( ! function_exists('form_error_class'))
 {
-	function form_error_class($fields = '', $class = 'invalid')
+	function form_error_class($fields = '', $class = 'fieldset-invalid')
 	{
 		if ( ! is_array($fields))
 		{
@@ -1083,8 +1015,6 @@ if ( ! function_exists('form_error_class'))
 		return '';
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Validation Error String
@@ -1109,8 +1039,6 @@ if ( ! function_exists('validation_errors'))
 		return $OBJ->error_string($prefix, $suffix);
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Parse the form attributes
@@ -1158,8 +1086,6 @@ if ( ! function_exists('_parse_form_attributes'))
 		return $att;
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Attributes To String
@@ -1218,8 +1144,6 @@ if ( ! function_exists('_attributes_to_string'))
 		}
 	}
 }
-
-// ------------------------------------------------------------------------
 
 /**
  * Validation Object

@@ -1,29 +1,15 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
- * @since		Version 2.7
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 /**
  * Markdown Plugin
- *
- * @package			ExpressionEngine
- * @category		Plugin
- * @author			EllisLab Dev Team
- * @copyright		Copyright (c) 2004 - 2016, EllisLab, Inc.
- * @link			https://ellislab.com
  */
-
 class Markdown {
 
 	public $return_data;
@@ -43,9 +29,7 @@ class Markdown {
 
 		return $this->return_data;
 	}
-
-	// -------------------------------------------------------------------------
-
 }
+// END CLASS
 
 // EOF

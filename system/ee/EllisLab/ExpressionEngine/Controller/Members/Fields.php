@@ -1,8 +1,13 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Members;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
@@ -11,27 +16,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Controller\Members;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Member Fields Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Member Fields Controller
  */
 class Fields extends Members\Members {
 
@@ -112,32 +97,40 @@ class Fields extends Members\Members {
 
 		$table->setNoResultsText(
 			sprintf(lang('no_found'), lang('custom_member_fields')),
-			'create_new',
+			'add_new',
 			ee('CP/URL')->make('members/fields/create')
 		);
 
 		$data = array();
 		$fieldData = array();
-		$total = ee()->api->get('MemberField')->count();
+
+		$total = ee('Model')->get('MemberField')->count();
 
 		$filter = ee('CP/Filter')
-						->add('Perpage', $total, 'show_all_member_fields');
+			->add('Keyword')
+			->add('Perpage', $total, 'show_all_member_fields');
 
 		$this->renderFilters($filter);
 
-		$fields = ee()->api->get('MemberField')
-		->order($sort_col, $sort_dir)
-		->limit($this->perpage)
-		->offset($this->offset);
+		$fields = ee('Model')->get('MemberField')
+			->order($sort_col, $sort_dir)
+			->limit($this->perpage)
+			->offset($this->offset);
 
+		if (isset($this->params['filter_by_keyword']))
+		{
+			$fields->search(['m_field_name', 'm_field_label'], $this->params['filter_by_keyword']);
+		}
+
+		$fields = $fields->all();
 
 		$type_map = array(
 			'text' => lang('text_input'),
 			'textarea' => lang('textarea'),
 			'select' => lang('select_dropdown'),
+			'date' => lang('date'),
+			'url' => lang('url')
 		);
-
-		$fields = $fields->all();
 
 		foreach ($fields as $field)
 		{
@@ -263,7 +256,7 @@ class Fields extends Members\Members {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$fields = ee()->api->get('MemberField')->order('m_field_order', 'asc')->all()->indexBy('m_field_id');
+		$fields = ee('Model')->get('MemberField')->order('m_field_order', 'asc')->all()->indexBy('m_field_id');
 
 		$order = 1;
 		foreach ($new_order['order'] as $field_id)
@@ -323,13 +316,16 @@ class Fields extends Members\Members {
 					'desc' => '',
 					'fields' => array(
 						'm_field_type' => array(
-							'type' => 'select',
+							'type' => 'dropdown',
 							'choices' => array(
+								'date'     => lang('date'),
 								'text'     => lang('text_input'),
 								'textarea' => lang('textarea'),
-								'select'   => lang('select_dropdown')
+								'select'   => lang('select_dropdown'),
+								'url'   => lang('url'),
 							),
 							'group_toggle' => array(
+								'date' => 'date',
 								'text' => 'text',
 								'textarea' => 'textarea',
 								'select' => 'select'
@@ -407,7 +403,7 @@ class Fields extends Members\Members {
 		$vars['sections'] = array_merge($vars['sections'], $field->getSettingsForm());
 
 		// These are currently the only fieldtypes we allow; get their settings forms
-		foreach (array('text', 'textarea', 'select') as $fieldtype)
+		foreach (array('date', 'text', 'textarea', 'select') as $fieldtype)
 		{
 			if ($field->field_type != $fieldtype)
 			{
@@ -476,9 +472,9 @@ class Fields extends Members\Members {
 		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('members/fields'), lang('custom_profile_fields'));
 
-		ee()->cp->add_js_script(array(
-			'file' => array('cp/form_group', 'cp/members/fields')
-		));
+		ee()->javascript->output('$(document).ready(function () {
+			EE.cp.fieldToggleDisable(null, "m_field_type");
+		});');
 
 		ee()->cp->render('settings/form', $vars);
 	}

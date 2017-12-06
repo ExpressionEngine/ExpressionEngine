@@ -1,34 +1,21 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Model;
 
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine File Synced Model
+ * File Synced Model
  *
  * A parent model that allows some of the model data to be stored and edited
  * on disk, for example to store templates as files.
- *
- * @package		ExpressionEngine
- * @category	Service
- * @subpackage	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 abstract class FileSyncedModel extends Model {
 

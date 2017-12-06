@@ -1,26 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// --------------------------------------------------------------------
-
 /**
- * ExpressionEngine Relationship Fieldtype Class
- *
- * @package		ExpressionEngine
- * @subpackage	Fieldtypes
- * @category	Fieldtypes
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Relationship Fieldtype
  */
 class Relationship_ft extends EE_Fieldtype {
 
@@ -73,8 +61,6 @@ class Relationship_ft extends EE_Fieldtype {
 		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Save Field
 	 *
@@ -108,8 +94,6 @@ class Relationship_ft extends EE_Fieldtype {
 		return NULL;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Post field save is where we do the actual works since we store
 	 * data in our own table based on the entry_id, which does not exist
@@ -142,7 +126,8 @@ class Relationship_ft extends EE_Fieldtype {
 
 		$all_rows_where = array(
 			'parent_id' => $entry_id,
-			'field_id' => $field_id
+			'field_id' => $field_id,
+			'fluid_field_data_id' => (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0
 		);
 
 		if (isset($this->settings['grid_field_id']))
@@ -187,15 +172,12 @@ class Relationship_ft extends EE_Fieldtype {
 		//
 		// -------------------------------------------
 
-
 		// If child_id is empty, they are deleting a single relationship
 		if (count($ships))
 		{
 			ee()->db->insert_batch($this->_table, $ships);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Called when entries are deleted
@@ -212,8 +194,6 @@ class Relationship_ft extends EE_Fieldtype {
 	}
 
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Called when grid entries are deleted
 	 *
@@ -228,8 +208,6 @@ class Relationship_ft extends EE_Fieldtype {
 			->delete($this->_table);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Display the field on the publish page
 	 *
@@ -242,6 +220,7 @@ class Relationship_ft extends EE_Fieldtype {
 	 */
 	public function display_field($data)
 	{
+		ee()->lang->loadfile('fieldtypes');
 		$field_name = $this->field_name;
 
 		$entry_id = ($this->content_id) ?: ee()->input->get('entry_id');
@@ -284,15 +263,16 @@ class Relationship_ft extends EE_Fieldtype {
 		if ($get_related)
 		{
 			$wheres = array(
-				'parent_id' => $entry_id,
-				'field_id' => $this->field_id,
+				'parent_id'     => $entry_id,
+				'field_id'      => $this->field_id,
+				'fluid_field_data_id' => (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0
 			);
 
 			if (isset($this->settings['grid_row_id']))
 			{
-				$wheres['grid_col_id'] = $this->settings['col_id'];
+				$wheres['grid_col_id']   = $this->settings['col_id'];
 				$wheres['grid_field_id'] = $this->settings['grid_field_id'];
-				$wheres['grid_row_id'] = $this->settings['grid_row_id'];
+				$wheres['grid_row_id']   = $this->settings['grid_row_id'];
 			}
 
 			ee()->db
@@ -400,13 +380,9 @@ class Relationship_ft extends EE_Fieldtype {
 		}
 
 		ee()->cp->add_js_script(array(
-			'plugin' => 'ee_interact.event',
-			'file' => 'fields/relationship/cp',
+			'plugin' => array('ui.touch.punch', 'ee_interact.event'),
+			'file' => 'fields/relationship/relationship',
 			'ui' => 'sortable'
-		));
-
-		ee()->javascript->set_global(array(
-			'relationship.filter_url' => ee('CP/URL', 'publish/relationship-filter')->compile()
 		));
 
 		if ($entry_id)
@@ -475,10 +451,67 @@ class Relationship_ft extends EE_Fieldtype {
 
 		$multiple = (bool) $this->settings['allow_multiple'];
 
-		return ee('View')->make('relationship:publish')->render(compact('field_name', 'entries', 'selected', 'related', 'multiple', 'channels', 'settings'));
-	}
+		$choices = [];
+		foreach ($entries as $entry)
+		{
+			$choices[] = [
+				'value' => $entry->getId(),
+				'label' => $entry->title,
+				'instructions' => $entry->Channel->channel_title
+			];
+		}
 
-	// --------------------------------------------------------------------
+		$selected = [];
+		foreach ($related as $child)
+		{
+			$selected[] = [
+				'value' => $child->getId(),
+				'label' => $child->title,
+				'instructions' => $child->Channel->channel_title
+			];
+		}
+
+		$field_name = $field_name.'[data]';
+
+		// Single relationships also expects an array
+		if ( ! $multiple) $field_name .= '[]';
+
+		$select_filters = [];
+		if ($channels->count() > 1) {
+			$select_filters[] = [
+				'name' => 'channel_id',
+				'title' => lang('channel'),
+				'placeholder' => lang('filter_channels'),
+				'items' => $channels->getDictionary('channel_id', 'channel_title')
+			];
+		}
+
+		if ($multiple)
+		{
+			$select_filters[] = [
+				'name' => 'related',
+				'title' => lang('show'),
+				'items' => [
+					'related' => lang('rel_ft_related_only'),
+					'unrelated' => lang('rel_ft_unrelated_only')
+				]
+			];
+		}
+
+		return ee('View')->make('relationship:publish')->render([
+			'field_name' => $field_name,
+			'choices' => $choices,
+			'selected' => $selected,
+			'multi' => $multiple,
+			'filter_url' => ee('CP/URL')->make('publish/relationship-filter', [
+				'settings' => $settings
+			])->compile(),
+			'limit' => $this->settings['limit'] ?: 100,
+			'no_results' => ['text' => lang('no_entries_found')],
+			'no_related' => ['text' => lang('no_entries_related')],
+			'select_filters' => $select_filters
+		]);
+	}
 
 	/**
 	 * Show the tag on the frontend
@@ -497,8 +530,6 @@ class Relationship_ft extends EE_Fieldtype {
 
 		return $data;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Display the settings page
@@ -531,9 +562,12 @@ class Relationship_ft extends EE_Fieldtype {
 						'type' => 'checkbox',
 						'nested' => TRUE,
 						'attrs' => 'data-any="y"',
-						'wrap' => TRUE,
 						'choices' => $util->all_channels(),
-						'value' => ($values['channels']) ?: '--'
+						'value' => ($values['channels']) ?: '--',
+						'toggle_all' => FALSE,
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('channels'))
+						]
 					)
 				)
 			),
@@ -566,10 +600,13 @@ class Relationship_ft extends EE_Fieldtype {
 					'relationship_categories' => array(
 						'type' => 'checkbox',
 						'nested' => TRUE,
-						'wrap' => TRUE,
 						'attrs' => 'data-any="y"',
 						'choices' => $util->all_categories(),
-						'value' => ($values['categories']) ?: '--'
+						'value' => ($values['categories']) ?: '--',
+						'toggle_all' => FALSE,
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('categories'))
+						]
 					)
 				)
 			),
@@ -580,10 +617,14 @@ class Relationship_ft extends EE_Fieldtype {
 					'relationship_authors' => array(
 						'type' => 'checkbox',
 						'nested' => TRUE,
-						'wrap' => TRUE,
 						'attrs' => 'data-any="y"',
 						'choices' => $util->all_authors(),
-						'value' => ($values['authors']) ?: '--'
+						'value' => ($values['authors']) ?: '--',
+						'filter_url' => ee('CP/URL')->make('fields/relationship-member-filter')->compile(),
+						'toggle_all' => FALSE,
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('authors'))
+						]
 					)
 				)
 			),
@@ -594,10 +635,13 @@ class Relationship_ft extends EE_Fieldtype {
 					'relationship_statuses' => array(
 						'type' => 'checkbox',
 						'nested' => TRUE,
-						'wrap' => TRUE,
 						'attrs' => 'data-any="y"',
 						'choices' => $util->all_statuses(),
-						'value' => ($values['statuses']) ?: '--'
+						'value' => ($values['statuses']) ?: '--',
+						'toggle_all' => FALSE,
+						'no_results' => [
+							'text' => sprintf(lang('no_found'), lang('statuses'))
+						]
 					)
 				)
 			),
@@ -616,7 +660,7 @@ class Relationship_ft extends EE_Fieldtype {
 				'desc' => 'rel_ft_order_desc',
 				'fields' => array(
 					'relationship_order_field' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => array(
 							'title' 	 => lang('rel_ft_order_title'),
 							'entry_date' => lang('rel_ft_order_date')
@@ -624,7 +668,7 @@ class Relationship_ft extends EE_Fieldtype {
 						'value' => $values['order_field']
 					),
 					'relationship_order_dir' => array(
-						'type' => 'select',
+						'type' => 'radio',
 						'choices' => array(
 							'asc' => lang('rel_ft_order_ascending'),
 							'desc'	=> lang('rel_ft_order_descending'),
@@ -657,8 +701,6 @@ class Relationship_ft extends EE_Fieldtype {
 		));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Save Settings
 	 *
@@ -690,8 +732,6 @@ class Relationship_ft extends EE_Fieldtype {
 
 		return $save;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Setup the form helper
@@ -739,8 +779,6 @@ class Relationship_ft extends EE_Fieldtype {
 
 		return $form;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create our table on install
@@ -824,8 +862,6 @@ class Relationship_ft extends EE_Fieldtype {
 		ee()->dbforge->create_table($this->_table);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Drop the table
 	 *
@@ -836,8 +872,6 @@ class Relationship_ft extends EE_Fieldtype {
 		ee()->load->dbforge();
 		ee()->dbforge->drop_table($this->_table);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Make sure that we only accept data for grid and channels.
@@ -850,10 +884,8 @@ class Relationship_ft extends EE_Fieldtype {
 	 */
 	public function accepts_content_type($name)
 	{
-		return ($name == 'channel' || $name == 'grid');
+		return ($name == 'channel' || $name == 'grid' || $name == 'fluid_field');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Modify column settings for a Relationship field in a grid.
@@ -869,8 +901,6 @@ class Relationship_ft extends EE_Fieldtype {
 	{
 		return $this->_settings_modify_column($data, TRUE);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Settings Modify Column
@@ -948,8 +978,6 @@ class Relationship_ft extends EE_Fieldtype {
 				->delete($this->_table);
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the fieldtype

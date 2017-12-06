@@ -1,29 +1,17 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 if ( ! defined('LD')) define('LD', '{');
 if ( ! defined('RD')) define('RD', '}');
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Installer Template Handling Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Installer Template Handling
  */
 class Installer_Template {
 
@@ -82,14 +70,13 @@ class Installer_Template {
 
 
 		$channel_single_variables = array(
-    		'absolute_count', 'absolute_results', 'aol_im', 'author',
-			'author_id', 'avatar_image_height', 'avatar_image_width', 'avatar_url', 'bio',
-			'channel', 'channel_id', 'channel_short_name', 'yahoo_im', 'comment_auto_path',
+    		'absolute_count', 'absolute_results', 'author',
+			'author_id', 'avatar_image_height', 'avatar_image_width', 'avatar_url',
+			'channel', 'channel_id', 'channel_short_name','comment_auto_path',
 			'comment_entry_id_auto_path', 'comment_total', 'comment_url_title_auto_path',
 			'count', 'edit_date', 'email', 'entry_date', 'entry_id', 'entry_id_path',
 			'entry_site_id', 'expiration_date', 'forum_topic_id', 'gmt_entry_date',
-			'gmt_edit_date', 'icq', 'interests', 'ip_address', 'location',
-			'member_search_path', 'msn_im', 'occupation', 'page_uri', 'page_url',
+			'gmt_edit_date', 'ip_address', 'member_search_path', 'page_uri', 'page_url',
 			'permalink', 'photo_url', 'photo_image_height', 'photo_image_width',
 			'profile_path', 'recent_comment_date', 'relative_url', 'relative_date',
 			'screen_name', 'signature', 'signature_image_height', 'signature_image_url',
@@ -247,14 +234,14 @@ class Installer_Template {
 
 					if (stristr($no_rel_match[1], LD.'if'))
 					{
-						$match[0] = ee()->functions->full_tag($no_rel_match[0], $matches[2][$j], LD.'if', LD.'\/'."if".RD);
+						$match[0] = ee('Variables/Parser')->getFullTag($matches[2][$j], $no_rel_match[0], LD.'if', LD.'/if'.RD);
 					}
 
 					$no_rel_content = substr($no_rel_match[0], strlen(LD."if no_related_entries".RD), -strlen(LD.'/'."if".RD));
 				}
 
 				$this->related_markers[] = $matches[1][$j];
-				$vars = ee()->functions->assign_variables($matches[2][$j]);
+				$vars = ee('Variables/Parser')->extractVariables($matches[2][$j]);
 				$this->related_id = $matches[1][$j];
 				$this->related_data[$rand] = array(
 											'marker'			=> $rand,
@@ -276,7 +263,7 @@ class Installer_Template {
 			{
 				$rand = ee()->functions->random('alnum', 8);
 				$marker = LD.'REV_REL['.$rand.']REV_REL'.RD;
-				$vars = ee()->functions->assign_variables($matches[2][$j]);
+				$vars = ee('Variables/Parser')->extractVariables($matches[2][$j]);
 
 				$no_rev_content = '';
 
@@ -286,7 +273,7 @@ class Installer_Template {
 
 					if (stristr($no_rev_match[1], LD.'if'))
 					{
-						$match[0] = ee()->functions->full_tag($no_rev_match[0], $matches[2][$j], LD.'if', LD.'\/'."if".RD);
+						$match[0] = ee('Variables/Parser')->getFullTag($matches[2][$j], $no_rev_match[0], LD.'if', LD.'/if'.RD);
 					}
 
 					$no_rev_content = substr($no_rev_match[0], strlen(LD."if no_reverse_related_entries".RD), -strlen(LD.'/'."if".RD));
@@ -298,7 +285,7 @@ class Installer_Template {
 															'var_single'		=> $vars['var_single'],
 															'var_pair' 			=> $vars['var_pair'],
 															'var_cond'			=> ee()->functions->assign_conditional_variables($matches[2][$j], '\/', LD, RD),
-															'params'			=> ee()->functions->assign_parameters($matches[1][$j]),
+															'params'			=> ee('Variables/Parser')->parseTagParameters($matches[1][$j]),
 															'no_rev_content'	=> $no_rev_content
 														);
 

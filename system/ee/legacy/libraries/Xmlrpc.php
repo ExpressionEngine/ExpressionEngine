@@ -1,16 +1,10 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * CodeIgniter
+ * ExpressionEngine (https://expressionengine.com)
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2016, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 if ( ! function_exists('xml_parser_create'))
@@ -18,17 +12,8 @@ if ( ! function_exists('xml_parser_create'))
 	show_error('Your PHP installation does not support XML');
 }
 
-
-// ------------------------------------------------------------------------
-
 /**
  * XML-RPC request handler class
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	XML-RPC
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
 class EE_Xmlrpc {
 
@@ -49,7 +34,7 @@ class EE_Xmlrpc {
 	var $xmlrpcstr		= array();  // Response strings
 
 	var $xmlrpc_defencoding = 'UTF-8';
-	var $xmlrpcName			= 'XML-RPC for CodeIgniter';
+	var $xmlrpcName			= 'XML-RPC for ExpressionEngine';
 	var $xmlrpcVersion		= '1.1';
 	var $xmlrpcerruser		= 800; // Start of user errors
 	var $xmlrpcerrxml		= 100; // Start of XML Parse errors
@@ -339,16 +324,11 @@ class EE_Xmlrpc {
 	}
 	// END
 
-} // END XML_RPC Class
-
-
+}
+// END XML_RPC Class
 
 /**
  * XML-RPC Client class
- *
- * @category	XML-RPC
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
 class XML_RPC_Client extends EE_Xmlrpc
 {
@@ -418,15 +398,11 @@ class XML_RPC_Client extends EE_Xmlrpc
 		return $resp;
 	}
 
-} // end class XML_RPC_Client
-
+}
+// end class XML_RPC_Client
 
 /**
  * XML-RPC Response class
- *
- * @category	XML-RPC
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
 class XML_RPC_Response
 {
@@ -596,16 +572,11 @@ class XML_RPC_Response
 		return $t;
 	}
 
-} // End Response Class
-
-
+}
+// End Response Class
 
 /**
  * XML-RPC Message class
- *
- * @category	XML-RPC
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
 class XML_RPC_Message extends EE_Xmlrpc
 {
@@ -1200,16 +1171,11 @@ class XML_RPC_Message extends EE_Xmlrpc
 		}
 	}
 
-} // End XML_RPC_Messages class
-
-
+}
+// End XML_RPC_Messages class
 
 /**
  * XML-RPC Values class
- *
- * @category	XML-RPC
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
 class XML_RPC_Values extends EE_Xmlrpc
 {

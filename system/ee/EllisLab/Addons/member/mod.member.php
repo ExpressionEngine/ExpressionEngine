@@ -1,54 +1,26 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * Member Management Front-end Class
  */
-
-// --------------------------------------------------------------------
-
-/**
- * Member Management Class
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- */
-
- /*
-	Multi Site Login
-
-	The login routine can set cookies for multiple domains if needed.
-	This allows users who run separate domains for each channel to have
-	a way to enable users to log-in once and remain logged-in across
-	domains.  In order to use this feature this array index must be
-	added to the config file:
-
-	$config['multi_login_sites'] = "http://www.siteone.com/|http://www.sitetwo.com";
-
-	Separate each domain with a pipe.
- */
-
 class Member {
 
 	var $trigger			= 'member';
-	var $member_template	= TRUE;	
+	var $member_template	= TRUE;
 	var $theme_class		= 'profile_theme';
 	var $request			= 'public_profile';
 	var $no_menu 			= array(
 						'public_profile', 'memberlist', 'do_member_search',
 						'member_search', 'register', 'smileys', 'login',
 						'unpw_update', 'email_console', 'send_email',
-						'aim_console', 'icq_console', 'forgot_password', 'reset_password',
+						'forgot_password', 'reset_password',
 						'delete', 'member_mini_search', 'do_member_mini_search',
 					);
 
@@ -64,13 +36,11 @@ class Member {
 					);
 
 	var $no_breadcrumb 		= array(
-						'email_console', 'send_email', 'aim_console',
-						'icq_console', 'member_mini_search', 'do_member_mini_search'
+						'email_console', 'send_email', 'member_mini_search', 'do_member_mini_search'
 					);
 
 	var $simple_page		= array(
-						'email_console', 'send_email', 'aim_console',
-						'icq_console', 'smileys', 'member_mini_search', 'do_member_mini_search'
+						'email_console', 'send_email', 'smileys', 'member_mini_search', 'do_member_mini_search'
 					);
 
 	var $page_title 		= '';
@@ -102,8 +72,6 @@ class Member {
 								'register'				=> 	'mbr_member_registration',
 								'email'					=>	'mbr_email_member',
 								'send_email'			=>	'mbr_send_email',
-								'aim'					=>	'mbr_aim_console',
-								'icq'					=>	'mbr_icq_console',
 								'profile_main'			=>	'mbr_my_account',
 								'edit_profile'			=>	'mbr_edit_your_profile',
 								'edit_email'			=>	'email_settings',
@@ -157,6 +125,10 @@ class Member {
 	{
 		ee()->lang->loadfile('myaccount');
 		ee()->lang->loadfile('member');
+
+		// For custom fields that use the template library
+		ee()->load->library('template', NULL, 'TMPL');
+
 		ee()->functions->template_type = 'webpage';
 
 		if (isset(ee()->TMPL) && is_object(ee()->TMPL))
@@ -169,8 +141,6 @@ class Member {
 			$this->trigger = ee()->config->item('profile_trigger');
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep the Request String
@@ -282,8 +252,6 @@ class Member {
  		return TRUE;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Run the Member Class
 	 */
@@ -356,8 +324,6 @@ class Member {
 			'member_mini_search',
 			'do_member_mini_search',
 			'email_console',
-			'aim_console',
-			'icq_console',
 			'send_email',
 			'forgot_password',
 			'reset_password',
@@ -426,8 +392,6 @@ class Member {
 		return $this->_final_prep($out);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Private Messages
 	 */
@@ -457,8 +421,6 @@ class Member {
 		return $MESS->return_data;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Member Profile - Menu
 	 */
@@ -478,8 +440,6 @@ class Member {
 
 		return $MS->profile_menu();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Private Messages - Menu
@@ -506,8 +466,6 @@ class Member {
 		return $MESS->menu;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Member Profile Main Page
 	 */
@@ -527,8 +485,6 @@ class Member {
 
 		return $MS->profile_main();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Public Profile
@@ -550,8 +506,6 @@ class Member {
 		return $MS->public_profile();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Login Page
 	 */
@@ -571,8 +525,6 @@ class Member {
 
 		return $MA->profile_login_form($return);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Profile Edit Page
@@ -594,8 +546,6 @@ class Member {
 		return $MS->edit_profile();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Profile Update
 	 */
@@ -615,8 +565,6 @@ class Member {
 
 		return $MS->update_profile();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Forum Preferences
@@ -638,8 +586,6 @@ class Member {
 		return $MS->edit_preferences();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Preferences
 	 */
@@ -659,8 +605,6 @@ class Member {
 
 		return $MS->update_preferences();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Email Settings
@@ -682,8 +626,6 @@ class Member {
 		return $MS->edit_email();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Email Update
 	 */
@@ -703,8 +645,6 @@ class Member {
 
 		return $MS->update_email();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Username/Password Preferences
@@ -726,8 +666,6 @@ class Member {
 		return $MS->edit_userpass();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Username/Password Update
 	 */
@@ -747,8 +685,6 @@ class Member {
 
 		return $MS->update_userpass();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Localization Edit Form
@@ -770,8 +706,6 @@ class Member {
 		return $MS->edit_localization();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Localization Prefs
 	 */
@@ -791,8 +725,6 @@ class Member {
 
 		return $MS->update_localization();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Signature Edit Form
@@ -814,8 +746,6 @@ class Member {
 		return $MI->edit_signature();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Signature
 	 */
@@ -835,8 +765,6 @@ class Member {
 
 		return $MI->update_signature();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Avatar Edit Form
@@ -858,8 +786,6 @@ class Member {
 		return $MI->edit_avatar();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Browse Avatars
 	 */
@@ -879,8 +805,6 @@ class Member {
 
 		return $MI->browse_avatars();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Select Avatar From Library
@@ -902,8 +826,6 @@ class Member {
 		return $MI->select_avatar();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Photo Edit Form
 	 */
@@ -923,8 +845,6 @@ class Member {
 
 		return $MI->edit_photo();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Notepad Edit Form
@@ -946,8 +866,6 @@ class Member {
 		return $MS->edit_notepad();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Notepad
 	 */
@@ -967,8 +885,6 @@ class Member {
 
 		return $MS->update_notepad();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Login
@@ -990,8 +906,6 @@ class Member {
 		$MA->member_login();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Member Logout
 	 */
@@ -1011,8 +925,6 @@ class Member {
 
 		$MA->member_logout();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Forgot Password Form
@@ -1036,8 +948,6 @@ class Member {
 		return $MA->forgot_password($ret);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Retreive Forgotten Password
 	 */
@@ -1057,8 +967,6 @@ class Member {
 
 		$MA->send_reset_token();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Reset the user's password
@@ -1080,8 +988,6 @@ class Member {
 		return $MA->reset_password();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 *
 	 */
@@ -1101,8 +1007,6 @@ class Member {
 
 		return $MA->process_reset_password();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Subscriptions Edit Form
@@ -1124,8 +1028,6 @@ class Member {
 		return $MS->edit_subscriptions();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Subscriptions
 	 */
@@ -1145,8 +1047,6 @@ class Member {
 
 		return $MS->update_subscriptions();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Edit Ignore List Form
@@ -1168,8 +1068,6 @@ class Member {
 		return $MS->edit_ignore_list();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Ignore List
 	 */
@@ -1189,8 +1087,6 @@ class Member {
 
 		return $MS->update_ignore_list();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Mini Search
@@ -1213,8 +1109,6 @@ class Member {
 		return $MS->member_mini_search();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Do Member Mini Search
 	 */
@@ -1235,8 +1129,6 @@ class Member {
 		$this->_set_page_title(ee()->lang->line('member_search'));
 		return $MS->do_member_mini_search();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Registration Form
@@ -1260,8 +1152,6 @@ class Member {
 		return $MR->registration_form();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Register Member
 	 */
@@ -1281,8 +1171,6 @@ class Member {
 
 		$MR->register_member();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Self-Activation
@@ -1304,8 +1192,6 @@ class Member {
 		$MR->activate_member();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Delete Page
 	 */
@@ -1313,8 +1199,6 @@ class Member {
 	{
 		return $this->confirm_delete_form();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Self-delete confirmation form
@@ -1338,8 +1222,6 @@ class Member {
 			return $this->_var_swap($delete_form, array('form_declaration' => ee()->functions->form_declaration($data)));
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member self-delete
@@ -1478,8 +1360,6 @@ class Member {
 		ee()->output->show_message($data);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Login Page
 	 */
@@ -1487,8 +1367,6 @@ class Member {
 	{
 		return $this->profile_login_form();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Manual Login Form
@@ -1547,8 +1425,6 @@ class Member {
 		return $res;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Username/password update
 	 */
@@ -1568,8 +1444,6 @@ class Member {
 
 		return $MS->unpw_update();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update the username/password
@@ -1591,8 +1465,6 @@ class Member {
 		$MS->update_un_pw();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Member Email Form
 	 */
@@ -1612,8 +1484,6 @@ class Member {
 
 		return $MM->email_console();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Send Member Email
@@ -1635,52 +1505,6 @@ class Member {
 		return $MM->send_email();
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * AIM Console
-	 */
-	public function aim_console()
-	{
-		if ( ! class_exists('Member_memberlist'))
-		{
-			require PATH_ADDONS.'member/mod.member_memberlist.php';
-		}
-
-		$MM = new Member_memberlist();
-
-		foreach(get_object_vars($this) as $key => $value)
-		{
-			$MM->{$key} = $value;
-		}
-
-		return $MM->aim_console();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * ICQ Console
-	 */
-	public function icq_console()
-	{
-		if ( ! class_exists('Member_memberlist'))
-		{
-			require PATH_ADDONS.'member/mod.member_memberlist.php';
-		}
-
-		$MM = new Member_memberlist();
-
-		foreach(get_object_vars($this) as $key => $value)
-		{
-			$MM->{$key} = $value;
-		}
-
-		return $MM->icq_console();
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Member List
 	 */
@@ -1700,8 +1524,6 @@ class Member {
 
 		return $MM->memberlist();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Search Results
@@ -1723,8 +1545,6 @@ class Member {
 		return $MM->memberlist();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Do A Member Search
 	 */
@@ -1744,8 +1564,6 @@ class Member {
 
 		return $MM->do_member_search();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Emoticons
@@ -1851,8 +1669,6 @@ class Member {
 		return str_replace('{include:smileys}', $r, $this->_load_element('emoticon_page'));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Convet special characters
 	 */
@@ -1860,8 +1676,6 @@ class Member {
 	{
 		return str_replace(array('<', '>', '{', '}', '\'', '"', '?'), array('&lt;', '&gt;', '&#123;', '&#125;', '&apos;', '&quot;', '&#63;'), $str);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Parse the index template
@@ -1885,8 +1699,6 @@ class Member {
 			 );
 
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Home Page
@@ -1929,8 +1741,6 @@ class Member {
 
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load theme element
 	 */
@@ -1958,8 +1768,6 @@ class Member {
 		return $this->_prep_element(trim(file_get_contents($this->theme_path.$which.'.html')));
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Trigger Error Template
 	 */
@@ -1973,8 +1781,6 @@ class Member {
 								);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Sets the title of the page
 	 */
@@ -1985,8 +1791,6 @@ class Member {
 			$this->page_title = $title;
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Member Breadcrumb
@@ -2063,8 +1867,6 @@ class Member {
 			}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Breadcrumb trail links
 	 */
@@ -2083,8 +1885,6 @@ class Member {
 		return $crumbs;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Finalize the Crumbs
 	 */
@@ -2101,8 +1901,6 @@ class Member {
 		return str_replace('{breadcrumb_links}', $crumbs, $breadcrumb);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Fetch member profile crumb item
 	 */
@@ -2113,88 +1911,6 @@ class Member {
 
 		return ( ! isset($this->crumb_map[$item])) ? FALSE : $this->crumb_map[$item];
 	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Create the "year" pull-down menu
-	 */
-	function _birthday_year($year = '')
-	{
-		$r = "<select name='bday_y' class='select'>\n";
-
-		$selected = ($year == '') ? " selected='selected'" : '';
-
-		$r .= "<option value=''{$selected}>".ee()->lang->line('year')."</option>\n";
-
-		for ($i = date('Y', ee()->localize->now); $i > 1904; $i--)
-		{
-			$selected = ($year == $i) ? " selected='selected'" : '';
-
-			$r .= "<option value='{$i}'{$selected}>".$i."</option>\n";
-		}
-
-		$r .= "</select>\n";
-
-		return $r;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Create the "month" pull-down menu
-	 */
-	function _birthday_month($month = '')
-	{
-		$months = array('01' => 'January','02' => 'February','03' => 'March', '04' => 'April', '05' => 'May', '06' => 'June', '07' => 'July', '08' => 'August', '09' => 'September', '10' => 'October', '11' => 'November', '12' => 'December');
-
-		$r = "<select name='bday_m' class='select'>\n";
-
-		$selected = ($month == '') ? " selected='selected'" : '';
-
-		$r .= "<option value=''{$selected}>".ee()->lang->line('month')."</option>\n";
-
-		for ($i = 1; $i < 13; $i++)
-		{
-			if (strlen($i) == 1)
-				$i = '0'.$i;
-
-			$selected = ($month == $i) ? " selected='selected'" : '';
-
-			$r .= "<option value='{$i}'{$selected}>".ee()->lang->line($months[$i])."</option>\n";
-		}
-
-		$r .= "</select>\n";
-
-		return $r;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Create the "day" pull-down menu
-	 */
-	function _birthday_day($day = '')
-	{
-		$r = "<select name='bday_d' class='select'>\n";
-
-		$selected = ($day == '') ? " selected='selected'" : '';
-
-		$r .= "<option value=''{$selected}>".ee()->lang->line('day')."</option>\n";
-
-		for ($i = 1; $i <= 31; $i++)
-		{
-			$selected = ($day == $i) ? " selected='selected'" : '';
-
-			$r .= "<option value='{$i}'{$selected}>".$i."</option>\n";
-		}
-
-		$r .= "</select>\n";
-
-		return $r;
-	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Prep Element Data
@@ -2242,8 +1958,6 @@ class Member {
 
 		return $str;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Finalize a few things
@@ -2319,7 +2033,7 @@ class Member {
 		{
 			foreach ($matches as $match)
 			{
-				$sparam = ee()->functions->assign_parameters($match[1]);
+				$sparam = ee('Variables/Parser')->parseTagParameters($match[1]);
 
 				if (isset($sparam['switch']))
 				{
@@ -2410,8 +2124,6 @@ class Member {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Set base values of class vars
 	 */
@@ -2426,8 +2138,6 @@ class Member {
 		}
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Sets the member basepath
 	 */
@@ -2435,8 +2145,6 @@ class Member {
 	{
 		$this->basepath = ee()->functions->create_url($this->trigger);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Compiles a path string
@@ -2451,8 +2159,6 @@ class Member {
 		return reduce_double_slashes($this->basepath.'/'.$uri);
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Helpers for "if" conditions
 	 */
@@ -2465,8 +2171,6 @@ class Member {
 	{
 		return preg_replace("/\{if\s+".$cond."\}(.+?)\{\/if\}/si", "\\1", $str);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Replace variables
@@ -2486,8 +2190,6 @@ class Member {
 		return $str;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Swap single variables with final value
 	 */
@@ -2500,8 +2202,6 @@ class Member {
 
 		return str_replace(LD.$search.RD, $replace, $source);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Show 404 Template
@@ -2518,8 +2218,6 @@ class Member {
 		ee()->TMPL->show_404();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Custom Member Profile Data
 	 */
@@ -2529,41 +2227,34 @@ class Member {
 		$member_id = ( ! ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
 
 		// Default Member Data
-		ee()->db->select('m.member_id, m.group_id, m.username, m.screen_name, m.email, m.signature,
-							m.avatar_filename, m.avatar_width, m.avatar_height,
-							m.photo_filename, m.photo_width, m.photo_height,
-							m.url, m.location, m.occupation, m.interests,
-							m.bio,
-							m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date,
-							m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts,
-							m.language, m.timezone, m.bday_d, m.bday_m, m.bday_y, g.group_title');
-		ee()->db->from(array('members m', 'member_groups g'));
-		ee()->db->where('m.member_id', $member_id);
-		ee()->db->where('g.site_id', ee()->config->item('site_id'));
-		ee()->db->where('m.group_id = g.group_id');
-		$query = ee()->db->get();
+		$member = ee('Model')->get('Member', $member_id)
+			->first();
 
-		if ($query->num_rows() == 0)
+		$total_results = count($member);
+
+		if ($total_results == 0)
 		{
 			return ee()->TMPL->tagdata = '';
 		}
 
-		$default_fields = $query->row_array();
+		$results = $member->getValues();
+
+		$default_fields = $results;
 
 		// Is there an avatar?
-		if (ee()->config->item('enable_avatars') == 'y' AND $query->row('avatar_filename') != '')
+		if (ee()->config->item('enable_avatars') == 'y' AND $results['avatar_filename'] != '')
 		{
 			$avatar_url = ee()->config->slash_item('avatar_url');
 			$avatar_fs_path = ee()->config->slash_item('avatar_path');
 
-			if (file_exists($avatar_fs_path.'default/'.$query->row('avatar_filename')))
+			if (file_exists($avatar_fs_path.'default/'.$results['avatar_filename']))
 			{
 				$avatar_url .= 'default/';
 			}
 
-			$avatar_path	= $avatar_url.$query->row('avatar_filename');
-			$avatar_width	= $query->row('avatar_width');
-			$avatar_height	= $query->row('avatar_height');
+			$avatar_path	= $avatar_url.$results['avatar_filename'];
+			$avatar_width	= $results['avatar_width'];
+			$avatar_height	= $results['avatar_height'];
 			$avatar			= TRUE;
 		}
 		else
@@ -2575,11 +2266,11 @@ class Member {
 		}
 
 		// Is there a member photo?
-		if (ee()->config->item('enable_photos') == 'y' AND $query->row('photo_filename') != '')
+		if (ee()->config->item('enable_photos') == 'y' AND $results['photo_filename'] != '')
 		{
-			$photo_path		= ee()->config->item('photo_url').$query->row('photo_filename');
-			$photo_width	= $query->row('photo_width');
-			$photo_height	= $query->row('photo_height');
+			$photo_path		= ee()->config->item('photo_url').$results['photo_filename'];
+			$photo_width	= $results['photo_width'];
+			$photo_height	= $results['photo_height'];
 			$photo			= TRUE;
 		}
 		else
@@ -2591,11 +2282,11 @@ class Member {
 		}
 
 		// Is there a signature image?
-		if (ee()->config->item('enable_signatures') == 'y' AND $query->row('sig_img_filename') != '')
+		if (ee()->config->item('enable_signatures') == 'y' AND $results['sig_img_filename'] != '')
 		{
-			$sig_img_path	= ee()->config->item('sig_img_url').$query->row('sig_img_filename');
-			$sig_img_width	= $query->row('sig_img_width');
-			$sig_img_height	= $query->row('sig_img_height');
+			$sig_img_path	= ee()->config->item('sig_img_url').$results['sig_img_filename'];
+			$sig_img_width	= $results['sig_img_width'];
+			$sig_img_height	= $results['sig_img_height'];
 			$sig_img_image	= TRUE;
 		}
 		else
@@ -2613,22 +2304,22 @@ class Member {
 		}
 		else
 		{
-			$search_path = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;mbr='.urlencode($query->row('member_id'));
+			$search_path = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;mbr='.urlencode($results['member_id']);
 		}
 
 		$more_fields = array(
 							'send_private_message'	=> $this->_member_path('messages/pm/'.$member_id),
 							'search_path'			=> $search_path,
 							'avatar_url'			=> $avatar_path,
-							'avatar_filename'		=> $query->row('avatar_filename'),
+							'avatar_filename'		=> $results['avatar_filename'],
 							'avatar_width'			=> $avatar_width,
 							'avatar_height'			=> $avatar_height,
 							'photo_url'				=> $photo_path,
-							'photo_filename'		=> $query->row('photo_filename'),
+							'photo_filename'		=> $results['photo_filename'],
 							'photo_width'			=> $photo_width,
 							'photo_height'			=> $photo_height,
 							'signature_image_url'		=> $sig_img_path,
-							'signature_image_filename'	=> $query->row('sig_img_filename'),
+							'signature_image_filename'	=> $results['sig_img_filename'],
 							'signature_image_width'		=> $sig_img_width,
 							'signature_image_height'	=> $sig_img_height
 						);
@@ -2649,19 +2340,6 @@ class Member {
 			}
 		}
 
-		ee()->db->where('member_id', $member_id);
-		$query = ee()->db->get('member_data');
-
-		if ($query->num_rows() == 0)
-		{
-			foreach ($fields as $key => $val)
-			{
-				ee()->TMPL->tagdata = ee()->TMPL->swap_var_single($key, '', ee()->TMPL->tagdata);
-			}
-
-			return ee()->TMPL->tagdata;
-		}
-
 		ee()->load->library('typography');
 		ee()->typography->initialize();
 
@@ -2673,9 +2351,10 @@ class Member {
 		// Get field names present in the template, sans modifiers
 		$clean_field_names = array_map(function($field)
 		{
-			$field = ee()->api_channel_fields->get_single_field($field);
+			$field = ee('Variables/Parser')->parseVariableProperties($field);
+
 			return $field['field_name'];
-		}, ee()->TMPL->var_single);
+		}, array_flip(ee()->TMPL->var_single));
 
 		// Get field IDs for the member fields we need to fetch
 		$member_field_ids = array();
@@ -2695,22 +2374,10 @@ class Member {
 				->indexBy('field_id');
 		}
 
-		foreach ($query->result_array() as $row)
+		foreach (array($results) as $row)
 		{
 			$cond['avatar']	= $avatar;
 			$cond['photo'] = $photo;
-
-			foreach($fields as $key =>  $value)
-			{
-				$cond[$key] = ee()->typography->parse_type($row['m_field_id_'.$value['0']],
-												array(
-													  'text_format'	=> $value['1'],
-													  'html_format'	=> 'safe',
-													  'auto_links'	=> 'y',
-													  'allow_img_url' => 'n'
-													 )
-										  	  );
-			}
 
 			ee()->TMPL->tagdata = ee()->functions->prep_conditionals(ee()->TMPL->tagdata, $cond);
 
@@ -2718,15 +2385,6 @@ class Member {
 			foreach (ee()->TMPL->var_single as $key => $val)
 			{
 				// parse default member data
-
-				//  Format URLs
-				if ($key == 'url')
-				{
-					if (substr($default_fields['url'], 0, 4) != "http" && strpos($default_fields['url'], '://') === FALSE)
-					{
-						$default_fields['url'] = "http://".$default_fields['url'];
-					}
-				}
 
 				//  "last_visit"
 				if (strncmp($key, 'last_visit', 10) == 0)
@@ -2786,43 +2444,6 @@ class Member {
 					ee()->TMPL->tagdata = $this->_var_swap_single($val, ee()->typography->encode_email($default_fields['email']), ee()->TMPL->tagdata, FALSE);
 				}
 
-				//  {birthday}
-				if ($key == "birthday")
-				{
-					$birthday = '';
-
-					if ($default_fields['bday_m'] != '' AND $default_fields['bday_m'] != 0)
-					{
-						$month = (strlen($default_fields['bday_m']) == 1) ? '0'.$default_fields['bday_m'] : $default_fields['bday_m'];
-
-						$m = ee()->localize->localize_month($month);
-
-						$birthday .= ee()->lang->line($m['1']);
-
-						if ($default_fields['bday_d'] != '' AND $default_fields['bday_d'] != 0)
-						{
-							$birthday .= ' '.$default_fields['bday_d'];
-						}
-					}
-
-					if ($default_fields['bday_y'] != '' AND $default_fields['bday_y'] != 0)
-					{
-						if ($birthday != '')
-						{
-							$birthday .= ', ';
-						}
-
-						$birthday .= $default_fields['bday_y'];
-					}
-
-					if ($birthday == '')
-					{
-						$birthday = '';
-					}
-
-					ee()->TMPL->tagdata = $this->_var_swap_single($val, $birthday, ee()->TMPL->tagdata);
-				}
-
 				//  {timezone}
 				if ($key == "timezone")
 				{
@@ -2849,20 +2470,6 @@ class Member {
 					);
 				}
 
-				//  {bio}
-				if ($key == 'bio')
-				{
-					$bio = ee()->typography->parse_type($default_fields[$val],
-																 array(
-																			'text_format'   => 'xhtml',
-																			'html_format'   => 'safe',
-																			'auto_links'    => 'y',
-																			'allow_img_url' => 'n'
-																	   )
-																);
-
-					ee()->TMPL->tagdata = $this->_var_swap_single($key, $bio, ee()->TMPL->tagdata);
-				}
 
 				// Special condideration for {total_forum_replies}, and
 				// {total_forum_posts} whose meanings do not match the
@@ -2884,19 +2491,33 @@ class Member {
 					ee()->TMPL->tagdata = $this->_var_swap_single($val, $default_fields[$val], ee()->TMPL->tagdata);
 				}
 
-				$field = ee()->api_channel_fields->get_single_field($val);
+				// Custom member fields
+				$field = ee('Variables/Parser')->parseVariableProperties($key);
 				$val = $field['field_name'];
 
 				// parse custom member fields
-				if (isset($fields[$val]) && array_key_exists('m_field_id_'.$fields[$val]['0'], $row))
+				if (isset($fields[$val]))
 				{
-					ee()->TMPL->tagdata = $this->parseField(
-						$fields[$val]['0'],
-						$field,
-						$row['m_field_id_'.$fields[$val]['0']],
-						ee()->TMPL->tagdata,
-						$member_id
-					);
+					if (array_key_exists('m_field_id_'.$fields[$val]['0'], $row))
+					{
+						ee()->TMPL->tagdata = $this->parseField(
+							$fields[$val]['0'],
+							$field,
+							$row['m_field_id_'.$fields[$val]['0']],
+							ee()->TMPL->tagdata,
+							$member_id,
+							array(),
+							$key
+						);
+					}
+					else
+					{
+						ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
+						$key,
+						'',
+						ee()->TMPL->tagdata
+						);
+					}
 				}
 			}
 		}
@@ -2908,14 +2529,15 @@ class Member {
 	 * Parse a custom member field
 	 *
 	 * @param	int		$field_id	Member field ID
-	 * @param	array	$field		Tag information as parsed by Api_channel_fields::get_single_field
+	 * @param	array	$field		Tag information as parsed by ee('Variables/Parser')->parseVariableProperties()
 	 * @param	mixed	$data		Data for this field
 	 * @param	string	$tagdata	Tagdata to perform the replacement in
 	 * @param	string	$member_id	ID for the member this data is associated
 	 * @return	string	String with variable parsed
 	 */
-	protected function parseField($field_id, $field, $data, $tagdata, $member_id, $row = array())
+	protected function parseField($field_id, $field, $data, $tagdata, $member_id, $row = array(), $tag = FALSE)
 	{
+
 		if ( ! isset($this->member_fields[$field_id]))
 		{
 			return $tagdata;
@@ -2930,10 +2552,8 @@ class Member {
 		);
 		$row = array_merge($default_row, $row);
 
-		return $member_field->parse($data, $member_id, 'member', $field['modifier'], $tagdata, $row);
+		return $member_field->parse($data, $member_id, 'member', $field, $tagdata, $row, $tag);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Ignore List
@@ -2959,7 +2579,7 @@ class Member {
 			$ignored = ee()->session->userdata('ignore_list');
 		}
 
-		$query = ee()->db->query("SELECT m.member_id, m.group_id, m.username, m.screen_name, m.email, m.ip_address, m.location, m.total_entries, m.total_comments, m.private_messages, m.total_forum_topics, m.total_forum_posts AS total_forum_replies, m.total_forum_topics + m.total_forum_posts AS total_forum_posts,
+		$query = ee()->db->query("SELECT m.member_id, m.group_id, m.username, m.screen_name, m.email, m.ip_address, m.total_entries, m.total_comments, m.private_messages, m.total_forum_topics, m.total_forum_posts AS total_forum_replies, m.total_forum_topics + m.total_forum_posts AS total_forum_posts,
 							g.group_title AS group_description FROM exp_members AS m, exp_member_groups AS g
 							WHERE g.group_id = m.group_id
 							AND g.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'
@@ -2992,8 +2612,6 @@ class Member {
 
 		return ee()->TMPL->tagdata = $out;
 	}
-
-	// -------------------------------------------------------------------------
 
 	/**
 	 * Create a language dropdown list

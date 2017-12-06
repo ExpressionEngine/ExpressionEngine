@@ -1,31 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Validation;
 
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Validator Factory
- *
- * @package		ExpressionEngine
- * @subpackage	Validation
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Validator Factory
  */
 class Factory {
 
@@ -66,17 +53,20 @@ class Factory {
 		{
 			$field = ee()->input->post('ee_fv_field');
 
+			if ($result->hasErrors($field))
+			{
+				return ['error' => $result->renderError($field)];
+			}
+
 			// Get the parent field name
 			$field = preg_replace('/\[.+?\]/', '', $field);
 
 			if ($result->hasErrors($field))
 			{
-				return array('error' => $result->renderError($field));
+				return ['error' => $result->renderError($field)];
 			}
-			else
-			{
-				return array('success');
-			}
+
+			return ['success'];
 		}
 
 		return NULL;

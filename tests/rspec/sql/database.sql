@@ -1,10 +1,19 @@
 #
+# SQL Export
+# Created by Querious (1068)
+# Created: September 18, 2017 at 11:28:08 AM PDT
 # Encoding: Unicode (UTF-8)
 #
 
 
+SET @PREVIOUS_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;
+SET FOREIGN_KEY_CHECKS = 0;
+
+
 DROP TABLE IF EXISTS `exp_upload_prefs`;
 DROP TABLE IF EXISTS `exp_upload_no_access`;
+DROP TABLE IF EXISTS `exp_update_notices`;
+DROP TABLE IF EXISTS `exp_update_log`;
 DROP TABLE IF EXISTS `exp_throttle`;
 DROP TABLE IF EXISTS `exp_templates`;
 DROP TABLE IF EXISTS `exp_template_routes`;
@@ -13,7 +22,6 @@ DROP TABLE IF EXISTS `exp_template_member_groups`;
 DROP TABLE IF EXISTS `exp_template_groups`;
 DROP TABLE IF EXISTS `exp_statuses`;
 DROP TABLE IF EXISTS `exp_status_no_access`;
-DROP TABLE IF EXISTS `exp_status_groups`;
 DROP TABLE IF EXISTS `exp_stats`;
 DROP TABLE IF EXISTS `exp_specialty_templates`;
 DROP TABLE IF EXISTS `exp_snippets`;
@@ -38,18 +46,22 @@ DROP TABLE IF EXISTS `exp_message_folders`;
 DROP TABLE IF EXISTS `exp_message_data`;
 DROP TABLE IF EXISTS `exp_message_copies`;
 DROP TABLE IF EXISTS `exp_message_attachments`;
+DROP TABLE IF EXISTS `exp_menu_sets`;
+DROP TABLE IF EXISTS `exp_menu_items`;
 DROP TABLE IF EXISTS `exp_members`;
 DROP TABLE IF EXISTS `exp_member_search`;
-DROP TABLE IF EXISTS `exp_member_homepage`;
 DROP TABLE IF EXISTS `exp_member_groups`;
 DROP TABLE IF EXISTS `exp_member_fields`;
+DROP TABLE IF EXISTS `exp_member_data_field_1`;
 DROP TABLE IF EXISTS `exp_member_data`;
+DROP TABLE IF EXISTS `exp_member_news_views`;
 DROP TABLE IF EXISTS `exp_member_bulletin_board`;
-DROP TABLE IF EXISTS `exp_layout_publish`;
 DROP TABLE IF EXISTS `exp_layout_publish_member_groups`;
+DROP TABLE IF EXISTS `exp_layout_publish`;
 DROP TABLE IF EXISTS `exp_html_buttons`;
 DROP TABLE IF EXISTS `exp_grid_columns`;
 DROP TABLE IF EXISTS `exp_global_variables`;
+DROP TABLE IF EXISTS `exp_fluid_field_data`;
 DROP TABLE IF EXISTS `exp_files`;
 DROP TABLE IF EXISTS `exp_file_watermarks`;
 DROP TABLE IF EXISTS `exp_file_dimensions`;
@@ -68,11 +80,15 @@ DROP TABLE IF EXISTS `exp_cp_log`;
 DROP TABLE IF EXISTS `exp_content_types`;
 DROP TABLE IF EXISTS `exp_comments`;
 DROP TABLE IF EXISTS `exp_comment_subscriptions`;
+DROP TABLE IF EXISTS `exp_channels_channel_fields`;
+DROP TABLE IF EXISTS `exp_channels_channel_field_groups`;
 DROP TABLE IF EXISTS `exp_channels`;
 DROP TABLE IF EXISTS `exp_channel_titles`;
 DROP TABLE IF EXISTS `exp_channel_member_groups`;
 DROP TABLE IF EXISTS `exp_channel_form_settings`;
 DROP TABLE IF EXISTS `exp_channel_fields`;
+DROP TABLE IF EXISTS `exp_channel_field_groups_fields`;
+DROP TABLE IF EXISTS `exp_channels_statuses`;
 DROP TABLE IF EXISTS `exp_channel_entries_autosave`;
 DROP TABLE IF EXISTS `exp_channel_data`;
 DROP TABLE IF EXISTS `exp_category_posts`;
@@ -145,7 +161,8 @@ CREATE TABLE `exp_category_fields` (
   `field_text_direction` char(3) NOT NULL DEFAULT 'ltr',
   `field_required` char(1) NOT NULL DEFAULT 'n',
   `field_order` int(3) unsigned NOT NULL,
-  `field_settings` text NULL,
+  `field_settings` text,
+  `legacy_field_data` char(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`field_id`),
   KEY `site_id` (`site_id`),
   KEY `group_id` (`group_id`)
@@ -236,10 +253,21 @@ CREATE TABLE `exp_channel_entries_autosave` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+CREATE TABLE `exp_channel_field_groups_fields` (
+  `field_id` int(6) unsigned NOT NULL,
+  `group_id` int(4) unsigned NOT NULL,
+  PRIMARY KEY (`field_id`,`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+CREATE TABLE exp_channels_statuses (
+	channel_id int(4) unsigned NOT NULL,
+	status_id int(4) unsigned NOT NULL,
+	PRIMARY KEY `channel_id_status_id` (`channel_id`, `status_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 CREATE TABLE `exp_channel_fields` (
   `field_id` int(6) unsigned NOT NULL AUTO_INCREMENT,
-  `site_id` int(4) unsigned NOT NULL DEFAULT '1',
-  `group_id` int(4) unsigned NOT NULL,
+  `site_id` int(10) unsigned DEFAULT NULL,
   `field_name` varchar(32) NOT NULL,
   `field_label` varchar(50) NOT NULL,
   `field_instructions` text,
@@ -259,8 +287,8 @@ CREATE TABLE `exp_channel_fields` (
   `field_order` int(3) unsigned NOT NULL,
   `field_content_type` varchar(20) NOT NULL DEFAULT 'any',
   `field_settings` text,
+  `legacy_field_data` char(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`field_id`),
-  KEY `group_id` (`group_id`),
   KEY `field_type` (`field_type`),
   KEY `site_id` (`site_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
@@ -296,6 +324,7 @@ CREATE TABLE `exp_channel_titles` (
   `title` varchar(100) NOT NULL,
   `url_title` varchar(75) NOT NULL,
   `status` varchar(50) NOT NULL,
+  `status_id` int(4) unsigned NOT NULL,
   `versioning_enabled` char(1) NOT NULL DEFAULT 'n',
   `view_count_one` int(10) unsigned NOT NULL DEFAULT '0',
   `view_count_two` int(10) unsigned NOT NULL DEFAULT '0',
@@ -319,7 +348,8 @@ CREATE TABLE `exp_channel_titles` (
   KEY `status` (`status`),
   KEY `entry_date` (`entry_date`),
   KEY `expiration_date` (`expiration_date`),
-  KEY `site_id` (`site_id`)
+  KEY `site_id` (`site_id`),
+  KEY `sticky_date_id_idx` (`sticky`,`entry_date`,`entry_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
 
@@ -337,16 +367,14 @@ CREATE TABLE `exp_channels` (
   `last_entry_date` int(10) unsigned NOT NULL DEFAULT '0',
   `last_comment_date` int(10) unsigned NOT NULL DEFAULT '0',
   `cat_group` varchar(255) DEFAULT NULL,
-  `status_group` int(4) unsigned DEFAULT NULL,
   `deft_status` varchar(50) NOT NULL DEFAULT 'open',
-  `field_group` int(4) unsigned DEFAULT NULL,
   `search_excerpt` int(4) unsigned DEFAULT NULL,
   `deft_category` varchar(60) DEFAULT NULL,
   `deft_comments` char(1) NOT NULL DEFAULT 'y',
   `channel_require_membership` char(1) NOT NULL DEFAULT 'y',
   `channel_max_chars` int(5) unsigned DEFAULT NULL,
   `channel_html_formatting` char(4) NOT NULL DEFAULT 'all',
-  `extra_publish_controls` char(1) NOT NULL default 'n',
+  `extra_publish_controls` char(1) NOT NULL DEFAULT 'n',
   `channel_allow_img_urls` char(1) NOT NULL DEFAULT 'y',
   `channel_auto_link_urls` char(1) NOT NULL DEFAULT 'n',
   `channel_notify` char(1) NOT NULL DEFAULT 'n',
@@ -374,14 +402,26 @@ CREATE TABLE `exp_channels` (
   `title_field_label` varchar(100) NOT NULL DEFAULT 'Title',
   `url_title_prefix` varchar(80) DEFAULT NULL,
   `live_look_template` int(10) unsigned NOT NULL DEFAULT '0',
-  `max_entries` int(10) unsigned NOT NULL DEFAULT 0,
+  `max_entries` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`channel_id`),
   KEY `cat_group` (`cat_group`),
-  KEY `status_group` (`status_group`),
-  KEY `field_group` (`field_group`),
   KEY `channel_name` (`channel_name`),
   KEY `site_id` (`site_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `exp_channels_channel_field_groups` (
+  `channel_id` int(4) unsigned NOT NULL,
+  `group_id` int(4) unsigned NOT NULL,
+  PRIMARY KEY (`channel_id`,`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+CREATE TABLE `exp_channels_channel_fields` (
+  `channel_id` int(4) unsigned NOT NULL,
+  `field_id` int(6) unsigned NOT NULL,
+  PRIMARY KEY (`channel_id`,`field_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 CREATE TABLE `exp_comment_subscriptions` (
@@ -552,7 +592,7 @@ CREATE TABLE `exp_extensions` (
 
 CREATE TABLE `exp_field_groups` (
   `group_id` int(4) unsigned NOT NULL AUTO_INCREMENT,
-  `site_id` int(4) unsigned NOT NULL DEFAULT '1',
+  `site_id` int(10) unsigned DEFAULT NULL,
   `group_name` varchar(50) NOT NULL,
   PRIMARY KEY (`group_id`),
   KEY `site_id` (`site_id`)
@@ -566,15 +606,15 @@ CREATE TABLE `exp_fieldtypes` (
   `settings` text,
   `has_global_settings` char(1) DEFAULT 'n',
   PRIMARY KEY (`fieldtype_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_file_categories` (
-  `file_id` int(10) unsigned DEFAULT NULL,
-  `cat_id` int(10) unsigned DEFAULT NULL,
+  `file_id` int(10) unsigned NOT NULL,
+  `cat_id` int(10) unsigned NOT NULL,
   `sort` int(10) unsigned DEFAULT '0',
   `is_cover` char(1) DEFAULT 'n',
-  KEY `file_id` (`file_id`),
+  PRIMARY KEY (`file_id`,`cat_id`),
   KEY `cat_id` (`cat_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -588,6 +628,7 @@ CREATE TABLE `exp_file_dimensions` (
   `resize_type` varchar(50) DEFAULT '',
   `width` int(10) DEFAULT '0',
   `height` int(10) DEFAULT '0',
+  `quality` tinyint(1) unsigned DEFAULT '90',
   `watermark_id` int(4) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `upload_location_id` (`upload_location_id`)
@@ -639,7 +680,20 @@ CREATE TABLE `exp_files` (
   PRIMARY KEY (`file_id`),
   KEY `upload_location_id` (`upload_location_id`),
   KEY `site_id` (`site_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `exp_fluid_field_data` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `fluid_field_id` int(11) unsigned NOT NULL,
+  `entry_id` int(11) unsigned NOT NULL,
+  `field_id` int(11) unsigned NOT NULL,
+  `field_data_id` int(11) unsigned NOT NULL,
+  `order` int(5) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `fluid_field_id` (`fluid_field_id`),
+  KEY `entry_id` (`entry_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 CREATE TABLE `exp_global_variables` (
@@ -647,7 +701,7 @@ CREATE TABLE `exp_global_variables` (
   `site_id` int(4) unsigned NOT NULL DEFAULT '1',
   `variable_name` varchar(50) NOT NULL,
   `variable_data` text NOT NULL,
-  `edit_date` int(10) NOT NULL DEFAULT 0,
+  `edit_date` int(10) NOT NULL DEFAULT '0',
   PRIMARY KEY (`variable_id`),
   KEY `variable_name` (`variable_name`),
   KEY `site_id` (`site_id`)
@@ -701,11 +755,13 @@ CREATE TABLE `exp_layout_publish` (
   KEY `channel_id` (`channel_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
 CREATE TABLE `exp_layout_publish_member_groups` (
   `layout_id` int(10) unsigned NOT NULL,
   `group_id` int(4) unsigned NOT NULL,
-  PRIMARY KEY `layout_id_group_id` (`layout_id`, `group_id`)
+  PRIMARY KEY (`layout_id`,`group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 CREATE TABLE `exp_member_bulletin_board` (
   `bulletin_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -726,6 +782,24 @@ CREATE TABLE `exp_member_data` (
   PRIMARY KEY (`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE exp_member_news_views (
+	news_id int(10) unsigned NOT NULL auto_increment,
+	version varchar(10) NULL,
+	member_id int(10) unsigned NOT NULL DEFAULT '0',
+	PRIMARY KEY `news_id` (`news_id`),
+	KEY `member_id` (`member_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `exp_member_data_field_1` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `member_id` int(10) unsigned NOT NULL,
+  `m_field_id_1` int(10) DEFAULT '0',
+  `m_field_dt_1` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `m_field_ft_1` tinytext COLLATE utf8_unicode_ci,
+  PRIMARY KEY (`id`),
+  KEY `member_id` (`member_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 
 CREATE TABLE `exp_member_fields` (
   `m_field_id` int(4) unsigned NOT NULL AUTO_INCREMENT,
@@ -735,150 +809,131 @@ CREATE TABLE `exp_member_fields` (
   `m_field_type` varchar(12) NOT NULL DEFAULT 'text',
   `m_field_list_items` text NOT NULL,
   `m_field_ta_rows` tinyint(2) DEFAULT '8',
-  `m_field_maxl` smallint(3) NULL DEFAULT NULL,
-  `m_field_width` varchar(6) NULL DEFAULT NULL,
+  `m_field_maxl` smallint(3) DEFAULT NULL,
+  `m_field_width` varchar(6) DEFAULT NULL,
   `m_field_search` char(1) NOT NULL DEFAULT 'y',
   `m_field_required` char(1) NOT NULL DEFAULT 'n',
   `m_field_public` char(1) NOT NULL DEFAULT 'y',
   `m_field_reg` char(1) NOT NULL DEFAULT 'n',
   `m_field_cp_reg` char(1) NOT NULL DEFAULT 'n',
   `m_field_fmt` char(5) NOT NULL DEFAULT 'none',
-  `m_field_show_fmt` char(1) NOT NULL default 'y',
+  `m_field_show_fmt` char(1) NOT NULL DEFAULT 'y',
   `m_field_order` int(3) unsigned NOT NULL,
   `m_field_text_direction` char(3) DEFAULT 'ltr',
-  `m_field_settings` text NULL,
+  `m_field_settings` text,
+  `m_legacy_field_data` char(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`m_field_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_member_groups` (
-    `group_id` smallint(4) unsigned NOT NULL,
-    `site_id` int(4) unsigned NOT NULL DEFAULT '1',
-    `menu_set_id` int(5) unsigned NOT NULL DEFAULT '1',
-    `group_title` varchar(100) NOT NULL,
-    `group_description` text NOT NULL,
-    `is_locked` char(1) NOT NULL DEFAULT 'n',
-    `can_view_offline_system` char(1) NOT NULL DEFAULT 'n',
-    `can_view_online_system` char(1) NOT NULL DEFAULT 'y',
-    `can_access_cp` char(1) NOT NULL DEFAULT 'y',
-    `can_access_footer_report_bug` char(1) NOT NULL DEFAULT 'n',
-    `can_access_footer_new_ticket` char(1) NOT NULL DEFAULT 'n',
-    `can_access_footer_user_guide` char(1) NOT NULL DEFAULT 'n',
-    `can_view_homepage_news` char(1) NOT NULL DEFAULT 'y',
-    `can_access_files` char(1) NOT NULL DEFAULT 'n',
-    `can_access_design` char(1) NOT NULL DEFAULT 'n',
-    `can_access_addons` char(1) NOT NULL DEFAULT 'n',
-    `can_access_members` char(1) NOT NULL DEFAULT 'n',
-    `can_access_sys_prefs` char(1) NOT NULL DEFAULT 'n',
-    `can_access_comm` char(1) NOT NULL DEFAULT 'n',
-    `can_access_utilities` char(1) NOT NULL DEFAULT 'n',
-    `can_access_data` char(1) NOT NULL DEFAULT 'n',
-    `can_access_logs` char(1) NOT NULL DEFAULT 'n',
-    `can_admin_channels` char(1) NOT NULL DEFAULT 'n',
-    `can_admin_design` char(1) NOT NULL DEFAULT 'n',
-    `can_delete_members` char(1) NOT NULL DEFAULT 'n',
-    `can_admin_mbr_groups` char(1) NOT NULL DEFAULT 'n',
-    `can_admin_mbr_templates` char(1) NOT NULL DEFAULT 'n',
-    `can_ban_users` char(1) NOT NULL DEFAULT 'n',
-    `can_admin_addons` char(1) NOT NULL DEFAULT 'n',
-    `can_edit_categories` char(1) NOT NULL DEFAULT 'n',
-    `can_delete_categories` char(1) NOT NULL DEFAULT 'n',
-    `can_view_other_entries` char(1) NOT NULL DEFAULT 'n',
-    `can_edit_other_entries` char(1) NOT NULL DEFAULT 'n',
-    `can_assign_post_authors` char(1) NOT NULL DEFAULT 'n',
-    `can_delete_self_entries` char(1) NOT NULL DEFAULT 'n',
-    `can_delete_all_entries` char(1) NOT NULL DEFAULT 'n',
-    `can_view_other_comments` char(1) NOT NULL DEFAULT 'n',
-    `can_edit_own_comments` char(1) NOT NULL DEFAULT 'n',
-    `can_delete_own_comments` char(1) NOT NULL DEFAULT 'n',
-    `can_edit_all_comments` char(1) NOT NULL DEFAULT 'n',
-    `can_delete_all_comments` char(1) NOT NULL DEFAULT 'n',
-    `can_moderate_comments` char(1) NOT NULL DEFAULT 'n',
-    `can_send_cached_email` char(1) NOT NULL DEFAULT 'n',
-    `can_email_member_groups` char(1) NOT NULL DEFAULT 'n',
-    `can_email_from_profile` char(1) NOT NULL DEFAULT 'n',
-    `can_view_profiles` char(1) NOT NULL DEFAULT 'n',
-    `can_edit_html_buttons` char(1) NOT NULL DEFAULT 'n',
-    `can_delete_self` char(1) NOT NULL DEFAULT 'n',
-    `mbr_delete_notify_emails` varchar(255) DEFAULT NULL,
-    `can_post_comments` char(1) NOT NULL DEFAULT 'n',
-    `exclude_from_moderation` char(1) NOT NULL DEFAULT 'n',
-    `can_search` char(1) NOT NULL DEFAULT 'n',
-    `search_flood_control` mediumint(5) unsigned NOT NULL,
-    `can_send_private_messages` char(1) NOT NULL DEFAULT 'n',
-    `prv_msg_send_limit` smallint(5) unsigned NOT NULL DEFAULT '20',
-    `prv_msg_storage_limit` smallint(5) unsigned NOT NULL DEFAULT '60',
-    `can_attach_in_private_messages` char(1) NOT NULL DEFAULT 'n',
-    `can_send_bulletins` char(1) NOT NULL DEFAULT 'n',
-    `include_in_authorlist` char(1) NOT NULL DEFAULT 'n',
-    `include_in_memberlist` char(1) NOT NULL DEFAULT 'y',
-    `cp_homepage` varchar(20) DEFAULT NULL,
-    `cp_homepage_channel` int(10) unsigned NOT NULL DEFAULT '0',
-    `cp_homepage_custom` varchar(100) DEFAULT NULL,
-    `can_create_entries` char(1) NOT NULL DEFAULT 'n',
-    `can_edit_self_entries` char(1) NOT NULL DEFAULT 'n',
-    `can_upload_new_files` char(1) NOT NULL DEFAULT 'n',
-    `can_edit_files` char(1) NOT NULL DEFAULT 'n',
-    `can_delete_files` char(1) NOT NULL DEFAULT 'n',
-    `can_upload_new_toolsets` char(1) NOT NULL DEFAULT 'n',
-    `can_edit_toolsets` char(1) NOT NULL DEFAULT 'n',
-    `can_delete_toolsets` char(1) NOT NULL DEFAULT 'n',
-    `can_create_upload_directories` char(1) NOT NULL DEFAULT 'n',
-    `can_edit_upload_directories` char(1) NOT NULL DEFAULT 'n',
-    `can_delete_upload_directories` char(1) NOT NULL DEFAULT 'n',
-    `can_create_channels` char(1) NOT NULL DEFAULT 'n',
-    `can_edit_channels` char(1) NOT NULL DEFAULT 'n',
-    `can_delete_channels` char(1) NOT NULL DEFAULT 'n',
-    `can_create_channel_fields` char(1) NOT NULL DEFAULT 'n',
-    `can_edit_channel_fields` char(1) NOT NULL DEFAULT 'n',
-    `can_delete_channel_fields` char(1) NOT NULL DEFAULT 'n',
-    `can_create_statuses` char(1) NOT NULL DEFAULT 'n',
-    `can_delete_statuses` char(1) NOT NULL DEFAULT 'n',
-    `can_edit_statuses` char(1) NOT NULL DEFAULT 'n',
-    `can_create_categories` char(1) NOT NULL DEFAULT 'n',
-    `can_create_member_groups` char(1) NOT NULL DEFAULT 'n',
-    `can_delete_member_groups` char(1) NOT NULL DEFAULT 'n',
-    `can_edit_member_groups` char(1) NOT NULL DEFAULT 'n',
-    `can_create_members` char(1) NOT NULL DEFAULT 'n',
-    `can_edit_members` char(1) NOT NULL DEFAULT 'n',
-    `can_create_new_templates` char(1) NOT NULL DEFAULT 'n',
-    `can_edit_templates` char(1) NOT NULL DEFAULT 'n',
-    `can_delete_templates` char(1) NOT NULL DEFAULT 'n',
-    `can_create_template_groups` char(1) NOT NULL DEFAULT 'n',
-    `can_edit_template_groups` char(1) NOT NULL DEFAULT 'n',
-    `can_delete_template_groups` char(1) NOT NULL DEFAULT 'n',
-    `can_create_template_partials` char(1) NOT NULL DEFAULT 'n',
-    `can_edit_template_partials` char(1) NOT NULL DEFAULT 'n',
-    `can_delete_template_partials` char(1) NOT NULL DEFAULT 'n',
-    `can_create_template_variables` char(1) NOT NULL DEFAULT 'n',
-    `can_delete_template_variables` char(1) NOT NULL DEFAULT 'n',
-    `can_edit_template_variables` char(1) NOT NULL DEFAULT 'n',
-    `can_access_security_settings` char(1) NOT NULL DEFAULT 'n',
-    `can_access_translate` char(1) NOT NULL DEFAULT 'n',
-    `can_access_import` char(1) NOT NULL DEFAULT 'n',
-    `can_access_sql_manager` char(1) NOT NULL DEFAULT 'n',
+  `group_id` smallint(4) unsigned NOT NULL,
+  `site_id` int(4) unsigned NOT NULL DEFAULT '1',
+  `menu_set_id` int(5) unsigned NOT NULL DEFAULT '1',
+  `group_title` varchar(100) NOT NULL,
+  `group_description` text NOT NULL,
+  `is_locked` char(1) NOT NULL DEFAULT 'n',
+  `can_view_offline_system` char(1) NOT NULL DEFAULT 'n',
+  `can_view_online_system` char(1) NOT NULL DEFAULT 'y',
+  `can_access_cp` char(1) NOT NULL DEFAULT 'y',
+  `can_access_footer_report_bug` char(1) NOT NULL DEFAULT 'n',
+  `can_access_footer_new_ticket` char(1) NOT NULL DEFAULT 'n',
+  `can_access_footer_user_guide` char(1) NOT NULL DEFAULT 'n',
+  `can_view_homepage_news` char(1) NOT NULL DEFAULT 'y',
+  `can_access_files` char(1) NOT NULL DEFAULT 'n',
+  `can_access_design` char(1) NOT NULL DEFAULT 'n',
+  `can_access_addons` char(1) NOT NULL DEFAULT 'n',
+  `can_access_members` char(1) NOT NULL DEFAULT 'n',
+  `can_access_sys_prefs` char(1) NOT NULL DEFAULT 'n',
+  `can_access_comm` char(1) NOT NULL DEFAULT 'n',
+  `can_access_utilities` char(1) NOT NULL DEFAULT 'n',
+  `can_access_data` char(1) NOT NULL DEFAULT 'n',
+  `can_access_logs` char(1) NOT NULL DEFAULT 'n',
+  `can_admin_channels` char(1) NOT NULL DEFAULT 'n',
+  `can_admin_design` char(1) NOT NULL DEFAULT 'n',
+  `can_delete_members` char(1) NOT NULL DEFAULT 'n',
+  `can_admin_mbr_groups` char(1) NOT NULL DEFAULT 'n',
+  `can_admin_mbr_templates` char(1) NOT NULL DEFAULT 'n',
+  `can_ban_users` char(1) NOT NULL DEFAULT 'n',
+  `can_admin_addons` char(1) NOT NULL DEFAULT 'n',
+  `can_edit_categories` char(1) NOT NULL DEFAULT 'n',
+  `can_delete_categories` char(1) NOT NULL DEFAULT 'n',
+  `can_view_other_entries` char(1) NOT NULL DEFAULT 'n',
+  `can_edit_other_entries` char(1) NOT NULL DEFAULT 'n',
+  `can_assign_post_authors` char(1) NOT NULL DEFAULT 'n',
+  `can_delete_self_entries` char(1) NOT NULL DEFAULT 'n',
+  `can_delete_all_entries` char(1) NOT NULL DEFAULT 'n',
+  `can_view_other_comments` char(1) NOT NULL DEFAULT 'n',
+  `can_edit_own_comments` char(1) NOT NULL DEFAULT 'n',
+  `can_delete_own_comments` char(1) NOT NULL DEFAULT 'n',
+  `can_edit_all_comments` char(1) NOT NULL DEFAULT 'n',
+  `can_delete_all_comments` char(1) NOT NULL DEFAULT 'n',
+  `can_moderate_comments` char(1) NOT NULL DEFAULT 'n',
+  `can_send_cached_email` char(1) NOT NULL DEFAULT 'n',
+  `can_email_member_groups` char(1) NOT NULL DEFAULT 'n',
+  `can_email_from_profile` char(1) NOT NULL DEFAULT 'n',
+  `can_view_profiles` char(1) NOT NULL DEFAULT 'n',
+  `can_edit_html_buttons` char(1) NOT NULL DEFAULT 'n',
+  `can_delete_self` char(1) NOT NULL DEFAULT 'n',
+  `mbr_delete_notify_emails` varchar(255) DEFAULT NULL,
+  `can_post_comments` char(1) NOT NULL DEFAULT 'n',
+  `exclude_from_moderation` char(1) NOT NULL DEFAULT 'n',
+  `can_search` char(1) NOT NULL DEFAULT 'n',
+  `search_flood_control` mediumint(5) unsigned NOT NULL,
+  `can_send_private_messages` char(1) NOT NULL DEFAULT 'n',
+  `prv_msg_send_limit` smallint(5) unsigned NOT NULL DEFAULT '20',
+  `prv_msg_storage_limit` smallint(5) unsigned NOT NULL DEFAULT '60',
+  `can_attach_in_private_messages` char(1) NOT NULL DEFAULT 'n',
+  `can_send_bulletins` char(1) NOT NULL DEFAULT 'n',
+  `include_in_authorlist` char(1) NOT NULL DEFAULT 'n',
+  `include_in_memberlist` char(1) NOT NULL DEFAULT 'y',
+  `cp_homepage` varchar(20) DEFAULT NULL,
+  `cp_homepage_channel` int(10) unsigned NOT NULL DEFAULT '0',
+  `cp_homepage_custom` varchar(100) DEFAULT NULL,
+  `can_create_entries` char(1) NOT NULL DEFAULT 'n',
+  `can_edit_self_entries` char(1) NOT NULL DEFAULT 'n',
+  `can_upload_new_files` char(1) NOT NULL DEFAULT 'n',
+  `can_edit_files` char(1) NOT NULL DEFAULT 'n',
+  `can_delete_files` char(1) NOT NULL DEFAULT 'n',
+  `can_upload_new_toolsets` char(1) NOT NULL DEFAULT 'n',
+  `can_edit_toolsets` char(1) NOT NULL DEFAULT 'n',
+  `can_delete_toolsets` char(1) NOT NULL DEFAULT 'n',
+  `can_create_upload_directories` char(1) NOT NULL DEFAULT 'n',
+  `can_edit_upload_directories` char(1) NOT NULL DEFAULT 'n',
+  `can_delete_upload_directories` char(1) NOT NULL DEFAULT 'n',
+  `can_create_channels` char(1) NOT NULL DEFAULT 'n',
+  `can_edit_channels` char(1) NOT NULL DEFAULT 'n',
+  `can_delete_channels` char(1) NOT NULL DEFAULT 'n',
+  `can_create_channel_fields` char(1) NOT NULL DEFAULT 'n',
+  `can_edit_channel_fields` char(1) NOT NULL DEFAULT 'n',
+  `can_delete_channel_fields` char(1) NOT NULL DEFAULT 'n',
+  `can_create_statuses` char(1) NOT NULL DEFAULT 'n',
+  `can_delete_statuses` char(1) NOT NULL DEFAULT 'n',
+  `can_edit_statuses` char(1) NOT NULL DEFAULT 'n',
+  `can_create_categories` char(1) NOT NULL DEFAULT 'n',
+  `can_create_member_groups` char(1) NOT NULL DEFAULT 'n',
+  `can_delete_member_groups` char(1) NOT NULL DEFAULT 'n',
+  `can_edit_member_groups` char(1) NOT NULL DEFAULT 'n',
+  `can_create_members` char(1) NOT NULL DEFAULT 'n',
+  `can_edit_members` char(1) NOT NULL DEFAULT 'n',
+  `can_create_new_templates` char(1) NOT NULL DEFAULT 'n',
+  `can_edit_templates` char(1) NOT NULL DEFAULT 'n',
+  `can_delete_templates` char(1) NOT NULL DEFAULT 'n',
+  `can_create_template_groups` char(1) NOT NULL DEFAULT 'n',
+  `can_edit_template_groups` char(1) NOT NULL DEFAULT 'n',
+  `can_delete_template_groups` char(1) NOT NULL DEFAULT 'n',
+  `can_create_template_partials` char(1) NOT NULL DEFAULT 'n',
+  `can_edit_template_partials` char(1) NOT NULL DEFAULT 'n',
+  `can_delete_template_partials` char(1) NOT NULL DEFAULT 'n',
+  `can_create_template_variables` char(1) NOT NULL DEFAULT 'n',
+  `can_delete_template_variables` char(1) NOT NULL DEFAULT 'n',
+  `can_edit_template_variables` char(1) NOT NULL DEFAULT 'n',
+  `can_access_security_settings` char(1) NOT NULL DEFAULT 'n',
+  `can_access_translate` char(1) NOT NULL DEFAULT 'n',
+  `can_access_import` char(1) NOT NULL DEFAULT 'n',
+  `can_access_sql_manager` char(1) NOT NULL DEFAULT 'n',
+  `can_moderate_spam` char(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`group_id`,`site_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE `exp_member_homepage` (
-  `member_id` int(10) unsigned NOT NULL,
-  `recent_entries` char(1) NOT NULL DEFAULT 'l',
-  `recent_entries_order` int(3) unsigned NOT NULL DEFAULT '0',
-  `recent_comments` char(1) NOT NULL DEFAULT 'l',
-  `recent_comments_order` int(3) unsigned NOT NULL DEFAULT '0',
-  `recent_members` char(1) NOT NULL DEFAULT 'n',
-  `recent_members_order` int(3) unsigned NOT NULL DEFAULT '0',
-  `site_statistics` char(1) NOT NULL DEFAULT 'r',
-  `site_statistics_order` int(3) unsigned NOT NULL DEFAULT '0',
-  `member_search_form` char(1) NOT NULL DEFAULT 'n',
-  `member_search_form_order` int(3) unsigned NOT NULL DEFAULT '0',
-  `notepad` char(1) NOT NULL DEFAULT 'r',
-  `notepad_order` int(3) unsigned NOT NULL DEFAULT '0',
-  `bulletin_board` char(1) NOT NULL DEFAULT 'r',
-  `bulletin_board_order` int(3) unsigned NOT NULL DEFAULT '0',
-  `pmachine_news_feed` char(1) NOT NULL DEFAULT 'n',
-  `pmachine_news_feed_order` int(3) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -909,18 +964,6 @@ CREATE TABLE `exp_members` (
   `crypt_key` varchar(40) DEFAULT NULL,
   `authcode` varchar(10) DEFAULT NULL,
   `email` varchar(75) NOT NULL,
-  `url` varchar(150) DEFAULT NULL,
-  `location` varchar(50) DEFAULT NULL,
-  `occupation` varchar(80) DEFAULT NULL,
-  `interests` varchar(120) DEFAULT NULL,
-  `bday_d` int(2) DEFAULT NULL,
-  `bday_m` int(2) DEFAULT NULL,
-  `bday_y` int(4) DEFAULT NULL,
-  `aol_im` varchar(50) DEFAULT NULL,
-  `yahoo_im` varchar(50) DEFAULT NULL,
-  `msn_im` varchar(50) DEFAULT NULL,
-  `icq` varchar(50) DEFAULT NULL,
-  `bio` text,
   `signature` text,
   `avatar_filename` varchar(120) DEFAULT NULL,
   `avatar_width` int(4) unsigned DEFAULT NULL,
@@ -958,10 +1001,10 @@ CREATE TABLE `exp_members` (
   `parse_smileys` char(1) NOT NULL DEFAULT 'y',
   `smart_notifications` char(1) NOT NULL DEFAULT 'y',
   `language` varchar(50) NOT NULL,
-  `timezone` varchar(50) NULL,
-  `time_format` char(2) NULL,
-  `date_format` varchar(8) NULL,
-  `include_seconds` char(1) NULL,
+  `timezone` varchar(50) DEFAULT NULL,
+  `time_format` char(2) DEFAULT NULL,
+  `date_format` varchar(8) DEFAULT NULL,
+  `include_seconds` char(1) DEFAULT NULL,
   `cp_theme` varchar(32) DEFAULT NULL,
   `profile_theme` varchar(32) DEFAULT NULL,
   `forum_theme` varchar(32) DEFAULT NULL,
@@ -976,14 +1019,34 @@ CREATE TABLE `exp_members` (
   `pmember_id` int(10) NOT NULL DEFAULT '0',
   `rte_enabled` char(1) NOT NULL DEFAULT 'y',
   `rte_toolset_id` int(10) NOT NULL DEFAULT '0',
-  `cp_homepage` varchar(20) NULL DEFAULT NULL,
-  `cp_homepage_channel` varchar(255) NULL DEFAULT NULL,
-  `cp_homepage_custom` varchar(100) NULL DEFAULT NULL,
+  `cp_homepage` varchar(20) DEFAULT NULL,
+  `cp_homepage_channel` varchar(255) DEFAULT NULL,
+  `cp_homepage_custom` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`member_id`),
   KEY `group_id` (`group_id`),
   KEY `unique_id` (`unique_id`),
   KEY `password` (`password`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `exp_menu_items` (
+  `item_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `parent_id` int(10) NOT NULL DEFAULT '0',
+  `set_id` int(10) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `data` varchar(255) DEFAULT NULL,
+  `type` varchar(10) DEFAULT NULL,
+  `sort` int(5) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`item_id`),
+  KEY `set_id` (`set_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `exp_menu_sets` (
+  `set_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`set_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_message_attachments` (
@@ -1080,7 +1143,7 @@ CREATE TABLE `exp_modules` (
   `has_cp_backend` char(1) NOT NULL DEFAULT 'n',
   `has_publish_fields` char(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`module_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_online_users` (
@@ -1110,14 +1173,16 @@ CREATE TABLE `exp_password_lockout` (
   KEY `user_agent` (`user_agent`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE exp_plugins (
-	plugin_id int(10) unsigned NOT NULL auto_increment,
-	plugin_name varchar(50) NOT NULL,
-	plugin_package varchar(50) NOT NULL,
-	plugin_version varchar(12) NOT NULL,
-	is_typography_related char(1) NOT NULL default 'n',
-	PRIMARY KEY `plugin_id` (`plugin_id`)
+
+CREATE TABLE `exp_plugins` (
+  `plugin_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `plugin_name` varchar(50) NOT NULL,
+  `plugin_package` varchar(50) NOT NULL,
+  `plugin_version` varchar(12) NOT NULL,
+  `is_typography_related` char(1) NOT NULL DEFAULT 'n',
+  PRIMARY KEY (`plugin_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 CREATE TABLE `exp_relationships` (
   `relationship_id` int(6) unsigned NOT NULL AUTO_INCREMENT,
@@ -1128,6 +1193,7 @@ CREATE TABLE `exp_relationships` (
   `grid_col_id` int(10) unsigned NOT NULL DEFAULT '0',
   `grid_row_id` int(10) unsigned NOT NULL DEFAULT '0',
   `order` int(10) unsigned NOT NULL DEFAULT '0',
+  `fluid_field_data_id` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`relationship_id`),
   KEY `parent_id` (`parent_id`),
   KEY `child_id` (`child_id`),
@@ -1242,10 +1308,10 @@ CREATE TABLE `exp_sessions` (
   `ip_address` varchar(45) NOT NULL DEFAULT '0',
   `user_agent` varchar(120) NOT NULL,
   `fingerprint` varchar(40) NOT NULL,
-  `login_state` varchar(32) NULL DEFAULT NULL,
+  `login_state` varchar(32) DEFAULT NULL,
   `sess_start` int(10) unsigned NOT NULL DEFAULT '0',
   `last_activity` int(10) unsigned NOT NULL DEFAULT '0',
-	`can_debug` char(1) NOT NULL DEFAULT 'n',
+  `can_debug` char(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`session_id`),
   KEY `member_id` (`member_id`),
   KEY `last_activity_idx` (`last_activity`)
@@ -1262,7 +1328,7 @@ CREATE TABLE `exp_sites` (
   `site_template_preferences` text NOT NULL,
   `site_channel_preferences` text NOT NULL,
   `site_bootstrap_checksums` text NOT NULL,
-  `site_pages` TEXT NOT NULL ,
+  `site_pages` text NOT NULL,
   PRIMARY KEY (`site_id`),
   KEY `site_name` (`site_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
@@ -1273,7 +1339,7 @@ CREATE TABLE `exp_snippets` (
   `site_id` int(4) NOT NULL,
   `snippet_name` varchar(75) NOT NULL,
   `snippet_contents` text,
-  `edit_date` int(10) NOT NULL DEFAULT 0,
+  `edit_date` int(10) NOT NULL DEFAULT '0',
   PRIMARY KEY (`snippet_id`),
   KEY `site_id` (`site_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
@@ -1281,16 +1347,16 @@ CREATE TABLE `exp_snippets` (
 
 CREATE TABLE `exp_specialty_templates` (
   `template_id` int(6) unsigned NOT NULL AUTO_INCREMENT,
-  `site_id` INT(4) UNSIGNED NOT NULL DEFAULT 1,
+  `site_id` int(4) unsigned NOT NULL DEFAULT '1',
   `enable_template` char(1) NOT NULL DEFAULT 'y',
   `template_name` varchar(50) NOT NULL,
   `data_title` varchar(80) NOT NULL,
-  `template_type` varchar(16) NULL,
-  `template_subtype` varchar(16) NULL,
+  `template_type` varchar(16) DEFAULT NULL,
+  `template_subtype` varchar(16) DEFAULT NULL,
   `template_data` text NOT NULL,
-  `template_notes` text NULL,
-  `edit_date` int(10) NOT NULL DEFAULT 0,
-  `last_author_id` int(10) UNSIGNED NOT NULL default 0,
+  `template_notes` text,
+  `edit_date` int(10) NOT NULL DEFAULT '0',
+  `last_author_id` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`template_id`),
   KEY `template_name` (`template_name`),
   KEY `site_id` (`site_id`)
@@ -1319,15 +1385,6 @@ CREATE TABLE `exp_stats` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `exp_status_groups` (
-  `group_id` int(4) unsigned NOT NULL AUTO_INCREMENT,
-  `site_id` int(4) unsigned NOT NULL DEFAULT '1',
-  `group_name` varchar(50) NOT NULL,
-  PRIMARY KEY (`group_id`),
-  KEY `site_id` (`site_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
-
-
 CREATE TABLE `exp_status_no_access` (
   `status_id` int(6) unsigned NOT NULL,
   `member_group` smallint(4) unsigned NOT NULL,
@@ -1337,14 +1394,10 @@ CREATE TABLE `exp_status_no_access` (
 
 CREATE TABLE `exp_statuses` (
   `status_id` int(6) unsigned NOT NULL AUTO_INCREMENT,
-  `site_id` int(4) unsigned NOT NULL DEFAULT '1',
-  `group_id` int(4) unsigned NOT NULL,
   `status` varchar(50) NOT NULL,
   `status_order` int(3) unsigned NOT NULL,
   `highlight` varchar(30) NOT NULL,
-  PRIMARY KEY (`status_id`),
-  KEY `group_id` (`group_id`),
-  KEY `site_id` (`site_id`)
+  PRIMARY KEY (`status_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 
@@ -1425,6 +1478,26 @@ CREATE TABLE `exp_throttle` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+CREATE TABLE `exp_update_log` (
+  `log_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `timestamp` int(10) unsigned DEFAULT NULL,
+  `message` text COLLATE utf8_unicode_ci,
+  `method` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `line` int(10) unsigned DEFAULT NULL,
+  `file` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`log_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+CREATE TABLE `exp_update_notices` (
+  `notice_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `message` text COLLATE utf8_unicode_ci,
+  `version` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `is_header` tinyint(4) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`notice_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
 CREATE TABLE `exp_upload_no_access` (
   `upload_id` int(6) unsigned NOT NULL,
   `member_group` smallint(4) unsigned NOT NULL,
@@ -1439,7 +1512,7 @@ CREATE TABLE `exp_upload_prefs` (
   `server_path` varchar(255) NOT NULL DEFAULT '',
   `url` varchar(100) NOT NULL,
   `allowed_types` varchar(3) NOT NULL DEFAULT 'img',
-  `default_modal_view` varchar(5) NOT NULL default 'list',
+  `default_modal_view` varchar(5) NOT NULL DEFAULT 'list',
   `max_size` varchar(16) DEFAULT NULL,
   `max_height` varchar(6) DEFAULT NULL,
   `max_width` varchar(6) DEFAULT NULL,
@@ -1451,34 +1524,23 @@ CREATE TABLE `exp_upload_prefs` (
   `file_post_format` varchar(120) DEFAULT NULL,
   `cat_group` varchar(255) DEFAULT NULL,
   `batch_location` varchar(255) DEFAULT NULL,
-  `module_id` int(4) NOT NULL DEFAULT 0,
+  `module_id` int(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `site_id` (`site_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
-CREATE TABLE `exp_menu_sets` (
-  `set_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`set_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
-CREATE TABLE `exp_menu_items` (
-  `item_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `parent_id` int(10) NOT NULL DEFAULT '0',
-  `set_id` int(10) DEFAULT NULL,
-  `name` varchar(50) DEFAULT NULL,
-  `data` varchar(255) DEFAULT NULL,
-  `type` varchar(10) DEFAULT NULL,
-  `sort` int(5) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`item_id`),
-  KEY `set_id` (`set_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+
+SET FOREIGN_KEY_CHECKS = @PREVIOUS_FOREIGN_KEY_CHECKS;
 
 
 SET @PREVIOUS_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;
 SET FOREIGN_KEY_CHECKS = 0;
 
+
 LOCK TABLES `exp_actions` WRITE;
+ALTER TABLE `exp_actions` DISABLE KEYS;
 INSERT INTO `exp_actions` (`action_id`, `class`, `method`, `csrf_exempt`) VALUES
 	(1,'Channel','submit_entry',0),
 	(2,'Channel','filemanager_endpoint',0),
@@ -1502,43 +1564,55 @@ INSERT INTO `exp_actions` (`action_id`, `class`, `method`, `csrf_exempt`) VALUES
 	(20,'Comment','comment_subscribe',0),
 	(21,'Comment','edit_comment',0),
 	(22,'Search','do_search',1);
+ALTER TABLE `exp_actions` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_captcha` WRITE;
+ALTER TABLE `exp_captcha` DISABLE KEYS;
+ALTER TABLE `exp_captcha` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_categories` WRITE;
+ALTER TABLE `exp_categories` DISABLE KEYS;
 INSERT INTO `exp_categories` (`cat_id`, `site_id`, `group_id`, `parent_id`, `cat_name`, `cat_url_title`, `cat_description`, `cat_image`, `cat_order`) VALUES
 	(1,1,1,0,'News','news','','',2),
 	(2,1,1,0,'Bands','bands','','',3),
 	(3,1,2,0,'Staff Bios','staff_bios','','',2),
 	(4,1,2,0,'Site Info','site_info','','',1);
+ALTER TABLE `exp_categories` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_category_field_data` WRITE;
+ALTER TABLE `exp_category_field_data` DISABLE KEYS;
 INSERT INTO `exp_category_field_data` (`cat_id`, `site_id`, `group_id`) VALUES
 	(1,1,1),
 	(2,1,1),
 	(3,1,2),
 	(4,1,2);
+ALTER TABLE `exp_category_field_data` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_category_fields` WRITE;
+ALTER TABLE `exp_category_fields` DISABLE KEYS;
+ALTER TABLE `exp_category_fields` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_category_groups` WRITE;
+ALTER TABLE `exp_category_groups` DISABLE KEYS;
 INSERT INTO `exp_category_groups` (`group_id`, `site_id`, `group_name`, `sort_order`, `exclude_group`, `field_html_formatting`, `can_edit_categories`, `can_delete_categories`) VALUES
 	(1,1,'News Categories','a',0,'all','',''),
 	(2,1,'About','a',0,'all','','');
+ALTER TABLE `exp_category_groups` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_category_posts` WRITE;
+ALTER TABLE `exp_category_posts` DISABLE KEYS;
 INSERT INTO `exp_category_posts` (`entry_id`, `cat_id`) VALUES
 	(1,1),
 	(2,1),
@@ -1550,10 +1624,12 @@ INSERT INTO `exp_category_posts` (`entry_id`, `cat_id`) VALUES
 	(8,3),
 	(9,3),
 	(10,2);
+ALTER TABLE `exp_category_posts` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_channel_data` WRITE;
+ALTER TABLE `exp_channel_data` DISABLE KEYS;
 INSERT INTO `exp_channel_data` (`entry_id`, `site_id`, `channel_id`, `field_id_1`, `field_ft_1`, `field_id_2`, `field_ft_2`, `field_id_3`, `field_ft_3`, `field_id_4`, `field_ft_4`, `field_id_5`, `field_ft_5`, `field_id_6`, `field_ft_6`, `field_id_7`, `field_ft_7`) VALUES
 	(1,1,1,'Thank you for choosing ExpressionEngine! This entry contains helpful resources to help you <a href="https://ellislab.com/expressionengine/user-guide/intro/getting_the_most.html">get the most from ExpressionEngine</a> and the EllisLab Community.\n\n<strong>Learning resources:</strong>\n\n<a href="https://ellislab.com/expressionengine/user-guide/">ExpressionEngine User Guide</a>\n<a href="https://ellislab.com/expressionengine/user-guide/intro/the_big_picture.html">The Big Picture</a>\n<a href="https://ellislab.com/support">EllisLab Support</a>\n\nIf you need to hire a web developer consider our <a href="https://ellislab.com/pro-network/">Professionals Network</a>.\n\nWelcome to our community,\n\n<span style="font-size:16px;">The EllisLab Team</span>','xhtml','','xhtml','{filedir_2}ee_banner_120_240.gif','none','','xhtml','','none','','none','','xhtml'),
 	(2,1,1,'Welcome to Agile Records, our Example Site.  Here you will be able to learn ExpressionEngine through a real site, with real features and in-depth comments to assist you along the way.\n\n','xhtml','','xhtml','{filedir_2}map.jpg','none','','xhtml','','none','','none','','xhtml'),
@@ -1565,119 +1641,194 @@ INSERT INTO `exp_channel_data` (`entry_id`, `site_id`, `channel_id`, `field_id_1
 	(8,1,2,'',NULL,'',NULL,'',NULL,'','xhtml','{filedir_2}staff_josh.png','none','Product Manager','none','','xhtml'),
 	(9,1,2,'',NULL,'',NULL,'',NULL,'','xhtml','{filedir_2}staff_jason.png','none','Graphic/Web Designer','none','','xhtml'),
 	(10,1,1,'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Proin congue mi a sapien. Duis augue erat, fringilla ac, volutpat ut, venenatis vitae, nisl. Phasellus lorem. Praesent mi. Suspendisse imperdiet felis a libero. uspendisse placerat tortor in ligula vestibulum vehicula.\n','xhtml','','xhtml','{filedir_2}testband300.jpg','none','',NULL,'',NULL,'',NULL,'',NULL);
+ALTER TABLE `exp_channel_data` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_channel_entries_autosave` WRITE;
+ALTER TABLE `exp_channel_entries_autosave` DISABLE KEYS;
+ALTER TABLE `exp_channel_entries_autosave` ENABLE KEYS;
 UNLOCK TABLES;
 
 
+LOCK TABLES `exp_channel_field_groups_fields` WRITE;
+ALTER TABLE `exp_channel_field_groups_fields` DISABLE KEYS;
+INSERT INTO `exp_channel_field_groups_fields` (`field_id`, `group_id`) VALUES
+	(1,1),
+	(2,1),
+	(3,1),
+	(4,2),
+	(5,2),
+	(6,2),
+	(7,2);
+ALTER TABLE `exp_channel_field_groups_fields` ENABLE KEYS;
+UNLOCK TABLES;
+
+LOCK TABLES `exp_channels_statuses` WRITE;
+ALTER TABLE `exp_channels_statuses` DISABLE KEYS;
+INSERT INTO `exp_channels_statuses` (`channel_id`, `status_id`) VALUES
+	(1,1),
+	(1,2),
+	(1,3);
+ALTER TABLE `exp_channels_statuses` ENABLE KEYS;
+UNLOCK TABLES;
+
 LOCK TABLES `exp_channel_fields` WRITE;
-INSERT INTO `exp_channel_fields` (`field_id`, `site_id`, `group_id`, `field_name`, `field_label`, `field_instructions`, `field_type`, `field_list_items`, `field_pre_populate`, `field_pre_channel_id`, `field_pre_field_id`, `field_ta_rows`, `field_maxl`, `field_required`, `field_text_direction`, `field_search`, `field_is_hidden`, `field_fmt`, `field_show_fmt`, `field_order`, `field_content_type`, `field_settings`) VALUES
-	(1,1,1,'news_body','Body','','textarea','','n',0,0,10,0,'n','ltr','y','n','xhtml','y',2,'any','YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30='),
-	(2,1,1,'news_extended','Extended text','','textarea','','n',0,0,12,0,'n','ltr','n','y','xhtml','y',3,'any','YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30='),
-	(3,1,1,'news_image','News Image','','file','','n',0,0,6,128,'n','ltr','n','n','none','n',3,'any','YTo3OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToibiI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJuIjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToibiI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToibiI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6Im4iO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6Im4iO3M6MTg6ImZpZWxkX2NvbnRlbnRfdHlwZSI7czo1OiJpbWFnZSI7fQ=='),
-	(4,1,2,'about_body','Body','','textarea','','n',0,0,6,128,'n','ltr','n','n','xhtml','y',4,'any','YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30='),
-	(5,1,2,'about_image','Image','URL Only','file','','n',0,0,6,128,'n','ltr','n','n','none','n',5,'any','YTo3OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToibiI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJuIjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToibiI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToibiI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6Im4iO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6Im4iO3M6MTg6ImZpZWxkX2NvbnRlbnRfdHlwZSI7czo1OiJpbWFnZSI7fQ=='),
-	(6,1,2,'about_staff_title','Staff Member\'s Title','This is the Title that the staff member has within the company.  Example: CEO','text','','n',0,0,6,128,'n','ltr','y','n','none','n',6,'any','YTo4OntzOjE4OiJmaWVsZF9jb250ZW50X3RleHQiO2I6MDtzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToibiI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJuIjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToibiI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToibiI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6Im4iO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6Im4iO3M6MTg6ImZpZWxkX2NvbnRlbnRfdHlwZSI7czozOiJhbnkiO30='),
-	(7,1,2,'about_extended','Extended','','textarea','','n',0,0,6,128,'n','ltr','y','y','xhtml','y',7,'any','YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30=');
+ALTER TABLE `exp_channel_fields` DISABLE KEYS;
+INSERT INTO `exp_channel_fields` (`field_id`, `site_id`, `field_name`, `field_label`, `field_instructions`, `field_type`, `field_list_items`, `field_pre_populate`, `field_pre_channel_id`, `field_pre_field_id`, `field_ta_rows`, `field_maxl`, `field_required`, `field_text_direction`, `field_search`, `field_is_hidden`, `field_fmt`, `field_show_fmt`, `field_order`, `field_content_type`, `field_settings`, `legacy_field_data`) VALUES
+	(1,1,'news_body','Body','','textarea','','n',0,0,10,0,'n','ltr','y','n','xhtml','y',2,'any','YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30=','y'),
+	(2,1,'news_extended','Extended text','','textarea','','n',0,0,12,0,'n','ltr','n','y','xhtml','y',3,'any','YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30=','y'),
+	(3,1,'news_image','News Image','','file','','n',0,0,6,128,'n','ltr','n','n','none','n',3,'any','YTo3OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToibiI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJuIjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToibiI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToibiI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6Im4iO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6Im4iO3M6MTg6ImZpZWxkX2NvbnRlbnRfdHlwZSI7czo1OiJpbWFnZSI7fQ==','y'),
+	(4,1,'about_body','Body','','textarea','','n',0,0,6,128,'n','ltr','n','n','xhtml','y',4,'any','YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30=','y'),
+	(5,1,'about_image','Image','URL Only','file','','n',0,0,6,128,'n','ltr','n','n','none','n',5,'any','YTo3OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToibiI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJuIjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToibiI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToibiI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6Im4iO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6Im4iO3M6MTg6ImZpZWxkX2NvbnRlbnRfdHlwZSI7czo1OiJpbWFnZSI7fQ==','y'),
+	(6,1,'about_staff_title','Staff Member\'s Title','This is the Title that the staff member has within the company.  Example: CEO','text','','n',0,0,6,128,'n','ltr','y','n','none','n',6,'any','YTo4OntzOjE4OiJmaWVsZF9jb250ZW50X3RleHQiO2I6MDtzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToibiI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJuIjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToibiI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToibiI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6Im4iO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6Im4iO3M6MTg6ImZpZWxkX2NvbnRlbnRfdHlwZSI7czozOiJhbnkiO30=','y'),
+	(7,1,'about_extended','Extended','','textarea','','n',0,0,6,128,'n','ltr','y','y','xhtml','y',7,'any','YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30=','y');
+ALTER TABLE `exp_channel_fields` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_channel_form_settings` WRITE;
+ALTER TABLE `exp_channel_form_settings` DISABLE KEYS;
+ALTER TABLE `exp_channel_form_settings` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_channel_member_groups` WRITE;
+ALTER TABLE `exp_channel_member_groups` DISABLE KEYS;
+ALTER TABLE `exp_channel_member_groups` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_channel_titles` WRITE;
-INSERT INTO `exp_channel_titles` (`entry_id`, `site_id`, `channel_id`, `author_id`, `forum_topic_id`, `ip_address`, `title`, `url_title`, `status`, `versioning_enabled`, `view_count_one`, `view_count_two`, `view_count_three`, `view_count_four`, `allow_comments`, `sticky`, `entry_date`, `year`, `month`, `day`, `expiration_date`, `comment_expiration_date`, `edit_date`, `recent_comment_date`, `comment_total`) VALUES
-	(1,1,1,1,NULL,'127.0.0.1','Getting to Know ExpressionEngine','getting_to_know_expressionengine','open','n',0,0,0,0,'y','n',1409242029,'2014','08','28',0,0,20140828160710,NULL,0),
-	(2,1,1,1,NULL,'127.0.0.1','Welcome to the Example Site!','welcome_to_the_example_site','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
-	(3,1,2,1,NULL,'127.0.0.1','About the Label','about_the_label','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
-	(4,1,2,1,NULL,'127.0.0.1','Randell','randell','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
-	(5,1,2,1,NULL,'127.0.0.1','Chloe','chloe','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
-	(6,1,2,1,NULL,'127.0.0.1','Howard','howard','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
-	(7,1,2,1,NULL,'127.0.0.1','Jane','jane','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
-	(8,1,2,1,NULL,'127.0.0.1','Josh','josh','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
-	(9,1,2,1,NULL,'127.0.0.1','Jason','jason','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
-	(10,1,1,1,NULL,'127.0.0.1','Band Title','band_title','Featured','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0);
+ALTER TABLE `exp_channel_titles` DISABLE KEYS;
+INSERT INTO `exp_channel_titles` (`entry_id`, `site_id`, `channel_id`, `author_id`, `forum_topic_id`, `ip_address`, `title`, `url_title`, `status`, `status_id`, `versioning_enabled`, `view_count_one`, `view_count_two`, `view_count_three`, `view_count_four`, `allow_comments`, `sticky`, `entry_date`, `year`, `month`, `day`, `expiration_date`, `comment_expiration_date`, `edit_date`, `recent_comment_date`, `comment_total`) VALUES
+	(1,1,1,1,NULL,'127.0.0.1','Getting to Know ExpressionEngine','getting_to_know_expressionengine','open',1,'n',0,0,0,0,'y','n',1409242029,'2014','08','28',0,0,20140828160710,NULL,0),
+	(2,1,1,1,NULL,'127.0.0.1','Welcome to the Example Site!','welcome_to_the_example_site','open',1,'n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(3,1,2,1,NULL,'127.0.0.1','About the Label','about_the_label','open',1,'n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(4,1,2,1,NULL,'127.0.0.1','Randell','randell','open',1,'n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(5,1,2,1,NULL,'127.0.0.1','Chloe','chloe','open',1,'n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(6,1,2,1,NULL,'127.0.0.1','Howard','howard','open',1,'n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(7,1,2,1,NULL,'127.0.0.1','Jane','jane','open',1,'n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(8,1,2,1,NULL,'127.0.0.1','Josh','josh','open',1,'n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(9,1,2,1,NULL,'127.0.0.1','Jason','jason','open',1,'n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(10,1,1,1,NULL,'127.0.0.1','Band Title','band_title','Featured','3','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0);
+ALTER TABLE `exp_channel_titles` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_channels` WRITE;
 ALTER TABLE `exp_channels` DISABLE KEYS;
-INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_title`, `channel_url`, `channel_description`, `channel_lang`, `total_entries`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `status_group`, `deft_status`, `field_group`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`, `extra_publish_controls`, `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `url_title_prefix`, `live_look_template`) VALUES
-	(1,1,'news','News','http://ee2/index.php/news',NULL,'en',3,0,1409242030,0,'1',1,'open',1,2,2,'y','y',0,'all','n','y','y','n','','http://ee2/index.php/news/comments','y','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','',0),
-	(2,1,'about','Information Pages','http://ee2/index.php/about',NULL,'en',7,0,1409242030,0,'2',1,'open',2,7,'','y','y',0,'all','n','y','n','n','','http://ee2/index.php/news/comments','n','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','',0);
+INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_title`, `channel_url`, `channel_description`, `channel_lang`, `total_entries`, `total_records`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `deft_status`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`, `extra_publish_controls`, `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `title_field_label`, `url_title_prefix`, `live_look_template`, `max_entries`) VALUES
+	(1,1,'news','News','http://ee2/index.php/news',NULL,'en',3,0,0,1409242030,0,'1','open',2,'2','y','y',0,'all','n','y','y','n','','http://ee2/index.php/news/comments','y','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','',0,0),
+	(2,1,'about','Information Pages','http://ee2/index.php/about',NULL,'en',7,0,0,1409242030,0,'2','open',7,'','y','y',0,'all','n','y','n','n','','http://ee2/index.php/news/comments','n','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','',0,0);
 ALTER TABLE `exp_channels` ENABLE KEYS;
 UNLOCK TABLES;
 
 
+LOCK TABLES `exp_channels_channel_field_groups` WRITE;
+ALTER TABLE `exp_channels_channel_field_groups` DISABLE KEYS;
+INSERT INTO `exp_channels_channel_field_groups` (`channel_id`, `group_id`) VALUES
+	(1,1),
+	(2,2);
+ALTER TABLE `exp_channels_channel_field_groups` ENABLE KEYS;
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_channels_channel_fields` WRITE;
+ALTER TABLE `exp_channels_channel_fields` DISABLE KEYS;
+ALTER TABLE `exp_channels_channel_fields` ENABLE KEYS;
+UNLOCK TABLES;
+
+
 LOCK TABLES `exp_comment_subscriptions` WRITE;
+ALTER TABLE `exp_comment_subscriptions` DISABLE KEYS;
+ALTER TABLE `exp_comment_subscriptions` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_comments` WRITE;
+ALTER TABLE `exp_comments` DISABLE KEYS;
+ALTER TABLE `exp_comments` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_content_types` WRITE;
+ALTER TABLE `exp_content_types` DISABLE KEYS;
 INSERT INTO `exp_content_types` (`content_type_id`, `name`) VALUES
-	(1,'grid'),
-	(2,'channel');
+	(2,'channel'),
+	(1,'grid');
+ALTER TABLE `exp_content_types` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_cp_log` WRITE;
+ALTER TABLE `exp_cp_log` DISABLE KEYS;
+ALTER TABLE `exp_cp_log` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_developer_log` WRITE;
+ALTER TABLE `exp_developer_log` DISABLE KEYS;
+ALTER TABLE `exp_developer_log` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_email_cache` WRITE;
+ALTER TABLE `exp_email_cache` DISABLE KEYS;
+ALTER TABLE `exp_email_cache` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_email_cache_mg` WRITE;
+ALTER TABLE `exp_email_cache_mg` DISABLE KEYS;
+ALTER TABLE `exp_email_cache_mg` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_email_cache_ml` WRITE;
+ALTER TABLE `exp_email_cache_ml` DISABLE KEYS;
+ALTER TABLE `exp_email_cache_ml` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_email_console_cache` WRITE;
+ALTER TABLE `exp_email_console_cache` DISABLE KEYS;
+ALTER TABLE `exp_email_console_cache` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_email_tracker` WRITE;
+ALTER TABLE `exp_email_tracker` DISABLE KEYS;
+ALTER TABLE `exp_email_tracker` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_entry_versioning` WRITE;
+ALTER TABLE `exp_entry_versioning` DISABLE KEYS;
+ALTER TABLE `exp_entry_versioning` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_extensions` WRITE;
+ALTER TABLE `exp_extensions` DISABLE KEYS;
 INSERT INTO `exp_extensions` (`extension_id`, `class`, `method`, `hook`, `settings`, `priority`, `version`, `enabled`) VALUES
 	(1,'Rte_ext','myaccount_nav_setup','myaccount_nav_setup','',10,'1.0.1','y'),
 	(2,'Rte_ext','cp_menu_array','cp_menu_array','',10,'1.0.1','y');
+ALTER TABLE `exp_extensions` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_field_groups` WRITE;
+ALTER TABLE `exp_field_groups` DISABLE KEYS;
 INSERT INTO `exp_field_groups` (`group_id`, `site_id`, `group_name`) VALUES
 	(1,1,'News'),
 	(2,1,'About');
+ALTER TABLE `exp_field_groups` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_fieldtypes` WRITE;
+ALTER TABLE `exp_fieldtypes` DISABLE KEYS;
 INSERT INTO `exp_fieldtypes` (`fieldtype_id`, `name`, `version`, `settings`, `has_global_settings`) VALUES
 	(1,'select','1.0.0','YTowOnt9','n'),
 	(2,'text','1.0.0','YTowOnt9','n'),
@@ -1689,28 +1840,35 @@ INSERT INTO `exp_fieldtypes` (`fieldtype_id`, `name`, `version`, `settings`, `ha
 	(8,'checkboxes','1.0.0','YTowOnt9','n'),
 	(9,'radio','1.0.0','YTowOnt9','n'),
 	(10,'relationship','1.0.0','YTowOnt9','n'),
-  # Leave RTE at 1.0.0 or change test_addon_manager's "can filter by status" so
-  # it properly checks the correct number of add-ons that need updates
-  (11,'rte','1.0.0','YTowOnt9','n'),
-  (12,'url','1.0.0','YTowOnt9','n'),
-  (13,'email_address','1.0.0','YTowOnt9','n'),
-	(14,'toggle','1.0.0','YTowOnt9','n');
+	(11,'rte','1.0.0','YTowOnt9','n'),
+	(12,'url','1.0.0','YTowOnt9','n'),
+	(13,'email_address','1.0.0','YTowOnt9','n'),
+	(14,'toggle','1.0.0','YTowOnt9','n'),
+	(15,'fluid_field','1.0.0','YTowOnt9','n');
+ALTER TABLE `exp_fieldtypes` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_file_categories` WRITE;
+ALTER TABLE `exp_file_categories` DISABLE KEYS;
+ALTER TABLE `exp_file_categories` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_file_dimensions` WRITE;
+ALTER TABLE `exp_file_dimensions` DISABLE KEYS;
+ALTER TABLE `exp_file_dimensions` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_file_watermarks` WRITE;
+ALTER TABLE `exp_file_watermarks` DISABLE KEYS;
+ALTER TABLE `exp_file_watermarks` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_files` WRITE;
+ALTER TABLE `exp_files` DISABLE KEYS;
 INSERT INTO `exp_files` (`file_id`, `site_id`, `title`, `upload_location_id`, `mime_type`, `file_name`, `file_size`, `description`, `credit`, `location`, `uploaded_by_member_id`, `upload_date`, `modified_by_member_id`, `modified_date`, `file_hw_original`) VALUES
 	(1,1,'staff_jane.png',2,'image/png','staff_jane.png',51612,NULL,NULL,NULL,1,1302889304,1,1302889304,''),
 	(2,1,'staff_jason.png',2,'image/png','staff_jason.png',51430,NULL,NULL,NULL,1,1302888304,1,1302888304,''),
@@ -1737,134 +1895,191 @@ INSERT INTO `exp_files` (`file_id`, `site_id`, `title`, `upload_location_id`, `m
 	(23,1,'procotopus.png',3,'image/png','procotopus.png',6456,NULL,NULL,NULL,1,1432910425,1,1432910425,''),
 	(24,1,'sneak_squirrel.jpg',3,'image/jpeg','sneak_squirrel.jpg',19542,NULL,NULL,NULL,1,1432910425,1,1432910425,''),
 	(25,1,'zombie_bunny.png',3,'image/png','zombie_bunny.png',6830,NULL,NULL,NULL,1,1432910425,1,1432910425,'');
+ALTER TABLE `exp_files` ENABLE KEYS;
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_fluid_field_data` WRITE;
+ALTER TABLE `exp_fluid_field_data` DISABLE KEYS;
+ALTER TABLE `exp_fluid_field_data` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_global_variables` WRITE;
-INSERT INTO `exp_global_variables` (`variable_id`, `site_id`, `variable_name`, `variable_data`) VALUES
-	(1,1,'.htaccess','deny from all'),
-	(2,1,'branding_begin','<div id="branding">\n	<div id="branding_logo"></div>\n	<div id="branding_sub">\n		<h1><a href="{site_url}" title="Agile Records Home"></a></h1>'),
-	(3,1,'branding_end','</div> <!-- ending #branding_sub -->\n</div> <!-- ending #branding -->'),
-	(4,1,'comment_guidelines','<div id="comment_guidelines">\n	<h6>Comment Guidelines</h6>\n	<p>Basic HTML formatting permitted - <br />\n		<code>&lt;ul&gt;</code>, <code>&lt;li&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;a href&gt;</code>, <code>&lt;blockquote&gt;</code>, <code>&lt;code&gt;</code></p>\n</div>'),
-	(5,1,'favicon','<!-- Favicon -->\n'),
-	(6,1,'html_close','</body>\n</html>'),
-	(7,1,'html_head','<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml">\n<head>\n<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n'),
-	(8,1,'html_head_end','</head>\n'),
-	(9,1,'js','<!-- JS -->\n<script src="http://code.jquery.com/jquery-1.12.1.min.js" type="text/javascript"></script>\n<script src="{site_url}themes/site/default/js/onload.js" type="text/javascript"></script>'),
-	(10,1,'nav_access','<ul id="nav_access">\n	<li><a href="#navigation">Skip to navigation</a></li>\n	<li><a href="#primary_content_wrapper">Skip to content</a></li>\n</ul>'),
-	(11,1,'rss','<!-- RSS -->\n<link href="{path=news/rss}" rel="alternate" type="application/rss+xml" title="RSS Feed" />'),
-	(12,1,'rss_links','<h5>RSS Feeds <img src="{site_url}themes/site/default/images/rss12.gif" alt="RSS Icon" class="rssicon" /></h5>\n		<div id="news_rss">\n			<p>Subscribe to our RSS Feeds</p>\n			<ul>\n				<li><a href="{path=\'news/rss\'}">News RSS Feed</a></li>\n				<li><a href="{path=\'news/atom\'}">News ATOM Feed</a></li>\n			</ul>\n		</div>'),
-	(13,1,'wrapper_begin','<div id="page">\n<div id="content_wrapper">'),
-	(14,1,'wrapper_close','</div> <!-- ending #content_wrapper -->\n</div> <!-- ending #page -->');
+ALTER TABLE `exp_global_variables` DISABLE KEYS;
+INSERT INTO `exp_global_variables` (`variable_id`, `site_id`, `variable_name`, `variable_data`, `edit_date`) VALUES
+	(1,1,'.htaccess','deny from all',0),
+	(2,1,'branding_begin','<div id="branding">\n	<div id="branding_logo"></div>\n	<div id="branding_sub">\n		<h1><a href="{site_url}" title="Agile Records Home"></a></h1>',0),
+	(3,1,'branding_end','</div> <!-- ending #branding_sub -->\n</div> <!-- ending #branding -->',0),
+	(4,1,'comment_guidelines','<div id="comment_guidelines">\n	<h6>Comment Guidelines</h6>\n	<p>Basic HTML formatting permitted - <br />\n		<code>&lt;ul&gt;</code>, <code>&lt;li&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;a href&gt;</code>, <code>&lt;blockquote&gt;</code>, <code>&lt;code&gt;</code></p>\n</div>',0),
+	(5,1,'favicon','<!-- Favicon -->\n',0),
+	(6,1,'html_close','</body>\n</html>',0),
+	(7,1,'html_head','<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml">\n<head>\n<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n',0),
+	(8,1,'html_head_end','</head>\n',0),
+	(9,1,'js','<!-- JS -->\n<script src="http://code.jquery.com/jquery-1.12.1.min.js" type="text/javascript"></script>\n<script src="{site_url}themes/site/default/js/onload.js" type="text/javascript"></script>',0),
+	(10,1,'nav_access','<ul id="nav_access">\n	<li><a href="#navigation">Skip to navigation</a></li>\n	<li><a href="#primary_content_wrapper">Skip to content</a></li>\n</ul>',0),
+	(11,1,'rss','<!-- RSS -->\n<link href="{path=news/rss}" rel="alternate" type="application/rss+xml" title="RSS Feed" />',0),
+	(12,1,'rss_links','<h5>RSS Feeds <img src="{site_url}themes/site/default/images/rss12.gif" alt="RSS Icon" class="rssicon" /></h5>\n		<div id="news_rss">\n			<p>Subscribe to our RSS Feeds</p>\n			<ul>\n				<li><a href="{path=\'news/rss\'}">News RSS Feed</a></li>\n				<li><a href="{path=\'news/atom\'}">News ATOM Feed</a></li>\n			</ul>\n		</div>',0),
+	(13,1,'wrapper_begin','<div id="page">\n<div id="content_wrapper">',0),
+	(14,1,'wrapper_close','</div> <!-- ending #content_wrapper -->\n</div> <!-- ending #page -->',0);
+ALTER TABLE `exp_global_variables` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_grid_columns` WRITE;
+ALTER TABLE `exp_grid_columns` DISABLE KEYS;
+ALTER TABLE `exp_grid_columns` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_html_buttons` WRITE;
+ALTER TABLE `exp_html_buttons` DISABLE KEYS;
 INSERT INTO `exp_html_buttons` (`id`, `site_id`, `member_id`, `tag_name`, `tag_open`, `tag_close`, `accesskey`, `tag_order`, `tag_row`, `classname`) VALUES
 	(1,1,0,'Bold text','<strong>','</strong>','b',1,'1','html-bold'),
 	(2,1,0,'Italic text','<em>','</em>','i',2,'1','html-italic'),
 	(3,1,0,'Blockquote','<blockquote>','</blockquote>','q',3,'1','html-quote'),
 	(4,1,0,'Link','<a href="[![Link:!:http://]!]"(!( title="[![Title]!]")!)>','</a>','a',4,'1','html-link'),
 	(5,1,0,'Image','<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />','','',5,'1','html-upload');
+ALTER TABLE `exp_html_buttons` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_layout_publish` WRITE;
+ALTER TABLE `exp_layout_publish` DISABLE KEYS;
+ALTER TABLE `exp_layout_publish` ENABLE KEYS;
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_layout_publish_member_groups` WRITE;
+ALTER TABLE `exp_layout_publish_member_groups` DISABLE KEYS;
+ALTER TABLE `exp_layout_publish_member_groups` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_member_bulletin_board` WRITE;
+ALTER TABLE `exp_member_bulletin_board` DISABLE KEYS;
+ALTER TABLE `exp_member_bulletin_board` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_member_data` WRITE;
+ALTER TABLE `exp_member_data` DISABLE KEYS;
 INSERT INTO `exp_member_data` (`member_id`) VALUES
-	(1),(2),(3),(4),(5),(6),(7);
+	(1),
+	(2),
+	(3),
+	(4),
+	(5),
+	(6),
+	(7);
+ALTER TABLE `exp_member_data` ENABLE KEYS;
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_member_data_field_1` WRITE;
+ALTER TABLE `exp_member_data_field_1` DISABLE KEYS;
+INSERT INTO `exp_member_data_field_1` (`id`, `member_id`, `m_field_id_1`, `m_field_dt_1`, `m_field_ft_1`) VALUES
+	(1,1,0,NULL,NULL),
+	(2,2,-24966000,NULL,NULL),
+	(3,3,0,NULL,NULL),
+	(4,4,0,NULL,NULL),
+	(5,5,0,NULL,NULL),
+	(6,6,0,NULL,NULL),
+	(7,7,0,NULL,NULL);
+ALTER TABLE `exp_member_data_field_1` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_member_fields` WRITE;
+ALTER TABLE `exp_member_fields` DISABLE KEYS;
+INSERT INTO `exp_member_fields` (`m_field_id`, `m_field_name`, `m_field_label`, `m_field_description`, `m_field_type`, `m_field_list_items`, `m_field_ta_rows`, `m_field_maxl`, `m_field_width`, `m_field_search`, `m_field_required`, `m_field_public`, `m_field_reg`, `m_field_cp_reg`, `m_field_fmt`, `m_field_show_fmt`, `m_field_order`, `m_field_text_direction`, `m_field_settings`, `m_legacy_field_data`) VALUES
+	(1,'birthday','Birthday','','date','',8,NULL,NULL,'y','n','y','n','n','none','y',1,'ltr',NULL,'n');
+ALTER TABLE `exp_member_fields` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_member_groups` WRITE;
-
-  INSERT INTO exp_member_groups
-  			(group_description, group_title, group_id, can_view_offline_system, can_access_cp, can_access_footer_report_bug, can_access_footer_new_ticket, can_access_footer_user_guide, can_view_homepage_news, can_upload_new_files, can_edit_files, can_delete_files, can_upload_new_toolsets, can_edit_toolsets, can_delete_toolsets, can_create_upload_directories, can_edit_upload_directories, can_delete_upload_directories, can_access_files, can_access_design, can_access_addons, can_access_members, can_access_sys_prefs, can_access_comm, can_access_utilities, can_access_data, can_access_logs, can_admin_channels, can_create_channels, can_edit_channels, can_delete_channels, can_create_channel_fields, can_edit_channel_fields, can_delete_channel_fields, can_create_statuses, can_delete_statuses, can_edit_statuses, can_create_categories, can_create_member_groups, can_delete_member_groups, can_edit_member_groups, can_admin_design, can_create_members, can_edit_members, can_delete_members, can_admin_mbr_groups, can_admin_mbr_templates, can_ban_users, can_admin_addons, can_create_new_templates, can_edit_templates, can_delete_templates, can_create_template_groups, can_edit_template_groups, can_delete_template_groups, can_create_template_partials, can_edit_template_partials, can_delete_template_partials, can_create_template_variables, can_delete_template_variables, can_edit_template_variables, can_edit_categories, can_delete_categories, can_view_other_entries, can_edit_other_entries, can_assign_post_authors, can_delete_self_entries, can_delete_all_entries, can_view_other_comments, can_edit_own_comments, can_delete_own_comments, can_edit_all_comments, can_delete_all_comments, can_moderate_comments, can_send_cached_email, can_email_member_groups, can_email_from_profile, can_view_profiles, can_edit_html_buttons, can_delete_self, exclude_from_moderation, can_send_private_messages, can_attach_in_private_messages, can_send_bulletins, include_in_authorlist, search_flood_control)
-  			VALUES ('', 'Super Admin', 1, 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', '0');
-
-  INSERT INTO exp_member_groups
-  			(group_description, group_title, group_id, can_access_cp, can_view_online_system, can_search, can_post_comments, include_in_memberlist, search_flood_control)
-  			VALUES ('', 'Banned', 2, 'n', 'n', 'n', 'n', 'n', '60');
-
-  INSERT INTO exp_member_groups
-  			(group_description, group_title, group_id, can_access_cp, search_flood_control)
-  			VALUES ('', 'Guests', 3, 'n', '10');
-
-  INSERT INTO exp_member_groups
-  			(group_description, group_title, group_id, can_access_cp, search_flood_control)
-  			VALUES ('', 'Pending', 4, 'n', '10');
-
-  INSERT INTO exp_member_groups
-  			(group_description, group_title, group_id, can_access_cp, can_email_from_profile, can_view_profiles, can_edit_html_buttons, can_delete_self, can_send_private_messages, can_attach_in_private_messages, search_flood_control)
-  			VALUES ('', 'Members', 5, 'n', 'y', 'y', 'y', 'y', 'y', 'y', '10');
-UNLOCK TABLES;
-
-
-LOCK TABLES `exp_member_homepage` WRITE;
-INSERT INTO `exp_member_homepage` (`member_id`, `recent_entries`, `recent_entries_order`, `recent_comments`, `recent_comments_order`, `recent_members`, `recent_members_order`, `site_statistics`, `site_statistics_order`, `member_search_form`, `member_search_form_order`, `notepad`, `notepad_order`, `bulletin_board`, `bulletin_board_order`, `pmachine_news_feed`, `pmachine_news_feed_order`) VALUES
-	(1,'l',1,'l',2,'n',0,'r',1,'n',0,'r',2,'r',0,'l',0);
+ALTER TABLE `exp_member_groups` DISABLE KEYS;
+INSERT INTO `exp_member_groups` (`group_id`, `site_id`, `menu_set_id`, `group_title`, `group_description`, `is_locked`, `can_view_offline_system`, `can_view_online_system`, `can_access_cp`, `can_access_footer_report_bug`, `can_access_footer_new_ticket`, `can_access_footer_user_guide`, `can_view_homepage_news`, `can_access_files`, `can_access_design`, `can_access_addons`, `can_access_members`, `can_access_sys_prefs`, `can_access_comm`, `can_access_utilities`, `can_access_data`, `can_access_logs`, `can_admin_channels`, `can_admin_design`, `can_delete_members`, `can_admin_mbr_groups`, `can_admin_mbr_templates`, `can_ban_users`, `can_admin_addons`, `can_edit_categories`, `can_delete_categories`, `can_view_other_entries`, `can_edit_other_entries`, `can_assign_post_authors`, `can_delete_self_entries`, `can_delete_all_entries`, `can_view_other_comments`, `can_edit_own_comments`, `can_delete_own_comments`, `can_edit_all_comments`, `can_delete_all_comments`, `can_moderate_comments`, `can_send_cached_email`, `can_email_member_groups`, `can_email_from_profile`, `can_view_profiles`, `can_edit_html_buttons`, `can_delete_self`, `mbr_delete_notify_emails`, `can_post_comments`, `exclude_from_moderation`, `can_search`, `search_flood_control`, `can_send_private_messages`, `prv_msg_send_limit`, `prv_msg_storage_limit`, `can_attach_in_private_messages`, `can_send_bulletins`, `include_in_authorlist`, `include_in_memberlist`, `cp_homepage`, `cp_homepage_channel`, `cp_homepage_custom`, `can_create_entries`, `can_edit_self_entries`, `can_upload_new_files`, `can_edit_files`, `can_delete_files`, `can_upload_new_toolsets`, `can_edit_toolsets`, `can_delete_toolsets`, `can_create_upload_directories`, `can_edit_upload_directories`, `can_delete_upload_directories`, `can_create_channels`, `can_edit_channels`, `can_delete_channels`, `can_create_channel_fields`, `can_edit_channel_fields`, `can_delete_channel_fields`, `can_create_statuses`, `can_delete_statuses`, `can_edit_statuses`, `can_create_categories`, `can_create_member_groups`, `can_delete_member_groups`, `can_edit_member_groups`, `can_create_members`, `can_edit_members`, `can_create_new_templates`, `can_edit_templates`, `can_delete_templates`, `can_create_template_groups`, `can_edit_template_groups`, `can_delete_template_groups`, `can_create_template_partials`, `can_edit_template_partials`, `can_delete_template_partials`, `can_create_template_variables`, `can_delete_template_variables`, `can_edit_template_variables`, `can_access_security_settings`, `can_access_translate`, `can_access_import`, `can_access_sql_manager`, `can_moderate_spam`) VALUES
+	(1,1,1,'Super Admin','','n','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y',NULL,'n','y','n',0,'y',20,60,'y','y','y','y',NULL,0,NULL,'n','n','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','n','n','n','n','y'),
+	(2,1,1,'Banned','','n','n','n','n','n','n','n','y','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n',NULL,'n','n','n',60,'n',20,60,'n','n','n','n',NULL,0,NULL,'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n'),
+	(3,1,1,'Guests','','n','n','y','n','n','n','n','y','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n',NULL,'n','n','n',10,'n',20,60,'n','n','n','y',NULL,0,NULL,'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n'),
+	(4,1,1,'Pending','','n','n','y','n','n','n','n','y','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n',NULL,'n','n','n',10,'n',20,60,'n','n','n','y',NULL,0,NULL,'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n'),
+	(5,1,1,'Members','','n','n','y','n','n','n','n','y','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','y','y','y','y',NULL,'n','n','n',10,'y',20,60,'y','n','n','y',NULL,0,NULL,'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n');
+ALTER TABLE `exp_member_groups` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_member_search` WRITE;
+ALTER TABLE `exp_member_search` DISABLE KEYS;
+ALTER TABLE `exp_member_search` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_members` WRITE;
-INSERT INTO `exp_members` (`member_id`, `group_id`, `username`, `screen_name`, `password`, `salt`, `unique_id`, `crypt_key`, `authcode`, `email`, `url`, `location`, `occupation`, `interests`, `bday_d`, `bday_m`, `bday_y`, `aol_im`, `yahoo_im`, `msn_im`, `icq`, `bio`, `signature`, `avatar_filename`, `avatar_width`, `avatar_height`, `photo_filename`, `photo_width`, `photo_height`, `sig_img_filename`, `sig_img_width`, `sig_img_height`, `ignore_list`, `private_messages`, `accept_messages`, `last_view_bulletins`, `last_bulletin_date`, `ip_address`, `join_date`, `last_visit`, `last_activity`, `total_entries`, `total_comments`, `total_forum_topics`, `total_forum_posts`, `last_entry_date`, `last_comment_date`, `last_forum_post_date`, `last_email_date`, `in_authorlist`, `accept_admin_email`, `accept_user_email`, `notify_by_default`, `notify_of_pm`, `display_avatars`, `display_signatures`, `parse_smileys`, `smart_notifications`, `language`, `timezone`, `time_format`, `date_format`, `include_seconds`, `cp_theme`, `profile_theme`, `forum_theme`, `tracker`, `template_size`, `notepad`, `notepad_size`, `quick_links`, `quick_tabs`, `show_sidebar`, `pmember_id`, `rte_enabled`, `rte_toolset_id`) VALUES
-  (1,1,'admin','Admin','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bc62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'kevin.cupp@gmail.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1409242030,0,0,10,0,0,0,1409242030,0,0,0,'n','y','y','y','y','y','y','y','y','english','America/New_York','12','%n/%j/%Y','n',NULL,NULL,NULL,NULL,'28',NULL,'18','',NULL,'n',0,'y',0);
+ALTER TABLE `exp_members` DISABLE KEYS;
+INSERT INTO `exp_members` (`member_id`, `group_id`, `username`, `screen_name`, `password`, `salt`, `unique_id`, `crypt_key`, `authcode`, `email`, `signature`, `avatar_filename`, `avatar_width`, `avatar_height`, `photo_filename`, `photo_width`, `photo_height`, `sig_img_filename`, `sig_img_width`, `sig_img_height`, `ignore_list`, `private_messages`, `accept_messages`, `last_view_bulletins`, `last_bulletin_date`, `ip_address`, `join_date`, `last_visit`, `last_activity`, `total_entries`, `total_comments`, `total_forum_topics`, `total_forum_posts`, `last_entry_date`, `last_comment_date`, `last_forum_post_date`, `last_email_date`, `in_authorlist`, `accept_admin_email`, `accept_user_email`, `notify_by_default`, `notify_of_pm`, `display_avatars`, `display_signatures`, `parse_smileys`, `smart_notifications`, `language`, `timezone`, `time_format`, `date_format`, `include_seconds`, `cp_theme`, `profile_theme`, `forum_theme`, `tracker`, `template_size`, `notepad`, `notepad_size`, `bookmarklets`, `quick_links`, `quick_tabs`, `show_sidebar`, `pmember_id`, `rte_enabled`, `rte_toolset_id`, `cp_homepage`, `cp_homepage_channel`, `cp_homepage_custom`) VALUES
+	(1,1,'admin','Admin','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bc62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'kevin.cupp@gmail.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1409242030,0,0,10,0,0,0,1409242030,0,0,0,'n','y','y','y','y','y','y','y','y','english','America/New_York','12','%n/%j/%Y','n',NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,'',NULL,'n',0,'y',0,NULL,NULL,NULL),
+	(2,1,'robin','Robin Screen','5zaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bz62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'mediacow@localhost',NULL,'procotopus.png',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'4',1,'y',0,0,'127.0.0.1',1465853984,1491259180,1491324114,83,10,7,4,0,1469650137,1487020433,0,'n','y','y','y','y','y','y','n','y','english','America/New_York','12','%n/%j/%Y','n',NULL,NULL,'Shares',NULL,'28',NULL,'18',NULL,'Query Results|index.php?/cp/utilities/query|1\nOffsite 2|http://test.com|4',NULL,'n',0,'y',0,'entries_edit','{"1":"1","2":"14","3":"8"}',''),
+	(3,2,'banned1','Banned 1','5aaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','by62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'edit2@localhost',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1484840926,0,0,2,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','y','english',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,NULL,NULL,'n',0,'y',0,NULL,NULL,NULL),
+	(4,4,'pending1','Pending 1','5daa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bx62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'edit5@localhost',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1484841088,0,0,2,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','y','english',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,NULL,NULL,'n',0,'y',0,NULL,NULL,NULL),
+	(5,4,'pending2','Pending 2','5eaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bm62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'edit6@localhost',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1485306436,0,0,0,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','y','english',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,NULL,NULL,'n',0,'y',0,NULL,NULL,NULL),
+	(6,5,'member1','Member 1','5faa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bn62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'editor7@localhost',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1485306584,0,0,0,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','y','english',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,NULL,NULL,'n',0,'y',0,NULL,NULL,NULL),
+	(7,5,'member2','Member 2','5gaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bo62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'editor8@localhost',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1485307720,0,0,0,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','y','english',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,NULL,NULL,'n',0,'y',0,NULL,NULL,NULL);
+ALTER TABLE `exp_members` ENABLE KEYS;
+UNLOCK TABLES;
 
-INSERT INTO `exp_members` (`member_id`, `group_id`, `username`, `screen_name`, `password`, `salt`, `unique_id`, `crypt_key`, `authcode`, `email`, `url`, `location`, `occupation`, `interests`, `bday_d`, `bday_m`, `bday_y`, `aol_im`, `yahoo_im`, `msn_im`, `icq`, `bio`, `signature`, `avatar_filename`, `avatar_width`, `avatar_height`, `photo_filename`, `photo_width`, `photo_height`, `sig_img_filename`, `sig_img_width`, `sig_img_height`, `ignore_list`, `private_messages`, `accept_messages`, `last_view_bulletins`, `last_bulletin_date`, `ip_address`, `join_date`, `last_visit`, `last_activity`, `total_entries`, `total_comments`, `total_forum_topics`, `total_forum_posts`, `last_entry_date`, `last_comment_date`, `last_forum_post_date`, `last_email_date`, `in_authorlist`, `accept_admin_email`, `accept_user_email`, `notify_by_default`, `notify_of_pm`, `display_avatars`, `display_signatures`, `parse_smileys`, `smart_notifications`, `language`, `timezone`, `time_format`, `date_format`, `include_seconds`, `profile_theme`, `forum_theme`, `tracker`, `template_size`, `notepad`, `notepad_size`, `bookmarklets`, `quick_links`, `quick_tabs`, `show_sidebar`, `pmember_id`, `rte_enabled`, `rte_toolset_id`, `cp_homepage`, `cp_homepage_channel`, `cp_homepage_custom`) VALUES
-  (2, 1, 'robin', 'Robin Screen', '5zaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bz62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL, 'mediacow@gmail.com', '', '', NULL, NULL, 18, 3, 1969, NULL, NULL, NULL, NULL, '', NULL, 'procotopus.png', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '4', 1, 'y', 0, 0, '127.0.0.1', 1465853984, 1491259180, 1491324114, 83, 10, 7, 4, 0, 1469650137, 1487020433, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'n', 'y', 'english', 'America/New_York', '12', '%n/%j/%Y', 'n', NULL, 'Shares', NULL, '28', NULL, '18', NULL, 'Query Results|index.php?/cp/utilities/query|1\nOffsite 2|http://test.com|4', NULL, 'n', 0, 'y', 0, 'entries_edit', '{"1":"1","2":"14","3":"8"}', ''),
-  (3, 2, 'banned1', 'Banned 1', '5aaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','by62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL, 'edit2@me.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1484840926, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, NULL, NULL, 'n', 0, 'y', 0, NULL, NULL, NULL),
-  (4, 4, 'pending1', 'Pending 1', '5daa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bx62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL, 'edit5@me.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1484841088, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, NULL, NULL, 'n', 0, 'y', 0, NULL, NULL, NULL),
-  (5, 4, 'pending2', 'Pending 2', '5eaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bm62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL, 'edit6@me.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1485306436, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, NULL, NULL, 'n', 0, 'y', 0, NULL, NULL, NULL),
-  (6, 5, 'member1', 'Member 1', '5faa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bn62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL, 'editor7@me.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1485306584, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, NULL, NULL, 'n', 0, 'y', 0, NULL, NULL, NULL),
-  (7, 5, 'member2', 'Member 2', '5gaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bo62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL, 'editor8@me.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '127.0.0.1', 1485307720, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, NULL, NULL, 'n', 0, 'y', 0, NULL, NULL, NULL);
 
+LOCK TABLES `exp_menu_items` WRITE;
+ALTER TABLE `exp_menu_items` DISABLE KEYS;
+ALTER TABLE `exp_menu_items` ENABLE KEYS;
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_menu_sets` WRITE;
+ALTER TABLE `exp_menu_sets` DISABLE KEYS;
+ALTER TABLE `exp_menu_sets` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_message_attachments` WRITE;
+ALTER TABLE `exp_message_attachments` DISABLE KEYS;
+ALTER TABLE `exp_message_attachments` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_message_copies` WRITE;
+ALTER TABLE `exp_message_copies` DISABLE KEYS;
+ALTER TABLE `exp_message_copies` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_message_data` WRITE;
+ALTER TABLE `exp_message_data` DISABLE KEYS;
+ALTER TABLE `exp_message_data` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_message_folders` WRITE;
+ALTER TABLE `exp_message_folders` DISABLE KEYS;
+ALTER TABLE `exp_message_folders` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_message_listed` WRITE;
+ALTER TABLE `exp_message_listed` DISABLE KEYS;
+ALTER TABLE `exp_message_listed` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_module_member_groups` WRITE;
+ALTER TABLE `exp_module_member_groups` DISABLE KEYS;
+ALTER TABLE `exp_module_member_groups` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_modules` WRITE;
+ALTER TABLE `exp_modules` DISABLE KEYS;
 INSERT INTO `exp_modules` (`module_id`, `module_name`, `module_version`, `has_cp_backend`, `has_publish_fields`) VALUES
 	(1,'Emoticon','2.0.0','n','n'),
 	(2,'Jquery','1.0.0','n','n'),
@@ -1877,34 +2092,54 @@ INSERT INTO `exp_modules` (`module_id`, `module_name`, `module_version`, `has_cp
 	(9,'Comment','2.3.2','y','n'),
 	(10,'Search','2.2.2','n','n'),
 	(11,'FilePicker','1.0.0','y','n');
+ALTER TABLE `exp_modules` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_online_users` WRITE;
+ALTER TABLE `exp_online_users` DISABLE KEYS;
+ALTER TABLE `exp_online_users` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_password_lockout` WRITE;
+ALTER TABLE `exp_password_lockout` DISABLE KEYS;
+ALTER TABLE `exp_password_lockout` ENABLE KEYS;
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_plugins` WRITE;
+ALTER TABLE `exp_plugins` DISABLE KEYS;
+ALTER TABLE `exp_plugins` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_relationships` WRITE;
+ALTER TABLE `exp_relationships` DISABLE KEYS;
+ALTER TABLE `exp_relationships` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_remember_me` WRITE;
+ALTER TABLE `exp_remember_me` DISABLE KEYS;
+ALTER TABLE `exp_remember_me` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_reset_password` WRITE;
+ALTER TABLE `exp_reset_password` DISABLE KEYS;
+ALTER TABLE `exp_reset_password` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_revision_tracker` WRITE;
+ALTER TABLE `exp_revision_tracker` DISABLE KEYS;
+ALTER TABLE `exp_revision_tracker` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_rte_tools` WRITE;
+ALTER TABLE `exp_rte_tools` DISABLE KEYS;
 INSERT INTO `exp_rte_tools` (`tool_id`, `name`, `class`, `enabled`) VALUES
 	(1,'Blockquote','Blockquote_rte','y'),
 	(2,'Bold','Bold_rte','y'),
@@ -1916,111 +2151,133 @@ INSERT INTO `exp_rte_tools` (`tool_id`, `name`, `class`, `enabled`) VALUES
 	(8,'Underline','Underline_rte','y'),
 	(9,'Unordered List','Unordered_list_rte','y'),
 	(10,'View Source','View_source_rte','y');
+ALTER TABLE `exp_rte_tools` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_rte_toolsets` WRITE;
+ALTER TABLE `exp_rte_toolsets` DISABLE KEYS;
 INSERT INTO `exp_rte_toolsets` (`toolset_id`, `member_id`, `name`, `tools`, `enabled`) VALUES
 	(1,0,'Default','3|2|5|1|9|7|6|4|10','y');
+ALTER TABLE `exp_rte_toolsets` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_search` WRITE;
+ALTER TABLE `exp_search` DISABLE KEYS;
+ALTER TABLE `exp_search` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_search_log` WRITE;
+ALTER TABLE `exp_search_log` DISABLE KEYS;
+ALTER TABLE `exp_search_log` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_security_hashes` WRITE;
+ALTER TABLE `exp_security_hashes` DISABLE KEYS;
+ALTER TABLE `exp_security_hashes` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_sessions` WRITE;
+ALTER TABLE `exp_sessions` DISABLE KEYS;
+ALTER TABLE `exp_sessions` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_sites` WRITE;
+ALTER TABLE `exp_sites` DISABLE KEYS;
 INSERT INTO `exp_sites` (`site_id`, `site_label`, `site_name`, `site_description`, `site_system_preferences`, `site_member_preferences`, `site_template_preferences`, `site_channel_preferences`, `site_bootstrap_checksums`, `site_pages`) VALUES
-	(1,'EE3','default_site',NULL,'YTo5Mjp7czoxMDoic2l0ZV9pbmRleCI7czo5OiJpbmRleC5waHAiO3M6ODoic2l0ZV91cmwiO3M6MTE6Imh0dHA6Ly9lZTIvIjtzOjE2OiJ0aGVtZV9mb2xkZXJfdXJsIjtzOjE4OiJodHRwOi8vZWUyL3RoZW1lcy8iO3M6MTU6IndlYm1hc3Rlcl9lbWFpbCI7czoyMDoia2V2aW4uY3VwcEBnbWFpbC5jb20iO3M6MTQ6IndlYm1hc3Rlcl9uYW1lIjtzOjA6IiI7czoyMDoiY2hhbm5lbF9ub21lbmNsYXR1cmUiO3M6NzoiY2hhbm5lbCI7czoxMDoibWF4X2NhY2hlcyI7czozOiIxNTAiO3M6MTE6ImNhcHRjaGFfdXJsIjtzOjI3OiJodHRwOi8vZWUyL2ltYWdlcy9jYXB0Y2hhcy8iO3M6MTI6ImNhcHRjaGFfcGF0aCI7czo1MDoiL3ByaXZhdGUvdmFyL3d3dy9leHByZXNzaW9uZW5naW5lL2ltYWdlcy9jYXB0Y2hhcy8iO3M6MTI6ImNhcHRjaGFfZm9udCI7czoxOiJ5IjtzOjEyOiJjYXB0Y2hhX3JhbmQiO3M6MToieSI7czoyMzoiY2FwdGNoYV9yZXF1aXJlX21lbWJlcnMiO3M6MToibiI7czoxNzoiZW5hYmxlX2RiX2NhY2hpbmciO3M6MToibiI7czoxODoiZW5hYmxlX3NxbF9jYWNoaW5nIjtzOjE6Im4iO3M6MTg6ImZvcmNlX3F1ZXJ5X3N0cmluZyI7czoxOiJuIjtzOjEzOiJzaG93X3Byb2ZpbGVyIjtzOjE6Im4iO3M6MTg6InRlbXBsYXRlX2RlYnVnZ2luZyI7czoxOiJuIjtzOjE1OiJpbmNsdWRlX3NlY29uZHMiO3M6MToibiI7czoxMzoiY29va2llX2RvbWFpbiI7czowOiIiO3M6MTE6ImNvb2tpZV9wYXRoIjtzOjA6IiI7czoyMDoid2Vic2l0ZV9zZXNzaW9uX3R5cGUiO3M6MToiYyI7czoxNToiY3Bfc2Vzc2lvbl90eXBlIjtzOjE6ImMiO3M6MjE6ImFsbG93X3VzZXJuYW1lX2NoYW5nZSI7czoxOiJ5IjtzOjE4OiJhbGxvd19tdWx0aV9sb2dpbnMiO3M6MToieSI7czoxNjoicGFzc3dvcmRfbG9ja291dCI7czoxOiJ5IjtzOjI1OiJwYXNzd29yZF9sb2Nrb3V0X2ludGVydmFsIjtzOjE6IjEiO3M6MjA6InJlcXVpcmVfaXBfZm9yX2xvZ2luIjtzOjE6InkiO3M6MjI6InJlcXVpcmVfaXBfZm9yX3Bvc3RpbmciO3M6MToieSI7czoyNDoicmVxdWlyZV9zZWN1cmVfcGFzc3dvcmRzIjtzOjE6Im4iO3M6MTk6ImFsbG93X2RpY3Rpb25hcnlfcHciO3M6MToieSI7czoyMzoibmFtZV9vZl9kaWN0aW9uYXJ5X2ZpbGUiO3M6MDoiIjtzOjE3OiJ4c3NfY2xlYW5fdXBsb2FkcyI7czoxOiJ5IjtzOjE1OiJyZWRpcmVjdF9tZXRob2QiO3M6ODoicmVkaXJlY3QiO3M6OToiZGVmdF9sYW5nIjtzOjc6ImVuZ2xpc2giO3M6ODoieG1sX2xhbmciO3M6MjoiZW4iO3M6MTI6InNlbmRfaGVhZGVycyI7czoxOiJ5IjtzOjExOiJnemlwX291dHB1dCI7czoxOiJuIjtzOjEzOiJsb2dfcmVmZXJyZXJzIjtzOjE6Im4iO3M6MTM6Im1heF9yZWZlcnJlcnMiO3M6MzoiNTAwIjtzOjExOiJkYXRlX2Zvcm1hdCI7czo4OiIlbi8lai8leSI7czoxMToidGltZV9mb3JtYXQiO3M6MjoiMTIiO3M6MTM6InNlcnZlcl9vZmZzZXQiO3M6MDoiIjtzOjIxOiJkZWZhdWx0X3NpdGVfdGltZXpvbmUiO3M6MTY6IkFtZXJpY2EvTmV3X1lvcmsiO3M6MTM6Im1haWxfcHJvdG9jb2wiO3M6NDoibWFpbCI7czoxMToic210cF9zZXJ2ZXIiO3M6MDoiIjtzOjEzOiJzbXRwX3VzZXJuYW1lIjtzOjA6IiI7czoxMzoic210cF9wYXNzd29yZCI7czowOiIiO3M6MTE6ImVtYWlsX2RlYnVnIjtzOjE6Im4iO3M6MTM6ImVtYWlsX2NoYXJzZXQiO3M6NToidXRmLTgiO3M6MTU6ImVtYWlsX2JhdGNobW9kZSI7czoxOiJuIjtzOjE2OiJlbWFpbF9iYXRjaF9zaXplIjtzOjA6IiI7czoxMToibWFpbF9mb3JtYXQiO3M6NToicGxhaW4iO3M6OToid29yZF93cmFwIjtzOjE6InkiO3M6MjI6ImVtYWlsX2NvbnNvbGVfdGltZWxvY2siO3M6MToiNSI7czoyMjoibG9nX2VtYWlsX2NvbnNvbGVfbXNncyI7czoxOiJ5IjtzOjg6ImNwX3RoZW1lIjtzOjc6ImRlZmF1bHQiO3M6MTY6ImxvZ19zZWFyY2hfdGVybXMiO3M6MToieSI7czoxOToiZGVueV9kdXBsaWNhdGVfZGF0YSI7czoxOiJ5IjtzOjI0OiJyZWRpcmVjdF9zdWJtaXR0ZWRfbGlua3MiO3M6MToibiI7czoxNjoiZW5hYmxlX2NlbnNvcmluZyI7czoxOiJuIjtzOjE0OiJjZW5zb3JlZF93b3JkcyI7czowOiIiO3M6MTg6ImNlbnNvcl9yZXBsYWNlbWVudCI7czowOiIiO3M6MTA6ImJhbm5lZF9pcHMiO3M6MDoiIjtzOjEzOiJiYW5uZWRfZW1haWxzIjtzOjA6IiI7czoxNjoiYmFubmVkX3VzZXJuYW1lcyI7czowOiIiO3M6MTk6ImJhbm5lZF9zY3JlZW5fbmFtZXMiO3M6MDoiIjtzOjEwOiJiYW5fYWN0aW9uIjtzOjg6InJlc3RyaWN0IjtzOjExOiJiYW5fbWVzc2FnZSI7czozNDoiVGhpcyBzaXRlIGlzIGN1cnJlbnRseSB1bmF2YWlsYWJsZSI7czoxNToiYmFuX2Rlc3RpbmF0aW9uIjtzOjIxOiJodHRwOi8vd3d3LnlhaG9vLmNvbS8iO3M6MTY6ImVuYWJsZV9lbW90aWNvbnMiO3M6MToieSI7czoxMjoiZW1vdGljb25fdXJsIjtzOjI2OiJodHRwOi8vZWUyL2ltYWdlcy9zbWlsZXlzLyI7czoxOToicmVjb3VudF9iYXRjaF90b3RhbCI7czo0OiIxMDAwIjtzOjE3OiJuZXdfdmVyc2lvbl9jaGVjayI7czoxOiJ5IjtzOjE3OiJlbmFibGVfdGhyb3R0bGluZyI7czoxOiJuIjtzOjE3OiJiYW5pc2hfbWFza2VkX2lwcyI7czoxOiJ5IjtzOjE0OiJtYXhfcGFnZV9sb2FkcyI7czoyOiIxMCI7czoxMzoidGltZV9pbnRlcnZhbCI7czoxOiI4IjtzOjEyOiJsb2Nrb3V0X3RpbWUiO3M6MjoiMzAiO3M6MTU6ImJhbmlzaG1lbnRfdHlwZSI7czo3OiJtZXNzYWdlIjtzOjE0OiJiYW5pc2htZW50X3VybCI7czowOiIiO3M6MTg6ImJhbmlzaG1lbnRfbWVzc2FnZSI7czo1MDoiWW91IGhhdmUgZXhjZWVkZWQgdGhlIGFsbG93ZWQgcGFnZSBsb2FkIGZyZXF1ZW5jeS4iO3M6MTc6ImVuYWJsZV9zZWFyY2hfbG9nIjtzOjE6InkiO3M6MTk6Im1heF9sb2dnZWRfc2VhcmNoZXMiO3M6MzoiNTAwIjtzOjE3OiJ0aGVtZV9mb2xkZXJfcGF0aCI7czo0MToiL3ByaXZhdGUvdmFyL3d3dy9leHByZXNzaW9uZW5naW5lL3RoZW1lcy8iO3M6MTA6ImlzX3NpdGVfb24iO3M6MToieSI7czoxMToicnRlX2VuYWJsZWQiO3M6MToieSI7czoyMjoicnRlX2RlZmF1bHRfdG9vbHNldF9pZCI7czoxOiIxIjtzOjE1OiJjb29raWVfaHR0cG9ubHkiO3M6MToieSI7czoxMzoiY29va2llX3NlY3VyZSI7czoxOiJuIjtzOjE1OiJyZXF1aXJlX2NhcHRjaGEiO3M6MToibiI7czoxMzoiZW1haWxfbmV3bGluZSI7czoyOiJcbiI7czoxNzoiZW1haWxfc210cF9jcnlwdG8iO3M6Mzoic3NsIjt9==','YTo0Mzp7czoxMDoidW5fbWluX2xlbiI7czoxOiI0IjtzOjEwOiJwd19taW5fbGVuIjtzOjE6IjUiO3M6MjU6ImFsbG93X21lbWJlcl9yZWdpc3RyYXRpb24iO3M6MToibiI7czoyNToiYWxsb3dfbWVtYmVyX2xvY2FsaXphdGlvbiI7czoxOiJ5IjtzOjE4OiJyZXFfbWJyX2FjdGl2YXRpb24iO3M6NToiZW1haWwiO3M6MjM6Im5ld19tZW1iZXJfbm90aWZpY2F0aW9uIjtzOjE6Im4iO3M6MjM6Im1icl9ub3RpZmljYXRpb25fZW1haWxzIjtzOjA6IiI7czoyNDoicmVxdWlyZV90ZXJtc19vZl9zZXJ2aWNlIjtzOjE6InkiO3M6MjA6ImRlZmF1bHRfbWVtYmVyX2dyb3VwIjtzOjE6IjUiO3M6MTU6InByb2ZpbGVfdHJpZ2dlciI7czo2OiJtZW1iZXIiO3M6MTI6Im1lbWJlcl90aGVtZSI7czo3OiJkZWZhdWx0IjtzOjE0OiJlbmFibGVfYXZhdGFycyI7czoxOiJ5IjtzOjIwOiJhbGxvd19hdmF0YXJfdXBsb2FkcyI7czoxOiJuIjtzOjEwOiJhdmF0YXJfdXJsIjtzOjI2OiJodHRwOi8vZWUyL2ltYWdlcy9hdmF0YXJzLyI7czoxMToiYXZhdGFyX3BhdGgiO3M6MTg6Ii4uL2ltYWdlcy9hdmF0YXJzLyI7czoxNjoiYXZhdGFyX21heF93aWR0aCI7czozOiIxMDAiO3M6MTc6ImF2YXRhcl9tYXhfaGVpZ2h0IjtzOjM6IjEwMCI7czoxMzoiYXZhdGFyX21heF9rYiI7czoyOiI1MCI7czoxMzoiZW5hYmxlX3Bob3RvcyI7czoxOiJuIjtzOjk6InBob3RvX3VybCI7czozMjoiaHR0cDovL2VlMi9pbWFnZXMvbWVtYmVyX3Bob3Rvcy8iO3M6MTA6InBob3RvX3BhdGgiO3M6NTU6Ii9wcml2YXRlL3Zhci93d3cvZXhwcmVzc2lvbmVuZ2luZS9pbWFnZXMvbWVtYmVyX3Bob3Rvcy8iO3M6MTU6InBob3RvX21heF93aWR0aCI7czozOiIxMDAiO3M6MTY6InBob3RvX21heF9oZWlnaHQiO3M6MzoiMTAwIjtzOjEyOiJwaG90b19tYXhfa2IiO3M6MjoiNTAiO3M6MTY6ImFsbG93X3NpZ25hdHVyZXMiO3M6MToieSI7czoxMzoic2lnX21heGxlbmd0aCI7czozOiI1MDAiO3M6MjE6InNpZ19hbGxvd19pbWdfaG90bGluayI7czoxOiJuIjtzOjIwOiJzaWdfYWxsb3dfaW1nX3VwbG9hZCI7czoxOiJuIjtzOjExOiJzaWdfaW1nX3VybCI7czo0MDoiaHR0cDovL2VlMi9pbWFnZXMvc2lnbmF0dXJlX2F0dGFjaG1lbnRzLyI7czoxMjoic2lnX2ltZ19wYXRoIjtzOjYzOiIvcHJpdmF0ZS92YXIvd3d3L2V4cHJlc3Npb25lbmdpbmUvaW1hZ2VzL3NpZ25hdHVyZV9hdHRhY2htZW50cy8iO3M6MTc6InNpZ19pbWdfbWF4X3dpZHRoIjtzOjM6IjQ4MCI7czoxODoic2lnX2ltZ19tYXhfaGVpZ2h0IjtzOjI6IjgwIjtzOjE0OiJzaWdfaW1nX21heF9rYiI7czoyOiIzMCI7czoxOToicHJ2X21zZ191cGxvYWRfcGF0aCI7czoyNToiLi4vaW1hZ2VzL3BtX2F0dGFjaG1lbnRzLyI7czoyMzoicHJ2X21zZ19tYXhfYXR0YWNobWVudHMiO3M6MToiMyI7czoyMjoicHJ2X21zZ19hdHRhY2hfbWF4c2l6ZSI7czozOiIyNTAiO3M6MjA6InBydl9tc2dfYXR0YWNoX3RvdGFsIjtzOjM6IjEwMCI7czoxOToicHJ2X21zZ19odG1sX2Zvcm1hdCI7czo0OiJzYWZlIjtzOjE4OiJwcnZfbXNnX2F1dG9fbGlua3MiO3M6MToieSI7czoxNzoicHJ2X21zZ19tYXhfY2hhcnMiO3M6NDoiNjAwMCI7czoxOToibWVtYmVybGlzdF9vcmRlcl9ieSI7czo5OiJtZW1iZXJfaWQiO3M6MjE6Im1lbWJlcmxpc3Rfc29ydF9vcmRlciI7czo0OiJkZXNjIjtzOjIwOiJtZW1iZXJsaXN0X3Jvd19saW1pdCI7czoyOiIyMCI7fQ==','YTo3OntzOjIyOiJlbmFibGVfdGVtcGxhdGVfcm91dGVzIjtzOjE6InkiO3M6MTE6InN0cmljdF91cmxzIjtzOjE6InkiO3M6ODoic2l0ZV80MDQiO3M6OToiYWJvdXQvNDA0IjtzOjE5OiJzYXZlX3RtcGxfcmV2aXNpb25zIjtzOjE6Im4iO3M6MTg6Im1heF90bXBsX3JldmlzaW9ucyI7czoxOiI1IjtzOjE1OiJzYXZlX3RtcGxfZmlsZXMiO3M6MToibiI7czoxODoidG1wbF9maWxlX2Jhc2VwYXRoIjtzOjE6Ii8iO30=','YToxMzp7czoyMToiaW1hZ2VfcmVzaXplX3Byb3RvY29sIjtzOjM6ImdkMiI7czoxODoiaW1hZ2VfbGlicmFyeV9wYXRoIjtzOjA6IiI7czoxNjoidGh1bWJuYWlsX3ByZWZpeCI7czo1OiJ0aHVtYiI7czoxNDoid29yZF9zZXBhcmF0b3IiO3M6NDoiZGFzaCI7czoxNzoidXNlX2NhdGVnb3J5X25hbWUiO3M6MToibiI7czoyMjoicmVzZXJ2ZWRfY2F0ZWdvcnlfd29yZCI7czo4OiJjYXRlZ29yeSI7czoyMzoiYXV0b19jb252ZXJ0X2hpZ2hfYXNjaWkiO3M6MToibiI7czoyMjoibmV3X3Bvc3RzX2NsZWFyX2NhY2hlcyI7czoxOiJ5IjtzOjIzOiJhdXRvX2Fzc2lnbl9jYXRfcGFyZW50cyI7czoxOiJ5IjtzOjE1OiJlbmFibGVfY29tbWVudHMiO3M6MToieSI7czoyMjoiY29tbWVudF93b3JkX2NlbnNvcmluZyI7czoxOiJuIjtzOjI3OiJjb21tZW50X21vZGVyYXRpb25fb3ZlcnJpZGUiO3M6MToibiI7czoyMzoiY29tbWVudF9lZGl0X3RpbWVfbGltaXQiO3M6MToiMCI7fQ==','YToxOntzOjU2OiIvaG9tZS9xdWlubmNoci9Qcm9qZWN0cy9hcmNoaXZlL0RvbnRGdWNrVGhpc1VwL2luZGV4LnBocCI7czozMjoiNjY4NGIxNzQ1YjNjZTRmMWQ2NDYyMzI4NDMwOWQwOGIiO30=','');
+	(1,'EE3','default_site',NULL,'YTo5Mjp7czoxMDoic2l0ZV9pbmRleCI7czo5OiJpbmRleC5waHAiO3M6ODoic2l0ZV91cmwiO3M6MTE6Imh0dHA6Ly9lZTIvIjtzOjE2OiJ0aGVtZV9mb2xkZXJfdXJsIjtzOjE4OiJodHRwOi8vZWUyL3RoZW1lcy8iO3M6MTU6IndlYm1hc3Rlcl9lbWFpbCI7czoyMDoia2V2aW4uY3VwcEBnbWFpbC5jb20iO3M6MTQ6IndlYm1hc3Rlcl9uYW1lIjtzOjA6IiI7czoyMDoiY2hhbm5lbF9ub21lbmNsYXR1cmUiO3M6NzoiY2hhbm5lbCI7czoxMDoibWF4X2NhY2hlcyI7czozOiIxNTAiO3M6MTE6ImNhcHRjaGFfdXJsIjtzOjI3OiJodHRwOi8vZWUyL2ltYWdlcy9jYXB0Y2hhcy8iO3M6MTI6ImNhcHRjaGFfcGF0aCI7czo1MDoiL3ByaXZhdGUvdmFyL3d3dy9leHByZXNzaW9uZW5naW5lL2ltYWdlcy9jYXB0Y2hhcy8iO3M6MTI6ImNhcHRjaGFfZm9udCI7czoxOiJ5IjtzOjEyOiJjYXB0Y2hhX3JhbmQiO3M6MToieSI7czoyMzoiY2FwdGNoYV9yZXF1aXJlX21lbWJlcnMiO3M6MToibiI7czoxNzoiZW5hYmxlX2RiX2NhY2hpbmciO3M6MToibiI7czoxODoiZW5hYmxlX3NxbF9jYWNoaW5nIjtzOjE6Im4iO3M6MTg6ImZvcmNlX3F1ZXJ5X3N0cmluZyI7czoxOiJuIjtzOjEzOiJzaG93X3Byb2ZpbGVyIjtzOjE6Im4iO3M6MTg6InRlbXBsYXRlX2RlYnVnZ2luZyI7czoxOiJuIjtzOjE1OiJpbmNsdWRlX3NlY29uZHMiO3M6MToibiI7czoxMzoiY29va2llX2RvbWFpbiI7czowOiIiO3M6MTE6ImNvb2tpZV9wYXRoIjtzOjA6IiI7czoyMDoid2Vic2l0ZV9zZXNzaW9uX3R5cGUiO3M6MToiYyI7czoxNToiY3Bfc2Vzc2lvbl90eXBlIjtzOjE6ImMiO3M6MjE6ImFsbG93X3VzZXJuYW1lX2NoYW5nZSI7czoxOiJ5IjtzOjE4OiJhbGxvd19tdWx0aV9sb2dpbnMiO3M6MToieSI7czoxNjoicGFzc3dvcmRfbG9ja291dCI7czoxOiJ5IjtzOjI1OiJwYXNzd29yZF9sb2Nrb3V0X2ludGVydmFsIjtzOjE6IjEiO3M6MjA6InJlcXVpcmVfaXBfZm9yX2xvZ2luIjtzOjE6InkiO3M6MjI6InJlcXVpcmVfaXBfZm9yX3Bvc3RpbmciO3M6MToieSI7czoyNDoicmVxdWlyZV9zZWN1cmVfcGFzc3dvcmRzIjtzOjE6Im4iO3M6MTk6ImFsbG93X2RpY3Rpb25hcnlfcHciO3M6MToieSI7czoyMzoibmFtZV9vZl9kaWN0aW9uYXJ5X2ZpbGUiO3M6MDoiIjtzOjE3OiJ4c3NfY2xlYW5fdXBsb2FkcyI7czoxOiJ5IjtzOjE1OiJyZWRpcmVjdF9tZXRob2QiO3M6ODoicmVkaXJlY3QiO3M6OToiZGVmdF9sYW5nIjtzOjc6ImVuZ2xpc2giO3M6ODoieG1sX2xhbmciO3M6MjoiZW4iO3M6MTI6InNlbmRfaGVhZGVycyI7czoxOiJ5IjtzOjExOiJnemlwX291dHB1dCI7czoxOiJuIjtzOjEzOiJsb2dfcmVmZXJyZXJzIjtzOjE6Im4iO3M6MTM6Im1heF9yZWZlcnJlcnMiO3M6MzoiNTAwIjtzOjExOiJkYXRlX2Zvcm1hdCI7czo4OiIlbi8lai8lWSI7czoxMToidGltZV9mb3JtYXQiO3M6MjoiMTIiO3M6MTM6InNlcnZlcl9vZmZzZXQiO3M6MDoiIjtzOjIxOiJkZWZhdWx0X3NpdGVfdGltZXpvbmUiO3M6MTY6IkFtZXJpY2EvTmV3X1lvcmsiO3M6MTM6Im1haWxfcHJvdG9jb2wiO3M6NDoibWFpbCI7czoxMToic210cF9zZXJ2ZXIiO3M6MDoiIjtzOjEzOiJzbXRwX3VzZXJuYW1lIjtzOjA6IiI7czoxMzoic210cF9wYXNzd29yZCI7czowOiIiO3M6MTE6ImVtYWlsX2RlYnVnIjtzOjE6Im4iO3M6MTM6ImVtYWlsX2NoYXJzZXQiO3M6NToidXRmLTgiO3M6MTU6ImVtYWlsX2JhdGNobW9kZSI7czoxOiJuIjtzOjE2OiJlbWFpbF9iYXRjaF9zaXplIjtzOjA6IiI7czoxMToibWFpbF9mb3JtYXQiO3M6NToicGxhaW4iO3M6OToid29yZF93cmFwIjtzOjE6InkiO3M6MjI6ImVtYWlsX2NvbnNvbGVfdGltZWxvY2siO3M6MToiNSI7czoyMjoibG9nX2VtYWlsX2NvbnNvbGVfbXNncyI7czoxOiJ5IjtzOjg6ImNwX3RoZW1lIjtzOjc6ImRlZmF1bHQiO3M6MTY6ImxvZ19zZWFyY2hfdGVybXMiO3M6MToieSI7czoxOToiZGVueV9kdXBsaWNhdGVfZGF0YSI7czoxOiJ5IjtzOjI0OiJyZWRpcmVjdF9zdWJtaXR0ZWRfbGlua3MiO3M6MToibiI7czoxNjoiZW5hYmxlX2NlbnNvcmluZyI7czoxOiJuIjtzOjE0OiJjZW5zb3JlZF93b3JkcyI7czowOiIiO3M6MTg6ImNlbnNvcl9yZXBsYWNlbWVudCI7czowOiIiO3M6MTA6ImJhbm5lZF9pcHMiO3M6MDoiIjtzOjEzOiJiYW5uZWRfZW1haWxzIjtzOjA6IiI7czoxNjoiYmFubmVkX3VzZXJuYW1lcyI7czowOiIiO3M6MTk6ImJhbm5lZF9zY3JlZW5fbmFtZXMiO3M6MDoiIjtzOjEwOiJiYW5fYWN0aW9uIjtzOjg6InJlc3RyaWN0IjtzOjExOiJiYW5fbWVzc2FnZSI7czozNDoiVGhpcyBzaXRlIGlzIGN1cnJlbnRseSB1bmF2YWlsYWJsZSI7czoxNToiYmFuX2Rlc3RpbmF0aW9uIjtzOjIxOiJodHRwOi8vd3d3LnlhaG9vLmNvbS8iO3M6MTY6ImVuYWJsZV9lbW90aWNvbnMiO3M6MToieSI7czoxMjoiZW1vdGljb25fdXJsIjtzOjI2OiJodHRwOi8vZWUyL2ltYWdlcy9zbWlsZXlzLyI7czoxOToicmVjb3VudF9iYXRjaF90b3RhbCI7czo0OiIxMDAwIjtzOjE3OiJuZXdfdmVyc2lvbl9jaGVjayI7czoxOiJ5IjtzOjE3OiJlbmFibGVfdGhyb3R0bGluZyI7czoxOiJuIjtzOjE3OiJiYW5pc2hfbWFza2VkX2lwcyI7czoxOiJ5IjtzOjE0OiJtYXhfcGFnZV9sb2FkcyI7czoyOiIxMCI7czoxMzoidGltZV9pbnRlcnZhbCI7czoxOiI4IjtzOjEyOiJsb2Nrb3V0X3RpbWUiO3M6MjoiMzAiO3M6MTU6ImJhbmlzaG1lbnRfdHlwZSI7czo3OiJtZXNzYWdlIjtzOjE0OiJiYW5pc2htZW50X3VybCI7czowOiIiO3M6MTg6ImJhbmlzaG1lbnRfbWVzc2FnZSI7czo1MDoiWW91IGhhdmUgZXhjZWVkZWQgdGhlIGFsbG93ZWQgcGFnZSBsb2FkIGZyZXF1ZW5jeS4iO3M6MTc6ImVuYWJsZV9zZWFyY2hfbG9nIjtzOjE6InkiO3M6MTk6Im1heF9sb2dnZWRfc2VhcmNoZXMiO3M6MzoiNTAwIjtzOjE3OiJ0aGVtZV9mb2xkZXJfcGF0aCI7czo0MToiL3ByaXZhdGUvdmFyL3d3dy9leHByZXNzaW9uZW5naW5lL3RoZW1lcy8iO3M6MTA6ImlzX3NpdGVfb24iO3M6MToieSI7czoxMToicnRlX2VuYWJsZWQiO3M6MToieSI7czoyMjoicnRlX2RlZmF1bHRfdG9vbHNldF9pZCI7czoxOiIxIjtzOjE1OiJjb29raWVfaHR0cG9ubHkiO3M6MToieSI7czoxMzoiY29va2llX3NlY3VyZSI7czoxOiJuIjtzOjE1OiJyZXF1aXJlX2NhcHRjaGEiO3M6MToibiI7czoxMzoiZW1haWxfbmV3bGluZSI7czoyOiJcbiI7czoxNzoiZW1haWxfc210cF9jcnlwdG8iO3M6Mzoic3NsIjt9==','YTo0Mzp7czoxMDoidW5fbWluX2xlbiI7czoxOiI0IjtzOjEwOiJwd19taW5fbGVuIjtzOjE6IjUiO3M6MjU6ImFsbG93X21lbWJlcl9yZWdpc3RyYXRpb24iO3M6MToibiI7czoyNToiYWxsb3dfbWVtYmVyX2xvY2FsaXphdGlvbiI7czoxOiJ5IjtzOjE4OiJyZXFfbWJyX2FjdGl2YXRpb24iO3M6NToiZW1haWwiO3M6MjM6Im5ld19tZW1iZXJfbm90aWZpY2F0aW9uIjtzOjE6Im4iO3M6MjM6Im1icl9ub3RpZmljYXRpb25fZW1haWxzIjtzOjA6IiI7czoyNDoicmVxdWlyZV90ZXJtc19vZl9zZXJ2aWNlIjtzOjE6InkiO3M6MjA6ImRlZmF1bHRfbWVtYmVyX2dyb3VwIjtzOjE6IjUiO3M6MTU6InByb2ZpbGVfdHJpZ2dlciI7czo2OiJtZW1iZXIiO3M6MTI6Im1lbWJlcl90aGVtZSI7czo3OiJkZWZhdWx0IjtzOjE0OiJlbmFibGVfYXZhdGFycyI7czoxOiJ5IjtzOjIwOiJhbGxvd19hdmF0YXJfdXBsb2FkcyI7czoxOiJuIjtzOjEwOiJhdmF0YXJfdXJsIjtzOjI2OiJodHRwOi8vZWUyL2ltYWdlcy9hdmF0YXJzLyI7czoxMToiYXZhdGFyX3BhdGgiO3M6MTg6Ii4uL2ltYWdlcy9hdmF0YXJzLyI7czoxNjoiYXZhdGFyX21heF93aWR0aCI7czozOiIxMDAiO3M6MTc6ImF2YXRhcl9tYXhfaGVpZ2h0IjtzOjM6IjEwMCI7czoxMzoiYXZhdGFyX21heF9rYiI7czoyOiI1MCI7czoxMzoiZW5hYmxlX3Bob3RvcyI7czoxOiJuIjtzOjk6InBob3RvX3VybCI7czozMjoiaHR0cDovL2VlMi9pbWFnZXMvbWVtYmVyX3Bob3Rvcy8iO3M6MTA6InBob3RvX3BhdGgiO3M6NTU6Ii9wcml2YXRlL3Zhci93d3cvZXhwcmVzc2lvbmVuZ2luZS9pbWFnZXMvbWVtYmVyX3Bob3Rvcy8iO3M6MTU6InBob3RvX21heF93aWR0aCI7czozOiIxMDAiO3M6MTY6InBob3RvX21heF9oZWlnaHQiO3M6MzoiMTAwIjtzOjEyOiJwaG90b19tYXhfa2IiO3M6MjoiNTAiO3M6MTY6ImFsbG93X3NpZ25hdHVyZXMiO3M6MToieSI7czoxMzoic2lnX21heGxlbmd0aCI7czozOiI1MDAiO3M6MjE6InNpZ19hbGxvd19pbWdfaG90bGluayI7czoxOiJuIjtzOjIwOiJzaWdfYWxsb3dfaW1nX3VwbG9hZCI7czoxOiJuIjtzOjExOiJzaWdfaW1nX3VybCI7czo0MDoiaHR0cDovL2VlMi9pbWFnZXMvc2lnbmF0dXJlX2F0dGFjaG1lbnRzLyI7czoxMjoic2lnX2ltZ19wYXRoIjtzOjYzOiIvcHJpdmF0ZS92YXIvd3d3L2V4cHJlc3Npb25lbmdpbmUvaW1hZ2VzL3NpZ25hdHVyZV9hdHRhY2htZW50cy8iO3M6MTc6InNpZ19pbWdfbWF4X3dpZHRoIjtzOjM6IjQ4MCI7czoxODoic2lnX2ltZ19tYXhfaGVpZ2h0IjtzOjI6IjgwIjtzOjE0OiJzaWdfaW1nX21heF9rYiI7czoyOiIzMCI7czoxOToicHJ2X21zZ191cGxvYWRfcGF0aCI7czoyNToiLi4vaW1hZ2VzL3BtX2F0dGFjaG1lbnRzLyI7czoyMzoicHJ2X21zZ19tYXhfYXR0YWNobWVudHMiO3M6MToiMyI7czoyMjoicHJ2X21zZ19hdHRhY2hfbWF4c2l6ZSI7czozOiIyNTAiO3M6MjA6InBydl9tc2dfYXR0YWNoX3RvdGFsIjtzOjM6IjEwMCI7czoxOToicHJ2X21zZ19odG1sX2Zvcm1hdCI7czo0OiJzYWZlIjtzOjE4OiJwcnZfbXNnX2F1dG9fbGlua3MiO3M6MToieSI7czoxNzoicHJ2X21zZ19tYXhfY2hhcnMiO3M6NDoiNjAwMCI7czoxOToibWVtYmVybGlzdF9vcmRlcl9ieSI7czo5OiJtZW1iZXJfaWQiO3M6MjE6Im1lbWJlcmxpc3Rfc29ydF9vcmRlciI7czo0OiJkZXNjIjtzOjIwOiJtZW1iZXJsaXN0X3Jvd19saW1pdCI7czoyOiIyMCI7fQ==','YTo2OntzOjIyOiJlbmFibGVfdGVtcGxhdGVfcm91dGVzIjtzOjE6InkiO3M6MTE6InN0cmljdF91cmxzIjtzOjE6InkiO3M6ODoic2l0ZV80MDQiO3M6OToiYWJvdXQvNDA0IjtzOjE5OiJzYXZlX3RtcGxfcmV2aXNpb25zIjtzOjE6Im4iO3M6MTg6Im1heF90bXBsX3JldmlzaW9ucyI7czoxOiI1IjtzOjE4OiJ0bXBsX2ZpbGVfYmFzZXBhdGgiO3M6MToiLyI7fQ==','YToxMzp7czoyMToiaW1hZ2VfcmVzaXplX3Byb3RvY29sIjtzOjM6ImdkMiI7czoxODoiaW1hZ2VfbGlicmFyeV9wYXRoIjtzOjA6IiI7czoxNjoidGh1bWJuYWlsX3ByZWZpeCI7czo1OiJ0aHVtYiI7czoxNDoid29yZF9zZXBhcmF0b3IiO3M6NDoiZGFzaCI7czoxNzoidXNlX2NhdGVnb3J5X25hbWUiO3M6MToibiI7czoyMjoicmVzZXJ2ZWRfY2F0ZWdvcnlfd29yZCI7czo4OiJjYXRlZ29yeSI7czoyMzoiYXV0b19jb252ZXJ0X2hpZ2hfYXNjaWkiO3M6MToibiI7czoyMjoibmV3X3Bvc3RzX2NsZWFyX2NhY2hlcyI7czoxOiJ5IjtzOjIzOiJhdXRvX2Fzc2lnbl9jYXRfcGFyZW50cyI7czoxOiJ5IjtzOjE1OiJlbmFibGVfY29tbWVudHMiO3M6MToieSI7czoyMjoiY29tbWVudF93b3JkX2NlbnNvcmluZyI7czoxOiJuIjtzOjI3OiJjb21tZW50X21vZGVyYXRpb25fb3ZlcnJpZGUiO3M6MToibiI7czoyMzoiY29tbWVudF9lZGl0X3RpbWVfbGltaXQiO3M6MToiMCI7fQ==','YToxOntzOjU2OiIvaG9tZS9xdWlubmNoci9Qcm9qZWN0cy9hcmNoaXZlL0RvbnRGdWNrVGhpc1VwL2luZGV4LnBocCI7czozMjoiNjY4NGIxNzQ1YjNjZTRmMWQ2NDYyMzI4NDMwOWQwOGIiO30=','');
+ALTER TABLE `exp_sites` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_snippets` WRITE;
-INSERT INTO `exp_snippets` (`snippet_id`, `site_id`, `snippet_name`, `snippet_contents`) VALUES
-	(1,1,'.htaccess','deny from all'),
-	(2,1,'global_edit_this','{if author_id == logged_in_member_id OR logged_in_group_id == "1"}&bull; <a href="{cp_url}?S={cp_session_id}&amp;D=cp&amp;C=content_publish&amp;M=entry_form&amp;channel_id={channel_id}&amp;entry_id={entry_id}">Edit This</a>{/if}'),
-	(3,1,'global_featured_band','<div id="featured_band">\n    <h2>Featured Band</h2>\n    {exp:channel:entries channel="news" limit="1" status="featured" rdf="off" disable="trackbacks" category="2" dynamic="no"}\n    <div class="image">\n        <h4><a href="{comment_url_title_auto_path}"><span>{title}</span></a></h4>\n        {if news_image}\n			<img src="{news_image}" alt="{title}"/>\n		{/if}\n    </div>\n    {news_body}\n    {/exp:channel:entries}\n</div>'),
-	(4,1,'global_featured_welcome','<div id="welcome">\n    {exp:channel:entries channel="about" url_title="about_the_label" dynamic="no"  limit="1" disable="pagination|member_date|categories|category_fields|trackbacks"}\n    {if about_image != ""}\n        <img src="{about_image}" alt="map" width="210" height="170" />\n    {/if}\n    {about_body}\n    <a href="{comment_url_title_auto_path}">Read more about us</a>\n    {/exp:channel:entries}\n</div>'),
-	(5,1,'global_footer','<div id="siteinfo">\n    <p>Copyright @ {exp:channel:entries limit="1" sort="asc" disable="custom_fields|comments|pagination|categories"}\n\n{if "{entry_date format=\'%Y\'}" != "{current_time format=\'%Y\'}"}{entry_date format="%Y"} - {/if}{/exp:channel:entries} {current_time format="%Y"}, powered by <a href="http://expressionengine.com">ExpressionEngine</a></p>\n    <p class="logo"><a href="#">Agile Records</a></p>\n	{if group_id == "1"}<p>{total_queries} queries in {elapsed_time} seconds</p>{/if}\n</div> <!-- ending #siteinfo -->'),
-	(6,1,'global_strict_urls','<!-- Strict URLS: https://ellislab.com/expressionengine/user-guide/cp/templates/global_template_preferences.html -->\n{if segment_2 != \'\'}\n  {redirect="404"}\n{/if}'),
-	(7,1,'global_stylesheets','<!-- CSS -->\n<!-- This makes use of the stylesheet= parameter, which automatically appends a time stamp to allow for the browser\'s caching mechanism to cache the stylesheet.  This allows for faster page-loads times.\nStylesheet linking is documented at https://ellislab.com/expressionengine/user-guide/templates/globals/stylesheet.html -->\n    <link href="{stylesheet=global_embeds/site_css}" type="text/css" rel="stylesheet" media="screen" />\n    <!--[if IE 6]><link href="{stylesheet=global_embeds/css_screen-ie6}" type="text/css" rel="stylesheet" media="screen" /><![endif]-->\n    <!--[if IE 7]><link href="{stylesheet=global_embeds/css_screen-ie7}" type="text/css" rel="stylesheet" media="screen" /><![endif]-->\n'),
-	(8,1,'global_top_member','<div id="member">\n\n	<!-- Utilized member conditionals: https://ellislab.com/expressionengine/user-guide/templates/globals/conditionals.html-->\n            <h4>Hello{if logged_in} {screen_name}{/if}!</h4>\n            {if is_core == FALSE}\n			<ul>\n				{if logged_in}\n                <li><a href="{path=\'member/profile\'}">Your Home</a></li>\n                <li><a href="{path=LOGOUT}">Log out</a></li>\n				{/if}\n				{if logged_out}\n				<li><a href="{path=\'member/register\'}">Register</a></li>\n				<li><a href="{path=\'member/login\'}">Log in</a></li>\n				{/if}\n            </ul>\n			{/if}\n        </div> <!-- ending #member -->'),
-	(9,1,'global_top_search','<!-- Simple Search Form: https://ellislab.com/expressionengine/user-guide/modules/search/index.html#simple \n\nThe parameters here help to identify what templates to use and where to search:\n\nResults page - result_page: https://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_result_page\n\nNo Results found: no_result_page: https://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_no_result_page\n\nsearch_in - search in titles? titles and entries? titles, entries?  https://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_search_in-->\n\n{exp:search:simple_form channel="news" result_page="search/results" no_result_page="search/no_results" search_in="everywhere"}\n<fieldset>\n    <label for="search">Search:</label>\n    <input type="text" name="keywords" id="search" value=""  />\n	<input type="image" id="submit" name="submit" class="submit" src="{site_url}themes/site/default/images/spacer.gif" />\n</fieldset>\n{/exp:search:simple_form}'),
-	(10,1,'news_calendar','<h5>Calendar</h5>\n		<div id="news_calendar">\n			\n			<!-- Channel Calendar Tag: https://ellislab.com/expressionengine/user-guide/modules/channel/calendar.html -->\n			\n			{exp:channel:calendar switch="calendarToday|calendarCell" channel="news"}\n			<table class="calendarBG" border="0" cellpadding="6" cellspacing="1" summary="My Calendar">\n			<tr class="calendarHeader">\n			<th><div class="calendarMonthLinks"><a href="{previous_path=\'news/archives\'}">&lt;&lt;</a></div></th>\n			<th colspan="5">{date format="%F %Y"}</th>\n			<th><div class="calendarMonthLinks"><a class="calendarMonthLinks" href="{next_path=\'news/archives\'}">&gt;&gt;</a></div></th>\n			</tr>\n			<tr>\n			{calendar_heading}\n			<td class="calendarDayHeading">{lang:weekday_abrev}</td>\n			{/calendar_heading}\n			</tr>\n\n			{calendar_rows }\n			{row_start}<tr>{/row_start}\n\n			{if entries}\n			<td class=\'{switch}\' align=\'center\'><a href="{day_path=\'news/archives\'}">{day_number}</a></td>\n			{/if}\n\n			{if not_entries}\n			<td class=\'{switch}\' align=\'center\'>{day_number}</td>\n			{/if}\n\n			{if blank}\n			<td class=\'calendarBlank\'>{day_number}</td>\n			{/if}\n\n			{row_end}</tr>{/row_end}\n			{/calendar_rows}\n			</table>\n			{/exp:channel:calendar}\n		</div> <!-- ending #news_calendar -->'),
-	(11,1,'news_categories','<div id="sidebar_category_archives">\n      		<h5>Categories</h5>\n  			<ul id="categories">\n  				<!-- Weblog Categories tag: https://ellislab.com/expressionengine/user-guide/modules/weblog/categories.html -->\n				\n  				{exp:channel:categories channel="news" style="linear"}\n  				<li><a href="{path=\'news/archives\'}">{category_name}</a></li>\n  				{/exp:channel:categories}\n  			</ul>\n  		</div>'),
-	(12,1,'news_month_archives','<div id="sidebar_date_archives">\n    	    <h5>Date Archives</h5>\n    		<ul id="months">\n    			{!-- Archive Month Link Tags: https://ellislab.com/expressionengine/user-guide/modules/weblog/archive_month_links.html --}\n		\n    			{exp:channel:month_links channel="news" limit="50"}\n    			<li><a href="{path=\'news/archives\'}">{month}, {year}</a></li>\n    			{/exp:channel:month_links}\n    		</ul>\n    	</div>'),
-	(13,1,'news_popular','<h5>Popular News Items</h5>\n\n<!-- Channel Entries tag ordered by track views for "popular posts".  See Tracking Entry Views at https://ellislab.com/expressionengine/user-guide/modules/weblog/entry_tracking.html -->\n\n{exp:channel:entries channel="news" limit="4" disable="categories|custom_fields|category_fields|trackbacks|pagination|member_data" dynamic="no"}\n	{if count == "1"}<ul>{/if}\n		<li><a href="{comment_url_title_auto_path}">{title}</a> </li>\n	{if count == total_results}</ul>{/if}\n{/exp:channel:entries}');
+ALTER TABLE `exp_snippets` DISABLE KEYS;
+INSERT INTO `exp_snippets` (`snippet_id`, `site_id`, `snippet_name`, `snippet_contents`, `edit_date`) VALUES
+	(1,1,'.htaccess','deny from all',0),
+	(2,1,'global_edit_this','{if author_id == logged_in_member_id OR logged_in_group_id == "1"}&bull; <a href="{cp_url}?S={cp_session_id}&amp;D=cp&amp;C=content_publish&amp;M=entry_form&amp;channel_id={channel_id}&amp;entry_id={entry_id}">Edit This</a>{/if}',0),
+	(3,1,'global_featured_band','<div id="featured_band">\n    <h2>Featured Band</h2>\n    {exp:channel:entries channel="news" limit="1" status="featured" rdf="off" disable="trackbacks" category="2" dynamic="no"}\n    <div class="image">\n        <h4><a href="{comment_url_title_auto_path}"><span>{title}</span></a></h4>\n        {if news_image}\n			<img src="{news_image}" alt="{title}"/>\n		{/if}\n    </div>\n    {news_body}\n    {/exp:channel:entries}\n</div>',0),
+	(4,1,'global_featured_welcome','<div id="welcome">\n    {exp:channel:entries channel="about" url_title="about_the_label" dynamic="no"  limit="1" disable="pagination|member_date|categories|category_fields|trackbacks"}\n    {if about_image != ""}\n        <img src="{about_image}" alt="map" width="210" height="170" />\n    {/if}\n    {about_body}\n    <a href="{comment_url_title_auto_path}">Read more about us</a>\n    {/exp:channel:entries}\n</div>',0),
+	(5,1,'global_footer','<div id="siteinfo">\n    <p>Copyright @ {exp:channel:entries limit="1" sort="asc" disable="custom_fields|comments|pagination|categories"}\n\n{if "{entry_date format=\'%Y\'}" != "{current_time format=\'%Y\'}"}{entry_date format="%Y"} - {/if}{/exp:channel:entries} {current_time format="%Y"}, powered by <a href="http://expressionengine.com">ExpressionEngine</a></p>\n    <p class="logo"><a href="#">Agile Records</a></p>\n	{if group_id == "1"}<p>{total_queries} queries in {elapsed_time} seconds</p>{/if}\n</div> <!-- ending #siteinfo -->',0),
+	(6,1,'global_strict_urls','<!-- Strict URLS: https://ellislab.com/expressionengine/user-guide/cp/templates/global_template_preferences.html -->\n{if segment_2 != \'\'}\n  {redirect="404"}\n{/if}',0),
+	(7,1,'global_stylesheets','<!-- CSS -->\n<!-- This makes use of the stylesheet= parameter, which automatically appends a time stamp to allow for the browser\'s caching mechanism to cache the stylesheet.  This allows for faster page-loads times.\nStylesheet linking is documented at https://ellislab.com/expressionengine/user-guide/templates/globals/stylesheet.html -->\n    <link href="{stylesheet=global_embeds/site_css}" type="text/css" rel="stylesheet" media="screen" />\n    <!--[if IE 6]><link href="{stylesheet=global_embeds/css_screen-ie6}" type="text/css" rel="stylesheet" media="screen" /><![endif]-->\n    <!--[if IE 7]><link href="{stylesheet=global_embeds/css_screen-ie7}" type="text/css" rel="stylesheet" media="screen" /><![endif]-->\n',0),
+	(8,1,'global_top_member','<div id="member">\n\n	<!-- Utilized member conditionals: https://ellislab.com/expressionengine/user-guide/templates/globals/conditionals.html-->\n            <h4>Hello{if logged_in} {screen_name}{/if}!</h4>\n            {if is_core == FALSE}\n			<ul>\n				{if logged_in}\n                <li><a href="{path=\'member/profile\'}">Your Home</a></li>\n                <li><a href="{path=LOGOUT}">Log out</a></li>\n				{/if}\n				{if logged_out}\n				<li><a href="{path=\'member/register\'}">Register</a></li>\n				<li><a href="{path=\'member/login\'}">Log in</a></li>\n				{/if}\n            </ul>\n			{/if}\n        </div> <!-- ending #member -->',0),
+	(9,1,'global_top_search','<!-- Simple Search Form: https://ellislab.com/expressionengine/user-guide/modules/search/index.html#simple \n\nThe parameters here help to identify what templates to use and where to search:\n\nResults page - result_page: https://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_result_page\n\nNo Results found: no_result_page: https://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_no_result_page\n\nsearch_in - search in titles? titles and entries? titles, entries?  https://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_search_in-->\n\n{exp:search:simple_form channel="news" result_page="search/results" no_result_page="search/no_results" search_in="everywhere"}\n<fieldset>\n    <label for="search">Search:</label>\n    <input type="text" name="keywords" id="search" value=""  />\n	<input type="image" id="submit" name="submit" class="submit" src="{site_url}themes/site/default/images/spacer.gif" />\n</fieldset>\n{/exp:search:simple_form}',0),
+	(10,1,'news_calendar','<h5>Calendar</h5>\n		<div id="news_calendar">\n			\n			<!-- Channel Calendar Tag: https://ellislab.com/expressionengine/user-guide/modules/channel/calendar.html -->\n			\n			{exp:channel:calendar switch="calendarToday|calendarCell" channel="news"}\n			<table class="calendarBG" border="0" cellpadding="6" cellspacing="1" summary="My Calendar">\n			<tr class="calendarHeader">\n			<th><div class="calendarMonthLinks"><a href="{previous_path=\'news/archives\'}">&lt;&lt;</a></div></th>\n			<th colspan="5">{date format="%F %Y"}</th>\n			<th><div class="calendarMonthLinks"><a class="calendarMonthLinks" href="{next_path=\'news/archives\'}">&gt;&gt;</a></div></th>\n			</tr>\n			<tr>\n			{calendar_heading}\n			<td class="calendarDayHeading">{lang:weekday_abrev}</td>\n			{/calendar_heading}\n			</tr>\n\n			{calendar_rows }\n			{row_start}<tr>{/row_start}\n\n			{if entries}\n			<td class=\'{switch}\' align=\'center\'><a href="{day_path=\'news/archives\'}">{day_number}</a></td>\n			{/if}\n\n			{if not_entries}\n			<td class=\'{switch}\' align=\'center\'>{day_number}</td>\n			{/if}\n\n			{if blank}\n			<td class=\'calendarBlank\'>{day_number}</td>\n			{/if}\n\n			{row_end}</tr>{/row_end}\n			{/calendar_rows}\n			</table>\n			{/exp:channel:calendar}\n		</div> <!-- ending #news_calendar -->',0),
+	(11,1,'news_categories','<div id="sidebar_category_archives">\n      		<h5>Categories</h5>\n  			<ul id="categories">\n  				<!-- Weblog Categories tag: https://ellislab.com/expressionengine/user-guide/modules/weblog/categories.html -->\n				\n  				{exp:channel:categories channel="news" style="linear"}\n  				<li><a href="{path=\'news/archives\'}">{category_name}</a></li>\n  				{/exp:channel:categories}\n  			</ul>\n  		</div>',0),
+	(12,1,'news_month_archives','<div id="sidebar_date_archives">\n    	    <h5>Date Archives</h5>\n    		<ul id="months">\n    			{!-- Archive Month Link Tags: https://ellislab.com/expressionengine/user-guide/modules/weblog/archive_month_links.html --}\n		\n    			{exp:channel:month_links channel="news" limit="50"}\n    			<li><a href="{path=\'news/archives\'}">{month}, {year}</a></li>\n    			{/exp:channel:month_links}\n    		</ul>\n    	</div>',0),
+	(13,1,'news_popular','<h5>Popular News Items</h5>\n\n<!-- Channel Entries tag ordered by track views for "popular posts".  See Tracking Entry Views at https://ellislab.com/expressionengine/user-guide/modules/weblog/entry_tracking.html -->\n\n{exp:channel:entries channel="news" limit="4" disable="categories|custom_fields|category_fields|trackbacks|pagination|member_data" dynamic="no"}\n	{if count == "1"}<ul>{/if}\n		<li><a href="{comment_url_title_auto_path}">{title}</a> </li>\n	{if count == total_results}</ul>{/if}\n{/exp:channel:entries}',0);
+ALTER TABLE `exp_snippets` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_specialty_templates` WRITE;
+ALTER TABLE `exp_specialty_templates` DISABLE KEYS;
 INSERT INTO `exp_specialty_templates` (`template_id`, `site_id`, `enable_template`, `template_name`, `data_title`, `template_type`, `template_subtype`, `template_data`, `template_notes`, `edit_date`, `last_author_id`) VALUES
-	(1,1,'y','offline_template','',NULL,NULL,'<html>\n<head>\n\n<title>System Offline</title>\n\n<style type="text/css">\n\nbody {\nbackground-color:	#ffffff;\nmargin:				50px;\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size:			11px;\ncolor:				#000;\nbackground-color:	#fff;\n}\n\na {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-weight:		bold;\nletter-spacing:		.09em;\ntext-decoration:	none;\ncolor:			  #330099;\nbackground-color:	transparent;\n}\n\na:visited {\ncolor:				#330099;\nbackground-color:	transparent;\n}\n\na:hover {\ncolor:				#000;\ntext-decoration:	underline;\nbackground-color:	transparent;\n}\n\n#content  {\nborder:				#999999 1px solid;\npadding:			22px 25px 14px 25px;\n}\n\nh1 {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-weight:		bold;\nfont-size:			14px;\ncolor:				#000;\nmargin-top: 		0;\nmargin-bottom:		14px;\n}\n\np {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size: 			12px;\nfont-weight: 		normal;\nmargin-top: 		12px;\nmargin-bottom: 		14px;\ncolor: 				#000;\n}\n</style>\n\n</head>\n\n<body>\n\n<div id="content">\n\n<h1>System Offline</h1>\n\n<p>This site is currently offline</p>\n\n</div>\n\n</body>\n\n</html>',NULL,0,0),
-	(2,1,'y','message_template','',NULL,NULL,'<html>\n<head>\n\n<title>{title}</title>\n\n<meta http-equiv=\'content-type\' content=\'text/html; charset={charset}\' />\n\n{meta_refresh}\n\n<style type="text/css">\n\nbody {\nbackground-color:	#ffffff;\nmargin:				50px;\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size:			11px;\ncolor:				#000;\nbackground-color:	#fff;\n}\n\na {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nletter-spacing:		.09em;\ntext-decoration:	none;\ncolor:			  #330099;\nbackground-color:	transparent;\n}\n\na:visited {\ncolor:				#330099;\nbackground-color:	transparent;\n}\n\na:active {\ncolor:				#ccc;\nbackground-color:	transparent;\n}\n\na:hover {\ncolor:				#000;\ntext-decoration:	underline;\nbackground-color:	transparent;\n}\n\n#content  {\nborder:				#000 1px solid;\nbackground-color: 	#DEDFE3;\npadding:			22px 25px 14px 25px;\n}\n\nh1 {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-weight:		bold;\nfont-size:			14px;\ncolor:				#000;\nmargin-top: 		0;\nmargin-bottom:		14px;\n}\n\np {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size: 			12px;\nfont-weight: 		normal;\nmargin-top: 		12px;\nmargin-bottom: 		14px;\ncolor: 				#000;\n}\n\nul {\nmargin-bottom: 		16px;\n}\n\nli {\nlist-style:			square;\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size: 			12px;\nfont-weight: 		normal;\nmargin-top: 		8px;\nmargin-bottom: 		8px;\ncolor: 				#000;\n}\n\n</style>\n\n</head>\n\n<body>\n\n<div id="content">\n\n<h1>{heading}</h1>\n\n{content}\n\n<p>{link}</p>\n\n</div>\n\n</body>\n\n</html>',NULL,0,0),
-	(3,1,'y','admin_notify_reg','Notification of new member registration',NULL,NULL,'New member registration site: {site_name}\n\nScreen name: {name}\nUser name: {username}\nEmail: {email}\n\nYour control panel URL: {control_panel_url}',NULL,0,0),
-	(4,1,'y','admin_notify_entry','A new channel entry has been posted',NULL,NULL,'A new entry has been posted in the following channel:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nPosted by: {name}\nEmail: {email}\n\nTo read the entry please visit:\n{entry_url}\n',NULL,0,0),
-	(6,1,'y','admin_notify_comment','You have just received a comment',NULL,NULL,'You have just received a comment for the following channel:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nLocated at:\n{comment_url}\n\nPosted by: {name}\nEmail: {email}\nURL: {url}\nLocation: {location}\n\n{comment}',NULL,0,0),
-	(7,1,'y','mbr_activation_instructions','Enclosed is your activation code',NULL,NULL,'Thank you for your new member registration.\n\nTo activate your new account, please visit the following URL:\n\n{unwrap}{activation_url}{/unwrap}\n\nThank You!\n\n{site_name}\n\n{site_url}',NULL,0,0),
-	(8,1,'y','forgot_password_instructions','Login information',NULL,NULL,'{name},\n\nTo reset your password, please go to the following page:\n\n{reset_url}\n\nThen log in with your username: {username}\n\nIf you do not wish to reset your password, ignore this message. It will expire in 24 hours.\n\n{site_name}\n{site_url}',NULL,0,0),
-	(9,1,'y','validated_member_notify','Your membership account has been activated',NULL,NULL,'{name},\n\nYour membership account has been activated and is ready for use.\n\nThank You!\n\n{site_name}\n{site_url}',NULL,0,0),
-	(10,1,'y','decline_member_validation','Your membership account has been declined',NULL,NULL,'{name},\n\nWe\'re sorry but our staff has decided not to validate your membership.\n\n{site_name}\n{site_url}',NULL,0,0),
-	(12,1,'y','comment_notification','Someone just responded to your comment',NULL,NULL,'{name_of_commenter} just responded to the entry you subscribed to at:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nYou can see the comment at the following URL:\n{comment_url}\n\n{comment}\n\nTo stop receiving notifications for this comment, click here:\n{notification_removal_url}',NULL,0,0),
-	(13,1,'y','comments_opened_notification','New comments have been added',NULL,NULL,'Responses have been added to the entry you subscribed to at:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nYou can see the comments at the following URL:\n{comment_url}\n\n{comments}\n{comment}\n{/comments}\n\nTo stop receiving notifications for this entry, click here:\n{notification_removal_url}',NULL,0,0),
-	(14,1,'y','private_message_notification','Someone has sent you a Private Message',NULL,NULL,'\n{recipient_name},\n\n{sender_name} has just sent you a Private Message titled ‘{message_subject}’.\n\nYou can see the Private Message by logging in and viewing your inbox at:\n{site_url}\n\nContent:\n\n{message_content}\n\nTo stop receiving notifications of Private Messages, turn the option off in your Email Settings.\n\n{site_name}\n{site_url}',NULL,0,0),
-	(15,1,'y','pm_inbox_full','Your private message mailbox is full',NULL,NULL,'{recipient_name},\n\n{sender_name} has just attempted to send you a Private Message,\nbut your inbox is full, exceeding the maximum of {pm_storage_limit}.\n\nPlease log in and remove unwanted messages from your inbox at:\n{site_url}',NULL,0,0);
+	(1,1,'y','offline_template','','system',NULL,'<html>\n<head>\n\n<title>System Offline</title>\n\n<style type="text/css">\n\nbody {\nbackground-color:	#ffffff;\nmargin:				50px;\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size:			11px;\ncolor:				#000;\nbackground-color:	#fff;\n}\n\na {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-weight:		bold;\nletter-spacing:		.09em;\ntext-decoration:	none;\ncolor:			  #330099;\nbackground-color:	transparent;\n}\n\na:visited {\ncolor:				#330099;\nbackground-color:	transparent;\n}\n\na:hover {\ncolor:				#000;\ntext-decoration:	underline;\nbackground-color:	transparent;\n}\n\n#content  {\nborder:				#999999 1px solid;\npadding:			22px 25px 14px 25px;\n}\n\nh1 {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-weight:		bold;\nfont-size:			14px;\ncolor:				#000;\nmargin-top: 		0;\nmargin-bottom:		14px;\n}\n\np {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size: 			12px;\nfont-weight: 		normal;\nmargin-top: 		12px;\nmargin-bottom: 		14px;\ncolor: 				#000;\n}\n</style>\n\n</head>\n\n<body>\n\n<div id="content">\n\n<h1>System Offline</h1>\n\n<p>This site is currently offline</p>\n\n</div>\n\n</body>\n\n</html>',NULL,0,0),
+	(2,1,'y','message_template','','system',NULL,'<html>\n<head>\n\n<title>{title}</title>\n\n<meta http-equiv=\'content-type\' content=\'text/html; charset={charset}\' />\n\n{meta_refresh}\n\n<style type="text/css">\n\nbody {\nbackground-color:	#ffffff;\nmargin:				50px;\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size:			11px;\ncolor:				#000;\nbackground-color:	#fff;\n}\n\na {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nletter-spacing:		.09em;\ntext-decoration:	none;\ncolor:			  #330099;\nbackground-color:	transparent;\n}\n\na:visited {\ncolor:				#330099;\nbackground-color:	transparent;\n}\n\na:active {\ncolor:				#ccc;\nbackground-color:	transparent;\n}\n\na:hover {\ncolor:				#000;\ntext-decoration:	underline;\nbackground-color:	transparent;\n}\n\n#content  {\nborder:				#000 1px solid;\nbackground-color: 	#DEDFE3;\npadding:			22px 25px 14px 25px;\n}\n\nh1 {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-weight:		bold;\nfont-size:			14px;\ncolor:				#000;\nmargin-top: 		0;\nmargin-bottom:		14px;\n}\n\np {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size: 			12px;\nfont-weight: 		normal;\nmargin-top: 		12px;\nmargin-bottom: 		14px;\ncolor: 				#000;\n}\n\nul {\nmargin-bottom: 		16px;\n}\n\nli {\nlist-style:			square;\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size: 			12px;\nfont-weight: 		normal;\nmargin-top: 		8px;\nmargin-bottom: 		8px;\ncolor: 				#000;\n}\n\n</style>\n\n</head>\n\n<body>\n\n<div id="content">\n\n<h1>{heading}</h1>\n\n{content}\n\n<p>{link}</p>\n\n</div>\n\n</body>\n\n</html>',NULL,0,0),
+	(3,1,'y','admin_notify_reg','Notification of new member registration','email','members','New member registration site: {site_name}\n\nScreen name: {name}\nUser name: {username}\nEmail: {email}\n\nYour control panel URL: {control_panel_url}',NULL,0,0),
+	(4,1,'y','admin_notify_entry','A new channel entry has been posted','email','content','A new entry has been posted in the following channel:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nPosted by: {name}\nEmail: {email}\n\nTo read the entry please visit:\n{entry_url}\n',NULL,0,0),
+	(6,1,'y','admin_notify_comment','You have just received a comment','email','comments','You have just received a comment for the following channel:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nLocated at:\n{comment_url}\n\nPosted by: {name}\nEmail: {email}\nURL: {url}\nLocation: {location}\n\n{comment}',NULL,0,0),
+	(7,1,'y','mbr_activation_instructions','Enclosed is your activation code','email','members','Thank you for your new member registration.\n\nTo activate your new account, please visit the following URL:\n\n{unwrap}{activation_url}{/unwrap}\n\nThank You!\n\n{site_name}\n\n{site_url}',NULL,0,0),
+	(8,1,'y','forgot_password_instructions','Login information','email','members','{name},\n\nTo reset your password, please go to the following page:\n\n{reset_url}\n\nThen log in with your username: {username}\n\nIf you do not wish to reset your password, ignore this message. It will expire in 24 hours.\n\n{site_name}\n{site_url}',NULL,0,0),
+	(9,1,'y','validated_member_notify','Your membership account has been activated','email','members','{name},\n\nYour membership account has been activated and is ready for use.\n\nThank You!\n\n{site_name}\n{site_url}',NULL,0,0),
+	(10,1,'y','decline_member_validation','Your membership account has been declined','email','members','{name},\n\nWe\'re sorry but our staff has decided not to validate your membership.\n\n{site_name}\n{site_url}',NULL,0,0),
+	(12,1,'y','comment_notification','Someone just responded to your comment','email','comments','{name_of_commenter} just responded to the entry you subscribed to at:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nYou can see the comment at the following URL:\n{comment_url}\n\n{comment}\n\nTo stop receiving notifications for this comment, click here:\n{notification_removal_url}',NULL,0,0),
+	(13,1,'y','comments_opened_notification','New comments have been added','email','comments','Responses have been added to the entry you subscribed to at:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nYou can see the comments at the following URL:\n{comment_url}\n\n{comments}\n{comment}\n{/comments}\n\nTo stop receiving notifications for this entry, click here:\n{notification_removal_url}',NULL,0,0),
+	(14,1,'y','private_message_notification','Someone has sent you a Private Message','email','private_messages','\n{recipient_name},\n\n{sender_name} has just sent you a Private Message titled ‘{message_subject}’.\n\nYou can see the Private Message by logging in and viewing your inbox at:\n{site_url}\n\nContent:\n\n{message_content}\n\nTo stop receiving notifications of Private Messages, turn the option off in your Email Settings.\n\n{site_name}\n{site_url}',NULL,0,0),
+	(15,1,'y','pm_inbox_full','Your private message mailbox is full','email','private_messages','{recipient_name},\n\n{sender_name} has just attempted to send you a Private Message,\nbut your inbox is full, exceeding the maximum of {pm_storage_limit}.\n\nPlease log in and remove unwanted messages from your inbox at:\n{site_url}',NULL,0,0);
+ALTER TABLE `exp_specialty_templates` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_stats` WRITE;
+ALTER TABLE `exp_stats` DISABLE KEYS;
 INSERT INTO `exp_stats` (`stat_id`, `site_id`, `total_members`, `recent_member_id`, `recent_member`, `total_entries`, `total_forum_topics`, `total_forum_posts`, `total_comments`, `last_entry_date`, `last_forum_post_date`, `last_comment_date`, `last_visitor_date`, `most_visitors`, `most_visitor_date`, `last_cache_clear`) VALUES
 	(1,1,1,1,'Admin',1,0,0,0,1409242030,0,0,0,0,0,1409242030);
-UNLOCK TABLES;
-
-
-LOCK TABLES `exp_status_groups` WRITE;
-INSERT INTO `exp_status_groups` (`group_id`, `site_id`, `group_name`) VALUES
-	(1,1,'Default');
+ALTER TABLE `exp_stats` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_status_no_access` WRITE;
+ALTER TABLE `exp_status_no_access` DISABLE KEYS;
+ALTER TABLE `exp_status_no_access` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_statuses` WRITE;
-INSERT INTO `exp_statuses` (`status_id`, `site_id`, `group_id`, `status`, `status_order`, `highlight`) VALUES
-	(1,1,1,'open',1,'009933'),
-	(2,1,1,'closed',2,'990000'),
-	(3,1,1,'Featured',3,'000000');
+ALTER TABLE `exp_statuses` DISABLE KEYS;
+INSERT INTO `exp_statuses` (`status_id`, `status`, `status_order`, `highlight`) VALUES
+	(1,'open',1,'009933'),
+	(2,'closed',2,'990000'),
+	(3,'Featured',3,'000000');
+ALTER TABLE `exp_statuses` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_template_groups` WRITE;
+ALTER TABLE `exp_template_groups` DISABLE KEYS;
 INSERT INTO `exp_template_groups` (`group_id`, `site_id`, `group_name`, `group_order`, `is_site_default`) VALUES
 	(1,1,'about',1,'n'),
 	(2,1,'global_embeds',2,'n'),
 	(3,1,'news',3,'y'),
 	(4,1,'search',4,'n');
+ALTER TABLE `exp_template_groups` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_template_member_groups` WRITE;
+ALTER TABLE `exp_template_member_groups` DISABLE KEYS;
+ALTER TABLE `exp_template_member_groups` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_template_no_access` WRITE;
+ALTER TABLE `exp_template_no_access` DISABLE KEYS;
 INSERT INTO `exp_template_no_access` (`template_id`, `member_group`) VALUES
 	(1,2),
 	(2,2),
@@ -2046,14 +2303,18 @@ INSERT INTO `exp_template_no_access` (`template_id`, `member_group`) VALUES
 	(16,5),
 	(17,2),
 	(18,2);
+ALTER TABLE `exp_template_no_access` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_template_routes` WRITE;
+ALTER TABLE `exp_template_routes` DISABLE KEYS;
+ALTER TABLE `exp_template_routes` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_templates` WRITE;
+ALTER TABLE `exp_templates` DISABLE KEYS;
 INSERT INTO `exp_templates` (`template_id`, `site_id`, `group_id`, `template_name`, `save_template_file`, `template_type`, `template_data`, `template_notes`, `edit_date`, `last_author_id`, `cache`, `refresh`, `no_auth_bounce`, `enable_http_auth`, `allow_php`, `php_parse_location`, `hits`, `protect_javascript`) VALUES
 	(1,1,1,'index','n','webpage','{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index. --}\n{html_head}\n	<title>{site_name}: Contact Us</title>\n{global_stylesheets}\n\n{rss}\n{favicon}\n{html_head_end}\n	<body>\n{nav_access}\n	{branding_begin}\n			{embed="global_embeds/_top_nav" loc="about"}\n			{global_top_search}\n			{global_top_member}\n	{branding_end}\n	{wrapper_begin}\n{embed="global_embeds/_page_header" header="About"}\n\n\n<div id="feature" class="about">\n	{exp:channel:entries channel="about" url_title="about_the_label" dynamic="no"  limit="1" disable="pagination|member_data|categories|category_fields"}\n		<h3 class="about">{title}</h3>\n		{about_body}\n	{/exp:channel:entries}\n</div> <!-- ending #feature -->\n\n	<div class="feature_end"></div>\n\n<div id="content_pri" class="about"> <!-- This is where all primary content, left column gets entered -->\n\n		<!-- Standard Channel Entries tag, but instead of relying on the URL for what to display, we request a specific entry for display via url-title:\n	https://ellislab.com/expressionengine/user-guide/modules/channel/parameters.html#par_url_title\n\n	and we force the channel entries tag to ignore the URL and always deliver the same content by using dynamic="no":\n\n	https://ellislab.com/expressionengine/user-guide/modules/channel/parameters.html#par_dynamic\n	-->\n\n		{exp:channel:entries channel="about" dynamic="no" url_title="about_the_label" limit="1" disable="pagination|member_data|categories|category_fields"}\n			{about_extended}\n		{/exp:channel:entries}\n</div>\n\n<div id="content_sec" class="staff_profiles right green40">\n		<h3 class="staff">Staff Profiles</h3>\n		{exp:channel:entries channel="about" limit="6" category="3" dynamic="off" orderby="date" sort="asc"}\n			{if count == "1"}<ul class="staff_member">{/if}\n				<li class="{switch="||end"}">\n					<h4>{title} <a href="#">i</a></h4>\n					<div class="profile">\n						{about_staff_title}\n					</div>\n					<img src="{about_image}" alt="{title}" />\n				</li>\n			{if count == total_results}</ul>{/if}\n		{/exp:channel:entries}\n\n</div>	<!-- ending #content_sec -->\n\n\n\n{global_footer}\n{wrapper_close}\n{js}\n{html_close}\n',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
 	(2,1,1,'404','n','webpage','{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index. --}\n{html_head}\n	<title>{site_name}: Not Found</title>\n{global_stylesheets}\n\n{rss}\n{favicon}\n{html_head_end}\n	<body>\n{nav_access}\n	{branding_begin}\n			{embed="global_embeds/_top_nav" loc="contact"}\n			{global_top_search}\n			{global_top_member}\n	{branding_end}\n	{wrapper_begin}\n{embed="global_embeds/_page_header" header="Not Found"}\n\n\n	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->\n		<h4>Not Found</h4>\n				 <p>The page you attempted to load was Not Found.  Please try again.</p>\n	</div>\n\n\n		<div id="content_sec" class="right green40">\n			<h3 class="oldernews">Browse Older News</h3>\n			<div id="news_archives">\n				<div id="categories_box">\n				{news_categories}\n				</div>\n				<div id="month_box">\n				{news_month_archives}\n				</div>\n			</div> <!-- ending #news_archives -->\n\n			{news_calendar}\n\n			{news_popular}\n\n		{rss_links}\n\n		</div>	<!-- ending #content_sec -->\n\n	{global_footer}\n	{wrapper_close}\n	{js}\n	{html_close}\n',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
@@ -2073,25 +2334,66 @@ INSERT INTO `exp_templates` (`template_id`, `site_id`, `group_id`, `template_nam
 	(16,1,4,'index','n','webpage','<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"\n"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{lang}" lang="{lang}">\n\n<head>\n<title>{site_name}{lang:search}</title>\n\n<meta http-equiv="content-type" content="text/html; charset={charset}" />\n\n<link rel=\'stylesheet\' type=\'text/css\' media=\'all\' href=\'{stylesheet=search/search_css}\' />\n<style type=\'text/css\' media=\'screen\'>@import "{stylesheet=search/search_css}";</style>\n\n</head>\n<body>\n\n<div id=\'pageheader\'>\n<div class="heading">{lang:search_engine}</div>\n</div>\n\n<div id="content">\n\n<div class=\'breadcrumb\'>\n<span class="defaultBold">&nbsp; <a href="{homepage}">{site_name}</a>&nbsp;&#8250;&nbsp;&nbsp;{lang:search}</span>\n</div>\n\n<div class=\'outerBorder\'>\n<div class=\'tablePad\'>\n\n{exp:search:advanced_form result_page="search/results" cat_style="nested"}\n\n<table cellpadding=\'4\' cellspacing=\'6\' border=\'0\' width=\'100%\'>\n<tr>\n<td width="50%">\n\n<fieldset class="fieldset">\n<legend>{lang:search_by_keyword}</legend>\n\n<input type="text" class="input" maxlength="100" size="40" name="keywords" style="width:100%;" />\n\n<div class="default">\n<select name="search_in">\n<option value="titles" selected="selected">{lang:search_in_titles}</option>\n<option value="entries">{lang:search_in_entries}</option>\n<option value="everywhere" >{lang:search_everywhere}</option>\n</select>\n\n</div>\n\n<div class="default">\n<select name="where">\n<option value="exact" selected="selected">{lang:exact_phrase_match}</option>\n<option value="any">{lang:search_any_words}</option>\n<option value="all" >{lang:search_all_words}</option>\n<option value="word" >{lang:search_exact_word}</option>\n</select>\n</div>\n\n</fieldset>\n\n<div class="default"><br /></div>\n\n<table cellpadding=\'0\' cellspacing=\'0\' border=\'0\'>\n<tr>\n<td valign="top">\n\n<div class="defaultBold">{lang:channels}</div>\n\n<select id="channel_id" name=\'channel_id[]\' class=\'multiselect\' size=\'12\' multiple=\'multiple\' onchange=\'changemenu(this.selectedIndex);\'>\n{channel_names}\n</select>\n\n</td>\n<td valign="top" width="16">&nbsp;</td>\n<td valign="top">\n\n<div class="defaultBold">{lang:categories}</div>\n\n<select name=\'cat_id[]\' size=\'12\'  class=\'multiselect\' multiple=\'multiple\'>\n<option value=\'all\' selected="selected">{lang:any_category}</option>\n</select>\n\n</td>\n</tr>\n</table>\n\n\n\n</td><td width="50%" valign="top">\n\n\n<fieldset class="fieldset">\n<legend>{lang:search_by_member_name}</legend>\n\n<input type="text" class="input" maxlength="100" size="40" name="member_name" style="width:100%;" />\n<div class="default"><input type="checkbox" class="checkbox" name="exact_match" value="y"  /> {lang:exact_name_match}</div>\n\n</fieldset>\n\n<div class="default"><br /></div>\n\n\n<fieldset class="fieldset">\n<legend>{lang:search_entries_from}</legend>\n\n<select name="date" style="width:150px">\n<option value="0" selected="selected">{lang:any_date}</option>\n<option value="1" >{lang:today_and}</option>\n<option value="7" >{lang:this_week_and}</option>\n<option value="30" >{lang:one_month_ago_and}</option>\n<option value="90" >{lang:three_months_ago_and}</option>\n<option value="180" >{lang:six_months_ago_and}</option>\n<option value="365" >{lang:one_year_ago_and}</option>\n</select>\n\n<div class="default">\n<input type=\'radio\' name=\'date_order\' value=\'newer\' class=\'radio\' checked="checked" />&nbsp;{lang:newer}\n<input type=\'radio\' name=\'date_order\' value=\'older\' class=\'radio\' />&nbsp;{lang:older}\n</div>\n\n</fieldset>\n\n<div class="default"><br /></div>\n\n<fieldset class="fieldset">\n<legend>{lang:sort_results_by}</legend>\n\n<select name="orderby">\n<option value="date" >{lang:date}</option>\n<option value="title" >{lang:title}</option>\n<option value="most_comments" >{lang:most_comments}</option>\n<option value="recent_comment" >{lang:recent_comment}</option>\n</select>\n\n<div class="default">\n<input type=\'radio\' name=\'sort_order\' class="radio" value=\'desc\' checked="checked" /> {lang:descending}\n<input type=\'radio\' name=\'sort_order\' class="radio" value=\'asc\' /> {lang:ascending}\n</div>\n</fieldset>\n\n</td>\n</tr>\n</table>\n\n\n<div class=\'searchSubmit\'>\n\n<input type=\'submit\' value=\'Search\' class=\'submit\' />\n\n</div>\n\n{/exp:search:advanced_form}\n\n<div class=\'copyright\'><a href="https://ellislab.com/">Powered by ExpressionEngine</a></div>\n\n\n</div>\n</div>\n</div>\n\n</body>\n</html>',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
 	(17,1,4,'no_results','n','webpage','{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index. --}\n{html_head}\n	<title>{site_name}: No Search Results</title>\n{global_stylesheets}\n{rss}\n{favicon}\n{html_head_end}\n	<body>\n{nav_access}\n	{branding_begin}\n			{embed="global_embeds/_top_nav" loc="not_found"}\n			{global_top_search}\n			{global_top_member}\n	{branding_end}\n	{wrapper_begin}\n{embed="global_embeds/_page_header" header="Search Results"}\n\n\n	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->\n\n		<!-- No search results: https://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_no_result_page -->\n		<!-- This is delivered based on the no_result_page parameter of the search form  -->\n\n				<h3>Search Results</h3>\n\n				<!-- exp:search:keywords: https://ellislab.com/expressionengine/user-guide/modules/search/keywords.html -->\n				<!-- exp:search:keywords lets you echo out what search term was used -->\n					<p>Sorry, no results were found for "<strong>{exp:search:keywords}</strong>".  Please try again.</p>\n	</div>\n\n	<div id="content_sec" class="right green40">\n		<h3 class="oldernews">Browse Older News</h3>\n		<div id="news_archives">\n			<div id="categories_box">\n			{news_categories}\n			</div>\n			<div id="month_box">\n			{news_month_archives}\n			</div>\n		</div> <!-- ending #news_archives -->\n\n		{news_calendar}\n\n		{news_popular}\n\n	{rss_links}\n\n	</div>	<!-- ending #content_sec -->\n\n{global_footer}\n{wrapper_close}\n{js}\n{html_close}\n',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
 	(18,1,4,'results','n','webpage','{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index. --}\n{html_head}\n	<title>{site_name}: {exp:search:search_results}\n		{if count == "1"}\n			Search Results for "{exp:search:keywords}"\n		{/if}\n		{/exp:search:search_results}\n	</title>\n{global_stylesheets}\n{rss}\n{favicon}\n{html_head_end}\n	<body>\n{nav_access}\n	{branding_begin}\n		{embed="global_embeds/_top_nav" loc="not_found"}\n		{global_top_search}\n		{global_top_member}\n	{branding_end}\n	{wrapper_begin}\n	{embed="global_embeds/_page_header" header="Search Results"}\n\n	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->\n\n		<!-- Search Results tag: https://ellislab.com/expressionengine/user-guide/modules/search/index.html#results -->\n\n		{exp:search:search_results}\n			{if count == "1"}\n				<!-- exp:search:keywords: https://ellislab.com/expressionengine/user-guide/modules/search/keywords.html -->\n				<!-- exp:search:keywords lets you echo out what search term was used -->\n\n				<h3>Search Results for "<strong>{exp:search:keywords}</strong>":</h3>\n				<ul id="news_listing">\n			{/if}\n\n			<li>\n				<h4>\n					<a href="{comment_url_title_auto_path}">{title}</a>  //\n					<!-- entry_date is a variable, and date formatting variables can be found at https://ellislab.com/expressionengine/user-guide/templates/date_variable_formatting.html -->\n					{entry_date format="%F %d %Y"}\n				</h4>\n\n				<!-- news_body and news_image are  custom channel fields. https://ellislab.com/expressionengine/user-guide/cp/admin/channel_administration/custom_channel_fields.html -->\n				{if news_image}\n					<img src="{news_image}" alt="{title}" />\n				{/if}\n				{news_body}\n			</li>\n			{if count == total_results}</ul>{/if}\n\n			{paginate}\n				<div class="pagination">\n					{pagination_links}\n						<ul>\n							{first_page}\n								<li><a href="{pagination_url}" class="page-first">First Page</a></li>\n							{/first_page}\n\n							{previous_page}\n								<li><a href="{pagination_url}" class="page-previous">Previous Page</a></li>\n							{/previous_page}\n\n							{page}\n								<li><a href="{pagination_url}" class="page-{pagination_page_number} {if current_page}active{/if}">{pagination_page_number}</a></li>\n							{/page}\n\n							{next_page}\n								<li><a href="{pagination_url}" class="page-next">Next Page</a></li>\n							{/next_page}\n\n							{last_page}\n								<li><a href="{pagination_url}" class="page-last">Last Page</a></li>\n							{/last_page}\n						</ul>\n					{/pagination_links}\n				</div> <!-- ending .pagination -->\n			{/paginate}\n		{/exp:search:search_results}\n	</div>\n\n	<div id="content_sec" class="right green40">\n		<h3 class="oldernews">Browse Older News</h3>\n		<div id="news_archives">\n			<div id="categories_box">\n			{news_categories}\n			</div>\n			<div id="month_box">\n			{news_month_archives}\n			</div>\n		</div> <!-- ending #news_archives -->\n\n		{news_calendar}\n\n		{news_popular}\n\n	{rss_links}\n\n	</div>	<!-- ending #content_sec -->\n\n{global_footer}\n{wrapper_close}\n{js}\n{html_close}\n',NULL,1409242030,1,'n',0,'','n','n','o',0,'n');
+ALTER TABLE `exp_templates` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_throttle` WRITE;
+ALTER TABLE `exp_throttle` DISABLE KEYS;
+ALTER TABLE `exp_throttle` ENABLE KEYS;
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_update_log` WRITE;
+ALTER TABLE `exp_update_log` DISABLE KEYS;
+INSERT INTO `exp_update_log` (`log_id`, `timestamp`, `message`, `method`, `line`, `file`) VALUES
+	(1,1503524902,'Updating to 4.0.0',NULL,NULL,NULL),
+	(2,1503524902,'Could not add column \'exp_file_dimensions.quality\'. Column already exists.','Smartforge::add_column',305,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(3,1503524904,'Update complete. Now running version 4.0.0.',NULL,NULL,NULL),
+	(4,1505759243,'Updating to 4.0.0',NULL,NULL,NULL),
+	(5,1505759243,'Could not modify column \'exp_channel_fields.group_id\'. Column does not exist.','Smartforge::modify_column',54,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(6,1505759243,'Could not create table \'exp_channels_channel_field_groups\'. Table already exists.','Smartforge::create_table',93,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(7,1505759243,'Could not create table \'exp_channels_channel_fields\'. Table already exists.','Smartforge::create_table',112,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(8,1505759243,'Could not create table \'exp_channel_field_groups_fields\'. Table already exists.','Smartforge::create_table',131,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(9,1505759243,'Smartforge::drop_table failed. Table \'exp_member_homepage\' does not exist.','Smartforge::drop_table',228,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(10,1505759243,'Could not drop column \'exp_members.birthday\'. Column does not exist.','Smartforge::drop_column',449,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(11,1505759243,'Could not create key \'sticky_date_id_idx\' on table \'exp_channel_titles\'. Key already exists.','Smartforge::add_key',592,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(12,1505759243,'Could not add column \'exp_file_dimensions.quality\'. Column already exists.','Smartforge::add_column',603,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(13,1505759243,'Could not add column \'exp_member_groups.can_moderate_spam\'. Column already exists.','Smartforge::add_column',618,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(14,1505759243,'Could not drop key \'file_id\' from table \'exp_file_categories\'. Key does not exist.','Smartforge::drop_key',679,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(15,1505759243,'Could not create key \'PRIMARY\' on table \'exp_file_categories\'. Key already exists.','Smartforge::add_key',682,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
+	(16,1505759245,'Update complete. Now running version 4.0.0.',NULL,NULL,NULL);
+ALTER TABLE `exp_update_log` ENABLE KEYS;
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_update_notices` WRITE;
+ALTER TABLE `exp_update_notices` DISABLE KEYS;
+INSERT INTO `exp_update_notices` (`notice_id`, `message`, `version`, `is_header`) VALUES
+	(1,'{birthday} member field variable is now a date type variable','4.0',1),
+	(2,' Checking for templates to review ...','4.0',0),
+	(3,'No templates contain the {birthday} variable.','4.0',0),
+	(4,'Done.','4.0',0);
+ALTER TABLE `exp_update_notices` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_upload_no_access` WRITE;
+ALTER TABLE `exp_upload_no_access` DISABLE KEYS;
+ALTER TABLE `exp_upload_no_access` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_upload_prefs` WRITE;
-INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, `url`, `allowed_types`, `max_size`, `max_height`, `max_width`, `properties`, `pre_format`, `post_format`, `file_properties`, `file_pre_format`, `file_post_format`, `cat_group`, `batch_location`, `module_id`) VALUES
-	(1,1,'Main Upload Directory','../images/uploads/','/images/uploads/','all','','','','style="border: 0;" alt="image"','','','','','',NULL,NULL,0),
-	(2,1,'About','../images/about/','/images/about/','img','','','','','','','','','',NULL,NULL,0),
-	(3,1,'Avatars','../images/avatars/','/images/avatars/','img','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
-	(4,1,'Default Avatars','../images/avatars/default/','/images/avatars/default/','img','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
-	(5,1,'Signature Attachments','../images/signature_attachments/','/images/signature_attachments/','img','30','80','480',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
-	(6,1,'PM Attachments','../images/pm_attachments/','/images/pm_attachments/','img','250',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4);
+ALTER TABLE `exp_upload_prefs` DISABLE KEYS;
+INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, `url`, `allowed_types`, `default_modal_view`, `max_size`, `max_height`, `max_width`, `properties`, `pre_format`, `post_format`, `file_properties`, `file_pre_format`, `file_post_format`, `cat_group`, `batch_location`, `module_id`) VALUES
+	(1,1,'Main Upload Directory','../images/uploads/','/images/uploads/','all','list','','','','style="border: 0;" alt="image"','','','','','',NULL,NULL,0),
+	(2,1,'About','../images/about/','/images/about/','img','list','','','','','','','','','',NULL,NULL,0),
+	(3,1,'Avatars','../images/avatars/','/images/avatars/','img','list','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
+	(4,1,'Default Avatars','../images/avatars/default/','/images/avatars/default/','img','list','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
+	(5,1,'Signature Attachments','../images/signature_attachments/','/images/signature_attachments/','img','list','30','80','480',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
+	(6,1,'PM Attachments','../images/pm_attachments/','/images/pm_attachments/','img','list','250',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4);
+ALTER TABLE `exp_upload_prefs` ENABLE KEYS;
 UNLOCK TABLES;
 
 

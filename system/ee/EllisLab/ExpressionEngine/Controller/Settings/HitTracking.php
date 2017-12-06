@@ -1,33 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Settings;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Hit Tracking Settings Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Hit Tracking Settings Controller
  */
 class HitTracking extends Settings {
 
@@ -63,7 +48,7 @@ class HitTracking extends Settings {
 					'title' => 'dynamic_tracking_disabling',
 					'desc' => sprintf(
 						lang('dynamic_tracking_disabling_desc'),
-						'https://docs.expressionengine.com/v3/cp/settings/hit-tracking.html#suspend-threshold'
+						'https://docs.expressionengine.com/v4/cp/settings/hit-tracking.html#suspend-threshold'
 					),
 					'fields' => array(
 						'dynamic_tracking_disabling' => array('type' => 'text')

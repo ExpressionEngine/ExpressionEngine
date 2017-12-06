@@ -1,20 +1,20 @@
 class WatermarkEdit < FileManagerPage
 
   element :wm_name, 'input[name=wm_name]'
-  element :wm_type, 'select[name=wm_type]'
-  element :wm_vrt_alignment, 'select[name=wm_vrt_alignment]'
-  element :wm_hor_alignment, 'select[name=wm_hor_alignment]'
+  elements :wm_type, 'input[name=wm_type]'
+  elements :wm_vrt_alignment, 'input[name=wm_vrt_alignment]'
+  elements :wm_hor_alignment, 'input[name=wm_hor_alignment]'
   element :wm_padding, 'input[name=wm_padding]'
   element :wm_hor_offset, 'input[name=wm_hor_offset]'
   element :wm_vrt_offset, 'input[name=wm_vrt_offset]'
 
   # Text options
-  elements :wm_use_font, 'input[name=wm_use_font]'
+  element :wm_use_font, 'a.toggle-btn[data-toggle-for="wm_use_font"]'
   element :wm_text, 'input[name=wm_text]'
-  element :wm_font, 'select[name=wm_font]'
+  elements :wm_font, 'input[name=wm_font]'
   element :wm_font_size, 'input[name=wm_font_size]'
   element :wm_font_color, 'input[name=wm_font_color]'
-  elements :wm_use_drop_shadow, 'input[name=wm_use_drop_shadow]'
+  element :wm_use_drop_shadow, 'a.toggle-btn[data-toggle-for="wm_use_drop_shadow"]'
   element :wm_shadow_distance, 'input[name=wm_shadow_distance]'
   element :wm_shadow_color, 'input[name=wm_shadow_color]'
 

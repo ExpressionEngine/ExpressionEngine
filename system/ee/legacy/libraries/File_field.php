@@ -1,27 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.4
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine File_browser Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	File_field
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * File Field
  */
 
 class File_field {
@@ -170,8 +157,6 @@ class File_field {
 		return ee('View')->make('_shared/file/field')->render($vars);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Initialize the file browser given a configuration array and an endpoint url
 	 * @param array $config Associative array containing five different keys and values:
@@ -222,8 +207,6 @@ class File_field {
 		$this->_browser_css();
 		$this->_browser_javascript($endpoint_url);
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Validate's the data by checking to see if they used the normal file
@@ -358,8 +341,6 @@ class File_field {
 		);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Format's the data of a file field given the name of the file and
 	 * the directory_id
@@ -380,8 +361,6 @@ class File_field {
 			return $file_name;
 		}
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Caches file data about to be parsed by the channel module. Instead of querying
@@ -451,8 +430,6 @@ class File_field {
 		);
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Queries for files based on file name using the Models and returns a
 	 * File_field library-compatible array of file information
@@ -493,8 +470,6 @@ class File_field {
 
 		return $files_as_array;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Searches the local _files array for a particular file based on a specific
@@ -557,8 +532,6 @@ class File_field {
 
 		return $file;
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Parse field contents, which may be in the {filedir_n} format for may be
@@ -626,6 +599,7 @@ class File_field {
 
 		// Set additional data based on what we've gathered
 		$file['raw_output']	= $data;
+		$file['raw_content'] = $data;
 		$file['path'] 		= (isset($upload_dir['url'])) ? $upload_dir['url'] : '';
 		$file['extension'] 	= substr(strrchr($file['file_name'], '.'), 1);
 		$file['filename'] 	= basename($file['file_name'], '.'.$file['extension']); // backwards compatibility
@@ -681,8 +655,6 @@ class File_field {
 		return $file;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Unlike parse(), this parses all occurances of {filedir_n} from a given
 	 * string to their actual values and returns the processed string.
@@ -718,8 +690,6 @@ class File_field {
 		return $data;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Get upload preferences and keep it cached in the class
 	 *
@@ -741,8 +711,6 @@ class File_field {
 		return $this->_upload_prefs;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Add the file browser CSS to the head
 	 */
@@ -750,8 +718,6 @@ class File_field {
 	{
 		ee()->cp->add_to_head(ee()->view->head_link('css/file_browser.css'));
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Loads up javascript dependencies and global variables for the file

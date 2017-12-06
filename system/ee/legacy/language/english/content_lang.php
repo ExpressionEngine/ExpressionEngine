@@ -12,7 +12,7 @@ $lang = array(
 
 'allow_comments' => 'Allow comments?',
 
-'allow_comments_desc' => 'When set to <b>yes</b>, members with permissions will be able to post comments to this entry.',
+'allow_comments_desc' => 'When enabled, members with permissions will be able to post comments to this entry.',
 
 'author' => 'Author',
 
@@ -30,7 +30,7 @@ $lang = array(
 
 'btn_create_new' => 'Create New',
 
-'btn_create_new_entry_in_channel' => 'Create New in %s',
+'btn_create_new_entry_in_channel' => 'New in %s',
 
 'btn_edit_comment' => 'Edit Comment',
 
@@ -168,7 +168,7 @@ $lang = array(
 
 'sticky' => 'Make entry sticky?',
 
-'sticky_desc' => 'When set to <b>yes</b>, this entry will be given preference in sorted listings.',
+'sticky_desc' => 'When enabled, this entry will be given preference in sorted listings.',
 
 'url_title' => '<abbr title="Unified Resource Locator">URL</abbr> title',
 
@@ -214,7 +214,13 @@ $lang = array(
 
 'autosaved' => 'Auto saved',
 
-'autosaved_entries' => 'Auto saved Entries',
+'autosaved_entries' => 'Auto-saved Entries',
+
+'autosaved_versions' => 'Auto-saved versions',
+
+'autosaved_versions_desc' => 'Below is a list of auto-saved versions of this entry.',
+
+'autosaves' => 'Auto Saves',
 
 'blockquote' => 'Blockquote',
 
@@ -393,6 +399,8 @@ $lang = array(
 'forum_no_forum_body' => 'You cannot create a forum topic without content.',
 
 'forum_no_forum_title' => 'You must give the forum topic a title.',
+
+'forum_no_forum_id' => 'You must choose a forum.',
 
 'forum_title' => 'Forum Topic Title',
 
@@ -642,8 +650,6 @@ $lang = array(
 
 'select_action' => 'Select Your Placement Options',
 
-'select_all' => 'Select/Deselect All',
-
 'select_channel_to_edit' => 'Choose a channel to view',
 
 'select_channel_to_post_in' => 'Choose a channel to post in',
@@ -657,6 +663,10 @@ $lang = array(
 'show_toolbar' => 'show toolbar',
 
 'spam' => 'SPAM',
+
+'spam_comments' => 'There are <b>%d comments</b> flagged as potential spam that <a href="%s">need moderation</a>.',
+
+'spam_comments_header' => 'Spam Comments',
 
 'span' => 'Span',
 
@@ -738,7 +748,7 @@ $lang = array(
 
 'versioning_enabled' => 'Enable entry revisions?',
 
-'versioning_enabled_desc' => 'When set to <b>yes</b>, you can store up to %d revisions of this entry.',
+'versioning_enabled_desc' => 'When enabled, you can store up to %d revisions of this entry.',
 
 'view' => 'View',
 
@@ -782,7 +792,9 @@ $lang = array(
 /* Relationships */
 'add_new_html_button' => 'Add New HTML button',
 
-'add_new_row' => 'add new row',
+'add_new_row' => 'Add new row',
+
+'collapse' => 'Collapse',
 
 'hide' => 'Hide',
 

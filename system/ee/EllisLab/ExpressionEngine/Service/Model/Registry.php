@@ -1,33 +1,20 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Model;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.5
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Model Registry
+ * Model Service Registry
  *
  * This contains general model information. This includes alias => class name
  * mapping, prefix information, installed/enabled information, and access to
  * model metadata.
- *
- * @package		ExpressionEngine
- * @category	Service
- * @subpackage	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class Registry {
 
@@ -125,7 +112,8 @@ class Registry {
 	{
 		$class = $this->expandAlias($name);
 
-		if ( ! isset($this->metadata[$class]))
+		if ( ! isset($this->metadata[$class])
+			|| $this->metadata[$class]->getName() != $name)
 		{
 			$this->metadata[$class] = new MetaDataReader($name, $class);
 		}

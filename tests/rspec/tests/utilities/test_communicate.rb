@@ -28,7 +28,7 @@ feature 'Communicate' do
     @page.load
 
     @page.should be_displayed
-    @page.heading.text.should eq 'Communicate Required Fields'
+    @page.heading.text.should eq 'Communicate'
     @page.should have_subject
     @page.should have_body
     @page.should have_mailtype
@@ -57,7 +57,7 @@ feature 'Communicate' do
 
   it "disables groups with no members" do
     @page.member_groups.each do |group|
-      group.parent.should have_text '(0)' if group[:disabled]
+      group.first(:xpath, ".//..").should have_text 'Guests' if group[:disabled]
     end
   end
 
@@ -80,10 +80,6 @@ feature 'Communicate' do
     @page.from_email.first(:xpath, ".//../..")[:class].should include 'invalid'
     @page.from_email.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
     @page.from_email.first(:xpath, ".//..").should have_text 'field is required.'
-
-    @page.recipient.first(:xpath, ".//../..")[:class].should include 'invalid'
-    @page.recipient.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
-    @page.recipient.first(:xpath, ".//..").should have_text 'field is required.'
 
     @page.submit_button[:value].should eq 'Errors Found'
   end

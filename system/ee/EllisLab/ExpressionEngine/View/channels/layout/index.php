@@ -1,22 +1,28 @@
-<?php $this->extend('_templates/default-nav-table'); ?>
+<?php $this->extend('_templates/default-nav', [], 'outer_box'); ?>
 
-<div class="tbl-ctrls">
-	<?=form_open($table['base_url'])?>
-		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=$create_url?>"><?=lang('create_new')?></a>
-		</fieldset>
-		<h1><?=$cp_page_title?></h1>
-		<?=ee('CP/Alert')->getAllInlines()?>
-		<?php $this->embed('_shared/table', $table); ?>
-		<?=$pagination?>
-		<fieldset class="tbl-bulk-act hidden">
-			<select name="bulk_action">
-				<option>-- <?=lang('with_selected')?> --</option>
-				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
-			</select>
-			<input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
-		</fieldset>
-	</form>
+<div class="box table-list-wrap">
+	<div class="tbl-ctrls">
+		<?php if (empty($layouts) && empty($channel_id)): ?>
+			<?php $this->embed('_shared/table-list', ['data' => []]); ?>
+		<?php else: ?>
+			<?=form_open($base_url)?>
+				<fieldset class="tbl-search right">
+					<a class="btn action" href="<?=$create_url?>"><?=lang('new_layout')?></a>
+				</fieldset>
+				<h1><?=$cp_page_title?></h1>
+				<?=ee('CP/Alert')->getAllInlines()?>
+				<?php $this->embed('_shared/table-list', ['data' => $layouts]); ?>
+				<?php if (isset($pagination)) echo $pagination; ?>
+				<fieldset class="tbl-bulk-act hidden">
+					<select name="bulk_action">
+						<option>-- <?=lang('with_selected')?> --</option>
+						<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+					</select>
+					<input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
+				</fieldset>
+			</form>
+		<?php endif?>
+	</div>
 </div>
 
 <?php

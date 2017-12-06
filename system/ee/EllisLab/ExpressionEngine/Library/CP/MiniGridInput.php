@@ -1,31 +1,17 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Library\CP;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
+ * CP MiniGrid Input Table
  */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Grid Input Class
- *
- * @package		ExpressionEngine
- * @subpackage	Library
- * @category	CP
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
- */
-
 class MiniGridInput extends GridInput {
 
 	/**
@@ -56,7 +42,13 @@ class MiniGridInput extends GridInput {
 		{
 			// getElementById instead of $('#...') for field names that have
 			// brackets in them
-			$this->javascript->output('$(".keyvalue").miniGrid('.json_encode($settings).');');
+			$this->javascript->output('
+				$(".fields-keyvalue").miniGrid('.json_encode($settings).');
+
+				FieldManager.on("fieldModalDisplay", function(modal) {
+					$(".fields-keyvalue").miniGrid('.json_encode($settings).');
+				});
+			');
 		}
 	}
 }

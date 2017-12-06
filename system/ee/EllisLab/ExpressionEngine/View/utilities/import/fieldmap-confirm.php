@@ -1,8 +1,8 @@
 <?php $this->extend('_templates/default-nav'); ?>
 
+<h1><?=$cp_page_title?></h1>
 <div class="tbl-ctrls">
 	<?=form_open(ee('CP/URL')->make('utilities/import-converter/import-code-output'), '', $form_hidden)?>
-		<h1><?=$cp_page_title?></h1>
 		<div class="alert inline warn">
 			<?php if ($form_hidden['encrypt'] == TRUE): ?>
 				<p><?=lang('plaintext_passwords')?></p>
@@ -27,8 +27,8 @@
 			</tbody>
 		</table>
 
-		<fieldset class="form-ctrls">
-			<?=cp_form_submit('btn_create_file', 'btn_create_file_working')?>
-		</fieldset>
+		<div class="form-btns">
+			<?=cp_form_submit('btn_assign_fields', 'btn_saving')?>
+		</div>
 	</form>
 </div>

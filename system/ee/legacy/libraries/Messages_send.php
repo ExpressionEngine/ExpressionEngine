@@ -1,26 +1,14 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Core Private Messaging Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Core Private Messaging
  */
 class EE_Messages_send extends EE_Messages {
 
@@ -876,13 +864,11 @@ class EE_Messages_send extends EE_Messages {
  				 				'highlight_code'	=> TRUE)
  				 				);
 
-				if (ee()->config->item('enable_censoring') == 'y' AND ee()->config->item('censored_words') != '')
+				$subject = ee('Security/XSS')->clean(ee()->input->get_post('subject'));
+
+				if (bool_config_item('enable_censoring'))
         		{
-					$subject = ee()->typography->filter_censored_words(ee('Security/XSS')->clean(ee()->input->get_post('subject')));
-				}
-				else
-				{
-					$subject = ee('Security/XSS')->clean(ee()->input->get_post('subject'));
+        			$subject = ee('Format')->make('Text', $subject)->censor();
 				}
 
 				$body = ee()->typography->parse_type(stripslashes(ee('Security/XSS')->clean(ee()->input->get_post('body'))),

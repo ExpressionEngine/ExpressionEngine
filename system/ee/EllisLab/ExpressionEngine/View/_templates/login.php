@@ -7,14 +7,17 @@
 		<?=ee()->view->head_link('css/out.min.css'); ?>
 	</head>
 	<body>
-		<section class="wrap">
+		<section class="flex-wrap">
+			<section class="wrap">
 
-			<?=$child_view?>
+				<?=$child_view?>
 
-		</section>
-		<section class="bar snap">
-			<p class="left"><b>ExpressionEngine</b></p>
-			<p class="right">&copy;2003&mdash;<?=ee()->localize->format_date('%Y')?> <a href="https://expressionengine.com/" rel="external">EllisLab</a>, Inc.</p>
+				<section class="bar">
+					<p class="left"><a href="https://expressionengine.com/" rel="external"><b>ExpressionEngine</b></a></p>
+					<p class="right">&copy;<?=ee()->localize->format_date('%Y')?> <a href="https://ellislab.com/" rel="external">EllisLab</a>, Inc.</p>
+				</section>
+
+			</section>
 		</section>
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->view->script_tag('common.min.js')?>

@@ -1,18 +1,11 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.6
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
-
-// ------------------------------------------------------------------------
 
 if (defined('EE_APPPATH'))
 {
@@ -36,16 +29,8 @@ require_once $path.'libraries/template_router/converters/Numeric.php';
 require_once $path.'libraries/template_router/converters/Pagination.php';
 require_once $path.'libraries/template_router/converters/Regex.php';
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Channel Parser Converters
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Template Router Converters
  */
 class EE_Template_router_converters {
 
@@ -68,8 +53,6 @@ class EE_Template_router_converters {
 		$this->register('pagination', 'EE_template_router_pagination_converter');
 		$this->register('regex', 'EE_template_router_regex_converter');
 	}
-
-	// ------------------------------------------------------------------------
 
 	/**
 	 * Load a validation rule with the provided constuctor $args
@@ -101,8 +84,6 @@ class EE_Template_router_converters {
 		return $obj;
 	}
 
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Register a converter
 	 *
@@ -115,16 +96,8 @@ class EE_Template_router_converters {
 
 }
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Rule Converter Implementation
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Template Router Converter Implementation
  */
 interface EE_Template_router_converter
 {

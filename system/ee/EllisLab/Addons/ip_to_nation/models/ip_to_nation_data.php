@@ -1,11 +1,19 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
+/**
+ * IP to Nation Model
+ */
 class Ip_to_nation_data extends CI_Model {
 
 	private $table = 'ip2nation';
 	private $c_table = 'ip2nation_countries';
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Get a country by ip address
@@ -34,8 +42,6 @@ class Ip_to_nation_data extends CI_Model {
 		return $query->row('country');
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Replace IP data with that of all the files in `$dir`
 	 */
@@ -46,8 +52,6 @@ class Ip_to_nation_data extends CI_Model {
 			glob($dir.'/*.csv')
 		);
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Replace IP data with that in `$files`
@@ -96,8 +100,6 @@ class Ip_to_nation_data extends CI_Model {
 		$this->db->insert_batch($this->c_table, $countries);
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Ban a countries by their country code
 	 */
@@ -115,8 +117,6 @@ class Ip_to_nation_data extends CI_Model {
 		}
 	}
 
-	// ----------------------------------------------------------------------
-
 	/**
 	 * Convert an IP address to its IPv6 packed format
 	 */
@@ -129,8 +129,6 @@ class Ip_to_nation_data extends CI_Model {
 		}
 		return inet_pton($addr);
 	}
-
-	// ----------------------------------------------------------------------
 
 	/**
 	 * Read the ip file and update the db

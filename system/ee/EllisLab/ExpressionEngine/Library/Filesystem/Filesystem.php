@@ -1,31 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Library\Filesystem;
 
 use FilesystemIterator;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Filesystem Library
- *
- * @package		ExpressionEngine
- * @subpackage	Filesystem
- * @category	Library
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Filesystem
  */
 class Filesystem {
 
@@ -54,13 +41,45 @@ class Filesystem {
 	}
 
 	/**
+	 * Read a file from disk line-by-line, good for large text files
+	 *
+	 * @param String $path File to read
+	 * @param Callable Callback to call for each line of the file, accepts one parameter
+	 */
+	public function readLineByLine($path, Callable $callback)
+	{
+		if ( ! $this->exists($path))
+		{
+			throw new FilesystemException("File not found: {$path}");
+		}
+		elseif ( ! $this->isFile($path))
+		{
+			throw new FilesystemException("Not a file: {$path}");
+		}
+		elseif ( ! $this->isReadable($path))
+		{
+			throw new FilesystemException("Cannot read file: {$path}");
+		}
+
+		$pointer = fopen($path, 'r');
+
+		while ( ! feof($pointer))
+		{
+			$callback(fgets($pointer));
+		}
+
+		fclose($pointer);
+	}
+
+	/**
 	 * Write a file to disk
 	 *
 	 * @param String $path File to write to
 	 * @param String $data Data to write
 	 * @param bool $overwrite Overwrite existing files?
+	 * @param bool $append Append to existing file?
 	 */
-	public function write($path, $data, $overwrite = FALSE)
+	public function write($path, $data, $overwrite = FALSE, $append = FALSE)
 	{
 		$path = $this->normalize($path);
 
@@ -68,14 +87,31 @@ class Filesystem {
 		{
 			throw new FilesystemException("Cannot write file, path is a directory: {$path}");
 		}
-		elseif ($this->isFile($path) && $overwrite == FALSE)
+		elseif ($this->isFile($path) && $overwrite == FALSE && $append == FALSE)
 		{
 			throw new FilesystemException("File already exists: {$path}");
 		}
 
-		file_put_contents($path, $data);
+		$flags = LOCK_EX;
+		if ($overwrite == FALSE && $append == TRUE)
+		{
+			$flags = FILE_APPEND | LOCK_EX;
+		}
+
+		file_put_contents($path, $data, $flags);
 
 		$this->ensureCorrectAccessMode($path);
+	}
+
+	/**
+	 * Append to an existing file
+	 *
+	 * @param String $path File to write to
+	 * @param String $data Data to write
+	 */
+	public function append($path, $data)
+	{
+		$this->write($path, $data, FALSE, TRUE);
 	}
 
 	/**
@@ -83,11 +119,20 @@ class Filesystem {
 	 *
 	 * @param String $path Directory to create
 	 * @param bool $with_index Add EE's default index.html file in the new dir?
+	 * @return bool Success or failure of mkdir()
 	 */
 	public function mkDir($path, $with_index = TRUE)
 	{
 		$path = $this->normalize($path);
-		mkdir($path, DIR_WRITE_MODE, TRUE);
+
+		$old_umask = umask(0);
+		$result = @mkdir($path, DIR_WRITE_MODE, TRUE);
+		umask($old_umask);
+
+		if ( ! $result)
+		{
+			return FALSE;
+		}
 
 		if ($with_index)
 		{
@@ -95,6 +140,8 @@ class Filesystem {
 		}
 
 		$this->ensureCorrectAccessMode($path);
+
+		return TRUE;
 	}
 
 	/**
@@ -170,6 +217,44 @@ class Filesystem {
 	}
 
 	/**
+	 * Gets the contents of a directory as a flat array, with the option of
+	 * returning a recursive listing
+	 *
+	 * @param String $path Directory to search
+	 * @param bool $recursive Whether or not to do a recursive search
+	 * @param array Array of all paths found inside the specified directory
+	 */
+	public function getDirectoryContents($path, $recursive = FALSE)
+	{
+		if ( ! $this->exists($path))
+		{
+			throw new FilesystemException('Cannot get contents of path, the path is invalid: '.$path);
+		}
+
+		if ( ! $this->isDir($path))
+		{
+			throw new FilesystemException('Cannot get contents of path, the path is not a directory: '.$path);
+		}
+
+		$contents = new FilesystemIterator($this->normalize($path));
+		$contents_array = [];
+
+		foreach ($contents as $item)
+		{
+			if ($item->isDir() && $recursive)
+			{
+				$contents_array += $this->getDirectoryContents($item->getPathname(), $recursive);
+			}
+			else
+			{
+				$contents_array[] = $item->getPathName();
+			}
+		}
+
+		return $contents_array;
+	}
+
+	/**
 	 * Empty a directory
 	 *
 	 * @param String $path Directory to empty
@@ -231,9 +316,9 @@ class Filesystem {
 	}
 
 	/**
-	 * Copy a file
+	 * Copy a file or directory
 	 *
-	 * @param String $source File to copy
+	 * @param String $source File or directory to copy
 	 * @param Stirng $dest Path to the duplicate
 	 */
 	public function copy($source, $dest)
@@ -243,12 +328,48 @@ class Filesystem {
 			throw new FilesystemException("Cannot copy non-existent path: {$source}");
 		}
 
-		rename(
-			$this->normalize($source),
-			$this->normalize($dest)
-		);
+		if ($this->isDir($source))
+		{
+			$this->recursiveCopy($source, $dest);
+		}
+		else
+		{
+			copy(
+				$this->normalize($source),
+				$this->normalize($dest)
+			);
+		}
 
 		$this->ensureCorrectAccessMode($dest);
+	}
+
+	/**
+	 * Copies a directory to another directory by recursively iterating over its files
+	 *
+	 * @param String $source Directory to copy
+	 * @param Stirng $dest Path to the duplicate
+	 */
+	protected function recursiveCopy($source, $dest)
+	{
+		$dir = opendir($source);
+		@mkdir($dest);
+
+		while(false !== ($file = readdir($dir)))
+		{
+			if (($file != '.') && ($file != '..'))
+			{
+				if ($this->isDir($source . '/' . $file))
+				{
+					$this->recursiveCopy($source . '/' . $file, $dest . '/' . $file);
+				}
+				else
+				{
+					copy($source . '/' . $file, $dest . '/' . $file);
+				}
+			}
+		}
+
+		closedir($dir);
 	}
 
 	/**
@@ -433,6 +554,44 @@ class Filesystem {
 
 		fclose($fp);
 		return TRUE;
+	}
+
+	/**
+	 * Returns a hash for a given file and hashing algorithm
+	 *
+	 * @param String $algo PHP hashing algorithm, as specified in hash_algos()
+	 * @param String $path Path to check
+	 * @return String Hash of file
+	 */
+	public function hashFile($algo, $filename)
+	{
+		if ( ! $this->exists($filename))
+		{
+			throw new FilesystemException("File does not exist: {$filename}");
+		}
+
+		return hash_file($algo, $filename);
+	}
+
+	/**
+	 * Returns the amount of free bytes at a given path
+	 *
+	 * @param	String	$path	Path to check
+	 * @return	Mixed	Number of bytes as a float, or FALSE on failure
+	 */
+	public function getFreeDiskSpace($path = '/')
+	{
+		return @disk_free_space($path);
+	}
+
+	/**
+	 * include() a file
+	 *
+	 * @param	string	$filename	Full path to file to include
+	 */
+	public function include_file($filename)
+	{
+		include_once($filename);
 	}
 
 	/**

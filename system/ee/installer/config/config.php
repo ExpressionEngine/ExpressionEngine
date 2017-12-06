@@ -1,11 +1,11 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 
 /*
 |--------------------------------------------------------------------------
 | Base Site URL
 |--------------------------------------------------------------------------
 |
-| URL to your CodeIgniter root. Typically this will be your base URL,
+| URL to your root. Typically this will be your base URL,
 | WITH a trailing slash:
 |
 |	http://example.com/

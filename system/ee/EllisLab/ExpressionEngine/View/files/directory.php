@@ -2,19 +2,7 @@
 
 <div class="tbl-ctrls">
 	<?=form_open($form_url)?>
-		<?php if ($can_upload_files): ?>
-		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=ee('CP/URL')->make('files/upload/' . $dir_id)?>"><?=lang('upload_new_file')?></a>
-		</fieldset>
-		<?php endif; ?>
-		<h1>
-			<?=$cp_heading?>
-			<?php if ($can_sync_directory): ?>
-			<ul class="toolbar">
-				<li class="sync"><a href="<?=ee('CP/URL')->make('files/uploads/sync/' . $dir_id)?>" title="<?=lang('sync')?>"></a></li>
-			</ul>
-			<?php endif; ?>
-		</h1>
+		<h1><?=$cp_heading?></h1>
 		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php if (isset($filters)) echo $filters; ?>
 		<?php $this->embed('_shared/table', $table); ?>

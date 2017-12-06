@@ -1,33 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Settings;
-
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Comment Settings Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Comment Settings Controller
  */
 class Comments extends Settings {
 
@@ -52,14 +37,8 @@ class Comments extends Settings {
 					'title' => 'enable_comments',
 					'desc' => 'enable_comments_desc',
 					'fields' => array(
-						'enable_comments' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							)
-						)
-					)
+						'enable_comments' => array('type' => 'yes_no')
+					),
 				)
 			),
 			'options' => array(
@@ -67,14 +46,8 @@ class Comments extends Settings {
 					'title' => 'comment_word_censoring',
 					'desc' => sprintf(lang('comment_word_censoring_desc'), ee('CP/URL')->make('settings/word-censor')),
 					'fields' => array(
-						'comment_word_censoring' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							)
-						)
-					)
+						'comment_word_censoring' => array('type' => 'yes_no')
+					),
 				),
 				array(
 					'title' => 'comment_moderation_override',

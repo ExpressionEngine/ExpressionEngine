@@ -1,26 +1,14 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Template Structure API Class
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Template Structure API
  */
 class Api_template_structure extends Api {
 
@@ -55,8 +43,6 @@ class Api_template_structure extends Api {
 		$this->_load_reserved_groups();
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Template Group metadata
 	 *
@@ -89,8 +75,6 @@ class Api_template_structure extends Api {
 		$this->group_info[$group_id] = $query;
 		return $query;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create Group
@@ -216,8 +200,6 @@ class Api_template_structure extends Api {
 		return $group_id;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Load Reserved Groups
 	 *
@@ -249,8 +231,6 @@ class Api_template_structure extends Api {
 			$this->reserved_names[] = ee()->config->item("profile_trigger");
 		}
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * File Extensions
@@ -289,8 +269,6 @@ class Api_template_structure extends Api {
 
 		return '';
 	}
-
-	// --------------------------------------------------------------------
 }
 // END CLASS
 

@@ -1,30 +1,16 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
 /**
- * ExpressionEngine - by EllisLab
+ * ExpressionEngine (https://expressionengine.com)
  *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 2.0
- * @filesource
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
-// ------------------------------------------------------------------------
-
 /**
- * ExpressionEngine Admin Model
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Model
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Search Model
  */
 class Search_model extends CI_Model {
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Filtered Entries
@@ -101,8 +87,6 @@ class Search_model extends CI_Model {
 		return $return_data;
 	}
 
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Build Main Query
@@ -486,8 +470,6 @@ class Search_model extends CI_Model {
 		return array('pageurl' => $pageurl, 'result_obj' => $this->db->get());
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Build Full CP Query
 	 *
@@ -557,8 +539,6 @@ class Search_model extends CI_Model {
 
 		return $this->db->get();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Searchable Fields
