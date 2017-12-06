@@ -255,6 +255,7 @@ class Select extends Query {
 
 		if (array_key_exists('group_column', $meta_field_data))
 		{
+			$meta_field_data['group_column'] = $alias . '__' . $meta_field_data['group_column'];
 			$structure_ids = array_map(function($column) use($meta_field_data){
 				if (array_key_exists($meta_field_data['group_column'], $column))
 				{

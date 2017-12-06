@@ -108,7 +108,7 @@ class ChannelEntry extends ContentModel {
 
 	protected static $_field_data = array(
 		'field_model'     => 'ChannelField',
-		'group_column'    => 'ChannelEntry__channel_id',
+		'group_column'    => 'channel_id',
 		'structure_model' => 'Channel',
 	);
 
