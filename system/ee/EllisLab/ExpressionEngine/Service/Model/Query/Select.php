@@ -250,9 +250,6 @@ class Select extends Query {
 		$table_name        = $class::getMetaData('table_name');
 		$parent_key        = "{$table_name}.{$primary_key}";
 
-		$fields = ee('Model')->get($meta_field_data['field_model'])
-			->filter($column_prefix.'legacy_field_data', 'n');
-
 		if (array_key_exists('group_column', $meta_field_data))
 		{
 			$meta_field_data['group_column'] = $alias . '__' . $meta_field_data['group_column'];
