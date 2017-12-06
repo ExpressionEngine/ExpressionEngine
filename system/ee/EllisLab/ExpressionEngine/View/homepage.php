@@ -90,7 +90,7 @@
 						<li><b><?=$number_of_channels?></b> <?=lang('channels')?></li>
 						<?php endif; ?>
 						<?php if ($can_access_fields): ?>
-						<li><a href="<?=ee('CP/URL', 'channels/fields/groups')?>"><b><?=$number_of_channel_field_groups?></b> <?=lang('field_groups')?></a></li>
+						<li><a href="<?=ee('CP/URL', 'fields')?>"><b><?=$number_of_channel_fields?></b> <?=lang('fields')?></a></li>
 						<?php endif; ?>
 					</ul>
 				</div>
