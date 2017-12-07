@@ -387,10 +387,7 @@ class Channel {
 					}
 					else
 					{
-						$this->$custom_fields[$site_id] = array_merge(
-							$this->$custom_fields[0],
-							$this->$custom_fields[$site_id]
-						);
+						$this->$custom_fields[$site_id] = $this->$custom_fields[0] + $this->$custom_fields[$site_id];
 					}
 				}
 			}
