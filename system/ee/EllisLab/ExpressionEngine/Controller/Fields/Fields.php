@@ -125,6 +125,7 @@ class Fields extends AbstractFieldsController {
 			->add('Perpage', $total_fields, 'all_fields', TRUE);
 
 		$filter_values = $filters->values();
+		$vars['base_url']->addQueryStringVariables($filter_values);
 		$per_page = $filter_values['perpage'];
 
 		if ($group)
