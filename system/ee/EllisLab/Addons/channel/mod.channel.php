@@ -2129,7 +2129,29 @@ class Channel {
 						case 'custom_field' :
 							if (strpos($corder[$key], '|') !== FALSE)
 							{
-								$field_list = 'wd.field_id_'.implode(", wd.field_id_", explode('|', $corder[$key]));
+								$field_list = [];
+
+								foreach (explode('|', $corder[$key]) as $field_id)
+								{
+									$field = ee('Model')->get('ChannelField', $field_id)->first();
+
+									if ($field->legacy_field_data)
+									{
+										$field_list[] = "wd.field_id_{$field_id}";
+									}
+									else
+									{
+										if (strpos($sql, "exp_channel_data_field_{$field_id}") === FALSE)
+										{
+											$join .= "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
+											$sql = str_replace('WHERE ', $join . 'WHERE ', $sql);
+										}
+
+										$field_list[] = "exp_channel_data_field_{$field_id}.field_id_{$field_id}";
+
+									}
+								}
+
 								$end .= "CONCAT(".$field_list.")";
 								$distinct_select .= ', '.$field_list.' ';
 							}
@@ -2137,14 +2159,24 @@ class Channel {
 							{
 								$field_id = $corder[$key];
 
-								if (strpos($sql, "exp_channel_data_field_{$field_id}") === FALSE)
-								{
-									$join = "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
-									$sql = str_replace('WHERE ', $join . 'WHERE ', $sql);
-								}
+								$field = ee('Model')->get('ChannelField', $field_id)->first();
 
-								$end .= "exp_channel_data_field_{$field_id}.field_id_{$field_id}";
-								$distinct_select .= ", exp_channel_data_field_{$field_id}.field_id_{$field_id} ";
+								if ($field->legacy_field_data)
+								{
+									$end .= "wd.field_id_{$field_id}";
+									$distinct_select .= ", wd.field_id_{$field_id} ";
+								}
+								else
+								{
+									if (strpos($sql, "exp_channel_data_field_{$field_id}") === FALSE)
+									{
+										$join = "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
+										$sql = str_replace('WHERE ', $join . 'WHERE ', $sql);
+									}
+
+									$end .= "exp_channel_data_field_{$field_id}.field_id_{$field_id}";
+									$distinct_select .= ", exp_channel_data_field_{$field_id}.field_id_{$field_id} ";
+								}
 							}
 						break;
 
