@@ -51,6 +51,8 @@ class Categories extends AbstractCategoriesController {
 
 		if ( ! $cat_group)
 		{
+			ee()->view->cp_page_title = lang('categories');
+
 			$vars = [
 				'no_results' => [
 					'text' => sprintf(lang('no_found'), lang('category_groups'))
