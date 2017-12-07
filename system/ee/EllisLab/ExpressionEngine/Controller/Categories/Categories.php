@@ -54,8 +54,7 @@ class Categories extends AbstractCategoriesController {
 			$vars = [
 				'no_results' => [
 					'text' => sprintf(lang('no_found'), lang('category_groups'))
-						.' <a href="'.ee('CP/URL', 'categories/groups/create').'">'.lang('add_new').'</a> '
-						.lang('or').' <a href="#" rel="import-channel">'.lang('import').'</a>'
+						.' <a href="'.ee('CP/URL', 'categories/groups/create').'">'.lang('add_new').'</a>'
 				],
 				'channel_id' => ''
 			];
