@@ -1132,6 +1132,17 @@ class ChannelEntry extends ContentModel {
 		{
 			$data['recent_comment_date'] = $this->recent_comment_date->format('U');
 		}
+
+		foreach ($this->getStructure()->getAllCustomFields() as $field)
+		{
+			$key = 'field_id_' . $field->getId();
+
+			if ( ! array_key_exists($key, $data))
+			{
+				$data[$key] = NULL;
+			}
+		}
+
 		return $data;
 	}
 }
