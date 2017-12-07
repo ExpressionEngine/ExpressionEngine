@@ -113,7 +113,10 @@ class Channels extends AbstractChannelsController {
 		$vars['cp_page_title'] = lang('all_channels');
 		$vars['channels'] = $data;
 		$vars['create_url'] = ee('CP/URL', 'channels/create');
-		$vars['no_results'] = ['text' => lang('no_channels'), 'href' => $vars['create_url']];
+		$vars['no_results'] = ['text' =>
+			sprintf(lang('no_found'), lang('channels'))
+			.' <a href="'.$vars['create_url'].'">'.lang('add_new').'</a> '
+			.lang('or').' <a href="#" rel="import-channel">'.lang('import').'</a>'];
 
 		ee()->cp->render('channels/index', $vars);
 	}
