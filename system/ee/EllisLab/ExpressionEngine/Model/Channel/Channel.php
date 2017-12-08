@@ -255,6 +255,39 @@ class Channel extends StructureModel {
 			$value = parse_config_variables((string) $value, $overrides);
 		}
 
+		$default_settings = [
+			'deft_status'                => 'open',
+			'channel_html_formatting'    => 'all',
+			'deft_comments'              => TRUE,
+			'channel_require_membership' => TRUE,
+			'channel_allow_img_urls'     => TRUE,
+			'channel_auto_link_urls'     => FALSE,
+			'channel_notify'             => FALSE,
+			'comment_system_enabled'     => TRUE,
+			'comment_require_membership' => FALSE,
+			'comment_moderate'           => FALSE,
+			'comment_max_chars'          => 5000,
+			'comment_timelock'           => 0,
+			'comment_require_email'      => TRUE,
+			'comment_text_formatting'    => 'xhtml',
+			'comment_html_formatting'    => 'safe',
+			'comment_allow_img_urls'     => FALSE,
+			'comment_auto_link_urls'     => TRUE,
+			'comment_notify'             => FALSE,
+			'comment_notify_authors'     => FALSE,
+			'enable_versioning'          => FALSE,
+			'max_revisions'              => 10,
+			'extra_publish_controls'     => FALSE,
+			'live_look_template'         => 0
+		];
+
+		if (in_array($name, array_keys($default_settings))
+			&& $this->isNew()
+			&& ! $this->isDirty($name))
+		{
+			return $default_settings[$name];
+		}
+
 		return $value;
 	}
 
