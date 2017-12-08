@@ -185,6 +185,7 @@ class ChannelLayout extends Model implements LayoutInterface {
 	{
 		$fields = ($fields) ?: $this->Channel->getAllCustomFields();
 		$fields = $fields->indexBy('field_id');
+		$seen = [];
 
 		$field_layout = $this->field_layout;
 
@@ -208,11 +209,18 @@ class ChannelLayout extends Model implements LayoutInterface {
 				else
 				{
 					unset($field_layout[$i]['fields'][$j]);
-
-					// Re-index to ensure flat, zero-indexed array
-					$field_layout[$i]['fields'] = array_values($field_layout[$i]['fields']);
 				}
+
+				if (isset($seen[$field_name]))
+				{
+					unset($field_layout[$i]['fields'][$j]);
+				}
+
+				$seen[$field_name] = TRUE;
 			}
+
+			// Re-index to ensure flat, zero-indexed array
+			$field_layout[$i]['fields'] = array_values($field_layout[$i]['fields']);
 		}
 
 		$this->setProperty('field_layout', $field_layout);
@@ -221,6 +229,8 @@ class ChannelLayout extends Model implements LayoutInterface {
 		{
 			$this->addField($field);
 		}
+
+		var_dump($this->field_layout); die();
 
 		$this->save();
 	}
