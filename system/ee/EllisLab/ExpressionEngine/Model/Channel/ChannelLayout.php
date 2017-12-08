@@ -230,8 +230,6 @@ class ChannelLayout extends Model implements LayoutInterface {
 			$this->addField($field);
 		}
 
-		var_dump($this->field_layout); die();
-
 		$this->save();
 	}
 
