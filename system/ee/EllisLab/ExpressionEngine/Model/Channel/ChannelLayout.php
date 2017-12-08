@@ -194,7 +194,7 @@ class ChannelLayout extends Model implements LayoutInterface {
 			{
 				$field_name = $field_info['field'];
 
-				if (strpos('field_id_', $field_name) !== 0)
+				if (strpos($field_name, 'field_id_') !== 0)
 				{
 					continue;
 				}
