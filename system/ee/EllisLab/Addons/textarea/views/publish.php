@@ -7,7 +7,10 @@ $attributes = array(
 	'class' => $class,
 );
 
-$format_name = str_replace('field_id_' . $settings['field_id'], 'field_ft_' . $settings['field_id'], $name);
+if (isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y')
+{
+	$format_name = str_replace('field_id_' . $settings['field_id'], 'field_ft_' . $settings['field_id'], $name);
+}
 
 if (isset($settings['field_show_formatting_btns']) && $settings['field_show_formatting_btns'] == 'y')
 {
