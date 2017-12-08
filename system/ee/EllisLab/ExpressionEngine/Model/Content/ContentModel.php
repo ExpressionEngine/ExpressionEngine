@@ -476,21 +476,27 @@ abstract class ContentModel extends VariableColumnModel {
 
 			$key_column = $this->getPrimaryKey();
 
+			$query->where($key_column, $this->getId());
+			$query->from($field->getTableName());
+			$result = $query->get();
+
+			$query = ee('Model/Datastore')->rawQuery();
+
 			// When a new entity is saved, this will be triggered by an
 			// onAfterInsert event (else, we won't have id to link to).
 			// The primary key can only be marked dirty on an insert event,
 			// not an update.
-			if (array_key_exists($key_column, $dirty))
-			{
-				$values[$key_column] = $this->getId();
-				$query->set($values);
-				$query->insert($field->getTableName());
-			}
-			else
+			if ($result->num_rows())
 			{
 				$query->set($values);
 				$query->where($key_column, $this->getId());
 				$query->update($field->getTableName());
+			}
+			else
+			{
+				$values[$key_column] = $this->getId();
+				$query->set($values);
+				$query->insert($field->getTableName());
 			}
 		}
 	}
