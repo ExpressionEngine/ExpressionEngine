@@ -799,7 +799,6 @@ class Channels extends AbstractChannelsController {
 
 		// Default status menu
 		$deft_status_options = [
-			'' => lang('none'),
 			'open' => lang('open'),
 			'closed' => lang('closed')
 		];
