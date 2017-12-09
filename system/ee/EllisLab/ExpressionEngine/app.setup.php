@@ -254,12 +254,19 @@ return array(
 
 		'Updater/Downloader' => function($ee)
 		{
+			$config = $ee->make('Config')->getFile();
+
+			if ( ! $config->has('site_url'))
+			{
+				$config->set('site_url', ee()->config->item('site_url'));
+			}
+
 			return new Updater\Downloader\Downloader(
 				$ee->make('License')->getEELicense(),
 				$ee->make('Curl'),
 				$ee->make('Filesystem'),
 				$ee->make('Updater/Logger'),
-				$ee->make('Config')->getFile()
+				$config
 			);
 		},
 
