@@ -4,7 +4,7 @@ $lang = array(
 
 'all_files' => 'All Files',
 
-'append' => 'Append numeral to <em>newer</em> file <i>&mdash; example: %s</i>',
+'append' => 'Append numeral to <strong>newer</strong> file <i>&mdash; example: %s</i>',
 
 'btn_cancel_upload' => 'Cancel Upload',
 
@@ -86,9 +86,9 @@ $lang = array(
 
 'problem_downloading_files' => 'An error occurred when attempting to download the selected files. Please verify the files exist on the server.',
 
-'rename' => 'Rename <em>newer</em> file',
+'rename' => 'Rename <strong>newer</strong> file',
 
-'replace' => 'Replace <em>older</em> file only <i>&mdash; destructive action</i>',
+'replace' => 'Replace <strong>older</strong> file only <i>&mdash; destructive action</i>',
 
 'replace_no_metadata' => 'Only the file was replaced. The Title, Description, Credit, Location, and Categories were not updated.',
 

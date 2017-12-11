@@ -183,8 +183,6 @@ class Filepicker_mcp {
 				$filters = ee('CP/Filter')->add($dirFilter);
 			}
 
-			$filters = $filters->add('Perpage', $total_files, 'show_all_files', TRUE);
-
 			$imgOptions = array(
 				'thumb' => 'thumbnails',
 				'list' => 'list'
@@ -193,6 +191,8 @@ class Filepicker_mcp {
 			$imgFilter = ee('CP/Filter')->make('type', lang('picker_type'), $imgOptions)
 				->disableCustomValue()
 				->setDefaultValue($type);
+
+			$filters = $filters->add('Perpage', $total_files, 'show_all_files', $imgFilter->value() == 'list');
 
 			$filters = $filters->add($imgFilter);
 
