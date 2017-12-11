@@ -994,14 +994,9 @@ class Email {
 
 		$charset = ee()->TMPL->fetch_param('charset', '');
 
-		// Get the URL
-		$uri_string = (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string;
-		$url = ee()->functions->fetch_site_index(0,0).'/'.$uri_string;
-
 		$allow_attachments = get_bool_from_string(ee()->TMPL->fetch_param('allow_attachments')) ? 'y' : 'n';
 
 		$data = array(
-			'action'        => reduce_double_slashes($url),
 			'id'            => (ee()->TMPL->form_id == '')
 				? $options['form_id']
 				: ee()->TMPL->form_id,
