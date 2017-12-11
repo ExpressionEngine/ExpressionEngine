@@ -2170,8 +2170,7 @@ GRID_FALLBACK;
 		//If two forms are on the same template, $this->channel needs to be redefined
 
 		$query = ee('Model')->get('Channel')
-			->with('ChannelFormSettings')
-			->with('Statuses');
+			->with('ChannelFormSettings');
 
 		if ($channel_id)
 		{
