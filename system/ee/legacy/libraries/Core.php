@@ -430,7 +430,7 @@ class EE_Core {
 		// Fetch control panel language file
 		ee()->lang->loadfile('cp');
 
-		// Prevent CodeIgniter Pseudo Output variables from being parsed
+		// Prevent Pseudo Output variables from being parsed
 		ee()->output->parse_exec_vars = FALSE;
 
 		/** ------------------------------------

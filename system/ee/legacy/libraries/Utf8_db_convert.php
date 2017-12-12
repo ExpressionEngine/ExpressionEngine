@@ -29,7 +29,7 @@ class Utf8_db_convert {
 	 * Do conversion to Unicode
 	 *
 	 * This method is being abstracted out from the 200 update file.
-	 * CodeIgniter forces UTF-8, but it seems that when a table is created
+	 * The app forces UTF-8, but it seems that when a table is created
 	 * with raw SQL and the db->query() method, it can be created with
 	 * DEFAULT CHARSET=latin1.  So unfortunately, we're kinda doing bits of this
 	 * again, but we can ignore some of the beefier tables, eg: channel(s) as
@@ -37,6 +37,8 @@ class Utf8_db_convert {
 	 *
 	 * Long story short, use this method on an update to ensure that your tables
 	 * will be of UTF-8 Collation, since the MySQL default is latin1
+	 *
+	 * 2017-12-12 NOTE: no longer used, default collation in the app is utf8mb4
 	 *
 	 * @param 	array 		array of tables to convert
 	 * @return 	boolean		TRUE on Success, FALSE on failure
