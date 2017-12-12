@@ -18,7 +18,7 @@ class EE_Email {
 	 *
 	 * @var	string
 	 */
-	public $useragent	= 'CodeIgniter';
+	public $useragent	= APP_NAME;
 
 	/**
 	 * Path to the Sendmail binary.
@@ -449,8 +449,6 @@ class EE_Email {
 		{
 			$config['smtp_crypto'] = ee()->config->item('email_smtp_crypto');
 		}
-
-		$this->useragent = APP_NAME.' '.APP_VER;
 
 		$this->initialize($config);
 	}
