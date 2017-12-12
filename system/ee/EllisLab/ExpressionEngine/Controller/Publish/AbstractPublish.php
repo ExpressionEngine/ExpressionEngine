@@ -235,7 +235,7 @@ abstract class AbstractPublish extends CP_Controller {
 
 		foreach ($entry->getAutosaves()->sortBy('edit_date') as $autosave)
 		{
-			if ( ! isset($authors[$autosave->author_id]))
+			if ( ! isset($authors[$autosave->author_id]) && $autosave->Author)
 			{
 				$authors[$autosave->author_id] = $autosave->Author->getMemberName();
 			}
@@ -260,7 +260,7 @@ abstract class AbstractPublish extends CP_Controller {
 				'columns' => array(
 					$i,
 					ee()->localize->human_time($autosave->edit_date),
-					$authors[$autosave->author_id],
+					isset($authors[$autosave->author_id]) ? $authors[$autosave->author_id] : '-',
 					$toolbar
 				)
 			);

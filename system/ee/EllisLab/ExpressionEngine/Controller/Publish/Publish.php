@@ -111,7 +111,7 @@ class Publish extends AbstractPublishController {
 		$autosave->entry_data = $_POST;
 
 		// This is currently unused, but might be useful for display purposes
-		$autosave->author_id = ee()->input->post('author_id');
+		$autosave->author_id = ee()->input->post('author_id', ee()->session->userdata('member_id'));
 
 		// This group of columns is unused
 		$autosave->title = (ee()->input->post('title')) ?: 'autosave_' . ee()->localize->now;
