@@ -112,7 +112,7 @@ var SelectList = function (_React$Component) {
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate(prevProps, prevState) {
-      if (this.props.multi && prevProps.selected.length != this.props.selected.length) {
+      if (this.props.multi && prevProps.selected.length != this.props.selected.length || !this.props.multi && prevProps.selected != this.props.selected) {
         $(this.input).trigger('change');
       }
 
@@ -353,11 +353,10 @@ var SelectList = function (_React$Component) {
             });
           })
         ),
-        !props.multi && props.tooMany && props.selected[0] && React.createElement(SelectedItem, { name: props.name,
-          item: props.selected[0],
+        !props.multi && props.tooMany && props.selected[0] && React.createElement(SelectedItem, { item: props.selected[0],
           clearSelection: this.clearSelection
         }),
-        props.multi && props.selectable && props.selected.length == 0 && React.createElement('input', { type: 'hidden', name: props.name + '[]', value: '',
+        props.selectable && props.selected.length == 0 && React.createElement('input', { type: 'hidden', name: props.name + '[]', value: '',
           ref: function ref(input) {
             _this7.input = input;
           } }),
@@ -579,17 +578,8 @@ var SelectedItem = function (_React$Component3) {
   }
 
   _createClass(SelectedItem, [{
-    key: 'componentDidUpdate',
-    value: function componentDidUpdate(prevProps, prevState) {
-      if (prevProps.item.value != this.props.item.value) {
-        $(this.input).trigger('change');
-      }
-    }
-  }, {
     key: 'render',
     value: function render() {
-      var _this10 = this;
-
       var props = this.props;
       return React.createElement(
         'div',
@@ -600,10 +590,6 @@ var SelectedItem = function (_React$Component3) {
           React.createElement('span', { className: 'icon--success' }),
           ' ',
           props.item.label,
-          React.createElement('input', { type: 'hidden', name: props.name, value: props.item.value,
-            ref: function ref(input) {
-              _this10.input = input;
-            } }),
           React.createElement(
             'ul',
             { className: 'toolbar' },
