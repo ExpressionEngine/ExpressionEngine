@@ -229,7 +229,7 @@ $(document).ready(function () {
 		var index = $('ul.tabs li').index(tab);
 		var tabContents = sheets.filter('.' + $(tab).find('a').eq(0).attr('rel'));
 
-		if (tabContents.html().trim()) {
+		if (tabContents.find('.layout-grid-wrap').html().trim()) {
 			$('body').prepend(EE.alert.not_empty.replace('%s', tab.text()));
 			return;
 		}
