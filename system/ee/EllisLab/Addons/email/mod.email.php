@@ -768,9 +768,13 @@ class Email {
 		{
 			$return_link = $x[0];
 
-			if ($x[0] == '' OR ! preg_match('{^http(s)?:\/\/}i', $x[0]))
+			if ($x[0] == '')
 			{
 				$return_link = ee()->functions->form_backtrack(1);
+			}
+			elseif ( ! preg_match('{^http(s)?:\/\/}i', $x[0]))
+			{
+				$return_link = ee()->functions->create_url($x[0]);
 			}
 		}
 
