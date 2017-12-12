@@ -356,7 +356,7 @@ var SelectList = function (_React$Component) {
         !props.multi && props.tooMany && props.selected[0] && React.createElement(SelectedItem, { item: props.selected[0],
           clearSelection: this.clearSelection
         }),
-        props.selectable && props.selected.length == 0 && React.createElement('input', { type: 'hidden', name: props.name + '[]', value: '',
+        props.selectable && props.selected.length == 0 && React.createElement('input', { type: 'hidden', name: props.multi ? props.name + '[]' : props.name, value: '',
           ref: function ref(input) {
             _this7.input = input;
           } }),

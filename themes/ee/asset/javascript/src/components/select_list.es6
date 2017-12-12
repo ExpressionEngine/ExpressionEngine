@@ -365,7 +365,7 @@ class SelectList extends React.Component {
         }
         {/* Maintain a blank input to easily know when field is empty */}
         {props.selectable && props.selected.length == 0 &&
-          <input type="hidden" name={props.name + '[]'} value=''
+          <input type="hidden" name={props.multi ? props.name + '[]' : props.name} value=''
             ref={(input) => { this.input = input }} />
         }
         {props.selectable &&
