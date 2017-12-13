@@ -2,6 +2,9 @@
 
 <h1><?=$cp_page_title?></h1>
 <?=form_open(ee('CP/URL')->make('utilities/member-import/create-custom-fields'), 'class="settings"', $form_hidden)?>
+	<div class="form-btns form-btns-top">
+		<?=cp_form_submit('btn_add_fields', 'btn_add_fields_working')?>
+	</div>
 	<?=ee('CP/Alert')->getAllInlines()?>
 	<fieldset class="grid-publish col-group last">
 		<div class="setting-txt col w-16">
@@ -58,8 +61,7 @@
 			</div>
 		</div>
 	</fieldset>
-
-	<fieldset class="form-ctrls">
+	<div class="form-btns">
 		<?=cp_form_submit('btn_add_fields', 'btn_add_fields_working')?>
-	</fieldset>
+	</div>
 </form>

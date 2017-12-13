@@ -25,7 +25,7 @@ feature 'Import File Converter' do
     @page.should have_text 'File location'
     @page.should have_file_location
     @page.should have_delimiter
-    @page.should have_delimiter_special
+    @page.should_not have_delimiter_special
     @page.should have_enclosing_char
   end
 

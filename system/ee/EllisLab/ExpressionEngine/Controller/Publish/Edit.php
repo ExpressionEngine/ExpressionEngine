@@ -9,11 +9,11 @@
 
 namespace EllisLab\ExpressionEngine\Controller\Publish;
 
-use EllisLab\ExpressionEngine\Library\CP\Table;
-use Mexitek\PHPColors\Color;
-
 use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPublishController;
+use EllisLab\ExpressionEngine\Library\CP\Table;
+use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry as ChannelEntry;
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
+use Mexitek\PHPColors\Color;
 
 /**
  * Publish/Edit Controller
@@ -48,7 +48,7 @@ class Edit extends AbstractPublishController {
 		$vars = array();
 		$base_url = ee('CP/URL')->make('publish/edit');
 
-		$entry_listing = ee('CP/EntryListing', ee()->input->get_post('search'));
+		$entry_listing = ee('CP/EntryListing', ee()->input->get_post('filter_by_keyword'));
 		$entries = $entry_listing->getEntries();
 		$filters = $entry_listing->getFilters();
 		$channel_id = $entry_listing->channel_filter->value();
@@ -60,13 +60,8 @@ class Edit extends AbstractPublishController {
 
 		$count = $entry_listing->getEntryCount();
 
-		if ( ! empty(ee()->view->search_value))
-		{
-			$base_url->setQueryStringVariable('search', ee()->view->search_value);
-		}
-
 		$vars['filters'] = $filters->render($base_url);
-		$vars['search_value'] = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
+		$vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
 
 		$filter_values = $filters->values();
 		$base_url->addQueryStringVariables($filter_values);
@@ -318,7 +313,7 @@ class Edit extends AbstractPublishController {
 		ee()->view->header = array(
 			'title' => lang('entry_manager'),
 			'action_button' => ee()->cp->allowed_group('can_create_entries') && $show_new_button ? [
-				'text' => lang('new'),
+				'text' => $channel_id ? sprintf(lang('btn_create_new_entry_in_channel'), $channel->channel_title) : lang('new'),
 				'href' => ee('CP/URL', 'publish/create/' . $channel_id)->compile(),
 				'filter_placeholder' => lang('filter_channels'),
 				'choices' => $channel_id ? NULL : $choices
@@ -339,9 +334,9 @@ class Edit extends AbstractPublishController {
 		));
 
 		ee()->view->cp_page_title = lang('edit_channel_entries');
-		if ( ! empty(ee()->view->search_value))
+		if ( ! empty($filter_values['filter_by_keyword']))
 		{
-			$vars['cp_heading'] = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+			$vars['cp_heading'] = sprintf(lang('search_results_heading'), $count, $filter_values['filter_by_keyword']);
 		}
 		else
 		{

@@ -124,7 +124,7 @@ class CategoryGroup extends StructureModel {
 			'text' => sprintf(lang('no_found'), lang('categories'))
 		];
 
-		if ( ! INSTALLER && ee()->cp->allowed_group('can_create_categories'))
+		if ( ! INSTALLER && ee('Permission')->has('can_create_categories'))
 		{
 			$no_results['link_text'] = 'add_new';
 			$no_results['link_href'] = ee('CP/URL')->make('categories/create/'.$this->getId());
@@ -146,7 +146,7 @@ class CategoryGroup extends StructureModel {
 			'deletable'				=> $deletable,
 			'populateCallback'		=> array($this, 'populateCategories'),
 			'manage_toggle_label'	=> lang('manage_categories'),
-			'add_btn_label'	        => ee()->cp->allowed_group('can_create_categories')
+			'add_btn_label'	        => REQ == 'CP' && ee()->cp->allowed_group('can_create_categories')
 				? lang('add_category')
 				: NULL,
 			'content_item_label'	=> lang('category'),

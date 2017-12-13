@@ -192,6 +192,7 @@ return array(
 				'stopwords' => ee()->config->loadFile('stopwords'),
 				'word_separator' => ee()->config->item('word_separator'),
 				'emoji_regex' => EMOJI_REGEX,
+				'emoji_map' => ee()->config->loadFile('emoji'),
 			];
 
 			return new Formatter\FormatterFactory(ee()->lang, ee()->session, $config_items, $format_opts);
@@ -253,12 +254,19 @@ return array(
 
 		'Updater/Downloader' => function($ee)
 		{
+			$config = $ee->make('Config')->getFile();
+
+			if ( ! $config->has('site_url'))
+			{
+				$config->set('site_url', ee()->config->item('site_url'));
+			}
+
 			return new Updater\Downloader\Downloader(
 				$ee->make('License')->getEELicense(),
 				$ee->make('Curl'),
 				$ee->make('Filesystem'),
 				$ee->make('Updater/Logger'),
-				$ee->make('Config')->getFile()
+				$config
 			);
 		},
 

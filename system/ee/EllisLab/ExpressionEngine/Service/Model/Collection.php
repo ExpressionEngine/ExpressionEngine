@@ -188,6 +188,11 @@ class Collection extends CoreCollection {
 				throw new InvalidArgumentException('Not a valid operator: '.htmlentities($operator));
 		}
 	}
+
+	public function __toString()
+	{
+		return spl_object_hash($this);
+	}
 }
 
 // EOF

@@ -94,13 +94,23 @@ class Updater extends CP_Controller {
 			return;
 		}
 
+		// This step should not have hit this controller
+		if ($step == 'updateFiles')
+		{
+			ee()->lang->loadfile('updater');
+			throw new \Exception(lang('out_of_date_admin_php'));
+		}
+
 		$runner = ee('Updater/Runner');
 		$runner->runStep($step);
 
-		// If there is no next step, 'updateFiles' should be next in the micro app
-		$next_step = $runner->getNextStep() ?: 'updateFiles';
-
-		ee()->lang->loadfile('updater');
+		// If there is no next step and we're not rolling back, 'updateFiles'
+		// should be next in the micro app
+		$next_step = $runner->getNextStep();
+		if ($next_step === FALSE && $step !== 'rollback')
+		{
+			$next_step = 'updateFiles';
+		}
 
 		return [
 			'messageType' => 'success',

@@ -335,7 +335,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 
 				$f->setName($this->name() . '[fields][' . $key . '][field_id_' . $field->getId() . ']');
 
-				$f = $this->setupFieldInstance($f, $data);
+				$f = $this->setupFieldInstance($f, $data, $field_id);
 
 				$fields .= ee('View')->make('fluid_field:field')->render(array('field' => $field, 'filters' => $filters, 'errors' => $this->errors));
 			}
@@ -346,6 +346,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 		foreach ($field_templates as $field)
 		{
 			$f = $field->getField();
+			$f->setItem('fluid_field_data_id', NULL);
 			$f->setName($this->name() . '[fields][new_field_0][field_id_' . $field->getId() . ']');
 
 			$templates .= ee('View')->make('fluid_field:field')->render(array('field' => $field, 'filters' => $filters, 'errors' => $this->errors));
@@ -374,7 +375,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 	public function display_settings($data)
 	{
 		$custom_field_options = ee('Model')->get('ChannelField')
-			->filter('site_id', 'IN', array(0, ee()->config->item('site_id')))
+			->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
 			->filter('field_type', '!=', 'fluid_field')
 			->order('field_label')
 			->all()
@@ -576,10 +577,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 			$field->setTimezone($data['field_dt_' . $field_id]);
 		}
 
-		if ( ! is_null($fluid_field_data_id))
-		{
-			$field->setItem('fluid_field_data_id', $fluid_field_data_id);
-		}
+		$field->setItem('fluid_field_data_id', $fluid_field_data_id);
 
 		return $field;
 	}

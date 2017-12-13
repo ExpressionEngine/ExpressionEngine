@@ -57,7 +57,7 @@ abstract class ContentModel extends VariableColumnModel {
 	/**
 	 * Optionally return an array of default fields.
 	 *
-	 * @return Array of field definitions
+	 * @return array of field definitions
 	 */
 	protected function getDefaultFields()
 	{
@@ -457,31 +457,12 @@ abstract class ContentModel extends VariableColumnModel {
 			}
 
 			$values = array();
-			// If there was data before, we update
-			// If there was no data before, we insert
-			// If the data has been erased, we can delete, but we'll store '' instead (so, update)
-			$update = FALSE;
 
 			foreach ($field->getColumnNames() as $column)
 			{
 				if (array_key_exists($column, $dirty))
 				{
 					$values[$column] = $this->$column;
-
-					// If the previous data was not null then we are updating
-					if ( ! is_null($dirty[$column]))
-					{
-						$update = TRUE;
-					}
-				}
-				else
-				{
-					// If this column's data is not dirty, and it is also not
-					// empty, then we are updating the field.
-					if (! empty($this->$column))
-					{
-						$update = TRUE;
-					}
 				}
 			}
 
@@ -495,16 +476,17 @@ abstract class ContentModel extends VariableColumnModel {
 
 			$key_column = $this->getPrimaryKey();
 
+			$query->where($key_column, $this->getId());
+			$query->from($field->getTableName());
+			$result = $query->get();
+
+			$query = ee('Model/Datastore')->rawQuery();
+
 			// When a new entity is saved, this will be triggered by an
 			// onAfterInsert event (else, we won't have id to link to).
 			// The primary key can only be marked dirty on an insert event,
 			// not an update.
-			if (array_key_exists($key_column, $dirty))
-			{
-				$update = FALSE;
-			}
-
-			if ($update)
+			if ($result->num_rows())
 			{
 				$query->set($values);
 				$query->where($key_column, $this->getId());
@@ -540,7 +522,7 @@ abstract class ContentModel extends VariableColumnModel {
 		if ( ! empty($tables))
 		{
 			ee('Model/Datastore')->rawQuery()
-				->where('entry_id', $this->getId())
+				->where($this->getPrimaryKey(), $this->getId())
 				->delete($tables);
 		}
 	}

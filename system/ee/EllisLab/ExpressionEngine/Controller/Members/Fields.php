@@ -106,15 +106,23 @@ class Fields extends Members\Members {
 
 		$total = ee('Model')->get('MemberField')->count();
 
-		$filter = ee('CP/Filter')->add('Perpage', $total, 'show_all_member_fields');
+		$filter = ee('CP/Filter')
+			->add('Keyword')
+			->add('Perpage', $total, 'show_all_member_fields');
 
 		$this->renderFilters($filter);
 
 		$fields = ee('Model')->get('MemberField')
 			->order($sort_col, $sort_dir)
 			->limit($this->perpage)
-			->offset($this->offset)
-			->all();
+			->offset($this->offset);
+
+		if (isset($this->params['filter_by_keyword']))
+		{
+			$fields->search(['m_field_name', 'm_field_label'], $this->params['filter_by_keyword']);
+		}
+
+		$fields = $fields->all();
 
 		$type_map = array(
 			'text' => lang('text_input'),
@@ -464,9 +472,9 @@ class Fields extends Members\Members {
 		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('members/fields'), lang('custom_profile_fields'));
 
-		ee()->cp->add_js_script(array(
-			'file' => array('cp/form_group', 'cp/members/fields')
-		));
+		ee()->javascript->output('$(document).ready(function () {
+			EE.cp.fieldToggleDisable(null, "m_field_type");
+		});');
 
 		ee()->cp->render('settings/form', $vars);
 	}

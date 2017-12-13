@@ -210,7 +210,8 @@ class Upload {
 								'append' => sprintf(lang('append'), $file->file_name),
 								'rename' => 'rename'
 							),
-							'value' => $checked_radio
+							'value' => $checked_radio,
+							'encode' => FALSE,
 						),
 						'rename_custom' => array(
 							'type' => 'text',
@@ -224,7 +225,8 @@ class Upload {
 							'choices' => array(
 								'replace' => 'replace',
 							),
-							'value' => $checked_radio
+							'value' => $checked_radio,
+							'encode' => FALSE,
 						)
 					)
 				)

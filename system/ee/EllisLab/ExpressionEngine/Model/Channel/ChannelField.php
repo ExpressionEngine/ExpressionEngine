@@ -10,6 +10,7 @@
 namespace EllisLab\ExpressionEngine\Model\Channel;
 
 use EllisLab\ExpressionEngine\Model\Content\FieldModel;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 /**
  * Channel Field Model
@@ -57,7 +58,7 @@ class ChannelField extends FieldModel {
 
 	protected static $_validation_rules = array(
 		'site_id'              => 'required|integer',
-		'field_name'           => 'required|unique[site_id]|validateNameIsNotReserved|maxLength[32]',
+		'field_name'           => 'required|unique|validateNameIsNotReserved|maxLength[32]',
 		'field_label'          => 'required|maxLength[50]',
 		'field_type'           => 'validateIsCompatibleWithPreviousValue',
 	//	'field_list_items'     => 'required',
@@ -145,7 +146,7 @@ class ChannelField extends FieldModel {
 		}
 
 		$this->field_order = $this->getModelFacade()->get('ChannelField')
-			->filter('site_id', $this->site_id)
+			->filter('site_id', 'IN', array(0, $this->site_id))
 			->count() + 1;
 	}
 
@@ -161,24 +162,25 @@ class ChannelField extends FieldModel {
 		$this->removeFromFluidFields();
 	}
 
-	private function getRelatedChannelIds()
+	public function getAllChannels()
 	{
-		$channel_ids = $this->Channels->pluck('channel_id');
+		$channels = $this->Channels->indexByIds();
+
 		foreach ($this->ChannelFieldGroups as $field_group)
 		{
 			foreach ($field_group->Channels as $channel)
 			{
-				$channel_ids[] = $channel->getId();
+				$channels[$channel->getId()] = $channel;
 			}
 		}
 
-		return array_unique($channel_ids);
+		return new Collection($channels);
 	}
 
 	private function getRelatedChannelLayouts()
 	{
 		return $this->getModelFacade()->get('ChannelLayout')
-			->filter('channel_id', $this->getRelatedChannelIds())
+			->filter('channel_id', $this->getAllChannels()->getIds())
 			->all();
 	}
 

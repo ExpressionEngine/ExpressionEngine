@@ -63,7 +63,8 @@ class Set {
 	private $assignments = array(
 		'channel_field_groups' => array(),
 		'channel_fields'       => array(),
-		'field_group_fields'   => array()
+		'field_group_fields'   => array(),
+		'statuses'             => array(),
 	);
 
 	/**
@@ -155,7 +156,6 @@ class Set {
 
 		if ( ! $this->result->isValid())
 		{
-			$this->deleteFiles();
 			return $this->result;
 		}
 
@@ -173,7 +173,7 @@ class Set {
 	/**
 	 * Deletes the source files used in the import
 	 */
-	protected function deleteFiles()
+	public function cleanUpSourceFiles()
 	{
 		$filesystem = new Filesystem();
 		$filesystem->delete($this->getPath());
@@ -258,8 +258,6 @@ class Set {
                 $fn();
             }
         }
-
-		$this->deleteFiles();
 	}
 
 	/**
@@ -331,7 +329,7 @@ class Set {
 			$field_ids = array();
 			foreach ($fields as $field_name)
 			{
-				$field = $this->fields[$field_name];
+				$field = $this->getFieldByName($field_name);
 				$field_ids[] = $field->getId();
 			}
 
@@ -436,6 +434,16 @@ class Set {
 		}
 	}
 
+	private function getFieldByName($field_name)
+	{
+		if (isset($this->aliases['ee:ChannelField'][$field_name]['field_name']))
+		{
+			$field_name = $this->aliases['ee:ChannelField'][$field_name]['field_name'];
+		}
+
+		return $this->fields[$field_name];
+	}
+
 	/**
 	 * Instantiate the upload destination models
 	 *
@@ -471,14 +479,17 @@ class Set {
 		{
 			$channel = ee('Model')->make('Channel');
 			$channel_title = $channel_data->channel_title;
+			$channel_name = (isset($channel_data->channel_name)) ? $channel_data->channel_name : strtolower(str_replace(' ', '_', $channel_data->channel_title));
 
 			$channel->title_field_label = (isset($channel_data->title_field_label))
 				? $channel_data->title_field_label
 				: lang('title');
 			$channel->site_id = $this->site_id;
-			$channel->channel_name = url_title($channel_data->channel_title, '_', TRUE);
+			$channel->channel_name = $channel_name;
 			$channel->channel_title = $channel_data->channel_title;
 			$channel->channel_lang = 'en';
+
+			$this->assignments['statuses'][$channel_title] = [];
 
 			foreach ($channel_data as $pref_key => $pref_value)
 			{
@@ -538,7 +549,7 @@ class Set {
 						$cat_group_ids[] = $cat_group->getId();
 					}
 
-					$channel->cat_group = implode('|', $cat_group_ids);
+					$channel->cat_group = rtrim(implode('|', $cat_group_ids), '|');
 					$channel->save();
 				};
 
@@ -770,12 +781,12 @@ class Set {
 	private function loadFieldGroup($group_name)
 	{
 		$group = ee('Model')->make('ChannelFieldGroup');
-		$group->site_id = $this->site_id;
+		$group->site_id = 0;
 		$group->group_name = $group_name;
 
 		$this->applyOverrides($group, $group_name);
 
-		$this->field_groups[$group_name] = $group;
+		$this->field_groups[$group->group_name] = $group;
 		return $group;
 	}
 
@@ -817,7 +828,7 @@ class Set {
 		}
 
 		$field = ee('Model')->make('ChannelField');
-		$field->site_id = $this->site_id;
+		$field->site_id = 0;
 		$field->field_name = $name;
 		$field->field_type = $type;
 
@@ -1002,7 +1013,7 @@ class Set {
 	 *
 	 * @param ChannelFieldModel $field Field instance
 	 * @param Array $field_data The field data that will be set() on the field
-	 * @return Array Modified $field_data
+	 * @return array Modified $field_data
 	 */
 	private function importRelationshipField($field, $field_data)
 	{

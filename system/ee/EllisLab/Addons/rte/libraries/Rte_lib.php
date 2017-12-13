@@ -144,7 +144,7 @@ class Rte_lib {
 		$vars['save_btn_text'] = sprintf(lang('btn_save'), lang('tool_set'));
 		$vars['save_btn_text_working'] = 'btn_saving';
 
-		return ee('View')->make('rte:box_wrapper')->render($vars);
+		return ee('View')->make('ee:_shared/form')->render($vars);
 	}
 
 	/**
@@ -422,12 +422,15 @@ class Rte_lib {
 						buttons: '.json_encode($bits['buttons']).'
 					});
 
-				FluidField.on("rte", "add", function(el) {
-					$("' . $selector . '", el).addClass("WysiHat-field")
-						.wysihat({
-							buttons: '.json_encode($bits['buttons']).'
-						});
-				});
+				if (typeof FluidField === "object")
+				{
+					FluidField.on("rte", "add", function(el) {
+						$("' . $selector . '", el).addClass("WysiHat-field")
+							.wysihat({
+								buttons: '.json_encode($bits['buttons']).'
+							});
+					});
+				}
 
 				if (typeof Grid === "object")
 				{

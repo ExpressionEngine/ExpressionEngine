@@ -21,17 +21,18 @@
 			<?php if (isset($action_button)):
 				$rel = isset($action_button['rel']) ? $action_button['rel'] : ''; ?>
 				<a class="btn action" href="<?=$action_button['href']?>" rel="<?=$rel?>"><?=lang($action_button['text'])?></a>
-			<?php else: ?>
+			<?php elseif ( ! isset($hide_top_buttons) OR ! $hide_top_buttons): ?>
 				<?php $this->embed('ee:_shared/form/buttons'); ?>
 			<?php endif ?>
 		</div>
 		<?php if (isset($tabs)):?>
+			<?php $active_tab = (isset($active_tab)) ? $active_tab : 0; ?>
 			<div class="tab-wrap">
 				<ul class="tabs">
 					<?php
 						foreach (array_keys($tabs) as $i => $name):
 							$class = '';
-							if ($i == 0)
+							if ($i == $active_tab)
 							{
 								$class = 'act';
 							}
@@ -58,7 +59,7 @@
 			if (isset($tabs)):
 				foreach (array_values($tabs) as $i => $html):
 			?>
-				<div class="tab t-<?=$i?><?php if ($i == 0) echo ' tab-open'?>"><?=$html?></div>
+				<div class="tab t-<?=$i?><?php if ($i == $active_tab) echo ' tab-open'?>"><?=$html?></div>
 			<?php
 				endforeach;
 			endif;

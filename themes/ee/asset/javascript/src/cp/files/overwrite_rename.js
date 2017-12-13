@@ -36,7 +36,7 @@ $(document).ready(function () {
 	$(window).on('beforeunload', confirmUnload);
 	$(window).on('unload', cleanUp);
 
-	$('.w-12 .box form.settings').on('submit', function() {
+	$('.form-standard form').on('submit', function() {
 		$(window).off('beforeunload', confirmUnload);
 		$(window).off('unload', cleanUp);
 	});

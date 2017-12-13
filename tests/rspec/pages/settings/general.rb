@@ -2,7 +2,8 @@ class GeneralSettings < ControlPanelPage
 
   element :site_name, 'input[name=site_name]'
   element :site_short_name, 'input[name=site_short_name]'
-  elements :is_system_on, 'input[name=is_system_on]'
+  element :is_system_on, 'input[name=is_system_on]', :visible => false
+  element :is_system_on_toggle, 'a[data-toggle-for=is_system_on]'
   elements :new_version_check, 'input[name=new_version_check]'
   element :check_version_btn, 'a[data-for=version-check]', :visible => false
   element :language, 'input[name=deft_lang]'

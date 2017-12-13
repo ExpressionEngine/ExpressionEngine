@@ -58,15 +58,17 @@ end
 
 # Checks for show_error()
 def should_have_show_error(message)
-  page.has_content?('An Error Was Encountered').should == true
   page.has_content?(message).should == true
   page.status_code.should == 500
 end
 
 def should_have_error_text(node, text)
-  node.first(:xpath, ".//ancestor::fieldset[1]")[:class].should include 'invalid'
-  node.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
-  node.first(:xpath, ".//..").should have_text text
+  fieldset = node.first(:xpath, ".//ancestor::fieldset[1]")
+  fieldctrl =  fieldset.first(:xpath, ".//div[@class='field-control']")
+
+  fieldset[:class].should include 'invalid'
+  fieldctrl.should have_css 'em.ee-form-error-message'
+  fieldctrl.should have_text text
 end
 
 def should_have_no_error_text(node)
@@ -233,7 +235,7 @@ module Capybara
     def has_checked_radio(value)
       self.each do |el|
         if el.value == value
-          return el[:checked] == "true"
+          return el.checked?
         end
       end
 
@@ -242,6 +244,25 @@ module Capybara
 
   end
 
+end
+
+# Monkey patch so SitePrism's all_there? gives a more explicit and useful failure
+# See https://github.com/natritmeyer/site_prism/issues/146
+module SitePrism
+  module ElementChecker
+    def all_there?
+      Capybara.using_wait_time(0) do
+        self.class.mapped_items.all? do |element|
+          if ! send "has_#{element}?"
+            warn "Missing element '#{element}'"
+            return false
+          else
+            return true
+          end
+        end
+      end
+    end
+  end
 end
 
 # Swaps on piece of text for another given a file

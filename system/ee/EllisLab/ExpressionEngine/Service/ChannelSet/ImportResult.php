@@ -78,7 +78,7 @@ class ImportResult {
 	/**
 	 * Get fatal errors
 	 *
-	 * @return Array Fatal errors
+	 * @return array Fatal errors
 	 */
 	public function getErrors()
 	{
@@ -88,7 +88,7 @@ class ImportResult {
 	/**
 	 * Get model errors that were not recoverable
 	 *
-	 * @return Array Model errors
+	 * @return array Model errors
 	 */
 	public function getModelErrors()
 	{
@@ -98,7 +98,7 @@ class ImportResult {
 	/**
 	 * Get recoverable errors
 	 *
-	 * @return Array Recoverable errors
+	 * @return array Recoverable errors
 	 */
 	public function getRecoverableErrors()
 	{
@@ -151,8 +151,8 @@ class ImportResult {
 	 * cases.
 	 *
 	 * @param Model $model Model that errored
-	 * @param String $field Field name that errored
-	 * @param Array $rules Rules that failed
+	 * @param string $field Field name that errored
+	 * @param array $rules Rules that failed
 	 * @return bool Can recover?
 	 */
 	private function errorIsRecoverable($model, $field, $rules)

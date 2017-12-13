@@ -77,16 +77,14 @@ class Variables extends AbstractDesignController {
 		$data = array();
 
 		$variables = ee('Model')->get('GlobalVariable')
-			->filterGroup()
-				->filter('site_id', ee()->config->item('site_id'))
-				->orFilter('site_id', 0)
-			->endFilterGroup();
+			->filter('site_id', 'IN', array(0, ee()->config->item('site_id')));
 
 		$this->base_url = ee('CP/URL')->make('design/variables');
 
 		$total = $variables->count();
 
 		$filters = ee('CP/Filter')
+			->add('Keyword')
 			->add('Perpage', $variables->count(), 'show_all_variables');
 
 		// Before pagination so perpage is set correctly
@@ -106,8 +104,14 @@ class Variables extends AbstractDesignController {
 
 		$variable_data = $variables->order($sort_map[$sort_col], $table->sort_dir)
 			->limit($this->perpage)
-			->offset($this->offset)
-			->all();
+			->offset($this->offset);
+
+		if (isset($this->params['filter_by_keyword']))
+		{
+			$variable_data->search(['variable_name', 'variable_data'], $this->params['filter_by_keyword']);
+		}
+
+		$variable_data = $variable_data->all();
 
 		foreach($variable_data as $variable)
 		{
@@ -218,6 +222,7 @@ class Variables extends AbstractDesignController {
 						'fields' => array(
 							'variable_data' => array(
 								'type' => 'textarea',
+								'attrs' => 'class="textarea-medium"',
 								'required' => TRUE
 							)
 						)
@@ -235,9 +240,11 @@ class Variables extends AbstractDesignController {
 					'site_id' => array(
 						'type' => 'inline_radio',
 						'choices' => array(
-							'0' => 'enable',
-							ee()->config->item('site_id') => 'disable'
-						)
+							'0' => 'all_sites',
+							ee()->config->item('site_id') => ee()->config->item('site_label').' '.lang('only')
+						),
+						'encode' => FALSE,
+						'value' => '0',
 					)
 				)
 			);
@@ -351,6 +358,7 @@ class Variables extends AbstractDesignController {
 						'fields' => array(
 							'variable_data' => array(
 								'type' => 'textarea',
+								'attrs' => 'class="textarea-medium"',
 								'required' => TRUE,
 								'value' => $variable->variable_data
 							)
@@ -369,10 +377,11 @@ class Variables extends AbstractDesignController {
 					'site_id' => array(
 						'type' => 'inline_radio',
 						'choices' => array(
-							'0' => 'enable',
-							ee()->config->item('site_id') => 'disable'
+							'0' => 'all_sites',
+							ee()->config->item('site_id') => ee()->config->item('site_label').' '.lang('only')
 						),
-						'value' => $variable->site_id
+						'value' => $variable->site_id,
+						'encode' => FALSE,
 					)
 				)
 			);
@@ -551,7 +560,7 @@ class Variables extends AbstractDesignController {
 		$variables = ee('Model')->get('GlobalVariable');
 		if ($this->msm)
 		{
-			$variables->filter('site_id', 'IN', array(0, ee()->config->item('site_id')));
+			$variables->filter('site_id', 'IN', [ee()->config->item('site_id'), 0]);
 		}
 		else
 		{

@@ -1,5 +1,7 @@
 class ChannelFieldForm < ControlPanelPage
-  element :field_type, 'select[name=field_type]'
+  element :field_type, 'div[data-input-value="field_type"]'
+  element :field_type_input, 'input[name=field_type]', visible: false
+  elements :field_type_choices, 'div[data-input-value="field_type"] .field-drop-choices label'
   element :field_label, 'input[name=field_label]'
   element :field_name, 'input[name=field_name]'
 
@@ -10,10 +12,10 @@ class ChannelFieldForm < ControlPanelPage
   def load_edit_for_custom_field(name)
     visit '/system/index.php?/cp/fields'
 
-    all('table tbody tr').each do |row|
-      cell = row.find('td:nth-child(2)')
-      if cell.text == name
-        row.find('li.edit a').click
+    all('.tbl-row').each do |row|
+      link = row.find('.main > a')
+      if link.text == name
+        link.click
         break
       end
     end
@@ -39,7 +41,8 @@ class ChannelFieldForm < ControlPanelPage
 
     visit "/system/index.php?/cp/fields/create/#{options[:group_id]}"
 
-    field_type.select options[:type]
+    select_field_type(options[:type])
+
     field_label.set options[:label]
     field_name.set options[:name] if options.key? :name
 
@@ -62,7 +65,13 @@ class ChannelFieldForm < ControlPanelPage
 
     submit
 
-    # Double check we're where we should be
-    alert.has_content?(options[:label]).should == true
+    # Should have some kind of alert
+    alert.visible?.should == true
+  end
+
+  def select_field_type(type)
+    field_type.find('.field-drop-selected').click
+    wait_until_field_type_choices_visible
+    find('div[data-input-value="field_type"] .field-drop-choices label', text: type).click
   end
 end

@@ -1,9 +1,9 @@
 class Logs < ControlPanelPage
-  element :heading, 'div.w-12 div.box form h1'
+  element :heading, 'div.w-12 div.box div.tbl-ctrls h1'
 
-  element :phrase_search, 'input[name=search]'
-  element :submit_button, 'input.submit'
-  element :form, 'div.w-12 form'
+  element :keyword_search, 'input[name=filter_by_keyword]'
+  element :submit_button, 'button.btn.action'
+  elements :forms, 'div.w-12 form'
 
   element :username_filter, 'div.filters a[data-filter-label^="username"]'
   element :username_filter_menu, 'div.filters a[data-filter-label^="username"] + div.sub-menu ul'
@@ -21,7 +21,7 @@ class Logs < ControlPanelPage
   element :perpage_manual_filter, 'input[name="perpage"]'
 
   element :no_results, 'p.no-results'
-  element :remove_all, 'button.btn.remove'
+  element :remove_all, 'button.btn.action'
 
   elements :items, 'section.item-wrap div.item'
 

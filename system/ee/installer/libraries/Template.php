@@ -234,7 +234,7 @@ class Installer_Template {
 
 					if (stristr($no_rel_match[1], LD.'if'))
 					{
-						$match[0] = ee()->functions->full_tag($no_rel_match[0], $matches[2][$j], LD.'if', LD.'\/'."if".RD);
+						$match[0] = ee('Variables/Parser')->getFullTag($matches[2][$j], $no_rel_match[0], LD.'if', LD.'/if'.RD);
 					}
 
 					$no_rel_content = substr($no_rel_match[0], strlen(LD."if no_related_entries".RD), -strlen(LD.'/'."if".RD));
@@ -273,7 +273,7 @@ class Installer_Template {
 
 					if (stristr($no_rev_match[1], LD.'if'))
 					{
-						$match[0] = ee()->functions->full_tag($no_rev_match[0], $matches[2][$j], LD.'if', LD.'\/'."if".RD);
+						$match[0] = ee('Variables/Parser')->getFullTag($matches[2][$j], $no_rev_match[0], LD.'if', LD.'/if'.RD);
 					}
 
 					$no_rev_content = substr($no_rev_match[0], strlen(LD."if no_reverse_related_entries".RD), -strlen(LD.'/'."if".RD));

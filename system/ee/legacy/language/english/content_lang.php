@@ -12,7 +12,7 @@ $lang = array(
 
 'allow_comments' => 'Allow comments?',
 
-'allow_comments_desc' => 'When set to <b>yes</b>, members with permissions will be able to post comments to this entry.',
+'allow_comments_desc' => 'When enabled, members with permissions will be able to post comments to this entry.',
 
 'author' => 'Author',
 
@@ -30,7 +30,7 @@ $lang = array(
 
 'btn_create_new' => 'Create New',
 
-'btn_create_new_entry_in_channel' => 'Create New in %s',
+'btn_create_new_entry_in_channel' => 'New in %s',
 
 'btn_edit_comment' => 'Edit Comment',
 
@@ -168,7 +168,7 @@ $lang = array(
 
 'sticky' => 'Make entry sticky?',
 
-'sticky_desc' => 'When set to <b>yes</b>, this entry will be given preference in sorted listings.',
+'sticky_desc' => 'When enabled, this entry will be given preference in sorted listings.',
 
 'url_title' => '<abbr title="Unified Resource Locator">URL</abbr> title',
 
@@ -397,6 +397,12 @@ $lang = array(
 'forum' => 'Forum',
 
 'forum_body' => 'Forum Topic Text',
+
+'forum_no_forum_body' => 'You cannot create a forum topic without content.',
+
+'forum_no_forum_title' => 'You must give the forum topic a title.',
+
+'forum_no_forum_id' => 'You must choose a forum.',
 
 'forum_title' => 'Forum Topic Title',
 
@@ -744,7 +750,7 @@ $lang = array(
 
 'versioning_enabled' => 'Enable entry revisions?',
 
-'versioning_enabled_desc' => 'When set to <b>yes</b>, you can store up to %d revisions of this entry.',
+'versioning_enabled_desc' => 'When enabled, you can store up to %d revisions of this entry.',
 
 'view' => 'View',
 
@@ -788,7 +794,9 @@ $lang = array(
 /* Relationships */
 'add_new_html_button' => 'Add New HTML button',
 
-'add_new_row' => 'add new row',
+'add_new_row' => 'Add new row',
+
+'collapse' => 'Collapse',
 
 'hide' => 'Hide',
 

@@ -36,7 +36,7 @@ feature 'Forum Tab' do
     click_link(title)
     @page.tab_links[4].click
     @page.forum_tab.should have_css('textarea[name=forum__forum_body][disabled]')
-    @page.forum_tab.should have_css('select[name=forum__forum_id][disabled]')
+    @page.forum_tab.should have_css('.fields-select-drop.field-disabled')
   end
 
   it 'associates a channel entry with a forum post when specifying a forum topic ID' do
@@ -105,7 +105,7 @@ feature 'Forum Tab' do
     should_have_form_errors(@page)
     should_have_error_text(
       @page.forum_tab.forum_body,
-      'no_forum_body'
+      'You cannot create a forum topic without content.'
     )
 
     @page.forum_tab.forum_title.set ''
@@ -122,8 +122,23 @@ feature 'Forum Tab' do
     should_have_form_errors(@page)
     should_have_error_text(
       @page.forum_tab.forum_title,
-      'no_forum_title'
+      'You must give the forum topic a title.'
     )
+  end
+
+  # https://expressionengine.com/support/bugs/23253/editing-entry-with-forum-post
+  it 'edits an entry successfully that has forum content in the forum tab' do
+    create_entry
+
+    edit = EntryManager.new
+    edit.load
+    edit.entry_rows[0].find('.toolbar-wrap a[href*="publish/edit/entry"]').click
+
+    @page.title.set title + " Edited"
+    @page.submit_buttons[2].click
+
+    @page.all_there?.should == false
+    @page.alert.has_content?("The entry #{title} Edited has been updated.").should == true
   end
 
   def create_entry
@@ -131,7 +146,11 @@ feature 'Forum Tab' do
     @page.tab_links[4].click
     @page.forum_tab.forum_title.set title
     @page.forum_tab.forum_body.set body
-    @page.submit_buttons[1].click
+    @page.forum_tab.forum_id.click
+    @page.forum_tab.wait_until_forum_id_choices_visible
+    @page.forum_tab.forum_id_choices[0].click
+
+    @page.submit_buttons[2].click
 
     @page.all_there?.should == false
     @page.alert.has_content?("The entry #{title} has been created.").should == true

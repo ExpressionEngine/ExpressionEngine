@@ -250,11 +250,9 @@ class Select extends Query {
 		$table_name        = $class::getMetaData('table_name');
 		$parent_key        = "{$table_name}.{$primary_key}";
 
-		$fields = ee('Model')->get($meta_field_data['field_model'])
-			->filter($column_prefix.'legacy_field_data', 'n');
-
 		if (array_key_exists('group_column', $meta_field_data))
 		{
+			$meta_field_data['group_column'] = $alias . '__' . $meta_field_data['group_column'];
 			$structure_ids = array_map(function($column) use($meta_field_data){
 				if (array_key_exists($meta_field_data['group_column'], $column))
 				{
@@ -719,17 +717,6 @@ class Select extends Query {
 	 */
 	protected function processWiths($query, $from, $from_alias)
 	{
-		$class = $this->getClass();
-
-		$extra_withs = $class::getMetaData('auto_join');
-		if ($extra_withs)
-		{
-			foreach ($extra_withs as $with)
-			{
-				$this->builder->with($with);
-			}
-		}
-
 		$withs = $this->builder->getWiths();
 		$this->recurseWiths($query, $from, $from_alias, $withs);
 	}

@@ -6,9 +6,6 @@
 					<li>
 						<a class="has-sub" href=""><?=lang('create_new')?></a>
 						<div class="sub-menu">
-							<fieldset class="filter-search">
-								<input type="text" value="" placeholder="<?=lang('filter_channels')?>">
-							</fieldset>
 							<div class="scroll-wrap">
 								<ul class="channels-pages-create">
 									<?php

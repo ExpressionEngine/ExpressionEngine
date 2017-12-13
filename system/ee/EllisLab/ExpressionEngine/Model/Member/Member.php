@@ -139,7 +139,6 @@ class Member extends ContentModel {
 
 	protected static $_events = array(
 		'beforeInsert',
-		'afterInsert',
 		'beforeUpdate',
 		'beforeDelete'
 	);
@@ -220,12 +219,6 @@ class Member extends ContentModel {
 	{
 		$this->setProperty('unique_id', ee('Encrypt')->generateKey());
 		$this->setProperty('crypt_key', ee('Encrypt')->generateKey());
-	}
-
-	public function onAfterInsert()
-	{
-		$this->NewsView = ee('Model')->make('MemberNewsView');
-		$this->NewsView->save();
 	}
 
 	/**
@@ -404,13 +397,17 @@ class Member extends ContentModel {
 			$cp_homepage_custom = $this->cp_homepage_custom;
 
 			// Site created after setting was saved, no channel setting will be available
-			if ($this->cp_homepage == 'publish_form' && ! isset($cp_homepage_channel[$site_id]))
+			if ($this->cp_homepage == 'publish_form')
 			{
-				$cp_homepage = '';
-			}
-			else
-			{
-				$cp_homepage_channel = $cp_homepage_channel[$site_id];
+				// No channels or bad channel? Can't go to the publish page
+				if ( ! isset($cp_homepage_channel[$site_id]))
+				{
+					$cp_homepage = '';
+				}
+				else
+				{
+					$cp_homepage_channel = $cp_homepage_channel[$site_id];
+				}
 			}
 		}
 		elseif ( ! empty($member_group->cp_homepage))

@@ -53,9 +53,6 @@ class Addons extends CP_Controller {
 
 		$this->params['perpage'] = $this->perpage; // Set a default
 
-		// Add in any submitted search phrase
-		ee()->view->search_value = htmlentities(ee()->input->get_post('search'), ENT_QUOTES, 'UTF-8');
-
 		$this->base_url = ee('CP/URL')->make('addons');
 
 		ee()->load->library('addons');
@@ -93,7 +90,8 @@ class Addons extends CP_Controller {
 		$status->disableCustomValue();
 
 		$first_filters = ee('CP/Filter')
-			->add($status);
+			->add($status)
+			->add('Keyword')->withName('filter_by_first_keyword');
 
 		// Third Party Add-on Filters
 
@@ -116,7 +114,8 @@ class Addons extends CP_Controller {
 
 		$third_filters = ee('CP/Filter')
 			->add($status)
-			->add($developer);
+			->add($developer)
+				->add('Keyword')->withName('filter_by_third_keyword');
 
 		// When filtering the first party table keep the third party filter values
 		$filter_base_url['first'] = clone $this->base_url;
@@ -184,11 +183,6 @@ class Addons extends CP_Controller {
 			)
 		);
 
-		if ( ! empty(ee()->view->search_value))
-		{
-			$this->base_url->setQueryStringVariable('search', ee()->view->search_value);
-		}
-
 		$addons = $this->getAllAddons();
 
 		// Filter list for non-super admins
@@ -230,10 +224,6 @@ class Addons extends CP_Controller {
 		), $developers);
 
 		$return_url = ee('CP/URL')->getCurrentUrl();
-		if (ee()->view->search_value)
-		{
-			$return_url->setQueryStringVariable('search', ee()->view->search_value);
-		}
 
 		foreach (array('first', 'third') as $party)
 		{
@@ -248,6 +238,7 @@ class Addons extends CP_Controller {
 			$config = array(
 				'autosort' => TRUE,
 				'autosearch' => TRUE,
+				'search' => $this->params["filter_by_{$party}_keyword"],
 				'sort_col' => ee()->input->get($party . '_sort_col') ?: NULL,
 				'sort_col_qs_var' => $party . '_sort_col',
 				'sort_dir' => ee()->input->get($party . '_sort_dir') ?: 'asc',

@@ -65,7 +65,7 @@ class CpSettings extends Profile {
 			if (empty($field['allowed_channels']))
 			{
 				$all_sites_have_channels = FALSE;
-				$field['allowed_channels'][0] = lang('no_channels');
+				$field['allowed_channels'][0] = strip_tags(lang('no_channels'));
 			}
 
 			$site_id = ee()->config->item('site_id');

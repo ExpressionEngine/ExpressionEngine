@@ -57,7 +57,7 @@ $actions = array(
 
 for ($x = 0; $x < $count; $x++)
 {
-	$fixture = $api->make('CpLog');
+	$fixture = ee('Model')->make('CpLog');
 	$fixture->site_id = $site_id;
 	$fixture->member_id = $member_id;
 	$fixture->username = $username;

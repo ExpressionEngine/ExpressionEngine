@@ -23,8 +23,6 @@ feature 'File Manager / Upload File' do
     @page.manager_title.text.should eq 'File Manager'
     @page.should have_title_toolbar
     @page.should have_download_all
-    @page.should have_phrase_search
-    @page.should have_search_submit_button
 
     # Check that we have a sidebar
     @page.should have_sidebar
@@ -35,7 +33,7 @@ feature 'File Manager / Upload File' do
     @page.sidebar.find('li.act').text.should eq 'Main Upload Directory'
 
     @page.should_not have_breadcrumb
-    @page.heading.text.should eq 'File Upload Required Fields'
+    @page.heading.text.should eq 'File Upload'
 
     @page.should have_file_input
     @page.should have_title_input
@@ -163,18 +161,6 @@ feature 'File Manager / Upload File' do
     @file.location_input.value.should eq "RSpec README"
   end
 
-  it 'can search files' do
-    @page.phrase_search.set 'map'
-    @page.search_submit_button.click
-    no_php_js_errors
-
-    @return.displayed?
-    @return.heading.text.should eq 'Search Results we found 2 results for "map"'
-    @return.phrase_search.value.should eq 'map'
-    @return.should have_text 'map'
-    @return.should have(3).files
-  end
-
   it 'cannot upload a shell script' do
     @page.attach_file('file', @script_file)
     @page.form_submit_button.click
@@ -187,8 +173,10 @@ feature 'File Manager / Upload File' do
   end
 
   it 'can upload a image when the directory is restricted to images' do
-    click_link 'About'
-    click_link 'Upload New File'
+    click_link 'Upload File'
+    within '.section-header__controls .filter-submenu' do
+      click_link 'About'
+    end
 
     @page.attach_file('file', @image_file)
     @page.form_submit_button.click
@@ -208,8 +196,10 @@ feature 'File Manager / Upload File' do
   end
 
   it 'cannot upload a non-image when the directory is restricted to images' do
-    click_link 'About'
-    click_link 'Upload New File'
+    click_link 'Upload File'
+    within '.section-header__controls .filter-submenu' do
+      click_link 'About'
+    end
 
     @page.attach_file('file', @md_file)
     @page.form_submit_button.click
@@ -222,8 +212,10 @@ feature 'File Manager / Upload File' do
   end
 
   it 'cannot upload a PHP script masquerading as an image' do
-    click_link 'About'
-    click_link 'Upload New File'
+    click_link 'Upload File'
+    within '.section-header__controls .filter-submenu' do
+      click_link 'About'
+    end
 
     @page.attach_file('file', @php_file)
     @page.form_submit_button.click

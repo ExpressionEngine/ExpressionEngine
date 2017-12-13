@@ -806,7 +806,7 @@ class Cp {
 
 		$quicklinks = array();
 
-		if (count($quick_links) != 0 && $quick_links != '')
+		if ( ! empty($quick_links))
 		{
 			foreach (explode("\n", $quick_links) as $row)
 			{

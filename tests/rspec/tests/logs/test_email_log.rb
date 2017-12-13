@@ -18,7 +18,7 @@ feature 'Email Log' do
     # These should always be true at all times if not something has gone wrong
     @page.displayed?
     @page.heading.text.should eq 'Email Logs'
-    @page.should have_phrase_search
+    @page.should have_keyword_search
     @page.should have_submit_button
     @page.should have_username_filter
     @page.should have_date_filter
@@ -37,20 +37,6 @@ feature 'Email Log' do
     @page.should have(25).items # Default is 25 per page
   end
 
-  it 'does not show filters at 10 items', :pregen => false do
-    @page.generate_data(count: 10)
-    @page.load
-
-    @page.displayed?
-    @page.heading.text.should eq 'Email Logs'
-    @page.should have_phrase_search
-    @page.should have_submit_button
-    @page.should_not have_username_filter
-    @page.should_not have_date_filter
-    @page.should_not have_perpage_filter
-    @page.should_not have_pagination
-  end
-
   # Confirming phrase search
   it 'searches by phrases', :pregen => true do
     our_subject = "Rspec entry for search"
@@ -62,11 +48,11 @@ feature 'Email Log' do
     # Be sane and make sure it's there before we search for it
     @page.should have_text our_subject
 
-    @page.phrase_search.set "Rspec"
-    @page.submit_button.click
+    @page.keyword_search.set "Rspec"
+    @page.keyword_search.send_keys(:enter)
 
     @page.heading.text.should eq 'Search Results we found 1 results for "Rspec"'
-    @page.phrase_search.value.should eq "Rspec"
+    @page.keyword_search.value.should eq "Rspec"
     @page.should have_text our_subject
     @page.should have(1).items
   end
@@ -74,18 +60,18 @@ feature 'Email Log' do
   it 'shows no results on a failed search', :pregen => true do
     our_subject = "NotFoundHere"
 
-    @page.phrase_search.set our_subject
-    @page.submit_button.click
+    @page.keyword_search.set our_subject
+    @page.keyword_search.send_keys(:enter)
 
     @page.heading.text.should eq 'Search Results we found 0 results for "' + our_subject + '"'
-    @page.phrase_search.value.should eq our_subject
+    @page.keyword_search.value.should eq our_subject
     @page.should have_text our_subject
+    @page.should have_username_filter
+    @page.should have_date_filter
+    @page.should have_perpage_filter
 
     @page.should have_no_results
 
-    @page.should_not have_username_filter
-    @page.should_not have_date_filter
-    @page.should_not have_perpage_filter
     @page.should_not have_pagination
     @page.should_not have_remove_all
   end
@@ -190,12 +176,12 @@ feature 'Email Log' do
     @page.should have_text "admin"
 
     # Now, combine the filters
-    @page.phrase_search.set "johndoe"
-    @page.submit_button.click
+    @page.keyword_search.set "johndoe"
+    @page.keyword_search.send_keys(:enter)
 
     @page.perpage_filter.text.should eq "show (150)"
     @page.heading.text.should eq 'Search Results we found 15 results for "johndoe"'
-    @page.phrase_search.value.should eq "johndoe"
+    @page.keyword_search.value.should eq "johndoe"
     @page.should have(15).items
     @page.should_not have_pagination
     @page.items.should_not have_text "admin"
@@ -296,13 +282,13 @@ feature 'Email Log' do
     @page.perpage_filter_menu.click_link "25"
     no_php_js_errors
 
-    @page.phrase_search.set "johndoe"
-    @page.submit_button.click
+    @page.keyword_search.set "johndoe"
+    @page.keyword_search.send_keys(:enter)
     no_php_js_errors
 
     # Page 1
     @page.heading.text.should eq 'Search Results we found 35 results for "johndoe"'
-    @page.phrase_search.value.should eq "johndoe"
+    @page.keyword_search.value.should eq "johndoe"
     @page.items.should_not have_text "admin"
     @page.perpage_filter.text.should eq "show (25)"
     @page.should have(25).items
@@ -314,7 +300,7 @@ feature 'Email Log' do
 
     # Page 2
     @page.heading.text.should eq 'Search Results we found 35 results for "johndoe"'
-    @page.phrase_search.value.should eq "johndoe"
+    @page.keyword_search.value.should eq "johndoe"
     @page.items.should_not have_text "admin"
     @page.perpage_filter.text.should eq "show (25)"
     @page.should have(10).items

@@ -320,7 +320,7 @@ feature 'Upload Destination Create/Edit' do
   it 'should repopulate the form on validation error, and save' do
     @page.url.set 'http://ee3/'
     @page.server_path.set @upload_path
-    @page.allowed_types.select 'All file types'
+    @page.allowed_types.choose_radio_option 'all'
     @page.max_size.set '4'
     @page.max_width.set '300'
     @page.max_height.set '200'
@@ -352,7 +352,7 @@ feature 'Upload Destination Create/Edit' do
     should_have_form_errors(@page)
 
     @page.server_path.value.should == @upload_path
-    @page.allowed_types.value.should == 'all'
+    @page.allowed_types.has_checked_radio('all').should == true
     @page.max_size.value.should == '4'
     @page.max_width.value.should == '300'
     @page.max_height.value.should == '200'
@@ -377,13 +377,9 @@ feature 'Upload Destination Create/Edit' do
 
     @page.should have_text 'Upload directory saved'
 
-    edit_screen = current_url
-    edit_screen ['directory'] = 'uploads/edit'
-    @page.visit edit_screen
-
     @page.name.value.should == 'Dir'
     @page.server_path.value.should == @upload_path + '/'
-    @page.allowed_types.value.should == 'all'
+    @page.allowed_types.has_checked_radio('all').should == true
     @page.max_size.value.should == '4'
     @page.max_width.value.should == '300'
     @page.max_height.value.should == '200'
@@ -434,13 +430,9 @@ feature 'Upload Destination Create/Edit' do
 
     @page.should have_text 'Upload directory saved'
 
-    edit_screen = current_url
-    edit_screen ['directory'] = 'uploads/edit'
-    @page.visit edit_screen
-
     @page.name.value.should == 'Dir'
     @page.server_path.value.should == @upload_path + '/'
-    @page.allowed_types.value.should == 'img'
+    @page.allowed_types.has_checked_radio('img').should == true
     @page.max_size.value.should == '4'
     @page.max_width.value.should == '300'
     @page.max_height.value.should == '200'
@@ -464,8 +456,6 @@ feature 'Upload Destination Create/Edit' do
     @page.should have_text 'Upload directory saved'
     no_php_js_errors
 
-    @page.visit edit_screen
-
     # Test adding a new image manipulation to an existing directory
     # and that unique name validation works
     @page.grid_add.click
@@ -487,8 +477,6 @@ feature 'Upload Destination Create/Edit' do
     @page.should have_text 'Upload directory saved'
     no_php_js_errors
 
-    @page.visit edit_screen
-
     @page.name_for_row(3).value.should == 'some_name2'
     @page.resize_type_for_row(3).value.should == 'constrain'
     @page.width_for_row(3).value.should == '60'
@@ -501,8 +489,6 @@ feature 'Upload Destination Create/Edit' do
     @page.submit
     @page.should have_text 'Upload directory saved'
     no_php_js_errors
-
-    @page.visit edit_screen
 
     @page.grid_rows.size.should == 3 # Header and two rows
 

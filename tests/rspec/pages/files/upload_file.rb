@@ -2,20 +2,22 @@ class UploadFile < FileManagerPage
   set_url_matcher /files\/upload/
 
   # Main box elements
-  element :heading, 'div.col.w-12 div.box h1'
+  element :heading, 'div.form-standard form div.form-btns-top h1'
 
   # Edit form
-  element :file_input, 'div.col.w-12 div.box form fieldset input[name="file"]'
-  element :title_input, 'div.col.w-12 div.box form fieldset input[name="title"]'
-  element :description_input, 'div.col.w-12 div.box form fieldset textarea[name="description"]'
-  element :credit_input, 'div.col.w-12 div.box form fieldset input[name="credit"]'
-  element :location_input, 'div.col.w-12 div.box form fieldset input[name="location"]'
-  element :form_submit_button, 'div.col.w-12 div.box form fieldset.form-ctrls input[type="submit"]'
+  element :file_input, 'div.col.w-12 div.form-standard form fieldset input[name="file"]'
+  element :title_input, 'div.col.w-12 div.form-standard form fieldset input[name="title"]'
+  element :description_input, 'div.col.w-12 div.form-standard form fieldset textarea[name="description"]'
+  element :credit_input, 'div.col.w-12 div.form-standard form fieldset input[name="credit"]'
+  element :location_input, 'div.col.w-12 div.form-standard form fieldset input[name="location"]'
+  element :form_submit_button, 'div.form-standard form div.form-btns-top input[type="submit"]'
 
   def load
     click_link 'Files'
-    click_link 'Main Upload Directory'
-    click_link 'Upload New File'
+    click_link 'Upload File'
+    within '.section-header__controls .filter-submenu' do
+      click_link 'Main Upload Directory'
+    end
   end
 
 end

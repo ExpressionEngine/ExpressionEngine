@@ -60,7 +60,8 @@ class Groups extends Members\Members {
 		$table = ee('CP/Table', array(
 			'sort_col' => $sort_col,
 			'sort_dir' => $sort_dir,
-			'limit' => $this->perpage
+			'limit' => $this->perpage,
+			'search' => ee()->input->get_post('filter_by_keyword'),
 		));
 
 		$columns = array(
@@ -98,7 +99,9 @@ class Groups extends Members\Members {
 			->filter('site_id', ee()->config->item('site_id'))
 			->count();
 
-		$filter = ee('CP/Filter')->add('Perpage', $total, 'show_all_member_groups');
+		$filter = ee('CP/Filter')
+			->add('Keyword')
+			->add('Perpage', $total, 'show_all_member_groups');
 
 		$this->renderFilters($filter);
 
@@ -108,11 +111,11 @@ class Groups extends Members\Members {
 			->limit($this->perpage)
 			->offset($this->offset);
 
-		$search = ee()->input->post('search');
+		$search = ee()->input->post('filter_by_keyword');
 
 		if ( ! empty($search))
 		{
-			$groups = $groups->filter('group_title', 'LIKE', "%$search%");
+			$groups = $groups->search('group_title', $search);
 		}
 
 		$groups = $groups->all();
@@ -399,8 +402,27 @@ class Groups extends Members\Members {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$this->load->model('member_model');
-		$this->member_model->delete_member_group($group_id, $replacement);
+		if ($replacement)
+		{
+			ee('Model')->get('Member')
+				->filter('group_id', $group_id)
+				->set('group_id', $replacement)
+				->update();
+		}
+
+		$sites = ee('Model')->get('Site')
+			->fields('site_id')
+			->all()
+			->pluck('site_id');
+
+		foreach ($sites as $site_id)
+		{
+			$groups = ee('Model')->get('MemberGroup')
+				->filter('group_id', $group_id)
+				->filter('site_id', $site_id)
+				->all()
+				->delete();
+		}
 	}
 
 	private function form($vars = array(), $values = array())
@@ -762,11 +784,7 @@ class Groups extends Members\Members {
 						'desc' => 'lock_description',
 						'fields' => array(
 							'is_locked' => array(
-								'type' => 'inline_radio',
-								'choices' => array(
-									'y' => 'enable',
-									'n' => 'disable'
-								),
+								'type' => 'yes_no',
 								'value' => element('is_locked', $values)
 							)
 						)

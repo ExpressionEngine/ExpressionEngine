@@ -10,7 +10,7 @@
 namespace EllisLab\ExpressionEngine\Model\Channel;
 
 use EllisLab\ExpressionEngine\Model\Content\StructureModel;
-use EllisLab\ExpressionEngine\Library\Data\Collection;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 /**
  * Channel Model
@@ -113,6 +113,9 @@ class Channel extends StructureModel {
 		'site_id'                    => 'required|isNatural',
 		'channel_title'              => 'required|unique[site_id]|xss',
 		'channel_name'               => 'required|unique[site_id]|alphaDash',
+		'channel_url'                => 'xss',
+		'comment_url'                => 'xss',
+		'channel_description'        => 'xss',
 		'deft_comments'              => 'enum[y,n]',
 		'channel_require_membership' => 'enum[y,n]',
 		'channel_allow_img_urls'     => 'enum[y,n]',
@@ -130,9 +133,13 @@ class Channel extends StructureModel {
 		'max_entries'                => 'isNatural',
 		'max_revisions'              => 'isNatural',
 		'max_characters'             => 'isNatural',
+		'comment_max_chars'          => 'isNatural',
 		'comment_timelock'           => 'isNatural',
 		'comment_expiration'         => 'isNatural',
-		'url_title_prefix'           => 'alphaDash',
+		'search_results_url'         => 'xss',
+		'rss_url'                    => 'xss',
+		'default_entry_title'        => 'xss',
+		'url_title_prefix'           => 'alphaDash|xss',
 		'channel_notify_emails'      => 'validateEmails',
 		'comment_notify_emails'      => 'validateEmails'
 	);
@@ -164,41 +171,41 @@ class Channel extends StructureModel {
 	protected $last_entry_date;
 	protected $last_comment_date;
 	protected $cat_group;
-	protected $deft_status;
+	protected $deft_status = 'open';
 	protected $search_excerpt;
 	protected $deft_category;
-	protected $deft_comments;
-	protected $channel_require_membership;
+	protected $deft_comments = TRUE;
+	protected $channel_require_membership = TRUE;
 	protected $channel_max_chars;
-	protected $channel_html_formatting;
-	protected $extra_publish_controls;
-	protected $channel_allow_img_urls;
-	protected $channel_auto_link_urls;
-	protected $channel_notify;
+	protected $channel_html_formatting = 'all';
+	protected $extra_publish_controls = FALSE;
+	protected $channel_allow_img_urls = TRUE;
+	protected $channel_auto_link_urls = FALSE;
+	protected $channel_notify = FALSE;
 	protected $channel_notify_emails;
 	protected $comment_url;
-	protected $comment_system_enabled;
-	protected $comment_require_membership;
-	protected $comment_moderate;
-	protected $comment_max_chars;
-	protected $comment_timelock;
-	protected $comment_require_email;
-	protected $comment_text_formatting;
-	protected $comment_html_formatting;
-	protected $comment_allow_img_urls;
-	protected $comment_auto_link_urls;
-	protected $comment_notify;
-	protected $comment_notify_authors;
+	protected $comment_system_enabled = TRUE;
+	protected $comment_require_membership = FALSE;
+	protected $comment_moderate = FALSE;
+	protected $comment_max_chars = 5000;
+	protected $comment_timelock = 0;
+	protected $comment_require_email = TRUE;
+	protected $comment_text_formatting = 'xhtml';
+	protected $comment_html_formatting = 'safe';
+	protected $comment_allow_img_urls = FALSE;
+	protected $comment_auto_link_urls = TRUE;
+	protected $comment_notify = FALSE;
+	protected $comment_notify_authors = FALSE;
 	protected $comment_notify_emails;
 	protected $comment_expiration;
 	protected $search_results_url;
 	protected $rss_url;
-	protected $enable_versioning;
-	protected $max_revisions;
+	protected $enable_versioning = FALSE;
+	protected $max_revisions = 10;
 	protected $default_entry_title;
 	protected $title_field_label;
 	protected $url_title_prefix;
-	protected $live_look_template;
+	protected $live_look_template = 0;
 	protected $max_entries;
 
 	/**
@@ -216,7 +223,7 @@ class Channel extends StructureModel {
 
 		foreach ($emails as $email)
 		{
-			if ($value != filter_var($value, FILTER_SANITIZE_EMAIL) OR ! filter_var($value, FILTER_VALIDATE_EMAIL))
+			if ($email != filter_var($email, FILTER_SANITIZE_EMAIL) OR ! filter_var($email, FILTER_VALIDATE_EMAIL))
 			{
 				$rule->stop();
 				return 'valid_email';
@@ -260,7 +267,7 @@ class Channel extends StructureModel {
 	 * Display the CP entry form
 	 *
 	 * @param Content $content  An object implementing the Content interface
-	 * @return Array of HTML field elements for the entry / edit form
+	 * @return array of HTML field elements for the entry / edit form
 	 */
 	public function getPublishForm($content = NULL)
 	{
@@ -320,6 +327,7 @@ class Channel extends StructureModel {
 		$this->FieldGroups = clone $channel->FieldGroups;
 		$this->CustomFields = clone $channel->CustomFields;
 		$this->Statuses = clone $channel->Statuses;
+		$this->ChannelFormSettings = clone $channel->ChannelFormSettings;
 	}
 
 	public function onBeforeSave()
@@ -368,6 +376,11 @@ class Channel extends StructureModel {
 			{
 				$this->removeRevisionTab();
 			}
+		}
+
+		foreach ($this->ChannelLayouts as $layout)
+		{
+			$layout->synchronize($this->getAllCustomFields());
 		}
 	}
 

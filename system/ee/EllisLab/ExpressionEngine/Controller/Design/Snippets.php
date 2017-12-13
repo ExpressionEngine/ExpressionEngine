@@ -76,16 +76,14 @@ class Snippets extends AbstractDesignController {
 
 		$data = array();
 		$snippets = ee('Model')->get('Snippet')
-			->filterGroup()
-				->filter('site_id', ee()->config->item('site_id'))
-				->orFilter('site_id', 0)
-			->endFilterGroup();
+			->filter('site_id', 'IN', array(0, ee()->config->item('site_id')));
 
 		$this->base_url = ee('CP/URL')->make('design/snippets');
 
 		$total = $snippets->count();
 
 		$filters = ee('CP/Filter')
+			->add('Keyword')
 			->add('Perpage', $total, 'show_all_partials');
 
 		// Before pagination so perpage is set correctly
@@ -105,8 +103,14 @@ class Snippets extends AbstractDesignController {
 
 		$snippet_data = $snippets->order($sort_map[$sort_col], $table->sort_dir)
 			->limit($this->perpage)
-			->offset($this->offset)
-			->all();
+			->offset($this->offset);
+
+		if (isset($this->params['filter_by_keyword']))
+		{
+			$snippet_data->search(['snippet_name', 'snippet_contents'], $this->params['filter_by_keyword']);
+		}
+
+		$snippet_data = $snippet_data->all();
 
 		foreach ($snippet_data as $snippet)
 		{
@@ -216,7 +220,7 @@ class Snippets extends AbstractDesignController {
 						'fields' => array(
 							'snippet_contents' => array(
 								'type' => 'textarea',
-								'required' => TRUE
+								'attrs' => 'class="textarea-medium"'
 							)
 						)
 					),
@@ -233,9 +237,11 @@ class Snippets extends AbstractDesignController {
 					'site_id' => array(
 						'type' => 'inline_radio',
 						'choices' => array(
-							'0' => 'enable',
-							ee()->config->item('site_id') => 'disable'
-						)
+							'0' => 'all_sites',
+							ee()->config->item('site_id') => ee()->config->item('site_label').' '.lang('only')
+						),
+						'encode' => FALSE,
+						'value' => '0',
 					)
 				)
 			);
@@ -253,11 +259,6 @@ class Snippets extends AbstractDesignController {
 				'field' => 'snippet_name',
 				'label' => 'lang:snippet_name',
 				'rules' => 'required|callback__snippet_name_checks'
-			),
-			array(
-				'field' => 'snippet_contents',
-				'label' => 'lang:snippet_contents',
-				'rules' => 'required'
 			)
 		));
 
@@ -349,7 +350,7 @@ class Snippets extends AbstractDesignController {
 						'fields' => array(
 							'snippet_contents' => array(
 								'type' => 'textarea',
-								'required' => TRUE,
+								'attrs' => 'class="textarea-medium"',
 								'value' => $snippet->snippet_contents
 							)
 						)
@@ -367,10 +368,11 @@ class Snippets extends AbstractDesignController {
 					'site_id' => array(
 						'type' => 'inline_radio',
 						'choices' => array(
-							'0' => 'enable',
-							ee()->config->item('site_id') => 'disable'
+							'0' => 'all_sites',
+							ee()->config->item('site_id') => ee()->config->item('site_label').' '.lang('only')
 						),
-						'value' => $snippet->site_id
+						'value' => $snippet->site_id,
+						'encode' => FALSE
 					)
 				)
 			);
@@ -382,11 +384,6 @@ class Snippets extends AbstractDesignController {
 				'field' => 'snippet_name',
 				'label' => 'lang:snippet_name',
 				'rules' => 'required|callback__snippet_name_checks'
-			),
-			array(
-				'field' => 'snippet_contents',
-				'label' => 'lang:snippet_contents',
-				'rules' => 'required'
 			)
 		));
 
@@ -535,7 +532,7 @@ class Snippets extends AbstractDesignController {
 		$snippets = ee('Model')->get('Snippet');
 		if ($this->msm)
 		{
-			$snippets->filter('site_id', 'IN', array(0, ee()->config->item('site_id')));
+			$snippets->filter('site_id', 'IN', [ee()->config->item('site_id'), 0]);
 		}
 		else
 		{

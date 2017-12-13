@@ -145,8 +145,15 @@ abstract class FieldModel extends Model {
 	 */
 	public function onAfterDelete()
 	{
-		$ft = $this->getFieldtypeInstance();
-		$this->callSettingsModify($ft, 'delete');
+		$installed = $this->getModelFacade()->get('Fieldtype')
+			->filter('name', $this->getFieldType())
+			->count();
+
+		if ($installed)
+		{
+			$ft = $this->getFieldtypeInstance();
+			$this->callSettingsModify($ft, 'delete');
+		}
 
 		$this->dropTable();
 
@@ -323,7 +330,7 @@ abstract class FieldModel extends Model {
 	 * Add the default columns if they don't exist
 	 *
 	 * @param Array $columns Column definitions
-	 * @return Array Updated column definitions
+	 * @return array Updated column definitions
 	 */
 	private function ensureDefaultColumns($columns)
 	{
@@ -396,6 +403,17 @@ abstract class FieldModel extends Model {
 	public function getTableName()
 	{
 		return $this->getDataTable() . '_field_' . $this->getId();
+	}
+
+	public function getDataStorageTable()
+	{
+		if ( ! $this->hasProperty($this->getColumnPrefix().'legacy_field_data')
+			|| $this->getProperty($this->getColumnPrefix().'legacy_field_data') == TRUE)
+		{
+			return $this->getDataTable();
+		}
+
+		return $this->getTableName();
 	}
 
 	protected function getForeignKey()
@@ -492,9 +510,6 @@ abstract class FieldModel extends Model {
 		$parse_fnc = ($modifier) ? 'replace_'.$modifier : 'replace_tag';
 		if (method_exists($fieldtype, $parse_fnc))
 		{
-			ee()->api_channel_fields->include_handler($this->field_type);
-			ee()->api_channel_fields->setup_handler($this->field_type, TRUE);
-			ee()->api_channel_fields->field_types[$this->field_type] = $fieldtype;
 			$data = ee()->api_channel_fields->apply($parse_fnc, array(
 				$data,
 				$params,

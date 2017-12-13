@@ -24,7 +24,7 @@ $lang = array(
 
 'rel_ft_allow_multi' => 'Allow multiple relationships?',
 
-'rel_ft_allow_multi_desc' => 'When set to <b>yes</b>, authors will be allowed to create multiple relationships.',
+'rel_ft_allow_multi_desc' => 'When enabled, authors will be allowed to create multiple relationships.',
 
 'rel_ft_authors' => 'Authors',
 
@@ -87,6 +87,7 @@ $lang = array(
 
 'duration_ft_units' => 'Units',
 
+'duration_ft_units_desc' => 'Determines the length of time being described when a content author enters a whole number like “42”.',
 
 /* File */
 'file_ft_allowed_dirs' => 'Allowed Directory',
@@ -113,7 +114,7 @@ $lang = array(
 
 'file_ft_show_files' => 'Show existing files?',
 
-'file_ft_show_files_desc' => 'When set to <b>yes</b>, a drop down with existing files will be shown to authors.',
+'file_ft_show_files_desc' => 'When enabled, a drop down with existing files will be shown to authors.',
 
 
 /* Grid */
@@ -137,9 +138,9 @@ $lang = array(
 
 'grid_col_type' => 'Data type?',
 
-'grid_col_width' => 'Column width',
+'grid_col_width' => 'Column minimum width',
 
-'grid_col_width_desc' => 'Set the width (in pixels) of this column in the publish form.',
+'grid_col_width_desc' => 'Set the minimum width (in pixels) of this column in the publish form.',
 
 'grid_col_width_percent' => 'Percentage.',
 

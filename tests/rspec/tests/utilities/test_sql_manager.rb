@@ -76,7 +76,7 @@ feature 'SQL Manager' do
     @page.wait_until_op_submit_visible
     @page.op_submit.click
 
-    @page.should have_text 'You must select an action to perform on the selected tables.'
+    @page.alert.should have_text 'You must select an action to perform on the selected tables.'
   end
 
   it 'should repair the tables and sort and search the results' do

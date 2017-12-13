@@ -220,13 +220,13 @@ class Search {
 
 		$this->hash = ee()->functions->random('md5');
 
-		$sql = $this->build_standard_query();
+		$query_parts = $this->build_standard_query();
 
 		/** ----------------------------------------
 		/**  No query results?
 		/** ----------------------------------------*/
 
-		if ($sql == FALSE)
+		if ($query_parts == FALSE)
 		{
 			if (isset($this->_meta['no_results_page']) AND $this->_meta['no_results_page'] != '')
 			{
@@ -258,12 +258,6 @@ class Search {
 		/**  If we have a result, cache it
 		/** ----------------------------------------*/
 
-		$sql = str_replace("\\", "\\\\", $sql);
-
-		// This fixes a bug that occurs when a different table prefix is used
-
-		$sql = str_replace('exp_', 'MDBMPREFIX', $sql);
-
 		$data = array(
 			'search_id'		=> $this->hash,
 			'search_date'	=> time(),
@@ -272,7 +266,7 @@ class Search {
 			'ip_address'	=> ee()->input->ip_address(),
 			'total_results'	=> $this->num_rows,
 			'per_page'		=> (isset($_POST['RES']) AND is_numeric($_POST['RES']) AND $_POST['RES'] < 999 ) ? $_POST['RES'] : 50,
-			'query'			=> addslashes(serialize($sql)),
+			'query'			=> serialize($query_parts),
 			'custom_fields'	=> addslashes(serialize($this->fields)),
 			'result_page'	=> $this->_meta['result_page'],
 			'site_id'		=> ee()->config->item('site_id')  // site search was made from
@@ -506,6 +500,8 @@ class Search {
 		/** ---------------------------------------*/
 
 		$fields = array();
+		$legacy_fields = array();
+		$joins = '';
 
 		// no need to do this unless there are keywords to search
 		if (trim($this->keywords) != '')
@@ -519,14 +515,22 @@ class Search {
     			$custom_fields = array();
     			foreach ($channels as $channel)
     			{
-    				$custom_fields = array_merge($custom_fields, $channel->getAllCustomFields());
+    				$custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
     			}
 
                 foreach ($custom_fields as $field)
                 {
                     if ($field->field_search)
                     {
-                        $fields[] = $field->field_id;
+						if ( ! isset($fields[$field->field_id]))
+						{
+	                        $fields[$field->field_id] = $field->field_id;
+							$legacy_fields[$field->field_id] = $field->legacy_field_data;
+							if ( ! $field->legacy_field_data)
+							{
+								$joins .= "\nLEFT JOIN exp_channel_data_field_{$field->field_id} ON exp_channel_data_field_{$field->field_id}.entry_id = exp_channel_titles.entry_id ";
+							}
+						}
                     }
 
 					$this->fields[$field->field_name] = array($field->field_id, $field->field_search);
@@ -541,10 +545,12 @@ class Search {
 
 
 		$sql = "SELECT
-			DISTINCT(exp_channel_titles.entry_id)
+			DISTINCT(exp_channel_titles.entry_id), exp_channel_titles.channel_id
 			FROM exp_channel_titles
 			LEFT JOIN exp_channels ON exp_channel_titles.channel_id = exp_channels.channel_id
 			LEFT JOIN exp_channel_data ON exp_channel_titles.entry_id = exp_channel_data.entry_id ";
+
+		$sql .= $joins;
 
 		// is the comment module installed?
 		if (ee()->addons_model->module_installed('comment'))
@@ -760,9 +766,11 @@ class Search {
 				{
 					foreach ($fields as $val)
 					{
+						$table = ($legacy_fields[$val]) ? "exp_channel_data" : "exp_channel_data_field_{$val}";
+
 						if (count($terms) == 1 && isset($this->_meta['where']) && $this->_meta['where'] == 'word')
 						{
-							$sql .= "\nOR ((exp_channel_data.field_id_".$val." LIKE '".$terms_like['0']." %' OR exp_channel_data.field_id_".$val." LIKE '% ".$terms_like['0']." %' OR exp_channel_data.field_id_".$val." LIKE '% ".$terms_like['0']."' OR exp_channel_data.field_id_".$val." = '".$terms['0']."') ";
+							$sql .= "\nOR (({$table}.field_id_".$val." LIKE '".$terms_like['0']." %' OR {$table}.field_id_".$val." LIKE '% ".$terms_like['0']." %' OR {$table}.field_id_".$val." LIKE '% ".$terms_like['0']."' OR {$table}.field_id_".$val." = '".$terms['0']."') ";
 
 							// and close up the member clause
 							if ($member_ids != '')
@@ -782,7 +790,7 @@ class Search {
 							// Since Title is always required in a search we use OR
 							// And then three parentheses just like above in case
 							// there are any NOT LIKE's being used and to allow for a member clause
-							$sql .= "\nOR (((exp_channel_data.field_id_".$val." $mysql_function '%".$search_term."%' ";
+							$sql .= "\nOR ((({$table}.field_id_".$val." $mysql_function '%".$search_term."%' ";
 
 							for ($i=1; $i < count($terms); $i++)
 							{
@@ -790,7 +798,7 @@ class Search {
 								$mysql_function	= (substr($terms[$i], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';
 								$search_term	= (substr($terms[$i], 0,1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
 
-								$sql .= "$mysql_criteria exp_channel_data.field_id_".$val." $mysql_function '%".$search_term."%' ";
+								$sql .= "$mysql_criteria {$table}.field_id_".$val." $mysql_function '%".$search_term."%' ";
 							}
 
 							$sql .= ")) ";
@@ -809,7 +817,7 @@ class Search {
 						else
 						{
 							$search_term = (count($terms) == 1) ? $terms_like[0] : ee()->db->escape_str($this->keywords);
-							$sql .= "\nOR (exp_channel_data.field_id_".$val." LIKE '%".$search_term."%' ";
+							$sql .= "\nOR ({$table}.field_id_".$val." LIKE '%".$search_term."%' ";
 
 							// and close up the member clause
 							if ($member_ids != '')
@@ -996,7 +1004,27 @@ class Search {
 
 					$this->num_rows = $query->num_rows();
 
-					return $sql;
+					$return = array(
+						'entries' => array(),
+						'channel_ids' => array(),
+						'end' => ''
+					);
+
+					foreach ($query->result_array() as $row)
+					{
+						$return['entries'][] = $row['entry_id'];
+						$return['channel_ids'][] = $row['channel_id'];
+					}
+
+					$return['channel_ids'] = array_unique($return['channel_ids']);
+
+					if (stripos($sql, ' ORDER BY ') !== FALSE)
+					{
+						list($before, $end) = explode(' ORDER BY ', $sql);
+						$return['end'] = ' ORDER BY ' . $end;
+					}
+
+					return $return;
 				}
 			}
 		//
@@ -1014,6 +1042,20 @@ class Search {
 		}
 
 		$this->num_rows = $query->num_rows();
+
+		$return = array(
+			'entries' => array(),
+			'channel_ids' => array(),
+			'end' => ''
+		);
+
+		foreach ($query->result_array() as $row)
+		{
+			$return['entries'][] = $row['entry_id'];
+			$return['channel_ids'][] = $row['channel_id'];
+		}
+
+		$return['channel_ids'] = array_unique($return['channel_ids']);
 
 		/** ----------------------------------------------
 		/**  Set sort order
@@ -1049,26 +1091,9 @@ class Search {
 
 		$end .= " ".$order;
 
-		$sql = "SELECT DISTINCT(t.entry_id), t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.entry_date, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
-				w.channel_title, w.channel_name, w.search_results_url, w.search_excerpt, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled,
-				m.username, m.email, m.screen_name, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id,
-				md.*,
-				wd.*
-			FROM exp_channel_titles		AS t
-			LEFT JOIN exp_channels 		AS w  ON t.channel_id = w.channel_id
-			LEFT JOIN exp_channel_data	AS wd ON t.entry_id = wd.entry_id
-			LEFT JOIN exp_members		AS m  ON m.member_id = t.author_id
-			LEFT JOIN exp_member_data	AS md ON md.member_id = m.member_id
-			WHERE t.entry_id IN (";
+		$return['end'] = $end;
 
-		foreach ($query->result_array() as $row)
-		{
-			$sql .= $row['entry_id'].',';
-		}
-
-		$sql = substr($sql, 0, -1).') '.$end;
-
-		return $sql;
+		return $return;
 	}
 
 	/** ----------------------------------------
@@ -1204,11 +1229,24 @@ class Search {
 		}
 
 		$fields	= ($query->row('custom_fields') == '') ? array() : unserialize(stripslashes($query->row('custom_fields') ));
-		$sql	= unserialize(stripslashes($query->row('query')));
-		$sql	= str_replace('MDBMPREFIX', 'exp_', $sql);
+		$query_parts = unserialize($query->row('query'));
 
 		$pagination->per_page = (int) $query->row('per_page');
 		$res_page = $query->row('result_page');
+
+		if ( ! class_exists('Channel'))
+		{
+			require PATH_ADDONS.'channel/mod.channel.php';
+		}
+
+		$channel = new Channel;
+
+		$channel->fetch_custom_channel_fields();
+		$channel->fetch_custom_member_fields();
+
+		$sql = 'SELECT DISTINCT(t.entry_id), w.search_results_url, w.search_excerpt, ';
+		$sql .= $channel->generateSQLForEntries($query_parts['entries'], $query_parts['channel_ids']);
+		$sql .= $query_parts['end'];
 
 		// -------------------------------------------
         // 'channel_search_modify_result_query' hook.
@@ -1259,11 +1297,6 @@ class Search {
 
 		$output = '';
 
-		if ( ! class_exists('Channel'))
-		{
-			require PATH_ADDONS.'channel/mod.channel.php';
-		}
-
 		unset(ee()->TMPL->var_single['auto_path']);
 		unset(ee()->TMPL->var_single['excerpt']);
 		unset(ee()->TMPL->var_single['id_auto_path']);
@@ -1286,13 +1319,9 @@ class Search {
 			ee()->logger->developer('The search module\'s {switch} variable has been deprecated, use standard {switch=} tags in your search results template.', TRUE, 604800);
 		}
 
-		$channel = new Channel;
-
 		// This allows the channel {absolute_count} variable to work
 		$channel->pagination->offset = ($pagination->per_page * $pagination->current_page) - $pagination->per_page;
 
-		$channel->fetch_custom_channel_fields();
-		$channel->fetch_custom_member_fields();
 		$channel->query = $query;
 
 		if ($channel->query->num_rows() == 0)
@@ -1435,7 +1464,7 @@ class Search {
 	 * Retrieve the Member Path tags for a set of tagdata
 	 *
 	 * @param String $tagdata The tagdata to get member_path tags from
-	 * @return Array Nested array containing tag and resulting paths for member
+	 * @return array Nested array containing tag and resulting paths for member
 	 *               path tags (e.g. {member_path="member/index"})
 	 */
 	private function get_member_path_tags($tagdata = NULL)

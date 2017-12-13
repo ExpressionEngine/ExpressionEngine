@@ -181,4 +181,69 @@ class ChannelLayout extends Model implements LayoutInterface {
 		return $display;
 	}
 
+	public function synchronize($fields = [])
+	{
+		$fields = ($fields) ?: $this->Channel->getAllCustomFields();
+		$fields = $fields->indexBy('field_id');
+		$seen = [];
+
+		$field_layout = $this->field_layout;
+
+		foreach ($field_layout as $i => $section)
+		{
+			foreach ($section['fields'] as $j => $field_info)
+			{
+				$field_name = $field_info['field'];
+
+				if (strpos($field_name, 'field_id_') !== 0)
+				{
+					continue;
+				}
+
+				$field_id = str_replace('field_id_', '', $field_name);
+
+				if (array_key_exists($field_id, $fields))
+				{
+					unset($fields[$field_id]);
+				}
+				else
+				{
+					unset($field_layout[$i]['fields'][$j]);
+				}
+
+				if (isset($seen[$field_name]))
+				{
+					unset($field_layout[$i]['fields'][$j]);
+				}
+
+				$seen[$field_name] = TRUE;
+			}
+
+			// Re-index to ensure flat, zero-indexed array
+			$field_layout[$i]['fields'] = array_values($field_layout[$i]['fields']);
+		}
+
+		$this->setProperty('field_layout', $field_layout);
+
+		foreach ($fields as $field)
+		{
+			$this->addField($field);
+		}
+
+		$this->save();
+	}
+
+	protected function addField($field)
+	{
+		$field_layout = $this->field_layout;
+		$field_info = array(
+			'field'     => 'field_id_' . $field->field_id,
+			'visible'   => TRUE,
+			'collapsed' => $field->getProperty('field_is_hidden')
+		);
+		$field_layout[0]['fields'][] = $field_info;
+
+		$this->setProperty('field_layout', $field_layout);
+	}
+
 }

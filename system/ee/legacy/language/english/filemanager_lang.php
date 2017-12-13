@@ -4,7 +4,7 @@ $lang = array(
 
 'all_files' => 'All Files',
 
-'append' => 'Append numeral to <em>newer</em> file <i>&mdash; example: %s</i>',
+'append' => 'Append numeral to <strong>newer</strong> file <i>&mdash; example: %s</i>',
 
 'btn_cancel_upload' => 'Cancel Upload',
 
@@ -86,9 +86,9 @@ $lang = array(
 
 'problem_downloading_files' => 'An error occurred when attempting to download the selected files. Please verify the files exist on the server.',
 
-'rename' => 'Rename <em>newer</em> file',
+'rename' => 'Rename <strong>newer</strong> file',
 
-'replace' => 'Replace <em>older</em> file only <i>&mdash; destructive action</i>',
+'replace' => 'Replace <strong>older</strong> file only <i>&mdash; destructive action</i>',
 
 'replace_no_metadata' => 'Only the file was replaced. The Title, Description, Credit, Location, and Categories were not updated.',
 
@@ -474,7 +474,7 @@ $lang = array(
 
 'watermark_text_dropshadow_color' => 'Dropshadow color',
 
-'watermark_text_dropshadow_desc' => 'When set to <b>yes</b>, a drop-shadow will be rendered.',
+'watermark_text_dropshadow_desc' => 'When enabled, a drop-shadow will be rendered.',
 
 'watermark_text_dropshadow_distance' => 'Dropshadow distance',
 
@@ -494,7 +494,7 @@ $lang = array(
 
 'watermarks_true_type' => 'Enable True Type?',
 
-'watermarks_true_type_desc' => 'When set to <b>yes</b>, text watermarks will be rendered with True Type.',
+'watermarks_true_type_desc' => 'When enabled, text watermarks will be rendered with True Type.',
 
 
 /* 2.x */

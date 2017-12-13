@@ -73,15 +73,26 @@ var SelectList = function (_React$Component) {
       // If checking, merge the newly-selected items on to the existing stack
       // in case the current view is limited by a filter
       if (check) {
-        newly_selected = _this.props.items.filter(function (thisItem) {
+        newlySelected = _this.props.items.filter(function (thisItem) {
+          // Do not attempt to select disabled choices
+          if (_this.props.disabledChoices && _this.props.disabledChoices.includes(thisItem.value)) {
+            return false;
+          }
           found = _this.props.selected.find(function (item) {
             return item.value == thisItem.value;
           });
           return !found;
         });
-        _this.props.selectionChanged(_this.props.selected.concat(newly_selected));
+        _this.props.selectionChanged(_this.props.selected.concat(newlySelected));
       } else {
-        _this.props.selectionChanged([]);
+        // Do not uncheck disabled choices if they are selected
+        if (_this.props.disabledChoices) {
+          _this.props.selectionChanged(_this.props.selected.filter(function (item) {
+            return _this.props.disabledChoices.includes(item.value);
+          }));
+        } else {
+          _this.props.selectionChanged([]);
+        }
       }
     };
 
@@ -101,7 +112,7 @@ var SelectList = function (_React$Component) {
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate(prevProps, prevState) {
-      if (this.props.multi && prevProps.selected.length != this.props.selected.length) {
+      if (this.props.multi && prevProps.selected.length != this.props.selected.length || !this.props.multi && prevProps.selected != this.props.selected) {
         $(this.input).trigger('change');
       }
 
@@ -291,10 +302,10 @@ var SelectList = function (_React$Component) {
           ref: function ref(container) {
             _this7.container = container;
           }, key: this.version },
-        props.tooMany && React.createElement(
+        (shouldShowToggleAll || props.tooMany) && React.createElement(
           FieldTools,
           null,
-          React.createElement(
+          props.tooMany && React.createElement(
             FilterBar,
             null,
             props.filters && props.filters.map(function (filter) {
@@ -312,7 +323,7 @@ var SelectList = function (_React$Component) {
                 return _this7.filterChange('search', e.target.value);
               } })
           ),
-          shouldShowToggleAll && React.createElement('hr', null),
+          shouldShowToggleAll && props.tooMany && React.createElement('hr', null),
           shouldShowToggleAll && React.createElement(FilterToggleAll, { checkAll: props.toggleAll, onToggleAll: function onToggleAll(check) {
               return _this7.handleToggleAll(check);
             } })
@@ -342,11 +353,10 @@ var SelectList = function (_React$Component) {
             });
           })
         ),
-        !props.multi && props.tooMany && props.selected[0] && React.createElement(SelectedItem, { name: props.name,
-          item: props.selected[0],
+        !props.multi && props.tooMany && props.selected[0] && React.createElement(SelectedItem, { item: props.selected[0],
           clearSelection: this.clearSelection
         }),
-        props.multi && props.selectable && props.selected.length == 0 && React.createElement('input', { type: 'hidden', name: props.name + '[]', value: '',
+        props.selectable && props.selected.length == 0 && React.createElement('input', { type: 'hidden', name: props.multi ? props.name + '[]' : props.name, value: '',
           ref: function ref(input) {
             _this7.input = input;
           } }),
@@ -436,7 +446,8 @@ SelectList.defaultProps = {
   nestableReorder: false,
   removable: false,
   selectable: true,
-  tooManyLimit: 8
+  tooManyLimit: 8,
+  toggleAllLimit: 3
 };
 
 
@@ -567,17 +578,8 @@ var SelectedItem = function (_React$Component3) {
   }
 
   _createClass(SelectedItem, [{
-    key: 'componentDidUpdate',
-    value: function componentDidUpdate(prevProps, prevState) {
-      if (prevProps.item.value != this.props.item.value) {
-        $(this.input).trigger('change');
-      }
-    }
-  }, {
     key: 'render',
     value: function render() {
-      var _this10 = this;
-
       var props = this.props;
       return React.createElement(
         'div',
@@ -588,10 +590,6 @@ var SelectedItem = function (_React$Component3) {
           React.createElement('span', { className: 'icon--success' }),
           ' ',
           props.item.label,
-          React.createElement('input', { type: 'hidden', name: props.name, value: props.item.value,
-            ref: function ref(input) {
-              _this10.input = input;
-            } }),
           React.createElement(
             'ul',
             { className: 'toolbar' },

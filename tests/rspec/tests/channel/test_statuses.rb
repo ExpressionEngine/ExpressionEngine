@@ -3,6 +3,8 @@ require './bootstrap.rb'
 feature 'Statuses' do
 
   before(:each) do
+    skip "Needs fleshing out for new channel manager" do
+    end
     cp_session
     @page = Statuses.new
     @page.load_view_for_status_group(1)

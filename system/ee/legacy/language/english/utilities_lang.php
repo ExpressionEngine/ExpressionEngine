@@ -261,7 +261,7 @@ $lang = array(
 
 'plain_text_passwords' => 'Plain text passwords?',
 
-'plain_text_passwords_desc' => 'When set to <b>yes</b>, passwords will be imported in plain text.',
+'plain_text_passwords_desc' => 'When enabled, passwords will be imported in plain text.',
 
 'plaintext_passwords' => 'Passwords are plain text.',
 
@@ -307,7 +307,7 @@ $lang = array(
 
 'mbr_create_custom_fields' => 'Create custom fields?',
 
-'mbr_create_custom_fields_desc' => 'When set to <b>yes</b>, import will automatically create custom member fields for any data that does not match a default member field.',
+'mbr_create_custom_fields_desc' => 'When enabled, import will automatically create custom member fields for any data that does not match a default member field.',
 
 'mbr_datetime_fmt' => 'Date &amp; time format',
 

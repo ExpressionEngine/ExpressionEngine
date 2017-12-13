@@ -1,13 +1,10 @@
 class AddonManager < ControlPanelPage
   set_url_matcher /addons/
 
-  element :title, 'div.box.full.mb form h1'
-
-  element :phrase_search, 'fieldset.tbl-search input[name=search]'
-  element :search_submit_button, 'fieldset.tbl-search input.submit'
+  element :title, '.section-header__title'
 
   # First Party Add-Ons
-  first_party_prefix = 'body section.wrap div.col-group + div.col-group div.col.w-16.last div.box:first-child '
+  first_party_prefix = 'body section.wrap div.col-group + div.col-group div.col.w-16 div.box:first-child '
 
   element :first_party_section, first_party_prefix
   element :first_party_heading, first_party_prefix + 'form h1'
@@ -36,7 +33,7 @@ class AddonManager < ControlPanelPage
   element :first_party_action_submit_button, first_party_prefix + 'form fieldset.tbl-bulk-act button.submit'
 
   # Third Party Add-Ons
-  third_party_prefix = 'body section.wrap div.col-group + div.col-group div.col.w-16.last div.box:nth-child(2) '
+  third_party_prefix = 'body section.wrap div.col-group + div.col-group div.col.w-16 div.box:nth-child(2) '
 
   element :third_party_section, third_party_prefix
   element :third_party_heading, third_party_prefix + 'form h1'

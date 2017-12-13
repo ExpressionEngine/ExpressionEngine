@@ -85,7 +85,7 @@ for ($x = 0; $x < $count; $x++)
 	$r_short = array_rand($recipients);
 	$r_name = $recipients[$r_short];
 
-	$fixture = $api->make('EmailConsoleCache');
+	$fixture = ee('Model')->make('EmailConsoleCache');
 	$fixture->member_id = $member_id;
 	$fixture->member_name = $member_name;
 	$fixture->ip_address = $ip_address;

@@ -19,7 +19,7 @@ feature 'Publish Page - Create' do
     @page.tab_links[1].click
     @page.should have_css('input[name="comment_expiration_date"]')
     @page.tab_links[3].click
-    @page.should have_css('input[name="allow_comments"]')
+    @page.should have_css('a[data-toggle-for="allow_comments"]')
   end
 
   it 'does not show comment fields when comments are disabled by system' do
@@ -28,7 +28,7 @@ feature 'Publish Page - Create' do
     @page.tab_links[1].click
     @page.should_not have_css('input[name="comment_expiration_date"]')
     @page.tab_links[3].click
-    @page.should_not have_css('input[name="allow_comments"]')
+    @page.should_not have_css('a[data-toggle-for="allow_comments"]')
   end
 
   it 'does not shows comment fields when comments are disabled by system and channel allows comments' do
@@ -37,7 +37,7 @@ feature 'Publish Page - Create' do
     @page.tab_links[1].click
     @page.should_not have_css('input[name="comment_expiration_date"]')
     @page.tab_links[3].click
-    @page.should_not have_css('input[name="allow_comments"]')
+    @page.should_not have_css('a[data-toggle-for="allow_comments"]')
   end
 
   it 'selects default categories for new entries' do
@@ -55,7 +55,7 @@ feature 'Publish Page - Create' do
         group_id: 1,
         type: 'File',
         label: 'Second File',
-        fields: { allowed_directories: 'About' }
+        fields: { allowed_directories: 2 }
       )
 
       @page.load(channel_id: 1)
@@ -78,7 +78,7 @@ feature 'Publish Page - Create' do
     end
 
     it 'the file field restricts you to the chosen directory' do
-      @page.file_fields[1].click
+      @page.file_fields[0].click
 
       @page.wait_until_modal_visible
       @page.file_modal.wait_for_filters
@@ -193,10 +193,13 @@ feature 'Publish Page - Create' do
         when 'radio'
           field.all('input[type=radio]')[1 + skew].set true
         when 'select'
-          if skew == 0 then field.find('select').select 'Corndog' end
-          if skew == 1 then field.find('select').select 'Burrito' end
+          field.find('div[data-dropdown-react]').click
+          if skew == 0 then choice = 'Corndog' end
+          if skew == 1 then choice = 'Burrito' end
+          sleep 0.1
+          find('div[data-dropdown-react] .field-drop-choices label', text: choice).click
         when 'grid'
-          field.find('a.btn.action').click
+          field.find('a[rel="add_row"]').click
           field.all('input')[0].set 'Lorem' + skew.to_s
           field.all('input')[1].set 'ipsum' + skew.to_s
         when 'textarea'
@@ -237,8 +240,10 @@ feature 'Publish Page - Create' do
         when 'radio'
           field.all('input[type=radio]')[1 + skew].checked?.should == true
         when 'select'
-          if skew == 0 then field.find('select').value.should eq 'Corndog' end
-          if skew == 1 then field.find('select').value.should eq 'Burrito' end
+          if skew == 0 then choice = 'Corndog' end
+          if skew == 1 then choice = 'Burrito' end
+
+          field.find('div[data-dropdown-react]').should have_content(choice)
         when 'grid'
           field.all('input')[0].value.should eq 'Lorem' + skew.to_s
           field.all('input')[1].value.should eq 'ipsum' + skew.to_s

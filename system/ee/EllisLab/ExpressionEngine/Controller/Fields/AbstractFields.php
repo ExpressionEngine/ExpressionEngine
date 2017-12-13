@@ -44,7 +44,7 @@ abstract class AbstractFields extends CP_Controller {
 		{
 			$header['action_button'] = [
 				'text' => lang('new_field'),
-				'href' => ee('CP/URL')->make('fields/create')
+				'href' => ee('CP/URL')->make('fields/create/'.ee('Request')->get('group_id') ?: '')
 			];
 		}
 
@@ -81,7 +81,7 @@ abstract class AbstractFields extends CP_Controller {
 		$imported_groups = ee()->session->flashdata('imported_field_groups') ?: [];
 
 		$field_groups = ee('Model')->get('ChannelFieldGroup')
-			->filter('site_id', ee()->config->item('site_id'))
+			->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
 			->order('group_name')
 			->all();
 

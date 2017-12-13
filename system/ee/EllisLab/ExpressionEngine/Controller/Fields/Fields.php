@@ -49,7 +49,7 @@ class Fields extends AbstractFieldsController {
 
 		// Set up filters
 		$group_ids = ee('Model')->get('ChannelFieldGroup')
-			->filter('site_id', ee()->config->item('site_id'))
+			->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
 			->order('group_name')
 			->all()
 			->getDictionary('group_id', 'group_name');
@@ -106,7 +106,7 @@ class Fields extends AbstractFieldsController {
 		else
 		{
 			$fields = ee('Model')->get('ChannelField')
-				->filter('site_id', ee()->config->item('site_id'));
+				->filter('site_id', 'IN', [ee()->config->item('site_id'), 0]);
 
 			if ($search = ee()->input->get_post('filter_by_keyword'))
 			{
@@ -121,10 +121,11 @@ class Fields extends AbstractFieldsController {
 			$total_fields = $fields->count();
 		}
 
-		$filters->add('Perpage', $total_fields, 'all_fields', TRUE)
-			->add('Keyword');
+		$filters->add('Keyword')
+			->add('Perpage', $total_fields, 'all_fields', TRUE);
 
 		$filter_values = $filters->values();
+		$vars['base_url']->addQueryStringVariables($filter_values);
 		$per_page = $filter_values['perpage'];
 
 		if ($group)
@@ -298,8 +299,7 @@ class Fields extends AbstractFieldsController {
 				]
 			],
 			'form_hidden' => array(
-				'field_id' => NULL,
-				'site_id' => ee()->config->item('site_id')
+				'field_id' => NULL
 			),
 		);
 
@@ -417,7 +417,6 @@ class Fields extends AbstractFieldsController {
 			],
 			'form_hidden' => array(
 				'field_id' => $id,
-				'site_id' => ee()->config->item('site_id')
 			),
 		);
 
@@ -428,11 +427,10 @@ class Fields extends AbstractFieldsController {
 
 	private function setWithPost(ChannelField $field)
 	{
-		$field->site_id = (int) ee()->config->item('site_id');
 		$field->field_list_items = ($field->field_list_items) ?: '';
 		$field->field_order = ($field->field_order) ?: 0;
+		$field->site_id = ($field->site_id) ?: 0;
 
-		unset($_POST['site_id']);
 		$field->set($_POST);
 
 		if ($field->field_pre_populate)
@@ -578,11 +576,9 @@ class Fields extends AbstractFieldsController {
 			}
 		}
 
-		ee()->cp->add_js_script(array(
-			'file' => array(
-				'cp/form_group'
-			),
-		));
+		ee()->javascript->output('$(document).ready(function () {
+			EE.cp.fieldToggleDisable();
+		});');
 
 		return $sections;
 	}
@@ -599,9 +595,7 @@ class Fields extends AbstractFieldsController {
 			$field_ids = array($field_ids);
 		}
 
-		$fields = ee('Model')->get('ChannelField', $field_ids)
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
+		$fields = ee('Model')->get('ChannelField', $field_ids)->all();
 
 		$field_names = $fields->pluck('field_label');
 
@@ -613,7 +607,10 @@ class Fields extends AbstractFieldsController {
 			->addToBody($field_names)
 			->defer();
 
-		ee()->logger->log_action(sprintf(lang('removed_fields'), '<b>' . implode('</b>, <b>', $field_names) . '</b>'));
+		foreach ($field_names as $field_name)
+		{
+			ee()->logger->log_action(sprintf(lang('removed_field'), '<b>' . $field_name . '</b>'));
+		}
 	}
 }
 

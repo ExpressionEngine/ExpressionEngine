@@ -1,12 +1,11 @@
 class CategoryGroups < ControlPanelPage
 
-  element :table, 'table'
-  elements :category_groups, 'table tr'
-  elements :group_names, 'table tr td:nth-child(2)'
+  element :table_list, '.tbl-list-wrap'
+  elements :category_groups, '.folder-list li'
+  elements :group_names, '.folder-list > li > a'
 
   def load
     self.open_dev_menu
-    click_link 'Channel Manager'
-    click_link 'Category Groups'
+    click_link 'Categories'
   end
 end

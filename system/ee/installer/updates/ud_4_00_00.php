@@ -425,34 +425,62 @@ class Updater {
 			ee()->db->query($sql);
 		}
 
+		$data = [];
 		if ($birthday AND ee()->db->count_all_results('member_data_field_'.$map['birthday']) == 0)
 		{
-			ee()->db->select('member_id, bday_d, bday_m, bday_y');
-			$query = ee()->db->get('members');
+			$total_members = ee()->db->count_all_results('members');
+			$limit = 5000;
+			$offset = 0;
 
-			foreach ($query->result() as $row)
+			while ($offset + $limit <= $total_members)
 			{
-				if (empty($row->bday_y) AND empty($row->bday_m) AND empty($row->bday_d))
+				$data = [];
+
+				$query = ee()->db->select('member_id, bday_d, bday_m, bday_y')
+					->limit($limit)
+					->offset($offset)
+					->get('members');
+
+				foreach ($query->result() as $row)
 				{
-					$r['member_id'] = $row->member_id;
-					$r['m_field_id_'.$map['birthday']] = 0;
+					if (empty($row->bday_y) AND empty($row->bday_m) AND empty($row->bday_d))
+					{
+						$r['member_id'] = $row->member_id;
+						$r['m_field_id_'.$map['birthday']] = 0;
+					}
+					else
+					{
+						$year = ( ! empty($row->bday_y) AND strlen($row->bday_y) == 4) ? $row->bday_y : '1900';
+						$month = ( ! empty($row->bday_m)) ? str_pad($row->bday_m, 2,"0", STR_PAD_LEFT) : '01';
+						$day = ( ! empty($row->bday_d)) ? str_pad($row->bday_d, 2,"0", STR_PAD_LEFT) : '01';
+
+						$bday_timestamp = ee()->localize->string_to_timestamp($year.'-'.$month.'-'.$day.' 01:00 AM');
+						$bday_timestamp = (int) $bday_timestamp;
+
+						// Sorry, people born <= 1901 or >= 2038
+						$max_32bit_int = 2147483648;
+						if ($bday_timestamp > $max_32bit_int)
+						{
+							$bday_timestamp = $max_32bit_int;
+						}
+						elseif ($bday_timestamp < -$max_32bit_int)
+						{
+							$bday_timestamp = -$max_32bit_int;
+						}
+
+						$r['member_id'] = $row->member_id;
+						$r['m_field_id_'.$map['birthday']] = $bday_timestamp;
+
+					}
+					$data[] = $r;
 				}
-				else
-				{
-					$year = ( ! empty($row->bday_y) AND strlen($row->bday_y) == 4) ? $row->bday_y : '1900';
-					$month = ( ! empty($row->bday_m)) ? str_pad($row->bday_m, 2,"0", STR_PAD_LEFT) : '01';
-					$day = ( ! empty($row->bday_d)) ? str_pad($row->bday_d, 2,"0", STR_PAD_LEFT) : '01';
 
-					$r['member_id'] = $row->member_id;
-					$r['m_field_id_'.$map['birthday']] = ee()->localize->string_to_timestamp($year.'-'.$month.'-'.$day.' 01:00 AM');
-
-				}
-				$data[] = $r;
-			}
-
-			ee()->db->insert_batch(
-				'member_data_field_'.$map['birthday'], $data
+				ee()->db->insert_batch(
+					'member_data_field_'.$map['birthday'], $data
 				);
+
+				$offset += $limit;
+			}
 		}
 
 		// Drop columns from exp_members
@@ -543,7 +571,7 @@ class Updater {
 	{
 		// Do we need to override?
 		$save_as_file = FALSE;
-		$msm_config = new \MSM_Config();
+		$update_config = FALSE;
 
 		$all_site_ids_query = ee()->db->select('site_id')
 			->get('sites')
@@ -554,17 +582,23 @@ class Updater {
 			$config = ee()->config->site_prefs('', $site->site_id, FALSE);
 
 			// If ANY sites save as file, they all must
-			if (isset($config['save_tmpl_files']) && $config['save_tmpl_files'] == 'y')
+			if (isset($config['save_tmpl_files']))
 			{
-				$save_as_file = TRUE;
-				break;
+				// Only update config if the key still exists
+				$update_config = TRUE;
+
+				if ($config['save_tmpl_files'] == 'y')
+				{
+					$save_as_file = TRUE;
+					break;
+				}
 			}
 
 		}
 
 		ee()->config->remove_config_item(array('save_tmpl_files'));
 
-		if ($save_as_file == FALSE)
+		if ($update_config && $save_as_file == FALSE)
 		{
 			// Add config override
 			ee()->config->_update_config(array('save_tmpl_files' => 'n'));
@@ -755,6 +789,10 @@ class Updater {
 			)
 		);
 
+		ee()->db->insert('content_types', array(
+			'name' => 'fluid_field'
+		));
+
 		ee()->dbforge->add_field(
 			array(
 				'id' => array(
@@ -815,15 +853,25 @@ class Updater {
 			)
 		);
 
-		ee()->db->from('channel_fields');
-		ee()->db->select('field_id');
-		ee()->db->where('field_type', 'grid');
+		$sql = "SHOW TABLES FROM " . ee()->db->_escape_char . ee()->db->database . ee()->db->_escape_char . " LIKE '%_grid_field_%'";
+		$query = ee()->db->query($sql);
 
-		$grids = ee()->db->get();
+		$tables = [];
 
-		foreach ($grids->result_array() as $row)
+		foreach ($query->result_array() as $row)
 		{
-			$table = 'channel_grid_field_' . $row['field_id'];
+			$tables[] = array_shift($row);
+		}
+
+		$dbprefix = ee()->db->dbprefix;
+
+		foreach ($tables as $table)
+		{
+			if (strpos($table, $dbprefix) === 0)
+			{
+				$table = substr($table, strlen($dbprefix));
+			}
+
 			ee()->smartforge->add_column(
 				$table,
 				array(

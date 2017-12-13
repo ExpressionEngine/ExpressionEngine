@@ -34,18 +34,11 @@ class NewsView extends Model {
 		]
 	];
 
-	protected static $_events = [
-		'beforeInsert'
-	];
-
 	protected $news_id;
 	protected $version;
 	protected $member_id;
 
-	public function onBeforeInsert()
-	{
-		$this->setProperty('version', APP_VER);
-	}
 }
+// END CLASS
 
 // EOF

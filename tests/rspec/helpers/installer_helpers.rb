@@ -96,6 +96,7 @@ module Installer
     end
 
     def delete_database_config
+      FileUtils.chmod(0666, @database) if File.exist?(@database)
       FileUtils.rm @database if File.exist?(@database)
     end
 

@@ -98,6 +98,7 @@ abstract class AbstractPublish extends CP_Controller {
 			'publish.autosave.URL'           => ee('CP/URL')->make('publish/autosave/' . $channel_id . '/' . $entry_id)->compile(),
 			'publish.default_entry_title'    => $entry->Channel->default_entry_title,
 			'publish.foreignChars'           => $foreign_characters,
+			'publish.urlLength'              => URL_TITLE_MAX_LENGTH,
 			'publish.lang.no_member_groups'  => lang('no_member_groups'),
 			'publish.lang.refresh_layout'    => lang('refresh_layout'),
 			'publish.lang.tab_count_zero'    => lang('tab_count_zero'),
@@ -234,7 +235,7 @@ abstract class AbstractPublish extends CP_Controller {
 
 		foreach ($entry->getAutosaves()->sortBy('edit_date') as $autosave)
 		{
-			if ( ! isset($authors[$autosave->author_id]))
+			if ( ! isset($authors[$autosave->author_id]) && $autosave->Author)
 			{
 				$authors[$autosave->author_id] = $autosave->Author->getMemberName();
 			}
@@ -259,7 +260,7 @@ abstract class AbstractPublish extends CP_Controller {
 				'columns' => array(
 					$i,
 					ee()->localize->human_time($autosave->edit_date),
-					$authors[$autosave->author_id],
+					isset($authors[$autosave->author_id]) ? $authors[$autosave->author_id] : '-',
 					$toolbar
 				)
 			);
@@ -374,16 +375,20 @@ abstract class AbstractPublish extends CP_Controller {
 
 		if (ee()->input->post('submit') == 'save')
 		{
-			$redirect_url = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
+			ee()->functions->redirect(ee('CP/URL')->make('publish/edit/entry/' . $entry->getId()));
+		}
+		elseif (ee()->input->post('submit') == 'save_and_close')
+		{
+			$redirect_url = ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id));
 
 			/* -------------------------------------
-			/*  'entry_submission_end' hook.
-			/*  - Redirect to a different URL when "Save & Finish" is clicked
+			/*  'entry_save_and_close_redirect' hook.
+			/*  - Redirect to a different URL when "Save & Close" is clicked
 			/*  - Added 4.0.0
 			*/
-				if (ee()->extensions->active_hook('entry_submission_redirect'))
+				if (ee()->extensions->active_hook('entry_save_and_close_redirect'))
 				{
-					$redirect_url = ee()->extensions->call('entry_submission_redirect', $entry);
+					$redirect_url = ee()->extensions->call('entry_save_and_close_redirect', $entry);
 				}
 			/*
 			/* -------------------------------------*/

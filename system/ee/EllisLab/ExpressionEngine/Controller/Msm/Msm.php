@@ -412,11 +412,7 @@ class Msm extends CP_Controller {
 				'desc' => 'site_online_desc',
 				'fields' => array(
 					'is_site_on' => array(
-						'type' => 'inline_radio',
-						'choices' => array(
-							'y' => 'online',
-							'n' => 'offline'
-						),
+						'type' => 'yes_no',
 						'value' => $site->site_system_preferences->is_site_on
 					)
 				)
@@ -512,12 +508,13 @@ class Msm extends CP_Controller {
 
 		$site_names = $sites->pluck('site_label');
 
+		$sites->delete();
+
 		foreach ($site_names as $site_name)
 		{
 			ee()->logger->log_action(lang('site_deleted') . ': ' . $site_name);
 		}
 
-		$sites->delete();
 		ee('CP/Alert')->makeInline('sites')
 			->asSuccess()
 			->withTitle(lang('success'))

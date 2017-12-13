@@ -14,6 +14,11 @@
 				<?php endforeach;?>
 			</div>
 		<?php endif ?>
-		<p class="msg-choices"><a href="<?=$cp_login_url?>"><?=lang('cp_login')?></a></p>
+		<p class="msg-choices">
+			<a href="<?=$cp_login_url?>"><?=lang('cp_login')?></a>
+			<?php if ($mailing_list): ?>
+				<a href="<?=$action?>&download"><?=lang('download_mailing_list')?></a>
+			<?php endif; ?>
+		</p>
 	</div>
 </div>

@@ -2,15 +2,15 @@ class EditFile < FileManagerPage
   set_url_matcher /files\/file\/edit/
 
   # Main box elements
-  element :heading, 'div.col.w-12 div.box h1'
-  element :crop_button, 'div.col.w-12 div.box h1 a.action'
+  element :heading, 'div.form-standard form div.form-btns-top h1'
+  element :crop_button, 'div.form-standard form div.form-btns-top h1 a.action'
 
   # Edit form
-  element :title_input, 'div.col.w-12 div.box form fieldset input[name="title"]'
-  element :description_input, 'div.col.w-12 div.box form fieldset textarea[name="description"]'
-  element :credit_input, 'div.col.w-12 div.box form fieldset input[name="credit"]'
-  element :location_input, 'div.col.w-12 div.box form fieldset input[name="location"]'
-  element :form_submit_button, 'div.col.w-12 div.box form fieldset.form-ctrls input[type="submit"]'
+  element :title_input, 'fieldset input[name="title"]'
+  element :description_input, 'fieldset textarea[name="description"]'
+  element :credit_input, 'fieldset input[name="credit"]'
+  element :location_input, 'fieldset input[name="location"]'
+  element :form_submit_button, '.form-btns-top input[type="submit"]'
 
   def load
     click_link 'Files'

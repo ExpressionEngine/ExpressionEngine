@@ -48,28 +48,19 @@ class Email extends Logs {
 
 		$logs = ee('Model')->get('EmailConsoleCache');
 
-		if ( ! empty(ee()->view->search_value))
+		if ($search = ee()->input->get_post('filter_by_keyword'))
 		{
-			$logs = $logs->filterGroup()
-			               ->filter('member_name', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('ip_address', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('recipient', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('recipient_name', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('subject', 'LIKE', '%' . ee()->view->search_value . '%')
-			               ->orFilter('message', 'LIKE', '%' . ee()->view->search_value . '%')
-						 ->endFilterGroup();
+			$logs->search(['member_name', 'ip_address', 'recipient', 'recipient_name', 'subject', 'message'], $search);
 		}
 
-		if ($logs->count() > 10)
-		{
-			$filters = ee('CP/Filter')
-				->add('Username')
-				->add('Date')
-				->add('Perpage', $logs->count(), 'all_email_logs');
-			ee()->view->filters = $filters->render($this->base_url);
-			$this->params = $filters->values();
-			$this->base_url->addQueryStringVariables($this->params);
-		}
+		$filters = ee('CP/Filter')
+			->add('Username')
+			->add('Date')
+			->add('Keyword')
+			->add('Perpage', $logs->count(), 'all_email_logs');
+		ee()->view->filters = $filters->render($this->base_url);
+		$this->params = $filters->values();
+		$this->base_url->addQueryStringVariables($this->params);
 
 		$page = ((int) ee()->input->get('page')) ?: 1;
 		$offset = ($page - 1) * $this->params['perpage']; // Offset is 0 indexed
@@ -95,9 +86,13 @@ class Email extends Logs {
 		$count = $logs->count();
 
 		// Set the page heading
-		if ( ! empty(ee()->view->search_value))
+		if ( ! empty($search))
 		{
-			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+			ee()->view->cp_heading = sprintf(
+				lang('search_results_heading'),
+				$count,
+				ee('Format')->make('Text', $search)->convertToEntities()
+			);
 		}
 
 		ee()->view->header = array(

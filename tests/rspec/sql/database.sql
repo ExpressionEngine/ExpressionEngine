@@ -22,7 +22,6 @@ DROP TABLE IF EXISTS `exp_template_member_groups`;
 DROP TABLE IF EXISTS `exp_template_groups`;
 DROP TABLE IF EXISTS `exp_statuses`;
 DROP TABLE IF EXISTS `exp_status_no_access`;
-DROP TABLE IF EXISTS `exp_status_groups`;
 DROP TABLE IF EXISTS `exp_stats`;
 DROP TABLE IF EXISTS `exp_specialty_templates`;
 DROP TABLE IF EXISTS `exp_snippets`;
@@ -325,6 +324,7 @@ CREATE TABLE `exp_channel_titles` (
   `title` varchar(100) NOT NULL,
   `url_title` varchar(75) NOT NULL,
   `status` varchar(50) NOT NULL,
+  `status_id` int(4) unsigned NOT NULL,
   `versioning_enabled` char(1) NOT NULL DEFAULT 'n',
   `view_count_one` int(10) unsigned NOT NULL DEFAULT '0',
   `view_count_two` int(10) unsigned NOT NULL DEFAULT '0',
@@ -367,7 +367,6 @@ CREATE TABLE `exp_channels` (
   `last_entry_date` int(10) unsigned NOT NULL DEFAULT '0',
   `last_comment_date` int(10) unsigned NOT NULL DEFAULT '0',
   `cat_group` varchar(255) DEFAULT NULL,
-  `status_group` int(4) unsigned DEFAULT NULL,
   `deft_status` varchar(50) NOT NULL DEFAULT 'open',
   `search_excerpt` int(4) unsigned DEFAULT NULL,
   `deft_category` varchar(60) DEFAULT NULL,
@@ -406,7 +405,6 @@ CREATE TABLE `exp_channels` (
   `max_entries` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`channel_id`),
   KEY `cat_group` (`cat_group`),
-  KEY `status_group` (`status_group`),
   KEY `channel_name` (`channel_name`),
   KEY `site_id` (`site_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
@@ -1387,15 +1385,6 @@ CREATE TABLE `exp_stats` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `exp_status_groups` (
-  `group_id` int(4) unsigned NOT NULL AUTO_INCREMENT,
-  `site_id` int(4) unsigned NOT NULL DEFAULT '1',
-  `group_name` varchar(50) NOT NULL,
-  PRIMARY KEY (`group_id`),
-  KEY `site_id` (`site_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
-
-
 CREATE TABLE `exp_status_no_access` (
   `status_id` int(6) unsigned NOT NULL,
   `member_group` smallint(4) unsigned NOT NULL,
@@ -1405,14 +1394,10 @@ CREATE TABLE `exp_status_no_access` (
 
 CREATE TABLE `exp_statuses` (
   `status_id` int(6) unsigned NOT NULL AUTO_INCREMENT,
-  `site_id` int(4) unsigned NOT NULL DEFAULT '1',
-  `group_id` int(4) unsigned NOT NULL,
   `status` varchar(50) NOT NULL,
   `status_order` int(3) unsigned NOT NULL,
   `highlight` varchar(30) NOT NULL,
-  PRIMARY KEY (`status_id`),
-  KEY `group_id` (`group_id`),
-  KEY `site_id` (`site_id`)
+  PRIMARY KEY (`status_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 
@@ -1679,6 +1664,14 @@ INSERT INTO `exp_channel_field_groups_fields` (`field_id`, `group_id`) VALUES
 ALTER TABLE `exp_channel_field_groups_fields` ENABLE KEYS;
 UNLOCK TABLES;
 
+LOCK TABLES `exp_channels_statuses` WRITE;
+ALTER TABLE `exp_channels_statuses` DISABLE KEYS;
+INSERT INTO `exp_channels_statuses` (`channel_id`, `status_id`) VALUES
+	(1,1),
+	(1,2),
+	(1,3);
+ALTER TABLE `exp_channels_statuses` ENABLE KEYS;
+UNLOCK TABLES;
 
 LOCK TABLES `exp_channel_fields` WRITE;
 ALTER TABLE `exp_channel_fields` DISABLE KEYS;
@@ -1708,26 +1701,26 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_channel_titles` WRITE;
 ALTER TABLE `exp_channel_titles` DISABLE KEYS;
-INSERT INTO `exp_channel_titles` (`entry_id`, `site_id`, `channel_id`, `author_id`, `forum_topic_id`, `ip_address`, `title`, `url_title`, `status`, `versioning_enabled`, `view_count_one`, `view_count_two`, `view_count_three`, `view_count_four`, `allow_comments`, `sticky`, `entry_date`, `year`, `month`, `day`, `expiration_date`, `comment_expiration_date`, `edit_date`, `recent_comment_date`, `comment_total`) VALUES
-	(1,1,1,1,NULL,'127.0.0.1','Getting to Know ExpressionEngine','getting_to_know_expressionengine','open','n',0,0,0,0,'y','n',1409242029,'2014','08','28',0,0,20140828160710,NULL,0),
-	(2,1,1,1,NULL,'127.0.0.1','Welcome to the Example Site!','welcome_to_the_example_site','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
-	(3,1,2,1,NULL,'127.0.0.1','About the Label','about_the_label','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
-	(4,1,2,1,NULL,'127.0.0.1','Randell','randell','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
-	(5,1,2,1,NULL,'127.0.0.1','Chloe','chloe','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
-	(6,1,2,1,NULL,'127.0.0.1','Howard','howard','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
-	(7,1,2,1,NULL,'127.0.0.1','Jane','jane','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
-	(8,1,2,1,NULL,'127.0.0.1','Josh','josh','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
-	(9,1,2,1,NULL,'127.0.0.1','Jason','jason','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
-	(10,1,1,1,NULL,'127.0.0.1','Band Title','band_title','Featured','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0);
+INSERT INTO `exp_channel_titles` (`entry_id`, `site_id`, `channel_id`, `author_id`, `forum_topic_id`, `ip_address`, `title`, `url_title`, `status`, `status_id`, `versioning_enabled`, `view_count_one`, `view_count_two`, `view_count_three`, `view_count_four`, `allow_comments`, `sticky`, `entry_date`, `year`, `month`, `day`, `expiration_date`, `comment_expiration_date`, `edit_date`, `recent_comment_date`, `comment_total`) VALUES
+	(1,1,1,1,NULL,'127.0.0.1','Getting to Know ExpressionEngine','getting_to_know_expressionengine','open',1,'n',0,0,0,0,'y','n',1409242029,'2014','08','28',0,0,20140828160710,NULL,0),
+	(2,1,1,1,NULL,'127.0.0.1','Welcome to the Example Site!','welcome_to_the_example_site','open',1,'n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(3,1,2,1,NULL,'127.0.0.1','About the Label','about_the_label','open',1,'n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(4,1,2,1,NULL,'127.0.0.1','Randell','randell','open',1,'n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(5,1,2,1,NULL,'127.0.0.1','Chloe','chloe','open',1,'n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(6,1,2,1,NULL,'127.0.0.1','Howard','howard','open',1,'n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(7,1,2,1,NULL,'127.0.0.1','Jane','jane','open',1,'n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(8,1,2,1,NULL,'127.0.0.1','Josh','josh','open',1,'n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(9,1,2,1,NULL,'127.0.0.1','Jason','jason','open',1,'n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(10,1,1,1,NULL,'127.0.0.1','Band Title','band_title','Featured','3','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0);
 ALTER TABLE `exp_channel_titles` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_channels` WRITE;
 ALTER TABLE `exp_channels` DISABLE KEYS;
-INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_title`, `channel_url`, `channel_description`, `channel_lang`, `total_entries`, `total_records`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `status_group`, `deft_status`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`, `extra_publish_controls`, `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `title_field_label`, `url_title_prefix`, `live_look_template`, `max_entries`) VALUES
-	(1,1,'news','News','http://ee2/index.php/news',NULL,'en',3,0,0,1409242030,0,'1',1,'open',2,'2','y','y',0,'all','n','y','y','n','','http://ee2/index.php/news/comments','y','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','',0,0),
-	(2,1,'about','Information Pages','http://ee2/index.php/about',NULL,'en',7,0,0,1409242030,0,'2',1,'open',7,'','y','y',0,'all','n','y','n','n','','http://ee2/index.php/news/comments','n','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','',0,0);
+INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_title`, `channel_url`, `channel_description`, `channel_lang`, `total_entries`, `total_records`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `deft_status`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`, `extra_publish_controls`, `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `title_field_label`, `url_title_prefix`, `live_look_template`, `max_entries`) VALUES
+	(1,1,'news','News','http://ee2/index.php/news',NULL,'en',3,0,0,1409242030,0,'1','open',2,'2','y','y',0,'all','n','y','y','n','','http://ee2/index.php/news/comments','y','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','',0,0),
+	(2,1,'about','Information Pages','http://ee2/index.php/about',NULL,'en',7,0,0,1409242030,0,'2','open',7,'','y','y',0,'all','n','y','n','n','','http://ee2/index.php/news/comments','n','n','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','','n',10,'','Title','',0,0);
 ALTER TABLE `exp_channels` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -2225,19 +2218,19 @@ UNLOCK TABLES;
 LOCK TABLES `exp_specialty_templates` WRITE;
 ALTER TABLE `exp_specialty_templates` DISABLE KEYS;
 INSERT INTO `exp_specialty_templates` (`template_id`, `site_id`, `enable_template`, `template_name`, `data_title`, `template_type`, `template_subtype`, `template_data`, `template_notes`, `edit_date`, `last_author_id`) VALUES
-	(1,1,'y','offline_template','',NULL,NULL,'<html>\n<head>\n\n<title>System Offline</title>\n\n<style type="text/css">\n\nbody {\nbackground-color:	#ffffff;\nmargin:				50px;\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size:			11px;\ncolor:				#000;\nbackground-color:	#fff;\n}\n\na {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-weight:		bold;\nletter-spacing:		.09em;\ntext-decoration:	none;\ncolor:			  #330099;\nbackground-color:	transparent;\n}\n\na:visited {\ncolor:				#330099;\nbackground-color:	transparent;\n}\n\na:hover {\ncolor:				#000;\ntext-decoration:	underline;\nbackground-color:	transparent;\n}\n\n#content  {\nborder:				#999999 1px solid;\npadding:			22px 25px 14px 25px;\n}\n\nh1 {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-weight:		bold;\nfont-size:			14px;\ncolor:				#000;\nmargin-top: 		0;\nmargin-bottom:		14px;\n}\n\np {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size: 			12px;\nfont-weight: 		normal;\nmargin-top: 		12px;\nmargin-bottom: 		14px;\ncolor: 				#000;\n}\n</style>\n\n</head>\n\n<body>\n\n<div id="content">\n\n<h1>System Offline</h1>\n\n<p>This site is currently offline</p>\n\n</div>\n\n</body>\n\n</html>',NULL,0,0),
-	(2,1,'y','message_template','',NULL,NULL,'<html>\n<head>\n\n<title>{title}</title>\n\n<meta http-equiv=\'content-type\' content=\'text/html; charset={charset}\' />\n\n{meta_refresh}\n\n<style type="text/css">\n\nbody {\nbackground-color:	#ffffff;\nmargin:				50px;\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size:			11px;\ncolor:				#000;\nbackground-color:	#fff;\n}\n\na {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nletter-spacing:		.09em;\ntext-decoration:	none;\ncolor:			  #330099;\nbackground-color:	transparent;\n}\n\na:visited {\ncolor:				#330099;\nbackground-color:	transparent;\n}\n\na:active {\ncolor:				#ccc;\nbackground-color:	transparent;\n}\n\na:hover {\ncolor:				#000;\ntext-decoration:	underline;\nbackground-color:	transparent;\n}\n\n#content  {\nborder:				#000 1px solid;\nbackground-color: 	#DEDFE3;\npadding:			22px 25px 14px 25px;\n}\n\nh1 {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-weight:		bold;\nfont-size:			14px;\ncolor:				#000;\nmargin-top: 		0;\nmargin-bottom:		14px;\n}\n\np {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size: 			12px;\nfont-weight: 		normal;\nmargin-top: 		12px;\nmargin-bottom: 		14px;\ncolor: 				#000;\n}\n\nul {\nmargin-bottom: 		16px;\n}\n\nli {\nlist-style:			square;\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size: 			12px;\nfont-weight: 		normal;\nmargin-top: 		8px;\nmargin-bottom: 		8px;\ncolor: 				#000;\n}\n\n</style>\n\n</head>\n\n<body>\n\n<div id="content">\n\n<h1>{heading}</h1>\n\n{content}\n\n<p>{link}</p>\n\n</div>\n\n</body>\n\n</html>',NULL,0,0),
-	(3,1,'y','admin_notify_reg','Notification of new member registration',NULL,NULL,'New member registration site: {site_name}\n\nScreen name: {name}\nUser name: {username}\nEmail: {email}\n\nYour control panel URL: {control_panel_url}',NULL,0,0),
-	(4,1,'y','admin_notify_entry','A new channel entry has been posted',NULL,NULL,'A new entry has been posted in the following channel:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nPosted by: {name}\nEmail: {email}\n\nTo read the entry please visit:\n{entry_url}\n',NULL,0,0),
-	(6,1,'y','admin_notify_comment','You have just received a comment',NULL,NULL,'You have just received a comment for the following channel:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nLocated at:\n{comment_url}\n\nPosted by: {name}\nEmail: {email}\nURL: {url}\nLocation: {location}\n\n{comment}',NULL,0,0),
-	(7,1,'y','mbr_activation_instructions','Enclosed is your activation code',NULL,NULL,'Thank you for your new member registration.\n\nTo activate your new account, please visit the following URL:\n\n{unwrap}{activation_url}{/unwrap}\n\nThank You!\n\n{site_name}\n\n{site_url}',NULL,0,0),
-	(8,1,'y','forgot_password_instructions','Login information',NULL,NULL,'{name},\n\nTo reset your password, please go to the following page:\n\n{reset_url}\n\nThen log in with your username: {username}\n\nIf you do not wish to reset your password, ignore this message. It will expire in 24 hours.\n\n{site_name}\n{site_url}',NULL,0,0),
-	(9,1,'y','validated_member_notify','Your membership account has been activated',NULL,NULL,'{name},\n\nYour membership account has been activated and is ready for use.\n\nThank You!\n\n{site_name}\n{site_url}',NULL,0,0),
-	(10,1,'y','decline_member_validation','Your membership account has been declined',NULL,NULL,'{name},\n\nWe\'re sorry but our staff has decided not to validate your membership.\n\n{site_name}\n{site_url}',NULL,0,0),
-	(12,1,'y','comment_notification','Someone just responded to your comment',NULL,NULL,'{name_of_commenter} just responded to the entry you subscribed to at:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nYou can see the comment at the following URL:\n{comment_url}\n\n{comment}\n\nTo stop receiving notifications for this comment, click here:\n{notification_removal_url}',NULL,0,0),
-	(13,1,'y','comments_opened_notification','New comments have been added',NULL,NULL,'Responses have been added to the entry you subscribed to at:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nYou can see the comments at the following URL:\n{comment_url}\n\n{comments}\n{comment}\n{/comments}\n\nTo stop receiving notifications for this entry, click here:\n{notification_removal_url}',NULL,0,0),
-	(14,1,'y','private_message_notification','Someone has sent you a Private Message',NULL,NULL,'\n{recipient_name},\n\n{sender_name} has just sent you a Private Message titled ‘{message_subject}’.\n\nYou can see the Private Message by logging in and viewing your inbox at:\n{site_url}\n\nContent:\n\n{message_content}\n\nTo stop receiving notifications of Private Messages, turn the option off in your Email Settings.\n\n{site_name}\n{site_url}',NULL,0,0),
-	(15,1,'y','pm_inbox_full','Your private message mailbox is full',NULL,NULL,'{recipient_name},\n\n{sender_name} has just attempted to send you a Private Message,\nbut your inbox is full, exceeding the maximum of {pm_storage_limit}.\n\nPlease log in and remove unwanted messages from your inbox at:\n{site_url}',NULL,0,0);
+	(1,1,'y','offline_template','','system',NULL,'<html>\n<head>\n\n<title>System Offline</title>\n\n<style type="text/css">\n\nbody {\nbackground-color:	#ffffff;\nmargin:				50px;\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size:			11px;\ncolor:				#000;\nbackground-color:	#fff;\n}\n\na {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-weight:		bold;\nletter-spacing:		.09em;\ntext-decoration:	none;\ncolor:			  #330099;\nbackground-color:	transparent;\n}\n\na:visited {\ncolor:				#330099;\nbackground-color:	transparent;\n}\n\na:hover {\ncolor:				#000;\ntext-decoration:	underline;\nbackground-color:	transparent;\n}\n\n#content  {\nborder:				#999999 1px solid;\npadding:			22px 25px 14px 25px;\n}\n\nh1 {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-weight:		bold;\nfont-size:			14px;\ncolor:				#000;\nmargin-top: 		0;\nmargin-bottom:		14px;\n}\n\np {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size: 			12px;\nfont-weight: 		normal;\nmargin-top: 		12px;\nmargin-bottom: 		14px;\ncolor: 				#000;\n}\n</style>\n\n</head>\n\n<body>\n\n<div id="content">\n\n<h1>System Offline</h1>\n\n<p>This site is currently offline</p>\n\n</div>\n\n</body>\n\n</html>',NULL,0,0),
+	(2,1,'y','message_template','','system',NULL,'<html>\n<head>\n\n<title>{title}</title>\n\n<meta http-equiv=\'content-type\' content=\'text/html; charset={charset}\' />\n\n{meta_refresh}\n\n<style type="text/css">\n\nbody {\nbackground-color:	#ffffff;\nmargin:				50px;\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size:			11px;\ncolor:				#000;\nbackground-color:	#fff;\n}\n\na {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nletter-spacing:		.09em;\ntext-decoration:	none;\ncolor:			  #330099;\nbackground-color:	transparent;\n}\n\na:visited {\ncolor:				#330099;\nbackground-color:	transparent;\n}\n\na:active {\ncolor:				#ccc;\nbackground-color:	transparent;\n}\n\na:hover {\ncolor:				#000;\ntext-decoration:	underline;\nbackground-color:	transparent;\n}\n\n#content  {\nborder:				#000 1px solid;\nbackground-color: 	#DEDFE3;\npadding:			22px 25px 14px 25px;\n}\n\nh1 {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-weight:		bold;\nfont-size:			14px;\ncolor:				#000;\nmargin-top: 		0;\nmargin-bottom:		14px;\n}\n\np {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size: 			12px;\nfont-weight: 		normal;\nmargin-top: 		12px;\nmargin-bottom: 		14px;\ncolor: 				#000;\n}\n\nul {\nmargin-bottom: 		16px;\n}\n\nli {\nlist-style:			square;\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size: 			12px;\nfont-weight: 		normal;\nmargin-top: 		8px;\nmargin-bottom: 		8px;\ncolor: 				#000;\n}\n\n</style>\n\n</head>\n\n<body>\n\n<div id="content">\n\n<h1>{heading}</h1>\n\n{content}\n\n<p>{link}</p>\n\n</div>\n\n</body>\n\n</html>',NULL,0,0),
+	(3,1,'y','admin_notify_reg','Notification of new member registration','email','members','New member registration site: {site_name}\n\nScreen name: {name}\nUser name: {username}\nEmail: {email}\n\nYour control panel URL: {control_panel_url}',NULL,0,0),
+	(4,1,'y','admin_notify_entry','A new channel entry has been posted','email','content','A new entry has been posted in the following channel:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nPosted by: {name}\nEmail: {email}\n\nTo read the entry please visit:\n{entry_url}\n',NULL,0,0),
+	(6,1,'y','admin_notify_comment','You have just received a comment','email','comments','You have just received a comment for the following channel:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nLocated at:\n{comment_url}\n\nPosted by: {name}\nEmail: {email}\nURL: {url}\nLocation: {location}\n\n{comment}',NULL,0,0),
+	(7,1,'y','mbr_activation_instructions','Enclosed is your activation code','email','members','Thank you for your new member registration.\n\nTo activate your new account, please visit the following URL:\n\n{unwrap}{activation_url}{/unwrap}\n\nThank You!\n\n{site_name}\n\n{site_url}',NULL,0,0),
+	(8,1,'y','forgot_password_instructions','Login information','email','members','{name},\n\nTo reset your password, please go to the following page:\n\n{reset_url}\n\nThen log in with your username: {username}\n\nIf you do not wish to reset your password, ignore this message. It will expire in 24 hours.\n\n{site_name}\n{site_url}',NULL,0,0),
+	(9,1,'y','validated_member_notify','Your membership account has been activated','email','members','{name},\n\nYour membership account has been activated and is ready for use.\n\nThank You!\n\n{site_name}\n{site_url}',NULL,0,0),
+	(10,1,'y','decline_member_validation','Your membership account has been declined','email','members','{name},\n\nWe\'re sorry but our staff has decided not to validate your membership.\n\n{site_name}\n{site_url}',NULL,0,0),
+	(12,1,'y','comment_notification','Someone just responded to your comment','email','comments','{name_of_commenter} just responded to the entry you subscribed to at:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nYou can see the comment at the following URL:\n{comment_url}\n\n{comment}\n\nTo stop receiving notifications for this comment, click here:\n{notification_removal_url}',NULL,0,0),
+	(13,1,'y','comments_opened_notification','New comments have been added','email','comments','Responses have been added to the entry you subscribed to at:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nYou can see the comments at the following URL:\n{comment_url}\n\n{comments}\n{comment}\n{/comments}\n\nTo stop receiving notifications for this entry, click here:\n{notification_removal_url}',NULL,0,0),
+	(14,1,'y','private_message_notification','Someone has sent you a Private Message','email','private_messages','\n{recipient_name},\n\n{sender_name} has just sent you a Private Message titled ‘{message_subject}’.\n\nYou can see the Private Message by logging in and viewing your inbox at:\n{site_url}\n\nContent:\n\n{message_content}\n\nTo stop receiving notifications of Private Messages, turn the option off in your Email Settings.\n\n{site_name}\n{site_url}',NULL,0,0),
+	(15,1,'y','pm_inbox_full','Your private message mailbox is full','email','private_messages','{recipient_name},\n\n{sender_name} has just attempted to send you a Private Message,\nbut your inbox is full, exceeding the maximum of {pm_storage_limit}.\n\nPlease log in and remove unwanted messages from your inbox at:\n{site_url}',NULL,0,0);
 ALTER TABLE `exp_specialty_templates` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -2250,14 +2243,6 @@ ALTER TABLE `exp_stats` ENABLE KEYS;
 UNLOCK TABLES;
 
 
-LOCK TABLES `exp_status_groups` WRITE;
-ALTER TABLE `exp_status_groups` DISABLE KEYS;
-INSERT INTO `exp_status_groups` (`group_id`, `site_id`, `group_name`) VALUES
-	(1,1,'Default');
-ALTER TABLE `exp_status_groups` ENABLE KEYS;
-UNLOCK TABLES;
-
-
 LOCK TABLES `exp_status_no_access` WRITE;
 ALTER TABLE `exp_status_no_access` DISABLE KEYS;
 ALTER TABLE `exp_status_no_access` ENABLE KEYS;
@@ -2266,10 +2251,10 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_statuses` WRITE;
 ALTER TABLE `exp_statuses` DISABLE KEYS;
-INSERT INTO `exp_statuses` (`status_id`, `site_id`, `group_id`, `status`, `status_order`, `highlight`) VALUES
-	(1,1,1,'open',1,'009933'),
-	(2,1,1,'closed',2,'990000'),
-	(3,1,1,'Featured',3,'000000');
+INSERT INTO `exp_statuses` (`status_id`, `status`, `status_order`, `highlight`) VALUES
+	(1,'open',1,'009933'),
+	(2,'closed',2,'990000'),
+	(3,'Featured',3,'000000');
 ALTER TABLE `exp_statuses` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -2415,5 +2400,3 @@ UNLOCK TABLES;
 
 
 SET FOREIGN_KEY_CHECKS = @PREVIOUS_FOREIGN_KEY_CHECKS;
-
-

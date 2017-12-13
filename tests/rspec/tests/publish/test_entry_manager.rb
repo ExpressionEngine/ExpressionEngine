@@ -15,7 +15,7 @@ feature 'Entry Manager' do
     @page.create_entries(1, channel[:channel_id])
     @page.load(filter_by_channel: channel[:channel_id])
 
-    @page.should have_no_link('Creates New in')
+    @page.should have_no_link('New in')
     @page.alert.text.should include "Channel limit reached"
   end
 
@@ -26,7 +26,7 @@ feature 'Entry Manager' do
     @page.create_entries(2, channel[:channel_id])
     @page.load(filter_by_channel: channel[:channel_id])
 
-    btn_txt = 'Create New in ' + channel[:channel_title]
+    btn_txt = 'New in ' + channel[:channel_title]
     @page.should have_link(btn_txt)
   end
 

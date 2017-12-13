@@ -31,7 +31,9 @@ function encode_multi_field($data = array())
 	// Escape pipes
 	foreach($data as $key => $val)
 	{
-		$data[$key] = str_replace(array('\\', '|'), array('\\\\', '\|'), $val);
+		$data[$key] = is_array($val)
+		    ? encode_multi_field($val)
+		    : str_replace(array('\\', '|'), array('\\\\', '\|'), $val);
 	}
 
 	// Implode on seperator

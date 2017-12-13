@@ -13,14 +13,21 @@
 class Installer_Session {
 
 	public $userdata = array();
+	protected $cache = array();
 
 	public function cache($class, $key, $default = FALSE)
 	{
-		return FALSE;
+		return (isset($this->cache[$class][$key])) ? $this->cache[$class][$key] : $default;
 	}
 
 	public function set_cache($class, $key, $val)
 	{
+		if ( ! isset($this->cache[$class]))
+		{
+			$this->cache[$class] = array();
+		}
+
+		$this->cache[$class][$key] = $val;
 		return $this;
 	}
 

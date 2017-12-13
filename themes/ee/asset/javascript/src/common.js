@@ -331,14 +331,16 @@ $(document).ready(function(){
 			if ($(e.target).is(":visible")) {
 				// fade out the overlay
 				$('.overlay').fadeOut('slow');
-				// fade out the modal
-				$('.modal-wrap, .modal-form-wrap').fadeOut('fast');
 
-				// disappear the app modal
-				$(this).addClass('app-modal---closed');
-				setTimeout(function() {
-					$('.app-modal---open').removeClass('app-modal---open');
-				}, 500);
+				if ($(this).hasClass('modal-wrap')) {
+					$(this).fadeOut('fast');
+				} else {
+					// disappear the app modal
+					$(this).addClass('app-modal---closed');
+					setTimeout(function() {
+						$('.app-modal---open').removeClass('app-modal---open');
+					}, 500);
+				}
 
 				// disappear the preview
 				$('.live-preview---open').addClass('live-preview---closed');
@@ -496,6 +498,13 @@ $(document).ready(function(){
 			}
 		});
 
+		// Check a table list row's checkbox when its item body is clicked
+		$('body').on('click', '.tbl-row', function(event) {
+			if (event.target.nodeName == 'DIV') {
+				$(this).find('> .check-ctrl input').click()
+			}
+		});
+
 		// "Table" lists
 		$('body').on('click change', '.tbl-list .check-ctrl input', function() {
 			$(this).parents('.tbl-row').toggleClass('selected', $(this).is(':checked'));
@@ -576,7 +585,7 @@ $(document).ready(function(){
 	// filters custom input submission
 	// ===============================
 
-		$('.filters .filter-search input[type="text"]').keypress(function(e) {
+		$('.filters .filter-search input[type="text"], .filters .filter-search-form input[type="text"]').keypress(function(e) {
 			if (e.which == 10 || e.which == 13) {
 				$(this).closest('form').submit();
 			}

@@ -42,9 +42,9 @@ class Channels extends AbstractChannelsController {
 
 		$total_channels = $channels->count();
 
-		$filters = ee('CP/Filter');
-		$filters->add('Keyword');
-		$filters->add('Perpage', $total_channels, 'all_channels', TRUE);
+		$filters = ee('CP/Filter')
+			->add('Keyword')
+			->add('Perpage', $total_channels, 'all_channels', TRUE);
 		$filter_values = $filters->values();
 
 		$page = ee('Request')->get('page') ?: 1;
@@ -113,7 +113,10 @@ class Channels extends AbstractChannelsController {
 		$vars['cp_page_title'] = lang('all_channels');
 		$vars['channels'] = $data;
 		$vars['create_url'] = ee('CP/URL', 'channels/create');
-		$vars['no_results'] = ['text' => lang('no_channels'), 'href' => $vars['create_url']];
+		$vars['no_results'] = ['text' =>
+			sprintf(lang('no_found'), lang('channels'))
+			.' <a href="'.$vars['create_url'].'">'.lang('add_new').'</a> '
+			.lang('or').' <a href="#" rel="import-channel">'.lang('import').'</a>'];
 
 		ee()->cp->render('channels/index', $vars);
 	}
@@ -516,7 +519,7 @@ class Channels extends AbstractChannelsController {
 	{
 		$field_group_options = ee('Model')->get('ChannelFieldGroup')
 			->fields('group_name')
-			->filter('site_id', ee()->config->item('site_id'))
+			->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
 			->order('group_name')
 			->all()
 			->getDictionary('group_id', 'group_name');
@@ -528,16 +531,22 @@ class Channels extends AbstractChannelsController {
 			$selected = $channel->FieldGroups->pluck('group_id');
 		}
 
+		$no_results = [
+			'text' => sprintf(lang('no_found'), lang('field_groups'))
+		];
+
+		if (ee()->cp->allowed_group('can_create_channel_fields'))
+		{
+			$no_results['link_text'] = 'add_new';
+			$no_results['link_href'] = ee('CP/URL')->make('fields/groups/create');
+		}
+
 		return ee('View')->make('ee:_shared/form/fields/select')->render([
 			'field_name' => 'field_groups',
 			'choices'    => $field_group_options,
 			'value'      => $selected,
 			'multi'      => TRUE,
-			'no_results' => [
-				'text' => sprintf(lang('no_found'), lang('field_groups')),
-				'link_text' => 'add_new',
-				'link_href' => ee('CP/URL')->make('fields/groups/create')
-			]
+			'no_results' => $no_results
 		]);
 	}
 
@@ -551,7 +560,7 @@ class Channels extends AbstractChannelsController {
 	{
 		$fields = ee('Model')->get('ChannelField')
 			->fields('field_label', 'field_name')
-			->filter('site_id', ee()->config->item('site_id'))
+			->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
 			->order('field_label')
 			->all();
 
@@ -570,16 +579,22 @@ class Channels extends AbstractChannelsController {
 			$selected = $channel->CustomFields->pluck('field_id');
 		}
 
+		$no_results = [
+			'text' => sprintf(lang('no_found'), lang('fields'))
+		];
+
+		if (ee()->cp->allowed_group('can_create_channel_fields'))
+		{
+			$no_results['link_text'] = 'add_new';
+			$no_results['link_href'] = ee('CP/URL')->make('fields/create');
+		}
+
 		return ee('View')->make('ee:_shared/form/fields/select')->render([
 			'field_name' => 'custom_fields',
 			'choices'    => $custom_field_options,
 			'value'      => $selected,
 			'multi'      => TRUE,
-			'no_results' => [
-				'text' => sprintf(lang('no_found'), lang('fields')),
-				'link_text' => 'add_new',
-				'link_href' => ee('CP/URL')->make('fields/create')
-			]
+			'no_results' => $no_results
 		]);
 	}
 
@@ -645,16 +660,22 @@ class Channels extends AbstractChannelsController {
 			$selected = explode('|', $channel->cat_group);
 		}
 
+		$no_results = [
+			'text' => sprintf(lang('no_found'), lang('category_groups'))
+		];
+
+		if (ee()->cp->allowed_group('can_create_categories'))
+		{
+			$no_results['link_text'] = 'add_new';
+			$no_results['link_href'] = ee('CP/URL')->make('categories/groups/create');
+		}
+
 		return ee('View')->make('ee:_shared/form/fields/select')->render([
 			'field_name' => 'cat_group',
 			'choices'    => $cat_group_options,
 			'value'      => $selected,
 			'multi'      => TRUE,
-			'no_results' => [
-				'text' => sprintf(lang('no_found'), lang('category_groups')),
-				'link_text' => 'add_new',
-				'link_href' => ee('CP/URL')->make('categories/groups/create')
-			]
+			'no_results' => $no_results
 		]);
 	}
 
@@ -741,15 +762,10 @@ class Channels extends AbstractChannelsController {
 			'value'            => $selected,
 			'multi'            => TRUE,
 			'force_react'      => TRUE,
-			'reorderable'      => TRUE,
-			'removable'        => TRUE,
-			'editable'         => TRUE,
-			'reorder_ajax_url' => ee('CP/URL', 'channels/status/reorder')->compile(),
-			'no_results' => [
-				'text' => sprintf(lang('no_found'), lang('status')),
-				'link_text' => 'add_new',
-				'link_href' => ee('CP/URL')->make('channels/status/create')
-			]
+			'reorderable'      => ee()->cp->allowed_group('can_edit_statuses'),
+			'removable'        => ee()->cp->allowed_group('can_delete_statuses'),
+			'editable'         => ee()->cp->allowed_group('can_edit_statuses'),
+			'reorder_ajax_url' => ee('CP/URL', 'channels/status/reorder')->compile()
 		]);
 	}
 
@@ -782,7 +798,10 @@ class Channels extends AbstractChannelsController {
 		}
 
 		// Default status menu
-		$deft_status_options = ['' => lang('none')];
+		$deft_status_options = [
+			'open' => lang('open'),
+			'closed' => lang('closed')
+		];
 		$deft_status_options += $channel->Statuses
 			->sortBy('status_order')
 			->getDictionary('status', 'status');
@@ -1080,11 +1099,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'enable_versioning_desc',
 					'fields' => array(
 						'enable_versioning' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $channel->enable_versioning
 						)
 					)
@@ -1110,11 +1125,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'enable_author_notification_desc',
 					'fields' => array(
 						'comment_notify_authors' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $channel->comment_notify_authors
 						)
 					)
@@ -1124,11 +1135,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'enable_channel_entry_notification_desc',
 					'fields' => array(
 						'channel_notify' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $channel->channel_notify
 						),
 						'channel_notify_emails' => array(
@@ -1142,11 +1149,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'enable_comment_notification_desc',
 					'fields' => array(
 						'comment_notify' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
+							'type' => 'yes_no',
 							'value' => $channel->comment_notify
 						),
 						'comment_notify_emails' => array(

@@ -74,6 +74,11 @@ class Runner {
 		ee('Config')->getFile()->set('is_system_on', 'n', TRUE);
 	}
 
+	public function rollback()
+	{
+		ee('Filesystem')->deleteDir(SYSPATH.'ee/updater');
+	}
+
 	/**
 	 * Catch-all exception handler for updater steps to log errors
 	 */

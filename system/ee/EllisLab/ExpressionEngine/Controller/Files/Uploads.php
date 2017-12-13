@@ -580,8 +580,9 @@ class Uploads extends AbstractFilesController {
 	private function validateUploadPreferences($upload_destination)
 	{
 		$upload_destination->set($_POST);
+		$cat_group = ee()->input->post('cat_group');
 
-		if ((count($this->input->post('cat_group')) > 0) && $this->input->post('cat_group'))
+		if ( ! empty($cat_group))
 		{
 			if ($_POST['cat_group'][0] == 0)
 			{
@@ -769,8 +770,10 @@ class Uploads extends AbstractFilesController {
 		foreach ($sizes as $size)
 		{
 			// For checkboxes
-			$size_choices[$size->id] = $size->short_name .
-				' <i>' . lang($size->resize_type) . ', ' . $size->width . 'px ' . lang('by') . ' ' . $size->height . 'px</i>';
+			$size_choices[$size->id] = [
+				'label' => $size->short_name,
+				'instructions' => lang($size->resize_type) . ', ' . $size->width . 'px ' . lang('by') . ' ' . $size->height . 'px'
+			];
 
 			// For JS sync script
 			$js_size[$size->upload_location_id][$size->id] = array(

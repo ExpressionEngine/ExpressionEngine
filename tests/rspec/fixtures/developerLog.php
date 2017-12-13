@@ -55,7 +55,7 @@ for ($x = 0; $x < $count; $x++)
 {
 	$type = rand(0, 6);
 
-	$fixture = $api->make('DeveloperLog');
+	$fixture = ee('Model')->make('DeveloperLog');
 	$fixture->timestamp = strtotime("-" . rand($timestamp_min*60, $timestamp_max*60) . " minutes");
 
 	if ($type == 0 || $description_only)

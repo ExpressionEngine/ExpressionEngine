@@ -44,6 +44,10 @@ class ChannelFieldGroup extends Model {
 		'group_name' => 'required|unique[site_id]|validateName'
 	);
 
+	protected static $_events = array(
+		'afterUpdate',
+	);
+
 	protected $group_id;
 	protected $site_id;
 	protected $group_name;
@@ -64,6 +68,17 @@ class ChannelFieldGroup extends Model {
 		}
 
 		return TRUE;
+	}
+
+	public function onAfterUpdate($previous)
+	{
+		foreach ($this->Channels as $channel)
+		{
+			foreach ($channel->ChannelLayouts as $layout)
+			{
+				$layout->synchronize();
+			}
+		}
 	}
 
 }

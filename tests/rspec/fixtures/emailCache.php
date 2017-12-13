@@ -100,7 +100,7 @@ for ($x = 0; $x < $count; $x++)
 	$text_fmt = array_rand($mailtypes);
 	$mailtype = $mailtypes[$text_fmt];
 
-	$fixture = $api->make('EmailCache');
+	$fixture = ee('Model')->make('EmailCache');
 	if ($timestamp !== FALSE)
 	{
 		$fixture->cache_date = $timestamp;

@@ -12,7 +12,7 @@ module CacheManager
     click_link 'Cache Manager'
     no_php_js_errors
 
-    @button = page.find('form.settings .form-ctrls input.btn');
+    @button = page.find('div.form-btns input.btn[type="submit"]');
   end
 
   def self.button

@@ -106,11 +106,9 @@ class ChannelEntry extends ContentModel {
 		)
 	);
 
-	protected static $_auto_join = array('Channel');
-
 	protected static $_field_data = array(
 		'field_model'     => 'ChannelField',
-		'group_column'    => 'Channel__channel_id',
+		'group_column'    => 'channel_id',
 		'structure_model' => 'Channel',
 	);
 
@@ -119,7 +117,7 @@ class ChannelEntry extends ContentModel {
 		'channel_id'         => 'required|validateMaxEntries',
 		'ip_address'         => 'ip_address',
 		'title'              => 'required|maxLength[200]|limitHtml[b,cite,code,del,em,i,ins,markspan,strong,sub,sup]',
-		'url_title'          => 'required|maxLength[200]|alphaDashPeriodEmoji|validateUniqueUrlTitle[channel_id]',
+		'url_title'          => 'required|maxLength[URL_TITLE_MAX_LENGTH]|alphaDashPeriodEmoji|validateUniqueUrlTitle[channel_id]',
 		'status'             => 'required',
 		'entry_date'         => 'required',
 		'versioning_enabled' => 'enum[y,n]',
@@ -511,7 +509,7 @@ class ChannelEntry extends ContentModel {
 			return;
 		}
 
-		$data = $this->getValues();
+		$data = $_POST ?: $this->getValues();
 
 		$last_version = $this->Versions->sortBy('version_date')->reverse()->first();
 
@@ -811,7 +809,7 @@ class ChannelEntry extends ContentModel {
 					'field_show_fmt'		=> 'n',
 					'field_text_direction'	=> 'ltr',
 					'field_type'			=> 'text',
-					'field_maxl'			=> 200
+					'field_maxl'			=> URL_TITLE_MAX_LENGTH
 				),
 				'entry_date' => array(
 					'field_id'				=> 'entry_date',
@@ -1013,6 +1011,7 @@ class ChannelEntry extends ContentModel {
 			? NULL : array_keys(ee()->session->userdata('assigned_channels'));
 
 		$my_fields = $this->Channel->getAllCustomFields()->pluck('field_id');
+		$my_statuses = $this->Channel->Statuses->getIds();
 
 		$channel_filter_options = array();
 
@@ -1023,7 +1022,8 @@ class ChannelEntry extends ContentModel {
 
 		foreach ($channels as $channel)
 		{
-			if ($my_fields == $channel->getAllCustomFields()->pluck('field_id'))
+			if ($my_fields == $channel->getAllCustomFields()->pluck('field_id') &&
+				$my_statuses == $channel->Statuses->getIds())
 			{
 				$channel_filter_options[$channel->channel_id] = $channel->channel_title;
 			}
@@ -1118,6 +1118,32 @@ class ChannelEntry extends ContentModel {
 	public function getAuthorName()
 	{
 		return ($this->author_id && $this->Author) ? $this->Author->getMemberName() : '';
+	}
+
+	public function getModChannelResultsArray()
+	{
+		$data = array_merge($this->getValues(), $this->Channel->getValues(), $this->Author->getValues());
+		$data['entry_site_id'] = $this->site_id;
+		if ($this->edit_date)
+		{
+			$data['edit_date'] = $this->edit_date->format('U');
+		}
+		if ($this->recent_comment_date)
+		{
+			$data['recent_comment_date'] = $this->recent_comment_date->format('U');
+		}
+
+		foreach ($this->getStructure()->getAllCustomFields() as $field)
+		{
+			$key = 'field_id_' . $field->getId();
+
+			if ( ! array_key_exists($key, $data))
+			{
+				$data[$key] = NULL;
+			}
+		}
+
+		return $data;
 	}
 }
 

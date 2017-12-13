@@ -292,7 +292,7 @@ $lang = array(
 
 'hide_field' => 'Hide field?',
 
-'hide_field_desc' => 'When set to <b>yes</b>, this field will be hidden on the publish form, with a link to show.',
+'hide_field_desc' => 'When enabled, this field will be hidden on the publish form, with a link to show.',
 
 'hide_formatting_buttons' => 'Hide Formatting Menu',
 
@@ -310,7 +310,7 @@ $lang = array(
 
 'include_in_search' => 'Include in search?',
 
-'include_in_search_desc' => 'When set to <b>yes</b>, this field will be included in searches.',
+'include_in_search_desc' => 'When enabled, this field will be included in searches.',
 
 'include_rss_templates' => 'Include RSS Templates',
 
@@ -330,7 +330,7 @@ $lang = array(
 
 'localize_date' => 'Localize date?',
 
-'localize_date_desc' => 'When set to <b>yes</b>, dates will be based on <a href="%s">time settings</a>.',
+'localize_date_desc' => 'When enabled, dates will be based on <a href="%s">time settings</a>.',
 
 'max_revisions' => 'Maximum Number of Recent Revisions per Entry',
 
@@ -388,11 +388,11 @@ $lang = array(
 
 'relationship' => 'Relationship',
 
-'removed_fields' => 'The following fields were removed and their data was deleted: %s',
+'removed_field' => 'The following field was removed and its data was deleted: %s',
 
 'removed_fields_from_fluid_field' => 'The following fields were removed from the Fluid Field <b>%s</b> and their data was deleted: %s',
 
-'require_field_desc' => 'When set to <b>yes</b>, this field will be required to submit the publish form.',
+'require_field_desc' => 'When enabled, this field will be required to submit the publish form.',
 
 'reserved_word' => 'The field name you have chosen is a reserved word and cannot be used. Please see the user guide for more information.',
 
@@ -818,7 +818,7 @@ $lang = array(
 
 'field_show_fmt' => 'Allow override?',
 
-'field_show_fmt_desc' => 'When set to <b>yes</b>, authors can override the default text formatting for this field from the publish form.',
+'field_show_fmt_desc' => 'When enabled, authors can override the default text formatting for this field from the publish form.',
 
 'field_text_direction' => 'Text direction',
 

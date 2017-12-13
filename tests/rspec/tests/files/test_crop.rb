@@ -23,10 +23,8 @@ feature 'File Manager / Crop File' do
     @page.displayed?
 
     # Check that the heder data is intact
-    @page.should_not have_title_toolbar
-    @page.should_not have_download_all
-    @page.should_not have_phrase_search
-    @page.should_not have_search_submit_button
+    @page.should have_title_toolbar
+    @page.should have_download_all
 
     # Check that we do not have a sidebar
     @page.should_not have_sidebar
@@ -48,7 +46,6 @@ feature 'File Manager / Crop File' do
     @page.wait_until_flip_vertical_visible
     @page.wait_until_flip_horizontal_visible
     @page.wait_until_rotate_image_preview_visible
-    @page.wait_until_rotate_submit_button_visible
   end
 
   before(:each, :tab => 'resize') do
@@ -57,7 +54,6 @@ feature 'File Manager / Crop File' do
     @page.wait_until_resize_width_input_visible
     @page.wait_until_resize_height_input_visible
     @page.wait_until_resize_image_preview_visible
-    @page.wait_until_resize_submit_button_visible
   end
 
   after(:each) do
@@ -73,7 +69,6 @@ feature 'File Manager / Crop File' do
     @page.should have_crop_x_input
     @page.should have_crop_y_input
     @page.should have_crop_image_preview
-    @page.should have_crop_submit_button
   end
 
   it 'requires crop width when cropping' do
@@ -82,12 +77,12 @@ feature 'File Manager / Crop File' do
     @page.crop_y_input.set 0
     wait_for_ajax
     @page.crop_width_input.set ''
-    @page.crop_submit_button.click
+    @page.save.click
     no_php_js_errors
 
     @page.should have_alert
     @page.should have_css('div.alert.issue')
-    @page.should have_css('div.invalid')
+    @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Crop File"
     @page.alert.text.should include "We were unable to crop the file, please review and fix errors below."
   end
@@ -98,12 +93,12 @@ feature 'File Manager / Crop File' do
     @page.crop_y_input.set 0
     wait_for_ajax
     @page.crop_height_input.set ''
-    @page.crop_submit_button.click
+    @page.save.click
     no_php_js_errors
 
     @page.should have_alert
     @page.should have_css('div.alert.issue')
-    @page.should have_css('div.invalid')
+    @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Crop File"
     @page.alert.text.should include "We were unable to crop the file, please review and fix errors below."
   end
@@ -114,12 +109,12 @@ feature 'File Manager / Crop File' do
     @page.crop_y_input.set 0
     wait_for_ajax
     @page.crop_x_input.set ''
-    @page.crop_submit_button.click
+    @page.save.click
     no_php_js_errors
 
     @page.should have_alert
     @page.should have_css('div.alert.issue')
-    @page.should have_css('div.invalid')
+    @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Crop File"
     @page.alert.text.should include "We were unable to crop the file, please review and fix errors below."
   end
@@ -130,12 +125,12 @@ feature 'File Manager / Crop File' do
     @page.crop_x_input.set 0
     wait_for_ajax
     @page.crop_y_input.set ''
-    @page.crop_submit_button.click
+    @page.save.click
     no_php_js_errors
 
     @page.should have_alert
     @page.should have_css('div.alert.issue')
-    @page.should have_css('div.invalid')
+    @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Crop File"
     @page.alert.text.should include "We were unable to crop the file, please review and fix errors below."
   end
@@ -146,12 +141,12 @@ feature 'File Manager / Crop File' do
     @page.crop_y_input.set 0
     wait_for_ajax
     @page.crop_width_input.set 'a'
-    @page.crop_submit_button.click
+    @page.save.click
     no_php_js_errors
 
     @page.should have_alert
     @page.should have_css('div.alert.issue')
-    @page.should have_css('div.invalid')
+    @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Crop File"
     @page.alert.text.should include "We were unable to crop the file, please review and fix errors below."
   end
@@ -162,12 +157,12 @@ feature 'File Manager / Crop File' do
     @page.crop_y_input.set 0
     wait_for_ajax
     @page.crop_height_input.set 'a'
-    @page.crop_submit_button.click
+    @page.save.click
     no_php_js_errors
 
     @page.should have_alert
     @page.should have_css('div.alert.issue')
-    @page.should have_css('div.invalid')
+    @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Crop File"
     @page.alert.text.should include "We were unable to crop the file, please review and fix errors below."
   end
@@ -178,12 +173,12 @@ feature 'File Manager / Crop File' do
     @page.crop_y_input.set 0
     wait_for_ajax
     @page.crop_x_input.set 'a'
-    @page.crop_submit_button.click
+    @page.save.click
     no_php_js_errors
 
     @page.should have_alert
     @page.should have_css('div.alert.issue')
-    @page.should have_css('div.invalid')
+    @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Crop File"
     @page.alert.text.should include "We were unable to crop the file, please review and fix errors below."
   end
@@ -194,12 +189,12 @@ feature 'File Manager / Crop File' do
     @page.crop_x_input.set 0
     wait_for_ajax
     @page.crop_y_input.set 'a'
-    @page.crop_submit_button.click
+    @page.save.click
     no_php_js_errors
 
     @page.should have_alert
     @page.should have_css('div.alert.issue')
-    @page.should have_css('div.invalid')
+    @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Crop File"
     @page.alert.text.should include "We were unable to crop the file, please review and fix errors below."
   end
@@ -210,12 +205,12 @@ feature 'File Manager / Crop File' do
     @page.crop_y_input.set 0
     wait_for_ajax
     @page.crop_width_input.set 0
-    @page.crop_submit_button.click
+    @page.save.click
     no_php_js_errors
 
     @page.should have_alert
     @page.should have_css('div.alert.issue')
-    @page.should have_css('div.invalid')
+    @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Crop File"
     @page.alert.text.should include "We were unable to crop the file, please review and fix errors below."
   end
@@ -226,12 +221,12 @@ feature 'File Manager / Crop File' do
     @page.crop_y_input.set 0
     wait_for_ajax
     @page.crop_height_input.set 0
-    @page.crop_submit_button.click
+    @page.save.click
     no_php_js_errors
 
     @page.should have_alert
     @page.should have_css('div.alert.issue')
-    @page.should have_css('div.invalid')
+    @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Crop File"
     @page.alert.text.should include "We were unable to crop the file, please review and fix errors below."
   end
@@ -241,12 +236,12 @@ feature 'File Manager / Crop File' do
     @page.crop_height_input.set 5
     @page.crop_x_input.set 0
     @page.crop_y_input.set 0
-    @page.crop_submit_button.click
+    @page.save.click
     no_php_js_errors
 
     @page.should have_alert
     @page.should have_css('div.alert.success')
-    @page.should_not have_css('div.invalid')
+    @page.should_not have_css('.fieldset-invalid')
     @page.alert.text.should include "File Crop Success"
   end
 
@@ -255,57 +250,59 @@ feature 'File Manager / Crop File' do
   end
 
   it 'requires a rotation option when rotating', :tab => 'rotate' do
-    @page.rotate_submit_button.click
+    skip "cannot figure out how uncheck the default option" do
+     end
+    @page.save.click
     no_php_js_errors
 
     @page.should have_alert
     @page.should have_css('div.alert.issue')
-    @page.should have_css('div.invalid')
+    @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Rotate File"
     @page.alert.text.should include "We were unable to rotate the file, please review and fix errors below."
   end
 
   it 'can rotate right', :tab => 'rotate' do
     @page.rotate_right.click
-    @page.rotate_submit_button.click
+    @page.save.click
     no_php_js_errors
 
     @page.should have_alert
     @page.should have_css('div.alert.success')
-    @page.should_not have_css('div.invalid')
+    @page.should_not have_css('.fieldset-invalid')
     @page.alert.text.should include "File Rotate Success"
   end
 
   it 'can rotate left', :tab => 'rotate' do
     @page.rotate_left.click
-    @page.rotate_submit_button.click
+    @page.save.click
     no_php_js_errors
 
     @page.should have_alert
     @page.should have_css('div.alert.success')
-    @page.should_not have_css('div.invalid')
+    @page.should_not have_css('.fieldset-invalid')
     @page.alert.text.should include "File Rotate Success"
   end
 
   it 'can flip vertically', :tab => 'rotate' do
     @page.flip_vertical.click
-    @page.rotate_submit_button.click
+    @page.save.click
     no_php_js_errors
 
     @page.should have_alert
     @page.should have_css('div.alert.success')
-    @page.should_not have_css('div.invalid')
+    @page.should_not have_css('.fieldset-invalid')
     @page.alert.text.should include "File Rotate Success"
   end
 
   it 'can flip horizontally', :tab => 'rotate' do
     @page.flip_horizontal.click
-    @page.rotate_submit_button.click
+    @page.save.click
     no_php_js_errors
 
     @page.should have_alert
     @page.should have_css('div.alert.success')
-    @page.should_not have_css('div.invalid')
+    @page.should_not have_css('.fieldset-invalid')
     @page.alert.text.should include "File Rotate Success"
   end
 
@@ -316,34 +313,34 @@ feature 'File Manager / Crop File' do
   it 'width is optional when resizing', :tab => 'resize' do
     @page.resize_width_input.set ''
     @page.resize_height_input.set 5
-    @page.resize_submit_button.click
+    @page.save.click
     no_php_js_errors
 
     @page.should have_css('div.alert.success')
-    @page.should_not have_css('div.invalid')
+    @page.should_not have_css('.fieldset-invalid')
     @page.alert.text.should include "File Resize Success"
   end
 
   it 'height is optional when resizing', :tab => 'resize' do
     @page.resize_width_input.set 5
     @page.resize_height_input.set ''
-    @page.resize_submit_button.click
+    @page.save.click
     no_php_js_errors
 
     @page.should have_css('div.alert.success')
-    @page.should_not have_css('div.invalid')
+    @page.should_not have_css('.fieldset-invalid')
     @page.alert.text.should include "File Resize Success"
   end
 
   it 'validates that resize width is a number', :tab => 'resize' do
     @page.resize_width_input.set 'a'
     @page.resize_height_input.set 5
-    @page.resize_submit_button.click
+    @page.save.click
     no_php_js_errors
 
     @page.should have_alert
     @page.should have_css('div.alert.issue')
-    @page.should have_css('div.invalid')
+    @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Resize File"
     @page.alert.text.should include "We were unable to resize the file, please review and fix errors below."
   end
@@ -351,12 +348,12 @@ feature 'File Manager / Crop File' do
   it 'validates that resize height is a number', :tab => 'resize' do
     @page.resize_width_input.set 5
     @page.resize_height_input.set 'a'
-    @page.resize_submit_button.click
+    @page.save.click
     no_php_js_errors
 
     @page.should have_alert
     @page.should have_css('div.alert.issue')
-    @page.should have_css('div.invalid')
+    @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Resize File"
     @page.alert.text.should include "We were unable to resize the file, please review and fix errors below."
   end
@@ -364,12 +361,12 @@ feature 'File Manager / Crop File' do
   it 'can resize an image', :tab => 'resize' do
     @page.resize_width_input.set 5
     @page.resize_height_input.set 5
-    @page.resize_submit_button.click
+    @page.save.click
     no_php_js_errors
 
     @page.should have_alert
     @page.should have_css('div.alert.success')
-    @page.should_not have_css('div.invalid')
+    @page.should_not have_css('.fieldset-invalid')
     @page.alert.text.should include "File Resize Success"
   end
 

@@ -24,18 +24,18 @@
 
 		{exp:channel:entries channel='{ch}' disable='{ch_disable}' limit='1'}
 			{!-- layout vars, dynamic, not output --}
-			{layout:set name='title' value='{p_seo_title}{gv_sep}'}
-			{layout:set name='description' value='{p_seo_desc}'}
+			{layout:set name='title' value='{seo_title}{gv_sep}'}
+			{layout:set name='description' value='{seo_desc}'}
 			{!-- OpenGraph meta output --}
-			{layout:set name='og_title' value='{p_seo_title}'}
+			{layout:set name='og_title' value='{seo_title}'}
 			{layout:set name='og_url'}{path='{p_url}'}{/layout:set}
-			{layout:set name='og_description' value='{p_seo_desc}'}
+			{layout:set name='og_description' value='{seo_desc}'}
 			{!-- /layout vars, dynamic, not output --}
 
 			{!-- content output --}
 			<h1>{title} <span class="required">Required Fields &#10033;</span></h1>
-			{!-- p_content is a textarea with HTML output we don't need to wrap this tag with HTML as that is already included in it's output. --}
-			{p_content}
+			{!-- page_content is a textarea with HTML output we don't need to wrap this tag with HTML as that is already included in it's output. --}
+			{page_content}
 			{!-- /content output --}
 
 			{!--

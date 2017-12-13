@@ -57,24 +57,27 @@ class MenuManager extends Settings {
 	{
 		$table = ee('CP/Table');
 
-		$columns = array(
+		$columns = [
 			'set_name',
-			'set_assigned',
-			'manage' => array(
+			'set_assigned' => [
+				'sort' => FALSE
+			],
+			'manage' => [
 				'type'	=> Table::COL_TOOLBAR
-			),
-			array(
+			],
+			[
 				'type'	=> Table::COL_CHECKBOX
-			)
-		);
+			]
+		];
 
 		$table->setColumns($columns);
-		$sort_map = array(
-			'set_name' => 'name'
-		);
 
-		$sets = $sets->order($sort_map[$table->sort_col], $table->sort_dir)
-			->limit($table->config['limit'])
+		if ($table->sort_col == 'set_name')
+		{
+			$sets->order('name', $table->sort_dir);
+		}
+
+		$sets = $sets->limit($table->config['limit'])
 			->offset(($table->config['page'] - 1) * $table->config['limit'])
 			->all();
 
@@ -323,7 +326,7 @@ class MenuManager extends Settings {
 	 * Show the upper half of the create/edit form for a menu set. This includes
 	 * the name and selected member groups.
 	 *
-	 * @return Array of shared form sections
+	 * @return array of shared form sections
 	 */
 	private function mainForm(MenuSet $set)
 	{
@@ -396,7 +399,7 @@ class MenuManager extends Settings {
 	/**
 	 * Create the nested list of menu items for a given set
 	 *
-	 * @return Rendered HTML of selection form
+	 * @return array of form sections or the rendered html
 	 */
 	private function reorderList(MenuSet $set)
 	{

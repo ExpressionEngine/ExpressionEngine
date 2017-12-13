@@ -4,14 +4,10 @@ feature 'One-Click Updater' do
 
   before(:each) do
     Capybara.default_max_wait_time = 50
-
-    cp_session
-    @page = ControlPanelPage.new
-
     system = '../../system/'
+    @config_path = File.expand_path('user/config/config.php', system)
     @syspath = File.expand_path('ee/', system);
     @themespath = File.expand_path('../../themes/ee/');
-    @config_path = File.expand_path('user/config/config.php', system)
 
     # Set to 3.3.4, 3.4.0 is the earliest update file compatible with the new updater
     swap(
@@ -19,6 +15,9 @@ feature 'One-Click Updater' do
       /\$config\['app_version'\]\s+=\s+.*?;/,
       "$config['app_version'] = '3.3.4';"
     )
+
+    cp_session
+    @page = ControlPanelPage.new
   end
 
   after(:each) do
