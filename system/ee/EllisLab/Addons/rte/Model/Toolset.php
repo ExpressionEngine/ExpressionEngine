@@ -23,7 +23,14 @@ class Toolset extends Model {
 
 	protected static $_relationships = array(
 		'Member' => array(
-			'type' => 'belongsTo'
+			'type' => 'belongsTo',
+			'model' => 'ee:Member',
+			'weak' => TRUE,
+			'inverse' => array(
+				'name' => 'Toolset',
+				'type' => 'hasMany',
+				'weak' => TRUE
+			)
 		)
 	);
 

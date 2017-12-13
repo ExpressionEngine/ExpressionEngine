@@ -734,7 +734,9 @@ class EE_Session {
 	 */
 	public function nation_ban_check($show_error = TRUE)
 	{
-		if (ee()->config->item('require_ip_for_posting') != 'y' OR ! ee('Addon')->get('ip_to_nation')->isInstalled())
+		$ip_to_nation = ee('Addon')->get('ip_to_nation');
+
+		if (ee()->config->item('require_ip_for_posting') != 'y' OR ( ! $ip_to_nation OR ! $ip_to_nation->isInstalled()))
 		{
 			return FALSE;
 		}

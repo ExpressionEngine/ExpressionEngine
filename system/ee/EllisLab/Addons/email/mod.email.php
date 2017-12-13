@@ -768,9 +768,13 @@ class Email {
 		{
 			$return_link = $x[0];
 
-			if ($x[0] == '' OR ! preg_match('{^http(s)?:\/\/}i', $x[0]))
+			if ($x[0] == '')
 			{
 				$return_link = ee()->functions->form_backtrack(1);
+			}
+			elseif ( ! preg_match('{^http(s)?:\/\/}i', $x[0]))
+			{
+				$return_link = ee()->functions->create_url($x[0]);
 			}
 		}
 
@@ -994,14 +998,9 @@ class Email {
 
 		$charset = ee()->TMPL->fetch_param('charset', '');
 
-		// Get the URL
-		$uri_string = (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string;
-		$url = ee()->functions->fetch_site_index(0,0).'/'.$uri_string;
-
 		$allow_attachments = get_bool_from_string(ee()->TMPL->fetch_param('allow_attachments')) ? 'y' : 'n';
 
 		$data = array(
-			'action'        => reduce_double_slashes($url),
 			'id'            => (ee()->TMPL->form_id == '')
 				? $options['form_id']
 				: ee()->TMPL->form_id,

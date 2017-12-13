@@ -18,7 +18,14 @@ return array(
 	'models' => array(
 		'Tool' => 'Model\Tool',
 		'Toolset' => 'Model\Toolset'
+	),
+
+	'models.dependencies' => array(
+		'Toolset' => array(
+			'ee:Member'
+		),
 	)
+
 );
 
 // EOF

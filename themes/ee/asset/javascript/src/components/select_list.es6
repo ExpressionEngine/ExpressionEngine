@@ -77,7 +77,8 @@ class SelectList extends React.Component {
   }
 
   componentDidUpdate (prevProps, prevState) {
-    if (this.props.multi && prevProps.selected.length != this.props.selected.length) {
+    if ((this.props.multi && prevProps.selected.length != this.props.selected.length)
+      || ( ! this.props.multi && prevProps.selected != this.props.selected)) {
       $(this.input).trigger('change')
     }
 
@@ -358,14 +359,13 @@ class SelectList extends React.Component {
           )}
         </FieldInputs>
         { ! props.multi && props.tooMany && props.selected[0] &&
-          <SelectedItem name={props.name}
-            item={props.selected[0]}
+          <SelectedItem item={props.selected[0]}
             clearSelection={this.clearSelection}
           />
         }
         {/* Maintain a blank input to easily know when field is empty */}
-        {props.multi && props.selectable && props.selected.length == 0 &&
-          <input type="hidden" name={props.name + '[]'} value=''
+        {props.selectable && props.selected.length == 0 &&
+          <input type="hidden" name={props.multi ? props.name + '[]' : props.name} value=''
             ref={(input) => { this.input = input }} />
         }
         {props.selectable &&
@@ -469,20 +469,12 @@ class SelectItem extends React.Component {
 }
 
 class SelectedItem extends React.Component {
-  componentDidUpdate (prevProps, prevState) {
-    if (prevProps.item.value != this.props.item.value) {
-      $(this.input).trigger('change')
-    }
-  }
-
   render () {
     let props = this.props
     return (
       <div className="field-input-selected">
         <label>
           <span className="icon--success"></span> {props.item.label}
-          <input type="hidden" name={props.name} value={props.item.value}
-            ref={(input) => { this.input = input }} />
           <ul className="toolbar">
             <li className="remove"><a href="" onClick={props.clearSelection}></a></li>
           </ul>

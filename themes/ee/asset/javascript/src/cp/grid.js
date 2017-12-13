@@ -48,7 +48,7 @@ var Grid = window.Grid = {
  * @param	{string}	field		Selector of table to instantiate as a Grid
  */
 Grid.Publish = function(field, settings) {
-	if (field === null || field === undefined) {
+	if (field === null || field === undefined || $(field).closest('.fluid-field-templates').size() > 0) {
 		return;
 	}
 	this.root = $(field);

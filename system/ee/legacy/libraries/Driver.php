@@ -51,7 +51,6 @@ class EE_Driver_Library {
 	 */
 	public function load_driver($child)
 	{
-		// Get CodeIgniter instance and subclass prefix
 		$prefix = config_item('subclass_prefix');
 
 		if ( ! isset($this->lib_name))

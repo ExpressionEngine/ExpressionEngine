@@ -56,9 +56,7 @@ class Publishing extends Profile {
 					'fields' => array(
 						'rte_toolset_id' => array(
 							'type' => 'radio',
-							'choices' => array(
-								0 => lang('default')
-							),
+							'choices' => ee('Model')->get('rte:Toolset')->all()->getDictionary('toolset_id', 'name'),
 							'value' => $this->member->rte_toolset_id
 						),
 					)

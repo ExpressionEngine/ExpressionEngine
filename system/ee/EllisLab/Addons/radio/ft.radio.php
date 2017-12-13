@@ -51,7 +51,7 @@ class Radio_ft extends OptionFieldtype {
 					break;
 				}
 			}
-			elseif ((string) $key === $data)
+			elseif ($key == $data)
 			{
 				$valid = TRUE;
 				break;

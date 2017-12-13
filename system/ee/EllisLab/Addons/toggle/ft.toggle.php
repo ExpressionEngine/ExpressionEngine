@@ -60,6 +60,12 @@ class Toggle_ft extends EE_Fieldtype {
 	 */
 	public function save($data)
 	{
+		if ($this->get_setting('yes_no', FALSE))
+		{
+			return ($data == 'y') ? 'y' : 'n';
+
+		}
+
 		return (int) $data;
 	}
 
