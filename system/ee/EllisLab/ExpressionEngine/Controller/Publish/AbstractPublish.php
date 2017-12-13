@@ -419,24 +419,42 @@ abstract class AbstractPublish extends CP_Controller {
 			->delete();
 	}
 
-	protected function getPublishFormButtons($entry)
+	/**
+	 * Get Submit Buttons for Publish Edit Form
+	 * @param  ChannelEntry $entry ChannelEntry model entity
+	 * @return array Submit button array
+	 */
+	protected function getPublishFormButtons(ChannelEntry $entry)
 	{
 		$buttons = [
 			[
-				'name'    => 'submit',
-				'type'    => 'submit',
-				'value'   => 'save',
-				'text'    => 'save',
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save',
+				'text' => 'save',
 				'working' => 'btn_saving'
 			],
 			[
-				'name'    => 'submit',
-				'type'    => 'submit',
-				'value'   => 'save_and_new',
-				'text'    => 'save_and_new',
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_new',
+				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_close',
+				'text' => 'save_and_close',
 				'working' => 'btn_saving'
 			]
 		];
+
+		// get rid of Save & New button if we've reached the max entries for this channel
+		if ($entry->Channel->max_entries != 0 && $entry->Channel->total_records >= $entry->Channel->max_entries)
+		{
+			unset($buttons[1]);
+		}
 
 		if ($entry->Channel->LiveLookTemplate)
 		{
