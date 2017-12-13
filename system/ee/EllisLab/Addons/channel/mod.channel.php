@@ -374,22 +374,26 @@ class Channel {
 			foreach (['cfields', 'dfields', 'rfields', 'gfields',
 				'pfields', 'ffields', 'tfields'] as $custom_fields)
 			{
-				if ( ! isset($this->$custom_fields[0]))
+				$tmp = $this->$custom_fields;
+
+				if ( ! isset($tmp[0]))
 				{
 					continue;
 				}
 
 				foreach ($site_ids as $site_id)
 				{
-					if ( ! isset($this->$custom_fields[$site_id]))
+					if ( ! isset($tmp[$site_id]))
 					{
-						$this->$custom_fields[$site_id] = $this->$custom_fields[0];
+						$tmp[$site_id] = $tmp[0];
 					}
 					else
 					{
-						$this->$custom_fields[$site_id] = $this->$custom_fields[0] + $this->$custom_fields[$site_id];
+						$tmp[$site_id] = $tmp[0] + $tmp[$site_id];
 					}
 				}
+
+				$this->$custom_fields = $tmp;
 			}
 		}
 
