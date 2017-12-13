@@ -566,8 +566,9 @@ class Uploads extends AbstractFilesController {
 	private function validateUploadPreferences($upload_destination)
 	{
 		$upload_destination->set($_POST);
+		$cat_group = ee()->input->post('cat_group');
 
-		if ((count($this->input->post('cat_group')) > 0) && $this->input->post('cat_group'))
+		if ( ! empty($cat_group))
 		{
 			if ($_POST['cat_group'][0] == 0)
 			{

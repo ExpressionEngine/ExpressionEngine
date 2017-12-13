@@ -2702,7 +2702,11 @@ while (--j >= 0)
 		// on the domain and not the entire string.
 		if (isset($parts['host']))
 		{
-			$parts['host'] = idn_to_ascii($parts['host']);
+			$parts['host'] = idn_to_ascii(
+				$parts['host'],
+				0,
+				defined('INTL_IDNA_VARIANT_UTS46') ? INTL_IDNA_VARIANT_UTS46 : INTL_IDNA_VARIANT_2003
+			);
 		}
 
 		return $this->unparse_url($parts);

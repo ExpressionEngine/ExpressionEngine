@@ -81,7 +81,7 @@ if (REQ == 'CP')
 			$hidden['csrf_token'] = CSRF_TOKEN;
 		}
 
-		if (is_array($hidden) AND count($hidden > 0))
+		if (is_array($hidden) AND count($hidden) > 0)
 		{
 			$form .= form_hidden($hidden)."\n";
 		}
