@@ -54,6 +54,8 @@ class Fluid_field_parser {
 			return FALSE;
 		}
 
+		$this->_prefix = $pre_parser->prefix();
+
 		$fluid_field_ids = array();
 
 		// Validate matches
@@ -147,12 +149,10 @@ class Fluid_field_parser {
 		{
 			$tags[$field_name] = array();
 
-			$tag_variable = $fluid_field_name . ':' . $field_name;
-
 			$pchunks = ee()->api_channel_fields->get_pair_field(
 				$tagdata,
 				$field_name,
-				$fluid_field_name . ':'
+				$this->_prefix . $fluid_field_name . ':'
 			);
 
 			foreach ($pchunks as $chk_data)
