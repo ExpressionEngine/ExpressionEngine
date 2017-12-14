@@ -82,7 +82,7 @@ class Relationship_model extends CI_Model {
 		$db->select('L0.order');
 		$db->from($this->_table.' as L0');
 
-		if ( ! is_null($fluid_field_data_id))
+		if (is_numeric($fluid_field_data_id))
 		{
 			$db->where('L0.fluid_field_data_id', $fluid_field_data_id);
 		}
@@ -172,16 +172,18 @@ class Relationship_model extends CI_Model {
 		//
 		// -------------------------------------------
 
-		return $this->overrideWithPreviewData($result);
+		return $this->overrideWithPreviewData($result, $fluid_field_data_id);
 	}
 
-	private function overrideWithPreviewData($result_array)
+	private function overrideWithPreviewData($result_array, $fluid_field_data_id)
 	{
 		$result = [];
 		$fields = [];
 
 		if (($data = ee()->session->cache('channel_entry', 'live-preview', FALSE)) !== FALSE)
 		{
+			$entry_id = $data['entry_id'];
+
 			foreach ($result_array as $i => $row)
 			{
 				if ($row['L0_parent'] != $data['entry_id'])
@@ -191,6 +193,18 @@ class Relationship_model extends CI_Model {
 				}
 
 				$fields[$row['L0_field']] = TRUE;
+			}
+
+			if ($fluid_field_data_id)
+			{
+				list($fluid_field, $field_id) = explode(',', $fluid_field_data_id);
+				$data = $data[$fluid_field]['fields'][$field_id];
+
+				foreach (array_keys($data) as $rel_field)
+				{
+					$field_id = (int) str_replace('field_id_', '', $rel_field);
+					$fields[$field_id] = TRUE;
+				}
 			}
 
 			foreach (array_keys($fields) as $field_id)
@@ -204,7 +218,7 @@ class Relationship_model extends CI_Model {
 							'L0_grid_field_id' => 0,
 							'L0_grid_col_id' => 0,
 							'L0_grid_row_id' => 0,
-							'L0_parent' => $data['entry_id'],
+							'L0_parent' => $entry_id,
 							'L0_id' => $id,
 							'order' => $order,
 						];

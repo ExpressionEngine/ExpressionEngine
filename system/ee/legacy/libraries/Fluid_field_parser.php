@@ -271,12 +271,13 @@ class Fluid_field_parser {
 					{
 						if (strpos($k, 'field_id_') === 0)
 						{
-							$field_id = str_replace('field_id_', '', $k);
+							$field_id = (int) str_replace('field_id_', '', $k);
 							break;
 						}
 					}
 
 					$fluid_field = ee('Model')->make('fluid_field:FluidField');
+					$fluid_field->setId("field_id_{$fluid_field_id},{$key}");
 					$fluid_field->fluid_field_id = $fluid_field_id;
 					$fluid_field->entry_id = $entry_id;
 					$fluid_field->field_id = $field_id;
