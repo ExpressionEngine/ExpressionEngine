@@ -1380,9 +1380,9 @@ GRID_FALLBACK;
 				$this->fetch_logged_out_member($logged_out_member_id);
 			}
 		}
-		elseif ($this->channel('channel_id') && ! ee()->session->userdata('member_id') &&  ! empty($this->settings['default_author'][ee()->config->item('site_id')][$this->channel('channel_id')]))
+		elseif ($this->channel('channel_id') && ! ee()->session->userdata('member_id') &&  ! empty($this->settings['default_author'][$this->_meta['site_id']][$this->channel('channel_id')]))
 		{
-			$this->fetch_logged_out_member($this->settings['default_author'][ee()->config->item('site_id')][$this->channel('channel_id')]);
+			$this->fetch_logged_out_member($this->settings['default_author'][$this->_meta['site_id']][$this->channel('channel_id')]);
 		}
 
 		$member_id = ee()->session->userdata('member_id') ?: $this->logged_out_member_id;
@@ -2309,9 +2309,9 @@ GRID_FALLBACK;
 			return;
 		}
 
-		if ( ! $logged_out_member_id && $this->channel('channel_id') && ! empty($this->settings['allow_guest_posts'][ee()->config->item('site_id')][$this->channel('channel_id')]) && ! empty($this->settings['default_author'][ee()->config->item('site_id')][$this->channel('channel_id')]))
+		if ( ! $logged_out_member_id && $this->channel('channel_id') && ! empty($this->settings['allow_guest_posts'][ee()->config->item('site_id')][$this->channel('channel_id')]) && ! empty($this->settings['default_author'][$this->_meta['site_id']][$this->channel('channel_id')]))
 		{
-			$logged_out_member_id = $this->settings['default_author'][ee()->config->item('site_id')][$this->channel('channel_id')];
+			$logged_out_member_id = $this->settings['default_author'][$this->_meta['site_id']][$this->channel('channel_id')];
 		}
 
 		$logged_out_member_id = $this->sanitize_int($logged_out_member_id);
