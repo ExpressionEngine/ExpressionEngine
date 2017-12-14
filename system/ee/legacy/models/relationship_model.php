@@ -172,9 +172,49 @@ class Relationship_model extends CI_Model {
 		//
 		// -------------------------------------------
 
-		return $result;
+		return $this->overrideWithPreviewData($result);
 	}
 
+	private function overrideWithPreviewData($result_array)
+	{
+		$result = [];
+		$fields = [];
+
+		if (($data = ee()->session->cache('channel_entry', 'live-preview', FALSE)) !== FALSE)
+		{
+			foreach ($result_array as $i => $row)
+			{
+				if ($row['L0_parent'] != $data['entry_id'])
+				{
+					$result[] = $row;
+					continue;
+				}
+
+				$fields[$row['L0_field']] = TRUE;
+			}
+
+			foreach (array_keys($fields) as $field_id)
+			{
+				if (isset($data['field_id_' . $field_id]) && array_key_exists('data', $data['field_id_' . $field_id]))
+				{
+					foreach ($data['field_id_' . $field_id]['data'] as $order => $id)
+					{
+						$result[] = [
+							'L0_field' => $field_id,
+							'L0_grid_field_id' => 0,
+							'L0_grid_col_id' => 0,
+							'L0_grid_row_id' => 0,
+							'L0_parent' => $data['entry_id'],
+							'L0_id' => $id,
+							'order' => $order,
+						];
+					}
+				}
+			}
+		}
+
+		return $result;
+	}
 
 	/**
 	 * Branch length utility method.
