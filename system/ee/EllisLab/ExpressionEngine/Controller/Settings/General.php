@@ -247,7 +247,16 @@ class General extends Settings {
 	 */
 	public function versionCheck()
 	{
-		ee()->cache->delete('current_version', \Cache::GLOBAL_SCOPE);
+		if (ee()->config->item('cache_driver') == 'dummy')
+		{
+			$cache = ee()->cache->file;
+		}
+		else
+		{
+			$cache = ee()->cache;
+		}
+
+		$cache->delete('current_version', \Cache::GLOBAL_SCOPE);
 
 		ee()->load->library('el_pings');
 		$version_info = ee()->el_pings->get_version_info();
