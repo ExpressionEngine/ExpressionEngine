@@ -177,11 +177,12 @@ class Relationship_model extends CI_Model {
 
 	private function overrideWithPreviewData($result_array, $fluid_field_data_id)
 	{
-		$result = [];
+		$result = $result_array;
 		$fields = [];
 
 		if (($data = ee()->session->cache('channel_entry', 'live-preview', FALSE)) !== FALSE)
 		{
+			$result = [];
 			$entry_id = $data['entry_id'];
 
 			foreach ($result_array as $i => $row)
