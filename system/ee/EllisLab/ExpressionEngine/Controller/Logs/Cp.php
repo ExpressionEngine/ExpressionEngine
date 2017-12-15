@@ -61,7 +61,6 @@ class Cp extends Logs {
 
 		if ( ! empty($this->params['filter_by_username']))
 		{
-			echo 'hi';
 			$logs = $logs->filter('member_id', 'IN', $this->params['filter_by_username']);
 		}
 

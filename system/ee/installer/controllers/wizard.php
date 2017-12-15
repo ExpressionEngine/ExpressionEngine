@@ -12,7 +12,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '4.0.2';	// The version being installed
+	public $version           = '4.0.3';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -83,6 +83,8 @@ class Wizard extends CI_Controller {
 		'db_password'           => '',
 		'db_name'               => '',
 		'db_prefix'             => 'exp',
+		'db_char_set'           => 'utf8',
+		'db_collat'             => 'utf8_unicode_ci',
 		'site_label'            => '',
 		'site_name'             => 'default_site',
 		'site_url'              => '',
@@ -749,8 +751,8 @@ class Wizard extends CI_Controller {
 			'db_debug' => TRUE, // We show our own errors
 			'cache_on' => FALSE,
 			'autoinit' => FALSE, // We'll initialize the DB manually
-			'char_set' => 'utf8mb4',
-			'dbcollat' => 'utf8mb4_unicode_ci',
+			'char_set' => $this->userdata['db_char_set'],
+			'dbcollat' => $this->userdata['db_collat']
 		);
 
 		// we did some db connections on form validation callbacks so let's reset here to test specific compatibilities
@@ -770,9 +772,6 @@ class Wizard extends CI_Controller {
 			// Fallback to UTF8 if we cannot do UTF8MB4
 			if ( ! $this->isUtf8mb4Supported())
 			{
-				$db['char_set'] = 'utf8';
-				$db['dbcollat'] = 'utf8_unicode_ci';
-
 				if (is_null($this->userdata['utf8mb4_supported']))
 				{
 					$which = '';
@@ -795,8 +794,12 @@ class Wizard extends CI_Controller {
 					$this->userdata['utf8mb4_supported'] = FALSE;
 					$errors[] = sprintf(lang('utf8mb4_not_supported'), $which);
 				}
+			}
+			else
+			{
+				$db['char_set'] = $this->userdata['db_char_set'] = 'utf8mb4';
+				$db['dbcollat'] = $this->userdata['db_collat'] = 'utf8mb4_unicode_ci';
 
-				// Need to reset the connection based on the above settings.
 				ee('Database')->closeConnection();
 				$this->db_connect($db);
 			}
@@ -1593,6 +1596,8 @@ class Wizard extends CI_Controller {
 			'db_password'               => $this->userdata['db_password'],
 			'db_database'               => $this->userdata['db_name'],
 			'db_dbprefix'               => $this->getDbPrefix(),
+			'db_char_set'               => $this->userdata['db_char_set'],
+			'db_collat'                 => $this->userdata['db_collat'],
 			'app_version'               => $this->userdata['app_version'],
 			'debug'                     => '1',
 			'site_index'                => $this->userdata['site_index'],

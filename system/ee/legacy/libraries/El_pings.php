@@ -14,6 +14,20 @@
 class El_pings {
 
 	protected $ping_result;
+	protected $cache;
+
+	public function __construct()
+	{
+		// License and version pings should still be cached if caching is disabled
+		if (ee()->config->item('cache_driver') == 'dummy')
+		{
+			$this->cache = ee()->cache->file;
+		}
+		else
+		{
+			$this->cache = ee()->cache;
+		}
+	}
 
 	/**
 	 * Is Registered?
@@ -28,7 +42,7 @@ class El_pings {
 			return FALSE;
 		}
 
-		$cached = ee()->cache->get('software_registration', Cache::GLOBAL_SCOPE);
+		$cached = $this->cache->get('software_registration', Cache::GLOBAL_SCOPE);
 		$exp_response = md5($license->getData('license_number').$license->getData('license_contact'));
 
 		if ( ! $cached OR $cached != $exp_response)
@@ -51,19 +65,19 @@ class El_pings {
 				if ( ! $registration = $this->_do_ping('https://ping.ellislab.com/register.php', $payload))
 				{
 					// save the failed request for a day only
-					ee()->cache->save('software_registration', $exp_response, 60*60*24, Cache::GLOBAL_SCOPE);
+					$this->cache->save('software_registration', $exp_response, 60*60*24, Cache::GLOBAL_SCOPE);
 				}
 				else
 				{
 					if ($registration != $exp_response)
 					{
 						// may have been a server error, save the failed request for a day
-						ee()->cache->save('software_registration', $exp_response, 60*60*24, Cache::GLOBAL_SCOPE);
+						$this->cache->save('software_registration', $exp_response, 60*60*24, Cache::GLOBAL_SCOPE);
 					}
 					else
 					{
 						// keep for two weeks
-						ee()->cache->save('software_registration', $registration, 60*60*24*7*2, Cache::GLOBAL_SCOPE);
+						$this->cache->save('software_registration', $registration, 60*60*24*7*2, Cache::GLOBAL_SCOPE);
 					}
 				}
 			}
@@ -89,7 +103,7 @@ class El_pings {
 	public function get_version_info()
 	{
 		// Attempt to grab the local cached file
-		$cached = ee()->cache->get('current_version', Cache::GLOBAL_SCOPE);
+		$cached = $this->cache->get('current_version', Cache::GLOBAL_SCOPE);
 
 		if ( ! $cached)
 		{
@@ -105,7 +119,7 @@ class El_pings {
 			$version_file = json_decode($version_file, TRUE);
 
 			// Cache version information for a day
-			ee()->cache->save(
+			$this->cache->save(
 				'current_version',
 				$version_file,
 				60 * 60 * 24,

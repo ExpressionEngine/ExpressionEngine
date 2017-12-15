@@ -285,15 +285,15 @@ class Member_model extends CI_Model {
 	 */
 	function get_member_quicklinks($member_id = FALSE)
 	{
-		$query = $this->get_member_data($member_id, array('quick_links'));
+		$quicklinks_query = $this->get_member_data($member_id, array('quick_links'))->row('quick_links');
 
 		$i = 1;
 
 		$quicklinks = array();
 
-		if (count($query->row('quick_links')) != 0 AND $query->row('quick_links') != '')
+		if ( ! empty($quicklinks_query))
 		{
-			foreach (explode("\n", $query->row('quick_links') ) as $row)
+			foreach (explode("\n", $quicklinks_query) as $row)
 			{
 				$x = explode('|', $row);
 

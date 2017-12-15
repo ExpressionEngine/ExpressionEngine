@@ -143,13 +143,11 @@ if ($can_create_channels || count($menu['channels']['create'])): ?>
 							<li>
 								<a class="has-sub" href=""><?=lang('create_new')?></a>
 								<div class="sub-menu">
-									<div class="scroll-wrap">
-										<ul>
-											<?php foreach ($menu['channels']['create'] as $channel_name => $link): ?>
-												<li><a href="<?=$link?>"><?=$channel_name?></a></li>
-											<?php endforeach ?>
-										</ul>
-									</div>
+									<ul>
+										<?php foreach ($menu['channels']['create'] as $channel_name => $link): ?>
+											<li><a href="<?=$link?>"><?=$channel_name?></a></li>
+										<?php endforeach ?>
+									</ul>
 								</div>
 							</li>
 						</ul>
