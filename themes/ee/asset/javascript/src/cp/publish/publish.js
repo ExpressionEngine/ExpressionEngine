@@ -78,15 +78,13 @@ $(document).ready(function () {
 		var iframe      = $('iframe.live-preview__frame')[0],
 		    preview_url = $(iframe).data('url');
 
-		iframe.contentDocument.body.innerHTML = '';
-
 		$.ajax({
 			type: "POST",
 			dataType: 'html',
 			url: preview_url,
 			data: publishForm.serialize(),
 			success: function(result) {
-				iframe.contentDocument.body.innerHTML = result;
+				iframe.src = "data:text/html;charset=utf-8," + escape(result);
 			}
 		});
 
