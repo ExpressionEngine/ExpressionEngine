@@ -1404,9 +1404,9 @@ GRID_FALLBACK;
 				$this->fetch_logged_out_member($logged_out_member_id);
 			}
 		}
-		elseif ($this->channel('channel_id') && ! ee()->session->userdata('member_id') &&  ! empty($this->settings['default_author'][ee()->config->item('site_id')][$this->channel('channel_id')]))
+		elseif ($this->channel('channel_id') && ! ee()->session->userdata('member_id') &&  ! empty($this->settings['default_author'][$this->_meta['site_id']][$this->channel('channel_id')]))
 		{
-			$this->fetch_logged_out_member($this->settings['default_author'][ee()->config->item('site_id')][$this->channel('channel_id')]);
+			$this->fetch_logged_out_member($this->settings['default_author'][$this->_meta['site_id']][$this->channel('channel_id')]);
 		}
 
 		$member_id = ee()->session->userdata('member_id') ?: $this->logged_out_member_id;
@@ -1671,9 +1671,9 @@ GRID_FALLBACK;
 		}
 
 		//don't override status on edit, only on publish
-		if ( ! $this->edit && ! empty($this->settings['default_status'][ee()->config->item('site_id')][ee()->input->post('channel_id')]))
+		if ( ! $this->edit && ! empty($this->settings['default_status'][$this->_meta['site_id']][ee()->input->post('channel_id')]))
 		{
-			$_POST['status'] = $this->settings['default_status'][ee()->config->item('site_id')][$this->_meta['channel_id']];
+			$_POST['status'] = $this->settings['default_status'][$this->_meta['site_id']][$this->_meta['channel_id']];
 		}
 
 		if ( ! $this->edit && is_array($this->_meta['category']))
