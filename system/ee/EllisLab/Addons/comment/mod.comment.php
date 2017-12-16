@@ -591,7 +591,7 @@ class Comment {
 		$search_link = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
 
 		$comments = ee('Model')->get('Comment', $result_ids)
-			->with('Author', 'Channel')
+			->with('Author', 'Channel', 'Entry')
 			->order($order_by, $this_sort)
 			->all();
 
@@ -602,7 +602,28 @@ class Comment {
 			$results = array();
 			foreach ($comments as $comment)
 			{
-				$values = array_merge($comment->getValues(), $comment->Channel->getValues());
+				// add in Channel and Entry details, being careful not to override data common to the comment (e.g. author_id)
+				$channel_details = [
+					'channel_short_name'      => $comment->Channel->channel_name,
+					'channel_title'           => $comment->Channel->channel_title,
+					'channel_url'             => $comment->Channel->channel_url,
+					'comment_allow_img_urls'  => $comment->Channel->comment_allow_img_urls,
+					'comment_auto_link_urls'  => $comment->Channel->comment_auto_link_urls,
+					'comment_html_formatting' => $comment->Channel->comment_html_formatting,
+					'comment_system_enabled'  => $comment->Channel->comment_system_enabled,
+					'comment_text_formatting' => $comment->Channel->comment_text_formatting,
+					'comment_url'             => $comment->Channel->comment_url,
+				];
+
+				$entry_details = [
+					'allow_comments'          => $comment->Entry->allow_comments,
+					'comment_expiration_date' => $comment->Entry->comment_expiration_date,
+					'entry_author_id'         => $comment->Entry->author_id,
+					'title'                   => $comment->Entry->title,
+					'url_title'               => $comment->Entry->url_title,
+				];
+
+				$values = array_merge($comment->getValues(), $channel_details, $entry_details);
 				unset($values['location'], $values['site_id']);
 				$values['c_location'] = $comment->location;
 				$values['comment_site_id'] = $comment->site_id;
