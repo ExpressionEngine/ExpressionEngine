@@ -70,6 +70,19 @@ class Relationship_model extends CI_Model {
 			$relative_parent = 'L0.grid_row_id';
 		}
 
+		if (($data = ee()->session->cache('channel_entry', 'live-preview', FALSE)) !== FALSE)
+		{
+			$entry_ids = array_filter($entry_ids, function($entry_id) use ($data)
+			{
+				return $entry_id != $data['entry_id'];
+			});
+		}
+
+		if (empty($entry_ids))
+		{
+			return $this->overrideWithPreviewData([], $type, $fluid_field_data_id);
+		}
+
 		$db = $this->db;
 
 		$db->distinct();
@@ -172,31 +185,33 @@ class Relationship_model extends CI_Model {
 		//
 		// -------------------------------------------
 
-		return $this->overrideWithPreviewData($result, $fluid_field_data_id);
+		return $this->overrideWithPreviewData($result, $type, $fluid_field_data_id);
 	}
 
-	private function overrideWithPreviewData($result_array, $fluid_field_data_id)
+	private function overrideWithPreviewData($result, $type, $fluid_field_data_id)
 	{
-		$result = $result_array;
-		$fields = [];
-
 		if (($data = ee()->session->cache('channel_entry', 'live-preview', FALSE)) !== FALSE)
 		{
-			$result = [];
 			$entry_id = $data['entry_id'];
 
-			foreach ($result_array as $i => $row)
+			$channel = ee('Model')->get('Channel', $data['channel_id'])->first();
+			$all_fields = $channel->getAllCustomFields();
+
+			$rel_fields = $all_fields->filter(function($field)
 			{
-				if ($row['L0_parent'] != $data['entry_id'])
+				return $field->field_type == 'relationship';
+			})->pluck('field_id');
+
+			if ($type == self::GRID)
+			{
+				$grid_fields = $all_fields->filter(function($field)
 				{
-					$result[] = $row;
-					continue;
-				}
+					return $field->field_type == 'grid';
+				});
 
-				$fields[$row['L0_field']] = TRUE;
+				return $this->overrideGridRelationships($result, $data, $grid_fields);
 			}
-
-			if ($fluid_field_data_id)
+			elseif ($fluid_field_data_id)
 			{
 				list($fluid_field, $field_id) = explode(',', $fluid_field_data_id);
 				$data = $data[$fluid_field]['fields'][$field_id];
@@ -204,11 +219,11 @@ class Relationship_model extends CI_Model {
 				foreach (array_keys($data) as $rel_field)
 				{
 					$field_id = (int) str_replace('field_id_', '', $rel_field);
-					$fields[$field_id] = TRUE;
+					$rel_fields[] = $field_id;
 				}
 			}
 
-			foreach (array_keys($fields) as $field_id)
+			foreach ($rel_fields as $field_id)
 			{
 				if (isset($data['field_id_' . $field_id]) && array_key_exists('data', $data['field_id_' . $field_id]))
 				{
@@ -223,6 +238,56 @@ class Relationship_model extends CI_Model {
 							'L0_id' => $id,
 							'order' => $order,
 						];
+					}
+				}
+			}
+		}
+
+		return $result;
+	}
+
+	private function overrideGridRelationships($result, $data, $grid_fields)
+	{
+		foreach ($grid_fields as $grid_field)
+		{
+			$field_id = $grid_field->getId();
+
+			// Don't bother if we don't have the field, if it doesn't have the row
+			// data, or if it has no rows.
+			if ( ! isset($data['field_id_' . $field_id])
+				|| ! isset($data['field_id_' . $field_id]['rows'])
+				|| empty($data['field_id_' . $field_id]['rows']))
+			{
+				continue;
+			}
+
+			$columns = [];
+			foreach (ee()->grid_model->get_columns_for_field($field_id, 'channel') as $column)
+			{
+				if ($column['col_type'] == 'relationship')
+				{
+					$columns[] = $column['col_id'];
+				}
+			}
+
+			foreach ($data['field_id_' . $field_id]['rows'] as $row_id => $row)
+			{
+				foreach ($columns as $col_id)
+				{
+					if (isset($row['col_id_' . $col_id]['data']))
+					{
+						foreach ($row['col_id_' . $col_id]['data'] as $order => $id)
+						{
+							$result[] = [
+								'L0_field' => $col_id,
+								'L0_grid_field_id' => $field_id,
+								'L0_grid_col_id' => $col_id,
+								'L0_grid_row_id' => crc32($row_id),
+								'L0_parent' => crc32($row_id),
+								'L0_id' => (int) $id,
+								'order' => $order + 1,
+							];
+						}
 					}
 				}
 			}

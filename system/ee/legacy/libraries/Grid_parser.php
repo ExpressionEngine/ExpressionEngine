@@ -745,13 +745,13 @@ class Grid_parser {
 				&& isset($data['field_id_' . $field_id]))
 			{
 				$override = [];
-				$i = 1;
+				$i = 0;
 				foreach ($data['field_id_' . $field_id]['rows'] as $row_id => $row_data)
 				{
 					$override[$i] = [
-						'row_id' => $i,
+						'row_id' => crc32($row_id),
 						'entry_id' => $entry_id,
-						'row_order' => $i - 1,
+						'row_order' => $i,
 						'fluid_field_data_id' => 0
 					] + $row_data;
 					$i++;
