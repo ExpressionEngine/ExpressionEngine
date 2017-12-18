@@ -31,7 +31,7 @@ class PublishTest extends \PHPUnit_Framework_TestCase {
 
 		sort($controller_methods);
 
-		$this->assertEquals(array('authorlist', 'autosave', 'create', 'field', 'relationshipfilter'), $controller_methods);
+		$this->assertEquals(array('authorlist', 'autosave', 'create', 'field', 'preview', 'relationshipfilter'), $controller_methods);
 	}
 
 }
