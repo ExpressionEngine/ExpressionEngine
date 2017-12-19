@@ -74,7 +74,7 @@ class LegacyParser {
 	{
 		if ($param_string == "")
 		{
-			return [];
+			return $defaults;
 		}
 
 		// remove comments before assigning
@@ -113,7 +113,7 @@ class LegacyParser {
 			return $result;
 		}
 
-		return [];
+		return $defaults;
 	}
 
 	/**
