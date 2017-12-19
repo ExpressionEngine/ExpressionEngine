@@ -31,7 +31,7 @@ class ViewHelpers {
 		$return_array = [];
 		foreach ($choices as $value => $label)
 		{
-			if ( ! $disable_headings && is_array($label) && is_string($value))
+			if ( ! $disable_headings && is_array($label))
 			{
 				$return_array[] = ['section' => $value];
 				$return_array = array_merge($return_array, $this->normalizedChoices($label, $disable_headings));
