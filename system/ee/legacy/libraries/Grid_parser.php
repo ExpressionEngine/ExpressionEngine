@@ -735,11 +735,12 @@ class Grid_parser {
 		return $this->call($parse_fnc, $params, TRUE);
 	}
 
-	private function overrideWithPreviewData($entry_data, $field_id, $fluid_field_data_id)
+	private function overrideWithPreviewData($entry_data, $field_id, $fluid_field_data_id = 0)
 	{
 		if (($data = ee()->session->cache('channel_entry', 'live-preview', FALSE)) !== FALSE)
 		{
 			$entry_id = $data['entry_id'];
+			$fluid_field = 0;
 
 			if ($fluid_field_data_id)
 			{
@@ -758,7 +759,7 @@ class Grid_parser {
 						'row_id' => crc32($row_id),
 						'entry_id' => $entry_id,
 						'row_order' => $i,
-						'fluid_field_data_id' => 0
+						'fluid_field_data_id' => $fluid_field_data_id
 					] + $row_data;
 					$i++;
 				}

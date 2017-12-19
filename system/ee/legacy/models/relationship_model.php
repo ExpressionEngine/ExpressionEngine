@@ -209,7 +209,7 @@ class Relationship_model extends CI_Model {
 					return $field->field_type == 'grid';
 				});
 
-				return $this->overrideGridRelationships($result, $data, $grid_fields);
+				return $this->overrideGridRelationships($result, $data, $grid_fields, $fluid_field_data_id);
 			}
 			elseif ($fluid_field_data_id)
 			{
@@ -246,11 +246,17 @@ class Relationship_model extends CI_Model {
 		return $result;
 	}
 
-	private function overrideGridRelationships($result, $data, $grid_fields)
+	private function overrideGridRelationships($result, $data, $grid_fields, $fluid_field_data_id = 0)
 	{
 		foreach ($grid_fields as $grid_field)
 		{
 			$field_id = $grid_field->getId();
+
+			if ($fluid_field_data_id)
+			{
+				list($fluid_field, $sub_field_id) = explode(',', $fluid_field_data_id);
+				$data = $data[$fluid_field]['fields'][$sub_field_id];
+			}
 
 			// Don't bother if we don't have the field, if it doesn't have the row
 			// data, or if it has no rows.
