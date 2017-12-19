@@ -127,7 +127,7 @@ class Grid_parser {
 
 		ee()->load->model('grid_model');
 		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $field_id, $content_type, $params, FALSE, $fluid_field_data_id);
-		$entry_data = $this->overrideWithPreviewData($entry_data, $field_id);
+		$entry_data = $this->overrideWithPreviewData($entry_data, $field_id, $fluid_field_data_id);
 
 		// Bail out if no entry data
 		if ($entry_data === FALSE OR ! isset($entry_data[$entry_id]))
@@ -735,11 +735,17 @@ class Grid_parser {
 		return $this->call($parse_fnc, $params, TRUE);
 	}
 
-	private function overrideWithPreviewData($entry_data, $field_id)
+	private function overrideWithPreviewData($entry_data, $field_id, $fluid_field_data_id)
 	{
 		if (($data = ee()->session->cache('channel_entry', 'live-preview', FALSE)) !== FALSE)
 		{
 			$entry_id = $data['entry_id'];
+
+			if ($fluid_field_data_id)
+			{
+				list($fluid_field, $sub_field_id) = explode(',', $fluid_field_data_id);
+				$data = $data[$fluid_field]['fields'][$sub_field_id];
+			}
 
 			if (array_key_exists($entry_id, $entry_data)
 				&& isset($data['field_id_' . $field_id]))
