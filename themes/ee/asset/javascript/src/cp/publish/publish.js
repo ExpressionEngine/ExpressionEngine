@@ -84,7 +84,9 @@ $(document).ready(function () {
 			url: preview_url,
 			data: publishForm.serialize(),
 			success: function(result) {
-				iframe.src = "data:text/html;charset=utf-8," + escape(result);
+				iframe.contentDocument.open();
+				iframe.contentDocument.write(result);
+				iframe.contentDocument.close();
 			}
 		});
 
