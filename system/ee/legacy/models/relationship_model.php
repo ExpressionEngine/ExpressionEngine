@@ -70,7 +70,11 @@ class Relationship_model extends CI_Model {
 			$relative_parent = 'L0.grid_row_id';
 		}
 
-		if (($data = ee()->session->cache('channel_entry', 'live-preview', FALSE)) !== FALSE)
+		// If we have preview data don't run a query for the entry we are previewing
+		// unless the tag we are processing is `{parents}` in which case we need to let
+		// that query run since that data isn't being overwritten.
+		if (($data = ee()->session->cache('channel_entry', 'live-preview', FALSE)) !== FALSE
+			&& $type != self::PARENT)
 		{
 			$entry_ids = array_filter($entry_ids, function($entry_id) use ($data)
 			{
