@@ -19,7 +19,7 @@ $disabled_choices = isset($disabled_choices) ? $disabled_choices : [];
 
 // Normalize choices into an array to keep order of items, order cannot be
 // counted on in a JavaScript object
-$normalized_choices = ee('View/Helpers')->normalizedChoices($choices, $nested);
+$normalized_choices = ee('View/Helpers')->normalizedChoices($choices, $nested ?: NULL);
 
 $has_groupings = FALSE;
 foreach ($normalized_choices as $key => $choice)
