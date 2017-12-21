@@ -110,7 +110,7 @@ class El_pings {
 			try
 			{
 				$version_file = ee('Curl')->post(
-					'https://update.expressssssionengine.com',
+					'https://update.expressionengine.com',
 					[
 						'action' => 'check_new_version',
 						'license' => ee('License')->getEELicense()->getRawLicense(),
