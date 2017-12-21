@@ -107,16 +107,24 @@ class El_pings {
 
 		if ( ! $cached)
 		{
-			$version_file = ee('Curl')->post(
-				'https://update.expressionengine.com',
-				[
-					'action' => 'check_new_version',
-					'license' => ee('License')->getEELicense()->getRawLicense(),
-					'version' => ee()->config->item('app_version'),
-				]
-			)->exec();
+			try
+			{
+				$version_file = ee('Curl')->post(
+					'https://update.expressssssionengine.com',
+					[
+						'action' => 'check_new_version',
+						'license' => ee('License')->getEELicense()->getRawLicense(),
+						'version' => ee()->config->item('app_version'),
+					]
+				)->exec();
 
-			$version_file = json_decode($version_file, TRUE);
+				$version_file = json_decode($version_file, TRUE);
+			}
+			catch (\Exception $e)
+			{
+				// don't scare the user with whatever random error, but store it for debugging
+				$version_file = $e->getMessage();
+			}
 
 			// Cache version information for a day
 			$this->cache->save(
