@@ -340,13 +340,13 @@ $(document).ready(function(){
 					setTimeout(function() {
 						$('.app-modal---open').removeClass('app-modal---open');
 					}, 500);
-				}
 
-				// disappear the preview
-				$('.live-preview---open').addClass('live-preview---closed');
-				setTimeout(function() {
-					$('.live-preview---open').removeClass('live-preview---open');
-				}, 500);
+					// disappear the preview
+					$('.live-preview---open').addClass('live-preview---closed');
+					setTimeout(function() {
+						$('.live-preview---open').removeClass('live-preview---open');
+					}, 500);
+				}
 
 				// distract the actor
 				$('.app-overlay---open').addClass('app-overlay---closed');
