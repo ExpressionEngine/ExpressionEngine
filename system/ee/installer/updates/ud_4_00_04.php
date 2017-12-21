@@ -7,7 +7,7 @@
  * @license   https://expressionengine.com/license
  */
 
-namespace EllisLab\ExpressionEngine\Updater\Version_4_0_1;
+namespace EllisLab\ExpressionEngine\Updater\Version_4_0_4;
 
 /**
  * Update
@@ -25,8 +25,7 @@ class Updater {
 	{
 		$steps = new \ProgressIterator(
 			array(
-				'removeOrhpanedLayouts',
-				'resyncLayouts'
+				'removeOrhpanedLayouts'
 			)
 		);
 
@@ -52,15 +51,6 @@ class Updater {
 				->delete();
 		}
 	}
-
-	private function resyncLayouts()
-	{
-		ee('Model')->get('ChannelLayout')
-			->with('Channel')
-			->all()
-			->synchronize();
-	}
-
 }
 // END CLASS
 
