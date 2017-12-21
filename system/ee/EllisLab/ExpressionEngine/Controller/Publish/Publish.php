@@ -352,7 +352,7 @@ class Publish extends AbstractPublishController {
 		}
 
 		$entry->set($_POST);
-		$data = array_merge($entry->getRawValues(), $channel->getRawValues(), $entry->Author->getRawValues());
+		$data = array_merge($entry->getValues(), $channel->getValues(), $entry->Author->getValues());
 		$data['entry_site_id'] = $entry->site_id;
 
 		ee()->session->set_cache('channel_entry', 'live-preview', $data);
