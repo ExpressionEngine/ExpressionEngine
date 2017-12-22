@@ -51,6 +51,8 @@ $lang = array(
 
 'click_to_edit' => 'Click to Edit',
 
+'close_modal' => 'Close modal',
+
 'consult_user_guide' => 'Consult User Guide',
 
 'control_panel' => 'Control Panel',
@@ -148,6 +150,10 @@ $lang = array(
 'unauthorized' => 'Unauthorized',
 
 'unauthorized_access' => 'You are not authorized to access this page',
+
+'update_check_btn' => 'Check for Update',
+
+'update_btn' => 'Update Now',
 
 'user_account' => 'Member Account',
 

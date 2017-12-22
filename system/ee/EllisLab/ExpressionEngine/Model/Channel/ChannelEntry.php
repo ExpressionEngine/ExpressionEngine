@@ -1122,7 +1122,7 @@ class ChannelEntry extends ContentModel {
 
 	public function getModChannelResultsArray()
 	{
-		$data = array_merge($this->getValues(), $this->Channel->getValues(), $this->Author->getValues());
+		$data = array_merge($this->getValues(), $this->Channel->getRawValues(), $this->Author->getValues());
 		$data['entry_site_id'] = $this->site_id;
 		if ($this->edit_date)
 		{

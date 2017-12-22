@@ -655,7 +655,7 @@ class Channels extends AbstractChannelsController {
 
 		$selected = ee('Request')->post('cat_group') ?: [];
 
-		if ($channel)
+		if ($channel && ! empty($channel->cat_group))
 		{
 			$selected = explode('|', $channel->cat_group);
 		}
@@ -1326,7 +1326,7 @@ class Channels extends AbstractChannelsController {
 	{
 		if (isset($_POST['cat_group']) && is_array($_POST['cat_group']))
 		{
-			$_POST['cat_group'] = implode('|', $_POST['cat_group']);
+			$_POST['cat_group'] = implode('|', array_filter($_POST['cat_group'], 'is_numeric'));
 		}
 		else
 		{

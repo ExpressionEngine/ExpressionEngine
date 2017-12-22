@@ -341,9 +341,8 @@ class Metaweblog_api_mcp {
 		}
 		$vars['sections'][0][] = $form_element;
 
-		$field_group_keys = array_keys($field_group_options);
 
-		$group_id = isset($values['field_group_id']) ? $values['field_group_id'] : $field_group_keys[0];
+		$group_id = isset($values['field_group_id']) ? $values['field_group_id'] : NULL;
 
 		$fields_list = ee('Model')->get('ChannelFieldGroup', $group_id)
 			->first()
@@ -660,7 +659,7 @@ function changemenu(index)
 	}
 }
 
-$('select[name=field_group_id]').on('change', function(event) {
+$('select[name=channel_id]').on('change', function(event) {
 	changemenu(this.value);
 });
 
