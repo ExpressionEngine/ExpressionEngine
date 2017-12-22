@@ -50,9 +50,7 @@
 					});
 				}
 				if ('error' in data) {
-					if ($('body > .banner').size() == 0) {
-						$('body').prepend(EE.alert.download_ajax_fail.replace('%s', data.error));
-					}
+					$('body').prepend(EE.alert.download_ajax_fail.replace('%s', data.error));
 					$(link).removeClass('work');
 				}
 			},
