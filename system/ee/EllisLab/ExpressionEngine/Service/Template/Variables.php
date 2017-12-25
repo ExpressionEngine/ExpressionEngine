@@ -139,7 +139,7 @@ abstract class Variables {
 	{
 		$str = ee()->typography->parse_type($str, $typography_prefs);
 
-		if (get_bool_config('enable_censoring'))
+		if (bool_config_item('enable_censoring'))
 		{
 			$str = ee('Format')->make('Text', $str)->censor();
 		}
@@ -174,7 +174,7 @@ abstract class Variables {
 	 * @param array $params optional URL parameters
 	 * @return string ACTion URL
 	 */
-	protected function action($method, $params)
+	protected function action($class, $method, $params)
 	{
 		if ( ! isset($params['return']) OR $params['return'] === '')
 		{
