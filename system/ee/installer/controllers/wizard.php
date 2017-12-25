@@ -1160,7 +1160,7 @@ class Wizard extends CI_Controller {
 			$this->refresh = TRUE;
 			$this->refresh_url = $this->set_qstr('do_update&agree=yes');
 			$this->title = sprintf(lang('updating_title'), $this->version);
-			$this->subtitle = sprintf(lang('running_updates'), $this->installed_version);
+			$this->subtitle = sprintf(lang('running_updates'), $next_version);
 			return $this->set_output(
 				'update_msg',
 				array(
@@ -1297,7 +1297,7 @@ class Wizard extends CI_Controller {
 		}
 
 		$this->title = sprintf(lang('updating_title'), $this->version);
-		$this->subtitle = sprintf(lang('running_updates'), $this->installed_version);
+		$this->subtitle = sprintf(lang('running_updates'), $next_version);
 		$this->set_output(
 			'update_msg',
 			array(
