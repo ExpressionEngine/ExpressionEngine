@@ -2743,23 +2743,25 @@ GRID_FALLBACK;
 			}
 			if ($field->field_pre_populate == 'y')
 			{
-				$query = ee()->db->select('field_id_'.$field->field_pre_field_id)
-						->distinct()
-						->from('channel_data')
-						->where('channel_id', $field->field_pre_channel_id)
-						->where('field_id_'.$field->field_pre_field_id.' !=', '')
-						->get();
+				$pop_entries = ee('Model')->get('ChannelEntry')
+					->fields('field_id_'.$field->field_pre_field_id)
+					->filter('channel_id', $field->field_pre_channel_id)
+					->filter('field_id_'.$field->field_pre_field_id, '!=', '')
+					->all();
 
-				$current = explode('|', $this->entry('field_id_' . $field->field_id));
-
-				foreach ($query->result_array() as $row)
+				if ($pop_entries && $pop_content = $pop_entries->pluck('field_id_'.$field->field_pre_field_id))
 				{
-					$options[] = array(
-						'option_value' => $row['field_id_'.$field->field_pre_field_id],
-						'option_name' => str_replace(array("\r\n", "\r", "\n", "\t"), ' ' , substr($row['field_id_'.$field->field_pre_field_id], 0, 110)),
-						'selected' => (in_array($row['field_id_'.$field->field_pre_field_id], $current)) ? ' selected="selected"' : '',
-						'checked' => (in_array($row['field_id_'.$field->field_pre_field_id], $current)) ? ' checked="checked"' : '',
-					);
+					$current = explode('|', $this->entry('field_id_' . $field->field_id));
+
+					foreach ($pop_content as $content)
+					{
+						$options[] = array(
+							'option_value' => $content,
+							'option_name' => str_replace(array("\r\n", "\r", "\n", "\t"), ' ' , substr($content, 0, 110)),
+							'selected' => (in_array($content, $current)) ? ' selected="selected"' : '',
+							'checked' => (in_array($content, $current)) ? ' checked="checked"' : '',
+						);
+					}
 				}
 			}
 
