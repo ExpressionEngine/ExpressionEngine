@@ -132,6 +132,11 @@ class MemberImport extends Utilities {
 				 'rules'   => 'required|file_exists'
 			),
 			array(
+				 'field'   => 'group_id',
+				 'label'   => 'lang:member_group',
+				 'rules'   => 'required'
+			),
+			array(
 				 'field'   => 'auto_custom_field',
 				 'label'   => 'lang:auto_custom_field',
 				 'rules'   => ''
