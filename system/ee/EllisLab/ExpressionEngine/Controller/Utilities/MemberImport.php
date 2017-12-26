@@ -602,7 +602,7 @@ class MemberImport extends Utilities {
 				{
 					if (isset($this->members_custom[$count][$name]))
 					{
-						$cdata['m_field_id_'.$id] = $this->members_custom[$count][$name];
+						$data['m_field_id_'.$id] = $this->members_custom[$count][$name];
 					}
 				}
 			}
@@ -716,20 +716,6 @@ class MemberImport extends Utilities {
 					{
 						$new_custom_fields['new'][] = $tag->tag;
 						$new_custom_fields['xml_fields'][] = $tag->tag;
-					}
-					elseif (isset($existing_c_fields[$tag->tag]))
-					{
-						while($i < 100)
-						{
-							$i++;
-
-							if ( ! isset($existing_c_fields[$tag->tag.'_'.$i]))
-							{
-								$new_custom_fields['new'][] = $tag->tag.'_'.$i;
-								$new_custom_fields['xml_fields'][] = $tag->tag;
-								break;
-							}
-						}
 					}
 				}
 			}
