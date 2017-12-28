@@ -319,12 +319,12 @@ $(document).ready(function(){
 				// Remove viewport scroll
 				$('body').css('overflow','hidden');
 			}
+		});
 
-			$(document).one('keydown', function(e) {
-				if (e.keyCode === 27) {
-					$('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
-				}
-			});
+		$(document).on('keydown', function(e) {
+			if (e.keyCode === 27) {
+				$('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
+			}
 		});
 
 		$('body').on('modal:close', '.modal-wrap, .modal-form-wrap, .app-modal', function(e) {

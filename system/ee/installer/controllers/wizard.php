@@ -12,7 +12,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '4.0.3';	// The version being installed
+	public $version           = '4.0.5';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -1160,7 +1160,7 @@ class Wizard extends CI_Controller {
 			$this->refresh = TRUE;
 			$this->refresh_url = $this->set_qstr('do_update&agree=yes');
 			$this->title = sprintf(lang('updating_title'), $this->version);
-			$this->subtitle = sprintf(lang('running_updates'), $this->installed_version);
+			$this->subtitle = sprintf(lang('running_updates'), $next_version);
 			return $this->set_output(
 				'update_msg',
 				array(
@@ -1297,7 +1297,7 @@ class Wizard extends CI_Controller {
 		}
 
 		$this->title = sprintf(lang('updating_title'), $this->version);
-		$this->subtitle = sprintf(lang('running_updates'), $this->installed_version);
+		$this->subtitle = sprintf(lang('running_updates'), $next_version);
 		$this->set_output(
 			'update_msg',
 			array(

@@ -1123,8 +1123,7 @@ class Api_channel_fields extends Api {
 			);
 
 			$ft_settings = array();
-
-			if (isset($row['field_settings']) && strlen($row['field_settings']))
+			if (isset($row['field_settings']) && is_string($row['field_settings']))
 			{
 				$ft_settings = unserialize(base64_decode($row['field_settings']));
 			}

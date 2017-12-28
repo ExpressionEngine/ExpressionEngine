@@ -203,14 +203,31 @@ class Sandr extends Utilities {
 
 			$rows += 5;
 		}
-		elseif ($where == 'template_data')
-		{
-			$sql = "UPDATE `exp_templates` SET `$where` = REPLACE(`{$where}`, '{$search}', '{$replace}'), `edit_date` = '".$this->localize->now."'";
-		}
 		elseif (strncmp($where, 'template_', 9) == 0)
 		{
-			$sql = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{$search}', '{$replace}'), edit_date = '".$this->localize->now."'
-					WHERE group_id = '".substr($where,9)."'";
+			// all templates or a specific group?
+			if ($where == 'template_data')
+			{
+				$templates = ee('Model')->get('Template')
+					->search('template_data', $search)
+					->all();
+			}
+			else
+			{
+				$templates = ee('Model')->get('Template')
+					->filter('group_id', substr($where, 9))
+					->search('template_data', $search)
+					->all();
+			}
+
+			foreach ($templates as $template)
+			{
+				$template->template_data = str_ireplace($search, $replace, $template->template_data);
+				$template->edit_date = ee()->localize->now;
+			}
+
+			$templates->save();
+			return $templates->count();
 		}
 		elseif (strncmp($where, 'field_id_', 9) == 0)
 		{

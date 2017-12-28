@@ -56,7 +56,7 @@ Grid.Publish = function(field, settings) {
 	this.blankRow = $('tr.grid-blank-row', this.root);
 	this.emptyField = $('tr.no-results', this.root);
 	this.tableActions = $('tr.tbl-action', this.root);
-	this.rowContainer = this.root.find('tbody');
+	this.rowContainer = this.root.find('> tbody');
 	this.addButtonToolbar = $('ul.toolbar:has(li.add)', this.parentContainer);
 	this.header = null;
 

@@ -132,6 +132,11 @@ class MemberImport extends Utilities {
 				 'rules'   => 'required|file_exists'
 			),
 			array(
+				 'field'   => 'group_id',
+				 'label'   => 'lang:member_group',
+				 'rules'   => 'required'
+			),
+			array(
 				 'field'   => 'auto_custom_field',
 				 'label'   => 'lang:auto_custom_field',
 				 'rules'   => ''
@@ -602,7 +607,7 @@ class MemberImport extends Utilities {
 				{
 					if (isset($this->members_custom[$count][$name]))
 					{
-						$cdata['m_field_id_'.$id] = $this->members_custom[$count][$name];
+						$data['m_field_id_'.$id] = $this->members_custom[$count][$name];
 					}
 				}
 			}
@@ -716,20 +721,6 @@ class MemberImport extends Utilities {
 					{
 						$new_custom_fields['new'][] = $tag->tag;
 						$new_custom_fields['xml_fields'][] = $tag->tag;
-					}
-					elseif (isset($existing_c_fields[$tag->tag]))
-					{
-						while($i < 100)
-						{
-							$i++;
-
-							if ( ! isset($existing_c_fields[$tag->tag.'_'.$i]))
-							{
-								$new_custom_fields['new'][] = $tag->tag.'_'.$i;
-								$new_custom_fields['xml_fields'][] = $tag->tag;
-								break;
-							}
-						}
 					}
 				}
 			}

@@ -1079,6 +1079,7 @@ class Template extends AbstractDesignController {
 
 		$templates = ee('Model')->get('Template')
 			->with('TemplateGroup')
+			->with('Site')
 			->order('TemplateGroup.group_name')
 			->order('Template.template_name');
 
@@ -1096,7 +1097,10 @@ class Template extends AbstractDesignController {
 		$results = [];
 		foreach ($templates as $template)
 		{
-			$results[$template->getId()] = $template->getPath();
+			$results[$template->getId()] = [
+				'label' => $template->getPath(),
+				'instructions' => bool_config_item('multiple_sites_enabled') ? $template->Site->site_label : NULL
+			];
 		}
 
 		return $results;
