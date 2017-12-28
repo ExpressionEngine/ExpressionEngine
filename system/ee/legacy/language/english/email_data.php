@@ -180,6 +180,32 @@ EOF;
 	}
 }
 
+if ( ! function_exists('password_changed_notification_title'))
+{
+	function password_changed_notification_title()
+	{
+return <<<EOF
+Password changed
+EOF;
+	}
+}
+
+if ( ! function_exists('password_changed_notification'))
+{
+	function password_changed_notification()
+	{
+return <<<EOF
+Hello {name},
+
+You just changed your password.
+
+If you didn't make this change yourself, please contact an administrator right away.
+
+{site_name}
+{site_url}
+EOF;
+	}
+}
 
 //---------------------------------------------------
 //	Validated Member Notification
