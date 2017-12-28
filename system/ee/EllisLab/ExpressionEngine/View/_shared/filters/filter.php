@@ -13,7 +13,6 @@
 			value="<?=htmlentities($custom_value, ENT_QUOTES, 'UTF-8')?>"
 			placeholder="<?=htmlentities($placeholder, ENT_QUOTES, 'UTF-8')?>"
 			<?php if ($has_list_filter): ?>
-			autofocus="autofocus"
 			data-fuzzy-filter="true"
 			<?php endif; ?>
 		>

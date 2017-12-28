@@ -60,7 +60,7 @@ class Grid_ft extends EE_Fieldtype {
 
 		$this->_load_grid_lib();
 
-		return encode_multi_field(ee()->grid_lib->getSearchableData());
+		return encode_multi_field(ee()->grid_lib->getSearchableData()) ?: ' ';
 	}
 
 	public function post_save($data)

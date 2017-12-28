@@ -321,7 +321,7 @@ class Rss {
 	{
 		return ee()->db->select('c.channel_id, c.channel_title, c.channel_url, c.channel_lang,
 									c.channel_description, ct.entry_date, m.email, m.username,
-									m.screen_name, m.url')
+									m.screen_name')
 							->from('channel_titles ct')
 							->join('channels c', 'ct.channel_id = c.channel_id', 'left')
 							->join('members m', 'm.member_id = ct.author_id', 'left')

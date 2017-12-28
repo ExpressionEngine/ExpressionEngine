@@ -102,6 +102,8 @@ class Runner {
 			);
 		}
 
+		$backup->endFile();
+
 		// Rename this file so that we know it's a complete backup
 		$filesystem = new Filesystem();
 		$destination = PATH_CACHE.'ee_update/database.sql';

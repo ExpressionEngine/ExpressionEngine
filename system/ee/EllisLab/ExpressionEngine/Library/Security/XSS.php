@@ -104,9 +104,9 @@ class XSS {
 		 */
 		if (is_array($str))
 		{
-			while (list($key) = each($str))
+			foreach ($str as $key => $value)
 			{
-				$str[$key] = $this->clean($str[$key]);
+				$str[$key] = $this->clean($value);
 			}
 
 			return $str;
