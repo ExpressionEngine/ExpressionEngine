@@ -196,6 +196,18 @@ class Alert {
 	}
 
 	/**
+	 * Marks the alert as a tip alert.
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function asTip()
+	{
+		$this->severity = 'tip';
+		$this->cannotClose();
+		return $this;
+	}
+
+	/**
 	 * Marks the alert as a warning alert.
 	 *
 	 * @return self This returns a reference to itself

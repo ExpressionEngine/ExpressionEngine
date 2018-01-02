@@ -92,6 +92,9 @@ class AlertCollection {
 					case 'warn':
 						$alert->asWarning();
 						break;
+					case 'tip':
+						$alert->asTip();
+						break;
 				}
 
 				if ($value['can_close'])
@@ -120,6 +123,9 @@ class AlertCollection {
 
 						case 'warn':
 							$sub_alert->asWarning();
+							break;
+						case 'tip':
+							$sub_alert->asTip();
 							break;
 					}
 					$alert->setSubAlert($sub_alert);
