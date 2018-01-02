@@ -41,7 +41,7 @@ class Alert {
 	protected $name;
 
 	/**
-	 * @var string $severity The severity of the alert (issue, warn, success)
+	 * @var string $severity The severity of the alert (issue, warn, success, tip)
 	 */
 	protected $severity;
 

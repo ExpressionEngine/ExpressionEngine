@@ -89,11 +89,12 @@ class AlertCollection {
 						$alert->asSuccess();
 						break;
 
-					case 'warn':
-						$alert->asWarning();
-						break;
 					case 'tip':
 						$alert->asTip();
+						break;
+
+					case 'warn':
+						$alert->asWarning();
 						break;
 				}
 
@@ -121,11 +122,12 @@ class AlertCollection {
 							$sub_alert->asSuccess();
 							break;
 
-						case 'warn':
-							$sub_alert->asWarning();
-							break;
 						case 'tip':
 							$sub_alert->asTip();
+							break;
+
+						case 'warn':
+							$sub_alert->asWarning();
 							break;
 					}
 					$alert->setSubAlert($sub_alert);
