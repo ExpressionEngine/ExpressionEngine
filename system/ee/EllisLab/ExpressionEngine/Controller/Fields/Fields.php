@@ -312,6 +312,10 @@ class Fields extends AbstractFieldsController {
 
 		ee()->cp->add_js_script('plugin', 'ee_url_title');
 
+		ee()->javascript->set_global([
+			'publish.foreignChars' => ee()->config->loadFile('foreign_chars')
+		]);
+
 		ee()->javascript->output('
 			$("input[name=field_label]").bind("keyup keydown", function() {
 				$(this).ee_url_title("input[name=field_name]", true);
