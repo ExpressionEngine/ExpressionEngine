@@ -195,7 +195,7 @@ if ( ! function_exists('password_changed_notification'))
 	function password_changed_notification()
 	{
 return <<<EOF
-Hello {name},
+{name},
 
 You just changed your password.
 
