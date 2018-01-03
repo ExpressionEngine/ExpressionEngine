@@ -89,6 +89,10 @@ class AlertCollection {
 						$alert->asSuccess();
 						break;
 
+					case 'tip':
+						$alert->asTip();
+						break;
+
 					case 'warn':
 						$alert->asWarning();
 						break;
@@ -116,6 +120,10 @@ class AlertCollection {
 
 						case 'success':
 							$sub_alert->asSuccess();
+							break;
+
+						case 'tip':
+							$sub_alert->asTip();
 							break;
 
 						case 'warn':
