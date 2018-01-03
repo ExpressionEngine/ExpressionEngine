@@ -33,7 +33,7 @@ class Toggle extends React.Component {
 
   render () {
     return (
-      <a href="#" className={"toggle-btn " + this.onOff} onClick={this.handleClick} alt={this.onOff} data-state={this.onOff} aria-checked={this.trueFalse} role="switch">
+      <a href="#" className={"toggle-btn " + this.state.onOff} onClick={this.handleClick} alt={this.state.onOff} data-state={this.state.onOff} aria-checked={this.state.trueFalse} role="switch">
         {this.props.name &&
           <input type="hidden" name={this.props.name} value={this.state.value} />
         }
