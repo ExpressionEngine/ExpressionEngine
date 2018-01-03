@@ -14,7 +14,7 @@ class Toggle extends React.Component {
       on: props.on,
       value: props.value,
       onOff: props.on ? 'on' : 'off',
-      trueFalse: props.on ? 'true' : 'false',
+      trueFalse: props.on ? 'true' : 'false'
     }
   }
 
