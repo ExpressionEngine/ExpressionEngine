@@ -38,9 +38,6 @@
 			// Enable inputs
 			fieldClone.find(':input').removeAttr('disabled');
 
-			// Bind the "add" button
-			fieldClone.find('a[data-field-name]').click(addField);
-
 			// Insert it
 			if ( ! $(this).parents('.fluid-item').length) {
 				// the button at the bottom of the form was used.
@@ -48,6 +45,8 @@
 			} else {
 				$(this).closest('.fluid-item').after(fieldClone);
 			}
+
+			$.fuzzyFilter();
 
 			// Bind the new field's inputs to AJAX form validation
 			if (EE.cp && EE.cp.formValidation !== undefined) {
@@ -60,7 +59,7 @@
 			FluidField.fireEvent($(fieldClone).data('field-type'), 'add', [fieldClone]);
 	    };
 
-		$('a[data-field-name]').click(addField);
+		$('.fluid-wrap').on('click', 'a[data-field-name]', addField);
 
 		$('.fluid-wrap').on('click', 'a.fluid-remove', function(e) {
 			var el = $(this).closest('.fluid-item');
