@@ -509,7 +509,7 @@ class Metaweblog_api_mcp {
 		else
 		{
 			$fields		= array('metaweblog_pref_name', 'metaweblog_parse_type', 'entry_status',
-								'field_group_id','excerpt_field_id','content_field_id',
+								'excerpt_field_id','content_field_id',
 								'more_field_id','keywords_field_id','upload_dir');
 
 			$data		= array();
