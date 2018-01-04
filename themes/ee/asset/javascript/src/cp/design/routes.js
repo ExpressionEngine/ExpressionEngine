@@ -13,6 +13,6 @@ $(document).ready(function () {
 
 	$('#routes').on('grid:addRow', function(e, el) {
 		$(el).addClass('setting-field');
-		SelectField.renderFields($(el).find('td').eq(1));
+		Dropdown.renderFields($(el).find('td').eq(1));
 	});
 });
