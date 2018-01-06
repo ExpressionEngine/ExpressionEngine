@@ -40,6 +40,10 @@ class CategoryGroup extends StructureModel {
 		'exclude_group'         => 'enum[0,1,2]'
 	);
 
+	protected static $_events = [
+		'afterDelete'
+	];
+
 	// Properties
 	protected $group_id;
 	protected $site_id;
@@ -49,6 +53,22 @@ class CategoryGroup extends StructureModel {
 	protected $field_html_formatting;
 	protected $can_edit_categories;
 	protected $can_delete_categories;
+
+	public function onAfterDelete()
+	{
+		// Disassociate this group from channels
+		foreach ($this->Channels as $channel)
+		{
+			$groups = explode('|', $channel->cat_group);
+
+			if (($key = array_search($this->getId(), $groups)) !== FALSE)
+			{
+				unset($groups[$key]);
+				$channel->cat_group = implode('|', $groups);
+				$channel->save();
+			}
+		}
+	}
 
 	public function __get($name)
 	{
