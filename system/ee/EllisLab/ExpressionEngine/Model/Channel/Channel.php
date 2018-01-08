@@ -36,6 +36,7 @@ class Channel extends StructureModel {
 		'comment_notify_authors'     => 'boolString',
 		'enable_versioning'          => 'boolString',
 		'extra_publish_controls'     => 'boolString',
+		'search_excerpt'             => 'int'
 	);
 
 	protected static $_relationships = array(
