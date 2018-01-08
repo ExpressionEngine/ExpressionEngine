@@ -366,7 +366,7 @@ class Fields extends AbstractFieldsController {
 				{
 					ee()->db->where('field_ft_' . $field->field_id . ' IS NOT NULL', NULL, FALSE);
 					ee()->db->update(
-						'channel_data_field_' . $field->field_id,
+						$field->getDataStorageTable(),
 						array('field_ft_'.$field->field_id => $field->field_fmt)
 					);
 				}
