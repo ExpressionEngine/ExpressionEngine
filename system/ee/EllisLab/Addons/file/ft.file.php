@@ -653,7 +653,12 @@ JSC;
 							'allowed_directories' => array(
 								'type' => 'radio',
 								'choices' => $directory_choices,
-								'value' => $allowed_directories
+								'value' => $allowed_directories,
+								'no_results' => [
+									'text' => sprintf(lang('no_found'), lang('file_ft_upload_directories')),
+									'link_text' => 'add_new',
+									'link_href' => ee('CP/URL')->make('files/uploads/create')
+								]
 							)
 						)
 					)
