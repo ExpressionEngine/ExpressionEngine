@@ -979,6 +979,10 @@ window.Grid = {
 		EE.grid_cache.push(arguments);
 	}
 };
+
+window.FluidField = {
+	on: function() {}
+};
 GRID_FALLBACK;
 			}
 			else
