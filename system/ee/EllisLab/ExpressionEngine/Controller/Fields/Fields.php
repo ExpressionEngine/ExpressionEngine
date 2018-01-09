@@ -341,8 +341,8 @@ class Fields extends AbstractFieldsController {
 			show_404();
 		}
 
-		$fieldGroups = $field->ChannelFieldGroups;
-		$active_groups = $fieldGroups->pluck('group_id');
+		$field_groups = $field->ChannelFieldGroups;
+		$active_groups = $field_groups->pluck('group_id');
 		$this->generateSidebar($active_groups);
 
 		ee()->view->cp_breadcrumbs = array(
