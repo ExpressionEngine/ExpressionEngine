@@ -18,7 +18,7 @@ feature 'Template Routes' do
 
   it 'can add a new route' do
     @page.add_route(
-      template: '1',
+      template: 'about/index',
       route: 'foo/bar'
     )
     @page.update_button.click
@@ -36,7 +36,7 @@ feature 'Template Routes' do
 
   it 'can edit a route' do
     @page.add_route(
-      template: '1',
+      template: 'about/index',
       route: 'foo/bar'
     )
     @page.update_button.click
@@ -50,11 +50,11 @@ feature 'Template Routes' do
 
   it 'can reorder routes' do
     @page.add_route(
-      template: '1',
+      template: 'about/index',
       route: 'foo/bar'
     )
     @page.add_route(
-      template: '2',
+      template: 'about/404',
       route: 'boo/far'
     )
     @page.update_button.click
@@ -74,11 +74,11 @@ feature 'Template Routes' do
 
   it 'can remove a route' do
     @page.add_route(
-      template: '1',
+      template: 'about/index',
       route: 'foo/bar'
     )
     @page.add_route(
-      template: '2',
+      template: 'about/404',
       route: 'boo/far'
     )
     @page.update_button.click

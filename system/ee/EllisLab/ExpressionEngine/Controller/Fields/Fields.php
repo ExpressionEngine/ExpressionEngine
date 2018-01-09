@@ -214,7 +214,7 @@ class Fields extends AbstractFieldsController {
 			ee('CP/URL')->make('fields')->compile() => lang('field_manager')
 		);
 
-		$this->generateSidebar();
+		$this->generateSidebar($group_id);
 
 		$errors = NULL;
 		$field = ee('Model')->make('ChannelField');
@@ -256,7 +256,8 @@ class Fields extends AbstractFieldsController {
 
 				if (ee('Request')->post('submit') == 'save_and_new')
 				{
-					ee()->functions->redirect(ee('CP/URL')->make('fields/create'));
+					$return = (empty($group_id)) ? '' : '/'.$group_id;
+					ee()->functions->redirect(ee('CP/URL')->make('fields/create'.$return));
 				}
 				else
 				{
@@ -312,6 +313,10 @@ class Fields extends AbstractFieldsController {
 
 		ee()->cp->add_js_script('plugin', 'ee_url_title');
 
+		ee()->javascript->set_global([
+			'publish.foreignChars' => ee()->config->loadFile('foreign_chars')
+		]);
+
 		ee()->javascript->output('
 			$("input[name=field_label]").bind("keyup keydown", function() {
 				$(this).ee_url_title("input[name=field_name]", true);
@@ -336,7 +341,9 @@ class Fields extends AbstractFieldsController {
 			show_404();
 		}
 
-		$this->generateSidebar();
+		$field_groups = $field->ChannelFieldGroups;
+		$active_groups = $field_groups->pluck('group_id');
+		$this->generateSidebar($active_groups);
 
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('fields')->compile() => lang('field_manager'),
@@ -362,7 +369,7 @@ class Fields extends AbstractFieldsController {
 				{
 					ee()->db->where('field_ft_' . $field->field_id . ' IS NOT NULL', NULL, FALSE);
 					ee()->db->update(
-						'channel_data_field_' . $field->field_id,
+						$field->getDataStorageTable(),
 						array('field_ft_'.$field->field_id => $field->field_fmt)
 					);
 				}

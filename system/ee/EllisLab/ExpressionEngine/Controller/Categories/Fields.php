@@ -255,7 +255,7 @@ class Fields extends AbstractCategoriesController {
 			}
 			else
 			{
-				$vars['errors'] = $result->renderErrors();
+				$vars['errors'] = $result;
 				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('category_field_not_'.$alert_key))

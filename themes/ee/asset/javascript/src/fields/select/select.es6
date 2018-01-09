@@ -77,30 +77,18 @@ $(document).ready(function () {
   SelectField.renderFields()
 })
 
-Grid.bind('relationship', 'displaySettings', function(cell) {
-  SelectField.renderFields(cell)
-})
+Grid.bind('relationship', 'displaySettings', SelectField.renderFields)
 
-Grid.bind('checkboxes', 'display', function(cell) {
-  SelectField.renderFields(cell)
-})
+Grid.bind('file', 'displaySettings', SelectField.renderFields)
 
-FluidField.on('checkboxes', 'add', function(field) {
-  SelectField.renderFields(field)
-});
+Grid.bind('checkboxes', 'display', SelectField.renderFields)
 
-Grid.bind('radio', 'display', function(cell) {
-  SelectField.renderFields(cell)
-})
+FluidField.on('checkboxes', 'add', SelectField.renderFields);
 
-FluidField.on('radio', 'add', function(field) {
-  SelectField.renderFields(field)
-});
+Grid.bind('radio', 'display', SelectField.renderFields)
 
-Grid.bind('multi_select', 'display', function(cell) {
-  SelectField.renderFields(cell)
-})
+FluidField.on('radio', 'add', SelectField.renderFields);
 
-FluidField.on('multi_select', 'add', function(field) {
-  SelectField.renderFields(field)
-});
+Grid.bind('multi_select', 'display', SelectField.renderFields)
+
+FluidField.on('multi_select', 'add', SelectField.renderFields);

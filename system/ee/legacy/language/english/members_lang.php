@@ -504,7 +504,7 @@ $lang = array(
 
 'can_admin_channels' => 'Access channel manager',
 
-'can_admin_channels_desc' => 'When enabled, users can access the channel manager.',
+'can_admin_channels_desc' => 'When enabled, users can access the channel manager, and optionally channel fields, categories, and statuses.',
 
 'can_admin_design' => 'Global template settings',
 
