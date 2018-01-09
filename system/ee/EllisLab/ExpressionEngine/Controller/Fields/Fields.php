@@ -214,7 +214,7 @@ class Fields extends AbstractFieldsController {
 			ee('CP/URL')->make('fields')->compile() => lang('field_manager')
 		);
 
-		$this->generateSidebar();
+		$this->generateSidebar($group_id);
 
 		$errors = NULL;
 		$field = ee('Model')->make('ChannelField');
@@ -256,7 +256,8 @@ class Fields extends AbstractFieldsController {
 
 				if (ee('Request')->post('submit') == 'save_and_new')
 				{
-					ee()->functions->redirect(ee('CP/URL')->make('fields/create'));
+					$return = (empty($group_id)) ? '' : '/'.$group_id;
+					ee()->functions->redirect(ee('CP/URL')->make('fields/create'.$return));
 				}
 				else
 				{
@@ -340,7 +341,9 @@ class Fields extends AbstractFieldsController {
 			show_404();
 		}
 
-		$this->generateSidebar();
+		$field_groups = $field->ChannelFieldGroups;
+		$active_groups = $field_groups->pluck('group_id');
+		$this->generateSidebar($active_groups);
 
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('fields')->compile() => lang('field_manager'),

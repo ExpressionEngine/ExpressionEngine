@@ -30,8 +30,6 @@ class Groups extends AbstractFieldsController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$this->generateSidebar();
-
 		ee()->lang->loadfile('admin');
 		ee()->lang->loadfile('admin_content');
 	}
@@ -46,6 +44,8 @@ class Groups extends AbstractFieldsController {
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('fields')->compile() => lang('field_manager'),
 		);
+
+		$this->generateSidebar();
 
 		$vars = array(
 			'ajax_validate' => TRUE,
@@ -141,6 +141,8 @@ class Groups extends AbstractFieldsController {
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('fields')->compile() => lang('field_manager'),
 		);
+
+		$this->generateSidebar($id);
 
 		$vars = array(
 			'ajax_validate' => TRUE,
