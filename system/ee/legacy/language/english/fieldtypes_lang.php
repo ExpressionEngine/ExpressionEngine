@@ -116,6 +116,8 @@ $lang = array(
 
 'file_ft_show_files_desc' => 'When enabled, a drop down with existing files will be shown to authors.',
 
+'file_ft_upload_directories' => 'Upload Directories',
+
 
 /* Grid */
 'grid_add_field' => 'add new field',
