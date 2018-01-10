@@ -199,6 +199,11 @@ class Channels extends AbstractChannelsController {
 
 			// Only auto-complete channel short name for new channels
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
+
+			ee()->javascript->set_global([
+				'publish.foreignChars' => ee()->config->loadFile('foreign_chars')
+			]);
+
 			ee()->javascript->output('
 				$("input[name=channel_title]").bind("keyup keydown", function() {
 					$(this).ee_url_title("input[name=channel_name]");

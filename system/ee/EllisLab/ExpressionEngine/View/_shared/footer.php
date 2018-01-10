@@ -156,7 +156,7 @@
 									</div>
 								</fieldset>
 								<fieldset class="form-ctrls">
-									<?=form_submit('submit', lang('login'), 'class="btn" data-work-text="'.lang('authenticating').'"')?>
+									<?=form_submit('submit', lang('login'), 'class="btn" data-submit-text="'.lang('login').'" data-work-text="'.lang('authenticating').'"')?>
 								</fieldset>
 							<?=form_close()?>
 						</div>

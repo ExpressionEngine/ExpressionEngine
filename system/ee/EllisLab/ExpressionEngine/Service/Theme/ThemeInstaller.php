@@ -381,7 +381,6 @@ class ThemeInstaller {
 		foreach (directory_map($entry_data_path) as $channel_name => $channel_entries)
 		{
 			$channel = ee('Model')->get('Channel')
-				->with('CategoryGroups')
 				->filter('channel_name', $channel_name)
 				->first();
 

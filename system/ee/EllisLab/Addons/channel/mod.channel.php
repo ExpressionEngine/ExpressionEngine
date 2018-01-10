@@ -2368,7 +2368,7 @@ class Channel {
 		}
 
 		$entries = array();
-		$channel_ids = array();
+		$channel_ids = isset($channel_ids) ? $channel_ids : array();
 
 		foreach ($query->result_array() as $row)
 		{

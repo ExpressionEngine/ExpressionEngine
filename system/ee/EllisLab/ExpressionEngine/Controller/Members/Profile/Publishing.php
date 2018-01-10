@@ -38,8 +38,12 @@ class Publishing extends Profile {
 						)
 					)
 				)
-			),
-			'rte_settings' => array(
+			)
+		);
+
+		if (ee('Addon')->get('rte')->isInstalled())
+		{
+			$vars['sections']['rte_settings'] = array(
 				array(
 					'title' => 'rte_enabled',
 					'desc' => 'rte_enabled_desc',
@@ -61,8 +65,8 @@ class Publishing extends Profile {
 						),
 					)
 				)
-			)
-		);
+			);
+		}
 
 		if( ! empty($_POST))
 		{

@@ -112,7 +112,7 @@ class EE_Validate {
 
 		if (strlen($this->username) < $len)
 		{
-			$this->errors[] = str_replace('%x', $len, ee()->lang->line('username_too_short'));
+			$this->errors[] = sprintf(lang('username_too_short'), $len);
 		}
 
 		// Is username max length correct?
