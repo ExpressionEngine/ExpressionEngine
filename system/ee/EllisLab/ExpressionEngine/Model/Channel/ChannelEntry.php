@@ -15,6 +15,7 @@ use EllisLab\ExpressionEngine\Model\Content\ContentModel;
 use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
+use Mexitek\PHPColors\Color;
 
 /**
  * Channel Entry
@@ -1106,13 +1107,26 @@ class ChannelEntry extends ContentModel {
 				continue;
 			}
 
+			$status_style = '';
+			if ( ! in_array($status->status, array('open', 'closed')) && $status->highlight != '')
+			{
+				$highlight = new Color($status->highlight);
+				$foreground = ($highlight->isLight())
+					? $highlight->darken(100)
+					: $highlight->lighten(100);
+
+				$status_style = "style='background-color: #{$status->highlight}; border-color: #{$status->highlight}; color: #{$foreground};'";
+			}
+
 			$status_name = ($status->status == 'closed' OR $status->status == 'open')
 				? lang($status->status)
 				: $status->status;
-			$status_options[$status->status] = $status_name;
+			$status_class = str_replace(' ', '_', strtolower($status->status));
+			$status_options[$status->status] = '<span class="status-tag st-'.$status_class.'" '.$status_style.'>'.$status_name.'</span>';
 		}
 
 		$field->setItem('field_list_items', $status_options);
+		$field->setItem('encode', FALSE);
 	}
 
 	public function getAuthorName()

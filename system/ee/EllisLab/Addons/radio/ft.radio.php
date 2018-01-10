@@ -117,7 +117,8 @@ class Radio_ft extends OptionFieldtype {
 				'multi'      => FALSE,
 				'disabled'   => $this->get_setting('field_disabled'),
 				'filter_url' => $this->get_setting('filter_url', NULL),
-				'no_results' => $this->get_setting('no_results', NULL)
+				'no_results' => $this->get_setting('no_results', NULL),
+				'encode'     => $this->get_setting('encode', TRUE),
 			]);
 		}
 
