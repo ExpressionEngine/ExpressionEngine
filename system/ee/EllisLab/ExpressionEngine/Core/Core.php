@@ -226,6 +226,12 @@ abstract class Core {
 		{
 			$controller = new $class;
 
+			$reflection = new \ReflectionMethod($controller, $method);
+			if (count($params) < $reflection->getNumberOfRequiredParameters())
+			{
+				show_404();
+			}
+
 			$result = call_user_func_array(array($controller, $method), $params);
 		}
 		catch (FileNotFound $ex)
