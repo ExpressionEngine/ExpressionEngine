@@ -226,10 +226,15 @@ abstract class Core {
 		{
 			$controller = new $class;
 
-			$reflection = new \ReflectionMethod($controller, $method);
-			if (count($params) < $reflection->getNumberOfRequiredParameters())
+			// we can only ascertain method signatures for real methods, not magic __call()s
+			if (method_exists($controller, $method))
 			{
-				show_404();
+				$reflection = new \ReflectionMethod($controller, $method);
+
+				if (count($params) < $reflection->getNumberOfRequiredParameters())
+				{
+					show_404();
+				}
 			}
 
 			$result = call_user_func_array(array($controller, $method), $params);
