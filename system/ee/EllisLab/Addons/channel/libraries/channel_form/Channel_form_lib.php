@@ -2313,9 +2313,14 @@ GRID_FALLBACK;
 			return;
 		}
 
-		if ( ! $logged_out_member_id && $this->channel('channel_id') && ! empty($this->settings['allow_guest_posts'][ee()->config->item('site_id')][$this->channel('channel_id')]) && ! empty($this->settings['default_author'][$this->_meta['site_id']][$this->channel('channel_id')]))
+		$channel_site_id = (isset($this->_meta['site_id'])) ? $this->_meta['site_id'] : $this->site_id;
+
+
+		if ( ! $logged_out_member_id && $this->channel('channel_id')
+			&& ! empty($this->settings['allow_guest_posts'][$channel_site_id][$this->channel('channel_id')])
+			&& ! empty($this->settings['default_author'][$channel_site_id][$this->channel('channel_id')]))
 		{
-			$logged_out_member_id = $this->settings['default_author'][$this->_meta['site_id']][$this->channel('channel_id')];
+			$logged_out_member_id = $this->settings['default_author'][$channel_site_id][$this->channel('channel_id')];
 		}
 
 		$logged_out_member_id = $this->sanitize_int($logged_out_member_id);
