@@ -464,7 +464,7 @@ abstract class AbstractPublish extends CP_Controller {
 				'value'   => 'preview',
 				'text'    => 'preview',
 				'class'   => 'action js-modal-link--side',
-				'attr'    => 'rel=live-preview',
+				'attrs'   => 'rel=live-preview',
 				'working' => 'btn_previewing'
 			];
 		}
