@@ -188,7 +188,7 @@ class Fluid_field_parser {
 	{
 		if (empty($entry_ids) || empty($fluid_field_ids) || empty($field_ids))
 		{
-			return new \EllisLab\ExpressionEngine\Library\Data\Collection([]);
+			return new \EllisLab\ExpressionEngine\Service\Model\Collection([]);
 		}
 
 		if (($data = ee()->session->cache('channel_entry', 'live-preview', FALSE)) !== FALSE)
@@ -201,7 +201,7 @@ class Fluid_field_parser {
 
 		if (empty($entry_ids))
 		{
-			$fluid_field_data = new \EllisLab\ExpressionEngine\Library\Data\Collection([]);
+			$fluid_field_data = new \EllisLab\ExpressionEngine\Service\Model\Collection([]);
 		}
 		else
 		{
@@ -293,7 +293,7 @@ class Fluid_field_parser {
 			}
 		}
 
-		return new \EllisLab\ExpressionEngine\Library\Data\Collection($fluid_fields);
+		return new \EllisLab\ExpressionEngine\Service\Model\Collection($fluid_fields);
 	}
 
 	/**
