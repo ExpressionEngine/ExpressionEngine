@@ -2536,15 +2536,12 @@ class Channel {
 
 	private function isLivePreviewEntry()
 	{
-		// return FALSE;
 		if (($data = ee()->session->cache('channel_entry', 'live-preview', FALSE)) !== FALSE)
 		{
 			return (ee()->TMPL->fetch_param('limit') == '1' && $this->query_string == $data['entry_id'] && $data['entry_id'] == PHP_INT_MAX);
 		}
-		else
-		{
-			return FALSE;
-		}
+
+		return FALSE;
 	}
 
 	/**
