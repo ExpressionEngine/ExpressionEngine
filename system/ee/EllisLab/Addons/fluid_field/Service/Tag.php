@@ -32,24 +32,31 @@ class Tag {
 	protected $function_delegate;
 
 	/**
-	 * @var obj $$channel_fields_delegate Dependency Injected reference to `ee()->api_channel_fields`
+	 * @var obj $channel_fields_delegate Dependency Injected reference to `ee()->api_channel_fields`
 	 */
 	protected $channel_fields_delegate;
+
+	/**
+	 * @var obj $variable_parser_delegate Dependency Injected reference to `ee:Variables/Parser`
+	 */
+	protected $variable_parser_delegate;
 
 	/**
 	 * Constructor
 	 *
 	 * @param string $tagdata The contents of the tag
 	 * @param obj $function_delegate Dependency Injected reference to `ee()->functions`
-	 * @param obj $$channel_fields_delegate Dependency Injected reference to `ee()->api_channel_fields`
+	 * @param obj $channel_fields_delegate Dependency Injected reference to `ee()->api_channel_fields`
+	 * @param obj $variable_parser_delegate Dependency Injected reference to `ee:Variables/Parser`
 	 * @return void
 	 */
-	public function __construct($tagdata, $function_delegate, $channel_fields_delegate)
+	public function __construct($tagdata, $function_delegate, $channel_fields_delegate, $variable_parser_delegate)
 	{
 		$this->tagdata = $tagdata;
 
 		$this->function_delegate = $function_delegate;
 		$this->channel_fields_delegate = $channel_fields_delegate;
+		$this->variable_parser_delegate = $variable_parser_delegate;
 
 		if (strpos($this->tagdata, LD."/content".RD) !== FALSE)
 		{
@@ -76,7 +83,7 @@ class Tag {
 	public function getSingleTags($tagdata = '')
 	{
 		$tagdata = ($tagdata) ?: $this->getTagdata();
-		$vars = $this->function_delegate->assign_variables($tagdata, '/');
+		$vars = $this->variable_parser_delegate->extractVariables($tagdata, 'content');
 		return array_keys($vars['var_single']);
 	}
 

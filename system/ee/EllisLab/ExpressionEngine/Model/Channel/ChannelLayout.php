@@ -206,11 +206,13 @@ class ChannelLayout extends Model implements LayoutInterface {
 				{
 					unset($fields[$field_id]);
 				}
+				// Remove stale fields
 				else
 				{
 					unset($field_layout[$i]['fields'][$j]);
 				}
 
+				// Ensure fields are unique in the layout
 				if (isset($seen[$field_name]))
 				{
 					unset($field_layout[$i]['fields'][$j]);

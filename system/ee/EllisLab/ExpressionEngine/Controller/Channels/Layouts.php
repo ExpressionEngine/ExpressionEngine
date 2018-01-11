@@ -289,6 +289,7 @@ class Layouts extends AbstractChannelsController {
 		ee()->view->left_nav = NULL;
 
 		$channel_layout = ee('Model')->get('ChannelLayout', $layout_id)
+			->with('Channel')
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
@@ -297,7 +298,7 @@ class Layouts extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$this->removeStaleFields($channel_layout);
+		$channel_layout->synchronize();
 
 		$channel = $channel_layout->Channel;
 
@@ -501,37 +502,6 @@ class Layouts extends AbstractChannelsController {
 			->addToBody(lang('layouts_removed_desc'))
 			->addToBody($layout_names)
 			->defer();
-	}
-
-	/**
-	 * Loops through the layout field data and removes any fields that are no
-	 * longer part of the channel.
-	 *
-	 * @param obj $channel_layout A ChannelLayout object
-	 * @return void
-	 */
-	private function removeStaleFields($channel_layout)
-	{
-		$field_layout = $channel_layout->field_layout;
-
-		$fields = $channel_layout->Channel->getAllCustomFields()->map(function($field) {
-			return "field_id_" . $field->field_id;
-		});
-
-		foreach ($field_layout as $i => $section)
-		{
-			foreach ($section['fields'] as $j => $field_info)
-			{
-				// Remove any fields that have since been deleted.
-				if (strpos($field_info['field'], 'field_id_') === 0
-					&& ! in_array($field_info['field'], $fields))
-				{
-					array_splice($field_layout[$i]['fields'], $j, 1);
-				}
-			}
-		}
-
-		$channel_layout->field_layout = $field_layout;
 	}
 }
 

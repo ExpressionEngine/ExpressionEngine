@@ -146,8 +146,6 @@ $lang = array(
 
 'filter_by_username' => 'filter username',
 
-'show' => 'show',
-
 );
 
 // EOF
