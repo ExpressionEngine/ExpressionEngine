@@ -628,8 +628,6 @@ $lang = array(
 
 'resize_original' => 'Resize the original image',
 
-'results' => 'results',
-
 'results_per_page' => 'Results Per Page',
 
 'return_to_publish' => 'Return to Publish',
@@ -819,8 +817,6 @@ $lang = array(
 'search_available_entries' => 'Search available entries',
 
 'search_related_entries' => 'Search related entries',
-
-'show' => 'Show',
 
 'show_tools' => 'Show Tools',
 

@@ -3218,7 +3218,7 @@ class Channel {
 					}
 				}
 
-				$chunk = $this->parseCategoryFields($cat_vars['category_id'], $val, $chunk);
+				$chunk = $this->parseCategoryFields($cat_vars['category_id'], array_merge($val, $cat_vars), $chunk);
 
 				/** --------------------------------
 				/**  {count}
@@ -3622,7 +3622,7 @@ class Channel {
 							$chunk = str_replace($ckey, reduce_double_slashes($cval.'/'.$cat_seg), $chunk);
 						}
 
-						$chunk = $this->parseCategoryFields($cat_vars['category_id'], $row, $chunk);
+						$chunk = $this->parseCategoryFields($cat_vars['category_id'], array_merge($row, $cat_vars), $chunk);
 
 						// Check to see if we need to parse {filedir_n}
 						if (strpos($chunk, '{filedir_') !== FALSE)
@@ -4047,7 +4047,7 @@ class Channel {
 					}
 				}
 
-				$chunk = $this->parseCategoryFields($cat_vars['category_id'], $val, $chunk);
+				$chunk = $this->parseCategoryFields($cat_vars['category_id'], array_merge($val, $cat_vars), $chunk);
 
 				/** --------------------------------
 				/**  {count}
@@ -4503,7 +4503,7 @@ class Channel {
 			ee()->TMPL->tagdata = ee()->file_field->parse_string(ee()->TMPL->tagdata);
 		}
 
-		ee()->TMPL->tagdata = $this->parseCategoryFields($cat_vars['category_id'], $row, ee()->TMPL->tagdata);
+		ee()->TMPL->tagdata = $this->parseCategoryFields($cat_vars['category_id'], array_merge($row, $cat_vars), ee()->TMPL->tagdata);
 
 		return ee()->TMPL->tagdata;
 	}
