@@ -2519,8 +2519,9 @@ class Channel {
 
 	private function overrideWithPreviewData($result_array)
 	{
-		if (($data = ee()->session->cache('channel_entry', 'live-preview', FALSE)) !== FALSE)
+		if (ee('LivePreview')->hasEntryData())
 		{
+			$data = ee('LivePreview')->getEntryData();
 			foreach ($result_array as $i => $row)
 			{
 				if ($row['entry_id'] == $data['entry_id'])
@@ -2536,8 +2537,9 @@ class Channel {
 
 	private function isLivePreviewEntry()
 	{
-		if (($data = ee()->session->cache('channel_entry', 'live-preview', FALSE)) !== FALSE)
+		if (ee('LivePreview')->hasEntryData())
 		{
+			$data = ee('LivePreview')->getEntryData();
 			return (ee()->TMPL->fetch_param('limit') == '1' && $this->query_string == $data['entry_id'] && $data['entry_id'] == PHP_INT_MAX);
 		}
 

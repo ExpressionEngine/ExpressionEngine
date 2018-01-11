@@ -191,7 +191,7 @@ class Fluid_field_parser {
 			return new \EllisLab\ExpressionEngine\Service\Model\Collection([]);
 		}
 
-		if (($data = ee()->session->cache('channel_entry', 'live-preview', FALSE)) !== FALSE)
+		if (ee('LivePreview')->hasEntryData())
 		{
 			$entry_ids = array_filter($entry_ids, function($entry_id) use ($data)
 			{
@@ -253,7 +253,7 @@ class Fluid_field_parser {
 	{
 		$fluid_fields = $fluid_field_data->asArray();
 
-		if (($data = ee()->session->cache('channel_entry', 'live-preview', FALSE)) !== FALSE)
+		if (ee('LivePreview')->hasEntryData())
 		{
 			$entry_id = $data['entry_id'];
 

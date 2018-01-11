@@ -737,8 +737,9 @@ class Grid_parser {
 
 	private function overrideWithPreviewData($entry_data, $field_id, $fluid_field_data_id = 0)
 	{
-		if (($data = ee()->session->cache('channel_entry', 'live-preview', FALSE)) !== FALSE)
+		if (ee('LivePreview')->hasEntryData())
 		{
+			$data = ee('LivePreview')->getEntryData();
 			$entry_id = $data['entry_id'];
 			$fluid_field = 0;
 

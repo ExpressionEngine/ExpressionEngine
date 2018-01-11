@@ -73,7 +73,7 @@ class Relationship_model extends CI_Model {
 		// If we have preview data don't run a query for the entry we are previewing
 		// unless the tag we are processing is `{parents}` in which case we need to let
 		// that query run since that data isn't being overwritten.
-		if (($data = ee()->session->cache('channel_entry', 'live-preview', FALSE)) !== FALSE
+		if (ee('LivePreview')->hasEntryData()
 			&& $type != self::PARENT)
 		{
 			$entry_ids = array_filter($entry_ids, function($entry_id) use ($data)
@@ -194,8 +194,9 @@ class Relationship_model extends CI_Model {
 
 	private function overrideWithPreviewData($result, $type, $fluid_field_data_id)
 	{
-		if (($data = ee()->session->cache('channel_entry', 'live-preview', FALSE)) !== FALSE)
+		if (ee('LivePreview')->hasEntryData())
 		{
+			$data = ee('LivePreview')->getEntryData();
 			$entry_id = $data['entry_id'];
 
 			$channel = ee('Model')->get('Channel', $data['channel_id'])->first();

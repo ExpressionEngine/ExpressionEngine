@@ -355,7 +355,7 @@ class Publish extends AbstractPublishController {
 		$data = $entry->getModChannelResultsArray();
 		$data['entry_site_id'] = $entry->site_id;
 
-		ee()->session->set_cache('channel_entry', 'live-preview', $data);
+		ee('LivePreview')->setEntryData($data);
 
 		ee()->load->library('template', NULL, 'TMPL');
 		$template_group = $channel->LiveLookTemplate->TemplateGroup->group_name;
