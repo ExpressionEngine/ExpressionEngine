@@ -1748,7 +1748,7 @@ class Wizard extends CI_Controller {
 			'banishment_message'        => 'You have exceeded the allowed page load frequency.',
 			'enable_search_log'         => 'y',
 			'max_logged_searches'       => '500',
-			'memberlist_order_by'       => "total_posts",
+			'memberlist_order_by'       => "member_id",
 			'memberlist_sort_order'     => "desc",
 			'memberlist_row_limit'      => "20",
 			'is_site_on'                => 'y',

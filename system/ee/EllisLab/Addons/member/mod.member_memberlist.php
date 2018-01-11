@@ -391,6 +391,12 @@ class Member_memberlist extends Member {
 		if ( ! in_array($order_by, $valid_order_bys))
 		{
 			$order_by = ee()->config->item('memberlist_order_by');
+
+			// Still not valid?
+			if ( ! in_array($order_by, $valid_order_bys))
+			{
+				$order_by = 'member_id';
+			}
 		}
 
 		$path = '/G'.$group_id.'/'.$order_by.'/'.$sort_order.'/L'.$row_limit;
