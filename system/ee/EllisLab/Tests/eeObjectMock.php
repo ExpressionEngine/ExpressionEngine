@@ -24,6 +24,7 @@ function ee($mock = '')
 class eeSingletonMock {
 	public $load;
 	public $config;
+	public $session;
 
 	protected $mock;
 	protected static $mocks = [];
@@ -32,6 +33,7 @@ class eeSingletonMock {
 	{
 		$this->load = new eeSingletonLoadMock;
 		$this->config = new eeSingletonConfigMock;
+		$this->session = new eeSingletoneSessionMock;
 		$this->mock = $mock;
 	}
 
@@ -78,5 +80,24 @@ class eeSingletonConfigMock {
 	public function resetConfig()
 	{
 		self::$config = [];
+	}
+}
+
+class eeSingletoneSessionMock {
+	public static $userdata = [];
+
+	public function userdata($item, $default = FALSE)
+	{
+		return ( ! isset(self::$userdata[$item])) ? $default : self::$userdata[$item];
+	}
+
+	public function setUserdata($item, $value)
+	{
+		self::$userdata[$item] = $value;
+	}
+
+	public function resetUserdata()
+	{
+		self::$userdata = [];
 	}
 }

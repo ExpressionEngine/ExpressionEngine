@@ -104,6 +104,26 @@ class TypographyTest extends \PHPUnit_Framework_TestCase {
 		$str = $this->typography->markdown(MARKDOWN);
 		$this->assertContains('<a href="https://packagecontrol.io/packages/Marked%20App%20Menu">Marked App Menu</a>', $str);
 	}
+
+	public function testEmoticonConversionOn()
+	{
+		ee()->session->setUserdata('parse_smileys', 'y');
+		$sample = 'Smileys like ;) should be converted but not character entities like &rdquo;, even if they end in parenthesis &rdquo;)';
+		$expected = 'Smileys like :wink: should be converted but not character entities like &rdquo;, even if they end in parenthesis &rdquo;)';
+
+		$str = $this->typography->emoticon_replace($sample);
+		$this->assertEquals($expected, $str);
+	}
+
+	public function testEmoticonConversionOff()
+	{
+		ee()->session->setUserdata('parse_smileys', 'n');
+		$sample = 'Smileys like ;) should be converted but not character entities like &rdquo;, even if they end in parenthesis &rdquo;)';
+		$expected = 'Smileys like ;) should be converted but not character entities like &rdquo;, even if they end in parenthesis &rdquo;)';
+
+		$str = $this->typography->emoticon_replace($sample);
+		$this->assertEquals($expected, $str);
+	}
 }
 
 class TypographyStub extends EE_Typography
