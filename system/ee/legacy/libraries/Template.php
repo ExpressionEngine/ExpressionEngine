@@ -1772,11 +1772,11 @@ class EE_Template {
 						}
 
 						$error  = ee()->lang->line('error_tag_module_processing');
-						$error .= '<br /><br />';
+						$error .= '<br /><br /><code>';
 						$error .= htmlspecialchars(LD);
 						$error .= 'exp:'.implode(':', $this->tag_data[$i]['tagparts']);
 						$error .= htmlspecialchars(RD);
-						$error .= '<br /><br />';
+						$error .= '</code><br /><br />';
 						$error .= str_replace('%x', $this->tag_data[$i]['class'], str_replace('%y', $meth_name, ee()->lang->line('error_fix_module_processing')));
 
 						ee()->output->fatal_error($error);
