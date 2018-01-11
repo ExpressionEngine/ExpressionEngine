@@ -17,7 +17,16 @@ class Update {
 	public function download()
 	{
 		$location = 'https://expressionengine.com/asset/file/spam.zip';
-		$compressed = ee('Curl')->get($location)->exec();
+
+		try
+		{
+			$compressed = ee('Curl')->get($location)->exec();
+		}
+		catch (\Exception $e)
+		{
+			// let's just bubble this up
+			throw $e;
+		}
 
 		// Write the training data to a tmp file and return the file name
 

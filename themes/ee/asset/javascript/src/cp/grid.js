@@ -56,7 +56,7 @@ Grid.Publish = function(field, settings) {
 	this.blankRow = $('tr.grid-blank-row', this.root);
 	this.emptyField = $('tr.no-results', this.root);
 	this.tableActions = $('tr.tbl-action', this.root);
-	this.rowContainer = this.root.find('tbody');
+	this.rowContainer = this.root.find('> tbody');
 	this.addButtonToolbar = $('ul.toolbar:has(li.add)', this.parentContainer);
 	this.header = null;
 
@@ -573,7 +573,14 @@ Grid.Settings.prototype = {
 
 			// Trigger validation on any invalid inputs in case the validaiton
 			// errors were due to a duplicate column name/label in this column
-			$('fieldset.fieldset-invalid input', that.root).trigger('change');
+			var invalidFields = $('fieldset.fieldset-invalid input', that.root)
+			if (invalidFields.size()) {
+				invalidFields.trigger('blur')
+			} else {
+			// Or, the deleted column contained the only validation errors, trigger
+			// validation on another known field to re-enable submit buttons
+				$('input[name=field_name]').trigger('blur')
+			}
 		});
 	},
 

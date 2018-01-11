@@ -10,16 +10,14 @@
 								<fieldset class="filter-search">
 									<input type="text" value="" placeholder="<?=lang('filter_channels')?>">
 								</fieldset>
-								<div class="scroll-wrap">
-									<ul class="channels-pages-create">
-										<?php
-										$menus = ee()->menu->generate_menu();
-										foreach ($menus['channels']['create'] as $channel_name => $link):
-										?>
-											<li class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
-										<?php endforeach ?>
-									</ul>
-								</div>
+								<ul class="channels-pages-create">
+									<?php
+									$menus = ee()->menu->generate_menu();
+									foreach ($menus['channels']['create'] as $channel_name => $link):
+									?>
+										<li class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
+									<?php endforeach ?>
+								</ul>
 							</div>
 						</li>
 					</ul>

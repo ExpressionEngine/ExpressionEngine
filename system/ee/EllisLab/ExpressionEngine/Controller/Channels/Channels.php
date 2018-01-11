@@ -199,6 +199,11 @@ class Channels extends AbstractChannelsController {
 
 			// Only auto-complete channel short name for new channels
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
+
+			ee()->javascript->set_global([
+				'publish.foreignChars' => ee()->config->loadFile('foreign_chars')
+			]);
+
 			ee()->javascript->output('
 				$("input[name=channel_title]").bind("keyup keydown", function() {
 					$(this).ee_url_title("input[name=channel_name]");
@@ -655,7 +660,7 @@ class Channels extends AbstractChannelsController {
 
 		$selected = ee('Request')->post('cat_group') ?: [];
 
-		if ($channel)
+		if ($channel && ! empty($channel->cat_group))
 		{
 			$selected = explode('|', $channel->cat_group);
 		}
@@ -1326,7 +1331,7 @@ class Channels extends AbstractChannelsController {
 	{
 		if (isset($_POST['cat_group']) && is_array($_POST['cat_group']))
 		{
-			$_POST['cat_group'] = implode('|', $_POST['cat_group']);
+			$_POST['cat_group'] = implode('|', array_filter($_POST['cat_group'], 'is_numeric'));
 		}
 		else
 		{

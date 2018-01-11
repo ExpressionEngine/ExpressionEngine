@@ -658,7 +658,7 @@ class EE_Template {
 			//       1 => string 'titles' (length=6)
 			//       2 => string ''' (length=1)
 			//       3 => string '4' (length=1)
-			preg_match_all("/".LD."layout:(.+?)\s+index\s*=\s*(\042|\047)([^\\2]*?)\\2\s*".RD."/si", $str, $matches, PREG_SET_ORDER);
+			preg_match_all("/".LD."layout:(\w+?)\s+index\s*=\s*(\042|\047)([^\\2]*?)\\2\s*".RD."/si", $str, $matches, PREG_SET_ORDER);
 
 			foreach ($matches as $match)
 			{
@@ -1772,11 +1772,11 @@ class EE_Template {
 						}
 
 						$error  = ee()->lang->line('error_tag_module_processing');
-						$error .= '<br /><br />';
+						$error .= '<br /><br /><code>';
 						$error .= htmlspecialchars(LD);
 						$error .= 'exp:'.implode(':', $this->tag_data[$i]['tagparts']);
 						$error .= htmlspecialchars(RD);
-						$error .= '<br /><br />';
+						$error .= '</code><br /><br />';
 						$error .= str_replace('%x', $this->tag_data[$i]['class'], str_replace('%y', $meth_name, ee()->lang->line('error_fix_module_processing')));
 
 						ee()->output->fatal_error($error);

@@ -36,7 +36,7 @@
 								<em><?=lang('build') . ' ' . $new_version['build']?></em>
 							</p>
 								<?php if (ee()->session->userdata('group_id') == 1): ?>
-									<div class="update-btn"><a class="btn submit" data-post-url="<?=ee('CP/URL', 'updater')?>">Update Now</a></div>
+									<div class="update-btn"><a class="btn submit" data-post-url="<?=ee('CP/URL', 'updater')?>"><?=lang('update_btn')?></a></div>
 								<?php endif ?>
 								<div class="status out">
 									<a href="" class="close"></a>
@@ -44,7 +44,7 @@
 								</div>
 							<?php else: ?>
 								<?php if (ee()->session->userdata('group_id') == 1): ?>
-									<div class="update-btn"><a class="btn action" href="<?=ee('CP/URL')->make('settings/general/version-check', ['redirect' => ee('CP/URL')->getCurrentUrl()->compile()])?>">Check for Update</a></div>
+									<div class="update-btn"><a class="btn action" href="<?=ee('CP/URL')->make('settings/general/version-check', ['redirect' => ee('CP/URL')->getCurrentUrl()->compile()])?>"><?=lang('update_check_btn')?></a></div>
 								<?php endif ?>
 								<div class="status">
 									<a href="" class="close"></a>
@@ -160,7 +160,7 @@
 									</div>
 								</fieldset>
 								<fieldset class="form-ctrls">
-									<?=form_submit('submit', lang('login'), 'class="btn" data-work-text="'.lang('authenticating').'"')?>
+									<?=form_submit('submit', lang('login'), 'class="btn" data-submit-text="'.lang('login').'" data-work-text="'.lang('authenticating').'"')?>
 								</fieldset>
 							<?=form_close()?>
 						</div>

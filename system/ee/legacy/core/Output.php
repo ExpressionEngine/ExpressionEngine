@@ -675,7 +675,7 @@ class EE_Output {
             ee()->load->library('user_agent', array(), 'user_agent');
 
             // many browsers do not consistently like this content type
-            if (is_array($msg) && in_array(ee()->user_agent->browser(), array('Safari', 'Chrome')))
+            if (is_array($msg) && in_array(ee()->user_agent->browser(), array('Safari', 'Chrome', 'Firefox')))
 			{
 				@header('Content-Type: application/json; charset=UTF-8');
 			}

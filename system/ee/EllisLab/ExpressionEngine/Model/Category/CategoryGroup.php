@@ -30,12 +30,7 @@ class CategoryGroup extends StructureModel {
 		'Categories' => array(
 			'type' => 'hasMany',
 			'model' => 'Category'
-		),
-		'Channel' => array(
-			'type' => 'hasMany',
-			'model' => 'Channel',
-			'to_key' => 'cat_group'
-		),
+		)
 	);
 
 	protected static $_validation_rules = array(
@@ -44,6 +39,10 @@ class CategoryGroup extends StructureModel {
 		'field_html_formatting' => 'enum[all,safe,none]',
 		'exclude_group'         => 'enum[0,1,2]'
 	);
+
+	protected static $_events = [
+		'afterDelete'
+	];
 
 	// Properties
 	protected $group_id;
@@ -54,6 +53,39 @@ class CategoryGroup extends StructureModel {
 	protected $field_html_formatting;
 	protected $can_edit_categories;
 	protected $can_delete_categories;
+
+	public function onAfterDelete()
+	{
+		// Disassociate this group from channels
+		foreach ($this->Channels as $channel)
+		{
+			$groups = explode('|', $channel->cat_group);
+
+			if (($key = array_search($this->getId(), $groups)) !== FALSE)
+			{
+				unset($groups[$key]);
+				$channel->cat_group = implode('|', $groups);
+				$channel->save();
+			}
+		}
+	}
+
+	public function __get($name)
+	{
+		// Fake the Channel relationship since it's stored weird; old
+		// relationship name was just "Channel"
+		if ($name == 'Channel' || $name == 'Channels')
+		{
+			return ee('Model')->get('Channel')
+				->filter('site_id', ee()->config->item('site_id'))
+				->all()
+				->filter(function($channel) {
+					return in_array($this->getId(), explode('|', $channel->cat_group));
+				});
+		}
+
+		return parent::__get($name);
+	}
 
 	public function getAllCustomFields()
 	{

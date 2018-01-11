@@ -25,8 +25,9 @@
 			var showModal = false;
 
 			for (var i = 0, len = existing_fields.length; i < len; i++) {
-				field = $('[data-input-value="field_channel_fields"] [value="' + existing_fields[i] + '"]');
-				if (field.prop('checked') == false) {
+				field = $('[name="field_channel_fields[]"][value="' + existing_fields[i] + '"]');
+				if (field.size() == 0 || // Hidden input from React
+					(field.attr('type') == 'checkbox' && field.prop('checked') == false)) { // Real checkbox
 					showModal = true;
 					break;
 				}

@@ -60,7 +60,7 @@ class Grid_ft extends EE_Fieldtype {
 
 		$this->_load_grid_lib();
 
-		return encode_multi_field(ee()->grid_lib->getSearchableData());
+		return encode_multi_field(ee()->grid_lib->getSearchableData()) ?: ' ';
 	}
 
 	public function post_save($data)
@@ -142,7 +142,7 @@ class Grid_ft extends EE_Fieldtype {
 		{
 			// channel form is not guaranteed to have this wrapper class,
 			// but the js requires it
-			$field = '<div class="grid-publish">'.$field.'</div>';
+			$field = '<div class="fieldset-faux">'.$field.'</div>';
 		}
 
 		return $field;

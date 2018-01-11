@@ -58,44 +58,46 @@
 			</div>
 		{/if}
 		{!-- email contact form --}
-		{exp:email:contact_form form_class='contact-form' return='{site_url}index.php/{p_url}/thanks' redirect='0'}
-			<fieldset class="row">
-				<section class="w-4 instruct">
-					<label>Name</label>
-					<em>What do you want to be called?</em>
-				</section>
-				<section class="w-12 field">
-					<input name="name" type="text" value="{member_name}">
-				</section>
-			</fieldset>
-			<fieldset class="row">
-				<section class="w-4 instruct">
-					<label>Email <span class="required" title="required field">&#10033;</span></label>
-					<em>How do we contact you?</em>
-				</section>
-				<section class="w-12 field">
-					<input class="required" name="from" type="text" value="{email}">
-				</section>
-			</fieldset>
-			<fieldset class="row">
-				<section class="w-4 instruct">
-					<label>Subject</label>
-					<em>What did you want to discuss?</em>
-				</section>
-				<section class="w-12 field">
-					<input name="subject" type="text" value="">
-				</section>
-			</fieldset>
-			<fieldset class="row">
-				<section class="w-4 instruct">
-					<label>Message <span class="required" title="required field">&#10033;</span></label>
-					<em>Please keep it kind, brief and courteous.</em>
-				</section>
-				<section class="w-12 field">
-					<textarea class="required" name="message" cols="" rows=""></textarea>
-				</section>
-			</fieldset>
-			<fieldset class="ctrls">
-				<input class="btn" type="submit" value="Send e-mail">
-			</fieldset>
-		{/exp:email:contact_form}
+		{if ! is_core}
+			{exp:email:contact_form form_class='contact-form' return='{site_url}index.php/{p_url}/thanks' redirect='0'}
+				<fieldset class="row">
+					<section class="w-4 instruct">
+						<label>Name</label>
+						<em>What do you want to be called?</em>
+					</section>
+					<section class="w-12 field">
+						<input name="name" type="text" value="{member_name}">
+					</section>
+				</fieldset>
+				<fieldset class="row">
+					<section class="w-4 instruct">
+						<label>Email <span class="required" title="required field">&#10033;</span></label>
+						<em>How do we contact you?</em>
+					</section>
+					<section class="w-12 field">
+						<input class="required" name="from" type="text" value="{email}">
+					</section>
+				</fieldset>
+				<fieldset class="row">
+					<section class="w-4 instruct">
+						<label>Subject</label>
+						<em>What did you want to discuss?</em>
+					</section>
+					<section class="w-12 field">
+						<input name="subject" type="text" value="">
+					</section>
+				</fieldset>
+				<fieldset class="row">
+					<section class="w-4 instruct">
+						<label>Message <span class="required" title="required field">&#10033;</span></label>
+						<em>Please keep it kind, brief and courteous.</em>
+					</section>
+					<section class="w-12 field">
+						<textarea class="required" name="message" cols="" rows=""></textarea>
+					</section>
+				</fieldset>
+				<fieldset class="ctrls">
+					<input class="btn" type="submit" value="Send e-mail">
+				</fieldset>
+			{/exp:email:contact_form}
+		{/if}

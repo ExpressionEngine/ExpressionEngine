@@ -116,6 +116,16 @@ class Query {
 	}
 
 	/**
+	 * Get the current Database/Query object's character set
+	 *
+	 * @return string database connection char_set
+	 */
+	public function getCharset()
+	{
+		return $this->query->char_set;
+	}
+
+	/**
 	 * Given a table name, generates a CREATE TABLE statement for it
 	 *
 	 * @param	string	$table_name	Table name

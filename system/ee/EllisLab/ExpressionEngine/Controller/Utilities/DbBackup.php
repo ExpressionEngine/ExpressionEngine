@@ -144,6 +144,8 @@ class DbBackup extends Utilities {
 			];
 		}
 
+		$backup->endFile();
+
 		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->canClose()

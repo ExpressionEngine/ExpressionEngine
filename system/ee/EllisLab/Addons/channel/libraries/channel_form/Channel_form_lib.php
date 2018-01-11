@@ -979,6 +979,10 @@ window.Grid = {
 		EE.grid_cache.push(arguments);
 	}
 };
+
+window.FluidField = {
+	on: function() {}
+};
 GRID_FALLBACK;
 			}
 			else
@@ -1380,9 +1384,9 @@ GRID_FALLBACK;
 				$this->fetch_logged_out_member($logged_out_member_id);
 			}
 		}
-		elseif ($this->channel('channel_id') && ! ee()->session->userdata('member_id') &&  ! empty($this->settings['default_author'][ee()->config->item('site_id')][$this->channel('channel_id')]))
+		elseif ($this->channel('channel_id') && ! ee()->session->userdata('member_id') &&  ! empty($this->settings['default_author'][$this->_meta['site_id']][$this->channel('channel_id')]))
 		{
-			$this->fetch_logged_out_member($this->settings['default_author'][ee()->config->item('site_id')][$this->channel('channel_id')]);
+			$this->fetch_logged_out_member($this->settings['default_author'][$this->_meta['site_id']][$this->channel('channel_id')]);
 		}
 
 		$member_id = ee()->session->userdata('member_id') ?: $this->logged_out_member_id;
@@ -1728,7 +1732,7 @@ GRID_FALLBACK;
 
 		if ( ! isset($_POST['url_title']))
 		{
-			$_POST['url_title'] = ee('Format')->make('Text', ee()->input->post('title', TRUE))->urlSlug();
+			$_POST['url_title'] = ee('Format')->make('Text', ee()->input->post('title', TRUE))->urlSlug()->compile();
 		}
 
 		//temporarily change site_id for cross-site forms
@@ -2309,9 +2313,14 @@ GRID_FALLBACK;
 			return;
 		}
 
-		if ( ! $logged_out_member_id && $this->channel('channel_id') && ! empty($this->settings['allow_guest_posts'][ee()->config->item('site_id')][$this->channel('channel_id')]) && ! empty($this->settings['default_author'][ee()->config->item('site_id')][$this->channel('channel_id')]))
+		$channel_site_id = (isset($this->_meta['site_id'])) ? $this->_meta['site_id'] : $this->site_id;
+
+
+		if ( ! $logged_out_member_id && $this->channel('channel_id')
+			&& ! empty($this->settings['allow_guest_posts'][$channel_site_id][$this->channel('channel_id')])
+			&& ! empty($this->settings['default_author'][$channel_site_id][$this->channel('channel_id')]))
 		{
-			$logged_out_member_id = $this->settings['default_author'][ee()->config->item('site_id')][$this->channel('channel_id')];
+			$logged_out_member_id = $this->settings['default_author'][$channel_site_id][$this->channel('channel_id')];
 		}
 
 		$logged_out_member_id = $this->sanitize_int($logged_out_member_id);
@@ -2743,23 +2752,25 @@ GRID_FALLBACK;
 			}
 			if ($field->field_pre_populate == 'y')
 			{
-				$query = ee()->db->select('field_id_'.$field->field_pre_field_id)
-						->distinct()
-						->from('channel_data')
-						->where('channel_id', $field->field_pre_channel_id)
-						->where('field_id_'.$field->field_pre_field_id.' !=', '')
-						->get();
+				$pop_entries = ee('Model')->get('ChannelEntry')
+					->fields('field_id_'.$field->field_pre_field_id)
+					->filter('channel_id', $field->field_pre_channel_id)
+					->filter('field_id_'.$field->field_pre_field_id, '!=', '')
+					->all();
 
-				$current = explode('|', $this->entry('field_id_' . $field->field_id));
-
-				foreach ($query->result_array() as $row)
+				if ($pop_entries && $pop_content = $pop_entries->pluck('field_id_'.$field->field_pre_field_id))
 				{
-					$options[] = array(
-						'option_value' => $row['field_id_'.$field->field_pre_field_id],
-						'option_name' => str_replace(array("\r\n", "\r", "\n", "\t"), ' ' , substr($row['field_id_'.$field->field_pre_field_id], 0, 110)),
-						'selected' => (in_array($row['field_id_'.$field->field_pre_field_id], $current)) ? ' selected="selected"' : '',
-						'checked' => (in_array($row['field_id_'.$field->field_pre_field_id], $current)) ? ' checked="checked"' : '',
-					);
+					$current = explode('|', $this->entry('field_id_' . $field->field_id));
+
+					foreach ($pop_content as $content)
+					{
+						$options[] = array(
+							'option_value' => $content,
+							'option_name' => str_replace(array("\r\n", "\r", "\n", "\t"), ' ' , substr($content, 0, 110)),
+							'selected' => (in_array($content, $current)) ? ' selected="selected"' : '',
+							'checked' => (in_array($content, $current)) ? ' checked="checked"' : '',
+						);
+					}
 				}
 			}
 

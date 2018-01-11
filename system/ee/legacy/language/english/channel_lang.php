@@ -316,7 +316,7 @@ $lang = array(
 
 'enable_versioning' => 'Enable entry versioning?',
 
-'enable_versioning_desc' => 'When enabled, ExpressinEngine will save revisions of each entry for this channel.',
+'enable_versioning_desc' => 'When enabled, ExpressionEngine will save revisions of each entry for this channel.',
 
 'extra_publish_controls' => 'Show extra publish controls?',
 

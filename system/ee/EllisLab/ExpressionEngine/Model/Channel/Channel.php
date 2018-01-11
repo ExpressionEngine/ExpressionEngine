@@ -36,6 +36,7 @@ class Channel extends StructureModel {
 		'comment_notify_authors'     => 'boolString',
 		'enable_versioning'          => 'boolString',
 		'extra_publish_controls'     => 'boolString',
+		'search_excerpt'             => 'int'
 	);
 
 	protected static $_relationships = array(
@@ -94,12 +95,6 @@ class Channel extends StructureModel {
 		),
 		'Site' => array(
 			'type' => 'belongsTo'
-		),
-		'CategoryGroups' => array(
-			'type' => 'hasMany',
-			'model' => 'CategoryGroup',
-			'from_key' => 'cat_group',
-			'to_key' => 'group_id'
 		),
 		'ChannelEntryAutosaves' => array(
 			'type' => 'hasMany',
@@ -241,6 +236,12 @@ class Channel extends StructureModel {
 	 */
 	public function __get($name)
 	{
+		// Fake the CategoryGroups relationship since it's stored weird
+		if ($name == 'CategoryGroups')
+		{
+			return $this->getCategoryGroups();
+		}
+
 		$value = parent::__get($name);
 
 		if (in_array($name, array('channel_url', 'comment_url', 'search_results_url', 'rss_url')))

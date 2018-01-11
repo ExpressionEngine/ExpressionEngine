@@ -1535,11 +1535,22 @@ class Api_channel_entries extends Api {
 	 */
 	private function _get_custom_fields()
 	{
-		ee()->db->select('field_id, field_name, field_label, field_type, field_required');
-		ee()->db->join('exp_channels_channel_field_groups', 'exp_channels_channel_field_groups.group_id = channel_fields.group_id', 'left');
-		ee()->db->where('exp_channels_channel_field_groups.channel_id', $this->channel_id);
-		$query = ee()->db->get('channel_fields');
-		$result = $query->result_array();
+		$result = [];
+
+		$channel = ee('Model')->get('Channel', $this->channel_id)->first();
+		$fields = $channel->getAllCustomFields();
+
+		// imitate legacy query which only gathered field_id, field_name, field_label, field_type, field_required
+		foreach ($fields->asArray() as $field)
+		{
+			$result[] = [
+				'field_id'       => $field->field_id,
+				'field_name'     => $field->field_name,
+				'field_label'    => $field->field_label,
+				'field_type'     => $field->field_type,
+				'field_required' => $field->field_required,
+			];
+		}
 
 		// ----------------------------------------------------------------
 		// 'api_channel_entries_custom_field_query' hook.
@@ -1554,7 +1565,6 @@ class Api_channel_entries extends Api {
 		//
 		// ----------------------------------------------------------------
 
-		$query->free_result();
 		return $result;
 	}
 }

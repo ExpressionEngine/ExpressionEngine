@@ -27,14 +27,11 @@ class Groups extends AbstractCategoriesController {
 		}
 
 		$group_id = ee()->input->post('content_id');
+		$group = ee('Model')->get('CategoryGroup', $group_id)->first();
 
-		if ( ! empty($group_id))
+		if ( ! empty($group_id) && $group)
 		{
-			ee()->load->model('category_model');
-
-			$group = ee('Model')->get('CategoryGroup', $group_id)->first();
-
-			ee()->category_model->delete_category_group($group_id);
+			$group->delete();
 
 			ee()->logger->log_action(lang('category_groups_removed').':'.NBS.NBS.$group->group_name);
 
