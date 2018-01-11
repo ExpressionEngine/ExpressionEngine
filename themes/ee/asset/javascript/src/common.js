@@ -438,11 +438,6 @@ $(document).ready(function(){
 				// the source window and appending # to the URI
 				e.preventDefault();
 
-				$(document).one('keydown', function(e) {
-					if (e.keyCode === 27) {
-						$('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
-					}
-				});
 			}
 		});
 
