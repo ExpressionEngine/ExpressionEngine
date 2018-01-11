@@ -749,7 +749,9 @@ class Grid_parser {
 			}
 
 			if (array_key_exists($entry_id, $entry_data)
-				&& isset($data['field_id_' . $field_id]))
+				&& isset($data['field_id_' . $field_id])
+				&& is_array($data['field_id_' . $field_id])
+				&& array_key_exists('rows', $data['field_id_' . $field_id]))
 			{
 				$override = [];
 				$i = 0;
