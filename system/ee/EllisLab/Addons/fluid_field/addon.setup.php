@@ -15,7 +15,7 @@ return array(
 	'services' => array(
 		'Tag' => function($ee, $tagdata)
 		{
-			return new Tag($tagdata, ee()->functions, ee()->api_channel_fields);
+			return new Tag($tagdata, ee()->functions, ee()->api_channel_fields, $ee->make('ee:Variables/Parser'));
 		}
 	),
 
