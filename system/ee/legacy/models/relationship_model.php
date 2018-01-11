@@ -213,7 +213,7 @@ class Relationship_model extends CI_Model {
 					return $field->field_type == 'grid';
 				});
 
-				return $this->overrideGridRelationships($result, $data, $grid_fields, $fluid_field_data_id);
+				return $this->overrideGridRelationships($result, $data, $grid_fields->pluck('field_id'), $fluid_field_data_id);
 			}
 			elseif ($fluid_field_data_id)
 			{
@@ -250,12 +250,10 @@ class Relationship_model extends CI_Model {
 		return $result;
 	}
 
-	private function overrideGridRelationships($result, $data, $grid_fields, $fluid_field_data_id = 0)
+	private function overrideGridRelationships($result, $data, $grid_field_ids, $fluid_field_data_id = 0)
 	{
-		foreach ($grid_fields as $grid_field)
+		foreach ($grid_field_ids as $field_id)
 		{
-			$field_id = $grid_field->getId();
-
 			if ($fluid_field_data_id)
 			{
 				list($fluid_field, $sub_field_id) = explode(',', $fluid_field_data_id);
