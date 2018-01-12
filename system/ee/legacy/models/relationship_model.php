@@ -76,6 +76,7 @@ class Relationship_model extends CI_Model {
 		if (ee('LivePreview')->hasEntryData()
 			&& $type != self::PARENT)
 		{
+			$data = ee('LivePreview')->getEntryData();
 			$entry_ids = array_filter($entry_ids, function($entry_id) use ($data)
 			{
 				return $entry_id != $data['entry_id'];

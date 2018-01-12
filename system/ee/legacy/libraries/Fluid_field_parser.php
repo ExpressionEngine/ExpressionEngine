@@ -193,6 +193,7 @@ class Fluid_field_parser {
 
 		if (ee('LivePreview')->hasEntryData())
 		{
+			$data = ee('LivePreview')->getEntryData();
 			$entry_ids = array_filter($entry_ids, function($entry_id) use ($data)
 			{
 				return $entry_id != $data['entry_id'];
@@ -255,6 +256,7 @@ class Fluid_field_parser {
 
 		if (ee('LivePreview')->hasEntryData())
 		{
+			$data = ee('LivePreview')->getEntryData();
 			$entry_id = $data['entry_id'];
 
 			foreach ($fluid_field_ids as $fluid_field_id)
