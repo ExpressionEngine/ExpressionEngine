@@ -46,7 +46,7 @@ class LivePreview {
 	 */
 	public function hasEntryData()
 	{
-		return ($this->getPreviewData() !== FALSE);
+		return ($this->getEntryData() !== FALSE);
 	}
 
 	/**
