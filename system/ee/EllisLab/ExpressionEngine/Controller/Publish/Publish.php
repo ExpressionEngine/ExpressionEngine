@@ -225,7 +225,6 @@ class Publish extends AbstractPublishController {
 			'form_attributes' => $form_attributes,
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
 			'revisions' => $this->getRevisionsTable($entry),
-			'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
 			'extra_publish_controls' => $channel->extra_publish_controls,
 			'buttons' => [
 				[
@@ -289,6 +288,7 @@ class Publish extends AbstractPublishController {
 		// Auto-saving needs an entry_id...
 		$entry->entry_id = 0;
 
+		$vars['autosaves'] = $this->getAutosavesTable($entry, $autosave_id);
 		$vars['entry'] = $entry;
 
 		$this->setGlobalJs($entry, TRUE);
