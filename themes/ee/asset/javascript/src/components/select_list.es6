@@ -25,7 +25,7 @@ class SelectList extends React.Component {
     this.version = 0
   }
 
-  static formatItems (items, parent, multi) {
+  static formatItems (items, parent, multi, components) {
     if ( ! items) return []
 
     let itemsArray = []
@@ -44,11 +44,12 @@ class SelectList extends React.Component {
           label: items[key].label !== undefined ? items[key].label : items[key],
           instructions: items[key].instructions ? items[key].instructions : '',
           children: null,
-          parent: parent ? parent : null
+          parent: parent ? parent : null,
+          component: components instanceof Object && components.constructor === Object && components.hasOwnProperty(items[key].value) ? components[items[key].value] : null
         }
 
         if (items[key].children) {
-          newItem.children = SelectList.formatItems(items[key].children, newItem)
+          newItem.children = SelectList.formatItems(items[key].children, newItem, multi, components)
         }
 
         itemsArray.push(newItem)
@@ -405,6 +406,7 @@ class SelectItem extends React.Component {
   render() {
     let props = this.props
     let checked = this.checked(props.item.value)
+    let label = props.item.label
 
     if (props.item.section) {
       return (
@@ -412,6 +414,11 @@ class SelectItem extends React.Component {
           {props.item.section}
         </div>
       )
+    }
+
+    if (props.item.component) {
+      const Tag = `${props.item.component.tag}`;
+      label = (<Tag className={props.item.component.class} style={props.item.component.style}>{props.item.component.label}</Tag>)
     }
 
     let listItem = (
@@ -432,7 +439,7 @@ class SelectItem extends React.Component {
         {props.editable && (
             <a href="#">{props.item.label}</a>
         )}
-        { ! props.editable && props.item.label}
+        { ! props.editable && label}
         {" "}
         {props.item.instructions && (
           <i>{props.item.instructions}</i>

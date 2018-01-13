@@ -45,9 +45,9 @@ var SelectField = function (_React$Component) {
       $(event.target).closest('[data-id]').trigger('select:removeItem', [item]);
     };
 
-    _this.props.items = SelectList.formatItems(props.items);
+    _this.props.items = SelectList.formatItems(props.items, null, null, props.components);
     _this.state = {
-      selected: SelectList.formatItems(props.selected, null, props.multi),
+      selected: SelectList.formatItems(props.selected, null, props.multi, props.components),
       editing: props.editing || false
     };
     return _this;

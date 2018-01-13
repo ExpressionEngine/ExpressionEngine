@@ -1108,6 +1108,8 @@ class ChannelEntry extends ContentModel {
 			}
 
 			$status_style = '';
+			$status_component_style = [];
+
 			if ( ! in_array($status->status, array('open', 'closed')) && $status->highlight != '')
 			{
 				$highlight = new Color($status->highlight);
@@ -1115,17 +1117,31 @@ class ChannelEntry extends ContentModel {
 					? $highlight->darken(100)
 					: $highlight->lighten(100);
 
-				$status_style = "style='background-color: #{$status->highlight}; border-color: #{$status->highlight}; color: #{$foreground};'";
+				$status_style = "background-color: #{$status->highlight}; border-color: #{$status->highlight}; color: #{$foreground};";
+
+				$status_component_style = [
+					'backgroundColor' => '#'.$status->highlight,
+					'borderColor' => '#'.$status->highlight,
+					'color' => '#'.$foreground,
+				];
 			}
 
 			$status_name = ($status->status == 'closed' OR $status->status == 'open')
 				? lang($status->status)
 				: $status->status;
 			$status_class = str_replace(' ', '_', strtolower($status->status));
-			$status_options[$status->status] = '<span class="status-tag st-'.$status_class.'" '.$status_style.'>'.$status_name.'</span>';
+			$status_options[$status->status] = '<span class="status-tag st-'.$status_class.'" style="'.$status_style.'">'.$status_name.'</span>';
+
+			$status_components[$status->status] = [
+				'tag' => 'span',
+				'label' => $status_name,
+				'class' => 'status-tag st-'.$status_class,
+				'style' => $status_component_style,
+			];
 		}
 
 		$field->setItem('field_list_items', $status_options);
+		$field->setItem('field_list_components', $status_components);
 		$field->setItem('encode', FALSE);
 	}
 

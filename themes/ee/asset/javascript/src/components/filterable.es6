@@ -10,7 +10,7 @@ function makeFilterableComponent(WrappedComponent) {
   return class extends React.Component {
     constructor(props) {
       super(props)
-      this.initialItems = SelectList.formatItems(props.items)
+      this.initialItems = SelectList.formatItems(props.items, null, null, props.components)
       this.state = {
         items: this.initialItems,
         loading: false

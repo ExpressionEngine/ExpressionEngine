@@ -370,7 +370,7 @@ var SelectList = function (_React$Component) {
     }
   }], [{
     key: 'formatItems',
-    value: function formatItems(items, parent, multi) {
+    value: function formatItems(items, parent, multi, components) {
       if (!items) return [];
 
       var itemsArray = [];
@@ -396,11 +396,12 @@ var SelectList = function (_React$Component) {
               label: items[key].label !== undefined ? items[key].label : items[key],
               instructions: items[key].instructions ? items[key].instructions : '',
               children: null,
-              parent: parent ? parent : null
+              parent: parent ? parent : null,
+              component: components instanceof Object && components.constructor === Object && components.hasOwnProperty(items[key].value) ? components[items[key].value] : null
             };
 
             if (items[key].children) {
-              newItem.children = SelectList.formatItems(items[key].children, newItem);
+              newItem.children = SelectList.formatItems(items[key].children, newItem, multi, components);
             }
 
             itemsArray.push(newItem);
@@ -488,12 +489,22 @@ var SelectItem = function (_React$Component2) {
     value: function render() {
       var props = this.props;
       var checked = this.checked(props.item.value);
+      var label = props.item.label;
 
       if (props.item.section) {
         return React.createElement(
           'div',
           { className: 'field-group-head', key: props.item.section },
           props.item.section
+        );
+      }
+
+      if (props.item.component) {
+        var Tag = '' + props.item.component.tag;
+        label = React.createElement(
+          Tag,
+          { className: props.item.component.class, style: props.item.component.style },
+          props.item.component.label
         );
       }
 
@@ -520,7 +531,7 @@ var SelectItem = function (_React$Component2) {
           { href: '#' },
           props.item.label
         ),
-        !props.editable && props.item.label,
+        !props.editable && label,
         " ",
         props.item.instructions && React.createElement(
           'i',

@@ -78,7 +78,7 @@ function makeFilterableComponent(WrappedComponent) {
         }, 300);
       };
 
-      _this.initialItems = SelectList.formatItems(props.items);
+      _this.initialItems = SelectList.formatItems(props.items, null, null, props.components);
       _this.state = {
         items: _this.initialItems,
         loading: false

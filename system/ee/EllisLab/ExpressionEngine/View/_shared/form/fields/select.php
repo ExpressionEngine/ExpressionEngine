@@ -102,6 +102,7 @@ else:
 	$component = [
 		'name' => $field_name,
 		'items' => $normalized_choices,
+		'components' => $components,
 		'selected' => $value,
 		'multi' => $multi,
 		'nested' => $nested,

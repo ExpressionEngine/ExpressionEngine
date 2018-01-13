@@ -12,9 +12,9 @@ class SelectField extends React.Component {
   constructor (props) {
     super(props)
 
-    this.props.items = SelectList.formatItems(props.items)
+    this.props.items = SelectList.formatItems(props.items, null, null, props.components)
     this.state = {
-      selected: SelectList.formatItems(props.selected, null, props.multi),
+      selected: SelectList.formatItems(props.selected, null, props.multi, props.components),
       editing: props.editing || false
     }
   }

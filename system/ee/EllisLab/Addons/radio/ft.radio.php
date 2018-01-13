@@ -113,6 +113,7 @@ class Radio_ft extends OptionFieldtype {
 			return ee('View')->make('ee:_shared/form/fields/select')->render([
 				'field_name' => $this->field_name,
 				'choices'    => $field_options,
+				'components' => $this->get_setting('field_list_components'),
 				'value'      => $data,
 				'multi'      => FALSE,
 				'disabled'   => $this->get_setting('field_disabled'),
