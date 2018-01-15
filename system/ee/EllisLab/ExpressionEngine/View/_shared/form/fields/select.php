@@ -83,7 +83,7 @@ if ($count <= $too_many
 <?php
 // Large list, render it using React
 else:
-	if ($no_radio_value)
+	if ($no_radio_value || ! is_array($value))
 	{
 		$label = ee('View/Helpers')->findLabelForValue($value, $normalized_choices);
 		$value = [$value => $label];
