@@ -28,31 +28,11 @@ class Memory {
 	 */
 	public function setMemoryForImageManipulation($file_path, $tweak_multiplier = 1.8)
 	{
-		$memory_ini_setting = ini_get('memory_limit');
+		$memory_limit = $this->getMemoryLimitBytes();
 
-		// UNLIMITED POWER MUAHAHAHAHA
-		if ($memory_ini_setting === -1)
+		if ($memory_limit === NULL)
 		{
-		    return;
-		}
-
-		// this would be odd, but let's set to our minimum sys requirements if ini_get gave us nada
-		if ( ! $memory_ini_setting)
-		{
-			$memory_ini_setting = '32M';
-		}
-
-		list($memory_limit, $unit) = sscanf($memory_ini_setting, "%d %s");
-
-		switch (strtolower($unit))
-		{
-			// no breaks so it's progressively multiplied as needed
-			case 'g':
-				$memory_limit *= 1024;
-			case 'm':
-				$memory_limit *= 1024;
-			case 'k':
-				$memory_limit *= 1024;
+			return;
 		}
 
   		$info = @getimagesize($file_path);
@@ -76,6 +56,43 @@ class Memory {
 				throw new \Exception("Unable to increase memory to {$new_memory} bytes needed to process this image. (Current limit: {$memory_limit} bytes)");
 			}
 		}
+	}
+
+	/**
+	 * Get Memory Limit in Bytes
+	 *
+	 * @return int Current memory limit, in bytes. NULL if no limit.
+	 */
+	public function getMemoryLimitBytes()
+	{
+		$memory_ini_setting = ini_get('memory_limit');
+
+		// UNLIMITED POWER MUAHAHAHAHA
+		if ($memory_ini_setting == '-1')
+		{
+		    return NULL;
+		}
+
+		// this would be odd, but let's set to our minimum sys requirements if ini_get gave us nada
+		if ( ! $memory_ini_setting)
+		{
+			$memory_ini_setting = '32M';
+		}
+
+		list($memory_limit, $unit) = sscanf($memory_ini_setting, "%d %s");
+
+		switch (strtolower($unit))
+		{
+			// no breaks so it's progressively multiplied as needed
+			case 'g':
+				$memory_limit *= 1024;
+			case 'm':
+				$memory_limit *= 1024;
+			case 'k':
+				$memory_limit *= 1024;
+		}
+
+		return $memory_limit;
 	}
 }
 
