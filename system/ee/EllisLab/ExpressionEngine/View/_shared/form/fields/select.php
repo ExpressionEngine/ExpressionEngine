@@ -36,6 +36,11 @@ foreach ($normalized_choices as $key => $choice)
 
 $count = ee('View/Helpers')->countChoices($normalized_choices);
 
+// We want to select the first in a radio selection when there is no value set;
+// these are the rules that we constitute as having no value
+$no_radio_value = ($value !== FALSE && $value !== '0' && empty($value) && ! $multi &&
+	! ($value === '' && isset($choices[''])));
+
 // If it's a small list, just render it server-side
 if ($count <= $too_many
 	&& ! ($count > 2 && $multi)
@@ -44,7 +49,7 @@ if ($count <= $too_many
 	&& ! $force_react):
 
 	// For radios with no value, set value to first choice
-	if ($value !== FALSE && $value !== '0' && empty($value) && ! $multi) {
+	if ($no_radio_value) {
 		$keys = array_keys($choices);
 		$value = $keys[0];
 	}
@@ -78,7 +83,7 @@ if ($count <= $too_many
 <?php
 // Large list, render it using React
 else:
-	if ($value !== FALSE && $value !== NULL && ! is_array($value) && ! $multi)
+	if ($no_radio_value || ! is_array($value))
 	{
 		$label = ee('View/Helpers')->findLabelForValue($value, $normalized_choices);
 		$value = [$value => $label];

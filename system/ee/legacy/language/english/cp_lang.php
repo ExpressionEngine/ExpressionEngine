@@ -274,7 +274,11 @@ $lang = array(
 
 'recent_entries' => 'Recent Entries',
 
+'results' => 'results',
+
 'select_all' => 'select all',
+
+'show' => 'Show',
 
 'site' => 'Site',
 

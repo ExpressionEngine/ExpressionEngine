@@ -2147,7 +2147,10 @@ class EE_Typography {
 
 		foreach ($emoji_remap as $smiley => $short_name)
 		{
-			$str = str_replace($smiley, $short_name, $str);
+			foreach(array(' ', "\t", "\n", "\r", '.', ',', '>') as $char)
+			{
+				$str = str_replace($char.$smiley, $char.$short_name, $str);
+			}
 		}
 
 		return $str;

@@ -12,7 +12,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '4.0.5';	// The version being installed
+	public $version           = '4.0.6';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -1748,7 +1748,7 @@ class Wizard extends CI_Controller {
 			'banishment_message'        => 'You have exceeded the allowed page load frequency.',
 			'enable_search_log'         => 'y',
 			'max_logged_searches'       => '500',
-			'memberlist_order_by'       => "total_posts",
+			'memberlist_order_by'       => "member_id",
 			'memberlist_sort_order'     => "desc",
 			'memberlist_row_limit'      => "20",
 			'is_site_on'                => 'y',

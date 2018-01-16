@@ -13,7 +13,8 @@ class SelectList extends React.Component {
     removable: false,
     selectable: true,
     tooManyLimit: 8,
-    toggleAllLimit: 3
+    toggleAllLimit: 3,
+    selectionShouldRetainItemOrder: true
   }
 
   constructor (props) {
@@ -218,6 +219,12 @@ class SelectList extends React.Component {
             .concat([item])
             .filter(item => item.value != XORvalue) // uncheck XOR value
 
+        // Sort selection?
+        if (this.props.selectionShouldRetainItemOrder) {
+          selected = this.getOrderedSelection(selected)
+        }
+
+        // Select parents?
         if (item.parent && this.props.autoSelectParents) {
           selected = selected.concat(this.diffItems(this.props.selected, this.getFlattenedParentsOfItem(item)))
         }
@@ -235,6 +242,17 @@ class SelectList extends React.Component {
     this.props.selectionChanged(selected)
 
     if (this.props.groupToggle) EE.cp.form_group_toggle(event.target)
+  }
+
+  // Orders the selection array based on the items' order in the list
+  getOrderedSelection(selected) {
+    orderedSelection = []
+    return selected.sort((a, b) => {
+      a = this.props.initialItems.findIndex(item => item.value == a.value)
+      b = this.props.initialItems.findIndex(item => item.value == b.value)
+
+      return (a < b) ? -1 : 1
+    })
   }
 
   // Returns all items in items2 that aren't present in items1
