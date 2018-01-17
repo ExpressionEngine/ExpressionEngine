@@ -30,7 +30,7 @@ class Memory {
 	{
 		$memory_limit = $this->getMemoryLimitBytes();
 
-		if ($memory_limit === NULL)
+		if ($memory_limit === -1)
 		{
 			return;
 		}
@@ -61,17 +61,11 @@ class Memory {
 	/**
 	 * Get Memory Limit in Bytes
 	 *
-	 * @return int Current memory limit, in bytes. NULL if no limit.
+	 * @return int Current memory limit, in bytes. (int -1 means no limit)
 	 */
 	public function getMemoryLimitBytes()
 	{
 		$memory_ini_setting = ini_get('memory_limit');
-
-		// UNLIMITED POWER MUAHAHAHAHA
-		if ($memory_ini_setting == '-1')
-		{
-		    return NULL;
-		}
 
 		// this would be odd, but let's set to our minimum sys requirements if ini_get gave us nada
 		if ( ! $memory_ini_setting)
