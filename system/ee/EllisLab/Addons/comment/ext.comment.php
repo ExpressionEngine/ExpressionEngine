@@ -43,7 +43,7 @@ class Comment_ext {
 		);
 
 		$spam_addon = ee('Addon')->get('spam');
-		if ($spam_addon->isInstalled())
+		if ($spam_addon && $spam_addon->isInstalled())
 		{
 			ee()->lang->load('spam');
 
