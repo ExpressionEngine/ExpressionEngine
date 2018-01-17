@@ -32,7 +32,7 @@ foreach ($normalized_choices as $key => $choice)
 	{
 		$nested = TRUE;
 	}
-	if (isset($choice['component']))
+	if ( ! empty($choice['component']))
 	{
 		$force_react = TRUE;
 	}
