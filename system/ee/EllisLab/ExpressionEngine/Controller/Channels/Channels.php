@@ -11,7 +11,6 @@ namespace EllisLab\ExpressionEngine\Controller\Channels;
 
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
-use Mexitek\PHPColors\Color;
 
 /**
  * Channels Controller
@@ -736,39 +735,9 @@ class Channels extends AbstractChannelsController {
 			->order('status_order')
 			->all();
 
-		$status_component_style = [];
-
 		foreach ($statuses as $status)
 		{
-			if ( ! in_array($status->status, array('open', 'closed')) && $status->highlight != '')
-			{
-				$highlight = new Color($status->highlight);
-				$foreground = ($highlight->isLight())
-					? $highlight->darken(100)
-					: $highlight->lighten(100);
-
-				$status_component_style = [
-					'backgroundColor' => '#'.$status->highlight,
-					'borderColor' => '#'.$status->highlight,
-					'color' => '#'.$foreground,
-				];
-			}
-
-			$status_name = ($status->status == 'closed' OR $status->status == 'open')
-				? lang($status->status)
-				: $status->status;
-			$status_class = str_replace(' ', '_', strtolower($status->status));
-
-			$status_options[] = [
-				'value' => $status->status_id,
-				'label' => $status_name,
-				'component' => [
-					'tag' => 'span',
-					'label' => $status_name,
-					'class' => 'status-tag st-'.$status_class,
-					'style' => $status_component_style,
-				]
-			];
+			$status_options[] = $status->getOptionComponent(['use_ids' => TRUE]);
 		}
 
 		$selected = ee('Request')->post('statuses') ?: [];

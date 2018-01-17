@@ -15,7 +15,6 @@ use EllisLab\ExpressionEngine\Model\Content\ContentModel;
 use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
-use Mexitek\PHPColors\Color;
 
 /**
  * Channel Entry
@@ -1107,37 +1106,7 @@ class ChannelEntry extends ContentModel {
 				continue;
 			}
 
-			$status_component_style = [];
-
-			if ( ! in_array($status->status, array('open', 'closed')) && $status->highlight != '')
-			{
-				$highlight = new Color($status->highlight);
-				$foreground = ($highlight->isLight())
-					? $highlight->darken(100)
-					: $highlight->lighten(100);
-
-				$status_component_style = [
-					'backgroundColor' => '#'.$status->highlight,
-					'borderColor' => '#'.$status->highlight,
-					'color' => '#'.$foreground,
-				];
-			}
-
-			$status_name = ($status->status == 'closed' OR $status->status == 'open')
-				? lang($status->status)
-				: $status->status;
-			$status_class = str_replace(' ', '_', strtolower($status->status));
-
-			$status_options[] = [
-				'value' => $status->status,
-				'label' => $status_name,
-				'component' => [
-					'tag' => 'span',
-					'label' => $status_name,
-					'class' => 'status-tag st-'.$status_class,
-					'style' => $status_component_style,
-				]
-			];
+			$status_options[] = $status->getOptionComponent();
 		}
 
 		$field->setItem('field_list_items', $status_options);
