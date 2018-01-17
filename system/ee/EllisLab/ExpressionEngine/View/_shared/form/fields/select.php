@@ -32,6 +32,10 @@ foreach ($normalized_choices as $key => $choice)
 	{
 		$nested = TRUE;
 	}
+	if (isset($choice['component']))
+	{
+		$force_react = TRUE;
+	}
 }
 
 $count = ee('View/Helpers')->countChoices($normalized_choices);
@@ -102,7 +106,6 @@ else:
 	$component = [
 		'name' => $field_name,
 		'items' => $normalized_choices,
-		'components' => $components,
 		'selected' => $value,
 		'multi' => $multi,
 		'nested' => $nested,

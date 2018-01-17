@@ -397,7 +397,7 @@ var SelectList = function (_React$Component) {
               instructions: items[key].instructions ? items[key].instructions : '',
               children: null,
               parent: parent ? parent : null,
-              component: components instanceof Object && components.constructor === Object && components.hasOwnProperty(items[key].value) ? components[items[key].value] : null
+              component: items[key].component != undefined ? items[key].component : null
             };
 
             if (items[key].children) {
