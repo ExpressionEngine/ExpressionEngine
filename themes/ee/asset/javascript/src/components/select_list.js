@@ -507,7 +507,7 @@ var SelectItem = function (_React$Component2) {
           props.item.component.label
         );
       }
-
+      console.log(props.item.value);
       var listItem = React.createElement(
         'label',
         { className: checked ? 'act' : '',
@@ -529,7 +529,7 @@ var SelectItem = function (_React$Component2) {
         props.editable && React.createElement(
           'a',
           { href: '#' },
-          props.item.label
+          label
         ),
         !props.editable && label,
         " ",

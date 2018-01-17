@@ -11,6 +11,7 @@ namespace EllisLab\ExpressionEngine\Controller\Channels;
 
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
+use Mexitek\PHPColors\Color;
 
 /**
  * Channels Controller
@@ -733,15 +734,41 @@ class Channels extends AbstractChannelsController {
 	{
 		$statuses = ee('Model')->get('Status')
 			->order('status_order')
-			->all()
-			->getDictionary('status_id', 'status');
+			->all();
 
-		foreach ($statuses as $status_id => $status)
+		$status_component_style = [];
+
+		foreach ($statuses as $status)
 		{
-			if (in_array($status, ['open', 'closed']))
+			if ( ! in_array($status->status, array('open', 'closed')) && $status->highlight != '')
 			{
-				$statuses[$status_id] = lang($status);
+				$highlight = new Color($status->highlight);
+				$foreground = ($highlight->isLight())
+					? $highlight->darken(100)
+					: $highlight->lighten(100);
+
+				$status_component_style = [
+					'backgroundColor' => '#'.$status->highlight,
+					'borderColor' => '#'.$status->highlight,
+					'color' => '#'.$foreground,
+				];
 			}
+
+			$status_name = ($status->status == 'closed' OR $status->status == 'open')
+				? lang($status->status)
+				: $status->status;
+			$status_class = str_replace(' ', '_', strtolower($status->status));
+
+			$status_options[] = [
+				'value' => $status->status_id,
+				'label' => $status_name,
+				'component' => [
+					'tag' => 'span',
+					'label' => $status_name,
+					'class' => 'status-tag st-'.$status_class,
+					'style' => $status_component_style,
+				]
+			];
 		}
 
 		$selected = ee('Request')->post('statuses') ?: [];
@@ -761,7 +788,7 @@ class Channels extends AbstractChannelsController {
 
 		return ee('View')->make('ee:_shared/form/fields/select')->render([
 			'field_name'       => 'statuses',
-			'choices'          => $statuses,
+			'choices'          => $status_options,
 			'disabled_choices' => $default,
 			'unremovable_choices' => $default,
 			'value'            => $selected,
