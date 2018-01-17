@@ -131,7 +131,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 	{
 		if (is_null($data))
 		{
-			$data = array();
+			$data = array('fields' => []);
 		}
 
 		ee()->session->set_cache(__CLASS__, $this->name(), $data);

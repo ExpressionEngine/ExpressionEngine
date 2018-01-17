@@ -41,6 +41,12 @@ var SelectList = function (_React$Component) {
             return item.value != XORvalue;
           }); // uncheck XOR value
 
+          // Sort selection?
+          if (_this.props.selectionShouldRetainItemOrder) {
+            selected = _this.getOrderedSelection(selected);
+          }
+
+          // Select parents?
           if (item.parent && _this.props.autoSelectParents) {
             selected = selected.concat(_this.diffItems(_this.props.selected, _this.getFlattenedParentsOfItem(item)));
           }
@@ -248,10 +254,30 @@ var SelectList = function (_React$Component) {
       return items;
     }
   }, {
-    key: 'diffItems',
+    key: 'getOrderedSelection',
 
+
+    // Orders the selection array based on the items' order in the list
+    value: function getOrderedSelection(selected) {
+      var _this6 = this;
+
+      orderedSelection = [];
+      return selected.sort(function (a, b) {
+        a = _this6.props.initialItems.findIndex(function (item) {
+          return item.value == a.value;
+        });
+        b = _this6.props.initialItems.findIndex(function (item) {
+          return item.value == b.value;
+        });
+
+        return a < b ? -1 : 1;
+      });
+    }
 
     // Returns all items in items2 that aren't present in items1
+
+  }, {
+    key: 'diffItems',
     value: function diffItems(items1, items2) {
       var values = items1.map(function (item) {
         return item.value;
@@ -277,13 +303,13 @@ var SelectList = function (_React$Component) {
   }, {
     key: 'getFlattenedChildrenOfItem',
     value: function getFlattenedChildrenOfItem(item) {
-      var _this6 = this;
+      var _this7 = this;
 
       var items = [];
       item.children.forEach(function (child) {
         items.push(child);
         if (child.children) {
-          items = items.concat(_this6.getFlattenedChildrenOfItem(child));
+          items = items.concat(_this7.getFlattenedChildrenOfItem(child));
         }
       });
       return items;
@@ -291,7 +317,7 @@ var SelectList = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this7 = this;
+      var _this8 = this;
 
       var props = this.props;
       var shouldShowToggleAll = (props.multi || !props.selectable) && props.toggleAll !== null;
@@ -300,7 +326,7 @@ var SelectList = function (_React$Component) {
         'div',
         { className: "fields-select" + (SelectList.countItems(props.items) > props.tooManyLimit ? ' field-resizable' : ''),
           ref: function ref(container) {
-            _this7.container = container;
+            _this8.container = container;
           }, key: this.version },
         (shouldShowToggleAll || props.tooMany) && React.createElement(
           FieldTools,
@@ -315,17 +341,17 @@ var SelectList = function (_React$Component) {
                 placeholder: filter.placeholder,
                 items: filter.items,
                 onSelect: function onSelect(value) {
-                  return _this7.filterChange(filter.name, value);
+                  return _this8.filterChange(filter.name, value);
                 }
               });
             }),
             React.createElement(FilterSearch, { onSearch: function onSearch(e) {
-                return _this7.filterChange('search', e.target.value);
+                return _this8.filterChange('search', e.target.value);
               } })
           ),
           shouldShowToggleAll && props.tooMany && React.createElement('hr', null),
           shouldShowToggleAll && React.createElement(FilterToggleAll, { checkAll: props.toggleAll, onToggleAll: function onToggleAll(check) {
-              return _this7.handleToggleAll(check);
+              return _this8.handleToggleAll(check);
             } })
         ),
         React.createElement(
@@ -345,7 +371,7 @@ var SelectList = function (_React$Component) {
               reorderable: props.reorderable,
               removable: props.removable && (!props.unremovableChoices || !props.unremovableChoices.includes(item.value)),
               editable: props.editable,
-              handleSelect: _this7.handleSelect,
+              handleSelect: _this8.handleSelect,
               handleRemove: function handleRemove(e, item) {
                 return props.handleRemove(e, item);
               },
@@ -358,12 +384,12 @@ var SelectList = function (_React$Component) {
         }),
         props.selectable && props.selected.length == 0 && React.createElement('input', { type: 'hidden', name: props.multi ? props.name + '[]' : props.name, value: '',
           ref: function ref(input) {
-            _this7.input = input;
+            _this8.input = input;
           } }),
         props.selectable && props.selected.map(function (item) {
           return React.createElement('input', { type: 'hidden', key: item.value, name: props.multi ? props.name + '[]' : props.name, value: item.value,
             ref: function ref(input) {
-              _this7.input = input;
+              _this8.input = input;
             } });
         })
       );
@@ -447,7 +473,8 @@ SelectList.defaultProps = {
   removable: false,
   selectable: true,
   tooManyLimit: 8,
-  toggleAllLimit: 3
+  toggleAllLimit: 3,
+  selectionShouldRetainItemOrder: true
 };
 
 

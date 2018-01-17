@@ -150,7 +150,7 @@ class Comments extends AbstractPublishController {
 		}
 
 		// if there are Spam comments, and the user can access them, give them a link
-		if (ee()->cp->allowed_group('can_moderate_spam') && ee('Addon')->get('spam')->isInstalled())
+		if (ee()->cp->allowed_group('can_moderate_spam') && ee('Addon')->get('spam') && ee('Addon')->get('spam')->isInstalled())
 		{
 			$spam_total = ee('Model')->get('Comment')
 				->filter('site_id', ee()->config->item('site_id'))
