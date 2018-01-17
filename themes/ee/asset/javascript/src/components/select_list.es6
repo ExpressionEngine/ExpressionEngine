@@ -420,7 +420,7 @@ class SelectItem extends React.Component {
       const Tag = `${props.item.component.tag}`;
       label = (<Tag className={props.item.component.class} style={props.item.component.style}>{props.item.component.label}</Tag>)
     }
-console.log(props.item.value);
+
     let listItem = (
       <label className={(checked ? 'act' : '')}
           data-id={props.reorderable && ! props.nested ? props.item.value : null}>
