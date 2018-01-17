@@ -48,7 +48,7 @@ class LegacyParser {
 		$param_string	= substr($unprefixed_var.' ', strlen($field_name));
 
 		$modifier = '';
-		$modifier_loc = strpos($field_name, ':');
+		$modifier_loc = strrpos($field_name, ':');
 
 		if ($modifier_loc !== FALSE)
 		{

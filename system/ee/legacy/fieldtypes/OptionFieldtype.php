@@ -515,7 +515,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 
 				$vars['item:label'] = $this->processTypograpghy($vars['item:label']);
 
-				$chunk .= ee()->functions->var_swap($tmp, $vars);
+				$chunk .= ee()->TMPL->parse_variables_row($tmp, $vars);
 			}
 			else
 			{
