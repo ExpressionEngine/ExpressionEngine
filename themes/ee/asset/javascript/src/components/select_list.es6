@@ -25,7 +25,7 @@ class SelectList extends React.Component {
     this.version = 0
   }
 
-  static formatItems (items, parent, multi, components) {
+  static formatItems (items, parent, multi) {
     if ( ! items) return []
 
     let itemsArray = []
@@ -49,7 +49,7 @@ class SelectList extends React.Component {
         }
 
         if (items[key].children) {
-          newItem.children = SelectList.formatItems(items[key].children, newItem, multi, components)
+          newItem.children = SelectList.formatItems(items[key].children, newItem)
         }
 
         itemsArray.push(newItem)

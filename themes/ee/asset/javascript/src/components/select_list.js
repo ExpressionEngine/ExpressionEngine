@@ -370,7 +370,7 @@ var SelectList = function (_React$Component) {
     }
   }], [{
     key: 'formatItems',
-    value: function formatItems(items, parent, multi, components) {
+    value: function formatItems(items, parent, multi) {
       if (!items) return [];
 
       var itemsArray = [];
@@ -401,7 +401,7 @@ var SelectList = function (_React$Component) {
             };
 
             if (items[key].children) {
-              newItem.children = SelectList.formatItems(items[key].children, newItem, multi, components);
+              newItem.children = SelectList.formatItems(items[key].children, newItem);
             }
 
             itemsArray.push(newItem);
