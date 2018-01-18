@@ -64,6 +64,7 @@ class Relationship extends React.Component {
           multi={this.props.multi}
           selected={this.state.selected}
           selectionChanged={this.selectionChanged}
+          selectionRemovable={true}
           selectionShouldRetainItemOrder={false}
           noResults={this.props.no_results}
           filterable={true}

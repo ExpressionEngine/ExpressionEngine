@@ -380,7 +380,8 @@ var SelectList = function (_React$Component) {
           })
         ),
         !props.multi && props.tooMany && props.selected[0] && React.createElement(SelectedItem, { item: props.selected[0],
-          clearSelection: this.clearSelection
+          clearSelection: this.clearSelection,
+          selectionRemovable: props.selectionRemovable
         }),
         props.selectable && props.selected.length == 0 && React.createElement('input', { type: 'hidden', name: props.multi ? props.name + '[]' : props.name, value: '',
           ref: function ref(input) {
@@ -474,6 +475,7 @@ SelectList.defaultProps = {
   selectable: true,
   tooManyLimit: 8,
   toggleAllLimit: 3,
+  selectionRemovable: false,
   selectionShouldRetainItemOrder: true
 };
 
@@ -617,7 +619,7 @@ var SelectedItem = function (_React$Component3) {
           React.createElement('span', { className: 'icon--success' }),
           ' ',
           props.item.label,
-          React.createElement(
+          props.selectionRemovable && React.createElement(
             'ul',
             { className: 'toolbar' },
             React.createElement(

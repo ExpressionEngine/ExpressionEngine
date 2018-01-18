@@ -14,6 +14,7 @@ class SelectList extends React.Component {
     selectable: true,
     tooManyLimit: 8,
     toggleAllLimit: 3,
+    selectionRemovable: false,
     selectionShouldRetainItemOrder: true
   }
 
@@ -379,6 +380,7 @@ class SelectList extends React.Component {
         { ! props.multi && props.tooMany && props.selected[0] &&
           <SelectedItem item={props.selected[0]}
             clearSelection={this.clearSelection}
+            selectionRemovable={props.selectionRemovable}
           />
         }
         {/* Maintain a blank input to easily know when field is empty */}
@@ -493,9 +495,11 @@ class SelectedItem extends React.Component {
       <div className="field-input-selected">
         <label>
           <span className="icon--success"></span> {props.item.label}
-          <ul className="toolbar">
-            <li className="remove"><a href="" onClick={props.clearSelection}></a></li>
-          </ul>
+          {props.selectionRemovable &&
+            <ul className="toolbar">
+              <li className="remove"><a href="" onClick={props.clearSelection}></a></li>
+            </ul>
+          }
         </label>
       </div>
     )
