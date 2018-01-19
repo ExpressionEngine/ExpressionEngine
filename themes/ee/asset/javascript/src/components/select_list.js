@@ -289,6 +289,22 @@ var SelectList = function (_React$Component) {
       return items;
     }
   }, {
+    key: 'getFullItem',
+
+
+    // You may have an item without complete metadata (component, parents, etc.),
+    // this can happen with initial selections passed into the component. This function
+    // will try to find the corresponding item in what we have available and return it.
+    // It may not be available though if this list is AJAX-filtered.
+    value: function getFullItem(item) {
+      var itemsHash = this.getItemsHash(this.props.initialItems);
+      if (itemsHash[item.value] !== undefined) {
+        return itemsHash[item.value];
+      }
+
+      return item;
+    }
+  }, {
     key: 'render',
     value: function render() {
       var _this7 = this;
@@ -353,7 +369,7 @@ var SelectList = function (_React$Component) {
             });
           })
         ),
-        !props.multi && props.tooMany && props.selected[0] && React.createElement(SelectedItem, { item: props.selected[0],
+        !props.multi && props.tooMany && props.selected[0] && React.createElement(SelectedItem, { item: this.getFullItem(props.selected[0]),
           clearSelection: this.clearSelection
         }),
         props.selectable && props.selected.length == 0 && React.createElement('input', { type: 'hidden', name: props.multi ? props.name + '[]' : props.name, value: '',

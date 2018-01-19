@@ -305,6 +305,19 @@ class SelectList extends React.Component {
     }
   }
 
+  // You may have an item without complete metadata (component, parents, etc.),
+  // this can happen with initial selections passed into the component. This function
+  // will try to find the corresponding item in what we have available and return it.
+  // It may not be available though if this list is AJAX-filtered.
+  getFullItem(item) {
+    let itemsHash = this.getItemsHash(this.props.initialItems)
+    if (itemsHash[item.value] !== undefined) {
+      return itemsHash[item.value]
+    }
+
+    return item
+  }
+
   render () {
     let props = this.props
     let shouldShowToggleAll = (props.multi || ! props.selectable) && props.toggleAll !== null
@@ -360,7 +373,7 @@ class SelectList extends React.Component {
           )}
         </FieldInputs>
         { ! props.multi && props.tooMany && props.selected[0] &&
-          <SelectedItem item={props.selected[0]}
+          <SelectedItem item={this.getFullItem(props.selected[0])}
             clearSelection={this.clearSelection}
           />
         }
