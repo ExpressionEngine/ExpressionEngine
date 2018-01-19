@@ -32,6 +32,7 @@ class SelectList extends React.Component {
 
     let itemsArray = []
     for (key of Object.keys(items)) {
+
       if (items[key].section) {
         itemsArray.push({
           section: items[key].section,
@@ -42,7 +43,7 @@ class SelectList extends React.Component {
         // array of values for multi-select
         var value = (multi) ? items[key] : key
         var newItem = {
-          value: items[key].value ? items[key].value : value,
+          value: items[key].value || items[key].value === '' ? items[key].value : value,
           label: items[key].label !== undefined ? items[key].label : items[key],
           instructions: items[key].instructions ? items[key].instructions : '',
           children: null,

@@ -409,6 +409,7 @@ var SelectList = function (_React$Component) {
         for (var _iterator = Object.keys(items)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           key = _step.value;
 
+
           if (items[key].section) {
             itemsArray.push({
               section: items[key].section,
@@ -419,7 +420,7 @@ var SelectList = function (_React$Component) {
             // array of values for multi-select
             var value = multi ? items[key] : key;
             var newItem = {
-              value: items[key].value ? items[key].value : value,
+              value: items[key].value || items[key].value === '' ? items[key].value : value,
               label: items[key].label !== undefined ? items[key].label : items[key],
               instructions: items[key].instructions ? items[key].instructions : '',
               children: null,
