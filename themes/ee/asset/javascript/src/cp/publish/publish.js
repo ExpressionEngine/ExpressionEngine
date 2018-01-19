@@ -98,13 +98,13 @@ $(document).ready(function () {
 
 		container.append($(publishForm));
 
-		$('input, textarea', container).on('keyup', function(e) {
+		$('input, textarea', container).on('interact', _.debounce(function(e) {
 			previewIt();
-		})
+		}, 225));
 
-		$('input[type=checkbox], input[type=radio], input[type=hidden], select', container).on('change', function(e) {
+		$('input[type=checkbox], input[type=radio], input[type=hidden], select', container).on('change', _.debounce(function(e) {
 			previewIt();
-		})
+		}));
 
 		$('button[rel="live-preview"]').hide();
 	});
