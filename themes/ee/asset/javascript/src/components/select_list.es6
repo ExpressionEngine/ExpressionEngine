@@ -478,10 +478,17 @@ class SelectItem extends React.Component {
 class SelectedItem extends React.Component {
   render () {
     let props = this.props
+    let label = props.item.label
+
+    if (props.item.component) {
+      const Tag = `${props.item.component.tag}`;
+      label = (<Tag className={props.item.component.class} style={props.item.component.style}>{props.item.component.label}</Tag>)
+    }
+
     return (
       <div className="field-input-selected">
         <label>
-          <span className="icon--success"></span> {props.item.label}
+          <span className="icon--success"></span> {label}
           <ul className="toolbar">
             <li className="remove"><a href="" onClick={props.clearSelection}></a></li>
           </ul>

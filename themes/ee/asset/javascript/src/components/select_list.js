@@ -592,6 +592,17 @@ var SelectedItem = function (_React$Component3) {
     key: 'render',
     value: function render() {
       var props = this.props;
+      var label = props.item.label;
+
+      if (props.item.component) {
+        var Tag = '' + props.item.component.tag;
+        label = React.createElement(
+          Tag,
+          { className: props.item.component.class, style: props.item.component.style },
+          props.item.component.label
+        );
+      }
+
       return React.createElement(
         'div',
         { className: 'field-input-selected' },
@@ -600,7 +611,7 @@ var SelectedItem = function (_React$Component3) {
           null,
           React.createElement('span', { className: 'icon--success' }),
           ' ',
-          props.item.label,
+          label,
           React.createElement(
             'ul',
             { className: 'toolbar' },
