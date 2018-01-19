@@ -1420,7 +1420,7 @@ class Channels extends AbstractChannelsController {
 			unset($_POST['duplicate_channel_prefs']);
 
 			// duplicating preferences?
-			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
+			if ( ! empty($dupe_id) && is_numeric($dupe_id))
 			{
 				$dupe_channel = ee('Model')->get('Channel')
 					->filter('channel_id', $dupe_id)
