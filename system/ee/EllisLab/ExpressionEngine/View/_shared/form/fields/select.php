@@ -88,7 +88,7 @@ if ($count <= $too_many
 <?php
 // Large list, render it using React
 else:
-	if ($no_radio_value || ! is_array($value))
+	if ($no_radio_value && ! $multi)
 	{
 		// If $value is FALSE and we're rendering the field with React, FALSE
 		// probably isn't a valid value and probably came from asking the config
