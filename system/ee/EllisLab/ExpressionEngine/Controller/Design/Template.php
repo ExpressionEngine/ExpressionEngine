@@ -115,6 +115,13 @@ class Template extends AbstractDesignController {
 			}
 		}
 
+		$duplicate_template_options = [
+			[
+				'label' => lang('do_not_duplicate'),
+				'value' => ''
+			]
+		] + $this->getExistingTemplates();
+
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'errors' => $errors,
@@ -147,7 +154,7 @@ class Template extends AbstractDesignController {
 						'fields' => array(
 							'template_id' => array(
 								'type' => 'radio',
-								'choices' => $this->getExistingTemplates(),
+								'choices' => $duplicate_template_options,
 								'filter_url' => ee('CP/URL', 'design/template/search-templates')->compile(),
 								'no_results' => [
 									'text' => sprintf(lang('no_found'), lang('templates'))
@@ -962,7 +969,12 @@ class Template extends AbstractDesignController {
 	 */
 	private function renderAccessPartial(TemplateModel $template, $errors)
 	{
-		$existing_templates = $this->getExistingTemplates();
+		$existing_templates = $duplicate_template_options = [
+			[
+				'label' => lang('none'),
+				'value' => ''
+			]
+		] + $this->getExistingTemplates();
 
 		$member_groups = ee('Model')->get('MemberGroup')
 			->fields('group_id', 'group_title')
