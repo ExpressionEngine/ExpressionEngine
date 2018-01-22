@@ -9,6 +9,7 @@
 $(document).ready(function () {
 
 	var publishForm = $(".form-standard > form");
+	var ajaxRequest;
 
 	if (EE.publish.title_focus == true) {
 		publishForm.find("input[name=title]").focus();
@@ -78,7 +79,7 @@ $(document).ready(function () {
 		var iframe      = $('iframe.live-preview__frame')[0],
 		    preview_url = $(iframe).data('url');
 
-		$.ajax({
+		ajaxRequest = $.ajax({
 			type: "POST",
 			dataType: 'html',
 			url: preview_url,
@@ -87,24 +88,42 @@ $(document).ready(function () {
 				iframe.contentDocument.open();
 				iframe.contentDocument.write(result);
 				iframe.contentDocument.close();
-			}
+				ajaxRequest = null;
+			},
+			error: function() {}
 		});
 	};
 
-	$('body').on('click', 'button[rel="live-preview"]', function(e)
-	{
+	function debouceAjax(func, wait) {
+	    var timeout, result;
+		return function() {
+	        var context = this, args = arguments;
+	        var later = function() {
+	          timeout = null;
+	          result = func.apply(context, args);
+	        };
+
+	        clearTimeout(timeout);
+			if (ajaxRequest) ajaxRequest.abort();
+
+			timeout = setTimeout(later, wait);
+			return result;
+		}
+	};
+
+	$('body').on('click', 'button[rel="live-preview"]', function(e) {
 		var container = $('.app-modal--live-preview .form-standard');
 		previewIt();
 
 		container.append($(publishForm));
 
-		$('input, textarea', container).on('interact', _.debounce(function(e) {
+		$('input, textarea', container).on('interact', debouceAjax(function(e) {
 			previewIt();
 		}, 225));
 
-		$('input[type=checkbox], input[type=radio], input[type=hidden], select', container).on('change', _.debounce(function(e) {
+		$('input[type=checkbox], input[type=radio], input[type=hidden], select', container).on('change', debouceAjax(function(e) {
 			previewIt();
-		}));
+		}, 0));
 
 		$('button[rel="live-preview"]').hide();
 	});
