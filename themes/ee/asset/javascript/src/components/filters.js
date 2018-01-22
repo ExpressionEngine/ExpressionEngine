@@ -12,163 +12,163 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
 function FieldTools(props) {
-  return React.createElement(
-    "div",
-    { className: "field-tools" },
-    props.children
-  );
+	return React.createElement(
+		"div",
+		{ className: "field-tools" },
+		props.children
+	);
 }
 
 function FilterBar(props) {
-  return React.createElement(
-    "div",
-    { className: "filter-bar" },
-    props.children
-  );
+	return React.createElement(
+		"div",
+		{ className: "filter-bar" },
+		props.children
+	);
 }
 
 var FilterToggleAll = function (_React$Component) {
-  _inherits(FilterToggleAll, _React$Component);
+	_inherits(FilterToggleAll, _React$Component);
 
-  function FilterToggleAll(props) {
-    _classCallCheck(this, FilterToggleAll);
+	function FilterToggleAll(props) {
+		_classCallCheck(this, FilterToggleAll);
 
-    var _this = _possibleConstructorReturn(this, (FilterToggleAll.__proto__ || Object.getPrototypeOf(FilterToggleAll)).call(this, props));
+		var _this = _possibleConstructorReturn(this, (FilterToggleAll.__proto__ || Object.getPrototypeOf(FilterToggleAll)).call(this, props));
 
-    _this.handleClick = function () {
-      // Clear all will always be "unchecked" to the parent
-      if (!_this.props.checkAll) {
-        _this.props.onToggleAll(false);
-        return;
-      }
+		_this.handleClick = function () {
+			// Clear all will always be "unchecked" to the parent
+			if (!_this.props.checkAll) {
+				_this.props.onToggleAll(false);
+				return;
+			}
 
-      var checked = !_this.state.checked;
-      _this.setState({
-        checked: checked
-      });
-      _this.props.onToggleAll(checked);
-    };
+			var checked = !_this.state.checked;
+			_this.setState({
+				checked: checked
+			});
+			_this.props.onToggleAll(checked);
+		};
 
-    _this.state = {
-      checked: false
-    };
-    return _this;
-  }
+		_this.state = {
+			checked: false
+		};
+		return _this;
+	}
 
-  _createClass(FilterToggleAll, [{
-    key: "render",
-    value: function render() {
-      return React.createElement(
-        "div",
-        { className: "field-ctrl" },
-        React.createElement(
-          "label",
-          { className: (this.props.checkAll ? "field-toggle-all" : "field-clear-all") + (this.state.checked ? " act" : ""),
-            onClick: this.handleClick },
-          this.props.checkAll ? EE.lang.check_all : EE.lang.clear_all
-        )
-      );
-    }
-  }]);
+	_createClass(FilterToggleAll, [{
+		key: "render",
+		value: function render() {
+			return React.createElement(
+				"div",
+				{ className: "field-ctrl" },
+				React.createElement(
+					"label",
+					{ className: (this.props.checkAll ? "field-toggle-all" : "field-clear-all") + (this.state.checked ? " act" : ""),
+						onClick: this.handleClick },
+					this.props.checkAll ? EE.lang.check_all : EE.lang.clear_all
+				)
+			);
+		}
+	}]);
 
-  return FilterToggleAll;
+	return FilterToggleAll;
 }(React.Component);
 
 function FilterSearch(props) {
-  return React.createElement(
-    "div",
-    { className: "filter-item filter-item__search" },
-    React.createElement("input", { type: "text", placeholder: EE.lang.keyword_search, onChange: props.onSearch })
-  );
+	return React.createElement(
+		"div",
+		{ className: "filter-item filter-item__search" },
+		React.createElement("input", { type: "text", placeholder: EE.lang.keyword_search, onChange: props.onSearch })
+	);
 }
 
 var FilterSelect = function (_React$Component2) {
-  _inherits(FilterSelect, _React$Component2);
+	_inherits(FilterSelect, _React$Component2);
 
-  function FilterSelect(props) {
-    _classCallCheck(this, FilterSelect);
+	function FilterSelect(props) {
+		_classCallCheck(this, FilterSelect);
 
-    var _this2 = _possibleConstructorReturn(this, (FilterSelect.__proto__ || Object.getPrototypeOf(FilterSelect)).call(this, props));
+		var _this2 = _possibleConstructorReturn(this, (FilterSelect.__proto__ || Object.getPrototypeOf(FilterSelect)).call(this, props));
 
-    _this2.handleSearch = function (event) {
-      _this2.setState({ items: _this2.initialItems.filter(function (item) {
-          return item.label.toLowerCase().includes(event.target.value.toLowerCase());
-        }) });
-    };
+		_this2.handleSearch = function (event) {
+			_this2.setState({ items: _this2.initialItems.filter(function (item) {
+					return item.label.toLowerCase().includes(event.target.value.toLowerCase());
+				}) });
+		};
 
-    _this2.selectItem = function (event, item) {
-      _this2.setState({ selected: item });
-      _this2.props.onSelect(item ? item.value : null);
-      $(event.target).closest('.filter-item').find('.js-filter-link').click();
-      event.preventDefault();
-    };
+		_this2.selectItem = function (event, item) {
+			_this2.setState({ selected: item });
+			_this2.props.onSelect(item ? item.value : null);
+			$(event.target).closest('.filter-item').find('.js-filter-link').click();
+			event.preventDefault();
+		};
 
-    _this2.initialItems = SelectList.formatItems(props.items);
-    _this2.state = {
-      items: _this2.initialItems,
-      selected: null
-    };
-    return _this2;
-  }
+		_this2.initialItems = SelectList.formatItems(props.items);
+		_this2.state = {
+			items: _this2.initialItems,
+			selected: null
+		};
+		return _this2;
+	}
 
-  _createClass(FilterSelect, [{
-    key: "render",
-    value: function render() {
-      var _this3 = this;
+	_createClass(FilterSelect, [{
+		key: "render",
+		value: function render() {
+			var _this3 = this;
 
-      return React.createElement(
-        "div",
-        { className: "filter-item" },
-        React.createElement(
-          "a",
-          { href: "#", className: "js-filter-link filter-item__link filter-item__link--has-submenu", onClick: this.toggle },
-          this.props.title
-        ),
-        React.createElement(
-          "div",
-          { className: "filter-submenu" },
-          this.state.items.length > 7 && React.createElement(
-            "div",
-            { className: "filter-submenu__search" },
-            React.createElement(
-              "form",
-              null,
-              React.createElement("input", { type: "text", placeholder: this.props.placeholder, onChange: this.handleSearch })
-            )
-          ),
-          this.state.selected && React.createElement(
-            "div",
-            { className: "filter-submenu__selected" },
-            React.createElement(
-              "a",
-              { href: "#", onClick: function onClick(e) {
-                  return _this3.selectItem(e, null);
-                } },
-              this.state.selected.label
-            )
-          ),
-          React.createElement(
-            "div",
-            { className: "filter-submenu__scroll" },
-            this.state.items.map(function (item) {
-              return React.createElement(
-                "a",
-                { href: "#", key: item.value, className: "filter-submenu__link filter-submenu__link---active", onClick: function onClick(e) {
-                    return _this3.selectItem(e, item);
-                  } },
-                item.label
-              );
-            })
-          )
-        )
-      );
-    }
-  }]);
+			return React.createElement(
+				"div",
+				{ className: "filter-item" },
+				React.createElement(
+					"a",
+					{ href: "#", className: "js-filter-link filter-item__link filter-item__link--has-submenu", onClick: this.toggle },
+					this.props.title
+				),
+				React.createElement(
+					"div",
+					{ className: "filter-submenu" },
+					this.state.items.length > 7 && React.createElement(
+						"div",
+						{ className: "filter-submenu__search" },
+						React.createElement(
+							"form",
+							null,
+							React.createElement("input", { type: "text", placeholder: this.props.placeholder, onChange: this.handleSearch })
+						)
+					),
+					this.state.selected && React.createElement(
+						"div",
+						{ className: "filter-submenu__selected" },
+						React.createElement(
+							"a",
+							{ href: "#", onClick: function onClick(e) {
+									return _this3.selectItem(e, null);
+								} },
+							this.state.selected.label
+						)
+					),
+					React.createElement(
+						"div",
+						{ className: "filter-submenu__scroll" },
+						this.state.items.map(function (item) {
+							return React.createElement(
+								"a",
+								{ href: "#", key: item.value, className: "filter-submenu__link filter-submenu__link---active", onClick: function onClick(e) {
+										return _this3.selectItem(e, item);
+									} },
+								item.label
+							);
+						})
+					)
+				)
+			);
+		}
+	}]);
 
-  return FilterSelect;
+	return FilterSelect;
 }(React.Component);
