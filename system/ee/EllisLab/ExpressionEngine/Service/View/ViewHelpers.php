@@ -49,7 +49,8 @@ class ViewHelpers {
 			$choice = [
 				'value' => $value,
 				'label' => $label,
-				'instructions' => isset($label['instructions']) ? $label['instructions'] : ''
+				'instructions' => isset($label['instructions']) ? $label['instructions'] : '',
+				'component' => isset($label['component']) ? $label['component'] : '',
 			];
 
 			// Any of these can be overridden by specifying them in the source array

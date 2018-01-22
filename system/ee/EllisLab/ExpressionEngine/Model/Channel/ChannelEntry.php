@@ -1106,10 +1106,7 @@ class ChannelEntry extends ContentModel {
 				continue;
 			}
 
-			$status_name = ($status->status == 'closed' OR $status->status == 'open')
-				? lang($status->status)
-				: $status->status;
-			$status_options[$status->status] = $status_name;
+			$status_options[] = $status->getOptionComponent();
 		}
 
 		$field->setItem('field_list_items', $status_options);

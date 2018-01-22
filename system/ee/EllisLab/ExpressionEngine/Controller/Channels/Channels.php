@@ -733,15 +733,11 @@ class Channels extends AbstractChannelsController {
 	{
 		$statuses = ee('Model')->get('Status')
 			->order('status_order')
-			->all()
-			->getDictionary('status_id', 'status');
+			->all();
 
-		foreach ($statuses as $status_id => $status)
+		foreach ($statuses as $status)
 		{
-			if (in_array($status, ['open', 'closed']))
-			{
-				$statuses[$status_id] = lang($status);
-			}
+			$status_options[] = $status->getOptionComponent(['use_ids' => TRUE]);
 		}
 
 		$selected = ee('Request')->post('statuses') ?: [];
@@ -761,7 +757,7 @@ class Channels extends AbstractChannelsController {
 
 		return ee('View')->make('ee:_shared/form/fields/select')->render([
 			'field_name'       => 'statuses',
-			'choices'          => $statuses,
+			'choices'          => $status_options,
 			'disabled_choices' => $default,
 			'unremovable_choices' => $default,
 			'value'            => $selected,
