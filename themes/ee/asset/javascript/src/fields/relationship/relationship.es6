@@ -2,7 +2,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -64,6 +64,7 @@ class Relationship extends React.Component {
           multi={this.props.multi}
           selected={this.state.selected}
           selectionChanged={this.selectionChanged}
+          selectionRemovable={true}
           selectionShouldRetainItemOrder={false}
           noResults={this.props.no_results}
           filterable={true}

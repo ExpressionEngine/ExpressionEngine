@@ -2,7 +2,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -14,6 +14,7 @@ class SelectList extends React.Component {
     selectable: true,
     tooManyLimit: 8,
     toggleAllLimit: 3,
+    selectionRemovable: false,
     selectionShouldRetainItemOrder: true
   }
 
@@ -31,6 +32,7 @@ class SelectList extends React.Component {
 
     let itemsArray = []
     for (key of Object.keys(items)) {
+
       if (items[key].section) {
         itemsArray.push({
           section: items[key].section,
@@ -41,7 +43,7 @@ class SelectList extends React.Component {
         // array of values for multi-select
         var value = (multi) ? items[key] : key
         var newItem = {
-          value: items[key].value ? items[key].value : value,
+          value: items[key].value || items[key].value === '' ? items[key].value : value,
           label: items[key].label !== undefined ? items[key].label : items[key],
           instructions: items[key].instructions ? items[key].instructions : '',
           children: null,
@@ -393,6 +395,7 @@ class SelectList extends React.Component {
         { ! props.multi && props.tooMany && props.selected[0] &&
           <SelectedItem item={this.getFullItem(props.selected[0])}
             clearSelection={this.clearSelection}
+            selectionRemovable={props.selectionRemovable}
           />
         }
         {/* Maintain a blank input to easily know when field is empty */}
@@ -520,9 +523,11 @@ class SelectedItem extends React.Component {
       <div className="field-input-selected">
         <label>
           <span className="icon--success"></span> {label}
-          <ul className="toolbar">
-            <li className="remove"><a href="" onClick={props.clearSelection}></a></li>
-          </ul>
+          {props.selectionRemovable &&
+            <ul className="toolbar">
+              <li className="remove"><a href="" onClick={props.clearSelection}></a></li>
+            </ul>
+          }
         </label>
       </div>
     )

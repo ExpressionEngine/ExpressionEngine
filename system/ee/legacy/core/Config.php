@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -1300,14 +1300,19 @@ class EE_Config {
 			return;
 		}
 
-		if (function_exists('opcache_invalidate'))
-		{
-			opcache_invalidate($path);
-		}
-
 		if (function_exists('apc_delete_file'))
 		{
 			@apc_delete_file($path) || apc_clear_cache();
+		}
+
+		if (function_exists('opcache_invalidate'))
+		{
+			if (($opcache_api_path = (string) ini_get('opcache.restrict_api')) && stripos(SYSPATH, $opcache_api_path) !== 0)
+			{
+				return;
+			}
+
+			opcache_invalidate($path);
 		}
 	}
 

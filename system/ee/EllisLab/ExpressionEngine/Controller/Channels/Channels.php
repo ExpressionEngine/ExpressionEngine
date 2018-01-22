@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -1416,7 +1416,7 @@ class Channels extends AbstractChannelsController {
 			unset($_POST['duplicate_channel_prefs']);
 
 			// duplicating preferences?
-			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
+			if ( ! empty($dupe_id) && is_numeric($dupe_id))
 			{
 				$dupe_channel = ee('Model')->get('Channel')
 					->filter('channel_id', $dupe_id)

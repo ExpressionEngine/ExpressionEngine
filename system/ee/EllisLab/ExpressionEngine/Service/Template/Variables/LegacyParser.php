@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -48,7 +48,7 @@ class LegacyParser {
 		$param_string	= substr($unprefixed_var.' ', strlen($field_name));
 
 		$modifier = '';
-		$modifier_loc = strpos($field_name, ':');
+		$modifier_loc = strrpos($field_name, ':');
 
 		if ($modifier_loc !== FALSE)
 		{

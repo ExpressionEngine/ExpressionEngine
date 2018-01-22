@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -515,7 +515,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 
 				$vars['item:label'] = $this->processTypograpghy($vars['item:label']);
 
-				$chunk .= ee()->functions->var_swap($tmp, $vars);
+				$chunk .= ee()->TMPL->parse_variables_row($tmp, $vars);
 			}
 			else
 			{

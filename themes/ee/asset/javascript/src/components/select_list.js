@@ -14,7 +14,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -396,7 +396,8 @@ var SelectList = function (_React$Component) {
           })
         ),
         !props.multi && props.tooMany && props.selected[0] && React.createElement(SelectedItem, { item: this.getFullItem(props.selected[0]),
-          clearSelection: this.clearSelection
+          clearSelection: this.clearSelection,
+          selectionRemovable: props.selectionRemovable
         }),
         props.selectable && props.selected.length == 0 && React.createElement('input', { type: 'hidden', name: props.multi ? props.name + '[]' : props.name, value: '',
           ref: function ref(input) {
@@ -424,6 +425,7 @@ var SelectList = function (_React$Component) {
         for (var _iterator = Object.keys(items)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           key = _step.value;
 
+
           if (items[key].section) {
             itemsArray.push({
               section: items[key].section,
@@ -434,7 +436,7 @@ var SelectList = function (_React$Component) {
             // array of values for multi-select
             var value = multi ? items[key] : key;
             var newItem = {
-              value: items[key].value ? items[key].value : value,
+              value: items[key].value || items[key].value === '' ? items[key].value : value,
               label: items[key].label !== undefined ? items[key].label : items[key],
               instructions: items[key].instructions ? items[key].instructions : '',
               children: null,
@@ -491,6 +493,7 @@ SelectList.defaultProps = {
   selectable: true,
   tooManyLimit: 8,
   toggleAllLimit: 3,
+  selectionRemovable: false,
   selectionShouldRetainItemOrder: true
 };
 
@@ -655,7 +658,7 @@ var SelectedItem = function (_React$Component3) {
           React.createElement('span', { className: 'icon--success' }),
           ' ',
           label,
-          React.createElement(
+          props.selectionRemovable && React.createElement(
             'ul',
             { className: 'toolbar' },
             React.createElement(
