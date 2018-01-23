@@ -294,9 +294,14 @@ $(document).ready(function(){
 
 			// fade in the overlay
 			$('.app-overlay')
+				.removeClass('app-overlay--destruct')
 				.removeClass('app-overlay---closed')
 				.addClass('app-overlay---open')
 				.css('height', heightIs);
+
+			if ($(this).hasClass('js-modal--destruct')) {
+				$('.app-overlay').addClass('app-overlay--destruct');
+			}
 
 			if ($(this).hasClass('modal-wrap')) {
 				$(this).fadeIn('slow');
@@ -310,7 +315,7 @@ $(document).ready(function(){
 
 			// scroll up, if needed, but only do so after a significant
 			// portion of the overlay is show so as not to disorient the user
-			if ( ! $(this).is('.modal-form-wrap, .app-modal'))
+			if ( ! $(this).is('.modal-form-wrap, .app-modal--side'))
 			{
 				setTimeout(function() {
 					$(document).scrollTop(0);
