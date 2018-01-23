@@ -33,6 +33,10 @@ $(document).ready(function () {
 				return $(el).attr('value') !== undefined;
 			});
 
+			if (conditional_element.val() == 'quick-edit') {
+				return EE.cp.Modal.openQuickEdit(modal, checked)
+			}
+
 			if (checked.length < 6) {
 				checked.each(function() {
 					$(modalIs + " .checklist").append('<li>' + $(this).attr('data-confirm') + '</li>');
@@ -113,5 +117,28 @@ EE.cp.Modal = {
 
 			return false
 		})
+	},
+
+	/**
+	 * Opens the Quick Edit modal for the entry listing
+	 *
+	 * @param  {jQuery object}   modal    jQuery object of the modal to open
+	 * @param  {array}           checked  Array of checked checkbox nodes
+	 * @return {void}
+	 */
+	openQuickEdit: function(modal, checked) {
+		var items = []
+
+		checked.each(function() {
+			items.push({
+				label: $(this).data('title'),
+				value: $(this).val(),
+				channelId: $(this).data('channelId')
+			})
+		})
+
+		QuickEditEntries.render(modal, {items: items})
+
+		modal.trigger('modal:open')
 	}
 };

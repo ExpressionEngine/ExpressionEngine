@@ -170,12 +170,12 @@ class Edit extends AbstractPublishController {
 			$autosaves = $entry->Autosaves->count();
 
 			// Escape markup in title
-			$title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
+			$escaped_title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
 
 			if ($can_edit)
 			{
 				$edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
-				$title = '<a href="' . $edit_link . '">' . $title . '</a>';
+				$title = '<a href="' . $edit_link . '">' . $escaped_title . '</a>';
 			}
 
 			if ($autosaves)
@@ -271,7 +271,9 @@ class Edit extends AbstractPublishController {
 					'value' => $entry->entry_id,
 					'disabled' => $disabled_checkbox,
 					'data' => array(
-						'confirm' => lang('entry') . ': <b>' . htmlentities($entry->title, ENT_QUOTES, 'UTF-8') . '</b>'
+						'title' => $escaped_title,
+						'channel-id' => $entry->Channel->getId(),
+						'confirm' => lang('entry') . ': <b>' . $escaped_title . '</b>'
 					)
 				)
 			);
@@ -329,7 +331,8 @@ class Edit extends AbstractPublishController {
 		ee()->cp->add_js_script(array(
 			'file' => array(
 				'cp/confirm_remove',
-				'cp/publish/entry-list'
+				'cp/publish/entry-list',
+				'components/quick_edit_entries'
 			),
 		));
 

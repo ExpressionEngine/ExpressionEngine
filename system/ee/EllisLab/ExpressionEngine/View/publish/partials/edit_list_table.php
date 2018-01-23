@@ -10,6 +10,7 @@
 		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
+				<option value="quick-edit" data-confirm-trigger="selected" rel="modal-quick-edit">Quick Edit</option>
 				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-entry"><?=lang('remove')?></option>
 			</select>
 			<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
