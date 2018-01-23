@@ -2557,7 +2557,7 @@ class Channel {
 	{
 		if ($this->isLivePreviewEntry())
 		{
-			$query_result = [ee()->session->cache('channel_entry', 'live-preview', FALSE)];
+			$query_result = [ee('LivePreview')->getEntryData()];
 		}
 		else
 		{
