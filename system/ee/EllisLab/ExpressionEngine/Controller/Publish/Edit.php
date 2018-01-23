@@ -207,11 +207,9 @@ class Edit extends AbstractPublishController {
 
 			if ($live_look_template)
 			{
-				$view_url = ee()->functions->create_url($live_look_template->getPath() . '/' . $entry->entry_id);
 				$toolbar['view'] = array(
-					'href' => ee()->cp->masked_url($view_url),
-					'title' => lang('view'),
-					'rel' => 'external'
+					'href' => ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, ['preview' => 'y']),
+					'title' => lang('preview'),
 				);
 			}
 

@@ -133,4 +133,8 @@ $(document).ready(function () {
 		$('button[rel="live-preview"]').show();
 	});
 
+	if (window.location.search.includes('&preview=y')) {
+		$('button[rel="live-preview"]').click();
+	}
+
 });
