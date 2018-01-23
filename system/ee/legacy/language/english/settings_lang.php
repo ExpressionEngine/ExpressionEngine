@@ -723,7 +723,7 @@ $lang = array(
 
 'cookie_path' => 'Path',
 
-'cookie_path_desc' => 'Path to apply cookies to the above domain. (<a href="%s">more info</a>)',
+'cookie_path_desc' => 'Path to apply cookies to the above domain. (<a href="%s" rel="external">more info</a>)',
 
 'cookie_prefix' => 'Prefix',
 

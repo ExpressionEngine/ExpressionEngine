@@ -12,71 +12,71 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
 var Toggle = function (_React$Component) {
-  _inherits(Toggle, _React$Component);
+	_inherits(Toggle, _React$Component);
 
-  function Toggle(props) {
-    _classCallCheck(this, Toggle);
+	function Toggle(props) {
+		_classCallCheck(this, Toggle);
 
-    var _this = _possibleConstructorReturn(this, (Toggle.__proto__ || Object.getPrototypeOf(Toggle)).call(this, props));
+		var _this = _possibleConstructorReturn(this, (Toggle.__proto__ || Object.getPrototypeOf(Toggle)).call(this, props));
 
-    _initialiseProps.call(_this);
+		_initialiseProps.call(_this);
 
-    _this.state = {
-      on: props.on,
-      value: props.value,
-      onOff: props.on ? 'on' : 'off',
-      trueFalse: props.on ? 'true' : 'false'
-    };
-    return _this;
-  }
+		_this.state = {
+			on: props.on,
+			value: props.value,
+			onOff: props.on ? 'on' : 'off',
+			trueFalse: props.on ? 'true' : 'false'
+		};
+		return _this;
+	}
 
-  _createClass(Toggle, [{
-    key: 'render',
-    value: function render() {
-      return React.createElement(
-        'a',
-        { href: '#', className: "toggle-btn " + this.state.onOff, onClick: this.handleClick, alt: this.state.onOff, 'data-state': this.state.onOff, 'aria-checked': this.state.trueFalse, role: 'switch' },
-        this.props.name && React.createElement('input', { type: 'hidden', name: this.props.name, value: this.state.value }),
-        React.createElement('span', { className: 'slider' }),
-        React.createElement('span', { className: 'option' })
-      );
-    }
-  }]);
+	_createClass(Toggle, [{
+		key: 'render',
+		value: function render() {
+			return React.createElement(
+				'a',
+				{ href: '#', className: "toggle-btn " + this.state.onOff, onClick: this.handleClick, alt: this.state.onOff, 'data-state': this.state.onOff, 'aria-checked': this.state.trueFalse, role: 'switch' },
+				this.props.name && React.createElement('input', { type: 'hidden', name: this.props.name, value: this.state.value }),
+				React.createElement('span', { className: 'slider' }),
+				React.createElement('span', { className: 'option' })
+			);
+		}
+	}]);
 
-  return Toggle;
+	return Toggle;
 }(React.Component);
 
 var _initialiseProps = function _initialiseProps() {
-  var _this2 = this;
+	var _this2 = this;
 
-  this.handleClick = function (event) {
-    event.preventDefault();
-    _this2.setState(function (prevState, props) {
-      if (props.handleToggle) props.handleToggle(!prevState.on);
-      return {
-        on: !prevState.on,
-        value: !prevState.on ? props.offValue : props.onValue,
-        onOff: !prevState.on ? 'on' : 'off',
-        trueFalse: !prevState.on ? 'true' : 'false'
-      };
-    });
-  };
+	this.handleClick = function (event) {
+		event.preventDefault();
+		_this2.setState(function (prevState, props) {
+			if (props.handleToggle) props.handleToggle(!prevState.on);
+			return {
+				on: !prevState.on,
+				value: !prevState.on ? props.offValue : props.onValue,
+				onOff: !prevState.on ? 'on' : 'off',
+				trueFalse: !prevState.on ? 'true' : 'false'
+			};
+		});
+	};
 };
 
 function ToggleTools(props) {
-  return React.createElement(
-    'div',
-    { className: 'toggle-tools' },
-    React.createElement(
-      'b',
-      null,
-      props.label
-    ),
-    props.children
-  );
+	return React.createElement(
+		'div',
+		{ className: 'toggle-tools' },
+		React.createElement(
+			'b',
+			null,
+			props.label
+		),
+		props.children
+	);
 }

@@ -14,7 +14,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -315,6 +315,22 @@ var SelectList = function (_React$Component) {
       return items;
     }
   }, {
+    key: 'getFullItem',
+
+
+    // You may have an item without complete metadata (component, parents, etc.),
+    // this can happen with initial selections passed into the component. This function
+    // will try to find the corresponding item in what we have available and return it.
+    // It may not be available though if this list is AJAX-filtered.
+    value: function getFullItem(item) {
+      var itemsHash = this.getItemsHash(this.props.initialItems);
+      if (itemsHash[item.value] !== undefined) {
+        return itemsHash[item.value];
+      }
+
+      return item;
+    }
+  }, {
     key: 'render',
     value: function render() {
       var _this8 = this;
@@ -379,8 +395,9 @@ var SelectList = function (_React$Component) {
             });
           })
         ),
-        !props.multi && props.tooMany && props.selected[0] && React.createElement(SelectedItem, { item: props.selected[0],
-          clearSelection: this.clearSelection
+        !props.multi && props.tooMany && props.selected[0] && React.createElement(SelectedItem, { item: this.getFullItem(props.selected[0]),
+          clearSelection: this.clearSelection,
+          selectionRemovable: props.selectionRemovable
         }),
         props.selectable && props.selected.length == 0 && React.createElement('input', { type: 'hidden', name: props.multi ? props.name + '[]' : props.name, value: '',
           ref: function ref(input) {
@@ -408,6 +425,7 @@ var SelectList = function (_React$Component) {
         for (var _iterator = Object.keys(items)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           key = _step.value;
 
+
           if (items[key].section) {
             itemsArray.push({
               section: items[key].section,
@@ -418,11 +436,12 @@ var SelectList = function (_React$Component) {
             // array of values for multi-select
             var value = multi ? items[key] : key;
             var newItem = {
-              value: items[key].value ? items[key].value : value,
+              value: items[key].value || items[key].value === '' ? items[key].value : value,
               label: items[key].label !== undefined ? items[key].label : items[key],
               instructions: items[key].instructions ? items[key].instructions : '',
               children: null,
-              parent: parent ? parent : null
+              parent: parent ? parent : null,
+              component: items[key].component != undefined ? items[key].component : null
             };
 
             if (items[key].children) {
@@ -474,6 +493,7 @@ SelectList.defaultProps = {
   selectable: true,
   tooManyLimit: 8,
   toggleAllLimit: 3,
+  selectionRemovable: false,
   selectionShouldRetainItemOrder: true
 };
 
@@ -515,12 +535,22 @@ var SelectItem = function (_React$Component2) {
     value: function render() {
       var props = this.props;
       var checked = this.checked(props.item.value);
+      var label = props.item.label;
 
       if (props.item.section) {
         return React.createElement(
           'div',
           { className: 'field-group-head', key: props.item.section },
           props.item.section
+        );
+      }
+
+      if (props.item.component) {
+        var Tag = '' + props.item.component.tag;
+        label = React.createElement(
+          Tag,
+          { className: props.item.component.class, style: props.item.component.style },
+          props.item.component.label
         );
       }
 
@@ -545,9 +575,9 @@ var SelectItem = function (_React$Component2) {
         props.editable && React.createElement(
           'a',
           { href: '#' },
-          props.item.label
+          label
         ),
-        !props.editable && props.item.label,
+        !props.editable && label,
         " ",
         props.item.instructions && React.createElement(
           'i',
@@ -608,6 +638,17 @@ var SelectedItem = function (_React$Component3) {
     key: 'render',
     value: function render() {
       var props = this.props;
+      var label = props.item.label;
+
+      if (props.item.component) {
+        var Tag = '' + props.item.component.tag;
+        label = React.createElement(
+          Tag,
+          { className: props.item.component.class, style: props.item.component.style },
+          props.item.component.label
+        );
+      }
+
       return React.createElement(
         'div',
         { className: 'field-input-selected' },
@@ -616,8 +657,8 @@ var SelectedItem = function (_React$Component3) {
           null,
           React.createElement('span', { className: 'icon--success' }),
           ' ',
-          props.item.label,
-          React.createElement(
+          label,
+          props.selectionRemovable && React.createElement(
             'ul',
             { className: 'toolbar' },
             React.createElement(

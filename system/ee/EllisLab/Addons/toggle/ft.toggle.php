@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -223,6 +223,12 @@ class Toggle_ft extends EE_Fieldtype {
 	protected function get_column_type($data, $grid = FALSE)
 	{
 		$id = ($grid) ? 'col_id' : 'field_id';
+
+		if (isset($data['ee_action']) && $data['ee_action'] == 'delete')
+		{
+			return [$id.'_'.$data[$id] => []];
+		}
+
 		$default_value = ($grid) ? $data['field_default_value'] : $data['field_settings']['field_default_value'];
 
 		return array(

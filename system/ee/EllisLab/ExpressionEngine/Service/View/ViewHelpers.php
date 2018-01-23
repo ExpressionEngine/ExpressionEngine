@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -49,7 +49,8 @@ class ViewHelpers {
 			$choice = [
 				'value' => $value,
 				'label' => $label,
-				'instructions' => isset($label['instructions']) ? $label['instructions'] : ''
+				'instructions' => isset($label['instructions']) ? $label['instructions'] : '',
+				'component' => isset($label['component']) ? $label['component'] : '',
 			];
 
 			// Any of these can be overridden by specifying them in the source array

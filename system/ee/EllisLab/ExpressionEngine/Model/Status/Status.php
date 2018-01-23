@@ -3,13 +3,14 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
 namespace EllisLab\ExpressionEngine\Model\Status;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use Mexitek\PHPColors\Color;
 
 /**
  * Status Model
@@ -93,6 +94,51 @@ class Status extends Model {
 			$count = $this->getModelFacade()->get('Status')->count();
 			$this->setProperty('status_order', $count + 1);
 		}
+	}
+
+	/**
+	 * Get Option Component for option input display (radio, etc.)
+	 *
+	 * @param  array  $options (bool) use_ids [default FALSE]
+	 * @return array option component array
+	 */
+	public function getOptionComponent($options = [])
+	{
+		$use_ids = (isset($options['use_ids'])) ? $options['use_ids'] : FALSE;
+
+		$status_component_style = [];
+
+		if ( ! in_array($this->status, array('open', 'closed')) && $this->highlight != '')
+		{
+			$highlight = new Color($this->highlight);
+			$foreground = ($highlight->isLight())
+				? $highlight->darken(100)
+				: $highlight->lighten(100);
+
+			$status_component_style = [
+				'backgroundColor' => '#'.$this->highlight,
+				'borderColor' => '#'.$this->highlight,
+				'color' => '#'.$foreground,
+			];
+		}
+
+		$status_name = ($this->status == 'closed' OR $this->status == 'open')
+			? lang($this->status)
+			: $this->status;
+		$status_class = str_replace(' ', '_', strtolower($this->status));
+
+		$status_option = [
+			'value' => ($use_ids) ? $this->status_id : $this->status,
+			'label' => $status_name,
+			'component' => [
+				'tag' => 'span',
+				'label' => $status_name,
+				'class' => 'status-tag st-'.$status_class,
+				'style' => $status_component_style,
+			]
+		];
+
+		return $status_option;
 	}
 }
 

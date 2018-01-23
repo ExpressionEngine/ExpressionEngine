@@ -61,8 +61,9 @@ feature 'Templates' do
       form.allowed_member_groups.has_checked_radio('3').should == true
       form.allowed_member_groups.has_checked_radio('4').should == true
       form.allowed_member_groups.has_checked_radio('5').should == true
-      form.no_access_redirect.each do |el|
-        el.checked?.should == false
+      form.no_access_redirect.each_with_index do |el, i|
+        # Only "None" should be selected
+        el.checked?.should == (i == 0)
       end
       form.enable_http_auth[:class].should include "off"
       form.template_route.value.should eq ''

@@ -2,7 +2,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -14,6 +14,7 @@ class SelectList extends React.Component {
     selectable: true,
     tooManyLimit: 8,
     toggleAllLimit: 3,
+    selectionRemovable: false,
     selectionShouldRetainItemOrder: true
   }
 
@@ -31,6 +32,7 @@ class SelectList extends React.Component {
 
     let itemsArray = []
     for (key of Object.keys(items)) {
+
       if (items[key].section) {
         itemsArray.push({
           section: items[key].section,
@@ -41,11 +43,12 @@ class SelectList extends React.Component {
         // array of values for multi-select
         var value = (multi) ? items[key] : key
         var newItem = {
-          value: items[key].value ? items[key].value : value,
+          value: items[key].value || items[key].value === '' ? items[key].value : value,
           label: items[key].label !== undefined ? items[key].label : items[key],
           instructions: items[key].instructions ? items[key].instructions : '',
           children: null,
-          parent: parent ? parent : null
+          parent: parent ? parent : null,
+          component: items[key].component != undefined ? items[key].component : null
         }
 
         if (items[key].children) {
@@ -322,6 +325,19 @@ class SelectList extends React.Component {
     }
   }
 
+  // You may have an item without complete metadata (component, parents, etc.),
+  // this can happen with initial selections passed into the component. This function
+  // will try to find the corresponding item in what we have available and return it.
+  // It may not be available though if this list is AJAX-filtered.
+  getFullItem(item) {
+    let itemsHash = this.getItemsHash(this.props.initialItems)
+    if (itemsHash[item.value] !== undefined) {
+      return itemsHash[item.value]
+    }
+
+    return item
+  }
+
   render () {
     let props = this.props
     let shouldShowToggleAll = (props.multi || ! props.selectable) && props.toggleAll !== null
@@ -377,8 +393,9 @@ class SelectList extends React.Component {
           )}
         </FieldInputs>
         { ! props.multi && props.tooMany && props.selected[0] &&
-          <SelectedItem item={props.selected[0]}
+          <SelectedItem item={this.getFullItem(props.selected[0])}
             clearSelection={this.clearSelection}
+            selectionRemovable={props.selectionRemovable}
           />
         }
         {/* Maintain a blank input to easily know when field is empty */}
@@ -423,6 +440,7 @@ class SelectItem extends React.Component {
   render() {
     let props = this.props
     let checked = this.checked(props.item.value)
+    let label = props.item.label
 
     if (props.item.section) {
       return (
@@ -430,6 +448,11 @@ class SelectItem extends React.Component {
           {props.item.section}
         </div>
       )
+    }
+
+    if (props.item.component) {
+      const Tag = `${props.item.component.tag}`;
+      label = (<Tag className={props.item.component.class} style={props.item.component.style}>{props.item.component.label}</Tag>)
     }
 
     let listItem = (
@@ -448,9 +471,9 @@ class SelectItem extends React.Component {
            />
         )}
         {props.editable && (
-            <a href="#">{props.item.label}</a>
+            <a href="#">{label}</a>
         )}
-        { ! props.editable && props.item.label}
+        { ! props.editable && label}
         {" "}
         {props.item.instructions && (
           <i>{props.item.instructions}</i>
@@ -489,13 +512,22 @@ class SelectItem extends React.Component {
 class SelectedItem extends React.Component {
   render () {
     let props = this.props
+    let label = props.item.label
+
+    if (props.item.component) {
+      const Tag = `${props.item.component.tag}`;
+      label = (<Tag className={props.item.component.class} style={props.item.component.style}>{props.item.component.label}</Tag>)
+    }
+
     return (
       <div className="field-input-selected">
         <label>
-          <span className="icon--success"></span> {props.item.label}
-          <ul className="toolbar">
-            <li className="remove"><a href="" onClick={props.clearSelection}></a></li>
-          </ul>
+          <span className="icon--success"></span> {label}
+          {props.selectionRemovable &&
+            <ul className="toolbar">
+              <li className="remove"><a href="" onClick={props.clearSelection}></a></li>
+            </ul>
+          }
         </label>
       </div>
     )
