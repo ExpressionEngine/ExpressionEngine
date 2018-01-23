@@ -519,6 +519,48 @@ class Channel {
 
 		unset($this->temp_array);
 		unset($this->cat_array);
+
+		if (ee('LivePreview')->hasEntryData())
+		{
+			$data = ee('LivePreview')->getEntryData();
+			unset($this->categories[$data['entry_id']]);
+
+			$cats = [];
+
+			foreach ($data['categories'] as $cat_group)
+			{
+				foreach ($cat_group as $cat)
+				{
+					$cats[] = $cat;
+				}
+			}
+
+			$this->temp_array = array();
+			$this->cat_array  = array();
+			$parents = array();
+
+			$categories = ee('Model')->get('Category', $cats)->all();
+			foreach ($categories as $cat)
+			{
+				$this->temp_array[$cat->cat_id] = array($cat->cat_id, $cat->parent_id, $cat->cat_name, $cat->cat_image, $cat->cat_description, $cat->group_id, $cat->cat_url_title);
+				if ($cat->parent_id > 0 && ! isset($this->temp_array[$cat->parent_id])) $parents[$cat->parent_id] = '';
+				unset($parents[$cat->cat_id]);
+
+			}
+
+			foreach($this->temp_array as $k => $v)
+			{
+				if (isset($parents[$v[1]])) $v[1] = 0;
+
+				if (0 == $v[1])
+				{
+					$this->cat_array[] = $this->temp_array[$k];
+					$this->process_subcategories($k);
+				}
+			}
+
+		$this->categories[$data['entry_id']] = $this->cat_array;
+		}
 	}
 
 	/**

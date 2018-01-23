@@ -354,6 +354,7 @@ class Publish extends AbstractPublishController {
 		$entry->set($_POST);
 		$data = $entry->getModChannelResultsArray();
 		$data['entry_site_id'] = $entry->site_id;
+		$data['categories'] = $_POST['categories'];
 
 		ee('LivePreview')->setEntryData($data);
 
