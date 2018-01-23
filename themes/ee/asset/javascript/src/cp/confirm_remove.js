@@ -12,11 +12,15 @@ $(document).ready(function () {
 		var ajax_url = $(this).data('confirm-ajax');
 		var confirm_text = $(this).data('confirm-text');
 		var confirm_input = $(this).data('confirm-input');
-		var conditional_element = $('*[data-' + data_element + ']').eq(0);
+		var select = $('*[data-' + data_element + ']').closest('select').get(0)
+		var conditional_element = $(select.options[select.selectedIndex])
 
 		if ($(conditional_element).prop($(conditional_element).data(data_element))) {
+			e.preventDefault();
+
 			// First adjust the checklist
 			var modalIs = '.' + $(conditional_element).attr('rel');
+			var modal = $(modalIs+', [rel='+$(conditional_element).attr('rel')+']')
 			$(modalIs + " .checklist").html(''); // Reset it
 
 			if (typeof confirm_text != 'undefined') {
@@ -69,13 +73,7 @@ $(document).ready(function () {
 				});
 			}
 
-			var heightIs = $(document).height();
-
-			$('.overlay').fadeIn('slow').css('height',heightIs);
-			$('.modal-wrap' + modalIs).fadeIn('slow');
-			$('.modal-wrap' + modalIs).trigger('modal:open');
-			e.preventDefault();
-			$('#top').animate({ scrollTop: 0 }, 100);
+			modal.trigger('modal:open')
 		}
 	})
 });
