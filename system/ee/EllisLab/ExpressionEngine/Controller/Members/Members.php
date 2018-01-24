@@ -168,7 +168,7 @@ class Members extends CP_Controller {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/confirm_remove'),
+			'file' => array('cp/confirm_remove', 'cp/members/members'),
 		));
 
 		$data['can_delete_members'] = ee()->cp->allowed_group('can_delete_members');
@@ -1233,6 +1233,11 @@ class Members extends CP_Controller {
 		// First, assign an heir if we are to do so
 		if (ee()->input->post('heir_action') == 'assign')
 		{
+			if ( ! ee()->input->post('heir'))
+			{
+				show_error(lang('heir_required'));
+			}
+
 			$heir = ee('Model')->get('Member', ee()->input->post('heir'))->first();
 
 			// We need to update the versions first else we'll trigger a new

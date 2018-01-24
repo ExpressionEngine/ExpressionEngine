@@ -12,6 +12,8 @@
 	</ul>
 
 	<?php
+	echo '<em class="ee-form-error-message hidden">'.lang('heir_required').'</em>';
+
 	foreach ($fields as $field_name => $field)
 	{
 		$vars = array(
