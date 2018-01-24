@@ -1245,6 +1245,11 @@ class Members extends CP_Controller {
 		// First, assign an heir if we are to do so
 		if (ee()->input->post('heir_action') == 'assign')
 		{
+			if ( ! ee()->input->post('heir'))
+			{
+				show_error(lang('heir_required'));
+			}
+
 			$heir = ee('Model')->get('Member', ee()->input->post('heir'))->first();
 
 			// We need to update the versions first else we'll trigger a new

@@ -19,7 +19,7 @@ if (function_exists('opcache_reset'))
 }
 
 $config['site_url'] = 'http://localhost/';
-$config['app_version'] = '3.5.14';
+$config['app_version'] = '3.5.15';
 $config['license_contact'] = 'ellislab.devleopers@gmail.com';
 $config['license_number'] = '1234-5678-9123-4567';
 $config['debug'] = '1';
