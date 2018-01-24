@@ -15,7 +15,8 @@ $(document).ready(function () {
 		var select = $('*[data-' + data_element + ']').closest('select').get(0)
 		var conditional_element = $(select.options[select.selectedIndex])
 
-		if ($(conditional_element).prop($(conditional_element).data(data_element))) {
+		if ($(conditional_element).data(data_element) &&
+			$(conditional_element).prop($(conditional_element).data(data_element))) {
 			e.preventDefault();
 
 			// First adjust the checklist
