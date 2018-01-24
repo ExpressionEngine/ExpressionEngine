@@ -136,6 +136,8 @@ $lang = array(
 
 'heir_to_members_entries' => 'Some of these members have entries assigned to their accounts. What would you like to do with those entries?',
 
+'heir_required' => 'You must select an account to reassign entries to.',
+
 'include_in_authorlist' => 'Author lists',
 
 'include_in_memberlist' => 'Member lists',
