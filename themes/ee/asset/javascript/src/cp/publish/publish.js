@@ -125,6 +125,10 @@ $(document).ready(function () {
 			previewIt();
 		}, 0));
 
+		$('a.toggle-btn', container).on('click', debouceAjax(function(e) {
+			previewIt();
+		}, 0));
+
 		$('button[rel="live-preview"]').hide();
 	});
 
