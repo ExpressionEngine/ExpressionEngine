@@ -48,7 +48,8 @@ class SelectList extends React.Component {
           instructions: items[key].instructions ? items[key].instructions : '',
           children: null,
           parent: parent ? parent : null,
-          component: items[key].component != undefined ? items[key].component : null
+          component: items[key].component != undefined ? items[key].component : null,
+          meta: items[key].meta || null
         }
 
         if (items[key].children) {
