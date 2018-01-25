@@ -43,7 +43,7 @@ $no_radio_value = ! $multi
 		// FALSE can be a valid value for models with boolString properties
 		($value !== FALSE && $value !== '0' && empty($value) && ! ($value === '' && isset($choices[''])))
 		// But if value is FALSE but an empty string is available as a choice, probably not valid
-		|| ($value === FALSE && isset($choices['']))
+		|| ($value === FALSE && ee('View/Helpers')->findLabelForValue('', $normalized_choices) !== FALSE)
 	);
 
 // If it's a small list, just render it server-side
@@ -86,18 +86,18 @@ if ($count <= $too_many
 		</div>
 	</div>
 <?php
-// Large list, render it using React
+// Large/complex list, render it using React
 else:
-	if ($no_radio_value || ! is_array($value))
+	// If $value is FALSE and we're rendering the field with React, FALSE
+	// probably isn't a valid value and probably came from asking the config
+	// library for the field's value in form/field.php
+	if ($no_radio_value && $value === FALSE && isset($normalized_choices[0]['value']))
 	{
-		// If $value is FALSE and we're rendering the field with React, FALSE
-		// probably isn't a valid value and probably came from asking the config
-		// library for the field's value in form/field.php
-		if ($value === FALSE && isset($normalized_choices[0]['value']))
-		{
-			$value = $normalized_choices[0]['value'];
-		}
+		$value = $normalized_choices[0]['value'];
+	}
 
+	if ($value !== FALSE && $value !== NULL && ! is_array($value) && ! $multi)
+	{
 		$label = ee('View/Helpers')->findLabelForValue($value, $normalized_choices);
 		$value = [$value => $label];
 	}
