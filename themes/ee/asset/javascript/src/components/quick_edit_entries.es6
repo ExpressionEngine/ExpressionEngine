@@ -12,14 +12,20 @@ class QuickEditEntries extends React.Component {
     limit: 50
   }
 
-  static render(context, props) {
+  static render (context, props) {
     $('div[data-quick-edit-entries-react]', context).each(function () {
       ReactDOM.unmountComponentAtNode(this)
       ReactDOM.render(React.createElement(FilterableQuickEditEntries, props, null), this)
     })
   }
 
-  handleRemove(item) {
+  componentDidUpdate (prevProps, prevState) {
+    if (prevProps.initialItems.length != this.props.initialItems.length) {
+      this.props.entriesChanged(this.props.initialItems)
+    }
+  }
+
+  handleRemove (item) {
     this.props.itemsChanged(
       this.props.items.filter((thisItem) => {
         return thisItem.value != item.value
@@ -27,7 +33,7 @@ class QuickEditEntries extends React.Component {
     )
   }
 
-  handleSearch(searchTerm) {
+  handleSearch (searchTerm) {
     this.props.filterChange('search', searchTerm)
   }
 

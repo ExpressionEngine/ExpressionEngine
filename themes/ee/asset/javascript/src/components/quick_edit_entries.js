@@ -26,6 +26,13 @@ var QuickEditEntries = function (_React$Component) {
   }
 
   _createClass(QuickEditEntries, [{
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps, prevState) {
+      if (prevProps.initialItems.length != this.props.initialItems.length) {
+        this.props.entriesChanged(this.props.initialItems);
+      }
+    }
+  }, {
     key: 'handleRemove',
     value: function handleRemove(item) {
       this.props.itemsChanged(this.props.items.filter(function (thisItem) {

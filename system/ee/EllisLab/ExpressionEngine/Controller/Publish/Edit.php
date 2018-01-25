@@ -327,12 +327,20 @@ class Edit extends AbstractPublishController {
 			->currentPage($page)
 			->render($base_url);
 
-		ee()->javascript->set_global('lang.remove_confirm', lang('entry') . ': <b>### ' . lang('entries') . '</b>');
+		ee()->javascript->set_global([
+			'lang.remove_confirm' => lang('entry') . ': <b>### ' . lang('entries') . '</b>',
+
+			'publishEdit.quickEditFormUrl' => ee('CP/URL')->make('publish/quick-edit')->compile(),
+			'publishEdit.addCategoriesFormUrl' => ee('CP/URL')->make('publish/quick-edit/add-categories')->compile(),
+			'publishEdit.removeCategoriesFormUrl' => ee('CP/URL')->make('publish/quick-edit/remove-categories')->compile()
+		]);
+
 		ee()->cp->add_js_script(array(
 			'file' => array(
 				'cp/confirm_remove',
 				'cp/publish/entry-list',
-				'components/quick_edit_entries'
+				'components/quick_edit_entries',
+				'cp/publish/quick-edit'
 			),
 		));
 
