@@ -693,7 +693,10 @@ class EE_Typography {
 		}
 
 		//  Decode BBCode
-		$str = $this->decode_bbcode($str);
+		if ($this->text_format != 'none')
+		{
+			$str = $this->decode_bbcode($str);
+		}
 
 		// Format text
 		switch ($this->text_format)
