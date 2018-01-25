@@ -14,9 +14,11 @@ $(document).ready(function() {
 
     $('.modal form').on('submit', function(e) {
         if ($('input[name="heir_action"]:checked').val() == 'assign'
-            && $('input[name="heir"]:checked').length == 0)
+            && (($('input[type="radio"][name="heir"]').length
+                && $('input[type="radio"][name="heir"]:checked').length == 0)
+                    || $('input[type="hidden"][name="heir"]').val() == ''))
         {
-            $('.modal .ajax .ee-form-error-message').show();
+            $('.modal .ajax .fieldset-invalid').show();
             e.preventDefault();
         }
     });

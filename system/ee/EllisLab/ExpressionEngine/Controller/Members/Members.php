@@ -1268,7 +1268,7 @@ class Members extends CP_Controller {
 		}
 
 		// If we got this far we're clear to delete the members
-		ee('Model')->get('Member')->filter('member_id', 'IN', $member_ids)->delete();
+		ee('Model')->get('Member')->with('MemberGroup')->filter('member_id', 'IN', $member_ids)->delete();
 
 		// Send member deletion notifications
 		$this->_member_delete_notifications($member_ids);
