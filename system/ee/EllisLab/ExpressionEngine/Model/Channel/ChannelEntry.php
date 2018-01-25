@@ -1145,7 +1145,7 @@ class ChannelEntry extends ContentModel {
 
 		foreach (['versioning_enabled', 'allow_comments', 'sticky'] as $key)
 		{
-			$data[$key] = ($key) ? 'y' : 'n';
+			$data[$key] = ($data[$key]) ? 'y' : 'n';
 		}
 
 		return $data;
