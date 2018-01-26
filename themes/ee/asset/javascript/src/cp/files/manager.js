@@ -41,11 +41,9 @@
 
 	clipboard.on('success', function(e) {
 		e.trigger.parentNode.className = 'approve';
-		setTimeout((function (e) {
-			return (function() {
-				e.trigger.parentNode.className = 'link';
-			})
-	    })(e), 2000);
+		setTimeout(function () {
+			e.trigger.parentNode.className = 'link';
+	    }, 2000);
 	});
 
 })(jQuery);
