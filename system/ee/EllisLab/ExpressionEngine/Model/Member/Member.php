@@ -138,6 +138,7 @@ class Member extends ContentModel {
 	);
 
 	protected static $_events = array(
+		'afterUpdate',
 		'beforeInsert',
 		'beforeUpdate',
 		'beforeDelete'
@@ -257,6 +258,39 @@ class Member extends ContentModel {
 
 				ee()->session->set_cache(__CLASS__, "getStructure({$this->group_id})", NULL);
 			}
+		}
+	}
+
+	public function onAfterUpdate($changed)
+	{
+		// notify user of front-end password changes
+		if (REQ != 'CP' && isset($changed['password']))
+		{
+			$vars = [
+				'name'		=> $this->screen_name,
+				'username'  => $this->username,
+				'site_name'	=> ee()->config->item('site_name'),
+				'site_url'	=> ee()->config->item('site_url')
+			];
+
+			$template = ee()->functions->fetch_email_template('password_changed_notification');
+			$subject = $template['title'];
+			$message = $template['data'];
+
+			foreach ($vars as $var => $value)
+			{
+				$subject = str_replace('{'.$var.'}', $value, $subject);
+				$message = str_replace('{'.$var.'}', $value, $message);
+			}
+
+			ee()->load->library('email');
+			ee()->email->wordwrap = true;
+			ee()->email->mailtype = ee()->config->item('mail_format');
+			ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
+			ee()->email->to($this->email);
+			ee()->email->subject($subject);
+			ee()->email->message($message);
+			ee()->email->send();
 		}
 	}
 

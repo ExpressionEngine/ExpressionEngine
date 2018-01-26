@@ -19,117 +19,117 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  */
 
 function makeFilterableComponent(WrappedComponent) {
-	return function (_React$Component) {
-		_inherits(_class2, _React$Component);
+  return function (_React$Component) {
+    _inherits(_class2, _React$Component);
 
-		function _class2(props) {
-			_classCallCheck(this, _class2);
+    function _class2(props) {
+      _classCallCheck(this, _class2);
 
-			var _this = _possibleConstructorReturn(this, (_class2.__proto__ || Object.getPrototypeOf(_class2)).call(this, props));
+      var _this = _possibleConstructorReturn(this, (_class2.__proto__ || Object.getPrototypeOf(_class2)).call(this, props));
 
-			_this.itemsChanged = function (items) {
-				_this.setState({
-					items: items
-				});
-			};
+      _this.itemsChanged = function (items) {
+        _this.setState({
+          items: items
+        });
+      };
 
-			_this.initialItemsChanged = function (items) {
-				_this.initialItems = items;
-				_this.setState({
-					items: items
-				});
+      _this.initialItemsChanged = function (items) {
+        _this.initialItems = items;
+        _this.setState({
+          items: items
+        });
 
-				if (_this.props.itemsChanged) {
-					_this.props.itemsChanged(items);
-				}
-			};
+        if (_this.props.itemsChanged) {
+          _this.props.itemsChanged(items);
+        }
+      };
 
-			_this.filterChange = function (name, value) {
-				_this.filterState[name] = value;
+      _this.filterChange = function (name, value) {
+        _this.filterState[name] = value;
 
-				// DOM filter
-				if (!_this.ajaxFilter && name == 'search') {
-					_this.itemsChanged(_this.filterItems(_this.initialItems, value));
-					return;
-				}
+        // DOM filter
+        if (!_this.ajaxFilter && name == 'search') {
+          _this.itemsChanged(_this.filterItems(_this.initialItems, value));
+          return;
+        }
 
-				// Debounce AJAX filter
-				clearTimeout(_this.ajaxTimer);
-				if (_this.ajaxRequest) _this.ajaxRequest.abort();
+        // Debounce AJAX filter
+        clearTimeout(_this.ajaxTimer);
+        if (_this.ajaxRequest) _this.ajaxRequest.abort();
 
-				var params = _this.filterState;
-				params.selected = _this.props.selected.map(function (item) {
-					return item.value;
-				});
+        var params = _this.filterState;
+        params.selected = _this.props.selected.map(function (item) {
+          return item.value;
+        });
 
-				_this.setState({ loading: true });
+        _this.setState({ loading: true });
 
-				_this.ajaxTimer = setTimeout(function () {
-					_this.ajaxRequest = $.ajax({
-						url: _this.props.filterUrl,
-						data: $.param(params),
-						dataType: 'json',
-						success: function success(data) {
-							_this.setState({ loading: false });
-							_this.initialItemsChanged(SelectList.formatItems(data));
-						},
-						error: function error() {} // Defined to prevent error on .abort above
-					});
-				}, 300);
-			};
+        _this.ajaxTimer = setTimeout(function () {
+          _this.ajaxRequest = $.ajax({
+            url: _this.props.filterUrl,
+            data: $.param(params),
+            dataType: 'json',
+            success: function success(data) {
+              _this.setState({ loading: false });
+              _this.initialItemsChanged(SelectList.formatItems(data));
+            },
+            error: function error() {} // Defined to prevent error on .abort above
+          });
+        }, 300);
+      };
 
-			_this.initialItems = SelectList.formatItems(props.items);
-			_this.state = {
-				items: _this.initialItems,
-				loading: false
-			};
+      _this.initialItems = SelectList.formatItems(props.items);
+      _this.state = {
+        items: _this.initialItems,
+        loading: false
+      };
 
-			_this.ajaxFilter = SelectList.countItems(_this.initialItems) >= props.limit && props.filterUrl;
-			_this.ajaxTimer = null;
-			_this.ajaxRequest = null;
-			_this.filterState = {};
-			return _this;
-		}
+      _this.ajaxFilter = SelectList.countItems(_this.initialItems) >= props.limit && props.filterUrl;
+      _this.ajaxTimer = null;
+      _this.ajaxRequest = null;
+      _this.filterState = {};
+      return _this;
+    }
 
-		_createClass(_class2, [{
-			key: 'filterItems',
-			value: function filterItems(items, searchTerm) {
-				var _this2 = this;
+    _createClass(_class2, [{
+      key: 'filterItems',
+      value: function filterItems(items, searchTerm) {
+        var _this2 = this;
 
-				items = items.map(function (item) {
-					// Clone item so we don't modify reference types
-					item = Object.assign({}, item);
+        items = items.map(function (item) {
+          // Clone item so we don't modify reference types
+          item = Object.assign({}, item);
 
-					// If any children contain the search term, we'll keep the parent
-					if (item.children) item.children = _this2.filterItems(item.children, searchTerm);
+          // If any children contain the search term, we'll keep the parent
+          if (item.children) item.children = _this2.filterItems(item.children, searchTerm);
 
-					var itemFoundInChildren = item.children && item.children.length > 0;
-					var itemFound = String(item.label).toLowerCase().includes(searchTerm.toLowerCase());
+          var itemFoundInChildren = item.children && item.children.length > 0;
+          var itemFound = String(item.label).toLowerCase().includes(searchTerm.toLowerCase());
 
-					return itemFound || itemFoundInChildren ? item : false;
-				});
+          return itemFound || itemFoundInChildren ? item : false;
+        });
 
-				return items.filter(function (item) {
-					return item;
-				});
-			}
-		}, {
-			key: 'render',
-			value: function render() {
-				var _this3 = this;
+        return items.filter(function (item) {
+          return item;
+        });
+      }
+    }, {
+      key: 'render',
+      value: function render() {
+        var _this3 = this;
 
-				return React.createElement(WrappedComponent, _extends({}, this.props, {
-					loading: this.state.loading,
-					filterChange: function filterChange(name, value) {
-						return _this3.filterChange(name, value);
-					},
-					initialItems: this.initialItems,
-					items: this.state.items,
-					itemsChanged: this.initialItemsChanged
-				}));
-			}
-		}]);
+        return React.createElement(WrappedComponent, _extends({}, this.props, {
+          loading: this.state.loading,
+          filterChange: function filterChange(name, value) {
+            return _this3.filterChange(name, value);
+          },
+          initialItems: this.initialItems,
+          items: this.state.items,
+          itemsChanged: this.initialItemsChanged
+        }));
+      }
+    }]);
 
-		return _class2;
-	}(React.Component);
+    return _class2;
+  }(React.Component);
 }

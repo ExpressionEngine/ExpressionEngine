@@ -118,6 +118,10 @@ $lang = array(
 
 'notification_has_char_limit' => 'Most of the above variables accept a char_limit parameter: {title char_limit="40"}',
 
+'password_changed_notification' => 'User &ndash; Password changed notification',
+
+'password_changed_notification_desc' => 'This template defines the message a user receives when their password was changed on the front end. Password changes made by an admininstrator in the ExpressionEngine control panel do <em>not</em> send a notification.',
+
 'pm_inbox_full' => 'User &ndash; Inbox full notification',
 
 'pm_inbox_full_desc' => 'This template defines the message that a user receives when they are not able to receive Private Messages due to a full InBox',
