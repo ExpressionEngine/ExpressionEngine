@@ -1860,7 +1860,7 @@ class Filemanager {
 		$config = array(
 			'file_name'		=> $clean_filename,
 			'upload_path'	=> $dir['server_path'],
-			'max_size'		=> round((int)$dir['max_size']*1024, 3)
+			'max_size'		=> round((int)$dir['max_size'], 3)
 		);
 
 		// Restricted upload directory?

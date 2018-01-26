@@ -184,6 +184,7 @@ class Profile extends CP_Controller {
 							->filter('group_id', 'IN', $group_ids)
 							->filter('member_id', '!=', $this->member->getId())
 							->order('screen_name')
+							->limit(100)
 							->all();
 
 						foreach ($heirs as $heir)

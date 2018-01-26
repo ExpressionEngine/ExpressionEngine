@@ -71,7 +71,7 @@ class Textarea_ft extends EE_Fieldtype {
 			ee()->cp->add_js_script(array('plugin' => array('markitup')));
 			ee()->javascript->output('
 				$("textarea[data-markitup]")
-					.not(".grid-textarea textarea, .fluid-item textarea")
+					.not(".grid-textarea textarea, .fluid-field-templates textarea")
 					.markItUp(EE.markitup.settings);
 
 				$("li.html-upload").addClass("m-link").attr({

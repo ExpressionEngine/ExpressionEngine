@@ -368,7 +368,7 @@ class File extends AbstractFilesController {
 					],
 					'crop_y' => [
 						'type' => 'short-text',
-						'label' => 'y-axis',
+						'label' => 'y_axis',
 						'value' => ee('Request')->post('crop_y', 0)
 					]
 				]
