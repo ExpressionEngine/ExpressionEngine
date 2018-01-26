@@ -3221,6 +3221,13 @@ GRID_FALLBACK;
 
 		ee()->api_channel_fields->field_type = $this->get_field_type($field_name);
 
+		if ( ! is_object(ee()->api_channel_fields->field_types[ee()->api_channel_fields->field_type]))
+		{
+			ee()->api_channel_fields->include_handler(ee()->api_channel_fields->field_type);
+			$fieldtype = ee()->api_channel_fields->setup_handler(ee()->api_channel_fields->field_type, TRUE);
+			ee()->api_channel_fields->field_types[ee()->api_channel_fields->field_type] = $fieldtype;
+		}
+
 		ee()->api_channel_fields->field_types[ee()->api_channel_fields->field_type]->settings = array_merge($this->get_field_settings($field_name), $this->get_field_data($field_name), ee()->api_channel_fields->get_global_settings(ee()->api_channel_fields->field_type));
 
 		$_GET['entry_id'] = $this->entry('entry_id');

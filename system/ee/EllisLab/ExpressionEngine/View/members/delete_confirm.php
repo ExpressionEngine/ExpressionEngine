@@ -11,7 +11,14 @@
 		<li><label><?=form_radio('heir_action', 'assign', 'y')?> <?= lang('member_delete_reassign_entries')?> </label>
 	</ul>
 
+   <fieldset class="fieldset-invalid hidden">
+        <div class="field-control">
+            <em class="ee-form-error-message"><?=lang('heir_required')?></em>
+        </div>
+    </fieldset>
+
 	<?php
+
 	foreach ($fields as $field_name => $field)
 	{
 		$vars = array(

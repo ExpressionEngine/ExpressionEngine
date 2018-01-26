@@ -975,7 +975,11 @@ class Member_settings extends Member {
 
 
 		ee()->db->select('m_field_id, m_field_label, m_field_type, m_field_name');
-		ee()->db->where('m_field_public = "y"');
+		if (ee()->session->userdata['group_id'] != 1)
+		{
+			ee()->db->where('m_field_public = "y"');
+		}
+
 		$query = ee()->db->get('member_fields');
 
 		 $errors = array();

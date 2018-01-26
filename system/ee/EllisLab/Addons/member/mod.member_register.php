@@ -81,6 +81,10 @@ class Member_register extends Member {
 				->all()
 				->indexBy('m_field_id');
 
+			ee()->router->set_class('cp');
+			ee()->load->library('cp');
+			ee()->load->library('javascript');
+
 			foreach ($query->result_array() as $row)
 			{
 				$field  = '';

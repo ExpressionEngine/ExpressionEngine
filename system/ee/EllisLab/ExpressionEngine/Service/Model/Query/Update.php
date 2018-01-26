@@ -41,6 +41,9 @@ class Update extends Query {
 		$object->emit('beforeUpdate', $backup);
 		$object->emit('beforeSave');
 
+		// In case values have changed in above events
+		$backup = $object->getOriginal();
+
 		$this->doWork($object);
 		$object->markAsClean();
 
