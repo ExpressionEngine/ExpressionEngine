@@ -254,7 +254,7 @@ abstract class AbstractFiles extends CP_Controller {
 				'link' => [
 					'href' => '',
 					'title' => lang('copy_url'),
-					'data-clipboard-text' => $file->UploadDestination->url.$file->file_name,
+					'data-clipboard-text' => $file->getAbsoluteUrl(),
 				],
 			);
 
