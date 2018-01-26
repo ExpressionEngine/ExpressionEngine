@@ -325,10 +325,13 @@ class Channel extends StructureModel {
 			}
 		}
 
-		$this->FieldGroups = clone $channel->FieldGroups;
-		$this->CustomFields = clone $channel->CustomFields;
-		$this->Statuses = clone $channel->Statuses;
-		$this->ChannelFormSettings = clone $channel->ChannelFormSettings;
+        foreach (['FieldGroups', 'CustomFields', 'Statuses', 'ChannelFormSettings'] as $rel)
+        {
+            if ($channel->$rel)
+            {
+                $this->$rel = clone $channel->$rel;
+            }
+        }
 	}
 
 	public function onBeforeSave()
