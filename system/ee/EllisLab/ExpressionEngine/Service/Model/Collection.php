@@ -86,6 +86,33 @@ class Collection extends CoreCollection {
 	}
 
 	/**
+	 * Called on a Collection of Collections, returns a Collection containing
+	 * the models that are present in all the Collections
+	 *
+	 * @return Collection
+	 */
+	public function intersect()
+	{
+		// Try to make sure we're only dealing with nested collections
+		if ( ! $this->first() instanceOf CoreCollection)
+		{
+			return $this;
+		}
+
+		// Only 1 or none? Nothing to intersect!
+		if ($this->count() < 2)
+		{
+			return $this->first();
+		}
+
+		$elements = $this->map(function($collection) {
+			return $collection->indexByIds();
+		});
+
+		return new static(call_user_func_array('array_intersect_key', $elements));
+	}
+
+	/**
 	 *
 	 */
 	public function with($with)
