@@ -437,6 +437,44 @@ EE.cp.cleanUrls = function() {
 	$('form').attr('action', EE.cp.cleanUrl);
 };
 
+// use data-clipboard-text attribute on a toolbar link
+EE.cp.toolbarCopyToClipboard = function(el) {
+	EE.copyToClipboard(el.data('clipboardText'));
+
+	var currentClass = el.closest('li').attr('class');
+	el.closest('li').removeClass().addClass('approve');
+	setTimeout(function () {
+		el.closest('li').removeClass('approve').addClass(currentClass);
+    }, 2000);
+}
+
+EE.copyToClipboard = function(text) {
+	var temp = document.createElement('textarea');
+
+	// Prevent zooming on iOS, reset the box model, and move our textarea off the screen
+	temp.style.fontSize = '12pt';
+	temp.style.border = '0';
+	temp.style.padding = '0';
+	temp.style.margin = '0';
+	temp.style.position = 'absolute';
+	temp.style.left = '-9999px';
+	var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+	temp.style.top = yPosition + 'px';
+
+	// prevents mobile devices from bringing up a keyboard
+	temp.setAttribute('readonly', '');
+	temp.value = text;
+
+	document.body.appendChild(temp);
+
+	temp.select();
+
+	// iOS needed this in addition to select()
+	temp.setSelectionRange(0, temp.value.length);
+
+	document.execCommand('Copy', false, null);
+	document.body.removeChild(temp);
+}
 
 // Fallback for browsers without placeholder= support
 EE.insert_placeholders = function () {

@@ -34,16 +34,8 @@
 
 	/* Copy URL Links */
 	$('.toolbar li.link a').click(function (e) {
+		EE.cp.toolbarCopyToClipboard($(this));
 		e.preventDefault();
-	});
-
-	var clipboard = new Clipboard('.toolbar li.link a');
-
-	clipboard.on('success', function(e) {
-		e.trigger.parentNode.className = 'approve';
-		setTimeout(function () {
-			e.trigger.parentNode.className = 'link';
-	    }, 2000);
 	});
 
 })(jQuery);
