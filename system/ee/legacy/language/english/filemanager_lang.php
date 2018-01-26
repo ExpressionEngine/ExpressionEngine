@@ -14,6 +14,8 @@ $lang = array(
 
 'categories' => 'Categories',
 
+'copy_url' => 'Copy URL',
+
 'credit' => 'Credit',
 
 'custom_limit' => 'custom limit',

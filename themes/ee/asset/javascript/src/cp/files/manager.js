@@ -31,4 +31,21 @@
 			})
 		});
 	});
+
+	/* Copy URL Links */
+	$('.toolbar li.link a').click(function (e) {
+		e.preventDefault();
+	});
+
+	var clipboard = new Clipboard('.toolbar li.link a');
+
+	clipboard.on('success', function(e) {
+	    e.trigger.parentNode.className = 'approve';
+	    setTimeout((function (e) {
+	    	return (function() {
+	    		e.trigger.parentNode.className = 'link';
+	    	})
+	    })(e), 2000);
+	});
+
 })(jQuery);

@@ -251,6 +251,11 @@ abstract class AbstractFiles extends CP_Controller {
 					'href' => ee('CP/URL')->make('files/file/download/' . $file->file_id),
 					'title' => lang('download'),
 				),
+				'link' => [
+					'href' => '',
+					'title' => lang('copy_url'),
+					'data-clipboard-text' => $file->UploadDestination->url.$file->file_name,
+				],
 			);
 
 			if ( ! ee()->cp->allowed_group('can_edit_files'))
@@ -413,8 +418,9 @@ abstract class AbstractFiles extends CP_Controller {
 		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
+				'cp/clipboard',
 				'cp/confirm_remove',
-				'cp/files/manager'
+				'cp/files/manager',
 			),
 		));
 
