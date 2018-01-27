@@ -386,9 +386,9 @@ class Table {
 								}
 								break;
 							case self::COL_TOOLBAR:
-								if ( ! isset($settings['toolbar_items']))
+								if ( ! isset($settings['toolbar_items']) && ! isset($settings['tools']))
 								{
-									throw new \InvalidArgumentException('No toolbar items set for toolbar column type.');
+									throw new \InvalidArgumentException('No tools set for toolbar column type.');
 								}
 								break;
 							default:

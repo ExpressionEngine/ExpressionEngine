@@ -20,7 +20,11 @@
 							<span class="faded">ID#</span> <?=$row['id']?> <?php if ( ! empty($row['extra'])):?> <span class="faded">/</span> <?=ee('Format')->make('Text', $row['extra'])->convertToEntities()?><?php endif ?>
 						</div>
 					</div>
-					<?=$this->embed('_shared/toolbar', ['toolbar_items' => $row['toolbar_items']])?>
+					<?php if (isset($row['tools'])): ?>
+						<?=$this->embed('_shared/tools', ['tools' => $row['tools']])?>
+					<?php else: ?>
+						<?=$this->embed('_shared/toolbar', ['toolbar_items' => $row['toolbar_items']])?>
+					<?php endif; ?>
 					<?php if (isset($row['selection'])): ?>
 						<div class="check-ctrl">
 							<input

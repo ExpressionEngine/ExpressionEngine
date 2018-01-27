@@ -231,7 +231,7 @@ abstract class AbstractFiles extends CP_Controller {
 			}
 
 			$edit_link =  ee('CP/URL')->make('files/file/edit/' . $file->file_id);
-			$toolbar = array(
+			$tools = array(
 				'view' => array(
 					'href' => '',
 					'rel' => 'modal-view-file',
@@ -255,15 +255,15 @@ abstract class AbstractFiles extends CP_Controller {
 
 			if ( ! ee()->cp->allowed_group('can_edit_files'))
 			{
-				unset($toolbar['view']);
-				unset($toolbar['edit']);
-				unset($toolbar['crop']);
+				unset($tools['view']);
+				unset($tools['edit']);
+				unset($tools['crop']);
 			}
 
 			if ( ! $file->isImage())
 			{
-				unset($toolbar['view']);
-				unset($toolbar['crop']);
+				unset($tools['view']);
+				unset($tools['crop']);
 			}
 
 			$file_description = $file->title;
@@ -277,7 +277,7 @@ abstract class AbstractFiles extends CP_Controller {
 				$file_description.'<br><em class="faded">' . $file->file_name . '</em>',
 				$file->mime_type,
 				ee()->localize->human_time($file->upload_date),
-				array('toolbar_items' => $toolbar),
+				array('tools' => $tools),
 				array(
 					'name' => 'selection[]',
 					'value' => $file->file_id,
