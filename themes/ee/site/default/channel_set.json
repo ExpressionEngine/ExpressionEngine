@@ -20,7 +20,7 @@
 			"cat_groups": [
 				"Blog"
 			],
-			"channel_url": "{path='blog/entry'}"
+			"channel_url": "{base_url}blog/entry"
 		},
 		{
 			"channel_title": "Contact",
