@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -45,7 +45,12 @@ class Radio_ft extends OptionFieldtype {
 		{
 			if (is_array($val))
 			{
-				if (array_key_exists($data, $val))
+				if (isset($val['value']) && $data == $val['value'])
+				{
+					$valid = TRUE;
+					break;
+				}
+				elseif (array_key_exists($data, $val))
 				{
 					$valid = TRUE;
 					break;
@@ -117,7 +122,7 @@ class Radio_ft extends OptionFieldtype {
 				'multi'      => FALSE,
 				'disabled'   => $this->get_setting('field_disabled'),
 				'filter_url' => $this->get_setting('filter_url', NULL),
-				'no_results' => $this->get_setting('no_results', NULL)
+				'no_results' => $this->get_setting('no_results', NULL),
 			]);
 		}
 

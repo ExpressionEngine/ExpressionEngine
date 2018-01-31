@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -163,6 +163,14 @@ class Email extends AbstractDesignController {
 			ee('CP/URL', 'design')->compile() => lang('template_manager'),
 			ee('CP/URL', 'design/email/')->compile() => sprintf(lang('breadcrumb_group'), lang('email'))
 		);
+
+		if (lang($template->template_name.'_desc') != $template->template_name.'_desc')
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asTip()
+				->addToBody(lang($template->template_name.'_desc'))
+				->now();
+		}
 
 		ee()->cp->render('settings/form', $vars);
 	}

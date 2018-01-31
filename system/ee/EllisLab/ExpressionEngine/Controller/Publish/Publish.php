@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -225,7 +225,6 @@ class Publish extends AbstractPublishController {
 			'form_attributes' => $form_attributes,
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
 			'revisions' => $this->getRevisionsTable($entry),
-			'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
 			'extra_publish_controls' => $channel->extra_publish_controls,
 			'buttons' => $this->getPublishFormButtons($entry)
 		);
@@ -275,6 +274,7 @@ class Publish extends AbstractPublishController {
 		// Auto-saving needs an entry_id...
 		$entry->entry_id = 0;
 
+		$vars['autosaves'] = $this->getAutosavesTable($entry, $autosave_id);
 		$vars['entry'] = $entry;
 
 		$this->setGlobalJs($entry, TRUE);

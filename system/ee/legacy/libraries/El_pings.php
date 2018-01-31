@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -15,6 +15,7 @@ class El_pings {
 
 	protected $ping_result;
 	protected $cache;
+	private $error;
 
 	public function __construct()
 	{
@@ -139,18 +140,28 @@ class El_pings {
 			$version_file = $cached;
 		}
 
+		if (isset($version_file['error']) && $version_file['error'] == TRUE)
+		{
+			if (isset($version_file['error_msg']))
+			{
+				$this->error = $version_file['error_msg'];
+			}
+
+			return FALSE;
+		}
+
 		// one final check for good measure
 		if ( ! $this->_is_valid_version_file($version_file))
 		{
 			return FALSE;
 		}
 
-		if (isset($version_file['error']) && $version_file['error'] == TRUE)
-		{
-			return FALSE;
-		}
-
 		return $version_file;
+	}
+
+	public function getError()
+	{
+		return $this->error;
 	}
 
 	/**

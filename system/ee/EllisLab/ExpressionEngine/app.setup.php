@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -27,6 +27,7 @@ use EllisLab\ExpressionEngine\Service\License;
 use EllisLab\ExpressionEngine\Service\LivePreview;
 use EllisLab\ExpressionEngine\Service\Logger;
 use EllisLab\ExpressionEngine\Service\Member;
+use EllisLab\ExpressionEngine\Service\Memory;
 use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Permission;
@@ -207,6 +208,11 @@ return array(
 		'View' => function($ee)
 		{
 			return new View\ViewFactory($ee);
+		},
+
+		'Memory' => function($ee)
+		{
+			return new Memory\Memory();
 		},
 
 		'Model' => function($ee)

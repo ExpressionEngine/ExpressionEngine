@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -131,7 +131,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 	{
 		if (is_null($data))
 		{
-			$data = array();
+			$data = array('fields' => []);
 		}
 
 		ee()->session->set_cache(__CLASS__, $this->name(), $data);

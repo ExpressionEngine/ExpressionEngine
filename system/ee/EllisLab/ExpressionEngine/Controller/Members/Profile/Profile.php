@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -184,6 +184,7 @@ class Profile extends CP_Controller {
 							->filter('group_id', 'IN', $group_ids)
 							->filter('member_id', '!=', $this->member->getId())
 							->order('screen_name')
+							->limit(100)
 							->all();
 
 						foreach ($heirs as $heir)

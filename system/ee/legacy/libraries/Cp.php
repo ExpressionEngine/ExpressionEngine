@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -491,6 +491,20 @@ class Cp {
 
 		if ( ! $version_file)
 		{
+			if (ee()->el_pings->getError() == 'license_disabled')
+			{
+				ee('CP/Alert')->makeBanner('error-getting-version')
+					->asIssue()
+					->withTitle(lang('cp_message_issue'))
+					->addToBody(sprintf(
+						lang('license_disabled'),
+						ee('CP/URL')->make('settings/license'),
+						ee()->cp->masked_url('https://expressionengine.com/store/purchases')
+					))
+					->now();
+				return FALSE;
+			}
+
 			ee('CP/Alert')->makeBanner('notices')
 				->asWarning()
 				->withTitle(lang('cp_message_warn'))

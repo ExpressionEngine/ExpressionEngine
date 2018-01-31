@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -134,9 +134,13 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 					'content_type'	=> 'channel'
 				));
 
-				$pre_processed = $ft_api->apply('pre_process', array(
-					$data['field_id_'.$field_id]
-				));
+				$pre_processed = '';
+				if (array_key_exists('field_id_'.$field_id, $data))
+				{
+					$pre_processed = $ft_api->apply('pre_process', array(
+						$data['field_id_'.$field_id]
+					));
+				}
 
 				foreach($chunks as $chk_data)
 				{

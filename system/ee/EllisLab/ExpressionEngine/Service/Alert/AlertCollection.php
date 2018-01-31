@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -89,6 +89,10 @@ class AlertCollection {
 						$alert->asSuccess();
 						break;
 
+					case 'tip':
+						$alert->asTip();
+						break;
+
 					case 'warn':
 						$alert->asWarning();
 						break;
@@ -116,6 +120,10 @@ class AlertCollection {
 
 						case 'success':
 							$sub_alert->asSuccess();
+							break;
+
+						case 'tip':
+							$sub_alert->asTip();
 							break;
 
 						case 'warn':

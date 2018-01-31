@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -115,6 +115,13 @@ class Template extends AbstractDesignController {
 			}
 		}
 
+		$duplicate_template_options = array_merge([
+			[
+				'label' => lang('do_not_duplicate'),
+				'value' => ''
+			]
+		], $this->getExistingTemplates());
+
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'errors' => $errors,
@@ -147,7 +154,7 @@ class Template extends AbstractDesignController {
 						'fields' => array(
 							'template_id' => array(
 								'type' => 'radio',
-								'choices' => $this->getExistingTemplates(),
+								'choices' => $duplicate_template_options,
 								'filter_url' => ee('CP/URL', 'design/template/search-templates')->compile(),
 								'no_results' => [
 									'text' => sprintf(lang('no_found'), lang('templates'))
@@ -962,7 +969,12 @@ class Template extends AbstractDesignController {
 	 */
 	private function renderAccessPartial(TemplateModel $template, $errors)
 	{
-		$existing_templates = $this->getExistingTemplates();
+		$existing_templates = array_merge([
+			[
+				'label' => lang('none'),
+				'value' => ''
+			]
+		], $this->getExistingTemplates());
 
 		$member_groups = ee('Model')->get('MemberGroup')
 			->fields('group_id', 'group_title')
@@ -999,7 +1011,7 @@ class Template extends AbstractDesignController {
 						'no_auth_bounce' => array(
 							'type' => 'radio',
 							'choices' => $existing_templates,
-							'value' => $template->no_auth_bounce ?: NULL,
+							'value' => $template->no_auth_bounce,
 							'no_results' => [
 								'text' => sprintf(lang('no_found'), lang('templates'))
 							]

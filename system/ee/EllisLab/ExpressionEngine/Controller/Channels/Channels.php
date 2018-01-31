@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -733,15 +733,11 @@ class Channels extends AbstractChannelsController {
 	{
 		$statuses = ee('Model')->get('Status')
 			->order('status_order')
-			->all()
-			->getDictionary('status_id', 'status');
+			->all();
 
-		foreach ($statuses as $status_id => $status)
+		foreach ($statuses as $status)
 		{
-			if (in_array($status, ['open', 'closed']))
-			{
-				$statuses[$status_id] = lang($status);
-			}
+			$status_options[] = $status->getOptionComponent(['use_ids' => TRUE]);
 		}
 
 		$selected = ee('Request')->post('statuses') ?: [];
@@ -761,7 +757,7 @@ class Channels extends AbstractChannelsController {
 
 		return ee('View')->make('ee:_shared/form/fields/select')->render([
 			'field_name'       => 'statuses',
-			'choices'          => $statuses,
+			'choices'          => $status_options,
 			'disabled_choices' => $default,
 			'unremovable_choices' => $default,
 			'value'            => $selected,
@@ -1420,7 +1416,7 @@ class Channels extends AbstractChannelsController {
 			unset($_POST['duplicate_channel_prefs']);
 
 			// duplicating preferences?
-			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
+			if ( ! empty($dupe_id) && is_numeric($dupe_id))
 			{
 				$dupe_channel = ee('Model')->get('Channel')
 					->filter('channel_id', $dupe_id)

@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -693,7 +693,10 @@ class EE_Typography {
 		}
 
 		//  Decode BBCode
-		$str = $this->decode_bbcode($str);
+		if ($this->text_format != 'none')
+		{
+			$str = $this->decode_bbcode($str);
+		}
 
 		// Format text
 		switch ($this->text_format)
@@ -2147,7 +2150,10 @@ class EE_Typography {
 
 		foreach ($emoji_remap as $smiley => $short_name)
 		{
-			$str = str_replace($smiley, $short_name, $str);
+			foreach(array(' ', "\t", "\n", "\r", '.', ',', '>') as $char)
+			{
+				$str = str_replace($char.$smiley, $char.$short_name, $str);
+			}
 		}
 
 		return $str;
