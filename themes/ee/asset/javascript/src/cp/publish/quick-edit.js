@@ -31,7 +31,12 @@ EE.cp.QuickEdit = {
 
 		var items = this._formatItems(checked)
 		this._renderEntryList(items)
+
+		this.formContainer.html('<span class="btn work">Loading</span>')
 		this._loadForm(items)
+
+		this._bindAddField()
+		this._bindRemoveField()
 
 		this.modal.trigger('modal:open')
 	},
@@ -66,16 +71,24 @@ EE.cp.QuickEdit = {
 	 * Loads the modal form with the specified contents
 	 */
 	_loadForm: function(items) {
-		this.formContainer.html('<span class="btn work">Loading</span>')
-
 		if (this.ajaxRequest) {
 			this.ajaxRequest.abort()
 		}
 
+		if (items.length == 0) {
+			return this.modal.trigger('modal:close')
+		}
+
+		var form = $('form', this.modal)
+		var params = Object.assign(
+			this._getFormData(form),
+			{ entryIds: this._getEntryIdsFromItems(items) }
+		)
+
 		var that = this
 		this.ajaxRequest = $.ajax({
 			url: this.intentFormUrls[this.intent],
-			data: $.param({ entryIds: this._getEntryIdsFromItems(items) }),
+			data: $.param(params),
 			dataType: 'html',
 			success: function(data) {
 				that._bindForm(data)
@@ -84,12 +97,32 @@ EE.cp.QuickEdit = {
 		})
 	},
 
+	_getFormData: function(form) {
+		var formData = {}
+
+		$.each(form.serializeArray(), function(i, input){
+			formData[input.name] = input.value
+		})
+
+		return formData
+	},
+
 	/**
 	 * Creates the form submit handler and binds form validation to the loaded form
 	 */
 	_bindForm: function(data) {
+		this.formContainer.html(data)
+		SelectField.renderFields(this.formContainer)
+		this.formContainer.find('.fluid-field-templates :input')
+			.attr('disabled', 'disabled')
+
+		$.fuzzyFilter()
 		var that = this
-		that.formContainer.html(data)
+		this.formContainer.find('.fluid-wrap')
+			.find('.js-sorting-container .fluid-item')
+			.each(function(i, item) {
+				that._toggleMenuItem($(item).data('fieldName'))
+			})
 
 		$('form', this.modal).on('submit', function() {
 			$.post(this.action, $(this).serialize(), function(result) {
@@ -103,5 +136,49 @@ EE.cp.QuickEdit = {
 			})
 			return false
 		})
+	},
+
+	_bindAddField: function() {
+		this.modal.on('click', '.fluid-actions a[data-field-name]', function(e) {
+			e.preventDefault()
+
+			var wrapper = $(this).closest('.fluid-wrap'),
+				fieldName = $(this).data('fieldName'),
+				template = wrapper.find('.fluid-field-templates [data-field-name="'+fieldName+'"]'),
+				fieldContainer = wrapper.find('.js-sorting-container')
+
+			// Add the field
+			template.clone().appendTo(fieldContainer)
+			fieldContainer.find(':input').removeAttr('disabled')
+			$(this).closest('li').addClass('hidden')
+			that._toggleMenuItem(fieldName)
+
+			// Close Add menu
+			$(this).closest('.filters')
+				.find('.open')
+				.removeClass('open')
+				.siblings('.sub-menu')
+				.hide();
+
+			SelectField.renderFields(fieldContainer)
+		})
+	},
+
+	_bindRemoveField: function() {
+		var that = this
+		this.modal.on('click', '.fluid-ctrls a.fluid-remove', function(e) {
+			e.preventDefault()
+
+			var item = $(this).closest('.fluid-item')
+
+			that._toggleMenuItem(item.data('fieldName'))
+			item.remove()
+		})
+	},
+
+	_toggleMenuItem(fieldName, toggle) {
+		this.formContainer.find('.fluid-actions a[data-field-name="'+fieldName+'"]')
+			.closest('li')
+			.toggleClass('hidden', toggle)
 	}
 }

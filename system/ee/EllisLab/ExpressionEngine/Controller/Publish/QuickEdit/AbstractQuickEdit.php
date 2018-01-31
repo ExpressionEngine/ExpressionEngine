@@ -7,32 +7,22 @@
  * @license   https://expressionengine.com/license
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Publish;
+namespace EllisLab\ExpressionEngine\Controller\Publish\QuickEdit;
 
-use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPublishController;
-use EllisLab\ExpressionEngine\Service\Model\Collection;
+use CP_Controller;
 
 /**
- * Quick Bulk Edit Controller
+ * Abstract Publish Controller
  */
-class QuickEdit extends AbstractPublishController {
+abstract class AbstractQuickEdit extends CP_Controller {
 
-	protected $standard_default_fields = [
-		'status',
-		'expiration_date',
-		'comment_expiration_date',
-		'sticky',
-		'allow_comments',
-		'author_id'
-		// Plus common category groups added dynamically below
-	];
-
-	public function index()
+	public function __construct()
 	{
-		$entries = ee('Model')->get('ChannelEntry', ee('Request')->get('entryIds'))->all();
+		parent::__construct();
 
-		// TODO: Filter entries based on permissions, just in case
-		$fields = $this->getFieldsForEntries($entries);
+		ee()->lang->loadfile('content');
+
+		$this->assigned_channel_ids = array_keys(ee()->session->userdata('assigned_channels'));
 	}
 
 	/**
@@ -87,6 +77,7 @@ class QuickEdit extends AbstractPublishController {
 
 		return $channel;
 	}
+
 }
 
 // EOF
