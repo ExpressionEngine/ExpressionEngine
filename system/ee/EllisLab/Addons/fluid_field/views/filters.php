@@ -8,7 +8,7 @@
 				</fieldset>
 				<ul>
 					<?php foreach ($fields as $field): ?>
-					<li><a href="#" data-field-name="<?=$field->field_name?>"><?=$field->field_label?></a></li>
+					<li><a href="#" data-field-name="<?=$field->getShortName()?>"><?=$field->getItem('field_label')?></a></li>
 					<?php endforeach; ?>
 				</ul>
 			</div>
