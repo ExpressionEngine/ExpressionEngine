@@ -456,7 +456,7 @@ abstract class AbstractPublish extends CP_Controller {
 			unset($buttons[1]);
 		}
 
-		if ($entry->Channel->LiveLookTemplate)
+		if ($entry->Channel->preview_url)
 		{
 			$buttons[] = [
 				'name'    => 'submit',

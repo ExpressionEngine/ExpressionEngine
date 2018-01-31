@@ -109,6 +109,7 @@ class Channel extends StructureModel {
 		'channel_title'              => 'required|unique[site_id]|xss',
 		'channel_name'               => 'required|unique[site_id]|alphaDash',
 		'channel_url'                => 'xss',
+		'preview_url'                => 'xss',
 		'comment_url'                => 'xss',
 		'channel_description'        => 'xss',
 		'deft_comments'              => 'enum[y,n]',
@@ -202,6 +203,7 @@ class Channel extends StructureModel {
 	protected $url_title_prefix;
 	protected $live_look_template = 0;
 	protected $max_entries;
+	protected $preview_url;
 
 	/**
 	 * Custom validation callback to validate a comma-separated list of email

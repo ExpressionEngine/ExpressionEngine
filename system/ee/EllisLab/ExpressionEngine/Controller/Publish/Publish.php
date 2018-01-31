@@ -229,7 +229,7 @@ class Publish extends AbstractPublishController {
 			'buttons' => $this->getPublishFormButtons($entry)
 		);
 
-		if ($entry->Channel->LiveLookTemplate)
+		if ($entry->Channel->preview_url)
 		{
 			$modal = ee('View')->make('publish/live-preview-modal')->render([
 				'preview_url' => ee('CP/URL')->make('publish/preview/' . $entry->channel_id)
@@ -359,16 +359,21 @@ class Publish extends AbstractPublishController {
 		ee('LivePreview')->setEntryData($data);
 
 		ee()->load->library('template', NULL, 'TMPL');
-		$template_group = $channel->LiveLookTemplate->TemplateGroup->group_name;
-		$template = $channel->LiveLookTemplate->template_name;
 
-		ee()->uri->segments = [$template_group, $template, $entry->entry_id];
-		ee()->uri->uri_string = implode('/', ee()->uri->segments);
-		ee()->uri->query_string = $entry->entry_id;
+		$uri = str_replace(['{url_title}', '{entry_id}'], [$entry->url_title, $entry->entry_id], $channel->preview_url);
+
+		ee()->uri->_set_uri_string($uri);
+
+		// Compile the segments into an array
+		ee()->uri->segments = [];
+		ee()->uri->_explode_segments();
+
+		// Re-index the segment array so that it starts with 1 rather than 0
+		ee()->uri->_reindex_segments();
 
 		ee()->core->loadSnippets();
 
-		ee()->TMPL->run_template_engine($template_group, $template);
+		ee()->TMPL->run_template_engine();
 	}
 }
 

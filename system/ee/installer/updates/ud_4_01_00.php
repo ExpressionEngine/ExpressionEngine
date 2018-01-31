@@ -26,6 +26,7 @@ class Updater {
 		$steps = new \ProgressIterator(
 			array(
 				'addPasswordChangeNotificationTemplates',
+				'addPreviewURLToChannels',
 			)
 		);
 
@@ -57,6 +58,33 @@ class Updater {
 					'data_title' => password_changed_notification_title(),
 					'template_data' => password_changed_notification()
 				])->save();
+		}
+	}
+
+	protected function addPreviewURLToChannels()
+	{
+		if ( ! ee()->db->field_exists('preview_url', 'channels'))
+		{
+			ee()->smartforge->add_column(
+				'channels',
+				array(
+					'preview_url' => array(
+						'type'    => 'VARCHAR(100)',
+						'null'    => TRUE,
+					)
+				)
+			);
+
+			$channels = ee('Model')->get('Channel')
+				->with('LiveLookTemplate')
+				->filter('live_look_template', '<>', 0)
+				->all();
+
+			foreach ($channels as $channel)
+			{
+				$channel->preview_url = $channel->LiveLookTemplate->TemplateGroup->group_name . '/' . $channel->LiveLookTemplate->template_name . '/{entry_id}';
+				$channel->save();
+			}
 		}
 	}
 }
