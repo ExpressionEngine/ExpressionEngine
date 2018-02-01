@@ -298,11 +298,39 @@ $(document).ready(function(){
 				.addClass('app-overlay---open')
 				.css('height', heightIs);
 
+			if (e.linkIs) {
+				// strongly warn the actor of their potential future mistakes
+				if(e.linkIs.indexOf('js-modal--destruct') !== -1){
+					$('.app-overlay')
+						.addClass('app-overlay--destruct');
+				}
+
+				// warn the actor of their potential future mistakes
+				if(e.linkIs.indexOf('js-modal--warning') !== -1){
+					$('.app-overlay')
+						.addClass('app-overlay--warning');
+				}
+			}
+
+			// reveal the modal
 			if ($(this).hasClass('modal-wrap')) {
 				$(this).fadeIn('slow');
 			} else {
 				$(this).removeClass('app-modal---closed')
 					.addClass('app-modal---open');
+			}
+
+			// remove viewport scroll for --side
+			if (e.linkIs) {
+				if(e.linkIs.indexOf('js-modal-link--side') !== -1){
+					$('body').css('overflow','hidden');
+				}
+			}
+
+			if(e.modalIs == 'live-preview'){
+				$('.live-preview')
+					.removeClass('live-preview---closed')
+					.addClass('live-preview---open');
 			}
 
 			// remember the scroll location on open
@@ -398,46 +426,15 @@ $(document).ready(function(){
 				e.preventDefault();
 			}
 			else{
-				// focus the actor
-				$('.app-overlay')
-					.removeClass('app-overlay---closed')
-					.addClass('app-overlay---open');
-
-				// strongly warn the actor of their potential future mistakes
-				if(linkIs.indexOf('js-modal--destruct') !== -1){
-					$('.app-overlay')
-						.addClass('app-overlay--destruct');
-				}
-
-				// warn the actor of their potential future mistakes
-				if(linkIs.indexOf('js-modal--warning') !== -1){
-					$('.app-overlay')
-						.addClass('app-overlay--warning');
-				}
-
-				// reveal the modal
-				$('[rev='+modalIs+']')
-					.removeClass('app-modal---closed')
-					.addClass('app-modal---open');
-
-				// remove viewport scroll for --side
-				if(linkIs.indexOf('js-modal-link--side') !== -1){
-					$('body').css('overflow','hidden');
-				}
-
-				if(modalIs == 'live-preview'){
-					$('.live-preview')
-						.removeClass('live-preview---closed')
-						.addClass('live-preview---open');
-				}
-
-				// scroll up, if needed
-				$('body,html').animate({ scrollTop: 0 }, 100);
+				$('[rev='+modalIs+']').trigger({
+					type:'modal:open',
+					modalIs: modalIs,
+					linkIs: linkIs
+				});
 
 				// stop page from reloading
 				// the source window and appending # to the URI
 				e.preventDefault();
-
 			}
 		});
 
