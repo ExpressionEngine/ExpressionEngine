@@ -240,7 +240,7 @@ class Channel {
 			}
 		}
 
-		if ( ! ee('LivePreview')->hasEntryData())
+		if ( ! $this->isLivePreviewEntry())
 		{
 			if ($this->sql == '')
 			{
@@ -2567,12 +2567,29 @@ class Channel {
 		return $offset;
 	}
 
+	private function isLivePreviewEntry()
+	{
+		$return = FALSE;
+
+		if (ee('LivePreview')->hasEntryData())
+		{
+			$data = ee('LivePreview')->getEntryData();
+			if ($data['entry_id'] == PHP_INT_MAX && in_array($this->query_string, [$data['entry_id'], $data['url_title']]))
+			{
+				$return = TRUE;
+			}
+		}
+
+		return $return;
+	}
+
 	private function overrideWithPreviewData($result_array)
 	{
 		if (ee('LivePreview')->hasEntryData())
 		{
 			$found = FALSE;
 			$data = ee('LivePreview')->getEntryData();
+
 			foreach ($result_array as $i => $row)
 			{
 				if ($row['entry_id'] == $data['entry_id'])
