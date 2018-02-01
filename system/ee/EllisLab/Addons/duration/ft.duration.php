@@ -78,6 +78,8 @@ class Duration_Ft extends EE_Fieldtype {
 	 */
 	public function display_field($data)
 	{
+		ee()->lang->loadfile('fieldtypes');
+
 		$field = array(
 			'name'        => $this->field_name,
 			'value'       => $data,
