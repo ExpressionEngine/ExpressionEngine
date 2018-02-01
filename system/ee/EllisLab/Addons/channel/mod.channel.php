@@ -30,7 +30,7 @@ class Channel {
 	public $gfields					= array();
 	public $mfields					= array();
 	public $pfields					= array();
-	public $ffields                = array();
+	public $ffields                 = array();
 	public $categories				= array();
 	public $catfields				= array();
 	public $channel_name	 		= array();
@@ -54,6 +54,8 @@ class Channel {
 	public $pager_sql 				= '';
 
 	protected $chunks               = array();
+
+	protected $preview_conditions   = array();
 
 	// SQL cache key prefix
 	protected $_sql_cache_prefix	= 'sql_cache';
@@ -238,7 +240,7 @@ class Channel {
 			}
 		}
 
-		if ( ! $this->isLivePreviewEntry())
+		if ( ! ee('LivePreview')->hasEntryData())
 		{
 			if ($this->sql == '')
 			{
@@ -1310,7 +1312,7 @@ class Channel {
 			}
 		}
 
-		$sql .= "WHERE t.entry_id !='' AND t.site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
+		$sql .= "WHERE t.entry_id != '' AND t.site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
 
 		/**------
 		/**  We only select entries that have not expired
@@ -2351,6 +2353,12 @@ class Channel {
 		/**  Add Limits to query
 		/**------*/
 
+		if (ee('LivePreview')->hasEntryData())
+		{
+			$parts = explode(' WHERE ', $sql);
+			$this->preview_conditions = explode(' AND ', $parts[1]);
+		}
+
 		$sql .= $end;
 
 		if ($this->pagination->paginate == FALSE)
@@ -2563,13 +2571,66 @@ class Channel {
 	{
 		if (ee('LivePreview')->hasEntryData())
 		{
+			$found = FALSE;
 			$data = ee('LivePreview')->getEntryData();
 			foreach ($result_array as $i => $row)
 			{
 				if ($row['entry_id'] == $data['entry_id'])
 				{
 					$result_array[$i] = $data;
+					$found = TRUE;
 					break;
+				}
+			}
+
+			// One of the things we will not find are new entries that are
+			// being previewed. They will not be in the database and thus will
+			// not be returned.
+			if ( ! $found)
+			{
+				$add = FALSE;
+
+				if ($data['entry_id'] == PHP_INT_MAX && in_array($this->query_string, [$data['entry_id'], $data['url_title']]))
+				{
+					$add = TRUE;
+				}
+
+				foreach ($this->preview_conditions as $condition)
+				{
+					if (strpos('OR', $condition) === FALSE)
+					{
+						$valid = $this->previewDataPassesCondition($condition, $data);
+					}
+					else
+					{
+						$valid = FALSE;
+
+						$condition = trim($condition, '()');
+						$conditions = explode(' OR ', $condition);
+						foreach ($conditions as $sub_condition)
+						{
+							$valid = $this->previewDataPassesCondition($sub_condition, $data);
+							if ($valid)
+							{
+								break;
+							}
+						}
+					}
+
+					if ($valid)
+					{
+						$add = TRUE;
+					}
+					else
+					{
+						$add = FALSE;
+						break;
+					}
+				}
+
+				if ($add)
+				{
+					array_unshift($result_array, $data);
 				}
 			}
 		}
@@ -2577,15 +2638,50 @@ class Channel {
 		return $result_array;
 	}
 
-	private function isLivePreviewEntry()
+	private function previewDataPassesCondition($condition, $data)
 	{
-		if (ee('LivePreview')->hasEntryData())
+		list($column, $comparison, $value) = explode(' ',  trim($condition));
+		list($table, $key) = explode('.', $column);
+
+		$value = trim($value, "'");
+
+		$passes = FALSE;
+
+		switch ($comparison)
 		{
-			$data = ee('LivePreview')->getEntryData();
-			return (ee()->TMPL->fetch_param('limit') == '1' && $this->query_string == $data['entry_id'] && $data['entry_id'] == PHP_INT_MAX);
+			case '=':
+				$passes = ($data[$key] == $value);
+				break;
+
+			case '!=':
+				$passes = ($data[$key] != $value);
+				break;
+
+			case '>':
+				$passes = ($data[$key] > $value);
+				break;
+
+			case '<':
+				$passes = ($data[$key] < $value);
+				break;
+
+			case '>=':
+				$passes = ($data[$key] >= $value);
+				break;
+
+			case '<=':
+				$passes = ($data[$key] <= $value);
+				break;
+
+			case 'IN':
+				$value = trim($value, '()');
+				$value = explode(',', str_replace("'", '', $value));
+
+				$passes = in_array($data[$key], $value);
+				break;
 		}
 
-		return FALSE;
+		return $passes;
 	}
 
 	/**
@@ -2597,23 +2693,19 @@ class Channel {
 	  */
 	public function parse_channel_entries($per_row_callback = NULL)
 	{
-		if ($this->isLivePreviewEntry())
+		// For our hook to work, we need to grab the result array
+		$query_result = ($this->query) ? $this->query->result_array() : [];
+
+		if ( ! empty($this->chunks))
 		{
-			$query_result = [ee('LivePreview')->getEntryData()];
+			$query_result = $this->getExtraData($query_result);
 		}
-		else
+
+		$query_result = $this->overrideWithPreviewData($query_result);
+
+		// Ditch everything else
+		if ($this->query)
 		{
-			// For our hook to work, we need to grab the result array
-			$query_result = $this->query->result_array();
-
-			if ( ! empty($this->chunks))
-			{
-				$query_result = $this->getExtraData($query_result);
-			}
-
-			$query_result = $this->overrideWithPreviewData($query_result);
-
-			// Ditch everything else
 			$this->query->free_result();
 			unset($this->query);
 		}
