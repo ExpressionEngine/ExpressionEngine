@@ -402,6 +402,7 @@ CREATE TABLE `exp_channels` (
   `title_field_label` varchar(100) NOT NULL DEFAULT 'Title',
   `url_title_prefix` varchar(80) DEFAULT NULL,
   `live_look_template` int(10) unsigned NOT NULL DEFAULT '0',
+  `preview_url` varchar(100) DEFAULT NULL,
   `max_entries` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`channel_id`),
   KEY `cat_group` (`cat_group`),
