@@ -75,13 +75,6 @@ class Channel extends StructureModel {
 		'ChannelFormSettings' => array(
 			'type' => 'hasOne'
 		),
-		'LiveLookTemplate' => array(
-			'type' => 'hasOne',
-			'model' => 'Template',
-			'from_key' => 'live_look_template',
-			'to_key' => 'template_id',
-			'weak' => TRUE,
-		),
 		'AssignedMemberGroups' => array(
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'MemberGroup',
@@ -201,7 +194,6 @@ class Channel extends StructureModel {
 	protected $default_entry_title;
 	protected $title_field_label;
 	protected $url_title_prefix;
-	protected $live_look_template = 0;
 	protected $max_entries;
 	protected $preview_url;
 

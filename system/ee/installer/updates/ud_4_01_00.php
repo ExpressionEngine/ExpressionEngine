@@ -75,16 +75,30 @@ class Updater {
 				)
 			);
 
-			$channels = ee('Model')->get('Channel')
-				->with('LiveLookTemplate')
-				->filter('live_look_template', '<>', 0)
-				->all();
+			$templates = ee()->db->select('channel_id, group_name, template_name')
+				->from('channels')
+				->join('templates', 'channels.live_look_template = templates.template_id')
+				->join('template_groups', 'templates.group_id = template_groups.group_id')
+				->where('live_look_template <> 0')
+				->get()
+				->result_array();
 
-			foreach ($channels as $channel)
+			if ( ! empty($templates))
 			{
-				$channel->preview_url = $channel->LiveLookTemplate->TemplateGroup->group_name . '/' . $channel->LiveLookTemplate->template_name . '/{entry_id}';
-				$channel->save();
+				$update = [];
+
+				foreach ($templates as $index => $template)
+				{
+					$update[$index] = [
+						'channel_id' => $template['channel_id'],
+						'preview_url' => $template['group_name'] . '/' . $template['template_name'] . '/{entry_id}'
+					];
+				}
+
+				ee()->db->update_batch('channels', $update, 'channel_id');
 			}
+
+			ee()->smartforge->drop_column('channels', 'live_look_template');
 		}
 	}
 }

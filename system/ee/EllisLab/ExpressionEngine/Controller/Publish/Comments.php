@@ -333,8 +333,6 @@ class Comments extends AbstractPublishController {
 
 		$title = $comment->getEntry()->title;
 
-		$live_look_template = $comment->getChannel()->getLiveLookTemplate();
-
 		if ($comment->Channel->preview_url)
 		{
 			$uri = str_replace(['{url_title}', '{entry_id}'], [$comment->Entry->url_title, $comment->Entry->entry_id], $comment->Channel->preview_url);

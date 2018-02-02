@@ -484,8 +484,6 @@ $lang = array(
 
 'link' => 'Link',
 
-'live_look' => 'Live Look',
-
 'live_view' => 'Click to View',
 
 'load_revision' => 'Load Revision',

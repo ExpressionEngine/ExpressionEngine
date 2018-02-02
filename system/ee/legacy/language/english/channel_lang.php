@@ -342,8 +342,6 @@ $lang = array(
 
 'moderate_comments_desc' => 'When enabled, submitted comments will be put into a moderation queue, and must be approved by a Super Admin or other member group with moderation permissions.',
 
-'no_live_look_template' => 'No template chosen',
-
 'notifications' => 'Notifications',
 
 'open' => 'Open',
