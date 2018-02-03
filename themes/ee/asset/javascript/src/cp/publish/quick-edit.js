@@ -21,9 +21,9 @@ EE.cp.QuickEdit = {
 
 	/**
 	 * Opens a modal form
-	 * @param  {object} options Object of options:
-	 *   url - URL of form to load into the modal
-	 *   checked - Array of jQuery objects of checked checkboxes for entries
+	 *
+	 * @param {string} options Intent of modal
+	 * @param {array} checked Array of jQuery objects of checked checkboxes for entries
 	 * @return {void}
 	 */
 	openForm: function(intent, checked) {
@@ -35,12 +35,15 @@ EE.cp.QuickEdit = {
 		this.formContainer.html('<span class="btn work">Loading</span>')
 		this._loadForm(items)
 
-		this._bindAddField()
-		this._bindRemoveField()
-
 		this.modal.trigger('modal:open')
 	},
 
+	/**
+	 * Renders the filterable entry list React component
+	 *
+	 * @param {array} items Array of item objects formatted for QuickEditEntries component
+	 * @return {void}
+	 */
 	_renderEntryList(items) {
 		var that = this
 		QuickEditEntries.render(this.modal, {
@@ -51,6 +54,13 @@ EE.cp.QuickEdit = {
 		})
 	},
 
+	/**
+	 * Given an array of jQuery objects of checked checkboxes, returns an array
+	 * of items formatter for the QuickEditEntries component
+	 *
+	 * @param {array} checked Array of jQuery objects of checked checkboxes for entries
+	 * @return {array}
+	 */
 	_formatItems: function(checked) {
 		return $.map(checked, function(el) {
 			return {
@@ -61,6 +71,13 @@ EE.cp.QuickEdit = {
 		})
 	},
 
+	/**
+	 * Given an array of QuickEditEntries component-formatted items, returns an
+	 * array of entry IDs for the items
+	 *
+	 * @param {array} items Array of QuickEditEntries component-formatted items
+	 * @return {array}
+	 */
 	_getEntryIdsFromItems: function(items) {
 		return $.map(items, function(item) {
 			return item.value
@@ -69,6 +86,9 @@ EE.cp.QuickEdit = {
 
 	/**
 	 * Loads the modal form with the specified contents
+	 *
+	 * @param {array} items Array of QuickEditEntries component-formatted items
+	 * @return {array}
 	 */
 	_loadForm: function(items) {
 		if (this.ajaxRequest) {
@@ -97,6 +117,12 @@ EE.cp.QuickEdit = {
 		})
 	},
 
+	/**
+	 * Given a form element, returns a hash of form input names to their values
+	 *
+	 * @param {jQuery object} form Form element
+	 * @return {object} Hash of form input names to their values
+	 */
 	_getFormData: function(form) {
 		var formData = {}
 
@@ -108,11 +134,18 @@ EE.cp.QuickEdit = {
 	},
 
 	/**
-	 * Creates the form submit handler and binds form validation to the loaded form
+	 * Binds all necessary callbacks and events when the form markup loads
+	 *
+	 * @param {string} data HTML of form
+	 * @return {void}
 	 */
 	_bindForm: function(data) {
 		this.formContainer.html(data)
+		this._bindAddField()
+		this._bindRemoveField()
+		this._enableOrDisableButtons()
 		SelectField.renderFields(this.formContainer)
+
 		this.formContainer.find('.fluid-field-templates :input')
 			.attr('disabled', 'disabled')
 
@@ -132,14 +165,20 @@ EE.cp.QuickEdit = {
 					return
 				}
 
-				that.modal.trigger('modal:close')
+				location.reload()
 			})
 			return false
 		})
 	},
 
+	/**
+	 * Binds Fluid UI Add button
+	 *
+	 * @return {void}
+	 */
 	_bindAddField: function() {
-		this.modal.on('click', '.fluid-actions a[data-field-name]', function(e) {
+		var that = this
+		this.modal.find('.fluid-actions a[data-field-name]').click(function(e) {
 			e.preventDefault()
 
 			var wrapper = $(this).closest('.fluid-wrap'),
@@ -148,10 +187,11 @@ EE.cp.QuickEdit = {
 				fieldContainer = wrapper.find('.js-sorting-container')
 
 			// Add the field
-			template.clone().appendTo(fieldContainer)
+			template.appendTo(fieldContainer)
 			fieldContainer.find(':input').removeAttr('disabled')
-			$(this).closest('li').addClass('hidden')
-			that._toggleMenuItem(fieldName)
+			that._toggleMenuItem(fieldName, true)
+
+			that._enableOrDisableButtons()
 
 			// Close Add menu
 			$(this).closest('.filters')
@@ -164,6 +204,11 @@ EE.cp.QuickEdit = {
 		})
 	},
 
+	/**
+	 * Binds Fluid UI Remove button
+	 *
+	 * @return {void}
+	 */
 	_bindRemoveField: function() {
 		var that = this
 		this.modal.on('click', '.fluid-ctrls a.fluid-remove', function(e) {
@@ -171,14 +216,42 @@ EE.cp.QuickEdit = {
 
 			var item = $(this).closest('.fluid-item')
 
-			that._toggleMenuItem(item.data('fieldName'))
-			item.remove()
+			that._toggleMenuItem(item.data('fieldName'), false)
+			item.appendTo(that.formContainer.find('.fluid-field-templates'))
+
+			that.formContainer.find('.fluid-field-templates :input')
+				.attr('disabled', 'disabled')
+
+			that._enableOrDisableButtons()
 		})
 	},
 
+	/**
+	 * Toggle visibility of field name in Fluid UI Add menu
+	 *
+	 * @param {string} fieldName Short name of field
+	 * @param {boolean} toggle Whether or not to hide or show the item
+	 * @return {void}
+	 */
 	_toggleMenuItem(fieldName, toggle) {
 		this.formContainer.find('.fluid-actions a[data-field-name="'+fieldName+'"]')
 			.closest('li')
 			.toggleClass('hidden', toggle)
+	},
+
+	/**
+	 * Enables/disables submission buttons based on the presence of fields to submit
+	 *
+	 * @return {void}
+	 */
+	_enableOrDisableButtons() {
+		var itemCount = this.formContainer.find('.js-sorting-container .fluid-item').size(),
+			buttons = this.formContainer.find('input.btn')
+
+		if (itemCount == 0) {
+			buttons.attr('disabled', 'disabled')
+		} else {
+			buttons.removeAttr('disabled')
+		}
 	}
 }

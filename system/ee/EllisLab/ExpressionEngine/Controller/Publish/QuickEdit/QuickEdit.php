@@ -10,13 +10,15 @@
 namespace EllisLab\ExpressionEngine\Controller\Publish\QuickEdit;
 
 use EllisLab\ExpressionEngine\Controller\Publish\QuickEdit\AbstractQuickEdit;
-use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 /**
  * Quick Bulk Edit Controller
  */
 class QuickEdit extends AbstractQuickEdit {
 
+	/**
+	 * @var Array Fields we want available to Quick Edit
+	 */
 	protected $standard_default_fields = [
 		'status',
 		'expiration_date',
@@ -24,60 +26,47 @@ class QuickEdit extends AbstractQuickEdit {
 		'sticky',
 		'allow_comments',
 		'author_id'
-		// Plus common category groups added dynamically below
 	];
 
-	public function index()
+	/**
+	 * Main Quick Edit form
+	 *
+	 * @param Array $data Associative array of field names to field data
+	 * @param Result $errors Validation result for the given fields, or NULL
+	 * @return String HTML markup of form
+	 */
+	public function index($data = NULL, $errors = NULL)
 	{
-		if ( ! ($entry_ids = ee('Request')->get('entryIds')))
-		{
-			return 'nope';
-		}
-
+		$entry_ids = ee('Request')->get('entryIds') ?: $data['entries_to_edit'];
 		$entries = ee('Model')->get('ChannelEntry', $entry_ids)->all();
 
-		// TODO: Filter entries based on permissions, just in case
-		$fields = $this->getFieldsForEntries($entries);
-
-		$filters = ee('View')->make('fluid_field:filters')->render(['fields' => $fields]);
-
-		$displayed_fields = '';
-		foreach ($_GET as $field_name => $value)
+		if ( ! $entry_ids OR $entries->count() == 0)
 		{
-			if (isset($fields[$field_name]))
-			{
-				$field = $fields[$field_name];
-				$field->setData($value);
-				$displayed_fields .= ee('View')->make('fluid_field:field')->render([
-					'field' => $field,
-					'field_name' => $field_name,
-					'filters' => '',
-					'errors' => NULL,
-				]);
-			}
+			return show_error(lang('unauthorized_access'), 403);
 		}
 
-		$field_templates = '';
-		foreach ($fields as $field_name => $field)
-		{
-			$field_templates .= ee('View')->make('fluid_field:field')->render([
-				'field' => $field,
-				'field_name' => $field_name,
-				'filters' => '',
-				'errors' => NULL,
-			]);
-		}
+		$entry = $this->getMockEntryForIntersectedChannels($entries->Channel);
 
-		$fluid_markup = ee('View')->make('fluid_field:publish')->render([
-			'fields'          => $displayed_fields,
-			'field_templates' => $field_templates,
-			'filters'         => $filters,
-		]);
+		$fields = $this->getFieldsForEntry($entry, $this->standard_default_fields);
+		$fields += $this->getCategoryFieldsForEntry($entry);
 
+		$data = $data ?: $_GET;
+		$entry->set($data);
+
+		$displayed_fields = array_intersect_key($fields, $data);
+		$field_templates = array_diff_key($fields, $displayed_fields);
+
+		$fluid_markup = $this->getFluidMarkupForFields($displayed_fields, $field_templates, $fields, $errors);
 		$fluid_markup .= form_hidden('entries_to_edit', $entry_ids);
 
+		$fieldset_class = 'fieldset-faux-fluid';
+		if ($errors)
+		{
+			$fieldset_class .= ' fieldset-invalid';
+		}
+
 		$vars = [
-			'base_url' => '',
+			'base_url' => ee('CP/URL', 'publish/quick-edit/save'),
 			'cp_page_title' => 'Editing ' . $entries->count() . ' entries',
 			'save_btn_text' => 'Save All & Close',
 			'save_btn_text_working' => 'btn_saving',
@@ -93,7 +82,7 @@ class QuickEdit extends AbstractQuickEdit {
 					'title' => 'Add editable fields',
 					'desc' => 'Chosen fields will be added below, and will be editable for <b>all</b> selected entries.',
 					'attrs' => [
-						'class' => 'fieldset-faux-fluid',
+						'class' => $fieldset_class,
 					],
 					'fields' => [
 						'quick-edit' => [
@@ -106,6 +95,40 @@ class QuickEdit extends AbstractQuickEdit {
 		];
 
 		return ee('View')->make('ee:_shared/form')->render($vars);
+	}
+
+	/**
+	 * Quick Edit submit handler
+	 *
+	 * @return String HTML markup of form if validation error, array if success
+	 */
+	public function save()
+	{
+		if ( ! ($entry_ids = ee('Request')->post('entries_to_edit')))
+		{
+			return show_error(lang('unauthorized_access'), 403);
+		}
+
+		$entries = ee('Model')->get('ChannelEntry', $entry_ids)->all();
+		$entries->set($_POST);
+
+		foreach ($entries->validate() as $result)
+		{
+			if ($result->isNotValid())
+			{
+				return $this->index($_POST, $result);
+			}
+		}
+
+		$entries->save();
+
+		ee('CP/Alert')->makeInline('entries-form')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody($entries->count() . ' entries have been updated.')
+			->defer();
+
+		return ['success'];
 	}
 }
 
