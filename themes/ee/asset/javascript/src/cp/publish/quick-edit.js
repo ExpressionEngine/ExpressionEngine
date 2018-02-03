@@ -65,8 +65,7 @@ EE.cp.QuickEdit = {
 		return $.map(checked, function(el) {
 			return {
 				label: $(el).data('title'),
-				value: $(el).val(),
-				meta: { channelId: $(el).data('channelId') }
+				value: $(el).val()
 			}
 		})
 	},
