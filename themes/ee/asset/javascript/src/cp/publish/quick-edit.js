@@ -6,6 +6,8 @@
  * @license   https://expressionengine.com/license
  */
 
+(function($) {
+
 EE.cp.QuickEdit = {
 
 	modal: $('div[rel="modal-quick-edit"]'),
@@ -44,7 +46,7 @@ EE.cp.QuickEdit = {
 	 * @param {array} items Array of item objects formatted for QuickEditEntries component
 	 * @return {void}
 	 */
-	_renderEntryList(items) {
+	_renderEntryList: function(items) {
 		var that = this
 		QuickEditEntries.render(this.modal, {
 			items: items,
@@ -232,7 +234,7 @@ EE.cp.QuickEdit = {
 	 * @param {boolean} toggle Whether or not to hide or show the item
 	 * @return {void}
 	 */
-	_toggleMenuItem(fieldName, toggle) {
+	_toggleMenuItem: function(fieldName, toggle) {
 		this.formContainer.find('.fluid-actions a[data-field-name="'+fieldName+'"]')
 			.closest('li')
 			.toggleClass('hidden', toggle)
@@ -243,7 +245,7 @@ EE.cp.QuickEdit = {
 	 *
 	 * @return {void}
 	 */
-	_enableOrDisableButtons() {
+	_enableOrDisableButtons: function() {
 		var itemCount = this.formContainer.find('.js-sorting-container .fluid-item').size(),
 			buttons = this.formContainer.find('input.btn')
 
@@ -254,3 +256,5 @@ EE.cp.QuickEdit = {
 		}
 	}
 }
+
+})(jQuery);
