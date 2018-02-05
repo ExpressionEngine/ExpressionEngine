@@ -71,6 +71,17 @@ var QuickEditEntries = function (_React$Component) {
         React.createElement(
           'ul',
           { 'class': 'entry-list' },
+          limitedItems.length == 0 && React.createElement(
+            'li',
+            { 'class': 'entry-list__item entry-list__item---empty' },
+            'No ',
+            React.createElement(
+              'b',
+              null,
+              'entries'
+            ),
+            ' found.'
+          ),
           limitedItems.map(function (item) {
             return React.createElement(QuickEditEntryItem, {
               item: item,

@@ -48,6 +48,11 @@ class QuickEditEntries extends React.Component {
           <input type="text" placeholder="Filter selected entries" onChange={(e) => this.handleSearch(e.target.value)} />
         </form>
         <ul class="entry-list">
+          {limitedItems.length == 0 &&
+            <li class="entry-list__item entry-list__item---empty">
+              No <b>entries</b> found.
+            </li>
+          }
           {limitedItems.map((item) =>
             <QuickEditEntryItem
               item={item}
