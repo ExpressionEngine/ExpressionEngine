@@ -157,6 +157,17 @@ class Member_settings extends Member {
 		// Fetch the row
 		$row = array_merge($member->getValues(), $member->MemberGroup->getValues());
 
+		// Use member field names
+		$member_fields = ee('Model')->get('MemberField')
+			->fields('m_field_id', 'm_field_name')
+			->all();
+
+		foreach ($member_fields as $member_field)
+		{
+			$key = 'm_field_id_' . $member_field->m_field_id;
+			$row[$member_field->m_field_name] = $row[$key];
+		}
+
 		/** ----------------------------------------
 		/**  Fetch the template
 		/** ----------------------------------------*/
@@ -721,11 +732,11 @@ class Member_settings extends Member {
 					if (array_key_exists('m_field_id_'.$fnames[$fval]['0'], $result_row))
 					{
 						ee()->TMPL->tagdata = $this->parseField(
-							$fields[$val]['0'],
+							$fnames[$fval][0],
 							$field,
 							$result_row['m_field_id_'.$fnames[$fval]['0']],
 							ee()->TMPL->tagdata,
-							$member_id,
+							$this->cur_id,
 							array(),
 							$key
 						);
