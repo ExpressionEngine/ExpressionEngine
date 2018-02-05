@@ -2379,6 +2379,18 @@ class Member {
 			$cond['avatar']	= $avatar;
 			$cond['photo'] = $photo;
 
+			foreach($fields as $key =>  $value)
+			{
+				$cond[$key] = ee()->typography->parse_type($row['m_field_id_'.$value['0']],
+					array(
+						'text_format'	=> $value['1'],
+						'html_format'	=> 'safe',
+						'auto_links'	=> 'y',
+						'allow_img_url' => 'n'
+						)
+					);
+			}
+
 			ee()->TMPL->tagdata = ee()->functions->prep_conditionals(ee()->TMPL->tagdata, $cond);
 
 			// Swap Variables

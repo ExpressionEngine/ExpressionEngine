@@ -629,6 +629,11 @@ class EE_Relationship_data_parser {
 	 */
 	public function _apply_sort($node, $entry_ids)
 	{
+		if (empty($entry_ids))
+		{
+			return $entry_ids;
+		}
+
 		$order_by = array_filter(explode('|', $node->param('orderby')));
 		$sort = explode('|', $node->param('sort', 'desc'));
 

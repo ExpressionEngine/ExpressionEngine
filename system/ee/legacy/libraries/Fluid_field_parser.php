@@ -140,27 +140,36 @@ class Fluid_field_parser {
 	{
 		$possible_fields = $this->getPossibleFields($fluid_field_field->field_settings['field_channel_fields']);
 
-		$tags = array();
-		$fields_found = array();
+		$tags = [];
+		$fields_found = [];
 
 		$fluid_field_name = $fluid_field_field->field_name;
 
-		foreach($possible_fields as $field_id => $field_name)
+		$fluid_pchunks = ee()->api_channel_fields->get_pair_field($tagdata, $fluid_field_name, $this->_prefix);
+		foreach ($fluid_pchunks as $fluid_chunk_data)
 		{
-			$tags[$field_name] = array();
+			list($fluid_modifier, $fluid_content, $fluid_params, $fluid_chunk) = $fluid_chunk_data;
+			$fluid_content_hash = sha1($fluid_content);
 
-			$pchunks = ee()->api_channel_fields->get_pair_field(
-				$tagdata,
-				$field_name,
-				$this->_prefix . $fluid_field_name . ':'
-			);
+			$tags[$fluid_content_hash] = [];
 
-			foreach ($pchunks as $chk_data)
+			foreach($possible_fields as $field_id => $field_name)
 			{
-				list($modifier, $content, $params, $chunk) = $chk_data;
+				$tags[$field_name] = [];
 
-				$tags[$field_name][] = ee('fluid_field:Tag', $content);
-				$fields_found[] = $field_id;
+				$pchunks = ee()->api_channel_fields->get_pair_field(
+					$fluid_chunk,
+					$field_name,
+					$this->_prefix . $fluid_field_name . ':'
+				);
+
+				foreach ($pchunks as $chk_data)
+				{
+					list($modifier, $content, $params, $chunk) = $chk_data;
+
+					$tags[$fluid_content_hash][$field_name][sha1($content)] = ee('fluid_field:Tag', $content);
+					$fields_found[] = $field_id;
+				}
 			}
 		}
 
@@ -264,7 +273,7 @@ class Fluid_field_parser {
 
 		foreach ($fluid_field_data as $fluid_field)
 		{
-			$tags = $this->tags[$fluid_field->fluid_field_id];
+			$tags = $this->tags[$fluid_field->fluid_field_id][sha1($tagdata)];
 
 			$field_name = $fluid_field->ChannelField->field_name;
 
@@ -283,7 +292,7 @@ class Fluid_field_parser {
 
 				$field->setItem('row', $row);
 
-				$output .=  $tag->parse($field);
+				$output .= $tag->parse($field);
 			}
 		}
 
