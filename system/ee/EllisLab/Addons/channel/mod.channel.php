@@ -2594,7 +2594,15 @@ class Channel {
 			{
 				if ($row['entry_id'] == $data['entry_id'])
 				{
-					$result_array[$i] = $data;
+					if ($data['status'] == 'closed')
+					{
+						unset($result_array[$i]);
+					}
+					else
+					{
+						$result_array[$i] = $data;
+					}
+
 					$found = TRUE;
 					break;
 				}
