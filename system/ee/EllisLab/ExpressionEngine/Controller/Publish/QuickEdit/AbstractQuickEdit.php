@@ -50,6 +50,8 @@ abstract class AbstractQuickEdit extends CP_Controller {
 				'field_name' => $field_name,
 				'filters' => '',
 				'errors' => $errors,
+				'reorderable' => FALSE,
+				'show_field_type' => FALSE
 			]);
 		}
 
@@ -61,6 +63,8 @@ abstract class AbstractQuickEdit extends CP_Controller {
 				'field_name' => $field_name,
 				'filters' => '',
 				'errors' => NULL,
+				'reorderable' => FALSE,
+				'show_field_type' => FALSE
 			]);
 		}
 

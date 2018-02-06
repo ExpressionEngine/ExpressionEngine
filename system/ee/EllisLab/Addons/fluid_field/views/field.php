@@ -1,9 +1,13 @@
 <div class="fluid-item" data-field-name="<?=$field_name?>" data-field-type="<?=$field->getType()?>">
 	<div class="fluid-ctrls">
-		<span class="reorder"></span>
+		<?php if ($reorderable): ?>
+			<span class="reorder"></span>
+		<?php endif ?>
 		<h3>
 			<span class="ico sub-arrow js-toggle-field"></span><?=$field->getItem('field_label')?>
-			<span class="faded">(<?=$field->getType()?>)</span>
+			<?php if ($show_field_type): ?>
+				<span class="faded">(<?=$field->getType()?>)</span>
+			<?php endif ?>
 		</h3>
 		<a class="fluid-remove" href="" title=""></a>
 		<?=$filters?>
