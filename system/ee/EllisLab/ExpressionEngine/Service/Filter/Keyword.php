@@ -31,7 +31,7 @@ class Keyword extends Filter {
 	{
 		$filter = [
 			'name'        => $this->name,
-			'value'       => $this->value(),
+			'value'       => str_replace('"', '&quot;', $this->value()),
 			'placeholder' => $this->placeholder
 		];
 
