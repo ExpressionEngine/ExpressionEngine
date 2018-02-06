@@ -125,10 +125,13 @@ EE.cp.QuickEdit = {
 	 */
 	_bindForm: function(data, entryIds) {
 		this.formContainer.html(data)
+
 		this._bindAddField()
 		this._bindRemoveField()
 		this._enableOrDisableButtons()
+
 		SelectField.renderFields(this.formContainer)
+		EE.cp.datePicker.bind($('input[rel="date-picker"]'))
 
 		this.formContainer.find('.fluid-field-templates :input')
 			.attr('disabled', 'disabled')
@@ -185,7 +188,10 @@ EE.cp.QuickEdit = {
 				.siblings('.sub-menu')
 				.hide();
 
+			// TODO: Once we have generic callback for fieldtypes to instantiate
+			// their stuff in a future version, use that here instead
 			SelectField.renderFields(fieldContainer)
+			EE.cp.datePicker.bind($('input[rel="date-picker"]'))
 		})
 	},
 
