@@ -125,6 +125,7 @@ abstract class AbstractQuickEdit extends CP_Controller {
 	protected function getMockEntryForIntersectedChannels($channels)
 	{
 		$entry = ee('Model')->make('ChannelEntry');
+		$entry->entry_id = 0;
 		$entry->author_id = ee()->session->userdata('member_id');
 		$entry->Channel = $this->getIntersectedChannel($channels);
 
