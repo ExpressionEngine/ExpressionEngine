@@ -37,7 +37,7 @@ class QuickEdit extends AbstractQuickEdit {
 	 */
 	public function index($data = NULL, $errors = NULL)
 	{
-		$entry_ids = ee('Request')->get('entryIds') ?: $data['entries_to_edit'];
+		$entry_ids = ee()->input->get_post('entry_ids');
 		$entries = ee('Model')->get('ChannelEntry', $entry_ids)->all();
 
 		if ( ! $entry_ids OR $entries->count() == 0)
@@ -57,7 +57,6 @@ class QuickEdit extends AbstractQuickEdit {
 		$field_templates = array_diff_key($fields, $displayed_fields);
 
 		$fluid_markup = $this->getFluidMarkupForFields($displayed_fields, $field_templates, $fields, $errors);
-		$fluid_markup .= form_hidden('entries_to_edit', $entry_ids);
 
 		$fieldset_class = 'fieldset-faux-fluid';
 		if ($errors)
@@ -104,7 +103,7 @@ class QuickEdit extends AbstractQuickEdit {
 	 */
 	public function save()
 	{
-		if ( ! ($entry_ids = ee('Request')->post('entries_to_edit')))
+		if ( ! ($entry_ids = ee('Request')->post('entry_ids')))
 		{
 			return show_error(lang('unauthorized_access'), 403);
 		}

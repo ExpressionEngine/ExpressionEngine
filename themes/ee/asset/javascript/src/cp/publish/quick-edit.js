@@ -100,47 +100,30 @@ EE.cp.QuickEdit = {
 			return this.modal.trigger('modal:close')
 		}
 
-		var form = $('form', this.modal)
-		var params = Object.assign(
-			this._getFormData(form),
-			{ entryIds: this._getEntryIdsFromItems(items) }
-		)
+		var form = $('form', this.modal),
+			entryIds = this._getEntryIdsFromItems(items),
+			params = form.serialize() + '&' + $.param({ entry_ids: entryIds })
 
 		var that = this
 		this.ajaxRequest = $.ajax({
 			url: this.intentFormUrls[this.intent],
-			data: $.param(params),
+			data: params,
 			dataType: 'html',
 			success: function(data) {
-				that._bindForm(data)
+				that._bindForm(data, entryIds)
 			},
 			error: console.error
 		})
 	},
 
 	/**
-	 * Given a form element, returns a hash of form input names to their values
-	 *
-	 * @param {jQuery object} form Form element
-	 * @return {object} Hash of form input names to their values
-	 */
-	_getFormData: function(form) {
-		var formData = {}
-
-		$.each(form.serializeArray(), function(i, input){
-			formData[input.name] = input.value
-		})
-
-		return formData
-	},
-
-	/**
 	 * Binds all necessary callbacks and events when the form markup loads
 	 *
 	 * @param {string} data HTML of form
+	 * @param {array} entryIds Array of entry IDs we're editing
 	 * @return {void}
 	 */
-	_bindForm: function(data) {
+	_bindForm: function(data, entryIds) {
 		this.formContainer.html(data)
 		this._bindAddField()
 		this._bindRemoveField()
@@ -159,10 +142,11 @@ EE.cp.QuickEdit = {
 			})
 
 		$('form', this.modal).on('submit', function() {
-			$.post(this.action, $(this).serialize(), function(result) {
+			var params = $(this).serialize() + '&' + $.param({ entry_ids: entryIds })
+			$.post(this.action, params, function(result) {
 				// Probably a validation error
 				if ($.type(result) === 'string') {
-					that._bindForm(result)
+					that._bindForm(result, entryIds)
 					return
 				}
 
