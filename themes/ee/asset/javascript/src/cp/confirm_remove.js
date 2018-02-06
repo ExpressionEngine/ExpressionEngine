@@ -7,7 +7,7 @@
  */
 
 $(document).ready(function () {
-	$('*[data-conditional-modal]').click(function (e) {
+	$('body').on('click', '*[data-conditional-modal]', function (e) {
 		var data_element = $(this).data('conditional-modal');
 		var ajax_url = $(this).data('confirm-ajax');
 		var confirm_text = $(this).data('confirm-text');
