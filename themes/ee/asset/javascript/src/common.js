@@ -499,10 +499,20 @@ $(document).ready(function(){
 	// publish collapse -> WIP
 	// =======================
 
-		$('.js-toggle-field').on('click',function(){
+		// Fieldset toggle
+		$('.js-toggle-field')
+			.not('.fluid-ctrls .js-toggle-field')
+			.on('click',function(){
+				$(this)
+					.parents('fieldset,.fieldset-faux-fluid,.fieldset-faux')
+					.toggleClass('fieldset---closed');
+			});
+
+		// Fluid field item toggle, wide initial selector for Fluids brought in via AJAX
+		$('body').on('click', '.fieldset-faux-fluid .fluid-ctrls .js-toggle-field', function(){
 			$(this)
-				.parents('fieldset,.fieldset-faux-fluid,.fieldset-faux')
-				.toggleClass('fieldset---closed');
+				.closest('.fluid-item')
+				.toggleClass('fluid-closed');
 		});
 
 	// ===================
