@@ -37,6 +37,8 @@ class QuickEdit extends AbstractQuickEdit {
 	 */
 	public function index($data = NULL, $errors = NULL)
 	{
+		// GET for when the entry filter has changed, POST for when coming back
+		// from validation error
 		$entry_ids = ee()->input->get_post('entry_ids');
 		$entries = ee('Model')->get('ChannelEntry', $entry_ids)->all();
 
@@ -53,7 +55,25 @@ class QuickEdit extends AbstractQuickEdit {
 		$data = $data ?: $_GET;
 		$entry->set($data);
 
-		$displayed_fields = array_intersect_key($fields, $data);
+		// Normalize category field names
+		if (isset($data['categories']))
+		{
+			foreach ($data['categories'] as $cat_group => $cat_data)
+			{
+				$data['categories['.$cat_group.']'] = $cat_data;
+			}
+		}
+
+		// Display the fields in the same order they were added
+		$displayed_fields = [];
+		foreach ($data as $field_name => $field)
+		{
+			if (isset($fields[$field_name]))
+			{
+				$displayed_fields[$field_name] = $fields[$field_name];
+			}
+		}
+
 		$field_templates = array_diff_key($fields, $displayed_fields);
 
 		$fluid_markup = $this->getFluidMarkupForFields($displayed_fields, $field_templates, $fields, $errors);
