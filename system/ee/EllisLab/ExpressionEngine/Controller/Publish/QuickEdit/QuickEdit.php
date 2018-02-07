@@ -86,20 +86,20 @@ class QuickEdit extends AbstractQuickEdit {
 
 		$vars = [
 			'base_url' => ee('CP/URL', 'publish/quick-edit/save'),
-			'cp_page_title' => 'Editing ' . $entries->count() . ' entries',
-			'save_btn_text' => 'Save All & Close',
+			'cp_page_title' => sprintf(lang('editing_entries'), $entries->count()),
+			'save_btn_text' => 'btn_save_all_and_close',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => [[
 				ee('CP/Alert')->makeInline()
 					->asWarning()
 					->cannotClose()
-					->withTitle('Important!')
-					->addToBody('Any fields submitted will overwrite that field\'s stored content for all selected entries.')
-					->addToBody('<b>This is a destructive and irreversible action.</b>')
+					->withTitle(lang('important'))
+					->addToBody(lang('quick_edit_notice'))
+					->addToBody('<b>'.lang('quick_edit_destructive').'</b>')
 					->render(),
 				[
-					'title' => 'Add editable fields',
-					'desc' => 'Chosen fields will be added below, and will be editable for <b>all</b> selected entries.',
+					'title' => 'add_editable_fields',
+					'desc' => 'add_editable_fields_desc',
 					'attrs' => [
 						'class' => $fieldset_class,
 					],
@@ -144,7 +144,7 @@ class QuickEdit extends AbstractQuickEdit {
 		ee('CP/Alert')->makeInline('entries-form')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody($entries->count() . ' entries have been updated.')
+			->addToBody(sprintf(lang('entries_updated'), $entries->count()))
 			->defer();
 
 		return ['success'];

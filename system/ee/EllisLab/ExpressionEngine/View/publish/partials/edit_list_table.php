@@ -10,10 +10,10 @@
 		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
-				<option value="quick-edit" data-confirm-trigger="selected" rel="modal-quick-edit">Quick Edit</option>
-				<option value="add-categories" data-confirm-trigger="selected" rel="modal-quick-edit">Add Categories</option>
-				<option value="remove-categories" data-confirm-trigger="selected" rel="modal-quick-edit">Remove Categories</option>
 				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-entry"><?=lang('remove')?></option>
+				<option value="quick-edit" data-confirm-trigger="selected" rel="modal-quick-edit"><?=lang('quick_edit')?></option>
+				<option value="add-categories" data-confirm-trigger="selected" rel="modal-quick-edit"><?=lang('add_categories')?></option>
+				<option value="remove-categories" data-confirm-trigger="selected" rel="modal-quick-edit"><?=lang('remove_categories')?></option>
 			</select>
 			<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
 		</fieldset>
