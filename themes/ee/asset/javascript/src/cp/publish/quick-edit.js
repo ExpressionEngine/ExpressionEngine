@@ -236,6 +236,12 @@ EE.cp.QuickEdit = {
 	 * @return {void}
 	 */
 	_enableOrDisableButtons: function() {
+
+		// No Fluid field? Nothing to do
+		if (this.modal.find('.fluid-wrap').size() == 0) {
+			return
+		}
+
 		var itemCount = this.formContainer.find('.js-sorting-container .fluid-item').size(),
 			buttons = this.formContainer.find('input.btn')
 
