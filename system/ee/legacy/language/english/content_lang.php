@@ -918,6 +918,24 @@ $lang = array(
 
 'rel_ft_no_entries' => 'No Entries',
 
+/* Quick Edit */
+
+'add_categories_entries' => 'Add categories to %d entries',
+
+'btn_save_all_and_close' => 'Save All & Close',
+
+'entries_updated' => '%d entries have been updated.',
+
+'important' => 'Important!',
+
+'no_cat_groups_in_common' => 'No <b>Category Groups</b> in common.',
+
+'quick_edit_add_categories_notice' => 'Any categories selected will be assigned to the selected entries <b>in addition</b> to the current category selection for those entries.',
+
+'quick_edit_remove_categories_notice' => 'Any categories selected will be <b>removed</b> from the selected entries, leaving the entries\' other category assignments intact.',
+
+'remove_categories_entries' => 'Remove categories from %d entries',
+
 );
 
 // EOF
