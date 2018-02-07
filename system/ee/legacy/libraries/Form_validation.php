@@ -172,6 +172,12 @@ class EE_Form_validation {
 				{
 					$enum = NULL;
 
+					// Account for empty state in React checkbox fields
+					if ($field['type'] == 'checkbox')
+					{
+						$field['choices'][] = '';
+					}
+
 					// If this field has 'choices', make sure only those
 					// choices are let through the submission
 					if (isset($field['choices']))
