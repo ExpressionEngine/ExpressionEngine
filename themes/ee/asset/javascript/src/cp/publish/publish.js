@@ -117,15 +117,15 @@ $(document).ready(function () {
 
 		container.append($(publishForm));
 
-		$('input, textarea', container).on('interact', debouceAjax(function(e) {
+		$(container).on('interact', 'input, textarea', debouceAjax(function(e) {
 			previewIt();
 		}, 225));
 
-		$('input[type=checkbox], input[type=radio], input[type=hidden], select', container).on('change', debouceAjax(function(e) {
+		$(container).on('change', 'input[type=checkbox], input[type=radio], input[type=hidden], select', debouceAjax(function(e) {
 			previewIt();
 		}, 0));
 
-		$('a.toggle-btn', container).on('click', debouceAjax(function(e) {
+		$(container).on('click', 'a.toggle-btn', debouceAjax(function(e) {
 			previewIt();
 		}, 0));
 
