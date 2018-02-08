@@ -415,24 +415,19 @@ class Channel_form_lib
 			//parse category menu
 			elseif ($tag_name == 'category_menu')
 			{
-				ee()->load->library('channel_form/channel_form_category_tree');
+				$cats = $this->categories($tagparams);
+				$tree = array();
+				$checkbox_fields[] = 'category';
 
-				if ($this->edit OR ! empty($this->channel->deft_category))
+				foreach($cats as $cat_value)
 				{
-					$tree = ee()->channel_form_category_tree->create(
-						$this->channel('cat_group'), 'edit', '', $this->entry->Categories->pluck('cat_id')
-					);
-				}
-				else
-				{
-					$tree = ee()->channel_form_category_tree->create(
-						$this->channel('cat_group'), '', '', ''
-					);
+					$tree[] = "'<option value='".$cat_value['category_id']."'>".$cat_value['category_name']."</option>";
 				}
 
 				$this->parse_variables['category_menu'] = array(
-					array('select_options' => implode("\n", $tree->categories()))
+					array('select_options' => implode("\n", $tree))
 				);
+
 			}
 
 			//parse status menu
