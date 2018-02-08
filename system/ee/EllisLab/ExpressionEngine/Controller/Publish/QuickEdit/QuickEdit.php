@@ -139,6 +139,15 @@ class QuickEdit extends AbstractQuickEdit {
 		}
 
 		$entries = ee('Model')->get('ChannelEntry', $entry_ids)->all();
+
+		// Categories need special handling to overwrite selections in specific
+		// groups without affecting other groups
+		if ($categories = ee('Request')->post('categories'))
+		{
+			$this->assignCategories($entries, $categories);
+			unset($_POST['categories']);
+		}
+
 		$entries->set($_POST);
 
 		foreach ($entries->validate() as $result)
@@ -158,6 +167,42 @@ class QuickEdit extends AbstractQuickEdit {
 			->defer();
 
 		return ['success'];
+	}
+
+	/**
+	 * We need a special method for category selection because if we just do
+	 * ->set($_POST), all category data will be overwritten instead of just the
+	 * individual groups selected. So we need to merge the existing category
+	 * selection with the selection made in the selected groups.
+	 *
+	 * @param Collection $entries Entries to assign categories to
+	 * @param Array $categories POST array of category selections
+	 * @return String HTML markup of form
+	 */
+	protected function assignCategories($entries, $categories)
+	{
+		$category_ids = [];
+		$group_ids = [];
+		foreach ($categories as $group => $checked)
+		{
+			$category_ids = array_merge($category_ids, $checked);
+			$group_ids[] = str_replace('cat_group_id_', '', $group);
+		}
+
+		if ( ! empty($group_ids))
+		{
+			foreach ($entries as $entry)
+			{
+				// Fiter out the groups marked to override
+				$existing_categories = $entry->Categories->filter('group_id', 'NOT IN', $group_ids);
+				$new_categories = array_merge($existing_categories->getIds(), $category_ids);
+
+				if ( ! empty($new_categories))
+				{
+					$entry->Categories = ee('Model')->get('Category', $new_categories)->all();
+				}
+			}
+		}
 	}
 }
 
