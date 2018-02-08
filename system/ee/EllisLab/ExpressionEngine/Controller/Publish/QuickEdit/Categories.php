@@ -142,6 +142,12 @@ class Categories extends AbstractQuickEdit {
 		if ( ! empty($category_ids))
 		{
 			$entries = ee('Model')->get('ChannelEntry', $entry_ids)->all();
+
+			if ( ! $this->hasPermissionToEditEntries($entries))
+			{
+				return show_error(lang('unauthorized_access'), 403);
+			}
+
 			$channel = $this->getIntersectedChannel($entries->Channel);
 
 			// Double-check passed categories belong to groups assigned to the channel

@@ -133,12 +133,13 @@ class QuickEdit extends AbstractQuickEdit {
 	 */
 	public function save()
 	{
-		if ( ! ($entry_ids = ee('Request')->post('entry_ids')))
+		$entry_ids = ee('Request')->post('entry_ids');
+		$entries = ee('Model')->get('ChannelEntry', $entry_ids)->all();
+
+		if ( ! $entry_ids || $entries->count() == 0 || ! $this->hasPermissionToEditEntries($entries))
 		{
 			return show_error(lang('unauthorized_access'), 403);
 		}
-
-		$entries = ee('Model')->get('ChannelEntry', $entry_ids)->all();
 
 		// Categories need special handling to overwrite selections in specific
 		// groups without affecting other groups
