@@ -952,6 +952,8 @@ $lang = array(
 
 'remove_categories_entries' => 'Remove categories from %d entries',
 
+'unauthorized_entry_desc' => 'You do not have permission to edit one of the selected entries.'
+
 );
 
 // EOF

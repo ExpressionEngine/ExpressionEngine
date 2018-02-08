@@ -21,8 +21,51 @@ abstract class AbstractQuickEdit extends CP_Controller {
 		parent::__construct();
 
 		ee()->lang->loadfile('content');
+	}
 
-		$this->assigned_channel_ids = array_keys(ee()->session->userdata('assigned_channels'));
+	/**
+	 * Given a set of entries, lets us know if the member initiating the edit
+	 * has permission to edit all entries
+	 *
+	 * @param Array $displayed_fields Fields that should be displayed on load
+	 * @return String HTML markup of Fluid UI
+	 */
+	protected function hasPermissionToEditEntries($entries)
+	{
+		// Can edit at all?
+		if ( ! ee('Permission')->has('can_edit_entries'))
+		{
+			return FALSE;
+		}
+
+		$author_ids = array_unique($entries->Author->getIds());
+		$member_id = ee()->session->userdata('member_id');
+
+		// Can edit others' entries?
+		if ( ! ee('Permission')->has('can_edit_other_entries'))
+		{
+			$other_authors = array_diff($author_ids, [$member_id]);
+
+			if (count($other_authors))
+			{
+				return FALSE;
+			}
+		}
+
+		// Can edit own entries?
+		if ( ! ee('Permission')->has('can_edit_self_entries') &&
+			in_array($member_id, $author_ids))
+		{
+			return FALSE;
+		}
+
+		// Finally, assigned channels
+		$assigned_channel_ids = array_keys(ee()->session->userdata('assigned_channels'));
+		$editing_channel_ids = $entries->Channel->getIds();
+
+		$disallowed_channels = array_diff($editing_channel_ids, $assigned_channel_ids);
+
+		return count($disallowed_channels) == 0;
 	}
 
 	/**

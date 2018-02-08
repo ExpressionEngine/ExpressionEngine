@@ -6,14 +6,18 @@
 		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
-			<?php if (ee()->cp->allowed_group('can_delete_all_entries') || ee()->cp->allowed_group('can_delete_self_entries')): ?>
+			<?php if ($can_edit || $can_delete): ?>
 		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
-				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-entry"><?=lang('remove')?></option>
-				<option value="quick-edit" data-confirm-trigger="selected" rel="modal-quick-edit"><?=lang('quick_edit')?></option>
-				<option value="add-categories" data-confirm-trigger="selected" rel="modal-quick-edit"><?=lang('add_categories')?></option>
-				<option value="remove-categories" data-confirm-trigger="selected" rel="modal-quick-edit"><?=lang('remove_categories')?></option>
+				<?php if ($can_delete): ?>
+					<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-entry"><?=lang('remove')?></option>
+				<?php endif ?>
+				<?php if ($can_edit): ?>
+					<option value="quick-edit" data-confirm-trigger="selected" rel="modal-quick-edit"><?=lang('quick_edit')?></option>
+					<option value="add-categories" data-confirm-trigger="selected" rel="modal-quick-edit"><?=lang('add_categories')?></option>
+					<option value="remove-categories" data-confirm-trigger="selected" rel="modal-quick-edit"><?=lang('remove_categories')?></option>
+				<?php endif ?>
 			</select>
 			<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
 		</fieldset>

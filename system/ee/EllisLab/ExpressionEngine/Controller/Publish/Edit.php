@@ -357,6 +357,9 @@ class Edit extends AbstractPublishController {
 			);
 		}
 
+		$vars['can_edit'] = ee('Permission')->hasAny('can_edit_entries', 'can_edit_self_entries', 'can_edit_other_entries');
+		$vars['can_delete'] = ee('Permission')->hasAny('can_delete_all_entries', 'can_delete_self_entries');
+
 		if (AJAX_REQUEST)
 		{
 			return array(

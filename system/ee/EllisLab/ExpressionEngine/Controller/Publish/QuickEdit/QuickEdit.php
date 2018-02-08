@@ -24,8 +24,8 @@ class QuickEdit extends AbstractQuickEdit {
 		'expiration_date',
 		'comment_expiration_date',
 		'sticky',
-		'allow_comments',
-		'author_id'
+		'allow_comments'
+		// Plus author and categories added dynamically below
 	];
 
 	/**
@@ -42,12 +42,22 @@ class QuickEdit extends AbstractQuickEdit {
 		$entry_ids = ee()->input->get_post('entry_ids');
 		$entries = ee('Model')->get('ChannelEntry', $entry_ids)->all();
 
-		if ( ! $entry_ids OR $entries->count() == 0)
+		if ( ! $entry_ids || $entries->count() == 0 || ! $this->hasPermissionToEditEntries($entries))
 		{
-			return show_error(lang('unauthorized_access'), 403);
+			return ee('CP/Alert')->makeInline()
+				->asIssue()
+				->cannotClose()
+				->withTitle(lang('unauthorized_access'))
+				->addToBody(lang('unauthorized_entry_desc'))
+				->render();
 		}
 
 		$entry = $this->getMockEntryForIntersectedChannels($entries->Channel);
+
+		if (ee('Permission')->has('can_assign_post_authors'))
+		{
+			$this->standard_default_fields[] = 'author_id';
+		}
 
 		$fields = $this->getFieldsForEntry($entry, $this->standard_default_fields);
 		$fields += $this->getCategoryFieldsForEntry($entry);
