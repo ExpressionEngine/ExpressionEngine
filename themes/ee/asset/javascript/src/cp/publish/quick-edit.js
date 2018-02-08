@@ -166,7 +166,8 @@ EE.cp.QuickEdit = {
 	 */
 	_bindAddField: function() {
 		var that = this
-		this.modal.find('.fluid-actions a[data-field-name]').click(function(e) {
+		this.modal.off('click', '.fluid-actions a[data-field-name]')
+		this.modal.on('click', '.fluid-actions a[data-field-name]', function(e) {
 			e.preventDefault()
 
 			var wrapper = $(this).closest('.fluid-wrap'),
