@@ -228,7 +228,7 @@ class Encrypt {
 
 		if ( ! in_array($algo, hash_algos()))
 		{
-			throw new InvalidArgumentException('{$algo} is not a valid hashing algorithm.');
+			throw new InvalidArgumentException("{$algo} is not a valid hashing algorithm.");
 		}
 
 		$key = ($key) ?: $this->default_key;
