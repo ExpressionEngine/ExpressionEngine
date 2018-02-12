@@ -279,11 +279,11 @@ class Channel {
 			{
 				$this->hit_tracking_id = $this->query->row('entry_id') ;
 			}
+		}
 
-			if ($this->enable['categories'] == TRUE)
-			{
-				$this->fetch_categories();
-			}
+		if ($this->enable['categories'] == TRUE)
+		{
+			$this->fetch_categories();
 		}
 
 		$this->parse_channel_entries();
@@ -446,81 +446,84 @@ class Channel {
 	  */
 	public function fetch_categories()
 	{
-		list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL();
-
-		$sql = "SELECT c.cat_name, c.cat_url_title, c.cat_id, c.cat_image, c.cat_description, c.parent_id,
-						p.cat_id, p.entry_id, c.group_id {$field_sqla}
-				FROM	(exp_categories AS c, exp_category_posts AS p)
-				{$field_sqlb}
-				WHERE	c.cat_id = p.cat_id
-				AND		p.entry_id IN (";
-
-		$categories = array();
-
-		foreach ($this->query->result_array() as $row)
+		if ( ! $this->isLivePreviewEntry())
 		{
-			$categories[] = $row['entry_id'];
-		}
+			list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL();
 
-		$sql .= implode(array_unique(array_filter($categories)), ',') . ')';
+			$sql = "SELECT c.cat_name, c.cat_url_title, c.cat_id, c.cat_image, c.cat_description, c.parent_id,
+							p.cat_id, p.entry_id, c.group_id {$field_sqla}
+					FROM	(exp_categories AS c, exp_category_posts AS p)
+					{$field_sqlb}
+					WHERE	c.cat_id = p.cat_id
+					AND		p.entry_id IN (";
 
-		$sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
+			$categories = array();
 
-		$query = ee()->db->query($sql);
-
-		if ($query->num_rows() == 0)
-		{
-			return;
-		}
-
-		foreach ($categories as $val)
-		{
-			$this->temp_array = array();
-			$this->cat_array  = array();
-			$parents = array();
-
-			foreach ($query->result_array() as $row)
+			foreach ($this->query->result_array() as $row)
 			{
-				if ($val == $row['entry_id'])
-				{
-					$this->temp_array[$row['cat_id']] = array($row['cat_id'], $row['parent_id'], $row['cat_name'], $row['cat_image'], $row['cat_description'], $row['group_id'], $row['cat_url_title']);
+				$categories[] = $row['entry_id'];
+			}
 
-					foreach ($row as $k => $v)
+			$sql .= implode(array_unique(array_filter($categories)), ',') . ')';
+
+			$sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
+
+			$query = ee()->db->query($sql);
+
+			if ($query->num_rows() == 0 && ! ee('LivePreview')->hasEntryData())
+			{
+				return;
+			}
+
+			foreach ($categories as $val)
+			{
+				$this->temp_array = array();
+				$this->cat_array  = array();
+				$parents = array();
+
+				foreach ($query->result_array() as $row)
+				{
+					if ($val == $row['entry_id'])
 					{
-						if (strpos($k, 'field') !== FALSE)
+						$this->temp_array[$row['cat_id']] = array($row['cat_id'], $row['parent_id'], $row['cat_name'], $row['cat_image'], $row['cat_description'], $row['group_id'], $row['cat_url_title']);
+
+						foreach ($row as $k => $v)
 						{
-							$this->temp_array[$row['cat_id']][$k] = $v;
+							if (strpos($k, 'field') !== FALSE)
+							{
+								$this->temp_array[$row['cat_id']][$k] = $v;
+							}
+						}
+
+						if ($row['parent_id'] > 0 && ! isset($this->temp_array[$row['parent_id']])) $parents[$row['parent_id']] = '';
+						unset($parents[$row['cat_id']]);
+					}
+				}
+
+				if (count($this->temp_array) == 0)
+				{
+					$temp = FALSE;
+				}
+				else
+				{
+					foreach($this->temp_array as $k => $v)
+					{
+						if (isset($parents[$v[1]])) $v[1] = 0;
+
+						if (0 == $v[1])
+						{
+							$this->cat_array[] = $this->temp_array[$k];
+							$this->process_subcategories($k);
 						}
 					}
-
-					if ($row['parent_id'] > 0 && ! isset($this->temp_array[$row['parent_id']])) $parents[$row['parent_id']] = '';
-					unset($parents[$row['cat_id']]);
 				}
+
+				$this->categories[$val] = $this->cat_array;
 			}
 
-			if (count($this->temp_array) == 0)
-			{
-				$temp = FALSE;
-			}
-			else
-			{
-				foreach($this->temp_array as $k => $v)
-				{
-					if (isset($parents[$v[1]])) $v[1] = 0;
-
-					if (0 == $v[1])
-					{
-						$this->cat_array[] = $this->temp_array[$k];
-						$this->process_subcategories($k);
-					}
-				}
-			}
-
-			$this->categories[$val] = $this->cat_array;
+			unset($this->temp_array);
+			unset($this->cat_array);
 		}
-
-		unset($this->temp_array);
-		unset($this->cat_array);
 
 		if (ee('LivePreview')->hasEntryData())
 		{
@@ -561,7 +564,7 @@ class Channel {
 				}
 			}
 
-		$this->categories[$data['entry_id']] = $this->cat_array;
+			$this->categories[$data['entry_id']] = $this->cat_array;
 		}
 	}
 
