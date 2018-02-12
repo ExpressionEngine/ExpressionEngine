@@ -101,13 +101,12 @@ $(document).ready(function () {
 			dataType: 'html',
 			url: preview_url,
 			data: publishForm.serialize(),
-			success: function(result) {
+			complete: function(xhr) {
 				iframe.contentDocument.open();
-				iframe.contentDocument.write(result);
+				iframe.contentDocument.write(xhr.responseText);
 				iframe.contentDocument.close();
 				ajaxRequest = null;
 			},
-			error: function() {}
 		});
 	};
 
