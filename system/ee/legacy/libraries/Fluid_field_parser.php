@@ -262,6 +262,12 @@ class Fluid_field_parser {
 			foreach ($fluid_field_ids as $fluid_field_id)
 			{
 				$i = 1;
+				if ( ! isset($data["field_id_{$fluid_field_id}"])
+					|| ! isset($data["field_id_{$fluid_field_id}"]['fields']))
+				{
+					continue;
+				}
+
 				foreach ($data["field_id_{$fluid_field_id}"]['fields'] as $key => $value)
 				{
 					if ($key == 'new_field_0')
