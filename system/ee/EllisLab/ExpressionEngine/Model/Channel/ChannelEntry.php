@@ -190,6 +190,42 @@ class ChannelEntry extends ContentModel {
         $this->setProperty('day', ee()->localize->format_date('%d', $entry_date));
     }
 
+	public function set__expiration_date($expiration_date)
+	{
+        if ( ! is_numeric($expiration_date))
+        {
+            // @TODO: DRY this out; this was copied from ft.date.php
+            // First we try with the configured date format
+            $expiration_date = ee()->localize->string_to_timestamp($expiration_date, TRUE, ee()->localize->get_date_format());
+
+            // If the date format didn't work, try something more fuzzy
+            if ($expiration_date === FALSE)
+            {
+                $expiration_date = ee()->localize->string_to_timestamp($expiration_date);
+            }
+        }
+
+        $this->setRawProperty('expiration_date', $expiration_date);
+	}
+
+	public function set__comment_expiration_date($comment_expiration_date)
+	{
+        if ( ! is_numeric($comment_expiration_date))
+        {
+            // @TODO: DRY this out; this was copied from ft.date.php
+            // First we try with the configured date format
+            $comment_expiration_date = ee()->localize->string_to_timestamp($comment_expiration_date, TRUE, ee()->localize->get_date_format());
+
+            // If the date format didn't work, try something more fuzzy
+            if ($comment_expiration_date === FALSE)
+            {
+                $comment_expiration_date = ee()->localize->string_to_timestamp($comment_expiration_date);
+            }
+        }
+
+        $this->setRawProperty('comment_expiration_date', $comment_expiration_date);
+	}
+
 	public function validate()
 	{
 		$result = parent::validate();
