@@ -10,6 +10,23 @@ $(document).ready(function () {
 
 	var publishForm = $(".form-standard > form");
 	var ajaxRequest;
+	var debounceTimeout;
+
+	function debounceAjax(func, wait) {
+	    var result;
+
+        var context = this, args = arguments;
+        var later = function() {
+          debounceTimeout = null;
+          result = func.apply(context, args);
+        };
+
+        clearTimeout(debounceTimeout);
+		if (ajaxRequest) ajaxRequest.abort();
+
+		debounceTimeout = setTimeout(later, wait);
+		return result;
+	};
 
 	if (EE.publish.title_focus == true) {
 		publishForm.find("input[name=title]").focus();
@@ -75,7 +92,7 @@ $(document).ready(function () {
 		changeable.on('change', function(){publishForm.trigger("entry:startAutosave")});
 	}
 
-	function previewIt() {
+	var fetchPreview = function() {
 		var iframe      = $('iframe.live-preview__frame')[0],
 		    preview_url = $(iframe).data('url');
 
@@ -94,40 +111,31 @@ $(document).ready(function () {
 		});
 	};
 
-	function debouceAjax(func, wait) {
-	    var timeout, result;
-		return function() {
-	        var context = this, args = arguments;
-	        var later = function() {
-	          timeout = null;
-	          result = func.apply(context, args);
-	        };
-
-	        clearTimeout(timeout);
-			if (ajaxRequest) ajaxRequest.abort();
-
-			timeout = setTimeout(later, wait);
-			return result;
+	$('body').on('entry:preview', function (event, wait) {
+		if (wait == undefined) {
+			wait = 0;
 		}
-	};
+
+		debounceAjax(fetchPreview, wait);
+	});
 
 	$('body').on('click', 'button[rel="live-preview"]', function(e) {
 		var container = $('.app-modal--live-preview .form-standard');
-		previewIt();
+		fetchPreview();
 
 		container.append($(publishForm));
 
-		$(container).on('interact', 'input, textarea', debouceAjax(function(e) {
-			previewIt();
-		}, 225));
+		$(container).on('interact', 'input, textarea', function(e) {
+			$('body').trigger('entry:preview', [225]);
+		});
 
-		$(container).on('change', 'input[type=checkbox], input[type=radio], input[type=hidden], select', debouceAjax(function(e) {
-			previewIt();
-		}, 0));
+		$(container).on('change', 'input[type=checkbox], input[type=radio], input[type=hidden], select', function(e) {
+			$('body').trigger('entry:preview');
+		});
 
-		$(container).on('click', 'a.toggle-btn', debouceAjax(function(e) {
-			previewIt();
-		}, 0));
+		$(container).on('click', 'a.toggle-btn', function(e) {
+			$('body').trigger('entry:preview');
+		});
 
 		$('button[rel="live-preview"]').hide();
 	});
