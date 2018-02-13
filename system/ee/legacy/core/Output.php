@@ -360,10 +360,7 @@ class EE_Output {
 				ee()->TMPL->debugging === TRUE &&
 				ee()->TMPL->template_type != 'js')
 			{
-				if (ee()->session->userdata('group_id') == 1)
-				{
-					$profiler->addSection('template', ee()->TMPL->log);
-				}
+				$profiler->addSection('template', ee()->TMPL->log);
 			}
 
 			// If the output data contains closing </body> and </html> tags
