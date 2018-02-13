@@ -236,7 +236,7 @@ class Edit extends AbstractPublishController {
 				$can_delete = FALSE;
 			}
 
-			$disabled_checkbox = ! $can_delete;
+			$disabled_checkbox = ! $can_edit && ! $can_delete;
 
 			// Display status highlight if one exists
 			$status = isset($statuses[$entry->status]) ? $statuses[$entry->status] : NULL;
