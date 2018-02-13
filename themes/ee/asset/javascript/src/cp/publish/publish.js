@@ -115,7 +115,9 @@ $(document).ready(function () {
 			wait = 0;
 		}
 
-		debounceAjax(fetchPreview, wait);
+		if ($('.app-modal--live-preview:visible').length) {
+			debounceAjax(fetchPreview, wait);
+		}
 	});
 
 	$('body').on('click', 'button[rel="live-preview"]', function(e) {
