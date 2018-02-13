@@ -2589,24 +2589,25 @@ class EE_Template {
 		}
 
 		// Is the current user allowed to view this template?
-		if ($query->row('enable_http_auth') != 'y' && $query->row('no_auth_bounce')  != '')
+		if ($query->row('enable_http_auth') != 'y' && ee()->session->userdata('group_id') != 1)
 		{
-			if (ee()->session->userdata('group_id') != 1)
+			ee()->db->select('COUNT(*) as count');
+			ee()->db->where('template_id', $query->row('template_id'));
+			ee()->db->where('member_group', ee()->session->userdata('group_id'));
+			$result = ee()->db->get('template_no_access');
+
+			if ($result->row('count') > 0)
 			{
-				ee()->db->select('COUNT(*) as count');
-				ee()->db->where('template_id', $query->row('template_id'));
-				ee()->db->where('member_group', ee()->session->userdata('group_id'));
-				$result = ee()->db->get('template_no_access');
+				$this->log_item("No Template Access Privileges");
 
-				if ($result->row('count') > 0)
+				if ($this->depth > 0)
 				{
-					$this->log_item("No Template Access Privileges");
+					return '';
+				}
 
-					if ($this->depth > 0)
-					{
-						return '';
-					}
-
+				// If no access redirect template was defined, 404
+				if ($query->row('no_auth_bounce') != '')
+				{
 					$query = ee()->db->select('a.template_id, a.template_data,
 						a.template_name, a.template_type, a.edit_date,
 						a.cache, a.refresh, a.hits, a.protect_javascript,
@@ -2616,12 +2617,12 @@ class EE_Template {
 						->where('template_id', $query->row('no_auth_bounce'))
 						->get();
 				}
+				elseif ($query->row('no_auth_bounce')  == '' OR $query->num_rows() != 1)
+				{
+					$this->log_item("Access denied, Show 404");
+					$this->show_404();
+				}
 			}
-		}
-
-		if ($query->num_rows() == 0)
-		{
-			return FALSE;
 		}
 
 		$row = $query->row_array();
