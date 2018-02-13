@@ -532,7 +532,7 @@ CREATE TABLE `exp_channels` (
   `max_revisions` smallint(4) unsigned NOT NULL DEFAULT '10',
   `default_entry_title` varchar(100) DEFAULT NULL,
   `url_title_prefix` varchar(80) DEFAULT NULL,
-  `live_look_template` int(10) unsigned NOT NULL DEFAULT '0',
+  `preview_url` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`channel_id`),
   KEY `cat_group` (`cat_group`),
   KEY `status_group` (`status_group`),
