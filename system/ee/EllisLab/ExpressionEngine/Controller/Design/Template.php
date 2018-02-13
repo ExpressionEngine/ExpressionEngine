@@ -974,7 +974,7 @@ class Template extends AbstractDesignController {
 				'label' => lang('none'),
 				'value' => ''
 			]
-		] + $this->getExistingTemplates();
+		] + $this->getExistingTemplates($template->no_auth_bounce);
 
 		$member_groups = ee('Model')->get('MemberGroup')
 			->fields('group_id', 'group_title')
@@ -1085,7 +1085,7 @@ class Template extends AbstractDesignController {
 	 *
 	 * @return array An associative array of templates
 	 */
-	private function getExistingTemplates()
+	private function getExistingTemplates($selected_id = NULL)
 	{
 		$search_query = ee('Request')->get('search');
 
@@ -1109,6 +1109,19 @@ class Template extends AbstractDesignController {
 		$results = [];
 		foreach ($templates as $template)
 		{
+			$results[$template->getId()] = [
+				'label' => $template->getPath(),
+				'instructions' => bool_config_item('multiple_sites_enabled') ? $template->Site->site_label : NULL
+			];
+		}
+
+		if ($selected_id && ! array_key_exists($selected_id, $results) && ! $search_query)
+		{
+			$template = ee('Model')->get('Template', $selected_id)
+				->with('TemplateGroup')
+				->with('Site')
+				->first();
+
 			$results[$template->getId()] = [
 				'label' => $template->getPath(),
 				'instructions' => bool_config_item('multiple_sites_enabled') ? $template->Site->site_label : NULL
