@@ -32,12 +32,6 @@ abstract class AbstractQuickEdit extends CP_Controller {
 	 */
 	protected function hasPermissionToEditEntries($entries)
 	{
-		// Can edit at all?
-		if ( ! ee('Permission')->has('can_edit_entries'))
-		{
-			return FALSE;
-		}
-
 		$author_ids = array_unique($entries->Author->getIds());
 		$member_id = ee()->session->userdata('member_id');
 
