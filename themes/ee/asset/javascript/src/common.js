@@ -420,7 +420,7 @@ $(document).ready(function(){
 			var isDisabled = $(this).attr('disabled');
 
 			// check for disabled status
-			if(isDisabled === 'disabled'){
+			if(isDisabled === 'disabled' || modalIs == ''){
 				// stop THIS href from loading
 				// in the source window
 				e.preventDefault();
