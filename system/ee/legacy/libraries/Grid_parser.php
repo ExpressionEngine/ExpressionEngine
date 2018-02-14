@@ -127,7 +127,6 @@ class Grid_parser {
 
 		ee()->load->model('grid_model');
 		$entry_data = ee()->grid_model->get_entry_rows($entry_id, $field_id, $content_type, $params, FALSE, $fluid_field_data_id);
-		$entry_data = $this->overrideWithPreviewData($entry_data, $field_id, $fluid_field_data_id);
 
 		// Bail out if no entry data
 		if ($entry_data === FALSE OR ! isset($entry_data[$entry_id]))
@@ -735,44 +734,6 @@ class Grid_parser {
 		return $this->call($parse_fnc, $params, TRUE);
 	}
 
-	private function overrideWithPreviewData($entry_data, $field_id, $fluid_field_data_id = 0)
-	{
-		if (ee('LivePreview')->hasEntryData())
-		{
-			$data = ee('LivePreview')->getEntryData();
-			$entry_id = $data['entry_id'];
-			$fluid_field = 0;
-
-			if ($fluid_field_data_id)
-			{
-				list($fluid_field, $sub_field_id) = explode(',', $fluid_field_data_id);
-				$data = $data[$fluid_field]['fields'][$sub_field_id];
-			}
-
-			if (array_key_exists($entry_id, $entry_data)
-				&& isset($data['field_id_' . $field_id])
-				&& is_array($data['field_id_' . $field_id])
-				&& array_key_exists('rows', $data['field_id_' . $field_id]))
-			{
-				$override = [];
-				$i = 0;
-				foreach ($data['field_id_' . $field_id]['rows'] as $row_id => $row_data)
-				{
-					$override[$i] = [
-						'row_id' => crc32($row_id),
-						'entry_id' => $entry_id,
-						'row_order' => $i,
-						'fluid_field_data_id' => $fluid_field_data_id
-					] + $row_data;
-					$i++;
-				}
-
-				$entry_data[$entry_id] = $override;
-			}
-		}
-
-		return $entry_data;
-	}
 }
 
 // EOF
