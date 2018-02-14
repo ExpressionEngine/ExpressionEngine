@@ -24,11 +24,11 @@ abstract class AbstractQuickEdit extends CP_Controller {
 	}
 
 	/**
-	 * Given a set of entries, lets us know if the member initiating the edit
-	 * has permission to edit all entries
+	 * Given a collection of entries, lets us know if the logged-in member has
+	 * permission to edit all entries
 	 *
-	 * @param Array $displayed_fields Fields that should be displayed on load
-	 * @return String HTML markup of Fluid UI
+	 * @param Collection $entries Entries to check editing permissions for
+	 * @return Boolean Whether or not the logged-in member has permission
 	 */
 	protected function hasPermissionToEditEntries($entries)
 	{
