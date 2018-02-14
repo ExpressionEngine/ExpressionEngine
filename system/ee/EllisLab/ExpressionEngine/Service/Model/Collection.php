@@ -93,19 +93,20 @@ class Collection extends CoreCollection {
 	 */
 	public function intersect()
 	{
-		// Try to make sure we're only dealing with nested collections
-		if ( ! $this->first() instanceOf CoreCollection)
+		// Only 1 or none? Nothing to intersect!
+		if ($this->count() < 2)
 		{
 			return $this;
 		}
 
-		// Only 1 or none? Nothing to intersect!
-		if ($this->count() < 2)
+		// Flat collection of models? Return a unique set
+		if ($this->first() instanceOf Model)
 		{
-			return $this->first();
+			return new static($this->indexByIds());
 		}
 
-		$elements = $this->map(function($collection) {
+		$elements = $this->map(function($collection)
+		{
 			return $collection->indexByIds();
 		});
 
