@@ -35,7 +35,7 @@ var QuickEditEntries = function (_React$Component) {
   }, {
     key: 'handleRemove',
     value: function handleRemove(item) {
-      this.props.itemsChanged(this.props.items.filter(function (thisItem) {
+      this.props.itemsChanged(this.props.initialItems.filter(function (thisItem) {
         return thisItem.value != item.value;
       }));
     }

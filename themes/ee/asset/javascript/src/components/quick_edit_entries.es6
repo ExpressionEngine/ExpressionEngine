@@ -27,7 +27,7 @@ class QuickEditEntries extends React.Component {
 
   handleRemove (item) {
     this.props.itemsChanged(
-      this.props.items.filter((thisItem) => {
+      this.props.initialItems.filter((thisItem) => {
         return thisItem.value != item.value
       })
     )
