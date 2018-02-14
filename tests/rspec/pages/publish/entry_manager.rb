@@ -44,4 +44,12 @@ class EntryManager < ControlPanelPage
       channel_json = stdout.read
     end
   end
+
+  def check_entry(title)
+    self.entry_rows.each do |row|
+      if row.find('td:nth-child(2) a').text == title
+        row.find('input[type="checkbox"]').click
+      end
+    end
+  end
 end
