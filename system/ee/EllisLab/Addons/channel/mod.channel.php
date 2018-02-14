@@ -2598,7 +2598,7 @@ class Channel {
 				if ($row['entry_id'] == $data['entry_id'])
 				{
 					if ($data['status'] == 'closed'
-						|| $data['expiration_date'] < ee()->localize->now)
+						|| ($data['expiration_date'] && $data['expiration_date'] < ee()->localize->now))
 					{
 						unset($result_array[$i]);
 					}
