@@ -45,7 +45,9 @@ function makeFilterableComponent(WrappedComponent) {
       };
 
       _this.filterChange = function (name, value) {
-        _this.filterState[name] = value;
+        var filterState = _this.state.filterValues;
+        filterState[name] = value;
+        _this.setState({ filterValues: filterState });
 
         // DOM filter
         if (!_this.ajaxFilter && name == 'search') {
@@ -57,7 +59,7 @@ function makeFilterableComponent(WrappedComponent) {
         clearTimeout(_this.ajaxTimer);
         if (_this.ajaxRequest) _this.ajaxRequest.abort();
 
-        var params = _this.filterState;
+        var params = filterState;
         params.selected = _this.props.selected.map(function (item) {
           return item.value;
         });
@@ -81,13 +83,13 @@ function makeFilterableComponent(WrappedComponent) {
       _this.initialItems = SelectList.formatItems(props.items);
       _this.state = {
         items: _this.initialItems,
+        filterValues: {},
         loading: false
       };
 
       _this.ajaxFilter = SelectList.countItems(_this.initialItems) >= props.limit && props.filterUrl;
       _this.ajaxTimer = null;
       _this.ajaxRequest = null;
-      _this.filterState = {};
       return _this;
     }
 
