@@ -147,6 +147,8 @@ abstract class AbstractQuickEdit extends CP_Controller {
 	 */
 	protected function getFieldsForEntry($entry, $fields)
 	{
+		$fields = array_filter($fields, [$entry, 'hasCustomField']);
+
 		$field_facades = [];
 		foreach ($fields as $field)
 		{
