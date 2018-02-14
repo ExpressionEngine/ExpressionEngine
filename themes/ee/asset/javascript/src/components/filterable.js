@@ -35,6 +35,11 @@ function makeFilterableComponent(WrappedComponent) {
 
       _this.initialItemsChanged = function (items) {
         _this.initialItems = items;
+
+        if (_this.state.filterValues.search) {
+          items = _this.filterItems(items, _this.state.filterValues.search);
+        }
+
         _this.setState({
           items: items
         });
