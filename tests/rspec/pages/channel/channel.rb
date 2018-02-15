@@ -38,7 +38,7 @@ class Channel < ControlPanelPage
   element :comment_url, 'input[name=comment_url]', :visible => false
   element :search_results_url, 'input[name=search_results_url]', :visible => false
   element :rss_url, 'input[name=rss_url]', :visible => false
-  elements :live_look_template, 'div[data-input-value="live_look_template"] input[type="radio"]', :visible => false
+  element :preview_url, 'input[name=preview_url]', :visible => false
 
   element :default_entry_title, 'input[name=default_entry_title]', :visible => false
   element :url_title_prefix, 'input[name=url_title_prefix]', :visible => false

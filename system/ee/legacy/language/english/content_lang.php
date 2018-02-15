@@ -230,6 +230,8 @@ $lang = array(
 
 'calendar' => 'Calendar',
 
+'cancel_preview' => 'Cancel Preview',
+
 'category' => 'Category',
 
 'channel_name' => 'Channel:',
@@ -481,8 +483,6 @@ $lang = array(
 'line_break' => 'Line Break',
 
 'link' => 'Link',
-
-'live_look' => 'Live Look',
 
 'live_view' => 'Click to View',
 

@@ -298,11 +298,39 @@ $(document).ready(function(){
 				.addClass('app-overlay---open')
 				.css('height', heightIs);
 
+			if (e.linkIs) {
+				// strongly warn the actor of their potential future mistakes
+				if(e.linkIs.indexOf('js-modal--destruct') !== -1){
+					$('.app-overlay')
+						.addClass('app-overlay--destruct');
+				}
+
+				// warn the actor of their potential future mistakes
+				if(e.linkIs.indexOf('js-modal--warning') !== -1){
+					$('.app-overlay')
+						.addClass('app-overlay--warning');
+				}
+			}
+
+			// reveal the modal
 			if ($(this).hasClass('modal-wrap')) {
 				$(this).fadeIn('slow');
 			} else {
 				$(this).removeClass('app-modal---closed')
 					.addClass('app-modal---open');
+			}
+
+			// remove viewport scroll for --side
+			if (e.linkIs) {
+				if(e.linkIs.indexOf('js-modal-link--side') !== -1){
+					$('body').css('overflow','hidden');
+				}
+			}
+
+			if(e.modalIs == 'live-preview'){
+				$('.live-preview')
+					.removeClass('live-preview---closed')
+					.addClass('live-preview---open');
 			}
 
 			// remember the scroll location on open
@@ -339,6 +367,12 @@ $(document).ready(function(){
 					$(this).addClass('app-modal---closed');
 					setTimeout(function() {
 						$('.app-modal---open').removeClass('app-modal---open');
+					}, 500);
+
+					// disappear the preview
+					$('.live-preview---open').addClass('live-preview---closed');
+					setTimeout(function() {
+						$('.live-preview---open').removeClass('live-preview---open');
 					}, 500);
 				}
 
@@ -380,6 +414,31 @@ $(document).ready(function(){
 			e.preventDefault();
 		});
 
+		$('body').on('click', '[class*="js-modal-link"]', function(e){
+			var modalIs = $(this).attr('rel');
+			var linkIs = $(this).attr('class');
+			var isDisabled = $(this).attr('disabled');
+
+			// check for disabled status
+			if(isDisabled === 'disabled' || modalIs == ''){
+				// stop THIS href from loading
+				// in the source window
+				e.preventDefault();
+			}
+			else{
+				$('[rev='+modalIs+']').trigger({
+					type:'modal:open',
+					modalIs: modalIs,
+					linkIs: linkIs
+				});
+
+				// stop page from reloading
+				// the source window and appending # to the URI
+				e.preventDefault();
+			}
+		});
+
+
 		// listen for clicks on the element with a class of overlay
 		$('body').on('click', '.m-close, .js-modal-close', function(e) {
 			$(this).closest('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
@@ -388,7 +447,7 @@ $(document).ready(function(){
 			e.preventDefault();
 		});
 
-		$('body').on('click', '.overlay, .app-overlay---open', function() {
+		$('body').on('click', '.overlay, .app-overlay---open, .js-modal-close', function() {
 			$('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
 		});
 

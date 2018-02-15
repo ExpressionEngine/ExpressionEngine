@@ -203,15 +203,11 @@ class Edit extends AbstractPublishController {
 
 			$toolbar = array();
 
-			$live_look_template = $entry->Channel->LiveLookTemplate;
-
-			if ($live_look_template)
+			if ($entry->Channel->preview_url)
 			{
-				$view_url = ee()->functions->create_url($live_look_template->getPath() . '/' . $entry->entry_id);
 				$toolbar['view'] = array(
-					'href' => ee()->cp->masked_url($view_url),
-					'title' => lang('view'),
-					'rel' => 'external'
+					'href' => ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, ['preview' => 'y']),
+					'title' => lang('preview'),
 				);
 			}
 
@@ -419,8 +415,16 @@ class Edit extends AbstractPublishController {
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
 			'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
 			'extra_publish_controls' => $entry->Channel->extra_publish_controls,
-			'buttons' => $this->getSubmitButtons($entry),
+			'buttons' => $this->getPublishFormButtons($entry)
 		);
+
+		if ($entry->Channel->preview_url)
+		{
+			$modal = ee('View')->make('publish/live-preview-modal')->render([
+				'preview_url' => ee('CP/URL')->make('publish/preview/' . $entry->channel_id . '/' . $entry->entry_id)
+			]);
+			ee('CP/Modal')->addModal('live-preview', $modal);
+		}
 
 		$version_id = ee()->input->get('version');
 
@@ -487,46 +491,6 @@ class Edit extends AbstractPublishController {
 		);
 
 		ee()->cp->render('publish/entry', $vars);
-	}
-
-	/**
-	 * Get Submit Buttons for Publish Edit Form
-	 * @param  ChannelEntry $entry ChannelEntry model entity
-	 * @return array Submit button array
-	 */
-	private function getSubmitButtons(ChannelEntry $entry)
-	{
-		$buttons = [
-			[
-				'name' => 'submit',
-				'type' => 'submit',
-				'value' => 'save',
-				'text' => 'save',
-				'working' => 'btn_saving'
-			],
-			[
-				'name' => 'submit',
-				'type' => 'submit',
-				'value' => 'save_and_new',
-				'text' => 'save_and_new',
-				'working' => 'btn_saving'
-			],
-			[
-				'name' => 'submit',
-				'type' => 'submit',
-				'value' => 'save_and_close',
-				'text' => 'save_and_close',
-				'working' => 'btn_saving'
-			]
-		];
-
-		// get rid of Save & New button if we've reached the max entries for this channel
-		if ($entry->Channel->max_entries != 0 && $entry->Channel->total_records >= $entry->Channel->max_entries)
-		{
-			unset($buttons[1]);
-		}
-
-		return $buttons;
 	}
 
 	private function remove($entry_ids)

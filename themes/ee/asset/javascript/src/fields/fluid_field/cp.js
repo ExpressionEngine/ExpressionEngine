@@ -57,6 +57,7 @@
 			fluidField.find('.open').trigger('click');
 
 			FluidField.fireEvent($(fieldClone).data('field-type'), 'add', [fieldClone]);
+			$(document).trigger('entry:preview');
 	    };
 
 		$('.fluid-wrap').on('click', 'a[data-field-name]', addField);
@@ -64,6 +65,7 @@
 		$('.fluid-wrap').on('click', 'a.fluid-remove', function(e) {
 			var el = $(this).closest('.fluid-item');
 			FluidField.fireEvent($(el).data('field-type'), 'remove', el);
+			$(document).trigger('entry:preview');
 			el.remove();
 			e.preventDefault();
 		});
@@ -79,6 +81,7 @@
 			},
 			stop: function (event, ui) {
 				FluidField.fireEvent($(ui.item).data('field-type'), 'afterSort', $(ui.item))
+				$(document).trigger('entry:preview');
 			}
 		});
 
