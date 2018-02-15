@@ -596,8 +596,13 @@ class Export {
 		foreach ($settings['field_channel_fields'] as $field_id)
 		{
 			$field = ee('Model')->get('ChannelField', $field_id)->first();
-			$result->field_channel_fields[] = $field->field_name;
-			$this->exportField($field);
+
+			// In case there is no field.
+			if ($field)
+			{
+				$result->field_channel_fields[] = $field->field_name;
+				$this->exportField($field);
+			}
 		}
 
 		return $result;

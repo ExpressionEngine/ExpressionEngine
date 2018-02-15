@@ -24,6 +24,7 @@ use EllisLab\ExpressionEngine\Service\File;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\Formatter;
 use EllisLab\ExpressionEngine\Service\License;
+use EllisLab\ExpressionEngine\Service\LivePreview;
 use EllisLab\ExpressionEngine\Service\Logger;
 use EllisLab\ExpressionEngine\Service\Member;
 use EllisLab\ExpressionEngine\Service\Memory;
@@ -316,6 +317,11 @@ return array(
 			}
 
 			return new Encrypt\Encrypt($key);
+		},
+
+		'LivePreview' => function($ee)
+		{
+			return new LivePreview\LivePreview(ee()->session);
 		},
 
 		'Variables/Parser' => function ($ee)

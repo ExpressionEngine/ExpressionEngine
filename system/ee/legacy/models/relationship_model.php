@@ -70,6 +70,24 @@ class Relationship_model extends CI_Model {
 			$relative_parent = 'L0.grid_row_id';
 		}
 
+		// If we have preview data don't run a query for the entry we are previewing
+		// unless the tag we are processing is `{parents}` in which case we need to let
+		// that query run since that data isn't being overwritten.
+		if (ee('LivePreview')->hasEntryData()
+			&& $type != self::PARENT)
+		{
+			$data = ee('LivePreview')->getEntryData();
+			$entry_ids = array_filter($entry_ids, function($entry_id) use ($data)
+			{
+				return $entry_id != $data['entry_id'];
+			});
+		}
+
+		if (empty($entry_ids))
+		{
+			return $this->overrideWithPreviewData([], $type, $fluid_field_data_id);
+		}
+
 		$db = $this->db;
 
 		$db->distinct();
@@ -82,7 +100,7 @@ class Relationship_model extends CI_Model {
 		$db->select('L0.order');
 		$db->from($this->_table.' as L0');
 
-		if ( ! is_null($fluid_field_data_id))
+		if (is_numeric($fluid_field_data_id))
 		{
 			$db->where('L0.fluid_field_data_id', $fluid_field_data_id);
 		}
@@ -172,9 +190,121 @@ class Relationship_model extends CI_Model {
 		//
 		// -------------------------------------------
 
+		return $this->overrideWithPreviewData($result, $type, $fluid_field_data_id);
+	}
+
+	private function overrideWithPreviewData($result, $type, $fluid_field_data_id)
+	{
+		if (ee('LivePreview')->hasEntryData())
+		{
+			$data = ee('LivePreview')->getEntryData();
+			$entry_id = $data['entry_id'];
+
+			$channel = ee('Model')->get('Channel', $data['channel_id'])->first();
+			$all_fields = $channel->getAllCustomFields();
+
+			$rel_fields = $all_fields->filter(function($field)
+			{
+				return $field->field_type == 'relationship';
+			})->pluck('field_id');
+
+			if ($type == self::GRID)
+			{
+				$grid_fields = $all_fields->filter(function($field)
+				{
+					return $field->field_type == 'grid';
+				});
+
+				return $this->overrideGridRelationships($result, $data, $grid_fields->pluck('field_id'), $fluid_field_data_id);
+			}
+			elseif ($fluid_field_data_id)
+			{
+				list($fluid_field, $field_id) = explode(',', $fluid_field_data_id);
+				$data = $data[$fluid_field]['fields'][$field_id];
+
+				foreach (array_keys($data) as $rel_field)
+				{
+					$field_id = (int) str_replace('field_id_', '', $rel_field);
+					$rel_fields[] = $field_id;
+				}
+			}
+
+			foreach ($rel_fields as $field_id)
+			{
+				if (isset($data['field_id_' . $field_id]) && array_key_exists('data', $data['field_id_' . $field_id]))
+				{
+					foreach ($data['field_id_' . $field_id]['data'] as $order => $id)
+					{
+						$result[] = [
+							'L0_field' => $field_id,
+							'L0_grid_field_id' => 0,
+							'L0_grid_col_id' => 0,
+							'L0_grid_row_id' => 0,
+							'L0_parent' => $entry_id,
+							'L0_id' => $id,
+							'order' => $order,
+						];
+					}
+				}
+			}
+		}
+
 		return $result;
 	}
 
+	private function overrideGridRelationships($result, $data, $grid_field_ids, $fluid_field_data_id = 0)
+	{
+		foreach ($grid_field_ids as $field_id)
+		{
+			if ($fluid_field_data_id)
+			{
+				list($fluid_field, $sub_field_id) = explode(',', $fluid_field_data_id);
+				$data = $data[$fluid_field]['fields'][$sub_field_id];
+			}
+
+			// Don't bother if we don't have the field, if it doesn't have the row
+			// data, or if it has no rows.
+			if ( ! isset($data['field_id_' . $field_id])
+				|| ! isset($data['field_id_' . $field_id]['rows'])
+				|| empty($data['field_id_' . $field_id]['rows']))
+			{
+				continue;
+			}
+
+			$columns = [];
+			foreach (ee()->grid_model->get_columns_for_field($field_id, 'channel') as $column)
+			{
+				if ($column['col_type'] == 'relationship')
+				{
+					$columns[] = $column['col_id'];
+				}
+			}
+
+			foreach ($data['field_id_' . $field_id]['rows'] as $row_id => $row)
+			{
+				foreach ($columns as $col_id)
+				{
+					if (isset($row['col_id_' . $col_id]['data']))
+					{
+						foreach ($row['col_id_' . $col_id]['data'] as $order => $id)
+						{
+							$result[] = [
+								'L0_field' => $col_id,
+								'L0_grid_field_id' => $field_id,
+								'L0_grid_col_id' => $col_id,
+								'L0_grid_row_id' => crc32($row_id),
+								'L0_parent' => crc32($row_id),
+								'L0_id' => (int) $id,
+								'order' => $order + 1,
+							];
+						}
+					}
+				}
+			}
+		}
+
+		return $result;
+	}
 
 	/**
 	 * Branch length utility method.

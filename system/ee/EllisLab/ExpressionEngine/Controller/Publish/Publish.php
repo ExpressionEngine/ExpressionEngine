@@ -226,30 +226,16 @@ class Publish extends AbstractPublishController {
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
 			'revisions' => $this->getRevisionsTable($entry),
 			'extra_publish_controls' => $channel->extra_publish_controls,
-			'buttons' => [
-				[
-					'name' => 'submit',
-					'type' => 'submit',
-					'value' => 'save',
-					'text' => 'save',
-					'working' => 'btn_saving'
-				],
-				[
-					'name' => 'submit',
-					'type' => 'submit',
-					'value' => 'save_and_new',
-					'text' => 'save_and_new',
-					'working' => 'btn_saving'
-				],
-				[
-					'name' => 'submit',
-					'type' => 'submit',
-					'value' => 'save_and_close',
-					'text' => 'save_and_close',
-					'working' => 'btn_saving'
-				]
-			]
+			'buttons' => $this->getPublishFormButtons($entry)
 		);
+
+		if ($entry->Channel->preview_url)
+		{
+			$modal = ee('View')->make('publish/live-preview-modal')->render([
+				'preview_url' => ee('CP/URL')->make('publish/preview/' . $entry->channel_id)
+			]);
+			ee('CP/Modal')->addModal('live-preview', $modal);
+		}
 
 		if ($autosave_id)
 		{
@@ -302,6 +288,12 @@ class Publish extends AbstractPublishController {
 			'file' => array('cp/publish/publish', 'cp/channel/category_edit')
 		));
 
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => $entry->Channel->channel_title,
+		);
+
+		$vars['breadcrumb_title'] = lang('new_entry');
+
 		ee()->cp->render('publish/entry', $vars);
 	}
 
@@ -334,6 +326,63 @@ class Publish extends AbstractPublishController {
 		}
 
 		$entry->set($data);
+	}
+
+	public function preview($channel_id, $entry_id = NULL)
+	{
+		if (empty($_POST))
+		{
+			return;
+		}
+
+		$channel = ee('Model')->get('Channel', $channel_id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
+
+		if ($entry_id)
+		{
+			$entry = ee('Model')->get('ChannelEntry', $entry_id)
+				->with('Channel', 'Author')
+				->first();
+		}
+		else
+		{
+			$entry = ee('Model')->make('ChannelEntry');
+			$entry->entry_id = PHP_INT_MAX;
+			$entry->Channel = $channel;
+			$entry->site_id =  ee()->config->item('site_id');
+			$entry->author_id = ee()->session->userdata('member_id');
+			$entry->ip_address = ee()->session->userdata['ip_address'];
+			$entry->versioning_enabled = $channel->enable_versioning;
+			$entry->sticky = FALSE;
+		}
+
+		$entry->set($_POST);
+		$data = $entry->getModChannelResultsArray();
+		$data['entry_site_id'] = $entry->site_id;
+		if (isset($_POST['categories']))
+		{
+			$data['categories'] = $_POST['categories'];
+		}
+
+		ee('LivePreview')->setEntryData($data);
+
+		ee()->load->library('template', NULL, 'TMPL');
+
+		$uri = str_replace(['{url_title}', '{entry_id}'], [$entry->url_title, $entry->entry_id], $channel->preview_url);
+
+		ee()->uri->_set_uri_string($uri);
+
+		// Compile the segments into an array
+		ee()->uri->segments = [];
+		ee()->uri->_explode_segments();
+
+		// Re-index the segment array so that it starts with 1 rather than 0
+		ee()->uri->_reindex_segments();
+
+		ee()->core->loadSnippets();
+
+		ee()->TMPL->run_template_engine();
 	}
 }
 

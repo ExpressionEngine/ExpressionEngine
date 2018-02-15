@@ -104,6 +104,10 @@
 		</footer>
 		<div class="overlay"></div>
 		<div class="app-overlay"></div>
+
+<?php if (isset($blocks['modals'])) echo $blocks['modals']; ?>
+<?php echo implode('', ee('CP/Modal')->getAllModals()); ?>
+
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->view->script_tag('common.js')?>
 		<?php

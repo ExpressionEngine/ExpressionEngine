@@ -192,7 +192,7 @@ feature 'Channel Create/Edit' do
     channel_settings.comment_url.set 'http://someurl/channel/comment'
     channel_settings.search_results_url.set 'http://someurl/channel/search/results'
     channel_settings.rss_url.set 'http://someurl/channel/rss'
-    channel_settings.live_look_template.choose_radio_option '16'
+    channel_settings.preview_url.set 'someurl/channel/{entry_id}'
 
     channel_settings.default_entry_title.set 'Default title'
     channel_settings.url_title_prefix.set 'default-title'
@@ -264,7 +264,7 @@ feature 'Channel Create/Edit' do
     @page.comment_url.value.should == 'http://someurl/channel/comment'
     @page.search_results_url.value.should == 'http://someurl/channel/search/results'
     @page.rss_url.value.should == 'http://someurl/channel/rss'
-    @page.live_look_template.has_checked_radio('16').should == true
+    @page.preview_url.value.should == 'someurl/channel/{entry_id}'
 
     @page.default_entry_title.value.should == 'Default title'
     @page.url_title_prefix.value.should == 'default-title'
