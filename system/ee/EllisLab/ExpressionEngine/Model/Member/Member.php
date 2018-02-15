@@ -267,7 +267,7 @@ class Member extends ContentModel {
 			ee('db')->update('comments', ['email' => $this->email], ['author_id' => $this->member_id]);
 		}
 
-		// clean any old password resets that may have been sent to the old email address
+		// invalidate reset codes if the user's email or password is changed
 		if (isset($changed['email']) OR isset($changed['password']))
 		{
 			ee('Model')->get('ResetPassword')
