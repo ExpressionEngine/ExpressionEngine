@@ -294,6 +294,7 @@ $(document).ready(function(){
 
 			// fade in the overlay
 			$('.app-overlay')
+				.removeClass('app-overlay--destruct')
 				.removeClass('app-overlay---closed')
 				.addClass('app-overlay---open')
 				.css('height', heightIs);
@@ -338,7 +339,7 @@ $(document).ready(function(){
 
 			// scroll up, if needed, but only do so after a significant
 			// portion of the overlay is show so as not to disorient the user
-			if ( ! $(this).is('.modal-form-wrap, .app-modal'))
+			if ( ! $(this).is('.modal-form-wrap, .app-modal--side'))
 			{
 				setTimeout(function() {
 					$(document).scrollTop(0);
@@ -553,10 +554,20 @@ $(document).ready(function(){
 	// publish collapse -> WIP
 	// =======================
 
-		$('.js-toggle-field').on('click',function(){
+		// Fieldset toggle
+		$('.js-toggle-field')
+			.not('.fluid-ctrls .js-toggle-field')
+			.on('click',function(){
+				$(this)
+					.parents('fieldset,.fieldset-faux-fluid,.fieldset-faux')
+					.toggleClass('fieldset---closed');
+			});
+
+		// Fluid field item toggle, wide initial selector for Fluids brought in via AJAX
+		$('body').on('click', '.fieldset-faux-fluid .fluid-ctrls .js-toggle-field', function(){
 			$(this)
-				.parents('fieldset,.fieldset-faux-fluid,.fieldset-faux')
-				.toggleClass('fieldset---closed');
+				.closest('.fluid-item')
+				.toggleClass('fluid-closed');
 		});
 
 	// ===================

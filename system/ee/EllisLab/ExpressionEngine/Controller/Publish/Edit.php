@@ -170,12 +170,12 @@ class Edit extends AbstractPublishController {
 			$autosaves = $entry->Autosaves->count();
 
 			// Escape markup in title
-			$title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
+			$escaped_title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
 
 			if ($can_edit)
 			{
 				$edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
-				$title = '<a href="' . $edit_link . '">' . $title . '</a>';
+				$title = '<a href="' . $edit_link . '">' . $escaped_title . '</a>';
 			}
 
 			if ($autosaves)
@@ -232,7 +232,7 @@ class Edit extends AbstractPublishController {
 				$can_delete = FALSE;
 			}
 
-			$disabled_checkbox = ! $can_delete;
+			$disabled_checkbox = ! $can_edit && ! $can_delete;
 
 			// Display status highlight if one exists
 			$status = isset($statuses[$entry->status]) ? $statuses[$entry->status] : NULL;
@@ -267,7 +267,9 @@ class Edit extends AbstractPublishController {
 					'value' => $entry->entry_id,
 					'disabled' => $disabled_checkbox,
 					'data' => array(
-						'confirm' => lang('entry') . ': <b>' . htmlentities($entry->title, ENT_QUOTES, 'UTF-8') . '</b>'
+						'title' => $escaped_title,
+						'channel-id' => $entry->Channel->getId(),
+						'confirm' => lang('entry') . ': <b>' . $escaped_title . '</b>'
 					)
 				)
 			);
@@ -321,11 +323,20 @@ class Edit extends AbstractPublishController {
 			->currentPage($page)
 			->render($base_url);
 
-		ee()->javascript->set_global('lang.remove_confirm', lang('entry') . ': <b>### ' . lang('entries') . '</b>');
+		ee()->javascript->set_global([
+			'lang.remove_confirm' => lang('entry') . ': <b>### ' . lang('entries') . '</b>',
+
+			'publishEdit.quickEditFormUrl' => ee('CP/URL')->make('publish/quick-edit')->compile(),
+			'publishEdit.addCategoriesFormUrl' => ee('CP/URL')->make('publish/quick-edit/categories/add')->compile(),
+			'publishEdit.removeCategoriesFormUrl' => ee('CP/URL')->make('publish/quick-edit/categories/remove')->compile()
+		]);
+
 		ee()->cp->add_js_script(array(
 			'file' => array(
 				'cp/confirm_remove',
-				'cp/publish/entry-list'
+				'cp/publish/entry-list',
+				'components/quick_edit_entries',
+				'cp/publish/quick-edit'
 			),
 		));
 
@@ -341,6 +352,9 @@ class Edit extends AbstractPublishController {
 				(isset($channel->channel_title)) ? $channel->channel_title : ''
 			);
 		}
+
+		$vars['can_edit'] = ee('Permission')->hasAny('can_edit_self_entries', 'can_edit_other_entries');
+		$vars['can_delete'] = ee('Permission')->hasAny('can_delete_all_entries', 'can_delete_self_entries');
 
 		if (AJAX_REQUEST)
 		{

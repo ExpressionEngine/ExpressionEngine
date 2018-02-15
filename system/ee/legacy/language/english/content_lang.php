@@ -918,6 +918,42 @@ $lang = array(
 
 'rel_ft_no_entries' => 'No Entries',
 
+/* Quick Edit */
+
+'add_categories' => 'Add Categories',
+
+'add_categories_entries' => 'Add categories to %d entries',
+
+'add_editable_fields' => 'Add editable fields',
+
+'add_editable_fields_desc' => 'Chosen fields will be added below, and will be editable for <b>all</b> selected entries.',
+
+'btn_save_all_and_close' => 'Save All & Close',
+
+'editing_entries' => 'Editing %d entries',
+
+'entries_updated' => '%d entries have been updated.',
+
+'important' => 'Important!',
+
+'no_cat_groups_in_common' => 'No <b>Category Groups</b> in common.',
+
+'quick_edit' => 'Quick Edit',
+
+'quick_edit_add_categories_notice' => 'Any categories selected will be assigned to the selected entries <b>in addition</b> to the current category selection for those entries.',
+
+'quick_edit_destructive' => 'This is a destructive and irreversible action.',
+
+'quick_edit_notice' => 'Any fields submitted will overwrite that field\'s stored content for all selected entries.',
+
+'quick_edit_remove_categories_notice' => 'Any categories selected will be <b>removed</b> from the selected entries, leaving the entries\' other category assignments intact.',
+
+'remove_categories' => 'Remove Categories',
+
+'remove_categories_entries' => 'Remove categories from %d entries',
+
+'unauthorized_entry_desc' => 'You do not have permission to edit one of the selected entries.'
+
 );
 
 // EOF
