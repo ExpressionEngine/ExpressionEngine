@@ -40,27 +40,27 @@ class QuickEditEntries extends React.Component {
   render () {
     const limitedItems = this.props.items.slice(0, this.props.limit)
     const totalItems = this.props.initialItems.length
+    const lang = this.props.lang
 
     return (
       <div>
-        <h2>{totalItems} Selected Entries</h2>
+        <h2>{totalItems} {lang.selectedEntries}</h2>
         <form class="field-search add-mrg-top">
-          <input type="text" placeholder="Filter selected entries" onChange={(e) => this.handleSearch(e.target.value)} />
+          <input type="text" placeholder={lang.filterSelectedEntries} onChange={(e) => this.handleSearch(e.target.value)} />
         </form>
         <ul class="entry-list">
           {limitedItems.length == 0 &&
-            <li class="entry-list__item entry-list__item---empty">
-              No <b>entries</b> found.
-            </li>
+            <li class="entry-list__item entry-list__item---empty" dangerouslySetInnerHTML={{__html: lang.noEntriesFound}} />
           }
           {limitedItems.map((item) =>
             <QuickEditEntryItem
               item={item}
               handleRemove={(item) => this.handleRemove(item)}
+              lang={lang}
             />
           )}
         </ul>
-        <div class="entry-list__note">Showing {limitedItems.length} of {totalItems} &mdash; <a href=""><span class="icon--remove"></span>Clear All</a></div>
+        <div class="entry-list__note">{lang.showing} {limitedItems.length} {lang.of} {totalItems} &mdash; <a href=""><span class="icon--remove"></span>{lang.clearAll}</a></div>
       </div>
     )
   }
@@ -70,7 +70,7 @@ function QuickEditEntryItem (props) {
   return (
     <li class="entry-list__item">
       <h2>{props.item.label}</h2>
-      <a href="#" onClick={(e) => props.handleRemove(props.item)}><span class="icon--remove"></span>Remove from selection</a>
+      <a href="#" onClick={(e) => props.handleRemove(props.item)}><span class="icon--remove"></span>{props.lang.removeFromSelection}</a>
     </li>
   )
 }

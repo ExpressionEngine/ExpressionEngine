@@ -51,6 +51,7 @@ var QuickEditEntries = function (_React$Component) {
 
       var limitedItems = this.props.items.slice(0, this.props.limit);
       var totalItems = this.props.initialItems.length;
+      var lang = this.props.lang;
 
       return React.createElement(
         'div',
@@ -59,51 +60,46 @@ var QuickEditEntries = function (_React$Component) {
           'h2',
           null,
           totalItems,
-          ' Selected Entries'
+          ' ',
+          lang.selectedEntries
         ),
         React.createElement(
           'form',
           { 'class': 'field-search add-mrg-top' },
-          React.createElement('input', { type: 'text', placeholder: 'Filter selected entries', onChange: function onChange(e) {
+          React.createElement('input', { type: 'text', placeholder: lang.filterSelectedEntries, onChange: function onChange(e) {
               return _this2.handleSearch(e.target.value);
             } })
         ),
         React.createElement(
           'ul',
           { 'class': 'entry-list' },
-          limitedItems.length == 0 && React.createElement(
-            'li',
-            { 'class': 'entry-list__item entry-list__item---empty' },
-            'No ',
-            React.createElement(
-              'b',
-              null,
-              'entries'
-            ),
-            ' found.'
-          ),
+          limitedItems.length == 0 && React.createElement('li', { 'class': 'entry-list__item entry-list__item---empty', dangerouslySetInnerHTML: { __html: lang.noEntriesFound } }),
           limitedItems.map(function (item) {
             return React.createElement(QuickEditEntryItem, {
               item: item,
               handleRemove: function handleRemove(item) {
                 return _this2.handleRemove(item);
-              }
+              },
+              lang: lang
             });
           })
         ),
         React.createElement(
           'div',
           { 'class': 'entry-list__note' },
-          'Showing ',
+          lang.showing,
+          ' ',
           limitedItems.length,
-          ' of ',
+          ' ',
+          lang.of,
+          ' ',
           totalItems,
           ' \u2014 ',
           React.createElement(
             'a',
             { href: '' },
             React.createElement('span', { 'class': 'icon--remove' }),
-            'Clear All'
+            lang.clearAll
           )
         )
       );
@@ -142,7 +138,7 @@ function QuickEditEntryItem(props) {
           return props.handleRemove(props.item);
         } },
       React.createElement('span', { 'class': 'icon--remove' }),
-      'Remove from selection'
+      props.lang.removeFromSelection
     )
   );
 }

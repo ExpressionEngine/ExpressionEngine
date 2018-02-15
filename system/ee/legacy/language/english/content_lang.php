@@ -934,6 +934,8 @@ $lang = array(
 
 'entries_updated' => '%d entries have been updated.',
 
+'filter_selected_entries' => 'Filter selected entries',
+
 'important' => 'Important!',
 
 'no_cat_groups_in_common' => 'No <b>Category Groups</b> in common.',
@@ -951,6 +953,12 @@ $lang = array(
 'remove_categories' => 'Remove Categories',
 
 'remove_categories_entries' => 'Remove categories from %d entries',
+
+'remove_from_selection' => 'Remove from selection',
+
+'selected_entries' => 'Selected Entries',
+
+'showing' => 'Showing',
 
 'unauthorized_entry_desc' => 'You do not have permission to edit one of the selected entries.'
 

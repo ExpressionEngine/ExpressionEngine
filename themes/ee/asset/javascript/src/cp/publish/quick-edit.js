@@ -53,6 +53,7 @@ EE.cp.QuickEdit = {
 		var that = this
 		QuickEditEntries.render(this.modal, {
 			items: items,
+			lang: EE.quickEdit.lang,
 			entriesChanged: function(items) {
 				that._loadForm(items)
 			}

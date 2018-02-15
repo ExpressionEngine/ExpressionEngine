@@ -328,7 +328,16 @@ class Edit extends AbstractPublishController {
 
 			'publishEdit.quickEditFormUrl' => ee('CP/URL')->make('publish/quick-edit')->compile(),
 			'publishEdit.addCategoriesFormUrl' => ee('CP/URL')->make('publish/quick-edit/categories/add')->compile(),
-			'publishEdit.removeCategoriesFormUrl' => ee('CP/URL')->make('publish/quick-edit/categories/remove')->compile()
+			'publishEdit.removeCategoriesFormUrl' => ee('CP/URL')->make('publish/quick-edit/categories/remove')->compile(),
+			'quickEdit.lang' => [
+				'selectedEntries'       => lang('selected_entries'),
+				'filterSelectedEntries' => lang('filter_selected_entries'),
+				'noEntriesFound'        => sprintf(lang('no_found'), lang('entries')),
+				'showing'               => lang('showing'),
+				'of'                    => lang('of'),
+				'clearAll'              => lang('clear_all'),
+				'removeFromSelection'   => lang('remove_from_selection'),
+			]
 		]);
 
 		ee()->cp->add_js_script(array(
