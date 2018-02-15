@@ -22,10 +22,8 @@ class QuickEdit extends AbstractQuickEdit {
 	protected $standard_default_fields = [
 		'status',
 		'expiration_date',
-		'comment_expiration_date',
-		'sticky',
-		'allow_comments'
-		// Plus author and categories added dynamically below
+		'sticky'
+		// Plus comment settings, author, and categories added dynamically below
 	];
 
 	/**
@@ -57,6 +55,12 @@ class QuickEdit extends AbstractQuickEdit {
 		if (ee('Permission')->has('can_assign_post_authors'))
 		{
 			$this->standard_default_fields[] = 'author_id';
+		}
+
+		if ($entry->Channel->comment_system_enabled)
+		{
+			$this->standard_default_fields[] = 'allow_comments';
+			$this->standard_default_fields[] = 'comment_expiration_date';
 		}
 
 		$fields = $this->getFieldsForEntry($entry, $this->standard_default_fields);

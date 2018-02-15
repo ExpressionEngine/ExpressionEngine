@@ -199,6 +199,9 @@ abstract class AbstractQuickEdit extends CP_Controller {
 		);
 		$channel->Statuses = $channels->Statuses->intersect();
 
+		// Only enable if ALL channels have comments enabled
+		$channel->comment_system_enabled = ! in_array(FALSE, $channels->pluck('comment_system_enabled'), TRUE);
+
 		return $channel;
 	}
 
