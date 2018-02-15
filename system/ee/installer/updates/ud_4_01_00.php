@@ -63,7 +63,7 @@ class Updater {
 
 	protected function addPreviewURLToChannels()
 	{
-		if ( ! ee()->db->field_exists('preview_url', 'channels'))
+		if (ee()->db->field_exists('live_look_template', 'channels'))
 		{
 			ee()->smartforge->add_column(
 				'channels',
