@@ -333,6 +333,11 @@ class EE_Input {
 			return $this->ip_address;
 		}
 
+		if (REQ == 'CLI')
+		{
+			return '0.0.0.0';
+		}
+
 		$proxy_ips = config_item('proxy_ips');
 		if ( ! empty($proxy_ips))
 		{

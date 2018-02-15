@@ -165,6 +165,12 @@ class Grid_ft extends EE_Fieldtype {
 			ee()->grid_parser->grid_field_names[$this->id()][$fluid_field_data_id] = $this->name();
 		}
 
+		// Channel Form can throw us a model object instead of a results row
+		if ($this->row instanceof \EllisLab\ExpressionEngine\Model\Channel\ChannelEntry)
+		{
+			$this->row = $this->row->getModChannelResultsArray();
+		}
+
 		return ee()->grid_parser->parse($this->row, $this->id(), $params, $tagdata, $this->content_type(), $fluid_field_data_id);
 	}
 
