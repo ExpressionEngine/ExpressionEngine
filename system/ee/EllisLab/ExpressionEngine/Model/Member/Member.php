@@ -242,7 +242,9 @@ class Member extends ContentModel {
 				ee()->logger->log_action(sprintf(
 					lang('member_changed_email'),
 					$this->username,
-					$this->member_id
+					$this->member_id,
+					$changed['email'],
+					$this->email
 				));
 			}
 
