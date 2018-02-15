@@ -22,6 +22,7 @@ class ControlPanelPage < SitePrism::Page
 
   # Alert
   element :alert, 'div.alert'
+  element :alert_success, 'div.alert.success'
 
   # Modals
   element :modal, 'div.modal'

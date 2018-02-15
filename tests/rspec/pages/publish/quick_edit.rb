@@ -5,6 +5,7 @@ class QuickEdit < ControlPanelPage
   element :filter_input, '.app-modal--center .field-search input'
   elements :selected_entries, '.app-modal--center .entry-list li'
   element :selected_entries_note, '.app-modal--center .entry-list__note'
+  element :clear_all_link, '.app-modal--center .entry-list__note a'
 
   element :add_field, '.app-modal--center .fluid-actions a.has-sub'
   elements :field_options, '.app-modal--center .fluid-actions .sub-menu li a'
