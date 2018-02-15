@@ -110,7 +110,7 @@ $(document).ready(function () {
 		});
 	};
 
-	$('body').on('entry:preview', function (event, wait) {
+	$(document).on('entry:preview', function (event, wait) {
 		if (wait == undefined) {
 			wait = 0;
 		}
@@ -131,11 +131,11 @@ $(document).ready(function () {
 		});
 
 		$(container).on('change', 'input[type=checkbox], input[type=radio], input[type=hidden], select', function(e) {
-			$('body').trigger('entry:preview');
+			$(document).trigger('entry:preview');
 		});
 
 		$(container).on('click', 'a.toggle-btn', function(e) {
-			$('body').trigger('entry:preview');
+			$(document).trigger('entry:preview');
 		});
 
 		$('button[rel="live-preview"]').hide();
