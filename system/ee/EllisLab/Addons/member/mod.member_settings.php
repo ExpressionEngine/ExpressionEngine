@@ -1175,7 +1175,6 @@ class Member_settings extends Member {
 	function update_email()
 	{
 		// Safety.
-
 		if ( ! isset($_POST['email']))
 		{
 			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
@@ -1190,69 +1189,47 @@ class Member_settings extends Member {
 			return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
 		}
 
-		/** -------------------------------------
-		/**  Validate submitted data
-		/** -------------------------------------*/
-		if ( ! class_exists('EE_Validate'))
+		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+
+		if ( ! $member)
 		{
-			require APPPATH.'libraries/Validate.php';
+			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
 		}
 
+		// this action requires password confirmation
+		ee()->load->library('auth');
+		$password = ee()->auth->hash_password(ee()->input->post('password'), $member->salt);
 
-		$query = ee()->db->query("SELECT email, password FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
-
-		$VAL = new EE_Validate(array(
-			'member_id'    => ee()->session->userdata('member_id'),
-			'val_type'     => 'update', // new or update
-			'fetch_lang'   => TRUE,
-			'require_cpw'  => TRUE,
-			'enable_log'   => FALSE,
-			'email'        => $_POST['email'],
-			'cur_email'    => $query->row('email'),
-			'cur_password' => $_POST['password']
-		));
-
-		$VAL->validate_email();
-
-		if (count($VAL->errors) > 0)
+		if ($password['password'] != $member->password)
 		{
-			return ee()->output->show_user_error('submission', $VAL->errors);
+			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_password')));
 		}
 
-		/** -------------------------------------
-		/**  Assign the query data
-		/** -------------------------------------*/
+		$member->set([
+			'email'               =>  ee()->input->post('email'),
+			'accept_admin_email'  => (ee()->input->post('accept_admin_email')) ? 'y' : 'n',
+			'accept_user_email'   => (ee()->input->post('accept_user_email'))  ? 'y' : 'n',
+			'notify_by_default'   => (ee()->input->post('notify_by_default'))  ? 'y' : 'n',
+			'notify_of_pm'        => (ee()->input->post('notify_of_pm'))  ? 'y' : 'n',
+			'smart_notifications' => (ee()->input->post('smart_notifications'))  ? 'y' : 'n',
+		]);
 
-		$data = array(
-						'email'					=>  $_POST['email'],
-						'accept_admin_email'	=> (isset($_POST['accept_admin_email'])) ? 'y' : 'n',
-						'accept_user_email'		=> (isset($_POST['accept_user_email']))  ? 'y' : 'n',
-						'notify_by_default'		=> (isset($_POST['notify_by_default']))  ? 'y' : 'n',
-						'notify_of_pm'			=> (isset($_POST['notify_of_pm']))  ? 'y' : 'n',
-						'smart_notifications'	=> (isset($_POST['smart_notifications']))  ? 'y' : 'n'
-					  );
+		$result = $member->validate();
 
-		ee()->db->query(ee()->db->update_string('exp_members', $data, "member_id = '".ee()->session->userdata('member_id')."'"));
-
-		/** -------------------------------------
-		/**  Update comments and log email change
-		/** -------------------------------------*/
-
-		if ($query->row('email')  != $_POST['email'])
+		if ( ! $result->isValid())
 		{
-			ee()->db->query(ee()->db->update_string('exp_comments', array('email' => $_POST['email']), "author_id = '".ee()->session->userdata('member_id')."'"));
+			return ee()->output->show_user_error('submission', $result->getErrors('email'));
 		}
 
-		/** -------------------------------------
-		/**  Success message
-		/** -------------------------------------*/
+		$member->save();
 
+		// success
 		return $this->_var_swap($this->_load_element('success'),
-								array(
-										'lang:heading'	=>	ee()->lang->line('mbr_email_updated'),
-										'lang:message'	=>	ee()->lang->line('mbr_email_has_been_updated')
-									 )
-							);
+			array(
+					'lang:heading'	=>	ee()->lang->line('mbr_email_updated'),
+					'lang:message'	=>	ee()->lang->line('mbr_email_has_been_updated')
+				 )
+		);
 	}
 
 
