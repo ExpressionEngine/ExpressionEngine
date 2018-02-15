@@ -102,9 +102,11 @@ $(document).ready(function () {
 			url: preview_url,
 			data: publishForm.serialize(),
 			complete: function(xhr) {
-				iframe.contentDocument.open();
-				iframe.contentDocument.write(xhr.responseText);
-				iframe.contentDocument.close();
+				if (xhr.responseText !== undefined) {
+					iframe.contentDocument.open();
+					iframe.contentDocument.write(xhr.responseText);
+					iframe.contentDocument.close();
+				}
 				ajaxRequest = null;
 			},
 		});
