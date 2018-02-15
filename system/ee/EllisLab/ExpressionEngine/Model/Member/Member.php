@@ -138,9 +138,9 @@ class Member extends ContentModel {
 	);
 
 	protected static $_events = array(
+		'afterUpdate',
+		'beforeDelete',
 		'beforeInsert',
-		'beforeUpdate',
-		'beforeDelete'
 	);
 
 	// Properties
@@ -224,11 +224,11 @@ class Member extends ContentModel {
 	/**
 	 * Log email and password changes
 	 */
-	public function onBeforeUpdate()
+	public function onAfterUpdate($changed)
 	{
 		if (REQ == 'CP')
 		{
-			if ($this->isDirty('password'))
+			if (isset($changed['password']))
 			{
 				ee()->logger->log_action(sprintf(
 					lang('member_changed_password'),
@@ -237,7 +237,7 @@ class Member extends ContentModel {
 				));
 			}
 
-			if ($this->isDirty('email'))
+			if (isset($changed['email']))
 			{
 				ee()->logger->log_action(sprintf(
 					lang('member_changed_email'),
@@ -246,7 +246,7 @@ class Member extends ContentModel {
 				));
 			}
 
-			if ($this->isDirty('group_id'))
+			if (isset($changed['group_id']))
 			{
 				ee()->logger->log_action(sprintf(
 					lang('member_changed_member_group'),
@@ -257,6 +257,20 @@ class Member extends ContentModel {
 
 				ee()->session->set_cache(__CLASS__, "getStructure({$this->group_id})", NULL);
 			}
+		}
+
+		if (isset($changed['email']))
+		{
+			// this operation could be expensive on models so use a direct MySQL UPDATE query
+			ee('db')->update('comments', ['email' => $this->email], ['author_id' => $this->member_id]);
+		}
+
+		// clean any old password resets that may have been sent to the old email address
+		if (isset($changed['email']) OR isset($changed['password']))
+		{
+			ee('Model')->get('ResetPassword')
+				->filter('member_id', $this->member_id)
+				->delete();
 		}
 	}
 
