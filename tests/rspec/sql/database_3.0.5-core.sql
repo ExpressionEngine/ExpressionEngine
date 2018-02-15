@@ -504,7 +504,7 @@ CREATE TABLE `exp_channels` (
   `default_entry_title` varchar(100) DEFAULT NULL,
   `title_field_label` varchar(100) NOT NULL DEFAULT 'Title',
   `url_title_prefix` varchar(80) DEFAULT NULL,
-  `preview_url` varchar(100) DEFAULT NULL,
+  `live_look_template` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`channel_id`),
   KEY `cat_group` (`cat_group`),
   KEY `status_group` (`status_group`),
