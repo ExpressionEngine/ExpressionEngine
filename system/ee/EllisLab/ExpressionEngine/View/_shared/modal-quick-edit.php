@@ -1,4 +1,4 @@
-<div class="app-modal app-modal--center<?php if (isset($destructive) && $destructive): ?> js-modal--destruct<?php endif ?>" rel="modal-quick-edit">
+<div class="app-modal app-modal--center" rel="modal-quick-edit">
 	<div class="app-modal__content">
 		<div class="app-modal__dismiss">
 			<a class="js-modal-close" rel="modal-quick-edit" href="#"><?=lang('close_modal')?></a> <span class="txt-fade">[esc]</span>

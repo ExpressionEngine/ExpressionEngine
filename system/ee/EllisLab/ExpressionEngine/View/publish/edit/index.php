@@ -15,8 +15,7 @@ $modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
 ee('CP/Modal')->addModal('remove-entry', $modal);
 
 $modal = $this->make('ee:_shared/modal-quick-edit')->render([
-	'name' => 'modal-quick-edit',
-	'destructive' => TRUE,
+	'name' => 'modal-quick-edit'
 ]);
 ee('CP/Modal')->addModal('quick-edit', $modal);
 ?>

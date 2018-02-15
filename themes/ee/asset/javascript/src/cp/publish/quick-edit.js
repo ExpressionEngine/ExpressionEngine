@@ -37,7 +37,10 @@ EE.cp.QuickEdit = {
 		this.formContainer.html('<span class="btn work">Loading</span>')
 		this._loadForm(items)
 
-		this.modal.trigger('modal:open')
+		this.modal.trigger({
+			type: 'modal:open',
+			linkIs: 'js-modal--destruct'
+		})
 	},
 
 	/**
