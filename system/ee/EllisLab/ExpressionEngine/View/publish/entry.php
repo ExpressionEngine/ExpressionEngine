@@ -3,7 +3,7 @@
 <div class="form-standard" data-publish>
 	<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 	<div class="form-btns form-btns-top">
-		<h1><?=$cp_page_title?></h1>
+		<h1><?=($entry->entry_id) ? lang('edit_entry') : lang('new_entry')?></h1>
 		<?php $this->embed('ee:_shared/form/buttons'); ?>
 	</div>
 	<div class="tab-wrap">

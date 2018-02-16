@@ -57,6 +57,9 @@ FuzzyListSearch.prototype = {
 
 		// update the score and show/hide
 		_.each(this.items, function(item) {
+			if ($(item.el).hasClass('hidden')) {
+				return
+			}
 			item.score = that._scoreString(item.text, search);
 			$(item.el).toggle(item.score != 0);
 			length += Math.ceil(item.score);
@@ -72,6 +75,9 @@ FuzzyListSearch.prototype = {
 	 */
 	reset: function() {
 		_.each(this.items, function(item) {
+			if ($(item.el).hasClass('hidden')) {
+				return
+			}
 			$(item.el).toggle(true);
 		});
 

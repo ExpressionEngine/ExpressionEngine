@@ -266,12 +266,37 @@ class Member extends ContentModel {
 			// this operation could be expensive on models so use a direct MySQL UPDATE query
 			ee('db')->update('comments', ['email' => $this->email], ['author_id' => $this->member_id]);
 
-			// email the original email address telling them of the hange
+			// email the original email address telling them of the change
 		}
 
 		if (isset($changed['password']))
 		{
 			// email the current email address telling them their password changed
+			$vars = [
+				'name'		=> $this->screen_name,
+				'username'  => $this->username,
+				'site_name'	=> ee()->config->item('site_name'),
+				'site_url'	=> ee()->config->item('site_url')
+			];
+
+			$template = ee()->functions->fetch_email_template('password_changed_notification');
+			$subject = $template['title'];
+			$message = $template['data'];
+
+			foreach ($vars as $var => $value)
+			{
+				$subject = str_replace('{'.$var.'}', $value, $subject);
+				$message = str_replace('{'.$var.'}', $value, $message);
+			}
+
+			ee()->load->library('email');
+			ee()->email->wordwrap = true;
+			ee()->email->mailtype = ee()->config->item('mail_format');
+			ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
+			ee()->email->to($this->email);
+			ee()->email->subject($subject);
+			ee()->email->message($message);
+			ee()->email->send();
 		}
 
 		if (isset($changed['screen_name']))

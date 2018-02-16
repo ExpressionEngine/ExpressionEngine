@@ -733,15 +733,11 @@ class Channels extends AbstractChannelsController {
 	{
 		$statuses = ee('Model')->get('Status')
 			->order('status_order')
-			->all()
-			->getDictionary('status_id', 'status');
+			->all();
 
-		foreach ($statuses as $status_id => $status)
+		foreach ($statuses as $status)
 		{
-			if (in_array($status, ['open', 'closed']))
-			{
-				$statuses[$status_id] = lang($status);
-			}
+			$status_options[] = $status->getOptionComponent(['use_ids' => TRUE]);
 		}
 
 		$selected = ee('Request')->post('statuses') ?: [];
@@ -761,7 +757,7 @@ class Channels extends AbstractChannelsController {
 
 		return ee('View')->make('ee:_shared/form/fields/select')->render([
 			'field_name'       => 'statuses',
-			'choices'          => $statuses,
+			'choices'          => $status_options,
 			'disabled_choices' => $default,
 			'unremovable_choices' => $default,
 			'value'            => $selected,
@@ -785,23 +781,6 @@ class Channels extends AbstractChannelsController {
 	 */
 	private function renderSettingsTab($channel, $errors)
 	{
-		$templates = ee('Model')->get('Template')
-			->with('TemplateGroup')
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('TemplateGroup.group_name', 'ASC')
-			->order('template_name', 'ASC')
-			->all();
-
-		$live_look_template_options[0] = lang('no_live_look_template');
-
-		if ( count($templates) > 0)
-		{
-			foreach ($templates as $template)
-			{
-				$live_look_template_options[$template->template_id] = $template->getTemplateGroup()->group_name.'/'.$template->template_name;
-			}
-		}
-
 		// Default status menu
 		$deft_status_options = [
 			'open' => lang('open'),
@@ -937,16 +916,12 @@ class Channels extends AbstractChannelsController {
 					)
 				),
 				array(
-					'title' => 'live_look_template',
-					'desc' => 'live_look_template_desc',
+					'title' => 'preview_url',
+					'desc' => 'preview_url_desc',
 					'fields' => array(
-						'live_look_template' => array(
-							'type' => 'radio',
-							'choices' => $live_look_template_options,
-							'value' => $channel->live_look_template,
-							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('templates'))
-							]
+						'preview_url' => array(
+							'type' => 'text',
+							'value' => $channel->getRawProperty('preview_url')
 						)
 					)
 				)

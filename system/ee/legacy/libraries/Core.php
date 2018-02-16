@@ -69,9 +69,9 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20180205');
-		define('APP_VER',		'4.0.9');
-		define('APP_VER_ID',	'');
+		define('APP_BUILD',		'20180215');
+		define('APP_VER',		'4.1.0-dp.1');
+		define('APP_VER_ID',	'dp.1');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');
@@ -353,30 +353,38 @@ class EE_Core {
 		// Load up any Snippets
 		if (REQ == 'ACTION' OR REQ == 'PAGE')
 		{
-			$fresh = ee('Model')->make('Snippet')->loadAll();
+			$this->loadSnippets();
+		}
+	}
 
-			if ($fresh->count() > 0)
+	/**
+	 * Load Snippets into config's _global_vars
+	 */
+	public function loadSnippets()
+	{
+		$fresh = ee('Model')->make('Snippet')->loadAll();
+
+		if ($fresh->count() > 0)
+		{
+			$snippets = $fresh->getDictionary('snippet_name', 'snippet_contents');
+
+			// Thanks to @litzinger for the code suggestion to parse
+			// global vars in snippets...here we go.
+
+			$var_keys = array();
+
+			foreach (ee()->config->_global_vars as $k => $v)
 			{
-				$snippets = $fresh->getDictionary('snippet_name', 'snippet_contents');
-
-				// Thanks to @litzinger for the code suggestion to parse
-				// global vars in snippets...here we go.
-
-				$var_keys = array();
-
-				foreach (ee()->config->_global_vars as $k => $v)
-				{
-					$var_keys[] = LD.$k.RD;
-				}
-
-				$snippets = str_replace($var_keys, ee()->config->_global_vars, $snippets);
-
-				ee()->config->_global_vars = ee()->config->_global_vars + $snippets;
-
-				unset($snippets);
-				unset($fresh);
-				unset($var_keys);
+				$var_keys[] = LD.$k.RD;
 			}
+
+			$snippets = str_replace($var_keys, ee()->config->_global_vars, $snippets);
+
+			ee()->config->_global_vars = ee()->config->_global_vars + $snippets;
+
+			unset($snippets);
+			unset($fresh);
+			unset($var_keys);
 		}
 	}
 

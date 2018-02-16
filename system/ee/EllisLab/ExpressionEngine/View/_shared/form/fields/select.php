@@ -32,6 +32,10 @@ foreach ($normalized_choices as $key => $choice)
 	{
 		$nested = TRUE;
 	}
+	if ( ! empty($choice['component']))
+	{
+		$force_react = TRUE;
+	}
 }
 
 $count = ee('View/Helpers')->countChoices($normalized_choices);
