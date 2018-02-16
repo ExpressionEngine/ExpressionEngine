@@ -25,6 +25,12 @@ class Auth extends Settings {
 	{
 		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 
+		ee()->view->base_url = $this->base_url;
+		ee()->view->ajax_validate = TRUE;
+		ee()->view->cp_page_title = lang('auth_settings');
+		ee()->view->save_btn_text = 'btn_authenticate_and_save';
+		ee()->view->save_btn_text_working = 'btn_saving';
+
 		$vars['sections'] = array(
 			array(
 				array(
@@ -128,15 +134,68 @@ class Auth extends Settings {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			if ($this->update())
+			// set and save the member as the various permissions allow
+			if ($this->config->item('allow_username_change') == 'y' OR
+				$this->session->userdata('group_id') == 1)
 			{
-				ee('CP/Alert')->makeInline('shared-form')
-					->asSuccess()
-					->withTitle(lang('member_updated'))
-					->addToBody(lang('member_updated_desc'))
-					->defer();
-				ee()->functions->redirect($base_url);
+				 $this->member->username = ee()->input->post('username');
 			}
+
+			// If the screen name field is empty, we'll assign is from the username field.
+			if (ee()->input->post('screen_name') == '')
+			{
+				$this->member->screen_name = ee()->input->post('username');
+			}
+			else
+			{
+				$this->member->screen_name = ee()->input->post('screen_name');
+			}
+
+			if (ee()->input->post('password'))
+			{
+				$this->member->password = ee()->input->post('password');
+			}
+
+			$result = $this->member->validate();
+
+			// Display errors if there are any
+			if ( ! $result->isValid())
+			{
+				$vars['errors'] = $result;
+				ee('CP/Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('settings_save_error'))
+					->addToBody(lang('settings_save_error_desc'))
+					->now();
+
+				ee()->cp->render('settings/form', $vars);
+				return;
+			}
+
+			// if the password was set, need to hash it before saving and kill all other sessions
+			if (ee()->input->post('password'))
+			{
+				ee()->load->library('auth');
+				$hashed_password = ee()->auth->hash_password($this->member->password);
+				$this->member->password = $hashed_password['password'];
+				$this->member->salt = $hashed_password['salt'];
+
+				ee('Model')->get('Session')
+					->filter('member_id', $this->member->member_id)
+					->filter('session_id', '!=', (string) ee()->session->userdata('session_id'))
+					->delete();
+
+				ee()->remember->delete_others($this->member->member_id);
+			}
+
+			$this->member->save();
+
+			ee('CP/Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('member_updated'))
+				->addToBody(lang('member_updated_desc'))
+				->defer();
+			ee()->functions->redirect($this->base_url);
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -147,128 +206,7 @@ class Auth extends Settings {
 				->now();
 		}
 
-		ee()->view->base_url = $this->base_url;
-		ee()->view->ajax_validate = TRUE;
-		ee()->view->cp_page_title = lang('auth_settings');
-		ee()->view->save_btn_text = 'btn_authenticate_and_save';
-		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->render('settings/form', $vars);
-	}
-
-	/**
-	  *	 Update username and password
-	  */
-	function update()
-	{
-		if ($this->config->item('allow_username_change') != 'y' &&
-			$this->session->userdata('group_id') != 1)
-		{
-			$_POST['username'] = $this->member->username;
-		}
-
-		// validate for unallowed blank values
-		if (empty($_POST))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
-		// If the screen name field is empty, we'll assign is from the username field.
-		if ($_POST['screen_name'] == '')
-		{
-			$_POST['screen_name'] = $_POST['username'];
-		}
-
-		// Fetch member data
-		$query = $this->member_model->get_member_data($this->member->member_id, array('username', 'screen_name'));
-
-		$this->VAL = $this->_validate_user(array(
-			'username'			=> $this->input->post('username'),
-			'cur_username'		=> $query->row('username'),
-			'screen_name'		=> $this->input->post('screen_name'),
-			'cur_screen_name'	=> $query->row('screen_name'),
-			'password'			=> $this->input->post('password'),
-			'password_confirm'	=> $this->input->post('confirm_password'),
-			'cur_password'		=> $this->input->post('current_password')
-		));
-
-		$this->VAL->validate_screen_name();
-
-		if ($this->config->item('allow_username_change') == 'y' OR
-			$this->session->userdata('group_id') == 1)
-		{
-			$this->VAL->validate_username();
-		}
-
-		if ($_POST['password'] != '')
-		{
-			$this->VAL->validate_password();
-		}
-
-		// Display errors if there are any
-		if (count($this->VAL->errors) > 0)
-		{
-			show_error($this->VAL->show_errors());
-		}
-
-		// Update "last post" forum info if needed
-		if ($query->row('screen_name') != $_POST['screen_name'] &&
-			$this->config->item('forum_is_installed') == "y")
-		{
-			$this->db->where('forum_last_post_author_id', $this->member->member_id);
-			$this->db->update(
-				'forums',
-				array('forum_last_post_author' => $this->input->post('screen_name'))
-			);
-
-			$this->db->where('mod_member_id', $this->member->member_id);
-			$this->db->update(
-				'forum_moderators',
-				array('mod_member_name' => $this->input->post('screen_name'))
-			);
-		}
-
-		// Assign the query data
-		$data['screen_name'] = $_POST['screen_name'];
-
-		if ($this->config->item('allow_username_change') == 'y' OR $this->session->userdata('group_id') == 1)
-		{
-			$data['username'] = $_POST['username'];
-		}
-
-		if ($_POST['password'] != '')
-		{
-			$this->load->library('auth');
-
-			$this->auth->update_password($this->member->member_id, $this->input->post('password'));
-		}
-
-		$this->member_model->update_member($this->member->member_id, $data);
-
-		if (ee()->config->item('enable_comments') == 'y')
-		{
-			if ($query->row('screen_name') != $_POST['screen_name'])
-			{
-				$query = $this->member_model->get_member_data($this->member->member_id, array('screen_name'));
-
-				$screen_name = ($query->row('screen_name')	!= '') ? $query->row('screen_name')	 : '';
-
-				// Update comments with current member data
-				$data = array('name' => ($screen_name != '') ? $screen_name : $_POST['username']);
-
-				$this->db->where('author_id', $this->member->member_id);
-				$this->db->update('comments', $data);
-			}
-		}
-
-		// Write log file
-		$this->logger->log_action($this->VAL->log_msg);
-
-		ee('CP/Alert')->makeInline('shared-form')
-			->asSuccess()
-			->withTitle(lang('member_updated'))
-			->addToBody(lang('member_updated_desc'))
-			->defer();
-		ee()->functions->redirect($this->base_url);
 	}
 
 	/**
