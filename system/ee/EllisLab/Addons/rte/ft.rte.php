@@ -71,6 +71,16 @@ class Rte_ft extends EE_Fieldtype {
 			return ee()->functions->encode_ee_tags($data);
 		}
 
+		if (ee('LivePreview')->hasEntryData())
+		{
+			$entry_data = ee('LivePreview')->getEntryData();
+
+			if ($entry_data['entry_id'] == $this->content_id)
+			{
+				$data = $this->save($data);
+			}
+		}
+
 		ee()->load->library('typography');
 		$str = ee()->typography->parse_type(
 			ee()->functions->encode_ee_tags(
