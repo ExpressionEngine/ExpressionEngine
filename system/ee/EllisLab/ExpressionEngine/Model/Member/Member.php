@@ -265,6 +265,13 @@ class Member extends ContentModel {
 		{
 			// this operation could be expensive on models so use a direct MySQL UPDATE query
 			ee('db')->update('comments', ['email' => $this->email], ['author_id' => $this->member_id]);
+
+			// email the original email address telling them of the hange
+		}
+
+		if (isset($changed['password']))
+		{
+			// email the current email address telling them their password changed
 		}
 
 		if (isset($changed['screen_name']))
