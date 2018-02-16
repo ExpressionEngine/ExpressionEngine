@@ -267,36 +267,13 @@ class Member extends ContentModel {
 			ee('db')->update('comments', ['email' => $this->email], ['author_id' => $this->member_id]);
 
 			// email the original email address telling them of the change
+			$this->notifyOfChanges('email_changed_notification', $changed['email']);
 		}
 
 		if (isset($changed['password']))
 		{
 			// email the current email address telling them their password changed
-			$vars = [
-				'name'		=> $this->screen_name,
-				'username'  => $this->username,
-				'site_name'	=> ee()->config->item('site_name'),
-				'site_url'	=> ee()->config->item('site_url')
-			];
-
-			$template = ee()->functions->fetch_email_template('password_changed_notification');
-			$subject = $template['title'];
-			$message = $template['data'];
-
-			foreach ($vars as $var => $value)
-			{
-				$subject = str_replace('{'.$var.'}', $value, $subject);
-				$message = str_replace('{'.$var.'}', $value, $message);
-			}
-
-			ee()->load->library('email');
-			ee()->email->wordwrap = true;
-			ee()->email->mailtype = ee()->config->item('mail_format');
-			ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
-			ee()->email->to($this->email);
-			ee()->email->subject($subject);
-			ee()->email->message($message);
-			ee()->email->send();
+			$this->notifyOfChanges('password_changed_notification', $this->email);
 		}
 
 		if (isset($changed['screen_name']))
@@ -318,6 +295,42 @@ class Member extends ContentModel {
 				->filter('member_id', $this->member_id)
 				->delete();
 		}
+	}
+
+	/**
+	 * Notify of Changes
+	 *
+	 * @param  string $type Specialty template type
+	 * @param  string $to   email address to send the notification to
+	 * @return void
+	 */
+	private function notifyOfChanges($type, $to)
+	{
+		$vars = [
+			'name'		=> $this->screen_name,
+			'username'  => $this->username,
+			'site_name'	=> ee()->config->item('site_name'),
+			'site_url'	=> ee()->config->item('site_url')
+		];
+
+		$template = ee()->functions->fetch_email_template($type);
+		$subject = $template['title'];
+		$message = $template['data'];
+
+		foreach ($vars as $var => $value)
+		{
+			$subject = str_replace('{'.$var.'}', $value, $subject);
+			$message = str_replace('{'.$var.'}', $value, $message);
+		}
+
+		ee()->load->library('email');
+		ee()->email->wordwrap = true;
+		ee()->email->mailtype = ee()->config->item('mail_format');
+		ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
+		ee()->email->to($to);
+		ee()->email->subject($subject);
+		ee()->email->message($message);
+		ee()->email->send();
 	}
 
 	/**
