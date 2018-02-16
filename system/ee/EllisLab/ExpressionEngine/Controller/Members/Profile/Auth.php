@@ -208,51 +208,6 @@ class Auth extends Settings {
 
 		ee()->cp->render('settings/form', $vars);
 	}
-
-	/**
-	 * Validate either a user, or a Super Admin editing the user
-	 * @param  array $validation_data Validation data to be sent to EE_Validate
-	 * @return EE_Validate	Validation object returned from EE_Validate
-	 */
-	private function _validate_user($validation_data)
-	{
-		//	Validate submitted data
-		if ( ! class_exists('EE_Validate'))
-		{
-			require APPPATH.'libraries/Validate.php';
-		}
-
-		$defaults = array(
-			'member_id'		=> $this->member->member_id,
-			'val_type'		=> 'update', // new or update
-			'fetch_lang'	=> FALSE,
-			'require_cpw'	=> TRUE,
-			'enable_log'	=> TRUE,
-		);
-
-		$validation_data = array_merge($defaults, $validation_data);
-
-		// Are we dealing with a Super Admin editing someone else's account?
-		if ($this->session->userdata('group_id') == 1)
-		{
-			// Validate Super Admin's password
-			$this->load->library('auth');
-			$auth = $this->auth->authenticate_id(
-				$this->session->userdata('member_id'),
-				$this->input->post('current_password')
-			);
-
-			if ($auth === FALSE)
-			{
-				show_error(lang('invalid_password'));
-			}
-
-			// Make sure we don't verify the actual member's existing password
-			$validation_data['require_cpw'] = FALSE;
-		}
-
-		return new \EE_Validate($validation_data);
-	}
 }
 // END CLASS
 
