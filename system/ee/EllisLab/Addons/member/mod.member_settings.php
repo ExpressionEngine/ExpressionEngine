@@ -1326,17 +1326,7 @@ class Member_settings extends Member {
 		// if the password was set, need to hash it before saving and kill all other sessions
 		if (ee()->input->post('password'))
 		{
-			ee()->load->library('auth');
-			$hashed_password = ee()->auth->hash_password($member->password);
-			$member->password = $hashed_password['password'];
-			$member->salt = $hashed_password['salt'];
-
-			ee('Model')->get('Session')
-				->filter('member_id', $member->member_id)
-				->filter('session_id', '!=', (string) ee()->session->userdata('session_id'))
-				->delete();
-
-			ee()->remember->delete_others($member->member_id);
+			$member->hashAndUpdatePassword($member->password);
 		}
 
 		$member->save();

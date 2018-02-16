@@ -462,10 +462,7 @@ class Member_register extends Member {
 			return ee()->output->show_user_error('submission', $errors);
 		}
 
-		ee()->load->library('auth');
-		$hashed_password = ee()->auth->hash_password($member->password);
-		$member->password = $hashed_password['password'];
-		$member->salt = $hashed_password['salt'];
+		$member->hashAndUpdatePassword($member->password);
 
 		// Do we require captcha?
 		if (ee('Captcha')->shouldRequireCaptcha())

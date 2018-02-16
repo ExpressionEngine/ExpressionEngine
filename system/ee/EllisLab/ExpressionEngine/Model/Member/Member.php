@@ -709,6 +709,35 @@ class Member extends ContentModel {
 	}
 
 	/**
+	 * Hash and update Password
+	 *
+	 * 	Validation of $this->password takes the plaintext password. But it then
+	 * 	needs to be prepped as a salted hash before it's saved to the database
+	 * 	so we never store a plaintext password. It is imperative that this is done
+	 * 	BEFORE a call to save() the model, so it's not even ever in the database
+	 * 	temporarily or in a MySQL query log, potentially transmitted over HTTP even.
+	 *
+	 * @param  string $plaintext Plaintext password
+	 * @return void
+	 */
+	public function hashAndUpdatePassword($plaintext)
+	{
+		ee()->load->library('auth');
+		$hashed_password = ee()->auth->hash_password($plaintext);
+		$this->password = $hashed_password['password'];
+		$this->salt = $hashed_password['salt'];
+
+		// kill all sessions for this member except for the current one
+		$this->getModelFacade()->get('Session')
+			->filter('member_id', $this->member_id)
+			->filter('session_id', '!=', (string) ee()->session->userdata('session_id'))
+			->delete();
+
+		// invalidate any other sessions' remember me cookies
+		ee()->remember->delete_others($this->member_id);
+	}
+
+	/**
 	 * Override ContentModel method to set our field prefix
 	 */
 	public function getCustomFieldPrefix()

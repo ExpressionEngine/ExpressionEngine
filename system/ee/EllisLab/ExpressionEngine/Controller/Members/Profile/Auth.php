@@ -175,17 +175,7 @@ class Auth extends Settings {
 			// if the password was set, need to hash it before saving and kill all other sessions
 			if (ee()->input->post('password'))
 			{
-				ee()->load->library('auth');
-				$hashed_password = ee()->auth->hash_password($this->member->password);
-				$this->member->password = $hashed_password['password'];
-				$this->member->salt = $hashed_password['salt'];
-
-				ee('Model')->get('Session')
-					->filter('member_id', $this->member->member_id)
-					->filter('session_id', '!=', (string) ee()->session->userdata('session_id'))
-					->delete();
-
-				ee()->remember->delete_others($this->member->member_id);
+				$this->member->hashAndUpdatePassword($this->member->password);
 			}
 
 			$this->member->save();
