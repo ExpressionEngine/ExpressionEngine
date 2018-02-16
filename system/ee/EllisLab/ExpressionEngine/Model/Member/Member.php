@@ -724,8 +724,8 @@ class Member extends ContentModel {
 	{
 		ee()->load->library('auth');
 		$hashed_password = ee()->auth->hash_password($plaintext);
-		$this->password = $hashed_password['password'];
-		$this->salt = $hashed_password['salt'];
+		$this->setProperty('password', $hashed_password['password']);
+		$this->setProperty('salt', $hashed_password['salt']);
 
 		// kill all sessions for this member except for the current one
 		$this->getModelFacade()->get('Session')
