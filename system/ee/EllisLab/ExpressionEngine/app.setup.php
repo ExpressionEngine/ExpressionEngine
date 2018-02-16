@@ -496,7 +496,8 @@ return array(
 			'ResetPassword' => 'Model\Security\ResetPassword',
 
 			// ..\Session
-			// empty
+			'Session' => 'Model\Session\Session',
+			'RememberMe' => 'Model\Session\RememberMe',
 
 			// ..\Site
 			'Site' => 'Model\Site\Site',
