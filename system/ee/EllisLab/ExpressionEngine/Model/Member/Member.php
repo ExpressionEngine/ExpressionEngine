@@ -267,6 +267,18 @@ class Member extends ContentModel {
 			ee('db')->update('comments', ['email' => $this->email], ['author_id' => $this->member_id]);
 		}
 
+		if (isset($changed['screen_name']))
+		{
+			// these operations could be expensive on models so use a direct MySQL UPDATE query
+			ee('db')->update('comments', ['name' => $this->screen_name], ['author_id' => $this->member_id]);
+
+			if (ee()->config->item('forum_is_installed') == 'y')
+			{
+				ee('db')->update('forums', ['forum_last_post_author' => $this->screen_name], ['forum_last_post_author_id' => $this->member_id]);
+				ee('db')->update('forum_moderators', ['mod_member_name' => $this->screen_name], ['mod_member_id' => $this->member_id]);
+			}
+		}
+
 		// invalidate reset codes if the user's email or password is changed
 		if (isset($changed['email']) OR isset($changed['password']))
 		{
