@@ -1264,149 +1264,91 @@ class Member_settings extends Member {
 	 */
 	function update_userpass()
 	{
-		ee()->load->library('auth');
+		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
 
-	  	// Safety. Prevents accessing this function unless
-	  	// the request came from the form submission
-		if ( ! ee()->input->post('current_password'))
+		if ( ! $member)
 		{
-			return ee()->output->show_user_error('general', array(ee()->lang->line('current_password_required')));
+			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
 		}
-
-		$query = ee()->db->select('username, screen_name, password')
-							  ->get_where('members', array(
-							  	'member_id'	=> (int) ee()->session->userdata('member_id')
-							  ));
-
-		if ( ! $query->num_rows())
-		{
-			return FALSE;
-		}
-
-		if (ee()->config->item('allow_username_change') != 'y')
-		{
-			$_POST['username'] = $query->row('username');
-		}
-
-		// If the screen name field is empty, we'll assign it
-		// from the username field.
-
-		if ($_POST['screen_name'] == '')
-		{
-			$_POST['screen_name'] = $_POST['username'];
-		}
-
-		if ( ! isset($_POST['username']))
-		{
-			$_POST['username'] = '';
-		}
-
-		// Validate submitted data
-		if ( ! class_exists('EE_Validate'))
-		{
-			require APPPATH.'libraries/Validate.php';
-		}
-
-		$VAL = new EE_Validate(
-								array(
-										'member_id'			=> ee()->session->userdata('member_id'),
-										'val_type'			=> 'update', // new or update
-										'fetch_lang' 		=> TRUE,
-										'require_cpw' 		=> TRUE,
-									 	'enable_log'		=> FALSE,
-										'username'			=> $_POST['username'],
-										'cur_username'		=> $query->row('username') ,
-										'screen_name'		=> $_POST['screen_name'],
-										'cur_screen_name'	=> $query->row('screen_name') ,
-										'password'			=> $_POST['password'],
-									 	'password_confirm'	=> $_POST['password_confirm'],
-									 	'cur_password'		=> $_POST['current_password']
-									 )
-							);
-
-		$VAL->validate_screen_name();
 
 		if (ee()->config->item('allow_username_change') == 'y')
 		{
-			$VAL->validate_username();
+			$member->username = ee()->input->post('username');
 		}
 
-		if ($_POST['password'] != '')
+		// If the screen name field is empty, we'll assign it from the username field.
+		if (ee()->input->post('screen_name') == '')
 		{
-			$VAL->validate_password();
+			$member->screen_name = ee()->input->post('username');
 		}
-
-
-		// Display validation errors if there are any
-		if (count($VAL->errors) > 0)
+		else
 		{
-			return ee()->output->show_user_error('submission', $VAL->errors);
+			$member->screen_name = ee()->input->post('screen_name');
 		}
 
-		// Finally, and most important of all, was their
-		// current password submitted correctly?
-		if ( ! ee()->auth->authenticate_id(
-			(int) ee()->session->userdata('member_id'),
-			ee()->input->post('current_password')))
+		// require authentication to change user/pass
+		$validator = ee('Validation')->make();
+		$validator->setRule('current_password', 'authenticated');
+
+		// set password, and confirmation if needed
+		if (ee()->input->post('password'))
 		{
-			return ee()->output->show_user_error('general', array(ee()->lang->line('current_password_incorrect')));
+			$member->password = ee()->input->post('password');
+			$validator->setRule('password_confirm', 'matches[password]');
 		}
 
-		/** -------------------------------------
-		/**  Update "last post" forum info if needed
-		/** -------------------------------------*/
+		$result = $member->validate();
+		$password_confirm = $validator->validate($_POST);
 
-		if ($query->row('screen_name')  != $_POST['screen_name'] AND ee()->config->item('forum_is_installed') == "y" )
+		// Add password confirmation failure to main result object
+		if ($password_confirm->failed())
 		{
-			ee()->db->query("UPDATE exp_forums SET forum_last_post_author = '".ee()->db->escape_str($_POST['screen_name'])."' WHERE forum_last_post_author_id = '".ee()->session->userdata('member_id')."'");
-			ee()->db->query("UPDATE exp_forum_moderators SET mod_member_name = '".ee()->db->escape_str($_POST['screen_name'])."' WHERE mod_member_id = '".ee()->session->userdata('member_id')."'");
+			$rules = $password_confirm->getFailed();
+			foreach ($rules as $field => $rule)
+			{
+				$result->addFailed($field, $rule[0]);
+			}
 		}
 
-		/** -------------------------------------
-		/**  Assign the query data
-		/** -------------------------------------*/
-		$data['screen_name'] = $_POST['screen_name'];
-
-		if (ee()->config->item('allow_username_change') == 'y')
+		if ( ! $result->isValid())
 		{
-			$data['username'] = $_POST['username'];
+			$errors = [];
+			foreach ($result->getAllErrors() as $error)
+			{
+				$errors = array_merge($errors, array_values($error));
+			}
+
+			return ee()->output->show_user_error('submission', $errors);
 		}
 
-		// Was a password submitted?
-
-		$pw_change = '';
-
-		if ($_POST['password'] != '')
+		// if the password was set, need to hash it before saving and kill all other sessions
+		if (ee()->input->post('password'))
 		{
-			ee()->auth->update_password(ee()->session->userdata('member_id'),
-											 ee()->input->post('password'));
+			ee()->load->library('auth');
+			$hashed_password = ee()->auth->hash_password($member->password);
+			$member->password = $hashed_password['password'];
+			$member->salt = $hashed_password['salt'];
 
-			$pw_change = $this->_var_swap($this->_load_element('password_change_warning'),
-											array('lang:password_change_warning' => ee()->lang->line('password_change_warning'))
-										);
+			ee('Model')->get('Session')
+				->filter('member_id', $member->member_id)
+				->filter('session_id', '!=', (string) ee()->session->userdata('session_id'))
+				->delete();
+
+			ee()->remember->delete_others($member->member_id);
 		}
 
-		ee()->db->query(ee()->db->update_string('exp_members', $data, "member_id = '".ee()->session->userdata('member_id')."'"));
-
-		/** -------------------------------------
-		/**  Update comments if screen name has changed
-		/** -------------------------------------*/
-		if ($query->row('screen_name')  != $_POST['screen_name'])
-		{
-			ee()->db->query(ee()->db->update_string('exp_comments', array('name' => $_POST['screen_name']), "author_id = '".ee()->session->userdata('member_id')."'"));
-
-			ee()->session->userdata['screen_name'] = stripslashes($_POST['screen_name']);
-		}
+		$member->save();
 
 		/** -------------------------------------
 		/**  Success message
 		/** -------------------------------------*/
+
 		return $this->_var_swap($this->_load_element('success'),
-								array(
-										'lang:heading'	=>	ee()->lang->line('username_and_password'),
-										'lang:message'	=>	ee()->lang->line('mbr_settings_updated').$pw_change
-									 )
-							);
+			[
+				'lang:heading'	=>	ee()->lang->line('username_and_password'),
+				'lang:message'	=>	ee()->lang->line('mbr_settings_updated'),
+			]
+		);
 	}
 
 
