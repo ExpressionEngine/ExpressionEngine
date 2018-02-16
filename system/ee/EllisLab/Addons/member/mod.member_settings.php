@@ -695,7 +695,9 @@ class Member_settings extends Member {
 
 				if (array_key_exists($val['3'], $fnames))
 				{
-					$lcond = str_replace($val['3'], "\$result_row['m_field_id_".$fnames[$val['3']]."']", $lcond);
+					$m_field_id_name = 'm_field_id_'.$fnames[$val['3']]['0'];
+
+					$lcond = str_replace($val['3'], "\$result_row['".$m_field_id_name."']", $lcond);
 
 					$cond = $lcond.' '.$rcond;
 
