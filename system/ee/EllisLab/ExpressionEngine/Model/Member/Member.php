@@ -291,7 +291,7 @@ class Member extends ContentModel {
 		// invalidate reset codes if the user's email or password is changed
 		if (isset($changed['email']) OR isset($changed['password']))
 		{
-			ee('Model')->get('ResetPassword')
+			$this->getModelFacade()->get('ResetPassword')
 				->filter('member_id', $this->member_id)
 				->delete();
 		}
