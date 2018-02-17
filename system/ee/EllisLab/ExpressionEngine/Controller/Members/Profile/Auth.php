@@ -76,13 +76,12 @@ class Auth extends Settings {
 
 			if ($result->isValid())
 			{
-				var_dump($this->member->password);
 				// if the password was set, need to hash it before saving and kill all other sessions
 				if (ee()->input->post('password'))
 				{
 					$this->member->hashAndUpdatePassword($this->member->password);
 				}
-				var_dump($this->member->password);
+
 				$this->member->save();
 
 				ee('CP/Alert')->makeInline('shared-form')
