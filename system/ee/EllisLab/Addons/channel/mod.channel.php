@@ -532,11 +532,14 @@ class Channel {
 
 			$cats = [];
 
-			foreach ($data['categories'] as $cat_group)
+			if (isset($data['categories']) && is_array($data['categories']))
 			{
-				foreach ($cat_group as $cat)
+				foreach ($data['categories'] as $cat_group)
 				{
-					$cats[] = $cat;
+					foreach ($cat_group as $cat)
+					{
+						$cats[] = $cat;
+					}
 				}
 			}
 
