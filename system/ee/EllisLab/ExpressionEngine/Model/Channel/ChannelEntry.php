@@ -1164,6 +1164,24 @@ class ChannelEntry extends ContentModel {
 
 		return $data;
 	}
+
+	public function hasPageURI()
+	{
+		$site = $this->getModelFacade()->get('Site', $this->site_id)->first();
+		return isset($site->site_pages[$this->site_id]['uris'][$this->getId()]);
+	}
+
+	public function getPageURI()
+	{
+		$site = $this->getModelFacade()->get('Site', $this->site_id)->first();
+		if ( ! isset($site->site_pages[$this->site_id]['uris'][$this->getId()]))
+		{
+			return NULL;
+		}
+
+		return $site->site_pages[$this->site_id]['uris'][$this->getId()];
+	}
+
 }
 
 // EOF

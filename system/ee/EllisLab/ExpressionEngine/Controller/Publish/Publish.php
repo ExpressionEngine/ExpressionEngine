@@ -369,7 +369,14 @@ class Publish extends AbstractPublishController {
 
 		ee()->load->library('template', NULL, 'TMPL');
 
-		$uri = str_replace(['{url_title}', '{entry_id}'], [$entry->url_title, $entry->entry_id], $channel->preview_url);
+		if ($entry->hasPageURI())
+		{
+			$uri = $entry->getPageURI();
+		}
+		else
+		{
+			$uri = str_replace(['{url_title}', '{entry_id}'], [$entry->url_title, $entry->entry_id], $channel->preview_url);
+		}
 
 		ee()->uri->_set_uri_string($uri);
 

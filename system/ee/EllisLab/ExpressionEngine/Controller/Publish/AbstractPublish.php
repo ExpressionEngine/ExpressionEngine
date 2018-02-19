@@ -456,7 +456,7 @@ abstract class AbstractPublish extends CP_Controller {
 			unset($buttons[1]);
 		}
 
-		if ($entry->Channel->preview_url)
+		if ($entry->Channel->preview_url || $entry->hasPageURI())
 		{
 			$buttons[] = [
 				'name'    => 'submit',
