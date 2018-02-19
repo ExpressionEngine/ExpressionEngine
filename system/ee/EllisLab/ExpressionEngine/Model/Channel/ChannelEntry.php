@@ -103,7 +103,10 @@ class ChannelEntry extends ContentModel {
 		'CommentSubscriptions' => array(
 			'type' => 'hasMany',
 			'model' => 'CommentSubscription'
-		)
+		),
+		'Site' => array(
+			'type' => 'belongsTo'
+		),
 	);
 
 	protected static $_field_data = array(
@@ -1165,23 +1168,10 @@ class ChannelEntry extends ContentModel {
 		return $data;
 	}
 
-	protected function getSite()
-	{
-		$cache_key = 'Site/' . $this->site_id;
-
-		if (($site = ee()->session->cache(__CLASS__, $cache_key, FALSE)) == FALSE)
-		{
-			$site = $this->getModelFacade()->get('Site', $this->site_id)->first();
-			ee()->session->set_cache(__CLASS__, $cache_key, $site);
-		}
-
-		return $site;
-	}
-
 	public function hasPageURI()
 	{
-		$site = $this->getSite();
-		return isset($site->site_pages[$this->site_id]['uris'][$this->getId()]);
+		$pages = $this->Site->site_pages;
+		return isset($pages[$this->site_id]['uris'][$this->getId()]);
 	}
 
 	public function getPageURI()
@@ -1191,9 +1181,7 @@ class ChannelEntry extends ContentModel {
 			return NULL;
 		}
 
-		$site = $this->getSite();
-
-		return $site->site_pages[$this->site_id]['uris'][$this->getId()];
+		return $this->Site->site_pages[$this->site_id]['uris'][$this->getId()];
 	}
 
 }
