@@ -148,6 +148,8 @@ class Categories extends AbstractQuickEdit {
 				return show_error(lang('unauthorized_access'), 403);
 			}
 
+			$entries->edit_date = ee()->localize->now;
+
 			$channel = $this->getIntersectedChannel($entries->Channel);
 
 			// Double-check passed categories belong to groups assigned to the channel

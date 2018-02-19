@@ -163,6 +163,7 @@ class QuickEdit extends AbstractQuickEdit {
 			}
 		}
 
+		$entries->edit_date = ee()->localize->now;
 		$entries->save();
 
 		ee('CP/Alert')->makeInline('entries-form')
