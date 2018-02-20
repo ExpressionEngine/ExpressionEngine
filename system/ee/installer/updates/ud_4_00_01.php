@@ -55,6 +55,18 @@ class Updater {
 
 	private function resyncLayouts()
 	{
+		// Fix for running this update routine in a >= 4.1 context, preview_url
+		// column must be present to access Channel model below
+		ee()->smartforge->add_column(
+			'channels',
+			array(
+				'preview_url' => array(
+					'type'    => 'VARCHAR(100)',
+					'null'    => TRUE,
+				)
+			)
+		);
+
 		ee('Model')->get('ChannelLayout')
 			->with('Channel')
 			->all()
