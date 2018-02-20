@@ -26,6 +26,7 @@ class Updater {
 		$steps = new \ProgressIterator(
 			array(
 				'addPasswordChangeNotificationTemplates',
+				'addEmailChangeNotificationTemplates',
 				'addPreviewURLToChannels',
 			)
 		);
@@ -57,6 +58,29 @@ class Updater {
 					'template_subtype' => 'members',
 					'data_title' => password_changed_notification_title(),
 					'template_data' => password_changed_notification()
+				])->save();
+		}
+	}
+
+	protected function addEmailChangeNotificationTemplates()
+	{
+		$notify_template = ee('Model')->get('SpecialtyTemplate')
+			->filter('template_name', 'email_changed_notification')
+			->filter('template_type', 'email')
+			->filter('template_subtype', 'members')
+			->first();
+
+		if ( ! $notify_template)
+		{
+			require_once EE_APPPATH.'/language/'.ee()->config->item('language').'/email_data.php';
+
+			$notify_template = ee('Model')->make('SpecialtyTemplate')
+				->set([
+					'template_name' => 'email_changed_notification',
+					'template_type' => 'email',
+					'template_subtype' => 'members',
+					'data_title' => email_changed_notification_title(),
+					'template_data' => email_changed_notification()
 				])->save();
 		}
 	}

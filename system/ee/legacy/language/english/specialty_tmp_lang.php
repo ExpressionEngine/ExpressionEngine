@@ -28,6 +28,10 @@ $lang = array(
 
 'decline_member_validation' => 'User &ndash; Account declined notification',
 
+'email_changed_notification' => 'User &ndash; Email changed notification',
+
+'email_changed_notification_desc' => 'This template defines the message a user receives when their email address was changed.',
+
 'email_message' => 'Email Message',
 
 'email_subject' => 'Email Subject',
@@ -120,7 +124,7 @@ $lang = array(
 
 'password_changed_notification' => 'User &ndash; Password changed notification',
 
-'password_changed_notification_desc' => 'This template defines the message a user receives when their password was changed on the front end. Password changes made by an admininstrator in the ExpressionEngine control panel do <em>not</em> send a notification.',
+'password_changed_notification_desc' => 'This template defines the message a user receives when their password was changed on the front end.',
 
 'pm_inbox_full' => 'User &ndash; Inbox full notification',
 

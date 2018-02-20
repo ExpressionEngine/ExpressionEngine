@@ -69,6 +69,7 @@ class SpecialtyTemplate extends Model {
 			'admin_notify_comment'          => array('channel_name', 'entry_title', 'entry_id', 'url_title', 'channel_id', 'comment_url_title_auto_path',  'comment_url', 'comment', 'comment_id', 'name', 'url', 'email', 'location', 'unwrap}{delete_link}{/unwrap', 'unwrap}{close_link}{/unwrap', 'unwrap}{approve_link}{/unwrap'),
 			'admin_notify_forum_post'       => array('name_of_poster', 'forum_name', 'title', 'body', 'thread_url', 'post_url'),
 			'mbr_activation_instructions'   => array('name',  'username', 'email', 'activation_url', 'site_name', 'site_url'),
+			'email_changed_notification'    => ['name', 'username', 'site_name', 'site_url'],
 			'forgot_password_instructions'  => array('name', 'username', 'reset_url', 'site_name', 'site_url'),
 			'password_changed_notification' => ['name', 'username', 'site_name', 'site_url'],
 			'decline_member_validation'     => array('name', 'username', 'site_name', 'site_url'),
