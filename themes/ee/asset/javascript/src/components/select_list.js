@@ -380,7 +380,7 @@ var SelectList = function (_React$Component) {
               item: item,
               name: props.name,
               selected: props.selected,
-              disabled: props.disabledChoices && props.disabledChoices.includes(item.value),
+              disabledChoices: props.disabledChoices,
               multi: props.multi,
               nested: props.nested,
               selectable: props.selectable,
@@ -536,6 +536,7 @@ var SelectItem = function (_React$Component2) {
       var props = this.props;
       var checked = this.checked(props.item.value);
       var label = props.item.label;
+      var disabled = props.disabledChoices && props.disabledChoices.includes(props.item.value);
 
       if (props.item.section) {
         return React.createElement(
@@ -570,7 +571,7 @@ var SelectItem = function (_React$Component2) {
           },
           checked: checked ? 'checked' : '',
           'data-group-toggle': props.groupToggle ? JSON.stringify(props.groupToggle) : '[]',
-          disabled: props.disabled ? 'disabled' : ''
+          disabled: disabled ? 'disabled' : ''
         }),
         props.editable && React.createElement(
           'a',
