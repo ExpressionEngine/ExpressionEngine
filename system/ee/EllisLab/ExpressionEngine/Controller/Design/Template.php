@@ -971,7 +971,7 @@ class Template extends AbstractDesignController {
 	{
 		$existing_templates = [
 			[
-				'label' => lang('none'),
+				'label' => lang('default_404_option'),
 				'value' => ''
 			]
 		] + $this->getExistingTemplates($template->no_auth_bounce);
