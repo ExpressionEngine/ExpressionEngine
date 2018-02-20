@@ -148,7 +148,7 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 					// API is referencing changed to another fieldtype
 					// (Grid may cause this), get it back on track to
 					// parse the next chunk
-					if ($ft_name != $ft_api->field_type)
+					if ($ft_name != $ft_api->field_type || $ft->id() != $field_id)
 					{
 						$ft_api->setup_handler($field_id);
 					}
