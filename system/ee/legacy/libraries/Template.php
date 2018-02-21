@@ -2616,10 +2616,35 @@ class EE_Template {
 						->join('template_groups b', 'a.group_id = b.group_id')
 						->where('template_id', $query->row('no_auth_bounce'))
 						->get();
+
+					// If the redirect template is not allowed, give them a 404
+					ee()->db->select('COUNT(*) as count');
+					ee()->db->where('template_id', $query->row('template_id'));
+					ee()->db->where('member_group', ee()->session->userdata('group_id'));
+					$result = ee()->db->get('template_no_access');
+
+					if ($result->row('count') > 0)
+					{
+						$this->log_item("Access redirect denied, Show 404");
+
+						// The redirect page with no access is the 404 template- throw a manual 404
+						if (ee()->config->item('site_404') == $template_group.'/'.$template)
+						{
+							show_404(ee()->uri->uri_string);
+						}
+
+						$this->show_404();
+					}
 				}
-				elseif ($query->row('no_auth_bounce')  == '' OR $query->num_rows() != 1)
+				elseif ($query->row('no_auth_bounce')  == '')
 				{
 					$this->log_item("Access denied, Show 404");
+					// The redirect page with no access is the 404 template- throw a manual 404
+					if (ee()->config->item('site_404') == $template_group.'/'.$template)
+					{
+						show_404(ee()->uri->uri_string);
+					}
+
 					$this->show_404();
 				}
 			}
