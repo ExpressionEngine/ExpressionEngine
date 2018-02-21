@@ -6,16 +6,16 @@
  * @license   https://expressionengine.com/license
  */
 
-class QuickEditEntries extends React.Component {
+class BulkEditEntries extends React.Component {
   static defaultProps = {
     items: [],
     limit: 50
   }
 
   static render (context, props) {
-    $('div[data-quick-edit-entries-react]', context).each(function () {
+    $('div[data-bulk-edit-entries-react]', context).each(function () {
       ReactDOM.unmountComponentAtNode(this)
-      ReactDOM.render(React.createElement(FilterableQuickEditEntries, props, null), this)
+      ReactDOM.render(React.createElement(FilterableBulkEditEntries, props, null), this)
     })
   }
 
@@ -53,7 +53,7 @@ class QuickEditEntries extends React.Component {
             <li class="entry-list__item entry-list__item---empty" dangerouslySetInnerHTML={{__html: lang.noEntriesFound}} />
           }
           {limitedItems.map((item) =>
-            <QuickEditEntryItem
+            <BulkEditEntryItem
               item={item}
               handleRemove={(item) => this.handleRemove(item)}
               lang={lang}
@@ -66,7 +66,7 @@ class QuickEditEntries extends React.Component {
   }
 }
 
-function QuickEditEntryItem (props) {
+function BulkEditEntryItem (props) {
   return (
     <li class="entry-list__item">
       <h2>{props.item.label}</h2>
@@ -75,4 +75,4 @@ function QuickEditEntryItem (props) {
   )
 }
 
-const FilterableQuickEditEntries = makeFilterableComponent(QuickEditEntries)
+const FilterableBulkEditEntries = makeFilterableComponent(BulkEditEntries)

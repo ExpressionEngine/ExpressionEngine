@@ -7,17 +7,17 @@
  * @license   https://expressionengine.com/license
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Publish\QuickEdit;
+namespace EllisLab\ExpressionEngine\Controller\Publish\BulkEdit;
 
-use EllisLab\ExpressionEngine\Controller\Publish\QuickEdit\AbstractQuickEdit;
+use EllisLab\ExpressionEngine\Controller\Publish\BulkEdit\AbstractBulkEdit;
 
 /**
- * Quick Bulk Edit Controller
+ * Bulk Edit Controller
  */
-class QuickEdit extends AbstractQuickEdit {
+class BulkEdit extends AbstractBulkEdit {
 
 	/**
-	 * @var Array Fields we want available to Quick Edit
+	 * @var Array Fields we want available to Bulk Edit
 	 */
 	protected $standard_default_fields = [
 		'status',
@@ -27,7 +27,7 @@ class QuickEdit extends AbstractQuickEdit {
 	];
 
 	/**
-	 * Main Quick Edit form
+	 * Main Bulk Edit form
 	 *
 	 * @param Array $data Associative array of field names to field data
 	 * @param Result $errors Validation result for the given fields, or NULL
@@ -99,7 +99,7 @@ class QuickEdit extends AbstractQuickEdit {
 		}
 
 		$vars = [
-			'base_url' => ee('CP/URL', 'publish/quick-edit/save'),
+			'base_url' => ee('CP/URL', 'publish/bulk-edit/save'),
 			'cp_page_title' => sprintf(lang('editing_entries'), $entries->count()),
 			'save_btn_text' => 'btn_save_all_and_close',
 			'save_btn_text_working' => 'btn_saving',
@@ -108,8 +108,8 @@ class QuickEdit extends AbstractQuickEdit {
 					->asWarning()
 					->cannotClose()
 					->withTitle(lang('important'))
-					->addToBody(lang('quick_edit_notice'))
-					->addToBody('<b>'.lang('quick_edit_destructive').'</b>')
+					->addToBody(lang('bulk_edit_notice'))
+					->addToBody('<b>'.lang('bulk_edit_destructive').'</b>')
 					->render(),
 				[
 					'title' => 'add_editable_fields',
@@ -118,7 +118,7 @@ class QuickEdit extends AbstractQuickEdit {
 						'class' => $fieldset_class,
 					],
 					'fields' => [
-						'quick-edit' => [
+						'bulk-edit' => [
 							'type' => 'html',
 							'content' => $fluid_markup
 						]
@@ -131,7 +131,7 @@ class QuickEdit extends AbstractQuickEdit {
 	}
 
 	/**
-	 * Quick Edit submit handler
+	 * Bulk Edit submit handler
 	 *
 	 * @return String HTML markup of form if validation error, array if success
 	 */

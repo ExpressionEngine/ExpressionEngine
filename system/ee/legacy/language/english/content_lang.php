@@ -918,7 +918,7 @@ $lang = array(
 
 'rel_ft_no_entries' => 'No Entries',
 
-/* Quick Edit */
+/* Bulk Edit */
 
 'add_categories' => 'Add Categories',
 
@@ -940,15 +940,15 @@ $lang = array(
 
 'no_cat_groups_in_common' => 'No <b>Category Groups</b> in common.',
 
-'quick_edit' => 'Quick Edit',
+'bulk_edit' => 'Bulk Edit',
 
-'quick_edit_add_categories_notice' => 'Any categories selected will be assigned to the selected entries <b>in addition</b> to the current category selection for those entries.',
+'bulk_edit_add_categories_notice' => 'Any categories selected will be assigned to the selected entries <b>in addition</b> to the current category selection for those entries.',
 
-'quick_edit_destructive' => 'This is a destructive and irreversible action.',
+'bulk_edit_destructive' => 'This is a destructive and irreversible action.',
 
-'quick_edit_notice' => 'Any fields submitted will overwrite that field\'s stored content for all selected entries.',
+'bulk_edit_notice' => 'Any fields submitted will overwrite that field\'s stored content for all selected entries.',
 
-'quick_edit_remove_categories_notice' => 'Any categories selected will be <b>removed</b> from the selected entries, leaving the entries\' other category assignments intact.',
+'bulk_edit_remove_categories_notice' => 'Any categories selected will be <b>removed</b> from the selected entries, leaving the entries\' other category assignments intact.',
 
 'remove_categories' => 'Remove Categories',
 

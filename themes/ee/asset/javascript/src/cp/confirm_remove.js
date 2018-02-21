@@ -34,8 +34,8 @@ $(document).ready(function () {
 				return $(el).attr('value') !== undefined;
 			});
 
-			if (conditional_element.attr('rel') == 'modal-quick-edit') {
-				return EE.cp.QuickEdit.openForm(conditional_element.val(), checked)
+			if (conditional_element.attr('rel') == 'modal-bulk-edit') {
+				return EE.cp.BulkEdit.openForm(conditional_element.val(), checked)
 			}
 
 			if (checked.length < 6) {

@@ -326,10 +326,10 @@ class Edit extends AbstractPublishController {
 		ee()->javascript->set_global([
 			'lang.remove_confirm' => lang('entry') . ': <b>### ' . lang('entries') . '</b>',
 
-			'publishEdit.quickEditFormUrl' => ee('CP/URL')->make('publish/quick-edit')->compile(),
-			'publishEdit.addCategoriesFormUrl' => ee('CP/URL')->make('publish/quick-edit/categories/add')->compile(),
-			'publishEdit.removeCategoriesFormUrl' => ee('CP/URL')->make('publish/quick-edit/categories/remove')->compile(),
-			'quickEdit.lang' => [
+			'publishEdit.bulkEditFormUrl' => ee('CP/URL')->make('publish/bulk-edit')->compile(),
+			'publishEdit.addCategoriesFormUrl' => ee('CP/URL')->make('publish/bulk-edit/categories/add')->compile(),
+			'publishEdit.removeCategoriesFormUrl' => ee('CP/URL')->make('publish/bulk-edit/categories/remove')->compile(),
+			'bulkEdit.lang' => [
 				'selectedEntries'       => lang('selected_entries'),
 				'filterSelectedEntries' => lang('filter_selected_entries'),
 				'noEntriesFound'        => sprintf(lang('no_found'), lang('entries')),
@@ -344,8 +344,8 @@ class Edit extends AbstractPublishController {
 			'file' => array(
 				'cp/confirm_remove',
 				'cp/publish/entry-list',
-				'components/quick_edit_entries',
-				'cp/publish/quick-edit'
+				'components/bulk_edit_entries',
+				'cp/publish/bulk-edit'
 			),
 		));
 

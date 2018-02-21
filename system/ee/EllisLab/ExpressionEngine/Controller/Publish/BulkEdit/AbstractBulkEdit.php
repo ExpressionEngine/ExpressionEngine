@@ -7,14 +7,14 @@
  * @license   https://expressionengine.com/license
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Publish\QuickEdit;
+namespace EllisLab\ExpressionEngine\Controller\Publish\BulkEdit;
 
 use CP_Controller;
 
 /**
- * Abstract Publish Controller
+ * Abstract Bulk Edit Controller
  */
-abstract class AbstractQuickEdit extends CP_Controller {
+abstract class AbstractBulkEdit extends CP_Controller {
 
 	public function __construct()
 	{

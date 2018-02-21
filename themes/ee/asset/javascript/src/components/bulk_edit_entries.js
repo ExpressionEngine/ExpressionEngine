@@ -16,16 +16,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @license   https://expressionengine.com/license
  */
 
-var QuickEditEntries = function (_React$Component) {
-  _inherits(QuickEditEntries, _React$Component);
+var BulkEditEntries = function (_React$Component) {
+  _inherits(BulkEditEntries, _React$Component);
 
-  function QuickEditEntries() {
-    _classCallCheck(this, QuickEditEntries);
+  function BulkEditEntries() {
+    _classCallCheck(this, BulkEditEntries);
 
-    return _possibleConstructorReturn(this, (QuickEditEntries.__proto__ || Object.getPrototypeOf(QuickEditEntries)).apply(this, arguments));
+    return _possibleConstructorReturn(this, (BulkEditEntries.__proto__ || Object.getPrototypeOf(BulkEditEntries)).apply(this, arguments));
   }
 
-  _createClass(QuickEditEntries, [{
+  _createClass(BulkEditEntries, [{
     key: 'componentDidUpdate',
     value: function componentDidUpdate(prevProps, prevState) {
       if (prevProps.initialItems.length != this.props.initialItems.length) {
@@ -75,7 +75,7 @@ var QuickEditEntries = function (_React$Component) {
           { 'class': 'entry-list' },
           limitedItems.length == 0 && React.createElement('li', { 'class': 'entry-list__item entry-list__item---empty', dangerouslySetInnerHTML: { __html: lang.noEntriesFound } }),
           limitedItems.map(function (item) {
-            return React.createElement(QuickEditEntryItem, {
+            return React.createElement(BulkEditEntryItem, {
               item: item,
               handleRemove: function handleRemove(item) {
                 return _this2.handleRemove(item);
@@ -107,23 +107,23 @@ var QuickEditEntries = function (_React$Component) {
   }], [{
     key: 'render',
     value: function render(context, props) {
-      $('div[data-quick-edit-entries-react]', context).each(function () {
+      $('div[data-bulk-edit-entries-react]', context).each(function () {
         ReactDOM.unmountComponentAtNode(this);
-        ReactDOM.render(React.createElement(FilterableQuickEditEntries, props, null), this);
+        ReactDOM.render(React.createElement(FilterableBulkEditEntries, props, null), this);
       });
     }
   }]);
 
-  return QuickEditEntries;
+  return BulkEditEntries;
 }(React.Component);
 
-QuickEditEntries.defaultProps = {
+BulkEditEntries.defaultProps = {
   items: [],
   limit: 50
 };
 
 
-function QuickEditEntryItem(props) {
+function BulkEditEntryItem(props) {
   return React.createElement(
     'li',
     { 'class': 'entry-list__item' },
@@ -143,4 +143,4 @@ function QuickEditEntryItem(props) {
   );
 }
 
-var FilterableQuickEditEntries = makeFilterableComponent(QuickEditEntries);
+var FilterableBulkEditEntries = makeFilterableComponent(BulkEditEntries);

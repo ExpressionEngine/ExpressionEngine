@@ -8,15 +8,15 @@
 
 (function($) {
 
-EE.cp.QuickEdit = {
+EE.cp.BulkEdit = {
 
-	modal: $('div[rel="modal-quick-edit"]'),
+	modal: $('div[rel="modal-bulk-edit"]'),
 	formContainer: $('.app-modal__content .col.w-12.remove-pad--right', this.modal),
 	ajaxRequest: null,
 	intent: null,
 
 	intentFormUrls: {
-		'quick-edit': EE.publishEdit.quickEditFormUrl,
+		'bulk-edit': EE.publishEdit.bulkEditFormUrl,
 		'add-categories': EE.publishEdit.addCategoriesFormUrl,
 		'remove-categories': EE.publishEdit.removeCategoriesFormUrl
 	},
@@ -46,14 +46,14 @@ EE.cp.QuickEdit = {
 	/**
 	 * Renders the filterable entry list React component
 	 *
-	 * @param {array} items Array of item objects formatted for QuickEditEntries component
+	 * @param {array} items Array of item objects formatted for BulkEditEntries component
 	 * @return {void}
 	 */
 	_renderEntryList: function(items) {
 		var that = this
-		QuickEditEntries.render(this.modal, {
+		BulkEditEntries.render(this.modal, {
 			items: items,
-			lang: EE.quickEdit.lang,
+			lang: EE.bulkEdit.lang,
 			entriesChanged: function(items) {
 				that._loadForm(items)
 			}
@@ -62,7 +62,7 @@ EE.cp.QuickEdit = {
 
 	/**
 	 * Given an array of jQuery objects of checked checkboxes, returns an array
-	 * of items formatter for the QuickEditEntries component
+	 * of items formatter for the BulkEditEntries component
 	 *
 	 * @param {array} checked Array of jQuery objects of checked checkboxes for entries
 	 * @return {array}
@@ -77,10 +77,10 @@ EE.cp.QuickEdit = {
 	},
 
 	/**
-	 * Given an array of QuickEditEntries component-formatted items, returns an
+	 * Given an array of BulkEditEntries component-formatted items, returns an
 	 * array of entry IDs for the items
 	 *
-	 * @param {array} items Array of QuickEditEntries component-formatted items
+	 * @param {array} items Array of BulkEditEntries component-formatted items
 	 * @return {array}
 	 */
 	_getEntryIdsFromItems: function(items) {
@@ -92,7 +92,7 @@ EE.cp.QuickEdit = {
 	/**
 	 * Loads the modal form with the specified contents
 	 *
-	 * @param {array} items Array of QuickEditEntries component-formatted items
+	 * @param {array} items Array of BulkEditEntries component-formatted items
 	 * @return {array}
 	 */
 	_loadForm: function(items) {

@@ -7,14 +7,14 @@
  * @license   https://expressionengine.com/license
  */
 
-namespace EllisLab\ExpressionEngine\Controller\Publish\QuickEdit;
+namespace EllisLab\ExpressionEngine\Controller\Publish\BulkEdit;
 
-use EllisLab\ExpressionEngine\Controller\Publish\QuickEdit\AbstractQuickEdit;
+use EllisLab\ExpressionEngine\Controller\Publish\BulkEdit\AbstractBulkEdit;
 
 /**
- * Add Categories Quick Bulk Edit Controller
+ * Add Categories Bulk Edit Controller
  */
-class Categories extends AbstractQuickEdit {
+class Categories extends AbstractBulkEdit {
 
 	/**
 	 * Add Categories form
@@ -71,7 +71,7 @@ class Categories extends AbstractQuickEdit {
 				->asWarning()
 				->cannotClose()
 				->withTitle(lang('important'))
-				->addToBody(lang('quick_edit_'.$intent.'_categories_notice'))
+				->addToBody(lang('bulk_edit_'.$intent.'_categories_notice'))
 				->render()
 		];
 
@@ -90,7 +90,7 @@ class Categories extends AbstractQuickEdit {
 		}
 
 		$vars = [
-			'base_url' => ee('CP/URL', 'publish/quick-edit/categories/save-'.$intent),
+			'base_url' => ee('CP/URL', 'publish/bulk-edit/categories/save-'.$intent),
 			'cp_page_title' => sprintf(lang($intent.'_categories_entries'), $entries->count()),
 			'save_btn_text' => 'btn_save_all_and_close',
 			'save_btn_text_working' => 'btn_saving',
