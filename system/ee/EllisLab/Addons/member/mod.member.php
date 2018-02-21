@@ -126,9 +126,6 @@ class Member {
 		ee()->lang->loadfile('myaccount');
 		ee()->lang->loadfile('member');
 
-		// For custom fields that use the template library
-		ee()->load->library('template', NULL, 'TMPL');
-
 		ee()->functions->template_type = 'webpage';
 
 		if (isset(ee()->TMPL) && is_object(ee()->TMPL))
@@ -138,6 +135,8 @@ class Member {
 		}
 		else
 		{
+			// For custom fields that use the template library
+			ee()->load->library('template', NULL, 'TMPL');
 			$this->trigger = ee()->config->item('profile_trigger');
 		}
 	}
