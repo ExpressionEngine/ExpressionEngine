@@ -152,4 +152,25 @@ $(document).ready(function () {
 		$('button[rel="live-preview"]').click();
 	}
 
+	var previewButtonStartedHidden = $('button[value="preview"]').hasClass('hidden');
+
+	var showPreviewButton = function(e) {
+		var pagesURI      = $('input[name="pages__pages_uri"]'),
+		    pagesTemplate = $('input[name="pages__pages_template_id"]'),
+		    button        = $('button[value="preview"]')
+			show          = false;
+
+		show = (pagesURI.val() != '' && (pagesTemplate.val() != '' || e.target.nodeName.toLowerCase() == 'label'));
+
+		if (show) {
+			button.removeClass('hidden');
+		}
+
+		if ( ! show && previewButtonStartedHidden) {
+			button.addClass('hidden');
+		}
+	};
+
+	$('input[name="pages__pages_uri"]').on('interact', showPreviewButton);
+	$('div[data-input-value="pages__pages_template_id"] .field-inputs label').on('click', showPreviewButton);
 });

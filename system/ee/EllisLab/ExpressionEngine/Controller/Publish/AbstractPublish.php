@@ -456,14 +456,22 @@ abstract class AbstractPublish extends CP_Controller {
 			unset($buttons[1]);
 		}
 
-		if ($entry->Channel->preview_url || $entry->hasPageURI())
+		if ($entry->hasLivePreview())
 		{
+			$extra_class = '';
+
+			$pages_module = ee('Addon')->get('pages');
+			if ($pages_module && $pages_module->isInstalled())
+			{
+				$extra_class = ' hidden';
+			}
+
 			$buttons[] = [
 				'name'    => 'submit',
 				'type'    => 'submit',
 				'value'   => 'preview',
 				'text'    => 'preview',
-				'class'   => 'action js-modal-link--side',
+				'class'   => 'action js-modal-link--side' . $extra_class,
 				'attrs'   => 'rel=live-preview',
 				'working' => 'btn_previewing'
 			];

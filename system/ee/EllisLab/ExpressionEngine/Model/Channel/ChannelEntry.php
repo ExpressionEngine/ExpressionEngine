@@ -1184,6 +1184,22 @@ class ChannelEntry extends ContentModel {
 		return $this->Site->site_pages[$this->site_id]['uris'][$this->getId()];
 	}
 
+	public function hasLivePreview()
+	{
+		if ($this->Channel->preview_url || $this->hasPageURI())
+		{
+			return TRUE;
+		}
+
+		$pages_module = ee('Addon')->get('pages');
+		if ($pages_module && $pages_module->isInstalled())
+		{
+			return TRUE;
+		}
+
+		return FALSE;
+	}
+
 }
 
 // EOF
