@@ -976,6 +976,9 @@ class Template extends AbstractDesignController {
 			]
 		] + $this->getExistingTemplates($template->no_auth_bounce);
 
+		// Remove current template from options
+		unset($existing_templates[$template->template_id]);
+
 		$member_groups = ee('Model')->get('MemberGroup')
 			->fields('group_id', 'group_title')
 			->filter('site_id', ee()->config->item('site_id'))
