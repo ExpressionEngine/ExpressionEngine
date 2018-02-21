@@ -369,6 +369,31 @@ class Publish extends AbstractPublishController {
 
 		ee()->load->library('template', NULL, 'TMPL');
 
+		$template_group = '';
+		$template = '';
+
+		$pages_module = ee('Addon')->get('pages');
+		if ($pages_module && $pages_module->isInstalled())
+		{
+			$values = [
+				'pages_uri'         => $_POST['pages__pages_uri'],
+				'pages_template_id' => $_POST['pages__pages_template_id'],
+			];
+
+			$page_tab = new \Pages_tab;
+			$site_pages = $page_tab->prepareSitePagesData($entry, $values);
+
+			ee()->config->set_item('site_pages', $site_pages);
+			$entry->Site->site_pages = $site_pages;
+
+			$template = ee('Model')->get('Template', $_POST['pages__pages_template_id'])
+				->with('TemplateGroup')
+				->first();
+
+			$template_group = $template->TemplateGroup->group_name;
+			$template = $template->template_name;
+		}
+
 		if ($entry->hasPageURI())
 		{
 			$uri = $entry->getPageURI();
@@ -389,7 +414,7 @@ class Publish extends AbstractPublishController {
 
 		ee()->core->loadSnippets();
 
-		ee()->TMPL->run_template_engine();
+		ee()->TMPL->run_template_engine($template_group, $template);
 	}
 }
 
