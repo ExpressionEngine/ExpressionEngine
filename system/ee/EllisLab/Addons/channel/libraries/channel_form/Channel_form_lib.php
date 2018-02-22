@@ -1755,7 +1755,7 @@ GRID_FALLBACK;
 		$cat_groups = explode('|', $this->entry->Channel->cat_group);
 		if ( ! empty($cat_groups) && isset($_POST['category']))
 		{
-			$_POST['categories'] = array('cat_group_id_'.$cat_groups[0] => $_POST['category']);
+			$_POST['categories'] = array('cat_group_id_'.$cat_groups[0] => (is_array($_POST['category'])) ? $_POST['category'] : [$_POST['category']]);
 		}
 
 		if (in_array($this->channel('channel_id'), $this->member->MemberGroup->AssignedChannels->pluck('channel_id')) OR (int) $this->member->MemberGroup->getId() == 1)
