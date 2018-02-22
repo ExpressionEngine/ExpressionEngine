@@ -421,7 +421,8 @@ class Channel_form_lib
 
 				foreach($cats as $cat_value)
 				{
-					$tree[] = "'<option value='".$cat_value['category_id']."'>".$cat_value['category_name']."</option>";
+					$cat_selected = (in_array($cat_value['category_id'], $this->get_selected_cats())) ? ' selected="selected"' : '';
+					$tree[] = '<option value="'.$cat_value['category_id'].'"'.$cat_selected.'>'.$cat_value['category_name'].'</option>';
 				}
 
 				$this->parse_variables['category_menu'] = array(
@@ -2111,6 +2112,24 @@ GRID_FALLBACK;
 	}
 
 	/**
+	 * Get selected categories
+	 *
+	 * @return	array
+	 */
+	public function get_selected_cats()
+	{
+		$selected = array();
+
+		if ($this->entry->entry_id OR ! empty($this->channel->deft_category))
+		{
+			$selected = $this->entry->Categories->pluck('cat_id');
+		}
+
+		return $selected;
+	}
+
+
+	/**
 	 * Load categories
 	 *
 	 * @return	void
@@ -2123,12 +2142,7 @@ GRID_FALLBACK;
 			return;
 		}
 
-		$selected = '';
-
-		if ($this->entry->entry_id OR ! empty($this->channel->deft_category))
-		{
-			$selected = $this->entry->Categories->pluck('cat_id');
-		}
+		$selected = $this->get_selected_cats();
 
 		// Load up the library and figure out what belongs and what's selected
 		ee()->load->library(array('api', 'file_field'));
