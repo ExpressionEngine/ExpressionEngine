@@ -371,8 +371,8 @@ class Publish extends AbstractPublishController {
 		$template_group = '';
 		$template = '';
 
-		$pages_module = ee('Addon')->get('pages');
-		if ($pages_module && $pages_module->isInstalled())
+		if (array_key_exists('pages__pages_uri', $_POST)
+			&& array_key_exists('pages__pages_template_id', $_POST))
 		{
 			$values = [
 				'pages_uri'         => $_POST['pages__pages_uri'],
