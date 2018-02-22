@@ -547,6 +547,13 @@ class Channel_form_lib
 							}
 
 							$this->parse_variables[$key] = ee()->localize->human_time($date);
+
+							// Default dates need a timestamp variable for the datepicker
+							if (in_array($name, array('entry_date', 'expiration_date', 'comment_expiration_date')))
+							{
+								$timestamp_name = str_replace('date', 'timestamp', $name);
+								$this->parse_variables[$timestamp_name] = $date;
+							}
 						}
 						else
 						{
@@ -585,25 +592,30 @@ class Channel_form_lib
 				if (strpos(ee()->TMPL->tagdata, 'entry_date') !== FALSE)
 				{
 					$this->parse_variables['entry_date'] = ee()->localize->human_time();
+					$this->parse_variables['entry_timestamp'] = ee()->localize->now;
 				}
 
 				if (strpos(ee()->TMPL->tagdata, 'expiration_date') !== FALSE)
 				{
 					$this->parse_variables['expiration_date'] = '';
+					$this->parse_variables['expiration_timestamp'] = '';
 				}
 
 				if (strpos(ee()->TMPL->tagdata, 'comment_expiration_date') !== FALSE)
 				{
 					$comment_expiration_date = '';
+					$comment_expiration_timestamp = '';
 
 					if ($this->channel('comment_expiration') > 0)
 					{
 						$comment_expiration_date = $this->channel('comment_expiration') * (60 * 60 * 24); // days -> seconds
 						$comment_expiration_date = $comment_expiration_date + ee()->localize->now;
+						$comment_expiration_timestamp = $comment_expiration_date;
 						$comment_expiration_date = ee()->localize->human_time($comment_expiration_date);
 					}
 
 					$this->parse_variables['comment_expiration_date'] = $comment_expiration_date;
+					$this->parse_variables['comment_expiration_timestamp'] = $comment_expiration_timestamp;
 				}
 			}
 			else
@@ -611,6 +623,9 @@ class Channel_form_lib
 				$this->parse_variables['entry_date'] = ee()->localize->human_time();
 				$this->parse_variables['expiration_date'] = '';
 				$this->parse_variables['comment_expiration_date'] = '';
+				$this->parse_variables['entry_timestamp'] = ee()->localize->now;
+				$this->parse_variables['expiration_timestamp'] = '';
+				$this->parse_variables['comment_expiration_timestamp'] = '';
 			}
 
 			foreach ($this->custom_fields as $field)

@@ -548,8 +548,24 @@ class Member_memberlist extends Member {
 
 		if ($query->num_rows() > 0)
 		{
+			$member_ids = [];
 			foreach ($query->result_array() as $row)
 			{
+				$member_ids[] = $row['member_id'];
+			}
+
+			$members = ee('Model')->get('Member', $member_ids)
+				->all()
+				->indexBy('member_id');
+
+			foreach ($query->result_array() as $row)
+			{
+				$member = $members[$row['member_id']];
+				foreach ($member->getCustomFieldNames() as $name)
+				{
+					$row[$name] = $member->$name;
+				}
+
 				$temp = $memberlist_rows;
 
 				$style = ($i++ % 2) ? 'memberlistRowOne' : 'memberlistRowTwo';
@@ -610,7 +626,7 @@ class Member_memberlist extends Member {
 					/** ------------------------------------------*/
 					elseif (isset($fields[$val['3']]))
 					{
-						if (isset($row['m_field_id_'.$fields[$val['3']]]))
+						if (array_key_exists('m_field_id_'.$fields[$val['3']], $row))
 						{
 							$v = $row['m_field_id_'.$fields[$val['3']]];
 

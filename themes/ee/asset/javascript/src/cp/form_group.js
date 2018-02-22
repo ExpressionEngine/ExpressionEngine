@@ -172,6 +172,7 @@ EE.cp.fieldToggleDisable = function(context, fieldName) {
 			.not('.filter-item__search input')
 			.attr('disabled', true);
 		$('fieldset:visible :input', context)
+			.not('.grid-blank-row :input')
 			.attr('disabled', false);
 	});
 }
@@ -181,7 +182,6 @@ EE.cp.fieldToggleDisable = function(context, fieldName) {
 // In an effort not to need to prefix those input names, we'll handle
 // it automatically with this function.
 function toggleInputs(container, group_name, enable) {
-	//return;
 	container.find(':radio').each(function() {
 
 //		var input = $(this),
