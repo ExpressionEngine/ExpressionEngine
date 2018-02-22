@@ -129,9 +129,8 @@ class Publish extends AbstractPublishController {
 		$time = ee()->localize->human_time(ee()->localize->now);
 		$time = trim(strstr($time, ' '));
 
-		$alert = ee('CP/Alert')->makeInline()
+		$alert = ee('CP/Alert')->make()
 			->asWarning()
-			->cannotClose()
 			->addToBody(lang('autosave_success') . $time);
 
 		ee()->output->send_ajax_response(array(

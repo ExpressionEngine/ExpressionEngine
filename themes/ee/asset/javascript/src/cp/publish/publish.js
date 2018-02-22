@@ -66,7 +66,7 @@ $(document).ready(function () {
 					url: EE.publish.autosave.URL,
 					data: publishForm.serialize(),
 					success: function(result) {
-						publishForm.find('div.alert.inline.warn').remove();
+						publishForm.find('div.alert.warn').remove();
 
 						if (result.error) {
 							console.log(result.error);
