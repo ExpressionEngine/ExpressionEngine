@@ -86,14 +86,5 @@
 				FluidField.fireEvent($(ui.item).data('field-type'), 'afterSort', $(ui.item))
 			}
 		});
-
-		// Remove the toggle event found in common.js
-		$('.fieldset-faux-fluid .js-toggle-field').off('click');
-
-		$('.fieldset-faux-fluid').on('click', '.js-toggle-field', function(){
-			$(this)
-				.parents('.fluid-item')
-				.toggleClass('fluid-closed');
-		});
 	});
 })(jQuery);
