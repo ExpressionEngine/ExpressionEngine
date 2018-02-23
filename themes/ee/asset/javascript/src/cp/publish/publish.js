@@ -152,6 +152,19 @@ $(document).ready(function () {
 		$('button[rel="live-preview"]').click();
 	}
 
+	// =============
+	// live preview width control
+	// =============
+
+	$('.js-preview-wide').on('click',function(){
+		var txtIs = $(this).text();
+		var closeTxtIs = $(this).attr('data-close');
+		var openTxtIs = $(this).attr('data-open');
+
+		$('.live-preview---open').toggleClass('live-preview--wide');
+		$(this).text(txtIs == closeTxtIs ? openTxtIs : closeTxtIs);
+	});
+
 	var previewButtonStartedHidden = $('button[value="preview"]').hasClass('hidden');
 
 	var showPreviewButton = function(e) {
