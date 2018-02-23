@@ -964,6 +964,8 @@ $lang = array(
 
 'remove_from_selection' => 'Remove from selection',
 
+'save_and_next' => 'Save & Next',
+
 'selected_entries' => 'Selected Entries',
 
 'showing' => 'Showing',

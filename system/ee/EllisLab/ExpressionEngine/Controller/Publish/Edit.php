@@ -326,6 +326,7 @@ class Edit extends AbstractPublishController {
 		ee()->javascript->set_global([
 			'lang.remove_confirm' => lang('entry') . ': <b>### ' . lang('entries') . '</b>',
 
+			'publishEdit.sequenceEditFormUrl' => ee('CP/URL')->make('publish/edit/entry')->compile(),
 			'publishEdit.bulkEditFormUrl' => ee('CP/URL')->make('publish/bulk-edit')->compile(),
 			'publishEdit.addCategoriesFormUrl' => ee('CP/URL')->make('publish/bulk-edit/categories/add')->compile(),
 			'publishEdit.removeCategoriesFormUrl' => ee('CP/URL')->make('publish/bulk-edit/categories/remove')->compile(),
@@ -383,15 +384,26 @@ class Edit extends AbstractPublishController {
 			show_404();
 		}
 
+		$base_url = ee('CP/URL')->make('publish/edit/entry/'.$id);
+
+		// Sequence editing?
+		$sequence_editing = FALSE;
+		if ($entry_ids = ee('Request')->get('entry_ids'))
+		{
+			$sequence_editing = TRUE;
+
+			$index = array_search($id, $entry_ids) + 1;
+			$next_entry_id = isset($entry_ids[$index]) ? $entry_ids[$index] : NULL;
+			$base_url->setQueryStringVariable('next_entry_id', $next_entry_id);
+			$base_url->setQueryStringVariable('entry_ids', $entry_ids);
+		}
+
 		// If an entry or channel on a different site is requested, try
 		// to switch sites and reload the publish form
 		$site_id = (int) ee()->input->get_post('site_id');
 		if ($site_id != 0 && $site_id != ee()->config->item('site_id') && empty($_POST))
 		{
-			ee()->cp->switch_site(
-				$site_id,
-				ee('CP/URL')->make('publish/edit/entry/'.$id)
-			);
+			ee()->cp->switch_site($site_id, $base_url);
 		}
 
 		$entry = ee('Model')->get('ChannelEntry', $id)
@@ -426,20 +438,34 @@ class Edit extends AbstractPublishController {
 			}
 		// -------------------------------------------
 
-		ee()->view->cp_page_title = sprintf(lang('edit_entry_with_title'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
+		$entry_title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
+		ee()->view->cp_page_title = sprintf(lang('edit_entry_with_title'), $entry_title);
 
 		$form_attributes = array(
 			'class' => 'ajax-validate',
 		);
 
 		$vars = array(
-			'form_url' => ee('CP/URL')->make('publish/edit/entry/' . $id),
+			'form_url' => $base_url,
 			'form_attributes' => $form_attributes,
+			'form_title' => lang('edit_entry'),
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
 			'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
 			'extra_publish_controls' => $entry->Channel->extra_publish_controls,
 			'buttons' => $this->getPublishFormButtons($entry)
 		);
+
+		if ($sequence_editing)
+		{
+			$vars['form_title'] = sprintf('(%d of %d) %s', $index, count($entry_ids), $entry_title);
+			$vars['buttons'] = [[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_next',
+				'text' => $index == count($entry_ids) ? 'save_and_close' : 'save_and_next',
+				'working' => 'btn_saving'
+			]];
+		}
 
 		if ($entry->isLivePreviewable())
 		{
@@ -512,6 +538,11 @@ class Edit extends AbstractPublishController {
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => $entry->Channel->channel_title,
 		);
+
+		if (AJAX_REQUEST)
+		{
+			return ee('View')->make('publish/partials/publish_form')->render($vars);
+		}
 
 		ee()->cp->render('publish/entry', $vars);
 	}

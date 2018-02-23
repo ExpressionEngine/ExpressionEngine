@@ -373,9 +373,20 @@ abstract class AbstractPublish extends CP_Controller {
 			->addToBody(sprintf(lang($action . '_entry_success_desc'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8')))
 			->defer();
 
+
 		if (ee()->input->post('submit') == 'save')
 		{
 			ee()->functions->redirect(ee('CP/URL')->make('publish/edit/entry/' . $entry->getId()));
+		}
+		elseif (ee()->input->post('submit') == 'save_and_next')
+		{
+			$entry_id = ee('Request')->get('next_entry_id');
+			if (is_numeric($entry_id))
+			{
+				return ee()->functions->redirect(ee('CP/URL')->make('publish/edit/entry/' . $entry_id));
+			}
+
+			return ['successsss'];
 		}
 		elseif (ee()->input->post('submit') == 'save_and_close')
 		{

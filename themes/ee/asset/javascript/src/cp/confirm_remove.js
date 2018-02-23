@@ -34,6 +34,18 @@ $(document).ready(function () {
 				return $(el).attr('value') !== undefined;
 			});
 
+			if (conditional_element.attr('rel') == 'modal-edit') {
+				var entryIds = $.map(checked, function(el) {
+					return $(el).val()
+				})
+				EE.cp.ModalForm.openForm({
+					url: EE.publishEdit.sequenceEditFormUrl + '/' + entryIds[0] + '&' + $.param({ entry_ids: entryIds }),
+					load: function(modal) {
+						// TODO: instantiate all fieldtype JS
+					}
+				})
+			}
+
 			if (conditional_element.attr('rel') == 'modal-bulk-edit') {
 				return EE.cp.BulkEdit.openForm(conditional_element.val(), checked)
 			}

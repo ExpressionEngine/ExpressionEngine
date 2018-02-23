@@ -222,6 +222,7 @@ class Publish extends AbstractPublishController {
 		$vars = array(
 			'form_url' => ee('CP/URL')->make('publish/create/' . $channel_id),
 			'form_attributes' => $form_attributes,
+			'form_title' => lang('new_entry'),
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
 			'revisions' => $this->getRevisionsTable($entry),
 			'extra_publish_controls' => $channel->extra_publish_controls,
