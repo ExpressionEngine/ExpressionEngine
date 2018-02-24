@@ -48,8 +48,12 @@ class Edit extends AbstractPublishController {
 		$vars = array();
 		$base_url = ee('CP/URL')->make('publish/edit');
 
-		$search_in = ee()->input->get_post('search_in') ?: 'titles';
-		$entry_listing = ee('CP/EntryListing', ee()->input->get_post('filter_by_keyword'), $search_in);
+		$entry_listing = ee('CP/EntryListing',
+			ee()->input->get_post('filter_by_keyword'),
+			ee()->input->get_post('search_in') ?: 'titles',
+			ee()->cp->allowed_group('can_edit_other_entries')
+		);
+
 		$entries = $entry_listing->getEntries();
 		$filters = $entry_listing->getFilters();
 		$channel_id = $entry_listing->channel_filter->value();

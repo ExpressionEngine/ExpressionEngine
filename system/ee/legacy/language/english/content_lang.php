@@ -142,6 +142,8 @@ $lang = array(
 
 'filter_autosaves' => 'filter auto saves',
 
+'filter_by_author' => 'author',
+
 'filter_by_category' => 'category',
 
 'filter_by_channel' => 'channel',

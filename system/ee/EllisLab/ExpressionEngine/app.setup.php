@@ -64,7 +64,7 @@ return array(
 			return new CustomMenu\Menu;
 		},
 
-		'CP/EntryListing' => function($ee, $search_value, $search_in = NULL)
+		'CP/EntryListing' => function($ee, $search_value, $search_in = NULL, $include_author_filter = FALSE)
 		{
 			 return new EntryListing\EntryListing(
 				ee()->config->item('site_id'),
@@ -72,7 +72,8 @@ return array(
 				array_keys(ee()->session->userdata['assigned_channels']),
 				ee()->localize->now,
 				$search_value,
-				$search_in
+				$search_in,
+				$include_author_filter
 			);
 		},
 

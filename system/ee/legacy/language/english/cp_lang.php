@@ -440,6 +440,8 @@ $lang = array(
 
 'enable' => 'Enable',
 
+'filter_authors' => 'filter authors',
+
 'filter_categories' => 'filter categories',
 
 'filter_channels' => 'filter channels',

@@ -20,6 +20,11 @@ use EllisLab\ExpressionEngine\Service\View\View;
 class EntryListing {
 
 	/**
+	 * @var Filter $author_filter Author Filter object
+	 */
+	public $author_filter;
+
+	/**
 	 * @var Filter $channel_filter Channel Filter object
 	 */
 	public $channel_filter;
@@ -49,6 +54,11 @@ class EntryListing {
 	 * @var array $allowed_channels IDs of channels this user is allowed to access
 	 */
 	protected $allowed_channels;
+
+	/**
+	 * @var boolean $include_author_filter Whether this user can edit others' entries
+	 */
+	protected $include_author_filter;
 
 	/**
 	 * @var int $now Timestamp of current time, used to filter entries by date
@@ -90,7 +100,7 @@ class EntryListing {
 	 * @param string $search_value Search critera to filter entries by
 	 * @param string $search_in What fields to include in the keyword search
 	 */
-	public function __construct($site_id, $is_admin, $allowed_channels = array(), $now = NULL, $search_value = NULL, $search_in = NULL)
+	public function __construct($site_id, $is_admin, $allowed_channels = array(), $now = NULL, $search_value = NULL, $search_in = NULL, $include_author_filter = FALSE)
 	{
 		$this->site_id = $site_id;
 		$this->is_admin = $is_admin;
@@ -98,6 +108,7 @@ class EntryListing {
 		$this->now = $now;
 		$this->search_value = $search_value;
 		$this->search_in = $search_in;
+		$this->include_author_filter = $include_author_filter;
 
 		$this->setupFilters();
 		$this->setupEntries();
@@ -175,12 +186,18 @@ class EntryListing {
 			->add('Date')
 			->add('Keyword')
 			->add('SearchIn', [
-				'titles' => lang('titles'),
-				'content' => lang('content'),
-				'titles_and_content' => lang('titles_and_content'),
+					'titles' => lang('titles'),
+					'content' => lang('content'),
+					'titles_and_content' => lang('titles_and_content'),
 				],
 				$this->search_in
 			);
+
+			if ($this->include_author_filter)
+			{
+				$this->author_filter = $this->createAuthorFilter($channel);
+				$this->filters->add($this->author_filter);
+			}
 	}
 
 	/**
@@ -242,6 +259,11 @@ class EntryListing {
 			$entries->filter('status', $this->status_filter->value());
 		}
 
+		if (! empty($this->author_filter) && $this->author_filter->value())
+		{
+			$entries->filter('author_id', $this->author_filter->value());
+		}
+
 		if ( ! empty($this->search_value))
 		{
 			// setup content fields to use in search
@@ -301,6 +323,34 @@ class EntryListing {
 		$entries->with('Autosaves', 'Author', 'Channel');
 
 		$this->entries = $entries;
+	}
+
+	/**
+	 * Creates an author filter
+	 */
+	private function createAuthorFilter($channel_id = NULL)
+	{
+		if ($channel_id)
+		{
+			ee('db')->where('channel_id', $channel_id);
+		}
+
+		$authors_query = ee('db')->distinct()
+			->select('t.author_id, m.screen_name')
+			->from('channel_titles t')
+			->join('members m', 'm.member_id = t.author_id', 'LEFT')
+			->get();
+
+		$author_filter_options = [];
+		foreach ($authors_query->result() as $row)
+		{
+			$author_filter_options[$row->author_id] = $row->screen_name;
+		}
+
+		$author_filter = ee('CP/Filter')->make('filter_by_author', 'filter_by_author', $author_filter_options);
+		$author_filter->setPlaceholder(lang('filter_authors'));
+		$author_filter->useListFilter();
+		return $author_filter;
 	}
 
 	/**
