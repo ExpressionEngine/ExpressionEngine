@@ -280,6 +280,8 @@ $lang = array(
 
 'select_all' => 'select all',
 
+'search_in' => 'Search in',
+
 'show' => 'Show',
 
 'site' => 'Site',

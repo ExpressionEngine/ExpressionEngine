@@ -56,6 +56,11 @@ class EntryListing {
 	protected $now;
 
 	/**
+	 * @var string $search_in What fields to include in the keyword search
+	 */
+	protected $search_in;
+
+	/**
 	 * @var string $search_value Search critera to filter entries by
 	 */
 	protected $search_value;
@@ -83,14 +88,16 @@ class EntryListing {
 	 * @param array $allowed_channels IDs of channels this user is allowed to access
 	 * @param int $now Timestamp of current time, used to filter entries by date
 	 * @param string $search_value Search critera to filter entries by
+	 * @param string $search_in What fields to include in the keyword search
 	 */
-	public function __construct($site_id, $is_admin, $allowed_channels = array(), $now = NULL, $search_value = NULL)
+	public function __construct($site_id, $is_admin, $allowed_channels = array(), $now = NULL, $search_value = NULL, $search_in = NULL)
 	{
 		$this->site_id = $site_id;
 		$this->is_admin = $is_admin;
 		$this->allowed_channels = $allowed_channels;
 		$this->now = $now;
 		$this->search_value = $search_value;
+		$this->search_in = $search_in;
 
 		$this->setupFilters();
 		$this->setupEntries();
@@ -166,7 +173,14 @@ class EntryListing {
 			->add($this->category_filter)
 			->add($this->status_filter)
 			->add('Date')
-			->add('Keyword');
+			->add('Keyword')
+			->add('SearchIn', [
+				'titles' => lang('titles'),
+				'content' => lang('content'),
+				'titles_and_content' => lang('titles_and_content'),
+				],
+				$this->search_in
+			);
 	}
 
 	/**
@@ -230,8 +244,8 @@ class EntryListing {
 
 		if ( ! empty($this->search_value))
 		{
-			$search_fields = array('title');
-
+			// setup content fields to use in search
+			$content_fields = [];
 			if (isset($channel))
 			{
 				$custom_fields = $channel->getAllCustomFields();
@@ -248,7 +262,22 @@ class EntryListing {
 
 			foreach ($custom_fields as $cf)
 			{
-				$search_fields[] = 'field_id_'.$cf->getId();
+				$content_fields[] = 'field_id_'.$cf->getId();
+			}
+
+			$search_fields = [];
+
+			switch ($this->search_in)
+			{
+				case 'titles_and_content':
+					$search_fields = array_merge(['title'], $content_fields);
+					break;
+				case 'content':
+					$search_fields = $content_fields;
+					break;
+				case 'titles':
+					$search_fields = ['title'];
+					break;
 			}
 
 			$entries->search($search_fields, $this->search_value);

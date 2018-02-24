@@ -698,13 +698,11 @@ $lang = array(
 
 'title' => 'Title',
 
-'title_and_body' => 'Search titles and entries',
+'titles' => 'Titles',
 
-'title_body_comments' => 'Search titles, entries, and comments',
+'titles_and_content' => 'Titles & Content',
 
 'title_not_unique' => 'An entry already exists with this title. Titles must be unique.',
-
-'title_only' => 'Search titles only',
 
 'today' => 'Today',
 
