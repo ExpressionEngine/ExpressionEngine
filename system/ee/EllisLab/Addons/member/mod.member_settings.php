@@ -147,9 +147,7 @@ class Member_settings extends Member {
 			->filter('MemberGroup.site_id', ee()->config->item('site_id'))
     		->first();
 
-		$total_results = count($member);
-
-		if ($total_results == 0)
+		if ( ! $member)
 		{
 			return ee()->output->show_user_error('general', array(ee()->lang->line('profile_not_available')));
 		}
