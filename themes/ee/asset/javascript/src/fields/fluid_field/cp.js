@@ -17,6 +17,11 @@
 		// Disable inputs
 		$('.fluid-field-templates :input').attr('disabled', 'disabled');
 
+		// Disable inputs on submit too, so we don't send them if they showed up late
+		$(".form-standard > form").on('submit', function(e) {
+			$('.fluid-field-templates :input').attr('disabled', 'disabled');
+		});
+
 	    var addField = function(e) {
 			var fluidField   = $(this).closest('.fluid-wrap'),
 			    fieldToAdd   = $(this).data('field-name'),
