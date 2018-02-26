@@ -371,8 +371,8 @@ class Publish extends AbstractPublishController {
 		$template_group = '';
 		$template = '';
 
-		if (array_key_exists('pages__pages_uri', $_POST)
-			&& array_key_exists('pages__pages_template_id', $_POST))
+		if ( ! empty($_POST['pages__pages_uri'])
+			&& ! empty($_POST['pages__pages_template_id']))
 		{
 			$values = [
 				'pages_uri'         => $_POST['pages__pages_uri'],
