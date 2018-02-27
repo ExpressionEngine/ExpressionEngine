@@ -1503,7 +1503,7 @@ class Member_settings extends Member {
 
 		foreach (array('timezone', 'date_format', 'time_format', 'include_seconds') as $key)
 		{
-			if ($_POST['site_default'] == 'y')
+			if (ee()->input->post('site_default') == 'y')
 			{
 				$data[$key] = NULL;
 			}
