@@ -399,6 +399,8 @@ class Publish extends AbstractPublishController {
 		}
 		else
 		{
+			// We want to avoid replacing `{url_title}` with an empty string since that
+			// can cause the wrong thing to render (like 404s).
 			if (empty($entry->url_title))
 			{
 				$entry->url_title = $entry->entry_id;
