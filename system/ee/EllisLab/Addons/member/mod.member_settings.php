@@ -1452,10 +1452,11 @@ class Member_settings extends Member {
 		// the same options
 		ee()->load->model('admin_model');
 		ee()->load->helper('form');
-		$timezone = ee()->session->userdata('timezone');
+		// Have to get tz from database since the config will have replaced null with the site default
+		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->fields('timezone')->first();
 
 		$defaults = array(
-			'site_default'    => empty($timezone) ? 'y' : 'n',
+			'site_default'    => empty($member->timezone) ? 'y' : 'n',
 			'date_format'     => ee()->session->userdata('date_format'),
 			'time_format'     => ee()->session->userdata('time_format'),
 			'include_seconds' => ee()->session->userdata('include_seconds')
@@ -1500,7 +1501,7 @@ class Member_settings extends Member {
 
 		$data['language'] = ee()->security->sanitize_filename($_POST['language']);
 
-		foreach (array('timezone', 'date_format', 'time_format', 'include_seconts') as $key)
+		foreach (array('timezone', 'date_format', 'time_format', 'include_seconds') as $key)
 		{
 			if ($_POST['site_default'] == 'y')
 			{
