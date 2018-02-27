@@ -399,6 +399,11 @@ class Publish extends AbstractPublishController {
 		}
 		else
 		{
+			if (empty($entry->url_title))
+			{
+				$entry->url_title = $entry->entry_id;
+			}
+
 			$uri = str_replace(['{url_title}', '{entry_id}'], [$entry->url_title, $entry->entry_id], $channel->preview_url);
 		}
 
