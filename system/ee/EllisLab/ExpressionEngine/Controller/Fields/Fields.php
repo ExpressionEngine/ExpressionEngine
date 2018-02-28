@@ -158,7 +158,7 @@ class Fields extends AbstractFieldsController {
 				'href' => $edit_url,
 				'extra' => LD.$field->field_name.RD,
 				'selected' => ($field_id && $field->getId() == $field_id),
-				'toolbar_items' => ee()->cp->allowed_group('can_edit_channel_fields') ? [
+				'tools' => ee()->cp->allowed_group('can_edit_channel_fields') ? [
 					'edit' => [
 						'href' => $edit_url,
 						'title' => lang('edit')
