@@ -518,7 +518,7 @@ class Edit extends AbstractPublishController {
 
 			if ($result->isValid())
 			{
-				$this->saveEntryAndRedirect($entry);
+				return $this->saveEntryAndRedirect($entry);
 			}
 		}
 

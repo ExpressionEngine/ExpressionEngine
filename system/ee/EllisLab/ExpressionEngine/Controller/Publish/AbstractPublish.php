@@ -378,16 +378,6 @@ abstract class AbstractPublish extends CP_Controller {
 		{
 			ee()->functions->redirect(ee('CP/URL')->make('publish/edit/entry/' . $entry->getId()));
 		}
-		elseif (ee()->input->post('submit') == 'save_and_next')
-		{
-			$entry_id = ee('Request')->get('next_entry_id');
-			if (is_numeric($entry_id))
-			{
-				return ee()->functions->redirect(ee('CP/URL')->make('publish/edit/entry/' . $entry_id));
-			}
-
-			return ['successsss'];
-		}
 		elseif (ee()->input->post('submit') == 'save_and_close')
 		{
 			$redirect_url = ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id));
@@ -405,6 +395,21 @@ abstract class AbstractPublish extends CP_Controller {
 			/* -------------------------------------*/
 
 			ee()->functions->redirect($redirect_url);
+		}
+		elseif (ee('Request')->post('modal_form') == 'y')
+		{
+			$next_entry_id = ee('Request')->get('next_entry_id');
+
+			$result = ['saveId' => $entry->getId()];
+
+			if (is_numeric($next_entry_id))
+			{
+				$next_entry = ee('CP/URL')->getCurrentUrl();
+				$next_entry->path = 'publish/edit/entry/' . $next_entry_id;
+				$result += ['redirect' => $next_entry->compile()];
+			}
+
+			return $result;
 		}
 		else
 		{
