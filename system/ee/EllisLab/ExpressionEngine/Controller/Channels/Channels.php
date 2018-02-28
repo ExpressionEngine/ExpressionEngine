@@ -83,7 +83,7 @@ class Channels extends AbstractChannelsController {
 						'href' => ee('CP/URL', 'channels/sets/export/' . $channel->getId()),
 						'title' => lang('export_set')
 					],
-					'layout-set' => [
+					'layout' => [
 						'href' => ee('CP/URL', 'channels/layouts/' . $channel->getId()),
 						'title' => lang('layouts')
 					]
