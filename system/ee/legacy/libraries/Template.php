@@ -449,6 +449,12 @@ class EE_Template {
 			$dates['current_time'] = ee()->localize->now;
 		}
 
+		// variable_time {variable_time date="yesterday" format="%Y %m %d %H:%i:%s"}
+		if (strpos($this->template, LD.'variable_time') !== FALSE)
+		{
+			$dates['variable_time'] = ee()->localize->now;
+		}
+
 		$this->template = $this->parse_date_variables($this->template, $dates);
 		unset($dates);
 
@@ -4108,6 +4114,14 @@ class EE_Template {
 						if (strpos($val, ':relative') !== FALSE) {
 							$relative = TRUE;
 						}
+
+						// variable_time timestamp needs to be created on the fly
+						if ($matches[1][$key] == 'variable_time')
+						{
+							$timestamp = (isset($args['date'])) ? ee()->localize->string_to_timestamp($args['date']) : $timestamp;
+						}
+
+
 						$dt = $this->process_date($timestamp, $args, $relative, $localize);
 					}
 
