@@ -76,6 +76,11 @@ class Groups extends AbstractFieldsController {
 			]
 		);
 
+		if (AJAX_REQUEST)
+		{
+			unset($vars['buttons'][2]);
+		}
+
 		if ( ! empty($_POST))
 		{
 			$field_group = $this->setWithPost(ee('Model')->make('ChannelFieldGroup'));

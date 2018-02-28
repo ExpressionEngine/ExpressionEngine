@@ -315,6 +315,11 @@ class Fields extends AbstractFieldsController {
 			),
 		);
 
+		if (AJAX_REQUEST)
+		{
+			unset($vars['buttons'][2]);
+		}
+
 		ee()->view->cp_page_title = lang('create_new_field');
 
 		if (AJAX_REQUEST)
