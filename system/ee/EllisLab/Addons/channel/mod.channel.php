@@ -30,7 +30,7 @@ class Channel {
 	public $gfields					= array();
 	public $mfields					= array();
 	public $pfields					= array();
-	public $ffields                = array();
+	public $ffields                 = array();
 	public $categories				= array();
 	public $catfields				= array();
 	public $channel_name	 		= array();
@@ -54,6 +54,8 @@ class Channel {
 	public $pager_sql 				= '';
 
 	protected $chunks               = array();
+
+	protected $preview_conditions   = array();
 
 	// SQL cache key prefix
 	protected $_sql_cache_prefix	= 'sql_cache';
@@ -238,42 +240,45 @@ class Channel {
 			}
 		}
 
-		if ($this->sql == '')
+		if ( ! $this->isLivePreviewEntry())
 		{
-			$this->build_sql_query();
-		}
-
-		if ($this->sql == '')
-		{
-			return ee()->TMPL->no_results();
-		}
-
-		if ($save_cache == TRUE)
-		{
-			$this->save_cache($this->sql);
-			if ( ! empty($this->chunks))
+			if ($this->sql == '')
 			{
-				$this->save_cache($this->chunks, 'chunks');
+				$this->build_sql_query();
 			}
-		}
 
-		$this->query = ee()->db->query($this->sql);
+			if ($this->sql == '')
+			{
+				return ee()->TMPL->no_results();
+			}
 
-		// -------------------------------------
-		//  "Relaxed" View Tracking
-		//
-		//  Some people have tags that are used to mimic a single-entry
-		//  page without it being dynamic. This allows Entry View Tracking
-		//  to work for ANY combination that results in only one entry
-		//  being returned by the tag, including channel query caching.
-		//
-		//  Hidden Configuration Variable
-		//  - relaxed_track_views => Allow view tracking on non-dynamic
-		//  	single entries (y/n)
-		// -------------------------------------
-		if (ee()->config->item('relaxed_track_views') === 'y' && $this->query->num_rows() == 1)
-		{
-			$this->hit_tracking_id = $this->query->row('entry_id') ;
+			if ($save_cache == TRUE)
+			{
+				$this->save_cache($this->sql);
+				if ( ! empty($this->chunks))
+				{
+					$this->save_cache($this->chunks, 'chunks');
+				}
+			}
+
+			$this->query = ee()->db->query($this->sql);
+
+			// -------------------------------------
+			//  "Relaxed" View Tracking
+			//
+			//  Some people have tags that are used to mimic a single-entry
+			//  page without it being dynamic. This allows Entry View Tracking
+			//  to work for ANY combination that results in only one entry
+			//  being returned by the tag, including channel query caching.
+			//
+			//  Hidden Configuration Variable
+			//  - relaxed_track_views => Allow view tracking on non-dynamic
+			//  	single entries (y/n)
+			// -------------------------------------
+			if (ee()->config->item('relaxed_track_views') === 'y' && $this->query->num_rows() == 1)
+			{
+				$this->hit_tracking_id = $this->query->row('entry_id') ;
+			}
 		}
 
 		if ($this->enable['categories'] == TRUE)
@@ -441,81 +446,129 @@ class Channel {
 	  */
 	public function fetch_categories()
 	{
-		list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL();
-
-		$sql = "SELECT c.cat_name, c.cat_url_title, c.cat_id, c.cat_image, c.cat_description, c.parent_id,
-						p.cat_id, p.entry_id, c.group_id {$field_sqla}
-				FROM	(exp_categories AS c, exp_category_posts AS p)
-				{$field_sqlb}
-				WHERE	c.cat_id = p.cat_id
-				AND		p.entry_id IN (";
-
-		$categories = array();
-
-		foreach ($this->query->result_array() as $row)
+		if ( ! $this->isLivePreviewEntry())
 		{
-			$categories[] = $row['entry_id'];
+			list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL();
+
+			$sql = "SELECT c.cat_name, c.cat_url_title, c.cat_id, c.cat_image, c.cat_description, c.parent_id,
+							p.cat_id, p.entry_id, c.group_id {$field_sqla}
+					FROM	(exp_categories AS c, exp_category_posts AS p)
+					{$field_sqlb}
+					WHERE	c.cat_id = p.cat_id
+					AND		p.entry_id IN (";
+
+			$categories = array();
+
+			foreach ($this->query->result_array() as $row)
+			{
+				$categories[] = $row['entry_id'];
+			}
+
+			$sql .= implode(array_unique(array_filter($categories)), ',') . ')';
+
+			$sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
+
+			$query = ee()->db->query($sql);
+
+			if ($query->num_rows() == 0 && ! ee('LivePreview')->hasEntryData())
+			{
+				return;
+			}
+
+			foreach ($categories as $val)
+			{
+				$this->temp_array = array();
+				$this->cat_array  = array();
+				$parents = array();
+
+				foreach ($query->result_array() as $row)
+				{
+					if ($val == $row['entry_id'])
+					{
+						$this->temp_array[$row['cat_id']] = array($row['cat_id'], $row['parent_id'], $row['cat_name'], $row['cat_image'], $row['cat_description'], $row['group_id'], $row['cat_url_title']);
+
+						foreach ($row as $k => $v)
+						{
+							if (strpos($k, 'field') !== FALSE)
+							{
+								$this->temp_array[$row['cat_id']][$k] = $v;
+							}
+						}
+
+						if ($row['parent_id'] > 0 && ! isset($this->temp_array[$row['parent_id']])) $parents[$row['parent_id']] = '';
+						unset($parents[$row['cat_id']]);
+					}
+				}
+
+				if (count($this->temp_array) == 0)
+				{
+					$temp = FALSE;
+				}
+				else
+				{
+					foreach($this->temp_array as $k => $v)
+					{
+						if (isset($parents[$v[1]])) $v[1] = 0;
+
+						if (0 == $v[1])
+						{
+							$this->cat_array[] = $this->temp_array[$k];
+							$this->process_subcategories($k);
+						}
+					}
+				}
+
+				$this->categories[$val] = $this->cat_array;
+			}
+
+			unset($this->temp_array);
+			unset($this->cat_array);
 		}
 
-		$sql .= implode(array_unique(array_filter($categories)), ',') . ')';
-
-		$sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
-
-		$query = ee()->db->query($sql);
-
-		if ($query->num_rows() == 0)
+		if (ee('LivePreview')->hasEntryData())
 		{
-			return;
-		}
+			$data = ee('LivePreview')->getEntryData();
+			unset($this->categories[$data['entry_id']]);
 
-		foreach ($categories as $val)
-		{
+			$cats = [];
+
+			if (isset($data['categories']) && is_array($data['categories']))
+			{
+				foreach ($data['categories'] as $cat_group)
+				{
+					foreach ($cat_group as $cat)
+					{
+						$cats[] = $cat;
+					}
+				}
+			}
+
 			$this->temp_array = array();
 			$this->cat_array  = array();
 			$parents = array();
 
-			foreach ($query->result_array() as $row)
+			$categories = ee('Model')->get('Category', $cats)->all();
+			foreach ($categories as $cat)
 			{
-				if ($val == $row['entry_id'])
+				$this->temp_array[$cat->cat_id] = array($cat->cat_id, $cat->parent_id, $cat->cat_name, $cat->cat_image, $cat->cat_description, $cat->group_id, $cat->cat_url_title);
+				if ($cat->parent_id > 0 && ! isset($this->temp_array[$cat->parent_id])) $parents[$cat->parent_id] = '';
+				unset($parents[$cat->cat_id]);
+
+			}
+
+			foreach($this->temp_array as $k => $v)
+			{
+				if (isset($parents[$v[1]])) $v[1] = 0;
+
+				if (0 == $v[1])
 				{
-					$this->temp_array[$row['cat_id']] = array($row['cat_id'], $row['parent_id'], $row['cat_name'], $row['cat_image'], $row['cat_description'], $row['group_id'], $row['cat_url_title']);
-
-					foreach ($row as $k => $v)
-					{
-						if (strpos($k, 'field') !== FALSE)
-						{
-							$this->temp_array[$row['cat_id']][$k] = $v;
-						}
-					}
-
-					if ($row['parent_id'] > 0 && ! isset($this->temp_array[$row['parent_id']])) $parents[$row['parent_id']] = '';
-					unset($parents[$row['cat_id']]);
+					$this->cat_array[] = $this->temp_array[$k];
+					$this->process_subcategories($k);
 				}
 			}
 
-			if (count($this->temp_array) == 0)
-			{
-				$temp = FALSE;
-			}
-			else
-			{
-				foreach($this->temp_array as $k => $v)
-				{
-					if (isset($parents[$v[1]])) $v[1] = 0;
-
-					if (0 == $v[1])
-					{
-						$this->cat_array[] = $this->temp_array[$k];
-						$this->process_subcategories($k);
-					}
-				}
-			}
-
-			$this->categories[$val] = $this->cat_array;
+			$this->categories[$data['entry_id']] = $this->cat_array;
 		}
-
-		unset($this->temp_array);
-		unset($this->cat_array);
 	}
 
 	/**
@@ -1265,7 +1318,7 @@ class Channel {
 			}
 		}
 
-		$sql .= "WHERE t.entry_id !='' AND t.site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
+		$sql .= "WHERE t.entry_id != '' AND t.site_id IN ('".implode("','", ee()->TMPL->site_ids)."') ";
 
 		/**------
 		/**  We only select entries that have not expired
@@ -2306,6 +2359,12 @@ class Channel {
 		/**  Add Limits to query
 		/**------*/
 
+		if (ee('LivePreview')->hasEntryData())
+		{
+			$parts = explode(' WHERE ', $sql);
+			$this->preview_conditions = explode(' AND ', $parts[1]);
+		}
+
 		$sql .= $end;
 
 		if ($this->pagination->paginate == FALSE)
@@ -2514,6 +2573,149 @@ class Channel {
 		return $offset;
 	}
 
+	private function isLivePreviewEntry()
+	{
+		$return = FALSE;
+
+		if (ee('LivePreview')->hasEntryData())
+		{
+			$data = ee('LivePreview')->getEntryData();
+			if ($data['entry_id'] == PHP_INT_MAX && in_array($this->query_string, [$data['entry_id'], $data['url_title']]))
+			{
+				$return = TRUE;
+			}
+		}
+
+		return $return;
+	}
+
+	private function overrideWithPreviewData($result_array)
+	{
+		if (ee('LivePreview')->hasEntryData())
+		{
+			$found = FALSE;
+			$data = ee('LivePreview')->getEntryData();
+
+			foreach ($result_array as $i => $row)
+			{
+				if ($row['entry_id'] == $data['entry_id'])
+				{
+					if ($data['status'] == 'closed'
+						|| ($data['expiration_date'] && $data['expiration_date'] < ee()->localize->now))
+					{
+						unset($result_array[$i]);
+					}
+					else
+					{
+						$result_array[$i] = $data;
+					}
+
+					$found = TRUE;
+					break;
+				}
+			}
+
+			// One of the things we will not find are new entries that are
+			// being previewed. They will not be in the database and thus will
+			// not be returned.
+			if ( ! $found)
+			{
+				$add = FALSE;
+
+				if ($data['entry_id'] == PHP_INT_MAX && in_array($this->query_string, [$data['entry_id'], $data['url_title']]))
+				{
+					$add = TRUE;
+				}
+
+				foreach ($this->preview_conditions as $condition)
+				{
+					if (strpos('OR', $condition) === FALSE)
+					{
+						$valid = $this->previewDataPassesCondition($condition, $data);
+					}
+					else
+					{
+						$valid = FALSE;
+
+						$condition = trim($condition, '()');
+						$conditions = explode(' OR ', $condition);
+						foreach ($conditions as $sub_condition)
+						{
+							$valid = $this->previewDataPassesCondition($sub_condition, $data);
+							if ($valid)
+							{
+								break;
+							}
+						}
+					}
+
+					if ($valid)
+					{
+						$add = TRUE;
+					}
+					else
+					{
+						$add = FALSE;
+						break;
+					}
+				}
+
+				if ($add)
+				{
+					array_unshift($result_array, $data);
+				}
+			}
+		}
+
+		return $result_array;
+	}
+
+	private function previewDataPassesCondition($condition, $data)
+	{
+		list($column, $comparison, $value) = explode(' ',  trim($condition));
+		list($table, $key) = explode('.', $column);
+
+		$value = trim($value, "'");
+
+		$passes = FALSE;
+
+		switch ($comparison)
+		{
+			case '=':
+				$passes = ($data[$key] == $value);
+				break;
+
+			case '!=':
+				$passes = ($data[$key] != $value);
+				break;
+
+			case '>':
+				$passes = ($data[$key] > $value);
+				break;
+
+			case '<':
+				$passes = ($data[$key] < $value);
+				break;
+
+			case '>=':
+				$passes = ($data[$key] >= $value);
+				break;
+
+			case '<=':
+				$passes = ($data[$key] <= $value);
+				break;
+
+			case 'IN':
+				$value = trim($value, '()');
+				$value = explode(',', str_replace("'", '', $value));
+
+				$passes = in_array($data[$key], $value);
+				break;
+		}
+
+		return $passes;
+	}
+
 	/**
 	  *  Parse channel entries
 	  *  @param Callable $per_row_callback A callable to send each row's tagdata
@@ -2524,16 +2726,21 @@ class Channel {
 	public function parse_channel_entries($per_row_callback = NULL)
 	{
 		// For our hook to work, we need to grab the result array
-		$query_result = $this->query->result_array();
+		$query_result = ($this->query) ? $this->query->result_array() : [];
 
 		if ( ! empty($this->chunks))
 		{
 			$query_result = $this->getExtraData($query_result);
 		}
 
+		$query_result = $this->overrideWithPreviewData($query_result);
+
 		// Ditch everything else
-		$this->query->free_result();
-		unset($this->query);
+		if ($this->query)
+		{
+			$this->query->free_result();
+			unset($this->query);
+		}
 
 		// -------------------------------------------
 		// 'channel_entries_query_result' hook.

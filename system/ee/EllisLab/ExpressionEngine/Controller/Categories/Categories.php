@@ -432,6 +432,12 @@ class Categories extends AbstractCategoriesController {
 
 		$parent_id_options = [0 => lang('none')] + $cat_group->buildCategoryOptionsTree();
 
+		$disabled_choices = [];
+		if ( ! $category->isNew())
+		{
+			$disabled_choices = array_merge([$category->getId()], $category->getAllChildren()->getIds());
+		}
+
 		$vars['sections'][0][] = array(
 			'title' => 'parent_category',
 			'fields' => array(
@@ -439,7 +445,7 @@ class Categories extends AbstractCategoriesController {
 					'type' => 'radio',
 					'value' => $category->parent_id === NULL ? 0 : $category->parent_id,
 					'choices' => $parent_id_options,
-					'disabled_choices' => $category->isNew() ? [] : [$category->getId()],
+					'disabled_choices' => $disabled_choices,
 					'no_results' => [
 						'text' => sprintf(lang('no_found'), lang('categories'))
 					]

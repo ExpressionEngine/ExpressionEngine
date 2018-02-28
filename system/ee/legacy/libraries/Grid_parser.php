@@ -733,6 +733,7 @@ class Grid_parser {
 
 		return $this->call($parse_fnc, $params, TRUE);
 	}
+
 }
 
 // EOF

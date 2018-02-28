@@ -71,6 +71,10 @@ class Site extends Model {
 			'model' => 'Channel',
 			'type' => 'hasMany'
 		),
+		'ChannelEntries' => array(
+			'model' => 'ChannelEntry',
+			'type' => 'hasMany'
+		),
 		'Comments' => array(
 			'type' => 'hasMany',
 			'model' => 'Comment'

@@ -379,7 +379,7 @@ class SelectList extends React.Component {
               item={item}
               name={props.name}
               selected={props.selected}
-              disabled={props.disabledChoices && props.disabledChoices.includes(item.value)}
+              disabledChoices={props.disabledChoices}
               multi={props.multi}
               nested={props.nested}
               selectable={props.selectable}
@@ -441,6 +441,7 @@ class SelectItem extends React.Component {
     let props = this.props
     let checked = this.checked(props.item.value)
     let label = props.item.label
+    let disabled = props.disabledChoices && props.disabledChoices.includes(props.item.value)
 
     if (props.item.section) {
       return (
@@ -467,7 +468,7 @@ class SelectItem extends React.Component {
             onChange={(e) => props.handleSelect(e, props.item)}
             checked={(checked ? 'checked' : '')}
             data-group-toggle={(props.groupToggle ? JSON.stringify(props.groupToggle) : '[]')}
-            disabled={props.disabled ? 'disabled' : ''}
+            disabled={disabled ? 'disabled' : ''}
            />
         )}
         {props.editable && (

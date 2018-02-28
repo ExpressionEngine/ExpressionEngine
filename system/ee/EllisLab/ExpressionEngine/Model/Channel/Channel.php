@@ -75,13 +75,6 @@ class Channel extends StructureModel {
 		'ChannelFormSettings' => array(
 			'type' => 'hasOne'
 		),
-		'LiveLookTemplate' => array(
-			'type' => 'hasOne',
-			'model' => 'Template',
-			'from_key' => 'live_look_template',
-			'to_key' => 'template_id',
-			'weak' => TRUE,
-		),
 		'AssignedMemberGroups' => array(
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'MemberGroup',
@@ -109,6 +102,7 @@ class Channel extends StructureModel {
 		'channel_title'              => 'required|unique[site_id]|xss',
 		'channel_name'               => 'required|unique[site_id]|alphaDash',
 		'channel_url'                => 'xss',
+		'preview_url'                => 'xss',
 		'comment_url'                => 'xss',
 		'channel_description'        => 'xss',
 		'deft_comments'              => 'enum[y,n]',
@@ -200,8 +194,8 @@ class Channel extends StructureModel {
 	protected $default_entry_title;
 	protected $title_field_label;
 	protected $url_title_prefix;
-	protected $live_look_template = 0;
 	protected $max_entries;
+	protected $preview_url;
 
 	/**
 	 * Custom validation callback to validate a comma-separated list of email
@@ -325,10 +319,13 @@ class Channel extends StructureModel {
 			}
 		}
 
-		$this->FieldGroups = clone $channel->FieldGroups;
-		$this->CustomFields = clone $channel->CustomFields;
-		$this->Statuses = clone $channel->Statuses;
-		$this->ChannelFormSettings = clone $channel->ChannelFormSettings;
+        foreach (['FieldGroups', 'CustomFields', 'Statuses', 'ChannelFormSettings'] as $rel)
+        {
+            if ($channel->$rel)
+            {
+                $this->$rel = clone $channel->$rel;
+            }
+        }
 	}
 
 	public function onBeforeSave()

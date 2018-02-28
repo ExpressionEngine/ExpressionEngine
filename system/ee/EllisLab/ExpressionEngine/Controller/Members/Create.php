@@ -195,10 +195,7 @@ class Create extends Members {
 			if ($result->isValid())
 			{
 				// Now that we know the password is valid, hash it
-				ee()->load->library('auth');
-				$hashed_password = ee()->auth->hash_password($member->password);
-				$member->password = $hashed_password['password'];
-				$member->salt = $hashed_password['salt'];
+				$member->hashAndUpdatePassword($member->password);
 
 				// -------------------------------------------
 				// 'cp_members_member_create_start' hook.

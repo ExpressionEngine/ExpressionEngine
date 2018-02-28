@@ -99,6 +99,33 @@ class Updater {
 	 */
 	private function fix_channel_total_entries_count()
 	{
+		// Fix for running this update file in a >= 4.0 context, status_id column
+		// must be present to access ChannelEntry model in updateEntryStats() below
+		ee()->smartforge->add_column(
+			'channel_titles',
+			array(
+				'status_id' => array(
+					'type'       => 'int',
+					'constraint' => 4,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				)
+			),
+			'status'
+		);
+
+		// Fix for running this update routine in a >= 4.1 context, preview_url
+		// column must be present to access Channel model below
+		ee()->smartforge->add_column(
+			'channels',
+			array(
+				'preview_url' => array(
+					'type'    => 'VARCHAR(100)',
+					'null'    => TRUE,
+				)
+			)
+		);
+
 		foreach (ee('Model')->get('Channel')->all() as $channel)
 		{
 			$channel->updateEntryStats();

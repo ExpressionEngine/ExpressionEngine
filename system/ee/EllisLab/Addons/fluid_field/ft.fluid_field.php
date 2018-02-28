@@ -292,10 +292,15 @@ class Fluid_field_ft extends EE_Fieldtype {
 
 		$field_templates = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
 			->order('field_label')
-			->all()
-			->indexByIds();
+			->all();
 
-		$filters = ee('View')->make('fluid_field:filters')->render(array('fields' => $field_templates));
+		$filter_options = $field_templates->map(function($field) {
+			return $field->getField();
+		});
+
+		$filters = ee('View')->make('fluid_field:filters')->render(array('fields' => $filter_options));
+
+		$field_templates = $field_templates->indexByIds();
 
 		if ( ! is_array($field_data))
 		{
@@ -309,7 +314,14 @@ class Fluid_field_ft extends EE_Fieldtype {
 
 					$field->setName($this->name() . '[fields][field_' . $data->getId() . '][field_id_' . $field->getId() . ']');
 
-					$fields .= ee('View')->make('fluid_field:field')->render(array('field' => $data->ChannelField, 'filters' => $filters, 'errors' => $this->errors));
+					$fields .= ee('View')->make('fluid_field:field')->render([
+						'field' => $field,
+						'field_name' => $data->ChannelField->field_name,
+						'filters' => $filters,
+						'errors' => $this->errors,
+						'reorderable' => TRUE,
+						'show_field_type' => TRUE
+					]);
 				}
 			}
 
@@ -337,7 +349,14 @@ class Fluid_field_ft extends EE_Fieldtype {
 
 				$f = $this->setupFieldInstance($f, $data, $field_id);
 
-				$fields .= ee('View')->make('fluid_field:field')->render(array('field' => $field, 'filters' => $filters, 'errors' => $this->errors));
+				$fields .= ee('View')->make('fluid_field:field')->render([
+					'field' => $f,
+					'field_name' => $field->field_name,
+					'filters' => $filters,
+					'errors' => $this->errors,
+					'reorderable' => TRUE,
+					'show_field_type' => TRUE
+				]);
 			}
 		}
 
@@ -349,7 +368,14 @@ class Fluid_field_ft extends EE_Fieldtype {
 			$f->setItem('fluid_field_data_id', NULL);
 			$f->setName($this->name() . '[fields][new_field_0][field_id_' . $field->getId() . ']');
 
-			$templates .= ee('View')->make('fluid_field:field')->render(array('field' => $field, 'filters' => $filters, 'errors' => $this->errors));
+			$templates .= ee('View')->make('fluid_field:field')->render([
+				'field' => $f,
+				'field_name' => $field->field_name,
+				'filters' => $filters,
+				'errors' => $this->errors,
+				'reorderable' => TRUE,
+				'show_field_type' => TRUE
+			]);
 		}
 
 		if (REQ == 'CP')

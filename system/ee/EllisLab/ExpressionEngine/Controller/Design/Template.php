@@ -115,12 +115,12 @@ class Template extends AbstractDesignController {
 			}
 		}
 
-		$duplicate_template_options = array_merge([
+		$duplicate_template_options = [
 			[
 				'label' => lang('do_not_duplicate'),
 				'value' => ''
 			]
-		], $this->getExistingTemplates());
+		] + $this->getExistingTemplates();
 
 		$vars = array(
 			'ajax_validate' => TRUE,
@@ -969,12 +969,12 @@ class Template extends AbstractDesignController {
 	 */
 	private function renderAccessPartial(TemplateModel $template, $errors)
 	{
-		$existing_templates = array_merge([
+		$existing_templates = [
 			[
 				'label' => lang('none'),
 				'value' => ''
 			]
-		], $this->getExistingTemplates());
+		] + $this->getExistingTemplates();
 
 		$member_groups = ee('Model')->get('MemberGroup')
 			->fields('group_id', 'group_title')

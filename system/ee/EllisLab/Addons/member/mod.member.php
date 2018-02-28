@@ -126,9 +126,6 @@ class Member {
 		ee()->lang->loadfile('myaccount');
 		ee()->lang->loadfile('member');
 
-		// For custom fields that use the template library
-		ee()->load->library('template', NULL, 'TMPL');
-
 		ee()->functions->template_type = 'webpage';
 
 		if (isset(ee()->TMPL) && is_object(ee()->TMPL))
@@ -138,6 +135,8 @@ class Member {
 		}
 		else
 		{
+			// For custom fields that use the template library
+			ee()->load->library('template', NULL, 'TMPL');
 			$this->trigger = ee()->config->item('profile_trigger');
 		}
 	}
@@ -2378,6 +2377,18 @@ class Member {
 		{
 			$cond['avatar']	= $avatar;
 			$cond['photo'] = $photo;
+
+			foreach($fields as $key =>  $value)
+			{
+				$cond[$key] = ee()->typography->parse_type($row['m_field_id_'.$value['0']],
+					array(
+						'text_format'	=> $value['1'],
+						'html_format'	=> 'safe',
+						'auto_links'	=> 'y',
+						'allow_img_url' => 'n'
+						)
+					);
+			}
 
 			ee()->TMPL->tagdata = ee()->functions->prep_conditionals(ee()->TMPL->tagdata, $cond);
 
