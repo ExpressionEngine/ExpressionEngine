@@ -1,4 +1,42 @@
-<nav class="tools <?=(count($tools) > 3) ? 'tools--no-text' : ''?>">
+<?php
+$classes[] = 'tools';
+
+if (count($tools) > 3)
+{
+	$classes[] = 'tools-no-text';
+}
+
+if (isset($type))
+{
+	switch ($type)
+	{
+		case 'list':
+			$classes[] = 'tools--tbl-list';
+			break;
+		case 'sidebar':
+			$classes[] = 'tools--no-text';
+			$classes[] = 'tools--in-list';
+			break;
+		case 'select':
+			$classes[] = 'tools--no-bar';
+			$classes[] = 'tools--align-right';
+			break;
+		case 'html_buttons':
+			$classes[] = 'tools--bar';
+			$classes[] = 'tools--html';
+			$classes[] = 'tools--before';
+			break;
+		case 'rte':
+			$classes[] = 'tools--bar';
+			$classes[] = 'tools--rte';
+			break;
+		case 'log':
+			$classes[] = 'tools--in-logs';
+			$classes[] = 'tools--no-bar';
+	}
+}
+?>
+<nav class="<?=implode(' ', array_unique($classes))?>">
 	<?php foreach ($tools as $type => $attributes):
 		if (isset($attributes['type']))
 		{
