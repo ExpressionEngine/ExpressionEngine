@@ -65,6 +65,13 @@ class Groups extends AbstractFieldsController {
 					'value' => 'save_and_new',
 					'text' => 'save_and_new',
 					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
 				]
 			]
 		);
@@ -97,6 +104,10 @@ class Groups extends AbstractFieldsController {
 				if (ee('Request')->post('submit') == 'save_and_new')
 				{
 					ee()->functions->redirect(ee('CP/URL')->make('fields/groups/create'));
+				}
+				elseif (ee()->input->post('submit') == 'save_and_close')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('fields'));
 				}
 				else
 				{
@@ -162,6 +173,13 @@ class Groups extends AbstractFieldsController {
 					'value' => 'save_and_new',
 					'text' => 'save_and_new',
 					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
 				]
 			]
 		);
@@ -190,6 +208,10 @@ class Groups extends AbstractFieldsController {
 				if (ee('Request')->post('submit') == 'save_and_new')
 				{
 					ee()->functions->redirect(ee('CP/URL')->make('fields/groups/create'));
+				}
+				elseif (ee()->input->post('submit') == 'save_and_close')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('fields'));
 				}
 				else
 				{

@@ -227,7 +227,19 @@ class Create extends Members {
 					->addToBody(sprintf(lang('member_created_desc'), $member->username))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL')->make('members/create'));
+				if (ee('Request')->post('submit') == 'save_and_new')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('members/create'));
+				}
+				elseif (ee()->input->post('submit') == 'save_and_close')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('members'));
+				}
+				else
+				{
+					ee()->session->set_flashdata('highlight_id', $member->getId());
+					ee()->functions->redirect(ee('CP/URL')->make('members/profile/settings', ['id' => $member->getId()]));
+				}
 			}
 			else
 			{
@@ -253,8 +265,22 @@ class Create extends Members {
 			[
 				'name' => 'submit',
 				'type' => 'submit',
+				'value' => 'save',
+				'text' => 'save',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
 				'value' => 'save_and_new',
 				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_close',
+				'text' => 'save_and_close',
 				'working' => 'btn_saving'
 			]
 		];

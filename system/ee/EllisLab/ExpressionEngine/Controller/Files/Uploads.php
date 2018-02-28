@@ -135,6 +135,10 @@ class Uploads extends AbstractFilesController {
 				{
 					ee()->functions->redirect(ee('CP/URL')->make('files/uploads/create'));
 				}
+				elseif (ee()->input->post('submit') == 'save_and_close')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('files'));
+				}
 				else
 				{
 					ee()->functions->redirect(ee('CP/URL')->make('files/uploads/edit/'.$new_upload_id));
@@ -344,6 +348,13 @@ class Uploads extends AbstractFilesController {
 				'type' => 'submit',
 				'value' => 'save_and_new',
 				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_close',
+				'text' => 'save_and_close',
 				'working' => 'btn_saving'
 			]
 		];

@@ -259,6 +259,10 @@ class Fields extends AbstractFieldsController {
 					$return = (empty($group_id)) ? '' : '/'.$group_id;
 					ee()->functions->redirect(ee('CP/URL')->make('fields/create'.$return));
 				}
+				elseif (ee()->input->post('submit') == 'save_and_close')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('fields'));
+				}
 				else
 				{
 					ee()->functions->redirect(ee('CP/URL')->make('fields/edit/'.$field->getId()));
@@ -296,6 +300,13 @@ class Fields extends AbstractFieldsController {
 					'type' => 'submit',
 					'value' => 'save_and_new',
 					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
 					'working' => 'btn_saving'
 				]
 			],
@@ -384,6 +395,10 @@ class Fields extends AbstractFieldsController {
 				{
 					ee()->functions->redirect(ee('CP/URL')->make('fields/create'));
 				}
+				elseif (ee()->input->post('submit') == 'save_and_close')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('fields'));
+				}
 				else
 				{
 					ee()->functions->redirect(ee('CP/URL')->make('fields/edit/'.$field->getId()));
@@ -419,6 +434,13 @@ class Fields extends AbstractFieldsController {
 					'type' => 'submit',
 					'value' => 'save_and_new',
 					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
 					'working' => 'btn_saving'
 				]
 			],

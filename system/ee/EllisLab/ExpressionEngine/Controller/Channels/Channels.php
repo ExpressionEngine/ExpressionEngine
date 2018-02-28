@@ -269,6 +269,10 @@ class Channels extends AbstractChannelsController {
 				{
 					ee()->functions->redirect(ee('CP/URL')->make('channels/create'));
 				}
+				elseif (ee()->input->post('submit') == 'save_and_close')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('channels'));
+				}
 				else
 				{
 					ee()->functions->redirect(ee('CP/URL')->make('channels/edit/'.$channel->getId()));
@@ -362,6 +366,13 @@ class Channels extends AbstractChannelsController {
 				'type' => 'submit',
 				'value' => 'save_and_new',
 				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_close',
+				'text' => 'save_and_close',
 				'working' => 'btn_saving'
 			]
 		];
