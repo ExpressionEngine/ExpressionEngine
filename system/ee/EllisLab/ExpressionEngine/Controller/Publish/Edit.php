@@ -201,14 +201,14 @@ class Edit extends AbstractPublishController {
 				$comments = '(0)';
 			}
 
-			$toolbar = array();
+			$tools = array();
 
 			$live_look_template = $entry->Channel->LiveLookTemplate;
 
 			if ($live_look_template)
 			{
 				$view_url = ee()->functions->create_url($live_look_template->getPath() . '/' . $entry->entry_id);
-				$toolbar['view'] = array(
+				$tools['view'] = array(
 					'href' => ee()->cp->masked_url($view_url),
 					'title' => lang('view'),
 					'rel' => 'external'
@@ -217,7 +217,7 @@ class Edit extends AbstractPublishController {
 
 			if ($can_edit)
 			{
-				$toolbar['edit'] = array(
+				$tools['edit'] = array(
 					'href' => $edit_link,
 					'title' => lang('edit')
 				);
@@ -265,7 +265,7 @@ class Edit extends AbstractPublishController {
 				$title,
 				ee()->localize->human_time($entry->entry_date),
 				$status,
-				array('toolbar_items' => $toolbar),
+				array('tools' => $tools),
 				array(
 					'name' => 'selection[]',
 					'value' => $entry->entry_id,
