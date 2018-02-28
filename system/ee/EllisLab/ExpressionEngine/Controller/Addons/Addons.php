@@ -299,7 +299,7 @@ class Addons extends CP_Controller {
 					}
 				}
 
-				$toolbar = array(
+				$tools = array(
 					'install' => array(
 						'href' => '#',
 						'data-post-url' => ee('CP/URL')->make(
@@ -320,11 +320,11 @@ class Addons extends CP_Controller {
 
 				if ($info['installed'])
 				{
-					$toolbar = array();
+					$tools = array();
 
 					if (isset($info['settings_url']))
 					{
-						$toolbar['settings'] = array(
+						$tools['settings'] = array(
 							'href' => $info['settings_url'],
 							'title' => lang('settings'),
 						);
@@ -337,20 +337,20 @@ class Addons extends CP_Controller {
 
 					if (isset($info['manual_url']))
 					{
-						$toolbar['manual'] = array(
+						$tools['manual'] = array(
 							'href' => $info['manual_url'],
 							'title' => lang('manual'),
 						);
 
 						if ($info['manual_external'])
 						{
-							$toolbar['manual']['target'] = '_external';
+							$tools['manual']['target'] = '_external';
 						}
 					}
 
 					if (isset($info['update']))
 					{
-						$toolbar['txt-only'] = array(
+						$tools['txt-only'] = array(
 							'href' => '#',
 							'data-post-url' => ee('CP/URL')->make(
 								'addons/update/' . $info['package'],
@@ -369,7 +369,7 @@ class Addons extends CP_Controller {
 
 				if ( ! ee()->cp->allowed_group('can_admin_addons'))
 				{
-					unset($toolbar['install']);
+					unset($tools['install']);
 				}
 
 				$row = array(
@@ -377,7 +377,7 @@ class Addons extends CP_Controller {
 					'columns' => array(
 						'addon' => $addon_name,
 						'version' => $this->formatVersionNumber($info['version']),
-						array('toolbar_items' => $toolbar)
+						array('tools' => $tools)
 					)
 				);
 
