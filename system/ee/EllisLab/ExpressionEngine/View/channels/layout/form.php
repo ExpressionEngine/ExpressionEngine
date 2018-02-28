@@ -4,7 +4,7 @@
 	<?=form_open($form_url, 'class="ajax-validate"')?>
 	<div class="form-btns form-btns-top">
 		<h1><?=$cp_page_title?></h1>
-		<?=cp_form_submit($submit_button_text, lang('btn_saving'))?>
+		<?php $this->embed('ee:_shared/form/buttons'); ?>
 	</div>
 	<div class="tab-wrap">
 		<ul class="tabs layout">
@@ -64,7 +64,7 @@
 			<?=$form?>
 
 			<div class="form-btns">
-				<?=cp_form_submit($submit_button_text, lang('btn_saving'))?>
+				<?php $this->embed('ee:_shared/form/buttons'); ?>
 			</div>
 		</form>
 	</div>
