@@ -33,6 +33,10 @@ if (isset($type))
 		case 'log':
 			$classes[] = 'tools--in-logs';
 			$classes[] = 'tools--no-bar';
+			break;
+		case 'sub_header':
+			$classes[] = 'tools--in-head';
+			break;
 	}
 }
 ?>
