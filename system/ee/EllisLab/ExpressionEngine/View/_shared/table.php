@@ -150,7 +150,7 @@ if ($wrap): ?>
 										<?php if (isset($column['tools'])): ?>
 											<?=$this->embed('_shared/tools', $column, TRUE)?>
 										<?php else: ?>
-											<<?=ee()->load->view('_shared/toolbar', $column, TRUE)?>
+											<?=ee()->load->view('_shared/toolbar', $column, TRUE)?>
 										<?php endif; ?>
 									</div>
 								</td>
