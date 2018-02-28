@@ -1,4 +1,4 @@
-<nav class="tools">
+<nav class="tools <?=(count($tools) > 3) ? 'tools--no-text' : ''?>">
 	<?php foreach ($tools as $type => $attributes):
 		if (isset($attributes['type']))
 		{
