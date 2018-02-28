@@ -149,6 +149,12 @@ EE.cp.BulkEdit = {
 			})
 
 		$('form', this.modal).on('submit', function() {
+			var buttons = that.formContainer.find('input.btn')
+			buttons.attr({
+				value: buttons.data('work-text'),
+				disabled: 'disabled'
+			}).addClass('work')
+
 			var params = $(this).serialize() + '&' + $.param({ entry_ids: entryIds })
 			$.post(this.action, params, function(result) {
 				// Probably a validation error
