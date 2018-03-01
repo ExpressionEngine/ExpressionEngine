@@ -231,7 +231,7 @@ class Relationship_model extends CI_Model {
 
 			foreach ($rel_fields as $field_id)
 			{
-				if (isset($data['field_id_' . $field_id]) && array_key_exists('data', $data['field_id_' . $field_id]))
+				if (isset($data['field_id_' . $field_id]) && is_array($data['field_id_' . $field_id]) && array_key_exists('data', $data['field_id_' . $field_id]))
 				{
 					foreach ($data['field_id_' . $field_id]['data'] as $order => $id)
 					{

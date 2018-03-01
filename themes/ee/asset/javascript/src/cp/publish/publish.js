@@ -72,7 +72,7 @@ $(document).ready(function () {
 							console.log(result.error);
 						}
 						else if (result.success) {
-							publishForm.find('ul.tabs').after(result.success);
+							$('[data-publish]').after(result.success);
 						}
 						else {
 							console.log('Autosave Failed');

@@ -385,7 +385,7 @@ feature 'Member Group List' do
 
     find('input[name="site_label"]').set 'Second Site'
     find('input[name="site_name"]').set 'second_site'
-    find('form[action$="cp/msm/create"] div.form-btns.form-btns-top input[type="submit"]').click
+    find('form[action$="cp/msm/create"] div.form-btns.form-btns-top button[value="save_and_close"]').click
 
     @page.load
   end

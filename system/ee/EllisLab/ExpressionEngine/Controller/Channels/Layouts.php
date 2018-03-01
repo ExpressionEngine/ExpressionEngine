@@ -248,7 +248,18 @@ class Layouts extends AbstractChannelsController {
 				->addToBody(sprintf(lang('create_layout_success_desc'), $channel_layout->layout_name))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'channels/layouts/' . $channel_id));
+			if (ee('Request')->post('submit') == 'save_and_new')
+			{
+				ee()->functions->redirect(ee('CP/URL')->make('channels/layouts/create/'.$channel_id));
+			}
+			elseif (ee()->input->post('submit') == 'save_and_close')
+			{
+				ee()->functions->redirect(ee('CP/URL')->make('channels/layouts/' . $channel_id));
+			}
+			else
+			{
+				ee()->functions->redirect(ee('CP/URL')->make('channels/layouts/edit/'.$channel_layout->getId()));
+			}
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -265,7 +276,29 @@ class Layouts extends AbstractChannelsController {
 			'layout' => $entry->getDisplay($channel_layout),
 			'channel_layout' => $channel_layout,
 			'form' => $this->getForm($channel_layout),
-			'submit_button_text' => lang('save')
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
+				]
+			]
 		);
 
 		ee()->view->cp_breadcrumbs = array(
@@ -347,7 +380,18 @@ class Layouts extends AbstractChannelsController {
 				->addToBody(sprintf(lang('edit_layout_success_desc'), ee()->input->post('layout_name')))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'channels/layouts/' . $channel_layout->Channel->channel_id));
+			if (ee('Request')->post('submit') == 'save_and_new')
+			{
+				ee()->functions->redirect(ee('CP/URL')->make('channels/layouts/create/' . $channel->getId()));
+			}
+			elseif (ee()->input->post('submit') == 'save_and_close')
+			{
+				ee()->functions->redirect(ee('CP/URL')->make('channels/layouts/' . $channel->getId()));
+			}
+			else
+			{
+				ee()->functions->redirect(ee('CP/URL')->make('channels/layouts/edit/' . $channel_layout->getId()));
+			}
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -364,7 +408,29 @@ class Layouts extends AbstractChannelsController {
 			'layout' => $entry->getDisplay($channel_layout),
 			'channel_layout' => $channel_layout,
 			'form' => $this->getForm($channel_layout),
-			'submit_button_text' => lang('save')
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
+				]
+			]
 		);
 
 		ee()->view->cp_breadcrumbs = array(

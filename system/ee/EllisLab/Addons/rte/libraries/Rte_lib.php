@@ -141,8 +141,29 @@ class Rte_lib {
 		);
 
 		$vars['ajax_validate'] = TRUE;
-		$vars['save_btn_text'] = sprintf(lang('btn_save'), lang('tool_set'));
-		$vars['save_btn_text_working'] = 'btn_saving';
+		$vars['buttons'] = [
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save',
+				'text' => 'save',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_new',
+				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_close',
+				'text' => 'save_and_close',
+				'working' => 'btn_saving'
+			]
+		];
 
 		return ee('View')->make('ee:_shared/form')->render($vars);
 	}
@@ -165,13 +186,25 @@ class Rte_lib {
 		if ($toolset_id)
 		{
 			$error_url = ee('CP/URL')->make('addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
-			$success_url = $error_url;
 		}
 		else
 		{
 			$error_url = ee('CP/URL')->make('addons/settings/rte/new_toolset');
+		}
+
+		if (ee('Request')->post('submit') == 'save_and_new')
+		{
+			$success_url = ee('CP/URL')->make('addons/settings/rte/new_toolset');
+		}
+		elseif (ee()->input->post('submit') == 'save_and_close')
+		{
 			$success_url = ee('CP/URL')->make('addons/settings/rte');
 		}
+		else
+		{
+			$success_url = ee('CP/URL')->make('addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
+		}
+
 
 		$toolset = array(
 			'name'      => ee()->input->post('toolset_name'),
