@@ -85,7 +85,7 @@ class Rte_mcp {
 			$toolset = array(
 				'tool_set' => $toolset_name,
 				'status' => lang('disabled'),
-				array('toolbar_items' => array(
+				array('tools' => array(
 						'edit' => array(
 							'href' => $url,
 							'title' => lang('edit'),
