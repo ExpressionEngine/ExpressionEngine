@@ -72,6 +72,8 @@ $lang = array(
 
 'default' => 'default',
 
+'default_404_option' => 'Default 404 Page',
+
 'design' => 'Design',
 
 'duplicate_existing_template' => 'Duplicate existing template?',

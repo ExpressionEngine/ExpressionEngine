@@ -226,6 +226,8 @@ class Member extends ContentModel {
 	 */
 	public function onAfterUpdate($changed)
 	{
+		parent::onAfterUpdate($changed);
+
 		if (REQ == 'CP')
 		{
 			if (isset($changed['password']))

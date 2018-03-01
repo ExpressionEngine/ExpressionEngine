@@ -249,7 +249,7 @@ class Status extends AbstractChannelsController {
 				'value' => 'save_and_new',
 				'text' => 'save_and_new',
 				'working' => 'btn_saving'
-			]
+					]
 		];
 
 		return ee('View')->make('ee:_shared/form')->render($vars);

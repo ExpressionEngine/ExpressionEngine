@@ -14,16 +14,16 @@ class ForumTab < SitePrism::Section
     # Create board
     find('.w-12 a[href*="cp/addons/settings/forum/create/board"]').click
     find('input[name="board_label"]').set 'Board'
-    all('.w-12 input[type="submit"]')[0].click
+    all('.w-12 button[value="save_and_close"]')[0].click
 
     # Create category
     find('.tbl-search a[href*="cp/addons/settings/forum/create/category/1"]').click
     find('input[name="forum_name"]').set 'Category'
-    all('.w-12 input[type="submit"]')[0].click
+    all('.w-12 button[value="save_and_close"]')[0].click
 
     # Create forum
     find('.tbl-action a[href*="cp/addons/settings/forum/create/forum/1"]').click
     find('input[name="forum_name"]').set 'Forum'
-    all('.w-12 input[type="submit"]')[0].click
+    all('.w-12 button[value="save_and_close"]')[0].click
   end
 end

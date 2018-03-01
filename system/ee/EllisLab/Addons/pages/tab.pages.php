@@ -308,6 +308,7 @@ class Pages_tab {
 	 */
 	public function save($entry, $values)
 	{
+	    $site_id    = ee()->config->item('site_id');
 	    $site_pages = $this->prepareSitePagesData($entry, $values);
 
 		if ($site_pages !== FALSE)

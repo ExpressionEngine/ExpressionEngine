@@ -456,15 +456,28 @@ abstract class AbstractPublish extends CP_Controller {
 			unset($buttons[1]);
 		}
 
+		$has_preview_button  = FALSE;
+		$show_preview_button = FALSE;
+
 		if ($entry->hasLivePreview())
 		{
-			$extra_class = '';
+			$has_preview_button  = TRUE;
+			$show_preview_button = TRUE;
+		}
 
-			$pages_module = ee('Addon')->get('pages');
-			if ($pages_module && $pages_module->isInstalled())
+		$pages_module = ee('Addon')->get('pages');
+		if ($pages_module && $pages_module->isInstalled())
+		{
+			$has_preview_button = TRUE;
+			if ($entry->hasPageURI())
 			{
-				$extra_class = ' hidden';
+				$show_preview_button = TRUE;
 			}
+		}
+
+		if ($has_preview_button)
+		{
+			$extra_class = ($show_preview_button) ? '' : ' hidden';
 
 			$buttons[] = [
 				'name'    => 'submit',

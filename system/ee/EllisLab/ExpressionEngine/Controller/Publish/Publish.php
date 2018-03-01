@@ -371,8 +371,8 @@ class Publish extends AbstractPublishController {
 		$template_group = '';
 		$template = '';
 
-		if (array_key_exists('pages__pages_uri', $_POST)
-			&& array_key_exists('pages__pages_template_id', $_POST))
+		if ( ! empty($_POST['pages__pages_uri'])
+			&& ! empty($_POST['pages__pages_template_id']))
 		{
 			$values = [
 				'pages_uri'         => $_POST['pages__pages_uri'],
@@ -399,6 +399,13 @@ class Publish extends AbstractPublishController {
 		}
 		else
 		{
+			// We want to avoid replacing `{url_title}` with an empty string since that
+			// can cause the wrong thing to render (like 404s).
+			if (empty($entry->url_title))
+			{
+				$entry->url_title = $entry->entry_id;
+			}
+
 			$uri = str_replace(['{url_title}', '{entry_id}'], [$entry->url_title, $entry->entry_id], $channel->preview_url);
 		}
 

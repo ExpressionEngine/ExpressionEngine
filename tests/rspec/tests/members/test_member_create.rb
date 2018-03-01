@@ -18,7 +18,7 @@ feature 'Member Registration' do
     @page.email.set 'test@gmail.com'
     @page.password.set 'password'
     @page.confirm_password.set 'password'
-    @page.submit
+    @page.save_and_new_button.click
 
     no_php_js_errors
     # Save and New is the only action
