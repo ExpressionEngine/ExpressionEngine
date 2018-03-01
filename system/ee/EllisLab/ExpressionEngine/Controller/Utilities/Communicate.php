@@ -829,7 +829,7 @@ class Communicate extends Utilities {
 				$email->subject,
 				ee()->localize->human_time($email->cache_date->format('U')),
 				$email->total_sent,
-				array('toolbar_items' => array(
+				array('tools' => array(
 					'view' => array(
 						'title' => lang('view_email'),
 						'href' => '',
