@@ -61,7 +61,7 @@ class Sql extends Utilities {
 				$table['name'],
 				$table['rows'],
 				$table['size'],
-				array('toolbar_items' => array(
+				array('tools' => array(
 					'view' => array(
 						'href' => ee('CP/URL')->make(
 							'utilities/query/run-query/'.$table['name'],
