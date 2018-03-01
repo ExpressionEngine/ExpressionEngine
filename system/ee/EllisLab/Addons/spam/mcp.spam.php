@@ -118,12 +118,12 @@ class Spam_mcp {
 
 		foreach ($trap as $spam)
 		{
-			$toolbar = array('toolbar_items' => array(
+			$toolbar = array('tools' => array(
 				'view' => array(
 					'href' => '#',
 					'class' => 'spam-detail',
 					'rel' => 'spam-modal',
-					'title' => strtolower(lang('edit')),
+					'title' => lang('edit'),
 					'data-content' => htmlentities(nl2br($spam->document), ENT_QUOTES, 'UTF-8'),
 					'data-type' => htmlentities($spam->content_type, ENT_QUOTES, 'UTF-8'),
 					'data-date' => ee()->localize->human_time($spam->trap_date->getTimestamp()),
