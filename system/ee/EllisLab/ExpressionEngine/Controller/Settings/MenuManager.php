@@ -117,7 +117,7 @@ class MenuManager extends Settings {
 			$columns = array(
 				$main_link,
 				implode(', ', $assigned),
-				array('toolbar_items' => $toolbar),
+				array('tools' => $toolbar),
 				$checkbox
 			);
 
