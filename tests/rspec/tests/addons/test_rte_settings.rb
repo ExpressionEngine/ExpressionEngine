@@ -33,7 +33,7 @@ def confirm_toolset_page (page)
 
   @page.should have_tool_set_name
   @page.should have_choose_tools
-  @page.should have_tool_set_submit_button
+  @page.should have_tool_set_save_and_close_button
 end
 
 feature 'RTE Settings' do
@@ -306,7 +306,7 @@ feature 'RTE Settings' do
 
   it 'can create a new tool set', :stage => 'toolset' do
     @page.tool_set_name.set 'Empty'
-    @page.tool_set_submit_button.click
+    @page.tool_set_save_and_close_button.click
 
     no_php_js_errors
     @page.displayed?
@@ -328,7 +328,7 @@ feature 'RTE Settings' do
     confirm_toolset_page @page
 
     @page.tool_set_name.set 'Rspec Edited'
-    @page.tool_set_submit_button.click
+    @page.tool_set_save_button.click
 
     no_php_js_errors
     @page.displayed?
@@ -343,7 +343,7 @@ feature 'RTE Settings' do
 
   it 'ensures tool set names are unique', :stage => 'toolset' do
     @page.tool_set_name.set 'Default'
-    @page.tool_set_submit_button.click
+    @page.tool_set_save_and_close_button.click
 
     no_php_js_errors
     @page.displayed?
@@ -362,7 +362,7 @@ feature 'RTE Settings' do
   end
 
   it 'requires a tool set name', :stage => 'toolset' do
-    @page.tool_set_submit_button.click
+    @page.tool_set_save_and_close_button.click
 
     no_php_js_errors
     @page.displayed?
@@ -382,7 +382,7 @@ feature 'RTE Settings' do
 
   it 'disallows XSS strings as a tool set name', :stage => 'toolset' do
     @page.tool_set_name.set '<script>Haha'
-    @page.tool_set_submit_button.click
+    @page.tool_set_save_and_close_button.click
 
     no_php_js_errors
     @page.displayed?
@@ -405,7 +405,7 @@ feature 'RTE Settings' do
     @page.choose_tools[1].click
     @page.choose_tools[2].click
 
-    @page.tool_set_submit_button.click
+    @page.tool_set_save_and_close_button.click
 
     no_php_js_errors
     @page.displayed?
