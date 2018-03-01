@@ -543,7 +543,7 @@ class Comments extends AbstractPublishController {
 				ee()->localize->human_time($comment->comment_date),
 				$comment->ip_address,
 				$status,
-				array('toolbar_items' => $toolbar),
+				array('tools' => $toolbar),
 				array(
 					'name' => 'selection[]',
 					'value' => $comment->comment_id,
