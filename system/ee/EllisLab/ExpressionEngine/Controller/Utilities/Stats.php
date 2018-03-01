@@ -69,7 +69,7 @@ class Stats extends Utilities {
 			$data[] = array(
 				lang($source),
 				ee()->db->count_all($source),
-				array('toolbar_items' => array(
+				array('tools' => array(
 					'sync' => array(
 						'href' => ee('CP/URL')->make('utilities/stats/sync/' . $source),
 						'title' => lang('sync')
