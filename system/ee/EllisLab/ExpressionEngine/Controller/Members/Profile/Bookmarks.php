@@ -45,10 +45,10 @@ class Bookmarks extends Settings {
 
 		foreach ($this->bookmarks as $id => $bookmark)
 		{
-			$toolbar = array('toolbar_items' => array(
+			$toolbar = array('tools' => array(
 				'edit' => array(
 					'href' => ee('CP/URL')->make('members/profile/bookmarks/edit/' . $id, $this->query_string),
-					'title' => strtolower(lang('edit'))
+					'title' => lang('edit')
 				)
 			));
 

@@ -135,10 +135,10 @@ class Fields extends Members\Members {
 		foreach ($fields as $field)
 		{
 			$edit_url = ee('CP/URL')->make('members/fields/edit/' . $field->m_field_id);
-			$toolbar = array('toolbar_items' => array(
-			'edit' => array(
+			$toolbar = array('tools' => array(
+				'edit' => array(
 					'href' => $edit_url,
-					'title' => strtolower(lang('edit'))
+					'title' => lang('edit')
 				)
 			));
 

@@ -288,10 +288,10 @@ class Quicklinks extends Settings {
 		{
 			$edit_url = ee('CP/URL')->make('members/profile/quicklinks/edit/' . ($quicklink['order'] ?: 1), $this->query_string);
 
-			$toolbar = array('toolbar_items' => array(
+			$toolbar = array('tools' => array(
 				'edit' => array(
 					'href' => $edit_url,
-					'title' => strtolower(lang('edit'))
+					'title' => lang('edit')
 				)
 			));
 

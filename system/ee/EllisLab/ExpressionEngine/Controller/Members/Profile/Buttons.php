@@ -60,17 +60,17 @@ class Buttons extends Settings {
 			$name = (strpos($button->classname, 'html-') !== 0) ? htmlentities($button->tag_name) : '';
 			$encoded_name = lang(htmlentities($button->tag_name, ENT_QUOTES, 'UTF-8'));
 
-			$preview = array('toolbar_items' => array(
+			$preview = array('tools' => array(
 				$button->classname => array(
 					'href' => ee('CP/URL')->make('members/profile/buttons/edit/' . $button->id, $this->query_string),
 					'title' => $encoded_name,
 					'content' => $name . form_hidden('order[]', $button->id)
 				)
 			));
-			$toolbar = array('toolbar_items' => array(
+			$toolbar = array('tools' => array(
 				'edit' => array(
 					'href' => ee('CP/URL')->make('members/profile/buttons/edit/' . $button->id, $this->query_string),
-					'title' => strtolower(lang('edit'))
+					'title' => lang('edit')
 				)
 			));
 

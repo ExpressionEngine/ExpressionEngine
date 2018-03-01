@@ -57,6 +57,8 @@ $lang = array(
 
 'control_panel' => 'Control Panel',
 
+'copy' => 'Copy',
+
 'copyright' => 'Copyright',
 
 'custom_limit' => 'custom limit',

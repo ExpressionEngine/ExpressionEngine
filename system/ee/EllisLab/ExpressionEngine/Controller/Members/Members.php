@@ -585,7 +585,7 @@ class Members extends CP_Controller {
 			$toolbar = array(
 				'edit' => array(
 					'href' => $edit_link,
-					'title' => strtolower(lang('profile'))
+					'title' => lang('profile')
 				)
 			);
 
@@ -605,7 +605,7 @@ class Members extends CP_Controller {
 						$toolbar['approve'] = array(
 							'href' => '#',
 							'data-post-url' => ee('CP/URL')->make('members/approve/' . $member->member_id),
-							'title' => strtolower(lang('approve'))
+							'title' => lang('approve')
 						);
 					}
 					break;
@@ -638,7 +638,7 @@ class Members extends CP_Controller {
 				$group
 			);
 
-			$toolbar = array('toolbar_items' => $toolbar);
+			$toolbar = array('tools' => $toolbar);
 
 			// add the toolbar if they can edit members
 			if (ee()->cp->allowed_group('can_edit_members'))
@@ -748,10 +748,10 @@ class Members extends CP_Controller {
 		{
 			$attributes = array();
 			$edit_link = ee('CP/URL')->make('members/profile/', array('id' => $member['member_id']));
-			$toolbar = array('toolbar_items' => array(
+			$toolbar = array('tools' => array(
 				'edit' => array(
 					'href' => $edit_link,
-					'title' => strtolower(lang('profile'))
+					'title' => lang('profile')
 				)
 			));
 
@@ -766,10 +766,10 @@ class Members extends CP_Controller {
 					$attributes['class'] = 'pending';
 					if (ee()->cp->allowed_group('can_edit_members'))
 					{
-						$toolbar['toolbar_items']['approve'] = array(
+						$toolbar['tools']['approve'] = array(
 							'href' => '#',
 							'data-post-url' => ee('CP/URL')->make('members/approve/' . $member['member_id']),
-							'title' => strtolower(lang('approve'))
+							'title' => lang('approve')
 						);
 					}
 					break;

@@ -320,6 +320,8 @@ $lang = array(
 
 'priv_msg_privs' => 'Private Messaging Privileges',
 
+'profile' => 'Profile',
+
 'profile_templates' => 'Member Profile Templates',
 
 'register_member' => 'New Member',

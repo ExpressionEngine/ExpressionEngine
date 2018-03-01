@@ -123,14 +123,14 @@ class Groups extends Members\Members {
 		foreach ($groups as $group)
 		{
 			$edit_link = ee('CP/URL')->make('members/groups/edit/' . $group->group_id);
-			$toolbar = array('toolbar_items' => array(
+			$toolbar = array('tools' => array(
 				'edit' => array(
 					'href' => $edit_link,
-					'title' => strtolower(lang('edit'))
+					'title' => lang('edit')
 				),
 				'copy' => array(
 					'href' => ee('CP/URL')->make('members/groups/copy/' . $group->group_id),
-					'title' => strtolower(lang('copy'))
+					'title' => lang('copy')
 				)
 			));
 
@@ -142,13 +142,13 @@ class Groups extends Members\Members {
 
 			if ( ! ee()->cp->allowed_group('can_create_member_groups'))
 			{
-				unset($toolbar['toolbar_items']['copy']);
+				unset($toolbar['tools']['copy']);
 			}
 
 			if ( ! ee()->cp->allowed_group('can_edit_member_groups') || ($group->is_locked == 'y' && ee()->session->userdata('group_id') != 1))
 			{
 				$title = $group->group_title;
-				unset($toolbar['toolbar_items']['edit']);
+				unset($toolbar['tools']['edit']);
 			}
 
 			$title .= " <a href='$href' alt='" . lang('view_members') . $group->group_title ."'>($count)</a>";
