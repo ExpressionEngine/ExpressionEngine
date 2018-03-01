@@ -571,7 +571,7 @@ abstract class AbstractDesign extends CP_Controller {
 				$column[] = $template->hits;
 			}
 
-			$column[] = array('toolbar_items' => $toolbar);
+			$column[] = array('tools' => $toolbar);
 			$column[] = array(
 				'name' => 'selection[]',
 				'value' => $template->template_id,
