@@ -88,7 +88,7 @@ EOT;
 					'content' => $moblog['moblog_full_name'],
 					'href' => $edit_url
 				),
-				array('toolbar_items' => array(
+				array('tools' => array(
 					'edit' => array(
 						'href' => $edit_url,
 						'title' => lang('edit')
@@ -99,8 +99,7 @@ EOT;
 					),
 					'txt-only' => array(
 						'href' => ee('CP/URL')->make('addons/settings/moblog/check/'.$moblog['moblog_id']),
-						'title' => (lang('check_now')),
-						'content' => strtolower(lang('check_now'))
+						'content' => lang('check_now')
 					)
 				)),
 				array(
