@@ -21,7 +21,7 @@
 						</div>
 					</div>
 					<?php if (isset($row['tools'])): ?>
-						<?=$this->embed('_shared/tools', ['tools' => $row['tools'], 'type' => 'list'])?>
+						<?=$this->embed('_shared/tools', ['tools' => $row['tools'], 'tool_type' => 'list'])?>
 					<?php else: ?>
 						<?=$this->embed('_shared/toolbar', ['toolbar_items' => $row['toolbar_items']])?>
 					<?php endif; ?>

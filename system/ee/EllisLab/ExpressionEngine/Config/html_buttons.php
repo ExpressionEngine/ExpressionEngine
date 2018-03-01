@@ -22,63 +22,63 @@ return array(
 												'tag_open'  => '<strong>',
 												'tag_close' => '</strong>',
 												'accesskey' => 'b',
-												'classname'	 => 'html-bold'
+												'classname'	 => 'bold'
 												),
 							'italic'	=> array(
 												'tag_name'  => lang('html_btn_italic'),
 												'tag_open'  => '<em>',
 												'tag_close' => '</em>',
 												'accesskey' => 'i',
-												'classname'	 => 'html-italic'
+												'classname'	 => 'italic'
 												),
 							'strike'	=> array(
 												'tag_name'  => lang('html_btn_strike'),
 												'tag_open'  => '<del>',
 												'tag_close' => '</del>',
 												'accesskey' => 's',
-												'classname'	 => 'html-strike'
+												'classname'	 => 'strikethrough'
 												),
 							'ins'	 	=> array(
 												'tag_name'  => lang('html_btn_ins'),
 												'tag_open'  => '<ins>',
 												'tag_close' => '</ins>',
 												'accesskey' => '',
-												'classname'	 => 'html-ins'
+												'classname'	 => 'ins'
 												),
 							'ul'		=> array(
 												'tag_name'  => lang('html_btn_ul'),
 												'tag_open'  => '<ul>',
 												'tag_close' => '</ul>',
 												'accesskey' => 'u',
-												'classname'	 => 'html-list'
+												'classname'	 => 'list'
 												),
 							'ol'		=> array(
 												'tag_name'  => lang('html_btn_ol'),
 												'tag_open'  => '<ol>',
 												'tag_close' => '</ol>',
 												'accesskey' => 'o',
-												'classname'	 => 'html-order-list'
+												'classname'	 => 'olist'
 												),
 							'blockquote'	=> array(
 												'tag_name'  => lang('html_btn_blockquote'),
 												'tag_open'  => '<blockquote>',
 												'tag_close' => '</blockquote>',
 												'accesskey' => 'q',
-												'classname'	 => 'html-quote'
+												'classname'	 => 'quote'
 												),
 							'anchor'	=> array(
 												'tag_name'  => lang('html_btn_anchor'),
 												'tag_open'  => '<a href="[![Link:!:http://]!]"(!( title="[![Title]!]")!)>',
 												'tag_close' => '</a>',
 												'accesskey' => 'a',
-												'classname'	 => 'html-link'
+												'classname'	 => 'link'
 												),
 							'picture'	=> array(
 												'tag_name'  => lang('html_btn_picture'),
 												'tag_open'  => '<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />',
 												'tag_close' => '',
 												'accesskey' => '',
-												'classname'	 => 'html-upload'
+												'classname'	 => 'upload'
 												),
 							)
 );

@@ -6,9 +6,9 @@ if (count($tools) > 3)
 	$classes[] = 'tools--no-text';
 }
 
-if (isset($type))
+if (isset($tool_type))
 {
-	switch ($type)
+	switch ($tool_type)
 	{
 		case 'list':
 			$classes[] = 'tools--tbl-list';
@@ -36,6 +36,9 @@ if (isset($type))
 			break;
 		case 'sub_header':
 			$classes[] = 'tools--in-head';
+			break;
+		case 'icon_only':
+			$classes[] = 'tools--no-text';
 			break;
 	}
 }

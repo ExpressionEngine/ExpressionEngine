@@ -53,19 +53,26 @@ class Buttons extends Settings {
 
 		foreach ($buttons as $button)
 		{
-			$name = (strpos($button->classname, 'html-') !== 0) ? htmlentities($button->tag_name) : '';
+			$encoded_name = lang(htmlentities($button->tag_name, ENT_QUOTES, 'UTF-8'));
 
-			$preview = array('toolbar_items' => array(
-				$button->classname => array(
-					'href' => ee('CP/URL')->make('settings/buttons/edit/' . $button->id),
-					'title' => lang($button->tag_name),
-					'content' => $name . form_hidden('order[]', $button->id)
-				)
-			));
-			$toolbar = array('toolbar_items' => array(
+			$preview = [
+				'tools' => [
+					$button->classname => [
+						'href' => ee('CP/URL')->make('settings/buttons/edit/' . $button->id),
+						'content' => lang(htmlentities($button->tag_name)) . form_hidden('order[]', $button->id)
+					],
+				],
+			];
+
+			if ( ! empty($button->classname))
+			{
+				$preview['tool_type'] = 'icon_only';
+			}
+
+			$toolbar = array('tools' => array(
 				'edit' => array(
 					'href' => ee('CP/URL')->make('settings/buttons/edit/' . $button->id),
-					'title' => strtolower(lang('edit'))
+					'title' => lang('edit')
 				)
 			));
 
@@ -385,9 +392,9 @@ class Buttons extends Settings {
 				'title' => $name,
 				'data-accesskey' => $button['accesskey'],
 			);
-			if (strpos($button['classname'], 'html-') !== 0)
+			if (empty($button['classname']))
 			{
-				$current['content'] = $name;
+				$current['content'] = htmlentities($name);
 				$buttons[$button['tag_name']] = $current;
 			}
 			else
@@ -396,7 +403,7 @@ class Buttons extends Settings {
 			}
 		}
 
-		$result .= ee('View')->make('ee:_shared/toolbar')->render(array('toolbar_items' => $buttons));
+		$result .= ee('View')->make('ee:_shared/tools')->render(['tools' => $buttons]);
 		return $result;
 	}
 

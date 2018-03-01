@@ -25,6 +25,7 @@ class Updater {
 	{
 		$steps = new \ProgressIterator(
 			[
+				'updateHtmlButtonClasses',
 			]
 		);
 
@@ -34,6 +35,28 @@ class Updater {
 		}
 
 		return TRUE;
+	}
+
+	private function updateHtmlButtonClasses()
+	{
+		$classes = [
+			'html-bold'       => 'bold',
+			'html-ins'        => 'ins',
+			'html-italic'     => 'italic',
+			'html-link'       => 'link',
+			'html-list'       => 'list',
+			'html-order-list' => 'olist',
+			'html-quote'      => 'quote',
+			'html-strike'     => 'strikethrough',
+			'html-upload'     => 'upload',
+		];
+
+		foreach ($classes as $original => $new)
+		{
+			ee()->db->where('classname', $original)
+				->set('classname', $new)
+				->update('html_buttons');
+		}
 	}
 }
 
