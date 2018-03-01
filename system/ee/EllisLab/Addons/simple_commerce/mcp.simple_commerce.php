@@ -117,7 +117,7 @@ class Simple_commerce_mcp {
 				$item->subscription_frequency ?: '--',
 				$item->current_subscriptions,
 				$item->item_purchases,
-				array('toolbar_items' => array(
+				array('tools' => array(
 					'edit' => array(
 						'href' => $edit_url,
 						'title' => lang('edit')
@@ -733,7 +733,7 @@ class Simple_commerce_mcp {
 				ee()->localize->human_time($purchase->purchase_date),
 				$purchase->subscription_end_date ?: '--',
 				'$'.$purchase->item_cost,
-				array('toolbar_items' => array(
+				array('tools' => array(
 					'edit' => array(
 						'href' => $edit_url,
 						'title' => lang('edit')
@@ -1062,7 +1062,7 @@ class Simple_commerce_mcp {
 					'content' => $template->email_name,
 					'href' => $edit_url
 				),
-				array('toolbar_items' => array(
+				array('tools' => array(
 					'edit' => array(
 						'href' => $edit_url,
 						'title' => lang('edit')
