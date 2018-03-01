@@ -81,6 +81,8 @@ $lang = array(
 
 'needs_updates' => 'Needs Updates',
 
+'settings' => 'Settings',
+
 'settings_saved' => 'Settings Saved',
 
 'settings_saved_desc' => 'The settings for %s have been saved.',

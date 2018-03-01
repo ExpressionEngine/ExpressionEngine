@@ -104,7 +104,7 @@ class Extensions extends Utilities {
 				'columns' => array(
 					'name' => $info['name'] . '(' . $info['version'] . ')',
 					'status' => $status,
-					array('toolbar_items' => $toolbar),
+					array('tools' => $toolbar),
 					array(
 						'name' => 'selection[]',
 						'value' => $info['package']
