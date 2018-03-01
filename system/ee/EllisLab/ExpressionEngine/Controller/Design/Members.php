@@ -157,7 +157,7 @@ class Members extends AbstractDesignController {
 					'content' => (lang($human) == FALSE) ? $human : lang($human),
 					'href' => $edit_url
 					),
-				array('toolbar_items' => array(
+				array('tools' => array(
 					'edit' => array(
 						'href' => $edit_url,
 						'title' => lang('edit')

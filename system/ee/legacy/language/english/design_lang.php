@@ -152,6 +152,8 @@ $lang = array(
 
 'export_variables' => 'Export Variables',
 
+'find' => 'Find',
+
 'group_not_found' => 'No template group found',
 
 'hit_counter' => 'Hit Counter',

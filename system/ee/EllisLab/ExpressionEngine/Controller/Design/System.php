@@ -62,7 +62,7 @@ class System extends AbstractDesignController {
 					'content' => lang($template->template_name),
 					'href' => $edit_url
 				),
-				array('toolbar_items' => array(
+				array('tools' => array(
 					'edit' => array(
 						'href' => $edit_url,
 						'title' => lang('edit')

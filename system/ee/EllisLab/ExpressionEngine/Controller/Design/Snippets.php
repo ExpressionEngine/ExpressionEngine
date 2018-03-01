@@ -129,7 +129,7 @@ class Snippets extends AbstractDesignController {
 					'href' => $edit_url
 				),
 				$all_sites,
-				array('toolbar_items' => array(
+				array('tools' => array(
 					'edit' => array(
 						'href' => $edit_url,
 						'title' => lang('edit')
