@@ -142,7 +142,7 @@ class Msm extends CP_Controller {
 				),
 				'<var>{' . htmlentities($site->site_name, ENT_QUOTES) . '}</var>',
 				$status,
-				array('toolbar_items' => array(
+				array('tools' => array(
 					'edit' => array(
 						'href' => $edit_url,
 						'title' => lang('edit')
