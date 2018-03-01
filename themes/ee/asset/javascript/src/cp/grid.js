@@ -164,6 +164,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 				// Fire 'afterSort' event on sort stop
 				afterSort: function(row) {
 					that._fireEvent('afterSort', row);
+					$(document).trigger('entry:preview');
 				}
 			};
 
@@ -303,6 +304,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 
 		// Fire 'display' event for the new row
 		this._fireEvent('display', el);
+		$(document).trigger('entry:preview');
 
 		$(this.root).trigger('grid:addRow', el);
 
@@ -325,6 +327,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 
 			// Fire 'remove' event for this row
 			that._fireEvent('remove', row);
+			$(document).trigger('entry:preview');
 
 			// Remove the row
 			row.remove();

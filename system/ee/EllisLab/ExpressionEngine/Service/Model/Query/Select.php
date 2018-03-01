@@ -172,6 +172,14 @@ class Select extends Query {
 			$fields[] = $primary_key_alias;
  		}
 
+		// Gather columns needed to fulfill relationships from this model
+		$relation_keys = array_map(function($relation) use ($alias)
+		{
+			$keys = $relation->getKeys();
+			return array_shift($keys);
+		}, $this->store->getAllRelations($model));
+		$relation_keys = array_unique(array_values($relation_keys));
+
 		foreach ($tables as $table => $table_fields)
 		{
 			$table_alias = "{$alias}_{$table}";
@@ -200,8 +208,12 @@ class Select extends Query {
 				$this->model_fields[$alias]["{$alias}__{$column}"] = "{$table_alias}.{$column}";
 
 				// but only select it if they did not specify fields to select
-				// or they specifically chose this one to be selected
-				if (empty($fields) OR in_array("{$alias}.{$column}", $fields) OR in_array("{$alias}.*", $fields))
+				// or they specifically chose this one to be selected,
+				// or the column is needed to fulfill a relationship
+				if (empty($fields) OR
+					in_array("{$alias}.{$column}", $fields) OR
+					in_array("{$alias}.*", $fields) OR
+					in_array($column, $relation_keys))
 				{
 					$query->select("{$table_alias}.{$column} as {$alias}__{$column}", FALSE);
 				}

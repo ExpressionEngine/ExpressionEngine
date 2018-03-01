@@ -153,6 +153,10 @@ class Groups extends AbstractCategoriesController {
 				{
 					ee()->functions->redirect(ee('CP/URL')->make('categories/groups/create'));
 				}
+				elseif (ee()->input->post('submit') == 'save_and_close')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('categories/group/'.$cat_group->getId()));
+				}
 				else
 				{
 					if (is_null($group_id))
@@ -197,9 +201,21 @@ class Groups extends AbstractCategoriesController {
 					'value' => 'save_and_new',
 					'text' => 'save_and_new',
 					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
 				]
 			]
 		];
+
+		if (AJAX_REQUEST)
+		{
+			unset($vars['buttons'][2]);
+		}
 
 		if ( ! $cat_group->isNew())
 		{

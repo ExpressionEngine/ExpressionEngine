@@ -170,12 +170,12 @@ class Edit extends AbstractPublishController {
 			$autosaves = $entry->Autosaves->count();
 
 			// Escape markup in title
-			$title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
+			$escaped_title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
 
 			if ($can_edit)
 			{
 				$edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
-				$title = '<a href="' . $edit_link . '">' . $title . '</a>';
+				$title = '<a href="' . $edit_link . '">' . $escaped_title . '</a>';
 			}
 
 			if ($autosaves)
@@ -203,15 +203,11 @@ class Edit extends AbstractPublishController {
 
 			$toolbar = array();
 
-			$live_look_template = $entry->Channel->LiveLookTemplate;
-
-			if ($live_look_template)
+			if ($entry->hasLivePreview())
 			{
-				$view_url = ee()->functions->create_url($live_look_template->getPath() . '/' . $entry->entry_id);
 				$toolbar['view'] = array(
-					'href' => ee()->cp->masked_url($view_url),
-					'title' => lang('view'),
-					'rel' => 'external'
+					'href' => ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, ['preview' => 'y']),
+					'title' => lang('preview'),
 				);
 			}
 
@@ -236,7 +232,7 @@ class Edit extends AbstractPublishController {
 				$can_delete = FALSE;
 			}
 
-			$disabled_checkbox = ! $can_delete;
+			$disabled_checkbox = ! $can_edit && ! $can_delete;
 
 			// Display status highlight if one exists
 			$status = isset($statuses[$entry->status]) ? $statuses[$entry->status] : NULL;
@@ -271,7 +267,9 @@ class Edit extends AbstractPublishController {
 					'value' => $entry->entry_id,
 					'disabled' => $disabled_checkbox,
 					'data' => array(
-						'confirm' => lang('entry') . ': <b>' . htmlentities($entry->title, ENT_QUOTES, 'UTF-8') . '</b>'
+						'title' => $escaped_title,
+						'channel-id' => $entry->Channel->getId(),
+						'confirm' => lang('entry') . ': <b>' . $escaped_title . '</b>'
 					)
 				)
 			);
@@ -325,11 +323,29 @@ class Edit extends AbstractPublishController {
 			->currentPage($page)
 			->render($base_url);
 
-		ee()->javascript->set_global('lang.remove_confirm', lang('entry') . ': <b>### ' . lang('entries') . '</b>');
+		ee()->javascript->set_global([
+			'lang.remove_confirm' => lang('entry') . ': <b>### ' . lang('entries') . '</b>',
+
+			'publishEdit.bulkEditFormUrl' => ee('CP/URL')->make('publish/bulk-edit')->compile(),
+			'publishEdit.addCategoriesFormUrl' => ee('CP/URL')->make('publish/bulk-edit/categories/add')->compile(),
+			'publishEdit.removeCategoriesFormUrl' => ee('CP/URL')->make('publish/bulk-edit/categories/remove')->compile(),
+			'bulkEdit.lang' => [
+				'selectedEntries'       => lang('selected_entries'),
+				'filterSelectedEntries' => lang('filter_selected_entries'),
+				'noEntriesFound'        => sprintf(lang('no_found'), lang('entries')),
+				'showing'               => lang('showing'),
+				'of'                    => lang('of'),
+				'clearAll'              => lang('clear_all'),
+				'removeFromSelection'   => lang('remove_from_selection'),
+			]
+		]);
+
 		ee()->cp->add_js_script(array(
 			'file' => array(
 				'cp/confirm_remove',
-				'cp/publish/entry-list'
+				'cp/publish/entry-list',
+				'components/bulk_edit_entries',
+				'cp/publish/bulk-edit'
 			),
 		));
 
@@ -345,6 +361,9 @@ class Edit extends AbstractPublishController {
 				(isset($channel->channel_title)) ? $channel->channel_title : ''
 			);
 		}
+
+		$vars['can_edit'] = ee('Permission')->hasAny('can_edit_self_entries', 'can_edit_other_entries');
+		$vars['can_delete'] = ee('Permission')->hasAny('can_delete_all_entries', 'can_delete_self_entries');
 
 		if (AJAX_REQUEST)
 		{
@@ -419,8 +438,16 @@ class Edit extends AbstractPublishController {
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
 			'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
 			'extra_publish_controls' => $entry->Channel->extra_publish_controls,
-			'buttons' => $this->getSubmitButtons($entry),
+			'buttons' => $this->getPublishFormButtons($entry)
 		);
+
+		if ($entry->hasLivePreview())
+		{
+			$modal = ee('View')->make('publish/live-preview-modal')->render([
+				'preview_url' => ee('CP/URL')->make('publish/preview/' . $entry->channel_id . '/' . $entry->entry_id)
+			]);
+			ee('CP/Modal')->addModal('live-preview', $modal);
+		}
 
 		$version_id = ee()->input->get('version');
 
@@ -487,46 +514,6 @@ class Edit extends AbstractPublishController {
 		);
 
 		ee()->cp->render('publish/entry', $vars);
-	}
-
-	/**
-	 * Get Submit Buttons for Publish Edit Form
-	 * @param  ChannelEntry $entry ChannelEntry model entity
-	 * @return array Submit button array
-	 */
-	private function getSubmitButtons(ChannelEntry $entry)
-	{
-		$buttons = [
-			[
-				'name' => 'submit',
-				'type' => 'submit',
-				'value' => 'save',
-				'text' => 'save',
-				'working' => 'btn_saving'
-			],
-			[
-				'name' => 'submit',
-				'type' => 'submit',
-				'value' => 'save_and_new',
-				'text' => 'save_and_new',
-				'working' => 'btn_saving'
-			],
-			[
-				'name' => 'submit',
-				'type' => 'submit',
-				'value' => 'save_and_close',
-				'text' => 'save_and_close',
-				'working' => 'btn_saving'
-			]
-		];
-
-		// get rid of Save & New button if we've reached the max entries for this channel
-		if ($entry->Channel->max_entries != 0 && $entry->Channel->total_records >= $entry->Channel->max_entries)
-		{
-			unset($buttons[1]);
-		}
-
-		return $buttons;
 	}
 
 	private function remove($entry_ids)

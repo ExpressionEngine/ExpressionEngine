@@ -12,7 +12,12 @@
 	</div>
 <?php endif; ?>
 <?php
-$params = array('value' => $value, 'name' => $field_name, 'rel' => 'date-picker');
+$params = [
+	'value' => $value,
+	'name' => $field_name,
+	'rel' => 'date-picker',
+	'data-date-format' => $date_format
+];
 
 if ($value)
 {

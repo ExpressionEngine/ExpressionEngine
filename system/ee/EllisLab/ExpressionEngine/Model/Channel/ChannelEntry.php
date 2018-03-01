@@ -103,7 +103,10 @@ class ChannelEntry extends ContentModel {
 		'CommentSubscriptions' => array(
 			'type' => 'hasMany',
 			'model' => 'CommentSubscription'
-		)
+		),
+		'Site' => array(
+			'type' => 'belongsTo'
+		),
 	);
 
 	protected static $_field_data = array(
@@ -168,20 +171,7 @@ class ChannelEntry extends ContentModel {
 
     public function set__entry_date($entry_date)
     {
-        if ( ! is_numeric($entry_date))
-        {
-            // @TODO: DRY this out; this was copied from ft.date.php
-            // First we try with the configured date format
-            $entry_date = ee()->localize->string_to_timestamp($entry_date, TRUE, ee()->localize->get_date_format());
-
-            // If the date format didn't work, try something more fuzzy
-            if ($entry_date === FALSE)
-            {
-                $entry_date = ee()->localize->string_to_timestamp($entry_date);
-            }
-        }
-
-        $this->setRawProperty('entry_date', $entry_date);
+        $this->setRawProperty('entry_date', $this->stringToTimestamp($entry_date));
 
         // Day, Month, and Year Fields
         // @TODO un-break these windows: inject this dependency
@@ -189,6 +179,35 @@ class ChannelEntry extends ContentModel {
         $this->setProperty('month', ee()->localize->format_date('%m', $entry_date));
         $this->setProperty('day', ee()->localize->format_date('%d', $entry_date));
     }
+
+	public function set__expiration_date($expiration_date)
+	{
+        $this->setRawProperty('expiration_date', $this->stringToTimestamp($expiration_date));
+	}
+
+	public function set__comment_expiration_date($comment_expiration_date)
+	{
+        $this->setRawProperty('comment_expiration_date', $this->stringToTimestamp($comment_expiration_date));
+	}
+
+	private function stringToTimestamp($date)
+	{
+        if ( ! is_numeric($date))
+        {
+            // @TODO: DRY this out; this was copied from ft.date.php (still need to put this logic
+			// somewhere both this Model and ft.date.php can use)
+            // First we try with the configured date format
+            $date = ee()->localize->string_to_timestamp($date, TRUE, ee()->localize->get_date_format());
+
+            // If the date format didn't work, try something more fuzzy
+            if ($date === FALSE)
+            {
+                $date = ee()->localize->string_to_timestamp($date);
+            }
+        }
+
+		return $date;
+	}
 
 	public function validate()
 	{
@@ -1107,10 +1126,7 @@ class ChannelEntry extends ContentModel {
 				continue;
 			}
 
-			$status_name = ($status->status == 'closed' OR $status->status == 'open')
-				? lang($status->status)
-				: $status->status;
-			$status_options[$status->status] = $status_name;
+			$status_options[] = $status->getOptionComponent();
 		}
 
 		$field->setItem('field_list_items', $status_options);
@@ -1144,8 +1160,46 @@ class ChannelEntry extends ContentModel {
 			}
 		}
 
+		foreach (['versioning_enabled', 'allow_comments', 'sticky'] as $key)
+		{
+			$data[$key] = ($data[$key]) ? 'y' : 'n';
+		}
+
 		return $data;
 	}
+
+	public function hasPageURI()
+	{
+		$pages = $this->Site->site_pages;
+		return isset($pages[$this->site_id]['uris'][$this->getId()]);
+	}
+
+	public function getPageURI()
+	{
+		if ( ! $this->hasPageURI())
+		{
+			return NULL;
+		}
+
+		return $this->Site->site_pages[$this->site_id]['uris'][$this->getId()];
+	}
+
+	public function hasLivePreview()
+	{
+		if ($this->Channel->preview_url || $this->hasPageURI())
+		{
+			return TRUE;
+		}
+
+		$pages_module = ee('Addon')->get('pages');
+		if ($pages_module && $pages_module->isInstalled())
+		{
+			return TRUE;
+		}
+
+		return FALSE;
+	}
+
 }
 
 // EOF

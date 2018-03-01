@@ -415,24 +415,20 @@ class Channel_form_lib
 			//parse category menu
 			elseif ($tag_name == 'category_menu')
 			{
-				ee()->load->library('channel_form/channel_form_category_tree');
+				$cats = $this->categories($tagparams);
+				$tree = array();
+				$checkbox_fields[] = 'category';
 
-				if ($this->edit OR ! empty($this->channel->deft_category))
+				foreach($cats as $cat_value)
 				{
-					$tree = ee()->channel_form_category_tree->create(
-						$this->channel('cat_group'), 'edit', '', $this->entry->Categories->pluck('cat_id')
-					);
-				}
-				else
-				{
-					$tree = ee()->channel_form_category_tree->create(
-						$this->channel('cat_group'), '', '', ''
-					);
+					$cat_selected = (in_array($cat_value['category_id'], $this->get_selected_cats())) ? ' selected="selected"' : '';
+					$tree[] = '<option value="'.$cat_value['category_id'].'"'.$cat_selected.'>'.$cat_value['category_name'].'</option>';
 				}
 
 				$this->parse_variables['category_menu'] = array(
-					array('select_options' => implode("\n", $tree->categories()))
+					array('select_options' => implode("\n", $tree))
 				);
+
 			}
 
 			//parse status menu
@@ -552,6 +548,13 @@ class Channel_form_lib
 							}
 
 							$this->parse_variables[$key] = ee()->localize->human_time($date);
+
+							// Default dates need a timestamp variable for the datepicker
+							if (in_array($name, array('entry_date', 'expiration_date', 'comment_expiration_date')))
+							{
+								$timestamp_name = str_replace('date', 'timestamp', $name);
+								$this->parse_variables[$timestamp_name] = $date;
+							}
 						}
 						else
 						{
@@ -590,25 +593,30 @@ class Channel_form_lib
 				if (strpos(ee()->TMPL->tagdata, 'entry_date') !== FALSE)
 				{
 					$this->parse_variables['entry_date'] = ee()->localize->human_time();
+					$this->parse_variables['entry_timestamp'] = ee()->localize->now;
 				}
 
 				if (strpos(ee()->TMPL->tagdata, 'expiration_date') !== FALSE)
 				{
 					$this->parse_variables['expiration_date'] = '';
+					$this->parse_variables['expiration_timestamp'] = '';
 				}
 
 				if (strpos(ee()->TMPL->tagdata, 'comment_expiration_date') !== FALSE)
 				{
 					$comment_expiration_date = '';
+					$comment_expiration_timestamp = '';
 
 					if ($this->channel('comment_expiration') > 0)
 					{
 						$comment_expiration_date = $this->channel('comment_expiration') * (60 * 60 * 24); // days -> seconds
 						$comment_expiration_date = $comment_expiration_date + ee()->localize->now;
+						$comment_expiration_timestamp = $comment_expiration_date;
 						$comment_expiration_date = ee()->localize->human_time($comment_expiration_date);
 					}
 
 					$this->parse_variables['comment_expiration_date'] = $comment_expiration_date;
+					$this->parse_variables['comment_expiration_timestamp'] = $comment_expiration_timestamp;
 				}
 			}
 			else
@@ -616,6 +624,9 @@ class Channel_form_lib
 				$this->parse_variables['entry_date'] = ee()->localize->human_time();
 				$this->parse_variables['expiration_date'] = '';
 				$this->parse_variables['comment_expiration_date'] = '';
+				$this->parse_variables['entry_timestamp'] = ee()->localize->now;
+				$this->parse_variables['expiration_timestamp'] = '';
+				$this->parse_variables['comment_expiration_timestamp'] = '';
 			}
 
 			foreach ($this->custom_fields as $field)
@@ -1745,7 +1756,7 @@ GRID_FALLBACK;
 		$cat_groups = explode('|', $this->entry->Channel->cat_group);
 		if ( ! empty($cat_groups) && isset($_POST['category']))
 		{
-			$_POST['categories'] = array('cat_group_id_'.$cat_groups[0] => $_POST['category']);
+			$_POST['categories'] = array('cat_group_id_'.$cat_groups[0] => (is_array($_POST['category'])) ? $_POST['category'] : [$_POST['category']]);
 		}
 
 		if (in_array($this->channel('channel_id'), $this->member->MemberGroup->AssignedChannels->pluck('channel_id')) OR (int) $this->member->MemberGroup->getId() == 1)
@@ -2101,6 +2112,24 @@ GRID_FALLBACK;
 	}
 
 	/**
+	 * Get selected categories
+	 *
+	 * @return	array
+	 */
+	public function get_selected_cats()
+	{
+		$selected = array();
+
+		if ($this->entry->entry_id OR ! empty($this->channel->deft_category))
+		{
+			$selected = $this->entry->Categories->pluck('cat_id');
+		}
+
+		return $selected;
+	}
+
+
+	/**
 	 * Load categories
 	 *
 	 * @return	void
@@ -2113,12 +2142,7 @@ GRID_FALLBACK;
 			return;
 		}
 
-		$selected = '';
-
-		if ($this->entry->entry_id OR ! empty($this->channel->deft_category))
-		{
-			$selected = $this->entry->Categories->pluck('cat_id');
-		}
+		$selected = $this->get_selected_cats();
 
 		// Load up the library and figure out what belongs and what's selected
 		ee()->load->library(array('api', 'file_field'));

@@ -26,7 +26,8 @@ class RTESettings < ControlPanelPage
   # Tool Set View
   element :tool_set_name, 'input[name="toolset_name"]'
   elements :choose_tools, 'div[data-input-value="tools"] input[type="checkbox"]'
-  element :tool_set_submit_button, 'div.form-btns.form-btns-top input.btn[type="submit"]'
+  element :tool_set_save_and_close_button, 'div.form-btns.form-btns-top button[value="save_and_close"]'
+  element :tool_set_save_button, 'div.form-btns.form-btns-top button[value="save"]'
 
   def load
     self.open_dev_menu

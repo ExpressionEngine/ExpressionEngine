@@ -34,6 +34,7 @@ class Session extends Model {
 	protected $admin_sess;
 	protected $ip_address;
 	protected $user_agent;
+	protected $login_state;
 	protected $fingerprint;
 	protected $sess_start;
 	protected $last_activity;

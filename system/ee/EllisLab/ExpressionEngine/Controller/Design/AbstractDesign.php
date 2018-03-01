@@ -475,10 +475,11 @@ abstract class AbstractDesign extends CP_Controller {
 
 		$sort_col = $table->sort_col;
 
-		$sort_map = array(
+		$sort_map = [
 			'template' => 'template_name',
-			'type' => 'template_type'
-		);
+			'type' => 'template_type',
+			'hits' => 'hits', // if they have enabled hit tracking
+		];
 
 		if ( ! array_key_exists($sort_col, $sort_map))
 		{

@@ -89,6 +89,14 @@ class ToMany extends Association {
 			{
 				return TRUE;
 			}
+
+			// Existing models queried independently may fail the above check
+			if ($m->getId() && $model->getId() &&
+				$m->getId() === $model->getId() &&
+				get_class($m) == get_class($model))
+			{
+				return TRUE;
+			}
 		}
 
 		return FALSE;

@@ -24,8 +24,10 @@ use EllisLab\ExpressionEngine\Service\File;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\Formatter;
 use EllisLab\ExpressionEngine\Service\License;
+use EllisLab\ExpressionEngine\Service\LivePreview;
 use EllisLab\ExpressionEngine\Service\Logger;
 use EllisLab\ExpressionEngine\Service\Member;
+use EllisLab\ExpressionEngine\Service\Memory;
 use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Permission;
@@ -208,6 +210,11 @@ return array(
 			return new View\ViewFactory($ee);
 		},
 
+		'Memory' => function($ee)
+		{
+			return new Memory\Memory();
+		},
+
 		'Model' => function($ee)
 		{
 			$facade = new Model\Facade($ee->make('Model/Datastore'));
@@ -310,6 +317,11 @@ return array(
 			}
 
 			return new Encrypt\Encrypt($key);
+		},
+
+		'LivePreview' => function($ee)
+		{
+			return new LivePreview\LivePreview(ee()->session);
 		},
 
 		'Variables/Parser' => function ($ee)
@@ -496,7 +508,8 @@ return array(
 			'ResetPassword' => 'Model\Security\ResetPassword',
 
 			// ..\Session
-			// empty
+			'Session' => 'Model\Session\Session',
+			'RememberMe' => 'Model\Session\RememberMe',
 
 			// ..\Site
 			'Site' => 'Model\Site\Site',

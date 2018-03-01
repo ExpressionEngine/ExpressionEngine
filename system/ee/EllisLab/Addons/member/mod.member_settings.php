@@ -136,20 +136,18 @@ class Member_settings extends Member {
 
 		if ($this->is_admin == FALSE OR ee()->session->userdata('group_id') != 1)
 		{
-    		$not_in[] = 2;
+			$not_in[] = 2;
 		}
 
 		ee()->load->model('member_model');
 
 		$member = ee('Model')->get('Member', (int)$this->cur_id)
-    		->with('MemberGroup')
-    		->filter('group_id', 'NOT IN', $not_in)
+			->with('MemberGroup')
+			->filter('group_id', 'NOT IN', $not_in)
 			->filter('MemberGroup.site_id', ee()->config->item('site_id'))
-    		->first();
+			->first();
 
-		$total_results = count($member);
-
-		if ($total_results == 0)
+		if ( ! $member)
 		{
 			return ee()->output->show_user_error('general', array(ee()->lang->line('profile_not_available')));
 		}
@@ -165,7 +163,7 @@ class Member_settings extends Member {
 		foreach ($member_fields as $member_field)
 		{
 			$key = 'm_field_id_' . $member_field->m_field_id;
-			$row[$member_field->m_field_name] = $row[$key];
+			$row[$member_field->m_field_name] = array_key_exists($key, $row) ? $row[$key] : '';
 		}
 
 		/** ----------------------------------------
@@ -695,7 +693,9 @@ class Member_settings extends Member {
 
 				if (array_key_exists($val['3'], $fnames))
 				{
-					$lcond = str_replace($val['3'], "\$result_row['m_field_id_".$fnames[$val['3']]."']", $lcond);
+					$m_field_id_name = 'm_field_id_'.$fnames[$val['3']]['0'];
+
+					$lcond = str_replace($val['3'], "\$result_row['".$m_field_id_name."']", $lcond);
 
 					$cond = $lcond.' '.$rcond;
 
@@ -1175,7 +1175,6 @@ class Member_settings extends Member {
 	function update_email()
 	{
 		// Safety.
-
 		if ( ! isset($_POST['email']))
 		{
 			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
@@ -1190,69 +1189,47 @@ class Member_settings extends Member {
 			return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
 		}
 
-		/** -------------------------------------
-		/**  Validate submitted data
-		/** -------------------------------------*/
-		if ( ! class_exists('EE_Validate'))
+		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+
+		if ( ! $member)
 		{
-			require APPPATH.'libraries/Validate.php';
+			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
 		}
 
+		// this action requires password confirmation
+		ee()->load->library('auth');
+		$password = ee()->auth->hash_password(ee()->input->post('password'), $member->salt);
 
-		$query = ee()->db->query("SELECT email, password FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
-
-		$VAL = new EE_Validate(array(
-			'member_id'    => ee()->session->userdata('member_id'),
-			'val_type'     => 'update', // new or update
-			'fetch_lang'   => TRUE,
-			'require_cpw'  => TRUE,
-			'enable_log'   => FALSE,
-			'email'        => $_POST['email'],
-			'cur_email'    => $query->row('email'),
-			'cur_password' => $_POST['password']
-		));
-
-		$VAL->validate_email();
-
-		if (count($VAL->errors) > 0)
+		if ($password['password'] != $member->password)
 		{
-			return ee()->output->show_user_error('submission', $VAL->errors);
+			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_password')));
 		}
 
-		/** -------------------------------------
-		/**  Assign the query data
-		/** -------------------------------------*/
+		$member->set([
+			'email'               =>  ee()->input->post('email'),
+			'accept_admin_email'  => (ee()->input->post('accept_admin_email')) ? 'y' : 'n',
+			'accept_user_email'   => (ee()->input->post('accept_user_email'))  ? 'y' : 'n',
+			'notify_by_default'   => (ee()->input->post('notify_by_default'))  ? 'y' : 'n',
+			'notify_of_pm'        => (ee()->input->post('notify_of_pm'))  ? 'y' : 'n',
+			'smart_notifications' => (ee()->input->post('smart_notifications'))  ? 'y' : 'n',
+		]);
 
-		$data = array(
-						'email'					=>  $_POST['email'],
-						'accept_admin_email'	=> (isset($_POST['accept_admin_email'])) ? 'y' : 'n',
-						'accept_user_email'		=> (isset($_POST['accept_user_email']))  ? 'y' : 'n',
-						'notify_by_default'		=> (isset($_POST['notify_by_default']))  ? 'y' : 'n',
-						'notify_of_pm'			=> (isset($_POST['notify_of_pm']))  ? 'y' : 'n',
-						'smart_notifications'	=> (isset($_POST['smart_notifications']))  ? 'y' : 'n'
-					  );
+		$result = $member->validate();
 
-		ee()->db->query(ee()->db->update_string('exp_members', $data, "member_id = '".ee()->session->userdata('member_id')."'"));
-
-		/** -------------------------------------
-		/**  Update comments and log email change
-		/** -------------------------------------*/
-
-		if ($query->row('email')  != $_POST['email'])
+		if ( ! $result->isValid())
 		{
-			ee()->db->query(ee()->db->update_string('exp_comments', array('email' => $_POST['email']), "author_id = '".ee()->session->userdata('member_id')."'"));
+			return ee()->output->show_user_error('submission', $result->getErrors('email'));
 		}
 
-		/** -------------------------------------
-		/**  Success message
-		/** -------------------------------------*/
+		$member->save();
 
+		// success
 		return $this->_var_swap($this->_load_element('success'),
-								array(
-										'lang:heading'	=>	ee()->lang->line('mbr_email_updated'),
-										'lang:message'	=>	ee()->lang->line('mbr_email_has_been_updated')
-									 )
-							);
+			array(
+					'lang:heading'	=>	ee()->lang->line('mbr_email_updated'),
+					'lang:message'	=>	ee()->lang->line('mbr_email_has_been_updated')
+				 )
+		);
 	}
 
 
@@ -1287,149 +1264,81 @@ class Member_settings extends Member {
 	 */
 	function update_userpass()
 	{
-		ee()->load->library('auth');
+		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
 
-	  	// Safety. Prevents accessing this function unless
-	  	// the request came from the form submission
-		if ( ! ee()->input->post('current_password'))
+		if ( ! $member)
 		{
-			return ee()->output->show_user_error('general', array(ee()->lang->line('current_password_required')));
+			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
 		}
-
-		$query = ee()->db->select('username, screen_name, password')
-							  ->get_where('members', array(
-							  	'member_id'	=> (int) ee()->session->userdata('member_id')
-							  ));
-
-		if ( ! $query->num_rows())
-		{
-			return FALSE;
-		}
-
-		if (ee()->config->item('allow_username_change') != 'y')
-		{
-			$_POST['username'] = $query->row('username');
-		}
-
-		// If the screen name field is empty, we'll assign it
-		// from the username field.
-
-		if ($_POST['screen_name'] == '')
-		{
-			$_POST['screen_name'] = $_POST['username'];
-		}
-
-		if ( ! isset($_POST['username']))
-		{
-			$_POST['username'] = '';
-		}
-
-		// Validate submitted data
-		if ( ! class_exists('EE_Validate'))
-		{
-			require APPPATH.'libraries/Validate.php';
-		}
-
-		$VAL = new EE_Validate(
-								array(
-										'member_id'			=> ee()->session->userdata('member_id'),
-										'val_type'			=> 'update', // new or update
-										'fetch_lang' 		=> TRUE,
-										'require_cpw' 		=> TRUE,
-									 	'enable_log'		=> FALSE,
-										'username'			=> $_POST['username'],
-										'cur_username'		=> $query->row('username') ,
-										'screen_name'		=> $_POST['screen_name'],
-										'cur_screen_name'	=> $query->row('screen_name') ,
-										'password'			=> $_POST['password'],
-									 	'password_confirm'	=> $_POST['password_confirm'],
-									 	'cur_password'		=> $_POST['current_password']
-									 )
-							);
-
-		$VAL->validate_screen_name();
 
 		if (ee()->config->item('allow_username_change') == 'y')
 		{
-			$VAL->validate_username();
+			$member->username = ee()->input->post('username');
 		}
 
-		if ($_POST['password'] != '')
+		// If the screen name field is empty, we'll assign it from the username field.
+		if (ee()->input->post('screen_name') == '')
 		{
-			$VAL->validate_password();
+			$member->screen_name = ee()->input->post('username');
 		}
-
-
-		// Display validation errors if there are any
-		if (count($VAL->errors) > 0)
+		else
 		{
-			return ee()->output->show_user_error('submission', $VAL->errors);
+			$member->screen_name = ee()->input->post('screen_name');
 		}
 
-		// Finally, and most important of all, was their
-		// current password submitted correctly?
-		if ( ! ee()->auth->authenticate_id(
-			(int) ee()->session->userdata('member_id'),
-			ee()->input->post('current_password')))
+		// require authentication to change user/pass
+		$validator = ee('Validation')->make();
+		$validator->setRule('current_password', 'authenticated');
+
+		// set password, and confirmation if needed
+		if (ee()->input->post('password'))
 		{
-			return ee()->output->show_user_error('general', array(ee()->lang->line('current_password_incorrect')));
+			$member->password = ee()->input->post('password');
+			$validator->setRule('password_confirm', 'matches[password]');
 		}
 
-		/** -------------------------------------
-		/**  Update "last post" forum info if needed
-		/** -------------------------------------*/
+		$result = $member->validate();
+		$password_confirm = $validator->validate($_POST);
 
-		if ($query->row('screen_name')  != $_POST['screen_name'] AND ee()->config->item('forum_is_installed') == "y" )
+		// Add password confirmation failure to main result object
+		if ($password_confirm->failed())
 		{
-			ee()->db->query("UPDATE exp_forums SET forum_last_post_author = '".ee()->db->escape_str($_POST['screen_name'])."' WHERE forum_last_post_author_id = '".ee()->session->userdata('member_id')."'");
-			ee()->db->query("UPDATE exp_forum_moderators SET mod_member_name = '".ee()->db->escape_str($_POST['screen_name'])."' WHERE mod_member_id = '".ee()->session->userdata('member_id')."'");
+			$rules = $password_confirm->getFailed();
+			foreach ($rules as $field => $rule)
+			{
+				$result->addFailed($field, $rule[0]);
+			}
 		}
 
-		/** -------------------------------------
-		/**  Assign the query data
-		/** -------------------------------------*/
-		$data['screen_name'] = $_POST['screen_name'];
-
-		if (ee()->config->item('allow_username_change') == 'y')
+		if ( ! $result->isValid())
 		{
-			$data['username'] = $_POST['username'];
+			$errors = [];
+			foreach ($result->getAllErrors() as $error)
+			{
+				$errors = array_merge($errors, array_values($error));
+			}
+
+			return ee()->output->show_user_error('submission', $errors);
 		}
 
-		// Was a password submitted?
-
-		$pw_change = '';
-
-		if ($_POST['password'] != '')
+		// if the password was set, need to hash it before saving and kill all other sessions
+		if (ee()->input->post('password'))
 		{
-			ee()->auth->update_password(ee()->session->userdata('member_id'),
-											 ee()->input->post('password'));
-
-			$pw_change = $this->_var_swap($this->_load_element('password_change_warning'),
-											array('lang:password_change_warning' => ee()->lang->line('password_change_warning'))
-										);
+			$member->hashAndUpdatePassword($member->password);
 		}
 
-		ee()->db->query(ee()->db->update_string('exp_members', $data, "member_id = '".ee()->session->userdata('member_id')."'"));
-
-		/** -------------------------------------
-		/**  Update comments if screen name has changed
-		/** -------------------------------------*/
-		if ($query->row('screen_name')  != $_POST['screen_name'])
-		{
-			ee()->db->query(ee()->db->update_string('exp_comments', array('name' => $_POST['screen_name']), "author_id = '".ee()->session->userdata('member_id')."'"));
-
-			ee()->session->userdata['screen_name'] = stripslashes($_POST['screen_name']);
-		}
+		$member->save();
 
 		/** -------------------------------------
 		/**  Success message
 		/** -------------------------------------*/
+
 		return $this->_var_swap($this->_load_element('success'),
-								array(
-										'lang:heading'	=>	ee()->lang->line('username_and_password'),
-										'lang:message'	=>	ee()->lang->line('mbr_settings_updated').$pw_change
-									 )
-							);
+			[
+				'lang:heading'	=>	ee()->lang->line('username_and_password'),
+				'lang:message'	=>	ee()->lang->line('mbr_settings_updated'),
+			]
+		);
 	}
 
 
@@ -1452,10 +1361,11 @@ class Member_settings extends Member {
 		// the same options
 		ee()->load->model('admin_model');
 		ee()->load->helper('form');
-		$timezone = ee()->session->userdata('timezone');
+		// Have to get tz from database since the config will have replaced null with the site default
+		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->fields('timezone')->first();
 
 		$defaults = array(
-			'site_default'    => empty($timezone) ? 'y' : 'n',
+			'site_default'    => empty($member->timezone) ? 'y' : 'n',
 			'date_format'     => ee()->session->userdata('date_format'),
 			'time_format'     => ee()->session->userdata('time_format'),
 			'include_seconds' => ee()->session->userdata('include_seconds')
@@ -1500,9 +1410,9 @@ class Member_settings extends Member {
 
 		$data['language'] = ee()->security->sanitize_filename($_POST['language']);
 
-		foreach (array('timezone', 'date_format', 'time_format', 'include_seconts') as $key)
+		foreach (array('timezone', 'date_format', 'time_format', 'include_seconds') as $key)
 		{
-			if ($_POST['site_default'] == 'y')
+			if (ee()->input->post('site_default') == 'y')
 			{
 				$data[$key] = NULL;
 			}

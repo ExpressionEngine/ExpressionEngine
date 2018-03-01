@@ -432,6 +432,12 @@ class Categories extends AbstractCategoriesController {
 
 		$parent_id_options = [0 => lang('none')] + $cat_group->buildCategoryOptionsTree();
 
+		$disabled_choices = [];
+		if ( ! $category->isNew())
+		{
+			$disabled_choices = array_merge([$category->getId()], $category->getAllChildren()->getIds());
+		}
+
 		$vars['sections'][0][] = array(
 			'title' => 'parent_category',
 			'fields' => array(
@@ -439,7 +445,7 @@ class Categories extends AbstractCategoriesController {
 					'type' => 'radio',
 					'value' => $category->parent_id === NULL ? 0 : $category->parent_id,
 					'choices' => $parent_id_options,
-					'disabled_choices' => $category->isNew() ? [] : [$category->getId()],
+					'disabled_choices' => $disabled_choices,
 					'no_results' => [
 						'text' => sprintf(lang('no_found'), lang('categories'))
 					]
@@ -497,6 +503,10 @@ class Categories extends AbstractCategoriesController {
 				{
 					ee()->functions->redirect(ee('CP/URL')->make('categories/create/'.$cat_group->group_id));
 				}
+				elseif (ee()->input->post('submit') == 'save_and_close')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('categories/group/'.$cat_group->group_id));
+				}
 				else
 				{
 					ee()->functions->redirect(ee('CP/URL')->make('categories/edit/'.$cat_group->group_id.'/'.$category->getId()));
@@ -527,6 +537,13 @@ class Categories extends AbstractCategoriesController {
 				'type' => 'submit',
 				'value' => 'save_and_new',
 				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_close',
+				'text' => 'save_and_close',
 				'working' => 'btn_saving'
 			]
 		];

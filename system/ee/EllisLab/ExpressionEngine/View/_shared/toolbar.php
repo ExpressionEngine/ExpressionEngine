@@ -1,3 +1,4 @@
+<?php if ( ! empty($toolbar_items)): ?>
 <ul class="toolbar">
 	<?php foreach ($toolbar_items as $type => $attributes):
 		if (isset($attributes['type']))
@@ -18,3 +19,4 @@
 		<li class="<?=$type?>"><a <?=$attr?>><?=$content?></a></li>
 	<?php endforeach ?>
 </ul>
+<?php endif; ?>
