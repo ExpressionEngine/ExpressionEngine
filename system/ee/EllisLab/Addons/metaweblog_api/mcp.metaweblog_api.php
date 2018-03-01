@@ -79,7 +79,7 @@ class Metaweblog_api_mcp {
 				),
 				$api_url . '&id=' . $metaweblog->metaweblog_id,
 				array(
-					'toolbar_items' => array(
+					'tools' => array(
 						'edit' => array(
 							'href' => $edit_url,
 							'title' => lang('edit')
