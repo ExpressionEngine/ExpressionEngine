@@ -129,10 +129,10 @@ class Translate extends Utilities {
 							'content' => $file,
 							'href' => $edit_url
 						),
-					array('toolbar_items' => array(
+					array('tools' => array(
 						'edit' => array(
 							'href' => $edit_url,
-							'title' => strtolower(lang('edit'))
+							'title' => lang('edit')
 						)
 					)),
 					array(
