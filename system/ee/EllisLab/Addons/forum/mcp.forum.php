@@ -149,7 +149,7 @@ class Forum_mcp extends CP_Controller {
 			foreach ($boards_categories as $i => $category)
 			{
 				$manage = array(
-					'toolbar_items' => array(
+					'tools' => array(
 						'edit' => array(
 							'href' => ee('CP/URL')->make($this->base . 'edit/category/' . $category->forum_id),
 							'title' => lang('edit'),
@@ -160,7 +160,7 @@ class Forum_mcp extends CP_Controller {
 						)
 					)
 				);
-				$manage = ee('View')->make('ee:_shared/toolbar')->render($manage);
+				$manage = ee('View')->make('ee:_shared/tools')->render($manage);
 
 				$class = ($i == count($boards_categories) - 1) ? '' : 'mb';
 
@@ -207,7 +207,7 @@ class Forum_mcp extends CP_Controller {
 					$row = array(
 						'<a href="' . $edit_url . '">' . $forum->forum_name . '</a>' . form_hidden('order[]', $forum->forum_id),
 						$this->getStatusWidget($forum->forum_status),
-						array('toolbar_items' => array(
+						array('tools' => array(
 								'edit' => array(
 									'href' => $edit_url,
 									'title' => lang('edit'),
@@ -2502,7 +2502,7 @@ class Forum_mcp extends CP_Controller {
 				),
 				$rank->rank_min_posts,
 				$rank->rank_stars,
-				array('toolbar_items' => array(
+				array('tools' => array(
 						'edit' => array(
 							'href' => $edit_url,
 							'title' => lang('edit'),
@@ -3129,7 +3129,7 @@ class Forum_mcp extends CP_Controller {
 				$row = array(
 					$forum->forum_name,
 					(empty($moderators)) ? '' : ee('View')->make('forum:mod-subtable')->render(array('moderators' => $moderators)),
-					array('toolbar_items' => array(
+					array('tools' => array(
 						'add' => array(
 							'href' => ee('CP/URL')->make($this->base . 'create/moderator/' . $forum->forum_id),
 							'title' => lang('add_moderator')

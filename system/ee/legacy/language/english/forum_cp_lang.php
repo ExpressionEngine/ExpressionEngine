@@ -515,6 +515,8 @@ $lang = array(
 
 
 /* Moderators */
+'add_moderator' => 'Add Moderator',
+
 'btn_save_moderator' => 'Save moderator',
 
 'create_moderator' => 'Create Moderator',
