@@ -156,9 +156,9 @@ abstract class AbstractPublish extends CP_Controller {
 				$authors[$version->author_id] = $version->getAuthorName();
 			}
 
-			$toolbar = ee('View')->make('_shared/toolbar')->render(array(
-				'toolbar_items' => array(
-						'txt-only' => array(
+			$toolbar = ee('View')->make('_shared/tools')->render(array(
+				'tools' => array(
+						'view' => array(
 							'href' => ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, array('version' => $version->version_id)),
 							'title' => lang('view'),
 							'content' => lang('view')
