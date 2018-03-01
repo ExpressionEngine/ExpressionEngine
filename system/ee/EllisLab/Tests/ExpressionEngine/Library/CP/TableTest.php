@@ -106,7 +106,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 				'col 1 data',
 				'col 2 data',
 				'col 3 data',
-				array('toolbar_items' =>
+				array('tools' =>
 					array('view' => 'http://test/')
 				),
 				'status',
@@ -116,7 +116,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 				'col 1 data 2',
 				'col 2 data 2',
 				NULL,
-				array('toolbar_items' =>
+				array('tools' =>
 					array('view' => 'http://test/2')
 				),
 				'status',
@@ -181,7 +181,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 								'content' 	=> '',
 								'type'		=> Table::COL_TOOLBAR,
 								'encode'	=> FALSE,
-								'toolbar_items'	=> array('view' => 'http://test/'),
+								'tools'	=> array('view' => 'http://test/'),
 							),
 							array(
 								'content' 	=> 'status',
@@ -219,7 +219,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 								'content' 	=> '',
 								'type'		=> Table::COL_TOOLBAR,
 								'encode'	=> FALSE,
-								'toolbar_items'	=> array('view' => 'http://test/2'),
+								'tools'	=> array('view' => 'http://test/2'),
 							),
 							array(
 								'content' 	=> 'status',
@@ -323,7 +323,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 								'content' 	=> '',
 								'type'		=> Table::COL_TOOLBAR,
 								'encode'	=> FALSE,
-								'toolbar_items'	=> array('view' => 'http://test/'),
+								'tools'	=> array('view' => 'http://test/'),
 							),
 							array(
 								'content' 	=> 'status',
@@ -361,7 +361,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 								'content' 	=> '',
 								'type'		=> Table::COL_TOOLBAR,
 								'encode'	=> FALSE,
-								'toolbar_items'	=> array('view' => 'http://test/2'),
+								'tools'	=> array('view' => 'http://test/2'),
 							),
 							array(
 								'content' 	=> 'status',
@@ -435,7 +435,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 							'content' 	=> '',
 							'type'		=> Table::COL_TOOLBAR,
 							'encode'	=> FALSE,
-							'toolbar_items'	=> array('view' => 'http://test/2'),
+							'tools'	=> array('view' => 'http://test/2'),
 						),
 						array(
 							'content' 	=> 'status',
@@ -473,7 +473,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 							'content' 	=> '',
 							'type'		=> Table::COL_TOOLBAR,
 							'encode'	=> FALSE,
-							'toolbar_items'	=> array('view' => 'http://test/'),
+							'tools'	=> array('view' => 'http://test/'),
 						),
 						array(
 							'content' 	=> 'status',
@@ -548,7 +548,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 							'content' 	=> '',
 							'type'		=> Table::COL_TOOLBAR,
 							'encode'	=> FALSE,
-							'toolbar_items'	=> array('view' => 'http://test/2'),
+							'tools'	=> array('view' => 'http://test/2'),
 						),
 						array(
 							'content' 	=> 'status',
@@ -604,7 +604,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						'content' 	=> '',
 						'type'		=> Table::COL_TOOLBAR,
 						'encode'	=> FALSE,
-						'toolbar_items'	=> array('view' => 'http://test/2'),
+						'tools'	=> array('view' => 'http://test/2'),
 					),
 					array(
 						'content' 	=> 'status',
@@ -651,7 +651,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						'content' 	=> '',
 						'type'		=> Table::COL_TOOLBAR,
 						'encode'	=> FALSE,
-						'toolbar_items'	=> array('view' => 'http://test/'),
+						'tools'	=> array('view' => 'http://test/'),
 					),
 					array(
 						'content' 	=> 'status',
@@ -683,7 +683,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 					'col 1 data',
 					'col 2 data',
 					'col 3 data',
-					array('toolbar_items' =>
+					array('tools' =>
 						array('view' => 'http://test/')
 					),
 					'status',
@@ -693,7 +693,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 					'col 1 data 2',
 					'col 2 data 2',
 					NULL,
-					array('toolbar_items' =>
+					array('tools' =>
 						array('view' => 'http://test/2')
 					),
 					'status',
@@ -705,7 +705,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 					'col 2 data',
 					'col 3 data',
 					'col 1 data',
-					array('toolbar_items' =>
+					array('tools' =>
 						array('view' => 'http://test/')
 					),
 					'status',
@@ -715,7 +715,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 					'col 1 data 2',
 					'col 2 data 2',
 					NULL,
-					array('toolbar_items' =>
+					array('tools' =>
 						array('view' => 'http://test/2')
 					),
 					'status',
@@ -725,7 +725,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 					'col 3 data 3',
 					'col 2 data 3',
 					NULL,
-					array('toolbar_items' =>
+					array('tools' =>
 						array('view' => 'http://test/2')
 					),
 					'status',
@@ -737,7 +737,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 					'col 3 data',
 					'col 2 data',
 					'col 1 data',
-					array('toolbar_items' =>
+					array('tools' =>
 						array('view' => 'http://test/')
 					),
 					'status',
@@ -774,7 +774,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 							'content' 	=> '',
 							'type'		=> Table::COL_TOOLBAR,
 							'encode'	=> FALSE,
-							'toolbar_items'	=> array('view' => 'http://test/'),
+							'tools'	=> array('view' => 'http://test/'),
 						),
 						array(
 							'content' 	=> 'status',
@@ -812,7 +812,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 							'content' 	=> '',
 							'type'		=> Table::COL_TOOLBAR,
 							'encode'	=> FALSE,
-							'toolbar_items'	=> array('view' => 'http://test/2'),
+							'tools'	=> array('view' => 'http://test/2'),
 						),
 						array(
 							'content' 	=> 'status',
@@ -852,7 +852,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 							'content' 	=> '',
 							'type'		=> Table::COL_TOOLBAR,
 							'encode'	=> FALSE,
-							'toolbar_items'	=> array('view' => 'http://test/'),
+							'tools'	=> array('view' => 'http://test/'),
 						),
 						array(
 							'content' 	=> 'status',
@@ -890,7 +890,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 							'content' 	=> '',
 							'type'		=> Table::COL_TOOLBAR,
 							'encode'	=> FALSE,
-							'toolbar_items'	=> array('view' => 'http://test/2'),
+							'tools'	=> array('view' => 'http://test/2'),
 						),
 						array(
 							'content' 	=> 'status',
@@ -928,7 +928,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 							'content' 	=> '',
 							'type'		=> Table::COL_TOOLBAR,
 							'encode'	=> FALSE,
-							'toolbar_items'	=> array('view' => 'http://test/2'),
+							'tools'	=> array('view' => 'http://test/2'),
 						),
 						array(
 							'content' 	=> 'status',
@@ -968,7 +968,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 							'content' 	=> '',
 							'type'		=> Table::COL_TOOLBAR,
 							'encode'	=> FALSE,
-							'toolbar_items'	=> array('view' => 'http://test/'),
+							'tools'	=> array('view' => 'http://test/'),
 						),
 						array(
 							'content' 	=> 'status',
@@ -1015,7 +1015,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 							'content' 	=> '',
 							'type'		=> Table::COL_TOOLBAR,
 							'encode'	=> FALSE,
-							'toolbar_items'	=> array('view' => 'http://test/2'),
+							'tools'	=> array('view' => 'http://test/2'),
 						),
 						array(
 							'content' 	=> 'status',
@@ -1053,7 +1053,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 							'content' 	=> '',
 							'type'		=> Table::COL_TOOLBAR,
 							'encode'	=> FALSE,
-							'toolbar_items'	=> array('view' => 'http://test/'),
+							'tools'	=> array('view' => 'http://test/'),
 						),
 						array(
 							'content' 	=> 'status',
@@ -1091,7 +1091,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 							'content' 	=> '',
 							'type'		=> Table::COL_TOOLBAR,
 							'encode'	=> FALSE,
-							'toolbar_items'	=> array('view' => 'http://test/2'),
+							'tools'	=> array('view' => 'http://test/2'),
 						),
 						array(
 							'content' 	=> 'status',
@@ -1131,7 +1131,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 							'content' 	=> '',
 							'type'		=> Table::COL_TOOLBAR,
 							'encode'	=> FALSE,
-							'toolbar_items'	=> array('view' => 'http://test/'),
+							'tools'	=> array('view' => 'http://test/'),
 						),
 						array(
 							'content' 	=> 'status',
@@ -1171,7 +1171,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 							'content' 	=> '',
 							'type'		=> Table::COL_TOOLBAR,
 							'encode'	=> FALSE,
-							'toolbar_items'	=> array('view' => 'http://test/'),
+							'tools'	=> array('view' => 'http://test/'),
 						),
 						array(
 							'content' 	=> 'status',
@@ -1209,7 +1209,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 							'content' 	=> '',
 							'type'		=> Table::COL_TOOLBAR,
 							'encode'	=> FALSE,
-							'toolbar_items'	=> array('view' => 'http://test/2'),
+							'tools'	=> array('view' => 'http://test/2'),
 						),
 						array(
 							'content' 	=> 'status',
@@ -1259,7 +1259,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						'content' 	=> '',
 						'type'		=> Table::COL_TOOLBAR,
 						'encode'	=> FALSE,
-						'toolbar_items'	=> array('view' => 'http://test/'),
+						'tools'	=> array('view' => 'http://test/'),
 					),
 					array(
 						'content' 	=> 'status',
@@ -1297,7 +1297,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						'content' 	=> '',
 						'type'		=> Table::COL_TOOLBAR,
 						'encode'	=> FALSE,
-						'toolbar_items'	=> array('view' => 'http://test/2'),
+						'tools'	=> array('view' => 'http://test/2'),
 					),
 					array(
 						'content' 	=> 'status',
@@ -1335,7 +1335,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						'content' 	=> '',
 						'type'		=> Table::COL_TOOLBAR,
 						'encode'	=> FALSE,
-						'toolbar_items'	=> array('view' => 'http://test/2'),
+						'tools'	=> array('view' => 'http://test/2'),
 					),
 					array(
 						'content' 	=> 'status',
@@ -1373,7 +1373,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						'content' 	=> '',
 						'type'		=> Table::COL_TOOLBAR,
 						'encode'	=> FALSE,
-						'toolbar_items'	=> array('view' => 'http://test/'),
+						'tools'	=> array('view' => 'http://test/'),
 					),
 					array(
 						'content' 	=> 'status',
@@ -1411,7 +1411,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						'content' 	=> '',
 						'type'		=> Table::COL_TOOLBAR,
 						'encode'	=> FALSE,
-						'toolbar_items'	=> array('view' => 'http://test/'),
+						'tools'	=> array('view' => 'http://test/'),
 					),
 					array(
 						'content' 	=> 'status',
@@ -1647,7 +1647,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 		$data = array(
 			array(
 				'test',
-				array('toolbar_items' => array()),
+				array('tools' => array()),
 				array('value' => 'test')
 			)
 		);
