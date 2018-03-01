@@ -78,7 +78,7 @@ class Watermarks extends AbstractFilesController {
 					'href' => $edit_url
 				),
 				$watermark->wm_type,
-				array('toolbar_items' => array(
+				array('tools' => array(
 					'edit' => array(
 						'href' => $edit_url,
 						'title' => lang('edit')
