@@ -136,16 +136,16 @@ class Member_settings extends Member {
 
 		if ($this->is_admin == FALSE OR ee()->session->userdata('group_id') != 1)
 		{
-    		$not_in[] = 2;
+			$not_in[] = 2;
 		}
 
 		ee()->load->model('member_model');
 
 		$member = ee('Model')->get('Member', (int)$this->cur_id)
-    		->with('MemberGroup')
-    		->filter('group_id', 'NOT IN', $not_in)
+			->with('MemberGroup')
+			->filter('group_id', 'NOT IN', $not_in)
 			->filter('MemberGroup.site_id', ee()->config->item('site_id'))
-    		->first();
+			->first();
 
 		if ( ! $member)
 		{
@@ -160,11 +160,11 @@ class Member_settings extends Member {
 			->fields('m_field_id', 'm_field_name')
 			->all();
 
-        foreach ($member_fields as $member_field)
-        {
-            $key = 'm_field_id_' . $member_field->m_field_id;
-            $row[$member_field->m_field_name] = array_key_exists($key, $row) ? $row[$key] : '';
-        }
+		foreach ($member_fields as $member_field)
+		{
+			$key = 'm_field_id_' . $member_field->m_field_id;
+			$row[$member_field->m_field_name] = array_key_exists($key, $row) ? $row[$key] : '';
+		}
 
 		/** ----------------------------------------
 		/**  Fetch the template
