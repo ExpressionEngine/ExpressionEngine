@@ -734,9 +734,9 @@ $lang = array(
 
 'can_not_delete_only_member' => 'You cannot delete the only member in the database',
 
-'can_send_bulletins' => 'Access bulletins',
+'can_send_bulletins' => 'Send bulletins',
 
-'can_send_bulletins_desc' => 'When enabled, users assigned to this group may send and receive bulletins.',
+'can_send_bulletins_desc' => 'When enabled, users assigned to this group may send bulletins.',
 
 'cannot_change_your_group' => 'Super Admins cannot change their member group assignment. Please have another Super Admin reassign you.',
 
