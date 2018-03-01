@@ -3,7 +3,7 @@ $classes[] = 'tools';
 
 if (count($tools) > 3)
 {
-	$classes[] = 'tools-no-text';
+	$classes[] = 'tools--no-text';
 }
 
 if (isset($type))
