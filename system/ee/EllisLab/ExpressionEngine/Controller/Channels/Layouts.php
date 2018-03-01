@@ -128,7 +128,7 @@ class Layouts extends AbstractChannelsController {
 				'href' => $edit_url,
 				'extra' => implode(', ', $layout->MemberGroups->pluck('group_title')),
 				'selected' => ($layout_id && $layout->layout_id == $layout_id),
-				'toolbar_items' => [
+				'tools' => [
 					'edit' => [
 						'href' => $edit_url,
 						'title' => lang('edit')
