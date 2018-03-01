@@ -124,7 +124,7 @@ class Pages_mcp {
 							),
 					'url' => $url,
 					array(
-						'toolbar_items' => array(
+						'tools' => array(
 							'edit' => array(
 								'href' => $edit_url,
 								'title' => lang('edit')
