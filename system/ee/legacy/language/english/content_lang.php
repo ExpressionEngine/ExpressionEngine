@@ -606,6 +606,8 @@ $lang = array(
 
 'pre' => 'Pre-formatted',
 
+'preview' => 'Preview',
+
 'preview_entry' => 'Preview Entry',
 
 'preview_layout' => 'Preview Layout',
@@ -722,6 +724,8 @@ $lang = array(
 
 'unordered_list' => 'Unordered List',
 
+'unpublished' => 'unpublished',
+
 'upload' => 'Upload',
 
 'upload_dir_choose' => 'Choose an upload directory',
@@ -755,6 +759,8 @@ $lang = array(
 'view_entry' => 'View Entry',
 
 'view_filtered' => 'Return to Filtered Entries',
+
+'view_wider' => 'View Wider',
 
 'warning' => 'Warning',
 
