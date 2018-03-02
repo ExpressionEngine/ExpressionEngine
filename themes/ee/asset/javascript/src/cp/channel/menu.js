@@ -7,7 +7,7 @@
  */
 
 $(document).ready(function () {
-	$('.sidebar .folder-list .remove a.m-link').click(function (e) {
+	$('.sidebar .folder-list .remove a.m-link, .sidebar .folder-list .tools a.m-link.remove').click(function (e) {
 		var modalIs = '.' + $(this).attr('rel');
 
 		$(modalIs + " .checklist").html(''); // Reset it
