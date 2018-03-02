@@ -149,7 +149,9 @@ $(document).ready(function () {
 	});
 
 	if (window.location.search.includes('&preview=y')) {
-		$('button[rel="live-preview"]').click();
+		setTimeout(function() {
+			$('button[rel="live-preview"]').click();
+		}, 100);
 	}
 
 	// =============
