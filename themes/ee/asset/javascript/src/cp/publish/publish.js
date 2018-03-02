@@ -66,7 +66,7 @@ $(document).ready(function () {
 					url: EE.publish.autosave.URL,
 					data: publishForm.serialize(),
 					success: function(result) {
-						publishForm.find('div.alert.warn').remove();
+						$('[data-publish]').siblings('div.alert.warn').remove();
 
 						if (result.error) {
 							console.log(result.error);
@@ -149,7 +149,9 @@ $(document).ready(function () {
 	});
 
 	if (window.location.search.includes('&preview=y')) {
-		$('button[rel="live-preview"]').click();
+		setTimeout(function() {
+			$('button[rel="live-preview"]').click();
+		}, 100);
 	}
 
 	// =============
