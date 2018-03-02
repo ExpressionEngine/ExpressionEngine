@@ -313,18 +313,19 @@ class EE_Template {
 		$seg_array = ee()->uri->segment_array();
 
 		// Define some path and template related global variables
-		$added_globals = array(
-			'last_segment'         => end($seg_array),
-			'current_url'          => ee()->functions->fetch_current_uri(),
-			'current_path'         => (ee()->uri->uri_string) ? str_replace(array('"', "'"), array('%22', '%27'), ee()->uri->uri_string) : '/',
-			'current_query_string' => http_build_query($_GET), // GET has been sanitized!
-			'template_name'        => $this->template_name,
-			'template_group'       => $this->group_name,
-			'template_group_id'    => $this->template_group_id,
-			'template_id'          => $this->template_id,
-			'template_type'        => $this->embed_type ?: $this->template_type,
-			'is_ajax_request'      => AJAX_REQUEST
-		);
+		$added_globals = [
+			'last_segment'            => end($seg_array),
+			'current_url'             => ee()->functions->fetch_current_uri(),
+			'current_path'            => (ee()->uri->uri_string) ? str_replace(array('"', "'"), array('%22', '%27'), ee()->uri->uri_string) : '/',
+			'current_query_string'    => http_build_query($_GET), // GET has been sanitized!
+			'template_name'           => $this->template_name,
+			'template_group'          => $this->group_name,
+			'template_group_id'       => $this->template_group_id,
+			'template_id'             => $this->template_id,
+			'template_type'           => $this->embed_type ?: $this->template_type,
+			'is_ajax_request'         => AJAX_REQUEST,
+			'is_live_preview_request' => ee('LivePreview')->hasEntryData(),
+		];
 
 		foreach ($this->user_vars as $user_var)
 		{
