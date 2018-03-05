@@ -1206,6 +1206,8 @@ class ChannelEntry extends ContentModel {
 		{
 			return TRUE;
 		}
+
+		return FALSE;
 	}
 
 }
