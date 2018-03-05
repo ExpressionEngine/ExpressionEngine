@@ -38,7 +38,7 @@ class Updater extends CP_Controller {
 	{
 		ee()->lang->loadfile('updater');
 		ee()->load->library('el_pings');
-		$version_file = ee()->el_pings->get_version_info();
+		$version_file = ee()->el_pings->get_version_info(TRUE);
 		$to_version = $version_file['latest_version'];
 
 		$newer_version_available = version_compare(ee()->config->item('app_version'), $to_version, '<');

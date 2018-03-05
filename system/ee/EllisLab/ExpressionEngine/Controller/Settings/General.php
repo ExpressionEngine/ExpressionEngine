@@ -256,10 +256,8 @@ class General extends Settings {
 			$cache = ee()->cache;
 		}
 
-		$cache->delete('current_version', \Cache::GLOBAL_SCOPE);
-
 		ee()->load->library('el_pings');
-		$version_info = ee()->el_pings->get_version_info();
+		$version_info = ee()->el_pings->get_version_info(TRUE);
 		$latest_version = $version_info['latest_version'];
 
 		// Error getting version
