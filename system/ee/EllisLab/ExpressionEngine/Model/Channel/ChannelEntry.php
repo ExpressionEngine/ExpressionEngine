@@ -1184,9 +1184,9 @@ class ChannelEntry extends ContentModel {
 		return $this->Site->site_pages[$this->site_id]['uris'][$this->getId()];
 	}
 
-	public function hasLivePreview()
+	public function isLivePreviewable()
 	{
-		if ($this->Channel->preview_url || $this->hasPageURI())
+		if ($this->Channel->preview_url)
 		{
 			return TRUE;
 		}
@@ -1198,6 +1198,14 @@ class ChannelEntry extends ContentModel {
 		}
 
 		return FALSE;
+	}
+
+	public function hasLivePreview()
+	{
+		if ($this->Channel->preview_url || $this->hasPageURI())
+		{
+			return TRUE;
+		}
 	}
 
 }
