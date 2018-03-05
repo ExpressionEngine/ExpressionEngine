@@ -94,9 +94,10 @@ class Tag {
 	 * @param FieldFacade $field The fieldtype instance we are processing
 	 * @return string The fully parsed tag
 	 */
-	public function parse(FieldFacade $field)
+	public function parse(FieldFacade $field, array $meta = [])
 	{
-		$tagdata = $this->parseConditionals($field);
+		$tagdata = $this->replaceMetaTags($meta);
+		$tagdata = $this->parseConditionals($field, $tagdata);
 
 		if ($field->getType() == 'relationship')
 		{
@@ -223,6 +224,19 @@ class Tag {
 		}
 
 		return $this->function_delegate->prep_conditionals($tagdata, $vars);
+	}
+
+	protected function replaceMetaTags(array $meta, $tagdata = NULL)
+	{
+		$tagdata = ($tagdata) ?: $this->getTagdata();
+
+		foreach ($meta as $name => $value)
+		{
+			$tag = LD.$name.RD;
+			$tagdata = str_replace($tag, $value, $tagdata);
+		}
+
+		return $tagdata;
 	}
 
 }

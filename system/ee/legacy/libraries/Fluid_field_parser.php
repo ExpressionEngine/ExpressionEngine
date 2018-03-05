@@ -330,6 +330,8 @@ class Fluid_field_parser {
 			return '';
 		}
 
+		$fluid_field_name = ee('Model')->get('ChannelField', $fluid_field_id)->first()->field_name;
+
 		$entry_id = $channel_row['entry_id'];
 
 		$fluid_field_data = $this->data->filter(function($fluid_field) use($entry_id, $fluid_field_id)
@@ -339,7 +341,9 @@ class Fluid_field_parser {
 
 		$output = '';
 
-		foreach ($fluid_field_data as $fluid_field)
+		$total_fields = count($fluid_field_data);
+
+		foreach ($fluid_field_data as $i => $fluid_field)
 		{
 			$tags = $this->tags[$fluid_field->fluid_field_id][sha1($tagdata)];
 
@@ -351,6 +355,15 @@ class Fluid_field_parser {
 				continue;
 			}
 
+			$meta = [
+				$fluid_field_name . ':count' => $i + 1,
+				$fluid_field_name . ':index' => $i,
+				$fluid_field_name . ':next_field_name' => (($i + 1) < $total_fields) ? $fluid_field_data[$i+1]->ChannelField->field_name : NULL,
+				$fluid_field_name . ':prev_field_name' => ($i > 0) ? $fluid_field_data[$i-1]->ChannelField->field_name : NULL,
+				$fluid_field_name . ':next_fieldtype' => (($i + 1) < $total_fields) ? $fluid_field_data[$i+1]->ChannelField->field_type : NULL,
+				$fluid_field_name . ':prev_fieldtype' => ($i > 0) ? $fluid_field_data[$i-1]->ChannelField->field_type : NULL,
+			];
+
 			foreach ($tags[$field_name] as $tag)
 			{
 				$field = $fluid_field->getField();
@@ -360,7 +373,7 @@ class Fluid_field_parser {
 
 				$field->setItem('row', $row);
 
-				$output .= $tag->parse($field);
+				$output .= $tag->parse($field, $meta);
 			}
 		}
 
