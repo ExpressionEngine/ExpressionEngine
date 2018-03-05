@@ -626,6 +626,22 @@ class Fluid_field_ft extends EE_Fieldtype {
 		return ee()->fluid_field_parser->parse($this->row, $this->id(), $params, $tagdata, $this->content_type());
 	}
 
+	/**
+	 * :length modifier
+	 */
+	public function replace_length($data, $params = '', $tagdata = '')
+	{
+		return $this->replace_total_fields($data, $params, $tagdata);
+	}
+
+	/**
+	 * :total_fields modifier
+	 */
+	public function replace_total_fields($data, $params = '', $tagdata = '')
+	{
+		$fluid_field_data = $this->getFieldData($this->id(), $this->row('entry_id'));
+		return ($fluid_field_data) ? count($fluid_field_data) : 0;
+	}
 }
 
 // EOF
