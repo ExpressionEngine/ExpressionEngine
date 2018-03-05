@@ -98,15 +98,15 @@ class El_pings {
 	 *
 	 * Checks the current version of ExpressionEngine available from EllisLab
 	 *
-	 * @access	private
-	 * @return	string
+	 * @param boolean $force_update Use the force, update regardless of cache
+	 * @return array
 	 */
-	public function get_version_info()
+	public function get_version_info($force_update = FALSE)
 	{
 		// Attempt to grab the local cached file
 		$cached = $this->cache->get('current_version', Cache::GLOBAL_SCOPE);
 
-		if ( ! $cached)
+		if ( ! $cached || $force_update)
 		{
 			try
 			{
