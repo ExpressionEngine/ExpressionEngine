@@ -717,7 +717,7 @@ class Relationship_ft extends EE_Fieldtype {
 		$save = $form->values();
 
 		// Boolstring conversion
-		$save['allow_multiple'] = ($save['allow_multiple'] === 'y') ? 1 : 0;
+		$save['allow_multiple'] = get_bool_from_string($save['allow_multiple']);
 
 		foreach ($save as $field => $value)
 		{
