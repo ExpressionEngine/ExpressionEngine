@@ -123,7 +123,13 @@ $(document).ready(function () {
 	});
 
 	$('body').on('click', 'button[rel="live-preview"]', function(e) {
-		var container = $('.app-modal--live-preview .form-standard');
+		var container = $('.app-modal--live-preview .form-standard'),
+		    iframe      = $('iframe.live-preview__frame')[0];
+
+		iframe.contentDocument.open();
+		iframe.contentDocument.write('');
+		iframe.contentDocument.close();
+
 		fetchPreview();
 
 		container.append($(publishForm));
