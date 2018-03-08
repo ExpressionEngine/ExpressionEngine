@@ -131,7 +131,8 @@ class Checkboxes_ft extends OptionFieldtype {
 				'multi'               => TRUE,
 				'nested'              => TRUE,
 				'nestable_reorder'    => TRUE,
-				'manageable'          => $this->get_setting('editable', FALSE),
+				'manageable'          => $this->get_setting('editable', FALSE)
+					&& ! $this->get_setting('in_modal_context'),
 				'add_btn_label'       => $this->get_setting('add_btn_label', NULL),
 				'editing'             => $this->get_setting('editing', FALSE),
 				'manage_label'        => $this->get_setting('manage_toggle_label', lang('manage')),

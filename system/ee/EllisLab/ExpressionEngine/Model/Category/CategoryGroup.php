@@ -174,7 +174,7 @@ class CategoryGroup extends StructureModel {
 			'field_list_items'      => '',
 			'field_maxl'			=> 100,
 			'editable'				=> $editable,
-			'editing'				=> AJAX_REQUEST,
+			'editing'				=> FALSE,
 			'deletable'				=> $deletable,
 			'populateCallback'		=> array($this, 'populateCategories'),
 			'manage_toggle_label'	=> lang('manage_categories'),
