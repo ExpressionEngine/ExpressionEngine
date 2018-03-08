@@ -89,6 +89,20 @@ class LayoutDisplay {
 
 		return $fields;
 	}
+
+	/**
+	 * Sets a flag to let fieldtypes know whether or not they are in a modal
+	 * view so they can enable/disable certain functionality
+	 *
+	 * @param boolean TRUE if in modal, FALSE if not
+	 */
+	public function setIsInModalContext($in_modal)
+	{
+		foreach ($this->getFields() as $field)
+		{
+			$field->setIsInModalContext($in_modal);
+		}
+	}
 }
 
 // EOF

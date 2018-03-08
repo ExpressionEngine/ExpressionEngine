@@ -452,7 +452,8 @@ class Edit extends AbstractPublishController {
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
 			'autosaves' => $this->getAutosavesTable($entry, $autosave_id),
 			'extra_publish_controls' => $entry->Channel->extra_publish_controls,
-			'buttons' => $this->getPublishFormButtons($entry)
+			'buttons' => $this->getPublishFormButtons($entry),
+			'in_modal_context' => $sequence_editing
 		);
 
 		if ($sequence_editing)
@@ -541,6 +542,7 @@ class Edit extends AbstractPublishController {
 
 		if (AJAX_REQUEST)
 		{
+			$vars['layout']->setIsInModalContext(TRUE);
 			return ee('View')->make('publish/partials/publish_form')->render($vars);
 		}
 
