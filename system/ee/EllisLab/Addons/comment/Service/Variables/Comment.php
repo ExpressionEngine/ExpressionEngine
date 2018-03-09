@@ -113,7 +113,7 @@ class Comment extends Variables {
 			'ip_address'                  => $this->comment->ip_address,
 			'is_ignored'                  => $this->isIgnored(),
 			'location'                    => ($this->comment->location) ?: $this->author->location,
-			'member_search_path'          => $this->member_search_path . $this->comment->author_id,
+			'member_search_path'          => $this->member_search_url.$this->comment->author_id,
 			'name'                        => $this->comment->name,
 			'permalink'                   => ee()->uri->uri_string.'#'.$this->comment->comment_id,
 			'signature'                   => $this->typography($this->getSignatureVariable('signature'), $typography_prefs),
