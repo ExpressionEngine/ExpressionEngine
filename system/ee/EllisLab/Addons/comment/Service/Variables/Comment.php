@@ -154,11 +154,8 @@ class Comment extends Variables {
 
 	private function formatComment($typography_prefs)
 	{
-		/* -------------------------------------------
-		/* 'member_process_reset_password' hook.
-		/*  - Additional processing after user resets password
-		/*  - Added EE 2.9.3
-		/*  - Member ID parameter added 4.0.0
+		/* 'comment_entries_comment_format' hook.
+		/*  - Play with the contents of the comment entries
 		*/
 			if (ee()->extensions->active_hook('comment_entries_comment_format') === TRUE)
 			{
