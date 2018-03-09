@@ -264,6 +264,12 @@ class LegacyParser {
 
 		foreach($temp_single as $val)
 		{
+			// skip template comments, including runtime annotation markers
+			if (strncmp($val, '!--', 3) === 0)
+			{
+				continue;
+			}
+
 			// simple conditionals
 			if (stristr($val, '\|') && substr($val, 0, 6) != 'switch' && substr($val, 0, 11) != 'multi_field')
 			{
