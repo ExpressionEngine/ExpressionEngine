@@ -80,43 +80,144 @@ class Comment extends Variables {
 		$base_url = ($this->channel->comment_url) ?: $this->channel->channel_url;
 		$base_url = parse_config_variables($base_url, ee()->config->get_cached_site_prefs($this->comment->site_id));
 
+
+
 		$this->variables = [
-			'author'                     => ($this->author->screen_name) ?: $this->comment->name,
-			'author_id'                  => $this->comment->author_id,
-			'channel_id'                 => $this->entry->channel_id,
-			'channel_short_name'         => $this->channel->channel_name,
-			'channel_title'              => $this->channel->channel_title,
-			'comment'                    => $this->typography($this->comment->comment, $typography_prefs),
-			'comment_auto_path'          => $base_url,
-			'comment_date'               => $this->date($this->comment->comment_date),
-			'comment_entry_id_auto_path' => $base_url.'/'.$this->comment->entry_id,
-			'comment_expiration_date'    => $this->date($this->entry->comment_expiration_date),
-			'comment_id'                 => $this->comment->comment_id,
-			'comment_site_id'            => $this->comment->site_id,
-			'comment_stripped'           => $this->protect($this->comment->comment),
+			'author'                      => ($this->author->screen_name) ?: $this->comment->name,
+			'author_id'                   => $this->comment->author_id,
+			'avatar_image_height'         => $this->getAvatarVariable('height'),
+			'avatar_image_width'          => $this->getAvatarVariable('width'),
+			'avatar_url'                  => $this->getAvatarVariable('url'),
+			'can_moderate_comment'        => $this->canModerate(),
+			'channel_id'                  => $this->entry->channel_id,
+			'channel_short_name'          => $this->channel->channel_name,
+			'channel_title'               => $this->channel->channel_title,
+			'comment'                     => $this->typography($this->comment->comment, $typography_prefs),
+			'comment_auto_path'           => $base_url,
+			'comment_date'                => $this->date($this->comment->comment_date),
+			'comment_entry_id_auto_path'  => $base_url.'/'.$this->comment->entry_id,
+			'comment_expiration_date'     => $this->date($this->entry->comment_expiration_date),
+			'comment_id'                  => $this->comment->comment_id,
+			'comment_site_id'             => $this->comment->site_id,
+			'comment_stripped'            => $this->protect($this->comment->comment),
 			'comment_url_title_auto_path' => $base_url.'/'.$this->entry->url_title,
-			'comments_disabled'          => $this->isDisabled(),
-			'comments_expired'           => (ee()->localize->now > $this->entry->comment_expiration_date),
-			'editable'                   => $this->isEditable(),
-			'edit_date'                  => $this->date($this->comment->edit_date),
-			'email'                      => $this->comment->email,
-			'entry_author_id'            => $this->entry->author_id,
-			'entry_id'                   => $this->comment->entry_id,
-			'entry_id_path'              => $this->pathVariable($this->comment->entry_id),
-		//	'gmt_comment_date'           => $this->date($this->comment->comment_date), // eliminated, just use timestamp= with comment date
-			'group_id'                   => $this->author->group_id,
-			'ip_address'                 => $this->comment->ip_address,
-			'location'                   => ($this->comment->location) ?: $this->author->location,
-			'member_search_path'         => $this->member_search_path . $this->comment->author_id,
-			'name'                       => $this->comment->name,
-			'status'                     => $this->comment->status,
-			'title'                      => $this->entry->title,
-			'url'                        => ($this->comment->url) ?: $this->author->url,
-			'url_title'                  => $this->entry->url_title,
-			'url_title_path'             => $this->pathVariable($this->entry->url_title),
+			'comments_disabled'           => $this->isDisabled(),
+			'comments_expired'            => (ee()->localize->now > $this->entry->comment_expiration_date),
+			'edit_date'                   => $this->date($this->comment->edit_date),
+			'editable'                    => $this->isEditable(),
+			'email'                       => $this->comment->email,
+			'entry_author_id'             => $this->entry->author_id,
+			'entry_id'                    => $this->comment->entry_id,
+			'entry_id_path'               => $this->pathVariable($this->comment->entry_id),
+			'group_id'                    => $this->author->group_id,
+			'ip_address'                  => $this->comment->ip_address,
+			'location'                    => ($this->comment->location) ?: $this->author->location,
+			'member_search_path'          => $this->member_search_path . $this->comment->author_id,
+			'name'                        => $this->comment->name,
+			'permalink'                   => ee()->uri->uri_string.'#'.$this->comment->comment_id,
+			'signature'                   => $this->typography($this->getSignatureVariable('signature'), $typography_prefs),
+			'signature_image_height'      => $this->getSignatureVariable('height'),
+			'signature_image_url'         => $this->getSignatureVariable('url'),
+			'signature_image_width'       => $this->getSignatureVariable('width'),
+			'status'                      => $this->comment->status,
+			'title'                       => $this->entry->title,
+			'url'                         => ($this->comment->url) ?: $this->author->url,
+			'url_title'                   => $this->entry->url_title,
+			'url_title_path'              => $this->pathVariable($this->entry->url_title),
+			'username'                    => $this->author->username,
 		];
 
 		return $this->variables;
+	}
+
+	private function getSignatureVariable($property)
+	{
+		if ( ! $this->signaturesEnabled())
+		{
+			return '';
+		}
+
+		switch ($property)
+		{
+			case 'signature':
+				return $this->author->signature;
+			case 'url':
+				if ($this->author->sig_img_filename)
+				{
+					return ee()->config->slash_item('sig_img_url').$this->author->sig_img_filename;
+				}
+				return '';
+			case 'width':
+				return $this->author->sig_img_width;
+			case 'height':
+				return $this->author->sig_img_height;
+		}
+
+		// er, something wrong?
+		return FALSE;
+	}
+
+	private function signaturesEnabled()
+	{
+		if ( ! bool_config_item('allow_signatures'))
+		{
+			return FALSE;
+		}
+
+		if ( ! get_bool_from_string(ee()->session->userdata('display_signatures')))
+		{
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	private function getAvatarVariable($property)
+	{
+		if ( ! $this->avatarsEnabled())
+		{
+			return '';
+		}
+
+		switch ($property)
+		{
+			case 'url':
+				if ($this->author->avatar_filename)
+				{
+					$avatar_url = ee()->config->slash_item('avatar_url');
+		            $avatar_fs_path = ee()->config->slash_item('avatar_path');
+
+		            if (file_exists($avatar_fs_path.'default/'.$this->author->avatar_filename))
+		            {
+		                $avatar_url .= 'default/';
+		            }
+
+					return $avatar_url.$this->author->avatar_filename;
+				}
+				return '';
+			case 'width':
+				return $this->author->avatar_width;
+			case 'height':
+				return $this->author->avatar_height;
+		}
+
+		// er, something wrong?
+		return FALSE;
+	}
+
+	private function avatarsEnabled()
+	{
+		if ( ! bool_config_item('enable_avatars'))
+		{
+			return FALSE;
+		}
+
+		if ( ! get_bool_from_string(ee()->session->userdata('display_avatars')))
+		{
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 	private function isDisabled()
@@ -124,6 +225,22 @@ class Comment extends Variables {
 		return ($this->entry->allow_comments === FALSE OR
 			$this->channel->comment_system_enabled === FALSE OR
 			bool_config_item('enable_comments') === FALSE);
+	}
+
+	private function canModerate()
+	{
+		if (ee('Permission')->has('can_edit_all_comments'))
+		{
+			return TRUE;
+		}
+
+		if ($this->ee('Permission')->has('can_edit_own_comments') &&
+			$this->entry->author_id == ee()->session->userdata('member_id'))
+		{
+			return TRUE;
+		}
+
+		return FALSE;
 	}
 
 	private function isEditable()
