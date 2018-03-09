@@ -203,7 +203,7 @@ class Edit extends AbstractPublishController {
 
 			$toolbar = array();
 
-			if ($entry->hasLivePreview())
+			if ($entry->isLivePreviewable())
 			{
 				$toolbar['view'] = array(
 					'href' => ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, ['preview' => 'y']),
@@ -441,7 +441,7 @@ class Edit extends AbstractPublishController {
 			'buttons' => $this->getPublishFormButtons($entry)
 		);
 
-		if ($entry->hasLivePreview())
+		if ($entry->isLivePreviewable())
 		{
 			$modal = ee('View')->make('publish/live-preview-modal')->render([
 				'preview_url' => ee('CP/URL')->make('publish/preview/' . $entry->channel_id . '/' . $entry->entry_id)
