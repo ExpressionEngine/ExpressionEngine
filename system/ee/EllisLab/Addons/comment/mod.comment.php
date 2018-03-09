@@ -132,14 +132,7 @@ class Comment {
 			$pagination = ee()->pagination->create(__CLASS__);
 		}
 
-		if (ee()->TMPL->fetch_param('dynamic') == 'no')
-		{
-			$dynamic = FALSE;
-		}
-		else
-		{
-			$dynamic = TRUE;
-		}
+		$dynamic = get_bool_from_string(ee()->TMPL->fetch_param('dynamic', TRUE));
 
 		$force_entry = FALSE;
 		if (ee()->TMPL->fetch_param('author_id') !== FALSE
