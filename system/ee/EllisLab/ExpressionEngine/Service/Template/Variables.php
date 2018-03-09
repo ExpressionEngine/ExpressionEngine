@@ -148,13 +148,23 @@ abstract class Variables {
 	}
 
 	/**
+	 * url
+	 * @param  string $url Unvalided URL, possibly missing protocol
+	 * @return string prepped and valid URL
+	 */
+	protected function url($url)
+	{
+		return (string) ee('Format')->make('Text', $url)->url();
+	}
+
+	/**
 	 * urlSlug
 	 * @param  string $str contents
 	 * @return string URL slug, built with site prefs
 	 */
 	protected function urlSlug($str)
 	{
-		return ee('Format')->make('Text', $str)->urlSlug();
+		return (string) ee('Format')->make('Text', $str)->urlSlug();
 	}
 
 	/**

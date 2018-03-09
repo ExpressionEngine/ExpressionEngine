@@ -210,12 +210,33 @@ class Relationship_model extends CI_Model {
 
 			if ($type == self::GRID)
 			{
-				$grid_fields = $all_fields->filter(function($field)
-				{
-					return $field->field_type == 'grid';
-				});
+				$grid_field_ids = [];
 
-				return $this->overrideGridRelationships($result, $data, $grid_fields->pluck('field_id'), $fluid_field_data_id);
+				foreach ($all_fields as $field)
+				{
+					if ($field->field_type == 'grid')
+					{
+						$grid_field_ids[$field->getId()] = TRUE;
+					}
+					elseif ($field->field_type == 'fluid_field')
+					{
+						if ( ! empty($field->field_settings['field_channel_fields']))
+						{
+							$fields = ee('Model')->get('ChannelField')
+								->fields('field_id')
+								->filter('field_id', 'IN', $field->field_settings['field_channel_fields'])
+								->filter('field_type', 'grid')
+								->all();
+
+							foreach ($fields as $grid_field)
+							{
+								$grid_field_ids[$grid_field->getId()] = TRUE;
+							}
+						}
+					}
+				}
+
+				return $this->overrideGridRelationships($result, $data, array_keys($grid_field_ids), $fluid_field_data_id);
 			}
 			elseif ($fluid_field_data_id)
 			{
@@ -254,14 +275,14 @@ class Relationship_model extends CI_Model {
 
 	private function overrideGridRelationships($result, $data, $grid_field_ids, $fluid_field_data_id = 0)
 	{
+		if ($fluid_field_data_id)
+		{
+			list($fluid_field, $sub_field_id) = explode(',', $fluid_field_data_id);
+			$data = $data[$fluid_field]['fields'][$sub_field_id];
+		}
+
 		foreach ($grid_field_ids as $field_id)
 		{
-			if ($fluid_field_data_id)
-			{
-				list($fluid_field, $sub_field_id) = explode(',', $fluid_field_data_id);
-				$data = $data[$fluid_field]['fields'][$sub_field_id];
-			}
-
 			// Don't bother if we don't have the field, if it doesn't have the row
 			// data, or if it has no rows.
 			if ( ! isset($data['field_id_' . $field_id])

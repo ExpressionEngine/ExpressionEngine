@@ -445,19 +445,10 @@ if ( ! function_exists('prep_url'))
 {
 	function prep_url($str = '')
 	{
-		if ($str == 'http://' OR $str == '')
-		{
-			return '';
-		}
+		ee()->load->library('logger');
+		ee()->logger->deprecated('4.2.0', "ee('Format')->make('Text', \$str)->url()");
 
-		$url = parse_url($str);
-
-		if ( ! $url OR ! isset($url['scheme']))
-		{
-			$str = 'http://'.$str;
-		}
-
-		return $str;
+		return (string) ee('Format')->make('Text', $str)->url();
 	}
 }
 

@@ -132,6 +132,14 @@ trait ModifiableTrait {
 	}
 
 	/**
+	 * :url modifier
+	 */
+	public function replace_url($data, $params = array(), $tagdata = FALSE)
+	{
+		return (string) ee('Format')->make('Text', $data)->url();
+	}
+
+	/**
 	 * :url_decode modifier
 	 */
 	public function replace_url_decode($data, $params = array(), $tagdata = FALSE)
