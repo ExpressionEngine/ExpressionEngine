@@ -55,9 +55,8 @@ class Group extends AbstractDesignController {
 		// Not a superadmin?  Preselect their member group as allowed to view templates
 		$selected_member_groups = ($this->session->userdata('group_id') != 1) ? array($this->session->userdata('group_id')) : array();
 
-		// only member groups with permission to create groups
+		// only member groups with design manager access
 		$member_groups = ee('Model')->get('MemberGroup')
-			// Banned & Pending have their own views
 			->filter('group_id', 'NOT IN', array(1, 2, 4))
 			->filter('can_access_design', 'y')
 			->filter('site_id', ee()->config->item('site_id'))
@@ -110,7 +109,7 @@ class Group extends AbstractDesignController {
 					),
 					array(
 					'title' => 'template_member_groups',
-					'desc' => 'member_groups_desc',
+					'desc' => 'template_member_groups_desc',
 					'fields' => array(
 						'member_groups' => array(
 							'type' => 'checkbox',
@@ -118,7 +117,7 @@ class Group extends AbstractDesignController {
 							'choices' => $member_groups,
 							'value' => $selected_member_groups,
 							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								'text' => sprintf(lang('no_found'), lang('valid_member_groups'))
 								]
 							)
 						)
@@ -258,10 +257,10 @@ class Group extends AbstractDesignController {
 
 		$selected_member_groups = ($group->MemberGroups) ? $group->MemberGroups->pluck('group_id') : array();
 
-		// only member groups with permission to create groups
+		// only member groups with permission to access templates
 		$member_groups = ee('Model')->get('MemberGroup')
-			// Banned & Pending have their own views
 			->filter('group_id', 'NOT IN', array(1, 2, 4))
+			->filter('can_access_design', 'y')
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('group_title', 'asc')
 			->all()
@@ -305,7 +304,7 @@ class Group extends AbstractDesignController {
 					),
 					array(
 					'title' => 'template_member_groups',
-					'desc' => 'member_groups_desc',
+					'desc' => 'template_member_groups_desc',
 					'fields' => array(
 						'member_groups' => array(
 							'type' => 'checkbox',
@@ -313,7 +312,7 @@ class Group extends AbstractDesignController {
 							'choices' => $member_groups,
 							'value' => $selected_member_groups,
 							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								'text' => sprintf(lang('no_found'), lang('valid_member_groups'))
 								]
 							)
 						)
