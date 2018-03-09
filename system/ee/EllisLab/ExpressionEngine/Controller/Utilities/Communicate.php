@@ -286,7 +286,8 @@ class Communicate extends Utilities {
 		{
 			if ($key == 'member_groups')
 			{
-				$groups = ee()->input->post($key);
+				// filter empty inputs, like a hidden no-value input from React
+				$groups = array_filter(ee()->input->post($key));
 			}
 			elseif (in_array($key, $form_fields))
 			{
