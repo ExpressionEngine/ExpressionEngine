@@ -12,7 +12,7 @@
 <!-- Website iframe -->
 <div class="live-preview">
 	<div class="alert banner warn">
-		<p class="txt-center"><b>Preview</b> <span class="txt-fade">(unpublished)</span> <a href="#" class="txt-rsp-lrg js-preview-wide align-block-right" data-close="Continue Editing" data-open="View Wider">View Wider</a></p>
+		<p class="txt-center"><b><?=lang('preview')?></b> <span class="txt-fade" data-unpublished>(<?=lang('unpublished')?>)</span> <span class="txt-fade hidden" data-loading>(<?=lang('loading')?>)</span> <a href="#" class="txt-rsp-lrg js-preview-wide align-block-right" data-close="<?=lang('continue_editing')?>" data-open="<?=lang('view_wider')?>"><?=lang('view_wider')?></a></p>
 	</div>
 	<iframe src="" data-url="<?=$preview_url?>" class="live-preview__frame"></iframe>
 </div>
