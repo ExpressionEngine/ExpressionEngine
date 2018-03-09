@@ -19,24 +19,7 @@ class Comment {
 
 	// Maximum number of comments.  This is a safety valve
 	// in case the user doesn't specify a maximum
-
-	var $limit = 100;
-
-
-	// Show anchor?
-	// TRUE/FALSE
-	// Determines whether to show the <a name> anchor above each comment
-
-	var $show_anchor = FALSE;
-
-	// Comment Expiration Mode
-	// 0 -	Comments only expire if the comment expiration field in the PUBLISH page contains a value.
-	// 1 -	If the comment expiration field is blank, comments will still expire if the global preference
-	// 		is set in the Channel Preferences page.  Use this option only if you used EE prior to
-	//		version 1.1 and you want your old comments to expire.
-
-	var $comment_expiration_mode = 0;
-
+	public $limit = 100;
 
 	/**
 	 * Constructor
