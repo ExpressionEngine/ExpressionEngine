@@ -40,8 +40,8 @@ $(document).ready(function () {
 				})
 				EE.cp.ModalForm.openForm({
 					url: EE.publishEdit.sequenceEditFormUrl + '/' + entryIds[0] + '&' + $.param({ entry_ids: entryIds }),
-					load: function(modal) {
-						// TODO: instantiate all fieldtype JS
+					success: function() {
+						location.reload()
 					}
 				})
 			}
