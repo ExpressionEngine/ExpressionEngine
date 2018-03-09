@@ -308,13 +308,7 @@ class Comment extends Variables {
 
 	private function isEditable()
 	{
-		if (ee('Permission')->has('can_edit_all_comments'))
-		{
-			return TRUE;
-		}
-
-		if ($this->ee('Permission')->has('can_edit_own_comments') &&
-			$this->entry->author_id == ee()->session->userdata('member_id'))
+		if ($this->canModerate())
 		{
 			return TRUE;
 		}
