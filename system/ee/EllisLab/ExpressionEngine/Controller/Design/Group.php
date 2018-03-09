@@ -117,7 +117,7 @@ class Group extends AbstractDesignController {
 							'choices' => $member_groups,
 							'value' => $selected_member_groups,
 							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('valid_member_groups'))
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
 								]
 							)
 						)
@@ -312,7 +312,7 @@ class Group extends AbstractDesignController {
 							'choices' => $member_groups,
 							'value' => $selected_member_groups,
 							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('valid_member_groups'))
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
 								]
 							)
 						)

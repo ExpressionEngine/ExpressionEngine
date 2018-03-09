@@ -168,6 +168,8 @@ $lang = array(
 
 'make_default_group_desc' => 'When enabled, this group will become the default group for this website.',
 
+'member_groups' => 'Member Groups',
+
 'messages' => 'Messages',
 
 'name' => 'Name',
@@ -957,8 +959,6 @@ $lang = array(
 'username_password_form' => 'Username and Password Form',
 
 'username_row' => 'Username Form Row',
-
-'valid_member_groups' => 'Valid Member Groups',
 
 'view_message' => 'Private Message - View Message',
 
