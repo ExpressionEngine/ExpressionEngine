@@ -168,6 +168,8 @@ $lang = array(
 
 'make_default_group_desc' => 'When enabled, this group will become the default group for this website.',
 
+'member_groups_desc' => 'Allowed member groups',
+
 'messages' => 'Messages',
 
 'name' => 'Name',
@@ -233,6 +235,8 @@ $lang = array(
 'template_groups' => 'Template Groups',
 
 'template_manager' => 'Template Manager',
+
+'template_member_groups' => 'Users in these member groups can create, edit, and/or delete templates in this template group.',
 
 'template_name_taken' => 'The template name you submitted is already taken',
 
