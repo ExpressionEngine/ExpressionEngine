@@ -80,6 +80,10 @@ class Comment extends Variables {
 		$base_url = ($this->channel->comment_url) ?: $this->channel->channel_url;
 		$base_url = parse_config_variables($base_url, ee()->config->get_cached_site_prefs($this->comment->site_id));
 
+		// todo (before PR) allow url and location override from custom member fields
+		$commenter_url = prep_url($this->comment->url);
+		$location = $this->comment->location;
+
 		$this->variables = [
 			'allow_comments'              => $this->entry->allow_comments,
 			'author'                      => ($this->author->screen_name) ?: $this->comment->name,
@@ -98,6 +102,7 @@ class Comment extends Variables {
 			'comment_entry_id_auto_path'  => $base_url.'/'.$this->comment->entry_id,
 			'comment_expiration_date'     => $this->date($this->entry->comment_expiration_date),
 			'comment_id'                  => $this->comment->comment_id,
+			'comment_path'                => $this->pathVariable($this->entry->entry_id),
 			'comment_site_id'             => $this->comment->site_id,
 			'comment_stripped'            => $this->protect($this->comment->comment),
 			'comment_url_title_auto_path' => $base_url.'/'.$this->entry->url_title,
@@ -112,7 +117,8 @@ class Comment extends Variables {
 			'group_id'                    => $this->author->group_id,
 			'ip_address'                  => $this->comment->ip_address,
 			'is_ignored'                  => $this->isIgnored(),
-			'location'                    => ($this->comment->location) ?: $this->author->location,
+			'location'                    => $this->comment->location,
+			'member_group_id'             => $this->author->group_id,
 			'member_search_path'          => $this->member_search_url.$this->comment->author_id,
 			'name'                        => $this->comment->name,
 			'permalink'                   => ee()->uri->uri_string.'#'.$this->comment->comment_id,
@@ -123,13 +129,34 @@ class Comment extends Variables {
 			'signature_image_width'       => $this->getSignatureVariable('width'),
 			'status'                      => $this->comment->status,
 			'title'                       => $this->entry->title,
-			'url'                         => ($this->comment->url) ?: $this->author->url,
+			'title_permalink'             => $this->pathVariable($this->entry->url_title),
+			'url'                         => $this->comment->url,
+			'url_as_author'               => $this->getAuthorUrl(),
+			'url_or_email_as_author'      => $this->getAuthorUrl(TRUE),
+			'url_or_email_as_link'        => $this->getAuthorUrl(TRUE, FALSE),
+			'url_or_email'                => ($this->comment->url) ?: $this->comment->email,
 			'url_title'                   => $this->entry->url_title,
 			'url_title_path'              => $this->pathVariable($this->entry->url_title),
 			'username'                    => $this->author->username,
 		];
 
 		return $this->variables;
+	}
+
+	private function getAuthorUrl($fallback_to_email = FALSE, $use_name_in_link = TRUE)
+	{
+		if ($this->comment->url)
+		{
+			$label = ($use_name_in_link) ? $this->comment->name : $this->comment->url;
+			return '<a href="'.$this->comment->url.'">'.$label.'</a>';
+		}
+		elseif ($fallback_to_email && $this->comment->email)
+		{
+			$label = ($use_name_in_link) ? $this->comment->name : $this->comment->email;
+			return ee()->typography->encode_email($this->comment->email, $label);
+		}
+
+		return $this->comment->name;
 	}
 
 	private function isIgnored()
