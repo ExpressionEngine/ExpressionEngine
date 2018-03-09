@@ -2586,7 +2586,7 @@ class Comment {
 		$cmtr_email	= ee()->input->post('email');
 		$cmtr_loc	= ee()->input->post('location', TRUE);
 		$cmtr_url	= ee()->input->post('url', TRUE);
-		$cmtr_url	= (string) filter_var(ee('Format')->make('Text', $cmtr_url)->url()), FILTER_VALIDATE_URL);
+		$cmtr_url	= (string) filter_var(ee('Format')->make('Text', $cmtr_url)->url(), FILTER_VALIDATE_URL);
 
 		$data = array(
 			'channel_id'	=> $channel_id,
