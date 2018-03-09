@@ -3,6 +3,7 @@
 namespace EllisLab\Addons\Comment;
 
 use EllisLab\Addons\Comment\Service\Notifications;
+use EllisLab\Addons\Comment\Service\Variables\Comment as CommentVars;
 
 /**
  * ExpressionEngine (https://expressionengine.com)
@@ -543,7 +544,7 @@ class Comment {
 		/**  Fetch Comments if necessary
 		/** -----------------------------------*/
 
-		$results = $result_ids;
+		$comments = [];
 		$mfields = array();
 		$mfields_data = array();
 
@@ -573,91 +574,24 @@ class Comment {
 
 		$search_link = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
 
-		$comments = ee('Model')->get('Comment', $result_ids)
+		$comment_models = ee('Model')->get('Comment', $result_ids)
 			->with('Author', 'Channel', 'Entry')
 			->order($order_by, $this_sort)
 			->all();
 
-		$total_results = count($comments);
-
-		if ($total_results)
+		if ( ! empty($comment_models))
 		{
-			$results = array();
-			foreach ($comments as $comment)
+			foreach ($comment_models as $comment_model)
 			{
-				// add in Channel and Entry details, being careful not to override data common to the comment (e.g. author_id)
-				$channel_details = [
-					'channel_short_name'      => $comment->Channel->channel_name,
-					'channel_title'           => $comment->Channel->channel_title,
-					'channel_url'             => $comment->Channel->channel_url,
-					'comment_allow_img_urls'  => $comment->Channel->comment_allow_img_urls,
-					'comment_auto_link_urls'  => $comment->Channel->comment_auto_link_urls,
-					'comment_html_formatting' => $comment->Channel->comment_html_formatting,
-					'comment_system_enabled'  => $comment->Channel->comment_system_enabled,
-					'comment_text_formatting' => $comment->Channel->comment_text_formatting,
-					'comment_url'             => $comment->Channel->comment_url,
-				];
-
-				$entry_details = [
-					'allow_comments'          => $comment->Entry->allow_comments,
-					'comment_expiration_date' => $comment->Entry->comment_expiration_date,
-					'entry_author_id'         => $comment->Entry->author_id,
-					'title'                   => $comment->Entry->title,
-					'url_title'               => $comment->Entry->url_title,
-				];
-
-				$values = array_merge($comment->getValues(), $channel_details, $entry_details);
-				unset($values['location'], $values['site_id']);
-				$values['c_location'] = $comment->location;
-				$values['comment_site_id'] = $comment->site_id;
-
-				$author = ($comment->Author) ?: ee('Model')->make('Member');
-				$author = $author->getValues();
-
-				if (isset($values['url']) && ! empty($values['url']))
-				{
-					unset($author['url']);
-				}
-
-				$results[] = array_merge($values, $author);
+				$comment_vars = new CommentVars($comment_model, $search_link);
+				$comments[] = $comment_vars->getTemplateVariables();
 			}
 
 			if (ee()->extensions->active_hook('comment_entries_query_result') === TRUE)
 			{
-				$results = ee()->extensions->call('comment_entries_query_result', $results);
+				$comments = ee()->extensions->call('comment_entries_query_result', $comments);
 				if (ee()->extensions->end_script === TRUE) return ee()->TMPL->tagdata;
 			}
-		}
-
-		/** ----------------------------------------
-		/**  Instantiate Typography class
-		/** ----------------------------------------*/
-
-		ee()->load->library('typography');
-		ee()->typography->initialize(array(
-			'parse_images'		=> FALSE,
-			'allow_headings'	=> FALSE,
-			'word_censor'		=> (ee()->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
-		);
-
-		/** ----------------------------------------
-		/**  Protected Variables for Cleanup Routine
-		/** ----------------------------------------*/
-
-		// Since comments do not necessarily require registration, and since
-		// you are allowed to put member variables in comments, we need to kill
-		// left-over unparsed junk.  The $member_vars array is all of those
-		// member related variables that should be removed.
-
-		$member_vars = array('signature', 'sig_img_filename', 'sig_img_width', 'sig_img_height',
-			'avatar_filename', 'avatar_width', 'avatar_height',
-			'photo_filename', 'photo_width', 'photo_height');
-
-		$member_cond_vars = array();
-
-		foreach($member_vars as $var)
-		{
-			$member_cond_vars[$var] = '';
 		}
 
 		// Fetch the custom member field definitions
@@ -677,107 +611,69 @@ class Comment {
 		$this->cacheMemberFieldModels($m_fields);
 
 		/** ----------------------------------------
-		/**  Start the processing loop
+		/**  Parse It!
 		/** ----------------------------------------*/
 
-		$item_count = 0;
-
+		$count = 0;
 		$relative_count = 0;
+		$total_results = count($comments);
+
 		if ($enabled['pagination'])
 		{
 			$absolute_count = ($pagination->current_page == '') ? 0 : ($pagination->current_page - 1) * $pagination->per_page;
+			$total_displayed = $pagination->total_items;
 		}
 		else
 		{
 			$absolute_count = 0;
+			$total_displayed = $total_results;
 		}
 
-		foreach ($results as $id => $row)
+		$vars = [];
+		foreach ($comments as $comment)
 		{
-			if ( ! is_array($row))
-			{
-				continue;
-			}
+			++$count;
 
-			$relative_count++;
-			$absolute_count++;
+			$vars[] = array_merge(
+				[
+					'absolute_count' => $pagination->offset + $count,
+					'absolute_results' => $total_results,
+					'absolute_reverse_count' => $total_results - $count + 1,
+					'count' => $count,
+					'reverse_count' => $total_results - $count + 1,
+					'total_comments' => $total_displayed,
+					'total_results' => $total_results,
+				],
+				$comment
+			);
+		}
 
-			$row['count']			= $relative_count;
-			$row['absolute_count']	= $absolute_count;
-			$row['total_results']	= $total_results;
-			$row['channel_url']		= parse_config_variables($row['channel_url'], ee()->config->get_cached_site_prefs($row['comment_site_id']));
-			$row['comment_url']		= parse_config_variables($row['comment_url'], ee()->config->get_cached_site_prefs($row['comment_site_id']));
+		$tagdata = ee()->TMPL->tagdata;
 
-			// If we do not paginate, then the total comments ARE the comments
-			// on the page
-			$row['total_comments']	= ($enabled['pagination']) ? $pagination->total_items : $total_results;
+		// -------------------------------------------
+		// 'comment_entries_tagdata' hook.
+		//  - Modify and play with the tagdata before everyone else
+		//
+		if (ee()->extensions->active_hook('comment_entries_tagdata') === TRUE)
+		{
+			$tagdata = ee()->extensions->call('comment_entries_tagdata', $tagdata, $row);
+			if (ee()->extensions->end_script === TRUE) return $tagdata;
+		}
+		//
+		// -------------------------------------------
 
-			// This lets the {if location} variable work
+		$tagdata = ee()->TMPL->parse_variables($tagdata, $vars);
 
-			if (isset($row['author_id']))
-			{
-				if ($row['author_id'] == 0)
-				{
-					$row['location'] = $row['c_location'];
-				}
-				else
-				{
-					// location and url set based on member custom field if it exists
-					if (isset($mfields['url']) && array_key_exists('m_field_id_'.$m_fields['url']['0'], $row))
-					{
-						$row['url'] = $row['m_field_id_'.$m_fields['url']['0']];
-					}
+		if ($enabled['pagination'])
+		{
+			return $pagination->render($tagdata);
+		}
+		else
+		{
+			return $tagdadta;
+		}
 
-					if (isset($mfields['location']) && array_key_exists('m_field_id_'.$m_fields['location']['0'], $row))
-					{
-						$row['location'] = $row['m_field_id_'.$m_fields['location']['0']];
-					}
-				}
-			}
-
-			$tagdata = ee()->TMPL->tagdata;
-
-			// -------------------------------------------
-			// 'comment_entries_tagdata' hook.
-			//  - Modify and play with the tagdata before everyone else
-			//
-			if (ee()->extensions->active_hook('comment_entries_tagdata') === TRUE)
-			{
-				$tagdata = ee()->extensions->call('comment_entries_tagdata', $tagdata, $row);
-				if (ee()->extensions->end_script === TRUE) return $tagdata;
-			}
-			//
-			// -------------------------------------------
-
-			/** ----------------------------------------
-			/**  Conditionals
-			/** ----------------------------------------*/
-			$cond = array_merge($member_cond_vars, $row);
-			$cond['comments']			= (substr($id, 0, 1) == 't') ? FALSE : TRUE;
-			$cond['logged_in']			= (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
-			$cond['logged_out']			= (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
-			$cond['allow_comments'] 	= (isset($row['allow_comments']) AND $row['allow_comments'] == 'n') ? FALSE : TRUE;
-			$cond['signature_image']	= ( ! isset($row['sig_img_filename']) OR $row['sig_img_filename'] == '' OR ee()->config->item('enable_signatures') == 'n' OR ee()->session->userdata('display_signatures') == 'n') ? FALSE : TRUE;
-			$cond['avatar']				= ( ! isset($row['avatar_filename']) OR $row['avatar_filename'] == '' OR ee()->config->item('enable_avatars') == 'n' OR ee()->session->userdata('display_avatars') == 'n') ? FALSE : TRUE;
-			$cond['photo']				= ( ! isset($row['photo_filename']) OR $row['photo_filename'] == '' OR ee()->config->item('enable_photos') == 'n' OR ee()->session->userdata('display_photos') == 'n') ? FALSE : TRUE;
-			$cond['is_ignored']			= ( ! isset($row['member_id']) OR ! in_array($row['member_id'], ee()->session->userdata['ignore_list'])) ? FALSE : TRUE;
-
-			$cond['editable'] = FALSE;
-			$cond['can_moderate_comment'] = FALSE;
-
-			if (ee('Permission')->has('can_edit_all_comments')
-				OR (ee('Permission')->has('can_edit_own_comments') && $row['entry_author_id'] == ee()->session->userdata['member_id']))
-			{
-				$cond['editable'] = TRUE;
-				$cond['can_moderate_comment'] = TRUE;
-			}
-			elseif (ee()->session->userdata['member_id'] != '0'
-				&& $row['author_id'] == ee()->session->userdata['member_id']
-				&& $row['comment_date'] > $this->_comment_edit_time_limit())
-			{
-					$cond['editable'] = TRUE;
-			}
-
+		// todo (before PR) - work member field parsing into the Comment variables
 			if ( isset($mfields) && is_array($mfields) && count($mfields) > 0)
 			{
 				foreach($mfields as $key => $value)
@@ -789,404 +685,6 @@ class Comment {
 				}
 			}
 
-			$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
-
-			/** ----------------------------------------
-			/**  parse comment date and "last edit" date
-			/** ----------------------------------------*/
-
-			$dates = array(
-				'comment_date' => $row['comment_date'],
-				'edit_date'    => $row['edit_date']
-			);
-
-			$tagdata = ee()->TMPL->parse_date_variables($tagdata, $dates);
-
-			/** ----------------------------------------
-			/**  parse GMT comment date
-			/** ----------------------------------------*/
-
-			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('gmt_comment_date' => $row['comment_date']), FALSE);
-
-
-			/** ----------------------------------------
-			/**  Parse "single" variables
-			/** ----------------------------------------*/
-			foreach (ee()->TMPL->var_single as $key => $val)
-			{
-				/** ----------------------------------------
-				/**  parse {switch} variable
-				/** ----------------------------------------*/
-
-				if (strncmp($key, 'switch', 6) == 0)
-				{
-					$sparam = ee('Variables/Parser')->parseTagParameters($key);
-
-					$sw = '';
-
-					if (isset($sparam['switch']))
-					{
-						$sopt = @explode("|", $sparam['switch']);
-
-						$sw = $sopt[($relative_count + count($sopt) - 1) % count($sopt)];
-					}
-
-					$tagdata = ee()->TMPL->swap_var_single($key, $sw, $tagdata);
-				}
-
-				/** ----------------------------------------
-				/**  parse permalink
-				/** ----------------------------------------*/
-
-				if ($key == 'permalink' && isset($row['comment_id']))
-				{
-					$tagdata = ee()->TMPL->swap_var_single(
-						$key,
-						ee()->functions->create_url($uristr.'#'.$row['comment_id'], FALSE),
-						$tagdata
-					);
-				}
-
-				/** ----------------------------------------
-				/**  parse comment_path
-				/** ----------------------------------------*/
-
-				if (strncmp($key, 'comment_path', 12) == 0 OR strncmp($key, 'entry_id_path', 13) == 0)
-				{
-					$tagdata = ee()->TMPL->swap_var_single(
-						$key,
-						ee()->functions->create_url(ee()->functions->extract_path($key).'/'.$row['entry_id']),
-						$tagdata
-					);
-				}
-
-
-				/** ----------------------------------------
-				/**  parse title permalink
-				/** ----------------------------------------*/
-
-				if (strncmp($key, 'title_permalink', 15) == 0 OR strncmp($key, 'url_title_path', 14) == 0)
-				{
-					$path = (ee()->functions->extract_path($key) != '' AND ee()->functions->extract_path($key) != 'SITE_INDEX') ? ee()->functions->extract_path($key).'/'.$row['url_title'] : $row['url_title'];
-
-					$tagdata = ee()->TMPL->swap_var_single(
-						$key,
-						ee()->functions->create_url($path, FALSE),
-						$tagdata
-					);
-				}
-
-				/** ----------------------------------------
-				/**  {member_search_path}
-				/** ----------------------------------------*/
-
-				if (strncmp($key, 'member_search_path', 18) == 0)
-				{
-					$tagdata = ee()->TMPL->swap_var_single($key, $search_link.$row['author_id'], $tagdata);
-				}
-
-
-				// {member_group_id}
-				if ($key == 'member_group_id')
-				{
-					$tagdata = ee()->TMPL->swap_var_single($key, $row['group_id'], $tagdata);
-				}
-
-				// Prep the URL
-				if (isset($row['url']))
-				{
-					ee()->load->helper('url');
-					$row['url'] = prep_url($row['url']);
-				}
-
-				/** ----------------------------------------
-				/**  {username}
-				/** ----------------------------------------*/
-				if ($key == "username")
-				{
-					$tagdata = ee()->TMPL->swap_var_single($val, (isset($row['username'])) ? $row['username'] : '', $tagdata);
-				}
-
-				/** ----------------------------------------
-				/**  {author}
-				/** ----------------------------------------*/
-				if ($key == "author")
-				{
-					$tagdata = ee()->TMPL->swap_var_single($val, (isset($row['name'])) ? $row['name'] : '', $tagdata);
-				}
-
-				/** ----------------------------------------
-				/**  {url_or_email} - Uses Raw Email Address, Like Channel Module
-				/** ----------------------------------------*/
-
-				if ($key == "url_or_email" AND array_key_exists('url', $row))
-				{
-					$tagdata = ee()->TMPL->swap_var_single($val, ($row['url'] != '') ? $row['url'] : $row['email'], $tagdata);
-				}
-
-				/** ----------------------------------------
-				/**  {url_as_author}
-				/** ----------------------------------------*/
-				if ($key == "url_as_author" AND array_key_exists('url', $row))
-				{
-					if ($row['url'] != '')
-					{
-						$tagdata = ee()->TMPL->swap_var_single($val, "<a href=\"".$row['url']."\">".$row['name']."</a>", $tagdata);
-					}
-					else
-					{
-						$tagdata = ee()->TMPL->swap_var_single($val, $row['name'], $tagdata);
-					}
-				}
-
-				/** ----------------------------------------
-				/**  {url_or_email_as_author}
-				/** ----------------------------------------*/
-
-				if ($key == "url_or_email_as_author" AND array_key_exists('url', $row))
-				{
-					if ($row['url'] != '')
-					{
-						$tagdata = ee()->TMPL->swap_var_single($val, "<a href=\"".$row['url']."\">".$row['name']."</a>", $tagdata);
-					}
-					else
-					{
-						if ($row['email'] != '')
-						{
-							$tagdata = ee()->TMPL->swap_var_single($val, ee()->typography->encode_email($row['email'], $row['name']), $tagdata);
-						}
-						else
-						{
-							$tagdata = ee()->TMPL->swap_var_single($val, $row['name'], $tagdata);
-						}
-					}
-				}
-
-				/** ----------------------------------------
-				/**  {url_or_email_as_link}
-				/** ----------------------------------------*/
-
-				if ($key == "url_or_email_as_link" AND array_key_exists('url', $row))
-				{
-					if ($row['url'] != '')
-					{
-						$tagdata = ee()->TMPL->swap_var_single($val, "<a href=\"".$row['url']."\">".$row['url']."</a>", $tagdata);
-					}
-					else
-					{
-						if ($row['email'] != '')
-						{
-							$tagdata = ee()->TMPL->swap_var_single($val, ee()->typography->encode_email($row['email']), $tagdata);
-						}
-						else
-						{
-							$tagdata = ee()->TMPL->swap_var_single($val, $row['name'], $tagdata);
-						}
-					}
-				}
-
-				/** ----------------------------------------
-				/**  {comment_auto_path}
-				/** ----------------------------------------*/
-
-				if ($key == "comment_auto_path")
-				{
-					$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
-
-					$tagdata = ee()->TMPL->swap_var_single($key, $path, $tagdata);
-				}
-
-				/** ----------------------------------------
-				/**  {comment_url_title_auto_path}
-				/** ----------------------------------------*/
-
-				if ($key == "comment_url_title_auto_path")
-				{
-					$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
-
-					$tagdata = ee()->TMPL->swap_var_single(
-						$key,
-						$path.'/'.$row['url_title'],
-						$tagdata
-					);
-				}
-
-				/** ----------------------------------------
-				/**  {comment_entry_id_auto_path}
-				/** ----------------------------------------*/
-
-				if ($key == "comment_entry_id_auto_path")
-				{
-					$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
-
-					$tagdata = ee()->TMPL->swap_var_single(
-						$key,
-						$path.'/'.$row['entry_id'],
-						$tagdata
-					);
-				}
-
-
-				/** ----------------------------------------
-				/**  parse comment_stripped field
-				/** ----------------------------------------*/
-
-				if ($key == "comment_stripped" AND isset($row['comment']))
-				{
-
-					$tagdata = ee()->TMPL->swap_var_single(
-						$key,
-						ee()->functions->encode_ee_tags($row['comment'], TRUE),
-						$tagdata
-					);
-				}
-
-				/** ----------------------------------------
-				/**  parse comment field
-				/** ----------------------------------------*/
-
-				if ($key == 'comment' AND isset($row['comment']))
-				{
-					// -------------------------------------------
-					// 'comment_entries_comment_format' hook.
-					//  - Play with the tagdata contents of the comment entries
-					//
-						if (ee()->extensions->active_hook('comment_entries_comment_format') === TRUE)
-						{
-							$comment = ee()->extensions->call('comment_entries_comment_format', $row);
-
-							if (ee()->extensions->end_script === TRUE) return;
-						}
-						else
-						{
-							$comment = ee()->typography->parse_type(
-								$row['comment'],
-								array(
-									'text_format'	=> $row['comment_text_formatting'],
-									'html_format'	=> $row['comment_html_formatting'],
-									'auto_links'	=> $row['comment_auto_link_urls'],
-									'allow_img_url' => $row['comment_allow_img_urls']
-								)
-							);
-						}
-
-					$tagdata = ee()->TMPL->swap_var_single($key, $comment, $tagdata);
-				}
-
-				//  {location}
-
-				if ($key == 'location' AND (isset($row['location']) OR isset($row['c_location'])))
-				{
-					$tagdata = ee()->TMPL->swap_var_single($key, (empty($row['location'])) ? $row['c_location'] : $row['location'], $tagdata);
-				}
-
-
-				/** ----------------------------------------
-				/**  {signature}
-				/** ----------------------------------------*/
-
-				if ($key == "signature")
-				{
-					if (ee()->session->userdata('display_signatures') == 'n' OR  ! isset($row['signature']) OR $row['signature'] == '' OR ee()->session->userdata('display_signatures') == 'n')
-					{
-						$tagdata = ee()->TMPL->swap_var_single($key, '', $tagdata);
-					}
-					else
-					{
-						$tagdata = ee()->TMPL->swap_var_single(
-							$key,
-							ee()->typography->parse_type(
-								$row['signature'],
-								array(
-									'text_format'	=> 'xhtml',
-									'html_format'	=> 'safe',
-									'auto_links'	=> 'y',
-									'allow_img_url' => ee()->config->item('sig_allow_img_hotlink')
-								)
-							),
-							$tagdata
-						);
-					}
-				}
-
-
-				if ($key == "signature_image_url")
-				{
-					if (ee()->session->userdata('display_signatures') == 'n' OR $row['sig_img_filename'] == ''  OR ee()->session->userdata('display_signatures') == 'n')
-					{
-						$tagdata = ee()->TMPL->swap_var_single($key, '', $tagdata);
-						$tagdata = ee()->TMPL->swap_var_single('signature_image_width', '', $tagdata);
-						$tagdata = ee()->TMPL->swap_var_single('signature_image_height', '', $tagdata);
-					}
-					else
-					{
-						$tagdata = ee()->TMPL->swap_var_single($key, ee()->config->slash_item('sig_img_url').$row['sig_img_filename'], $tagdata);
-						$tagdata = ee()->TMPL->swap_var_single('signature_image_width', $row['sig_img_width'], $tagdata);
-						$tagdata = ee()->TMPL->swap_var_single('signature_image_height', $row['sig_img_height'], $tagdata);
-					}
-				}
-
-				if ($key == "avatar_url")
-				{
-					if ( ! isset($row['avatar_filename']))
-					{
-						$row['avatar_filename'] = '';
-					}
-
-					if (ee()->session->userdata('display_avatars') == 'n' OR $row['avatar_filename'] == ''  OR ee()->session->userdata('display_avatars') == 'n')
-					{
-						$tagdata = ee()->TMPL->swap_var_single($key, '', $tagdata);
-						$tagdata = ee()->TMPL->swap_var_single('avatar_image_width', '', $tagdata);
-						$tagdata = ee()->TMPL->swap_var_single('avatar_image_height', '', $tagdata);
-					}
-					else
-					{
-						$avatar_url = ee()->config->slash_item('avatar_url');
-			            $avatar_fs_path = ee()->config->slash_item('avatar_path');
-
-			            if (file_exists($avatar_fs_path.'default/'.$row['avatar_filename']))
-			            {
-			                $avatar_url .= 'default/';
-			            }
-
-			            $cur_avatar_url = $avatar_url.$row['avatar_filename'];
-
-						$tagdata = ee()->TMPL->swap_var_single($key, $cur_avatar_url, $tagdata);
-						$tagdata = ee()->TMPL->swap_var_single('avatar_image_width', $row['avatar_width'], $tagdata);
-						$tagdata = ee()->TMPL->swap_var_single('avatar_image_height', $row['avatar_height'], $tagdata);
-					}
-				}
-
-				if ($key == "photo_url")
-				{
-					if ( ! isset($row['photo_filename']))
-					{
-						$row['photo_filename'] = '';
-					}
-
-					if (ee()->session->userdata('display_photos') == 'n' OR $row['photo_filename'] == ''  OR ee()->session->userdata('display_photos') == 'n')
-					{
-						$tagdata = ee()->TMPL->swap_var_single($key, '', $tagdata);
-						$tagdata = ee()->TMPL->swap_var_single('photo_image_width', '', $tagdata);
-						$tagdata = ee()->TMPL->swap_var_single('photo_image_height', '', $tagdata);
-					}
-					else
-					{
-						$tagdata = ee()->TMPL->swap_var_single($key, ee()->config->slash_item('photo_url').$row['photo_filename'], $tagdata);
-						$tagdata = ee()->TMPL->swap_var_single('photo_image_width', $row['photo_width'], $tagdata);
-						$tagdata = ee()->TMPL->swap_var_single('photo_image_height', $row['photo_height'], $tagdata);
-					}
-				}
-
-
-				/** ----------------------------------------
-				/**  parse basic fields
-				/** ----------------------------------------*/
-
-				if (isset($row[$val]) && $val != 'member_id')
-				{
-					$tagdata = ee()->TMPL->swap_var_single($val, $row[$val], $tagdata);
-				}
 
 				/** ----------------------------------------
 				/**  parse custom member fields
@@ -1220,44 +718,6 @@ class Comment {
 					}
 				}
 
-				/** ----------------------------------------
-				/**  Clean up left over member variables
-				/** ----------------------------------------*/
-
-				if (in_array($val, $member_vars))
-				{
-					$tagdata = str_replace(LD.$val.RD, '', $tagdata);
-				}
-			}
-
-			if ($this->show_anchor == TRUE)
-			{
-				$return .= "<a name=\"".$item_count."\"></a>\n";
-			}
-
-			$return .= $tagdata;
-
-			$item_count++;
-		}
-
-		/** ----------------------------------------
-		/**  Parse path variable
-		/** ----------------------------------------*/
-
-		$return = preg_replace_callback("/".LD."\s*path=(.+?)".RD."/", array(&ee()->functions, 'create_url'), $return);
-
-		/** ----------------------------------------
-		/**  Add pagination to result
-		/** ----------------------------------------*/
-
-		if ($enabled['pagination'])
-		{
-			return $pagination->render($return);
-		}
-		else
-		{
-			return $return;
-		}
 	}
 
 	/**
