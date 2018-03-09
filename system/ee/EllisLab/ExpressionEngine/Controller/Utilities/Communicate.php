@@ -443,19 +443,19 @@ class Communicate extends Utilities {
 
 		// Is Batch Mode set?
 
-		$batch_mode = ee()->config->item('email_batchmode');
+		$batch_mode = bool_config_item('email_batchmode');
 		$batch_size = (int) ee()->config->item('email_batch_size');
 
 		if (count($email_addresses) <= $batch_size)
 		{
-			$batch_mode = 'n';
+			$batch_mode = FALSE;
 		}
 
 		/** ----------------------------------------
 		/**  If batch-mode is not set, send emails
 		/** ----------------------------------------*/
 
-		if ($batch_mode == 'n')
+		if ($batch_mode == FALSE)
 		{
 			$total_sent = $this->deliverManyEmails($email);
 
@@ -465,6 +465,11 @@ class Communicate extends Utilities {
 
 			ee()->view->set_message('success', lang('total_emails_sent') . ' ' . $total_sent, $debug_msg, TRUE);
 			ee()->functions->redirect(ee('CP/URL')->make('utilities/communicate'));
+		}
+
+		if ($batch_size === 0)
+		{
+			show_error(lang('batch_size_is_zero'));
 		}
 
 		/** ----------------------------------------
