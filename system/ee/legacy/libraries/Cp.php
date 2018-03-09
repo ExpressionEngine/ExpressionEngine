@@ -1101,7 +1101,7 @@ class Cp {
 			'screen_name', 'signature', 'signature_image_height',
 			'signature_image_url', 'signature_image_width', 'status',
 			'switch', 'title', 'title_permalink', 'total_results',
-			'trimmed_url', 'url', 'url_as_email_as_link', 'url_or_email',
+			'trimmed_url', 'url_as_email_as_link', 'url_or_email',
 			'url_or_email_as_author', 'url_title', 'url_title_path',
 			'username', 'channel', 'channel_id', 'year'
 		);
@@ -1110,7 +1110,7 @@ class Cp {
 			'app_version', 'captcha', 'charset', 'current_time',
 			'debug_mode', 'elapsed_time', 'email', 'embed', 'encode',
 			'group_description', 'group_id', 'gzip_mode', 'hits',
-			'homepage', 'ip_address', 'ip_hostname', 'lang', 'location',
+			'homepage', 'ip_address', 'ip_hostname', 'lang',
 			'member_group', 'member_id', 'member_profile_link', 'path',
 			'private_messages', 'screen_name', 'site_index', 'site_name',
 			'site_url', 'stylesheet', 'total_comments', 'total_entries',
