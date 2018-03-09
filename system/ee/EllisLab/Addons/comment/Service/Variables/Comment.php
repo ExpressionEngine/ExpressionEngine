@@ -70,6 +70,12 @@ class Comment extends Variables {
 			return $this->variables;
 		}
 
+		ee()->typography->initialize([
+			'parse_images'		=> FALSE,
+			'allow_headings'	=> FALSE,
+			'word_censor'		=> bool_config_item('comment_word_censoring'),
+		]);
+
 		$typography_prefs = [
 			'text_format'	=> $this->channel->comment_text_formatting,
 			'html_format'	=> $this->channel->comment_html_formatting,
@@ -77,8 +83,9 @@ class Comment extends Variables {
 			'allow_img_url' => $this->channel->comment_allow_img_urls,
 		];
 
-		$base_url = ($this->channel->comment_url) ?: $this->channel->channel_url;
-		$base_url = parse_config_variables($base_url, ee()->config->get_cached_site_prefs($this->comment->site_id));
+		$comment_url = parse_config_variables($this->channel->comment_url, ee()->config->get_cached_site_prefs($this->comment->site_id));
+		$channel_url = parse_config_variables($this->channel->channel_url, ee()->config->get_cached_site_prefs($this->comment->site_id));
+		$base_url = ($this->channel->comment_url) ? $comment_url : $channel_url;
 
 		// todo (before PR) allow url and location override from custom member fields
 		$commenter_url = prep_url($this->comment->url);
@@ -96,7 +103,8 @@ class Comment extends Variables {
 			'channel_id'                  => $this->entry->channel_id,
 			'channel_short_name'          => $this->channel->channel_name,
 			'channel_title'               => $this->channel->channel_title,
-			'comment'                     => $this->typography($this->comment->comment, $typography_prefs),
+			'channel_url'                 => $channel_url,
+			'comment'                     => $this->formatComment($typography_prefs),
 			'comment_auto_path'           => $base_url,
 			'comment_date'                => $this->date($this->comment->comment_date),
 			'comment_entry_id_auto_path'  => $base_url.'/'.$this->comment->entry_id,
@@ -105,6 +113,7 @@ class Comment extends Variables {
 			'comment_path'                => $this->pathVariable($this->entry->entry_id),
 			'comment_site_id'             => $this->comment->site_id,
 			'comment_stripped'            => $this->protect($this->comment->comment),
+			'comment_url'                 => $comment_url,
 			'comment_url_title_auto_path' => $base_url.'/'.$this->entry->url_title,
 			'comments_disabled'           => $this->isDisabled(),
 			'comments_expired'            => (ee()->localize->now > $this->entry->comment_expiration_date),
@@ -132,15 +141,33 @@ class Comment extends Variables {
 			'title_permalink'             => $this->pathVariable($this->entry->url_title),
 			'url'                         => $this->comment->url,
 			'url_as_author'               => $this->getAuthorUrl(),
+			'url_or_email'                => ($this->comment->url) ?: $this->comment->email,
 			'url_or_email_as_author'      => $this->getAuthorUrl(TRUE),
 			'url_or_email_as_link'        => $this->getAuthorUrl(TRUE, FALSE),
-			'url_or_email'                => ($this->comment->url) ?: $this->comment->email,
 			'url_title'                   => $this->entry->url_title,
 			'url_title_path'              => $this->pathVariable($this->entry->url_title),
 			'username'                    => $this->author->username,
 		];
 
 		return $this->variables;
+	}
+
+	private function formatComment($typography_prefs)
+	{
+		/* -------------------------------------------
+		/* 'member_process_reset_password' hook.
+		/*  - Additional processing after user resets password
+		/*  - Added EE 2.9.3
+		/*  - Member ID parameter added 4.0.0
+		*/
+			if (ee()->extensions->active_hook('comment_entries_comment_format') === TRUE)
+			{
+				return ee()->extensions->call('comment_entries_comment_format', $this->comment->getValues());
+			}
+		/*
+		/* -------------------------------------------*/
+
+		return $this->typography($this->comment->comment, $typography_prefs);
 	}
 
 	private function getAuthorUrl($fallback_to_email = FALSE, $use_name_in_link = TRUE)
