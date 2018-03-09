@@ -80,11 +80,11 @@ class Comment extends Variables {
 		$base_url = ($this->channel->comment_url) ?: $this->channel->channel_url;
 		$base_url = parse_config_variables($base_url, ee()->config->get_cached_site_prefs($this->comment->site_id));
 
-
-
 		$this->variables = [
+			'allow_comments'              => $this->entry->allow_comments,
 			'author'                      => ($this->author->screen_name) ?: $this->comment->name,
 			'author_id'                   => $this->comment->author_id,
+			'avatar'                      => ($this->getAvatarVariable('url')) ? TRUE : FALSE,
 			'avatar_image_height'         => $this->getAvatarVariable('height'),
 			'avatar_image_width'          => $this->getAvatarVariable('width'),
 			'avatar_url'                  => $this->getAvatarVariable('url'),
@@ -111,11 +111,13 @@ class Comment extends Variables {
 			'entry_id_path'               => $this->pathVariable($this->comment->entry_id),
 			'group_id'                    => $this->author->group_id,
 			'ip_address'                  => $this->comment->ip_address,
+			'is_ignored'                  => $this->isIgnored(),
 			'location'                    => ($this->comment->location) ?: $this->author->location,
 			'member_search_path'          => $this->member_search_path . $this->comment->author_id,
 			'name'                        => $this->comment->name,
 			'permalink'                   => ee()->uri->uri_string.'#'.$this->comment->comment_id,
 			'signature'                   => $this->typography($this->getSignatureVariable('signature'), $typography_prefs),
+			'signature_image'             => ($this->getSignatureVariable('url')) ? TRUE : FALSE,
 			'signature_image_height'      => $this->getSignatureVariable('height'),
 			'signature_image_url'         => $this->getSignatureVariable('url'),
 			'signature_image_width'       => $this->getSignatureVariable('width'),
@@ -128,6 +130,16 @@ class Comment extends Variables {
 		];
 
 		return $this->variables;
+	}
+
+	private function isIgnored()
+	{
+		if ( ! $this->comment->author_id)
+		{
+			return FALSE;
+		}
+
+		return in_array($this->comment->author_id, ee()->session->userdata('ignore_list'));
 	}
 
 	private function getSignatureVariable($property)
