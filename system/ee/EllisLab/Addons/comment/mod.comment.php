@@ -533,40 +533,17 @@ class Comment {
 			return ee()->TMPL->no_results();
 		}
 
-		/** -----------------------------------
-		/**  Fetch Comments if necessary
-		/** -----------------------------------*/
-
+		// time to build a comments
 		$comments = [];
-		$mfields = array();
-		$mfields_data = array();
 
-		/** ----------------------------------------
-		/**  Fetch custom member field IDs
-		/** ----------------------------------------*/
-
-		ee()->db->select('m_field_id, m_field_name');
-		$query = ee()->db->get('member_fields');
-
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result_array() as $row)
-			{
-				$mfields[$row['m_field_name']] = $row['m_field_id'];
-			}
-		}
-
-		/** ----------------------------------------
-		/**  "Search by Member" link
-		/** ----------------------------------------*/
-		// We use this with the {member_search_path} variable
-
+		// Build the search link. We inject it into the CommentVars class as it has no knowledge of the Tagdata
 		$result_path = (preg_match("/".LD."member_search_path\s*=(.*?)".RD."/s", ee()->TMPL->tagdata, $match)) ? $match['1'] : 'search/results';
 		$result_path = str_replace("\"", "", $result_path);
 		$result_path = str_replace("'",  "", $result_path);
-
+		// todo (before PR) this doesn't work
 		$search_link = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
 
+		// don't forget, you know, the comments.
 		$comment_models = ee('Model')->get('Comment', $result_ids)
 			->with('Author', 'Channel', 'Entry')
 			->order($order_by, $this_sort)
@@ -576,7 +553,12 @@ class Comment {
 		{
 			foreach ($comment_models as $comment_model)
 			{
-				$comment_vars = new CommentVars($comment_model, $search_link);
+				$comment_vars = new CommentVars(
+					$comment_model,
+					$this->getMemberFields(),
+					$this->getFieldsInTemplate(),
+					$search_link
+				);
 				$comments[] = $comment_vars->getTemplateVariables();
 			}
 
@@ -586,22 +568,6 @@ class Comment {
 				if (ee()->extensions->end_script === TRUE) return ee()->TMPL->tagdata;
 			}
 		}
-
-		// Fetch the custom member field definitions
-		$m_fields = array();
-
-		ee()->db->select('m_field_id, m_field_name, m_field_fmt');
-		$query = ee()->db->get('member_fields');
-
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result_array() as $row)
-			{
-				$m_fields[$row['m_field_name']] = array($row['m_field_id'], $row['m_field_fmt']);
-			}
-		}
-
-		$this->cacheMemberFieldModels($m_fields);
 
 		/** ----------------------------------------
 		/**  Parse It!
@@ -667,128 +633,65 @@ class Comment {
 		}
 
 		// todo (before PR) - work member field parsing into the Comment variables
-			if ( isset($mfields) && is_array($mfields) && count($mfields) > 0)
-			{
-				foreach($mfields as $key => $value)
-				{
-					if (isset($row['m_field_id_'.$value]))
-					{
-						$cond[$key] = $row['m_field_id_'.$value];
-					}
-				}
-			}
-
-
-				/** ----------------------------------------
-				/**  parse custom member fields
-				/** ----------------------------------------*/
-
-				$field = ee('Variables/Parser')->parseVariableProperties($key);
-				$val2 = $field['field_name'];
-
-				// parse custom member fields
-				if (isset($m_fields[$val2]))
-				{
-					if (array_key_exists('m_field_id_'.$m_fields[$val2]['0'], $row))
-					{
-						$tagdata = $this->parseField(
-							$m_fields[$val2]['0'],
-							$field,
-							$row['m_field_id_'.$m_fields[$val2]['0']],
-							$tagdata,
-							$row['author_id'],
-							array(),
-							$key
-						);
-					}
-					else
-					{
-						$tagdata = ee()->TMPL->swap_var_single(
-						$key,
-						'',
-						$tagdata
-						);
-					}
-				}
-
 	}
 
-	/**
-	 * Called after $m_fields is populated, caches associated MemberField models
-	 */
-	private function cacheMemberFieldModels($m_fields)
+	private function getMemberFields()
 	{
-		$this->member_field_models = ee()->session->cache(__CLASS__, 'member_field_models') ?: array();
-
-		ee()->load->library('api');
-		ee()->legacy_api->instantiate('channel_fields');
-		$single_field_data = array();
-
-		// Get field names present in the template, sans modifiers
-		$clean_field_names = array_map(function($field)
+		if ( ! $field_names = ee()->session->cache(__CLASS__, 'member_field_names'))
 		{
+			$field_names = ee('Model')->get('MemberField')
+				->fields('field_id', 'm_field_name', 'field_fmt')
+				->all()
+				->indexBy('field_name');
 
-			$field = ee('Variables/Parser')->parseVariableProperties($field);
+			ee()->session->set_cache(__CLASS__, 'member_field_names', $field_names);
+		}
 
-			return $field['field_name'];
-		}, array_flip(ee()->TMPL->var_single));
+		// progressively cache member field models
+		$member_fields = ee()->session->cache(__CLASS__, 'member_fields') ?: [];
 
-		// Get field IDs for the member fields we need to fetch
-		$member_field_ids = array();
-		foreach ($clean_field_names as $field_name)
+		// Get fields present in the template, and not yet cached
+		$member_field_ids = [];
+		foreach ($this->getFieldsInTemplate() as $name => $field)
 		{
-			if (isset($m_fields[$field_name][0]))
+			if (isset($field_names[$name]) && ! isset($member_fields[$name]))
 			{
-				$member_field_ids[] = $m_fields[$field_name][0];
+				$member_field_ids[] = $field_names[$name]->m_field_id;
 			}
 		}
 
-		// Cache member fields here before we start parsing
+		// fetch the missing member field models
 		if ( ! empty($member_field_ids))
 		{
-			$this->member_field_models = ee('Model')->get('MemberField', array_unique($member_field_ids))
+			$member_fields = $member_fields + ee('Model')->get('MemberField', $member_field_ids)
 				->all()
-				->indexBy('field_id');
+				->indexBy('field_name');
 		}
 
-		ee()->session->set_cache(__CLASS__, 'member_field_models', $this->member_field_models);
+		ee()->session->set_cache(__CLASS__, 'member_fields', $member_fields);
+
+		return $member_fields;
 	}
 
-	/**
-	 * Parse a custom member field
-	 *
-	 * @param	int		$field_id	Member field ID
-	 * @param	array	$field		Tag information as parsed by ee('Variables/Parser')->parseVariableProperties()
-	 * @param	mixed	$data		Data for this field
-	 * @param	string	$tagdata	Tagdata to perform the replacement in
-	 * @param	string	$member_id	ID for the member this data is associated
-	 * @return	string	String with variable parsed
-	 */
-	protected function parseField($field_id, $field, $data, $tagdata, $member_id, $row = array(), $tag = FALSE)
+	private function getFieldsInTemplate()
 	{
+		$cache_key = 'fields_in_use:'.md5(ee()->TMPL->tagdata);
+		$fields = ee()->session->cache(__CLASS__, $cache_key) ?: [];
 
-		if ( ! isset($this->member_field_models[$field_id]))
+		if ( ! empty($fields))
 		{
-
-			return $tagdata;
+			return $fields;
 		}
 
-		$member_field = $this->member_field_models[$field_id];
+		foreach (ee()->TMPL->var_single as $var)
+		{
+			$field = ee('Variables/Parser')->parseVariableProperties($var);
+			$fields[$field['field_name']] = $field;
+		}
 
-
-		$default_row = array(
-			'channel_html_formatting' => 'safe',
-			'channel_auto_link_urls' => 'y',
-			'channel_allow_img_urls' => 'n'
-		);
-		$row = array_merge($default_row, $row);
-
-
-		return $member_field->parse($data, $member_id, 'member', $field, $tagdata, $row, $tag);
+		ee()->session->set_cache(__CLASS__, $cache_key, $fields);
+		return $fields;
 	}
-
-
-
 
 	/**
 	 * Fetch comment ids associated entry ids
@@ -2013,8 +1916,6 @@ class Comment {
 		/** ----------------------------------------
 		/**  Build the data array
 		/** ----------------------------------------*/
-
-		ee()->load->helper('url');
 
 		$notify = (ee()->input->post('notify_me')) ? 'y' : 'n';
 

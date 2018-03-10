@@ -38,23 +38,37 @@ class Comment extends Variables {
 	private $entry;
 
 	/**
+	 * @var array Collection of Member Field models to parse
+	 */
+	private $member_fields;
+
+	/**
 	 * @var string A pre-parsed ACTion URL for member search
 	 */
 	private $member_search_url;
 
 	/**
+	 * @var array Template variables from ee('Variables/Parser')->extractVariables(), indexed by name
+	 */
+	private $template_vars;
+
+	/**
 	 * Constructor
 	 *
 	 * @param object $comment EllisLab\ExpressionEngine\Model\Comment\Comment
+	 * @param array Collection of Member Field models to parse
+	 * @param array Template variables from ee('Variables/Parser')->extractVariables(), indexed by name
 	 * @param string $member_search_url A pre-parsed ACTion URL for member search
 	 */
-	public function __construct(CommentModel $comment, $member_search_url)
+	public function __construct(CommentModel $comment, $member_fields, $template_vars, $member_search_url)
 	{
 		$this->author = ($comment->Author) ?: ee('Model')->make('Member');
 		$this->channel = $comment->Channel;
 		$this->comment = $comment;
 		$this->entry = $comment->Entry;
+		$this->member_fields = $member_fields;
 		$this->member_search_url = $member_search_url;
+		$this->template_vars = $template_vars;
 
 		parent::__construct();
 	}
@@ -88,7 +102,7 @@ class Comment extends Variables {
 		$base_url = ($this->channel->comment_url) ? $comment_url : $channel_url;
 
 		// todo (before PR) allow url and location override from custom member fields
-		$commenter_url = prep_url($this->comment->url);
+		$commenter_url = (string) ee('Format')->make('Text', $this->comment->url)->url();
 		$location = $this->comment->location;
 
 		$this->variables = [
@@ -149,7 +163,42 @@ class Comment extends Variables {
 			'username'                    => $this->author->username,
 		];
 
+		$this->addCustomMemberFields();
+
 		return $this->variables;
+	}
+
+	private function addCustomMemberFields()
+	{
+		$author = $this->author->getValues();
+
+		$fieldtype_row = [
+			'channel_html_formatting' => 'safe',
+			'channel_auto_link_urls' => 'y',
+			'channel_allow_img_urls' => 'n'
+		];
+
+		foreach ($this->member_fields as $field)
+		{
+			$col = 'm_field_id_'.$field->field_id;
+
+			// safety for guest authors and to be defensive
+			if (empty($author[$col]) OR ! isset($this->template_vars[$field->field_name]))
+			{
+				$this->variables[$field->field_name] = '';
+				continue;
+			}
+
+			$this->variables[$field->field_name] = $field->parse(
+				$author[$col],
+				$this->author->member_id,
+				'member',
+				$this->template_vars[$field->field_name],
+				'{'.$field->field_name.'}', // fake tagdata to force just this variable to be returned
+				$fieldtype_row,
+				$field->field_name
+			);
+		}
 	}
 
 	private function formatComment($typography_prefs)
