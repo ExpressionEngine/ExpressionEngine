@@ -160,30 +160,6 @@ class Comment extends Variables {
 	}
 
 	/**
-	 * Legacy {member_search_path='foo/bar'}
-	 * Can't treat it like a normal path variable, because it's not, it's an action URL
-	 */
-	private function addMemberSearchPath()
-	{
-		foreach ($this->template_vars as $var)
-		{
-			if (strncmp($var['field_name'], 'member_search_path', 18) === 0)
-			{
-				$path = ee()->functions->extract_path($var['field_name']);
-				$params = [
-					'result_path' => $path,
-					'mbr' => $this->comment->author_id,
-					'return' => FALSE,
-					'token' => FALSE,
-				];
-
-				$this->variables[$var['field_name']] = $this->action('Search', 'do_search', $params);
-				return;
-			}
-		}
-	}
-
-	/**
 	 * Add parsed custom member fields to the variables array
 	 */
 	private function addCustomMemberFields()
@@ -224,6 +200,49 @@ class Comment extends Variables {
 				$field->field_name
 			);
 		}
+	}
+
+	/**
+	 * Legacy {member_search_path='foo/bar'}
+	 * Can't treat it like a normal path variable, because it's not, it's an action URL
+	 */
+	private function addMemberSearchPath()
+	{
+		foreach ($this->template_vars as $var)
+		{
+			if (strncmp($var['field_name'], 'member_search_path', 18) === 0)
+			{
+				$path = ee()->functions->extract_path($var['field_name']);
+				$params = [
+					'result_path' => $path,
+					'mbr' => $this->comment->author_id,
+					'return' => FALSE,
+					'token' => FALSE,
+				];
+
+				$this->variables[$var['field_name']] = $this->action('Search', 'do_search', $params);
+				return;
+			}
+		}
+	}
+
+	/**
+	 * @return boolean Whether the user can moderate this comment
+	 */
+	private function canModerate()
+	{
+		if (ee('Permission')->has('can_edit_all_comments'))
+		{
+			return TRUE;
+		}
+
+		if ($this->ee('Permission')->has('can_edit_own_comments') &&
+			$this->entry->author_id == ee()->session->userdata('member_id'))
+		{
+			return TRUE;
+		}
+
+		return FALSE;
 	}
 
 	/**
@@ -268,72 +287,6 @@ class Comment extends Variables {
 		}
 
 		return $this->comment->name;
-	}
-
-	/**
-	 * @return boolean [Whether the current user is ignoring this commenter
-	 */
-	private function isIgnored()
-	{
-		if ( ! $this->comment->author_id)
-		{
-			return FALSE;
-		}
-
-		return in_array($this->comment->author_id, ee()->session->userdata('ignore_list'));
-	}
-
-	/**
-	 * Access to Signature-related variables
-	 *
-	 * Gated since all properties are disabled if signatures are not enabled.
-	 *
-	 * @param  string $property Which property you are after
-	 * @return string The parsed requested property
-	 */
-	private function getSignatureVariable($property)
-	{
-		if ( ! $this->signaturesEnabled())
-		{
-			return '';
-		}
-
-		switch ($property)
-		{
-			case 'signature':
-				return $this->author->signature;
-			case 'url':
-				if ($this->author->sig_img_filename)
-				{
-					return ee()->config->slash_item('sig_img_url').$this->author->sig_img_filename;
-				}
-				return '';
-			case 'width':
-				return $this->author->sig_img_width;
-			case 'height':
-				return $this->author->sig_img_height;
-		}
-
-		// er, something wrong?
-		return FALSE;
-	}
-
-	/**
-	 * @return boolean Whether signatures are enabled or not
-	 */
-	private function signaturesEnabled()
-	{
-		if ( ! bool_config_item('allow_signatures'))
-		{
-			return FALSE;
-		}
-
-		if ( ! get_bool_from_string(ee()->session->userdata('display_signatures')))
-		{
-			return FALSE;
-		}
-
-		return TRUE;
 	}
 
 	/**
@@ -396,6 +349,59 @@ class Comment extends Variables {
 	}
 
 	/**
+	 * Access to Signature-related variables
+	 *
+	 * Gated since all properties are disabled if signatures are not enabled.
+	 *
+	 * @param  string $property Which property you are after
+	 * @return string The parsed requested property
+	 */
+	private function getSignatureVariable($property)
+	{
+		if ( ! $this->signaturesEnabled())
+		{
+			return '';
+		}
+
+		switch ($property)
+		{
+			case 'signature':
+				return $this->author->signature;
+			case 'url':
+				if ($this->author->sig_img_filename)
+				{
+					return ee()->config->slash_item('sig_img_url').$this->author->sig_img_filename;
+				}
+				return '';
+			case 'width':
+				return $this->author->sig_img_width;
+			case 'height':
+				return $this->author->sig_img_height;
+		}
+
+		// er, something wrong?
+		return FALSE;
+	}
+
+	/**
+	 * @return boolean Whether signatures are enabled or not
+	 */
+	private function signaturesEnabled()
+	{
+		if ( ! bool_config_item('allow_signatures'))
+		{
+			return FALSE;
+		}
+
+		if ( ! get_bool_from_string(ee()->session->userdata('display_signatures')))
+		{
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	/**
 	 * @return boolean Whether comments are disabled
 	 */
 	private function isDisabled()
@@ -403,25 +409,6 @@ class Comment extends Variables {
 		return ($this->entry->allow_comments === FALSE OR
 			$this->channel->comment_system_enabled === FALSE OR
 			bool_config_item('enable_comments') === FALSE);
-	}
-
-	/**
-	 * @return boolean Whether the user can moderate this comment
-	 */
-	private function canModerate()
-	{
-		if (ee('Permission')->has('can_edit_all_comments'))
-		{
-			return TRUE;
-		}
-
-		if ($this->ee('Permission')->has('can_edit_own_comments') &&
-			$this->entry->author_id == ee()->session->userdata('member_id'))
-		{
-			return TRUE;
-		}
-
-		return FALSE;
 	}
 
 	/**
@@ -446,6 +433,19 @@ class Comment extends Variables {
 		}
 
 		return FALSE;
+	}
+
+	/**
+	 * @return boolean [Whether the current user is ignoring this commenter
+	 */
+	private function isIgnored()
+	{
+		if ( ! $this->comment->author_id)
+		{
+			return FALSE;
+		}
+
+		return in_array($this->comment->author_id, ee()->session->userdata('ignore_list'));
 	}
 }
 // END CLASS
