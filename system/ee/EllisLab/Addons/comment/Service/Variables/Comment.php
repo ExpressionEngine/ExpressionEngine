@@ -183,6 +183,9 @@ class Comment extends Variables {
 		}
 	}
 
+	/**
+	 * Add parsed custom member fields to the variables array
+	 */
 	private function addCustomMemberFields()
 	{
 		$author = $this->author->getValues();
@@ -223,6 +226,11 @@ class Comment extends Variables {
 		}
 	}
 
+	/**
+	 * Format the comment, including an extension hook
+	 * @param  array $typography_prefs Typography Preferences
+	 * @return string Parsed and formatted comment
+	 */
 	private function formatComment($typography_prefs)
 	{
 		/* 'comment_entries_comment_format' hook.
@@ -238,6 +246,14 @@ class Comment extends Variables {
 		return $this->typography($this->comment->comment, $typography_prefs);
 	}
 
+	/**
+	 * Get Author URLs
+	 *
+	 * @param  string  $url The URL to use
+	 * @param  boolean $fallback_to_email Whether to fallback to email if the URL is empty
+	 * @param  boolean $use_name_in_link  Whether to use the user's name as the visible part of the link or just the URL/Email
+	 * @return string parsed author URL variable
+	 */
 	private function getAuthorUrl($url, $fallback_to_email = FALSE, $use_name_in_link = TRUE)
 	{
 		if ($url)
@@ -254,6 +270,9 @@ class Comment extends Variables {
 		return $this->comment->name;
 	}
 
+	/**
+	 * @return boolean [Whether the current user is ignoring this commenter
+	 */
 	private function isIgnored()
 	{
 		if ( ! $this->comment->author_id)
@@ -264,6 +283,14 @@ class Comment extends Variables {
 		return in_array($this->comment->author_id, ee()->session->userdata('ignore_list'));
 	}
 
+	/**
+	 * Access to Signature-related variables
+	 *
+	 * Gated since all properties are disabled if signatures are not enabled.
+	 *
+	 * @param  string $property Which property you are after
+	 * @return string The parsed requested property
+	 */
 	private function getSignatureVariable($property)
 	{
 		if ( ! $this->signaturesEnabled())
@@ -291,6 +318,9 @@ class Comment extends Variables {
 		return FALSE;
 	}
 
+	/**
+	 * @return boolean Whether signatures are enabled or not
+	 */
 	private function signaturesEnabled()
 	{
 		if ( ! bool_config_item('allow_signatures'))
@@ -306,6 +336,14 @@ class Comment extends Variables {
 		return TRUE;
 	}
 
+	/**
+	 * Access to Avatar-related variables
+	 *
+	 * Gated since all properties are disabled if avatars are not enabled
+	 *
+	 * @param  string $property Which property you are after
+	 * @return string The parsed requested property
+	 */
 	private function getAvatarVariable($property)
 	{
 		if ( ! $this->avatarsEnabled())
@@ -339,6 +377,9 @@ class Comment extends Variables {
 		return FALSE;
 	}
 
+	/**
+	 * @return boolean Whether avatars are enabled or not
+	 */
 	private function avatarsEnabled()
 	{
 		if ( ! bool_config_item('enable_avatars'))
@@ -354,6 +395,9 @@ class Comment extends Variables {
 		return TRUE;
 	}
 
+	/**
+	 * @return boolean Whether comments are disabled
+	 */
 	private function isDisabled()
 	{
 		return ($this->entry->allow_comments === FALSE OR
@@ -361,6 +405,9 @@ class Comment extends Variables {
 			bool_config_item('enable_comments') === FALSE);
 	}
 
+	/**
+	 * @return boolean Whether the user can moderate this comment
+	 */
 	private function canModerate()
 	{
 		if (ee('Permission')->has('can_edit_all_comments'))
@@ -377,6 +424,9 @@ class Comment extends Variables {
 		return FALSE;
 	}
 
+	/**
+	 * @return boolean Whether the user can edit this comment
+	 */
 	private function isEditable()
 	{
 		if ($this->canModerate())
