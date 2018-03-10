@@ -142,10 +142,6 @@ class Comment extends Variables {
 			'title'                       => $this->entry->title,
 			'title_permalink'             => $this->pathVariable($this->entry->url_title),
 			'url'                         => $this->url($this->comment->url),
-			'url_as_author'               => $this->getAuthorUrl(),
-			'url_or_email'                => ($this->comment->url) ?: $this->comment->email,
-			'url_or_email_as_author'      => $this->getAuthorUrl(TRUE),
-			'url_or_email_as_link'        => $this->getAuthorUrl(TRUE, FALSE),
 			'url_title'                   => $this->entry->url_title,
 			'url_title_path'              => $this->pathVariable($this->entry->url_title),
 			'username'                    => $this->author->username,
@@ -153,6 +149,12 @@ class Comment extends Variables {
 
 		$this->addCustomMemberFields();
 		$this->addMemberSearchPath();
+
+		// have to wait until now to do these, as 'url' could have been overridden by a custom member 'url' variable. Legacy!
+		$this->variables['url_as_author'] = $this->getAuthorUrl($this->variables['url']);
+		$this->variables['url_or_email'] = ($this->variables['url']) ?: $this->comment->email;
+		$this->variables['url_or_email_as_author'] = $this->getAuthorUrl($this->variables['url'], TRUE);
+		$this->variables['url_or_email_as_link'] = $this->getAuthorUrl($this->variables['url'], TRUE, FALSE);
 
 		return $this->variables;
 	}
@@ -236,12 +238,12 @@ class Comment extends Variables {
 		return $this->typography($this->comment->comment, $typography_prefs);
 	}
 
-	private function getAuthorUrl($fallback_to_email = FALSE, $use_name_in_link = TRUE)
+	private function getAuthorUrl($url, $fallback_to_email = FALSE, $use_name_in_link = TRUE)
 	{
-		if ($this->comment->url)
+		if ($url)
 		{
-			$label = ($use_name_in_link) ? $this->comment->name : $this->comment->url;
-			return '<a href="'.$this->comment->url.'">'.$label.'</a>';
+			$label = ($use_name_in_link) ? $this->comment->name : $url;
+			return '<a href="'.$url.'">'.$label.'</a>';
 		}
 		elseif ($fallback_to_email && $this->comment->email)
 		{
