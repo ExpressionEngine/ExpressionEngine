@@ -534,21 +534,12 @@ class Comment {
 		}
 
 		// time to build a comments
-		$comments = [];
-
-		// Build the search link. We inject it into the CommentVars class as it has no knowledge of the Tagdata
-		$result_path = (preg_match("/".LD."member_search_path\s*=(.*?)".RD."/s", ee()->TMPL->tagdata, $match)) ? $match['1'] : 'search/results';
-		$result_path = str_replace("\"", "", $result_path);
-		$result_path = str_replace("'",  "", $result_path);
-		// todo (before PR) this doesn't work
-		$search_link = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
-
-		// don't forget, you know, the comments.
 		$comment_models = ee('Model')->get('Comment', $result_ids)
 			->with('Author', 'Channel', 'Entry')
 			->order($order_by, $this_sort)
 			->all();
 
+		$comments = [];
 		if ( ! empty($comment_models))
 		{
 			foreach ($comment_models as $comment_model)
@@ -556,8 +547,7 @@ class Comment {
 				$comment_vars = new CommentVars(
 					$comment_model,
 					$this->getMemberFields(),
-					$this->getFieldsInTemplate(),
-					$search_link
+					$this->getFieldsInTemplate()
 				);
 				$comments[] = $comment_vars->getTemplateVariables();
 			}

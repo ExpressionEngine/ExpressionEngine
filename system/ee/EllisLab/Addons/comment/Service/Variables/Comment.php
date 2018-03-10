@@ -43,11 +43,6 @@ class Comment extends Variables {
 	private $member_fields;
 
 	/**
-	 * @var string A pre-parsed ACTion URL for member search
-	 */
-	private $member_search_url;
-
-	/**
 	 * @var array Template variables from ee('Variables/Parser')->extractVariables(), indexed by name
 	 */
 	private $template_vars;
@@ -58,16 +53,14 @@ class Comment extends Variables {
 	 * @param object $comment EllisLab\ExpressionEngine\Model\Comment\Comment
 	 * @param array Collection of Member Field models to parse
 	 * @param array Template variables from ee('Variables/Parser')->extractVariables(), indexed by name
-	 * @param string $member_search_url A pre-parsed ACTion URL for member search
 	 */
-	public function __construct(CommentModel $comment, $member_fields, $template_vars, $member_search_url)
+	public function __construct(CommentModel $comment, $member_fields, $template_vars)
 	{
 		$this->author = ($comment->Author) ?: ee('Model')->make('Member');
 		$this->channel = $comment->Channel;
 		$this->comment = $comment;
 		$this->entry = $comment->Entry;
 		$this->member_fields = $member_fields;
-		$this->member_search_url = $member_search_url;
 		$this->template_vars = $template_vars;
 
 		parent::__construct();
@@ -138,7 +131,6 @@ class Comment extends Variables {
 			'is_ignored'                  => $this->isIgnored(),
 			'location'                    => $this->comment->location,
 			'member_group_id'             => $this->author->group_id,
-			'member_search_path'          => $this->member_search_url.$this->comment->author_id,
 			'name'                        => $this->comment->name,
 			'permalink'                   => ee()->uri->uri_string.'#'.$this->comment->comment_id,
 			'signature'                   => $this->typography($this->getSignatureVariable('signature'), $typography_prefs),
@@ -160,8 +152,33 @@ class Comment extends Variables {
 		];
 
 		$this->addCustomMemberFields();
+		$this->addMemberSearchPath();
 
 		return $this->variables;
+	}
+
+	/**
+	 * Legacy {member_search_path='foo/bar'}
+	 * Can't treat it like a normal path variable, because it's not, it's an action URL
+	 */
+	private function addMemberSearchPath()
+	{
+		foreach ($this->template_vars as $var)
+		{
+			if (strncmp($var['field_name'], 'member_search_path', 18) === 0)
+			{
+				$path = ee()->functions->extract_path($var['field_name']);
+				$params = [
+					'result_path' => $path,
+					'mbr' => $this->comment->author_id,
+					'return' => FALSE,
+					'token' => FALSE,
+				];
+
+				$this->variables[$var['field_name']] = $this->action('Search', 'do_search', $params);
+				return;
+			}
+		}
 	}
 
 	private function addCustomMemberFields()
