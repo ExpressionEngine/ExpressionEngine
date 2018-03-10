@@ -621,8 +621,6 @@ class Comment {
 		{
 			return $tagdadta;
 		}
-
-		// todo (before PR) - work member field parsing into the Comment variables
 	}
 
 	private function getMemberFields()
