@@ -101,10 +101,6 @@ class Comment extends Variables {
 		$channel_url = parse_config_variables($this->channel->channel_url, ee()->config->get_cached_site_prefs($this->comment->site_id));
 		$base_url = ($this->channel->comment_url) ? $comment_url : $channel_url;
 
-		// todo (before PR) allow url and location override from custom member fields
-		$commenter_url = (string) ee('Format')->make('Text', $this->comment->url)->url();
-		$location = $this->comment->location;
-
 		$this->variables = [
 			'allow_comments'              => $this->entry->allow_comments,
 			'author'                      => ($this->author->screen_name) ?: $this->comment->name,
@@ -153,7 +149,7 @@ class Comment extends Variables {
 			'status'                      => $this->comment->status,
 			'title'                       => $this->entry->title,
 			'title_permalink'             => $this->pathVariable($this->entry->url_title),
-			'url'                         => $this->comment->url,
+			'url'                         => $this->url($this->comment->url),
 			'url_as_author'               => $this->getAuthorUrl(),
 			'url_or_email'                => ($this->comment->url) ?: $this->comment->email,
 			'url_or_email_as_author'      => $this->getAuthorUrl(TRUE),
@@ -186,6 +182,13 @@ class Comment extends Variables {
 			if (empty($author[$col]) OR ! isset($this->template_vars[$field->field_name]))
 			{
 				$this->variables[$field->field_name] = '';
+				continue;
+			}
+
+			// legacy exception for url
+			if ($field->field_name == 'url')
+			{
+				$this->variables['url'] = $this->url($author[$col]);
 				continue;
 			}
 
