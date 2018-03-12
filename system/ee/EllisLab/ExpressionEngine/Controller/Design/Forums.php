@@ -54,6 +54,16 @@ class Forums extends AbstractDesignController {
 			show_error(lang('unable_to_find_templates'));
 		}
 
+		// Check whether the theme is in the themes/user folder
+		$no_results = 'template_path_not_user';
+		$user_theme_folder = FALSE;
+
+		if ($this->isUserDir($base_path))
+		{
+			$user_theme_folder = TRUE;
+			$no_results = 'no_templates_found';
+		}
+
 		ee()->load->helper('directory');
 
 		$vars = array();
@@ -61,7 +71,7 @@ class Forums extends AbstractDesignController {
 		$base_url = ee('CP/URL')->make('design/forums/index/' . $theme);
 
 		$table = ee('CP/Table', array('autosort' => TRUE, 'subheadings' => TRUE));
-		$table->setNoResultsText('no_templates_found');
+		$table->setNoResultsText($no_results);
 		$table->setColumns(
 			array(
 				'template',
@@ -72,7 +82,9 @@ class Forums extends AbstractDesignController {
 		);
 
 		$data = array();
-		foreach (directory_map($base_path) as $dir => $files)
+
+		$dir_map = ($user_theme_folder) ? directory_map($base_path) : [];
+		foreach ($dir_map as $dir => $files)
 		{
 			$path = $base_path . '/' . $dir;
 
@@ -162,6 +174,11 @@ class Forums extends AbstractDesignController {
 		show_error(lang('unable_to_find_templates'));
 	}
 
+	private function isUserDir($path)
+	{
+		return (strpos($path, PATH_THIRD_THEMES) === 0) ? TRUE : FALSE;
+	}
+
 	public function edit($theme, $dir, $file)
 	{
 		$path = ee('Theme')->getPath('forum/'
@@ -174,6 +191,11 @@ class Forums extends AbstractDesignController {
 		if ( ! file_exists($path))
 		{
 			show_error(lang('unable_to_find_template_file'));
+		}
+
+		if ( ! $this->isUserDir($path))
+		{
+			show_error(lang('template_path_not_user'));
 		}
 
 		$template_name = ucwords(str_replace('_', ' ', $file));
