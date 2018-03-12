@@ -240,6 +240,8 @@ $lang = array(
 
 'template_notes_desc' => 'Use this form field to store notes and information about this template',
 
+'template_path_not_user' => 'Templates not found in themes/user',
+
 'template_partial' => 'Template Partial',
 
 'template_partials' => 'Template Partials',
