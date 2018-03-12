@@ -190,6 +190,13 @@ class Comment extends Variables {
 				continue;
 			}
 
+			// date variables, just give the timestamp, template parser will work the rest out
+			if ($field->field_type == 'date')
+			{
+				$this->variables[$field->field_name] = $author[$col];
+				continue;
+			}
+
 			foreach ($this->template_vars[$field->field_name] as $var)
 			{
 				$modifier = ($var['modifier'] != '') ? ':'.$var['modifier'] : '';

@@ -682,7 +682,7 @@ class Comment {
 			return $fields;
 		}
 
-		foreach (ee()->TMPL->var_single as $var)
+		foreach (array_keys(ee()->TMPL->var_single) as $var)
 		{
 			$field = ee('Variables/Parser')->parseVariableProperties($var);
 
