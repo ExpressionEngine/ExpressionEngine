@@ -236,7 +236,7 @@ class Comment extends Variables {
 			return TRUE;
 		}
 
-		if ($this->ee('Permission')->has('can_edit_own_comments') &&
+		if (ee('Permission')->has('can_edit_own_comments') &&
 			$this->entry->author_id == ee()->session->userdata('member_id'))
 		{
 			return TRUE;
