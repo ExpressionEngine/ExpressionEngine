@@ -310,12 +310,12 @@ class Comment extends Variables {
 				if ($this->author->avatar_filename)
 				{
 					$avatar_url = ee()->config->slash_item('avatar_url');
-		            $avatar_fs_path = ee()->config->slash_item('avatar_path');
+					$avatar_fs_path = ee()->config->slash_item('avatar_path');
 
-		            if (file_exists($avatar_fs_path.'default/'.$this->author->avatar_filename))
-		            {
-		                $avatar_url .= 'default/';
-		            }
+					if (file_exists($avatar_fs_path.'default/'.$this->author->avatar_filename))
+					{
+						$avatar_url .= 'default/';
+					}
 
 					return $avatar_url.$this->author->avatar_filename;
 				}
