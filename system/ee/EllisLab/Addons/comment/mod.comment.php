@@ -655,7 +655,7 @@ class Comment {
 		{
 			if (isset($field_names[$name]) && ! isset($member_fields[$name]))
 			{
-				$member_field_ids[] = $field_names[$name]->m_field_id;
+				$member_field_ids[] = $field_names[$name]->getId();
 			}
 		}
 
