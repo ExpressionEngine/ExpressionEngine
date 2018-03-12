@@ -178,15 +178,7 @@ class Member_settings extends Member {
 
 		if (ee()->config->item('enable_avatars') == 'y' AND $row['avatar_filename']  != '')
 		{
-			$avatar_url = ee()->config->slash_item('avatar_url');
-			$avatar_fs_path = ee()->config->slash_item('avatar_path');
-
-			if (file_exists($avatar_fs_path.'default/'.$row['avatar_filename']))
-			{
-				$avatar_url .= 'default/';
-			}
-
-			$avatar_path	= $avatar_url.$row['avatar_filename'];
+			$avatar_path	= $member->getAvatarUrl();
 			$avatar_width	= $row['avatar_width'] ;
 			$avatar_height	= $row['avatar_height'] ;
 
