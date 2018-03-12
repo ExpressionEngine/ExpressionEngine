@@ -651,7 +651,7 @@ class Comment {
 
 		// Get fields present in the template, and not yet cached
 		$member_field_ids = [];
-		foreach ($this->getFieldsInTemplate() as $name => $field)
+		foreach ($this->getFieldsInTemplate() as $name => $fields)
 		{
 			if (isset($field_names[$name]) && ! isset($member_fields[$name]))
 			{
@@ -685,7 +685,9 @@ class Comment {
 		foreach (ee()->TMPL->var_single as $var)
 		{
 			$field = ee('Variables/Parser')->parseVariableProperties($var);
-			$fields[$field['field_name']] = $field;
+
+			// indexed by var name, but stored as an array since multiple modifiers or parameters may be in play
+			$fields[$field['field_name']][] = $field;
 		}
 
 		ee()->session->set_cache(__CLASS__, $cache_key, $fields);

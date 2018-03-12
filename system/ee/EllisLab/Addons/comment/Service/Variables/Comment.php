@@ -190,15 +190,20 @@ class Comment extends Variables {
 				continue;
 			}
 
-			$this->variables[$field->field_name] = $field->parse(
-				$author[$col],
-				$this->author->member_id,
-				'member',
-				$this->template_vars[$field->field_name],
-				'{'.$field->field_name.'}', // fake tagdata to force just this variable to be returned
-				$fieldtype_row,
-				$field->field_name
-			);
+			foreach ($this->template_vars[$field->field_name] as $var)
+			{
+				$modifier = ($var['modifier'] != '') ? ':'.$var['modifier'] : '';
+
+				$this->variables[$field->field_name.$modifier] = $field->parse(
+					$author[$col],
+					$this->author->member_id,
+					'member',
+					$var,
+					'{'.$field->field_name.'}', // fake tagdata to force just this variable to be returned
+					$fieldtype_row,
+					$field->field_name
+				);
+			}
 		}
 	}
 
@@ -208,11 +213,11 @@ class Comment extends Variables {
 	 */
 	private function addMemberSearchPath()
 	{
-		foreach ($this->template_vars as $var)
+		foreach ($this->template_vars as $name => $vars)
 		{
-			if (strncmp($var['field_name'], 'member_search_path', 18) === 0)
+			if (strncmp($name, 'member_search_path', 18) === 0)
 			{
-				$path = ee()->functions->extract_path($var['field_name']);
+				$path = ee()->functions->extract_path($name);
 				$params = [
 					'result_path' => $path,
 					'mbr' => $this->comment->author_id,
@@ -220,7 +225,7 @@ class Comment extends Variables {
 					'token' => FALSE,
 				];
 
-				$this->variables[$var['field_name']] = $this->action('Search', 'do_search', $params);
+				$this->variables[$name] = $this->action('Search', 'do_search', $params);
 				return;
 			}
 		}
