@@ -623,9 +623,14 @@ class Comment {
 		}
 	}
 
+	/**
+	 * Get and cache member field models, but only if the fields are present in the template
+	 * @return array Collection of MemberField models
+	 */
 	private function getMemberFields()
 	{
-		if ( ! $field_names = ee()->session->cache(__CLASS__, 'member_field_names'))
+		$field_names = ee()->session->cache(__CLASS__, 'member_field_names');
+		if ($field_names === FALSE)
 		{
 			$field_names = ee('Model')->get('MemberField')
 				->fields('field_id', 'm_field_name', 'field_fmt')
@@ -633,6 +638,12 @@ class Comment {
 				->indexBy('field_name');
 
 			ee()->session->set_cache(__CLASS__, 'member_field_names', $field_names);
+		}
+
+		// may not have any member fields, in which case we can skip the rest of this processing
+		if (empty($field_names))
+		{
+			return [];
 		}
 
 		// progressively cache member field models
