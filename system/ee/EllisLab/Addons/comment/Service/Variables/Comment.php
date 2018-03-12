@@ -307,19 +307,7 @@ class Comment extends Variables {
 		switch ($property)
 		{
 			case 'url':
-				if ($this->author->avatar_filename)
-				{
-					$avatar_url = ee()->config->slash_item('avatar_url');
-					$avatar_fs_path = ee()->config->slash_item('avatar_path');
-
-					if (file_exists($avatar_fs_path.'default/'.$this->author->avatar_filename))
-					{
-						$avatar_url .= 'default/';
-					}
-
-					return $avatar_url.$this->author->avatar_filename;
-				}
-				return '';
+				return $this->author->getAvatarUrl();
 			case 'width':
 				return $this->author->avatar_width;
 			case 'height':
@@ -368,11 +356,7 @@ class Comment extends Variables {
 			case 'signature':
 				return $this->author->signature;
 			case 'url':
-				if ($this->author->sig_img_filename)
-				{
-					return ee()->config->slash_item('sig_img_url').$this->author->sig_img_filename;
-				}
-				return '';
+				return $this->author->getSignatureImageUrl();
 			case 'width':
 				return $this->author->sig_img_width;
 			case 'height':
