@@ -433,7 +433,7 @@ Grid.Settings.prototype = {
 			sort: EE.sortable_sort_helper
 		});
 
-		$('.fields-grid-tool-reorder', this.root).on('click', function(e){
+		$(this.root).on('click', '.fields-grid-tool-reorder', function(e){
 			e.preventDefault();
 		});
 	},
