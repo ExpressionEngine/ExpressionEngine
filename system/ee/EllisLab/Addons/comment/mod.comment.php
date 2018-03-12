@@ -885,31 +885,14 @@ class Comment {
 		/**  Has commenting expired?
 		/** ----------------------------------------*/
 
-		$mode = ( ! isset($this->comment_expiration_mode)) ? 0 : $this->comment_expiration_mode;
-
 		//  First check whether expiration is overriden
 		if (ee()->config->item('comment_moderation_override') !== 'y')
 		{
-			if ($mode == 0)
+			if ($query->row('comment_expiration_date')  > 0)
 			{
-				if ($query->row('comment_expiration_date')  > 0)
+				if (ee()->localize->now > $query->row('comment_expiration_date') )
 				{
-					if (ee()->localize->now > $query->row('comment_expiration_date') )
-					{
-						$halt_processing = 'expired';
-					}
-				}
-			}
-			else
-			{
-				if ($query->row('comment_expiration')  > 0)
-				{
-					$days = $query->row('entry_date')  + ($query->row('comment_expiration')  * 86400);
-
-					if (ee()->localize->now > $days)
-					{
-						$halt_processing = 'expired';
-					}
+					$halt_processing = 'expired';
 				}
 			}
 		}
@@ -1661,43 +1644,20 @@ class Comment {
 
 		$force_moderation = $query->row('comment_moderate');
 
-		if ($this->comment_expiration_mode == 0)
+		if ($query->row('comment_expiration_date')  > 0)
 		{
-			if ($query->row('comment_expiration_date')  > 0)
+			if (ee()->localize->now > $query->row('comment_expiration_date') )
 			{
-				if (ee()->localize->now > $query->row('comment_expiration_date') )
+				if (ee()->config->item('comment_moderation_override') == 'y')
 				{
-					if (ee()->config->item('comment_moderation_override') == 'y')
-					{
-						$force_moderation = 'y';
-					}
-					else
-					{
-						return ee()->output->show_user_error('submission', ee()->lang->line('cmt_commenting_has_expired'));
-					}
+					$force_moderation = 'y';
+				}
+				else
+				{
+					return ee()->output->show_user_error('submission', ee()->lang->line('cmt_commenting_has_expired'));
 				}
 			}
 		}
-		else
-		{
-			if ($query->row('comment_expiration') > 0)
-			{
-				$days = $query->row('entry_date') + ($query->row('comment_expiration') * 86400);
-
-				if (ee()->localize->now > $days)
-				{
-					if (ee()->config->item('comment_moderation_override') == 'y')
-					{
-						$force_moderation = 'y';
-					}
-					else
-					{
-						return ee()->output->show_user_error('submission', ee()->lang->line('cmt_commenting_has_expired'));
-					}
-				}
-			}
-		}
-
 
 		/** ----------------------------------------
 		/**  Is there a comment timelock?
