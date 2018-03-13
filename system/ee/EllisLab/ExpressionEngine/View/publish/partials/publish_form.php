@@ -102,8 +102,9 @@
 				</div>
 			</fieldset>
 		</div>
-		<div class="form-btns">
-			<?php $this->embed('ee:_shared/form/buttons'); ?>
-		</div>
+	</div>
+	<div class="form-btns">
+		<?php $this->embed('ee:_shared/form/buttons'); ?>
+	</div>
 	</form>
 </div>
