@@ -48,7 +48,7 @@ class Updater {
 		{
 			ee()->update_notices->setVersion('4.1.2');
 			ee()->update_notices->header('"content" is now a reserved word and will conflict with your Fluid Fields');
-			ee()->update_notices->item(' Please rename the field(s) and update your templates accordingly.');
+			ee()->update_notices->item(' Please rename your Channel Field(s) and update your templates accordingly.');
 		}
 	}
 
