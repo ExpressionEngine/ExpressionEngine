@@ -38,6 +38,17 @@ class XSSTest extends \PHPUnit_Framework_TestCase {
 			'<x onclick=alert(1) src=a>1</x>' => '<x  src=a>1</x>',
 			'<marquee loop=1 width=0 onfinish=confirm(1)//' => '<marquee loop=1 width=0 ',
 			"<select autofocus onfocus='confirm(1)'" => '<select autofocus ',
+
+			// RTLO characters, some invisible, all at position some_file_[RTLO]3pm.exe
+			'<a href="http://example.com/some_file_‮3pm.exe">http://example.com/some_file_‮3pm.exe</a>' =>
+				'<a href="http://example.com/some_file_3pm.exe">http://example.com/some_file_3pm.exe</a>',
+			'<a href="http://example.com/some_file_&#8238;3pm.exe">http://example.com/some_file_&#8238;3pm.exe</a>' =>
+				'<a href="http://example.com/some_file_3pm.exe">http://example.com/some_file_3pm.exe</a>',
+			'<a href="http://example.com/some_file_%E2%80%AE3pm.exe">http://example.com/some_file_%E2%80%AE3pm.exe</a>' =>
+				'<a href="http://example.com/some_file_3pm.exe">http://example.com/some_file_3pm.exe</a>',
+			'http://example.com/some_file_‮3pm.exe' => 'http://example.com/some_file_3pm.exe',
+			'http://example.com/some_file_&#8238;3pm.exe' => 'http://example.com/some_file_3pm.exe',
+			'http://example.com/some_file_%E2%80%AE3pm.exe' => 'http://example.com/some_file_3pm.exe',
 		);
 
 		foreach ($testArray as $before => $after) {
