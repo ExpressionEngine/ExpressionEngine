@@ -2229,9 +2229,7 @@ class Member {
 		$member = ee('Model')->get('Member', $member_id)
 			->first();
 
-		$total_results = count($member);
-
-		if ($total_results == 0)
+		if ( ! $member)
 		{
 			return ee()->TMPL->tagdata = '';
 		}

@@ -2583,6 +2583,15 @@ class Channel {
 			if ($data['entry_id'] == PHP_INT_MAX && in_array($this->query_string, [$data['entry_id'], $data['url_title']]))
 			{
 				$return = TRUE;
+
+				if ($channels = ee()->TMPL->fetch_param('channel'))
+				{
+					if (strpos($channels, $data['channel_name']) === FALSE
+						|| strpos($channels, 'not ' . $data['channel_name']) !== FALSE)
+					{
+						$return = FALSE;
+					}
+				}
 			}
 		}
 

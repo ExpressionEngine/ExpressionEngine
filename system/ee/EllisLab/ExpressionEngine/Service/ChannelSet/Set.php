@@ -308,7 +308,7 @@ class Set {
 			$field_ids = array();
 			foreach ($fields as $field_name)
 			{
-				$field = $this->fields[$field_name];
+				$field = $this->getFieldByName($field_name);
 				$field_ids[] = $field->getId();
 			}
 
