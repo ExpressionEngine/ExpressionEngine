@@ -26,6 +26,7 @@ class Updater {
 		$steps = new \ProgressIterator(
 			array(
 				'warnAboutContentReservedWord',
+				'addMissingNotificationTemplates'
 			)
 		);
 
@@ -48,6 +49,41 @@ class Updater {
 			ee()->update_notices->setVersion('4.1.2');
 			ee()->update_notices->header('"content" is now a reserved word and will conflict with your Fluid Fields');
 			ee()->update_notices->item(' Please rename the field(s) and update your templates accordingly.');
+		}
+	}
+
+	private function addMissingNotificationTemplates()
+	{
+		$sites = ee('Model')->get('Site')->all();
+
+		$email_templates = ee('Model')->get('SpecialtyTemplate')
+			->filter('template_name', 'email_changed_notification')
+			->all()
+			->indexBy('site_id');
+
+		$password_templates = ee('Model')->get('SpecialtyTemplate')
+			->filter('template_name', 'password_changed_notification')
+			->all()
+			->indexBy('site_id');
+
+		$email_template_data = $email_templates[1]->getValues();
+		$password_template_data = $password_templates[1]->getValues();
+		unset($email_template_data['template_id']);
+		unset($password_template_data['template_id']);
+
+		foreach ($sites as $site)
+		{
+			if ( ! array_key_exists($site->site_id, $email_templates))
+			{
+				$email_template_data['site_id'] = $site->site_id;
+				ee('Model')->make('SpecialtyTemplate', $email_template_data)->save();
+			}
+
+			if ( ! array_key_exists($site->site_id, $password_templates))
+			{
+				$password_template_data['site_id'] = $site->site_id;
+				ee('Model')->make('SpecialtyTemplate', $password_template_data)->save();
+			}
 		}
 	}
 }
