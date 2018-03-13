@@ -45,13 +45,28 @@ feature 'System Templates' do
     end
   end
 
-  context 'Members' do
+  context 'Members without Templates' do
     before(:each) do
       @page.load('members')
       no_php_js_errors
     end
 
-    it 'displays' do
+    it 'displays a helpful error when user templates are missing' do
+      @page.should have_theme_chooser
+      @page.templates.should have(1).items
+      @page.templates[0].name.text.should start_with('Templates not found in themes/user')
+    end
+  end
+
+  context 'Members with Templates' do
+    before(:each) do
+      @themes = Themes::Prepare.new
+      @themes.copy_member_themes
+      @page.load('members')
+      no_php_js_errors
+    end
+
+    it 'displays when user templates are present' do
       @page.should have_theme_chooser
       @page.templates.should have(86).items
     end
@@ -64,22 +79,37 @@ feature 'System Templates' do
     end
   end
 
-  # context 'Forums' do
-  #   before(:each) do
-  #     @page.load('forums')
-  #     no_php_js_errors
-  #   end
-  #
-  #   it 'displays' do
-  #     @page.should have_theme_chooser
-  #     @page.templates.should have(201).items
-  #
-  #     it 'displays the edit form' do
-  #       @page.templates[1].manage.edit.click
-  #       no_php_js_errors
-  #       @form.all_there?.should == true
-  #       @form.template_contents.value.should_not eq ''
-  #     end
-  #   end
-  # end
+  context 'Forums without Templates' do
+    before(:each) do
+      @page.load('forums')
+      no_php_js_errors
+    end
+
+    it 'displays a helpful error when user templates are missing' do
+      @page.should have_theme_chooser
+      @page.templates.should have(1).items
+      @page.templates[0].name.text.should start_with('Templates not found in themes/user')
+    end
+  end
+
+  context 'Forums with Templates' do
+    before(:each) do
+      @themes = Themes::Prepare.new
+      @themes.copy_forum_themes
+      @page.load('forums')
+      no_php_js_errors
+    end
+
+    it 'displays when user templates are present' do
+      @page.should have_theme_chooser
+      @page.templates.should have(201).items
+    end
+
+    it 'displays the edit form' do
+      @page.templates[1].manage.edit.click
+      no_php_js_errors
+      @form.all_there?.should == true
+      @form.template_contents.value.should_not eq ''
+    end
+  end
 end
