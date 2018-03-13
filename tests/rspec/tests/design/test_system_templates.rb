@@ -81,11 +81,6 @@ feature 'System Templates' do
 
   context 'Forums without Templates' do
     before(:each) do
-      visit '/system/index.php?/cp/addons'
-      find('ul.toolbar a[data-post-url*="cp/addons/install/forum"]').click
-
-      @page = SystemTemplates.new
-      @form = SystemTemplateForm.new
       @page.load('forums')
       no_php_js_errors
     end
@@ -101,12 +96,6 @@ feature 'System Templates' do
     before(:each) do
       @themes = Themes::Prepare.new
       @themes.copy_forum_themes
-
-      visit '/system/index.php?/cp/addons'
-      find('ul.toolbar a[data-post-url*="cp/addons/install/forum"]').click
-
-      @page = SystemTemplates.new
-      @form = SystemTemplateForm.new
       @page.load('forums')
       no_php_js_errors
     end
