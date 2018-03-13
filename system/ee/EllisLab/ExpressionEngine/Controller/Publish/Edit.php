@@ -384,7 +384,7 @@ class Edit extends AbstractPublishController {
 			show_404();
 		}
 
-		$base_url = ee('CP/URL')->make('publish/edit/entry/'.$id);
+		$base_url = ee('CP/URL')->getCurrentUrl();
 
 		// Sequence editing?
 		$sequence_editing = FALSE;
@@ -395,7 +395,6 @@ class Edit extends AbstractPublishController {
 			$index = array_search($id, $entry_ids) + 1;
 			$next_entry_id = isset($entry_ids[$index]) ? $entry_ids[$index] : NULL;
 			$base_url->setQueryStringVariable('next_entry_id', $next_entry_id);
-			$base_url->setQueryStringVariable('entry_ids', $entry_ids);
 		}
 
 		// If an entry or channel on a different site is requested, try
@@ -540,10 +539,10 @@ class Edit extends AbstractPublishController {
 			ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => $entry->Channel->channel_title,
 		);
 
-		if (AJAX_REQUEST)
+		if (ee('Request')->get('modal_form') == 'y')
 		{
 			$vars['layout']->setIsInModalContext(TRUE);
-			return ee('View')->make('publish/partials/publish_form')->render($vars);
+			return ee('View')->make('publish/modal-entry')->render($vars);
 		}
 
 		ee()->cp->render('publish/entry', $vars);

@@ -396,7 +396,7 @@ abstract class AbstractPublish extends CP_Controller {
 
 			ee()->functions->redirect($redirect_url);
 		}
-		elseif (ee('Request')->post('modal_form') == 'y')
+		elseif (ee('Request')->get('modal_form') == 'y')
 		{
 			$next_entry_id = ee('Request')->get('next_entry_id');
 
