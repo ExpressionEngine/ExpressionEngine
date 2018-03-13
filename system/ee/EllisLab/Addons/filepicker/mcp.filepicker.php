@@ -502,7 +502,7 @@ class Filepicker_mcp {
 
 	protected function ajaxValidation(ValidationResult $result)
 	{
-		return ee('Validation')->ajax($reuslt);
+		return ee('Validation')->ajax($result);
 	}
 }
 
