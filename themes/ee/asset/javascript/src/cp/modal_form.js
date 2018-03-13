@@ -16,6 +16,7 @@ EE.cp.ModalForm = {
 	 * Opens a modal form
 	 * @param  {object} options Object of options:
 	 *   url - URL of form to load into the modal
+	 *   iframe - If the form is to be loaded into an iframe, set to true
 	 *   createUrl - URL of creation form for Save & New, if different than `url`
 	 *   load - Callback to call on load of the URL contents into the modal
 	 *   success - Callback to call on successful form submission
@@ -35,12 +36,23 @@ EE.cp.ModalForm = {
 	_loadModalContents: function(options) {
 		var that = this
 
-		this.modalContentsContainer
-			.html('<span class="btn work">Loading</span>')
-			.load(options.url, function() {
+		this.modalContentsContainer.html('<span class="btn work">Loading</span>')
+
+		if (options.iframe) {
+			var iframe = $('<iframe />', {
+				src: options.url + '&modal_form=y',
+				style: 'width: 100%; height: 1000px'
+			}).load(function(){
+				that._bindIframeForm(this, options)
+			})
+
+			$('.app-modal__content', this.modal).html(iframe)
+		} else {
+			this.modalContentsContainer.load(options.url, function() {
 				that._bindForm(options)
 				options.load(that.modalContentsContainer)
 			})
+		}
 	},
 
 	/**
@@ -89,6 +101,38 @@ EE.cp.ModalForm = {
 			})
 
 			return false;
+		})
+	},
+
+	/**
+	 * Creates the form submit handler for a form loaded into an iframe
+	 */
+	_bindIframeForm: function(iframe, options) {
+		$(iframe).contents().find('[data-publish] > form').on('submit', function() {
+			var params = $(this).serialize() + '&modal_form=y';
+
+			$.post(this.action, params, function(result) {
+				// Probably a validation error
+				if ($.type(result) === 'string') {
+					iframe.contentDocument.open()
+					iframe.contentDocument.write(result)
+					iframe.contentDocument.close()
+					return
+				} else if (result.redirect) {
+					iframe.src = result.redirect
+					return
+				} else if (options.success) {
+					options.success(result)
+				}
+			})
+
+			return false
+		})
+
+		var that = this
+		$(iframe).contents().find('body').on('click', '.js-modal-close', function(e) {
+			that.modal.trigger('modal:close')
+			e.preventDefault();
 		})
 	}
 }
