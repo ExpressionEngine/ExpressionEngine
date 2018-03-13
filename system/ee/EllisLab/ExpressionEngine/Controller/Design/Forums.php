@@ -55,7 +55,7 @@ class Forums extends AbstractDesignController {
 		}
 
 		// Check whether the theme is in the themes/user folder
-		$no_results = 'template_path_not_user';
+		$no_results = sprintf(lang('template_path_not_user'), DOC_URL.'add-ons/forum/forum_themes.html');
 		$user_theme_folder = FALSE;
 
 		if ($this->isUserDir($base_path))
@@ -195,7 +195,7 @@ class Forums extends AbstractDesignController {
 
 		if ( ! $this->isUserDir($path))
 		{
-			show_error(lang('template_path_not_user'));
+			show_error(sprintf(lang('template_path_not_user'), DOC_URL.'add-ons/forum/forum_themes.html'));
 		}
 
 		$template_name = ucwords(str_replace('_', ' ', $file));

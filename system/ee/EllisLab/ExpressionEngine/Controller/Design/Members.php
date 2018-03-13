@@ -134,7 +134,7 @@ class Members extends AbstractDesignController {
 		}
 		else
 		{
-			$no_results = 'template_path_not_user';
+			$no_results = sprintf(lang('template_path_not_user'), DOC_URL.'member/index.html#member-profile-templates');
 			$files = array();
 		}
 
@@ -221,7 +221,7 @@ class Members extends AbstractDesignController {
 
 		if ( ! $this->isUserDir($path))
 		{
-			show_error(lang('template_path_not_user'));
+			show_error(sprintf(lang('template_path_not_user'), DOC_URL.'member/index.html#member-profile-templates'));
 		}
 
 		$template_name = (lang($file) == FALSE) ? $file : lang($file);
