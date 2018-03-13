@@ -22,6 +22,7 @@ ee('CP/Modal')->addModal('bulk-edit', $modal);
 $modal = ee('View')->make('ee:_shared/modal-form')->render([
 	'name' => 'modal-form',
 	'full' => TRUE,
+	'iframe' => TRUE,
 	'contents' => ''
 ]);
 ee('CP/Modal')->addModal('modal-form', $modal);

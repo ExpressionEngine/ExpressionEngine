@@ -14,7 +14,7 @@
 		}
 		?>
 	</head>
-	<body>
+	<body class="app-modal-inner">
 		<div class="app-modal__dismiss">
 			<a class="js-modal-close" rel="modal-form" href="#"><?=lang('close_modal')?></a> <span class="txt-fade">[esc]</span>
 		</div>

@@ -41,7 +41,7 @@ EE.cp.ModalForm = {
 		if (options.iframe) {
 			var iframe = $('<iframe />', {
 				src: options.url + '&modal_form=y',
-				style: 'width: 100%; height: 1000px'
+				class: 'app-modal__iframe'
 			}).load(function(){
 				that._bindIframeForm(this, options)
 			})
