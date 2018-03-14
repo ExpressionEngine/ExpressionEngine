@@ -58,7 +58,9 @@ $(document).ready(function(){
 		$('body').on('click', 'a[rel="external"]', function(e){
 			// open a new window pointing to
 			// the href attribute of THIS anchor click
-			window.open(this.href);
+			var newWindow = window.open();
+			newWindow.opener = null;
+			newWindow.location = this.href;
 			// stop THIS href from loading
 			// in the source window
 			e.preventDefault();

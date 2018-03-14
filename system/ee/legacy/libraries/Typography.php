@@ -1805,7 +1805,20 @@ class EE_Typography {
 						$url = "http://".$url;
 					}
 
-					$extra .= (($this->popup_links == TRUE) ? ' onclick="window.open(this.href); return false;" ' : '');
+					// Ensure new windows don't have access to window.opener
+					if (strpos($matches['0'][$i], 'target='))
+					{
+						if (strpos($extra, 'rel=') === FALSE)
+						{
+							$extra .= ' rel="noopener"';
+						}
+						else
+						{
+							$extra = preg_replace('/rel=(\042|\047)?/', '$0noopener ', $extra);
+						}
+					}
+
+					$extra .= (($this->popup_links == TRUE) ? ' onclick="var newWindow = window.open(); newWindow.opener = null; newWindow.location = this.href; return false;" ' : '');
 
 					if ($bounce != '')
 					{
