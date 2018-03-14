@@ -12,11 +12,7 @@
  */
 class Wizard extends CI_Controller {
 
-<<<<<<< HEAD
 	public $version           = '4.2.0';	// The version being installed
-=======
-	public $version           = '4.1.2';	// The version being installed
->>>>>>> stability
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
