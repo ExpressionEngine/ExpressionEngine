@@ -597,29 +597,40 @@ class Comment {
 			);
 		}
 
-		$tagdata = ee()->TMPL->tagdata;
-
-		// -------------------------------------------
-		// 'comment_entries_tagdata' hook.
-		//  - Modify and play with the tagdata before everyone else
+		// We could do this in one fell, performant swoop with:
 		//
-		if (ee()->extensions->active_hook('comment_entries_tagdata') === TRUE)
+		// 		$tagdata = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
+		//
+		// But we have a legacy extension hook here that fires on EVERY row's tagdata...
+		// So we need to loop it for now, deprecate it, and change/remove it in v5
+		$return = '';
+
+		foreach ($vars as $variables)
 		{
-			$tagdata = ee()->extensions->call('comment_entries_tagdata', $tagdata, $row);
-			if (ee()->extensions->end_script === TRUE) return $tagdata;
-		}
-		//
-		// -------------------------------------------
+			$tagdata = ee()->TMPL->tagdata;
 
-		$tagdata = ee()->TMPL->parse_variables($tagdata, $vars);
+			// -------------------------------------------
+			// 'comment_entries_tagdata' hook.
+			//  - Modify and play with the tagdata before everyone else
+			//
+			if (ee()->extensions->active_hook('comment_entries_tagdata') === TRUE)
+			{
+				$tagdata = ee()->extensions->call('comment_entries_tagdata', $tagdata, $variables);
+				if (ee()->extensions->end_script === TRUE) return $tagdata;
+			}
+			//
+			// -------------------------------------------
+
+			$return .= ee()->TMPL->parse_variables_row($tagdata, $variables);
+		}
 
 		if ($enabled['pagination'])
 		{
-			return $pagination->render($tagdata);
+			return $pagination->render($return);
 		}
 		else
 		{
-			return $tagdadta;
+			return $return;
 		}
 	}
 
