@@ -1936,13 +1936,15 @@ class EE_Typography {
 	 **/
 	private function addAttribute($name, $value, $str)
 	{
+		$value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+
 		if (strpos($str, $name.'=') === FALSE)
 		{
 			$str .= ' '.$name.'="'.$value.'"';
 		}
 		else
 		{
-			$str = preg_replace('/'.$name.'=(\042|\047)?/', '$0'.$value.' ', $str);
+			$str = preg_replace('/'.preg_quote($name).'=(\042|\047)?/', '$0'.$value.' ', $str);
 		}
 
 		return $str;
