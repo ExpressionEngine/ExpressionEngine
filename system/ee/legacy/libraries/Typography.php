@@ -1927,6 +1927,29 @@ class EE_Typography {
 	}
 
 	/**
+	 * Adds HTML attribute to a string, or adds the given value to the attribute
+	 * if it already exists in the string
+	 *
+	 * @param array $name Attribute name, such as 'target'
+	 * @param array $value Attribute value, such as '_blank'
+	 * @param array $str Attributes string, such as 'href="hi" rel="external"'
+	 * @return string Passed attributes string with new attribute and/or value
+	 **/
+	private function addAttribute($name, $value, $str)
+	{
+		if (strpos($str, $name.'=') === FALSE)
+		{
+			$str .= ' '.$name.'="'.$value.'"';
+		}
+		else
+		{
+			$str = preg_replace('/'.$name.'=(\042|\047)?/', '$0'.$value.' ', $str);
+		}
+
+		return $str;
+	}
+
+	/**
 	 * Clean BBCode Attributes from [quote]
 	 *
 	 * @param array $matches preg_match of the valid opening [quote author="foo" date="12345678"]
