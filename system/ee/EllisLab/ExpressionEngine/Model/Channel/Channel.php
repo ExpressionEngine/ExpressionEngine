@@ -406,9 +406,15 @@ class Channel extends StructureModel {
 		foreach ($this->ChannelLayouts as $channel_layout)
 		{
 			$field_layout = $channel_layout->field_layout;
+			$new_cat_tab = 0;
 
 			foreach ($field_layout as $i => $section)
 			{
+				if ($section['id'] == 'categories' && $section['visible'])
+				{
+					$new_cat_tab = $i;
+				}
+
 				foreach ($section['fields'] as $j => $field_info)
 				{
 					// All category fields begin with "categories"
@@ -442,7 +448,7 @@ class Channel extends StructureModel {
 					'visible' => TRUE,
 					'collapsed' => FALSE
 				);
-				$field_layout[2]['fields'][] = $field_info;
+				$field_layout[$new_cat_tab]['fields'][] = $field_info;
 			}
 
 			$channel_layout->field_layout = $field_layout;
