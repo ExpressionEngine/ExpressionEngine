@@ -1944,7 +1944,7 @@ class EE_Typography {
 		}
 		else
 		{
-			$str = preg_replace('/'.preg_quote($name).'=(\042|\047)?/', '$0'.$value.' ', $str);
+			$str = preg_replace('/'.preg_quote($name, '/').'=(\042|\047)?/', '$0'.$value.' ', $str);
 		}
 
 		return $str;
