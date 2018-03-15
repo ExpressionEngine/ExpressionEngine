@@ -210,8 +210,18 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->load->model('grid_model');
 		ee()->load->helper('array_helper');
 
+		$fluid_field_data_id = (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0;
+
+		// not in a channel scope? pre-process may not have been run.
+		if ($fluid_field_data_id)
+		{
+			ee()->load->library('api');
+			ee()->legacy_api->instantiate('channel_fields');
+			ee()->grid_parser->grid_field_names[$this->id()][$fluid_field_data_id] = $this->name();
+		}
+
 		$columns = ee()->grid_model->get_columns_for_field($this->id(), $this->content_type());
-		$prefix = ee()->grid_parser->grid_field_names[$this->id()].':';
+		$prefix = ee()->grid_parser->grid_field_names[$this->id()][$fluid_field_data_id].':';
 
 		// Parameters
 		$set_classes = element('set_classes', $params, 'no');
@@ -285,7 +295,8 @@ class Grid_ft extends EE_Fieldtype {
 				$this->id(),
 				$params,
 				$match[1],
-				$this->content_type()
+				$this->content_type(),
+				$fluid_field_data_id
 			);
 
 			// Replace the marker section with the parsed data
