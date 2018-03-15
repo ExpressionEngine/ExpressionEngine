@@ -2077,7 +2077,6 @@ class Wizard extends CI_Controller {
 		fclose($fp);
 
 		// Clear any caches of the config file
-		// Clear any caches of the config file
 		if (function_exists('apc_delete_file'))
 		{
 			@apc_delete_file($this->config->config_path) || apc_clear_cache();

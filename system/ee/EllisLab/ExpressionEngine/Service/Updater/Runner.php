@@ -105,6 +105,12 @@ class Runner {
 		// We may have shifted files around
 		if (function_exists('opcache_reset'))
 		{
+			// Check for restrict_api path restriction
+			if (($opcache_api_path = ini_get('opcache.restrict_api')) && stripos(SYSPATH, $opcache_api_path) !== 0)
+			{
+				return;
+			}
+
 			opcache_reset();
 		}
 	}
