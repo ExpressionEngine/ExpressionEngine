@@ -1805,20 +1805,19 @@ class EE_Typography {
 						$url = "http://".$url;
 					}
 
+					$has_target = strpos($matches['0'][$i], 'target=') !== FALSE;
+
 					// Ensure new windows don't have access to window.opener
-					if (strpos($matches['0'][$i], 'target='))
+					if ($has_target)
 					{
-						if (strpos($extra, 'rel=') === FALSE)
-						{
-							$extra .= ' rel="noopener"';
-						}
-						else
-						{
-							$extra = preg_replace('/rel=(\042|\047)?/', '$0noopener ', $extra);
-						}
+						$extra = $this->addAttribute('rel', 'noopener', $extra);
 					}
 
-					$extra .= (($this->popup_links == TRUE) ? ' onclick="var newWindow = window.open(); newWindow.opener = null; newWindow.location = this.href; return false;" ' : '');
+					if ( ! $has_target && $this->popup_links)
+					{
+						$extra = $this->addAttribute('target', '_blank', $extra);
+						$extra = $this->addAttribute('rel', 'noopener', $extra);
+					}
 
 					if ($bounce != '')
 					{
