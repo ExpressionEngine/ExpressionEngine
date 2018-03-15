@@ -89,6 +89,12 @@ class Channel extends StructureModel {
 		'Site' => array(
 			'type' => 'belongsTo'
 		),
+		'SearchExcerpt' => array(
+			'type' => 'belongsTo',
+			'model' => 'ChannelField',
+			'from_key' => 'search_excerpt',
+			'weak' => TRUE
+		),
 		'ChannelEntryAutosaves' => array(
 			'type' => 'hasMany',
 			'model' => 'ChannelEntryAutosave',

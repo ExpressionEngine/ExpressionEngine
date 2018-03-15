@@ -54,6 +54,12 @@ class ChannelField extends FieldModel {
 			),
 			'weak' => TRUE
 		),
+		'SearchExcerpts' => array(
+			'type' => 'hasMany',
+			'model' => 'Channel',
+			'to_key' => 'search_excerpt',
+			'weak' => TRUE
+		),
 	);
 
 	protected static $_validation_rules = array(
@@ -160,6 +166,12 @@ class ChannelField extends FieldModel {
 	{
 		$this->removeFromLayouts();
 		$this->removeFromFluidFields();
+
+		foreach ($this->SearchExcerpts as $channel)
+		{
+			$channel->search_excerpt = NULL;
+			$channel->save();
+		}
 	}
 
 	public function getAllChannels()
