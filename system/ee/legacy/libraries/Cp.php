@@ -1103,7 +1103,7 @@ class Cp {
 			'switch', 'title', 'title_permalink', 'total_results',
 			'trimmed_url', 'url_as_email_as_link', 'url_or_email',
 			'url_or_email_as_author', 'url_title', 'url_title_path',
-			'username', 'channel', 'channel_id', 'year'
+			'username', 'channel', 'channel_id', 'year', 'content'
 		);
 
 		$global_vars = array(
