@@ -905,9 +905,7 @@ class Grid_model extends CI_Model {
 
 			if ( ! $field->field_search)
 			{
-				// save a space instead of NULL in the searchable content
-				// or the Channel Entries parser will skip things like {grid:total_rows}
-				$unsearchable[$table][$data_col] = ' ';
+				$unsearchable[$table][$data_col] = NULL;
 				continue;
 			}
 

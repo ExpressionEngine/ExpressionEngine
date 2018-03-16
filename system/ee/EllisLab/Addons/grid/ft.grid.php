@@ -58,9 +58,7 @@ class Grid_ft extends EE_Fieldtype {
 
 		// we save compounded searchable data to the field data table,
 		// real data gets saved to the grid's own table
-		// white space ensures the Channel Entries parser doesn't skip the field
-		// for things like {grid:total_rows}
-		$searchable_data = ' ';
+		$searchable_data = NULL;
 		if ($this->settings['field_search'])
 		{
 			ee()->load->helper('custom_field_helper');
