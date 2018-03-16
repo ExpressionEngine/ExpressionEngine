@@ -56,11 +56,17 @@ class Grid_ft extends EE_Fieldtype {
 
 		ee()->session->set_cache(__CLASS__, $this->name(), $data);
 
-		ee()->load->helper('custom_field_helper');
+		// we save compounded searchable data to the field data table,
+		// real data gets saved to the grid's own table
+		$searchable_data = NULL;
+		if ($this->settings['field_search'])
+		{
+			ee()->load->helper('custom_field_helper');
+			$this->_load_grid_lib();
+			$searchable_data = encode_multi_field(ee()->grid_lib->getSearchableData()) ?: ' ';
+		}
 
-		$this->_load_grid_lib();
-
-		return encode_multi_field(ee()->grid_lib->getSearchableData()) ?: ' ';
+		return $searchable_data;
 	}
 
 	public function post_save($data)
