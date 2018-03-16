@@ -203,7 +203,7 @@ class Edit extends AbstractPublishController {
 
 			$toolbar = array();
 
-			if ($entry->isLivePreviewable())
+			if ($entry->hasLivePreview())
 			{
 				$toolbar['view'] = array(
 					'href' => ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, ['preview' => 'y']),
