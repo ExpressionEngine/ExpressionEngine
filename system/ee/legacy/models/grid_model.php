@@ -974,10 +974,7 @@ class Grid_model extends CI_Model {
 			$entry_data = [];
 			foreach ($entries as $entry_id => $fields)
 			{
-				array_walk($fields, function(&$value)
-				{
-					$value = encode_multi_field($value);
-				});
+				$fields = array_map('encode_multi_field', $fields);
 
 				$fields['entry_id'] = $entry_id;
 				$entry_data[] = $fields;
