@@ -138,7 +138,7 @@ class Comment extends Variables {
 			'signature_image_height'      => $this->getSignatureVariable('height'),
 			'signature_image_url'         => $this->getSignatureVariable('url'),
 			'signature_image_width'       => $this->getSignatureVariable('width'),
-			'status'                      => $this->comment->status,
+			'status'                      => $this->getStatus(),
 			'title'                       => $this->entry->title,
 			'title_permalink'             => $this->pathVariable($this->entry->url_title),
 			'url'                         => $this->url($this->comment->url),
@@ -395,6 +395,22 @@ class Comment extends Variables {
 		}
 
 		return TRUE;
+	}
+
+	/**
+	 * @return string Spelled-out version of the comment status
+	 */
+	private function getStatus()
+	{
+		switch ($this->comment->status)
+		{
+			case 'o':
+				return 'open';
+			case 'p':
+				return 'pending';
+			case 'c':
+				return 'closed';
+		}
 	}
 
 	/**
