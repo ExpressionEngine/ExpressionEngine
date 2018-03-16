@@ -112,12 +112,6 @@ class FieldFacade {
 	public function setData($data)
 	{
 		$this->ensurePopulatedDefaults();
-
-		if ($data === NULL && $this->getItem('field_type') == 'grid')
-		{
-			$data = ' ';
-		}
-
 		$this->data = $data;
 	}
 
