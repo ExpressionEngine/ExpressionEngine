@@ -876,21 +876,6 @@ class Grid_model extends CI_Model {
 	}
 
 	/**
-	 * Get all rows for a given field
-	 *
-	 * @param integer $field_id The field to retrieve rows from
-	 * @param array $columns Array of numeric column IDs (e.g. array(2, 6, 8))
-	 * @return array Array of rows
-	 */
-	public function get_field_rows($field_id, $columns = '*')
-	{
-		return ee()->db->select('row_id, entry_id')
-			->select($columns)
-			->get($this->_data_table('channel', $field_id))
-			->result_array();
-	}
-
-	/**
 	 * Update grid field(s) search values
 	 *
 	 * @param array $field_ids Array of field_ids
@@ -932,7 +917,10 @@ class Grid_model extends CI_Model {
 				return 'col_id_'.$element['col_id'];
 			}, $searchable_columns);
 
-			$rows = $this->get_field_rows($field->field_id, $searchable_columns);
+			$rows = ee()->db->select('row_id, entry_id')
+				->select($searchable_columns)
+				->get($this->_data_table('channel', $field->field_id))
+				->result_array();
 
 			// No rows? Move on.
 			if (empty($rows))
