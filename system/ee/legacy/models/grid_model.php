@@ -884,7 +884,7 @@ class Grid_model extends CI_Model {
 	public function update_grid_search(array $field_ids)
 	{
 		// Get the fields, and filter for grid as a safety measure. If this was somehow
-		// called with the wrong field IDs it could clobber thos fields' contents
+		// called with the wrong field IDs it could clobber those fields' contents
 		$fields = ee('Model')->get('ChannelField', $field_ids)
 			->fields('field_id', 'field_search', 'legacy_field_data')
 			->filter('field_type', 'grid')
