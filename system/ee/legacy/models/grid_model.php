@@ -901,7 +901,7 @@ class Grid_model extends CI_Model {
 		foreach ($fields as $field)
 		{
 			$data_col = 'field_id_'.$field->field_id;
-			$table = ($field->legacy_field_data) ? 'channel_data' : 'channel_data_field_'.$field->field_id;
+			$table = $field->getDataStorageTable();
 
 			if ( ! $field->field_search)
 			{
