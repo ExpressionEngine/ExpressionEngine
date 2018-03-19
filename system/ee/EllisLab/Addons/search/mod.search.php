@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -731,7 +731,13 @@ class Search {
 			{
 				if (count($terms) > 1 && isset($this->_meta['where']) && $this->_meta['where'] == 'all' && ! isset($_POST['exact_keyword']) && count($fields) > 0)
 				{
-					$concat_fields = "CAST(CONCAT_WS(' ', exp_channel_data.field_id_".implode(', exp_channel_data.field_id_', $fields).') AS CHAR)';
+					$concat_tables = [];
+					foreach ($fields as $val)
+					{
+						$table = ($legacy_fields[$val]) ? "exp_channel_data" : "exp_channel_data_field_{$val}";
+						$concat_tables[] = $table.'.field_id_'.$val;
+					}
+					$concat_fields = "CAST(CONCAT_WS(' ', ".implode(', ', $concat_tables).") AS CHAR)";
 
 					$mysql_function	= (substr($terms['0'], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';
 					$search_term	= (substr($terms['0'], 0,1) == '-') ? substr($terms['0'], 1) : $terms['0'];

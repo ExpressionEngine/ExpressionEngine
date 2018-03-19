@@ -35,7 +35,7 @@
 								<div class="filter-submenu">
 									<?php if (count($header['action_button']['choices']) > 8): ?>
 										<div class="filter-submenu__search">
-											<input type="text" value="" data-fuzzy-filter="true" autofocus="autofocus" placeholder="<?=$header['action_button']['filter_placeholder']?>">
+											<input type="text" value="" data-fuzzy-filter="true" placeholder="<?=$header['action_button']['filter_placeholder']?>">
 										</div>
 									<?php endif ?>
 									<div class="filter-submenu__scroll">
@@ -84,6 +84,3 @@
 		</div>
 	<?php endif; ?>
 </div>
-
-<?php if (isset($blocks['modals'])) echo $blocks['modals']; ?>
-<?php echo implode('', ee('CP/Modal')->getAllModals()); ?>

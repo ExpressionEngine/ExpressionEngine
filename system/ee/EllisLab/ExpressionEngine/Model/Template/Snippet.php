@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -177,55 +177,116 @@ class Snippet extends FileSyncedModel {
 	 * Load all snippets available on this site, including global snippets and
 	 * any that are currently only available as files.
 	 *
+	 * This method is run from a front-end context, so we are sensitive to having as few and light queries as possible.
+	 *
 	 * @return Collection of snippets
 	 */
 	public function loadAll()
 	{
-		$fs = new Filesystem();
-
 		// load up any Snippets
 		$snippets = $this->getModelFacade()->get('Snippet')
 			->filter('site_id', ee()->config->item('site_id'))
 			->orFilter('site_id', 0)
 			->all();
 
-		$path_site_ids = array(
-			PATH_TMPL.'_global_partials' => 0,
-			PATH_TMPL.ee()->config->item('site_short_name').'/_partials' => ee()->config->item('site_id')
-		);
+		$paths = [
+			0 => PATH_TMPL.'_global_partials',
+			ee()->config->item('site_id') => PATH_TMPL.ee()->config->item('site_short_name').'/_partials',
+		];
 
 		$names = $snippets->pluck('snippet_name');
 
-		foreach ($path_site_ids as $path => $site_id)
+		foreach ($paths as $site_id => $path)
 		{
-			if ( ! $fs->isDir($path))
+			foreach ($this->getNewSnippetsFromFiles($path, $site_id, $names) as $new)
 			{
-				continue;
+				$snippets[] = $new;
 			}
+		}
 
-			$files = new FilesystemIterator($path);
+		return $snippets;
+	}
 
-			foreach ($files as $item)
+	/**
+	 * Load all snippets from the entire installation, including any not yet synced from files.
+	 * Kinda brute force, this should not be something run on every request.
+	 *
+	 * @return object Collection of snippets
+	 */
+	public function loadAllInstallWide()
+	{
+		$sites = ee('Model')->get('Site')
+			->fields('site_id', 'site_name')
+			->all();
+
+		// always include the global partials
+		$paths = [0 => PATH_TMPL.'_global_partials'];
+
+		foreach ($sites as $site)
+		{
+			$paths[$site->site_id] = PATH_TMPL.$site->site_name.'/_partials';
+		}
+
+		$snippets = $this->getModelFacade()->get('Snippet')->all();
+
+		$site_snippets = [];
+		foreach ($snippets as $snippet)
+		{
+			$site_snippets[$snippet->site_id][] = $snippet->snippet_name;
+		}
+
+		foreach ($paths as $site_id => $path)
+		{
+			$existing = ( ! empty($site_snippets[$site_id])) ? $site_snippets[$site_id] : [];
+			foreach ($this->getNewSnippetsFromFiles($path, $site_id, $existing) as $new)
 			{
-				if ($item->isFile() && $item->getExtension() == 'html')
+				$snippets[] = $new;
+			}
+		}
+
+		return $snippets;
+	}
+
+	/**
+	 * Get (and save) new snippets from the file system
+	 *
+	 * @param  string $path Path to load snippets from
+	 * @param  int $site_id Site ID
+	 * @param  array $existing Names of existing snippets so we don't make duplicates
+	 * @return array All newly created snippets
+	 */
+	private function getNewSnippetsFromFiles($path, $site_id, $existing)
+	{
+		$fs = new Filesystem;
+		$snippets = [];
+
+		if ( ! $fs->isDir($path))
+		{
+			return $snippets;
+		}
+
+		$files = new FilesystemIterator($path);
+
+		foreach ($files as $item)
+		{
+			if ($item->isFile() && $item->getExtension() == 'html')
+			{
+				$name = $item->getBasename('.html');
+
+				if ( ! in_array($name, $existing))
 				{
-					$name = $item->getBasename('.html');
+					$contents = file_get_contents($item->getRealPath());
 
-					if ( ! in_array($name, $names))
-					{
-						$contents = file_get_contents($item->getRealPath());
+					$snippet = $this->getModelFacade()->make('Snippet', [
+						'site_id' => $site_id,
+						'snippet_name' => $name,
+						'snippet_contents' => $contents
+					]);
 
-						$new_snip = $this->getModelFacade()->make('Snippet', array(
-							'site_id' => $site_id,
-							'snippet_name' => $name,
-							'snippet_contents' => $contents
-						));
+					$snippet->setModificationTime($item->getMTime());
 
-						$new_snip->setModificationTime($item->getMTime());
-
-						$new_snip->save();
-						$snippets[] = $new_snip;
-					}
+					$snippet->save();
+					$snippets[] = $snippet;
 				}
 			}
 		}

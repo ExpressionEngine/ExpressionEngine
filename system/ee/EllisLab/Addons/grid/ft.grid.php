@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -60,7 +60,7 @@ class Grid_ft extends EE_Fieldtype {
 
 		$this->_load_grid_lib();
 
-		return encode_multi_field(ee()->grid_lib->getSearchableData());
+		return encode_multi_field(ee()->grid_lib->getSearchableData()) ?: ' ';
 	}
 
 	public function post_save($data)
@@ -142,7 +142,7 @@ class Grid_ft extends EE_Fieldtype {
 		{
 			// channel form is not guaranteed to have this wrapper class,
 			// but the js requires it
-			$field = '<div class="grid-publish">'.$field.'</div>';
+			$field = '<div class="fieldset-faux">'.$field.'</div>';
 		}
 
 		return $field;
@@ -163,6 +163,12 @@ class Grid_ft extends EE_Fieldtype {
 			ee()->load->library('api');
 			ee()->legacy_api->instantiate('channel_fields');
 			ee()->grid_parser->grid_field_names[$this->id()][$fluid_field_data_id] = $this->name();
+		}
+
+		// Channel Form can throw us a model object instead of a results row
+		if ($this->row instanceof \EllisLab\ExpressionEngine\Model\Channel\ChannelEntry)
+		{
+			$this->row = $this->row->getModChannelResultsArray();
 		}
 
 		return ee()->grid_parser->parse($this->row, $this->id(), $params, $tagdata, $this->content_type(), $fluid_field_data_id);
@@ -204,8 +210,18 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->load->model('grid_model');
 		ee()->load->helper('array_helper');
 
+		$fluid_field_data_id = (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0;
+
+		// not in a channel scope? pre-process may not have been run.
+		if ($fluid_field_data_id)
+		{
+			ee()->load->library('api');
+			ee()->legacy_api->instantiate('channel_fields');
+			ee()->grid_parser->grid_field_names[$this->id()][$fluid_field_data_id] = $this->name();
+		}
+
 		$columns = ee()->grid_model->get_columns_for_field($this->id(), $this->content_type());
-		$prefix = ee()->grid_parser->grid_field_names[$this->id()].':';
+		$prefix = ee()->grid_parser->grid_field_names[$this->id()][$fluid_field_data_id].':';
 
 		// Parameters
 		$set_classes = element('set_classes', $params, 'no');
@@ -279,7 +295,8 @@ class Grid_ft extends EE_Fieldtype {
 				$this->id(),
 				$params,
 				$match[1],
-				$this->content_type()
+				$this->content_type(),
+				$fluid_field_data_id
 			);
 
 			// Replace the marker section with the parsed data

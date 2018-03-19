@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -105,7 +105,7 @@ abstract class Filter {
 			$value = $_GET[$this->name];
 		}
 
-		return is_null($value) ? NULL : htmlentities($value, ENT_QUOTES, 'UTF-8');
+		return is_null($value) ? NULL : htmlentities($value, ENT_NOQUOTES, 'UTF-8');
 	}
 
 	/**

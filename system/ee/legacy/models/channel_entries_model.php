@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -18,10 +18,38 @@ class Channel_entries_model extends CI_Model {
 	 */
 	public function get_entry_data(array $entries)
 	{
-		return ee('Model')->get('ChannelEntry', $entries)
+		$entry_data = ee('Model')->get('ChannelEntry', $entries)
 			->with('Channel', 'Author')
 			->all()
 			->getModChannelResultsArray();
+
+		if ( ! is_array($entry_data))
+		{
+			$entry_data = array();
+		}
+
+		if (ee('LivePreview')->hasEntryData())
+		{
+			$data = ee('LivePreview')->getEntryData();
+			$found = FALSE;
+
+			foreach ($entry_data as $i => $datum)
+			{
+				if ($datum['entry_id'] == $data['entry_id'])
+				{
+					$entry_data[$i] = $data;
+					$found = TRUE;
+					break;
+				}
+			}
+
+			if ( ! $found)
+			{
+				$entry_data[] = $data;
+			}
+		}
+
+		return $entry_data;
 	}
 
 	/**

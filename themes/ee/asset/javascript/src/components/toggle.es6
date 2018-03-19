@@ -2,7 +2,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -12,7 +12,9 @@ class Toggle extends React.Component {
 
     this.state = {
       on: props.on,
-      value: props.value
+      value: props.value,
+      onOff: props.on ? 'on' : 'off',
+      trueFalse: props.on ? 'true' : 'false'
     }
   }
 
@@ -22,14 +24,16 @@ class Toggle extends React.Component {
       if (props.handleToggle) props.handleToggle( ! prevState.on)
       return {
         on: ! prevState.on,
-        value: ( ! prevState.on) ? props.offValue : props.onValue
+        value: ( ! prevState.on) ? props.offValue : props.onValue,
+        onOff: !prevState.on ? 'on' : 'off',
+        trueFalse: !prevState.on ? 'true' : 'false',
       }
     })
   }
 
   render () {
     return (
-      <a href="#" className={"toggle-btn" + (this.state.on ? ' on' : ' off')} onClick={this.handleClick}>
+      <a href="#" className={"toggle-btn " + this.state.onOff} onClick={this.handleClick} alt={this.state.onOff} data-state={this.state.onOff} aria-checked={this.state.trueFalse} role="switch">
         {this.props.name &&
           <input type="hidden" name={this.props.name} value={this.state.value} />
         }

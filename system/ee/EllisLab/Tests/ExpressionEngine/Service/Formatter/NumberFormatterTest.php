@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -73,11 +73,12 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider currencyProvider
 	 */
-	public function testCurrency($content, $currency, $locale, $expected, $opts)
+	public function testCurrency($content, $currency, $locale, $expected, $opts, $decimals = NULL)
 	{
 		$params = [
 			'currency' => $currency,
 			'locale' => $locale,
+			'decimals' => $decimals,
 		];
 
 		$number = (string) $this->format($content, $opts)->currency($params);
@@ -89,6 +90,7 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 		return [
 			// with intl extension
 			[112358.13, NULL, NULL, '$112,358.13', 0b00000001],
+			[112358.13, NULL, NULL, '$112,358', 0b00000001, 0],
 			[112358.13, 'EUR', 'de_DE', '112.358,13 €', 0b00000001],
 			[112358.13, 'GBP', 'en_UK', '£112,358.13', 0b00000001],
 			[112358.13, 'AUD', 'en_US.UTF-8', 'A$112,358.13', 0b00000001],
@@ -100,6 +102,7 @@ class NumberFormatterTest extends \PHPUnit_Framework_TestCase {
 
 			// no intl extension
 			[112358.13, NULL, NULL, '$112,358.13', 0],
+			[112358.13, NULL, NULL, '$112,358', 0, 0],
 			[112358.13, 'EUR', 'de_DE', '112.358,13 EUR', 0],
 			[112358.13, 'GBP', 'en_UK', '112358.13', 0],
 			[112358.13, 'AUD', 'en_US.UTF-8', '$112,358.13', 0],

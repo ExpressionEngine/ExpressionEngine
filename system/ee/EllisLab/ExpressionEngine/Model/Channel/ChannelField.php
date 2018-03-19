@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -52,6 +52,12 @@ class ChannelField extends FieldModel {
 			'pivot' => array(
 				'table' => 'channels_channel_fields'
 			),
+			'weak' => TRUE
+		),
+		'SearchExcerpts' => array(
+			'type' => 'hasMany',
+			'model' => 'Channel',
+			'to_key' => 'search_excerpt',
 			'weak' => TRUE
 		),
 	);
@@ -160,6 +166,12 @@ class ChannelField extends FieldModel {
 	{
 		$this->removeFromLayouts();
 		$this->removeFromFluidFields();
+
+		foreach ($this->SearchExcerpts as $channel)
+		{
+			$channel->search_excerpt = NULL;
+			$channel->save();
+		}
 	}
 
 	public function getAllChannels()

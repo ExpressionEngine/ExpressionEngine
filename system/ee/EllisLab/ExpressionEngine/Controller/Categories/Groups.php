@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -27,14 +27,11 @@ class Groups extends AbstractCategoriesController {
 		}
 
 		$group_id = ee()->input->post('content_id');
+		$group = ee('Model')->get('CategoryGroup', $group_id)->first();
 
-		if ( ! empty($group_id))
+		if ( ! empty($group_id) && $group)
 		{
-			ee()->load->model('category_model');
-
-			$group = ee('Model')->get('CategoryGroup', $group_id)->first();
-
-			ee()->category_model->delete_category_group($group_id);
+			$group->delete();
 
 			ee()->logger->log_action(lang('category_groups_removed').':'.NBS.NBS.$group->group_name);
 
@@ -156,6 +153,10 @@ class Groups extends AbstractCategoriesController {
 				{
 					ee()->functions->redirect(ee('CP/URL')->make('categories/groups/create'));
 				}
+				elseif (ee()->input->post('submit') == 'save_and_close')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('categories/group/'.$cat_group->getId()));
+				}
 				else
 				{
 					if (is_null($group_id))
@@ -200,9 +201,21 @@ class Groups extends AbstractCategoriesController {
 					'value' => 'save_and_new',
 					'text' => 'save_and_new',
 					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
 				]
 			]
 		];
+
+		if (AJAX_REQUEST)
+		{
+			unset($vars['buttons'][2]);
+		}
 
 		if ( ! $cat_group->isNew())
 		{

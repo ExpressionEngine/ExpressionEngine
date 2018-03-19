@@ -78,7 +78,7 @@ $lang = array(
 
 'no_upload_destination' => 'No upload destination found',
 
-'not_an_image' => 'Selected filie is not an image',
+'not_an_image' => 'Selected file is not an image',
 
 'pixels' => 'pixels',
 
@@ -95,8 +95,6 @@ $lang = array(
 'search_files' => 'Search Files',
 
 'security_failure' => 'The file type you are attempting to upload is not allowed.',
-
-'show' => 'show',
 
 'show_all_files' => 'All %d files',
 

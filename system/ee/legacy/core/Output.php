@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -360,10 +360,7 @@ class EE_Output {
 				ee()->TMPL->debugging === TRUE &&
 				ee()->TMPL->template_type != 'js')
 			{
-				if (ee()->session->userdata('group_id') == 1)
-				{
-					$profiler->addSection('template', ee()->TMPL->log);
-				}
+				$profiler->addSection('template', ee()->TMPL->log);
 			}
 
 			// If the output data contains closing </body> and </html> tags

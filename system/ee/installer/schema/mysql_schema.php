@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -593,7 +593,7 @@ class EE_Schema {
 			default_entry_title varchar(100) NULL DEFAULT NULL,
 			title_field_label varchar(100) NOT NULL DEFAULT 'Title',
 			url_title_prefix varchar(80) NULL DEFAULT NULL,
-			live_look_template int(10) UNSIGNED NOT NULL default 0,
+			preview_url varchar(100) NULL DEFAULT NULL,
 			max_entries int(10) unsigned NOT NULL DEFAULT '0',
 			PRIMARY KEY `channel_id` (`channel_id`),
 			KEY `cat_group` (`cat_group`(191)),
@@ -904,7 +904,7 @@ class EE_Schema {
 			username varchar(".USERNAME_MAX_LENGTH.") NOT NULL,
 			ip_address varchar(45) default '0' NOT NULL,
 			act_date int(10) NOT NULL,
-			action varchar(200) NOT NULL,
+			action text NOT NULL,
 			PRIMARY KEY `id` (`id`),
 			KEY `site_id` (`site_id`)
 		)";
@@ -1421,6 +1421,8 @@ class EE_Schema {
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('admin_notify_comment', 'email', 'comments', " . time() . ", '".addslashes(trim(admin_notify_comment_title()))."', '".addslashes(admin_notify_comment())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('mbr_activation_instructions', 'email', 'members', " . time() . ", '".addslashes(trim(mbr_activation_instructions_title()))."', '".addslashes(mbr_activation_instructions())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('forgot_password_instructions', 'email', 'members', " . time() . ", '".addslashes(trim(forgot_password_instructions_title()))."', '".addslashes(forgot_password_instructions())."')";
+		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('password_changed_notification', 'email', 'members', " . time() . ", '".addslashes(trim(password_changed_notification_title()))."', '".addslashes(password_changed_notification())."')";
+		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('email_changed_notification', 'email', 'members', " . time() . ", '".addslashes(trim(email_changed_notification_title()))."', '".addslashes(email_changed_notification())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('validated_member_notify', 'email', 'members', " . time() . ", '".addslashes(trim(validated_member_notify_title()))."', '".addslashes(validated_member_notify())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('decline_member_validation', 'email', 'members', " . time() . ", '".addslashes(trim(decline_member_validation_title()))."', '".addslashes(decline_member_validation())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('comment_notification', 'email', 'comments', " . time() . ", '".addslashes(trim(comment_notification_title()))."', '".addslashes(comment_notification())."')";

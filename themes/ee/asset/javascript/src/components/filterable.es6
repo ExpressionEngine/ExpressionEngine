@@ -2,7 +2,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -13,13 +13,13 @@ function makeFilterableComponent(WrappedComponent) {
       this.initialItems = SelectList.formatItems(props.items)
       this.state = {
         items: this.initialItems,
+        filterValues: {},
         loading: false
       }
 
       this.ajaxFilter = (SelectList.countItems(this.initialItems) >= props.limit && props.filterUrl)
       this.ajaxTimer = null
       this.ajaxRequest = null
-      this.filterState = {}
     }
 
     itemsChanged = (items) => {
@@ -30,6 +30,11 @@ function makeFilterableComponent(WrappedComponent) {
 
     initialItemsChanged = (items) => {
       this.initialItems = items
+
+      if (this.state.filterValues.search) {
+        items = this.filterItems(items, this.state.filterValues.search)
+      }
+
       this.setState({
         items: items
       })
@@ -57,7 +62,9 @@ function makeFilterableComponent(WrappedComponent) {
     }
 
     filterChange = (name, value) => {
-      this.filterState[name] = value
+      let filterState = this.state.filterValues
+      filterState[name] = value
+      this.setState({ filterValues: filterState })
 
       // DOM filter
       if ( ! this.ajaxFilter && name == 'search') {
@@ -69,7 +76,7 @@ function makeFilterableComponent(WrappedComponent) {
       clearTimeout(this.ajaxTimer)
       if (this.ajaxRequest) this.ajaxRequest.abort()
 
-      let params = this.filterState
+      let params = filterState
       params.selected = this.props.selected.map(item => {
         return item.value
       })

@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -79,7 +79,7 @@ class Date_ft extends EE_Fieldtype {
 			$data = $this->_parse_date($data);
 		}
 
-		if ($data === FALSE
+		if ($data === FALSE OR is_null($data)
 			OR (is_numeric($data) && ($data > 2147483647 OR $data < -2147483647)))
 		{
 			return lang('invalid_date');

@@ -2,7 +2,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -26,7 +26,8 @@
 
 			for (var i = 0, len = existing_fields.length; i < len; i++) {
 				field = $('[name="field_channel_fields[]"][value="' + existing_fields[i] + '"]');
-				if (field.size() == 0 || field.prop('checked') == false) {
+				if (field.size() == 0 || // Hidden input from React
+					(field.attr('type') == 'checkbox' && field.prop('checked') == false)) { // Real checkbox
 					showModal = true;
 					break;
 				}

@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -268,9 +268,7 @@ abstract class AbstractDesign extends CP_Controller {
 			unset($header['toolbar_items']['settings']);
 		}
 
-		if (ee('Model')->get('Template')
-			->filter('site_id', ee()->config->item('site_id'))
-			->count() > 0)
+		if (ee('Model')->get('Template')->count() > 0 && ee()->session->userdata('group_id') == 1)
 		{
 			$header['toolbar_items']['export'] =array(
 				'href' => ee('CP/URL', 'design/export'),
@@ -378,19 +376,11 @@ abstract class AbstractDesign extends CP_Controller {
 	/**
 	 * Export templates
 	 *
-	 * @param  int|array $template_ids The ids of templates to export
 	 * @return void
 	 */
-	protected function exportTemplates($template_ids)
+	protected function exportTemplates()
 	{
-		if ( ! is_array($template_ids))
-		{
-			$template_ids = array($template_ids);
-		}
-
-		$templates = ee('Model')->get('Template', $template_ids)
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
+		$templates = ee('Model')->get('Template')->all();
 
 		if ( ! $templates)
 		{
@@ -415,11 +405,35 @@ abstract class AbstractDesign extends CP_Controller {
 			return;
 		}
 
+		$sites = ee('Model')->get('Site')
+			->fields('site_id', 'site_name')
+			->all()
+			->getDictionary('site_id', 'site_name');
+
 		// Loop through templates and add them to the zip
-		$templates->each(function($template) use($zip) {
-				$filename = $template->getTemplateGroup()->group_name . '.group/' . $template->template_name . $template->getFileExtension();
+		$templates->each(function($template) use($zip, $sites) {
+				$filename = // site_short_name/template_group.group/template.ext
+					$sites[$template->site_id] . '/' .
+					$template->TemplateGroup->group_name . '.group/'.
+					$template->template_name . $template->getFileExtension();
 				$zip->addFromString($filename, $template->template_data);
 			});
+
+		// and now partials
+		$partials = ee('Model')->make('Snippet')->loadAllInstallWide();
+		$partials->each(function($partial) use($zip, $sites) {
+			$folder = ($partial->site_id) ? $sites[$partial->site_id].'/_partials/' : '_global_partials/';
+			$filename = $folder.$partial->snippet_name.'.html';
+			$zip->addFromString($filename, $partial->snippet_contents);
+		});
+
+		// and now venerable variables
+		$variables = ee('Model')->make('GlobalVariable')->loadAllInstallWide();
+		$variables->each(function($variable) use($zip, $sites) {
+			$folder = ($variable->site_id) ? $sites[$variable->site_id].'/_variables/' : '_global_variables/';
+			$filename = $folder.$variable->variable_name.'.html';
+			$zip->addFromString($filename, $variable->variable_data);
+		});
 
 		$zip->close();
 
@@ -475,10 +489,11 @@ abstract class AbstractDesign extends CP_Controller {
 
 		$sort_col = $table->sort_col;
 
-		$sort_map = array(
+		$sort_map = [
 			'template' => 'template_name',
-			'type' => 'template_type'
-		);
+			'type' => 'template_type',
+			'hits' => 'hits', // if they have enabled hit tracking
+		];
 
 		if ( ! array_key_exists($sort_col, $sort_map))
 		{

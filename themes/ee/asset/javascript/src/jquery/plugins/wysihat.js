@@ -869,6 +869,7 @@ WysiHat.Event.prototype = {
 		);
 
 		this.$editor.closest('form').trigger("entry:startAutosave");
+		$(document).trigger('entry:preview');
 	},
 
 	/**
@@ -1051,6 +1052,12 @@ WysiHat.Event.prototype = {
 		return true;
 	},
 
+	_triggerPreivew: _.debounce(function()
+	{
+		this.Editor.updateField();
+		$(document).trigger('entry:preview');
+	}, 225),
+
 	/**
 	 * Handle key events
 	 *
@@ -1062,6 +1069,7 @@ WysiHat.Event.prototype = {
 		// need it, shouldn't break anything
 		if (evt.type == 'keypress')
 		{
+			this._triggerPreivew();
 			return true;
 		}
 

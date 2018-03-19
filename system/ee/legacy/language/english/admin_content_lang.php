@@ -766,15 +766,11 @@ $lang = array(
 
 'invalid_url_title_prefix' => 'Invalid URL Title Prefix',
 
-'live_look_template' => 'Live Look Template',
-
 'ltr' => 'Left to Right',
 
 'multiple_cat_group_preferences' => 'Multiple Category Group Preferences',
 
 'new_status' => 'New Status',
-
-'no_live_look_template' => '- No Live Look Template -',
 
 'rtl' => 'Right to Left',
 

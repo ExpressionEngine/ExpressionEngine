@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -81,6 +81,7 @@ class Number extends Formatter {
 		$options = [
 			'currency' => (isset($options['currency'])) ? $options['currency'] : 'USD',
 			'locale' => (isset($options['locale'])) ? $options['locale'] : 'en_US.UTF-8',
+			'decimals' => (isset($options['decimals'])) ? (int) $options['decimals'] : NULL,
 		];
 
 		// best option, will display the currency correctly based on the locale
@@ -88,6 +89,12 @@ class Number extends Formatter {
 		if ($this->intl_loaded)
 		{
 			$fmt = new \NumberFormatter($options['locale'], \NumberFormatter::CURRENCY);
+
+			if (is_int($options['decimals']))
+			{
+				$fmt->setAttribute($fmt::FRACTION_DIGITS, $options['decimals']);
+			}
+
 			$this->content = $fmt->formatCurrency((float) $this->content, $options['currency']);
 			return $this;
 		}
@@ -105,7 +112,8 @@ class Number extends Formatter {
 			// set the monetary locale to the specified option
 			setlocale(LC_MONETARY, $options['locale']);
 
-			$this->content = money_format('%.2n', (float) $this->content);
+			$right_precision = (is_int($options['decimals'])) ? $options['decimals'] : 2;
+			$this->content = money_format("%.{$right_precision}n", (float) $this->content);
 
 			// set the monetary locale back to normal
 			setlocale(LC_MONETARY, $sys_locale);

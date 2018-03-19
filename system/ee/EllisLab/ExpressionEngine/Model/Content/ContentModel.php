@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -322,6 +322,12 @@ abstract class ContentModel extends VariableColumnModel {
 	{
 		foreach ($data as $name => $value)
 		{
+			// Optimization, skip if null
+			if ( ! isset($value))
+			{
+				continue;
+			}
+
 			if (strpos($name, 'field_ft_') !== FALSE)
 			{
 				$name = str_replace('field_ft_', 'field_id_', $name);

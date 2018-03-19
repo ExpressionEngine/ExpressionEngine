@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -514,10 +514,7 @@ class Export {
 			$result->future = 'y';
 		}
 
-		if ( ! $settings['allow_multiple'])
-		{
-			$result->allow_multiple = 'n';
-		}
+		$result->allow_multiple = ($settings['allow_multiple']) ? 'y' : 'n';
 
 		if ($settings['limit'] != 100)
 		{
@@ -596,8 +593,13 @@ class Export {
 		foreach ($settings['field_channel_fields'] as $field_id)
 		{
 			$field = ee('Model')->get('ChannelField', $field_id)->first();
-			$result->field_channel_fields[] = $field->field_name;
-			$this->exportField($field);
+
+			// In case there is no field.
+			if ($field)
+			{
+				$result->field_channel_fields[] = $field->field_name;
+				$this->exportField($field);
+			}
 		}
 
 		return $result;

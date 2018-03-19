@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -134,6 +134,10 @@ class Uploads extends AbstractFilesController {
 				if (ee('Request')->post('submit') == 'save_and_new')
 				{
 					ee()->functions->redirect(ee('CP/URL')->make('files/uploads/create'));
+				}
+				elseif (ee()->input->post('submit') == 'save_and_close')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('files'));
 				}
 				else
 				{
@@ -344,6 +348,13 @@ class Uploads extends AbstractFilesController {
 				'type' => 'submit',
 				'value' => 'save_and_new',
 				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_close',
+				'text' => 'save_and_close',
 				'working' => 'btn_saving'
 			]
 		];

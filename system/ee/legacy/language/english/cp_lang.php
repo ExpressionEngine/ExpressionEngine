@@ -51,6 +51,8 @@ $lang = array(
 
 'click_to_edit' => 'Click to Edit',
 
+'close_modal' => 'Close modal',
+
 'consult_user_guide' => 'Consult User Guide',
 
 'control_panel' => 'Control Panel',
@@ -60,6 +62,8 @@ $lang = array(
 'custom_limit' => 'custom limit',
 
 'details' => 'Details',
+
+'do_not_duplicate' => 'Do not duplicate',
 
 'e_no_css' => 'The requested CSS file could not be opened.',
 
@@ -149,6 +153,10 @@ $lang = array(
 
 'unauthorized_access' => 'You are not authorized to access this page',
 
+'update_check_btn' => 'Check for Update',
+
+'update_btn' => 'Update Now',
+
 'user_account' => 'Member Account',
 
 'user_avatar_alt' => 'User Avatar',
@@ -205,7 +213,7 @@ $lang = array(
 
 'ip_address' => 'IP Address',
 
-'member_changed_email' => 'Changed email for "%s" (%d)',
+'member_changed_email' => 'Changed email for "%s" (%d) from "%s" to "%s"',
 
 'member_changed_member_group' => 'Changed member group to "%s" for "%s" (%d)',
 
@@ -268,7 +276,11 @@ $lang = array(
 
 'recent_entries' => 'Recent Entries',
 
+'results' => 'results',
+
 'select_all' => 'select all',
+
+'show' => 'Show',
 
 'site' => 'Site',
 
@@ -374,7 +386,7 @@ $lang = array(
 
 'missing_license' => 'This copy of ExpressionEngine is <strong>unregistered</strong>. <a href="%s">Please upload your license.</a>',
 
-'missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="%s" rel="external">EllisLab.com</a> and download a fresh copy.',
+'missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="%s" rel="external">expressionengine.com</a> and download a fresh copy.',
 
 'software_unregistered' => 'Software Unregistered',
 

@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -38,10 +38,11 @@ class Updater extends CP_Controller {
 	{
 		ee()->lang->loadfile('updater');
 		ee()->load->library('el_pings');
-		$version_file = ee()->el_pings->get_version_info();
+		$version_file = ee()->el_pings->get_version_info(TRUE);
+		$current_version = ee()->config->item('app_version');
 		$to_version = $version_file['latest_version'];
 
-		$newer_version_available = version_compare(ee()->config->item('app_version'), $to_version, '<');
+		$newer_version_available = version_compare($current_version, $to_version, '<');
 		$core_to_pro = (IS_CORE && $version_file['license_type'] == 'pro');
 
 		if ( ! $newer_version_available && ! $core_to_pro)
@@ -67,7 +68,7 @@ class Updater extends CP_Controller {
 		$vars = [
 			'cp_page_title'   => lang('updating'),
 			'site_name'       => ee()->config->item('site_name'),
-			'current_version' => formatted_version(APP_VER),
+			'current_version' => formatted_version($current_version),
 			'to_version'      => formatted_version($to_version),
 			'warn_message'    => $preflight_error,
 			'first_step'      => $runner->getLanguageForStep($next_step),

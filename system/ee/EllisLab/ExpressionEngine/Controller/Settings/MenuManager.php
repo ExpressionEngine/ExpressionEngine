@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -225,7 +225,18 @@ class MenuManager extends Settings {
 					->defer();
 			}
 
-			ee()->functions->redirect(ee('CP/URL')->make('settings/menu-manager'));
+			if (ee('Request')->post('submit') == 'save_and_new')
+			{
+				ee()->functions->redirect(ee('CP/URL')->make('settings/menu-manager/create-set'));
+			}
+			elseif (ee()->input->post('submit') == 'save_and_close')
+			{
+				ee()->functions->redirect(ee('CP/URL')->make('settings/menu-manager'));
+			}
+			else
+			{
+				ee()->functions->redirect(ee('CP/URL')->make('settings/menu-manager/edit-set/' . $set->getId()));
+			}
 		}
 
 		$vars['sections'][] = $this->mainForm($set);
@@ -270,8 +281,31 @@ class MenuManager extends Settings {
 
 		ee()->view->cp_page_title = is_null($set_id) ? lang('create_menu_set') : lang('edit_menu_set');
 		ee()->view->ajax_validate = TRUE;
-		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('menu_set'));
-		ee()->view->save_btn_text_working = 'btn_saving';
+
+		$vars['buttons'] = [
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save',
+				'text' => 'save',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_new',
+				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_close',
+				'text' => 'save_and_close',
+				'working' => 'btn_saving'
+			]
+		];
+
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('settings/menu-manager'), lang('menu_sets'));
 
 		ee()->cp->render('settings/form', $vars);

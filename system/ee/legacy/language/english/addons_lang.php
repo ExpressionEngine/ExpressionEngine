@@ -85,8 +85,6 @@ $lang = array(
 
 'settings_saved_desc' => 'The settings for %s have been saved.',
 
-'show' => 'show',
-
 'uninstall' => 'Uninstall',
 
 'uninstalled' => 'Uninstalled',

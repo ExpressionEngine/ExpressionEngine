@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -113,6 +113,16 @@ class Query {
 		}
 
 		return $this->tables;
+	}
+
+	/**
+	 * Get the current Database/Query object's character set
+	 *
+	 * @return string database connection char_set
+	 */
+	public function getCharset()
+	{
+		return $this->query->char_set;
 	}
 
 	/**

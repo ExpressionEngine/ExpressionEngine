@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -36,6 +36,7 @@ class Channel extends StructureModel {
 		'comment_notify_authors'     => 'boolString',
 		'enable_versioning'          => 'boolString',
 		'extra_publish_controls'     => 'boolString',
+		'search_excerpt'             => 'int'
 	);
 
 	protected static $_relationships = array(
@@ -74,13 +75,6 @@ class Channel extends StructureModel {
 		'ChannelFormSettings' => array(
 			'type' => 'hasOne'
 		),
-		'LiveLookTemplate' => array(
-			'type' => 'hasOne',
-			'model' => 'Template',
-			'from_key' => 'live_look_template',
-			'to_key' => 'template_id',
-			'weak' => TRUE,
-		),
 		'AssignedMemberGroups' => array(
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'MemberGroup',
@@ -95,11 +89,11 @@ class Channel extends StructureModel {
 		'Site' => array(
 			'type' => 'belongsTo'
 		),
-		'CategoryGroups' => array(
-			'type' => 'hasMany',
-			'model' => 'CategoryGroup',
-			'from_key' => 'cat_group',
-			'to_key' => 'group_id'
+		'SearchExcerpt' => array(
+			'type' => 'belongsTo',
+			'model' => 'ChannelField',
+			'from_key' => 'search_excerpt',
+			'weak' => TRUE
 		),
 		'ChannelEntryAutosaves' => array(
 			'type' => 'hasMany',
@@ -114,6 +108,7 @@ class Channel extends StructureModel {
 		'channel_title'              => 'required|unique[site_id]|xss',
 		'channel_name'               => 'required|unique[site_id]|alphaDash',
 		'channel_url'                => 'xss',
+		'preview_url'                => 'xss',
 		'comment_url'                => 'xss',
 		'channel_description'        => 'xss',
 		'deft_comments'              => 'enum[y,n]',
@@ -205,8 +200,8 @@ class Channel extends StructureModel {
 	protected $default_entry_title;
 	protected $title_field_label;
 	protected $url_title_prefix;
-	protected $live_look_template = 0;
 	protected $max_entries;
+	protected $preview_url;
 
 	/**
 	 * Custom validation callback to validate a comma-separated list of email
@@ -241,6 +236,12 @@ class Channel extends StructureModel {
 	 */
 	public function __get($name)
 	{
+		// Fake the CategoryGroups relationship since it's stored weird
+		if ($name == 'CategoryGroups')
+		{
+			return $this->getCategoryGroups();
+		}
+
 		$value = parent::__get($name);
 
 		if (in_array($name, array('channel_url', 'comment_url', 'search_results_url', 'rss_url')))
@@ -324,10 +325,13 @@ class Channel extends StructureModel {
 			}
 		}
 
-		$this->FieldGroups = clone $channel->FieldGroups;
-		$this->CustomFields = clone $channel->CustomFields;
-		$this->Statuses = clone $channel->Statuses;
-		$this->ChannelFormSettings = clone $channel->ChannelFormSettings;
+        foreach (['FieldGroups', 'CustomFields', 'Statuses', 'ChannelFormSettings'] as $rel)
+        {
+            if ($channel->$rel)
+            {
+                $this->$rel = clone $channel->$rel;
+            }
+        }
 	}
 
 	public function onBeforeSave()
@@ -402,9 +406,15 @@ class Channel extends StructureModel {
 		foreach ($this->ChannelLayouts as $channel_layout)
 		{
 			$field_layout = $channel_layout->field_layout;
+			$new_cat_tab = 0;
 
 			foreach ($field_layout as $i => $section)
 			{
+				if ($section['id'] == 'categories' && $section['visible'])
+				{
+					$new_cat_tab = $i;
+				}
+
 				foreach ($section['fields'] as $j => $field_info)
 				{
 					// All category fields begin with "categories"
@@ -438,7 +448,7 @@ class Channel extends StructureModel {
 					'visible' => TRUE,
 					'collapsed' => FALSE
 				);
-				$field_layout[2]['fields'][] = $field_info;
+				$field_layout[$new_cat_tab]['fields'][] = $field_info;
 			}
 
 			$channel_layout->field_layout = $field_layout;

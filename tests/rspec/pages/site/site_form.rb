@@ -5,7 +5,7 @@ class SiteForm < ControlPanelPage
   element :title, '.section-header__title'
   element :add_site_button, '.section-header__controls a.btn.action'
 
-  element :save_button, '.form-btns-top input.btn'
+  element :save_button, 'div.form-btns.form-btns-top button[value="save_and_close"]'
   element :name, 'input[name="site_label"]'
   element :short_name, 'input[name="site_name"]'
   element :online, 'a[data-toggle-for="is_site_on"]'

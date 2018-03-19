@@ -121,7 +121,7 @@ $lang = array(
 
 'license_file_invalid_signature' => 'The license file provided has an invalid signature.',
 
-'license_file_missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="%s" rel="external">EllisLab.com</a> and download a fresh copy.',
+'license_file_missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="%s" rel="external">expressionengine.com</a> and download a fresh copy.',
 
 'license_file_permissions' => 'The license file could not be saved. Check the permissions on <b>%s</b>.',
 
@@ -723,7 +723,7 @@ $lang = array(
 
 'cookie_path' => 'Path',
 
-'cookie_path_desc' => 'Path to apply cookies to the above domain. (<a href="%s">more info</a>)',
+'cookie_path_desc' => 'Path to apply cookies to the above domain. (<a href="%s" rel="external">more info</a>)',
 
 'cookie_prefix' => 'Prefix',
 

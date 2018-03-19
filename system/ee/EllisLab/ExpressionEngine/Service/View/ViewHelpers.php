@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -26,12 +26,20 @@ class ViewHelpers {
 	 *   children or as items belonging to a subheading
 	 * @return array Array of choices ready for a React component
 	 */
-	public function normalizedChoices($choices, $disable_headings = FALSE)
+	public function normalizedChoices($choices, $disable_headings = NULL)
 	{
 		$return_array = [];
+
+		// Auto-disable headings if all array keys are numeric
+		if (is_null($disable_headings) &&
+			count(array_filter(array_keys($choices), 'is_numeric')) === count($choices))
+		{
+			$disable_headings = TRUE;
+		}
+
 		foreach ($choices as $value => $label)
 		{
-			if ( ! $disable_headings && is_array($label) && is_string($value))
+			if ( ! $disable_headings && is_array($label))
 			{
 				$return_array[] = ['section' => $value];
 				$return_array = array_merge($return_array, $this->normalizedChoices($label, $disable_headings));
@@ -41,7 +49,8 @@ class ViewHelpers {
 			$choice = [
 				'value' => $value,
 				'label' => $label,
-				'instructions' => isset($label['instructions']) ? $label['instructions'] : ''
+				'instructions' => isset($label['instructions']) ? $label['instructions'] : '',
+				'component' => isset($label['component']) ? $label['component'] : '',
 			];
 
 			// Any of these can be overridden by specifying them in the source array

@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -491,7 +491,6 @@ class Search_model extends CI_Model {
 				exp_channel_titles.status,
 				exp_channel_titles.entry_date,
 				exp_channel_titles.comment_total,
-				exp_channels.live_look_template,
 				exp_members.username,
 				exp_members.email,
 				exp_members.screen_name";

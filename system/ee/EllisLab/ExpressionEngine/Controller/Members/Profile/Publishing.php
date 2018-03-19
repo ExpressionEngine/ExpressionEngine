@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -38,8 +38,12 @@ class Publishing extends Profile {
 						)
 					)
 				)
-			),
-			'rte_settings' => array(
+			)
+		);
+
+		if (ee('Addon')->get('rte')->isInstalled())
+		{
+			$vars['sections']['rte_settings'] = array(
 				array(
 					'title' => 'rte_enabled',
 					'desc' => 'rte_enabled_desc',
@@ -61,8 +65,8 @@ class Publishing extends Profile {
 						),
 					)
 				)
-			)
-		);
+			);
+		}
 
 		if( ! empty($_POST))
 		{

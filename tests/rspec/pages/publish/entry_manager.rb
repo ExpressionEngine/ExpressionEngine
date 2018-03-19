@@ -3,6 +3,7 @@ class EntryManager < ControlPanelPage
 
   elements :entry_rows, '.w-16 .tbl-ctrls form table tbody tr'
   elements :entry_checkboxes, '.w-16 .tbl-ctrls form table tbody tr input[type="checkbox"]'
+  element :center_modal, '.app-modal--center'
 
   # Create a number of entries
   #
@@ -43,5 +44,23 @@ class EntryManager < ControlPanelPage
     Open3.popen3(command) do |stdin, stdout, stderr, thread|
       channel_json = stdout.read
     end
+  end
+
+  def check_entry(title)
+    row = self.get_row_for_title(title)
+    row.find('input[type="checkbox"]').click
+  end
+
+  def get_row_for_title(title)
+    self.entry_rows.each do |row|
+      if row.find('td:nth-child(2) a').text == title
+        return row
+      end
+    end
+  end
+
+  def click_edit_for_entry(title)
+    row = self.get_row_for_title(title)
+    row.find('td:nth-child(2) a').click
   end
 end

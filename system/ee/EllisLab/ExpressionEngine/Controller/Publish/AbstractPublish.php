@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -417,6 +417,80 @@ abstract class AbstractPublish extends CP_Controller {
 		$autosave = ee('Model')->get('ChannelEntryAutosave')
 			->filter('edit_date', '<', $cutoff)
 			->delete();
+	}
+
+	/**
+	 * Get Submit Buttons for Publish Edit Form
+	 * @param  ChannelEntry $entry ChannelEntry model entity
+	 * @return array Submit button array
+	 */
+	protected function getPublishFormButtons(ChannelEntry $entry)
+	{
+		$buttons = [
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save',
+				'text' => 'save',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_new',
+				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_close',
+				'text' => 'save_and_close',
+				'working' => 'btn_saving'
+			]
+		];
+
+		// get rid of Save & New button if we've reached the max entries for this channel
+		if ($entry->Channel->max_entries != 0 && $entry->Channel->total_records >= $entry->Channel->max_entries)
+		{
+			unset($buttons[1]);
+		}
+
+		$has_preview_button  = FALSE;
+		$show_preview_button = FALSE;
+
+		if ($entry->hasLivePreview())
+		{
+			$has_preview_button  = TRUE;
+			$show_preview_button = TRUE;
+		}
+
+		$pages_module = ee('Addon')->get('pages');
+		if ($pages_module && $pages_module->isInstalled())
+		{
+			$has_preview_button = TRUE;
+			if ($entry->hasPageURI())
+			{
+				$show_preview_button = TRUE;
+			}
+		}
+
+		if ($has_preview_button)
+		{
+			$extra_class = ($show_preview_button) ? '' : ' hidden';
+
+			$buttons[] = [
+				'name'    => 'submit',
+				'type'    => 'submit',
+				'value'   => 'preview',
+				'text'    => 'preview',
+				'class'   => 'action js-modal-link--side' . $extra_class,
+				'attrs'   => 'rel=live-preview',
+				'working' => 'btn_previewing'
+			];
+		}
+
+		return $buttons;
 	}
 }
 

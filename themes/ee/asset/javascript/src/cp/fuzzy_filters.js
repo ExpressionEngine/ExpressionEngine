@@ -2,7 +2,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -57,6 +57,9 @@ FuzzyListSearch.prototype = {
 
 		// update the score and show/hide
 		_.each(this.items, function(item) {
+			if ($(item.el).hasClass('hidden')) {
+				return
+			}
 			item.score = that._scoreString(item.text, search);
 			$(item.el).toggle(item.score != 0);
 			length += Math.ceil(item.score);
@@ -72,6 +75,9 @@ FuzzyListSearch.prototype = {
 	 */
 	reset: function() {
 		_.each(this.items, function(item) {
+			if ($(item.el).hasClass('hidden')) {
+				return
+			}
 			$(item.el).toggle(true);
 		});
 

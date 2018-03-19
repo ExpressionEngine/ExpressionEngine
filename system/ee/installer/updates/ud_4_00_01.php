@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -25,7 +25,8 @@ class Updater {
 	{
 		$steps = new \ProgressIterator(
 			array(
-				'resyncLayouts',
+				'removeOrhpanedLayouts',
+				'resyncLayouts'
 			)
 		);
 
@@ -37,9 +38,36 @@ class Updater {
 		return TRUE;
 	}
 
+	private function removeOrhpanedLayouts()
+	{
+		$channel_ids = ee('Model')->get('Channel')
+			->fields('channel_id')
+			->all()
+			->getIds();
+
+		if ( ! empty($channel_ids))
+		{
+			ee('Model')->get('ChannelLayout')
+				->filter('channel_id', 'NOT IN', $channel_ids)
+				->delete();
+		}
+	}
+
 	private function resyncLayouts()
 	{
-		$layotus = ee('Model')->get('ChannelLayout')
+		// Fix for running this update routine in a >= 4.1 context, preview_url
+		// column must be present to access Channel model below
+		ee()->smartforge->add_column(
+			'channels',
+			array(
+				'preview_url' => array(
+					'type'    => 'VARCHAR(100)',
+					'null'    => TRUE,
+				)
+			)
+		);
+
+		ee('Model')->get('ChannelLayout')
 			->with('Channel')
 			->all()
 			->synchronize();

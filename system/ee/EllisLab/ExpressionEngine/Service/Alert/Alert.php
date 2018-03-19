@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -41,7 +41,7 @@ class Alert {
 	protected $name;
 
 	/**
-	 * @var string $severity The severity of the alert (issue, warn, success)
+	 * @var string $severity The severity of the alert (issue, warn, success, tip)
 	 */
 	protected $severity;
 
@@ -192,6 +192,18 @@ class Alert {
 	{
 		$this->severity = 'success';
 		$this->canClose();
+		return $this;
+	}
+
+	/**
+	 * Marks the alert as a tip alert.
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function asTip()
+	{
+		$this->severity = 'tip';
+		$this->cannotClose();
 		return $this;
 	}
 

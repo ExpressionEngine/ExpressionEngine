@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -361,7 +361,18 @@ class Buttons extends Settings {
 					->addToBody(sprintf(lang($action . '_html_buttons_success_desc'), $this->button->tag_name))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL')->make($this->index_url, $this->query_string));
+				if (ee('Request')->post('submit') == 'save_and_new')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make($this->index_url . '/create', $this->query_string));
+				}
+				elseif (ee()->input->post('submit') == 'save_and_close')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make($this->index_url, $this->query_string));
+				}
+				else
+				{
+					ee()->functions->redirect(ee('CP/URL')->make($this->index_url . '/edit/' . $this->button->getId(), $this->query_string));
+				}
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
@@ -375,8 +386,31 @@ class Buttons extends Settings {
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
-		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('html_button'));
-		ee()->view->save_btn_text_working = 'btn_saving';
+
+		$vars['buttons'] = [
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save',
+				'text' => 'save',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_new',
+				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_close',
+				'text' => 'save_and_close',
+				'working' => 'btn_saving'
+			]
+		];
+
 		ee()->cp->render('settings/form', $vars);
 	}
 

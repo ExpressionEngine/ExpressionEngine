@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -60,6 +60,7 @@ class Settings extends Profile {
 
 		$directories = ee('Model')->get('UploadDestination')
 			->filter('name', 'IN', array('Default Avatars', 'Avatars'))
+			->filter('site_id', ee()->config->item('site_id'))
 			->all()
 			->indexBy('name');
 

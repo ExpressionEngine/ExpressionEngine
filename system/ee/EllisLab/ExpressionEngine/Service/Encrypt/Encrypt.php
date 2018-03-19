@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -228,7 +228,7 @@ class Encrypt {
 
 		if ( ! in_array($algo, hash_algos()))
 		{
-			throw new InvalidArgumentException('{$algo} is not a valid hashing algorithm.');
+			throw new InvalidArgumentException("{$algo} is not a valid hashing algorithm.");
 		}
 
 		$key = ($key) ?: $this->default_key;

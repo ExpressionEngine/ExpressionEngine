@@ -2,7 +2,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -56,7 +56,7 @@ Grid.Publish = function(field, settings) {
 	this.blankRow = $('tr.grid-blank-row', this.root);
 	this.emptyField = $('tr.no-results', this.root);
 	this.tableActions = $('tr.tbl-action', this.root);
-	this.rowContainer = this.root.find('tbody');
+	this.rowContainer = this.root.find('> tbody');
 	this.addButtonToolbar = $('ul.toolbar:has(li.add)', this.parentContainer);
 	this.header = null;
 
@@ -164,6 +164,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 				// Fire 'afterSort' event on sort stop
 				afterSort: function(row) {
 					that._fireEvent('afterSort', row);
+					$(document).trigger('entry:preview');
 				}
 			};
 
@@ -303,6 +304,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 
 		// Fire 'display' event for the new row
 		this._fireEvent('display', el);
+		$(document).trigger('entry:preview');
 
 		$(this.root).trigger('grid:addRow', el);
 
@@ -325,6 +327,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 
 			// Fire 'remove' event for this row
 			that._fireEvent('remove', row);
+			$(document).trigger('entry:preview');
 
 			// Remove the row
 			row.remove();
@@ -430,7 +433,7 @@ Grid.Settings.prototype = {
 			sort: EE.sortable_sort_helper
 		});
 
-		$('.fields-grid-tool-reorder', this.root).on('click', function(e){
+		$(this.root).on('click', '.fields-grid-tool-reorder', function(e){
 			e.preventDefault();
 		});
 	},

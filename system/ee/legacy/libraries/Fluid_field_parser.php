@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -13,10 +13,10 @@
  */
 class Fluid_field_parser {
 
-	public $modifiers = array();
-	public $reserved_names = array();
-	protected $data = array();
-	protected $tags = array();
+	public $modifiers = [];
+	public $reserved_names = [];
+	protected $data = [];
+	protected $tags = [];
 
 	public function __construct()
 	{
@@ -56,7 +56,7 @@ class Fluid_field_parser {
 
 		$this->_prefix = $pre_parser->prefix();
 
-		$fluid_field_ids = array();
+		$fluid_field_ids = [];
 
 		// Validate matches
 		foreach ($matches as $key => $match)
@@ -92,7 +92,7 @@ class Fluid_field_parser {
 			->fields('field_id', 'field_settings', 'field_name')
 			->all();
 
-		$found_fields = array();
+		$found_fields = [];
 
 		foreach ($fluid_field_fields as $fluid_field_field)
 		{
@@ -140,27 +140,36 @@ class Fluid_field_parser {
 	{
 		$possible_fields = $this->getPossibleFields($fluid_field_field->field_settings['field_channel_fields']);
 
-		$tags = array();
-		$fields_found = array();
+		$tags = [];
+		$fields_found = [];
 
 		$fluid_field_name = $fluid_field_field->field_name;
 
-		foreach($possible_fields as $field_id => $field_name)
+		$fluid_pchunks = ee()->api_channel_fields->get_pair_field($tagdata, $fluid_field_name, $this->_prefix);
+		foreach ($fluid_pchunks as $fluid_chunk_data)
 		{
-			$tags[$field_name] = array();
+			list($fluid_modifier, $fluid_content, $fluid_params, $fluid_chunk) = $fluid_chunk_data;
+			$fluid_content_hash = sha1($fluid_content);
 
-			$pchunks = ee()->api_channel_fields->get_pair_field(
-				$tagdata,
-				$field_name,
-				$this->_prefix . $fluid_field_name . ':'
-			);
+			$tags[$fluid_content_hash] = [];
 
-			foreach ($pchunks as $chk_data)
+			foreach($possible_fields as $field_id => $field_name)
 			{
-				list($modifier, $content, $params, $chunk) = $chk_data;
+				$tags[$field_name] = [];
 
-				$tags[$field_name][] = ee('fluid_field:Tag', $content);
-				$fields_found[] = $field_id;
+				$pchunks = ee()->api_channel_fields->get_pair_field(
+					$fluid_chunk,
+					$field_name,
+					$this->_prefix . $fluid_field_name . ':'
+				);
+
+				foreach ($pchunks as $chk_data)
+				{
+					list($modifier, $content, $params, $chunk) = $chk_data;
+
+					$tags[$fluid_content_hash][$field_name][sha1($content)] = ee('fluid_field:Tag', $content);
+					$fields_found[] = $field_id;
+				}
 			}
 		}
 
@@ -188,52 +197,120 @@ class Fluid_field_parser {
 	{
 		if (empty($entry_ids) || empty($fluid_field_ids) || empty($field_ids))
 		{
-			return new \EllisLab\ExpressionEngine\Library\Data\Collection(array());
+			return new \EllisLab\ExpressionEngine\Service\Model\Collection([]);
 		}
 
-		$data = array();
-
-		$fluid_field_data = ee('Model')->get('fluid_field:FluidField')
-			->with('ChannelField')
-			->filter('fluid_field_id', 'IN', $fluid_field_ids)
-			->filter('entry_id', 'IN', $entry_ids)
-			->filter('field_id', 'IN', $field_ids)
-			->order('fluid_field_id')
-			->order('entry_id')
-			->order('order')
-			->all();
-
-		// Since we store the data in the field's table, and each field has its
-		// own table, we'll group our fluid field data by the field_id. This will
-		// allow us to run one query per field, fetching all the data across
-		// all the fluid fields & entries for each field.
-		$fields = array();
-
-		foreach ($fluid_field_data as $fluid_field)
+		if (ee('LivePreview')->hasEntryData())
 		{
-			if ( ! array_key_exists($fluid_field->field_id, $fields))
+			$data = ee('LivePreview')->getEntryData();
+			$entry_ids = array_filter($entry_ids, function($entry_id) use ($data)
 			{
-				$fields[$fluid_field->field_id] = array();
+				return $entry_id != $data['entry_id'];
+			});
+		}
+
+		if (empty($entry_ids))
+		{
+			$fluid_field_data = new \EllisLab\ExpressionEngine\Service\Model\Collection([]);
+		}
+		else
+		{
+			$fluid_field_data = ee('Model')->get('fluid_field:FluidField')
+				->with('ChannelField')
+				->filter('fluid_field_id', 'IN', $fluid_field_ids)
+				->filter('entry_id', 'IN', $entry_ids)
+				->filter('field_id', 'IN', $field_ids)
+				->order('fluid_field_id')
+				->order('entry_id')
+				->order('order')
+				->all();
+
+			// Since we store the data in the field's table, and each field has its
+			// own table, we'll group our fluid field data by the field_id. This will
+			// allow us to run one query per field, fetching all the data across
+			// all the fluid fields & entries for each field.
+			$fields = [];
+
+			foreach ($fluid_field_data as $fluid_field)
+			{
+				if ( ! array_key_exists($fluid_field->field_id, $fields))
+				{
+					$fields[$fluid_field->field_id] = [];
+				}
+
+				$fields[$fluid_field->field_id][$fluid_field->field_data_id] = $fluid_field;
 			}
 
-			$fields[$fluid_field->field_id][$fluid_field->field_data_id] = $fluid_field;
-		}
-
-		foreach ($fields as $field_id => $fluid_fields)
-		{
-			$field_data_ids = array_keys($fluid_fields);
-
-			// Captain Obvious says: here we be gettin' the data, Arrrr!
-			ee()->db->where_in('id', $field_data_ids);
-			$rows = ee()->db->get('channel_data_field_' . $field_id)->result_array();
-
-			foreach($rows as $row)
+			foreach ($fields as $field_id => $fluid_fields)
 			{
-				$fluid_fields[$row['id']]->setFieldData($row);
+				$field_data_ids = array_keys($fluid_fields);
+
+				// Captain Obvious says: here we be gettin' the data, Arrrr!
+				ee()->db->where_in('id', $field_data_ids);
+				$rows = ee()->db->get('channel_data_field_' . $field_id)->result_array();
+
+				foreach($rows as $row)
+				{
+					$fluid_fields[$row['id']]->setFieldData($row);
+				}
 			}
 		}
 
-		return $fluid_field_data;
+		return $this->overrideWithPreviewData($fluid_field_data, $fluid_field_ids);
+	}
+
+	private function overrideWithPreviewData($fluid_field_data, $fluid_field_ids)
+	{
+		$fluid_fields = $fluid_field_data->asArray();
+
+		if (ee('LivePreview')->hasEntryData())
+		{
+			$data = ee('LivePreview')->getEntryData();
+			$entry_id = $data['entry_id'];
+
+			foreach ($fluid_field_ids as $fluid_field_id)
+			{
+				$i = 1;
+				if ( ! isset($data["field_id_{$fluid_field_id}"])
+					|| ! isset($data["field_id_{$fluid_field_id}"]['fields']))
+				{
+					continue;
+				}
+
+				foreach ($data["field_id_{$fluid_field_id}"]['fields'] as $key => $value)
+				{
+					if ($key == 'new_field_0')
+					{
+						continue;
+					}
+
+					foreach (array_keys($value) as $k)
+					{
+						if (strpos($k, 'field_id_') === 0)
+						{
+							$field_id = (int) str_replace('field_id_', '', $k);
+							break;
+						}
+					}
+
+					$fluid_field = ee('Model')->make('fluid_field:FluidField');
+					$fluid_field->setId("field_id_{$fluid_field_id},{$key}");
+					$fluid_field->fluid_field_id = $fluid_field_id;
+					$fluid_field->entry_id = $entry_id;
+					$fluid_field->field_id = $field_id;
+					$fluid_field->order = $i;
+					$fluid_field->field_data_id = $i;
+
+					$value['entry_id'] = $entry_id;
+					$fluid_field->setFieldData($value);
+					$fluid_fields[] = $fluid_field;
+
+					$i++;
+				}
+			}
+		}
+
+		return new \EllisLab\ExpressionEngine\Service\Model\Collection($fluid_fields);
 	}
 
 	/**
@@ -264,7 +341,7 @@ class Fluid_field_parser {
 
 		foreach ($fluid_field_data as $fluid_field)
 		{
-			$tags = $this->tags[$fluid_field->fluid_field_id];
+			$tags = $this->tags[$fluid_field->fluid_field_id][sha1($tagdata)];
 
 			$field_name = $fluid_field->ChannelField->field_name;
 
@@ -283,7 +360,7 @@ class Fluid_field_parser {
 
 				$field->setItem('row', $row);
 
-				$output .=  $tag->parse($field);
+				$output .= $tag->parse($field);
 			}
 		}
 

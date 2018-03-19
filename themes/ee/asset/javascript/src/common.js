@@ -2,7 +2,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -58,11 +58,33 @@ $(document).ready(function(){
 		$('body').on('click', 'a[rel="external"]', function(e){
 			// open a new window pointing to
 			// the href attribute of THIS anchor click
-			window.open(this.href);
+			iframeOpen(this.href);
 			// stop THIS href from loading
 			// in the source window
 			e.preventDefault();
 		});
+
+		// Prevent external links access to window.opener
+		// Hat tip to https://github.com/danielstjules/blankshield
+		function iframeOpen(url) {
+			var iframe, iframeDoc, script, newWin;
+
+			iframe = document.createElement('iframe');
+			iframe.style.display = 'none';
+			document.body.appendChild(iframe);
+			iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+			script = iframeDoc.createElement('script');
+			script.type = 'text/javascript';
+			script.text = 'window.parent = null; window.top = null;' +
+				'window.frameElement = null; var child = window.open("' + url + '");' +
+				'if (child) { child.opener = null }';
+			iframeDoc.body.appendChild(script);
+			newWin = iframe.contentWindow.child;
+
+			document.body.removeChild(iframe);
+			return newWin;
+		}
 
 	// ===============
 	// scroll smoothly
@@ -294,10 +316,26 @@ $(document).ready(function(){
 
 			// fade in the overlay
 			$('.app-overlay')
+				.removeClass('app-overlay--destruct')
 				.removeClass('app-overlay---closed')
 				.addClass('app-overlay---open')
 				.css('height', heightIs);
 
+			if (e.linkIs) {
+				// strongly warn the actor of their potential future mistakes
+				if(e.linkIs.indexOf('js-modal--destruct') !== -1){
+					$('.app-overlay')
+						.addClass('app-overlay--destruct');
+				}
+
+				// warn the actor of their potential future mistakes
+				if(e.linkIs.indexOf('js-modal--warning') !== -1){
+					$('.app-overlay')
+						.addClass('app-overlay--warning');
+				}
+			}
+
+			// reveal the modal
 			if ($(this).hasClass('modal-wrap')) {
 				$(this).fadeIn('slow');
 			} else {
@@ -305,12 +343,25 @@ $(document).ready(function(){
 					.addClass('app-modal---open');
 			}
 
+			// remove viewport scroll for --side
+			if (e.linkIs) {
+				if(e.linkIs.indexOf('js-modal-link--side') !== -1){
+					$('body').css('overflow','hidden');
+				}
+			}
+
+			if(e.modalIs == 'live-preview'){
+				$('.live-preview')
+					.removeClass('live-preview---closed')
+					.addClass('live-preview---open');
+			}
+
 			// remember the scroll location on open
 			$(this).data('scroll', $(document).scrollTop());
 
 			// scroll up, if needed, but only do so after a significant
 			// portion of the overlay is show so as not to disorient the user
-			if ( ! $(this).is('.modal-form-wrap, .app-modal'))
+			if ( ! $(this).is('.modal-form-wrap, .app-modal--side'))
 			{
 				setTimeout(function() {
 					$(document).scrollTop(0);
@@ -319,12 +370,12 @@ $(document).ready(function(){
 				// Remove viewport scroll
 				$('body').css('overflow','hidden');
 			}
+		});
 
-			$(document).one('keydown', function(e) {
-				if (e.keyCode === 27) {
-					$('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
-				}
-			});
+		$(document).on('keydown', function(e) {
+			if (e.keyCode === 27) {
+				$('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
+			}
 		});
 
 		$('body').on('modal:close', '.modal-wrap, .modal-form-wrap, .app-modal', function(e) {
@@ -339,6 +390,12 @@ $(document).ready(function(){
 					$(this).addClass('app-modal---closed');
 					setTimeout(function() {
 						$('.app-modal---open').removeClass('app-modal---open');
+					}, 500);
+
+					// disappear the preview
+					$('.live-preview---open').addClass('live-preview---closed');
+					setTimeout(function() {
+						$('.live-preview---open').removeClass('live-preview---open');
 					}, 500);
 				}
 
@@ -380,6 +437,31 @@ $(document).ready(function(){
 			e.preventDefault();
 		});
 
+		$('body').on('click', '[class*="js-modal-link"]', function(e){
+			var modalIs = $(this).attr('rel');
+			var linkIs = $(this).attr('class');
+			var isDisabled = $(this).attr('disabled');
+
+			// check for disabled status
+			if(isDisabled === 'disabled' || modalIs == ''){
+				// stop THIS href from loading
+				// in the source window
+				e.preventDefault();
+			}
+			else{
+				$('[rev='+modalIs+']').trigger({
+					type:'modal:open',
+					modalIs: modalIs,
+					linkIs: linkIs
+				});
+
+				// stop page from reloading
+				// the source window and appending # to the URI
+				e.preventDefault();
+			}
+		});
+
+
 		// listen for clicks on the element with a class of overlay
 		$('body').on('click', '.m-close, .js-modal-close', function(e) {
 			$(this).closest('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
@@ -388,7 +470,7 @@ $(document).ready(function(){
 			e.preventDefault();
 		});
 
-		$('body').on('click', '.overlay, .app-overlay---open', function() {
+		$('body').on('click', '.overlay, .app-overlay---open, .js-modal-close', function() {
 			$('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
 		});
 
@@ -494,10 +576,20 @@ $(document).ready(function(){
 	// publish collapse -> WIP
 	// =======================
 
-		$('.js-toggle-field').on('click',function(){
+		// Fieldset toggle
+		$('.js-toggle-field')
+			.not('.fluid-ctrls .js-toggle-field')
+			.on('click',function(){
+				$(this)
+					.parents('fieldset,.fieldset-faux-fluid,.fieldset-faux')
+					.toggleClass('fieldset---closed');
+			});
+
+		// Fluid field item toggle, wide initial selector for Fluids brought in via AJAX
+		$('body').on('click', '.fieldset-faux-fluid .fluid-ctrls .js-toggle-field', function(){
 			$(this)
-				.parents('fieldset,.fieldset-faux-fluid,.fieldset-faux')
-				.toggleClass('fieldset---closed');
+				.closest('.fluid-item')
+				.toggleClass('fluid-closed');
 		});
 
 	// ===================
@@ -536,7 +628,9 @@ $(document).ready(function(){
 			}
 
 			var input = $(this).find('input[type="hidden"]'),
-				yes_no = $(this).hasClass('yes_no');
+				yes_no = $(this).hasClass('yes_no'),
+				onOff = $(this).hasClass('off') ? 'on' : 'off',
+				trueFalse = $(this).hasClass('off') ? 'true' : 'false';
 
 			if ($(this).hasClass('off')){
 				$(this).removeClass('off');
@@ -547,6 +641,10 @@ $(document).ready(function(){
 				$(this).addClass('off');
 				$(input).val(yes_no ? 'n' : 0);
 			}
+
+			$(this).attr('alt', onOff);
+			$(this).attr('data-state', onOff);
+			$(this).attr('aria-checked', trueFalse);
 
 			if ($(input).data('groupToggle')) EE.cp.form_group_toggle(input)
 

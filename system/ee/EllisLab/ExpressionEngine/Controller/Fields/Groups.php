@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -30,8 +30,6 @@ class Groups extends AbstractFieldsController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$this->generateSidebar();
-
 		ee()->lang->loadfile('admin');
 		ee()->lang->loadfile('admin_content');
 	}
@@ -46,6 +44,8 @@ class Groups extends AbstractFieldsController {
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('fields')->compile() => lang('field_manager'),
 		);
+
+		$this->generateSidebar();
 
 		$vars = array(
 			'ajax_validate' => TRUE,
@@ -65,9 +65,21 @@ class Groups extends AbstractFieldsController {
 					'value' => 'save_and_new',
 					'text' => 'save_and_new',
 					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
 				]
 			]
 		);
+
+		if (AJAX_REQUEST)
+		{
+			unset($vars['buttons'][2]);
+		}
 
 		if ( ! empty($_POST))
 		{
@@ -97,6 +109,10 @@ class Groups extends AbstractFieldsController {
 				if (ee('Request')->post('submit') == 'save_and_new')
 				{
 					ee()->functions->redirect(ee('CP/URL')->make('fields/groups/create'));
+				}
+				elseif (ee()->input->post('submit') == 'save_and_close')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('fields'));
 				}
 				else
 				{
@@ -142,6 +158,8 @@ class Groups extends AbstractFieldsController {
 			ee('CP/URL')->make('fields')->compile() => lang('field_manager'),
 		);
 
+		$this->generateSidebar($id);
+
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL')->make('fields/groups/edit/' . $id),
@@ -159,6 +177,13 @@ class Groups extends AbstractFieldsController {
 					'type' => 'submit',
 					'value' => 'save_and_new',
 					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
 					'working' => 'btn_saving'
 				]
 			]
@@ -188,6 +213,10 @@ class Groups extends AbstractFieldsController {
 				if (ee('Request')->post('submit') == 'save_and_new')
 				{
 					ee()->functions->redirect(ee('CP/URL')->make('fields/groups/create'));
+				}
+				elseif (ee()->input->post('submit') == 'save_and_close')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('fields'));
 				}
 				else
 				{

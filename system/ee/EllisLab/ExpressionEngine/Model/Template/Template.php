@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -62,12 +62,6 @@ class Template extends FileSyncedModel {
 		'DeveloperLogItems' => array(
 			'type' => 'hasMany',
 			'model' => 'DeveloperLog'
-		),
-		'Channel' => array(
-			'type' => 'belongsTo',
-			'to_key' => 'live_look_template',
-			'from_key' => 'template_id',
-			'weak' => TRUE,
 		),
 		'Versions' => array(
 			'type' => 'hasMany',

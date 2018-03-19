@@ -17,6 +17,11 @@
 		// Disable inputs
 		$('.fluid-field-templates :input').attr('disabled', 'disabled');
 
+		// Disable inputs on submit too, so we don't send them if they showed up late
+		$(".form-standard > form").on('submit', function(e) {
+			$('.fluid-field-templates :input').attr('disabled', 'disabled');
+		});
+
 	    var addField = function(e) {
 			var fluidField   = $(this).closest('.fluid-wrap'),
 			    fieldToAdd   = $(this).data('field-name'),
@@ -38,9 +43,6 @@
 			// Enable inputs
 			fieldClone.find(':input').removeAttr('disabled');
 
-			// Bind the "add" button
-			fieldClone.find('a[data-field-name]').click(addField);
-
 			// Insert it
 			if ( ! $(this).parents('.fluid-item').length) {
 				// the button at the bottom of the form was used.
@@ -48,6 +50,8 @@
 			} else {
 				$(this).closest('.fluid-item').after(fieldClone);
 			}
+
+			$.fuzzyFilter();
 
 			// Bind the new field's inputs to AJAX form validation
 			if (EE.cp && EE.cp.formValidation !== undefined) {
@@ -58,13 +62,15 @@
 			fluidField.find('.open').trigger('click');
 
 			FluidField.fireEvent($(fieldClone).data('field-type'), 'add', [fieldClone]);
+			$(document).trigger('entry:preview');
 	    };
 
-		$('a[data-field-name]').click(addField);
+		$('.fluid-wrap').on('click', 'a[data-field-name]', addField);
 
 		$('.fluid-wrap').on('click', 'a.fluid-remove', function(e) {
 			var el = $(this).closest('.fluid-item');
 			FluidField.fireEvent($(el).data('field-type'), 'remove', el);
+			$(document).trigger('entry:preview');
 			el.remove();
 			e.preventDefault();
 		});
@@ -80,16 +86,8 @@
 			},
 			stop: function (event, ui) {
 				FluidField.fireEvent($(ui.item).data('field-type'), 'afterSort', $(ui.item))
+				$(document).trigger('entry:preview');
 			}
-		});
-
-		// Remove the toggle event found in common.js
-		$('.fieldset-faux-fluid .js-toggle-field').off('click');
-
-		$('.fieldset-faux-fluid').on('click', '.js-toggle-field', function(){
-			$(this)
-				.parents('.fluid-item')
-				.toggleClass('fluid-closed');
 		});
 	});
 })(jQuery);

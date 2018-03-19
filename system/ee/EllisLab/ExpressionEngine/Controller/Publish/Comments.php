@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -150,7 +150,7 @@ class Comments extends AbstractPublishController {
 		}
 
 		// if there are Spam comments, and the user can access them, give them a link
-		if (ee()->cp->allowed_group('can_moderate_spam') && ee('Addon')->get('spam')->isInstalled())
+		if (ee()->cp->allowed_group('can_moderate_spam') && ee('Addon')->get('spam') && ee('Addon')->get('spam')->isInstalled())
 		{
 			$spam_total = ee('Model')->get('Comment')
 				->filter('site_id', ee()->config->item('site_id'))
@@ -333,11 +333,10 @@ class Comments extends AbstractPublishController {
 
 		$title = $comment->getEntry()->title;
 
-		$live_look_template = $comment->getChannel()->getLiveLookTemplate();
-
-		if ($live_look_template)
+		if ($comment->Channel->preview_url)
 		{
-			$view_url = ee()->functions->create_url($live_look_template->getPath() . '/' . $comment->getEntry()->entry_id);
+			$uri = str_replace(['{url_title}', '{entry_id}'], [$comment->Entry->url_title, $comment->Entry->entry_id], $comment->Channel->preview_url);
+			$view_url = ee()->functions->create_url($uri);
 			$title = '<a href="' . ee()->cp->masked_url($view_url) . '" rel="external">' . $title . '</a>';
 		}
 

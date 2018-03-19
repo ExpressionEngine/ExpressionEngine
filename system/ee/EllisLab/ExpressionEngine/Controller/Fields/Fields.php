@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -214,7 +214,7 @@ class Fields extends AbstractFieldsController {
 			ee('CP/URL')->make('fields')->compile() => lang('field_manager')
 		);
 
-		$this->generateSidebar();
+		$this->generateSidebar($group_id);
 
 		$errors = NULL;
 		$field = ee('Model')->make('ChannelField');
@@ -256,7 +256,12 @@ class Fields extends AbstractFieldsController {
 
 				if (ee('Request')->post('submit') == 'save_and_new')
 				{
-					ee()->functions->redirect(ee('CP/URL')->make('fields/create'));
+					$return = (empty($group_id)) ? '' : '/'.$group_id;
+					ee()->functions->redirect(ee('CP/URL')->make('fields/create'.$return));
+				}
+				elseif (ee()->input->post('submit') == 'save_and_close')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('fields'));
 				}
 				else
 				{
@@ -296,12 +301,24 @@ class Fields extends AbstractFieldsController {
 					'value' => 'save_and_new',
 					'text' => 'save_and_new',
 					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
 				]
 			],
 			'form_hidden' => array(
 				'field_id' => NULL
 			),
 		);
+
+		if (AJAX_REQUEST)
+		{
+			unset($vars['buttons'][2]);
+		}
 
 		ee()->view->cp_page_title = lang('create_new_field');
 
@@ -311,6 +328,10 @@ class Fields extends AbstractFieldsController {
 		}
 
 		ee()->cp->add_js_script('plugin', 'ee_url_title');
+
+		ee()->javascript->set_global([
+			'publish.foreignChars' => ee()->config->loadFile('foreign_chars')
+		]);
 
 		ee()->javascript->output('
 			$("input[name=field_label]").bind("keyup keydown", function() {
@@ -336,7 +357,9 @@ class Fields extends AbstractFieldsController {
 			show_404();
 		}
 
-		$this->generateSidebar();
+		$field_groups = $field->ChannelFieldGroups;
+		$active_groups = $field_groups->pluck('group_id');
+		$this->generateSidebar($active_groups);
 
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('fields')->compile() => lang('field_manager'),
@@ -362,7 +385,7 @@ class Fields extends AbstractFieldsController {
 				{
 					ee()->db->where('field_ft_' . $field->field_id . ' IS NOT NULL', NULL, FALSE);
 					ee()->db->update(
-						'channel_data_field_' . $field->field_id,
+						$field->getDataStorageTable(),
 						array('field_ft_'.$field->field_id => $field->field_fmt)
 					);
 				}
@@ -376,6 +399,10 @@ class Fields extends AbstractFieldsController {
 				if (ee('Request')->post('submit') == 'save_and_new')
 				{
 					ee()->functions->redirect(ee('CP/URL')->make('fields/create'));
+				}
+				elseif (ee()->input->post('submit') == 'save_and_close')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('fields'));
 				}
 				else
 				{
@@ -412,6 +439,13 @@ class Fields extends AbstractFieldsController {
 					'type' => 'submit',
 					'value' => 'save_and_new',
 					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
 					'working' => 'btn_saving'
 				]
 			],

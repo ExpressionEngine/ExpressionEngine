@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -331,6 +331,11 @@ class EE_Input {
 		if ($this->ip_address !== FALSE)
 		{
 			return $this->ip_address;
+		}
+
+		if (REQ == 'CLI')
+		{
+			return '0.0.0.0';
 		}
 
 		$proxy_ips = config_item('proxy_ips');

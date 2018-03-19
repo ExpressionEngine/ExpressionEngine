@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -27,19 +27,12 @@ class Design extends AbstractDesignController {
 
 	public function export()
 	{
-		$templates = ee('Model')->get('Template')
-			->fields('template_id')
-			->filter('site_id', ee()->config->item('site_id'));
-
 		if (ee()->session->userdata['group_id'] != 1)
 		{
-			$templates->filter('group_id', 'IN', array_keys(ee()->session->userdata['assigned_template_groups']));
+			show_error(lang('unauthorized_access'));
 		}
 
-		$template_ids = $templates->all()
-			->pluck('template_id');
-
-		$this->exportTemplates($template_ids);
+		$this->exportTemplates();
 	}
 
 	public function manager($group_name = NULL)
@@ -95,13 +88,14 @@ class Design extends AbstractDesignController {
 			$group = ee('Model')->get('TemplateGroup')
 				->fields('group_id', 'group_name')
 				->filter('group_name', $group_name)
-				->filter('site_id', ee()->config->item('site_id'))
-				->first();
+				->filter('site_id', ee()->config->item('site_id'));
 
 			if ($assigned_groups)
 			{
 				$group->filter('group_id', 'IN', $assigned_groups);
 			}
+
+			$group = $group->first();
 
 			if ( ! $group)
 			{

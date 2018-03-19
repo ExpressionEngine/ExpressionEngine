@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -89,7 +89,7 @@ abstract class Variables {
 
 		foreach ($this->form_vars as $name => $value)
 		{
-			$this->form_vars[$name] = (isset($variables[$name])) ? form_prep($variables[$name]) : '';
+			$this->form_vars[$name] = (isset($variables[$name])) ? $this->formPrep($variables[$name]) : '';
 		}
 
 		return $this->form_vars;
@@ -121,6 +121,31 @@ abstract class Variables {
 	}
 
 	/**
+	 * encode ExpressionEngine tags
+	 * @param  string $str contents to encode
+	 * @return string      contents with { } encoded as HTML entities
+	 */
+	protected function encodeEETags($str)
+	{
+		return (string) ee('Format')->make('Text', $str)->encodeEETags();
+	}
+
+	/**
+	 * Form prep
+	 *
+	 * Time saver security method. form_prep() on its own is also used in the CP, but on the
+	 * front end, we need to encode EE tags as well.
+	 *
+	 * @param  string  $str            contents to prep for form inputs
+	 * @param  boolean $encode_ee_tags Whether or not to encode ExpressionEngine tags
+	 * @return return                  contents prepped for use in form inputs
+	 */
+	protected function formPrep($str, $encode_ee_tags = TRUE)
+	{
+		return (string) ee('Format')->make('Text', form_prep($str))->encodeEETags();
+	}
+
+	/**
 	 * date
 	 * @param  mixed $date DateTime object or int timestamp
 	 * @return int timestamp
@@ -139,7 +164,7 @@ abstract class Variables {
 	{
 		$str = ee()->typography->parse_type($str, $typography_prefs);
 
-		if (get_bool_config('enable_censoring'))
+		if (bool_config_item('enable_censoring'))
 		{
 			$str = ee('Format')->make('Text', $str)->censor();
 		}
@@ -174,7 +199,7 @@ abstract class Variables {
 	 * @param array $params optional URL parameters
 	 * @return string ACTion URL
 	 */
-	protected function action($method, $params)
+	protected function action($class, $method, $params)
 	{
 		if ( ! isset($params['return']) OR $params['return'] === '')
 		{

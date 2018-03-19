@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -199,6 +199,11 @@ class Channels extends AbstractChannelsController {
 
 			// Only auto-complete channel short name for new channels
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
+
+			ee()->javascript->set_global([
+				'publish.foreignChars' => ee()->config->loadFile('foreign_chars')
+			]);
+
 			ee()->javascript->output('
 				$("input[name=channel_title]").bind("keyup keydown", function() {
 					$(this).ee_url_title("input[name=channel_name]");
@@ -263,6 +268,10 @@ class Channels extends AbstractChannelsController {
 				if (ee('Request')->post('submit') == 'save_and_new')
 				{
 					ee()->functions->redirect(ee('CP/URL')->make('channels/create'));
+				}
+				elseif (ee()->input->post('submit') == 'save_and_close')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('channels'));
 				}
 				else
 				{
@@ -357,6 +366,13 @@ class Channels extends AbstractChannelsController {
 				'type' => 'submit',
 				'value' => 'save_and_new',
 				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_close',
+				'text' => 'save_and_close',
 				'working' => 'btn_saving'
 			]
 		];
@@ -655,7 +671,7 @@ class Channels extends AbstractChannelsController {
 
 		$selected = ee('Request')->post('cat_group') ?: [];
 
-		if ($channel)
+		if ($channel && ! empty($channel->cat_group))
 		{
 			$selected = explode('|', $channel->cat_group);
 		}
@@ -728,15 +744,11 @@ class Channels extends AbstractChannelsController {
 	{
 		$statuses = ee('Model')->get('Status')
 			->order('status_order')
-			->all()
-			->getDictionary('status_id', 'status');
+			->all();
 
-		foreach ($statuses as $status_id => $status)
+		foreach ($statuses as $status)
 		{
-			if (in_array($status, ['open', 'closed']))
-			{
-				$statuses[$status_id] = lang($status);
-			}
+			$status_options[] = $status->getOptionComponent(['use_ids' => TRUE]);
 		}
 
 		$selected = ee('Request')->post('statuses') ?: [];
@@ -756,7 +768,7 @@ class Channels extends AbstractChannelsController {
 
 		return ee('View')->make('ee:_shared/form/fields/select')->render([
 			'field_name'       => 'statuses',
-			'choices'          => $statuses,
+			'choices'          => $status_options,
 			'disabled_choices' => $default,
 			'unremovable_choices' => $default,
 			'value'            => $selected,
@@ -780,23 +792,6 @@ class Channels extends AbstractChannelsController {
 	 */
 	private function renderSettingsTab($channel, $errors)
 	{
-		$templates = ee('Model')->get('Template')
-			->with('TemplateGroup')
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('TemplateGroup.group_name', 'ASC')
-			->order('template_name', 'ASC')
-			->all();
-
-		$live_look_template_options[0] = lang('no_live_look_template');
-
-		if ( count($templates) > 0)
-		{
-			foreach ($templates as $template)
-			{
-				$live_look_template_options[$template->template_id] = $template->getTemplateGroup()->group_name.'/'.$template->template_name;
-			}
-		}
-
 		// Default status menu
 		$deft_status_options = [
 			'open' => lang('open'),
@@ -932,16 +927,12 @@ class Channels extends AbstractChannelsController {
 					)
 				),
 				array(
-					'title' => 'live_look_template',
-					'desc' => 'live_look_template_desc',
+					'title' => 'preview_url',
+					'desc' => 'preview_url_desc',
 					'fields' => array(
-						'live_look_template' => array(
-							'type' => 'radio',
-							'choices' => $live_look_template_options,
-							'value' => $channel->live_look_template,
-							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('templates'))
-							]
+						'preview_url' => array(
+							'type' => 'text',
+							'value' => $channel->getRawProperty('preview_url')
 						)
 					)
 				)
@@ -1326,7 +1317,7 @@ class Channels extends AbstractChannelsController {
 	{
 		if (isset($_POST['cat_group']) && is_array($_POST['cat_group']))
 		{
-			$_POST['cat_group'] = implode('|', $_POST['cat_group']);
+			$_POST['cat_group'] = implode('|', array_filter($_POST['cat_group'], 'is_numeric'));
 		}
 		else
 		{
@@ -1415,7 +1406,7 @@ class Channels extends AbstractChannelsController {
 			unset($_POST['duplicate_channel_prefs']);
 
 			// duplicating preferences?
-			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
+			if ( ! empty($dupe_id) && is_numeric($dupe_id))
 			{
 				$dupe_channel = ee('Model')->get('Channel')
 					->filter('channel_id', $dupe_id)

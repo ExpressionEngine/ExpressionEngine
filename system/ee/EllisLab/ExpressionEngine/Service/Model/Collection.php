@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -83,6 +83,34 @@ class Collection extends CoreCollection {
 		}
 
 		return parent::filter($key);
+	}
+
+	/**
+	 * Called on a Collection of Collections, returns a Collection containing
+	 * the models that are present in all the Collections
+	 *
+	 * @return Collection
+	 */
+	public function intersect()
+	{
+		// Only 1 or none? Nothing to intersect!
+		if ($this->count() < 2)
+		{
+			return $this;
+		}
+
+		// Flat collection of models? Return a unique set
+		if ($this->first() instanceOf Model)
+		{
+			return new static($this->indexByIds());
+		}
+
+		$elements = $this->map(function($collection)
+		{
+			return $collection->indexByIds();
+		});
+
+		return new static(call_user_func_array('array_intersect_key', $elements));
 	}
 
 	/**

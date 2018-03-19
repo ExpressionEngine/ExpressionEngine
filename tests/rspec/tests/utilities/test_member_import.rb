@@ -49,6 +49,7 @@ feature 'Member Import' do
 
     @page.file_location.set @members_xml
     @page.file_location.trigger 'blur'
+    @page.member_group.choose_radio_option '5'
     @page.wait_for_error_message_count(0)
     should_have_no_error_text(@page.file_location)
     should_have_no_form_errors(@page)
@@ -113,6 +114,7 @@ feature 'Member Import' do
 
   it 'should fail to import duplicate data' do
     @page.file_location.set @members_xml_duplicate
+    @page.member_group.choose_radio_option '5'
     @page.submit
 
     # Confirm the import
@@ -126,6 +128,7 @@ feature 'Member Import' do
 
   it 'should fail to import invalid XML' do
     @page.file_location.set @members_xml_invalid
+    @page.member_group.choose_radio_option '5'
     @page.submit
 
     # Confirm the import
@@ -140,6 +143,7 @@ feature 'Member Import' do
     # If our XML does not contain any extra fields but Yes is selected
     # for custom field creation:
     @page.file_location.set @members_xml
+    @page.member_group.choose_radio_option '5'
     @page.submit
 
     @page.should have_text 'Confirm Import'
@@ -148,6 +152,7 @@ feature 'Member Import' do
     # If our XML contains extra field but we elect not to bother:
     @page.load
     @page.file_location.set @members_xml_custom
+    @page.member_group.choose_radio_option '5'
     @page.auto_custom_field_toggle.click
     @page.submit
 

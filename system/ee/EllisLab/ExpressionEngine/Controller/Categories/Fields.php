@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -255,7 +255,7 @@ class Fields extends AbstractCategoriesController {
 			}
 			else
 			{
-				$vars['errors'] = $result->renderErrors();
+				$vars['errors'] = $result;
 				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('category_field_not_'.$alert_key))

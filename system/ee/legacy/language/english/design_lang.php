@@ -72,6 +72,8 @@ $lang = array(
 
 'default' => 'default',
 
+'default_404_option' => 'Default 404 Page',
+
 'design' => 'Design',
 
 'duplicate_existing_template' => 'Duplicate existing template?',
@@ -237,6 +239,8 @@ $lang = array(
 'template_notes' => 'Template Notes',
 
 'template_notes_desc' => 'Use this form field to store notes and information about this template',
+
+'template_path_not_user' => 'Templates not found in themes/user, please see <a href="%s">the documentation</a> for details.',
 
 'template_partial' => 'Template Partial',
 

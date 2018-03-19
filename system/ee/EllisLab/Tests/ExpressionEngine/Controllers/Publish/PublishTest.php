@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -31,7 +31,7 @@ class PublishTest extends \PHPUnit_Framework_TestCase {
 
 		sort($controller_methods);
 
-		$this->assertEquals(array('authorlist', 'autosave', 'create', 'field', 'relationshipfilter'), $controller_methods);
+		$this->assertEquals(array('authorlist', 'autosave', 'create', 'field', 'preview', 'relationshipfilter'), $controller_methods);
 	}
 
 }

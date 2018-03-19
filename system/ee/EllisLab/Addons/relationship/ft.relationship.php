@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -717,7 +717,7 @@ class Relationship_ft extends EE_Fieldtype {
 		$save = $form->values();
 
 		// Boolstring conversion
-		$save['allow_multiple'] = ($save['allow_multiple'] === 'y') ? 1 : 0;
+		$save['allow_multiple'] = get_bool_from_string($save['allow_multiple']);
 
 		foreach ($save as $field => $value)
 		{

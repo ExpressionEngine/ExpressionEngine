@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -125,7 +125,18 @@ class Members extends AbstractDesignController {
 		}
 
 		$this->load->helper('directory');
-		$files = directory_map($path, TRUE);
+
+		// Check whether the theme is in the themes/user folder
+		if ($this->isUserDir($path))
+		{
+			$files = directory_map($path, TRUE);
+			$no_results = 'no_templates_found';
+		}
+		else
+		{
+			$no_results = sprintf(lang('template_path_not_user'), DOC_URL.'member/index.html#member-profile-templates');
+			$files = array();
+		}
 
 		$vars = array();
 
@@ -140,6 +151,7 @@ class Members extends AbstractDesignController {
 				),
 			)
 		);
+		$table->setNoResultsText($no_results);
 
 		$data = array();
 		foreach ($files as $file)
@@ -190,6 +202,11 @@ class Members extends AbstractDesignController {
 		ee()->cp->render('design/members/index', $vars);
 	}
 
+	private function isUserDir($path)
+	{
+		return (strpos($path, PATH_THIRD_THEMES) === 0) ? TRUE : FALSE;
+	}
+
 	public function edit($theme, $file)
 	{
 		$path = ee('Theme')->getPath('member/'
@@ -200,6 +217,11 @@ class Members extends AbstractDesignController {
 		if ( ! file_exists($path))
 		{
 			show_error(lang('unable_to_find_template_file'));
+		}
+
+		if ( ! $this->isUserDir($path))
+		{
+			show_error(sprintf(lang('template_path_not_user'), DOC_URL.'member/index.html#member-profile-templates'));
 		}
 
 		$template_name = (lang($file) == FALSE) ? $file : lang($file);

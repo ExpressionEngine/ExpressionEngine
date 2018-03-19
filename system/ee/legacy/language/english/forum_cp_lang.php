@@ -555,7 +555,7 @@ $lang = array(
 
 'mod_can_split' => 'Split',
 
-'mod_can_view_ip' => 'View <abbr title="Internet Protocol">IP</abbr> addresses',
+'mod_can_view_ip' => 'View IP addresses',
 
 'moderator_removed' => 'Moderator Removed',
 

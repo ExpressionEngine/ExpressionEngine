@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -119,7 +119,7 @@ class EE_Template {
 			$this->sites[ee()->config->item('site_id')] = ee()->config->item('site_short_name');
 		}
 
-		if (ee()->config->item('show_profiler') === 'y' && ee()->session->userdata['group_id'] == 1)
+		if (ee()->config->item('show_profiler') === 'y')
 		{
 			$this->debugging = TRUE;
 
@@ -658,7 +658,7 @@ class EE_Template {
 			//       1 => string 'titles' (length=6)
 			//       2 => string ''' (length=1)
 			//       3 => string '4' (length=1)
-			preg_match_all("/".LD."layout:(.+?)\s+index\s*=\s*(\042|\047)([^\\2]*?)\\2\s*".RD."/si", $str, $matches, PREG_SET_ORDER);
+			preg_match_all("/".LD."layout:([^\s]+?)\s+index\s*=\s*(\042|\047)([^\\2]*?)\\2\s*".RD."/si", $str, $matches, PREG_SET_ORDER);
 
 			foreach ($matches as $match)
 			{
@@ -1772,11 +1772,11 @@ class EE_Template {
 						}
 
 						$error  = ee()->lang->line('error_tag_module_processing');
-						$error .= '<br /><br />';
+						$error .= '<br /><br /><code>';
 						$error .= htmlspecialchars(LD);
 						$error .= 'exp:'.implode(':', $this->tag_data[$i]['tagparts']);
 						$error .= htmlspecialchars(RD);
-						$error .= '<br /><br />';
+						$error .= '</code><br /><br />';
 						$error .= str_replace('%x', $this->tag_data[$i]['class'], str_replace('%y', $meth_name, ee()->lang->line('error_fix_module_processing')));
 
 						ee()->output->fatal_error($error);
@@ -2589,24 +2589,25 @@ class EE_Template {
 		}
 
 		// Is the current user allowed to view this template?
-		if ($query->row('enable_http_auth') != 'y' && $query->row('no_auth_bounce')  != '')
+		if ($query->row('enable_http_auth') != 'y' && ee()->session->userdata('group_id') != 1)
 		{
-			if (ee()->session->userdata('group_id') != 1)
+			ee()->db->select('COUNT(*) as count');
+			ee()->db->where('template_id', $query->row('template_id'));
+			ee()->db->where('member_group', ee()->session->userdata('group_id'));
+			$result = ee()->db->get('template_no_access');
+
+			if ($result->row('count') > 0)
 			{
-				ee()->db->select('COUNT(*) as count');
-				ee()->db->where('template_id', $query->row('template_id'));
-				ee()->db->where('member_group', ee()->session->userdata('group_id'));
-				$result = ee()->db->get('template_no_access');
+				$this->log_item("No Template Access Privileges");
 
-				if ($result->row('count') > 0)
+				if ($this->depth > 0)
 				{
-					$this->log_item("No Template Access Privileges");
+					return '';
+				}
 
-					if ($this->depth > 0)
-					{
-						return '';
-					}
-
+				// If no access redirect template was defined, 404
+				if ($query->row('no_auth_bounce') != '')
+				{
 					$query = ee()->db->select('a.template_id, a.template_data,
 						a.template_name, a.template_type, a.edit_date,
 						a.cache, a.refresh, a.hits, a.protect_javascript,
@@ -2615,13 +2616,38 @@ class EE_Template {
 						->join('template_groups b', 'a.group_id = b.group_id')
 						->where('template_id', $query->row('no_auth_bounce'))
 						->get();
+
+					// If the redirect template is not allowed, give them a 404
+					ee()->db->select('COUNT(*) as count');
+					ee()->db->where('template_id', $query->row('template_id'));
+					ee()->db->where('member_group', ee()->session->userdata('group_id'));
+					$result = ee()->db->get('template_no_access');
+
+					if ($result->row('count') > 0)
+					{
+						$this->log_item("Access redirect denied, Show 404");
+
+						// The redirect page with no access is the 404 template- throw a manual 404
+						if (ee()->config->item('site_404') == $template_group.'/'.$template)
+						{
+							show_404(ee()->uri->uri_string);
+						}
+
+						$this->show_404();
+					}
+				}
+				elseif ($query->row('no_auth_bounce')  == '')
+				{
+					$this->log_item("Access denied, Show 404");
+					// The redirect page with no access is the 404 template- throw a manual 404
+					if (ee()->config->item('site_404') == $template_group.'/'.$template)
+					{
+						show_404(ee()->uri->uri_string);
+					}
+
+					$this->show_404();
 				}
 			}
-		}
-
-		if ($query->num_rows() == 0)
-		{
-			return FALSE;
 		}
 
 		$row = $query->row_array();

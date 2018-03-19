@@ -2,7 +2,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -13,6 +13,6 @@ $(document).ready(function () {
 
 	$('#routes').on('grid:addRow', function(e, el) {
 		$(el).addClass('setting-field');
-		SelectField.renderFields($(el).find('td').eq(1));
+		Dropdown.renderFields($(el).find('td').eq(1));
 	});
 });

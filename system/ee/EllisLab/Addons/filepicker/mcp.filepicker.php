@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -502,7 +502,7 @@ class Filepicker_mcp {
 
 	protected function ajaxValidation(ValidationResult $result)
 	{
-		return ee('Validation')->ajax($reuslt);
+		return ee('Validation')->ajax($result);
 	}
 }
 

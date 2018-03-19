@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -308,7 +308,7 @@ class Set {
 			$field_ids = array();
 			foreach ($fields as $field_name)
 			{
-				$field = $this->fields[$field_name];
+				$field = $this->getFieldByName($field_name);
 				$field_ids[] = $field->getId();
 			}
 

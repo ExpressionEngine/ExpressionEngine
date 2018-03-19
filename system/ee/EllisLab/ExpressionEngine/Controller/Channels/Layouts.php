@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -248,7 +248,18 @@ class Layouts extends AbstractChannelsController {
 				->addToBody(sprintf(lang('create_layout_success_desc'), $channel_layout->layout_name))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'channels/layouts/' . $channel_id));
+			if (ee('Request')->post('submit') == 'save_and_new')
+			{
+				ee()->functions->redirect(ee('CP/URL')->make('channels/layouts/create/'.$channel_id));
+			}
+			elseif (ee()->input->post('submit') == 'save_and_close')
+			{
+				ee()->functions->redirect(ee('CP/URL')->make('channels/layouts/' . $channel_id));
+			}
+			else
+			{
+				ee()->functions->redirect(ee('CP/URL')->make('channels/layouts/edit/'.$channel_layout->getId()));
+			}
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -265,7 +276,29 @@ class Layouts extends AbstractChannelsController {
 			'layout' => $entry->getDisplay($channel_layout),
 			'channel_layout' => $channel_layout,
 			'form' => $this->getForm($channel_layout),
-			'submit_button_text' => lang('save')
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
+				]
+			]
 		);
 
 		ee()->view->cp_breadcrumbs = array(
@@ -289,6 +322,7 @@ class Layouts extends AbstractChannelsController {
 		ee()->view->left_nav = NULL;
 
 		$channel_layout = ee('Model')->get('ChannelLayout', $layout_id)
+			->with('Channel')
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
@@ -297,7 +331,7 @@ class Layouts extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$this->removeStaleFields($channel_layout);
+		$channel_layout->synchronize();
 
 		$channel = $channel_layout->Channel;
 
@@ -346,7 +380,18 @@ class Layouts extends AbstractChannelsController {
 				->addToBody(sprintf(lang('edit_layout_success_desc'), ee()->input->post('layout_name')))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'channels/layouts/' . $channel_layout->Channel->channel_id));
+			if (ee('Request')->post('submit') == 'save_and_new')
+			{
+				ee()->functions->redirect(ee('CP/URL')->make('channels/layouts/create/' . $channel->getId()));
+			}
+			elseif (ee()->input->post('submit') == 'save_and_close')
+			{
+				ee()->functions->redirect(ee('CP/URL')->make('channels/layouts/' . $channel->getId()));
+			}
+			else
+			{
+				ee()->functions->redirect(ee('CP/URL')->make('channels/layouts/edit/' . $channel_layout->getId()));
+			}
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -363,7 +408,29 @@ class Layouts extends AbstractChannelsController {
 			'layout' => $entry->getDisplay($channel_layout),
 			'channel_layout' => $channel_layout,
 			'form' => $this->getForm($channel_layout),
-			'submit_button_text' => lang('save')
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
+				]
+			]
 		);
 
 		ee()->view->cp_breadcrumbs = array(
@@ -501,37 +568,6 @@ class Layouts extends AbstractChannelsController {
 			->addToBody(lang('layouts_removed_desc'))
 			->addToBody($layout_names)
 			->defer();
-	}
-
-	/**
-	 * Loops through the layout field data and removes any fields that are no
-	 * longer part of the channel.
-	 *
-	 * @param obj $channel_layout A ChannelLayout object
-	 * @return void
-	 */
-	private function removeStaleFields($channel_layout)
-	{
-		$field_layout = $channel_layout->field_layout;
-
-		$fields = $channel_layout->Channel->getAllCustomFields()->map(function($field) {
-			return "field_id_" . $field->field_id;
-		});
-
-		foreach ($field_layout as $i => $section)
-		{
-			foreach ($section['fields'] as $j => $field_info)
-			{
-				// Remove any fields that have since been deleted.
-				if (strpos($field_info['field'], 'field_id_') === 0
-					&& ! in_array($field_info['field'], $fields))
-				{
-					array_splice($field_layout[$i]['fields'], $j, 1);
-				}
-			}
-		}
-
-		$channel_layout->field_layout = $field_layout;
 	}
 }
 

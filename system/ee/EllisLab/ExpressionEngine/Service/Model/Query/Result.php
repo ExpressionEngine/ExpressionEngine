@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -119,12 +119,7 @@ class Result {
 					throw new \Exception("Unknown model property in query result: `{$alias}.{$property}`");
 				}
 
-				$value = $row["{$alias}__{$property}"];
-
-				if (isset($value))
-				{
-					$model_data[$property] = $value;
-				}
+				$model_data[$property] = $row["{$alias}__{$property}"];
 			}
 
 			if (empty($model_data))

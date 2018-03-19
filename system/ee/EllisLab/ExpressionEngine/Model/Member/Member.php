@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -138,9 +138,9 @@ class Member extends ContentModel {
 	);
 
 	protected static $_events = array(
+		'afterUpdate',
+		'beforeDelete',
 		'beforeInsert',
-		'beforeUpdate',
-		'beforeDelete'
 	);
 
 	// Properties
@@ -224,11 +224,13 @@ class Member extends ContentModel {
 	/**
 	 * Log email and password changes
 	 */
-	public function onBeforeUpdate()
+	public function onAfterUpdate($changed)
 	{
+		parent::onAfterUpdate($changed);
+
 		if (REQ == 'CP')
 		{
-			if ($this->isDirty('password'))
+			if (isset($changed['password']))
 			{
 				ee()->logger->log_action(sprintf(
 					lang('member_changed_password'),
@@ -237,16 +239,18 @@ class Member extends ContentModel {
 				));
 			}
 
-			if ($this->isDirty('email'))
+			if (isset($changed['email']))
 			{
 				ee()->logger->log_action(sprintf(
 					lang('member_changed_email'),
 					$this->username,
-					$this->member_id
+					$this->member_id,
+					$changed['email'],
+					$this->email
 				));
 			}
 
-			if ($this->isDirty('group_id'))
+			if (isset($changed['group_id']))
 			{
 				ee()->logger->log_action(sprintf(
 					lang('member_changed_member_group'),
@@ -258,6 +262,77 @@ class Member extends ContentModel {
 				ee()->session->set_cache(__CLASS__, "getStructure({$this->group_id})", NULL);
 			}
 		}
+
+		if (isset($changed['email']))
+		{
+			// this operation could be expensive on models so use a direct MySQL UPDATE query
+			ee('db')->update('comments', ['email' => $this->email], ['author_id' => $this->member_id]);
+
+			// email the original email address telling them of the change
+			$this->notifyOfChanges('email_changed_notification', $changed['email']);
+		}
+
+		if (isset($changed['password']))
+		{
+			// email the current email address telling them their password changed
+			$this->notifyOfChanges('password_changed_notification', $this->email);
+		}
+
+		if (isset($changed['screen_name']))
+		{
+			// these operations could be expensive on models so use a direct MySQL UPDATE query
+			ee('db')->update('comments', ['name' => $this->screen_name], ['author_id' => $this->member_id]);
+
+			if (ee()->config->item('forum_is_installed') == 'y')
+			{
+				ee('db')->update('forums', ['forum_last_post_author' => $this->screen_name], ['forum_last_post_author_id' => $this->member_id]);
+				ee('db')->update('forum_moderators', ['mod_member_name' => $this->screen_name], ['mod_member_id' => $this->member_id]);
+			}
+		}
+
+		// invalidate reset codes if the user's email or password is changed
+		if (isset($changed['email']) OR isset($changed['password']))
+		{
+			$this->getModelFacade()->get('ResetPassword')
+				->filter('member_id', $this->member_id)
+				->delete();
+		}
+	}
+
+	/**
+	 * Notify of Changes
+	 *
+	 * @param  string $type Specialty template type
+	 * @param  string $to   email address to send the notification to
+	 * @return void
+	 */
+	private function notifyOfChanges($type, $to)
+	{
+		$vars = [
+			'name'		=> $this->screen_name,
+			'username'  => $this->username,
+			'site_name'	=> ee()->config->item('site_name'),
+			'site_url'	=> ee()->config->item('site_url')
+		];
+
+		$template = ee()->functions->fetch_email_template($type);
+		$subject = $template['title'];
+		$message = $template['data'];
+
+		foreach ($vars as $var => $value)
+		{
+			$subject = str_replace('{'.$var.'}', $value, $subject);
+			$message = str_replace('{'.$var.'}', $value, $message);
+		}
+
+		ee()->load->library('email');
+		ee()->email->wordwrap = true;
+		ee()->email->mailtype = ee()->config->item('mail_format');
+		ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
+		ee()->email->to($to);
+		ee()->email->subject($subject);
+		ee()->email->message($message);
+		ee()->email->send();
 	}
 
 	/**
@@ -633,6 +708,35 @@ class Member extends ContentModel {
 		}
 
 		return TRUE;
+	}
+
+	/**
+	 * Hash and update Password
+	 *
+	 * 	Validation of $this->password takes the plaintext password. But it then
+	 * 	needs to be prepped as a salted hash before it's saved to the database
+	 * 	so we never store a plaintext password. It is imperative that this is done
+	 * 	BEFORE a call to save() the model, so it's not even ever in the database
+	 * 	temporarily or in a MySQL query log, potentially transmitted over HTTP even.
+	 *
+	 * @param  string $plaintext Plaintext password
+	 * @return void
+	 */
+	public function hashAndUpdatePassword($plaintext)
+	{
+		ee()->load->library('auth');
+		$hashed_password = ee()->auth->hash_password($plaintext);
+		$this->setProperty('password', $hashed_password['password']);
+		$this->setProperty('salt', $hashed_password['salt']);
+
+		// kill all sessions for this member except for the current one
+		$this->getModelFacade()->get('Session')
+			->filter('member_id', $this->member_id)
+			->filter('session_id', '!=', (string) ee()->session->userdata('session_id'))
+			->delete();
+
+		// invalidate any other sessions' remember me cookies
+		ee()->remember->delete_others($this->member_id);
 	}
 
 	/**

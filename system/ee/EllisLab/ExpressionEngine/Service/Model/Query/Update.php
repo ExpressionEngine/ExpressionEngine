@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -40,6 +40,9 @@ class Update extends Query {
 
 		$object->emit('beforeUpdate', $backup);
 		$object->emit('beforeSave');
+
+		// In case values have changed in above events
+		$backup = $object->getOriginal();
 
 		$this->doWork($object);
 		$object->markAsClean();

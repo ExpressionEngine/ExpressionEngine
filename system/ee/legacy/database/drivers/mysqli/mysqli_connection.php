@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -237,11 +237,11 @@ class CI_DB_mysqli_connection {
 		$collation = $this->config['dbcollat'];
 
 		$find = '/(DEFAULT\s+)?(CHARACTER\s+SET\s+|CHARSET\s*=\s*)\w+(\s+COLLATE\s+\w+)?/';
-		$want = "\\1CHARACTER SET {$charset} COLLATE {$collation}";
+		$want = "CHARACTER SET {$charset} COLLATE {$collation}";
 
 		if (preg_match($find, $query))
 		{
-			$query = preg_replace($find, $want, $query);
+			$query = preg_replace($find, "\\1".$want, $query);
 		}
 		else
 		{

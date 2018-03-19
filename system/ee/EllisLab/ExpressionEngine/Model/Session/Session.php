@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -34,6 +34,7 @@ class Session extends Model {
 	protected $admin_sess;
 	protected $ip_address;
 	protected $user_agent;
+	protected $login_state;
 	protected $fingerprint;
 	protected $sess_start;
 	protected $last_activity;

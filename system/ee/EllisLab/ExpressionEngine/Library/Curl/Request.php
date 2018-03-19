@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -49,6 +49,12 @@ abstract class Request {
 		curl_setopt_array($curl, $this->config);
 
 		$response = curl_exec($curl);
+
+		if ($response === FALSE)
+		{
+			throw new \Exception(curl_error($curl));
+		}
+
 		list($headers, $data) = explode("\r\n\r\n", $response, 2);
 
 		$this->setHeaders($headers, $curl);

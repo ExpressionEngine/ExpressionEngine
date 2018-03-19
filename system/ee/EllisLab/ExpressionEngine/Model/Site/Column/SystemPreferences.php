@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -131,7 +131,18 @@ class SystemPreferences extends CustomType {
 	public function __get($name)
 	{
 		$value = parent::__get($name);
-		$value = parse_config_variables($value, $this->getValues());
+
+		$config = ee('Config')->getFile();
+		$overrides = [];
+
+		// If not explicitly overridden in config.php, use the config vars for
+		// this particular site
+		foreach (['base_path', 'base_url'] as $variable)
+		{
+			$overrides[$variable] = $config->get($variable) ?: $this->$variable;
+		}
+
+		$value = parse_config_variables($value, $overrides);
 
 		return $value;
 	}

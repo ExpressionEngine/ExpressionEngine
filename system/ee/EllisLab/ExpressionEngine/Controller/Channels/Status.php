@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -249,7 +249,7 @@ class Status extends AbstractChannelsController {
 				'value' => 'save_and_new',
 				'text' => 'save_and_new',
 				'working' => 'btn_saving'
-			]
+					]
 		];
 
 		return ee('View')->make('ee:_shared/form')->render($vars);

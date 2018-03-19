@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -450,8 +450,30 @@ class Forum_mcp extends CP_Controller {
 			'errors' => $errors,
 			'cp_page_title' => lang('create_forum_board'),
 			'base_url' => ee('CP/URL')->make($this->base . 'create/board'),
-			'save_btn_text' => 'btn_save_board',
-			'save_btn_text_working' => 'btn_saving',
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
+				]
+
+			],
 			'tabs' => array(
 				'board' => $this->getBoardForm($board, $errors),
 				'forums' => $this->getBoardForumsForm($board, $errors),
@@ -508,8 +530,30 @@ class Forum_mcp extends CP_Controller {
 			'errors' => $errors,
 			'cp_page_title' => sprintf(lang('edit_forum_board'), $board->board_label),
 			'base_url' => ee('CP/URL')->make($this->base . 'edit/board/' . $id),
-			'save_btn_text' => 'btn_save_board',
-			'save_btn_text_working' => 'btn_saving',
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
+				]
+
+			],
 			'tabs' => array(
 				'board' => $this->getBoardForm($board, $errors),
 				'forums' => $this->getBoardForumsForm($board, $errors),
@@ -599,7 +643,18 @@ class Forum_mcp extends CP_Controller {
 			->addToBody(sprintf(lang($action . '_forum_board_success_desc'), $board->board_label))
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL')->make($this->base . '/index/' . $board->board_id));
+		if (ee('Request')->post('submit') == 'save_and_new')
+		{
+			ee()->functions->redirect(ee('CP/URL')->make($this->base . 'create/board'));
+		}
+		elseif (ee()->input->post('submit') == 'save_and_close')
+		{
+			ee()->functions->redirect(ee('CP/URL')->make($this->base . 'index/' . $board->board_id));
+		}
+		else
+		{
+			ee()->functions->redirect(ee('CP/URL')->make($this->base . 'edit/board/' . $board->board_id));
+		}
 	}
 
 	private function getBoardForm($board, $errors)
@@ -1247,8 +1302,30 @@ class Forum_mcp extends CP_Controller {
 			'errors' => $errors,
 			'cp_page_title' => lang('create_forum_alias'),
 			'base_url' => ee('CP/URL')->make($this->base . 'create/alias'),
-			'save_btn_text' => 'btn_save_alias',
-			'save_btn_text_working' => 'btn_saving',
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
+				]
+
+			],
 			'sections' => $this->getAliasForm($alias),
 			'errors' => $errors,
 			'required' => TRUE
@@ -1301,8 +1378,30 @@ class Forum_mcp extends CP_Controller {
 			'errors' => $errors,
 			'cp_page_title' => sprintf(lang('edit_forum_board'), $alias->board_label),
 			'base_url' => ee('CP/URL')->make($this->base . 'edit/alias/' . $id),
-			'save_btn_text' => 'btn_save_alias',
-			'save_btn_text_working' => 'btn_saving',
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
+				]
+
+			],
 			'sections' => $this->getAliasForm($alias),
 			'errors' => $errors,
 			'required' => TRUE
@@ -1362,7 +1461,18 @@ class Forum_mcp extends CP_Controller {
 			->addToBody(sprintf(lang($action . '_forum_alias_success_desc'), $alias->board_label))
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL')->make($this->base . '/index/' . $alias->board_alias_id));
+		if (ee('Request')->post('submit') == 'save_and_new')
+		{
+			ee()->functions->redirect(ee('CP/URL')->make($this->base . 'create/alias'));
+		}
+		elseif (ee()->input->post('submit') == 'save_and_close')
+		{
+			ee()->functions->redirect(ee('CP/URL')->make($this->base . 'index/' . $alias->board_alias_id));
+		}
+		else
+		{
+			ee()->functions->redirect(ee('CP/URL')->make($this->base . 'edit/alias/' . $alias->getId()));
+		}
 	}
 
 	private function getAliasForm($alias)
@@ -1527,8 +1637,30 @@ class Forum_mcp extends CP_Controller {
 			'errors' => $errors,
 			'cp_page_title' => lang('create_category'),
 			'base_url' => ee('CP/URL')->make($this->base . 'create/category/' . $board_id),
-			'save_btn_text' => 'btn_save_category',
-			'save_btn_text_working' => 'btn_saving',
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
+				]
+
+			],
 			'sections' => $this->categoryForm($category),
 		);
 
@@ -1572,8 +1704,30 @@ class Forum_mcp extends CP_Controller {
 			'errors' => $errors,
 			'cp_page_title' => lang('edit_category'),
 			'base_url' => ee('CP/URL')->make($this->base . 'edit/category/' . $id),
-			'save_btn_text' => 'btn_save_category',
-			'save_btn_text_working' => 'btn_saving',
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
+				]
+
+			],
 			'sections' => $this->categoryForm($category),
 		);
 
@@ -1631,7 +1785,18 @@ class Forum_mcp extends CP_Controller {
 			->addToBody(sprintf(lang($action . '_category_success_desc'), $category->forum_name))
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL')->make($this->base . '/index/' . $category->board_id));
+		if (ee('Request')->post('submit') == 'save_and_new')
+		{
+			ee()->functions->redirect(ee('CP/URL')->make($this->base . 'create/category/' . $category->board_id));
+		}
+		elseif (ee()->input->post('submit') == 'save_and_close')
+		{
+			ee()->functions->redirect(ee('CP/URL')->make($this->base . 'index/' . $category->board_id));
+		}
+		else
+		{
+			ee()->functions->redirect(ee('CP/URL')->make($this->base . 'edit/category/' . $category->getId()));
+		}
 	}
 
 	private function categoryForm($category)
@@ -1753,15 +1918,37 @@ class Forum_mcp extends CP_Controller {
 				->addToBody(sprintf(lang('edit_category_settings_success_desc'), $category->forum_name))
 				->defer();
 
-			ee()->functions->redirect($return);
+			if (ee()->input->post('submit') == 'save_and_close')
+			{
+				ee()->functions->redirect($return);
+			}
+			else
+			{
+				ee()->functions->redirect(ee('CP/URL')->make($this->base . 'settings/category/' . $id));
+			}
 		}
 
 		$vars = array(
 			'errors' => $errors,
 			'cp_page_title' => sprintf(lang('category_permissions'), $category->forum_name),
 			'base_url' => ee('CP/URL')->make($this->base . 'settings/category/' . $id),
-			'save_btn_text' => 'btn_save_permissions',
-			'save_btn_text_working' => 'btn_saving',
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
+				]
+
+			],
 		);
 
 		$member_groups = ee('Model')->get('MemberGroup')
@@ -1878,8 +2065,30 @@ class Forum_mcp extends CP_Controller {
 			'errors' => $errors,
 			'cp_page_title' => lang('create_forum'),
 			'base_url' => ee('CP/URL')->make($this->base . 'create/forum/' . $cat_id),
-			'save_btn_text' => 'btn_save_forum',
-			'save_btn_text_working' => 'btn_saving',
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
+				]
+
+			],
 			'sections' => $this->forumForm($forum),
 		);
 
@@ -1923,8 +2132,30 @@ class Forum_mcp extends CP_Controller {
 			'errors' => $errors,
 			'cp_page_title' => lang('edit_forum'),
 			'base_url' => ee('CP/URL')->make($this->base . 'edit/forum/' . $id),
-			'save_btn_text' => 'btn_save_forum',
-			'save_btn_text_working' => 'btn_saving',
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
+				]
+
+			],
 			'sections' => $this->forumForm($forum),
 		);
 
@@ -1987,7 +2218,18 @@ class Forum_mcp extends CP_Controller {
 			->addToBody(sprintf(lang($action . '_forum_success_desc'), $forum->forum_name))
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL')->make($this->base . '/index/' . $forum->board_id));
+		if (ee('Request')->post('submit') == 'save_and_new')
+		{
+			ee()->functions->redirect(ee('CP/URL')->make($this->base . 'create/forum/' . $forum->board_id));
+		}
+		elseif (ee()->input->post('submit') == 'save_and_close')
+		{
+			ee()->functions->redirect(ee('CP/URL')->make($this->base . 'index/' . $forum->board_id));
+		}
+		else
+		{
+			ee()->functions->redirect(ee('CP/URL')->make($this->base . 'edit/forum/' . $forum->getId()));
+		}
 	}
 
 	private function forumForm($forum)
@@ -2290,15 +2532,37 @@ class Forum_mcp extends CP_Controller {
 				->addToBody(sprintf(lang('edit_forum_settings_success_desc'), $forum->forum_name))
 				->defer();
 
-			ee()->functions->redirect($return);
+			if (ee()->input->post('submit') == 'save_and_close')
+			{
+				ee()->functions->redirect($return);
+			}
+			else
+			{
+				ee()->functions->redirect(ee('CP/URL')->make($this->base . 'settings/forum/' . $id));
+			}
 		}
 
 		$vars = array(
 			'errors' => $errors,
 			'cp_page_title' => sprintf(lang('forum_permissions'), $forum->forum_name),
 			'base_url' => ee('CP/URL')->make($this->base . 'settings/forum/' . $id),
-			'save_btn_text' => 'btn_save_permissions',
-			'save_btn_text_working' => 'btn_saving',
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
+				]
+
+			],
 		);
 
 		$member_groups = ee('Model')->get('MemberGroup')
@@ -2587,8 +2851,30 @@ class Forum_mcp extends CP_Controller {
 			'errors' => $errors,
 			'cp_page_title' => lang('create_member_rank'),
 			'base_url' => ee('CP/URL')->make($this->base . 'create/rank/'),
-			'save_btn_text' => 'btn_save_rank',
-			'save_btn_text_working' => 'btn_saving',
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
+				]
+
+			],
 			'sections' => $this->rankForm($rank),
 		);
 
@@ -2632,8 +2918,30 @@ class Forum_mcp extends CP_Controller {
 			'errors' => $errors,
 			'cp_page_title' => lang('edit_member_rank'),
 			'base_url' => ee('CP/URL')->make($this->base . 'edit/rank/' . $id),
-			'save_btn_text' => 'btn_save_rank',
-			'save_btn_text_working' => 'btn_saving',
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
+				]
+
+			],
 			'sections' => $this->rankForm($rank),
 		);
 
@@ -2739,7 +3047,18 @@ class Forum_mcp extends CP_Controller {
 			->addToBody(sprintf(lang($action . '_rank_success_desc'), $rank->rank_title))
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL')->make($this->base . '/ranks'));
+		if (ee('Request')->post('submit') == 'save_and_new')
+		{
+			ee()->functions->redirect(ee('CP/URL')->make($this->base . 'create/rank'));
+		}
+		elseif (ee()->input->post('submit') == 'save_and_close')
+		{
+			ee()->functions->redirect(ee('CP/URL')->make($this->base . 'ranks'));
+		}
+		else
+		{
+			ee()->functions->redirect(ee('CP/URL')->make($this->base . 'edit/rank/' . $rank->getId()));
+		}
 	}
 
 	private function removeRanks($ids)
@@ -2901,7 +3220,14 @@ class Forum_mcp extends CP_Controller {
 					->addToBody(sprintf(lang('create_administrator_success_desc'), $admin->getAdminName()))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL')->make($this->base . 'admins/' . $board_id));
+				if (ee('Request')->post('submit') == 'save_and_new')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make($this->base . 'create/admin/' . $admin->board_id));
+				}
+				else
+				{
+					ee()->functions->redirect(ee('CP/URL')->make($this->base . 'admins/' . $board_id));
+				}
 			}
 		}
 
@@ -2910,8 +3236,23 @@ class Forum_mcp extends CP_Controller {
 			'errors' => $errors,
 			'cp_page_title' => lang('create_administrator'),
 			'base_url' => ee('CP/URL')->make($this->base . 'create/admin/' . $board_id),
-			'save_btn_text' => 'btn_save_administrator',
-			'save_btn_text_working' => 'btn_saving',
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
+				]
+
+			],
 		);
 
 		$member_groups = ee('Model')->get('MemberGroup')
@@ -3214,8 +3555,30 @@ class Forum_mcp extends CP_Controller {
 			'errors' => $errors,
 			'cp_page_title' => sprintf(lang('create_moderator_in'), $forum->forum_name),
 			'base_url' => ee('CP/URL')->make($this->base . 'create/moderator/' . $forum_id),
-			'save_btn_text' => 'btn_save_moderator',
-			'save_btn_text_working' => 'btn_saving',
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
+				]
+
+			],
 			'sections' => $this->moderatorForm($moderator),
 		);
 
@@ -3264,8 +3627,30 @@ class Forum_mcp extends CP_Controller {
 			'errors' => $errors,
 			'cp_page_title' => sprintf(lang('edit_moderator_in'), $forum->forum_name),
 			'base_url' => ee('CP/URL')->make($this->base . 'edit/moderator/' . $id),
-			'save_btn_text' => 'btn_save_moderator',
-			'save_btn_text_working' => 'btn_saving',
+			'buttons' => [
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'save',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_new',
+					'text' => 'save_and_new',
+					'working' => 'btn_saving'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save_and_close',
+					'text' => 'save_and_close',
+					'working' => 'btn_saving'
+				]
+
+			],
 			'sections' => $this->moderatorForm($moderator),
 		);
 
@@ -3326,6 +3711,7 @@ class Forum_mcp extends CP_Controller {
 							'choices' => array(
 								'group' => lang('moderator_type_member_group'),
 							),
+							'encode' => FALSE,
 							'value' => ($moderator->getType()) ?: 'group',
 						),
 						'member_group' => array(
@@ -3342,6 +3728,7 @@ class Forum_mcp extends CP_Controller {
 							'choices' => array(
 								'individual' => lang('moderator_type_individual')
 							),
+							'encode' => FALSE,
 							'value' => ($moderator->getType()) ?: 'group',
 						),
 						'individual' => array(
@@ -3366,6 +3753,7 @@ class Forum_mcp extends CP_Controller {
 								'mod_can_announce'      => lang('mod_can_announce'),
 								'mod_can_view_ip'       => lang('mod_can_view_ip'),
 							),
+							'encode' => FALSE,
 							'value' => $permissions
 						)
 					)
@@ -3476,7 +3864,18 @@ class Forum_mcp extends CP_Controller {
 			->addToBody(sprintf(lang($action . '_moderator_success_desc'), $moderator->getModeratorName()))
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL')->make($this->base . 'moderators/' . $moderator->board_id));
+		if (ee('Request')->post('submit') == 'save_and_new')
+		{
+			ee()->functions->redirect(ee('CP/URL')->make($this->base . 'create/moderator/' . $moderator->board_id));
+		}
+		elseif (ee()->input->post('submit') == 'save_and_close')
+		{
+			ee()->functions->redirect(ee('CP/URL')->make($this->base . 'moderators/' . $moderator->board_id));
+		}
+		else
+		{
+			ee()->functions->redirect(ee('CP/URL')->make($this->base . 'edit/moderator/' . $moderator->getId()));
+		}
 	}
 
 	private function removeModerator($id)

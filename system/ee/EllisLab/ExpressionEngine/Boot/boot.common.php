@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -554,14 +554,18 @@ if ( ! function_exists('log_message'))
 
 		// every control character except newline (dec 10)
 		// carriage return (dec 13), and horizontal tab (dec 09)
+		// and strip all RTL / LTR type markers
 
 		if ($url_encoded)
 		{
-			$non_displayables[] = '/%0[0-8bcef]/';	// url encoded 00-08, 11, 12, 14, 15
-			$non_displayables[] = '/%1[0-9a-f]/';	// url encoded 16-31
+			$non_displayables[] = '/%0[0-8bcef]/i';	// url encoded 00-08, 11, 12, 14, 15
+			$non_displayables[] = '/%1[0-9a-f]/i';	// url encoded 16-31
+			$non_displayables[] = '/%e2%80%(?:a[de]|8[ef])/i'; // url encoded RTLO, LTRO, RTL, and LTR
 		}
 
-		$non_displayables[] = '/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+/S';	// 00-08, 11, 12, 14-31, 127
+		$non_displayables[] = '/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+/S'; // 00-08, 11, 12, 14-31, 127
+		$non_displayables[] = '/[\x{202e}\x{202d}\x{200f}\x{200e}]/uS'; // RTLO 202e, LTRO 202d, RTL 200f, LTR 200e
+		$non_displayables[] = '/&#(?:823[78]|820[67]);/'; // HTML entity versions of RTL/LTR markers
 
 		do
 		{

@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -381,7 +381,6 @@ class ThemeInstaller {
 		foreach (directory_map($entry_data_path) as $channel_name => $channel_entries)
 		{
 			$channel = ee('Model')->get('Channel')
-				->with('CategoryGroups')
 				->filter('channel_name', $channel_name)
 				->first();
 

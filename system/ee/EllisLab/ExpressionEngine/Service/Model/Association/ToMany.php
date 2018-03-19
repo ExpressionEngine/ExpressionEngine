@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -86,6 +86,14 @@ class ToMany extends Association {
 		foreach ($this->related as $m)
 		{
 			if ($m === $model)
+			{
+				return TRUE;
+			}
+
+			// Existing models queried independently may fail the above check
+			if ($m->getId() && $model->getId() &&
+				$m->getId() === $model->getId() &&
+				get_class($m) == get_class($model))
 			{
 				return TRUE;
 			}

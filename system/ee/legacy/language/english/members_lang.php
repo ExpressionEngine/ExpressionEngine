@@ -136,6 +136,8 @@ $lang = array(
 
 'heir_to_members_entries' => 'Some of these members have entries assigned to their accounts. What would you like to do with those entries?',
 
+'heir_required' => 'You must select an account to reassign entries to.',
+
 'include_in_authorlist' => 'Author lists',
 
 'include_in_memberlist' => 'Member lists',
@@ -504,7 +506,7 @@ $lang = array(
 
 'can_admin_channels' => 'Access channel manager',
 
-'can_admin_channels_desc' => 'When enabled, users can access the channel manager.',
+'can_admin_channels_desc' => 'When enabled, users can access the channel manager, and optionally channel fields, categories, and statuses.',
 
 'can_admin_design' => 'Global template settings',
 
@@ -732,9 +734,9 @@ $lang = array(
 
 'can_not_delete_only_member' => 'You cannot delete the only member in the database',
 
-'can_send_bulletins' => 'Access bulletins',
+'can_send_bulletins' => 'Send bulletins',
 
-'can_send_bulletins_desc' => 'When enabled, users assigned to this group may send and receive bulletins.',
+'can_send_bulletins_desc' => 'When enabled, users assigned to this group may send bulletins.',
 
 'cannot_change_your_group' => 'Super Admins cannot change their member group assignment. Please have another Super Admin reassign you.',
 

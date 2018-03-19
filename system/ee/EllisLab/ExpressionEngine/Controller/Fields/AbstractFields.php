@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -62,6 +62,9 @@ abstract class AbstractFields extends CP_Controller {
 
 	protected function generateSidebar($active = NULL)
 	{
+		// More than one group can be active, so we use an array
+		$active_groups = (is_array($active)) ? $active : array($active);
+
 		$all_fields = ee('CP/Sidebar')->makeNew()->addMarginBottom();
 		$all_fields->addHeader(lang('all_fields'), ee('CP/URL')->make('fields'))->isInactive();
 
@@ -108,7 +111,7 @@ abstract class AbstractFields extends CP_Controller {
 				)->identifiedBy($group->getId());
 			}
 
-			if ($active && $active == $group->getId())
+			if (in_array($group->getId(), $active_groups))
 			{
 				$item->isActive();
 			}

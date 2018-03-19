@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -225,6 +225,17 @@ abstract class Core {
 		try
 		{
 			$controller = new $class;
+
+			// we can only ascertain method signatures for real methods, not magic __call()s
+			if (method_exists($controller, $method))
+			{
+				$reflection = new \ReflectionMethod($controller, $method);
+
+				if (count($params) < $reflection->getNumberOfRequiredParameters())
+				{
+					show_404();
+				}
+			}
 
 			$result = call_user_func_array(array($controller, $method), $params);
 		}

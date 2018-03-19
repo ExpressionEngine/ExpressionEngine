@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -1421,7 +1421,7 @@ class EE_Functions {
 		$total_conditionals = count($eek[0]);
 
 		// Mark all opening conditionals, sequentially.
-		if (count($modified_str) > 0)
+		if ( ! empty($modified_str))
 		{
 			 for ($i = 0; $i < $total_conditionals; $i++)
 			 {

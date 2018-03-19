@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -104,9 +104,9 @@ class XSS {
 		 */
 		if (is_array($str))
 		{
-			while (list($key) = each($str))
+			foreach ($str as $key => $value)
 			{
-				$str[$key] = $this->clean($str[$key]);
+				$str[$key] = $this->clean($value);
 			}
 
 			return $str;

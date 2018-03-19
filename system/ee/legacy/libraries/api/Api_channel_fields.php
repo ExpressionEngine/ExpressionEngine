@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -1123,8 +1123,7 @@ class Api_channel_fields extends Api {
 			);
 
 			$ft_settings = array();
-
-			if (isset($row['field_settings']) && strlen($row['field_settings']))
+			if (isset($row['field_settings']) && is_string($row['field_settings']))
 			{
 				$ft_settings = unserialize(base64_decode($row['field_settings']));
 			}

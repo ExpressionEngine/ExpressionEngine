@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -115,6 +115,13 @@ class Template extends AbstractDesignController {
 			}
 		}
 
+		$duplicate_template_options = [
+			[
+				'label' => lang('do_not_duplicate'),
+				'value' => ''
+			]
+		] + $this->getExistingTemplates();
+
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'errors' => $errors,
@@ -147,7 +154,7 @@ class Template extends AbstractDesignController {
 						'fields' => array(
 							'template_id' => array(
 								'type' => 'radio',
-								'choices' => $this->getExistingTemplates(),
+								'choices' => $duplicate_template_options,
 								'filter_url' => ee('CP/URL', 'design/template/search-templates')->compile(),
 								'no_results' => [
 									'text' => sprintf(lang('no_found'), lang('templates'))
@@ -962,7 +969,15 @@ class Template extends AbstractDesignController {
 	 */
 	private function renderAccessPartial(TemplateModel $template, $errors)
 	{
-		$existing_templates = $this->getExistingTemplates();
+		$existing_templates = [
+			[
+				'label' => lang('default_404_option'),
+				'value' => ''
+			]
+		] + $this->getExistingTemplates($template->no_auth_bounce);
+
+		// Remove current template from options
+		unset($existing_templates[$template->template_id]);
 
 		$member_groups = ee('Model')->get('MemberGroup')
 			->fields('group_id', 'group_title')
@@ -999,7 +1014,8 @@ class Template extends AbstractDesignController {
 						'no_auth_bounce' => array(
 							'type' => 'radio',
 							'choices' => $existing_templates,
-							'value' => $template->no_auth_bounce ?: NULL,
+							'filter_url' => ee('CP/URL', 'design/template/search-templates')->compile(),
+							'value' => $template->no_auth_bounce,
 							'no_results' => [
 								'text' => sprintf(lang('no_found'), lang('templates'))
 							]
@@ -1073,12 +1089,13 @@ class Template extends AbstractDesignController {
 	 *
 	 * @return array An associative array of templates
 	 */
-	private function getExistingTemplates()
+	private function getExistingTemplates($selected_id = NULL)
 	{
 		$search_query = ee('Request')->get('search');
 
 		$templates = ee('Model')->get('Template')
 			->with('TemplateGroup')
+			->with('Site')
 			->order('TemplateGroup.group_name')
 			->order('Template.template_name');
 
@@ -1096,7 +1113,23 @@ class Template extends AbstractDesignController {
 		$results = [];
 		foreach ($templates as $template)
 		{
-			$results[$template->getId()] = $template->getPath();
+			$results[$template->getId()] = [
+				'label' => $template->getPath(),
+				'instructions' => bool_config_item('multiple_sites_enabled') ? $template->Site->site_label : NULL
+			];
+		}
+
+		if ($selected_id && ! array_key_exists($selected_id, $results) && ! $search_query)
+		{
+			$template = ee('Model')->get('Template', $selected_id)
+				->with('TemplateGroup')
+				->with('Site')
+				->first();
+
+			$results[$template->getId()] = [
+				'label' => $template->getPath(),
+				'instructions' => bool_config_item('multiple_sites_enabled') ? $template->Site->site_label : NULL
+			];
 		}
 
 		return $results;
