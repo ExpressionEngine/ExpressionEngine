@@ -136,6 +136,11 @@ class Fluid_field_ft extends EE_Fieldtype {
 
 		ee()->session->set_cache(__CLASS__, $this->name(), $data);
 
+		if ( ! $this->settings['field_search'])
+		{
+			return NULL;
+		}
+
 		$compiled_data_for_search = array();
 
 		foreach ($data['fields'] as $field_data)
