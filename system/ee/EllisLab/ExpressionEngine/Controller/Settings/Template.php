@@ -123,6 +123,7 @@ class Template extends Settings {
 	private function templateListSearch()
 	{
 		$search_query = ee('Request')->get('search');
+		$selected = ee()->config->item('site_404');
 
 		$templates = ee('Model')->get('Template')
 			->with('TemplateGroup')
@@ -145,6 +146,11 @@ class Template extends Settings {
 		foreach ($templates as $template)
 		{
 			$results[$template->getPath()] = $template->getPath();
+		}
+
+		if ($selected && ! array_key_exists($selected, $results) && ! $search_query)
+		{
+			$results[$selected] = $selected;
 		}
 
 		return $results;
