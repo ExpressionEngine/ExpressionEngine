@@ -126,6 +126,7 @@ class Template extends Settings {
 
 		$templates = ee('Model')->get('Template')
 			->with('TemplateGroup')
+			->filter('site_id', ee()->config->item('site_id'))
 			->order('TemplateGroup.group_name')
 			->order('Template.template_name');
 
