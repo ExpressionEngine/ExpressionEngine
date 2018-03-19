@@ -133,7 +133,7 @@ class Template extends Settings {
 
 		if ($search_query)
 		{
-			$templates = $templates = $templates->all()->filter(function($template) use ($search_query) {
+			$templates = $templates->all()->filter(function($template) use ($search_query) {
 				return strpos(strtolower($template->getPath()), strtolower($search_query)) !== FALSE;
 			});
 		}
