@@ -108,7 +108,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 							$data,
 							$field['params'],
 							FALSE,
-							$modifier
+							$field['full_modifier']
 						));
 					}
 

@@ -36,7 +36,7 @@ class LegacyParser {
 	 * is a non-breaking API change
 	 *
 	 * @param  string $template_var Template variable to get the name, modifier, and parameters from
-	 * @param  string $prefix Options prefix
+	 * @param  string $prefix Optional prefix including colon suffix
 	 * @return array Variable name, modifier, and parameters
 	 */
 	public function parseVariableProperties($template_var, $prefix = '')
@@ -44,21 +44,32 @@ class LegacyParser {
 		$props = [];
 
 		$unprefixed_var	= preg_replace('/^'.$prefix.'/', '', $template_var);
-		$field_name 	= substr($unprefixed_var.' ', 0, strpos($unprefixed_var.' ', ' '));
-		$param_string	= substr($unprefixed_var.' ', strlen($field_name));
+		$orig_field_name = substr($unprefixed_var.' ', 0, strpos($unprefixed_var.' ', ' '));
+		$param_string	= substr($unprefixed_var.' ', strlen($orig_field_name));
 
+		$field_name = $orig_field_name;
 		$modifier = '';
-		$modifier_loc = strrpos($field_name, ':');
+		$full_modifier = '';
 
-		if ($modifier_loc !== FALSE)
+		$full_modifier_loc = strpos($orig_field_name, ':');
+		$modifier_loc = strrpos($orig_field_name, ':');
+
+		if ($full_modifier_loc !== FALSE)
 		{
-			$modifier = substr($field_name, $modifier_loc + 1);
-			$field_name = substr($field_name, 0, $modifier_loc);
+			$field_name = substr($orig_field_name, 0, $full_modifier_loc);
+			$full_modifier = substr($orig_field_name, $full_modifier_loc + 1);
+			$modifier = $full_modifier;
+		}
+
+		if ($modifier_loc !== FALSE && $modifier_loc !== $full_modifier_loc)
+		{
+			$modifier = substr($orig_field_name, $modifier_loc + 1);
 		}
 
 		$props['field_name'] = $field_name;
 		$props['params'] = (trim($param_string)) ? $this->parseTagParameters($param_string) : [];
 		$props['modifier'] = $modifier;
+		$props['full_modifier'] = $full_modifier;
 
 		return $props;
 	}
