@@ -919,6 +919,7 @@ class Grid_model extends CI_Model {
 
 			$rows = ee()->db->select('row_id, entry_id')
 				->select($searchable_columns)
+				->where('fluid_field_data_id', 0)
 				->get($this->_data_table('channel', $field->field_id))
 				->result_array();
 
