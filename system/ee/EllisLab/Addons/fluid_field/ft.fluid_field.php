@@ -540,7 +540,12 @@ class Fluid_field_ft extends EE_Fieldtype {
 				->delete();
 		}
 
-		return array();
+		$columns['field_id_' . $data['field_id']] = [
+			'type' => 'mediumtext',
+			'null' => TRUE
+		];
+
+		return $columns;
 	}
 
 	/**
