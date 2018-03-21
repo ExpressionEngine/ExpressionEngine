@@ -136,17 +136,44 @@ class Fluid_field_ft extends EE_Fieldtype {
 
 		ee()->session->set_cache(__CLASS__, $this->name(), $data);
 
+		$fluid_field_data = $this->getFieldData()->indexBy('id');
+
 		$compiled_data_for_search = array();
 
-		foreach ($data['fields'] as $field_data)
+		foreach ($data['fields'] as $key => $value)
 		{
-			foreach ($field_data as $key => $value)
+			if ($key == 'new_field_0')
 			{
-				if (strpos($key, '_id_') and is_string($value))
+				continue;
+			}
+
+			// Existing field
+			if (strpos($key, 'field_') === 0)
+			{
+				$id = str_replace('field_', '', $key);
+				$field = $fluid_field_data[$id]->getField();
+			}
+			// New field
+			elseif (strpos($key, 'new_field_') === 0)
+			{
+				foreach (array_keys($value) as $k)
 				{
-					$compiled_data_for_search[] = $value;
+					if (strpos($k, 'field_id_') === 0)
+					{
+						$field_id = str_replace('field_id_', '', $k);
+
+						$fluid_field = ee('Model')->make('fluid_field:FluidField');
+						$fluid_field->fluid_field_id = $this->field_id;
+						$fluid_field->field_id = $field_id;
+
+						$field = $fluid_field->getField();
+						break;
+					}
 				}
 			}
+
+			$field->setItem('field_search', true);
+			$compiled_data_for_search[] = $field->save($value);
 		}
 
 		return implode(' ', $compiled_data_for_search);
