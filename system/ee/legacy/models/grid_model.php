@@ -896,6 +896,7 @@ class Grid_model extends CI_Model {
 		}
 
 		$search_data = [];
+		$fluid_search_data = [];
 		$unsearchable = [];
 
 		foreach ($fields as $field)
@@ -917,9 +918,10 @@ class Grid_model extends CI_Model {
 				return 'col_id_'.$element['col_id'];
 			}, $searchable_columns);
 
+			$searchable_columns[] = 'fluid_field_data_id';
+
 			$rows = ee()->db->select('row_id, entry_id')
 				->select($searchable_columns)
-				->where('fluid_field_data_id', 0)
 				->get($this->_data_table('channel', $field->field_id))
 				->result_array();
 
@@ -939,6 +941,12 @@ class Grid_model extends CI_Model {
 					{
 						$column_data[$key] = $value;
 					}
+				}
+
+				if ($row['fluid_field_data_id'] > 0)
+				{
+					$fluid_search_data[$row['fluid_field_data_id']] = array_values($column_data);
+					continue;
 				}
 
 				if ( ! isset($search_data[$table][$row['entry_id']]))
@@ -982,6 +990,77 @@ class Grid_model extends CI_Model {
 			}
 
 			ee()->db->update_batch($table, $entry_data, 'entry_id');
+		}
+
+		// Update any Fluid fields that use this Grid
+		$fluid_grid_instances = ee('Model')->get('fluid_field:FluidField')
+			->filter('field_id', 'IN', $field_ids)
+			->all();
+
+		if (count($fluid_grid_instances))
+		{
+			$entry_data = [];
+			foreach ($fluid_grid_instances as $fluid_grid)
+			{
+				if (array_key_exists($fluid_grid->fluid_field_id, $entry_data)
+					&& array_key_exists($fluid_grid->entry_id, $entry_data[$fluid_grid->fluid_field_id]))
+				{
+					continue;
+				}
+
+				if ( ! array_key_exists($fluid_grid->fluid_field_id, $entry_data))
+				{
+					$entry_data[$fluid_grid->fluid_field_id] = [];
+				}
+
+				$fluid_field_data = ee('Model')->get('fluid_field:FluidField')
+					->with('ChannelField')
+					->filter('fluid_field_id', $fluid_grid->fluid_field_id)
+					->filter('entry_id', $fluid_grid->entry_id)
+					->order('order')
+					->all();
+
+				$search_data = [];
+
+				foreach ($fluid_field_data as $fluid_field)
+				{
+					$field_data = $fluid_field->fetchFieldData();
+					if (isset($field_data['field_id_' . $fluid_field->field_id]))
+					{
+						$search_data[] = $field_data['field_id_' . $fluid_field->field_id];
+					}
+
+					if (isset($fluid_search_data[$fluid_field->getId()]))
+					{
+						$search_data[] = encode_multi_field($fluid_search_data[$fluid_field->getId()]);
+					}
+				}
+
+				$entry_data[$fluid_grid->fluid_field_id][$fluid_grid->entry_id] = implode(' ', $search_data);
+			}
+
+			$fields = ee('Model')->get('ChannelField', array_keys($entry_data))
+				->filter('field_type', 'fluid_field')
+				->all()
+				->indexBy('field_id');
+
+			foreach ($entry_data as $fluid_field_id => $entries)
+			{
+				$field = $fields[$fluid_field_id];
+				$table = $field->getDataStorageTable();
+
+				$update_data = [];
+
+				foreach ($entries as $entry_id => $search_data)
+				{
+					$update_data[] = [
+						'entry_id' => $entry_id,
+						'field_id_' . $fluid_field_id => $search_data
+					];
+				}
+
+				ee()->db->update_batch($table, $update_data, 'entry_id');
+			}
 		}
 	}
 }
