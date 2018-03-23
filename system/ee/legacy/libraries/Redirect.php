@@ -55,13 +55,17 @@ $referrer_parts = isset($_SERVER['HTTP_REFERER'])
 	? parse_url($_SERVER['HTTP_REFERER'])
 	: FALSE;
 
+$url_parts = parse_url($url);
+$url_host = empty($url_parts['host']) ? '' : $url_parts['host'];
+
 if ($force_redirect == TRUE
 	OR ( ! $referrer_parts OR ! stristr($referrer_parts['host'], $host)))
 {
 	// Possibly not from our site, so we give the user the option
 	// Of clicking the link or not
 	$str = "<html>\n<head>\n<meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>\n<meta name='robots' content='none'>\n<title>Redirect</title>\n</head>\n<body>".
-			"<p>Warning: You’re opening a new web page ($url) that is not part of ".config_item('site_label').". Double check that the web page address is correct.</p>".
+			"<p>Warning: You’re opening a new web page going to host <b>{$url_host}</b> that is not part of ".config_item('site_label').". Double check that the web page address is correct:</p>".
+			"<p>".htmlspecialchars($url, ENT_COMPAT, 'UTF-8')."</p>".
 			"<p>Would you like to $link or <a href='".config_item('site_url')."'>Stay put</a>?</p>\n</body>\n</html>";
 }
 else

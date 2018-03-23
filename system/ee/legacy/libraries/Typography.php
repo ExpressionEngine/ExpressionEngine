@@ -1805,7 +1805,19 @@ class EE_Typography {
 						$url = "http://".$url;
 					}
 
-					$extra .= (($this->popup_links == TRUE) ? ' onclick="window.open(this.href); return false;" ' : '');
+					$has_target = strpos($matches['0'][$i], 'target=') !== FALSE;
+
+					// Ensure new windows don't have access to window.opener
+					if ($has_target)
+					{
+						$extra = $this->addAttribute('rel', 'noopener', $extra);
+					}
+
+					if ( ! $has_target && $this->popup_links)
+					{
+						$extra = $this->addAttribute('target', '_blank', $extra);
+						$extra = $this->addAttribute('rel', 'noopener', $extra);
+					}
 
 					if ($bounce != '')
 					{
@@ -1908,6 +1920,31 @@ class EE_Typography {
 				array($this, 'cleanBBCodeAttributesQuote'),
 				$str
 			);
+		}
+
+		return $str;
+	}
+
+	/**
+	 * Adds HTML attribute to a string, or adds the given value to the attribute
+	 * if it already exists in the string
+	 *
+	 * @param array $name Attribute name, such as 'target'
+	 * @param array $value Attribute value, such as '_blank'
+	 * @param array $str Attributes string, such as 'href="hi" rel="external"'
+	 * @return string Passed attributes string with new attribute and/or value
+	 **/
+	private function addAttribute($name, $value, $str)
+	{
+		$value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+
+		if (strpos($str, $name.'=') === FALSE)
+		{
+			$str .= ' '.$name.'="'.$value.'"';
+		}
+		else
+		{
+			$str = preg_replace('/'.preg_quote($name, '/').'=(\042|\047)?/', '$0'.$value.' ', $str);
 		}
 
 		return $str;

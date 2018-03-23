@@ -12,7 +12,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '4.1.2';	// The version being installed
+	public $version           = '4.1.3';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -2077,14 +2077,20 @@ class Wizard extends CI_Controller {
 		fclose($fp);
 
 		// Clear any caches of the config file
-		if (function_exists('opcache_invalidate'))
-		{
-			opcache_invalidate($this->config->config_path);
-		}
-
 		if (function_exists('apc_delete_file'))
 		{
 			@apc_delete_file($this->config->config_path) || apc_clear_cache();
+		}
+
+		if (function_exists('opcache_invalidate'))
+		{
+			// Check for restrict_api path restriction
+			if (($opcache_api_path = ini_get('opcache.restrict_api')) && stripos(SYSPATH, $opcache_api_path) !== 0)
+			{
+				return TRUE;
+			}
+
+			opcache_invalidate($this->config->config_path);
 		}
 
 		return TRUE;
