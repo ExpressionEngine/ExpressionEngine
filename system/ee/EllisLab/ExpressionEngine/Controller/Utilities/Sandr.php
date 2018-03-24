@@ -231,7 +231,9 @@ class Sandr extends Utilities {
 		}
 		elseif (strncmp($where, 'field_id_', 9) == 0)
 		{
-			$sql = "UPDATE `exp_channel_data` SET `{$where}` = REPLACE(`{$where}`, '{$search}', '{$replace}')";
+			$field_id = str_replace('field_id_', '', $where);
+			$field = ee('Model')->get('ChannelField', $field_id)->first();
+			$sql = "UPDATE `exp_{$field->getDataStorageTable()}` SET `{$where}` = REPLACE(`{$where}`, '{$search}', '{$replace}')";
 		}
 		else
 		{

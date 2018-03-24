@@ -770,6 +770,12 @@ class Grid_lib {
 			$count++;
 		}
 
+		// Channel content type only searchable at the moment
+		if ($this->content_type == 'channel')
+		{
+			ee()->grid_model->update_grid_search(array($settings['field_id']));
+		}
+
 		// Delete columns that were not including in new field settings
 		if ( ! $new_field)
 		{

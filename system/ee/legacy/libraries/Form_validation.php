@@ -170,6 +170,12 @@ class EE_Form_validation {
 			{
 				foreach ($setting['fields'] as $field_name => $field)
 				{
+					// For ajaxified fields with options not currently showing, we skip
+					if (isset($field['filter_url']) && isset($field['choices']) && count($field['choices']) == 100)
+					{
+						continue;
+					}
+
 					$enum = NULL;
 
 					// Account for empty state in React checkbox fields

@@ -53,9 +53,11 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 		$site_id = $data['site_id'];
 		$cfields = $obj->channel()->cfields;
 		$rfields = $obj->channel()->rfields;
+		$gfields = $obj->channel()->gfields;
 
-		$rfields = isset($rfields[$site_id]) ? $rfields[$site_id] : array();
-		$cfields = isset($cfields[$site_id]) ? $cfields[$site_id] : array();
+		$rfields = isset($rfields[$site_id]) ? $rfields[$site_id] : [];
+		$cfields = isset($cfields[$site_id]) ? $cfields[$site_id] : [];
+		$gfields = isset($gfields[$site_id]) ? $gfields[$site_id] : [];
 
 		$cfields = array_diff_key($cfields, $rfields);
 
@@ -71,7 +73,8 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 			$entry = '';
 			$field_id = $cfields[$field['field_name']];
 
-			if (isset($data['field_id_'.$field_id]) && $data['field_id_'.$field_id] !== '')
+			if ((isset($data['field_id_'.$field_id]) && $data['field_id_'.$field_id] !== '') OR
+				array_key_exists($field['field_name'], $gfields)) // is a Grid single
 			{
 				$modifier = $field['modifier'];
 
