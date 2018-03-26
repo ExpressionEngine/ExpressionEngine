@@ -640,6 +640,23 @@ class Fluid_field_ft extends EE_Fieldtype {
 	public function replace_total_fields($data, $params = '', $tagdata = '')
 	{
 		$fluid_field_data = $this->getFieldData($this->id(), $this->row('entry_id'));
+
+		if (isset($params['type']))
+		{
+			$fluid_field_data = $fluid_field_data->filter(function($datum) use($params)
+			{
+				return ($params['type'] == $datum->ChannelField->field_type);
+			});
+		}
+
+		if (isset($params['name']))
+		{
+			$fluid_field_data = $fluid_field_data->filter(function($datum) use($params)
+			{
+				return ($params['name'] == $datum->ChannelField->field_name);
+			});
+		}
+
 		return ($fluid_field_data) ? count($fluid_field_data) : 0;
 	}
 }
