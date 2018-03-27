@@ -16,7 +16,7 @@ class Fluid_field_parser {
 	public $modifiers = [];
 	public $reserved_names = [];
 	protected $data = [];
-	protected $tags = [];
+	protected $possible_fields = [];
 
 	public function __construct()
 	{
@@ -96,10 +96,7 @@ class Fluid_field_parser {
 
 		foreach ($fluid_field_fields as $fluid_field_field)
 		{
-			$returned = $this->lexTagdata($tagdata, $fluid_field_field);
-
-			$this->tags[$fluid_field_field->field_id] = $returned['tags'];
-			$found_fields = array_merge($found_fields, $returned['fields_found']);
+			$found_fields = array_merge($found_fields, $this->lexTagdata($tagdata, $fluid_field_field));
 		}
 
 		$this->data = $this->fetchFluidFields($pre_parser->entry_ids(), $fluid_field_ids, $found_fields);
@@ -119,9 +116,9 @@ class Fluid_field_parser {
 		if (($possible_fields = ee()->session->cache(__CLASS__, $cache_key, FALSE)) === FALSE)
 		{
 			$possible_fields = ee('Model')->get('ChannelField', $field_channel_fields)
-				->fields('field_id', 'field_name')
+				->fields('field_id', 'field_name', 'field_type')
 				->all()
-				->getDictionary('field_id', 'field_name');
+				->indexBy('field_id');
 
 			ee()->session->set_cache(__CLASS__, $cache_key, $possible_fields);
 		}
@@ -145,6 +142,9 @@ class Fluid_field_parser {
 
 		$fluid_field_name = $fluid_field_field->field_name;
 
+		// Store this for easy meta tag deciphering later
+		$this->possible_fields[$fluid_field_name] = $possible_fields;
+
 		$fluid_pchunks = ee()->api_channel_fields->get_pair_field($tagdata, $fluid_field_name, $this->_prefix);
 		foreach ($fluid_pchunks as $fluid_chunk_data)
 		{
@@ -153,8 +153,9 @@ class Fluid_field_parser {
 
 			$tags[$fluid_content_hash] = [];
 
-			foreach($possible_fields as $field_id => $field_name)
+			foreach($possible_fields as $field_id => $field)
 			{
+				$field_name = $field->field_name;
 				$tags[$field_name] = [];
 
 				$pchunks = ee()->api_channel_fields->get_pair_field(
@@ -166,17 +167,12 @@ class Fluid_field_parser {
 				foreach ($pchunks as $chk_data)
 				{
 					list($modifier, $content, $params, $chunk) = $chk_data;
-
-					$tags[$fluid_content_hash][$field_name][sha1($content)] = ee('fluid_field:Tag', $content);
 					$fields_found[] = $field_id;
 				}
 			}
 		}
 
-		return array(
-			'tags' => $tags,
-			'fields_found' => array_unique($fields_found)
-		);
+		return $fields_found;
 	}
 
 	/**
@@ -330,7 +326,28 @@ class Fluid_field_parser {
 			return '';
 		}
 
-		$fluid_field_name = ee('Model')->get('ChannelField', $fluid_field_id)->first()->field_name;
+		$fluid = ee('Model')->get('ChannelField', $fluid_field_id)->first();
+		$fluid_field_name = $fluid->field_name;
+
+		$vars = ee('Variables/Parser')->extractVariables($tagdata);
+		$singles = array_filter($vars['var_single'], function($val) use ($fluid_field_name)
+		{
+			return (strpos($val, $fluid_field_name . ':') === 0);
+		});
+
+		$cond = [];
+		foreach(array_keys($vars['var_pair']) as $field)
+		{
+			// Must start with the fluid field name
+			if(strpos($field, $fluid_field_name . ':') === 0)
+			{
+				$cond[$field] = FALSE;
+			}
+		}
+
+		// The field blocks inside a Fluid field are essentially `{if fluid:field}...{/if}`
+		// so we'll rewrite them and use the Conditional parser to get what we want each pass
+		$cond_tagdata = $this->rewriteFluidTagsAsConditionals($tagdata, array_keys($cond));
 
 		$entry_id = $channel_row['entry_id'];
 
@@ -345,17 +362,17 @@ class Fluid_field_parser {
 
 		foreach ($fluid_field_data as $i => $fluid_field)
 		{
-			$tags = $this->tags[$fluid_field->fluid_field_id][sha1($tagdata)];
-
 			$field_name = $fluid_field->ChannelField->field_name;
 
-			// Have no tags for this field?
-			if ( ! array_key_exists($field_name, $tags))
-			{
-				continue;
-			}
+			// Flip this field's conditional to TRUE so all the other fields will be
+			// removed from the tagdata
+			$cond[$fluid_field_name.':'.$field_name] = TRUE;
+			$my_tagdata = ee()->functions->prep_conditionals($cond_tagdata, $cond);
+			$cond[$fluid_field_name.':'.$field_name] = FALSE; // Reset for the next pass
 
 			$meta = [
+				$fluid_field_name . ':first' => (int) ($i == 0),
+				$fluid_field_name . ':last' => (int) (($i + 1) == $total_fields),
 				$fluid_field_name . ':count' => $i + 1,
 				$fluid_field_name . ':index' => $i,
 				$fluid_field_name . ':next_field_name' => (($i + 1) < $total_fields) ? $fluid_field_data[$i+1]->ChannelField->field_name : NULL,
@@ -364,20 +381,97 @@ class Fluid_field_parser {
 				$fluid_field_name . ':prev_fieldtype' => ($i > 0) ? $fluid_field_data[$i-1]->ChannelField->field_type : NULL,
 			];
 
-			foreach ($tags[$field_name] as $tag)
+			foreach ($singles as $key => $value)
 			{
-				$field = $fluid_field->getField();
-
-				$row = array_merge($channel_row, $fluid_field->getFieldData()->getValues());
-				$row['entry_id'] = $entry_id; // the merge can sometimes wipe this out
-
-				$field->setItem('row', $row);
-
-				$output .= $tag->parse($field, $meta);
+				if ( ! array_key_exists($key, $meta))
+				{
+					$meta[$key] = $this->processSingleVariable($value, $fluid_field_data, $fluid_field);
+				}
 			}
+
+			$field = $fluid_field->getField();
+
+			$row = array_merge($channel_row, $fluid_field->getFieldData()->getValues());
+			$row['entry_id'] = $entry_id; // the merge can sometimes wipe this out
+
+			$field->setItem('row', $row);
+
+			$tag = ee('fluid_field:Tag', $my_tagdata);
+
+			$output .= $tag->parse($field, $meta);
 		}
 
 		return $output;
+	}
+
+	private function rewriteFluidTagsAsConditionals($tagdata, $field_names)
+	{
+		foreach($field_names as $field)
+		{
+			$tagdata = str_replace(LD.$field.RD, LD.'if '.$field.RD, $tagdata);
+			$tagdata = str_replace(LD.'/'.$field.RD, LD.'/if'.RD, $tagdata);
+		}
+
+		return $tagdata;
+	}
+
+	private function processSingleVariable($var, $fluid_field_data, \EllisLab\Addons\FluidField\Model\FluidField $current_field)
+	{
+		$properties = ee('Variables/Parser')->parseVariableProperties($var);
+		$params = $properties['params'];
+
+		if (isset($params['type']))
+		{
+			$fluid_field_data = $fluid_field_data->filter(function($datum) use($params)
+			{
+				return ($params['type'] == $datum->ChannelField->field_type);
+			});
+		}
+
+		if (isset($params['name']))
+		{
+			$fluid_field_data = $fluid_field_data->filter(function($datum) use($params)
+			{
+				return ($params['name'] == $datum->ChannelField->field_name);
+			});
+		}
+
+		$return = NULL;
+
+		switch($properties['modifier'])
+		{
+			case 'first':
+				$return = (int) ($current_field->getId() == $fluid_field_data[0]->getId());
+				break;
+
+			case 'last':
+				$return = (int) ($current_field->getId() == $fluid_field_data->last()->getId());
+				break;
+
+			case 'count':
+				foreach ($fluid_field_data as $i => $field)
+				{
+					if ($current_field->getId() == $field->getId())
+					{
+						$return = $i + 1;
+						break;
+					}
+				}
+				break;
+
+			case 'index':
+				foreach ($fluid_field_data as $i => $field)
+				{
+					if ($current_field->getId() == $field->getId())
+					{
+						$return = $i;
+						break;
+					}
+				}
+				break;
+		}
+
+		return $return;
 	}
 
 }
