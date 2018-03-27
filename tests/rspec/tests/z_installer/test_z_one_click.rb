@@ -26,16 +26,16 @@ feature 'One-Click Updater' do
   end
 
   it 'should fail preflight check when permissions are incorrect' do
-    @page.find('span.version').click
-    @page.find('.update-btn .submit').click
+    @page.find('.app-about__version').click
+    @page.find('.app-about-info .button').click
 
     @page.should have_text 'Update Stopped'
     @page.should have_text 'The following paths are not writable:'
   end
 
   it 'should continue update when permissions are fixed' do
-    @page.find('span.version').click
-    @page.find('.update-btn .submit').click
+    @page.find('.app-about__version').click
+    @page.find('.app-about-info .button').click
 
     @page.should have_text 'Update Stopped'
 
@@ -50,8 +50,8 @@ feature 'One-Click Updater' do
   end
 
   it 'should update if there are no impediments' do
-    @page.find('span.version').click
-    @page.find('.update-btn .submit').click
+    @page.find('.app-about__version').click
+    @page.find('.app-about-info .button').click
 
     @page.should have_text 'ExpressionEngine has been successfully updated'
   end

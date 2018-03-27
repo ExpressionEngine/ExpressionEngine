@@ -295,6 +295,42 @@ $(document).ready(function(){
 			return false;
 		});
 
+		// new app-about popup
+		$('.js-about').on('click',function(e){
+			// show version-info box
+			$('.app-about-info').show().trigger('display');
+			// stop THIS href from loading
+			// in the source window
+			e.preventDefault();
+		});
+
+		$('.js-about-close').on('click',function(e){
+			// hide version-info box
+			$('.app-about-info').hide();
+			// stop THIS href from loading
+			// in the source window
+			e.preventDefault();
+		});
+
+		$('.app-about-info').on('display', function() {
+			if ($('.app-about-info__update:visible').size() > 0) {
+				$.get(EE.cp.updateCheckURL, function(data) {
+					if (data.newVersionMarkup) {
+						$('.app-about-info__status, .app-about-info__update').hide()
+						$('.app-about-info__installed').after(data.newVersionMarkup)
+
+						if (data.isVitalUpdate) {
+							$('.app-about-info__status--update-vital').show()
+						} else {
+							$('.app-about-info__status--update').show()
+						}
+					} else {
+						$('.app-about-info__update').hide()
+					}
+				})
+			}
+		})
+
 	// ====================
 	// modal windows -> WIP
 	// ====================
@@ -694,6 +730,10 @@ $(document).ready(function(){
 					.removeClass('filter-item__link---active')
 					// hide all siblings of open with a class of sub-menu
 					.siblings('.filter-submenu').hide();
+			}
+
+			if(!$(e.target).closest('.app-about').length){
+				$('.app-about-info:visible').hide()
 			}
 		});
 }); // close (document).ready
