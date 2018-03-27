@@ -323,7 +323,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		this.root.on('click', 'a[rel=remove_row]', function(event) {
 			event.preventDefault();
 
-			row = $(this).parents(that.rowSelector);
+			var row = $(this).closest(that.rowSelector);
 
 			// Fire 'remove' event for this row
 			that._fireEvent('remove', row);
