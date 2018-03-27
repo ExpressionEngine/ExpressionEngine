@@ -115,28 +115,35 @@ class Members extends AbstractDesignController {
 		);
 	}
 
-	public function index($theme = 'default')
+	public function index($theme = NULL)
 	{
-		$path = ee('Theme')->getPath('member/' . ee()->security->sanitize_filename($theme));
+
+		$path = '';
+		$this->load->helper('directory');
+		$theme_folders = (directory_map(PATH_THIRD_THEMES . 'member/')) ?: array();
+
+
+		if ($theme)
+		{
+			$path = ee('Theme')->getPath('member/' . ee()->security->sanitize_filename($theme));
+		}
+		elseif ($theme_folders)
+		{
+			$theme = $theme_folders[0];
+			$path = ee('Theme')->getPath('member/' . ee()->security->sanitize_filename($theme));
+		}
+
+
 
 		if ( ! is_dir($path))
 		{
-			show_error(lang('unable_to_find_templates'));
+		//	show_error(lang('unable_to_find_templates'));
 		}
 
-		$this->load->helper('directory');
 
-		// Check whether the theme is in the themes/user folder
-		if ($this->isUserDir($path))
-		{
-			$files = directory_map($path, TRUE);
-			$no_results = 'no_templates_found';
-		}
-		else
-		{
-			$no_results = sprintf(lang('template_path_not_user'), DOC_URL.'member/index.html#member-profile-templates');
-			$files = array();
-		}
+		$files = (directory_map($path, TRUE)) ?: array();
+		$no_results = sprintf(lang('template_path_not_user'), DOC_URL.'member/index.html#member-profile-templates');
+
 
 		$vars = array();
 
@@ -152,6 +159,8 @@ class Members extends AbstractDesignController {
 			)
 		);
 		$table->setNoResultsText($no_results);
+
+		//exit('a');
 
 		$data = array();
 		foreach ($files as $file)
@@ -180,18 +189,31 @@ class Members extends AbstractDesignController {
 
 		$table->setData($data);
 
+		//exit('a');
+
+
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
+		$vars['themes'] = '';
 
 		ee()->load->model('member_model');
 
 		$themes = array();
-		foreach (ee()->member_model->get_profile_templates() as $dir => $name)
+		foreach (ee()->member_model->get_profile_templates(PATH_THIRD_THEMES . 'member/') as $dir => $name)
 		{
 			$themes[ee('CP/URL')->make('design/members/index/' . $dir)->compile()] = $name;
 		}
 
-		$vars['themes'] = form_dropdown('theme', $themes, ee('CP/URL')->make('design/members/index/' . $theme));
+
+
+
+		if ($theme_folders)
+		{
+			$vars['themes'] = form_dropdown('theme', $themes, ee('CP/URL')->make('design/members/index/' . $theme));
+		}
+
+
+
 
 		$this->generateSidebar('members');
 		ee()->view->cp_page_title = lang('template_manager');
