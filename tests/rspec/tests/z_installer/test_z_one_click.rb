@@ -27,7 +27,7 @@ feature 'One-Click Updater' do
 
   it 'should fail preflight check when permissions are incorrect' do
     @page.find('.app-about__version').click
-    @page.find('.app-about-info .button').click
+    @page.find('.app-about-info__status--update .button').click
 
     @page.should have_text 'Update Stopped'
     @page.should have_text 'The following paths are not writable:'
@@ -35,7 +35,7 @@ feature 'One-Click Updater' do
 
   it 'should continue update when permissions are fixed' do
     @page.find('.app-about__version').click
-    @page.find('.app-about-info .button').click
+    @page.find('.app-about-info__status--update .button').click
 
     @page.should have_text 'Update Stopped'
 
@@ -46,14 +46,14 @@ feature 'One-Click Updater' do
 
     click_link 'Continue'
 
-    @page.should have_text 'ExpressionEngine has been successfully updated'
+    @page.should have_text 'Up to date!'
   end
 
   it 'should update if there are no impediments' do
     @page.find('.app-about__version').click
-    @page.find('.app-about-info .button').click
+    @page.find('.app-about-info__status--update .button').click
 
-    @page.should have_text 'ExpressionEngine has been successfully updated'
+    @page.should have_text 'Up to date!'
   end
 
 end
