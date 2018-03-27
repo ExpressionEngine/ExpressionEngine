@@ -55,7 +55,7 @@ $(document).ready(function(){
 
 		// listen for clicks on anchor tags
 		// that include rel="external" attributes
-		$('body').on('click', 'a[rel="external"]', function(e){
+		$('body').on('click', 'a[rel*="external"]', function(e){
 			// open a new window pointing to
 			// the href attribute of THIS anchor click
 			iframeOpen(this.href);
