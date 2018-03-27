@@ -229,6 +229,15 @@ $(document).ready(function () {
 	EE.cp.bindPostLinks();
 });
 
+// Scroll to version popover on successful update
+if (EE.cp.updateCompleted) {
+	$('.app-about-info').show()
+	$('.app-about-info__update').hide()
+	$('html, body').animate({
+		scrollTop: $('.app-about-info').offset().top
+	}, 500)
+}
+
 /**
  * Finds links with a data-post-url attribute and on click, fires off a POST
  * request to that URL via a form submission. This is so that certain actions

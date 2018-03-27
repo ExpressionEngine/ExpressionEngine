@@ -312,14 +312,6 @@ $(document).ready(function(){
 			e.preventDefault();
 		});
 
-		if (EE.cp.updateCompleted) {
-			$('.app-about-info').show()
-			$('.app-about-info__update').hide()
-			$('html, body').animate({
-				scrollTop: $('.app-about-info').offset().top
-			}, 500)
-		}
-
 		$('.app-about-info').on('display', function() {
 			if ($('.app-about-info__update:visible').size() > 0) {
 				$.get(EE.cp.updateCheckURL, function(data) {
