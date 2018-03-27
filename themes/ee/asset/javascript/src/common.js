@@ -478,6 +478,10 @@ $(document).ready(function(){
 			var linkIs = $(this).attr('class');
 			var isDisabled = $(this).attr('disabled');
 
+			if ($(this).data('for') == 'version-check') {
+				return
+			}
+
 			// check for disabled status
 			if(isDisabled === 'disabled' || modalIs == ''){
 				// stop THIS href from loading
