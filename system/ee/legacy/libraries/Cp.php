@@ -168,6 +168,11 @@ class Cp {
 			'cp.updateCheckURL' => ee('CP/URL', 'settings/general/version-check')->compile(),
 		));
 
+		if (ee()->session->flashdata('update:completed'))
+		{
+			ee()->javascript->set_global('cp.updateCompleted', TRUE);
+		}
+
 		// Combo-load the javascript files we need for every request
 
 		$js_scripts = array(
