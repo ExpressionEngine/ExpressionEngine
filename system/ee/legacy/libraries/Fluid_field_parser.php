@@ -8,6 +8,9 @@
  * @license   https://expressionengine.com/license
  */
 
+use EllisLab\Addons\FluidField\Model\FluidField;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
+
 /**
  * Fluid Field Parser
  */
@@ -39,9 +42,8 @@ class Fluid_field_parser {
 	 * @param object $pre_parser Channel preparser object
 	 * @param array $fluid_field_fields An array of fluid field fields
 	 * @param string $content_type The type of content being processed
-	 * @param array	Array of known Fluid Field fields in this channel
 	 */
-	public function pre_process($tagdata, $pre_parser, $fluid_field_fields, $content_type = 'channel')
+	public function pre_process($tagdata, $pre_parser, array $fluid_field_fields, $content_type = 'channel')
 	{
 		// Bail out if there are no fluid field fields present to parse
 		if ( ! preg_match_all(
@@ -96,9 +98,10 @@ class Fluid_field_parser {
 	/**
 	 * Gets a list of field names for a given set of field ids
 	 *
+	 * @param array A list of channel field ids
 	 * @return array A list of field_names
 	 */
-	private function getPossibleFields($field_channel_fields)
+	private function getPossibleFields(array $field_channel_fields)
 	{
 		$cache_key = 'ChannelFields/' . implode($field_channel_fields, ',') . '/field_name';
 
@@ -127,7 +130,7 @@ class Fluid_field_parser {
 	{
 		if (empty($entry_ids) || empty($fluid_field_ids))
 		{
-			return new \EllisLab\ExpressionEngine\Service\Model\Collection([]);
+			return new Collection([]);
 		}
 
 		if (ee('LivePreview')->hasEntryData())
@@ -141,7 +144,7 @@ class Fluid_field_parser {
 
 		if (empty($entry_ids))
 		{
-			$fluid_field_data = new \EllisLab\ExpressionEngine\Service\Model\Collection([]);
+			$fluid_field_data = new Collection([]);
 		}
 		else
 		{
@@ -191,11 +194,11 @@ class Fluid_field_parser {
 	/**
 	 * Replaces data with preview data when said data is available.
 	 *
-	 * @param	obj		Fluid field Collection
-	 * @param	array	An array of fluid field ids
-	 * @return	obj		A Colletion of FluidField model entities
+	 * @param obj Fluid field Collection
+	 * @param array An array of fluid field ids
+	 * @return obj A Colletion of FluidField model entities
 	 */
-	private function overrideWithPreviewData($fluid_field_data, array $fluid_field_ids)
+	private function overrideWithPreviewData(Collection $fluid_field_data, array $fluid_field_ids)
 	{
 		$fluid_fields = $fluid_field_data->asArray();
 
@@ -246,20 +249,20 @@ class Fluid_field_parser {
 			}
 		}
 
-		return new \EllisLab\ExpressionEngine\Service\Model\Collection($fluid_fields);
+		return new Collection($fluid_fields);
 	}
 
 	/**
 	 * Handles ft.fluid_field.php's replace_tag(), called with each loop of the
 	 * channel entries parser
 	 *
-	 * @param	array	Channel entry row data typically sent to fieldtypes
-	 * @param	int		Field ID of field being parsed so we can make sure
-	 * @param	array	Parameters array, unvalidated
-	 * @param	string	Tag data of our field pair
-	 * @return	string	Parsed field data
+	 * @param array Channel entry row data typically sent to fieldtypes
+	 * @param int  Field ID of field being parsed so we can make sure
+	 * @param array Parameters array, unvalidated
+	 * @param string Tag data of our field pair
+	 * @return string Parsed field data
 	 */
-	public function parse($channel_row, $fluid_field_id, $params, $tagdata, $content_type = 'channel')
+	public function parse(array $channel_row, $fluid_field_id, array $params, $tagdata, $content_type = 'channel')
 	{
 		if (empty($tagdata))
 		{
@@ -348,9 +351,9 @@ class Fluid_field_parser {
 	 * Takes the tag data and a list of field names (i.e. 'fluid:field') and
 	 * rewrites the field tag pairs as conditionals.
 	 *
-	 * @param	string	The template tagdata to change
-	 * @param	array	An array of field names (i.e. 'fluid:field')
-	 * @return	string	The template with conditionals for the field tag pairs
+	 * @param string The template tagdata to change
+	 * @param array An array of field names (i.e. 'fluid:field')
+	 * @return string The template with conditionals for the field tag pairs
 	 */
 	private function rewriteFluidTagsAsConditionals($tagdata, array $field_names)
 	{
@@ -367,12 +370,12 @@ class Fluid_field_parser {
 	 * Takes a single variable tag (i.e. {fluid:count type="textarea"}) and
 	 * evaluates it, returning its value.
 	 *
-	 * @param	string	The variable tag
-	 * @param	obj		A collection of FluidField model entities
-	 * @param	obj		The current field in the Fluid being processed
-	 * @return	int		The evaulated value
+	 * @param string The variable tag
+	 * @param obj  A collection of FluidField model entities
+	 * @param obj  The current field in the Fluid being processed
+	 * @return int  The evaulated value
 	 */
-	private function evaluateSingleVariable($var, $fluid_field_data, \EllisLab\Addons\FluidField\Model\FluidField $current_field)
+	private function evaluateSingleVariable($var, Collection $fluid_field_data, FluidField $current_field)
 	{
 		$properties = ee('Variables/Parser')->parseVariableProperties($var);
 		$params = $properties['params'];
