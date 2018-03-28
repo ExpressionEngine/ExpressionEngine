@@ -229,7 +229,7 @@ class Publish extends AbstractPublishController {
 			'buttons' => $this->getPublishFormButtons($entry)
 		);
 
-		if ($entry->Channel->preview_url)
+		if ($entry->isLivePreviewable())
 		{
 			$modal = ee('View')->make('publish/live-preview-modal')->render([
 				'preview_url' => ee('CP/URL')->make('publish/preview/' . $entry->channel_id)

@@ -39,7 +39,7 @@ $lang = array(
 
 'be_careful' => 'BE CAREFUL!',
 
-'build' => 'build date:',
+'build' => 'Build:',
 
 'captcha_explanation' => 'A CAPTCHA is an image containing a security code that users have to submit. Please consult the user guide for more info.',
 
@@ -155,7 +155,7 @@ $lang = array(
 
 'update_check_btn' => 'Check for Update',
 
-'update_btn' => 'Update Now',
+'update_btn' => 'Upgrade Now',
 
 'user_account' => 'Member Account',
 
@@ -386,7 +386,7 @@ $lang = array(
 
 'missing_license' => 'This copy of ExpressionEngine is <strong>unregistered</strong>. <a href="%s">Please upload your license.</a>',
 
-'missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="%s" rel="external">EllisLab.com</a> and download a fresh copy.',
+'missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="%s" rel="external">expressionengine.com</a> and download a fresh copy.',
 
 'software_unregistered' => 'Software Unregistered',
 
@@ -524,11 +524,13 @@ $lang = array(
 
 'authenticating' => 'authenticating...',
 
+'checking_for_updates' => 'Checking for updates...',
+
 'download' => 'download',
 
 'installed' => 'Installed',
 
-'latest_version' => 'Latest Version',
+'latest_version' => 'Latest',
 
 'license_no' => 'License #',
 
@@ -540,9 +542,9 @@ $lang = array(
 
 'out_of_date' => 'out of date',
 
-'out_of_date_recommended' => 'Out of date, Recommended upgrade',
+'out_of_date_recommended' => 'Recommended Upgrade',
 
-'out_of_date_upgrade' => 'Out of date, please upgrade',
+'out_of_date_upgrade' => 'New version found',
 
 'owned_by' => 'Owned by',
 
@@ -555,6 +557,10 @@ $lang = array(
 'scroll_to_top' => 'scroll to top',
 
 'session_timeout' => 'Your administration access session has timed out. Please use the form below to log back into your control panel.',
+
+'up_to_date' => 'Up to date!',
+
+'version' => 'Version',
 
 
 /* confirm removal modal */

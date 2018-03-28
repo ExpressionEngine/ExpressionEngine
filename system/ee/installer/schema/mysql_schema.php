@@ -904,7 +904,7 @@ class EE_Schema {
 			username varchar(".USERNAME_MAX_LENGTH.") NOT NULL,
 			ip_address varchar(45) default '0' NOT NULL,
 			act_date int(10) NOT NULL,
-			action varchar(200) NOT NULL,
+			action text NOT NULL,
 			PRIMARY KEY `id` (`id`),
 			KEY `site_id` (`site_id`)
 		)";
