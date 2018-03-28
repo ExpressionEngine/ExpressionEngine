@@ -188,7 +188,14 @@ class Fluid_field_parser {
 		return $this->overrideWithPreviewData($fluid_field_data, $fluid_field_ids);
 	}
 
-	private function overrideWithPreviewData($fluid_field_data, $fluid_field_ids)
+	/**
+	 * Replaces data with preview data when said data is available.
+	 *
+	 * @param	obj		Fluid field Collection
+	 * @param	array	An array of fluid field ids
+	 * @return	obj		A Colletion of FluidField model entities
+	 */
+	private function overrideWithPreviewData($fluid_field_data, array $fluid_field_ids)
 	{
 		$fluid_fields = $fluid_field_data->asArray();
 
@@ -318,7 +325,7 @@ class Fluid_field_parser {
 			{
 				if ( ! array_key_exists($key, $meta))
 				{
-					$meta[$key] = $this->processSingleVariable($value, $fluid_field_data, $fluid_field);
+					$meta[$key] = $this->evaluateSingleVariable($value, $fluid_field_data, $fluid_field);
 				}
 			}
 
@@ -337,7 +344,15 @@ class Fluid_field_parser {
 		return $output;
 	}
 
-	private function rewriteFluidTagsAsConditionals($tagdata, $field_names)
+	/**
+	 * Takes the tag data and a list of field names (i.e. 'fluid:field') and
+	 * rewrites the field tag pairs as conditionals.
+	 *
+	 * @param	string	The template tagdata to change
+	 * @param	array	An array of field names (i.e. 'fluid:field')
+	 * @return	string	The template with conditionals for the field tag pairs
+	 */
+	private function rewriteFluidTagsAsConditionals($tagdata, array $field_names)
 	{
 		foreach($field_names as $field)
 		{
@@ -348,7 +363,16 @@ class Fluid_field_parser {
 		return $tagdata;
 	}
 
-	private function processSingleVariable($var, $fluid_field_data, \EllisLab\Addons\FluidField\Model\FluidField $current_field)
+	/**
+	 * Takes a single variable tag (i.e. {fluid:count type="textarea"}) and
+	 * evaluates it, returning its value.
+	 *
+	 * @param	string	The variable tag
+	 * @param	obj		A collection of FluidField model entities
+	 * @param	obj		The current field in the Fluid being processed
+	 * @return	int		The evaulated value
+	 */
+	private function evaluateSingleVariable($var, $fluid_field_data, \EllisLab\Addons\FluidField\Model\FluidField $current_field)
 	{
 		$properties = ee('Variables/Parser')->parseVariableProperties($var);
 		$params = $properties['params'];
