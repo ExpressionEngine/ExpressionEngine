@@ -88,18 +88,7 @@ class Fluid_field_parser {
 			$fluid_field_ids[] = $fluid_field_fields[$field_name];
 		}
 
-		$fluid_field_fields = ee('Model')->get('ChannelField', $fluid_field_ids)
-			->fields('field_id', 'field_settings', 'field_name')
-			->all();
-
-		$found_fields = [];
-
-		foreach ($fluid_field_fields as $fluid_field_field)
-		{
-			$found_fields = array_merge($found_fields, $this->lexTagdata($tagdata, $fluid_field_field));
-		}
-
-		$this->data = $this->fetchFluidFields($pre_parser->entry_ids(), $fluid_field_ids, $found_fields);
+		$this->data = $this->fetchFluidFields($pre_parser->entry_ids(), $fluid_field_ids);
 
 		return TRUE;
 	}
@@ -127,71 +116,16 @@ class Fluid_field_parser {
 	}
 
 	/**
-	 * Goes through the tag data finding the field tags used in this fluid field.
-	 *
-	 * @param string $tagdata Tag data for entire channel entries loop
-	 * @param obj $fluid_field_field A ChannelField instance for a fluid field
-	 * @return array An associateive array of tag objects and a list of found fields
-	 */
-	private function lexTagdata($tagdata, $fluid_field_field)
-	{
-		$possible_fields = $this->getPossibleFields($fluid_field_field->field_settings['field_channel_fields']);
-
-		$tags = [];
-		$fields_found = [];
-
-		$fluid_field_name = $fluid_field_field->field_name;
-
-		// Store this for easy meta tag deciphering later
-		$this->possible_fields[$fluid_field_name] = $possible_fields;
-
-		$fluid_pchunks = ee()->api_channel_fields->get_pair_field($tagdata, $fluid_field_name, $this->_prefix);
-		foreach ($fluid_pchunks as $fluid_chunk_data)
-		{
-			list($fluid_modifier, $fluid_content, $fluid_params, $fluid_chunk) = $fluid_chunk_data;
-			$fluid_content_hash = sha1($fluid_content);
-
-			$tags[$fluid_content_hash] = [];
-
-			foreach($possible_fields as $field_id => $field)
-			{
-				$field_name = $field->field_name;
-				$tags[$field_name] = [];
-
-				$pchunks = ee()->api_channel_fields->get_pair_field(
-					$fluid_chunk,
-					$field_name,
-					$this->_prefix . $fluid_field_name . ':'
-				);
-
-				foreach ($pchunks as $chk_data)
-				{
-					list($modifier, $content, $params, $chunk) = $chk_data;
-					$fields_found[] = $field_id;
-				}
-			}
-		}
-
-		return $fields_found;
-	}
-
-	/**
 	 * Given a list of entry ids, fluid field ids, and field ids used in the
 	 * fluid fields, this bulk-fetches all the needed data for the field fields.
 	 *
-	 * A fluid field is a collection of individual fieldtypes. We store the
-	 * data for the fields in the fields's tables. Because of this, since we know
-	 * which fields have tags (see lexTagdata()) we will only fetch data for
-	 * those fields. Thus, we pass in an array of field ids.
-	 *
 	 * @param array $entry_id A list of entry ids
 	 * @param array $fluid_field_ids A list of fluid field ids
-	 * @param array $field_ids A list of field ids
 	 * @return obj A Colletion of FluidField model entities
 	 */
-	private function fetchFluidFields(array $entry_ids, array $fluid_field_ids, array $field_ids)
+	private function fetchFluidFields(array $entry_ids, array $fluid_field_ids)
 	{
-		if (empty($entry_ids) || empty($fluid_field_ids) || empty($field_ids))
+		if (empty($entry_ids) || empty($fluid_field_ids))
 		{
 			return new \EllisLab\ExpressionEngine\Service\Model\Collection([]);
 		}
@@ -215,7 +149,6 @@ class Fluid_field_parser {
 				->with('ChannelField')
 				->filter('fluid_field_id', 'IN', $fluid_field_ids)
 				->filter('entry_id', 'IN', $entry_ids)
-				->filter('field_id', 'IN', $field_ids)
 				->order('fluid_field_id')
 				->order('entry_id')
 				->order('order')
