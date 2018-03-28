@@ -272,8 +272,7 @@ class Fluid_field_parser {
 			return '';
 		}
 
-		$fluid = ee('Model')->get('ChannelField', $fluid_field_id)->first();
-		$fluid_field_name = $fluid->field_name;
+		$fluid_field_name = ee('Model')->get('ChannelField', $fluid_field_id)->first()->field_name;
 
 		$vars = ee('Variables/Parser')->extractVariables($tagdata);
 		$singles = array_filter($vars['var_single'], function($val) use ($fluid_field_name)
@@ -297,6 +296,8 @@ class Fluid_field_parser {
 
 		$entry_id = $channel_row['entry_id'];
 
+		// We bulk-fetch all entry's fluid fields in the pre parser. This filters that Collection
+		// down to just the data for this fluid field on this entry.
 		$fluid_field_data = $this->data->filter(function($fluid_field) use($entry_id, $fluid_field_id)
 		{
 			return ($fluid_field->entry_id == $entry_id && $fluid_field->fluid_field_id == $fluid_field_id);
@@ -327,6 +328,8 @@ class Fluid_field_parser {
 				$fluid_field_name . ':prev_fieldtype' => ($i > 0) ? $fluid_field_data[$i-1]->ChannelField->field_type : NULL,
 			];
 
+			// Templates can include things like `{fluid:count type="text"}` which we can easily
+			// evaluate and toss into this meta array for processing, so...why not?
 			foreach ($singles as $key => $value)
 			{
 				if ( ! array_key_exists($key, $meta))
