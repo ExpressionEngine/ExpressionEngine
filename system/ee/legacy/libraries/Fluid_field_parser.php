@@ -17,21 +17,24 @@ use EllisLab\ExpressionEngine\Service\Model\Collection;
 class Fluid_field_parser {
 
 	public $modifiers = [];
-	public $reserved_names = [];
 	protected $data = [];
 	protected $possible_fields = [];
 
 	public function __construct()
 	{
 		// The pre processor will accept these modifiers as fields that need querying
-		$this->modifiers = array('next_field', 'prev_field', 'total_fields');
-
-		// These names cannot be used for column names because they serve
-		// other front-end functions as tag modifiers
-		$this->reserved_names = array_merge(
-			$this->modifiers,
-			array('switch', 'count', 'index')
-		);
+		$this->modifiers = [
+			'first',
+			'last',
+			'count',
+			'index',
+			'next_field_name',
+			'prev_field_name',
+			'next_fieldtype',
+			'prev_fieldtype',
+			'length',
+			'total_fields'
+		];
 	}
 
 	/**
