@@ -220,7 +220,7 @@ class Publish extends AbstractPublishController {
 		);
 
 		$vars = array(
-			'form_url' => ee('CP/URL')->make('publish/create/' . $channel_id),
+			'form_url' => ee('CP/URL')->getCurrentUrl(),
 			'form_attributes' => $form_attributes,
 			'form_title' => lang('new_entry'),
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
@@ -267,7 +267,7 @@ class Publish extends AbstractPublishController {
 
 			if ($result->isValid())
 			{
-				$this->saveEntryAndRedirect($entry);
+				return $this->saveEntryAndRedirect($entry);
 			}
 		}
 
@@ -293,6 +293,12 @@ class Publish extends AbstractPublishController {
 		);
 
 		$vars['breadcrumb_title'] = lang('new_entry');
+
+		if (ee('Request')->get('modal_form') == 'y')
+		{
+			$vars['layout']->setIsInModalContext(TRUE);
+			return ee('View')->make('publish/modal-entry')->render($vars);
+		}
 
 		ee()->cp->render('publish/entry', $vars);
 	}
