@@ -343,7 +343,7 @@ class Relationship_ft extends EE_Fieldtype {
 		if (empty($this->channels))
 		{
 			$this->channels = ee('Model')->get('Channel')
-				->fields('channel_title')
+				->fields('channel_title', 'max_entries', 'total_records')
 				->all();
 		}
 
@@ -498,6 +498,10 @@ class Relationship_ft extends EE_Fieldtype {
 			];
 		}
 
+		$channel_choices = $channels->filter(function($channel) {
+			return ! $channel->maxEntriesLimitReached() && $channel->site_id == ee()->config->item('site_id');
+		});
+
 		return ee('View')->make('relationship:publish')->render([
 			'field_name' => $field_name,
 			'choices' => $choices,
@@ -509,7 +513,8 @@ class Relationship_ft extends EE_Fieldtype {
 			'limit' => $this->settings['limit'] ?: 100,
 			'no_results' => ['text' => lang('no_entries_found')],
 			'no_related' => ['text' => lang('no_entries_related')],
-			'select_filters' => $select_filters
+			'select_filters' => $select_filters,
+			'channels' => $channel_choices
 		]);
 	}
 
