@@ -379,11 +379,15 @@ class Relationship_ft extends EE_Fieldtype {
 			}
 		}
 
-		ee()->cp->add_js_script(array(
-			'plugin' => array('ui.touch.punch', 'ee_interact.event'),
-			'file' => 'fields/relationship/relationship',
+		ee()->javascript->set_global([
+			'relationship.publishCreateUrl' => ee('CP/URL')->make('publish/create/###')->compile()
+		]);
+
+		ee()->cp->add_js_script([
+			'plugin' => ['ui.touch.punch', 'ee_interact.event'],
+			'file' => ['fields/relationship/mutable_relationship', 'fields/relationship/relationship'],
 			'ui' => 'sortable'
-		));
+		]);
 
 		if ($entry_id)
 		{

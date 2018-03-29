@@ -23,8 +23,18 @@ class Relationship extends React.Component {
     $('div[data-relationship-react]', context).each(function () {
       let props = JSON.parse(window.atob($(this).data('relationshipReact')))
       props.name = $(this).data('inputValue')
-      ReactDOM.render(React.createElement(Relationship, props, null), this)
+
+      let element = React.createElement(Relationship, props, null)
+      ReactDOM.render(element, this)
+
+      // TODO: Hook up success handler to the component some how?
+      new MutableRelationshipField($(this))
     })
+    $.fuzzyFilter()
+  }
+
+  handleAddedEntry = (item) => {
+    console.log(item)
   }
 
   // Items visible in the selection container changed via filtering
