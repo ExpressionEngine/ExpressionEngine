@@ -467,7 +467,7 @@ abstract class AbstractPublish extends CP_Controller {
 		];
 
 		// get rid of Save & New button if we've reached the max entries for this channel
-		if ($entry->Channel->max_entries != 0 && $entry->Channel->total_records >= $entry->Channel->max_entries)
+		if ($entry->Channel->maxEntriesLimitReached())
 		{
 			unset($buttons[1]);
 		}

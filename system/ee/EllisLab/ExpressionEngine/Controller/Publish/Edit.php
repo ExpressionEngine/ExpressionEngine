@@ -115,7 +115,7 @@ class Edit extends AbstractPublishController {
 			$channel = $entry_listing->getChannelModelFromFilter();
 
 			// Have we reached the max entries limit for this channel?
-			if ($channel->max_entries != 0 && $count >= $channel->max_entries)
+			if ($channel->maxEntriesLimitReached())
 			{
 				// Don't show New button
 				$show_new_button = FALSE;

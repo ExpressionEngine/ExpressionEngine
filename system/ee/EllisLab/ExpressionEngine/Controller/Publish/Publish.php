@@ -171,7 +171,7 @@ class Publish extends AbstractPublishController {
 		}
 
 		// Redirect to edit listing if we've reached max entries for this channel
-		if ($channel->max_entries != 0 && $channel->total_records >= $channel->max_entries)
+		if ($channel->maxEntriesLimitReached())
 		{
 			ee()->functions->redirect(
 				ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $channel_id))
