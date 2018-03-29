@@ -18,6 +18,7 @@ EE.cp.ModalForm = {
 	 * Opens a modal form
 	 * @param  {object} options Object of options:
 	 *   url - URL of form to load into the modal
+	 *   full - If the form is to take the full screen width, set to true
 	 *   iframe - If the form is to be loaded into an iframe, set to true
 	 *   createUrl - URL of creation form for Save & New, if different than `url`
 	 *   load - Callback to call on load of the URL contents into the modal
@@ -38,15 +39,17 @@ EE.cp.ModalForm = {
 	_loadModalContents: function(options) {
 		var that = this
 
+		// Reset if used before
 		var loading = $('<span />', { class: 'btn work'}).html('Loading')
 		this.modalContentsContainer.html(loading).removeClass('hidden')
 		this.modalCloseContainer.removeClass('hidden')
+		this.modal.removeClass('app-modal--iframe')
+			.find('iframe')
+			.remove()
+
+		this.modal.toggleClass('app-modal--full', options.full)
 
 		if (options.iframe) {
-			this.modal.removeClass('app-modal--iframe')
-				.find('iframe')
-				.remove()
-
 			var iframe = $('<iframe />', {
 				src: options.url + '&modal_form=y',
 				class: 'app-modal__iframe hidden'

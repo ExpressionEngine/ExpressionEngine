@@ -40,6 +40,7 @@ $(document).ready(function () {
 				})
 				EE.cp.ModalForm.openForm({
 					url: EE.publishEdit.sequenceEditFormUrl + '/' + entryIds[0] + '&' + $.param({ entry_ids: entryIds }),
+					full: true,
 					iframe: true,
 					success: function() {
 						location.reload()
