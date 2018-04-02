@@ -49,7 +49,7 @@ class Forums extends AbstractDesignController {
 
 		if ($theme_dirs && empty($theme))
 		{
-			$theme = reset($theme_dirs);
+			$theme = array_keys($theme_dirs)[0];
 		}
 
 		if ($theme)
