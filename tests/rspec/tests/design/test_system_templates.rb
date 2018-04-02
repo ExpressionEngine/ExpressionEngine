@@ -52,9 +52,9 @@ feature 'System Templates' do
     end
 
     it 'displays a helpful error when user templates are missing' do
-      @page.should have_theme_chooser
+      @page.should_not have_theme_chooser
       @page.templates.should have(1).items
-      @page.templates[0].name.text.should start_with('Templates not found in themes/user')
+      @page.templates[0].name.text.should start_with('No Templates found. See documentation.')
     end
   end
 
@@ -86,9 +86,9 @@ feature 'System Templates' do
     end
 
     it 'displays a helpful error when user templates are missing' do
-      @page.should have_theme_chooser
+      @page.should_not have_theme_chooser
       @page.templates.should have(1).items
-      @page.templates[0].name.text.should start_with('Templates not found in themes/user')
+      @page.templates[0].name.text.should start_with('No Templates found. See documentation.')
     end
   end
 
