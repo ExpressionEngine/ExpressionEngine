@@ -75,7 +75,7 @@ class Alert {
 	 * Constructor: sets the type and name of the alert, and injects the
 	 * AllertCollection and View dependencies.
 	 *
-	 * @param string $type The type of alert (standard, inline, banner)
+	 * @param string $type The type of alert (standard, inline, banner, alert)
 	 * @param string $name The name of the alert
 	 * @param AlertCollection $collection A collection of alerts for use with
 	 *  deferring or immediately displaying alerts

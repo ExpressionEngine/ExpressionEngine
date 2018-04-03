@@ -277,6 +277,16 @@ EE.cp.bindCpMessageClose = function() {
 		event.preventDefault();
 		$(this).closest('.app-notice').remove();
 	});
+
+	// Clear floating alerts after some time
+	var floatingAlerts = $('.app-notice--alert')
+	if (floatingAlerts.size()) {
+		setTimeout(function() {
+			floatingAlerts.fadeOut(function() {
+				floatingAlerts.remove()
+			})
+		}, 20000)
+	}
 }
 
 // Binds jQuery UI sortable to reorderable folder lists

@@ -51,11 +51,12 @@ class AlertCollection {
 	 */
 	public function __construct(EE_Session $session, View $view, EE_Lang $lang)
 	{
-		$this->alerts = array(
-			'inline' => array(),
-			'banner' => array(),
-			'standard' => array()
-		);
+		$this->alerts = [
+			'inline'   => [],
+			'banner'   => [],
+			'standard' => [],
+			'alert'   => []
+		];
 		$this->session = $session;
 		$this->view = $view;
 		$this->lang = $lang;
@@ -244,6 +245,21 @@ class AlertCollection {
 	}
 
 	/**
+	 * Gets the rendered value of the floating alert.
+	 *
+	 * @return string The rendered HTML of the alert
+	 */
+	public function getAllAlerts()
+	{
+		$return = '';
+		foreach ($this->alerts['alert'] as $alert)
+		{
+			$return .= $alert->render();
+		}
+		return $return;
+	}
+
+	/**
 	 * Makes a new named alert of the specified type.
 	 *
 	 * @param string $name The name of the alert
@@ -286,6 +302,17 @@ class AlertCollection {
 	public function makeStandard($name = '')
 	{
 		return $this->make($name, 'standard');
+	}
+
+	/**
+	 * Makes a new named floating alert.
+	 *
+	 * @param string $name The name of the alert
+	 * @return EllisLab\ExpressionEngine\Service\Alert\Alert An Alert
+	 */
+	public function makeAlert($name = '')
+	{
+		return $this->make($name, 'alert');
 	}
 
 	public function makeDeprecationNotice()
