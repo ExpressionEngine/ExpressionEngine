@@ -548,6 +548,8 @@ $lang = array(
 
 'no_templates_found' => 'No <b>Templates</b> found.',
 
+'no_user_templates_found' => 'No <b>Templates</b> found. See <a href="%s" title="Documentation" rel="external">documentation</a>.',
+
 'no_templates_selected' => 'No Templates Selected',
 
 'no_valid_templates_sync' => 'No valid templates exist. You must have at least one template flagged to save as a text file.',

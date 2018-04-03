@@ -328,7 +328,7 @@ class Comments extends AbstractPublishController {
 		// You get an edit button if you can edit all comments or you can
 		// edit your own comments and this comment is one of yours
 		if ( ! ee()->cp->allowed_group('can_edit_all_comments')
-			&& $comment->author_id = ee()->session->userdata('member_id'))
+			&& $comment->author_id != ee()->session->userdata('member_id'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -533,7 +533,7 @@ class Comments extends AbstractPublishController {
 			// edit your own comments and this comment is one of yours
 			if (ee()->cp->allowed_group('can_edit_all_comments')
 				|| (ee()->cp->allowed_group('can_edit_own_comments')
-					&& $comment->author_id = ee()->session->userdata('member_id')))
+					&& $comment->author_id == ee()->session->userdata('member_id')))
 			{
 				$toolbar = array(
 					'edit' => array(

@@ -69,6 +69,23 @@ class Theme {
 	}
 
 	/**
+	 * Gets the full path to the indicated file/directory.
+	 * Searches only in user folder as edits in ee folder are not allowed.
+	 *
+	 * @param string $path The relative path to the file/directory, i.e. "forum/default"
+	 * @return string The full path to the file/directory
+	 */
+	public function getUserPath($path)
+	{
+		if (file_exists($this->user_theme_path . $path))
+		{
+			return $this->user_theme_path . $path;
+		}
+
+		return FALSE;
+	}
+
+	/**
 	 * Gets the URL to the indicated file/directory. If the file/directory
 	 * exists in the user's theme folder use that, otherwise use the ee theme
 	 * folder.
@@ -106,6 +123,21 @@ class Theme {
 	}
 
 	/**
+     * Gets a list of all the themes available of a certain kind.
+	 * Searches onlin in user folder, as edits in ee folder are not allowed.
+	 *
+	 * @param string $path A path to a directory we want to list
+	 * @return array An associative array of the contents of the directory
+	 *  using the file/folder name as the key and making a presentable name as
+	 *  the value, i.e. 'my_happy_theme' => 'My Happy Theme'
+	 */
+
+	public function listUserThemes($kind)
+	{
+		return $this->listDirectory($this->user_theme_path . $kind . '/');
+	}
+
+	/**
 	 * Gets the contents of a directory using the "folder" name as the key and
 	 * transforms that into a presentable name.
 	 *
@@ -136,6 +168,5 @@ class Theme {
 
 		return $files;
 	}
-
 }
 // EOF
