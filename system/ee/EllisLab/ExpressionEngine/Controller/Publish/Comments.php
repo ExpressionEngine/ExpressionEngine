@@ -82,6 +82,11 @@ class Comments extends AbstractPublishController {
 			$comments->filter('comment', 'LIKE', '%' . $search_value . '%');
 		}
 
+		if (ee('Request')->get('comment_id'))
+		{
+			$comments->filter('comment_id', ee('Request')->get('comment_id'));
+		}
+
 		$filters = ee('CP/Filter')
 			->add($channel_filter)
 			->add($status_filter)

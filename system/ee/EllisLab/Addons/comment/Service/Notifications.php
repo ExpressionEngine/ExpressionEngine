@@ -101,15 +101,15 @@ class Notifications {
 		$action_id  = ee()->functions->fetch_action_id('Comment_mcp', 'delete_comment_notification');
 
 		$this->variables = array(
-			'approve_link' => ee('CP/URL')->make('addons/settings/comment/delete_comment_confirm', array('comment_id' => $comment->comment_id, 'status' => 'o')),
+			'approve_link' => ee('CP/URL')->make('publish/comments/edit/'.$comment->comment_id, [], ee()->config->item('cp_url')),
 			'channel_id'   => $comment->channel_id,
 			'channel_name' => $comment->Channel->channel_title,
-			'close_link'   => ee('CP/URL')->make('addons/settings/comment/delete_comment_confirm', array('comment_id' => $comment->comment_id, 'status' => 'c')),
+			'close_link'   => ee('CP/URL')->make('publish/comments/edit/'.$comment->comment_id, [], ee()->config->item('cp_url')),
 			'comment'      => $parsed_comment,
 			'comment_id'   => $comment->comment_id,
 			'comment_url'  => reduce_double_slashes(ee()->input->remove_session_id(ee()->functions->fetch_site_index().'/'.$url)),
 			'comment_url_title_auto_path' => reduce_double_slashes($path.'/'.$comment->Entry->url_title),
-			'delete_link'  => ee('CP/URL')->make('addons/settings/comment/delete_comment_confirm', array('comment_id' => $comment->comment_id)),
+			'delete_link'  => ee('CP/URL')->make('publish/comments', ['comment_id' => $comment->comment_id], ee()->config->item('cp_url')),
 			'email'        => $comment->email,
 			'entry_id'     => $comment->entry_id,
 			'entry_title'  => $comment->Entry->title,
