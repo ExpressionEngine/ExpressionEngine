@@ -18,7 +18,7 @@ feature 'Watermark Create/Edit' do
 
     no_php_js_errors
     should_have_form_errors(@page)
-    @page.should have_css 'div.alert.issue'
+    @page.should have_alert_error
     should_have_error_text(@page.wm_name, $required_error)
 
     # AJAX validation
@@ -109,7 +109,7 @@ feature 'Watermark Create/Edit' do
     @page.wm_shadow_color.set '000'
     @page.submit
 
-    @page.should have_css 'div.alert.success'
+    @page.should have_alert_success
     no_php_js_errors
 
     click_link 'Test'
@@ -155,7 +155,7 @@ feature 'Watermark Create/Edit' do
     @page.wm_y_transp.set 60
     @page.submit
 
-    @page.should have_css 'div.alert.success'
+    @page.should have_alert_success
     no_php_js_errors
 
     click_link 'Test'

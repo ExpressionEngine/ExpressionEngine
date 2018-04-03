@@ -52,6 +52,18 @@ class Group extends AbstractDesignController {
 				}
 			});
 
+		// Not a superadmin?  Preselect their member group as allowed to view templates
+		$selected_member_groups = ($this->session->userdata('group_id') != 1) ? array($this->session->userdata('group_id')) : array();
+
+		// only member groups with design manager access
+		$member_groups = ee('Model')->get('MemberGroup')
+			->filter('group_id', 'NOT IN', array(1, 2, 4))
+			->filter('can_access_design', 'y')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_title', 'asc')
+			->all()
+			->getDictionary('group_id', 'group_title');
+
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL')->make('design/group/create'),
@@ -95,9 +107,30 @@ class Group extends AbstractDesignController {
 							)
 						)
 					),
+					array(
+					'title' => 'template_member_groups',
+					'desc' => 'template_member_groups_desc',
+					'fields' => array(
+						'member_groups' => array(
+							'type' => 'checkbox',
+							'required' => TRUE,
+							'choices' => $member_groups,
+							'value' => $selected_member_groups,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								]
+							)
+						)
+					),
 				)
 			)
 		);
+
+		// Permission check for assigning member groups to templates
+		if ( ! ee()->cp->allowed_group('can_admin_mbr_groups'))
+		{
+			unset($vars['sections'][0][3]);
+		}
 
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules(array(
@@ -125,10 +158,20 @@ class Group extends AbstractDesignController {
 			$group->group_name = ee()->input->post('group_name');
 			$group->is_site_default = ee()->input->post('make_default_group');
 
-			if ($this->session->userdata('group_id') != 1)
+			// Only set member groups from post if they have permission to admin member groups and a value is set
+			if (ee()->input->post('member_groups') && ($this->session->userdata('group_id') == 1 OR ee()->cp->allowed_group('can_admin_mbr_groups')))
 			{
+				$group->MemberGroups = ee('Model')->get('MemberGroup', ee('Request')->post('member_groups'))->all();
+			}
+			elseif ($this->session->userdata('group_id') != 1 AND ! ee()->cp->allowed_group('can_admin_mbr_groups'))
+			{
+				// No permission to admin, so their group is automatically added to the template group
 				$group->MemberGroups = ee('Model')->get('MemberGroup', $this->session->userdata('group_id'))->first();
 			}
+
+			// Does the current member have permission to access the template group they just created?
+			$member_groups = $group->MemberGroups->pluck('group_id');
+			$redirect_name = ($this->session->userdata('group_id') == 1 OR in_array($this->session->userdata('group_id'), $member_groups)) ? TRUE : FALSE;
 
 			$group->save();
 
@@ -176,13 +219,16 @@ class Group extends AbstractDesignController {
 				}
 			}
 
+			// Only redirect to the template group if the member has permission to view it
+			$name = ($redirect_name) ? $group->group_name : '';
+
 			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('create_template_group_success'))
 				->addToBody(sprintf(lang('create_template_group_success_desc'), $group->group_name))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $group->group_name));
+			ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $name));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -215,6 +261,17 @@ class Group extends AbstractDesignController {
 		{
 			show_error(sprintf(lang('error_no_template_group'), $group_name));
 		}
+
+		$selected_member_groups = ($group->MemberGroups) ? $group->MemberGroups->pluck('group_id') : array();
+
+		// only member groups with permission to access templates
+		$member_groups = ee('Model')->get('MemberGroup')
+			->filter('group_id', 'NOT IN', array(1, 2, 4))
+			->filter('can_access_design', 'y')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_title', 'asc')
+			->all()
+			->getDictionary('group_id', 'group_title');
 
 		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
 		{
@@ -252,9 +309,30 @@ class Group extends AbstractDesignController {
 							)
 						)
 					),
+					array(
+					'title' => 'template_member_groups',
+					'desc' => 'template_member_groups_desc',
+					'fields' => array(
+						'member_groups' => array(
+							'type' => 'checkbox',
+							'required' => TRUE,
+							'choices' => $member_groups,
+							'value' => $selected_member_groups,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								]
+							)
+						)
+					),
 				)
 			)
 		);
+
+		// Permission check for assigning member groups to templates
+		if ( ! ee()->cp->allowed_group('can_admin_mbr_groups'))
+		{
+			unset($vars['sections'][0][2]);
+		}
 
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules(array(
@@ -280,7 +358,30 @@ class Group extends AbstractDesignController {
 			$group->group_name = ee()->input->post('group_name');
 			$group->is_site_default = ee()->input->post('make_default_group');
 
+			// On edit, if they don't have permission to edit member group permissions, they can't change
+			// template member group settings
+			if ($this->session->userdata('group_id') == 1 OR ee()->cp->allowed_group('can_admin_mbr_groups'))
+			{
+				// If post is null and field should be present, unassign members
+				// If field isn't present, we don't change whatever it's currently set to
+				if ( ! ee()->input->post('member_groups'))
+				{
+					$group->MemberGroups = array();
+				}
+				else
+				{
+					$group->MemberGroups = ee('Model')->get('MemberGroup', ee('Request')->post('member_groups'))->all();
+				}
+			}
+
+			// Does the current member have permission to access the template group they just edited?
+			$member_groups = $group->MemberGroups->pluck('group_id');
+			$redirect_name = ($this->session->userdata('group_id') == 1 OR in_array($this->session->userdata('group_id'), $member_groups)) ? TRUE : FALSE;
+
 			$group->save();
+
+			// Only redirect to the template group if the member has permission to view it
+			$name = ($redirect_name) ? $group->group_name : '';
 
 			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
@@ -288,7 +389,7 @@ class Group extends AbstractDesignController {
 				->addToBody(sprintf(lang('edit_template_group_success_desc'), $group->group_name))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $group->group_name));
+			ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $name));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{

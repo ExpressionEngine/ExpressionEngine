@@ -36,7 +36,7 @@ EE.file_manager.sync_listen = function() {
 		$('input.btn', this).prop('disabled', true);
 
 		// Remove any existing alerts
-		$('.alert.inline').remove();
+		$('.app-notice--inline').remove();
 
 		// Send ajax requests
 		// Note- testing didn't show async made much improvement on time
@@ -138,7 +138,7 @@ EE.file_manager.finish_sync = function(upload_directory_id) {
 			// If there are errors, pass them through POST, there may be too
 			// many to store in a flashdata cookie
 			var input = $('<input>', { type: 'hidden', name: 'errors', value: JSON.stringify(EE.file_manager.sync_errors) });
-			$('.form-standard form').append(input).submit();
+			$('.wrap .form-standard form').append(input).submit();
 		}
 	};
 };

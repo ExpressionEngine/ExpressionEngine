@@ -49,7 +49,7 @@ feature 'Channel Manager' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.alert[:class].should include 'success'
+    @page.should have_alert_success
     @page.channels.should have(channels.count - 1).items
   end
 
@@ -76,7 +76,7 @@ feature 'Channel Manager' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.alert[:class].should include 'success'
+    @page.should have_alert_success
     @page.alert.text.should include 'Channels removed'
     @page.alert.text.should include channels.count.to_s + ' channels were removed.'
     @page.channels.count.should == 0
