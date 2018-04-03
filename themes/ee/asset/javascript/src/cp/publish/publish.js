@@ -66,13 +66,14 @@ $(document).ready(function () {
 					url: EE.publish.autosave.URL,
 					data: publishForm.serialize(),
 					success: function(result) {
-						$('[data-publish]').siblings('div.app-notice---important').remove();
+						var publishHeading = $('[data-publish] .form-btns-top h1');
+						publishHeading.find('.app-badge').remove();
 
 						if (result.error) {
 							console.log(result.error);
 						}
 						else if (result.success) {
-							$('[data-publish]').after(result.success);
+							publishHeading.append(result.success);
 						}
 						else {
 							console.log('Autosave Failed');
