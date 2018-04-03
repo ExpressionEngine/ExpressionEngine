@@ -35,7 +35,7 @@ ee()->load->library('typography');
 
 $url = ee()->typography->decodeIDN($_GET['URL']);
 
-$link = '<a rel="nofollow" href="'.htmlspecialchars($url, ENT_COMPAT, 'UTF-8').'">Continue to the new page</a>';
+$link = '<a rel="nofollow" href="'.htmlspecialchars($url, ENT_COMPAT, 'UTF-8').'">Continue</a>';
 
 // Make sure a filtered comparison later doesn't trip the URL as "changed" for URLs with query strings
 $link = str_replace('&amp;', '&', $link);
@@ -63,10 +63,13 @@ if ($force_redirect == TRUE
 {
 	// Possibly not from our site, so we give the user the option
 	// Of clicking the link or not
-	$str = "<html>\n<head>\n<meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>\n<meta name='robots' content='none'>\n<title>Redirect</title>\n</head>\n<body>".
-			"<p>Warning: You’re opening a new web page going to host <b>{$url_host}</b> that is not part of ".config_item('site_label').". Double check that the web page address is correct:</p>".
-			"<p>".htmlspecialchars($url, ENT_COMPAT, 'UTF-8')."</p>".
-			"<p>Would you like to $link or <a href='".config_item('site_url')."'>Stay put</a>?</p>\n</body>\n</html>";
+	ee()->load->library('view');
+	$str = ee('View')->make('ee:errors/redirect')->render([
+		'cp_page_title' => 'Redirect',
+		'host' => $url_host,
+		'url'  => htmlspecialchars($url, ENT_COMPAT, 'UTF-8'),
+		'link' => $link
+	]);
 }
 else
 {
