@@ -178,7 +178,7 @@ class Alert {
 	 */
 	public function asIssue()
 	{
-		$this->severity = 'issue';
+		$this->severity = 'error';
 		$this->cannotClose();
 		return $this;
 	}
@@ -214,8 +214,20 @@ class Alert {
 	 */
 	public function asWarning()
 	{
-		$this->severity = 'warn';
+		$this->severity = 'important';
 		$this->canClose();
+		return $this;
+	}
+
+	/**
+	 * Marks the alert as an important alert that cannot be closed.
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function asImportant()
+	{
+		$this->severity = 'important';
+		$this->cannotClose();
 		return $this;
 	}
 

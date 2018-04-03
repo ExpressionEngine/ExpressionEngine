@@ -6,7 +6,7 @@
 			<a class="btn tn action" href="<?=ee('CP/URL')->make('categories/fields/create/'.$group_id)?>"><?=lang('create_new')?></a>
 		</fieldset>
 		<h1><?=$cp_page_title?></h1>
-		<?=ee('CP/Alert')->getAllInlines()?>
+		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 		<?php if (isset($filters)) echo $filters; ?>
 		<?php $this->embed('_shared/table', $table); ?>
 		<fieldset class="tbl-bulk-act hidden">

@@ -6,7 +6,7 @@
 			<?=$cp_heading?><br>
 			<i><?=$cp_sub_heading?></i>
 		</h1>
-		<?=ee('CP/Alert')->getAllInlines()?>
+		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 		<?php $this->embed('_shared/table', $table); ?>
 		<?php $this->embed('_shared/pagination'); ?>
 		<?php if ( ! empty($table['data'])): ?>

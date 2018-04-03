@@ -144,34 +144,38 @@
 				<div class="col-group snap">
 					<div class="col w-16 last">
 						<a class="m-close" href="#"></a>
-						<div class="box">
-							<h1>Log into <?=ee()->config->item('site_name')?> <span class="req-title"><?=lang('required_fields')?></span></h1>
-							<?=form_open(ee('CP/URL')->make('login/authenticate'), array('class' => 'settings'))?>
-								<div class="alert inline warn">
-									<p><?=lang('session_timeout')?></p>
+						<div class="form-standard">
+							<?=form_open(ee('CP/URL')->make('login/authenticate'))?>
+								<div class="form-btns form-btns-top">
+									<h1>Log into <?=ee()->config->item('site_name')?></h1>
 								</div>
-								<fieldset class="col-group required">
-									<div class="setting-txt col w-8">
-										<h3><?=lang('username')?></h3>
+								<?=ee('CP/Alert')
+									->makeInline()
+									->asImportant()
+									->addToBody(lang('session_timeout'))
+									->render()?>
+								<fieldset class="fieldset-required">
+									<div class="field-instruct">
+										<label><?=lang('username')?></label>
 										<em></em>
 									</div>
-									<div class="setting-field col w-8 last">
+									<div class="field-control">
 										<input type="text" value="<?=form_prep(ee()->session->userdata('username'))?>" disabled="disabled">
 										<input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
 									</div>
 								</fieldset>
-								<fieldset class="col-group required last">
-									<div class="setting-txt col w-8">
-										<h3><?=lang('password')?></h3>
+								<fieldset class="fieldset-required">
+									<div class="field-instruct">
+										<label><?=lang('password')?></label>
 										<em></em>
 									</div>
-									<div class="setting-field col w-8 last">
+									<div class="field-control">
 										<input type="password" name="password" value="" id="logout-confirm-password">
 									</div>
 								</fieldset>
-								<fieldset class="form-ctrls">
+								<div class="form-btns">
 									<?=form_submit('submit', lang('login'), 'class="btn" data-submit-text="'.lang('login').'" data-work-text="'.lang('authenticating').'"')?>
-								</fieldset>
+								</div>
 							<?=form_close()?>
 						</div>
 					</div>

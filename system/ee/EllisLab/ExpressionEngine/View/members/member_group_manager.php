@@ -4,7 +4,7 @@
 <?=form_open($table['base_url'])?>
 	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 
-	<?=ee('CP/Alert')->getAllInlines()?>
+	<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
 	<?php if (isset($filters)) echo $filters; ?>
 

@@ -8,7 +8,7 @@
 				<li class="settings"><a href="<?=ee('CP/URL')->make('settings/comments')?>" title="<?=lang('comment_settings')?>"></a></li>
 			</ul>
 		</h1>
-		<?=ee('CP/Alert')->getAllInlines()?>
+		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 		<?php if (isset($filters)) echo $filters; ?>
 		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>

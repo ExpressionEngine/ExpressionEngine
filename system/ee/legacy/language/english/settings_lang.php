@@ -783,7 +783,7 @@ $lang = array(
 
 'security_tip' => '<b>Tip</b>: Site security is important.',
 
-'security_tip_desc' => 'Any setting marked with <span title="security enhancement"></span> will further enhance and improve site security.',
+'security_tip_desc' => 'Any setting marked with <span class="icon--caution" title="security enhancement"></span> will further enhance and improve site security.',
 
 'un_min_len' => 'Minimum username length',
 

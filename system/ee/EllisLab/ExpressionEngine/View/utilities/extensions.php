@@ -3,7 +3,7 @@
 <div class="tbl-ctrls">
 	<?=form_open($form_url)?>
 		<h1><?=$cp_heading?></h1>
-		<?=ee('CP/Alert')->getAllInlines()?>
+		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 		<?php $this->embed('_shared/table', $table); ?>
 		<? if (isset($pagination)) echo $pagination; ?>
 		<?php if ($table['total_rows'] > 0): ?>

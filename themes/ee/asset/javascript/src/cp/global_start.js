@@ -273,9 +273,9 @@ EE.cp.addLastToChecklists = function() {
 
 // Close alert modal when close button is clicked
 EE.cp.bindCpMessageClose = function() {
-	$('body').on('click', 'div.alert a.close', function(event) {
+	$('body').on('click', '.js-notice-dismiss', function(event) {
 		event.preventDefault();
-		$(this).parent().hide();
+		$(this).closest('.app-notice').remove();
 	});
 }
 

@@ -81,7 +81,7 @@ class AlertCollection {
 
 				switch ($value['severity'])
 				{
-					case 'issue':
+					case 'error':
 						$alert->asIssue();
 						break;
 
@@ -93,7 +93,7 @@ class AlertCollection {
 						$alert->asTip();
 						break;
 
-					case 'warn':
+					case 'important':
 						$alert->asWarning();
 						break;
 				}
@@ -114,7 +114,7 @@ class AlertCollection {
 					$sub_alert->body = $value['sub_alert']['body'];
 					switch ($value['sub_alert']['severity'])
 					{
-						case 'issue':
+						case 'error':
 							$sub_alert->asIssue();
 							break;
 
@@ -126,7 +126,7 @@ class AlertCollection {
 							$sub_alert->asTip();
 							break;
 
-						case 'warn':
+						case 'important':
 							$sub_alert->asWarning();
 							break;
 					}
