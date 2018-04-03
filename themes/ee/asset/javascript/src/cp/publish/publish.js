@@ -8,7 +8,7 @@
 
 $(document).ready(function () {
 
-	var publishForm = $(".form-standard > form");
+	var publishForm = $("[data-publish] > form");
 	var ajaxRequest;
 	var debounceTimeout;
 
