@@ -138,7 +138,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 
 		$fluid_field_data = $this->getFieldData()->indexBy('id');
 
-		$compiled_data_for_search = array();
+		$compiled_data_for_search = [];
 
 		foreach ($data['fields'] as $key => $value)
 		{
@@ -227,6 +227,22 @@ class Fluid_field_ft extends EE_Fieldtype {
 		{
 			$this->removeField($fluid_field);
 		}
+	}
+
+	public function reindex($data)
+	{
+		$compiled_data_for_search = [];
+
+		$fluid_field_data = $this->getFieldData();
+		foreach ($fluid_field_data as $fluid_field)
+		{
+			$field = $fluid_field->getField();
+			$field_data = $fluid_field->getFieldData();
+			$field->setItem('field_search', true);
+			$compiled_data_for_search[] = $field->reindex($field_data);
+		}
+
+		return implode(' ', $compiled_data_for_search);
 	}
 
 	private function prepareData($fluid_field, array $values)

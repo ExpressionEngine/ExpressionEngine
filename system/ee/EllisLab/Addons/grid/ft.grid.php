@@ -81,6 +81,47 @@ class Grid_ft extends EE_Fieldtype {
 		}
 	}
 
+	public function reindex($data)
+	{
+		// we save compounded searchable data to the field data table,
+		// real data gets saved to the grid's own table
+		$searchable_data = NULL;
+		if ($this->get_setting('field_search'))
+		{
+			$this->_load_grid_lib();
+
+			$rows = ee()->grid_model->get_entry(ee()->grid_lib->entry_id, ee()->grid_lib->field_id, ee()->grid_lib->content_type, ee()->grid_lib->fluid_field_data_id);
+
+			$columns = ee()->grid_model->get_columns_for_field(ee()->grid_lib->field_id, 'channel');
+			$searchable_columns = array_filter($columns, function($column) {
+				return ($column['col_search'] == 'y');
+			});
+			$searchable_columns = array_map(function($element) {
+				return 'col_id_'.$element['col_id'];
+			}, $searchable_columns);
+
+			$search_data = [];
+
+			foreach ($rows as $row)
+			{
+				// We need only the column data for insertion
+				$column_data = [];
+				foreach ($row as $key => $value)
+				{
+					if (in_array($key, $searchable_columns))
+					{
+						$search_data[$key] = $value;
+					}
+				}
+			}
+
+			ee()->load->helper('custom_field_helper');
+			$searchable_data = encode_multi_field($search_data) ?: NULL;
+		}
+
+		return $searchable_data;
+	}
+
 	// This fieldtype has been converted, so it accepts all content types
 	public function accepts_content_type($name)
 	{
