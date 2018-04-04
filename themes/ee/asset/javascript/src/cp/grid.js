@@ -184,7 +184,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 
 		// Show empty field message if field is empty and no rows are needed
 		if (rowsCount == 0 && neededRows == 0) {
-			this.emptyField.removeClass('hidden');
+			this._setNoResultsVisible(true)
 		}
 
 		// Add the needed rows
@@ -297,7 +297,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		}
 
 		// Make sure empty field message is hidden
-		this.emptyField.addClass('hidden');
+		this._setNoResultsVisible(false)
 
 		// Hide/show delete buttons depending on minimum row setting
 		this._toggleRowManipulationButtons();
@@ -336,7 +336,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 
 			// Show our empty field message if we have no rows left
 			if (that._getRows().size() == 0) {
-				that.emptyField.removeClass('hidden');
+				that._setNoResultsVisible(true);
 			}
 
 			// Mark entire Grid field as valid if all rows with invalid cells are cleared
@@ -346,6 +346,20 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 				EE.cp.formValidation.markFieldValid($('input, select, textarea', that.blankRow).eq(0));
 			}
 		});
+	},
+
+	/**
+	 * Set visibility status of No Results row
+	 */
+	_setNoResultsVisible(visible) {
+		this.emptyField.toggleClass('hidden', ! visible)
+
+		// An input may be present to keep the field in POST when empty
+		if (visible) {
+			this.emptyField.find(':input').removeAttr('disabled')
+		} else {
+			this.emptyField.find(':input').attr('disabled', 'disabled')
+		}
 	},
 
 	/**

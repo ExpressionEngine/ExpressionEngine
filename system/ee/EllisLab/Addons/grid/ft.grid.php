@@ -138,7 +138,10 @@ class Grid_ft extends EE_Fieldtype {
 				: TRUE
 		));
 		$grid->loadAssets();
-		$grid->setNoResultsText('no_rows_created', 'add_new_row');
+		$grid->setNoResultsText(
+			lang('no_rows_created') . form_hidden($this->name()),
+			'add_new_row'
+		);
 
 		$this->_load_grid_lib();
 
