@@ -19,6 +19,7 @@ class Fluid_field_parser {
 	public $modifiers = [];
 	protected $data = [];
 	protected $possible_fields = [];
+	protected $fluid_fields = [];
 
 	public function __construct()
 	{
@@ -59,6 +60,8 @@ class Fluid_field_parser {
 			return FALSE;
 		}
 
+		$this->fluid_fields = array_flip($fluid_field_fields);
+
 		$this->_prefix = $pre_parser->prefix();
 
 		$fluid_field_ids = [];
@@ -66,7 +69,7 @@ class Fluid_field_parser {
 		// Validate matches
 		foreach ($matches as $key => $match)
 		{
-			$field_name = str_replace($pre_parser->prefix(), '', $match[1]);
+			$field_name = str_replace($this->_prefix, '', $match[1]);
 
 			// Analyze the field to see if its modifier matches any of our
 			// reserved modifier names
@@ -272,7 +275,7 @@ class Fluid_field_parser {
 			return '';
 		}
 
-		$fluid_field_name = ee('Model')->get('ChannelField', $fluid_field_id)->first()->field_name;
+		$fluid_field_name = $this->fluid_fields[$fluid_field_id];
 
 		$vars = ee('Variables/Parser')->extractVariables($tagdata);
 		$singles = array_filter($vars['var_single'], function($val) use ($fluid_field_name)
