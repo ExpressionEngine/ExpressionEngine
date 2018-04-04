@@ -769,7 +769,7 @@ class Grid_lib {
 				'col_settings'		=> json_encode($column['col_settings'])
 			);
 
-			if ($column['col_search'] != $columns[$column['col_id']]['col_search'])
+			if (isset($columns[$column['col_id']]) && $column['col_search'] != $columns[$column['col_id']]['col_search'])
 			{
 				$col_search_settings_changed = TRUE;
 			}
