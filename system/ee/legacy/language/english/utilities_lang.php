@@ -461,6 +461,22 @@ $lang = array(
 
 'uptime' => 'Uptime',
 
+/* Search Reindex */
+
+'search_reindex_fail' => 'Reindexing Failed',
+
+'search_reindex' => 'Search Reindex',
+
+'search_reindex_desc' => '%d Channel entries will be reindexed',
+
+'reindex_success' => 'Reindexing Complete',
+
+'reindex_success_desc' => '',
+
+'btn_reindex' => 'Reindex',
+
+'btn_reindex_working' => 'Reindexing',
+
 );
 
 // EOF
