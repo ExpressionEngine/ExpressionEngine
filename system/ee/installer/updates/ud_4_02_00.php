@@ -25,6 +25,7 @@ class Updater {
 	{
 		$steps = new \ProgressIterator(
 			[
+				'alterFluidFieldToMediumText'
 			]
 		);
 
@@ -34,6 +35,27 @@ class Updater {
 		}
 
 		return TRUE;
+	}
+
+	private function alterFluidFieldToMediumText()
+	{
+		$field_ids = ee('Model')->get('ChannelField')
+			->fields('field_id')
+			->filter('field_type', 'fluid_field')
+			->all()
+			->pluck('field_id');
+
+		foreach ($field_ids as $field_id)
+		{
+			ee()->smartforge->modify_column(
+				'channel_data_field_' . $field_id,
+				[
+					'field_id_' . $field_id => [
+						'type' => 'mediumtext'
+					]
+				]
+			);
+		}
 	}
 }
 
