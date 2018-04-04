@@ -220,6 +220,7 @@ class Reindex extends Utilities {
 
 		if ( ! empty($entry->getDirty()))
 		{
+			// @TODO: find/make a better way of updating individual field data
 			$entry->onAfterUpdate($entry->getDirty());
 		}
 
