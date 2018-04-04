@@ -408,6 +408,11 @@ class Fluid_field_parser {
 
 		$return = NULL;
 
+		if ($fluid_field_data->count() < 1)
+		{
+			return 0;
+		}
+
 		switch($properties['modifier'])
 		{
 			case 'first':
