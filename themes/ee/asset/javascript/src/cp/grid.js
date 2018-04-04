@@ -351,7 +351,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	/**
 	 * Set visibility status of No Results row
 	 */
-	_setNoResultsVisible(visible) {
+	_setNoResultsVisible: function(visible) {
 		this.emptyField.toggleClass('hidden', ! visible)
 
 		// An input may be present to keep the field in POST when empty
