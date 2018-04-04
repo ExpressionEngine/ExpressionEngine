@@ -115,23 +115,27 @@ class Members extends AbstractDesignController {
 		);
 	}
 
-	public function index($theme = 'default')
+	public function index($theme = NULL)
 	{
-		$path = ee('Theme')->getPath('member/' . ee()->security->sanitize_filename($theme));
+		$base_path = FALSE;
+		$this->load->helper('directory');
+		$files = array();
+		$theme_dirs = ee('Theme')->listUserThemes('member');
 
-		if ( ! is_dir($path))
+		if ($theme_dirs && empty($theme))
 		{
-			show_error(lang('unable_to_find_templates'));
+			$theme = array_keys($theme_dirs)[0];
 		}
 
-		$this->load->helper('directory');
-		$files = directory_map($path, TRUE);
-
-		$vars = array();
+		if ($theme)
+		{
+			$base_path = ee('Theme')->getUserPath('member/' . ee()->security->sanitize_filename($theme));
+		}
 
 		$base_url = ee('CP/URL')->make('design/members/index/' . $theme);
 
 		$table = ee('CP/Table', array('autosort' => TRUE, 'subheadings' => TRUE));
+		$table->setNoResultsText(sprintf(lang('no_user_templates_found'), DOC_URL.'member/index.html#member-profile-templates'));
 		$table->setColumns(
 			array(
 				'template',
@@ -141,45 +145,55 @@ class Members extends AbstractDesignController {
 			)
 		);
 
+		$vars['themes'] = '';
 		$data = array();
-		foreach ($files as $file)
+
+		if ($base_path && is_dir($base_path))
 		{
-			if (strpos($file, '.') === FALSE)
+			$files = (directory_map($base_path, TRUE)) ?: array();
+
+			foreach ($files as $file)
 			{
-				continue;
+				if (strpos($file, '.') === FALSE)
+				{
+					continue;
+				}
+
+				$human = substr($file, 0, -strlen(strrchr($file, '.')));
+				$edit_url = ee('CP/URL')->make('design/members/edit/' . $theme . '/' . $human);
+
+				$data['profile_' . $this->template_group_map[$file]][] = array(
+					array(
+						'content' => (lang($human) == FALSE) ? $human : lang($human),
+						'href' => $edit_url
+						),
+					array('tools' => array(
+						'edit' => array(
+							'href' => $edit_url,
+							'title' => lang('edit')
+						),
+					))
+				);
 			}
 
-			$human = substr($file, 0, -strlen(strrchr($file, '.')));
-			$edit_url = ee('CP/URL')->make('design/members/edit/' . $theme . '/' . $human);
+			if ( ! empty($files))
+			{
+				foreach ($theme_dirs as $dir => $name)
+				{
+					$themes[ee('CP/URL')->make('design/members/index/' . $dir)->compile()] = $name;
+				}
 
-			$data['profile_' . $this->template_group_map[$file]][] = array(
-				array(
-					'content' => (lang($human) == FALSE) ? $human : lang($human),
-					'href' => $edit_url
-					),
-				array('tools' => array(
-					'edit' => array(
-						'href' => $edit_url,
-						'title' => lang('edit')
-					),
-				))
-			);
+				if ($themes)
+				{
+					$vars['themes'] = form_dropdown('theme', $themes, ee('CP/URL')->make('design/members/index/' . $theme));
+				}
+			}
 		}
 
 		$table->setData($data);
 
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
-
-		ee()->load->model('member_model');
-
-		$themes = array();
-		foreach (ee()->member_model->get_profile_templates() as $dir => $name)
-		{
-			$themes[ee('CP/URL')->make('design/members/index/' . $dir)->compile()] = $name;
-		}
-
-		$vars['themes'] = form_dropdown('theme', $themes, ee('CP/URL')->make('design/members/index/' . $theme));
 
 		$this->generateSidebar('members');
 		ee()->view->cp_page_title = lang('template_manager');
@@ -192,7 +206,7 @@ class Members extends AbstractDesignController {
 
 	public function edit($theme, $file)
 	{
-		$path = ee('Theme')->getPath('member/'
+		$path = ee('Theme')->getUserPath('member/'
 			.ee()->security->sanitize_filename($theme)
 			.'/'
 			.ee()->security->sanitize_filename($file . '.html'));
@@ -221,7 +235,7 @@ class Members extends AbstractDesignController {
 				if (ee()->input->post('submit') == 'finish')
 				{
 					$alert->defer();
-					ee()->functions->redirect(ee('CP/URL')->make('design/members'));
+					ee()->functions->redirect(ee('CP/URL')->make('design/members/index/' . $theme));
 				}
 
 				$alert->now();

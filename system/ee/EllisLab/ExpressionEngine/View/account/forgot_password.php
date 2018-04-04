@@ -2,12 +2,7 @@
 
 <div class="box snap">
 	<h1><?=lang('reset_password')?> <span class="icon-reset"></span></h1>
-	<?php if ($message != ''):?>
-		<div class="alert inline <?=$message_status?>">
-			<span class="icon-<?=$message_status?>"></span>
-			<p><?=$message?></p>
-		</div>
-	<?php endif;?>
+	<?=ee('CP/Alert')->getAllInlines()?>
 	<?=form_open(ee('CP/URL')->make('/cp/login/send_reset_token'))?>
 		<fieldset class="last">
 			<?=lang('email_address', 'email')?>

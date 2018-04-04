@@ -57,17 +57,21 @@ class Login extends CP_Controller {
 		if (($type = ee()->input->get('after')) && is_dir($installer_dir))
 		{
 			ee()->lang->load('installer', 'english', FALSE, TRUE, $installer_dir);
-			$this->view->message =
-				sprintf(
-					lang("{$type}_success_note"),
-					APP_VER
-				)
-				.BR.
-				sprintf(
-					lang('success_moved'),
-					ee()->config->item('app_version')
-				);
-			$this->view->message_status = 'success';
+
+			ee('CP/Alert')
+				->makeInline()
+				->asSuccess()
+				->addToBody(sprintf(
+						lang("{$type}_success_note"),
+						APP_VER
+					)
+					.BR.
+					sprintf(
+						lang('success_moved'),
+						ee()->config->item('app_version')
+					))
+				->cannotClose()
+				->now();
 		}
 
 		$username = $this->session->flashdata('username');
@@ -81,6 +85,24 @@ class Login extends CP_Controller {
 			$this->view->message = ($this->input->get('auto_expire')) ? lang('session_auto_timeout') : $this->session->flashdata('message');
 		}
 
+		if ($this->input->get('auto_expire'))
+		{
+			ee('CP/Alert')
+				->makeInline()
+				->asIssue()
+				->addToBody(lang('session_auto_timeout'))
+				->now();
+		}
+
+		if ($this->session->flashdata('message'))
+		{
+			ee('CP/Alert')
+				->makeInline()
+				->asIssue()
+				->addToBody($this->session->flashdata('message'))
+				->now();
+		}
+
 		// Normal login button state
 		$this->view->btn_class = 'btn';
 		$this->view->btn_label = lang('login');
@@ -92,15 +114,16 @@ class Login extends CP_Controller {
 			$this->view->btn_class .= ' disable';
 			$this->view->btn_label = lang('locked');
 			$this->view->btn_disabled = 'disabled';
-			$this->view->message = sprintf(
-				lang('password_lockout_in_effect'),
-				ee()->config->item('password_lockout_interval')
-			);
-		}
 
-		if ($this->view->message != '' && ! isset($this->view->message_status))
-		{
-			$this->view->message_status = 'issue';
+			ee('CP/Alert')
+				->makeInline()
+				->asIssue()
+				->addToBody(sprintf(
+					lang('password_lockout_in_effect'),
+					ee()->config->item('password_lockout_interval')
+				))
+				->cannotClose()
+				->now();
 		}
 
 		// Show the site label
@@ -262,8 +285,6 @@ class Login extends CP_Controller {
 			'required_changes' => array(),
 			'focus_field'   => 'new_username',
 			'cp_page_title'	=> lang('login'),
-			'message'		=> lang('access_notice').'<br>',
-			'message_status' => 'issue',
 			'username'		=> $this->input->post('username'),
 			'new_username_required'	=> FALSE,
 			'new_username'	=> $new_un,
@@ -276,17 +297,31 @@ class Login extends CP_Controller {
 			)
 		);
 
+		$required_changes = [];
 		if ($ulen < $uml)
 		{
 			$data['new_username_required'] = TRUE;
-			$data['required_changes'][] = sprintf(lang('un_len'), $uml);
+			$required_changes[] = sprintf(lang('un_len'), $uml);
 		}
 
 		if ($plen < $pml)
 		{
 			$data['new_password_required'] = TRUE;
-			$data['required_changes'][] = sprintf(lang('pw_len'), $pml);
+			$required_changes[] = sprintf(lang('pw_len'), $pml);
 		}
+
+		$alert = ee('CP/Alert')
+			->makeInline()
+			->asIssue()
+			->addToBody(lang('access_notice'))
+			->cannotClose()
+			->now();
+
+		if ( ! empty($required_changes))
+		{
+			$alert->addToBody($required_changes);
+		}
+
 
 		return ee('View')->make('account/update_un_pw')->render($data);
 	}
@@ -477,11 +512,6 @@ class Login extends CP_Controller {
 		$this->view->cp_page_title = lang('new_password');
 		$this->view->focus_field = 'email';
 
-		if ( ! isset($this->view->message))
-		{
-			$this->view->message = '';
-		}
-
 		$this->view->render('account/forgot_password');
 	}
 
@@ -519,8 +549,13 @@ class Login extends CP_Controller {
 		// don't know if an email exists or not
 		if ($query->num_rows() == 0)
 		{
-			$this->view->message = lang('forgotten_email_sent');
-			$this->view->message_status = 'success';
+			ee('CP/Alert')
+				->makeInline()
+				->asSuccess()
+				->addToBody(lang('forgotten_email_sent'))
+				->cannotClose()
+				->now();
+
 			return $this->forgotten_password_form();
 		}
 
@@ -571,13 +606,21 @@ class Login extends CP_Controller {
 
 		if ( ! $this->email->send())
 		{
-			$this->view->message = lang('error_sending_email');
-			$this->view->message_status = 'issue';
+			ee('CP/Alert')
+				->makeInline()
+				->asIssue()
+				->addToBody(lang('error_sending_email'))
+				->cannotClose()
+				->now();
 		}
 		else
 		{
-			$this->view->message = lang('forgotten_email_sent');
-			$this->view->message_status = 'success';
+			ee('CP/Alert')
+				->makeInline()
+				->asSuccess()
+				->addToBody(lang('forgotten_email_sent'))
+				->cannotClose()
+				->now();
 		}
 
 		$this->forgotten_password_form();
@@ -667,8 +710,13 @@ class Login extends CP_Controller {
 					->or_where('member_id', $member_id)
 					->delete('reset_password');
 
-				$this->view->message = lang('successfully_changed_password');
-				$this->view->message_status = 'success';
+				ee('CP/Alert')
+					->makeInline()
+					->asSuccess()
+					->addToBody(lang('successfully_changed_password'))
+					->cannotClose()
+					->now();
+
 				return $this->index();
 			}
 		}
@@ -683,29 +731,20 @@ class Login extends CP_Controller {
 				/*
 				/* -------------------------------------------*/
 
-		$this->view->messages = array();
+		$alert = ee('CP/Alert')
+			->makeInline()
+			->asIssue()
+			->cannotClose();
 
 		// Show form validation errors
 		if (form_error('password'))
 		{
-			// Regular array appending is throwing an error, so merging
-			$this->view->messages = array_merge(
-				$this->view->messages,
-				array(strip_tags(form_error('password')))
-			);
+			$alert->addToBody(strip_tags(form_error('password')))->now();
 		}
 
 		if (form_error('password_confirm'))
 		{
-			$this->view->messages = array_merge(
-				$this->view->messages,
-				array(strip_tags(form_error('password_confirm')))
-			);
-		}
-
-		if ( ! empty($this->view->messages))
-		{
-			$this->view->message_status = 'issue';
+			$alert->addToBody(strip_tags(form_error('password_confirm')))->now();
 		}
 
 		$this->view->cp_page_title = lang('enter_new_password');

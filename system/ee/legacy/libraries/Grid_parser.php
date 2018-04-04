@@ -725,10 +725,10 @@ class Grid_parser {
 		$params = array($data, $field['params'], $content);
 
 		// Sent to catchall if modifier function doesn't exist
-		if ($modifier && ! method_exists($fieldtype, $parse_fnc))
+		if ($field['full_modifier'] && ! method_exists($fieldtype, $parse_fnc))
 		{
 			$parse_fnc = 'replace_tag_catchall';
-			$params[] = $modifier;
+			$params[] = $field['full_modifier'];
 		}
 
 		return $this->call($parse_fnc, $params, TRUE);

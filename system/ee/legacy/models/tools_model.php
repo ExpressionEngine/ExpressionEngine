@@ -39,11 +39,12 @@ class Tools_model extends CI_Model {
 
 		$this->db->select('cf.field_id, cf.field_label, cf.field_name, s.site_label');
 		$this->db->from('channel_fields AS cf');
-		$this->db->join('sites AS s', 's.site_id = cf.site_id');
+		$this->db->join('sites AS s', 's.site_id = cf.site_id', 'LEFT');
 
 		if ($this->config->item('multiple_sites_enabled') !== 'y')
 		{
 			$this->db->where('cf.site_id', 1);
+			$this->db->or_where('cf.site_id', 0);
 		}
 
 		$this->db->order_by('s.site_label, cf.field_label, cf.field_name');

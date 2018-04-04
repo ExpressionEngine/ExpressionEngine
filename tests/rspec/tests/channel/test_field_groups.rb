@@ -51,7 +51,7 @@ feature 'Field Groups' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.alert[:class].should include 'success'
+    @page.should have_alert_success
     @page.field_groups.should have(1).items
   end
 end

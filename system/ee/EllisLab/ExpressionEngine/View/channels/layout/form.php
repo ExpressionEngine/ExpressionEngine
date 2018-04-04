@@ -31,7 +31,7 @@
 			<?php endforeach; ?>
 		</ul>
 		<a class="add-tab m-link" rel="modal-add-new-tab" href="#"><?=lang('add_tab')?></a>
-			<input type="hidden" name="field_layout" value="<?=json_encode($channel_layout->field_layout)?>">
+			<input type="hidden" name="field_layout" value='<?=json_encode($channel_layout->field_layout)?>'>
 			<?=ee('CP/Alert')->get('layout-form')?>
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
 			<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">

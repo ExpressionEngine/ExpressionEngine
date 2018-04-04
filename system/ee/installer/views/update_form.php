@@ -1,8 +1,10 @@
 <div class="box">
 	<h1><?=($header) ?: $title?></h1>
-	<div class="alert inline warn">
-		<span class="icon-issue"></span>
-		<div class="alert-content">
+	<div class="app-notice app-notice--inline app-notice---important">
+		<div class="app-notice__tag">
+			<span class="app-notice__icon"></span>
+		</div>
+		<div class="app-notice__content">
 			<p><?=lang('update_note')?></p>
 			<p><?=lang('update_backup')?></p>
 		</div>

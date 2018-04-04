@@ -82,13 +82,17 @@ class Dropdown extends React.Component {
   }
 
   render () {
-    let tooMany = this.props.items.length > this.props.tooMany && ! this.state.loading
+    const tooMany = this.props.items.length > this.props.tooMany && ! this.state.loading
+    const selected = this.state.selected
 
     return (
       <div className={"fields-select-drop" + (tooMany ? ' field-resizable' : '')}>
         <div className={"field-drop-selected" + (this.state.open ? ' field-open' : '')} onClick={this.toggleOpen}>
           <label className={this.state.selected ? 'act' : ''}>
-            <i>{this.state.selected ? this.state.selected.label : this.props.emptyText}</i>
+            {selected &&
+              <i>{selected.sectionLabel ? selected.sectionLabel + ' / ' : ''}{selected.label}</i>
+            }
+            { ! selected && <i>{this.props.emptyText}</i>}
             <input type="hidden"
               ref={(input) => { this.input = input }}
               name={this.props.name}
@@ -113,7 +117,10 @@ class Dropdown extends React.Component {
               <Loading text={EE.lang.loading} />
             }
             {this.props.items.map((item) =>
-              <DropdownItem key={item.value ? item.value : item.section} item={item} onClick={(e) => this.selectionChanged(item)} />
+              <DropdownItem key={item.value ? item.value : item.section}
+                item={item}
+                selected={this.state.selected && item.value == this.state.selected.value}
+                onClick={(e) => this.selectionChanged(item)} />
             )}
           </div>
         </div>
@@ -128,13 +135,13 @@ function DropdownItem (props) {
   if (item.section) {
     return (
       <div className="field-group-head">
-        {item.section}
+        <span class="icon--folder"></span> {item.section}
       </div>
     )
   }
 
   return (
-    <label onClick={props.onClick}>
+    <label onClick={props.onClick} className={props.selected ? 'act' : ''}>
       {item.label} {item.instructions && <i>{item.instructions}</i>}
     </label>
   )

@@ -774,6 +774,38 @@ class Member extends ContentModel {
 
 		return TRUE;
 	}
+
+	/**
+	 * Get the full URL to the Avatar
+	 */
+	public function getAvatarUrl()
+	{
+		if ($this->avatar_filename)
+		{
+			$avatar_url = ee()->config->slash_item('avatar_url');
+			$avatar_fs_path = ee()->config->slash_item('avatar_path');
+
+			if (file_exists($avatar_fs_path.'default/'.$this->avatar_filename))
+			{
+				$avatar_url .= 'default/';
+			}
+
+			return $avatar_url.$this->avatar_filename;
+		}
+		return '';
+	}
+
+	/**
+	 * Get the full URL to the Signature Image
+	 */
+	public function getSignatureImageUrl()
+	{
+		if ($this->sig_img_filename)
+		{
+			return ee()->config->slash_item('sig_img_url').$this->sig_img_filename;
+		}
+		return '';
+	}
 }
 
 // EOF

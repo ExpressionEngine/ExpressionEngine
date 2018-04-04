@@ -8,7 +8,7 @@
 		</fieldset>
 		<?php endif; ?>
 		<h1><?=$cp_page_title?></h1>
-		<?=ee('CP/Alert')->getAllInlines()?>
+		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 		<div class="tbl-list-wrap">
 			<?php if (count($categories->children()) != 0 && $can_delete_categories): ?>
 				<div class="tbl-list-ctrl">

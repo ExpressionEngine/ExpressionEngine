@@ -316,8 +316,6 @@ class Translate extends Utilities {
 		$vars['save_btn_text_working'] = 'btn_saving';
 
 		return ee()->cp->render('settings/form', $vars);
-
-		ee()->cp->render('utilities/translate/edit', $vars);
 	}
 
 	private function save($language, $file)

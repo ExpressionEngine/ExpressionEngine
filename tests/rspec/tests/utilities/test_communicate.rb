@@ -66,7 +66,7 @@ feature 'Communicate' do
     @page.submit_button.click
 
     @page.should have_alert
-    @page.should have_css 'div.alert.issue'
+    @page.should have_alert_error
     @page.alert.should have_text "Attention: Email not sent"
 
     @page.subject.first(:xpath, ".//../..")[:class].should include 'invalid'
@@ -94,7 +94,7 @@ feature 'Communicate' do
     @page.submit_button.click
 
     @page.should have_alert
-    @page.should have_css 'div.alert.issue'
+    @page.should have_alert_error
     @page.alert.should have_text "Attention: Email not sent"
 
     @page.from_email.value.should eq my_email
@@ -125,7 +125,7 @@ feature 'Communicate' do
     @page.submit_button.click
 
     @page.should have_alert
-    @page.should have_css 'div.alert.issue'
+    @page.should have_alert_error
     @page.alert.should have_text 'Attention: Email not sent'
 
     @page.from_email.value.should eq my_email
@@ -179,7 +179,7 @@ feature 'Communicate' do
 #    @page.submit_button.click
 #
 #    @page.should have_alert
-#    @page.should have_css 'div.alert.success'
+#    @page.should have_alert_success
 #    @page.alert.should have_text 'Your email has been sent'
 #
 #    mail = get_mail
@@ -201,7 +201,7 @@ feature 'Communicate' do
 #    @page.submit_button.click
 #
 #    @page.should have_alert
-#    @page.should have_css 'div.alert.success'
+#    @page.should have_alert_success
 #    @page.alert.should have_text 'Your email has been sent'
 #
 #    mail = get_mail
@@ -225,7 +225,7 @@ feature 'Communicate' do
 #    @page.submit_button.click
 #
 #    @page.should have_alert
-#    @page.should have_css 'div.alert.success'
+#    @page.should have_alert_success
 #    @page.alert.should have_text 'Your email has been sent'
 #
 #    mail = get_mail
@@ -253,7 +253,7 @@ feature 'Communicate' do
 #    @page.submit_button.click
 #
 #    @page.should have_alert
-#    @page.should have_css 'div.alert.success'
+#    @page.should have_alert_success
 #    @page.alert.should have_text 'Your email has been sent'
 #
 #    mail = get_mail
@@ -278,7 +278,7 @@ feature 'Communicate' do
 #    @page.submit_button.click
 #
 #    @page.should have_alert
-#    @page.should have_css 'div.alert.success'
+#    @page.should have_alert_success
 #    @page.alert.should have_text 'Your email has been sent'
 #
 #    mail = get_mail
@@ -303,7 +303,7 @@ feature 'Communicate' do
 #    @page.submit_button.click
 #
 #    @page.should have_alert
-#    @page.should have_css 'div.alert.success'
+#    @page.should have_alert_success
 #    @page.alert.should have_text 'Your email has been sent'
 #
 #    mail = get_mail
@@ -327,7 +327,7 @@ feature 'Communicate' do
 #    @page.submit_button.click
 #
 #    @page.should have_alert
-#    @page.should have_css 'div.alert.success'
+#    @page.should have_alert_success
 #    @page.alert.should have_text 'Your email has been sent'
 #
 #    mail = get_mail
@@ -356,7 +356,7 @@ feature 'Communicate' do
 #    @page.submit_button.click
 #
 #    @page.should have_alert
-#    @page.should have_css 'div.alert.success'
+#    @page.should have_alert_success
 #    @page.alert.should have_text 'Total number of emails sent: 2'
 #
 #    # This isn't ideal as there could be name conflicts but for now
@@ -394,7 +394,7 @@ feature 'Communicate' do
 #    @page.submit_button.click
 #
 #    @page.should have_alert
-#    @page.should have_css 'div.alert.warn'
+#    @page.should have_alert_important
 #    @page.alert.should have_text 'The email sending routine will begin in'
 #
 #    # Manually "follow" the meta-refresh URL
@@ -438,7 +438,7 @@ feature 'Communicate' do
 #    @page.submit_button.click
 #
 #    @page.should have_alert
-#    @page.should have_css 'div.alert.warn'
+#    @page.should have_alert_important
 #    @page.alert.should have_text 'The email sending routine will begin in'
 #
 #    # Manually "follow" the meta-refresh URL

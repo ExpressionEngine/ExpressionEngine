@@ -514,10 +514,7 @@ class Export {
 			$result->future = 'y';
 		}
 
-		if ( ! $settings['allow_multiple'])
-		{
-			$result->allow_multiple = 'n';
-		}
+		$result->allow_multiple = ($settings['allow_multiple']) ? 'y' : 'n';
 
 		if ($settings['limit'] != 100)
 		{

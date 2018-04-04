@@ -247,23 +247,10 @@ class General extends Settings {
 	 */
 	public function versionCheck()
 	{
-		if (ee()->config->item('cache_driver') == 'dummy')
-		{
-			$cache = ee()->cache->file;
-		}
-		else
-		{
-			$cache = ee()->cache;
-		}
-
-		$cache->delete('current_version', \Cache::GLOBAL_SCOPE);
-
 		ee()->load->library('el_pings');
-		$version_info = ee()->el_pings->get_version_info();
-		$latest_version = $version_info['latest_version'];
 
 		// Error getting version
-		if ( ! $latest_version)
+		if ( ! ee()->el_pings->get_version_info(TRUE))
 		{
 			ee('CP/Alert')->makeBanner('error-getting-version')
 				->asIssue()
@@ -273,9 +260,20 @@ class General extends Settings {
 		}
 		else
 		{
+			$version_info = ee()->el_pings->getUpgradeInfo();
+			$latest_version = $version_info['version'];
+
 			// New version available
 			if (version_compare(ee()->config->item('app_version'), $latest_version, '<'))
 			{
+				if (AJAX_REQUEST)
+				{
+					return [
+						'isVitalUpdate' => $version_info['security'],
+						'newVersionMarkup' => ee('View')->make('ee:_shared/_new_version')->render($version_info)
+					];
+				}
+
 				$upgrade_url = ee('CP/URL', 'updater')->compile();
 				$instruct_url = ee()->cp->masked_url(DOC_URL.'installation/update.html');
 
@@ -290,6 +288,11 @@ class General extends Settings {
 			// Running latest version already
 			else
 			{
+				if (AJAX_REQUEST)
+				{
+					return ['up-to-date'];
+				}
+
 				ee('CP/Alert')->makeBanner('running-current')
 					->asSuccess()
 					->withTitle(lang('running_current'))
@@ -298,9 +301,7 @@ class General extends Settings {
 			}
 		}
 
-		$redirect = ee('Request')->get('redirect') ?: ee('CP/URL', 'settings/general');
-
-		ee()->functions->redirect($redirect);
+		ee()->functions->redirect(ee('CP/URL', 'settings/general'));
 	}
 }
 // END CLASS

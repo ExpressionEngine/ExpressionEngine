@@ -417,6 +417,8 @@ var SelectList = function (_React$Component) {
       if (!items) return [];
 
       var itemsArray = [];
+      var currentSection = null;
+
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
       var _iteratorError = undefined;
@@ -427,8 +429,9 @@ var SelectList = function (_React$Component) {
 
 
           if (items[key].section) {
+            currentSection = items[key].section;
             itemsArray.push({
-              section: items[key].section,
+              section: currentSection,
               label: ''
             });
           } else {
@@ -441,7 +444,8 @@ var SelectList = function (_React$Component) {
               instructions: items[key].instructions ? items[key].instructions : '',
               children: null,
               parent: parent ? parent : null,
-              component: items[key].component != undefined ? items[key].component : null
+              component: items[key].component != undefined ? items[key].component : null,
+              sectionLabel: currentSection
             };
 
             if (items[key].children) {

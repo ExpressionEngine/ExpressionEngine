@@ -18,6 +18,8 @@ $lang = array(
 
 'batchmode_warning' => 'Do not touch your browser until the process is completely finished!',
 
+'batch_size_is_zero' => 'Batch mode enabled, but batch size is not set properly. Check your <a href="'.DOC_URL.'/general/system_configuration_overrides.html#email-batch-size" rel="external">Email Configuration Overrides</a> in your config file.',
+
 'bcc' => 'BCC',
 
 'cache_data_missing' => 'The email cache data was not located.',

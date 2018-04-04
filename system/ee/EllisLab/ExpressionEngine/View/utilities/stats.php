@@ -3,7 +3,7 @@
 <div class="tbl-ctrls">
 	<?=form_open(ee('CP/URL')->make('utilities/stats/sync'))?>
 		<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
-		<?=ee('CP/Alert')->getAllInlines()?>
+		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 		<?php $this->embed('ee:_shared/table', $table); ?>
 
 		<fieldset class="tbl-bulk-act hidden">

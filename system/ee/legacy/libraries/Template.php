@@ -128,8 +128,8 @@ class EE_Template {
 
 		$this->user_vars = array(
 			'member_id', 'group_id', 'group_description', 'group_title', 'username', 'screen_name',
-			'email', 'ip_address', 'location', 'total_entries',
-			'total_comments', 'private_messages', 'total_forum_posts', 'total_forum_topics', 'total_forum_replies'
+			'email', 'ip_address', 'total_entries', 'total_comments', 'private_messages',
+			'total_forum_posts', 'total_forum_topics', 'total_forum_replies'
 		);
 
 		$this->marker = md5(ee()->config->site_url().$this->marker);
@@ -313,18 +313,19 @@ class EE_Template {
 		$seg_array = ee()->uri->segment_array();
 
 		// Define some path and template related global variables
-		$added_globals = array(
-			'last_segment'         => end($seg_array),
-			'current_url'          => ee()->functions->fetch_current_uri(),
-			'current_path'         => (ee()->uri->uri_string) ? str_replace(array('"', "'"), array('%22', '%27'), ee()->uri->uri_string) : '/',
-			'current_query_string' => http_build_query($_GET), // GET has been sanitized!
-			'template_name'        => $this->template_name,
-			'template_group'       => $this->group_name,
-			'template_group_id'    => $this->template_group_id,
-			'template_id'          => $this->template_id,
-			'template_type'        => $this->embed_type ?: $this->template_type,
-			'is_ajax_request'      => AJAX_REQUEST
-		);
+		$added_globals = [
+			'last_segment'            => end($seg_array),
+			'current_url'             => ee()->functions->fetch_current_uri(),
+			'current_path'            => (ee()->uri->uri_string) ? str_replace(array('"', "'"), array('%22', '%27'), ee()->uri->uri_string) : '/',
+			'current_query_string'    => http_build_query($_GET), // GET has been sanitized!
+			'template_name'           => $this->template_name,
+			'template_group'          => $this->group_name,
+			'template_group_id'       => $this->template_group_id,
+			'template_id'             => $this->template_id,
+			'template_type'           => $this->embed_type ?: $this->template_type,
+			'is_ajax_request'         => AJAX_REQUEST,
+			'is_live_preview_request' => ee('LivePreview')->hasEntryData(),
+		];
 
 		foreach ($this->user_vars as $user_var)
 		{
@@ -664,7 +665,7 @@ class EE_Template {
 			//       1 => string 'titles' (length=6)
 			//       2 => string ''' (length=1)
 			//       3 => string '4' (length=1)
-			preg_match_all("/".LD."layout:(\w+?)\s+index\s*=\s*(\042|\047)([^\\2]*?)\\2\s*".RD."/si", $str, $matches, PREG_SET_ORDER);
+			preg_match_all("/".LD."layout:([^\s]+?)\s+index\s*=\s*(\042|\047)([^\\2]*?)\\2\s*".RD."/si", $str, $matches, PREG_SET_ORDER);
 
 			foreach ($matches as $match)
 			{

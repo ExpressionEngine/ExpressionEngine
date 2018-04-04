@@ -1562,7 +1562,7 @@ class Groups extends Members\Members {
 				->asWarning()
 				->cannotClose()
 				->addToBody(lang('access_privilege_warning'))
-				->addToBody(lang('access_privilege_caution'), 'caution')
+				->addToBody(lang('access_privilege_caution'), 'txt-enhance')
 				->now();
 		}
 

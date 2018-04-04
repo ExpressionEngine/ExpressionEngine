@@ -272,19 +272,30 @@ class Filesystem {
 	 * We can't always do this, but it's much, much faster than iterating
 	 * over directories with many children.
 	 *
-	 * @param String $path
+	 * @param bool whether or not the fast system delete could be done
 	 */
 	protected function attemptFastDelete($path)
 	{
-		$normal_path = $this->normalize($path);
-		$path_delete = $normal_path.'_delete_'.mt_rand();
+		$path = $this->normalize($path);
 
-		@exec("mv {$normal_path} {$path_delete}", $out, $ret);
+		$delete_name = sha1($path.'_delete_'.mt_rand());
+		$delete_path = PATH_CACHE.$delete_name;
+		$this->rename($path, $delete_path);
 
-		if (isset($ret) && $ret == 0)
+		if ($this->exists($delete_path) && is_dir($delete_path))
 		{
-			@exec("rm -r -f {$path_delete}");
-			return TRUE;
+			$delete_path = escapeshellarg($delete_path);
+
+			if (DIRECTORY_SEPARATOR == '/')
+			{
+				@exec("rm -rf {$delete_path}");
+			}
+			else
+			{
+				@exec("rd /s /q {$delete_path}");
+			}
+
+			return  ! $this->exists($delete_path);
 		}
 
 		return FALSE;
