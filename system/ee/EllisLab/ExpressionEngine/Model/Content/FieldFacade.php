@@ -209,6 +209,21 @@ class FieldFacade {
 		return $this->data = $this->api->apply('post_save', array($value));
 	}
 
+	public function reindex($model = NULL)
+	{
+		$this->ensurePopulatedDefaults();
+
+		$ft = $this->getNativeField();
+		if ( ! method_exists($ft, 'reindex'))
+		{
+			return FALSE;
+		}
+
+		$value = $this->data;
+		$this->initField();
+		return $this->data = $this->api->apply('reindex', array($value, $model));
+	}
+
 	public function getForm()
 	{
 		$data = $this->initField();
