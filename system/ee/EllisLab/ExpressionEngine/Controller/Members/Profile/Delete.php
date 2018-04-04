@@ -49,7 +49,7 @@ class Delete extends Profile {
 			->asWarning()
 			->cannotClose()
 			->withTitle(lang('delete_member_warning'))
-			->addToBody(lang('delete_member_caution'), 'caution')
+			->addToBody(lang('delete_member_caution'), 'txt-enhance')
 			->now();
 
 		ee()->view->base_url = $this->base_url;

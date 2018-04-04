@@ -323,7 +323,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		this.root.on('click', 'a[rel=remove_row]', function(event) {
 			event.preventDefault();
 
-			row = $(this).parents(that.rowSelector);
+			var row = $(this).closest(that.rowSelector);
 
 			// Fire 'remove' event for this row
 			that._fireEvent('remove', row);
@@ -790,10 +790,14 @@ Grid.Settings.prototype = {
 			}
 			// Handle radio buttons
 			else if ($(this).attr('type') == 'radio') {
-				new_input
-					.removeAttr('selected')
+				new_input = new_input
 					.filter("[value='"+$(this).val()+"']")
-					.attr('checked', $(this).attr('checked'));
+					.removeAttr('checked');
+
+				if ($(this).prop('checked')) {
+					new_input.attr('checked', 'checked');
+					console.log(new_input);
+				}
 			}
 			// Handle textareas
 			else if ($(this).is("textarea")) {

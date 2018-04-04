@@ -178,7 +178,7 @@ class Status extends AbstractChannelsController {
 					->asWarning()
 					->addToBody(lang('category_permissions_warning'))
 					->addToBody(
-						sprintf(lang('category_permissions_warning2'), '<span title="excercise caution"></span>'),
+						sprintf(lang('category_permissions_warning2'), '<span class="icon--caution" title="exercise caution"></span>'),
 						'caution'
 					)
 					->cannotClose()

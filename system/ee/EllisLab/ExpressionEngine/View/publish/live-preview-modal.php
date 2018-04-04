@@ -11,8 +11,16 @@
 </div>
 <!-- Website iframe -->
 <div class="live-preview">
-	<div class="alert banner warn">
-		<p class="txt-center"><b><?=lang('preview')?></b> <span class="txt-fade" data-unpublished>(<?=lang('unpublished')?>)</span> <span class="txt-fade hidden" data-loading>(<?=lang('loading')?>)</span> <a href="#" class="txt-rsp-lrg js-preview-wide align-block-right" data-close="<?=lang('continue_editing')?>" data-open="<?=lang('view_wider')?>"><?=lang('view_wider')?></a></p>
+	<div class="app-notice app-notice--banner app-notice---important">
+		<div class="app-notice__tag">
+			<span class="app-notice__icon"></span>
+		</div>
+		<div class="app-notice__content">
+			<p><b><?=lang('preview')?></b> <span data-unpublished>(<?=lang('unpublished')?>)</span><span class="hidden" data-loading>(<?=lang('loading')?>)</span></p>
+		</div>
+		<div class="app-notice__controls">
+			<a href="#" class="txt-rsp-lrg js-preview-wide align-block-right" data-close="<?=lang('continue_editing')?>" data-open="<?=lang('view_wider')?>"><?=lang('view_wider')?></a>
+		</div>
 	</div>
 	<iframe src="" data-url="<?=$preview_url?>" class="live-preview__frame"></iframe>
 </div>

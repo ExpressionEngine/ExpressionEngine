@@ -4,7 +4,7 @@
 	<div class="tbl-ctrls">
 		<?=form_open($base_url)?>
 			<h1><?=$cp_page_title?></h1>
-			<?=ee('CP/Alert')->getAllInlines()?>
+			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 			<?php $this->embed('_shared/table-list', ['data' => $fields]); ?>
 			<?php if (isset($pagination)) echo $pagination; ?>
 			<fieldset class="tbl-bulk-act hidden">

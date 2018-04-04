@@ -21,13 +21,15 @@ class ControlPanelPage < SitePrism::Page
   elements :pages, 'div.paginate ul li a'
 
   # Alert
-  element :alert, 'div.alert'
-  element :alert_success, 'div.alert.success'
+  element :alert, 'div.app-notice'
+  element :alert_success, 'div.app-notice---success'
+  element :alert_important, 'div.app-notice---important'
+  element :alert_error, 'div.app-notice---error'
 
   # Modals
   element :modal, 'div.modal'
-  element :modal_title, 'div.modal div.box h1'
-  element :modal_submit_button, 'div.modal .form-ctrls input.btn'
+  element :modal_title, 'div.modal h1'
+  element :modal_submit_button, 'div.modal input.btn'
 
   # Grid
   element :grid_add_no_results, 'tr.no-results a[rel="add_row"]'

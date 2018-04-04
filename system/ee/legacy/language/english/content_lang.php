@@ -32,7 +32,7 @@ $lang = array(
 
 'btn_create_new_entry_in_channel' => 'New in %s',
 
-'btn_edit_comment' => 'Edit Comment',
+'btn_edit_comment' => 'Save',
 
 'btn_publish' => 'Publish',
 
@@ -202,7 +202,7 @@ $lang = array(
 
 'autosave_data_available' => 'auto saved data available',
 
-'autosave_success' => '<b>Auto saved</b> at ',
+'autosave_success' => 'Auto Saved',
 
 'autosave_title' => 'Saved data available',
 

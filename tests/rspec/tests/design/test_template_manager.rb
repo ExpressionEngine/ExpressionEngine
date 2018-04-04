@@ -224,7 +224,7 @@ feature 'Template Manager' do
       no_php_js_errors
 
       @page.should have_alert
-      @page.alert[:class].should include 'success'
+      @page.should have_alert_success
       @page.templates.should have(5).items
     end
   end

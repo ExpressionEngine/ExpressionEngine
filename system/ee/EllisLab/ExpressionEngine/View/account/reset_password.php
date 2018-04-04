@@ -2,14 +2,7 @@
 
 <div class="box">
 	<h1><?=lang('reset_password')?><span class="icon-reset"></span></h1>
-	<?php if ( ! empty($messages)):?>
-		<div class="alert inline <?=$message_status?>">
-			<span class="icon-<?=$message_status?>"></span>
-			<?php foreach ($messages as $message): ?>
-				<p><?=$message?></p>
-			<?php endforeach ?>
-		</div>
-	<?php endif;?>
+	<?=ee('CP/Alert')->getAllInlines()?>
 	<?=form_open(ee('CP/URL')->make('login/reset_password'))?>
 		<fieldset>
 			<?=lang('new_password', 'password')?>

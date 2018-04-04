@@ -177,15 +177,7 @@ class Member_settings extends Member {
 
 		if (ee()->config->item('enable_avatars') == 'y' AND $row['avatar_filename']  != '')
 		{
-			$avatar_url = ee()->config->slash_item('avatar_url');
-			$avatar_fs_path = ee()->config->slash_item('avatar_path');
-
-			if (file_exists($avatar_fs_path.'default/'.$row['avatar_filename']))
-			{
-				$avatar_url .= 'default/';
-			}
-
-			$avatar_path	= $avatar_url.$row['avatar_filename'];
+			$avatar_path	= $member->getAvatarUrl();
 			$avatar_width	= $row['avatar_width'] ;
 			$avatar_height	= $row['avatar_height'] ;
 
@@ -675,18 +667,16 @@ class Member_settings extends Member {
 			foreach ($this->var_cond as $val)
 			{
 				// Prep the conditional
-
 				$cond = ee()->functions->prep_conditional($val['0']);
 
 				$lcond	= substr($cond, 0, strpos($cond, ' '));
 				$rcond	= substr($cond, strpos($cond, ' '));
 
-
 				if (array_key_exists($val['3'], $fnames))
 				{
 					$m_field_id_name = 'm_field_id_'.$fnames[$val['3']]['0'];
 
-					$lcond = str_replace($val['3'], "\$result_row['".$m_field_id_name."']", $lcond);
+					$lcond = str_replace($val['3'], "\$row['".$m_field_id_name."']", $lcond);
 
 					$cond = $lcond.' '.$rcond;
 
