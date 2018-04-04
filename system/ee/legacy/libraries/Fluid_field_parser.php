@@ -334,7 +334,11 @@ class Fluid_field_parser {
 			{
 				if ( ! array_key_exists($key, $meta))
 				{
-					$meta[$key] = $this->evaluateSingleVariable($value, $fluid_field_data, $fluid_field);
+					$meta_value = $this->evaluateSingleVariable($value, $fluid_field_data, $fluid_field);
+					if ( ! is_null($meta_value))
+					{
+						$meta[$key] = $meta_value;
+					}
 				}
 			}
 
