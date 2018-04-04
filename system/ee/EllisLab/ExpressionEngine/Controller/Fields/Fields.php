@@ -455,6 +455,7 @@ class Fields extends AbstractFieldsController {
 		);
 
 		ee()->view->cp_page_title = lang('edit_field');
+		ee()->view->extra_alerts = array('search-reindex');
 
 		ee()->cp->render('settings/form', $vars);
 	}

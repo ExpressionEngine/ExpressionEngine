@@ -606,6 +606,12 @@ $lang = array(
 
 'html_button_ajax_reorder_fail_desc' => 'We failed to save your new html buttons order. Refresh the page and make sure you\'re logged in.',
 
+/* Search Reindex tip */
+
+'search_reindex_tip' => 'Search Reindex',
+
+'search_reindex_tip_desc' => "If you use the search module you will want to <a href='%s'>run the search reindex tool</a> to keep the search data up-to-date.",
+
 );
 
 // EOF

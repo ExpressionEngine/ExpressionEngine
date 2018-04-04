@@ -734,6 +734,10 @@ class Grid_lib {
 		// other columns in the DB to see which we should delete
 		$col_ids = array();
 
+		$columns = ee()->grid_model->get_columns_for_field($settings['field_id'], $this->content_type, FALSE);
+
+		$col_search_settings_changed = FALSE;
+
 		// Go through ALL posted columns for this field
 		foreach ($settings['grid']['cols'] as $col_field => $column)
 		{
@@ -765,9 +769,23 @@ class Grid_lib {
 				'col_settings'		=> json_encode($column['col_settings'])
 			);
 
+			if ($column['col_search'] != $columns[$column['col_id']]['col_search'])
+			{
+				$col_search_settings_changed = TRUE;
+			}
+
 			$col_ids[] = ee()->grid_model->save_col_settings($column_data, $column['col_id'], $this->content_type);
 
 			$count++;
+		}
+
+		if ($col_search_settings_changed)
+		{
+			ee('CP/Alert')->makeInline('search-reindex')
+				->asTip()
+				->withTitle(lang('search_reindex_tip'))
+				->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
+				->defer();
 		}
 
 		// Channel content type only searchable at the moment
@@ -779,12 +797,16 @@ class Grid_lib {
 		// Delete columns that were not including in new field settings
 		if ( ! $new_field)
 		{
-			$columns = ee()->grid_model->get_columns_for_field($settings['field_id'], $this->content_type, FALSE);
+			$had_searchable_data = FALSE;
 
 			$old_cols = array();
 			foreach ($columns as $column)
 			{
 				$old_cols[$column['col_id']] = $column['col_type'];
+				if ($column['col_search'] == 'y')
+				{
+					$had_searchable_data = TRUE;
+				}
 			}
 
 			// Compare columns in DB to ones we gathered from the settings array
@@ -799,6 +821,15 @@ class Grid_lib {
 					$settings['field_id'],
 					$this->content_type
 				);
+
+				if ($had_searchable_data)
+				{
+					ee('CP/Alert')->makeInline('search-reindex')
+						->asTip()
+						->withTitle(lang('search_reindex_tip'))
+						->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
+						->defer();
+				}
 			}
 		}
 	}
