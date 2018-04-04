@@ -37,6 +37,9 @@ if (isset($tool_type))
 		case 'sub_header':
 			$classes[] = 'tools--in-head';
 			break;
+		case 'sub_table':
+			$classes[] = 'tools--no-bar';
+			break;
 		case 'icon_only':
 			$classes[] = 'tools--no-text';
 			break;
