@@ -733,6 +733,15 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function save_settings($data)
 	{
+		if ( ! $this->get_setting('field_search') && $data['field_search'] == 'y')
+		{
+			ee('CP/Alert')->makeInline('search-reindex')
+				->asTip()
+				->withTitle(lang('search_reindex_tip'))
+				->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
+				->defer();
+		}
+
 		// Make sure grid_min_rows is at least zero
 		return array(
 			'grid_min_rows' => empty($data['grid_min_rows']) ? 0 : $data['grid_min_rows'],
