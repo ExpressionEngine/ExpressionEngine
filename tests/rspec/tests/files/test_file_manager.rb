@@ -400,7 +400,7 @@ feature 'File Manager' do
 		no_php_js_errors
 
 		@page.should have_alert
-		@page.should have_css('div.alert.warn')
+		@page.should have_alert_important
 		@page.alert.text.should include "Files Not Found"
 		@page.alert.text.should include "Highlighted files cannot be found on the server."
 
@@ -413,7 +413,7 @@ feature 'File Manager' do
 		no_php_js_errors
 
 		@page.should have_alert
-		@page.should have_css('div.alert.warn')
+		@page.should have_alert_important
 		@page.alert.text.should include "Files Not Found"
 		@page.alert.text.should include "Highlighted files cannot be found on the server."
 

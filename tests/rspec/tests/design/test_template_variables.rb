@@ -94,7 +94,7 @@ feature 'Template Variables' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.alert[:class].should include 'success'
+    @page.should have_alert_success
     @page.variables.should have(13).items
   end
 end

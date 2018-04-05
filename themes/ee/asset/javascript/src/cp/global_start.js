@@ -273,10 +273,20 @@ EE.cp.addLastToChecklists = function() {
 
 // Close alert modal when close button is clicked
 EE.cp.bindCpMessageClose = function() {
-	$('body').on('click', 'div.alert a.close', function(event) {
+	$('body').on('click', '.js-notice-dismiss', function(event) {
 		event.preventDefault();
-		$(this).parent().hide();
+		$(this).closest('.app-notice').remove();
 	});
+
+	// Clear floating alerts after some time
+	var floatingAlerts = $('.app-notice--alert')
+	if (floatingAlerts.size()) {
+		setTimeout(function() {
+			floatingAlerts.fadeOut(function() {
+				floatingAlerts.remove()
+			})
+		}, 20000)
+	}
 }
 
 // Binds jQuery UI sortable to reorderable folder lists

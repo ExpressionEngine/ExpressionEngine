@@ -205,7 +205,7 @@ feature 'Translate Tool' do
     no_php_js_errors
 
     @edit_page.should have_alert
-    @edit_page.should have_css('div.alert.issue')
+    @edit_page.should have_alert_error
 
     FileUtils.chmod t_stat.mode, translations_path
   end
@@ -220,7 +220,7 @@ feature 'Translate Tool' do
     no_php_js_errors
 
     @edit_page.should have_alert
-    @edit_page.should have_css('div.alert.success')
+    @edit_page.should have_alert_success
     File.exists?(language_path + 'english/addons_lang.php')
   end
 
@@ -232,7 +232,7 @@ feature 'Translate Tool' do
     no_php_js_errors
 
     @edit_page.should have_alert
-    @edit_page.should have_css('div.alert.issue')
+    @edit_page.should have_alert_error
 
     FileUtils.chmod 0777, language_path + 'english/addons_lang.php'
   end
@@ -249,7 +249,7 @@ feature 'Translate Tool' do
     no_php_js_errors
 
     @edit_page.should have_alert
-    @edit_page.should have_css('div.alert.issue')
+    @edit_page.should have_alert_error
 
     FileUtils.chmod 0644, language_path + 'rspeclingo/addons_lang.php'
   end

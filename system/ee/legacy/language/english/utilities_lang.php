@@ -281,7 +281,7 @@ $lang = array(
 
 'confirm_import' => 'Confirm Import',
 
-'confirm_import_warning' => '<p class="caution"><span title="excercise caution"></span> <b>Caution</b>: If your <abbr title="Extensible Markup Language">XML</abbr> file contains a tag named "<b>member_id</b>", stop.</p><p>Members in your database with matching <abbr title="Identifier">ID</abbr>s will be <b>overwritten</b> if you confirm this import.</p>',
+'confirm_import_warning' => '<p class="txt-caution"><span class="icon--caution" title="exercise caution"></span> <b>Caution</b>: If your <abbr title="Extensible Markup Language">XML</abbr> file contains a tag named "<b>member_id</b>", stop.</p><p>Members in your database with matching <abbr title="Identifier">ID</abbr>s will be <b>overwritten</b> if you confirm this import.</p>',
 
 'custom_fields' => 'Custom Fields',
 

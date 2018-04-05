@@ -1,15 +1,19 @@
 <div class="box">
 	<h1><?=($header) ?: $title?></h1>
-	<div class="alert inline warn">
-		<span class="icon-issue"></span>
-		<div class="alert-content">
+	<div class="app-notice app-notice--inline app-notice---important">
+		<div class="app-notice__tag">
+			<span class="app-notice__icon"></span>
+		</div>
+		<div class="app-notice__content">
 			<p><?=lang('install_note')?></p>
 		</div>
 	</div>
 	<?php if ( ! empty($errors)): ?>
-		<div class="alert inline issue">
-			<span class="icon-issue"></span>
-			<div class="alert-content">
+		<div class="app-notice app-notice--inline app-notice---error">
+			<div class="app-notice__tag">
+				<span class="app-notice__icon"></span>
+			</div>
+			<div class="app-notice__content">
 				<?php foreach ($errors as $error): ?>
 					<p><?=$error?></p>
 				<?php endforeach ?>

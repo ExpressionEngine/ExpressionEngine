@@ -8,7 +8,7 @@
 	<div class="tbl-ctrls">
 		<?=form_open($form_url)?>
 			<h1><?=$cp_heading['first']?></h1>
-			<?=ee('CP/Alert')->get('first-party')?>
+			<div class="app-notice-wrap"><?=ee('CP/Alert')->get('first-party')?></div>
 			<?php if (isset($filters['first'])) echo $filters['first']; ?>
 			<?php $this->embed('_shared/table', $tables['first']); ?>
 			<?php if ( ! empty($tables['first']['columns']) && ! empty($tables['first']['data'])): ?>
@@ -30,7 +30,7 @@
 	<div class="tbl-ctrls">
 		<?=form_open($form_url)?>
 			<h1><?=$cp_heading['third']?></h1>
-			<?=ee('CP/Alert')->get('third-party')?>
+			<div class="app-notice-wrap"><?=ee('CP/Alert')->get('third-party')?></div>
 			<?php if (isset($filters['third'])) echo $filters['third']; ?>
 			<?php $this->embed('_shared/table', $tables['third']); ?>
 			<?php if ( ! empty($tables['third']['columns']) && ! empty($tables['third']['data'])): ?>
@@ -55,12 +55,16 @@
 		<div class="col-group">
 			<div class="col w-16">
 				<a class="m-close" href="#"></a>
-				<div class="box">
-					<h1><?=lang('confirm_uninstall')?></h1>
-					<?=form_open($form_url, 'class="settings"', array('bulk_action' => 'remove'))?>
-						<div class="alert inline issue">
-							<p><?=lang('confirm_uninstall_desc')?></p>
+				<div class="form-standard">
+					<?=form_open($form_url, '', array('bulk_action' => 'remove'))?>
+						<div class="form-btns form-btns-top">
+							<h1><?=lang('confirm_uninstall')?></h1>
 						</div>
+						<?=ee('CP/Alert')
+							->makeInline()
+							->asIssue()
+							->addToBody(lang('confirm_uninstall_desc'))
+							->render()?>
 						<div class="txt-wrap">
 							<ul class="checklist">
 								<?php if (isset($checklist)):
@@ -72,9 +76,9 @@
 							</ul>
 							<div class="ajax"></div>
 						</div>
-						<fieldset class="form-ctrls">
+						<div class="form-btns">
 							<?=cp_form_submit('btn_confirm_and_uninstall', 'btn_confirm_and_uninstall_working')?>
-						</fieldset>
+						</div>
 					</form>
 				</div>
 			</div>

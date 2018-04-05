@@ -35,15 +35,19 @@
 		<div class="col-group">
 			<div class="col w-16">
 				<a class="m-close" href="#"></a>
-				<div class="box">
-					<h1><?=lang('confirm_show_all')?></h1>
-					<form class="settings">
-						<div class="alert inline warn">
-							<p><?=sprintf(lang('confirm_show_all_desc'), $threshold)?></p>
+				<div class="form-standard">
+					<form>
+						<div class="form-btns form-btns-top">
+							<h1><?=lang('confirm_show_all')?></h1>
 						</div>
-						<fieldset class="form-ctrls">
+						<?=ee('CP/Alert')
+							->makeInline()
+							->asImportant()
+							->addToBody(sprintf(lang('confirm_show_all_desc'), $threshold))
+							->render()?>
+						<div class="form-btns">
 							<a class="btn submit" href="<?=$show_all_url?>"><?=lang('confirm_show_all_btn')?></a>
-						</fieldset>
+						</div>
 					</form>
 				</div>
 			</div>

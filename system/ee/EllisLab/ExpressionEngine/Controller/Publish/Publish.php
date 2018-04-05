@@ -129,12 +129,8 @@ class Publish extends AbstractPublishController {
 		$time = ee()->localize->human_time(ee()->localize->now);
 		$time = trim(strstr($time, ' '));
 
-		$alert = ee('CP/Alert')->make()
-			->asWarning()
-			->addToBody(lang('autosave_success') . $time);
-
 		ee()->output->send_ajax_response(array(
-			'success' => $alert->render(),
+			'success' => ee('View')->make('ee:publish/partials/autosave_badge')->render(['time' => $time]),
 			'autosave_entry_id' => $autosave->entry_id,
 			'original_entry_id'	=> $entry_id
 		));
