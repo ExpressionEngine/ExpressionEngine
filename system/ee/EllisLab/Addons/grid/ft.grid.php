@@ -733,7 +733,8 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function save_settings($data)
 	{
-		if ( ! $this->get_setting('field_search') && $data['field_search'] == 'y')
+		if ( ! $this->get_setting('field_search')
+			&& (isset($data['field_search']) && $data['field_search'] == 'y'))
 		{
 			ee('CP/Alert')->makeInline('search-reindex')
 				->asTip()
