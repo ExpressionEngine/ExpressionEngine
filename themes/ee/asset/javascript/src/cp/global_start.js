@@ -534,6 +534,11 @@ EE.cp.broadcastEvents = (function() {
 		logoutModal = $('#idle-modal'),
 		overlay		= $('.overlay');
 
+		// May be inside a modal form or elsewhere
+		if ( ! logoutModal) {
+			return;
+		}
+
 		// If the modal hasn't been interacted with in over 10 minutes we'll send a request for
 		// the current csrf token. It can flip on us during long waits due to the session timeout.
 		// If the session times out this will get us a cookie based csrf token, which is what you
@@ -680,7 +685,7 @@ EE.cp.broadcastEvents = (function() {
 
 		// received another window's modal event, open it
 		modal: function() {
-			if ( ! State.modalActive) {
+			if ( ! State.modalActive && logoutModal) {
 
 				logoutModal.trigger('modal:open');
 
