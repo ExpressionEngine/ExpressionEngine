@@ -21,6 +21,15 @@ class MutableRelationshipField {
       .on('click', (e) => {
         e.preventDefault()
         this.openPublishFormForChannel($(e.currentTarget).data('channelId'))
+
+        // Close sub menu
+        if ($(e.currentTarget).closest('.sub-menu').length) {
+          $(e.currentTarget).closest('.filters')
+            .find('.open')
+            .removeClass('open')
+            .siblings('.sub-menu')
+            .hide();
+        }
       })
   }
 

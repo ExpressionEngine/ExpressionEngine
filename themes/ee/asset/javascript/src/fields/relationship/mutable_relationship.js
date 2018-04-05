@@ -30,6 +30,11 @@ var MutableRelationshipField = function () {
       this.field.closest('[data-relationship-react]').parent().find('[rel=add_new][data-channel-id]').on('click', function (e) {
         e.preventDefault();
         _this.openPublishFormForChannel($(e.currentTarget).data('channelId'));
+
+        // Close sub menu
+        if ($(e.currentTarget).closest('.sub-menu').length) {
+          $(e.currentTarget).closest('.filters').find('.open').removeClass('open').siblings('.sub-menu').hide();
+        }
       });
     }
   }, {
