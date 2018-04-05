@@ -96,6 +96,8 @@ class Sandr extends Utilities {
 		$replace = $this->db->escape_str($replace);
 		$where = $this->db->escape_str($where);
 
+		$show_reindex_tip = FALSE;
+
 		if ($where == 'title')
 		{
 			$sql = "UPDATE `exp_channel_titles` SET `{$where}` = REPLACE(`{$where}`, '{$search}', '{$replace}')";
@@ -234,6 +236,7 @@ class Sandr extends Utilities {
 			$field_id = str_replace('field_id_', '', $where);
 			$field = ee('Model')->get('ChannelField', $field_id)->first();
 			$sql = "UPDATE `exp_{$field->getDataStorageTable()}` SET `{$where}` = REPLACE(`{$where}`, '{$search}', '{$replace}')";
+			$show_reindex_tip = TRUE;
 		}
 		else
 		{
@@ -245,6 +248,15 @@ class Sandr extends Utilities {
 		{
 			$this->db->query($sql);
 			$rows = $this->db->affected_rows();
+		}
+
+		if ($rows > 0 && $show_reindex_tip)
+		{
+			ee('CP/Alert')->makeInline('search-reindex')
+				->asTip()
+				->withTitle(lang('search_reindex_tip'))
+				->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
+				->defer();
 		}
 
 		return $rows;
