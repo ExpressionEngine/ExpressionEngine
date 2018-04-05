@@ -349,6 +349,7 @@ class XSS {
 			{
 				// backup for environments without iconv, ENT_SUBSTITUTE since PHP 5.4 subs invalid characters with U+FFFD
 				$str = htmlspecialchars_decode(htmlspecialchars($str, ENT_SUBSTITUTE, 'UTF-8'));
+				$str = str_replace('�', '', $str);
 			}
 		}
 
