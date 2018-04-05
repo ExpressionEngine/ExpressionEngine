@@ -147,8 +147,8 @@ if ($wrap): ?>
 							<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
 								<td>
 									<div class="toolbar-wrap">
-										<?php if (isset($column['tools'])): ?>
-											<?=$this->embed('_shared/tools', $column, TRUE)?>
+										<?php if (isset($column['toolbar'])): ?>
+											<?=$column['toolbar']->render()?>
 										<?php else: ?>
 											<?=ee()->load->view('_shared/toolbar', $column, TRUE)?>
 										<?php endif; ?>

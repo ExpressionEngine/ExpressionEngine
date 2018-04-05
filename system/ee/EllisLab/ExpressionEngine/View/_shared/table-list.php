@@ -20,8 +20,8 @@
 							<span class="faded">ID#</span> <?=$row['id']?> <?php if ( ! empty($row['extra'])):?> <span class="faded">/</span> <?=ee('Format')->make('Text', $row['extra'])->convertToEntities()?><?php endif ?>
 						</div>
 					</div>
-					<?php if (isset($row['tools'])): ?>
-						<?=$this->embed('_shared/tools', ['tools' => $row['tools'], 'tool_type' => 'list'])?>
+					<?php if (isset($row['toolbar'])): ?>
+						<?=$row['toolbar']->asType('list')->render()?>
 					<?php else: ?>
 						<?=$this->embed('_shared/toolbar', ['toolbar_items' => $row['toolbar_items']])?>
 					<?php endif; ?>
