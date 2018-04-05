@@ -66,7 +66,7 @@ class Buttons extends Settings {
 
 			if ( ! empty($button->classname))
 			{
-				$preview['tool_type'] = 'icon_only';
+				$preview['toolbar_type'] = 'icon_only';
 			}
 
 			$toolbar = array('tools' => array(
