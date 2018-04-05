@@ -201,22 +201,20 @@ class Edit extends AbstractPublishController {
 				$comments = '(0)';
 			}
 
-			$tools = array();
+			$toolbar = ee('CP/Toolbar')->make();
 
 			if ($entry->hasLivePreview())
 			{
-				$tools['view'] = array(
-					'href' => ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, ['preview' => 'y']),
-					'title' => lang('preview'),
+				$toolbar->addTool(
+					'view',
+					lang('preview'),
+					ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, ['preview' => 'y'])
 				);
 			}
 
 			if ($can_edit)
 			{
-				$tools['edit'] = array(
-					'href' => $edit_link,
-					'title' => lang('edit')
-				);
+				$toolbar->addTool('edit', lang('edit'), $edit_link);
 			}
 
 			if (ee()->cp->allowed_group('can_delete_all_entries')
@@ -261,7 +259,7 @@ class Edit extends AbstractPublishController {
 				$title,
 				ee()->localize->human_time($entry->entry_date),
 				$status,
-				array('tools' => $tools),
+				['toolbar' => $toolbar],
 				array(
 					'name' => 'selection[]',
 					'value' => $entry->entry_id,
