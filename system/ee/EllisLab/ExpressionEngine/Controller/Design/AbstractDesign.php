@@ -551,29 +551,15 @@ abstract class AbstractDesign extends CP_Controller {
 				$type_col = lang($template->template_type.'_type_col');
 			}
 
-			$toolbar = array(
-				'view' => array(
-					'href' => ee()->cp->masked_url($view_url),
-					'title' => lang('view'),
-					'rel' => 'external'
-				),
-				'edit' => array(
-					'href' => $edit_url,
-					'title' => lang('edit')
-				),
-				'settings' => array(
-					'href' => '',
-					'rel' => 'modal-template-settings',
-					'class' => 'm-link',
-					'title' => lang('settings'),
-					'data-template-id' => $template->template_id
-				)
-			);
+			$toolbar = ee('CP/Toolbar')->make();
+			$toolbar->addTool('view', lang('view'), ee()->cp->masked_url($view_url))->asExternal();
 
-			if ( ! ee()->cp->allowed_group('can_edit_templates'))
+			if (ee()->cp->allowed_group('can_edit_templates'))
 			{
-				unset($toolbar['edit']);
-				unset($toolbar['settings']);
+				$toolbar->addTool('edit', lang('edit'), $edit_url);
+				$toolbar->addTool('settings', lang('settings'), '')
+					->withData('template-id', $template->template_id)
+					->asModal('template-settings');
 			}
 
 			$column = array(
@@ -586,7 +572,7 @@ abstract class AbstractDesign extends CP_Controller {
 				$column[] = $template->hits;
 			}
 
-			$column[] = array('tools' => $toolbar);
+			$column[] = ['toolbar' => $toolbar];
 			$column[] = array(
 				'name' => 'selection[]',
 				'value' => $template->template_id,

@@ -381,16 +381,13 @@ class Template extends AbstractDesignController {
 			}
 			else
 			{
-				$toolbar = ee('View')->make('_shared/tools')->render(array(
-					'tools' => array(
-							'view' => array(
-								'href' => ee('CP/URL')->make('design/template/edit/' . $template->getId(), array('version' => $version->getId())),
-								'title' => lang('view'),
-								'content' => lang('view')
-							),
-						)
-					)
+				$toolbar = ee('CP/Toolbar')->make();
+				$toolbar->addTool(
+					'view',
+					lang('view'),
+					ee('CP/URL')->make('design/template/edit/' . $template->getId(), array('version' => $version->getId()))
 				);
+				$toolbar = $toolbar->render();
 			}
 
 			// Mark currently-loaded version as selected
