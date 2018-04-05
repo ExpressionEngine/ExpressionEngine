@@ -225,6 +225,17 @@ class Publish extends AbstractPublishController {
 			'buttons' => $this->getPublishFormButtons($entry)
 		);
 
+		if (ee('Request')->get('modal_form') == 'y')
+		{
+			$vars['buttons'] = [[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_close',
+				'text' => 'save_and_close',
+				'working' => 'btn_saving'
+			]];
+		}
+
 		if ($entry->isLivePreviewable())
 		{
 			$modal = ee('View')->make('publish/live-preview-modal')->render([
