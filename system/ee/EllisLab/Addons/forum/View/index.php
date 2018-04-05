@@ -22,10 +22,12 @@
 			</h1>
 			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 			<fieldset class="tbl-filter">
-				<ul class="toolbar">
-					<li class="mods"><a href="<?=ee('CP/URL')->make('addons/settings/forum/moderators/' . $board->board_id)?>" title="<?=lang('moderators')?>"></a></li>
-					<li class="admin"><a href="<?=ee('CP/URL')->make('addons/settings/forum/admins/' . $board->board_id)?>" title="<?=lang('administrators')?>"></a></li>
-				</ul>
+				<?php
+					$toolbar = ee('CP/Toolbar')->make();
+					$toolbar->addTool('mods', lang('moderators'), ee('CP/URL')->make('addons/settings/forum/moderators/' . $board->board_id));
+					$toolbar->addTool('admins', lang('administrators'), ee('CP/URL')->make('addons/settings/forum/moderators/' . $board->board_id));
+					echo $toolbar->render();
+				?>
 			</fieldset>
 
 			<?php if (empty($categories)): ?>

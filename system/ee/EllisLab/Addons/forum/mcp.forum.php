@@ -148,19 +148,17 @@ class Forum_mcp extends CP_Controller {
 
 			foreach ($boards_categories as $i => $category)
 			{
-				$manage = array(
-					'tools' => array(
-						'edit' => array(
-							'href' => ee('CP/URL')->make($this->base . 'edit/category/' . $category->forum_id),
-							'title' => lang('edit'),
-						),
-						'settings' => array(
-							'href' => ee('CP/URL')->make($this->base . 'settings/category/' . $category->forum_id),
-							'title' => lang('settings'),
-						)
-					)
+				$manage = ee('CP/Toolbar')->make();
+				$manage->addTool(
+					'edit',
+					lang('edit'),
+					ee('CP/URL')->make($this->base . 'edit/category/' . $category->forum_id)
 				);
-				$manage = ee('View')->make('ee:_shared/tools')->render($manage);
+				$manage->addTool(
+					'settings',
+					lang('settings'),
+					ee('CP/URL')->make($this->base . 'settings/category/' . $category->forum_id)
+				);
 
 				$class = ($i == count($boards_categories) - 1) ? '' : 'mb';
 
@@ -183,7 +181,7 @@ class Forum_mcp extends CP_Controller {
 						$this->getStatusWidget($category->forum_status) => array(
 							'encode' => FALSE
 						),
-						$manage => array(
+						$manage->render() => array(
 							'type'	=> Table::COL_TOOLBAR,
 						),
 						array(
@@ -203,21 +201,16 @@ class Forum_mcp extends CP_Controller {
 				foreach ($category->Forums->sortBy('forum_order') as $forum)
 				{
 					$edit_url = ee('CP/URL')->make($this->base . 'edit/forum/' . $forum->forum_id);
+					$settings_url = ee('CP/URL')->make($this->base . 'settings/forum/' . $forum->forum_id);
+
+					$toolbar = ee('CP/Toolbar')->make();
+					$toolbar->addTool('edit', lang('edit'), $edit_url);
+					$toolbar->addTool('settings', lang('settings'), $settings_url);
 
 					$row = array(
 						'<a href="' . $edit_url . '">' . $forum->forum_name . '</a>' . form_hidden('order[]', $forum->forum_id),
 						$this->getStatusWidget($forum->forum_status),
-						array('tools' => array(
-								'edit' => array(
-									'href' => $edit_url,
-									'title' => lang('edit'),
-								),
-								'settings' => array(
-									'href' => ee('CP/URL')->make($this->base . 'settings/forum/' . $forum->forum_id),
-									'title' => lang('settings'),
-								)
-							)
-						),
+						['toolbar' => $toolbar],
 						array(
 							'name' => 'selection[]',
 							'value' => $forum->forum_id,
@@ -3467,15 +3460,17 @@ class Forum_mcp extends CP_Controller {
 					);
 				}
 
+				$toolbar = ee('CP/Toolbar')->make();
+				$toolbar->addTool(
+					'add',
+					lang('add_moderator'),
+					ee('CP/URL')->make($this->base . 'create/moderator/' . $forum->forum_id)
+				);
+
 				$row = array(
 					$forum->forum_name,
 					(empty($moderators)) ? '' : ee('View')->make('forum:mod-subtable')->render(array('moderators' => $moderators)),
-					array('tools' => array(
-						'add' => array(
-							'href' => ee('CP/URL')->make($this->base . 'create/moderator/' . $forum->forum_id),
-							'title' => lang('add_moderator')
-						)
-					))
+					['toolbar' => $toolbar]
 				);
 
 				$attrs = array();
