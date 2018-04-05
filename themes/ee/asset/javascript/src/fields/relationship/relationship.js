@@ -26,10 +26,6 @@ var Relationship = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Relationship.__proto__ || Object.getPrototypeOf(Relationship)).call(this, props));
 
-    _this.handleAddedEntry = function (item) {
-      console.log(item);
-    };
-
     _this.selectedItemsChanged = function (selectedItems) {
       _this.setState({
         selectedVisible: selectedItems
@@ -59,9 +55,34 @@ var Relationship = function (_React$Component) {
   }
 
   _createClass(Relationship, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      // Allow new entries to be added to this field on the fly
+      new MutableRelationshipField($(this.container), {
+        success: function success(result, modal) {
+          var selected = _this2.state.selected;
+
+          if (_this2.props.multi) {
+            selected.push(result.item);
+          } else {
+            selected = [result.item];
+          }
+
+          _this2.selectionChanged(selected);
+          _this2.entryList.forceAjaxRefresh();
+
+          modal.trigger('modal:close');
+        }
+      });
+    }
+    // Items visible in the selection container changed via filtering
+
+  }, {
     key: 'render',
     value: function render() {
-      var _this2 = this;
+      var _this3 = this;
 
       // Force the selected pane to re-render because we need to pass in new
       // items as props which the filterable component doesn't expect...
@@ -69,7 +90,10 @@ var Relationship = function (_React$Component) {
 
       return React.createElement(
         'div',
-        { className: "fields-relate" + (this.props.multi ? ' fields-relate-multi' : '') },
+        { className: "fields-relate" + (this.props.multi ? ' fields-relate-multi' : ''),
+          ref: function ref(container) {
+            _this3.container = container;
+          } },
         React.createElement(FilterableSelectList, {
           items: this.props.items,
           name: this.props.name,
@@ -84,7 +108,10 @@ var Relationship = function (_React$Component) {
           tooMany: true,
           filters: this.props.select_filters,
           filterUrl: this.props.filter_url,
-          toggleAll: this.props.multi && this.props.items.length > SelectList.defaultProps.toggleAllLimit ? true : null
+          toggleAll: this.props.multi && this.props.items.length > SelectList.defaultProps.toggleAllLimit ? true : null,
+          ref: function ref(entryList) {
+            _this3.entryList = entryList;
+          }
         }),
         this.props.multi && React.createElement(SelectedFilterableSelectList, {
           items: this.state.selectedVisible,
@@ -95,7 +122,7 @@ var Relationship = function (_React$Component) {
           reorderable: true,
           removable: true,
           handleRemove: function handleRemove(e, item) {
-            return _this2.handleRemove(e, item);
+            return _this3.handleRemove(e, item);
           },
           itemsChanged: this.selectionChanged,
           selectionChanged: this.selectionChanged,
@@ -110,18 +137,10 @@ var Relationship = function (_React$Component) {
       $('div[data-relationship-react]', context).each(function () {
         var props = JSON.parse(window.atob($(this).data('relationshipReact')));
         props.name = $(this).data('inputValue');
-
-        var element = React.createElement(Relationship, props, null);
-        ReactDOM.render(element, this);
-
-        // TODO: Hook up success handler to the component some how?
-        new MutableRelationshipField($(this));
+        ReactDOM.render(React.createElement(Relationship, props, null), this);
       });
       $.fuzzyFilter();
     }
-
-    // Items visible in the selection container changed via filtering
-
   }]);
 
   return Relationship;

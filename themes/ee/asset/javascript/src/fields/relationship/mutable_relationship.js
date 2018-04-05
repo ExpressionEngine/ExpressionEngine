@@ -27,7 +27,7 @@ var MutableRelationshipField = function () {
     value: function bindAdd() {
       var _this = this;
 
-      this.field.parent().find('[rel=add_new][data-channel-id]').on('click', function (e) {
+      this.field.closest('[data-relationship-react]').parent().find('[rel=add_new][data-channel-id]').on('click', function (e) {
         e.preventDefault();
         _this.openPublishFormForChannel($(e.currentTarget).data('channelId'));
       });

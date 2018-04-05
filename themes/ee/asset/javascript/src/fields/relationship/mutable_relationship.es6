@@ -15,10 +15,13 @@ class MutableRelationshipField {
   }
 
   bindAdd () {
-    this.field.parent().find('[rel=add_new][data-channel-id]').on('click', (e) => {
-      e.preventDefault()
-      this.openPublishFormForChannel($(e.currentTarget).data('channelId'))
-    })
+    this.field.closest('[data-relationship-react]')
+      .parent()
+      .find('[rel=add_new][data-channel-id]')
+      .on('click', (e) => {
+        e.preventDefault()
+        this.openPublishFormForChannel($(e.currentTarget).data('channelId'))
+      })
   }
 
   openPublishFormForChannel (channelId) {

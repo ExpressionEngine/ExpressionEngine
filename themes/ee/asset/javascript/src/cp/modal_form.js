@@ -137,7 +137,7 @@ EE.cp.ModalForm = {
 					iframe.src = result.redirect
 					return
 				} else if (options.success) {
-					options.success(result)
+					options.success(result, that.modal)
 				}
 			})
 

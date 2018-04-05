@@ -72,16 +72,7 @@ function makeFilterableComponent(WrappedComponent) {
         _this.setState({ loading: true });
 
         _this.ajaxTimer = setTimeout(function () {
-          _this.ajaxRequest = $.ajax({
-            url: _this.props.filterUrl,
-            data: $.param(params),
-            dataType: 'json',
-            success: function success(data) {
-              _this.setState({ loading: false });
-              _this.initialItemsChanged(SelectList.formatItems(data));
-            },
-            error: function error() {} // Defined to prevent error on .abort above
-          });
+          _this.ajaxRequest = _this.forceAjaxRefresh(params);
         }, 300);
       };
 
@@ -121,14 +112,37 @@ function makeFilterableComponent(WrappedComponent) {
         });
       }
     }, {
+      key: 'forceAjaxRefresh',
+      value: function forceAjaxRefresh(params) {
+        var _this3 = this;
+
+        if (!params) {
+          params = this.state.filterValues;
+          params.selected = this.props.selected.map(function (item) {
+            return item.value;
+          });
+        }
+
+        return $.ajax({
+          url: this.props.filterUrl,
+          data: $.param(params),
+          dataType: 'json',
+          success: function success(data) {
+            _this3.setState({ loading: false });
+            _this3.initialItemsChanged(SelectList.formatItems(data));
+          },
+          error: function error() {} // Defined to prevent error on .abort above
+        });
+      }
+    }, {
       key: 'render',
       value: function render() {
-        var _this3 = this;
+        var _this4 = this;
 
         return React.createElement(WrappedComponent, _extends({}, this.props, {
           loading: this.state.loading,
           filterChange: function filterChange(name, value) {
-            return _this3.filterChange(name, value);
+            return _this4.filterChange(name, value);
           },
           initialItems: this.initialItems,
           items: this.state.items,
