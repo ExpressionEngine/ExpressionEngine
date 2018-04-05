@@ -156,15 +156,11 @@ abstract class AbstractPublish extends CP_Controller {
 				$authors[$version->author_id] = $version->getAuthorName();
 			}
 
-			$toolbar = ee('View')->make('_shared/tools')->render(array(
-				'tools' => array(
-						'view' => array(
-							'href' => ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, array('version' => $version->version_id)),
-							'title' => lang('view'),
-							'content' => lang('view')
-						),
-					)
-				)
+			$toolbar = ee('CP/Toolbar')->make();
+			$toolbar->addTool(
+				'view',
+				lang('view'),
+				ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, array('version' => $version->version_id))
 			);
 
 			$attrs = ($version->version_id == $version_id) ? array('class' => 'selected') : array();
@@ -175,7 +171,7 @@ abstract class AbstractPublish extends CP_Controller {
 					$i,
 					ee()->localize->human_time($version->version_date->format('U')),
 					$authors[$version->author_id],
-					$toolbar
+					$toolbar->render()
 				)
 			);
 			$i++;
