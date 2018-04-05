@@ -7,7 +7,7 @@
  */
 
 $(document).ready(function () {
-	$('.light .toolbar .remove a.m-link').click(function (e) {
+	$('.light .tools a.m-link.remove').click(function (e) {
 		var modalIs = '.' + $(this).attr('rel');
 
 		$(modalIs + " .checklist").html(''); // Reset it
