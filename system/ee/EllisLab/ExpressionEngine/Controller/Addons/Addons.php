@@ -299,35 +299,23 @@ class Addons extends CP_Controller {
 					}
 				}
 
-				$tools = array(
-					'install' => array(
-						'href' => '#',
-						'data-post-url' => ee('CP/URL')->make(
-							'addons/install/' . $info['package'],
-							array(
-								'return' => $return_url->encode()
-							)
-						),
-						'title' => lang('install'),
-						'content' => lang('install'),
-						'type' => 'txt-only',
-						'class' => 'add'
-					)
-				);
-
 				$attrs = array('class' => 'not-installed');
 				$addon_name = $info['name'];
 
-				if ($info['installed'])
-				{
-					$tools = array();
+				$toolbar = ee('CP/Toolbar')->make();
 
+				if ( ! $info['installed'] && ee()->cp->allowed_group('can_admin_addons'))
+				{
+					$toolbar->addTool('install', lang('install'))
+						->withData('post-uri',
+							ee('CP/URL')->make('addons/install/' . $info['package'], ['return' => $return_url->encode()])
+						);
+				}
+				else
+				{
 					if (isset($info['settings_url']))
 					{
-						$tools['settings'] = array(
-							'href' => $info['settings_url'],
-							'title' => lang('settings'),
-						);
+						$toolbar->addTool('settings', lang('settings'), $info['settings_url']);
 
 						$addon_name = array(
 							'content' => $addon_name,
@@ -337,39 +325,24 @@ class Addons extends CP_Controller {
 
 					if (isset($info['manual_url']))
 					{
-						$tools['manual'] = array(
-							'href' => $info['manual_url'],
-							'title' => lang('manual'),
-						);
+						$manual = $toolbar->addTool('manual', lang('manual'), $info['manual_url']);
 
 						if ($info['manual_external'])
 						{
-							$tools['manual']['target'] = '_external';
+							$manual->asExternal();
 						}
 					}
 
 					if (isset($info['update']))
 					{
-						$tools['txt-only'] = array(
-							'href' => '#',
-							'data-post-url' => ee('CP/URL')->make(
-								'addons/update/' . $info['package'],
-								array(
-									'return' => $return_url->encode()
-								)
-							),
-							'title' => strtolower(lang('update')),
-							'class' => 'add',
-							'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['update']))
-						);
+						$label = sprintf(lang('update_to_version'), $this->formatVersionNumber($info['update']));
+						$toolbar->addTool('sync', $label)
+							->withData('post-uri',
+								ee('CP/URL')->make('addons/update/' . $info['package'], ['return' => $return_url->encode()])
+							);
 					}
 
 					$attrs = array();
-				}
-
-				if ( ! ee()->cp->allowed_group('can_admin_addons'))
-				{
-					unset($tools['install']);
 				}
 
 				$row = array(
@@ -377,7 +350,7 @@ class Addons extends CP_Controller {
 					'columns' => array(
 						'addon' => $addon_name,
 						'version' => $this->formatVersionNumber($info['version']),
-						array('tools' => $tools)
+						['toolbar' => $toolbar]
 					)
 				);
 

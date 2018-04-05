@@ -37,7 +37,7 @@ $lang = array(
 
 'update' => 'Update',
 
-'update_to_version' => 'Update to %s',
+'update_to_version' => 'Update (%s)',
 
 
 /* confirm uninstall modal */
