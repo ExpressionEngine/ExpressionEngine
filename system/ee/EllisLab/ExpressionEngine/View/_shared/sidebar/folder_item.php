@@ -1,28 +1,22 @@
 <li<?=$class?> data-<?=$key?>="<?=$value?>">
 	<a href="<?=$url?>"<?php if ($external) echo ' rel="external"'?>><?=$text?></a>
 	<?php
-		if ($edit || $remove)
-		{
-			if ($edit)
-			{
-				$tools['edit'] = [
-					'href' => $edit_url,
-					'title' => lang('edit'),
-				];
-			}
+		$toolbar = ee('CP/Toolbar')->make('sidebar');
 
-			if ($remove)
-			{
-				$tools['remove'] = [
-					'class' => 'm-link remove',
-					'rel' => 'modal-confirm-'.$modal_name,
-					'title' => lang('remove'),
-					'data-confirm' => $confirm,
-					'data-'.$key => $value,
-				];
-			}
+		if ($edit)
+		{
+			$toolbar->addTool('edit', lang('edit'), $edit_url);
 		}
 
-		echo $this->embed('_shared/tools', ['tools' => $tools, 'tool_type' => 'sidebar']);
+		if ($remove)
+		{
+			$toolbar->addTool('remove', lang('remove'))
+				->withData('confirm', $confirm)
+				->withData('key', $value)
+				->asModal('confirm-'.$modal_name)
+				->asRemove();
+		}
+
+		echo $toolbar->render();
 	?>
 </li>
