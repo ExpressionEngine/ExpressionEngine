@@ -275,7 +275,7 @@ class Fluid_field_parser {
 			return '';
 		}
 
-		$fluid_field_name = $this->fluid_fields[$fluid_field_id];
+		$fluid_field_name = $this->_prefix . $this->fluid_fields[$fluid_field_id];
 
 		$vars = ee('Variables/Parser')->extractVariables($tagdata);
 		$singles = array_filter($vars['var_single'], function($val) use ($fluid_field_name)
