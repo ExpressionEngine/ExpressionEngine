@@ -35,6 +35,7 @@ use EllisLab\ExpressionEngine\Service\Profiler;
 use EllisLab\ExpressionEngine\Service\Sidebar;
 use EllisLab\ExpressionEngine\Service\Theme;
 use EllisLab\ExpressionEngine\Service\Thumbnail;
+use EllisLab\ExpressionEngine\Service\Toolbar;
 use EllisLab\ExpressionEngine\Service\URL;
 use EllisLab\ExpressionEngine\Service\Updater;
 use EllisLab\ExpressionEngine\Service\Validation;
@@ -113,6 +114,12 @@ return array(
 			$table = Library\CP\Table::fromGlobals($config);
 			$table->setLocalize(ee()->localize);
 			return $table;
+		},
+
+		'CP/Toolbar' => function ($ee)
+		{
+			$view = $ee->make('View')->make('_shared/tools');
+			return new Toolbar\Toolbar($view);
 		},
 
 		'CP/URL' => function($ee, $path = NULL)
