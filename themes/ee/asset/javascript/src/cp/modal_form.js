@@ -146,5 +146,10 @@ EE.cp.ModalForm = {
 			that.modal.trigger('modal:close')
 			e.preventDefault();
 		})
+		$(iframe).contents().find('body').on('keydown', function(e) {
+			if (e.keyCode === 27) {
+				that.modal.trigger('modal:close')
+			}
+		});
 	}
 }
