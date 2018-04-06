@@ -16,16 +16,17 @@ use EllisLab\ExpressionEngine\Service\Model\Collection;
  */
 class Reindex extends Utilities {
 
+	const CACHE_KEY  = '/search/reindex';
+
 	protected $field_ids  = [];
 	protected $entry_ids  = [];
 	protected $reindexing = FALSE;
-	protected $cache_key  = '/search/reindex';
 
 	public function __construct()
 	{
 		parent::__construct();
 
-		$data = ee()->cache->get($this->cache_key);
+		$data = ee()->cache->get(self::CACHE_KEY);
 		if ($data === FALSE || $data['reindexing'] === FALSE)
 		{
 			$fields = $this->getFields();
@@ -127,7 +128,7 @@ class Reindex extends Utilities {
 			'reindexing' => $this->reindexing
 		];
 
-		return ee()->cache->save($this->cache_key, $data);
+		return ee()->cache->save(self::CACHE_KEY, $data);
 	}
 
 	/**
@@ -235,7 +236,7 @@ class Reindex extends Utilities {
 				->defer();
 
 			$this->reindexing = FALSE; // For symmetry and "futureproofing"
-			ee()->cache->delete($this->cache_key); // All done!
+			ee()->cache->delete(self::CACHE_KEY); // All done!
 			ee()->output->send_ajax_response(['status' => 'finished']);
 		}
 
