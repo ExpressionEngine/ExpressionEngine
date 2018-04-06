@@ -475,8 +475,6 @@ class Upload {
 					{
 						ee('Filesystem')->copy($src, $dest);
 					}
-
-					ee('Filesystem')->copy($src, $dest);
 				}
 
 				$file->delete();
