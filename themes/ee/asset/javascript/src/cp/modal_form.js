@@ -12,6 +12,7 @@ EE.cp.ModalForm = {
 	modalContents: $('.app-modal__content', this.modal),
 	modalContentsContainer: $('div.contents', this.modal),
 	modalCloseContainer: $('.app-modal__dismiss', this.modal),
+	loadingBanner: $('.app-notice---loading', this.modal),
 	saveAndNew: false,
 
 	/**
@@ -36,25 +37,29 @@ EE.cp.ModalForm = {
 	 * Loads the modal form with the specified contents
 	 */
 	_loadModalContents: function(options) {
+		var iframe = options.iframe || false,
+			full = options.full || false
+
+		this.modal.toggleClass('app-modal--iframe', iframe)
+			.toggleClass('app-modal--full', full)
+			.find('iframe')
+			.remove()
+		this.modalContentsContainer.toggle( ! iframe)
+		this.modalCloseContainer.toggle( ! iframe)
+		this.loadingBanner.toggle(iframe)
+
+		if ( ! options.iframe) {
+			var loading = $('<span />', { class: 'btn work'}).html('Loading')
+			this.modalContentsContainer.html(loading)
+		}
+
 		var that = this
-
-		var loading = $('<span />', { class: 'btn work'}).html('Loading')
-		this.modalContentsContainer.html(loading).removeClass('hidden')
-		this.modalCloseContainer.removeClass('hidden')
-
 		if (options.iframe) {
-			this.modal.removeClass('app-modal--iframe')
-				.find('iframe')
-				.remove()
-
 			var iframe = $('<iframe />', {
 				src: options.url + '&modal_form=y',
-				class: 'app-modal__iframe hidden'
-			}).load(function(){
-				that.modal.addClass('app-modal--iframe')
-				that.modalContentsContainer.addClass('hidden')
-				that.modalCloseContainer.addClass('hidden')
-				iframe.removeClass('hidden')
+				class: 'app-modal__iframe'
+			}).on('load', function() {
+				that.loadingBanner.hide()
 				that._bindIframeForm(this, options)
 			})
 
