@@ -503,7 +503,8 @@ class Relationship_ft extends EE_Fieldtype {
 		}
 
 		$channel_choices = $channels->filter(function($channel) {
-			return ! $channel->maxEntriesLimitReached() && $channel->site_id == ee()->config->item('site_id');
+			return ! $channel->maxEntriesLimitReached()
+				&& in_array($channel->getId(), array_keys(ee()->session->userdata('assigned_channels')));
 		});
 
 		return ee('View')->make('relationship:publish')->render([
