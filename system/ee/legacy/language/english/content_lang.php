@@ -726,8 +726,6 @@ $lang = array(
 
 'unpublished' => 'unpublished',
 
-'loading' => 'loading',
-
 'upload' => 'Upload',
 
 'upload_dir_choose' => 'Choose an upload directory',
