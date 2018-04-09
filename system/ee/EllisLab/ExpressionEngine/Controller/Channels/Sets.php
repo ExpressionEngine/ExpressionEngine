@@ -260,6 +260,7 @@ class Sets extends AbstractChannelsController {
 
 				// Show the current model title in the section header
 				$title_field = $result->getTitleFieldFor($model);
+				$title = ee('Format')->make('Text', $model->$title_field)->convertToEntities();
 
 				// Frequently the error is on the short_name, but in those cases
 				// you really want to edit the long name as well, so we'll show it.
@@ -268,7 +269,7 @@ class Sets extends AbstractChannelsController {
 					$key = $model_name.'['.$ident.']['.$long_field.']';
 					if (isset($hidden[$key]))
 					{
-						$vars['sections'][$section.': '.$model->$title_field][] = array(
+						$vars['sections'][$section.': '.$title][] = array(
 							'title' => $long_field,
 							'fields' => array(
 								$key => array(
@@ -283,7 +284,7 @@ class Sets extends AbstractChannelsController {
 				}
 
 				$key = $model_name.'['.$ident.']['.$field.']';
-				$vars['sections'][$section.': '.$model->$title_field][] = array(
+				$vars['sections'][$section.': '.$title][] = array(
 					'title' => $field,
 					'fields' => array(
 						$model_name.'['.$ident.']['.$field.']' => array(
