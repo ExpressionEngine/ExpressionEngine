@@ -96,6 +96,7 @@ class EE_Exceptions {
 
 		$message = str_replace("\\", "/", $message);
 		$message = str_replace(SYSPATH, '', $message);
+		$message = htmlentities($message, ENT_QUOTES, 'UTF-8');
 
 		if (ob_get_level() > $this->ob_level + 1)
 		{
