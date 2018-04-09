@@ -44,6 +44,10 @@ $(document).ready(function () {
 					iframe: true,
 					success: function() {
 						location.reload()
+					},
+					load: function (modal) {
+						var title = modal.find('> iframe').last().contents().find('meta[name=modal-title]').attr('content')
+						EE.cp.ModalForm.setTitle(title)
 					}
 				})
 			}

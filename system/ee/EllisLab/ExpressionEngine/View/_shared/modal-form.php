@@ -4,6 +4,11 @@
 		->asLoading()
 		->addToBody(lang('loading') . ' <b><a class="js-modal-close">'.lang('cancel').'</a></b>')
 		->render()?>
+	<?=ee('CP/Alert')
+		->makeBanner()
+		->asImportant()
+		->addToBody('%placeholder%')
+		->render()?>
 	<div class="app-modal__content">
 		<div class="app-modal__dismiss">
 			<a class="js-modal-close" rel="<?=$name?>" href="#"><?=lang('close_modal')?></a> <span class="txt-fade">[esc]</span>

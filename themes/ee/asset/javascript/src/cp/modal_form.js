@@ -13,6 +13,7 @@ EE.cp.ModalForm = {
 	modalContentsContainer: $('div.contents', this.modal),
 	modalCloseContainer: $('.app-modal__dismiss', this.modal),
 	loadingBanner: $('.app-notice---loading', this.modal),
+	titleBanner: $('.app-notice---important', this.modal),
 	saveAndNew: false,
 
 	/**
@@ -47,6 +48,7 @@ EE.cp.ModalForm = {
 		this.modalContentsContainer.toggle( ! iframe)
 		this.modalCloseContainer.toggle( ! iframe)
 		this.loadingBanner.toggle(iframe)
+		this.titleBanner.hide()
 
 		if ( ! options.iframe) {
 			var loading = $('<span />', { class: 'btn work'}).html('Loading')
@@ -61,6 +63,7 @@ EE.cp.ModalForm = {
 			}).on('load', function() {
 				that.loadingBanner.hide()
 				that._bindIframeForm(this, options)
+				options.load(that.modalContents)
 			})
 
 			this.modalContents.append(iframe)
@@ -70,6 +73,10 @@ EE.cp.ModalForm = {
 				options.load(that.modalContentsContainer)
 			})
 		}
+	},
+
+	setTitle: function(title) {
+		this.titleBanner.show().find('.app-notice__content p').html(title)
 	},
 
 	/**
@@ -134,6 +141,7 @@ EE.cp.ModalForm = {
 					iframe.contentDocument.open()
 					iframe.contentDocument.write(result)
 					iframe.contentDocument.close()
+					options.load(that.modalContents)
 					return
 				} else if (result.redirect) {
 					iframe.src = result.redirect
