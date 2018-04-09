@@ -457,7 +457,7 @@ class Edit extends AbstractPublishController {
 
 		if ($sequence_editing)
 		{
-			$vars['form_title'] = sprintf('(%d of %d) %s', $index, count($entry_ids), $entry_title);
+			$vars['modal_title'] = sprintf('(%d of %d) %s', $index, count($entry_ids), $entry_title);
 			$vars['buttons'] = [[
 				'name' => 'submit',
 				'type' => 'submit',
