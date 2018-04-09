@@ -29,22 +29,37 @@ var MutableRelationshipField = function () {
 
       this.field.closest('[data-relationship-react]').parent().find('[rel=add_new][data-channel-id]').on('click', function (e) {
         e.preventDefault();
-        _this.openPublishFormForChannel($(e.currentTarget).data('channelId'));
+
+        var channelLink = $(e.currentTarget);
+        _this.openPublishFormForChannel(channelLink.data('channelId'), channelLink.data('channelTitle'));
 
         // Close sub menu
-        if ($(e.currentTarget).closest('.sub-menu').length) {
-          $(e.currentTarget).closest('.filters').find('.open').removeClass('open').siblings('.sub-menu').hide();
+        if (channelLink.closest('.sub-menu').length) {
+          channelLink.closest('.filters').find('.open').removeClass('open').siblings('.sub-menu').hide();
         }
       });
     }
   }, {
     key: 'openPublishFormForChannel',
-    value: function openPublishFormForChannel(channelId) {
+    value: function openPublishFormForChannel(channelId, channelTitle) {
+      var _this2 = this;
+
       EE.cp.ModalForm.openForm({
         url: EE.relationship.publishCreateUrl.replace('###', channelId),
         full: true,
         iframe: true,
-        success: this.options.success
+        success: this.options.success,
+        load: function load(modal) {
+          var entryTitle = _this2.field.closest('[data-publish]').find('input[name=title]').val();
+
+          var title = EE.relationship.lang.creatingNew.replace('#from_channel#', channelTitle).replace('#to_channel#', EE.publish.channel_title);
+
+          if (entryTitle) {
+            title += '<b>: ' + entryTitle + '</b>';
+          }
+
+          EE.cp.ModalForm.setTitle(title);
+        }
       });
     }
   }]);

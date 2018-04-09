@@ -96,6 +96,9 @@ abstract class AbstractPublish extends CP_Controller {
 			'lang.loading'                   => lang('loading'),
 			'publish.autosave.interval'      => (int) $autosave_interval_seconds,
 			'publish.autosave.URL'           => ee('CP/URL')->make('publish/autosave/' . $channel_id . '/' . $entry_id)->compile(),
+			'publish.channel_title'          => ee('Format')->make('Text', $entry->Channel->channel_title)
+				->convertToEntities()
+				->compile(),
 			'publish.default_entry_title'    => $entry->Channel->default_entry_title,
 			'publish.foreignChars'           => $foreign_characters,
 			'publish.urlLength'              => URL_TITLE_MAX_LENGTH,

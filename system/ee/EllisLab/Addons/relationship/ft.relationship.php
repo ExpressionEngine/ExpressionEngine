@@ -380,7 +380,8 @@ class Relationship_ft extends EE_Fieldtype {
 		}
 
 		ee()->javascript->set_global([
-			'relationship.publishCreateUrl' => ee('CP/URL')->make('publish/create/###')->compile()
+			'relationship.publishCreateUrl' => ee('CP/URL')->make('publish/create/###')->compile(),
+			'relationship.lang.creatingNew' => lang('creating_new_in_rel')
 		]);
 
 		ee()->cp->add_js_script([

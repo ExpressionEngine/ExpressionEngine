@@ -20,11 +20,16 @@ class MutableRelationshipField {
       .find('[rel=add_new][data-channel-id]')
       .on('click', (e) => {
         e.preventDefault()
-        this.openPublishFormForChannel($(e.currentTarget).data('channelId'))
+
+        const channelLink = $(e.currentTarget)
+        this.openPublishFormForChannel(
+          channelLink.data('channelId'),
+          channelLink.data('channelTitle')
+        )
 
         // Close sub menu
-        if ($(e.currentTarget).closest('.sub-menu').length) {
-          $(e.currentTarget).closest('.filters')
+        if (channelLink.closest('.sub-menu').length) {
+          channelLink.closest('.filters')
             .find('.open')
             .removeClass('open')
             .siblings('.sub-menu')
@@ -33,12 +38,25 @@ class MutableRelationshipField {
       })
   }
 
-  openPublishFormForChannel (channelId) {
+  openPublishFormForChannel (channelId, channelTitle) {
     EE.cp.ModalForm.openForm({
       url: EE.relationship.publishCreateUrl.replace('###', channelId),
       full: true,
       iframe: true,
-      success: this.options.success
+      success: this.options.success,
+      load: (modal) => {
+        const entryTitle = this.field.closest('[data-publish]').find('input[name=title]').val()
+
+        let title = EE.relationship.lang.creatingNew
+          .replace('#from_channel#', channelTitle)
+          .replace('#to_channel#', EE.publish.channel_title)
+
+        if (entryTitle) {
+          title += '<b>: ' + entryTitle + '</b>'
+        }
+
+        EE.cp.ModalForm.setTitle(title)
+      }
     })
   }
 }
