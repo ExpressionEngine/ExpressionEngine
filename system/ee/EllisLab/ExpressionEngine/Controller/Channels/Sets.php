@@ -267,12 +267,13 @@ class Sets extends AbstractChannelsController {
 				if (isset($long_field))
 				{
 					$key = $model_name.'['.$ident.']['.$long_field.']';
+					$encoded_key = ee('Format')->make('Text', $key)->convertToEntities()->compile();
 					if (isset($hidden[$key]))
 					{
 						$vars['sections'][$section.': '.$title][] = array(
 							'title' => $long_field,
 							'fields' => array(
-								$key => array(
+								$encoded_key => array(
 									'type' => 'text',
 									'value' => $model->$long_field,
 									// 'required' => TRUE
@@ -284,10 +285,11 @@ class Sets extends AbstractChannelsController {
 				}
 
 				$key = $model_name.'['.$ident.']['.$field.']';
+				$encoded_key = ee('Format')->make('Text', $key)->convertToEntities()->compile();
 				$vars['sections'][$section.': '.$title][] = array(
 					'title' => $field,
 					'fields' => array(
-						$model_name.'['.$ident.']['.$field.']' => array(
+						$encoded_key => array(
 							'type' => 'text',
 							'value' => $model->$field,
 							'required' => TRUE
