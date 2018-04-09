@@ -206,27 +206,30 @@ class Reindex extends Utilities {
 
 		$progress = (int) ee('Request')->post('progress');
 
-		$entry = ee('Model')->get('ChannelEntry', $this->entry_ids[$progress])->first();
-
-		foreach ($entry->getCustomFields() as $field)
+		if (isset($this->entry_ids[$progress]))
 		{
-			$name = $field->getName();
+			$entry = ee('Model')->get('ChannelEntry', $this->entry_ids[$progress])->first();
 
-			if (in_array($name, $this->field_ids))
+			foreach ($entry->getCustomFields() as $field)
 			{
-				$search_data = $field->reindex($entry);
-				$entry->setRawProperty($name, $search_data);
+				$name = $field->getName();
+
+				if (in_array($name, $this->field_ids))
+				{
+					$search_data = $field->reindex($entry);
+					$entry->setRawProperty($name, $search_data);
+				}
 			}
+
+			if ( ! empty($entry->getDirty()))
+			{
+				$entry->saveFieldData($entry->getDirty());
+			}
+
+			$progress++;
 		}
 
-		if ( ! empty($entry->getDirty()))
-		{
-			$entry->saveFieldData($entry->getDirty());
-		}
-
-		$progress++;
-
-		if ($progress == count($this->entry_ids))
+		if ($progress >= count($this->entry_ids))
 		{
 			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
