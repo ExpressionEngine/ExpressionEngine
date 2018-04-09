@@ -858,7 +858,7 @@ class Template extends AbstractDesignController {
 					->asWarning()
 					->addToBody(lang('php_in_templates_warning'))
 					->addToBody(
-						sprintf(lang('php_in_templates_warning2'), '<span title="excercise caution"></span>'),
+						sprintf(lang('php_in_templates_warning2'), '<span class="icon--caution" title="exercise caution"></span>'),
 						'caution'
 					)
 					->cannotClose()

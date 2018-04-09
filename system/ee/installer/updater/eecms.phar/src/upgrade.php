@@ -45,7 +45,7 @@ class Command {
 	public function start($interactive = TRUE)
 	{
 		ee()->load->library('el_pings');
-		$version_file = ee()->el_pings->get_version_info();
+		$version_file = ee()->el_pings->get_version_info(TRUE);
 		$to_version = $version_file['latest_version'];
 		$core_to_pro = (IS_CORE && $version_file['license_type'] == 'pro');
 

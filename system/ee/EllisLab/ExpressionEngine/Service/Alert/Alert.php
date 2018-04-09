@@ -75,7 +75,7 @@ class Alert {
 	 * Constructor: sets the type and name of the alert, and injects the
 	 * AllertCollection and View dependencies.
 	 *
-	 * @param string $type The type of alert (standard, inline, banner)
+	 * @param string $type The type of alert (standard, inline, banner, alert)
 	 * @param string $name The name of the alert
 	 * @param AlertCollection $collection A collection of alerts for use with
 	 *  deferring or immediately displaying alerts
@@ -178,7 +178,7 @@ class Alert {
 	 */
 	public function asIssue()
 	{
-		$this->severity = 'issue';
+		$this->severity = 'error';
 		$this->cannotClose();
 		return $this;
 	}
@@ -214,8 +214,20 @@ class Alert {
 	 */
 	public function asWarning()
 	{
-		$this->severity = 'warn';
+		$this->severity = 'important';
 		$this->canClose();
+		return $this;
+	}
+
+	/**
+	 * Marks the alert as an important alert that cannot be closed.
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function asImportant()
+	{
+		$this->severity = 'important';
+		$this->cannotClose();
 		return $this;
 	}
 

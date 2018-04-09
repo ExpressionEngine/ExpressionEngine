@@ -16,6 +16,8 @@ class Updater {
 
 	var $version_suffix = '';
 
+	public $affected_tables = ['exp_channels'];
+
 	/**
 	 * Do Update
 	 *
@@ -49,16 +51,21 @@ class Updater {
 
 		if ( ! $notify_template)
 		{
+			$sites = ee('Model')->get('Site')->all();
 			require_once EE_APPPATH.'/language/'.ee()->config->item('language').'/email_data.php';
 
-			$notify_template = ee('Model')->make('SpecialtyTemplate')
-				->set([
-					'template_name' => 'password_changed_notification',
-					'template_type' => 'email',
-					'template_subtype' => 'members',
-					'data_title' => password_changed_notification_title(),
-					'template_data' => password_changed_notification()
-				])->save();
+			foreach ($sites as $site)
+			{
+				$notify_template = ee('Model')->make('SpecialtyTemplate')
+					->set([
+						'template_name' => 'password_changed_notification',
+						'template_type' => 'email',
+						'template_subtype' => 'members',
+						'data_title' => password_changed_notification_title(),
+						'template_data' => password_changed_notification(),
+						'site_id' => $site->site_id,
+					])->save();
+			}
 		}
 	}
 
@@ -72,16 +79,21 @@ class Updater {
 
 		if ( ! $notify_template)
 		{
+			$sites = ee('Model')->get('Site')->all();
 			require_once EE_APPPATH.'/language/'.ee()->config->item('language').'/email_data.php';
 
-			$notify_template = ee('Model')->make('SpecialtyTemplate')
-				->set([
-					'template_name' => 'email_changed_notification',
-					'template_type' => 'email',
-					'template_subtype' => 'members',
-					'data_title' => email_changed_notification_title(),
-					'template_data' => email_changed_notification()
-				])->save();
+			foreach ($sites as $site)
+			{
+				$notify_template = ee('Model')->make('SpecialtyTemplate')
+					->set([
+						'template_name' => 'email_changed_notification',
+						'template_type' => 'email',
+						'template_subtype' => 'members',
+						'data_title' => email_changed_notification_title(),
+						'template_data' => email_changed_notification(),
+						'site_id' => $site->site_id,
+					])->save();
+			}
 		}
 	}
 

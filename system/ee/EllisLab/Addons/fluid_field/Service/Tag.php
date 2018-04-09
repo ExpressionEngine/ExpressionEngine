@@ -200,7 +200,7 @@ class Tag {
 	protected function replaceSingle(FieldFacade $field, $tag)
 	{
 		$tag_info = $this->variable_parser_delegate->parseVariableProperties($tag);
-		return $field->replaceTag(FALSE, $tag_info['params'], $tag_info['modifier']);
+		return $field->replaceTag(FALSE, $tag_info['params'], $tag_info['modifier'], $tag_info['full_modifier']);
 	}
 
 	/**

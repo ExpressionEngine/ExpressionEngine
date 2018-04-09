@@ -1,21 +1,28 @@
-<div class="alert <?=$alert->type?> <?=$alert->severity?>">
-	<?php if ($alert->title): ?>
-	<h3><?=$alert->title?></h3>
-	<?php endif; ?>
-	<?php if ($alert->severity == 'tip'):?>
-	<span class="icon--tip"></span>
-	<div class="alert-content">
+<div class="app-notice app-notice--<?=$alert->type?> app-notice---<?=$alert->severity?>">
+	<div class="app-notice__tag">
+		<span class="app-notice__icon"></span>
+	</div>
+	<div class="app-notice__content">
+		<?php if ($alert->title): ?>
+			<p><b><?=$alert->title?></b></p>
+		<?php endif; ?>
+
 		<?=$alert->body?>
+
+		<?php if ($alert->sub_alert): ?>
+			<div class="app-notice app-notice--<?=$alert->sub_alert->type?> app-notice---<?=$alert->sub_alert->severity?>">
+				<div class="app-notice__tag">
+					<span class="app-notice__icon"></span>
+				</div>
+				<div class="app-notice__content">
+					<?=$alert->sub_alert->body?>
+				</div>
+			</div>
+		<?php endif; ?>
 	</div>
-	<?php else:?>
-	<?=$alert->body?>
-	<?php endif; ?>
-	<?php if ($alert->sub_alert): ?>
-	<div class="alert <?=$alert->sub_alert->type?> <?=$alert->sub_alert->severity?>">
-		<?=$alert->sub_alert->body?>
-	</div>
-	<?php endif; ?>
 	<?php if ($alert->has_close_button): ?>
-	<a class="close" href=""></a>
+		<div class="app-notice__controls">
+			<a href="#" class="app-notice__dismiss js-notice-dismiss"></a>
+		</div>
 	<?php endif; ?>
 </div>

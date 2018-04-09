@@ -6,10 +6,12 @@
 			<h1><?=$cp_page_title?></h1>
 			<?=cp_form_submit('btn_sandr', 'btn_sandr_working')?>
 		</div>
-		<div class="alert inline warn">
-			<?=lang('sandr_warning')?>
-		</div>
-		<?=ee('CP/Alert')->getAllInlines()?>
+		<?=ee('CP/Alert')
+			->makeInline()
+			->asImportant()
+			->addToBody(lang('sandr_warning'))
+			->render()?>
+		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 		<fieldset class="fieldset-required <?=form_error_class('search_term')?>">
 			<div class="field-instruct">
 				<label><?=lang('sandr_search_text')?></label>

@@ -5,7 +5,7 @@
 				<a class="btn tn action" href="<?=$new_url?>"><?=lang('create_new')?></a>
 			</fieldset>
 			<h1><?=$cp_heading?><br><i><?=$cp_heading_desc?></i></h1>
-			<?=ee('CP/Alert')->getAllInlines()?>
+			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 			<?php if (isset($filters)) echo $filters; ?>
 			<?php $this->embed('ee:_shared/table', $table); ?>
 			<?=$pagination?>

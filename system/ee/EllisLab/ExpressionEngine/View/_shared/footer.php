@@ -1,90 +1,98 @@
 		</section>
-		<footer>
-			<section class="product-bar <?php if ( ! empty($version_identifier)): ?>pre-release<?php endif ?>">
-				<div class="snap">
-					<div class="left">
+		<footer class="app-footer">
+			<section class="app-footer__product">
+				<div class="content--center">
+					<div class="app-about">
 						<?php
-						$ver_title = lang('about_expressionengine');
-						if (isset($new_version))
+						$version_class = 'app-about__version';
+						$update_available = isset($new_version);
+						$vital_update = $update_available && $new_version['security'];
+
+						if ( ! empty($version_identifier))
 						{
-							$ver_title = lang('out_of_date_upgrade');
-							if ($new_version['security'])
+							$version_class .= ' app-about__version--dev';
+						}
+						elseif ($update_available)
+						{
+							if ($vital_update)
 							{
-								$ver_title = lang('out_of_date_recommended');
+								$version_class .= ' app-about__version--update-vital';
+							}
+							else
+							{
+								$version_class .= ' app-about__version--update';
 							}
 						}
 						?>
-						<p>
-							<a class="brand-link" href="https://expressionengine.com" rel="external"><b>ExpressionEngine</b></a><span class="version<?php if ($show_news_button): ?> has-new<?php endif ?><?php if (isset($new_version)): ?> out-of-date<?php if ($new_version['security']): ?>-vital<?php endif; endif ?>" title="<?=$ver_title?>"><?=$formatted_version?></span><?php if ($show_news_button): ?><a class="ee-new" href="<?=ee('CP/URL')->make('homepage/show-changelog')?>" rel="external"></a><?php endif ?>
-						</p>
-						<div class="version-info">
-							<?php if (isset($new_version) && $new_version['security']): ?>
-								<p class="alert inline warn"><?=lang('recommended_upgrade')?></p>
+
+						<a class="app-about__link" href="https://expressionengine.com" rel="external noreferrer">ExpressionEngine <b><?=IS_CORE ? 'Core' : 'CMS'?></b></a>
+
+						<span class="<?=$version_class?> js-about"><?=$formatted_version?></span>
+
+						<?php if ($show_news_button): ?>
+							<a href="<?=ee('CP/URL')->make('homepage/show-changelog')?>" class="app-about__whats-new" rel="external">
+								<span class="icon--gift"></span>
+							</a>
+						<?php endif ?>
+
+						<div class="app-about-info">
+							<div class="app-about-info__installed">
+								<h3><?=lang('installed')?></h3>
+								<?=lang('version')?>: <?=$formatted_version?><br>
+								<em><?=lang('build')?> <?=$ee_build_date?></em>
+							</div>
+							<?php if ($update_available): ?>
+								<?=$this->embed('ee:_shared/_new_version', $new_version)?>
 							<?php endif ?>
-							<h3><?=lang('installed')?></h3>
-							<p>
-								ExpressionEngine <?=$formatted_version?><br>
-								<em><?=lang('build') . ' ' . $ee_build_date?></em>
-								<?php if ( ! empty($version_identifier)): ?>
-									<br><em><?=lang('version_identifier') . ' ' . $version_identifier?></em>
+							<?php if (ee()->session->userdata('group_id') == 1): ?>
+								<?php if ( ! $update_available): ?>
+									<div class="app-about-info__update">
+										<?=lang('checking_for_updates')?>
+									</div>
+									<div class="app-about-info__status">
+										<?=lang('up_to_date')?>
+									</div>
 								<?php endif ?>
-							</p>
-							<?php if (isset($new_version)): ?>
-								<h3><?=lang('latest_version')?> (<a href="<?=ee()->cp->masked_url('https://expressionengine.com/store/purchases')?>" rel="external"><?=lang('download')?></a>)</h3>
-								<p>
-								ExpressionEngine <?=$new_version['version']?><br>
-								<em><?=lang('build') . ' ' . $new_version['build']?></em>
-							</p>
-								<?php if (ee()->session->userdata('group_id') == 1): ?>
-									<div class="update-btn"><a class="btn submit" data-post-url="<?=ee('CP/URL', 'updater')?>"><?=lang('update_btn')?></a></div>
-								<?php endif ?>
-								<div class="status out">
-									<a href="" class="close"></a>
-									<?=lang('out_of_date')?>
+								<div class="app-about-info__status app-about-info__status--update<?=$update_available && ! $vital_update ? '' : ' hidden'?>">
+									<?=lang('out_of_date_upgrade')?>
+									<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button"><?=lang('update_btn')?></a>
 								</div>
-							<?php else: ?>
-								<?php if (ee()->session->userdata('group_id') == 1): ?>
-									<div class="update-btn"><a class="btn action" href="<?=ee('CP/URL')->make('settings/general/version-check', ['redirect' => ee('CP/URL')->getCurrentUrl()->compile()])?>"><?=lang('update_check_btn')?></a></div>
-								<?php endif ?>
-								<div class="status">
-									<a href="" class="close"></a>
-									<?=lang('current')?>
+								<div class="app-about-info__status app-about-info__status--update-vital<?=$update_available && $vital_update ? '' : ' hidden'?>">
+									<?=lang('out_of_date_recommended')?>
+									<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button"><?=lang('update_btn')?></a>
 								</div>
 							<?php endif ?>
+							<a href="" class="app-about-info__close js-about-close">
+								<span class="icon--close"></span>
+							</a>
 						</div>
 					</div>
-					<div class="right">
-						<p>
-							<?php if (ee()->cp->allowed_group('can_access_footer_report_bug')): ?>
-								<a href="https://expressionengine.com/support/bugs/new" rel="external"><?=lang('report_bug')?></a>
+					<div class="app-support">
+						<?php if (ee()->cp->allowed_group('can_access_footer_report_bug')): ?>
+							<a href="https://expressionengine.com/support/bugs/new" class="app-about__link" rel="external noreferrer"><?=lang('report_bug')?></a>
 
-								<?php if (ee()->cp->allowed_group('can_access_footer_new_ticket') || ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
-									<b class="sep">&middot;</b>
-								<?php endif; ?>
+							<?php if (ee()->cp->allowed_group('can_access_footer_new_ticket') || ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
+								<b class="sep">&middot;</b>
 							<?php endif; ?>
+						<?php endif; ?>
 
-							<?php if (ee()->cp->allowed_group('can_access_footer_new_ticket')): ?>
-								<a href="https://expressionengine.com/support" rel="external"><?=lang('new_ticket')?></a>
-
-								<?php if (ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
-									<b class="sep">&middot;</b>
-								<?php endif; ?>
-							<?php endif; ?>
+						<?php if (ee()->cp->allowed_group('can_access_footer_new_ticket')): ?>
+							<a href="https://expressionengine.com/support" class="app-about__link" rel="external noreferrer"><?=lang('new_ticket')?></a>
 
 							<?php if (ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
-								<a href="<?=DOC_URL?>" rel="external"><?=lang('user_guide')?></a>
+								<b class="sep">&middot;</b>
 							<?php endif; ?>
-						</p>
+						<?php endif; ?>
+
+						<?php if (ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
+							<a href="<?=DOC_URL?>" class="app-about__link" rel="external noreferrer"><?=lang('user_guide')?></a>
+						<?php endif; ?>
 					</div>
 				</div>
 			</section>
-			<section class="footer">
-				<div class="snap">
-					<div class="left">
-						<p>&copy;<?=date('Y')?> <a href="<?=ee()->cp->masked_url('https://expressionengine.com/')?>" rel="external">EllisLab</a>, Inc.<br><a class="scroll" href="#top"><?=lang('scroll_to_top')?></a></p>
-					</div>
-					<div class="right">
-						<p>
+			<section class="app-footer__meta">
+				<div class="content--center">
+					<div class="app-footer__license">
 						<?php if ($ee_license->isValid()): ?>
 							<?=lang('license_no')?>: <?=$ee_license->getData('license_number')?>
 							<br><?=lang('owned_by')?>: <a href="mailto:<?=$ee_license->getData('license_contact')?>">
@@ -97,7 +105,9 @@
 								<?=lang('not_entered')?>
 							<?php endif ?>
 						<?php endif; ?>
-						</p>
+					</div>
+					<div class="app-footer__copyright">
+						&copy;<?=date('Y')?> <a href="https://expressionengine.com/" rel="external noreferrer">EllisLab</a>, Inc.
 					</div>
 				</div>
 			</section>
@@ -134,34 +144,38 @@
 				<div class="col-group snap">
 					<div class="col w-16 last">
 						<a class="m-close" href="#"></a>
-						<div class="box">
-							<h1>Log into <?=ee()->config->item('site_name')?> <span class="req-title"><?=lang('required_fields')?></span></h1>
-							<?=form_open(ee('CP/URL')->make('login/authenticate'), array('class' => 'settings'))?>
-								<div class="alert inline warn">
-									<p><?=lang('session_timeout')?></p>
+						<div class="form-standard">
+							<?=form_open(ee('CP/URL')->make('login/authenticate'))?>
+								<div class="form-btns form-btns-top">
+									<h1>Log into <?=ee()->config->item('site_name')?></h1>
 								</div>
-								<fieldset class="col-group required">
-									<div class="setting-txt col w-8">
-										<h3><?=lang('username')?></h3>
+								<?=ee('CP/Alert')
+									->makeInline()
+									->asImportant()
+									->addToBody(lang('session_timeout'))
+									->render()?>
+								<fieldset class="fieldset-required">
+									<div class="field-instruct">
+										<label><?=lang('username')?></label>
 										<em></em>
 									</div>
-									<div class="setting-field col w-8 last">
+									<div class="field-control">
 										<input type="text" value="<?=form_prep(ee()->session->userdata('username'))?>" disabled="disabled">
 										<input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
 									</div>
 								</fieldset>
-								<fieldset class="col-group required last">
-									<div class="setting-txt col w-8">
-										<h3><?=lang('password')?></h3>
+								<fieldset class="fieldset-required">
+									<div class="field-instruct">
+										<label><?=lang('password')?></label>
 										<em></em>
 									</div>
-									<div class="setting-field col w-8 last">
+									<div class="field-control">
 										<input type="password" name="password" value="" id="logout-confirm-password">
 									</div>
 								</fieldset>
-								<fieldset class="form-ctrls">
+								<div class="form-btns">
 									<?=form_submit('submit', lang('login'), 'class="btn" data-submit-text="'.lang('login').'" data-work-text="'.lang('authenticating').'"')?>
-								</fieldset>
+								</div>
 							<?=form_close()?>
 						</div>
 					</div>

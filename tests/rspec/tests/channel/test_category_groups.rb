@@ -55,7 +55,7 @@ feature 'Category Groups' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.alert[:class].should include 'success'
+    @page.should have_alert_success
     @page.alert.text.should include 'Category group removed'
     @page.group_names.count.should == groups.count - 1
   end

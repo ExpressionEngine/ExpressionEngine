@@ -78,7 +78,7 @@ $lang = array(
 
 'no_upload_destination' => 'No upload destination found',
 
-'not_an_image' => 'Selected filie is not an image',
+'not_an_image' => 'Selected file is not an image',
 
 'pixels' => 'pixels',
 

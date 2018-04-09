@@ -89,7 +89,7 @@ abstract class Variables {
 
 		foreach ($this->form_vars as $name => $value)
 		{
-			$this->form_vars[$name] = (isset($variables[$name])) ? form_prep($variables[$name]) : '';
+			$this->form_vars[$name] = (isset($variables[$name])) ? $this->formPrep($variables[$name]) : '';
 		}
 
 		return $this->form_vars;
@@ -121,6 +121,31 @@ abstract class Variables {
 	}
 
 	/**
+	 * encode ExpressionEngine tags
+	 * @param  string $str contents to encode
+	 * @return string      contents with { } encoded as HTML entities
+	 */
+	protected function encodeEETags($str)
+	{
+		return (string) ee('Format')->make('Text', $str)->encodeEETags();
+	}
+
+	/**
+	 * Form prep
+	 *
+	 * Time saver security method. form_prep() on its own is also used in the CP, but on the
+	 * front end, we need to encode EE tags as well.
+	 *
+	 * @param  string  $str            contents to prep for form inputs
+	 * @param  boolean $encode_ee_tags Whether or not to encode ExpressionEngine tags
+	 * @return return                  contents prepped for use in form inputs
+	 */
+	protected function formPrep($str, $encode_ee_tags = TRUE)
+	{
+		return (string) ee('Format')->make('Text', form_prep($str))->encodeEETags();
+	}
+
+	/**
 	 * date
 	 * @param  mixed $date DateTime object or int timestamp
 	 * @return int timestamp
@@ -148,13 +173,23 @@ abstract class Variables {
 	}
 
 	/**
+	 * url
+	 * @param  string $url Unvalided URL, possibly missing protocol
+	 * @return string prepped and valid URL
+	 */
+	protected function url($url)
+	{
+		return (string) ee('Format')->make('Text', $url)->url();
+	}
+
+	/**
 	 * urlSlug
 	 * @param  string $str contents
 	 * @return string URL slug, built with site prefs
 	 */
 	protected function urlSlug($str)
 	{
-		return ee('Format')->make('Text', $str)->urlSlug();
+		return (string) ee('Format')->make('Text', $str)->urlSlug();
 	}
 
 	/**

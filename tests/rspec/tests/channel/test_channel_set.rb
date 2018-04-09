@@ -38,7 +38,7 @@ feature 'Channel Sets' do
 
     if block_given?
       no_php_js_errors
-      @page.alert[:class].should include 'issue'
+      @page.should have_alert_error
       yield
     else
       send('check_' + method)
@@ -50,7 +50,7 @@ feature 'Channel Sets' do
   # @return [void]
   def check_success
     no_php_js_errors
-    @page.alert[:class].should include 'success'
+    @page.should have_alert_success
     @page.alert.text.should include 'Channel Imported'
     @page.alert.text.should include 'The channel was successfully imported.'
     @page.all_there?.should == true
@@ -61,7 +61,7 @@ feature 'Channel Sets' do
   # @return [void]
   def check_issue_duplicate
     no_php_js_errors
-    @page.alert[:class].should include 'issue'
+    @page.should have_alert_error
     @page.alert.text.should include 'Import Creates Duplicates'
     @page.alert.text.should include 'This channel set uses names that already exist on your site. Please rename the following items.'
   end
@@ -514,9 +514,9 @@ feature 'Channel Sets' do
           column['settings'].each do |key, value|
             if compare.has_key? key.to_sym then
               if compare[key.to_sym].is_a?(TrueClass) then
-                ['y', '1', 1].should include value
+                ['y', '1', 1, true].should include value
               elsif compare[key.to_sym].is_a?(FalseClass) then
-                ['n', '0', 0].should include value
+                ['n', '0', 0, false].should include value
               else
                 value.should == compare[key.to_sym]
               end
@@ -722,7 +722,7 @@ feature 'Channel Sets' do
           field_settings = PHP.unserialize(Base64.decode64(row['field_settings']))
           field_settings['expired'].should == 0
           field_settings['future'].should == 1
-          field_settings['allow_multiple'].should == 0
+          field_settings['allow_multiple'].should == false
           field_settings['limit'].to_i.should == 25
           field_settings['order_field'].should == 'entry_date'
           field_settings['order_dir'].should == 'desc'
@@ -738,7 +738,7 @@ feature 'Channel Sets' do
           field_settings = PHP.unserialize(Base64.decode64(row['field_settings']))
           field_settings['expired'].should == 0
           field_settings['future'].should == 1
-          field_settings['allow_multiple'].should == 0
+          field_settings['allow_multiple'].should == false
           field_settings['limit'].to_i.should == 25
           field_settings['order_field'].should == 'entry_date'
           field_settings['order_dir'].should == 'desc'

@@ -98,15 +98,15 @@ class El_pings {
 	 *
 	 * Checks the current version of ExpressionEngine available from EllisLab
 	 *
-	 * @access	private
-	 * @return	string
+	 * @param boolean $force_update Use the force, update regardless of cache
+	 * @return array
 	 */
-	public function get_version_info()
+	public function get_version_info($force_update = FALSE)
 	{
 		// Attempt to grab the local cached file
 		$cached = $this->cache->get('current_version', Cache::GLOBAL_SCOPE);
 
-		if ( ! $cached)
+		if ( ! $cached || $force_update)
 		{
 			try
 			{
@@ -157,6 +157,36 @@ class El_pings {
 		}
 
 		return $version_file;
+	}
+
+	/**
+	 * Get information about the available upgrade, or FALSE if no upgrade path available
+	 *
+	 * @param boolean $force_update Use the force, update regardless of cache
+	 * @return array or FALSE if no upgrade path available
+	 */
+	public function getUpgradeInfo($force_update = FALSE)
+	{
+		$version_file = $this->get_version_info($force_update);
+
+		$version_info = array(
+			'version' => $version_file['latest_version'],
+			'build' => $version_file['build_date'],
+			'security' => $version_file['severity'] == 'high'
+		);
+
+		// Upgrading form Core to Pro?
+		if (IS_CORE && $version_file['license_type'] == 'pro')
+		{
+			return $version_info;
+		}
+
+		if (version_compare($version_info['version'], ee()->config->item('app_version')) < 1)
+		{
+			return FALSE;
+		}
+
+		return $version_info;
 	}
 
 	public function getError()

@@ -426,7 +426,7 @@ $lang = array(
 
 
 /* Member group settings */
-'access_privilege_caution' => 'Any setting marked with <span title="excercise caution"></span> should only be granted to people you trust implicitly.',
+'access_privilege_caution' => 'Any setting marked with <span class="icon--caution" title="exercise caution"></span> should only be granted to people you trust implicitly.',
 
 'access_privilege_warning' => '<b>Warning</b>: Please be very careful with the access privileges you grant.',
 

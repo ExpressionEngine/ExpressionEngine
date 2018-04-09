@@ -170,6 +170,12 @@ class EE_Form_validation {
 			{
 				foreach ($setting['fields'] as $field_name => $field)
 				{
+					// For ajaxified fields with options not currently showing, we skip
+					if (isset($field['filter_url']) && isset($field['choices']) && count($field['choices']) == 100)
+					{
+						continue;
+					}
+
 					$enum = NULL;
 
 					// Account for empty state in React checkbox fields
@@ -1927,17 +1933,7 @@ class EE_Form_validation {
 	 */
 	function prep_url($str = '')
 	{
-		if ($str == 'http://' OR $str == '')
-		{
-			return '';
-		}
-
-		if (substr($str, 0, 7) != 'http://' && substr($str, 0, 8) != 'https://')
-		{
-			$str = 'http://'.$str;
-		}
-
-		return $str;
+		return (string) ee('Format')->make('Text', $str)->url();
 	}
 
 	/**

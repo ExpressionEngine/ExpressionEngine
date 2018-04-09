@@ -128,8 +128,8 @@ class EE_Template {
 
 		$this->user_vars = array(
 			'member_id', 'group_id', 'group_description', 'group_title', 'username', 'screen_name',
-			'email', 'ip_address', 'location', 'total_entries',
-			'total_comments', 'private_messages', 'total_forum_posts', 'total_forum_topics', 'total_forum_replies'
+			'email', 'ip_address', 'total_entries', 'total_comments', 'private_messages',
+			'total_forum_posts', 'total_forum_topics', 'total_forum_replies'
 		);
 
 		$this->marker = md5(ee()->config->site_url().$this->marker);
@@ -665,7 +665,7 @@ class EE_Template {
 			//       1 => string 'titles' (length=6)
 			//       2 => string ''' (length=1)
 			//       3 => string '4' (length=1)
-			preg_match_all("/".LD."layout:(\w+?)\s+index\s*=\s*(\042|\047)([^\\2]*?)\\2\s*".RD."/si", $str, $matches, PREG_SET_ORDER);
+			preg_match_all("/".LD."layout:([^\s]+?)\s+index\s*=\s*(\042|\047)([^\\2]*?)\\2\s*".RD."/si", $str, $matches, PREG_SET_ORDER);
 
 			foreach ($matches as $match)
 			{

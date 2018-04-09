@@ -4,7 +4,7 @@
 			<fieldset class="tbl-search right">
 			</fieldset>
 			<h1><?=lang('moderators')?><br><i><?=lang('moderators_desc')?></i></h1>
-			<?=ee('CP/Alert')->getAllInlines()?>
+			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
 			<?php if (empty($categories)): ?>
 			<table cellspacing="0" class="empty no-results">

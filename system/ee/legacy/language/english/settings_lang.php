@@ -121,7 +121,7 @@ $lang = array(
 
 'license_file_invalid_signature' => 'The license file provided has an invalid signature.',
 
-'license_file_missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="%s" rel="external">EllisLab.com</a> and download a fresh copy.',
+'license_file_missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="%s" rel="external">expressionengine.com</a> and download a fresh copy.',
 
 'license_file_permissions' => 'The license file could not be saved. Check the permissions on <b>%s</b>.',
 
@@ -783,7 +783,7 @@ $lang = array(
 
 'security_tip' => '<b>Tip</b>: Site security is important.',
 
-'security_tip_desc' => 'Any setting marked with <span title="security enhancement"></span> will further enhance and improve site security.',
+'security_tip_desc' => 'Any setting marked with <span class="icon--caution" title="security enhancement"></span> will further enhance and improve site security.',
 
 'un_min_len' => 'Minimum username length',
 

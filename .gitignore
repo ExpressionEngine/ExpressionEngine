@@ -5,6 +5,7 @@ Thumbs.db
 env_local.rb
 *.swp
 node_modules/
+.vscode/
 
 
 # 2.0 Paths ====================================================================

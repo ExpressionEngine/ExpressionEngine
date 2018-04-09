@@ -874,6 +874,116 @@ class Grid_model extends CI_Model {
 	{
 		return $content_type .'_'. $this->_table_prefix . $field_id;
 	}
+
+	/**
+	 * Update grid field(s) search values
+	 *
+	 * @param array $field_ids Array of field_ids
+	 * @return void
+	 */
+	public function update_grid_search(array $field_ids)
+	{
+		// Get the fields, and filter for grid as a safety measure. If this was somehow
+		// called with the wrong field IDs it could clobber those fields' contents
+		$fields = ee('Model')->get('ChannelField', $field_ids)
+			->fields('field_id', 'field_search', 'legacy_field_data')
+			->filter('field_type', 'grid')
+			->all();
+
+		if (empty($fields))
+		{
+			return;
+		}
+
+		$search_data = [];
+		$unsearchable = [];
+
+		foreach ($fields as $field)
+		{
+			$data_col = 'field_id_'.$field->field_id;
+			$table = $field->getDataStorageTable();
+
+			if ( ! $field->field_search)
+			{
+				$unsearchable[$table][$data_col] = NULL;
+				continue;
+			}
+
+			$columns = $this->get_columns_for_field($field->field_id, 'channel');
+			$searchable_columns = array_filter($columns, function($column) {
+				return ($column['col_search'] == 'y');
+			});
+			$searchable_columns = array_map(function($element) {
+				return 'col_id_'.$element['col_id'];
+			}, $searchable_columns);
+
+			$rows = ee()->db->select('row_id, entry_id')
+				->select($searchable_columns)
+				->where('fluid_field_data_id', 0)
+				->get($this->_data_table('channel', $field->field_id))
+				->result_array();
+
+			// No rows? Move on.
+			if (empty($rows))
+			{
+				continue;
+			}
+
+			foreach ($rows as $row)
+			{
+				// We need only the column data for insertion
+				$column_data = [];
+				foreach ($row as $key => $value)
+				{
+					if (strncmp($key, 'col_id_', 7) === 0)
+					{
+						$column_data[$key] = $value;
+					}
+				}
+
+				if ( ! isset($search_data[$table][$row['entry_id']]))
+				{
+					$search_data[$table][$row['entry_id']] = [];
+					$search_data[$table][$row['entry_id']][$data_col] = [];
+				}
+
+				// merge with existing data for this field
+				$search_data[$table][$row['entry_id']][$data_col] = array_merge(
+					$search_data[$table][$row['entry_id']][$data_col],
+					array_values($column_data)
+				);
+			}
+		}
+
+		// empty out unsearchable Grids
+		foreach ($unsearchable as $table => $columns)
+		{
+			ee()->db->update($table, $columns);
+		}
+
+		if (empty($search_data))
+		{
+			return;
+		}
+
+		// repopulate the searchable Grids
+		$entry_data = [];
+		ee()->load->helper('custom_field_helper');
+
+		foreach ($search_data as $table => $entries)
+		{
+			$entry_data = [];
+			foreach ($entries as $entry_id => $fields)
+			{
+				$fields = array_map('encode_multi_field', $fields);
+
+				$fields['entry_id'] = $entry_id;
+				$entry_data[] = $fields;
+			}
+
+			ee()->db->update_batch($table, $entry_data, 'entry_id');
+		}
+	}
 }
 
 // EOF

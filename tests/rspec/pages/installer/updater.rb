@@ -4,7 +4,7 @@ module Installer
 
     element :header, 'h1'
     element :updater_steps, 'ul.updater-steps'
-    element :error, 'div.issue'
+    element :error, 'div.issue, div.app-notice---error'
 
     element :submit, 'form input[type=submit]'
     elements :success_actions, 'p.msg-choices a'

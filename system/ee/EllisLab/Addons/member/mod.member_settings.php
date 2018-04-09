@@ -157,7 +157,6 @@ class Member_settings extends Member {
 
 		// Use member field names
 		$member_fields = ee('Model')->get('MemberField')
-			->fields('m_field_id', 'm_field_name')
 			->all();
 
 		foreach ($member_fields as $member_field)
@@ -178,15 +177,7 @@ class Member_settings extends Member {
 
 		if (ee()->config->item('enable_avatars') == 'y' AND $row['avatar_filename']  != '')
 		{
-			$avatar_url = ee()->config->slash_item('avatar_url');
-			$avatar_fs_path = ee()->config->slash_item('avatar_path');
-
-			if (file_exists($avatar_fs_path.'default/'.$row['avatar_filename']))
-			{
-				$avatar_url .= 'default/';
-			}
-
-			$avatar_path	= $avatar_url.$row['avatar_filename'];
+			$avatar_path	= $member->getAvatarUrl();
 			$avatar_width	= $row['avatar_width'] ;
 			$avatar_height	= $row['avatar_height'] ;
 
@@ -643,25 +634,24 @@ class Member_settings extends Member {
 		/** ------------------------------------*/
 		// Grab the data for the particular member
 
-		ee()->db->select('m_field_id, m_field_name, m_field_label, m_field_description, m_field_fmt, m_field_type');
-		if (ee()->session->userdata['group_id'] != 1)
+		if ($member_fields)
 		{
-			ee()->db->where('m_field_public = "y"');
-		}
-		ee()->db->order_by('m_field_order');
-		$query = ee()->db->get('member_fields');
+			if (ee()->session->userdata['group_id'] != 1)
+			{
+				$member_fields = $member_fields->filter(function($field) {
+					return $field->m_field_public == 'y';
+				});
+			}
 
-		if ($query->num_rows() > 0)
-		{
 			$fnames = array();
 
-			$result_row = $row;
 			$member_field_ids = array();
 
-			foreach ($query->result_array() as $row)
+			foreach ($member_fields as $member_field)
 			{
-				$fnames[$row['m_field_name']] = array($row['m_field_id'], $row['m_field_fmt'], $row['m_field_type']);
-				$member_field_ids[] = $row['m_field_id'];
+				$fnames[$member_field->m_field_name] = array($member_field->m_field_id, $member_field->m_field_fmt, $member_field->m_field_type);
+				$member_field_ids[] = $member_field->m_field_id;
+				$this->member_fields[$member_field->getId()] = $member_field;
 			}
 
 			ee()->load->library('typography');
@@ -670,14 +660,6 @@ class Member_settings extends Member {
 			ee()->load->library('api');
 			ee()->legacy_api->instantiate('channel_fields');
 
-			// Cache member fields here before we start parsing
-			if ( ! empty($member_field_ids))
-			{
-				$this->member_fields = ee('Model')->get('MemberField', array_unique($member_field_ids))
-					->all()
-					->indexBy('field_id');
-			}
-
 			/** ----------------------------------------
 			/**  Parse conditionals for custom fields
 			/** ----------------------------------------*/
@@ -685,7 +667,6 @@ class Member_settings extends Member {
 			foreach ($this->var_cond as $val)
 			{
 				// Prep the conditional
-
 				$cond = ee()->functions->prep_conditional($val['0']);
 
 				$lcond	= substr($cond, 0, strpos($cond, ' '));
@@ -695,7 +676,7 @@ class Member_settings extends Member {
 				{
 					$m_field_id_name = 'm_field_id_'.$fnames[$val['3']]['0'];
 
-					$lcond = str_replace($val['3'], "\$result_row['".$m_field_id_name."']", $lcond);
+					$lcond = str_replace($val['3'], "\$row['".$m_field_id_name."']", $lcond);
 
 					$cond = $lcond.' '.$rcond;
 
@@ -729,12 +710,12 @@ class Member_settings extends Member {
 				// parse custom member fields
 				if (isset($fnames[$fval]))
 				{
-					if (array_key_exists('m_field_id_'.$fnames[$fval]['0'], $result_row))
+					if (array_key_exists('m_field_id_'.$fnames[$fval]['0'], $row))
 					{
 						ee()->TMPL->tagdata = $this->parseField(
 							$fnames[$fval][0],
 							$field,
-							$result_row['m_field_id_'.$fnames[$fval]['0']],
+							$row['m_field_id_'.$fnames[$fval]['0']],
 							ee()->TMPL->tagdata,
 							$this->cur_id,
 							array(),
@@ -758,9 +739,8 @@ class Member_settings extends Member {
 
 			$field_chunk = $this->_load_element('public_custom_profile_fields');
 
-
 			// Is there a chunk to parse?
-			if ($query->num_rows() == 0)
+			if ( ! $member_fields)
 			{
 				$content = str_replace("/{custom_profile_fields}/s", '', $content);
 			}
@@ -768,35 +748,38 @@ class Member_settings extends Member {
 			{
 				$str = '';
 				$var_conds = ee()->functions->assign_conditional_variables($field_chunk);
+				$member_field = '';
 
-				foreach ($query->result_array() as $field_row)
+				foreach ($member_fields as $member_field)
 				{
 					$temp = $field_chunk;
+					$field_row = $member_field->getValues();
 
 					// enables conditionals on these variables
 					$field_row['field_label'] = $field_row['m_field_label'];
 					$field_row['field_description'] = $field_row['m_field_description'];
 
 					// Custom member fields
+					$field_name = $member_field->m_field_name;
 
 					// We fake the template data and make it simply be the tag
 					$temp_string = LD.$field_row['m_field_name'].RD;
 
-					if (array_key_exists('m_field_id_'.$field_row['m_field_id'], $result_row))
+					if (array_key_exists('m_field_id_'.$field_row['m_field_id'], $row))
 					{
 						// Hard code date field modifier because this doesn't use real variables
-						$params = ($field_row['m_field_type'] == 'date') ? "%Y %m %d" : '';
+						$params = ($member_field->m_field_type == 'date') ? "%Y %m %d" : '';
 						$field = array(
-							'field_name' => $field_row['m_field_name'],
+							'field_name' => $member_field->m_field_name,
 							'params' => array('format' => $params, 'modifier' => '')
 						);
 
 						$field_data = $this->parseField(
-							$field_row['m_field_id'],
+							$member_field->m_field_id,
 							$field,
-							$result_row['m_field_id_'.$field_row['m_field_id']],
+							$row['m_field_id_'.$field_row['m_field_id']],
 							$temp_string,
-							$result_row['member_id']
+							$this->cur_id
 						);
 					}
 					else
@@ -806,8 +789,8 @@ class Member_settings extends Member {
 
 					$field_row['field_data'] = $field_data;
 
-					$temp = str_replace('{field_name}', $field_row['m_field_label'], $temp);
-					$temp = str_replace('{field_description}', $field_row['m_field_description'], $temp);
+					$temp = str_replace('{field_name}', $member_field->m_field_label, $temp);
+					$temp = str_replace('{field_description}', $member_field->m_field_description, $temp);
 					$temp = str_replace('{field_data}', $field_data, $temp);
 
 					foreach ($var_conds as $val)

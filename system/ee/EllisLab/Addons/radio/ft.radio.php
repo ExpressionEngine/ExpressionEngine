@@ -96,6 +96,7 @@ class Radio_ft extends OptionFieldtype {
 			? $this->settings['field_text_direction'] : 'ltr';
 
 		$field_options = $this->_get_field_options($data);
+		$extra = ($this->get_setting('field_disabled')) ? 'disabled' : '';
 
 		// Is this new entry?  Set a default
 		if ( ! $this->content_id AND is_null($data))

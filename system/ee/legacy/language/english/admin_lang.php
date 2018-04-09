@@ -478,7 +478,7 @@ $lang = array(
 
 'license_number' => 'License Number',
 
-'license_number_explanation' => 'You can find and manage your software licenses on the EllisLab.com <a href="https://expressionengine.com/store/purchases" rel="external">Manage Purchases</a> page,',
+'license_number_explanation' => 'You can find and manage your software licenses on the expressionengine.com <a href="https://expressionengine.com/store/purchases" rel="external">Manage Purchases</a> page,',
 
 'localization_cfg' => 'Localization Settings',
 

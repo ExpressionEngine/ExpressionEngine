@@ -2229,9 +2229,7 @@ class Member {
 		$member = ee('Model')->get('Member', $member_id)
 			->first();
 
-		$total_results = count($member);
-
-		if ($total_results == 0)
+		if ( ! $member)
 		{
 			return ee()->TMPL->tagdata = '';
 		}
@@ -2241,17 +2239,9 @@ class Member {
 		$default_fields = $results;
 
 		// Is there an avatar?
-		if (ee()->config->item('enable_avatars') == 'y' AND $results['avatar_filename'] != '')
+		if (ee()->config->item('enable_avatars') == 'y')
 		{
-			$avatar_url = ee()->config->slash_item('avatar_url');
-			$avatar_fs_path = ee()->config->slash_item('avatar_path');
-
-			if (file_exists($avatar_fs_path.'default/'.$results['avatar_filename']))
-			{
-				$avatar_url .= 'default/';
-			}
-
-			$avatar_path	= $avatar_url.$results['avatar_filename'];
+			$avatar_path	= $member->getAvatarUrl();
 			$avatar_width	= $results['avatar_width'];
 			$avatar_height	= $results['avatar_height'];
 			$avatar			= TRUE;
@@ -2281,9 +2271,9 @@ class Member {
 		}
 
 		// Is there a signature image?
-		if (ee()->config->item('enable_signatures') == 'y' AND $results['sig_img_filename'] != '')
+		if (ee()->config->item('enable_signatures') == 'y')
 		{
-			$sig_img_path	= ee()->config->item('sig_img_url').$results['sig_img_filename'];
+			$sig_img_path	= $member->getSignatureImageUrl();
 			$sig_img_width	= $results['sig_img_width'];
 			$sig_img_height	= $results['sig_img_height'];
 			$sig_img_image	= TRUE;

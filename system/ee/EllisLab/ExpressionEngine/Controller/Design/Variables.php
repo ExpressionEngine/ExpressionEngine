@@ -36,6 +36,9 @@ class Variables extends AbstractDesignController {
 		$this->stdHeader();
 
 		$this->msm = (ee()->config->item('multiple_sites_enabled') == 'y');
+
+		// make sure all variables are synced from the filesystem
+		ee('Model')->make('GlobalVariable')->loadAll();
 	}
 
 	public function index()

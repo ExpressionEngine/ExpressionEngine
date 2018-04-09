@@ -1208,6 +1208,7 @@ class EE_Session {
 	 */
 	protected function _initialize_userdata()
 	{
+		// my_* cookies used by guests in the comment form
 		$this->userdata = array(
 			'username'			=> ee()->input->cookie('my_name'),
 			'screen_name'		=> '',

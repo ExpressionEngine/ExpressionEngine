@@ -8,7 +8,7 @@
 
 $(document).ready(function () {
 
-	var publishForm = $(".form-standard > form");
+	var publishForm = $("[data-publish] > form");
 	var ajaxRequest;
 	var debounceTimeout;
 
@@ -66,13 +66,14 @@ $(document).ready(function () {
 					url: EE.publish.autosave.URL,
 					data: publishForm.serialize(),
 					success: function(result) {
-						publishForm.find('div.alert.warn').remove();
+						var publishHeading = $('[data-publish] .form-btns-top h1');
+						publishHeading.find('.app-badge').remove();
 
 						if (result.error) {
 							console.log(result.error);
 						}
 						else if (result.success) {
-							$('[data-publish]').after(result.success);
+							publishHeading.append(result.success);
 						}
 						else {
 							console.log('Autosave Failed');
@@ -93,8 +94,14 @@ $(document).ready(function () {
 	}
 
 	var fetchPreview = function() {
-		var iframe      = $('iframe.live-preview__frame')[0],
-		    preview_url = $(iframe).data('url');
+		var iframe         = $('iframe.live-preview__frame')[0],
+		    preview_url    = $(iframe).data('url'),
+			preview_banner = $('.live-preview > .app-notice---important');
+
+		preview_banner.removeClass('app-notice---important').addClass('app-notice---loading');
+		preview_banner.find('[data-loading]').removeClass('hidden');
+		preview_banner.find('[data-unpublished]').addClass('hidden');
+		preview_banner.find('.js-preview-wide').addClass('hidden');
 
 		ajaxRequest = $.ajax({
 			type: "POST",
@@ -106,6 +113,11 @@ $(document).ready(function () {
 					iframe.contentDocument.open();
 					iframe.contentDocument.write(xhr.responseText);
 					iframe.contentDocument.close();
+
+					preview_banner.removeClass('app-notice---loading').addClass('app-notice---important');
+					preview_banner.find('[data-loading]').addClass('hidden');
+					preview_banner.find('[data-unpublished]').removeClass('hidden');
+					preview_banner.find('.js-preview-wide').removeClass('hidden');
 				}
 				ajaxRequest = null;
 			},
@@ -123,7 +135,13 @@ $(document).ready(function () {
 	});
 
 	$('body').on('click', 'button[rel="live-preview"]', function(e) {
-		var container = $('.app-modal--live-preview .form-standard');
+		var container = $('.app-modal--live-preview .form-standard'),
+		    iframe      = $('iframe.live-preview__frame')[0];
+
+		iframe.contentDocument.open();
+		iframe.contentDocument.write('');
+		iframe.contentDocument.close();
+
 		fetchPreview();
 
 		container.append($(publishForm));
@@ -149,7 +167,9 @@ $(document).ready(function () {
 	});
 
 	if (window.location.search.includes('&preview=y')) {
-		$('button[rel="live-preview"]').click();
+		setTimeout(function() {
+			$('button[rel="live-preview"]').click();
+		}, 100);
 	}
 
 	// =============
