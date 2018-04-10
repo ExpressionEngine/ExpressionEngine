@@ -13,7 +13,7 @@ EE.cp.ModalForm = {
 	modalContentsContainer: $('div.contents', this.modal),
 	modalCloseContainer: $('.app-modal__dismiss', this.modal),
 	loadingBanner: $('.app-notice---loading', this.modal),
-	titleBanner: $('.app-notice---important', this.modal),
+	titleBanner: $('.app-notice---attention', this.modal),
 	saveAndNew: false,
 
 	/**
