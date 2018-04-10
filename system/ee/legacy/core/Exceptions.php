@@ -91,11 +91,18 @@ class EE_Exceptions {
 			return;
 		}
 
-		$filepath = str_replace("\\", "/", $filepath);
-		$filepath = str_replace(SYSPATH, '', $filepath);
+		$syspath = SYSPATH;
 
-		$message = str_replace("\\", "/", $message);
-		$message = str_replace(SYSPATH, '', $message);
+		// normalize for Windows servers
+		if (DIRECTORY_SEPARATOR == '\\')
+		{
+			$syspath = str_replace('\\', '/', $syspath);
+			$filepath = str_replace('\\', '/', $filepath);
+			$message = str_replace('\\', '/', $message);
+		}
+
+		$filepath = str_replace($syspath, '', $filepath);
+		$message = str_replace($syspath, '', $message);
 
 		if (ob_get_level() > $this->ob_level + 1)
 		{
