@@ -209,11 +209,18 @@ class FieldFacade {
 		return $this->data = $this->api->apply('post_save', array($value));
 	}
 
+	public function hasReindex()
+	{
+		$ft = $this->getNativeField();
+
+		return method_exists($ft, 'reindex');
+	}
+
 	public function reindex($model = NULL)
 	{
 		$ft = $this->getNativeField();
 
-		if ( ! method_exists($ft, 'reindex'))
+		if ( ! $this->hasReindex())
 		{
 			return FALSE;
 		}
