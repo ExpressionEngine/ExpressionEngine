@@ -36,8 +36,9 @@ class Reindex extends Utilities {
 		}
 		else
 		{
-			$this->field_ids = $data['field_ids'];
-			$this->entry_ids = $data['entry_ids'];
+			$this->field_ids  = $data['field_ids'];
+			$this->entry_ids  = $data['entry_ids'];
+			$this->reindexing = $data['reindexing'];
 		}
 	}
 
@@ -168,7 +169,7 @@ class Reindex extends Utilities {
 				[
 					[
 						'title'  => 'search_reindex',
-						'desc'   => sprintf(lang('search_reindex_desc'), count($this->entry_ids)),
+						'desc'   => sprintf(lang('search_reindex_desc'), number_format(count($this->entry_ids))),
 						'fields' => [
 							'progress' => [
 								'type'    => 'html',
@@ -201,6 +202,7 @@ class Reindex extends Utilities {
 
 		if ( ! $this->reindexing)
 		{
+			ee()->logger->log_action(lang('search_reindexed_started'));
 			$this->reindexing = TRUE;
 			$this->cache();
 		}
@@ -237,6 +239,8 @@ class Reindex extends Utilities {
 				->withTitle(lang('reindex_success'))
 				->addToBody(lang('reindex_success_desc'))
 				->defer();
+
+			ee()->logger->log_action(sprintf(lang('search_reindexed_completed'), number_format(count($this->entry_ids))));
 
 			$this->reindexing = FALSE; // For symmetry and "futureproofing"
 			ee()->cache->delete(self::CACHE_KEY); // All done!
