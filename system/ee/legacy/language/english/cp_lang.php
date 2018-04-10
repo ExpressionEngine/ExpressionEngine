@@ -610,7 +610,7 @@ $lang = array(
 
 'search_reindex_tip' => 'Search Reindex',
 
-'search_reindex_tip_desc' => "If you use the search module you will want to <a href='%s'>run the search reindex tool</a> to keep the search data up-to-date.",
+'search_reindex_tip_desc' => "Please <a href='%s'>run the search reindex tool</a> tool to keep your searchable data up-to-date.",
 
 );
 
