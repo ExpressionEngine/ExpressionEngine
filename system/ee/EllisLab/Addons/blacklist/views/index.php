@@ -16,7 +16,7 @@
 			<div class="tab t-0 tab-open">
 				<?=ee('CP/Alert')
 					->makeInline()
-					->asImportant()
+					->asAttention()
 					->addToBody(lang('blacklist_desc'))
 					->render()?>
 				<br>
@@ -55,7 +55,7 @@
 			<div class="tab t-1">
 				<?=ee('CP/Alert')
 					->makeInline()
-					->asImportant()
+					->asAttention()
 					->addToBody(lang('whitelist_desc'))
 					->render()?>
 				<br>
