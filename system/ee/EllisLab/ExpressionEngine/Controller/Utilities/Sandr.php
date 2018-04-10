@@ -253,7 +253,7 @@ class Sandr extends Utilities {
 		if ($rows > 0 && $show_reindex_tip)
 		{
 			ee('CP/Alert')->makeInline('search-reindex')
-				->asTip()
+				->asImportant()
 				->withTitle(lang('search_reindex_tip'))
 				->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
 				->defer();

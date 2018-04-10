@@ -737,7 +737,7 @@ class Grid_ft extends EE_Fieldtype {
 			&& (isset($data['field_search']) && $data['field_search'] == 'y'))
 		{
 			ee('CP/Alert')->makeInline('search-reindex')
-				->asTip()
+				->asImportant()
 				->withTitle(lang('search_reindex_tip'))
 				->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
 				->defer();

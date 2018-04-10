@@ -532,7 +532,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 					->delete();
 
 				ee('CP/Alert')->makeInline('search-reindex')
-					->asTip()
+					->asImportant()
 					->withTitle(lang('search_reindex_tip'))
 					->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
 					->defer();

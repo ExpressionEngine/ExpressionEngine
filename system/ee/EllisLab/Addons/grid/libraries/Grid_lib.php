@@ -782,7 +782,7 @@ class Grid_lib {
 		if ($col_search_settings_changed)
 		{
 			ee('CP/Alert')->makeInline('search-reindex')
-				->asTip()
+				->asImportant()
 				->withTitle(lang('search_reindex_tip'))
 				->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
 				->defer();
@@ -825,7 +825,7 @@ class Grid_lib {
 				if ($had_searchable_data)
 				{
 					ee('CP/Alert')->makeInline('search-reindex')
-						->asTip()
+						->asImportant()
 						->withTitle(lang('search_reindex_tip'))
 						->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
 						->defer();
