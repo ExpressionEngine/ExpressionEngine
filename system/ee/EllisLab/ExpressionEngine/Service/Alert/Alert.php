@@ -232,7 +232,19 @@ class Alert {
 	}
 
 	/**
-	 * Marks the alert as an important alert that cannot be closed.
+	 * Marks the alert as an attention alert that cannot be closed.
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function asAttention()
+	{
+		$this->severity = 'attention';
+		$this->cannotClose();
+		return $this;
+	}
+
+	/**
+	 * Marks the alert as a loading alert that cannot be closed.
 	 *
 	 * @return self This returns a reference to itself
 	 */
