@@ -161,6 +161,7 @@ class Reindex extends Utilities {
 
 		$vars = [
 			'base_url'              => ee('CP/URL')->make('utilities/reindex/process')->compile(),
+			'hide_top_buttons'      => TRUE,
 			'save_btn_text'         => 'btn_reindex',
 			'save_btn_text_working' => 'btn_reindex_working',
 			'sections'              => [
