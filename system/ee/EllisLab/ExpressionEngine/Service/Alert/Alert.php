@@ -232,6 +232,18 @@ class Alert {
 	}
 
 	/**
+	 * Marks the alert as an attention alert that cannot be closed.
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function asAttention()
+	{
+		$this->severity = 'attention';
+		$this->cannotClose();
+		return $this;
+	}
+
+	/**
 	 * Sets the title of the alert.
 	 *
 	 * @param string $title The title of the alert

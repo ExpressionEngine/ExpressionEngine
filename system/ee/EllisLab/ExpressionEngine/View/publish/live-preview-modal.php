@@ -11,7 +11,7 @@
 </div>
 <!-- Website iframe -->
 <div class="live-preview">
-	<div class="app-notice app-notice--banner app-notice---important">
+	<div class="app-notice app-notice--banner app-notice---attention">
 		<div class="app-notice__tag">
 			<span class="app-notice__icon"></span>
 		</div>
