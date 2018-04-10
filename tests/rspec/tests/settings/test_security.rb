@@ -26,6 +26,10 @@ feature 'Security & Privacy Settings' do
     require_ip_for_posting = ee_config(item: 'require_ip_for_posting')
     xss_clean_uploads = ee_config(item: 'xss_clean_uploads')
     redirect_submitted_links = ee_config(item: 'redirect_submitted_links')
+    force_redirect = ee_config(item: 'force_redirect')
+    if force_redirect == ''
+      force_redirect = 'n'
+    end
 
     @page.cp_session_type.has_checked_radio(ee_config(item: 'cp_session_type')).should == true
     @page.website_session_type.has_checked_radio(ee_config(item: 'website_session_type')).should == true
@@ -48,6 +52,7 @@ feature 'Security & Privacy Settings' do
     @page.require_ip_for_posting.value.should == require_ip_for_posting
     @page.xss_clean_uploads.value.should == xss_clean_uploads
     @page.redirect_submitted_links.value.should == redirect_submitted_links
+    @page.force_interstitial.value.should == force_redirect
   end
 
   it 'should validate the form' do
@@ -128,6 +133,9 @@ feature 'Security & Privacy Settings' do
     @page.require_ip_for_posting_toggle.click
     @page.xss_clean_uploads_toggle.click
     @page.redirect_submitted_links_toggle.click
+
+    @page.force_interstitial_toggle.visible?.should == true
+    @page.force_interstitial_toggle.click
     @page.submit
 
     # Since we changed session settings, login again
@@ -154,5 +162,6 @@ feature 'Security & Privacy Settings' do
     @page.require_ip_for_posting.value.should == 'n'
     @page.xss_clean_uploads.value.should == 'n'
     @page.redirect_submitted_links.value.should == 'y'
+    @page.force_interstitial.value.should == 'y'
   end
 end

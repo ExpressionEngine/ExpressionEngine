@@ -551,7 +551,7 @@ class Grid_lib {
 					// we're validating
 					if (ee()->input->is_ajax_request() && $field = ee()->input->post('ee_fv_field'))
 					{
-						if ($field == 'field_id_'.$this->field_id.'[rows]['.$row_id.']['.$col_id.']'
+						if (strpos($field, 'field_id_'.$this->field_id.'[rows]['.$row_id.']['.$col_id.']') === 0
 							|| strpos($field, '[field_id_'.$this->field_id.'][rows]['.$row_id.']['.$col_id.']') !== FALSE)
 						{
 							return $error;

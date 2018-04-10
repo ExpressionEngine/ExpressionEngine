@@ -103,6 +103,7 @@ class EE_Exceptions {
 
 		$filepath = str_replace($syspath, '', $filepath);
 		$message = str_replace($syspath, '', $message);
+		$message = htmlentities($message, ENT_QUOTES, 'UTF-8');
 
 		if (ob_get_level() > $this->ob_level + 1)
 		{
