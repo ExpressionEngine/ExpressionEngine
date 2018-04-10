@@ -181,7 +181,7 @@ class EE_Form_validation {
 					// Account for empty state in React checkbox fields
 					if ($field['type'] == 'checkbox')
 					{
-						$field['choices'][] = '';
+						$field['choices'][''] = '';
 					}
 
 					// If this field has 'choices', make sure only those
