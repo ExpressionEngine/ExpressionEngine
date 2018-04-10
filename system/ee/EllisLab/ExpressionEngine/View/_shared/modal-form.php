@@ -6,7 +6,7 @@
 		->render()?>
 	<?=ee('CP/Alert')
 		->makeBanner()
-		->asImportant()
+		->asAttention()
 		->addToBody('%placeholder%')
 		->render()?>
 	<div class="app-modal__content">
