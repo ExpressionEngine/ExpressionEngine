@@ -52,7 +52,7 @@ var MutableRelationshipField = function () {
         load: function load(modal) {
           var entryTitle = _this2.field.closest('[data-publish]').find('input[name=title]').val();
 
-          var title = EE.relationship.lang.creatingNew.replace('#from_channel#', channelTitle).replace('#to_channel#', EE.publish.channel_title);
+          var title = EE.relationship.lang.creatingNew.replace('#to_channel#', channelTitle).replace('#from_channel#', EE.publish.channel_title);
 
           if (entryTitle) {
             title += '<b>: ' + entryTitle + '</b>';

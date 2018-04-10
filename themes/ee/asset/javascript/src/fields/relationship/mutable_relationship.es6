@@ -48,8 +48,8 @@ class MutableRelationshipField {
         const entryTitle = this.field.closest('[data-publish]').find('input[name=title]').val()
 
         let title = EE.relationship.lang.creatingNew
-          .replace('#from_channel#', channelTitle)
-          .replace('#to_channel#', EE.publish.channel_title)
+          .replace('#to_channel#', channelTitle)
+          .replace('#from_channel#', EE.publish.channel_title)
 
         if (entryTitle) {
           title += '<b>: ' + entryTitle + '</b>'

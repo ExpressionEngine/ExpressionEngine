@@ -800,7 +800,7 @@ $lang = array(
 
 'collapse' => 'Collapse',
 
-'creating_new_in_rel' => 'Creating new entry in <b>#from_channel#</b> for the relationship in <b>#to_channel#</b>',
+'creating_new_in_rel' => 'Creating new entry in <b>#to_channel#</b> for a relationship with <b>#from_channel#</b>',
 
 'hide' => 'Hide',
 
