@@ -132,7 +132,6 @@ abstract class AbstractBulkEdit extends CP_Controller {
 		{
 			// Cannot edit categories in this view
 			$field->setItem('editable', FALSE);
-			$field->setItem('editing', FALSE);
 		}
 
 		return $field_facades;

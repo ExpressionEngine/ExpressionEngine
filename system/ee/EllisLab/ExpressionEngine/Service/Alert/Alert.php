@@ -244,6 +244,18 @@ class Alert {
 	}
 
 	/**
+	 * Marks the alert as a loading alert that cannot be closed.
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function asLoading()
+	{
+		$this->severity = 'loading';
+		$this->cannotClose();
+		return $this;
+	}
+
+	/**
 	 * Sets the title of the alert.
 	 *
 	 * @param string $title The title of the alert
