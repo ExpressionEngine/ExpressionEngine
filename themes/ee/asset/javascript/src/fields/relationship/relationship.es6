@@ -25,6 +25,30 @@ class Relationship extends React.Component {
       props.name = $(this).data('inputValue')
       ReactDOM.render(React.createElement(Relationship, props, null), this)
     })
+    $.fuzzyFilter()
+  }
+
+  componentDidMount () {
+    // Allow new entries to be added to this field on the fly
+    new MutableRelationshipField(
+      $(this.container),
+      {
+        success: (result, modal) => {
+          let selected = this.state.selected
+
+          if (this.props.multi) {
+            selected.push(result.item)
+          } else {
+            selected = [result.item]
+          }
+
+          this.selectionChanged(selected)
+          this.entryList.forceAjaxRefresh()
+
+          modal.trigger('modal:close')
+        }
+      }
+    )
   }
 
   // Items visible in the selection container changed via filtering
@@ -56,7 +80,8 @@ class Relationship extends React.Component {
     const SelectedFilterableSelectList = makeFilterableComponent(SelectList)
 
     return (
-      <div className={"fields-relate" + (this.props.multi ? ' fields-relate-multi' : '')}>
+      <div className={"fields-relate" + (this.props.multi ? ' fields-relate-multi' : '')}
+        ref={(container) => { this.container = container }}>
         <FilterableSelectList
           items={this.props.items}
           name={this.props.name}
@@ -72,6 +97,7 @@ class Relationship extends React.Component {
           filters={this.props.select_filters}
           filterUrl={this.props.filter_url}
           toggleAll={this.props.multi && this.props.items.length > SelectList.defaultProps.toggleAllLimit ? true : null}
+          ref={(entryList) => { this.entryList = entryList }}
         />
 
         {this.props.multi &&

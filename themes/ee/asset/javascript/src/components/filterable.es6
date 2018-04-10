@@ -84,17 +84,28 @@ function makeFilterableComponent(WrappedComponent) {
       this.setState({ loading: true })
 
       this.ajaxTimer = setTimeout(() => {
-        this.ajaxRequest = $.ajax({
-          url: this.props.filterUrl,
-          data: $.param(params),
-          dataType: 'json',
-          success: (data) => {
-            this.setState({ loading: false })
-            this.initialItemsChanged(SelectList.formatItems(data))
-          },
-          error: () => {} // Defined to prevent error on .abort above
-        })
+        this.ajaxRequest = this.forceAjaxRefresh(params)
       }, 300)
+    }
+
+    forceAjaxRefresh (params) {
+      if ( ! params) {
+        params = this.state.filterValues
+        params.selected = this.props.selected.map(item => {
+          return item.value
+        })
+      }
+
+      return $.ajax({
+        url: this.props.filterUrl,
+        data: $.param(params),
+        dataType: 'json',
+        success: (data) => {
+          this.setState({ loading: false })
+          this.initialItemsChanged(SelectList.formatItems(data))
+        },
+        error: () => {} // Defined to prevent error on .abort above
+      })
     }
 
     render() {

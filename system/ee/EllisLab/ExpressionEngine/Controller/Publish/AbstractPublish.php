@@ -96,6 +96,9 @@ abstract class AbstractPublish extends CP_Controller {
 			'lang.loading'                   => lang('loading'),
 			'publish.autosave.interval'      => (int) $autosave_interval_seconds,
 			'publish.autosave.URL'           => ee('CP/URL')->make('publish/autosave/' . $channel_id . '/' . $entry_id)->compile(),
+			'publish.channel_title'          => ee('Format')->make('Text', $entry->Channel->channel_title)
+				->convertToEntities()
+				->compile(),
 			'publish.default_entry_title'    => $entry->Channel->default_entry_title,
 			'publish.foreignChars'           => $foreign_characters,
 			'publish.urlLength'              => URL_TITLE_MAX_LENGTH,
@@ -377,7 +380,29 @@ abstract class AbstractPublish extends CP_Controller {
 			->defer();
 
 
-		if (ee()->input->post('submit') == 'save')
+		if (ee('Request')->get('modal_form') == 'y')
+		{
+			$next_entry_id = ee('Request')->get('next_entry_id');
+
+			$result = [
+				'saveId' => $entry->getId(),
+				'item' => [
+					'value' => $entry->getId(),
+					'label' => $entry->title,
+					'instructions' => $entry->Channel->channel_title
+				]
+			];
+
+			if (is_numeric($next_entry_id))
+			{
+				$next_entry = ee('CP/URL')->getCurrentUrl();
+				$next_entry->path = 'publish/edit/entry/' . $next_entry_id;
+				$result += ['redirect' => $next_entry->compile()];
+			}
+
+			return $result;
+		}
+		elseif (ee()->input->post('submit') == 'save')
 		{
 			ee()->functions->redirect(ee('CP/URL')->make('publish/edit/entry/' . $entry->getId()));
 		}
@@ -398,21 +423,6 @@ abstract class AbstractPublish extends CP_Controller {
 			/* -------------------------------------*/
 
 			ee()->functions->redirect($redirect_url);
-		}
-		elseif (ee('Request')->get('modal_form') == 'y')
-		{
-			$next_entry_id = ee('Request')->get('next_entry_id');
-
-			$result = ['saveId' => $entry->getId()];
-
-			if (is_numeric($next_entry_id))
-			{
-				$next_entry = ee('CP/URL')->getCurrentUrl();
-				$next_entry->path = 'publish/edit/entry/' . $next_entry_id;
-				$result += ['redirect' => $next_entry->compile()];
-			}
-
-			return $result;
 		}
 		else
 		{
@@ -470,7 +480,7 @@ abstract class AbstractPublish extends CP_Controller {
 		];
 
 		// get rid of Save & New button if we've reached the max entries for this channel
-		if ($entry->Channel->max_entries != 0 && $entry->Channel->total_records >= $entry->Channel->max_entries)
+		if ($entry->Channel->maxEntriesLimitReached())
 		{
 			unset($buttons[1]);
 		}

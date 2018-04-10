@@ -20,6 +20,7 @@ EE.cp.ModalForm = {
 	 * Opens a modal form
 	 * @param  {object} options Object of options:
 	 *   url - URL of form to load into the modal
+	 *   full - If the form is to take the full screen width, set to true
 	 *   iframe - If the form is to be loaded into an iframe, set to true
 	 *   createUrl - URL of creation form for Save & New, if different than `url`
 	 *   load - Callback to call on load of the URL contents into the modal
@@ -147,7 +148,7 @@ EE.cp.ModalForm = {
 					iframe.src = result.redirect
 					return
 				} else if (options.success) {
-					options.success(result)
+					options.success(result, that.modal)
 				}
 			})
 
