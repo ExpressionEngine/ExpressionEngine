@@ -218,13 +218,24 @@ class EE_Exceptions {
 
 		$message = $exception->getMessage();
 
-		// Replace system path
-		$filepath = str_replace("\\", "/", $exception->getFile());
-		$filepath = str_replace(SYSPATH, '', $filepath);
-		$location =  $filepath . ':' . $exception->getLine();
+		$syspath = SYSPATH;
+		$filepath = $exception->getFile();
 
+		// normalize for Windows servers
+		if (DIRECTORY_SEPARATOR == '\\')
+		{
+			$syspath = str_replace('\\', '/', $syspath);
+			$filepath = str_replace('\\', '/', $filepath);
+			$message = str_replace('\\', '/', $message);
+		}
+
+		// Replace system path
+		$filepath = str_replace($syspath, '', $filepath);
+		$message = str_replace($syspath, '', $message);
+
+		$location =  $filepath . ':' . $exception->getLine();
 		$trace = explode("\n", $exception->getTraceAsString());
-		$partial_path = substr(SYSPATH, 0, 15);
+		$partial_path = substr($syspath, 0, 15);
 
 		// Replace the system paths in the stack trace
 		foreach ($trace as &$line)
