@@ -81,10 +81,15 @@ class Sets extends AbstractChannelsController {
 			else
 			{
 				$set = ee('ChannelSet')->importUpload($set_file);
+				$set_path = ee('Encrypt')->encode(
+					$set->getPath(),
+					ee()->config->item('session_crypt_key')
+				);
 				ee()->functions->redirect(
 					ee('CP/URL')->make(
 						'channels/sets/doImport',
-						array('set_path' => str_replace(PATH_CACHE, '', $set->getPath())))
+						['set_path' => $set_path]
+					)
 				);
 			}
 		}
@@ -137,6 +142,10 @@ class Sets extends AbstractChannelsController {
 	public function doImport()
 	{
 		$set_path = ee('Request')->get('set_path');
+		$set_path = ee('Encrypt')->decode(
+			$set_path,
+			ee()->config->item('session_crypt_key')
+		);
 
 		// no path or unacceptable path? abort!
 		if ( ! $set_path || strpos($set_path, '..') !== FALSE)
@@ -151,7 +160,7 @@ class Sets extends AbstractChannelsController {
 		}
 
 		// load up the set
-		$set = ee('ChannelSet')->importDir(PATH_CACHE.ltrim($set_path, '/'));
+		$set = ee('ChannelSet')->importDir($set_path);
 
 		// posted values? grab 'em
 		if (isset($_POST))
@@ -302,9 +311,11 @@ class Sets extends AbstractChannelsController {
 			$vars['form_hidden'] = $hidden;
 		}
 
+		$set_path = ee('Encrypt')->encode($set->getPath(), ee()->config->item('session_crypt_key'));
+
 		// Final view variables we need to render the form
 		$vars += array(
-			'base_url' => ee('CP/URL')->make('channels/sets/doImport', array('set_path' => str_replace(PATH_CACHE, '', $set->getPath()))),
+			'base_url' => ee('CP/URL')->make('channels/sets/doImport', ['set_path' => $set_path]),
 			'save_btn_text' => 'btn_save_settings',
 			'save_btn_text_working' => 'btn_saving',
 		);
