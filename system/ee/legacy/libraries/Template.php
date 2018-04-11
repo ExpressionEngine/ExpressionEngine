@@ -162,6 +162,7 @@ class EE_Template {
 		if (rand(1, 10) == 1)
 		{
 			$this->_garbage_collect_cache();
+			ee('ChannelSet')->garbageCollect();
 		}
 
 		$this->log_item("URI: ".ee()->uri->uri_string);
