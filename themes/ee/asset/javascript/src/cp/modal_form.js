@@ -8,12 +8,6 @@
 
 EE.cp.ModalForm = {
 
-	modal: $('div[rel="modal-form"]'),
-	modalContents: $('.app-modal__content', this.modal),
-	modalContentsContainer: $('div.contents', this.modal),
-	modalCloseContainer: $('.app-modal__dismiss', this.modal),
-	loadingBanner: $('.app-notice---loading', this.modal),
-	titleBanner: $('.app-notice---attention', this.modal),
 	saveAndNew: false,
 
 	/**
@@ -28,7 +22,12 @@ EE.cp.ModalForm = {
 	 * @return {void}
 	 */
 	openForm: function(options) {
-		var that = this
+		this.modal = $('div[rel="modal-form"]')
+		this.modalContents = $('.app-modal__content', this.modal)
+		this.modalContentsContainer = $('div.contents', this.modal)
+		this.modalCloseContainer = $('.app-modal__dismiss', this.modal)
+		this.loadingBanner = $('.app-notice---loading', this.modal)
+		this.titleBanner = $('.app-notice---attention', this.modal)
 
 		this.modal.trigger('modal:open')
 		this._loadModalContents(options)
