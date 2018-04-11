@@ -510,7 +510,7 @@ $(document).ready(function(){
 			e.preventDefault();
 		});
 
-		$('body').on('click', '.overlay, .app-overlay---open, .js-modal-close', function() {
+		$('body').on('click', '.overlay, .app-overlay---open', function() {
 			$('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
 		});
 
