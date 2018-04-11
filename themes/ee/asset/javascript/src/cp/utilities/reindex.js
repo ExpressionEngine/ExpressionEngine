@@ -9,9 +9,21 @@
 EE.cp.reindex = {
 
 	buttons: $('input.btn:visible'),
+	site: 'all',
 
 	init: function() {
+		var that = this;
+
 		EE.cp.reindex._init();
+		$('a.toggle-btn').on('click', function(e) {
+			if ($('input[name="all_sites"]').val() == "1") {
+				that.site = 'all';
+			} else {
+				that.site = 'one';
+			}
+
+			$('fieldset:first em').text(EE.reindex.search_desc.replace('%s', EE.reindex.entries[that.site]));
+		});
 	},
 
 	_init: function() {
@@ -64,9 +76,12 @@ EE.cp.reindex = {
 	 */
 	_sendAjaxRequest: function(progress) {
 
-		var data = {progress: 0},
-			request = new XMLHttpRequest(),
-			that = this;
+		var request = new XMLHttpRequest(),
+			that = this,
+			data = {
+				progress: 0,
+				all_sites: $('input[name="all_sites"]').val()
+			};
 
 		if (progress !== undefined) {
 			data = {
@@ -142,9 +157,9 @@ EE.cp.reindex = {
 	 */
 	_getPercentageForResponse: function(response) {
 		var progress = 0,
-			total_fields = EE.reindex.entries;
+			total_fields = EE.reindex.entries[this.site];
 
-		progress = Math.round(parseInt(response.progress) / EE.reindex.entries * 100);
+		progress = Math.round(parseInt(response.progress) / total_fields * 100);
 
 		return progress > 100 ? 100 : progress;
 	},

@@ -612,10 +612,6 @@ $lang = array(
 
 'search_reindex_tip_desc' => "Please <a href='%s'>run the search reindex tool</a> tool to keep your searchable data up-to-date.",
 
-'search_reindexed_started' => 'Search reindexing started.',
-
-'search_reindexed_completed' => 'Search reindexing complete. %d entries were reindexed.',
-
 );
 
 // EOF

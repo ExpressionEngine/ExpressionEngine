@@ -29,9 +29,14 @@ class Reindex extends Utilities {
 		$data = ee()->cache->get(self::CACHE_KEY);
 		if ($data === FALSE || $data['reindexing'] === FALSE)
 		{
+			$site_id = ee()->config->item('site_id');
+
 			$fields = $this->getFields();
 			$this->field_ids = $this->getFieldIdNames($fields);
-			$this->entry_ids = $this->getEntryIds($fields);
+			$this->entry_ids = [
+				'all' => $this->getEntryIds($fields),
+				$site_id => $this->getEntryIds($fields, $site_id)
+			];
 			$this->cache();
 		}
 		else
@@ -95,7 +100,7 @@ class Reindex extends Utilities {
 	 * @param obj $fields A Collection of ChannelField entities
 	 * @return array An array of Channel entry IDs.
 	 */
-	protected function getEntryIds(Collection $fields)
+	protected function getEntryIds(Collection $fields, $site_id = NULL)
 	{
 		$channel_ids = [];
 		$entry_ids = [];
@@ -109,11 +114,14 @@ class Reindex extends Utilities {
 
 		$entry_ids = ee('Model')->get('ChannelEntry')
 			->fields('entry_id')
-			->filter('channel_id', 'IN', $channel_ids)
-			->all()
-			->pluck('entry_id');
+			->filter('channel_id', 'IN', $channel_ids);
 
-		return $entry_ids;
+		if ($site_id)
+		{
+			$entry_ids->filter('site_id', $site_id);
+		}
+
+		return $entry_ids->all()->pluck('entry_id');
 	}
 
 	/**
@@ -145,12 +153,18 @@ class Reindex extends Utilities {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
+		$site_id = ee()->config->item('site_id');
+
 		ee()->cp->add_js_script('file', 'cp/utilities/reindex');
 
 		ee()->javascript->set_global([
 			'reindex' => [
 				'endpoint'              => ee('CP/URL')->make('utilities/reindex/process')->compile(),
-				'entries'               => count($this->entry_ids),
+				'entries'               => [
+					'all' => count($this->entry_ids['all']),
+					'one' => count($this->entry_ids[$site_id])
+				],
+				'search_desc'           => lang('search_reindex_desc'),
 				'base_url'              => ee('CP/URL')->make('utilities/reindex')->compile(),
 				'ajax_fail_banner'      => ee('CP/Alert')->makeInline('search-reindex-fail')
 					->asIssue()
@@ -169,7 +183,7 @@ class Reindex extends Utilities {
 				[
 					[
 						'title'  => 'search_reindex',
-						'desc'   => sprintf(lang('search_reindex_desc'), number_format(count($this->entry_ids))),
+						'desc'   => sprintf(lang('search_reindex_desc'), number_format(count($this->entry_ids['all']))),
 						'fields' => [
 							'progress' => [
 								'type'    => 'html',
@@ -180,6 +194,20 @@ class Reindex extends Utilities {
 				]
 			],
 		];
+
+		if (ee('Model')->get('Site')->count() > 1)
+		{
+			$vars['sections'][0][] = [
+				'title'  => 'all_sites',
+				'desc'   => 'all_sites_desc',
+				'fields' => [
+					'all_sites' => [
+						'type'  => 'toggle',
+						'value' => 1
+					]
+				]
+			];
+		}
 
 		ee()->view->cp_page_title = lang('search_reindex');
 
@@ -200,6 +228,8 @@ class Reindex extends Utilities {
 			show_404();
 		}
 
+		$site = (ee('Request')->post('all_sites', 'y') == 'y') ? 'all' : ee()->config->item('site_id');
+
 		if ( ! $this->reindexing)
 		{
 			ee()->logger->log_action(lang('search_reindexed_started'));
@@ -209,9 +239,9 @@ class Reindex extends Utilities {
 
 		$progress = (int) ee('Request')->post('progress');
 
-		if (isset($this->entry_ids[$progress]))
+		if (isset($this->entry_ids[$site][$progress]))
 		{
-			$entry = ee('Model')->get('ChannelEntry', $this->entry_ids[$progress])->first();
+			$entry = ee('Model')->get('ChannelEntry', $this->entry_ids[$site][$progress])->first();
 
 			foreach ($entry->getCustomFields() as $field)
 			{
@@ -232,7 +262,7 @@ class Reindex extends Utilities {
 			$progress++;
 		}
 
-		if ($progress >= count($this->entry_ids))
+		if ($progress >= count($this->entry_ids[$site]))
 		{
 			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
@@ -240,7 +270,7 @@ class Reindex extends Utilities {
 				->addToBody(lang('reindex_success_desc'))
 				->defer();
 
-			ee()->logger->log_action(sprintf(lang('search_reindexed_completed'), number_format(count($this->entry_ids))));
+			ee()->logger->log_action(sprintf(lang('search_reindexed_completed'), number_format(count($this->entry_ids[$site]))));
 
 			$this->reindexing = FALSE; // For symmetry and "futureproofing"
 			ee()->cache->delete(self::CACHE_KEY); // All done!
