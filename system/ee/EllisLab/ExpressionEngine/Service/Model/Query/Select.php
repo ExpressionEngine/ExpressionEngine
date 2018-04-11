@@ -630,6 +630,9 @@ class Select extends Query {
 
 		if (is_null($value) || (is_string($value) && strtoupper($value) == 'NULL'))
 		{
+			// in case it was a string
+			$value = NULL;
+
 			switch ($operator)
 			{
 				case '!=':
