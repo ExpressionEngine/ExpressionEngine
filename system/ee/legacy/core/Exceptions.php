@@ -233,6 +233,8 @@ class EE_Exceptions {
 		$filepath = str_replace($syspath, '', $filepath);
 		$message = str_replace($syspath, '', $message);
 
+		$message = htmlentities($message, ENT_QUOTES, 'UTF-8');
+
 		$location =  $filepath . ':' . $exception->getLine();
 		$trace = explode("\n", $exception->getTraceAsString());
 		$partial_path = substr($syspath, 0, 15);
