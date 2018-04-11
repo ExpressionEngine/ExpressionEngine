@@ -415,24 +415,28 @@ $(document).ready(function(){
 		});
 
 		$('body').on('modal:close', '.modal-wrap, .modal-form-wrap, .app-modal', function(e) {
-			if ($(e.target).is(":visible")) {
+			var modal = $(this)
+
+			if (modal.is(":visible")) {
 				// fade out the overlay
 				$('.overlay').fadeOut('slow');
 
-				if ($(this).hasClass('modal-wrap')) {
-					$(this).fadeOut('fast');
+				if (modal.hasClass('modal-wrap')) {
+					modal.fadeOut('fast');
 				} else {
 					// disappear the app modal
-					$(this).addClass('app-modal---closed');
+					modal.addClass('app-modal---closed');
 					setTimeout(function() {
-						$('.app-modal---open').removeClass('app-modal---open');
+						modal.removeClass('app-modal---open');
 					}, 500);
 
-					// disappear the preview
-					$('.live-preview---open').addClass('live-preview---closed');
-					setTimeout(function() {
-						$('.live-preview---open').removeClass('live-preview---open');
-					}, 500);
+					if (modal.hasClass('app-modal--live-preview')) {
+						// disappear the preview
+						$('.live-preview---open').addClass('live-preview---closed');
+						setTimeout(function() {
+							$('.live-preview---open').removeClass('live-preview---open');
+						}, 500);
+					}
 				}
 
 				// distract the actor
