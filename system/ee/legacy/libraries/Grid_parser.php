@@ -468,8 +468,9 @@ class Grid_parser {
 					$entry_id,
 					$row['row_id'],
 					array(
-						'modifier'	=> $modifier,
-						'params'	=> $params
+						'modifier'      => $modifier,
+						'full_modifier' => $modifier,
+						'params'        => $params,
 					),
 					$channel_row,
 					$content,
