@@ -514,6 +514,10 @@ class Set {
 			{
 				foreach ($channel_data->field_groups as $field_group)
 				{
+					if (isset($this->aliases['ee:ChannelFieldGroup'][$field_group]))
+					{
+						$field_group = $this->aliases['ee:ChannelFieldGroup'][$field_group]['group_name'];
+					}
 					$field_groups[] = $this->field_groups[$field_group];
 				}
 			}
