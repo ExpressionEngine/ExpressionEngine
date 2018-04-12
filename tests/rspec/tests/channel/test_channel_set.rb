@@ -564,6 +564,8 @@ feature 'Channel Sets' do
       @page.find('input[name="ee:ChannelField[news_extended][field_name]"]').set 'event_extended'
       @page.find('input[name="ee:ChannelField[news_image][field_name]"]').set 'event_image'
       @page.find('input[name="ee:ChannelField[news_image][field_name]"]').trigger 'blur'
+      @page.find('input[name="ee:ChannelFieldGroup[News][group_name]"]').set 'Event'
+      @page.find('input[name="ee:ChannelFieldGroup[News][group_name]"]').trigger 'blur'
       @page.submit
 
       check_success
