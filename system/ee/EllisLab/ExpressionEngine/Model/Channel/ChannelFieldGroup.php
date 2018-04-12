@@ -41,7 +41,7 @@ class ChannelFieldGroup extends Model {
 	);
 
 	protected static $_validation_rules = array(
-		'group_name' => 'required|unique[site_id]|validateName'
+		'group_name' => 'required|unique|validateName'
 	);
 
 	protected static $_events = array(
