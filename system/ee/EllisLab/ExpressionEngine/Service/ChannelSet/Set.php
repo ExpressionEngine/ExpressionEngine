@@ -507,7 +507,13 @@ class Set {
 
 			if (isset($channel_data->field_group))
 			{
-				$field_groups[] = $this->field_groups[$channel_data->field_group];
+				$field_group_name = $channel_data->field_group;
+				if (isset($this->aliases['ee:ChannelFieldGroup'][$field_group_name]))
+				{
+					$field_group_name = $this->aliases['ee:ChannelFieldGroup'][$field_group_name]['group_name'];
+				}
+
+				$field_groups[] = $this->field_groups[$field_group_name];
 			}
 
 			if (isset($channel_data->field_groups))
