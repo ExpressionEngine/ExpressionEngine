@@ -542,7 +542,8 @@ class Edit extends AbstractPublishController {
 		if (ee('Request')->get('modal_form') == 'y')
 		{
 			$vars['layout']->setIsInModalContext(TRUE);
-			return ee('View')->make('publish/modal-entry')->render($vars);
+			ee()->output->enable_profiler(FALSE);
+			return ee()->view->render('publish/modal-entry', $vars);
 		}
 
 		ee()->cp->render('publish/entry', $vars);
