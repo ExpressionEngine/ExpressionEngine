@@ -625,6 +625,8 @@ class Set {
 				$cat_group->Categories[] = $category;
 			}
 
+			$this->applyOverrides($cat_group, $group_name);
+
 			$this->category_groups[$group_name] = $cat_group;
 		}
 	}
