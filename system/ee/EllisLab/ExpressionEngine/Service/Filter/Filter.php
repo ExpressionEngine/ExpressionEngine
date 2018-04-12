@@ -105,6 +105,11 @@ abstract class Filter {
 			$value = $_GET[$this->name];
 		}
 
+		if ( ! $this->has_custom_value)
+		{
+			$value = isset($this->options[$value]) ? $value : NULL;
+		}
+
 		return is_null($value) ? NULL : htmlentities($value, ENT_NOQUOTES, 'UTF-8');
 	}
 
