@@ -89,6 +89,11 @@ abstract class Filter {
 	 */
 	public function value()
 	{
+		if (isset($this->selected_value))
+		{
+			return $this->selected_value;
+		}
+
 		$value = $this->derivedValue();
 
 		if ( ! $this->has_custom_value)
