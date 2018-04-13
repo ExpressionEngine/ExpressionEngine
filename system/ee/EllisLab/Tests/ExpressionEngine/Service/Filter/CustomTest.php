@@ -98,13 +98,14 @@ class CustomTest extends \PHPUnit_Framework_TestCase {
 		$filter = new Custom('filter_by_custom', 'custom', $this->options);
 		$filter->disableCustomValue();
 
-		$this->assertEquals($submitted, $filter->value());
 		if ($valid)
 		{
+			$this->assertEquals($submitted, $filter->value());
 			$this->assertTrue($filter->isValid(), '"' . $submitted . '" is valid');
 		}
 		else
 		{
+			$this->assertEquals(NULL, $filter->value());
 			$this->assertFalse($filter->isValid(), '"' . $submitted . '" is invalid');
 		}
 
@@ -114,13 +115,14 @@ class CustomTest extends \PHPUnit_Framework_TestCase {
 		$filter = new Custom('filter_by_custom', 'custom', $this->options);
 		$filter->disableCustomValue();
 
-		$this->assertEquals($submitted, $filter->value());
 		if ($valid)
 		{
+			$this->assertEquals($submitted, $filter->value());
 			$this->assertTrue($filter->isValid(), '"' . $submitted . '" is valid');
 		}
 		else
 		{
+			$this->assertEquals(NULL, $filter->value());
 			$this->assertFalse($filter->isValid(), '"' . $submitted . '" is invalid');
 		}
 
