@@ -146,6 +146,11 @@ abstract class Filter {
 	{
 		$value = $this->derivedValue();
 
+		if (is_null($value))
+		{
+			return TRUE;
+		}
+
 		return (array_key_exists($value, $this->options));
 	}
 
