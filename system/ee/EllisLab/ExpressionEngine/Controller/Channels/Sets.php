@@ -148,7 +148,7 @@ class Sets extends AbstractChannelsController {
 		);
 
 		// no path or unacceptable path? abort!
-		if ( ! $set_path || strpos($set_path, '..') !== FALSE || ! file_exists(PATH_CACHE.ltrim($set_path, '/')))
+		if ( ! $set_path || strpos($set_path, '..') !== FALSE || ! file_exists($set_path))
 		{
 			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
