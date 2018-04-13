@@ -258,6 +258,7 @@ class EE_Exceptions {
 			}
 
 			$line = str_replace($partial_path, '', $line);
+			$line = htmlentities($line, ENT_QUOTES, 'UTF-8');
 		}
 
 		$debug = DEBUG;
