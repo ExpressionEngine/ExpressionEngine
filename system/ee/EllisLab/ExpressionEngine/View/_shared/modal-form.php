@@ -1,4 +1,4 @@
-<div class="app-modal app-modal--side" rel="<?=$name?>">
+<div class="app-modal" rel="<?=$name?>">
 	<?=ee('CP/Alert')
 		->makeBanner()
 		->asLoading()

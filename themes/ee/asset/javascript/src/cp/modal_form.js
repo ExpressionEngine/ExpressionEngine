@@ -29,6 +29,17 @@ EE.cp.ModalForm = {
 		this.loadingBanner = $('.app-notice---loading', this.modal)
 		this.titleBanner = $('.app-notice---attention', this.modal)
 
+		var iframe = options.iframe || false,
+			full = options.full || false
+
+		this.modal.toggleClass('app-modal--side', ! full)
+			.toggleClass('app-modal--fullscreen', iframe || full)
+			.find('iframe')
+			.remove()
+		this.modalContents.toggle( ! iframe)
+		this.loadingBanner.toggle(iframe)
+		this.titleBanner.hide()
+
 		this.modal.trigger('modal:open')
 		this._loadModalContents(options)
 		this._bindSaveAndNew()
@@ -38,18 +49,6 @@ EE.cp.ModalForm = {
 	 * Loads the modal form with the specified contents
 	 */
 	_loadModalContents: function(options) {
-		var iframe = options.iframe || false,
-			full = options.full || false
-
-		this.modal.toggleClass('app-modal--iframe', iframe)
-			.toggleClass('app-modal--full', full)
-			.find('iframe')
-			.remove()
-		this.modalContentsContainer.toggle( ! iframe)
-		this.modalCloseContainer.toggle( ! iframe)
-		this.loadingBanner.toggle(iframe)
-		this.titleBanner.hide()
-
 		if ( ! options.iframe) {
 			var loading = $('<span />', { class: 'btn work'}).html('Loading')
 			this.modalContentsContainer.html(loading)
@@ -59,14 +58,14 @@ EE.cp.ModalForm = {
 		if (options.iframe) {
 			var iframe = $('<iframe />', {
 				src: options.url + '&modal_form=y',
-				class: 'app-modal__iframe'
+				class: 'app-modal__frame'
 			}).on('load', function() {
 				that.loadingBanner.hide()
 				that._bindIframeForm(this, options)
-				options.load(that.modalContents)
+				options.load(that.modal)
 			})
 
-			this.modalContents.append(iframe)
+			this.modal.append(iframe)
 		} else {
 			this.modalContentsContainer.load(options.url, function() {
 				that._bindForm(options)
