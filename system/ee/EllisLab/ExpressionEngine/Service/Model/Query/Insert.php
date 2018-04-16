@@ -62,7 +62,8 @@ class Insert extends Update {
 		{
 			$values[$primary_key] = $this->insert_id;
 		}
-		elseif ($object->getName() != 'ee:MemberGroup') // TODO MSM this needs to change with msm
+		elseif ($object->getName() != 'ee:Member' &&
+			$object->getName() != 'ee:MemberGroup') // TODO MSM this needs to change with msm
 		{
 			unset($values[$primary_key]);
 		}
