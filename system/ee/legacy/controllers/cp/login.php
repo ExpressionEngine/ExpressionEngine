@@ -252,6 +252,14 @@ class Login extends CP_Controller {
 			$return_path = $member->getCPHomepageURL();
 		}
 
+		// If there is a URL= parameter in the return URL folks could end up anywhere
+		// so if we see that we'll ditch everything we were told and just go to `/`
+		if (strpos($return_path, '&URL=') !== FALSE
+			|| strpos($return_path, '?URL=') !== FALSE)
+		{
+			$return_path = ee('CP/URL')->make('/')->compile();
+		}
+
 		$this->functions->redirect($return_path);
 	}
 
