@@ -42,7 +42,7 @@
 			{if about_image}
 				{about_image}
 					<figure {if about_image:align != 'none'}class="{about_image:align}"{/if}>
-						<img src="{about_image:image}" alt="{about_image:caption}">
+						<img src="{about_image:image}" alt="{about_image:caption:attr_safe}">
 						<figcaption>{about_image:caption}</figcaption>
 					</figure>
 				{/about_image}
