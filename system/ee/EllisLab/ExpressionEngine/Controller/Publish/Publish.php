@@ -129,12 +129,8 @@ class Publish extends AbstractPublishController {
 		$time = ee()->localize->human_time(ee()->localize->now);
 		$time = trim(strstr($time, ' '));
 
-		$alert = ee('CP/Alert')->make()
-			->asWarning()
-			->addToBody(lang('autosave_success') . $time);
-
 		ee()->output->send_ajax_response(array(
-			'success' => $alert->render(),
+			'success' => ee('View')->make('ee:publish/partials/autosave_badge')->render(['time' => $time]),
 			'autosave_entry_id' => $autosave->entry_id,
 			'original_entry_id'	=> $entry_id
 		));
@@ -171,7 +167,7 @@ class Publish extends AbstractPublishController {
 		}
 
 		// Redirect to edit listing if we've reached max entries for this channel
-		if ($channel->max_entries != 0 && $channel->total_records >= $channel->max_entries)
+		if ($channel->maxEntriesLimitReached())
 		{
 			ee()->functions->redirect(
 				ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $channel_id))
@@ -220,13 +216,25 @@ class Publish extends AbstractPublishController {
 		);
 
 		$vars = array(
-			'form_url' => ee('CP/URL')->make('publish/create/' . $channel_id),
+			'form_url' => ee('CP/URL')->getCurrentUrl(),
 			'form_attributes' => $form_attributes,
+			'form_title' => lang('new_entry'),
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
 			'revisions' => $this->getRevisionsTable($entry),
 			'extra_publish_controls' => $channel->extra_publish_controls,
 			'buttons' => $this->getPublishFormButtons($entry)
 		);
+
+		if (ee('Request')->get('modal_form') == 'y')
+		{
+			$vars['buttons'] = [[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_close',
+				'text' => 'save_and_close',
+				'working' => 'btn_saving'
+			]];
+		}
 
 		if ($entry->isLivePreviewable())
 		{
@@ -266,7 +274,7 @@ class Publish extends AbstractPublishController {
 
 			if ($result->isValid())
 			{
-				$this->saveEntryAndRedirect($entry);
+				return $this->saveEntryAndRedirect($entry);
 			}
 		}
 
@@ -292,6 +300,12 @@ class Publish extends AbstractPublishController {
 		);
 
 		$vars['breadcrumb_title'] = lang('new_entry');
+
+		if (ee('Request')->get('modal_form') == 'y')
+		{
+			$vars['layout']->setIsInModalContext(TRUE);
+			return ee('View')->make('publish/modal-entry')->render($vars);
+		}
 
 		ee()->cp->render('publish/entry', $vars);
 	}
@@ -368,8 +382,7 @@ class Publish extends AbstractPublishController {
 
 		ee()->load->library('template', NULL, 'TMPL');
 
-		$template_group = '';
-		$template = '';
+		$template_id = NULL;
 
 		if ( ! empty($_POST['pages__pages_uri'])
 			&& ! empty($_POST['pages__pages_template_id']))
@@ -385,12 +398,7 @@ class Publish extends AbstractPublishController {
 			ee()->config->set_item('site_pages', $site_pages);
 			$entry->Site->site_pages = $site_pages;
 
-			$template = ee('Model')->get('Template', $_POST['pages__pages_template_id'])
-				->with('TemplateGroup')
-				->first();
-
-			$template_group = $template->TemplateGroup->group_name;
-			$template = $template->template_name;
+			$template_id = $_POST['pages__pages_template_id'];
 		}
 
 		if ($entry->hasPageURI())
@@ -409,6 +417,20 @@ class Publish extends AbstractPublishController {
 			$uri = str_replace(['{url_title}', '{entry_id}'], [$entry->url_title, $entry->entry_id], $channel->preview_url);
 		}
 
+		// -------------------------------------------
+		// 'publish_live_preview_route' hook.
+		//  - Set alternate URI and/or template to use for preview
+		//  - Added 4.2.0
+		//
+			if (ee()->extensions->active_hook('publish_live_preview_route') === TRUE)
+			{
+				$route = ee()->extensions->call('publish_live_preview_route', array_merge($_POST, $data), $uri, $template_id);
+				$uri = $route['uri'];
+				$template_id = $route['template_id'];
+			}
+		//
+		// -------------------------------------------
+
 		ee()->uri->_set_uri_string($uri);
 
 		// Compile the segments into an array
@@ -420,7 +442,20 @@ class Publish extends AbstractPublishController {
 
 		ee()->core->loadSnippets();
 
-		ee()->TMPL->run_template_engine($template_group, $template);
+		$template_group = '';
+		$template_name = '';
+
+		if ($template_id)
+		{
+			$template = ee('Model')->get('Template', $template_id)
+				->with('TemplateGroup')
+				->first();
+
+			$template_group = $template->TemplateGroup->group_name;
+			$template_name = $template->template_name;
+		}
+
+		ee()->TMPL->run_template_engine($template_group, $template_name);
 	}
 }
 

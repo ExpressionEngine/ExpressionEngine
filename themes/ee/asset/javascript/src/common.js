@@ -55,7 +55,7 @@ $(document).ready(function(){
 
 		// listen for clicks on anchor tags
 		// that include rel="external" attributes
-		$('body').on('click', 'a[rel="external"]', function(e){
+		$('body').on('click', 'a[rel*="external"]', function(e){
 			// open a new window pointing to
 			// the href attribute of THIS anchor click
 			iframeOpen(this.href);
@@ -295,6 +295,42 @@ $(document).ready(function(){
 			return false;
 		});
 
+		// new app-about popup
+		$('.js-about').on('click',function(e){
+			// show version-info box
+			$('.app-about-info').show().trigger('display');
+			// stop THIS href from loading
+			// in the source window
+			e.preventDefault();
+		});
+
+		$('.js-about-close').on('click',function(e){
+			// hide version-info box
+			$('.app-about-info').hide();
+			// stop THIS href from loading
+			// in the source window
+			e.preventDefault();
+		});
+
+		$('.app-about-info').on('display', function() {
+			if ($('.app-about-info__update:visible').size() > 0) {
+				$.get(EE.cp.updateCheckURL, function(data) {
+					if (data.newVersionMarkup) {
+						$('.app-about-info__status, .app-about-info__update').hide()
+						$('.app-about-info__installed').after(data.newVersionMarkup)
+
+						if (data.isVitalUpdate) {
+							$('.app-about-info__status--update-vital').show()
+						} else {
+							$('.app-about-info__status--update').show()
+						}
+					} else {
+						$('.app-about-info__update').hide()
+					}
+				})
+			}
+		})
+
 	// ====================
 	// modal windows -> WIP
 	// ====================
@@ -379,24 +415,28 @@ $(document).ready(function(){
 		});
 
 		$('body').on('modal:close', '.modal-wrap, .modal-form-wrap, .app-modal', function(e) {
-			if ($(e.target).is(":visible")) {
+			var modal = $(this)
+
+			if (modal.is(":visible")) {
 				// fade out the overlay
 				$('.overlay').fadeOut('slow');
 
-				if ($(this).hasClass('modal-wrap')) {
-					$(this).fadeOut('fast');
+				if (modal.hasClass('modal-wrap')) {
+					modal.fadeOut('fast');
 				} else {
 					// disappear the app modal
-					$(this).addClass('app-modal---closed');
+					modal.addClass('app-modal---closed');
 					setTimeout(function() {
-						$('.app-modal---open').removeClass('app-modal---open');
+						modal.removeClass('app-modal---open');
 					}, 500);
 
-					// disappear the preview
-					$('.live-preview---open').addClass('live-preview---closed');
-					setTimeout(function() {
-						$('.live-preview---open').removeClass('live-preview---open');
-					}, 500);
+					if (modal.hasClass('app-modal--live-preview')) {
+						// disappear the preview
+						$('.live-preview---open').addClass('live-preview---closed');
+						setTimeout(function() {
+							$('.live-preview---open').removeClass('live-preview---open');
+						}, 500);
+					}
 				}
 
 				// distract the actor
@@ -442,6 +482,10 @@ $(document).ready(function(){
 			var linkIs = $(this).attr('class');
 			var isDisabled = $(this).attr('disabled');
 
+			if ($(this).data('for') == 'version-check') {
+				return
+			}
+
 			// check for disabled status
 			if(isDisabled === 'disabled' || modalIs == ''){
 				// stop THIS href from loading
@@ -470,7 +514,7 @@ $(document).ready(function(){
 			e.preventDefault();
 		});
 
-		$('body').on('click', '.overlay, .app-overlay---open, .js-modal-close', function() {
+		$('body').on('click', '.overlay, .app-overlay---open', function() {
 			$('.modal-wrap, .modal-form-wrap, .app-modal').trigger('modal:close');
 		});
 
@@ -694,6 +738,10 @@ $(document).ready(function(){
 					.removeClass('filter-item__link---active')
 					// hide all siblings of open with a class of sub-menu
 					.siblings('.filter-submenu').hide();
+			}
+
+			if(!$(e.target).closest('.app-about').length){
+				$('.app-about-info:visible').hide()
 			}
 		});
 }); // close (document).ready

@@ -222,19 +222,7 @@ class Runner {
 
 		if (empty($rollback))
 		{
-			ee()->load->library('cp');
-
-			ee('CP/Alert')->makeBanner('update-completed')
-				->asSuccess()
-				->withTitle(sprintf(lang('update_completed'), APP_VER))
-				->addToBody(sprintf(
-					lang('update_completed_desc'),
-					APP_VER,
-					ee()->cp->masked_url(
-						DOC_URL.'about/changelog.html'
-					)
-				))
-				->defer();
+			ee()->session->set_flashdata('update:completed', TRUE);
 		}
 		else
 		{

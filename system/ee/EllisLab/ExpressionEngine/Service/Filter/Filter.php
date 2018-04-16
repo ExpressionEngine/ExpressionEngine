@@ -94,6 +94,30 @@ abstract class Filter {
 			return $this->selected_value;
 		}
 
+		$value = $this->derivedValue();
+
+		if ( ! $this->has_custom_value)
+		{
+			$value = $this->isValid() ? $value : NULL;
+		}
+
+		return is_null($value) ? NULL : htmlentities($value, ENT_NOQUOTES, 'UTF-8');
+	}
+
+	/**
+	 * Determines the value of this filter. If a selected_value was set, that
+	 * is used. Otherwise we'll determine the value by using the POST value, GET
+	 * valeu or default value (in that order).
+	 *
+	 * @return mixed The value of the filter
+	 */
+	protected function derivedValue()
+	{
+		if (isset($this->selected_value))
+		{
+			return $this->selected_value;
+		}
+
 		$value = $this->default_value;
 
 		if (isset($_POST[$this->name]) && ! empty($_POST[$this->name]))
@@ -105,7 +129,7 @@ abstract class Filter {
 			$value = $_GET[$this->name];
 		}
 
-		return is_null($value) ? NULL : htmlentities($value, ENT_NOQUOTES, 'UTF-8');
+		return $value;
 	}
 
 	/**
@@ -125,14 +149,14 @@ abstract class Filter {
 	 */
 	public function isValid()
 	{
-		$value = $this->value();
+		$value = $this->derivedValue();
 
 		if (is_null($value))
 		{
 			return TRUE;
 		}
 
-		return (array_key_exists($this->value(), $this->options));
+		return (array_key_exists($value, $this->options));
 	}
 
 	/**

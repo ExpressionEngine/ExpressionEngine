@@ -8,21 +8,26 @@
 
 EE.cp.ModalForm = {
 
-	modal: $('div[rel="modal-form"]'),
-	modalContentsContainer: $('div.contents', this.modal),
 	saveAndNew: false,
 
 	/**
 	 * Opens a modal form
 	 * @param  {object} options Object of options:
 	 *   url - URL of form to load into the modal
+	 *   full - If the form is to take the full screen width, set to true
+	 *   iframe - If the form is to be loaded into an iframe, set to true
 	 *   createUrl - URL of creation form for Save & New, if different than `url`
 	 *   load - Callback to call on load of the URL contents into the modal
 	 *   success - Callback to call on successful form submission
 	 * @return {void}
 	 */
 	openForm: function(options) {
-		var that = this
+		this.modal = $('div[rel="modal-form"]')
+		this.modalContents = $('.app-modal__content', this.modal)
+		this.modalContentsContainer = $('div.contents', this.modal)
+		this.modalCloseContainer = $('.app-modal__dismiss', this.modal)
+		this.loadingBanner = $('.app-notice---loading', this.modal)
+		this.titleBanner = $('.app-notice---attention', this.modal)
 
 		this.modal.trigger('modal:open')
 		this._loadModalContents(options)
@@ -33,14 +38,45 @@ EE.cp.ModalForm = {
 	 * Loads the modal form with the specified contents
 	 */
 	_loadModalContents: function(options) {
-		var that = this
+		var iframe = options.iframe || false,
+			full = options.full || false
 
-		this.modalContentsContainer
-			.html('<span class="btn work">Loading</span>')
-			.load(options.url, function() {
+		this.modal.toggleClass('app-modal--iframe', iframe)
+			.toggleClass('app-modal--full', full)
+			.find('iframe')
+			.remove()
+		this.modalContentsContainer.toggle( ! iframe)
+		this.modalCloseContainer.toggle( ! iframe)
+		this.loadingBanner.toggle(iframe)
+		this.titleBanner.hide()
+
+		if ( ! options.iframe) {
+			var loading = $('<span />', { class: 'btn work'}).html('Loading')
+			this.modalContentsContainer.html(loading)
+		}
+
+		var that = this
+		if (options.iframe) {
+			var iframe = $('<iframe />', {
+				src: options.url + '&modal_form=y',
+				class: 'app-modal__iframe'
+			}).on('load', function() {
+				that.loadingBanner.hide()
+				that._bindIframeForm(this, options)
+				options.load(that.modalContents)
+			})
+
+			this.modalContents.append(iframe)
+		} else {
+			this.modalContentsContainer.load(options.url, function() {
 				that._bindForm(options)
 				options.load(that.modalContentsContainer)
 			})
+		}
+	},
+
+	setTitle: function(title) {
+		this.titleBanner.show().find('.app-notice__content p').html(title)
 	},
 
 	/**
@@ -90,5 +126,43 @@ EE.cp.ModalForm = {
 
 			return false;
 		})
+	},
+
+	/**
+	 * Creates the form submit handler for a form loaded into an iframe
+	 */
+	_bindIframeForm: function(iframe, options) {
+		$(iframe).contents().find('[data-publish] > form').on('submit', function() {
+			var params = $(this).serialize() + '&modal_form=y';
+
+			$.post(this.action, params, function(result) {
+				// Probably a validation error
+				if ($.type(result) === 'string') {
+					iframe.contentDocument.open()
+					iframe.contentDocument.write(result)
+					iframe.contentDocument.close()
+					options.load(that.modalContents)
+					return
+				} else if (result.redirect) {
+					iframe.src = result.redirect
+					return
+				} else if (options.success) {
+					options.success(result, that.modal)
+				}
+			})
+
+			return false
+		})
+
+		var that = this
+		$(iframe).contents().find('body').on('click', '.js-modal-close', function(e) {
+			that.modal.trigger('modal:close')
+			e.preventDefault();
+		})
+		$(iframe).contents().find('body').on('keydown', function(e) {
+			if (e.keyCode === 27) {
+				that.modal.trigger('modal:close')
+			}
+		});
 	}
 }

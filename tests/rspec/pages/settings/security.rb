@@ -33,6 +33,8 @@ class SecuritySettings < ControlPanelPage
   element :xss_clean_uploads_toggle, 'a[data-toggle-for=xss_clean_uploads]'
   element :redirect_submitted_links, 'input[name=redirect_submitted_links]', :visible => false
   element :redirect_submitted_links_toggle, 'a[data-toggle-for=redirect_submitted_links]'
+  element :force_interstitial, 'input[name=force_redirect]', :visible => false
+  element :force_interstitial_toggle, 'a[data-toggle-for=force_redirect]', :visible => false
 
   def load
     settings_btn.click

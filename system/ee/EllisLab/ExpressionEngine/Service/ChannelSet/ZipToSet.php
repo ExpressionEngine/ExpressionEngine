@@ -49,7 +49,7 @@ class ZipToSet {
 			$fs->mkdir(PATH_CACHE.'cset/');
 		}
 
-		$tmp_dir = 'cset/tmp_'.time();
+		$tmp_dir = 'cset/tmp_'.ee('Encrypt')->generateKey();
 		$fs->mkdir(PATH_CACHE.$tmp_dir, FALSE);
 
 		// extract the archive

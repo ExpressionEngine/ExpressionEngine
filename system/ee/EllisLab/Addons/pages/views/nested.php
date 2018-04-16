@@ -24,7 +24,7 @@
 				</div>
 			</fieldset>
 			<h1><?=lang('all_pages')?></h1>
-			<?=ee('CP/Alert')->getAllInlines()?>
+			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 			<div class="tbl-list-wrap">
 				<?php if (count($pages->children()) != 0): ?>
 					<div class="tbl-list-ctrl">

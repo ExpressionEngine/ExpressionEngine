@@ -164,8 +164,14 @@ class Cp {
 			'router_class'     => ee()->router->class, // advanced css
 			'lang'             => $js_lang_keys,
 			'THEME_URL'        => $this->cp_theme_url,
-			'hasRememberMe'    => (bool) ee()->remember->exists()
+			'hasRememberMe'    => (bool) ee()->remember->exists(),
+			'cp.updateCheckURL' => ee('CP/URL', 'settings/general/version-check')->compile(),
 		));
+
+		if (ee()->session->flashdata('update:completed'))
+		{
+			ee()->javascript->set_global('cp.updateCompleted', TRUE);
+		}
 
 		// Combo-load the javascript files we need for every request
 
@@ -214,12 +220,11 @@ class Cp {
 		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
 
 		ee()->load->helper('text');
+		ee()->load->library('el_pings');
 
 		if (ee()->config->item('new_version_check') == 'y' &&
-			$new_version = $this->_version_check())
+			$new_version = ee()->el_pings->getUpgradeInfo())
 		{
-			$new_version['version'] = formatted_version($new_version['version']);
-			$new_version['build'] = ee()->localize->format_date($date_format, $this->_parse_build_date($new_version['build']), TRUE);
 			ee()->view->new_version = $new_version;
 		}
 
@@ -236,7 +241,7 @@ class Cp {
 		$this->_seal_combo_loader();
 		$this->add_js_script('file', 'cp/global_end');
 
-		ee()->view->ee_build_date = ee()->localize->format_date($date_format, $this->_parse_build_date(), TRUE);
+		ee()->view->ee_build_date = ee()->localize->format_date($date_format, ee()->localize->parse_build_date(), TRUE);
 		ee()->view->version_identifier = APP_VER_ID;
 		ee()->view->show_news_button = $this->shouldShowNewsButton();
 
@@ -298,29 +303,6 @@ class Cp {
 		}
 
 		return $license;
-	}
-
-	/**
-	 * Converts our build date constant into a timestamp so we can format it
-	 * for display
-	 *
-	 * @param  string Build date in the format of yyyymmdd, uses APP_BUILD by default
-	 * @return int Timestamp representing the build date
-	 */
-	protected function _parse_build_date($build = NULL)
-	{
-		if (empty($build))
-		{
-			$build = APP_BUILD;
-		}
-
-		$year = substr($build, 0, 4);
-		$month = substr($build, 4, 2);
-		$day = substr($build, 6, 2);
-
-		$string = $year . '-' . $month . '-' . $day;
-
-		return ee()->localize->string_to_timestamp($string, TRUE, '%Y-%m-%d');
 	}
 
 	/**
@@ -502,7 +484,7 @@ class Cp {
 						ee()->cp->masked_url('https://expressionengine.com/store/purchases')
 					))
 					->now();
-				return FALSE;
+				return;
 			}
 
 			ee('CP/Alert')->makeBanner('notices')
@@ -513,27 +495,7 @@ class Cp {
 					ee()->cp->masked_url('https://expressionengine.com/store/purchases')
 				))
 				->now();
-			return FALSE;
 		}
-
-		$version_info = array(
-			'version' => $version_file['latest_version'],
-			'build' => $version_file['build_date'],
-			'security' => $version_file['severity'] == 'high'
-		);
-
-		// Upgrading form Core to Pro?
-		if (IS_CORE && $version_file['license_type'] == 'pro')
-		{
-			return $version_info;
-		}
-
-		if (version_compare($version_info['version'], ee()->config->item('app_version')) < 1)
-		{
-			return FALSE;
-		}
-
-		return $version_info;
 	}
 
 	/**
@@ -1101,7 +1063,7 @@ class Cp {
 			'screen_name', 'signature', 'signature_image_height',
 			'signature_image_url', 'signature_image_width', 'status',
 			'switch', 'title', 'title_permalink', 'total_results',
-			'trimmed_url', 'url', 'url_as_email_as_link', 'url_or_email',
+			'trimmed_url', 'url_as_email_as_link', 'url_or_email',
 			'url_or_email_as_author', 'url_title', 'url_title_path',
 			'username', 'channel', 'channel_id', 'year', 'content'
 		);
@@ -1110,7 +1072,7 @@ class Cp {
 			'app_version', 'captcha', 'charset', 'current_time',
 			'debug_mode', 'elapsed_time', 'email', 'embed', 'encode',
 			'group_description', 'group_id', 'gzip_mode', 'hits',
-			'homepage', 'ip_address', 'ip_hostname', 'lang', 'location',
+			'homepage', 'ip_address', 'ip_hostname', 'lang',
 			'member_group', 'member_id', 'member_profile_link', 'path',
 			'private_messages', 'screen_name', 'site_index', 'site_name',
 			'site_url', 'stylesheet', 'total_comments', 'total_entries',

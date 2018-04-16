@@ -56,7 +56,6 @@
 					<?php endif ?>
 				</div>
 				<div class="nav-global-user">
-					<a class="nav-logout" href="<?=ee('CP/URL', 'login/logout')?>"><i class="icon-logout"></i><span class="nav-txt-collapse"><?=lang('log_out')?></span></a>
 					<div class="nav-user">
 						<a class="nav-has-sub" href=""><i class="icon-user"></i><span class="nav-txt-collapse"><?=$cp_screen_name?></span></a>
 						<ul class="nav-sub-menu">
@@ -67,6 +66,7 @@
 							<li><a class="nav-add" href="<?=ee('CP/URL')->make('members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id'), 'url' => ee('CP/URL')->getCurrentUrl()->encode(), 'name' => $cp_page_title))?>"><i class="icon-add"></i><?=lang('new_link')?></a></li>
 						</ul>
 					</div>
+					<a class="nav-logout" href="<?=ee('CP/URL', 'login/logout')?>"><i class="icon-logout"></i><span class="nav-txt-collapse"><?=lang('log_out')?></span></a>
 				</div>
 			</nav>
 		</div>

@@ -94,9 +94,10 @@ class Tag {
 	 * @param FieldFacade $field The fieldtype instance we are processing
 	 * @return string The fully parsed tag
 	 */
-	public function parse(FieldFacade $field)
+	public function parse(FieldFacade $field, array $meta = [])
 	{
-		$tagdata = $this->parseConditionals($field);
+		$tagdata = $this->replaceMetaTags($meta);
+		$tagdata = $this->parseConditionals($field, $tagdata, $meta);
 
 		if ($field->getType() == 'relationship')
 		{
@@ -199,7 +200,7 @@ class Tag {
 	protected function replaceSingle(FieldFacade $field, $tag)
 	{
 		$tag_info = $this->variable_parser_delegate->parseVariableProperties($tag);
-		return $field->replaceTag(FALSE, $tag_info['params'], $tag_info['modifier']);
+		return $field->replaceTag(FALSE, $tag_info['params'], $tag_info['modifier'], $tag_info['full_modifier']);
 	}
 
 	/**
@@ -212,10 +213,9 @@ class Tag {
 		return $this->tagdata;
 	}
 
-	protected function parseConditionals(FieldFacade $field, $tagdata = NULL)
+	protected function parseConditionals(FieldFacade $field, $tagdata = NULL, $vars = [])
 	{
 		$tagdata = ($tagdata) ?: $this->getTagdata();
-		$vars = array();
 
 		foreach ($this->getSingleTags($tagdata) as $tag)
 		{
@@ -223,6 +223,19 @@ class Tag {
 		}
 
 		return $this->function_delegate->prep_conditionals($tagdata, $vars);
+	}
+
+	protected function replaceMetaTags(array $meta, $tagdata = NULL)
+	{
+		$tagdata = ($tagdata) ?: $this->getTagdata();
+
+		foreach ($meta as $name => $value)
+		{
+			$tag = LD.$name.RD;
+			$tagdata = str_replace($tag, $value, $tagdata);
+		}
+
+		return $tagdata;
 	}
 
 }

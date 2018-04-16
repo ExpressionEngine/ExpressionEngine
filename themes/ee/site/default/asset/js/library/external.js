@@ -6,7 +6,7 @@ $(function(){
 
 		// listen for clicks on anchor tags
 		// that include rel="external" attributes
-		$('a[rel="external"]').click(function(e){
+		$('a[rel*="external"]').click(function(e){
 			// open a new window pointing to
 			// the href attribute of THIS anchor click
 			iframeOpen(this.href);

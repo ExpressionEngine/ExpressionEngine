@@ -458,14 +458,10 @@ class Select extends Query {
 			}
 		}
 
-		foreach ($this->builder->getFilters() as $filter)
-		{
-			$field = $filter[0];
-			if (strpos($field, $column_prefix.'field_id') === 0)
-			{
-				$field_ids[] = str_replace($column_prefix.'field_id_', '', $field);
-			}
-		}
+		$field_ids = array_merge(
+			$field_ids,
+			$this->getFieldIdsFromFilters($this->builder->getFilters(), $column_prefix)
+		);
 
 		foreach ($this->builder->getOrders() as $order)
 		{
@@ -493,6 +489,39 @@ class Select extends Query {
 				$this->model_fields[$table_prefix][$column_alias] = $table_alias . ".{$column_prefix}field_id_{$field_id}";
 			}
 		}
+	}
+
+	/**
+	 * Given an array of filters from the Builder, extracts all the custom field
+	 * IDs from them
+	 *
+	 * @param array $filters Result of getFilters() on Builder
+	 * @param string $column_prefix Field model's content prefix
+	 */
+	protected function getFieldIdsFromFilters($filters, $column_prefix)
+	{
+		$field_ids = [];
+
+		foreach ($filters as $filter)
+		{
+			// Nested filter group
+			if (count($filter) == 2)
+			{
+				list($connective, $nested) = $filter;
+
+				$field_ids = array_merge($field_ids, $this->getFieldIdsFromFilters($nested, $column_prefix));
+			}
+			else
+			{
+				$field = $filter[0];
+				if (strpos($field, $column_prefix.'field_id') === 0)
+				{
+					$field_ids[] = str_replace($column_prefix.'field_id_', '', $field);
+				}
+			}
+		}
+
+		return $field_ids;
 	}
 
 	/**
@@ -601,6 +630,9 @@ class Select extends Query {
 
 		if (is_null($value) || (is_string($value) && strtoupper($value) == 'NULL'))
 		{
+			// in case it was a string
+			$value = NULL;
+
 			switch ($operator)
 			{
 				case '!=':

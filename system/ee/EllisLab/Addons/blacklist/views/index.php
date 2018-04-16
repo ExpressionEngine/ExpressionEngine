@@ -1,5 +1,5 @@
 <?php if ($allow_write_htaccess):?>
-<div class="box mb">
+<div class="mb">
 	<?php $this->embed('ee:_shared/form')?>
 </div>
 <?php endif;?>
@@ -14,9 +14,12 @@
 		<?=form_open(ee('CP/URL')->make('addons/settings/blacklist/save_lists'), 'class="settings"')?>
 			<?=ee('CP/Alert')->get('lists-form')?>
 			<div class="tab t-0 tab-open">
-				<div class="alert inline warn">
-					<p><?=lang('blacklist_desc')?></p>
-				</div>
+				<?=ee('CP/Alert')
+					->makeInline()
+					->asAttention()
+					->addToBody(lang('blacklist_desc'))
+					->render()?>
+				<br>
 				<fieldset class="col-group">
 					<div class="setting-txt col w-8">
 						<h3><?=lang('ip_address')?></h3>
@@ -50,9 +53,12 @@
 			</fieldset>
 			</div>
 			<div class="tab t-1">
-				<div class="alert inline warn">
-					<p><?=lang('whitelist_desc')?></p>
-				</div>
+				<?=ee('CP/Alert')
+					->makeInline()
+					->asAttention()
+					->addToBody(lang('whitelist_desc'))
+					->render()?>
+				<br>
 				<fieldset class="col-group">
 					<div class="setting-txt col w-8">
 						<h3><?=lang('ip_address')?></h3>

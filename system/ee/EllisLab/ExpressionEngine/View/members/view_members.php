@@ -7,7 +7,9 @@
 			<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
 		</h1>
 
-		<?=ee('CP/Alert')->get('view-members')?>
+		<div class="app-notice-wrap">
+			<?=ee('CP/Alert')->get('view-members')?>
+		</div>
 
 		<?php if (isset($filters)) echo $filters; ?>
 

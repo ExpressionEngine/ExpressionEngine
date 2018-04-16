@@ -128,8 +128,8 @@ class EE_Template {
 
 		$this->user_vars = array(
 			'member_id', 'group_id', 'group_description', 'group_title', 'username', 'screen_name',
-			'email', 'ip_address', 'location', 'total_entries',
-			'total_comments', 'private_messages', 'total_forum_posts', 'total_forum_topics', 'total_forum_replies'
+			'email', 'ip_address', 'total_entries', 'total_comments', 'private_messages',
+			'total_forum_posts', 'total_forum_topics', 'total_forum_replies'
 		);
 
 		$this->marker = md5(ee()->config->site_url().$this->marker);
@@ -154,6 +154,7 @@ class EE_Template {
 		if (rand(1, 10) == 1)
 		{
 			$this->_garbage_collect_cache();
+			ee('ChannelSet')->garbageCollect();
 		}
 
 		$this->log_item("URI: ".ee()->uri->uri_string);
@@ -313,18 +314,19 @@ class EE_Template {
 		$seg_array = ee()->uri->segment_array();
 
 		// Define some path and template related global variables
-		$added_globals = array(
-			'last_segment'         => end($seg_array),
-			'current_url'          => ee()->functions->fetch_current_uri(),
-			'current_path'         => (ee()->uri->uri_string) ? str_replace(array('"', "'"), array('%22', '%27'), ee()->uri->uri_string) : '/',
-			'current_query_string' => http_build_query($_GET), // GET has been sanitized!
-			'template_name'        => $this->template_name,
-			'template_group'       => $this->group_name,
-			'template_group_id'    => $this->template_group_id,
-			'template_id'          => $this->template_id,
-			'template_type'        => $this->embed_type ?: $this->template_type,
-			'is_ajax_request'      => AJAX_REQUEST
-		);
+		$added_globals = [
+			'last_segment'            => end($seg_array),
+			'current_url'             => ee()->functions->fetch_current_uri(),
+			'current_path'            => (ee()->uri->uri_string) ? str_replace(array('"', "'"), array('%22', '%27'), ee()->uri->uri_string) : '/',
+			'current_query_string'    => http_build_query($_GET), // GET has been sanitized!
+			'template_name'           => $this->template_name,
+			'template_group'          => $this->group_name,
+			'template_group_id'       => $this->template_group_id,
+			'template_id'             => $this->template_id,
+			'template_type'           => $this->embed_type ?: $this->template_type,
+			'is_ajax_request'         => AJAX_REQUEST,
+			'is_live_preview_request' => ee('LivePreview')->hasEntryData(),
+		];
 
 		foreach ($this->user_vars as $user_var)
 		{
@@ -447,6 +449,12 @@ class EE_Template {
 		if (strpos($this->template, LD.'current_time') !== FALSE)
 		{
 			$dates['current_time'] = ee()->localize->now;
+		}
+
+		// variable_time {variable_time date="yesterday" format="%Y %m %d %H:%i:%s"}
+		if (strpos($this->template, LD.'variable_time') !== FALSE)
+		{
+			$dates['variable_time'] = ee()->localize->now;
 		}
 
 		$this->template = $this->parse_date_variables($this->template, $dates);
@@ -4134,6 +4142,14 @@ class EE_Template {
 						if (strpos($val, ':relative') !== FALSE) {
 							$relative = TRUE;
 						}
+
+						// variable_time timestamp needs to be created on the fly
+						if ($matches[1][$key] == 'variable_time')
+						{
+							$timestamp = (isset($args['date'])) ? ee()->localize->string_to_timestamp($args['date']) : $timestamp;
+						}
+
+
 						$dt = $this->process_date($timestamp, $args, $relative, $localize);
 					}
 

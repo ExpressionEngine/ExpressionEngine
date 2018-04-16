@@ -942,8 +942,8 @@ class ChannelEntry extends ContentModel {
 					'field_show_fmt'		=> 'n',
 					'field_instructions'	=> sprintf(lang('versioning_enabled_desc'), $this->Channel->max_revisions),
 					'field_text_direction'	=> 'ltr',
-					'field_type'			=> 'radio',
-					'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
+					'field_type'			=> 'toggle',
+					'yes_no'				=> TRUE,
 					'field_maxl'			=> 100
 				);
 				$default_fields['revisions'] = array(

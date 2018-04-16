@@ -26,7 +26,7 @@ feature 'Channel Fields' do
       form.all_there?.should == true
 
       @page.should have_alert
-      @page.alert[:class].should include 'success'
+      @page.should have_alert_success
     end
 
     it 'creates a field' do
@@ -38,7 +38,7 @@ feature 'Channel Fields' do
       @page.submit
 
       @page.should have_alert
-      @page.alert[:class].should include 'success'
+      @page.should have_alert_success
     end
 
     it 'invalidates reserved words used in field_name' do
@@ -67,7 +67,7 @@ feature 'Channel Fields' do
     @page.modal_submit_button.click
 
     @page.should have_alert
-    @page.alert[:class].should include 'success'
+    @page.should have_alert_success
     @page.fields.should have(6).items
   end
 end

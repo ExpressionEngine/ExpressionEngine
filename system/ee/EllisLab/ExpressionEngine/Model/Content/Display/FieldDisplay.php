@@ -121,6 +121,11 @@ class FieldDisplay {
 		return isset($settings[$item]) ? $settings[$item] : NULL;
 	}
 
+	public function setIsInModalContext($in_modal)
+	{
+		$this->field->setItem('in_modal_context', $in_modal);
+		return $this;
+	}
 }
 
 // EOF

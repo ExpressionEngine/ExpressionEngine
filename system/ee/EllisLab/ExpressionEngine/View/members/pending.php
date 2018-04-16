@@ -7,7 +7,9 @@
 			<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
 		</h1>
 
-		<?=ee('CP/Alert')->get('view-members')?>
+		<div class="app-notice-wrap">
+			<?=ee('CP/Alert')->get('view-members')?>
+		</div>
 
 		<?php if (isset($filters)) echo $filters; ?>
 
@@ -42,12 +44,16 @@
 		<div class="col-group">
 			<div class="col w-16">
 				<a class="m-close" href="#"></a>
-				<div class="box">
-					<h1><?=lang('confirm_decline')?></h1>
-					<?=form_open($form_url, 'class="settings"', array('bulk_action' => 'decline'))?>
-						<div class="alert inline issue">
-							<p><?=lang('confirm_decline_desc')?></p>
+				<div class="form-standard">
+					<?=form_open($form_url, '', array('bulk_action' => 'decline'))?>
+						<div class="form-btns form-btns-top">
+							<h1><?=lang('confirm_decline')?></h1>
 						</div>
+						<?=ee('CP/Alert')
+							->makeInline()
+							->asIssue()
+							->addToBody(lang('confirm_decline_desc'))
+							->render()?>
 						<div class="txt-wrap">
 							<ul class="checklist">
 								<?php if (isset($checklist)):
@@ -59,9 +65,9 @@
 							</ul>
 							<div class="ajax"></div>
 						</div>
-						<fieldset class="form-ctrls">
+						<div class="form-btns">
 							<?=cp_form_submit('btn_confirm_and_decline', 'btn_confirm_and_decline_working')?>
-						</fieldset>
+						</div>
 					</form>
 				</div>
 			</div>

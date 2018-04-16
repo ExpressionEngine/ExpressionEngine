@@ -181,7 +181,7 @@ class EE_Form_validation {
 					// Account for empty state in React checkbox fields
 					if ($field['type'] == 'checkbox')
 					{
-						$field['choices'][] = '';
+						$field['choices'][''] = '';
 					}
 
 					// If this field has 'choices', make sure only those
@@ -1933,17 +1933,7 @@ class EE_Form_validation {
 	 */
 	function prep_url($str = '')
 	{
-		if ($str == 'http://' OR $str == '')
-		{
-			return '';
-		}
-
-		if (substr($str, 0, 7) != 'http://' && substr($str, 0, 8) != 'https://')
-		{
-			$str = 'http://'.$str;
-		}
-
-		return $str;
+		return (string) ee('Format')->make('Text', $str)->url();
 	}
 
 	/**

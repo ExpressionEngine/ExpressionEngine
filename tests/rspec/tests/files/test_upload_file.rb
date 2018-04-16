@@ -63,7 +63,7 @@ feature 'File Manager / Upload File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.issue')
+    @page.should have_alert_error
     @page.alert.text.should include "Cannot Upload File"
     @page.alert.text.should include "You did not select a file to upload."
   end
@@ -75,7 +75,7 @@ feature 'File Manager / Upload File' do
 
     @return.displayed?
     @return.should have_alert
-    @return.should have_css('div.alert.success')
+    @return.should have_alert_success
     @return.alert.text.should include "File Upload Success"
     @return.alert.text.should include "The file README.md was uploaded successfully."
     @return.should have_selected_file
@@ -90,7 +90,7 @@ feature 'File Manager / Upload File' do
 
     @return.displayed?
     @return.should have_alert
-    @return.should have_css('div.alert.success')
+    @return.should have_alert_success
     @return.alert.text.should include "File Upload Success"
     @return.alert.text.should include "The file RSpec README was uploaded successfully."
     @return.should have_selected_file
@@ -106,7 +106,7 @@ feature 'File Manager / Upload File' do
 
     @return.displayed?
     @return.should have_alert
-    @return.should have_css('div.alert.success')
+    @return.should have_alert_success
     @return.alert.text.should include "File Upload Success"
     @return.alert.text.should include "The file README.md was uploaded successfully."
     @return.should have_selected_file
@@ -127,7 +127,7 @@ feature 'File Manager / Upload File' do
 
     @return.displayed?
     @return.should have_alert
-    @return.should have_css('div.alert.success')
+    @return.should have_alert_success
     @return.alert.text.should include "File Upload Success"
     @return.alert.text.should include "The file README.md was uploaded successfully."
     @return.should have_selected_file
@@ -148,7 +148,7 @@ feature 'File Manager / Upload File' do
 
     @return.displayed?
     @return.should have_alert
-    @return.should have_css('div.alert.success')
+    @return.should have_alert_success
     @return.alert.text.should include "File Upload Success"
     @return.alert.text.should include "The file README.md was uploaded successfully."
     @return.should have_selected_file
@@ -167,7 +167,7 @@ feature 'File Manager / Upload File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.issue')
+    @page.should have_alert_error
     @page.alert.text.should include "Cannot Upload File"
     @page.alert.text.should include "File not allowed."
   end
@@ -184,7 +184,7 @@ feature 'File Manager / Upload File' do
 
     @return.displayed?
     @return.should have_alert
-    @return.should have_css('div.alert.success')
+    @return.should have_alert_success
     @return.alert.text.should include "File Upload Success"
     @return.alert.text.should include "The file programming.gif was uploaded successfully."
     @return.should have_selected_file
@@ -206,7 +206,7 @@ feature 'File Manager / Upload File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.issue')
+    @page.should have_alert_error
     @page.alert.text.should include "Cannot Upload File"
     @page.alert.text.should include "File not allowed."
   end
@@ -222,7 +222,7 @@ feature 'File Manager / Upload File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.issue')
+    @page.should have_alert_error
     @page.alert.text.should include "Cannot Upload File"
     @page.alert.text.should include "File not allowed."
   end
@@ -233,7 +233,7 @@ feature 'File Manager / Upload File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.issue')
+    @page.should have_alert_error
     @page.alert.text.should include "Directory Not Writable"
     @page.alert.text.should include "Cannot write to the directory"
     @page.alert.text.should include "Check your file permissions on the server"
@@ -248,7 +248,7 @@ feature 'File Manager / Upload File' do
     @page.text.should include "404"
 
     # @page.should have_alert
-    # @page.should have_css('div.alert.issue')
+    # @page.should have_alert_error
     # @page.alert.text.should include "Cannot find the directory"
     File.rename(@upload_dir + '.rspec', @upload_dir)
   end

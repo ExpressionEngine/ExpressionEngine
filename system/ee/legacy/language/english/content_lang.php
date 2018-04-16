@@ -32,7 +32,7 @@ $lang = array(
 
 'btn_create_new_entry_in_channel' => 'New in %s',
 
-'btn_edit_comment' => 'Edit Comment',
+'btn_edit_comment' => 'Save',
 
 'btn_publish' => 'Publish',
 
@@ -202,7 +202,7 @@ $lang = array(
 
 'autosave_data_available' => 'auto saved data available',
 
-'autosave_success' => '<b>Auto saved</b> at ',
+'autosave_success' => 'Auto Saved',
 
 'autosave_title' => 'Saved data available',
 
@@ -726,8 +726,6 @@ $lang = array(
 
 'unpublished' => 'unpublished',
 
-'loading' => 'loading',
-
 'upload' => 'Upload',
 
 'upload_dir_choose' => 'Choose an upload directory',
@@ -801,6 +799,8 @@ $lang = array(
 'add_new_row' => 'Add new row',
 
 'collapse' => 'Collapse',
+
+'creating_new_in_rel' => 'Creating new entry in <b>#to_channel#</b> for a relationship with <b>#from_channel#</b>',
 
 'hide' => 'Hide',
 
@@ -963,6 +963,8 @@ $lang = array(
 'remove_categories_entries' => 'Remove categories from %d entries',
 
 'remove_from_selection' => 'Remove from selection',
+
+'save_and_next' => 'Save & Next',
 
 'selected_entries' => 'Selected Entries',
 

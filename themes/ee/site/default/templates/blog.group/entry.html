@@ -84,7 +84,7 @@
 			{if blog_image}
 				{blog_image}
 					<figure>
-						<img src="{blog_image:image}" alt="{blog_image:caption}">
+						<img src="{blog_image:image}" alt="{blog_image:caption:attr_safe}">
 						<figcaption>{blog_image:caption}</figcaption>
 					</figure>
 				{/blog_image}

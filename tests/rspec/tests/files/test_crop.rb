@@ -81,7 +81,7 @@ feature 'File Manager / Crop File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.issue')
+    @page.should have_alert_error
     @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Crop File"
     @page.alert.text.should include "We were unable to crop the file, please review and fix errors below."
@@ -97,7 +97,7 @@ feature 'File Manager / Crop File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.issue')
+    @page.should have_alert_error
     @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Crop File"
     @page.alert.text.should include "We were unable to crop the file, please review and fix errors below."
@@ -113,7 +113,7 @@ feature 'File Manager / Crop File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.issue')
+    @page.should have_alert_error
     @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Crop File"
     @page.alert.text.should include "We were unable to crop the file, please review and fix errors below."
@@ -129,7 +129,7 @@ feature 'File Manager / Crop File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.issue')
+    @page.should have_alert_error
     @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Crop File"
     @page.alert.text.should include "We were unable to crop the file, please review and fix errors below."
@@ -145,7 +145,7 @@ feature 'File Manager / Crop File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.issue')
+    @page.should have_alert_error
     @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Crop File"
     @page.alert.text.should include "We were unable to crop the file, please review and fix errors below."
@@ -161,7 +161,7 @@ feature 'File Manager / Crop File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.issue')
+    @page.should have_alert_error
     @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Crop File"
     @page.alert.text.should include "We were unable to crop the file, please review and fix errors below."
@@ -177,7 +177,7 @@ feature 'File Manager / Crop File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.issue')
+    @page.should have_alert_error
     @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Crop File"
     @page.alert.text.should include "We were unable to crop the file, please review and fix errors below."
@@ -193,7 +193,7 @@ feature 'File Manager / Crop File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.issue')
+    @page.should have_alert_error
     @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Crop File"
     @page.alert.text.should include "We were unable to crop the file, please review and fix errors below."
@@ -209,7 +209,7 @@ feature 'File Manager / Crop File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.issue')
+    @page.should have_alert_error
     @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Crop File"
     @page.alert.text.should include "We were unable to crop the file, please review and fix errors below."
@@ -225,7 +225,7 @@ feature 'File Manager / Crop File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.issue')
+    @page.should have_alert_error
     @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Crop File"
     @page.alert.text.should include "We were unable to crop the file, please review and fix errors below."
@@ -240,7 +240,7 @@ feature 'File Manager / Crop File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.success')
+    @page.should have_alert_success
     @page.should_not have_css('.fieldset-invalid')
     @page.alert.text.should include "File Crop Success"
   end
@@ -256,7 +256,7 @@ feature 'File Manager / Crop File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.issue')
+    @page.should have_alert_error
     @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Rotate File"
     @page.alert.text.should include "We were unable to rotate the file, please review and fix errors below."
@@ -268,7 +268,7 @@ feature 'File Manager / Crop File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.success')
+    @page.should have_alert_success
     @page.should_not have_css('.fieldset-invalid')
     @page.alert.text.should include "File Rotate Success"
   end
@@ -279,7 +279,7 @@ feature 'File Manager / Crop File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.success')
+    @page.should have_alert_success
     @page.should_not have_css('.fieldset-invalid')
     @page.alert.text.should include "File Rotate Success"
   end
@@ -290,7 +290,7 @@ feature 'File Manager / Crop File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.success')
+    @page.should have_alert_success
     @page.should_not have_css('.fieldset-invalid')
     @page.alert.text.should include "File Rotate Success"
   end
@@ -301,7 +301,7 @@ feature 'File Manager / Crop File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.success')
+    @page.should have_alert_success
     @page.should_not have_css('.fieldset-invalid')
     @page.alert.text.should include "File Rotate Success"
   end
@@ -316,7 +316,7 @@ feature 'File Manager / Crop File' do
     @page.save.click
     no_php_js_errors
 
-    @page.should have_css('div.alert.success')
+    @page.should have_alert_success
     @page.should_not have_css('.fieldset-invalid')
     @page.alert.text.should include "File Resize Success"
   end
@@ -327,7 +327,7 @@ feature 'File Manager / Crop File' do
     @page.save.click
     no_php_js_errors
 
-    @page.should have_css('div.alert.success')
+    @page.should have_alert_success
     @page.should_not have_css('.fieldset-invalid')
     @page.alert.text.should include "File Resize Success"
   end
@@ -339,7 +339,7 @@ feature 'File Manager / Crop File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.issue')
+    @page.should have_alert_error
     @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Resize File"
     @page.alert.text.should include "We were unable to resize the file, please review and fix errors below."
@@ -352,7 +352,7 @@ feature 'File Manager / Crop File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.issue')
+    @page.should have_alert_error
     @page.should have_css('.fieldset-invalid')
     @page.alert.text.should include "Cannot Resize File"
     @page.alert.text.should include "We were unable to resize the file, please review and fix errors below."
@@ -365,7 +365,7 @@ feature 'File Manager / Crop File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.success')
+    @page.should have_alert_success
     @page.should_not have_css('.fieldset-invalid')
     @page.alert.text.should include "File Resize Success"
   end
@@ -392,7 +392,7 @@ feature 'File Manager / Crop File' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.should have_css('div.alert.issue')
+    @page.should have_alert_error
     @page.alert.text.should include "File Not Writable"
     @page.alert.text.should include "Cannot write to the file"
     @page.alert.text.should include "Check your file permissions on the server"
@@ -406,7 +406,7 @@ feature 'File Manager / Crop File' do
     @page.text.should include "404"
 
     # @page.should have_alert
-    # @page.should have_css('div.alert.issue')
+    # @page.should have_alert_error
     # @page.alert.text.should include "Cannot find the file"
   end
 
@@ -418,7 +418,7 @@ feature 'File Manager / Crop File' do
     @page.text.should include "404"
 
     # @page.should have_alert
-    # @page.should have_css('div.alert.issue')
+    # @page.should have_alert_error
     # @page.alert.text.should include "Cannot find the file"
   end
 

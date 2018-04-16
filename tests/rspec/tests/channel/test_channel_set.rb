@@ -38,7 +38,7 @@ feature 'Channel Sets' do
 
     if block_given?
       no_php_js_errors
-      @page.alert[:class].should include 'issue'
+      @page.should have_alert_error
       yield
     else
       send('check_' + method)
@@ -50,7 +50,7 @@ feature 'Channel Sets' do
   # @return [void]
   def check_success
     no_php_js_errors
-    @page.alert[:class].should include 'success'
+    @page.should have_alert_success
     @page.alert.text.should include 'Channel Imported'
     @page.alert.text.should include 'The channel was successfully imported.'
     @page.all_there?.should == true
@@ -61,7 +61,7 @@ feature 'Channel Sets' do
   # @return [void]
   def check_issue_duplicate
     no_php_js_errors
-    @page.alert[:class].should include 'issue'
+    @page.should have_alert_error
     @page.alert.text.should include 'Import Creates Duplicates'
     @page.alert.text.should include 'This channel set uses names that already exist on your site. Please rename the following items.'
   end
@@ -564,6 +564,8 @@ feature 'Channel Sets' do
       @page.find('input[name="ee:ChannelField[news_extended][field_name]"]').set 'event_extended'
       @page.find('input[name="ee:ChannelField[news_image][field_name]"]').set 'event_image'
       @page.find('input[name="ee:ChannelField[news_image][field_name]"]').trigger 'blur'
+      @page.find('input[name="ee:ChannelFieldGroup[News][group_name]"]').set 'Event'
+      @page.find('input[name="ee:ChannelFieldGroup[News][group_name]"]').trigger 'blur'
       @page.submit
 
       check_success

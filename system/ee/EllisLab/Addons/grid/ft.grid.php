@@ -59,7 +59,7 @@ class Grid_ft extends EE_Fieldtype {
 		// we save compounded searchable data to the field data table,
 		// real data gets saved to the grid's own table
 		$searchable_data = NULL;
-		if ($this->settings['field_search'])
+		if ($this->get_setting('field_search'))
 		{
 			ee()->load->helper('custom_field_helper');
 			$this->_load_grid_lib();
@@ -138,7 +138,10 @@ class Grid_ft extends EE_Fieldtype {
 				: TRUE
 		));
 		$grid->loadAssets();
-		$grid->setNoResultsText('no_rows_created', 'add_new_row');
+		$grid->setNoResultsText(
+			lang('no_rows_created') . form_hidden($this->name()),
+			'add_new_row'
+		);
 
 		$this->_load_grid_lib();
 

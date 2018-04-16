@@ -73,4 +73,25 @@ class Factory {
 
 		return $set;
 	}
+
+	/**
+	 * Removes extracted channel set directories that have been sitting around
+	 * for more than one day
+	 */
+	public function garbageCollect()
+	{
+		$path = PATH_CACHE.'cset/';
+
+		if (ee('Filesystem')->exists($path))
+		{
+			foreach (ee('Filesystem')->getDirectoryContents($path) as $cset)
+			{
+				if (ee('Filesystem')->isDir($cset) &&
+					ee('Filesystem')->mtime($cset) < time() - 86400)
+				{
+					ee('Filesystem')->deleteDir($cset);
+				}
+			}
+		}
+	}
 }

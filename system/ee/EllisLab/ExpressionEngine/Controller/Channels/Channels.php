@@ -338,7 +338,6 @@ class Channels extends AbstractChannelsController {
 
 		ee()->view->header = array(
 			'title' => lang('channel_manager'),
-			'form_url' => ee('CP/URL')->make('channels/search'),
 			'toolbar_items' => array(
 				'settings' => array(
 					'href' => ee('CP/URL')->make('settings/content-design'),

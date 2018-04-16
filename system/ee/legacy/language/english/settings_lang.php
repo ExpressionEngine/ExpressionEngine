@@ -747,6 +747,10 @@ $lang = array(
 
 'enable_rank_denial_desc' => 'When enabled, all outgoing links are sent to a redirect page. This prevents spammers from <a href="%s" rel="external">gaining page rank</a>.',
 
+'force_interstitial' => 'Force redirect confirmation on submitted links?',
+
+'force_interstitial_desc' => 'Shows a confirmation screen when a linked is clicked and Enable Rank Denial is turned on.',
+
 'form_security_settings' => 'Content Submission Settings',
 
 'member_security_settings' => 'Member Security Settings',
@@ -783,7 +787,7 @@ $lang = array(
 
 'security_tip' => '<b>Tip</b>: Site security is important.',
 
-'security_tip_desc' => 'Any setting marked with <span title="security enhancement"></span> will further enhance and improve site security.',
+'security_tip_desc' => 'Any setting marked with <span class="icon--caution" title="security enhancement"></span> will further enhance and improve site security.',
 
 'un_min_len' => 'Minimum username length',
 
