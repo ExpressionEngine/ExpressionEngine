@@ -612,8 +612,8 @@ class EE_Input {
 	function cookie($index = '', $xss_clean = FALSE)
 	{
 		$prefix = ( ! ee()->config->item('cookie_prefix')) ? 'exp_' : ee()->config->item('cookie_prefix').'_';
-
-		return ( ! isset($_COOKIE[$prefix.$index]) ) ? FALSE : stripslashes($_COOKIE[$prefix.$index]);
+		$cookie = $this->_fetch_from_array($_COOKIE, $prefix.$index, $xss_clean);
+		return ($cookie) ? stripslashes($cookie) : FALSE;
 	}
 
 	/**
