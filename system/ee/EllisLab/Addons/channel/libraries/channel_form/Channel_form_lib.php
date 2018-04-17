@@ -2774,6 +2774,27 @@ GRID_FALLBACK;
 					);
 				}
 			}
+			elseif ($field->field_list_items)
+			{
+				foreach (preg_split('/[\r\n]+/', $field->field_list_items) as $row)
+				{
+					$row = trim($row);
+
+					if ($row == '')
+					{
+						continue;
+					}
+
+					$options[] = array(
+						'option_value' => $row,
+						'option_name' => $row,
+						'selected' => (in_array($row, $field_data)) ? ' selected="selected"' : '',
+						'checked' => (in_array($row, $field_data)) ? ' checked="checked"' : '',
+					);
+				}
+			}
+
+
 			if ($field->field_pre_populate == 'y')
 			{
 				$pop_entries = ee('Model')->get('ChannelEntry')
@@ -2797,27 +2818,6 @@ GRID_FALLBACK;
 					}
 				}
 			}
-
-			elseif ($field->field_list_items)
-			{
-				foreach (preg_split('/[\r\n]+/', $field->field_list_items) as $row)
-				{
-					$row = trim($row);
-
-					if ($row == '')
-					{
-						continue;
-					}
-
-					$options[] = array(
-						'option_value' => $row,
-						'option_name' => $row,
-						'selected' => (in_array($row, $field_data)) ? ' selected="selected"' : '',
-						'checked' => (in_array($row, $field_data)) ? ' checked="checked"' : '',
-					);
-				}
-			}
-
 			elseif ( ! in_array($field->field_type, $this->native_option_fields))
 			{
 				$field_settings = $field->field_settings;
