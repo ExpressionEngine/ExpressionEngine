@@ -5597,6 +5597,12 @@ class Forum_Core extends Forum {
 		}
 		elseif ($this->current_request == 'edittopic')
 		{
+			// no tampering
+			if ($this->current_id != ee()->input->post('topic_id'))
+			{
+				return $this->trigger_error();
+			}
+
 			if (FALSE === ($meta = $this->_fetch_topic_metadata($this->current_id)))
 			{
 				return $this->trigger_error();
@@ -5622,6 +5628,12 @@ class Forum_Core extends Forum {
 		}
 		elseif ($this->current_request == 'editreply' OR $this->current_request == 'quotereply')
 		{
+			// no tampering
+			if ($this->current_id != ee()->input->post('post_id'))
+			{
+				return $this->trigger_error();
+			}
+
 			if (FALSE === ($meta = $this->_fetch_post_metadata($this->current_id)))
 			{
 				return $this->trigger_error();
