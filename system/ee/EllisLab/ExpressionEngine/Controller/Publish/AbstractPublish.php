@@ -371,7 +371,7 @@ abstract class AbstractPublish extends CP_Controller {
 		ee()->session->set_flashdata('entry_id', $entry->entry_id);
 
 		$alert = (ee('Request')->get('modal_form') == 'y' && ee('Request')->get('next_entry_id'))
-			? ee('CP/Alert')->makeAlert()
+			? ee('CP/Alert')->makeStandard()
 			: ee('CP/Alert')->makeInline('entry-form');
 
 		$alert->asSuccess()
