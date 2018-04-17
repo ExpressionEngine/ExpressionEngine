@@ -311,6 +311,11 @@ class EE_Channel_data_parser {
 			//  Parse individual variable tags
 			foreach ($singles as $key => $val)
 			{
+				if (strpos($tagdata, $key) === FALSE)
+				{
+					continue;
+				}
+
 				$this->_tag = $key;
 				$this->_tag_options = $val;
 
