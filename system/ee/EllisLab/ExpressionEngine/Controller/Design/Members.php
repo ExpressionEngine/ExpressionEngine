@@ -158,6 +158,10 @@ class Members extends AbstractDesignController {
 				{
 					continue;
 				}
+				if ( ! isset($this->template_group_map[$file]))
+				{
+					continue;
+				}
 
 				$human = substr($file, 0, -strlen(strrchr($file, '.')));
 				$edit_url = ee('CP/URL')->make('design/members/edit/' . $theme . '/' . $human);

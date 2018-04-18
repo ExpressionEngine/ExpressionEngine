@@ -331,12 +331,13 @@ class LegacyParser {
 			return;
 		}
 
-		if ( ! preg_match("/format\s*=\s*[\'|\"](.*?)[\'|\"]/s", $date_string, $match))
+		$bs = '\\'; // single backslash
+		if ( ! preg_match("/format\s*=\s*($bs$bs?)[\'|\"](.*?)\\1[\'|\"]/s", $date_string, $match))
 		{
 			return FALSE;
 		}
 
-		return $match[1];
+		return $match[2];
 	}
 
 	/**

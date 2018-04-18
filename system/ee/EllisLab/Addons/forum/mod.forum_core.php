@@ -5597,6 +5597,12 @@ class Forum_Core extends Forum {
 		}
 		elseif ($this->current_request == 'edittopic')
 		{
+			// no tampering
+			if ($this->current_id != ee()->input->post('topic_id'))
+			{
+				return $this->trigger_error();
+			}
+
 			if (FALSE === ($meta = $this->_fetch_topic_metadata($this->current_id)))
 			{
 				return $this->trigger_error();
@@ -5622,6 +5628,12 @@ class Forum_Core extends Forum {
 		}
 		elseif ($this->current_request == 'editreply' OR $this->current_request == 'quotereply')
 		{
+			// no tampering
+			if ($this->current_id != ee()->input->post('post_id'))
+			{
+				return $this->trigger_error();
+			}
+
 			if (FALSE === ($meta = $this->_fetch_post_metadata($this->current_id)))
 			{
 				return $this->trigger_error();
@@ -8976,11 +8988,11 @@ class Forum_Core extends Forum {
 
 		if ($new_topic_search == TRUE)
 		{
-			$sql .= "AND topic_date > ".ee()->session->userdata('last_visit')." ";
+			$last_visit = (int) ee()->session->userdata('last_visit');
+			$sql .= "AND topic_date > ".$last_visit." ";
 
 			// Do we need to igore any recently visited topics?
-
-			if (ee()->session->userdata('last_visit') > 0)
+			if ($last_visit > 0)
 			{
 				if ($active_topic_search == TRUE)
 				{
@@ -8997,7 +9009,7 @@ class Forum_Core extends Forum {
 				}
 				else
 				{
-					$cutoff = ee()->session->userdata('last_visit');
+					$cutoff = $last_visit;
 				}
 
 				$tquery = ee()->db->query("SELECT topic_id, last_post_date FROM exp_forum_topics WHERE last_post_date > '".$cutoff."' AND board_id = '".$this->fetch_pref('board_id')."'");

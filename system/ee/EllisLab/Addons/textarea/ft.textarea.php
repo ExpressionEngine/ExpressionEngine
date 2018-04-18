@@ -97,6 +97,9 @@ class Textarea_ft extends EE_Fieldtype {
 						rel: "modal-file",
 						href: "'.ee('CP/URL')->make('addons/settings/filepicker/modal', array('directory' => 'all')).'"
 					});
+
+					$(".textarea-field-filepicker").FilePicker({callback: EE.filePickerCallback});
+
 				});
 			');
 

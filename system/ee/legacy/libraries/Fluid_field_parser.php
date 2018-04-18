@@ -29,8 +29,10 @@ class Fluid_field_parser {
 			'last',
 			'count',
 			'index',
+			'current_field_name',
 			'next_field_name',
 			'prev_field_name',
+			'current_field_type',
 			'next_fieldtype',
 			'prev_fieldtype',
 			'length',
@@ -325,11 +327,17 @@ class Fluid_field_parser {
 				$fluid_field_name . ':last' => (int) (($i + 1) == $total_fields),
 				$fluid_field_name . ':count' => $i + 1,
 				$fluid_field_name . ':index' => $i,
+				$fluid_field_name . ':current_field_name' => $field_name,
 				$fluid_field_name . ':next_field_name' => (($i + 1) < $total_fields) ? $fluid_field_data[$i+1]->ChannelField->field_name : NULL,
 				$fluid_field_name . ':prev_field_name' => ($i > 0) ? $fluid_field_data[$i-1]->ChannelField->field_name : NULL,
+				$fluid_field_name . ':current_fieldtype' => $fluid_field_data[$i]->ChannelField->field_type,
 				$fluid_field_name . ':next_fieldtype' => (($i + 1) < $total_fields) ? $fluid_field_data[$i+1]->ChannelField->field_type : NULL,
 				$fluid_field_name . ':prev_fieldtype' => ($i > 0) ? $fluid_field_data[$i-1]->ChannelField->field_type : NULL,
 			];
+
+			// a couple aliases to cover some additionally intuitive names
+			$meta[$fluid_field_name . ':this_field_name'] = $meta[$fluid_field_name . ':current_field_name'];
+			$meta[$fluid_field_name . ':this_fieldtype'] = $meta[$fluid_field_name . ':current_fieldtype'];
 
 			// Templates can include things like `{fluid:count type="text"}` which we can easily
 			// evaluate and toss into this meta array for processing, so...why not?

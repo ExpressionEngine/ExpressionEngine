@@ -506,7 +506,7 @@ class EE_Session {
 		$expire = (60*60*24*365);
 
 		// Has the user been active before? If not we set the "last_activity" to the current time.
-		$this->sdata['last_activity'] = ( ! ee()->input->cookie('last_activity')) ? ee()->localize->now : ee()->input->cookie('last_activity');
+		$this->sdata['last_activity'] = (int) ( ! ee()->input->cookie('last_activity')) ? ee()->localize->now : ee()->input->cookie('last_activity');
 
 		// Is the "last_visit" cookie set?  If not, we set the last visit
 		// date to ten years ago. This is a kind of funky thing to do but
@@ -520,7 +520,7 @@ class EE_Session {
 		}
 		else
 		{
-			$this->userdata['last_visit'] = ee()->input->cookie('last_visit');
+			$this->userdata['last_visit'] = (int) ee()->input->cookie('last_visit');
 		}
 
 		// If the user has been inactive longer than the session length we'll
@@ -1210,11 +1210,11 @@ class EE_Session {
 	{
 		// my_* cookies used by guests in the comment form
 		$this->userdata = array(
-			'username'			=> ee()->input->cookie('my_name'),
+			'username'			=> ee()->input->cookie('my_name', TRUE),
 			'screen_name'		=> '',
-			'email'				=> ee()->input->cookie('my_email'),
-			'url'				=> ee()->input->cookie('my_url'),
-			'location'			=> ee()->input->cookie('my_location'),
+			'email'				=> ee()->input->cookie('my_email', TRUE),
+			'url'				=> ee()->input->cookie('my_url', TRUE),
+			'location'			=> ee()->input->cookie('my_location', TRUE),
 			'language'			=> '',
 			'timezone'			=> ee()->config->item('default_site_timezone'),
 			'date_format'		=> ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y',

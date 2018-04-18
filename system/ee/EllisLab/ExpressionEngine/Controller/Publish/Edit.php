@@ -326,7 +326,7 @@ class Edit extends AbstractPublishController {
 		ee()->javascript->set_global([
 			'lang.remove_confirm' => lang('entry') . ': <b>### ' . lang('entries') . '</b>',
 
-			'publishEdit.sequenceEditFormUrl' => ee('CP/URL')->make('publish/edit/entry')->compile(),
+			'publishEdit.sequenceEditFormUrl' => ee('CP/URL')->make('publish/edit/entry/###')->compile(),
 			'publishEdit.bulkEditFormUrl' => ee('CP/URL')->make('publish/bulk-edit')->compile(),
 			'publishEdit.addCategoriesFormUrl' => ee('CP/URL')->make('publish/bulk-edit/categories/add')->compile(),
 			'publishEdit.removeCategoriesFormUrl' => ee('CP/URL')->make('publish/bulk-edit/categories/remove')->compile(),

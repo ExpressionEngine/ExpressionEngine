@@ -10,7 +10,7 @@
 
 (function ($) {
 	$(document).ready(function () {
-		var filePickerCallback = function(data, references) {
+		EE.filePickerCallback = function(data, references) {
 			var input = references.input_value;
 
 			// May be a markItUp button
@@ -45,7 +45,7 @@
 
 		// Need to make sure this is loaded after markItUp has added the image button :-/
 		setTimeout(function() {
-			$('.textarea-field-filepicker, li.html-upload').FilePicker({callback: filePickerCallback});
+			$('.textarea-field-filepicker, li.html-upload').FilePicker({callback: EE.filePickerCallback});
 		}, 1000);
 
 		// Grid added a row? Hook up the new buttons!
@@ -54,7 +54,7 @@
 				var input_name = $(this).find('textarea').attr('name');
 				$(this).find('.textarea-field-filepicker, li.html-upload').attr('data-input-value', input_name);
 			});
-			$(el).find('.textarea-field-filepicker, li.html-upload').FilePicker({callback: filePickerCallback});
+			$(el).find('.textarea-field-filepicker, li.html-upload').FilePicker({callback: EE.filePickerCallback});
 		});
 	});
 })(jQuery);

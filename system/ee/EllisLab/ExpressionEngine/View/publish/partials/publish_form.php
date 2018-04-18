@@ -108,4 +108,4 @@
 	</div>
 	</form>
 </div>
-<?=ee('CP/Alert')->getAllAlerts()?>
+<?=ee('CP/Alert')->getStandard()?>

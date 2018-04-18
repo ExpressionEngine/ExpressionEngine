@@ -621,20 +621,17 @@ class MemberImport extends Utilities {
 			/*  before a specified member_id.
 			/* -------------------------------------*/
 
-			if (isset($data['member_id']))
+			if (isset($data['member_id']) && isset($new_ids[$data['member_id']]))
 			{
 				$member_obj = ee('Model')->get('Member', $data['member_id'])->first();
 
-				if (isset($new_ids[$data['member_id']]))
-				{
-					/* -------------------------------------
-					/*  Grab the member so we can re-insert it after we
-					/*  take care of this nonsense
-					/* -------------------------------------*/
-					$dupe = $member_obj->getValues();
-					unset($dupe['member_id']);
-					ee('Model')->make('Member', $dupe)->save();
-				}
+				/* -------------------------------------
+				/*  Grab the member so we can re-insert it after we
+				/*  take care of this nonsense
+				/* -------------------------------------*/
+				$dupe = $member_obj->getValues();
+				unset($dupe['member_id']);
+				ee('Model')->make('Member', $dupe)->save();
 			}
 			else
 			{
