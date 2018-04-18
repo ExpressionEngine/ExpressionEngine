@@ -335,6 +335,10 @@ class Fluid_field_parser {
 				$fluid_field_name . ':prev_fieldtype' => ($i > 0) ? $fluid_field_data[$i-1]->ChannelField->field_type : NULL,
 			];
 
+			// a couple aliases to cover some additionally intuitive names
+			$meta[$fluid_field_name . ':this_field_name'] = $meta[$fluid_field_name . ':current_field_name'];
+			$meta[$fluid_field_name . ':this_fieldtype'] = $meta[$fluid_field_name . ':current_fieldtype'];
+
 			// Templates can include things like `{fluid:count type="text"}` which we can easily
 			// evaluate and toss into this meta array for processing, so...why not?
 			foreach ($singles as $key => $value)
