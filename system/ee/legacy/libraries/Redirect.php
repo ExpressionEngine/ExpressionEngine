@@ -68,7 +68,8 @@ if ($force_redirect == TRUE
 		'cp_page_title' => 'Redirect',
 		'host' => $url_host,
 		'url'  => htmlspecialchars($url, ENT_COMPAT, 'UTF-8'),
-		'link' => $link
+		'link' => $link,
+		'branded' => FALSE,
 	]);
 }
 else
