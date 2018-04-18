@@ -108,13 +108,14 @@ class Design extends AbstractDesignController {
 			$group = ee('Model')->get('TemplateGroup')
 				->fields('group_id', 'group_name')
 				->filter('group_name', $group_name)
-				->filter('site_id', ee()->config->item('site_id'))
-				->first();
+				->filter('site_id', ee()->config->item('site_id'));
 
 			if ($assigned_groups)
 			{
 				$group->filter('group_id', 'IN', $assigned_groups);
 			}
+
+			$group = $group->first();
 
 			if ( ! $group)
 			{
@@ -148,7 +149,7 @@ class Design extends AbstractDesignController {
 
 		$vars = $this->buildTableFromTemplateQueryBuilder($templates);
 
-		$vars['show_new_template_button'] = ee()->cp->allowed_group('can_create_templates');
+		$vars['show_new_template_button'] = ee()->cp->allowed_group('can_create_new_templates');
 		$vars['show_bulk_delete'] = ee()->cp->allowed_group('can_delete_templates');
 		$vars['group_id'] = $group->group_name;
 
