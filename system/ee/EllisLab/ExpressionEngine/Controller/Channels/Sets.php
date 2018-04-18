@@ -315,7 +315,7 @@ class Sets extends AbstractChannelsController {
 
 		// Final view variables we need to render the form
 		$vars += array(
-			'base_url' => ee('CP/URL')->make('channels/sets/doImport', ['set_path' => $set_path]),
+			'base_url' => ee('CP/URL')->make('channels/sets/doImport', array('set_path' => $set_path)),
 			'save_btn_text' => 'btn_save_settings',
 			'save_btn_text_working' => 'btn_saving',
 		);
