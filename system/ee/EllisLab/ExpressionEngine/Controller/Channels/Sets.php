@@ -88,7 +88,7 @@ class Sets extends AbstractChannelsController {
 				ee()->functions->redirect(
 					ee('CP/URL')->make(
 						'channels/sets/doImport',
-						['set_path' => $set_path]
+						array('set_path' => $set_path)
 					)
 				);
 			}
