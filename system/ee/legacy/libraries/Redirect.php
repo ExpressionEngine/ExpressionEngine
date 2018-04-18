@@ -35,7 +35,7 @@ ee()->load->library('typography');
 
 $url = ee()->typography->decodeIDN($_GET['URL']);
 
-$link = '<a rel="nofollow" href="'.htmlspecialchars($url, ENT_COMPAT, 'UTF-8').'">Continue</a>';
+$link = '<a rel="nofollow noreferrer" href="'.htmlspecialchars($url, ENT_COMPAT, 'UTF-8').'">Continue</a>';
 
 // Make sure a filtered comparison later doesn't trip the URL as "changed" for URLs with query strings
 $link = str_replace('&amp;', '&', $link);
