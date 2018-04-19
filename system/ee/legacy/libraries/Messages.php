@@ -458,13 +458,13 @@ class EE_Messages {
 		else
 		{
 			$required = array(
-				'1' => array(htmlspecialchars($query->row('folder1_name'), ENT_QUOTES), '0'),
-				'2' => array(htmlspecialchars($query->row('folder2_name'), ENT_QUOTES), '0')
+				'1' => array(ee('Format')->make('Text', $query->row('folder1_name'))->attributeEscape(), '0'),
+				'2' => array(ee('Format')->make('Text', $query->row('folder2_name'))->attributeEscape(), '0')
 			);
 
 			for($i=3; $i <= $this->max_folders; $i++)
 			{
-				$this->folders[$i] = htmlspecialchars($query->row('folder'.$i.'_name'), ENT_QUOTES);
+				$this->folders[$i] = ee('Format')->make('Text', $query->row('folder'.$i.'_name'))->attributeEscape();
 			}
 
 			asort($this->folders);
