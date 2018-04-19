@@ -457,7 +457,10 @@ class EE_Messages {
 		}
 		else
 		{
-			$required = array('1' => array($query->row('folder1_name') , '0'), '2' => array($query->row('folder2_name') , '0'));
+			$required = array(
+				'1' => array(htmlspecialchars($query->row('folder1_name'), ENT_QUOTES), '0'),
+				'2' => array(htmlspecialchars($query->row('folder2_name'), ENT_QUOTES), '0')
+			);
 
 			for($i=3; $i <= $this->max_folders; $i++)
 			{
