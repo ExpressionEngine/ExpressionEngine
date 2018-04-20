@@ -784,6 +784,12 @@ class Addons extends CP_Controller {
 		foreach ($addons as $addon)
 		{
 			$info = ee('Addon')->get($addon);
+
+			if (empty($info))
+			{
+				continue;
+			}
+
 			$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
 
 			$module = $this->getModule($addon);
