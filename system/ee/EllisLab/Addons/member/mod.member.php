@@ -2239,9 +2239,9 @@ class Member {
 		$default_fields = $results;
 
 		// Is there an avatar?
-		if (ee()->config->item('enable_avatars') == 'y')
+		$avatar_path = $member->getAvatarUrl();
+		if (ee()->config->item('enable_avatars') == 'y' && ! empty($avatar_path))
 		{
-			$avatar_path	= $member->getAvatarUrl();
 			$avatar_width	= $results['avatar_width'];
 			$avatar_height	= $results['avatar_height'];
 			$avatar			= TRUE;
