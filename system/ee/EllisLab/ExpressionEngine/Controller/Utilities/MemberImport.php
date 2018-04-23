@@ -198,19 +198,19 @@ class MemberImport extends Utilities {
 		}
 
 		$data = array(
-			'xml_file'   		=> parse_config_variables(ee()->input->post('xml_file')),
-			'group_id' 			=> ee()->input->post('group_id'),
-			'language' 			=> (ee()->input->post('language') == lang('none')) ? '' : ee()->input->post('language'),
-			'timezones' 		=> ee()->input->post('timezones'),
-			'date_format' 		=> ee()->input->post('date_format'),
-			'time_format' 		=> ee()->input->post('time_format'),
-			'include_seconds' 	=> ee()->input->post('include_seconds'),
+			'xml_file'   		=> form_prep(parse_config_variables(ee()->input->post('xml_file'))),
+			'group_id' 			=> (int) ee()->input->post('group_id'),
+			'language' 			=> (ee()->input->post('language') == lang('none')) ? '' : form_prep(ee()->input->post('language')),
+			'timezones' 		=> form_prep(ee()->input->post('timezones')),
+			'date_format' 		=> form_prep(ee()->input->post('date_format')),
+			'time_format' 		=> form_prep(ee()->input->post('time_format')),
+			'include_seconds' 	=> (ee()->input->post('include_seconds') == 'y') ? 'y' : 'n',
 			'auto_custom_field' => (ee()->input->post('auto_custom_field') == 'y') ? 'y' : 'n'
 		);
 
 		ee()->lang->load('admin');
 		$localization_cfg = ee()->config->get_config_fields('localization_cfg');
-		$added_fields = ee()->input->post('added_fields');
+		$added_fields = form_prep(ee()->input->post('added_fields'));
 
 		$vars = array(
 			'added_fields'		=> $added_fields,
