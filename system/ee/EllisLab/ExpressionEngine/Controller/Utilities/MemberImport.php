@@ -9,6 +9,8 @@
 
 namespace EllisLab\ExpressionEngine\Controller\Utilities;
 
+use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
+
 /**
  * Member Import Controller
  */
@@ -20,6 +22,17 @@ class MemberImport extends Utilities {
 	protected $default_fields = array();
 	protected $default_custom_fields = array();
 
+	private $xml_file_name = '';
+	private $cache = '';
+	private $filesystem;
+
+	function __construct()
+	{
+		parent::__construct();
+		$this->cache = parse_config_variables(PATH_CACHE.'member_import/');
+		$this->filesystem = new Filesystem();
+	}
+
 	/**
 	 * Member import
 	 */
@@ -29,6 +42,14 @@ class MemberImport extends Utilities {
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
+
+		if (@is_dir($this->cache))
+		{
+			$this->filesystem->deleteDir($this->cache);
+		}
+
+		$this->filesystem->mkDir($this->cache);
+
 
 		$groups = ee('Model')->get('MemberGroup')->order('group_title', 'asc')->all();
 
@@ -42,13 +63,16 @@ class MemberImport extends Utilities {
 
 		$vars['sections'] = array(
 			array(
-				array(
-					'title' => 'mbr_xml_file',
-					'desc' => 'mbr_xml_file_location',
-					'fields' => array(
-						'xml_file' => array('type' => 'text', 'required' => TRUE)
+			'member_xml_file' => array(
+				'title' => 'member_xml_file',
+				'desc' => sprintf(lang('member_xml_file_desc')),
+				'fields' => array(
+					'member_xml_file' => [
+						'type' => 'file',
+						'required' => TRUE
+						],
 					)
-				),
+				)
 			),
 			'mbr_import_default_options' => array(
 				array(
@@ -57,6 +81,7 @@ class MemberImport extends Utilities {
 						'group_id' => array(
 							'type' => 'radio',
 							'choices' => $member_groups,
+							'required' => TRUE,
 							'no_results' => [
 								'text' => sprintf(lang('no_found'), lang('member_groups'))
 							]
@@ -127,9 +152,9 @@ class MemberImport extends Utilities {
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules(array(
 			array(
-				 'field'   => 'xml_file',
-				 'label'   => 'lang:mbr_xml_file',
-				 'rules'   => 'required|file_exists'
+				 'field'   => 'member_xml_file',
+				 'label'   => 'lang:member_xml_file',
+				 'rules'   => 'callback__file_handler'
 			),
 			array(
 				 'field'   => 'group_id',
@@ -159,12 +184,74 @@ class MemberImport extends Utilities {
 			ee()->view->set_message('issue', lang('member_import_error'), lang('member_import_error_desc'));
 		}
 
+		// Check cache folder is writable, no point in filling the form if not
+		if ( true) //! @is_dir($this->cache) OR ! is_really_writable($this->cache))
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asWarning()
+				->cannotClose()
+				->withTitle(lang('import_cache_file_not_writable'))
+				->addToBody(lang('import_cache_file_instructions'))
+				->now();
+		}
+
+		$vars['has_file_input'] = TRUE;
 		ee()->view->base_url = $base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('member_import');
 		ee()->view->save_btn_text = 'mbr_import_btn';
 		ee()->view->save_btn_text_working = 'mbr_import_btn_saving';
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Callback that handles file upload
+	 *
+	 *
+	 * @return	bool
+	 */
+
+	public function _file_handler()
+	{
+
+		//Array ( [member_xml_file] => Array ( [name] => memb.xml [type] => text/xml [tmp_name] => /Applications/MAMP/tmp/php/phphV6e35 [error] => 0 [size] => 491 ) )
+
+
+		if ( ! @is_dir($this->cache) OR ! is_really_writable($this->cache))
+		{
+			ee()->form_validation->set_message('_file_upload', lang('import_cache_file_not_writable'));
+			return FALSE;
+		}
+
+		// Required field
+		if ( ! isset($_FILES['member_xml_file']['name']) OR empty($_FILES['member_xml_file']['name']))
+		{
+			ee()->form_validation->set_message('_file_upload', lang('required'));
+			return FALSE;
+		}
+
+		// OK- xml is not allowed by default, so we need to whitelist it
+		$whitelist_xml = array('text/xml', 'application/xml');
+		ee()->config->set_item('mime_whitelist_additions', $whitelist_xml);
+
+		ee()->load->library('upload');
+		ee()->upload->initialize(array(
+			'allowed_types'	=> 'xml',
+			'upload_path'	=> $this->cache,
+			'overwrite' => TRUE
+		));
+
+		if ( ! ee()->upload->do_upload('member_xml_file'))
+		{
+			print_r(ee()->upload->display_errors());
+			ee()->form_validation->set_message('_file_upload', lang('upload_problem'));
+			return FALSE;
+		}
+
+		$data = ee()->upload->data();
+		$this->xml_file_name = $data['file_name'];
+
+		return TRUE;
 	}
 
 	/**
@@ -198,7 +285,7 @@ class MemberImport extends Utilities {
 		}
 
 		$data = array(
-			'xml_file'   		=> form_prep(parse_config_variables(ee()->input->post('xml_file'))),
+			'xml_file_name'   		=> ee('Encrypt')->encode($this->xml_file_name),
 			'group_id' 			=> (int) ee()->input->post('group_id'),
 			'language' 			=> (ee()->input->post('language') == lang('none')) ? '' : form_prep(ee()->input->post('language')),
 			'timezones' 		=> form_prep(ee()->input->post('timezones')),
@@ -214,7 +301,7 @@ class MemberImport extends Utilities {
 
 		$vars = array(
 			'added_fields'		=> $added_fields,
-			'xml_file'   		=> $data['xml_file'],
+			'xml_file_name'   		=> $data['xml_file_name'],
 			'default_group_id'	=> $group_name,
 			'language' 			=> ($data['language'] == '') ? lang('none') : ucfirst($data['language']),
 			'timezones' 		=> $data['timezones'],
@@ -233,10 +320,11 @@ class MemberImport extends Utilities {
 
 		$vars['form_hidden'] = ($map) ? array_merge($data, $_POST['field_map']) : $data;
 
+
 		// Branch off here if we need to create a new custom field
 		if ($data['auto_custom_field'] == 'y' && ee()->input->post('added_fields') === FALSE)
 		{
-			$new_custom_fields = $this->_custom_field_check($data['xml_file']);
+			$new_custom_fields = $this->_custom_field_check($this->cache . '/' .$this->xml_file_name);
 
 			if ($new_custom_fields !== FALSE && count($new_custom_fields) > 0)
 			{
@@ -268,11 +356,11 @@ class MemberImport extends Utilities {
 
 		$this->lang->loadfile('member_import');
 
-		$xml_file   = ( ! $this->input->post('xml_file'))  ? '' : parse_config_variables($this->input->post('xml_file'));
+		$this->xml_file_name = ee('Encrypt')->decode(ee()->input->post('xml_file_name'));
 
 		//  Read XML file contents
 		$this->load->helper('file');
-		$contents = read_file($xml_file);
+		$contents = read_file($this->cache . '/' . $this->xml_file_name);
 
 		if ($contents === FALSE)
 		{
@@ -335,6 +423,11 @@ class MemberImport extends Utilities {
 		$imports = $this->doImport();
 
 		$msg = lang('import_success_blurb').'<br>'.str_replace('%x', $imports, lang('total_members_imported'));
+
+		if (@is_dir($this->cache))
+		{
+			$this->filesystem->deleteDir($this->cache);
+		}
 
 		ee()->view->set_message('success', lang('import_success'), $msg, TRUE);
 
