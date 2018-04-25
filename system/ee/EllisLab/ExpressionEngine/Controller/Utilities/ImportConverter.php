@@ -39,7 +39,11 @@ class ImportConverter extends Utilities {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$this->filesystem->deleteDir($this->cache);
+		if (@is_dir($this->cache))
+		{
+			$this->filesystem->deleteDir($this->cache);
+		}
+
 		$this->filesystem->mkDir($this->cache);
 
 		ee()->lang->loadfile('member_import');
