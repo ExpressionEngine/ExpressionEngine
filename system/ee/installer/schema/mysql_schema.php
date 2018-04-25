@@ -1403,6 +1403,56 @@ class EE_Schema {
 		  KEY `set_id` (`set_id`)
 	  	)";
 
+		$Q[] = "CREATE TABLE `exp_consent_requests` (
+		  `consent_request_id` int(4) unsigned NOT NULL,
+		  `site_id` int(4) unsigned NOT NULL,
+		  `consent_request_version_id` int(4) unsigned NOT NULL,
+		  `title` varchar(200) NOT NULL,
+		  `url_title` varchar(200) NOT NULL,
+		  `double_opt_in` varchar(1) NOT NULL DEFAULT 'n',
+		  `retention_period` varchar(32) DEFAULT NULL,
+		  PRIMARY KEY (`consent_request_id`),
+		  KEY `site_id` (`site_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_consent_request_versions` (
+		  `consent_request_version_id` int(4) unsigned NOT NULL,
+		  `consent_request_id` int(4) unsigned NOT NULL,
+		  `request` mediumtext,
+		  `request_format` tinytext,
+		  `created_on` int(10) NOT NULL DEFAULT '0',
+		  `created_by` int(4) unsigned NOT NULL DEFAULT '0',
+		  `edited_on` int(10) NOT NULL DEFAULT '0',
+		  `edited_by` int(4) unsigned NOT NULL DEFAULT '0',
+		  PRIMARY KEY (`consent_request_version_id`),
+		  KEY `consent_request_id` (`consent_request_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_consents` (
+		  `consent_id` int(4) unsigned NOT NULL,
+		  `consent_request_version_id` int(4) unsigned NOT NULL,
+		  `member_id` int(4) unsigned NOT NULL,
+		  `request_copy` mediumtext,
+		  `request_format` tinytext,
+		  `consent_given` varchar(1) NOT NULL DEFAULT 'n',
+		  `consent_given_via` varchar(32) DEFAULT NULL,
+		  `expires_on` int(10) DEFAULT NULL,
+		  `updated_on` int(10) DEFAULT NULL,
+		  `withdrawn_on` int(10) DEFAULT NULL,
+		  PRIMARY KEY (`consent_id`),
+		  KEY `consent_request_version_id` (`consent_request_version_id`)
+		  KEY `member_id` (`member_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_consent_audit_log` (
+		  `consent_audit_id` int(4) unsigned NOT NULL,
+		  `consent_request_id` int(4) unsigned NOT NULL,
+		  `member_id` int(4) unsigned NOT NULL,
+		  `action` varchar(200) NOT NULL,
+		  PRIMARY KEY (`consent_audit_id`),
+		  KEY `consent_request_id` (`consent_request_id`)
+		)";
+
 		// Default menu set
 		$Q[] = "INSERT INTO exp_menu_sets(name) VALUES ('Default')";
 
