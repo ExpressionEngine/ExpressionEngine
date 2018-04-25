@@ -227,13 +227,13 @@ $lang = array(
 
 'encrypted_passwords' => 'Passwords are encrypted.',
 
-'file_location' => 'File location',
-
-'file_location_desc' => 'Path location of your <mark>delimited</mark> file.',
-
 'file_not_converted' => 'Attention: File not converted',
 
 'file_not_converted_desc' => 'We were unable to convert this file, please review and fix errors below.',
+
+'import_cache_file_not_writable' => 'Unable to create cache folder',
+
+'import_cache_file_instructions' => 'The user cache folder must be writable',
 
 'import_convert_btn' => 'Convert File',
 
@@ -242,6 +242,10 @@ $lang = array(
 'import_converter' => 'Import File Converter',
 
 'import_password_warning' => '<b>Warning</b>: If you don\'t map one of your data points to "Password", a random encrypted password will be assigned to each imported user. These users will need to reset their password via the "Forgot Password" link.',
+
+'member_file' => 'Member file',
+
+'member_file_desc' => 'Delimited file containing member data',
 
 'member_id_warning' => 'WARNING: If you have &lt;member_id&gt; tags in your XML, existing members with the same member_id will be OVERWRITTEN! Proceed with caution!',
 

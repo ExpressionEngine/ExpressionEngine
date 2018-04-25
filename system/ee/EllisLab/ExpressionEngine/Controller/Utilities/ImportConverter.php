@@ -16,15 +16,18 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
  */
 class ImportConverter extends Utilities {
 
-	var $_member_file_name = '';
-	var $_cache = '';
+	private $_member_file_name = '';
+	private $_cache = '';
+	private $_filesystem;
+
 
 	function __construct()
 	{
 		parent::__construct();
-		$this->_cache = $this->_cache_path();
-
+		$this->_cache = parse_config_variables(PATH_CACHE.'member_import/');
+		$this->filesystem = new Filesystem();
 	}
+
 
 	/**
 	 * Member import file converter
@@ -35,6 +38,9 @@ class ImportConverter extends Utilities {
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
+
+		$this->filesystem->deleteDir($this->_cache);
+		$this->filesystem->mkDir($this->_cache);
 
 		ee()->lang->loadfile('member_import');
 
@@ -85,28 +91,26 @@ class ImportConverter extends Utilities {
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules(array(
 			array(
-				 'field'   => 'member_file',
-				 'label'   => 'lang:member_file',
-				 'rules'   => 'rcallback__file_handler'
+				'field'   => 'member_file',
+				'label'   => 'lang:member_file',
+				'rules'   => 'callback__file_handler'
 			),
 			array(
-				 'field'   => 'delimiter',
-				 'label'   => 'lang:delimiting_char',
-				 'rules'   => 'required|enum[tab,other,comma,pipe]'
+				'field'   => 'delimiter',
+				'label'   => 'lang:delimiting_char',
+				'rules'   => 'required|enum[tab,other,comma,pipe]'
 			),
 			array(
-				 'field'   => 'delimiter_special',
-				 'label'   => 'lang:delimiting_char',
-				 'rules'   => 'trim|callback__not_alphanu'
+				'field'   => 'delimiter_special',
+				'label'   => 'lang:delimiting_char',
+				'rules'   => 'trim|callback__not_alphanu'
 			),
 			array(
-				 'field'   => 'enclosure',
-				 'label'   => 'lang:enclosing_char',
-				 'rules'   => 'callback__prep_enclosure'
+				'field'   => 'enclosure',
+				'label'   => 'lang:enclosing_char',
+				'rules'   => 'callback__prep_enclosure'
 			),
 		));
-
-
 
 		if (AJAX_REQUEST)
 		{
@@ -119,8 +123,18 @@ class ImportConverter extends Utilities {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			$this->cleanUpSourceFiles();
 			ee()->view->set_message('issue', lang('file_not_converted'), lang('file_not_converted_desc'));
+		}
+
+		// Check cache folder is writable, no point in filling the form if not
+		if ( ! @is_dir($this->_cache) OR ! is_really_writable($this->_cache))
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asWarning()
+				->cannotClose()
+				->withTitle(lang('import_cache_file_not_writable'))
+				->addToBody(lang('import_cache_file_instructions'))
+				->now();
 		}
 
 		$vars['has_file_input'] = TRUE;
@@ -131,21 +145,6 @@ class ImportConverter extends Utilities {
 		ee()->view->save_btn_text_working = 'import_convert_btn_saving';
 		ee()->cp->render('settings/form', $vars);
 	}
-
-	function _cache_path()
-	{
-		$cache_path = PATH_CACHE.'member_import/';
-
-		if ( ! is_dir($cache_path))
-		{
-			mkdir($cache_path, DIR_WRITE_MODE);
-			@chmod($cache_path, DIR_WRITE_MODE);
-		}
-
-		return parse_config_variables($cache_path);
-	}
-
-
 
 	/**
 	 * Not Alpha or Numeric
@@ -199,8 +198,21 @@ class ImportConverter extends Utilities {
 	}
 
 
+	/**
+	 * Callback that handles file upload
+	 *
+	 *
+	 * @return	bool
+	 */
+
 	public function _file_handler()
 	{
+		if ( ! @is_dir($this->_cache) OR ! is_really_writable($this->_cache))
+		{
+			ee()->form_validation->set_message('_file_upload', lang('import_cache_file_not_writable'));
+			return FALSE;
+		}
+
 		// Required field
 		if ( ! isset($_FILES['member_file']['name']) OR empty($_FILES['member_file']['name']))
 		{
@@ -502,7 +514,6 @@ class ImportConverter extends Utilities {
 
 		if ( ! empty(ee()->xmlparser->errors))
 		{
-			$this->cleanUpSourceFiles();
 			return show_error($this->xmlparser->errors);
 		}
 
@@ -510,21 +521,11 @@ class ImportConverter extends Utilities {
 		$vars['generated'] = ee()->localize->human_time();
 		$vars['username'] = ee()->session->userdata('username');
 
-		// Should be good to delete the file here
-		$this->cleanUpSourceFiles();
-
 		ee()->view->cp_page_title = lang('xml_code');
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('utilities/import_converter'), lang('import_converter'));
 		ee()->cp->render('utilities/import/code-output', $vars);
 
 	}
-
-	public function cleanUpSourceFiles()
-	{
-		$filesystem = new Filesystem();
-		$filesystem->delete($this->_cache . '/' .$this->_member_file_name);
-	}
-
 
 	/**
 	 * Downloads generated XML from import converter
