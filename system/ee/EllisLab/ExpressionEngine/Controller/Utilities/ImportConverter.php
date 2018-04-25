@@ -24,7 +24,7 @@ class ImportConverter extends Utilities {
 	function __construct()
 	{
 		parent::__construct();
-		$this->_cache = parse_config_variables(PATH_CACHE.'member_import/');
+		$this->_cache = parse_config_variables(PATH_CACHE.'import_convert/');
 		$this->filesystem = new Filesystem();
 	}
 
