@@ -16,15 +16,15 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
  */
 class ImportConverter extends Utilities {
 
-	private $_member_file_name = '';
-	private $_cache = '';
-	private $_filesystem;
+	private $member_file_name = '';
+	private $cache = '';
+	private $filesystem;
 
 
 	function __construct()
 	{
 		parent::__construct();
-		$this->_cache = parse_config_variables(PATH_CACHE.'import_convert/');
+		$this->cache = parse_config_variables(PATH_CACHE.'import_convert/');
 		$this->filesystem = new Filesystem();
 	}
 
@@ -39,8 +39,8 @@ class ImportConverter extends Utilities {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$this->filesystem->deleteDir($this->_cache);
-		$this->filesystem->mkDir($this->_cache);
+		$this->filesystem->deleteDir($this->cache);
+		$this->filesystem->mkDir($this->cache);
 
 		ee()->lang->loadfile('member_import');
 
@@ -127,7 +127,7 @@ class ImportConverter extends Utilities {
 		}
 
 		// Check cache folder is writable, no point in filling the form if not
-		if ( ! @is_dir($this->_cache) OR ! is_really_writable($this->_cache))
+		if ( ! @is_dir($this->cache) OR ! is_really_writable($this->cache))
 		{
 			ee('CP/Alert')->makeInline('shared-form')
 				->asWarning()
@@ -207,7 +207,7 @@ class ImportConverter extends Utilities {
 
 	public function _file_handler()
 	{
-		if ( ! @is_dir($this->_cache) OR ! is_really_writable($this->_cache))
+		if ( ! @is_dir($this->cache) OR ! is_really_writable($this->cache))
 		{
 			ee()->form_validation->set_message('_file_upload', lang('import_cache_file_not_writable'));
 			return FALSE;
@@ -225,7 +225,7 @@ class ImportConverter extends Utilities {
 		ee()->load->library('upload');
 		ee()->upload->initialize(array(
 			'allowed_types'	=> '*',
-			'upload_path'	=> $this->_cache,
+			'upload_path'	=> $this->cache,
 			'overwrite' => TRUE
 		));
 
@@ -237,7 +237,7 @@ class ImportConverter extends Utilities {
 		}
 
 		$data = ee()->upload->data();
-		$this->_member_file_name = $data['file_name'];
+		$this->member_file_name = $data['file_name'];
 
 		return TRUE;
 	}
@@ -270,7 +270,7 @@ class ImportConverter extends Utilities {
 		$enclosure = ee()->input->post('enclosure') ?: '';
 
 		//  Read data file into an array
-		$fields = $this->_datafile_to_array($this->_cache . '/' .$this->_member_file_name, $delimiter, $enclosure);
+		$fields = $this->_datafile_to_array($this->cache . '/' .$this->member_file_name, $delimiter, $enclosure);
 
 		if ( ! isset($fields[0]) OR count($fields[0]) < 3)
 		{
@@ -309,7 +309,7 @@ class ImportConverter extends Utilities {
 		$vars['fields'] = $fields;
 
 		$vars['form_hidden'] = array(
-			'member_file'		=> ee('Encrypt')->encode($this->_member_file_name),
+			'member_file'		=> ee('Encrypt')->encode($this->member_file_name),
 			'delimiter'			=> ee()->input->post('delimiter'),
 			'enclosure'			=> $enclosure,
 			'delimiter_special'	=> $delimiter
@@ -419,11 +419,11 @@ class ImportConverter extends Utilities {
 		}
 
 
-		$this->_member_file_name = ee('Encrypt')->decode(ee()->input->post('member_file'));
+		$this->member_file_name = ee('Encrypt')->decode(ee()->input->post('member_file'));
 		$enclosure = ee()->input->post('enclosure') ?: '';
 
 		//  Read data file into an array
-		$fields = $this->_datafile_to_array($this->_cache . '/' .$this->_member_file_name, $delimiter, $enclosure);
+		$fields = $this->_datafile_to_array($this->cache . '/' .$this->member_file_name, $delimiter, $enclosure);
 
 		$vars['fields'] = $fields;
 		$vars['paired'] = $paired;
@@ -470,14 +470,14 @@ class ImportConverter extends Utilities {
 			default:		$delimiter = ",";
 		}
 
-		$this->_member_file_name = ee('Encrypt')->decode(ee()->input->post('member_file'));
+		$this->member_file_name = ee('Encrypt')->decode(ee()->input->post('member_file'));
 		$enclosure = ee()->input->post('enclosure') ?: '';
 		$encrypt = ($this->input->post('encrypt') == 'y');
 
 		ee()->load->helper(array('file', 'xml'));
 
 		//  Read file contents
-		$contents = read_file($this->_cache . '/' .$this->_member_file_name);
+		$contents = read_file($this->cache . '/' .$this->member_file_name);
 
 		//  Get structure
 		$structure = array();
