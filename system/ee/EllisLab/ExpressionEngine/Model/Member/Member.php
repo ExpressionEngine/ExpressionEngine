@@ -118,6 +118,26 @@ class Member extends ContentModel {
 			'type' => 'hasOne',
 			'model' => 'MemberNewsView'
 		),
+		'AuthoredConsentRequests' => array(
+			'type' => 'hasMany',
+			'model' => 'ConsentRequests',
+			'to_key' => 'author_id',
+			'weak' => TRUE
+		),
+		'LastAuthoredConsentRequests' => array(
+			'type' => 'hasMany',
+			'model' => 'ConsentRequests',
+			'to_key' => 'last_author_id',
+			'weak' => TRUE
+		),
+		'ConsentAuditLogs' => array(
+			'type' => 'hasMany',
+			'model' => 'ConsentAuditLog'
+		),
+		'Consents' => array(
+			'type' => 'hasMany',
+			'model' => 'Consent'
+		),
 	);
 
 	protected static $_field_data = array(
