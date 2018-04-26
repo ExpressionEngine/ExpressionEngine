@@ -1405,7 +1405,7 @@ class EE_Schema {
 
 		$Q[] = "CREATE TABLE `exp_consent_requests` (
 			`consent_request_id` int(4) unsigned NOT NULL,
-			`site_id` int(4) unsigned NOT NULL,
+			`site_id` int(4) unsigned NOT NULL DEFAULT 0,
 			`consent_request_version_id` int(4) unsigned NOT NULL,
 			`title` varchar(200) NOT NULL,
 			`url_title` varchar(200) NOT NULL,

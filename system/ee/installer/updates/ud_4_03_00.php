@@ -51,7 +51,8 @@ class Updater {
 					'type'       => 'int',
 					'constraint' => 4,
 					'unsigned'   => TRUE,
-					'null'       => FALSE
+					'null'       => TRUE,
+					'default'    => 0
 				],
 				'consent_request_version_id' => [
 					'type'       => 'int',
