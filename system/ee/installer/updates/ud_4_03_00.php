@@ -109,26 +109,26 @@ class Updater {
 					'type'       => 'tinytext',
 					'null'       => TRUE
 				],
-				'created_on'                 => [
+				'create_date'                => [
 					'type'       => 'int',
 					'constraint' => 10,
 					'null'       => FALSE,
 					'default'    => 0
 				],
-				'created_by'                 => [
+				'author_id'                  => [
 					'type'       => 'int',
 					'constraint' => 4,
 					'unsigned'   => TRUE,
 					'null'       => FALSE,
 					'default'    => 0
 				],
-				'edited_on'                  => [
+				'edit_date'                  => [
 					'type'       => 'int',
 					'constraint' => 10,
 					'null'       => FALSE,
 					'default'    => 0
 				],
-				'edited_by'                  => [
+				'last_author_id'             => [
 					'type'       => 'int',
 					'constraint' => 4,
 					'unsigned'   => TRUE,
@@ -180,17 +180,17 @@ class Updater {
 					'constraint' => 32,
 					'null'       => TRUE
 				],
-				'expires_on'                 => [
+				'expiration_date'            => [
 					'type'       => 'int',
 					'constraint' => 10,
 					'null'       => TRUE
 				],
-				'updated_on'                 => [
+				'update_date'                => [
 					'type'       => 'int',
 					'constraint' => 10,
 					'null'       => TRUE
 				],
-				'withdrawn_on'               => [
+				'withdrawn_date'             => [
 					'type'       => 'int',
 					'constraint' => 10,
 					'null'       => TRUE

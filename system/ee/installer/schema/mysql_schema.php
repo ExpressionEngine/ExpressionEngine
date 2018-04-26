@@ -1420,10 +1420,10 @@ class EE_Schema {
 			`consent_request_id` int(4) unsigned NOT NULL,
 			`request` mediumtext,
 			`request_format` tinytext,
-			`created_on` int(10) NOT NULL DEFAULT '0',
-			`created_by` int(4) unsigned NOT NULL DEFAULT '0',
-			`edited_on` int(10) NOT NULL DEFAULT '0',
-			`edited_by` int(4) unsigned NOT NULL DEFAULT '0',
+			`create_date` int(10) NOT NULL DEFAULT '0',
+			`author_id` int(4) unsigned NOT NULL DEFAULT '0',
+			`edit_date` int(10) NOT NULL DEFAULT '0',
+			`last_author_id` int(4) unsigned NOT NULL DEFAULT '0',
 			PRIMARY KEY (`consent_request_version_id`),
 			KEY `consent_request_id` (`consent_request_id`)
 		)";
@@ -1436,9 +1436,9 @@ class EE_Schema {
 			`request_format` tinytext,
 			`consent_given` varchar(1) NOT NULL DEFAULT 'n',
 			`consent_given_via` varchar(32) DEFAULT NULL,
-			`expires_on` int(10) DEFAULT NULL,
-			`updated_on` int(10) DEFAULT NULL,
-			`withdrawn_on` int(10) DEFAULT NULL,
+			`expiration_date` int(10) DEFAULT NULL,
+			`update_date` int(10) DEFAULT NULL,
+			`withdrawn_date` int(10) DEFAULT NULL,
 			PRIMARY KEY (`consent_id`),
 			KEY `consent_request_version_id` (`consent_request_version_id`)
 			KEY `member_id` (`member_id`)

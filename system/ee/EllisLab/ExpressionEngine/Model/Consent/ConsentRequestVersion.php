@@ -22,10 +22,10 @@ class ConsentRequestVersion extends Model {
 	protected static $_typed_columns = [
 		'consent_request_version_id' => 'int',
 		'consent_request_id'         => 'int',
-		'created_on'                 => 'timestamp',
-		'created_by'                 => 'int',
-		'edited_on'                  => 'timestamp',
-		'edited_by'                  => 'int',
+		'create_date'                => 'timestamp',
+		'author_id'                  => 'int',
+		'edit_date'                  => 'timestamp',
+		'last_author_id'             => 'int',
 	];
 
 	protected static $_relationships = [
@@ -35,10 +35,10 @@ class ConsentRequestVersion extends Model {
 	];
 
 	protected static $_validation_rules = [
-		'created_on' => 'required',
-		'created_by' => 'required',
-		'edited_on'  => 'required',
-		'edited_by'  => 'required',
+		'create_date' => 'required',
+		'author_id' => 'required',
+		'edit_date'  => 'required',
+		'last_author_id'  => 'required',
 	];
 
 	// protected static $_events = [];
@@ -48,10 +48,10 @@ class ConsentRequestVersion extends Model {
 	protected $consent_request_id;
 	protected $request;
 	protected $request_format;
-	protected $created_on;
-	protected $created_by;
-	protected $edited_on;
-	protected $edited_by;
+	protected $create_date;
+	protected $author_id;
+	protected $edit_date;
+	protected $last_author_id;
 
 }
 

@@ -24,9 +24,9 @@ class Consent extends Model {
 		'consent_request_version_id' => 'int',
 		'member_id'                  => 'int',
 		'consent_given'              => 'boolString',
-		'expires_on'                 => 'timestamp',
-		'updated_on'                 => 'timestamp',
-		'withdrawn_on'               => 'timestamp',
+		'expiration_date'            => 'timestamp',
+		'update_date'                => 'timestamp',
+		'withdrawn_date'             => 'timestamp',
 	];
 
 	protected static $_relationships = [
@@ -55,9 +55,9 @@ class Consent extends Model {
 	protected $request_format;
 	protected $consent_given;
 	protected $consent_given_via;
-	protected $expires_on;
-	protected $updated_on;
-	protected $withdrawn_on;
+	protected $expiration_date;
+	protected $update_date;
+	protected $withdrawn_date;
 
 }
 
