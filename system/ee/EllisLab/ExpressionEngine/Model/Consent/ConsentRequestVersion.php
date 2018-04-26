@@ -35,6 +35,18 @@ class ConsentRequestVersion extends Model {
 		'Consents' => [
 			'type' => 'hasMany',
 		],
+		'Author' => [
+			'type' => 'belongsTo',
+			'model' => 'Member',
+			'from_key' => 'author_id',
+			'weak' => TRUE
+		],
+		'LastAuthor' => [
+			'type' => 'belongsTo',
+			'model' => 'Member',
+			'from_key' => 'last_author_id',
+			'weak' => TRUE
+		],
 	];
 
 	protected static $_validation_rules = [
