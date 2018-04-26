@@ -65,6 +65,44 @@ class Consent extends Model {
 	protected $update_date;
 	protected $withdrawn_date;
 
+	public function isExpired()
+	{
+		$now = ee()->localize->now;
+
+		if ($this->expiration_date && $this->expiration_date > $now)
+		{
+			return TRUE;
+		}
+
+		return FALSE;
+	}
+
+	public function isGranted()
+	{
+		$request = $this->ConsentRequest->CurrentVersion;
+
+		// If the consent is not for the current version of the request, then the consent
+		// is void. The request has changed.
+		if ($this->ConsentRequestVersion->getId() != $request->getId())
+		{
+			return FALSE;
+		}
+
+		// If the current request version was edited after the consent was granted,
+		// then the consent is void. The request has changed.
+		if ($request->edit_date > $this->updated_date)
+		{
+			return FALSE;
+		}
+
+		// If the consent has expired it's no longer granted
+		if ($this->isExpired())
+		{
+			return FALSE;
+		}
+
+		return $this->getProperty('consent_given');
+	}
 }
 
 // EOF

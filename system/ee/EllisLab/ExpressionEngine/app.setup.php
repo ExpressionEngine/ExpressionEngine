@@ -15,6 +15,7 @@ use EllisLab\ExpressionEngine\Service\Alert;
 use EllisLab\ExpressionEngine\Service\Category;
 use EllisLab\ExpressionEngine\Service\ChannelSet;
 use EllisLab\ExpressionEngine\Service\Config;
+use EllisLab\ExpressionEngine\Service\Consent;
 use EllisLab\ExpressionEngine\Service\CustomMenu;
 use EllisLab\ExpressionEngine\Service\Database;
 use EllisLab\ExpressionEngine\Service\Encrypt;
@@ -328,6 +329,28 @@ return array(
 		{
 			return new Template\Variables\LegacyParser();
 		},
+
+		'Consent' => function($ee, $member = NULL)
+		{
+			$member_id = NULL;
+
+			if (is_numeric($member))
+			{
+				$member_id = $member;
+			}
+			elseif (empty($member) || ! $member instanceof Model\Member\Member)
+			{
+				$member_id = ee()->session->userdata['member_id'];
+			}
+
+			if ($member_id)
+			{
+				$member = $ee->make('Model')->get('Member', $member_id)->first();
+			}
+
+			return new Consent\Consent($ee->make('Model'), $member, ee()->config->item('site_id'));
+		},
+
 	),
 
 	'services.singletons' => array(
