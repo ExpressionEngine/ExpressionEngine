@@ -85,6 +85,7 @@ class Updater {
 		ee()->dbforge->add_key('consent_request_id', TRUE);
 		ee()->dbforge->add_key('site_id');
 		ee()->smartforge->create_table('consent_requests');
+		ee()->db->query("CREATE INDEX `url_title` ON `exp_consent_requests` (`url_title`(191));");
 
 		ee()->dbforge->add_field(
 			[
