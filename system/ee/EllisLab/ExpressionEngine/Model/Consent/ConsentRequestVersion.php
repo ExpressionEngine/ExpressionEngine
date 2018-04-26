@@ -31,7 +31,10 @@ class ConsentRequestVersion extends Model {
 	protected static $_relationships = [
 		'ConsentRequest' => [
 			'type' => 'belongsTo',
-		]
+		],
+		'Consents' => [
+			'type' => 'hasMany',
+		],
 	];
 
 	protected static $_validation_rules = [

@@ -150,6 +150,12 @@ class Updater {
 					'unsigned'   => TRUE,
 					'null'       => FALSE
 				],
+				'consent_request_id' => [
+					'type'       => 'int',
+					'constraint' => 4,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				],
 				'consent_request_version_id' => [
 					'type'       => 'int',
 					'constraint' => 4,

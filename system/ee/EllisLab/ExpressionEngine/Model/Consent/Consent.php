@@ -21,6 +21,7 @@ class Consent extends Model {
 
 	protected static $_typed_columns = [
 		'consent_id'                 => 'int',
+		'consent_request_id'         => 'int',
 		'consent_request_version_id' => 'int',
 		'member_id'                  => 'int',
 		'consent_given'              => 'boolString',
@@ -30,6 +31,9 @@ class Consent extends Model {
 	];
 
 	protected static $_relationships = [
+		'ConsentRequest' => [
+			'type' => 'belongsTo'
+		],
 		'ConsentRequestVersion' => [
 			'type' => 'belongsTo'
 		],
@@ -40,6 +44,7 @@ class Consent extends Model {
 
 	protected static $_validation_rules = [
 		'consent_id'                 => 'required',
+		'consent_request_id'         => 'required',
 		'consent_request_version_id' => 'required',
 		'member_id'                  => 'required',
 		'consent_given'              => 'enum[y,n]',
@@ -49,6 +54,7 @@ class Consent extends Model {
 
 	// Properties
 	protected $consent_id;
+	protected $consent_request_id;
 	protected $consent_request_version_id;
 	protected $member_id;
 	protected $request_copy;
