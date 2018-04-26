@@ -82,15 +82,22 @@ feature 'Import File Converter' do
     # Regular form validation
     #########################
 
+    # Don't upload a file
+    @page.load
+    @page.submit
+    @page.should have_text @field_required
+    no_php_js_errors
 
     # Selected wrong delimiter for file
+    @page.load
+    @page.attach_file('member_file', @tab_file)
     @page.submit
     @page.should have_text @min_field_error
     no_php_js_errors
 
+    @page.load
     @page.attach_file('member_file', @tab_file)
     @page.find('input[value=tab]').click
-
     @page.submit
     @page.should have_text @assign_fields_title
     no_php_js_errors
