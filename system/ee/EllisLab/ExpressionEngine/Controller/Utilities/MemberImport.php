@@ -185,7 +185,7 @@ class MemberImport extends Utilities {
 		}
 
 		// Check cache folder is writable, no point in filling the form if not
-		if ( true) //! @is_dir($this->cache) OR ! is_really_writable($this->cache))
+		if ( ! @is_dir($this->cache) OR ! is_really_writable($this->cache))
 		{
 			ee('CP/Alert')->makeInline('shared-form')
 				->asWarning()
@@ -213,10 +213,6 @@ class MemberImport extends Utilities {
 
 	public function _file_handler()
 	{
-
-		//Array ( [member_xml_file] => Array ( [name] => memb.xml [type] => text/xml [tmp_name] => /Applications/MAMP/tmp/php/phphV6e35 [error] => 0 [size] => 491 ) )
-
-
 		if ( ! @is_dir($this->cache) OR ! is_really_writable($this->cache))
 		{
 			ee()->form_validation->set_message('_file_upload', lang('import_cache_file_not_writable'));
@@ -284,6 +280,8 @@ class MemberImport extends Utilities {
 			$group_name = htmlentities($member_group->group_title, ENT_QUOTES, 'UTF-8');
 		}
 
+		$this->xml_file_name = ( ! empty($this->xml_file_name)) ? $this->xml_file_name : ee('Encrypt')->decode($this->input->post('xml_file_name'));
+
 		$data = array(
 			'xml_file_name'   		=> ee('Encrypt')->encode($this->xml_file_name),
 			'group_id' 			=> (int) ee()->input->post('group_id'),
@@ -319,7 +317,6 @@ class MemberImport extends Utilities {
 		}
 
 		$vars['form_hidden'] = ($map) ? array_merge($data, $_POST['field_map']) : $data;
-
 
 		// Branch off here if we need to create a new custom field
 		if ($data['auto_custom_field'] == 'y' && ee()->input->post('added_fields') === FALSE)

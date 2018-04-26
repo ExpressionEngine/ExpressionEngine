@@ -4,10 +4,10 @@ feature 'Member Import' do
 
   before(:each) do
     # Paths to files to test
-    @members_xml = asset_path('member-import/members.xml')
-    @members_xml_duplicate = asset_path('member-import/members-duplicate.xml')
-    @members_xml_invalid = asset_path('member-import/members-invalid.xml')
-    @members_xml_custom = asset_path('member-import/members-custom.xml')
+    @members_xml = File.expand_path('support/member-import/members.xml')
+    @members_xml_duplicate = File.expand_path('support/member-import/members-duplicate.xml')
+    @members_xml_invalid = File.expand_path('support/member-import/members-invalid.xml')
+    @members_xml_custom = File.expand_path('support/member-import/members-custom.xml')
 
     @field_required = 'This field is required.'
 
@@ -19,7 +19,7 @@ feature 'Member Import' do
 
   it 'shows the Member Import page' do
     @page.should have_text 'Member Import'
-    @page.should have_text 'XML file location'
+    @page.should have_text 'Member XML file'
     @page.should have_member_group
     @page.should have_language
     @page.should have_tz_country
@@ -30,51 +30,11 @@ feature 'Member Import' do
     @page.should have_include_seconds
   end
 
-  it 'should validate the file location' do
-    @page.submit
 
-    no_php_js_errors
-    should_have_error_text(@page.file_location, @field_required)
-    @page.should have_text 'Attention: Import not completed'
-    should_have_form_errors(@page)
 
-    @page.load
-    @page.file_location.set '/some/bogus/path'
-    @page.submit
-
-    no_php_js_errors
-    should_have_error_text(@page.file_location, $invalid_path)
-    @page.should have_text 'Attention: Import not completed'
-    should_have_form_errors(@page)
-
-    @page.file_location.set @members_xml
-    @page.file_location.trigger 'blur'
-    @page.member_group.choose_radio_option '5'
-    @page.wait_for_error_message_count(0)
-    should_have_no_error_text(@page.file_location)
-    should_have_no_form_errors(@page)
-
-    # Reset for AJAX validation
-    @page.load
-    @page.file_location.trigger 'blur'
-    @page.wait_for_error_message_count(1)
-    should_have_error_text(@page.file_location, @field_required)
-    should_have_form_errors(@page)
-
-    @page.file_location.set '/some/bogus/path'
-    @page.file_location.trigger 'blur'
-    should_have_error_text(@page.file_location, $invalid_path)
-    should_have_form_errors(@page)
-
-    @page.file_location.set @members_xml
-    @page.file_location.trigger 'blur'
-    @page.wait_for_error_message_count(0)
-    should_have_no_error_text(@page.file_location)
-    should_have_no_form_errors(@page)
-  end
 
   it 'should show the confirm import screen' do
-    @page.file_location.set @members_xml
+    @page.attach_file('member_xml_file', @members_xml)
     @page.member_group.choose_radio_option('5')
     @page.language.choose_radio_option('english')
     @page.tz_country.select 'United States'
@@ -86,15 +46,15 @@ feature 'Member Import' do
     @page.submit
 
     @page.options.map {|option| option.text}.should ==
-        ['XML file location', 'Member group', 'Language', 'Timezone',
+        ['Member group', 'Language', 'Timezone',
             'Date & time format', 'Show seconds?', 'Create custom fields?']
     @page.values.map {|value| value.text}.should ==
-        [@members_xml, 'Members', 'English',
+        ['Members', 'English',
             'America/New_York', 'yyyy-mm-dd, 24-hour', 'Yes', 'No']
   end
 
   it 'should import basic member import file' do
-    @page.file_location.set @members_xml
+    @page.attach_file('member_xml_file', @members_xml)
     @page.member_group.choose_radio_option('5')
     @page.language.choose_radio_option('english')
     @page.tz_country.select 'United States'
@@ -113,7 +73,7 @@ feature 'Member Import' do
   end
 
   it 'should fail to import duplicate data' do
-    @page.file_location.set @members_xml_duplicate
+    @page.attach_file('member_xml_file', @members_xml_duplicate)
     @page.member_group.choose_radio_option '5'
     @page.submit
 
@@ -127,7 +87,7 @@ feature 'Member Import' do
   end
 
   it 'should fail to import invalid XML' do
-    @page.file_location.set @members_xml_invalid
+    @page.attach_file('member_xml_file', @members_xml_invalid)
     @page.member_group.choose_radio_option '5'
     @page.submit
 
@@ -142,7 +102,7 @@ feature 'Member Import' do
   it 'should bypass custom field creation in some cases' do
     # If our XML does not contain any extra fields but Yes is selected
     # for custom field creation:
-    @page.file_location.set @members_xml
+    @page.attach_file('member_xml_file', @members_xml)
     @page.member_group.choose_radio_option '5'
     @page.submit
 
@@ -151,7 +111,7 @@ feature 'Member Import' do
 
     # If our XML contains extra field but we elect not to bother:
     @page.load
-    @page.file_location.set @members_xml_custom
+   @page.attach_file('member_xml_file', @members_xml_custom)
     @page.member_group.choose_radio_option '5'
     @page.auto_custom_field_toggle.click
     @page.submit
@@ -160,7 +120,7 @@ feature 'Member Import' do
   end
 
   it 'should create custom fields' do
-    @page.file_location.set @members_xml_custom
+    @page.attach_file('member_xml_file', @members_xml_custom)
     @page.member_group.choose_radio_option('5')
     @page.language.choose_radio_option('english')
     @page.tz_country.select 'United States'
