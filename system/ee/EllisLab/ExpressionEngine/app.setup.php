@@ -560,7 +560,13 @@ return array(
 			'EmailTracker' => 'Model\Email\EmailTracker',
 
 			// ..\Revision
-			'RevisionTracker' => 'Model\Revision\RevisionTracker'
+			'RevisionTracker' => 'Model\Revision\RevisionTracker',
+
+			// ..\Consent
+			'Consent' => 'Model\Consent\Consent',
+			'ConsentAuditLog' => 'Model\Consent\ConsentAuditLog',
+			'ConsentRequest' => 'Model\Consent\ConsentRequest',
+			'ConsentRequestVersion' => 'Model\Consent\ConsentRequestVersion'
 	)
 );
 
