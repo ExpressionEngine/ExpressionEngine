@@ -120,13 +120,13 @@ class Member extends ContentModel {
 		),
 		'AuthoredConsentRequests' => array(
 			'type' => 'hasMany',
-			'model' => 'ConsentRequests',
+			'model' => 'ConsentRequest',
 			'to_key' => 'author_id',
 			'weak' => TRUE
 		),
 		'LastAuthoredConsentRequests' => array(
 			'type' => 'hasMany',
-			'model' => 'ConsentRequests',
+			'model' => 'ConsentRequest',
 			'to_key' => 'last_author_id',
 			'weak' => TRUE
 		),
