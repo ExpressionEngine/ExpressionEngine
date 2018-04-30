@@ -68,31 +68,18 @@ class Group extends AbstractDesignController {
 			->all()
 			->getDictionary('group_id', 'group_title');
 
-        if ( ! empty($_POST))
+		if ( ! empty($_POST))
 		{
 			$group = ee('Model')->make('TemplateGroup');
 			$group->site_id = ee()->config->item('site_id');
 
 			$result = $this->validateTemplateGroup($group);
-    		if ($result instanceOf ValidationResult)
+			if ($result instanceOf ValidationResult)
 			{
-    			$errors = $result;
+				$errors = $result;
 
-    			if (AJAX_REQUEST && ($field = ee()->input->post('ee_fv_field')))
-    			{
-    				if ($result->hasErrors($field))
-    				{
-    					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
-    				}
-    				else
-    				{
-    					ee()->output->send_ajax_response('success');
-    				}
-    				exit;
-    			}
-
-    			if ($result->isValid())
-    			{
+				if ($result->isValid())
+				{
 					// Only set member groups from post if they have permission to admin member groups and a value is set
 					if (ee()->input->post('member_groups') && ($this->session->userdata('group_id') == 1 OR ee()->cp->allowed_group('can_admin_mbr_groups')))
 					{
@@ -278,28 +265,15 @@ class Group extends AbstractDesignController {
 			->all()
 			->getDictionary('group_id', 'group_title');
 
-        if ( ! empty($_POST))
+		if ( ! empty($_POST))
 		{
 			$result = $this->validateTemplateGroup($group);
-    		if ($result instanceOf ValidationResult)
+			if ($result instanceOf ValidationResult)
 			{
-    			$errors = $result;
+				$errors = $result;
 
-    			if (AJAX_REQUEST && ($field = ee()->input->post('ee_fv_field')))
-    			{
-    				if ($result->hasErrors($field))
-    				{
-    					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
-    				}
-    				else
-    				{
-    					ee()->output->send_ajax_response('success');
-    				}
-    				exit;
-    			}
-
-    			if ($result->isValid())
-    			{
+				if ($result->isValid())
+				{
 					// On edit, if they don't have permission to edit member group permissions, they can't change
 					// template member group settings
 					if ($this->session->userdata('group_id') == 1 OR ee()->cp->allowed_group('can_admin_mbr_groups'))
@@ -463,15 +437,7 @@ class Group extends AbstractDesignController {
 
 		$field = ee()->input->post('ee_fv_field');
 
-		// The ajaxValidation method looks for the 'ee_fv_field' in the POST
-		// data. Then it checks to see if the result object has an error
-		// for that field. Then it'll return. Since we may be validating
-		// a field on a TemplateRoute model we should check for that
-		// befaore outputting an ajax response.
-		if ( ! isset($_POST['save_modal'])
-			&& isset($field)
-			&& $group->hasProperty($field)
-			&& $response = $this->ajaxValidation($result))
+		if ($response = $this->ajaxValidation($result))
 		{
 			ee()->output->send_ajax_response($response);
 		}
