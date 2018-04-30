@@ -23,6 +23,7 @@ class ConsentAuditLog extends Model {
 		'consent_audit_id'   => 'int',
 		'consent_request_id' => 'int',
 		'member_id'          => 'int',
+		'log_date'           => 'timestamp',
 	];
 
 	protected static $_relationships = [
@@ -39,6 +40,7 @@ class ConsentAuditLog extends Model {
 		'consent_request_id' => 'required',
 		'member_id'          => 'required',
 		'action'             => 'required',
+		'edit_date'          => 'required',
 	];
 
 	// protected static $_events = [];
@@ -48,6 +50,7 @@ class ConsentAuditLog extends Model {
 	protected $consent_request_id;
 	protected $member_id;
 	protected $action;
+	protected $log_date;
 
 }
 

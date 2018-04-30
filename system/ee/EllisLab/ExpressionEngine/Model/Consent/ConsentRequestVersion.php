@@ -50,10 +50,10 @@ class ConsentRequestVersion extends Model {
 	];
 
 	protected static $_validation_rules = [
-		'create_date' => 'required',
-		'author_id' => 'required',
-		'edit_date'  => 'required',
-		'last_author_id'  => 'required',
+		'create_date'    => 'required',
+		'author_id'      => 'required',
+		'edit_date'      => 'required',
+		'last_author_id' => 'required',
 	];
 
 	// protected static $_events = [];

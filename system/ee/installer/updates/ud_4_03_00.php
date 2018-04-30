@@ -240,6 +240,12 @@ class Updater {
 					'constraint' => 200,
 					'null'       => FALSE
 				],
+				'log_date'           => [
+					'type'       => 'int',
+					'constraint' => 10,
+					'null'       => FALSE,
+					'default'    => 0
+				],
 			]
 		);
 		ee()->dbforge->add_key('consent_audit_id', TRUE);
