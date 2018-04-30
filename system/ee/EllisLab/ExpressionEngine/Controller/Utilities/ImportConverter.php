@@ -236,7 +236,7 @@ class ImportConverter extends Utilities {
 		if ( ! ee()->upload->do_upload('member_file'))
 		{
 			//print_r(ee()->upload->display_errors());
-			ee()->form_validation->set_message('_file_upload', lang('upload_problem'));
+			ee()->form_validation->set_message('_file_handler', lang('upload_problem'));
 			return FALSE;
 		}
 
