@@ -60,6 +60,12 @@ class Updater {
 					'unsigned'   => TRUE,
 					'null'       => FALSE
 				],
+				'source'                     => [
+					'type'       => 'char',
+					'constraint' => 1,
+					'null'       => FALSE,
+					'default'    => 'a', // a => app, u => user
+				],
 				'title'                      => [
 					'type'       => 'varchar',
 					'constraint' => 200,
@@ -71,7 +77,7 @@ class Updater {
 					'null'       => FALSE
 				],
 				'double_opt_in'              => [
-					'type'       => 'varchar',
+					'type'       => 'char',
 					'constraint' => 1,
 					'null'       => FALSE,
 					'default'    => 'n'
@@ -177,7 +183,7 @@ class Updater {
 					'null'       => TRUE
 				],
 				'consent_given'              => [
-					'type'       => 'varchar',
+					'type'       => 'char',
 					'constraint' => 1,
 					'null'       => FALSE,
 					'default'    => 'n'
