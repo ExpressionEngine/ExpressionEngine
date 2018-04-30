@@ -34,11 +34,17 @@ class Consent {
 	 */
 	protected $site_id;
 
-	public function __construct(ModelFacade $model_delegate, Member $member, $site_id)
+	/**
+	 * @var int $now The current timestamp
+	 */
+	protected $now;
+
+	public function __construct(ModelFacade $model_delegate, Member $member, $site_id, $now)
 	{
 		$this->model_delegate = $model_delegate;
 		$this->member = $member;
 		$this->site_id = $site_id;
+		$this->now = $now;
 	}
 
 	/**
@@ -57,7 +63,7 @@ class Consent {
 		$consent->consent_given_via = $via;
 		$consent->save();
 
-		$this->log('');
+		$this->log($request, sprintf(lang('consent_granted_log_msg'), $this->member->getAuthor(), $via));
 	}
 
 	/**
@@ -73,10 +79,10 @@ class Consent {
 		$request = $this->getConsentRequest($request_ref);
 		$consent = $this->getOrMakeConsent($request);
 		$consent->consent_given = FALSE;
-		$consent->withdrawn_date = ee()->localize->now;
+		$consent->withdrawn_date = $this->now;
 		$consent->save();
 
-		$this->log('');
+		$this->log($request, sprintf(lang('consent_withdrawn_log_msg'), $this->member->getAuthor()));
 	}
 
 	/**
@@ -184,6 +190,7 @@ class Consent {
 		$log->ConsentRequest = $request;
 		$log->Member = $this->member;
 		$log->action = $msg;
+		$log->log_date = $this->now;
 		$log->save();
 	}
 }

@@ -348,7 +348,7 @@ return array(
 				$member = $ee->make('Model')->get('Member', $member_id)->first();
 			}
 
-			return new Consent\Consent($ee->make('Model'), $member, ee()->config->item('site_id'));
+			return new Consent\Consent($ee->make('Model'), $member, ee()->config->item('site_id'), ee()->localize->now);
 		},
 
 	),
