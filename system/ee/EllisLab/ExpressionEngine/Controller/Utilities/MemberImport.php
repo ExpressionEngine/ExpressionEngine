@@ -215,14 +215,14 @@ class MemberImport extends Utilities {
 	{
 		if ( ! @is_dir($this->cache) OR ! is_really_writable($this->cache))
 		{
-			ee()->form_validation->set_message('_file_upload', lang('import_cache_file_not_writable'));
+			ee()->form_validation->set_message('_file_handler', lang('import_cache_file_not_writable'));
 			return FALSE;
 		}
 
 		// Required field
 		if ( ! isset($_FILES['member_xml_file']['name']) OR empty($_FILES['member_xml_file']['name']))
 		{
-			ee()->form_validation->set_message('_file_upload', lang('required'));
+			ee()->form_validation->set_message('_file_handler', lang('required'));
 			return FALSE;
 		}
 
@@ -239,8 +239,7 @@ class MemberImport extends Utilities {
 
 		if ( ! ee()->upload->do_upload('member_xml_file'))
 		{
-			print_r(ee()->upload->display_errors());
-			ee()->form_validation->set_message('_file_upload', lang('upload_problem'));
+			ee()->form_validation->set_message('_file_handler', lang('upload_problem'));
 			return FALSE;
 		}
 
