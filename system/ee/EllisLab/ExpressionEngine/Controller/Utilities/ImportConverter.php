@@ -9,8 +9,6 @@
 
 namespace EllisLab\ExpressionEngine\Controller\Utilities;
 
-use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
-
 /**
  * Import Converter Controller
  */
@@ -18,14 +16,11 @@ class ImportConverter extends Utilities {
 
 	private $member_file_name = '';
 	private $cache = '';
-	private $filesystem;
-
 
 	function __construct()
 	{
 		parent::__construct();
-		$this->cache = parse_config_variables(PATH_CACHE.'import_convert/');
-		$this->filesystem = new Filesystem();
+		$this->cache = PATH_CACHE.'import_convert/';
 	}
 
 
@@ -41,10 +36,10 @@ class ImportConverter extends Utilities {
 
 		if (@is_dir($this->cache))
 		{
-			$this->filesystem->deleteDir($this->cache);
+			ee('Filesystem')->deleteDir($this->cache);
 		}
 
-		$this->filesystem->mkDir($this->cache);
+		ee('Filesystem')->mkDir($this->cache);
 
 		ee()->lang->loadfile('member_import');
 
@@ -131,7 +126,7 @@ class ImportConverter extends Utilities {
 		}
 
 		// Check cache folder is writable, no point in filling the form if not
-		if ( ! @is_dir($this->cache) OR ! is_really_writable($this->cache))
+		if ( ! ee('Filesystem')->isWritable($this->cache))
 		{
 			ee('CP/Alert')->makeInline('shared-form')
 				->asWarning()
@@ -211,7 +206,7 @@ class ImportConverter extends Utilities {
 
 	public function _file_handler()
 	{
-		if ( ! @is_dir($this->cache) OR ! is_really_writable($this->cache))
+		if ( ! ee('Filesystem')->isWritable($this->cache))
 		{
 			ee()->form_validation->set_message('_file_handler', lang('import_cache_file_not_writable'));
 			return FALSE;
