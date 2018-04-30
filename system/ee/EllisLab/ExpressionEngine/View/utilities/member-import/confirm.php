@@ -25,10 +25,6 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr>
-					<td><?=lang('mbr_xml_file')?></td>
-					<td><?=$xml_file?></td>
-				</tr>
 				<tr class="alt">
 					<td><?=lang('member_group')?></td>
 					<td><?=$default_group_id?></td>
