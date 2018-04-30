@@ -45,6 +45,7 @@ class ConsentRequest extends Model {
 	];
 
 	protected static $_validation_rules = [
+		'source'        => 'enum[a,u]',
 		'title'         => 'required|maxLength[200]|limitHtml[b,cite,code,del,em,i,ins,markspan,strong,sub,sup]',
 		'url_title'     => 'required|unique|maxLength[URL_TITLE_MAX_LENGTH]|alphaDashPeriodEmoji',
 		'double_opt_in' => 'enum[y,n]',
@@ -56,6 +57,7 @@ class ConsentRequest extends Model {
 	protected $consent_request_id;
 	protected $site_id;
 	protected $consent_request_version_id;
+	protected $source;
 	protected $title;
 	protected $url_title;
 	protected $double_opt_in;
