@@ -347,6 +347,12 @@ return array(
 			{
 				$member = $ee->make('Model')->get('Member', $member_id)->first();
 			}
+			else
+			{
+				$member = $ee->make('Model')->make('Member', ['member_id' => 0]);
+				$member->screen_name = lang('anonymous');
+				$member->group_id = 3;
+			}
 
 			return new Consent\Consent($ee->make('Model'), $member, ee()->config->item('site_id'), ee()->localize->now);
 		},
