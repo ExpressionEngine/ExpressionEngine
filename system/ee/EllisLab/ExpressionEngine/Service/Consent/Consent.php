@@ -52,7 +52,7 @@ class Consent {
 	 *
 	 * @param int|string $request_ref The name (url_title) or ID of a consent request
 	 * @throws InvalidArgumentException
-	 * @return null
+	 * @return NULL
 	 */
 	public function grant($request_ref, $via = 'online_form')
 	{
@@ -71,7 +71,7 @@ class Consent {
 	 *
 	 * @param int|string $request_ref The name (url_title) or ID of a consent request
 	 * @throws InvalidArgumentException
-	 * @return null
+	 * @return NULL
 	 */
 	public function withdraw($request_ref)
 	{
