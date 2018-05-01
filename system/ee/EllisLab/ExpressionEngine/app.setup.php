@@ -354,7 +354,12 @@ return array(
 				$member->group_id = 3;
 			}
 
-			return new Consent\Consent($ee->make('Model'), $member, ee()->config->item('site_id'), ee()->localize->now);
+			return new Consent\Consent(
+				$ee->make('Model'),
+				ee()->input,
+				$member,
+				ee()->config->item('site_id'),
+				ee()->localize->now);
 		},
 
 	),

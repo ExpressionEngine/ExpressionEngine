@@ -19,6 +19,8 @@ use InvalidArgumentException;
  */
 class Consent {
 
+	const COOKIE_NAME = 'visitor_consents';
+
 	/**
 	 * @var Member $member A Member entity object
 	 */
@@ -30,6 +32,11 @@ class Consent {
 	protected $model_delegate;
 
 	/**
+	 * @var obj $input_delegate An injected `ee()->input` object
+	 */
+	protected $input_delegate;
+
+	/**
 	 * @var int $site_id The current site_id
 	 */
 	protected $site_id;
@@ -39,9 +46,10 @@ class Consent {
 	 */
 	protected $now;
 
-	public function __construct(ModelFacade $model_delegate, Member $member, $site_id, $now)
+	public function __construct(ModelFacade $model_delegate, $input_delegate, Member $member, $site_id, $now)
 	{
 		$this->model_delegate = $model_delegate;
+		$this->input_delegate = $input_delegate;
 		$this->member = $member;
 		$this->site_id = $site_id;
 		$this->now = $now;
@@ -57,12 +65,22 @@ class Consent {
 	public function grant($request_ref, $via = 'online_form')
 	{
 		$request = $this->getConsentRequest($request_ref);
-		$consent = $this->getOrMakeConsent($request);
-		$consent->consent_given = FALSE;
-		$consent->update_date = $this->now;
-		$consent->consent_given_via = $via;
-		$consent->save();
-		$consent->log(sprintf(lang('consent_granted_log_msg'), $via));
+
+		if ($this->isAnonymous())
+		{
+			$cookie = $this->getConsentCookie();
+			$cookie[$request->getId()] = TRUE;
+			$this->saveConsentCookie($cookie);
+		}
+		else
+		{
+			$consent = $this->getOrMakeConsent($request);
+			$consent->consent_given = FALSE;
+			$consent->update_date = $this->now;
+			$consent->consent_given_via = $via;
+			$consent->save();
+			$consent->log(sprintf(lang('consent_granted_log_msg'), $via));
+		}
 	}
 
 	/**
@@ -76,11 +94,21 @@ class Consent {
 	public function withdraw($request_ref)
 	{
 		$request = $this->getConsentRequest($request_ref);
-		$consent = $this->getOrMakeConsent($request);
-		$consent->consent_given = FALSE;
-		$consent->withdrawn_date = $this->now;
-		$consent->save();
-		$consent->log(lang('consent_withdrawn_log_msg'));
+
+		if ($this->isAnonymous())
+		{
+			$cookie = $this->getConsentCookie();
+			unset($cookie[$request->getId()]);
+			$this->saveConsentCookie($cookie);
+		}
+		else
+		{
+			$consent = $this->getOrMakeConsent($request);
+			$consent->consent_given = FALSE;
+			$consent->withdrawn_date = $this->now;
+			$consent->save();
+			$consent->log(lang('consent_withdrawn_log_msg'));
+		}
 	}
 
 	/**
@@ -98,6 +126,12 @@ class Consent {
 		catch (InvalidArgumentException $e)
 		{
 			return FALSE;
+		}
+
+		// Anonymous visitor/guest consent check: it's in a cookie, if we can set cookies
+		if ($this->isAnonymous())
+		{
+			return array_key_exists($request->getId(), $this->getConsentCookie());
 		}
 
 		$consent = $this->getConsent($request->getId());
@@ -131,6 +165,47 @@ class Consent {
 			->filter(function($consent) {
 				return $consent->isGranted();
 			});
+	}
+
+	/**
+	 * Is the member we are checking anonymous?
+	 *
+	 * @return bool TRUE if they are, FALSE if not
+	 */
+	protected function isAnonymous()
+	{
+		return ($this->member->getId() == 0);
+	}
+
+	/**
+	 * Gets the consent cookie
+	 *
+	 * @return array An associative array of granted consents
+	 */
+	protected function getConsentCookie()
+	{
+		$cookie = $this->input_delegate->cookie(self::COOKIE_NAME);
+		$cookie = ee('Encrypt/Cookie')->getVerifiedCookieData($cookie);
+		$cookie = json_decode($cookie, TRUE);
+
+		if ( ! $cookie)
+		{
+			$cookie = [];
+		}
+
+		return $cookie;
+	}
+
+	/**
+	 * Encodes, signs, and saves the consent cookie
+	 *
+	 * @param array $consented_to An associative array of granted consents with the
+	 *   request's ID as the array key.
+	 */
+	protected function saveConsentCookie(array $consented_to)
+	{
+		$payload = ee('Encrypt/Cookie')->signCookieData(json_encode($consented_to));
+		$this->input_delegate->set_cookie(self::COOKIE_NAME, $payload);
 	}
 
 	/**
