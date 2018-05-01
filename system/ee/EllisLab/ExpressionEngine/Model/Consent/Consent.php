@@ -65,6 +65,11 @@ class Consent extends Model {
 	protected $update_date;
 	protected $withdrawn_date;
 
+	/**
+	 * Is this consent expired?
+	 *
+	 * @return bool TRUE if it is, FALSE otherwise.
+	 */
 	public function isExpired()
 	{
 		$now = ee()->localize->now;
@@ -77,6 +82,13 @@ class Consent extends Model {
 		return FALSE;
 	}
 
+	/**
+	 * Checks to see if the request version matches, and that it hasn't been edited
+	 * since the member responded, and that the consent isn't expired, and that
+	 * consent was granted.
+	 *
+	 * @return bool TRUE if it is, FALSE otherwise.
+	 */
 	public function isGranted()
 	{
 		$request = $this->ConsentRequest->CurrentVersion;
@@ -104,6 +116,12 @@ class Consent extends Model {
 		return $this->getProperty('consent_given');
 	}
 
+	/**
+	 * Adds a record to the Consent Audit Log
+	 *
+	 * @param string $action The action/log message
+	 * @return NULL
+	 */
 	public function log($action)
 	{
 		$log = $this->getModelFacade()->make('ConsentAuditLog');
