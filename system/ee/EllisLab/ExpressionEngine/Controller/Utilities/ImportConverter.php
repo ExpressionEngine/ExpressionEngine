@@ -34,7 +34,7 @@ class ImportConverter extends Utilities {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		if (@is_dir($this->cache))
+		if (ee('Filesystem')->exists($this->cache))
 		{
 			ee('Filesystem')->deleteDir($this->cache);
 		}
