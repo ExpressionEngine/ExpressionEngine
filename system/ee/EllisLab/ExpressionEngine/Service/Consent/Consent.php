@@ -59,11 +59,10 @@ class Consent {
 		$request = $this->getConsentRequest($request_ref);
 		$consent = $this->getOrMakeConsent($request);
 		$consent->consent_given = FALSE;
-		$consent->update_date = ee()->localize->now;
+		$consent->update_date = $this->now;
 		$consent->consent_given_via = $via;
 		$consent->save();
-
-		$this->log($request, sprintf(lang('consent_granted_log_msg'), $via));
+		$consent->log(sprintf(lang('consent_granted_log_msg'), $via));
 	}
 
 	/**
@@ -81,8 +80,7 @@ class Consent {
 		$consent->consent_given = FALSE;
 		$consent->withdrawn_date = $this->now;
 		$consent->save();
-
-		$this->log($request, lang('consent_withdrawn_log_msg'));
+		$consent->log(lang('consent_withdrawn_log_msg'));
 	}
 
 	/**
@@ -175,22 +173,5 @@ class Consent {
 		}
 
 		return $consent;
-	}
-
-	/**
-	 * Logs an action
-	 *
-	 * @param ConsentRequest $request A ConsentRequest object
-	 * @param string $msg The log message
-	 * @return null
-	 */
-	protected function log(ConsentRequest $request, $msg)
-	{
-		$log = $this->model_delegate->make('ConsentAuditLog');
-		$log->ConsentRequest = $request;
-		$log->Member = $this->member;
-		$log->action = $msg;
-		$log->log_date = $this->now;
-		$log->save();
 	}
 }

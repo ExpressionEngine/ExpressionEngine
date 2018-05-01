@@ -103,6 +103,17 @@ class Consent extends Model {
 
 		return $this->getProperty('consent_given');
 	}
+
+	public function log($action)
+	{
+		$log = $this->getModelFacade()->make('ConsentAuditLog');
+		$log->ConsentRequest = $this->ConsentRequest;
+		$log->Member = $this->member;
+		$log->action = $action;
+		$log->log_date = ee()->localize->now;
+		$log->save();
+
+	}
 }
 
 // EOF
