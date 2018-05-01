@@ -608,9 +608,9 @@ $lang = array(
 
 /* Consent */
 
-'consent_granted_log_msg' => '%s granted consent via %s',
+'consent_granted_log_msg' => 'consent granted via %s',
 
-'consent_withdrawn_log_msg' => '%s withdrew consent',
+'consent_withdrawn_log_msg' => 'consent withdrawn',
 
 );
 

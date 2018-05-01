@@ -63,7 +63,7 @@ class Consent {
 		$consent->consent_given_via = $via;
 		$consent->save();
 
-		$this->log($request, sprintf(lang('consent_granted_log_msg'), $this->member->getAuthor(), $via));
+		$this->log($request, sprintf(lang('consent_granted_log_msg'), $via));
 	}
 
 	/**
@@ -82,7 +82,7 @@ class Consent {
 		$consent->withdrawn_date = $this->now;
 		$consent->save();
 
-		$this->log($request, sprintf(lang('consent_withdrawn_log_msg'), $this->member->getAuthor()));
+		$this->log($request, lang('consent_withdrawn_log_msg'));
 	}
 
 	/**
