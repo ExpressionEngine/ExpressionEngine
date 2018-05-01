@@ -1965,12 +1965,12 @@ class Comment {
 		// send notifications
 		if ( ! $is_spam)
 		{
-			$notify = new Notifications($comment, $_POST['URI']);
-			$notify->sendAdminNotifications();
+			$notification = new Notifications($comment, $_POST['URI']);
+			$notification->sendAdminNotifications();
 
 			if ($comment_moderate == 'n')
 			{
-				$notify->sendUserNotifications();
+				$notification->sendUserNotifications();
 			}
 		}
 
