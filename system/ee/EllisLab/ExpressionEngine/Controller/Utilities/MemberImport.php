@@ -40,7 +40,7 @@ class MemberImport extends Utilities {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		if (@is_dir($this->cache))
+		if (ee('Filesystem')->exists($this->cache))
 		{
 			ee('Filesystem')->deleteDir($this->cache);
 		}
@@ -417,7 +417,7 @@ class MemberImport extends Utilities {
 
 		$msg = lang('import_success_blurb').'<br>'.str_replace('%x', $imports, lang('total_members_imported'));
 
-		if (@is_dir($this->cache))
+		if (ee('Filesystem')->exists($this->cache))
 		{
 			ee('Filesystem')->deleteDir($this->cache);
 		}

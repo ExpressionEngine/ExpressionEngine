@@ -174,6 +174,8 @@ $lang = array(
 
 'unable_to_read_file' => 'Unable to read file.',
 
+'upload_problem' => 'Upload failed',
+
 'value' => 'Value',
 
 'view_in_browser' => 'View in Browser',
