@@ -112,6 +112,28 @@ class Consent {
 	}
 
 	/**
+	 * Gets all the granted consent for a specific request?
+	 *
+	 * @param int|string $request_ref The name (url_title) or ID of a consent request
+	 * @throws InvalidArgumentException
+	 * @return obj A Model Collection of Consents
+	 */
+	public function getGrantedConsentsFor($request_ref)
+	{
+		$request = $this->getConsentRequest($request_ref);
+
+		return $this->model_delegate->get('Consent')
+			->with('ConsentRequest')
+			->with(['ConsentRequest' => 'CurrentVersion'])
+			->with('ConsentRequestVersion')
+			->filter('consent_id', $request_id)
+			->all()
+			->filter(function($consent) {
+				return $consent->isGranted();
+			});
+	}
+
+	/**
 	 * Gets a ConsentRequest entity
 	 *
 	 * @param int|string $request_ref The name (url_title) or ID of a consent request
