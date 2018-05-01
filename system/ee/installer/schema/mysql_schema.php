@@ -1450,7 +1450,7 @@ class EE_Schema {
 			`consent_audit_id` int(4) unsigned NOT NULL,
 			`consent_request_id` int(4) unsigned NOT NULL,
 			`member_id` int(4) unsigned NOT NULL,
-			`action` varchar(200) NOT NULL,
+			`action` text NOT NULL,
 			`log_date` int(10) DEFAULT NULL,
 			PRIMARY KEY (`consent_audit_id`),
 			KEY `consent_request_id` (`consent_request_id`)

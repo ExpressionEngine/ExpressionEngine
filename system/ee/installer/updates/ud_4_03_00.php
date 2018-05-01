@@ -236,8 +236,7 @@ class Updater {
 					'null'       => FALSE
 				],
 				'action'             => [
-					'type'       => 'varchar',
-					'constraint' => 200,
+					'type'       => 'text',
 					'null'       => FALSE
 				],
 				'log_date'           => [
