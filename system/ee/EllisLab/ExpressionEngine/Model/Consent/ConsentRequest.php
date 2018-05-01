@@ -41,6 +41,7 @@ class ConsentRequest extends Model {
 		],
 		'Consents' => [
 			'type' => 'hasMany',
+			'model' => 'Consent'
 		],
 	];
 
