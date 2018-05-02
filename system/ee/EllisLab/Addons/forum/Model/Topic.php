@@ -121,7 +121,7 @@ class Topic extends Model {
 
 	protected static $_events = array(
 		'afterInsert',
-		'beforeDelete',
+		'afterDelete',
 	);
 
 	protected $topic_id;
