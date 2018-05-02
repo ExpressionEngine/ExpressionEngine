@@ -149,6 +149,12 @@ class Member extends ContentModel {
 			'type' => 'hasMany',
 			'model' => 'ListedMember',
 			'to_key' => 'listed_member'
+		],
+		'RememberMe' => [
+			'type' => 'hasMany'
+		],
+		'Session' => [
+			'type' => 'hasMany'
 		]
 	);
 
