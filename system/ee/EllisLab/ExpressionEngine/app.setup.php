@@ -541,6 +541,12 @@ return array(
 			'Comment' => 'Model\Comment\Comment',
 			'CommentSubscription' => 'Model\Comment\CommentSubscription',
 
+			// ..\Message
+			'Message' => 'Model\Message\Message',
+			'MessageAttachment' => 'Model\Message\Attachment',
+			'MessageFolder' => 'Model\Message\Folder',
+			'ListedMember' => 'Model\Message\ListedMember',
+
 			// ..\Member
 			'HTMLButton' => 'Model\Member\HTMLButton',
 			'Member' => 'Model\Member\Member',

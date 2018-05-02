@@ -118,6 +118,38 @@ class Member extends ContentModel {
 			'type' => 'hasOne',
 			'model' => 'MemberNewsView'
 		),
+		'SentMessages' => [
+			'type' => 'hasMany',
+			'model' => 'Message',
+			'to_key' => 'sender_id'
+		],
+		'SentAttachments' => [
+			'type' => 'hasMany',
+			'model' => 'MessageAttachment',
+			'to_key' => 'sender_id'
+		],
+		'ReceivedMessages' => [
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Message',
+			'pivot' => [
+				'table' => 'message_copies',
+				'left' => 'recipient_id',
+				'right' => 'message_id'
+			]
+		],
+		'MessageFolders' => [
+			'type' => 'hasOne',
+			'model' => 'MessageFolder'
+		],
+		'ListedMembers' => [
+			'type' => 'hasMany',
+			'model' => 'ListedMember'
+		],
+		'ListedByMembers' => [
+			'type' => 'hasMany',
+			'model' => 'ListedMember',
+			'to_key' => 'listed_member'
+		]
 	);
 
 	protected static $_field_data = array(
