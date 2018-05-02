@@ -1405,15 +1405,13 @@ class EE_Schema {
 
 		$Q[] = "CREATE TABLE `exp_consent_requests` (
 			`consent_request_id` int(4) unsigned NOT NULL,
-			`site_id` int(4) unsigned NOT NULL DEFAULT 0,
 			`consent_request_version_id` int(4) unsigned NOT NULL,
 			`source` char(1) NOT NULL DEFAULT 'a',
 			`title` varchar(200) NOT NULL,
 			`url_title` varchar(200) NOT NULL,
 			`double_opt_in` char(1) NOT NULL DEFAULT 'n',
 			`retention_period` varchar(32) DEFAULT NULL,
-			PRIMARY KEY (`consent_request_id`),
-			KEY `site_id` (`site_id`)
+			PRIMARY KEY (`consent_request_id`)
 		)";
 
 		$Q[] = "CREATE TABLE `exp_consent_request_versions` (

@@ -47,13 +47,6 @@ class Updater {
 					'unsigned'   => TRUE,
 					'null'       => FALSE
 				],
-				'site_id'                    => [
-					'type'       => 'int',
-					'constraint' => 4,
-					'unsigned'   => TRUE,
-					'null'       => TRUE,
-					'default'    => 0
-				],
 				'consent_request_version_id' => [
 					'type'       => 'int',
 					'constraint' => 4,
@@ -90,7 +83,6 @@ class Updater {
 			]
 		);
 		ee()->dbforge->add_key('consent_request_id', TRUE);
-		ee()->dbforge->add_key('site_id');
 		ee()->smartforge->create_table('consent_requests');
 		ee()->db->query("CREATE INDEX `url_title` ON `exp_consent_requests` (`url_title`(191));");
 

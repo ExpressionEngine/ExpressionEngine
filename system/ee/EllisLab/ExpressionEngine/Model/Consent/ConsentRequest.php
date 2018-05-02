@@ -21,15 +21,11 @@ class ConsentRequest extends Model {
 
 	protected static $_typed_columns = [
 		'consent_request_id'         => 'int',
-		'site_id'                    => 'int',
 		'consent_request_version_id' => 'int',
 		'double_opt_in'              => 'boolString',
 	];
 
 	protected static $_relationships = [
-		'Site' => [
-			'type' => 'belongsTo'
-		],
 		'CurrentVersion' => [
 			'type' => 'belongsTo',
 			'model' => 'ConsentRequestVersion',
@@ -56,7 +52,6 @@ class ConsentRequest extends Model {
 
 	// Properties
 	protected $consent_request_id;
-	protected $site_id;
 	protected $consent_request_version_id;
 	protected $source;
 	protected $title;
