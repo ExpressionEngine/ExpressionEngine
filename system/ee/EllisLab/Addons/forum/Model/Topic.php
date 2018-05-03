@@ -158,11 +158,14 @@ class Topic extends Model {
 
 	public function onAfterDelete()
 	{
-		$this->Forum->forum_total_topics--;
-		$this->Forum->save();
+		require_once PATH_ADDONS.'forum/mod.forum.php';
+		require_once PATH_ADDONS.'forum/mod.forum_core.php';
 
-		$this->Author->total_forum_topics--;
-		$this->Author->save();
+		$forum_core = new \Forum_Core;
+
+		$forum_core->_update_member_stats($this->author_id);
+		$forum_core->_update_post_stats($this->forum_id);
+		$forum_core->_update_global_stats();
 	}
 
 }
