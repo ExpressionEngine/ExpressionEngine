@@ -1085,7 +1085,7 @@ class Forum_Core extends Forum {
 	{
 		if ( ! is_array($member_ids))
 		{
-			$member_ids[$member_ids] = $member_ids;
+			$member_ids = [$member_ids];
 		}
 
 		foreach ($member_ids as $member_id)
