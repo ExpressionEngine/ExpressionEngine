@@ -66,7 +66,7 @@ class Topic extends Model {
 			'model'    => 'ee:Member',
 			'weak'     => TRUE,
 			'inverse' => array(
-				'name' => 'Topic',
+				'name' => 'EditedTopic',
 				'type' => 'hasMany'
 			)
 		),
@@ -86,7 +86,7 @@ class Topic extends Model {
 			'to_key'   => 'member_id',
 			'weak'     => TRUE,
 			'inverse' => array(
-				'name' => 'Topic',
+				'name' => 'LastPost',
 				'type' => 'hasMany',
 				'weak' => TRUE
 			)
