@@ -1404,8 +1404,8 @@ class EE_Schema {
 	  	)";
 
 		$Q[] = "CREATE TABLE `exp_consent_requests` (
-			`consent_request_id` int(4) unsigned NOT NULL,
-			`consent_request_version_id` int(4) unsigned NOT NULL,
+			`consent_request_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`consent_request_version_id` int(10) unsigned NOT NULL,
 			`source` char(1) NOT NULL DEFAULT 'a',
 			`title` varchar(200) NOT NULL,
 			`url_title` varchar(200) NOT NULL,
@@ -1415,23 +1415,23 @@ class EE_Schema {
 		)";
 
 		$Q[] = "CREATE TABLE `exp_consent_request_versions` (
-			`consent_request_version_id` int(4) unsigned NOT NULL,
-			`consent_request_id` int(4) unsigned NOT NULL,
+			`consent_request_version_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`consent_request_id` int(10) unsigned DEFAULT NULL,
 			`request` mediumtext,
 			`request_format` tinytext,
 			`create_date` int(10) NOT NULL DEFAULT '0',
-			`author_id` int(4) unsigned NOT NULL DEFAULT '0',
+			`author_id` int(10) unsigned NOT NULL DEFAULT '0',
 			`edit_date` int(10) NOT NULL DEFAULT '0',
-			`last_author_id` int(4) unsigned NOT NULL DEFAULT '0',
+			`last_author_id` int(10) unsigned NOT NULL DEFAULT '0',
 			PRIMARY KEY (`consent_request_version_id`),
 			KEY `consent_request_id` (`consent_request_id`)
 		)";
 
 		$Q[] = "CREATE TABLE `exp_consents` (
-			`consent_id` int(4) unsigned NOT NULL,
-			`consent_request_id` int(4) unsigned NOT NULL,
-			`consent_request_version_id` int(4) unsigned NOT NULL,
-			`member_id` int(4) unsigned NOT NULL,
+			`consent_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`consent_request_id` int(10) unsigned NOT NULL,
+			`consent_request_version_id` int(10) unsigned NOT NULL,
+			`member_id` int(10) unsigned NOT NULL,
 			`request_copy` mediumtext,
 			`request_format` tinytext,
 			`consent_given` char(1) NOT NULL DEFAULT 'n',
@@ -1445,9 +1445,9 @@ class EE_Schema {
 		)";
 
 		$Q[] = "CREATE TABLE `exp_consent_audit_log` (
-			`consent_audit_id` int(4) unsigned NOT NULL,
-			`consent_request_id` int(4) unsigned NOT NULL,
-			`member_id` int(4) unsigned NOT NULL,
+			`consent_audit_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`consent_request_id` int(10) unsigned NOT NULL,
+			`member_id` int(10) unsigned NOT NULL,
 			`action` text NOT NULL,
 			`log_date` int(10) DEFAULT NULL,
 			PRIMARY KEY (`consent_audit_id`),

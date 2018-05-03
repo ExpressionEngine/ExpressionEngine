@@ -42,16 +42,18 @@ class Updater {
 		ee()->dbforge->add_field(
 			[
 				'consent_request_id'         => [
-					'type'       => 'int',
-					'constraint' => 4,
-					'unsigned'   => TRUE,
-					'null'       => FALSE
+					'type'           => 'int',
+					'constraint'     => 10,
+					'unsigned'       => TRUE,
+					'null'           => FALSE,
+					'auto_increment' => TRUE
 				],
 				'consent_request_version_id' => [
 					'type'       => 'int',
-					'constraint' => 4,
+					'constraint' => 10,
 					'unsigned'   => TRUE,
-					'null'       => FALSE
+					'null'       => TRUE,
+					'default'    => TRUE
 				],
 				'source'                     => [
 					'type'       => 'char',
@@ -89,14 +91,15 @@ class Updater {
 		ee()->dbforge->add_field(
 			[
 				'consent_request_version_id' => [
-					'type'       => 'int',
-					'constraint' => 4,
-					'unsigned'   => TRUE,
-					'null'       => FALSE
+					'type'           => 'int',
+					'constraint'     => 10,
+					'unsigned'       => TRUE,
+					'null'           => FALSE,
+					'auto_increment' => TRUE
 				],
 				'consent_request_id'         => [
 					'type'       => 'int',
-					'constraint' => 4,
+					'constraint' => 10,
 					'unsigned'   => TRUE,
 					'null'       => FALSE
 				],
@@ -116,7 +119,7 @@ class Updater {
 				],
 				'author_id'                  => [
 					'type'       => 'int',
-					'constraint' => 4,
+					'constraint' => 10,
 					'unsigned'   => TRUE,
 					'null'       => FALSE,
 					'default'    => 0
@@ -129,7 +132,7 @@ class Updater {
 				],
 				'last_author_id'             => [
 					'type'       => 'int',
-					'constraint' => 4,
+					'constraint' => 10,
 					'unsigned'   => TRUE,
 					'null'       => FALSE,
 					'default'    => 0
@@ -143,26 +146,27 @@ class Updater {
 		ee()->dbforge->add_field(
 			[
 				'consent_id'                 => [
-					'type'       => 'int',
-					'constraint' => 4,
-					'unsigned'   => TRUE,
-					'null'       => FALSE
+					'type'           => 'int',
+					'constraint'     => 10,
+					'unsigned'       => TRUE,
+					'null'           => FALSE,
+					'auto_increment' => TRUE
 				],
 				'consent_request_id' => [
 					'type'       => 'int',
-					'constraint' => 4,
+					'constraint' => 10,
 					'unsigned'   => TRUE,
 					'null'       => FALSE
 				],
 				'consent_request_version_id' => [
 					'type'       => 'int',
-					'constraint' => 4,
+					'constraint' => 10,
 					'unsigned'   => TRUE,
 					'null'       => FALSE
 				],
 				'member_id'                  => [
 					'type'       => 'int',
-					'constraint' => 4,
+					'constraint' => 10,
 					'unsigned'   => TRUE,
 					'null'       => FALSE
 				],
@@ -210,20 +214,21 @@ class Updater {
 		ee()->dbforge->add_field(
 			[
 				'consent_audit_id'   => [
-					'type'       => 'int',
-					'constraint' => 4,
-					'unsigned'   => TRUE,
-					'null'       => FALSE
+					'type'           => 'int',
+					'constraint'     => 10,
+					'unsigned'       => TRUE,
+					'null'           => FALSE,
+					'auto_increment' => TRUE
 				],
 				'consent_request_id' => [
 					'type'       => 'int',
-					'constraint' => 4,
+					'constraint' => 10,
 					'unsigned'   => TRUE,
 					'null'       => FALSE
 				],
 				'member_id'          => [
 					'type'       => 'int',
-					'constraint' => 4,
+					'constraint' => 10,
 					'unsigned'   => TRUE,
 					'null'       => FALSE
 				],
