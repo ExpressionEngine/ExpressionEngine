@@ -178,6 +178,7 @@ class Member extends ContentModel {
 	protected static $_events = array(
 		'afterUpdate',
 		'beforeDelete',
+		'afterDelete',
 		'beforeInsert',
 	);
 
@@ -394,6 +395,11 @@ class Member extends ContentModel {
 
 		$this->TemplateRevisions->item_author_id = 0;
 		$this->TemplateRevisions->save();
+	}
+
+	public function onAfterDelete()
+	{
+		ee()->stats->update_member_stats();
 	}
 
 	/**
