@@ -32,6 +32,11 @@ class ConsentRequestVersion extends Model {
 		'ConsentRequest' => [
 			'type' => 'belongsTo',
 		],
+		'CurrentVersion' => [
+			'type' => 'belongsTo',
+			'model' => 'ConsentRequest',
+			'to_key' => 'consent_request_version_id'
+		],
 		'Consents' => [
 			'type' => 'hasMany',
 			'model' => 'Consent',

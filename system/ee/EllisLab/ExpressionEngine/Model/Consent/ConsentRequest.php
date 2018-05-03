@@ -27,7 +27,7 @@ class ConsentRequest extends Model {
 
 	protected static $_relationships = [
 		'CurrentVersion' => [
-			'type' => 'belongsTo',
+			'type' => 'hasOne',
 			'model' => 'ConsentRequestVersion',
 			'from_key' => 'consent_request_version_id'
 		],
