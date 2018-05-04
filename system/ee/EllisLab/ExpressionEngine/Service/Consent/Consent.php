@@ -265,8 +265,11 @@ class Consent {
 			$consent->ConsentRequest = $request;
 			$consent->ConsentRequestVersion = $request->CurrentVersion;
 			$consent->Member = $this->member;
-			$consent->request_copy = $request->CurrentVersion->request;
-			$consent->request_format = $request->CurrentVersion->request_format;
+			if ($request->CurrentVersion)
+			{
+				$consent->request_copy = $request->CurrentVersion->request;
+				$consent->request_format = $request->CurrentVersion->request_format;
+			}
 		}
 
 		return $consent;

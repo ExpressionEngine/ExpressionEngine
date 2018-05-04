@@ -53,7 +53,7 @@ class Updater {
 					'constraint' => 10,
 					'unsigned'   => TRUE,
 					'null'       => TRUE,
-					'default'    => TRUE
+					'default'    => NULL
 				],
 				'source'                     => [
 					'type'       => 'char',

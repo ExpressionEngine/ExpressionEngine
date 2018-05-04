@@ -93,6 +93,11 @@ class Consent extends Model {
 	{
 		$request = $this->ConsentRequest->CurrentVersion;
 
+		if ( ! $request)
+		{
+			return FALSE;
+		}
+
 		// If the consent is not for the current version of the request, then the consent
 		// is void. The request has changed.
 		if ($this->ConsentRequestVersion->getId() != $request->getId())
