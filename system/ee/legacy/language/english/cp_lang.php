@@ -608,9 +608,9 @@ $lang = array(
 
 /* Consent */
 
-'consent_request' => 'Consent request',
+'consent_request' => 'Consent Request',
 
-'consent_requests' => 'Consent requests',
+'consent_requests' => 'Consent Requests',
 
 'create_consent_request' => 'Create Consent Request',
 
