@@ -162,9 +162,9 @@ class Consents extends Settings {
 
 			$request = ee('Model')->make('ConsentRequest');
 			$request->source = 'u';
+
 			$version = $this->makeNewVersion();
 			$request->Versions->add($version);
-			$request->CurrentVersion = $version;
 		}
 		else
 		{
@@ -182,8 +182,10 @@ class Consents extends Settings {
 			if ($request->CurrentVersion->Consents->count())
 			{
 				$version = $this->makeNewVersion();
+				$version->request = $request->CurrentVersion->request;
+				$version->request_format = $request->CurrentVersion->request_format;
+
 				$request->Versions->add($version);
-				$request->CurrentVersion = $version;
 			}
 			else
 			{
@@ -209,13 +211,17 @@ class Consents extends Settings {
 
 			if ($result->isValid())
 			{
-				$request->save();
+				// We need a request ID for the version, so we'll save when new.
+				if ($request->isNew())
+				{
+					$request->save();
+				}
 
-				// $version->consent_request_id = $request->getId();
-				// $version->save();
-				//
-				// $request->consent_request_version_id = $version->getId();
-				// $request->save();
+				$version->save();
+
+				// Ensure that whatever was submitted is marked as the current version.
+				$request->CurrentVersion = $version;
+				$request->save();
 
 				if (is_null($request_id))
 				{
