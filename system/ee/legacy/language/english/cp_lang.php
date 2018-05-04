@@ -608,9 +608,41 @@ $lang = array(
 
 /* Consent */
 
+'consent_request' => 'Consent request',
+
+'consent_requests' => 'Consent requests',
+
+'create_consent_request' => 'Create Consent Request',
+
+'edit_consent_request' => 'Edit Consent Request',
+
+'consent_request_created' => 'Consent Request Created',
+
+'consent_request_created_desc' => 'The consent request <b>%s</b> has been created.',
+
+'consent_request_not_created' => 'Cannot Create Consent Request',
+
+'consent_request_not_created_desc' => 'We were unable to create this consent request, please review and fix errors below.',
+
+'consent_request_updated' => 'Consent Request Updated',
+
+'consent_request_updated_desc' => 'The consent request <b>%s</b> has been updated.',
+
+'consent_request_not_updated' => 'Cannot Update Consent Request',
+
+'consent_request_not_updated_desc' => 'We were unable to update this consent request, please review and fix errors below.',
+
+'consent_requests_removed' => 'Consent requests removed',
+
+'consent_requests_removed_desc' => '%d consent requests were removed.',
+
 'consent_granted_log_msg' => 'consent granted via %s',
 
 'consent_withdrawn_log_msg' => 'consent withdrawn',
+
+'consent_title' => 'Consent Title',
+
+'request' => 'Request',
 
 );
 

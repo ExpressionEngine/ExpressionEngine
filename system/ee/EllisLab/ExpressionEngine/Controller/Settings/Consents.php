@@ -79,13 +79,13 @@ class Consents extends Settings {
 					'name' => 'selection[]',
 					'value' => $request->getId(),
 					'data' => [
-						'confirm' => lang('consent') . ': <b>' . ee('Format')->make('Text', $request->title)->convertToEntities() . '</b>'
+						'confirm' => lang('consent_request') . ': <b>' . ee('Format')->make('Text', $request->title)->convertToEntities() . '</b>'
 					]
 				]
 			];
 		}
 
-		ee()->javascript->set_global('lang.remove_confirm', lang('layout') . ': <b>### ' . lang('consents') . '</b>');
+		ee()->javascript->set_global('lang.remove_confirm', lang('consent_request') . ': <b>### ' . lang('consent_requests') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
 				'cp/confirm_remove',
@@ -97,11 +97,11 @@ class Consents extends Settings {
 			->currentPage($page)
 			->render(ee('CP/URL')->make('settings/consents', $total_requests));
 
-		$vars['cp_page_title'] = lang('consents');
+		$vars['cp_page_title'] = lang('consent_request');
 		$vars['requests'] = $data;
 		$vars['create_url'] = ee('CP/URL', 'settings/consents/create');
 		$vars['no_results'] = ['text' =>
-			sprintf(lang('no_found'), lang('consents'))
+			sprintf(lang('no_found'), lang('consent_requests'))
 			.' <a href="'.$vars['create_url'].'">'.lang('add_new').'</a>'];
 
 		ee()->cp->render('settings/consents/index', $vars);
@@ -130,7 +130,7 @@ class Consents extends Settings {
 	public function remove()
 	{
 		$request_ids = ee()->input->post('selection');
-		$requests = ee('Model')->get('Channel', $request_ids)
+		$requests = ee('Model')->get('ConsentRequest', $request_ids)
 			->filter('source', 'u')
 			->all();
 
@@ -140,8 +140,8 @@ class Consents extends Settings {
 
 			ee('CP/Alert')->makeInline('requests')
 				->asSuccess()
-				->withTitle(lang('requests_removed'))
-				->addToBody(sprintf(lang('requests_removed_desc'), count($request_ids)))
+				->withTitle(lang('consent_requests_removed'))
+				->addToBody(sprintf(lang('consent_requests_removed_desc'), count($request_ids)))
 				->defer();
 		}
 		else
@@ -149,20 +149,22 @@ class Consents extends Settings {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		ee()->functions->redirect(ee('CP/URL')->make('settings/consents/create', ee()->cp->get_url_state()));
+		ee()->functions->redirect(ee('CP/URL')->make('settings/consents', ee()->cp->get_url_state()));
 	}
 
 	private function form($request_id = NULL)
 	{
 		if (is_null($request_id))
 		{
-			$alert_key = 'updated';
-			ee()->view->cp_page_title = lang('create_new_consent_request');
+			$alert_key = 'created';
+			ee()->view->cp_page_title = lang('create_consent_request');
 			ee()->view->base_url = ee('CP/URL')->make('settings/consents/create');
 
 			$request = ee('Model')->make('ConsentRequest');
 			$request->source = 'u';
 			$version = $this->makeNewVersion();
+			$request->Versions->add($version);
+			$request->CurrentVersion = $version;
 		}
 		else
 		{
@@ -180,6 +182,8 @@ class Consents extends Settings {
 			if ($request->CurrentVersion->Consents->count())
 			{
 				$version = $this->makeNewVersion();
+				$request->Versions->add($version);
+				$request->CurrentVersion = $version;
 			}
 			else
 			{
@@ -207,11 +211,11 @@ class Consents extends Settings {
 			{
 				$request->save();
 
-				$version->consent_request_id = $request->getId();
-				$version->save();
-
-				$request->consent_request_version_id = $version->getId();
-				$request->save();
+				// $version->consent_request_id = $request->getId();
+				// $version->save();
+				//
+				// $request->consent_request_version_id = $version->getId();
+				// $request->save();
 
 				if (is_null($request_id))
 				{
@@ -220,8 +224,8 @@ class Consents extends Settings {
 
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
-					->withTitle(lang('channel_'.$alert_key))
-					->addToBody(sprintf(lang('channel_'.$alert_key.'_desc'), $request->title))
+					->withTitle(lang('consent_request_'.$alert_key))
+					->addToBody(sprintf(lang('consent_request_'.$alert_key.'_desc'), $request->title))
 					->defer();
 
 				if (ee('Request')->post('submit') == 'save_and_new')
@@ -230,7 +234,7 @@ class Consents extends Settings {
 				}
 				elseif (ee()->input->post('submit') == 'save_and_close')
 				{
-					ee()->functions->redirect(ee('CP/URL')->make('channels'));
+					ee()->functions->redirect(ee('CP/URL')->make('settings/consents'));
 				}
 				else
 				{
@@ -254,7 +258,7 @@ class Consents extends Settings {
 		$vars['sections'] = [
 			[
 				[
-					'title' => 'title',
+					'title' => 'consent_title',
 					'fields' => [
 						'title' => [
 							'type' => 'text',
@@ -281,16 +285,11 @@ class Consents extends Settings {
 							'type' => 'textarea',
 							'value' => $version->request,
 							'required' => TRUE
-						]
-					]
-				],
-				[
-					'title' => 'request_format',
-					'fields' => [
+						],
 						'request_format' => [
-							'type' => 'radio',
-							'choices' => $format_options,
-							'value' => $version->request_format,
+							'type' => 'html',
+							'content' => '<div class="format-options">' . form_dropdown('request_format', $format_options, [$version->request_format]) . '</div>',
+							'margin_top' => FALSE
 						]
 					]
 				]
