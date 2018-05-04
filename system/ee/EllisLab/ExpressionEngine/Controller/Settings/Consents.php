@@ -109,6 +109,16 @@ class Consents extends Settings {
 
 	public function create()
 	{
+		ee()->cp->add_js_script('plugin', 'ee_url_title');
+		ee()->javascript->set_global([
+			'publish.word_separator' => ee()->config->item('word_separator') != "dash" ? '_' : '-',
+		]);
+		ee()->javascript->output('
+			$("input[name=title]").bind("keyup keydown", function() {
+				$(this).ee_url_title("input[name=url_title]");
+			});
+		');
+
 		return $this->form();
 	}
 
@@ -310,8 +320,6 @@ class Consents extends Settings {
 				'working' => 'btn_saving'
 			]
 		];
-
-		ee()->cp->add_js_script('plugin', 'ee_url_title');
 
 		ee()->cp->render('settings/form', $vars);
 	}
