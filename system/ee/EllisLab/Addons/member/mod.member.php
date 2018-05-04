@@ -1287,8 +1287,7 @@ class Member {
 		}
 
 		// No turning back, get to deletin'!
-		ee()->load->model('member_model');
-		ee()->member_model->delete_member(ee()->session->userdata('member_id'));
+		ee('Model')->get('Member', ee()->session->userdata('member_id'))->delete();
 
 		// Email notification recipients
 		if (ee()->session->userdata('mbr_delete_notify_emails') != '')

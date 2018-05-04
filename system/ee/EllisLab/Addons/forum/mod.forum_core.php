@@ -8149,8 +8149,7 @@ class Forum_Core extends Forum {
 		}
 		else
 		{
-			ee()->load->model('member_model');
-			ee()->member_model->delete_member($this->current_id);
+			ee('Model')->get('Member', $this->current_id)->delete();
 
 			$ban_msg = lang('user_account_deleted');
 		}
