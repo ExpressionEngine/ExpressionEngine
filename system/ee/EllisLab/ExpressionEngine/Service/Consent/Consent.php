@@ -37,21 +37,15 @@ class Consent {
 	protected $input_delegate;
 
 	/**
-	 * @var int $site_id The current site_id
-	 */
-	protected $site_id;
-
-	/**
 	 * @var int $now The current timestamp
 	 */
 	protected $now;
 
-	public function __construct(ModelFacade $model_delegate, $input_delegate, Member $member, $site_id, $now)
+	public function __construct(ModelFacade $model_delegate, $input_delegate, Member $member, $now)
 	{
 		$this->model_delegate = $model_delegate;
 		$this->input_delegate = $input_delegate;
 		$this->member = $member;
-		$this->site_id = $site_id;
 		$this->now = $now;
 	}
 
@@ -227,7 +221,6 @@ class Consent {
 
 		$request = $this->model_delegate->get('ConsentRequest')
 			->with('CurrentVersion')
-			->filter('site_id', 'IN', [0, $this->site_id])
 			->filter($column, $request_ref)
 			->first();
 

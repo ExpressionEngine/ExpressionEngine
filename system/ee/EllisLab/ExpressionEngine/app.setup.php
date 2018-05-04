@@ -358,7 +358,6 @@ return array(
 				$ee->make('Model'),
 				ee()->input,
 				$member,
-				ee()->config->item('site_id'),
 				ee()->localize->now);
 		},
 
