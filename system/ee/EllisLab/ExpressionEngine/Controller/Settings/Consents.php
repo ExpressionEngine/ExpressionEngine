@@ -62,7 +62,7 @@ class Consents extends Settings {
 
 		foreach ($requests as $request)
 		{
-			$edit_url = ee('CP/URL')->make('settings/consents/' . $request->getId());
+			$edit_url = ee('CP/URL')->make('settings/consents/edit/' . $request->getId());
 
 			$data[] = [
 				'id' => $request->getId(),
