@@ -62,7 +62,7 @@ class Consent {
 		$request = $this->getConsentRequest($request_ref);
 
 		// Can't consent to an empty consent request
-		if ( ! $request->CurrentVersion)
+		if ( ! $request->consent_request_version_id)
 		{
 			return;
 		}

@@ -93,7 +93,7 @@ class Consent extends Model {
 	{
 		$request = $this->ConsentRequest->CurrentVersion;
 
-		if ( ! $request)
+		if ( ! $request->getId())
 		{
 			return FALSE;
 		}

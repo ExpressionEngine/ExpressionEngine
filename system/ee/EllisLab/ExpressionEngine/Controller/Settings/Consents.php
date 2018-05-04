@@ -184,7 +184,7 @@ class Consents extends Settings {
 
 			// If there is no current version, or if the current version of the request has
 			// any consents, then we are making a new version.
-			if ( ! $request->CurrentVersion || $request->CurrentVersion->Consents->count())
+			if ( ! $request->consent_request_version_id || $request->CurrentVersion->Consents->count())
 			{
 				$version = $this->makeNewVersion($request);
 			}
@@ -342,7 +342,7 @@ class Consents extends Settings {
 		{
 			$request->Versions->add($version);
 
-			if ($request->CurrentVersion)
+			if ($request->consent_request_version_id)
 			{
 				$version->request = $request->CurrentVersion->request;
 				$version->request_format = $request->CurrentVersion->request_format;
