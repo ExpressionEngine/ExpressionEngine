@@ -155,6 +155,10 @@ class Member extends ContentModel {
 		],
 		'Session' => [
 			'type' => 'hasMany'
+		],
+		'Online' => [
+			'type' => 'hasMany',
+			'model' => 'OnlineMember'
 		]
 	);
 

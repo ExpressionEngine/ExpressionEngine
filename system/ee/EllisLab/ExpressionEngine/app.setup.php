@@ -553,6 +553,7 @@ return array(
 			'MemberField' => 'Model\Member\MemberField',
 			'MemberGroup' => 'Model\Member\MemberGroup',
 			'MemberNewsView' => 'Model\Member\NewsView',
+			'OnlineMember' => 'Model\Member\Online',
 
 			// ..\Menu
 			'MenuSet' => 'Model\Menu\MenuSet',
