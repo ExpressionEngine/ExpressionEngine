@@ -231,9 +231,9 @@ $lang = array(
 
 'file_not_converted_desc' => 'We were unable to convert this file, please review and fix errors below.',
 
-'import_cache_file_not_writable' => 'Unable to create cache folder',
+'import_cache_file_not_writable' => 'Cache folder not writable',
 
-'import_cache_file_instructions' => 'The user cache folder must be writable',
+'import_cache_file_instructions' => 'To upload the file, the cache folder must be writable.',
 
 'import_convert_btn' => 'Convert File',
 
