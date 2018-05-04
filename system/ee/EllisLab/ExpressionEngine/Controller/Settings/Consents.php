@@ -63,7 +63,7 @@ class Consents extends Settings {
 		{
 			$edit_url = ee('CP/URL')->make('settings/consents/edit/' . $request->getId());
 
-			$data[] = [
+			$datum = [
 				'id' => $request->getId(),
 				'label' => $request->title,
 				'href' => $edit_url,
@@ -82,6 +82,13 @@ class Consents extends Settings {
 					]
 				]
 			];
+
+			if ($request->source == 'a')
+			{
+				$datum['selection']['disabled'] = TRUE;
+			}
+
+			$data[] = $datum;
 		}
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('consent_request') . ': <b>### ' . lang('consent_requests') . '</b>');
