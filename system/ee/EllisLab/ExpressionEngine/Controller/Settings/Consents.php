@@ -269,7 +269,7 @@ class Consents extends Settings {
 					'fields' => [
 						'request' => [
 							'type' => 'textarea',
-							'value' => $request->CurrentVersion->request,
+							'value' => $version->request,
 							'required' => TRUE
 						]
 					]
@@ -280,7 +280,7 @@ class Consents extends Settings {
 						'request_format' => [
 							'type' => 'radio',
 							'choices' => $format_options,
-							'value' => $request->CurrentVersion->request_format,
+							'value' => $version->request_format,
 						]
 					]
 				]
