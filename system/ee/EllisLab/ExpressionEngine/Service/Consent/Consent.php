@@ -12,6 +12,7 @@ namespace EllisLab\ExpressionEngine\Service\Consent;
 use EllisLab\ExpressionEngine\Service\Model\Facade as ModelFacade;
 use EllisLab\ExpressionEngine\Model\Member\Member;
 use EllisLab\ExpressionEngine\Model\Consent\ConsentRequest;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 use InvalidArgumentException;
 
 /**
@@ -147,11 +148,55 @@ class Consent {
 	}
 
 	/**
-	 * Gets all the granted consent for a specific request?
+	 * Gets all the consent requests the member (or anonymous visitor) has granted
+	 * consent.
+	 *
+	 * @return obj A Model Collection of ConsentRequest objects
+	 */
+	public function getGrantedConsentRequests()
+	{
+		if ($this->isAnonymous())
+		{
+			$request_ids = array_keys($this->getConsentCookie());
+
+			if (empty($request_ids))
+			{
+				return new Collection([]);
+			}
+
+			return $this->model_delegate->get('ConsentRequest')
+				->with('CurrentVersion')
+				->filter('consent_request_id', $request_ids)
+				->all();
+		}
+
+		if ( ! $this->member->Consents)
+		{
+			return new Collection([]);
+		}
+
+		$consents = $this->model_delegate->get('Consent')
+			->with('ConsentRequest')
+			->with(['ConsentRequest' => 'CurrentVersion'])
+			->with('ConsentRequestVersion')
+			->filter('member_id', $this->member->getId())
+			->filter('consent_given', 'y')
+			->all()
+			->filter(function($consent) {
+				return $consent->isGranted();
+			});
+
+		return new Collection($consents->map(function($consent) {
+			return $consent->ConsentRequest;
+		}));
+	}
+
+	/**
+	 * Gets all the granted consents for a specific request
 	 *
 	 * @param int|string $request_ref The name (url_title) or ID of a consent request
 	 * @throws InvalidArgumentException
-	 * @return obj A Model Collection of Consents
+	 * @return obj A Model Collection of Consent objects
 	 */
 	public function getGrantedConsentsFor($request_ref)
 	{
