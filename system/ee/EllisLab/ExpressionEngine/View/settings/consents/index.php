@@ -27,7 +27,7 @@
 
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove',
-	'form_url'	=> ee('CP/URL')->make('channels', ee()->cp->get_url_state()),
+	'form_url'	=> ee('CP/URL')->make('settings/consents', ee()->cp->get_url_state()),
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)
