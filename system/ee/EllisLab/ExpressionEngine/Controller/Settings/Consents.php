@@ -9,8 +9,7 @@
 
 namespace EllisLab\ExpressionEngine\Controller\Settings;
 
-use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
-use EllisLab\ExpressionEngine\Library\CP\Table;
+use EllisLab\ExpressionEngine\Model\Consent\ConsentRequest;
 
 /**
  * Consents Controller
@@ -163,8 +162,7 @@ class Consents extends Settings {
 			$request = ee('Model')->make('ConsentRequest');
 			$request->source = 'u';
 
-			$version = $this->makeNewVersion();
-			$request->Versions->add($version);
+			$version = $this->makeNewVersion($request);
 		}
 		else
 		{
@@ -177,15 +175,11 @@ class Consents extends Settings {
 				show_error(lang('unauthorized_access'), 403);
 			}
 
-			// If the current version of the request has any consents, then we are making
-			// a new version.
-			if ($request->CurrentVersion->Consents->count())
+			// If there is no current version, or if the current version of the request has
+			// any consents, then we are making a new version.
+			if ( ! $request->CurrentVersion || $request->CurrentVersion->Consents->count())
 			{
-				$version = $this->makeNewVersion();
-				$version->request = $request->CurrentVersion->request;
-				$version->request_format = $request->CurrentVersion->request_format;
-
-				$request->Versions->add($version);
+				$version = $this->makeNewVersion($request);
 			}
 			else
 			{
@@ -329,13 +323,24 @@ class Consents extends Settings {
 		ee()->cp->render('settings/form', $vars);
 	}
 
-	private function makeNewVersion()
+	private function makeNewVersion(ConsentRequest $request = NULL)
 	{
 		$version = ee('Model')->make('ConsentRequestVersion');
 		$version->author_id = ee()->session->userdata['member_id'];
 		$version->last_author_id = ee()->session->userdata['member_id'];
 		$version->create_date = ee()->localize->now;
 		$version->edit_date = ee()->localize->now;
+
+		if ($request)
+		{
+			$request->Versions->add($version);
+
+			if ($request->CurrentVersion)
+			{
+				$version->request = $request->CurrentVersion->request;
+				$version->request_format = $request->CurrentVersion->request_format;
+			}
+		}
 
 		return $version;
 	}
