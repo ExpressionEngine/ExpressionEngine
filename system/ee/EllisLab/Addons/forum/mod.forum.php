@@ -841,9 +841,9 @@ class Forum {
 
 		// Check path to folder containing the requested theme
 		$this->theme = ($forum_theme != '' &&
-		@is_dir(ee('Theme')->getPath('forum/'.$forum_theme))) ? $forum_theme : $this->fetch_pref('board_default_theme');
+		ee('Filesystem')->exists(ee('Theme')->getPath('forum/'.$forum_theme))) ? $forum_theme : $this->fetch_pref('board_default_theme');
 
-		if ( ! @is_dir(ee('Theme')->getPath('forum/'.$this->theme)))
+		if ( ! ee('Filesystem')->exists(ee('Theme')->getPath('forum/'.$this->theme)))
 		{
 			return ee()->output->fatal_error('Unable to locate the forum theme folder.');
 		}

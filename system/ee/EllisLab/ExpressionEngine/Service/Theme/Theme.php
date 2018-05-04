@@ -15,7 +15,7 @@ namespace EllisLab\ExpressionEngine\Service\Theme;
 class Theme {
 
 	/**
-	 * @var string The path to the 'themes/ee' directory
+	 * @var string The path to the 'system/templates/_themes/' directory
 	 */
 	protected $ee_theme_path;
 
@@ -25,7 +25,7 @@ class Theme {
 	protected $ee_theme_url;
 
 	/**
-	 * @var string The path to the 'themes/user' directory
+	 * @var string The path to the 'system/user/templates/_themes/' directory
 	 */
 	protected $user_theme_path;
 
@@ -35,6 +35,16 @@ class Theme {
 	protected $user_theme_url;
 
 	/**
+	 * @var string The path to the 'themes/ee' directory
+	 */
+	protected $ee_assets_path;
+
+	/**
+	 * @var string The path to the 'themes/user' directory
+	 */
+	protected $user_assets_path;
+
+	/**
 	 * Constructor: sets the ee and user theme path and URL properties
 	 *
 	 * @param string $ee_theme_path The path to the 'themes/ee' directory
@@ -42,12 +52,26 @@ class Theme {
 	 * @param string $user_theme_path The path to the 'themes/user' directory
 	 * @param string $user_theme_url The URL to the 'themes/user' directory
 	 */
-	public function __construct($ee_theme_path, $ee_theme_url, $user_theme_path, $user_theme_url)
+	public function __construct($ee_theme_path, $ee_theme_url, $user_theme_path, $user_theme_url, $ee_assets_path, $user_assets_path)
 	{
+
+		/*
+		$this->ee_theme_path = $ee_theme_path;
+		$this->ee_assets_path = $ee_assets_path;
+		$this->ee_assets_url = $ee_assets_url;
+		$this->user_theme_path = $user_theme_path;
+		$this->user_assets_path = $user_assets_path;
+		$this->user_assets_url = $user_assets_url;
+		*/
+
 		$this->ee_theme_path = $ee_theme_path;
 		$this->ee_theme_url = $ee_theme_url;
 		$this->user_theme_path = $user_theme_path;
 		$this->user_theme_url = $user_theme_url;
+
+		$this->ee_assets_path = $ee_assets_path;
+		$this->user_assets_path = $user_assets_path;
+
 	}
 
 	/**
@@ -88,14 +112,14 @@ class Theme {
 	/**
 	 * Gets the URL to the indicated file/directory. If the file/directory
 	 * exists in the user's theme folder use that, otherwise use the ee theme
-	 * folder.
+	 * folder. A URL MUST go to themes not system.
 	 *
 	 * @param string $path The relative path to the file/directory, i.e. "forum/default"
 	 * @return string The URL to the file/directory
 	 */
 	public function getUrl($path)
 	{
-		if (file_exists($this->user_theme_path . $path))
+		if (file_exists($this->user_assets_path . $path))
 		{
 			return $this->user_theme_url . $path;
 		}
