@@ -78,6 +78,13 @@ class Consent {
 			$consent->consent_given = FALSE;
 			$consent->update_date = $this->now;
 			$consent->consent_given_via = $via;
+
+			if ($request->CurrentVersion)
+			{
+				$consent->request_copy = $request->CurrentVersion->request;
+				$consent->request_format = $request->CurrentVersion->request_format;
+			}
+
 			$consent->save();
 			$consent->log(sprintf(lang('consent_granted_log_msg'), $via));
 		}
@@ -265,11 +272,6 @@ class Consent {
 			$consent->ConsentRequest = $request;
 			$consent->ConsentRequestVersion = $request->CurrentVersion;
 			$consent->Member = $this->member;
-			if ($request->CurrentVersion)
-			{
-				$consent->request_copy = $request->CurrentVersion->request;
-				$consent->request_format = $request->CurrentVersion->request_format;
-			}
 		}
 
 		return $consent;
