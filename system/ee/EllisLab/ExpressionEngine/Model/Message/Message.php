@@ -36,7 +36,7 @@ class Message extends Model {
 	];
 
 	protected static $_events = [
-		'afterDelete'
+		'beforeDelete'
 	];
 
 	protected $message_id;
@@ -53,7 +53,7 @@ class Message extends Model {
 	protected $total_recipients;
 	protected $message_status;
 
-	public function onAfterDelete()
+	public function onBeforeDelete()
 	{
 		foreach ($this->Recipients as $recipient)
 		{
