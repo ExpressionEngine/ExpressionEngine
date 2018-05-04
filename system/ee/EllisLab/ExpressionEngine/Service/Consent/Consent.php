@@ -61,6 +61,12 @@ class Consent {
 	{
 		$request = $this->getConsentRequest($request_ref);
 
+		// Can't consent to an empty consent request
+		if ( ! $request->CurrentVersion)
+		{
+			return;
+		}
+
 		if ($this->isAnonymous())
 		{
 			$cookie = $this->getConsentCookie();
@@ -73,12 +79,8 @@ class Consent {
 			$consent->consent_given = FALSE;
 			$consent->update_date = $this->now;
 			$consent->consent_given_via = $via;
-
-			if ($request->CurrentVersion)
-			{
-				$consent->request_copy = $request->CurrentVersion->request;
-				$consent->request_format = $request->CurrentVersion->request_format;
-			}
+			$consent->request_copy = $request->CurrentVersion->request;
+			$consent->request_format = $request->CurrentVersion->request_format;
 
 			$consent->save();
 			$consent->log(sprintf(lang('consent_granted_log_msg'), $via));
