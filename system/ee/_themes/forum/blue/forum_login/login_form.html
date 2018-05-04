@@ -1,0 +1,14 @@
+{form_declaration:member:member_login}
+	<p class="formheading">{lang:login_required}</p>
+	<p>{lang:must_be_logged_in}</p>
+
+	<a href="{path:register}">{lang:member_registration}</a>
+	<a href="{path:forgot}">{lang:forgot_password}</a>
+	<fieldset>
+		<label class="field-username">{lang:username}<input type="text" class="textbox" name="username" value="" maxlength="{username_max_length}" /></label>
+		<label class="field-password">{lang:password}<input type="password" class="textbox" name="password" autocomplete='off' maxlength="{password_max_length}" /></label>
+		<input type="submit" class="submit" value="{lang:login}" />
+		<input class="field-autologin">{lang:auto_login} <input type="checkbox" class="checkbox" name="auto_login" value="1" checked="checked" />
+		<input class="field-anon">{lang:show_name_in_userlist} <input type="checkbox" class="checkbox" name="anon" value="1" checked="checked" />
+	</fieldset>
+</form>

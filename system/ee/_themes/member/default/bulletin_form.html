@@ -1,0 +1,53 @@
+
+{form:form_declaration:sending_bulletin}
+
+{if message}
+<div class='tableCellOne'><div class='success'>{include:message}</div></div>
+{/if}
+
+<table border='0' cellspacing='0' cellpadding='0' style='width:100%'>
+
+<tr>
+<td class='profileHeadingBG' colspan="2"><div class="tableHeading">{lang:send_bulletin}</div></td>
+</tr>
+
+<tr>
+<td class='tableCellOne' style="width:20%;"><div class='defaultBold'>{lang:member_group}</div></td>
+<td class='tableCellOne' style="width:80%;">
+<select name="group_id">
+{group_id_options}
+</select>
+</td>
+</tr>
+
+<tr>
+<td class='tableCellTwo' style="width:20%;"><div class='defaultBold'>{lang:bulletin_message}</div></td>
+<td class='tableCellTwo' style="width:80%;"><textarea name='bulletin_message' style='width:100%' class='textarea' rows='10' cols='90'></textarea></td>
+</tr>
+
+<tr>
+<td class='tableCellOne' style="width:20%;"><div class='defaultBold'>{lang:bulletin_date}</div></td>
+<td class='tableCellOne' style="width:80%;">
+<input type="text" style="width:80%" class="input" name="bulletin_date" size="20" value="{input:bulletin_date}" maxlength="50" />
+</td>
+</tr>
+
+
+<tr>
+<td class='tableCellOne' style="width:20%;"><div class='defaultBold'>{lang:bulletin_expires}</div></td>
+<td class='tableCellOne' style="width:80%;">
+<input type="text" style="width:80%" class="input" name="bulletin_expires" size="20" value="{input:bulletin_expires}" maxlength="50" />
+</td>
+</tr>
+
+<tr>
+<td class='tableCellTwo' colspan="2">
+<div class='marginpad'>
+<input type='submit' class='submit' value='{lang:submit}' />
+</div>
+</td>
+</tr>
+
+</table>
+
+</form>

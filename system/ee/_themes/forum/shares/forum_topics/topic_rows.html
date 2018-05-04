@@ -1,0 +1,29 @@
+{if is_ignored}
+<tr>
+ <td class="tableCellOne" colspan="5">
+  {lang:topic_hidden} <strong>{author}</strong> {lang:is_ignored}.
+  <span style="float:right"><a href="#" onclick="showHideRow('{id1}');return false;">{lang:view_hide}</a> &bull;
+  <a href="{path:ignore}">{lang:stop_ignoring} {author}</a></span>
+ </td>
+</tr>
+{/if}
+
+<tr id="{id1}" {if is_ignored}style="display: none;"{/if}>
+<td class="tableCellTwo tablePad2 T1" align="center"><a href="{path:view_thread}"><img src="{topic_marker}" width="20" height="20" border="0" alt="" title="" /></a></td>
+<td class="tableCellOne  T2">
+<div class="topicTitle">
+{topic_type}<a href="{path:view_thread}" title="{topic_title}" >{if is_new}<b>{/if}{topic_title}{if is_new}</b>{/if}</a>
+{if pagelinks}&nbsp;&nbsp;<span class="smallLinks">(<img src="{path:image_url}marker_file.gif" width="9" height="9" border="0" alt="" title="" /> {pagelinks})</span>{/if}
+</div>
+<div class="forumLightLinks">{lang:posted_by} <a href="{path:member_profile}">{author}</a></div>
+</td>
+<td class="tableCellTwo T3" align="center"><span class="postcount">{total_replies}</span></td>
+<td class="tableCellTwo T4" align="center"><span class="postcount">{total_views}</span></td>
+<td class="tableCellOne T5" >
+<div class="tablePostInfo">
+	{if is_topic}{lang:posted_on} {last_reply format="%m-%d-%Y %h:%i %A"}<br />{/if}
+	{if is_post}<a href="{path:post_link}">{lang:posted_on} {last_reply format="%m-%d-%Y %h:%i %A"}</a><br />{/if}
+	{lang:posted_by} <a href="{path:reply_member_profile}">{reply_author}</a>
+</div>
+</td>
+</tr>

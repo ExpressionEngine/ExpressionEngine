@@ -1,0 +1,116 @@
+
+<script type="text/javascript">
+<!--
+
+function textcounter()
+{
+	var max		= {maxchars};
+	var base	= document.forms.submit_post;
+	var cur		= base.body.value.length;
+
+	if (cur > max)
+	{
+		base.body.value = base.body.value.substring(0, max);
+	} 
+	else
+	{
+		base.charsleft.value = max - cur
+	}
+}
+
+//-->
+</script>
+
+
+{form_declaration}
+
+<table border='0' cellspacing='0' cellpadding='0' style='width:100%'>
+<tr>
+<td class='profileHeadingBG' colspan='2'><div class="tableHeading">{lang:edit_signature}</div></td>
+
+</tr><tr>
+
+<td class="tableCellTwo" style="width:18%;" valign="middle" align="right">
+<div class='buttonMode'>{lang:guided}&nbsp;<input type='radio' name='mode' value='guided' onclick='setmode(this.value)' />&nbsp;{lang:normal}&nbsp;<input type='radio' name='mode' value='normal' onclick='setmode(this.value)' checked='checked'/></div></td>
+<td class="tableCellTwo" style="width:82%;"><div class="itempadbig">{include:html_formatting_buttons}</div></td>
+
+</tr><tr>
+
+<td class="tableCellTwo" style="width:18%;" valign="middle" align="right"><div class='buttonMode'>{lang:font_formatting}</div></td>
+
+<td class="tableCellTwo" style="width:82%;">
+
+<select name="size" class="select" onchange="selectinsert(this, 'size')" >
+<option value="0">{lang:size}</option>
+<option value="1">{lang:small}</option>
+<option value="3">{lang:medium}</option>
+<option value="4">{lang:large}</option>
+<option value="5">{lang:very_large}</option>
+<option value="6">{lang:largest}</option>
+</select>
+
+<select name="color" class="select" onchange="selectinsert(this, 'color')">
+<option value="0">{lang:color}</option>
+<option value="blue">{lang:blue}</option>
+<option value="green">{lang:green}</option>
+<option value="red">{lang:red}</option>
+<option value="purple">{lang:purple}</option>
+<option value="orange">{lang:orange}</option>
+<option value="yellow">{lang:yellow}</option>
+<option value="brown">{lang:brown}</option>
+<option value="pink">{lang:pink}</option>
+<option value="gray">{lang:grey}</option>
+</select>
+</td>
+
+</tr><tr>
+
+<td class="tableCellTwo" style="width:18%;" valign="top" align="right">
+<div><b>{lang:signature}</b></div>
+<div class="itempadbig"><br /><a href='#' onclick="window.open('{path:smileys}', '_blank', 'width=700,height=220,scrollbars=yes,status=yes,screenx=40,screeny=120,resizable=yes');">{lang:smileys}</a></div>
+</td>
+
+<td class="tableCellTwo" style="width:82%;"><textarea name='body' style='width:100%' class='textarea' rows='8' cols='90' onkeydown="textcounter();" onkeyup="textcounter();" >{signature}</textarea></td>
+
+
+</tr><tr>
+<td class="tableCellTwo" style="width:18%;" align="right"><b>{lang:max_characters}</b></td>
+<td class="tableCellTwo" style="width:82%;"><input type="text" class="input" name="charsleft" size="5" maxlength="4" value="{maxchars}" readonly="readonly"/></td>
+
+
+{if image}
+</tr><tr>
+<td class='tableCellTwo' style="width:18%;" align="right"><div class="itempadbig"><div class='defaultBold'>{lang:signature_image}</div></div></td>
+<td class='tableCellTwo' style="width:82%;">
+<div class="itempad"><img src="{path:signature_image}" border="0" width="{signature_image_width}" height="{signature_image_height}" title="{lang:signature_image}" /></div>
+{/if}
+
+</tr><tr>
+<td class="tableCellTwo" style="width:18%;" align="right" valign="top">
+<div class="itempadbig"><b>{lang:upload_image}</b></div>
+</td>
+<td class="tableCellTwo" style="width:82%;">
+	{if upload_allowed}
+		<div class="itempad"><input type="file" name="userfile" size="20" class="input" /></div>
+		<div class="lighttext">{lang:max_image_size}</div>
+		<div class="lighttext">{lang:allowed_image_types}</div>
+	{/if}
+	{if upload_not_allowed}
+		<div class="lighttext">{lang:uploads_not_allowed}</div>
+	{/if}
+</td>
+
+
+</tr><tr>
+
+
+<td class='tableCellOne' colspan='2'>
+<div class='marginpad'>
+<input type='submit' class='submit' value='{lang:update_signature}' name="submit" /> 
+{if image}&nbsp;&nbsp;<input type='submit' class='submit' value='{lang:remove_image}' name="remove" />{/if}
+</div>
+</td>
+</tr>
+</table>
+
+</form>

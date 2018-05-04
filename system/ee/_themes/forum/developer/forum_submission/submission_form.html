@@ -1,0 +1,277 @@
+
+<script type="text/javascript">
+<!--
+
+function textcounter()
+{
+	var max		= {maxchars};
+	var base	= document.forms.submit_post;
+	var cur		= base.body.value.length;
+
+	if (cur > max)
+	{
+		base.body.value = base.body.value.substring(0, max);
+	} 
+	else
+	{
+		base.charsleft.value = max - cur
+	}
+}
+
+function showhide(what)
+{
+	if (document.getElementById(what).style.display == "block")
+	{
+		document.getElementById(what).style.display = "none";
+	}
+	else
+	{
+		document.getElementById(what).style.display = "block";
+	}
+}
+
+
+function setannouncement()
+{
+	if (document.submit_post.announcement.checked == false)
+		return false;
+	
+	document.submit_post.announcement.checked = true;
+	document.submit_post.status.checked = false;
+	document.submit_post.sticky.checked = false;
+	document.submit_post.ann_type[0].disabled = false;	
+	document.submit_post.ann_type[1].disabled = false;	
+}
+function clearannouncement()
+{
+	document.submit_post.announcement.checked = false;
+	document.submit_post.ann_type[0].disabled = true;	
+	document.submit_post.ann_type[1].disabled = true;	
+}
+
+var rownum = {poll_rownum};
+function addPollField()
+{
+	if (rownum == 12)
+	{
+		return false;
+	}
+	rownum++
+	var marker = document.getElementById("rowpos");
+	var newrow = {poll_answer_field};
+	
+	newrow =  newrow + '<span id="rowpos"></span>';
+
+	if (typeof(marker.outerHTML) == 'undefined')
+	{
+		var range = document.createRange();
+		range.setStartBefore(marker);
+		marker.parentNode.replaceChild(range.createContextualFragment(newrow), marker);
+	}
+	else
+	{
+		marker.outerHTML = newrow;
+	}
+}
+
+//-->
+</script>
+
+
+{include:spellcheck_js}
+
+{form_declaration:forum:submit_post}
+
+<table class="tableBorder" cellpadding="0" cellspacing="0" border="0" style="width:100%;" >
+<tr>
+<td class="tableHeadingBG" colspan="2"><div class="tableHeading">{lang:submission_heading}</div></td>
+
+</tr><tr>
+
+{if is_topic}
+<td class="tableRowHeadingBold" style="width:18%;" align="right">{lang:forum_name_heading}</td>
+<td class="tableRowHeadingBold" style="width:82%;">{forum_name}</td>
+</tr>
+<tr>
+<td class="tableCellTwo" style="width:18%;" align="right"><b>{lang:title}</b></td>
+<td class="tableCellTwo" style="width:82%;">
+<input type="text" class="input" name="title" style='width:100%' size="90" value="{title}" onkeydown="var evt = arguments[0] || window.event; return (evt.keyCode != 13);" />
+</td>
+{/if}
+
+{if is_post}
+<td class="tableRowHeadingBold" style="width:18%;" align="right">{lang:topic_title}</td>
+<td class="tableRowHeadingBold" style="width:82%;">{topic_title}</td>
+{/if}
+
+</tr><tr>
+
+<td class="tableCellTwo" style="width:18%;" valign="middle" align="right"><div class='buttonMode'>{lang:guided}&nbsp;<input type='radio' name='mode' value='guided' onclick='setmode(this.value)' />&nbsp;{lang:normal}&nbsp;<input type='radio' name='mode' value='normal' onclick='setmode(this.value)' checked='checked'/></div></td>
+<td class="tableCellTwo" style="width:82%;"><div class="itempadbig">{include:html_formatting_buttons}</div></td>
+
+</tr><tr>
+
+<td class="tableCellTwo" style="width:18%;" valign="middle" align="right"><div class='buttonMode'>{lang:font_formatting}</div></td>
+
+<td class="tableCellTwo" style="width:82%;">
+
+<select name="size" class="select" onchange="selectinsert(this, 'size')" >
+<option value="0">{lang:size}</option>
+<option value="1">{lang:small}</option>
+<option value="3">{lang:medium}</option>
+<option value="4">{lang:large}</option>
+<option value="5">{lang:very_large}</option>
+<option value="6">{lang:largest}</option>
+</select>
+
+<select name="color" class="select" onchange="selectinsert(this, 'color')">
+<option value="0">{lang:color}</option>
+<option value="blue">{lang:blue}</option>
+<option value="green">{lang:green}</option>
+<option value="red">{lang:red}</option>
+<option value="purple">{lang:purple}</option>
+<option value="orange">{lang:orange}</option>
+<option value="yellow">{lang:yellow}</option>
+<option value="brown">{lang:brown}</option>
+<option value="pink">{lang:pink}</option>
+<option value="gray">{lang:grey}</option>
+</select>
+</td>
+
+
+</tr><tr>
+
+
+<td class="tableCellTwo" style="width:18%;" valign="top" align="right">
+
+<div><b>{lang:body}</b></div>
+<div class="itempadbig"><br /><a href='javascript:void(0)' onclick="window.open('{path:smileys}', '_blank', 'width=700,height=180,scrollbars=yes,status=yes,screenx=40,screeny=120,resizable=yes');">{lang:smileys}</a></div>
+
+</td>
+<td class="tableCellTwo" style="width:82%;">
+<textarea name='body' id="body" style='width:100%' class='textarea' rows='18' cols='90' onkeydown="textcounter();" onkeyup="textcounter();" >{body}</textarea>
+</td>
+
+
+</tr>
+
+{if spellcheck}
+<tr>
+<td class="tableCellTwo" style="width:18%" valign="top" align="right"><div class="default"><div class="itempadbig"><b>{lang:spell_check}</b></div></div></td>
+<td class="tableCellTwo" style="width:82%" valign="top">
+<div class="default">
+<div class="itempadbig">
+&nbsp;&nbsp;<a href="javascript:void(0);" onclick="eeSpell.getResults('body');return false;">{lang:check_spelling}</a>
+<span id="spellcheck_hidden_body" style="visibility:hidden;">&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:void(0);" onclick="SP_saveSpellCheck();return false">{lang:save_spellcheck}</a>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:void(0);" onclick="SP_revertToOriginal();return false">{lang:revert_spellcheck}</a></span>
+</div>
+</div>
+
+<iframe src="{path:spellcheck_iframe}" width="100%" style="display:none;" class="iframe" id="spellcheck_frame_body" name="spellcheck_frame_body"></iframe>
+<div id="spellcheck_popup" class="wordSuggestion" style="position:absolute;visibility:hidden;"></div>
+
+</td>
+</tr>
+{/if}
+
+
+<tr>
+<td class="tableCellTwo" style="width:18%;" align="right"><b>{lang:max_characters}</b></td>
+<td class="tableCellTwo" style="width:82%;"><input type="text" class="input" name="charsleft" size="5" maxlength="5" value="{total_characters}" readonly="readonly"/></td>
+
+{if can_post_poll}
+	</tr><tr>
+	
+	<td class="tableCellTwo" style="width:18%;" valign="top" align="right"><div class="itempad"><b>{lang:poll}</b></div></td>
+	<td class="tableCellTwo" style="width:82%;" valign="top">
+	
+	<div class="itempad"><a href="javascript:void(0);" onclick="showhide('poll');return false;">{lang:post_poll}</a></div>
+	
+	<div id="poll" style="display: none; padding:0;">
+	<div class="itempad">
+	<div class="itempadbig"><b>{lang:poll_question}</b></div>
+	<input type="text" class="input" name="poll_question" style='width:75%' size="90" value="{poll_question}" onkeydown="var evt = arguments[0] || window.event; return (evt.keyCode != 13);" />
+	
+	<div class="itempadbig"><b>{lang:poll_answers}</b>&nbsp;&nbsp;{lang:poll_answer_instructions}</div>
+	{include:poll_answers}
+	<span id="rowpos"></span>
+	<div class="itempadbig">&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:addPollField(); void(0);">{lang:add_another_row}</a></div>
+	
+	<div class="itempadbig"><div class="highlight">{lang:poll_delete_instructions}</div></div>
+	
+	</div>
+	</div>
+	
+	</td>
+{/if}
+
+</tr><tr>
+
+<td class="tableCellTwo" style="width:18%;" valign="top" align="right"><div class="itempad"><b>{lang:options}</b></div>
+{if show_more_options}
+<div class="forumLightLinks"><a href="javascript:void(0);" onclick="showhide('options');return false;">{lang:more_options}</a></div>
+{/if}
+</td>
+<td class="tableCellTwo" style="width:82%;" valign="top">
+
+<div class="itempad"><input type="checkbox" class="checkbox" name="notify" value="y" {notify_checked} /> {lang:notify_of_repsonses}</div>
+<div class="itempad"><input type="checkbox" class="checkbox" name="smileys" value="y" {smileys_checked} /> {lang:enable_smileys}</div>
+
+<div id="options" style="display: none; padding:0;">
+
+{if can_announce}
+<div class="itempad">
+<input type="checkbox" class="checkbox" name="announcement" value="y" {announce_checked} onclick="setannouncement();" /> {lang:make_post_announcement}
+{/if}	
+	
+{if is_admin}
+	&nbsp;&nbsp;<input type="radio" name="ann_type" value="t" {type_one_checked} /> {lang:in_this_forum}&nbsp;&nbsp;<input type="radio" name="ann_type" value="a" {type_all_checked} /> {lang:in_all_forums}
+{/if}
+
+{if can_announce}
+</div>
+{/if}
+
+{if is_moderator}
+<div class="itempad"><input type="checkbox" class="checkbox" name="sticky" value="y" {sticky_checked} onclick="clearannouncement();" /> {lang:make_post_sticky}</div>
+{/if}
+
+{if can_change_status}
+<div class="itempad"><input type="checkbox" class="checkbox" name="status" value="c" {status_checked} onclick="clearannouncement();" /> {lang:close_post}</div>
+{/if}
+
+</div>
+</td>
+
+{if can_upload}
+</tr><tr>
+<td class="tableCellTwo" style="width:18%;" valign="bottom" align="right">
+<div class="itempadbig"><b>{lang:attachments}</b></div>
+<div class="forumLightLinks">{lang:max_attach_size}</div>
+</td>
+<td class="tableCellTwo" valign="bottom">
+<div class="itempad"><input type="file" name="userfile" size="20" class="input" /></div>
+<div class="forumLightLinks">{lang:click_preview_to_attach}</div>
+</td>
+{/if}
+
+
+{if attachments_exist}
+</tr><tr>
+<td class="tableCellTwo" style="width:18%;" valign="top" align="right"><div class="itempad"><br /><b>{lang:current_attachments}</b></div></td>
+<td class="tableCellTwo" style="width:82%;"><div class="itempadbig">
+	{include:form_attachments}
+</td>
+{/if}
+
+
+</tr><tr>
+<td class="tableCellTwo" style="width:18%;">&nbsp;</td>
+<td class="tableCellTwo" style="width:82%;"><div class="itempadbig">
+<input type="submit" name="preview" class="submit" value="{lang:preview_post}" />&nbsp;&nbsp;&nbsp;
+<input type="submit" name="submit" class="submit" value="{lang:submit_post}" />
+</div>
+</td>
+</tr>
+</table>
+
+</form>

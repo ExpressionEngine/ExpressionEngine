@@ -1,0 +1,124 @@
+
+{if is_ignored}
+<tr>
+ <td colspan="3">
+  <table class="ignored" style="width:100%">
+   <tr>
+   <td class="tableCellOne">
+    <span style="float:right"><a href="#" onclick="showHideRow('{id9}');return false;">{lang:view_hide}</a> &bull;
+    <a href="{path:ignore}">{lang:stop_ignoring} {author}</a></span>{lang:post_hidden} <strong>{author}</strong> {lang:is_ignored}.
+   </td>
+   </tr>
+  </table>
+ </td>
+</tr>
+{/if}
+
+<tr id="{id9}" {if is_ignored}style="display: none;"{/if}>
+ <td colspan="3">
+
+
+ <table class="threadBorder" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
+  <tr>
+   <td class="tableRowHeadingBold" style="width:130px;"><div class="largeLinks"><a href="{path:member_profile}">{author}</a></div></td>
+   <td class="tableRowHeading" colspan="2">
+
+	<table cellpadding="0" cellspacing="0" border="0" style="width:99%;">
+	<tr>
+	<td>{lang:posted_on} {post_date format="%d %F %Y %h:%i %A"}</td>
+	<td align="right">
+	{if can_view_ip}<i>{lang:ip_address} {ip_address}</i>{/if}
+		
+	{if is_topic}
+		{if can_change_status}&nbsp;&nbsp;<span class="smallLinks">[ <a href="{path:change_status}">{lang:change_status}</a> ]</span>{/if}
+	{/if}
+	{if can_ban}&nbsp;&nbsp;<span class="smallLinks">[ <a href="{path:ban_member}">{lang:ban_member}</a> ]</span>{/if}
+
+	{if can_report}&nbsp;&nbsp;<span class="smallLinks">[ <a href="{path:report}" title="{lang:report}">{lang:report}</a> ]</span>{/if}
+	
+	{if can_ignore}&nbsp;&nbsp;<span class="smallLinks">[ <a href="{path:ignore}" title="{lang:ignore}">{lang:ignore}</a> ]</span>{/if}
+	
+	{if is_post}&nbsp;&nbsp;<span class="smallLinks">[ <a name="{post_id}" href="{path:post_link}" title="{lang:post_permalink}"># {post_number}</a> ]</span>{/if}
+	
+	&nbsp;
+	</td>
+	</tr>
+	</table>
+
+   </td>
+  </tr>
+<tr>
+ <td class="tableCellOne" style="width:130px;" valign="top">
+	<div class="{rank_class}">{rank_title}</div>
+	{if avatar}<div class="itempad"><img src="{path:avatars}" width="{avatar_width}" height="{avatar_height}" border="0" alt="{lang:avatar}" /></div>{/if}
+	<div class="itempad">{if rank_stars}<img src="{path:image_url}rank.gif" width="9" height="10" border="0" alt="{lang:rank}" class="rankImage" />{/if}</div>
+	<div class="userBlock">{lang:total_posts}&nbsp; {total_posts}</div>
+	<div class="userBlock">{lang:joined}&nbsp; {join_date format="%Y-%m-%d"}</div>
+</td>
+<td class="tableCellOne" valign="top" colspan="2"><div class="post">{body}</div>
+	{if edited}<div class="edited"><em>[ {lang:edited}: {edit_date format="%d %F %Y %h:%i %A"} {lang:by} <a href="{path:edit_author_profile}">{edit_author}</a>]</em></div>{/if}
+	{if attachments}
+	{include:post_attachments}
+	{/if}
+	{if signature}
+	{include:signature}
+	{/if}
+
+</td>
+
+</tr><tr>
+
+<td class="tableCellTwo"  style="width:130px;">
+	<table cellpadding="0" cellspacing="0" border="0" width="100%">
+	<tr>
+	<td align="center"><div class="button"><div class="buttonSmall" id="{id1}" onclick="navJump('{path:member_profile}')" onmouseover="navHover(this);" onmouseout="navReset(this);">{lang:profile}</div></div></td>
+	
+	{if logged_in}
+	<td align="center"><div class="button40"><div class="buttonSmall" id="{id2}" onclick="navJump('{path:send_private_message}')" onmouseover="navHover(this);" onmouseout="navReset(this);">{lang:pm_short}</div></div></td>
+	{/if}
+
+	</tr>
+	</table>
+</td>
+
+<td class="tableCellTwo" colspan="2">
+	<table cellpadding="0" cellspacing="0" border="0">
+	<tr>
+	{if can_edit}
+		<td align="center"><div class="button100"><div class="buttonSmall"  id="{id4}" onclick="navJump('{path:edit_post}')" onmouseover="navHover(this);" onmouseout="navReset(this);">{lang:edit}</div></div></td>
+	{/if}
+	{if can_delete}
+		<td><div class="button100"><div class="buttonSmall" id="{id5}" onclick="navJump('{path:delete_post}')" onmouseover="navHover(this);" onmouseout="navReset(this);">{lang:delete}</div></div></td>
+	{/if}
+	
+	{if is_topic}
+		{if can_move}
+			<td><div class="button100"><div class="buttonSmall" id="{id6}" onclick="navJump('{path:move_topic}')" onmouseover="navHover(this);" onmouseout="navReset(this);">{lang:move}</div></div></td>
+		{/if}
+		{if can_merge}
+			<td><div class="button100"><div class="buttonSmall" id="{id7}" onclick="navJump('{path:merge_topic}')" onmouseover="navHover(this);" onmouseout="navReset(this);">{lang:merge}</div></div></td>
+		{/if}
+		{if can_split}
+			<td><div class="button100"><div class="buttonSmall" id="{id8}" onclick="navJump('{path:split_topic}')" onmouseover="navHover(this);" onmouseout="navReset(this);">{lang:split}</div></div></td>
+		{/if}		
+	{/if}
+		
+	{if is_post}
+		{if can_move}
+			<td><div class="button100"><div class="buttonSmall" id="{id10}" onclick="navJump('{path:move_reply}')" onmouseover="navHover(this);" onmouseout="navReset(this);">{lang:move}</div></div></td>
+		{/if}
+	{/if}
+	
+	{if can_post}
+		<td align="center"><div class="button100"><div class="buttonSmall" id="{id3}" onclick="navJump('{path:quote_reply}')" onmouseover="navHover(this);" onmouseout="navReset(this);">{lang:quote}</div></div></td>
+	{/if}
+	
+	<td>&nbsp;</td>	
+	</tr>
+	</table>
+  </td>
+ </tr>
+</table>
+
+</td>
+</tr>

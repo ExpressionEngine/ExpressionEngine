@@ -1,0 +1,18 @@
+<div id='pageheader'>
+<table style="width:100%; height:50px;" border="0" cellpadding="0" cellspacing="0">
+<tr>
+<td style="width:45%;"><a href="{path:forum_home}" title="{forum_name}">{lang:ee_forums}</a></td>
+<td style="width:55%;" align="right" class="rightheader">
+
+{if logged_in}
+{include:private_message_box}
+{/if}
+
+{if logged_out}
+{include:login_form_mini}
+{/if}
+
+</td>
+</tr>
+</table>
+</div>

@@ -1,0 +1,31 @@
+            <div id="credits" class="clearfix">
+            	<p id="f1">
+					Powered By <a href="https://ellislab.com/">ExpressionEngine</a><br />
+					Template Design By <a href="http://www.sonnenvogel.com/">Sonnenvogel.com</a><br />
+{if in_forum}
+<form method="post" action="{path:set_theme}">
+<input type="hidden" name="csrf_token" value="{csrf_token}" />
+Select a theme:
+<select name="theme" class="select" onchange="if (this.value != '') this.form.submit()">
+<option value="">{lang:select_theme}</option>
+{include:theme_option_list}
+</select>
+</form>
+{/if}
+
+				</p>
+				<p id="f2">{lang:ee_discussion_forum} - {lang:version} {module_version} ({forum_build})<br />
+{lang:elapsed_time}</p>
+
+{if feeds_enabled}
+<p id="f3"><a href="{path:atom}"><img src="{path:image_url}bt_atom.gif" width="77" height="16" border="0" alt="{lang:atom_feed}" title="{lang:atom_feed}" /></a><br /><a href="{path:rss}"><img src="{path:image_url}bt_rss.gif" width="61" height="16" border="0" alt="{lang:rss_feed}" title="{lang:rss_feed}"  /></a>
+</p>
+{/if}
+
+            </div>
+            </div>
+            </div>
+
+
+</body>
+</html>

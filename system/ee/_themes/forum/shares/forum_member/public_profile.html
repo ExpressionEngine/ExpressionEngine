@@ -1,0 +1,181 @@
+<table border='0' cellspacing='0' cellpadding='0' style='width:100%'>
+<tr>
+<td class='profileTopBox' valign='top' style="width:50%;">
+
+	<table border='0' cellspacing='0' cellpadding='0' >
+	<tr>
+	{if avatar}<td style="width:{avatar_width}px;"><img class="avatar" src="{path:avatar_url}" width="{avatar_width}" height="{avatar_height}" border="0" alt="{name}" title="{name}" /></td>{/if}
+	<td valign="top">
+	<div class='profileTitle'>{name}</div>
+	<div class="{rank_class}">{rank_title}</div>
+	<div class="itempad">{if rank_stars}<img src="{path:image_url}rank.gif" width="9" height="10" border="0" alt="{lang:rank}" class="rankImage" />{/if}</div>
+	<div class='itempad'>{lang:member_group}&nbsp; <b>{member_group}</b></div>
+	<div class='itempadbig'><a href="{search_path}"><b>{lang:view_posts_by_member}</b></a></div>
+	{if ignore}
+	  <div class='itempad'><b>{ignore_link}</b></div>
+	{/if}
+	</td>
+	</tr>
+	</table>
+
+</td>
+	<td class='profilePhoto' valign='middle' style="width:50%;">
+
+	<table border='0' cellspacing='0' cellpadding='0' style='width:100%'>
+	<tr>
+	<td>
+		<div class="defaultCenter">
+		{if photo}
+			<div class="itempad"><img src="{path:photo_url}" class="photo" width="{photo_width}" height="{photo_height}" border="0" title="{name}" alt="{name} photo" /></div>
+			<div class="lighttext">{lang:my_photo}</div>
+		{/if}
+		{if not_photo}
+			<div class="itempad"><img src="{path:image_url}icon_profile.gif" width="50" height="50" border="0" title="{name}" alt="Profile" /></div>
+			<div class="lighttext">{lang:no_photo_exists}</div>
+		{/if}
+		</div>
+	</td>
+	</tr>
+	</table>
+</td>
+</tr>
+</table>
+
+
+<div class='itempad'>&nbsp;</div>
+
+
+<table border='0' cellspacing='0' cellpadding='0' style='width:100%'>
+<tr>
+<td style="width:49%;" valign='top'>
+
+<table class='tableBorderLeft' border='0' cellspacing='0' cellpadding='0' style='width:100%'>
+<tr>
+<td class='tableRowHeadingBold' colspan='2'>{lang:communications}</td>
+</tr><tr>
+
+<td class='tableCellTwo' style="width:42%;"><div class='defaultBold'>{lang:email}</div></td>
+<td class='tableCellOne' style="width:58%;">
+{if accept_email}
+<a href="#" {email_console}><img src="{path:image_url}icon_email.gif" width="56" height="14" alt="{lang:email_console}" title="{lang:email_console}" border="0" /></a>
+{/if}
+</td>
+
+</tr>
+{if can_private_message}
+<tr>
+
+<td class='tableCellTwo' style="width:42%;"><div class='defaultBold'>{lang:private_message}</div></td>
+<td class='tableCellOne' style="width:58%;">
+<a href="{send_private_message}"><img src="{path:image_url}icon_pm.gif" width="56" height="14" alt="{lang:send_pm}" title="{lang:send_pm}" border="0" /></a>
+</td>
+
+</tr>
+{/if}
+
+</table>
+
+
+
+<div class='itempad'>&nbsp;</div>
+
+<table class='tableBorderLeft' border='0' cellspacing='0' cellpadding='0' style='width:100%'>
+<tr>
+<td class='tableRowHeadingBold' colspan='2'>{lang:personal_info}</td>
+</tr><tr>
+
+<td class='tableCellTwo' style="width:42%;"><div class='defaultBold'>{lang:location}</div></td>
+<td class='tableCellOne' style="width:58%;"><div class='default'>{location}</div></td>
+
+{custom_profile_fields}
+
+</tr>
+</table>
+
+
+
+</td>
+<td style="width:2%;">&nbsp;</td>
+
+<td style="width:49%;" valign='top'>
+
+
+<table class='tableBorderLeft' border='0' cellspacing='0' cellpadding='0' style='width:100%'>
+<tr>
+<td class='tableRowHeadingBold' colspan='2'>{lang:statistics}</td>
+
+</tr><tr>
+
+<td class='tableCellTwo' style="width:46%;"><div class='defaultBold'>{lang:member_group}</div></td>
+<td class='tableCellOne' style="width:54%;"><div class='default'>{member_group}</div></td>
+
+</tr><tr>
+
+<td class='tableCellTwo' style="width:46%;"><div class='defaultBold'>{lang:total_entries}</div></td>
+<td class='tableCellOne' style="width:54%;"><div class='default'>{total_entries}</div></td>
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:total_comments}</div></td>
+<td class='tableCellOne'><div class='default'>{total_comments}</div></td>
+
+{if forum_installed}
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:total_forum_topics}</div></td>
+<td class='tableCellOne'><div class='default'>{total_forum_topics}</div></td>
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:total_forum_replies}</div></td>
+<td class='tableCellOne'><div class='default'>{total_forum_replies}</div></td>
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:total_forum_posts}</div></td>
+<td class='tableCellOne'><div class='default'>{total_forum_posts}</div></td>
+
+{/if}
+
+</tr><tr>
+
+<td class='tableCellTwo' style="width:46%;"><div class='defaultBold'>{lang:member_local_time}</div></td>
+<td class='tableCellOne' style="width:54%;">{local_time format="%F %d, %Y &nbsp;%h:%i %A"}</td>
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:last_visit}</div></td>
+<td class='tableCellOne'>{last_visit format="%F %d, %Y &nbsp;%h:%i %A"}</td>
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:join_date}</div></td>
+<td class='tableCellOne'>{join_date format="%F %d, %Y &nbsp;%h:%i %A"}</td>
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:most_recent_entry}</div></td>
+<td class='tableCellOne'>{last_entry_date format="%F %d, %Y &nbsp;%h:%i %A"}</td>
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:most_recent_comment}</div></td>
+<td class='tableCellOne'>{last_comment_date format="%F %d, %Y &nbsp;%h:%i %A"}</td>
+
+{if forum_installed}
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:most_recent_forum_post}</div></td>
+<td class='tableCellOne'>{last_forum_post_date format="%F %d, %Y &nbsp;%h:%i %A"}</td>
+
+{/if}
+
+</tr>
+</table>
+
+</td>
+</tr>
+</table>
+

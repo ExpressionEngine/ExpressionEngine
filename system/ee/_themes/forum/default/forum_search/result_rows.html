@@ -1,0 +1,30 @@
+<tr>
+<td class="tableCellTwo" style="width:4%;" align="center"><a href="{path:view_thread}"><img src="{topic_marker}" width="24" height="18" border="0" alt="{topic_title}" title="{topic_title}" /></a></td>
+<td class="tableCellOne" style="width:50%;">
+<div class="topicTitle">
+
+{if reply_results == 0}
+	{topic_type}<a href="{path:view_thread}" title="{topic_title}" ><b>{topic_title}</b></a>
+{if:elseif reply_results < 6}
+	{topic_type}<a href="{path:view_thread}" title="{topic_title}" ><b>{topic_title}</b></a>
+	<br /><span class="smallLinks">{lang:found_in} <ul>{include:reply_results}</ul></span>
+{if:else}
+	{topic_type}<a href="{path:view_thread}" title="{topic_title}" ><b>{topic_title}</b></a>
+	<br /><span class="smallLinks">{lang:found_in_many} - <a href="{path:search_thread}">{lang:search_thread}</a></span>
+{/if}
+
+{if pagelinks}&nbsp;&nbsp;<span class="smallLinks">(<img src="{path:image_url}marker_file.gif" width="9" height="9" border="0" alt="" title="" /> {pagelinks})</span>{/if}
+</div>
+<div class="forumLightLinks">{lang:posted_by} <a href="{path:member_profile}">{author}</a></div>
+</td>
+<td class="tableCellTwo" style="width:6%;" align="center">{total_posts}</td>
+<td class="tableCellTwo" style="width:6%;" align="center">{total_views}</td>
+<td class="tableCellOne" style="width:38%;">
+<div class="tablePostInfo">
+	{lang:posted_on} {last_reply:relative format="%m-%d-%Y %h:%i %A" stop="tomorrow"}<br />
+	{lang:posted_by} <a href="{path:reply_member_profile}">{reply_author}</a><br />
+	{lang:forum} <a href="{path:viewforum}" title="{forum_name}">{forum_name}</a>
+
+</div>
+</td>
+</tr>

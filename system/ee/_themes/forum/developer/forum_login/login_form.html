@@ -1,0 +1,38 @@
+{form_declaration:member:member_login}
+
+<table class="tableBorder" cellpadding="0" cellspacing="0" border="0" style="width:700px;" align="center">
+<tr>
+<td class="tableHeadingBG" colspan="2"><div class="tableHeading">{lang:login_required}</div>
+</td>
+
+</tr><tr>
+
+<td class="tableRowHeadingBold" colspan="2">{lang:must_be_logged_in}</td>
+
+</tr><tr>
+
+<td class="tableCellOne" align="right"><div class="itempadbig"><a href="{path:register}">{lang:member_registration}</a></div></td>
+<td class="tableCellOne"><div class="itempadbig"><a href="{path:forgot}">{lang:forgot_password}</a></div></td>
+
+</tr><tr>
+
+<td class="tableCellTwo" align="right" style="width:35%;"><b>{lang:username}</b></td>
+<td class="tableCellTwo" style="width:75%;"><input type="text" style="width:80%" class="input" name="username" size="20" value="" maxlength="{username_max_length}" /></td>
+
+</tr><tr>
+
+<td class="tableCellTwo" align="right"><b>{lang:password}</b></td>
+<td class="tableCellTwo"><input type="password" style="width:80%" class="input" name="password" size="20" value="" maxlength="{password_max_length}" autocomplete='off' /></td>
+
+</tr><tr>
+
+<td class="tableCellOne" align="right"><input type="submit" class="submit" value="{lang:login}" /></td>
+<td class="tableCellOne">
+<input type="checkbox" class="checkbox" name="auto_login" value="1" checked="checked" /> {lang:auto_login}<br />
+<input type="checkbox" class="checkbox" name="anon" value="1" checked="checked" /> {lang:show_name_in_userlist}
+</td>
+
+</tr>
+</table>
+
+</form>

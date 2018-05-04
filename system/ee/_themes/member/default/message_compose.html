@@ -1,0 +1,219 @@
+
+{include:hidden_js}
+{include:search_js}
+{include:spellcheck_js}
+{include:text_counter_js}
+{include:dynamic_address_book}
+
+<!-- Hidden Emoticon Popup -->
+
+<div id="emoticons" class="tableCellOne" style="border: 1px solid #666; position:absolute;visibility:hidden;">
+
+<script type="text/javascript">
+//<![CDATA[
+function add_smiley(smiley)
+{
+	taginsert('other', " " + smiley + " ", '');
+	//document.getElementById('submit_message').body.value += " " + smiley + " ";
+	emoticonspopup.hidePopup('emoticons');
+	document.getElementById('submit_message').body.focus();
+}
+//]]>
+</script>
+
+{form_declaration}
+<table border='0' cellspacing='0' cellpadding='10' style='width:200px'>
+
+{include:emoticons}
+
+</table>
+</form>
+<div class="defaultCenter">
+<p><a href="" onclick="emoticonspopup.hidePopup(); return false;">{lang:close_window}</a></p>
+</div>
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var emoticonspopup = new PopupWindow("emoticons");
+emoticonspopup.offsetY=0;
+emoticonspopup.offsetX=0;
+emoticonspopup.autoHide();
+//]]>
+</script>
+
+<!-- End Hidden Emoticon Popup -->
+
+
+{include:submission_error}
+{include:preview_message}
+
+{form:form_declaration:messages}
+
+<table cellpadding="0" cellspacing="0" border="0" width="100%" >
+
+<tr>
+<td class="menuHeadingBG" colspan="2"><div class="tableHeading">{lang:new_message}</div></td>
+</tr>
+
+<tr>
+<td class="tableCellTwo" style="width:25%" align="right"><b>{lang:message_recipients}</b> &nbsp;{include:search:recipients}</td>
+<td class="tableCellTwo" style="width:75%">
+<textarea name='recipients' id='recipients' style='width:100%' class='textarea' rows='2' cols='90' onkeyup='buddy_list(this.name);'>{input:recipients}</textarea>
+<div id="recipients_buddies"></div>
+</td>
+</tr>
+
+<tr>
+<td class="tableCellTwo" style="width:25%" align="right"><b>{lang:cc}</b> &nbsp;{include:search:cc}</td>
+<td class="tableCellTwo" style="width:75%">
+<textarea name='cc' id='cc' style='width:100%' class='textarea' rows='2' cols='90' onkeyup='buddy_list(this.name);'>{input:cc}</textarea>
+<div id="cc_buddies"></div>
+</td>
+</tr>
+
+<tr>
+<td class="tableCellTwo" style="width:25%" align="right"><b>{lang:message_subject}</b></td>
+<td class="tableCellTwo" style="width:75%">
+<input type="text" class="input" name="subject" style='width:100%' size="90" value="{input:subject}" />
+</td>
+</tr>
+
+<tr>
+<td class="tableCellTwo" style="width:25%" valign="middle" align="right">
+<b>{lang:guided}&nbsp;<input type='radio' name='mode' value='guided' onclick='setmode(this.value)' />&nbsp;
+{lang:normal}&nbsp;<input type='radio' name='mode' value='normal' onclick='setmode(this.value)' checked='checked'/></b>
+</td>
+<td class="tableCellTwo" style="width:75%">
+<div class="default">
+
+ {include:html_formatting_buttons}
+
+</div>
+</td>
+</tr>
+
+
+
+<tr>
+<td class="tableCellTwo" style="width:25%" valign="middle" align="right">
+<b>{lang:font_formatting}</b>
+</td>
+<td class="tableCellTwo" style="width:75%">
+<div class="default">
+
+<select name="size" class="select" onchange="selectinsert(this, 'size')" >
+<option value="0">{lang:size}</option>
+<option value="1">{lang:small}</option>
+<option value="3">{lang:medium}</option>
+<option value="4">{lang:large}</option>
+<option value="5">{lang:very_large}</option>
+<option value="6">{lang:largest}</option>
+</select>
+
+<select name="color" class="select" onchange="selectinsert(this, 'color')">
+<option value="0">{lang:color}</option>
+<option value="blue">{lang:blue}</option>
+<option value="green">{lang:green}</option>
+<option value="red">{lang:red}</option>
+<option value="purple">{lang:purple}</option>
+<option value="orange">{lang:orange}</option>
+<option value="yellow">{lang:yellow}</option>
+<option value="brown">{lang:brown}</option>
+<option value="pink">{lang:pink}</option>
+<option value="gray">{lang:grey}</option>
+</select>
+
+</div>
+</td>
+</tr>
+
+
+<tr>
+<td class="tableCellTwo" style="width:25%" valign="top" align="right">
+<div><b>{lang:message}</b></div>
+<div class="default"><br /><a href='javascript:void(0);' onclick='dynamic_emoticons();return false;'>{lang:smileys}</a></div>
+</td>
+<td class="tableCellTwo" style="width:75%">
+<textarea name='body' id="body" style='width:100%' class='textarea' rows='20' cols='90' onkeydown='text_counter();' onkeyup='text_counter();'>{input:body}</textarea>
+</td>
+</tr>
+
+{if spellcheck}
+
+<tr>
+<td class="tableCellTwo" style="width:25%" valign="top" align="right"><div class="default"><div class="itempadbig"><b>{lang:spell_check}</b></div></div></td>
+<td class="tableCellTwo" style="width:75%" valign="top">
+<div class="default">
+<div class="itempadbig">
+&nbsp;&nbsp;<a href="javascript:void(0);" onclick="eeSpell.getResults('body');return false;">{lang:check_spelling}</a>
+<span id="spellcheck_hidden_body" style="visibility:hidden;">&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:void(0);" onclick="SP_saveSpellCheck();return false">{lang:save_spellcheck}</a>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:void(0);" onclick="SP_revertToOriginal();return false">{lang:revert_spellcheck}</a></span>
+</div>
+</div>
+
+<iframe src="{path:spellcheck_iframe}" width="100%" style="display:none;" class="iframe" id="spellcheck_frame_body" name="spellcheck_frame_body"></iframe>
+<div id="spellcheck_popup" class="wordSuggestion" style="position:absolute;visibility:hidden;"></div>
+
+</td>
+</tr>
+
+{/if}
+
+
+<tr>
+<td class='tableCellTwo' style='width:25%;' align='right'>
+<div class='defaultBold'>{lang:characters}</div>
+</td>
+<td class='tableCellTwo' style='width:75%;' valign='top'><input type="text" class="input" name="charsleft" size="5" maxlength="4" value="{lang:max_chars}" readonly="readonly" /></td>
+</tr>
+
+<tr>
+<td class="tableCellTwo" style="width:25%" valign="top" align="right"><div class="itempad"><b>{lang:message_options}</b></div></td>
+<td class="tableCellTwo" style="width:75%" valign="top">
+<div class="default"><input type="checkbox" class="checkbox" name="sent_copy" value="y" {input:sent_copy_checked} /> {lang:sent_copy}</div>
+<div class="default"><input type="checkbox" class="checkbox" name="hide_cc" value="y" {input:hide_cc_checked} /> {lang:hide_cc}</div>
+</td>
+</tr>
+
+{if attachments_allowed}
+
+<tr>
+<td class="tableCellTwo" style="width:25%" valign="top" align="right">
+<div class="default"><b>{lang:attachments}</b></div>
+<div class="lighttext">{lang:max_size}&nbsp;{lang:max_file_size} {lang:kb}</div>
+</td>
+<td class="tableCellTwo">
+<div class="default"><input type="file" name="userfile" size="20" class="input" /></div>
+<div class="lighttext">{lang:click_preview_to_attach}</div>
+</td>
+</tr>
+
+{/if}
+
+
+{if attachments_exist}
+
+<tr>
+<td class="tableCellTwo" style="width:25%" valign="top" align="right">
+<div class="default"><b>{lang:attachments}</b></div>
+</td>
+<td class="tableCellTwo" valign="bottom">
+<div class="default">{include:attachments}</div>
+</td>
+</tr>
+
+{/if}
+
+<tr>
+<td class="tableCellTwo" style="width:25%">&nbsp;</td>
+<td class="tableCellTwo" style="width:75%"><div class="itempadbig">
+<input type="submit" name="preview" class="submit" value="{lang:preview_message}" />&nbsp;&nbsp;&nbsp;
+<input type="submit" name="draft" class="submit" value="{lang:draft_message}" />&nbsp;&nbsp;&nbsp;
+<input type="submit" name="submit" class="submit" value="{lang:send_message}" />
+</div>
+</td>
+</tr>
+
+</table>
+
+</form>

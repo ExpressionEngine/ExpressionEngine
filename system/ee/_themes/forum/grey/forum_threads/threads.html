@@ -1,0 +1,157 @@
+
+<script type="text/javascript">
+<!--
+
+function showimage(loc, width, height)
+{
+	window.open(loc,'Image','width='+width+',height='+height+',screenX=0,screenY=0,top=0,left=0,toolbar=0,status=0,scrollbars=0,location=0,menubar=1,resizable=1');
+	return false;
+}
+
+function showfastreply()
+{
+	if (document.getElementById('fastreply').style.display == "block")
+	{
+		document.getElementById('fastreply').style.display = "none";
+	}
+	else
+	{
+		document.getElementById('fastreply').style.display = "block";
+	}
+}
+
+function showHideRow(el)
+{
+	if (document.getElementById(el).style.display == "")
+	{
+		document.getElementById(el).style.display = "none";
+	}
+	else
+	{
+		document.getElementById(el).style.display = "";
+	}
+}
+
+function post(path, params, method) {
+    method = method || "post"; // Set method to post by default if not specified.
+
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", path);
+
+    for(var key in params) {
+        if(params.hasOwnProperty(key)) {
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", key);
+            hiddenField.setAttribute("value", params[key]);
+
+            form.appendChild(hiddenField);
+         }
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+}
+
+function subscribe(el)
+{
+	var csrf_token = "{csrf_token}",
+	         parts = el.href.slice(0, -1).split('/'),
+		  topic_id = parts.pop(),
+		       url = parts.join('/');
+
+	post(url, {
+		topic_id: topic_id,
+		csrf_token: csrf_token
+	});
+
+	return false;
+}
+//-->
+</script>
+
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%;">
+<tr>
+<td valign="middle" style="width:80%;">
+{paginate}
+<table cellpadding="0" cellspacing="0" border="0" class="paginateBorder">
+<tr>
+<td><div class="paginateStat">{current_page} {lang:of} {total_pages}</div></td>
+{pagination_links}
+</tr>
+</table>
+{/paginate}
+</td>
+{if can_post}
+<td align="right" style="width:20%;"><div class="button150"><div class="buttonLarge" id="pr1" onclick="navJump('{path:post_reply}')" onmouseover="navHover(this);" onmouseout="navReset(this);">{lang:post_reply}</div></div></td>
+{/if}
+
+{if can_post_topics}
+<td align="right" style="width:140px;"><div class="buttonSpacer"><div class="button150"><div class="buttonLarge" id="nt2" onclick="navJump('{path:new_topic}')" onmouseover="navHover(this);" onmouseout="navReset(this);">{lang:post_new_topic}</div></div></div></td>
+{/if}
+
+</tr>
+</table>
+
+{if poll}{include:poll}{/if}
+
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%;" >
+<tr>
+<td class="tableHeadingBG" colspan="2"><div class="tableHeading">{topic_title}</div></td>
+<td class="tableHeadingBG" colspan="1" align="right"><div class="altLinks">{if logged_in}<a href="{path:subscribe}" onclick="return subscribe(this)"><b>{lang:subscribe}</b></a>{/if}&nbsp;</div></td>
+
+</tr>
+
+{include:thread_rows}
+
+</table>
+
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%;">
+<tr>
+<td valign="middle" style="width:70%;">
+
+{paginate}
+<table cellpadding="0" cellspacing="0" border="0" class="paginateBorder">
+<tr>
+<td><div class="paginateStat">{current_page} {lang:of} {total_pages}</div></td>
+{pagination_links}
+</tr>
+</table>
+{/paginate}
+
+</td>
+{if can_post}
+<td align="right" style="width:140px;"><div class="button150"><div class="buttonLarge" id="fr" onclick="showfastreply();return false;" onmouseover="navHover(this);" onmouseout="navReset(this);">{lang:fast_reply}</div></div></td>
+<td align="right" style="width:140px;"><div class="buttonSpacer"><div class="button150"><div class="buttonLarge" id="pr2" onclick="navJump('{path:post_reply}')" onmouseover="navHover(this);" onmouseout="navReset(this);">{lang:post_reply}</div></div></div></td>
+{/if}
+
+{if can_post_topics}
+<td align="right" style="width:140px;"><div class="buttonSpacer"><div class="button150"><div class="buttonLarge" id="nt3" onclick="navJump('{path:new_topic}')" onmouseover="navHover(this);" onmouseout="navReset(this);">{lang:post_new_topic}</div></div></div></td>
+{/if}
+
+</tr>
+</table>
+
+{if can_post}
+<div id="fastreply" style="display: none; padding:0;">
+{include:fast_reply_form}
+</div>
+{/if}
+
+
+<div class="defaultCenter">
+<div class="marginpad">
+
+{if previous_topic}
+&lsaquo;&lsaquo; <a href="{path:previous_topic_url}">{previous_topic_title}</a>
+{/if}
+
+{if next_topic}
+&nbsp;&nbsp;&nbsp;&nbsp; <a href="{path:next_topic_url}">{next_topic_title}</a> &rsaquo;&rsaquo;
+{/if}
+
+</div>
+</div>

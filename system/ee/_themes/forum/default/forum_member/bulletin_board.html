@@ -1,0 +1,35 @@
+
+{if message}
+<div class='tableCellOne'><div class='success'>{include:message}</div></div>
+{/if}
+
+<div class='menuHeadingBG'><div class="tableHeading">{lang:bulletin_board}</div></div>
+
+{if can_post_bulletin}
+<table border='0'  cellspacing='0' cellpadding='0' style='width:100%;' >
+<tr><td class='tableCellOne'>
+<span class="defaultBold">&#187; <a href='{path:send_bulletin}' >{lang:send_bulletin}</a></span>
+</td></tr>
+</table>
+{/if}
+
+{if no_bulletins}
+<div class="tableCellOne">
+<span class="defaultBold">{lang:message_no_bulletins}</span>
+</div>
+{/if}
+
+
+{if bulletins}
+{include:bulletins}
+{/if}
+
+{paginate}
+<table border='0' cellspacing='5' cellpadding='0' class='tablePad'>
+<tr>
+<td class='default'>
+{pagination_links}
+</td>
+</tr>
+</table>
+{/paginate}

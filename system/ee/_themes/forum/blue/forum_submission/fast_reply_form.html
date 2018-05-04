@@ -1,0 +1,22 @@
+
+{form_declaration:forum:submit_post}
+
+<table class="tableBorderLeft" cellpadding="0" cellspacing="0" border="0" style="width:100%;" >
+<tr>
+<td class="tableHeadingBG"><div class="tableHeading">{lang:fast_reply}</div></td>
+
+</tr><tr>
+
+<td class="tableCellTwo">
+<div class="itempadbig"><a href='javascript:void(0)' onclick="window.open('{path:smileys}', '_blank', 'width=700,height=180,scrollbars=yes,status=yes,screenx=40,screeny=120,resizable=yes');">{lang:smileys}</a></div>
+<textarea name='body' style='width:100%' class='textarea' rows='12' cols='90'></textarea>
+<div class="itempadbig"><input type="checkbox" class="checkbox" name="notify" value="y" {notify_checked} /> {lang:notify_of_repsonses}</div>
+</td>
+</tr><tr>
+<td class="tableCellTwo"><div class="itempadbig">
+<input type="submit" name="submit" class="submit" value="{lang:submit_post}" />
+</div>
+</td>
+</tr>
+</table>
+</form>

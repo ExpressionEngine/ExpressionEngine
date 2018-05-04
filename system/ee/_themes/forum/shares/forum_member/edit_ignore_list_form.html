@@ -1,0 +1,33 @@
+
+{include:toggle_js}
+
+<div class='menuHeadingBG'><div class="tableHeading">{include:member_search} {lang:ignore_list}</div></div>
+
+{if success_message}<div class='tableCellOne'><div class='success'>{lang:message}</div></div>{/if}
+
+{form:form_declaration}
+
+<table border='0' cellspacing='0' cellpadding='0' style='width:100%;' class='tableBorderTopLeft' >
+
+<tr>
+
+<td class='tableCellOne' style='width:80%;'>
+<div class='defaultBold'>{lang:screen_name}</div>
+</td>
+
+<td class='tableCellOne' style='width:5%;'>
+<div class='defaultBold'><input class='checkbox' type='checkbox' name='toggleflag' value='' onclick="toggle(this);" />
+</div>
+</td>
+
+</tr>
+
+{include:edit_ignore_list_rows}
+
+</table>
+
+<div class="itempad">
+<div class='defaultLeft'>{form:add_button}&nbsp;&nbsp;{form:delete_button}&nbsp;&nbsp;</div>
+</div>
+
+</form>

@@ -1,0 +1,36 @@
+
+<table cellpadding="3" cellspacing="0" border="0" style="width:98%;" >
+<tr>
+<td valign="middle"><div class="itempadbig"><div class="defaultBold">{lang:keywords} {keywords}</div></div>
+</td>
+<td align="right"><div class="defaultBold">{lang:total_results} {total_results}</div>
+</td>
+</tr>
+</table>
+
+
+<table class="tableBorderLeft" cellpadding="0" cellspacing="0" border="0" style="width:100%;" >
+<tr>
+<td class="tableHeadingBG" colspan="5"><div class="tableHeading">{lang:search_results}</div></td>
+</tr><tr>
+<td class="tableRowHeadingBold" colspan="2" style="width:62%;">{lang:replies_in_topic} <em>{topic_title}</em></td>
+<td class="tableRowHeadingBold" style="width:38%;">{lang:reply_info_heading}</td>
+</tr>
+{include:thread_result_rows}
+</table>
+
+
+<table cellpadding="0" cellspacing="0" border="0" >
+<tr>
+<td class="itempadbig" valign="bottom">
+{paginate}
+	<table cellpadding="0" cellspacing="0" border="0" class="paginateBorder">
+	<tr>
+	<td><div class="paginateStat">{current_page} {lang:of} {total_pages}</div></td>
+	{pagination_links}
+	</tr>
+	</table>
+{/paginate}
+</td>
+</tr>
+</table>

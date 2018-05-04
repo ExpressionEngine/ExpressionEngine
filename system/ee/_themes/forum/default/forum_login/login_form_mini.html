@@ -1,0 +1,14 @@
+{form_declaration:member:member_login}
+<table cellpadding="0" cellspacing="4" border="0" align="right">
+<tr>
+<td>{lang:username}</td>
+<td><input type="text" class="input" name="username" size="15" value="" maxlength="{username_max_length}" /></td>
+<td><input type="checkbox" class="checkbox" name="auto_login" value="1" checked="checked" /> {lang:remember_me}</td>
+</tr>
+<tr>
+<td>{lang:password}</td>
+<td><input type="password" class="input" name="password" size="15" autocomplete="off" maxlength="{password_max_length}" /></td>
+<td><input type="submit" class="submit" value="{lang:login}" />&nbsp; <a href="{path:forgot}">{lang:forgot_your_password}</a>	</td>
+</tr>
+</table>
+</form>

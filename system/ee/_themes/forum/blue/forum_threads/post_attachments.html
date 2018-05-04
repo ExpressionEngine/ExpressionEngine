@@ -1,0 +1,15 @@
+{if thumb_attach}
+	<div class="attachTitle">{lang:image_attachments}</div>
+	<div class="attachBody">
+		{include:thumb_attachments}
+		<div class="forumLightLinks">{lang:click_for_fullsize}</div>
+	</div>
+{/if}
+{if image_attach}
+	<div class="attachTitle">{lang:image_attachments}</div>
+	<div class="attachBody">{include:image_attachments}</div>
+{/if}
+{if file_attach}
+	<div class="attachTitle">{lang:file_attachments}</div>
+	<div class="attachBody">{include:file_attachments}</div>
+{/if}

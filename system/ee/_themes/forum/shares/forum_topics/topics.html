@@ -1,0 +1,83 @@
+
+<script type="text/javascript">
+<!--
+
+function showHideRow(el)
+{
+    if (document.getElementById(el).style.display == "")
+    {
+        document.getElementById(el).style.display = "none";
+    }
+    else
+    {
+        document.getElementById(el).style.display = "";
+    }
+}
+//-->
+</script>
+
+{paginate}
+<table cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td valign="middle">
+
+	<table cellpadding="0" cellspacing="0" border="0" class="paginateBorder">
+	<tr>
+	<td><div class="paginateStat">{current_page} {lang:of} {total_pages}</div></td>
+	{pagination_links}
+	</tr>
+	</table>
+
+</td>
+</tr>
+</table>
+{/paginate}
+
+{if can_post}
+<table cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td class="button150"><a href="#" title="{lang:post_new_topic}" onclick="navJump('{path:new_topic}')"><img src="{path:image_url}bt_new_topic.gif" border='0' width='151' height='26' alt="{lang:post_new_topic}"/></a></td>
+</tr>
+</table>{/if}
+
+
+{include:announcement_topics}
+
+
+<table class="tableBorderLeft" cellpadding="0" cellspacing="0" border="0" >
+<tr>
+<td class="tableHeadingBG" colspan="5"><div class="tableHeading">{forum_name}</div></td>
+</tr><tr>
+<td class="tableRowHeadingBold tablePad2" colspan="2">{lang:topic_heading}</td>
+<td class="tableRowHeadingBold" align="center">{lang:total_replies_heading}</td>
+<td class="tableRowHeadingBold" align="center">{lang:total_views_heading}</td>
+<td class="tableRowHeadingBold tablePad3">{lang:post_info_heading}</td>
+</tr>
+
+{include:topic_rows}
+
+<tr>
+<td class="tableRowHeading" colspan="5">
+{include:forum_quick_search_form}
+</td>
+</tr>
+</table>
+
+
+<table cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td valign="middle">
+{paginate}
+	<table cellpadding="0" cellspacing="0" border="0" class="paginateBorder">
+	<tr>
+	<td><div class="paginateStat">{current_page} {lang:of} {total_pages}</div></td>
+	{pagination_links}
+	</tr>
+	</table>
+{/paginate}
+</td>
+{if can_post}
+<td class="button150"><a href="#" title="{lang:post_new_topic}" onclick="navJump('{path:new_topic}')"><img src="{path:image_url}bt_new_topic.gif" border='0' width='151' height='26' alt="{lang:post_new_topic}"/></a></td>
+{/if}
+</tr>
+</table>

@@ -1,0 +1,126 @@
+
+{include:hidden_js}
+{include:toggle_js}
+
+<div class='profileHeadingBG'><div class="tableHeading">{lang:folder_name}</div></div>
+
+<table border='0'  cellspacing='0' cellpadding='0' style='width:100%;padding-top:18px;' >
+<tr>
+<td  class='tablePad'>
+
+<table border='0'  cellspacing='0' cellpadding='0' style='width:300px;' class="tableBorderTopLeft">
+<tr>
+<td  class='tableCellOne'  style='width:100%;' colspan='3'>
+{lang:storage_percentage}
+</td>
+</tr>
+<tr>
+<td class='tableCellOne'  style='width:100%;' colspan='3'>
+<div style="width:{image:messages_graph:width}px; height:{image:messages_graph:height}px; background-color: #F25800; border:1px solid #F23A04;"></div>
+</td>
+</tr>
+<tr>
+<td class='tableCellOne' >0%</td>
+<td class='tableCellOne'>
+<div class='defaultCenter'>50%</div>
+</td>
+<td class='tableCellOne'>
+<div class='defaultRight'>100%</div>
+</td>
+</tr>
+</table>
+
+</td>
+<td class='tablePad' valign='top'>
+
+<div class='defaultRight'>
+<span class='defaultBold'>
+<a href='{path:compose_message}'  onmouseover="window.status='{lang:compose_messages}';" onmouseout="window.status='';" >{lang:compose_message}</a>
+</span>
+
+</div>
+
+<div class='defaultRight'>
+<span class='defaultBold'>
+<a href='{path:erase_messages}' onclick='if( ! confirm("{lang:erase_popup}")) return false;'>{lang:erase_messages}</a>
+</span>
+
+</div>
+
+<div class='defaultRight'>
+<br />{lang:switch_folder} {include:folder_pulldown:change}
+</div>
+
+</td>
+</tr>
+</table>
+
+
+{form:form_declaration:modify_messages}
+
+
+{paginate}
+<table border='0' cellspacing='5' cellpadding='0' class='tablePad'>
+<tr>
+<td class='default'>
+{pagination_links}
+</td>
+</tr>
+</table>
+{/paginate}
+
+<div class="tablePad">
+
+<table border='0' cellspacing='0' cellpadding='0' style='width:100%;'  class='tableBorderTopLeft' >
+<tr>
+<td  class='tableCellOne'  style='width:5%;'>
+
+<div class='defaultBold'>&nbsp;</div>
+
+</td>
+<td  class='tableCellOne'  style='width:40%;'>
+
+<div class='defaultBold'>{lang:message_subject}</div>
+
+</td>
+<td  class='tableCellOne'  style='width:25%;'>
+
+<div class='defaultBold'>{lang:message_sender}</div>
+
+</td>
+<td  class='tableCellOne'  style='width:25%;'>
+
+<div class='defaultBold'>{lang:message_date}</div>
+
+</td>
+<td  class='tableCellOne'  style='width:5%;'>
+
+<div class='defaultBold'><input class='checkbox' type='checkbox' name='toggleflag' value='' onclick="toggle(this);" />
+</div>
+
+</td>
+</tr>
+
+{include:folder_rows}
+</table>
+
+</div>
+
+{paginate}
+<table border='0' cellspacing='5' cellpadding='0' class='tablePad'>
+<tr>
+<td class='default'>
+{pagination_links}
+</td>
+</tr>
+</table>
+{/paginate}
+
+{include:folder_pulldown:move}
+
+{include:folder_pulldown:copy}
+
+<div class='defaultPad'>&nbsp;{form:copy_button}{form:move_button}{form:delete_button}</div>
+</form>
+
+<div class='defaultRight'>{lang:storage_status}&nbsp;</div>

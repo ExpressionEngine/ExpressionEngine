@@ -1,0 +1,34 @@
+<div id="footer">
+
+	{if in_forum}
+	<form method="post" action="{path:set_theme}">
+	<input type="hidden" name="csrf_token" value="{csrf_token}" />
+
+	<div id="switcher">{lang:select_theme}
+		<select name="theme" class="select" onchange="if (this.value != '') this.form.submit()">
+			{include:theme_option_list}
+		</select>
+	</div><!--switcher-->
+	</form>
+	{/if}
+
+	<ul class="credits">
+		<li>Powered By <a href="https://ellislab.com/">ExpressionEngine</a></li>
+		<li>Template Design By <a href="http://artificialmemory.com/" title="Nathaniel Davis">Artificial Memory</a></li>
+        </ul>
+        <ul class="stats">
+		<li>{lang:ee_discussion_forum} - {lang:version} {module_version} ({forum_build})</li>
+		<li>{lang:elapsed_time}</li>
+	</ul>
+
+	{if feeds_enabled}
+	<ul class="feeds">
+		<li><a href="{path:rss}"><img src="{path:image_url}feed_rss.jpg" alt="{lang:rss_feed}" title="{lang:rss_feed}" /></a></li>
+		<li><a href="{path:atom}"><img src="{path:image_url}feed_atom.jpg" alt="{lang:atom_feed}" title="{lang:atom_feed}" /></a></li>
+	</ul>
+	{/if}
+
+</div><!--footer-->
+</div><!--wrapper-->
+</body>
+</html>

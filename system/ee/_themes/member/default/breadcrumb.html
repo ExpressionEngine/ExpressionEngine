@@ -1,0 +1,30 @@
+<table border='0' cellpadding='0' cellspacing='0' style="width:99%;">
+<tr>
+<td>
+<div class='breadcrumb'>{breadcrumb_links}</div>
+</td>
+
+{if logged_in}
+<td align="right">
+
+{lang:logged_in_as}&nbsp; <span class="defaultBold"><a href="{path:your_profile}">{name}</a></span>
+
+&nbsp;|&nbsp;
+
+<span class="default"><a href="{path:your_control_panel}">{lang:your_control_panel}</a></span>
+
+&nbsp;|&nbsp;
+
+<span class="default"><a href="{path:memberlist}">{lang:memberlist}</a></span>
+
+&nbsp;|&nbsp;
+
+<span class="default"><a href="{path="LOGOUT"}">{lang:logout}</a></span>
+
+&nbsp;&nbsp;
+
+</td>
+{/if}
+
+</tr>
+</table>

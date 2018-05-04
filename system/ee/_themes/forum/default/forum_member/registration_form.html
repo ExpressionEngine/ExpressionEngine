@@ -1,0 +1,92 @@
+
+<table class="tableBorderLeft" border='0' cellspacing='0' cellpadding='0' style='width:100%'>
+<tr>
+<td class='profileHeadingBG' colspan='2'><div class="tableHeading">{lang:member_registration}</div></td>
+
+</tr><tr>
+
+<td class='tableCellTwo' style="width:45%;"><div class='defaultBold'><span class="highlight">*</span> {lang:username}</div><div class='itempad'>{lang:username_length}</div></td>
+<td class='tableCellTwo' style="width:55%;"><input type="text" name="username" value="" maxlength="{username_max_length}" class="input" size="25" style="width:300px" /></td>
+
+</tr><tr>
+
+<td class='tableCellTwo' style="width:45%;"><div class='defaultBold'><span class="highlight">*</span> {lang:password}</div><div class='itempad'>{lang:password_length}</div></td>
+<td class='tableCellOne' style="width:55%;"><input type="password" name="password" value="" maxlength="{password_max_length}" class="input" size="25" style="width:300px" autocomplete='off' /></td>
+
+</tr><tr>
+
+<td class='tableCellTwo' style="width:45%;"><div class='defaultBold'><span class="highlight">*</span> {lang:password_confirm}</div></td>
+<td class='tableCellOne' style="width:55%;"><input type="password" name="password_confirm" value="" maxlength="{password_max_length}" class="input" size="25" style="width:300px" autocomplete='off' /></td>
+
+
+</tr><tr>
+
+<td class='tableCellTwo' style="width:45%;">
+<div class='defaultBold'><span class="highlight">*</span> {lang:screen_name}</div>
+<div class='itempad'>{lang:screen_name_explanation}</div>
+</td>
+<td class='tableCellOne' style="width:55%;"><input type="text" name="screen_name" value="" maxlength="{username_max_length}" class="input" size="25" style="width:300px" /></td>
+
+</tr><tr>
+
+<td class='tableCellTwo' style="width:45%;"><div class='defaultBold'><span class="highlight">*</span> {lang:email}</div></td>
+<td class='tableCellOne' style="width:55%;"><input type="text" name="email" value="" maxlength="{username_max_length}"class="input" size="40" style="width:300px" /></td>
+
+</tr><tr>
+
+<td class='tableCellTwo' style="width:45%;"><div class='defaultBold'><span class="highlight">*</span> {lang:email_confirm}</div></td>
+<td class='tableCellOne' style="width:55%;"><input type="text" name="email_confirm" value="" maxlength="{username_max_length}" class="input" size="40" style="width:300px" /></td>
+
+</tr><tr>
+
+<td class='tableCellTwo' style="width:45%;"><div class='defaultBold'>{lang:url}</div></td>
+<td class='tableCellOne' style="width:55%;"><input type="text" name="url" value="" maxlength="150" class="input" size="25" style="width:300px" /></td>
+
+{custom_fields}
+</tr><tr>
+<td class='tableCellTwo' style="width:45%;">
+<div class='defaultBold'>{required}<span class="highlight">*</span>{/required} {field_name}</div>
+{if field_description}
+<div class='default'>{field_description}</div>
+{/if}
+</td>
+<td class='tableCellOne' style="width:55%;">{field}</td>
+{/custom_fields}
+
+</tr><tr>
+
+<td colspan='2' class='tableCellOne'>
+<div class="itempadbig">
+
+<div class="itempad"><div class='defaultBold'>{lang:terms_of_service}</div></div>
+
+<textarea name='rules' style='width:100%' class='textarea' rows='8' cols='90' readonly>
+All messages posted at this site express the views of the author, and do not necessarily reflect the views of the owners and administrators of this site.
+
+By registering at this site you agree not to post any messages that are obscene, vulgar, slanderous, hateful, threatening, or that violate any laws.   We will permanently ban all users who do so.
+
+We reserve the right to remove, edit, or move any messages for any reason.
+</textarea>
+</div>
+</td>
+
+</tr><tr>
+
+<td colspan='2' class='tableCellOne'>
+
+{if captcha}
+<p><span class="highlight">*</span> {lang:captcha}</p>
+<p>
+{captcha}
+<br />
+<input type="text" name="captcha" value="" size="20" maxlength="20" style="width:140px;" />
+</p>
+{/if}
+
+<p><input type='checkbox' name='accept_terms' value='y'  />&nbsp;&nbsp;<span class="alert">{lang:terms_accepted}</span></p>
+<p><input type="submit" value="{lang:submit}" class="submit" /></p>
+<p><span class="highlight">*</span> {lang:required_fields}</p>
+
+</td>
+</tr>
+</table>

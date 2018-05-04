@@ -1,0 +1,31 @@
+<div id="forum{category_id}off" style="display:none;">
+
+<table class="tableBorder" cellpadding="0" cellspacing="0" border="0" style="width:100%;" >
+<tr>
+<td class="tableHeadingBG"><div class="tableHeading">{category_name}</div>
+	{if category_description}<div class="tableHeadingSmall">{category_description}</div>{/if}
+</td>
+<td class="tableHeadingBG" align="right">
+<a href="javascript:void(0);" onclick="show_element('forum{category_id}')"><img src="{path:image_url}expand.gif" width="10" height="10" border="0" title="{lang:show_category}" alt="{lang:show_category}" /></a>&nbsp;
+</td>
+</tr>
+</table>
+
+</div>
+
+
+<div id="forum{category_id}on" style="display:block;">
+<table class="tableBorder" cellpadding="0" cellspacing="0" border="0" style="width:100%;" >
+<tr>
+<td class="tableHeadingBG" colspan="4"><div class="tableHeading">{category_name}</div>
+	{if category_description}<div class="tableHeadingSmall">{category_description}</div>{/if}
+</td>
+<td class="tableHeadingBG" colspan="1" align="right">
+<a href="javascript:void(0);" onclick="hide_element('forum{category_id}')"><img src="{path:image_url}collapse.gif" width="10" height="10" border="0" title="{lang:hide_category}" alt="{lang:hide_category}" /></a>&nbsp;</td>
+</tr>
+<tr>
+<td class="tableRowHeadingBold" colspan="2">{lang:forum_name_heading}</td>
+<td class="tableRowHeadingBold" align="center">{lang:total_topics_heading}</td>
+<td class="tableRowHeadingBold" align="center">{lang:total_replies_heading}</td>
+<td class="tableRowHeadingBold">{lang:post_info_heading}</td>
+</tr>

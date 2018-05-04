@@ -1,0 +1,27 @@
+<table class="tableBorderLeft" cellpadding="0" cellspacing="0" border="0" style="width:100%;" align="center">
+<tr>
+<td class="errorHeading">{lang:member_banning}</td>
+
+</tr><tr>
+<td class="tableCellTwo">
+<div class="itempadbig"><b>{lang:member_banned} {name}</b></div>
+</td>
+
+{if banned_ips}
+</tr><tr>
+<td class="tableCellOne">
+<div class="itempadbig">{lang:ip_addresses_banned}</div>
+{banned_ips}
+</td>
+{/if}
+
+
+</tr><tr>
+<td class="tableCellOne">
+<div class="itempadbig"><a href="{path:forum_home}">{forum_name}</a></div>
+</td>
+
+</tr>
+</table>
+
+</form>

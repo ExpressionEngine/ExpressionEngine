@@ -1,0 +1,44 @@
+
+<script type="text/javascript">
+<!--
+
+function toggle(thebutton)
+{
+	if (thebutton.checked)
+	{
+	   val = true;
+	}
+	else
+	{
+	   val = false;
+	}
+
+	var len = document.target.elements.length;
+
+	for (var i = 0; i < len; i++)
+	{
+		var button = document.target.elements[i];
+
+		var name_array = button.name.split("[");
+
+		if (name_array[0] == "toggle")
+		{
+			button.checked = val;
+		}
+	}
+
+	document.target.toggleflag.checked = val;
+}
+//-->
+</script>
+
+{form_declaration}
+
+<div class='profileHeadingBG'><div class="tableHeading">{lang:subscriptions}</div></div>
+
+<table border='0' cellspacing='0' cellpadding='0' style='width:100%'>
+
+{subscription_results}
+
+</table>
+</form>

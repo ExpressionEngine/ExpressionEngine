@@ -1,0 +1,50 @@
+{if is_ignored}
+<tr>
+ <td colspan="3">
+  <table class="ignored" style="width:100%">
+   <tr>
+   <td class="tableCellOne">
+    <span style="float:right"><a href="#" onclick="showHideRow('{id1}');showHideRow('{id2}');return false;">{lang:view_hide}</a> &bull;
+    <a href="{path:ignore}">{lang:stop_ignoring} {author}</a></span>{lang:post_hidden} <strong>{author}</strong> {lang:is_ignored}.
+   </td>
+   </tr>
+  </table>
+ </td>
+</tr>
+{/if}
+
+<tr id="{id1}" {if is_ignored}style="display: none;"{/if}>
+<td class="tableRowHeadingBold" style="width:130px;"><a href="{path:member_profile}">{author}</a></td>
+<td class="tableRowHeading" colspan="2">
+
+<table cellpadding="0" cellspacing="0" border="0" style="width:99%;">
+<tr>
+<td>{lang:posted_on} {post_date format="%d %F %Y %h:%i %A"}</td>
+<td align="right">
+{if can_view_ip}<i>{lang:ip_address} {ip_address}</i>{/if}
+&nbsp;
+</td>
+</tr>
+</table>
+
+</td>
+
+</tr><tr id="{id2}" {if is_ignored}style="display: none;"{/if}>
+
+<td class="tableCellOne" style="width:130px;" valign="top">
+<div class="{rank_class}">{rank_title}</div>
+{if avatar}<div class="itempad"><img src="{path:avatars}" width="{avatar_width}" height="{avatar_height}" border="0" alt="{lang:avatar}" /></div>{/if}
+<div class="itempad">{if rank_stars}<img src="{path:image_url}rank.gif" alt="{lang:rank}" class="rankImage" />{/if}</div>
+<div class="userBlock">{lang:total_posts}&nbsp; {total_posts}</div>
+<div class="userBlock">{lang:joined}&nbsp; {join_date format="%Y-%m-%d"}</div>
+</td>
+<td class="tableCellOne" valign="top" colspan="2"><div class="post">{body}</div>
+{if attachments}
+{include:post_attachments}
+{/if}
+{if signature}
+{include:signature}
+{/if}
+</td>
+
+</tr>

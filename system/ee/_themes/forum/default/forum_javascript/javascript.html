@@ -1,0 +1,45 @@
+
+<script type="text/javascript"> 
+<!--
+
+function navHover(which)
+{					
+	if (document.getElementById(which.id))
+	{
+		cur = document.getElementById(which.id).className;
+		
+		if (cur == 'buttonLarge')
+		{
+			document.getElementById(which.id).className = 'buttonLargeHover'
+		}
+		else if (cur == 'buttonSmall')
+		{
+			document.getElementById(which.id).className = 'buttonSmallHover'
+		}
+	}
+}
+
+function navReset(which)
+{					
+	if (document.getElementById(which.id))
+	{
+		cur = document.getElementById(which.id).className;
+		
+		if (cur == 'buttonLargeHover')
+		{
+			document.getElementById(which.id).className = 'buttonLarge'
+		}
+		else if (cur == 'buttonSmallHover')
+		{
+			document.getElementById(which.id).className = 'buttonSmall'
+		}
+	}
+}
+
+
+function navJump(where)
+{
+	window.location=where;
+}
+-->
+</script>

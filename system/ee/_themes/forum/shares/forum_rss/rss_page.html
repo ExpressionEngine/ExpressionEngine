@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="{encoding}" ?>
+<rss version="2.0"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+    xmlns:admin="http://webns.net/mvcb/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:content="http://purl.org/rss/1.0/modules/content/">
+
+    <channel>
+
+    <title>{exp:xml_encode}{forum_name}{/exp:xml_encode}</title>
+    <link>{forum_url}</link>
+    <description>{exp:xml_encode}{forum_name}{/exp:xml_encode}</description>
+    <dc:language>{forum_language}</dc:language>
+    <dc:rights>Copyright {gmt_date format="%Y"}</dc:rights>
+    <dc:date>{gmt_date format="%Y-%m-%dT%H:%i:%s%Q"}</dc:date>
+    <admin:generatorAgent rdf:resource="https://ellislab.com/" />
+
+{rows}
+    <item>
+      <title>{exp:xml_encode}{title}{/exp:xml_encode}</title>
+      <link>{exp:xml_encode}{path:view_thread}{/exp:xml_encode}</link>
+      <guid>{path:view_thread}#When:{gmt_post_date format="%H:%i:%sZ"}</guid>
+      <description>{exp:xml_encode}{body}{/exp:xml_encode}</description>
+      <dc:date>{gmt_post_date format="%Y-%m-%dT%H:%i:%s%Q"}</dc:date>
+    </item>
+{/rows}
+
+    </channel>
+</rss>

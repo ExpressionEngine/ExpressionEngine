@@ -1,0 +1,70 @@
+
+{form_declaration:forum:do_split}
+
+<table class="tableBorderLeft" cellpadding="0" cellspacing="0" border="0" style="width:100%;" align="center">
+<tr>
+<td class="tableHeadingBG"><div class="tableHeading">{lang:split_thread}</div></td>
+
+</tr><tr>
+
+<td class="tableRowHeadingBold">{lang:split_info}</td>
+
+</tr><tr>
+
+<td class="tableCellOne"><div class="itempad">{lang:title}</div>
+<div class="itempadbig"><input type="text" class="input" name="title" value="{title}" style="width:500px" size="50" maxlength="120" /></div>
+</td>
+</tr>
+
+{if forums_exist}
+	<tr>
+	<td class="tableCellOne"><div class="itempadbig">{lang:forum}
+	<select name="forum_id" class="select">
+	{split_select_options}
+	</select>
+	</div></td>
+	</tr>
+{/if}
+
+<tr>
+
+<td class="tableCellOne">
+<div class="itempad"><input type="checkbox" class="checkbox" name="notify" value="1" checked="checked" /> {lang:notify_thread_owner}</div>
+</td>
+
+</tr><tr>
+
+
+<td class="tablecellone">
+	<div class="itempadbig">
+		{paginate}
+			{if previous_page}
+				<input type="submit" name="previous_page" class="submit" value="&lsaquo;&lsaquo; {lang:previous}" />
+			{/if}
+		{/paginate}
+		&nbsp;
+		<input type="submit" name="submit" class="submit" value="{lang:split_thread}" />
+		&nbsp;
+		{paginate}
+			{if next_page}
+				<input type="submit" name="next_page" class="submit" value="{lang:next} &rsaquo;&rsaquo;" />
+			{/if}
+		{/paginate}
+	</div>
+</td>
+
+</tr>
+
+
+</table>
+
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%;" >
+<tr>
+<td class="tableHeadingBG" colspan="2"><div class="tableHeading">{topic_title}</div></td>
+</tr>
+
+{include:split_thread_rows}
+
+</table>
+
+</form>

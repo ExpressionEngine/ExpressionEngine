@@ -1,0 +1,68 @@
+
+<div id="forumstatsoff" style="display:none;">
+<table class="tableBorder" cellpadding="0" cellspacing="0" border="0" style="width:100%;" >
+<tr>
+<td class="tableHeadingBG">
+<div class="tableHeading">{lang:visitor_stats}</div>
+</td>
+<td class="tableHeadingBG" align="right"><a href="javascript:void(0);" onclick="show_element('forumstats')"><img src="{path:image_url}expand.gif" width="10" height="10" border="0" title="{lang:show_stats}" alt="{lang:show_stats}" /></a>&nbsp;</td>
+</tr>
+</table>
+</div>
+
+<div id="forumstatson" style="display:block;">
+<table class="tableBorder" cellpadding="0" cellspacing="0" border="0" style="width:100%;" >
+<tr>
+<td class="tableHeadingBG">
+<div class="tableHeading">{lang:visitor_stats}</div>
+</td>
+
+<td class="tableHeadingBG" align="right"><a href="javascript:void(0);" onclick="hide_element('forumstats')"><img src="{path:image_url}collapse.gif" width="10" height="10" border="0" title="{lang:hide_stats}" alt="{lang:hide_stats}" /></a>&nbsp;</td>
+
+</tr><tr>
+
+<td class="tableRowHeadingBold" colspan="2">
+{lang:most_users_ever} {most_visitors}, {lang:visited_on} {most_visitor_date format="%F %d, %Y %h:%i %A"}
+</td>
+
+</tr><tr>
+
+<td class="tableCellOne" style="width:46%;" valign="top">
+<div class="itempad">{lang:total_registered_members} {total_members}</div>
+<div class="itempad">{lang:total_topics} {total_forum_topics}</div>
+<div class="itempad">{lang:total_replies} {total_forum_replies}</div>
+<div class="itempad">{lang:total_posts} {total_forum_posts}</div>
+</td>
+
+
+<td class="tableCellOne" style="width:50%;">
+<div class="itempad">{lang:total_logged_in} {total_logged_in}</div>
+<div class="itempad">{lang:total_anonymous} {total_anon}</div>
+<div class="itempad">{lang:total_guests} {total_guests}</div>
+</td>
+
+</tr><tr>
+
+<td class="tableCellOne" colspan="2"><div class="itempadbig">
+<b>{lang:newest_members}</b>&nbsp;
+{recent_member_names limit='10' backspace='8'}<a href="{path:member_profile}">{name}</a>,&nbsp; {/recent_member_names}
+</div>
+</td>
+
+</tr><tr>
+
+<td class="tableCellOne" colspan="2"><div class="itempadbig">
+
+<b>{lang:active_members}</b>&nbsp;&nbsp;&nbsp; 
+{if member_names}
+{member_names backspace='8'}<a href="{path:member_profile}">{name}</a>,&nbsp; {/member_names}
+{/if}
+</div>
+</td>
+
+</tr>
+</table>
+
+</div>
+
+<div class="spacer"></div>

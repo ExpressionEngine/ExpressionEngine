@@ -1,0 +1,31 @@
+<div id="footer">
+
+{if in_forum}
+<form method="post" action="{path:set_theme}">
+<input type="hidden" name="csrf_token" value="{csrf_token}" />
+<div class="itempadbig">
+<select name="theme" class="select" onchange="if (this.value != '') this.form.submit()">
+<option value="">{lang:select_theme}</option>
+{include:theme_option_list}
+</select>
+</div>
+</form>
+{/if}
+
+<a href="https://ellislab.com/">Powered By ExpressionEngine</a><br />
+{lang:ee_discussion_forum} - {lang:version} {module_version} ({forum_build})<br />
+
+{lang:elapsed_time}
+
+{if feeds_enabled}
+<div class="itempadbig">
+<a href="{path:rss}"><img src="{path:image_url}feed_rss.jpg" width="16" height="16" border="0" alt="{lang:rss_feed}" title="{lang:rss_feed}" /></a>
+&nbsp;&nbsp;&nbsp;
+<a href="{path:atom}"><img src="{path:image_url}feed_atom.jpg" width="16" height="16" border="0" alt="{lang:atom_feed}" title="{lang:atom_feed}" /></a>
+</div>
+{/if}
+
+</div>
+
+</body>
+</html>

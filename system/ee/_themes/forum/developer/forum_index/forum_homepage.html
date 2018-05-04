@@ -1,0 +1,18 @@
+{include:html_header}
+{include:top_bar}
+{include:page_header}
+{include:page_subheader}
+<div id="content">
+
+{if logged_in}
+	<div class="itempad">
+	<div class="defaultRight">
+	<a href="{path:view_new_topics}">{lang:view_new_topics}</a>&nbsp;&nbsp;&middot;&nbsp;&nbsp;<a href="{path:view_active_topics}">{lang:view_active_topics}</a>&nbsp;&nbsp;&middot;&nbsp;&nbsp;<a href="{path:view_pending_topics}">{lang:view_pending_topics}</a>&nbsp;&nbsp;&middot;&nbsp;&nbsp;<a href="{path:mark_all_read}">{lang:mark_all_read}</a>&nbsp;&nbsp;</div>
+	</div>
+{/if}
+{include:recent_posts}
+{include:main_forum_list}
+{include:visitor_stats}
+{include:forum_legend}
+</div>
+{include:html_footer}

@@ -1,0 +1,77 @@
+
+<script type="text/javascript">
+<!--
+
+function showHideRow(el)
+{
+    if (document.getElementById(el).style.display == "")
+    {
+        document.getElementById(el).style.display = "none";
+    }
+    else
+    {
+        document.getElementById(el).style.display = "";
+    }
+}
+//-->
+</script>
+
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%;" >
+<tr>
+<td valign="middle" style="width:80%;">
+{paginate}
+	<table cellpadding="0" cellspacing="0" border="0" class="paginateBorder">
+	<tr>
+	<td><div class="paginateStat">{current_page} {lang:of} {total_pages}</div></td>
+	{pagination_links}
+	</tr>
+	</table>
+{/paginate}
+</td>
+{if can_post}
+<td align="right" style="width:20%;"><div class="button150"><div class="buttonLarge" id="nt1" onclick="navJump('{path:new_topic}')" onmouseover="navHover(this);" onmouseout="navReset(this);">{lang:post_new_topic}</div></div></td>
+{/if}
+</tr>
+</table>
+
+
+{include:announcement_topics}
+
+
+<table class="tableBorderLeft" cellpadding="0" cellspacing="0" border="0" style="width:100%;" >
+<tr>
+<td class="tableHeadingBG" colspan="5"><div class="tableHeading">{forum_name}</div></td>
+</tr><tr>
+<td class="tableRowHeadingBold" colspan="2" style="width:50%;">{lang:topic_heading}</td>
+<td class="tableRowHeadingBold" align="center" style="width:6%;">{lang:total_replies_heading}</td>
+<td class="tableRowHeadingBold" align="center" style="width:6%;">{lang:total_views_heading}</td>
+<td class="tableRowHeadingBold" style="width:38%;">{lang:post_info_heading}</td>
+</tr>
+
+{include:topic_rows}
+
+<tr>
+<td class="tableRowHeading" colspan="5">
+{include:forum_quick_search_form}
+</td>
+</tr>
+</table>
+
+
+<table cellpadding="0" cellspacing="0" border="0" style="width:100%;" >
+<tr>
+<td valign="middle" style="width:80%;">
+{paginate}
+	<table cellpadding="0" cellspacing="0" border="0" class="paginateBorder">
+	<tr>
+	<td><div class="paginateStat">{current_page} {lang:of} {total_pages}</div></td>
+	{pagination_links}
+	</tr>
+	</table>
+{/paginate}
+</td>
+{if can_post}
+<td align="right" width="20%"><div class="button150"><div class="buttonLarge" id="nt2" onclick="navJump('{path:new_topic}')" onmouseover="navHover(this);" onmouseout="navReset(this);">{lang:post_new_topic}</div></div></td>
+{/if}
+</tr>
+</table>

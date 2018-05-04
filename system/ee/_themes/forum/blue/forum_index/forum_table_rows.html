@@ -1,0 +1,23 @@
+<tr>
+<td class="tableCellTwo" style="width:4%;" align="center"><a href="{path:viewforum}"><img src="{topic_marker}"  alt="{forum_name}" title="{forum_name}" /></a></td>
+<td class="tableCellOne" style="width:46%;">
+<div class="forumName"><a href="{path:viewforum}" title="{forum_name}"><b>{forum_name}</b></a></div>
+	{if forum_description}<div class="forumDescription">{forum_description}</div>{/if}
+	{if forum_moderators}
+		<div class="forumLightLinks">{lang:moderated_by}
+			{moderators backspace='1'}<a href="{path:member_profile}">{name}</a>,{/moderators}
+		</div>
+	{/if}
+</td>
+<td class="tableCellTwo" style="width:6%;" align="center">{total_topics}</td>
+<td class="tableCellTwo" style="width:6%;" align="center">{total_replies}</td>
+<td class="tableCellOne" style="width:38%;">
+<div class="tablePostInfo">
+	{if recent_post}
+		<a href="{path:recent_thread}">{title}</a><br />
+		{lang:posted_on} {last_post:relative format="%m-%d-%Y %h:%i %A" stop="tomorrow"}<br />
+		{lang:posted_by} <a href="{path:member_profile}">{author}</a>
+	{/if}
+</div>
+</td>
+</tr>

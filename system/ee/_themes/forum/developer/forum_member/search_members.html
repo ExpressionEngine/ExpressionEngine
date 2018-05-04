@@ -1,0 +1,50 @@
+	
+{form:form_declaration:do_member_search}
+
+<div class="spacer">&nbsp;</div>
+
+<table class="tableBorderTopLeft" cellpadding="0" cellspacing="0" border="0" width="400" align="center">
+<tr>
+<td class="profileHeadingBG" colspan="2"><div class="tableHeading">{lang:member_search}</div>
+</td>
+
+</tr>
+<tr>
+<td class="tableCellOne">
+
+{if message}
+<div class="highlight">
+{include:message}
+</div>
+{/if}
+
+<h3>{lang:screen_name}</h3>
+<p>
+<input style='width:100%' type='text' name='screen_name' id='screen_name' value='' size='35' maxlength='100' class='input'  />
+</p>
+
+<h3>{lang:email}</h3>
+<p>
+<input style='width:100%' type='text' name='email' id='email' value='' size='35' maxlength='100' class='input'  />
+</p>
+
+
+<h3>{lang:member_group}</h3>
+<p>
+
+<select name='group_id' class='select' >
+<option value='any'>{lang:any}</option>
+{include:member_group_options}</select>
+</p>
+
+
+<p><input type="submit" value="{lang:submit}" class="submit" /></p>
+<div class="marginpad"><a href="JavaScript:window.close();">{lang:close_window}</a></div>
+
+</td>
+</tr>
+</table>
+
+</form>
+
+	

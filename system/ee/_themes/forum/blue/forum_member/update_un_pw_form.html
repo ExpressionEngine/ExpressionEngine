@@ -1,0 +1,65 @@
+{form_declaration}
+
+<table class="tableBorderLeft" cellpadding="0" cellspacing="0" border="0" style="width:700px;" align="center">
+<tr>
+<td class="profileHeadingBG" colspan="2"><div class="tableHeading">{lang:settings_update}</div>
+</td>
+
+</tr><tr>
+
+<td class="tableCellOne" colspan="2"><div class="itempadbig"><div class="alert">{lang:access_notice}</div></div></td>
+
+</tr><tr>
+
+<td class="tableCellOne" colspan="2"><div class="itempadbig">
+
+{if invalid_username}<div class="itempad"><div class="highlight">{lang:username_length}</div></div>{/if}
+{if invalid_password}<div class="itempad"><div class="highlight">{lang:password_length}</div></div>{/if}
+</td>
+
+</tr><tr>
+
+{if invalid_username}
+	<td class="tableCellTwo" align="right" style="width:35%;"><b>{lang:choose_new_un}</b></td>
+	<td class="tableCellTwo" style="width:75%;"><input type="text" style="width:80%" class="input" name="new_username" size="20" value="" maxlength="{username_max_length}" /></td>
+	</tr><tr>
+{/if}
+
+{if invalid_password}
+	<td class="tableCellTwo" align="right"><b>{lang:choose_new_pw}</b></td>
+	<td class="tableCellTwo"><input type="password" style="width:80%" class="input" name="new_password" size="20" value="" maxlength="{password_max_length}" autocomplete='off' /></td>
+	</tr><tr>
+
+	<td class="tableCellTwo" align="right"><b>{lang:confirm_new_pw}</b></td>
+	<td class="tableCellTwo"><input type="password" style="width:80%" class="input" name="new_password_confirm" size="20" value="" maxlength="{password_max_length}" autocomplete='off' /></td>
+	</tr><tr>
+{/if}
+
+</tr>
+</table>
+
+<div class="spacer"></div>
+
+<table class="tableBorderLeft" cellpadding="0" cellspacing="0" border="0" style="width:700px;" align="center">
+<tr>
+<td class="profileHeadingBG" colspan="2"><div class="tableHeading">{lang:your_current_un_pw}</div>
+</td>
+
+</tr><tr>
+
+<td class="tableCellTwo" align="right" style="width:35%;"><b>{lang:existing_username}</b></td>
+<td class="tableCellTwo" style="width:75%;"><input type="text" style="width:80%" class="input" name="username" size="20" value="" maxlength="{username_max_length}" /></td>
+
+</tr><tr>
+
+<td class="tableCellTwo" align="right"><b>{lang:existing_password}</b></td>
+<td class="tableCellTwo"><input type="password" style="width:80%" class="input" name="password" size="20" value="" maxlength="{password_max_length}" autocomplete='off' /></td>
+
+</tr><tr>
+
+<td class="tableCellOne" align="right"><div class="itempadbig"><input type="submit" class="submit" value="{lang:submit}" /></div></td>
+<td class="tableCellTwo">&nbsp;</td>
+</tr>
+</table>
+
+</form>

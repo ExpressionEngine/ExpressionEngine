@@ -1,0 +1,105 @@
+<script type="text/javascript">
+
+// <![CDATA[
+
+function navHover(which)
+{					
+	if (document.getElementById(which.id))
+	{
+		cur = document.getElementById(which.id).className;
+		
+		if (cur == 'buttonLarge')
+		{
+			document.getElementById(which.id).className = 'buttonLargeHover'
+		}
+		else if (cur == 'buttonSmall')
+		{
+			document.getElementById(which.id).className = 'buttonSmallHover'
+		}
+	}
+}
+
+function navReset(which)
+{					
+	if (document.getElementById(which.id))
+	{
+		cur = document.getElementById(which.id).className;
+		
+		if (cur == 'buttonLargeHover')
+		{
+			document.getElementById(which.id).className = 'buttonLarge'
+		}
+		else if (cur == 'buttonSmallHover')
+		{
+			document.getElementById(which.id).className = 'buttonSmall'
+		}
+	}
+}
+
+function navJump(where)
+{
+	window.location=where;
+}
+
+function addEvent(obj, evType, fn, useCapture){
+  if (obj.addEventListener){
+    obj.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (obj.attachEvent){
+    var r = obj.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be attached");
+  }
+}
+
+function removeEvent(obj, evType, fn, useCapture){
+  if (obj.removeEventListener){
+    obj.removeEventListener(evType, fn, useCapture);
+    return true;
+  } else if (obj.detachEvent){
+    var r = obj.detachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+}
+
+var DEF_VAL   = "Search for ..."; // Default Value
+var isSafari  = ((parseInt(navigator.productSub)>=20020000)&&     // detecting WebCore
+               (navigator.vendor.indexOf("Apple Computer")!=-1));
+
+function replaceSearchField() {
+  // Replaces normal input text field with safari's neat search field
+  if ( ! document.getElementById)
+    return;
+  var searchField = document.getElementById('keywords');
+  var searchField2 = document.getElementById('keywords2');
+  if (isSafari) {
+    // changing type to "search"
+    searchField.setAttribute('type', 'search');
+    searchField.setAttribute('autosave', 'forum.search');
+    searchField.setAttribute('results', '5');
+    searchField.setAttribute('placeholder', DEF_VAL);
+	if (searchField2) {
+		searchField2.setAttribute('type', 'search');
+	    searchField2.setAttribute('autosave', 'forum.search');
+	    searchField2.setAttribute('results', '5');
+	    searchField2.setAttribute('placeholder', DEF_VAL);		
+	}
+  } 
+  
+};
+
+addEvent(window, 'load', replaceSearchField, false);
+
+function showhide(id)  
+{ 
+ var style = document.getElementById(id).style  
+ if (style.display == "block")  
+  style.display = "none";  
+ else  
+  style.display = "block";  
+};
+// ]]>
+</script>

@@ -1,0 +1,36 @@
+
+{include:toggle_js}
+{include:buddy_search_js}
+
+<div class='menuHeadingBG'><div class="tableHeading">{include:member_search} {lang:list_title}</div></div>
+
+{form:form_declaration:list}
+
+<table border='0'  cellspacing='0' cellpadding='0' style='width:100%;'  class='tableBorderTopRight' >
+
+<tr>
+
+<td  class='tableCellOne'  style='width:20%;'>
+<div class='defaultBold'>{lang:screen_name}</div>
+</td>
+
+<td  class='tableCellOne'  style='width:60%;'>
+<div class='defaultBold'>{lang:member_description}</div>
+</td>
+
+<td  class='tableCellOne'  style='width:5%;'>
+<div class='defaultBold'><input class='checkbox' type='checkbox' name='toggleflag' value='' onclick="toggle(this);" />
+</div>
+</td>
+
+</tr>
+
+{include:list_rows}
+</table>
+
+<div class="itempad">
+<div class='defaultRight'>{form:add_button}&nbsp;&nbsp;{form:delete_button}&nbsp;&nbsp;</div>
+</div>
+
+</form>
+    	

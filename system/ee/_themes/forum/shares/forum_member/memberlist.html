@@ -1,0 +1,139 @@
+{form_declaration}
+
+<table class='tableBorderLeft' border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+<tr>
+<td class='memberlistHead' width="21%">{lang:name}</td>
+<td class='memberlistHead' width="13%">{lang:forum_posts}</td>
+<td class='memberlistHead' width="8%">{lang:email_short}</td>
+<td class='memberlistHead' width="13%">{lang:join_date}</td>
+<td class='memberlistHead' width="13%">{lang:last_visit}</td>
+</tr>
+
+{member_rows}
+
+<tr>
+<td class='memberlistFooter' colspan="5" align='center' valign='middle'>
+
+<div class="defaultSmall">
+<b>{lang:show}</b>
+
+<select name='group_id' class='select'>
+{group_id_options}
+</select>
+
+&nbsp; <b>{lang:sort}</b>
+
+<select name='order_by' class='select'>
+{order_by_options}
+</select>
+
+&nbsp;  <b>{lang:order}</b>
+
+<select name='sort_order' class='select'>
+{sort_order_options}
+</select>
+
+&nbsp; <b>{lang:rows}</b>
+
+<select name='row_limit' class='select'>
+{row_limit_options}
+</select>
+
+
+&nbsp; <input type='submit' value='{lang:submit}' class='submit' />
+
+</div>
+</td>
+</tr>
+</table>
+
+{paginate}
+<div class="itempadbig">
+	<table cellpadding="0" cellspacing="0" border="0" class="paginateBorder">
+	<tr>
+	<td><div class="paginateStat">{current_page} {lang:of} {total_pages}</div></td>
+	{pagination_links}
+	</tr>
+	</table>
+</div>
+{/paginate}
+
+</form>
+
+<!--- Begin Member Search -->
+
+<script type="text/javascript">
+<!--
+
+var searchFieldCount = 1;
+
+function add_search_field()
+{
+	if (document.getElementById('search_field_1'))
+	{
+		// Find last search field
+		var originalSearchField = document.getElementById('search_field_1');
+		searchFieldCount++;
+
+		// Clone it, change the id
+		var newSearchField = originalSearchField.cloneNode(true);
+		newSearchField.id = 'search_field_' + searchFieldCount;
+
+		// Zero the input and change the names of fields
+		var newFieldInputs = newSearchField.getElementsByTagName('input');
+		newFieldInputs[0].value = '';
+		newFieldInputs[0].name = 'search_keywords_' + searchFieldCount;
+
+		var newFieldSelects = newSearchField.getElementsByTagName('select');
+		newFieldSelects[0].name = 'search_field_' + searchFieldCount;
+
+		// Append it and we're done
+		originalSearchField.parentNode.appendChild(newSearchField);
+	}
+}
+
+function delete_search_field(obj)
+{
+	if (obj.parentNode && obj.parentNode.id != 'search_field_1')
+	{
+		obj.parentNode.parentNode.removeChild(obj.parentNode)
+	}
+}
+
+//-->
+</script>
+
+<table class='tableBorderLeft' border='0' cellspacing='0' cellpadding='0' style='width:100%'>
+<tr>
+	<td class='memberlistHead'>{lang:member_search}</td>
+</tr>
+<tr>
+	<td class='tableCellOne'>
+		{form:form_declaration:do_member_search}
+
+		<div id="member_search_fields">
+
+		<div id="search_field_1" class="itempadbig">
+		<input type="text" name="search_keywords_1" />
+		<select name='search_field_1' class='select' >
+		<option value='screen_name'>{lang:search_field}</option>
+		<option value='screen_name'>{lang:mbr_screen_name}</option>
+		<option value='email'>{lang:mbr_email_address}</option>
+		{custom_profile_field_options}
+		</select>
+		<a href="#" onclick="add_search_field(); return false;" class="defaultBold">+</a>
+		<a href="#" onclick="delete_search_field(this); return false;" class="defaultBold">-</a>
+		</div>
+
+		</div>
+
+		<select name='search_group_id' class='select' >
+		{group_id_options}
+		</select>
+
+		<div class="itempadbig">&nbsp; <input type='submit' value='{lang:search}' class='submit' /></div>
+
+		</form>
+	</td>
+</tr>
+</table>

@@ -1,0 +1,42 @@
+
+<div class='menuHeadingBG'><div class="tableHeading">{lang:menu}</div></div>
+
+<div class='borderBot'><div class='profileHead'>{lang:personal_settings}</div></div>
+
+<div class='profileMenuInner'>
+<div class='menuItem'><a href='{path:profile}'>{lang:edit_profile}</a></div>
+<div class='menuItem'><a href='{path:signature}'>{lang:edit_signature}</a></div>
+{if enable_avatars}
+<div class='menuItem'><a href='{path:avatar}'>{lang:edit_avatar}</a></div>
+{/if}
+{if enable_photos}
+<div class='menuItem'><a href='{path:photo}'>{lang:edit_photo}</a></div>
+{/if}
+<div class='menuItem'><a href='{path:email}'>{lang:email_settings}</a></div>
+<div class='menuItem'><a href='{path:username}'>{lang:username_and_password}</a></div>
+<div class='menuItem'><a href='{path:edit_preferences}'>{lang:edit_preferences}</a></div>
+
+{if allow_localization}
+<div class='menuItem'><a href='{path:localization}'>{lang:localization}</a></div>
+{/if}
+
+{if can_delete}
+<div class="menuItem"><a href="{path:delete}">{lang:mbr_delete}</a></div>
+{/if}
+</div>
+
+<div class='borderTopBot'><div class='profileHead'>{lang:utilities}</div></div>
+
+<div class='profileMenuInner'>
+<div class='menuItem'><a href='{path:subscriptions}' >{lang:edit_subscriptions}</a></div>
+<div class='menuItem'><a href='{path:ignore_list}' >{lang:ignore_list}</a></div>
+</div>
+
+{include:messages_menu}
+
+
+<div class='borderTopBot'><div class='profileHead'>{lang:extras}</div></div>
+
+<div class='profileMenuInner'>
+<div class='menuItem'><a href='{path:notepad}' >{lang:notepad}</a></div>
+</div>

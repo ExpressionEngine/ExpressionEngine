@@ -1,0 +1,139 @@
+
+{if is_ignored}
+<tr>
+ <td colspan="3">
+  <table class="ignored" style="width:100%">
+   <tr>
+   <td class="tableCellOne">
+    <span style="float:right"><a href="#" onclick="showHideRow('{id9}');return false;">{lang:view_hide}</a> &bull;
+    <a href="{path:ignore}">{lang:stop_ignoring} {author}</a></span>{lang:post_hidden} <strong>{author}</strong> {lang:is_ignored}.
+   </td>
+   </tr>
+  </table>
+ </td>
+</tr>
+{/if}
+
+<tr id="{id9}" {if is_ignored}style="display: none;"{/if}>
+ <td colspan="3">
+
+
+ <table class="threadBorder" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
+  <tr>
+   <td class="tableRowHeadingBold" style="width:130px;"><div class="largeLinks"><a href="{path:member_profile}">{author}</a></div></td>
+   <td class="tableRowHeading" style="padding-left:20px;" colspan="2">
+
+	<table cellpadding="0" cellspacing="0" border="0" style="width:99%;">
+	<tr>
+	<td>{lang:posted_on} {post_date format="%d %F %Y %h:%i&nbsp;%A"}</td>
+	<td align="right">
+	{if can_view_ip}<i>{lang:ip_address} {ip_address}</i>{/if}
+		
+	{if is_topic}
+		{if can_change_status}&nbsp;&nbsp;<span class="smallLinks">[ <a href="{path:change_status}">{lang:change_status}</a> ]</span>{/if}
+	{/if}
+	{if can_ban}&nbsp;&nbsp;<span class="smallLinks">[ <a href="{path:ban_member}">{lang:ban_member}</a> ]</span>{/if}
+	
+	{if can_report}&nbsp;&nbsp;<span class="smallLinks">[ <a href="{path:report}" title="{lang:report}">{lang:report}</a> ]</span>{/if}
+	
+	{if can_ignore}&nbsp;&nbsp;<span class="smallLinks">[&nbsp;<a href="{path:ignore}" title="{lang:ignore}">{lang:ignore}</a>&nbsp;]</span>{/if}
+	
+	{if is_post}&nbsp;&nbsp;<span class="smallLinks">[ <a name="{post_id}" href="{path:post_link}" title="{lang:post_permalink}"># {post_number}</a> ]</span>{/if}
+		
+	&nbsp;
+	</td>
+	</tr>
+	</table>
+
+   </td>
+  </tr>
+<tr>
+ <td class="tableCellOne leftcol" style="width:130px;" valign="top">
+	<div class="{rank_class}">{rank_title}</div>
+	{if avatar}<div><img class="avatar" src="{path:avatars}" width="{avatar_width}" height="{avatar_height}" border="0" alt="{lang:avatar}" /></div>{/if}
+	<div>{if rank_stars}<img src="{path:image_url}rank.gif" width="9" height="10" border="0" alt="{lang:rank}" class="rankImage" />{/if}</div>
+	<div class="userBlock">{lang:total_posts}&nbsp; {total_posts}</div>
+	<div class="userBlock">{lang:joined}&nbsp; {join_date format="%Y-%m-%d"}</div>
+</td>
+<td class="tableCellOne" valign="top" colspan="2"><div class="post">{body}</div>
+	{if edited}<div class="edited"><em>[ {lang:edited}: {edit_date format="%d %F %Y %h:%i %A"} {lang:by} <a href="{path:edit_author_profile}">{edit_author}</a>]</em></div>{/if}
+	{if attachments}
+	{include:post_attachments}
+	{/if}
+	{if signature}
+	{include:signature}
+	{/if}
+		
+</td>
+
+</tr><tr>
+
+<td class="tableCellThree"  style="width:130px;">
+	<table cellpadding="0" cellspacing="0" border="0">
+	<tr class="buttonBG">
+	<td><a href="#" title="{lang:profile}" onclick="navJump('{path:member_profile}')"><img src="{path:image_url}bt_small_profile.gif" border='0' width='106' height='18' alt="{lang:profile}"/></a>
+	</td>
+	
+	{if logged_in}
+	<td><a class="pm" href="#" title="{lang:pm_short}" onclick="navJump('{path:send_private_message}')"><img src="{path:image_url}bt_small_pm.gif" border='0' width='42' height='18' alt="{lang:pm_short}"/></a></td>
+	{/if}
+
+	</tr>
+	</table>
+</td>
+
+<td class="tableCellFour" colspan="2">
+	<table cellpadding="0" cellspacing="0" border="0">
+	<tr>
+	{if can_edit}
+		<td align="center">
+		<a href="#" title="{lang:edit}" onclick="navJump('{path:edit_post}')"><img src="{path:image_url}bt_small_edit.gif" border='0' width='97' height='18' alt="{lang:edit}"/></a>
+		</td>
+	{/if}
+	{if can_delete}
+		<td>
+		<a href="#" title="{lang:delete}" onclick="navJump('{path:delete_post}')"><img src="{path:image_url}bt_small_delete.gif" border='0' width='98' height='18' alt="{lang:delete}"/></a>
+		</td>
+	{/if}
+	
+	{if is_topic}
+		{if can_move}
+			<td>
+			<a href="#" title="{lang:move}" onclick="navJump('{path:move_topic}')"><img src="{path:image_url}bt_small_move.gif" border='0' width='98' height='18' alt="{lang:move}"/></a>
+			</td>
+		{/if}
+		{if can_merge}
+			<td>
+			<a href="#" title="{lang:merge}" onclick="navJump('{path:merge_topic}')"><img src="{path:image_url}bt_small_merge.gif" border='0' width='97' height='18' alt="{lang:merge}"/></a>
+			</td>
+		{/if}
+		{if can_split}
+			<td>
+			<a href="#" title="{lang:split}" onclick="navJump('{path:split_topic}')"><img src="{path:image_url}bt_small_split.gif" border='0' width='98' height='18' alt="{lang:split}"/></a>
+			</td>
+		{/if}		
+	{/if}
+	
+	{if is_post}
+		{if can_move}
+			<td>
+			<a href="#" title="{lang:move}" onclick="navJump('{path:move_reply}')"><img src="{path:image_url}bt_small_move.gif" border='0' width='98' height='18' alt="{lang:move}"/></a>
+			</td>
+		{/if}
+	{/if}
+	
+	{if can_post}
+		<td align="center">
+		<a href="#" title="{lang:quote}" onclick="navJump('{path:quote_reply}')"><img src="{path:image_url}bt_small_quote.gif" border='0' width='93' height='18' alt="{lang:quote}"/></a>
+		</td>
+	{/if}
+
+	
+	</tr>
+	</table>
+  </td>
+ </tr>
+</table>
+
+</td>
+</tr>

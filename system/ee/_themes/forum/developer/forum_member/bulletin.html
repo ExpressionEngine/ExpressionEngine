@@ -1,0 +1,15 @@
+
+<div class="{style}" id="bulletin_div_{bulletin_id}">
+
+<span class="defaultBold">{lang:message_sender}</span>: {bulletin_sender}<br />
+<span class="defaultBold">{lang:message_date}</span>: {bulletin_date}<br />
+{if can_delete_bulletin}
+<span class='defaultBold'>{lang:delete_bulletin}:&nbsp;<a href='{path:delete_bulletin}' onclick='if( ! confirm("{lang:delete_bulletin_popup}")) return false;'>{lang:yes}</a></span><br />
+{/if}
+
+<div class="itempadbig">
+<textarea name='bulletin_{bulletin_id}' readonly='readonly' style='width:100%' class='textarea' rows='8' cols='90'>{bulletin_message}</textarea>
+</div>
+
+</div>
+    	
