@@ -283,8 +283,8 @@ class Consents extends Settings {
 					'fields' => [
 						'request' => [
 							'type' => 'textarea',
-							'value' => $version->request,
-							'required' => TRUE
+							'attrs' => ' class="textarea-tall" ',
+							'value' => $version->request
 						],
 						'request_format' => [
 							'type' => 'html',
