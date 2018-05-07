@@ -37,11 +37,17 @@ class Consent {
 	 */
 	protected $input_delegate;
 
-	public function __construct(ModelFacade $model_delegate, $input_delegate, Member $member)
+	/**
+	 * @var int $now The current timestamp
+	 */
+	protected $now;
+
+	public function __construct(ModelFacade $model_delegate, $input_delegate, Member $member, $now)
 	{
 		$this->model_delegate = $model_delegate;
 		$this->input_delegate = $input_delegate;
 		$this->member = $member;
+		$this->now = $now;
 	}
 
 	/**
