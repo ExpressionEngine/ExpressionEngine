@@ -44,7 +44,7 @@ class ConsentRequest extends Model {
 	protected static $_validation_rules = [
 		'source'        => 'enum[a,u]',
 		'title'         => 'required|maxLength[200]|limitHtml[b,cite,code,del,em,i,ins,markspan,strong,sub,sup]',
-		'consent_name'  => 'required|unique|maxLength[32]|alphaDash',
+		'consent_name'  => 'required|unique|maxLength[32]|validateName[source]',
 		'double_opt_in' => 'enum[y,n]',
 	];
 
@@ -58,6 +58,25 @@ class ConsentRequest extends Model {
 	protected $consent_name;
 	protected $double_opt_in;
 	protected $retention_period;
+
+	public function validateName($name, $value, $params, $object)
+	{
+		$source = $params[0];
+
+		$pattern = "-a-z0-9_-";
+
+		if ($source == 'a')
+		{
+			$pattern .= ':';
+		}
+
+		if (preg_match("/^([" . $pattern . "])+$/i", $value))
+		{
+			return TRUE;
+		}
+
+		return 'alpha_dash';
+	}
 
 }
 
