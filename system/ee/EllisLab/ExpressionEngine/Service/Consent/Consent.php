@@ -292,7 +292,7 @@ class Consent {
 			->with(['ConsentRequest' => 'CurrentVersion'])
 			->with('ConsentRequestVersion')
 			->filter('member_id', $this->member->getId())
-			->filter('consent_id', $request_id)
+			->filter('consent_request_id', $request_id)
 			->first();
 	}
 
