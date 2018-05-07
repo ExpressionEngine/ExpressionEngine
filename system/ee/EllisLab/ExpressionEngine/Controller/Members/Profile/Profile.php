@@ -95,6 +95,7 @@ class Profile extends CP_Controller {
 
 		$list = $header->addBasicList();
 
+		$list->addItem(lang('consents'), ee('CP/URL')->make('members/profile/consent', $this->query_string));
 		$list->addItem(lang('email_settings'), ee('CP/URL')->make('members/profile/email', $this->query_string));
 		$list->addItem(lang('auth_settings'), ee('CP/URL')->make('members/profile/auth', $this->query_string));
 
