@@ -207,6 +207,11 @@ class Consents extends Settings {
 
 		if ( ! empty($_POST))
 		{
+			if ($request->source == 'a')
+			{
+				unset($_POST['consent_name']);
+			}
+
 			$request->set($_POST);
 			$version->set($_POST);
 			$result = $request->validate();
