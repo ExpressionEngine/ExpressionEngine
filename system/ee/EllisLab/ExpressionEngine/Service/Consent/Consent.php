@@ -149,7 +149,7 @@ class Consent {
 	 *
 	 * @return obj A Model Collection of ConsentRequest objects
 	 */
-	public function getGrantedConsentRequests()
+	public function getGrantedRequests()
 	{
 		if ($this->isAnonymous())
 		{
