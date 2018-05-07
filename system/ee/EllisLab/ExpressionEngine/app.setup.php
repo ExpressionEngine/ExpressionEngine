@@ -357,8 +357,7 @@ return array(
 			return new Consent\Consent(
 				$ee->make('Model'),
 				ee()->input,
-				$member,
-				ee()->localize->now);
+				$member);
 		},
 
 	),
