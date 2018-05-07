@@ -20,6 +20,7 @@ class Metaweblog_api {
 	var $fields			= array();
 	var $userdata		= array();
 
+	var $entry			= NULL;
 	var $title			= 'MetaWeblog API Entry';	// Default Title
 	var $channel_id		= '1';						// Default Channel ID
 	var $site_id		= '1';						// Default Site ID
@@ -146,17 +147,16 @@ class Metaweblog_api {
 	function newPost($plist)
 	{
 		$parameters = $plist->output_parameters();
+		$this->channel_id = $parameters['0'];
 
 		if ( ! $this->fetch_member_data($parameters['1'], $parameters['2']))
 		{
 			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
-		/** ---------------------------------------
-		/**  Parse Out Channel Information
-		/** ---------------------------------------*/
+		$this->parse_channel($this->channel_id);
 
-		$this->parse_channel($parameters['0']);
+		$this->fetch_entry(0);
 
 		if ($this->entry_status != '' && $this->entry_status != 'null')
 		{
@@ -166,34 +166,6 @@ class Metaweblog_api {
 		{
 			$this->status = ($parameters['4'] == '0') ? 'closed' : 'open';
 		}
-
-		/** ---------------------------------------
-		/**  Default Channel Data for channel_id
-		/** ---------------------------------------*/
-
-		ee()->db->select('deft_comments, cat_group, deft_category, channel_title, channel_url,
-								channel_notify_emails, channel_notify, comment_url');
-		ee()->db->where('channel_id', $this->channel_id);
-		$query = ee()->db->get('channels');
-
-		if ($query->num_rows() == 0)
-		{
-			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_channel'));
-		}
-
-		foreach($query->row_array() as $key => $value)
-		{
-			${$key} =  $value;
-		}
-
-		$notify_address = ($query->row('channel_notify')  == 'y' AND $query->row('channel_notify_emails')  != '') ? $query->row('channel_notify_emails')  : '';
-
-		// Get channel field Settings
-		$this->get_settings($this->channel_id, 'new');
-
-		/** ---------------------------------------
-		/**  Parse Data Struct
-		/** ---------------------------------------*/
 
 		$this->title = $parameters['3']['title'];
 
@@ -207,65 +179,27 @@ class Metaweblog_api {
 			$deft_comments = ($parameters['3']['mt_allow_comments'] == 1) ? 'y' : 'n';
 		}
 
-		if (isset($parameters['3']['categories']) && count($parameters['3']['categories']) > 0)
+		// Default category was set in fetch_entry()
+		if (isset($parameters['3']['categories']))
 		{
-			$cats = array();
-
-			foreach($parameters['3']['categories'] as $cat)
+			if (count($parameters['3']['categories']) > 0)
 			{
-				if (trim($cat) != '')
+				$cats = array();
+
+				foreach($parameters['3']['categories'] as $cat)
 				{
-					$cats[] = $cat;
+					if (trim($cat) != '')
+					{
+						$cats[] = $cat;
+					}
+				}
+
+				if (count($cats) > 0)
+				{
+					$this->check_categories(array_unique($cats));
 				}
 			}
-
-			if (count($cats) == 0 && ! empty($deft_category))
-			{
-				$cats = array($deft_category);
-			}
-
-			if (count($cats) > 0)
-			{
-				$this->check_categories(array_unique($cats));
-			}
 		}
-		elseif( ! empty($deft_category))
-		{
-			$this->check_categories(array($deft_category));
-		}
-
-		if ( ! empty($parameters['3']['dateCreated']))
-		{
-			$entry_date = $this->iso8601_decode($parameters['3']['dateCreated']);
-		}
-		else
-		{
-			$entry_date = ee()->localize->now;
-		}
-
-		/** ---------------------------------
-		/**  Build our query string
-		/** --------------------------------*/
-
-		$metadata = array(
-							'channel_id'		=> $this->channel_id,
-							'author_id'			=> $this->userdata['member_id'],
-							'title'				=> $this->title,
-							'ip_address'		=> ee()->input->ip_address(),
-							'entry_date'		=> $entry_date,
-							'edit_date'			=> gmdate("YmdHis", $entry_date),
-							'year'				=> gmdate('Y', $entry_date),
-							'month'				=> gmdate('m', $entry_date),
-							'day'				=> gmdate('d', $entry_date),
-							'status'			=> $this->status,
-							'allow_comments'	=> $deft_comments
-						  );
-
-		/** ---------------------------------------
-		/**  Parse Channel Field Data
-		/** ---------------------------------------*/
-
-		$entry_data = array('channel_id' => $this->channel_id);
 
 		// Default formatting for all of the channel's fields...
 
@@ -274,133 +208,57 @@ class Metaweblog_api {
 			$entry_data['field_ft_'.$field_id] = $field_data['1'];
 		}
 
-		$convert_breaks = ( ! isset($parameters['3']['mt_convert_breaks'])) ? '' : $parameters['3']['mt_convert_breaks'];
-
-		if ($convert_breaks === '0')
-		{
-			// MarsEdit sends '0' as synonymous with 'none'
-			$convert_breaks = 'none';
-		}
-		elseif ($convert_breaks != '')
-		{
-			$plugins = $this->fetch_plugins();
-
-			if ( ! in_array($convert_breaks, $plugins))
-			{
-				$convert_breaks = '';
-			}
-		}
-
-		if (isset($this->fields[$this->excerpt_field]))
-		{
-			if (isset($entry_data['field_id_'.$this->excerpt_field]))
-			{
-				$entry_data['field_id_'.$this->excerpt_field] .= $this->field_data['excerpt'];
-			}
-			else
-			{
-				$entry_data['field_id_'.$this->excerpt_field] = $this->field_data['excerpt'];
-			}
-
-			$entry_data['field_ft_'.$this->excerpt_field] = ($convert_breaks != '') ? $convert_breaks : $this->fields[$this->excerpt_field]['1'];
-		}
-
-		if (isset($this->fields[$this->content_field]))
-		{
-			if (isset($entry_data['field_id_'.$this->content_field]))
-			{
-				$entry_data['field_id_'.$this->content_field] .= $this->field_data['content'];
-			}
-			else
-			{
-				$entry_data['field_id_'.$this->content_field] = $this->field_data['content'];
-			}
-
-			$entry_data['field_ft_'.$this->content_field] = ($convert_breaks != '') ? $convert_breaks : $this->fields[$this->content_field]['1'];
-		}
-
-		if (isset($this->fields[$this->more_field]))
-		{
-			if (isset($entry_data['field_id_'.$this->more_field]))
-			{
-				$entry_data['field_id_'.$this->more_field] .= $this->field_data['more'];
-			}
-			else
-			{
-				$entry_data['field_id_'.$this->more_field] = $this->field_data['more'];
-			}
-
-			$entry_data['field_ft_'.$this->more_field] = ($convert_breaks != '') ? $convert_breaks : $this->fields[$this->more_field]['1'];
-		}
-
-		if (isset($this->fields[$this->keywords_field]))
-		{
-			if (isset($entry_data['field_id_'.$this->keywords_field]))
-			{
-				$entry_data['field_id_'.$this->keywords_field] .= $this->field_data['keywords'];
-			}
-			else
-			{
-				$entry_data['field_id_'.$this->keywords_field] = $this->field_data['keywords'];
-			}
-
-			$entry_data['field_ft_'.$this->keywords_field] = ($convert_breaks != '') ? $convert_breaks : $this->fields[$this->keywords_field]['1'];
-		}
-
-		/** ---------------------------------
-		/**  Insert the entry data
-		/** ---------------------------------*/
+		// Set custom field data
+		$entry_data = $this->get_field_entry_data($parameters);
 
 		$entry_data['site_id']	= $this->site_id;
 		$entry_data['versioning_enabled'] = 'n';
 
-		$data = array_merge($metadata, $entry_data);
-
-		if (count($this->categories) > 0)
-		{
-			foreach($this->categories as $cat_id => $cat_name)
-			{
-				$data['category'][] = $cat_id;
-			}
-		}
-
 		ee()->session->userdata = array_merge(
-			ee()->session->userdata,
-			array(
-				'group_id'			=> $this->userdata['group_id'],
-				'member_id'			=> $this->userdata['member_id'],
-				'assigned_channels'	=> $this->userdata['assigned_channels']
-			)
+				ee()->session->userdata,
+				array(
+					'group_id'			=> $this->userdata['group_id'],
+					'member_id'			=> $this->userdata['member_id'],
+					'assigned_channels'	=> $this->userdata['assigned_channels']
+				)
 		);
 
-		ee()->router->set_class('cp');
-		ee()->load->library('cp');
-		ee()->load->library('api');
-		ee()->legacy_api->instantiate('channel_entries');
-		ee()->legacy_api->instantiate('channel_fields');
 
-		ee()->api_channel_fields->setup_entry_settings($this->channel_id, $data);
+		$entry_data['title'] = $this->title;
+		$entry_data['channel_id'] = $this->channel_id;
+		$entry_data['url_title'] = ee('Format')->make('Text', $this->title)->urlSlug()->compile();
+		$entry_data['status'] = $this->status;
+		$entry_data['entry_date'] = ee()->localize->now;
 
-		if ( ! ee()->api_channel_entries->save_entry($data, $this->channel_id))
+		if ( ! empty($this->categories))
 		{
-			$errors = ee()->api_channel_entries->get_errors();
-
-			ee()->lang->loadfile('content');
-			$mssg = "\n";
-
-			foreach ($errors as $val)
-			{
-				$mssg .= lang($val)."\n";
-			}
-
-			return ee()->xmlrpc->send_error_message('804', lang('new_entry_errors').$mssg);
+			$entry_data['categories'] = $this->categories;
 		}
 
-		//Return Entry ID of new entry - defaults to string, so nothing fancy
-		$response = ee()->api_channel_entries->entry_id;
+		$this->entry->set($entry_data);
 
-		return ee()->xmlrpc->send_response($response);
+		$result = $this->entry->validate();
+
+		if ($result->isValid())
+		{
+			$this->entry->save();
+
+			//Return Entry ID of new entry - defaults to string, so nothing fancy
+			$response = $this->entry->entry_id;
+
+			return ee()->xmlrpc->send_response($response);
+		}
+
+		$errors = $result->renderErrors();
+
+		foreach ($errors as $field => $val)
+		{
+			$mssg .= $field.': '.$val."\n";
+		}
+
+		return ee()->xmlrpc->send_error_message('804', lang('new_entry_errors').$mssg);
 	}
+
 
 	/**
 	 * Edit Post
@@ -412,6 +270,7 @@ class Metaweblog_api {
 	function editPost($plist)
 	{
 		$parameters = $plist->output_parameters();
+		//$this->channel_id = $parameters['0'];
 
 		if ( ! $this->fetch_member_data($parameters['1'], $parameters['2']))
 		{
@@ -428,40 +287,8 @@ class Metaweblog_api {
 			}
 		}
 
-		/** ---------------------------------------
-		/**  Retrieve Entry Information
-		/** ---------------------------------------*/
-
 		$entry_id = $parameters['0'];
-
-		$sql = "SELECT wt.channel_id, wt.author_id, wt.title, wt.url_title,
-				wb.channel_title, wb.channel_url
-				FROM (exp_channel_titles wt, exp_channels wb)
-				WHERE wt.channel_id = wb.channel_id
-				AND wt.entry_id = '".ee()->db->escape_str($entry_id)."' ";
-
-		$query = ee()->db->query($sql);
-
-		if ($query->num_rows() == 0)
-		{
-			return ee()->xmlrpc->send_error_message('805', ee()->lang->line('no_entry_found'));
-		}
-
-		if ( ! in_array($query->row('channel_id'), array_keys($this->userdata['assigned_channels'])) && $this->userdata['group_id'] != '1')
-		{
-			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
-		}
-
-		if ( ! $this->userdata['can_edit_other_entries'] && $this->userdata['group_id'] != '1')
-		{
-			if ($query->row('author_id')  != $this->userdata['member_id'])
-			{
-				return ee()->xmlrpc->send_error_message('806', ee()->lang->line('entry_uneditable'));
-			}
-		}
-
-		$this->channel_id	= $query->row('channel_id');
-		$this->title		= $query->row('title');
+		$this->fetch_entry($entry_id);
 
 		$this->parse_channel($this->channel_id);
 
@@ -480,21 +307,12 @@ class Metaweblog_api {
 
 		$this->title = $parameters['3']['title'];
 
+
 		$this->field_data['excerpt']  = ( ! isset($parameters['3']['mt_excerpt'])) ? '' : $parameters['3']['mt_excerpt'];
 		$this->field_data['content']  = ( ! isset($parameters['3']['description'])) ? '' : $parameters['3']['description'];
 		$this->field_data['more']	  = ( ! isset($parameters['3']['mt_text_more'])) ? '' : $parameters['3']['mt_text_more'];
 		$this->field_data['keywords'] = ( ! isset($parameters['3']['mt_keywords'])) ? '' : $parameters['3']['mt_keywords'];
 
-		/** ---------------------------------
-		/**  Build our query string
-		/** ---------------------------------*/
-
-		$metadata = array(
-							'entry_id'			=> $entry_id,
-							'title'				=> $this->title,
-							'ip_address'		=> ee()->input->ip_address(),
-							'status'			=> $this->status
-						  );
 
 		if (isset($parameters['3']['mt_allow_comments']))
 		{
@@ -512,7 +330,100 @@ class Metaweblog_api {
 		/**  Parse Channel Field Data
 		/** ---------------------------------------*/
 
-		$entry_data = array('channel_id' => $this->channel_id);
+
+		// Set custom field data
+		$entry_data = $this->get_field_entry_data($parameters);
+
+		$entry_data['site_id']	= $this->site_id;
+		$entry_data['versioning_enabled'] = 'n';
+
+		$entry_data['channel_id'] = $this->channel_id;
+
+		$entry_data['title'] = $this->title;
+		$entry_data['channel_id'] = $this->channel_id;
+		$entry_data['url_title'] = ee('Format')->make('Text', $this->title)->urlSlug()->compile();
+		$entry_data['status'] = $this->status;
+		//$entry_data['entry_date'] = ee()->localize->now;
+
+
+		$data = array_merge($metadata, $entry_data);
+
+		// Add Categories, if any
+
+		if (isset($parameters['3']['categories']))
+		{
+			if (count($parameters['3']['categories']) > 0)
+			{
+				$cats = array();
+
+				foreach($parameters['3']['categories'] as $cat)
+				{
+					if (trim($cat) != '')
+					{
+						$cats[] = $cat;
+					}
+				}
+
+				if (count($cats) > 0)
+				{
+					$this->check_categories(array_unique($cats));
+				}
+			}
+
+			$data['categories'] = $this->categories;
+		}
+
+		$this->entry->set($data);
+
+		$result = $this->entry->validate();
+
+		if ($result->isValid())
+		{
+			$this->entry->save();
+
+			//Return Entry ID of new entry - defaults to string, so nothing fancy
+			$response = $this->entry->entry_id;
+
+		}
+		else
+		{
+
+			$errors = $result->renderErrors();
+
+			foreach ($errors as $field => $val)
+			{
+				$mssg .= $field.': '.$val."\n";
+			}
+
+			return ee()->xmlrpc->send_error_message('804', lang('new_entry_errors').$mssg);
+		}
+
+
+		/** ---------------------------------
+		/**  Clear caches if needed
+		/** ---------------------------------*/
+
+		if (ee()->config->item('new_posts_clear_caches') == 'y')
+		{
+			ee()->functions->clear_caching('all');
+		}
+		else
+		{
+			ee()->functions->clear_caching('sql');
+		}
+
+
+		/** ---------------------------------
+		/**  Return Boolean TRUE
+		/** ---------------------------------*/
+
+		return ee()->xmlrpc->send_response(array(1,'boolean'));
+
+	}
+
+	function get_field_entry_data($parameters)
+	{
+		$entry_data = array();
 
 		$convert_breaks = ( ! isset($parameters['3']['mt_convert_breaks'])) ? '' : $parameters['3']['mt_convert_breaks'];
 
@@ -587,61 +498,83 @@ class Metaweblog_api {
 			$entry_data['field_ft_'.$this->keywords_field] = ($convert_breaks != '') ? $convert_breaks : $this->fields[$this->keywords_field]['1'];
 		}
 
-		/** ---------------------------------
-		/**  Update the entry data
-		/** ---------------------------------*/
-
-		ee()->db->query(ee()->db->update_string('exp_channel_titles', $metadata, "entry_id = '$entry_id'"));
-		ee()->db->query(ee()->db->update_string('exp_channel_data', $entry_data, "entry_id = '$entry_id'"));
-
-		/** ---------------------------------
-		/**  Insert Categories, if any
-		/** ---------------------------------*/
-
-		if ( ! empty($parameters['3']['categories']) && count($parameters['3']['categories']) > 0)
-		{
-			$this->check_categories($parameters['3']['categories']);
-		}
-
-		if (count($this->categories) > 0)
-		{
-			ee()->db->query("DELETE FROM exp_category_posts WHERE entry_id = '$entry_id'");
-
-			foreach($this->categories as $cat_id => $cat_name)
-			{
-				ee()->db->query("INSERT INTO exp_category_posts
-							(entry_id, cat_id)
-							VALUES
-							('".$entry_id."', '$cat_id')");
-			}
-		}
-
-		/** ---------------------------------
-		/**  Clear caches if needed
-		/** ---------------------------------*/
-
-		if (ee()->config->item('new_posts_clear_caches') == 'y')
-		{
-			ee()->functions->clear_caching('all');
-		}
-		else
-		{
-			ee()->functions->clear_caching('sql');
-		}
-
-		/** ---------------------------------
-		/**  Count your chickens after they've hatched
-		/** ---------------------------------*/
-
-		ee()->stats->update_channel_stats($this->channel_id);
-
-		/** ---------------------------------
-		/**  Return Boolean TRUE
-		/** ---------------------------------*/
-
-		return ee()->xmlrpc->send_response(array(1,'boolean'));
-
+		return $entry_data;
 	}
+
+
+	public function fetch_entry($entry_id)
+	{
+		if ( ! $entry_id)
+		{
+			if ( ! $this->channel_id)
+			{
+				return ee()->xmlrpc->send_error_message('804', ee()->lang->line('invalid_channel'));
+			}
+
+			$channel = ee('Model')->get('Channel')
+				->with('ChannelFormSettings')
+				->filter('channel_id', $this->channel_id)
+				->first();
+
+			if (empty($channel))
+			{
+				return ee()->xmlrpc->send_error_message('804', ee()->lang->line('invalid_channel').$this->channel_id);
+			}
+
+			$this->entry = ee('Model')->make('ChannelEntry');
+			$this->entry->Channel = $channel;
+			$this->entry->ip_address = ee()->input->ip_address();
+			// Assign defaults based on the channel
+			$this->entry->title = $channel->default_entry_title;
+			$this->entry->versioning_enabled = $channel->enable_versioning;
+			$this->entry->status = $channel->deft_status;
+			$this->entry->author_id = $this->userdata['member_id'];
+
+			if ( ! empty($this->channel->deft_category))
+			{
+				$cat = ee('Model')->get('Category', $this->channel->deft_category)->first();
+
+				if ($cat)
+				{
+					$this->entry->Categories = $cat;
+				}
+			}
+
+			return;
+		}
+
+		$query = ee('Model')->get('ChannelEntry')->with('Channel');
+		$query->filter('entry_id', $entry_id);
+		$query->filter('ChannelEntry.site_id', $this->site_id);
+
+		$entry = $query->first();
+
+		if (isset($entry))
+		{
+			$this->entry = $entry;
+			$this->title = $this->entry->title;
+			$this->channel_id = $this->entry->channel_id;
+
+
+			if ( ! in_array($this->channel_id, array_keys($this->userdata['assigned_channels'])) && $this->userdata['group_id'] != '1')
+			{
+				return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
+			}
+
+			if ( ! $this->userdata['can_edit_other_entries'] && $this->userdata['group_id'] != '1')
+			{
+				if ($this->entry->author_id  != $this->userdata['member_id'])
+				{
+					return ee()->xmlrpc->send_error_message('806', ee()->lang->line('entry_uneditable'));
+				}
+			}
+
+			return;
+		}
+
+		return ee()->xmlrpc->send_error_message('805', ee()->lang->line('no_entry_found'));
+	}
+
 
 	/**
 	 * MT API: Publish Post
@@ -703,13 +636,15 @@ class Metaweblog_api {
 			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
+		$this->channel_id = $parameters['0'];
+
 		/** ---------------------------------------
 		/**  Parse Out Channel Information
 		/** ---------------------------------------*/
 
 		if ($entry_id == '')
 		{
-			$this->parse_channel($parameters['0']);
+			$this->parse_channel($this->channel_id);
 			$limit = ( ! empty($parameters['3']) && is_numeric($parameters['3'])) ? $parameters['3'] : '10';
 		}
 
@@ -717,46 +652,46 @@ class Metaweblog_api {
 		/**  Perform Query
 		/** ---------------------------------------*/
 
-		$sql = "SELECT DISTINCT(wt.entry_id), wt.title, wt.url_title, wt.channel_id,
-				wt.author_id, wt.entry_date, wt.allow_comments,
-				exp_channel_data.*
-				FROM	exp_channel_titles wt, exp_channel_data
-				WHERE wt.entry_id = exp_channel_data.entry_id ";
+
+		$query = ee('Model')->get('ChannelEntry')->filter('channel_id', $this->channel_id);
 
 		if ($this->userdata['group_id'] != '1' && ! $this->userdata['can_edit_other_entries'])
 		{
-			$sql .= "AND wt.author_id = '".$this->userdata['member_id']."' ";
+			//$sql .= "AND wt.author_id = '".$this->userdata['member_id']."' ";
+			$query->filter('author_id', $this->userdata['member_id']);
 		}
 
 		if ($entry_id != '')
 		{
-			$sql .= "AND wt.entry_id = '{$entry_id}' ";
+			//$sql .= "AND wt.entry_id = '{$entry_id}' ";
+			$query->filter('entry_id', $entry_id);
 		}
 		else
 		{
-			$sql .= str_replace('exp_channels.channel_id','wt.channel_id', $this->channel_sql)." ";
+			//$sql .= str_replace('exp_channels.channel_id','wt.channel_id', $this->channel_sql)." ";
 		}
 
 		if ($entry_id == '')
 		{
-			$sql .= "ORDER BY entry_date desc LIMIT 0, {$limit}";
+			//$sql .= "ORDER BY entry_date desc LIMIT 0, {$limit}";
+			$query->order('entry_date', 'desc')->limit($limit);
 		}
 
-		$query = ee()->db->query($sql);
+		$query = $query->all();
 
-		if ($query->num_rows() == 0)
+		if ( ! $query)
 		{
 			return ee()->xmlrpc->send_error_message('805', ee()->lang->line('no_entries_found'));
 		}
 
-		if ( ! in_array($query->row('channel_id'), array_keys($this->userdata['assigned_channels'])) && $this->userdata['group_id'] != '1')
+		if ( ! in_array($this->channel_id, array_keys($this->userdata['assigned_channels'])) && $this->userdata['group_id'] != '1')
 		{
 			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 		}
 
 		if ($entry_id != '')
 		{
-			$this->parse_channel($query->row('channel_id') );
+			$this->parse_channel($this->channel_id);
 		}
 
 		/** ----------------------------------------
@@ -783,10 +718,10 @@ class Metaweblog_api {
 
 		$response = array();
 
-		foreach($query->result_array() as $row)
+		foreach($query as $row)
 		{
 			$convert_breaks = 'none';
-			$link = reduce_double_slashes(parse_config_variables($this->comment_url).'/'.$query->row('url_title') .'/');
+			$link = reduce_double_slashes(parse_config_variables($this->comment_url).'/'.$row->url_title .'/');
 
 			// Fields:  Textarea and Text Input Only
 
@@ -794,62 +729,74 @@ class Metaweblog_api {
 
 			if (isset($this->fields[$this->excerpt_field]))
 			{
+				$field_ft = 'field_ft_'.$this->excerpt_field;
+				$field_id = 'field_id_'.$this->excerpt_field;
+
 				if ($this->parse_type === TRUE)
 	  			{
-	  				$settings['text_format'] = $row['field_ft_'.$this->excerpt_field];
+	  				$settings['text_format'] = $row->$field_ft;
 
-					$this->field_data['excerpt'] = ee()->typography->parse_type($row['field_id_'.$this->excerpt_field], $settings);
+					$this->field_data['excerpt'] = ee()->typography->parse_type($row->$field_id, $settings);
 				}
 				else
 				{
-					$this->field_data['excerpt'] .= $row['field_id_'.$this->excerpt_field];
+					$this->field_data['excerpt'] .= $row->$field_id;
 				}
 			}
 
+
+
 			if (isset($this->fields[$this->content_field]))
 			{
-				$convert_breaks	= $row['field_ft_'.$this->content_field];
+				$field_ft = 'field_ft_'.$this->content_field;
+				$field_id = 'field_id_'.$this->content_field;
+				$convert_breaks	= $row->$field_ft;
 
 				if ($this->parse_type === TRUE)
 	  			{
-	  				$settings['text_format'] = $row['field_ft_'.$this->content_field];
+	  				$settings['text_format'] = $row->$field_ft;
 
-					$this->field_data['content'] = ee()->typography->parse_type($row['field_id_'.$this->content_field], $settings);
+					$this->field_data['content'] = ee()->typography->parse_type($row->$field_id, $settings);
 				}
 				else
 				{
-					$this->field_data['content'] .= $row['field_id_'.$this->content_field];
+					$this->field_data['content'] .= $row->$field_id;
 				}
 			}
 
 			if (isset($this->fields[$this->more_field]))
 			{
+
+				$field_ft = 'field_ft_'.$this->more_field;
+				$field_id = 'field_id_'.$this->more_field;
+
 				if ($this->parse_type === TRUE)
 	  			{
-	  				$settings['text_format'] = $row['field_ft_'.$this->more_field];
+	  				$settings['text_format'] = $row->$field_ft;
 
-					$this->field_data['more'] = ee()->typography->parse_type($row['field_id_'.$this->more_field], $settings);
+					$this->field_data['more'] = ee()->typography->parse_type($row->$field_id, $settings);
 				}
 				else
 				{
-					$this->field_data['more'] .= $row['field_id_'.$this->more_field];
+					$this->field_data['more'] .= $row->$field_id;
 				}
 			}
 
 			if (isset($this->fields[$this->keywords_field]))
 			{
+				$field_ft = 'field_ft_'.$this->keywords_field;
+				$field_id = 'field_id_'.$this->keywords_field;
 				if ($this->parse_type === TRUE)
 	  			{
-	  				$settings['text_format'] = $row['field_ft_'.$this->keywords_field];
+	  				$settings['text_format'] = $row->$field_ft;
 
-					$this->field_data['keywords'] = ee()->typography->parse_type($row['field_id_'.$this->keywords_field], $settings);
+					$this->field_data['keywords'] = ee()->typography->parse_type($row->$field_id, $settings);
 				}
 				else
 				{
-					$this->field_data['keywords'] .= $row['field_id_'.$this->keywords_field];
+					$this->field_data['keywords'] .= $row->$field_id;
 				}
 			}
-
 
 			// Categories
 
@@ -858,7 +805,7 @@ class Metaweblog_api {
 			$sql = "SELECT	exp_categories.cat_id, exp_categories.cat_name
 					FROM	exp_category_posts, exp_categories
 					WHERE	exp_category_posts.cat_id = exp_categories.cat_id
-					AND		exp_category_posts.entry_id = '".$row['entry_id']."'
+					AND		exp_category_posts.entry_id = '".$row->entry_id."'
 					ORDER BY cat_id";
 
 			$results = ee()->db->query($sql);
@@ -875,13 +822,13 @@ class Metaweblog_api {
 			// Entry Data to XML-RPC form
 			$entry_data = array(array(
 										'userid' =>
-										array($row['author_id'],'string'),
+										array($row->author_id,'string'),
 										'dateCreated' =>
-										array(date('Ymd\TH:i:s',$row['entry_date']).'Z','dateTime.iso8601'),
+										array(date('Ymd\TH:i:s',$row->entry_date).'Z','dateTime.iso8601'),
 										'blogid' =>
-										array($row['channel_id'],'string'),
+										array($row->channel_id,'string'),
 										'title' =>
-										array($row['title'], 'string'),
+										array($row->title, 'string'),
 										'mt_excerpt' =>
 										array($this->field_data['excerpt'],'string'),
 										'description' =>
@@ -893,7 +840,7 @@ class Metaweblog_api {
 										'mt_convert_breaks' =>
 										array($convert_breaks,'string'),
 										'postid' =>
-										array($row['entry_id'],'string'),
+										array($row->entry_id,'string'),
 										'link' =>
 										array($link,'string'),
 										'permaLink' =>
@@ -901,7 +848,7 @@ class Metaweblog_api {
 										'categories' =>
 										array($cat_array,'array'),
 										'mt_allow_comments' =>
-										array(($row['allow_comments'] == 'y') ? 1 : 0,'int')
+										array(($row->allow_comments == 'y') ? 1 : 0,'int')
 										),
 									'struct');
 
@@ -1365,22 +1312,20 @@ class Metaweblog_api {
 		$channel_id			= trim($channel_id);
 		$this->status		= 'open';
 
-		$sql				= "SELECT channel_id, channel_url, comment_url, deft_category, channel_html_formatting, site_id FROM exp_channels WHERE ";
-		$this->channel_sql	= ee()->functions->sql_andor_string($channel_id, 'exp_channels.channel_id');
-			$sql				= (substr($this->channel_sql, 0, 3) == 'AND') ? $sql.substr($this->channel_sql, 3) : $sql.$this->channel_sql;
-		$query				= ee()->db->query($sql);
+		$channel = ee('Model')->get('Channel', $channel_id)->first();
 
-		if ($query->num_rows() == 0)
+		if ( ! $channel)
 		{
 			return ee()->xmlrpc->send_error_message('804', ee()->lang->line('invalid_channel'));
 		}
 
-		$this->channel_id		= $query->row('channel_id');
-		$this->channel_url		= parse_config_variables($query->row('channel_url'));
-		$this->comment_url		= parse_config_variables($query->row('comment_url'));
-		$this->deft_category	= $query->row('deft_category');
-		$this->html_format		= $query->row('channel_html_formatting');
-		$this->site_id			= $query->row('site_id');
+
+		$this->channel_id		= $channel->channel_id;
+		$this->channel_url		= parse_config_variables($channel->channel_url);
+		$this->comment_url		= parse_config_variables($channel->comment_url);
+		$this->deft_category	= $channel->deft_category;
+		$this->html_format		= $channel->channel_html_formatting;
+		$this->site_id			= $channel->site_id;
 
 		if ($this->site_id != ee()->config->item('site_id'))
 		{
@@ -1389,27 +1334,26 @@ class Metaweblog_api {
 			$this->assign_parents = (ee()->config->item('auto_assign_cat_parents') == 'n') ? FALSE : TRUE;
 		}
 
-		foreach ($query->result_array() as $row)
+		if ( ! in_array($channel->channel_id, $this->userdata['assigned_channels']) && $this->userdata['group_id'] != '1')
 		{
-			if ( ! in_array($row['channel_id'], $this->userdata['assigned_channels']) && $this->userdata['group_id'] != '1')
-			{
-				return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_channel'));
-			}
+			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_channel'));
 		}
 
 		/** ---------------------------------------
 		/**  Find Fields
 		/** ---------------------------------------*/
 
-		$query = ee()->db->query("SELECT field_name, field_id, field_type, field_fmt FROM exp_channel_fields, exp_channels
-							  WHERE exp_channels.field_group = exp_channel_fields.group_id
-							  {$this->channel_sql}
-							  ORDER BY field_order");
-
-		foreach($query->result_array() as $row)
+		$allowed_fieldtypes = array('text', 'textarea', 'rte');
+		foreach ($channel->getAllCustomFields() as $field)
 		{
-			$this->fields[$row['field_id']] = array($row['field_name'], $row['field_fmt']);
+			if ( ! in_array($field->field_type, $allowed_fieldtypes))
+			{
+				continue;
+			}
+
+			$this->fields[$field->field_id] = array($field->field_name, $field->field_fmt);
 		}
+
 	}
 
 	/**
@@ -1421,9 +1365,9 @@ class Metaweblog_api {
 	 */
 	function check_categories($array, $debug = '0')
 	{
-		$this->categories = array_unique($array);
+		$categories = array_unique($array);
 
-		$sql = "SELECT exp_categories.cat_id, exp_categories.cat_name, exp_categories.parent_id
+		$sql = "SELECT exp_categories.cat_id, exp_categories.cat_name, exp_categories.parent_id, exp_categories.group_id
 				FROM	exp_categories, exp_channels
 				WHERE  FIND_IN_SET(exp_categories.group_id, REPLACE(exp_channels.cat_group, '|', ','))
 				AND exp_channels.channel_id = '{$this->channel_id}'";
@@ -1438,37 +1382,23 @@ class Metaweblog_api {
 		$good		= 0;
 		$all_cats	= array();
 
+		// //$this->categories[cat_group_id_1] = array(2,4);
+
 		foreach($query->result_array() as $row)
 		{
 			$all_cats[$row['cat_id']] = $row['cat_name'];
 
-			if (in_array($row['cat_id'], $this->categories) OR in_array($row['cat_name'], $this->categories))
+			if (in_array($row['cat_id'], $categories) OR in_array($row['cat_name'], $categories))
 			{
 				$good++;
-				$cat_names[$row['cat_id']] = $row['cat_name'];
 
-				if ($this->assign_parents == TRUE && $row['parent_id'] != '0')
-				{
-					$this->cat_parents[$row['parent_id']] = 'Parent';
-				}
+				$this->categories['cat_group_id_'.$row['group_id']][] = $row['cat_id'];
 			}
 		}
 
-		if ($good < count($this->categories))
+		if ($good < count($categories))
 		{
 			return ee()->xmlrpc->send_error_message('807', ee()->lang->line('invalid_categories'));
-		}
-		else
-		{
-			$this->categories = $cat_names;
-
-			if ($this->assign_parents == TRUE && count($this->cat_parents) > 0)
-			{
-				foreach($this->cat_parents as $kitty => $galore)
-				{
-					$this->categories[$kitty] = $all_cats[$kitty];
-				}
-			}
 		}
 	}
 
@@ -1831,7 +1761,7 @@ class Metaweblog_api {
 	 *
 	 *
 	 */
-	function get_settings($channel_id, $which = 'new')
+	function get_settingsZZ($channel_id, $which = 'new')
 	{
 		ee()->load->model('channel_model');
 		ee()->load->library('api');

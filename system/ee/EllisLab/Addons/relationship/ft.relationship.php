@@ -520,7 +520,8 @@ class Relationship_ft extends EE_Fieldtype {
 			'no_results' => ['text' => lang('no_entries_found')],
 			'no_related' => ['text' => lang('no_entries_related')],
 			'select_filters' => $select_filters,
-			'channels' => $channel_choices
+			'channels' => $channel_choices,
+			'in_modal' => $this->get_setting('in_modal_context')
 		]);
 	}
 

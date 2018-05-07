@@ -584,7 +584,7 @@ class Channel_form_lib
 		{
 			$this->parse_variables['title']		= $this->channel('default_entry_title');
 			$this->parse_variables['url_title'] = $this->channel('url_title_prefix');
-			$this->parse_variables['allow_comments'] = ($this->channel('deft_comments') != 'n' OR $this->channel('comment_system_enabled') != 'y') ? '' : "checked='checked'";
+			$this->parse_variables['allow_comments'] = ($this->channel('deft_comments') == FALSE OR $this->channel('comment_system_enabled') == FALSE) ? '' : "checked='checked'";
 
 			$this->form_hidden('unique_url_title', $this->bool_string(ee()->TMPL->fetch_param('unique_url_title')) ? '1' : '');
 
@@ -1513,6 +1513,12 @@ GRID_FALLBACK;
 					$_POST[$checkbox] = '';
 				}
 			}
+		}
+
+		// If allow_comments is NOT included in the form and it's not set by parameter, use the default
+		if ( ! isset($_POST['allow_comments']) && $this->_meta['allow_comments'] == FALSE)
+		{
+			$_POST['allow_comments'] = ($this->channel('deft_comments') == TRUE && $this->channel('comment_system_enabled') == TRUE) ? 'y' : 'n';
 		}
 
 		$spam_content = "";

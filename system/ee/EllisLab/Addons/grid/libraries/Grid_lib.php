@@ -19,6 +19,7 @@ class Grid_lib {
 	public $content_type;
 	public $entry_id;
 	public $fluid_field_data_id = 0;
+	public $in_modal_context = FALSE;
 
 	protected $_fieldtypes = [];
 	protected $_validated = [];
@@ -197,7 +198,8 @@ class Grid_lib {
 			$this->field_id,
 			$this->entry_id,
 			$this->content_type,
-			$this->fluid_field_data_id
+			$this->fluid_field_data_id,
+			$this->in_modal_context
 		);
 
 		$row_data = (isset($row['col_id_'.$column['col_id']]))

@@ -17,7 +17,7 @@
 	?>
 	<?=form_open($base_url, $attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 		<div class="form-btns form-btns-top">
-			<h1><?=(isset($cp_page_title_alt)) ? $cp_page_title_alt : $cp_page_title?></h1>
+			<h1><?=ee('Format')->make('Text', (isset($cp_page_title_alt)) ? $cp_page_title_alt : $cp_page_title)->attributeSafe()->compile()?></h1>
 			<?php if (isset($action_button)):
 				$rel = isset($action_button['rel']) ? $action_button['rel'] : ''; ?>
 				<a class="btn action" href="<?=$action_button['href']?>" rel="<?=$rel?>"><?=lang($action_button['text'])?></a>

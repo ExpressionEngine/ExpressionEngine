@@ -2,7 +2,7 @@
 <?=form_open($form_url)?>
 	<?php if ($search_allowed): ?>
 		<fieldset class="tbl-search right">
-			<input placeholder="<?=lang('type_phrase')?>" name="search" type="text" value="<?=$search ? $search : ''?>">
+			<input placeholder="<?=lang('type_phrase')?>" name="search" type="text" value="<?=$search ? form_prep($search) : ''?>">
 			<input class="btn submit" type="submit" value="<?=lang('search_files')?>">
 		</fieldset>
 	<?php endif ?>

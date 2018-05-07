@@ -93,9 +93,14 @@ abstract class ContentModel extends VariableColumnModel {
 	 */
 	public function onBeforeDelete()
 	{
-		foreach ($this->getCustomFields() as $field)
+		// These models don't yet support any fieldtypes that implement delete(),
+		// skip for now for performance
+		if ( ! in_array($this->getName(), ['ee:Member', 'ee:Category']))
 		{
-			$field->delete();
+			foreach ($this->getCustomFields() as $field)
+			{
+				$field->delete();
+			}
 		}
 
 		$this->deleteFieldData();

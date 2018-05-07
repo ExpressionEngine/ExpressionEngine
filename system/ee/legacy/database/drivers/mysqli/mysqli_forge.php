@@ -85,7 +85,21 @@ class CI_DB_mysqli_forge extends CI_DB_forge {
 
 				if (array_key_exists('DEFAULT', $attributes))
 				{
-					$sql .= ' DEFAULT \''.$attributes['DEFAULT'].'\'';
+					// wrap default in a string with one exception
+					if (
+						$attributes['DEFAULT'] == 'CURRENT_TIMESTAMP' &&
+						array_key_exists('TYPE', $attributes) &&
+						in_array($attributes['TYPE'], ['datetime', 'timestamp'])
+					)
+					{
+						$default = 'CURRENT_TIMESTAMP';
+					}
+					else
+					{
+						$default = "'{$attributes['DEFAULT']}'";
+					}
+
+					$sql .= ' DEFAULT '.$default;
 				}
 
 				if (array_key_exists('NULL', $attributes))

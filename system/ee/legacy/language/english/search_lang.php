@@ -90,6 +90,8 @@ $lang = array(
 
 'search_min_length' => 'Search terms must be at least %x characters in length',
 
+'search_max_length' => 'Search terms must be no more than %x characters in length',
+
 'search_module_description' => 'Search module',
 
 'search_module_name' => 'Search',
