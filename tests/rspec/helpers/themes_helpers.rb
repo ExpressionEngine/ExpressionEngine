@@ -11,6 +11,7 @@ module Themes
 
       @user_assets_dir    = File.expand_path('user', themes)
       @user_theme_dir    = File.expand_path('user/templates/_themes', system)
+      FileUtils.mkdir_p @user_theme_dir
     end
 
     # Copies themes/ee/member themes to themes/user
