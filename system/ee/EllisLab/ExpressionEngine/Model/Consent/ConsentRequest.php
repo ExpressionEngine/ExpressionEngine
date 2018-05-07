@@ -39,6 +39,10 @@ class ConsentRequest extends Model {
 			'type' => 'hasMany',
 			'model' => 'Consent'
 		],
+		'Logs' => [
+			'type' => 'hasMany',
+			'model' => 'ConsentAuditLog'
+		],
 	];
 
 	protected static $_validation_rules = [
