@@ -66,9 +66,9 @@ class Updater {
 					'constraint' => 200,
 					'null'       => FALSE
 				],
-				'url_title'                  => [
+				'consent_name'               => [
 					'type'       => 'varchar',
-					'constraint' => URL_TITLE_MAX_LENGTH,
+					'constraint' => 32,
 					'null'       => FALSE
 				],
 				'double_opt_in'              => [

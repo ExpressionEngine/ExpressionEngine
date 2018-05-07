@@ -53,7 +53,7 @@ class Consent {
 	/**
 	 * Creates/updates a consent record for the member for the given consent request
 	 *
-	 * @param int|string $request_ref The name (url_title) or ID of a consent request
+	 * @param int|string $request_ref The name or ID of a consent request
 	 * @throws InvalidArgumentException
 	 * @return NULL
 	 */
@@ -91,7 +91,7 @@ class Consent {
 	 * Updates a consent record for the member for the given consent request to indicate
 	 * that consent has been withdrawn
 	 *
-	 * @param int|string $request_ref The name (url_title) or ID of a consent request
+	 * @param int|string $request_ref The name or ID of a consent request
 	 * @throws InvalidArgumentException
 	 * @return NULL
 	 */
@@ -118,7 +118,7 @@ class Consent {
 	/**
 	 * Has the member granted consent for a given consent request?
 	 *
-	 * @param int|string $request_ref The name (url_title) or ID of a consent request
+	 * @param int|string $request_ref The name or ID of a consent request
 	 * @throws InvalidArgumentException
 	 * @return bool TRUE if they have, FALSE if they have not
 	 */
@@ -196,7 +196,7 @@ class Consent {
 	/**
 	 * Gets all the granted consents for a specific request
 	 *
-	 * @param int|string $request_ref The name (url_title) or ID of a consent request
+	 * @param int|string $request_ref The name or ID of a consent request
 	 * @throws InvalidArgumentException
 	 * @return obj A Model Collection of Consent objects
 	 */
@@ -259,12 +259,12 @@ class Consent {
 	/**
 	 * Gets a ConsentRequest entity
 	 *
-	 * @param int|string $request_ref The name (url_title) or ID of a consent request
+	 * @param int|string $request_ref The name or ID of a consent request
 	 * @return ConsentRequest|null The consent request entity or NULL if it's not found.
 	 */
 	protected function getConsentRequest($request_ref)
 	{
-		$column = (is_numeric($request_ref)) ? 'consent_request_id' : 'url_title';
+		$column = (is_numeric($request_ref)) ? 'consent_request_id' : 'consent_name';
 
 		$request = $this->model_delegate->get('ConsentRequest')
 			->with('CurrentVersion')

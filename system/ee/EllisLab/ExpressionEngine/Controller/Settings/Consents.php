@@ -121,7 +121,7 @@ class Consents extends Settings {
 		]);
 		ee()->javascript->output('
 			$("input[name=title]").bind("keyup keydown", function() {
-				$(this).ee_url_title("input[name=url_title]");
+				$(this).ee_url_title("input[name=consent_name]");
 			});
 		');
 
@@ -275,12 +275,12 @@ class Consents extends Settings {
 					]
 				],
 				[
-					'title' => 'url_title',
+					'title' => 'consent_name',
 					'desc' => 'alphadash_desc',
 					'fields' => [
-						'url_title' => [
+						'consent_name' => [
 							'type' => 'text',
-							'value' => $request->url_title,
+							'value' => $request->consent_name,
 							'required' => TRUE
 						]
 					]
