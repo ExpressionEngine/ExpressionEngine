@@ -76,7 +76,7 @@ class Consent {
 		else
 		{
 			$consent = $this->getOrMakeConsent($request);
-			$consent->consent_given = FALSE;
+			$consent->consent_given = TRUE;
 			$consent->update_date = $this->now;
 			$consent->consent_given_via = $via;
 			$consent->request_copy = $request->CurrentVersion->request;
