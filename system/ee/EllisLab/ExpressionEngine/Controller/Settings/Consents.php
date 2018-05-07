@@ -282,7 +282,8 @@ class Consents extends Settings {
 						'consent_name' => [
 							'type' => 'text',
 							'value' => $request->consent_name,
-							'required' => TRUE
+							'required' => TRUE,
+							'disabled' => ($request->source == 'a')
 						]
 					]
 				],
