@@ -67,6 +67,7 @@ class Consents extends Settings {
 				'id' => $request->getId(),
 				'label' => $request->title,
 				'href' => $edit_url,
+				'extra' => LD.$request->consent_name.RD,
 				'selected' => ($highlight_id && $request->getId() == $highlight_id),
 				'toolbar_items' => [
 					'edit' => [
