@@ -177,6 +177,10 @@ $lang = array(
 /* Buttons */
 'cancel' => 'Cancel',
 
+'accept' => 'Accept',
+
+'decline' => 'Decline',
+
 'delete' => 'Delete',
 
 'done' => 'Done',

@@ -78,13 +78,17 @@ class Consent extends Settings {
 
 		$consents = ($this->member->Consents->count()) ? $this->member->Consents->indexBy('consent_request_id') : [];
 
+		$vars['requests'] = $requests;
+
 		foreach ($requests as $request)
 		{
 			$toolbar = [
 				'toolbar_items' => [
 					'view' => [
 						'href' => '',
-						'title' => strtolower(lang('view'))
+						'rel' => 'modal-consent-request-' . $request->getId(),
+						'title' => strtolower(lang('view')),
+						'class' => 'js-modal-link'
 					]
 				]
 			];
@@ -116,7 +120,7 @@ class Consent extends Settings {
 
 			$data[] = [
 				'name' => $request->title,
-				'date_added' => ee()->localize->human_time($request->CurrentVersion->edit_date->format('U')),
+				'date' => ee()->localize->human_time($request->CurrentVersion->edit_date->format('U')),
 				'status' => $status,
 				$toolbar,
 				'selection' => [
