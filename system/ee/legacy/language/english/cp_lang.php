@@ -181,6 +181,8 @@ $lang = array(
 
 'decline' => 'Decline',
 
+'needs_review' => 'Needs Review',
+
 'delete' => 'Delete',
 
 'done' => 'Done',
@@ -647,6 +649,8 @@ $lang = array(
 'consent_title' => 'Consent Title',
 
 'request' => 'Request',
+
+'consents' => 'Consents',
 
 );
 
