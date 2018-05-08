@@ -546,6 +546,7 @@ return array(
 			'MessageAttachment' => 'Model\Message\Attachment',
 			'MessageFolder' => 'Model\Message\Folder',
 			'ListedMember' => 'Model\Message\ListedMember',
+			'MessageCopy' => 'Model\Message\Copy',
 
 			// ..\Member
 			'HTMLButton' => 'Model\Member\HTMLButton',

@@ -123,6 +123,11 @@ class Member extends ContentModel {
 			'model' => 'Message',
 			'to_key' => 'sender_id'
 		],
+		'SentMessageReceipts' => [
+			'type' => 'hasMany',
+			'model' => 'MessageCopy',
+			'to_key' => 'sender_id'
+		],
 		'SentAttachments' => [
 			'type' => 'hasMany',
 			'model' => 'MessageAttachment',
@@ -136,6 +141,11 @@ class Member extends ContentModel {
 				'left' => 'recipient_id',
 				'right' => 'message_id'
 			]
+		],
+		'ReceivedMessageReceipts' => [
+			'type' => 'hasMany',
+			'model' => 'MessageCopy',
+			'to_key' => 'recipient_id'
 		],
 		'MessageFolders' => [
 			'type' => 'hasOne',
