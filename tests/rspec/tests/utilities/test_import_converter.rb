@@ -333,6 +333,7 @@ feature 'Import File Converter' do
 </members>')
 
     @page.load
+    sleep 1
     @page.attach_file('member_file', @tab_file)
     @page.find('input[value=tab]').click
     @page.submit
