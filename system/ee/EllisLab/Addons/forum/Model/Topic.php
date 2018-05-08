@@ -50,7 +50,6 @@ class Topic extends Model {
 			'type'     => 'belongsTo',
 			'model'    => 'ee:Member',
 			'from_key' => 'author_id',
-			'weak'     => TRUE,
 			'inverse' => array(
 				'name' => 'Topic',
 				'type' => 'hasMany'

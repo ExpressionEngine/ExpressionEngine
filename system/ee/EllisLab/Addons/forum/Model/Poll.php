@@ -33,7 +33,6 @@ class Poll extends Model {
 			'type'     => 'belongsTo',
 			'model'    => 'ee:Member',
 			'from_key' => 'author_id',
-			'weak'     => TRUE,
 			'inverse' => array(
 				'name' => 'Poll',
 				'type' => 'hasMany'

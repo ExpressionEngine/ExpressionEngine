@@ -42,7 +42,6 @@ class Post extends Model {
 			'type'     => 'belongsTo',
 			'model'    => 'ee:Member',
 			'from_key' => 'author_id',
-			'weak'     => TRUE,
 			'inverse' => array(
 				'name' => 'Posts',
 				'type' => 'hasMany'

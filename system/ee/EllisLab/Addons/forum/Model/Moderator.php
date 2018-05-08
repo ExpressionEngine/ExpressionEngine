@@ -50,7 +50,6 @@ class Moderator extends Model {
 			'model'    => 'ee:Member',
 			'from_key' => 'mod_member_id',
 			'to_key'   => 'member_id',
-			'weak'     => TRUE,
 			'inverse' => array(
 				'name' => 'Moderator',
 				'type' => 'hasMany'
@@ -61,7 +60,6 @@ class Moderator extends Model {
 			'model'    => 'ee:MemberGroup',
 			'from_key' => 'mod_group_id',
 			'to_key'   => 'group_id',
-			'weak'     => TRUE,
 			'inverse' => array(
 				'name' => 'Moderator',
 				'type' => 'hasMany'
