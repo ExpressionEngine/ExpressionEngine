@@ -644,13 +644,21 @@ $lang = array(
 
 'consent_granted_log_msg' => 'consent granted via %s',
 
+'consent_granted_by_log_msg' => 'consent granted by %s via %s',
+
 'consent_withdrawn_log_msg' => 'consent withdrawn',
+
+'consent_withdrawn_by_log_msg' => 'consent withdrawn by %s',
 
 'consent_title' => 'Consent Title',
 
 'request' => 'Request',
 
 'consents' => 'Consents',
+
+'opt_in' => 'Opt In',
+
+'opt_out' => 'Opt Out',
 
 );
 

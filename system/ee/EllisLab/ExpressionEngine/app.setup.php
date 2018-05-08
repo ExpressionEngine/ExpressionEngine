@@ -332,32 +332,36 @@ return array(
 
 		'Consent' => function($ee, $member = NULL)
 		{
-			$member_id = NULL;
+			$logged_in_member = $ee->make('Model')->get('Member', ee()->session->userdata['member_id'])->first();
 
-			if (is_numeric($member))
+			if ( ! $member instanceof EllisLab\ExpressionEngine\Model\Member\Member)
 			{
-				$member_id = $member;
-			}
-			elseif (empty($member) || ! $member instanceof Model\Member\Member)
-			{
-				$member_id = ee()->session->userdata['member_id'];
-			}
+				$member_id = (is_numeric($member)) ? $member : ee()->session->userdata['member_id'];
 
-			if ($member_id)
-			{
-				$member = $ee->make('Model')->get('Member', $member_id)->first();
-			}
-			else
-			{
-				$member = $ee->make('Model')->make('Member', ['member_id' => 0]);
-				$member->screen_name = lang('anonymous');
-				$member->group_id = 3;
+				if ($member_id)
+				{
+					if ($member_id == ee()->session->userdata['member_id'])
+					{
+						$member = $logged_in_member;
+					}
+					else
+					{
+						$member = $ee->make('Model')->get('Member', $member_id)->first();
+					}
+				}
+				else
+				{
+					$member = $ee->make('Model')->make('Member', ['member_id' => 0]);
+					$member->screen_name = lang('anonymous');
+					$member->group_id = 3;
+				}
 			}
 
 			return new Consent\Consent(
 				$ee->make('Model'),
 				ee()->input,
 				$member,
+				$logged_in_member,
 				ee()->localize->now);
 		},
 

@@ -23,9 +23,14 @@ class Consent {
 	const COOKIE_NAME = 'visitor_consents';
 
 	/**
-	 * @var Member $member A Member entity object
+	 * @var Member $member The Member the consent relates to
 	 */
 	protected $member;
+
+	/**
+	 * @var Member $actor The Member acting, usually the member being acted upon, but may be a super admin.
+	 */
+	protected $actor;
 
 	/**
 	 * @var obj $model_delegate An injected `ee('Model')` object
@@ -42,11 +47,12 @@ class Consent {
 	 */
 	protected $now;
 
-	public function __construct(ModelFacade $model_delegate, $input_delegate, Member $member, $now)
+	public function __construct(ModelFacade $model_delegate, $input_delegate, Member $member, Member $actor, $now)
 	{
 		$this->model_delegate = $model_delegate;
 		$this->input_delegate = $input_delegate;
 		$this->member = $member;
+		$this->actor = $actor;
 		$this->now = $now;
 	}
 
@@ -83,7 +89,15 @@ class Consent {
 			$consent->request_format = $request->CurrentVersion->request_format;
 
 			$consent->save();
-			$consent->log(sprintf(lang('consent_granted_log_msg'), $via));
+
+			if ($this->memberIsActor())
+			{
+				$consent->log(sprintf(lang('consent_granted_log_msg'), $via));
+			}
+			else
+			{
+				$consent->log(sprintf(lang('consent_granted_by_log_msg'), $this->getActorName(), $via));
+			}
 		}
 	}
 
@@ -111,7 +125,15 @@ class Consent {
 			$consent->consent_given = FALSE;
 			$consent->withdrawn_date = $this->now;
 			$consent->save();
-			$consent->log(lang('consent_withdrawn_log_msg'));
+
+			if ($this->memberIsActor())
+			{
+				$consent->log(lang('consent_withdrawn_log_msg'));
+			}
+			else
+			{
+				$consent->log(sprintf(lang('consent_withdrawn_by_log_msg'), $this->getActorName()));
+			}
 		}
 	}
 
@@ -223,6 +245,26 @@ class Consent {
 	protected function isAnonymous()
 	{
 		return ($this->member->getId() == 0);
+	}
+
+	/**
+	 * Is the member granting/withdrawing consent the member initiating the action (actor)?
+	 *
+	 * @return bool TRUE if they are, FALSE if not
+	 */
+	protected function memberIsActor()
+	{
+		return ($this->member->getId() == $this->actor->getId());
+	}
+
+	/**
+	 * Gets the name and UID of the actor for logging purposes
+	 *
+	 * @return string The member name and UID.
+	 */
+	protected function getActorName()
+	{
+		return $this->actor->getMemberName() . ' (#' . $this->actor->getId() . ')';
 	}
 
 	/**
