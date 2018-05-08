@@ -15,7 +15,7 @@ namespace EllisLab\ExpressionEngine\Service\Theme;
 class Theme {
 
 	/**
-	 * @var string The path to the 'system/templates/_themes/' directory
+	 * @var string The path to the 'system/ee/templates/_themes/' directory
 	 */
 	protected $ee_theme_path;
 
@@ -47,23 +47,15 @@ class Theme {
 	/**
 	 * Constructor: sets the ee and user theme path and URL properties
 	 *
-	 * @param string $ee_theme_path The path to the 'themes/ee' directory
+	 * @param string $ee_theme_path The path to the 'system/ee/templates/_themes' directory
 	 * @param string $ee_theme_url The URL to the 'themes/ee' directory
-	 * @param string $user_theme_path The path to the 'themes/user' directory
+	 * @param string $user_theme_path The path to the 'system/user/templates/_themes' directory
 	 * @param string $user_theme_url The URL to the 'themes/user' directory
+	 * @param string $ee_assets_path The path to the 'themes/ee' directory
+	 * @param string $user_assets_path The URL to the 'themes/user' directory
 	 */
 	public function __construct($ee_theme_path, $ee_theme_url, $user_theme_path, $user_theme_url, $ee_assets_path, $user_assets_path)
 	{
-
-		/*
-		$this->ee_theme_path = $ee_theme_path;
-		$this->ee_assets_path = $ee_assets_path;
-		$this->ee_assets_url = $ee_assets_url;
-		$this->user_theme_path = $user_theme_path;
-		$this->user_assets_path = $user_assets_path;
-		$this->user_assets_url = $user_assets_url;
-		*/
-
 		$this->ee_theme_path = $ee_theme_path;
 		$this->ee_theme_url = $ee_theme_url;
 		$this->user_theme_path = $user_theme_path;
@@ -72,6 +64,7 @@ class Theme {
 		$this->ee_assets_path = $ee_assets_path;
 		$this->user_assets_path = $user_assets_path;
 
+		ee()->load->library('logger');
 	}
 
 	/**
@@ -87,6 +80,11 @@ class Theme {
 		if (file_exists($this->user_theme_path . $path))
 		{
 			return $this->user_theme_path . $path;
+		}
+		elseif (file_exists($this->user_assets_path . $path))
+		{
+			ee()->logger->developer('As of 4.2.2, themes should be in folder: system/ee/templates/_themes/');
+			return $this->user_assets_path . $path;
 		}
 
 		return $this->ee_theme_path . $path;
@@ -104,6 +102,11 @@ class Theme {
 		if (file_exists($this->user_theme_path . $path))
 		{
 			return $this->user_theme_path . $path;
+		}
+		elseif (file_exists($this->user_assets_path . $path))
+		{
+			ee()->logger->developer('As of 4.2.2, themes should be in folder: system/ee/templates/_themes/');
+			return $this->user_assets_path . $path;
 		}
 
 		return FALSE;
@@ -139,10 +142,21 @@ class Theme {
 	 */
 	public function listThemes($kind)
 	{
+		$user_files = $this->listDirectory($this->user_theme_path . $kind . '/');
+
+		if (empty($user_files))
+		{
+			$user_files = $this->listDirectory($this->user_assets_path . $kind . '/');
+			if ( ! empty($user_files))
+			{
+				ee()->logger->developer('As of 4.2.2, themes should be in folder: system/user/templates/_themes/');
+			}
+		}
+
 		// EE first so the User based themes can override.
 		return array_merge(
 			$this->listDirectory($this->ee_theme_path . $kind . '/'),
-			$this->listDirectory($this->user_theme_path . $kind . '/')
+			$user_files
 		);
 	}
 
@@ -158,7 +172,19 @@ class Theme {
 
 	public function listUserThemes($kind)
 	{
-		return $this->listDirectory($this->user_theme_path . $kind . '/');
+		$user_files = $this->listDirectory($this->user_theme_path . $kind . '/');
+
+		if (empty($user_files))
+		{
+			$user_files = $this->listDirectory($this->user_assets_path . $kind . '/');
+
+			if ( ! empty($user_files))
+			{
+				ee()->logger->developer('As of 4.2.2, themes should be in folder: system/user/templates/_themes/');
+			}
+		}
+
+		return $user_files;
 	}
 
 	/**
