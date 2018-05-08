@@ -261,8 +261,7 @@ $lang = array(
 
 'limit_by' => 'limit by',
 
-'keyword_search' =>
-'Keyword Search',
+'keyword_search' => 'Keyword Search',
 
 'manage' => 'Manage',
 
@@ -310,6 +309,7 @@ $lang = array(
 
 'with_selected' => 'with selected',
 
+'important' => 'Important!',
 
 /* Sites and Channels */
 'avatar_path' => 'Avatar Path',
@@ -651,6 +651,12 @@ $lang = array(
 'consent_withdrawn_by_log_msg' => 'consent withdrawn by %s',
 
 'consent_title' => 'Consent Title',
+
+'consent_name' => 'Consent Name',
+
+'new_version_notice' => 'Editing this Consent Request will result in all prior consent being universally revoked.',
+
+'new_version_destructive' => 'This is a destructive and irreversible action.',
 
 'request' => 'Request',
 
