@@ -82,6 +82,16 @@ class ConsentRequest extends Model {
 		return 'alpha_dash';
 	}
 
+	public function render()
+	{
+		if ( ! $this->CurrentVersion)
+		{
+			return '';
+		}
+
+		return $this->CurrentVersion->render();
+	}
+
 }
 
 // EOF

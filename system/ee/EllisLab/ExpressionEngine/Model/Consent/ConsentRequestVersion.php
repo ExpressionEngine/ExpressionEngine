@@ -74,6 +74,23 @@ class ConsentRequestVersion extends Model {
 	protected $edit_date;
 	protected $last_author_id;
 
+	public function render()
+	{
+		ee()->load->library('typography');
+		ee()->typography->initialize(array(
+			'bbencode_links' => FALSE,
+			'parse_images'	=> FALSE,
+			'parse_smileys'	=> FALSE
+		));
+
+		return ee()->typography->parse_type($this->request, array(
+			'text_format'    => $this->request_format,
+			'html_format'    => 'all',
+			'auto_links'	 => 'n',
+			'allow_img_url'  => 'y'
+		));
+	}
+
 }
 
 // EOF
