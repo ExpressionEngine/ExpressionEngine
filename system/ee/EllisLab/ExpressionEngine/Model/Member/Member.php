@@ -414,6 +414,25 @@ class Member extends ContentModel {
 	public function onAfterDelete()
 	{
 		ee()->stats->update_member_stats();
+
+		// Quick and dirty private message count update; due to the order of
+		// events, we can't seem to reliably do this in model delete events
+		// Copied from Stats controller
+		$member_message_count = ee()->db->query('SELECT COUNT(*) AS count, recipient_id FROM exp_message_copies WHERE message_read = "n" GROUP BY recipient_id ORDER BY count DESC');
+
+		$pm_count = [];
+		foreach ($member_message_count->result() as $row)
+		{
+			$pm_count[] = [
+				'member_id' => $row->recipient_id,
+				'private_messages' => $row->count
+			];
+		}
+
+		if ( ! empty($pm_count))
+		{
+			ee()->db->update_batch('members', $pm_count, 'member_id');
+		}
 	}
 
 	/**

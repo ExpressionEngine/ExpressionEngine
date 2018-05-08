@@ -35,10 +35,6 @@ class Message extends Model {
 		]
 	];
 
-	protected static $_events = [
-		'beforeDelete'
-	];
-
 	protected $message_id;
 	protected $sender_id;
 	protected $message_date;
@@ -52,19 +48,6 @@ class Message extends Model {
 	protected $message_sent_copy;
 	protected $total_recipients;
 	protected $message_status;
-
-	public function onBeforeDelete()
-	{
-		foreach ($this->Recipients as $recipient)
-		{
-			if ($recipient->private_messages > 0)
-			{
-				$recipient->private_messages--;
-			}
-		}
-
-		$this->Recipients->save();
-	}
 }
 // END CLASS
 
