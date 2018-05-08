@@ -266,9 +266,6 @@ class EE_Channel_data_parser {
 
 			$this->_row = $row;
 
-			// conditionals!
-			$cond = $this->_get_conditional_data($row, $prefix, $channel);
-
 			//  Parse Variable Pairs
 			foreach ($pairs as $key => $val)
 			{
@@ -302,6 +299,8 @@ class EE_Channel_data_parser {
 				}
 			}
 
+			$modified_conditionals = $this->getModifiedConditionals($tagdata);
+			$cond = $this->_get_conditional_data($row, $prefix, $channel, $modified_conditionals);
 
 			// We swap out the conditionals after pairs are parsed so they don't interfere
 			// with the string replace
@@ -420,6 +419,67 @@ class EE_Channel_data_parser {
 	}
 
 	/**
+	 * Find modified conditionals
+	 *
+	 * The regular custom field conditional prep does not correctly identify
+	 * custom fields with modifiers in conditionals ie. {if image:small}, so
+	 * we grab those separately.
+	 *
+	 * @return Array Fieldtype variables with modifiers in conditionals
+	 */
+	protected function getModifiedConditionals($tagdata)
+	{
+		if (strpos($tagdata, LD.'if') === FALSE)
+		{
+			return array();
+		}
+
+		$prefix = $this->prefix();
+		$field_names = $prefix.implode('|'.$prefix, $this->_preparser->field_names);
+		$modified_conditionals = array();
+
+		if (preg_match_all("/".preg_quote(LD)."((if:(else))*if)\s+(($field_names):(\w+))(.*?)".preg_quote(RD)."/s", $tagdata, $matches))
+		{
+			foreach($matches[5] as $match_key => $field_name)
+			{
+				$modified_conditionals[$field_name][] = $matches[6][$match_key];
+			}
+		}
+
+		// Make {if grid_field} work
+		// For each Grid field found in a conditional, add it to the modified
+		// conditionals array to make the conditional evaluate with the
+		// :total_rows modifier, otherwise it will evaluate based on what's
+		// in channel_data, and only data from searchable fields is there
+		foreach	($this->getGridsInConditionals($tagdata) as $field_name)
+		{
+			$modified_conditionals[$field_name][] = 'total_rows';
+		}
+
+		return array_map('array_unique', $modified_conditionals);
+	}
+
+	/**
+	 * Find any {if grid_field} conditionals and return those field names
+	 *
+	 * @return Array Standalone Grid field names in conditionals
+	 */
+	protected function getGridsInConditionals($tagdata)
+	{
+		$grid_field_names = $this->_preparser->grid_field_names;
+		$grid_field_names = $this->prefix().implode('|'.$this->prefix(), $grid_field_names);
+
+		preg_match_all("/".preg_quote(LD)."((if:(else))*if)\s+($grid_field_names)(?!:)(\s+|".preg_quote(RD).")/s", $tagdata, $matches);
+
+		if (isset($matches[4]) && ! empty($matches[4]))
+		{
+			return $matches[4];
+		}
+
+		return [];
+	}
+
+	/**
 	 * Prepare the row for conditionals
 	 *
 	 * Retrieves a prefixed set of all the row data that can be passed
@@ -428,9 +488,10 @@ class EE_Channel_data_parser {
 	 * @param	array	The data row.
 	 * @param	string	The prefix.
  	 * @param	object	A channel object to operate on
+ 	 * @param	array	Modified fieldtype variables in conditionals to parse
 	 * @return	array	Prefixed, prep-able data
 	 */
-	protected function _get_conditional_data($row, $prefix, $channel)
+	protected function _get_conditional_data($row, $prefix, $channel, $modified_conditionals)
 	{
 		$pre = $this->_preparser;
 
@@ -496,14 +557,14 @@ class EE_Channel_data_parser {
 				}
 
 				// Is this field used with a modifier anywhere?
-				if (isset($pre->modified_conditionals[$key]) && count($pre->modified_conditionals[$key]))
+				if (isset($modified_conditionals[$key]) && count($modified_conditionals[$key]))
 				{
 					ee()->load->library('api');
 					ee()->legacy_api->instantiate('channel_fields');
 
 					if (ee()->api_channel_fields->setup_handler($value))
 					{
-						foreach($pre->modified_conditionals[$key] as $modifier)
+						foreach($modified_conditionals[$key] as $modifier)
 						{
 							ee()->api_channel_fields->apply('_init', array(array(
 								'row' => $row,
