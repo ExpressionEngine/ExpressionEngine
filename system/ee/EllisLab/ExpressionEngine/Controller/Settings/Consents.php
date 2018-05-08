@@ -270,6 +270,13 @@ class Consents extends Settings {
 
 		$vars['sections'] = [
 			[
+				ee('CP/Alert')->makeInline()
+					->asWarning()
+					->cannotClose()
+					->withTitle(lang('important'))
+					->addToBody(lang('new_version_notice'))
+					->addToBody('<b>'.lang('new_version_destructive').'</b>')
+					->render(),
 				[
 					'title' => 'consent_title',
 					'fields' => [
@@ -309,6 +316,11 @@ class Consents extends Settings {
 				]
 			]
 		];
+
+		if ($version->isNew())
+		{
+			unset($vars['sections'][0][0]);
+		}
 
 		$vars['buttons'] = [
 			[
