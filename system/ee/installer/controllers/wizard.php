@@ -1546,9 +1546,10 @@ class Wizard extends CI_Controller {
 		if ($this->userdata['theme'] != ''&& $this->userdata['theme'] != 'none')
 		{
 			// Install any default structure and content that the theme may have
-			if (file_exists($this->theme_path.$this->userdata['theme'].'/channel_set.json'))
+			if (file_exists(APPPATH.'/site_themes/'.$this->userdata['theme'].'/channel_set.json'))
 			{
 				$theme = ee('ThemeInstaller');
+				$theme->setInstallerPath(APPPATH);
 				$theme->setSiteURL($this->userdata['site_url']);
 				$theme->setBasePath($this->base_path);
 				$theme->setThemePath($this->root_theme_path);
