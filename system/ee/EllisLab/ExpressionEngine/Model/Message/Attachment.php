@@ -31,6 +31,19 @@ class Attachment extends Model {
 		]
 	];
 
+	protected static $_typed_columns = [
+		'attachment_id'        => 'int',
+		'sender_id'            => 'int',
+		'message_id'           => 'int',
+		'attachment_name'      => 'string',
+		'attachment_hash'      => 'string',
+		'attachment_extension' => 'string',
+		'attachment_location'  => 'string',
+		'attachment_date'      => 'timestamp',
+		'attachment_size'      => 'int',
+		'is_temp'              => 'boolString'
+	];
+
 	protected $attachment_id;
 	protected $sender_id;
 	protected $message_id;

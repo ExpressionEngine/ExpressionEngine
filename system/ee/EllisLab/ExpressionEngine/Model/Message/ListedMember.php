@@ -33,6 +33,14 @@ class ListedMember extends Model {
 		]
 	];
 
+	protected static $_typed_columns = [
+		'listed_id'          => 'int',
+		'member_id'          => 'int',
+		'listed_member'      => 'int',
+		'listed_description' => 'string',
+		'listed_type'        => 'string'
+	];
+
 	protected $listed_id;
 	protected $member_id;
 	protected $listed_member;
