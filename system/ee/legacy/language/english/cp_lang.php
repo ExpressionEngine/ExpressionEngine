@@ -576,9 +576,9 @@ $lang = array(
 /*confirm show all modal */
 'all_items' => 'All %d items',
 
-'confirm_show_all' => 'Danger, Will Robinson!',
+'confirm_show_all' => 'Confirm Show All',
 
-'confirm_show_all_btn' => 'Damn the torpedoes, full speed ahead!',
+'confirm_show_all_btn' => 'Show All',
 
 'confirm_show_all_desc' => 'Viewing more than %d items at a time may result in reduced performance.',
 

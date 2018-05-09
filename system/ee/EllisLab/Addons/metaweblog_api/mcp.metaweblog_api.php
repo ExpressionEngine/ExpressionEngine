@@ -17,6 +17,7 @@ class Metaweblog_api_mcp {
 	var $field_array = array();
 	var $status_array = array();
 	var $group_array = array();
+	var $_field_list = array();
 
 	/**
 	 * Constructor
@@ -189,7 +190,8 @@ class Metaweblog_api_mcp {
 			});
 
 		// Filtering Javascript
-		$this->filtering_menus();
+		$cid = ($id == 'new') ? NULL : $id;
+		$this->filtering_menus($cid);
 		ee()->javascript->compile();
 
 		$values = array();
@@ -335,19 +337,13 @@ class Metaweblog_api_mcp {
 				)
 			)
 		);
-		if (isset($values['field_group_id']))
+		if (isset($values['channel_id']))
 		{
-			$form_element['fields']['field_group_id']['value'] = $values['field_group_id'];
+			$form_element['fields']['channel_id']['value'] = $values['channel_id'];
 		}
 		$vars['sections'][0][] = $form_element;
 
-
-		$group_id = isset($values['field_group_id']) ? $values['field_group_id'] : NULL;
-
-		$fields_list = ee('Model')->get('ChannelFieldGroup', $group_id)
-			->first()
-			->ChannelFields
-			->getDictionary('field_id', 'field_label');
+		$fields_list = $this->_field_list;
 
 		$form_element = array(
 			'title' => 'metaweblog_excerpt_field',
@@ -508,7 +504,7 @@ class Metaweblog_api_mcp {
 		}
 		else
 		{
-			$fields		= array('metaweblog_pref_name', 'metaweblog_parse_type', 'entry_status',
+			$fields		= array('metaweblog_pref_name', 'metaweblog_parse_type', 'channel_id', 'entry_status',
 								'excerpt_field_id','content_field_id',
 								'more_field_id','keywords_field_id','upload_dir');
 
@@ -559,7 +555,7 @@ class Metaweblog_api_mcp {
 	// CREATE page
 	//-----------------------------------------------------------
 
-	function filtering_menus()
+	function filtering_menus($id = NULL)
 	{
 		// In order to build our filtering options we need to gather
 		// all the field groups and fields
@@ -586,6 +582,7 @@ class Metaweblog_api_mcp {
 		}
 
 		$channel_info = array();
+		$allowed_fieldtypes = array('text', 'textarea', 'rte');
 
 		foreach ($channels->all() as $channel)
 		{
@@ -595,6 +592,23 @@ class Metaweblog_api_mcp {
 
 			foreach ($channel->getAllCustomFields() as $field)
 			{
+				if ( ! in_array($field->field_type, $allowed_fieldtypes))
+				{
+					continue;
+				}
+
+				if ($id)
+				{
+					if ($channel->channel_id == $id)
+					{
+						$this->_field_list[$field->field_id] = $field->field_label;
+					}
+				}
+				elseif (empty($this->_field_list))
+				{
+					$this->_field_list[$field->field_id] = $field->field_label;
+				}
+
 				$fields[] = array($field->field_id, $field->field_label);
 			}
 
@@ -662,6 +676,7 @@ function changemenu(index)
 $('select[name=channel_id]').on('change', function(event) {
 	changemenu(this.value);
 });
+
 
 MAGIC;
 		ee()->javascript->output($javascript);

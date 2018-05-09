@@ -13,6 +13,7 @@
 class Search {
 
 	var	$min_length		= 3;			// Minimum length of search keywords
+	var	$max_length		= 200;			// Maximum length of search keywords (logged to varchar(200))...
 	var	$cache_expire	= 2;			// How many hours should we keep search caches?
 	var	$keywords		= "";
 	var	$text_format	= 'xhtml';		// Excerpt text formatting
@@ -146,6 +147,18 @@ class Search {
 		{
 			// Load the search helper so we can filter the keywords
 			ee()->load->helper('search');
+
+			// If the search terms are too long to log we'll toss an error. We do this
+			// before sanitizing because with a long enough input that process can take
+			// enough time to be a DDoS attack point. :sigh:
+			if (strlen($this->keywords) > $this->max_length)
+			{
+				$text = lang('search_max_length');
+
+				$text = str_replace("%x", $this->max_length, $text);
+
+				return ee()->output->show_user_error('general', array($text));
+			}
 
 			$this->keywords = sanitize_search_terms($_POST['keywords']);
 

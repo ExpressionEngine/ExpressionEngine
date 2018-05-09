@@ -8987,7 +8987,7 @@ class Forum_Core extends Forum {
 
 		if ($new_topic_search == TRUE)
 		{
-			$last_visit = ee()->session->userdata('last_visit');
+			$last_visit = (int) ee()->session->userdata('last_visit');
 			$sql .= "AND topic_date > ".$last_visit." ";
 
 			// Do we need to igore any recently visited topics?
