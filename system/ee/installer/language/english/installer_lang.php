@@ -69,6 +69,7 @@ $lang = array(
 'unreadable_config'                  => 'Your config.php file is unreadable. Please make sure the file exists and that the file permissions to 666 (or the equivalent write permissions for your server) on the following file: system/user/config/config.php',
 'unwritable_config'                  => 'Your config.php file does not appear to have the proper file permissions. Please set the file permissions to 666 (or the equivalent write permissions for your server) on the following file: system/user/config/config.php',
 'unwritable_templates'               => 'Your template directory (<code>system/user/templates</code>) is not writeable. Please set the directory permissions to 777.',
+'unwritable_themes_user'             => 'Your user themes directory (<code>themes/user/</code>) is not writeable. Please set the directory permissions to 777.',
 'json_parser_missing'                => 'Your instance of PHP does not support the <code>json_encode</code> and <code>json_decode</code> methods.',
 'fileinfo_missing'                => 'The required Fileinfo PHP extension is not currently enabled.',
 'unwritable_cache_folder'            => 'Your cache folder does not appear to have proper permissions. Please set the folder permissions to 777 (or the equivalent write permissions for your server) on the following folder: system/user/cache',

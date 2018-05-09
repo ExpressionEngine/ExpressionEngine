@@ -706,7 +706,7 @@ class Wizard extends CI_Controller {
 			array(
 				'field' => 'install_default_theme',
 				'label' => 'lang:install_default_theme',
-				'rules' => 'callback_template_path_writeable'
+				'rules' => 'callback_themes_user_writable|callback_template_path_writeable'
 			),
 			array(
 				'field' => 'password',
@@ -948,6 +948,20 @@ class Wizard extends CI_Controller {
 			ee()->form_validation->set_message(
 				'template_path_writeable',
 				lang('unwritable_templates')
+			);
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	public function themes_user_writable($radio)
+	{
+		if ( ! is_really_writable($this->root_theme_path.'user'))
+		{
+			ee()->form_validation->set_message(
+				'themes_user_writable',
+				lang('unwritable_themes_user')
 			);
 			return FALSE;
 		}
