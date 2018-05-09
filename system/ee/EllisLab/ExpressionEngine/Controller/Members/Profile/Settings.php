@@ -176,7 +176,7 @@ class Settings extends Profile {
 							'type' => 'image',
 							'id' => 'avatar',
 							'edit' => FALSE,
-							'image' => ($directory) ? $directory->url . $this->member->avatar_filename : '',
+							'image' => ($directory && $this->member->avatar_filename) ? $directory->url . $this->member->avatar_filename : '',
 							'value' => $this->member->avatar_filename
 						)
 					)
