@@ -12,7 +12,7 @@
 		<!-- open graph common -->
 		<meta property="og:site_name" content="{site_name}">
 		<meta property="og:type" content="website">
-		<meta property="og:image" content="{theme_folder_url}site/default/asset/img/og/default.jpg"> {!-- square, 50*50 min --}
+		<meta property="og:image" content="{theme_user_folder_url}site/default/asset/img/og/default.jpg"> {!-- square, 50*50 min --}
 
 		{if layout:og_title != ''}
 			<!-- open graph per page -->
@@ -21,8 +21,8 @@
 			<meta property="og:description" content="{layout:og_description}">
 		{/if}
 
-		<link href="{theme_folder_url}site/default/asset/style/default.min.css" title="common-styles" rel="stylesheet">
-		<!-- <link href="{theme_folder_url}site/default/asset/style/debug.min.css" title="common-styles" rel="stylesheet"> -->
+		<link href="{theme_user_folder_url}site/default/asset/style/default.min.css" title="common-styles" rel="stylesheet">
+		<!-- <link href="{theme_user_folder_url}site/default/asset/style/debug.min.css" title="common-styles" rel="stylesheet"> -->
 	</head>
 	<body>
 		<header class="full">
@@ -54,8 +54,8 @@
 		</footer>
 		</section>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js" ></script>
-		<script src="{theme_folder_url}site/default/asset/js/default.min.js" ></script>
-		<script src="{theme_folder_url}site/default/asset/js/plugins/cycle2.min.js"></script>
+		<script src="{theme_user_folder_url}site/default/asset/js/default.min.js" ></script>
+		<script src="{theme_user_folder_url}site/default/asset/js/plugins/cycle2.min.js"></script>
 		{layout:scripts}
 	</body>
 </html>
