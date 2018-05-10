@@ -93,9 +93,9 @@ class Theme {
 		elseif (file_exists($this->user_assets_path . $path))
 		{
 			ee()->load->library('logger');
-			$version_url = ee()->cp->masked_url('https://docs.expressionengine.com/v4/installation/version_notes_4.2.2.html');
+			$version_url = $this->mask_url('https://docs.expressionengine.com/v4/installation/version_notes_4.2.2.html');
 
-			ee()->logger->developer('As of 4.2.2, theme templates should be in folder: system/user/templates/_themes/.  <a href=".$version_url.">Please see 4.2.2 version notes.</a>');
+			ee()->logger->developer('As of 4.2.2, theme templates should be in folder: system/user/templates/_themes/.  <a href="'.$version_url.'">Please see 4.2.2 version notes.</a>');
 
 			return $this->user_assets_path . $path;
 		}
@@ -119,9 +119,9 @@ class Theme {
 		elseif (file_exists($this->user_assets_path . $path))
 		{
 			ee()->load->library('logger');
-			$version_url = ee()->cp->masked_url('https://docs.expressionengine.com/v4/installation/version_notes_4.2.2.html');
+			$version_url = $this->mask_url('https://docs.expressionengine.com/v4/installation/version_notes_4.2.2.html');
 
-			ee()->logger->developer('As of 4.2.2, theme templates should be in folder: system/user/templates/_themes/.  <a href=".$version_url.">Please see 4.2.2 version notes.</a>');
+			ee()->logger->developer('As of 4.2.2, theme templates should be in folder: system/user/templates/_themes/.  <a href="'.$version_url.'">Please see 4.2.2 version notes.</a>');
 
 			return $this->user_assets_path . $path;
 		}
@@ -168,9 +168,9 @@ class Theme {
 			if ( ! empty($user_files))
 			{
 				ee()->load->library('logger');
-				$version_url = ee()->cp->masked_url('https://docs.expressionengine.com/v4/installation/version_notes_4.2.2.html');
+				$version_url = $this->mask_url('https://docs.expressionengine.com/v4/installation/version_notes_4.2.2.html');
 
-				ee()->logger->developer('As of 4.2.2, theme templates should be in folder: system/user/templates/_themes/.  <a href=".$version_url.">Please see 4.2.2 version notes.</a>');
+				ee()->logger->developer('As of 4.2.2, theme templates should be in folder: system/user/templates/_themes/.  <a href="'.$version_url.'">Please see 4.2.2 version notes.</a>');
 
 			}
 		}
@@ -203,9 +203,9 @@ class Theme {
 			if ( ! empty($user_files))
 			{
 				ee()->load->library('logger');
-				$version_url = ee()->cp->masked_url('https://docs.expressionengine.com/v4/installation/version_notes_4.2.2.html');
+				$version_url = $this->mask_url('https://docs.expressionengine.com/v4/installation/version_notes_4.2.2.html');
 
-				ee()->logger->developer('As of 4.2.2, theme templates should be in folder: system/user/templates/_themes/.  <a href=".$version_url.">Please see 4.2.2 version notes.</a>');
+				ee()->logger->developer('As of 4.2.2, theme templates should be in folder: system/user/templates/_themes/.  <a href="'.$version_url.'">Please see 4.2.2 version notes.</a>');
 
 			}
 		}
@@ -243,6 +243,18 @@ class Theme {
 		ksort($files);
 
 		return $files;
+	}
+
+	/**
+     * Equivilent to ee()->cp->masked_url. Needed because cp can't be used on the frontend.
+	 *
+	 * @param string $url Offsite URL we will redirect to
+	 * @return string A URL that will trigger the redirect on the frontend.
+	 */
+
+	private function mask_url ($url)
+	{
+		return ee()->functions->fetch_site_index(0,0).QUERY_MARKER.'URL='.urlencode($url);
 	}
 }
 // EOF
