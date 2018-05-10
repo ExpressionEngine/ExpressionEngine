@@ -64,7 +64,16 @@ class Theme {
 		$this->ee_assets_path = $ee_assets_path;
 		$this->user_assets_path = $user_assets_path;
 
-		ee()->load->library('logger');
+		/*
+
+   	 * @param string $ee_theme_templates_path The path to the 'system/ee/templates/_themes' directory
+   	 * @param string $ee_theme_assets_url The URL to the 'themes/ee' directory
+   	 * @param string $user_theme_templates_path The path to the 'system/user/templates/_themes' directory
+   	 * @param string $user_theme_assets_url The URL to the 'themes/user' directory
+   	 * @param string $ee_theme_assets_path The path to the 'themes/ee' directory
+   	 * @param string $user_theme_assets_path The URL to the 'themes/user' directory
+
+		*/
 	}
 
 	/**
@@ -83,7 +92,11 @@ class Theme {
 		}
 		elseif (file_exists($this->user_assets_path . $path))
 		{
-			ee()->logger->developer('As of 4.2.2, themes should be in folder: system/ee/templates/_themes/');
+			ee()->load->library('logger');
+			$version_url = ee()->cp->masked_url('https://docs.expressionengine.com/v4/installation/version_notes_4.2.2.html');
+
+			ee()->logger->developer('As of 4.2.2, theme templates should be in folder: system/user/templates/_themes/.  <a href=".$version_url.">Please see 4.2.2 version notes.</a>');
+
 			return $this->user_assets_path . $path;
 		}
 
@@ -105,7 +118,11 @@ class Theme {
 		}
 		elseif (file_exists($this->user_assets_path . $path))
 		{
-			ee()->logger->developer('As of 4.2.2, themes should be in folder: system/ee/templates/_themes/');
+			ee()->load->library('logger');
+			$version_url = ee()->cp->masked_url('https://docs.expressionengine.com/v4/installation/version_notes_4.2.2.html');
+
+			ee()->logger->developer('As of 4.2.2, theme templates should be in folder: system/user/templates/_themes/.  <a href=".$version_url.">Please see 4.2.2 version notes.</a>');
+
 			return $this->user_assets_path . $path;
 		}
 
@@ -147,9 +164,14 @@ class Theme {
 		if (empty($user_files))
 		{
 			$user_files = $this->listDirectory($this->user_assets_path . $kind . '/');
+
 			if ( ! empty($user_files))
 			{
-				ee()->logger->developer('As of 4.2.2, themes should be in folder: system/user/templates/_themes/');
+				ee()->load->library('logger');
+				$version_url = ee()->cp->masked_url('https://docs.expressionengine.com/v4/installation/version_notes_4.2.2.html');
+
+				ee()->logger->developer('As of 4.2.2, theme templates should be in folder: system/user/templates/_themes/.  <a href=".$version_url.">Please see 4.2.2 version notes.</a>');
+
 			}
 		}
 
@@ -180,7 +202,11 @@ class Theme {
 
 			if ( ! empty($user_files))
 			{
-				ee()->logger->developer('As of 4.2.2, themes should be in folder: system/user/templates/_themes/');
+				ee()->load->library('logger');
+				$version_url = ee()->cp->masked_url('https://docs.expressionengine.com/v4/installation/version_notes_4.2.2.html');
+
+				ee()->logger->developer('As of 4.2.2, theme templates should be in folder: system/user/templates/_themes/.  <a href=".$version_url.">Please see 4.2.2 version notes.</a>');
+
 			}
 		}
 
