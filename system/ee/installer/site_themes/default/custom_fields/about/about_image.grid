@@ -1,0 +1,53 @@
+{
+	"label": "About Image",
+	"instructions": "Image for the about page.",
+	"order": 7,
+	"columns": [
+		{
+			"type": "file",
+			"label": "Image",
+			"name": "image",
+			"instructions": "Upload the image you want to use.",
+			"required": "n",
+			"search": "n",
+			"settings":
+			{
+				"field_content_type": "image",
+				"allowed_directories": "all",
+				"show_existing": "y",
+				"num_existing": "50",
+				"field_required": "n"
+			}
+		},
+		{
+			"type": "text",
+			"label": "Caption",
+			"name": "caption",
+			"instructions": "Credit and copyright for this image.",
+			"required": "n",
+			"search": "n",
+			"settings":
+			{
+				"field_fmt": "none",
+				"field_content_type": "all",
+				"field_text_direction": "ltr",
+				"field_maxl": "256",
+				"field_required": "n"
+			}
+		},
+		{
+			"type": "select",
+			"label": "Alignment?",
+			"name": "align",
+			"instructions": "Align this image ot the left or right?",
+			"required": "n",
+			"search": "n",
+			"settings":
+			{
+				"field_fmt": "none",
+				"field_list_items": "none\nleft\nright",
+				"field_required": "n"
+			}
+		}
+	]
+}

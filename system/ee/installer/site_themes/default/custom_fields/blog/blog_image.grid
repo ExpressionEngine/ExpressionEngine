@@ -1,0 +1,39 @@
+{
+	"label": "Image",
+	"instructions": "Photograph, comic, any image you like.",
+	"order": 4,
+	"columns": [
+		{
+			"type": "file",
+			"label": "Image",
+			"name": "image",
+			"instructions": "Upload the image you want to use.",
+			"required": "n",
+			"search": "y",
+			"settings":
+			{
+				"field_content_type": "image",
+				"allowed_directories": "all",
+				"show_existing": "y",
+				"num_existing": "50",
+				"field_required": "n"
+			}
+		},
+		{
+			"type": "text",
+			"label": "Caption",
+			"name": "caption",
+			"instructions": "Credit and copyright for this image.",
+			"required": "n",
+			"search": "y",
+			"settings":
+			{
+				"field_fmt": "none",
+				"field_content_type": "all",
+				"field_text_direction": "ltr",
+				"field_maxl": "256",
+				"field_required": "n"
+			}
+		}
+	]
+}

@@ -1,0 +1,32 @@
+/*
+	_floats.less
+	-------------
+	define floats
+	-------------
+		.left
+		.right
+		.clear
+*/
+
+.left,
+.right{ display: inline; }
+
+	.left{ float: left; }
+
+	.right{ float: right; }
+
+/*
+	clears floated elements
+	-------------
+	arguments
+		none
+	examples
+		.parent:after{ .clear; }
+*/
+.clear{
+	clear: both;
+	content: '.';
+	display: block;
+	font-size: 0;
+	visibility: hidden;
+}

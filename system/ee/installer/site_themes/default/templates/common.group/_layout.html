@@ -1,0 +1,20 @@
+{!-- template vars --}
+{!-- used double quotes in this one file, as og_url required it :( --}
+{preload_replace:t_inc="common/"}
+
+{!-- embed the header --}
+{embed="{t_inc}_header"
+	title="{layout:title}"
+	desc="{layout:desc}"
+	{if layout:ogtitle}
+		ogtitle="{layout:ogtitle}"
+		og_url="{layout:og_url}"
+		og_description="{layout:og_description}"
+	{/if}
+}
+
+{!-- cALL the content --}
+{layout:contents}
+
+{!-- embed the footer --}
+{embed="{t_inc}_footer"}

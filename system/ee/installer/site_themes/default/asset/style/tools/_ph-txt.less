@@ -1,0 +1,26 @@
+/*
+	_ph-txt.less
+	-------------
+	define ph-txt
+*/
+
+@ph-color: lighten(@medium-gray,10%);
+
+/*
+	styles `placeholder=""` attribute
+	-------------
+	arguments
+		color
+	examples
+		fieldset{ .ph-txt(@black); }
+*/
+.ph-txt(@color: @ph-color){
+	input::-webkit-input-placeholder{ color: @color; }
+	textarea::-webkit-input-placeholder{ color: @color; }
+	input:-moz-placeholder{ color: @color; }
+	textarea:-moz-placeholder{ color: @color; }
+	input::-moz-placeholder{ color: @color; }
+	textarea::-moz-placeholder{ color: @color; }
+	input:-ms-input-placeholder{ color: @color; }
+	textarea:-ms-input-placeholder{ color: @color; }
+}

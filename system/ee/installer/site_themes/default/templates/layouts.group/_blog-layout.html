@@ -1,0 +1,52 @@
+{layout='layouts/_html-wrapper'}
+
+{!-- page vars (prefix p_) --}
+{preload_replace:p_url_cat='category'}
+
+{!-- embed for breadcrumb, needed to pass arguments (embeds aren't evil) --}
+{layout:set name='breadcrumbs'}
+	{embed='common/_breadcrumb'
+		p_url='{layout:p_url}'
+		p_title='{layout:p_title}'
+		{if layout:entry_ch}entry_ch='{layout:entry_ch}'{/if}
+		{if layout:search}search='{layout:search}'{/if}
+		{if layout:cat_ch}cat_ch='{layout:cat_ch}'{/if}
+	}
+{/layout:set}
+
+{layout:set name='scripts'}
+	<script src="{theme_folder_url}site/default/asset/js/plugins/validate.min.js"></script>
+	{layout:scripts}
+{/layout:set}
+
+		<section class="row pad">
+			<section class="w-12">
+				{layout:contents}
+			</section>
+			<section class="w-4">
+				<div class="sidebar">
+					{exp:search:simple_form
+						form_class='search'
+						channel='{layout:ch}'
+						search_in='everywhere'
+						where='all'
+						result_page='{layout:p_url}/search'
+						no_result_page='{layout:p_url}/no-results'
+						results='5'
+					}
+						<input type="text" name="keywords" id="keywords" value="" placeholder="Type keywords, hit enter">
+					{/exp:search:simple_form}
+					<h2>Categories</h2>
+					<ul class="list yes">
+						{exp:channel:categories channel='{layout:ch}' style='linear'}
+							<li><a href="{path='{layout:p_url}/{p_url_cat}/{category_url_title}'}">{category_name}</a></li>
+						{/exp:channel:categories}
+					</ul>
+					<h2>RSS Feed</h2>
+					<ul class="list rss">
+						<li><a href="{path='{layout:p_url}/rss'}">Subscribe to {layout:p_title}</a></li>
+					</ul>
+				</div>
+
+			</section>
+		</section>

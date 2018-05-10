@@ -1,0 +1,26 @@
+{layout='layouts/_blog-layout'}
+
+{!-- prevents 4th ++ segments on no results searches --}
+{if segment_4}
+	{redirect='{segment_1}/{segment_2}/{segment_3}'}
+{/if}
+
+{!-- page vars --}
+{preload_replace:p_title='My Blog'}
+{preload_replace:p_description='Search Results'}
+{preload_replace:p_url='blog'}
+{!-- channel vars (prefix ch_) --}
+{preload_replace:ch='blog'}
+{!-- layout vars, channel/page related --}
+{layout:set name='ch' value='{ch}'}
+{layout:set name='p_url' value='{p_url}'}
+{layout:set name='p_title' value='{p_title}'}
+{layout:set name='search' value='y'}
+{!-- layout vars --}
+{layout:set name='title' value='search results{gv_sep}{p_title}{gv_sep}'}
+{layout:set name='description' value='{p_description}'}
+
+		<h1>Search Results, {p_title}</h1>
+		<div class="alert warn no-results">
+			<p>Sorry, zero entries found matching "<b>{exp:search:keywords}</b>".</p>
+		</div>

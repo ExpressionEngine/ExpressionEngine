@@ -1,0 +1,91 @@
+{layout='layouts/_blog-layout'}
+
+{!--
+	404 Redirect
+	============
+	This is a listing page, it needs categories and pagination to work, but also needs to redirect if segment_2 is invalid . i.e. http://example.com/blog/nothing
+--}
+{if segment_2}
+	{if segment_2 != 'category' AND segment_2  ~ '/^(?!P\d+).*/'}
+		{redirect='404'}
+	{/if}
+{/if}
+
+{!-- prevents 3rd ++ segments on non category listings --}
+{if segment_3}
+	{if segment_2 != 'category'}
+		{redirect='{segment_1}/{segment_2}'}
+	{/if}
+{/if}
+
+{!-- prevents 4th ++ segments on category listings --}
+{if segment_4}
+	{if segment_4 ~ '/^(?!P\d+).*/'}
+		{redirect='{segment_1}/{segment_2}/{segment_3}'}
+	{/if}
+{/if}
+
+{!-- prevents 5th ++ segments on paginated category listings --}
+{if segment_5}
+	{redirect='{segment_1}/{segment_2}/{segment_3}/{segment_4}'}
+{/if}
+
+{!-- We use preload replace variables for in-template replacements for things
+     like tag parameters that we might repeat here. That way if we change things
+     down the road, we can just change it here instead of looking all over the
+     template for them. --}
+
+{!-- page vars (prefix p_) --}
+{preload_replace:p_title='My Blog'}
+{preload_replace:p_description='A blog about things, things I like and things I do.'}
+{preload_replace:p_url='blog'}
+{preload_replace:p_url_entry='entry'}
+{!-- channel vars (prefix ch_) --}
+{preload_replace:ch='blog'}
+{preload_replace:ch_disable='category_fields|member_data'}
+
+{!-- every template using the blog layout will set these which lets us use
+	 shared markup with customizable details. --}
+
+{!-- layout vars, channel/page related --}
+{layout:set name='ch' value='{ch}'}
+{layout:set name='p_url' value='{p_url}'}
+{layout:set name='p_title' value='{p_title}'}
+{!-- layout vars, static --}
+{layout:set name='title' value='{p_title}{gv_sep}'}
+{layout:set name='description' value='{p_description}'}
+{!-- OpenGraph meta output --}
+{layout:set name='og_title' value='{p_title}'}
+{layout:set name='og_url'}{path='{p_url}'}{/layout:set}
+{layout:set name='og_description' value='{p_description}'}
+
+{!-- Everything below is the "meat" of the template. We'll use tags to output content,
+	which will populate the layout:contents of the layouts/_blog-layout layout --}
+
+			{!-- Heading output is different in the case of category listings. --}
+			{if segment_2 == 'category'}
+				{layout:set name='cat_ch' value='{ch}'}
+				{exp:channel:category_heading channel='{ch}'}
+					<h1>{category_name}</h1>
+					{if category_description}
+						<p>{category_description}</p>
+					{/if}
+				{/exp:channel:category_heading}
+			{if:else}
+				<h1>{p_title}</h1>
+				<p>{p_description}</p>
+			{/if}
+			<div class="entries">
+				{exp:channel:entries channel='{ch}' disable='{ch_disable}' limit='5'}
+					{!-- listing as a snippet, as it's used through more than one template --}
+					{snp_blog_list}
+					{!-- no results output --}
+					{if no_results}
+						<div class="alert warn no-results">
+							<p>{gv_entries_none}</p>
+						</div>
+					{/if}
+					{!-- pagination --}
+					{snp_blog_list_paginate}
+				{/exp:channel:entries}
+			</div>
