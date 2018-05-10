@@ -510,6 +510,8 @@ class Addons extends CP_Controller {
 			$addon_info = ee('Addon')->get($addon);
 			$party = ($addon_info->getAuthor() == 'EllisLab') ? 'first' : 'third';
 
+			$this->updateConsentRequests($addon_info);
+
 			$module = $this->getModule($addon);
 			if ( ! empty($module)
 				&& $module['installed'] === TRUE
@@ -678,6 +680,22 @@ class Addons extends CP_Controller {
 
 			$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
 
+			try
+			{
+				$this->installConsentRequests($info);
+			}
+			catch (\Exception $e)
+			{
+				$alert = ee('CP/Alert')->makeInline($party . '-party')
+					->asIssue()
+					->withTitle(lang('addons_not_installed'))
+					->addToBody(lang('existing_consent_request'))
+					->addToBody([$addon])
+					->addToBody(lang('contact_developer'))
+					->defer();
+				break;
+			}
+
 			$module = $this->getModule($addon);
 			if ( ! empty($module) && $module['installed'] === FALSE)
 			{
@@ -784,6 +802,8 @@ class Addons extends CP_Controller {
 		foreach ($addons as $addon)
 		{
 			$info = ee('Addon')->get($addon);
+
+			$this->removeConsentRequests($info);
 
 			if (empty($info))
 			{
@@ -1955,6 +1975,96 @@ class Addons extends CP_Controller {
 			|| ! in_array($module['module_id'], $this->assigned_modules))
 		{
 			show_error(lang('unauthorized_access'), 403);
+		}
+	}
+
+	private function installConsentRequests($addon)
+	{
+		$prefix = $addon->getPrefix();
+		$requests = $addon->get('consent.requests', []);
+
+		// Preflight: if we have any consents that match there's been a problem.
+		foreach ($requests as $name => $values)
+		{
+			$consent_name = $prefix . ':' . $name;
+			if ($this->haveConsentRequest($consent_name))
+			{
+				throw new \Exception;
+			}
+		}
+
+		foreach ($requests as $name => $values)
+		{
+			$consent_name = $prefix . ':' . $name;
+			$this->makeConsentRequest($consent_name, $values);
+		}
+	}
+
+	private function haveConsentRequest($name)
+	{
+		return (bool) ee('Model')->get('ConsentRequest')
+			->filter('consent_name', $name)
+			->count();
+	}
+
+	private function makeConsentRequest($name, $values)
+	{
+		$request = ee('Model')->make('ConsentRequest');
+		$request->source = 'a'; // App-generated request
+		$request->consent_name = $name;
+		$request->title = (isset($values['title'])) ? $values['title'] : $name;
+		$request->save();
+
+		if (isset($values['request']))
+		{
+			$version = ee('Model')->make('ConsentRequestVersion');
+			$version->request = $values['request'];
+			$version->request_format = (isset($values['request_format'])) ? $values['request_format'] : 'none';
+			$version->author_id = ee()->session->userdata['member_id'];
+			$version->last_author_id = ee()->session->userdata['member_id'];
+			$version->create_date = ee()->localize->now;
+			$version->edit_date = ee()->localize->now;
+			$request->Versions->add($version);
+
+			$version->save();
+
+			$request->CurrentVersion = $version;
+			$request->save();
+		}
+	}
+
+	private function updateConsentRequests($addon)
+	{
+		$prefix = $addon->getPrefix();
+		$requests = $addon->get('consent.requests', []);
+
+		foreach ($requests as $name => $values)
+		{
+			$consent_name = $prefix . ':' . $name;
+			if ( ! $this->haveConsentRequest($consent_name))
+			{
+				$this->makeConsentRequest($consent_name, $values);
+			}
+		}
+	}
+
+	private function removeConsentRequests($addon)
+	{
+		$prefix = $addon->getPrefix();
+		$requests = $addon->get('consent.requests', []);
+
+		$consent_names = [];
+
+		foreach ($requests as $name => $values)
+		{
+			$consent_names[] = $prefix . ':' . $name;
+		}
+
+		if ( ! empty($consent_names))
+		{
+			ee('Model')->get('ConsentRequest')
+				->filter('consent_name', 'IN', $consent_names)
+				->delete();
 		}
 	}
 }
