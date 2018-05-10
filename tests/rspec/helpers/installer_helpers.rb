@@ -5,15 +5,12 @@ module Installer
 
     def initialize
       system             = '../../system/'
-      themes             = '../../themes/'
       @boot              = File.expand_path('ee/EllisLab/ExpressionEngine/Boot/boot.php', system)
       @config            = File.expand_path('user/config/config.php', system)
       @database          = File.expand_path('user/config/database.php', system)
       @wizard            = File.expand_path('ee/installer/controllers/wizard.php', system)
       @old_templates     = File.expand_path('user/templates/default_site.old', system)
       @current_templates = File.expand_path('user/templates/default_site', system)
-      @old_site_assets     = File.expand_path('user/site/default.old', themes)
-      @current_site_assets = File.expand_path('user/site/default', themes)
     end
 
     # Enables installer by removing `FALSE &&` from boot.php
@@ -155,35 +152,6 @@ module Installer
         "$config['app_version'] = '#{version}';"
       )
     end
-
-    # Backup site assets for restoration later
-    #
-    # @return [void]
-    def backup_site_assets
-      FileUtils.rm_rf @old_site_assets if File.exist? @old_site_assets
-
-      if File.exist? @current_site_assets
-        FileUtils.mv(
-          @current_site_assets,
-          @old_site_assets
-        )
-      end
-    end
-
-    # Restore templates if they've previously been backed up
-    #
-    # @return [void]
-    def restore_site_assets
-      FileUtils.rm_rf @current_site_assets if File.exist? @current_site_assets
-
-      if File.exist? @old_site_assets
-        FileUtils.mv(
-          @old_site_assets,
-          @current_site_assets
-        )
-      end
-    end
-
 
     # Backup any templates for restoration later
     #

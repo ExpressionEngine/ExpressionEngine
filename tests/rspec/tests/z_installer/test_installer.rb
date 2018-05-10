@@ -66,7 +66,6 @@ feature 'Installer' do
 
     it 'installs successfully with the default theme' do
       @installer.backup_templates
-      @installer.backup_site_assets
 
       @page.install_form.db_hostname.set 'localhost'
       @page.install_form.db_name.set $test_config[:db_name]
