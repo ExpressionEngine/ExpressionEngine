@@ -330,12 +330,7 @@ class ThemeInstaller {
 		$img_url = "{base_url}themes/user/site/{$theme_name}/";
 		$img_path = $this->theme_path."user/site/{$theme_name}/";
 
-		// check to see if themes/user/site/default/site/asset exists before copying
-
-		if ( ! ee('Filesystem')->isDir('/Users/robinb/sites/ee4/themes/user/site/default/asset/'))
-		{
-			ee('Filesystem')->rename($this->installer_path.'site_themes/default/asset/', $this->theme_path.'user/site/default/asset/');
-		}
+		ee('Filesystem')->copy($this->installer_path.'site_themes/default/asset/', $this->theme_path.'user/site/default/asset/');
 
 		foreach ($upload_locations as $upload_location_data)
 		{
