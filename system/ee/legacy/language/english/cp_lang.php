@@ -578,6 +578,10 @@ $lang = array(
 
 'confirm_removal_desc' => 'You are attempting to remove the following items, please confirm this action.',
 
+'btn_confirm_and_save' => 'Confirm, and Save',
+
+'btn_confirm_and_save_working' => 'Saving...',
+
 
 /*confirm show all modal */
 'all_items' => 'All %d items',

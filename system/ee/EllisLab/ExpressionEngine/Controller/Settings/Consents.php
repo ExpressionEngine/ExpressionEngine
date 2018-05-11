@@ -190,8 +190,6 @@ class Consents extends Settings {
 
 	private function form($request_id = NULL, $make_new_version = FALSE)
 	{
-		$vars['new_version'] = FALSE;
-
 		if (is_null($request_id))
 		{
 			$alert_key = 'created';
@@ -218,8 +216,8 @@ class Consents extends Settings {
 			// any consents, then we are making a new version.
 			if ($make_new_version || ! $request->consent_request_version_id || $request->CurrentVersion->Consents->count())
 			{
-				$vars['new_version'] = TRUE;
 				$version = $this->makeNewVersion($request);
+				ee()->view->base_url = ee('CP/URL')->make('settings/consents/new_version/'.$request_id);
 			}
 			else
 			{
@@ -227,12 +225,12 @@ class Consents extends Settings {
 				$request->CurrentVersion->edit_date = ee()->localize->now;
 
 				$version = $request->CurrentVersion;
+				ee()->view->base_url = ee('CP/URL')->make('settings/consents/edit/'.$request_id);
 			}
 
 			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_consent_request');
 			ee()->view->breadcrumb_title = lang('edit').' '.$request->title;
-			ee()->view->base_url = ee('CP/URL')->make('settings/consents/edit/'.$request_id);
 		}
 
 		$vars['errors'] = NULL;
@@ -352,6 +350,17 @@ class Consents extends Settings {
 		if ( ! $version->isNew())
 		{
 			unset($vars['sections'][0][0]);
+		}
+		else
+		{
+			$modal = ee('View')->make('ee:settings/consents/destructive_modal')->render([]);
+			ee('CP/Modal')->addModal('new-version', $modal);
+
+			ee()->cp->add_js_script([
+				'file' => [
+					'cp/settings/consents/edit',
+				],
+			]);
 		}
 
 		$vars['buttons'] = [
