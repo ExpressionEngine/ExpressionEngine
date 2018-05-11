@@ -38,12 +38,12 @@ class Consent {
 	private $addon_prefix = '';
 
 	/**
-	 * @var obj $model_delegate An injected `ee('Model')` object
+	 * @var object$model_delegate An injected `ee('Model')` object
 	 */
 	protected $model_delegate;
 
 	/**
-	 * @var obj $input_delegate An injected `ee()->input` object
+	 * @var object$input_delegate An injected `ee()->input` object
 	 */
 	protected $input_delegate;
 
@@ -81,7 +81,7 @@ class Consent {
 
 		if ( ! $this->callerHasPermission($request))
 		{
-			throw new InvalidArgumentException("Invalid Consent access, {$this->addon_prefix} cannot grant: '{$request_ref}'");
+			throw new \Exception("Invalid Consent access, {$this->addon_prefix} cannot grant: '{$request_ref}'");
 		}
 
 		if ($this->isAnonymous())
@@ -127,7 +127,7 @@ class Consent {
 
 		if ( ! $this->callerHasPermission($request))
 		{
-			throw new InvalidArgumentException("Invalid Consent access, {$this->addon_prefix} cannot grant: '{$request_ref}'");
+			throw new \Exception("Invalid Consent access, {$this->addon_prefix} cannot withdraw: '{$request_ref}'");
 		}
 
 		if ($this->isAnonymous())
@@ -192,7 +192,7 @@ class Consent {
 	 * Gets all the consent requests the member (or anonymous visitor) has granted
 	 * consent.
 	 *
-	 * @return obj A Collection of ConsentRequest objects
+	 * @return objectA Collection of ConsentRequest objects
 	 */
 	public function getGrantedRequests()
 	{
@@ -237,7 +237,7 @@ class Consent {
 	 *
 	 * @param int|string $request_ref The name or ID of a consent request
 	 * @throws InvalidArgumentException
-	 * @return obj A Collection of Consent objects
+	 * @return objectA Collection of Consent objects
 	 */
 	public function getGrantedConsentsFor($request_ref)
 	{
