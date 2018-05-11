@@ -86,10 +86,9 @@ class Consents extends Settings {
 				];
 			}
 
-			$toolbar['new_version'] = [
+			$toolbar['add'] = [
 				'href'  => ee('CP/URL')->make('settings/consents/new_version/' . $request->getId()),
 				'title' => lang('new_version'),
-				'content' => lang('new_version')
 			];
 
 			$datum = [

@@ -670,8 +670,6 @@ $lang = array(
 
 'opt_out' => 'Opt Out',
 
-'new_version' => 'New Version',
-
 );
 
 // EOF
