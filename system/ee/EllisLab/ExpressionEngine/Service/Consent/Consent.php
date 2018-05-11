@@ -33,6 +33,11 @@ class Consent {
 	protected $actor;
 
 	/**
+	 * @var string The addon prefix, if any, e.g. (addon_name:)
+	 */
+	private $addon_prefix = '';
+
+	/**
 	 * @var obj $model_delegate An injected `ee('Model')` object
 	 */
 	protected $model_delegate;
@@ -72,6 +77,11 @@ class Consent {
 		if ( ! $request->consent_request_version_id)
 		{
 			return;
+		}
+
+		if ( ! $this->callerHasPermission($request))
+		{
+			throw new InvalidArgumentException("Invalid Consent access, {$this->addon_prefix} cannot grant: '{$request_ref}'");
 		}
 
 		if ($this->isAnonymous())
@@ -114,6 +124,11 @@ class Consent {
 	public function withdraw($request_ref)
 	{
 		$request = $this->getConsentRequest($request_ref);
+
+		if ( ! $this->callerHasPermission($request))
+		{
+			throw new InvalidArgumentException("Invalid Consent access, {$this->addon_prefix} cannot grant: '{$request_ref}'");
+		}
 
 		if ($this->isAnonymous())
 		{
@@ -238,6 +253,32 @@ class Consent {
 				return $consent->isGranted();
 			});
 	}
+
+	/**
+	 * Checks to make sure the caller has write access premission to a Consent Request
+	 *
+	 * @param  object $request EllisLab\ExpressionEngine\Model\Consent\ConsentRequest
+	 * @return bool whether or not the caller has permission to modify the user's consent
+	 */
+	protected function callerHasPermission($request)
+    {
+        list($this_class, $caller) = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+        if (strpos($caller['file'], PATH_THIRD) === 0)
+        {
+        	if (empty($this->addon_prefix))
+        	{
+        		$relative_path = str_replace(PATH_THIRD, '', $caller['file']);
+        		list($addon_name, $extra_path) = explode('/', $relative_path, 2);
+
+        		$addon = ee('Addon')->get($addon_name);
+        		$this->addon_prefix = $addon->getPrefix();
+        	}
+
+            return (strpos($request->consent_name, $this->addon_prefix . ':') === 0);
+        }
+
+        return TRUE;
+    }
 
 	/**
 	 * Is the member we are checking anonymous?
