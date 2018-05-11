@@ -1698,6 +1698,10 @@ class EE_Template {
 				$this->no_results		= $this->tag_data[$i]['no_results'];
 				$this->search_fields	= $this->tag_data[$i]['search_fields'];
 
+				// reset cached date and modified vars
+				$this->date_vars        = [];
+				$this->modified_vars    = [];
+
 				// Assign Sites for Tag
 				$this->_fetch_site_ids();
 
