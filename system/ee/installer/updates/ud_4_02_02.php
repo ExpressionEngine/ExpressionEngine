@@ -47,8 +47,6 @@ class Updater {
 
 		foreach ($upload_destinations as $upload)
 		{
-
-			//if (strpos($directory, PATH_THEMES) !== FALSE)
 			if (strpos($upload->server_path, 'themes/ee/site/default/asset/img/') !== FALSE)
 			{
 				$warning = TRUE;
@@ -56,24 +54,22 @@ class Updater {
 			}
 		}
 
+		//ee()->update_notices->clear(); die;
+
 		if ($warning)
 		{
-
 			$msg = 'The themes/ee/ folder may be overwritten during upgrade. The following directories should be moved:<br><br>';
-			$msg .= '<ul>';
 
 			foreach ($directories as $path => $name)
 			{
-				$msg .= '<li>'.$name.': '.$path.'</li>';
+				$msg .= $name.': '.$path.'<br>';
 			}
 
-			$msg .= '</ul>';
 			$msg .= 'See the <a href="'.DOC_URL.'installation/version_notes_4.2.2.html">version notes</a> for details.';
 
 			ee()->update_notices->setVersion('4.2.2');
 			ee()->update_notices->header('File upload directory found in themes/ee/');
 			ee()->update_notices->item($msg);
-
 		}
 
 	}
