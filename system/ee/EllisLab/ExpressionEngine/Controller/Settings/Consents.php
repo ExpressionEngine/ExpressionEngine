@@ -16,6 +16,18 @@ use EllisLab\ExpressionEngine\Model\Consent\ConsentRequest;
  */
 class Consents extends Settings {
 
+	function __construct()
+	{
+		parent::__construct();
+
+		ee('CP/Alert')->makeDeprecationNotice()->now();
+
+		if ( ! ee('Permission')->has('can_manage_consents'))
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+	}
+
 	public function index()
 	{
 		if (ee()->input->post('bulk_action') == 'remove')
@@ -104,7 +116,7 @@ class Consents extends Settings {
 			->currentPage($page)
 			->render(ee('CP/URL')->make('settings/consents', $total_requests));
 
-		$vars['cp_page_title'] = lang('consent_request');
+		$vars['cp_page_title'] = lang('consent_requests');
 		$vars['requests'] = $data;
 		$vars['create_url'] = ee('CP/URL', 'settings/consents/create');
 		$vars['no_results'] = ['text' =>

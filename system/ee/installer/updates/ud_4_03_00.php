@@ -26,6 +26,7 @@ class Updater {
 		$steps = new \ProgressIterator(
 			[
 				'addConsentTables',
+				'addConsentModerationPermissions',
 			]
 		);
 
@@ -247,6 +248,24 @@ class Updater {
 		ee()->dbforge->add_key('consent_audit_id', TRUE);
 		ee()->dbforge->add_key('consent_request_id');
 		ee()->smartforge->create_table('consent_audit_log');
+	}
+
+	private function addConsentModerationPermissions()
+	{
+		ee()->smartforge->add_column(
+			'member_groups',
+			array(
+				'can_manage_consents' => array(
+					'type'       => 'CHAR',
+					'constraint' => 1,
+					'default'    => 'n',
+					'null'       => FALSE,
+				)
+			)
+		);
+
+		// Only assume super admins can moderate consent requests
+		ee()->db->update('member_groups', array('can_manage_consents' => 'y'), array('group_id' => 1));
 	}
 }
 
