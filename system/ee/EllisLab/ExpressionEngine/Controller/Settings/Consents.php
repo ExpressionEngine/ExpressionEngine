@@ -10,6 +10,7 @@
 namespace EllisLab\ExpressionEngine\Controller\Settings;
 
 use EllisLab\ExpressionEngine\Model\Consent\ConsentRequest;
+use EllisLab\ExpressionEngine\Library\CP\Table;
 
 /**
  * Consents Controller
@@ -90,6 +91,14 @@ class Consents extends Settings {
 				'href'  => ee('CP/URL')->make('settings/consents/new_version/' . $request->getId()),
 				'title' => lang('new_version'),
 			];
+
+			if ($request->Versions->count() > 1)
+			{
+				$toolbar['view'] = [
+					'href'  => ee('CP/URL')->make('settings/consents/versions/' . $request->getId()),
+					'title' => lang('list_versions'),
+				];
+			}
 
 			$datum = [
 				'id' => $request->getId(),
@@ -185,6 +194,66 @@ class Consents extends Settings {
 		}
 
 		ee()->functions->redirect(ee('CP/URL')->make('settings/consents', ee()->cp->get_url_state()));
+	}
+
+	public function versions($request_id)
+	{
+		$request = ee('Model')->get('ConsentRequest', $request_id)
+			->first();
+
+		if ( ! $request)
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+
+		$table = ee('CP/Table');
+		$table->setColumns(
+			[
+				'id' => [
+					'encode' => FALSE
+				],
+				'date',
+				'author',
+				'manage' => [
+					'type'=> Table::COL_TOOLBAR
+				],
+			]
+		);
+
+		foreach ($request->Versions as $version)
+		{
+			$toolbar = [
+				'toolbar_items' => [
+					'view' => [
+						'href' => '',
+						'rel' => 'modal-consent-request-' . $version->getId(),
+						'title' => strtolower(lang('view')),
+						'class' => 'js-modal-link'
+					]
+				]
+			];
+
+			$data[] = [
+				'id' => $version->getId(),
+				'date' => ee()->localize->human_time($version->edit_date->format('U')),
+				'author' => $version->LastAuthor->getMemberName(),
+				$toolbar
+			];
+		}
+
+		$table->setNoResultsText('no_versions_found');
+		$table->setData($data);
+
+		$base_url = ee('CP/URL')->make('settings/consents/versions/' . $request->getId());
+
+		$vars['table'] = $table->viewData($base_url);
+		$vars['form_url'] = $base_url->compile();
+		$vars['versions'] = $request->Versions;
+
+		ee()->view->base_url = $base_url;
+		ee()->view->ajax_validate = TRUE;
+		ee()->view->cp_page_title = sprintf(lang('consent_request_versions'), $request->title);
+		ee()->cp->render('settings/consents/versions', $vars);
 	}
 
 	private function form($request_id = NULL, $make_new_version = FALSE)
