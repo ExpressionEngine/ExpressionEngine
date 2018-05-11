@@ -17,63 +17,51 @@ class Theme {
 	/**
 	 * @var string The path to the 'system/ee/templates/_themes/' directory
 	 */
-	protected $ee_theme_path;
+	protected $ee_theme_templates_path;
 
 	/**
 	 * @var string The URL to the 'themes/ee' directory
 	 */
-	protected $ee_theme_url;
+	protected $ee_theme_assets_url;
 
 	/**
 	 * @var string The path to the 'system/user/templates/_themes/' directory
 	 */
-	protected $user_theme_path;
+	protected $user_theme_templates_path;
 
 	/**
 	 * @var string The URL to the 'themes/user' directory
 	 */
-	protected $user_theme_url;
+	protected $user_theme_assets_url;
 
 	/**
 	 * @var string The path to the 'themes/ee' directory
 	 */
-	protected $ee_assets_path;
+	protected $ee_theme_assets_path;
 
 	/**
 	 * @var string The path to the 'themes/user' directory
 	 */
-	protected $user_assets_path;
+	protected $user_theme_assets_path;
 
 	/**
 	 * Constructor: sets the ee and user theme path and URL properties
 	 *
-	 * @param string $ee_theme_path The path to the 'system/ee/templates/_themes' directory
-	 * @param string $ee_theme_url The URL to the 'themes/ee' directory
-	 * @param string $user_theme_path The path to the 'system/user/templates/_themes' directory
-	 * @param string $user_theme_url The URL to the 'themes/user' directory
-	 * @param string $ee_assets_path The path to the 'themes/ee' directory
-	 * @param string $user_assets_path The URL to the 'themes/user' directory
-	 */
-	public function __construct($ee_theme_path, $ee_theme_url, $user_theme_path, $user_theme_url, $ee_assets_path, $user_assets_path)
-	{
-		$this->ee_theme_path = $ee_theme_path;
-		$this->ee_theme_url = $ee_theme_url;
-		$this->user_theme_path = $user_theme_path;
-		$this->user_theme_url = $user_theme_url;
-
-		$this->ee_assets_path = $ee_assets_path;
-		$this->user_assets_path = $user_assets_path;
-
-		/*
-
    	 * @param string $ee_theme_templates_path The path to the 'system/ee/templates/_themes' directory
    	 * @param string $ee_theme_assets_url The URL to the 'themes/ee' directory
    	 * @param string $user_theme_templates_path The path to the 'system/user/templates/_themes' directory
    	 * @param string $user_theme_assets_url The URL to the 'themes/user' directory
    	 * @param string $ee_theme_assets_path The path to the 'themes/ee' directory
    	 * @param string $user_theme_assets_path The URL to the 'themes/user' directory
-
-		*/
+	 */
+	public function __construct($ee_theme_templates_path, $ee_theme_assets_url, $user_theme_templates_path, $user_theme_assets_url, $ee_theme_assets_path, $user_theme_assets_path)
+	{
+		$this->ee_theme_templates_path = $ee_theme_templates_path;
+		$this->ee_theme_assets_url = $ee_theme_assets_url;
+		$this->user_theme_templates_path = $user_theme_templates_path;
+		$this->user_theme_assets_url = $user_theme_assets_url;
+		$this->ee_theme_assets_path = $ee_theme_assets_path;
+		$this->user_theme_assets_path = $user_theme_assets_path;
 	}
 
 	/**
@@ -86,21 +74,21 @@ class Theme {
 	 */
 	public function getPath($path)
 	{
-		if (file_exists($this->user_theme_path . $path))
+		if (file_exists($this->user_theme_templates_path . $path))
 		{
-			return $this->user_theme_path . $path;
+			return $this->user_theme_templates_path . $path;
 		}
-		elseif (file_exists($this->user_assets_path . $path))
+		elseif (file_exists($this->user_theme_assets_path . $path))
 		{
 			ee()->load->library('logger');
 			$version_url = $this->mask_url('https://docs.expressionengine.com/v4/installation/version_notes_4.2.2.html');
 
 			ee()->logger->developer('As of 4.2.2, theme templates should be in folder: system/user/templates/_themes/.  <a href="'.$version_url.'">Please see 4.2.2 version notes.</a>');
 
-			return $this->user_assets_path . $path;
+			return $this->user_theme_assets_path . $path;
 		}
 
-		return $this->ee_theme_path . $path;
+		return $this->ee_theme_templates_path . $path;
 	}
 
 	/**
@@ -112,18 +100,18 @@ class Theme {
 	 */
 	public function getUserPath($path)
 	{
-		if (file_exists($this->user_theme_path . $path))
+		if (file_exists($this->user_theme_templates_path . $path))
 		{
-			return $this->user_theme_path . $path;
+			return $this->user_theme_templates_path . $path;
 		}
-		elseif (file_exists($this->user_assets_path . $path))
+		elseif (file_exists($this->user_theme_assets_path . $path))
 		{
 			ee()->load->library('logger');
 			$version_url = $this->mask_url('https://docs.expressionengine.com/v4/installation/version_notes_4.2.2.html');
 
 			ee()->logger->developer('As of 4.2.2, theme templates should be in folder: system/user/templates/_themes/.  <a href="'.$version_url.'">Please see 4.2.2 version notes.</a>');
 
-			return $this->user_assets_path . $path;
+			return $this->user_theme_assets_path . $path;
 		}
 
 		return FALSE;
@@ -139,12 +127,12 @@ class Theme {
 	 */
 	public function getUrl($path)
 	{
-		if (file_exists($this->user_assets_path . $path))
+		if (file_exists($this->user_theme_assets_path . $path))
 		{
-			return $this->user_theme_url . $path;
+			return $this->user_theme_assets_url . $path;
 		}
 
-		return $this->ee_theme_url . $path;
+		return $this->ee_theme_assets_url . $path;
 	}
 
 	/**
@@ -159,11 +147,11 @@ class Theme {
 	 */
 	public function listThemes($kind)
 	{
-		$user_files = $this->listDirectory($this->user_theme_path . $kind . '/');
+		$user_files = $this->listDirectory($this->user_theme_templates_path . $kind . '/');
 
 		if (empty($user_files))
 		{
-			$user_files = $this->listDirectory($this->user_assets_path . $kind . '/');
+			$user_files = $this->listDirectory($this->user_theme_assets_path . $kind . '/');
 
 			if ( ! empty($user_files))
 			{
@@ -177,7 +165,7 @@ class Theme {
 
 		// EE first so the User based themes can override.
 		return array_merge(
-			$this->listDirectory($this->ee_theme_path . $kind . '/'),
+			$this->listDirectory($this->ee_theme_templates_path . $kind . '/'),
 			$user_files
 		);
 	}
@@ -194,11 +182,11 @@ class Theme {
 
 	public function listUserThemes($kind)
 	{
-		$user_files = $this->listDirectory($this->user_theme_path . $kind . '/');
+		$user_files = $this->listDirectory($this->user_theme_templates_path . $kind . '/');
 
 		if (empty($user_files))
 		{
-			$user_files = $this->listDirectory($this->user_assets_path . $kind . '/');
+			$user_files = $this->listDirectory($this->user_theme_assets_path . $kind . '/');
 
 			if ( ! empty($user_files))
 			{
