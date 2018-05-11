@@ -73,20 +73,32 @@ class Consents extends Settings {
 
 		foreach ($requests as $request)
 		{
-			$edit_url = ee('CP/URL')->make('settings/consents/edit/' . $request->getId());
+			$toolbar = [];
+			$href = ee('CP/URL')->make('settings/consents/new_version/' . $request->getId());
+
+			if ( ! $request->CurrentVersion->Consents->count())
+			{
+				$href = ee('CP/URL')->make('settings/consents/edit/' . $request->getId());
+
+				$toolbar['edit'] = [
+					'href'  => ee('CP/URL')->make('settings/consents/edit/' . $request->getId()),
+					'title' => lang('edit')
+				];
+			}
+
+			$toolbar['new_version'] = [
+				'href'  => ee('CP/URL')->make('settings/consents/new_version/' . $request->getId()),
+				'title' => lang('new_version'),
+				'content' => lang('new_version')
+			];
 
 			$datum = [
 				'id' => $request->getId(),
 				'label' => $request->title,
-				'href' => $edit_url,
+				'href' => $href,
 				'extra' => LD.$request->consent_name.RD,
 				'selected' => ($highlight_id && $request->getId() == $highlight_id),
-				'toolbar_items' => [
-					'edit' => [
-						'href' => $edit_url,
-						'title' => lang('edit')
-							]
-				],
+				'toolbar_items' => $toolbar,
 				'selection' => [
 					'name' => 'selection[]',
 					'value' => $request->getId(),
@@ -146,6 +158,11 @@ class Consents extends Settings {
 		return $this->form($request_id);
 	}
 
+	public function newVersion($request_id)
+	{
+		return $this->form($request_id, TRUE);
+	}
+
 	public function remove()
 	{
 		$request_ids = ee()->input->post('selection');
@@ -171,8 +188,10 @@ class Consents extends Settings {
 		ee()->functions->redirect(ee('CP/URL')->make('settings/consents', ee()->cp->get_url_state()));
 	}
 
-	private function form($request_id = NULL)
+	private function form($request_id = NULL, $make_new_version = FALSE)
 	{
+		$vars['new_version'] = FALSE;
+
 		if (is_null($request_id))
 		{
 			$alert_key = 'created';
@@ -197,8 +216,9 @@ class Consents extends Settings {
 
 			// If there is no current version, or if the current version of the request has
 			// any consents, then we are making a new version.
-			if ( ! $request->consent_request_version_id || $request->CurrentVersion->Consents->count())
+			if ($make_new_version || ! $request->consent_request_version_id || $request->CurrentVersion->Consents->count())
 			{
+				$vars['new_version'] = TRUE;
 				$version = $this->makeNewVersion($request);
 			}
 			else
@@ -329,7 +349,7 @@ class Consents extends Settings {
 			]
 		];
 
-		if ($version->isNew())
+		if ( ! $version->isNew())
 		{
 			unset($vars['sections'][0][0]);
 		}
