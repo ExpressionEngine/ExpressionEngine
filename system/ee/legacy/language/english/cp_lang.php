@@ -656,6 +656,8 @@ $lang = array(
 
 'consent_title' => 'Consent Title',
 
+'consent_list_versions' => 'Versions',
+
 'consent_name' => 'Consent Name',
 
 'new_version_notice' => 'Editing this Consent Request will result in all prior consents granted for this Request being universally revoked.',
