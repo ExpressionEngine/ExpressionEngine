@@ -253,6 +253,8 @@ $lang = array(
 
 'custom_date_range' => 'Custom Date Range',
 
+'date_added' => 'Date Added',
+
 'edit' => 'Edit',
 
 'ee_wiki' => 'EE Wiki',
