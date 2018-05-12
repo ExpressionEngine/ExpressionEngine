@@ -415,7 +415,7 @@ class Consents extends Settings {
 			]
 		];
 
-		if ( ! $version->isNew())
+		if ($version->isNew())
 		{
 			unset($vars['sections'][0][0]);
 		}
