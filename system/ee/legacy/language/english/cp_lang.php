@@ -660,9 +660,9 @@ $lang = array(
 
 'consent_name' => 'Consent Name',
 
-'new_version_notice' => 'Editing this Consent Request will result in all prior consents granted for this Request being universally revoked.',
+'new_consent_version_notice' => 'Editing this Consent Request will result in all prior consents granted for this Request being universally revoked.',
 
-'new_version_destructive' => 'This is a destructive and irreversible action.',
+'new_consent_version_destructive' => 'This is a destructive and irreversible action.',
 
 'request' => 'Request',
 

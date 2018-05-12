@@ -11,7 +11,7 @@
 					<?=ee('CP/Alert')
 						->makeInline()
 						->asIssue()
-						->addToBody(lang('new_version_notice'))
+						->addToBody(lang('new_consent_version_notice'))
 						->render()?>
 					<div class="txt-wrap">
 					</div>
