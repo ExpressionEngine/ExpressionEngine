@@ -96,7 +96,7 @@ class Consents extends Settings {
 			{
 				$toolbar['view'] = [
 					'href'  => ee('CP/URL')->make('settings/consents/versions/' . $request->getId()),
-					'title' => lang('list_versions'),
+					'title' => lang('consent_list_versions'),
 				];
 			}
 
@@ -372,8 +372,8 @@ class Consents extends Settings {
 					->asWarning()
 					->cannotClose()
 					->withTitle(lang('important'))
-					->addToBody(lang('new_version_notice'))
-					->addToBody('<b>'.lang('new_version_destructive').'</b>')
+					->addToBody(lang('new_consent_version_notice'))
+					->addToBody('<b>'.lang('new_consent_version_destructive').'</b>')
 					->render(),
 				[
 					'title' => 'consent_title',
