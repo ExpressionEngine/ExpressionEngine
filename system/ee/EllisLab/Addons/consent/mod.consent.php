@@ -17,6 +17,47 @@ use EllisLab\Addons\Consent\Service\Variables\ConsentRequest as ConsentRequestVa
  */
 class Consent {
 
+	/**
+	 * {exp:consent:form}
+	 *
+	 * @return string The Consent Form
+	 */
+	public function form()
+	{
+
+	}
+
+	/**
+	 * {exp:consent:requests}
+	 *
+	 * @return string Parsed tagdata for the Consent Requests tag
+	 */
+	public function requests()
+	{
+
+	}
+
+	/**
+	 * Grant Consent
+	 * Responds to ACTion request
+	 *
+	 * @return mixed JSON (if Ajax request), or redirects
+	 */
+	public function grantConsent()
+	{
+
+	}
+
+	/**
+	 * Withdraw Consent
+	 * Responds to ACTion request
+	 *
+	 * @return mixed JSON (if Ajax request), or redirects
+	 */
+	public function withdrawConsent()
+	{
+
+	}
 }
 // END CLASS
 
