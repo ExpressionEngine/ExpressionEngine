@@ -2035,7 +2035,15 @@ class Addons extends CP_Controller {
 
 	private function installConsentRequests($addon)
 	{
-		$prefix = $addon->getPrefix();
+		if (strpos($addon->getPath(), PATH_ADDONS) === 0)
+		{
+			$prefix = 'ee';
+		}
+		else
+		{
+			$prefix = $addon->getPrefix();
+		}
+
 		$requests = $addon->get('consent.requests', []);
 
 		// Preflight: if we have any consents that match there's been a problem.
