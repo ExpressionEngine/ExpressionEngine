@@ -303,7 +303,15 @@ class Consents extends Settings {
 				show_error(lang('unauthorized_access'), 403);
 			}
 
-			$version = $this->makeNewVersion($request);
+			if (isset($_POST['request']) && $_POST['request'] != $request->CurrentVersion->request)
+			{
+				$version = $this->makeNewVersion($request);
+			}
+			else
+			{
+				$version = $request->CurrentVersion;
+			}
+
 			ee()->view->base_url = ee('CP/URL')->make('settings/consents/new_version/'.$request_id);
 
 			$alert_key = 'updated';
