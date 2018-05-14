@@ -6,6 +6,8 @@
 			<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></br>
        </h1>
 
+		<?=ee('CP/Alert')->get('shared-form')?>
+
        <?php if (isset($filters)) echo $filters; ?>
 
        <?php $this->embed('_shared/table', $table); ?>

@@ -188,6 +188,17 @@ class Consent extends Settings {
 		{
 			ee('Consent', $this->member)->grant($request_id);
 		}
+
+		$request_titles = ee('Model')->get('ConsentRequest', $request_ids)
+			->all()
+			->pluck('title');
+
+		ee('CP/Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang('consent_granted'))
+			->addToBody(lang('consent_granted_desc'))
+			->addToBody($request_titles)
+			->defer();
 	}
 
 	protected function optOut(array $request_ids)
@@ -196,6 +207,17 @@ class Consent extends Settings {
 		{
 			ee('Consent', $this->member)->withdraw($request_id);
 		}
+
+		$request_titles = ee('Model')->get('ConsentRequest', $request_ids)
+			->all()
+			->pluck('title');
+
+		ee('CP/Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang('consent_withdrawn'))
+			->addToBody(lang('consent_withdrawn_desc'))
+			->addToBody($request_titles)
+			->defer();
 	}
 
 }

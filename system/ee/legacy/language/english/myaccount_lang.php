@@ -553,6 +553,15 @@ $lang = array(
 
 'your_html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Formatting Buttons',
 
+'consent_granted' => 'Consent Granted',
+
+'consent_granted_desc' => 'Your consent was granted for the following requests:',
+
+'consent_withdrawn' => 'Consent Withdrawn',
+
+'consent_withdrawn_desc' => 'Your consent was withdrawn for the following requests:',
+
+
 );
 
 // EOF
