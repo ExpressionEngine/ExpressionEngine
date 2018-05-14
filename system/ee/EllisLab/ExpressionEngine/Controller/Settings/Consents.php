@@ -57,16 +57,27 @@ class Consents extends Settings {
 		$page = ee('Request')->get('page') ?: 1;
 		$per_page = $filter_values['perpage'];
 
+		if ( ! empty($filter_values['filter_by_date']))
+		{
+			$requests->with('CurrentVersion');
+
+			if (is_array($filter_values['filter_by_date']))
+			{
+				$requests->filter('CurrentVersion.create_date', '>=', $filter_values['filter_by_date'][0]);
+				$requests->filter('CurrentVersion.create_date', '<', $filter_values['filter_by_date'][1]);
+			}
+			else
+			{
+				$requests->filter('CurrentVersion.create_date', '>=', ee()->localize->now - $filter_values['filter_by_date']);
+			}
+		}
+
 		$requests = $requests->offset(($page - 1) * $per_page)
 			->limit($per_page)
 			->order('title')
 			->all();
 
-		// Only show filters if there is data to filter or we are currently filtered
-		if ($search OR $requests->count() > 0)
-		{
-			$vars['filters'] = $filters->render($vars['base_url']);
-		}
+		$vars['filters'] = $filters->render($vars['base_url']);
 
 		$highlight_id = ee()->session->flashdata('highlight_id');
 
