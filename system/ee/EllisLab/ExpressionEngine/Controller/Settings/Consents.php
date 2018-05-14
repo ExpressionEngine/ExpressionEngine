@@ -314,6 +314,11 @@ class Consents extends Settings {
 			$version->set($_POST);
 			$result = $request->validate();
 
+			if ($response = $this->ajaxValidation($result))
+			{
+				return $response;
+			}
+
 			if ($result->isValid())
 			{
 				// We need a request ID for the version, so we'll save when new.
@@ -455,6 +460,8 @@ class Consents extends Settings {
 				'working' => 'btn_saving'
 			]
 		];
+
+		ee()->view->ajax_validate = TRUE;
 
 		ee()->cp->render('settings/form', $vars);
 	}
