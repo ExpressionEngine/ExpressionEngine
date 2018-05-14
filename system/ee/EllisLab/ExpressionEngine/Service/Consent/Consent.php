@@ -261,24 +261,24 @@ class Consent {
 	 * @return bool whether or not the caller has permission to modify the user's consent
 	 */
 	protected function callerHasPermission($request)
-    {
-        list($this_class, $caller) = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
-        if (strpos($caller['file'], PATH_THIRD) === 0)
-        {
-        	if (empty($this->addon_prefix))
-        	{
-        		$relative_path = str_replace(PATH_THIRD, '', $caller['file']);
-        		list($addon_name, $extra_path) = explode('/', $relative_path, 2);
+	{
+		list($this_class, $caller) = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+		if (strpos($caller['file'], PATH_THIRD) === 0)
+		{
+			if (empty($this->addon_prefix))
+			{
+				$relative_path = str_replace(PATH_THIRD, '', $caller['file']);
+				list($addon_name, $extra_path) = explode('/', $relative_path, 2);
 
-        		$addon = ee('Addon')->get($addon_name);
-        		$this->addon_prefix = $addon->getPrefix();
-        	}
+				$addon = ee('Addon')->get($addon_name);
+				$this->addon_prefix = $addon->getPrefix();
+			}
 
-            return (strpos($request->consent_name, $this->addon_prefix . ':') === 0);
-        }
+			return (strpos($request->consent_name, $this->addon_prefix . ':') === 0);
+		}
 
-        return TRUE;
-    }
+		return TRUE;
+	}
 
 	/**
 	 * Is the member we are checking anonymous?
