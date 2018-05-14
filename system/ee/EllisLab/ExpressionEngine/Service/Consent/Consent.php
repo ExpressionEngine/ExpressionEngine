@@ -281,6 +281,15 @@ class Consent {
 			$data[$key] = array_merge($request->getValues(), $request->CurrentVersion->getValues());
 			$data[$key]['has_granted'] = FALSE;
 
+			// these keys may not be present if the user hasn't responded, but we want a consistent array
+			$data['consent_given_via'] = NULL;
+			$data['consent_id'] = NULL;
+			$data['expiration_date'] = NULL;
+			$data['member_id'] = NULL;
+			$data['request_copy'] = NULL;
+			$data['update_date'] = NULL;
+			$data['withdrawn_date'] = NULL;
+
 			if ($this->isAnonymous())
 			{
 				$data[$key]['has_granted'] = array_key_exists($request->getId(), $consents);
