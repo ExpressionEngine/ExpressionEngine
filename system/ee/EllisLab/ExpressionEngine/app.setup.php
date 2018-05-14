@@ -332,15 +332,24 @@ return array(
 
 		'Consent' => function($ee, $member = NULL)
 		{
-			$logged_in_member = $ee->make('Model')->get('Member', ee()->session->userdata['member_id'])->first();
+			if (ee()->session->userdata('member_id'))
+			{
+				$logged_in_member = $ee->make('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+			}
+			else
+			{
+				$logged_in_member = $ee->make('Model')->make('Member', ['member_id' => 0]);
+				$logged_in_member->screen_name = lang('anonymous');
+				$logged_in_member->group_id = 3;
+			}
 
 			if ( ! $member instanceof EllisLab\ExpressionEngine\Model\Member\Member)
 			{
-				$member_id = (is_numeric($member)) ? $member : ee()->session->userdata['member_id'];
+				$member_id = (is_numeric($member)) ? $member : ee()->session->userdata('member_id');
 
 				if ($member_id)
 				{
-					if ($member_id == ee()->session->userdata['member_id'])
+					if ($member_id == ee()->session->userdata('member_id'))
 					{
 						$member = $logged_in_member;
 					}
