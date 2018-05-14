@@ -2035,18 +2035,14 @@ class Addons extends CP_Controller {
 
 	private function installConsentRequests($addon)
 	{
+		$requests = $this->getRequestsFor($addon);
+		if ( ! empty($requests))
+		{
+		    throw new \Exception;
+		}
+
 		$prefix = $addon->getPrefix();
 		$requests = $addon->get('consent.requests', []);
-
-		// Preflight: if we have any consents that match there's been a problem.
-		foreach ($requests as $name => $values)
-		{
-			$consent_name = $prefix . ':' . $name;
-			if ($this->haveConsentRequest($consent_name))
-			{
-				throw new \Exception;
-			}
-		}
 
 		foreach ($requests as $name => $values)
 		{
