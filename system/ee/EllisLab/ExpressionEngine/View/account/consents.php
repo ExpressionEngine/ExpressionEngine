@@ -34,7 +34,7 @@
 				</div>
 				<div class="md-wrap">
 					<h1><?=$request->title?></h1>
-					<p><?=ee()->localize->human_time($request->CurrentVersion->edit_date->format('U'))?></p>
+					<p><?=ee()->localize->human_time($request->CurrentVersion->create_date->format('U'))?></p>
 					<?php
 					$contents = $request->render();
 					if (strpos($contents, '<p>') !== 0)
