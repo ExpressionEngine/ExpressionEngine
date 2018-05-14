@@ -22,7 +22,7 @@
 				</div>
 				<div class="md-wrap">
 					<h1><?=$version->ConsentRequest->title?> (#<?=$version->getId()?>)</h1>
-					<p><?=ee()->localize->human_time($version->edit_date->format('U'))?></p>
+					<p><?=ee()->localize->human_time($version->create_date->format('U'))?></p>
 					<?php
 					$contents = $version->render();
 					if (strpos($contents, '<p>') !== 0)
