@@ -81,7 +81,7 @@ class Theme {
 		elseif (file_exists($this->user_theme_assets_path . $path))
 		{
 			ee()->load->library('logger');
-			$version_url = $this->mask_url('https://docs.expressionengine.com/v4/installation/version_notes_4.2.2.html');
+			$version_url = $this->mask_url(DOC_URL.'installation/version_notes_4.2.2.html');
 
 			ee()->logger->developer('As of 4.2.2, theme templates should be in folder: system/user/templates/_themes/.  <a href="'.$version_url.'">Please see 4.2.2 version notes.</a>');
 
@@ -107,7 +107,7 @@ class Theme {
 		elseif (file_exists($this->user_theme_assets_path . $path))
 		{
 			ee()->load->library('logger');
-			$version_url = $this->mask_url('https://docs.expressionengine.com/v4/installation/version_notes_4.2.2.html');
+			$version_url = $this->mask_url(DOC_URL.'installation/version_notes_4.2.2.html');
 
 			ee()->logger->developer('As of 4.2.2, theme templates should be in folder: system/user/templates/_themes/.  <a href="'.$version_url.'">Please see 4.2.2 version notes.</a>');
 
@@ -156,7 +156,7 @@ class Theme {
 			if ( ! empty($user_files))
 			{
 				ee()->load->library('logger');
-				$version_url = $this->mask_url('https://docs.expressionengine.com/v4/installation/version_notes_4.2.2.html');
+				$version_url = $this->mask_url(DOC_URL.'installation/version_notes_4.2.2.html');
 
 				ee()->logger->developer('As of 4.2.2, theme templates should be in folder: system/user/templates/_themes/.  <a href="'.$version_url.'">Please see 4.2.2 version notes.</a>');
 
@@ -191,7 +191,7 @@ class Theme {
 			if ( ! empty($user_files))
 			{
 				ee()->load->library('logger');
-				$version_url = $this->mask_url('https://docs.expressionengine.com/v4/installation/version_notes_4.2.2.html');
+				$version_url = $this->mask_url(DOC_URL.'installation/version_notes_4.2.2.html');
 
 				ee()->logger->developer('As of 4.2.2, theme templates should be in folder: system/user/templates/_themes/.  <a href="'.$version_url.'">Please see 4.2.2 version notes.</a>');
 
