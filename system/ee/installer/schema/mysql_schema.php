@@ -1409,7 +1409,7 @@ class EE_Schema {
 			`consent_request_version_id` int(10) unsigned DEFAULT NULL,
 			`source` char(1) NOT NULL DEFAULT 'a',
 			`title` varchar(200) NOT NULL,
-			`consent_name` varchar(32) NOT NULL,
+			`consent_name` varchar(50) NOT NULL,
 			`double_opt_in` char(1) NOT NULL DEFAULT 'n',
 			`retention_period` varchar(32) DEFAULT NULL,
 			PRIMARY KEY (`consent_request_id`)

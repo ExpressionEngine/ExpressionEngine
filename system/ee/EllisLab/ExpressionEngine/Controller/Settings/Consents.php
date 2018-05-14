@@ -393,6 +393,7 @@ class Consents extends Settings {
 							'type' => 'text',
 							'value' => $request->consent_name,
 							'required' => TRUE,
+							'maxlength' => 50,
 							'disabled' => ($request->source == 'a')
 						]
 					]

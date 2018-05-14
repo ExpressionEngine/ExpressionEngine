@@ -69,7 +69,7 @@ class Updater {
 				],
 				'consent_name'               => [
 					'type'       => 'varchar',
-					'constraint' => 32,
+					'constraint' => 50,
 					'null'       => FALSE
 				],
 				'double_opt_in'              => [
