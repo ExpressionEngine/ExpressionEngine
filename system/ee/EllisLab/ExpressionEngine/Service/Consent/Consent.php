@@ -282,13 +282,13 @@ class Consent {
 			$data[$key]['has_granted'] = FALSE;
 
 			// these keys may not be present if the user hasn't responded, but we want a consistent array
-			$data['consent_given_via'] = NULL;
-			$data['consent_id'] = NULL;
-			$data['expiration_date'] = NULL;
-			$data['member_id'] = NULL;
-			$data['request_copy'] = NULL;
-			$data['update_date'] = NULL;
-			$data['withdrawn_date'] = NULL;
+			$data[$key]['consent_given_via'] = NULL;
+			$data[$key]['consent_id'] = NULL;
+			$data[$key]['expiration_date'] = NULL;
+			$data[$key]['member_id'] = NULL;
+			$data[$key]['request_copy'] = NULL;
+			$data[$key]['update_date'] = NULL;
+			$data[$key]['withdrawn_date'] = NULL;
 
 			if ($this->isAnonymous())
 			{
