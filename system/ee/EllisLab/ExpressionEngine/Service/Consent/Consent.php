@@ -192,7 +192,7 @@ class Consent {
 	 * Gets all the consent requests the member (or anonymous visitor) has granted
 	 * consent.
 	 *
-	 * @return objectA Collection of ConsentRequest objects
+	 * @return object A Collection of ConsentRequest objects
 	 */
 	public function getGrantedRequests()
 	{
@@ -237,7 +237,7 @@ class Consent {
 	 *
 	 * @param int|string $request_ref The name or ID of a consent request
 	 * @throws InvalidArgumentException
-	 * @return objectA Collection of Consent objects
+	 * @return object A Collection of Consent objects
 	 */
 	public function getGrantedConsentsFor($request_ref)
 	{
@@ -252,6 +252,57 @@ class Consent {
 			->filter(function($consent) {
 				return $consent->isGranted();
 			});
+	}
+
+	/**
+	 * Gets the values for a specific request and the member's consent
+	 *
+	 * @param string|array $request_names The name or an array of names
+	 * @return array An associative array of values
+	 */
+	public function getConsentDataFor($request_names)
+	{
+		if ( ! is_array($request_names))
+		{
+			$request_names = [$request_names];
+		}
+
+		$data = [];
+
+		if ($this->isAnonymous())
+		{
+			$requests = $this->model_delegate->get('ConsentRequest')
+				->with('CurrentVersion')
+				->filter('consent_name', 'IN', $request_names)
+				->all();
+
+			foreach ($requests as $request)
+			{
+				$key = $request->consent_name;
+				$data[$key] = array_merge($request->getValues(), $request->CurrentVersion->getValues());
+				$data[$key]['has_granted'] = array_key_exists($request->getId(), $this->getConsentCookie());
+			}
+		}
+		else
+		{
+			$consents = $this->model_delegate->get('Consent')
+				->with('ConsentRequest')
+				->with(['ConsentRequest' => 'CurrentVersion'])
+				->with('ConsentRequestVersion')
+				->filter('member_id', $this->member->getId())
+				->filter('ConsentRequest.consent_name', 'IN', $request_names)
+				->all();
+
+			foreach ($consents as $consent)
+			{
+				$key = $consent->ConsentRequest->consent_name;
+				$data[$key] = array_merge($consent->getValues(), $consent->ConsentRequest->getValues(), $consent->ConsentRequestVersion->getValues());
+				unset($data[$key]['consent_given']);
+				$data[$key]['has_granted'] = $consent->isGranted();
+			}
+		}
+
+		return $data;
 	}
 
 	/**
