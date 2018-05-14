@@ -205,7 +205,7 @@ class Consents extends Settings {
 		{
 			$requests->delete();
 
-			ee('CP/Alert')->makeInline('requests')
+			ee('CP/Alert')->makeInline('user-alerts')
 				->asSuccess()
 				->withTitle(lang('consent_requests_removed'))
 				->addToBody(sprintf(lang('consent_requests_removed_desc'), count($request_ids)))
@@ -320,6 +320,7 @@ class Consents extends Settings {
 		}
 
 		$vars['errors'] = NULL;
+		$alert_name = ($request->source == 'a') ? 'app-alerts' : 'user-alerts';
 
 		if ( ! empty($_POST))
 		{
@@ -356,7 +357,7 @@ class Consents extends Settings {
 					ee()->session->set_flashdata('highlight_id', $request->getId());
 				}
 
-				ee('CP/Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline($alert_name)
 					->asSuccess()
 					->withTitle(lang('consent_request_'.$alert_key))
 					->addToBody(sprintf(lang('consent_request_'.$alert_key.'_desc'), $request->title))
@@ -378,7 +379,7 @@ class Consents extends Settings {
 			else
 			{
 				$vars['errors'] = $result;
-				ee('CP/Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline($alert_name)
 					->asIssue()
 					->withTitle(lang('consent_request_not_'.$alert_key))
 					->addToBody(lang('consent_request_not_'.$alert_key.'_desc'))

@@ -7,7 +7,7 @@
 				<a class="btn action" href="<?=$create_url?>"><?=lang('new')?></a>
 			</fieldset>
 			<h1><?=$heading['user']?></h1>
-			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+			<div class="app-notice-wrap"><?=ee('CP/Alert')->get('user-alerts')?></div>
 			<?php $this->embed('_shared/table-list', ['data' => $requests['user'], 'filters' => $filters['user']]); ?>
 			<fieldset class="tbl-bulk-act hidden">
 				<select name="bulk_action">
@@ -25,7 +25,7 @@
 	<div class="tbl-ctrls">
 		<?=form_open($base_url)?>
 			<h1><?=$heading['app']?></h1>
-			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+			<div class="app-notice-wrap"><?=ee('CP/Alert')->get('app-alerts')?></div>
 			<?php $this->embed('_shared/table-list', ['data' => $requests['app'], 'filters' => $filters['app']]); ?>
 		</form>
 	</div>
