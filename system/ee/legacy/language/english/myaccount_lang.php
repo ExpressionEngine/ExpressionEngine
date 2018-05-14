@@ -309,6 +309,8 @@ $lang = array(
 
 'new_tab_url' => 'New Tab URL',
 
+'no_consents_found' => 'No <b>Consents</b> found.',
+
 'no_blocked_members_found' => 'No <b>Blocked members</b> found.',
 
 'no_bookmarklets_found' => 'No <b>Bookmarklets</b> found.',
