@@ -268,37 +268,32 @@ class Consent {
 		}
 
 		$data = [];
+		$consents = ($this->isAnonymous()) ? $this->getConsentCookie() : $this->member->Consents->indexBy('consent_request_id');
 
-		if ($this->isAnonymous())
+		$requests = $this->model_delegate->get('ConsentRequest')
+			->with('CurrentVersion')
+			->filter('consent_name', 'IN', $request_names)
+			->all();
+
+		foreach ($requests as $request)
 		{
-			$requests = $this->model_delegate->get('ConsentRequest')
-				->with('CurrentVersion')
-				->filter('consent_name', 'IN', $request_names)
-				->all();
+			$key = $request->consent_name;
+			$data[$key] = array_merge($request->getValues(), $request->CurrentVersion->getValues());
+			$data[$key]['has_granted'] = FALSE;
 
-			foreach ($requests as $request)
+			if ($this->isAnonymous())
 			{
-				$key = $request->consent_name;
-				$data[$key] = array_merge($request->getValues(), $request->CurrentVersion->getValues());
-				$data[$key]['has_granted'] = array_key_exists($request->getId(), $this->getConsentCookie());
+				$data[$key]['has_granted'] = array_key_exists($request->getId(), $consents);
 			}
-		}
-		else
-		{
-			$consents = $this->model_delegate->get('Consent')
-				->with('ConsentRequest')
-				->with(['ConsentRequest' => 'CurrentVersion'])
-				->with('ConsentRequestVersion')
-				->filter('member_id', $this->member->getId())
-				->filter('ConsentRequest.consent_name', 'IN', $request_names)
-				->all();
-
-			foreach ($consents as $consent)
+			else
 			{
-				$key = $consent->ConsentRequest->consent_name;
-				$data[$key] = array_merge($consent->getValues(), $consent->ConsentRequest->getValues(), $consent->ConsentRequestVersion->getValues());
-				unset($data[$key]['consent_given']);
-				$data[$key]['has_granted'] = $consent->isGranted();
+				if (array_key_exists($request->getId(), $consents))
+				{
+					$consent = $consents[$request->getId()];
+					$data[$key] = array_merge($consent->getValues(), $data[$key]);
+					unset($data[$key]['consent_given']);
+					$data[$key]['has_granted'] = $consent->isGranted();
+				}
 			}
 		}
 
