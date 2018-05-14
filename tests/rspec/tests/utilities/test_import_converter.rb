@@ -129,12 +129,14 @@ feature 'Import File Converter' do
     @page.should have_text @min_field_error
     no_php_js_errors
 
+    sleep 1 # Give filesystem a chance to clean up cache
     @page.attach_file('member_file', @tab_file)
     @page.find('input[value=pipe]').click
     @page.submit
     @page.should have_text @min_field_error
     no_php_js_errors
 
+    sleep 1
     @page.attach_file('member_file', @tab_file)
     @page.find('input[value=other]').click
     @page.delimiter_special.set '*'
@@ -142,6 +144,7 @@ feature 'Import File Converter' do
     @page.should have_text @min_field_error
     no_php_js_errors
 
+    sleep 1
     @page.attach_file('member_file', @tab_file)
     @page.find('input[value=tab]').click
     @page.submit
@@ -150,6 +153,7 @@ feature 'Import File Converter' do
     no_php_js_errors
 
     # Comma file should only work with Comma selected
+    sleep 1
     @page.load
     @page.attach_file('member_file', @comma_file)
     @page.find('input[value=tab]').click
@@ -157,12 +161,14 @@ feature 'Import File Converter' do
     @page.should have_text @min_field_error
     no_php_js_errors
 
+    sleep 1
     @page.attach_file('member_file', @comma_file)
     @page.find('input[value=pipe]').click
     @page.submit
     @page.should have_text @min_field_error
     no_php_js_errors
 
+    sleep 1
     @page.attach_file('member_file', @comma_file)
     @page.find('input[value=other]').click
     @page.delimiter_special.set '*'
@@ -170,6 +176,7 @@ feature 'Import File Converter' do
     @page.should have_text @min_field_error
     no_php_js_errors
 
+    sleep 1
     @page.attach_file('member_file', @comma_file)
     @page.find('input[value=comma]').click
     @page.submit
@@ -178,6 +185,7 @@ feature 'Import File Converter' do
     no_php_js_errors
 
     # Pipe file should only work with Pipe selected
+    sleep 1
     @page.load
     @page.attach_file('member_file', @pipe_file)
     @page.find('input[value=comma]').click
@@ -185,12 +193,14 @@ feature 'Import File Converter' do
     @page.should have_text @min_field_error
     no_php_js_errors
 
+    sleep 1
     @page.attach_file('member_file', @pipe_file)
     @page.find('input[value=tab]').click
     @page.submit
     @page.should have_text @min_field_error
     no_php_js_errors
 
+    sleep 1
     @page.attach_file('member_file', @pipe_file)
     @page.find('input[value=other]').click
     @page.delimiter_special.set '*'
@@ -198,6 +208,7 @@ feature 'Import File Converter' do
     @page.should have_text @min_field_error
     no_php_js_errors
 
+    sleep 1
     @page.attach_file('member_file', @pipe_file)
     @page.find('input[value=pipe]').click
     @page.submit
@@ -206,6 +217,7 @@ feature 'Import File Converter' do
     no_php_js_errors
 
     # Special delimiter file should only work with Other selected
+    sleep 1
     @page.load
     @page.attach_file('member_file', @other_file)
     @page.find('input[value=comma]').click
@@ -213,18 +225,21 @@ feature 'Import File Converter' do
     @page.should have_text @min_field_error
     no_php_js_errors
 
+    sleep 1
     @page.attach_file('member_file', @other_file)
     @page.find('input[value=tab]').click
     @page.submit
     @page.should have_text @min_field_error
     no_php_js_errors
 
+    sleep 1
     @page.attach_file('member_file', @other_file)
     @page.find('input[value=pipe]').click
     @page.submit
     @page.should have_text @min_field_error
     no_php_js_errors
 
+    sleep 1
     @page.attach_file('member_file', @other_file)
     @page.find('input[value=other]').click
     @page.delimiter_special.set '*'
