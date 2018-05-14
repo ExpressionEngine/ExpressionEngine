@@ -766,7 +766,7 @@ class Forum {
 						'forum_path'		=> $this->forum_path(),
 						'image_url'			=> $this->image_url,
 						'theme_path'		=> ee('Theme')->getPath('forum/'.$this->theme.'/forum_member/'),
-						'css_file_path'		=> ee('Theme')->getUrl('forum/'.$this->theme.'/theme.css'),
+						'css_file_path'		=> '',
 						'board_id'			=> $this->fetch_pref('board_id')
 					)
 			);
@@ -1196,7 +1196,7 @@ class Forum {
 				'module_version'           => $this->version,
 				'forum_build'              => $this->build,
 				'error_message'            => $this->error_message,
-				'path:theme_css'           => ee('Theme')->getUrl('forum/'.$this->theme.'/theme.css'),
+				'path:theme_css'           => '',
 				'path:theme_js'            => ee('Theme')->getUrl('forum/'.$this->theme.'/theme/javascript/'),
 				'site_url'                 => ee()->config->item('site_url'),
 				'username_max_length'      => USERNAME_MAX_LENGTH,
