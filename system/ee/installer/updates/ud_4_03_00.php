@@ -69,7 +69,7 @@ class Updater {
 				],
 				'consent_name'               => [
 					'type'       => 'varchar',
-					'constraint' => 32,
+					'constraint' => 50,
 					'null'       => FALSE
 				],
 				'double_opt_in'              => [
@@ -119,19 +119,6 @@ class Updater {
 					'default'    => 0
 				],
 				'author_id'                  => [
-					'type'       => 'int',
-					'constraint' => 10,
-					'unsigned'   => TRUE,
-					'null'       => FALSE,
-					'default'    => 0
-				],
-				'edit_date'                  => [
-					'type'       => 'int',
-					'constraint' => 10,
-					'null'       => FALSE,
-					'default'    => 0
-				],
-				'last_author_id'             => [
 					'type'       => 'int',
 					'constraint' => 10,
 					'unsigned'   => TRUE,

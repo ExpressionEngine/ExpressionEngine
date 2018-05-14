@@ -24,8 +24,6 @@ class ConsentRequestVersion extends Model {
 		'consent_request_id'         => 'int',
 		'create_date'                => 'timestamp',
 		'author_id'                  => 'int',
-		'edit_date'                  => 'timestamp',
-		'last_author_id'             => 'int',
 	];
 
 	protected static $_relationships = [
@@ -47,19 +45,11 @@ class ConsentRequestVersion extends Model {
 			'from_key' => 'author_id',
 			'weak' => TRUE
 		],
-		'LastAuthor' => [
-			'type' => 'belongsTo',
-			'model' => 'Member',
-			'from_key' => 'last_author_id',
-			'weak' => TRUE
-		],
 	];
 
 	protected static $_validation_rules = [
 		'create_date'    => 'required',
 		'author_id'      => 'required',
-		'edit_date'      => 'required',
-		'last_author_id' => 'required',
 	];
 
 	// protected static $_events = [];
@@ -71,8 +61,6 @@ class ConsentRequestVersion extends Model {
 	protected $request_format;
 	protected $create_date;
 	protected $author_id;
-	protected $edit_date;
-	protected $last_author_id;
 
 	public function render()
 	{

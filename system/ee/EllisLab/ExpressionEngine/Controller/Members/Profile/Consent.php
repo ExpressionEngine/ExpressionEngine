@@ -78,6 +78,20 @@ class Consent extends Settings {
 
 		$consents = ($this->member->Consents->count()) ? $this->member->Consents->indexBy('consent_request_id') : [];
 
+		if ( ! empty($filter_values['filter_by_date']))
+		{
+			$consents = array_filter($consents, function($consent) use($filter_values){
+				if (is_array($filter_values['filter_by_date']))
+				{
+					return ($consent->update_date->format('U') >= $filter_values['filter_by_date'][0] && $consent->update_date->format('U') < $filter_values['filter_by_date'][1]);
+				}
+				else
+				{
+					return ($consent->update_date->format('U') >= (ee()->localize->now - $filter_values['filter_by_date']));
+				}
+			});
+		}
+
 		$vars['requests'] = $requests;
 
 		foreach ($requests as $request)
@@ -98,9 +112,12 @@ class Consent extends Settings {
 				'content' => lang('needs_review'),
 			];
 
+			$date = NULL;
+
 			if (array_key_exists($request->getId(), $consents))
 			{
 				$consent = $consents[$request->getId()];
+				$date = ee()->localize->human_time($consent->update_date->format('U'));
 
 				if ($consent->isGranted())
 				{
@@ -118,9 +135,14 @@ class Consent extends Settings {
 				}
 			}
 
+			if ( ! empty($filter_values['filter_by_date']) && is_null($date))
+			{
+				continue;
+			}
+
 			$data[] = [
 				'name' => $request->title,
-				'date' => ee()->localize->human_time($request->CurrentVersion->edit_date->format('U')),
+				'date' => ($date) ?: '-',
 				'status' => $status,
 				$toolbar,
 				'selection' => [
@@ -133,9 +155,9 @@ class Consent extends Settings {
 		$table->setColumns(
 			[
 				'name' => [
-					'encode' => FALSE
+					'type'	=> Table::COL_ID
 				],
-				'date_added',
+				'date',
 				'status' => [
 					'type' => Table::COL_STATUS
 				],
@@ -166,6 +188,17 @@ class Consent extends Settings {
 		{
 			ee('Consent', $this->member)->grant($request_id);
 		}
+
+		$request_titles = ee('Model')->get('ConsentRequest', $request_ids)
+			->all()
+			->pluck('title');
+
+		ee('CP/Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang('consent_granted'))
+			->addToBody(lang('consent_granted_desc'))
+			->addToBody($request_titles)
+			->defer();
 	}
 
 	protected function optOut(array $request_ids)
@@ -174,6 +207,17 @@ class Consent extends Settings {
 		{
 			ee('Consent', $this->member)->withdraw($request_id);
 		}
+
+		$request_titles = ee('Model')->get('ConsentRequest', $request_ids)
+			->all()
+			->pluck('title');
+
+		ee('CP/Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang('consent_withdrawn'))
+			->addToBody(lang('consent_withdrawn_desc'))
+			->addToBody($request_titles)
+			->defer();
 	}
 
 }

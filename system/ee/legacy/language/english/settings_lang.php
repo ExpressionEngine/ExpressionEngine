@@ -858,6 +858,12 @@ $lang = array(
 /* Consent Requests */
 'consent_request_versions' => 'Versions of %s',
 
+'new_version' => 'New version',
+
+'app_consent_requests' => 'Application Consent Requests',
+
+'user_consent_requests' => 'User Consent Requests',
+
 );
 
 // EOF

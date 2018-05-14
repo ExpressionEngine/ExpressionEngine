@@ -48,7 +48,7 @@ class ConsentRequest extends Model {
 	protected static $_validation_rules = [
 		'source'        => 'enum[a,u]',
 		'title'         => 'required|maxLength[200]|limitHtml[b,cite,code,del,em,i,ins,markspan,strong,sub,sup]',
-		'consent_name'  => 'required|unique|maxLength[32]|validateName[source]',
+		'consent_name'  => 'required|unique|maxLength[50]|validateName[source]',
 		'double_opt_in' => 'enum[y,n]',
 	];
 

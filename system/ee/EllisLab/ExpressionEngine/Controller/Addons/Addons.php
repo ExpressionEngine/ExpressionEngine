@@ -2035,6 +2035,12 @@ class Addons extends CP_Controller {
 
 	private function installConsentRequests($addon)
 	{
+		$requests = $this->getRequestsFor($addon);
+		if ( ! empty($requests))
+		{
+		    throw new \Exception;
+		}
+
 		if (strpos($addon->getPath(), PATH_ADDONS) === 0)
 		{
 			$prefix = 'ee';
@@ -2045,16 +2051,6 @@ class Addons extends CP_Controller {
 		}
 
 		$requests = $addon->get('consent.requests', []);
-
-		// Preflight: if we have any consents that match there's been a problem.
-		foreach ($requests as $name => $values)
-		{
-			$consent_name = $prefix . ':' . $name;
-			if ($this->haveConsentRequest($consent_name))
-			{
-				throw new \Exception;
-			}
-		}
 
 		foreach ($requests as $name => $values)
 		{
@@ -2084,9 +2080,7 @@ class Addons extends CP_Controller {
 			$version->request = $values['request'];
 			$version->request_format = (isset($values['request_format'])) ? $values['request_format'] : 'none';
 			$version->author_id = ee()->session->userdata['member_id'];
-			$version->last_author_id = ee()->session->userdata['member_id'];
 			$version->create_date = ee()->localize->now;
-			$version->edit_date = ee()->localize->now;
 			$request->Versions->add($version);
 
 			$version->save();

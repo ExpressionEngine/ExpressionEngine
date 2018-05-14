@@ -6,22 +6,31 @@
 			<fieldset class="tbl-search right">
 				<a class="btn action" href="<?=$create_url?>"><?=lang('new')?></a>
 			</fieldset>
-			<h1><?=$cp_page_title?></h1>
-			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-			<?php $this->embed('_shared/table-list', ['data' => $requests]); ?>
-			<?php if (isset($pagination)) echo $pagination; ?>
+			<h1><?=$heading['user']?></h1>
+			<div class="app-notice-wrap"><?=ee('CP/Alert')->get('user-alerts')?></div>
+			<?php $this->embed('_shared/table-list', ['data' => $requests['user'], 'filters' => $filters['user']]); ?>
 			<fieldset class="tbl-bulk-act hidden">
 				<select name="bulk_action">
 					<option>-- <?=lang('with_selected')?> --</option>
-					<?php if (ee()->cp->allowed_group('can_delete_channels')): ?>
-						<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
-					<?php endif ?>
+					<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
 				</select>
 				<input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
 			</fieldset>
 		</form>
 	</div>
 </div>
+
+<?php if ( ! empty($requests['app'])) : ?>
+<div class="box table-list-wrap">
+	<div class="tbl-ctrls">
+		<?=form_open($base_url)?>
+			<h1><?=$heading['app']?></h1>
+			<div class="app-notice-wrap"><?=ee('CP/Alert')->get('app-alerts')?></div>
+			<?php $this->embed('_shared/table-list', ['data' => $requests['app'], 'filters' => $filters['app']]); ?>
+		</form>
+	</div>
+</div>
+<?php endif; ?>
 
 <?php
 

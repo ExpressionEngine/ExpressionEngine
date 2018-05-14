@@ -40,7 +40,7 @@ class ConsentAuditLog extends Model {
 		'consent_request_id' => 'required',
 		'member_id'          => 'required',
 		'action'             => 'required',
-		'edit_date'          => 'required',
+		'log_date'           => 'required',
 	];
 
 	// protected static $_events = [];

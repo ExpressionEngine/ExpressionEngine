@@ -6,6 +6,8 @@
 			<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></br>
        </h1>
 
+		<?=ee('CP/Alert')->get('shared-form')?>
+
        <?php if (isset($filters)) echo $filters; ?>
 
        <?php $this->embed('_shared/table', $table); ?>
@@ -34,7 +36,7 @@
 				</div>
 				<div class="md-wrap">
 					<h1><?=$request->title?></h1>
-					<p><?=ee()->localize->human_time($request->CurrentVersion->edit_date->format('U'))?></p>
+					<p><?=ee()->localize->human_time($request->CurrentVersion->create_date->format('U'))?></p>
 					<?php
 					$contents = $request->render();
 					if (strpos($contents, '<p>') !== 0)

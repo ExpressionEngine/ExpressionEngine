@@ -37,11 +37,61 @@ class Consents extends Settings {
 			ee()->functions->redirect(ee('CP/URL')->make('settings/consents'));
 		}
 
-		$vars['base_url'] = ee('CP/URL', 'settings/consents');
+		$vars = [
+			'base_url'      => ee('CP/URL', 'settings/consents'),
+			'cp_page_title' =>lang('consent_requests'),
+			'create_url'    => ee('CP/URL', 'settings/consents/create'),
+			'filters'       => [
+				'app'  => NULL,
+				'user' => NULL
+			],
+			'requests'      => [
+				'app'  => [],
+				'user' => []
+			],
+			'heading'       => [
+				'app'  => lang('app_consent_requests'),
+				'user' => lang('user_consent_requests')
+			]
+		];
 
-		$requests = ee('Model')->get('ConsentRequest');
+		foreach (['a' => 'app', 'u' => 'user'] as $type =>$label)
+		{
+			$data = $this->buildTableDataFor($type);
+			$vars['filters'][$label] = $data['filters']->render($vars['base_url']);
+			$vars['requests'][$label] = $data['requests'];
+		}
 
-		if ($search = ee()->input->get_post('filter_by_keyword'))
+		$vars['no_results'] = ['text' =>
+			sprintf(lang('no_found'), lang('consent_requests'))
+			.' <a href="'.$vars['create_url'].'">'.lang('add_new').'</a>'];
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('consent_request') . ': <b>### ' . lang('consent_requests') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/confirm_remove',
+			),
+		));
+
+		ee()->cp->render('settings/consents/index', $vars);
+	}
+
+	private function buildTableDataFor($type = 'a')
+	{
+		if ($type == 'u')
+		{
+			$label = 'uesr';
+		}
+		else
+		{
+			$type = 'a';
+			$label = 'app';
+		}
+
+		$requests = ee('Model')->get('ConsentRequest')
+			->filter('source', $type);
+
+		if ($search = ee()->input->get_post('filter_by_' . $label . '_keyword'))
 		{
 			$requests = $requests->search('title', $search);
 		}
@@ -49,24 +99,28 @@ class Consents extends Settings {
 		$total_requests = $requests->count();
 
 		$filters = ee('CP/Filter')
-			->add('Date')
-			->add('Keyword')
-			->add('Perpage', $total_requests, 'all_consents', TRUE);
+			->add('Date')->withName('filter_by_' . $label . '_date')
+			->add('Keyword')->withName('filter_by_' . $label . '_keyword');
 		$filter_values = $filters->values();
 
-		$page = ee('Request')->get('page') ?: 1;
-		$per_page = $filter_values['perpage'];
+		if ( ! empty($filter_values['filter_by_' . $label . '_date']))
+		{
+			$requests->with('CurrentVersion');
 
-		$requests = $requests->offset(($page - 1) * $per_page)
-			->limit($per_page)
+			if (is_array($filter_values['filter_by_' . $label . '_date']))
+			{
+				$requests->filter('CurrentVersion.create_date', '>=', $filter_values['filter_by_' . $label . '_date'][0]);
+				$requests->filter('CurrentVersion.create_date', '<', $filter_values['filter_by_' . $label . '_date'][1]);
+			}
+			else
+			{
+				$requests->filter('CurrentVersion.create_date', '>=', ee()->localize->now - $filter_values['filter_by_' . $label . '_date']);
+			}
+		}
+
+		$requests = $requests
 			->order('title')
 			->all();
-
-		// Only show filters if there is data to filter or we are currently filtered
-		if ($search OR $requests->count() > 0)
-		{
-			$vars['filters'] = $filters->render($vars['base_url']);
-		}
 
 		$highlight_id = ee()->session->flashdata('highlight_id');
 
@@ -76,16 +130,6 @@ class Consents extends Settings {
 		{
 			$toolbar = [];
 			$href = ee('CP/URL')->make('settings/consents/new_version/' . $request->getId());
-
-			if ( ! $request->CurrentVersion->Consents->count())
-			{
-				$href = ee('CP/URL')->make('settings/consents/edit/' . $request->getId());
-
-				$toolbar['edit'] = [
-					'href'  => ee('CP/URL')->make('settings/consents/edit/' . $request->getId()),
-					'title' => lang('edit')
-				];
-			}
 
 			$toolbar['add'] = [
 				'href'  => ee('CP/URL')->make('settings/consents/new_version/' . $request->getId()),
@@ -118,32 +162,16 @@ class Consents extends Settings {
 
 			if ($request->source == 'a')
 			{
-				$datum['selection']['disabled'] = TRUE;
+				unset($datum['selection']);
 			}
 
 			$data[] = $datum;
 		}
 
-		ee()->javascript->set_global('lang.remove_confirm', lang('consent_request') . ': <b>### ' . lang('consent_requests') . '</b>');
-		ee()->cp->add_js_script(array(
-			'file' => array(
-				'cp/confirm_remove',
-			),
-		));
-
-		$vars['pagination'] = ee('CP/Pagination', $total_requests)
-			->perPage($per_page)
-			->currentPage($page)
-			->render(ee('CP/URL')->make('settings/consents', $total_requests));
-
-		$vars['cp_page_title'] = lang('consent_requests');
-		$vars['requests'] = $data;
-		$vars['create_url'] = ee('CP/URL', 'settings/consents/create');
-		$vars['no_results'] = ['text' =>
-			sprintf(lang('no_found'), lang('consent_requests'))
-			.' <a href="'.$vars['create_url'].'">'.lang('add_new').'</a>'];
-
-		ee()->cp->render('settings/consents/index', $vars);
+		return [
+			'requests'   => $data,
+			'filters'    => $filters
+		];
 	}
 
 	public function create()
@@ -161,14 +189,9 @@ class Consents extends Settings {
 		return $this->form();
 	}
 
-	public function edit($request_id)
-	{
-		return $this->form($request_id);
-	}
-
 	public function newVersion($request_id)
 	{
-		return $this->form($request_id, TRUE);
+		return $this->form($request_id);
 	}
 
 	public function remove()
@@ -182,7 +205,7 @@ class Consents extends Settings {
 		{
 			$requests->delete();
 
-			ee('CP/Alert')->makeInline('requests')
+			ee('CP/Alert')->makeInline('user-alerts')
 				->asSuccess()
 				->withTitle(lang('consent_requests_removed'))
 				->addToBody(sprintf(lang('consent_requests_removed_desc'), count($request_ids)))
@@ -235,8 +258,8 @@ class Consents extends Settings {
 
 			$data[] = [
 				'id' => $version->getId(),
-				'date' => ee()->localize->human_time($version->edit_date->format('U')),
-				'author' => $version->LastAuthor->getMemberName(),
+				'date' => ee()->localize->human_time($version->create_date->format('U')),
+				'author' => $version->Author->getMemberName(),
 				$toolbar
 			];
 		}
@@ -256,7 +279,7 @@ class Consents extends Settings {
 		ee()->cp->render('settings/consents/versions', $vars);
 	}
 
-	private function form($request_id = NULL, $make_new_version = FALSE)
+	private function form($request_id = NULL)
 	{
 		if (is_null($request_id))
 		{
@@ -280,21 +303,16 @@ class Consents extends Settings {
 				show_error(lang('unauthorized_access'), 403);
 			}
 
-			// If there is no current version, or if the current version of the request has
-			// any consents, then we are making a new version.
-			if ($make_new_version || ! $request->consent_request_version_id || $request->CurrentVersion->Consents->count())
+			if (isset($_POST['request']) && $_POST['request'] != $request->CurrentVersion->request)
 			{
 				$version = $this->makeNewVersion($request);
-				ee()->view->base_url = ee('CP/URL')->make('settings/consents/new_version/'.$request_id);
 			}
 			else
 			{
-				$request->CurrentVersion->last_author_id = ee()->session->userdata['member_id'];
-				$request->CurrentVersion->edit_date = ee()->localize->now;
-
 				$version = $request->CurrentVersion;
-				ee()->view->base_url = ee('CP/URL')->make('settings/consents/edit/'.$request_id);
 			}
+
+			ee()->view->base_url = ee('CP/URL')->make('settings/consents/new_version/'.$request_id);
 
 			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_consent_request');
@@ -302,6 +320,7 @@ class Consents extends Settings {
 		}
 
 		$vars['errors'] = NULL;
+		$alert_name = ($request->source == 'a') ? 'app-alerts' : 'user-alerts';
 
 		if ( ! empty($_POST))
 		{
@@ -313,6 +332,11 @@ class Consents extends Settings {
 			$request->set($_POST);
 			$version->set($_POST);
 			$result = $request->validate();
+
+			if ($response = $this->ajaxValidation($result))
+			{
+				return $response;
+			}
 
 			if ($result->isValid())
 			{
@@ -333,7 +357,7 @@ class Consents extends Settings {
 					ee()->session->set_flashdata('highlight_id', $request->getId());
 				}
 
-				ee('CP/Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline($alert_name)
 					->asSuccess()
 					->withTitle(lang('consent_request_'.$alert_key))
 					->addToBody(sprintf(lang('consent_request_'.$alert_key.'_desc'), $request->title))
@@ -355,7 +379,7 @@ class Consents extends Settings {
 			else
 			{
 				$vars['errors'] = $result;
-				ee('CP/Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline($alert_name)
 					->asIssue()
 					->withTitle(lang('consent_request_not_'.$alert_key))
 					->addToBody(lang('consent_request_not_'.$alert_key.'_desc'))
@@ -393,6 +417,7 @@ class Consents extends Settings {
 							'type' => 'text',
 							'value' => $request->consent_name,
 							'required' => TRUE,
+							'maxlength' => 50,
 							'disabled' => ($request->source == 'a')
 						]
 					]
@@ -415,7 +440,7 @@ class Consents extends Settings {
 			]
 		];
 
-		if ($version->isNew())
+		if ($request->isNew())
 		{
 			unset($vars['sections'][0][0]);
 		}
@@ -455,6 +480,8 @@ class Consents extends Settings {
 			]
 		];
 
+		ee()->view->ajax_validate = TRUE;
+
 		ee()->cp->render('settings/form', $vars);
 	}
 
@@ -462,9 +489,7 @@ class Consents extends Settings {
 	{
 		$version = ee('Model')->make('ConsentRequestVersion');
 		$version->author_id = ee()->session->userdata['member_id'];
-		$version->last_author_id = ee()->session->userdata['member_id'];
 		$version->create_date = ee()->localize->now;
-		$version->edit_date = ee()->localize->now;
 
 		if ($request)
 		{
