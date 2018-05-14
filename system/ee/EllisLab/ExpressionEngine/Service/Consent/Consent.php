@@ -192,7 +192,7 @@ class Consent {
 	 * Gets all the consent requests the member (or anonymous visitor) has granted
 	 * consent.
 	 *
-	 * @return objectA Collection of ConsentRequest objects
+	 * @return object A Collection of ConsentRequest objects
 	 */
 	public function getGrantedRequests()
 	{
@@ -237,7 +237,7 @@ class Consent {
 	 *
 	 * @param int|string $request_ref The name or ID of a consent request
 	 * @throws InvalidArgumentException
-	 * @return objectA Collection of Consent objects
+	 * @return object A Collection of Consent objects
 	 */
 	public function getGrantedConsentsFor($request_ref)
 	{
@@ -252,6 +252,20 @@ class Consent {
 			->filter(function($consent) {
 				return $consent->isGranted();
 			});
+	}
+
+	/**
+	 * Gets the values for a specific request request
+	 *
+	 * @param int|string $request_ref The name or ID of a consent request
+	 * @throws InvalidArgumentException
+	 * @return array An associative array of values
+	 */
+	public function getRequestDataFor($request_ref)
+	{
+		$request = $this->getConsentRequest($request_ref);
+
+		return array_merge($reuqest->getValues(), $request->CurrentVersion->getValues());
 	}
 
 	/**
