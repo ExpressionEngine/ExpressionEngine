@@ -37,11 +37,61 @@ class Consents extends Settings {
 			ee()->functions->redirect(ee('CP/URL')->make('settings/consents'));
 		}
 
-		$vars['base_url'] = ee('CP/URL', 'settings/consents');
+		$vars = [
+			'base_url'      => ee('CP/URL', 'settings/consents'),
+			'cp_page_title' =>lang('consent_requests'),
+			'create_url'    => ee('CP/URL', 'settings/consents/create'),
+			'filters'       => [
+				'app'  => NULL,
+				'user' => NULL
+			],
+			'requests'      => [
+				'app'  => [],
+				'user' => []
+			],
+			'heading'       => [
+				'app'  => lang('app_consent_requests'),
+				'user' => lang('user_consent_requests')
+			]
+		];
 
-		$requests = ee('Model')->get('ConsentRequest');
+		foreach (['a' => 'app', 'u' => 'user'] as $type =>$label)
+		{
+			$data = $this->buildTableDataFor($type);
+			$vars['filters'][$label] = $data['filters']->render($vars['base_url']);
+			$vars['requests'][$label] = $data['requests'];
+		}
 
-		if ($search = ee()->input->get_post('filter_by_keyword'))
+		$vars['no_results'] = ['text' =>
+			sprintf(lang('no_found'), lang('consent_requests'))
+			.' <a href="'.$vars['create_url'].'">'.lang('add_new').'</a>'];
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('consent_request') . ': <b>### ' . lang('consent_requests') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/confirm_remove',
+			),
+		));
+
+		ee()->cp->render('settings/consents/index', $vars);
+	}
+
+	private function buildTableDataFor($type = 'a')
+	{
+		if ($type == 'u')
+		{
+			$label = 'uesr';
+		}
+		else
+		{
+			$type = 'a';
+			$label = 'app';
+		}
+
+		$requests = ee('Model')->get('ConsentRequest')
+			->filter('source', $type);
+
+		if ($search = ee()->input->get_post('filter_by_' . $label . '_keyword'))
 		{
 			$requests = $requests->search('title', $search);
 		}
@@ -49,35 +99,28 @@ class Consents extends Settings {
 		$total_requests = $requests->count();
 
 		$filters = ee('CP/Filter')
-			->add('Date')
-			->add('Keyword')
-			->add('Perpage', $total_requests, 'all_consents', TRUE);
+			->add('Date')->withName('filter_by_' . $label . '_date')
+			->add('Keyword')->withName('filter_by_' . $label . '_keyword');
 		$filter_values = $filters->values();
 
-		$page = ee('Request')->get('page') ?: 1;
-		$per_page = $filter_values['perpage'];
-
-		if ( ! empty($filter_values['filter_by_date']))
+		if ( ! empty($filter_values['filter_by_' . $label . '_date']))
 		{
 			$requests->with('CurrentVersion');
 
-			if (is_array($filter_values['filter_by_date']))
+			if (is_array($filter_values['filter_by_' . $label . '_date']))
 			{
-				$requests->filter('CurrentVersion.create_date', '>=', $filter_values['filter_by_date'][0]);
-				$requests->filter('CurrentVersion.create_date', '<', $filter_values['filter_by_date'][1]);
+				$requests->filter('CurrentVersion.create_date', '>=', $filter_values['filter_by_' . $label . '_date'][0]);
+				$requests->filter('CurrentVersion.create_date', '<', $filter_values['filter_by_' . $label . '_date'][1]);
 			}
 			else
 			{
-				$requests->filter('CurrentVersion.create_date', '>=', ee()->localize->now - $filter_values['filter_by_date']);
+				$requests->filter('CurrentVersion.create_date', '>=', ee()->localize->now - $filter_values['filter_by_' . $label . '_date']);
 			}
 		}
 
-		$requests = $requests->offset(($page - 1) * $per_page)
-			->limit($per_page)
+		$requests = $requests
 			->order('title')
 			->all();
-
-		$vars['filters'] = $filters->render($vars['base_url']);
 
 		$highlight_id = ee()->session->flashdata('highlight_id');
 
@@ -119,32 +162,16 @@ class Consents extends Settings {
 
 			if ($request->source == 'a')
 			{
-				$datum['selection']['disabled'] = TRUE;
+				unset($datum['selection']);
 			}
 
 			$data[] = $datum;
 		}
 
-		ee()->javascript->set_global('lang.remove_confirm', lang('consent_request') . ': <b>### ' . lang('consent_requests') . '</b>');
-		ee()->cp->add_js_script(array(
-			'file' => array(
-				'cp/confirm_remove',
-			),
-		));
-
-		$vars['pagination'] = ee('CP/Pagination', $total_requests)
-			->perPage($per_page)
-			->currentPage($page)
-			->render(ee('CP/URL')->make('settings/consents', $total_requests));
-
-		$vars['cp_page_title'] = lang('consent_requests');
-		$vars['requests'] = $data;
-		$vars['create_url'] = ee('CP/URL', 'settings/consents/create');
-		$vars['no_results'] = ['text' =>
-			sprintf(lang('no_found'), lang('consent_requests'))
-			.' <a href="'.$vars['create_url'].'">'.lang('add_new').'</a>'];
-
-		ee()->cp->render('settings/consents/index', $vars);
+		return [
+			'requests'   => $data,
+			'filters'    => $filters
+		];
 	}
 
 	public function create()

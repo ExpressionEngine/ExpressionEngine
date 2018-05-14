@@ -6,10 +6,9 @@
 			<fieldset class="tbl-search right">
 				<a class="btn action" href="<?=$create_url?>"><?=lang('new')?></a>
 			</fieldset>
-			<h1><?=$cp_page_title?></h1>
+			<h1><?=$heading['user']?></h1>
 			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-			<?php $this->embed('_shared/table-list', ['data' => $requests]); ?>
-			<?php if (isset($pagination)) echo $pagination; ?>
+			<?php $this->embed('_shared/table-list', ['data' => $requests['user'], 'filters' => $filters['user']]); ?>
 			<fieldset class="tbl-bulk-act hidden">
 				<select name="bulk_action">
 					<option>-- <?=lang('with_selected')?> --</option>
@@ -22,6 +21,18 @@
 		</form>
 	</div>
 </div>
+
+<?php if ( ! empty($requests['app'])) : ?>
+<div class="box table-list-wrap">
+	<div class="tbl-ctrls">
+		<?=form_open($base_url)?>
+			<h1><?=$heading['app']?></h1>
+			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+			<?php $this->embed('_shared/table-list', ['data' => $requests['app'], 'filters' => $filters['app']]); ?>
+		</form>
+	</div>
+</div>
+<?php endif; ?>
 
 <?php
 
