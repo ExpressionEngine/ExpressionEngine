@@ -124,12 +124,6 @@ class Member extends ContentModel {
 			'to_key' => 'author_id',
 			'weak' => TRUE
 		),
-		'LastAuthoredConsentRequests' => array(
-			'type' => 'hasMany',
-			'model' => 'ConsentRequest',
-			'to_key' => 'last_author_id',
-			'weak' => TRUE
-		),
 		'ConsentAuditLogs' => array(
 			'type' => 'hasMany',
 			'model' => 'ConsentAuditLog'

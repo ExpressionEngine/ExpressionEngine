@@ -2076,9 +2076,7 @@ class Addons extends CP_Controller {
 			$version->request = $values['request'];
 			$version->request_format = (isset($values['request_format'])) ? $values['request_format'] : 'none';
 			$version->author_id = ee()->session->userdata['member_id'];
-			$version->last_author_id = ee()->session->userdata['member_id'];
 			$version->create_date = ee()->localize->now;
-			$version->edit_date = ee()->localize->now;
 			$request->Versions->add($version);
 
 			$version->save();

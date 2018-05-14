@@ -107,7 +107,7 @@ class Consent extends Model {
 
 		// If the current request version was edited after the consent was granted,
 		// then the consent is void. The request has changed.
-		if ($request->edit_date > $this->update_date)
+		if ($request->create_date > $this->update_date)
 		{
 			return FALSE;
 		}

@@ -1422,8 +1422,6 @@ class EE_Schema {
 			`request_format` tinytext,
 			`create_date` int(10) NOT NULL DEFAULT '0',
 			`author_id` int(10) unsigned NOT NULL DEFAULT '0',
-			`edit_date` int(10) NOT NULL DEFAULT '0',
-			`last_author_id` int(10) unsigned NOT NULL DEFAULT '0',
 			PRIMARY KEY (`consent_request_version_id`),
 			KEY `consent_request_id` (`consent_request_id`)
 		)";

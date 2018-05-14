@@ -88,16 +88,6 @@ class Consents extends Settings {
 			$toolbar = [];
 			$href = ee('CP/URL')->make('settings/consents/new_version/' . $request->getId());
 
-			if ( ! $request->CurrentVersion->Consents->count())
-			{
-				$href = ee('CP/URL')->make('settings/consents/edit/' . $request->getId());
-
-				$toolbar['edit'] = [
-					'href'  => ee('CP/URL')->make('settings/consents/edit/' . $request->getId()),
-					'title' => lang('edit')
-				];
-			}
-
 			$toolbar['add'] = [
 				'href'  => ee('CP/URL')->make('settings/consents/new_version/' . $request->getId()),
 				'title' => lang('new_version'),
@@ -172,14 +162,9 @@ class Consents extends Settings {
 		return $this->form();
 	}
 
-	public function edit($request_id)
-	{
-		return $this->form($request_id);
-	}
-
 	public function newVersion($request_id)
 	{
-		return $this->form($request_id, TRUE);
+		return $this->form($request_id);
 	}
 
 	public function remove()
@@ -246,8 +231,8 @@ class Consents extends Settings {
 
 			$data[] = [
 				'id' => $version->getId(),
-				'date' => ee()->localize->human_time($version->edit_date->format('U')),
-				'author' => $version->LastAuthor->getMemberName(),
+				'date' => ee()->localize->human_time($version->create_date->format('U')),
+				'author' => $version->Author->getMemberName(),
 				$toolbar
 			];
 		}
@@ -267,7 +252,7 @@ class Consents extends Settings {
 		ee()->cp->render('settings/consents/versions', $vars);
 	}
 
-	private function form($request_id = NULL, $make_new_version = FALSE)
+	private function form($request_id = NULL)
 	{
 		if (is_null($request_id))
 		{
@@ -291,21 +276,8 @@ class Consents extends Settings {
 				show_error(lang('unauthorized_access'), 403);
 			}
 
-			// If there is no current version, or if the current version of the request has
-			// any consents, then we are making a new version.
-			if ($make_new_version || ! $request->consent_request_version_id || $request->CurrentVersion->Consents->count())
-			{
-				$version = $this->makeNewVersion($request);
-				ee()->view->base_url = ee('CP/URL')->make('settings/consents/new_version/'.$request_id);
-			}
-			else
-			{
-				$request->CurrentVersion->last_author_id = ee()->session->userdata['member_id'];
-				$request->CurrentVersion->edit_date = ee()->localize->now;
-
-				$version = $request->CurrentVersion;
-				ee()->view->base_url = ee('CP/URL')->make('settings/consents/edit/'.$request_id);
-			}
+			$version = $this->makeNewVersion($request);
+			ee()->view->base_url = ee('CP/URL')->make('settings/consents/new_version/'.$request_id);
 
 			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_consent_request');
@@ -432,7 +404,7 @@ class Consents extends Settings {
 			]
 		];
 
-		if ($version->isNew())
+		if ($request->isNew())
 		{
 			unset($vars['sections'][0][0]);
 		}
@@ -481,9 +453,7 @@ class Consents extends Settings {
 	{
 		$version = ee('Model')->make('ConsentRequestVersion');
 		$version->author_id = ee()->session->userdata['member_id'];
-		$version->last_author_id = ee()->session->userdata['member_id'];
 		$version->create_date = ee()->localize->now;
-		$version->edit_date = ee()->localize->now;
 
 		if ($request)
 		{

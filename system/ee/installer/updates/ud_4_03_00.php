@@ -125,19 +125,6 @@ class Updater {
 					'null'       => FALSE,
 					'default'    => 0
 				],
-				'edit_date'                  => [
-					'type'       => 'int',
-					'constraint' => 10,
-					'null'       => FALSE,
-					'default'    => 0
-				],
-				'last_author_id'             => [
-					'type'       => 'int',
-					'constraint' => 10,
-					'unsigned'   => TRUE,
-					'null'       => FALSE,
-					'default'    => 0
-				],
 			]
 		);
 		ee()->dbforge->add_key('consent_request_version_id', TRUE);
