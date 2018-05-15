@@ -23,6 +23,7 @@ class ConsentRequest extends Model {
 		'consent_request_id'         => 'int',
 		'consent_request_version_id' => 'int',
 		'double_opt_in'              => 'boolString',
+		'user_created'               => 'boolString',
 	];
 
 	protected static $_relationships = [
@@ -46,9 +47,9 @@ class ConsentRequest extends Model {
 	];
 
 	protected static $_validation_rules = [
-		'source'        => 'enum[a,u]',
+		'user_created'  => 'enum[y,n]',
 		'title'         => 'required|maxLength[200]|limitHtml[b,cite,code,del,em,i,ins,markspan,strong,sub,sup]',
-		'consent_name'  => 'required|unique|maxLength[50]|validateName[source]',
+		'consent_name'  => 'required|unique|maxLength[50]|validateName[user_created]',
 		'double_opt_in' => 'enum[y,n]',
 	];
 
@@ -57,7 +58,7 @@ class ConsentRequest extends Model {
 	// Properties
 	protected $consent_request_id;
 	protected $consent_request_version_id;
-	protected $source;
+	protected $user_created;
 	protected $title;
 	protected $consent_name;
 	protected $double_opt_in;
@@ -65,11 +66,11 @@ class ConsentRequest extends Model {
 
 	public function validateName($name, $value, $params, $object)
 	{
-		$source = $params[0];
+		$user_created = $params[0];
 
 		$pattern = "-a-z0-9_-";
 
-		if ($source == 'a')
+		if ($user_created == 'n')
 		{
 			$pattern .= ':';
 		}

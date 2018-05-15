@@ -56,11 +56,11 @@ class Updater {
 					'null'       => TRUE,
 					'default'    => NULL
 				],
-				'source'                     => [
+				'user_created'               => [
 					'type'       => 'char',
 					'constraint' => 1,
 					'null'       => FALSE,
-					'default'    => 'a', // a => app, u => user
+					'default'    => 'n',
 				],
 				'title'                      => [
 					'type'       => 'varchar',

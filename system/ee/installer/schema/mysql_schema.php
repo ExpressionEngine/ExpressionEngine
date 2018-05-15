@@ -1407,7 +1407,7 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE `exp_consent_requests` (
 			`consent_request_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`consent_request_version_id` int(10) unsigned DEFAULT NULL,
-			`source` char(1) NOT NULL DEFAULT 'a',
+			`user_created` char(1) NOT NULL DEFAULT 'n',
 			`title` varchar(200) NOT NULL,
 			`consent_name` varchar(50) NOT NULL,
 			`double_opt_in` char(1) NOT NULL DEFAULT 'n',
