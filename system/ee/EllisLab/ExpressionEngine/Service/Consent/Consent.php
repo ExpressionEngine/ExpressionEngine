@@ -262,6 +262,11 @@ class Consent {
 	 */
 	public function getConsentDataFor($request_names)
 	{
+		if (empty($request_names))
+		{
+			return new Collection([]);
+		}
+
 		if ( ! is_array($request_names))
 		{
 			$request_names = [$request_names];
