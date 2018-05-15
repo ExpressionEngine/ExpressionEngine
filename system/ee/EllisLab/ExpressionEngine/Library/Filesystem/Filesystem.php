@@ -189,7 +189,7 @@ class Filesystem {
 			throw new FilesystemException("Directory does not exist {$path}.");
 		}
 
-		if ($this->attemptFastDelete($path))
+		if ( ! $leave_empty && $this->attemptFastDelete($path))
 		{
 			return TRUE;
 		}
