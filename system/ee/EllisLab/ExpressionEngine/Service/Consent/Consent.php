@@ -87,7 +87,7 @@ class Consent {
 		if ($this->isAnonymous())
 		{
 			$cookie = $this->getConsentCookie();
-			$cookie[$request->getId()] = TRUE;
+			$cookie[$request->getId()] = $this->now;
 			$this->saveConsentCookie($cookie);
 		}
 		else
