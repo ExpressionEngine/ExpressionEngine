@@ -2041,7 +2041,7 @@ class Addons extends CP_Controller {
 		    throw new \Exception;
 		}
 
-		$prefix = $addon->getPrefix();
+		$prefix = $this->getConsentPrefixForAddon($addon);
 		$requests = $addon->get('consent.requests', []);
 
 		foreach ($requests as $name => $values)
@@ -2084,7 +2084,7 @@ class Addons extends CP_Controller {
 
 	private function updateConsentRequests($addon)
 	{
-		$prefix = $addon->getPrefix();
+		$prefix = $this->getConsentPrefixForAddon($addon);
 		$requests = $addon->get('consent.requests', []);
 
 		foreach ($requests as $name => $values)
@@ -2099,7 +2099,7 @@ class Addons extends CP_Controller {
 
 	private function removeConsentRequests($addon)
 	{
-		$prefix = $addon->getPrefix();
+		$prefix = $this->getConsentPrefixForAddon($addon);
 		$requests = $addon->get('consent.requests', []);
 
 		$consent_names = [];
@@ -2114,6 +2114,18 @@ class Addons extends CP_Controller {
 			ee('Model')->get('ConsentRequest')
 				->filter('consent_name', 'IN', $consent_names)
 				->delete();
+		}
+	}
+
+	private function getConsentPrefixForAddon($addon)
+	{
+		if (strpos($addon->getPath(), PATH_ADDONS) === 0)
+		{
+			return 'ee';
+		}
+		else
+		{
+			return $addon->getPrefix();
 		}
 	}
 }
