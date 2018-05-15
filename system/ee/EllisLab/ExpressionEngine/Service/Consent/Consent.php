@@ -258,7 +258,7 @@ class Consent {
 	 * Gets the values for a specific request and the member's consent
 	 *
 	 * @param string|array $request_names The name or an array of names
-	 * @return array An associative array of values
+	 * @return object A Collection of associative arrays for each Consent Request
 	 */
 	public function getConsentDataFor($request_names)
 	{
@@ -322,7 +322,7 @@ class Consent {
 			}
 		}
 
-		return $data;
+		return new Collection($data);
 	}
 
 	/**
