@@ -292,7 +292,7 @@ class Consent {
 
 			if ($this->isAnonymous())
 			{
-				$data[$key]['consent_given_via'] = 'cookie';
+				$data[$key]['consent_given_via'] = 'online_form';
 				$data[$key]['member_id'] = 0;
 				$data[$key]['has_granted'] = array_key_exists($request->getId(), $consents);
 				if ($data[$key]['has_granted'])
