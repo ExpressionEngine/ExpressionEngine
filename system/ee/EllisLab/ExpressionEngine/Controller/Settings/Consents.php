@@ -55,11 +55,11 @@ class Consents extends Settings {
 			]
 		];
 
-		foreach (['a' => 'app', 'u' => 'user'] as $type =>$label)
+		foreach (['app', 'user'] as $type)
 		{
 			$data = $this->buildTableDataFor($type);
-			$vars['filters'][$label] = $data['filters']->render($vars['base_url']);
-			$vars['requests'][$label] = $data['requests'];
+			$vars['filters'][$type] = $data['filters']->render($vars['base_url']);
+			$vars['requests'][$type] = $data['requests'];
 		}
 
 		$vars['no_results'] = ['text' =>
@@ -76,20 +76,22 @@ class Consents extends Settings {
 		ee()->cp->render('settings/consents/index', $vars);
 	}
 
-	private function buildTableDataFor($type = 'a')
+	private function buildTableDataFor($type)
 	{
-		if ($type == 'u')
+		switch ($type)
 		{
-			$label = 'uesr';
-		}
-		else
-		{
-			$type = 'a';
-			$label = 'app';
+			case 'user':
+				$label = 'user';
+				$user_created = 'y';
+				break;
+			case 'app':
+			default:
+				$label = 'app';
+				$user_created = 'n';
 		}
 
 		$requests = ee('Model')->get('ConsentRequest')
-			->filter('source', $type);
+			->filter('user_created', $user_created);
 
 		if ($search = ee()->input->get_post('filter_by_' . $label . '_keyword'))
 		{
@@ -160,7 +162,7 @@ class Consents extends Settings {
 				]
 			];
 
-			if ($request->source == 'a')
+			if ( ! $request->user_created)
 			{
 				unset($datum['selection']);
 			}
@@ -198,7 +200,7 @@ class Consents extends Settings {
 	{
 		$request_ids = ee()->input->post('selection');
 		$requests = ee('Model')->get('ConsentRequest', $request_ids)
-			->filter('source', 'u')
+			->filter('user_created', 'y')
 			->all();
 
 		if ($requests->count() > 0 && ee()->input->post('bulk_action') == 'remove')
@@ -288,7 +290,7 @@ class Consents extends Settings {
 			ee()->view->base_url = ee('CP/URL')->make('settings/consents/create');
 
 			$request = ee('Model')->make('ConsentRequest');
-			$request->source = 'u';
+			$request->user_created = TRUE;
 
 			$version = $this->makeNewVersion($request);
 		}
@@ -320,11 +322,11 @@ class Consents extends Settings {
 		}
 
 		$vars['errors'] = NULL;
-		$alert_name = ($request->source == 'a') ? 'app-alerts' : 'user-alerts';
+		$alert_name = ($request->user_created) ? 'user-alerts' : 'app-alerts';
 
 		if ( ! empty($_POST))
 		{
-			if ($request->source == 'a')
+			if ( ! $request->user_created)
 			{
 				unset($_POST['consent_name']);
 			}
@@ -373,7 +375,6 @@ class Consents extends Settings {
 				}
 				else
 				{
-					ee()->functions->redirect(ee('CP/URL')->make('settings/consents/edit/'.$request->getId()));
 					ee()->functions->redirect(ee('CP/URL')->make('settings/consents/new_version/'.$request->getId()));
 				}
 			}
@@ -419,7 +420,7 @@ class Consents extends Settings {
 							'value' => $request->consent_name,
 							'required' => TRUE,
 							'maxlength' => 50,
-							'disabled' => ($request->source == 'a')
+							'disabled' => ( ! $request->user_created)
 						]
 					]
 				],
