@@ -374,6 +374,7 @@ class Consents extends Settings {
 				else
 				{
 					ee()->functions->redirect(ee('CP/URL')->make('settings/consents/edit/'.$request->getId()));
+					ee()->functions->redirect(ee('CP/URL')->make('settings/consents/new_version/'.$request->getId()));
 				}
 			}
 			else
