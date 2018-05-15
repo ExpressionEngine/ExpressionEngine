@@ -92,7 +92,8 @@ class Post extends Model {
 
 	protected static $_events = array(
 		'afterInsert',
-		'beforeDelete',
+		'beforeBulkDelete',
+		'afterBulkDelete'
 	);
 
 	protected $post_id;
@@ -117,16 +118,31 @@ class Post extends Model {
 		$this->Author->save();
 	}
 
-	public function onBeforeDelete()
+	protected static $_forum_ids = [];
+	protected static $_topic_ids = [];
+
+	public static function onBeforeBulkDelete($delete_ids)
+	{
+		$posts = ee('Model')->get('forum:Post', $delete_ids)->all();
+		self::$_forum_ids = array_unique($posts->pluck('forum_id'));
+		self::$_topic_ids = array_unique($posts->pluck('topic_id'));
+	}
+
+	public static function onAfterBulkDelete()
 	{
 		require_once PATH_ADDONS.'forum/mod.forum.php';
 		require_once PATH_ADDONS.'forum/mod.forum_core.php';
 
 		$forum_core = new \Forum_Core;
 
-		$forum_core->_update_topic_stats($this->topic_id);
-		$forum_core->_update_post_stats($this->forum_id);
-		$forum_core->_update_member_stats($this->author_id);
+		foreach (self::$_forum_ids as $forum_id)
+		{
+			$forum_core->_update_post_stats($forum_id);
+		}
+		foreach (self::$_topic_ids as $topic_id)
+		{
+			$forum_core->_update_topic_stats($topic_id);
+		}
 		$forum_core->_update_global_stats();
 	}
 

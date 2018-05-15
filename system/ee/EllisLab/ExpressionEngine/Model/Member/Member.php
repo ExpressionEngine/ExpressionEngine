@@ -192,7 +192,7 @@ class Member extends ContentModel {
 	protected static $_events = array(
 		'afterUpdate',
 		'beforeDelete',
-		'afterDelete',
+		'afterBulkDelete',
 		'beforeInsert',
 	);
 
@@ -411,7 +411,7 @@ class Member extends ContentModel {
 		$this->TemplateRevisions->save();
 	}
 
-	public function onAfterDelete()
+	public static function onAfterBulkDelete()
 	{
 		ee()->stats->update_member_stats();
 
