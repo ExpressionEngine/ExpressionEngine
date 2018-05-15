@@ -393,7 +393,8 @@ class Consent {
 	protected function saveConsentCookie(array $consented_to)
 	{
 		$payload = ee('Encrypt/Cookie')->signCookieData(json_encode($consented_to));
-		$this->input_delegate->set_cookie(self::COOKIE_NAME, $payload);
+		// 60 * 60 * 24 * 365 = 31556952; A year of seconds
+		$this->input_delegate->set_cookie(self::COOKIE_NAME, $payload, 31556952);
 	}
 
 	/**
