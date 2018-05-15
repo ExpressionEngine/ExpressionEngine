@@ -70,7 +70,7 @@ class EE_Core {
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
 		define('APP_BUILD',		'20180418');
-		define('APP_VER',		'4.2.1');
+		define('APP_VER',		'4.2.2');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
