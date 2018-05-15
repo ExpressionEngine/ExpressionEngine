@@ -2069,7 +2069,7 @@ class Addons extends CP_Controller {
 	private function makeConsentRequest($name, $values)
 	{
 		$request = ee('Model')->make('ConsentRequest');
-		$request->source = 'a'; // App-generated request
+		$request->user_created = FALSE; // App-generated request
 		$request->consent_name = $name;
 		$request->title = (isset($values['title'])) ? $values['title'] : $name;
 		$request->save();
