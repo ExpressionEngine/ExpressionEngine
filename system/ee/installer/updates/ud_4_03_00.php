@@ -182,12 +182,7 @@ class Updater {
 					'constraint' => 10,
 					'null'       => TRUE
 				],
-				'update_date'                => [
-					'type'       => 'int',
-					'constraint' => 10,
-					'null'       => TRUE
-				],
-				'withdrawn_date'             => [
+				'response_date'              => [
 					'type'       => 'int',
 					'constraint' => 10,
 					'null'       => TRUE

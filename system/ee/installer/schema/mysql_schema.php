@@ -1436,8 +1436,7 @@ class EE_Schema {
 			`consent_given` char(1) NOT NULL DEFAULT 'n',
 			`consent_given_via` varchar(32) DEFAULT NULL,
 			`expiration_date` int(10) DEFAULT NULL,
-			`update_date` int(10) DEFAULT NULL,
-			`withdrawn_date` int(10) DEFAULT NULL,
+			`response_date` int(10) DEFAULT NULL,
 			PRIMARY KEY (`consent_id`),
 			KEY `consent_request_version_id` (`consent_request_version_id`)
 			KEY `member_id` (`member_id`)

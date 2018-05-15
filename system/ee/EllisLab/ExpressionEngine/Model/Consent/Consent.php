@@ -26,8 +26,7 @@ class Consent extends Model {
 		'member_id'                  => 'int',
 		'consent_given'              => 'boolString',
 		'expiration_date'            => 'timestamp',
-		'update_date'                => 'timestamp',
-		'withdrawn_date'             => 'timestamp',
+		'response_date'              => 'timestamp',
 	];
 
 	protected static $_relationships = [
@@ -62,8 +61,7 @@ class Consent extends Model {
 	protected $consent_given;
 	protected $consent_given_via;
 	protected $expiration_date;
-	protected $update_date;
-	protected $withdrawn_date;
+	protected $response_date;
 
 	/**
 	 * Is this consent expired?
@@ -107,7 +105,7 @@ class Consent extends Model {
 
 		// If the current request version was edited after the consent was granted,
 		// then the consent is void. The request has changed.
-		if ($request->create_date > $this->update_date)
+		if ($request->create_date > $this->response_date)
 		{
 			return FALSE;
 		}
