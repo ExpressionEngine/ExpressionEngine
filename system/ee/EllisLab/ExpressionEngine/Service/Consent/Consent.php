@@ -87,7 +87,7 @@ class Consent {
 		if ($this->isAnonymous())
 		{
 			$cookie = $this->getConsentCookie();
-			$cookie[$request->getId()] = TRUE;
+			$cookie[$request->getId()] = $this->now;
 			$this->saveConsentCookie($cookie);
 		}
 		else
@@ -292,7 +292,14 @@ class Consent {
 
 			if ($this->isAnonymous())
 			{
+				$data[$key]['consent_given_via'] = 'online_form';
+				$data[$key]['member_id'] = 0;
 				$data[$key]['has_granted'] = array_key_exists($request->getId(), $consents);
+				if ($data[$key]['has_granted'])
+				{
+					$data[$key]['update_date'] = $consents[$request->getId()];
+
+				}
 			}
 			else
 			{
@@ -393,7 +400,8 @@ class Consent {
 	protected function saveConsentCookie(array $consented_to)
 	{
 		$payload = ee('Encrypt/Cookie')->signCookieData(json_encode($consented_to));
-		$this->input_delegate->set_cookie(self::COOKIE_NAME, $payload);
+		// 60 * 60 * 24 * 365 = 31556952; A year of seconds
+		$this->input_delegate->set_cookie(self::COOKIE_NAME, $payload, 31556952);
 	}
 
 	/**
