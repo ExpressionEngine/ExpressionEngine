@@ -64,15 +64,14 @@ class Consent extends Variables {
 			'consent_expiration_date'  => $this->consent['expiration_date'],
 			'consent_given_via'        => $this->consent['consent_given_via'],
 			'consent_granted'          => $this->consent['has_granted'],
-			'consent_granted_date'     => $this->consent['update_date'],
 			'consent_id'               => $this->consent['consent_request_id'],
 			'consent_request'          => $this->typography($this->consent['request'], $typography_prefs),
+			'consent_response_date'    => $this->consent['response_date'],
 			'consent_retention_period' => $this->consent['retention_period'],
 			'consent_short_name'       => $this->consent['consent_name'],
 			'consent_user_created'     => $this->consent['user_created'],
 			'consent_title'            => $this->consent['title'],
 			'consent_version_id'       => $this->consent['consent_request_version_id'],
-			'consent_withdrawn_date'   => $this->consent['withdrawn_date'],
 		];
 
 		return $this->variables;
