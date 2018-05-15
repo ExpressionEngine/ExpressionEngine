@@ -79,6 +79,28 @@ feature 'System Templates' do
     end
   end
 
+  context 'Members with Templates in themes/users' do
+    before(:each) do
+      @themes = Themes::Prepare.new
+      @themes.copy_member_themes_to_user
+      @page.load('members')
+      no_php_js_errors
+    end
+
+    it 'displays when user templates are present' do
+      @page.should have_theme_chooser
+      @page.templates.should have(86).items
+    end
+
+    it 'displays the edit form' do
+      @page.templates[1].manage.edit.click
+      no_php_js_errors
+      @form.all_there?.should == true
+      @form.template_contents.value.should_not eq ''
+    end
+  end
+
+
   context 'Forums without Templates' do
     before(:each) do
       @page.load('forums')
@@ -112,4 +134,26 @@ feature 'System Templates' do
       @form.template_contents.value.should_not eq ''
     end
   end
+
+  context 'Forums with Templates in themes/users' do
+    before(:each) do
+      @themes = Themes::Prepare.new
+      @themes.copy_forum_themes_to_user
+      @page.load('forums')
+      no_php_js_errors
+    end
+
+    it 'displays when user templates are present' do
+      @page.should have_theme_chooser
+      @page.templates.should have(201).items
+    end
+
+    it 'displays the edit form' do
+      @page.templates[1].manage.edit.click
+      no_php_js_errors
+      @form.all_there?.should == true
+      @form.template_contents.value.should_not eq ''
+    end
+  end
+
 end
