@@ -750,6 +750,24 @@ class EE_Output {
 	{
 		$this->remove_unparsed_variables = $remove_unparsed_vars;
 	}
+
+	/**
+	 * Display a generic Unauthorized Access error to the user, or
+	 * sends an error response back for Ajax requests
+	 *
+	 * @return void throws an error and halts processing
+	 */
+	public function throwAuthError()
+	{
+		if (AJAX_REQUEST)
+		{
+			$this->send_ajax_response(lang('not_authorized'), TRUE);
+		}
+		else
+		{
+			$this->show_user_error('submission', [lang('not_authorized')]);
+		}
+	}
 }
 // END CLASS
 
