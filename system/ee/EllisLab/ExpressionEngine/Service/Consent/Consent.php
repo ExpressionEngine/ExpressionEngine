@@ -280,6 +280,7 @@ class Consent {
 			$key = $request->consent_name;
 			$data[$key] = array_merge($request->getValues(), $request->CurrentVersion->getValues());
 			$data[$key]['has_granted'] = FALSE;
+			$data[$key]['create_date'] = $request->CurrentVersion->create_date->format('U');
 
 			// these keys may not be present if the user hasn't responded, but we want a consistent array
 			$data[$key]['consent_given_via'] = NULL;
@@ -309,6 +310,14 @@ class Consent {
 					$data[$key] = array_merge($consent->getValues(), $data[$key]);
 					unset($data[$key]['consent_given']);
 					$data[$key]['has_granted'] = $consent->isGranted();
+
+					foreach (['expiration_date', 'update_date', 'withdrawn_date'] as $property)
+					{
+						if ( ! is_null($data[$key][$property]))
+						{
+							$data[$key][$property] = $data[$key][$property]->format('U');
+						}
+					}
 				}
 			}
 		}
