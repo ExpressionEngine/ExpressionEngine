@@ -34,6 +34,7 @@ class Consent_upd {
 
 		$actions = [
 			'grantConsent',
+			'submitConsent',
 			'withdrawConsent',
 		];
 
