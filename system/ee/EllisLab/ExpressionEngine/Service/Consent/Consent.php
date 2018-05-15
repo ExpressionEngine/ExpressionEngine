@@ -95,7 +95,7 @@ class Consent {
 			$consent = $this->getOrMakeConsent($request);
 			$consent->consent_given = TRUE;
 			$consent->ConsentRequestVersion = $request->CurrentVersion;
-			$consent->update_date = $this->now;
+			$consent->response_date = $this->now;
 			$consent->consent_given_via = $via;
 			$consent->request_copy = $request->CurrentVersion->request;
 			$consent->request_format = $request->CurrentVersion->request_format;
@@ -140,7 +140,7 @@ class Consent {
 		{
 			$consent = $this->getOrMakeConsent($request);
 			$consent->consent_given = FALSE;
-			$consent->withdrawn_date = $this->now;
+			$consent->response_date = $this->now;
 			$consent->save();
 
 			if ($this->memberIsActor())
@@ -262,6 +262,11 @@ class Consent {
 	 */
 	public function getConsentDataFor($request_names)
 	{
+		if (empty($request_names))
+		{
+			return new Collection([]);
+		}
+
 		if ( ! is_array($request_names))
 		{
 			$request_names = [$request_names];
@@ -288,8 +293,7 @@ class Consent {
 			$data[$key]['expiration_date'] = NULL;
 			$data[$key]['member_id'] = NULL;
 			$data[$key]['request_copy'] = NULL;
-			$data[$key]['update_date'] = NULL;
-			$data[$key]['withdrawn_date'] = NULL;
+			$data[$key]['response_date'] = NULL;
 
 			if ($this->isAnonymous())
 			{
@@ -298,7 +302,7 @@ class Consent {
 				$data[$key]['has_granted'] = array_key_exists($request->getId(), $consents);
 				if ($data[$key]['has_granted'])
 				{
-					$data[$key]['update_date'] = $consents[$request->getId()];
+					$data[$key]['response_date'] = $consents[$request->getId()];
 
 				}
 			}
@@ -311,7 +315,7 @@ class Consent {
 					unset($data[$key]['consent_given']);
 					$data[$key]['has_granted'] = $consent->isGranted();
 
-					foreach (['expiration_date', 'update_date', 'withdrawn_date'] as $property)
+					foreach (['expiration_date', 'response_date'] as $property)
 					{
 						if ( ! is_null($data[$key][$property]))
 						{

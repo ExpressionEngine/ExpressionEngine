@@ -83,11 +83,11 @@ class Consent extends Settings {
 			$consents = array_filter($consents, function($consent) use($filter_values){
 				if (is_array($filter_values['filter_by_date']))
 				{
-					return ($consent->update_date->format('U') >= $filter_values['filter_by_date'][0] && $consent->update_date->format('U') < $filter_values['filter_by_date'][1]);
+					return ($consent->response_date->format('U') >= $filter_values['filter_by_date'][0] && $consent->response_date->format('U') < $filter_values['filter_by_date'][1]);
 				}
 				else
 				{
-					return ($consent->update_date->format('U') >= (ee()->localize->now - $filter_values['filter_by_date']));
+					return ($consent->response_date->format('U') >= (ee()->localize->now - $filter_values['filter_by_date']));
 				}
 			});
 		}
@@ -117,7 +117,7 @@ class Consent extends Settings {
 			if (array_key_exists($request->getId(), $consents))
 			{
 				$consent = $consents[$request->getId()];
-				$date = ee()->localize->human_time($consent->update_date->format('U'));
+				$date = ee()->localize->human_time($consent->response_date->format('U'));
 
 				if ($consent->isGranted())
 				{
