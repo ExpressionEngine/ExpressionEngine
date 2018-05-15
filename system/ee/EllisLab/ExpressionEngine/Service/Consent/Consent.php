@@ -292,7 +292,14 @@ class Consent {
 
 			if ($this->isAnonymous())
 			{
+				$data[$key]['consent_given_via'] = 'cookie';
+				$data[$key]['member_id'] = 0;
 				$data[$key]['has_granted'] = array_key_exists($request->getId(), $consents);
+				if ($data[$key]['has_granted'])
+				{
+					$data[$key]['update_date'] = $consents[$request->getId()];
+
+				}
 			}
 			else
 			{
