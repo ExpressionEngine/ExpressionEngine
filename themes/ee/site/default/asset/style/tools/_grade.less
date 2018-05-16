@@ -1,0 +1,24 @@
+/*
+	_grade.less
+	-------------
+	define grade mixin
+*/
+
+/*
+	applies background gradients to box level elements
+	requires a ; at the end of all arguments
+	-------------
+	arguments
+		direction, color position
+	examples
+		faded out ends
+			.grade(left, #FFF 0%, #000 50%, #FFF 100%;);
+		diagonal lines
+		requires a background-size set on element
+			.grade(left, #FFF 0%, #FFF 25%, #000 25%, #000 50%, #FFF 50%, #FFF 75%, #000 75%;);
+*/
+.grade(@args){
+	background-image: -moz-linear-gradient(@args);
+	background-image: -webkit-linear-gradient(@args);
+	background-image: linear-gradient(to right, @args);
+}
