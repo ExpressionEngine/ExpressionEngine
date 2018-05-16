@@ -307,6 +307,8 @@ $lang = array(
 
 'btn_exporting' => 'Exporting',
 
+'will_be_logged' => 'This action will be logged',
+
 /* Sites and Channels */
 'avatar_path' => 'Avatar Path',
 

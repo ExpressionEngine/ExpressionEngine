@@ -32,6 +32,13 @@ class ExportEmailAddresses extends Utilities {
 			'base_url' => ee('CP/URL')->make('utilities/export-email-addresses/export'),
 			'sections' => [
 				[
+					ee('CP/Alert')->makeInline('security')
+						->asWarning()
+						->withTitle(lang('important'))
+						->addToBody(lang('export_warning_desc'))
+						->addToBody(lang('will_be_logged'))
+						->cannotClose()
+						->render(),
 					[
 						'title' => 'export_email_addresses_title',
 						'desc' => sprintf(lang('export_email_addresses_desc'), number_format(ee('Model')->get('Member')->count())),
