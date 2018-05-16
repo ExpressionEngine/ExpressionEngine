@@ -36,7 +36,6 @@ class Administrator extends Model {
 			'model'    => 'ee:Member',
 			'from_key' => 'admin_member_id',
 			'to_key'   => 'member_id',
-			'weak'     => TRUE,
 			'inverse' => array(
 				'name' => 'Administrator',
 				'type' => 'hasMany'
@@ -47,7 +46,6 @@ class Administrator extends Model {
 			'model'    => 'ee:MemberGroup',
 			'from_key' => 'admin_group_id',
 			'to_key'   => 'group_id',
-			'weak'     => TRUE,
 			'inverse' => array(
 				'name' => 'Administrator',
 				'type' => 'hasMany'

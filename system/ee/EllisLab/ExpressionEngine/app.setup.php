@@ -541,12 +541,20 @@ return array(
 			'Comment' => 'Model\Comment\Comment',
 			'CommentSubscription' => 'Model\Comment\CommentSubscription',
 
+			// ..\Message
+			'Message' => 'Model\Message\Message',
+			'MessageAttachment' => 'Model\Message\Attachment',
+			'MessageFolder' => 'Model\Message\Folder',
+			'ListedMember' => 'Model\Message\ListedMember',
+			'MessageCopy' => 'Model\Message\Copy',
+
 			// ..\Member
 			'HTMLButton' => 'Model\Member\HTMLButton',
 			'Member' => 'Model\Member\Member',
 			'MemberField' => 'Model\Member\MemberField',
 			'MemberGroup' => 'Model\Member\MemberGroup',
 			'MemberNewsView' => 'Model\Member\NewsView',
+			'OnlineMember' => 'Model\Member\Online',
 
 			// ..\Menu
 			'MenuSet' => 'Model\Menu\MenuSet',

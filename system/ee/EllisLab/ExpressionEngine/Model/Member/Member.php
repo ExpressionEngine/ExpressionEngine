@@ -118,6 +118,58 @@ class Member extends ContentModel {
 			'type' => 'hasOne',
 			'model' => 'MemberNewsView'
 		),
+		'SentMessages' => [
+			'type' => 'hasMany',
+			'model' => 'Message',
+			'to_key' => 'sender_id'
+		],
+		'SentMessageReceipts' => [
+			'type' => 'hasMany',
+			'model' => 'MessageCopy',
+			'to_key' => 'sender_id'
+		],
+		'SentAttachments' => [
+			'type' => 'hasMany',
+			'model' => 'MessageAttachment',
+			'to_key' => 'sender_id'
+		],
+		'ReceivedMessages' => [
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Message',
+			'pivot' => [
+				'table' => 'message_copies',
+				'left' => 'recipient_id',
+				'right' => 'message_id'
+			]
+		],
+		'ReceivedMessageReceipts' => [
+			'type' => 'hasMany',
+			'model' => 'MessageCopy',
+			'to_key' => 'recipient_id'
+		],
+		'MessageFolders' => [
+			'type' => 'hasOne',
+			'model' => 'MessageFolder'
+		],
+		'ListedMembers' => [
+			'type' => 'hasMany',
+			'model' => 'ListedMember'
+		],
+		'ListedByMembers' => [
+			'type' => 'hasMany',
+			'model' => 'ListedMember',
+			'to_key' => 'listed_member'
+		],
+		'RememberMe' => [
+			'type' => 'hasMany'
+		],
+		'Session' => [
+			'type' => 'hasMany'
+		],
+		'Online' => [
+			'type' => 'hasMany',
+			'model' => 'OnlineMember'
+		]
 	);
 
 	protected static $_field_data = array(
@@ -140,6 +192,7 @@ class Member extends ContentModel {
 	protected static $_events = array(
 		'afterUpdate',
 		'beforeDelete',
+		'afterBulkDelete',
 		'beforeInsert',
 	);
 
@@ -356,6 +409,30 @@ class Member extends ContentModel {
 
 		$this->TemplateRevisions->item_author_id = 0;
 		$this->TemplateRevisions->save();
+	}
+
+	public static function onAfterBulkDelete()
+	{
+		ee()->stats->update_member_stats();
+
+		// Quick and dirty private message count update; due to the order of
+		// events, we can't seem to reliably do this in model delete events
+		// Copied from Stats controller
+		$member_message_count = ee()->db->query('SELECT COUNT(*) AS count, recipient_id FROM exp_message_copies WHERE message_read = "n" GROUP BY recipient_id ORDER BY count DESC');
+
+		$pm_count = [];
+		foreach ($member_message_count->result() as $row)
+		{
+			$pm_count[] = [
+				'member_id' => $row->recipient_id,
+				'private_messages' => $row->count
+			];
+		}
+
+		if ( ! empty($pm_count))
+		{
+			ee()->db->update_batch('members', $pm_count, 'member_id');
+		}
 	}
 
 	/**

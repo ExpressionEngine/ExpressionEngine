@@ -1282,9 +1282,6 @@ class Members extends CP_Controller {
 		/*
 		/* -------------------------------------------*/
 
-		// Update
-		ee()->stats->update_member_stats();
-
 		$cp_message = (count($member_ids) == 1) ?
 			lang('member_deleted') : lang('members_deleted');
 
