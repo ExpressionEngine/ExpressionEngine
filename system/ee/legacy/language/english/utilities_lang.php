@@ -23,9 +23,13 @@ $lang = array(
 
 'file_converter' => 'File Converter',
 
-'import_tools' => 'Import Tools',
+'member_tools' => 'Member Tools',
 
 'member_import' => 'Member Import',
+
+'export_email_addresses' => 'Export Email Addresses',
+
+'exported_email_addresses' => 'Member email addresses were exported',
 
 'php_info' => '<abbr title="PHP: Hypertext Processor">PHP</abbr> Info',
 
@@ -467,6 +471,12 @@ $lang = array(
 'total_records' => 'Total Records',
 
 'uptime' => 'Uptime',
+
+/* Export Email Addresses */
+
+'export_email_addresses_title' => 'Export a <abbr title="Comma Separated Values">CSV</abbr> File',
+
+'export_email_addresses_desc' => 'Export names and email addresses of your %s members.',
 
 );
 

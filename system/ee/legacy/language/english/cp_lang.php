@@ -255,8 +255,7 @@ $lang = array(
 
 'limit_by' => 'limit by',
 
-'keyword_search' =>
-'Keyword Search',
+'keyword_search' => 'Keyword Search',
 
 'manage' => 'Manage',
 
@@ -304,6 +303,9 @@ $lang = array(
 
 'with_selected' => 'with selected',
 
+'export' => 'Export',
+
+'btn_exporting' => 'Exporting',
 
 /* Sites and Channels */
 'avatar_path' => 'Avatar Path',
