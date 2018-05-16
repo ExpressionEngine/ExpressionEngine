@@ -155,7 +155,7 @@ class Consent extends Settings {
 		$table->setColumns(
 			[
 				'name' => [
-					'type'	=> Table::COL_ID
+					'encode' => FALSE
 				],
 				'date',
 				'status' => [
