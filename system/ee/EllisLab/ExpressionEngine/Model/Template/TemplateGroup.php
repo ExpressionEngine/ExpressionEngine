@@ -49,7 +49,7 @@ class TemplateGroup extends Model {
 
 	protected static $_validation_rules = array(
 		'is_site_default' => 'enum[y,n]',
-		'group_name' => 'required|alphaDashPeriodEmoji|validateTemplateGroupName|unique',
+		'group_name' => 'required|alphaDashPeriodEmoji|validateTemplateGroupName|unique[site_id]',
 	);
 
 	protected static $_events = array(
@@ -211,6 +211,26 @@ class TemplateGroup extends Model {
 		}
 
 		return TRUE;
+	}
+
+	/**
+	 * Override of the parent validateUnique to alter the lang key if it's a failure.
+	 *
+	 * @param String $key    Property name
+	 * @param String $value  Property value
+	 * @param Array  $params Rule parameters
+	 * @return Mixed String if error, TRUE if success
+	 */
+	public function validateUnique($key, $value, array $params = array())
+	{
+		$return = parent::validateUnique($key, $value, $params);
+
+		if (is_bool($return))
+		{
+			return $return;
+		}
+
+		return 'template_group_taken';
 	}
 
 }

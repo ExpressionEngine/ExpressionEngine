@@ -137,7 +137,7 @@ class Tag {
 
 		if ($this->hasPair())
 		{
-			$tagdata = $this->parsePairs($field);
+			$tagdata = $this->parsePairs($field, $tagdata);
 		}
 
 		return $this->parseSingle($field, $tagdata);
@@ -147,12 +147,11 @@ class Tag {
 	 * Parses and replaces the tag pairs
 	 *
 	 * @param FieldFacade $field The fieldtype instance we are processing
+	 * @param string $tagdata The tagdata to parse
 	 * @return string The tagdata with the pairs replaced
 	 */
-	protected function parsePairs(FieldFacade $field)
+	protected function parsePairs(FieldFacade $field, $tagdata)
 	{
-		$tagdata = $this->getTagdata();
-
 		$pairs = $this->channel_fields_delegate->get_pair_field($tagdata, 'content');
 
 		foreach ($pairs as $chk_data)
@@ -177,6 +176,7 @@ class Tag {
 	 * Parses out the single tags and replaces them.
 	 *
 	 * @param FieldFacade $field The fieldtype instance we are processing
+	 * @param string $tagdata The tagdata to parse
 	 * @return string The tagdata with the tag replaced
 	 */
 	protected function parseSingle(FieldFacade $field, $tagdata)

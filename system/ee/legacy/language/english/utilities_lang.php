@@ -227,13 +227,13 @@ $lang = array(
 
 'encrypted_passwords' => 'Passwords are encrypted.',
 
-'file_location' => 'File location',
-
-'file_location_desc' => 'Path location of your <mark>delimited</mark> file.',
-
 'file_not_converted' => 'Attention: File not converted',
 
 'file_not_converted_desc' => 'We were unable to convert this file, please review and fix errors below.',
+
+'import_cache_file_not_writable' => 'Cache folder not writable',
+
+'import_cache_file_instructions' => 'To upload the file, the cache folder must be writable.',
 
 'import_convert_btn' => 'Convert File',
 
@@ -241,7 +241,12 @@ $lang = array(
 
 'import_converter' => 'Import File Converter',
 
+
 'import_password_warning' => '<b>Warning</b>: If you don\'t map one of your data points to "Password", a random encrypted password will be assigned to each imported user. These users will need to reset their password via the "Forgot Password" link.',
+
+'member_file' => 'Member file',
+
+'member_file_desc' => 'Delimited file containing member data',
 
 'member_id_warning' => 'WARNING: If you have &lt;member_id&gt; tags in your XML, existing members with the same member_id will be OVERWRITTEN! Proceed with caution!',
 
@@ -321,8 +326,6 @@ $lang = array(
 
 'mbr_xml_file' => '<abbr title="Extensible Markup Language">XML</abbr> file location',
 
-'mbr_xml_file_location' => 'Server path to your <abbr title="Extensible Markup Language"><mark>xml</mark></abbr> file.',
-
 'member_group' => 'Member group',
 
 'member_import_error' => 'Attention: Import not completed',
@@ -330,6 +333,10 @@ $lang = array(
 'member_import_error_desc' => 'We were unable to complete the import, please review and fix errors below.',
 
 'member_import_no_custom_fields_selected' => 'No custom fields were selected for import. Please click the checkboxes next to the fields you which to create.',
+
+'member_xml_file' => 'Member XML file',
+
+'member_xml_file_desc' => 'XML file containing member data',
 
 'new_fields_success' => 'The following custom member fields were successfully added:',
 

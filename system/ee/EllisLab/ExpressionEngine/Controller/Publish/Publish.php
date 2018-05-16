@@ -404,6 +404,7 @@ class Publish extends AbstractPublishController {
 		if ($entry->hasPageURI())
 		{
 			$uri = $entry->getPageURI();
+			ee()->uri->page_query_string = $entry->entry_id;
 		}
 		else
 		{

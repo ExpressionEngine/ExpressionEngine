@@ -766,7 +766,7 @@ class Forum {
 						'forum_path'		=> $this->forum_path(),
 						'image_url'			=> $this->image_url,
 						'theme_path'		=> ee('Theme')->getPath('forum/'.$this->theme.'/forum_member/'),
-						'css_file_path'		=> ee('Theme')->getUrl('forum/'.$this->theme.'/theme.css'),
+						'css_file_path'		=> '',
 						'board_id'			=> $this->fetch_pref('board_id')
 					)
 			);
@@ -841,9 +841,9 @@ class Forum {
 
 		// Check path to folder containing the requested theme
 		$this->theme = ($forum_theme != '' &&
-		@is_dir(ee('Theme')->getPath('forum/'.$forum_theme))) ? $forum_theme : $this->fetch_pref('board_default_theme');
+		ee('Filesystem')->exists(ee('Theme')->getPath('forum/'.$forum_theme))) ? $forum_theme : $this->fetch_pref('board_default_theme');
 
-		if ( ! @is_dir(ee('Theme')->getPath('forum/'.$this->theme)))
+		if ( ! ee('Filesystem')->exists(ee('Theme')->getPath('forum/'.$this->theme)))
 		{
 			return ee()->output->fatal_error('Unable to locate the forum theme folder.');
 		}
@@ -1196,7 +1196,7 @@ class Forum {
 				'module_version'           => $this->version,
 				'forum_build'              => $this->build,
 				'error_message'            => $this->error_message,
-				'path:theme_css'           => ee('Theme')->getUrl('forum/'.$this->theme.'/theme.css'),
+				'path:theme_css'           => '',
 				'path:theme_js'            => ee('Theme')->getUrl('forum/'.$this->theme.'/theme/javascript/'),
 				'site_url'                 => ee()->config->item('site_url'),
 				'username_max_length'      => USERNAME_MAX_LENGTH,

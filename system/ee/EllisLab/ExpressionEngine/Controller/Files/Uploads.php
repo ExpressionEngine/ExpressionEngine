@@ -863,6 +863,14 @@ class Uploads extends AbstractFilesController {
 		$id = ee()->input->post('upload_directory_id');
 		$sizes = ee()->input->post('sizes') ?: array($id => '');
 
+		if ( ! ee()->cp->allowed_group('can_upload_new_files') OR empty($id))
+		{
+			return ee()->output->send_ajax_response([
+				'message_type'	=> 'failure',
+				'errors'		=> lang('unauthorized_access'),
+			]);
+		}
+
 		// If file exists- make sure it exists in db - otherwise add it to db and generate all child sizes
 		// If db record exists- make sure file exists -  otherwise delete from db - ?? check for child sizes??
 
@@ -882,6 +890,14 @@ class Uploads extends AbstractFilesController {
 		foreach ($upload_dirs as $row)
 		{
 			$this->_upload_dirs[$row['id']] = $row;
+		}
+
+		if ( ! isset($this->_upload_dirs[$id]))
+		{
+			return ee()->output->send_ajax_response([
+				'message_type'	=> 'failure',
+				'errors'		=> lang('unauthorized_access'),
+			]);
 		}
 
 		// Final run through, it syncs the db, removing stray records and thumbs

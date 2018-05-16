@@ -103,7 +103,7 @@ class EE_Exceptions {
 
 		$filepath = str_replace($syspath, '', $filepath);
 		$message = str_replace($syspath, '', $message);
-		$message = htmlentities($message, ENT_QUOTES, 'UTF-8');
+		$message = htmlentities($message, ENT_QUOTES, 'UTF-8', FALSE);
 
 		if (ob_get_level() > $this->ob_level + 1)
 		{
@@ -233,7 +233,7 @@ class EE_Exceptions {
 		$filepath = str_replace($syspath, '', $filepath);
 		$message = str_replace($syspath, '', $message);
 
-		$message = htmlentities($message, ENT_QUOTES, 'UTF-8');
+		$message = htmlentities($message, ENT_QUOTES, 'UTF-8', FALSE);
 
 		$location =  $filepath . ':' . $exception->getLine();
 		$trace = explode("\n", $exception->getTraceAsString());

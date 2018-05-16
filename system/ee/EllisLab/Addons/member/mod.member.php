@@ -2008,24 +2008,7 @@ class Member {
 		}
 		// -------
 
-		// Set some paths
-		$theme_images = URL_THEMES.'member/'.ee()->config->item('member_theme').'/images/';
-
-		if (ee()->session->userdata('profile_theme') != '')
-		{
-			$img_path = ee()->config->slash_item('theme_folder_url').'member/'.ee()->session->userdata('profile_theme').'/images/';
-		}
-		else
-		{
-			$img_path = URL_THEMES.'member/'.ee()->config->item('member_theme').'/images/';
-		}
-
 		$simple = ($this->show_headings == FALSE) ? '/simple' : '';
-
-		if ($this->css_file_path == '')
-		{
-			$this->css_file_path = URL_THEMES.'member/'.ee()->config->item('member_theme').'profile.css';
-		}
 
 		// Parse {switch="foo|bar"} variables
 		if (preg_match_all("/".LD."(switch\s*=.+?)".RD."/i", $str, $matches, PREG_SET_ORDER))
@@ -2047,6 +2030,16 @@ class Member {
 			}
 		}
 
+
+		// Set some paths
+		$theme = (ee()->session->userdata('profile_theme') != '') ? ee()->session->userdata('profile_theme') : ee()->config->item('member_theme');
+
+		if ($this->image_url == '')
+		{
+			$theme = ($theme == '') ? 'default' : $theme;
+			$this->image_url = ee('Theme')->getUrl('member/'.$theme.'/images/');
+		}
+
 		// Finalize the output
 		$str = ee()->functions->prep_conditionals($str, array('current_request' => $this->request));
 
@@ -2055,7 +2048,7 @@ class Member {
 			array(
 				'lang'                    => ee()->config->item('xml_lang'),
 				'charset'                 => ee()->config->item('output_charset'),
-				'path:image_url'          => ($this->image_url == '') ? $theme_images : $this->image_url,
+				'path:image_url'          => $this->image_url,
 				'path:your_control_panel' => $this->_member_path('profile'),
 				'path:your_profile'       => $this->_member_path(ee()->session->userdata('member_id')),
 				'path:edit_preferences'   => $this->_member_path('edit_preferences'),
@@ -2071,7 +2064,7 @@ class Member {
 				'path:delete'             => $this->_member_path('delete'),
 				'page_title'              => $this->page_title,
 				'site_name'               => stripslashes(ee()->config->item('site_name')),
-				'path:theme_css'          => $this->css_file_path,
+				'path:theme_css'          => '',
 				'current_request'         => $this->request,
 				'username_max_length'     => USERNAME_MAX_LENGTH,
 				'password_max_length'     => PASSWORD_MAX_LENGTH
@@ -2239,9 +2232,9 @@ class Member {
 		$default_fields = $results;
 
 		// Is there an avatar?
-		if (ee()->config->item('enable_avatars') == 'y')
+		$avatar_path = $member->getAvatarUrl();
+		if (ee()->config->item('enable_avatars') == 'y' && ! empty($avatar_path))
 		{
-			$avatar_path	= $member->getAvatarUrl();
 			$avatar_width	= $results['avatar_width'];
 			$avatar_height	= $results['avatar_height'];
 			$avatar			= TRUE;

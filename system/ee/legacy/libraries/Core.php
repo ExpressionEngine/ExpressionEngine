@@ -69,8 +69,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20180418');
-		define('APP_VER',		'4.2.1');
+		define('APP_BUILD',		'20180516');
+		define('APP_VER',		'4.2.2');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -227,6 +227,11 @@ class EE_Core {
 
 		define('PATH_MBR_THEMES', PATH_THEMES.'member/');
 		define('PATH_CP_GBL_IMG', URL_THEMES_GLOBAL_ASSET.'img/');
+
+		define('PATH_THEME_TEMPLATES', SYSPATH . 'ee/templates/_themes/');
+		define('PATH_THIRD_THEME_TEMPLATES', SYSPATH . 'user/templates/_themes/');
+
+
 		unset($theme_path);
 
 		// Load the very, very base classes
