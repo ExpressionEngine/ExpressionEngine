@@ -71,14 +71,16 @@ class ExportEmailAddresses extends Utilities {
 		$csv = ee('CSV');
 
 		$members = ee('Model')->get('Member')
-			->fields('username', 'screen_name', 'email')
+			->fields('member_id', 'username', 'screen_name', 'email')
 			->all();
 
 		foreach ($members as $member)
 		{
 			$csv->addRow([
-				'name' => $member->getMemberName(),
-				'email' => $member->email
+				'member_id'   => $member->member_id,
+				'username'    => $member->username,
+				'screen_name' => $member->screen_name,
+				'email'       => $member->email
 			]);
 		}
 
