@@ -24,19 +24,22 @@ class Consent {
 	 */
 	public function form()
 	{
-		$consent = ee('Variables/Parser')->parseOrParameter(ee()->TMPL->fetch_param('consent'));
+		$consent_names = ee('Model')->get('ConsentRequest')->fields('consent_name');
 
-		if (empty($consent['options']))
+		if (ee()->TMPL->fetch_param('consent'))
 		{
-			return ee()->TMPL->no_results();
+			$consent = ee('Variables/Parser')->parseOrParameter(ee()->TMPL->fetch_param('consent'));
+
+			if (empty($consent['options']))
+			{
+				return ee()->TMPL->no_results();
+			}
+
+			$consent_names->filter('consent_name', (($consent['not']) ? 'NOT IN' : 'IN'), $consent['options']);
 		}
 
-		$consent_names = ee('Model')->get('ConsentRequest')
-			->fields('consent_name')
-			->filter('consent_name', (($consent['not']) ? 'NOT IN' : 'IN'), $consent['options'])
-			->all()
-			->pluck('consent_name');
-
+		$consent_names = $consent_names->all()->pluck('consent_name');
+var_dump($consent_names);
 		if ( ! $consent_names)
 		{
 			return ee()->TMPL->no_results();
