@@ -360,7 +360,7 @@ class Member extends ContentModel {
 	 * @return void
 	 */
 	private function notifyOfChanges($type, $to)
-	{
+	{return;
 		$vars = [
 			'name'		=> $this->screen_name,
 			'username'  => $this->username,
@@ -882,6 +882,66 @@ class Member extends ContentModel {
 			return ee()->config->slash_item('sig_img_url').$this->sig_img_filename;
 		}
 		return '';
+	}
+
+	/**
+	 * Anonymize a member record in order to comply with a GDPR Right to Erasure request
+	 */
+	public function anonymize()
+	{
+		// ---------------------------------------------------------------
+		// 'member_anonymize' hook.
+		// - Provides an opportunity for addons to perform anonymization on
+		// any personal member data they've collected for a given member
+		//
+		if (ee()->extensions->active_hook('member_anonymize'))
+		{
+			ee()->extensions->call('member_anonymize', $this);
+		}
+		//
+		// ---------------------------------------------------------------
+
+		$username = 'anonymous'.$this->getId();
+		$email = 'redacted'.$this->getId();
+		$ip_address = '0.0.0.0';
+
+		$this->setProperty('group_id', 2); // Ban member
+		$this->setProperty('username', $username);
+		$this->setProperty('screen_name', $username);
+		$this->setProperty('email', $email);
+		$this->setProperty('ip_address', $ip_address);
+		$this->save();
+
+		if ($this->Session) $this->Session->delete();
+		if ($this->Online) $this->Online->delete();
+		if ($this->RememberMe) $this->RememberMe->delete();
+
+		if ($this->CpLogs)
+		{
+			$this->CpLogs->ip_address = $ip_address;
+			$this->CpLogs->save();
+		}
+
+		if ($this->SearchLogs)
+		{
+			$this->SearchLogs->ip_address = $ip_address;
+			$this->SearchLogs->save();
+		}
+
+		if ($this->Comments)
+		{
+			$this->Comments->name = $username;
+			$this->Comments->email = $email;
+			$this->Comments->url = $email;
+			$this->Comments->ip_address = $ip_address;
+			$this->Comments->save();
+		}
+
+		if ($this->AuthoredChannelEntries)
+		{
+			$this->AuthoredChannelEntries->ip_address = $ip_address;
+			$this->AuthoredChannelEntries->save();
+		}
 	}
 }
 
