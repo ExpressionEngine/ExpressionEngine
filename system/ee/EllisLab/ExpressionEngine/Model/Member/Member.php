@@ -360,7 +360,7 @@ class Member extends ContentModel {
 	 * @return void
 	 */
 	private function notifyOfChanges($type, $to)
-	{return;
+	{
 		$vars = [
 			'name'		=> $this->screen_name,
 			'username'  => $this->username,
