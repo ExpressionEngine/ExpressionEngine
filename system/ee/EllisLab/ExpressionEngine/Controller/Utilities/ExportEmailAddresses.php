@@ -243,6 +243,8 @@ class ExportEmailAddresses extends Utilities {
 			$fs->mkdir(PATH_CACHE . self::CACHE_DIR);
 		}
 
+		$fs->touch(PATH_CACHE . self::CACHE_DIR);
+
 		$fs->write(PATH_CACHE . self::CACHE_DIR . $item, serialize($data), TRUE);
 	}
 
