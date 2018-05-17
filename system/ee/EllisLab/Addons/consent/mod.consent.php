@@ -39,7 +39,7 @@ class Consent {
 		}
 
 		$consent_names = $consent_names->all()->pluck('consent_name');
-var_dump($consent_names);
+
 		if ( ! $consent_names)
 		{
 			return ee()->TMPL->no_results();
