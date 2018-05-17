@@ -15,6 +15,7 @@ namespace EllisLab\ExpressionEngine\Controller\Utilities;
 class ExportEmailAddresses extends Utilities {
 
 	const CACHE_TTL = 300; // 5 mins
+	const PREFIX = 'exprt';
 
 	protected $batch_size = 10;
 	protected $validated_batch_size = 5;
@@ -45,7 +46,7 @@ class ExportEmailAddresses extends Utilities {
 
 		if (empty($this->export_path))
 		{
-			$this->export_path = 'expt_' . ee('Encrypt')->generateKey();
+			$this->export_path = self::PREFIX . '_' . ee('Encrypt')->generateKey();
 		}
 	}
 
@@ -260,7 +261,7 @@ class ExportEmailAddresses extends Utilities {
 		$fs = ee('Filesystem');
 		$path = $this->getPath();
 
-		if ( ! is_dir($path))
+		if ( ! $fs->isDir($path))
 		{
 			$fs->mkdir($path);
 		}
@@ -288,11 +289,15 @@ class ExportEmailAddresses extends Utilities {
 	protected function garbageCollect()
 	{
 		$fs = ee('Filesystem');
-		$path = $this->getPath();
 
-		if ($fs->exists($path) && ee()->localize->now > ($fs->mtime($path) + self::CACHE_TTL))
+		foreach (glob(PATH_CACHE . self::PREFIX . '_*') as $path)
 		{
-			$fs->delete($path);
+			if ($fs->exists($path)
+				&& $fs->isDir($path)
+				&& ee()->localize->now > ($fs->mtime($path) + self::CACHE_TTL))
+			{
+				$fs->delete($path);
+			}
 		}
 	}
 
@@ -328,7 +333,7 @@ class ExportEmailAddresses extends Utilities {
 
 	protected function getPath($item = '')
 	{
-		$path = PATH_CACHE . $this->export_path . $item;
+		$path = PATH_CACHE . $this->export_path . '/' . $item;
 		return $path;
 	}
 
