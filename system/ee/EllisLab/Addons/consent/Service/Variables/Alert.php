@@ -1,0 +1,52 @@
+<?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
+namespace EllisLab\Addons\Consent\Service\Variables;
+
+use EllisLab\ExpressionEngine\Service\Template\Variables;
+
+/**
+ * Consent Alert Variables
+ */
+class Alert extends Variables {
+
+	/**
+	 * @var array $alert Alert data
+	 */
+	private $alert;
+
+	/**
+	 * Constructor
+	 *
+	 * @param array $alert The Alert data
+	 */
+	public function __construct($alert)
+	{
+		$this->alert = $alert;
+		parent::__construct();
+	}
+
+	public function getTemplateVariables()
+	{
+		if ( ! empty($this->variables))
+		{
+			return $this->variables;
+		}
+
+		$this->variables = [
+			'alert_type' => $this->alert['type'],
+			'alert_message' => $this->alert['message']
+		];
+
+		return $this->variables;
+	}
+}
+// END CLASS
+
+// EOF

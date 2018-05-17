@@ -10,12 +10,21 @@
 namespace EllisLab\Addons\Consent;
 
 use EllisLab\Addons\Consent\Service\Notifications;
+use EllisLab\Addons\Consent\Service\Variables\Alert as AlertVars;
 use EllisLab\Addons\Consent\Service\Variables\Consent as ConsentVars;
 
 /**
  * Consent Module
  */
 class Consent {
+
+	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		ee()->lang->loadfile('consent');
+	}
 
 	/**
 	 * {exp:consent:form}
@@ -68,6 +77,30 @@ class Consent {
 	}
 
 	/**
+	 * {exp:discuss:alert}
+	 */
+	public function alert()
+	{
+		$alerts = ee()->session->flashdata(md5('Consent/alerts'));
+
+		if (empty($alerts))
+		{
+			// no content rather than a no results, as this might be inside other tags that have their own
+			return '';
+		}
+
+		$vars = [];
+
+		foreach ($alerts as $alert)
+		{
+			$alert_vars = new AlertVars($alert);
+			$vars[] = $alert_vars->getTemplateVariables();
+		}
+
+		return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
+	}
+
+	/**
 	 * Grant Consent
 	 * Responds to ACTion request
 	 *
@@ -95,12 +128,18 @@ class Consent {
 			}
 		}
 
+		$message = sprintf(
+			lang('consent_prefs_saved'),
+			htmlentities(implode(', ', $requests->pluck('title')))
+		);
+
 		if (AJAX_REQUEST)
 		{
-			$this->output->send_ajax_response(['success' => lang('consent_updated')]);
+			$this->output->send_ajax_response(['success' => $message]);
 		}
 		else
 		{
+			$this->setAlertFlashdata('success', $message);
 			$return = ee('Encrypt')->decode(ee()->input->post('RET'));
 			ee()->functions->redirect(ee()->functions->create_url($return));
 		}
@@ -126,6 +165,35 @@ class Consent {
 	public function withdrawConsent()
 	{
 
+	}
+
+	/**
+	 * Set Alert Flashdata
+	 *
+	 *   Adds an alert onto this requests's flashdata alert stack
+	 *
+	 * @param string $type    issue/success/warn/
+	 * @param string $message Alert message
+	 */
+	protected function setAlertFlashdata($type, $message)
+	{
+		$key = md5('Consent/alerts');
+
+		$alert = [
+			'type' => $type,
+			'message' => $message
+		];
+
+		if ($data = ee()->session->flashdata($key))
+		{
+			$data[] = $alert;
+		}
+		else
+		{
+			$data = [$alert];
+		}
+
+		ee()->session->set_flashdata($key, $data);
 	}
 
 	private function getValidRequestsFromParameter($param)
