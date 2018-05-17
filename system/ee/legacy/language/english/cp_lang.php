@@ -307,6 +307,8 @@ $lang = array(
 
 'btn_exporting' => 'Exporting',
 
+'btn_downloading' => 'Downloading',
+
 'will_be_logged' => 'This action will be logged',
 
 /* Sites and Channels */
