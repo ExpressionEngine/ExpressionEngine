@@ -1438,7 +1438,7 @@ class EE_Schema {
 			`expiration_date` int(10) DEFAULT NULL,
 			`response_date` int(10) DEFAULT NULL,
 			PRIMARY KEY (`consent_id`),
-			KEY `consent_request_version_id` (`consent_request_version_id`)
+			KEY `consent_request_version_id` (`consent_request_version_id`),
 			KEY `member_id` (`member_id`)
 		)";
 
