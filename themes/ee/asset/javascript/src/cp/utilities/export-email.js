@@ -205,4 +205,7 @@ if (document.readyState != 'loading') {
 
 $(document).ready(function () {
 	$('.form-standard form').off('submit');
+	$('button[type="submit"]').on('click', function(e) {
+		$(e.target).hide();
+	});
 });
