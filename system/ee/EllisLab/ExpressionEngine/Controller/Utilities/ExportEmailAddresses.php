@@ -15,6 +15,7 @@ namespace EllisLab\ExpressionEngine\Controller\Utilities;
 class ExportEmailAddresses extends Utilities {
 
 	const CACHE_KEY = '/export/email';
+	const CACHE_TTL = 300; // 5 mins
 
 	protected $batch_size = 10;
 	protected $total_members;
@@ -148,7 +149,7 @@ class ExportEmailAddresses extends Utilities {
 			];
 		}
 
-		ee()->cache->save(self::CACHE_KEY, $export);
+		ee()->cache->save(self::CACHE_KEY, $export, self::CACHE_TTL);
 	}
 
 	protected function buildAndDownloadCSV()
