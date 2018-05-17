@@ -19,6 +19,7 @@ class ExportEmailAddresses extends Utilities {
 
 	protected $batch_size = 10;
 	protected $total_members;
+	protected $domains = [];
 
 	function __construct()
 	{
@@ -71,13 +72,23 @@ class ExportEmailAddresses extends Utilities {
 								'content' => ee()->load->view('_shared/progress_bar', array('percent' => 0), TRUE)
 							]
 						]
+					],
+					[
+						'title' => 'validate_addresses',
+						'desc'  => 'validate_addresses_desc',
+						'fields' => [
+							'validate_email' => [
+								'type' => 'toggle',
+								'value' => 0
+							]
+						]
 					]
 				]
 			],
 			'buttons' => [
 				[
 					'name' => 'export',
-					'type' => 'submit',
+					'type' => 'button',
 					'value' => 'export',
 					'text' => 'export',
 					'working' => 'btn_exporting'
@@ -85,13 +96,24 @@ class ExportEmailAddresses extends Utilities {
 			]
 		];
 
-		if (ee()->cache->get(self::CACHE_KEY))
+		if ( ! empty($this->getFromCache('valid')))
 		{
 			$vars['buttons'][] = [
 				'name' => 'download',
 				'type' => 'submit',
-				'value' => 'download',
-				'text' => ucfirst(lang('download')),
+				'value' => 'valid',
+				'text' => 'download_valid_email_addresses',
+				'working' => 'btn_downloading'
+			];
+		}
+
+		if ( ! empty($this->getFromCache('invalid')))
+		{
+			$vars['buttons'][] = [
+				'name' => 'download',
+				'type' => 'submit',
+				'value' => 'invalid',
+				'text' => 'download_invalid_email_addresses',
 				'working' => 'btn_downloading'
 			];
 		}
@@ -109,10 +131,21 @@ class ExportEmailAddresses extends Utilities {
 
 		if (ee('Request')->post('download'))
 		{
-			$this->buildAndDownloadCSV();
+			$this->buildAndDownloadCSV(ee('Request')->post('download'));
 		}
 
 		$progress = (int) ee('Request')->post('progress');
+
+		if ($progress == 0)
+		{
+			$this->deleteCache('valid');
+			$this->deleteCache('invalid');
+		}
+
+		if ($this->needsValidation())
+		{
+			$this->batch_size = 5;
+		}
 
 		$members = ee('Model')->get('Member')
 			->fields('member_id', 'username', 'screen_name', 'email')
@@ -126,6 +159,7 @@ class ExportEmailAddresses extends Utilities {
 
 		if ($progress >= $this->total_members)
 		{
+			$this->deleteCache('domains');
 			ee()->output->send_ajax_response(['status' => 'finished']);
 		}
 
@@ -137,25 +171,40 @@ class ExportEmailAddresses extends Utilities {
 
 	protected function processBatch($members)
 	{
-		$export = ee()->cache->get(self::CACHE_KEY) ?: [];
+		$this->domains = $this->getFromCache('domains');
+		$valid = $this->getFromCache('valid');
+		$invalid = $this->getFromCache('invalid');
 
 		foreach ($members as $member)
 		{
-			$export[] = [
+			$data = [
 				'member_id'   => $member->member_id,
 				'username'    => $member->username,
 				'screen_name' => $member->screen_name,
 				'email'       => $member->email
 			];
+
+			if($this->emailIsValid($member->email))
+			{
+				$valid[] = $data;
+			}
+			else
+			{
+				$invalid[] = $data;
+			}
 		}
 
-		ee()->cache->save(self::CACHE_KEY, $export, self::CACHE_TTL);
+		$this->saveToCache('domains', $this->domains);
+		$this->saveToCache('valid', $valid);
+		$this->saveToCache('invalid', $invalid);
 	}
 
-	protected function buildAndDownloadCSV()
+	protected function buildAndDownloadCSV($type = 'valid')
 	{
-		$data = ee()->cache->get(self::CACHE_KEY) ?: [];
-		ee()->cache->delete(self::CACHE_KEY);
+		$type = ($type == 'invalid') ? 'invalid' : 'valid';
+
+		$data = $this->getFromCache($type);
+		$this->deleteCache($type);
 
 		$csv = ee('CSV');
 
@@ -164,10 +213,55 @@ class ExportEmailAddresses extends Utilities {
 			$csv->addRow($datum);
 		}
 
-		ee()->logger->log_action(lang('exported_email_addresses'));
+		ee()->logger->log_action(lang('exported_' . $type . '_email_addresses'));
 
 		ee()->load->helper('download');
-		force_download('email-addresses.csv', (string) $csv);
+		force_download($type . '-email-addresses.csv', (string) $csv);
+	}
+
+	protected function getFromCache($item)
+	{
+		return ee()->cache->get(self::CACHE_KEY . '/' . $item) ?: [];
+	}
+
+	protected function saveToCache($item, $data)
+	{
+		return ee()->cache->save(self::CACHE_KEY . '/' . $item, $data, self::CACHE_TTL);
+	}
+
+	protected function deleteCache($item)
+	{
+		return ee()->cache->delete(self::CACHE_KEY . '/' . $item);
+	}
+
+	protected function needsValidation()
+	{
+		$validate = ee('Request')->post('validate_email', FALSE);
+
+		return ($validate == TRUE || $validate == 'y');
+	}
+
+	protected function emailIsValid($email)
+	{
+		if ( ! $this->needsValidation())
+		{
+			// Intentionally not validating, so all emails pass this check
+			return TRUE;
+		}
+
+		if (filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE)
+		{
+			return FALSE;
+		}
+
+		list($box, $domain) = explode('@', $email);
+
+		if ( ! isset($this->domains[$domain]))
+		{
+			$this->domains[$domain] = checkdnsrr($domain);
+		}
+
+		return $this->domains[$domain];
 	}
 
 }

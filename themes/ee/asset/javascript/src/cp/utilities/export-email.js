@@ -30,6 +30,11 @@ EE.cp.export_email = {
 
 		this.buttons.on('click', function(event) {
 			event.preventDefault();
+			button = $(event.target);
+
+			button.addClass('work');
+			button.text(button.data('work-text'));
+
 			that._disableButton(true);
 			that._sendAjaxRequest(0);
 		});
@@ -71,11 +76,13 @@ EE.cp.export_email = {
 			that = this,
 			data = {
 				progress: 0,
+				validate_email: $('input[name="validate_email"]').val()
 			};
 
 		if (progress !== undefined) {
 			data = {
 				progress: progress,
+				validate_email: $('input[name="validate_email"]').val()
 			};
 		}
 
@@ -190,9 +197,12 @@ EE.cp.export_email = {
 	}
 }
 
-
 if (document.readyState != 'loading') {
 	EE.cp.export_email.init();
 } else {
 	document.addEventListener('DOMContentLoaded', EE.cp.export_email.init);
 }
+
+$(document).ready(function () {
+	$('.form-standard form').off('submit');
+});

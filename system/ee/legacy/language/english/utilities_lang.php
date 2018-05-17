@@ -29,8 +29,6 @@ $lang = array(
 
 'export_email_addresses' => 'Export Email Addresses',
 
-'exported_email_addresses' => 'Member email addresses were exported',
-
 'php_info' => '<abbr title="PHP: Hypertext Processor">PHP</abbr> Info',
 
 'query_form' => 'Query Form',
@@ -479,6 +477,18 @@ $lang = array(
 'export_email_addresses_desc' => 'Export names and email addresses of your %s members.',
 
 'export_warning_desc' => 'This action should only be done by authorized users. The resulting <abbr title="Comma Separated Values">CSV</abbr> file should be handled in harmony with your privacy policy.',
+
+'download_valid_email_addresses' => 'Download Valid Emails',
+
+'download_invalid_email_addresses' => 'Download Invalid Emails',
+
+'exported_valid_email_addresses' => 'Valid member email addresses were exported',
+
+'exported_invalid_email_addresses' => 'Invalid member email addresses were exported',
+
+'validate_addresses' => 'Validate email addresses?',
+
+'validate_addresses_desc' => 'Check the email for corret format and check that the domain exists.',
 
 );
 
