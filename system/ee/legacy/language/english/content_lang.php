@@ -944,8 +944,6 @@ $lang = array(
 
 'filter_selected_entries' => 'Filter selected entries',
 
-'important' => 'Important!',
-
 'no_cat_groups_in_common' => 'No <b>Category Groups</b> in common.',
 
 'bulk_edit' => 'Bulk Edit',
