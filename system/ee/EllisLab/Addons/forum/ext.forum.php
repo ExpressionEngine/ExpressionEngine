@@ -44,23 +44,21 @@ class Forum_ext
 	 */
 	public function anonymizeMember($member)
 	{
-		$ip_address = '0.0.0.0';
-
 		if ($posts = $member->getAssociation('forum:Posts')->get())
 		{
-			$posts->ip_address = $ip_address;
+			$posts->mapProperty('ip_address', [ee('IpAddress'), 'anonymize']);
 			$posts->save();
 		}
 
 		if ($searches = $member->getAssociation('forum:Search')->get())
 		{
-			$searches->ip_address = $ip_address;
+			$searches->mapProperty('ip_address', [ee('IpAddress'), 'anonymize']);
 			$searches->save();
 		}
 
 		if ($topics = $member->getAssociation('forum:Topic')->get())
 		{
-			$topics->ip_address = $ip_address;
+			$topics->mapProperty('ip_address', [ee('IpAddress'), 'anonymize']);
 			$topics->save();
 		}
 	}

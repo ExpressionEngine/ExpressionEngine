@@ -903,7 +903,7 @@ class Member extends ContentModel {
 
 		$username = 'anonymous'.$this->getId();
 		$email = 'redacted'.$this->getId();
-		$ip_address = '0.0.0.0';
+		$ip_address = ee('IpAddress')->anonymize($this->ip_address);
 
 		$this->setProperty('group_id', 2); // Ban member
 		$this->setProperty('username', $username);
@@ -918,13 +918,13 @@ class Member extends ContentModel {
 
 		if ($this->CpLogs)
 		{
-			$this->CpLogs->ip_address = $ip_address;
+			$this->CpLogs->mapProperty('ip_address', [ee('IpAddress'), 'anonymize']);
 			$this->CpLogs->save();
 		}
 
 		if ($this->SearchLogs)
 		{
-			$this->SearchLogs->ip_address = $ip_address;
+			$this->SearchLogs->mapProperty('ip_address', [ee('IpAddress'), 'anonymize']);
 			$this->SearchLogs->save();
 		}
 
@@ -933,13 +933,13 @@ class Member extends ContentModel {
 			$this->Comments->name = $username;
 			$this->Comments->email = $email;
 			$this->Comments->url = $email;
-			$this->Comments->ip_address = $ip_address;
+			$this->Comments->mapProperty('ip_address', [ee('IpAddress'), 'anonymize']);
 			$this->Comments->save();
 		}
 
 		if ($this->AuthoredChannelEntries)
 		{
-			$this->AuthoredChannelEntries->ip_address = $ip_address;
+			$this->AuthoredChannelEntries->mapProperty('ip_address', [ee('IpAddress'), 'anonymize']);
 			$this->AuthoredChannelEntries->save();
 		}
 	}
