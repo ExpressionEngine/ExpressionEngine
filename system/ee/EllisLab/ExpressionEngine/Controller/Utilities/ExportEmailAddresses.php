@@ -14,7 +14,7 @@ namespace EllisLab\ExpressionEngine\Controller\Utilities;
  */
 class ExportEmailAddresses extends Utilities {
 
-	const CACHE_KEY = '/export/email';
+	const CACHE_DIR = 'email-export/';
 	const CACHE_TTL = 300; // 5 mins
 
 	protected $batch_size = 10;
@@ -35,6 +35,8 @@ class ExportEmailAddresses extends Utilities {
 
 	public function index()
 	{
+		$this->garbageCollect();
+
 		ee()->cp->add_js_script('file', 'cp/utilities/export-email');
 
 		ee()->javascript->set_global([
@@ -221,17 +223,51 @@ class ExportEmailAddresses extends Utilities {
 
 	protected function getFromCache($item)
 	{
-		return ee()->cache->get(self::CACHE_KEY . '/' . $item) ?: [];
+		$fs = ee('Filesystem');
+		$path = PATH_CACHE . self::CACHE_DIR . $item;
+
+		if ($fs->exists($path) && $fs->isFile($path))
+		{
+			return unserialize($fs->read($path));
+		}
+
+		return [];
 	}
 
 	protected function saveToCache($item, $data)
 	{
-		return ee()->cache->save(self::CACHE_KEY . '/' . $item, $data, self::CACHE_TTL);
+		$fs = ee('Filesystem');
+
+		if ( ! is_dir(PATH_CACHE . self::CACHE_DIR))
+		{
+			$fs->mkdir(PATH_CACHE . self::CACHE_DIR);
+		}
+
+		$fs->write(PATH_CACHE . self::CACHE_DIR . $item, serialize($data), TRUE);
 	}
 
 	protected function deleteCache($item)
 	{
-		return ee()->cache->delete(self::CACHE_KEY . '/' . $item);
+		try
+		{
+			$fs = ee('Filesystem');
+			$fs->delete(PATH_CACHE . self::CACHE_DIR . $item);
+		}
+		catch (\Exception $e)
+		{
+			return;
+		}
+	}
+
+	protected function garbageCollect()
+	{
+		$fs = ee('Filesystem');
+		$path = PATH_CACHE . self::CACHE_DIR;
+
+		if ($fs->exists($path) && ee()->localize->now > ($fs->mtime($path) + self::CACHE_TTL))
+		{
+			$fs->delete($path);
+		}
 	}
 
 	protected function needsValidation()
