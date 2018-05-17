@@ -131,8 +131,9 @@ class Spam_mcp {
 				)
 			));
 
-			if ($spam->author_id != 0)
+			if ($spam->author_id != 0 && is_object($spam->Author))
 			{
+
 				$author = $spam->Author->getMemberName();
 			}
 			else
