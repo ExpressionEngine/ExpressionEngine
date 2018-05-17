@@ -14,13 +14,13 @@ namespace EllisLab\ExpressionEngine\Controller\Utilities;
  */
 class ExportEmailAddresses extends Utilities {
 
-	const CACHE_DIR = 'email-export/';
 	const CACHE_TTL = 300; // 5 mins
 
 	protected $batch_size = 10;
 	protected $validated_batch_size = 5;
 	protected $total_members;
 	protected $domains = [];
+	protected $export_path;
 
 	function __construct()
 	{
@@ -32,19 +32,39 @@ class ExportEmailAddresses extends Utilities {
 		}
 
 		$this->total_members = ee('Model')->get('Member')->count();
+
+		$this->export_path = ee('Request')->get('export_path', '');
+
+		if ( ! empty($this->export_path))
+		{
+			$this->export_path = ee('Encrypt')->decode(
+				$this->export_path,
+				ee()->config->item('session_crypt_key')
+			);
+		}
+
+		if (empty($this->export_path))
+		{
+			$this->export_path = 'expt_' . ee('Encrypt')->generateKey();
+		}
 	}
 
 	public function index()
 	{
 		$this->garbageCollect();
 
+		$export_path = ee('Encrypt')->encode(
+				$this->export_path,
+				ee()->config->item('session_crypt_key')
+			);
+
 		ee()->cp->add_js_script('file', 'cp/utilities/export-email');
 
 		ee()->javascript->set_global([
 			'export_email' => [
-				'endpoint'              => ee('CP/URL')->make('utilities/export-email-addresses/export')->compile(),
+				'endpoint'              => ee('CP/URL')->make('utilities/export-email-addresses/export', ['export_path' => $export_path])->compile(),
 				'total_members'         => $this->total_members,
-				'base_url'              => ee('CP/URL')->make('utilities/export-email-addresses')->compile(),
+				'base_url'              => ee('CP/URL')->make('utilities/export-email-addresses', ['export_path' => $export_path])->compile(),
 				'ajax_fail_banner'      => ee('CP/Alert')->makeInline('export-fail')
 					->asIssue()
 					->withTitle(lang('export_email_addresses_fail'))
@@ -168,7 +188,7 @@ class ExportEmailAddresses extends Utilities {
 
 		ee()->output->send_ajax_response([
 			'status' => 'in_progress',
-			'progress' => $progress
+			'progress' => $progress,
 		]);
 	}
 
@@ -225,7 +245,7 @@ class ExportEmailAddresses extends Utilities {
 	protected function getFromCache($item)
 	{
 		$fs = ee('Filesystem');
-		$path = PATH_CACHE . self::CACHE_DIR . $item;
+		$path = $this->getPath($item);
 
 		if ($fs->exists($path) && $fs->isFile($path))
 		{
@@ -238,23 +258,26 @@ class ExportEmailAddresses extends Utilities {
 	protected function saveToCache($item, $data)
 	{
 		$fs = ee('Filesystem');
+		$path = $this->getPath();
 
-		if ( ! is_dir(PATH_CACHE . self::CACHE_DIR))
+		if ( ! is_dir($path))
 		{
-			$fs->mkdir(PATH_CACHE . self::CACHE_DIR);
+			$fs->mkdir($path);
 		}
 
-		$fs->touch(PATH_CACHE . self::CACHE_DIR);
+		$fs->touch($path);
 
-		$fs->write(PATH_CACHE . self::CACHE_DIR . $item, serialize($data), TRUE);
+		$fs->write($path . $item, serialize($data), TRUE);
 	}
 
 	protected function deleteCache($item)
 	{
+		$path = $this->getPath($item);
+
 		try
 		{
 			$fs = ee('Filesystem');
-			$fs->delete(PATH_CACHE . self::CACHE_DIR . $item);
+			$fs->delete($path);
 		}
 		catch (\Exception $e)
 		{
@@ -265,7 +288,7 @@ class ExportEmailAddresses extends Utilities {
 	protected function garbageCollect()
 	{
 		$fs = ee('Filesystem');
-		$path = PATH_CACHE . self::CACHE_DIR;
+		$path = $this->getPath();
 
 		if ($fs->exists($path) && ee()->localize->now > ($fs->mtime($path) + self::CACHE_TTL))
 		{
@@ -301,6 +324,12 @@ class ExportEmailAddresses extends Utilities {
 		}
 
 		return $this->domains[$domain];
+	}
+
+	protected function getPath($item = '')
+	{
+		$path = PATH_CACHE . $this->export_path . $item;
+		return $path;
 	}
 
 }
