@@ -855,6 +855,15 @@ $lang = array(
 
 'edit_html_buttons_success_desc' => 'The <abbr title="Hyper-Text Markup Language">HTML</abbr> button <b>%s</b> has been updated.',
 
+/* Consent Requests */
+'consent_request_versions' => 'Versions of %s',
+
+'new_version' => 'New version',
+
+'app_consent_requests' => 'Application Consent Requests',
+
+'user_consent_requests' => 'User Consent Requests',
+
 );
 
 // EOF

@@ -118,6 +118,20 @@ class Member extends ContentModel {
 			'type' => 'hasOne',
 			'model' => 'MemberNewsView'
 		),
+		'AuthoredConsentRequests' => array(
+			'type' => 'hasMany',
+			'model' => 'ConsentRequest',
+			'to_key' => 'author_id',
+			'weak' => TRUE
+		),
+		'ConsentAuditLogs' => array(
+			'type' => 'hasMany',
+			'model' => 'ConsentAuditLog'
+		),
+		'Consents' => array(
+			'type' => 'hasMany',
+			'model' => 'Consent'
+		),
 		'SentMessages' => [
 			'type' => 'hasMany',
 			'model' => 'Message',

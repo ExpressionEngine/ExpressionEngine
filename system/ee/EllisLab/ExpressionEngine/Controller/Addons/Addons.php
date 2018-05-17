@@ -510,6 +510,8 @@ class Addons extends CP_Controller {
 			$addon_info = ee('Addon')->get($addon);
 			$party = ($addon_info->getAuthor() == 'EllisLab') ? 'first' : 'third';
 
+			$this->updateConsentRequests($addon_info);
+
 			$module = $this->getModule($addon);
 			if ( ! empty($module)
 				&& $module['installed'] === TRUE
@@ -671,78 +673,129 @@ class Addons extends CP_Controller {
 			'third' => array()
 		);
 
+		// Preflight for consents
+		$requests = [
+			'first' => [],
+			'third' => []
+		];
+
+		$can_install = TRUE;
+
 		foreach ($addons as $addon)
 		{
 			$info = ee('Addon')->get($addon);
-			ee()->load->add_package_path($info->getPath());
 
 			$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
 
-			$module = $this->getModule($addon);
-			if ( ! empty($module) && $module['installed'] === FALSE)
-			{
-				$name = $this->installModule($addon);
-				if ($name)
-				{
-					$installed[$party][$addon] = $name;
-				}
-			}
-
-			$fieldtype = $this->getFieldtype($addon);
-			if ( ! empty($fieldtype) && $fieldtype['installed'] === FALSE)
-			{
-				$name = $this->installFieldtype($addon);
-				if ($name && ! isset($installed[$addon]))
-				{
-					$installed[$party][$addon] = $name;
-				}
-			}
-
-			$extension = $this->getExtension($addon);
-			if ( ! empty($extension) && $extension['installed'] === FALSE)
-			{
-				$name = $this->installExtension($addon);
-				if ($name && ! isset($installed[$addon]))
-				{
-					$installed[$party][$addon] = $name;
-				}
-			}
-
-			$plugin = $this->getPlugin($addon);
-			if ( ! empty($plugin) && $plugin['installed'] === FALSE)
-			{
-				$typography = 'n';
-				if ($info->get('plugin.typography'))
-				{
-					$typography = 'y';
-				}
-
-				$model = ee('Model')->make('Plugin');
-				$model->plugin_name = $plugin['name'];
-				$model->plugin_package = $plugin['package'];
-				$model->plugin_version = $info->getVersion();
-				$model->is_typography_related = $typography;
-				$model->save();
-
-				if ( ! isset($installed[$addon]))
-				{
-					$installed[$party][$addon] = $plugin['name'];
-				}
-			}
-
-			ee()->load->remove_package_path($info->getPath());
+			$requests[$party] = array_merge($requests[$party], $this->getRequestsFor($info));
 		}
 
 		foreach (array('first', 'third') as $party)
 		{
-			if ( ! empty($installed[$party]))
+			if ( ! empty($requests[$party]))
 			{
+				$can_install = FALSE;
 				$alert = ee('CP/Alert')->makeInline($party . '-party')
-					->asSuccess()
-					->withTitle(lang('addons_installed'))
-					->addToBody(lang('addons_installed_desc'))
-					->addToBody(array_values($installed[$party]))
+					->asIssue()
+					->withTitle(lang('addons_not_installed'))
+					->addToBody(lang('existing_consent_request'))
+					->addToBody($requests[$party])
+					->addToBody(lang('contact_developer'))
 					->defer();
+			}
+		}
+
+		if ($can_install)
+		{
+			foreach ($addons as $addon)
+			{
+				$info = ee('Addon')->get($addon);
+				ee()->load->add_package_path($info->getPath());
+
+				$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
+
+				try
+				{
+					$this->installConsentRequests($info);
+				}
+				catch (\Exception $e)
+				{
+					$alert = ee('CP/Alert')->makeInline($party . '-party')
+						->asIssue()
+						->withTitle(lang('addons_not_installed'))
+						->addToBody(lang('existing_consent_request'))
+						->addToBody([$addon])
+						->addToBody(lang('contact_developer'))
+						->defer();
+					break;
+				}
+
+				$module = $this->getModule($addon);
+				if ( ! empty($module) && $module['installed'] === FALSE)
+				{
+					$name = $this->installModule($addon);
+					if ($name)
+					{
+						$installed[$party][$addon] = $name;
+					}
+				}
+
+				$fieldtype = $this->getFieldtype($addon);
+				if ( ! empty($fieldtype) && $fieldtype['installed'] === FALSE)
+				{
+					$name = $this->installFieldtype($addon);
+					if ($name && ! isset($installed[$addon]))
+					{
+						$installed[$party][$addon] = $name;
+					}
+				}
+
+				$extension = $this->getExtension($addon);
+				if ( ! empty($extension) && $extension['installed'] === FALSE)
+				{
+					$name = $this->installExtension($addon);
+					if ($name && ! isset($installed[$addon]))
+					{
+						$installed[$party][$addon] = $name;
+					}
+				}
+
+				$plugin = $this->getPlugin($addon);
+				if ( ! empty($plugin) && $plugin['installed'] === FALSE)
+				{
+					$typography = 'n';
+					if ($info->get('plugin.typography'))
+					{
+						$typography = 'y';
+					}
+
+					$model = ee('Model')->make('Plugin');
+					$model->plugin_name = $plugin['name'];
+					$model->plugin_package = $plugin['package'];
+					$model->plugin_version = $info->getVersion();
+					$model->is_typography_related = $typography;
+					$model->save();
+
+					if ( ! isset($installed[$addon]))
+					{
+						$installed[$party][$addon] = $plugin['name'];
+					}
+				}
+
+				ee()->load->remove_package_path($info->getPath());
+			}
+
+			foreach (array('first', 'third') as $party)
+			{
+				if ( ! empty($installed[$party]))
+				{
+					$alert = ee('CP/Alert')->makeInline($party . '-party')
+						->asSuccess()
+						->withTitle(lang('addons_installed'))
+						->addToBody(lang('addons_installed_desc'))
+						->addToBody(array_values($installed[$party]))
+						->defer();
+				}
 			}
 		}
 
@@ -784,6 +837,8 @@ class Addons extends CP_Controller {
 		foreach ($addons as $addon)
 		{
 			$info = ee('Addon')->get($addon);
+
+			$this->removeConsentRequests($info);
 
 			if (empty($info))
 			{
@@ -1955,6 +2010,122 @@ class Addons extends CP_Controller {
 			|| ! in_array($module['module_id'], $this->assigned_modules))
 		{
 			show_error(lang('unauthorized_access'), 403);
+		}
+	}
+
+	private function getRequestsFor($addon)
+	{
+		$return = [];
+
+		$prefix = $addon->getPrefix();
+		$requests = $addon->get('consent.requests', []);
+
+		// Preflight: if we have any consents that match there's been a problem.
+		foreach ($requests as $name => $values)
+		{
+			$consent_name = $prefix . ':' . $name;
+			if ($this->haveConsentRequest($consent_name))
+			{
+				$return[] = $consent_name;
+			}
+		}
+
+		return $return;
+	}
+
+	private function installConsentRequests($addon)
+	{
+		$requests = $this->getRequestsFor($addon);
+		if ( ! empty($requests))
+		{
+		    throw new \Exception;
+		}
+
+		$prefix = $this->getConsentPrefixForAddon($addon);
+		$requests = $addon->get('consent.requests', []);
+
+		foreach ($requests as $name => $values)
+		{
+			$consent_name = $prefix . ':' . $name;
+			$this->makeConsentRequest($consent_name, $values);
+		}
+	}
+
+	private function haveConsentRequest($name)
+	{
+		return (bool) ee('Model')->get('ConsentRequest')
+			->filter('consent_name', $name)
+			->count();
+	}
+
+	private function makeConsentRequest($name, $values)
+	{
+		$request = ee('Model')->make('ConsentRequest');
+		$request->user_created = FALSE; // App-generated request
+		$request->consent_name = $name;
+		$request->title = (isset($values['title'])) ? $values['title'] : $name;
+		$request->save();
+
+		if (isset($values['request']))
+		{
+			$version = ee('Model')->make('ConsentRequestVersion');
+			$version->request = $values['request'];
+			$version->request_format = (isset($values['request_format'])) ? $values['request_format'] : 'none';
+			$version->author_id = ee()->session->userdata['member_id'];
+			$version->create_date = ee()->localize->now;
+			$request->Versions->add($version);
+
+			$version->save();
+
+			$request->CurrentVersion = $version;
+			$request->save();
+		}
+	}
+
+	private function updateConsentRequests($addon)
+	{
+		$prefix = $this->getConsentPrefixForAddon($addon);
+		$requests = $addon->get('consent.requests', []);
+
+		foreach ($requests as $name => $values)
+		{
+			$consent_name = $prefix . ':' . $name;
+			if ( ! $this->haveConsentRequest($consent_name))
+			{
+				$this->makeConsentRequest($consent_name, $values);
+			}
+		}
+	}
+
+	private function removeConsentRequests($addon)
+	{
+		$prefix = $this->getConsentPrefixForAddon($addon);
+		$requests = $addon->get('consent.requests', []);
+
+		$consent_names = [];
+
+		foreach ($requests as $name => $values)
+		{
+			$consent_names[] = $prefix . ':' . $name;
+		}
+
+		if ( ! empty($consent_names))
+		{
+			ee('Model')->get('ConsentRequest')
+				->filter('consent_name', 'IN', $consent_names)
+				->delete();
+		}
+	}
+
+	private function getConsentPrefixForAddon($addon)
+	{
+		if (strpos($addon->getPath(), PATH_ADDONS) === 0)
+		{
+			return 'ee';
+		}
+		else
+		{
+			return $addon->getPrefix();
 		}
 	}
 }

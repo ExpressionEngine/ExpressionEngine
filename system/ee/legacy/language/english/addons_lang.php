@@ -55,6 +55,12 @@ $lang = array(
 
 'addons_installed_desc' => 'The following add-on(s) have been installed: ',
 
+'addons_not_installed' => 'Add-Ons Not Installed',
+
+'existing_consent_request' => 'The following add-on(s) could not be installed due to an existing Consent Request which the add-on(s) are trying to create:',
+
+'contact_developer' => 'Please contact the add-on developer(s) for assistance.',
+
 'addons_uninstalled' => 'Add-Ons Uninstalled',
 
 'addons_uninstalled_desc' => 'The following add-on(s) have been uninstalled: ',

@@ -103,6 +103,8 @@ class Profile extends CP_Controller {
 			$list->addItem(lang('date_settings'), ee('CP/URL')->make('members/profile/date', $this->query_string));
 		}
 
+		$list->addItem(lang('consents'), ee('CP/URL')->make('members/profile/consent', $this->query_string));
+
 		$publishing_link = NULL;
 
 		if ($this->cp->allowed_group('can_access_members', 'can_edit_members'))

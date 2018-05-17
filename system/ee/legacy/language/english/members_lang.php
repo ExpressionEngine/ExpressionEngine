@@ -722,6 +722,10 @@ $lang = array(
 
 'can_access_addon_settings' => 'Add-ons',
 
+'can_manage_consents' => 'Consent Requests',
+
+'can_manage_consents_desc' => 'When enabled members of this group will be able to manage consent requests.',
+
 'can_access_security_settings' => 'Security &amp; Privacy',
 
 'can_access_security_settings_desc' => 'When enabled members of this group will be able to access the system security and privacy settings.',
