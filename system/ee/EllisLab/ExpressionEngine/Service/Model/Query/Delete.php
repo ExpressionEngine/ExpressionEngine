@@ -123,11 +123,15 @@ class Delete extends Query {
 			$extra_where['site_id'] = array_unique($collection->pluck('site_id'));
 		}
 
+		$class = $to_meta->getClass();
+
+		$class::emitStatic('beforeBulkDelete', $delete_ids);
 		$collection->emit('beforeDelete');
 
 		$this->deleteAsLeaf($to_meta, $delete_ids, $extra_where);
 
 		$collection->emit('afterDelete');
+		$class::emitStatic('afterBulkDelete', $delete_ids);
 
 		return $delete_ids;
 	}
