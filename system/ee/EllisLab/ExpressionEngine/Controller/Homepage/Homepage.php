@@ -30,7 +30,8 @@ class Homepage extends CP_Controller {
 		$vars['number_of_entries'] = $stats->total_entries;
 		$vars['number_of_comments'] = $stats->total_comments;
 
-		$vars['last_visit'] = ee()->localize->human_time(ee()->session->userdata['last_visit']);
+		// First login, this is 0 on the first page load
+		$vars['last_visit'] = (empty(ee()->session->userdata['last_visit'])) ? ee()->localize->human_time() : ee()->localize->human_time(ee()->session->userdata['last_visit']);
 
 		if (ee()->config->item('enable_comments') == 'y')
 		{
