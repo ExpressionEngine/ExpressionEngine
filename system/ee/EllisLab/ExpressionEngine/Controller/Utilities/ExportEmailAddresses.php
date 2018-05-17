@@ -18,6 +18,7 @@ class ExportEmailAddresses extends Utilities {
 	const CACHE_TTL = 300; // 5 mins
 
 	protected $batch_size = 10;
+	protected $validated_batch_size = 5;
 	protected $total_members;
 	protected $domains = [];
 
@@ -146,7 +147,7 @@ class ExportEmailAddresses extends Utilities {
 
 		if ($this->needsValidation())
 		{
-			$this->batch_size = 5;
+			$this->batch_size = $this->validated_batch_size;
 		}
 
 		$members = ee('Model')->get('Member')
