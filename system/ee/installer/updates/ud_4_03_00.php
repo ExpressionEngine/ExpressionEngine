@@ -27,6 +27,7 @@ class Updater {
 			[
 				'addConsentTables',
 				'addConsentModerationPermissions',
+				'installConsentModule',
 			]
 		);
 
@@ -248,6 +249,27 @@ class Updater {
 
 		// Only assume super admins can moderate consent requests
 		ee()->db->update('member_groups', array('can_manage_consents' => 'y'), array('group_id' => 1));
+	}
+
+	private function installConsentModule()
+	{
+		$addon = ee('Addon')->get('consent');
+
+		if ( ! $addon->isInstalled())
+		{
+			ee()->load->library('addons');
+			ee()->addons->install_modules(['consent']);
+
+			try
+			{
+				$addon = ee('Addon')->get('consent');
+				$addon->installConsentRequests();
+			}
+			catch (\Exception $e)
+			{
+				// probably just ran the update again
+			}
+		}
 	}
 }
 

@@ -8,6 +8,7 @@ return [
 	'version'        => '1.0.0',
 	'namespace'      => 'EllisLab\Addons\Consent',
 	'settings_exist' => FALSE,
+	'built_in'       => TRUE,
 
 	// Consent Requests
 	'consent.requests' => [
