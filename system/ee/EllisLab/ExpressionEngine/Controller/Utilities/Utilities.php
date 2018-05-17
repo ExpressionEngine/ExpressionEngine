@@ -95,7 +95,7 @@ class Utilities extends CP_Controller {
 			}
 			if (ee('Permission')->has('can_access_members'))
 			{
-				$member_tools->addItem(lang('export_email_addresses'), ee('CP/URL')->make('utilities/export-email-addresses'));
+				$member_tools->addItem(lang('mass_notification_export'), ee('CP/URL')->make('utilities/export-email-addresses'));
 			}
 		}
 

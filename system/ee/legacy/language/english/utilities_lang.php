@@ -27,8 +27,6 @@ $lang = array(
 
 'member_import' => 'Member Import',
 
-'export_email_addresses' => 'Export Email Addresses',
-
 'php_info' => '<abbr title="PHP: Hypertext Processor">PHP</abbr> Info',
 
 'query_form' => 'Query Form',
@@ -472,6 +470,8 @@ $lang = array(
 
 /* Export Email Addresses */
 
+'mass_notification_export' => 'Mass Notification Export',
+
 'export_email_addresses_title' => 'Export a <abbr title="Comma Separated Values">CSV</abbr> File',
 
 'export_email_addresses_desc' => 'Export names and email addresses of your %s members.',
@@ -489,6 +489,8 @@ $lang = array(
 'validate_addresses' => 'Validate email addresses?',
 
 'validate_addresses_desc' => 'Check the email for corret format and check that the domain exists.',
+
+'export_email_addresses_fail' => 'Export Failed',
 
 );
 

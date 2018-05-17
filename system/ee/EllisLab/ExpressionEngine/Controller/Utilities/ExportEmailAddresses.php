@@ -52,7 +52,7 @@ class ExportEmailAddresses extends Utilities {
 
 		$vars = [
 			'hide_top_buttons' => TRUE,
-			'cp_page_title' => lang('export_email_addresses'),
+			'cp_page_title' => lang('mass_notification_export'),
 			'base_url' => ee('CP/URL')->make('utilities/export-email-addresses/export'),
 			'sections' => [
 				[
