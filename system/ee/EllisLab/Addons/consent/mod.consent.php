@@ -73,7 +73,23 @@ class Consent {
 	 */
 	public function requests()
 	{
+		$consent_names = $this->getValidRequestsFromParameter(ee()->TMPL->fetch_param('consent'));
 
+		if ( ! $consent_names)
+		{
+			return ee()->TMPL->no_results();
+		}
+
+		$requests = ee('Consent')->getConsentDataFor($consent_names);
+
+		$consents = [];
+		foreach ($requests as $request)
+		{
+			$request_vars = new ConsentVars($request, ee()->TMPL->var_single);
+			$consents[] = $request_vars->getTemplateVariables();
+		}
+
+		return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $consents);
 	}
 
 	/**
