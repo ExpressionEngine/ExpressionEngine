@@ -71,7 +71,15 @@ class Consent {
 	 */
 	public function grant($request_ref, $via = 'online_form')
 	{
-		$request = $this->getConsentRequest($request_ref);
+		try
+		{
+			$request = $this->getConsentRequest($request_ref);
+		}
+		catch (InvalidArgumentException $e)
+		{
+			// bubble up any exceptions so they are able to be handled by the caller
+			throw $e;
+		}
 
 		// Can't consent to an empty consent request
 		if ( ! $request->consent_request_version_id)
@@ -123,7 +131,15 @@ class Consent {
 	 */
 	public function withdraw($request_ref)
 	{
-		$request = $this->getConsentRequest($request_ref);
+		try
+		{
+			$request = $this->getConsentRequest($request_ref);
+		}
+		catch (InvalidArgumentException $e)
+		{
+			// bubble up any exceptions so they are able to be handled by the caller
+			throw $e;
+		}
 
 		if ( ! $this->callerHasPermission($request))
 		{
@@ -163,7 +179,8 @@ class Consent {
 	 */
 	public function hasGranted($request_ref)
 	{
-		try {
+		try
+		{
 			$request = $this->getConsentRequest($request_ref);
 		}
 		catch (InvalidArgumentException $e)
@@ -257,28 +274,46 @@ class Consent {
 	/**
 	 * Gets the values for a specific request and the member's consent
 	 *
-	 * @param string|array $request_names The name or an array of names
+	 * @param int|string|array $request_refs The name or an array of names, or id or array of ids
 	 * @return object A Collection of associative arrays for each Consent Request
 	 */
-	public function getConsentDataFor($request_names)
+	public function getConsentDataFor($request_refs)
 	{
-		if (empty($request_names))
+		if (empty($request_refs))
 		{
 			return new Collection([]);
 		}
 
-		if ( ! is_array($request_names))
+		if ( ! is_array($request_refs))
 		{
-			$request_names = [$request_names];
+			$request_refs = [$request_refs];
 		}
 
 		$data = [];
 		$consents = ($this->isAnonymous()) ? $this->getConsentCookie() : $this->member->Consents->indexBy('consent_request_id');
 
-		$requests = $this->model_delegate->get('ConsentRequest')
-			->with('CurrentVersion')
-			->filter('consent_name', 'IN', $request_names)
-			->all();
+		$requests = $this->model_delegate->get('ConsentRequest')->with('CurrentVersion');
+
+		$numeric_refs = TRUE;
+		foreach ($request_refs as $ref)
+		{
+			if ( ! is_numeric($ref))
+			{
+				$numeric_refs = FALSE;
+				break;
+			}
+		}
+
+		if ($numeric_refs)
+		{
+			$requests->filter('consent_request_id', 'IN', $request_refs);
+		}
+		else
+		{
+			$requests->filter('consent_name', 'IN', $request_refs);
+		}
+
+		$requests = $requests->all();
 
 		foreach ($requests as $request)
 		{
