@@ -221,6 +221,25 @@ class EE_Session {
 		unset($member_exists);
 	}
 
+	public function setSessionCookies()
+	{
+		ee()->input->set_cookie($this->c_session, $this->sdata['session_id'], $this->cookie_ttl);
+		ee()->input->set_cookie($this->c_expire, time()+$this->session_length, $this->cookie_ttl);
+		ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $expire);
+		ee()->input->set_cookie('last_activity', ee()->localize->now, $expire);
+
+		// Update session ID cookie
+		if ($this->validation != 's')
+		{
+			ee()->input->set_cookie($this->c_session , $this->sdata['session_id'],  $this->cookie_ttl);
+		}
+
+		if (REQ == 'PAGE')
+		{
+			$this->set_tracker_cookie($tracker);
+		}
+	}
+
 	/**
 	 * Fetch all session data
 	 *
@@ -376,9 +395,6 @@ class EE_Session {
 		$this->userdata['fingerprint']	= $this->sdata['fingerprint'];
 		$this->userdata['site_id']		= ee()->config->item('site_id');
 
-		ee()->input->set_cookie($this->c_session, $this->sdata['session_id'], $this->cookie_ttl);
-		ee()->input->set_cookie($this->c_expire, time()+$this->session_length, $this->cookie_ttl);
-
 		ee()->db->query(ee()->db->insert_string('exp_sessions', $this->sdata));
 
 		return $this->sdata['session_id'];
@@ -516,7 +532,6 @@ class EE_Session {
 		if ( ! ee()->input->cookie('last_visit'))
 		{
 			$this->userdata['last_visit'] = ee()->localize->now-($expire*10);
-			ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $expire);
 		}
 		else
 		{
@@ -529,11 +544,7 @@ class EE_Session {
 		if (($this->sdata['last_activity'] + $this->session_length) < ee()->localize->now)
 		{
 			$this->userdata['last_visit'] = $this->sdata['last_activity'];
-			ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $expire);
 		}
-
-		// Update the last activity with each page load
-		ee()->input->set_cookie('last_activity', ee()->localize->now, $expire);
 	}
 
 	/**
@@ -918,11 +929,6 @@ class EE_Session {
 			}
 		}
 
-		if (REQ == 'PAGE')
-		{
-			$this->set_tracker_cookie($tracker);
-		}
-
 		return $tracker;
 	}
 
@@ -997,12 +1003,6 @@ class EE_Session {
 		}
 
 		ee()->db->query(ee()->db->update_string('exp_sessions', $this->sdata, "session_id = '".$cur_session_id."'"));
-
-		// Update session ID cookie
-		if ($this->validation != 's')
-		{
-			ee()->input->set_cookie($this->c_session , $this->sdata['session_id'],  $this->cookie_ttl);
-		}
 
 		// We'll unset the "last activity" item from the session data array.
 		// We do this to avoid a conflict with the "last_activity" item in the

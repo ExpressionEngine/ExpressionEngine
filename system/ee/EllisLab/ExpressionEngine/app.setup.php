@@ -121,6 +121,7 @@ return array(
 			if ( ! isset(ee()->session))
 			{
 				ee()->load->library('session');
+				ee()->session->setSessionCookies();
 			}
 
 			$cp_url = ee()->config->item('cp_url');

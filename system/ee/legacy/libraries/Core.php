@@ -286,6 +286,8 @@ class EE_Core {
 		ee()->load->library('remember');
 		ee()->load->library('localize');
 		ee()->load->library('session');
+		ee()->session->setSessionCookies();
+
 		ee()->load->library('user_agent');
 
 		// Get timezone to set as PHP timezone
