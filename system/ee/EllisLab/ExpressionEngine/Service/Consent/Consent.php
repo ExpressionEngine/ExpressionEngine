@@ -72,13 +72,11 @@ class Consent {
 		$this->now = $now;
 
 		// load up the member's consent grants if we haven't yet
-		if (($cached_consents = $this->session_delegate->cache(__CLASS__, 'cached_consents_'.$member_id)) === FALSE)
+		if (($this->cached_consents = $this->session_delegate->cache(__CLASS__, 'cached_consents_'.$member_id)) === FALSE)
 		{
-			$cached_consents = $this->getGrantedConsents();
-			$this->session_delegate->set_cache(__CLASS__, 'cached_consents_'.$member_id, $cached_consents);
+			$this->cached_consents = $this->getGrantedConsents();
+			$this->session_delegate->set_cache(__CLASS__, 'cached_consents_'.$member_id, $this->cached_consents);
 		}
-
-		$this->cached_consents = $cached_consents;
 	}
 
 	/**
@@ -140,7 +138,7 @@ class Consent {
 			}
 		}
 
-		$this->addGrantedRequestToCache($request);
+		$this->addConsentToCache($consent);
 	}
 
 	/**
@@ -201,42 +199,23 @@ class Consent {
 	 */
 	public function hasGranted($request_ref)
 	{
-		if ($this->grantIsCached($request_ref))
+		if (is_numeric($request_ref))
 		{
-			return TRUE;
+			$grants = $this->cached_consents->pluck('consent_request_id');
+		}
+		else
+		{
+			$grants = $this->cached_consents->pluck('consent_name');
 		}
 
-		try
-		{
-			$request = $this->getConsentRequest($request_ref);
-		}
-		catch (InvalidArgumentException $e)
-		{
-			return FALSE;
-		}
-
-		// Anonymous visitor/guest consent check: it's in a cookie, if we can set cookies
-		if ($this->isAnonymous())
-		{
-			return array_key_exists($request->getId(), $this->getConsentCookie());
-		}
-
-		$consent = $this->getConsent($request->getId());
-
-		// They've never responded to the request, so consent was not given
-		if ( ! $consent)
-		{
-			return FALSE;
-		}
-
-		return $consent->isGranted();
+		return isset($grants[$request_ref]);
 	}
 
 	/**
 	 * Gets all the consents the member (or anonymous visitor) has granted
 	 * consent.
 	 *
-	 * @return object A Collection of Consent objects
+	 * @return object A Collection of Consent objects (ConsentRequest for anonymous)
 	 */
 	public function getGrantedConsents()
 	{
@@ -534,49 +513,29 @@ class Consent {
 	}
 
 	/**
-	 * Check if we know a request is granted already
+	 * Adds a consent to the cached consents
 	 *
-	 * @param  int|string $request_ref The name or ID of a consent request
-	 * @return boolean Whether a request is in the cached consents
-	 */
-	protected function grantIsCached($request_ref)
-	{
-		if (is_numeric($request_ref))
-		{
-			$grants = $this->cached_consents->pluck('consent_request_id');
-		}
-		else
-		{
-			$grants = $this->cached_consents->pluck('consent_name');
-		}
-
-		return isset($grants[$request_ref]);
-	}
-
-	/**
-	 * Adds a request to the cached consents
-	 *
-	 * @param object $request EllisLab\ExpressionEngine\Model\Consent\ConsentRequest
+	 * @param object $request EllisLab\ExpressionEngine\Model\Consent\Consent
 	 * @return void
 	 */
-	protected function addGrantedRequestToCache($request)
+	protected function addConsentToCache($consent)
 	{
-		$this->cached_consents[] = $request;
+		$this->cached_consents[] = $consent;
 		$this->session_delegate->set_cache(__CLASS__, 'cached_consents_'.$this->member_id, $this->cached_consents);
 	}
 
 	/**
-	 * Removes a request from the cached consents for the affected member
+	 * Removes a consent from the cached consents for the affected member
 	 *
-	 * @param  object $request EllisLab\ExpressionEngine\Model\Consent\ConsentRequest
+	 * @param  object $request EllisLab\ExpressionEngine\Model\Consent\Consent
 	 * @return void
 	 */
-	protected function removeGrantedRequestFromCache($request)
+	protected function removeConsentFromCache($consent)
 	{
 		$this->cached_consents = $this->cached_consents->filter(
-			function ($consent) use ($request)
+			function ($cached) use ($consent)
 			{
-				return $consent->consent_name != $request->consent_name;
+				return $cached->consent_name != $consent->consent_name;
 			}
 		);
 
