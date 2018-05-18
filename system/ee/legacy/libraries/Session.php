@@ -235,7 +235,7 @@ class EE_Session {
 
 		if (REQ == 'PAGE')
 		{
-			$this->set_tracker_cookie($tracker);
+			$this->set_tracker_cookie($this->tracker);
 		}
 
 		$this->_prep_flashdata();
