@@ -186,7 +186,7 @@ class Consent extends Settings {
 	{
 		foreach ($request_ids as $request_id)
 		{
-			ee('Consent', $this->member)->grant($request_id);
+			ee('Consent', $this->member->getId())->grant($request_id);
 		}
 
 		$request_titles = ee('Model')->get('ConsentRequest', $request_ids)
@@ -205,7 +205,7 @@ class Consent extends Settings {
 	{
 		foreach ($request_ids as $request_id)
 		{
-			ee('Consent', $this->member)->withdraw($request_id);
+			ee('Consent', $this->member->getId())->withdraw($request_id);
 		}
 
 		$request_titles = ee('Model')->get('ConsentRequest', $request_ids)
