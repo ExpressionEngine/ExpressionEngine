@@ -54,6 +54,7 @@ class MemberField extends FieldModel {
 	protected $m_field_cp_reg;
 	protected $m_field_fmt;
 	protected $m_field_show_fmt;
+	protected $m_field_exclude_from_anon;
 	protected $m_field_order;
 	protected $m_field_text_direction;
 	protected $m_field_settings;

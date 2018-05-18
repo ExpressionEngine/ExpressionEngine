@@ -27,6 +27,7 @@ class Updater {
 			[
 				'addConsentTables',
 				'addConsentModerationPermissions',
+				'addMemberFieldAnonExcludeColumn'
 			]
 		);
 
@@ -248,6 +249,21 @@ class Updater {
 
 		// Only assume super admins can moderate consent requests
 		ee()->db->update('member_groups', array('can_manage_consents' => 'y'), array('group_id' => 1));
+	}
+
+	private function addMemberFieldAnonExcludeColumn()
+	{
+		ee()->smartforge->add_column(
+			'member_fields',
+			[
+				'm_field_exclude_from_anon' => [
+					'type'    => 'CHAR(1)',
+					'null'    => FALSE,
+					'default' => 'n'
+				]
+			],
+			'm_field_show_fmt'
+		);
 	}
 }
 

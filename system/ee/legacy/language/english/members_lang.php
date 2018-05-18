@@ -842,6 +842,10 @@ $lang = array(
 
 'email_title' => 'Email Title',
 
+'exclude_from_anonymization' => 'Exclude from Anonymization Actions?',
+
+'exclude_from_anonymization_desc' => 'When enabled, this field will be unaffected by anonymization (right to forget) actions.', // TODO: docs link
+
 'field_created' => 'Field Created',
 
 'field_format' => 'Text Formatting',
