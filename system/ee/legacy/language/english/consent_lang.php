@@ -30,8 +30,6 @@ $lang = [
 
 'consent_request_updated_desc' => 'The consent request <b>%s</b> has been updated.',
 
-'consent_requests' => 'Consent Requests',
-
 'consent_requests_removed' => 'Consent requests removed',
 
 'consent_requests_removed_desc' => '%d consent requests were removed.',

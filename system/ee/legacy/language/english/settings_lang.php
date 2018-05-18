@@ -11,6 +11,8 @@ $lang = array(
 
 'comment_settings' => 'Comment Settings',
 
+'consent_requests' => 'Consent Requests',
+
 'content_and_design' => 'Content & Design',
 
 'debugging_output' => 'Debugging & Output',
