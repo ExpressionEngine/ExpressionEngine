@@ -70,6 +70,8 @@ class EE_Session {
 	public $sess_crypt_key		= '';
 
 	public $cookie_ttl			= '';
+	protected $activity_cookie_ttl = 31536000; // Activity cookie expiration:  One year
+
 	public $session_length		= '';
 	public $validation_type  	= '';
 
@@ -187,9 +189,6 @@ class EE_Session {
 			}
 		}
 
-		$this->_prep_flashdata();
-		ee()->remember->refresh();
-
 		// Fetch "tracker" cookie
 		if (REQ != 'CP')
 		{
@@ -223,21 +222,24 @@ class EE_Session {
 
 	public function setSessionCookies()
 	{
-		ee()->input->set_cookie($this->c_session, $this->sdata['session_id'], $this->cookie_ttl);
+		ee()->input->set_cookie($this->c_session, $this->userdata['session_id'], $this->cookie_ttl);
 		ee()->input->set_cookie($this->c_expire, time()+$this->session_length, $this->cookie_ttl);
-		ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $expire);
-		ee()->input->set_cookie('last_activity', ee()->localize->now, $expire);
+		ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $this->activity_cookie_ttl);
+		ee()->input->set_cookie('last_activity', ee()->localize->now, $this->activity_cookie_ttl);
 
 		// Update session ID cookie
 		if ($this->validation != 's')
 		{
-			ee()->input->set_cookie($this->c_session , $this->sdata['session_id'],  $this->cookie_ttl);
+			ee()->input->set_cookie($this->c_session , $this->userdata['session_id'],  $this->cookie_ttl);
 		}
 
 		if (REQ == 'PAGE')
 		{
 			$this->set_tracker_cookie($tracker);
 		}
+
+		$this->_prep_flashdata();
+		ee()->remember->refresh();
 	}
 
 	/**
@@ -518,9 +520,6 @@ class EE_Session {
 		// It enables us to track "read topics" with users who are not
 		// logged in.
 
-		// Cookie expiration:  One year
-		$expire = (60*60*24*365);
-
 		// Has the user been active before? If not we set the "last_activity" to the current time.
 		$this->sdata['last_activity'] = (int) ( ! ee()->input->cookie('last_activity')) ? ee()->localize->now : ee()->input->cookie('last_activity');
 
@@ -531,7 +530,7 @@ class EE_Session {
 		// doesn't hurt anything to set it this way for guests.
 		if ( ! ee()->input->cookie('last_visit'))
 		{
-			$this->userdata['last_visit'] = ee()->localize->now-($expire*10);
+			$this->userdata['last_visit'] = ee()->localize->now-($this->activity_cookie_ttl*10);
 		}
 		else
 		{

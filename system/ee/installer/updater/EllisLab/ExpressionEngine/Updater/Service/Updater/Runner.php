@@ -219,7 +219,6 @@ class Runner {
 
 		ee()->lang->loadfile('updater');
 		ee()->load->library('session');
-		ee()->session->setSessionCookies();
 
 		if (empty($rollback))
 		{

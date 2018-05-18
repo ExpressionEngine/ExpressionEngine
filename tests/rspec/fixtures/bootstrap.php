@@ -13,6 +13,4 @@ define('BOOT_ONLY', TRUE);
 include_once SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php';
 
 ee()->load->library('session');
-ee()->session->setSessionCookies();
-
 ee()->load->library('functions');

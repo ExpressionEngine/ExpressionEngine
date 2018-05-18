@@ -173,7 +173,6 @@ class Wizard extends CI_Controller {
 		$this->load->library('cp');
 		$this->load->library('functions');
 		$this->load->library('session');
-		ee()->session->setSessionCookies();
 		$this->load->driver('cache');
 		$this->load->helper('language');
 		$this->lang->loadfile('installer');

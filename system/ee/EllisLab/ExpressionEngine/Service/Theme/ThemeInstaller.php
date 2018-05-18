@@ -349,7 +349,6 @@ class ThemeInstaller {
 	public function createEntries($theme_name)
 	{
 		ee()->load->library('session');
-		ee()->session->setSessionCookies();
 		ee()->session->userdata['group_id'] = 1;
 
 		$entry_data_path = $this->theme_path."ee/site/{$theme_name}/channel_entries/";
