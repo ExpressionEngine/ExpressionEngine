@@ -22,13 +22,19 @@ class Consent extends Variables {
 	private $consent;
 
 	/**
+	 * @var array Single variables that are present in the template
+	 */
+	private $template_vars = [];
+
+	/**
 	 * Constructor
 	 *
 	 * @param array $consent Consent data from ee('Consent')->getConsentDataFor()
 	 */
-	public function __construct(array $consent)
+	public function __construct(array $consent, $template_vars = [])
 	{
 		$this->consent = $consent;
+		$this->template_vars = $template_vars;
 
 		parent::__construct();
 	}
@@ -74,7 +80,50 @@ class Consent extends Variables {
 			'consent_version_id'       => $this->consent['consent_request_version_id'],
 		];
 
+		$this->addActionUrls();
+
 		return $this->variables;
+	}
+
+	/**
+	 * Add Action URLs
+	 *
+	 * 	{consent_grant_url return='foo/bar'}
+	 * 	{consent_withdraw_url return='foo/bar'}
+	 *
+	 * Uses the return= parameter, or the current URI if not supplied
+	 */
+	private function addActionUrls()
+	{
+		$params = ['crid' => $this->consent['consent_request_id']];
+
+		foreach ($this->template_vars as $name => $vars)
+		{
+			unset($params['return']);
+
+			if (strncmp($name, 'consent_grant_url', 17) === 0 OR strncmp($name, 'consent_withdraw_url', 20) === 0)
+			{
+				$variable = ee('Variables/Parser')->parseVariableProperties($name);
+
+				if (isset($variable['params']['return']))
+				{
+					$params['return'] = ee('Encrypt')->encode($variable['params']['return']);
+				}
+				else
+				{
+					$params['return'] = ee('Encrypt')->encode(ee()->uri->uri_string);
+				}
+
+				if ($variable['field_name'] == 'consent_grant_url')
+				{
+					$this->variables[$name] = $this->action('Consent', 'grantConsent', $params);
+				}
+				else
+				{
+					$this->variables[$name] = $this->action('Consent', 'withdrawConsent', $params);
+				}
+			}
+		}
 	}
 }
 // END CLASS

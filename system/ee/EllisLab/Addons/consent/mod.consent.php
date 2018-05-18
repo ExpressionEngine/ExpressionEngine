@@ -45,7 +45,7 @@ class Consent {
 		$consents = [];
 		foreach ($requests as $request)
 		{
-			$request_vars = new ConsentVars($request);
+			$request_vars = new ConsentVars($request, ee()->TMPL->var_single);
 			$consents[] = $request_vars->getTemplateVariables();
 		}
 
@@ -169,7 +169,40 @@ class Consent {
 	 */
 	public function grantConsent()
 	{
+		if (empty($_POST))
+		{
+			$this->validateGetCsrf();
+		}
 
+		$request_id = ee()->input->get_post('crid');
+		$request = ee('Consent')->getConsentDataFor($request_id)->first();
+
+		if (empty($request))
+		{
+			ee()->output->throwAuthError();
+		}
+
+		try
+		{
+			ee('Consent')->grant($request_id);
+		}
+		catch (\InvalidArgumentException $e)
+		{
+			ee()->output->throwAuthError();
+		}
+
+		$message = sprintf(lang('consent_prefs_saved'), htmlentities($request['title']));
+
+		if (AJAX_REQUEST)
+		{
+			$this->output->send_ajax_response(['success' => $message]);
+		}
+		else
+		{
+			$this->setAlertFlashdata('success', $message);
+			$return = ee('Encrypt')->decode(ee()->input->get_post('return'));
+			ee()->functions->redirect(ee()->functions->create_url($return));
+		}
 	}
 
 	/**
@@ -180,7 +213,40 @@ class Consent {
 	 */
 	public function withdrawConsent()
 	{
+		if (empty($_POST))
+		{
+			$this->validateGetCsrf();
+		}
 
+		$request_id = ee()->input->get_post('crid');
+		$request = ee('Consent')->getConsentDataFor($request_id)->first();
+
+		if (empty($request))
+		{
+			ee()->output->throwAuthError();
+		}
+
+		try
+		{
+			ee('Consent')->withdraw($request_id);
+		}
+		catch (\InvalidArgumentException $e)
+		{
+			ee()->output->throwAuthError();
+		}
+
+		$message = sprintf(lang('consent_prefs_saved'), htmlentities($request['title']));
+
+		if (AJAX_REQUEST)
+		{
+			$this->output->send_ajax_response(['success' => $message]);
+		}
+		else
+		{
+			$this->setAlertFlashdata('success', $message);
+			$return = ee('Encrypt')->decode(ee()->input->get_post('return'));
+			ee()->functions->redirect(ee()->functions->create_url($return));
+		}
 	}
 
 	/**
@@ -212,6 +278,12 @@ class Consent {
 		ee()->session->set_flashdata($key, $data);
 	}
 
+	/**
+	 * Get Valid Consent Requests from tag parameter
+	 *
+	 * @param  string $param supplied tag parameter
+	 * @return array valid names in accord with the parameter
+	 */
 	private function getValidRequestsFromParameter($param)
 	{
 		$requests = ee('Model')->get('ConsentRequest')->fields('consent_name');
@@ -229,6 +301,21 @@ class Consent {
 		}
 
 		return $requests->all()->pluck('consent_name');
+	}
+
+	/**
+	 * Check GET CSRF token
+	 *
+	 * @return void, throws auth error on failure
+	 */
+	private function validateGetCsrf()
+	{
+		$token = ee()->input->get('token');
+
+		if ($token != CSRF_TOKEN)
+		{
+			ee()->output->throwAuthError();
+		}
 	}
 }
 // END CLASS
