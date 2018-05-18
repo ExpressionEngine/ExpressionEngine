@@ -38,12 +38,17 @@ class Consent {
 	private $addon_prefix = '';
 
 	/**
-	 * @var object$model_delegate An injected `ee('Model')` object
+	 * @var object Collection of granted consents for this Member
+	 */
+	private $cached_consents;
+
+	/**
+	 * @var object $model_delegate An injected `ee('Model')` object
 	 */
 	protected $model_delegate;
 
 	/**
-	 * @var object$input_delegate An injected `ee()->input` object
+	 * @var object $input_delegate An injected `ee()->input` object
 	 */
 	protected $input_delegate;
 
@@ -59,6 +64,15 @@ class Consent {
 		$this->member = $member;
 		$this->actor = $actor;
 		$this->now = $now;
+
+		// load up the member's consent grants if we haven't yet
+		if (($cached_consents = ee()->session->cache(__CLASS__, 'cached_consents_'.$member->getId())) === FALSE)
+		{
+			$cached_consents = $this->getGrantedRequests()->indexBy('consent_name');
+			ee()->session->set_cache(__CLASS__, 'cached_consents_'.$member->getId(), $cached_consents);
+		}
+
+		$this->cached_consents = $cached_consents;
 	}
 
 	/**
@@ -119,6 +133,8 @@ class Consent {
 				$consent->log(sprintf(lang('consent_granted_by_log_msg'), $this->getActorName(), $via));
 			}
 		}
+
+		$this->addGrantedRequestToCache($request);
 	}
 
 	/**
@@ -179,6 +195,11 @@ class Consent {
 	 */
 	public function hasGranted($request_ref)
 	{
+		if ($this->grantIsCached($request_ref))
+		{
+			return TRUE;
+		}
+
 		try
 		{
 			$request = $this->getConsentRequest($request_ref);
@@ -511,5 +532,46 @@ class Consent {
 		}
 
 		return $consent;
+	}
+
+	/**
+	 * Check if we know a request is granted already
+	 *
+	 * @param  int|string $request_ref The name or ID of a consent request
+	 * @return boolean Whether a request is in the cached consents
+	 */
+	protected function grantIsCached($request_ref)
+	{
+		if (is_numeric($request_ref))
+		{
+			$grant_ids = $this->cached_consents->pluck('consent_request_id');
+			return isset($grant_ids[$request_ref]);
+		}
+
+		return isset($this->cached_consents[$request_ref]);
+	}
+
+	/**
+	 * Adds a request to the cached consents
+	 *
+	 * @param object $request EllisLab\ExpressionEngine\Model\Consent\ConsentRequest
+	 * @return void
+	 */
+	protected function addGrantedRequestToCache($request)
+	{
+		$this->cached_consents[$request->consent_name] = $request;
+		ee()->session->set_cache(__CLASS__, 'cached_consents_'.$this->member->getId(), $this->cached_consents);
+	}
+
+	/**
+	 * Removes a request from the cached consents for the affected member
+	 *
+	 * @param  object $request EllisLab\ExpressionEngine\Model\Consent\ConsentRequest
+	 * @return void
+	 */
+	protected function removeGrantedRequestFromCache($request)
+	{
+		unset($this->cached_consents[$request->consent_name]);
+		ee()->session->set_cache(__CLASS__, 'cached_consents_'.$this->member->getId(), $this->cached_consents);
 	}
 }
