@@ -23,14 +23,14 @@ class Consent {
 	const COOKIE_NAME = 'visitor_consents';
 
 	/**
-	 * @var Member $member The Member the consent relates to
+	 * @var int $member_id The Member ID the consent relates to
 	 */
-	protected $member;
+	protected $member_id;
 
 	/**
-	 * @var Member $actor The Member acting, usually the member being acted upon, but may be a super admin.
+	 * @var int $actor_id The Member ID acting, usually the member being acted upon, but may be a super admin.
 	 */
-	protected $actor;
+	protected $actor_userdata;
 
 	/**
 	 * @var string The addon prefix, if any, e.g. (addon_name:)
@@ -53,23 +53,29 @@ class Consent {
 	protected $input_delegate;
 
 	/**
+	 * @var object $session_delegate An injected `ee()->session` object
+	 */
+	protected $session_delegate;
+
+	/**
 	 * @var int $now The current timestamp
 	 */
 	protected $now;
 
-	public function __construct(ModelFacade $model_delegate, $input_delegate, Member $member, Member $actor, $now)
+	public function __construct(ModelFacade $model_delegate, $input_delegate, $session_delegate, $member_id, $actor_userdata, $now)
 	{
 		$this->model_delegate = $model_delegate;
 		$this->input_delegate = $input_delegate;
-		$this->member = $member;
-		$this->actor = $actor;
+		$this->session_delegate = $session_delegate;
+		$this->member_id = $member_id;
+		$this->actor_userdata = $actor_userdata;
 		$this->now = $now;
 
 		// load up the member's consent grants if we haven't yet
-		if (($cached_consents = ee()->session->cache(__CLASS__, 'cached_consents_'.$member->getId())) === FALSE)
+		if (($cached_consents = $this->session_delegate->cache(__CLASS__, 'cached_consents_'.$member_id)) === FALSE)
 		{
-			$cached_consents = $this->getGrantedRequests()->indexBy('consent_name');
-			ee()->session->set_cache(__CLASS__, 'cached_consents_'.$member->getId(), $cached_consents);
+			$cached_consents = $this->getGrantedConsents();
+			$this->session_delegate->set_cache(__CLASS__, 'cached_consents_'.$member_id, $cached_consents);
 		}
 
 		$this->cached_consents = $cached_consents;
@@ -227,12 +233,12 @@ class Consent {
 	}
 
 	/**
-	 * Gets all the consent requests the member (or anonymous visitor) has granted
+	 * Gets all the consents the member (or anonymous visitor) has granted
 	 * consent.
 	 *
-	 * @return object A Collection of ConsentRequest objects
+	 * @return object A Collection of Consent objects
 	 */
-	public function getGrantedRequests()
+	public function getGrantedConsents()
 	{
 		if ($this->isAnonymous())
 		{
@@ -249,25 +255,18 @@ class Consent {
 				->all();
 		}
 
-		if ( ! $this->member->Consents)
-		{
-			return new Collection([]);
-		}
-
 		$consents = $this->model_delegate->get('Consent')
 			->with('ConsentRequest')
 			->with(['ConsentRequest' => 'CurrentVersion'])
 			->with('ConsentRequestVersion')
-			->filter('member_id', $this->member->getId())
+			->filter('member_id', $this->member_id)
 			->filter('consent_given', 'y')
 			->all()
 			->filter(function($consent) {
 				return $consent->isGranted();
 			});
 
-		return new Collection($consents->map(function($consent) {
-			return $consent->ConsentRequest;
-		}));
+		return $consents;
 	}
 
 	/**
@@ -311,8 +310,7 @@ class Consent {
 		}
 
 		$data = [];
-		$consents = ($this->isAnonymous()) ? $this->getConsentCookie() : $this->member->Consents->indexBy('consent_request_id');
-
+		$consents = ($this->isAnonymous()) ? $this->getConsentCookie() : $this->cached_consents->indexBy('consent_request_id');
 		$requests = $this->model_delegate->get('ConsentRequest')->with('CurrentVersion');
 
 		$numeric_refs = TRUE;
@@ -369,6 +367,7 @@ class Consent {
 					$consent = $consents[$request->getId()];
 					$data[$key] = array_merge($consent->getValues(), $data[$key]);
 					unset($data[$key]['consent_given']);
+
 					$data[$key]['has_granted'] = $consent->isGranted();
 
 					foreach (['expiration_date', 'response_date'] as $property)
@@ -418,7 +417,7 @@ class Consent {
 	 */
 	protected function isAnonymous()
 	{
-		return ($this->member->getId() == 0);
+		return ($this->member_id == 0);
 	}
 
 	/**
@@ -428,7 +427,7 @@ class Consent {
 	 */
 	protected function memberIsActor()
 	{
-		return ($this->member->getId() == $this->actor->getId());
+		return ($this->member_id == $this->actor_userdata['member_id']);
 	}
 
 	/**
@@ -438,7 +437,7 @@ class Consent {
 	 */
 	protected function getActorName()
 	{
-		return $this->actor->getMemberName() . ' (#' . $this->actor->getId() . ')';
+		return $this->actor_userdata['screen_name'] . ' ('.$this->actor_userdata['screen_name'] . ', #' . $this->actor_userdata['member_id'] . ')';
 	}
 
 	/**
@@ -508,7 +507,7 @@ class Consent {
 			->with('ConsentRequest')
 			->with(['ConsentRequest' => 'CurrentVersion'])
 			->with('ConsentRequestVersion')
-			->filter('member_id', $this->member->getId())
+			->filter('member_id', $this->member_id)
 			->filter('consent_request_id', $request_id)
 			->first();
 	}
@@ -528,7 +527,7 @@ class Consent {
 			$consent = $this->model_delegate->make('Consent');
 			$consent->ConsentRequest = $request;
 			$consent->ConsentRequestVersion = $request->CurrentVersion;
-			$consent->Member = $this->member;
+			$consent->member_id = $this->member_id;
 		}
 
 		return $consent;
@@ -544,11 +543,14 @@ class Consent {
 	{
 		if (is_numeric($request_ref))
 		{
-			$grant_ids = $this->cached_consents->pluck('consent_request_id');
-			return isset($grant_ids[$request_ref]);
+			$grants = $this->cached_consents->pluck('consent_request_id');
+		}
+		else
+		{
+			$grants = $this->cached_consents->pluck('consent_name');
 		}
 
-		return isset($this->cached_consents[$request_ref]);
+		return isset($grants[$request_ref]);
 	}
 
 	/**
@@ -559,8 +561,8 @@ class Consent {
 	 */
 	protected function addGrantedRequestToCache($request)
 	{
-		$this->cached_consents[$request->consent_name] = $request;
-		ee()->session->set_cache(__CLASS__, 'cached_consents_'.$this->member->getId(), $this->cached_consents);
+		$this->cached_consents[] = $request;
+		$this->session_delegate->set_cache(__CLASS__, 'cached_consents_'.$this->member_id, $this->cached_consents);
 	}
 
 	/**
@@ -571,7 +573,13 @@ class Consent {
 	 */
 	protected function removeGrantedRequestFromCache($request)
 	{
-		unset($this->cached_consents[$request->consent_name]);
-		ee()->session->set_cache(__CLASS__, 'cached_consents_'.$this->member->getId(), $this->cached_consents);
+		$this->cached_consents = $this->cached_consents->filter(
+			function ($consent) use ($request)
+			{
+				return $consent->consent_name != $request->consent_name;
+			}
+		);
+
+		$this->session_delegate->set_cache(__CLASS__, 'cached_consents_'.$this->member_id, $this->cached_consents);
 	}
 }
