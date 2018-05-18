@@ -22,6 +22,7 @@ class Consent extends Settings {
 	{
 		parent::__construct();
 		$this->base_url  = ee('CP/URL')->make($this->base_url, $this->query_string);
+		ee()->lang->loadfile('consent');
 	}
 
 	public function index()

@@ -92,6 +92,16 @@ $lang = array(
 
 'comment' => 'Comment',
 
+'consent_granted' => 'Consent Granted',
+
+'consent_granted_desc' => 'Your consent was granted for the following requests:',
+
+'consent_withdrawn' => 'Consent Withdrawn',
+
+'consent_withdrawn_desc' => 'Your consent was withdrawn for the following requests:',
+
+'consents' => 'Consents',
+
 'control_panel_settings' => 'CP Customization',
 
 'cp_homepage' => 'Control Panel Homepage',
@@ -243,9 +253,6 @@ $lang = array(
 'location' => 'Location',
 
 'location_desc' => 'Your physical location.',
-
-
-'accept_admin_email' => 'From admins',
 
 'login_as' => 'Login as %s',
 
@@ -552,15 +559,6 @@ $lang = array(
 'year' => 'Year',
 
 'your_html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Formatting Buttons',
-
-'consent_granted' => 'Consent Granted',
-
-'consent_granted_desc' => 'Your consent was granted for the following requests:',
-
-'consent_withdrawn' => 'Consent Withdrawn',
-
-'consent_withdrawn_desc' => 'Your consent was withdrawn for the following requests:',
-
 
 );
 
