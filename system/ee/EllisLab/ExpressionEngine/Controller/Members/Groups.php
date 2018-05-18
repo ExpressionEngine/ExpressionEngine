@@ -1553,6 +1553,18 @@ class Groups extends Members\Members {
 									'value' => element('can_access_security_settings', $values)
 								)
 							)
+						),
+						array(
+							'title' => 'can_manage_consents',
+							'desc' => 'can_manage_consents_desc',
+							'group' => 'can_access_sys_prefs',
+							'caution' => TRUE,
+							'fields' => array(
+								'can_manage_consents' => array(
+									'type' => 'yes_no',
+									'value' => element('can_manage_consents', $values)
+								)
+							)
 						)
 					)
 				)

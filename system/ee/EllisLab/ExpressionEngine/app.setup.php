@@ -15,6 +15,7 @@ use EllisLab\ExpressionEngine\Service\Alert;
 use EllisLab\ExpressionEngine\Service\Category;
 use EllisLab\ExpressionEngine\Service\ChannelSet;
 use EllisLab\ExpressionEngine\Service\Config;
+use EllisLab\ExpressionEngine\Service\Consent;
 use EllisLab\ExpressionEngine\Service\CustomMenu;
 use EllisLab\ExpressionEngine\Service\Database;
 use EllisLab\ExpressionEngine\Service\Encrypt;
@@ -329,6 +330,51 @@ return array(
 		{
 			return new Template\Variables\LegacyParser();
 		},
+
+		'Consent' => function($ee, $member = NULL)
+		{
+			if (ee()->session->userdata('member_id'))
+			{
+				$logged_in_member = $ee->make('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+			}
+			else
+			{
+				$logged_in_member = $ee->make('Model')->make('Member', ['member_id' => 0]);
+				$logged_in_member->screen_name = lang('anonymous');
+				$logged_in_member->group_id = 3;
+			}
+
+			if ( ! $member instanceof EllisLab\ExpressionEngine\Model\Member\Member)
+			{
+				$member_id = (is_numeric($member)) ? $member : ee()->session->userdata('member_id');
+
+				if ($member_id)
+				{
+					if ($member_id == ee()->session->userdata('member_id'))
+					{
+						$member = $logged_in_member;
+					}
+					else
+					{
+						$member = $ee->make('Model')->get('Member', $member_id)->first();
+					}
+				}
+				else
+				{
+					$member = $ee->make('Model')->make('Member', ['member_id' => 0]);
+					$member->screen_name = lang('anonymous');
+					$member->group_id = 3;
+				}
+			}
+
+			return new Consent\Consent(
+				$ee->make('Model'),
+				ee()->input,
+				$member,
+				$logged_in_member,
+				ee()->localize->now);
+		},
+
 	),
 
 	'services.singletons' => array(
@@ -574,7 +620,13 @@ return array(
 			'EmailTracker' => 'Model\Email\EmailTracker',
 
 			// ..\Revision
-			'RevisionTracker' => 'Model\Revision\RevisionTracker'
+			'RevisionTracker' => 'Model\Revision\RevisionTracker',
+
+			// ..\Consent
+			'Consent' => 'Model\Consent\Consent',
+			'ConsentAuditLog' => 'Model\Consent\ConsentAuditLog',
+			'ConsentRequest' => 'Model\Consent\ConsentRequest',
+			'ConsentRequestVersion' => 'Model\Consent\ConsentRequestVersion'
 	)
 );
 

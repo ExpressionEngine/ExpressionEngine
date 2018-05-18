@@ -309,6 +309,8 @@ $lang = array(
 
 'new_tab_url' => 'New Tab URL',
 
+'no_consents_found' => 'No <b>Consents</b> found.',
+
 'no_blocked_members_found' => 'No <b>Blocked members</b> found.',
 
 'no_bookmarklets_found' => 'No <b>Bookmarklets</b> found.',
@@ -550,6 +552,15 @@ $lang = array(
 'year' => 'Year',
 
 'your_html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Formatting Buttons',
+
+'consent_granted' => 'Consent Granted',
+
+'consent_granted_desc' => 'Your consent was granted for the following requests:',
+
+'consent_withdrawn' => 'Consent Withdrawn',
+
+'consent_withdrawn_desc' => 'Your consent was withdrawn for the following requests:',
+
 
 );
 
