@@ -104,6 +104,10 @@ class EE_Input {
 	 */
 	public function set_cookie($name = '', $value = '', $expire = '', $domain = '', $path = '/', $prefix = '')
 	{
+		if ( ! $this->cookieIsAllowed($name))
+		{
+			return;
+		}
 
 		$data = array(
 			'name' => $name,
@@ -231,6 +235,44 @@ class EE_Input {
 
 		return setcookie($data['prefix'].$data['name'], $data['value'], $data['expire'],
 			$data['path'], $data['domain'], $data['secure_cookie'], $data['httponly']);
+	}
+
+	/**
+	 * Is the cookie allowed?
+	 *
+	 * @param  string $name Name of the cookie
+	 * @return boolean Whether or not it's allowed to be set
+	 */
+	private function cookieIsAllowed($name)
+	{
+		// only worry about it if consent is required
+		if (bool_config_item('require_cookie_consent') !== TRUE)
+		{
+			return TRUE;
+		}
+
+		// unregistered cookies, pass, but log
+		if ( ! ee('CookieRegistry')->isRegistered($name))
+		{
+			ee()->load->library('logger');
+			ee()->logger->developer('A cookie ('.htmlentities($name).') is being sent without being properly registered, and does not meet cookie compliance policies. Register this cookie appropriately in your addon.setup.php file.', TRUE, 604800);
+			return TRUE;
+		}
+
+		switch (ee('CookieRegistry')->getType($name))
+		{
+			case ee('CookieRegistry')::NECESSARY:
+				return TRUE;
+			case ee('CookieRegistry')::FUNCTIONALITY:
+				return ee('Consent')->hasGranted('ee:cookies_functionality');
+			case ee('CookieRegistry')::PERFORMANCE:
+				return ee('Consent')->hasGranted('ee:cookies_performance');
+			case ee('CookieRegistry')::TARGETING:
+				return ee('Consent')->hasGranted('ee:cookies_targeting');
+		}
+
+		// something bad happened
+		return FALSE;
 	}
 
 	/**
