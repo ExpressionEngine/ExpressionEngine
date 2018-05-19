@@ -75,8 +75,8 @@ class Consent extends Variables {
 			'consent_response_date'    => $this->consent['response_date'],
 			'consent_retention_period' => $this->consent['retention_period'],
 			'consent_short_name'       => $this->consent['consent_name'],
-			'consent_user_created'     => $this->consent['user_created'],
 			'consent_title'            => $this->consent['title'],
+			'consent_user_created'     => $this->consent['user_created'],
 			'consent_version_id'       => $this->consent['consent_request_version_id'],
 		];
 
