@@ -223,7 +223,6 @@ class EE_Session {
 	public function setSessionCookies()
 	{
 		ee()->input->set_cookie($this->c_session, $this->userdata['session_id'], $this->cookie_ttl);
-		ee()->input->set_cookie($this->c_expire, time()+$this->session_length, $this->cookie_ttl);
 		ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $this->activity_cookie_ttl);
 		ee()->input->set_cookie('last_activity', ee()->localize->now, $this->activity_cookie_ttl);
 
@@ -485,7 +484,6 @@ class EE_Session {
 
 		ee()->remember->delete();
 		ee()->input->delete_cookie($this->c_session);
-		ee()->input->delete_cookie($this->c_expire);
 		ee()->input->delete_cookie($this->c_anon);
 		ee()->input->delete_cookie('tracker');
 	}
