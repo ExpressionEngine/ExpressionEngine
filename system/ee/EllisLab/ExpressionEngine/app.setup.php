@@ -606,6 +606,7 @@ return [
 		'last_visit',
 		'remember',
 		'sessionid',
+		'visitor_consents',
 	],
 	'cookies.functionality' => [
 		'anon',

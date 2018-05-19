@@ -12,11 +12,6 @@ return [
 
 	// Consent Requests
 	'consent.requests' => [
-	  'cookies_necessary' => [
-	    'title' => 'Strictly Necessary Cookies',
-	    'request' => 'These cookies are required in order for the website to work properly. If you do not allow these cookies, some parts of the website may not work properly, such as logging in, submitting forms, and other standard website behavior.',
-	    'request_format' => 'none',
-	  ],
 	  'cookies_functionality' => [
 	    'title' => 'Functionality Cookies',
 	    'request' => 'These cookies help us personalize content and functionality for you, including remembering changes you have made to parts of the website that you can customize, or selections for services made on previous visits. If you do not allow these cookies, some portions of our website may be less friendly and easy to use, forcing you to enter content or set your preferences on each visit.',
