@@ -222,12 +222,11 @@ class EE_Session {
 
 	public function setSessionCookies()
 	{
-		ee()->input->set_cookie($this->c_session, $this->userdata['session_id'], $this->cookie_ttl);
 		ee()->input->set_cookie('last_visit', $this->userdata['last_visit'], $this->activity_cookie_ttl);
 		ee()->input->set_cookie('last_activity', ee()->localize->now, $this->activity_cookie_ttl);
 
 		// Update session ID cookie
-		if ($this->validation != 's')
+		if ($this->session_exists === TRUE && $this->validation != 's')
 		{
 			ee()->input->set_cookie($this->c_session , $this->userdata['session_id'],  $this->cookie_ttl);
 		}
@@ -395,6 +394,12 @@ class EE_Session {
 		$this->userdata['session_id']	= $this->sdata['session_id'];
 		$this->userdata['fingerprint']	= $this->sdata['fingerprint'];
 		$this->userdata['site_id']		= ee()->config->item('site_id');
+
+		// Set the session cookie, ONLY if this method is not called from the context of the constructor, i.e. a login action
+		if (isset(ee()->session))
+		{
+			ee()->input->set_cookie($this->c_session , $this->userdata['session_id'],  $this->cookie_ttl);
+		}
 
 		ee()->db->query(ee()->db->insert_string('exp_sessions', $this->sdata));
 
