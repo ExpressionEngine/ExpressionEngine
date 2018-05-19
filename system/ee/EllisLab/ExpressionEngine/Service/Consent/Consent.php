@@ -542,3 +542,6 @@ class Consent {
 		$this->session_delegate->set_cache(__CLASS__, 'cached_consents_'.$this->member_id, $this->cached_consents);
 	}
 }
+// END CLASS
+
+// EOF
