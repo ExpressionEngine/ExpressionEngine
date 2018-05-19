@@ -45,7 +45,7 @@ use EllisLab\Addons\Spam\Service\Spam;
 use EllisLab\Addons\FilePicker\Service\FilePicker;
 
 // TODO should put the version in here at some point ...
-return array(
+return [
 
 	'author' => 'EllisLab',
 	'name' => 'ExpressionEngine',
@@ -374,6 +374,11 @@ return array(
 			);
 		},
 
+		'CookieRegistry' => function($ee)
+		{
+			return new Consent\CookieRegistry();
+		},
+
 		'CP/Alert' => function($ee)
 		{
 			$view = $ee->make('View')->make('_shared/alert');
@@ -592,7 +597,28 @@ return array(
 			'ConsentAuditLog' => 'Model\Consent\ConsentAuditLog',
 			'ConsentRequest' => 'Model\Consent\ConsentRequest',
 			'ConsentRequestVersion' => 'Model\Consent\ConsentRequestVersion'
-	)
-);
+	),
+	'cookies.necessary' => [
+		'cp_last_site_id',
+		'csrf_token',
+		'flash',
+		'last_activity',
+		'last_visit',
+		'remember',
+		'sessionid',
+	],
+	'cookies.functional' => [
+		'anon',
+		'forum_theme',
+		'forum_topics',
+		'my_email',
+		'my_location',
+		'my_name',
+		'my_url',
+		'notify_me',
+		'save_info',
+		'tracker',
+	],
+];
 
 // EOF
