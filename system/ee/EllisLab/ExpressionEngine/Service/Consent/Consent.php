@@ -23,6 +23,11 @@ class Consent {
 	const COOKIE_NAME = 'visitor_consents';
 
 	/**
+	 * @var array Cookie data, for visitors
+	 */
+	protected $cookie = [];
+
+	/**
 	 * @var int $member_id The Member ID the consent relates to
 	 */
 	protected $member_id;
@@ -77,6 +82,16 @@ class Consent {
 			$this->cached_consents = $this->getGrantedConsents();
 			$this->session_delegate->set_cache(__CLASS__, 'cached_consents_'.$member_id, $this->cached_consents);
 		}
+
+		// keep persistent cookie data, otherwise subsequent reads will not reflect changes made before new cookie headers are sent
+		if ($this->isAnonymous())
+		{
+			if (($this->cookie = $this->session_delegate->cache(__CLASS__, 'cookie_data_'.$member_id)) === FALSE)
+			{
+				$this->cookie = $this->getConsentCookie();
+				$this->session_delegate->set_cache(__CLASS__, 'cookie_data_'.$member_id, $this->cookie);
+			}
+		}
 	}
 
 	/**
@@ -112,9 +127,9 @@ class Consent {
 
 		if ($this->isAnonymous())
 		{
-			$cookie = $this->getConsentCookie();
-			$cookie[$request->getId()] = $this->now;
-			$this->saveConsentCookie($cookie);
+			$this->cookie[$request->getId()] = $this->now;
+			$this->saveConsentCookie($this->cookie);
+			$this->addConsentToCache($request);
 		}
 		else
 		{
@@ -136,9 +151,9 @@ class Consent {
 			{
 				$consent->log(sprintf(lang('consent_granted_by_log_msg'), $this->getActorName(), $via));
 			}
-		}
 
-		$this->addConsentToCache($consent);
+			$this->addConsentToCache($consent);
+		}
 	}
 
 	/**
@@ -168,9 +183,9 @@ class Consent {
 
 		if ($this->isAnonymous())
 		{
-			$cookie = $this->getConsentCookie();
-			unset($cookie[$request->getId()]);
-			$this->saveConsentCookie($cookie);
+			unset($this->cookie[$request->getId()]);
+			$this->saveConsentCookie($this->cookie);
+			$this->removeConsentFromCache($request);
 		}
 		else
 		{
@@ -187,9 +202,9 @@ class Consent {
 			{
 				$consent->log(sprintf(lang('consent_withdrawn_by_log_msg'), $this->getActorName()));
 			}
-		}
 
-		$this->removeConsentFromCache($consent);
+			$this->removeConsentFromCache($consent);
+		}
 	}
 
 	/**
@@ -207,7 +222,16 @@ class Consent {
 		}
 		else
 		{
-			$grants = $this->cached_consents->ConsentRequest->indexBy('consent_name');
+			if ($this->isAnonymous())
+			{
+				// anonymous is a collection of ConsentRequests
+				$grants = $this->cached_consents->indexBy('consent_name');
+			}
+			else
+			{
+				// logged in is a collection of Consents
+				$grants = $this->cached_consents->ConsentRequest->indexBy('consent_name');
+			}
 		}
 
 		return isset($grants[$request_ref]);
@@ -232,7 +256,7 @@ class Consent {
 
 			return $this->model_delegate->get('ConsentRequest')
 				->with('CurrentVersion')
-				->filter('consent_request_id', $request_ids)
+				->filter('consent_request_id', 'IN', $request_ids)
 				->all();
 		}
 
@@ -430,7 +454,6 @@ class Consent {
 	{
 		$cookie = $this->input_delegate->cookie(self::COOKIE_NAME);
 		$cookie = ee('Encrypt/Cookie')->getVerifiedCookieData($cookie);
-		$cookie = json_decode($cookie, TRUE);
 
 		if ( ! $cookie)
 		{
@@ -448,9 +471,10 @@ class Consent {
 	 */
 	protected function saveConsentCookie(array $consented_to)
 	{
-		$payload = ee('Encrypt/Cookie')->signCookieData(json_encode($consented_to));
+		$payload = ee('Encrypt/Cookie')->signCookieData($consented_to);
 		// 60 * 60 * 24 * 365 = 31556952; A year of seconds
 		$this->input_delegate->set_cookie(self::COOKIE_NAME, $payload, 31556952);
+		$this->session_delegate->set_cache(__CLASS__, 'cookie_data_'.$this->member_id, $consented_to);
 	}
 
 	/**
@@ -537,7 +561,16 @@ class Consent {
 		$this->cached_consents = $this->cached_consents->filter(
 			function ($cached) use ($consent)
 			{
-				return $cached->ConsentRequest->consent_name != $consent->ConsentRequest->consent_name;
+				if ($this->isAnonymous())
+				{
+					// anonymous is a collection of ConsentRequests
+					return $cached->consent_name != $consent->consent_name;
+				}
+				else
+				{
+					// logged in is a collection of Consents
+					return $cached->ConsentRequest->consent_name != $consent->ConsentRequest->consent_name;
+				}
 			}
 		);
 
