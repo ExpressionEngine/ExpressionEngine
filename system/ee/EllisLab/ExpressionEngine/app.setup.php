@@ -607,7 +607,7 @@ return [
 		'remember',
 		'sessionid',
 	],
-	'cookies.functional' => [
+	'cookies.functionality' => [
 		'anon',
 		'forum_theme',
 		'forum_topics',

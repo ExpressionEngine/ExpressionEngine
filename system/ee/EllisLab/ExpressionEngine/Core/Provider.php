@@ -303,7 +303,7 @@ class Provider extends InjectionBindingDecorator {
 	protected function registerCookies()
 	{
 		$cookie_reg = $this->make('ee:CookieRegistry');
-		foreach (['Necessary', 'Functional', 'Performance', 'Targeting'] as $type)
+		foreach (['Necessary', 'Functionality', 'Performance', 'Targeting'] as $type)
 		{
 			foreach ($this->get('cookies.'.strtolower($type), []) as $cookie_name)
 			{

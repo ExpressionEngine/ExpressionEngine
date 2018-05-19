@@ -20,9 +20,9 @@ class CookieRegistry {
 	const NECESSARY = 0;
 
 	/**
-	 * @var int Value to indicate Functional cookies
+	 * @var int Value to indicate Functionality cookies
 	 */
-	const FUNCTIONAL = 1;
+	const FUNCTIONALITY = 1;
 
 	/**
 	 * @var int Value to indicate Performance cookies
@@ -51,14 +51,14 @@ class CookieRegistry {
 	}
 
 	/**
-	 * Register a cookie as Functional
+	 * Register a cookie as Functionality
 	 *
 	 * @param  string $name Name of the cookie
 	 * @return void
 	 */
-	public function registerFunctional($name)
+	public function registerFunctionality($name)
 	{
-		$this->cookies[$name] = self::FUNCTIONAL;
+		$this->cookies[$name] = self::FUNCTIONALITY;
 	}
 
 	/**
@@ -95,14 +95,14 @@ class CookieRegistry {
 	}
 
 	/**
-	 * Is this cookie Functional?
+	 * Is this cookie Functionality?
 	 *
 	 * @param  string $name Name of the cookie
-	 * @return boolean Whether or not the cookie is Functional
+	 * @return boolean Whether or not the cookie is Functionality
 	 */
-	public function isFunctional($name)
+	public function isFunctionality($name)
 	{
-		return $this->cookieIs($name, self::FUNCTIONAL);
+		return $this->cookieIs($name, self::FUNCTIONALITY);
 	}
 
 	/**
