@@ -41,12 +41,11 @@ class Consent {
 		}
 
 		$requests = ee('Consent')->getConsentDataFor($consent_names);
+		$consents = $this->getVariablesForRequests($requests);
 
-		$consents = [];
-		foreach ($requests as $request)
+		if (empty($consents))
 		{
-			$request_vars = new ConsentVars($request, ee()->TMPL->var_single);
-			$consents[] = $request_vars->getTemplateVariables();
+			return ee()->TMPL->no_results();
 		}
 
 		$vars[] = ['consents' => $consents];
@@ -81,12 +80,11 @@ class Consent {
 		}
 
 		$requests = ee('Consent')->getConsentDataFor($consent_names);
+		$consents = $this->getVariablesForRequests($requests);
 
-		$consents = [];
-		foreach ($requests as $request)
+		if (empty($consents))
 		{
-			$request_vars = new ConsentVars($request, ee()->TMPL->var_single);
-			$consents[] = $request_vars->getTemplateVariables();
+			return ee()->TMPL->no_results();
 		}
 
 		return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $consents);
@@ -151,7 +149,7 @@ class Consent {
 
 		if (AJAX_REQUEST)
 		{
-			$this->output->send_ajax_response(['success' => $message]);
+			ee()->output->send_ajax_response(['success' => $message]);
 		}
 		else
 		{
@@ -195,7 +193,7 @@ class Consent {
 
 		if (AJAX_REQUEST)
 		{
-			$this->output->send_ajax_response(['success' => $message]);
+			ee()->output->send_ajax_response(['success' => $message]);
 		}
 		else
 		{
@@ -239,7 +237,7 @@ class Consent {
 
 		if (AJAX_REQUEST)
 		{
-			$this->output->send_ajax_response(['success' => $message]);
+			ee()->output->send_ajax_response(['success' => $message]);
 		}
 		else
 		{
@@ -301,6 +299,38 @@ class Consent {
 		}
 
 		return $requests->all()->pluck('consent_name');
+	}
+
+	/**
+	 * Get Variables for Requests
+	 *
+	 * 	Abstracted for re-use and to standardize user_created= filtering
+	 *
+	 * @param  array $requests Consent data from ee('Consent')->getConsentDataFor()
+	 * @return array Variables for parsing
+	 */
+	private function getVariablesForRequests($requests)
+	{
+		$user_created = ee()->TMPL->fetch_param('user_created');
+
+		$consents = [];
+		foreach ($requests as $request)
+		{
+			if ($user_created == 'only' && ! $request['user_created'])
+			{
+				continue;
+			}
+
+			if ($user_created == 'no' && $request['user_created'])
+			{
+				continue;
+			}
+
+			$request_vars = new ConsentVars($request, ee()->TMPL->var_single);
+			$consents[] = $request_vars->getTemplateVariables();
+		}
+
+		return $consents;
 	}
 
 	/**
