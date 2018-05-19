@@ -188,6 +188,8 @@ class Consent {
 				$consent->log(sprintf(lang('consent_withdrawn_by_log_msg'), $this->getActorName()));
 			}
 		}
+
+		$this->removeConsentFromCache($consent);
 	}
 
 	/**
@@ -201,11 +203,11 @@ class Consent {
 	{
 		if (is_numeric($request_ref))
 		{
-			$grants = $this->cached_consents->pluck('consent_request_id');
+			$grants = $this->cached_consents->indexBy('consent_request_id');
 		}
 		else
 		{
-			$grants = $this->cached_consents->pluck('consent_name');
+			$grants = $this->cached_consents->ConsentRequest->indexBy('consent_name');
 		}
 
 		return isset($grants[$request_ref]);
@@ -535,7 +537,7 @@ class Consent {
 		$this->cached_consents = $this->cached_consents->filter(
 			function ($cached) use ($consent)
 			{
-				return $cached->consent_name != $consent->consent_name;
+				return $cached->ConsentRequest->consent_name != $consent->ConsentRequest->consent_name;
 			}
 		);
 
