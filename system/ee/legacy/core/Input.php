@@ -251,6 +251,7 @@ class EE_Input {
 			return TRUE;
 		}
 
+		// Need a local ref for PHP < 7, can't do ee('CookieRegistry')::CONST
 		$cookie_reg = ee('CookieRegistry');
 
 		// unregistered cookies, pass, but log
