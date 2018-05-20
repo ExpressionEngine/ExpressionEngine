@@ -251,23 +251,25 @@ class EE_Input {
 			return TRUE;
 		}
 
+		$cookie_reg = ee('CookieRegistry');
+
 		// unregistered cookies, pass, but log
-		if ( ! ee('CookieRegistry')->isRegistered($name))
+		if ( ! $cookie_reg->isRegistered($name))
 		{
 			ee()->load->library('logger');
 			ee()->logger->developer('A cookie ('.htmlentities($name).') is being sent without being properly registered, and does not meet cookie compliance policies. Register this cookie appropriately in your addon.setup.php file.', TRUE, 604800);
 			return TRUE;
 		}
 
-		switch (ee('CookieRegistry')->getType($name))
+		switch ($cookie_reg->getType($name))
 		{
-			case ee('CookieRegistry')::NECESSARY:
+			case $cookie_reg::NECESSARY:
 				return TRUE;
-			case ee('CookieRegistry')::FUNCTIONALITY:
+			case $cookie_reg::FUNCTIONALITY:
 				return ee('Consent')->hasGranted('ee:cookies_functionality');
-			case ee('CookieRegistry')::PERFORMANCE:
+			case $cookie_reg::PERFORMANCE:
 				return ee('Consent')->hasGranted('ee:cookies_performance');
-			case ee('CookieRegistry')::TARGETING:
+			case $cookie_reg::TARGETING:
 				return ee('Consent')->hasGranted('ee:cookies_targeting');
 		}
 
