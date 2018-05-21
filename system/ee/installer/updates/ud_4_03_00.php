@@ -255,7 +255,7 @@ class Updater {
 	{
 		$addon = ee('Addon')->get('consent');
 
-		if ( ! $addon OR $addon->isInstalled())
+		if ( ! $addon OR ! $addon->isInstalled())
 		{
 			ee()->load->library('addons');
 			ee()->addons->install_modules(['consent']);
