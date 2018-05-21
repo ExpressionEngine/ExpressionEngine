@@ -6,6 +6,8 @@ $lang = array(
 
 
 /* Sidebar */
+'all_consent_logs' => 'All %d Consent Audit Logs',
+
 'all_cp_logs' => 'All %d Control Panel Logs',
 
 'all_developer_logs' => 'All %d Developer Logs',
@@ -18,6 +20,8 @@ $lang = array(
 
 'clear_cp_logs' => 'Remove all CP Access Logs',
 
+'consent_log' => 'Consent',
+
 'cp_log' => 'Control Panel',
 
 'date_logged' => 'Date logged',
@@ -29,6 +33,8 @@ $lang = array(
 'logs_deleted' => 'Logs Deleted',
 
 'logs_deleted_desc' => '<b>%d</b> log(s) deleted from <b>%s</b> logs',
+
+'no_consent_logs_found' => 'No <b>Consent audit logs</b> found.',
 
 'no_control_panel_logs_found' => 'No <b>Control panel logs</b> found.',
 
@@ -45,6 +51,8 @@ $lang = array(
 'site_search' => 'Site',
 
 'throttle_log' => 'Throttling',
+
+'view_consent_log' => 'Consent Audit Logs',
 
 'view_cp_log' => 'Control Panel Access Logs',
 

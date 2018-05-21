@@ -45,7 +45,7 @@ use EllisLab\Addons\Spam\Service\Spam;
 use EllisLab\Addons\FilePicker\Service\FilePicker;
 
 // TODO should put the version in here at some point ...
-return array(
+return [
 
 	'author' => 'EllisLab',
 	'name' => 'ExpressionEngine',
@@ -330,47 +330,26 @@ return array(
 			return new Template\Variables\LegacyParser();
 		},
 
-		'Consent' => function($ee, $member = NULL)
+		'Consent' => function($ee, $member_id = NULL)
 		{
-			if (ee()->session->userdata('member_id'))
+			$actor_userdata = ee()->session->userdata;
+			if ( ! ee()->session->userdata('member_id'))
 			{
-				$logged_in_member = $ee->make('Model')->get('Member', ee()->session->userdata('member_id'))->first();
-			}
-			else
-			{
-				$logged_in_member = $ee->make('Model')->make('Member', ['member_id' => 0]);
-				$logged_in_member->screen_name = lang('anonymous');
-				$logged_in_member->group_id = 3;
+				$actor_userdata['screen_name'] = lang('anonymous');
+				$actor_userdata['username'] = lang('anonymous');
 			}
 
-			if ( ! $member instanceof EllisLab\ExpressionEngine\Model\Member\Member)
+			if ( ! $member_id)
 			{
-				$member_id = (is_numeric($member)) ? $member : ee()->session->userdata('member_id');
-
-				if ($member_id)
-				{
-					if ($member_id == ee()->session->userdata('member_id'))
-					{
-						$member = $logged_in_member;
-					}
-					else
-					{
-						$member = $ee->make('Model')->get('Member', $member_id)->first();
-					}
-				}
-				else
-				{
-					$member = $ee->make('Model')->make('Member', ['member_id' => 0]);
-					$member->screen_name = lang('anonymous');
-					$member->group_id = 3;
-				}
+				$member_id = $actor_userdata['member_id'];
 			}
 
 			return new Consent\Consent(
 				$ee->make('Model'),
 				ee()->input,
-				$member,
-				$logged_in_member,
+				ee()->session,
+				$member_id,
+				$actor_userdata,
 				ee()->localize->now);
 		},
 
@@ -393,6 +372,11 @@ return array(
 			return new ChannelSet\Factory(
 				ee()->config->item('site_id')
 			);
+		},
+
+		'CookieRegistry' => function($ee)
+		{
+			return new Consent\CookieRegistry();
 		},
 
 		'CP/Alert' => function($ee)
@@ -621,7 +605,29 @@ return array(
 			'ConsentAuditLog' => 'Model\Consent\ConsentAuditLog',
 			'ConsentRequest' => 'Model\Consent\ConsentRequest',
 			'ConsentRequestVersion' => 'Model\Consent\ConsentRequestVersion'
-	)
-);
+	),
+	'cookies.necessary' => [
+		'cp_last_site_id',
+		'csrf_token',
+		'flash',
+		'last_activity',
+		'last_visit',
+		'remember',
+		'sessionid',
+		'visitor_consents',
+	],
+	'cookies.functionality' => [
+		'anon',
+		'forum_theme',
+		'forum_topics',
+		'my_email',
+		'my_location',
+		'my_name',
+		'my_url',
+		'notify_me',
+		'save_info',
+		'tracker',
+	],
+];
 
 // EOF

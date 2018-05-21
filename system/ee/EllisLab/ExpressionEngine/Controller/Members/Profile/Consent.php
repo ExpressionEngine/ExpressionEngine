@@ -22,6 +22,7 @@ class Consent extends Settings {
 	{
 		parent::__construct();
 		$this->base_url  = ee('CP/URL')->make($this->base_url, $this->query_string);
+		ee()->lang->loadfile('consent');
 	}
 
 	public function index()
@@ -186,7 +187,7 @@ class Consent extends Settings {
 	{
 		foreach ($request_ids as $request_id)
 		{
-			ee('Consent', $this->member)->grant($request_id);
+			ee('Consent', $this->member->getId())->grant($request_id);
 		}
 
 		$request_titles = ee('Model')->get('ConsentRequest', $request_ids)
@@ -205,7 +206,7 @@ class Consent extends Settings {
 	{
 		foreach ($request_ids as $request_id)
 		{
-			ee('Consent', $this->member)->withdraw($request_id);
+			ee('Consent', $this->member->getId())->withdraw($request_id);
 		}
 
 		$request_titles = ee('Model')->get('ConsentRequest', $request_ids)

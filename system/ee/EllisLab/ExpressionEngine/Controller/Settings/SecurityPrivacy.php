@@ -102,6 +102,14 @@ class SecurityPrivacy extends Settings {
 					'fields' => array(
 						'cookie_secure' => array('type' => 'yes_no')
 					)
+				),
+				array(
+					'title' => 'require_cookie_consent',
+					'desc' => 'require_cookie_consent_desc',
+					'security' => TRUE,
+					'fields' => array(
+						'require_cookie_consent' => array('type' => 'yes_no')
+					)
 				)
 			),
 			'member_security_settings' => array(

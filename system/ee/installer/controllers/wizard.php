@@ -51,6 +51,7 @@ class Wizard extends CI_Controller {
 	public $required_modules = array(
 		'channel',
 		'comment',
+		'consent',
 		'member',
 		'stats',
 		'rte',
@@ -64,7 +65,7 @@ class Wizard extends CI_Controller {
 
 	// Native First Party ExpressionEngine Modules (everything else is in third
 	// party folder)
-	public $native_modules = array('blacklist', 'channel', 'comment', 'commerce',
+	public $native_modules = array('blacklist', 'channel', 'comment', 'commerce', 'consent',
 		'email', 'emoticon', 'file', 'forum', 'gallery', 'ip_to_nation',
 		'jquery', 'member', 'metaweblog_api', 'moblog', 'pages', 'query', 'relationship',
 		'rss', 'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
@@ -1570,6 +1571,9 @@ class Wizard extends CI_Controller {
 		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
 		ee()->load->library('addons');
 		$this->module_install_errors = ee()->addons->install_modules($this->required_modules);
+
+		$consent = ee('Addon')->get('consent');
+		$consent->installConsentRequests();
 
 		return TRUE;
 	}

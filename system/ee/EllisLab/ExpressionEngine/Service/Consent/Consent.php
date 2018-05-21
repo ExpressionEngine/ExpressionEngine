@@ -23,14 +23,19 @@ class Consent {
 	const COOKIE_NAME = 'visitor_consents';
 
 	/**
-	 * @var Member $member The Member the consent relates to
+	 * @var array Cookie data, for visitors
 	 */
-	protected $member;
+	protected $cookie = [];
 
 	/**
-	 * @var Member $actor The Member acting, usually the member being acted upon, but may be a super admin.
+	 * @var int $member_id The Member ID the consent relates to
 	 */
-	protected $actor;
+	protected $member_id;
+
+	/**
+	 * @var array $actor_userdata Injected ee()->session->userdata for the actor, usually the member being acted upon, but may be a super admin.
+	 */
+	protected $actor_userdata;
 
 	/**
 	 * @var string The addon prefix, if any, e.g. (addon_name:)
@@ -38,27 +43,55 @@ class Consent {
 	private $addon_prefix = '';
 
 	/**
-	 * @var object$model_delegate An injected `ee('Model')` object
+	 * @var object Collection of granted consents for this Member
+	 */
+	private $cached_consents;
+
+	/**
+	 * @var object $model_delegate An injected `ee('Model')` object
 	 */
 	protected $model_delegate;
 
 	/**
-	 * @var object$input_delegate An injected `ee()->input` object
+	 * @var object $input_delegate An injected `ee()->input` object
 	 */
 	protected $input_delegate;
+
+	/**
+	 * @var object $session_delegate An injected `ee()->session` object
+	 */
+	protected $session_delegate;
 
 	/**
 	 * @var int $now The current timestamp
 	 */
 	protected $now;
 
-	public function __construct(ModelFacade $model_delegate, $input_delegate, Member $member, Member $actor, $now)
+	public function __construct(ModelFacade $model_delegate, $input_delegate, $session_delegate, $member_id, $actor_userdata, $now)
 	{
 		$this->model_delegate = $model_delegate;
 		$this->input_delegate = $input_delegate;
-		$this->member = $member;
-		$this->actor = $actor;
+		$this->session_delegate = $session_delegate;
+		$this->member_id = $member_id;
+		$this->actor_userdata = $actor_userdata;
 		$this->now = $now;
+
+		// load up the member's consent grants if we haven't yet
+		if (($this->cached_consents = $this->session_delegate->cache(__CLASS__, 'cached_consents_'.$member_id)) === FALSE)
+		{
+			$this->cached_consents = $this->getConsents();
+			$this->session_delegate->set_cache(__CLASS__, 'cached_consents_'.$member_id, $this->cached_consents);
+		}
+
+		// keep persistent cookie data, otherwise subsequent reads will not reflect changes made before new cookie headers are sent
+		if ($this->isAnonymous())
+		{
+			if (($this->cookie = $this->session_delegate->cache(__CLASS__, 'cookie_data_'.$member_id)) === FALSE)
+			{
+				$this->cookie = $this->getConsentCookie();
+				$this->session_delegate->set_cache(__CLASS__, 'cookie_data_'.$member_id, $this->cookie);
+			}
+		}
 	}
 
 	/**
@@ -71,7 +104,15 @@ class Consent {
 	 */
 	public function grant($request_ref, $via = 'online_form')
 	{
-		$request = $this->getConsentRequest($request_ref);
+		try
+		{
+			$request = $this->getConsentRequest($request_ref);
+		}
+		catch (InvalidArgumentException $e)
+		{
+			// bubble up any exceptions so they are able to be handled by the caller
+			throw $e;
+		}
 
 		// Can't consent to an empty consent request
 		if ( ! $request->consent_request_version_id)
@@ -86,9 +127,9 @@ class Consent {
 
 		if ($this->isAnonymous())
 		{
-			$cookie = $this->getConsentCookie();
-			$cookie[$request->getId()] = $this->now;
-			$this->saveConsentCookie($cookie);
+			$this->cookie[$request->getId()] = $this->now;
+			$this->saveConsentCookie($this->cookie);
+			$this->updateConsentCache($request);
 		}
 		else
 		{
@@ -110,6 +151,8 @@ class Consent {
 			{
 				$consent->log(sprintf(lang('consent_granted_by_log_msg'), $this->getActorName(), $via));
 			}
+
+			$this->updateConsentCache($consent);
 		}
 	}
 
@@ -123,7 +166,15 @@ class Consent {
 	 */
 	public function withdraw($request_ref)
 	{
-		$request = $this->getConsentRequest($request_ref);
+		try
+		{
+			$request = $this->getConsentRequest($request_ref);
+		}
+		catch (InvalidArgumentException $e)
+		{
+			// bubble up any exceptions so they are able to be handled by the caller
+			throw $e;
+		}
 
 		if ( ! $this->callerHasPermission($request))
 		{
@@ -132,9 +183,9 @@ class Consent {
 
 		if ($this->isAnonymous())
 		{
-			$cookie = $this->getConsentCookie();
-			unset($cookie[$request->getId()]);
-			$this->saveConsentCookie($cookie);
+			unset($this->cookie[$request->getId()]);
+			$this->saveConsentCookie($this->cookie);
+			$this->updateConsentCache($request);
 		}
 		else
 		{
@@ -151,6 +202,8 @@ class Consent {
 			{
 				$consent->log(sprintf(lang('consent_withdrawn_by_log_msg'), $this->getActorName()));
 			}
+
+			$this->updateConsentCache($consent);
 		}
 	}
 
@@ -163,38 +216,33 @@ class Consent {
 	 */
 	public function hasGranted($request_ref)
 	{
-		try {
-			$request = $this->getConsentRequest($request_ref);
-		}
-		catch (InvalidArgumentException $e)
-		{
-			return FALSE;
-		}
+		$column = (is_numeric($request_ref)) ? 'consent_request_id' : 'consent_name';
 
-		// Anonymous visitor/guest consent check: it's in a cookie, if we can set cookies
 		if ($this->isAnonymous())
 		{
-			return array_key_exists($request->getId(), $this->getConsentCookie());
+			$grants = $this->cached_consents->indexBy($column);
+			return isset($grants[$request_ref]);
 		}
-
-		$consent = $this->getConsent($request->getId());
-
-		// They've never responded to the request, so consent was not given
-		if ( ! $consent)
+		else
 		{
+			$grants = $this->cached_consents->ConsentRequest->indexBy($column);
+
+			if (isset($grants[$request_ref]))
+			{
+				$consents = $this->cached_consents->indexBy('consent_request_id');
+				return $consents[$grants[$request_ref]->consent_request_id]->isGranted();
+			}
+
 			return FALSE;
 		}
-
-		return $consent->isGranted();
 	}
 
 	/**
-	 * Gets all the consent requests the member (or anonymous visitor) has granted
-	 * consent.
+	 * Gets all the consents the member (or anonymous visitor) has responded to.
 	 *
-	 * @return object A Collection of ConsentRequest objects
+	 * @return object A Collection of Consent objects (ConsentRequest for anonymous)
 	 */
-	public function getGrantedRequests()
+	public function getConsents()
 	{
 		if ($this->isAnonymous())
 		{
@@ -207,29 +255,18 @@ class Consent {
 
 			return $this->model_delegate->get('ConsentRequest')
 				->with('CurrentVersion')
-				->filter('consent_request_id', $request_ids)
+				->filter('consent_request_id', 'IN', $request_ids)
 				->all();
-		}
-
-		if ( ! $this->member->Consents)
-		{
-			return new Collection([]);
 		}
 
 		$consents = $this->model_delegate->get('Consent')
 			->with('ConsentRequest')
 			->with(['ConsentRequest' => 'CurrentVersion'])
 			->with('ConsentRequestVersion')
-			->filter('member_id', $this->member->getId())
-			->filter('consent_given', 'y')
-			->all()
-			->filter(function($consent) {
-				return $consent->isGranted();
-			});
+			->filter('member_id', $this->member_id)
+			->all();
 
-		return new Collection($consents->map(function($consent) {
-			return $consent->ConsentRequest;
-		}));
+		return $consents;
 	}
 
 	/**
@@ -257,28 +294,45 @@ class Consent {
 	/**
 	 * Gets the values for a specific request and the member's consent
 	 *
-	 * @param string|array $request_names The name or an array of names
+	 * @param int|string|array $request_refs The name or an array of names, or id or array of ids
 	 * @return object A Collection of associative arrays for each Consent Request
 	 */
-	public function getConsentDataFor($request_names)
+	public function getConsentDataFor($request_refs)
 	{
-		if (empty($request_names))
+		if (empty($request_refs))
 		{
 			return new Collection([]);
 		}
 
-		if ( ! is_array($request_names))
+		if ( ! is_array($request_refs))
 		{
-			$request_names = [$request_names];
+			$request_refs = [$request_refs];
 		}
 
 		$data = [];
-		$consents = ($this->isAnonymous()) ? $this->getConsentCookie() : $this->member->Consents->indexBy('consent_request_id');
+		$consents = ($this->isAnonymous()) ? $this->getConsentCookie() : $this->cached_consents->indexBy('consent_request_id');
+		$requests = $this->model_delegate->get('ConsentRequest')->with('CurrentVersion');
 
-		$requests = $this->model_delegate->get('ConsentRequest')
-			->with('CurrentVersion')
-			->filter('consent_name', 'IN', $request_names)
-			->all();
+		$numeric_refs = TRUE;
+		foreach ($request_refs as $ref)
+		{
+			if ( ! is_numeric($ref))
+			{
+				$numeric_refs = FALSE;
+				break;
+			}
+		}
+
+		if ($numeric_refs)
+		{
+			$requests->filter('consent_request_id', 'IN', $request_refs);
+		}
+		else
+		{
+			$requests->filter('consent_name', 'IN', $request_refs);
+		}
+
+		$requests = $requests->all();
 
 		foreach ($requests as $request)
 		{
@@ -286,14 +340,6 @@ class Consent {
 			$data[$key] = array_merge($request->getValues(), $request->CurrentVersion->getValues());
 			$data[$key]['has_granted'] = FALSE;
 			$data[$key]['create_date'] = $request->CurrentVersion->create_date->format('U');
-
-			// these keys may not be present if the user hasn't responded, but we want a consistent array
-			$data[$key]['consent_given_via'] = NULL;
-			$data[$key]['consent_id'] = NULL;
-			$data[$key]['expiration_date'] = NULL;
-			$data[$key]['member_id'] = NULL;
-			$data[$key]['request_copy'] = NULL;
-			$data[$key]['response_date'] = NULL;
 
 			if ($this->isAnonymous())
 			{
@@ -303,7 +349,6 @@ class Consent {
 				if ($data[$key]['has_granted'])
 				{
 					$data[$key]['response_date'] = $consents[$request->getId()];
-
 				}
 			}
 			else
@@ -313,15 +358,25 @@ class Consent {
 					$consent = $consents[$request->getId()];
 					$data[$key] = array_merge($consent->getValues(), $data[$key]);
 					unset($data[$key]['consent_given']);
+
 					$data[$key]['has_granted'] = $consent->isGranted();
 
 					foreach (['expiration_date', 'response_date'] as $property)
 					{
 						if ( ! is_null($data[$key][$property]))
 						{
-							$data[$key][$property] = $data[$key][$property]->format('U');
+							$data[$key][$property] = $data[$key][$property]->getTimestamp();
 						}
 					}
+				}
+			}
+
+			// these keys may not be present if the user hasn't responded, but we want a consistent array
+			foreach (['consent_given_via', 'consent_id', 'expiration_date', 'member_id', 'request_copy', 'response_date'] as $item)
+			{
+				if ( ! array_key_exists($item, $data[$key]))
+				{
+					$data[$key][$item] = NULL;
 				}
 			}
 		}
@@ -362,7 +417,7 @@ class Consent {
 	 */
 	protected function isAnonymous()
 	{
-		return ($this->member->getId() == 0);
+		return ($this->member_id == 0);
 	}
 
 	/**
@@ -372,7 +427,7 @@ class Consent {
 	 */
 	protected function memberIsActor()
 	{
-		return ($this->member->getId() == $this->actor->getId());
+		return ($this->member_id == $this->actor_userdata['member_id']);
 	}
 
 	/**
@@ -382,7 +437,7 @@ class Consent {
 	 */
 	protected function getActorName()
 	{
-		return $this->actor->getMemberName() . ' (#' . $this->actor->getId() . ')';
+		return $this->actor_userdata['screen_name'] . ' ('.$this->actor_userdata['screen_name'] . ', #' . $this->actor_userdata['member_id'] . ')';
 	}
 
 	/**
@@ -394,7 +449,6 @@ class Consent {
 	{
 		$cookie = $this->input_delegate->cookie(self::COOKIE_NAME);
 		$cookie = ee('Encrypt/Cookie')->getVerifiedCookieData($cookie);
-		$cookie = json_decode($cookie, TRUE);
 
 		if ( ! $cookie)
 		{
@@ -412,9 +466,10 @@ class Consent {
 	 */
 	protected function saveConsentCookie(array $consented_to)
 	{
-		$payload = ee('Encrypt/Cookie')->signCookieData(json_encode($consented_to));
+		$payload = ee('Encrypt/Cookie')->signCookieData($consented_to);
 		// 60 * 60 * 24 * 365 = 31556952; A year of seconds
 		$this->input_delegate->set_cookie(self::COOKIE_NAME, $payload, 31556952);
+		$this->session_delegate->set_cache(__CLASS__, 'cookie_data_'.$this->member_id, $consented_to);
 	}
 
 	/**
@@ -452,7 +507,7 @@ class Consent {
 			->with('ConsentRequest')
 			->with(['ConsentRequest' => 'CurrentVersion'])
 			->with('ConsentRequestVersion')
-			->filter('member_id', $this->member->getId())
+			->filter('member_id', $this->member_id)
 			->filter('consent_request_id', $request_id)
 			->first();
 	}
@@ -472,9 +527,52 @@ class Consent {
 			$consent = $this->model_delegate->make('Consent');
 			$consent->ConsentRequest = $request;
 			$consent->ConsentRequestVersion = $request->CurrentVersion;
-			$consent->Member = $this->member;
+			$consent->member_id = $this->member_id;
 		}
 
 		return $consent;
 	}
+
+	/**
+	 * Updates the cached consents for the affected member with the new consent
+	 *
+	 * @param  object $request EllisLab\ExpressionEngine\Model\Consent\Consent
+	 * @return void
+	 */
+	protected function updateConsentCache($consent)
+	{
+		if ($this->isAnonymous())
+		{
+			// anonymous cache only holds consented items, so if it's in our persistent cookie
+			// it should be in the cache. Otherwise, baleet it.
+			if (isset($this->cookie[$consent->consent_request_id]))
+			{
+				$this->cached_consents[] = $consent;
+			}
+			else
+			{
+				$this->cached_consents = $this->cached_consents->filter(
+					function($cached) use ($consent)
+					{
+						return $consent->consent_request_id != $cached->consent_request_id;
+					}
+				);
+			}
+		}
+		else
+		{
+			foreach ($this->cached_consents as $key => $cached)
+			{
+				if ($cached->consent_request_id == $consent->consent_request_id)
+				{
+					$this->cached_consents[$key] = $consent;
+				}
+			}
+		}
+
+		$this->session_delegate->set_cache(__CLASS__, 'cached_consents_'.$this->member_id, $this->cached_consents);
+	}
 }
+// END CLASS
+
+// EOF
