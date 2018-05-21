@@ -158,6 +158,26 @@ class Request {
 	}
 
 	/**
+	 * Is this a POST request?
+	 *
+	 * @return 	boolean
+	 */
+	public function isPost()
+	{
+		return ($this->method() == 'POST');
+	}
+
+	/**
+	 * Is this a GET request?
+	 *
+	 * @return 	boolean
+	 */
+	public function isGet()
+	{
+		return ($this->method() == 'GET');
+	}
+
+	/**
 	 * Get the request body
 	 *
 	 * @return String Request body

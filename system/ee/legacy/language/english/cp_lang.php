@@ -311,6 +311,14 @@ $lang = array(
 
 'with_selected' => 'with selected',
 
+'export' => 'Export',
+
+'btn_exporting' => 'Exporting',
+
+'btn_downloading' => 'Downloading',
+
+'will_be_logged' => 'This action will be logged',
+
 'important' => 'Important!',
 
 /* Sites and Channels */
