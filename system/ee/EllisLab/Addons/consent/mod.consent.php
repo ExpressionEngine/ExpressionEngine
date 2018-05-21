@@ -58,7 +58,7 @@ class Consent {
 			'hidden_fields' => [
 				'ACT' => ee()->functions->fetch_action_id('Consent', 'submitConsent'),
 				'RET' => ee('Encrypt')->encode(ee()->TMPL->fetch_param('return')),
-				'consent_names' => ee('Encrypt')->encode(serialize($requests->pluck('consent_name'))),
+				'consent_names' => ee('Encrypt')->encode(json_encode($requests->pluck('consent_name'))),
 			]
 		];
 
@@ -122,7 +122,7 @@ class Consent {
 	 */
 	public function submitConsent()
 	{
-		$consent_names = @unserialize(ee('Encrypt')->decode(ee()->input->post('consent_names')));
+		$consent_names = @json_decode(ee('Encrypt')->decode(ee()->input->post('consent_names')), TRUE);
 		$requests = ee('Consent')->getConsentDataFor($consent_names);
 
 		if ($requests->count() == 0)
