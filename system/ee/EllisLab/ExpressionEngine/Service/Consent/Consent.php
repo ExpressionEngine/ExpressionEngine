@@ -33,7 +33,7 @@ class Consent {
 	protected $member_id;
 
 	/**
-	 * @var int $actor_id The Member ID acting, usually the member being acted upon, but may be a super admin.
+	 * @var array $actor_userdata Injected ee()->session->userdata for the actor, usually the member being acted upon, but may be a super admin.
 	 */
 	protected $actor_userdata;
 
