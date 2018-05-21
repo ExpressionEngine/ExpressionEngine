@@ -98,6 +98,10 @@ DROP TABLE IF EXISTS `exp_category_field_data`;
 DROP TABLE IF EXISTS `exp_categories`;
 DROP TABLE IF EXISTS `exp_captcha`;
 DROP TABLE IF EXISTS `exp_actions`;
+DROP TABLE IF EXISTS `exp_consent_requests`;
+DROP TABLE IF EXISTS `exp_consent_request_versions`;
+DROP TABLE IF EXISTS `exp_consents`;
+DROP TABLE IF EXISTS `exp_consent_audit_log`;
 
 
 CREATE TABLE `exp_actions` (
@@ -1530,6 +1534,53 @@ CREATE TABLE `exp_upload_prefs` (
   KEY `site_id` (`site_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
+CREATE TABLE `exp_consent_requests` (
+	`consent_request_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`consent_request_version_id` int(10) unsigned DEFAULT NULL,
+	`user_created` char(1) NOT NULL DEFAULT 'n',
+	`title` varchar(200) NOT NULL,
+	`consent_name` varchar(50) NOT NULL,
+	`double_opt_in` char(1) NOT NULL DEFAULT 'n',
+	`retention_period` varchar(32) DEFAULT NULL,
+	PRIMARY KEY (`consent_request_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `exp_consent_request_versions` (
+	`consent_request_version_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`consent_request_id` int(10) unsigned NOT NULL,
+	`request` mediumtext,
+	`request_format` tinytext,
+	`create_date` int(10) NOT NULL DEFAULT '0',
+	`author_id` int(10) unsigned NOT NULL DEFAULT '0',
+	PRIMARY KEY (`consent_request_version_id`),
+	KEY `consent_request_id` (`consent_request_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `exp_consents` (
+	`consent_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`consent_request_id` int(10) unsigned NOT NULL,
+	`consent_request_version_id` int(10) unsigned NOT NULL,
+	`member_id` int(10) unsigned NOT NULL,
+	`request_copy` mediumtext,
+	`request_format` tinytext,
+	`consent_given` char(1) NOT NULL DEFAULT 'n',
+	`consent_given_via` varchar(32) DEFAULT NULL,
+	`expiration_date` int(10) DEFAULT NULL,
+	`response_date` int(10) DEFAULT NULL,
+	PRIMARY KEY (`consent_id`),
+	KEY `consent_request_version_id` (`consent_request_version_id`),
+	KEY `member_id` (`member_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `exp_consent_audit_log` (
+	`consent_audit_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`consent_request_id` int(10) unsigned NOT NULL,
+	`member_id` int(10) unsigned NOT NULL,
+	`action` text NOT NULL,
+	`log_date` int(10) NOT NULL DEFAULT '0',
+	PRIMARY KEY (`consent_audit_id`),
+	KEY `consent_request_id` (`consent_request_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 
 
