@@ -773,6 +773,10 @@ $lang = array(
 
 'pw_min_len_desc' => 'Minimum number of characters required for new members\' passwords.',
 
+'require_cookie_consent' => 'Require user consent to set cookies?',
+
+'require_cookie_consent_desc' => 'When enabled, cookies will not be set for the visitor (except those <b>strictly necessary</b> for the web site to function) until they have consented to your site\'s cookie policy. See the <a href="'.DOC_URL.'add-ons/consent/">Consent Module documentation</a> for more details.',
+
 'require_ip_for_login' => 'Require user agent and <abbr title="Internet Protocol">IP</abbr> for login?',
 
 'require_ip_for_login_desc' => 'When enabled, members will be unable to login without a valid user agent and <abbr title="Internet Protocol">IP</abbr> address.',
