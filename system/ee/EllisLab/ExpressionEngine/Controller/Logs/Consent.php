@@ -22,6 +22,11 @@ class Consent extends Logs {
 	 */
 	public function index()
 	{
+		if ( ! ee('Permission')->has('can_manage_consents'))
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+
 		ee('CP/Alert')->makeDeprecationNotice()->now();
 
 		$this->base_url->path = 'logs/consent';
