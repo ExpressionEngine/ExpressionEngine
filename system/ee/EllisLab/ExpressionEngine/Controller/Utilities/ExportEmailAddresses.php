@@ -52,8 +52,6 @@ class ExportEmailAddresses extends Utilities {
 
 	public function index()
 	{
-		$this->garbageCollect();
-
 		$export_path = ee('Encrypt')->encode(
 				$this->export_path,
 				ee()->config->item('session_crypt_key')
@@ -286,7 +284,7 @@ class ExportEmailAddresses extends Utilities {
 		}
 	}
 
-	protected function garbageCollect()
+	public static function garbageCollect()
 	{
 		$fs = ee('Filesystem');
 

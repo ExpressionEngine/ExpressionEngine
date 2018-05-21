@@ -38,6 +38,9 @@ class Utilities extends CP_Controller {
 		ee()->view->header = array(
 			'title' => lang('system_utilities')
 		);
+
+		// Some garbage collection
+		ExportEmailAddresses::garbageCollect();
 	}
 
 	protected function generateSidebar($active = NULL)
