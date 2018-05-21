@@ -32,19 +32,16 @@ class PollVote extends Model {
 		'Member' => array(
 			'type' => 'belongsTo',
 			'model' => 'ee:Member',
-			'weak'     => TRUE,
 			'inverse' => array(
 				'name' => 'PollVote',
 				'type' => 'hasMany',
 			)
 		),
 		'Poll' => array(
-			'type' => 'belongsTo',
-			'weak' => TRUE
+			'type' => 'belongsTo'
 		),
 		'Topic' => array(
-			'type' => 'belongsTo',
-			'weak' => TRUE
+			'type' => 'belongsTo'
 		),
 	);
 
