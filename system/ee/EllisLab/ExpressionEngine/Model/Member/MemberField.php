@@ -34,8 +34,9 @@ class MemberField extends FieldModel {
 	);
 
 	protected static $_typed_columns = array(
-		'm_field_settings'    => 'json',
-		'm_legacy_field_data' => 'boolString',
+		'm_field_settings'          => 'json',
+		'm_field_exclude_from_anon' => 'boolString',
+		'm_legacy_field_data'       => 'boolString',
 	);
 
 	protected $m_field_id;

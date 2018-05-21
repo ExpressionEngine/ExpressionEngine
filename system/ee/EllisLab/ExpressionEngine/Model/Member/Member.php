@@ -924,6 +924,15 @@ class Member extends ContentModel {
 		$this->setProperty('screen_name', $username);
 		$this->setProperty('email', $email);
 		$this->setProperty('ip_address', $ip_address);
+
+		foreach	($this->getCustomFields() as $field)
+		{
+			if ( ! $field->getItem('m_field_exclude_from_anon'))
+			{
+				$this->setProperty('m_field_id_'.$field->getId(), '');
+			}
+		}
+
 		$this->save();
 
 		if ($this->Session) $this->Session->delete();
