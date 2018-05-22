@@ -287,6 +287,8 @@ $lang = array(
 
 'select_all' => 'select all',
 
+'search_in' => 'Search in',
+
 'show' => 'Show',
 
 'site' => 'Site',
@@ -453,6 +455,8 @@ $lang = array(
 'edit' => 'Edit',
 
 'enable' => 'Enable',
+
+'filter_authors' => 'filter authors',
 
 'filter_categories' => 'filter categories',
 
