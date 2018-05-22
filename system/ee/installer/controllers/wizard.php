@@ -1569,7 +1569,6 @@ class Wizard extends CI_Controller {
 	 */
 	private function install_modules()
 	{
-		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
 		ee()->load->library('addons');
 		$this->module_install_errors = ee()->addons->install_modules($this->required_modules);
 
