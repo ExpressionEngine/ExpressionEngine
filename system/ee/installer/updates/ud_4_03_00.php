@@ -28,6 +28,7 @@ class Updater {
 				'addConsentTables',
 				'addConsentModerationPermissions',
 				'addMemberFieldAnonExcludeColumn'
+				'installConsentModule'
 			]
 		);
 
@@ -264,6 +265,27 @@ class Updater {
 			],
 			'm_field_show_fmt'
 		);
+	}
+
+	private function installConsentModule()
+	{
+		$addon = ee('Addon')->get('consent');
+
+		if ( ! $addon OR ! $addon->isInstalled())
+		{
+			ee()->load->library('addons');
+			ee()->addons->install_modules(['consent']);
+
+			try
+			{
+				$addon = ee('Addon')->get('consent');
+				$addon->installConsentRequests();
+			}
+			catch (\Exception $e)
+			{
+				// probably just ran the update again
+			}
+		}
 	}
 }
 

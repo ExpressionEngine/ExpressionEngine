@@ -235,6 +235,12 @@ class EE_Exceptions {
 
 		$message = htmlentities($message, ENT_QUOTES, 'UTF-8', FALSE);
 
+		// whitelist formatting tags
+		foreach (['i', 'b', 'br'] as $tag)
+		{
+			$message = str_replace(["&lt;{$tag}&gt;", "&lt;/{$tag}&gt;"], ["<{$tag}>", "</{$tag}>"], $message);
+		}
+
 		$location =  $filepath . ':' . $exception->getLine();
 		$trace = explode("\n", $exception->getTraceAsString());
 		$partial_path = substr($syspath, 0, 15);

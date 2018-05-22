@@ -27,6 +27,8 @@ class Consents extends Settings {
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
+
+		ee()->lang->loadfile('consent');
 	}
 
 	public function index()
@@ -138,13 +140,10 @@ class Consents extends Settings {
 				'title' => lang('new_version'),
 			];
 
-			if ($request->Versions->count() > 1)
-			{
-				$toolbar['view'] = [
-					'href'  => ee('CP/URL')->make('settings/consents/versions/' . $request->getId()),
-					'title' => lang('consent_list_versions'),
-				];
-			}
+			$toolbar['view'] = [
+				'href'  => ee('CP/URL')->make('settings/consents/versions/' . $request->getId()),
+				'title' => lang('consent_list_versions'),
+			];
 
 			$datum = [
 				'id' => $request->getId(),
@@ -261,7 +260,7 @@ class Consents extends Settings {
 			$data[] = [
 				'id' => $version->getId(),
 				'date' => ee()->localize->human_time($version->create_date->format('U')),
-				'author' => $version->Author->getMemberName(),
+				'author' => ($version->Author) ? $version->Author->getMemberName() : lang('consent_app_created'),
 				$toolbar
 			];
 		}

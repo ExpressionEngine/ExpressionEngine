@@ -41,6 +41,10 @@ class Consent extends Model {
 		]
 	];
 
+	protected static $_events = [
+		'afterSave',
+	];
+
 	protected static $_validation_rules = [
 		'consent_id'                 => 'required',
 		'consent_request_id'         => 'required',
@@ -134,6 +138,16 @@ class Consent extends Model {
 		$log->log_date = ee()->localize->now;
 		$log->save();
 
+	}
+
+	public function onAfterSave()
+	{
+		// make sure date fields are objects, or we'll get fatal errors
+		// when isGranted() is called on the same request after a save()
+		if (is_int($this->response_date))
+		{
+			$this->set(['response_date' => new \DateTime("@{$this->response_date}")]);
+		}
 	}
 }
 

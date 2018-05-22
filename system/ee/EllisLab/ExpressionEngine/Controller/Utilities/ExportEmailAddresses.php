@@ -118,7 +118,8 @@ class ExportEmailAddresses extends Utilities {
 			]
 		];
 
-		if ( ! empty($this->getFromCache('valid')))
+		$valid_cache = $this->getFromCache('valid');
+		if ( ! empty($valid_cache))
 		{
 			$vars['buttons'][] = [
 				'name' => 'download',
@@ -129,7 +130,8 @@ class ExportEmailAddresses extends Utilities {
 			];
 		}
 
-		if ( ! empty($this->getFromCache('invalid')))
+		$invalid_cache = $this->getFromCache('invalid');
+		if ( ! empty($invalid_cache))
 		{
 			$vars['buttons'][] = [
 				'name' => 'download',
