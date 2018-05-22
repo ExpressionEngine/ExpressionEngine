@@ -127,7 +127,7 @@ class Consent {
 
 		if ($this->isAnonymous())
 		{
-			$this->cookie[$request->getId()] = $this->now;
+			$this->cookie[$request->getId()] = ['has_granted' => TRUE, 'timestamp' => $this->now];
 			$this->saveConsentCookie($this->cookie);
 			$this->updateConsentCache($request);
 		}
@@ -183,7 +183,7 @@ class Consent {
 
 		if ($this->isAnonymous())
 		{
-			unset($this->cookie[$request->getId()]);
+			$this->cookie[$request->getId()] = ['has_granted' => FALSE, 'timestamp' => $this->now];
 			$this->saveConsentCookie($this->cookie);
 			$this->updateConsentCache($request);
 		}
@@ -221,7 +221,11 @@ class Consent {
 		if ($this->isAnonymous())
 		{
 			$grants = $this->cached_consents->indexBy($column);
-			return isset($grants[$request_ref]);
+			if (isset($grants[$request_ref]))
+			{
+				$rid = $grants[$request_ref]->consent_request_id;
+				return (isset($this->cookie[$rid]) && $this->cookie[$rid]['has_granted'] === TRUE);
+			}
 		}
 		else
 		{
@@ -345,10 +349,16 @@ class Consent {
 			{
 				$data[$key]['consent_given_via'] = 'online_form';
 				$data[$key]['member_id'] = 0;
-				$data[$key]['has_granted'] = array_key_exists($request->getId(), $consents);
-				if ($data[$key]['has_granted'])
+
+				if (isset($this->cookie[$request->getId()]))
 				{
-					$data[$key]['response_date'] = $consents[$request->getId()];
+					$data[$key]['has_granted'] = $this->cookie[$request->getId()]['has_granted'];
+					$data[$key]['response_date'] = $this->cookie[$request->getId()]['timestamp'];
+				}
+				else
+				{
+					$data[$key]['has_granted'] = FALSE;
+					$data[$key]['response_date'] = NULL;
 				}
 			}
 			else
@@ -541,32 +551,11 @@ class Consent {
 	 */
 	protected function updateConsentCache($consent)
 	{
-		if ($this->isAnonymous())
+		foreach ($this->cached_consents as $key => $cached)
 		{
-			// anonymous cache only holds consented items, so if it's in our persistent cookie
-			// it should be in the cache. Otherwise, baleet it.
-			if (isset($this->cookie[$consent->consent_request_id]))
+			if ($cached->consent_request_id == $consent->consent_request_id)
 			{
-				$this->cached_consents[] = $consent;
-			}
-			else
-			{
-				$this->cached_consents = $this->cached_consents->filter(
-					function($cached) use ($consent)
-					{
-						return $consent->consent_request_id != $cached->consent_request_id;
-					}
-				);
-			}
-		}
-		else
-		{
-			foreach ($this->cached_consents as $key => $cached)
-			{
-				if ($cached->consent_request_id == $consent->consent_request_id)
-				{
-					$this->cached_consents[$key] = $consent;
-				}
+				$this->cached_consents[$key] = $consent;
 			}
 		}
 
