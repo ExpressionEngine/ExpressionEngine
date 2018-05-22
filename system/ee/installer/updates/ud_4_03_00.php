@@ -28,7 +28,8 @@ class Updater {
 				'addConsentTables',
 				'addConsentModerationPermissions',
 				'addMemberFieldAnonExcludeColumn'
-				'installConsentModule'
+				'installConsentModule',
+				'addSessionAuthTimeoutColumn',
 			]
 		);
 
@@ -286,6 +287,24 @@ class Updater {
 				// probably just ran the update again
 			}
 		}
+	}
+
+	private function addSessionAuthTimeoutColumn()
+	{
+		ee()->smartforge->add_column(
+			'sessions',
+			[
+				'auth_timeout' => [
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => FALSE,
+					'default'    => 0
+				]
+			],
+			'sess_start'
+		);
+
 	}
 }
 

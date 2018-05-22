@@ -1316,6 +1316,7 @@ CREATE TABLE `exp_sessions` (
   `fingerprint` varchar(40) NOT NULL,
   `login_state` varchar(32) DEFAULT NULL,
   `sess_start` int(10) unsigned NOT NULL DEFAULT '0',
+  `auth_timeout` int(10) unsigned NOT NULL DEFAULT '0',
   `last_activity` int(10) unsigned NOT NULL DEFAULT '0',
   `can_debug` char(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`session_id`),
