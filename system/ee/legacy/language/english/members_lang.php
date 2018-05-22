@@ -144,6 +144,8 @@ $lang = array(
 
 'index' => 'Main Index Page',
 
+'invalid_password' => 'The password you entered was invalid.',
+
 'invalid_path' => 'The path you submitted is not valid.',
 
 'invalid_path_description' => 'The following path you submitted is not valid:',
@@ -214,6 +216,8 @@ $lang = array(
 
 'member_delete_success' => 'Member Deleted',
 
+'member_delete_problem' => 'There was a problem deleting members.',
+
 'member_deleted' => 'Member Deleted',
 
 'member_field_not_saved' => 'Member Field could not be saved',
@@ -239,6 +243,8 @@ $lang = array(
 'member_groups' => 'Member Groups',
 
 'member_groups_removed_desc' => 'Member Group has been deleted successfully.',
+
+'member_groups_remove_problem' => 'There was a problem deleting member groups.',
 
 'member_has_cp_access' => 'Can access the control panel',
 
@@ -387,6 +393,12 @@ $lang = array(
 'your_password' => 'Your Password',
 
 'your_password_desc' => 'You <b>must</b> enter your password in order to create a member that has control panel access.',
+
+'your_password_anonymize_members_desc' => 'You <b>must</b> enter your password in order to anomymize members.',
+
+'your_password_delete_members_desc' => 'You <b>must</b> enter your password in order to delete members.',
+
+'your_password_delete_member_groups_desc' => 'You <b>must</b> enter your password in order to delete member groups.',
 
 
 /* Member banning */

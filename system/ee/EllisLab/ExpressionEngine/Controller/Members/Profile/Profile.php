@@ -172,6 +172,8 @@ class Profile extends CP_Controller {
 
 				if (ee()->cp->allowed_group('can_delete_members'))
 				{
+					$session = ee('Model')->get('Session', ee()->session->userdata('session_id'))->first();
+
 					$list->addItem(sprintf(lang('delete_username'), $this->member->username), ee('CP/URL')->make('members/delete', $this->query_string))
 						->asDeleteAction('modal-confirm-remove-member');
 
@@ -231,6 +233,22 @@ class Profile extends CP_Controller {
 						),
 						'ajax_default' => $heirs_view
 					);
+
+					if ( ! $session->isWithinAuthTimeout())
+					{
+						$modal_vars['secure_form_ctrls'] = [
+							'title' => 'your_password',
+							'desc' => 'your_password_delete_members_desc',
+							'group' => 'verify_password',
+							'fields' => [
+								'verify_password' => [
+									'type'      => 'password',
+									'required'  => TRUE,
+									'maxlength' => PASSWORD_MAX_LENGTH
+								]
+							]
+						];
+					}
 
 					ee('CP/Modal')->addModal('member', ee('View')->make('_shared/modal_confirm_remove')->render($modal_vars));
 				}

@@ -171,6 +171,24 @@ class Members extends CP_Controller {
 			'file' => array('cp/confirm_remove', 'cp/members/members'),
 		));
 
+		$session = ee('Model')->get('Session', ee()->session->userdata('session_id'))->first();
+
+		if ( ! $session->isWithinAuthTimeout())
+		{
+			$data['confirm_remove_secure_form_ctrls'] = [
+				'title' => 'your_password',
+				'desc' => 'your_password_delete_members_desc',
+				'group' => 'verify_password',
+				'fields' => [
+					'verify_password' => [
+						'type'      => 'password',
+						'required'  => TRUE,
+						'maxlength' => PASSWORD_MAX_LENGTH
+					]
+				]
+			];
+		}
+
 		$data['can_delete_members'] = ee()->cp->allowed_group('can_delete_members');
 
 		ee()->view->base_url = $this->base_url;
@@ -1207,14 +1225,39 @@ class Members extends CP_Controller {
 	 */
 	public function delete()
 	{
-		// Verify the member is allowed to delete
-		if ( ! ee()->cp->allowed_group('can_delete_members'))
+		$member_ids = ee()->input->post('selection', TRUE);
+		$session = ee('Model')->get('Session', ee()->session->userdata('session_id'))
+			->filter('member_id', ee()->session->userdata('member_id'))
+			->first();
+
+		if ( ! $session ||
+			! ee()->cp->allowed_group('can_delete_members') ||
+			! $member_ids)
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		//  Fetch member ID numbers and build the query
-		$member_ids = ee()->input->post('selection', TRUE);
+		if ( ! $session->isWithinAuthTimeout())
+		{
+			$validator = ee('Validation')->make();
+			$validator->setRules(array(
+				'verify_password'  => 'required|authenticated'
+			));
+			$password_confirm = $validator->validate($_POST);
+
+			if ($password_confirm->failed())
+			{
+				ee('CP/Alert')->makeInline('view-members')
+					->asIssue()
+					->withTitle(lang('member_delete_problem'))
+					->addToBody(lang('invalid_password'))
+					->defer();
+
+				return ee()->functions->redirect($this->base_url);
+			}
+
+			$session->resetAuthTimeout();
+		}
 
 		if ( ! is_array($member_ids))
 		{

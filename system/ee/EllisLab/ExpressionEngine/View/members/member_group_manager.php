@@ -31,7 +31,8 @@ $modal_vars = array(
 	'form_url'	=> $form_url,
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
-	)
+	),
+	'secure_form_ctrls' => isset($confirm_remove_secure_form_ctrls) ? $confirm_remove_secure_form_ctrls : NULL
 );
 
 $modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
