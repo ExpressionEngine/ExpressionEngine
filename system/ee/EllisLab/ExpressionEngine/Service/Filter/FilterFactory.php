@@ -230,6 +230,16 @@ class FilterFactory {
 	}
 
 	/**
+	 * This will instantiate and return a default Search In filter
+	 *
+	 * @return Filter\SearchIn a SearchIn Filter object
+	 */
+	protected function createDefaultSearchIn($options, $default = NULL)
+	{
+		return new Filter\SearchIn($options, $default);
+	}
+
+	/**
 	 * This will instantiate and return a default Site filter
 	 *
 	 * @todo Use the $container to make Config->item

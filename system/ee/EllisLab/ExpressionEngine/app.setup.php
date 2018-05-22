@@ -65,14 +65,16 @@ return [
 			return new CustomMenu\Menu;
 		},
 
-		'CP/EntryListing' => function($ee, $search_value)
+		'CP/EntryListing' => function($ee, $search_value, $search_in = NULL, $include_author_filter = FALSE)
 		{
 			 return new EntryListing\EntryListing(
 				ee()->config->item('site_id'),
 				(ee()->session->userdata['group_id'] == 1),
 				array_keys(ee()->session->userdata['assigned_channels']),
 				ee()->localize->now,
-				$search_value
+				$search_value,
+				$search_in,
+				$include_author_filter
 			);
 		},
 

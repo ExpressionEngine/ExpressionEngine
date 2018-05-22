@@ -20,6 +20,11 @@ use EllisLab\ExpressionEngine\Service\View\View;
 class EntryListing {
 
 	/**
+	 * @var Filter $author_filter Author Filter object
+	 */
+	public $author_filter;
+
+	/**
 	 * @var Filter $channel_filter Channel Filter object
 	 */
 	public $channel_filter;
@@ -51,9 +56,19 @@ class EntryListing {
 	protected $allowed_channels;
 
 	/**
+	 * @var boolean $include_author_filter Whether this user can edit others' entries
+	 */
+	protected $include_author_filter;
+
+	/**
 	 * @var int $now Timestamp of current time, used to filter entries by date
 	 */
 	protected $now;
+
+	/**
+	 * @var string $search_in What fields to include in the keyword search
+	 */
+	protected $search_in;
 
 	/**
 	 * @var string $search_value Search critera to filter entries by
@@ -83,14 +98,17 @@ class EntryListing {
 	 * @param array $allowed_channels IDs of channels this user is allowed to access
 	 * @param int $now Timestamp of current time, used to filter entries by date
 	 * @param string $search_value Search critera to filter entries by
+	 * @param string $search_in What fields to include in the keyword search
 	 */
-	public function __construct($site_id, $is_admin, $allowed_channels = array(), $now = NULL, $search_value = NULL)
+	public function __construct($site_id, $is_admin, $allowed_channels = array(), $now = NULL, $search_value = NULL, $search_in = NULL, $include_author_filter = FALSE)
 	{
 		$this->site_id = $site_id;
 		$this->is_admin = $is_admin;
 		$this->allowed_channels = $allowed_channels;
 		$this->now = $now;
 		$this->search_value = $search_value;
+		$this->search_in = $search_in;
+		$this->include_author_filter = $include_author_filter;
 
 		$this->setupFilters();
 		$this->setupEntries();
@@ -166,7 +184,20 @@ class EntryListing {
 			->add($this->category_filter)
 			->add($this->status_filter)
 			->add('Date')
-			->add('Keyword');
+			->add('Keyword')
+			->add('SearchIn', [
+					'titles' => lang('titles'),
+					'content' => lang('content'),
+					'titles_and_content' => lang('titles_and_content'),
+				],
+				$this->search_in
+			);
+
+			if ($this->include_author_filter)
+			{
+				$this->author_filter = $this->createAuthorFilter($channel);
+				$this->filters->add($this->author_filter);
+			}
 	}
 
 	/**
@@ -228,10 +259,15 @@ class EntryListing {
 			$entries->filter('status', $this->status_filter->value());
 		}
 
+		if (! empty($this->author_filter) && $this->author_filter->value())
+		{
+			$entries->filter('author_id', $this->author_filter->value());
+		}
+
 		if ( ! empty($this->search_value))
 		{
-			$search_fields = array('title');
-
+			// setup content fields to use in search
+			$content_fields = [];
 			if (isset($channel))
 			{
 				$custom_fields = $channel->getAllCustomFields();
@@ -248,7 +284,22 @@ class EntryListing {
 
 			foreach ($custom_fields as $cf)
 			{
-				$search_fields[] = 'field_id_'.$cf->getId();
+				$content_fields[] = 'field_id_'.$cf->getId();
+			}
+
+			$search_fields = [];
+
+			switch ($this->search_in)
+			{
+				case 'titles_and_content':
+					$search_fields = array_merge(['title'], $content_fields);
+					break;
+				case 'content':
+					$search_fields = $content_fields;
+					break;
+				case 'titles':
+					$search_fields = ['title'];
+					break;
 			}
 
 			$entries->search($search_fields, $this->search_value);
@@ -272,6 +323,44 @@ class EntryListing {
 		$entries->with('Autosaves', 'Author', 'Channel');
 
 		$this->entries = $entries;
+	}
+
+	/**
+	 * Creates an author filter
+	 */
+	private function createAuthorFilter($channel_id = NULL)
+	{
+		$db = ee('db')->distinct()
+			->select('t.author_id, m.screen_name')
+			->from('channel_titles t')
+			->join('members m', 'm.member_id = t.author_id', 'LEFT')
+			->order_by('screen_name', 'asc');
+
+		if ($channel_id)
+		{
+			$db->where('channel_id', $channel_id->channel_id);
+		}
+
+		$authors_query = $db->get();
+
+		$author_filter_options = [];
+		foreach ($authors_query->result() as $row)
+		{
+			$author_filter_options[$row->author_id] = $row->screen_name;
+		}
+
+		// Put the current user at the top of the author list
+		if (isset($author_filter_options[ee()->session->userdata['member_id']]))
+		{
+			$first[ee()->session->userdata['member_id']] = $author_filter_options[ee()->session->userdata['member_id']];
+			unset($author_filter_options[ee()->session->userdata['member_id']]);
+			$author_filter_options = $first + $author_filter_options;
+		}
+
+		$author_filter = ee('CP/Filter')->make('filter_by_author', 'filter_by_author', $author_filter_options);
+		$author_filter->setPlaceholder(lang('filter_authors'));
+		$author_filter->useListFilter();
+		return $author_filter;
 	}
 
 	/**
