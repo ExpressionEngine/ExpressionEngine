@@ -339,12 +339,21 @@ class EntryListing {
 			->select('t.author_id, m.screen_name')
 			->from('channel_titles t')
 			->join('members m', 'm.member_id = t.author_id', 'LEFT')
+			->order_by('screen_name', 'asc')
 			->get();
 
 		$author_filter_options = [];
 		foreach ($authors_query->result() as $row)
 		{
 			$author_filter_options[$row->author_id] = $row->screen_name;
+		}
+
+		// Put the current user at the top of the author list
+		if (isset($author_filter_options[ee()->session->userdata['member_id']]))
+		{
+			$first[ee()->session->userdata['member_id']] = $author_filter_options[ee()->session->userdata['member_id']];
+			unset($author_filter_options[ee()->session->userdata['member_id']]);
+			$author_filter_options = $first + $author_filter_options;
 		}
 
 		$author_filter = ee('CP/Filter')->make('filter_by_author', 'filter_by_author', $author_filter_options);
