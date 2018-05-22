@@ -1,0 +1,21 @@
+/*
+	_search.less
+	-------------
+	define search
+*/
+
+.search{
+	padding: 10px;
+	input[type='text']{ font-size: @font-base + 2; }
+	.ctrls{
+		border-bottom: 0;
+		margin-top: 10px;
+		padding: 0;
+		text-align: center;
+	}
+}
+
+// responsibility
+@media screen and (min-width: @min-width){
+	.search{ input[type='text']{ font-size: @font-base; } }
+}

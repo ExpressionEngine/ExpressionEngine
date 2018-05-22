@@ -1070,7 +1070,7 @@ class ChannelEntry extends ContentModel {
 	 * @return	void    Sets author field metaddata
 	 *
 	 * The following are included in the author list regardless of
-	 * their channel posting permissions:
+	 * their channel posting permissions (assuming the user has permission to assign entries to others):
 	 *	  The current user
 	 *	  The current author (if editing)
 	 *	  Anyone in a group set to 'include_in_authorlist'
@@ -1092,13 +1092,16 @@ class ChannelEntry extends ContentModel {
 
 		$author_options[$author->getId()] = $author->getMemberName();
 
-		if ($author->getId() != ee()->session->userdata('member_id'))
+		if (ee('Permission')->has('can_assign_post_authors'))
 		{
-			$author_options[ee()->session->userdata('member_id')] =
-			ee()->session->userdata('screen_name') ?: ee()->session->userdata('username');
-		}
+			if ($author->getId() != ee()->session->userdata('member_id'))
+			{
+				$author_options[ee()->session->userdata('member_id')] =
+				ee()->session->userdata('screen_name') ?: ee()->session->userdata('username');
+			}
 
-		$author_options += ee('Member')->getAuthors();
+			$author_options += ee('Member')->getAuthors();
+		}
 
 		$field->setItem('field_list_items', $author_options);
 	}
