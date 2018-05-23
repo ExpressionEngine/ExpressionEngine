@@ -163,7 +163,7 @@ class Consents extends Settings {
 
 			if ( ! $request->user_created)
 			{
-				unset($datum['selection']);
+				$datum['selection']['disabled'] = TRUE;
 			}
 
 			$data[] = $datum;
