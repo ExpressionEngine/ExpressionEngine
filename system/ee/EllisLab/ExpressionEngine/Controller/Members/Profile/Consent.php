@@ -97,6 +97,11 @@ class Consent extends Settings {
 
 		foreach ($requests as $request)
 		{
+			if (bool_config_item('require_cookie_consent') !== TRUE && strpos($request->consent_name, 'ee:cookies_') === 0)
+			{
+				continue;
+			}
+
 			$toolbar = [
 				'toolbar_items' => [
 					'view' => [
