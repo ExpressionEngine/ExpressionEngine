@@ -870,6 +870,8 @@ $lang = array(
 
 'user_consent_requests' => 'User Consent Requests',
 
+'author' => 'Author',
+
 );
 
 // EOF
