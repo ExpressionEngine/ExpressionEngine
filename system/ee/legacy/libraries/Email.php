@@ -582,11 +582,7 @@ class EE_Email {
 		}
 		else
 		{
-			// Soft validate to prevent sending email to invalid addresses
-			if ( ! $this->valid_email($to))
-			{
-				return $this;
-			}
+			$to = array_filter($to, [$this, 'valid_email']);
 		}
 
 		if ($this->_get_protocol() !== 'mail')
@@ -615,11 +611,7 @@ class EE_Email {
 		}
 		else
 		{
-			// Soft validate to prevent sending email to invalid addresses
-			if ( ! $this->valid_email($cc))
-			{
-				return $this;
-			}
+			$cc = array_filter($cc, [$this, 'valid_email']);
 		}
 
 		$this->set_header('Cc', implode(', ', $cc));
@@ -655,11 +647,7 @@ class EE_Email {
 		}
 		else
 		{
-			// Soft validate to prevent sending email to invalid addresses
-			if ( ! $this->valid_email($bcc))
-			{
-				return $this;
-			}
+			$bcc = array_filter($bcc, [$this, 'valid_email']);
 		}
 
 		if ($this->_get_protocol() === 'smtp' OR ($this->bcc_batch_mode && count($bcc) > $this->bcc_batch_size))
