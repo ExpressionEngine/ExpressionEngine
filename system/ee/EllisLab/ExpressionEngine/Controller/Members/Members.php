@@ -1338,11 +1338,7 @@ class Members extends CP_Controller {
 	}
 
 	/**
-	 * Member Delete
-	 *
-	 * Delete Members
-	 *
-	 * @return	mixed
+	 * Member Anonymize
 	 */
 	public function anonymize()
 	{
