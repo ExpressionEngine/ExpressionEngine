@@ -20,9 +20,13 @@ $lang = array(
 
 'banned_email' => 'The email address you submitted is banned',
 
+'btn_confirm_and_anonymize' => 'Confirm, and Anonymize',
+
+'btn_confirm_and_anonymize_working' => 'Anonymizing...',
+
 'btn_confirm_and_decline' => 'Confirm, and Decline',
 
-'btn_confirm_and_decline_working' => 'Declineing...',
+'btn_confirm_and_decline_working' => 'Declining...',
 
 'can_attach_in_private_messages' => 'Allow attachments',
 
@@ -193,6 +197,12 @@ $lang = array(
 'member_activation_resent_success' => 'Activation Email Resent',
 
 'member_activation_resent_success_desc' => 'An activation email was sent to <b>%s</b>.',
+
+'member_anonymize_problem' => 'There was a problem anonymizing the member.',
+
+'member_anonymize_success' => 'Member Anonymized',
+
+'member_anonymize_success_desc' => 'The member has been anonymized.',
 
 'member_approve' => 'Approve Member',
 

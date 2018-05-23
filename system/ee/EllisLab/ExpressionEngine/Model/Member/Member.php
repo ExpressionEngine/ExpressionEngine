@@ -966,6 +966,14 @@ class Member extends ContentModel {
 			$this->AuthoredChannelEntries->save();
 		}
 	}
+
+	/**
+	 * Has this member already been anonymized?
+	 */
+	public function isAnonymized()
+	{
+		return (bool) preg_match('/^redacted\d+$/', $this->email);
+	}
 }
 
 // EOF

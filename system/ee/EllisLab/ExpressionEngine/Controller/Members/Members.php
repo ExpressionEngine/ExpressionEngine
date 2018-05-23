@@ -1338,6 +1338,73 @@ class Members extends CP_Controller {
 	}
 
 	/**
+	 * Member Delete
+	 *
+	 * Delete Members
+	 *
+	 * @return	mixed
+	 */
+	public function anonymize()
+	{
+		$member_id = ee()->input->post('selection', TRUE);
+		$member = ee('Model')->get('Member')
+			->filter('member_id', $member_id)
+			->first();
+
+		$session = ee('Model')->get('Session', ee()->session->userdata('session_id'))
+			->filter('member_id', ee()->session->userdata('member_id'))
+			->first();
+
+		if ( ! $session ||
+			! ee()->cp->allowed_group('can_delete_members') ||
+			! $member)
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+
+		$profile_url = ee('CP/URL')->make('members/profile/settings', ['id' => $member_id]);
+
+		if ( ! $session->isWithinAuthTimeout())
+		{
+			$validator = ee('Validation')->make();
+			$validator->setRules(array(
+				'verify_password'  => 'required|authenticated'
+			));
+			$password_confirm = $validator->validate($_POST);
+
+			if ($password_confirm->failed())
+			{
+				ee('CP/Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('member_anonymize_problem'))
+					->addToBody(lang('invalid_password'))
+					->defer();
+
+				return ee()->functions->redirect($profile_url);
+			}
+
+			$session->resetAuthTimeout();
+		}
+
+		if ($member_id == ee()->session->userdata('member_id'))
+		{
+			show_error(lang('can_not_delete_self'));
+		}
+
+		$this->_super_admin_delete_check($member_id);
+
+		$member->anonymize();
+
+		ee('CP/Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang('member_anonymize_success'))
+			->addToBody(lang('member_anonymize_success_desc'))
+			->defer();
+
+		ee()->functions->redirect($profile_url);
+	}
+
+	/**
 	 * Check to see if the members being deleted are super admins. If they are
 	 * we need to make sure that the deleting user is a super admin and that
 	 * there is at least one more super admin remaining.
