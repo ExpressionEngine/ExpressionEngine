@@ -306,7 +306,7 @@ class Member extends ContentModel {
 				));
 			}
 
-			if (isset($changed['email']))
+			if (isset($changed['email']) && ! $this->isAnonymized())
 			{
 				ee()->logger->log_action(sprintf(
 					lang('member_changed_email'),
