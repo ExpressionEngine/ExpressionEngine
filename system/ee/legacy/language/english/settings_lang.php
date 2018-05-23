@@ -874,7 +874,7 @@ $lang = array(
 
 'cookie_consent_disabled' => 'Cookie Consent Disabled',
 
-'cookie_consent_disabled_desc' => 'Cookie consent requests have no affect on the setting of cookies unless the <a href="%s">cookie consent setting</a> is enabled.'
+'cookie_consent_disabled_desc' => 'Cookie-related consent requests have no affect on the setting of cookies unless the <a href="%s">cookie consent setting</a> is enabled.'
 
 );
 
