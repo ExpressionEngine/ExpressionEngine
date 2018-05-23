@@ -924,6 +924,9 @@ class Member extends ContentModel {
 		$this->setProperty('screen_name', $username);
 		$this->setProperty('email', $email);
 		$this->setProperty('ip_address', $ip_address);
+		$this->setProperty('avatar_filename', '');
+		$this->setProperty('sig_img_filename', '');
+		$this->setProperty('photo_filename', '');
 
 		foreach	($this->getCustomFields() as $field)
 		{
