@@ -872,6 +872,10 @@ $lang = array(
 
 'author' => 'Author',
 
+'cookie_consent_disabled' => 'Cookie Consent Disabled',
+
+'cookie_consent_disabled_desc' => 'Cookie consent requests are not displayed to users nor do they have any automatic affect on the setting of cookies unless the <a href="%s">cookie consent setting</a> is enabled.'
+
 );
 
 // EOF

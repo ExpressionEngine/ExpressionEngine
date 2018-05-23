@@ -33,6 +33,16 @@ class Consents extends Settings {
 
 	public function index()
 	{
+		if (bool_config_item('require_cookie_consent') !== TRUE)
+		{
+			ee('CP/Alert')->makeInline('no-cookie-consent')
+				->asWarning()
+				->cannotClose()
+				->withTitle(lang('cookie_consent_disabled'))
+				->addToBody(sprintf(lang('cookie_consent_disabled_desc'), ee('CP/URL')->make('settings/security-privacy')->compile()))
+				->now();
+		}
+
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));

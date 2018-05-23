@@ -25,7 +25,10 @@
 	<div class="tbl-ctrls">
 		<?=form_open($base_url)?>
 			<h1><?=$heading['app']?></h1>
-			<div class="app-notice-wrap"><?=ee('CP/Alert')->get('app-alerts')?></div>
+			<div class="app-notice-wrap">
+				<?=ee('CP/Alert')->get('app-alerts')?>
+				<?=ee('CP/Alert')->get('no-cookie-consent')?>
+			</div>
 			<?php $this->embed('_shared/table-list', ['data' => $requests['app'], 'filters' => $filters['app']]); ?>
 		</form>
 	</div>
