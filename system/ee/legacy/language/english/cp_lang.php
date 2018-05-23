@@ -225,6 +225,8 @@ $lang = array(
 
 'member_changed_password' => 'Changed password for "%s" (%d)',
 
+'member_anonymized_member' => 'Anonymized member with ID: %d',
+
 'member_id' => 'Member ID',
 
 'member_logged_in' => 'Logged in',

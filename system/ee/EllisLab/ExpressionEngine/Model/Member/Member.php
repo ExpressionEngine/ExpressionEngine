@@ -968,6 +968,11 @@ class Member extends ContentModel {
 			$this->AuthoredChannelEntries->mapProperty('ip_address', [ee('IpAddress'), 'anonymize']);
 			$this->AuthoredChannelEntries->save();
 		}
+
+		ee()->logger->log_action(sprintf(
+			lang('member_anonymized_member'),
+			$this->member_id
+		));
 	}
 
 	/**
