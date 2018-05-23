@@ -27,7 +27,9 @@ class Updater {
 			[
 				'addConsentTables',
 				'addConsentModerationPermissions',
+				'addMemberFieldAnonExcludeColumn',
 				'installConsentModule',
+				'addSessionAuthTimeoutColumn',
 			]
 		);
 
@@ -251,6 +253,21 @@ class Updater {
 		ee()->db->update('member_groups', array('can_manage_consents' => 'y'), array('group_id' => 1));
 	}
 
+	private function addMemberFieldAnonExcludeColumn()
+	{
+		ee()->smartforge->add_column(
+			'member_fields',
+			[
+				'm_field_exclude_from_anon' => [
+					'type'    => 'CHAR(1)',
+					'null'    => FALSE,
+					'default' => 'n'
+				]
+			],
+			'm_field_show_fmt'
+		);
+	}
+
 	private function installConsentModule()
 	{
 		$addon = ee('Addon')->get('consent');
@@ -270,6 +287,24 @@ class Updater {
 				// probably just ran the update again
 			}
 		}
+	}
+
+	private function addSessionAuthTimeoutColumn()
+	{
+		ee()->smartforge->add_column(
+			'sessions',
+			[
+				'auth_timeout' => [
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => FALSE,
+					'default'    => 0
+				]
+			],
+			'sess_start'
+		);
+
 	}
 }
 

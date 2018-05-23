@@ -822,6 +822,7 @@ CREATE TABLE `exp_member_fields` (
   `m_field_cp_reg` char(1) NOT NULL DEFAULT 'n',
   `m_field_fmt` char(5) NOT NULL DEFAULT 'none',
   `m_field_show_fmt` char(1) NOT NULL DEFAULT 'y',
+  `m_field_exclude_from_anon` char(1) NOT NULL DEFAULT 'n',
   `m_field_order` int(3) unsigned NOT NULL,
   `m_field_text_direction` char(3) DEFAULT 'ltr',
   `m_field_settings` text,
@@ -1315,6 +1316,7 @@ CREATE TABLE `exp_sessions` (
   `fingerprint` varchar(40) NOT NULL,
   `login_state` varchar(32) DEFAULT NULL,
   `sess_start` int(10) unsigned NOT NULL DEFAULT '0',
+  `auth_timeout` int(10) unsigned NOT NULL DEFAULT '0',
   `last_activity` int(10) unsigned NOT NULL DEFAULT '0',
   `can_debug` char(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`session_id`),
@@ -2044,8 +2046,8 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_member_fields` WRITE;
 ALTER TABLE `exp_member_fields` DISABLE KEYS;
-INSERT INTO `exp_member_fields` (`m_field_id`, `m_field_name`, `m_field_label`, `m_field_description`, `m_field_type`, `m_field_list_items`, `m_field_ta_rows`, `m_field_maxl`, `m_field_width`, `m_field_search`, `m_field_required`, `m_field_public`, `m_field_reg`, `m_field_cp_reg`, `m_field_fmt`, `m_field_show_fmt`, `m_field_order`, `m_field_text_direction`, `m_field_settings`, `m_legacy_field_data`) VALUES
-	(1,'birthday','Birthday','','date','',8,NULL,NULL,'y','n','y','n','n','none','y',1,'ltr',NULL,'n');
+INSERT INTO `exp_member_fields` (`m_field_id`, `m_field_name`, `m_field_label`, `m_field_description`, `m_field_type`, `m_field_list_items`, `m_field_ta_rows`, `m_field_maxl`, `m_field_width`, `m_field_search`, `m_field_required`, `m_field_public`, `m_field_reg`, `m_field_cp_reg`, `m_field_fmt`, `m_field_show_fmt`, `m_field_exclude_from_anon`, `m_field_order`, `m_field_text_direction`, `m_field_settings`, `m_legacy_field_data`) VALUES
+	(1,'birthday','Birthday','','date','',8,NULL,NULL,'y','n','y','n','n','none','y','n',1,'ltr',NULL,'n');
 ALTER TABLE `exp_member_fields` ENABLE KEYS;
 UNLOCK TABLES;
 

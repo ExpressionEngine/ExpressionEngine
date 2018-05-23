@@ -20,6 +20,10 @@ $lang = array(
 
 'allow_messages' => 'Allow messages from other members',
 
+'anonymize_username' => 'Anonymize %s',
+
+'anonymize_member_desc' => 'You are about to anonymize this member, which means all data considered personally-identifiable information will be cleared out, but the member record will remain. Please confirm this action.',
+
 'aol_im' => 'AOL IM',
 
 'auth_settings' => 'Username & Password',

@@ -306,7 +306,7 @@ class Member extends ContentModel {
 				));
 			}
 
-			if (isset($changed['email']))
+			if (isset($changed['email']) && ! $this->isAnonymized())
 			{
 				ee()->logger->log_action(sprintf(
 					lang('member_changed_email'),
@@ -896,6 +896,91 @@ class Member extends ContentModel {
 			return ee()->config->slash_item('sig_img_url').$this->sig_img_filename;
 		}
 		return '';
+	}
+
+	/**
+	 * Anonymize a member record in order to comply with a GDPR Right to Erasure request
+	 */
+	public function anonymize()
+	{
+		// ---------------------------------------------------------------
+		// 'member_anonymize' hook.
+		// - Provides an opportunity for addons to perform anonymization on
+		// any personal member data they've collected for a given member
+		//
+		if (ee()->extensions->active_hook('member_anonymize'))
+		{
+			ee()->extensions->call('member_anonymize', $this);
+		}
+		//
+		// ---------------------------------------------------------------
+
+		$username = 'anonymous'.$this->getId();
+		$email = 'redacted'.$this->getId();
+		$ip_address = ee('IpAddress')->anonymize($this->ip_address);
+
+		$this->setProperty('group_id', 2); // Ban member
+		$this->setProperty('username', $username);
+		$this->setProperty('screen_name', $username);
+		$this->setProperty('email', $email);
+		$this->setProperty('ip_address', $ip_address);
+		$this->setProperty('avatar_filename', '');
+		$this->setProperty('sig_img_filename', '');
+		$this->setProperty('photo_filename', '');
+
+		foreach	($this->getCustomFields() as $field)
+		{
+			if ( ! $field->getItem('m_field_exclude_from_anon'))
+			{
+				$this->setProperty('m_field_id_'.$field->getId(), '');
+			}
+		}
+
+		$this->save();
+
+		if ($this->Session) $this->Session->delete();
+		if ($this->Online) $this->Online->delete();
+		if ($this->RememberMe) $this->RememberMe->delete();
+
+		if ($this->CpLogs)
+		{
+			$this->CpLogs->mapProperty('ip_address', [ee('IpAddress'), 'anonymize']);
+			$this->CpLogs->save();
+		}
+
+		if ($this->SearchLogs)
+		{
+			$this->SearchLogs->mapProperty('ip_address', [ee('IpAddress'), 'anonymize']);
+			$this->SearchLogs->save();
+		}
+
+		if ($this->Comments)
+		{
+			$this->Comments->name = $username;
+			$this->Comments->email = $email;
+			$this->Comments->url = $email;
+			$this->Comments->mapProperty('ip_address', [ee('IpAddress'), 'anonymize']);
+			$this->Comments->save();
+		}
+
+		if ($this->AuthoredChannelEntries)
+		{
+			$this->AuthoredChannelEntries->mapProperty('ip_address', [ee('IpAddress'), 'anonymize']);
+			$this->AuthoredChannelEntries->save();
+		}
+
+		ee()->logger->log_action(sprintf(
+			lang('member_anonymized_member'),
+			$this->member_id
+		));
+	}
+
+	/**
+	 * Has this member already been anonymized?
+	 */
+	public function isAnonymized()
+	{
+		return (bool) preg_match('/^redacted\d+$/', $this->email);
 	}
 }
 

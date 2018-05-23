@@ -24,6 +24,7 @@ use EllisLab\ExpressionEngine\Service\Event;
 use EllisLab\ExpressionEngine\Service\File;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\Formatter;
+use EllisLab\ExpressionEngine\Service\IpAddress;
 use EllisLab\ExpressionEngine\Service\License;
 use EllisLab\ExpressionEngine\Service\LivePreview;
 use EllisLab\ExpressionEngine\Service\Logger;
@@ -444,6 +445,11 @@ return [
 		'File' => function($ee)
 		{
 			return new File\Factory();
+		},
+
+		'IpAddress' => function($ee)
+		{
+			return new IpAddress\Factory();
 		},
 
 		'License' => function($ee)

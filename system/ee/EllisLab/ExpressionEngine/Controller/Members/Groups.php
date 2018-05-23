@@ -211,6 +211,24 @@ class Groups extends Members\Members {
 			'file' => array('cp/confirm_remove'),
 		));
 
+		$session = ee('Model')->get('Session', ee()->session->userdata('session_id'))->first();
+
+		if ( ! $session->isWithinAuthTimeout())
+		{
+			$data['confirm_remove_secure_form_ctrls'] = [
+				'title' => 'your_password',
+				'desc' => 'your_password_delete_member_groups_desc',
+				'group' => 'verify_password',
+				'fields' => [
+					'verify_password' => [
+						'type'      => 'password',
+						'required'  => TRUE,
+						'maxlength' => PASSWORD_MAX_LENGTH
+					]
+				]
+			];
+		}
+
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('all_member_groups');
@@ -298,9 +316,37 @@ class Groups extends Members\Members {
 	 */
 	public function delete()
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_member_groups'))
+		$groups = ee()->input->post('selection');
+		$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+
+		if ( ! $member ||
+			! $member->Session ||
+			! ee()->cp->allowed_group('can_delete_member_groups') ||
+			! $groups)
 		{
 			show_error(lang('unauthorized_access'), 403);
+		}
+
+		if ( ! $member->Session->isWithinAuthTimeout())
+		{
+			$validator = ee('Validation')->make();
+			$validator->setRules(array(
+				'verify_password'  => 'authenticated'
+			));
+			$password_confirm = $validator->validate($_POST);
+
+			if ($password_confirm->failed())
+			{
+				ee('CP/Alert')->makeInline('member_groups')
+					->asIssue()
+					->withTitle(lang('member_groups_remove_problem'))
+					->addToBody(lang('invalid_password'))
+					->defer();
+
+				return ee()->functions->redirect($this->base_url);
+			}
+
+			$member->Session->resetAuthTimeout();
 		}
 
 		$replacement = ee()->input->post('replacement');
