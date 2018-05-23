@@ -472,8 +472,11 @@ class EE_Template {
 			foreach ($requests as $request)
 			{
 				$var_name = 'consent:'.$request->consent_name;
+				$responded_name = 'consent:has_responded:'.$request->consent_name;
 				$this->consent_vars[$var_name] = ee('Consent')->hasGranted($request->consent_name);
+				$this->consent_vars[$responded_name] = ee('Consent')->hasResponded($request->consent_name);
 				$this->template = str_replace(LD.$var_name.RD, $this->consent_vars[$var_name], $this->template);
+				$this->template = str_replace(LD.$responded_name.RD, $this->consent_vars[$responded_name], $this->template);
 			}
 		}
 

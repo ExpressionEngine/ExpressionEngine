@@ -403,6 +403,7 @@ class EE_Session {
 
 		ee()->db->query(ee()->db->insert_string('exp_sessions', $this->sdata));
 
+		$this->session_exists = TRUE;
 		return $this->sdata['session_id'];
 	}
 

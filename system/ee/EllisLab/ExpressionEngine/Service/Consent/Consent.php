@@ -242,6 +242,40 @@ class Consent {
 	}
 
 	/**
+	 * Has the member responded to a given consent request?
+	 *
+	 * @param int|string $request_ref The name or ID of a consent request
+	 * @return bool TRUE if they have, FALSE if they have not
+	 */
+	public function hasResponded($request_ref)
+	{
+		$column = (is_numeric($request_ref)) ? 'consent_request_id' : 'consent_name';
+
+		if ($this->isAnonymous())
+		{
+			$grants = $this->cached_consents->indexBy($column);
+			if (isset($grants[$request_ref]))
+			{
+				$rid = $grants[$request_ref]->consent_request_id;
+				return (isset($this->cookie[$rid]) && $this->cookie[$rid]['timestamp'] !== FALSE);
+			}
+		}
+		else
+		{
+			$grants = $this->cached_consents->ConsentRequest->indexBy($column);
+
+			if (isset($grants[$request_ref]))
+			{
+				$rid = $grants[$request_ref]->consent_request_id;
+				$consents = $this->cached_consents->indexBy('consent_request_id');
+				return $consents[$rid]->response_date != FALSE;
+			}
+
+			return FALSE;
+		}
+	}
+
+	/**
 	 * Gets all the consents the member (or anonymous visitor) has responded to.
 	 *
 	 * @return object A Collection of Consent objects (ConsentRequest for anonymous)
