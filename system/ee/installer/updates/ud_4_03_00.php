@@ -27,7 +27,7 @@ class Updater {
 			[
 				'addConsentTables',
 				'addConsentModerationPermissions',
-				'addMemberFieldAnonExcludeColumn'
+				'addMemberFieldAnonExcludeColumn',
 				'installConsentModule',
 				'addSessionAuthTimeoutColumn',
 			]
