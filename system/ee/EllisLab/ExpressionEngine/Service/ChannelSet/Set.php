@@ -1090,11 +1090,14 @@ class Set {
 		{
 			$settings = $field_data;
 
-			$settings['field_channel_fields'] = ee('Model')->get('ChannelField')
-				->fields('field_id')
-				->filter('field_name', 'IN', $field_data['field_channel_fields'])
-				->all()
-				->pluck('field_id');
+			if ($field_data['field_channel_fields'])
+			{
+				$settings['field_channel_fields'] = ee('Model')->get('ChannelField')
+					->fields('field_id')
+					->filter('field_name', 'IN', $field_data['field_channel_fields'])
+					->all()
+					->pluck('field_id');
+			}
 
 			$field->set($settings);
 			$field->save();
