@@ -520,6 +520,11 @@ class Set {
 			{
 				foreach ($channel_data->field_groups as $field_group)
 				{
+					if (is_null($field_group))
+					{
+						continue;
+					}
+
 					if (isset($this->aliases['ee:ChannelFieldGroup'][$field_group]))
 					{
 						$field_group = $this->aliases['ee:ChannelFieldGroup'][$field_group]['group_name'];
