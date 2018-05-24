@@ -1,0 +1,57 @@
+/*
+	_list.less
+	-------------
+	define list
+*/
+
+.list{
+	list-style-type: none;
+		li{
+			&:before{
+				color: @medium-gray;
+				content: @fa-var-chevron-right;
+				font-family: @fam-ico;
+				font-size: @font-base - 2;
+				margin-right: 5px;
+				position: relative;
+				top: 1px;
+			}
+			a.act{ font-weight: bold; }
+		}
+		li.fav,
+		&.fav li{
+			&:before{
+				color: lighten(@red,35%);
+				content: @fa-var-heart;
+			}
+		}
+		li.star,
+		&.star li{
+			&:before{
+				color: darken(@yellow,25%);
+				content: @fa-var-star;
+				top: 0;
+			}
+		}
+		li.yes,
+		&.yes li{
+			&:before{
+				color: @green;
+				content: @fa-var-check;
+			}
+		}
+		li.no,
+		&.no li{
+			&:before{
+				color: @red;
+				content: @fa-var-times;
+			}
+		}
+		li.rss,
+		&.rss li{
+			&:before{
+				color: darken(@yellow,25%);
+				content: @fa-var-rss-square;
+			}
+		}
+}

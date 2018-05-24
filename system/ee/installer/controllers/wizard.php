@@ -708,7 +708,7 @@ class Wizard extends CI_Controller {
 			array(
 				'field' => 'install_default_theme',
 				'label' => 'lang:install_default_theme',
-				'rules' => 'callback_template_path_writeable'
+				'rules' => 'callback_themes_user_writable|callback_template_path_writeable'
 			),
 			array(
 				'field' => 'password',
@@ -950,6 +950,20 @@ class Wizard extends CI_Controller {
 			ee()->form_validation->set_message(
 				'template_path_writeable',
 				lang('unwritable_templates')
+			);
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	public function themes_user_writable($radio)
+	{
+		if ( ! is_really_writable($this->root_theme_path.'user'))
+		{
+			ee()->form_validation->set_message(
+				'themes_user_writable',
+				lang('unwritable_themes_user')
 			);
 			return FALSE;
 		}
@@ -1548,9 +1562,10 @@ class Wizard extends CI_Controller {
 		if ($this->userdata['theme'] != ''&& $this->userdata['theme'] != 'none')
 		{
 			// Install any default structure and content that the theme may have
-			if (file_exists($this->theme_path.$this->userdata['theme'].'/channel_set.json'))
+			if (file_exists(APPPATH.'/site_themes/'.$this->userdata['theme'].'/channel_set.json'))
 			{
 				$theme = ee('ThemeInstaller');
+				$theme->setInstallerPath(APPPATH);
 				$theme->setSiteURL($this->userdata['site_url']);
 				$theme->setBasePath($this->base_path);
 				$theme->setThemePath($this->root_theme_path);

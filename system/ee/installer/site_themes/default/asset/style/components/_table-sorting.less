@@ -1,0 +1,24 @@
+/*
+	_table-sorting.less
+	-------------
+	define table-sorting
+*/
+
+.table-sorting{
+	background-color: @off-white;
+	border: solid @medium-gray;
+	border-width: 1px 1px 0;
+	font-size: @font-base - 2;
+	margin: 20px 0 0;
+	padding: 10px;
+		+ table{ margin-top: 0; }
+		select{ margin-right: 10px; }
+		label{ margin-bottom: 10px; }
+}
+
+// responsibility
+@media screen and (min-width: @min-width){
+	.table-sorting{
+		label{ display: inline-block; margin-bottom: 0; }
+	}
+}

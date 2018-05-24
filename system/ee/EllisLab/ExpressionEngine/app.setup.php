@@ -234,7 +234,7 @@ return [
 
 		'Theme' => function($ee)
 		{
-			return new Theme\Theme(PATH_THEMES, URL_THEMES, PATH_THIRD_THEMES, URL_THIRD_THEMES);
+			return new Theme\Theme(PATH_THEME_TEMPLATES, URL_THEMES, PATH_THIRD_THEME_TEMPLATES, URL_THIRD_THEMES, PATH_THEMES, PATH_THIRD_THEMES);
 		},
 
 		'ThemeInstaller' => function($ee)

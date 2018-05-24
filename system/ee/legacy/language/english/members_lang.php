@@ -210,6 +210,8 @@ $lang = array(
 
 'member_approved_success_desc' => 'The member <b>%s</b> has been approved.',
 
+'member_assignment_none' => 'None, members in this group will be deleted',
+
 'member_assignment_warning' => 'Members are currently assigned to some of these groups. What member group should they be re-assigned to?',
 
 'member_cfg' => 'Member Group Settings',

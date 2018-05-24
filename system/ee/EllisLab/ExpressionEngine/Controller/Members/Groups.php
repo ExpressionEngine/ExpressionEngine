@@ -423,7 +423,7 @@ class Groups extends Members\Members {
 						return count($group->Members) > 0;
 					});
 
-		$vars['new_groups'] = array('delete' => 'None');
+		$vars['new_groups'] = ['delete' => lang('member_assignment_none')];
 		$vars['new_groups'] += ee('Model')->get('MemberGroup')
 								->filter('group_id', 'NOT IN', $groups)
 								->all()
@@ -454,6 +454,12 @@ class Groups extends Members\Members {
 				->filter('group_id', $group_id)
 				->set('group_id', $replacement)
 				->update();
+		}
+		else
+		{
+			ee('Model')->get('Member')
+				->filter('group_id', $group_id)
+				->delete();
 		}
 
 		$sites = ee('Model')->get('Site')

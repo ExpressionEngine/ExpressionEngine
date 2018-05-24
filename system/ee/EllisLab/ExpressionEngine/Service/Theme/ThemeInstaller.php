@@ -8,6 +8,7 @@
  */
 
 namespace EllisLab\ExpressionEngine\Service\Theme;
+use EllisLab\ExpressionEngine\Library\Filesystem;
 
 /**
  * ThemeInstaller
@@ -38,6 +39,11 @@ class ThemeInstaller {
 	private $theme_url;
 
 	/**
+	 * @var string The absolute path to the installer
+	 */
+	private $installer_path;
+
+	/**
 	 * @var array Multidimensional associative array containing model data for
 	 * 	- statuses
 	 * 	- cat_group
@@ -64,6 +70,15 @@ class ThemeInstaller {
 
 		ee()->remove('functions');
 		ee()->set('functions', new FunctionsStub());
+	}
+
+	/**
+	 * Set the installer path
+	 * @param string $installer_path The path to the installer
+	 */
+	public function setInstallerPath($installer_path)
+	{
+		$this->installer_path = rtrim($installer_path, '/').'/';
 	}
 
 	/**
@@ -122,6 +137,7 @@ class ThemeInstaller {
 		$channel_set = $this->loadExtraData($theme_name);
 
 		$this->createTemplates($theme_name, $channel_set->template_preferences);
+		$this->createAssetFolders($theme_name);
 		$this->createUploadDestinations($theme_name, $channel_set->upload_destinations);
 		$this->createEntries($theme_name);
 		$this->setConfigItems($channel_set->config);
@@ -137,7 +153,7 @@ class ThemeInstaller {
 	 */
 	private function getChannelSetPath($theme_name)
 	{
-		return $this->theme_path.'ee/site/'.$theme_name;
+		return $this->installer_path.'site_themes/'.$theme_name;
 	}
 
 	/**
@@ -172,7 +188,7 @@ class ThemeInstaller {
 
 		@chmod($path_tmpl.'default_site', DIR_WRITE_MODE);
 
-		$theme_template_dir = $this->theme_path."ee/site/{$theme_name}/templates/";
+		$theme_template_dir = $this->installer_path."site_themes/{$theme_name}/templates/";
 		foreach (directory_map($theme_template_dir) as $directory => $contents)
 		{
 			$from_dir = $theme_template_dir.$directory.'/';
@@ -291,6 +307,16 @@ class ThemeInstaller {
 		return $template;
 	}
 
+	private function createAssetFolders($theme_name)
+	{
+		// Create themes/user/site/default
+		foreach (array('site', 'site/'.$theme_name) as $path)
+		{
+
+			ee('Filesystem')->mkDir($this->theme_path.'user/'.$path);
+		}
+	}
+
 	/**
 	 * Create the upload locations
 	 * @param string $theme_name The name of the theme, used for pulling in
@@ -301,8 +327,10 @@ class ThemeInstaller {
 	 */
 	private function createUploadDestinations($theme_name, $upload_locations)
 	{
-		$img_url = "{base_url}themes/ee/site/{$theme_name}/";
-		$img_path = $this->theme_path."ee/site/{$theme_name}/";
+		$img_url = "{base_url}themes/user/site/{$theme_name}/";
+		$img_path = $this->theme_path."user/site/{$theme_name}/";
+
+		ee('Filesystem')->copy($this->installer_path.'site_themes/default/asset/', $this->theme_path.'user/site/default/asset/');
 
 		foreach ($upload_locations as $upload_location_data)
 		{
@@ -351,7 +379,7 @@ class ThemeInstaller {
 		ee()->load->library('session');
 		ee()->session->userdata['group_id'] = 1;
 
-		$entry_data_path = $this->theme_path."ee/site/{$theme_name}/channel_entries/";
+		$entry_data_path = $this->installer_path.'site_themes/'.$theme_name.'/channel_entries/';
 
 		$custom_fields = ee('Model')->get('ChannelField')
 			->fields('field_name')
@@ -550,8 +578,8 @@ class ThemeInstaller {
 	 */
 	private function setMemberTheme($theme_name)
 	{
-		$to_dir = $this->theme_path."ee/member/{$theme_name}/";
-		$from_dir = $this->theme_path."ee/site/{$theme_name}/members/";
+		$to_dir = $this->theme_path."user/member/{$theme_name}/";
+		$from_dir = $this->installer_path."site_theme/{$theme_name}/members/";
 
 		if ( ! is_dir($from_dir))
 		{
