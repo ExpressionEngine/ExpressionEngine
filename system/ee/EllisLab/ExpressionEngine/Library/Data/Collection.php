@@ -248,6 +248,28 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 * Applies the given callback to the collection and returns an array
 	 * of the results.
 	 *
+	 * @param Callable $callback Function to apply
+	 * @return array  results
+	 */
+	public function mapProperty($key, Callable $callback)
+	{
+		return $this->each(function($item) use ($key, $callback)
+		{
+			if (is_array($item))
+			{
+				$item[$key] = $callback($item[$key]);
+			}
+			else
+			{
+				$item->$key = $callback($item->$key);
+			}
+		});
+	}
+
+	/**
+	 * Applies the given callback to the collection and returns an array
+	 * of the results.
+	 *
 	 * @param Closure $callback Function to apply
 	 * @return Collection  results
 	 */

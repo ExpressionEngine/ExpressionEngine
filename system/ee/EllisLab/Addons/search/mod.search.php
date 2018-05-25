@@ -27,6 +27,7 @@ class Search {
 	var $hash			= "";
 
 	protected $_meta 	= array();
+	protected $custom_fields = [];
 
 	/**
 	 * Do Search
@@ -233,7 +234,7 @@ class Search {
 
 		$this->hash = ee()->functions->random('md5');
 
-		$query_parts = $this->build_standard_query();
+		$query_parts = $this->getAllQueryParts();
 
 		/** ----------------------------------------
 		/**  No query results?
@@ -525,13 +526,17 @@ class Search {
 
             if ($channels)
             {
-    			$custom_fields = array();
-    			foreach ($channels as $channel)
-    			{
-    				$custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
-    			}
+				if (empty($this->custom_fields))
+				{
+	    			$custom_fields = array();
+	    			foreach ($channels as $channel)
+	    			{
+	    				$custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
+	    			}
+					$this->custom_fields = array_chunk($custom_fields, 50);
+				}
 
-                foreach ($custom_fields as $field)
+                foreach (array_shift($this->custom_fields) as $field)
                 {
                     if ($field->field_search)
                     {
@@ -943,7 +948,6 @@ class Search {
 				$sql .= ")";
 			}
 		}
-		//exit($sql);
 
 		/** ----------------------------------------------
 		/**  Limit query to a specific channel
@@ -1115,6 +1119,34 @@ class Search {
 		return $return;
 	}
 
+	protected function getAllQueryParts()
+	{
+		$query_parts = $this->build_standard_query();
+
+		if ( ! empty($this->custom_fields))
+		{
+			foreach (array_keys($this->custom_fields) as $i)
+			{
+				$qp = $this->build_standard_query();
+
+				if ($query_parts === FALSE)
+				{
+					$query_parts = $qp;
+				}
+				else
+				{
+					if ($qp)
+					{
+						$query_parts['entries'] = array_merge($query_parts['entries'], $qp['entries']);
+						$query_parts['channel_ids'] = array_merge($query_parts['channel_ids'], $qp['channel_ids']);
+					}
+				}
+			}
+		}
+
+		return $query_parts;
+	}
+
 	/** ----------------------------------------
 	/**  Total search results
 	/** ----------------------------------------*/
@@ -1262,6 +1294,8 @@ class Search {
 
 		$channel->fetch_custom_channel_fields();
 		$channel->fetch_custom_member_fields();
+
+		ee()->session->cache['channel']['entry_ids'] = $query_parts['entries'];
 
 		$sql = 'SELECT DISTINCT(t.entry_id), w.search_results_url, w.search_excerpt, ';
 		$sql .= $channel->generateSQLForEntries($query_parts['entries'], $query_parts['channel_ids']);

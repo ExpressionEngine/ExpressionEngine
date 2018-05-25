@@ -11,6 +11,8 @@ $lang = array(
 
 'comment_settings' => 'Comment Settings',
 
+'consent_requests' => 'Consent Requests',
+
 'content_and_design' => 'Content & Design',
 
 'debugging_output' => 'Debugging & Output',
@@ -771,6 +773,10 @@ $lang = array(
 
 'pw_min_len_desc' => 'Minimum number of characters required for new members\' passwords.',
 
+'require_cookie_consent' => 'Require user consent to set cookies?',
+
+'require_cookie_consent_desc' => 'When enabled, cookies will not be set for the visitor (except those <b>strictly necessary</b> for the web site to function) until they have consented to your site\'s cookie policy. See the <a href="'.DOC_URL.'add-ons/consent/">Consent Module documentation</a> for more details.',
+
 'require_ip_for_login' => 'Require user agent and <abbr title="Internet Protocol">IP</abbr> for login?',
 
 'require_ip_for_login_desc' => 'When enabled, members will be unable to login without a valid user agent and <abbr title="Internet Protocol">IP</abbr> address.',
@@ -854,6 +860,21 @@ $lang = array(
 'edit_html_buttons_success' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Button Updated',
 
 'edit_html_buttons_success_desc' => 'The <abbr title="Hyper-Text Markup Language">HTML</abbr> button <b>%s</b> has been updated.',
+
+/* Consent Requests */
+'consent_request_versions' => 'Versions of %s',
+
+'new_version' => 'New version',
+
+'app_consent_requests' => 'Application Consent Requests',
+
+'user_consent_requests' => 'User Consent Requests',
+
+'author' => 'Author',
+
+'cookie_consent_disabled' => 'Cookie Consent Disabled',
+
+'cookie_consent_disabled_desc' => 'Cookie-related consent requests have no affect on the setting of cookies unless the <a href="%s">cookie consent setting</a> is enabled.'
 
 );
 

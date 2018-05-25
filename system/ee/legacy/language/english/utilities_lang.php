@@ -23,7 +23,7 @@ $lang = array(
 
 'file_converter' => 'File Converter',
 
-'import_tools' => 'Import Tools',
+'member_tools' => 'Member Tools',
 
 'member_import' => 'Member Import',
 
@@ -467,6 +467,30 @@ $lang = array(
 'total_records' => 'Total Records',
 
 'uptime' => 'Uptime',
+
+/* Export Email Addresses */
+
+'mass_notification_export' => 'Mass Notification Export',
+
+'export_email_addresses_title' => 'Export a <abbr title="Comma Separated Values">CSV</abbr> File',
+
+'export_email_addresses_desc' => 'Export names and email addresses of your %s members.',
+
+'export_warning_desc' => 'This action should only be done by authorized users. The resulting <abbr title="Comma Separated Values">CSV</abbr> file should be handled in harmony with your privacy policy.',
+
+'download_valid_email_addresses' => 'Download Valid Emails',
+
+'download_invalid_email_addresses' => 'Download Invalid Emails',
+
+'exported_valid_email_addresses' => 'Valid member email addresses were exported',
+
+'exported_invalid_email_addresses' => 'Invalid member email addresses were exported',
+
+'validate_addresses' => 'Validate email addresses?',
+
+'validate_addresses_desc' => 'Check the email for corret format and check that the domain exists.',
+
+'export_email_addresses_fail' => 'Export Failed',
 
 );
 

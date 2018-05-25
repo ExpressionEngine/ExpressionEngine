@@ -42,7 +42,6 @@ class Post extends Model {
 			'type'     => 'belongsTo',
 			'model'    => 'ee:Member',
 			'from_key' => 'author_id',
-			'weak'     => TRUE,
 			'inverse' => array(
 				'name' => 'Posts',
 				'type' => 'hasMany'
@@ -93,7 +92,8 @@ class Post extends Model {
 
 	protected static $_events = array(
 		'afterInsert',
-		'beforeDelete',
+		'beforeBulkDelete',
+		'afterBulkDelete'
 	);
 
 	protected $post_id;
@@ -118,19 +118,32 @@ class Post extends Model {
 		$this->Author->save();
 	}
 
-	public function onBeforeDelete()
-	{
-		if ($this->Forum)
-		{
-			$this->Forum->forum_total_posts--;
-			$this->Forum->save();
-		}
+	protected static $_forum_ids = [];
+	protected static $_topic_ids = [];
 
-		if ($this->Author)
+	public static function onBeforeBulkDelete($delete_ids)
+	{
+		$posts = ee('Model')->get('forum:Post', $delete_ids)->all();
+		self::$_forum_ids = array_unique($posts->pluck('forum_id'));
+		self::$_topic_ids = array_unique($posts->pluck('topic_id'));
+	}
+
+	public static function onAfterBulkDelete()
+	{
+		require_once PATH_ADDONS.'forum/mod.forum.php';
+		require_once PATH_ADDONS.'forum/mod.forum_core.php';
+
+		$forum_core = new \Forum_Core;
+
+		foreach (self::$_forum_ids as $forum_id)
 		{
-			$this->Author->total_forum_posts--;
-			$this->Author->save();
+			$forum_core->_update_post_stats($forum_id);
 		}
+		foreach (self::$_topic_ids as $topic_id)
+		{
+			$forum_core->_update_topic_stats($topic_id);
+		}
+		$forum_core->_update_global_stats();
 	}
 
 }

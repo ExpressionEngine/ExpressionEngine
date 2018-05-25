@@ -520,6 +520,11 @@ class Set {
 			{
 				foreach ($channel_data->field_groups as $field_group)
 				{
+					if (is_null($field_group))
+					{
+						continue;
+					}
+
 					if (isset($this->aliases['ee:ChannelFieldGroup'][$field_group]))
 					{
 						$field_group = $this->aliases['ee:ChannelFieldGroup'][$field_group]['group_name'];
@@ -1085,11 +1090,14 @@ class Set {
 		{
 			$settings = $field_data;
 
-			$settings['field_channel_fields'] = ee('Model')->get('ChannelField')
-				->fields('field_id')
-				->filter('field_name', 'IN', $field_data['field_channel_fields'])
-				->all()
-				->pluck('field_id');
+			if ($field_data['field_channel_fields'])
+			{
+				$settings['field_channel_fields'] = ee('Model')->get('ChannelField')
+					->fields('field_id')
+					->filter('field_name', 'IN', $field_data['field_channel_fields'])
+					->all()
+					->pluck('field_id');
+			}
 
 			$field->set($settings);
 			$field->save();

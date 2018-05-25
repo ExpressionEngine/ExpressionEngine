@@ -142,6 +142,8 @@ $lang = array(
 
 'filter_autosaves' => 'filter auto saves',
 
+'filter_by_author' => 'author',
+
 'filter_by_category' => 'category',
 
 'filter_by_channel' => 'channel',
@@ -700,13 +702,11 @@ $lang = array(
 
 'title' => 'Title',
 
-'title_and_body' => 'Search titles and entries',
+'titles' => 'Titles',
 
-'title_body_comments' => 'Search titles, entries, and comments',
+'titles_and_content' => 'Titles & Content',
 
 'title_not_unique' => 'An entry already exists with this title. Titles must be unique.',
-
-'title_only' => 'Search titles only',
 
 'today' => 'Today',
 
@@ -943,8 +943,6 @@ $lang = array(
 'entries_updated' => '%d entries have been updated.',
 
 'filter_selected_entries' => 'Filter selected entries',
-
-'important' => 'Important!',
 
 'no_cat_groups_in_common' => 'No <b>Category Groups</b> in common.',
 

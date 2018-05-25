@@ -107,6 +107,16 @@ class Settings extends CP_Controller {
 
 			$list->addItem(lang('access_throttling'), ee('CP/URL')->make('settings/throttling'));
 			$list->addItem(lang('captcha'), ee('CP/URL')->make('settings/captcha'));
+
+			if (ee()->cp->allowed_group('can_manage_consents'))
+			{
+				$list->addItem(lang('consent_requests'), ee('CP/URL')->make('settings/consents'));
+			}
+		}
+		elseif (ee()->cp->allowed_group('can_manage_consents'))
+		{
+			$list = $sidebar->addHeader(lang('security_privacy'))->addBasicList();
+			$list->addItem(lang('consent_requests'), ee('CP/URL')->make('settings/consents'));
 		}
 	}
 

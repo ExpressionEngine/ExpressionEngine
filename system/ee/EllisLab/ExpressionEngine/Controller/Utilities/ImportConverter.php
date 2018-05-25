@@ -34,13 +34,16 @@ class ImportConverter extends Utilities {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		if ( ! ee('Filesystem')->exists($this->cache))
+		if ( ! AJAX_REQUEST)
 		{
-			ee('Filesystem')->mkDir($this->cache);
-		}
-		else
-		{
-			ee('Filesystem')->deleteDir($this->cache, TRUE);
+			if ( ! ee('Filesystem')->exists($this->cache))
+			{
+				ee('Filesystem')->mkDir($this->cache);
+			}
+			else
+			{
+				ee('Filesystem')->deleteDir($this->cache, TRUE);
+			}
 		}
 
 		ee()->lang->loadfile('member_import');

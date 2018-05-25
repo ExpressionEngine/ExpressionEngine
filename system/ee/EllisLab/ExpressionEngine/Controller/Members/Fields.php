@@ -374,6 +374,16 @@ class Fields extends Members\Members {
 							'value' => $field->field_required
 						)
 					)
+				),
+				array(
+					'title' => 'exclude_from_anonymization',
+					'desc' => 'exclude_from_anonymization_desc',
+					'fields' => array(
+						'm_field_exclude_from_anon' => array(
+							'type' => 'yes_no',
+							'value' => $field->field_exclude_from_anon
+						)
+					)
 				)
 			),
 			'visibility' => array(

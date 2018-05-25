@@ -38,6 +38,9 @@ class Utilities extends CP_Controller {
 		ee()->view->header = array(
 			'title' => lang('system_utilities')
 		);
+
+		// Some garbage collection
+		ExportEmailAddresses::garbageCollect();
 	}
 
 	protected function generateSidebar($active = NULL)
@@ -84,12 +87,19 @@ class Utilities extends CP_Controller {
 			$sidebar->addHeader(lang('debug_extensions'), ee('CP/URL')->make('utilities/extensions'));
 		}
 
-		if (ee()->cp->allowed_group('can_access_import'))
+		if (ee('Permission')->hasAny('can_access_import', 'can_access_members'))
 		{
-			$import_list = $sidebar->addHeader(lang('import_tools'))
+			$member_tools = $sidebar->addHeader(lang('member_tools'))
 				->addBasicList();
-			$import_list->addItem(lang('file_converter'), ee('CP/URL')->make('utilities/import-converter'));
-			$import_list->addItem(lang('member_import'), ee('CP/URL')->make('utilities/member-import'));
+			if (ee('Permission')->has('can_access_import'))
+			{
+				$member_tools->addItem(lang('file_converter'), ee('CP/URL')->make('utilities/import-converter'));
+				$member_tools->addItem(lang('member_import'), ee('CP/URL')->make('utilities/member-import'));
+			}
+			if (ee('Permission')->has('can_access_members'))
+			{
+				$member_tools->addItem(lang('mass_notification_export'), ee('CP/URL')->make('utilities/export-email-addresses'));
+			}
 		}
 
 		if (ee()->cp->allowed_group('can_access_sql_manager'))

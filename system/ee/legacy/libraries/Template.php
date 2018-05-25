@@ -62,6 +62,7 @@ class EE_Template {
 	public $layout_vars          = array();		// This array can be set via the {layout} tag
 	public $segment_vars         = array();		// Array of segment variables
 	public $template_route_vars  = array();		// Array of segment variables
+	public $consent_vars         = [];          // Array of consent variables
 
 	public $tagparts             = array();		// The parts of the tag: {exp:comment:form}
 	public $tagdata              = '';			// The chunk between tag pairs.  This is what modules will utilize
@@ -460,6 +461,25 @@ class EE_Template {
 		$this->template = $this->parse_date_variables($this->template, $dates);
 		unset($dates);
 
+		// Parse Consent variables. Since this adds a query or two, only do it if needed
+		if (strpos($this->template, LD.'consent:') != FALSE OR strpos($this->template, ' consent:'))
+		{
+			$requests = ee('Model')->get('ConsentRequest')
+				->with('CurrentVersion')
+				->all();
+
+			$this->consent_vars = [];
+			foreach ($requests as $request)
+			{
+				$var_name = 'consent:'.$request->consent_name;
+				$responded_name = 'consent:has_responded:'.$request->consent_name;
+				$this->consent_vars[$var_name] = ee('Consent')->hasGranted($request->consent_name);
+				$this->consent_vars[$responded_name] = ee('Consent')->hasResponded($request->consent_name);
+				$this->template = str_replace(LD.$var_name.RD, $this->consent_vars[$var_name], $this->template);
+				$this->template = str_replace(LD.$responded_name.RD, $this->consent_vars[$responded_name], $this->template);
+			}
+		}
+
 		// Is the main template cached?
 		// If a cache file exists for the primary template
 		// there is no reason to go further.
@@ -517,7 +537,8 @@ class EE_Template {
 			$this->layout_conditionals,
 			array('layout:contents' => $this->layout_contents),
 			$logged_in_user_cond,
-			ee()->config->_global_vars
+			ee()->config->_global_vars,
+			$this->consent_vars
 		);
 
 		$this->template = ee()->functions->prep_conditionals(

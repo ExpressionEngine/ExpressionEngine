@@ -20,6 +20,10 @@ $lang = array(
 
 'allow_messages' => 'Allow messages from other members',
 
+'anonymize_username' => 'Anonymize %s',
+
+'anonymize_member_desc' => 'You are about to anonymize this member, which means all data considered personally-identifiable information will be cleared out, but the member record will remain. Please confirm this action.',
+
 'aol_im' => 'AOL IM',
 
 'auth_settings' => 'Username & Password',
@@ -91,6 +95,16 @@ $lang = array(
 'choose_theme' => 'Choose Control Panel Theme',
 
 'comment' => 'Comment',
+
+'consent_granted' => 'Consent Granted',
+
+'consent_granted_desc' => 'Your consent was granted for the following requests:',
+
+'consent_withdrawn' => 'Consent Withdrawn',
+
+'consent_withdrawn_desc' => 'Your consent was withdrawn for the following requests:',
+
+'consents' => 'Consents',
 
 'control_panel_settings' => 'CP Customization',
 
@@ -244,9 +258,6 @@ $lang = array(
 
 'location_desc' => 'Your physical location.',
 
-
-'accept_admin_email' => 'From admins',
-
 'login_as' => 'Login as %s',
 
 'login_as_member' => 'Login as Member',
@@ -308,6 +319,8 @@ $lang = array(
 'new_tab_title' => 'New Tab Title',
 
 'new_tab_url' => 'New Tab URL',
+
+'no_consents_found' => 'No <b>Consents</b> found.',
 
 'no_blocked_members_found' => 'No <b>Blocked members</b> found.',
 
