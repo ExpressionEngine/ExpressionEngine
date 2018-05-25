@@ -171,13 +171,14 @@ class ChannelEntry extends ContentModel {
 
     public function set__entry_date($entry_date)
     {
-        $this->setRawProperty('entry_date', $this->stringToTimestamp($entry_date));
+        $entry_time = $this->stringToTimestamp($entry_date);
+		$this->setRawProperty('entry_date', $entry_timestamp);
 
         // Day, Month, and Year Fields
         // @TODO un-break these windows: inject this dependency
-        $this->setProperty('year', ee()->localize->format_date('%Y', $entry_date));
-        $this->setProperty('month', ee()->localize->format_date('%m', $entry_date));
-        $this->setProperty('day', ee()->localize->format_date('%d', $entry_date));
+        $this->setProperty('year', ee()->localize->format_date('%Y', $entry_timestamp));
+        $this->setProperty('month', ee()->localize->format_date('%m', $entry_timestamp));
+        $this->setProperty('day', ee()->localize->format_date('%d', $entry_timestamp));
     }
 
 	public function set__expiration_date($expiration_date)
