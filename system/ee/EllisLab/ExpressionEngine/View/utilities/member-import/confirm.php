@@ -5,14 +5,18 @@
 	<?=form_open(ee('CP/URL')->make('utilities/member-import/process-xml'), '', $form_hidden)?>
 		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php if ($added_fields && count($added_fields) > 0):?>
-			<div class="alert inline success">
-				<h3><?=lang('new_fields_success')?></h3>
-				<p><?=implode('<br />', $added_fields)?></p>
-			</div>
+			<?=ee('CP/Alert')
+				->makeInline()
+				->asSuccess()
+				->withTitle(lang('new_fields_success'))
+				->addToBody($added_fields)
+				->render()?>
 		<?php endif;?>
-		<div class="alert inline warn">
-			<?=lang(lang('confirm_import_warning'))?>
-		</div>
+		<?=ee('CP/Alert')
+			->makeInline()
+			->asImportant()
+			->addToBody(lang('confirm_import_warning'))
+			->render()?>
 		<table cellspacing="0">
 			<thead>
 				<tr>
@@ -21,10 +25,6 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr>
-					<td><?=lang('mbr_xml_file')?></td>
-					<td><?=$xml_file?></td>
-				</tr>
 				<tr class="alt">
 					<td><?=lang('member_group')?></td>
 					<td><?=$default_group_id?></td>

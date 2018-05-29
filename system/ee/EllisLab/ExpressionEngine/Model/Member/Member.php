@@ -118,6 +118,72 @@ class Member extends ContentModel {
 			'type' => 'hasOne',
 			'model' => 'MemberNewsView'
 		),
+		'AuthoredConsentRequests' => array(
+			'type' => 'hasMany',
+			'model' => 'ConsentRequestVersion',
+			'to_key' => 'author_id',
+			'weak' => TRUE
+		),
+		'ConsentAuditLogs' => array(
+			'type' => 'hasMany',
+			'model' => 'ConsentAuditLog'
+		),
+		'Consents' => array(
+			'type' => 'hasMany',
+			'model' => 'Consent'
+		),
+		'SentMessages' => [
+			'type' => 'hasMany',
+			'model' => 'Message',
+			'to_key' => 'sender_id'
+		],
+		'SentMessageReceipts' => [
+			'type' => 'hasMany',
+			'model' => 'MessageCopy',
+			'to_key' => 'sender_id'
+		],
+		'SentAttachments' => [
+			'type' => 'hasMany',
+			'model' => 'MessageAttachment',
+			'to_key' => 'sender_id'
+		],
+		'ReceivedMessages' => [
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Message',
+			'pivot' => [
+				'table' => 'message_copies',
+				'left' => 'recipient_id',
+				'right' => 'message_id'
+			]
+		],
+		'ReceivedMessageReceipts' => [
+			'type' => 'hasMany',
+			'model' => 'MessageCopy',
+			'to_key' => 'recipient_id'
+		],
+		'MessageFolders' => [
+			'type' => 'hasOne',
+			'model' => 'MessageFolder'
+		],
+		'ListedMembers' => [
+			'type' => 'hasMany',
+			'model' => 'ListedMember'
+		],
+		'ListedByMembers' => [
+			'type' => 'hasMany',
+			'model' => 'ListedMember',
+			'to_key' => 'listed_member'
+		],
+		'RememberMe' => [
+			'type' => 'hasMany'
+		],
+		'Session' => [
+			'type' => 'hasMany'
+		],
+		'Online' => [
+			'type' => 'hasMany',
+			'model' => 'OnlineMember'
+		]
 	);
 
 	protected static $_field_data = array(
@@ -140,6 +206,7 @@ class Member extends ContentModel {
 	protected static $_events = array(
 		'afterUpdate',
 		'beforeDelete',
+		'afterBulkDelete',
 		'beforeInsert',
 	);
 
@@ -239,7 +306,7 @@ class Member extends ContentModel {
 				));
 			}
 
-			if (isset($changed['email']))
+			if (isset($changed['email']) && ! $this->isAnonymized())
 			{
 				ee()->logger->log_action(sprintf(
 					lang('member_changed_email'),
@@ -356,6 +423,30 @@ class Member extends ContentModel {
 
 		$this->TemplateRevisions->item_author_id = 0;
 		$this->TemplateRevisions->save();
+	}
+
+	public static function onAfterBulkDelete()
+	{
+		ee()->stats->update_member_stats();
+
+		// Quick and dirty private message count update; due to the order of
+		// events, we can't seem to reliably do this in model delete events
+		// Copied from Stats controller
+		$member_message_count = ee()->db->query('SELECT COUNT(*) AS count, recipient_id FROM exp_message_copies WHERE message_read = "n" GROUP BY recipient_id ORDER BY count DESC');
+
+		$pm_count = [];
+		foreach ($member_message_count->result() as $row)
+		{
+			$pm_count[] = [
+				'member_id' => $row->recipient_id,
+				'private_messages' => $row->count
+			];
+		}
+
+		if ( ! empty($pm_count))
+		{
+			ee()->db->update_batch('members', $pm_count, 'member_id');
+		}
 	}
 
 	/**
@@ -805,6 +896,91 @@ class Member extends ContentModel {
 			return ee()->config->slash_item('sig_img_url').$this->sig_img_filename;
 		}
 		return '';
+	}
+
+	/**
+	 * Anonymize a member record in order to comply with a GDPR Right to Erasure request
+	 */
+	public function anonymize()
+	{
+		// ---------------------------------------------------------------
+		// 'member_anonymize' hook.
+		// - Provides an opportunity for addons to perform anonymization on
+		// any personal member data they've collected for a given member
+		//
+		if (ee()->extensions->active_hook('member_anonymize'))
+		{
+			ee()->extensions->call('member_anonymize', $this);
+		}
+		//
+		// ---------------------------------------------------------------
+
+		$username = 'anonymous'.$this->getId();
+		$email = 'redacted'.$this->getId();
+		$ip_address = ee('IpAddress')->anonymize($this->ip_address);
+
+		$this->setProperty('group_id', 2); // Ban member
+		$this->setProperty('username', $username);
+		$this->setProperty('screen_name', $username);
+		$this->setProperty('email', $email);
+		$this->setProperty('ip_address', $ip_address);
+		$this->setProperty('avatar_filename', '');
+		$this->setProperty('sig_img_filename', '');
+		$this->setProperty('photo_filename', '');
+
+		foreach	($this->getCustomFields() as $field)
+		{
+			if ( ! $field->getItem('m_field_exclude_from_anon'))
+			{
+				$this->setProperty('m_field_id_'.$field->getId(), '');
+			}
+		}
+
+		$this->save();
+
+		if ($this->Session) $this->Session->delete();
+		if ($this->Online) $this->Online->delete();
+		if ($this->RememberMe) $this->RememberMe->delete();
+
+		if ($this->CpLogs)
+		{
+			$this->CpLogs->mapProperty('ip_address', [ee('IpAddress'), 'anonymize']);
+			$this->CpLogs->save();
+		}
+
+		if ($this->SearchLogs)
+		{
+			$this->SearchLogs->mapProperty('ip_address', [ee('IpAddress'), 'anonymize']);
+			$this->SearchLogs->save();
+		}
+
+		if ($this->Comments)
+		{
+			$this->Comments->name = $username;
+			$this->Comments->email = $email;
+			$this->Comments->url = $email;
+			$this->Comments->mapProperty('ip_address', [ee('IpAddress'), 'anonymize']);
+			$this->Comments->save();
+		}
+
+		if ($this->AuthoredChannelEntries)
+		{
+			$this->AuthoredChannelEntries->mapProperty('ip_address', [ee('IpAddress'), 'anonymize']);
+			$this->AuthoredChannelEntries->save();
+		}
+
+		ee()->logger->log_action(sprintf(
+			lang('member_anonymized_member'),
+			$this->member_id
+		));
+	}
+
+	/**
+	 * Has this member already been anonymized?
+	 */
+	public function isAnonymized()
+	{
+		return (bool) preg_match('/^redacted\d+$/', $this->email);
 	}
 }
 

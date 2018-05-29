@@ -136,16 +136,48 @@ class Fluid_field_ft extends EE_Fieldtype {
 
 		ee()->session->set_cache(__CLASS__, $this->name(), $data);
 
+		$fluid_field_data = $this->getFieldData()->indexBy('id');
+
 		$compiled_data_for_search = array();
 
-		foreach ($data['fields'] as $field_data)
+		foreach ($data['fields'] as $key => $value)
 		{
-			foreach ($field_data as $key => $value)
+			if ($key == 'new_field_0')
 			{
-				if (strpos($key, '_id_') and is_string($value))
+				continue;
+			}
+
+			// Existing field
+			if (strpos($key, 'field_') === 0)
+			{
+				$id = str_replace('field_', '', $key);
+				$field = $fluid_field_data[$id]->getField();
+			}
+			// New field
+			elseif (strpos($key, 'new_field_') === 0)
+			{
+				foreach (array_keys($value) as $k)
 				{
-					$compiled_data_for_search[] = $value;
+					if (strpos($k, 'field_id_') === 0)
+					{
+						$field_id = str_replace('field_id_', '', $k);
+
+						$fluid_field = ee('Model')->make('fluid_field:FluidField');
+						$fluid_field->fluid_field_id = $this->field_id;
+						$fluid_field->field_id = $field_id;
+
+						$field = $fluid_field->getField();
+						break;
+					}
 				}
+			}
+
+			$field->setItem('field_search', true);
+
+			foreach ($value as $field_data)
+			{
+				$field->setData($field_data);
+				$compiled_data_for_search[] = $field->save($field_data);
 			}
 		}
 
@@ -513,7 +545,12 @@ class Fluid_field_ft extends EE_Fieldtype {
 				->delete();
 		}
 
-		return array();
+		$columns['field_id_' . $data['field_id']] = [
+			'type' => 'mediumtext',
+			'null' => TRUE
+		];
+
+		return $columns;
 	}
 
 	/**
@@ -630,6 +667,39 @@ class Fluid_field_ft extends EE_Fieldtype {
 		return ee()->fluid_field_parser->parse($this->row, $this->id(), $params, $tagdata, $this->content_type());
 	}
 
+	/**
+	 * :length modifier
+	 */
+	public function replace_length($data, $params = '', $tagdata = '')
+	{
+		return $this->replace_total_fields($data, $params, $tagdata);
+	}
+
+	/**
+	 * :total_fields modifier
+	 */
+	public function replace_total_fields($data, $params = '', $tagdata = '')
+	{
+		$fluid_field_data = $this->getFieldData($this->id(), $this->row('entry_id'));
+
+		if (isset($params['type']))
+		{
+			$fluid_field_data = $fluid_field_data->filter(function($datum) use($params)
+			{
+				return ($params['type'] == $datum->ChannelField->field_type);
+			});
+		}
+
+		if (isset($params['name']))
+		{
+			$fluid_field_data = $fluid_field_data->filter(function($datum) use($params)
+			{
+				return ($params['name'] == $datum->ChannelField->field_name);
+			});
+		}
+
+		return ($fluid_field_data) ? count($fluid_field_data) : 0;
+	}
 }
 
 // EOF

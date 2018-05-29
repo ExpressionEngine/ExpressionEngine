@@ -660,6 +660,12 @@ class Comment {
 
 	private function getFieldsInTemplate()
 	{
+		// contextual safety, ACT requests, etc.
+		if (empty(ee()->TMPL))
+		{
+			return [];
+		}
+
 		$cache_key = 'fields_in_use:'.md5(ee()->TMPL->tagdata);
 		$fields = ee()->session->cache(__CLASS__, $cache_key) ?: [];
 
@@ -1934,12 +1940,12 @@ class Comment {
 		// send notifications
 		if ( ! $is_spam)
 		{
-			$notify = new Notifications($comment, $_POST['URI']);
-			$notify->sendAdminNotifications();
+			$notification = new Notifications($comment, $_POST['URI']);
+			$notification->sendAdminNotifications();
 
 			if ($comment_moderate == 'n')
 			{
-				$notify->sendUserNotifications();
+				$notification->sendUserNotifications();
 			}
 		}
 
@@ -2216,94 +2222,79 @@ class Comment {
 
 		if (ee()->input->get_post('comment_id') === FALSE OR ((ee()->input->get_post('comment') === FALSE OR ee()->input->get_post('comment') == '') && ee()->input->get_post('status') != 'close'))
 		{
-			ee()->output->send_ajax_response(array('error' => $unauthorized));
+			ee()->output->send_ajax_response(['error' => $unauthorized]);
 		}
 
 		// Not logged in member- eject
 		if (ee()->session->userdata['member_id'] == '0')
 		{
-			ee()->output->send_ajax_response(array('error' => $unauthorized));
+			ee()->output->send_ajax_response(['error' => $unauthorized]);
 		}
 
-		$edited_status = (ee()->input->get_post('status') != 'close') ? FALSE : 'c';
+		$edited_status = (ee()->input->get_post('status') == 'close');
 		$edited_comment = ee()->input->get_post('comment');
 		$can_edit = FALSE;
-		$can_moderate = FALSE;
+		$can_moderate = ee('Permission')->has('can_moderate_comments');
 
-		ee()->db->from('comments');
-		ee()->db->from('channels');
-		ee()->db->from('channel_titles');
-		ee()->db->select('comments.author_id, comments.comment_date, channel_titles.author_id AS entry_author_id, channel_titles.entry_id, channels.channel_id, channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls');
-		ee()->db->where('comment_id', ee()->input->get_post('comment_id'));
-		ee()->db->where('comments.channel_id = '.ee()->db->dbprefix('channels').'.channel_id');
-		ee()->db->where('comments.entry_id = '.ee()->db->dbprefix('channel_titles').'.entry_id');
-		$query = ee()->db->get();
+		$comment = ee('Model')->get('Comment', ee()->input->get_post('comment_id'))
+			->with('Author', 'Channel', 'Entry')
+			->first();
 
-		if ($query->num_rows() > 0)
+		if ( ! $comment)
 		{
-			// User is logged in and in a member group that can edit this comment.
-			if (ee('Permission')->has('can_edit_all_comments')
-            OR (ee('Permission')->has('can_edit_own_comments')
-					&& $query->row('entry_author_id') == ee()->session->userdata['member_id']))
-
-			{
-				$can_edit = TRUE;
-				$can_moderate = TRUE;
-			}
-			// User is logged in and can still edit this comment.
-			elseif (ee()->session->userdata['member_id'] != '0'
-				&& $query->row('author_id') == ee()->session->userdata['member_id']
-				&& $query->row('comment_date') > $this->_comment_edit_time_limit())
-			{
-				$can_edit = true;
-			}
-
-			$data = array();
-			$author_id = $query->row('author_id');
-			$channel_id = $query->row('channel_id');
-			$entry_id = $query->row('entry_id');
-
-			if ($edited_status != FALSE & $can_moderate != FALSE)
-			{
-				$data['status'] = 'c';
-			}
-
-			if ($edited_comment != FALSE & $can_edit != FALSE)
-			{
-				$data['comment'] = $edited_comment;
-			}
-
-			if (count($data) > 0)
-			{
-				$data['edit_date'] = ee()->localize->now;
-
-				ee()->db->where('comment_id', ee()->input->get_post('comment_id'));
-				ee()->db->update('comments', $data);
-
-				if ($edited_status != FALSE & $can_moderate != FALSE)
-				{
-					// Send back the updated comment
-					ee()->output->send_ajax_response(array('moderated' => ee()->lang->line('closed')));
-				}
-
-				ee()->load->library('typography');
-
-				$f_comment = ee()->typography->parse_type(
-					stripslashes(ee()->input->get_post('comment')),
-					array(
-						'text_format'   => $query->row('comment_text_formatting'),
-						'html_format'   => $query->row('comment_html_formatting'),
-						'auto_links'    => $query->row('comment_auto_link_urls'),
-						'allow_img_url' => $query->row('comment_allow_img_urls')
-					)
-				);
-
-				// Send back the updated comment
-				ee()->output->send_ajax_response(array('comment' => $f_comment));
-			}
+			ee()->output->send_ajax_response(['error' => $unauthorized]);
 		}
 
-		ee()->output->send_ajax_response(array('error' => $unauthorized));
+		$comment_vars = new CommentVars(
+			$comment,
+			$this->getMemberFields(),
+			$this->getFieldsInTemplate()
+		);
+
+		if ($edited_status && $comment_vars->getVariable('can_moderate_comment'))
+		{
+			$comment->status = 'c';
+		}
+
+		if ($edited_comment && $comment_vars->getVariable('editable'))
+		{
+			$comment->comment = $edited_comment;
+		}
+
+		// save if we changed something
+		if ($comment->isDirty())
+		{
+			$comment->edit_date = ee()->localize->now;
+			$result = $comment->validate();
+
+			// shouldn't happen since we fully control the modifications above, but if we make an error above
+			// in the future, let's make debugging easier and reflect the model errors in the XHR
+			if ( ! $result->isValid())
+			{
+				ee()->output->send_ajax_response(['error' => $result->getAllErrors()]);
+			}
+
+			$comment->save();
+
+			if ($edited_status)
+			{
+				// Send back the updated comment
+				ee()->output->send_ajax_response(array('moderated' => ee()->lang->line('closed')));
+			}
+
+			// send back the new parsed comment
+			$comment_vars = new CommentVars(
+				$comment,
+				$this->getMemberFields(),
+				$this->getFieldsInTemplate()
+			);
+
+			// Send back the updated comment
+			ee()->output->send_ajax_response(['comment' => $comment_vars->getVariable('comment')]);
+		}
+
+		// d-fence
+		ee()->output->send_ajax_response(['error' => $unauthorized]);
 	}
 
 	/**

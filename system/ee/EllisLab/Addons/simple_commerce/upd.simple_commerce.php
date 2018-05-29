@@ -230,6 +230,18 @@ class Simple_commerce_upd {
 			ee()->db->update('actions', $data);
 		}
 
+		if (version_compare($current, '2.2.1', '<'))
+		{
+			ee('Model')->make('Extension', [
+				'class'    => 'Simple_commerce_ext',
+				'method'   => 'anonymizeMember',
+				'hook'     => 'member_anonymize',
+				'settings' => [],
+				'version'  => $current,
+				'enabled'  => 'y'
+			])->save();
+		}
+
 		return TRUE;
 	}
 }

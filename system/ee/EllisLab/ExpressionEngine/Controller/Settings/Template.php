@@ -123,15 +123,17 @@ class Template extends Settings {
 	private function templateListSearch()
 	{
 		$search_query = ee('Request')->get('search');
+		$selected = ee()->config->item('site_404');
 
 		$templates = ee('Model')->get('Template')
 			->with('TemplateGroup')
+			->filter('site_id', ee()->config->item('site_id'))
 			->order('TemplateGroup.group_name')
 			->order('Template.template_name');
 
 		if ($search_query)
 		{
-			$templates = $templates = $templates->all()->filter(function($template) use ($search_query) {
+			$templates = $templates->all()->filter(function($template) use ($search_query) {
 				return strpos(strtolower($template->getPath()), strtolower($search_query)) !== FALSE;
 			});
 		}
@@ -144,6 +146,11 @@ class Template extends Settings {
 		foreach ($templates as $template)
 		{
 			$results[$template->getPath()] = $template->getPath();
+		}
+
+		if ($selected && ! array_key_exists($selected, $results) && ! $search_query)
+		{
+			$results[$selected] = $selected;
 		}
 
 		return $results;

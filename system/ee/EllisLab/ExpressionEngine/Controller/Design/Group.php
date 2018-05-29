@@ -10,6 +10,8 @@
 namespace EllisLab\ExpressionEngine\Controller\Design;
 
 use EllisLab\ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
+use EllisLab\ExpressionEngine\Model\Template\TemplateGroup as TemplateGroupModel;
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * Design\Group Controller
@@ -38,6 +40,8 @@ class Group extends AbstractDesignController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
+		$errors = NULL;
+
 		$groups = array(
 			'false' => '-- ' . strtolower(lang('none')) . ' --'
 		);
@@ -52,8 +56,108 @@ class Group extends AbstractDesignController {
 				}
 			});
 
+		// Not a superadmin?  Preselect their member group as allowed to view templates
+		$selected_member_groups = ($this->session->userdata('group_id') != 1) ? array($this->session->userdata('group_id')) : array();
+
+		// only member groups with design manager access
+		$member_groups = ee('Model')->get('MemberGroup')
+			->filter('group_id', 'NOT IN', array(1, 2, 4))
+			->filter('can_access_design', 'y')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_title', 'asc')
+			->all()
+			->getDictionary('group_id', 'group_title');
+
+		if ( ! empty($_POST))
+		{
+			$group = ee('Model')->make('TemplateGroup');
+			$group->site_id = ee()->config->item('site_id');
+
+			$result = $this->validateTemplateGroup($group);
+			if ($result instanceOf ValidationResult)
+			{
+				$errors = $result;
+
+				if ($result->isValid())
+				{
+					// Only set member groups from post if they have permission to admin member groups and a value is set
+					if (ee()->input->post('member_groups') && ($this->session->userdata('group_id') == 1 OR ee()->cp->allowed_group('can_admin_mbr_groups')))
+					{
+						$group->MemberGroups = ee('Model')->get('MemberGroup', ee('Request')->post('member_groups'))->all();
+					}
+					elseif ($this->session->userdata('group_id') != 1 AND ! ee()->cp->allowed_group('can_admin_mbr_groups'))
+					{
+						// No permission to admin, so their group is automatically added to the template group
+						$group->MemberGroups = ee('Model')->get('MemberGroup', $this->session->userdata('group_id'))->first();
+					}
+
+					// Does the current member have permission to access the template group they just created?
+					$member_groups = $group->MemberGroups->pluck('group_id');
+					$redirect_name = ($this->session->userdata('group_id') == 1 OR in_array($this->session->userdata('group_id'), $member_groups)) ? TRUE : FALSE;
+
+					$group->save();
+
+					$duplicate = FALSE;
+
+					if (is_numeric(ee()->input->post('duplicate_group')))
+					{
+						$master_group = ee('Model')->get('TemplateGroup', ee()->input->post('duplicate_group'))->first();
+						$master_group_templates = $master_group->getTemplates();
+						if (count($master_group_templates) > 0)
+						{
+							$duplicate = TRUE;
+						}
+					}
+
+					if ( ! $duplicate)
+					{
+						$template = ee('Model')->make('Template');
+						$template->group_id = $group->group_id;
+						$template->template_name = 'index';
+						$template->template_data = '';
+						$template->last_author_id = 0;
+						$template->edit_date = ee()->localize->now;
+						$template->site_id = ee()->config->item('site_id');
+						$template->save();
+					}
+					else
+					{
+						foreach ($master_group_templates as $master_template)
+						{
+							$values = $master_template->getValues();
+							unset($values['template_id']);
+							$new_template = ee('Model')->make('Template', $values);
+							$new_template->template_id = NULL;
+							$new_template->group_id = $group->group_id;
+							$new_template->edit_date = ee()->localize->now;
+							$new_template->site_id = ee()->config->item('site_id');
+							$new_template->hits = 0; // Reset hits
+							$new_template->NoAccess = $master_template->NoAccess;
+							if (ee()->session->userdata['group_id'] != 1)
+							{
+								$new_template->allow_php = FALSE;
+							}
+							$new_template->save();
+						}
+					}
+
+					// Only redirect to the template group if the member has permission to view it
+					$name = ($redirect_name) ? $group->group_name : '';
+
+					ee('CP/Alert')->makeInline('shared-form')
+						->asSuccess()
+						->withTitle(lang('create_template_group_success'))
+						->addToBody(sprintf(lang('create_template_group_success_desc'), $group->group_name))
+						->defer();
+
+					ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $name));
+				}
+			}
+		}
+
 		$vars = array(
 			'ajax_validate' => TRUE,
+			'errors' => $errors,
 			'base_url' => ee('CP/URL')->make('design/group/create'),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('template_group')),
 			'save_btn_text_working' => 'btn_saving',
@@ -86,7 +190,7 @@ class Group extends AbstractDesignController {
 						'title' => 'make_default_group',
 						'desc' => 'make_default_group_desc',
 						'fields' => array(
-							'make_default_group' => array(
+							'is_site_default' => array(
 								'type' => 'yes_no',
 								'value' => ee('Model')->get('TemplateGroup')
 									->filter('site_id', ee()->config->item('site_id'))
@@ -95,102 +199,29 @@ class Group extends AbstractDesignController {
 							)
 						)
 					),
+					array(
+					'title' => 'template_member_groups',
+					'desc' => 'template_member_groups_desc',
+					'fields' => array(
+						'member_groups' => array(
+							'type' => 'checkbox',
+							'required' => TRUE,
+							'choices' => $member_groups,
+							'value' => $selected_member_groups,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								]
+							)
+						)
+					),
 				)
 			)
 		);
 
-		ee()->load->library('form_validation');
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'group_name',
-				'label' => 'lang:name',
-				'rules' => 'required|callback__group_name_checks'
-			),
-			array(
-				'field' => 'make_default_group',
-				'label' => 'lang:make_default_group',
-				'rules' => 'required|enum[y,n]'
-			)
-		));
-
-		if (AJAX_REQUEST)
+		// Permission check for assigning member groups to templates
+		if ( ! ee()->cp->allowed_group('can_admin_mbr_groups'))
 		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			$group = ee('Model')->make('TemplateGroup');
-			$group->site_id = ee()->config->item('site_id');
-			$group->group_name = ee()->input->post('group_name');
-			$group->is_site_default = ee()->input->post('make_default_group');
-
-			if ($this->session->userdata('group_id') != 1)
-			{
-				$group->MemberGroups = ee('Model')->get('MemberGroup', $this->session->userdata('group_id'))->first();
-			}
-
-			$group->save();
-
-			$duplicate = FALSE;
-
-			if (is_numeric(ee()->input->post('duplicate_group')))
-			{
-				$master_group = ee('Model')->get('TemplateGroup', ee()->input->post('duplicate_group'))->first();
-				$master_group_templates = $master_group->getTemplates();
-				if (count($master_group_templates) > 0)
-				{
-					$duplicate = TRUE;
-				}
-			}
-
-			if ( ! $duplicate)
-			{
-				$template = ee('Model')->make('Template');
-				$template->group_id = $group->group_id;
-				$template->template_name = 'index';
-				$template->template_data = '';
-				$template->last_author_id = 0;
-				$template->edit_date = ee()->localize->now;
-				$template->site_id = ee()->config->item('site_id');
-				$template->save();
-			}
-			else
-			{
-				foreach ($master_group_templates as $master_template)
-				{
-					$values = $master_template->getValues();
-					unset($values['template_id']);
-					$new_template = ee('Model')->make('Template', $values);
-					$new_template->template_id = NULL;
-					$new_template->group_id = $group->group_id;
-					$new_template->edit_date = ee()->localize->now;
-					$new_template->site_id = ee()->config->item('site_id');
-					$new_template->hits = 0; // Reset hits
-					$new_template->NoAccess = $master_template->NoAccess;
-					if (ee()->session->userdata['group_id'] != 1)
-					{
-						$new_template->allow_php = FALSE;
-					}
-					$new_template->save();
-				}
-			}
-
-			ee('CP/Alert')->makeInline('shared-form')
-				->asSuccess()
-				->withTitle(lang('create_template_group_success'))
-				->addToBody(sprintf(lang('create_template_group_success_desc'), $group->group_name))
-				->defer();
-
-			ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $group->group_name));
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('CP/Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang('create_template_group_error'))
-				->addToBody(lang('create_template_group_error_desc'))
-				->now();
+			unset($vars['sections'][0][3]);
 		}
 
 		$this->generateSidebar();
@@ -205,6 +236,8 @@ class Group extends AbstractDesignController {
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
+
+		$errors = NULL;
 
 		$group = ee('Model')->get('TemplateGroup')
 			->filter('group_name', $group_name)
@@ -221,12 +254,66 @@ class Group extends AbstractDesignController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
+		$selected_member_groups = ($group->MemberGroups) ? $group->MemberGroups->pluck('group_id') : array();
+
+		// only member groups with permission to access templates
+		$member_groups = ee('Model')->get('MemberGroup')
+			->filter('group_id', 'NOT IN', array(1, 2, 4))
+			->filter('can_access_design', 'y')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_title', 'asc')
+			->all()
+			->getDictionary('group_id', 'group_title');
+
+		if ( ! empty($_POST))
+		{
+			$result = $this->validateTemplateGroup($group);
+			if ($result instanceOf ValidationResult)
+			{
+				$errors = $result;
+
+				if ($result->isValid())
+				{
+					// On edit, if they don't have permission to edit member group permissions, they can't change
+					// template member group settings
+					if ($this->session->userdata('group_id') == 1 OR ee()->cp->allowed_group('can_admin_mbr_groups'))
+					{
+						// If post is null and field should be present, unassign members
+						// If field isn't present, we don't change whatever it's currently set to
+						if ( ! ee()->input->post('member_groups'))
+						{
+							$group->MemberGroups = array();
+						}
+						else
+						{
+							$group->MemberGroups = ee('Model')->get('MemberGroup', ee('Request')->post('member_groups'))->all();
+						}
+					}
+
+					// Does the current member have permission to access the template group they just edited?
+					$member_groups = $group->MemberGroups->pluck('group_id');
+					$redirect_name = ($this->session->userdata('group_id') == 1 OR in_array($this->session->userdata('group_id'), $member_groups)) ? TRUE : FALSE;
+
+					$group->save();
+
+					// Only redirect to the template group if the member has permission to view it
+					$name = ($redirect_name) ? $group->group_name : '';
+
+					ee('CP/Alert')->makeInline('shared-form')
+						->asSuccess()
+						->withTitle(lang('edit_template_group_success'))
+						->addToBody(sprintf(lang('edit_template_group_success_desc'), $group->group_name))
+						->defer();
+
+					ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $name));
+				}
+			}
+		}
+
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL')->make('design/group/edit/' . $group->group_name),
-			'form_hidden' => array(
-				'old_name' => $group->group_name
-			),
+			'errors' => $errors,
+			'base_url' => ee('CP/URL')->make('design/group/edit/' . $group_name),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('template_group')),
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
@@ -246,9 +333,24 @@ class Group extends AbstractDesignController {
 						'title' => 'make_default_group',
 						'desc' => 'make_default_group_desc',
 						'fields' => array(
-							'make_default_group' => array(
+							'is_site_default' => array(
 								'type' => 'yes_no',
 								'value' => $group->is_site_default
+							)
+						)
+					),
+					array(
+					'title' => 'template_member_groups',
+					'desc' => 'template_member_groups_desc',
+					'fields' => array(
+						'member_groups' => array(
+							'type' => 'checkbox',
+							'required' => TRUE,
+							'choices' => $member_groups,
+							'value' => $selected_member_groups,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								]
 							)
 						)
 					),
@@ -256,47 +358,10 @@ class Group extends AbstractDesignController {
 			)
 		);
 
-		ee()->load->library('form_validation');
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'group_name',
-				'label' => 'lang:group_name',
-				'rules' => 'required|callback__group_name_checks'
-			),
-			array(
-				'field' => 'make_default_group',
-				'label' => 'lang:make_default_group',
-				'rules' => 'required|enum[y,n]'
-			)
-		));
-
-		if (AJAX_REQUEST)
+		// Permission check for assigning member groups to templates
+		if ( ! ee()->cp->allowed_group('can_admin_mbr_groups'))
 		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			$group->group_name = ee()->input->post('group_name');
-			$group->is_site_default = ee()->input->post('make_default_group');
-
-			$group->save();
-
-			ee('CP/Alert')->makeInline('shared-form')
-				->asSuccess()
-				->withTitle(lang('edit_template_group_success'))
-				->addToBody(sprintf(lang('edit_template_group_success_desc'), $group->group_name))
-				->defer();
-
-			ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $group->group_name));
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('CP/Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang('edit_template_group_error'))
-				->addToBody(lang('edit_template_group_error_desc'))
-				->now();
+			unset($vars['sections'][0][2]);
 		}
 
 		$this->generateSidebar($group->group_id);
@@ -351,43 +416,42 @@ class Group extends AbstractDesignController {
 	}
 
 	/**
-	  *	 Check Template Group Name
-	  */
-	public function _group_name_checks($str)
+	 * Sets a template group entity with the POSTed data and validates it, setting
+	 * an alert if there are any errors.
+	 *
+	 * @param TemplateGroupModel $$group A TemplateGroup entity
+	 * @return mixed FALSE if nothing was posted, void if it was an AJAX call,
+	 *  or a ValidationResult object.
+	 */
+	private function validateTemplateGroup(TemplateGroupModel $group)
 	{
-		$result = ee('Validation')->make(array('group_name' => 'alphaDashPeriodEmoji'))->validate(array('group_name' => $str));
-
-		if ( ! $result->isValid())
+		if (empty($_POST))
 		{
-			$error = $result->getErrors('group_name');
-			return $error['group_name'];
-		}
-
-		$reserved_names = array('act', 'css');
-
-		if (in_array($str, $reserved_names))
-		{
-			ee()->form_validation->set_message('_group_name_checks', lang('reserved_name'));
 			return FALSE;
 		}
 
-		$count = ee('Model')->get('TemplateGroup')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_name', $str)
-			->count();
+		$group->group_name = ee()->input->post('group_name');
+		$group->is_site_default = ee()->input->post('is_site_default');
 
-		if ((strtolower($this->input->post('old_name')) != strtolower($str)) AND $count > 0)
+		$result = $group->validate();
+
+		$field = ee()->input->post('ee_fv_field');
+
+		if ($response = $this->ajaxValidation($result))
 		{
-			$this->form_validation->set_message('_group_name_checks', lang('template_group_taken'));
-			return FALSE;
-		}
-		elseif ($count > 1)
-		{
-			$this->form_validation->set_message('_group_name_checks', lang('template_group_taken'));
-			return FALSE;
+			ee()->output->send_ajax_response($response);
 		}
 
-		return TRUE;
+		if ($result->failed())
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('edit_template_group_error'))
+				->addToBody(lang('edit_template_group_error_desc'))
+				->now();
+		}
+
+		return $result;
 	}
 }
 

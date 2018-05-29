@@ -244,7 +244,6 @@ class EE_relationship_tree_builder {
 			return NULL;
 		}
 
-
 		$root = new QueryNode('__root__');
 
 		$open_nodes = array(
@@ -265,7 +264,7 @@ class EE_relationship_tree_builder {
 			$in_grid = array_key_exists($relationship_prefix, $this->grid_relationship_ids);
 			$in_fluid_field = (bool) ($this->fluid_field_data_id && $this->fluid_field_data_id > 0);
 
-			if ($in_grid && $match[2])
+			if (($in_grid || $in_fluid_field) && $match[2])
 			{
 				$is_only_relationship = ($match[2][0] != ':');
 			}

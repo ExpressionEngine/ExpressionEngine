@@ -37,9 +37,23 @@ class Session extends Model {
 	protected $login_state;
 	protected $fingerprint;
 	protected $sess_start;
+	protected $auth_timeout;
 	protected $last_activity;
 	protected $can_debug;
 
+	/**
+	 * Manage sudo-like timeout for "trust but verify" actions
+	 */
+	const AUTH_TIMEOUT = '+15 minutes';
+	public function resetAuthTimeout()
+	{
+		$this->setProperty('auth_timeout', ee()->localize->string_to_timestamp(self::AUTH_TIMEOUT));
+		$this->save();
+	}
+	public function isWithinAuthTimeout()
+	{
+		return $this->auth_timeout > ee()->localize->now;
+	}
 }
 
 // EOF

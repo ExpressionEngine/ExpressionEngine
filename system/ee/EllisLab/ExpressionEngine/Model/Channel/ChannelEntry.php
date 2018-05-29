@@ -171,13 +171,14 @@ class ChannelEntry extends ContentModel {
 
     public function set__entry_date($entry_date)
     {
-        $this->setRawProperty('entry_date', $this->stringToTimestamp($entry_date));
+		$entry_timestamp = $this->stringToTimestamp($entry_date);
+		$this->setRawProperty('entry_date', $entry_timestamp);
 
         // Day, Month, and Year Fields
         // @TODO un-break these windows: inject this dependency
-        $this->setProperty('year', ee()->localize->format_date('%Y', $entry_date));
-        $this->setProperty('month', ee()->localize->format_date('%m', $entry_date));
-        $this->setProperty('day', ee()->localize->format_date('%d', $entry_date));
+		$this->setProperty('year', ee()->localize->format_date('%Y', $entry_timestamp));
+		$this->setProperty('month', ee()->localize->format_date('%m', $entry_timestamp));
+		$this->setProperty('day', ee()->localize->format_date('%d', $entry_timestamp));
     }
 
 	public function set__expiration_date($expiration_date)
@@ -303,6 +304,16 @@ class ChannelEntry extends ContentModel {
 		{
 			if ( ! $this->isNew() && $this->getBackup('author_id') != $this->author_id &&
 				($this->Author->MemberGroup->can_edit_other_entries != 'y' OR $this->Author->MemberGroup->can_assign_post_authors != 'y'))
+			{
+				return 'not_authorized';
+			}
+		}
+
+		if ( ! $this->isNew() && $this->getBackup('author_id') != $this->author_id)
+		{
+			$authors = ee('Member')->getAuthors();
+
+			if ( ! isset($authors[$this->author_id]))
 			{
 				return 'not_authorized';
 			}
@@ -1060,7 +1071,7 @@ class ChannelEntry extends ContentModel {
 	 * @return	void    Sets author field metaddata
 	 *
 	 * The following are included in the author list regardless of
-	 * their channel posting permissions:
+	 * their channel posting permissions (assuming the user has permission to assign entries to others):
 	 *	  The current user
 	 *	  The current author (if editing)
 	 *	  Anyone in a group set to 'include_in_authorlist'
@@ -1082,13 +1093,16 @@ class ChannelEntry extends ContentModel {
 
 		$author_options[$author->getId()] = $author->getMemberName();
 
-		if ($author->getId() != ee()->session->userdata('member_id'))
+		if (ee('Permission')->has('can_assign_post_authors'))
 		{
-			$author_options[ee()->session->userdata('member_id')] =
-			ee()->session->userdata('screen_name') ?: ee()->session->userdata('username');
-		}
+			if ($author->getId() != ee()->session->userdata('member_id'))
+			{
+				$author_options[ee()->session->userdata('member_id')] =
+				ee()->session->userdata('screen_name') ?: ee()->session->userdata('username');
+			}
 
-		$author_options += ee('Member')->getAuthors();
+			$author_options += ee('Member')->getAuthors();
+		}
 
 		$field->setItem('field_list_items', $author_options);
 	}

@@ -61,6 +61,7 @@ function setup_permissions {
 		chmod 777 tests/rspec/support/tmp
 		chmod -R 777 tests/rspec/support/file-sync/uploads
 		chmod -R 777 images
+		chmod -R 777 themes/user
 		# JS Shim for ES5/ES6 with Capybara
 		cp themes/ee/asset/javascript/src/react/react.min.js themes/ee/asset/javascript/src/react/react.min~orig.js
 		cat tests/rspec/shim.min.js themes/ee/asset/javascript/src/react/react.min.js > themes/ee/asset/javascript/src/react/react.min-shimmed.js

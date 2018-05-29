@@ -4,7 +4,7 @@
 <?=form_open($table['base_url'])?>
 	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 
-	<?=ee('CP/Alert')->getAllInlines()?>
+	<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
 	<?php if (isset($filters)) echo $filters; ?>
 
@@ -31,7 +31,8 @@ $modal_vars = array(
 	'form_url'	=> $form_url,
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
-	)
+	),
+	'secure_form_ctrls' => isset($confirm_remove_secure_form_ctrls) ? $confirm_remove_secure_form_ctrls : NULL
 );
 
 $modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);

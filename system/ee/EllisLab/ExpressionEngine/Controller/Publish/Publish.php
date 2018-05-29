@@ -129,12 +129,8 @@ class Publish extends AbstractPublishController {
 		$time = ee()->localize->human_time(ee()->localize->now);
 		$time = trim(strstr($time, ' '));
 
-		$alert = ee('CP/Alert')->make()
-			->asWarning()
-			->addToBody(lang('autosave_success') . $time);
-
 		ee()->output->send_ajax_response(array(
-			'success' => $alert->render(),
+			'success' => ee('View')->make('ee:publish/partials/autosave_badge')->render(['time' => $time]),
 			'autosave_entry_id' => $autosave->entry_id,
 			'original_entry_id'	=> $entry_id
 		));
@@ -171,7 +167,7 @@ class Publish extends AbstractPublishController {
 		}
 
 		// Redirect to edit listing if we've reached max entries for this channel
-		if ($channel->max_entries != 0 && $channel->total_records >= $channel->max_entries)
+		if ($channel->maxEntriesLimitReached())
 		{
 			ee()->functions->redirect(
 				ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $channel_id))
@@ -220,15 +216,27 @@ class Publish extends AbstractPublishController {
 		);
 
 		$vars = array(
-			'form_url' => ee('CP/URL')->make('publish/create/' . $channel_id),
+			'form_url' => ee('CP/URL')->getCurrentUrl(),
 			'form_attributes' => $form_attributes,
+			'form_title' => lang('new_entry'),
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
 			'revisions' => $this->getRevisionsTable($entry),
 			'extra_publish_controls' => $channel->extra_publish_controls,
 			'buttons' => $this->getPublishFormButtons($entry)
 		);
 
-		if ($entry->Channel->preview_url)
+		if (ee('Request')->get('modal_form') == 'y')
+		{
+			$vars['buttons'] = [[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_close',
+				'text' => 'save_and_close',
+				'working' => 'btn_saving'
+			]];
+		}
+
+		if ($entry->isLivePreviewable())
 		{
 			$modal = ee('View')->make('publish/live-preview-modal')->render([
 				'preview_url' => ee('CP/URL')->make('publish/preview/' . $entry->channel_id)
@@ -266,7 +274,7 @@ class Publish extends AbstractPublishController {
 
 			if ($result->isValid())
 			{
-				$this->saveEntryAndRedirect($entry);
+				return $this->saveEntryAndRedirect($entry);
 			}
 		}
 
@@ -292,6 +300,12 @@ class Publish extends AbstractPublishController {
 		);
 
 		$vars['breadcrumb_title'] = lang('new_entry');
+
+		if (ee('Request')->get('modal_form') == 'y')
+		{
+			$vars['layout']->setIsInModalContext(TRUE);
+			return ee('View')->make('publish/modal-entry')->render($vars);
+		}
 
 		ee()->cp->render('publish/entry', $vars);
 	}
@@ -390,6 +404,7 @@ class Publish extends AbstractPublishController {
 		if ($entry->hasPageURI())
 		{
 			$uri = $entry->getPageURI();
+			ee()->uri->page_query_string = $entry->entry_id;
 		}
 		else
 		{

@@ -51,7 +51,7 @@ feature 'Statistics' do
     @page.content_table.find('tr:nth-child(2) li.sync a').click
 
     @page.should have_alert
-    @page.should have_css('div.alert.success')
+    @page.should have_alert_success
   end
 
   it "can sync multiple sources" do
@@ -61,7 +61,7 @@ feature 'Statistics' do
     @page.action_submit_button.click
 
     @page.should have_alert
-    @page.should have_css('div.alert.success')
+    @page.should have_alert_success
   end
 
 end

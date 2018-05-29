@@ -94,7 +94,7 @@ feature 'Template Partials' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.alert[:class].should include 'success'
+    @page.should have_alert_success
     @page.partials.should have(12).items
   end
 end

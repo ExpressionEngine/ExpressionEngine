@@ -229,6 +229,15 @@ $(document).ready(function () {
 	EE.cp.bindPostLinks();
 });
 
+// Scroll to version popover on successful update
+if (EE.cp.updateCompleted) {
+	$('.app-about-info').show()
+	$('.app-about-info__update').hide()
+	$('html, body').animate({
+		scrollTop: $('.app-about-info').offset().top
+	}, 500)
+}
+
 /**
  * Finds links with a data-post-url attribute and on click, fires off a POST
  * request to that URL via a form submission. This is so that certain actions
@@ -264,10 +273,20 @@ EE.cp.addLastToChecklists = function() {
 
 // Close alert modal when close button is clicked
 EE.cp.bindCpMessageClose = function() {
-	$('body').on('click', 'div.alert a.close', function(event) {
+	$('body').on('click', '.js-notice-dismiss', function(event) {
 		event.preventDefault();
-		$(this).parent().hide();
+		$(this).closest('.app-notice').remove();
 	});
+
+	// Clear floating alerts after some time
+	var floatingAlerts = $('.app-notice--alert')
+	if (floatingAlerts.size()) {
+		setTimeout(function() {
+			floatingAlerts.fadeOut(function() {
+				floatingAlerts.remove()
+			})
+		}, 20000)
+	}
 }
 
 // Binds jQuery UI sortable to reorderable folder lists
@@ -515,6 +534,11 @@ EE.cp.broadcastEvents = (function() {
 		logoutModal = $('#idle-modal'),
 		overlay		= $('.overlay');
 
+		// May be inside a modal form or elsewhere
+		if ( ! logoutModal) {
+			return;
+		}
+
 		// If the modal hasn't been interacted with in over 10 minutes we'll send a request for
 		// the current csrf token. It can flip on us during long waits due to the session timeout.
 		// If the session times out this will get us a cookie based csrf token, which is what you
@@ -661,7 +685,7 @@ EE.cp.broadcastEvents = (function() {
 
 		// received another window's modal event, open it
 		modal: function() {
-			if ( ! State.modalActive) {
+			if ( ! State.modalActive && logoutModal) {
 
 				logoutModal.trigger('modal:open');
 

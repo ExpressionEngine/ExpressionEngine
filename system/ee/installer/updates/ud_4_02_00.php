@@ -23,16 +23,6 @@ class Updater {
 	 */
 	public function do_update()
 	{
-		$steps = new \ProgressIterator(
-			[
-			]
-		);
-
-		foreach ($steps as $k => $v)
-		{
-			$this->$v();
-		}
-
 		return TRUE;
 	}
 }

@@ -43,6 +43,7 @@ setpermissions() {
 	mkdir -p tests/rspec/support/file-sync/uploads
 	chmod -R 777 tests/rspec/support/file-sync/uploads
 	chmod -R 777 images
+	chmod -R 777 themes/user
 	chmod +x tests/circleci/runtests.sh
 }
 

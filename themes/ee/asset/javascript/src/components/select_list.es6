@@ -31,11 +31,14 @@ class SelectList extends React.Component {
     if ( ! items) return []
 
     let itemsArray = []
+    let currentSection = null
+
     for (key of Object.keys(items)) {
 
       if (items[key].section) {
+        currentSection = items[key].section
         itemsArray.push({
-          section: items[key].section,
+          section: currentSection,
           label: ''
         })
       } else {
@@ -48,7 +51,8 @@ class SelectList extends React.Component {
           instructions: items[key].instructions ? items[key].instructions : '',
           children: null,
           parent: parent ? parent : null,
-          component: items[key].component != undefined ? items[key].component : null
+          component: items[key].component != undefined ? items[key].component : null,
+          sectionLabel: currentSection
         }
 
         if (items[key].children) {

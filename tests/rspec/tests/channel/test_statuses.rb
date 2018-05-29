@@ -61,7 +61,7 @@ feature 'Statuses' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.alert[:class].should include 'success'
+    @page.should have_alert_success
     @page.alert.text.should include 'Statuses removed'
     @page.alert.text.should include '1 statuses were removed.'
     @page.status_names.count.should == @statuses.count - 1
@@ -94,7 +94,7 @@ feature 'Statuses' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.alert[:class].should include 'success'
+    @page.should have_alert_success
     @page.alert.text.should include 'Statuses removed'
     @page.alert.text.should include (@statuses.count - 2).to_s + ' statuses were removed.'
     @page.status_names.count.should == 2

@@ -69,10 +69,15 @@ class Sets extends AbstractChannelsController {
 			else
 			{
 				$set = ee('ChannelSet')->importUpload($set_file);
+				$set_path = ee('Encrypt')->encode(
+					$set->getPath(),
+					ee()->config->item('session_crypt_key')
+				);
 				ee()->functions->redirect(
 					ee('CP/URL')->make(
 						'channels/sets/doImport',
-						array('set_path' => str_replace(PATH_CACHE, '', $set->getPath())))
+						['set_path' => $set_path]
+					)
 				);
 			}
 		}
@@ -125,9 +130,13 @@ class Sets extends AbstractChannelsController {
 	public function doImport()
 	{
 		$set_path = ee('Request')->get('set_path');
+		$set_path = ee('Encrypt')->decode(
+			$set_path,
+			ee()->config->item('session_crypt_key')
+		);
 
 		// no path or unacceptable path? abort!
-		if ( ! $set_path || strpos($set_path, '..') !== FALSE)
+		if ( ! $set_path || strpos($set_path, '..') !== FALSE || ! file_exists($set_path))
 		{
 			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
@@ -139,7 +148,7 @@ class Sets extends AbstractChannelsController {
 		}
 
 		// load up the set
-		$set = ee('ChannelSet')->importDir(PATH_CACHE.ltrim($set_path, '/'));
+		$set = ee('ChannelSet')->importDir($set_path);
 
 		// posted values? grab 'em
 		if (isset($_POST))
@@ -260,18 +269,20 @@ class Sets extends AbstractChannelsController {
 
 				// Show the current model title in the section header
 				$title_field = $result->getTitleFieldFor($model);
+				$title = ee('Format')->make('Text', $model->$title_field)->convertToEntities();
 
 				// Frequently the error is on the short_name, but in those cases
 				// you really want to edit the long name as well, so we'll show it.
 				if (isset($long_field))
 				{
 					$key = $model_name.'['.$ident.']['.$long_field.']';
+					$encoded_key = ee('Format')->make('Text', $key)->convertToEntities()->compile();
 					if (isset($hidden[$key]))
 					{
-						$vars['sections'][$section.': '.$model->$title_field][] = array(
+						$vars['sections'][$section.': '.$title][] = array(
 							'title' => $long_field,
 							'fields' => array(
-								$key => array(
+								$encoded_key => array(
 									'type' => 'text',
 									'value' => $model->$long_field,
 									// 'required' => TRUE
@@ -283,10 +294,11 @@ class Sets extends AbstractChannelsController {
 				}
 
 				$key = $model_name.'['.$ident.']['.$field.']';
-				$vars['sections'][$section.': '.$model->$title_field][] = array(
+				$encoded_key = ee('Format')->make('Text', $key)->convertToEntities()->compile();
+				$vars['sections'][$section.': '.$title][] = array(
 					'title' => $field,
 					'fields' => array(
-						$model_name.'['.$ident.']['.$field.']' => array(
+						$encoded_key => array(
 							'type' => 'text',
 							'value' => $model->$field,
 							'required' => TRUE
@@ -308,9 +320,11 @@ class Sets extends AbstractChannelsController {
 			$vars['form_hidden'] = $hidden;
 		}
 
+		$set_path = ee('Encrypt')->encode($set->getPath(), ee()->config->item('session_crypt_key'));
+
 		// Final view variables we need to render the form
 		$vars += array(
-			'base_url' => ee('CP/URL')->make('channels/sets/doImport', array('set_path' => str_replace(PATH_CACHE, '', $set->getPath()))),
+			'base_url' => ee('CP/URL')->make('channels/sets/doImport', ['set_path' => $set_path]),
 			'save_btn_text' => 'btn_save_settings',
 			'save_btn_text_working' => 'btn_saving',
 		);

@@ -168,6 +168,8 @@ $lang = array(
 
 'make_default_group_desc' => 'When enabled, this group will become the default group for this website.',
 
+'member_groups' => 'Member Groups',
+
 'messages' => 'Messages',
 
 'name' => 'Name',
@@ -233,6 +235,10 @@ $lang = array(
 'template_groups' => 'Template Groups',
 
 'template_manager' => 'Template Manager',
+
+'template_member_groups' => 'Allowed member groups',
+
+'template_member_groups_desc' => 'Users in these member groups can create, edit, and/or delete templates in this template group.',
 
 'template_name_taken' => 'The template name you submitted is already taken',
 
@@ -444,8 +450,6 @@ $lang = array(
 
 'enable_template_routes_exp' => 'Disabling template routes will remove the route options from the access panel and templates will only be accesible from the default group/template URL.',
 
-'export' => 'Export',
-
 'export_as' => 'Export files as',
 
 'export_group' => 'Export Group',
@@ -541,6 +545,8 @@ $lang = array(
 'no_results' => 'The search term you submitted was not found in any of your templates.',
 
 'no_templates_found' => 'No <b>Templates</b> found.',
+
+'no_user_templates_found' => 'No <b>Templates</b> found. See <a href="%s" title="Documentation" rel="external">documentation</a>.',
 
 'no_templates_selected' => 'No Templates Selected',
 

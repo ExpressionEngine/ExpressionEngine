@@ -160,6 +160,7 @@ class ImportResult {
 		$recoverable = array(
 			'ee:Channel' => array('channel_title', 'channel_name'),
 			'ee:ChannelFieldGroup' => array('group_name'),
+			'ee:CategoryGroup' => array('group_name'),
 			'ee:ChannelField' => array('field_name'),
 			'ee:UploadDestination' => array('name', 'server_path', 'url')
 		);

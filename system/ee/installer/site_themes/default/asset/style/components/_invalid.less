@@ -1,0 +1,29 @@
+/*
+	_invalid.less
+	-------------
+	define invalid
+*/
+
+.invalid{
+	h3{ color: @red; }
+	textarea,
+	select[multiple='multiple'],
+	input:not([type='submit']){ background-color: lighten(@red,57%); border-color: @red; }
+	.field{
+		em{
+			color: @red;
+			display: block;
+			font-size: @font-base;
+			font-style: italic;
+			margin: 5px 0 0;
+				&:before{
+					content: @fa-var-minus-circle;
+					font-family: @fam-ico;
+					font-size: @font-base - 2;
+					font-style: normal;
+					margin-right: 5px;
+				}
+		}
+		label{ color: @red; }
+	}
+}

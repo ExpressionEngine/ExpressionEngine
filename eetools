@@ -10,16 +10,12 @@ git archive --format=tar -o ee.tar $STASH_NAME
 #tar --append --file=ee.tar .git
 
 IMAGE_NAME="ellislab/eecms-test:latest"
+VOLUME_ID=`docker volume create`
+HELPER_CONTAINER_ID=`docker create -v $VOLUME_ID:/app $IMAGE_NAME /bin/true`
 
 function remove_app_volume {
-	CONTAINER_ID=`docker ps -a | grep eecms-test-vol | cut -d " " -f 1`
-	docker rm $CONTAINER_ID
-}
-
-function create_app_volume {
-	[ "$(docker ps -a | grep eecms-test-vol)" ] && remove_app_volume
-
-	docker create -v /app --name eecms-test-vol $IMAGE_NAME /bin/true
+	docker rm $HELPER_CONTAINER_ID
+	docker volume rm $VOLUME_ID
 }
 
 function commit_container_changes {
@@ -44,20 +40,19 @@ elif [ "$1" == "updategems" ]; then
 	commit_container_changes
 	remove_last_container
 else
-	create_app_volume
-	docker cp ee.tar eecms-test-vol:/app
+	docker cp ee.tar $HELPER_CONTAINER_ID:/app
 
 	# Have to quote this to get multiple arguments working for run.sh
-	DOCKER_CMD="docker run -t -i -v /app --volumes-from eecms-test-vol $IMAGE_NAME /bin/bash -c \"./run.sh $@\""
+	DOCKER_CMD="docker run --rm -t -i -v /app --volumes-from $HELPER_CONTAINER_ID $IMAGE_NAME /bin/bash -c \"./run.sh $@\""
 	eval $DOCKER_CMD
 
 	((STATUS+=$?))
 
 	mkdir /tmp/artifacts > /dev/null
-	docker cp eecms-test-vol:/app/artifacts/. /tmp/artifacts
-
-	remove_last_container
+	docker cp $HELPER_CONTAINER_ID:/app/artifacts/. /tmp/artifacts
 fi
+
+remove_app_volume > /dev/null
 
 rm ee.tar
 

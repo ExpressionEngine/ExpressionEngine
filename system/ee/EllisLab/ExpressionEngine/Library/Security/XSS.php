@@ -132,10 +132,10 @@ class XSS {
 		 *
 		 * <a href="http://%77%77%77%2E%67%6F%6F%67%6C%65%2E%63%6F%6D">Google</a>
 		 *
-		 * Note: Use rawurldecode() so it does not remove plus signs
+		 * Only operate inside tags since those the only ones a browser is going to decode
 		 *
 		 */
-		$str = rawurldecode($str);
+		$str = preg_replace_callback("/<\w+.*?(?=>|<|$)/si", [$this, 'decodeUrlCallback'], $str);
 
 		/*
 		 * Convert character entities to ASCII
@@ -324,6 +324,36 @@ class XSS {
 		}
 
 		return $this->_xss_hash;
+	}
+
+	/**
+	 * URL Decode PCRE Callback
+	 *
+	 * @param  array $matches preg_match array
+	 * @return string Text with any URL-encoded characters decoded
+	 */
+	private function decodeUrlCallback($match)
+	{
+		// rawurldecode() so we don't convert + signs
+		$str = rawurldecode($match[0]);
+
+		// decoding could have left some non-UTF-8 encoded strings, which could cause nulled
+		// strings in PCRE calls later. If that happened, strip those invalid characters
+		if (preg_match('/[^\x00-\x7F]/S', $str) != 0)
+		{
+			if (function_exists('iconv'))
+			{
+				$str = @iconv('UTF-8', 'UTF-8//IGNORE', $str);
+			}
+			else
+			{
+				// backup for environments without iconv, ENT_SUBSTITUTE since PHP 5.4 subs invalid characters with U+FFFD
+				$str = htmlspecialchars_decode(htmlspecialchars($str, ENT_SUBSTITUTE, 'UTF-8'));
+				$str = str_replace('�', '', $str);
+			}
+		}
+
+		return $str;
 	}
 
 	/**

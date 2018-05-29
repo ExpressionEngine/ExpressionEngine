@@ -8,7 +8,7 @@
 				<a class="btn action" href="#" rel="import-channel"><?=lang('import')?></a>
 			</fieldset>
 			<h1><?=$cp_page_title?></h1>
-			<?=ee('CP/Alert')->getAllInlines()?>
+			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 			<?php $this->embed('_shared/table-list', ['data' => $channels]); ?>
 			<?php if (isset($pagination)) echo $pagination; ?>
 			<fieldset class="tbl-bulk-act hidden">

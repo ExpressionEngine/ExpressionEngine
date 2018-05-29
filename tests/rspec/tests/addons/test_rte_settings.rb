@@ -97,14 +97,14 @@ feature 'RTE Settings' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.alert[:class].should include "issue"
+    @page.should have_alert_error
 
     @page.execute_script("$('input[name=rte_enabled]').val('yes');")
     @page.save_settings_button.click
     no_php_js_errors
 
     @page.should have_alert
-    @page.alert[:class].should include "issue"
+    @page.should have_alert_error
   end
 
   it 'can change the default tool set', :stage => 'settings' do
@@ -122,8 +122,8 @@ feature 'RTE Settings' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.alert[:class].should include "issue"
-    @page.alert[:class].should_not include "success"
+    @page.should have_alert_error
+    @page.should have_no_alert_success
   end
 
   it 'can disable & enable a single tool set', :stage => 'settings' do
@@ -215,7 +215,7 @@ feature 'RTE Settings' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.alert[:class].should include "issue"
+    @page.should have_alert_error
     @page.alert.text.should include "The default RTE tool set cannot be removed"
     @page.tool_set_names[1].text.should eq tool_set_name
   end
@@ -230,7 +230,7 @@ feature 'RTE Settings' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.alert[:class].should include "success"
+    @page.should have_alert_success
     @page.alert.text.should include "Tool sets removed"
     @page.alert.text.should include "The following tool sets were removed"
     @page.alert.text.should include "Advanced"
@@ -248,7 +248,7 @@ feature 'RTE Settings' do
     no_php_js_errors
 
     @page.should have_alert
-    @page.alert[:class].should include "success"
+    @page.should have_alert_success
     @page.alert.text.should include "Tool sets removed"
     @page.alert.text.should include "The following tool sets were removed"
     @page.alert.text.should include "Advanced"
@@ -313,7 +313,7 @@ feature 'RTE Settings' do
     confirm_settings_page @page
 
     @page.should have_alert
-    @page.alert[:class].should include "success"
+    @page.should have_alert_success
     @page.alert.text.should include "Tool set created"
     @page.alert.text.should include "Empty has been successfully created."
 
@@ -337,7 +337,7 @@ feature 'RTE Settings' do
     @page.tool_set_name.value.should eq "Rspec Edited"
 
     @page.should have_alert
-    @page.alert[:class].should include "success"
+    @page.should have_alert_success
     @page.alert.text.should include "Tool set updated"
   end
 
@@ -352,7 +352,7 @@ feature 'RTE Settings' do
     @page.tool_set_name.value.should eq "Default"
 
     @page.should have_alert
-    @page.alert[:class].should include "issue"
+    @page.should have_alert_error
     @page.alert.text.should include "Tool set error"
     @page.alert.text.should include "We were unable to save the tool set, please review and fix errors below."
 
@@ -371,7 +371,7 @@ feature 'RTE Settings' do
     @page.tool_set_name.value.should eq ""
 
     @page.should have_alert
-    @page.alert[:class].should include "issue"
+    @page.should have_alert_error
     @page.alert.text.should include "Tool set error"
     @page.alert.text.should include "We were unable to save the tool set, please review and fix errors below."
 
@@ -391,7 +391,7 @@ feature 'RTE Settings' do
     @page.tool_set_name.value.should eq "<script>Haha"
 
     @page.should have_alert
-    @page.alert[:class].should include "issue"
+    @page.should have_alert_error
     @page.alert.text.should include "Tool set error"
     @page.alert.text.should include "We were unable to save the tool set, please review and fix errors below."
 

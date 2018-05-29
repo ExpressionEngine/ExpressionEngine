@@ -2,12 +2,7 @@
 
 <div class="box">
 	<h1><b><?=$header?></b><span class="icon-locked"></span></h1>
-	<?php if ($message != ''):?>
-		<div class="alert inline <?=$message_status?>">
-			<span class="icon-<?=$message_status?>"></span>
-			<p><?=$message?></p>
-		</div>
-	<?php endif;?>
+	<?=ee('CP/Alert')->getAllInlines()?>
 	<?=form_open(ee('CP/URL')->make('login/authenticate'), array(), array('return_path' => $return_path))?>
 		<fieldset>
 			<?=lang('username', 'username')?>

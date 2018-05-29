@@ -13,6 +13,7 @@
 class Search {
 
 	var	$min_length		= 3;			// Minimum length of search keywords
+	var	$max_length		= 200;			// Maximum length of search keywords (logged to varchar(200))...
 	var	$cache_expire	= 2;			// How many hours should we keep search caches?
 	var	$keywords		= "";
 	var	$text_format	= 'xhtml';		// Excerpt text formatting
@@ -26,6 +27,7 @@ class Search {
 	var $hash			= "";
 
 	protected $_meta 	= array();
+	protected $custom_fields = [];
 
 	/**
 	 * Do Search
@@ -147,6 +149,18 @@ class Search {
 			// Load the search helper so we can filter the keywords
 			ee()->load->helper('search');
 
+			// If the search terms are too long to log we'll toss an error. We do this
+			// before sanitizing because with a long enough input that process can take
+			// enough time to be a DDoS attack point. :sigh:
+			if (strlen($this->keywords) > $this->max_length)
+			{
+				$text = lang('search_max_length');
+
+				$text = str_replace("%x", $this->max_length, $text);
+
+				return ee()->output->show_user_error('general', array($text));
+			}
+
 			$this->keywords = sanitize_search_terms($_POST['keywords']);
 
 			/** ----------------------------------------
@@ -220,7 +234,7 @@ class Search {
 
 		$this->hash = ee()->functions->random('md5');
 
-		$query_parts = $this->build_standard_query();
+		$query_parts = $this->getAllQueryParts();
 
 		/** ----------------------------------------
 		/**  No query results?
@@ -512,13 +526,17 @@ class Search {
 
             if ($channels)
             {
-    			$custom_fields = array();
-    			foreach ($channels as $channel)
-    			{
-    				$custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
-    			}
+				if (empty($this->custom_fields))
+				{
+	    			$custom_fields = array();
+	    			foreach ($channels as $channel)
+	    			{
+	    				$custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
+	    			}
+					$this->custom_fields = array_chunk($custom_fields, 50);
+				}
 
-                foreach ($custom_fields as $field)
+                foreach (array_shift($this->custom_fields) as $field)
                 {
                     if ($field->field_search)
                     {
@@ -930,7 +948,6 @@ class Search {
 				$sql .= ")";
 			}
 		}
-		//exit($sql);
 
 		/** ----------------------------------------------
 		/**  Limit query to a specific channel
@@ -1102,6 +1119,34 @@ class Search {
 		return $return;
 	}
 
+	protected function getAllQueryParts()
+	{
+		$query_parts = $this->build_standard_query();
+
+		if ( ! empty($this->custom_fields))
+		{
+			foreach (array_keys($this->custom_fields) as $i)
+			{
+				$qp = $this->build_standard_query();
+
+				if ($query_parts === FALSE)
+				{
+					$query_parts = $qp;
+				}
+				else
+				{
+					if ($qp)
+					{
+						$query_parts['entries'] = array_merge($query_parts['entries'], $qp['entries']);
+						$query_parts['channel_ids'] = array_merge($query_parts['channel_ids'], $qp['channel_ids']);
+					}
+				}
+			}
+		}
+
+		return $query_parts;
+	}
+
 	/** ----------------------------------------
 	/**  Total search results
 	/** ----------------------------------------*/
@@ -1249,6 +1294,8 @@ class Search {
 
 		$channel->fetch_custom_channel_fields();
 		$channel->fetch_custom_member_fields();
+
+		ee()->session->cache['channel']['entry_ids'] = $query_parts['entries'];
 
 		$sql = 'SELECT DISTINCT(t.entry_id), w.search_results_url, w.search_excerpt, ';
 		$sql .= $channel->generateSQLForEntries($query_parts['entries'], $query_parts['channel_ids']);

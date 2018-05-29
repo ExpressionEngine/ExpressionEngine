@@ -91,11 +91,19 @@ class EE_Exceptions {
 			return;
 		}
 
-		$filepath = str_replace("\\", "/", $filepath);
-		$filepath = str_replace(SYSPATH, '', $filepath);
+		$syspath = SYSPATH;
 
-		$message = str_replace("\\", "/", $message);
-		$message = str_replace(SYSPATH, '', $message);
+		// normalize for Windows servers
+		if (DIRECTORY_SEPARATOR == '\\')
+		{
+			$syspath = str_replace('\\', '/', $syspath);
+			$filepath = str_replace('\\', '/', $filepath);
+			$message = str_replace('\\', '/', $message);
+		}
+
+		$filepath = str_replace($syspath, '', $filepath);
+		$message = str_replace($syspath, '', $message);
+		$message = htmlentities($message, ENT_QUOTES, 'UTF-8', FALSE);
 
 		if (ob_get_level() > $this->ob_level + 1)
 		{
@@ -210,13 +218,32 @@ class EE_Exceptions {
 
 		$message = $exception->getMessage();
 
-		// Replace system path
-		$filepath = str_replace("\\", "/", $exception->getFile());
-		$filepath = str_replace(SYSPATH, '', $filepath);
-		$location =  $filepath . ':' . $exception->getLine();
+		$syspath = SYSPATH;
+		$filepath = $exception->getFile();
 
+		// normalize for Windows servers
+		if (DIRECTORY_SEPARATOR == '\\')
+		{
+			$syspath = str_replace('\\', '/', $syspath);
+			$filepath = str_replace('\\', '/', $filepath);
+			$message = str_replace('\\', '/', $message);
+		}
+
+		// Replace system path
+		$filepath = str_replace($syspath, '', $filepath);
+		$message = str_replace($syspath, '', $message);
+
+		$message = htmlentities($message, ENT_QUOTES, 'UTF-8', FALSE);
+
+		// whitelist formatting tags
+		foreach (['i', 'b', 'br'] as $tag)
+		{
+			$message = str_replace(["&lt;{$tag}&gt;", "&lt;/{$tag}&gt;"], ["<{$tag}>", "</{$tag}>"], $message);
+		}
+
+		$location =  $filepath . ':' . $exception->getLine();
 		$trace = explode("\n", $exception->getTraceAsString());
-		$partial_path = substr(SYSPATH, 0, 15);
+		$partial_path = substr($syspath, 0, 15);
 
 		// Replace the system paths in the stack trace
 		foreach ($trace as &$line)
@@ -237,6 +264,7 @@ class EE_Exceptions {
 			}
 
 			$line = str_replace($partial_path, '', $line);
+			$line = htmlentities($line, ENT_QUOTES, 'UTF-8');
 		}
 
 		$debug = DEBUG;

@@ -54,11 +54,17 @@ class ChannelField extends FieldModel {
 			),
 			'weak' => TRUE
 		),
+		'SearchExcerpts' => array(
+			'type' => 'hasMany',
+			'model' => 'Channel',
+			'to_key' => 'search_excerpt',
+			'weak' => TRUE
+		),
 	);
 
 	protected static $_validation_rules = array(
 		'site_id'              => 'required|integer',
-		'field_name'           => 'required|unique|validateNameIsNotReserved|maxLength[32]',
+		'field_name'           => 'required|alphaDash|unique|validateNameIsNotReserved|maxLength[32]',
 		'field_label'          => 'required|maxLength[50]',
 		'field_type'           => 'validateIsCompatibleWithPreviousValue',
 	//	'field_list_items'     => 'required',
@@ -160,6 +166,12 @@ class ChannelField extends FieldModel {
 	{
 		$this->removeFromLayouts();
 		$this->removeFromFluidFields();
+
+		foreach ($this->SearchExcerpts as $channel)
+		{
+			$channel->search_excerpt = NULL;
+			$channel->save();
+		}
 	}
 
 	public function getAllChannels()

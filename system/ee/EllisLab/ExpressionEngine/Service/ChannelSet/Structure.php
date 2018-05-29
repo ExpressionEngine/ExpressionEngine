@@ -39,6 +39,7 @@ class Structure {
 	public static $title_fields = array(
 		'ee:Channel' => 'channel_title',
 		'ee:ChannelFieldGroup' => 'group_name',
+		'ee:CategoryGroup' => 'group_name',
 		'ee:ChannelField' => 'field_label',
 		'ee:UploadDestination' => 'name'
 	);
@@ -46,6 +47,7 @@ class Structure {
 	public static $identity_fields = array(
 		'ee:Channel' => 'channel_name',
 		'ee:ChannelFieldGroup' => 'group_name',
+		'ee:CategoryGroup' => 'group_name',
 		'ee:ChannelField' => 'field_name',
 		'ee:UploadDestination' => 'name'
 	);

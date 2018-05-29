@@ -138,7 +138,7 @@ feature 'Template Manager' do
       no_php_js_errors
 
       form = TemplateGroupEdit.new
-      form.make_default_group.click
+      form.is_site_default.click
       form.save_button.click
 
       no_php_js_errors
@@ -224,7 +224,7 @@ feature 'Template Manager' do
       no_php_js_errors
 
       @page.should have_alert
-      @page.alert[:class].should include 'success'
+      @page.should have_alert_success
       @page.templates.should have(5).items
     end
   end

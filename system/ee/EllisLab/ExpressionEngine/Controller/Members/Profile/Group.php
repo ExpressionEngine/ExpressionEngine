@@ -59,7 +59,7 @@ class Group extends Profile {
 					->asWarning()
 					->addToBody(lang('access_privilege_warning'))
 					->addToBody(
-						sprintf(lang('access_privilege_caution'), '<span title="excercise caution"></span>'),
+						sprintf(lang('access_privilege_caution'), '<span class="icon--caution" title="exercise caution"></span>'),
 						'caution'
 					)
 					->cannotClose()

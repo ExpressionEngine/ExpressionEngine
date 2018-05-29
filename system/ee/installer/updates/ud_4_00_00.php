@@ -934,7 +934,7 @@ class Updater {
 	 */
 	private function emancipateStatuses()
 	{
-		if (ee()->db->table_exists('channels_statuses'))
+		if (ee()->db->table_exists('channels_statuses') && ee()->db->field_exists('status_id', 'channel_titles'))
 		{
 			return;
 		}
@@ -1021,6 +1021,8 @@ class Updater {
 
 		if ( ! empty($channels_statuses))
 		{
+			// truncate in case this is being re-run from an incomplete upgrade
+			ee()->db->truncate('channels_statuses');
 			ee()->db->insert_batch('channels_statuses', $channels_statuses);
 		}
 
