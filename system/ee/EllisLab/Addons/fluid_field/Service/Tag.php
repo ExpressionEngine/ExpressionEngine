@@ -130,7 +130,10 @@ class Tag {
 				$field->getItem('fluid_field_data_id')
 			);
 
-			$tagdata = $relationship_parser->parse($field->getContentId(), $tagdata, $channel);
+			if ( ! is_null($relationship_parser))
+			{
+				$tagdata = $relationship_parser->parse($field->getContentId(), $tagdata, $channel);
+			}
 
 			return $field->replaceTag($tagdata);
 		}
