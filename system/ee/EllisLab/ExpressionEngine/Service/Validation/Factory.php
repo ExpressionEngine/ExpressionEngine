@@ -49,10 +49,10 @@ class Factory {
 	 */
 	public function ajax(ValidationResult $result)
 	{
-		if (ee()->input->is_ajax_request())
-		{
-			$field = ee()->input->post('ee_fv_field');
+		$field = ee()->input->post('ee_fv_field');
 
+		if ($field && ee()->input->is_ajax_request())
+		{
 			if ($result->hasErrors($field))
 			{
 				return ['error' => $result->renderError($field)];

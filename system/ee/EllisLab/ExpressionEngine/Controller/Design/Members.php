@@ -130,6 +130,15 @@ class Members extends AbstractDesignController {
 		if ($theme)
 		{
 			$base_path = ee('Theme')->getUserPath('member/' . ee()->security->sanitize_filename($theme));
+
+			// Check if custom templates are in themes folder instead of system folder
+			if (strpos($base_path, PATH_THIRD_THEMES) !== FALSE)
+			{
+				ee()->load->library('logger');
+				$version_url = ee()->cp->masked_url(DOC_URL.'installation/version_notes_4.2.2.html');
+
+				ee()->logger->developer('As of 4.2.2, member templates should be in folder: system/user/templates/_themes/member/.  <a href="'.$version_url.'">Please see 4.2.2 version notes.</a>', TRUE);
+			}
 		}
 
 		$base_url = ee('CP/URL')->make('design/members/index/' . $theme);
@@ -155,6 +164,10 @@ class Members extends AbstractDesignController {
 			foreach ($files as $file)
 			{
 				if (strpos($file, '.') === FALSE)
+				{
+					continue;
+				}
+				if ( ! isset($this->template_group_map[$file]))
 				{
 					continue;
 				}

@@ -12,7 +12,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '4.2.0';	// The version being installed
+	public $version           = '4.3.0';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
@@ -51,6 +51,7 @@ class Wizard extends CI_Controller {
 	public $required_modules = array(
 		'channel',
 		'comment',
+		'consent',
 		'member',
 		'stats',
 		'rte',
@@ -64,7 +65,7 @@ class Wizard extends CI_Controller {
 
 	// Native First Party ExpressionEngine Modules (everything else is in third
 	// party folder)
-	public $native_modules = array('blacklist', 'channel', 'comment', 'commerce',
+	public $native_modules = array('blacklist', 'channel', 'comment', 'commerce', 'consent',
 		'email', 'emoticon', 'file', 'forum', 'gallery', 'ip_to_nation',
 		'jquery', 'member', 'metaweblog_api', 'moblog', 'pages', 'query', 'relationship',
 		'rss', 'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
@@ -217,6 +218,8 @@ class Wizard extends CI_Controller {
 		$this->year  = gmdate('Y', $this->now);
 		$this->month = gmdate('m', $this->now);
 		$this->day   = gmdate('d', $this->now);
+
+		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
 	}
 
 	/**
@@ -390,7 +393,6 @@ class Wizard extends CI_Controller {
 
 		// Make sure the Member module is installed in the case the user is
 		// upgrading from Core to Standard
-		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
 		if ( ! IS_CORE
 			&& (ee('Addon')->get('member') !== NULL && ! ee('Addon')->get('member')->isInstalled()))
 		{
@@ -706,7 +708,7 @@ class Wizard extends CI_Controller {
 			array(
 				'field' => 'install_default_theme',
 				'label' => 'lang:install_default_theme',
-				'rules' => 'callback_template_path_writeable'
+				'rules' => 'callback_themes_user_writable|callback_template_path_writeable'
 			),
 			array(
 				'field' => 'password',
@@ -948,6 +950,20 @@ class Wizard extends CI_Controller {
 			ee()->form_validation->set_message(
 				'template_path_writeable',
 				lang('unwritable_templates')
+			);
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	public function themes_user_writable($radio)
+	{
+		if ( ! is_really_writable($this->root_theme_path.'user'))
+		{
+			ee()->form_validation->set_message(
+				'themes_user_writable',
+				lang('unwritable_themes_user')
 			);
 			return FALSE;
 		}
@@ -1546,9 +1562,10 @@ class Wizard extends CI_Controller {
 		if ($this->userdata['theme'] != ''&& $this->userdata['theme'] != 'none')
 		{
 			// Install any default structure and content that the theme may have
-			if (file_exists($this->theme_path.$this->userdata['theme'].'/channel_set.json'))
+			if (file_exists(APPPATH.'/site_themes/'.$this->userdata['theme'].'/channel_set.json'))
 			{
 				$theme = ee('ThemeInstaller');
+				$theme->setInstallerPath(APPPATH);
 				$theme->setSiteURL($this->userdata['site_url']);
 				$theme->setBasePath($this->base_path);
 				$theme->setThemePath($this->root_theme_path);
@@ -1567,9 +1584,11 @@ class Wizard extends CI_Controller {
 	 */
 	private function install_modules()
 	{
-		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
 		ee()->load->library('addons');
 		$this->module_install_errors = ee()->addons->install_modules($this->required_modules);
+
+		$consent = ee('Addon')->get('consent');
+		$consent->installConsentRequests();
 
 		return TRUE;
 	}

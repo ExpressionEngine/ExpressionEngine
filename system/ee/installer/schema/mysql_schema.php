@@ -70,6 +70,7 @@ class EE_Schema {
 			login_state varchar(32) NULL DEFAULT NULL,
 			fingerprint varchar(40) NOT NULL,
 			sess_start int(10) unsigned DEFAULT '0' NOT NULL,
+			auth_timeout int(10) unsigned DEFAULT '0' NOT NULL,
 			last_activity int(10) unsigned DEFAULT '0' NOT NULL,
 			can_debug char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY `session_id` (`session_id`),
@@ -465,6 +466,7 @@ class EE_Schema {
 			`can_access_import` char(1) NOT NULL DEFAULT 'n',
 			`can_access_sql_manager` char(1) NOT NULL DEFAULT 'n',
 			`can_moderate_spam` char(1) NOT NULL DEFAULT 'n',
+			`can_manage_consents` char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY `group_id_site_id` (`group_id`, `site_id`)
 		)";
 
@@ -516,6 +518,7 @@ class EE_Schema {
 			m_field_cp_reg char(1) NOT NULL default 'n',
 			m_field_fmt char(5) NOT NULL default 'none',
 			m_field_show_fmt char(1) NOT NULL default 'y',
+			m_field_exclude_from_anon char(1) NOT NULL default 'n',
 			m_field_order int(3) unsigned NULL DEFAULT NULL,
 			m_field_text_direction char(3) DEFAULT 'ltr',
 			m_field_settings text NULL,
@@ -1392,16 +1395,64 @@ class EE_Schema {
 		)";
 
 		$Q[] = "CREATE TABLE `exp_menu_items` (
-		  `item_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-		  `parent_id` int(10) NOT NULL DEFAULT '0',
-		  `set_id` int(10) DEFAULT NULL,
-		  `name` varchar(50) DEFAULT NULL,
-		  `data` varchar(255) DEFAULT NULL,
-		  `type` varchar(10) DEFAULT NULL,
-		  `sort` int(5) NOT NULL DEFAULT '0',
-		  PRIMARY KEY (`item_id`),
-		  KEY `set_id` (`set_id`)
+			`item_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`parent_id` int(10) NOT NULL DEFAULT '0',
+			`set_id` int(10) DEFAULT NULL,
+			`name` varchar(50) DEFAULT NULL,
+			`data` varchar(255) DEFAULT NULL,
+			`type` varchar(10) DEFAULT NULL,
+			`sort` int(5) NOT NULL DEFAULT '0',
+			PRIMARY KEY (`item_id`),
+			KEY `set_id` (`set_id`)
 	  	)";
+
+		$Q[] = "CREATE TABLE `exp_consent_requests` (
+			`consent_request_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`consent_request_version_id` int(10) unsigned DEFAULT NULL,
+			`user_created` char(1) NOT NULL DEFAULT 'n',
+			`title` varchar(200) NOT NULL,
+			`consent_name` varchar(50) NOT NULL,
+			`double_opt_in` char(1) NOT NULL DEFAULT 'n',
+			`retention_period` varchar(32) DEFAULT NULL,
+			PRIMARY KEY (`consent_request_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_consent_request_versions` (
+			`consent_request_version_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`consent_request_id` int(10) unsigned NOT NULL,
+			`request` mediumtext,
+			`request_format` tinytext,
+			`create_date` int(10) NOT NULL DEFAULT '0',
+			`author_id` int(10) unsigned NOT NULL DEFAULT '0',
+			PRIMARY KEY (`consent_request_version_id`),
+			KEY `consent_request_id` (`consent_request_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_consents` (
+			`consent_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`consent_request_id` int(10) unsigned NOT NULL,
+			`consent_request_version_id` int(10) unsigned NOT NULL,
+			`member_id` int(10) unsigned NOT NULL,
+			`request_copy` mediumtext,
+			`request_format` tinytext,
+			`consent_given` char(1) NOT NULL DEFAULT 'n',
+			`consent_given_via` varchar(32) DEFAULT NULL,
+			`expiration_date` int(10) DEFAULT NULL,
+			`response_date` int(10) DEFAULT NULL,
+			PRIMARY KEY (`consent_id`),
+			KEY `consent_request_version_id` (`consent_request_version_id`),
+			KEY `member_id` (`member_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_consent_audit_log` (
+			`consent_audit_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`consent_request_id` int(10) unsigned NOT NULL,
+			`member_id` int(10) unsigned NOT NULL,
+			`action` text NOT NULL,
+			`log_date` int(10) NOT NULL DEFAULT '0',
+			PRIMARY KEY (`consent_audit_id`),
+			KEY `consent_request_id` (`consent_request_id`)
+		)";
 
 		// Default menu set
 		$Q[] = "INSERT INTO exp_menu_sets(name) VALUES ('Default')";
@@ -1575,6 +1626,7 @@ class EE_Schema {
 				'can_access_import'              => 'y',
 				'can_access_sql_manager'         => 'y',
 				'can_moderate_spam'              => 'y',
+				'can_manage_consents'            => 'y',
 				'search_flood_control'           => '0'
 			),
 			array(

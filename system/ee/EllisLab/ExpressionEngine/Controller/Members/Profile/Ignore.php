@@ -58,7 +58,8 @@ class Ignore extends Profile {
 			->with('MemberGroup')
 			->order($sort_map[$sort_col], $sort_dir);
 
-		if ( ! empty($search = ee()->input->post('search')))
+		$search = ee()->input->post('search');
+		if ( ! empty($search))
 		{
 			// $members = $members->filter('screen_name', 'LIKE', "%$search%");
 			$members = $members->search('screen_name', $search);

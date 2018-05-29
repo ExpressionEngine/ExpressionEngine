@@ -580,6 +580,10 @@ class EE_Email {
 		{
 			$this->validate_email($to);
 		}
+		else
+		{
+			$to = array_filter($to, [$this, 'valid_email']);
+		}
 
 		if ($this->_get_protocol() !== 'mail')
 		{
@@ -604,6 +608,10 @@ class EE_Email {
 		if ($this->validate)
 		{
 			$this->validate_email($cc);
+		}
+		else
+		{
+			$cc = array_filter($cc, [$this, 'valid_email']);
 		}
 
 		$this->set_header('Cc', implode(', ', $cc));
@@ -636,6 +644,10 @@ class EE_Email {
 		if ($this->validate)
 		{
 			$this->validate_email($bcc);
+		}
+		else
+		{
+			$bcc = array_filter($bcc, [$this, 'valid_email']);
 		}
 
 		if ($this->_get_protocol() === 'smtp' OR ($this->bcc_batch_mode && count($bcc) > $this->bcc_batch_size))

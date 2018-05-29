@@ -148,7 +148,7 @@ class EE_Cache_memcached extends CI_Driver {
 	{
 		$stored = $this->_memcached->get($this->_namespaced_key($key, $scope));
 
-		if (count($stored) !== 3)
+		if ($stored == FALSE OR count($stored) !== 3)
 		{
 			return FALSE;
 		}

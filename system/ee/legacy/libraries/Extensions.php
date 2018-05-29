@@ -36,18 +36,12 @@ class EE_Extensions {
 
 				foreach($query->result_array() as $row)
 				{
-					// There is a possiblity that there will be three extensions for a given
-					// hook and that two of them will call the same class but different methods
-					// while the third will have a priority that places it between those two.
-					// The chance is pretty remote and I cannot think offhand why someone
-					// would do this, but I have learned that our users and developers are
-					// a crazy bunch so I should make shite like this work initially and not
-					// just fix it later.
-
-					// However, it makes no sense for a person to call the same class but different
-					// methods for the same hook at the same priority.  I feel confident in this.
-					// If someone does do this I will just have to point out the fact that they
-					// are a complete nutter.
+					// Calls are unique for class & priority. Multiple extensions may
+					// use the same hook, with their effects interspersed based on priority.
+					// That could even be within a single extension calling different methods
+					// on the same hook, but they must have different priorities.
+					// If the developer has given them identical priorities in the same extension
+					// only the last one in will run.
 
 					// force the classname to conform to standard casing
 					$row['class'] = ucfirst(strtolower($row['class']));

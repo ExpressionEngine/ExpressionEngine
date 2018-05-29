@@ -597,40 +597,15 @@ class Comment {
 			);
 		}
 
-		// We could do this in one fell, performant swoop with:
-		//
-		// 		$tagdata = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
-		//
-		// But we have a legacy extension hook here that fires on EVERY row's tagdata...
-		// So we need to loop it for now, deprecate it, and change/remove it in v5
-		$return = '';
-
-		foreach ($vars as $variables)
-		{
-			$tagdata = ee()->TMPL->tagdata;
-
-			// -------------------------------------------
-			// 'comment_entries_tagdata' hook.
-			//  - Modify and play with the tagdata before everyone else
-			//
-			if (ee()->extensions->active_hook('comment_entries_tagdata') === TRUE)
-			{
-				$tagdata = ee()->extensions->call('comment_entries_tagdata', $tagdata, $variables);
-				if (ee()->extensions->end_script === TRUE) return $tagdata;
-			}
-			//
-			// -------------------------------------------
-
-			$return .= ee()->TMPL->parse_variables_row($tagdata, $variables);
-		}
+		$tagdata = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
 
 		if ($enabled['pagination'])
 		{
-			return $pagination->render($return);
+			return $pagination->render($tagdata);
 		}
 		else
 		{
-			return $return;
+			return $tagdadta;
 		}
 	}
 
@@ -1965,12 +1940,12 @@ class Comment {
 		// send notifications
 		if ( ! $is_spam)
 		{
-			$notify = new Notifications($comment, $_POST['URI']);
-			$notify->sendAdminNotifications();
+			$notification = new Notifications($comment, $_POST['URI']);
+			$notification->sendAdminNotifications();
 
 			if ($comment_moderate == 'n')
 			{
-				$notify->sendUserNotifications();
+				$notification->sendUserNotifications();
 			}
 		}
 

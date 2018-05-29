@@ -91,6 +91,11 @@ class Facade {
 		}
 
 		$this->loaded[$name] = $object;
+
+		if ($name == 'session')
+		{
+			$object->setSessionCookies();
+		}
 	}
 
 	/**

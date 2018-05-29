@@ -185,7 +185,7 @@ class Developer extends Logs {
 					$description .= sprintf(
 						lang('deprecated_template'),
 						'<code>exp:'.strtolower($log->addon_module).':'.$log->addon_method.'</code>',
-						'<a href="'.ee('CP/URL')->make('design/edit_template/'.$log->template_id).'">'.$log->template_group.'/'.$log->template_name.'</a>'
+						'<a href="'.ee('CP/URL')->make('design/template/edit/'.$log->template_id).'">'.$log->template_group.'/'.$log->template_name.'</a>'
 					);
 
 					if ($log->snippets)

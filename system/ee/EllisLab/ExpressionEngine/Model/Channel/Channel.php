@@ -606,6 +606,11 @@ class Channel extends StructureModel {
 
 		return $group;
 	}
+
+	public function maxEntriesLimitReached()
+	{
+		return ($this->max_entries != 0 && $this->total_records >= $this->max_entries);
+	}
 }
 
 // EOF

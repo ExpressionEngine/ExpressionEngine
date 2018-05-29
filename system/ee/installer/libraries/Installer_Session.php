@@ -40,6 +40,11 @@ class Installer_Session {
 	{
 		return 0;
 	}
+
+	public function setSessionCookies()
+	{
+		return;
+	}
 }
 // END CLASS
 

@@ -102,6 +102,14 @@ class SecurityPrivacy extends Settings {
 					'fields' => array(
 						'cookie_secure' => array('type' => 'yes_no')
 					)
+				),
+				array(
+					'title' => 'require_cookie_consent',
+					'desc' => 'require_cookie_consent_desc',
+					'security' => TRUE,
+					'fields' => array(
+						'require_cookie_consent' => array('type' => 'yes_no')
+					)
 				)
 			),
 			'member_security_settings' => array(
@@ -202,9 +210,22 @@ class SecurityPrivacy extends Settings {
 					'title' => 'enable_rank_denial',
 					'desc' => sprintf(lang('enable_rank_denial_desc'), 'https://support.google.com/webmasters/answer/96569?hl=en'),
 					'fields' => array(
-						'redirect_submitted_links' => array('type' => 'yes_no')
+						'redirect_submitted_links' => [
+							'type' => 'yes_no',
+							'group_toggle' => array(
+								'y' => 'force_interstitial'
+							)
+						]
 					)
-				)
+				),
+				[
+					'title' => 'force_interstitial',
+					'desc' => 'force_interstitial_desc',
+					'group' => 'force_interstitial',
+					'fields' => [
+						'force_redirect' => ['type' => 'yes_no']
+					]
+				]
 			)
 		);
 

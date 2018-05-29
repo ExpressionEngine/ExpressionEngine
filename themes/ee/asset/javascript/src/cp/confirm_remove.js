@@ -34,6 +34,24 @@ $(document).ready(function () {
 				return $(el).attr('value') !== undefined;
 			});
 
+			if (conditional_element.attr('rel') == 'modal-edit') {
+				var entryIds = $.map(checked, function(el) {
+					return $(el).val()
+				})
+				EE.cp.ModalForm.openForm({
+					url: EE.publishEdit.sequenceEditFormUrl.replace('###', entryIds[0] + '&' + $.param({ entry_ids: entryIds })),
+					full: true,
+					iframe: true,
+					success: function() {
+						location.reload()
+					},
+					load: function (modal) {
+						var title = modal.find('> iframe').last().contents().find('meta[name=modal-title]').attr('content')
+						EE.cp.ModalForm.setTitle(title)
+					}
+				})
+			}
+
 			if (conditional_element.attr('rel') == 'modal-bulk-edit') {
 				return EE.cp.BulkEdit.openForm(conditional_element.val(), checked)
 			}

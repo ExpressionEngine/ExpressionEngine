@@ -177,6 +177,12 @@ $lang = array(
 /* Buttons */
 'cancel' => 'Cancel',
 
+'accept' => 'Accept',
+
+'decline' => 'Decline',
+
+'needs_review' => 'Needs Review',
+
 'delete' => 'Delete',
 
 'done' => 'Done',
@@ -219,6 +225,8 @@ $lang = array(
 
 'member_changed_password' => 'Changed password for "%s" (%d)',
 
+'member_anonymized_member' => 'Anonymized member with ID: %d',
+
 'member_id' => 'Member ID',
 
 'member_logged_in' => 'Logged in',
@@ -247,6 +255,8 @@ $lang = array(
 
 'custom_date_range' => 'Custom Date Range',
 
+'date_added' => 'Date Added',
+
 'edit' => 'Edit',
 
 'ee_wiki' => 'EE Wiki',
@@ -255,8 +265,7 @@ $lang = array(
 
 'limit_by' => 'limit by',
 
-'keyword_search' =>
-'Keyword Search',
+'keyword_search' => 'Keyword Search',
 
 'manage' => 'Manage',
 
@@ -279,6 +288,8 @@ $lang = array(
 'results' => 'results',
 
 'select_all' => 'select all',
+
+'search_in' => 'Search in',
 
 'show' => 'Show',
 
@@ -304,6 +315,15 @@ $lang = array(
 
 'with_selected' => 'with selected',
 
+'export' => 'Export',
+
+'btn_exporting' => 'Exporting',
+
+'btn_downloading' => 'Downloading',
+
+'will_be_logged' => 'This action will be logged',
+
+'important' => 'Important!',
 
 /* Sites and Channels */
 'avatar_path' => 'Avatar Path',
@@ -437,6 +457,8 @@ $lang = array(
 'edit' => 'Edit',
 
 'enable' => 'Enable',
+
+'filter_authors' => 'filter authors',
 
 'filter_categories' => 'filter categories',
 
@@ -572,13 +594,17 @@ $lang = array(
 
 'confirm_removal_desc' => 'You are attempting to remove the following items, please confirm this action.',
 
+'btn_confirm_and_save' => 'Confirm, and Save',
+
+'btn_confirm_and_save_working' => 'Saving...',
+
 
 /*confirm show all modal */
 'all_items' => 'All %d items',
 
-'confirm_show_all' => 'Danger, Will Robinson!',
+'confirm_show_all' => 'Confirm Show All',
 
-'confirm_show_all_btn' => 'Damn the torpedoes, full speed ahead!',
+'confirm_show_all_btn' => 'Show All',
 
 'confirm_show_all_desc' => 'Viewing more than %d items at a time may result in reduced performance.',
 

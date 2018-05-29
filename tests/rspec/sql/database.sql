@@ -98,6 +98,10 @@ DROP TABLE IF EXISTS `exp_category_field_data`;
 DROP TABLE IF EXISTS `exp_categories`;
 DROP TABLE IF EXISTS `exp_captcha`;
 DROP TABLE IF EXISTS `exp_actions`;
+DROP TABLE IF EXISTS `exp_consent_requests`;
+DROP TABLE IF EXISTS `exp_consent_request_versions`;
+DROP TABLE IF EXISTS `exp_consents`;
+DROP TABLE IF EXISTS `exp_consent_audit_log`;
 
 
 CREATE TABLE `exp_actions` (
@@ -818,6 +822,7 @@ CREATE TABLE `exp_member_fields` (
   `m_field_cp_reg` char(1) NOT NULL DEFAULT 'n',
   `m_field_fmt` char(5) NOT NULL DEFAULT 'none',
   `m_field_show_fmt` char(1) NOT NULL DEFAULT 'y',
+  `m_field_exclude_from_anon` char(1) NOT NULL DEFAULT 'n',
   `m_field_order` int(3) unsigned NOT NULL,
   `m_field_text_direction` char(3) DEFAULT 'ltr',
   `m_field_settings` text,
@@ -933,6 +938,7 @@ CREATE TABLE `exp_member_groups` (
   `can_access_import` char(1) NOT NULL DEFAULT 'n',
   `can_access_sql_manager` char(1) NOT NULL DEFAULT 'n',
   `can_moderate_spam` char(1) NOT NULL DEFAULT 'n',
+  `can_manage_consents` char(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`group_id`,`site_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1310,6 +1316,7 @@ CREATE TABLE `exp_sessions` (
   `fingerprint` varchar(40) NOT NULL,
   `login_state` varchar(32) DEFAULT NULL,
   `sess_start` int(10) unsigned NOT NULL DEFAULT '0',
+  `auth_timeout` int(10) unsigned NOT NULL DEFAULT '0',
   `last_activity` int(10) unsigned NOT NULL DEFAULT '0',
   `can_debug` char(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`session_id`),
@@ -1529,6 +1536,53 @@ CREATE TABLE `exp_upload_prefs` (
   KEY `site_id` (`site_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
+CREATE TABLE `exp_consent_requests` (
+	`consent_request_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`consent_request_version_id` int(10) unsigned DEFAULT NULL,
+	`user_created` char(1) NOT NULL DEFAULT 'n',
+	`title` varchar(200) NOT NULL,
+	`consent_name` varchar(50) NOT NULL,
+	`double_opt_in` char(1) NOT NULL DEFAULT 'n',
+	`retention_period` varchar(32) DEFAULT NULL,
+	PRIMARY KEY (`consent_request_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `exp_consent_request_versions` (
+	`consent_request_version_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`consent_request_id` int(10) unsigned NOT NULL,
+	`request` mediumtext,
+	`request_format` tinytext,
+	`create_date` int(10) NOT NULL DEFAULT '0',
+	`author_id` int(10) unsigned NOT NULL DEFAULT '0',
+	PRIMARY KEY (`consent_request_version_id`),
+	KEY `consent_request_id` (`consent_request_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `exp_consents` (
+	`consent_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`consent_request_id` int(10) unsigned NOT NULL,
+	`consent_request_version_id` int(10) unsigned NOT NULL,
+	`member_id` int(10) unsigned NOT NULL,
+	`request_copy` mediumtext,
+	`request_format` tinytext,
+	`consent_given` char(1) NOT NULL DEFAULT 'n',
+	`consent_given_via` varchar(32) DEFAULT NULL,
+	`expiration_date` int(10) DEFAULT NULL,
+	`response_date` int(10) DEFAULT NULL,
+	PRIMARY KEY (`consent_id`),
+	KEY `consent_request_version_id` (`consent_request_version_id`),
+	KEY `member_id` (`member_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `exp_consent_audit_log` (
+	`consent_audit_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	`consent_request_id` int(10) unsigned NOT NULL,
+	`member_id` int(10) unsigned NOT NULL,
+	`action` text NOT NULL,
+	`log_date` int(10) NOT NULL DEFAULT '0',
+	PRIMARY KEY (`consent_audit_id`),
+	KEY `consent_request_id` (`consent_request_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 
 
@@ -1992,20 +2046,20 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_member_fields` WRITE;
 ALTER TABLE `exp_member_fields` DISABLE KEYS;
-INSERT INTO `exp_member_fields` (`m_field_id`, `m_field_name`, `m_field_label`, `m_field_description`, `m_field_type`, `m_field_list_items`, `m_field_ta_rows`, `m_field_maxl`, `m_field_width`, `m_field_search`, `m_field_required`, `m_field_public`, `m_field_reg`, `m_field_cp_reg`, `m_field_fmt`, `m_field_show_fmt`, `m_field_order`, `m_field_text_direction`, `m_field_settings`, `m_legacy_field_data`) VALUES
-	(1,'birthday','Birthday','','date','',8,NULL,NULL,'y','n','y','n','n','none','y',1,'ltr',NULL,'n');
+INSERT INTO `exp_member_fields` (`m_field_id`, `m_field_name`, `m_field_label`, `m_field_description`, `m_field_type`, `m_field_list_items`, `m_field_ta_rows`, `m_field_maxl`, `m_field_width`, `m_field_search`, `m_field_required`, `m_field_public`, `m_field_reg`, `m_field_cp_reg`, `m_field_fmt`, `m_field_show_fmt`, `m_field_exclude_from_anon`, `m_field_order`, `m_field_text_direction`, `m_field_settings`, `m_legacy_field_data`) VALUES
+	(1,'birthday','Birthday','','date','',8,NULL,NULL,'y','n','y','n','n','none','y','n',1,'ltr',NULL,'n');
 ALTER TABLE `exp_member_fields` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_member_groups` WRITE;
 ALTER TABLE `exp_member_groups` DISABLE KEYS;
-INSERT INTO `exp_member_groups` (`group_id`, `site_id`, `menu_set_id`, `group_title`, `group_description`, `is_locked`, `can_view_offline_system`, `can_view_online_system`, `can_access_cp`, `can_access_footer_report_bug`, `can_access_footer_new_ticket`, `can_access_footer_user_guide`, `can_view_homepage_news`, `can_access_files`, `can_access_design`, `can_access_addons`, `can_access_members`, `can_access_sys_prefs`, `can_access_comm`, `can_access_utilities`, `can_access_data`, `can_access_logs`, `can_admin_channels`, `can_admin_design`, `can_delete_members`, `can_admin_mbr_groups`, `can_admin_mbr_templates`, `can_ban_users`, `can_admin_addons`, `can_edit_categories`, `can_delete_categories`, `can_view_other_entries`, `can_edit_other_entries`, `can_assign_post_authors`, `can_delete_self_entries`, `can_delete_all_entries`, `can_view_other_comments`, `can_edit_own_comments`, `can_delete_own_comments`, `can_edit_all_comments`, `can_delete_all_comments`, `can_moderate_comments`, `can_send_cached_email`, `can_email_member_groups`, `can_email_from_profile`, `can_view_profiles`, `can_edit_html_buttons`, `can_delete_self`, `mbr_delete_notify_emails`, `can_post_comments`, `exclude_from_moderation`, `can_search`, `search_flood_control`, `can_send_private_messages`, `prv_msg_send_limit`, `prv_msg_storage_limit`, `can_attach_in_private_messages`, `can_send_bulletins`, `include_in_authorlist`, `include_in_memberlist`, `cp_homepage`, `cp_homepage_channel`, `cp_homepage_custom`, `can_create_entries`, `can_edit_self_entries`, `can_upload_new_files`, `can_edit_files`, `can_delete_files`, `can_upload_new_toolsets`, `can_edit_toolsets`, `can_delete_toolsets`, `can_create_upload_directories`, `can_edit_upload_directories`, `can_delete_upload_directories`, `can_create_channels`, `can_edit_channels`, `can_delete_channels`, `can_create_channel_fields`, `can_edit_channel_fields`, `can_delete_channel_fields`, `can_create_statuses`, `can_delete_statuses`, `can_edit_statuses`, `can_create_categories`, `can_create_member_groups`, `can_delete_member_groups`, `can_edit_member_groups`, `can_create_members`, `can_edit_members`, `can_create_new_templates`, `can_edit_templates`, `can_delete_templates`, `can_create_template_groups`, `can_edit_template_groups`, `can_delete_template_groups`, `can_create_template_partials`, `can_edit_template_partials`, `can_delete_template_partials`, `can_create_template_variables`, `can_delete_template_variables`, `can_edit_template_variables`, `can_access_security_settings`, `can_access_translate`, `can_access_import`, `can_access_sql_manager`, `can_moderate_spam`) VALUES
-	(1,1,1,'Super Admin','','n','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y',NULL,'n','y','n',0,'y',20,60,'y','y','y','y',NULL,0,NULL,'n','n','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','n','n','n','n','y'),
-	(2,1,1,'Banned','','n','n','n','n','n','n','n','y','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n',NULL,'n','n','n',60,'n',20,60,'n','n','n','n',NULL,0,NULL,'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n'),
-	(3,1,1,'Guests','','n','n','y','n','n','n','n','y','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n',NULL,'n','n','n',10,'n',20,60,'n','n','n','y',NULL,0,NULL,'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n'),
-	(4,1,1,'Pending','','n','n','y','n','n','n','n','y','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n',NULL,'n','n','n',10,'n',20,60,'n','n','n','y',NULL,0,NULL,'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n'),
-	(5,1,1,'Members','','n','n','y','n','n','n','n','y','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','y','y','y','y',NULL,'n','n','n',10,'y',20,60,'y','n','n','y',NULL,0,NULL,'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n');
+INSERT INTO `exp_member_groups` (`group_id`, `site_id`, `menu_set_id`, `group_title`, `group_description`, `is_locked`, `can_view_offline_system`, `can_view_online_system`, `can_access_cp`, `can_access_footer_report_bug`, `can_access_footer_new_ticket`, `can_access_footer_user_guide`, `can_view_homepage_news`, `can_access_files`, `can_access_design`, `can_access_addons`, `can_access_members`, `can_access_sys_prefs`, `can_access_comm`, `can_access_utilities`, `can_access_data`, `can_access_logs`, `can_admin_channels`, `can_admin_design`, `can_delete_members`, `can_admin_mbr_groups`, `can_admin_mbr_templates`, `can_ban_users`, `can_admin_addons`, `can_edit_categories`, `can_delete_categories`, `can_view_other_entries`, `can_edit_other_entries`, `can_assign_post_authors`, `can_delete_self_entries`, `can_delete_all_entries`, `can_view_other_comments`, `can_edit_own_comments`, `can_delete_own_comments`, `can_edit_all_comments`, `can_delete_all_comments`, `can_moderate_comments`, `can_send_cached_email`, `can_email_member_groups`, `can_email_from_profile`, `can_view_profiles`, `can_edit_html_buttons`, `can_delete_self`, `mbr_delete_notify_emails`, `can_post_comments`, `exclude_from_moderation`, `can_search`, `search_flood_control`, `can_send_private_messages`, `prv_msg_send_limit`, `prv_msg_storage_limit`, `can_attach_in_private_messages`, `can_send_bulletins`, `include_in_authorlist`, `include_in_memberlist`, `cp_homepage`, `cp_homepage_channel`, `cp_homepage_custom`, `can_create_entries`, `can_edit_self_entries`, `can_upload_new_files`, `can_edit_files`, `can_delete_files`, `can_upload_new_toolsets`, `can_edit_toolsets`, `can_delete_toolsets`, `can_create_upload_directories`, `can_edit_upload_directories`, `can_delete_upload_directories`, `can_create_channels`, `can_edit_channels`, `can_delete_channels`, `can_create_channel_fields`, `can_edit_channel_fields`, `can_delete_channel_fields`, `can_create_statuses`, `can_delete_statuses`, `can_edit_statuses`, `can_create_categories`, `can_create_member_groups`, `can_delete_member_groups`, `can_edit_member_groups`, `can_create_members`, `can_edit_members`, `can_create_new_templates`, `can_edit_templates`, `can_delete_templates`, `can_create_template_groups`, `can_edit_template_groups`, `can_delete_template_groups`, `can_create_template_partials`, `can_edit_template_partials`, `can_delete_template_partials`, `can_create_template_variables`, `can_delete_template_variables`, `can_edit_template_variables`, `can_access_security_settings`, `can_access_translate`, `can_access_import`, `can_access_sql_manager`, `can_moderate_spam`, `can_manage_consents`) VALUES
+	(1,1,1,'Super Admin','','n','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y',NULL,'n','y','n',0,'y',20,60,'y','y','y','y',NULL,0,NULL,'n','n','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','n','n','n','n','y','y'),
+	(2,1,1,'Banned','','n','n','n','n','n','n','n','y','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n',NULL,'n','n','n',60,'n',20,60,'n','n','n','n',NULL,0,NULL,'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n'),
+	(3,1,1,'Guests','','n','n','y','n','n','n','n','y','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n',NULL,'n','n','n',10,'n',20,60,'n','n','n','y',NULL,0,NULL,'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n'),
+	(4,1,1,'Pending','','n','n','y','n','n','n','n','y','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n',NULL,'n','n','n',10,'n',20,60,'n','n','n','y',NULL,0,NULL,'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n'),
+	(5,1,1,'Members','','n','n','y','n','n','n','n','y','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','y','y','y','y',NULL,'n','n','n',10,'y',20,60,'y','n','n','y',NULL,0,NULL,'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n');
 ALTER TABLE `exp_member_groups` ENABLE KEYS;
 UNLOCK TABLES;
 

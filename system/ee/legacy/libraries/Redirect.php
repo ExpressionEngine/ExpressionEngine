@@ -29,13 +29,13 @@ if (strncmp($_GET['URL'], 'http', 4) != 0 && strpos($_GET['URL'], '://') === FAL
 
 $host = ( ! isset($_SERVER['HTTP_HOST'])) ? '' : (substr($_SERVER['HTTP_HOST'],0,4) == 'www.' ? substr($_SERVER['HTTP_HOST'], 4) : $_SERVER['HTTP_HOST']);
 
-$force_redirect = ($request_type != 'CP' && config_item('force_redirect') == TRUE) ? TRUE: FALSE;
+$force_redirect = ($request_type != 'CP' && bool_config_item('force_redirect') == TRUE) ? TRUE: FALSE;
 
 ee()->load->library('typography');
 
 $url = ee()->typography->decodeIDN($_GET['URL']);
 
-$link = '<a rel="nofollow" href="'.htmlspecialchars($url, ENT_COMPAT, 'UTF-8').'">Continue</a>';
+$link = '<a rel="nofollow noreferrer" href="'.htmlspecialchars($url, ENT_COMPAT, 'UTF-8').'">Continue</a>';
 
 // Make sure a filtered comparison later doesn't trip the URL as "changed" for URLs with query strings
 $link = str_replace('&amp;', '&', $link);
@@ -68,7 +68,8 @@ if ($force_redirect == TRUE
 		'cp_page_title' => 'Redirect',
 		'host' => $url_host,
 		'url'  => htmlspecialchars($url, ENT_COMPAT, 'UTF-8'),
-		'link' => $link
+		'link' => $link,
+		'branded' => FALSE,
 	]);
 }
 else

@@ -79,6 +79,7 @@ class StandardGlobals extends Variables {
 			'template_name'        => $this->legacy_tmpl_obj->template_name,
 			'template_type'        => $this->legacy_tmpl_obj->embed_type ?: $this->legacy_tmpl_obj->template_type,
 			'theme_folder_url'     => URL_THEMES,
+			'theme_user_folder_url'=> URL_THIRD_THEMES,
 			'username_max_length'  => USERNAME_MAX_LENGTH,
 			'version'              => APP_VER,
 			'version_identifier'   => APP_VER_ID,

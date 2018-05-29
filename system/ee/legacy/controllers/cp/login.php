@@ -137,7 +137,7 @@ class Login extends CP_Controller {
 
 		if ($this->input->get('BK'))
 		{
-			$this->view->return_path = base64_encode($this->input->get('BK'));
+			$this->view->return_path = ee('Encrypt')->encode($this->input->get('BK'));
 		}
 		else if ($this->input->get('return'))
 		{
@@ -234,7 +234,7 @@ class Login extends CP_Controller {
 
 		if ($this->input->post('return_path'))
 		{
-			$return_path = base64_decode($this->input->post('return_path'));
+			$return_path = ee('Encrypt')->decode($this->input->post('return_path'));
 
 			if (strpos($return_path, '{') === 0)
 			{
@@ -250,6 +250,14 @@ class Login extends CP_Controller {
 		{
 			$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
 			$return_path = $member->getCPHomepageURL();
+		}
+
+		// If there is a URL= parameter in the return URL folks could end up anywhere
+		// so if we see that we'll ditch everything we were told and just go to `/`
+		if (strpos($return_path, '&URL=') !== FALSE
+			|| strpos($return_path, '?URL=') !== FALSE)
+		{
+			$return_path = ee('CP/URL')->make('/')->compile();
 		}
 
 		$this->functions->redirect($return_path);
@@ -823,11 +831,11 @@ class Login extends CP_Controller {
 		// If we have a return argument, keep it
 		if (ee()->input->post('return_path'))
 		{
-			$redirect .= AMP . 'return=' . ee()->input->post('return_path');
+			$redirect .= AMP . 'return=' . ee('Encrypt')->encode(ee()->input->post('return_path'));
 		}
 		elseif (ee()->input->get('return'))
 		{
-			$redirect .= AMP . 'return=' . ee()->input->get('return');
+			$redirect .= AMP . 'return=' . ee('Encrypt')->encode(ee()->input->get('return'));
 		}
 
 		$this->functions->redirect(BASE.AMP.$redirect);

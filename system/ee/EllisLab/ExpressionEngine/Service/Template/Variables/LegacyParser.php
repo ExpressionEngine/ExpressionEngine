@@ -331,12 +331,13 @@ class LegacyParser {
 			return;
 		}
 
-		if ( ! preg_match("/format\s*=\s*[\'|\"](.*?)[\'|\"]/s", $date_string, $match))
+		$bs = '\\'; // single backslash
+		if ( ! preg_match("/format\s*=\s*($bs$bs?)[\'|\"](.*?)\\1[\'|\"]/s", $date_string, $match))
 		{
 			return FALSE;
 		}
 
-		return $match[1];
+		return $match[2];
 	}
 
 	/**
@@ -430,6 +431,51 @@ class LegacyParser {
 		}
 
 		return $str;
+	}
+
+	/**
+	 * Parse "OR" parameters
+	 *
+	 * Provides a consistent method to handle 'not foo|bar|bat' type parameters.
+	 * Returns an array of options, and whether or not the options are negated (not true/false):
+	 *
+	 *		array (size=2)
+	 *			'options' =>
+	 *				array (size=4)
+	 *					0 => string 'foo' (length=3)
+	 *					1 => string 'bar' (length=3)
+	 *					2 => string 'bat' (length=3)
+	 *			'not' => boolean true
+	 *
+	 * @param  string $param The parameter string
+	 * @return array Array of options and whether the options are negated (not)
+	 */
+	public function parseOrParameter($param)
+	{
+		$options = [];
+		$not = FALSE;
+
+		$param = trim($param);
+		if (strncasecmp($param, 'not ', 4) === 0)
+		{
+			$param = trim(substr($param, 4));
+			$not = TRUE;
+		}
+
+		if (strpos($param, '|') !== FALSE)
+		{
+			$options = preg_split('/\|/', $param, -1, PREG_SPLIT_NO_EMPTY);
+			$options = array_map('trim', $options);
+		}
+		elseif ( ! empty($param))
+		{
+			$options = [$param];
+		}
+
+		return [
+			'options' => $options,
+			'not' => $not,
+		];
 	}
 }
 // END CLASS

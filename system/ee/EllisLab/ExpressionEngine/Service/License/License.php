@@ -159,7 +159,7 @@ class License {
 	{
 		$this->parseLicenseFile();
 
-		return $this->data[$key];
+		return isset($this->data[$key]) ? $this->data[$key] : NULL;
 	}
 
 	/**

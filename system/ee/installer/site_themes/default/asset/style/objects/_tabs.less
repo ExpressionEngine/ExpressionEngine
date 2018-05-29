@@ -1,0 +1,21 @@
+/*
+	_tabs.less
+	-------------
+	define tabs
+	-------------
+		.tabs
+		.tab
+		.tab-open
+*/
+
+.tabs:extend(.menu){
+	li{ .left; }
+	&:after{ .clear; }
+}
+
+.tab{
+	.hide;
+	p, ul, ol{ &:last-child{ .bottom; } }
+}
+
+.tab-open{ display: block; }

@@ -173,7 +173,12 @@ class Fluid_field_ft extends EE_Fieldtype {
 			}
 
 			$field->setItem('field_search', true);
-			$compiled_data_for_search[] = $field->save($value);
+
+			foreach ($value as $field_data)
+			{
+				$field->setData($field_data);
+				$compiled_data_for_search[] = $field->save($field_data);
+			}
 		}
 
 		return implode(' ', $compiled_data_for_search);

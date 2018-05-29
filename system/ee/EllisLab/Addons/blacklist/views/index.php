@@ -49,7 +49,7 @@
 				</fieldset>
 			<fieldset class="form-ctrls">
 				<?=cp_form_submit('btn_save_list', $save_btn_text_working)?>
-				<a class="btn" href="<?=ee('CP/URL')->make('addons/settings/blacklist/ee_blacklist')?>"><?=lang('btn_download_blacklist')?></a>
+				<a class="btn" href="<?=ee('CP/URL')->make('addons/settings/blacklist/ee_blacklist', ['token' => CSRF_TOKEN])?>"><?=lang('btn_download_blacklist')?></a>
 			</fieldset>
 			</div>
 			<div class="tab t-1">

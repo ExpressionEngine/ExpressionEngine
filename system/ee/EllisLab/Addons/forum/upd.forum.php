@@ -958,6 +958,18 @@ class Forum_upd {
 				->save();
 		}
 
+		if (version_compare($current, '5.0.1', '<'))
+		{
+			ee('Model')->make('Extension', [
+				'class'    => 'Forum_ext',
+				'method'   => 'anonymizeMember',
+				'hook'     => 'member_anonymize',
+				'settings' => [],
+				'version'  => $current,
+				'enabled'  => 'y'
+			])->save();
+		}
+
 		return TRUE;
 
 	}

@@ -469,7 +469,12 @@ class Upload {
 				{
 					$src  = $fd->getAbsolutePath() . $file->file_name;
 					$dest = $fd->getAbsolutePath() . $original->file_name;
-					ee('Filesystem')->copy($src, $dest);
+
+					// non-image files will not have manipulations
+					if (ee('Filesystem')->exists($src))
+					{
+						ee('Filesystem')->copy($src, $dest);
+					}
 				}
 
 				$file->delete();

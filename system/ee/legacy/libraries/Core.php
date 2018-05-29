@@ -69,8 +69,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20180306');
-		define('APP_VER',		'4.2.0');
+		define('APP_BUILD',		'20180524');
+		define('APP_VER',		'4.3.0');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -227,6 +227,11 @@ class EE_Core {
 
 		define('PATH_MBR_THEMES', PATH_THEMES.'member/');
 		define('PATH_CP_GBL_IMG', URL_THEMES_GLOBAL_ASSET.'img/');
+
+		define('PATH_THEME_TEMPLATES', SYSPATH . 'ee/templates/_themes/');
+		define('PATH_THIRD_THEME_TEMPLATES', SYSPATH . 'user/templates/_themes/');
+
+
 		unset($theme_path);
 
 		// Load the very, very base classes
@@ -457,7 +462,7 @@ class EE_Core {
 			// has their session Timed out and they are requesting a page?
 			// Grab the URL, base64_encode it and send them to the login screen.
 			$safe_refresh = ee()->cp->get_safe_refresh();
-			$return_url = ($safe_refresh == 'C=homepage') ? '' : AMP.'return='.base64_encode($safe_refresh);
+			$return_url = ($safe_refresh == 'C=homepage') ? '' : AMP.'return='.ee('Encrypt')->encode($safe_refresh);
 
 			ee()->functions->redirect(BASE.AMP.'C=login'.$return_url);
 		}

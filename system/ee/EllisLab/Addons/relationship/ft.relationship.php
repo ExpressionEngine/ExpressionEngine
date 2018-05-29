@@ -343,7 +343,7 @@ class Relationship_ft extends EE_Fieldtype {
 		if (empty($this->channels))
 		{
 			$this->channels = ee('Model')->get('Channel')
-				->fields('channel_title')
+				->fields('channel_title', 'max_entries', 'total_records')
 				->all();
 		}
 
@@ -379,11 +379,16 @@ class Relationship_ft extends EE_Fieldtype {
 			}
 		}
 
-		ee()->cp->add_js_script(array(
-			'plugin' => array('ui.touch.punch', 'ee_interact.event'),
-			'file' => 'fields/relationship/relationship',
+		ee()->javascript->set_global([
+			'relationship.publishCreateUrl' => ee('CP/URL')->make('publish/create/###')->compile(),
+			'relationship.lang.creatingNew' => lang('creating_new_in_rel')
+		]);
+
+		ee()->cp->add_js_script([
+			'plugin' => ['ui.touch.punch', 'ee_interact.event'],
+			'file' => ['fields/relationship/mutable_relationship', 'fields/relationship/relationship'],
 			'ui' => 'sortable'
-		));
+		]);
 
 		if ($entry_id)
 		{
@@ -498,6 +503,11 @@ class Relationship_ft extends EE_Fieldtype {
 			];
 		}
 
+		$channel_choices = $channels->filter(function($channel) {
+			return ! $channel->maxEntriesLimitReached()
+				&& in_array($channel->getId(), array_keys(ee()->session->userdata('assigned_channels')));
+		});
+
 		return ee('View')->make('relationship:publish')->render([
 			'field_name' => $field_name,
 			'choices' => $choices,
@@ -509,7 +519,9 @@ class Relationship_ft extends EE_Fieldtype {
 			'limit' => $this->settings['limit'] ?: 100,
 			'no_results' => ['text' => lang('no_entries_found')],
 			'no_related' => ['text' => lang('no_entries_related')],
-			'select_filters' => $select_filters
+			'select_filters' => $select_filters,
+			'channels' => $channel_choices,
+			'in_modal' => $this->get_setting('in_modal_context')
 		]);
 	}
 

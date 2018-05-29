@@ -142,6 +142,8 @@ $lang = array(
 
 'filter_autosaves' => 'filter auto saves',
 
+'filter_by_author' => 'author',
+
 'filter_by_category' => 'category',
 
 'filter_by_channel' => 'channel',
@@ -700,13 +702,11 @@ $lang = array(
 
 'title' => 'Title',
 
-'title_and_body' => 'Search titles and entries',
+'titles' => 'Titles',
 
-'title_body_comments' => 'Search titles, entries, and comments',
+'titles_and_content' => 'Titles & Content',
 
 'title_not_unique' => 'An entry already exists with this title. Titles must be unique.',
-
-'title_only' => 'Search titles only',
 
 'today' => 'Today',
 
@@ -725,8 +725,6 @@ $lang = array(
 'unordered_list' => 'Unordered List',
 
 'unpublished' => 'unpublished',
-
-'loading' => 'loading',
 
 'upload' => 'Upload',
 
@@ -801,6 +799,8 @@ $lang = array(
 'add_new_row' => 'Add new row',
 
 'collapse' => 'Collapse',
+
+'creating_new_in_rel' => 'Creating new entry in <b>#to_channel#</b> for a relationship with <b>#from_channel#</b>',
 
 'hide' => 'Hide',
 
@@ -944,8 +944,6 @@ $lang = array(
 
 'filter_selected_entries' => 'Filter selected entries',
 
-'important' => 'Important!',
-
 'no_cat_groups_in_common' => 'No <b>Category Groups</b> in common.',
 
 'bulk_edit' => 'Bulk Edit',
@@ -963,6 +961,8 @@ $lang = array(
 'remove_categories_entries' => 'Remove categories from %d entries',
 
 'remove_from_selection' => 'Remove from selection',
+
+'save_and_next' => 'Save & Next',
 
 'selected_entries' => 'Selected Entries',
 

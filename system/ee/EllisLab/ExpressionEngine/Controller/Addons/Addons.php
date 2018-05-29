@@ -510,6 +510,8 @@ class Addons extends CP_Controller {
 			$addon_info = ee('Addon')->get($addon);
 			$party = ($addon_info->getAuthor() == 'EllisLab') ? 'first' : 'third';
 
+			$addon_info->updateConsentRequests();
+
 			$module = $this->getModule($addon);
 			if ( ! empty($module)
 				&& $module['installed'] === TRUE
@@ -671,78 +673,129 @@ class Addons extends CP_Controller {
 			'third' => array()
 		);
 
+		// Preflight for consents
+		$requests = [
+			'first' => [],
+			'third' => []
+		];
+
+		$can_install = TRUE;
+
 		foreach ($addons as $addon)
 		{
 			$info = ee('Addon')->get($addon);
-			ee()->load->add_package_path($info->getPath());
 
 			$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
 
-			$module = $this->getModule($addon);
-			if ( ! empty($module) && $module['installed'] === FALSE)
-			{
-				$name = $this->installModule($addon);
-				if ($name)
-				{
-					$installed[$party][$addon] = $name;
-				}
-			}
-
-			$fieldtype = $this->getFieldtype($addon);
-			if ( ! empty($fieldtype) && $fieldtype['installed'] === FALSE)
-			{
-				$name = $this->installFieldtype($addon);
-				if ($name && ! isset($installed[$addon]))
-				{
-					$installed[$party][$addon] = $name;
-				}
-			}
-
-			$extension = $this->getExtension($addon);
-			if ( ! empty($extension) && $extension['installed'] === FALSE)
-			{
-				$name = $this->installExtension($addon);
-				if ($name && ! isset($installed[$addon]))
-				{
-					$installed[$party][$addon] = $name;
-				}
-			}
-
-			$plugin = $this->getPlugin($addon);
-			if ( ! empty($plugin) && $plugin['installed'] === FALSE)
-			{
-				$typography = 'n';
-				if ($info->get('plugin.typography'))
-				{
-					$typography = 'y';
-				}
-
-				$model = ee('Model')->make('Plugin');
-				$model->plugin_name = $plugin['name'];
-				$model->plugin_package = $plugin['package'];
-				$model->plugin_version = $info->getVersion();
-				$model->is_typography_related = $typography;
-				$model->save();
-
-				if ( ! isset($installed[$addon]))
-				{
-					$installed[$party][$addon] = $plugin['name'];
-				}
-			}
-
-			ee()->load->remove_package_path($info->getPath());
+			$requests[$party] = array_merge($requests[$party], $info->getInstalledConsentRequests());
 		}
 
 		foreach (array('first', 'third') as $party)
 		{
-			if ( ! empty($installed[$party]))
+			if ( ! empty($requests[$party]))
 			{
+				$can_install = FALSE;
 				$alert = ee('CP/Alert')->makeInline($party . '-party')
-					->asSuccess()
-					->withTitle(lang('addons_installed'))
-					->addToBody(lang('addons_installed_desc'))
-					->addToBody(array_values($installed[$party]))
+					->asIssue()
+					->withTitle(lang('addons_not_installed'))
+					->addToBody(lang('existing_consent_request'))
+					->addToBody($requests[$party])
+					->addToBody(lang('contact_developer'))
 					->defer();
+			}
+		}
+
+		if ($can_install)
+		{
+			foreach ($addons as $addon)
+			{
+				$info = ee('Addon')->get($addon);
+				ee()->load->add_package_path($info->getPath());
+
+				$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
+
+				try
+				{
+					$info->installConsentRequests();
+				}
+				catch (\Exception $e)
+				{
+					$alert = ee('CP/Alert')->makeInline($party . '-party')
+						->asIssue()
+						->withTitle(lang('addons_not_installed'))
+						->addToBody(lang('existing_consent_request'))
+						->addToBody([$addon])
+						->addToBody(lang('contact_developer'))
+						->defer();
+					break;
+				}
+
+				$module = $this->getModule($addon);
+				if ( ! empty($module) && $module['installed'] === FALSE)
+				{
+					$name = $this->installModule($addon);
+					if ($name)
+					{
+						$installed[$party][$addon] = $name;
+					}
+				}
+
+				$fieldtype = $this->getFieldtype($addon);
+				if ( ! empty($fieldtype) && $fieldtype['installed'] === FALSE)
+				{
+					$name = $this->installFieldtype($addon);
+					if ($name && ! isset($installed[$addon]))
+					{
+						$installed[$party][$addon] = $name;
+					}
+				}
+
+				$extension = $this->getExtension($addon);
+				if ( ! empty($extension) && $extension['installed'] === FALSE)
+				{
+					$name = $this->installExtension($addon);
+					if ($name && ! isset($installed[$addon]))
+					{
+						$installed[$party][$addon] = $name;
+					}
+				}
+
+				$plugin = $this->getPlugin($addon);
+				if ( ! empty($plugin) && $plugin['installed'] === FALSE)
+				{
+					$typography = 'n';
+					if ($info->get('plugin.typography'))
+					{
+						$typography = 'y';
+					}
+
+					$model = ee('Model')->make('Plugin');
+					$model->plugin_name = $plugin['name'];
+					$model->plugin_package = $plugin['package'];
+					$model->plugin_version = $info->getVersion();
+					$model->is_typography_related = $typography;
+					$model->save();
+
+					if ( ! isset($installed[$addon]))
+					{
+						$installed[$party][$addon] = $plugin['name'];
+					}
+				}
+
+				ee()->load->remove_package_path($info->getPath());
+			}
+
+			foreach (array('first', 'third') as $party)
+			{
+				if ( ! empty($installed[$party]))
+				{
+					$alert = ee('CP/Alert')->makeInline($party . '-party')
+						->asSuccess()
+						->withTitle(lang('addons_installed'))
+						->addToBody(lang('addons_installed_desc'))
+						->addToBody(array_values($installed[$party]))
+						->defer();
+				}
 			}
 		}
 
@@ -784,6 +837,14 @@ class Addons extends CP_Controller {
 		foreach ($addons as $addon)
 		{
 			$info = ee('Addon')->get($addon);
+
+			$info->removeConsentRequests();
+
+			if (empty($info))
+			{
+				continue;
+			}
+
 			$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
 
 			$module = $this->getModule($addon);

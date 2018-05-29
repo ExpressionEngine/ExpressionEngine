@@ -601,6 +601,7 @@ class Categories extends AbstractCategoriesController {
 			->filter('cat_id', 'IN', $selected['cat_group_id_'.$group_id])
 			->all();
 		$field->setData(implode('|', $selected_cats->pluck('cat_id')));
+		$field->setItem('editing', TRUE);
 
 		return $field->getForm();
 	}

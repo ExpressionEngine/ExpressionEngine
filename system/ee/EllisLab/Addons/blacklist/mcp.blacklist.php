@@ -545,6 +545,11 @@ class Blacklist_mcp {
 	 */
 	private function _download_update_list($listtype = "black")
 	{
+		if (ee()->input->get('token') != CSRF_TOKEN)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$vars['cp_page_title'] = lang('blacklist_module_name'); // both black and white lists share this title
 
 		if ( ! ee()->db->table_exists("{$listtype}listed"))

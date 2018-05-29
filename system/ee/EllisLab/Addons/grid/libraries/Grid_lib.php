@@ -19,6 +19,7 @@ class Grid_lib {
 	public $content_type;
 	public $entry_id;
 	public $fluid_field_data_id = 0;
+	public $in_modal_context = FALSE;
 
 	protected $_fieldtypes = [];
 	protected $_validated = [];
@@ -197,7 +198,8 @@ class Grid_lib {
 			$this->field_id,
 			$this->entry_id,
 			$this->content_type,
-			$this->fluid_field_data_id
+			$this->fluid_field_data_id,
+			$this->in_modal_context
 		);
 
 		$row_data = (isset($row['col_id_'.$column['col_id']]))
@@ -551,7 +553,7 @@ class Grid_lib {
 					// we're validating
 					if (ee()->input->is_ajax_request() && $field = ee()->input->post('ee_fv_field'))
 					{
-						if ($field == 'field_id_'.$this->field_id.'[rows]['.$row_id.']['.$col_id.']'
+						if (strpos($field, 'field_id_'.$this->field_id.'[rows]['.$row_id.']['.$col_id.']') === 0
 							|| strpos($field, '[field_id_'.$this->field_id.'][rows]['.$row_id.']['.$col_id.']') !== FALSE)
 						{
 							return $error;

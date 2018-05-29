@@ -584,7 +584,7 @@ class Channel_form_lib
 		{
 			$this->parse_variables['title']		= $this->channel('default_entry_title');
 			$this->parse_variables['url_title'] = $this->channel('url_title_prefix');
-			$this->parse_variables['allow_comments'] = ($this->channel('deft_comments') != 'n' OR $this->channel('comment_system_enabled') != 'y') ? '' : "checked='checked'";
+			$this->parse_variables['allow_comments'] = ($this->channel('deft_comments') == FALSE OR $this->channel('comment_system_enabled') == FALSE) ? '' : "checked='checked'";
 
 			$this->form_hidden('unique_url_title', $this->bool_string(ee()->TMPL->fetch_param('unique_url_title')) ? '1' : '');
 
@@ -1513,6 +1513,12 @@ GRID_FALLBACK;
 					$_POST[$checkbox] = '';
 				}
 			}
+		}
+
+		// If allow_comments is NOT included in the form and it's not set by parameter, use the default
+		if ( ! isset($_POST['allow_comments']) && $this->_meta['allow_comments'] == FALSE)
+		{
+			$_POST['allow_comments'] = ($this->channel('deft_comments') == TRUE && $this->channel('comment_system_enabled') == TRUE) ? 'y' : 'n';
 		}
 
 		$spam_content = "";
@@ -2774,6 +2780,27 @@ GRID_FALLBACK;
 					);
 				}
 			}
+			elseif ($field->field_list_items)
+			{
+				foreach (preg_split('/[\r\n]+/', $field->field_list_items) as $row)
+				{
+					$row = trim($row);
+
+					if ($row == '')
+					{
+						continue;
+					}
+
+					$options[] = array(
+						'option_value' => $row,
+						'option_name' => $row,
+						'selected' => (in_array($row, $field_data)) ? ' selected="selected"' : '',
+						'checked' => (in_array($row, $field_data)) ? ' checked="checked"' : '',
+					);
+				}
+			}
+
+
 			if ($field->field_pre_populate == 'y')
 			{
 				$pop_entries = ee('Model')->get('ChannelEntry')
@@ -2797,27 +2824,6 @@ GRID_FALLBACK;
 					}
 				}
 			}
-
-			elseif ($field->field_list_items)
-			{
-				foreach (preg_split('/[\r\n]+/', $field->field_list_items) as $row)
-				{
-					$row = trim($row);
-
-					if ($row == '')
-					{
-						continue;
-					}
-
-					$options[] = array(
-						'option_value' => $row,
-						'option_name' => $row,
-						'selected' => (in_array($row, $field_data)) ? ' selected="selected"' : '',
-						'checked' => (in_array($row, $field_data)) ? ' checked="checked"' : '',
-					);
-				}
-			}
-
 			elseif ( ! in_array($field->field_type, $this->native_option_fields))
 			{
 				$field_settings = $field->field_settings;
