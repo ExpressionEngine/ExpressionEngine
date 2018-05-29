@@ -171,7 +171,7 @@ class ChannelEntry extends ContentModel {
 
     public function set__entry_date($entry_date)
     {
-		$entry_time = $this->stringToTimestamp($entry_date);
+		$entry_timestamp = $this->stringToTimestamp($entry_date);
 		$this->setRawProperty('entry_date', $entry_timestamp);
 
         // Day, Month, and Year Fields
