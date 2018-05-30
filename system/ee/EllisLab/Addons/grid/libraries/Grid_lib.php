@@ -282,7 +282,7 @@ class Grid_lib {
 			return $this->_validated[$this->field_id.','.$this->fluid_field_data_id];
 		}
 
-		$this->_searchable_data[$this->field_id] = [];
+		$this->_searchable_data[$this->field_id.','.$this->fluid_field_data_id] = [];
 
 		// Process the posted data and cache
 		$this->_validated[$this->field_id.','.$this->fluid_field_data_id] = $this->_process_field_data('validate', $data);
@@ -572,7 +572,7 @@ class Grid_lib {
 					// Add to searchable array if searchable
 					if ($column['col_search'] == 'y')
 					{
-						$this->_searchable_data[$this->field_id][] = $value;
+						$this->_searchable_data[$this->field_id.','.$this->fluid_field_data_id][] = $value;
 					}
 				}
 				// 'save' method
@@ -608,9 +608,9 @@ class Grid_lib {
 	 */
 	public function getSearchableData()
 	{
-		if (isset($this->_searchable_data[$this->field_id]))
+		if (isset($this->_searchable_data[$this->field_id.','.$this->fluid_field_data_id]))
 		{
-			return $this->_searchable_data[$this->field_id];
+			return $this->_searchable_data[$this->field_id.','.$this->fluid_field_data_id];
 		}
 
 		return [];
