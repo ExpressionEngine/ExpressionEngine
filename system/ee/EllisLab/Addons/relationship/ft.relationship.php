@@ -81,7 +81,7 @@ class Relationship_ft extends EE_Fieldtype {
 			$cache_name .= $this->settings['grid_row_name'];
 		}
 
-		if (isset($model))
+		if (isset($model) && is_object($model))
 		{
 			$name = $this->field_name;
 			$model->$name = '';
