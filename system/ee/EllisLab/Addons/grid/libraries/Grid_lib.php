@@ -850,6 +850,8 @@ class Grid_lib {
 			$field_name = (empty($column)) ? 'new_0' : 'col_id_'.$column['col_id'];
 		}
 
+		$is_new = (strpos($field_name, 'new_') !== FALSE);
+
 		if (empty($column))
 		{
 			$column = array(
@@ -873,7 +875,7 @@ class Grid_lib {
 					'fields' => [
 						'grid[cols]['.$field_name.'][col_type]' => [
 							'type' => 'dropdown',
-							'choices' => $this->getGridFieldtypeDropdownForColumn($column['col_type']),
+							'choices' => $this->getGridFieldtypeDropdownForColumn($is_new ? NULL : $column['col_type']),
 							'value' => $column['col_type'] ?: 'text',
 							'no_results' => ['text' => sprintf(lang('no_found'), lang('fieldtypes'))]
 						]
