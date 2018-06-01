@@ -502,10 +502,10 @@ class Channel_model extends CI_Model {
 		// the beginning of the string with strncmp for that
 		// 'not', much prefer to do it once and then set a
 		// boolean.  But.. [cont:1]
-		$not = false;
+		$not = FALSE;
 		$site_id = ($site_id !== FALSE) ? 'wd.site_id=' . $site_id . ' AND ' : '';
 
-		if (strncmp($terms, 'not ', 4) == 0)
+		if (strncasecmp($terms, 'not ', 4) == 0)
 		{
 			$not = true;
 			$terms = substr($terms, 4);
@@ -552,7 +552,7 @@ class Channel_model extends CI_Model {
 		// Add the empty check condition.
 		if ($not)
 		{
-			return $add_search . ' ' . $conj . ' ((' . $site_id . $col_name . ' != "") OR (' . $site_id . $col_name . ' IS NOT NULL))';
+			return $add_search . ' ' . $conj . ' ((' . $site_id . $col_name . ' != "") AND (' . $site_id . $col_name . ' IS NOT NULL))';
 		}
 
 		return $add_search.' '.$conj.' ((' . $site_id . $col_name . ' = "") OR (' . $site_id . $col_name . ' IS NULL))';
