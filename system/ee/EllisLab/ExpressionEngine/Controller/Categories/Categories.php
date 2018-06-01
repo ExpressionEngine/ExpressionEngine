@@ -518,8 +518,8 @@ class Categories extends AbstractCategoriesController {
 				ee()->form_validation->_error_array = $result->renderErrors();
 				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
-					->withTitle(lang('category_group_not_'.$alert_key))
-					->addToBody(lang('category_group_not_'.$alert_key.'_desc'))
+					->withTitle(lang('category_not_'.$alert_key))
+					->addToBody(lang('category_not_'.$alert_key.'_desc'))
 					->now();
 			}
 		}

@@ -75,7 +75,7 @@ class ExportEmailAddresses extends Utilities {
 		$vars = [
 			'hide_top_buttons' => TRUE,
 			'cp_page_title' => lang('mass_notification_export'),
-			'base_url' => ee('CP/URL')->make('utilities/export-email-addresses/export'),
+			'base_url' => ee('CP/URL')->make('utilities/export-email-addresses/export', ['export_path' => $export_path]),
 			'sections' => [
 				[
 					ee('CP/Alert')->makeInline('security')

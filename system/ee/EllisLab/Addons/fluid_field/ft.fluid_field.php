@@ -147,11 +147,14 @@ class Fluid_field_ft extends EE_Fieldtype {
 				continue;
 			}
 
+			$fluid_field_data_id = 0;
+
 			// Existing field
 			if (strpos($key, 'field_') === 0)
 			{
 				$id = str_replace('field_', '', $key);
 				$field = $fluid_field_data[$id]->getField();
+				$fluid_field_data_id = $fluid_field_data[$id]->getId();
 			}
 			// New field
 			elseif (strpos($key, 'new_field_') === 0)
@@ -167,12 +170,14 @@ class Fluid_field_ft extends EE_Fieldtype {
 						$fluid_field->field_id = $field_id;
 
 						$field = $fluid_field->getField();
+						$fluid_field_data_id = $key;
 						break;
 					}
 				}
 			}
 
 			$field->setItem('field_search', true);
+			$field->setItem('fluid_field_data_id', $fluid_field_data_id);
 
 			foreach ($value as $field_data)
 			{
