@@ -1454,6 +1454,16 @@ class EE_Schema {
 			KEY `consent_request_id` (`consent_request_id`)
 		)";
 
+		$Q[] = "CREATE TABLE `exp_queue` (
+			`queue_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`identifier` varchar(200) NOT NULL DEFAULT '',
+			`step` int(10) unsigned NOT NULL DEFAULT '1',
+			`total` int(10) unsigned NOT NULL DEFAULT '1',
+			`data` mediumtext NULL,
+			PRIMARY KEY (`queue_id`),
+			KEY `identifier` (`identifier`)
+		)";
+
 		// Default menu set
 		$Q[] = "INSERT INTO exp_menu_sets(name) VALUES ('Default')";
 

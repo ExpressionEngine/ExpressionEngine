@@ -34,6 +34,7 @@ use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Permission;
 use EllisLab\ExpressionEngine\Service\Profiler;
+use EllisLab\ExpressionEngine\Service\Queue;
 use EllisLab\ExpressionEngine\Service\Sidebar;
 use EllisLab\ExpressionEngine\Service\Theme;
 use EllisLab\ExpressionEngine\Service\Thumbnail;
@@ -612,7 +613,10 @@ return [
 			'Consent' => 'Model\Consent\Consent',
 			'ConsentAuditLog' => 'Model\Consent\ConsentAuditLog',
 			'ConsentRequest' => 'Model\Consent\ConsentRequest',
-			'ConsentRequestVersion' => 'Model\Consent\ConsentRequestVersion'
+			'ConsentRequestVersion' => 'Model\Consent\ConsentRequestVersion',
+
+			// ..\Queue
+			'Queue' => 'Model\Queue\Queue',
 	),
 	'cookies.necessary' => [
 		'cp_last_site_id',
