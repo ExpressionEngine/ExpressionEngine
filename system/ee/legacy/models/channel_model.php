@@ -566,7 +566,7 @@ class Channel_model extends CI_Model {
 	private function _field_search($terms, $col_name, $site_id = FALSE)
 	{
 		$not = '';
-		if (strncmp($terms, 'not ', 4) == 0)
+		if (strncasecmp($terms, 'not ', 4) == 0)
 		{
 			$terms = substr($terms, 4);
 			$not = 'NOT';
@@ -618,6 +618,7 @@ class Channel_model extends CI_Model {
 
 		if ($not && ! $empty)
 		{
+
 			$search_sql =  '('.$search_sql .') OR (' . $col_name . ' IS NULL) ';
 		}
 
