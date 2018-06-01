@@ -357,6 +357,16 @@ return [
 				ee()->localize->now);
 		},
 
+		'Queue' => function($ee, $identifier = NULL)
+		{
+			if (empty($identifier))
+			{
+				$trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 7);
+				$identifier = $trace[6]['class'];
+			}
+
+			return new Queue\Queue($ee->make('Model'), $identifier);
+		},
 	),
 
 	'services.singletons' => array(
