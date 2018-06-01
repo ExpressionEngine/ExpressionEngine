@@ -1531,7 +1531,6 @@ class Wizard extends CI_Controller {
 		// Since we do not know where the CP access file is being loaded from
 		// we need to use only the relative URL
 		$this->config->set_item('site_url', '');
-		$this->config->set_item('base_url', ''); // Same with the CI base_url
 
 		// We set the index page to the SELF value.
 		// but it might have been renamed by the user

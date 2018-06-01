@@ -266,49 +266,6 @@ class ChannelField extends FieldModel {
 		}
 	}
 
-	public function getCompatibleFieldtypes()
-	{
-		$fieldtypes = array();
-		$compatibility = array();
-
-		foreach (ee('Addon')->installed() as $addon)
-		{
-			if ($addon->hasFieldtype())
-			{
-				foreach ($addon->get('fieldtypes', array()) as $fieldtype => $metadata)
-				{
-					if (isset($metadata['compatibility']))
-					{
-						$compatibility[$fieldtype] = $metadata['compatibility'];
-					}
-				}
-
-				$fieldtypes = array_merge($fieldtypes, $addon->getFieldtypeNames());
-			}
-		}
-
-		if ($this->field_type)
-		{
-			if ( ! isset($compatibility[$this->field_type]))
-			{
-				return array($this->field_type => $fieldtypes[$this->field_type]);
-			}
-
-			$my_type = $compatibility[$this->field_type];
-
-			$compatible = array_filter($compatibility, function($v) use($my_type)
-			{
-				return $v == $my_type;
-			});
-
-			$fieldtypes = array_intersect_key($fieldtypes, $compatible);
-		}
-
-		asort($fieldtypes);
-
-		return $fieldtypes;
-	}
-
 	/**
 	 * Validate the field name to avoid variable name collisions
 	 */

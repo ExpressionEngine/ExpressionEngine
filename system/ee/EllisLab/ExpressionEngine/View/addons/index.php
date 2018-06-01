@@ -8,7 +8,7 @@
 	<div class="tbl-ctrls">
 		<?=form_open($form_url)?>
 			<h1><?=$cp_heading['first']?></h1>
-			<div class="app-notice-wrap"><?=ee('CP/Alert')->get('first-party')?></div>
+			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 			<?php if (isset($filters['first'])) echo $filters['first']; ?>
 			<?php $this->embed('_shared/table', $tables['first']); ?>
 			<?php if ( ! empty($tables['first']['columns']) && ! empty($tables['first']['data'])): ?>
@@ -30,7 +30,6 @@
 	<div class="tbl-ctrls">
 		<?=form_open($form_url)?>
 			<h1><?=$cp_heading['third']?></h1>
-			<div class="app-notice-wrap"><?=ee('CP/Alert')->get('third-party')?></div>
 			<?php if (isset($filters['third'])) echo $filters['third']; ?>
 			<?php $this->embed('_shared/table', $tables['third']); ?>
 			<?php if ( ! empty($tables['third']['columns']) && ! empty($tables['third']['data'])): ?>

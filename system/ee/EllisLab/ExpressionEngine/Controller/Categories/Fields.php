@@ -104,6 +104,12 @@ class Fields extends AbstractCategoriesController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
+		$fieldtype_choices = [
+			'text'     => lang('text_input'),
+			'textarea' => lang('textarea'),
+			'select'   => lang('select_dropdown')
+		];
+
 		$cat_group = ee('Model')->get('CategoryGroup', $group_id)->first();
 
 		if ($field_id)
@@ -111,6 +117,8 @@ class Fields extends AbstractCategoriesController {
 			$cat_field = ee('Model')->get('CategoryField')
 				->filter('field_id', (int) $field_id)
 				->first();
+
+			$fieldtype_choices = array_intersect_key($fieldtype_choices, $field->getCompatibleFieldtypes());
 
 			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_category_field');
@@ -151,11 +159,7 @@ class Fields extends AbstractCategoriesController {
 					'fields' => array(
 						'field_type' => array(
 							'type' => 'dropdown',
-							'choices' => array(
-								'text'     => lang('text_input'),
-								'textarea' => lang('textarea'),
-								'select'   => lang('select_dropdown')
-							),
+							'choices' => $fieldtype_choices,
 							'group_toggle' => array(
 								'text' => 'text',
 								'textarea' => 'textarea',
@@ -202,7 +206,7 @@ class Fields extends AbstractCategoriesController {
 		$vars['sections'] += $cat_field->getSettingsForm();
 
 		// These are currently the only fieldtypes we allow; get their settings forms
-		foreach (array('text', 'textarea', 'select') as $fieldtype)
+		foreach (array_keys($fieldtype_choices) as $fieldtype)
 		{
 			if ($cat_field->field_type != $fieldtype)
 			{
