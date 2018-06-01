@@ -129,7 +129,7 @@ EE.cp.export_email = {
 
 				// Still more to do, update progress and kick off another AJAX request
 				that._updateProgress(that._getPercentageForResponse(response));
-				that._sendAjaxRequest(response.progress);
+				that._sendAjaxRequest(response.step);
 			} else {
 				if (response.status == 'error') {
 					that._presentError(response.message);
@@ -153,10 +153,11 @@ EE.cp.export_email = {
 	 * @param	object	response	Parsed JSON response from AJAX request to endpoint
 	 */
 	_getPercentageForResponse: function(response) {
-		var progress = 0,
-			total_members = EE.export_email.total_members;
+		var progress = 0;
 
-		progress = Math.round(parseInt(response.progress) / total_members * 100);
+		console.log(response);
+
+		progress = Math.round(parseInt(response.step) / parseInt(response.total) * 100);
 
 		return progress > 100 ? 100 : progress;
 	},

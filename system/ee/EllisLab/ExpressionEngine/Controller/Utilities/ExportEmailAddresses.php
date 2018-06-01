@@ -160,28 +160,23 @@ class ExportEmailAddresses extends Utilities {
 
 		$progress = (int) ee('Request')->post('progress');
 
-		if ($progress == 0)
-		{
-			$this->deleteCache('valid');
-			$this->deleteCache('invalid');
-		}
-
 		if ($this->needsValidation())
 		{
 			$this->batch_size = $this->validated_batch_size;
 		}
 
-		$members = ee('Model')->get('Member')
-			->fields('member_id', 'username', 'screen_name', 'email')
-			->offset($progress)
-			->limit($this->batch_size)
-			->all();
+		if ($progress == 0)
+		{
+			$this->deleteCache('valid');
+			$this->deleteCache('invalid');
+			$this->startQueue();
+		}
 
-		$progress += $this->batch_size;
+		$next = ee('Queue')->next();
 
-		$this->processBatch($members);
+		$this->processBatch($next['data']);
 
-		if ($progress >= $this->total_members)
+		if ($next['step'] >= $next['total'])
 		{
 			$this->deleteCache('domains');
 			ee()->output->send_ajax_response(['status' => 'finished']);
@@ -189,8 +184,21 @@ class ExportEmailAddresses extends Utilities {
 
 		ee()->output->send_ajax_response([
 			'status' => 'in_progress',
-			'progress' => $progress,
+			'step' => $next['step'],
+			'total' => $next['total']
 		]);
+	}
+
+	protected function startQueue()
+	{
+		ee('Queue')->reset();
+
+		$members = ee('Model')->get('Member')
+			->fields('member_id', 'username', 'screen_name', 'email')
+			->all()
+			->asArray();
+
+		ee('Queue')->enqueue(array_chunk($members, $this->batch_size));
 	}
 
 	protected function processBatch($members)
