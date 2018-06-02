@@ -14,7 +14,6 @@ class Wizard extends CI_Controller {
 
 	public $version           = '4.3.1';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
-	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
 	public $languages         = array(); 	// Available languages the installer supports (set dynamically based on what is in the "languages" folder)
 	public $mylang            = 'english';// Set dynamically by the user when they run the installer
