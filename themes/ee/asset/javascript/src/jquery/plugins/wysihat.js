@@ -182,7 +182,8 @@ WysiHat.Editor.prototype = {
 			'contentEditable': 'true',
 
 			// Respect textarea's existing row count settings
-			'height': this.$field.height(),
+			// This is a guess based on the row height, and differs slightly between Webkit and Mozilla browsers
+			'height': (this.$field.height() > 0) ? this.$field.height() * 1.8 : this.$field.attr('rows') * 27,
 
 			// Text direction
 			'dir': this.$field.attr('dir'),
