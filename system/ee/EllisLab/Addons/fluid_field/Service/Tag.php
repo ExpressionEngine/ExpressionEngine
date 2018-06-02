@@ -97,7 +97,6 @@ class Tag {
 	public function parse(FieldFacade $field, array $meta = [])
 	{
 		$tagdata = $this->replaceMetaTags($meta);
-		$tagdata = $this->parseConditionals($field, $tagdata, $meta);
 
 		if ($field->getType() == 'relationship')
 		{
@@ -130,7 +129,10 @@ class Tag {
 				$field->getItem('fluid_field_data_id')
 			);
 
-			$tagdata = $relationship_parser->parse($field->getContentId(), $tagdata, $channel);
+			if ( ! is_null($relationship_parser))
+			{
+				$tagdata = $relationship_parser->parse($field->getContentId(), $tagdata, $channel);
+			}
 
 			return $field->replaceTag($tagdata);
 		}
@@ -140,6 +142,7 @@ class Tag {
 			$tagdata = $this->parsePairs($field, $tagdata);
 		}
 
+		$tagdata = $this->parseConditionals($field, $tagdata, $meta);
 		return $this->parseSingle($field, $tagdata);
 	}
 

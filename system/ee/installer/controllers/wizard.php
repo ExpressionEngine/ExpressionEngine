@@ -12,9 +12,8 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '4.3.0';	// The version being installed
+	public $version           = '4.3.1';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
-	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
 	public $schema            = NULL;		// This will contain the schema object with our queries
 	public $languages         = array(); 	// Available languages the installer supports (set dynamically based on what is in the "languages" folder)
 	public $mylang            = 'english';// Set dynamically by the user when they run the installer
@@ -1531,7 +1530,6 @@ class Wizard extends CI_Controller {
 		// Since we do not know where the CP access file is being loaded from
 		// we need to use only the relative URL
 		$this->config->set_item('site_url', '');
-		$this->config->set_item('base_url', ''); // Same with the CI base_url
 
 		// We set the index page to the SELF value.
 		// but it might have been renamed by the user

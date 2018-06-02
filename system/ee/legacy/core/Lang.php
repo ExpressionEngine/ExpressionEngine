@@ -115,6 +115,8 @@ class EE_Lang {
 			// Temporary! Rename your language files!
 			$third_party_old = 'lang.'.str_replace('_lang.', '.', $langfile);
 
+			array_unshift($paths, $alt_path.'language/english/'.$third_party_old);
+			array_unshift($paths, $alt_path.'language/english/'.$langfile);
 			array_unshift($paths, $alt_path.'language/'.$deft_lang.'/'.$third_party_old);
 			array_unshift($paths, $alt_path.'language/'.$idiom.'/'.$third_party_old);
 			array_unshift($paths, $alt_path.'language/'.$deft_lang.'/'.$langfile);
