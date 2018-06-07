@@ -2766,7 +2766,9 @@ class Channel {
 
 		if (empty($query_result))
 		{
-			return ee()->TMPL->no_results();
+			$this->enable['pagination'] = FALSE;
+			$this->return_data = ee()->TMPL->no_results();
+			return;
 		}
 
 		ee()->load->library('channel_entries_parser');
@@ -5438,7 +5440,6 @@ class Channel {
 		{
 			return ee()->TMPL->no_results();
 		}
-
 
 		$this->query = ee()->db->query($this->sql);
 
