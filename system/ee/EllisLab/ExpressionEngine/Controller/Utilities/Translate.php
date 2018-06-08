@@ -289,18 +289,20 @@ class Translate extends Utilities {
 
 		$keys = array();
 
+		$english = ee()->lang->load($file, 'english', TRUE);
+
 		ee()->lang->load($file);
 		$vars['sections'] = [[]];
-		foreach ($M as $key => $val)
+		foreach ($english as $key => $val)
 		{
 			if ($key != '')
 			{
 				$vars['sections'][0][] = [
-					'title' => htmlentities(lang($key), ENT_QUOTES, 'UTF-8'),
+					'title' => ee('Format')->make('Text', $val)->convertToEntities()->compile(),
 					'fields' => [
 						$key => [
 							'type' => (strlen($val) > 100) ? 'textarea' : 'text',
-							'value' => $val
+							'value' => isset($M[$key]) ? $M[$key] : ''
 						]
 					]
 				];
