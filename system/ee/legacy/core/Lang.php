@@ -86,7 +86,10 @@ class EE_Lang {
 		}
 
 		$deft_lang = ee()->config->item('deft_lang') ?: 'english';
-		$idiom = $this->getIdiom();
+		if (empty($idiom))
+		{
+			$idiom = $this->getIdiom();
+		}
 
 		$paths = array(
 			// Check custom languages first
