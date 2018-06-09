@@ -298,7 +298,7 @@ class Translate extends Utilities {
 			if ($key != '')
 			{
 				$vars['sections'][0][] = [
-					'title' => ee('Format')->make('Text', $val)->convertToEntities()->compile(),
+					'title' => ee('Format')->make('Text', $val.' ')->convertToEntities()->compile(),
 					'fields' => [
 						$key => [
 							'type' => (strlen($val) > 100) ? 'textarea' : 'text',
