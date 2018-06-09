@@ -80,7 +80,7 @@ class EE_Lang {
 		$langfile .= '.php';
 
 		// Check to see if it's already loaded
-		if (in_array($langfile, $this->is_loaded, TRUE))
+		if (in_array($langfile, $this->is_loaded, TRUE) && ! $return)
 		{
 			return;
 		}
