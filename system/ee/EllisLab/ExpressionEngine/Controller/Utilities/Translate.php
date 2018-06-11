@@ -361,7 +361,11 @@ class Translate extends Utilities {
 
 			if ( ! is_really_writable($dest_loc))
 			{
-				ee()->view->set_message('issue', lang('trans_file_not_writable'), '', TRUE);
+				ee('CP/Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('trans_file_not_writable'))
+					->defer();
+
 				ee()->functions->redirect(ee('CP/URL')->make('utilities/translate/' . $language . '/edit/' . $file));
 			}
 		}
@@ -370,11 +374,19 @@ class Translate extends Utilities {
 
 		if (write_file($dest_loc, $str))
 		{
-			ee()->view->set_message('success', lang('translations_saved'), str_replace('%s', $dest_loc, lang('file_saved')), TRUE);
+			ee('CP/Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('translations_saved'))
+				->addToBody(sprintf(lang('file_saved'), $dest_loc))
+				->defer();
 		}
 		else
 		{
-			ee()->view->set_message('issue', lang('invalid_path'), $dest_loc, TRUE);
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('invalid_path'))
+				->addToBody($dest_loc)
+				->defer();
 		}
 		ee()->functions->redirect(ee('CP/URL')->make('utilities/translate/' . $language . '/edit/' . $file));
 	}
