@@ -264,7 +264,7 @@ class Translate extends Utilities {
 		$path = $this->getLanguageDirectory($language);
 		$filename =  $file . '_lang.php';
 
-		if ( ! is_readable($path . $filename))
+		if (file_exists($path . $filename) && ! is_readable($path . $filename))
 		{
 			$message = $path . $file . '_lang.php ' . lang('cannot_access') . '.';
 			ee()->view->set_message('issue', $message, '', TRUE);
@@ -278,11 +278,15 @@ class Translate extends Utilities {
 
 		$dest_dir = $this->languages_dir . $language . '/';
 
-		require($path . $filename);
+		$M = [];
+		if (file_exists($path . $filename) && is_readable($path . $filename))
+		{
+			require($path . $filename);
 
-		$M = $lang;
+			$M = $lang;
 
-		unset($lang);
+			unset($lang);
+		}
 
 		if (file_exists($dest_dir . $filename))
 		{
