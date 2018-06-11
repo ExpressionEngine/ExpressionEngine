@@ -112,8 +112,9 @@ class Translate extends Utilities {
 		$languages = array();
 
 		$language_files = get_filenames($path);
+		$english_files = get_filenames(APPPATH.'language/english/');
 
-		foreach ($language_files as $file)
+		foreach ($english_files as $file)
 		{
 			if ($file == 'email_data.php' OR $file == 'stopwords.php')
 			{
@@ -124,22 +125,27 @@ class Translate extends Utilities {
 			{
 				$name = str_replace('_lang.php', '', $file);
 				$edit_url = ee('CP/URL')->make('utilities/translate/' . $language . '/edit/' . $name);
-				$data[] = array(
-					'filename' => array(
-							'content' => $file,
-							'href' => $edit_url
-						),
-					array('toolbar_items' => array(
-						'edit' => array(
-							'href' => $edit_url,
-							'title' => strtolower(lang('edit'))
+				$data[] = [
+					'attrs' => [
+						'class' => ! in_array($file, $language_files) ? 'missing' : ''
+					],
+					'columns' => array(
+						'filename' => array(
+								'content' => $file,
+								'href' => $edit_url
+							),
+						array('toolbar_items' => array(
+							'edit' => array(
+								'href' => $edit_url,
+								'title' => strtolower(lang('edit'))
+							)
+						)),
+						array(
+							'name' => 'selection[]',
+							'value' => $name
 						)
-					)),
-					array(
-						'name' => 'selection[]',
-						'value' => $name
 					)
-				);
+				];
 			}
 		}
 
