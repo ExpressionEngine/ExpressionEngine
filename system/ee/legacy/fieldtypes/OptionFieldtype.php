@@ -105,9 +105,16 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 		{
 			if ($this->content_type() == 'grid')
 			{
+				list($channel_id, $field_id) = explode('_', $data['field_pre_populate_id']);
+
+				$field_pre_channel_id = $channel_id;
+				$field_pre_field_id = $field_id;
+
 				return array(
 					'field_fmt' => $data['field_fmt'],
 					'field_pre_populate' => isset($data['field_pre_populate']) ? $data['field_pre_populate'] : 'n',
+					'field_pre_channel_id' => $field_pre_channel_id,
+					'field_pre_field_id' => $field_pre_field_id,
 					'field_list_items' => $data['field_list_items'],
 					'value_label_pairs' => array()
 				);
@@ -265,6 +272,12 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 			$data['field_pre_populate'] = empty($this->field_id) ? 'v' : 'n';
 		}
 
+		if ( ! isset($data['field_pre_channel_id']))
+		{
+			$data['field_pre_channel_id'] = 0;
+			$data['field_pre_field_id'] = 0;
+		}
+
 		// Load from validation error
 		if (isset($data['value_label_pairs']['rows']))
 		{
@@ -283,6 +296,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 			}
 			Grid.bind('".$field_type."', 'displaySettings', function(column) {
 				miniGridInit(column);
+				SelectField.renderFields(column)
 			});
 			FieldManager.on('fieldModalDisplay', function(modal) {
 				miniGridInit(modal);
@@ -331,6 +345,24 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 							'type' => 'textarea',
 							'margin_left' => TRUE,
 							'value' => isset($data['field_list_items']) ? $data['field_list_items'] : ''
+						),
+						'field_pre_populate_y' => array(
+							'type' => 'radio',
+							'name' => 'field_pre_populate',
+							'choices' => array(
+								'y' => lang('field_populate_from_channel'),
+							),
+							'value' => $data['field_pre_populate'] ?: 'v'
+						),
+						'field_pre_populate_id' => array(
+							'type' => 'radio',
+							'margin_left' => TRUE,
+							'choices' => $this->get_channel_field_list(),
+							'value' => ($data['field_pre_channel_id'] != 0)
+								? $data['field_pre_channel_id'] . '_' . $data['field_pre_field_id'] : NULL,
+							'no_results' => [
+								'text' => sprintf(lang('no_found'), lang('fields'))
+							]
 						)
 					)
 				)
