@@ -105,6 +105,11 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 		{
 			if ($this->content_type() == 'grid')
 			{
+				if ( ! isset($data['field_pre_populate_id']))
+				{
+					$data['field_pre_populate_id'] = '0_0';
+				}
+
 				list($channel_id, $field_id) = explode('_', $data['field_pre_populate_id']);
 
 				$field_pre_channel_id = $channel_id;
