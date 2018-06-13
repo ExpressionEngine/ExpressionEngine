@@ -34,6 +34,7 @@ use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Permission;
 use EllisLab\ExpressionEngine\Service\Profiler;
+use EllisLab\ExpressionEngine\Service\Session;
 use EllisLab\ExpressionEngine\Service\Sidebar;
 use EllisLab\ExpressionEngine\Service\Theme;
 use EllisLab\ExpressionEngine\Service\Thumbnail;
@@ -499,6 +500,15 @@ return [
 		'Security/XSS' => function($ee)
 		{
 			return new Library\Security\XSS();
+		},
+
+		'Session' => function($ee)
+		{
+			$session = ee('Model')->get('Session', ee()->session->userdata('session_id'))
+				->filter('member_id', ee()->session->userdata('member_id'))
+				->first();
+
+			return new Session\Session($session);
 		},
 
 		'Validation' => function($ee)
