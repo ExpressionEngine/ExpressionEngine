@@ -80,13 +80,16 @@ class EE_Lang {
 		$langfile .= '.php';
 
 		// Check to see if it's already loaded
-		if (in_array($langfile, $this->is_loaded, TRUE))
+		if (in_array($langfile, $this->is_loaded, TRUE) && ! $return)
 		{
 			return;
 		}
 
 		$deft_lang = ee()->config->item('deft_lang') ?: 'english';
-		$idiom = $this->getIdiom();
+		if (empty($idiom))
+		{
+			$idiom = $this->getIdiom();
+		}
 
 		$paths = array(
 			// Check custom languages first

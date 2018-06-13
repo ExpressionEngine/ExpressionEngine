@@ -97,7 +97,6 @@ class Tag {
 	public function parse(FieldFacade $field, array $meta = [])
 	{
 		$tagdata = $this->replaceMetaTags($meta);
-		$tagdata = $this->parseConditionals($field, $tagdata, $meta);
 
 		if ($field->getType() == 'relationship')
 		{
@@ -143,6 +142,7 @@ class Tag {
 			$tagdata = $this->parsePairs($field, $tagdata);
 		}
 
+		$tagdata = $this->parseConditionals($field, $tagdata, $meta);
 		return $this->parseSingle($field, $tagdata);
 	}
 
