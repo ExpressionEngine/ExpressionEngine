@@ -18,11 +18,24 @@ class Authenticated extends ValidationRule {
 
 	public function validate($key, $password)
 	{
+		$auth_timeout = in_array('useAuthTimeout', $this->parameters);
+
+		if ($auth_timeout && ee('Session')->isWithinAuthTimeout())
+		{
+			ee('Session')->resetAuthTimeout();
+			return TRUE;
+		}
+
 		ee()->load->library('auth');
 		$validate = ee()->auth->authenticate_id(
 			ee()->session->userdata('member_id'),
 			$password
 		);
+
+		if ($validate !== FALSE && $auth_timeout)
+		{
+			ee('Session')->resetAuthTimeout();
+		}
 
 		return ($validate !== FALSE) ? TRUE : $this->stop();
 	}
