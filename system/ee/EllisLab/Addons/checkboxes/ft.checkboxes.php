@@ -138,7 +138,7 @@ class Checkboxes_ft extends OptionFieldtype {
 				'manage_label'        => $this->get_setting('manage_toggle_label', lang('manage')),
 				'reorder_ajax_url'    => $this->get_setting('reorder_ajax_url', NULL),
 				'auto_select_parents' => $this->get_setting('auto_select_parents', FALSE),
-				'no_results'          => $this->get_setting('no_results', NULL)
+				'no_results'          => $this->get_setting('no_results', ['text' => sprintf(lang('no_found'), lang('choices'))])
 			]);
 		}
 
