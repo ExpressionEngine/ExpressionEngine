@@ -171,9 +171,7 @@ class Members extends CP_Controller {
 			'file' => array('cp/confirm_remove', 'cp/members/members'),
 		));
 
-		$session = ee('Model')->get('Session', ee()->session->userdata('session_id'))->first();
-
-		if ( ! $session->isWithinAuthTimeout())
+		if ( ! ee('Session')->isWithinAuthTimeout())
 		{
 			$data['confirm_remove_secure_form_ctrls'] = [
 				'title' => 'your_password',
@@ -1226,18 +1224,14 @@ class Members extends CP_Controller {
 	public function delete()
 	{
 		$member_ids = ee()->input->post('selection', TRUE);
-		$session = ee('Model')->get('Session', ee()->session->userdata('session_id'))
-			->filter('member_id', ee()->session->userdata('member_id'))
-			->first();
 
-		if ( ! $session ||
-			! ee()->cp->allowed_group('can_delete_members') ||
+		if ( ! ee()->cp->allowed_group('can_delete_members') ||
 			! $member_ids)
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		if ( ! $session->isWithinAuthTimeout())
+		if ( ! ee('Session')->isWithinAuthTimeout())
 		{
 			$validator = ee('Validation')->make();
 			$validator->setRules(array(
@@ -1256,7 +1250,7 @@ class Members extends CP_Controller {
 				return ee()->functions->redirect($this->base_url);
 			}
 
-			$session->resetAuthTimeout();
+			ee('Session')->resetAuthTimeout();
 		}
 
 		if ( ! is_array($member_ids))
@@ -1347,12 +1341,7 @@ class Members extends CP_Controller {
 			->filter('member_id', $member_id)
 			->first();
 
-		$session = ee('Model')->get('Session', ee()->session->userdata('session_id'))
-			->filter('member_id', ee()->session->userdata('member_id'))
-			->first();
-
-		if ( ! $session ||
-			! ee()->cp->allowed_group('can_delete_members') ||
+		if ( ! ee()->cp->allowed_group('can_delete_members') ||
 			! $member)
 		{
 			show_error(lang('unauthorized_access'), 403);
@@ -1360,7 +1349,7 @@ class Members extends CP_Controller {
 
 		$profile_url = ee('CP/URL')->make('members/profile/settings', ['id' => $member_id]);
 
-		if ( ! $session->isWithinAuthTimeout())
+		if ( ! ee('Session')->isWithinAuthTimeout())
 		{
 			$validator = ee('Validation')->make();
 			$validator->setRules(array(
@@ -1379,7 +1368,7 @@ class Members extends CP_Controller {
 				return ee()->functions->redirect($profile_url);
 			}
 
-			$session->resetAuthTimeout();
+			ee('Session')->resetAuthTimeout();
 		}
 
 		if ($member_id == ee()->session->userdata('member_id'))
