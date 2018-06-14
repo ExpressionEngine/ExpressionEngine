@@ -504,9 +504,7 @@ return [
 
 		'Session' => function($ee)
 		{
-			$session = ee('Model')->get('Session', ee()->session->userdata('session_id'))
-				->filter('member_id', ee()->session->userdata('member_id'))
-				->first();
+			$session = ee()->session->getSessionModel();
 
 			return new Session\Session($session);
 		},
