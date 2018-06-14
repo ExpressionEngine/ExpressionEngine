@@ -115,8 +115,8 @@ class Email extends Settings {
 			);
 
 			$rules[] = [
-				'field' => 'current_password',
-				'label' => 'lang:current_password',
+				'field' => 'verify_password',
+				'label' => 'lang:verify_password',
 				'rules' => 'required|auth_password[useAuthTimeout]'
 			];
 		}
