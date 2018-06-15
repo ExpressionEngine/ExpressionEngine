@@ -344,7 +344,12 @@ class Consent {
 
 		if ($token != CSRF_TOKEN)
 		{
-			ee()->output->throwAuthError();
+			if (AJAX_REQUEST)
+			{
+				ee()->output->send_ajax_response(lang('csrf_token_expired'), TRUE);
+			}
+
+			ee()->output->show_user_error('general', array(lang('csrf_token_expired')));
 		}
 	}
 }
