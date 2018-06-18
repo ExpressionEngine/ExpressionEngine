@@ -75,8 +75,8 @@
 	<div class="col-group snap mb">
 		<div class="col w-8">
 			<div class="box">
-				<h1><?=lang('channels')?>
-					<?php if ($can_create_channels): ?>
+				<h1><?=lang('channels'); ?>
+					<?php if ($can_access_channels && $can_create_channels): ?>
 						<a class="btn action" href="<?=ee('CP/URL', 'channels/create')?>"><?=lang('create_new')?></a>
 					<?php endif; ?>
 				</h1>
