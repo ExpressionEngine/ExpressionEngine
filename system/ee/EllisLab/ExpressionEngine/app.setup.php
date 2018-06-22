@@ -620,8 +620,12 @@ return [
 			'Consent' => 'Model\Consent\Consent',
 			'ConsentAuditLog' => 'Model\Consent\ConsentAuditLog',
 			'ConsentRequest' => 'Model\Consent\ConsentRequest',
-			'ConsentRequestVersion' => 'Model\Consent\ConsentRequestVersion'
+			'ConsentRequestVersion' => 'Model\Consent\ConsentRequestVersion',
+
+			// ..\Config
+			'Config' => 'Model\Config\Config',
 	),
+
 	'cookies.necessary' => [
 		'cp_last_site_id',
 		'csrf_token',

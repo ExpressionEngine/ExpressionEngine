@@ -98,6 +98,10 @@ class Site extends Model {
 		'Snippets' => array(
 			'model' => 'Snippet',
 			'type' => 'hasMany'
+		),
+		'Configs' => array(
+			'model' => 'Config',
+			'type' => 'hasMany'
 		)
 	);
 

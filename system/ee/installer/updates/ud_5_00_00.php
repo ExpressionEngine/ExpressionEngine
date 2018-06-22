@@ -25,7 +25,7 @@ class Updater {
 	{
 		$steps = new \ProgressIterator(
 			[
-
+				'addConfigTable',
 			]
 		);
 
@@ -35,6 +35,78 @@ class Updater {
 		}
 
 		return TRUE;
+	}
+
+	private function addConfigTable()
+	{
+		if (ee()->db->table_exists('config'))
+		{
+			return;
+		}
+
+		// Create table
+		ee()->dbforge->add_field(
+			[
+				'config_id' => [
+					'type'           => 'int',
+					'constraint'     => 10,
+					'unsigned'       => TRUE,
+					'null'           => FALSE,
+					'auto_increment' => TRUE
+				],
+				'site_id'   => [
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => FALSE,
+					'default'    => 0
+				],
+				'key'       => [
+					'type'       => 'varchar',
+					'constraint' => 64,
+					'null'       => FALSE,
+					'default'    => '',
+				],
+				'value'     => [
+					'type'       => 'text',
+				],
+			]
+		);
+		ee()->dbforge->add_key('config_id', TRUE);
+		ee()->dbforge->add_key(['site_id', 'key']);
+		ee()->smartforge->create_table('config');
+
+		// Populate table with existing config values
+		$sites = ee('Model')->get('Site')->all();
+
+		$prefs = [
+			'site_channel_preferences',
+			'site_member_preferences',
+			'site_system_preferences',
+			'site_template_preferences'
+		];
+
+		foreach ($sites as $site)
+		{
+			$site_id = $site->getId();
+			foreach ($prefs as $pref)
+			{
+				foreach ($site->$pref->getValues() as $key => $value)
+				{
+					ee('Model')->make('Config', [
+						'site_id' => $site_id,
+						'key' => $key,
+						'value' => $value
+					])->save();
+				}
+			}
+		}
+
+		// Drop the columns from the sites table
+		foreach ($prefs as $pref)
+		{
+			ee()->smartforge->drop_column('sites', $pref);
+		}
 	}
 }
 
