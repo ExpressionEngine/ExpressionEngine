@@ -310,21 +310,17 @@ class EE_Config {
 		// Fetch the query result array
 		$row = $query->row_array();
 
+		$site_configs = ee('Model')->get('Config')
+				->filter('site_id', 'IN', [0, $row['site_id']])
+				->all()
+				->getDictionary('key', 'value');
+
+		$config = array_merge($site_configs, $config);
+
 		// Fold in the Preferences in the Database
 		foreach($query->row_array() as $name => $data)
 		{
-			if (substr($name, -12) == '_preferences')
-			{
-				$data = base64_decode($data);
-
-				if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
-				{
-					show_error("Site Error:  Unable to Load Site Preferences; Invalid Preference Data", 503);
-				}
-				// Any values in config.php take precedence over those in the database, so it goes second in array_merge()
-				$config = array_merge(unserialize($data), $config);
-			}
-			elseif ($name == 'site_pages')
+			if ($name == 'site_pages')
 			{
 				$config['site_pages'] = $this->site_pages($row['site_id'], $data);
 			}
