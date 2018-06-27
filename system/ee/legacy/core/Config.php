@@ -814,7 +814,30 @@ class EE_Config {
 			$query = ee()->db->get_where('sites', array('site_id' => $site_id));
 
 			$this->_update_pages($site_id, $new_values, $query);
-			$new_values = $this->_update_preferences($site_id, $new_values, $query, $find, $replace);
+
+			if (ee()->db->table_exists('config'))
+			{
+				$configs = ee('Model')->get('Config')
+					->filter('site_id', $site_id)
+					->filter('key', 'IN', array_keys($new_values))
+					->all();
+
+				foreach ($configs as $config)
+				{
+					if ($find != '')
+					{
+						$new_values[$key] = str_replace($find, $replace, $new_values[$key]);
+					}
+
+					$config->value = $new_values[$key];
+					$config->save();
+					unset($new_values[$key]);
+				}
+			}
+			else
+			{
+				$new_values = $this->_update_preferences($site_id, $new_values, $query, $find, $replace);
+			}
 		}
 
 		// Add the CI pref items to the new values array if needed
