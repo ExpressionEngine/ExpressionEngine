@@ -43,6 +43,17 @@ class Config extends Model {
 	protected $key;
 	protected $value;
 
+	public function set__value($value)
+	{
+		// exception for email_newline, which uses backslashes, and is not a path variable
+		if ($this->key != 'email_newline')
+		{
+			$value = str_replace('\\', '/', $value);
+		}
+
+		$this->setProperty('value', $value);
+	}
+
 }
 
 // EOF
