@@ -1544,7 +1544,7 @@ class Wizard extends CI_Controller {
 	private function set_qstr($method = '')
 	{
 		$query_string = 'C=wizard&M='.$method.'&language='.$this->mylang;
-		return site_url($query_string);
+		return $this->config->item('index_page').'?'.$query_string;
 	}
 
 	/**
