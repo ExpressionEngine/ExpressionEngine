@@ -51,7 +51,7 @@ class Config extends Model {
 			$value = str_replace('\\', '/', $value);
 		}
 
-		$this->setProperty('value', $value);
+		$this->setRawProperty('value', $value);
 	}
 
 }
