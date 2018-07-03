@@ -24,9 +24,10 @@ class Updater {
 	public function do_update()
 	{
 		$steps = new \ProgressIterator(
-			array(
+			[
 				'memberDataTableCleanup',
-			)
+				'updateFieldFmtOptionForMemberFields',
+			]
 		);
 
 		foreach ($steps as $k => $v)
@@ -46,7 +47,6 @@ class Updater {
 		$new_column = array();
 		$id_ids = array();
 		$ft_ids = array();
-
 		$member_data_columns = ee()->db->list_fields('member_data');
 
 		foreach ($member_data_columns as $column)
@@ -66,11 +66,20 @@ class Updater {
 		foreach ($make as $id)
 		{
 			$new_column['m_field_ft_'.$id] = array('type' => 'tinytext');
-
 			ee()->smartforge->add_column('member_data', $new_column, 'm_field_id_'.$id);
 		}
 	}
 
+	private function updateFieldFmtOptionForMemberFields()
+	{
+		// Fields can span Sites and do not need Groups
+		ee()->smartforge->modify_column('member_fields', array(
+			'm_field_fmt' => array(
+				'type'       => 'varchar',
+				'constraint' => 40,
+			),
+		));
+	}
 }
 
 // EOF

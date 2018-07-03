@@ -516,7 +516,7 @@ class EE_Schema {
 			m_field_public char(1) NOT NULL default 'y',
 			m_field_reg char(1) NOT NULL default 'n',
 			m_field_cp_reg char(1) NOT NULL default 'n',
-			m_field_fmt char(5) NOT NULL default 'none',
+			m_field_fmt varchar(40) NOT NULL default 'none',
 			m_field_show_fmt char(1) NOT NULL default 'y',
 			m_field_exclude_from_anon char(1) NOT NULL default 'n',
 			m_field_order int(3) unsigned NULL DEFAULT NULL,
