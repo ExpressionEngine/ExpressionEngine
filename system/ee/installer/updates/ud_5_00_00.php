@@ -107,6 +107,33 @@ class Updater {
 		{
 			ee()->smartforge->drop_column('sites', $pref);
 		}
+
+		$config_prefs = [
+			'cache_driver',
+			'cookie_prefix',
+			'debug',
+			'dynamic_tracking_disabling',
+			'enable_entry_view_tracking',
+			'enable_hit_tracking',
+			'enable_online_user_tracking',
+			'force_redirect',
+			'is_system_on',
+			'multiple_sites_enabled',
+			'search_reindex_needed'
+		];
+
+		foreach ($config_prefs as $pref)
+		{
+			$value = ee()->config->item($pref);
+
+			$value = ($value) ?: NULL;
+
+			ee('Model')->make('Config', [
+				'site_id' => 0,
+				'key' => $pref,
+				'value' => $value
+			])->save();
+		}
 	}
 }
 
