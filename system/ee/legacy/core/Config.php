@@ -818,7 +818,7 @@ class EE_Config {
 			if (ee()->db->table_exists('config'))
 			{
 				$configs = ee('Model')->get('Config')
-					->filter('site_id', $site_id)
+					->filter('site_id', 'IN', [0, $site_id])
 					->filter('key', 'IN', array_keys($new_values))
 					->all();
 
