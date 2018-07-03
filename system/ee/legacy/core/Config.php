@@ -824,6 +824,8 @@ class EE_Config {
 
 				foreach ($configs as $config)
 				{
+					$key = $config->key;
+
 					if ($find != '')
 					{
 						$new_values[$key] = str_replace($find, $replace, $new_values[$key]);
