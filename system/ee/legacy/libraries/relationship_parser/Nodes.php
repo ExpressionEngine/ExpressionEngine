@@ -110,7 +110,7 @@ class ParseNode extends EE_TreeNode {
 		{
 			$ids[$parent] = array_merge($ids[$parent], $child);
 		}
-		else
+		elseif ( ! in_array($child, $ids[$parent]))
 		{
 			$ids[$parent][] = $child;
 		}

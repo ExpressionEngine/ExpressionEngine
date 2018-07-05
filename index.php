@@ -30,7 +30,7 @@
  * --------------------------------------------------------------------
  *
  * Uncomment the following variables if you are using the Multiple
- * Site Manager: https://ellislab.com/expressionengine/user-guide/cp/sites
+ * Site Manager: https://docs.expressionengine.com/latest/msm/index.html
  *
  * Set the Short Name of the site this file will display, the URL of
  * this site's admin.php file, and the main URL of the site (without

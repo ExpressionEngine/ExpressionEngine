@@ -2217,8 +2217,9 @@ class Member {
 
 		$member_id = ( ! ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
 
-		// Default Member Data
-		$member = ee('Model')->get('Member', $member_id)
+		$member = ee('Model')
+			->get('Member', $member_id)
+			->with('MemberGroup')
 			->first();
 
 		if ( ! $member)
@@ -2226,8 +2227,7 @@ class Member {
 			return ee()->TMPL->tagdata = '';
 		}
 
-		$results = $member->getValues();
-
+		$results = $member->getValues() + array('group_title' => $member->MemberGroup->group_title);
 		$default_fields = $results;
 
 		// Is there an avatar?
