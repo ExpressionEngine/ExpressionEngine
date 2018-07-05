@@ -722,9 +722,36 @@ class EE_Config {
 			'comment_edit_time_limit'
 		);
 
+		$install_default = [
+			'cache_driver',
+			'cookie_prefix',
+			'debug',
+			'dynamic_tracking_disabling',
+			'enable_entry_view_tracking',
+			'enable_hit_tracking',
+			'enable_online_user_tracking',
+			'force_redirect',
+			'is_system_on',
+			'multiple_sites_enabled',
+			'newrelic_app_name',
+			'use_newrelic',
+			'search_reindex_needed'
+		];
+
 		$name = $which.'_default';
 
 		return ${$name};
+	}
+
+	function divineAll()
+	{
+		return array_merge(
+			$this->divination('system'),
+			$this->divination('member'),
+			$this->divination('template'),
+			$this->divination('channel'),
+			$this->divination('install')
+		);
 	}
 
 	/**
