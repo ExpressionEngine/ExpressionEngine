@@ -204,7 +204,7 @@ class Preflight {
 		$theme_paths = [];
 		foreach ($this->sites as $site)
 		{
-			$theme_paths[] = $site->site_system_preferences->theme_folder_path;
+			$theme_paths[] = ee()->config->item('theme_folder_path');
 		}
 
 		return array_unique($theme_paths);
