@@ -645,7 +645,8 @@ class EE_Config {
 			'enable_search_log',
 			'max_logged_searches',
 			'rte_enabled',
-			'rte_default_toolset_id'
+			'rte_default_toolset_id',
+			'forum_trigger'
 		);
 
 		$member_default = array(
@@ -703,7 +704,8 @@ class EE_Config {
 			'save_tmpl_revisions',
 			'max_tmpl_revisions',
 			'strict_urls',
-			'enable_template_routes'
+			'enable_template_routes',
+			'tmpl_file_basepath'
 		);
 
 		$channel_default = array(
