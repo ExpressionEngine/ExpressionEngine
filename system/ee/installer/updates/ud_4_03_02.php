@@ -72,7 +72,6 @@ class Updater {
 
 	private function updateFieldFmtOptionForMemberFields()
 	{
-		// Fields can span Sites and do not need Groups
 		ee()->smartforge->modify_column('member_fields', array(
 			'm_field_fmt' => array(
 				'type'       => 'varchar',
