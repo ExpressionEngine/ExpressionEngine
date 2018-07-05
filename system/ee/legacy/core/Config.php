@@ -862,6 +862,25 @@ class EE_Config {
 					$config->save();
 					unset($new_values[$key]);
 				}
+
+				// Add any new configs to the DB
+				if ( ! empty($new_values))
+				{
+					$all = $this->divineAll();
+					$install = $this->divination('install');
+					foreach ($new_values as $key => $value)
+					{
+						if (in_array($key, $all))
+						{
+							ee('Model')->make('Config', [
+								'site_id' => (in_array($key, $install)) ? 0 : $site_id,
+								'key' => $key,
+								'value' => $value
+							])->save();
+							unset($new_values[$key]);
+						}
+					}
+				}
 			}
 			else
 			{
