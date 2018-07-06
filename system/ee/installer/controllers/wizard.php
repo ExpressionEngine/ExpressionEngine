@@ -1729,7 +1729,6 @@ class Wizard extends CI_Controller {
 			'site_404'                  => '',
 			'save_tmpl_revisions'       => 'n',
 			'max_tmpl_revisions'        => '5',
-			'save_tmpl_files'           => 'y',
 			'deny_duplicate_data'       => 'y',
 			'redirect_submitted_links'  => 'n',
 			'enable_censoring'          => 'n',
