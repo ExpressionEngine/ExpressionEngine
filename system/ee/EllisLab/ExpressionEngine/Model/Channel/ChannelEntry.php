@@ -1221,6 +1221,11 @@ class ChannelEntry extends ContentModel {
 			return TRUE;
 		}
 
+		if ($this->hasPageURI())
+		{
+		    return TRUE;
+		}
+
 		return FALSE;
 	}
 
