@@ -981,42 +981,40 @@ class Updater {
             {
                 foreach ($statuses_by_group[$channel->status_group] as $status)
                 {
-                    $status = [
+                    $status_item = [
                         'channel_id' => $channel->channel_id,
                         'status_id' => $keep[$status->status]
                     ];
 
                     if ( ! in_array($status, $channels_statuses))
                     {
-                        $channels_statuses[] = $status;
+                        $channels_statuses[] = $status_item;
                     }
                 }
             }
             else
             {
-                $status[] = [
+                $status_item = [
                     'channel_id' => $channel->channel_id,
                     'status_id' => $keep['open']
                 ];
 
                 if ( ! in_array($status, $channels_statuses))
                 {
-                    $channels_statuses[] = $status;
+                    $channels_statuses[] = $status_item;
                 }
 
-                $status[] = [
+                $status_item = [
                     'channel_id' => $channel->channel_id,
                     'status_id' => $keep['closed']
                 ];
 
                 if ( ! in_array($status, $channels_statuses))
                 {
-                    $channels_statuses[] = $status;
+                    $channels_statuses[] = $status_item;
                 }
             }
         }
-
-
 
 		ee()->dbforge->add_field(
 			array(
