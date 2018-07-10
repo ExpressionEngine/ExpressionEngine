@@ -528,7 +528,7 @@ $lang = array(
 
 'update_avatar_path' => '</em><em>Please update your <a href="%s">avatar</a> upload settings.',
 
-'upload_avatar' => 'Upload — .gif, .jpg, .png (max 50kb)',
+'upload_avatar' => 'Upload — .gif, .jpg, .png (max %skb)',
 
 'url' => 'Personal website',
 
