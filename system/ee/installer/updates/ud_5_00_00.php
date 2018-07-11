@@ -25,7 +25,7 @@ class Updater {
 	{
 		$steps = new \ProgressIterator(
 			[
-
+				'addTheMemberToGroupPivotTable',
 			]
 		);
 
@@ -35,6 +35,34 @@ class Updater {
 		}
 
 		return TRUE;
+	}
+
+	private function addTheMemberToGroupPivotTable()
+	{
+		if (ee()->db->table_exists('members_member_groups'))
+		{
+			return;
+		}
+
+		// Add the Many-to-Many tables
+		ee()->dbforge->add_field(
+			array(
+				'member_id' => array(
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				),
+				'group_id' => array(
+					'type'       => 'int',
+					'constraint' => 4,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				)
+			)
+		);
+		ee()->dbforge->add_key(array('member_id', 'group_id'), TRUE);
+		ee()->smartforge->create_table('members_member_groups');
 	}
 }
 

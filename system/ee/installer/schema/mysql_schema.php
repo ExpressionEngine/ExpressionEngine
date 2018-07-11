@@ -470,6 +470,12 @@ class EE_Schema {
 			PRIMARY KEY `group_id_site_id` (`group_id`, `site_id`)
 		)";
 
+		$Q[] = "CREATE TABLE exp_members_member_groups (
+			member_id int(10) unsigned NOT NULL,
+			group_id int(4) unsigned NOT NULL,
+			PRIMARY KEY `member_id_group_id` (`member_id`, `group_id`)
+		)";
+
 		// Channel access privs
 		// Member groups assignment for each channel
 
