@@ -91,6 +91,10 @@ class Site extends Model {
 			'model' => 'MemberGroup',
 			'type' => 'hasMany'
 		),
+		'Permissions' => array(
+			'model' => 'Permission',
+			'type' => 'hasMany'
+		),
 		'HTMLButtons' => array(
 			'model' => 'HTMLButton',
 			'type' => 'hasMany'

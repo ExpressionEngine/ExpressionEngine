@@ -620,7 +620,10 @@ return [
 			'Consent' => 'Model\Consent\Consent',
 			'ConsentAuditLog' => 'Model\Consent\ConsentAuditLog',
 			'ConsentRequest' => 'Model\Consent\ConsentRequest',
-			'ConsentRequestVersion' => 'Model\Consent\ConsentRequestVersion'
+			'ConsentRequestVersion' => 'Model\Consent\ConsentRequestVersion',
+
+			// ..\Permission
+			'Permission' => 'Model\Permission\Permission',
 	),
 	'cookies.necessary' => [
 		'cp_last_site_id',
