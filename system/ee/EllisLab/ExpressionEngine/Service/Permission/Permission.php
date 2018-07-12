@@ -55,6 +55,11 @@ class Permission {
 		return $this->hasAll($which[0]);
 	}
 
+	public function can($which)
+	{
+		return $this->has('can_' . $which);
+	}
+
 	/**
 	 * Has All
 	 *
