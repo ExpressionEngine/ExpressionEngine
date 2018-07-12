@@ -58,7 +58,7 @@ class Activity extends Profile {
 			$items['total_forum_replies'] = $this->member->total_forum_posts;
 		}
 
-		if (get_bool_from_string($this->member->MemberGroup->can_access_cp))
+		if ($this->member->can('access_cp'))
 		{
 			$log_url = ee('CP/URL')->make('cp/logs/cp', array('filter_by_username' => $this->member->member_id));
 			$items['cp_log'] = '<a href="'.$log_url.'">'.sprintf(lang('view_cp_logs'), $this->member->username).'</a>';
