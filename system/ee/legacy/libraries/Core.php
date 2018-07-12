@@ -471,7 +471,7 @@ class EE_Core {
 		// Before rendering the full control panel we'll make sure the user isn't banned
 		// But only if they are not a Super Admin, as they can not be banned
 		if ((ee()->session->userdata('group_id') != 1 && ee()->session->ban_check('ip')) OR
-			(ee()->session->userdata('member_id') !== 0 && ! ee()->cp->allowed_group('can_access_cp')))
+			(ee()->session->userdata('member_id') !== 0 && ! ee('Permission')->can('access_cp')))
 		{
 			return ee()->output->fatal_error(lang('not_authorized'));
 		}
