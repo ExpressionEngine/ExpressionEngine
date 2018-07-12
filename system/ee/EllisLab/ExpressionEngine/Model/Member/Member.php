@@ -1002,10 +1002,11 @@ class Member extends ContentModel {
 
 		if ( ! $permissions)
 		{
-			foreach ($this->MemberGroups as $group)
-			{
-				$permissions = array_merge($permissions, $group->Permissions->getDictionary('permission', 'permission_id'));
-			}
+			$permissions = $this->getModelFacade()->get('Permission')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('group_id', 'IN', $this->MemberGroups->pluck('group_id'))
+				->all()
+				->getDictionary('permission', 'permission_id');
 		}
 
 		return $permissions;
