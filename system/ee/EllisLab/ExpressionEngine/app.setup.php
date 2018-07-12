@@ -258,7 +258,12 @@ return [
 			$userdata = ee()->session->all_userdata();
 			$permissions = ee()->session->getMember()->getPermissions();
 
-			return new Permission\Permission($userdata, $permissions);
+			return new Permission\Permission(
+				$ee->make('Model'),
+				$userdata,
+				$permissions,
+				ee()->config->item('site_id')
+			);
 		},
 
 		'Updater/Runner' => function($ee)

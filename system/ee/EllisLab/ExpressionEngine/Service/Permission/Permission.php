@@ -24,15 +24,43 @@ class Permission {
 	 */
 	protected $permissions;
 
+	protected $model_delegate;
+
+	protected $site_id;
+
 	/**
 	 * Constructor: sets the userdata.
 	 *
 	 * @param array $userdata The session userdata array
 	 */
-	public function __construct(array $userdata = [], array $permissions = [])
+	public function __construct($model_delegate, array $userdata = [], array $permissions = [], $site_id = 1)
 	{
+		$this->model_delegate = $model_delegate;
 		$this->userdata = $userdata;
 		$this->permissions = $permissions;
+		$this->site_id = $site_id;
+	}
+
+	public function groupsThatHave($permission, $site_id = NULL)
+	{
+		$site_id = ($site_id) ?: $this->site_id;
+		$groups = $this->model_delegate->get('Permission')
+			->fields('group_id')
+			->filter('site_id', $site_id)
+			->filter('permission', $permission)
+			->all();
+
+		if ($groups)
+		{
+			return $groups->pluck('group_id');
+		}
+
+		return [];
+	}
+
+	public function groupsThatCan($permission, $site_id = NULL)
+	{
+		return $this->groupsThatHave('can_' . $permission, $site_id);
 	}
 
 	/**
