@@ -1313,35 +1313,25 @@ class EE_Session {
 	{
 		// Fetch Assigned Sites Available to User
 
-		$assigned_sites = array();
+		$assigned_sites = ee('Model')->get('Site')
+				->fields('site_id', 'site_label')
+				->order('site_label', 'desc');
 
-		if ($this->userdata['group_id'] == 1)
+		if ($this->userdata['group_id'] != 1)
 		{
-			$qry = ee()->db->select('site_id, site_label')
-								->order_by('site_label')
-								->get('sites');
-		}
-		else
-		{
-			// Groups that can access the Site's CP, see the site in the 'Sites' pulldown
-			$qry = ee()->db->select('es.site_id, es.site_label')
-								->from(array('sites es', 'member_groups mg'))
-								->where('mg.site_id', ' es.site_id', FALSE)
-								->where('mg.group_id', $this->userdata['group_id'])
-								->where('mg.can_access_cp', 'y')
-								->order_by('es.site_label')
-								->get();
+			$groups = $this->getMember()->MemberGroups->pluck('group_id');
+			$site_ids = ee('Model')->get('Permission')
+				->fields('site_id')
+				->filter('permission', 'can_access_cp')
+				->filter('group_id', 'IN', $groups)
+				->all()
+				->pluck('site_id');
+
+			$assigned_sites->filter('site_id', 'IN', $site_ids);
 		}
 
-		if ($qry->num_rows() > 0)
-		{
-			foreach ($qry->result() as $row)
-			{
-				$assigned_sites[$row->site_id] = $row->site_label;
-			}
-		}
-
-		$this->userdata['assigned_sites'] = $assigned_sites;
+		$this->userdata['assigned_sites'] = $assigned_sites->all()
+				->getDictionary('site_id', 'site_label');
 	}
 
 	/**
