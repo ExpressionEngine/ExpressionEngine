@@ -46,15 +46,10 @@ class Create extends Members {
 		}
 
 		// Get member groups who have CP access to verify the member creating this member
-		$groups = ee('Model')->get('Permission')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('permission', 'can_access_cp')
-			->filter('group_id', 'IN', $groups->pluck('group_id'))
-			->all();
 		$group_toggle = array();
-		foreach ($groups as $group)
+		foreach (ee('Permission')->groupsThatCan('access_cp') as $group_id)
 		{
-			$group_toggle[$group->group_id] = 'verify_password';
+			$group_toggle[$group_id] = 'verify_password';
 		}
 
 		$vars['sections'] = array(

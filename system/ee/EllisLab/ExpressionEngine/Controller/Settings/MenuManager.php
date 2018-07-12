@@ -112,7 +112,7 @@ class MenuManager extends Settings {
 				$checkbox['disabled'] = "disabled";
 			}
 
-			$assigned = $set->MemberGroups->filter('can_access_cp', TRUE)->pluck('group_title');
+			$assigned = $set->MemberGroups->filter('group_id', 'IN', ee('Permission')->groupsThatCan('access_cp'))->pluck('group_title');
 
 			$columns = array(
 				$main_link,
@@ -187,10 +187,9 @@ class MenuManager extends Settings {
 		{
 			$set->set($_POST);
 
-			$assigned = ee('Request')->post('member_groups');
+			$assigned = (array) ee('Request')->post('member_groups');
 			$set->MemberGroups = ee('Model')
-				->get('MemberGroup', (array) $assigned)
-				->filter('can_access_cp', 'y')
+				->get('MemberGroup', array_intersect($assigned, ee('Permission')->groupsThatCan('access_cp')))
 				->all();
 
 			$sort = (array) ee('Request')->post('sort', array());
@@ -366,14 +365,14 @@ class MenuManager extends Settings {
 	{
 		$disabled_choices = array();
 		$member_groups = ee('Model')->get('MemberGroup')
-			->filter('can_access_cp', 'y')
+			->filter('group_id', 'IN', ee('Permission')->groupsThatCan('access_cp', 1))
 			->filter('site_id', 1) // this is on purpose, saving the member group apply the set to other sites
 			->all()
 			->getDictionary('group_id', 'group_title');
 
 		$other_sets = ee('Model')->get('MenuSet')
 			->with('MemberGroups')
-			->filter('MemberGroups.can_access_cp', 'y');
+			->filter('MemberGroups.group_id', ee('Permission')->groupsThatCan('access_cp'));
 
 		if ( ! $set->isNew())
 		{
@@ -385,15 +384,12 @@ class MenuManager extends Settings {
 		{
 			foreach ($other_set->MemberGroups as $group)
 			{
-				if ($group->can_access_cp)
-				{
-					$member_groups[$group->group_id] = [
-						'label' => $group->group_title,
-						'value' => $group->group_id,
-						'instructions' => lang('assigned_to') . ' ' . $other_set->name
-					];
-					$disabled_choices[] = $group->group_id;
-				}
+				$member_groups[$group->group_id] = [
+					'label' => $group->group_title,
+					'value' => $group->group_id,
+					'instructions' => lang('assigned_to') . ' ' . $other_set->name
+				];
+				$disabled_choices[] = $group->group_id;
 			}
 		}
 
