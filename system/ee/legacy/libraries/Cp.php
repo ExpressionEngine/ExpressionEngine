@@ -1138,13 +1138,13 @@ class Cp {
 	{
 		if (ee()->session->userdata('group_id') != 1)
 		{
-			ee()->db->select('can_access_cp');
-			ee()->db->where('site_id', $site_id);
-			ee()->db->where('group_id', ee()->session->userdata['group_id']);
+			$can_access_cp = ee('Model')->get('Permission')
+				->filter('permission', 'can_access_cp')
+				->filter('site_id', $site_id)
+				->filter('group_id', 'IN', ee()->session->getMember()->MemberGroups->pluck('group_id'))
+				->first();
 
-			$query = ee()->db->get('member_groups');
-
-			if ($query->num_rows() == 0 OR $query->row('can_access_cp') !== 'y')
+			if ( ! $can_access_cp)
 			{
 				show_error(lang('unauthorized_access'), 403);
 			}
@@ -1152,7 +1152,7 @@ class Cp {
 
 		if (empty($redirect))
 		{
-			$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+			$member = ee()->session->getMember();
 			$redirect = $member->getCPHomepageURL($site_id);
 		}
 
