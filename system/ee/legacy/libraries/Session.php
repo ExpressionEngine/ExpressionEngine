@@ -89,6 +89,7 @@ class EE_Session {
 	public $cache				= array();
 
 	private $session_model      = NULL;
+	private $member_model       = NULL;
 
 	/**
 	 * Session Class Constructor
@@ -330,7 +331,6 @@ class EE_Session {
 		return (isset($this->cache[$class][$key])) ? $this->cache[$class][$key] : $default;
 	}
 
-
 	/**
 	 * Check password lockout
 	 */
@@ -363,18 +363,21 @@ class EE_Session {
 	 */
 	public function create_new_session($member_id, $admin_session = FALSE, $can_debug = FALSE)
 	{
-		$member = ee('Model')->get('Member', $member_id)->first();
+		if ( ! is_object($this->member_model) || $member_model->member_id != $member_id)
+		{
+			$this->member_model = ee('Model')->get('Member', $member_id)->first();
+		}
 
-		if ($this->access_cp == TRUE OR $member->MemberGroup->can_access_cp == 'y')
+		if ($this->access_cp == TRUE OR $this->member_model->can('access_cp'))
 		{
 			$this->sdata['admin_sess'] = 1;
 		}
 		else
 		{
-			$this->sdata['admin_sess'] 	= ($admin_session == FALSE) ? 0 : 1;
+			$this->sdata['admin_sess'] = ($admin_session == FALSE) ? 0 : 1;
 		}
 
-		$crypt_key = $member->crypt_key;
+		$crypt_key = $this->member_model->crypt_key;
 
 		// Create crypt key for member if one doesn't exist
 		if (empty($crypt_key))
@@ -397,7 +400,7 @@ class EE_Session {
 		$this->sdata['can_debug']		= ($can_debug) ? 'y' : 'n';
 
 		$this->userdata['member_id']	= (int) $member_id;
-		$this->userdata['group_id']		= (int) $member->MemberGroup->getId();
+		$this->userdata['group_id']		= (int) $this->member_model->MemberGroup->getId();
 		$this->userdata['session_id']	= $this->sdata['session_id'];
 		$this->userdata['fingerprint']	= $this->sdata['fingerprint'];
 		$this->userdata['site_id']		= ee()->config->item('site_id');
@@ -584,6 +587,12 @@ class EE_Session {
 			}
 		}
 
+		// Add in the Permissions for backwards compatibility
+		foreach ($this->member_model->getPermissions() as $perm => $perm_id)
+		{
+			$this->userdata[$key] = 'y';
+		}
+
 		// Remember me may have validated the user agent for us, if so create a fingerprint now that we
 		// can salt it properly for the user
 		if ($this->validation == 'c' && ee()->remember->exists())
@@ -630,7 +639,7 @@ class EE_Session {
 
 		// Does the member have admin privileges?
 
-		if ($member_query->row('can_access_cp') == 'y')
+		if ($this->member_model->can('access_cp'))
 		{
 			$this->access_cp = TRUE;
 		}
@@ -1034,6 +1043,11 @@ class EE_Session {
 		return ( ! isset($this->userdata[$which])) ? $default : $this->userdata[$which];
 	}
 
+	public function getMember()
+	{
+		return $this->member_model;
+	}
+
 	/**
 	 * Fetch the current session id or fingerprint
 	 *
@@ -1190,6 +1204,11 @@ class EE_Session {
 		}
 
 		ee()->db->where('member_id', (int) $member_id);
+
+		if ( ! is_object($this->member_model) || $member_model->member_id != $member_id)
+		{
+			$this->member_model = ee('Model')->get('Member', $member_id)->first();
+		}
 
 		return ee()->db->get();
 	}
