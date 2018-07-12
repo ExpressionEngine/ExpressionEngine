@@ -37,6 +37,18 @@ class Member extends ContentModel {
 		'MemberGroup' => array(
 			'type' => 'belongsTo'
 		),
+		'PrimaryMemberGroup' => array(
+			'type' => 'belongsTo',
+			'model' => 'MemberGroup',
+		),
+		'MemberGroups' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'MemberGroup',
+			'pivot' => array(
+				'table' => 'members_member_groups'
+			),
+			'weak' => TRUE
+		),
 		'HTMLButtons' => array(
 			'type' => 'hasMany',
 			'model' => 'HTMLButton',
