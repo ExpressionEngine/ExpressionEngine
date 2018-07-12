@@ -570,6 +570,7 @@ class Auth_result {
 
 	private $group;
 	private $member;
+	private $permissions = [];
 	private $session_id;
 	private $remember_me = FALSE;
 	private $anon = FALSE;
@@ -652,7 +653,16 @@ class Auth_result {
 	 */
 	public function has_permission($perm)
 	{
-		return ($this->group($perm) === 'y');
+		if (empty($this->permissions))
+		{
+			$this->permissions = ee('Model')->get('Permission')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('group_id', 'IN', [$this->member('group_id')])
+				->all()
+				->getDictionary('permission', 'permission_id');
+		}
+
+		return (array_key_exists($perm, $this->permissions));
 	}
 
 	/**
