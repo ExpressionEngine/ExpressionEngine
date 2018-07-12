@@ -20,13 +20,19 @@ class Permission {
 	protected $userdata;
 
 	/**
+	 * @var array $permissions An array of granted permissions
+	 */
+	protected $permissions;
+
+	/**
 	 * Constructor: sets the userdata.
 	 *
 	 * @param array $userdata The session userdata array
 	 */
-	public function __construct(array $userdata = array())
+	public function __construct(array $userdata = [], array $permissions = [])
 	{
 		$this->userdata = $userdata;
+		$this->permissions = $permissions;
 	}
 
 	/**
@@ -75,9 +81,7 @@ class Permission {
 
 		foreach ($which as $w)
 		{
-			$k = $this->getUserdatum($w);
-
-			if ( ! $k OR $k !== 'y')
+			if ( ! $this->check($w))
 			{
 				return FALSE;
 			}
@@ -109,19 +113,33 @@ class Permission {
 			return TRUE;
 		}
 
-		$result = FALSE;
-
 		foreach ($which as $w)
 		{
-			$k = $this->getUserdatum($w);
-
-			if ($k === TRUE OR $k == 'y')
+			if ($this->check($w))
 			{
 				return TRUE;
 			}
 		}
 
-		return $result;
+		return FALSE;
+	}
+
+	/**
+	 * Check for the permission first looking in the userdata then in the permission array
+	 *
+	 * @param string $which any number of permission names
+	 * @return bool TRUE if the permission is in the userdata or the permission key exists; FALSE otherwise
+	 */
+	protected function check($which)
+	{
+		$k = $this->getUserdatum($which);
+
+		if ($k === TRUE OR $k == 'y')
+		{
+			return TRUE;
+		}
+
+		return array_key_exists($which, $this->permissions);
 	}
 
 	/**
@@ -129,7 +147,7 @@ class Permission {
 	 *
 	 * Member access validation
 	 *
-	 * @param	string  any number of permission names
+	 * @param	string $which any number of permission names
 	 * @return	mixed    False if the requested userdata array key doesn't exist
 	 *							otherwise returns the key's value
 	 */

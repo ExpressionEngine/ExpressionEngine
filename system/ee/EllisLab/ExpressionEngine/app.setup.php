@@ -255,8 +255,10 @@ return [
 
 		'Permission' => function($ee)
 		{
-			$userdata = ee()->session->userdata;
-			return new Permission\Permission($userdata);
+			$userdata = ee()->session->all_userdata();
+			$permissions = ee()->session->getMember()->getPermissions();
+
+			return new Permission\Permission($userdata, $permissions);
 		},
 
 		'Updater/Runner' => function($ee)
