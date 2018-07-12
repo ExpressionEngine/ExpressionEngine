@@ -994,6 +994,35 @@ class Member extends ContentModel {
 	{
 		return (bool) preg_match('/^redacted\d+$/', $this->email);
 	}
+
+
+	public function getPermissions()
+	{
+		static $permissions;
+
+		if ( ! $permissions)
+		{
+			foreach ($this->MemberGroups as $group)
+			{
+				$permissions = array_merge($permissions, $group->Permissions->getDictionary('permission', 'permission_id'));
+			}
+		}
+
+		return $permissions;
+	}
+
+	public function can($permission)
+	{
+		$permissions = $this->getPermissions();
+		return array_key_exists('can_' . $permission, $permissions);
+	}
+
+	public function has($permission)
+	{
+		return array_key_exists($permission, $permissions);
+	}
+
 }
+
 
 // EOF
