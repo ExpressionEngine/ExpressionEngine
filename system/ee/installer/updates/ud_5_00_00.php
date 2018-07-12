@@ -64,6 +64,22 @@ class Updater {
 		);
 		ee()->dbforge->add_key(['member_id', 'group_id'], TRUE);
 		ee()->smartforge->create_table('members_member_groups');
+
+		$members = ee()->db->select('member_id, group_id')->get('members');
+		$insert = [];
+
+		foreach ($members->result() as $member)
+		{
+			$insert[] = [
+				'member_id' => $member->member_id,
+				'group_id' => $member->group_id
+			];
+		}
+
+		if ( ! empty($insert))
+		{
+			ee()->db->insert_batch('members_member_groups', $insert);
+		}
 	}
 
 	private function addAndPopulatePermissionsTable()
