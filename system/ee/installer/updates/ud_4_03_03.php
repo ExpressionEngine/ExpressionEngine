@@ -52,13 +52,8 @@ class Updater {
 		{
 			if ( ! isset($valid[$lang]))
 			{
-				// Is the language setting the full word
-				//$xml_lang = array_search($lang, $valid);
-
-
+				// Is the xml language setting the full word
 				$xml_lang = array_search(strtolower($lang), array_map('strtolower', $valid));
-
-
 
 				if ($xml_lang !== FALSE)
 				{
