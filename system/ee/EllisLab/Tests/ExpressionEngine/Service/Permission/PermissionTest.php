@@ -15,28 +15,28 @@ class PermissionTest extends \PHPUnit_Framework_TestCase {
 
 	public function testHas()
 	{
-		$permission = new Permission(array('can_edit_all_comments' => 'y', 'group_id' => 5));
+		$permission = new Permission(NULL, array('can_edit_all_comments' => 'y', 'group_id' => 5));
 		$this->assertTrue($permission->has('can_edit_all_comments'));
 		$this->assertFalse($permission->has('can_edit_all_the_things'));
 	}
 
 	public function testHasSuperAdmin()
 	{
-		$permission = new Permission(array('can_edit_all_comments' => 'y', 'group_id' => 1));
+		$permission = new Permission(NULL, array('can_edit_all_comments' => 'y', 'group_id' => 1));
 		$this->assertTrue($permission->has('can_edit_all_comments'));
 		$this->assertTrue($permission->has('can_edit_all_the_things'));
 	}
 
 	public function testHasAny()
 	{
-		$permission = new Permission(array('can_edit_own_comments' => 'y', 'group_id' => 5));
+		$permission = new Permission(NULL, array('can_edit_own_comments' => 'y', 'group_id' => 5));
 		$this->assertTrue($permission->hasAny('can_edit_own_comments', 'can_edit_all_the_things'));
 		$this->assertFalse($permission->hasAny('can_edit_all_the_things'));
 	}
 
 	public function testHasAnySuperAdmin()
 	{
-		$permission = new Permission(array('can_edit_own_comments' => 'y', 'group_id' => 1));
+		$permission = new Permission(NULL, array('can_edit_own_comments' => 'y', 'group_id' => 1));
 		$this->assertTrue($permission->hasAny('can_edit_own_comments', 'can_edit_all_the_things'));
 		$this->assertTrue($permission->hasAny('can_edit_all_the_things'));
 	}
@@ -44,14 +44,14 @@ class PermissionTest extends \PHPUnit_Framework_TestCase {
 
 	public function testHasAll()
 	{
-		$permission = new Permission(array('can_edit_all_comments' => 'n', 'can_edit_own_comments' => 'y', 'group_id' => 5));
+		$permission = new Permission(NULL, array('can_edit_all_comments' => 'n', 'can_edit_own_comments' => 'y', 'group_id' => 5));
 		$this->assertFalse($permission->hasAll('can_edit_own_comments', 'can_edit_all_the_things'));
 		$this->assertFalse($permission->hasAll('can_edit_all_the_things'));
 	}
 
 	public function testHasAllSuperAdmin()
 	{
-		$permission = new Permission(array('can_edit_all_comments' => 'n', 'can_edit_own_comments' => 'y', 'group_id' => 1));
+		$permission = new Permission(NULL, array('can_edit_all_comments' => 'n', 'can_edit_own_comments' => 'y', 'group_id' => 1));
 		$this->assertTrue($permission->hasAll('can_edit_own_comments', 'can_edit_all_the_things'));
 		$this->assertTrue($permission->hasAll('can_edit_all_the_things'));
 	}
@@ -61,7 +61,7 @@ class PermissionTest extends \PHPUnit_Framework_TestCase {
      */
 	public function testHasException()
 	{
-		$permission = new Permission(array('can_edit_all_comments' => 'n', 'can_edit_own_comments' => 'y', 'group_id' => 1));
+		$permission = new Permission(NULL, array('can_edit_all_comments' => 'n', 'can_edit_own_comments' => 'y', 'group_id' => 1));
 		$permission->has('can_edit_own_comments', 'can_edit_all_the_things');
 	}
 
@@ -70,7 +70,7 @@ class PermissionTest extends \PHPUnit_Framework_TestCase {
      */
 	public function testHasAnyException()
 	{
-	$permission = new Permission(array('can_edit_all_comments' => 'n', 'can_edit_own_comments' => 'y', 'group_id' => 1));
+	$permission = new Permission(NULL, array('can_edit_all_comments' => 'n', 'can_edit_own_comments' => 'y', 'group_id' => 1));
 		$permission->hasAny();
 	}
 
@@ -80,7 +80,7 @@ class PermissionTest extends \PHPUnit_Framework_TestCase {
      */
 	public function testHasAllException()
 	{
-		$permission = new Permission(array('can_edit_all_comments' => 'n', 'can_edit_own_comments' => 'y', 'group_id' => 1));
+		$permission = new Permission(NULL, array('can_edit_all_comments' => 'n', 'can_edit_own_comments' => 'y', 'group_id' => 1));
 		$permission->hasAll();
 	}
 
