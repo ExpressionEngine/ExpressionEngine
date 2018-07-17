@@ -25,7 +25,7 @@ class Updater {
 	{
 		$steps = new \ProgressIterator(
 			[
-				'addTheMemberToGroupPivotTable',
+				'addRoles',
 				'addAndPopulatePermissionsTable'
 			]
 		);
@@ -38,14 +38,58 @@ class Updater {
 		return TRUE;
 	}
 
-	private function addTheMemberToGroupPivotTable()
+	private function addRoles()
 	{
-		if (ee()->db->table_exists('members_member_groups'))
+		if (ee()->db->table_exists('roles'))
 		{
 			return;
 		}
 
-		// Add the Many-to-Many tables
+		// Make exp_roles table
+		ee()->dbforge->add_field(
+			[
+				'role_id' => [
+					'type'           => 'int',
+					'constraint'     => 10,
+					'unsigned'       => TRUE,
+					'null'           => FALSE,
+					'auto_increment' => TRUE
+				],
+				'name' => [
+					'type'       => 'varchar',
+					'constraint' => 100,
+					'null'       => FALSE
+				],
+				'description' => [
+					'type'       => 'text',
+					'null'       => TRUE
+				]
+			]
+		);
+		ee()->dbforge->add_key('role_id', TRUE);
+		ee()->smartforge->create_table('roles');
+
+		// Populate Roles with existing Groups
+		ee()->db->select('group_id, group_title, group_description');
+		ee()->db->where('site_id', 1);
+		$groups = ee()->db->get('member_groups');
+		$insert = [];
+
+		foreach ($groups->result() as $group)
+		{
+			$insert[] = [
+				'role_id' => $group->group_id,
+				'name' => $group->group_title,
+				'description' => $group->group_description
+			];
+		}
+
+		if ( ! empty($insert))
+		{
+			ee()->db->insert_batch('roles', $insert);
+		}
+
+		// Add the member->role pivot table
 		ee()->dbforge->add_field(
 			[
 				'member_id' => [
@@ -54,17 +98,18 @@ class Updater {
 					'unsigned'   => TRUE,
 					'null'       => FALSE
 				],
-				'group_id' => [
+				'role_id' => [
 					'type'       => 'int',
-					'constraint' => 4,
+					'constraint' => 10,
 					'unsigned'   => TRUE,
 					'null'       => FALSE
 				]
 			]
 		);
-		ee()->dbforge->add_key(['member_id', 'group_id'], TRUE);
-		ee()->smartforge->create_table('members_member_groups');
+		ee()->dbforge->add_key(['member_id', 'role_id'], TRUE);
+		ee()->smartforge->create_table('members_roles');
 
+		// Populate the member->role pivot table
 		$members = ee()->db->select('member_id, group_id')->get('members');
 		$insert = [];
 
@@ -72,13 +117,13 @@ class Updater {
 		{
 			$insert[] = [
 				'member_id' => $member->member_id,
-				'group_id' => $member->group_id
+				'role_id' => $member->group_id
 			];
 		}
 
 		if ( ! empty($insert))
 		{
-			ee()->db->insert_batch('members_member_groups', $insert);
+			ee()->db->insert_batch('members_roles', $insert);
 		}
 	}
 
@@ -98,9 +143,9 @@ class Updater {
 					'unsigned'       => TRUE,
 					'auto_increment' => TRUE
 				],
-				'group_id' => [
+				'role_id' => [
 					'type'       => 'int',
-					'constraint' => 4,
+					'constraint' => 10,
 					'unsigned'   => TRUE,
 					'null'       => FALSE
 				],
@@ -118,8 +163,10 @@ class Updater {
 			]
 		);
 		ee()->dbforge->add_key('permission_id', TRUE);
-		ee()->dbforge->add_key(['group_id', 'site_id'], TRUE);
 		ee()->smartforge->create_table('permissions');
+
+		ee()->db->data_cache = []; // Reset the cache so it will re-fetch a list of tables
+		ee()->smartforge->add_key('permissions', ['role_id', 'site_id'], 'role_id_site_id');
 
 		// Migrate permissions to the new table
 		$insert = [];
@@ -227,7 +274,7 @@ class Updater {
 				if ($group->$permission == 'y')
 				{
 					$insert[] = [
-						'group_id'   => $group->group_id,
+						'role_id'   => $group->group_id,
 						'site_id'    => $group->site_id,
 						'permission' => $permission
 					];

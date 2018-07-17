@@ -357,6 +357,28 @@ class EE_Schema {
 			KEY `password` (`password`)
 		)";
 
+		$Q[] = "CREATE TABLE `exp_roles` (
+			`role_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`name` varchar(100) NOT NULL,
+			`description` text,
+			PRIMARY KEY (`role_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_members_roles` (
+			`member_id` int(10) unsigned NOT NULL,
+			`role_id` int(10) unsigned NOT NULL,
+			PRIMARY KEY (`member_id`,`role_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_permissions` (
+			`permission_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+		    `role_id` int(10) unsigned NOT NULL,
+			`site_id` int(5) unsigned NOT NULL,
+			`permission` varchar(32) NOT NULL,
+			PRIMARY KEY (`permission_id`),
+			KEY `role_id_site_id` (`role_id`,`site_id`)
+		)";
+
 		// Member Groups table
 
 		$Q[] = "CREATE TABLE exp_member_groups (
@@ -377,20 +399,6 @@ class EE_Schema {
 			`cp_homepage_channel` int(10) unsigned NOT NULL DEFAULT '0',
 			`cp_homepage_custom` varchar(100) DEFAULT NULL,
 			PRIMARY KEY `group_id_site_id` (`group_id`, `site_id`)
-		)";
-
-		$Q[] = "CREATE TABLE exp_members_member_groups (
-			member_id int(10) unsigned NOT NULL,
-			group_id int(4) unsigned NOT NULL,
-			PRIMARY KEY `member_id_group_id` (`member_id`, `group_id`)
-		)";
-
-		$Q[] = "CREATE TABLE `exp_permissions` (
-			`permission_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-			`group_id` int(4) unsigned NOT NULL,
-			`site_id` int(5) unsigned NOT NULL,
-			`permission` varchar(32) NOT NULL,
-			PRIMARY KEY (`permission_id`,`group_id`,`site_id`)
 		)";
 
 		// Channel access privs
@@ -1426,6 +1434,8 @@ class EE_Schema {
 				'$quick_link',
 				'".ee()->db->escape_str($this->userdata['deft_lang'])."')";
 
+		$Q[] = "INSERT INTO exp_members_roles (member_id, role_id) VALUES ('1', '1')";
+
 		$Q[] = "INSERT INTO exp_member_data (member_id) VALUES ('1')";
 
 		$Q[] = "INSERT INTO exp_member_news_views (member_id, version) VALUES ('1', '".$this->version."')";
@@ -1501,6 +1511,10 @@ class EE_Schema {
 			$Q[] = "INSERT INTO exp_member_groups
 				(".implode(', ', array_keys($group)).")
 				VALUES (".implode(', ' , array_map($add_quotes, $group)).")";
+
+			$Q[] = "INSERT INTO exp_roles
+				(role_id, name)
+				VALUES (" . $group['group_id'] . ", '" . $group['group_title'] . "')";
 		}
 
 		$group_permissions = [
@@ -1606,11 +1620,11 @@ class EE_Schema {
 			]
 		];
 
-		foreach ($group_permissions as $group_id => $permissions)
+		foreach ($group_permissions as $role_id => $permissions)
 		{
 			foreach ($permissions as $permission)
 			{
-				$Q[] = "INSERT INTO exp_permissions (site_id, group_id, permission) VALUES(1, $group_id, '$permission')";
+				$Q[] = "INSERT INTO exp_permissions (site_id, role_id, permission) VALUES(1, $role_id, '$permission')";
 			}
 		}
 
