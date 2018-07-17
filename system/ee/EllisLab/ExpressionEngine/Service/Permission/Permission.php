@@ -24,6 +24,8 @@ class Permission {
 	 */
 	protected $permissions;
 
+	protected $roles;
+
 	protected $model_delegate;
 
 	protected $site_id;
@@ -33,11 +35,12 @@ class Permission {
 	 *
 	 * @param array $userdata The session userdata array
 	 */
-	public function __construct($model_delegate, array $userdata = [], array $permissions = [], $site_id = 1)
+	public function __construct($model_delegate, array $userdata = [], array $permissions = [], array $roles = [], $site_id = 1)
 	{
 		$this->model_delegate = $model_delegate;
 		$this->userdata = $userdata;
 		$this->permissions = $permissions;
+		$this->roles = $roles;
 		$this->site_id = $site_id;
 	}
 
@@ -61,6 +64,21 @@ class Permission {
 	public function groupsThatCan($permission, $site_id = NULL)
 	{
 		return $this->groupsThatHave('can_' . $permission, $site_id);
+	}
+
+	public function isSuperAdmin()
+	{
+		return isset($this->roles[1]);
+	}
+
+	public function hasRole($role)
+	{
+		if (is_numeric($role))
+		{
+			return isset($this->roles[$role]);
+		}
+
+		return in_array($role, $this->roles);
 	}
 
 	/**

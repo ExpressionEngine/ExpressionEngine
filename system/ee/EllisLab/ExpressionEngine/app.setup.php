@@ -257,11 +257,13 @@ return [
 		{
 			$userdata = ee()->session->all_userdata();
 			$permissions = ee()->session->getMember()->getPermissions();
+			$roles = ee()->session->Roles->getDictionary('role_id', 'name');
 
 			return new Permission\Permission(
 				$ee->make('Model'),
 				$userdata,
 				$permissions,
+				$roles,
 				ee()->config->item('site_id')
 			);
 		},
