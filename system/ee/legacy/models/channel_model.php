@@ -31,7 +31,7 @@ class Channel_model extends CI_Model {
 		}
 
 		// If the user is restricted to specific channels, add that to the query
-		if ($this->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$allowed_channels = $this->session->userdata('assigned_channels');
 

@@ -31,7 +31,7 @@ class Auth extends Settings {
 		{
 			// set and save the member as the various permissions allow
 			if ($this->config->item('allow_username_change') == 'y' OR
-				$this->session->userdata('group_id') == 1)
+				ee('Permission')->isSuperAdmin())
 			{
 				 $this->member->username = ee()->input->post('username');
 			}

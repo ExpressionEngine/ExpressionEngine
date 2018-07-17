@@ -25,7 +25,7 @@ class Developer extends Logs {
 	 */
 	public function index()
 	{
-		if ($this->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

@@ -45,7 +45,7 @@ class EE extends EE_Controller {
 			}
 		}
 
-		$can_view_system = ($this->session->userdata('group_id') == 1) ? TRUE : $can_view_system;
+		$can_view_system = (ee('Permission')->isSuperAdmin()) ? TRUE : $can_view_system;
 
 		if (REQ != 'ACTION' && $can_view_system != TRUE)
 		{

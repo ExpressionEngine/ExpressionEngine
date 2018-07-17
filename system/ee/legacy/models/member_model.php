@@ -192,7 +192,7 @@ class Member_model extends CI_Model {
 		// Extended profile fields
 		$this->db->from('member_fields');
 
-		if ($restricted == TRUE && $this->session->userdata('group_id') != 1)
+		if ($restricted == TRUE && ! ee('Permission')->isSuperAdmin())
 		{
 			$this->db->where('m_field_public', 'y');
 		}
@@ -1233,7 +1233,7 @@ class Member_model extends CI_Model {
 	function can_access_module($module, $group_id = '')
 	{
 		// Superadmin sees all
-		if ($this->session->userdata('group_id') == 1)
+		if (ee('Permission')->isSuperAdmin())
 		{
 			return TRUE;
 		}

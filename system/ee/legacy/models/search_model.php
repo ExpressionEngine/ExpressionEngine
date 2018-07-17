@@ -117,7 +117,7 @@ class Search_model extends CI_Model {
 
 		if ($data['search_channels'] == '')
 		{
-			if ($cp && $this->session->userdata['group_id'] != 1)
+			if ($cp && ! ee('Permission')->isSuperAdmin())
 			{
 				$data['search_channels'] = $allowed_channels;
 			}

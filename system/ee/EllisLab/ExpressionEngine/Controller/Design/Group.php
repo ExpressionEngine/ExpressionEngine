@@ -57,7 +57,7 @@ class Group extends AbstractDesignController {
 			});
 
 		// Not a superadmin?  Preselect their member group as allowed to view templates
-		$selected_member_groups = ($this->session->userdata('group_id') != 1) ? array($this->session->userdata('group_id')) : array();
+		$selected_member_groups = ( ! ee('Permission')->isSuperAdmin()) ? array($this->session->userdata('group_id')) : array();
 
 		// only member groups with design manager access
 		$member_groups = ee('Model')->get('MemberGroup')
@@ -81,11 +81,11 @@ class Group extends AbstractDesignController {
 				if ($result->isValid())
 				{
 					// Only set member groups from post if they have permission to admin member groups and a value is set
-					if (ee()->input->post('member_groups') && ($this->session->userdata('group_id') == 1 OR ee()->cp->allowed_group('can_admin_mbr_groups')))
+					if (ee()->input->post('member_groups') && (ee('Permission')->isSuperAdmin() OR ee()->cp->allowed_group('can_admin_mbr_groups')))
 					{
 						$group->MemberGroups = ee('Model')->get('MemberGroup', ee('Request')->post('member_groups'))->all();
 					}
-					elseif ($this->session->userdata('group_id') != 1 AND ! ee()->cp->allowed_group('can_admin_mbr_groups'))
+					elseif ( ! ee('Permission')->isSuperAdmin() AND ! ee()->cp->allowed_group('can_admin_mbr_groups'))
 					{
 						// No permission to admin, so their group is automatically added to the template group
 						$group->MemberGroups = ee('Model')->get('MemberGroup', $this->session->userdata('group_id'))->first();
@@ -93,7 +93,7 @@ class Group extends AbstractDesignController {
 
 					// Does the current member have permission to access the template group they just created?
 					$member_groups = $group->MemberGroups->pluck('group_id');
-					$redirect_name = ($this->session->userdata('group_id') == 1 OR in_array($this->session->userdata('group_id'), $member_groups)) ? TRUE : FALSE;
+					$redirect_name = (ee('Permission')->isSuperAdmin() OR in_array($this->session->userdata('group_id'), $member_groups)) ? TRUE : FALSE;
 
 					$group->save();
 
@@ -276,7 +276,7 @@ class Group extends AbstractDesignController {
 				{
 					// On edit, if they don't have permission to edit member group permissions, they can't change
 					// template member group settings
-					if ($this->session->userdata('group_id') == 1 OR ee()->cp->allowed_group('can_admin_mbr_groups'))
+					if (ee('Permission')->isSuperAdmin() OR ee()->cp->allowed_group('can_admin_mbr_groups'))
 					{
 						// If post is null and field should be present, unassign members
 						// If field isn't present, we don't change whatever it's currently set to
@@ -292,7 +292,7 @@ class Group extends AbstractDesignController {
 
 					// Does the current member have permission to access the template group they just edited?
 					$member_groups = $group->MemberGroups->pluck('group_id');
-					$redirect_name = ($this->session->userdata('group_id') == 1 OR in_array($this->session->userdata('group_id'), $member_groups)) ? TRUE : FALSE;
+					$redirect_name = (ee('Permission')->isSuperAdmin() OR in_array($this->session->userdata('group_id'), $member_groups)) ? TRUE : FALSE;
 
 					$group->save();
 

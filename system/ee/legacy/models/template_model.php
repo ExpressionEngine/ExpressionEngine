@@ -447,7 +447,7 @@ class Template_model extends CI_Model {
 
 		// If a user other than Super Admin is creating a template group, give them
 		// access to the group they just created
-		if ($this->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$data = array();
 			$data['group_id'] = $this->session->userdata('group_id');

@@ -123,7 +123,7 @@ class Rte_toolset_model extends CI_Model {
 		}
 
 		// are you an admin?
-		$admin = ($this->session->userdata('group_id') == '1');
+		$admin = (ee('Permission')->isSuperAdmin());
 
 		if ( ! $admin)
 		{
