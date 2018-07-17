@@ -77,6 +77,7 @@ function makeFilterableComponent(WrappedComponent) {
       _this.initialItems = SelectList.formatItems(props.items);
       _this.state = {
         items: _this.initialItems,
+        initialCount: _this.initialItems.length,
         filterValues: {},
         loading: false
       };
@@ -154,6 +155,7 @@ function makeFilterableComponent(WrappedComponent) {
             return _this4.filterChange(name, value);
           },
           initialItems: this.initialItems,
+          initialCount: this.state.initialCount,
           items: this.state.items,
           itemsChanged: this.initialItemsChanged
         }));

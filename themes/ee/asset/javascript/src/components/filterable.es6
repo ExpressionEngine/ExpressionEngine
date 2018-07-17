@@ -13,6 +13,7 @@ function makeFilterableComponent(WrappedComponent) {
       this.initialItems = SelectList.formatItems(props.items)
       this.state = {
         items: this.initialItems,
+        initialCount: this.initialItems.length,
         filterValues: {},
         loading: false
       }
@@ -122,6 +123,7 @@ function makeFilterableComponent(WrappedComponent) {
         loading={this.state.loading}
         filterChange={(name, value) => this.filterChange(name, value)}
         initialItems={this.initialItems}
+        initialCount={this.state.initialCount}
         items={this.state.items}
         itemsChanged={this.initialItemsChanged}
       />
