@@ -268,7 +268,7 @@ abstract class AbstractDesign extends CP_Controller {
 			unset($header['toolbar_items']['settings']);
 		}
 
-		if (ee('Model')->get('Template')->count() > 0 && ee()->session->userdata('group_id') == 1)
+		if (ee('Model')->get('Template')->count() > 0 && ee('Permission')->isSuperAdmin())
 		{
 			$header['toolbar_items']['export'] =array(
 				'href' => ee('CP/URL', 'design/export'),
@@ -291,7 +291,7 @@ abstract class AbstractDesign extends CP_Controller {
 	protected function hasEditTemplatePrivileges($group_id = NULL, $template_id = NULL)
 	{
 		// If the user is a Super Admin, return true
-		if (ee()->session->userdata['group_id'] == 1)
+		if (ee('Permission')->isSuperAdmin())
 		{
 			return TRUE;
 		}

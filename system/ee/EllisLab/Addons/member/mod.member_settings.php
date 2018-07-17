@@ -1232,7 +1232,7 @@ class Member_settings extends Member {
 					array('action' => $this->_member_path('update_userpass'))
 				),
 				'row:username_form'				=>
-					(ee()->session->userdata['group_id'] == 1 OR ee()->config->item('allow_username_change') == 'y') ?
+					(ee('Permission')->isSuperAdmin() OR ee()->config->item('allow_username_change') == 'y') ?
 						$this->_load_element('username_row') :
 						$this->_load_element('username_change_disallowed'),
 				'path:update_username_password'	=>	$this->_member_path('update_userpass'),

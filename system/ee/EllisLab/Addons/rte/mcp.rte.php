@@ -456,7 +456,7 @@ class Rte_mcp {
 	private function _permissions_check()
 	{
 		// super admins always can
-		$can_access = (ee()->session->userdata('group_id') == '1');
+		$can_access = (ee('Permission')->isSuperAdmin());
 
 		if ( ! $can_access)
 		{

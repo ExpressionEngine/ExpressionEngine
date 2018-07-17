@@ -912,7 +912,7 @@ class EE_Functions {
 		{
 			$allowed_channels = array_keys(ee()->session->userdata['assigned_channels']);
 		}
-		elseif (ee()->session->userdata['group_id'] == 1)
+		elseif (ee('Permission')->isSuperAdmin())
 		{
 			if ($all_sites === TRUE)
 			{
@@ -1759,7 +1759,7 @@ class EE_Functions {
 
 			if (ee()->config->item('debug') == 2
 				OR (ee()->config->item('debug') == 1
-					&& ee()->session->userdata('group_id') == 1))
+					&& ee('Permission')->isSuperAdmin()))
 			{
 				$error = lang('error_invalid_conditional') . "\n\n";
 				$error .= '<strong>' . $thrower . ' State:</strong> ' . $e->getMessage();

@@ -44,7 +44,7 @@
 							<?php if ($update_available): ?>
 								<?=$this->embed('ee:_shared/_new_version', $new_version)?>
 							<?php endif ?>
-							<?php if (ee()->session->userdata('group_id') == 1): ?>
+							<?php if (ee('Permission')->isSuperAdmin()): ?>
 								<?php if ( ! $update_available): ?>
 									<div class="app-about-info__update">
 										<?=lang('checking_for_updates')?>

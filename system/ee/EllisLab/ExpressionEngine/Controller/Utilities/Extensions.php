@@ -323,7 +323,7 @@ class Extensions extends Utilities {
 				$file = $info->getPath() . '/ext.' . $name . '.php';
 				if (ee()->config->item('debug') == 2
 					OR (ee()->config->item('debug') == 1
-						AND ee()->session->userdata('group_id') == 1))
+						AND ee('Permission')->isSuperAdmin()))
 				{
 					include($file);
 				}

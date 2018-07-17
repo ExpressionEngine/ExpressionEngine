@@ -95,7 +95,7 @@ class EE_Messages {
 		$this->attach_allowed = (ee()->config->item('prv_msg_allow_attachments') == 'y'
 			&& ee()->session->userdata('can_attach_in_private_messages') == 'y') ? 'y' : 'n';
 
-		$this->storage_limit	= (ee()->session->userdata['group_id'] == '1') ? 0 : ee()->session->userdata['prv_msg_storage_limit'];
+		$this->storage_limit	= (ee('Permission')->isSuperAdmin()) ? 0 : ee()->session->userdata['prv_msg_storage_limit'];
 		$this->send_limit		= ee()->session->userdata['prv_msg_send_limit'];
 
 		if ( ! defined('AMP')) define('AMP', '&amp;');
@@ -3219,7 +3219,7 @@ DOH;
 			++$i;
 			$data = $row;
 
-			$this->conditionals['can_delete_bulletin']		= (ee()->session->userdata['group_id'] == 1 OR $row['sender_id'] == ee()->session->userdata['member_id']) ? 'y' : 'n';
+			$this->conditionals['can_delete_bulletin']		= (ee('Permission')->isSuperAdmin() OR $row['sender_id'] == ee()->session->userdata['member_id']) ? 'y' : 'n';
 
 			if ($this->allegiance == 'cp')
 			{

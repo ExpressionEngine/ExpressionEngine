@@ -1414,7 +1414,7 @@ class Addons extends CP_Controller {
 				$file = $info->getPath() . '/ext.' . $name . '.php';
 				if (ee()->config->item('debug') == 2
 					OR (ee()->config->item('debug') == 1
-						AND ee()->session->userdata('group_id') == 1))
+						AND ee('Permission')->isSuperAdmin()))
 				{
 					include($file);
 				}
@@ -1999,7 +1999,7 @@ class Addons extends CP_Controller {
 
 	private function assertUserHasAccess($addon)
 	{
-		if (ee()->session->userdata('group_id') == 1)
+		if (ee('Permission')->isSuperAdmin())
 		{
 			return;
 		}

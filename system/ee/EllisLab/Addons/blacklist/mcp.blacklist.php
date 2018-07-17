@@ -70,7 +70,7 @@ class Blacklist_mcp {
 		$allow_write_htaccess = FALSE;
 		$htaccess_path = NULL;
 
-		if (ee()->session->userdata('group_id') == '1')
+		if (ee('Permission')->isSuperAdmin())
 		{
 			$allow_write_htaccess = TRUE;
 			$htaccess_path = ee()->config->item('htaccess_path', '', TRUE);

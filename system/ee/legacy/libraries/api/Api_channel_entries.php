@@ -572,7 +572,7 @@ class Api_channel_entries extends Api {
 
 				if ($result_zero->cat_group == $result_one->cat_group)
 				{
-					if (ee()->session->userdata('group_id') == 1 OR in_array($data['new_channel'], $this->_cache['assigned_channels']))
+					if (ee('Permission')->isSuperAdmin() OR in_array($data['new_channel'], $this->_cache['assigned_channels']))
 					{
 						$data['old_channel'] = $this->channel_id;
 						$this->channel_id = $data['new_channel'];

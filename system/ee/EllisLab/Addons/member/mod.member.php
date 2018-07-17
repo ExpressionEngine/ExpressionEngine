@@ -1248,7 +1248,7 @@ class Member {
 		}
 
 		// If the user is a SuperAdmin, then no deletion
-		if (ee()->session->userdata('group_id') == 1)
+		if (ee('Permission')->isSuperAdmin())
 		{
 			return ee()->output->show_user_error('general', ee()->lang->line('cannot_delete_super_admin'));
 		}

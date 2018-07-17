@@ -55,7 +55,7 @@ class Logs extends CP_Controller {
 		$logs = $sidebar->addHeader(lang('logs'))
 			->addBasicList();
 
-		if (ee()->session->userdata('group_id') == 1)
+		if (ee('Permission')->isSuperAdmin())
 		{
 			$item = $logs->addItem(lang('developer_log'), ee('CP/URL')->make('logs/developer'));
 		}
@@ -84,7 +84,7 @@ class Logs extends CP_Controller {
 	 */
 	public function index()
 	{
-		if (ee()->session->userdata('group_id') == 1)
+		if (ee('Permission')->isSuperAdmin())
 		{
 			ee()->functions->redirect(ee('CP/URL')->make('logs/developer'));
 		}

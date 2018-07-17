@@ -110,7 +110,7 @@ class EE_Messages_send extends EE_Messages {
 		}
 		else
 		{
-			$config['xss_clean'] = (ee()->session->userdata('group_id') == 1) ? FALSE : TRUE;
+			$config['xss_clean'] = (ee('Permission')->isSuperAdmin()) ? FALSE : TRUE;
 		}
 
 		ee()->load->library('upload', $config);

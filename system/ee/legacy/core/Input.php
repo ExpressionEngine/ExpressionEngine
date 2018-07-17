@@ -800,7 +800,7 @@ class EE_Input {
 				if ( ! $clean)
 				{
 					// Only notify super admins of the offending data
-					if (ee()->session->userdata('group_id') == 1)
+					if (ee('Permission')->isSuperAdmin())
 					{
 						$data = ((int) config_item('debug') == 2) ? '<br>'.htmlentities($val) : '';
 

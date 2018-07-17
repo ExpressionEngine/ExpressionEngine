@@ -32,7 +32,7 @@ abstract class AbstractPublish extends CP_Controller {
 
 		ee()->cp->get_installed_modules();
 
-		$this->is_admin = (ee()->session->userdata['group_id'] == 1);
+		$this->is_admin = (ee('Permission')->isSuperAdmin());
 		$this->assigned_channel_ids = array_keys(ee()->session->userdata['assigned_channels']);
 
 		$this->pruneAutosaves();

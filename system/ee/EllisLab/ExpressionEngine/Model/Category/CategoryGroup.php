@@ -133,7 +133,7 @@ class CategoryGroup extends StructureModel {
 		$can_edit = explode('|', rtrim($this->can_edit_categories, '|'));
 		$editable = FALSE;
 
-		if (ee()->session->userdata['group_id'] == 1
+		if (ee('Permission')->isSuperAdmin()
 			|| (ee()->session->userdata['can_edit_categories'] == 'y'
 				&& in_array(ee()->session->userdata['group_id'], $can_edit)
 				))
@@ -144,7 +144,7 @@ class CategoryGroup extends StructureModel {
 		$can_delete = explode('|', rtrim($this->can_delete_categories, '|'));
 		$deletable = FALSE;
 
-		if (ee()->session->userdata['group_id'] == 1
+		if (ee('Permission')->isSuperAdmin()
 			|| (ee()->session->userdata['can_delete_categories'] =='y'
 				&& in_array(ee()->session->userdata['group_id'], $can_delete)
 				))

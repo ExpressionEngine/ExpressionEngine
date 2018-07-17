@@ -227,7 +227,7 @@ class Rte_ext {
 			$has_access = $access AND ee()->cp->allowed_group('can_access_addons');
 		}
 
-		if (ee()->session->userdata('group_id') == 1 OR $has_access)
+		if (ee('Permission')->isSuperAdmin() OR $has_access)
 		{
 			ee()->lang->loadfile($this->module);
 			$menu['admin']['admin_content']['rte_settings'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module='.$this->module;

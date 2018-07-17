@@ -3560,7 +3560,7 @@ class Forum_Core extends Forum {
 			}
 
 			// Parse the "Delete" Button
-			if (ee()->session->userdata('group_id') == 1 OR
+			if (ee('Permission')->isSuperAdmin() OR
 				($this->_mod_permission('can_delete', $row['forum_id']) &&
 				! in_array($row['author_id'], $super_admins)))
 			{
@@ -3578,7 +3578,7 @@ class Forum_Core extends Forum {
 
 			$can_edit = FALSE;
 
-			if (ee()->session->userdata('group_id') == 1 OR
+			if (ee('Permission')->isSuperAdmin() OR
 				(ee()->session->userdata('member_id') == $row['author_id']))
 			{
 				$can_edit = TRUE;
@@ -8394,7 +8394,7 @@ class Forum_Core extends Forum {
 
 			if ($v['1'] == 'y')
 			{
-				if (ee()->session->userdata('group_id') == 1)
+				if (ee('Permission')->isSuperAdmin())
 				{
 					$temp = preg_replace("/\{name\}/", $v['0'].'*', $temp);
 				}

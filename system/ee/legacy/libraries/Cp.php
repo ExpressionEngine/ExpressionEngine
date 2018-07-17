@@ -118,7 +118,7 @@ class Cp {
 			'cp_quicklinks'			=> $this->_get_quicklinks($member->quick_links),
 
 			'EE_view_disable'		=> FALSE,
-			'is_super_admin'		=> (ee()->session->userdata['group_id'] == 1) ? TRUE : FALSE,	// for conditional use in view files
+			'is_super_admin'		=> (ee('Permission')->isSuperAdmin()) ? TRUE : FALSE,	// for conditional use in view files
 		);
 
 		// global table data
@@ -430,7 +430,7 @@ class Cp {
 				ee()->file_integrity->send_site_admin_warning($changed);
 			}
 
-			if (ee()->session->userdata('group_id') == 1)
+			if (ee('Permission')->isSuperAdmin())
 			{
 				$alert = ee('CP/Alert')->makeStandard('notices')
 					->asWarning()
@@ -949,7 +949,7 @@ class Cp {
 		}
 
 		// Super Admins always have access
-		if (ee()->session->userdata('group_id') == 1)
+		if (ee('Permission')->isSuperAdmin())
 		{
 			return TRUE;
 		}
@@ -986,7 +986,7 @@ class Cp {
 		}
 
 		// Super Admins always have access
-		if (ee()->session->userdata('group_id') == 1)
+		if (ee('Permission')->isSuperAdmin())
 		{
 			return TRUE;
 		}

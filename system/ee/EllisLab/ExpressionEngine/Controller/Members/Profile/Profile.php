@@ -98,7 +98,7 @@ class Profile extends CP_Controller {
 		$list->addItem(lang('email_settings'), ee('CP/URL')->make('members/profile/email', $this->query_string));
 		$list->addItem(lang('auth_settings'), ee('CP/URL')->make('members/profile/auth', $this->query_string));
 
-		if (ee()->config->item('allow_member_localization') == 'y' OR ee()->session->userdata('group_id') == 1)
+		if (ee()->config->item('allow_member_localization') == 'y' OR ee('Permission')->isSuperAdmin())
 		{
 			$list->addItem(lang('date_settings'), ee('CP/URL')->make('members/profile/date', $this->query_string));
 		}
@@ -168,7 +168,7 @@ class Profile extends CP_Controller {
 					$list->addItem(sprintf(lang('email_username'), $this->member->username), ee('CP/URL')->make('utilities/communicate/member/' . $this->member->member_id));
 				}
 
-				if (ee()->session->userdata('group_id') == 1 && ! $this->member->isAnonymized())
+				if (ee('Permission')->isSuperAdmin() && ! $this->member->isAnonymized())
 				{
 					$list->addItem(sprintf(lang('login_as'), $this->member->username), ee('CP/URL')->make('members/profile/login', $this->query_string));
 				}

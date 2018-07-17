@@ -1709,7 +1709,7 @@ class Comment {
 
 		$channel_id         = $query->row('channel_id') ;
 		$require_membership = $query->row('comment_require_membership') ;
-		$comment_moderate   = (ee()->session->userdata['group_id'] == 1 OR ee()->session->userdata['exclude_from_moderation'] == 'y') ? 'n' : $force_moderation;
+		$comment_moderate   = (ee('Permission')->isSuperAdmin() OR ee()->session->userdata['exclude_from_moderation'] == 'y') ? 'n' : $force_moderation;
 		$entry_id           = $query->row('entry_id');
 		$comment_site_id    = $query->row('site_id');
 
@@ -2088,7 +2088,7 @@ class Comment {
 
 		// non-member comments will expose email addresses, so make sure the visitor should
 		// be able to see this data before including it
-		$expose_emails = (ee()->session->userdata('group_id') == 1) ? TRUE : FALSE;
+		$expose_emails = (ee('Permission')->isSuperAdmin()) ? TRUE : FALSE;
 
 		$vars = array();
 		$total_results = count($subscribed);
