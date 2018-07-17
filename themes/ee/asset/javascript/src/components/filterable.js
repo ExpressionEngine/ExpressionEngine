@@ -65,9 +65,7 @@ function makeFilterableComponent(WrappedComponent) {
         if (_this.ajaxRequest) _this.ajaxRequest.abort();
 
         var params = filterState;
-        params.selected = _this.props.selected.map(function (item) {
-          return item.value;
-        });
+        params.selected = _this.getSelectedValues(_this.props.selected);
 
         _this.setState({ loading: true });
 
@@ -112,15 +110,26 @@ function makeFilterableComponent(WrappedComponent) {
         });
       }
     }, {
+      key: 'getSelectedValues',
+      value: function getSelectedValues(selected) {
+        var values = [];
+        if (selected instanceof Array) {
+          values = selected.map(function (item) {
+            return item.value;
+          });
+        } else if (selected.value) {
+          values = [selected.value];
+        }
+        return values.join('|');
+      }
+    }, {
       key: 'forceAjaxRefresh',
       value: function forceAjaxRefresh(params) {
         var _this3 = this;
 
         if (!params) {
           params = this.state.filterValues;
-          params.selected = this.props.selected.map(function (item) {
-            return item.value;
-          });
+          params.selected = this.getSelectedValues(this.props.selected);
         }
 
         return $.ajax({

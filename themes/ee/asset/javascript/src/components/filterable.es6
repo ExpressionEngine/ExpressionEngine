@@ -77,9 +77,7 @@ function makeFilterableComponent(WrappedComponent) {
       if (this.ajaxRequest) this.ajaxRequest.abort()
 
       let params = filterState
-      params.selected = this.props.selected.map(item => {
-        return item.value
-      })
+      params.selected = this.getSelectedValues(this.props.selected)
 
       this.setState({ loading: true })
 
@@ -88,12 +86,22 @@ function makeFilterableComponent(WrappedComponent) {
       }, 300)
     }
 
+    getSelectedValues (selected) {
+      let values = []
+      if (selected instanceof Array) {
+        values = selected.map(item => {
+          return item.value
+        })
+      } else if (selected.value) {
+        values = [selected.value]
+      }
+      return values.join('|')
+    }
+
     forceAjaxRefresh (params) {
       if ( ! params) {
         params = this.state.filterValues
-        params.selected = this.props.selected.map(item => {
-          return item.value
-        })
+        params.selected = this.getSelectedValues(this.props.selected)
       }
 
       return $.ajax({
