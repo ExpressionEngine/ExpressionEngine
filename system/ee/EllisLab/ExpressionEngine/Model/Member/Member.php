@@ -37,15 +37,11 @@ class Member extends ContentModel {
 		'MemberGroup' => array(
 			'type' => 'belongsTo'
 		),
-		'PrimaryMemberGroup' => array(
-			'type' => 'belongsTo',
-			'model' => 'MemberGroup',
-		),
-		'MemberGroups' => array(
+		'Roles' => array(
 			'type' => 'hasAndBelongsToMany',
-			'model' => 'MemberGroup',
+			'model' => 'Role',
 			'pivot' => array(
-				'table' => 'members_member_groups'
+				'table' => 'members_roles'
 			),
 			'weak' => TRUE
 		),
@@ -995,7 +991,6 @@ class Member extends ContentModel {
 		return (bool) preg_match('/^redacted\d+$/', $this->email);
 	}
 
-
 	public function getPermissions()
 	{
 		static $permissions;
@@ -1004,7 +999,7 @@ class Member extends ContentModel {
 		{
 			$permissions = $this->getModelFacade()->get('Permission')
 				->filter('site_id', ee()->config->item('site_id'))
-				->filter('group_id', 'IN', $this->MemberGroups->pluck('group_id'))
+				->filter('role_id', 'IN', $this->Roles->pluck('role_id'))
 				->all()
 				->getDictionary('permission', 'permission_id');
 		}
