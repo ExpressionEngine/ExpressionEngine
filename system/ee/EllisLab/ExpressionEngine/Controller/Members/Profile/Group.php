@@ -38,7 +38,7 @@ class Group extends Profile {
 		$groups = ee('Model')->get('MemberGroup')->order('group_title', 'asc')->all();
 		$choices = array();
 
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$groups = $groups->filter('is_locked', FALSE);
 		}
@@ -156,7 +156,7 @@ class Group extends Profile {
 	{
 		$groups = ee('Model')->get('MemberGroup')->filter('group_id', $group);
 
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$groups->filter('is_locked', 'n');
 		}

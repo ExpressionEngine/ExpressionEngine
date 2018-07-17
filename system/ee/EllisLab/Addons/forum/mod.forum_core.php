@@ -2977,7 +2977,7 @@ class Forum_Core extends Forum {
 		$meta = $this->_fetch_forum_metadata($forum_id);
 		$perms = unserialize(stripslashes($meta[$forum_id]['forum_permissions']));
 
-		if ( ! $this->_permission('can_post_reply', $perms) OR ($tquery->row('status')  == 'c' AND ee()->session->userdata('group_id') != 1) OR ee()->session->userdata('member_id') == 0)
+		if ( ! $this->_permission('can_post_reply', $perms) OR ($tquery->row('status')  == 'c' AND ! ee('Permission')->isSuperAdmin()) OR ee()->session->userdata('member_id') == 0)
 		{
 			$str = $this->deny_if('can_post', $str, '&nbsp;');
 		}
@@ -3517,7 +3517,7 @@ class Forum_Core extends Forum {
 			$meta = $this->_fetch_forum_metadata($row['forum_id']);
 			$perms = unserialize(stripslashes($meta[$row['forum_id']]['forum_permissions']));
 
-			if ( ! $this->_permission('can_post_reply', $perms) OR ($topic_status == 'c' AND ee()->session->userdata('group_id') != 1) OR ee()->session->userdata('member_id') == 0)
+			if ( ! $this->_permission('can_post_reply', $perms) OR ($topic_status == 'c' AND ! ee('Permission')->isSuperAdmin()) OR ee()->session->userdata('member_id') == 0)
 			{
 				$temp = $this->deny_if('can_post', $temp, '&nbsp;');
 			}
@@ -5580,7 +5580,7 @@ class Forum_Core extends Forum {
 				return $this->trigger_error('topic_no_exists');
 			}
 
-			if ($meta[$this->current_id]['forum_is_cat'] == 'y' OR ($meta[$this->current_id]['status'] == 'c' AND ee()->session->userdata('group_id') != 1) OR $meta[$this->current_id]['forum_status'] == 'a')
+			if ($meta[$this->current_id]['forum_is_cat'] == 'y' OR ($meta[$this->current_id]['status'] == 'c' AND ! ee('Permission')->isSuperAdmin()) OR $meta[$this->current_id]['forum_status'] == 'a')
 			{
 				return $this->trigger_error('not_authorized');
 			}
@@ -5658,7 +5658,7 @@ class Forum_Core extends Forum {
 					//  Fetch the Super Admin IDs
 					$super_admins = $this->fetch_superadmins();
 
-					if (in_array($meta[$this->current_id]['author_id'], $super_admins) && ee()->session->userdata('group_id') != 1)
+					if (in_array($meta[$this->current_id]['author_id'], $super_admins) && ! ee('Permission')->isSuperAdmin())
 					{
 						//return $this->trigger_error('not_authorized');
 					}
@@ -5694,7 +5694,7 @@ class Forum_Core extends Forum {
 		}
 
 		// Throttle check
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$query = ee()->db->query("SELECT forum_post_timelock FROM exp_forums WHERE forum_id = '{$meta[$this->current_id]['forum_id']}'");
 
@@ -5715,7 +5715,7 @@ class Forum_Core extends Forum {
 		// Do we allow duplicate data?
 		if ($this->current_request != 'edittopic' AND $this->current_request != 'editreply')
 		{
-			if (ee()->config->item('deny_duplicate_data') == 'y' AND ee()->session->userdata['group_id'] != 1 AND ee()->input->post('body') != '')
+			if (ee()->config->item('deny_duplicate_data') == 'y' AND ! ee('Permission')->isSuperAdmin() AND ee()->input->post('body') != '')
 			{
 				$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_topics WHERE body = '".ee()->db->escape_str(ee()->input->post('body'))."'");
 
@@ -5786,7 +5786,7 @@ class Forum_Core extends Forum {
 
 		// Check for spam
 		$spam = FALSE;
-		if (ee()->input->post('preview') == FALSE && ee()->session->userdata('group_id') != 1)
+		if (ee()->input->post('preview') == FALSE && ! ee('Permission')->isSuperAdmin())
 		{
 			$body = ee()->input->post('body');
 			$title = ee()->input->post('title');
@@ -6528,7 +6528,7 @@ class Forum_Core extends Forum {
 			//  Fetch the Super Admin IDs
 			$super_admins = $this->fetch_superadmins();
 
-			if (in_array($author_id, $super_admins) && ee()->session->userdata('group_id') != 1)
+			if (in_array($author_id, $super_admins) && ! ee('Permission')->isSuperAdmin())
 			{
 				return $this->trigger_error('not_authorized');
 			}
@@ -7962,7 +7962,7 @@ class Forum_Core extends Forum {
 		}
 
 		// Admins can not be banned - except by a super admin
-		if ($this->_is_admin($this->current_id, $query->row('group_id') ) AND ee()->session->userdata('group_id') != 1)
+		if ($this->_is_admin($this->current_id, $query->row('group_id') ) AND ! ee('Permission')->isSuperAdmin())
 		{
 			return $this->trigger_error('admins_can_not_be_banned');
 		}
@@ -8036,7 +8036,7 @@ class Forum_Core extends Forum {
 
 		// Admins can not be banned - except by a super admin
 		if ($this->_is_admin($this->current_id, $query->row('group_id') ) &&
-			ee()->session->userdata('group_id') != 1)
+			! ee('Permission')->isSuperAdmin())
 		{
 			return $this->trigger_error('admins_can_not_be_banned');
 		}
@@ -8639,7 +8639,7 @@ class Forum_Core extends Forum {
 
 		// Flood control
 
-		if (ee()->session->userdata['search_flood_control'] > 0 AND ee()->session->userdata['group_id'] != 1)
+		if (ee()->session->userdata['search_flood_control'] > 0 AND ! ee('Permission')->isSuperAdmin())
 		{
 			$cutoff = time() - ee()->session->userdata['search_flood_control'];
 

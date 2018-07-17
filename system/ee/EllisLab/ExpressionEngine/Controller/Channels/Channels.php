@@ -1418,7 +1418,7 @@ class Channels extends AbstractChannelsController {
 			// If they made the channel?  Give access to that channel to the member group?
 			// If member group has ability to create the channel, they should be
 			// able to access it as well
-			if (ee()->session->userdata('group_id') != 1)
+			if ( ! ee('Permission')->isSuperAdmin())
 			{
 				$data = array(
 					'group_id'		=> ee()->session->userdata('group_id'),

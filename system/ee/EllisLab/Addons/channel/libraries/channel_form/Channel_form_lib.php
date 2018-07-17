@@ -197,7 +197,7 @@ class Channel_form_lib
 
 		if ($this->edit && $this->bool_string(ee()->TMPL->fetch_param('author_only')) && $this->entry('author_id') != $member_id)
 		{
-			if (ee()->session->userdata('group_id') != 1)
+			if ( ! ee('Permission')->isSuperAdmin())
 			{
 				throw new Channel_form_exception(lang('channel_form_author_only'));
 			}

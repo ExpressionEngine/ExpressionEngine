@@ -89,7 +89,7 @@ class Search {
 		/** ----------------------------------------
 		/**  Is the current user allowed to search?
 		/** ----------------------------------------*/
-		if (ee()->session->userdata('can_search') == 'n' AND ee()->session->userdata('group_id') != 1)
+		if (ee()->session->userdata('can_search') == 'n' AND ! ee('Permission')->isSuperAdmin())
 		{
 			return ee()->output->show_user_error('general', array(lang('search_not_allowed')));
 		}
@@ -98,7 +98,7 @@ class Search {
 		/**  Flood control
 		/** ----------------------------------------*/
 
-		if (ee()->session->userdata['search_flood_control'] > 0 AND ee()->session->userdata['group_id'] != 1)
+		if (ee()->session->userdata['search_flood_control'] > 0 AND ! ee('Permission')->isSuperAdmin())
 		{
 			$cutoff = time() - ee()->session->userdata['search_flood_control'];
 

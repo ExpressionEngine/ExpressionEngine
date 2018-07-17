@@ -186,7 +186,7 @@ class Addons extends CP_Controller {
 		$addons = $this->getAllAddons();
 
 		// Filter list for non-super admins
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$that = $this;
 			$addons['first'] = array_filter($addons['first'], function($addon) use ($that)
@@ -1605,7 +1605,7 @@ class Addons extends CP_Controller {
 			->filter('module_name', $name)
 			->first();
 
-		if (ee()->session->userdata['group_id'] != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			// Do they have access to this module?
 			if ( ! isset($module))

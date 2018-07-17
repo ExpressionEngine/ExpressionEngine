@@ -124,7 +124,7 @@ abstract class AbstractFiles extends CP_Controller {
 				->filter('module_id', 0)
 				->all();
 
-			if (ee()->session->userdata['group_id'] != 1)
+			if ( ! ee('Permission')->isSuperAdmin())
 			{
 				$member_group = ee()->session->userdata['group_id'];
 				$upload_destinations = $upload_destinations->filter(function($dir) use ($member_group)

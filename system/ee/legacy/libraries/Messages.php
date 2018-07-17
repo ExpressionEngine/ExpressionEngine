@@ -158,7 +158,7 @@ class EE_Messages {
 	{
 		if (ee()->config->item('prv_msg_enabled') != 'y' OR
 				(ee()->session->userdata('can_send_private_messages') != 'y' &&
-				ee()->session->userdata('group_id') != '1') OR
+				! ee('Permission')->isSuperAdmin()) OR
 			ee()->session->userdata('accept_messages') != 'y')
 		{
 			return FALSE;
@@ -3273,7 +3273,7 @@ DOH;
 		{
 			return $this->bulletin_board();
 		}
-		elseif(ee()->session->userdata['group_id'] != 1 && $query->row('sender_id')  != ee()->session->userdata['member_id'])
+		elseif(! ee('Permission')->isSuperAdmin() && $query->row('sender_id')  != ee()->session->userdata['member_id'])
 		{
 			return $this->bulletin_board();
 		}
@@ -3327,7 +3327,7 @@ DOH;
 
 		$sql = "SELECT group_id, group_title FROM exp_member_groups WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND include_in_memberlist = 'y' AND group_id NOT IN ('2', '3', '4') ";
 
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$sql .= "AND group_id != '1' ";
 		}
@@ -3393,7 +3393,7 @@ DOH;
 
 		$sql = "SELECT group_id FROM exp_member_groups WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND include_in_memberlist = 'y' AND group_id NOT IN ('2', '3', '4') ";
 
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$sql .= "AND group_id != '1' ";
 		}

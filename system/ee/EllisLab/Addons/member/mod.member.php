@@ -1945,7 +1945,7 @@ class Member {
 
 		// Parse the self deletion conditional
 		if (ee()->session->userdata('can_delete_self') == 'y' &&
-			ee()->session->userdata('group_id') != 1)
+			! ee('Permission')->isSuperAdmin())
 		{
 			$str = $this->_allow_if('can_delete', $str);
 		}

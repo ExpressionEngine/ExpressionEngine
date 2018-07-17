@@ -1413,7 +1413,7 @@ class Members extends CP_Controller {
 		{
 			// You must be a Super Admin to delete a Super Admin
 
-			if (ee()->session->userdata['group_id'] != 1)
+			if ( ! ee('Permission')->isSuperAdmin())
 			{
 				show_error(lang('must_be_superadmin_to_delete_one'));
 			}

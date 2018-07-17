@@ -27,7 +27,7 @@ class Design extends AbstractDesignController {
 
 	public function export()
 	{
-		if (ee()->session->userdata['group_id'] != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -39,7 +39,7 @@ class Design extends AbstractDesignController {
 	{
 		$assigned_groups = NULL;
 
-		if (ee()->session->userdata['group_id'] != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$assigned_groups = array_keys(ee()->session->userdata['assigned_template_groups']);
 

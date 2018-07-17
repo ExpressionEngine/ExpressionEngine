@@ -71,7 +71,7 @@ return [
 		{
 			 return new EntryListing\EntryListing(
 				ee()->config->item('site_id'),
-				(ee()->session->userdata['group_id'] == 1),
+				(ee('Permission')->isSuperAdmin()),
 				array_keys(ee()->session->userdata['assigned_channels']),
 				ee()->localize->now,
 				$search_value,

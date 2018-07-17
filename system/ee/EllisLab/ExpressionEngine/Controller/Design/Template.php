@@ -553,7 +553,7 @@ class Template extends AbstractDesignController {
 		$base_url = ee('CP/URL')->make('design/template/search');
 		$base_url->setQueryStringVariable('search', $search_terms);
 
-		if (ee()->session->userdata['group_id'] != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$assigned_groups = array_keys(ee()->session->userdata['assigned_template_groups']);
 			$templates->filter('group_id', 'IN', $assigned_groups);

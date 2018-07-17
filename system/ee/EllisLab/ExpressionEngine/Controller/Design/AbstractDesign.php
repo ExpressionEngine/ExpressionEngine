@@ -98,7 +98,7 @@ abstract class AbstractDesign extends CP_Controller {
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('group_order', 'asc');
 
-		if (ee()->session->userdata['group_id'] != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$assigned_groups =  array_keys(ee()->session->userdata['assigned_template_groups']);
 			$template_groups->filter('group_id', 'IN', $assigned_groups);

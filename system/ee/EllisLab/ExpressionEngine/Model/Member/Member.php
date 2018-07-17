@@ -643,7 +643,7 @@ class Member extends ContentModel {
 	{
 		$member_groups = $this->getModelFacade()->get('MemberGroup');
 
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$member_groups->filter('is_locked', 'n');
 		}

@@ -20,7 +20,7 @@ class Member_settings extends Member {
 	{
 		$menu = $this->_load_element('menu');
 
-		if (ee()->config->item('allow_member_localization') == 'n' AND ee()->session->userdata('group_id') != 1)
+		if (ee()->config->item('allow_member_localization') == 'n' AND ! ee('Permission')->isSuperAdmin())
 		{
 			$menu = $this->_deny_if('allow_localization', $menu);
 		}
@@ -134,7 +134,7 @@ class Member_settings extends Member {
 		// Default Member Data
 		$not_in = array(3, 4);
 
-		if ($this->is_admin == FALSE OR ee()->session->userdata('group_id') != 1)
+		if ($this->is_admin == FALSE OR ! ee('Permission')->isSuperAdmin())
 		{
 			$not_in[] = 2;
 		}
@@ -636,7 +636,7 @@ class Member_settings extends Member {
 
 		if ($member_fields)
 		{
-			if (ee()->session->userdata['group_id'] != 1)
+			if ( ! ee('Permission')->isSuperAdmin())
 			{
 				$member_fields = $member_fields->filter(function($field) {
 					return $field->m_field_public == 'y';
@@ -866,7 +866,7 @@ class Member_settings extends Member {
 
 		$sql = "SELECT *  FROM exp_member_fields ";
 
-		if (ee()->session->userdata['group_id'] != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$sql .= " WHERE m_field_public = 'y' ";
 		}
@@ -885,7 +885,7 @@ class Member_settings extends Member {
 		{
 			foreach ($this->member->getDisplay()->getFields() as $field)
 			{
-				if (ee()->session->userdata['group_id'] != 1 && $field->get('field_public') != 'y')
+				if ( ! ee('Permission')->isSuperAdmin() && $field->get('field_public') != 'y')
 				{
 					continue;
 				}
@@ -969,7 +969,7 @@ class Member_settings extends Member {
 
 
 		ee()->db->select('m_field_id, m_field_label, m_field_type, m_field_name');
-		if (ee()->session->userdata['group_id'] != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			ee()->db->where('m_field_public = "y"');
 		}
@@ -1335,7 +1335,7 @@ class Member_settings extends Member {
 	{
 		// Are localizations enabled?
 
-		if (ee()->config->item('allow_member_localization') == 'n' AND ee()->session->userdata('group_id') != 1)
+		if (ee()->config->item('allow_member_localization') == 'n' AND ! ee('Permission')->isSuperAdmin())
 		{
 			return ee()->output->show_user_error('general', array(ee()->lang->line('localization_disallowed')));
 		}
@@ -1381,7 +1381,7 @@ class Member_settings extends Member {
 	{
 		// Are localizations enabled?
 
-		if (ee()->config->item('allow_member_localization') == 'n' AND ee()->session->userdata('group_id') != 1)
+		if (ee()->config->item('allow_member_localization') == 'n' AND ! ee('Permission')->isSuperAdmin())
 		{
 			return ee()->output->show_user_error('general', array(ee()->lang->line('localization_disallowed')));
 		}

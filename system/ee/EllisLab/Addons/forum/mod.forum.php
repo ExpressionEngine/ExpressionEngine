@@ -99,7 +99,7 @@ class Forum {
 		// Is the forum enabled?
 		// If not, only super admins can view it
 		if ($this->preferences['board_enabled'] == 'n'
-			&& ee()->session->userdata('group_id') != 1)
+			&& ! ee('Permission')->isSuperAdmin())
 		{
 			return $this->display_forum('offline_page');
 		}

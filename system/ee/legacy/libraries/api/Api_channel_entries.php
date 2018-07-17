@@ -301,7 +301,7 @@ class Api_channel_entries extends Api {
 
 		foreach ($query->result_array() as $row)
 		{
-			if (ee()->session->userdata('group_id') != 1)
+			if ( ! ee('Permission')->isSuperAdmin())
 			{
 				if ( ! in_array($row['channel_id'], $allowed_channels))
 				{
@@ -472,7 +472,7 @@ class Api_channel_entries extends Api {
 		// Is this user allowed to post here?
 		$this->_cache['assigned_channels'] = ee()->functions->fetch_assigned_channels();
 
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			if ( ! in_array($this->channel_id, $this->_cache['assigned_channels']))
 			{
@@ -772,7 +772,7 @@ class Api_channel_entries extends Api {
 			$this->_set_error('not_authorized');
 		}
 
-		if ($data['author_id'] != ee()->session->userdata('member_id') && ee()->session->userdata('group_id') != 1 && ee()->session->userdata('can_edit_other_entries') != 'y')
+		if ($data['author_id'] != ee()->session->userdata('member_id') && ! ee('Permission')->isSuperAdmin() && ee()->session->userdata('can_edit_other_entries') != 'y')
 		{
 			if ( ! isset($this->_cache['orig_author_id']) OR $data['author_id'] != $this->_cache['orig_author_id'])
 			{
@@ -807,7 +807,7 @@ class Api_channel_entries extends Api {
 
 		$data['status'] = ( ! isset($data['status']) OR $data['status'] === FALSE) ? $this->c_prefs['deft_status'] : $data['status'];
 
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$disallowed_statuses = array();
 			$valid_statuses = ee('Model')->get('Channel', $this->channel_id)->first()

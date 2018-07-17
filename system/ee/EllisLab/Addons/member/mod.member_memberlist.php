@@ -132,7 +132,7 @@ class Member_memberlist extends Member {
 		/**  Check Email Timelock
 		/** ----------------------------------------*/
 
-		if (ee()->session->userdata['group_id'] != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$lock = ee()->config->item('email_console_timelock');
 
@@ -425,7 +425,7 @@ class Member_memberlist extends Member {
 					AND g.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'
 					AND g.include_in_memberlist = 'y' ";
 
-		if ($this->is_admin == FALSE OR ee()->session->userdata('group_id') != 1)
+		if ($this->is_admin == FALSE OR ! ee('Permission')->isSuperAdmin())
 		{
 			$sql .= "AND g.group_id != '2' ";
 		}
@@ -829,7 +829,7 @@ class Member_memberlist extends Member {
 		$sql = "SELECT group_id, group_title FROM exp_member_groups
 				WHERE include_in_memberlist = 'y' AND site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND group_id != '3' AND group_id != '4' ";
 
-		if ($this->is_admin == FALSE OR ee()->session->userdata('group_id') != 1)
+		if ($this->is_admin == FALSE OR ! ee('Permission')->isSuperAdmin())
 		{
 			$sql .= "AND group_id != '2' ";
 		}
@@ -1027,7 +1027,7 @@ class Member_memberlist extends Member {
 		/** ----------------------------------------
 		/**  Is the current user allowed to search?
 		/** ----------------------------------------*/
-		if (ee()->session->userdata['can_search'] == 'n' AND ee()->session->userdata['group_id'] != 1)
+		if (ee()->session->userdata['can_search'] == 'n' AND ! ee('Permission')->isSuperAdmin())
 		{
 			return ee()->output->show_user_error('general', array(ee()->lang->line('search_not_allowed')));
 		}
@@ -1036,7 +1036,7 @@ class Member_memberlist extends Member {
 		/**  Flood control
 		/** ----------------------------------------*/
 
-		if (ee()->session->userdata['search_flood_control'] > 0 AND ee()->session->userdata['group_id'] != 1)
+		if (ee()->session->userdata['search_flood_control'] > 0 AND ! ee('Permission')->isSuperAdmin())
 		{
 			$cutoff = time() - ee()->session->userdata['search_flood_control'];
 
@@ -1120,7 +1120,7 @@ class Member_memberlist extends Member {
 		$keywords = array();
 		$fields	= array();
 
-		$xsql = ($this->is_admin == FALSE OR ee()->session->userdata('group_id') != 1) ? ",'2'" : "";
+		$xsql = ($this->is_admin == FALSE OR ! ee('Permission')->isSuperAdmin()) ? ",'2'" : "";
 
 		if ($custom_fields === FALSE)
 		{

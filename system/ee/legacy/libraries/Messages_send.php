@@ -430,7 +430,7 @@ class EE_Messages_send extends EE_Messages {
 
 		$waiting_period = (ee()->config->item('prv_msg_waiting_period') !== FALSE) ? (int) ee()->config->item('prv_msg_waiting_period') : 1;
 
-		if (ee()->session->userdata['group_id'] != 1 && ee()->session->userdata['join_date'] > (ee()->localize->now - $waiting_period * 60 * 60))
+		if ( ! ee('Permission')->isSuperAdmin() && ee()->session->userdata['join_date'] > (ee()->localize->now - $waiting_period * 60 * 60))
 		{
 			return $this->_error_page(str_replace(array('%time%', '%email%', '%site%'),
 												  array($waiting_period, ee()->functions->encode_email(ee()->config->item('webmaster_email')), ee()->config->item('site_name')),
@@ -443,7 +443,7 @@ class EE_Messages_send extends EE_Messages {
 		/*	- prv_msg_throttling_period => How many seconds between PMs?
 		/* -------------------------------------------*/
 
-		if ($status == 'sent' && ee()->session->userdata['group_id'] != 1)
+		if ($status == 'sent' && ! ee('Permission')->isSuperAdmin())
 		{
 			$period = (ee()->config->item('prv_msg_throttling_period') !== FALSE) ? (int) ee()->config->item('prv_msg_throttling_period') : 30;
 
@@ -530,7 +530,7 @@ class EE_Messages_send extends EE_Messages {
 		/**  Super Admins get a free pass
 		/** -------------------------------------*/
 
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			/** ------------------------------------------
 			/**  Sender Allowed to Send More Messages?

@@ -2622,7 +2622,7 @@ class EE_Template {
 		}
 
 		// Is the current user allowed to view this template?
-		if ($query->row('enable_http_auth') != 'y' && ee()->session->userdata('group_id') != 1)
+		if ($query->row('enable_http_auth') != 'y' && ! ee('Permission')->isSuperAdmin())
 		{
 			ee()->db->select('COUNT(*) as count');
 			ee()->db->where('template_id', $query->row('template_id'));

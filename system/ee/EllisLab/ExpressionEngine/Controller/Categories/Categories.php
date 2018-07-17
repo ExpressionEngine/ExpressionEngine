@@ -306,7 +306,7 @@ class Categories extends AbstractCategoriesController {
 		{
 			$can_edit = explode('|', rtrim($cat_group->can_edit_categories, '|'));
 
-			if (ee()->session->userdata('group_id') != 1 AND ! in_array(ee()->session->userdata('group_id'), $can_edit))
+			if ( ! ee('Permission')->isSuperAdmin() AND ! in_array(ee()->session->userdata('group_id'), $can_edit))
 			{
 				show_error(lang('unauthorized_access'), 403);
 			}

@@ -212,7 +212,7 @@ class Rte_ext {
 
 		// If this isn't a Super Admin, let's check to see if they can modify
 		// the RTE module
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$access = (bool) ee()->db->select('COUNT(m.module_id) AS count')
 				->from('modules m')

@@ -145,7 +145,7 @@ class Groups extends Members\Members {
 				unset($toolbar['toolbar_items']['copy']);
 			}
 
-			if ( ! ee()->cp->allowed_group('can_edit_member_groups') || ($group->is_locked == 'y' && ee()->session->userdata('group_id') != 1))
+			if ( ! ee()->cp->allowed_group('can_edit_member_groups') || ($group->is_locked == 'y' && ! ee('Permission')->isSuperAdmin()))
 			{
 				$title = $group->group_title;
 				unset($toolbar['toolbar_items']['edit']);

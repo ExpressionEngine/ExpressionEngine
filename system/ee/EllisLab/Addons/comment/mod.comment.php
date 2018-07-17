@@ -1669,7 +1669,7 @@ class Comment {
 		/** ----------------------------------------*/
 		if ($query->row('comment_timelock') != '' AND $query->row('comment_timelock') > 0)
 		{
-			if (ee()->session->userdata['group_id'] != 1)
+			if ( ! ee('Permission')->isSuperAdmin())
 			{
 				$time = ee()->localize->now - $query->row('comment_timelock') ;
 
@@ -1690,7 +1690,7 @@ class Comment {
 		/** ----------------------------------------*/
 		if (ee()->config->item('deny_duplicate_data') == 'y')
 		{
-			if (ee()->session->userdata['group_id'] != 1)
+			if ( ! ee('Permission')->isSuperAdmin())
 			{
 				ee()->db->where('comment', $_POST['comment']);
 				$result = ee()->db->count_all_results('comments');
@@ -1715,7 +1715,7 @@ class Comment {
 
 		$comment_string = ee('Security/XSS')->clean($_POST['comment']);
 
-		$is_spam = ee()->session->userdata('group_id') != 1 && ee('Spam')->isSpam($comment_string);
+		$is_spam = ! ee('Permission')->isSuperAdmin() && ee('Spam')->isSpam($comment_string);
 
 		if ($is_spam === TRUE)
 		{

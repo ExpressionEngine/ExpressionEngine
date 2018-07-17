@@ -331,7 +331,7 @@ class Cp {
 		$alert = $this->_checksum_bootstrap_files();
 
 		// These are only displayed to Super Admins
-		if (ee()->session->userdata['group_id'] != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			return;
 		}
@@ -1136,7 +1136,7 @@ class Cp {
 	 */
 	public function switch_site($site_id, $redirect = '')
 	{
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$can_access_cp = ee('Model')->get('Permission')
 				->filter('permission', 'can_access_cp')

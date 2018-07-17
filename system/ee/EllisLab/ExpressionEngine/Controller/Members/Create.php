@@ -35,7 +35,7 @@ class Create extends Members {
 		$groups = ee('Model')->get('MemberGroup')->order('group_title', 'asc')->all();
 		$choices = array();
 
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$groups = $groups->filter('is_locked', FALSE);
 		}
