@@ -201,11 +201,11 @@ class Preflight {
 			return [$this->config->get('theme_folder_path')];
 		}
 
-		$theme_paths = [];
-		foreach ($this->sites as $site)
-		{
-			$theme_paths[] = ee()->config->item('theme_folder_path');
-		}
+		$theme_paths = ee('Model')->get('Config')
+				->filter('site_id', 'IN', $this->sites->pluck('site_id'))
+				->filter('key', 'theme_folder_path')
+				->all()
+				->pluck('value');
 
 		return array_unique($theme_paths);
 	}
