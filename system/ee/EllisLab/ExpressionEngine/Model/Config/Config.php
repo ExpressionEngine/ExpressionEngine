@@ -54,6 +54,11 @@ class Config extends Model {
 		$this->setRawProperty('value', $value);
 	}
 
+	public function get__value()
+	{
+		return parse_config_variables($this->getRawProperty('value'));
+	}
+
 }
 
 // EOF
