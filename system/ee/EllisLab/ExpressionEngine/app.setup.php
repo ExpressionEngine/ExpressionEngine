@@ -633,6 +633,9 @@ return [
 
 			// ..\Permission
 			'Permission' => 'Model\Permission\Permission',
+
+			// ..\Role
+			'Role' => 'Model\Role\Role',
 	),
 	'cookies.necessary' => [
 		'cp_last_site_id',
