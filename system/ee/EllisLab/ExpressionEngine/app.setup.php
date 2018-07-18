@@ -256,14 +256,13 @@ return [
 		'Permission' => function($ee)
 		{
 			$userdata = ee()->session->all_userdata();
-			$permissions = ee()->session->getMember()->getPermissions();
-			$roles = ee()->session->Roles->getDictionary('role_id', 'name');
+			$member = ee()->session->getMember();
 
 			return new Permission\Permission(
 				$ee->make('Model'),
 				$userdata,
-				$permissions,
-				$roles,
+				($member) ? $member->getPermissions() : [],
+				($member) ? $member->Roles->getDictionary('role_id', 'name') : [],
 				ee()->config->item('site_id')
 			);
 		},
