@@ -655,9 +655,11 @@ class Auth_result {
 	{
 		if (empty($this->permissions))
 		{
+			$member = ee('Model')->get('Member', $this->member('member_id'))->first();
+
 			$this->permissions = ee('Model')->get('Permission')
 				->filter('site_id', ee()->config->item('site_id'))
-				->filter('group_id', 'IN', [$this->member('group_id')])
+				->filter('role_id', 'IN', $member->Roles->pluck('role_id'))
 				->all()
 				->getDictionary('permission', 'permission_id');
 		}
