@@ -21,7 +21,7 @@ class Permission extends Model {
 
 	protected static $_typed_columns = [
 		'permission_id' => 'int',
-		'group_id'      => 'int',
+		'role_id'       => 'int',
 		'site_id'       => 'int',
 	];
 
@@ -36,7 +36,7 @@ class Permission extends Model {
 
 	protected static $_validation_rules = [
 		'permission_id' => 'required',
-		'group_id'      => 'required',
+		'role_id'       => 'required',
 		'site_id'       => 'required',
 		'permission'    => 'required',
 	];
@@ -45,7 +45,7 @@ class Permission extends Model {
 
 	// Properties
 	protected $permission_id;
-	protected $group_id;
+	protected $role_id;
 	protected $site_id;
 	protected $permission;
 
