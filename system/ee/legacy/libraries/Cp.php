@@ -936,37 +936,18 @@ class Cp {
 	 *
 	 * Member access validation
 	 *
+	 * @deprecated 5.0.0 Use ee('Permission')->hasAny() instead
 	 * @param	string  any number of permission names
 	 * @return	bool    TRUE if member has any permissions in the set
 	 */
 	public function allowed_group_any()
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('5.0.0', "ee('Permission')->hasAny()");
+
 		$which = func_get_args();
 
-		if ( ! count($which))
-		{
-			return FALSE;
-		}
-
-		// Super Admins always have access
-		if (ee('Permission')->isSuperAdmin())
-		{
-			return TRUE;
-		}
-
-		$result = FALSE;
-
-		foreach ($which as $w)
-		{
-			$k = ee()->session->userdata($w);
-
-			if ($k === TRUE OR $k == 'y')
-			{
-				$result = TRUE;
-			}
-		}
-
-		return $result;
+		return ee('Permission')->hasAny($which);
 	}
 
 	/**
@@ -974,34 +955,18 @@ class Cp {
 	 *
 	 * Member access validation
 	 *
+	 * @deprecated 5.0.0 Use ee('Permission')->hasAll() instead
+	 * @param	string  any number of permission names
 	 * @return	bool    TRUE if member has all permissions
 	 */
 	public function allowed_group()
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('5.0.0', "ee('Permission')->hasAll()");
+
 		$which = func_get_args();
 
-		if ( ! count($which))
-		{
-			return FALSE;
-		}
-
-		// Super Admins always have access
-		if (ee('Permission')->isSuperAdmin())
-		{
-			return TRUE;
-		}
-
-		foreach ($which as $w)
-		{
-			$k = ee()->session->userdata($w);
-
-			if ( ! $k OR $k !== 'y')
-			{
-				return FALSE;
-			}
-		}
-
-		return TRUE;
+		return ee('Permission')->hasAll($which);
 	}
 
 	/**
