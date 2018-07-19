@@ -21,7 +21,7 @@ class Groups extends AbstractFieldsController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group_any(
+		if ( ! ee('Permission')->hasAny(
 			'can_create_channel_fields',
 			'can_edit_channel_fields',
 			'can_delete_channel_fields'

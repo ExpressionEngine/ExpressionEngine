@@ -23,7 +23,7 @@ class Comments extends AbstractPublishController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group_any(
+		if ( ! ee('Permission')->hasAny(
 			'can_moderate_comments',
 			'can_edit_own_comments',
 			'can_delete_own_comments',
@@ -298,7 +298,7 @@ class Comments extends AbstractPublishController {
 			ee()->view->cp_heading = sprintf(lang('all_comments_for_entry'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
 		}
 
-		$vars['can_delete'] = ee()->cp->allowed_group_any(
+		$vars['can_delete'] = ee('Permission')->hasAny(
 			'can_delete_own_comments',
 			'can_delete_all_comments'
 		);

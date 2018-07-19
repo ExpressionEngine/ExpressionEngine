@@ -22,7 +22,7 @@ class Status extends AbstractChannelsController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group_any(
+		if ( ! ee('Permission')->hasAny(
 			'can_create_statuses',
 			'can_edit_statuses',
 			'can_delete_statuses'

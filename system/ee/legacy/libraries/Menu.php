@@ -198,7 +198,7 @@ class EE_Menu {
 		$menu = array();
 
 		if (ee('Permission')->can('admin_channels') &&
-			ee()->cp->allowed_group_any(
+			ee('Permission')->hasAny(
 			'can_create_channels',
 			'can_edit_channels',
 			'can_delete_channels',
@@ -221,7 +221,7 @@ class EE_Menu {
 
 			foreach ($sections as $name => $path)
 			{
-				if (ee()->cp->allowed_group_any(
+				if (ee('Permission')->hasAny(
 					"can_create_{$name}",
 					"can_edit_{$name}",
 					"can_delete_{$name}"

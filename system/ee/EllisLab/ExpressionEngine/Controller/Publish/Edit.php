@@ -24,7 +24,7 @@ class Edit extends AbstractPublishController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group_any(
+		if ( ! ee('Permission')->hasAny(
 			'can_edit_other_entries',
 			'can_edit_self_entries'
 			))

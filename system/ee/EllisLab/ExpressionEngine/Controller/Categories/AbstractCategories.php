@@ -31,7 +31,7 @@ abstract class AbstractCategories extends CP_Controller {
 			['createCat', 'editCat', 'categoryGroupPublishField']
 		))
 		{
-			if ( ! ee()->cp->allowed_group_any(
+			if ( ! ee('Permission')->hasAny(
 				'can_create_categories',
 				'can_edit_categories'
 			))
@@ -41,7 +41,7 @@ abstract class AbstractCategories extends CP_Controller {
 		}
 		else
 		{
-			if ( ! ee()->cp->allowed_group_any(
+			if ( ! ee('Permission')->hasAny(
 				'can_create_categories',
 				'can_edit_categories',
 				'can_delete_categories'
