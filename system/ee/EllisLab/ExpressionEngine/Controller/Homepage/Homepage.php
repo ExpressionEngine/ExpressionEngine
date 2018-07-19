@@ -1,31 +1,18 @@
 <?php
+/**
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
 
 namespace EllisLab\ExpressionEngine\Controller\Homepage;
 
 use CP_Controller;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2016, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine CP Homepage Class
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * Homepage Controller
  */
 class Homepage extends CP_Controller {
 
@@ -43,7 +30,8 @@ class Homepage extends CP_Controller {
 		$vars['number_of_entries'] = $stats->total_entries;
 		$vars['number_of_comments'] = $stats->total_comments;
 
-		$vars['last_visit'] = ee()->localize->human_time(ee()->session->userdata['last_visit']);
+		// First login, this is 0 on the first page load
+		$vars['last_visit'] = (empty(ee()->session->userdata['last_visit'])) ? ee()->localize->human_time() : ee()->localize->human_time(ee()->session->userdata['last_visit']);
 
 		if (ee()->config->item('enable_comments') == 'y')
 		{
@@ -75,8 +63,7 @@ class Homepage extends CP_Controller {
 				->channel_id;
 		}
 
-		$vars['number_of_channel_field_groups'] = ee('Model')->get('ChannelFieldGroup')
-			->filter('site_id', ee()->config->item('site_id'))
+		$vars['number_of_channel_fields'] = ee('Model')->get('ChannelField')
 			->count();
 
 		$vars['number_of_banned_members'] = ee('Model')->get('Member')
@@ -94,7 +81,32 @@ class Homepage extends CP_Controller {
 			->filter('Entry.status', 'closed')
 			->count();
 
-		$vars['spam_module_installed'] = (ee('Model')->get('Module')->filter('module_name', 'Spam')->count());
+		$vars['spam_module_installed'] = (bool) ee('Model')->get('Module')->filter('module_name', 'Spam')->count();
+
+		if ($vars['spam_module_installed'])
+		{
+			$vars['number_of_new_spam'] = ee('Model')->get('spam:SpamTrap')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('trap_date', '>', ee()->session->userdata['last_visit'])
+				->count();
+
+			$vars['number_of_spam'] = ee('Model')->get('spam:SpamTrap')
+				->filter('site_id', ee()->config->item('site_id'))
+				->count();
+
+			// db query to aggregate
+			$vars['trapped_spam'] = ee()->db->select('content_type, COUNT(trap_id) as total_trapped')
+				->group_by('content_type')
+				->get('spam_trap')
+				->result();
+
+			foreach ($vars['trapped_spam'] as $trapped)
+			{
+				ee()->lang->load($trapped->content_type);
+			}
+
+			$vars['can_moderate_spam'] = ee()->cp->allowed_group('can_moderate_spam');
+		}
 
 		// Gather the news
 		ee()->load->library(array('rss_parser', 'typography'));
@@ -169,6 +181,17 @@ class Homepage extends CP_Controller {
 
 			if ($member_home_url->path != 'homepage')
 			{
+				// Preserve updater result status messages
+				if (ee('Request')->get('update'))
+				{
+					$member_home_url->setQueryStringVariable(
+						'update',
+						ee('Request')->get('update')
+					);
+				}
+
+				ee()->session->benjaminButtonFlashdata();
+
 				$this->functions->redirect($member_home_url);
 			}
 		}
@@ -203,6 +226,34 @@ class Homepage extends CP_Controller {
 		}
 
 		ee()->functions->redirect($return);
+	}
+
+	/**
+	 * Records that the changelog for this version of EE has been viewed by
+	 * this member, and then redirects to the changelog.
+	 */
+	public function showChangelog()
+	{
+		$news_view = ee('Model')->get('MemberNewsView')
+			->filter('member_id', ee()->session->userdata('member_id'))
+			->first();
+
+		if ( ! $news_view)
+		{
+			$news_view = ee('Model')->make(
+				'MemberNewsView',
+				['member_id' => ee()->session->userdata('member_id')]
+			);
+		}
+
+		$news_view->version = APP_VER;
+		$news_view->save();
+
+		// Version in anchor is separated by dashes instead of dots
+		$dashed_version = implode('-', explode('.', APP_VER));
+		$changelog_url = 'https://docs.expressionengine.com/latest/about/changelog.html#version-'.$dashed_version;
+
+		ee()->functions->redirect($changelog_url);
 	}
 
 }
