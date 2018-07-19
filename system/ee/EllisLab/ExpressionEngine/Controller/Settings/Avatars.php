@@ -20,7 +20,7 @@ class Avatars extends Settings {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_members', 'can_admin_design'))
+		if ( ! ee('Permission')->hasAll('can_access_members', 'can_admin_design'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

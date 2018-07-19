@@ -69,14 +69,14 @@ class Settings extends CP_Controller {
 		$list = $sidebar->addHeader(lang('content_and_design'), $content_and_design_link)
 			->addBasicList();
 
-		if (ee()->cp->allowed_group('can_access_addons', 'can_admin_addons'))
+		if (ee('Permission')->hasAll('can_access_addons', 'can_admin_addons'))
 		{
 			$list->addItem(lang('comment_settings'), ee('CP/URL')->make('settings/comments'));
 		}
 
 		$list->addItem(lang('html_buttons'), ee('CP/URL')->make('settings/buttons'));
 
-		if (ee()->cp->allowed_group('can_access_design', 'can_admin_design'))
+		if (ee('Permission')->hasAll('can_access_design', 'can_admin_design'))
 		{
 			$list->addItem(lang('template_settings'), ee('CP/URL')->make('settings/template'));
 		}
@@ -91,7 +91,7 @@ class Settings extends CP_Controller {
 		$list->addItem(lang('word_censoring'), ee('CP/URL')->make('settings/word-censor'));
 		$list->addItem(lang('menu_manager'), ee('CP/URL')->make('settings/menu-manager'));
 
-		if (ee()->cp->allowed_group('can_access_members', 'can_admin_mbr_groups'))
+		if (ee('Permission')->hasAll('can_access_members', 'can_admin_mbr_groups'))
 		{
 			$list = $sidebar->addHeader(lang('members'), ee('CP/URL')->make('settings/members'))
 				->addBasicList();
@@ -137,7 +137,7 @@ class Settings extends CP_Controller {
 
 			foreach ($settings_options as $allow => $link)
 			{
-				if (ee()->cp->allowed_group($allow))
+				if (ee('Permission')->hasAll($allow))
 				{
 					$landing = $link;
 					break;

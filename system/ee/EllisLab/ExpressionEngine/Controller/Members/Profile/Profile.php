@@ -76,7 +76,7 @@ class Profile extends CP_Controller {
 
 	protected function permissionCheck()
 	{
-		if ( ! $this->cp->allowed_group('can_access_members', 'can_edit_members'))
+		if ( ! ee('Permission')->hasAll('can_access_members', 'can_edit_members'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -107,7 +107,7 @@ class Profile extends CP_Controller {
 
 		$publishing_link = NULL;
 
-		if ($this->cp->allowed_group('can_access_members', 'can_edit_members'))
+		if (ee('Permission')->hasAll('can_access_members', 'can_edit_members'))
 		{
 			$publishing_link = ee('CP/URL')->make('members/profile/publishing', $this->query_string);
 		}

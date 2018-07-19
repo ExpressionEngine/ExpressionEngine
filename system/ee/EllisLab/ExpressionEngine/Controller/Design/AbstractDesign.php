@@ -263,7 +263,7 @@ abstract class AbstractDesign extends CP_Controller {
 			'search_button_value' => lang('search_templates')
 		);
 
-		if ( ! ee()->cp->allowed_group('can_access_sys_prefs', 'can_admin_design'))
+		if ( ! ee('Permission')->hasAll('can_access_sys_prefs', 'can_admin_design'))
 		{
 			unset($header['toolbar_items']['settings']);
 		}

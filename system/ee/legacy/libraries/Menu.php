@@ -261,7 +261,7 @@ class EE_Menu {
 
 			foreach ($utility_options as $allow => $link)
 			{
-				if (ee()->cp->allowed_group($allow))
+				if (ee('Permission')->hasAll($allow))
 				{
 					$menu['utilities'] = $link;
 					break;
