@@ -41,8 +41,14 @@ class Grid_parser {
 	public function pre_process($tagdata, $pre_parser, $grid_fields, $content_type = 'channel')
 	{
 		// Bail out if there are no grid fields present to parse
+
+		$sorted_grid_fields = array_keys($grid_fields);
+
+		// Sort so any names with a dash come before their roots
+		rsort($sorted_grid_fields);
+
 		if ( ! preg_match_all(
-				"/".LD.'\/?('.preg_quote($pre_parser->prefix()).'(?:(?:'.implode('|', array_flip($grid_fields)).'):?))\b([^}{]*)?'.RD."/",
+				"/".LD.'\/?('.preg_quote($pre_parser->prefix()).'(?:(?:'.implode('|', $sorted_grid_fields).'):?))\b([^}{]*)?'.RD."/",
 				$tagdata,
 				$matches,
 				PREG_SET_ORDER)

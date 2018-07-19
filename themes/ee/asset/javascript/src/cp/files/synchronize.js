@@ -49,8 +49,14 @@ EE.file_manager.sync_listen = function() {
 EE.file_manager.resize_ids = function() {
 	var resize_ids = [];
 
-	$('input[name="sizes[]"]:checked').each(function() {
-		resize_ids.push($(this).val());
+	$('input[name="sizes[]"]').each(function() {
+		var field = $(this);
+
+		if (field.attr('type') == 'hidden' || // Hidden input from React
+            (field.attr('type') == 'checkbox' && field.prop('checked') == true)) // Real checkbox
+		{
+			resize_ids.push($(this).val());
+		}
 	});
 
 	return resize_ids;

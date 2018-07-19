@@ -118,7 +118,7 @@ class Fields extends AbstractCategoriesController {
 				->filter('field_id', (int) $field_id)
 				->first();
 
-			$fieldtype_choices = array_intersect_key($fieldtype_choices, $field->getCompatibleFieldtypes());
+			$fieldtype_choices = array_intersect_key($fieldtype_choices, $cat_field->getCompatibleFieldtypes());
 
 			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_category_field');

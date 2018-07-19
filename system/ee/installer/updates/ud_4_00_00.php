@@ -973,32 +973,48 @@ class Updater {
 			$statuses_by_group[$status->group_id][] = $status;
 		}
 
-		// Create a new association of channels to statuses
-		$channels_statuses = [];
-		foreach ($channels_status_groups as $channel)
-		{
-			if (isset($statuses_by_group[$channel->status_group]))
-			{
-				foreach ($statuses_by_group[$channel->status_group] as $status)
-				{
-					$channels_statuses[] = [
-						'channel_id' => $channel->channel_id,
-						'status_id' => $keep[$status->status]
-					];
-				}
-			}
-			else
-			{
-				$channels_statuses[] = [
-					'channel_id' => $channel->channel_id,
-					'status_id' => $keep['open']
-				];
-				$channels_statuses[] = [
-					'channel_id' => $channel->channel_id,
-					'status_id' => $keep['closed']
-				];
-			}
-		}
+        // Create a new association of channels to statuses
+        $channels_statuses = [];
+        foreach ($channels_status_groups as $channel)
+        {
+            if (isset($statuses_by_group[$channel->status_group]))
+            {
+                foreach ($statuses_by_group[$channel->status_group] as $status)
+                {
+                    $status_item = [
+                        'channel_id' => $channel->channel_id,
+                        'status_id' => $keep[$status->status]
+                    ];
+
+                    if ( ! in_array($status, $channels_statuses))
+                    {
+                        $channels_statuses[] = $status_item;
+                    }
+                }
+            }
+            else
+            {
+                $status_item = [
+                    'channel_id' => $channel->channel_id,
+                    'status_id' => $keep['open']
+                ];
+
+                if ( ! in_array($status, $channels_statuses))
+                {
+                    $channels_statuses[] = $status_item;
+                }
+
+                $status_item = [
+                    'channel_id' => $channel->channel_id,
+                    'status_id' => $keep['closed']
+                ];
+
+                if ( ! in_array($status, $channels_statuses))
+                {
+                    $channels_statuses[] = $status_item;
+                }
+            }
+        }
 
 		ee()->dbforge->add_field(
 			array(

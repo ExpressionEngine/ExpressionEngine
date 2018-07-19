@@ -2133,11 +2133,13 @@ class Channel {
 							$vc = $order.$view_ct;
 
 							$end .= " t.{$vc} ".$sort_array[$key];
+							$distinct_select .= ",  t.{$vc} ";
 
 							if (count($order_array)-1 == $key)
 							{
 								$end .= ", t.entry_date ".$sort_array[$key];
 							}
+
 
 							$sort_array[$key] = FALSE;
 						break;
@@ -2766,7 +2768,9 @@ class Channel {
 
 		if (empty($query_result))
 		{
-			return ee()->TMPL->no_results();
+			$this->enable['pagination'] = FALSE;
+			$this->return_data = ee()->TMPL->no_results();
+			return;
 		}
 
 		ee()->load->library('channel_entries_parser');
@@ -5438,7 +5442,6 @@ class Channel {
 		{
 			return ee()->TMPL->no_results();
 		}
-
 
 		$this->query = ee()->db->query($this->sql);
 

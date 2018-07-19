@@ -206,4 +206,7 @@ $(document).ready(function () {
 
 	$('input[name="pages__pages_uri"]').on('interact', showPreviewButton);
 	$('div[data-input-value="pages__pages_template_id"] .field-inputs label').on('click', showPreviewButton);
+
+	// Everything's probably ready, re-enable publish buttons
+	$('[data-publish] .form-btns button:disabled').removeAttr('disabled');
 });
