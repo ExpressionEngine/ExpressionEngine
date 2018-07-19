@@ -125,7 +125,7 @@ class Permission {
 		}
 
 		// Super Admins always have access
-		if ($this->getUserdatum('group_id') == 1)
+		if ($this->isSuperAdmin())
 		{
 			return TRUE;
 		}
@@ -159,7 +159,7 @@ class Permission {
 		}
 
 		// Super Admins always have access
-		if ($this->getUserdatum('group_id') == 1)
+		if ($this->isSuperAdmin())
 		{
 			return TRUE;
 		}
