@@ -262,7 +262,7 @@ feature 'Channel Settings' do
     @page.find('.tabs li', {text: 'Settings'}).click
 
     @page.channel_description.value.should == 'Some description'
-    @page.channel_lang.has_checked_radio('english').should == true
+    @page.channel_lang.has_checked_radio('en').should == true
 
     @page.channel_url.value.should == 'http://someurl/channel'
     @page.comment_url.value.should == 'http://someurl/channel/comment'
