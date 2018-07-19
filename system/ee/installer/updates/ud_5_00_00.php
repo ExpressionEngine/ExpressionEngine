@@ -77,7 +77,7 @@ class Updater {
 		ee()->smartforge->create_table('config');
 
 		// Populate table with existing config values
-		$sites = ee('Model')->get('Site')->all();
+		$sites = ee()->db->get('sites');
 
 		$prefs = [
 			'site_channel_preferences',
@@ -86,12 +86,13 @@ class Updater {
 			'site_template_preferences'
 		];
 
-		foreach ($sites as $site)
+		foreach ($sites->result_array() as $site)
 		{
-			$site_id = $site->getId();
+			$site_id = $site['site_id'];
 			foreach ($prefs as $pref)
 			{
-				foreach ($site->$pref->getValues() as $key => $value)
+				$data = unserialize(base64_decode($site[$pref]));
+				foreach ($data as $key => $value)
 				{
 					ee('Model')->make('Config', [
 						'site_id' => $site_id,
