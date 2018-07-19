@@ -79,7 +79,7 @@ class Groups extends Members\Members {
 			)
 		);
 
-		if ( ! ee()->cp->allowed_group_any('can_create_member_groups', 'can_edit_member_groups'))
+		if ( ! ee('Permission')->hasAny('can_create_member_groups', 'can_edit_member_groups'))
 		{
 			unset($columns['manage']);
 		}

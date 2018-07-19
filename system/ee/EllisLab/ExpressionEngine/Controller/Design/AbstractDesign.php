@@ -186,7 +186,7 @@ abstract class AbstractDesign extends CP_Controller {
 		}
 
 		// Template Partials
-		if (ee()->cp->allowed_group_any('can_create_template_partials', 'can_edit_template_partials', 'can_delete_template_partials'))
+		if (ee('Permission')->hasAny('can_create_template_partials', 'can_edit_template_partials', 'can_delete_template_partials'))
 		{
 			$header = $sidebar->addHeader(lang('template_partials'), ee('CP/URL')->make('design/snippets'));
 
@@ -202,7 +202,7 @@ abstract class AbstractDesign extends CP_Controller {
 		}
 
 		// Template Variables
-		if (ee()->cp->allowed_group_any('can_create_template_variables', 'can_edit_template_variables', 'can_delete_template_variables'))
+		if (ee('Permission')->hasAny('can_create_template_variables', 'can_edit_template_variables', 'can_delete_template_variables'))
 		{
 			$header = $sidebar->addHeader(lang('template_variables'), ee('CP/URL')->make('design/variables'));
 
