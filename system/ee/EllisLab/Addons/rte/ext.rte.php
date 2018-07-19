@@ -224,7 +224,7 @@ class Rte_ext {
 				->get()
 				->row('count');
 
-			$has_access = $access AND ee()->cp->allowed_group('can_access_addons');
+			$has_access = $access AND ee('Permission')->can('access_addons');
 		}
 
 		if (ee('Permission')->isSuperAdmin() OR $has_access)

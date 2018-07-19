@@ -236,7 +236,7 @@ class Addons_installer {
 	 */
 	function _module_install_setup($module)
 	{
-		if ( ! ee()->cp->allowed_group('can_admin_addons'))
+		if ( ! ee('Permission')->can('admin_addons'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -283,7 +283,7 @@ class Addons_installer {
 	 */
 	function _extension_install_setup($extension, $instantiate = TRUE)
 	{
-		if ( ! ee()->cp->allowed_group('can_access_extensions'))
+		if ( ! ee('Permission')->can('access_extensions'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

@@ -197,7 +197,7 @@ class EE_Menu {
 	{
 		$menu = array();
 
-		if (ee()->cp->allowed_group('can_admin_channels') &&
+		if (ee('Permission')->can('admin_channels') &&
 			ee()->cp->allowed_group_any(
 			'can_create_channels',
 			'can_edit_channels',
@@ -233,22 +233,22 @@ class EE_Menu {
 			}
 		}
 
-		if (ee()->cp->allowed_group('can_access_design'))
+		if (ee('Permission')->can('access_design'))
 		{
 			$menu['templates'] = ee('CP/URL')->make('design');
 		}
 
-		if (ee()->config->item('multiple_sites_enabled') == 'y' && ee()->cp->allowed_group('can_admin_sites'))
+		if (ee()->config->item('multiple_sites_enabled') == 'y' && ee('Permission')->can('admin_sites'))
 		{
 			$menu['msm_manager'] = ee('CP/URL')->make('msm');
 		}
 
-		if (ee()->cp->allowed_group('can_access_addons'))
+		if (ee('Permission')->can('access_addons'))
 		{
 			$menu['addons'] = ee('CP/URL')->make('addons');
 		}
 
-		if (ee()->cp->allowed_group('can_access_utilities'))
+		if (ee('Permission')->can('access_utilities'))
 		{
 
 			$utility_options = array(
@@ -273,15 +273,15 @@ class EE_Menu {
 
 			if ( ! isset($menu['utilities']))
 			{
-				if (ee()->cp->allowed_group('can_access_addons')
-					&& ee()->cp->allowed_group('can_admin_addons'))
+				if (ee('Permission')->can('access_addons')
+					&& ee('Permission')->can('admin_addons'))
 				{
 					$menu['utilities'] = ee('CP/URL')->make('utilities/extensions');
 				}
 			}
 		}
 
-		if (ee()->cp->allowed_group('can_access_logs'))
+		if (ee('Permission')->can('access_logs'))
 		{
 			$menu['logs'] = ee('CP/URL')->make('logs');
 		}

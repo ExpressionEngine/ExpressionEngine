@@ -126,7 +126,7 @@ class Channels extends AbstractChannelsController {
 	 */
 	public function remove()
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_channels'))
+		if ( ! ee('Permission')->can('delete_channels'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -157,7 +157,7 @@ class Channels extends AbstractChannelsController {
 	 */
 	public function create()
 	{
-		if ( ! ee()->cp->allowed_group('can_create_channels'))
+		if ( ! ee('Permission')->can('create_channels'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -175,7 +175,7 @@ class Channels extends AbstractChannelsController {
 	 */
 	public function edit($channel_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_channels'))
+		if ( ! ee('Permission')->can('edit_channels'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -473,7 +473,7 @@ class Channels extends AbstractChannelsController {
 		$add_groups_button = NULL;
 		$add_fields_button = NULL;
 
-		if (ee()->cp->allowed_group('can_create_channel_fields'))
+		if (ee('Permission')->can('create_channel_fields'))
 		{
 			$add_groups_button = [
 				'text' => 'add_group',
@@ -550,7 +550,7 @@ class Channels extends AbstractChannelsController {
 			'text' => sprintf(lang('no_found'), lang('field_groups'))
 		];
 
-		if (ee()->cp->allowed_group('can_create_channel_fields'))
+		if (ee('Permission')->can('create_channel_fields'))
 		{
 			$no_results['link_text'] = 'add_new';
 			$no_results['link_href'] = ee('CP/URL')->make('fields/groups/create');
@@ -598,7 +598,7 @@ class Channels extends AbstractChannelsController {
 			'text' => sprintf(lang('no_found'), lang('fields'))
 		];
 
-		if (ee()->cp->allowed_group('can_create_channel_fields'))
+		if (ee('Permission')->can('create_channel_fields'))
 		{
 			$no_results['link_text'] = 'add_new';
 			$no_results['link_href'] = ee('CP/URL')->make('fields/create');
@@ -626,7 +626,7 @@ class Channels extends AbstractChannelsController {
 	{
 		$add_groups_button = NULL;
 
-		if (ee()->cp->allowed_group('can_create_categories'))
+		if (ee('Permission')->can('create_categories'))
 		{
 			$add_groups_button = [
 				'text' => 'add_group',
@@ -679,7 +679,7 @@ class Channels extends AbstractChannelsController {
 			'text' => sprintf(lang('no_found'), lang('category_groups'))
 		];
 
-		if (ee()->cp->allowed_group('can_create_categories'))
+		if (ee('Permission')->can('create_categories'))
 		{
 			$no_results['link_text'] = 'add_new';
 			$no_results['link_href'] = ee('CP/URL')->make('categories/groups/create');
@@ -707,7 +707,7 @@ class Channels extends AbstractChannelsController {
 	{
 		$add_status_button = NULL;
 
-		if (ee()->cp->allowed_group('can_create_statuses'))
+		if (ee('Permission')->can('create_statuses'))
 		{
 			$add_status_button = [
 				'text' => 'add_status',
@@ -773,9 +773,9 @@ class Channels extends AbstractChannelsController {
 			'value'            => $selected,
 			'multi'            => TRUE,
 			'force_react'      => TRUE,
-			'reorderable'      => ee()->cp->allowed_group('can_edit_statuses'),
-			'removable'        => ee()->cp->allowed_group('can_delete_statuses'),
-			'editable'         => ee()->cp->allowed_group('can_edit_statuses'),
+			'reorderable'      => ee('Permission')->can('edit_statuses'),
+			'removable'        => ee('Permission')->can('delete_statuses'),
+			'editable'         => ee('Permission')->can('edit_statuses'),
 			'reorder_ajax_url' => ee('CP/URL', 'channels/status/reorder')->compile()
 		]);
 	}

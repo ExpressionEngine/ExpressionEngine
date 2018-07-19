@@ -101,7 +101,7 @@ class Files extends AbstractFilesController {
 		ee()->view->cp_heading = sprintf(lang('files_in_directory'), $dir->name);
 
 		// Check to see if they can sync the directory
-		ee()->view->can_sync_directory = ee()->cp->allowed_group('can_upload_new_files')
+		ee()->view->can_sync_directory = ee('Permission')->can('upload_new_files')
 			&& $dir->memberGroupHasAccess(ee()->session->userdata('group_id'));
 
 		$this->stdHeader(
@@ -127,7 +127,7 @@ class Files extends AbstractFilesController {
 
 	public function upload($dir_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_upload_new_files'))
+		if ( ! ee('Permission')->can('upload_new_files'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -218,7 +218,7 @@ class Files extends AbstractFilesController {
 
 	public function finishUpload($file_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_upload_new_files'))
+		if ( ! ee('Permission')->can('upload_new_files'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -270,7 +270,7 @@ class Files extends AbstractFilesController {
 
 	public function rmdir()
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_upload_directories'))
+		if ( ! ee('Permission')->can('delete_upload_directories'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -408,7 +408,7 @@ class Files extends AbstractFilesController {
 
 	private function remove($file_ids)
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_files'))
+		if ( ! ee('Permission')->can('delete_files'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

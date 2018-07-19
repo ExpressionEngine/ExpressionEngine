@@ -25,7 +25,7 @@ class Group extends AbstractDesignController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_design'))
+		if ( ! ee('Permission')->can('access_design'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -35,7 +35,7 @@ class Group extends AbstractDesignController {
 
 	public function create()
 	{
-		if ( ! ee()->cp->allowed_group('can_create_template_groups'))
+		if ( ! ee('Permission')->can('create_template_groups'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -81,11 +81,11 @@ class Group extends AbstractDesignController {
 				if ($result->isValid())
 				{
 					// Only set member groups from post if they have permission to admin member groups and a value is set
-					if (ee()->input->post('member_groups') && (ee('Permission')->isSuperAdmin() OR ee()->cp->allowed_group('can_admin_mbr_groups')))
+					if (ee()->input->post('member_groups') && (ee('Permission')->isSuperAdmin() OR ee('Permission')->can('admin_mbr_groups')))
 					{
 						$group->MemberGroups = ee('Model')->get('MemberGroup', ee('Request')->post('member_groups'))->all();
 					}
-					elseif ( ! ee('Permission')->isSuperAdmin() AND ! ee()->cp->allowed_group('can_admin_mbr_groups'))
+					elseif ( ! ee('Permission')->isSuperAdmin() AND ! ee('Permission')->can('admin_mbr_groups'))
 					{
 						// No permission to admin, so their group is automatically added to the template group
 						$group->MemberGroups = ee('Model')->get('MemberGroup', $this->session->userdata('group_id'))->first();
@@ -219,7 +219,7 @@ class Group extends AbstractDesignController {
 		);
 
 		// Permission check for assigning member groups to templates
-		if ( ! ee()->cp->allowed_group('can_admin_mbr_groups'))
+		if ( ! ee('Permission')->can('admin_mbr_groups'))
 		{
 			unset($vars['sections'][0][3]);
 		}
@@ -232,7 +232,7 @@ class Group extends AbstractDesignController {
 
 	public function edit($group_name)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_template_groups'))
+		if ( ! ee('Permission')->can('edit_template_groups'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -276,7 +276,7 @@ class Group extends AbstractDesignController {
 				{
 					// On edit, if they don't have permission to edit member group permissions, they can't change
 					// template member group settings
-					if (ee('Permission')->isSuperAdmin() OR ee()->cp->allowed_group('can_admin_mbr_groups'))
+					if (ee('Permission')->isSuperAdmin() OR ee('Permission')->can('admin_mbr_groups'))
 					{
 						// If post is null and field should be present, unassign members
 						// If field isn't present, we don't change whatever it's currently set to
@@ -359,7 +359,7 @@ class Group extends AbstractDesignController {
 		);
 
 		// Permission check for assigning member groups to templates
-		if ( ! ee()->cp->allowed_group('can_admin_mbr_groups'))
+		if ( ! ee('Permission')->can('admin_mbr_groups'))
 		{
 			unset($vars['sections'][0][2]);
 		}
@@ -372,7 +372,7 @@ class Group extends AbstractDesignController {
 
 	public function remove()
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_template_groups'))
+		if ( ! ee('Permission')->can('delete_template_groups'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

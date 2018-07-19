@@ -37,7 +37,7 @@ class Status extends AbstractChannelsController {
 	 */
 	public function reorder()
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_statuses'))
+		if ( ! ee('Permission')->can('edit_statuses'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -58,7 +58,7 @@ class Status extends AbstractChannelsController {
 	 */
 	public function remove()
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_statuses'))
+		if ( ! ee('Permission')->can('delete_statuses'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -78,7 +78,7 @@ class Status extends AbstractChannelsController {
 	 */
 	public function create()
 	{
-		if ( ! ee()->cp->allowed_group('can_create_statuses'))
+		if ( ! ee('Permission')->can('create_statuses'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -91,7 +91,7 @@ class Status extends AbstractChannelsController {
 	 */
 	public function edit($status_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_statuses'))
+		if ( ! ee('Permission')->can('edit_statuses'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

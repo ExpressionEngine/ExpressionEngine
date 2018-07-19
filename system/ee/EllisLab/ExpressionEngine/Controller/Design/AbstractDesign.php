@@ -40,7 +40,7 @@ abstract class AbstractDesign extends CP_Controller {
 		ee('CP/Alert')->makeDeprecationNotice()->now();
 
 
-		if ( ! $this->cp->allowed_group('can_access_design'))
+		if ( ! ee('Permission')->can('access_design'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -79,7 +79,7 @@ abstract class AbstractDesign extends CP_Controller {
 		// Template Groups
 		$template_group_list = $sidebar->addHeader(lang('template_groups'));
 
-		if (ee()->cp->allowed_group('can_create_template_groups'))
+		if (ee('Permission')->can('create_template_groups'))
 		{
 			$template_group_list = $template_group_list->withButton(lang('new'), ee('CP/URL')->make('design/group/create'));
 		}
@@ -89,7 +89,7 @@ abstract class AbstractDesign extends CP_Controller {
 				->withRemovalKey('group_name')
 			->withNoResultsText(lang('zero_template_groups_found'));
 
-		if (ee()->cp->allowed_group('can_edit_template_groups'))
+		if (ee('Permission')->can('edit_template_groups'))
 		{
 			$template_group_list->canReorder();
 		}
@@ -118,12 +118,12 @@ abstract class AbstractDesign extends CP_Controller {
 			$item->withRemoveConfirmation(lang('template_group') . ': <b>' . $group->group_name . '</b>')
 				->identifiedBy($group->group_name);
 
-			if ( ! ee()->cp->allowed_group('can_edit_template_groups'))
+			if ( ! ee('Permission')->can('edit_template_groups'))
 			{
 				$item->cannotEdit();
 			}
 
-			if ( ! ee()->cp->allowed_group('can_delete_template_groups'))
+			if ( ! ee('Permission')->can('delete_template_groups'))
 			{
 				$item->cannotRemove();
 			}
@@ -161,7 +161,7 @@ abstract class AbstractDesign extends CP_Controller {
 			$item->isActive();
 		}
 
-		if (ee()->cp->allowed_group('can_admin_mbr_templates') && ee('Model')->get('Module')->filter('module_name', 'Member')->first())
+		if (ee('Permission')->can('admin_mbr_templates') && ee('Model')->get('Module')->filter('module_name', 'Member')->first())
 		{
 			$item = $system_templates->addItem(lang('members'), ee('CP/URL')->make('design/members'))
 				->withEditUrl(ee('CP/URL')->make('design/members'))
@@ -190,7 +190,7 @@ abstract class AbstractDesign extends CP_Controller {
 		{
 			$header = $sidebar->addHeader(lang('template_partials'), ee('CP/URL')->make('design/snippets'));
 
-			if (ee()->cp->allowed_group('can_create_template_partials'))
+			if (ee('Permission')->can('create_template_partials'))
 			{
 				$header->withButton(lang('new'), ee('CP/URL')->make('design/snippets/create'));
 			}
@@ -206,7 +206,7 @@ abstract class AbstractDesign extends CP_Controller {
 		{
 			$header = $sidebar->addHeader(lang('template_variables'), ee('CP/URL')->make('design/variables'));
 
-			if (ee()->cp->allowed_group('can_create_template_variables'))
+			if (ee('Permission')->can('create_template_variables'))
 			{
 				$header->withButton(lang('new'), ee('CP/URL')->make('design/variables/create'));
 			}
@@ -221,7 +221,7 @@ abstract class AbstractDesign extends CP_Controller {
 		// Template Routes
 		if (! IS_CORE
 			&& ! TemplateRoute::getConfig()
-			&& ee()->cp->allowed_group('can_admin_design')
+			&& ee('Permission')->can('admin_design')
 			)
 		{
 			$header = $sidebar->addHeader(lang('template_routes'), ee('CP/URL')->make('design/routes'));
@@ -518,7 +518,7 @@ abstract class AbstractDesign extends CP_Controller {
 				$template_name = $group->group_name . '/' . $template_name;
 			}
 
-			if (ee()->cp->allowed_group('can_edit_templates'))
+			if (ee('Permission')->can('edit_templates'))
 			{
 				$template_name = '<a href="' . $edit_url->compile() . '">' . $template_name . '</a>';
 			}
@@ -570,7 +570,7 @@ abstract class AbstractDesign extends CP_Controller {
 				)
 			);
 
-			if ( ! ee()->cp->allowed_group('can_edit_templates'))
+			if ( ! ee('Permission')->can('edit_templates'))
 			{
 				unset($toolbar['edit']);
 				unset($toolbar['settings']);
@@ -663,7 +663,7 @@ abstract class AbstractDesign extends CP_Controller {
 
 	protected function removeTemplates($template_ids)
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_templates'))
+		if ( ! ee('Permission')->can('delete_templates'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

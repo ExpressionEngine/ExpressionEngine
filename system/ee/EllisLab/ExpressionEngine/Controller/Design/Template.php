@@ -35,7 +35,7 @@ class Template extends AbstractDesignController {
 	{
 		$errors = NULL;
 
-		if ( ! ee()->cp->allowed_group('can_create_new_templates'))
+		if ( ! ee('Permission')->can('create_new_templates'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -192,7 +192,7 @@ class Template extends AbstractDesignController {
 	{
 		$errors = NULL;
 
-		if ( ! ee()->cp->allowed_group('can_edit_templates'))
+		if ( ! ee('Permission')->can('edit_templates'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -420,7 +420,7 @@ class Template extends AbstractDesignController {
 	{
 		$errors = NULL;
 
-		if ( ! ee()->cp->allowed_group('can_edit_templates'))
+		if ( ! ee('Permission')->can('edit_templates'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -518,7 +518,7 @@ class Template extends AbstractDesignController {
 	{
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
-			if (ee()->cp->allowed_group('can_delete_templates'))
+			if (ee('Permission')->can('delete_templates'))
 			{
 				$this->removeTemplates(ee()->input->post('selection'));
 				ee()->functions->redirect(ee('CP/URL')->make('design/template/search', ee()->cp->get_url_state()));
@@ -571,7 +571,7 @@ class Template extends AbstractDesignController {
 		$vars = $this->buildTableFromTemplateQueryBuilder($templates, TRUE);
 
 		$vars['show_new_template_button'] = FALSE;
-		$vars['show_bulk_delete'] = ee()->cp->allowed_group('can_delete_templates');
+		$vars['show_bulk_delete'] = ee('Permission')->can('delete_templates');
 
 		ee()->view->cp_heading = sprintf(
 			lang('search_results_heading'),

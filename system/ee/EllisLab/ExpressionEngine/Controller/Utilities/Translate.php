@@ -27,7 +27,7 @@ class Translate extends Utilities {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_translate'))
+		if ( ! ee('Permission')->can('access_translate'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

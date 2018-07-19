@@ -21,7 +21,7 @@ class Create extends Members {
 	 */
 	public function index()
 	{
-		if ( ! ee()->cp->allowed_group('can_create_members'))
+		if ( ! ee('Permission')->can('create_members'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

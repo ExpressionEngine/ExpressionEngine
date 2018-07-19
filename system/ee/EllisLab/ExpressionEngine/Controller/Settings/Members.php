@@ -20,7 +20,7 @@ class Members extends Settings {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_members'))
+		if ( ! ee('Permission')->can('access_members'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

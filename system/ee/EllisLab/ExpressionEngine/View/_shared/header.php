@@ -33,7 +33,7 @@
 					<a class="nav-home" href="<?=$cp_homepage_url?>" title="<?=lang('nav_homepage')?>"><i class="icon-home"></i><span class="nav-txt-collapse"><?=lang('nav_homepage')?></span></a>
 					<a class="nav-overview" href="<?=ee('CP/URL', 'homepage')?>" title="<?=lang('nav_overview')?>"><i class="icon-dashboard"></i><span class="nav-txt-collapse"><?=lang('nav_overview')?></span></a>
 					<?php endif; ?>
-					<?php if (ee()->config->item('multiple_sites_enabled') === 'y' && (count($cp_main_menu['sites']) > 0 || ee()->cp->allowed_group('can_admin_sites'))): ?>
+					<?php if (ee()->config->item('multiple_sites_enabled') === 'y' && (count($cp_main_menu['sites']) > 0 || ee('Permission')->can('admin_sites'))): ?>
 					<div class="nav-sites">
 						<a class="nav-has-sub" href=""><?=ee()->config->item('site_name')?></a>
 						<a class="nav-view" href="<?=ee()->config->item('site_url')?>" rel="external"><i class="icon-view"></i><span class="nav-txt-collapse"><?=lang('view')?></span></a>
@@ -41,7 +41,7 @@
 							<?php foreach ($cp_main_menu['sites'] as $site_name => $link): ?>
 								<li><a href="<?=$link?>"><?=$site_name?></a></li>
 							<?php endforeach ?>
-							<?php if (ee()->cp->allowed_group('can_admin_sites')): ?>
+							<?php if (ee('Permission')->can('admin_sites')): ?>
 								<li><a class="nav-manage" href="<?=ee('CP/URL', 'msm')?>"><i class="icon-settings"></i>Manage Sites</a></li>
 								<?php if (ee('License')->getEELicense()->canAddSites(ee('Model')->get('Site')->count())): ?>
 									<li><a class="nav-add" href="<?=ee('CP/URL', 'msm/create')?>"><i class="icon-add"></i><?=lang('new_site')?></a></li>
@@ -73,7 +73,7 @@
 		<div class="nav-main-wrap">
 			<nav class="nav-main">
 				<div class="nav-main-author">
-					<?php if (ee()->cp->allowed_group('can_create_entries') && (count($cp_main_menu['channels']['create']) || ee()->cp->allowed_group('can_create_channels'))): ?>
+					<?php if (ee('Permission')->can('create_entries') && (count($cp_main_menu['channels']['create']) || ee('Permission')->can('create_channels'))): ?>
 					<div class="nav-create">
 						<a class="nav-has-sub" href=""><?=lang('menu_create')?></a>
 						<div class="nav-sub-menu">
@@ -83,12 +83,12 @@
 								</form>
 							<?php endif ?>
 							<ul>
-								<?php $last = ee()->cp->allowed_group('can_create_channels') ? NULL : end($cp_main_menu['channels']['create']); ?>
+								<?php $last = ee('Permission')->can('create_channels') ? NULL : end($cp_main_menu['channels']['create']); ?>
 								<?php foreach ($cp_main_menu['channels']['create'] as $channel_name => $link): ?>
 									<li><a href="<?=$link?>"><?=$channel_name?></a></li>
 								<?php endforeach ?>
 							</ul>
-							<?php if (ee()->cp->allowed_group('can_create_channels')): ?>
+							<?php if (ee('Permission')->can('create_channels')): ?>
 								<a class="nav-add" href="<?=ee('CP/URL', 'channels/create')?>"><i class="icon-add"></i><?=lang('new_channel')?></a>
 							<?php endif; ?>
 						</div>
@@ -117,10 +117,10 @@
 					<?php endif ?>
 					</div>
 					<?php endif ?>
-					<?php if (ee()->cp->allowed_group('can_access_files')): ?>
+					<?php if (ee('Permission')->can('access_files')): ?>
 					<a class="nav-files" href="<?=ee('CP/URL', 'files')?>"><i class="icon-files"></i><span class="nav-txt-collapse"><?=lang('menu_files')?></span></a>
 					<?php endif; ?>
-					<?php if (ee()->cp->allowed_group('can_access_members')): ?>
+					<?php if (ee('Permission')->can('access_members')): ?>
 					<a class="nav-members" href="<?=ee('CP/URL', 'members')?>"><i class="icon-members"></i><span class="nav-txt-collapse"><?=lang('menu_members')?></span></a>
 					<?php endif; ?>
 				</div>
@@ -137,7 +137,7 @@
 						</div>
 					</div>
 					<?php endif; ?>
-					<?php if (ee()->cp->allowed_group('can_access_sys_prefs')): ?>
+					<?php if (ee('Permission')->can('access_sys_prefs')): ?>
 					<a class="nav-settings" href="<?=ee('CP/URL', 'settings')?>" title="<?=lang('nav_settings')?>"><i class="icon-settings"></i><span class="nav-txt-collapse"><?=lang('nav_settings')?></span></a>
 					<?php endif; ?>
 				</div>

@@ -30,14 +30,14 @@ abstract class AbstractFiles extends CP_Controller {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_files'))
+		if ( ! ee('Permission')->can('access_files'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->lang->loadfile('filemanager');
 
-		ee()->view->can_edit_upload_directories = ee()->cp->allowed_group('can_edit_upload_directories');
+		ee()->view->can_edit_upload_directories = ee('Permission')->can('edit_upload_directories');
 	}
 
 	protected function generateSidebar($active = NULL)
@@ -55,7 +55,7 @@ abstract class AbstractFiles extends CP_Controller {
 		$list = $header->addFolderList('directory')
 			->withNoResultsText(lang('zero_directories_found'));
 
-		if (ee()->cp->allowed_group('can_create_upload_directories'))
+		if (ee('Permission')->can('create_upload_directories'))
 		{
 			$header->withButton(lang('new'), ee('CP/URL')->make('files/uploads/create'));
 
@@ -91,12 +91,12 @@ abstract class AbstractFiles extends CP_Controller {
 				->withRemoveConfirmation(lang('upload_directory') . ': <b>' . $display_name . '</b>')
 				->identifiedBy($destination->id);
 
-			if ( ! ee()->cp->allowed_group('can_edit_upload_directories'))
+			if ( ! ee('Permission')->can('edit_upload_directories'))
 			{
 				$item->cannotEdit();
 			}
 
-			if ( ! ee()->cp->allowed_group('can_delete_upload_directories'))
+			if ( ! ee('Permission')->can('delete_upload_directories'))
 			{
 				$item->cannotRemove();
 			}
@@ -115,7 +115,7 @@ abstract class AbstractFiles extends CP_Controller {
 	protected function stdHeader($active = NULL)
 	{
 		$upload_destinations = [];
-		if (ee()->cp->allowed_group('can_upload_new_files'))
+		if (ee('Permission')->can('upload_new_files'))
 		{
 			$upload_destinations = ee('Model')->get('UploadDestination')
 				->with('NoAccess')
@@ -161,7 +161,7 @@ abstract class AbstractFiles extends CP_Controller {
 		ee()->view->header = array(
 			'title' => lang('file_manager'),
 			'toolbar_items' => $toolbar_items,
-			'action_button' => ee()->cp->allowed_group('can_upload_new_files') && $upload_destinations->count() ? [
+			'action_button' => ee('Permission')->can('upload_new_files') && $upload_destinations->count() ? [
 				'text' => lang('upload_file'),
 				'filter_placeholder' => lang('filter_upload_directories'),
 				'choices' => count($choices) > 1 ? $choices : NULL,
@@ -253,7 +253,7 @@ abstract class AbstractFiles extends CP_Controller {
 				),
 			);
 
-			if ( ! ee()->cp->allowed_group('can_edit_files'))
+			if ( ! ee('Permission')->can('edit_files'))
 			{
 				unset($toolbar['view']);
 				unset($toolbar['edit']);
@@ -268,7 +268,7 @@ abstract class AbstractFiles extends CP_Controller {
 
 			$file_description = $file->title;
 
-			if (ee()->cp->allowed_group('can_edit_files'))
+			if (ee('Permission')->can('edit_files'))
 			{
 				$file_description = '<a href="'.$edit_link.'">'.$file->title.'</a>';
 			}

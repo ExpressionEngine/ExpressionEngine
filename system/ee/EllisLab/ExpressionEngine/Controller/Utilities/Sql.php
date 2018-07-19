@@ -21,7 +21,7 @@ class Sql extends Utilities {
 	 */
 	public function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_sql_manager'))
+		if ( ! ee('Permission')->can('access_sql_manager'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

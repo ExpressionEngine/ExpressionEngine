@@ -129,8 +129,8 @@ class Design extends AbstractDesignController {
 
 		$vars = $this->buildTableFromTemplateQueryBuilder($templates);
 
-		$vars['show_new_template_button'] = ee()->cp->allowed_group('can_create_new_templates');
-		$vars['show_bulk_delete'] = ee()->cp->allowed_group('can_delete_templates');
+		$vars['show_new_template_button'] = ee('Permission')->can('create_new_templates');
+		$vars['show_bulk_delete'] = ee('Permission')->can('delete_templates');
 		$vars['group_id'] = $group->group_name;
 
 		ee()->javascript->set_global('template_settings_url', ee('CP/URL')->make('design/template/settings/###')->compile());
@@ -159,7 +159,7 @@ class Design extends AbstractDesignController {
 	{
 		if ( ! ($group_names = ee()->input->post('groups'))
 			OR ! AJAX_REQUEST
-			OR ! ee()->cp->allowed_group('can_edit_template_groups'))
+			OR ! ee('Permission')->can('edit_template_groups'))
 		{
 			return;
 		}

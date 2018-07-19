@@ -25,7 +25,7 @@ class Layouts extends AbstractChannelsController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_edit_channels'))
+		if ( ! ee('Permission')->can('edit_channels'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

@@ -28,7 +28,7 @@ class Fields extends Members\Members {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_admin_mbr_groups'))
+		if ( ! ee('Permission')->can('admin_mbr_groups'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

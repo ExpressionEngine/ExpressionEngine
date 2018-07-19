@@ -38,7 +38,7 @@ class Uploads extends AbstractFilesController {
 	 */
 	public function create()
 	{
-		if ( ! ee()->cp->allowed_group('can_create_upload_directories'))
+		if ( ! ee('Permission')->can('create_upload_directories'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -56,7 +56,7 @@ class Uploads extends AbstractFilesController {
 	 */
 	public function edit($upload_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_upload_directories'))
+		if ( ! ee('Permission')->can('edit_upload_directories'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -718,7 +718,7 @@ class Uploads extends AbstractFilesController {
 	 */
 	public function sync($upload_id = NULL)
 	{
-		if ( ! ee()->cp->allowed_group('can_upload_new_files'))
+		if ( ! ee('Permission')->can('upload_new_files'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -863,7 +863,7 @@ class Uploads extends AbstractFilesController {
 		$id = ee()->input->post('upload_directory_id');
 		$sizes = ee()->input->post('sizes') ?: array($id => '');
 
-		if ( ! ee()->cp->allowed_group('can_upload_new_files') OR empty($id))
+		if ( ! ee('Permission')->can('upload_new_files') OR empty($id))
 		{
 			return ee()->output->send_ajax_response([
 				'message_type'	=> 'failure',

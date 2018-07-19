@@ -67,7 +67,7 @@ class Categories extends AbstractCategoriesController {
 
 		ee()->cp->add_js_script('plugin', 'nestable');
 
-		if (ee()->cp->allowed_group('can_edit_categories'))
+		if (ee('Permission')->can('edit_categories'))
 		{
 			ee()->cp->add_js_script('file', 'cp/channel/category_reorder');
 		}
@@ -93,9 +93,9 @@ class Categories extends AbstractCategoriesController {
 		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
 		$data = array(
-			'can_create_categories' => ee()->cp->allowed_group('can_create_categories'),
-			'can_edit_categories' => ee()->cp->allowed_group('can_edit_categories'),
-			'can_delete_categories' => ee()->cp->allowed_group('can_delete_categories')
+			'can_create_categories' => ee('Permission')->can('create_categories'),
+			'can_edit_categories' => ee('Permission')->can('edit_categories'),
+			'can_delete_categories' => ee('Permission')->can('delete_categories')
 		);
 
 		ee()->cp->render('channels/cat/list', $data);
@@ -106,7 +106,7 @@ class Categories extends AbstractCategoriesController {
 	 */
 	public function reorder($group_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_categories'))
+		if ( ! ee('Permission')->can('edit_categories'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -183,7 +183,7 @@ class Categories extends AbstractCategoriesController {
 	 */
 	public function remove()
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_categories'))
+		if ( ! ee('Permission')->can('delete_categories'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -230,7 +230,7 @@ class Categories extends AbstractCategoriesController {
 	 */
 	public function removeSingle()
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_categories'))
+		if ( ! ee('Permission')->can('delete_categories'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -252,7 +252,7 @@ class Categories extends AbstractCategoriesController {
 	 */
 	public function create($group_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_create_categories'))
+		if ( ! ee('Permission')->can('create_categories'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -268,7 +268,7 @@ class Categories extends AbstractCategoriesController {
 	 */
 	public function edit($group_id, $category_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_categories'))
+		if ( ! ee('Permission')->can('edit_categories'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

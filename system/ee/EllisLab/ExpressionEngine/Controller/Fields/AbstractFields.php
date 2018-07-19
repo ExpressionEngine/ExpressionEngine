@@ -40,7 +40,7 @@ abstract class AbstractFields extends CP_Controller {
 			'title' => lang('field_manager')
 		];
 
-		if (ee()->cp->allowed_group('can_create_channel_fields'))
+		if (ee('Permission')->can('create_channel_fields'))
 		{
 			$header['action_button'] = [
 				'text' => lang('new_field'),
@@ -75,7 +75,7 @@ abstract class AbstractFields extends CP_Controller {
 		$list = $list->addFolderList('field_groups')
 			->withNoResultsText(sprintf(lang('no_found'), lang('field_groups')));
 
-		if (ee()->cp->allowed_group('can_delete_channel_fields'))
+		if (ee('Permission')->can('delete_channel_fields'))
 		{
 			$list->withRemoveUrl(ee('CP/URL')->make('fields/groups/remove', ee()->cp->get_url_state()))
 				->withRemovalKey('content_id');
@@ -97,14 +97,14 @@ abstract class AbstractFields extends CP_Controller {
 				ee('CP/URL')->make('fields', ['group_id' => $group->getId()])
 			);
 
-			if (ee()->cp->allowed_group('can_edit_channel_fields'))
+			if (ee('Permission')->can('edit_channel_fields'))
 			{
 				$item->withEditUrl(
 					ee('CP/URL')->make('fields/groups/edit/' . $group->getId())
 				);
 			}
 
-			if (ee()->cp->allowed_group('can_delete_channel_fields'))
+			if (ee('Permission')->can('delete_channel_fields'))
 			{
 				$item->withRemoveConfirmation(
 					lang('field_group') . ': <b>' . $group_name . '</b>'

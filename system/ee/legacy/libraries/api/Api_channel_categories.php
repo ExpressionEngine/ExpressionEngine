@@ -336,7 +336,7 @@ class Api_channel_categories extends Api {
 	 */
 	public function fetch_allowed_category_groups($cat_group)
 	{
-		if (ee()->cp->allowed_group('can_admin_channels') OR ee()->cp->allowed_group('can_edit_categories'))
+		if (ee('Permission')->can('admin_channels') OR ee('Permission')->can('edit_categories'))
 		{
 			if (! is_array($cat_group))
 			{

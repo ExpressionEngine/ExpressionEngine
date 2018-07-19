@@ -26,7 +26,7 @@ class Utilities extends CP_Controller {
 
 		ee('CP/Alert')->makeDeprecationNotice()->now();
 
-		if ( ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! ee('Permission')->can('access_utilities'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -47,14 +47,14 @@ class Utilities extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		if (ee()->cp->allowed_group('can_access_comm'))
+		if (ee('Permission')->can('access_comm'))
 		{
 			$sidebar->addHeader(lang('communicate'), ee('CP/URL')->make('utilities/communicate'))
 			->addBasicList()
 				->addItem(lang('sent'), ee('CP/URL')->make('utilities/communicate/sent'));
 		}
 
-		if (ee()->cp->allowed_group('can_access_translate'))
+		if (ee('Permission')->can('access_translate'))
 		{
 			$langauge_list = $sidebar->addHeader(lang('cp_translation'))
 				->addBasicList();
@@ -82,7 +82,7 @@ class Utilities extends CP_Controller {
 		$sidebar->addHeader(lang('php_info'), ee('CP/URL')->make('utilities/php'))
 			->urlIsExternal();
 
-		if (ee()->cp->allowed_group('can_access_addons') && ee()->cp->allowed_group('can_admin_addons'))
+		if (ee('Permission')->can('access_addons') && ee('Permission')->can('admin_addons'))
 		{
 			$sidebar->addHeader(lang('debug_extensions'), ee('CP/URL')->make('utilities/extensions'));
 		}
@@ -102,7 +102,7 @@ class Utilities extends CP_Controller {
 			}
 		}
 
-		if (ee()->cp->allowed_group('can_access_sql_manager'))
+		if (ee('Permission')->can('access_sql_manager'))
 		{
 			$db_list = $sidebar->addHeader(lang('database'))->addBasicList();
 			$db_list->addItem(lang('backup_utility'), ee('CP/URL')->make('utilities/db-backup'));
@@ -110,7 +110,7 @@ class Utilities extends CP_Controller {
 			$db_list->addItem(lang('query_form'), ee('CP/URL')->make('utilities/query'));
 		}
 
-		if (ee()->cp->allowed_group('can_access_data'))
+		if (ee('Permission')->can('access_data'))
 		{
 			$data_list = $sidebar->addHeader(lang('data_operations'))
 			->addBasicList();

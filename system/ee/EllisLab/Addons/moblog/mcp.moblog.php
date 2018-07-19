@@ -644,7 +644,7 @@ EOT;
 				->with('Statuses')
 				->order('channel_title');
 
-			if ( ! ee()->cp->allowed_group('can_edit_other_entries'))
+			if ( ! ee('Permission')->can('edit_other_entries'))
 			{
 				$channels->filter('channel_id', 'IN', $allowed_channels);
 			}

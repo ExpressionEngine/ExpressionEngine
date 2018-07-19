@@ -39,7 +39,7 @@ class Members extends CP_Controller {
 		$this->perpage = ee()->config->item('memberlist_row_limit');
 		$this->group_id = ($this->input->get_post('group') && $this->input->get_post('group') != 'all') ? $this->input->get_post('group') : '';
 
-		if ( ! ee()->cp->allowed_group('can_access_members'))
+		if ( ! ee('Permission')->can('access_members'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -58,7 +58,7 @@ class Members extends CP_Controller {
 
 		$header = $sidebar->addHeader(lang('all_members'), ee('CP/URL')->make('members')->compile());
 
-		if ( ! $this->hasMaximumMembers() && ee()->cp->allowed_group('can_create_members'))
+		if ( ! $this->hasMaximumMembers() && ee('Permission')->can('create_members'))
 		{
 			$header->withButton(lang('new'), ee('CP/URL')->make('members/create'));
 		}
@@ -70,7 +70,7 @@ class Members extends CP_Controller {
 			$header->isActive();
 		}
 
-		if (ee()->cp->allowed_group('can_edit_members'))
+		if (ee('Permission')->can('edit_members'))
 		{
 			$pending = $list->addItem(lang('pending_activation'), ee('CP/URL', 'members/pending')->compile());
 
@@ -80,16 +80,16 @@ class Members extends CP_Controller {
 			}
 		}
 
-		if (ee()->cp->allowed_group('can_ban_users'))
+		if (ee('Permission')->can('ban_users'))
 		{
 			$list->addItem(lang('manage_bans'), ee('CP/URL')->make('members/ban-settings'));
 		}
 
-		if (ee()->cp->allowed_group('can_admin_mbr_groups'))
+		if (ee('Permission')->can('admin_mbr_groups'))
 		{
 			$header = $sidebar->addHeader(lang('member_groups'), ee('CP/URL')->make('members/groups'));
 
-			if (ee()->cp->allowed_group('can_create_member_groups'))
+			if (ee('Permission')->can('create_member_groups'))
 			{
 				$header->withButton(lang('new'), ee('CP/URL')->make('members/groups/create'));
 			}
@@ -187,7 +187,7 @@ class Members extends CP_Controller {
 			];
 		}
 
-		$data['can_delete_members'] = ee()->cp->allowed_group('can_delete_members');
+		$data['can_delete_members'] = ee('Permission')->can('delete_members');
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
@@ -197,7 +197,7 @@ class Members extends CP_Controller {
 
 	public function pending()
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_members'))
+		if ( ! ee('Permission')->can('edit_members'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -231,8 +231,8 @@ class Members extends CP_Controller {
 
 		$vars = array(
 			'cp_page_title' => lang('pending_members'),
-			'can_delete' => ee()->cp->allowed_group('can_delete_members'),
-			'can_edit' => ee()->cp->allowed_group('can_edit_members'),
+			'can_delete' => ee('Permission')->can('delete_members'),
+			'can_edit' => ee('Permission')->can('edit_members'),
 			'resend_available' => (ee()->config->item('req_mbr_activation') == 'email')
 		);
 
@@ -330,7 +330,7 @@ class Members extends CP_Controller {
 
 	public function banSettings()
 	{
-		if ( ! ee()->cp->allowed_group('can_ban_users'))
+		if ( ! ee('Permission')->can('ban_users'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -514,7 +514,7 @@ class Members extends CP_Controller {
 	{
 		if (is_null($checkboxes))
 		{
-			$checkboxes = ee()->cp->allowed_group('can_delete_members');
+			$checkboxes = ee('Permission')->can('delete_members');
 		}
 
 		// Get order by and sort preferences for our initial state
@@ -558,7 +558,7 @@ class Members extends CP_Controller {
 			)
 		);
 
-		if (ee()->cp->allowed_group('can_edit_members'))
+		if (ee('Permission')->can('edit_members'))
 		{
 			$columns['manage'] = array(
 				'type'	=> Table::COL_TOOLBAR
@@ -616,7 +616,7 @@ class Members extends CP_Controller {
 				case 'Pending':
 					$group = "<span class='st-pending'>" . lang('pending') . "</span>";
 					$attrs['class'] = 'pending';
-					if (ee()->cp->allowed_group('can_edit_members'))
+					if (ee('Permission')->can('edit_members'))
 					{
 						$toolbar['approve'] = array(
 							'href' => '#',
@@ -631,7 +631,7 @@ class Members extends CP_Controller {
 
 			$email = "<a href = '" . ee('CP/URL')->make('utilities/communicate/member/' . $member->member_id) . "'>".$member->email."</a>";
 
-			if (ee()->cp->allowed_group('can_edit_members'))
+			if (ee('Permission')->can('edit_members'))
 			{
 				$username_display = "<a href = '" . $edit_link . "'>". $member->username."</a>";
 			}
@@ -657,13 +657,13 @@ class Members extends CP_Controller {
 			$toolbar = array('toolbar_items' => $toolbar);
 
 			// add the toolbar if they can edit members
-			if (ee()->cp->allowed_group('can_edit_members'))
+			if (ee('Permission')->can('edit_members'))
 			{
 				$column[] = $toolbar;
 			}
 
 			// add the checkbox if they can delete members
-			if (ee()->cp->allowed_group('can_delete_members'))
+			if (ee('Permission')->can('delete_members'))
 			{
 				$column[] = array(
 					'name' => 'selection[]',
@@ -780,7 +780,7 @@ class Members extends CP_Controller {
 				case 'Pending':
 					$group = "<span class='st-pending'>" . lang('pending') . "</span>";
 					$attributes['class'] = 'pending';
-					if (ee()->cp->allowed_group('can_edit_members'))
+					if (ee('Permission')->can('edit_members'))
 					{
 						$toolbar['toolbar_items']['approve'] = array(
 							'href' => '#',
@@ -800,7 +800,7 @@ class Members extends CP_Controller {
 
 			$email = "<a href = '" . ee('CP/URL')->make('utilities/communicate/member/' . $member['member_id']) . "'>".$member['email']."</a>";
 
-			if (ee()->cp->allowed_group('can_edit_members'))
+			if (ee('Permission')->can('edit_members'))
 			{
 				$username_display = "<a href = '" . $edit_link . "'>". $member['username']."</a>";
 			}
@@ -825,13 +825,13 @@ class Members extends CP_Controller {
 			);
 
 			// add the toolbar if they can edit members
-			if (ee()->cp->allowed_group('can_edit_members'))
+			if (ee('Permission')->can('edit_members'))
 			{
 				$row['columns'][] = $toolbar;
 			}
 
 			// add the checkbox if they can delete members
-			if (ee()->cp->allowed_group('can_delete_members'))
+			if (ee('Permission')->can('delete_members'))
 			{
 				$row['columns'][] = array(
 					'name' => 'selection[]',
@@ -862,7 +862,7 @@ class Members extends CP_Controller {
 	 */
 	public function approve($ids)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_members') OR
+		if ( ! ee('Permission')->can('edit_members') OR
 			ee('Request')->method() !== 'POST')
 		{
 			show_error(lang('unauthorized_access'), 403);
@@ -934,7 +934,7 @@ class Members extends CP_Controller {
 	 */
 	private function decline(array $ids)
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_members'))
+		if ( ! ee('Permission')->can('delete_members'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -999,7 +999,7 @@ class Members extends CP_Controller {
 	 */
 	private function resend(array $ids)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_members') OR
+		if ( ! ee('Permission')->can('edit_members') OR
 			ee()->config->item('req_mbr_activation') !== 'email')
 		{
 			show_error(lang('unauthorized_access'), 403);
@@ -1225,7 +1225,7 @@ class Members extends CP_Controller {
 	{
 		$member_ids = ee()->input->post('selection', TRUE);
 
-		if ( ! ee()->cp->allowed_group('can_delete_members') ||
+		if ( ! ee('Permission')->can('delete_members') ||
 			! $member_ids)
 		{
 			show_error(lang('unauthorized_access'), 403);
@@ -1341,7 +1341,7 @@ class Members extends CP_Controller {
 			->filter('member_id', $member_id)
 			->first();
 
-		if ( ! ee()->cp->allowed_group('can_delete_members') ||
+		if ( ! ee('Permission')->can('delete_members') ||
 			! $member)
 		{
 			show_error(lang('unauthorized_access'), 403);
@@ -1520,7 +1520,7 @@ class Members extends CP_Controller {
 			'search_button_value' => $search_button_value
 		);
 
-		if ( ! ee()->cp->allowed_group('can_access_settings'))
+		if ( ! ee('Permission')->can('access_settings'))
 		{
 			unset($header['toolbar_items']);
 		}

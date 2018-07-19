@@ -112,7 +112,7 @@ abstract class AbstractPublish extends CP_Controller {
 			'publish.url_title_prefix'       => $entry->Channel->url_title_prefix,
 			'publish.which'                  => ($entry_id) ? 'edit' : 'new',
 			'publish.word_separator'         => ee()->config->item('word_separator') != "dash" ? '_' : '-',
-			'user.can_edit_html_buttons'     => ee()->cp->allowed_group('can_edit_html_buttons'),
+			'user.can_edit_html_buttons'     => ee('Permission')->can('edit_html_buttons'),
 			'user.foo'                       => FALSE,
 			'user_id'                        => ee()->session->userdata('member_id'),
 		));
@@ -336,7 +336,7 @@ abstract class AbstractPublish extends CP_Controller {
 			}
 		}
 
-		if ( ! ee()->cp->allowed_group('can_assign_post_authors'))
+		if ( ! ee('Permission')->can('assign_post_authors'))
 		{
 			unset($_POST['author_id']);
 		}

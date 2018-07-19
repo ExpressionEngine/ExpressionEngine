@@ -564,7 +564,7 @@ class Metaweblog_api_mcp {
 		$allowed_groups = array();
 		$groups_exist = TRUE;
 
-		if ( ! ee()->cp->allowed_group('can_edit_other_entries') && count($allowed_channels) == 0)
+		if ( ! ee('Permission')->can('edit_other_entries') && count($allowed_channels) == 0)
 		{
 			$groups_exist = FALSE;
 		}
@@ -576,7 +576,7 @@ class Metaweblog_api_mcp {
 			$channels->filter('site_id', '1');
 		}
 
-		if ( ! ee()->cp->allowed_group('can_edit_other_entries'))
+		if ( ! ee('Permission')->can('edit_other_entries'))
 		{
 			$channels->filter('channel_id', 'IN', $allowed_channels);
 		}

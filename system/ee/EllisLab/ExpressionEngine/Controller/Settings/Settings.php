@@ -26,7 +26,7 @@ class Settings extends CP_Controller {
 
 		ee('CP/Alert')->makeDeprecationNotice()->now();
 
-		if ( ! ee()->cp->allowed_group('can_access_sys_prefs'))
+		if ( ! ee('Permission')->can('access_sys_prefs'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -52,7 +52,7 @@ class Settings extends CP_Controller {
 		$list->addItem(lang('license_and_registration'), ee('CP/URL')->make('settings/license'));
 		$list->addItem(lang('url_path_settings'), ee('CP/URL')->make('settings/urls'));
 
-		if (ee()->cp->allowed_group('can_access_comm'))
+		if (ee('Permission')->can('access_comm'))
 		{
 			$list->addItem(lang('outgoing_email'), ee('CP/URL')->make('settings/email'));
 		}
@@ -61,7 +61,7 @@ class Settings extends CP_Controller {
 
 		$content_and_design_link = NULL;
 
-		if (ee()->cp->allowed_group('can_admin_channels'))
+		if (ee('Permission')->can('admin_channels'))
 		{
 			$content_and_design_link = ee('CP/URL')->make('settings/content-design');
 		}
@@ -100,7 +100,7 @@ class Settings extends CP_Controller {
 			$list->addItem(lang('avatars'), ee('CP/URL')->make('settings/avatars'));
 		}
 
-		if (ee()->cp->allowed_group('can_access_security_settings'))
+		if (ee('Permission')->can('access_security_settings'))
 		{
 			$list = $sidebar->addHeader(lang('security_privacy'), ee('CP/URL')->make('settings/security-privacy'))
 				->addBasicList();
@@ -108,12 +108,12 @@ class Settings extends CP_Controller {
 			$list->addItem(lang('access_throttling'), ee('CP/URL')->make('settings/throttling'));
 			$list->addItem(lang('captcha'), ee('CP/URL')->make('settings/captcha'));
 
-			if (ee()->cp->allowed_group('can_manage_consents'))
+			if (ee('Permission')->can('manage_consents'))
 			{
 				$list->addItem(lang('consent_requests'), ee('CP/URL')->make('settings/consents'));
 			}
 		}
-		elseif (ee()->cp->allowed_group('can_manage_consents'))
+		elseif (ee('Permission')->can('manage_consents'))
 		{
 			$list = $sidebar->addHeader(lang('security_privacy'))->addBasicList();
 			$list->addItem(lang('consent_requests'), ee('CP/URL')->make('settings/consents'));

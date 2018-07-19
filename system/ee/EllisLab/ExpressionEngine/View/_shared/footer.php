@@ -68,23 +68,23 @@
 						</div>
 					</div>
 					<div class="app-support">
-						<?php if (ee()->cp->allowed_group('can_access_footer_report_bug')): ?>
+						<?php if (ee('Permission')->can('access_footer_report_bug')): ?>
 							<a href="https://expressionengine.com/support/bugs/new" class="app-about__link" rel="external noreferrer"><?=lang('report_bug')?></a>
 
-							<?php if (ee()->cp->allowed_group('can_access_footer_new_ticket') || ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
+							<?php if (ee('Permission')->can('access_footer_new_ticket') || ee('Permission')->can('access_footer_user_guide')): ?>
 								<b class="sep">&middot;</b>
 							<?php endif; ?>
 						<?php endif; ?>
 
-						<?php if (ee()->cp->allowed_group('can_access_footer_new_ticket')): ?>
+						<?php if (ee('Permission')->can('access_footer_new_ticket')): ?>
 							<a href="https://expressionengine.com/support" class="app-about__link" rel="external noreferrer"><?=lang('new_ticket')?></a>
 
-							<?php if (ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
+							<?php if (ee('Permission')->can('access_footer_user_guide')): ?>
 								<b class="sep">&middot;</b>
 							<?php endif; ?>
 						<?php endif; ?>
 
-						<?php if (ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
+						<?php if (ee('Permission')->can('access_footer_user_guide')): ?>
 							<a href="<?=DOC_URL?>" class="app-about__link" rel="external noreferrer"><?=lang('user_guide')?></a>
 						<?php endif; ?>
 					</div>
@@ -99,7 +99,7 @@
 								<?=($ee_license->getData('license_contact_name')) ?: $ee_license->getData('license_contact')?>
 							</a>
 						<?php else: ?>
-							<?php if (ee()->cp->allowed_group('can_access_sys_prefs')): ?>
+							<?php if (ee('Permission')->can('access_sys_prefs')): ?>
 								<a class="btn no-reg" href="<?=ee('CP/URL')->make('settings/license')?>"><?=lang('register_now')?></a>
 							<?php else: ?>
 								<?=lang('not_entered')?>

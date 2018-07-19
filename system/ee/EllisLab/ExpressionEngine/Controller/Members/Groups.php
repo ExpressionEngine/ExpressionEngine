@@ -35,7 +35,7 @@ class Groups extends Members\Members {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_admin_mbr_groups'))
+		if ( ! ee('Permission')->can('admin_mbr_groups'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -84,7 +84,7 @@ class Groups extends Members\Members {
 			unset($columns['manage']);
 		}
 
-		if (ee()->cp->allowed_group('can_delete_member_groups'))
+		if (ee('Permission')->can('delete_member_groups'))
 		{
 			$columns[] = array(
 				'type'	=> Table::COL_CHECKBOX
@@ -140,12 +140,12 @@ class Groups extends Members\Members {
 			$href = ee('CP/URL')->make('members', array('group' => $group->group_id));
 			$title = '<a href="' . $edit_link . '">' . htmlentities($group->group_title, ENT_QUOTES, 'UTF-8') . '</a>';
 
-			if ( ! ee()->cp->allowed_group('can_create_member_groups'))
+			if ( ! ee('Permission')->can('create_member_groups'))
 			{
 				unset($toolbar['toolbar_items']['copy']);
 			}
 
-			if ( ! ee()->cp->allowed_group('can_edit_member_groups') || ($group->is_locked == 'y' && ! ee('Permission')->isSuperAdmin()))
+			if ( ! ee('Permission')->can('edit_member_groups') || ($group->is_locked == 'y' && ! ee('Permission')->isSuperAdmin()))
 			{
 				$title = $group->group_title;
 				unset($toolbar['toolbar_items']['edit']);
@@ -166,7 +166,7 @@ class Groups extends Members\Members {
 				$row[] = $toolbar;
 			}
 
-			if (ee()->cp->allowed_group('can_delete_member_groups'))
+			if (ee('Permission')->can('delete_member_groups'))
 			{
 				$row[] = array(
 					'name' => 'selection[]',
@@ -237,7 +237,7 @@ class Groups extends Members\Members {
 
 	public function create()
 	{
-		if ( ! ee()->cp->allowed_group('can_create_member_groups'))
+		if ( ! ee('Permission')->can('create_member_groups'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -254,7 +254,7 @@ class Groups extends Members\Members {
 
 	public function copy($group_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_create_member_groups'))
+		if ( ! ee('Permission')->can('create_member_groups'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -282,7 +282,7 @@ class Groups extends Members\Members {
 
 	public function edit($group_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_member_groups'))
+		if ( ! ee('Permission')->can('edit_member_groups'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -321,7 +321,7 @@ class Groups extends Members\Members {
 
 		if ( ! $member ||
 			! $member->Session ||
-			! ee()->cp->allowed_group('can_delete_member_groups') ||
+			! ee('Permission')->can('delete_member_groups') ||
 			! $groups)
 		{
 			show_error(lang('unauthorized_access'), 403);
@@ -402,7 +402,7 @@ class Groups extends Members\Members {
 	public function confirm()
 	{
 		//  Only super admins can delete member groups
-		if ( ! ee()->cp->allowed_group('can_delete_member_groups'))
+		if ( ! ee('Permission')->can('delete_member_groups'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

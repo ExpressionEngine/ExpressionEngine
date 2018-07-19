@@ -23,7 +23,7 @@ class Filepicker_mcp {
 		$this->base_url = 'addons/settings/filepicker';
 		$this->access = FALSE;
 
-		if (ee()->cp->allowed_group('can_access_files'))
+		if (ee('Permission')->can('access_files'))
 		{
 			$this->access = TRUE;
 		}
@@ -253,7 +253,7 @@ class Filepicker_mcp {
 			// show a slightly different message if we have no upload directories
 			if ($nodirs)
 			{
-				if (ee()->cp->allowed_group('can_create_upload_directories'))
+				if (ee('Permission')->can('create_upload_directories'))
 				{
 					$table->setNoResultsText(
 						lang('zero_upload_directories_found'),

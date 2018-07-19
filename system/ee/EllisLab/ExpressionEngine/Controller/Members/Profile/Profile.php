@@ -115,7 +115,7 @@ class Profile extends CP_Controller {
 		$list = $sidebar->addHeader(lang('publishing_settings'), $publishing_link)
 			->addBasicList();
 
-		if ($this->cp->allowed_group('can_edit_html_buttons'))
+		if (ee('Permission')->can('edit_html_buttons'))
 		{
 			$url = ee('CP/URL')->make('members/profile/buttons', $this->query_string);
 			$item = $list->addItem(lang('html_buttons'), $url);
@@ -142,7 +142,7 @@ class Profile extends CP_Controller {
 
 		$list->addItem(lang('subscriptions'), ee('CP/URL')->make('members/profile/subscriptions', $this->query_string));
 
-		if (ee()->cp->allowed_group('can_edit_members'))
+		if (ee('Permission')->can('edit_members'))
 		{
 			$list = $sidebar->addHeader(lang('administration'))
 				->addBasicList();
@@ -173,7 +173,7 @@ class Profile extends CP_Controller {
 					$list->addItem(sprintf(lang('login_as'), $this->member->username), ee('CP/URL')->make('members/profile/login', $this->query_string));
 				}
 
-				if (ee()->cp->allowed_group('can_delete_members'))
+				if (ee('Permission')->can('delete_members'))
 				{
 					$session = ee('Model')->get('Session', ee()->session->userdata('session_id'))->first();
 

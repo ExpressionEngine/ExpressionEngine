@@ -14,7 +14,7 @@
 			<fieldset class="tbl-bulk-act hidden">
 				<select name="bulk_action">
 					<option>-- <?=lang('with_selected')?> --</option>
-					<?php if (ee()->cp->allowed_group('can_delete_channels')): ?>
+					<?php if (ee('Permission')->can('delete_channels')): ?>
 						<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
 					<?php endif ?>
 				</select>

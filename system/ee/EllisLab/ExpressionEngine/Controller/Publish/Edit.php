@@ -51,14 +51,14 @@ class Edit extends AbstractPublishController {
 		$entry_listing = ee('CP/EntryListing',
 			ee()->input->get_post('filter_by_keyword'),
 			ee()->input->get_post('search_in') ?: 'titles',
-			ee()->cp->allowed_group('can_edit_other_entries')
+			ee('Permission')->can('edit_other_entries')
 		);
 
 		$entries = $entry_listing->getEntries();
 		$filters = $entry_listing->getFilters();
 		$channel_id = $entry_listing->channel_filter->value();
 
-		if ( ! ee()->cp->allowed_group('can_edit_other_entries'))
+		if ( ! ee('Permission')->can('edit_other_entries'))
 		{
 			$entries->filter('author_id', ee()->session->userdata('member_id'));
 		}
@@ -150,8 +150,8 @@ class Edit extends AbstractPublishController {
 
 		foreach ($entries->all() as $entry)
 		{
-			if (ee()->cp->allowed_group('can_edit_other_entries')
-				|| (ee()->cp->allowed_group('can_edit_self_entries') &&
+			if (ee('Permission')->can('edit_other_entries')
+				|| (ee('Permission')->can('edit_self_entries') &&
 					$entry->author_id == ee()->session->userdata('member_id')
 					)
 				)
@@ -192,7 +192,7 @@ class Edit extends AbstractPublishController {
 
 			if ($entry->comment_total > 0)
 			{
-				if (ee()->cp->allowed_group('can_moderate_comments'))
+				if (ee('Permission')->can('moderate_comments'))
 				{
 					$comments = '(<a href="' . ee('CP/URL')->make('publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>)';
 				}
@@ -224,8 +224,8 @@ class Edit extends AbstractPublishController {
 				);
 			}
 
-			if (ee()->cp->allowed_group('can_delete_all_entries')
-				|| (ee()->cp->allowed_group('can_delete_self_entries') &&
+			if (ee('Permission')->can('delete_all_entries')
+				|| (ee('Permission')->can('delete_self_entries') &&
 					$entry->author_id == ee()->session->userdata('member_id')
 					)
 				)
@@ -315,7 +315,7 @@ class Edit extends AbstractPublishController {
 
 		ee()->view->header = array(
 			'title' => lang('entry_manager'),
-			'action_button' => ee()->cp->allowed_group('can_create_entries') && $show_new_button ? [
+			'action_button' => ee('Permission')->can('create_entries') && $show_new_button ? [
 				'text' => $channel_id ? sprintf(lang('btn_create_new_entry_in_channel'), $channel->channel_title) : lang('new'),
 				'href' => ee('CP/URL', 'publish/create/' . $channel_id)->compile(),
 				'filter_placeholder' => lang('filter_channels'),
@@ -420,7 +420,7 @@ class Edit extends AbstractPublishController {
 			show_error(lang('no_entries_matching_that_criteria'));
 		}
 
-		if ( ! ee()->cp->allowed_group('can_edit_other_entries')
+		if ( ! ee('Permission')->can('edit_other_entries')
 			&& $entry->author_id != ee()->session->userdata('member_id'))
 		{
 			show_error(lang('unauthorized_access'), 403);
@@ -556,8 +556,8 @@ class Edit extends AbstractPublishController {
 
 	private function remove($entry_ids)
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_all_entries')
-			&& ! ee()->cp->allowed_group('can_delete_self_entries'))
+		if ( ! ee('Permission')->can('delete_all_entries')
+			&& ! ee('Permission')->can('delete_self_entries'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -580,7 +580,7 @@ class Edit extends AbstractPublishController {
 			$entries->filter('channel_id', 'IN', $this->assigned_channel_ids);
 		}
 
-		if ( ! ee()->cp->allowed_group('can_delete_all_entries'))
+		if ( ! ee('Permission')->can('delete_all_entries'))
 		{
 			$entries->filter('author_id', ee()->session->userdata('member_id'));
 		}

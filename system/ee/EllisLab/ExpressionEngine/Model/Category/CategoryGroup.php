@@ -178,7 +178,7 @@ class CategoryGroup extends StructureModel {
 			'deletable'				=> $deletable,
 			'populateCallback'		=> array($this, 'populateCategories'),
 			'manage_toggle_label'	=> lang('manage_categories'),
-			'add_btn_label'	        => REQ == 'CP' && ee()->cp->allowed_group('can_create_categories')
+			'add_btn_label'	        => REQ == 'CP' && ee('Permission')->can('create_categories')
 				? lang('add_category')
 				: NULL,
 			'content_item_label'	=> lang('category'),

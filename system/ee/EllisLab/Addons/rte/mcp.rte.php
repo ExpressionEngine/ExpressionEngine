@@ -242,7 +242,7 @@ class Rte_mcp {
 	 */
 	public function new_toolset()
 	{
-		if ( ! ee()->cp->allowed_group('can_upload_new_toolsets'))
+		if ( ! ee('Permission')->can('upload_new_toolsets'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -265,7 +265,7 @@ class Rte_mcp {
 	 */
 	public function edit_toolset($toolset_id = FALSE)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_toolsets'))
+		if ( ! ee('Permission')->can('edit_toolsets'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -346,7 +346,7 @@ class Rte_mcp {
 				break;
 
 			case 'remove':
-				if ( ! ee()->cp->allowed_group('can_delete_toolsets'))
+				if ( ! ee('Permission')->can('delete_toolsets'))
 				{
 					show_error(lang('unauthorized_access'), 403);
 				}

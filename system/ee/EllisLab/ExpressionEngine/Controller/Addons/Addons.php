@@ -33,12 +33,12 @@ class Addons extends CP_Controller {
 
 		ee('CP/Alert')->makeDeprecationNotice()->now();
 
-		if ( ! ee()->cp->allowed_group('can_access_addons'))
+		if ( ! ee('Permission')->can('access_addons'))
 		{
 			// possible exception for FilePicker
 			if (strncmp(ee()->uri->uri_string, 'cp/addons/settings/filepicker', 29) == 0)
 			{
-				if (! ee()->cp->allowed_group('can_access_files'))
+				if (! ee('Permission')->can('access_files'))
 				{
 					show_error(lang('unauthorized_access'), 403);
 				}
@@ -65,7 +65,7 @@ class Addons extends CP_Controller {
 			->pluck('module_id');
 
 		// Make sure Filepicker is accessible for those who need it
-		if (ee()->cp->allowed_group('can_access_files'))
+		if (ee('Permission')->can('access_files'))
 		{
 			$this->assigned_modules[] = ee('Model')->get('Module')->filter('module_name', 'Filepicker')->first()->getId();
 		}
@@ -258,7 +258,7 @@ class Addons extends CP_Controller {
 			);
 
 
-			if (ee()->cp->allowed_group('can_admin_addons'))
+			if (ee('Permission')->can('admin_addons'))
 			{
 				$columns[] = array(
 					'type'	=> Table::COL_CHECKBOX
@@ -367,7 +367,7 @@ class Addons extends CP_Controller {
 					$attrs = array();
 				}
 
-				if ( ! ee()->cp->allowed_group('can_admin_addons'))
+				if ( ! ee('Permission')->can('admin_addons'))
 				{
 					unset($toolbar['install']);
 				}
@@ -381,7 +381,7 @@ class Addons extends CP_Controller {
 					)
 				);
 
-				if (ee()->cp->allowed_group('can_admin_addons'))
+				if (ee('Permission')->can('admin_addons'))
 				{
 					$row['columns'][] = array(
 						'name' => 'selection[]',
@@ -489,7 +489,7 @@ class Addons extends CP_Controller {
 	 */
 	public function update($addons)
 	{
-		if ( ! ee()->cp->allowed_group('can_admin_addons') OR
+		if ( ! ee('Permission')->can('admin_addons') OR
 			ee('Request')->method() !== 'POST')
 		{
 			show_error(lang('unauthorized_access'), 403);
@@ -655,7 +655,7 @@ class Addons extends CP_Controller {
 	 */
 	public function install($addons)
 	{
-		if ( ! ee()->cp->allowed_group('can_admin_addons') OR
+		if ( ! ee('Permission')->can('admin_addons') OR
 			ee('Request')->method() !== 'POST')
 		{
 			show_error(lang('unauthorized_access'), 403);
@@ -817,7 +817,7 @@ class Addons extends CP_Controller {
 	 */
 	private function remove($addons)
 	{
-		if ( ! ee()->cp->allowed_group('can_admin_addons'))
+		if ( ! ee('Permission')->can('admin_addons'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -1911,7 +1911,7 @@ class Addons extends CP_Controller {
 
 	private function getFieldtypeSettings($fieldtype)
 	{
-		if ( ! ee()->cp->allowed_group('can_access_addons'))
+		if ( ! ee('Permission')->can('access_addons'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -1953,7 +1953,7 @@ class Addons extends CP_Controller {
 
 	private function saveFieldtypeSettings($fieldtype)
 	{
-		if ( ! ee()->cp->allowed_group('can_access_addons'))
+		if ( ! ee('Permission')->can('access_addons'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

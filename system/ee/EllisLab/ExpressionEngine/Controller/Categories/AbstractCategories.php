@@ -78,7 +78,7 @@ abstract class AbstractCategories extends CP_Controller {
 		$list = $sidebar->addFolderList('categories')
 			->withNoResultsText(sprintf(lang('no_found'), lang('category_groups')));
 
-		if (ee()->cp->allowed_group('can_delete_categories'))
+		if (ee('Permission')->can('delete_categories'))
 		{
 			$list->withRemoveUrl(ee('CP/URL')->make('categories/groups/remove'))
 				->withRemovalKey('content_id');
@@ -100,14 +100,14 @@ abstract class AbstractCategories extends CP_Controller {
 				ee('CP/URL')->make('categories/group/' . $group->getId())
 			);
 
-			if (ee()->cp->allowed_group('can_edit_categories'))
+			if (ee('Permission')->can('edit_categories'))
 			{
 				$item->withEditUrl(
 					ee('CP/URL')->make('categories/groups/edit/' . $group->getId())
 				);
 			}
 
-			if (ee()->cp->allowed_group('can_delete_categories'))
+			if (ee('Permission')->can('delete_categories'))
 			{
 				$item->withRemoveConfirmation(
 					lang('category_group') . ': <b>' . $group_name . '</b>'

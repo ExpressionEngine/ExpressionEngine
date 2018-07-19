@@ -105,7 +105,7 @@ class Homepage extends CP_Controller {
 				ee()->lang->load($trapped->content_type);
 			}
 
-			$vars['can_moderate_spam'] = ee()->cp->allowed_group('can_moderate_spam');
+			$vars['can_moderate_spam'] = ee('Permission')->can('moderate_spam');
 		}
 
 		// Gather the news
@@ -152,15 +152,15 @@ class Homepage extends CP_Controller {
 		$vars['news']    = $news;
 		$vars['url_rss'] = ee()->cp->masked_url($url_rss);
 
-		$vars['can_moderate_comments'] = ee()->cp->allowed_group('can_moderate_comments');
-		$vars['can_edit_comments'] = ee()->cp->allowed_group('can_edit_all_comments');
-		$vars['can_access_members'] = ee()->cp->allowed_group('can_access_members');
-		$vars['can_create_members'] = ee()->cp->allowed_group('can_create_members');
-		$vars['can_access_channels'] = ee()->cp->allowed_group('can_admin_channels');
-		$vars['can_create_channels'] = ee()->cp->allowed_group('can_create_channels');
+		$vars['can_moderate_comments'] = ee('Permission')->can('moderate_comments');
+		$vars['can_edit_comments'] = ee('Permission')->can('edit_all_comments');
+		$vars['can_access_members'] = ee('Permission')->can('access_members');
+		$vars['can_create_members'] = ee('Permission')->can('create_members');
+		$vars['can_access_channels'] = ee('Permission')->can('admin_channels');
+		$vars['can_create_channels'] = ee('Permission')->can('create_channels');
 		$vars['can_access_fields'] = ee()->cp->allowed_group('can_create_channel_fields', 'can_edit_channel_fields', 'can_delete_channel_fields');
 		$vars['can_access_member_settings'] = ee()->cp->allowed_group('can_access_sys_prefs', 'can_access_members');
-		$vars['can_view_homepage_news'] = ee()->cp->allowed_group('can_view_homepage_news');
+		$vars['can_view_homepage_news'] = ee('Permission')->can('view_homepage_news');
 
 		ee()->view->cp_page_title = ee()->config->item('site_name') . ' ' . lang('overview');
 		ee()->cp->render('homepage', $vars);

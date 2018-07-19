@@ -27,7 +27,7 @@ class Communicate extends Utilities {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_comm'))
+		if ( ! ee('Permission')->can('access_comm'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -79,7 +79,7 @@ class Communicate extends Utilities {
 		}
 
 		// Set up member group emailing options
-		if (ee()->cp->allowed_group('can_email_member_groups'))
+		if (ee('Permission')->can('email_member_groups'))
 		{
 			$groups = ee('Model')->get('MemberGroup')
 				->filter('site_id', ee()->config->item('site_id'))
@@ -206,7 +206,7 @@ class Communicate extends Utilities {
 			)
 		);
 
-		if (ee()->cp->allowed_group('can_email_member_groups'))
+		if (ee('Permission')->can('email_member_groups'))
 		{
 			$vars['sections']['recipient_options'][] = array(
 				'title' => 'add_member_groups',
@@ -296,7 +296,7 @@ class Communicate extends Utilities {
 		}
 
 		//  Verify privileges
-		if (count($groups) > 0 && ! ee()->cp->allowed_group('can_email_member_groups'))
+		if (count($groups) > 0 && ! ee('Permission')->can('email_member_groups'))
 		{
 			show_error(lang('not_allowed_to_email_member_groups'));
 		}
@@ -758,7 +758,7 @@ class Communicate extends Utilities {
 	 */
 	public function sent()
 	{
-		if ( ! ee()->cp->allowed_group('can_send_cached_email'))
+		if ( ! ee('Permission')->can('send_cached_email'))
 		{
 			show_error(lang('not_allowed_to_email_cache'));
 		}

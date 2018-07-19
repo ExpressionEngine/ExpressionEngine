@@ -31,7 +31,7 @@ class Logs extends CP_Controller {
 
 		ee()->lang->loadfile('logs');
 
-		if ( ! ee()->cp->allowed_group('can_access_logs'))
+		if ( ! ee('Permission')->can('access_logs'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -104,7 +104,7 @@ class Logs extends CP_Controller {
 	 */
 	protected function delete($model, $log_type)
 	{
-		if ( ! ee()->cp->allowed_group('can_access_logs'))
+		if ( ! ee('Permission')->can('access_logs'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

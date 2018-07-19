@@ -27,7 +27,7 @@ class Buttons extends Settings {
 
 		ee()->lang->load('admin_content');
 
-		if ( ! $this->cp->allowed_group('can_edit_html_buttons'))
+		if ( ! ee('Permission')->can('edit_html_buttons'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
