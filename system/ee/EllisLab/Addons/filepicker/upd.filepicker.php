@@ -38,11 +38,20 @@ class Filepicker_upd {
 		// When installing, ee()->config will contain the installer app values,
 		// not the ExpressionEngine application values.
 		// So fetch them from the model - dj
-		$member_prefs = ee('Model')->get('Config')
-			->filter('site_id', 'IN', [0, $site_id])
-			->filter('key', 'IN', ee()->config->divination('member'))
-			->all()
-			->getDictionary('key', 'value');
+		if (ee()->db->table_exists('config'))
+		{
+			$member_prefs = ee('Model')->get('Config')
+				->filter('site_id', $site_id)
+				->filter('key', 'IN', ee()->config->divination('member'))
+				->all()
+				->getDictionary('key', 'value');
+		}
+		else
+		{
+			$sites = ee()->db->get_where('sites', ['site_id' => $site_id]);
+			$site = $sites->result_array();
+			$member_prefs = unserialize(base64_decode($site[0]['site_member_preferences']));
+		}
 
 		$member_directories['Avatars'] = array(
 			'server_path' => $member_prefs['avatar_path'],
