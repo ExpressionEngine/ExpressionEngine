@@ -579,7 +579,10 @@ class Updater {
 
 		foreach ($all_site_ids_query as $site)
 		{
-			$config = ee()->config->site_prefs('', $site->site_id, FALSE);
+			$query = ee()->db->get_where('sites', array('site_id' => $site));
+			$row = $query->row_array();
+
+			$config = unserialize(base64_decode($row['site_template_preferences']));
 
 			// If ANY sites save as file, they all must
 			if (isset($config['save_tmpl_files']))
