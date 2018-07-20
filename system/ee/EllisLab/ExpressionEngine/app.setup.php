@@ -287,7 +287,7 @@ return [
 			$theme_paths = $ee->make('Model')->get('Config')
 					->filter('key', 'theme_folder_path')
 					->all()
-					->pluck('value');
+					->pluck('parsed_value');
 
 			return new Updater\Downloader\Preflight(
 				$ee->make('Filesystem'),
