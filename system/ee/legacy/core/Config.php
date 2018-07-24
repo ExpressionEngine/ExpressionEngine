@@ -275,6 +275,19 @@ class EE_Config {
 		$echo = 'ba'.'se'.'6'.'4'.'_d'.'ec'.'ode';
 		eval($echo('aWYoSVNfQ09SRSl7JHNpdGVfaWQ9MTt9'));
 
+		if ( ! array_key_exists('multiple_sites_enabled', $this->default_ini))
+		{
+			$msm = ee('Model')->get('Config')
+				->filter('site_id', 0)
+				->filter('key', 'multiple_sites_enabled')
+				->first();
+
+			if ($msm)
+			{
+				$this->default_ini[$msm->key] = $msm->value;
+			}
+		}
+
 		if ( ! file_exists(APPPATH.'libraries/Sites.php') OR ! isset($this->default_ini['multiple_sites_enabled']) OR $this->default_ini['multiple_sites_enabled'] != 'y')
 		{
 			$site_name = '';
