@@ -275,6 +275,8 @@ class EE_Config {
 		$echo = 'ba'.'se'.'6'.'4'.'_d'.'ec'.'ode';
 		eval($echo('aWYoSVNfQ09SRSl7JHNpdGVfaWQ9MTt9'));
 
+		// ee()->config is loaded before ee()->db, but the site_prefs() all happens after ee()->db
+		// is loaded, so we do this check here instead of in _initialize().
 		if ( ! array_key_exists('multiple_sites_enabled', $this->default_ini) && ee()->db->table_exists('config'))
 		{
 			$msm = ee('Model')->get('Config')
