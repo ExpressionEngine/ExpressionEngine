@@ -275,7 +275,7 @@ class EE_Config {
 		$echo = 'ba'.'se'.'6'.'4'.'_d'.'ec'.'ode';
 		eval($echo('aWYoSVNfQ09SRSl7JHNpdGVfaWQ9MTt9'));
 
-		if ( ! array_key_exists('multiple_sites_enabled', $this->default_ini))
+		if ( ! array_key_exists('multiple_sites_enabled', $this->default_ini) && ee()->db->table_exists('config'))
 		{
 			$msm = ee('Model')->get('Config')
 				->filter('site_id', 0)
