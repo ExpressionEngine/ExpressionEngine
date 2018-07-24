@@ -137,6 +137,9 @@ def reset_db(test_file = '')
     if test_file == 'updater'
       $db.query(IO.read('sql/database_2.10.1.sql'))
       clear_db_result
+    elsif test_file == 'one-click'
+      $db.query(IO.read('sql/database_3.3.4.sql'))
+      clear_db_result
     elsif test_file != 'installer'
       $db.query(IO.read('sql/database.sql'))
       clear_db_result
