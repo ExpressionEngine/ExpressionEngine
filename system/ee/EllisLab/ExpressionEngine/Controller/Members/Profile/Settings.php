@@ -255,7 +255,11 @@ class Settings extends Profile {
 		switch (ee()->input->post('avatar_picker')) {
 			case "upload":
 				$this->member->avatar_filename = $this->uploadAvatar();
-				if ( ! $this->member->avatar_filename) { return FALSE; }
+				if ( ! $this->member->avatar_filename)
+				{
+					parent::saveSettings($settings);
+					return FALSE;
+				}
 				break;
 			case "choose":
 				$choice = ee()->input->post('avatar_filename');
