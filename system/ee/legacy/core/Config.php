@@ -325,12 +325,15 @@ class EE_Config {
 		// Fetch the query result array
 		$row = $query->row_array();
 
-		$site_configs = ee('Model')->get('Config')
-				->filter('site_id', 'IN', [0, $row['site_id']])
-				->all()
-				->getDictionary('key', 'value');
+		if (ee()->db->table_exists('config'))
+		{
+			$site_configs = ee('Model')->get('Config')
+					->filter('site_id', 'IN', [0, $row['site_id']])
+					->all()
+					->getDictionary('key', 'value');
 
-		$config = array_merge($site_configs, $config);
+			$config = array_merge($site_configs, $config);
+		}
 
 		// Fold in the Preferences in the Database
 		foreach($query->row_array() as $name => $data)
