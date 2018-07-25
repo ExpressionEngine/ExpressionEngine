@@ -362,7 +362,7 @@ class EE_Config {
 
 		// Few More Variables
 		$config['site_short_name'] = $row['site_name'];
-		$config['site_name'] 		 = $row['site_label']; // Legacy code as 3rd Party modules likely use it
+		$config['site_name']       = $row['site_label']; // Legacy code as 3rd Party modules likely use it
 
 		// Need this so we know the base url a page belongs to
 		if (isset($config['site_pages'][$row['site_id']]))
