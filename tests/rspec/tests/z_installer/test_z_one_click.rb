@@ -3,8 +3,6 @@ require './bootstrap.rb'
 feature 'One-Click Updater' do
 
   before(:each) do
-    reset_db 'one-click'
-
     Capybara.default_max_wait_time = 50
     system = '../../system/'
     @config_path = File.expand_path('user/config/config.php', system)
