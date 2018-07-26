@@ -363,7 +363,7 @@ class EE_Session {
 	 */
 	public function create_new_session($member_id, $admin_session = FALSE, $can_debug = FALSE)
 	{
-		if ( ! is_object($this->member_model) || $member_model->member_id != $member_id)
+		if ( ! is_object($this->member_model) || $this->member_model->member_id != $member_id)
 		{
 			$this->member_model = ee('Model')->get('Member', $member_id)->first();
 		}
