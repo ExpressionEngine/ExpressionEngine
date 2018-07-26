@@ -57,16 +57,14 @@ class Group extends AbstractDesignController {
 			});
 
 		// Not a superadmin?  Preselect their member group as allowed to view templates
-		$selected_member_groups = ( ! ee('Permission')->isSuperAdmin()) ? array($this->session->userdata('group_id')) : array();
+		$selected_roles = ( ! ee('Permission')->isSuperAdmin()) ? array($this->session->userdata('group_id')) : array();
 
-		// only member groups with design manager access
-		$member_groups = ee('Model')->get('MemberGroup')
-			->filter('group_id', 'NOT IN', array(1, 2, 4))
-			->filter('can_access_design', 'y')
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('group_title', 'asc')
+		// only roles with design manager access
+		$roles = ee('Model')->get('Role', ee('Permission')->rolesThatCan('access_design'))
+			->filter('role_id', 'NOT IN', array(1, 2, 4))
+			->order('name', 'asc')
 			->all()
-			->getDictionary('group_id', 'group_title');
+			->getDictionary('role_id', 'name');
 
 		if ( ! empty($_POST))
 		{
@@ -81,19 +79,19 @@ class Group extends AbstractDesignController {
 				if ($result->isValid())
 				{
 					// Only set member groups from post if they have permission to admin member groups and a value is set
-					if (ee()->input->post('member_groups') && (ee('Permission')->isSuperAdmin() OR ee('Permission')->can('admin_mbr_groups')))
+					if (ee()->input->post('roles') && (ee('Permission')->isSuperAdmin() OR ee('Permission')->can('admin_mbr_groups')))
 					{
-						$group->MemberGroups = ee('Model')->get('MemberGroup', ee('Request')->post('member_groups'))->all();
+						$group->Roles = ee('Model')->get('Role', ee('Request')->post('roles'))->all();
 					}
 					elseif ( ! ee('Permission')->isSuperAdmin() AND ! ee('Permission')->can('admin_mbr_groups'))
 					{
 						// No permission to admin, so their group is automatically added to the template group
-						$group->MemberGroups = ee('Model')->get('MemberGroup', $this->session->userdata('group_id'))->first();
+						$group->Roles = ee('Model')->get('Role', $this->session->userdata('group_id'))->first();
 					}
 
 					// Does the current member have permission to access the template group they just created?
-					$member_groups = $group->MemberGroups->pluck('group_id');
-					$redirect_name = (ee('Permission')->isSuperAdmin() OR in_array($this->session->userdata('group_id'), $member_groups)) ? TRUE : FALSE;
+					$roles = $group->Roles->pluck('role_id');
+					$redirect_name = (ee('Permission')->isSuperAdmin() OR in_array($this->session->userdata('group_id'), $roles)) ? TRUE : FALSE;
 
 					$group->save();
 
@@ -200,16 +198,16 @@ class Group extends AbstractDesignController {
 						)
 					),
 					array(
-					'title' => 'template_member_groups',
-					'desc' => 'template_member_groups_desc',
+					'title' => 'template_roles',
+					'desc' => 'template_roles_desc',
 					'fields' => array(
-						'member_groups' => array(
+						'roles' => array(
 							'type' => 'checkbox',
 							'required' => TRUE,
-							'choices' => $member_groups,
-							'value' => $selected_member_groups,
+							'choices' => $roles,
+							'value' => $selected_roles,
 							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								'text' => sprintf(lang('no_found'), lang('roles'))
 								]
 							)
 						)
@@ -254,16 +252,14 @@ class Group extends AbstractDesignController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$selected_member_groups = ($group->MemberGroups) ? $group->MemberGroups->pluck('group_id') : array();
+		$selected_roles = ($group->Roles) ? $group->Roles->pluck('role_id') : array();
 
-		// only member groups with permission to access templates
-		$member_groups = ee('Model')->get('MemberGroup')
-			->filter('group_id', 'NOT IN', array(1, 2, 4))
-			->filter('can_access_design', 'y')
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('group_title', 'asc')
+		// only roles with design manager access
+		$roles = ee('Model')->get('Role', ee('Permission')->rolesThatCan('access_design'))
+			->filter('role_id', 'NOT IN', array(1, 2, 4))
+			->order('name', 'asc')
 			->all()
-			->getDictionary('group_id', 'group_title');
+			->getDictionary('role_id', 'name');
 
 		if ( ! empty($_POST))
 		{
@@ -280,19 +276,19 @@ class Group extends AbstractDesignController {
 					{
 						// If post is null and field should be present, unassign members
 						// If field isn't present, we don't change whatever it's currently set to
-						if ( ! ee()->input->post('member_groups'))
+						if ( ! ee()->input->post('roles'))
 						{
-							$group->MemberGroups = array();
+							$group->Roles = array();
 						}
 						else
 						{
-							$group->MemberGroups = ee('Model')->get('MemberGroup', ee('Request')->post('member_groups'))->all();
+							$group->Roles = ee('Model')->get('Role', ee('Request')->post('roles'))->all();
 						}
 					}
 
 					// Does the current member have permission to access the template group they just edited?
-					$member_groups = $group->MemberGroups->pluck('group_id');
-					$redirect_name = (ee('Permission')->isSuperAdmin() OR in_array($this->session->userdata('group_id'), $member_groups)) ? TRUE : FALSE;
+					$roles = $group->Roles->pluck('role_id');
+					$redirect_name = (ee('Permission')->isSuperAdmin() OR in_array($this->session->userdata('group_id'), $roles)) ? TRUE : FALSE;
 
 					$group->save();
 
@@ -340,16 +336,16 @@ class Group extends AbstractDesignController {
 						)
 					),
 					array(
-					'title' => 'template_member_groups',
-					'desc' => 'template_member_groups_desc',
+					'title' => 'template_roles',
+					'desc' => 'template_roles_desc',
 					'fields' => array(
-						'member_groups' => array(
+						'roles' => array(
 							'type' => 'checkbox',
 							'required' => TRUE,
-							'choices' => $member_groups,
-							'value' => $selected_member_groups,
+							'choices' => $roles,
+							'value' => $selected_roles,
 							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								'text' => sprintf(lang('no_found'), lang('roles'))
 								]
 							)
 						)
