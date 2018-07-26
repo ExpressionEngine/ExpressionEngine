@@ -112,7 +112,7 @@ class MenuManager extends Settings {
 				$checkbox['disabled'] = "disabled";
 			}
 
-			$assigned = $set->MemberGroups->filter('group_id', 'IN', ee('Permission')->groupsThatCan('access_cp'))->pluck('group_title');
+			$assigned = $set->MemberGroups->filter('group_id', 'IN', ee('Permission')->rolesThatCan('access_cp'))->pluck('group_title');
 
 			$columns = array(
 				$main_link,
@@ -189,7 +189,7 @@ class MenuManager extends Settings {
 
 			$assigned = (array) ee('Request')->post('member_groups');
 			$set->MemberGroups = ee('Model')
-				->get('MemberGroup', array_intersect($assigned, ee('Permission')->groupsThatCan('access_cp')))
+				->get('MemberGroup', array_intersect($assigned, ee('Permission')->rolesThatCan('access_cp')))
 				->all();
 
 			$sort = (array) ee('Request')->post('sort', array());
@@ -365,14 +365,14 @@ class MenuManager extends Settings {
 	{
 		$disabled_choices = array();
 		$member_groups = ee('Model')->get('MemberGroup')
-			->filter('group_id', 'IN', ee('Permission')->groupsThatCan('access_cp', 1))
+			->filter('group_id', 'IN', ee('Permission')->rolesThatCan('access_cp', 1))
 			->filter('site_id', 1) // this is on purpose, saving the member group apply the set to other sites
 			->all()
 			->getDictionary('group_id', 'group_title');
 
 		$other_sets = ee('Model')->get('MenuSet')
 			->with('MemberGroups')
-			->filter('MemberGroups.group_id', ee('Permission')->groupsThatCan('access_cp'));
+			->filter('MemberGroups.group_id', ee('Permission')->rolesThatCan('access_cp'));
 
 		if ( ! $set->isNew())
 		{

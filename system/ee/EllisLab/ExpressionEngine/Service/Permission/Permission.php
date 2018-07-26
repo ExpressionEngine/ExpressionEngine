@@ -44,26 +44,26 @@ class Permission {
 		$this->site_id = $site_id;
 	}
 
-	public function groupsThatHave($permission, $site_id = NULL)
+	public function rolesThatHave($permission, $site_id = NULL)
 	{
 		$site_id = ($site_id) ?: $this->site_id;
 		$groups = $this->model_delegate->get('Permission')
-			->fields('group_id')
+			->fields('role_id')
 			->filter('site_id', $site_id)
 			->filter('permission', $permission)
 			->all();
 
 		if ($groups)
 		{
-			return $groups->pluck('group_id');
+			return $groups->pluck('role_id');
 		}
 
 		return [];
 	}
 
-	public function groupsThatCan($permission, $site_id = NULL)
+	public function rolesThatCan($permission, $site_id = NULL)
 	{
-		return $this->groupsThatHave('can_' . $permission, $site_id);
+		return $this->rolesThatHave('can_' . $permission, $site_id);
 	}
 
 	public function isSuperAdmin()

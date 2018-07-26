@@ -47,7 +47,7 @@ class Create extends Members {
 
 		// Get member groups who have CP access to verify the member creating this member
 		$group_toggle = array();
-		foreach (ee('Permission')->groupsThatCan('access_cp') as $group_id)
+		foreach (ee('Permission')->rolesThatCan('access_cp') as $group_id)
 		{
 			$group_toggle[$group_id] = 'verify_password';
 		}
