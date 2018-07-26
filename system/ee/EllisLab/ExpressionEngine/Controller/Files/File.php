@@ -378,7 +378,7 @@ class File extends AbstractFilesController {
 				'fields' => [
 					'img_preview' => [
 						'type' => 'html',
-						'content' => '<figure class="img-preview"><img src="' . $file->getAbsoluteURL() . '"></figure>'
+						'content' => '<figure class="img-preview"><img src="' . $file->getAbsoluteURL() . '?v=' . time() . '"></figure>'
 					]
 				]
 			]
@@ -412,7 +412,7 @@ class File extends AbstractFilesController {
 				'fields' => [
 					'img_preview' => [
 						'type' => 'html',
-						'content' => '<figure class="img-preview"><img src="' . $file->getAbsoluteURL() . '"></figure>'
+						'content' => '<figure class="img-preview"><img src="' . $file->getAbsoluteURL() . '?v=' . time() . '"></figure>'
 					]
 				]
 			]
@@ -446,7 +446,7 @@ class File extends AbstractFilesController {
 				'fields' => [
 					'img_preview' => [
 						'type' => 'html',
-						'content' => '<figure class="img-preview"><img src="' . $file->getAbsoluteURL() . '"></figure>'
+						'content' => '<figure class="img-preview"><img src="' . $file->getAbsoluteURL() . '?v=' . time() . '"></figure>'
 					]
 				]
 			]
