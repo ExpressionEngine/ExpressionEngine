@@ -30,8 +30,7 @@ class TemplateGroup extends Model {
 	protected static $_relationships = array(
 		'Roles' => array(
 			'type'     => 'HasAndBelongsToMany',
-			'model'    => 'MemberGroup',
-			'from_key' => 'role_id',
+			'model'    => 'Role',
 			'pivot' => array(
 				'table' => 'template_groups_roles',
 				'left'  => 'template_group_id',
