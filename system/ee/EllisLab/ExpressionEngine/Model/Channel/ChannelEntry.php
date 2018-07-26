@@ -311,7 +311,7 @@ class ChannelEntry extends ContentModel {
 
 		if ($this->getBackup('author_id') != $this->author_id)
 		{
-			$authors = ee('Member')->getAuthors();
+			$authors = ee('Member')->getAuthors(NULL, FALSE);
 
 			if ( ! isset($authors[$this->author_id]))
 			{
