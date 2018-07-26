@@ -32,6 +32,15 @@ class Role extends Model {
 			),
 			'weak' => TRUE
 		),
+		'AssignedTemplateGroups' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'TemplateGroup',
+			'pivot' => array(
+				'table' => 'template_groups_roles',
+				'left'  => 'role_id',
+				'right' => 'template_group_id'
+			)
+		),
 	];
 
 	protected static $_validation_rules = [

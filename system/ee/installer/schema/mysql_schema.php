@@ -423,10 +423,10 @@ class EE_Schema {
 		// Template Group access privs
 		// Member group assignment for each template group
 
-		$Q[] = "CREATE TABLE exp_template_member_groups (
-			group_id smallint(4) unsigned NOT NULL,
+		$Q[] = "CREATE TABLE exp_template_groups_roles (
+			role_id int(10) unsigned NOT NULL,
 			template_group_id mediumint(5) unsigned NOT NULL,
-			PRIMARY KEY `group_id_template_group_id` (`group_id`, `template_group_id`)
+			PRIMARY KEY `role_id_template_group_id` (`role_id`, `template_group_id`)
 		)";
 
 		// Member Custom Fields

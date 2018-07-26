@@ -1436,24 +1436,17 @@ class EE_Session {
 	 */
 	protected function _setup_template_privs()
 	{
-		$assigned_template_groups = array();
+		$assigned_template_groups = [];
 
-		ee()->db->select('template_group_id');
-		$qry = ee()->db->get_where('template_member_groups',
-										array('group_id' => $this->userdata['group_id']));
-
-
-		if ($qry->num_rows() > 0)
+		foreach ($this->member_model->Roles as $role)
 		{
-			foreach ($qry->result() as $row)
+			foreach ($role->AssignedTemplateGroups as $template_group)
 			{
-				$assigned_template_groups[$row->template_group_id] = TRUE;
+				$assigned_template_groups[$template_group->getId()] = TRUE;
 			}
 		}
 
 		$this->userdata['assigned_template_groups'] = $assigned_template_groups;
-
-		$qry->free_result();
 	}
 
 }

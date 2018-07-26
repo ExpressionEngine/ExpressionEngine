@@ -26,7 +26,8 @@ class Updater {
 		$steps = new \ProgressIterator(
 			[
 				'addRoles',
-				'addAndPopulatePermissionsTable'
+				'addAndPopulatePermissionsTable',
+				'reassignTemplateGroupsToRoles'
 			]
 		);
 
@@ -291,6 +292,24 @@ class Updater {
 		{
 			ee()->smartforge->drop_column('member_groups', $permission);
 		}
+	}
+
+	private function reassignTemplateGroupsToRoles()
+	{
+		if (ee()->db->table_exists('template_groups_roles'))
+		{
+			return;
+		}
+
+		ee()->smartforge->modify_column('template_member_groups', [
+			'group_id' => [
+				'name'       => 'role_id',
+				'type'       => 'int',
+				'constraint' => 10
+			]
+		]);
+
+		ee()->smartforge->rename_table('template_member_groups', 'template_groups_roles');
 	}
 }
 
