@@ -10,7 +10,7 @@
     "babel-preset-react": "^6.0.0",
     "dateformat": "^1.0.11",
     "del": "^1.2.0",
-    "gulp": "^3.9.0",
+    "gulp": "^3.9.1",
     "gulp-git": "^2.4.2",
     "gulp-hashsum": "^1.0.1",
     "gulp-load-plugins": "^0.10.0",
