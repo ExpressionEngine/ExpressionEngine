@@ -187,7 +187,7 @@ feature 'Channel Create/Edit' do
     channel_settings.load_edit_for_channel(2) # 2nd row, not channel id 2
     channel_settings.settings_tab.click
     channel_settings.channel_description.set 'Some description'
-    channel_settings.channel_lang.choose_radio_option 'english'
+    channel_settings.channel_lang.choose_radio_option 'en'
     channel_settings.channel_url.set 'http://someurl/channel'
     channel_settings.comment_url.set 'http://someurl/channel/comment'
     channel_settings.search_results_url.set 'http://someurl/channel/search/results'
@@ -258,7 +258,7 @@ feature 'Channel Create/Edit' do
     # Now make sure settings were duplicated
     @page.settings_tab.click
     @page.channel_description.value.should == 'Some description'
-    @page.channel_lang.has_checked_radio('english').should == true
+    @page.channel_lang.has_checked_radio('en').should == true
 
     @page.channel_url.value.should == 'http://someurl/channel'
     @page.comment_url.value.should == 'http://someurl/channel/comment'

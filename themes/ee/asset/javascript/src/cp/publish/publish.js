@@ -159,11 +159,14 @@ $(document).ready(function () {
 		});
 
 		$('button[rel="live-preview"]').hide();
+
+		$(document).trigger('entry:preview-open')
 	});
 
 	$('.app-modal--live-preview').on('modal:close', function(e) {
 		$('[data-publish]').append($('.app-modal--live-preview .form-standard > form'));
 		$('button[rel="live-preview"]').show();
+		$(document).trigger('entry:preview-close')
 	});
 
 	if (window.location.search.includes('&preview=y')) {
