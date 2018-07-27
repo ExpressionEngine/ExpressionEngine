@@ -1101,18 +1101,9 @@ class Cp {
 	 */
 	public function switch_site($site_id, $redirect = '')
 	{
-		if ( ! ee('Permission')->isSuperAdmin())
+		if ( ! ee('Permission')->isSuperAdmin() && ee('Permission', $site_id)->can('access_cp'))
 		{
-			$can_access_cp = ee('Model')->get('Permission')
-				->filter('permission', 'can_access_cp')
-				->filter('site_id', $site_id)
-				->filter('group_id', 'IN', ee()->session->getMember()->MemberGroups->pluck('group_id'))
-				->first();
-
-			if ( ! $can_access_cp)
-			{
-				show_error(lang('unauthorized_access'), 403);
-			}
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if (empty($redirect))
