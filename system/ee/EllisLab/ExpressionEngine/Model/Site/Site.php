@@ -161,6 +161,7 @@ class Site extends Model {
 		$this->createHTMLButtons();
 		$this->createSpecialtyTemplates();
 		$this->createMemberGroups();
+		$this->copyPermisisons();
     }
 
 	/**
@@ -269,6 +270,26 @@ class Site extends Model {
 			$data['site_id'] = $this->site_id;
 
 			$this->getModelFacade()->make('MemberGroup', $data)->save();
+		}
+	}
+
+	/**
+	 * Creates permissions for this site by cloning site 1's permisisons
+	 *
+	 * @return void
+	 */
+	protected function copyPermisisons()
+	{
+		$permissions = $this->getModelFacade()->get('Permission')
+			->filter('site_id', 1)
+			->all();
+
+		foreach($permissions as $permission)
+		{
+			$data = $permission->getValues();
+			$data['site_id'] = $this->site_id;
+
+			$this->getModelFacade()->make('Permission', $data)->save();
 		}
 	}
 }
