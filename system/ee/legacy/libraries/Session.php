@@ -1205,12 +1205,14 @@ class EE_Session {
 
 		ee()->db->where('member_id', (int) $member_id);
 
+		$data = ee()->db->get();
+
 		if ( ! is_object($this->member_model) || $member_model->member_id != $member_id)
 		{
 			$this->member_model = ee('Model')->get('Member', $member_id)->first();
 		}
 
-		return ee()->db->get();
+		return $data;
 	}
 
 	/**
