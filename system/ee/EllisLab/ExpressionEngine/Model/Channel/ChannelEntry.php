@@ -289,13 +289,13 @@ class ChannelEntry extends ContentModel {
 	{
 		if (ee()->session->userdata('member_id'))
 		{
-			if ($this->author_id != ee()->session->userdata('member_id') && ee()->session->userdata('can_edit_other_entries') != 'y')
+			if ($this->author_id != ee()->session->userdata('member_id') && ! ee('Permission')->can('edit_other_entries'))
 			{
 				return 'not_authorized';
 			}
 
 			if ( ! $this->isNew() && $this->getBackup('author_id') != $this->author_id &&
-				(ee()->session->userdata('can_edit_other_entries') != 'y' OR ee()->session->userdata('can_assign_post_authors') != 'y'))
+				( ! ee('Permission')->can('edit_other_entries') OR ! ee('Permission')->can('assign_post_authors')))
 			{
 				return 'not_authorized';
 			}
@@ -303,7 +303,7 @@ class ChannelEntry extends ContentModel {
 		else
 		{
 			if ( ! $this->isNew() && $this->getBackup('author_id') != $this->author_id &&
-				($this->Author->MemberGroup->can_edit_other_entries != 'y' OR $this->Author->MemberGroup->can_assign_post_authors != 'y'))
+				( ! ee('Permission')->can('edit_other_entries') OR ! ee('Permission')->can('assign_post_authors')))
 			{
 				return 'not_authorized';
 			}
@@ -1093,7 +1093,7 @@ class ChannelEntry extends ContentModel {
 
 		$author_options[$author->getId()] = $author->getMemberName();
 
-		if (ee('Permission')->has('can_assign_post_authors'))
+		if (ee('Permission')->can('assign_post_authors'))
 		{
 			if ($author->getId() != ee()->session->userdata('member_id'))
 			{
