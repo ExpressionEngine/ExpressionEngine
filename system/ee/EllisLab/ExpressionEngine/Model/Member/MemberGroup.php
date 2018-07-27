@@ -104,11 +104,7 @@ class MemberGroup extends StructureModel {
 		'MenuSet' => array(
 			'type' => 'belongsTo',
 			'from_key' => 'menu_set_id'
-		),
-		'Permissions' => array(
-			'model' => 'Permission',
-			'type' => 'hasMany'
-		),
+		)
 	);
 
 	protected static $_validation_rules = array(
