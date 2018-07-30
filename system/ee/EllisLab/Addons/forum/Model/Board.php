@@ -272,8 +272,7 @@ class Board extends Model {
 			$triggers = $boards->filter('board_site_id', $site->site_id)
 				->pluck('board_forum_trigger');
 
-			$site->site_system_preferences->forum_trigger = implode('|', $triggers);
-			$site->save();
+			ee()->config->update_site_prefs(['forum_trigger' => implode('|', $triggers)], [$site->site_id]);
 		}
 	}
 

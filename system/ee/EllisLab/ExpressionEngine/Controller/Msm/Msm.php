@@ -118,7 +118,13 @@ class Msm extends CP_Controller {
 
 		foreach ($sites as $site)
 		{
-			if ($site->site_system_preferences->is_site_on == 'y')
+			$site_on = ee('Model')->get('Config')
+				->filter('site_id', $site->site_id)
+				->filter('key', 'is_site_on')
+				->filter('value', 'y')
+				->count();
+
+			if ($site_on)
 			{
 				$status = array(
 					'class' => 'enable',
@@ -474,13 +480,18 @@ class Msm extends CP_Controller {
 
 		if ( ! $site->isNew())
 		{
+			$site_on = ee('Model')->get('Config')
+				->filter('site_id', $site->site_id)
+				->filter('key', 'is_site_on')
+				->first();
+
 			$site_online = array(
 				'title' => 'site_online',
 				'desc' => 'site_online_desc',
 				'fields' => array(
 					'is_site_on' => array(
 						'type' => 'yes_no',
-						'value' => $site->site_system_preferences->is_site_on
+						'value' => ($site_on) ? $site_on->value : 'y'
 					)
 				)
 			);
@@ -524,7 +535,7 @@ class Msm extends CP_Controller {
 
 		if ($action == 'edit')
 		{
-			$site->site_system_preferences->is_site_on = ee()->input->post('is_site_on');
+			ee()->config->update_site_prefs(['is_site_on' => ee()->input->post('is_site_on')], [$site->site_id]);
 		}
 
 		$result = $site->validate();
