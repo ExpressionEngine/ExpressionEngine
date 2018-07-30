@@ -334,7 +334,7 @@ class EE_Output {
 
 		// Do we need to generate profile data?
 		// If so, load the Profile service and run it.
-		if ($this->enable_profiler == TRUE && ! ee()->input->is_ajax_request())
+		if ($this->enable_profiler == TRUE && ( ! AJAX_REQUEST OR ee('LivePreview')->hasEntryData()))
 		{
 			$performance = 	array(
 				'database' => number_format(ee('Database')->currentExecutionTime(), 4),

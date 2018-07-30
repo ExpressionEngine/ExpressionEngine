@@ -29,7 +29,7 @@
  * --------------------------------------------------------------------
  *
  * Uncomment the following variables if you are using the Multiple
- * Site Manager: https://ellislab.com/expressionengine/user-guide/cp/sites
+ * Site Manager: https://docs.expressionengine.com/latest/msm/index.html
  *
  * The variables set the Short Name of the site this admin.php file
  * will log into, and its URL.

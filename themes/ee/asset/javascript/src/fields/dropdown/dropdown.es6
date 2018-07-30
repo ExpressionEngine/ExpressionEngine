@@ -102,7 +102,7 @@ class Dropdown extends React.Component {
           </label>
         </div>
         <div className="field-drop-choices" style={this.state.open ? {display: 'block'} : {}}>
-          {this.props.initialItems.length > this.props.tooMany &&
+          {this.props.initialCount > this.props.tooMany &&
             <FieldTools>
               <FilterBar>
                 <FilterSearch onSearch={(e) => this.handleSearch(e.target.value)} />

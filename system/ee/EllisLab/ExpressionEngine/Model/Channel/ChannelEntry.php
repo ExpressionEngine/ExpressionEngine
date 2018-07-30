@@ -309,9 +309,9 @@ class ChannelEntry extends ContentModel {
 			}
 		}
 
-		if ( ! $this->isNew() && $this->getBackup('author_id') != $this->author_id)
+		if ($this->getBackup('author_id') != $this->author_id)
 		{
-			$authors = ee('Member')->getAuthors();
+			$authors = ee('Member')->getAuthors(NULL, FALSE);
 
 			if ( ! isset($authors[$this->author_id]))
 			{
@@ -1219,6 +1219,11 @@ class ChannelEntry extends ContentModel {
 		if ($pages_module && $pages_module->isInstalled())
 		{
 			return TRUE;
+		}
+
+		if ($this->hasPageURI())
+		{
+		    return TRUE;
 		}
 
 		return FALSE;
