@@ -788,6 +788,8 @@ class Grid_lib {
 				->withTitle(lang('search_reindex_tip'))
 				->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
 				->defer();
+
+			ee()->config->update_site_prefs(['search_reindex_needed' => ee()->localize->now], 0);
 		}
 
 		// Channel content type only searchable at the moment

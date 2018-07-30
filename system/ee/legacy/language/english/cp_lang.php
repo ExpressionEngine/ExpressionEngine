@@ -638,6 +638,10 @@ $lang = array(
 
 'search_reindex_tip_desc' => "Please <a href='%s'>run the search reindex tool</a> tool to keep your searchable data up-to-date.",
 
+'reindex_not_needed' => 'Reindexing Not Necessary',
+
+'reindex_not_needed_desc' => 'Your search index is up-to-date!',
+
 );
 
 // EOF

@@ -744,6 +744,8 @@ class Grid_ft extends EE_Fieldtype {
 				->withTitle(lang('search_reindex_tip'))
 				->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
 				->defer();
+
+			ee()->config->update_site_prefs(['search_reindex_needed' => ee()->localize->now], 0);
 		}
 
 		// Make sure grid_min_rows is at least zero

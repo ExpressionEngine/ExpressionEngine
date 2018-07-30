@@ -547,6 +547,8 @@ class Fluid_field_ft extends EE_Fieldtype {
 					->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
 					->defer();
 
+				ee()->config->update_site_prefs(['search_reindex_needed' => ee()->localize->now], 0);
+
 				$fields = ee('Model')->get('ChannelField', $removed_fields)
 					->fields('field_label')
 					->all()

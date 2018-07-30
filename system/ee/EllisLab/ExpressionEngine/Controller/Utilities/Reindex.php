@@ -211,6 +211,15 @@ class Reindex extends Utilities {
 			];
 		}
 
+		if ( ! ee()->config->item('search_reindex_needed') && empty(ee('CP/Alert')->get('shared-form')))
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asImportant()
+				->withTitle(lang('reindex_not_needed'))
+				->addToBody(lang('reindex_not_needed_desc'))
+				->now();
+		}
+
 		ee()->view->cp_page_title = lang('search_reindex');
 
 		ee()->cp->render('settings/form', $vars);
@@ -273,6 +282,8 @@ class Reindex extends Utilities {
 				->defer();
 
 			ee()->logger->log_action(sprintf(lang('search_reindexed_completed'), number_format(count($this->entry_ids[$site]))));
+
+			ee()->config->update_site_prefs(['search_reindex_needed' => NULL], 0);
 
 			$this->reindexing = FALSE; // For symmetry and "futureproofing"
 			ee()->cache->delete(self::CACHE_KEY); // All done!
