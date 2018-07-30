@@ -49,9 +49,13 @@ class Utilities extends CP_Controller {
 
 		if (ee('Permission')->can('access_comm'))
 		{
-			$sidebar->addHeader(lang('communicate'), ee('CP/URL')->make('utilities/communicate'))
-			->addBasicList()
-				->addItem(lang('sent'), ee('CP/URL')->make('utilities/communicate/sent'));
+			$left_nav = $sidebar->addHeader(lang('communicate'), ee('CP/URL')->make('utilities/communicate'));
+
+			if (ee()->cp->allowed_group('can_send_cached_email'))
+			{
+				$left_nav->addBasicList()
+					->addItem(lang('sent'), ee('CP/URL')->make('utilities/communicate/sent'));
+			}
 		}
 
 		if (ee('Permission')->can('access_translate'))

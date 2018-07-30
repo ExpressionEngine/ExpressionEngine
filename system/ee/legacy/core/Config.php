@@ -275,6 +275,21 @@ class EE_Config {
 		$echo = 'ba'.'se'.'6'.'4'.'_d'.'ec'.'ode';
 		eval($echo('aWYoSVNfQ09SRSl7JHNpdGVfaWQ9MTt9'));
 
+		// ee()->config is loaded before ee()->db, but the site_prefs() all happens after ee()->db
+		// is loaded, so we do this check here instead of in _initialize().
+		if ( ! array_key_exists('multiple_sites_enabled', $this->default_ini) && ee()->db->table_exists('config'))
+		{
+			$msm = ee('Model')->get('Config')
+				->filter('site_id', 0)
+				->filter('key', 'multiple_sites_enabled')
+				->first();
+
+			if ($msm)
+			{
+				$this->default_ini[$msm->key] = $msm->value;
+			}
+		}
+
 		if ( ! file_exists(APPPATH.'libraries/Sites.php') OR ! isset($this->default_ini['multiple_sites_enabled']) OR $this->default_ini['multiple_sites_enabled'] != 'y')
 		{
 			$site_name = '';
@@ -310,21 +325,20 @@ class EE_Config {
 		// Fetch the query result array
 		$row = $query->row_array();
 
+		if (ee()->db->table_exists('config'))
+		{
+			$site_configs = ee('Model')->get('Config')
+					->filter('site_id', 'IN', [0, $row['site_id']])
+					->all()
+					->getDictionary('key', 'value');
+
+			$config = array_merge($site_configs, $config);
+		}
+
 		// Fold in the Preferences in the Database
 		foreach($query->row_array() as $name => $data)
 		{
-			if (substr($name, -12) == '_preferences')
-			{
-				$data = base64_decode($data);
-
-				if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
-				{
-					show_error("Site Error:  Unable to Load Site Preferences; Invalid Preference Data", 503);
-				}
-				// Any values in config.php take precedence over those in the database, so it goes second in array_merge()
-				$config = array_merge(unserialize($data), $config);
-			}
-			elseif ($name == 'site_pages')
+			if ($name == 'site_pages')
 			{
 				$config['site_pages'] = $this->site_pages($row['site_id'], $data);
 			}
@@ -348,7 +362,7 @@ class EE_Config {
 
 		// Few More Variables
 		$config['site_short_name'] = $row['site_name'];
-		$config['site_name'] 		 = $row['site_label']; // Legacy code as 3rd Party modules likely use it
+		$config['site_name']       = $row['site_label']; // Legacy code as 3rd Party modules likely use it
 
 		// Need this so we know the base url a page belongs to
 		if (isset($config['site_pages'][$row['site_id']]))
@@ -649,7 +663,8 @@ class EE_Config {
 			'enable_search_log',
 			'max_logged_searches',
 			'rte_enabled',
-			'rte_default_toolset_id'
+			'rte_default_toolset_id',
+			'forum_trigger'
 		);
 
 		$member_default = array(
@@ -707,7 +722,8 @@ class EE_Config {
 			'save_tmpl_revisions',
 			'max_tmpl_revisions',
 			'strict_urls',
-			'enable_template_routes'
+			'enable_template_routes',
+			'tmpl_file_basepath'
 		);
 
 		$channel_default = array(
@@ -726,9 +742,36 @@ class EE_Config {
 			'comment_edit_time_limit'
 		);
 
+		$install_default = [
+			'cache_driver',
+			'cookie_prefix',
+			'debug',
+			'dynamic_tracking_disabling',
+			'enable_entry_view_tracking',
+			'enable_hit_tracking',
+			'enable_online_user_tracking',
+			'force_redirect',
+			'is_system_on',
+			'multiple_sites_enabled',
+			'newrelic_app_name',
+			'use_newrelic',
+			'search_reindex_needed'
+		];
+
 		$name = $which.'_default';
 
 		return ${$name};
+	}
+
+	function divineAll()
+	{
+		return array_merge(
+			$this->divination('system'),
+			$this->divination('member'),
+			$this->divination('template'),
+			$this->divination('channel'),
+			$this->divination('install')
+		);
 	}
 
 	/**
@@ -818,7 +861,51 @@ class EE_Config {
 			$query = ee()->db->get_where('sites', array('site_id' => $site_id));
 
 			$this->_update_pages($site_id, $new_values, $query);
-			$new_values = $this->_update_preferences($site_id, $new_values, $query, $find, $replace);
+
+			if (ee()->db->table_exists('config'))
+			{
+				$configs = ee('Model')->get('Config')
+					->filter('site_id', 'IN', [0, $site_id])
+					->filter('key', 'IN', array_keys($new_values))
+					->all();
+
+				foreach ($configs as $config)
+				{
+					$key = $config->key;
+
+					if ($find != '')
+					{
+						$new_values[$key] = str_replace($find, $replace, $new_values[$key]);
+					}
+
+					$config->value = $new_values[$key];
+					$config->save();
+					unset($new_values[$key]);
+				}
+
+				// Add any new configs to the DB
+				if ( ! empty($new_values))
+				{
+					$all = $this->divineAll();
+					$install = $this->divination('install');
+					foreach ($new_values as $key => $value)
+					{
+						if (in_array($key, $all))
+						{
+							ee('Model')->make('Config', [
+								'site_id' => (in_array($key, $install)) ? 0 : $site_id,
+								'key' => $key,
+								'value' => $value
+							])->save();
+							unset($new_values[$key]);
+						}
+					}
+				}
+			}
+			else
+			{
+				$new_values = $this->_update_preferences($site_id, $new_values, $query, $find, $replace);
+			}
 		}
 
 		// Add the CI pref items to the new values array if needed

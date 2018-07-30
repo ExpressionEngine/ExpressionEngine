@@ -293,11 +293,16 @@ return [
 
 		'Updater/Preflight' => function($ee)
 		{
+			$theme_paths = $ee->make('Model')->get('Config')
+					->filter('key', 'theme_folder_path')
+					->all()
+					->pluck('parsed_value');
+
 			return new Updater\Downloader\Preflight(
 				$ee->make('Filesystem'),
 				$ee->make('Updater/Logger'),
 				$ee->make('Config')->getFile(),
-				$ee->make('Model')->get('Site')->all()
+				array_unique($theme_paths)
 			);
 		},
 
@@ -636,7 +641,10 @@ return [
 
 			// ..\Role
 			'Role' => 'Model\Role\Role',
+			// ..\Config
+			'Config' => 'Model\Config\Config',
 	),
+
 	'cookies.necessary' => [
 		'cp_last_site_id',
 		'csrf_token',

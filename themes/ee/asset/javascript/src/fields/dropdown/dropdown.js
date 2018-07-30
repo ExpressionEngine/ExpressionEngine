@@ -122,7 +122,7 @@ var Dropdown = function (_React$Component) {
         React.createElement(
           'div',
           { className: 'field-drop-choices', style: this.state.open ? { display: 'block' } : {} },
-          this.props.initialItems.length > this.props.tooMany && React.createElement(
+          this.props.initialCount > this.props.tooMany && React.createElement(
             FieldTools,
             null,
             React.createElement(

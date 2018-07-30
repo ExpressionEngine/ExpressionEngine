@@ -137,7 +137,7 @@ https://expressionengine.com/support',
 
 'unwritable_cache_folder' => 'Your cache folder does not have proper permissions.<br />To fix: Set the cache folder (/system/user/cache/) permissions to 777 (or equivalent for your server).',
 
-'unwritable_config_file' => 'Your configuration file does not have the proper permissions.<br />To fix: Set the config file (/system/user/config/config.php) permissions to 666 (or equivalent for your server).',
+'unwritable_config_file' => 'Your configuration file does not have the proper permissions.<br />To fix: Set the config file (/'.SYSDIR.'/user/config/config.php) permissions to 666 (or equivalent for your server).',
 
 'version_mismatch' => 'Your ExpressionEngine installation&rsquo;s version (%s) is not consistent with the reported version (%s). <a href="'.DOC_URL.'installation/update.html" rel="external">Please update your installation of ExpressionEngine again</a>.',
 

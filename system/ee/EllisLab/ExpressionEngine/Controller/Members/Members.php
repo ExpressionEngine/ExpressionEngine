@@ -476,20 +476,20 @@ class Members extends CP_Controller {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$site = ee('Model')->get('Site', ee()->config->item('site_id'))->first();
+			$prefs = [
+				'ban_action'      => ee()->input->post('ban_action'),
+				'ban_message'     => ee()->input->post('ban_message'),
+				'ban_destination' => ee()->input->post('ban_destination'),
+			];
 
 			foreach (array_keys($values) as $item)
 			{
 				$value = ee()->input->post($item);
 				$value = implode('|', explode(NL, $value));
-				$site->site_system_preferences->$item = $value;
+				$prefs[$item] = $value;
 			}
 
-			$site->site_system_preferences->ban_action = ee()->input->post('ban_action');
-			$site->site_system_preferences->ban_message = ee()->input->post('ban_message');
-			$site->site_system_preferences->ban_destination = ee()->input->post('ban_destination');
-
-			$site->save();
+			ee()->config->update_site_prefs($prefs);
 
 			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()

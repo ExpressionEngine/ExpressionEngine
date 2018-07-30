@@ -2217,8 +2217,9 @@ class Member {
 
 		$member_id = ( ! ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
 
-		// Default Member Data
-		$member = ee('Model')->get('Member', $member_id)
+		$member = ee('Model')
+			->get('Member', $member_id)
+			->with('MemberGroup')
 			->first();
 
 		if ( ! $member)
@@ -2226,8 +2227,7 @@ class Member {
 			return ee()->TMPL->tagdata = '';
 		}
 
-		$results = $member->getValues();
-
+		$results = $member->getValues() + array('group_title' => $member->MemberGroup->group_title);
 		$default_fields = $results;
 
 		// Is there an avatar?
@@ -2374,46 +2374,22 @@ class Member {
 
 			ee()->TMPL->tagdata = ee()->functions->prep_conditionals(ee()->TMPL->tagdata, $cond);
 
+			$dates = array(
+				'last_visit' => (empty($default_fields['last_visit'])) ? '' : $default_fields['last_visit'],
+				'last_activity' => (empty($default_fields['last_activity'])) ? '' : $default_fields['last_activity'],
+				'join_date' => (empty($default_fields['join_date'])) ? '' : $default_fields['last_entry_date'],
+				'last_entry_date' => (empty($default_fields['last_entry_date'])) ? '' : $default_fields['last_entry_date'],
+				'last_forum_post_date' => (empty($default_fields['last_forum_post_date'])) ? '' : $default_fields['last_forum_post_date'],
+				'last_comment_date' => (empty($default_fields['last_comment_date'])) ? '' : $default_fields['last_comment_date']
+			);
+
+			// parse date variables
+			ee()->TMPL->tagdata = ee()->TMPL->parse_date_variables(ee()->TMPL->tagdata, $dates);
+
 			// Swap Variables
 			foreach (ee()->TMPL->var_single as $key => $val)
 			{
 				// parse default member data
-
-				//  "last_visit"
-				if (strncmp($key, 'last_visit', 10) == 0)
-				{
-					ee()->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_visit'] > 0) ? ee()->localize->format_date($val, $default_fields['last_visit']) : '', ee()->TMPL->tagdata);
-				}
-
-				//  "last_activity"
-				if (strncmp($key, 'last_activity', 10) == 0)
-				{
-					ee()->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_activity'] > 0) ? ee()->localize->format_date($val, $default_fields['last_activity']) : '', ee()->TMPL->tagdata);
-				}
-
-				//  "join_date"
-				if (strncmp($key, 'join_date', 9) == 0)
-				{
-					ee()->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['join_date'] > 0) ? ee()->localize->format_date($val, $default_fields['join_date']) : '', ee()->TMPL->tagdata);
-				}
-
-				//  "last_entry_date"
-				if (strncmp($key, 'last_entry_date', 15) == 0)
-				{
-					ee()->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_entry_date'] > 0) ? ee()->localize->format_date($val, $default_fields['last_entry_date']) : '', ee()->TMPL->tagdata);
-				}
-
-				//  "last_forum_post_date"
-				if (strncmp($key, 'last_forum_post_date', 20) == 0)
-				{
-					ee()->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_forum_post_date'] > 0) ? ee()->localize->format_date($val, $default_fields['last_forum_post_date']) : '', ee()->TMPL->tagdata);
-				}
-
-				//  parse "recent_comment"
-				if (strncmp($key, 'last_comment_date', 17) == 0)
-				{
-					ee()->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_comment_date'] > 0) ? ee()->localize->format_date($val, $default_fields['last_comment_date']) : '', ee()->TMPL->tagdata);
-				}
 
 				//  {name}
 				$name = ( ! $default_fields['screen_name']) ? $default_fields['username'] : $default_fields['screen_name'];

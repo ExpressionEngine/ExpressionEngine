@@ -859,6 +859,7 @@ class Channels extends AbstractChannelsController {
 		// Add "Use Channel Default" option for channel form default status
 		$channel_form_statuses = array('' => lang('channel_form_default_status_empty'));
 		$channel_form_statuses = array_merge($channel_form_statuses, $deft_status_options);
+		ee()->load->model('admin_model');
 
 		$sections = array(
 			array(
@@ -878,8 +879,8 @@ class Channels extends AbstractChannelsController {
 					'fields' => array(
 						'channel_lang' => array(
 							'type' => 'radio',
-							'choices' => ee()->lang->language_pack_names(),
-							'value' => $channel->channel_lang ?: 'english'
+							'choices' => ee()->admin_model->get_xml_encodings(),
+							'value' => $channel->channel_lang ?: 'en'
 						)
 					)
 				),
