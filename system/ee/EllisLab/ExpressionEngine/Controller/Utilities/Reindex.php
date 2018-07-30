@@ -103,7 +103,8 @@ class Reindex extends Utilities {
 	protected function getEntryIds(Collection $fields, $site_id = NULL)
 	{
 		$channel_ids = [];
-		$entry_ids = [];
+		$entry_ids = ee('Model')->get('ChannelEntry')
+			->fields('entry_id');
 
 		foreach ($fields as $field)
 		{
@@ -112,9 +113,10 @@ class Reindex extends Utilities {
 
 		$channel_ids = array_unique($channel_ids);
 
-		$entry_ids = ee('Model')->get('ChannelEntry')
-			->fields('entry_id')
-			->filter('channel_id', 'IN', $channel_ids);
+		if ( ! empty($channel_ids))
+		{
+			$entry_ids->filter('channel_id', 'IN', $channel_ids);
+		}
 
 		if ($site_id)
 		{
