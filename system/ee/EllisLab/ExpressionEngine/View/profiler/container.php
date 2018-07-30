@@ -1,4 +1,4 @@
-<?php if (REQ == 'PAGE'): ?>
+<?php if (REQ == 'PAGE' OR ee('LivePreview')->hasEntryData()): ?>
 	<link rel="stylesheet" href="<?=URL_THEMES.'debug/css/eecms-debug.min.css'?>" type="text/css" media="screen" />
 <?php endif; ?>
 
@@ -26,7 +26,7 @@
 </section>
 
 
-<?php if (REQ == 'PAGE'): ?>
+<?php if (REQ == 'PAGE' OR ee('LivePreview')->hasEntryData()): ?>
 	<script>
 	!function() {
 		"use strict";
