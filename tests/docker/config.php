@@ -20,7 +20,7 @@ if (function_exists('opcache_reset'))
 
 $config['base_url'] = 'http://localhost/';
 $config['site_url'] = $config['base_url'];
-$config['app_version'] = '4.3.0';
+$config['app_version'] = '5.0.0';
 $config['license_contact'] = 'ellislab.devleopers@gmail.com';
 $config['license_number'] = '1234-5678-9123-4567';
 $config['debug'] = '1';
@@ -29,10 +29,10 @@ $config['theme_folder_url'] = 'http://localhost/themes/';
 $config['theme_folder_path'] = '/var/www/html/themes/';
 $config['emoticon_url'] = 'http://localhost/images/smileys/';
 $config['doc_url'] = 'https://ellislab.com/expressionengine/user-guide/';
-$config['is_system_on'] = 'y';
+// $config['is_system_on'] = 'y';
 $config['allow_extensions'] = 'y';
 $config['cookie_prefix'] = '';
-$config['cache_driver'] = 'file';
+// $config['cache_driver'] = 'file';
 $config['database'] = array(
 	'expressionengine' => array(
 		'database' => 'ee-test',

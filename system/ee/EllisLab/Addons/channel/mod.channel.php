@@ -695,7 +695,7 @@ class Channel {
 		foreach ($search_fields as $field_name => $search_terms)
 		{
 			// Log empty terms to notify the user.
-			if(empty($search_terms) || $search_terms === '=')
+			if ($search_terms == '' || $search_terms === '=')
 			{
 				ee()->TMPL->log_item('WARNING: Field search parameter for field "' . $field_name . '" was empty.  If you wish to search for an empty field, use IS_EMPTY.');
 				continue;
@@ -2766,7 +2766,9 @@ class Channel {
 
 		if (empty($query_result))
 		{
-			return ee()->TMPL->no_results();
+			$this->enable['pagination'] = FALSE;
+			$this->return_data = ee()->TMPL->no_results();
+			return;
 		}
 
 		ee()->load->library('channel_entries_parser');
@@ -5438,7 +5440,6 @@ class Channel {
 		{
 			return ee()->TMPL->no_results();
 		}
-
 
 		$this->query = ee()->db->query($this->sql);
 

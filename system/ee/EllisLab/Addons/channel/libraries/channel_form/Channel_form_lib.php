@@ -694,6 +694,15 @@ class Channel_form_lib
 					$this->parse_variables['field:'.$field->field_name] = (array_key_exists($field->field_name, $this->custom_fields)) ? $this->display_field($field->field_name) : '';
 				}
 			}
+
+			// We need to know if allow_comments field is present in order to figure out defaults
+			foreach ($this->checkboxes as $value)
+			{
+				if (isset(ee()->TMPL->var_single[$value]))
+				{
+					$checkbox_fields[] = $value;
+				}
+			}
 		}
 
 		$this->form_hidden('checkbox_fields', implode('|', array_unique($checkbox_fields)));
@@ -1516,7 +1525,7 @@ GRID_FALLBACK;
 		}
 
 		// If allow_comments is NOT included in the form and it's not set by parameter, use the default
-		if ( ! isset($_POST['allow_comments']) && $this->_meta['allow_comments'] == FALSE)
+		if ($this->edit != TRUE && ! isset($_POST['allow_comments']) && $this->_meta['allow_comments'] == FALSE)
 		{
 			$_POST['allow_comments'] = ($this->channel('deft_comments') == TRUE && $this->channel('comment_system_enabled') == TRUE) ? 'y' : 'n';
 		}

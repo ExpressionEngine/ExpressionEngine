@@ -13,12 +13,12 @@ class PreflightTest extends \PHPUnit_Framework_TestCase {
 		$this->filesystem = Mockery::mock('EllisLab\ExpressionEngine\Library\Filesystem\Filesystem');
 		$this->config = Mockery::mock('EllisLab\ExpressionEngine\Service\Config\File');
 		$this->logger = Mockery::mock('EllisLab\ExpressionEngine\Service\Updater\Logger');
-		$this->sites = Mockery::mock('EllisLab\ExpressionEngine\Library\Data\Collection');
+		$this->theme_paths = ['/some/theme/path', '/some/theme/path2'];
 
 		$this->logger->shouldReceive('log'); // Logger's gonna log
 		$this->filesystem->shouldReceive('mkDir'); // For update path creation
 
-		$this->preflight = new Preflight($this->filesystem, $this->logger, $this->config, $this->sites);
+		$this->preflight = new Preflight($this->filesystem, $this->logger, $this->config, $this->theme_paths);
 	}
 
 	public function tearDown()
@@ -26,7 +26,6 @@ class PreflightTest extends \PHPUnit_Framework_TestCase {
 		$this->filesystem = NULL;
 		$this->config = NULL;
 		$this->logger = NULL;
-		$this->sites = NULL;
 		$this->preflight = NULL;
 	}
 
@@ -71,17 +70,16 @@ class PreflightTest extends \PHPUnit_Framework_TestCase {
 				SYSPATH.'ee/legacy/'
 			]);
 
-		$iterator = $this->getSitesIterator();
-		$this->sites->shouldReceive('getIterator')->andReturn($iterator);
 		$theme_paths = [];
-		foreach ($iterator as $site)
+		foreach ($this->theme_paths as $theme_path)
 		{
-			$theme_path = $site->site_system_preferences->theme_folder_path . '/ee/';
+			$theme_paths[] = $theme_path;
+			$theme_path .= '/ee/';
+
 			$this->filesystem->shouldReceive('isWritable')
 				->with($theme_path)
 				->andReturn(TRUE);
 
-			$theme_paths[] = $site->site_system_preferences->theme_folder_path;
 			$this->filesystem->shouldReceive('getDirectoryContents')
 				->with($theme_path)
 				->andReturn([
@@ -143,22 +141,6 @@ class PreflightTest extends \PHPUnit_Framework_TestCase {
 		{
 			$this->assertEquals(1, $e->getCode());
 		}
-	}
-
-	private function getSitesIterator()
-	{
-		// Protected method stashConfigs() called inside moveUpdater()
-		$site1 = new MockSite();
-		$site1->site_id = 1;
-		$site1->site_system_preferences = new MockSystemPrefs();
-		$site1->site_system_preferences->theme_folder_path = '/some/theme/path';
-
-		$site2 = new MockSite();
-		$site2->site_id = 2;
-		$site2->site_system_preferences = new MockSystemPrefs();
-		$site2->site_system_preferences->theme_folder_path = '/some/theme/path2';
-
-		return new \ArrayIterator([$site1, $site2]);
 	}
 }
 

@@ -1,7 +1,7 @@
 <?php $this->extend('_templates/login'); ?>
 
 <div class="box snap">
-	<h1><?=lang('new_requirements')?> <span class="ico locked"></span></h1>
+	<h1><?=lang('new_requirements')?> <span class="ico reset"></span></h1>
 	<?=ee('CP/Alert')->getAllInlines()?>
 
 	<?=form_open(ee('CP/URL')->make('login/update_un_pw'), array(), $hidden)?>
