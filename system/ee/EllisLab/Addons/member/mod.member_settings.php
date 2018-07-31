@@ -99,7 +99,7 @@ class Member_settings extends Member {
 		/**  Can the user view profiles?
 		/** ----------------------------------------*/
 
-		if (ee()->session->userdata('can_view_profiles') == 'n')
+		if ( ! ee('Permission')->can('view_profiles'))
 		{
 			return ee()->output->show_user_error('general',
 					array(ee()->lang->line('mbr_not_allowed_to_view_profiles')));
@@ -110,26 +110,6 @@ class Member_settings extends Member {
 		{
 			return ee()->output->show_user_error('general', array(ee()->lang->line('profile_not_available')));
 		}
-
-		/** ----------------------------------------
-		/**  Fetch the member data
-		/** ----------------------------------------*/
-/*
-		$select = 'm.member_id, m.group_id, m.username, m.screen_name, m.email, m.signature,
-					m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename,
-					m.photo_width, m.photo_height, m.join_date, m.last_visit,
-					m.last_activity, m.last_entry_date, m.last_comment_date, m.last_forum_post_date,
-					m.total_entries, m.total_comments, m.total_forum_topics,
-					m.total_forum_posts, m.language, m.timezone,
-					m.accept_user_email, m.accept_messages,
-					g.group_title, g.can_send_private_messages';
-
-		ee()->db->select($select);
-		ee()->db->from(array('members m', 'member_groups g'));
-		ee()->db->where('m.member_id', (int)$this->cur_id);
-		ee()->db->where('g.site_id', ee()->config->item('site_id'));
-		ee()->db->where('m.group_id', 'g.group_id', FALSE);
-*/
 
 		// Default Member Data
 		$not_in = array(3, 4);

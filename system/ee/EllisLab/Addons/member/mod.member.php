@@ -1204,7 +1204,7 @@ class Member {
 	 */
 	public function confirm_delete_form()
 	{
-		if (ee()->session->userdata('can_delete_self') !== 'y')
+		if ( ! ee('Permission')->can('delete_self'))
 		{
 			return ee()->output->show_user_error('general', ee()->lang->line('cannot_delete_self'));
 		}
@@ -1242,7 +1242,7 @@ class Member {
 		// after logging out.
 
 		if (ee()->session->userdata('member_id') == 0 OR
-			ee()->session->userdata('can_delete_self') !== 'y')
+			 ! ee('Permission')->can('delete_self'))
 		{
 			return ee()->output->show_user_error('general', ee()->lang->line('not_authorized'));
 		}
@@ -1944,7 +1944,7 @@ class Member {
 		}
 
 		// Parse the self deletion conditional
-		if (ee()->session->userdata('can_delete_self') == 'y' &&
+		if (ee('Permission')->can('delete_self') &&
 			! ee('Permission')->isSuperAdmin())
 		{
 			$str = $this->_allow_if('can_delete', $str);

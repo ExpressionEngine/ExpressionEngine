@@ -203,7 +203,7 @@ class Channel_model extends CI_Model {
 			->order_by($sort, 'DESC')
 			->where('site_id', $this->config->item('site_id'));
 
-		if ($this->session->userdata['can_edit_other_entries'] != 'y')
+		if ( ! ee('Permission')->can('edit_other_entries'))
 		{
 			$this->db->where('author_id', $this->session->userdata('member_id'));
 		}

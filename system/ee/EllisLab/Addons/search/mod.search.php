@@ -89,7 +89,7 @@ class Search {
 		/** ----------------------------------------
 		/**  Is the current user allowed to search?
 		/** ----------------------------------------*/
-		if (ee()->session->userdata('can_search') == 'n' AND ! ee('Permission')->isSuperAdmin())
+		if ( ! ee('Permission')->can('search') AND ! ee('Permission')->isSuperAdmin())
 		{
 			return ee()->output->show_user_error('general', array(lang('search_not_allowed')));
 		}

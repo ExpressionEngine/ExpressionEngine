@@ -311,14 +311,14 @@ class Api_channel_entries extends Api {
 
 			if ($row['author_id'] == ee()->session->userdata('member_id'))
 			{
-				if (ee()->session->userdata('can_delete_self_entries') != 'y')
+				if ( ! ee('Permission')->can('delete_self_entries'))
 				{
 					return $this->_set_error('unauthorized_to_delete_self');
 				}
 			}
 			else
 			{
-				if (ee()->session->userdata('can_delete_all_entries') != 'y')
+				if ( ! ee('Permission')->can('delete_all_entries'))
 				{
 					return $this->_set_error('unauthorized_to_delete_others');
 				}
@@ -762,21 +762,21 @@ class Api_channel_entries extends Api {
 
 		$data['author_id'] = ( ! isset($data['author_id']) OR ! $data['author_id']) ? ee()->session->userdata('member_id'): $data['author_id'];
 
-		if ($data['author_id'] != ee()->session->userdata('member_id') && ee()->session->userdata('can_edit_other_entries') != 'y')
+		if ($data['author_id'] != ee()->session->userdata('member_id') && ! ee('Permission')->can('edit_other_entries'))
 		{
 			$this->_set_error('not_authorized');
 		}
 
-		if (isset($this->_cache['orig_author_id']) && $data['author_id'] != $this->_cache['orig_author_id'] && (ee()->session->userdata('can_edit_other_entries') != 'y' OR ee()->session->userdata('can_assign_post_authors') != 'y'))
+		if (isset($this->_cache['orig_author_id']) && $data['author_id'] != $this->_cache['orig_author_id'] && ( ! ee('Permission')->can('edit_other_entries') OR ! ee('Permission')->can('assign_post_authors')))
 		{
 			$this->_set_error('not_authorized');
 		}
 
-		if ($data['author_id'] != ee()->session->userdata('member_id') && ! ee('Permission')->isSuperAdmin() && ee()->session->userdata('can_edit_other_entries') != 'y')
+		if ($data['author_id'] != ee()->session->userdata('member_id') && ! ee('Permission')->isSuperAdmin() &&  ! ee('Permission')->can('edit_other_entries'))
 		{
 			if ( ! isset($this->_cache['orig_author_id']) OR $data['author_id'] != $this->_cache['orig_author_id'])
 			{
-				if (ee()->session->userdata('can_assign_post_authors') != 'y')
+				if ( ! ee('Permission')->can('assign_post_authors'))
 				{
 					$this->_set_error('not_authorized', 'author');
 				}

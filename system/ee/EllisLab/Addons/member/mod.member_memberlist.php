@@ -35,7 +35,7 @@ class Member_memberlist extends Member {
 		/**  Is user allowed to send email?
 		/** ---------------------------------*/
 
-		if (ee()->session->userdata['can_email_from_profile'] == 'n')
+		if ( ! ee('Permission')->can('email_from_profile'))
 		{
 			return ee()->output->show_user_error('general', array(ee()->lang->line('mbr_not_allowed_to_use_email_console')));
 		}
@@ -261,7 +261,7 @@ class Member_memberlist extends Member {
 		/**  Can the user view profiles?
 		/** ----------------------------------------*/
 
-		if (ee()->session->userdata['can_view_profiles'] == 'n')
+		if ( ! ee('Permission')->can('view_profiles'))
 		{
 			return ee()->output->show_user_error('general', array(ee()->lang->line('mbr_not_allowed_to_view_profiles')));
 		}
@@ -1027,7 +1027,7 @@ class Member_memberlist extends Member {
 		/** ----------------------------------------
 		/**  Is the current user allowed to search?
 		/** ----------------------------------------*/
-		if (ee()->session->userdata['can_search'] == 'n' AND ! ee('Permission')->isSuperAdmin())
+		if ( ! ee('Permission')->can('search') AND ! ee('Permission')->isSuperAdmin())
 		{
 			return ee()->output->show_user_error('general', array(ee()->lang->line('search_not_allowed')));
 		}

@@ -277,7 +277,7 @@ class Metaweblog_api {
 			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
-		if ( ! $this->userdata['can_edit_other_entries'] && $this->userdata['group_id'] != '1')
+		if ( ! ee('Permission')->can('edit_other_entries') && ! ee('Permission')->isSuperAdmin())
 		{
 			// If there aren't any channels assigned to the user, bail out
 
@@ -561,7 +561,7 @@ class Metaweblog_api {
 				return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 			}
 
-			if ( ! $this->userdata['can_edit_other_entries'] && $this->userdata['group_id'] != '1')
+			if ( ! ee('Permission')->can('edit_other_entries') && ! ee('Permission')->isSuperAdmin())
 			{
 				if ($this->entry->author_id  != $this->userdata['member_id'])
 				{
@@ -655,7 +655,7 @@ class Metaweblog_api {
 
 		$query = ee('Model')->get('ChannelEntry')->filter('channel_id', $this->channel_id);
 
-		if ($this->userdata['group_id'] != '1' && ! $this->userdata['can_edit_other_entries'])
+		if ( ! ee('Permission')->can('edit_other_entries') && ! ee('Permission')->isSuperAdmin())
 		{
 			//$sql .= "AND wt.author_id = '".$this->userdata['member_id']."' ";
 			$query->filter('author_id', $this->userdata['member_id']);
@@ -898,7 +898,7 @@ class Metaweblog_api {
 				FROM	exp_channel_titles wt, exp_channel_data
 				WHERE wt.entry_id = exp_channel_data.entry_id ";
 
-		if ($this->userdata['group_id'] != '1' && ! $this->userdata['can_edit_other_entries'])
+		if ( ! ee('Permission')->can('edit_other_entries') && ! ee('Permission')->isSuperAdmin())
 		{
 			$sql .= "AND wt.author_id = '".$this->userdata['member_id']."' ";
 		}
@@ -1018,7 +1018,7 @@ class Metaweblog_api {
 			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
-		if ( ! $this->userdata['can_edit_other_entries'] && $this->userdata['group_id'] != '1')
+		if ( ! ee('Permission')->can('edit_other_entries') && ! ee('Permission')->isSuperAdmin())
 		{
 			// If there aren't any channels assigned to the user, bail out
 
@@ -1054,7 +1054,7 @@ class Metaweblog_api {
 			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 		}
 
-		if ( ! $this->userdata['can_edit_other_entries'] && $this->userdata['group_id'] != '1')
+		if ( ! ee('Permission')->can('edit_other_entries') && ! ee('Permission')->isSuperAdmin())
 		{
 			if ($query->row('author_id')  != $this->userdata['member_id'])
 			{
@@ -1418,9 +1418,9 @@ class Metaweblog_api {
 			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
-		if (	$this->userdata['group_id'] != '1' AND
-			 ! $this->userdata['can_delete_self_entries'] AND
-			 ! $this->userdata['can_delete_all_entries'])
+ 		if ( ! ee('Permission')->isSuperAdmin() &&
+			 ! ee('Permission')->can('delete_self_entries') &&
+			 ! ee('Permission')->can('delete_all_entries'))
 		{
 			return ee()->xmlrpc->send_error_message('808', ee()->lang->line('invalid_access'));
 		}
