@@ -1530,7 +1530,7 @@ class Comment {
 		/**  Can the user post comments?
 		/** ----------------------------------------*/
 
-		if ( ! ee('Permission')->has('can_post_comments'))
+		if ( ! ee('Permission')->can('post_comments'))
 		{
 			$error[] = ee()->lang->line('cmt_no_authorized_for_comments');
 
@@ -2234,7 +2234,7 @@ class Comment {
 		$edited_status = (ee()->input->get_post('status') == 'close');
 		$edited_comment = ee()->input->get_post('comment');
 		$can_edit = FALSE;
-		$can_moderate = ee('Permission')->has('can_moderate_comments');
+		$can_moderate = ee('Permission')->can('moderate_comments');
 
 		$comment = ee('Model')->get('Comment', ee()->input->get_post('comment_id'))
 			->with('Author', 'Channel', 'Entry')

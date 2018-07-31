@@ -60,7 +60,7 @@ class Logs extends CP_Controller {
 			$item = $logs->addItem(lang('developer_log'), ee('CP/URL')->make('logs/developer'));
 		}
 
-		if (ee('Permission')->has('can_manage_consents'))
+		if (ee('Permission')->can('manage_consents'))
 		{
 			$item = $logs->addItem(lang('consent_log'), ee('CP/URL')->make('logs/consent'));
 		}

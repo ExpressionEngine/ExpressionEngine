@@ -52,7 +52,7 @@ class BulkEdit extends AbstractBulkEdit {
 
 		$entry = $this->getMockEntryForIntersectedChannels($entries->Channel);
 
-		if (ee('Permission')->has('can_assign_post_authors'))
+		if (ee('Permission')->can('assign_post_authors'))
 		{
 			$this->standard_default_fields[] = 'author_id';
 		}

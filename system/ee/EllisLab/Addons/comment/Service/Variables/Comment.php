@@ -102,7 +102,7 @@ class Comment extends Variables {
 			'avatar_image_height'         => $this->getAvatarVariable('height'),
 			'avatar_image_width'          => $this->getAvatarVariable('width'),
 			'avatar_url'                  => $this->getAvatarVariable('url'),
-			'can_moderate_comment'        => ee('Permission')->has('can_moderate_comments'),
+			'can_moderate_comment'        => ee('Permission')->can('moderate_comments'),
 			'channel_id'                  => $this->entry->channel_id,
 			'channel_short_name'          => $this->channel->channel_name,
 			'channel_title'               => $this->channel->channel_title,
@@ -409,12 +409,12 @@ class Comment extends Variables {
 	 */
 	private function isEditable()
 	{
-		if (ee('Permission')->has('can_edit_all_comments'))
+		if (ee('Permission')->can('edit_all_comments'))
 		{
 			return TRUE;
 		}
 
-		if ($this->comment->author_id == ee()->session->userdata('member_id') && ee('Permission')->has('can_edit_own_comments'))
+		if ($this->comment->author_id == ee()->session->userdata('member_id') && ee('Permission')->can('edit_own_comments'))
 		{
 			if (ee()->config->item('comment_edit_time_limit') == 0)
 			{

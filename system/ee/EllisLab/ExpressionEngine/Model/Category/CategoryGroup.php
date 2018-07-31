@@ -156,7 +156,7 @@ class CategoryGroup extends StructureModel {
 			'text' => sprintf(lang('no_found'), lang('categories'))
 		];
 
-		if ( ! INSTALLER && ee('Permission')->has('can_create_categories'))
+		if ( ! INSTALLER && ee('Permission')->can('create_categories'))
 		{
 			$no_results['link_text'] = 'add_new';
 			$no_results['link_href'] = ee('CP/URL')->make('categories/create/'.$this->getId());

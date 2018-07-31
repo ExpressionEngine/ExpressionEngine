@@ -95,12 +95,12 @@ class Utilities extends CP_Controller {
 		{
 			$member_tools = $sidebar->addHeader(lang('member_tools'))
 				->addBasicList();
-			if (ee('Permission')->has('can_access_import'))
+			if (ee('Permission')->can('access_import'))
 			{
 				$member_tools->addItem(lang('file_converter'), ee('CP/URL')->make('utilities/import-converter'));
 				$member_tools->addItem(lang('member_import'), ee('CP/URL')->make('utilities/member-import'));
 			}
-			if (ee('Permission')->has('can_access_members'))
+			if (ee('Permission')->can('access_members'))
 			{
 				$member_tools->addItem(lang('mass_notification_export'), ee('CP/URL')->make('utilities/export-email-addresses'));
 			}

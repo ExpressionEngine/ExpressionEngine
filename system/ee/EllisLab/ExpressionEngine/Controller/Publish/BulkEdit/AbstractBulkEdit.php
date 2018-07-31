@@ -36,7 +36,7 @@ abstract class AbstractBulkEdit extends CP_Controller {
 		$member_id = ee()->session->userdata('member_id');
 
 		// Can edit others' entries?
-		if ( ! ee('Permission')->has('can_edit_other_entries'))
+		if ( ! ee('Permission')->can('edit_other_entries'))
 		{
 			$other_authors = array_diff($author_ids, [$member_id]);
 
@@ -47,7 +47,7 @@ abstract class AbstractBulkEdit extends CP_Controller {
 		}
 
 		// Can edit own entries?
-		if ( ! ee('Permission')->has('can_edit_self_entries') &&
+		if ( ! ee('Permission')->can('edit_self_entries') &&
 			in_array($member_id, $author_ids))
 		{
 			return FALSE;
