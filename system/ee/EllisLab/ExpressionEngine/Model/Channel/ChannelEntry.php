@@ -309,9 +309,9 @@ class ChannelEntry extends ContentModel {
 			}
 		}
 
-		if ( ! $this->isNew() && $this->getBackup('author_id') != $this->author_id)
+		if ($this->getBackup('author_id') != $this->author_id)
 		{
-			$authors = ee('Member')->getAuthors();
+			$authors = ee('Member')->getAuthors(NULL, FALSE);
 
 			if ( ! isset($authors[$this->author_id]))
 			{
@@ -1198,6 +1198,16 @@ class ChannelEntry extends ContentModel {
 		return $this->Site->site_pages[$this->site_id]['uris'][$this->getId()];
 	}
 
+	public function getPageTemplateID()
+	{
+		if ( ! $this->hasPageURI())
+		{
+			return NULL;
+		}
+
+		return $this->Site->site_pages[$this->site_id]['templates'][$this->getId()];
+	}
+
 	public function isLivePreviewable()
 	{
 		if ($this->Channel->preview_url)
@@ -1209,6 +1219,11 @@ class ChannelEntry extends ContentModel {
 		if ($pages_module && $pages_module->isInstalled())
 		{
 			return TRUE;
+		}
+
+		if ($this->hasPageURI())
+		{
+		    return TRUE;
 		}
 
 		return FALSE;

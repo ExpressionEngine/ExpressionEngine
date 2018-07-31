@@ -405,6 +405,10 @@ class Publish extends AbstractPublishController {
 		{
 			$uri = $entry->getPageURI();
 			ee()->uri->page_query_string = $entry->entry_id;
+			if ( ! $template_id)
+			{
+				$template_id = $entry->getPageTemplateID();
+			}
 		}
 		else
 		{

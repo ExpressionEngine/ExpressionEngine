@@ -83,6 +83,8 @@ class Settings extends Profile {
 			$directory = $default;
 		}
 
+		$upload_dir =  $directories['Avatars'];
+
 		$fp = ee('CP/FilePicker')->make($default->id);
 
 		$dirs = array();
@@ -106,7 +108,7 @@ class Settings extends Profile {
 					'type' => 'radio',
 					'name' => 'avatar_picker',
 					'choices' => [
-						'upload' => lang('upload_avatar')
+						'upload' => sprintf(lang('upload_avatar'), $upload_dir->max_size)
 					],
 					'value' => 'choose'
 				],
@@ -253,6 +255,11 @@ class Settings extends Profile {
 		switch (ee()->input->post('avatar_picker')) {
 			case "upload":
 				$this->member->avatar_filename = $this->uploadAvatar();
+				if ( ! $this->member->avatar_filename)
+				{
+					parent::saveSettings($settings);
+					return FALSE;
+				}
 				break;
 			case "choose":
 				$choice = ee()->input->post('avatar_filename');
@@ -288,7 +295,7 @@ class Settings extends Profile {
 				->addToBody($upload_response['error'])
 				->now();
 
-			return;
+			return FALSE;
 		}
 
 		// We don't have the suffix, so first we explode to avoid passed by reference error

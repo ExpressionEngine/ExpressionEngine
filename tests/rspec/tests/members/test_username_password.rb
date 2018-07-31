@@ -39,7 +39,6 @@ feature 'Profile - Username and Password' do
     @page.profile_form.submit
 
     no_php_js_errors
-    should_have_show_error('Your password cannot be over 72 characters in length')
-    @page.all_there?.should == false
+    @page.should have_text 'Your password cannot be over 72 characters in length'
   end
 end

@@ -79,34 +79,42 @@ class Group extends Profile {
 						)
 					)
 				)
-			),
-			'secure_form_ctrls' => array(
+			)
+		);
+
+		$rules = [
+			[
+				'field' => 'group_id',
+				'label' => 'lang:member_group',
+				'rules' => 'callback__valid_member_group'
+			]
+		];
+
+		if ( ! ee('Session')->isWithinAuthTimeout())
+		{
+			$vars['sections']['secure_form_ctrls'] = array(
 				array(
 					'title' => 'existing_password',
 					'desc' => 'existing_password_exp',
 					'fields' => array(
 						'password_confirm' => array(
 							'type'      => 'password',
-							'required' => TRUE,
+							'required'  => TRUE,
 							'maxlength' => PASSWORD_MAX_LENGTH
 						)
 					)
 				)
-			)
-		);
+			);
 
-		ee()->form_validation->set_rules(array(
-			array(
-				 'field'   => 'group_id',
-				 'label'   => 'lang:member_group',
-				 'rules'   => 'callback__valid_member_group'
-			),
-			array(
-				 'field'   => 'password_confirm',
-				 'label'   => 'lang:password',
-				 'rules'   => 'required|auth_password'
-			)
-		));
+			$rules[] = [
+				'field' => 'password_confirm',
+				'label' => 'lang:password',
+				'rules' => 'required|auth_password[useAuthTimeout]'
+			];
+
+		}
+
+		ee()->form_validation->set_rules($rules);
 
 		if (AJAX_REQUEST)
 		{

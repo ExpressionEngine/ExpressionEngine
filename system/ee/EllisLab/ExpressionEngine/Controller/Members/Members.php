@@ -171,9 +171,7 @@ class Members extends CP_Controller {
 			'file' => array('cp/confirm_remove', 'cp/members/members'),
 		));
 
-		$session = ee('Model')->get('Session', ee()->session->userdata('session_id'))->first();
-
-		if ( ! $session->isWithinAuthTimeout())
+		if ( ! ee('Session')->isWithinAuthTimeout())
 		{
 			$data['confirm_remove_secure_form_ctrls'] = [
 				'title' => 'your_password',
@@ -478,20 +476,20 @@ class Members extends CP_Controller {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$site = ee('Model')->get('Site', ee()->config->item('site_id'))->first();
+			$prefs = [
+				'ban_action'      => ee()->input->post('ban_action'),
+				'ban_message'     => ee()->input->post('ban_message'),
+				'ban_destination' => ee()->input->post('ban_destination'),
+			];
 
 			foreach (array_keys($values) as $item)
 			{
 				$value = ee()->input->post($item);
 				$value = implode('|', explode(NL, $value));
-				$site->site_system_preferences->$item = $value;
+				$prefs[$item] = $value;
 			}
 
-			$site->site_system_preferences->ban_action = ee()->input->post('ban_action');
-			$site->site_system_preferences->ban_message = ee()->input->post('ban_message');
-			$site->site_system_preferences->ban_destination = ee()->input->post('ban_destination');
-
-			$site->save();
+			ee()->config->update_site_prefs($prefs);
 
 			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
@@ -1226,18 +1224,14 @@ class Members extends CP_Controller {
 	public function delete()
 	{
 		$member_ids = ee()->input->post('selection', TRUE);
-		$session = ee('Model')->get('Session', ee()->session->userdata('session_id'))
-			->filter('member_id', ee()->session->userdata('member_id'))
-			->first();
 
-		if ( ! $session ||
-			! ee()->cp->allowed_group('can_delete_members') ||
+		if ( ! ee()->cp->allowed_group('can_delete_members') ||
 			! $member_ids)
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		if ( ! $session->isWithinAuthTimeout())
+		if ( ! ee('Session')->isWithinAuthTimeout())
 		{
 			$validator = ee('Validation')->make();
 			$validator->setRules(array(
@@ -1256,7 +1250,7 @@ class Members extends CP_Controller {
 				return ee()->functions->redirect($this->base_url);
 			}
 
-			$session->resetAuthTimeout();
+			ee('Session')->resetAuthTimeout();
 		}
 
 		if ( ! is_array($member_ids))
@@ -1347,12 +1341,7 @@ class Members extends CP_Controller {
 			->filter('member_id', $member_id)
 			->first();
 
-		$session = ee('Model')->get('Session', ee()->session->userdata('session_id'))
-			->filter('member_id', ee()->session->userdata('member_id'))
-			->first();
-
-		if ( ! $session ||
-			! ee()->cp->allowed_group('can_delete_members') ||
+		if ( ! ee()->cp->allowed_group('can_delete_members') ||
 			! $member)
 		{
 			show_error(lang('unauthorized_access'), 403);
@@ -1360,7 +1349,7 @@ class Members extends CP_Controller {
 
 		$profile_url = ee('CP/URL')->make('members/profile/settings', ['id' => $member_id]);
 
-		if ( ! $session->isWithinAuthTimeout())
+		if ( ! ee('Session')->isWithinAuthTimeout())
 		{
 			$validator = ee('Validation')->make();
 			$validator->setRules(array(
@@ -1379,7 +1368,7 @@ class Members extends CP_Controller {
 				return ee()->functions->redirect($profile_url);
 			}
 
-			$session->resetAuthTimeout();
+			ee('Session')->resetAuthTimeout();
 		}
 
 		if ($member_id == ee()->session->userdata('member_id'))
