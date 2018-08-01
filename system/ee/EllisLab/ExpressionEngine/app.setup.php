@@ -641,6 +641,8 @@ return [
 
 			// ..\Role
 			'Role' => 'Model\Role\Role',
+			'RoleGroup' => 'Model\Role\RoleGroup',
+
 			// ..\Config
 			'Config' => 'Model\Config\Config',
 	),

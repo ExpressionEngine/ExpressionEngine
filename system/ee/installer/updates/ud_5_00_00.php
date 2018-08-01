@@ -27,6 +27,7 @@ class Updater {
 			[
 				'addConfigTable',
 				'addRoles',
+				'addRoleGroups',
 				'addAndPopulatePermissionsTable',
 				'reassignTemplateGroupsToRoles'
 			]
@@ -214,6 +215,69 @@ class Updater {
 		{
 			ee()->db->insert_batch('members_roles', $insert);
 		}
+	}
+
+	private function addRoleGroups()
+	{
+		// Make exp_role_groups table
+		ee()->dbforge->add_field(
+			[
+				'group_id' => [
+					'type'           => 'int',
+					'constraint'     => 10,
+					'unsigned'       => TRUE,
+					'null'           => FALSE,
+					'auto_increment' => TRUE
+				],
+				'name' => [
+					'type'       => 'varchar',
+					'constraint' => 100,
+					'null'       => FALSE
+						]
+			]
+		);
+		ee()->dbforge->add_key('group_id', TRUE);
+		ee()->smartforge->create_table('role_groups');
+
+		// Add the role->role group pivot table
+		ee()->dbforge->add_field(
+			[
+				'role_id' => [
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				],
+				'group_id' => [
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				]
+			]
+		);
+		ee()->dbforge->add_key(['role_id', 'group_id'], TRUE);
+		ee()->smartforge->create_table('roles_role_groups');
+
+		// Add the member->role group pivot table
+		ee()->dbforge->add_field(
+			[
+				'member_id' => [
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				],
+				'group_id' => [
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				]
+			]
+		);
+		ee()->dbforge->add_key(['member_id', 'group_id'], TRUE);
+		ee()->smartforge->create_table('members_role_groups');
 	}
 
 	private function addAndPopulatePermissionsTable()

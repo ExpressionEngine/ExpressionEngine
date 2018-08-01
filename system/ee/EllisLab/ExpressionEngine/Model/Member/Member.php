@@ -45,6 +45,14 @@ class Member extends ContentModel {
 			),
 			'weak' => TRUE
 		),
+		'RoleGroups' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'RoleGroup',
+			'pivot' => array(
+				'table' => 'members_role_groups'
+			),
+			'weak' => TRUE
+		),
 		'HTMLButtons' => array(
 			'type' => 'hasMany',
 			'model' => 'HTMLButton',

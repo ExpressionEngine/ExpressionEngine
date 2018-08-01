@@ -366,6 +366,24 @@ class EE_Schema {
 			PRIMARY KEY (`member_id`,`role_id`)
 		)";
 
+		$Q[] = "CREATE TABLE `exp_role_groups` (
+			`group_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`name` varchar(100) NOT NULL,
+			PRIMARY KEY (`group_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_roles_role_groups` (
+			`role_id` int(10) unsigned NOT NULL,
+			`group_id` int(10) unsigned NOT NULL,
+			PRIMARY KEY (`role_id`,`group_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_members_role_groups` (
+			`member_id` int(10) unsigned NOT NULL,
+			`group_id` int(10) unsigned NOT NULL,
+			PRIMARY KEY (`member_id`,`group_id`)
+		)";
+
 		$Q[] = "CREATE TABLE `exp_permissions` (
 			`permission_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 		    `role_id` int(10) unsigned NOT NULL,
