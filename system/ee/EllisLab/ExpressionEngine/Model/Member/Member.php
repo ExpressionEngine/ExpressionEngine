@@ -13,6 +13,7 @@ use DateTimeZone;
 use EllisLab\ExpressionEngine\Model\Content\ContentModel;
 use EllisLab\ExpressionEngine\Model\Member\Display\MemberFieldLayout;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 /**
  * Member
@@ -999,6 +1000,21 @@ class Member extends ContentModel {
 		return (bool) preg_match('/^redacted\d+$/', $this->email);
 	}
 
+	public function getAllRoles()
+	{
+		$roles = $this->Roles->indexBy('name');
+
+		foreach ($this->RoleGroups as $role_group)
+		{
+			foreach ($role_group->Roles as $role)
+			{
+				$roles[$role->name] = $role;
+			}
+		}
+
+		return new Collection($roles);
+	}
+
 	public function getPermissions()
 	{
 		static $permissions;
@@ -1007,7 +1023,7 @@ class Member extends ContentModel {
 		{
 			$permissions = $this->getModelFacade()->get('Permission')
 				->filter('site_id', ee()->config->item('site_id'))
-				->filter('role_id', 'IN', $this->Roles->pluck('role_id'))
+				->filter('role_id', 'IN', $this->getAllRoles()->pluck('role_id'))
 				->all()
 				->getDictionary('permission', 'permission_id');
 		}
