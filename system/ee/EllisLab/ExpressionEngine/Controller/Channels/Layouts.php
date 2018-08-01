@@ -534,11 +534,11 @@ class Layouts extends AbstractChannelsController {
 
 	private function getEligibleMemberGroups(Channel $channel)
 	{
-		$super_admins = ee('Model')->get('MemberGroup', 1)
+		$super_admins = ee('Model')->get('Role', 1)
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
-		$member_groups = array_merge($super_admins->asArray(), $channel->AssignedMemberGroups->asArray());
+		$member_groups = array_merge($super_admins->asArray(), $channel->AssignedRoles->asArray());
 
 		return new Collection($member_groups);
 	}

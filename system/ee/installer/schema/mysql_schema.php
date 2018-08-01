@@ -418,10 +418,10 @@ class EE_Schema {
 		// Channel access privs
 		// Member groups assignment for each channel
 
-		$Q[] = "CREATE TABLE exp_channel_member_groups (
-			group_id smallint(4) unsigned NOT NULL,
+		$Q[] = "CREATE TABLE exp_channel_member_roles (
+			role_id int(10) unsigned NOT NULL,
 			channel_id int(6) unsigned NOT NULL,
-			PRIMARY KEY `group_id_channel_id` (`group_id`, `channel_id`)
+			PRIMARY KEY `role_id_channel_id` (`role_id`, `channel_id`)
 		)";
 
 		// Module access privs

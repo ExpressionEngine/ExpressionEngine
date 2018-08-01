@@ -45,13 +45,6 @@ class MemberGroup extends StructureModel {
 			'model' => 'Member',
 			'weak' => TRUE
 		),
-		'AssignedChannels' => array(
-			'type' => 'hasAndBelongsToMany',
-			'model' => 'Channel',
-			'pivot' => array(
-				'table' => 'channel_member_groups'
-			)
-		),
 		'AssignedModules' => array(
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'Module',

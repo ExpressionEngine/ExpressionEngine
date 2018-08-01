@@ -704,9 +704,9 @@ EOT;
 					'moblog_author_id' => $authors,
 				);
 
-				foreach ($channel->AssignedMemberGroups as $member_group)
+				foreach ($channel->AssignedRoles as $role)
 				{
-					foreach ($member_group->Members as $member)
+					foreach ($role->Members as $member)
 					{
 						$channel_info[$channel->getId()]['moblog_author_id'][] = array($member->getId(), $member->getMemberName());
 					}

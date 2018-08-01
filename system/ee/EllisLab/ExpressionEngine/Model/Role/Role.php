@@ -40,6 +40,13 @@ class Role extends Model {
 			),
 			'weak' => TRUE
 		),
+		'AssignedChannels' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Channel',
+			'pivot' => array(
+				'table' => 'channel_member_roles'
+			)
+		),
 		'AssignedTemplateGroups' => array(
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'TemplateGroup',

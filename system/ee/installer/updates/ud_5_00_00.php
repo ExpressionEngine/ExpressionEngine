@@ -29,7 +29,8 @@ class Updater {
 				'addRoles',
 				'addRoleGroups',
 				'addAndPopulatePermissionsTable',
-				'reassignTemplateGroupsToRoles'
+				'reassignChannelsToRoles',
+				'reassignTemplateGroupsToRoles',
 			]
 		);
 
@@ -444,6 +445,24 @@ class Updater {
 		{
 			ee()->smartforge->drop_column('member_groups', $permission);
 		}
+	}
+
+	private function reassignChannelsToRoles()
+	{
+		if (ee()->db->table_exists('channel_member_roles'))
+		{
+			return;
+		}
+
+		ee()->smartforge->modify_column('channel_member_groups', [
+			'group_id' => [
+				'name'       => 'role_id',
+				'type'       => 'int',
+				'constraint' => 10
+			]
+		]);
+
+		ee()->smartforge->rename_table('channel_member_groups', 'channel_member_roles');
 	}
 
 	private function reassignTemplateGroupsToRoles()
