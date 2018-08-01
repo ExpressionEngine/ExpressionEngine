@@ -45,13 +45,6 @@ class MemberGroup extends StructureModel {
 			'model' => 'Member',
 			'weak' => TRUE
 		),
-		'AssignedModules' => array(
-			'type' => 'hasAndBelongsToMany',
-			'model' => 'Module',
-			'pivot' => array(
-				'table' => 'module_member_groups'
-			)
-		),
 		'NoTemplateAccess' => array(
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'Template',

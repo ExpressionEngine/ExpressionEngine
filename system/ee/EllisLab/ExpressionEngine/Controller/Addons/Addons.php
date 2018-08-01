@@ -59,10 +59,9 @@ class Addons extends CP_Controller {
 		ee()->load->helper(array('file', 'directory'));
 		ee()->legacy_api->instantiate('channel_fields');
 
-		$this->assigned_modules = ee('Model')->get('MemberGroup', ee()->session->userdata('group_id'))
-			->first()
-			->AssignedModules
-			->pluck('module_id');
+		$member = ee()->session->getMember();
+
+		$this->assigned_modules = $member->getAssignedModules()->pluck('module_id');
 
 		// Make sure Filepicker is accessible for those who need it
 		if (ee('Permission')->can('access_files'))

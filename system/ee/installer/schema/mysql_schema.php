@@ -416,7 +416,7 @@ class EE_Schema {
 		)";
 
 		// Channel access privs
-		// Member groups assignment for each channel
+		// Role assignment for each channel
 
 		$Q[] = "CREATE TABLE exp_channel_member_roles (
 			role_id int(10) unsigned NOT NULL,
@@ -425,17 +425,17 @@ class EE_Schema {
 		)";
 
 		// Module access privs
-		// Member Group assignment for each module
+		// Role assignment for each module
 
-		$Q[] = "CREATE TABLE exp_module_member_groups (
-			group_id smallint(4) unsigned NOT NULL,
+		$Q[] = "CREATE TABLE exp_module_member_roles (
+		role_id int(10) unsigned NOT NULL,
 			module_id mediumint(5) unsigned NOT NULL,
-			PRIMARY KEY `group_id_module_id` (`group_id`, `module_id`)
+			PRIMARY KEY `role_id_module_id` (`role_id`, `module_id`)
 		)";
 
 
 		// Template Group access privs
-		// Member group assignment for each template group
+		// Role assignment for each template group
 
 		$Q[] = "CREATE TABLE exp_template_groups_roles (
 			role_id int(10) unsigned NOT NULL,

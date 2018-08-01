@@ -47,6 +47,13 @@ class Role extends Model {
 				'table' => 'channel_member_roles'
 			)
 		),
+		'AssignedModules' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Module',
+			'pivot' => array(
+				'table' => 'module_member_roles'
+			)
+		),
 		'AssignedTemplateGroups' => array(
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'TemplateGroup',

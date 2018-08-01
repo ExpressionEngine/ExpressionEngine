@@ -20,9 +20,9 @@ class Module extends Model {
 	protected static $_table_name = 'modules';
 
 	protected static $_relationships = array(
-		'AssignedModules' => array(
+		'AssignedRoles' => array(
 			'type' => 'hasAndBelongsToMany',
-			'model' => 'MemberGroup',
+			'model' => 'Role',
 			'pivot' => array(
 				'table' => 'module_member_groups'
 			)
