@@ -218,14 +218,15 @@ class FieldFacade {
 
 	public function reindex($model = NULL)
 	{
-		$ft = $this->getNativeField();
-
 		if ( ! $this->hasReindex())
 		{
 			return FALSE;
 		}
 
+		$this->ensurePopulatedDefaults();
+
 		$value = $this->data;
+		$this->initField();
 		return $this->data = $this->api->apply('reindex', array($value, $model));
 	}
 
