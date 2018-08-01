@@ -248,8 +248,17 @@ class Fluid_field_ft extends EE_Fieldtype {
 		{
 			$field = $fluid_field->getField();
 			$field_data = $fluid_field->getFieldData();
-			$field->setItem('field_search', true);
-			$compiled_data_for_search[] = $field->reindex($field_data);
+
+			if ($field->hasReindex())
+			{
+				$field->setItem('field_search', true);
+				$compiled_data_for_search[] = $field->reindex($field_data);
+			}
+			else
+			{
+				$compiled_data_for_search[] = $field->getData();
+			}
+
 		}
 
 		return implode(' ', $compiled_data_for_search);
