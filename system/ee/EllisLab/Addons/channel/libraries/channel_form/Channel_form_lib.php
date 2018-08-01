@@ -152,7 +152,7 @@ class Channel_form_lib
 			return ee()->TMPL->no_results();
 		}
 
-		$assigned_channels = $this->member->MemberGroup->AssignedChannels->pluck('channel_id');
+		$assigned_channels = $this->member->getAssignedChannels()->pluck('channel_id');
 
 		// Can they post?
 		if ( ! in_array($this->channel('channel_id'), $assigned_channels) && (int) $this->member->MemberGroup->getId() != 1)
@@ -1774,7 +1774,7 @@ GRID_FALLBACK;
 			$_POST['categories'] = array('cat_group_id_'.$cat_groups[0] => (is_array($_POST['category'])) ? $_POST['category'] : [$_POST['category']]);
 		}
 
-		if (in_array($this->channel('channel_id'), $this->member->MemberGroup->AssignedChannels->pluck('channel_id')) OR (int) $this->member->MemberGroup->getId() == 1)
+		if (in_array($this->channel('channel_id'), $this->member->getAssignedChannels()->pluck('channel_id')) OR (int) $this->member->MemberGroup->getId() == 1)
 		{
 			$entry_data = array_filter(
 				$_POST,

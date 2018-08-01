@@ -25,7 +25,7 @@ class CpSettings extends Profile {
 	{
 		$field['allowed_channels'] = array();
 		$all_sites_have_channels = TRUE;
-		$assigned_channels = $this->member->MemberGroup->AssignedChannels->pluck('channel_id');
+		$assigned_channels = $this->member->getAssignedChannels()->pluck('channel_id');
 
 		// If MSM is enabled, let them choose a channel for each site, should they
 		// want to redirect to the publish form on each site

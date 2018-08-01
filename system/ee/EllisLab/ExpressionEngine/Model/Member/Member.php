@@ -1015,6 +1015,34 @@ class Member extends ContentModel {
 		return new Collection($roles);
 	}
 
+	public function getAssignedMoudles()
+	{
+		$modules = [];
+		foreach ($this->getAllRoles() as $role)
+		{
+			foreach ($role->AssignedModules as $module)
+			{
+				$modules[$module->getId()] = $module;
+			}
+		}
+
+		return new Collection($modules);
+	}
+
+	public function getAssignedChannels()
+	{
+		$channels = [];
+		foreach ($this->getAllRoles() as $role)
+		{
+			foreach ($role->AssignedChannels as $channel)
+			{
+				$channels[$channel->getId()] = $channel;
+			}
+		}
+
+		return new Collection($channels);
+	}
+
 	public function getPermissions()
 	{
 		static $permissions;
