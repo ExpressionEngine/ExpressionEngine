@@ -1058,8 +1058,8 @@ class EE_Schema {
 
 		$Q[] = "CREATE TABLE exp_upload_no_access (
 			upload_id int(6) unsigned NOT NULL,
-			member_group smallint(4) unsigned NOT NULL,
-			PRIMARY KEY `upload_id_member_group` (`upload_id`, `member_group`)
+			role_id int(10) unsigned NOT NULL,
+			PRIMARY KEY `upload_id_role_id` (`upload_id`, `role_id`)
 		)";
 
 		// Private messaging tables

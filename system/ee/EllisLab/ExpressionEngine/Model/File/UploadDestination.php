@@ -32,10 +32,10 @@ class UploadDestination extends Model {
 		),
 		'NoAccess' => array(
 			'type' => 'hasAndBelongsToMany',
-			'model' => 'MemberGroup',
+			'model' => 'Role',
 			'pivot' => array(
 				'table' => 'upload_no_access',
-				'left' => 'upload_id',
+				'left' => 'role_id',
 				'right' => 'member_group'
 			)
 		),

@@ -32,6 +32,7 @@ class Updater {
 				'reassignChannelsToRoles',
 				'reassignModulesToRoles',
 				'reassignTemplateGroupsToRoles',
+				'reassignNoUploadAccess',
 			]
 		);
 
@@ -500,6 +501,23 @@ class Updater {
 		]);
 
 		ee()->smartforge->rename_table('template_member_groups', 'template_groups_roles');
+	}
+
+
+	private function reassignNoUploadAccess()
+	{
+		if (ee()->db->field_exists('role_id', 'upload_no_access'))
+		{
+			return;
+		}
+
+		ee()->smartforge->modify_column('upload_no_access', [
+			'member_group' => [
+				'name'       => 'role_id',
+				'type'       => 'int',
+				'constraint' => 10
+			]
+		]);
 	}
 }
 

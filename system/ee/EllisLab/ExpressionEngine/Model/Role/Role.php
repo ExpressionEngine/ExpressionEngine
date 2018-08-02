@@ -63,6 +63,15 @@ class Role extends Model {
 				'right' => 'template_group_id'
 			)
 		),
+		'NoUploadAccess' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'UploadDestination',
+			'pivot' => array(
+				'table' => 'upload_no_access',
+				'left' => 'member_group',
+				'right' => 'role_id'
+			)
+		),
 	];
 
 	protected static $_validation_rules = [
