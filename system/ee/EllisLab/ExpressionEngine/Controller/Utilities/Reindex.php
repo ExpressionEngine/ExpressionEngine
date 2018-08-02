@@ -211,13 +211,14 @@ class Reindex extends Utilities {
 			];
 		}
 
-		if ( ! ee()->config->item('search_reindex_needed') && empty(ee('CP/Alert')->get('shared-form')))
+		if ( ! ee()->config->item('search_reindex_needed'))
 		{
-			ee('CP/Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('reindex-not-needed')
 				->asImportant()
 				->withTitle(lang('reindex_not_needed'))
 				->addToBody(lang('reindex_not_needed_desc'))
 				->now();
+			ee()->view->extra_alerts = array('reindex-not-needed');
 		}
 
 		ee()->view->cp_page_title = lang('search_reindex');
