@@ -1389,21 +1389,12 @@ class EE_Session {
 	{
 		$assigned_modules = array();
 
-		ee()->db->select('module_id');
-		$qry = ee()->db->get_where('module_member_groups',
-										array('group_id' => $this->userdata['group_id']));
-
-		if ($qry->num_rows() > 0)
+		foreach ($this->member_model->getAssignedMoudles() as $module)
 		{
-			foreach ($qry->result() as $row)
-			{
-				$assigned_modules[$row->module_id] = TRUE;
-			}
+			$assigned_modules[$module->getId()] = TRUE;
 		}
 
 		$this->userdata['assigned_modules'] = $assigned_modules;
-
-		$qry->free_result();
 	}
 
 	/**
