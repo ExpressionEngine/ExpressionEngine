@@ -77,7 +77,7 @@ class Channel extends StructureModel {
 		),
 		'AssignedRoles' => array(
 			'type' => 'hasAndBelongsToMany',
-			'model' => 'Roles',
+			'model' => 'Role',
 			'pivot' => array(
 				'table' => 'channel_member_roles'
 			)
