@@ -35,8 +35,8 @@ class UploadDestination extends Model {
 			'model' => 'Role',
 			'pivot' => array(
 				'table' => 'upload_no_access',
-				'left' => 'role_id',
-				'right' => 'member_group'
+				'left' => 'upload_id',
+				'right' => 'role_id'
 			)
 		),
 		'Module' => array(
