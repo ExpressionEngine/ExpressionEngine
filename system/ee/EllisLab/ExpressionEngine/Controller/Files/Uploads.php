@@ -283,7 +283,7 @@ class Uploads extends AbstractFilesController {
 		);
 
 		// Member IDs NOT in $no_access have access...
-		list($allowed_groups, $member_groups) = $this->getAllowedGroups($upload_destination);
+		list($allowed_groups, $member_groups) = $this->getAllowedRoles($upload_destination);
 
 		$vars['sections']['upload_privileges'] = array(
 			array(
@@ -554,31 +554,30 @@ class Uploads extends AbstractFilesController {
 	 * @param	model	$upload_destination		Model object for upload destination
 	 * @return	array	Array containing each of the arrays mentioned above
 	 */
-	private function getAllowedGroups($upload_destination = NULL)
+	private function getAllowedRoles($upload_destination = NULL)
 	{
-		$member_groups = ee('Model')->get('MemberGroup')
-			->filter('group_id', 'NOT IN', array(1,2,3,4))
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('group_title')
+		$roles = ee('Model')->get('Role')
+			->filter('role_id', 'NOT IN', array(1,2,3,4))
+			->order('name')
 			->all()
-			->getDictionary('group_id', 'group_title');
+			->getDictionary('role_id', 'name');
 
 		if ( ! empty($_POST))
 		{
 			if (isset($_POST['upload_member_groups']))
 			{
-				return array($_POST['upload_member_groups'], $member_groups);
+				return array($_POST['upload_member_groups'], $roles);
 			}
 
-			return array(array(), $member_groups);
+			return array(array(), $roles);
 		}
 
-		$no_access = $upload_destination->getNoAccess()->pluck('group_id');
+		$no_access = $upload_destination->getNoAccess()->pluck('role_id');
 
-		$allowed_groups = array_diff(array_keys($member_groups), $no_access);
+		$allowed_roles = array_diff(array_keys($roles), $no_access);
 
 		// Member IDs NOT in $no_access have access...
-		return array($allowed_groups, $member_groups);
+		return array($allowed_roles, $roles);
 	}
 
 	/**
