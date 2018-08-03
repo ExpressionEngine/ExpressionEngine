@@ -54,24 +54,6 @@ class Role extends Model {
 				'table' => 'module_member_roles'
 			)
 		),
-		'AssignedTemplateGroups' => array(
-			'type' => 'hasAndBelongsToMany',
-			'model' => 'TemplateGroup',
-			'pivot' => array(
-				'table' => 'template_groups_roles',
-				'left'  => 'role_id',
-				'right' => 'template_group_id'
-			)
-		),
-		'AssingedUploadDestinations' => array(
-			'type' => 'hasAndBelongsToMany',
-			'model' => 'UploadDestination',
-			'pivot' => array(
-				'table' => 'upload_prefs_roles',
-				'left' => 'role_id',
-				'right' => 'upload_id'
-			)
-		),
 		'AssingedStatuses' => array(
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'Status',
@@ -88,6 +70,24 @@ class Role extends Model {
 				'table' => 'templates_roles',
 				'left' => 'role_id',
 				'right' => 'template_id'
+			)
+		),
+		'AssignedTemplateGroups' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'TemplateGroup',
+			'pivot' => array(
+				'table' => 'template_groups_roles',
+				'left'  => 'role_id',
+				'right' => 'template_group_id'
+			)
+		),
+		'AssingedUploadDestinations' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'UploadDestination',
+			'pivot' => array(
+				'table' => 'upload_prefs_roles',
+				'left' => 'role_id',
+				'right' => 'upload_id'
 			)
 		),
 	];
