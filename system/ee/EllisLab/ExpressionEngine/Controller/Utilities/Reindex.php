@@ -266,9 +266,11 @@ class Reindex extends Utilities {
 				}
 			}
 
-			if ( ! empty($entry->getDirty()))
+			$dirty = $entry->getDirty();
+
+			if ( ! empty($dirty))
 			{
-				$entry->saveFieldData($entry->getDirty());
+				$entry->saveFieldData($dirty);
 			}
 
 			$progress++;
