@@ -299,8 +299,8 @@ class ThemeInstaller {
 				->all();
 
 			$access = $template_preferences->access;
-			$template->NoAccess = $member_groups->filter(function($group) use ($access) {
-				return ($access->{$group->group_title} == 'n');
+			$template->Roles = $member_groups->filter(function($group) use ($access) {
+				return ($access->{$group->group_title} == 'y');
 			});
 		}
 

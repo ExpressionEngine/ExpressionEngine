@@ -87,11 +87,11 @@ class Template extends AbstractDesignController {
 				// allow access to everyone
 				if ( ! ee()->input->post('template_id'))
 				{
-					$template->NoAccess = NULL;
+					$template->Roles = $master_template->Roles;
 				}
 				else
 				{
-					$template->NoAccess = $master_template->NoAccess;
+					$template->Roles = NULL;
 				}
 
 				$template->save();
@@ -641,17 +641,21 @@ class Template extends AbstractDesignController {
 		}
 		else
 		{
-			$member_groups = ee('Model')->get('MemberGroup')
-				->filter('site_id', ee()->config->item('site_id'))
-				->filter('group_id', '!=', 1)
+			$access = ee()->input->post('allowed_roles') ?: array();
+
+			$roles = ee('Model')->get('Role', $access)
+				->filter('role_id', '!=', 1)
 				->all();
 
-			$allowed_member_groups = ee()->input->post('allowed_member_groups') ?: array();
-
-			$template->NoAccess = $member_groups->filter(function($group) use ($allowed_member_groups)
+			if ($roles->count() > 0)
 			{
-				return ! in_array($group->group_id, $allowed_member_groups);
-			});
+				$template->Roles = $roles;
+			}
+			else
+			{
+				// Remove all roles from this upload destination
+				$template->Roles = NULL;
+			}
 		}
 
 		return $result;
@@ -975,28 +979,23 @@ class Template extends AbstractDesignController {
 		// Remove current template from options
 		unset($existing_templates[$template->template_id]);
 
-		$member_groups = ee('Model')->get('MemberGroup')
-			->fields('group_id', 'group_title')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_id', '!=', 1)
-			->all();
-
-		$allowed_member_groups = array_diff(
-			$member_groups->pluck('group_id'),
-			$template->getNoAccess()->pluck('group_id')
-		);
+		$roles = ee('Model')->get('Role')
+			->filter('role_id', '!=', 1)
+			->order('name')
+			->all()
+			->getDictionary('role_id', 'name');
 
 		$sections = array(
 			array(
 				array(
-					'title' => 'allowed_member_groups',
-					'desc' => 'allowed_member_groups_desc',
-					'desc_cont' => 'allowed_member_groups_super_admin',
+					'title' => 'allowed_roles',
+					'desc' => 'allowed_roles_desc',
+					'desc_cont' => 'allowed_roles_super_admin',
 					'fields' => array(
-						'allowed_member_groups' => array(
+						'allowed_roles' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups->getDictionary('group_id', 'group_title'),
-							'value' => $allowed_member_groups,
+							'choices' => $roles,
+							'value' => $template->Roles->pluck('role_id'),
 							'no_results' => [
 								'text' => sprintf(lang('no_found'), lang('member_groups'))
 							]
