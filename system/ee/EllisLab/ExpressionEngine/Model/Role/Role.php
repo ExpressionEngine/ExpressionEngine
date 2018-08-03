@@ -63,13 +63,13 @@ class Role extends Model {
 				'right' => 'template_group_id'
 			)
 		),
-		'NoUploadAccess' => array(
+		'AssingedUploadDestinations' => array(
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'UploadDestination',
 			'pivot' => array(
-				'table' => 'upload_no_access',
-				'left' => 'member_group',
-				'right' => 'role_id'
+				'table' => 'upload_prefs_roles',
+				'left' => 'role_id',
+				'right' => 'upload_id'
 			)
 		),
 	];
