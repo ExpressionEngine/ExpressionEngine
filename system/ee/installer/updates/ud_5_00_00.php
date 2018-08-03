@@ -33,6 +33,7 @@ class Updater {
 				'reassignModulesToRoles',
 				'reassignTemplateGroupsToRoles',
 				'flipPolarityOnUploadRoleAccess',
+				'flipPolarityOnStatusRoleAccess',
 			]
 		);
 
@@ -503,7 +504,6 @@ class Updater {
 		ee()->smartforge->rename_table('template_member_groups', 'template_groups_roles');
 	}
 
-
 	private function flipPolarityOnUploadRoleAccess()
 	{
 		if (ee()->db->table_exists('upload_prefs_roles'))
@@ -575,6 +575,78 @@ class Updater {
 		}
 
 		ee()->smartforge->drop_table('upload_no_access');
+	}
+
+	private function flipPolarityOnStatusRoleAccess()
+	{
+		if (ee()->db->table_exists('statuses_roles'))
+		{
+			return;
+		}
+
+		ee()->dbforge->add_field(
+			[
+				'role_id' => [
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				],
+				'status_id' => [
+					'type'       => 'int',
+					'constraint' => 6,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				]
+			]
+		);
+		ee()->dbforge->add_key(['role_id', 'status_id'], TRUE);
+		ee()->smartforge->create_table('statuses_roles');
+
+		$role_ids = [];
+		$roles = ee()->db->where_not_in('role_id', [1, 2, 3, 4])->get('roles')->result();
+		foreach ($roles as $role)
+		{
+			$role_ids[$role->role_id] = $role->role_id;
+		}
+
+		$no_access = [];
+		foreach (ee()->db->get('status_no_access')->result() as $row)
+		{
+			if ( ! array_key_exists($row->status_id, $no_access))
+			{
+				$no_access[$row->status_id] = [];
+			}
+
+			$no_access[$row->status_id][] = $row->member_group;
+		}
+
+		$insert = [];
+
+		ee()->db->select('status_id');
+		$statuses = ee()->db->get('statuses')->result();
+		foreach ($statuses as $status)
+		{
+			$status_id = $status->status_id;
+			foreach ($role_ids as $role_id)
+			{
+				if ( ! array_key_exists($status_id, $no_access) ||
+					 ! in_array($role_id, $no_access[$status_id]))
+				{
+					$insert[] = [
+						'role_id'   => $role_id,
+						'status_id' => $status_id
+					];
+				}
+			}
+		}
+
+		if ( ! empty($insert))
+		{
+			ee()->db->insert_batch('statuses_roles', $insert);
+		}
+
+		ee()->smartforge->drop_table('status_no_access');
 	}
 }
 

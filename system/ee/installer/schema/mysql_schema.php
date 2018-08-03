@@ -759,13 +759,10 @@ class EE_Schema {
 			PRIMARY KEY `status_id` (`status_id`)
 		)";
 
-		// Status "no access"
-		// Stores groups that can not access certain statuses
-
-		$Q[] = "CREATE TABLE exp_status_no_access (
+		$Q[] = "CREATE TABLE exp_statuses_roles (
+			role_id int(10) unsigned NOT NULL,
 			status_id int(6) unsigned NOT NULL,
-			member_group smallint(4) unsigned NOT NULL,
-			PRIMARY KEY `status_id_member_group` (`status_id`, `member_group`)
+			PRIMARY KEY `status_id_role_id` (`status_id`, `role_id`)
 		)";
 
 		// Category Groups
