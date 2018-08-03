@@ -32,7 +32,7 @@ class Updater {
 				'reassignChannelsToRoles',
 				'reassignModulesToRoles',
 				'reassignTemplateGroupsToRoles',
-				'reassignNoUploadAccess',
+				'flipPolarityOnUploadRoleAccess',
 			]
 		);
 
@@ -504,20 +504,77 @@ class Updater {
 	}
 
 
-	private function reassignNoUploadAccess()
+	private function flipPolarityOnUploadRoleAccess()
 	{
-		if (ee()->db->field_exists('role_id', 'upload_no_access'))
+		if (ee()->db->table_exists('upload_prefs_roles'))
 		{
 			return;
 		}
 
-		ee()->smartforge->modify_column('upload_no_access', [
-			'member_group' => [
-				'name'       => 'role_id',
-				'type'       => 'int',
-				'constraint' => 10
+		ee()->dbforge->add_field(
+			[
+				'role_id' => [
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				],
+				'upload_id' => [
+					'type'       => 'int',
+					'constraint' => 4,
+					'unsigned'   => TRUE,
+					'null'       => FALSE
+				]
 			]
-		]);
+		);
+		ee()->dbforge->add_key(['role_id', 'upload_id'], TRUE);
+		ee()->smartforge->create_table('upload_prefs_roles');
+
+		$role_ids = [];
+		$roles = ee()->db->where_not_in('role_id', [1, 2, 3, 4])->get('roles')->result();
+		foreach ($roles as $role)
+		{
+			$role_ids[$role->role_id] = $role->role_id;
+		}
+
+		$no_access = [];
+		foreach (ee()->db->get('upload_no_access')->result() as $row)
+		{
+			if ( ! array_key_exists($row->upload_id, $no_access))
+			{
+				$no_access[$row->upload_id] = [];
+			}
+
+			$no_access[$row->upload_id][] = $row->member_group;
+		}
+
+		$insert = [];
+
+		ee()->db->select('id');
+		ee()->db->where('module_id', 0);
+		$upload_prefs = ee()->db->get('upload_prefs')->result();
+		foreach ($upload_prefs as $upload_pref)
+		{
+			$upload_pref_id = $upload_pref->id;
+			foreach ($role_ids as $role_id)
+			{
+				if ( ! array_key_exists($upload_pref_id, $no_access) ||
+					 ! in_array($role_id, $no_access[$upload_pref_id]))
+				{
+					$insert[] = [
+						'role_id'   => $role_id,
+						'upload_id' => $upload_pref_id
+					];
+				}
+			}
+		}
+
+		if ( ! empty($insert))
+		{
+			ee()->db->insert_batch('upload_prefs_roles', $insert);
+		}
+
+		ee()->smartforge->drop_table('upload_no_access');
 	}
 }
 

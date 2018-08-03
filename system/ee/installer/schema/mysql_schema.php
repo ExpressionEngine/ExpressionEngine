@@ -1056,9 +1056,9 @@ class EE_Schema {
 		// Upload "no access"
 		// We store the member groups that can not access various upload destinations
 
-		$Q[] = "CREATE TABLE exp_upload_no_access (
-			upload_id int(6) unsigned NOT NULL,
+		$Q[] = "CREATE TABLE exp_upload_prefs_roles (
 			role_id int(10) unsigned NOT NULL,
+			upload_id int(4) unsigned NOT NULL,
 			PRIMARY KEY `upload_id_role_id` (`upload_id`, `role_id`)
 		)";
 
