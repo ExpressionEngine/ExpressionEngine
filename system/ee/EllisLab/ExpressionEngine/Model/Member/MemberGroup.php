@@ -45,15 +45,6 @@ class MemberGroup extends StructureModel {
 			'model' => 'Member',
 			'weak' => TRUE
 		),
-		'NoTemplateAccess' => array(
-			'type' => 'hasAndBelongsToMany',
-			'model' => 'Template',
-			'pivot' => array(
-				'table' => 'template_no_access',
-				'right'  => 'template_id',
-				'left' => 'member_group'
-			)
-		),
 		'ChannelLayouts' => array(
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'ChannelLayout',
