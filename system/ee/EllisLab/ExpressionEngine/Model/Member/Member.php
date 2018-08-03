@@ -1057,6 +1057,20 @@ class Member extends ContentModel {
 		return new Collection($uploads);
 	}
 
+	public function getAssignedStatuses()
+	{
+		$statuses = [];
+		foreach ($this->getAllRoles() as $role)
+		{
+			foreach ($role->AssingedStatuses as $status)
+			{
+				$statuses[$status->getId()] = $status;
+			}
+		}
+
+		return new Collection($statuses);
+	}
+
 	public function getPermissions()
 	{
 		static $permissions;
