@@ -72,6 +72,15 @@ class Role extends Model {
 				'right' => 'upload_id'
 			)
 		),
+		'AssingedStatuses' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Status',
+			'pivot' => array(
+				'table' => 'statuses_roles',
+				'left' => 'role_id',
+				'right' => 'status_id'
+			)
+		),
 	];
 
 	protected static $_validation_rules = [
