@@ -282,18 +282,21 @@ class Uploads extends AbstractFilesController {
 			)
 		);
 
-		// Member IDs NOT in $no_access have access...
-		list($allowed_groups, $member_groups) = $this->getAllowedRoles($upload_destination);
+		$roles = ee('Model')->get('Role')
+			->filter('role_id', 'NOT IN', array(1,2,3,4))
+			->order('name')
+			->all()
+			->getDictionary('role_id', 'name');
 
 		$vars['sections']['upload_privileges'] = array(
 			array(
-				'title' => 'upload_member_groups',
-				'desc' => 'upload_member_groups_desc',
+				'title' => 'upload_roles',
+				'desc' => 'upload_roles_desc',
 				'fields' => array(
-					'upload_member_groups' => array(
+					'upload_roles' => array(
 						'type' => 'checkbox',
-						'choices' => $member_groups,
-						'value' => $allowed_groups,
+						'choices' => $roles,
+						'value' => $upload_destination->Roles->pluck('role_id'),
 						'no_results' => [
 							'text' => sprintf(lang('no_found'), lang('member_groups'))
 						]
@@ -547,40 +550,6 @@ class Uploads extends AbstractFilesController {
 	}
 
 	/**
-	 * Returns an array of member group IDs allowed to upload to this
-	 * upload destination in the form of id => title, along with an
-	 * array of all member groups in the same format
-	 *
-	 * @param	model	$upload_destination		Model object for upload destination
-	 * @return	array	Array containing each of the arrays mentioned above
-	 */
-	private function getAllowedRoles($upload_destination = NULL)
-	{
-		$roles = ee('Model')->get('Role')
-			->filter('role_id', 'NOT IN', array(1,2,3,4))
-			->order('name')
-			->all()
-			->getDictionary('role_id', 'name');
-
-		if ( ! empty($_POST))
-		{
-			if (isset($_POST['upload_member_groups']))
-			{
-				return array($_POST['upload_member_groups'], $roles);
-			}
-
-			return array(array(), $roles);
-		}
-
-		$no_access = $upload_destination->getNoAccess()->pluck('role_id');
-
-		$allowed_roles = array_diff(array_keys($roles), $no_access);
-
-		// Member IDs NOT in $no_access have access...
-		return array($allowed_roles, $roles);
-	}
-
-	/**
 	 * Sets information on the UploadDestination object and its children and
 	 * validates them all
 	 *
@@ -606,21 +575,20 @@ class Uploads extends AbstractFilesController {
 			$upload_destination->cat_group = '';
 		}
 
-		$access = ee()->input->post('upload_member_groups') ?: array();
+		$access = ee()->input->post('upload_roles') ?: array();
 
-		$no_access = ee('Model')->get('MemberGroup')
-			->filter('group_id', 'NOT IN', array_merge(array(1,2,3,4), $access))
-			->filter('site_id', ee()->config->item('site_id'))
+		$roles = ee('Model')->get('Role', $access)
+			->filter('role_id', 'NOT IN', [1,2,3,4])
 			->all();
 
-		if ($no_access->count() > 0)
+		if ($roles->count() > 0)
 		{
-			$upload_destination->NoAccess = $no_access;
+			$upload_destination->Roles = $roles;
 		}
 		else
 		{
-			// Remove all member groups from this upload destination
-			$upload_destination->NoAccess = NULL;
+			// Remove all roles from this upload destination
+			$upload_destination->Roles = NULL;
 		}
 
 		$result = $upload_destination->validate();
