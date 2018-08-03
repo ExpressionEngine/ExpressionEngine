@@ -110,9 +110,10 @@ class Grid_ft extends EE_Fieldtype {
 				{
 					if (in_array($key, $searchable_columns))
 					{
-						$search_data[$key] = $value;
+						$column_data[$key] = $value;
 					}
 				}
+				$search_data[$row['row_id']] = $column_data;
 			}
 
 			ee()->load->helper('custom_field_helper');
