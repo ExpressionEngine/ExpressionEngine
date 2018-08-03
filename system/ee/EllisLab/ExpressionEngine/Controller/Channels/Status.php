@@ -128,8 +128,11 @@ class Status extends AbstractChannelsController {
 			$vars['base_url'] = ee('CP/URL')->make('channels/status/edit/'.$status_id);
 		}
 
-		// Member IDs NOT in $no_access have access...
-		list($allowed_groups, $member_groups) = $this->getAllowedGroups(is_null($status_id) ? NULL : $status);
+		$roles = ee('Model')->get('Role')
+			->filter('role_id', 'NOT IN', array(1,2,3,4))
+			->order('name')
+			->all()
+			->getDictionary('role_id', 'name');
 
 		// Create the status example
 		$status_style = '';
@@ -190,8 +193,8 @@ class Status extends AbstractChannelsController {
 					'fields' => array(
 						'status_access' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups,
-							'value' => $allowed_groups,
+							'choices' => $roles,
+							'value' => $status->Roles->pluck('role_id'),
 							'no_results' => [
 								'text' => sprintf(lang('no_found'), lang('member_groups'))
 							]
@@ -266,19 +269,18 @@ class Status extends AbstractChannelsController {
 
 		$access = ee()->input->post('status_access') ?: array();
 
-		$no_access = ee('Model')->get('MemberGroup')
-			->filter('group_id', 'NOT IN', array_merge(array(1,2,3,4), $access))
-			->filter('site_id', ee()->config->item('site_id'))
+		$roles = ee('Model')->get('Role', $access)
+			->filter('role_id', 'NOT IN', [1,2,3,4])
 			->all();
 
-		if ($no_access->count() > 0)
+		if ($roles->count() > 0)
 		{
-			$status->NoAccess = $no_access;
+			$status->Roles = $roles;
 		}
 		else
 		{
 			// Remove all member groups from this status
-			$status->NoAccess = NULL;
+			$status->Roles = NULL;
 		}
 
 		return $status;
@@ -318,45 +320,6 @@ class Status extends AbstractChannelsController {
 		}
 
 		return $foreground;
-	}
-
-	/**
-	 * Returns an array of member group IDs allowed to use this status
-	 * in the form of id => title, along with an array of all member
-	 * groups in the same format
-	 *
-	 * @param	model	$status		Model object for status
-	 * @return	array	Array containing each of the arrays mentioned above
-	 */
-	private function getAllowedGroups($status = NULL)
-	{
-		$member_groups = ee('Model')->get('MemberGroup')
-			->filter('group_id', 'NOT IN', array(1,2,3,4))
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('group_title')
-			->all()
-			->getDictionary('group_id', 'group_title');
-
-		if ( ! empty($_POST))
-		{
-			if (isset($_POST['status_access']))
-			{
-				return array($_POST['status_access'], $member_groups);
-			}
-
-			return array(array(), $member_groups);
-		}
-
-		$no_access = array();
-		if ($status !== NULL)
-		{
-			$no_access = $status->getNoAccess()->pluck('group_id');
-		}
-
-		$allowed_groups = array_diff(array_keys($member_groups), $no_access);
-
-		// Member IDs NOT in $no_access have access...
-		return array($allowed_groups, $member_groups);
 	}
 }
 

@@ -1131,16 +1131,15 @@ class ChannelEntry extends ContentModel {
 			);
 		}
 
-		$member_group_id = ee()->session->userdata('group_id');
+		$member = ee()->session->getMember();
+		$assigned_statuses = $member->getAssignedStatuses()->pluck('status_id');
 
 		foreach ($all_statuses as $status)
 		{
-			if ($member_group_id != 1 && in_array($member_group_id, $status->NoAccess->pluck('group_id')))
+			if (ee('Permission')->isSuperAdmin() || in_array($status->getId(), $assigned_statuses))
 			{
-				continue;
+				$status_options[] = $status->getOptionComponent();
 			}
-
-			$status_options[] = $status->getOptionComponent();
 		}
 
 		$field->setItem('field_list_items', $status_options);
