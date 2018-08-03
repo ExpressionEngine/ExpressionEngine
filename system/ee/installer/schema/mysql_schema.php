@@ -945,14 +945,10 @@ class EE_Schema {
 			KEY `template_id` (`template_id`)
 		)";
 
-		// Template "no access"
-		// Since each template can be made private to specific member groups
-		// we store member IDs of people who can not access certain templates
-
-		$Q[] = "CREATE TABLE exp_template_no_access (
-			template_id int(6) unsigned NOT NULL,
-			member_group smallint(4) unsigned NOT NULL,
-			PRIMARY KEY `template_id_member_group` (`template_id`, `member_group`)
+		$Q[] = "CREATE TABLE exp_templates_roles (
+			role_id int(10) unsigned NOT NULL,
+			template_id int(10) unsigned NOT NULL,
+			PRIMARY KEY `template_id_member_group` (`template_id`, `role_id`)
 		)";
 
 		// Specialty Templates
