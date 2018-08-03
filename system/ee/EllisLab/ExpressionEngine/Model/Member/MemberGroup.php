@@ -54,15 +54,6 @@ class MemberGroup extends StructureModel {
 				'left' => 'member_group'
 			)
 		),
-		'NoUploadAccess' => array(
-			'type' => 'hasAndBelongsToMany',
-			'model' => 'UploadDestination',
-			'pivot' => array(
-				'table' => 'upload_no_access',
-				'left' => 'member_group',
-				'right' => 'upload_id'
-			)
-		),
 		'NoStatusAccess' => array(
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'Status',
