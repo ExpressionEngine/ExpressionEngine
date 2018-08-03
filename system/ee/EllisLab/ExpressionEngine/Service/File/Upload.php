@@ -247,7 +247,7 @@ class Upload {
 			show_error(lang('no_upload_destination'));
 		}
 
-		if ( ! $dir->memberGroupHasAccess(ee()->session->userdata['group_id']))
+		if ( ! $dir->memberHasAccess(ee()->session->getMember()))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -338,7 +338,7 @@ class Upload {
 			show_error(lang('no_file'));
 		}
 
-		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
+		if ( ! $file->memberHasAccess(ee()->session->getMember()))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

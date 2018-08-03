@@ -116,7 +116,7 @@ class File_ft extends EE_Fieldtype {
 				}
 
 				if ($check_permissions &&
-					$file->memberGroupHasAccess(ee()->session->userdata['group_id']) == FALSE)
+					$file->memberHasAccess(ee()->session->getMember()) == FALSE)
 				{
 					return array('value' => '', 'error' => lang('directory_no_access'));
 				}

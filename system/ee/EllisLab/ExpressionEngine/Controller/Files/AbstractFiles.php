@@ -72,14 +72,13 @@ abstract class AbstractFiles extends CP_Controller {
 		}
 
 		$upload_destinations = ee('Model')->get('UploadDestination')
-			->with('NoAccess')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('module_id', 0)
 			->order('name', 'asc');
 
 		foreach ($upload_destinations->all() as $destination)
 		{
-			if ($destination->memberGroupHasAccess(ee()->session->userdata['group_id']) === FALSE)
+			if ($destination->memberHasAccess(ee()->session->getMember()) === FALSE)
 			{
 				continue;
 			}
@@ -118,7 +117,6 @@ abstract class AbstractFiles extends CP_Controller {
 		if (ee('Permission')->can('upload_new_files'))
 		{
 			$upload_destinations = ee('Model')->get('UploadDestination')
-				->with('NoAccess')
 				->fields('id', 'name')
 				->filter('site_id', ee()->config->item('site_id'))
 				->filter('module_id', 0)
@@ -126,10 +124,10 @@ abstract class AbstractFiles extends CP_Controller {
 
 			if ( ! ee('Permission')->isSuperAdmin())
 			{
-				$member_group = ee()->session->userdata['group_id'];
-				$upload_destinations = $upload_destinations->filter(function($dir) use ($member_group)
+				$member = ee()->session->getMember();
+				$upload_destinations = $upload_destinations->filter(function($dir) use ($member)
 				{
-					return $dir->memberGroupHasAccess($member_group);
+					return $dir->memberHasAccess($member_group);
 				});
 			}
 
@@ -221,11 +219,11 @@ abstract class AbstractFiles extends CP_Controller {
 		$missing_files = FALSE;
 
 		$file_id = ee()->session->flashdata('file_id');
-		$member_group = ee()->session->userdata['group_id'];
+		$member = ee()->session->getMember();
 
 		foreach ($files as $file)
 		{
-			if ( ! $file->memberGroupHasAccess($member_group))
+			if ( ! $file->memberHasAccess($member))
 			{
 				continue;
 			}

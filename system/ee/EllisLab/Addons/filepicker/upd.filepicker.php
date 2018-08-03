@@ -113,7 +113,6 @@ class Filepicker_upd {
 			$dir = ee('Model')->make('UploadDestination', $data);
 			$dir->site_id = $site_id;
 			$dir->name = $name;
-			$dir->removeNoAccess();
 			$dir->module_id = 1; // this is a terribly named column - should be called `hidden`
 			$dir->save();
 		}

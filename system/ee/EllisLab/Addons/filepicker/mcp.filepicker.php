@@ -34,16 +34,15 @@ class Filepicker_mcp {
 	protected function getUserUploadDirectories()
 	{
 		$dirs = ee('Model')->get('UploadDestination')
-			->with('NoAccess')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('module_id', 0)
 			->all();
 
-		$member_group = ee()->session->userdata['group_id'];
+		$member = ee()->session->getMember();
 
-		return $dirs->filter(function($dir) use ($member_group)
+		return $dirs->filter(function($dir) use ($member)
 		{
-			return $dir->memberGroupHasAccess($member_group);
+			return $dir->memberHasAccess($member);
 		});
 	}
 
@@ -359,9 +358,9 @@ class Filepicker_mcp {
 			ee()->output->send_ajax_response(lang('file_not_found'), TRUE);
 		}
 
-		$member_group = ee()->session->userdata['group_id'];
+		$member = ee()->session->getMember();
 
-		if ($file->memberGroupHasAccess($member_group) === FALSE || $this->access === FALSE)
+		if ($file->memberHasAccess($member) === FALSE || $this->access === FALSE)
 		{
 			ee()->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 		}

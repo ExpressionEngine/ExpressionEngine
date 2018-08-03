@@ -28,7 +28,7 @@ class File extends AbstractFilesController {
 			show_error(lang('no_file'));
 		}
 
-		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
+		if ( ! $file->memberHasAccess(ee()->session->getMember()))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -70,7 +70,7 @@ class File extends AbstractFilesController {
 			show_error(lang('no_file'));
 		}
 
-		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
+		if ( ! $file->memberHasAccess(ee()->session->getMember()))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -126,7 +126,7 @@ class File extends AbstractFilesController {
 			show_error(lang('no_file'));
 		}
 
-		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
+		if ( ! $file->memberHasAccess(ee()->session->getMember()))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -467,7 +467,7 @@ class File extends AbstractFilesController {
 			show_error(lang('no_file'));
 		}
 
-		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
+		if ( ! $file->memberHasAccess(ee()->session->getMember()))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

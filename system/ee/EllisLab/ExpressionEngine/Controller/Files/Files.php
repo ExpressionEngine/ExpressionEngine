@@ -67,7 +67,7 @@ class Files extends AbstractFilesController {
 			show_error(lang('no_upload_destination'));
 		}
 
-		if ( ! $dir->memberGroupHasAccess(ee()->session->userdata['group_id']))
+		if ( ! $dir->memberHasAccess(ee()->session->getMember()))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -102,7 +102,7 @@ class Files extends AbstractFilesController {
 
 		// Check to see if they can sync the directory
 		ee()->view->can_sync_directory = ee('Permission')->can('upload_new_files')
-			&& $dir->memberGroupHasAccess(ee()->session->userdata('group_id'));
+			&& $dir->memberHasAccess(ee()->session->getMember());
 
 		$this->stdHeader(
 			ee()->view->can_sync_directory ? $id : NULL
@@ -232,7 +232,7 @@ class Files extends AbstractFilesController {
 			show_error(lang('no_file'));
 		}
 
-		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
+		if ( ! $file->memberHasAccess(ee()->session->getMember()))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -285,7 +285,7 @@ class Files extends AbstractFilesController {
 			show_error(lang('no_upload_destination'));
 		}
 
-		if ( ! $dir->memberGroupHasAccess(ee()->session->userdata['group_id']))
+		if ( ! $dir->memberHasAccess(ee()->session->getMember()))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -364,14 +364,14 @@ class Files extends AbstractFilesController {
 			return;
 		}
 
-		$member_group = ee()->session->userdata['group_id'];
+		$member = ee()->session->getMember();
 
 		// Loop through the files and add them to the zip
 		$files = ee('Model')->get('File', $file_ids)
 			->filter('site_id', ee()->config->item('site_id'))
 			->all()
-			->filter(function($file) use ($member_group) {
-				return $file->memberGroupHasAccess($member_group);
+			->filter(function($file) use ($member) {
+				return $file->memberHasAccess($member);
 			});
 
 		foreach ($files as $file)
@@ -418,13 +418,13 @@ class Files extends AbstractFilesController {
 			$file_ids = array($file_ids);
 		}
 
-		$member_group = ee()->session->userdata['group_id'];
+		$member = ee()->session->getMember();
 
 		$files = ee('Model')->get('File', $file_ids)
 			->filter('site_id', ee()->config->item('site_id'))
 			->all()
 			->filter(function($file) use ($member_group) {
-				return $file->memberGroupHasAccess($member_group);
+				return $file->memberHasAccess($member);
 			});
 
 		$names = array();
