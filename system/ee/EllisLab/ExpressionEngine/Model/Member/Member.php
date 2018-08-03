@@ -1043,6 +1043,20 @@ class Member extends ContentModel {
 		return new Collection($channels);
 	}
 
+	public function getAssignedUploadDestinations()
+	{
+		$uploads = [];
+		foreach ($this->getAllRoles() as $role)
+		{
+			foreach ($role->AssingedUploadDestinations as $dir)
+			{
+				$uploads[$dir->getId()] = $dir;
+			}
+		}
+
+		return new Collection($uploads);
+	}
+
 	public function getPermissions()
 	{
 		static $permissions;
