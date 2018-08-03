@@ -1071,6 +1071,20 @@ class Member extends ContentModel {
 		return new Collection($statuses);
 	}
 
+	public function getAssignedTemplates()
+	{
+		$templates = [];
+		foreach ($this->getAllRoles() as $role)
+		{
+			foreach ($role->AssingedTemplates as $template)
+			{
+				$templates[$template->getId()] = $template;
+			}
+		}
+
+		return new Collection($templates);
+	}
+
 	public function getPermissions()
 	{
 		static $permissions;
