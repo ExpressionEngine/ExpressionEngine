@@ -318,6 +318,23 @@ class ChannelEntry extends ContentModel {
 				return 'not_authorized';
 			}
 		}
+		else
+		{
+			// Catch the rare database corruption
+
+			if ( ! $this->author_id)
+			{
+				return 'not_authorized';
+			}
+
+			$member = ee('Model')->get('Member', $this->author_id)->first();
+
+			if (is_null($member))
+			{
+				return 'not_authorized';
+			}
+		}
+
 
 		return TRUE;
 	}
@@ -1085,17 +1102,14 @@ class ChannelEntry extends ContentModel {
 		// Default author
 		$author = $this->Author;
 
-		if ( ! $author)
+		if ($author)
 		{
-			$field->setItem('field_list_items', $author_options);
-			return;
+			$author_options[$author->getId()] = $author->getMemberName();
 		}
-
-		$author_options[$author->getId()] = $author->getMemberName();
 
 		if (ee('Permission')->has('can_assign_post_authors'))
 		{
-			if ($author->getId() != ee()->session->userdata('member_id'))
+			if ( ! $author OR ($author->getId() != ee()->session->userdata('member_id')))
 			{
 				$author_options[ee()->session->userdata('member_id')] =
 				ee()->session->userdata('screen_name') ?: ee()->session->userdata('username');
