@@ -205,7 +205,6 @@ class Group extends AbstractDesignController {
 					'fields' => array(
 						'member_groups' => array(
 							'type' => 'checkbox',
-							'required' => TRUE,
 							'choices' => $member_groups,
 							'value' => $selected_member_groups,
 							'no_results' => [
