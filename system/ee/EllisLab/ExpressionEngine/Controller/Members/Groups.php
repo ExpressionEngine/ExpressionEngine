@@ -450,10 +450,10 @@ class Groups extends Members\Members {
 
 		if ($replacement)
 		{
-			ee('Model')->get('Member')
-				->filter('group_id', $group_id)
-				->set('group_id', $replacement)
-				->update();
+			// Query bulder for speed as model update() is broken
+			$db = ee('db');
+			$db->where('group_id', $group_id);
+			$db->update('exp_members', ['group_id' => $replacement]);
 		}
 		else
 		{
