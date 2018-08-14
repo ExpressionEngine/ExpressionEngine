@@ -26,7 +26,6 @@ class Member {
 		// First, get member groups who should be in the list
 		$member_groups = ee('Model')->get('MemberGroup')
 			->filter('include_in_authorlist', 'y')
-			->orFilter('can_create_entries', 'y')
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
