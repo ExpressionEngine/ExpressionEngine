@@ -626,6 +626,7 @@ return [
 	],
 	'cookies.functionality' => [
 		'anon',
+		'expiration',
 		'forum_theme',
 		'forum_topics',
 		'my_email',
