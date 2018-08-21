@@ -132,7 +132,7 @@ return [
 			$session_id = ee()->session->session_id();
 			$default_cp_url = SELF;
 
-			$factory = new URL\URLFactory($cp_url, $site_index, $uri_string, $session_id, $default_cp_url);
+			$factory = new URL\URLFactory($cp_url, $site_index, $uri_string, $session_id, $default_cp_url, $ee->make('Encrypt'));
 
 			return (is_null($path)) ? $factory : $factory->make($path);
 		},

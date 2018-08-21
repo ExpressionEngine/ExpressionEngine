@@ -40,6 +40,11 @@ class URL implements \Serializable {
 	protected $requested_uri;
 
 	/**
+	 * @var string $encrypt_delegate An Encryption Service delegate.
+	 */
+	protected $encrypt_delegate;
+
+	/**
 	 * Create a CP Path
 	 *
 	 * @param	string	$path		The path (i.e. 'logs/cp')
@@ -48,8 +53,9 @@ class URL implements \Serializable {
 	 * @param	string	$cp_url		Optional value of cp_url config item,
 	 *                        		include when creating CP URLs that are to
 	 *                        		be used on the front end
+	 * @param obj $encrypt An Encryption Service instance
 	 */
-	public function __construct($path, $session_id = NULL, $qs = array(), $cp_url = '', $requested_uri = '')
+	public function __construct($path, $session_id = NULL, $qs = array(), $cp_url = '', $requested_uri = '', $encrypt_delegate = NULL)
 	{
 		// PHP 5.3 will not throw an error on array to string conversion
 		if (is_array($path) || is_array($session_id))
@@ -70,6 +76,8 @@ class URL implements \Serializable {
 		{
 			parse_str(str_replace(AMP, '&', $qs), $this->qs);
 		}
+
+		$this->encrypt_delegate = $encrypt_delegate;
 	}
 
 	public function isTheRequestedURI()
@@ -208,7 +216,7 @@ class URL implements \Serializable {
 	 */
 	public function encode()
 	{
-		return base64_encode($this->serialize($this));
+		return $this->encrypt_delegate->encode($this->serialize($this));
 	}
 }
 
