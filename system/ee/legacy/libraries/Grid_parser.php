@@ -340,6 +340,12 @@ class Grid_parser {
 			{
 				$value = (isset($row['col_id_'.$col_id])) ? $row['col_id_'.$col_id] : '';
 
+				if ($col['col_type'] == 'date')
+				{
+					// don't want to cast non-existent values to 0, which is a valid date
+					$value = ($value === '') ? FALSE : (int) $value;
+				}
+
 				$cond[$prefix.$col['col_name']] = $value;
 			}
 
