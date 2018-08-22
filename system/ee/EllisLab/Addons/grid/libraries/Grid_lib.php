@@ -55,11 +55,23 @@ class Grid_lib {
 		{
 			$rows = isset($data['rows']) ? $data['rows'] : $data;
 		}
-		// Otherwise, we're editing or creating a new entry
+		// Editing an existing entry
+		elseif ($this->entry_id)
+		{
+			$rows = ee()->grid_model->get_entry_rows(
+				$this->entry_id,
+				$this->field_id,
+				$this->content_type,
+				[],
+				FALSE,
+				$this->fluid_field_data_id
+			);
+			$rows = (isset($rows[$this->entry_id])) ? $rows[$this->entry_id] : array();
+		}
+		// Creating a new entry
 		else
 		{
-			$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type, array(), FALSE, $this->fluid_field_data_id);
-			$rows = (isset($rows[$this->entry_id])) ? $rows[$this->entry_id] : array();
+			$rows = [];
 		}
 
 		$column_headings = array();

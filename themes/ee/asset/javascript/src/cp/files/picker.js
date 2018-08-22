@@ -134,6 +134,8 @@
 
 				var response = $(this).contents().find('body');
 
+				SelectField.renderFields(response)
+
 				if ($(response).find('pre').length)
 				{
 					response = $(response).find('pre');
