@@ -59,6 +59,7 @@ $url_parts = parse_url($url);
 $url_host = empty($url_parts['host']) ? '' : $url_parts['host'];
 
 if ($force_redirect == TRUE
+	OR ! stristr($url_host, $host) // external link
 	OR ( ! $referrer_parts OR ! stristr($referrer_parts['host'], $host)))
 {
 	// Possibly not from our site, so we give the user the option
