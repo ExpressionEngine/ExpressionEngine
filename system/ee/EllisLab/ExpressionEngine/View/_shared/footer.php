@@ -38,7 +38,7 @@
 						<div class="app-about-info">
 							<div class="app-about-info__installed">
 								<h3><?=lang('installed')?></h3>
-								<?=lang('version')?>: <?=$formatted_version?><br>
+								<?=lang('version')?>: <?=$formatted_version?> <a href="<?=ee()->cp->makeChangelogLinkForVersion(APP_VER)?>" rel="external noreferrer"><span class="icon--changes"></span></a><br>
 								<em><?=lang('build')?> <?=$ee_build_date?></em>
 							</div>
 							<?php if ($update_available): ?>
