@@ -211,6 +211,14 @@ class Reindex extends Utilities {
 			];
 		}
 
+		ee('CP/Alert')->makeInline('reindex-explained')
+			->asTip()
+			->cannotClose()
+			->addToBody(lang('reindex_explained_desc'))
+			->now();
+
+		ee()->view->extra_alerts = ['reindex-explained'];
+
 		if ( ! ee()->config->item('search_reindex_needed'))
 		{
 			ee('CP/Alert')->makeInline('reindex-not-needed')
@@ -218,7 +226,7 @@ class Reindex extends Utilities {
 				->withTitle(lang('reindex_not_needed'))
 				->addToBody(lang('reindex_not_needed_desc'))
 				->now();
-			ee()->view->extra_alerts = array('reindex-not-needed');
+			ee()->view->extra_alerts = ['reindex-explained', 'reindex-not-needed'];
 		}
 
 		ee()->view->cp_page_title = lang('search_reindex');
