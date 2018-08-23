@@ -451,21 +451,16 @@ class Grid_ft extends EE_Fieldtype {
 		return ee()->grid_parser->parse($this->row, $this->id(), $params, $tagdata, $this->content_type());
 	}
 
-	public function display_settings($data)
+	/**
+	 * Gather all view variables needed to construct a Grid settings view
+	 */
+	protected function getSettingsVars()
 	{
 		$field_id = (int) $this->id();
 
 		$this->_load_grid_lib();
 
 		$vars = array();
-
-		// Fresh settings forms ready to be used for added columns
-		$vars['settings_forms'] = array();
-		$fieldtypes = ee()->grid_lib->get_grid_fieldtypes();
-		foreach (array_keys($fieldtypes['fieldtypes']) as $field_name)
-		{
-			$vars['settings_forms'][$field_name] = ee()->grid_lib->get_settings_form($field_name);
-		}
 
 		// Gather columns for current field
 		$vars['columns'] = array();
@@ -494,15 +489,29 @@ class Grid_ft extends EE_Fieldtype {
 		// Will be our template for newly-created columns
 		$vars['blank_col'] = ee()->grid_lib->get_column_view();
 
+		// Grid and Grid Images will need this, but only load once
+		if ( ! ee()->session->cache('grid', 'templates_loaded'))
+		{
+			// Fresh settings forms ready to be used for added columns
+			$vars['settings_forms'] = array();
+			$fieldtypes = ee()->grid_lib->get_grid_fieldtypes();
+			foreach (array_keys($fieldtypes['fieldtypes']) as $field_name)
+			{
+				$vars['settings_forms'][$field_name] = ee()->grid_lib->get_settings_form($field_name);
+			}
+
+			ee()->session->set_cache('grid', 'templates_loaded', TRUE);
+		}
+
 		if (empty($vars['columns']))
 		{
 			$vars['columns'][] = $vars['blank_col'];
 		}
 
-		$grid_alert = '';
+		$vars['grid_alert'] = '';
 		if ( ! empty($this->error_string))
 		{
-			$grid_alert = ee('CP/Alert')->makeInline('grid-error')
+			$vars['grid_alert'] = ee('CP/Alert')->makeInline('grid-error')
 				->asIssue()
 				->addToBody($this->error_string)
 				->render();
@@ -515,6 +524,14 @@ class Grid_ft extends EE_Fieldtype {
 			->render();
 
 		ee()->javascript->set_global('alert.grid_error', $alert_template);
+
+		return $vars;
+	}
+
+	public function display_settings($data)
+	{
+		$vars = $this->getSettingsVars();
+		$vars['group'] = 'grid';
 
 		$settings = array(
 			'field_options_grid' => array(
@@ -555,7 +572,7 @@ class Grid_ft extends EE_Fieldtype {
 			'grid_fields' => array(
 				'label' => 'grid_fields',
 				'group' => 'grid',
-				'settings' => array($grid_alert, ee('View')->make('grid:settings')->render($vars))
+				'settings' => array($vars['grid_alert'], ee('View')->make('grid:settings')->render($vars))
 			)
 		);
 

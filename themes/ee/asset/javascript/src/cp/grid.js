@@ -405,11 +405,10 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 /**
  * Grid Settings class
  */
-Grid.Settings = function(settings) {
-	this.root = $('.fields-grid-setup');
+Grid.Settings = function(root) {
+	this.root = root || $('.fields-grid-setup[data-group=grid]');
 	this.colTemplateContainer = $('#grid_col_settings_elements');
 	this.blankColumn = this.colTemplateContainer.find('.fields-grid-item');
-	this.settings = settings;
 
 	this.init();
 }
@@ -873,8 +872,8 @@ EE.grid = function(field, settings) {
 /**
  * Public method to instantiate Grid settings
  */
-EE.grid_settings = function(settings) {
-	return new Grid.Settings(settings);
+EE.grid_settings = function(root, settings) {
+	return new Grid.Settings(root, settings);
 };
 
 if (typeof _ !== 'undefined' && EE.grid_cache !== 'undefined') {

@@ -104,6 +104,8 @@ $lang = array(
 
 'file_ft_content_type_desc' => 'Types of files that can be uploaded from this field.',
 
+'file_ft_images_only' => 'Images Only',
+
 'file_ft_limit' => 'Existing files limit',
 
 'file_ft_limit_desc' => 'Maximum number of files to show in the drop down.<br><i>Leave blank to show all files.</i>',
@@ -192,6 +194,9 @@ $lang = array(
 
 'grid_validation_error' => 'There was a problem with one or more Grid fields',
 
+/* Grid Images */
+
+'grid_images_setup' => 'Grid Images Setup',
 
 /* URL */
 'url_ft_allowed_url_schemes' => 'Allowed URL Schemes',
