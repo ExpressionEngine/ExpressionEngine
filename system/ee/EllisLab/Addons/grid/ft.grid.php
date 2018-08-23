@@ -517,6 +517,14 @@ class Grid_ft extends EE_Fieldtype {
 				->render();
 		}
 
+		return $vars;
+	}
+
+	/**
+	 * Load global assets needed for Grid settings
+	 */
+	protected function loadGridSettingsAssets()
+	{
 		// Create a template of the banner we generally use for alerts
 		// so we can manipulate it for AJAX validation
 		$alert_template = ee('CP/Alert')->makeInline('grid-error')
@@ -525,7 +533,10 @@ class Grid_ft extends EE_Fieldtype {
 
 		ee()->javascript->set_global('alert.grid_error', $alert_template);
 
-		return $vars;
+		ee()->cp->add_js_script('plugin', 'ee_url_title');
+		ee()->cp->add_js_script('plugin', 'ui.touch.punch');
+		ee()->cp->add_js_script('ui', 'sortable');
+		ee()->cp->add_js_script('file', 'cp/grid');
 	}
 
 	public function display_settings($data)
@@ -576,13 +587,7 @@ class Grid_ft extends EE_Fieldtype {
 			)
 		);
 
-		// Settings to initialize JS with
-		$field_settings = array();
-
-		ee()->cp->add_js_script('plugin', 'ee_url_title');
-		ee()->cp->add_js_script('plugin', 'ui.touch.punch');
-		ee()->cp->add_js_script('ui', 'sortable');
-		ee()->cp->add_js_script('file', 'cp/grid');
+		$this->loadGridSettingsAssets();
 
 		ee()->javascript->output('EE.grid_settings();');
 		ee()->javascript->output('FieldManager.on("fieldModalDisplay", function(modal) {

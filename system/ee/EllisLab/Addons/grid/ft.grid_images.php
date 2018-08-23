@@ -107,6 +107,8 @@ class Grid_images_ft extends Grid_ft {
 			]
 		];
 
+		$this->loadGridSettingsAssets();
+
 		ee()->javascript->output('EE.grid_settings($(".fields-grid-setup[data-group=grid_images]"));');
 		ee()->javascript->output('FieldManager.on("fieldModalDisplay", function(modal) {
 			EE.grid_settings($(".fields-grid-setup[data-group=grid_images]"));
