@@ -252,6 +252,7 @@ class Api_channel_fields extends Api {
 			if (isset($fts[$field_type]))
 			{
 				$paths[] = PATH_THIRD.$fts[$field_type]['package'].'/';
+				$paths[] = PATH_ADDONS.$fts[$field_type]['package'].'/';
 			}
 
 			$paths[] = PATH_ADDONS.$field_type.'/';
