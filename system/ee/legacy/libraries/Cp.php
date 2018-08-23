@@ -1163,6 +1163,13 @@ class Cp {
 
 		ee()->functions->redirect($redirect);
 	}
+
+	public function makeChangelogLinkForVersion($version)
+	{
+		// Version in anchor is separated by dashes instead of dots
+		$dashed_version = implode('-', explode('.', $version));
+		return 'https://docs.expressionengine.com/latest/about/changelog.html#version-'.$dashed_version;
+	}
 }
 
 // EOF

@@ -77,6 +77,7 @@ var Relationship = function (_React$Component) {
         }
       });
     }
+
     // Items visible in the selection container changed via filtering
 
   }, {

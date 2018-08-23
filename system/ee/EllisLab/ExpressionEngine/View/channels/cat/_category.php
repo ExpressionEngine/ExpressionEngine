@@ -5,7 +5,7 @@
 		<?php endif; ?>
 		<div class="txt">
 			<div class="main">
-				<b><?=$category->data->cat_name?></b>
+				<b><?=ee('Format')->make('Text', $category->data->cat_name)->convertToEntities()?></b>
 			</div>
 			<div class="secondary">
 				<span class="faded">ID#</span> <?=$category->data->cat_id?> <span class="faded">/</span> <?=$category->data->cat_url_title?>

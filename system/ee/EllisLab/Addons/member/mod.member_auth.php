@@ -177,7 +177,7 @@ class Member_auth extends Member {
 		}
 
 		// More sites?
-		if ($sites && ee()->config->item('allow_multi_logins') == 'y')
+		if ($sites)
 		{
 			$this->_redirect_next_site($sites, $current_idx, $current_url, $login_state);
 		}
@@ -299,7 +299,6 @@ class Member_auth extends Member {
 	private function _do_multi_auth($sites, $login_state)
 	{
 		if ( ! $sites
-			OR ee()->config->item('allow_multi_logins') == 'n'
 			OR empty($login_state))
 		{
 			return ee()->output->show_user_error('general', lang('not_authorized'));
@@ -400,7 +399,6 @@ class Member_auth extends Member {
 
 			return ee()->functions->redirect($next_url);
 		}
-
 	}
 
 	private function _build_multi_success_message($sites)

@@ -237,6 +237,17 @@ class Sandr extends Utilities {
 			$field = ee('Model')->get('ChannelField', $field_id)->first();
 			$sql = "UPDATE `exp_{$field->getDataStorageTable()}` SET `{$where}` = REPLACE(`{$where}`, '{$search}', '{$replace}')";
 			$show_reindex_tip = $field->getField()->hasReindex();
+
+			if ($field->field_type == 'grid')
+			{
+				ee()->load->model('grid_model');
+				$affected_grid_rows = ee()->grid_model->search_and_replace(
+					'channel',
+					$field->getId(),
+					$search,
+					$replace
+				);
+			}
 		}
 		else
 		{
@@ -248,6 +259,11 @@ class Sandr extends Utilities {
 		{
 			$this->db->query($sql);
 			$rows = $this->db->affected_rows();
+		}
+
+		if (isset($affected_grid_rows))
+		{
+			$rows += $affected_grid_rows;
 		}
 
 		if ($rows > 0 && $show_reindex_tip)
@@ -263,7 +279,6 @@ class Sandr extends Utilities {
 
 		return $rows;
 	}
-
 }
 // END CLASS
 
