@@ -322,6 +322,8 @@ class Fields extends AbstractFieldsController {
 
 		ee()->view->cp_page_title = lang('create_new_field');
 
+		ee()->view->extra_alerts = array('search-reindex'); // for Save & New
+
 		if (AJAX_REQUEST)
 		{
 			return ee()->cp->render('_shared/form', $vars);
@@ -455,6 +457,7 @@ class Fields extends AbstractFieldsController {
 		);
 
 		ee()->view->cp_page_title = lang('edit_field');
+		ee()->view->extra_alerts = array('search-reindex');
 
 		ee()->cp->render('settings/form', $vars);
 	}

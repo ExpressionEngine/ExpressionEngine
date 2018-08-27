@@ -209,6 +209,27 @@ class FieldFacade {
 		return $this->data = $this->api->apply('post_save', array($value));
 	}
 
+	public function hasReindex()
+	{
+		$ft = $this->getNativeField();
+
+		return method_exists($ft, 'reindex');
+	}
+
+	public function reindex($model = NULL)
+	{
+		if ( ! $this->hasReindex())
+		{
+			return FALSE;
+		}
+
+		$this->ensurePopulatedDefaults();
+
+		$value = $this->data;
+		$this->initField();
+		return $this->data = $this->api->apply('reindex', array($value, $model));
+	}
+
 	public function getForm()
 	{
 		$data = $this->initField();
@@ -274,8 +295,6 @@ class FieldFacade {
 	public function replaceTag($tagdata, $params = array(), $modifier = '', $full_modifier = '')
 	{
 		$ft = $this->getNativeField();
-
-		$this->initField();
 
 		$data = $this->getItem('row');
 

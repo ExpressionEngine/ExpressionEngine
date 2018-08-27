@@ -119,6 +119,7 @@ class Utilities extends CP_Controller {
 			$data_list = $sidebar->addHeader(lang('data_operations'))
 			->addBasicList();
 			$data_list->addItem(lang('cache_manager'), ee('CP/URL')->make('utilities/cache'));
+			$data_list->addItem(lang('search_reindex'), ee('CP/URL')->make('utilities/reindex'));
 			$data_list->addItem(lang('statistics'), ee('CP/URL')->make('utilities/stats'));
 			$data_list->addItem(lang('search_and_replace'), ee('CP/URL')->make('utilities/sandr'));
 		}
