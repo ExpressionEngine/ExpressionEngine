@@ -66,6 +66,8 @@ class EE_Upload {
 			'php',
 			'php3',
 			'php4',
+			'php5',
+			'php7',
 			'phps',
 			'phtml'
 		);
@@ -797,7 +799,7 @@ class EE_Upload {
 
 		// We can't simply check for `<?` because that's valid XML and is
 		// allowed in files.
-		return (strpos($data, '<?php') === FALSE);
+		return (stripos($data, '<?php') === FALSE);
 	}
 
 	/**
