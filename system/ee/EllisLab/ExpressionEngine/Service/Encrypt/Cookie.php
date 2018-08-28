@@ -63,10 +63,7 @@ class Cookie {
 	 */
 	public function signCookieData($data)
 	{
-		// JSON_UNESCAPED_SLASHES not available until PHP 5.4; but we need to
-		// do this because our flashdata often has markup in it and json_encode
-		// will break closing tags by escaping their forward slashes
-		$payload = str_replace("\\/","/", json_encode($data));
+		$payload = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
 		return $payload.$this->generateHashForCookieData($payload);
 	}
