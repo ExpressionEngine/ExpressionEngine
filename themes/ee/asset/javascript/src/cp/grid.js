@@ -405,10 +405,12 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 /**
  * Grid Settings class
  */
-Grid.Settings = function(root) {
+Grid.Settings = function(root, settings) {
 	this.root = root || $('.fields-grid-setup[data-group=grid]');
-	this.colTemplateContainer = $('#grid_col_settings_elements');
+	this.settings = settings || { minColumns: 1, fieldName: 'grid' };
+	this.colTemplateContainer = $('.'+this.settings.fieldName+'-col-settings-elements');
 	this.blankColumn = this.colTemplateContainer.find('.fields-grid-item');
+	this.noResults = this.root.find('.field-no-results');
 
 	this.init();
 }
@@ -421,6 +423,7 @@ Grid.Settings.prototype = {
 		this._expandErroredColumns();
 		this._bindActionButtons(this.root);
 		this._toggleDeleteButtons();
+		this._toggleNoResults();
 		this._bindColTypeChange();
 
 		// If this is a new field, bind the automatic column title plugin
@@ -519,13 +522,17 @@ Grid.Settings.prototype = {
 	_bindAddButton: function(context) {
 		var that = this;
 
-		context.find('.fields-grid-tool-add').on('click', function(event) {
-			event.preventDefault();
+		context.find('.fields-grid-tool-add')
+			.add(that.noResults.find('a[rel=add_new]'))
+			.on('click', function(event) {
+				event.preventDefault();
 
-			var parentCol = $(this).parents('.fields-grid-item');
+				that.noResults.hide();
 
-			that._insertColumn(that._buildNewColumn(), parentCol);
-		});
+				var parentCol = $(this).parents('.fields-grid-item');
+
+				that._insertColumn(that._buildNewColumn(), parentCol);
+			});
 	},
 
 	/**
@@ -571,6 +578,7 @@ Grid.Settings.prototype = {
 			if (settings.index() == $('.fields-grid-item:last', that.root).index()) {
 				settings.remove();
 				that._toggleDeleteButtons();
+				that._toggleNoResults();
 			} else {
 				settings.animate({
 					opacity: 0
@@ -584,6 +592,7 @@ Grid.Settings.prototype = {
 					}, 200, function() {
 						settings.remove();
 						that._toggleDeleteButtons();
+						that._toggleNoResults();
 					});
 				});
 			}
@@ -602,15 +611,28 @@ Grid.Settings.prototype = {
 	},
 
 	/**
-	 * Looks at current column count, and if there are multiple columns,
-	 * shows the delete buttons; otherwise, hides delete buttons if there is
-	 * only one column
+	 * Toggles the delete buttons on the columns if there are more columns than
+	 * the minColumns setting, also handles showing no
 	 */
 	_toggleDeleteButtons: function() {
-		var multiCol = this.root.find('.fields-grid-item').size() > 1,
+		var moreThanMinimum = this._getColumnCount() > this.settings.minColumns,
 			deleteButtons = this.root.find('.fields-grid-tool-remove');
 
-		deleteButtons.toggle(multiCol);
+		deleteButtons.toggle(moreThanMinimum);
+	},
+
+	/**
+	 * Toggles No Results message based on existence of columns
+	 */
+	_toggleNoResults: function() {
+		this.noResults.toggle(this._getColumnCount() == 0)
+	},
+
+	/**
+	 * Get the number of columns for this Grid field
+	 */
+	_getColumnCount: function() {
+		return this.root.find('.fields-grid-item').size()
 	},
 
 	/**
@@ -634,7 +656,11 @@ Grid.Settings.prototype = {
 			column.css({ opacity: 0 })
 		}
 
-		column.insertAfter(insertAfter);
+		if (insertAfter.length) {
+			column.insertAfter(insertAfter)
+		} else {
+			this.root.append(column)
+		}
 
 		this._toggleDeleteButtons();
 
