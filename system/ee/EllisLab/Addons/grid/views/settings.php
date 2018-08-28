@@ -17,12 +17,10 @@
 	<?php endforeach ?>
 </div>
 
-<?php if (isset($settings_forms)): ?>
-	<div id="grid_col_settings_elements" data-group="always-hidden" class="hidden">
-		<?=$blank_col?>
+<div class="<?=$group?>-col-settings-elements" data-group="always-hidden" class="hidden">
+	<?=$blank_col?>
 
-		<?php foreach ($settings_forms as $form): ?>
-			<?=$form?>
-		<?php endforeach ?>
-	</div>
-<?php endif ?>
+	<?php foreach ($settings_forms as $form): ?>
+		<?=$form?>
+	<?php endforeach ?>
+</div>

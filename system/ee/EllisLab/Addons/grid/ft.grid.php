@@ -20,6 +20,8 @@ class Grid_ft extends EE_Fieldtype {
 
 	var $has_array_data = TRUE;
 
+	public $settings_form_field_name = 'grid';
+
 	private $errors;
 
 	public function __construct()
@@ -466,9 +468,9 @@ class Grid_ft extends EE_Fieldtype {
 		$vars['columns'] = array();
 
 		// Validation error, repopulate
-		if (isset($_POST['grid']))
+		if (isset($_POST[$this->settings_form_field_name]))
 		{
-			$columns = $_POST['grid']['cols'];
+			$columns = $_POST[$this->settings_form_field_name]['cols'];
 
 			foreach ($columns as $field_name => &$column)
 			{
@@ -489,23 +491,12 @@ class Grid_ft extends EE_Fieldtype {
 		// Will be our template for newly-created columns
 		$vars['blank_col'] = ee()->grid_lib->get_column_view();
 
-		// Grid and Grid Images will need this, but only load once
-		if ( ! ee()->session->cache('grid', 'templates_loaded'))
+		// Fresh settings forms ready to be used for added columns
+		$vars['settings_forms'] = array();
+		$fieldtypes = ee()->grid_lib->get_grid_fieldtypes();
+		foreach (array_keys($fieldtypes['fieldtypes']) as $field_name)
 		{
-			// Fresh settings forms ready to be used for added columns
-			$vars['settings_forms'] = array();
-			$fieldtypes = ee()->grid_lib->get_grid_fieldtypes();
-			foreach (array_keys($fieldtypes['fieldtypes']) as $field_name)
-			{
-				$vars['settings_forms'][$field_name] = ee()->grid_lib->get_settings_form($field_name);
-			}
-
-			ee()->session->set_cache('grid', 'templates_loaded', TRUE);
-		}
-
-		if (empty($vars['columns']))
-		{
-			$vars['columns'][] = $vars['blank_col'];
+			$vars['settings_forms'][$field_name] = ee()->grid_lib->get_settings_form($field_name);
 		}
 
 		$vars['grid_alert'] = '';
@@ -543,6 +534,11 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		$vars = $this->getSettingsVars();
 		$vars['group'] = 'grid';
+
+		if (empty($vars['columns']))
+		{
+			$vars['columns'][] = $vars['blank_col'];
+		}
 
 		$settings = array(
 			'field_options_grid' => array(
@@ -608,9 +604,14 @@ class Grid_ft extends EE_Fieldtype {
 			'fieldtype_errors' => 'ensureNoFieldtypeErrors'
 		];
 
-		$grid_settings = ee()->input->post('grid');
+		$grid_settings = ee()->input->post($this->settings_form_field_name);
 		$col_labels = [];
 		$col_names = [];
+
+		if ( ! isset($grid_settings['cols']))
+		{
+			return $this->errors;
+		}
 
 		// Create a flattened version of the grid settings data to pass to the
 		// validator, but also assign rules to the dynamic field names
@@ -622,7 +623,7 @@ class Grid_ft extends EE_Fieldtype {
 
 			foreach ($column as $field => $value)
 			{
-				$field_name = 'grid[cols]['.$column_id.']['.$field.']';
+				$field_name = $this->settings_form_field_name.'[cols]['.$column_id.']['.$field.']';
 				$data[$field_name] = $value;
 
 				switch ($field) {
@@ -705,7 +706,7 @@ class Grid_ft extends EE_Fieldtype {
 		{
 			foreach ($error->getFailed() as $field => $rules)
 			{
-				$field_name = 'grid[cols]['.$field_name.'][col_settings]['.$field.']';
+				$field_name = $this->settings_form_field_name.'[cols]['.$field_name.'][col_settings]['.$field.']';
 				foreach ($rules as $rule)
 				{
 					$this->errors->addFailed($field_name, $rule);
@@ -728,7 +729,7 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function post_save_settings($data)
 	{
-		if ( ! isset($_POST['grid']))
+		if ( ! isset($_POST[$this->settings_form_field_name]))
 		{
 			return;
 		}
@@ -736,7 +737,7 @@ class Grid_ft extends EE_Fieldtype {
 		// Need to get the field ID of the possibly newly-created field, so
 		// we'll actually re-save the field settings in the Grid library
 		$data['field_id'] = $this->id();
-		$data['grid'] = ee()->input->post('grid');
+		$data['grid'] = ee()->input->post($this->settings_form_field_name);
 
 		$this->_load_grid_lib();
 		ee()->grid_lib->apply_settings($data);
@@ -789,6 +790,7 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->grid_lib->content_type = $this->content_type();
 		ee()->grid_lib->fluid_field_data_id = (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0;
 		ee()->grid_lib->in_modal_context = $this->get_setting('in_modal_context');
+		ee()->grid_lib->settings_form_field_name = $this->settings_form_field_name;
 	}
 
 	/**

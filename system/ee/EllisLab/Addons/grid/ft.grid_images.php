@@ -14,10 +14,12 @@ require_once PATH_ADDONS.'grid/ft.grid.php';
  */
 class Grid_images_ft extends Grid_ft {
 
-	var $info = [
+	public $info = [
 		'name'		=> 'Grid Images',
 		'version'	=> '1.0.0'
 	];
+
+	public $settings_form_field_name = 'grid_images';
 
 	public function display_settings($data)
 	{
@@ -32,12 +34,12 @@ class Grid_images_ft extends Grid_ft {
 			->getDictionary('id', 'name');
 
 		$vars = $this->getSettingsVars();
-		$vars['group'] = 'grid_images';
+		$vars['group'] = $this->settings_form_field_name;
 
 		$settings = [
 			'field_options_grid_images' => [
 				'label' => 'field_options',
-				'group' => 'grid_images',
+				'group' => $vars['group'],
 				'settings' => [
 					[
 						'title' => 'grid_min_rows',
@@ -102,16 +104,18 @@ class Grid_images_ft extends Grid_ft {
 			],
 			'field_options_grid_images_fields' => [
 				'label' => 'grid_images_setup',
-				'group' => 'grid_images',
+				'group' => $vars['group'],
 				'settings' => [$vars['grid_alert'], ee('View')->make('grid:settings')->render($vars)]
 			]
 		];
 
 		$this->loadGridSettingsAssets();
 
-		ee()->javascript->output('EE.grid_settings($(".fields-grid-setup[data-group=grid_images]"));');
+		$settings_json = '{ minColumns: 0, fieldName: "grid_images" }';
+
+		ee()->javascript->output('EE.grid_settings($(".fields-grid-setup[data-group=grid_images]"), '.$settings_json.');');
 		ee()->javascript->output('FieldManager.on("fieldModalDisplay", function(modal) {
-			EE.grid_settings($(".fields-grid-setup[data-group=grid_images]"));
+			EE.grid_settings($(".fields-grid-setup[data-group=grid_images]", modal), '.$settings_json.');
 		});');
 
 		return $settings;
