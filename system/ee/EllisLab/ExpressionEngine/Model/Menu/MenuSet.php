@@ -28,8 +28,8 @@ class MenuSet extends Model {
 			'model' => 'MenuItem',
 			'type' => 'HasMany'
 		),
-		'MemberGroups' => array(
-			'model' => 'MemberGroup',
+		'RoleSettings' => array(
+			'model' => 'RoleSetting',
 			'type' => 'HasMany',
 			'to_key' => 'menu_set_id',
 			'weak' => TRUE
