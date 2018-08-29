@@ -120,6 +120,43 @@ class Grid_images_ft extends Grid_ft {
 
 		return $settings;
 	}
+
+	/**
+	 * Override parent to insert/hide our phantom File column
+	 */
+	public function getColumnsForSettingsView()
+	{
+		$columns = parent::getColumnsForSettingsView();
+
+		if ($this->id())
+		{
+			foreach ($columns as &$column)
+			{
+				$column['col_hidden'] = TRUE;
+				break;
+			}
+		}
+		else
+		{
+			array_unshift($columns, [
+				'col_id' => 'new_0',
+				'col_type' => 'file',
+				'col_label' => 'File',
+				'col_name' => 'file',
+				'col_instructions' => '',
+				'col_required' => 'n',
+				'col_search' => 'n',
+				'col_width' => '',
+				'col_settings' => [
+					'field_content_type'  => 'image',
+					'allowed_directories' => 'all'
+				],
+				'col_hidden' => TRUE
+			]);
+		}
+
+		return $columns;
+	}
 }
 
 // EOF

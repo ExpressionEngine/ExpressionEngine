@@ -454,18 +454,13 @@ class Grid_ft extends EE_Fieldtype {
 	}
 
 	/**
-	 * Gather all view variables needed to construct a Grid settings view
+	 * Gathers column data ready to be rendered as a view
 	 */
-	protected function getSettingsVars()
+	public function getColumnsForSettingsView()
 	{
 		$field_id = (int) $this->id();
 
-		$this->_load_grid_lib();
-
-		$vars = array();
-
-		// Gather columns for current field
-		$vars['columns'] = array();
+		$columns = [];
 
 		// Validation error, repopulate
 		if (isset($_POST[$this->settings_form_field_name]))
@@ -475,17 +470,33 @@ class Grid_ft extends EE_Fieldtype {
 			foreach ($columns as $field_name => &$column)
 			{
 				$column['col_id'] = $field_name;
-				$vars['columns'][] = ee()->grid_lib->get_column_view($column, $this->errors);
 			}
 		}
 		elseif ( ! empty($field_id))
 		{
 			$columns = ee()->grid_model->get_columns_for_field($field_id, $this->content_type());
+		}
 
-			foreach ($columns as $column)
-			{
-				$vars['columns'][] = ee()->grid_lib->get_column_view($column);
-			}
+		return $columns;
+	}
+
+	/**
+	 * Gather all view variables needed to construct a Grid settings view
+	 */
+	protected function getSettingsVars()
+	{
+		$this->_load_grid_lib();
+
+		$vars = array();
+
+		// Gather columns for current field
+		$vars['columns'] = array();
+
+		$columns = $this->getColumnsForSettingsView();
+
+		foreach ($columns as $column)
+		{
+			$vars['columns'][] = ee()->grid_lib->get_column_view($column, $this->errors);
 		}
 
 		// Will be our template for newly-created columns
