@@ -1796,18 +1796,13 @@ GRID_FALLBACK;
 				// Lastly we check for spam before saving a new entry
 				if ( ! $this->entry('entry_id'))
 				{
-					// set the real group ID or 3 for guests for spam exemption check
-					// can't trust group_id on the session object due to _member_group_override()
-					$real_group_id = (ee()->session->userdata('member_id')) ? ee()->session->userdata('group_id') : 3;
-					$is_spam = $real_group_id != 1 && ee('Spam')->isSpam($spam_content);
-
-					if ($is_spam)
+					if (ee('Permission')->isSuperAdmin() || ! ee('Spam')->isSpam($spam_content))
 					{
-						ee('Spam')->moderate('channel', $this->entry, $spam_content, $entry_data);
+						$this->entry->save();
 					}
 					else
 					{
-						$this->entry->save();
+						ee('Spam')->moderate('channel', $this->entry, $spam_content, $entry_data);
 					}
 				}
 				else

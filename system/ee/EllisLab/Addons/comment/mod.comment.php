@@ -1715,7 +1715,16 @@ class Comment {
 
 		$comment_string = ee('Security/XSS')->clean($_POST['comment']);
 
-		$is_spam = ! ee('Permission')->isSuperAdmin() && ee('Spam')->isSpam($comment_string);
+		// This may be verbose (it could be a simple ternary) but it reads better:
+		// Super Admins are exempt from Spam checking.
+		if (ee('Permission')->isSuperAdmin())
+		{
+			$is_spam = FALSE;
+		}
+		else
+		{
+			$is_spam = ee('Spam')->isSpam($comment_string);
+		}
 
 		if ($is_spam === TRUE)
 		{
