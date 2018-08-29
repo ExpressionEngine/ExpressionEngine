@@ -632,7 +632,7 @@ Grid.Settings.prototype = {
 	 * Get the number of columns for this Grid field
 	 */
 	_getColumnCount: function() {
-		return this.root.find('.fields-grid-item').size()
+		return this.root.find('.fields-grid-item:visible').size()
 	},
 
 	/**
