@@ -1389,7 +1389,7 @@ class EE_Session {
 	{
 		$assigned_modules = array();
 
-		foreach ($this->member_model->getAssignedMoudles() as $module)
+		foreach ($this->member_model->getAssignedModules() as $module)
 		{
 			$assigned_modules[$module->getId()] = TRUE;
 		}

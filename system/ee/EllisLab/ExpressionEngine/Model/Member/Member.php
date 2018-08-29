@@ -1015,7 +1015,7 @@ class Member extends ContentModel {
 		return new Collection($roles);
 	}
 
-	public function getAssignedMoudles()
+	public function getAssignedModules()
 	{
 		$modules = [];
 		foreach ($this->getAllRoles() as $role)
