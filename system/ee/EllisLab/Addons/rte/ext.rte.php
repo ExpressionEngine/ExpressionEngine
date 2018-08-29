@@ -214,15 +214,9 @@ class Rte_ext {
 		// the RTE module
 		if ( ! ee('Permission')->isSuperAdmin())
 		{
-			$access = (bool) ee()->db->select('COUNT(m.module_id) AS count')
-				->from('modules m')
-				->join('module_member_groups mmg', 'm.module_id = mmg.module_id')
-				->where(array(
-					'mmg.group_id' 	=> ee()->session->userdata('group_id'),
-					'm.module_name' => ucfirst($this->module)
-				))
-				->get()
-				->row('count');
+			$member = ee()->session->getMember();
+			$assigned_modules = $member->getAssignedModules()->pluck('module_name');
+			$access = in_array($this->module, $assigned_modules);
 
 			$has_access = $access AND ee('Permission')->can('access_addons');
 		}

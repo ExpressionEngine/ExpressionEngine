@@ -460,24 +460,9 @@ class Rte_mcp {
 
 		if ( ! $can_access)
 		{
-			// get the group_ids with access
-			$result = ee()->db->select('module_member_groups.group_id')
-				->from('module_member_groups')
-				->join('modules', 'modules.module_id = module_member_groups.module_id')
-				->where('modules.module_name',$this->name)
-				->get();
-
-			if ($result->num_rows())
-			{
-				foreach ($result->result_array() as $r)
-				{
-					if (ee()->session->userdata('group_id') == $r['group_id'])
-					{
-						$can_access = TRUE;
-						break;
-					}
-				}
-			}
+			$member = ee()->session->getMember();
+			$assigned_modules = $member->getAssignedModules()->pluck('module_name');
+			$can_access = in_array($this->name, $assigned_modules);
 		}
 
 		if ( ! $can_access)
