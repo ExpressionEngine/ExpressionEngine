@@ -509,14 +509,13 @@ class EE_Session {
 	 */
 	public function fetch_guest_data()
 	{
-		$guest_q = ee()->db
-			->where('site_id', ee()->config->item('site_id'))
-			->where('group_id', (int) 3)
-			->get('member_groups');
+		$role = ee('Model')->get('Role', 3)->first();
 
-		foreach ($guest_q->row_array() as $key => $val)
+		$this->userdata = array_merge($this->userdata, $role->RoleSettings->getValues());
+
+		foreach ($role->Permisisons as $permission)
 		{
-			$this->userdata[$key] = $val;
+			$this->userdata[$permission->permission] = 'y';
 		}
 
 		$this->userdata['total_comments']		= 0;
