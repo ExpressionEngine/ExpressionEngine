@@ -1112,6 +1112,10 @@ class Member extends ContentModel {
 		return array_key_exists($permission, $permissions);
 	}
 
+	public function isSuperAdmin()
+	{
+		return in_array(1, $this->getAllRoles()->pluck('role_id'));
+	}
 }
 
 
