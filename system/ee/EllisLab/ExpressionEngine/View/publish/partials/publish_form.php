@@ -47,7 +47,9 @@
 				{
 					$field_class .= ' warned';
 				}
-				if ($errors->hasErrors($field->getName()) && $field->getType() != 'grid')
+				if ($errors->hasErrors($field->getName())
+					&& $field->getType() != 'grid'
+					&& $field->getType() != 'grid_images')
 				{
 					$field_class .= ' fieldset-invalid';
 				}
@@ -64,7 +66,7 @@
 					$field_class .= ' fieldset-faux-fluid';
 				}
 			?>
-			<?php if ($field->getType() == 'grid'): ?>
+			<?php if ($field->getType() == 'grid' || $field->getType() == 'grid_images'): ?>
 			<div class="fieldset-faux <?=$field_class?>">
 			<?php else: ?>
 			<fieldset class="<?=$field_class?>">
