@@ -157,6 +157,28 @@ class Grid_images_ft extends Grid_ft {
 
 		return $columns;
 	}
+
+	/**
+	 * Override parent apply Grid Images upload preference settings to phantom file column
+	 */
+	public function post_save_settings($data)
+	{
+		if (isset($_POST[$this->settings_form_field_name]))
+		{
+			foreach ($_POST[$this->settings_form_field_name]['cols'] as $col_field => &$column)
+			{
+				if ($column['col_name'] == 'file')
+				{
+					$column['col_settings'] = [
+						'field_content_type'  => ee('Request')->post('field_content_type'),
+						'allowed_directories' => ee('Request')->post('allowed_directories')
+					];
+				}
+			}
+		}
+
+		parent::post_save_settings($data);
+	}
 }
 
 // EOF
