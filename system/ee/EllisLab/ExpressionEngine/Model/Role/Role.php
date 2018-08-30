@@ -24,6 +24,10 @@ class Role extends Model {
 	];
 
 	protected static $_relationships = [
+		'Permisisons' => array(
+			'model' => 'Permission',
+			'type' => 'hasMany'
+		),
 		'RoleSettings' => array(
 			'model' => 'RoleSetting',
 			'type' => 'hasMany'

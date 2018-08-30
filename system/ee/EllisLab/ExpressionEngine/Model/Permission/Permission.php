@@ -26,7 +26,7 @@ class Permission extends Model {
 	];
 
 	protected static $_relationships = [
-		'MemberGroup' => [
+		'Role' => [
 			'type' => 'belongsTo'
 		],
 		'Site' => [
