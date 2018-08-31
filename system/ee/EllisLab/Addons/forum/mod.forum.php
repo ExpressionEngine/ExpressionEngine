@@ -1425,12 +1425,7 @@ class Forum {
 				return FALSE;
 			}
 
-			if ($group_id == 0)
-			{
-				$group_id = ee()->session->userdata('group_id');
-			}
-
-			if ($group_id == 1)
+			if (ee('Permission')->isSuperAdmin())
 			{
 				return TRUE;
 			}
@@ -1441,19 +1436,19 @@ class Forum {
 
 		if ($member_id != 0 AND $group_id == 0)
 		{
-			ee()->db->select('group_id');
-			$query = ee()->db->get_where('members', array(
-												'member_id' => $member_id));
+			if ($member_id = ee()->session->userdata('member_id'))
+			{
+				return ee('Permission')->isSuperAdmin();
+			}
 
-			if ($query->num_rows() == 0)
+			$member = ee('Model')->get('Member', $member_id)->first();
+
+			if ( ! $member)
 			{
 				return FALSE;
 			}
 
-			if ($query->row('group_id') == 1)
-			{
-				return TRUE;
-			}
+			return $member->isSuperAdmin();
 		}
 
 		return FALSE;

@@ -100,7 +100,7 @@ class Forum_upd {
 
 	function forum_set_base_permissions($is_category = FALSE)
 	{
-		$query = ee()->db->query("SELECT group_id FROM exp_member_groups WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND group_id > 4");
+		$query = ee()->db->query("SELECT role_id FROM exp_roles WHERE role_id > 4");
 
 		$group_ids = '';
 
@@ -108,7 +108,7 @@ class Forum_upd {
 		{
 			foreach ($query->result_array() as $row)
 			{
-				$group_ids .= '|'.$row['group_id'];
+				$group_ids .= '|'.$row['role_id'];
 			}
 		}
 
@@ -489,7 +489,7 @@ class Forum_upd {
 		$sql[] = "DELETE FROM exp_specialty_templates WHERE template_name = 'forum_post_notification'";
 		$sql[] = "DELETE FROM exp_specialty_templates WHERE template_name = 'forum_moderation_notification'";
 		$sql[] = "DELETE FROM exp_specialty_templates WHERE template_name = 'forum_report_notification'";
-		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
+		$sql[] = "DELETE FROM exp_module_member_roles WHERE module_id = '".$query->row('module_id') ."'";
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Forum'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Forum'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Forum_mcp'";
@@ -625,7 +625,7 @@ class Forum_upd {
 			/**  Load up group id array
 			/** -------------------------------------*/
 
-			$query = ee()->db->query("SELECT group_id FROM exp_member_groups WHERE group_id > 4");
+			$query = ee()->db->query("SELECT role_id FROM exp_roles WHERE role_id > 4");
 
 			$group_ids = '';
 
@@ -633,7 +633,7 @@ class Forum_upd {
 			{
 				foreach ($query->result_array() as $row)
 				{
-					$group_ids .= '|'.$row['group_id'];
+					$group_ids .= '|'.$row['role_id'];
 				}
 			}
 

@@ -1096,16 +1096,14 @@ class Forum_mcp extends CP_Controller {
 	{
 		$html = '';
 
-		$member_groups = ee('Model')->get('MemberGroup')
-			->fields('group_id', 'group_title')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_id', '!=', '1')
-			->order('group_title', 'asc')
+		$roles = ee('Model')->get('Role')
+			->filter('role_id', '!=', 1)
+			->order('name')
 			->all()
-			->getDictionary('group_id', 'group_title');
+			->getDictionary('role_id', 'name');
 
-		$member_groups_no_results = [
-			'text' => sprintf(lang('no_found'), lang('member_groups'))
+		$roles_no_results = [
+			'text' => sprintf(lang('no_found'), lang('roles'))
 		];
 
 		$sections = array(
@@ -1131,9 +1129,9 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'permissions[can_view_forum]' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'value' => $board->getPermission('can_view_forum'),
-							'no_results' => $member_groups_no_results
+							'no_results' => $roles_no_results
 						)
 					)
 				),
@@ -1143,9 +1141,9 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'permissions[can_view_hidden]' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'value' => $board->getPermission('can_view_hidden'),
-							'no_results' => $member_groups_no_results
+							'no_results' => $roles_no_results
 						)
 					)
 				),
@@ -1155,9 +1153,9 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'permissions[can_view_topics]' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'value' => $board->getPermission('can_view_topics'),
-							'no_results' => $member_groups_no_results
+							'no_results' => $roles_no_results
 						)
 					)
 				),
@@ -1167,9 +1165,9 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'permissions[can_post_topics]' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'value' => $board->getPermission('can_post_topics'),
-							'no_results' => $member_groups_no_results
+							'no_results' => $roles_no_results
 						)
 					)
 				),
@@ -1179,7 +1177,7 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'permissions[can_post_reply]' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'value' => $board->getPermission('can_post_reply'),
 							'no_results' => [
 								'text' => sprintf(lang('no_found'), lang('member_groups'))
@@ -1193,7 +1191,7 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'permissions[can_upload_files]' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'value' => $board->getPermission('can_upload_files'),
 							'no_results' => [
 								'text' => sprintf(lang('no_found'), lang('member_groups'))
@@ -1207,9 +1205,9 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'permissions[can_report]' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'value' => $board->getPermission('can_report'),
-							'no_results' => $member_groups_no_results
+							'no_results' => $roles_no_results
 						)
 					)
 				),
@@ -1219,9 +1217,9 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'permissions[can_search]' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'value' => $board->getPermission('can_search'),
-							'no_results' => $member_groups_no_results
+							'no_results' => $roles_no_results
 						)
 					)
 				),
@@ -1951,16 +1949,14 @@ class Forum_mcp extends CP_Controller {
 			],
 		);
 
-		$member_groups = ee('Model')->get('MemberGroup')
-			->fields('group_id', 'group_title')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_id', '!=', '1')
-			->order('group_title', 'asc')
+		$roles = ee('Model')->get('Role')
+			->filter('role_id', '!=', 1)
+			->order('name')
 			->all()
-			->getDictionary('group_id', 'group_title');
+			->getDictionary('role_id', 'name');
 
-		$member_groups_no_results = [
-			'text' => sprintf(lang('no_found'), lang('member_groups'))
+		$roles_no_results = [
+			'text' => sprintf(lang('no_found'), lang('roles'))
 		];
 
 		$vars['sections'] = array(
@@ -1976,9 +1972,9 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'permissions[can_view_forum]' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'value' => $category->getPermission('can_view_forum'),
-							'no_results' => $member_groups_no_results
+							'no_results' => $roles_no_results
 						)
 					)
 				),
@@ -1988,9 +1984,9 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'permissions[can_view_hidden]' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'value' => $category->getPermission('can_view_hidden'),
-							'no_results' => $member_groups_no_results
+							'no_results' => $roles_no_results
 						)
 					)
 				),
@@ -2565,16 +2561,14 @@ class Forum_mcp extends CP_Controller {
 			],
 		);
 
-		$member_groups = ee('Model')->get('MemberGroup')
-			->fields('group_id', 'group_title')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_id', '!=', '1')
-			->order('group_title', 'asc')
+		$roles = ee('Model')->get('Role')
+			->filter('role_id', '!=', 1)
+			->order('name')
 			->all()
-			->getDictionary('group_id', 'group_title');
+			->getDictionary('role_id', 'name');
 
-		$member_groups_no_results = [
-			'text' => sprintf(lang('no_found'), lang('member_groups'))
+		$roles_no_results = [
+			'text' => sprintf(lang('no_found'), lang('roles'))
 		];
 
 		$vars['sections'] = array(
@@ -2590,9 +2584,9 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'permissions[can_view_forum]' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'value' => $forum->getPermission('can_view_forum'),
-							'no_results' => $member_groups_no_results
+							'no_results' => $roles_no_results
 						)
 					)
 				),
@@ -2602,9 +2596,9 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'permissions[can_view_hidden]' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'value' => $forum->getPermission('can_view_hidden'),
-							'no_results' => $member_groups_no_results
+							'no_results' => $roles_no_results
 						)
 					)
 				),
@@ -2614,9 +2608,9 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'permissions[can_view_topics]' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'value' => $forum->getPermission('can_view_topics'),
-							'no_results' => $member_groups_no_results
+							'no_results' => $roles_no_results
 						)
 					)
 				),
@@ -2626,9 +2620,9 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'permissions[can_post_topics]' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'value' => $forum->getPermission('can_post_topics'),
-							'no_results' => $member_groups_no_results
+							'no_results' => $roles_no_results
 						)
 					)
 				),
@@ -2638,9 +2632,9 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'permissions[can_post_reply]' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'value' => $forum->getPermission('can_post_reply'),
-							'no_results' => $member_groups_no_results
+							'no_results' => $roles_no_results
 						)
 					)
 				),
@@ -2650,9 +2644,9 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'permissions[can_upload_files]' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'value' => $forum->getPermission('can_upload_files'),
-							'no_results' => $member_groups_no_results
+							'no_results' => $roles_no_results
 						)
 					)
 				),
@@ -2662,9 +2656,9 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'permissions[can_report]' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'value' => $forum->getPermission('can_report'),
-							'no_results' => $member_groups_no_results
+							'no_results' => $roles_no_results
 						)
 					)
 				),
@@ -2674,9 +2668,9 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'permissions[can_search]' => array(
 							'type' => 'checkbox',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'value' => $forum->getPermission('can_search'),
-							'no_results' => $member_groups_no_results
+							'no_results' => $roles_no_results
 						)
 					)
 				),
@@ -3104,7 +3098,7 @@ class Forum_mcp extends CP_Controller {
 
 		$admins = ee('Model')->get('forum:Administrator')
 			// ->with('Member')
-			// ->with('MemberGroup')
+			// ->with('Role')
 			->filter('board_id', $board_id)
 			->all();
 
@@ -3255,13 +3249,11 @@ class Forum_mcp extends CP_Controller {
 			],
 		);
 
-		$member_groups = ee('Model')->get('MemberGroup')
-			->fields('group_id', 'group_title')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_id', '!=', '1')
-			->order('group_title', 'asc')
+		$roles = ee('Model')->get('Role')
+			->filter('role_id', '!=', 1)
+			->order('name')
 			->all()
-			->getDictionary('group_id', 'group_title');
+			->getDictionary('role_id', 'name');
 
 		$vars['sections'] = array(
 			array(
@@ -3280,7 +3272,7 @@ class Forum_mcp extends CP_Controller {
 						),
 						'member_group' => array(
 							'type' => 'radio',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'value' => 5,
 							'margin_left' => TRUE,
 							'no_results' => [
@@ -3326,7 +3318,7 @@ class Forum_mcp extends CP_Controller {
 
 		$validator = ee('Validation')->make(array(
 			'administrator_type' => 'required|enum[group,individual]',
-			'member_group'       => 'whenAdministratorTypeIs[group]|validMemberGroup',
+			'member_group'       => 'whenAdministratorTypeIs[group]|validRole',
 			'individual'         => 'whenAdministratorTypeIs[individual]|validMember',
 		));
 
@@ -3337,9 +3329,9 @@ class Forum_mcp extends CP_Controller {
 		  return ($data['administrator_type'] == $parameters[0]) ? TRUE : $rule->skip();
 		});
 
-		$validator->defineRule('validMemberGroup', function($key, $value) use ($admin)
+		$validator->defineRule('validRole', function($key, $value) use ($admin)
 		{
-			if (ee('Model')->get('MemberGroup', $value)->count() == 1)
+			if (ee('Model')->get('Role', $value)->count() == 1)
 			{
 				$admin->admin_group_id = $value;
 				return TRUE;
@@ -3691,13 +3683,11 @@ class Forum_mcp extends CP_Controller {
 			}
 		}
 
-		$member_groups = ee('Model')->get('MemberGroup')
-			->fields('group_id', 'group_title')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_id', '!=', '1')
-			->order('group_title', 'asc')
+		$roles = ee('Model')->get('Role')
+			->filter('role_id', '!=', 1)
+			->order('name')
 			->all()
-			->getDictionary('group_id', 'group_title');
+			->getDictionary('role_id', 'name');
 
 		$sections = array(
 			array(
@@ -3716,7 +3706,7 @@ class Forum_mcp extends CP_Controller {
 						),
 						'member_group' => array(
 							'type' => 'radio',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'value' => ($moderator->mod_group_id) ?: 5,
 							'no_results' => [
 								'text' => sprintf(lang('no_found'), lang('member_groups'))
@@ -3789,7 +3779,7 @@ class Forum_mcp extends CP_Controller {
 
 		$validator = ee('Validation')->make(array(
 			'moderator_type' => 'required|enum[group,individual]',
-			'member_group'       => 'whenModeratorTypeIs[group]|validMemberGroup',
+			'member_group'       => 'whenModeratorTypeIs[group]|validRole',
 			'individual'         => 'whenModeratorTypeIs[individual]|validMember',
 		));
 
@@ -3800,9 +3790,9 @@ class Forum_mcp extends CP_Controller {
 		  return ($data['moderator_type'] == $parameters[0]) ? TRUE : $rule->skip();
 		});
 
-		$validator->defineRule('validMemberGroup', function($key, $value) use ($moderator)
+		$validator->defineRule('validRole', function($key, $value) use ($moderator)
 		{
-			if (ee('Model')->get('MemberGroup', $value)->count() == 1)
+			if (ee('Model')->get('Role', $value)->count() == 1)
 			{
 				$moderator->mod_group_id = $value;
 				return TRUE;

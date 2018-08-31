@@ -361,7 +361,7 @@ class Forum_tab {
 		// Get Admins
 		$admins = array();
 
-		if ($group_id != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$adminq = ee()->db->get('forum_administrators');
 
@@ -380,10 +380,14 @@ class Forum_tab {
 		foreach ($forums->result() as $row)
 		{
 			$perms = unserialize(stripslashes($row->forum_permissions));
+			$can_post_topics = ( ! isset($perms['can_post_topics'])) ? [] : explode('|', trim($perms['can_post_topics'], '|'));
 
-			if ( ! isset($perms['can_post_topics']) OR strpos($perms['can_post_topics'], '|'.$group_id.'|') === FALSE)
+			$member = ee()->session->getMember();
+			$role_ids = $member->getAllRoles()->pluck('role_id');
+
+			if (empty(array_intersect($can_post_topics, $role_ids)))
 			{
-				if ($group_id != 1)
+				if ( ! ee('Permission')->isSuperAdmin())
 				{
 					if ( ! isset($admins[$row->board_id]))
 					{
