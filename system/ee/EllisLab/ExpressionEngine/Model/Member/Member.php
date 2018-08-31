@@ -1002,17 +1002,24 @@ class Member extends ContentModel {
 
 	public function getAllRoles()
 	{
-		$roles = $this->Roles->indexBy('name');
+		static $roles;
 
-		foreach ($this->RoleGroups as $role_group)
+		if ( ! $roles)
 		{
-			foreach ($role_group->Roles as $role)
+			$roles = $this->Roles->indexBy('name');
+
+			foreach ($this->RoleGroups as $role_group)
 			{
-				$roles[$role->name] = $role;
+				foreach ($role_group->Roles as $role)
+				{
+					$roles[$role->name] = $role;
+				}
 			}
+
+			$roles = new Collection($roles);
 		}
 
-		return new Collection($roles);
+		return $roles;
 	}
 
 	public function getAssignedModules()
