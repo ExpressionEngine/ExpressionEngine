@@ -55,11 +55,11 @@ class Moderator extends Model {
 				'type' => 'hasMany'
 			)
 		),
-		'MemberGroup' => array(
+		'Role' => array(
 			'type'     => 'belongsTo',
-			'model'    => 'ee:MemberGroup',
+			'model'    => 'ee:Role',
 			'from_key' => 'mod_group_id',
-			'to_key'   => 'group_id',
+			'to_key'   => 'role_id',
 			'inverse' => array(
 				'name' => 'Moderator',
 				'type' => 'hasMany'
@@ -101,7 +101,7 @@ class Moderator extends Model {
 
 		if ($this->mod_group_id)
 		{
-			$name = $this->MemberGroup->group_title;
+			$name = $this->Role->name;
 		}
 
 		return $name;

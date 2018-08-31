@@ -41,11 +41,11 @@ class Administrator extends Model {
 				'type' => 'hasMany'
 			)
 		),
-		'MemberGroup' => array(
+		'Role' => array(
 			'type'     => 'belongsTo',
-			'model'    => 'ee:MemberGroup',
+			'model'    => 'ee:Role',
 			'from_key' => 'admin_group_id',
-			'to_key'   => 'group_id',
+			'to_key'   => 'role_id',
 			'inverse' => array(
 				'name' => 'Administrator',
 				'type' => 'hasMany'
@@ -70,7 +70,7 @@ class Administrator extends Model {
 
 		if ($this->admin_group_id)
 		{
-			$name = $this->MemberGroup->group_title;
+			$name = $this->Role->name;
 		}
 		elseif ($this->admin_member_id)
 		{
