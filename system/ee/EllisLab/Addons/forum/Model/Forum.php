@@ -239,7 +239,29 @@ class Forum extends Model {
 		}
 
 		$updates->save();
+	}
 
+	public function getModeratorEmailString()
+	{
+		$email_string = '';
+
+		foreach ($forum->Moderators as $moderator)
+		{
+			if ($moderator->Member)
+			{
+				$email_string .= ','.$moderator->Member->email;
+			}
+
+			if ($moderator->Role)
+			{
+				foreach ($moderator->Role->Members as $member)
+				{
+					$email_string .= ','.$member->email;
+				}
+			}
+		}
+
+		return $email_string;
 	}
 }
 
