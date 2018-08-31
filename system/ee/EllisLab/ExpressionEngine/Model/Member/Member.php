@@ -1123,6 +1123,11 @@ class Member extends ContentModel {
 	{
 		return in_array(1, $this->getAllRoles()->pluck('role_id'));
 	}
+
+	public function isBanned()
+	{
+		return in_array(2, $this->getAllRoles()->pluck('role_id'));
+	}
 }
 
 
