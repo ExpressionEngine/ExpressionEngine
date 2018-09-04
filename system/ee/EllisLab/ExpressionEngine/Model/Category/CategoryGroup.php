@@ -132,25 +132,22 @@ class CategoryGroup extends StructureModel {
 	{
 		$can_edit = explode('|', rtrim($this->can_edit_categories, '|'));
 		$editable = FALSE;
+		$member_roles = ee()->session->getMember()->getAllRoles()->pluck('role_id');
 
 		if (ee('Permission')->isSuperAdmin()
-			|| (ee()->session->userdata['can_edit_categories'] == 'y'
-				&& in_array(ee()->session->userdata['group_id'], $can_edit)
-				))
-			{
-				$editable = TRUE;
-			}
+			|| (ee('Permission')->can('edit_categories') && ! empty(array_intersect($member_roles, $can_edit))))
+		{
+			$editable = TRUE;
+		}
 
 		$can_delete = explode('|', rtrim($this->can_delete_categories, '|'));
 		$deletable = FALSE;
 
 		if (ee('Permission')->isSuperAdmin()
-			|| (ee()->session->userdata['can_delete_categories'] =='y'
-				&& in_array(ee()->session->userdata['group_id'], $can_delete)
-				))
-			{
-				$deletable = TRUE;
-			}
+			|| (ee('Permission')->can('delete_categories') && ! empty(array_intersect($member_roles, $can_delete))))
+		{
+			$deletable = TRUE;
+		}
 
 		$no_results = [
 			'text' => sprintf(lang('no_found'), lang('categories'))
