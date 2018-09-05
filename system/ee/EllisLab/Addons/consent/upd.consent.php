@@ -65,7 +65,7 @@ class Consent_upd {
 			->delete();
 
 		ee('db')->where('module_id', $module->module_id)
-			->delete('module_member_groups');
+			->delete('module_member_roles');
 
 		$module->delete();
 

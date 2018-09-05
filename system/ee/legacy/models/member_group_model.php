@@ -12,7 +12,7 @@
  * tables:
  * 	exp_member_groups
  * 	exp_channel_member_groups
- * 	exp_module_member_groups
+ * 	exp_module_member_roles
  * 	exp_template_member_groups
  */
 class Member_group_model extends CI_Model
@@ -226,7 +226,7 @@ class Member_group_model extends CI_Model
 	 * Update the related permissions tables
      *
 	 * 	exp_channel_member_groups
-	 * 	exp_module_member_groups
+	 * 	exp_module_member_roles
 	 * 	exp_template_member_groups
      *
 	 * @param int $group_id The id of the group who's relations we're updating.
@@ -290,7 +290,7 @@ class Member_group_model extends CI_Model
 		}
 		if ( ! empty($module_ids_yes))
 		{
-			$this->db->insert_batch('module_member_groups', $module_ids_yes);
+			$this->db->insert_batch('module_member_roles', $module_ids_yes);
 		}
 		if ( ! empty($template_ids_yes))
 		{
@@ -589,7 +589,7 @@ class Member_group_model extends CI_Model
 	}
 
 	/**
-	 * Delete a group of rows from the exp_module_member_groups table.  The
+	 * Delete a group of rows from the exp_module_member_roles table.  The
 	 * rows have ids in the $module_ids array and a group_id equal to $group_id.
      *
 	 * @param int $group_id The group for which to delete the permissions rows.
@@ -601,7 +601,7 @@ class Member_group_model extends CI_Model
 	{
 		$this->db->where('group_id', $group_id);
 		$this->db->where_in('module_id', $module_ids);
-		$this->db->delete('module_member_groups');
+		$this->db->delete('module_member_roles');
 	}
 
 }

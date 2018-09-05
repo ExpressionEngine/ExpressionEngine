@@ -89,7 +89,7 @@ class Moblog_upd {
 							->get_where('modules', array('module_name' => 'Moblog'));
 
 		// Delete all mentions of the moblog from other tables
-		ee()->db->delete('module_member_groups', array('module_id' => $qry->row('module_id')));
+		ee()->db->delete('module_member_roles', array('module_id' => $qry->row('module_id')));
 		ee()->db->delete('modules', array('module_name' => 'Moblog'));
 		ee()->db->delete('actions', array('class' => 'Moblog'));
 		ee()->db->delete('actions', array('class' => 'Moblog_mcp'));

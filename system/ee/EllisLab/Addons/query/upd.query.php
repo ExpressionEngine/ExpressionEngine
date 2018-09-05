@@ -46,7 +46,7 @@ class Query_upd {
 		$module_id = $query->row('module_id');
 
 		ee()->db->where('module_id', $module_id);
-		ee()->db->delete('module_member_groups');
+		ee()->db->delete('module_member_roles');
 
 		ee()->db->where('module_name', 'Query');
 		ee()->db->delete('modules');

@@ -134,7 +134,7 @@ class Filepicker_upd {
 			))->row('module_id');
 
 		ee()->db->where('module_id', $mod_id)
-			->delete('module_member_groups');
+			->delete('module_member_roles');
 
 		ee()->db->where('module_name', 'Filepicker')
 			->delete('modules');

@@ -151,7 +151,7 @@ class Comment_upd {
 		$query = ee()->db->get_where('modules', array('module_name' => 'Comment'));
 
 		ee()->db->where('module_id', $query->row('module_id'));
-		ee()->db->delete('module_member_groups');
+		ee()->db->delete('module_member_roles');
 
 		ee()->db->where('module_name', 'Comment');
 		ee()->db->delete('modules');

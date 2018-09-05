@@ -24,7 +24,7 @@ class Module extends Model {
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'Role',
 			'pivot' => array(
-				'table' => 'module_member_groups'
+				'table' => 'module_member_roles'
 			)
 		),
 		'UploadDestination' => array(

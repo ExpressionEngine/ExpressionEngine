@@ -57,7 +57,7 @@ class Relationship_upd {
 			->row('module_id');
 
 		ee()->db->delete(
-			'module_member_groups',
+			'module_member_roles',
 			array('module_id' => $module_id)
 		);
 

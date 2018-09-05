@@ -45,7 +45,7 @@ class Emoticon_upd {
 		$query = ee()->db->get_where('modules', array('module_name' => 'Emoticon'));
 
 		ee()->db->where('module_id', $query->row('module_id'));
-		ee()->db->delete('module_member_groups');
+		ee()->db->delete('module_member_roles');
 
 		ee()->db->where('module_name', 'Emoticon');
 		ee()->db->delete('modules');

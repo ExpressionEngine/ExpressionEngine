@@ -54,7 +54,7 @@ class Email_upd {
 	{
 		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Email'");
 
-		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
+		$sql[] = "DELETE FROM exp_module_member_roles WHERE module_id = '".$query->row('module_id') ."'";
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Email'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Email'";
 		$sql[] = "DROP TABLE IF EXISTS exp_email_tracker";

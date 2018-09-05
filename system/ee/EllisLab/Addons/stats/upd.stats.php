@@ -51,7 +51,7 @@ class Stats_upd {
 		ee()->db->where('module_name', 'Stats');
 		$query = ee()->db->get();
 
-		ee()->db->delete('module_member_groups', array('module_id' => $query->row('module_id')));
+		ee()->db->delete('module_member_roles', array('module_id' => $query->row('module_id')));
 		ee()->db->delete('modules', array('module_name' => 'Stats'));
 		ee()->db->delete('actions', array('class' => 'Stats'));
 		ee()->db->delete('actions', array('class' => 'Stats_mcp'));
