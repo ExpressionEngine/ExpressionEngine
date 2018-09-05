@@ -61,8 +61,8 @@ class EE_Menu {
 		$args = array($custom);
 		$items = ee('Model')->get('MenuItem')
 			->fields('MenuItem.*', 'Children.*')
-			->with(array('Set' => 'MemberGroups'), 'Children')
-			->filter('MemberGroups.group_id', ee()->session->userdata('group_id'))
+			->with(array('Set' => 'RoleSettings'), 'Children')
+			->filter('RoleSettings.role_id', ee()->session->userdata('role_id'))
 			->order('MenuItem.sort')
 			->order('Children.sort')
 			->all();
