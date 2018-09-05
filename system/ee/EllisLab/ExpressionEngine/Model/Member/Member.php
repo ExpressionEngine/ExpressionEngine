@@ -35,8 +35,11 @@ class Member extends ContentModel {
 	);
 
 	protected static $_relationships = array(
-		'MemberGroup' => array(
-			'type' => 'belongsTo'
+		'PrimaryRole' => array(
+			'type' => 'belongsTo',
+			'model' => 'Role',
+			'to_key' => 'role_id',
+			'from_key' => 'role_id',
 		),
 		'Roles' => array(
 			'type' => 'hasAndBelongsToMany',
@@ -209,7 +212,7 @@ class Member extends ContentModel {
 	);
 
 	protected static $_validation_rules = array(
-		'group_id'        => 'required|isNatural|validateGroupId',
+		'role_id'        => 'required|isNatural|validateGroupId',
 		'username'        => 'required|unique|validateUsername',
 		'screen_name'     => 'validateScreenName',
 		'email'           => 'required|email|uniqueEmail|validateEmail',
@@ -229,7 +232,7 @@ class Member extends ContentModel {
 
 	// Properties
 	protected $member_id;
-	protected $group_id;
+	protected $role_id;
 	protected $username;
 	protected $screen_name;
 	protected $password;
@@ -334,7 +337,7 @@ class Member extends ContentModel {
 				));
 			}
 
-			if (isset($changed['group_id']))
+			if (isset($changed['role_id']))
 			{
 				ee()->logger->log_action(sprintf(
 					lang('member_changed_member_group'),
@@ -343,7 +346,7 @@ class Member extends ContentModel {
 					$this->member_id
 				));
 
-				ee()->session->set_cache(__CLASS__, "getStructure({$this->group_id})", NULL);
+				ee()->session->set_cache(__CLASS__, "getStructure({$this->role_id})", NULL);
 			}
 		}
 
@@ -568,8 +571,8 @@ class Member extends ContentModel {
 		}
 
 		// Make sure to get the correct site, revert once issue #1285 is fixed
-		$member_group = $this->getModelFacade()->get('MemberGroup')
-			->filter('group_id', $this->group_id)
+		$member_group = $this->getModelFacade()->get('RoleSetting')
+			->filter('role_id', $this->role_id)
 			->filter('site_id', $site_id)
 			->first();
 
@@ -626,10 +629,10 @@ class Member extends ContentModel {
 	 */
 	public function getStructure()
 	{
-		if ( ! $structure = ee()->session->cache(__CLASS__, "getStructure({$this->group_id})"))
+		if ( ! $structure = ee()->session->cache(__CLASS__, "getStructure({$this->role_id})"))
 		{
 			$structure = $this->MemberGroup;
-			ee()->session->set_cache(__CLASS__, "getStructure({$this->group_id})", $structure);
+			ee()->session->set_cache(__CLASS__, "getStructure({$this->role_id})", $structure);
 		}
 
 		return $structure;
@@ -648,18 +651,19 @@ class Member extends ContentModel {
 	/**
 	 * Ensures the group ID exists and the member has permission to add to the group
 	 */
-	public function validateGroupId($key, $group_id)
+	public function validateGroupId($key, $role_id)
 	{
-		$member_groups = $this->getModelFacade()->get('MemberGroup');
+		$member_groups = $this->getModelFacade()->get('Role')
+			->with('RoleSettings');
 
 		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$member_groups->filter('is_locked', 'n');
 		}
 
-		if ( ! in_array($group_id, $member_groups->all()->pluck('group_id')))
+		if ( ! in_array($role_id, $member_groups->all()->pluck('role_id')))
 		{
-			return 'invalid_group_id';
+			return 'invalid_role_id';
 		}
 
 		return TRUE;
@@ -936,7 +940,7 @@ class Member extends ContentModel {
 		$email = 'redacted'.$this->getId();
 		$ip_address = ee('IpAddress')->anonymize($this->ip_address);
 
-		$this->setProperty('group_id', 2); // Ban member
+		$this->setProperty('role_id', 2); // Ban member
 		$this->setProperty('username', $username);
 		$this->setProperty('screen_name', $username);
 		$this->setProperty('email', $email);

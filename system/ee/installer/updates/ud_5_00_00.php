@@ -35,7 +35,8 @@ class Updater {
 				'flipPolarityOnStatusRoleAccess',
 				'flipPolarityOnTepmlateRoleAccess',
 				'flipPolarityOnUploadRoleAccess',
-				'renameMemberGroupTable'
+				'renameMemberGroupTable',
+				'convertMembersGroupToPrimaryRole'
 			]
 		);
 
@@ -735,6 +736,17 @@ class Updater {
 		ee()->smartforge->drop_column('member_groups', 'group_title');
 		ee()->smartforge->drop_column('member_groups', 'group_description');
 		ee()->smartforge->rename_table('member_groups', 'role_settings');
+	}
+
+	private function convertMembersGroupToPrimaryRole()
+	{
+		ee()->smartforge->modify_column('members', [
+			'group_id' => [
+				'name'       => 'role_id',
+				'type'       => 'int',
+				'constraint' => 10
+			]
+		]);
 	}
 }
 
