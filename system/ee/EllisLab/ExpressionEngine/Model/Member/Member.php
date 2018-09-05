@@ -208,7 +208,7 @@ class Member extends ContentModel {
 
 	protected static $_field_data = array(
 		'field_model'     => 'MemberField',
-		'structure_model' => 'MemberGroup',
+		'structure_model' => 'Role',
 	);
 
 	protected static $_validation_rules = array(
@@ -341,7 +341,7 @@ class Member extends ContentModel {
 			{
 				ee()->logger->log_action(sprintf(
 					lang('member_changed_member_group'),
-					$this->MemberGroup->group_title,
+					$this->PrimaryRole->name,
 					$this->username,
 					$this->member_id
 				));
@@ -631,7 +631,7 @@ class Member extends ContentModel {
 	{
 		if ( ! $structure = ee()->session->cache(__CLASS__, "getStructure({$this->role_id})"))
 		{
-			$structure = $this->MemberGroup;
+			$structure = $this->PrimaryRole;
 			ee()->session->set_cache(__CLASS__, "getStructure({$this->role_id})", $structure);
 		}
 
