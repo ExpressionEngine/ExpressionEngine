@@ -400,7 +400,7 @@ class EE_Session {
 		$this->sdata['can_debug']		= ($can_debug) ? 'y' : 'n';
 
 		$this->userdata['member_id']	= (int) $member_id;
-		$this->userdata['group_id']		= (int) $this->member_model->MemberGroup->getId();
+		$this->userdata['role_id']		= (int) $this->member_model->role_id;
 		$this->userdata['session_id']	= $this->sdata['session_id'];
 		$this->userdata['fingerprint']	= $this->sdata['fingerprint'];
 		$this->userdata['site_id']		= ee()->config->item('site_id');
@@ -629,10 +629,18 @@ class EE_Session {
 		// Assign Sites, Channel, Template, and Module Access Privs
 		if (REQ == 'CP')
 		{
-			$this->_setup_channel_privs();
+			$permission = new EllisLab\ExpressionEngine\Service\Permission\Permission(
+				ee('Model'),
+				$this->all_userdata(),
+				$this->member_model->getPermissions(),
+				$this->member_model->Roles->getDictionary('role_id', 'name'),
+				ee()->config->item('site_id')
+			);
+
+			$this->_setup_channel_privs($permission->isSuperAdmin());
 			$this->_setup_module_privs();
 			$this->_setup_template_privs();
-			$this->_setup_assigned_sites();
+			$this->_setup_assigned_sites($permission->isSuperAdmin());
 		}
 
 
@@ -1188,9 +1196,9 @@ class EE_Session {
 		// Query DB for member data.  Depending on the validation type we'll
 		// either use the cookie data or the member ID gathered with the session query.
 
-		ee()->db->from(array('members m', 'member_groups g'))
+		ee()->db->from(array('members m', 'role_settings g'))
 			->where('g.site_id', (int) ee()->config->item('site_id'))
-			->where('m.group_id', ' g.group_id', FALSE);
+			->where('m.role_id', ' g.role_id', FALSE);
 
 		$member_id = $this->sdata['member_id'];
 
@@ -1252,7 +1260,7 @@ class EE_Session {
 			'date_format'		=> ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y',
 			'time_format'		=> ee()->config->item('time_format') ? ee()->config->item('time_format') : '12',
 			'include_seconds'	=> ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n',
-			'group_id'			=> '3',
+			'role_id'			=> '3',
 			'access_cp'			=>  0,
 			'last_visit'		=>  0,
 			'is_banned'			=>  $this->_do_ban_check(),
@@ -1310,21 +1318,20 @@ class EE_Session {
 	 *
 	 * @return void
 	 */
-	protected function _setup_assigned_sites()
+	protected function _setup_assigned_sites($is_superadmin = FALSE)
 	{
 		// Fetch Assigned Sites Available to User
-
 		$assigned_sites = ee('Model')->get('Site')
 				->fields('site_id', 'site_label')
 				->order('site_label', 'desc');
 
-		if ($this->userdata['group_id'] != 1)
+		if ( ! $is_superadmin)
 		{
-			$groups = $this->getMember()->MemberGroups->pluck('group_id');
+			$roles = $this->getMember()->getAllRoles()->pluck('role_id');
 			$site_ids = ee('Model')->get('Permission')
 				->fields('site_id')
 				->filter('permission', 'can_access_cp')
-				->filter('group_id', 'IN', $groups)
+				->filter('role_id', 'IN', $roles)
 				->all()
 				->pluck('site_id');
 
@@ -1340,13 +1347,12 @@ class EE_Session {
 	 *
 	 * @return void
 	 */
-	protected function _setup_channel_privs()
+	protected function _setup_channel_privs($is_superadmin = FALSE)
 	{
 		// Fetch channel privileges
-
 		$assigned_channels = array();
 
-		if ($this->userdata['group_id'] == 1)
+		if ($is_superadmin)
 		{
 			ee()->db->select('channel_id, channel_title');
 			ee()->db->order_by('channel_title');
@@ -1354,27 +1360,28 @@ class EE_Session {
 				'channels',
 				array('site_id' => ee()->config->item('site_id'))
 			);
+
+			if ($res->num_rows() > 0)
+			{
+				foreach ($res->result() as $row)
+				{
+					$assigned_channels[$row->channel_id] = $row->channel_title;
+				}
+			}
+
+			$res->free_result();
 		}
 		else
 		{
-			$res = ee()->db->select('ec.channel_id, ec.channel_title')
-				->from(array('channel_member_groups ecmg', 'channels ec'))
-				->where('ecmg.channel_id', 'ec.channel_id',  FALSE)
-				->where('ecmg.group_id', $this->userdata['group_id'])
-				->where('site_id', ee()->config->item('site_id'))
-				->order_by('ec.channel_title')
-				->get();
-		}
+			$site_id = ee()->config->item('site_id');
 
-		if ($res->num_rows() > 0)
-		{
-			foreach ($res->result() as $row)
-			{
-				$assigned_channels[$row->channel_id] = $row->channel_title;
-			}
+			$assigned_channels = $this->member_model->getAssignedChannels()
+				->filter(function($channel) use($site_id)
+				{
+					return $channel->site_id == $site_id;
+				})
+				->getDictionary('channel_id', 'channel_title');
 		}
-
-		$res->free_result();
 
 		$this->userdata['assigned_channels'] = $assigned_channels;
 	}
