@@ -119,7 +119,7 @@ class Auth {
 
 		if ($authed !== FALSE)
 		{
-			if (in_array($authed->member('group_id'), $not_allowed_groups))
+			if (in_array($authed->member('role_id'), $not_allowed_groups))
 			{
 				$authed = FALSE;
 			}
@@ -423,7 +423,7 @@ class Auth {
 			return FALSE;
 		}
 
-		if (in_array($member->row('group_id'), $always_disallowed))
+		if (in_array($member->row('role_id'), $always_disallowed))
 		{
 			return ee()->output->show_user_error('general', lang('mbr_account_not_active'));
 		}
@@ -674,7 +674,7 @@ class Auth_result {
 	 */
 	public function is_banned()
 	{
-		if ($this->member('group_id') != 1)
+		if ($this->member('role_id') != 1)
 		{
 			return ee()->session->ban_check();
 		}
