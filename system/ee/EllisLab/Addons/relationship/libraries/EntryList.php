@@ -108,40 +108,33 @@ class EntryList {
 
 		if (count($limit_authors))
 		{
-			$groups = array();
+			$roles = array();
 			$members = array();
 
 			foreach ($limit_authors as $author)
 			{
 				switch ($author[0])
 				{
-					case 'g': $groups[] = substr($author, 2);
+					case 'g': $roles[] = substr($author, 2);
 						break;
 					case 'm': $members[] = substr($author, 2);
 						break;
 				}
 			}
 
+			if (count($roles))
+			{
+				foreach (ee('Model')->get('Role', $roles)->all() as $role)
+				{
+					$members = array_merge($role->getAllMembers()->pluck('member_id'), $members);
+				}
+			}
+
 			$entries->with('Author');
 
-			if (count($members) && count($groups))
+			if (count($members))
 			{
-				$entries->filterGroup()
-					->filter('author_id', 'IN', implode(', ', $members))
-					->orFilter('Author.group_id', 'IN', implode(', ', $groups))
-					->endFilterGroup();
-			}
-			else
-			{
-				if (count($members))
-				{
-					$entries->filter('author_id', 'IN', implode(', ', $members));
-				}
-
-				if (count($groups))
-				{
-					$entries->filter('Author.group_id', 'IN', implode(', ', $groups));
-				}
+				$entries->filter('author_id', 'IN', $members);
 			}
 		}
 
