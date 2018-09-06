@@ -10,6 +10,7 @@
 namespace EllisLab\ExpressionEngine\Model\Role;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 /**
  * Role Model
@@ -112,6 +113,20 @@ class Role extends Model {
 	protected $name;
 	protected $description;
 
+	public function getAllMembers()
+	{
+		$members = $this->Members->indexBy('member_id');
+
+		foreach ($this->RoleGroups as $role_group)
+		{
+			foreach ($role_group->Members as $member)
+			{
+				$members[$member->member_id] = $member;
+			}
+		}
+
+		return new Collection($members);
+	}
 }
 
 // EOF
