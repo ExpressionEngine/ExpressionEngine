@@ -1004,11 +1004,31 @@ class Member extends ContentModel {
 		return (bool) preg_match('/^redacted\d+$/', $this->email);
 	}
 
+	protected function saveToCache($key, $data)
+	{
+		if (isset(ee()->session))
+		{
+			ee()->session->set_cache(__CLASS__, $key, $data);
+		}
+	}
+
+	protected function getFromCache($key)
+	{
+		if (isset(ee()->session))
+		{
+			return ee()->session->cache(__CLASS__, $key, FALSE);
+		}
+
+		return FALSE;
+	}
+
 	public function getAllRoles()
 	{
-		static $roles;
+		$cache_key = "Member/{$this->member_id}/Roles";
 
-		if ( ! $roles)
+		$roles = $this->getFromCache($cache_key);
+
+		if ($roles === FALSE)
 		{
 			$roles = $this->Roles->indexBy('name');
 
@@ -1021,6 +1041,8 @@ class Member extends ContentModel {
 			}
 
 			$roles = new Collection($roles);
+
+			$this->saveToCache($cache_key, $roles);
 		}
 
 		return $roles;
@@ -1098,15 +1120,19 @@ class Member extends ContentModel {
 
 	public function getPermissions()
 	{
-		static $permissions;
+		$cache_key = "Member/{$this->member_id}/Permissions";
 
-		if ( ! $permissions)
+		$permissions = $this->getFromCache($cache_key);
+
+		if ($permissions === FALSE)
 		{
 			$permissions = $this->getModelFacade()->get('Permission')
 				->filter('site_id', ee()->config->item('site_id'))
 				->filter('role_id', 'IN', $this->getAllRoles()->pluck('role_id'))
 				->all()
 				->getDictionary('permission', 'permission_id');
+
+			$this->saveToCache($cache_key, $permissions);
 		}
 
 		return $permissions;
