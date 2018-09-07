@@ -423,7 +423,7 @@ class Files extends AbstractFilesController {
 		$files = ee('Model')->get('File', $file_ids)
 			->filter('site_id', ee()->config->item('site_id'))
 			->all()
-			->filter(function($file) use ($member_group) {
+			->filter(function($file) use ($member) {
 				return $file->memberHasAccess($member);
 			});
 

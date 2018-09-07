@@ -527,28 +527,15 @@ class Filemanager {
 	 */
 	private function _check_permissions($dir_id)
 	{
-		$group_id = ee()->session->userdata('group_id');
-
-		// Non admins need to have their permissions checked
-		if ($group_id != 1)
+		if (ee('Permission')->isSuperAdmin())
 		{
-			// non admins need to first be checked for restrictions
-			// we'll add these into a where_not_in() check below
-			ee()->db->select('upload_id');
-			ee()->db->where(array(
-				'member_group' => $group_id,
-				'upload_id'    => $dir_id
-			));
-
-			// If any record shows up, then they do not have access
-			if (ee()->db->count_all_results('upload_no_access') > 0)
-			{
-
-				return FALSE;
-			}
+			return TRUE;
 		}
 
-		return TRUE;
+		$member = ee()->session->getMember();
+		$assigned_upload_destinations = $member->getAssignedUploadDestinations()->indexBy('id');
+
+		return isset($assigned_upload_destinations[$dir_id]);
 	}
 
 
