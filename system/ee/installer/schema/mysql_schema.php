@@ -884,10 +884,10 @@ class EE_Schema {
 			KEY `channel_id` (`channel_id`)
 		)";
 
-		$Q[] = "CREATE TABLE exp_layout_publish_member_groups (
+		$Q[] = "CREATE TABLE exp_layout_publish_member_roles (
 			layout_id int(10) UNSIGNED NOT NULL,
-			group_id int(4) UNSIGNED NOT NULL,
-			PRIMARY KEY `layout_id_group_id` (`layout_id`, `group_id`)
+			role_id int(10) UNSIGNED NOT NULL,
+			PRIMARY KEY `layout_id_role_id` (`layout_id`, `role_id`)
 		)";
 
 		// Template Groups

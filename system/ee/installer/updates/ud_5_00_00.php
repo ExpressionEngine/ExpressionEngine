@@ -36,7 +36,8 @@ class Updater {
 				'flipPolarityOnTepmlateRoleAccess',
 				'flipPolarityOnUploadRoleAccess',
 				'renameMemberGroupTable',
-				'convertMembersGroupToPrimaryRole'
+				'convertMembersGroupToPrimaryRole',
+				'reassignLayoutsToPrimaryRole',
 			]
 		);
 
@@ -747,6 +748,19 @@ class Updater {
 				'constraint' => 10
 			]
 		]);
+	}
+
+	private function reassignLayoutsToPrimaryRole()
+	{
+		ee()->smartforge->modify_column('layout_publish_member_groups', [
+			'group_id' => [
+				'name'       => 'role_id',
+				'type'       => 'int',
+				'constraint' => 10
+			]
+		]);
+
+		ee()->smartforge->rename_table('layout_publish_member_groups', 'layout_publish_member_roles');
 	}
 }
 

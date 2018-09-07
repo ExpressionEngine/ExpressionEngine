@@ -25,6 +25,14 @@ class Role extends Model {
 	];
 
 	protected static $_relationships = [
+		'ChannelLayouts' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'ChannelLayout',
+			'pivot' => array(
+				'table' => 'layout_publish_member_roles',
+				'key' => 'layout_id',
+			)
+		),
 		'Permisisons' => array(
 			'model' => 'Permission',
 			'type' => 'hasMany'
