@@ -60,7 +60,7 @@ class Template extends AbstractDesignController {
 		$template->TemplateGroup = $group;
 
 		// Duplicate a template?
-		if (ee()->input->post('template_id'))
+		if ( ! empty(ee()->input->post('template_id')))
 		{
 			$master_template = ee('Model')->get('Template', ee()->input->post('template_id'))
 				->first();
@@ -85,7 +85,7 @@ class Template extends AbstractDesignController {
 			{
 				// Unless we are duplicating a template the default is to
 				// allow access to everyone
-				if ( ! ee()->input->post('template_id'))
+				if ( ! empty(ee()->input->post('template_id')))
 				{
 					$template->Roles = $master_template->Roles;
 				}
@@ -653,7 +653,7 @@ class Template extends AbstractDesignController {
 			}
 			else
 			{
-				// Remove all roles from this upload destination
+				// Remove all roles from this template
 				$template->Roles = NULL;
 			}
 		}
