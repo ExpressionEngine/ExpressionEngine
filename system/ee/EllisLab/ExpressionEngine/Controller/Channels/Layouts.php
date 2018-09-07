@@ -67,19 +67,18 @@ class Layouts extends AbstractChannelsController {
 		$layout_id = ee()->session->flashdata('layout_id');
 
 		// Set up filters
-		$group_ids = ee('Model')->get('MemberGroup')
+		$role_ids = ee('Model')->get('Role')
 			// Banned & Pending have their own views
-			->filter('group_id', 'NOT IN', array(2, 4))
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('group_title', 'asc')
+			->filter('role_id', 'NOT IN', array(2, 4))
+			->order('name', 'asc')
 			->all()
-			->getDictionary('group_id', 'group_title');
+			->getDictionary('role_id', 'name');
 
-		$options = $group_ids;
+		$options = $role_ids;
 		$options['all'] = lang('all');
 
 		$filters = ee('CP/Filter');
-		$group_filter = $filters->make('group_id', 'member_group', $options);
+		$group_filter = $filters->make('role_id', 'role', $options);
 		$group_filter->setPlaceholder(lang('all'));
 		$group_filter->disableCustomValue();
 
@@ -94,10 +93,10 @@ class Layouts extends AbstractChannelsController {
 		$layouts = $channel->ChannelLayouts->asArray();
 
 		// Perform filtering
-		if ($group_id = $filter_values['group_id'])
+		if ($role_id = $filter_values['role_id'])
 		{
-			$layouts = array_filter($layouts, function($layout) use ($group_id) {
-				return in_array($group_id, $layout->MemberGroups->pluck('group_id'));
+			$layouts = array_filter($layouts, function($layout) use ($role_id) {
+				return in_array($role_id, $layout->PrimaryRoles->pluck('role_id'));
 			});
 		}
 		if ($search = $filter_values['filter_by_keyword'])
@@ -113,7 +112,7 @@ class Layouts extends AbstractChannelsController {
 		$layouts = array_slice($layouts, (($page - 1) * $per_page), $per_page);
 
 		// Only show filters if there is data to filter or we are currently filtered
-		if ($group_id OR ! empty($layouts))
+		if ($role_id OR ! empty($layouts))
 		{
 			$vars['filters'] = $filters->render($vars['base_url']);
 		}
@@ -126,7 +125,7 @@ class Layouts extends AbstractChannelsController {
 				'id' => $layout->getId(),
 				'label' => $layout->layout_name,
 				'href' => $edit_url,
-				'extra' => implode(', ', $layout->MemberGroups->pluck('group_title')),
+				'extra' => implode(', ', $layout->PrimaryRoles->pluck('name')),
 				'selected' => ($layout_id && $layout->layout_id == $layout_id),
 				'toolbar_items' => [
 					'edit' => [
@@ -217,8 +216,8 @@ class Layouts extends AbstractChannelsController {
 				'rules' => 'required'
 			),
 			array(
-				'field' => 'member_groups',
-				'label' => 'lang:layout_member_groups',
+				'field' => 'roles',
+				'label' => 'lang:layout_roles',
 				'rules' => 'required'
 			),
 		));
@@ -232,11 +231,10 @@ class Layouts extends AbstractChannelsController {
 		{
 			$channel_layout->layout_name = ee()->input->post('layout_name');
 
-			$member_groups = ee('Model')->get('MemberGroup', ee()->input->post('member_groups'))
-				->filter('site_id', ee()->config->item('site_id'))
+			$roles = ee('Model')->get('Role', ee()->input->post('roles'))
 				->all();
 
-			$channel_layout->MemberGroups = $member_groups;
+			$channel_layout->PrimaryRoles = $roles;
 
 			$channel_layout->save();
 
@@ -351,8 +349,8 @@ class Layouts extends AbstractChannelsController {
 				'rules' => 'required'
 			),
 			array(
-				'field' => 'member_groups',
-				'label' => 'lang:layout_member_groups',
+				'field' => 'roles',
+				'label' => 'lang:layout_roles',
 				'rules' => 'required'
 			),
 		));
@@ -366,11 +364,10 @@ class Layouts extends AbstractChannelsController {
 		{
 			$channel_layout->layout_name = ee()->input->post('layout_name');
 
-			$member_groups = ee('Model')->get('MemberGroup', ee()->input->post('member_groups'))
-				->filter('site_id', ee()->config->item('site_id'))
+			$roles = ee('Model')->get('Role', ee()->input->post('roles'))
 				->all();
 
-			$channel_layout->MemberGroups = $member_groups;
+			$channel_layout->PrimaryRoles = $roles;
 
 			$channel_layout->save();
 
@@ -470,11 +467,11 @@ class Layouts extends AbstractChannelsController {
 	private function getForm($layout)
 	{
 		$disabled_choices = array();
-		$member_groups = $this->getEligibleMemberGroups($layout->Channel)
-			->getDictionary('group_id', 'group_title');
+		$roles = $this->getEligibleRoles($layout->Channel)
+			->getDictionary('role_id', 'name');
 
 		$other_layouts = ee('Model')->get('ChannelLayout')
-			->with('MemberGroups')
+			->with('PrimaryRoles')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('channel_id', $layout->Channel->channel_id);
 
@@ -486,18 +483,18 @@ class Layouts extends AbstractChannelsController {
 
 		foreach ($other_layouts->all() as $other_layout)
 		{
-			foreach ($other_layout->MemberGroups as $group)
+			foreach ($other_layout->PrimaryRoles as $role)
 			{
-				$member_groups[$group->group_id] = [
-					'label' => $group->group_title,
-					'value' => $group->group_id,
+				$roles[$role->role_id] = [
+					'label' => $role->name,
+					'value' => $role->role_id,
 					'instructions' => lang('assigned_to') . ' ' . $other_layout->layout_name
 				];
-				$disabled_choices[] = $group->group_id;
+				$disabled_choices[] = $role->role_id;
 			}
 		}
 
-		$selected_member_groups = ($layout->MemberGroups) ? $layout->MemberGroups->pluck('group_id') : array();
+		$selected_roles = ($layout->PrimaryRoles) ? $layout->PrimaryRoles->pluck('role_id') : array();
 
 		$section = array(
 			array(
@@ -511,17 +508,17 @@ class Layouts extends AbstractChannelsController {
 				)
 			),
 			array(
-				'title' => 'layout_member_groups',
-				'desc' => 'member_groups_desc',
+				'title' => 'layout_roles',
+				'desc' => 'roles_desc',
 				'fields' => array(
-					'member_groups' => array(
+					'roles' => array(
 						'type' => 'checkbox',
 						'required' => TRUE,
-						'choices' => $member_groups,
+						'choices' => $roles,
 						'disabled_choices' => $disabled_choices,
-						'value' => $selected_member_groups,
+						'value' => $selected_roles,
 						'no_results' => [
-							'text' => sprintf(lang('no_found'), lang('member_groups'))
+							'text' => sprintf(lang('no_found'), lang('roles'))
 						]
 					)
 				)
@@ -532,15 +529,14 @@ class Layouts extends AbstractChannelsController {
 				->render(array('name' => 'layout_options', 'settings' => $section));
 	}
 
-	private function getEligibleMemberGroups(Channel $channel)
+	private function getEligibleRoles(Channel $channel)
 	{
 		$super_admins = ee('Model')->get('Role', 1)
-			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
-		$member_groups = array_merge($super_admins->asArray(), $channel->AssignedRoles->asArray());
+		$roles = array_merge($super_admins->asArray(), $channel->AssignedRoles->asArray());
 
-		return new Collection($member_groups);
+		return new Collection($roles);
 	}
 
 	private function remove($layout_ids)

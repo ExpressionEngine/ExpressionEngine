@@ -32,7 +32,7 @@ class ChannelLayout extends Model implements LayoutInterface {
 			'type' => 'belongsTo',
 			'key' => 'channel_id'
 		),
-		'PrimaryRole' => array(
+		'PrimaryRoles' => array(
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'Role',
 			'pivot' => array(
