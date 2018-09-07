@@ -76,10 +76,6 @@ class Site extends Model {
 			'model' => 'UploadDestination',
 			'type' => 'hasMany'
 		),
-		'MemberGroups' => array(
-			'model' => 'MemberGroup',
-			'type' => 'hasMany'
-		),
 		'Permissions' => array(
 			'model' => 'Permission',
 			'type' => 'hasMany'
@@ -149,7 +145,6 @@ class Site extends Model {
 		$this->createNewStats();
 		$this->createHTMLButtons();
 		$this->createSpecialtyTemplates();
-		$this->createMemberGroups();
 		$this->copyPermisisons();
     }
 
@@ -241,26 +236,6 @@ class Site extends Model {
 			$data['site_id'] = $this->site_id;
 
 			$this->getModelFacade()->make('SpecialtyTemplate', $data)->save();
-		}
-	}
-
-	/**
-	 * Creates member groups for this site by cloning site 1's member groups
-	 *
-	 * @return void
-	 */
-	protected function createMemberGroups()
-	{
-		$groups = $this->getModelFacade()->get('MemberGroup')
-			->filter('site_id', 1)
-			->all();
-
-		foreach($groups as $group)
-		{
-			$data = $group->getValues();
-			$data['site_id'] = $this->site_id;
-
-			$this->getModelFacade()->make('MemberGroup', $data)->save();
 		}
 	}
 

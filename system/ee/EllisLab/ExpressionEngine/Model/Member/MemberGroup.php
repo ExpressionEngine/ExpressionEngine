@@ -45,14 +45,6 @@ class MemberGroup extends StructureModel {
 			'model' => 'Member',
 			'weak' => TRUE
 		),
-		'ChannelLayouts' => array(
-			'type' => 'hasAndBelongsToMany',
-			'model' => 'ChannelLayout',
-			'pivot' => array(
-				'table' => 'layout_publish_member_groups',
-				'key' => 'layout_id',
-			)
-		),
 		'EmailCache' => array(
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'EmailCache',
@@ -60,10 +52,6 @@ class MemberGroup extends StructureModel {
 				'table' => 'email_cache_mg'
 			)
 		),
-		'MenuSet' => array(
-			'type' => 'belongsTo',
-			'from_key' => 'menu_set_id'
-		)
 	);
 
 	protected static $_validation_rules = array(
