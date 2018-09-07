@@ -91,7 +91,7 @@ class Template extends AbstractDesignController {
 				}
 				else
 				{
-					$template->Roles = NULL;
+					$template->Roles = ee('Model')->get('Role')->all();
 				}
 
 				$template->save();
