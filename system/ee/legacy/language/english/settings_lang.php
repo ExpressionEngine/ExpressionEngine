@@ -479,7 +479,7 @@ $lang = array(
 
 'declined_member_notification_desc' => 'When enabled, members will receive an email notification when their member registration is declined.',
 
-'default_member_group' => 'Default member group',
+'default_primary_role' => 'Default primary Role',
 
 'mbr_notification_emails' => 'Notification recipients',
 

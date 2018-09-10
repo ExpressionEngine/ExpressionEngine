@@ -31,13 +31,10 @@ class Members extends Settings {
 	 */
 	public function index()
 	{
-		$groups = ee('Model')->get('MemberGroup')->order('group_title', 'asc')->all();
-
-		$member_groups = array();
-		foreach ($groups as $group)
-		{
-			$member_groups[$group->group_id] = $group->group_title;
-		}
+		$roles = ee('Model')->get('Role')
+			->order('name', 'asc')
+			->all()
+			->getDictionary('role_id', 'name');
 
 		ee()->load->model('member_model');
 		$themes = ee('Theme')->listThemes('member');
@@ -100,13 +97,13 @@ class Members extends Settings {
 					)
 				),
 				array(
-					'title' => 'default_member_group',
+					'title' => 'default_primary_role',
 					'fields' => array(
-						'default_member_group' => array(
+						'default_primary_role' => array(
 							'type' => 'radio',
-							'choices' => $member_groups,
+							'choices' => $roles,
 							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								'text' => sprintf(lang('no_found'), lang('roles'))
 							]
 						)
 					)
