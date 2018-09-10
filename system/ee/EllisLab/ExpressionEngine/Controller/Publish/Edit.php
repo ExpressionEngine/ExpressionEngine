@@ -509,8 +509,8 @@ class Edit extends AbstractPublishController {
 		$channel_layout = ee('Model')->get('ChannelLayout')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('channel_id', $entry->channel_id)
-			->with('MemberGroups')
-			->filter('MemberGroups.group_id', ee()->session->userdata['group_id'])
+			->with('PrimaryRoles')
+			->filter('PrimaryRoles.role_id', ee()->session->userdata('role_id'))
 			->first();
 
 		$vars['layout'] = $entry->getDisplay($channel_layout);
