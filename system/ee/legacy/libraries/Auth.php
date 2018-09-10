@@ -659,7 +659,7 @@ class Auth_result {
 
 			$this->permissions = ee('Model')->get('Permission')
 				->filter('site_id', ee()->config->item('site_id'))
-				->filter('role_id', 'IN', $member->Roles->pluck('role_id'))
+				->filter('role_id', 'IN', $member->getAllRoles()->pluck('role_id'))
 				->all()
 				->getDictionary('permission', 'permission_id');
 		}
