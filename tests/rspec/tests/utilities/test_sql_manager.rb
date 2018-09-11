@@ -50,25 +50,25 @@ feature 'SQL Manager' do
   it 'should search the table names' do
     tables = get_tables
 
-    @page.search_field.set 'access'
+    @page.search_field.set 'role'
     @page.search_btn.click
 
-    @page.should have_text 'Search Results we found 3 results for "access"'
+    @page.should have_text 'Search Results we found 13 results for "role"'
 
-    @page.tables.map {|source| source.text}.should == tables.grep(/access/)
+    @page.tables.map {|source| source.text}.should == tables.grep(/role/)
   end
 
   it 'should sort search results' do
     tables = get_tables
 
-    @page.search_field.set 'access'
+    @page.search_field.set 'role'
     @page.search_btn.click
 
     @page.sort_links[0].click
 
-    @page.should have_text 'Search Results we found 3 results for "access"'
+    @page.should have_text 'Search Results we found 13 results for "role"'
 
-    @page.tables.map {|source| source.text}.should == tables.grep(/access/).reverse
+    @page.tables.map {|source| source.text}.should == tables.grep(/role/).reverse
   end
 
   it 'should validate the table operations submission' do
