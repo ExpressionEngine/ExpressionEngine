@@ -348,7 +348,7 @@ class EE_Schema {
 			cp_homepage_channel varchar(255) NULL DEFAULT NULL,
 			cp_homepage_custom varchar(100) NULL DEFAULT NULL,
 			PRIMARY KEY `member_id` (`member_id`),
-			KEY `group_id` (`group_id`),
+			KEY `role_id` (`role_id`),
 			KEY `unique_id` (`unique_id`),
 			KEY `password` (`password`)
 		)";
@@ -411,7 +411,7 @@ class EE_Schema {
 			`cp_homepage` varchar(20) DEFAULT NULL,
 			`cp_homepage_channel` int(10) unsigned NOT NULL DEFAULT '0',
 			`cp_homepage_custom` varchar(100) DEFAULT NULL,
-			PRIMARY KEY (`id`)
+			PRIMARY KEY (`id`),
 			KEY `role_id_site_id` (`role_id`, `site_id`)
 		)";
 
@@ -1478,7 +1478,7 @@ class EE_Schema {
 		$member_groups = array(
 			array(
 				'group_title'                    => 'Super Admin',
-				'group_id'                       => 1,
+				'role_id'                        => 1,
 				'is_locked'                      => 'y',
 				'exclude_from_moderation'        => 'y',
 				'include_in_authorlist'          => 'y',
@@ -1486,29 +1486,25 @@ class EE_Schema {
 			),
 			array(
 				'group_title'                    => 'Banned',
-				'group_id'                       => 2,
+				'role_id'                        => 2,
 				'include_in_memberlist'          => 'n',
 				'search_flood_control'           => '60'
 			),
 			array(
 				'group_title'                    => 'Guests',
-				'group_id'                       => 3,
+				'role_id'                        => 3,
 				'search_flood_control'           => '10'
 			),
 			array(
 				'group_title'                    => 'Pending',
-				'group_id'                       => 4,
+				'role_id'                        => 4,
 				'search_flood_control'           => '10'
 			),
 			array(
 				'group_title'                    => 'Members',
-				'group_id'                       => 5,
+				'role_id'                        => 5,
 				'search_flood_control'           => '10'
 			)
-		);
-
-		$member_group_defaults = array(
-			'group_description' => ''
 		);
 
 		$add_quotes = function($value) {
@@ -1517,16 +1513,16 @@ class EE_Schema {
 
 		foreach ($member_groups as $group)
 		{
-			// Merge in defaults
-			$group = array_merge($member_group_defaults, $group);
+			$Q[] = "INSERT INTO exp_roles
+				(role_id, name)
+				VALUES (" . $group['role_id'] . ", '" . $group['group_title'] . "')";
 
-			$Q[] = "INSERT INTO exp_member_groups
+			unset($group['group_title']);
+
+			$Q[] = "INSERT INTO exp_role_settings
 				(".implode(', ', array_keys($group)).")
 				VALUES (".implode(', ' , array_map($add_quotes, $group)).")";
 
-			$Q[] = "INSERT INTO exp_roles
-				(role_id, name)
-				VALUES (" . $group['group_id'] . ", '" . $group['group_title'] . "')";
 		}
 
 		$group_permissions = [
