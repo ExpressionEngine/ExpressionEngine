@@ -58,7 +58,7 @@ class Communicate extends Utilities {
 			'html'		=> lang('html')
 		);
 
-		$member_groups = array();
+		$roles = array();
 
 		if ( ! is_null($email))
 		{
@@ -74,28 +74,24 @@ class Communicate extends Utilities {
 
 			if ( ! isset($this->member))
 			{
-				$member_groups = $email->getMemberGroups()->pluck('group_id');
+				$roles = $email->Roles->pluck('role_id');
 			}
 		}
 
-		// Set up member group emailing options
+		// Set up member role emailing options
 		if (ee('Permission')->can('email_member_groups'))
 		{
-			$groups = ee('Model')->get('MemberGroup')
-				->filter('site_id', ee()->config->item('site_id'))
-				->all();
+			$roles = ee('Model')->get('Role')->all();
 
-			$member_groups = [];
-			$disabled_groups = [];
-			foreach ($groups as $group)
+			$member_roles = [];
+			$disabled_roles = [];
+			foreach ($roles as $role)
 			{
-				$member_groups[$group->group_id] = $group->group_title;
+				$member_roles[$role->role_id] = $role->name;
 
-				if (ee('Model')->get('Member')
-					->filter('group_id', $group->group_id)
-					->count() == 0)
+				if ($role->getAllMembers()->count() == 0)
 				{
-					$disabled_groups[] = $group->group_id;
+					$disabled_roles[] = $role->role_id;
 				}
 			}
 		}
@@ -209,13 +205,13 @@ class Communicate extends Utilities {
 		if (ee('Permission')->can('email_member_groups'))
 		{
 			$vars['sections']['recipient_options'][] = array(
-				'title' => 'add_member_groups',
-				'desc' => 'add_member_groups_desc',
+				'title' => 'add_member_roles',
+				'desc' => 'add_member_roles_desc',
 				'fields' => array(
-					'member_groups' => array(
+					'member_roles' => array(
 						'type' => 'checkbox',
-						'choices' => $member_groups,
-						'disabled_choices' => $disabled_groups,
+						'choices' => $member_roles,
+						'disabled_choices' => $disabled_roles,
 					)
 				)
 			);
@@ -251,7 +247,7 @@ class Communicate extends Utilities {
 		);
 
 		$email = ee('Model')->make('EmailCache', $cache_data);
-		$email->removeMemberGroups();
+		$email->Roles = NULL;
 		$this->index($email);
 	}
 
@@ -265,7 +261,7 @@ class Communicate extends Utilities {
 		// Fetch $_POST data
 		// We'll turn the $_POST data into variables for simplicity
 
-		$groups = array();
+		$roles = array();
 
 		$form_fields = array(
 			'subject',
@@ -284,10 +280,10 @@ class Communicate extends Utilities {
 
 		foreach ($_POST as $key => $val)
 		{
-			if ($key == 'member_groups')
+			if ($key == 'member_roles')
 			{
 				// filter empty inputs, like a hidden no-value input from React
-				$groups = array_filter(ee()->input->post($key));
+				$roles = array_filter(ee()->input->post($key));
 			}
 			elseif (in_array($key, $form_fields))
 			{
@@ -296,13 +292,13 @@ class Communicate extends Utilities {
 		}
 
 		//  Verify privileges
-		if (count($groups) > 0 && ! ee('Permission')->can('email_member_groups'))
+		if (count($roles) > 0 && ! ee('Permission')->can('email_member_groups'))
 		{
 			show_error(lang('not_allowed_to_email_member_groups'));
 		}
 
 		// Set to allow a check for at least one recipient
-		$_POST['total_gl_recipients'] = count($groups);
+		$_POST['total_gl_recipients'] = count($roles);
 
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules('subject', 'lang:subject', 'required|valid_xss_check');
@@ -376,7 +372,7 @@ class Communicate extends Utilities {
 		$email->save();
 
 		//  Send a single email
-		if (count($groups) == 0)
+		if (count($roles) == 0)
 		{
 			$debug_msg = $this->deliverOneEmail($email, $recipient);
 
@@ -384,15 +380,15 @@ class Communicate extends Utilities {
 			ee()->functions->redirect(ee('CP/URL')->make('utilities/communicate'));
 		}
 
-		// Get member group emails
-		$member_groups = ee('Model')->get('MemberGroup', $groups)
+		// Get member role emails
+		$member_roles = ee('Model')->get('Roles', $roles)
 			->with('Members')
 			->all();
 
 		$email_addresses = array();
-		foreach ($member_groups as $group)
+		foreach ($member_roles as $role)
 		{
-			foreach ($group->getMembers() as $member)
+			foreach ($role->getAllMembers() as $member)
 			{
 				$email_addresses[] = $member->email;
 			}
@@ -438,7 +434,7 @@ class Communicate extends Utilities {
 
 		//  Store email cache
 		$email->recipient_array = $email_addresses;
-		$email->setMemberGroups(ee('Model')->get('MemberGroup', $groups)->all());
+		$email->Roles = ee('Model')->get('Role', $roles)->all();
 		$email->save();
 		$id = $email->cache_id;
 
@@ -561,7 +557,7 @@ class Communicate extends Utilities {
 		}
 
 		$caches = ee('Model')->get('EmailCache', $id)
-			->with('MemberGroups')
+			->with('Roles')
 			->all();
 
 		$email = $caches[0];
