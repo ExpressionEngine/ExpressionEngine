@@ -212,7 +212,7 @@ class Member extends ContentModel {
 	);
 
 	protected static $_validation_rules = array(
-		'role_id'        => 'required|isNatural|validateGroupId',
+		'role_id'         => 'required|isNatural|validateGroupId',
 		'username'        => 'required|unique|validateUsername',
 		'screen_name'     => 'validateScreenName',
 		'email'           => 'required|email|uniqueEmail|validateEmail',
