@@ -91,7 +91,11 @@ class Site extends Model {
 		'Configs' => array(
 			'model' => 'Config',
 			'type' => 'hasMany'
-		)
+		),
+		'RoleSettings' => array(
+			'model' => 'RoleSetting',
+			'type' => 'hasMany'
+		),
 	);
 
 	protected static $_validation_rules = array(
@@ -146,6 +150,7 @@ class Site extends Model {
 		$this->createHTMLButtons();
 		$this->createSpecialtyTemplates();
 		$this->copyPermisisons();
+		$this->copyRoleSettings();
     }
 
 	/**
@@ -256,6 +261,27 @@ class Site extends Model {
 			$data['site_id'] = $this->site_id;
 
 			$this->getModelFacade()->make('Permission', $data)->save();
+		}
+	}
+
+	/**
+	 * Creates RoleSettings for this site by cloning site 1's RoleSettings
+	 *
+	 * @return void
+	 */
+	protected function copyRoleSettings()
+	{
+		$role_settings = $this->getModelFacade()->get('RoleSetting')
+			->filter('site_id', 1)
+			->all();
+
+		foreach($role_settings as $role_setting)
+		{
+			$data = $role_setting->getValues();
+			$data['site_id'] = $this->site_id;
+			$data['role_id'] = $role_setting->role_id;
+
+			$this->getModelFacade()->make('RoleSetting', $data)->save();
 		}
 	}
 }
