@@ -16,7 +16,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  */
 class RoleSetting extends Model {
 
-	protected static $_primary_key = 'role_id';
+	protected static $_primary_key = 'id';
 	protected static $_table_name = 'role_settings';
 
 	protected static $_typed_columns = [
@@ -35,6 +35,9 @@ class RoleSetting extends Model {
 		'Role' => array(
 			'type' => 'belongsTo',
 		),
+		'Site' => array(
+			'type' => 'belongsTo',
+		),
 	];
 
 	protected static $_validation_rules = [
@@ -44,6 +47,7 @@ class RoleSetting extends Model {
 	// protected static $_events = [];
 
 	// Properties
+	protected $id;
 	protected $role_id;
 	protected $site_id;
 	protected $is_locked;

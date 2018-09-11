@@ -396,6 +396,7 @@ class EE_Schema {
 		// Member Groups table
 
 		$Q[] = "CREATE TABLE exp_role_settings (
+			`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`role_id` int(10) unsigned NOT NULL,
 			`site_id` int(4) unsigned NOT NULL DEFAULT '1',
 			`menu_set_id` int(5) unsigned NOT NULL DEFAULT '1',
@@ -410,7 +411,8 @@ class EE_Schema {
 			`cp_homepage` varchar(20) DEFAULT NULL,
 			`cp_homepage_channel` int(10) unsigned NOT NULL DEFAULT '0',
 			`cp_homepage_custom` varchar(100) DEFAULT NULL,
-			PRIMARY KEY `role_id_site_id` (`role_id`, `site_id`)
+			PRIMARY KEY (`id`)
+			KEY `role_id_site_id` (`role_id`, `site_id`)
 		)";
 
 		// Channel access privs

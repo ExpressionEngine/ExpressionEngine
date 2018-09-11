@@ -727,6 +727,11 @@ class Updater {
 
 	private function renameMemberGroupTable()
 	{
+		if (ee()->db->table_exists('role_settings'))
+		{
+			return;
+		}
+
 		ee()->smartforge->modify_column('member_groups', [
 			'group_id' => [
 				'name'       => 'role_id',
@@ -736,7 +741,11 @@ class Updater {
 		]);
 		ee()->smartforge->drop_column('member_groups', 'group_title');
 		ee()->smartforge->drop_column('member_groups', 'group_description');
+		ee()->smartforge->drop_key('member_groups', 'PRIMARY');
+		ee()->smartforge->add_key('member_groups', ['role_id', 'site_id']);
 		ee()->smartforge->rename_table('member_groups', 'role_settings');
+
+		ee()->db->query("ALTER TABLE `exp_role_settings` ADD `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT FIRST, ADD PRIMARY KEY (`id`);");
 	}
 
 	private function convertMembersGroupToPrimaryRole()
