@@ -52,14 +52,6 @@ class MemberImport extends Utilities {
 			}
 		}
 
-		$groups = ee('Model')->get('MemberGroup')->order('group_title', 'asc')->all();
-
-		$member_groups = array();
-		foreach ($groups as $group)
-		{
-			$member_groups[$group->group_id] = $group->group_title;
-		}
-
 		ee()->lang->loadfile('settings');
 
 		$vars['sections'] = array(
@@ -77,14 +69,14 @@ class MemberImport extends Utilities {
 			),
 			'mbr_import_default_options' => array(
 				array(
-					'title' => 'member_group',
+					'title' => 'role',
 					'fields' => array(
-						'group_id' => array(
+						'role_id' => array(
 							'type' => 'radio',
-							'choices' => $member_groups,
+							'choices' => ee('Model')->get('Role')->order('name', 'asc')->all()->getDictionary('role_id', 'name'),
 							'required' => TRUE,
 							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								'text' => sprintf(lang('no_found'), lang('roles'))
 							]
 						)
 					)
@@ -158,8 +150,8 @@ class MemberImport extends Utilities {
 				 'rules'   => 'callback__file_handler'
 			),
 			array(
-				 'field'   => 'group_id',
-				 'label'   => 'lang:member_group',
+				 'field'   => 'role_id',
+				 'label'   => 'lang:role',
 				 'rules'   => 'required'
 			),
 			array(
@@ -267,24 +259,21 @@ class MemberImport extends Utilities {
 		ee()->load->model('member_model');
 		ee()->lang->loadfile('settings');
 
-		$member_group = ee()->api
-			->get('MemberGroup')
-			->filter('group_id', ee()->input->post('group_id'))
-			->first();
+		$role = ee('Model')->get('Role', ee()->input->post('role_id'))->first();
 
 		$group_title = '';
 		$group_name = ' -- ';
 
-		if ( ! empty($member_group))
+		if ( ! empty($role))
 		{
-			$group_name = htmlentities($member_group->group_title, ENT_QUOTES, 'UTF-8');
+			$group_name = htmlentities($role->name, ENT_QUOTES, 'UTF-8');
 		}
 
 		$this->xml_file_name = ( ! empty($this->xml_file_name)) ? $this->xml_file_name : ee('Encrypt')->decode($this->input->post('xml_file_name'));
 
 		$data = array(
 			'xml_file_name'   		=> ee('Encrypt')->encode($this->xml_file_name),
-			'group_id' 			=> (int) ee()->input->post('group_id'),
+			'role_id' 			=> (int) ee()->input->post('role_id'),
 			'language' 			=> (ee()->input->post('language') == lang('none')) ? '' : form_prep(ee()->input->post('language')),
 			'timezones' 		=> form_prep(ee()->input->post('timezones')),
 			'date_format' 		=> form_prep(ee()->input->post('date_format')),
@@ -300,7 +289,7 @@ class MemberImport extends Utilities {
 		$vars = array(
 			'added_fields'		=> $added_fields,
 			'xml_file_name'   		=> $data['xml_file_name'],
-			'default_group_id'	=> $group_name,
+			'default_role_id'	=> $group_name,
 			'language' 			=> ($data['language'] == '') ? lang('none') : ucfirst($data['language']),
 			'timezones' 		=> $data['timezones'],
 			'date_format' 		=> lang($localization_cfg['date_format'][1][$data['date_format']]),
@@ -665,7 +654,7 @@ class MemberImport extends Utilities {
 		}
 
 		//  Set our optional default values
-		$this->default_fields['group_id']			= $this->input->post('group_id');
+		$this->default_fields['role_id']			= $this->input->post('role_id');
 		$this->default_fields['language']			= ($this->input->post('language') == lang('none') OR $this->input->post('language') == '') ? 'english' : strtolower($this->input->post('language'));
 		$this->default_fields['timezone']			= $this->input->post('timezones') ?: NULL;
 		$this->default_fields['date_format']		= $this->input->post('date_format') ?: NULL;

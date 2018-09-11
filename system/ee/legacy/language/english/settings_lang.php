@@ -593,9 +593,9 @@ $lang = array(
 
 'set_assigned' => 'Assigned',
 
-'set_member_groups' => 'Member group(s)?',
+'set_roles' => 'Member role(s)?',
 
-'set_member_groups_desc' => 'Choose the member group(s) to apply this menu to.',
+'set_roles_desc' => 'Choose the role(s) to apply this menu to.',
 
 'set_name' => 'Name',
 

@@ -328,6 +328,8 @@ $lang = array(
 
 'member_group' => 'Member group',
 
+'role' => 'Role',
+
 'member_import_error' => 'Attention: Import not completed',
 
 'member_import_error_desc' => 'We were unable to complete the import, please review and fix errors below.',
