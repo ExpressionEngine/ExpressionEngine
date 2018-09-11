@@ -262,7 +262,7 @@ class EE_Stats {
 		$name = $query->row('screen_name');
 		$mid  = $query->row('member_id');
 
-		$query = ee()->db->where_not_in('group_id', array('4', '2'))
+		$query = ee()->db->where_not_in('role_id', array('4', '2'))
 							  ->select('COUNT(*) as count')
 							  ->get('members');
 
