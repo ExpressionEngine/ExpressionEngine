@@ -1215,7 +1215,6 @@ class Updater {
 			$directory = ee('Model')->make('UploadDestination');
 			$directory->site_id = $site_id;
 			$directory->name = $name;
-			$directory->removeNoAccess();
 			$directory->setModule($module);
 
 			foreach ($dir as $property => $value)
@@ -1224,6 +1223,9 @@ class Updater {
 			}
 
 			$directory->save();
+
+			ee()->db->where('upload_id', $directory->getId());
+			ee()->db->delete('upload_no_access');
 		}
 
 		return TRUE;
