@@ -28,9 +28,9 @@ class EmailCache extends Model
 	);
 
 	protected static $_relationships = array(
-		'MemberGroups' => array(
+		'Roles' => array(
 			'type' => 'hasAndBelongsToMany',
-			'model' => 'MemberGroup',
+			'model' => 'Role',
 			'pivot' => array(
 				'table' => 'email_cache_mg'
 			)

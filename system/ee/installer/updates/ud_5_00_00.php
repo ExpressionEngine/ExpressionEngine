@@ -38,6 +38,7 @@ class Updater {
 				'renameMemberGroupTable',
 				'convertMembersGroupToPrimaryRole',
 				'reassignLayoutsToPrimaryRole',
+				'reassignEmailCacheToPrimaryRole',
 			]
 		);
 
@@ -771,6 +772,18 @@ class Updater {
 
 		ee()->smartforge->rename_table('layout_publish_member_groups', 'layout_publish_member_roles');
 	}
+
+	private function reassignEmailCacheToPrimaryRole()
+	{
+		ee()->smartforge->modify_column('email_cache_mg', [
+			'group_id' => [
+				'name'       => 'role_id',
+				'type'       => 'int',
+				'constraint' => 10
+			]
+		]);
+	}
+
 }
 
 // EOF

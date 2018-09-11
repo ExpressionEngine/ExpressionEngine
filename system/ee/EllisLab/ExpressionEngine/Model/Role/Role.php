@@ -107,6 +107,13 @@ class Role extends Model {
 				'right' => 'upload_id'
 			)
 		),
+		'EmailCache' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'EmailCache',
+			'pivot' => array(
+				'table' => 'email_cache_mg'
+			)
+		),
 	];
 
 	protected static $_validation_rules = [
