@@ -108,7 +108,7 @@ class Channel extends StructureModel {
 		'channel_title'              => 'required|unique[site_id]|xss',
 		'channel_name'               => 'required|unique[site_id]|alphaDash',
 		'channel_url'                => 'xss',
-		'preview_url'                => 'xss',
+		'preview_url'                => 'xss|validatePreviewURL',
 		'comment_url'                => 'xss',
 		'channel_description'        => 'xss',
 		'deft_comments'              => 'enum[y,n]',
@@ -227,6 +227,27 @@ class Channel extends StructureModel {
 
 		return TRUE;
 	}
+
+	/**
+	 * Custom validation callback to validate preview URL- needs to be relative URL
+	 */
+	public function validatePreviewURL($key, $value, $params, $rule)
+	{
+		if (empty($value))
+		{
+			return TRUE;
+		}
+
+		$parsed_url = parse_url($value);
+
+		if (strpos($value, '{base_url}') !== FALSE OR isset($parsed_url['scheme']))
+		{
+			return lang('channel_preview_url_invalid');
+		}
+
+		return TRUE;
+	}
+
 
 	/**
 	 * Parses URL properties for any config variables
