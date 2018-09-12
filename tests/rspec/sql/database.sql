@@ -2574,7 +2574,7 @@ UNLOCK TABLES;
 LOCK TABLES `exp_sites` WRITE;
 ALTER TABLE `exp_sites` DISABLE KEYS;
 INSERT INTO `exp_sites` (`site_id`, `site_label`, `site_name`, `site_description`, `site_bootstrap_checksums`, `site_pages`) VALUES
-	(1,'EE3','default_site',NULL,'YToxOntzOjc6ImVtYWlsZWQiO2E6MDp7fX0=','');
+	(1,'EE5','default_site',NULL,'YToxOntzOjc6ImVtYWlsZWQiO2E6MDp7fX0=','');
 ALTER TABLE `exp_sites` ENABLE KEYS;
 UNLOCK TABLES;
 
