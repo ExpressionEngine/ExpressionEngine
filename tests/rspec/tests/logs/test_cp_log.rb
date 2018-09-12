@@ -115,7 +115,7 @@ feature 'CP Log' do
     @page.date_filter_menu.click_link "Last 24 Hours"
 
     @page.date_filter.text.should eq "date (Last 24 Hours)"
-    @page.should have(3).items
+    @page.should have(1).items
   end
 
   it 'can change page size', :pregen => true do
