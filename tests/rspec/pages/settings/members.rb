@@ -7,7 +7,7 @@ class MemberSettings < ControlPanelPage
   element :require_terms_of_service, 'input[name=require_terms_of_service]', :visible => false
   element :allow_member_localization_toggle, 'a[data-toggle-for=allow_member_localization]'
   element :allow_member_localization, 'input[name=allow_member_localization]', :visible => false
-  elements :default_member_group, 'input[name=default_member_group]'
+  elements :default_primary_role, 'input[name=default_primary_role]'
   elements :member_theme, 'input[name=member_theme]'
   elements :memberlist_order_by, 'input[name=memberlist_order_by]'
   elements :memberlist_sort_order, 'input[name=memberlist_sort_order]'

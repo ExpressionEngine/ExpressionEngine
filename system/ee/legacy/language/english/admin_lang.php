@@ -308,7 +308,7 @@ $lang = array(
 
 'default_html_buttons' => 'Default HTML Buttons',
 
-'default_member_group' => 'Default Member Group Assigned to New Members',
+'default_primary_role' => 'Default Member Group Assigned to New Members',
 
 'default_site_timezone' => 'Site Timezone',
 

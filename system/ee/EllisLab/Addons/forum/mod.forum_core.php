@@ -8107,7 +8107,7 @@ class Forum_Core extends Forum {
 		// Reinstate the user
 		if ($_POST['action'] == 'reinstate')
 		{
-			ee()->db->query("UPDATE exp_members SET group_id = '".ee()->config->item('default_member_group')."' WHERE member_id = '{$this->current_id}'");
+			ee()->db->query("UPDATE exp_members SET group_id = '".ee()->config->item('default_primary_role')."' WHERE member_id = '{$this->current_id}'");
 			$ban_msg = lang('user_account_reinstated');
 			$banned_user_ips = '';
 		}

@@ -889,7 +889,7 @@ class Members extends CP_Controller {
 			}
 		}
 
-		$members->group_id = ee()->config->item('default_member_group');
+		$members->group_id = ee()->config->item('default_primary_role');
 		$members->save();
 
 		/* -------------------------------------------

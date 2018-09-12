@@ -99,6 +99,10 @@ class Updater {
 			'site_template_preferences'
 		];
 
+		$rename = [
+			'default_member_group' => 'default_primary_role',
+		];
+
 		foreach ($sites->result_array() as $site)
 		{
 			$site_id = $site['site_id'];
@@ -107,6 +111,8 @@ class Updater {
 				$data = unserialize(base64_decode($site[$pref]));
 				foreach ($data as $key => $value)
 				{
+					$key = (isset($rename[$key])) ? $rename[$key] : $key;
+
 					ee('Model')->make('Config', [
 						'site_id' => $site_id,
 						'key' => $key,

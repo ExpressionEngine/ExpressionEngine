@@ -1810,7 +1810,7 @@ INSERT INTO `exp_config` (`config_id`, `site_id`, `key`, `value`) VALUES
 	(19,1,'new_member_notification','n'),
 	(20,1,'mbr_notification_emails',''),
 	(21,1,'require_terms_of_service','y'),
-	(22,1,'default_member_group','5'),
+	(22,1,'default_primary_role','5'),
 	(23,1,'profile_trigger','member'),
 	(24,1,'member_theme','default'),
 	(25,1,'enable_avatars','y'),

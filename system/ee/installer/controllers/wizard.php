@@ -1690,7 +1690,7 @@ class Wizard extends CI_Controller {
 			'new_member_notification'   => 'n',
 			'mbr_notification_emails'   => '',
 			'require_terms_of_service'  => 'y',
-			'default_member_group'      => '5',
+			'default_primary_role'      => '5',
 			'profile_trigger'           => 'member',
 			'member_theme'              => 'default',
 			'enable_avatars'            => 'y',
