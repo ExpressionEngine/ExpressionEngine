@@ -115,7 +115,7 @@ feature 'CP Log' do
     @page.date_filter_menu.click_link "Last 24 Hours"
 
     @page.date_filter.text.should eq "date (Last 24 Hours)"
-    @page.should have(2).items
+    @page.should have(3).items
   end
 
   it 'can change page size', :pregen => true do
@@ -227,7 +227,7 @@ feature 'CP Log' do
     @page.modal_submit_button.click # Submits a form
 
     @page.should have_alert
-    @page.alert.text.should eq "Logs Deleted 167 log(s) deleted from Control Panel logs"
+    @page.alert.text.should eq "Logs Deleted 168 log(s) deleted from Control Panel logs"
 
     @page.should have_no_results
     @page.should_not have_pagination
