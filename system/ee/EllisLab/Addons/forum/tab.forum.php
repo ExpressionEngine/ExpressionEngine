@@ -385,7 +385,9 @@ class Forum_tab {
 			$member = ee()->session->getMember();
 			$role_ids = $member->getAllRoles()->pluck('role_id');
 
-			if (empty(array_intersect($can_post_topics, $role_ids)))
+			$can_post = array_intersect($can_post_topics, $role_ids);
+
+			if (empty($can_post))
 			{
 				if ( ! ee('Permission')->isSuperAdmin())
 				{

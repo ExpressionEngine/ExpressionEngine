@@ -727,7 +727,8 @@ class Forum_Core extends Forum {
 
 		if (is_array($group_id))
 		{
-			if ( ! empty(array_intersect($role_ids, $this->admin_groups)))
+			$in_admin = array_intersect($role_ids, $this->admin_groups);
+			if ( ! empty($in_admin))
 			{
 				return TRUE;
 			}
@@ -759,7 +760,9 @@ class Forum_Core extends Forum {
 
 			$role_ids = $member->getAllRoles()->pluck('role_id');
 
-			return ( ! empty(array_intersect($role_ids, $this->admin_groups)) || in_array(1, $role_ids));
+			$in_admin = array_intersect($role_ids, $this->admin_groups);
+
+			return ( ! empty($in_admin) || in_array(1, $role_ids));
 		}
 
 		return FALSE;
@@ -10749,8 +10752,9 @@ class Forum_Core extends Forum {
 		}
 
 		$role_ids = $member->getAllRoles()->pluck('role_id');
+		$in_allowed_groups = array_intersect($role_ids, $allowed_groups);
 
-		if (empty(array_intersect($role_ids, $allowed_groups)))
+		if (empty($in_allowed_groups))
 		{
 			return FALSE;
 		}

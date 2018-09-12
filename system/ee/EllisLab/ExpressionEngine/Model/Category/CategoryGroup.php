@@ -134,8 +134,10 @@ class CategoryGroup extends StructureModel {
 		$editable = FALSE;
 		$member_roles = ee()->session->getMember()->getAllRoles()->pluck('role_id');
 
+		$in_can_edit = array_intersect($member_roles, $can_edit);
+
 		if (ee('Permission')->isSuperAdmin()
-			|| (ee('Permission')->can('edit_categories') && ! empty(array_intersect($member_roles, $can_edit))))
+			|| (ee('Permission')->can('edit_categories') && ! empty($in_can_edit)))
 		{
 			$editable = TRUE;
 		}
@@ -143,8 +145,10 @@ class CategoryGroup extends StructureModel {
 		$can_delete = explode('|', rtrim($this->can_delete_categories, '|'));
 		$deletable = FALSE;
 
+		$in_can_delete = array_intersect($member_roles, $can_delete);
+
 		if (ee('Permission')->isSuperAdmin()
-			|| (ee('Permission')->can('delete_categories') && ! empty(array_intersect($member_roles, $can_delete))))
+			|| (ee('Permission')->can('delete_categories') && ! empty($in_can_delete)))
 		{
 			$deletable = TRUE;
 		}

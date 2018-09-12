@@ -59,10 +59,12 @@ class Template extends AbstractDesignController {
 		$template->site_id = ee()->config->item('site_id');
 		$template->TemplateGroup = $group;
 
+		$dup_id = ee()->input->post('template_id');
+
 		// Duplicate a template?
-		if ( ! empty(ee()->input->post('template_id')))
+		if ( ! empty($dup_id))
 		{
-			$master_template = ee('Model')->get('Template', ee()->input->post('template_id'))
+			$master_template = ee('Model')->get('Template', $dup_id)
 				->first();
 
 			$properties = $master_template->getValues();
