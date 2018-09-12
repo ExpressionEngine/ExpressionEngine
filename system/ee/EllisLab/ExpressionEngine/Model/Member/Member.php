@@ -208,7 +208,7 @@ class Member extends ContentModel {
 
 	protected static $_field_data = array(
 		'field_model'     => 'MemberField',
-		'structure_model' => 'Role',
+		'structure_model' => 'Member',
 	);
 
 	protected static $_validation_rules = array(
@@ -629,13 +629,7 @@ class Member extends ContentModel {
 	 */
 	public function getStructure()
 	{
-		if ( ! $structure = ee()->session->cache(__CLASS__, "getStructure({$this->role_id})"))
-		{
-			$structure = $this->PrimaryRole;
-			ee()->session->set_cache(__CLASS__, "getStructure({$this->role_id})", $structure);
-		}
-
-		return $structure;
+		return $this;
 	}
 
 	/**
@@ -1157,6 +1151,31 @@ class Member extends ContentModel {
 	public function isBanned()
 	{
 		return in_array(2, $this->getAllRoles()->pluck('role_id'));
+	}
+
+	/**
+	 * Returns array of field models; implements StructureModel interface
+	 */
+	public function getAllCustomFields()
+	{
+		$member_cfields = ee()->session->cache('EllisLab::RoleModel', 'getCustomFields');
+
+		// might be empty, so need to be specific
+		if ( ! is_array($member_cfields))
+		{
+			$member_cfields = $this->getModelFacade()->get('MemberField')->all()->asArray();
+			ee()->session->set_cache('EllisLab::RoleModel', 'getCustomFields', $member_cfields);
+		}
+
+		return $member_cfields;
+	}
+
+	/**
+	 * Returns name of content type for these fields; implements StructureModel interface
+	 */
+	public function getContentType()
+	{
+		return 'member';
 	}
 }
 
