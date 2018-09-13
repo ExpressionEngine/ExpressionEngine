@@ -2460,33 +2460,18 @@ GRID_FALLBACK;
 
 		ee()->lang->loadfile('content');
 
+		$assigned_statuses = $this->member->getAssignedStatuses()->indexBy('status_id');
+
 		foreach ($this->channel->Statuses as $index => $status)
 		{
-			$this->statuses[$index]['status_id'] = $status->getId();
-			$this->statuses[$index]['status'] = $status->status;
-			$this->statuses[$index]['selected'] = ($status->status == $this->entry('status'))
-				? ' selected="selected"' : '';
-			$this->statuses[$index]['checked'] = ($status->status == $this->entry('status'))
-				? ' checked="checked"' : '';
-		}
-
-		$member_group_id = $this->member->MemberGroup->getId();
-
-		$no_access = ee()->db->where('member_group', $member_group_id)
-								  ->get('status_no_access')
-								  ->result_array();
-		$remove = array();
-
-		foreach ($no_access as $no)
-		{
-			$remove[] = $no['status_id'];
-		}
-
-		foreach ($this->statuses as $idx => $status)
-		{
-			if (in_array($status['status_id'], $remove))
+			if (isset($assigned_statuses[$status->getId()]))
 			{
-				unset($this->statuses[$idx]);
+				$this->statuses[$index]['status_id'] = $status->getId();
+				$this->statuses[$index]['status'] = $status->status;
+				$this->statuses[$index]['selected'] = ($status->status == $this->entry('status'))
+					? ' selected="selected"' : '';
+				$this->statuses[$index]['checked'] = ($status->status == $this->entry('status'))
+					? ' checked="checked"' : '';
 			}
 		}
 	}
