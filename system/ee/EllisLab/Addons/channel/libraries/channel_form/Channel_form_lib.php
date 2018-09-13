@@ -144,7 +144,7 @@ class Channel_form_lib
 		$this->fetch_logged_out_member(ee()->TMPL->fetch_param('logged_out_member_id'));
 
 		$member_id = ee()->session->userdata('member_id') ?: $this->logged_out_member_id;
-		$this->member = ee('Model')->get('Member', $member_id)->with('MemberGroup')->first();
+		$this->member = ee('Model')->get('Member', $member_id)->first();
 
 		if ( ! $this->member)
 		{
@@ -155,7 +155,7 @@ class Channel_form_lib
 		$assigned_channels = $this->member->getAssignedChannels()->pluck('channel_id');
 
 		// Can they post?
-		if ( ! in_array($this->channel('channel_id'), $assigned_channels) && (int) $this->member->MemberGroup->getId() != 1)
+		if ( ! in_array($this->channel('channel_id'), $assigned_channels) && ! ee('Permission')->isSuperAdmin())
 		{
 			ee()->config->set_item('site_id', $current_site_id);
 			return ee()->TMPL->no_results();
@@ -1410,7 +1410,7 @@ GRID_FALLBACK;
 		}
 
 		$member_id = ee()->session->userdata('member_id') ?: $this->logged_out_member_id;
-		$this->member = ee('Model')->get('Member', $member_id)->with('MemberGroup')->first();
+		$this->member = ee('Model')->get('Member', $member_id)->first();
 
 		if ( ! $this->member)
 		{
@@ -1774,7 +1774,7 @@ GRID_FALLBACK;
 			$_POST['categories'] = array('cat_group_id_'.$cat_groups[0] => (is_array($_POST['category'])) ? $_POST['category'] : [$_POST['category']]);
 		}
 
-		if (in_array($this->channel('channel_id'), $this->member->getAssignedChannels()->pluck('channel_id')) OR (int) $this->member->MemberGroup->getId() == 1)
+		if (in_array($this->channel('channel_id'), $this->member->getAssignedChannels()->pluck('channel_id')) OR ee('Permission')->isSuperAdmin())
 		{
 			$entry_data = array_filter(
 				$_POST,

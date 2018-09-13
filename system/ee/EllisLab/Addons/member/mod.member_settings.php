@@ -122,9 +122,7 @@ class Member_settings extends Member {
 		ee()->load->model('member_model');
 
 		$member = ee('Model')->get('Member', (int)$this->cur_id)
-			->with('MemberGroup')
-			->filter('group_id', 'NOT IN', $not_in)
-			->filter('MemberGroup.site_id', ee()->config->item('site_id'))
+			->filter('role_id', 'NOT IN', $not_in)
 			->first();
 
 		if ( ! $member)

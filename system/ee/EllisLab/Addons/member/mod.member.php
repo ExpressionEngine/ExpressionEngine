@@ -2219,7 +2219,6 @@ class Member {
 
 		$member = ee('Model')
 			->get('Member', $member_id)
-			->with('MemberGroup')
 			->first();
 
 		if ( ! $member)
