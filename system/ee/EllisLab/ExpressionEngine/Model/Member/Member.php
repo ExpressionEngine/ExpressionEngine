@@ -1044,6 +1044,11 @@ class Member extends ContentModel {
 
 	public function getAssignedModules()
 	{
+		if ($this->isSuperAdmin())
+		{
+			return $this->getModelFacade()->get('Module')->all();
+		}
+
 		$modules = [];
 		foreach ($this->getAllRoles() as $role)
 		{
@@ -1058,6 +1063,11 @@ class Member extends ContentModel {
 
 	public function getAssignedChannels()
 	{
+		if ($this->isSuperAdmin())
+		{
+			return $this->getModelFacade()->get('Channel')->all();
+		}
+
 		$channels = [];
 		foreach ($this->getAllRoles() as $role)
 		{
@@ -1072,6 +1082,11 @@ class Member extends ContentModel {
 
 	public function getAssignedUploadDestinations()
 	{
+		if ($this->isSuperAdmin())
+		{
+			return $this->getModelFacade()->get('UploadDestination')->all();
+		}
+
 		$uploads = [];
 		foreach ($this->getAllRoles() as $role)
 		{
@@ -1086,6 +1101,11 @@ class Member extends ContentModel {
 
 	public function getAssignedStatuses()
 	{
+		if ($this->isSuperAdmin())
+		{
+			return $this->getModelFacade()->get('Status')->all();
+		}
+
 		$statuses = [];
 		foreach ($this->getAllRoles() as $role)
 		{
@@ -1100,6 +1120,11 @@ class Member extends ContentModel {
 
 	public function getAssignedTemplates()
 	{
+		if ($this->isSuperAdmin())
+		{
+			return $this->getModelFacade()->get('Template')->all();
+		}
+
 		$templates = [];
 		foreach ($this->getAllRoles() as $role)
 		{
