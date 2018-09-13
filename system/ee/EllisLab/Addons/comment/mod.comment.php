@@ -1762,7 +1762,7 @@ class Comment {
 
 			// Membership is pending
 
-			if (ee()->session->userdata['group_id'] == 4)
+			if (ee()->session->getMember()->isPending())
 			{
 				return ee()->output->show_user_error('general', ee()->lang->line('cmt_account_not_active'));
 			}
