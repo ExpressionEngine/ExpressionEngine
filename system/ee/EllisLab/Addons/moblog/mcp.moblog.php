@@ -624,11 +624,9 @@ EOT;
 				array('0', lang('none'))
 			);
 
-			$super_admins = ee('Model')->get('Member')
-				->filter('group_id', 1)
-				->all();
+			$super_admins = ee('Model')->get('Role', 1)->first();
 
-			foreach ($super_admins as $admin)
+			foreach ($super_admins->Members as $admin)
 			{
 				$authors[] = array($admin->getId(), $admin->getMemberName());
 			}
@@ -782,19 +780,17 @@ MAGIC;
 			$sizes_array[$row['upload_location_id']][$row['id']] = $row['short_name'];
 		}
 
-		$upload_q = ee()->file_upload_preferences_model->get_file_upload_preferences(ee()->session->userdata['group_id']);
-
-		foreach ($upload_q as $row)
+		foreach (ee()->session->getMember()->getAssignedUploadDestinations() as $destination)
 		{
-			$this->image_dim_array[$row['id']] = array('0' => lang('none'));
-			$this->upload_loc_array[$row['id']] = $row['name'];
+			$this->image_dim_array[$destination->id] = array('0' => lang('none'));
+			$this->upload_loc_array[$destination->id] = $destination->name;
 
 			// Get sizes
-			if (isset($sizes_array[$row['id']]))
+			if (isset($sizes_array[$destination->id]))
 			{
-				foreach ($sizes_array[$row['id']] as $id => $title)
+				foreach ($sizes_array[$destination->id] as $id => $title)
 				{
-					$this->image_dim_array[$row['id']][$id] = $title;
+					$this->image_dim_array[$destination->id][$id] = $title;
 				}
 			}
 		}
