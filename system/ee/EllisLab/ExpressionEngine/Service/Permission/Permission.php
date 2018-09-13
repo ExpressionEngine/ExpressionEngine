@@ -81,6 +81,19 @@ class Permission {
 		return in_array($role, $this->roles);
 	}
 
+	public function hasAnyRole($roles)
+	{
+		foreach ($roles as $role)
+		{
+			if ($this->hasRole($role))
+			{
+				return TRUE;
+			}
+		}
+
+		return FALSE;
+	}
+
 	/**
 	 * Has a single permission
 	 *
