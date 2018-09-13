@@ -291,36 +291,7 @@ EOT;
 				? $channel->Site->site_label.' - '.$channel->channel_title : $channel->channel_title;
 		}
 
-		$author_options = array();
-
-		// First, get member groups who should be in the list
-		$member_groups = ee('Model')->get('MemberGroup')
-			->with('AssignedChannels')
-			->filter('include_in_authorlist', 'y')
-			->fields('group_id')
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
-
-		// Then authors who are individually selected to appear in author list
-		$authors = ee('Model')->get('Member')
-			->fields('username', 'screen_name')
-			->filter('in_authorlist', 'y');
-
-		// Then grab any members that are part of the member groups we found
-		if ($member_groups->count())
-		{
-			$authors->orFilter('group_id', 'IN', $member_groups->pluck('group_id'));
-		}
-
-		$authors->order('screen_name');
-		$authors->order('username');
-
-		foreach ($authors->all() as $author)
-		{
-			$author_options[$author->getId()] = $author->getMemberName();
-		}
-
-		$moblog_authors = $author_options;// ee('Model')->get('Member')->fields('member_id', 'screen_name')->limit(100)->all()->getDictionary('member_id', 'screen_name');
+		$moblog_authors = ee('Member')->getAuthors(NULL, FALSE);
 
 		$vars['sections'] = array(
 			array(
