@@ -1118,6 +1118,25 @@ class Member extends ContentModel {
 		return new Collection($statuses);
 	}
 
+	public function getAssignedTemplateGroups()
+	{
+		if ($this->isSuperAdmin())
+		{
+			return $this->getModelFacade()->get('TemplateGroup')->all();
+		}
+
+		$template_groups = [];
+		foreach ($this->getAllRoles() as $role)
+		{
+			foreach ($role->AssignedTemplateGroups as $template_group)
+			{
+				$template_groups[$template_group->getId()] = $template_group;
+			}
+		}
+
+		return new Collection($template_groups);
+	}
+
 	public function getAssignedTemplates()
 	{
 		if ($this->isSuperAdmin())
