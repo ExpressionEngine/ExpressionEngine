@@ -57,7 +57,7 @@ class Group extends AbstractDesignController {
 			});
 
 		// Not a superadmin?  Preselect their member group as allowed to view templates
-		$selected_roles = ( ! ee('Permission')->isSuperAdmin()) ? array($this->session->userdata('group_id')) : array();
+		$selected_roles = ( ! ee('Permission')->isSuperAdmin()) ? ee()->session->getMember()->getAllRoles()->pluck('role_id') : array();
 
 		// only roles with design manager access
 		$roles = ee('Model')->get('Role', ee('Permission')->rolesThatCan('access_design'))
@@ -86,12 +86,16 @@ class Group extends AbstractDesignController {
 					elseif ( ! ee('Permission')->isSuperAdmin() AND ! ee('Permission')->can('admin_mbr_groups'))
 					{
 						// No permission to admin, so their group is automatically added to the template group
-						$group->Roles = ee('Model')->get('Role', $this->session->userdata('group_id'))->first();
+						$group->Roles = ee()->session->getMember()->getAllRoles()->pluck('role_id');
 					}
 
 					// Does the current member have permission to access the template group they just created?
 					$roles = $group->Roles->pluck('role_id');
-					$redirect_name = (ee('Permission')->isSuperAdmin() OR in_array($this->session->userdata('group_id'), $roles)) ? TRUE : FALSE;
+					$member_roles = ee()->session->getMember()->getAllRoles()->pluck('role_id');
+
+					$allowed = array_intersect($member_roles, $roles);
+
+					$redirect_name = (ee('Permission')->isSuperAdmin() OR ! empty($allowed)) ? TRUE : FALSE;
 
 					$group->save();
 
@@ -286,9 +290,13 @@ class Group extends AbstractDesignController {
 						}
 					}
 
-					// Does the current member have permission to access the template group they just edited?
+					// Does the current member have permission to access the template group they just created?
 					$roles = $group->Roles->pluck('role_id');
-					$redirect_name = (ee('Permission')->isSuperAdmin() OR in_array($this->session->userdata('group_id'), $roles)) ? TRUE : FALSE;
+					$member_roles = ee()->session->getMember()->getAllRoles()->pluck('role_id');
+
+					$allowed = array_intersect($member_roles, $roles);
+
+					$redirect_name = (ee('Permission')->isSuperAdmin() OR ! empty($allowed)) ? TRUE : FALSE;
 
 					$group->save();
 
