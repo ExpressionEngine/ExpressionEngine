@@ -543,6 +543,44 @@ class Filesystem {
 	{
 		return $path;
 	}
+
+	/**
+	 * Gets the contents of a directory as a flat array, with the option of
+	 * returning a recursive listing
+	 *
+	 * @param String $path Directory to search
+	 * @param bool $recursive Whether or not to do a recursive search
+	 * @param array Array of all paths found inside the specified directory
+	 */
+	public function getDirectoryContents($path, $recursive = FALSE)
+	{
+		if ( ! $this->exists($path))
+		{
+			throw new FilesystemException('Cannot get contents of path, the path is invalid: '.$path);
+		}
+
+		if ( ! $this->isDir($path))
+		{
+			throw new FilesystemException('Cannot get contents of path, the path is not a directory: '.$path);
+		}
+
+		$contents = new FilesystemIterator($this->normalize($path));
+		$contents_array = [];
+
+		foreach ($contents as $item)
+		{
+			if ($item->isDir() && $recursive)
+			{
+				$contents_array += $this->getDirectoryContents($item->getPathname(), $recursive);
+			}
+			else
+			{
+				$contents_array[] = $item->getPathName();
+			}
+		}
+
+		return $contents_array;
+	}
 }
 
 // EOF
