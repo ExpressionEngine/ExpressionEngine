@@ -221,43 +221,12 @@ class Metaweblog_api_mcp {
 
 		// Get the directories
 		$upload_directories = array(0 => lang('none'));
-		// Any group restrictions?
-		if (ee()->session->userdata['group_id'] !== 1)
+
+		foreach (ee()->session->getMember()->getAssignedUploadDestinations() as $destination)
 		{
-			ee()->db->select('upload_id');
-			$no_access = ee()->db->get_where('upload_no_access', array('member_group' => ee()->session->userdata['group_id']));
-
-			if (ee()->config->item('multiple_sites_enabled') !== 'y')
-			{
-				ee()->db->where('sites.site_id', 1);
-			}
-
-			if ($no_access->num_rows() > 0)
-			{
-				foreach ($no_access->result() as $row)
-				{
-					ee()->db->where('id', $row->upload_id);
-				}
-			}
-		}
-
-		// Grab them (the above restrictions still apply)
-		ee()->db->select('id, name, site_label');
-		ee()->db->from('upload_prefs');
-		ee()->db->from('sites');
-		ee()->db->where(ee()->db->dbprefix.'upload_prefs.site_id = '.ee()->db->dbprefix.'sites.site_id', NULL, FALSE);
-		ee()->db->order_by('name');
-
-		$query = ee()->db->get();
-
-		if ($query->num_rows() > 0)
-		{
-			foreach($query->result() as $row)
-			{
-				$upload_directories[$row->id] = (ee()->config->item('multiple_sites_enabled') === 'y')
-					? ['label' => $row->name, 'instructions' => $row->site_label]
-					: $row->name;
-			}
+			$upload_directories[$destination->getId()] = (ee()->config->item('multiple_sites_enabled') === 'y')
+				? ['label' => $destination->name, 'instructions' => $destination->Site->site_label]
+				: $destination->name;
 		}
 
 		$vars = array(
