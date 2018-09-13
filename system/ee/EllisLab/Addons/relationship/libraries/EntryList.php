@@ -48,7 +48,7 @@ class EntryList {
 
 		$entries = ee('Model')->get('ChannelEntry')
 			->with('Channel')
-			->fields('Channel.*', 'entry_id', 'title', 'channel_id')
+			->fields('Channel.channel_title', 'title')
 			->order($order_field, $order_dir);
 
 		if ($related == 'related')
