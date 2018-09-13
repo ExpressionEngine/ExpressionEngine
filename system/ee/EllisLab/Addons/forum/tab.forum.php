@@ -355,7 +355,6 @@ class Forum_tab {
 	{
 		$allowed = array();
 
-		$group_id = ee()->session->userdata('group_id');
 		$member_id = ee()->session->userdata('member_id');
 
 		// Get Admins
@@ -377,14 +376,13 @@ class Forum_tab {
 								->where('f.forum_is_cat', 'n')
 								->get();
 
+		$member = ee()->session->getMember();
+		$role_ids = $member->getAllRoles()->pluck('role_id');
+
 		foreach ($forums->result() as $row)
 		{
 			$perms = unserialize(stripslashes($row->forum_permissions));
 			$can_post_topics = ( ! isset($perms['can_post_topics'])) ? [] : explode('|', trim($perms['can_post_topics'], '|'));
-
-			$member = ee()->session->getMember();
-			$role_ids = $member->getAllRoles()->pluck('role_id');
-
 			$can_post = array_intersect($can_post_topics, $role_ids);
 
 			if (empty($can_post))
@@ -396,7 +394,7 @@ class Forum_tab {
 						continue;
 					}
 					elseif ($admins[$row->board_id]['member_id'] != $member_id &&
-					 	$admins[$row->board_id]['group_id'] != $group_id)
+					 	! in_array($admins[$row->board_id]['group_id'], $role_ids))
 					{
 						continue;
 					}
