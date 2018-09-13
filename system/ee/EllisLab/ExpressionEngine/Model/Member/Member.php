@@ -1150,7 +1150,12 @@ class Member extends ContentModel {
 
 	public function isBanned()
 	{
-		return in_array(2, $this->getAllRoles()->pluck('role_id'));
+		return $this->role_id == 2 || in_array(2, $this->getAllRoles()->pluck('role_id'));
+	}
+
+	public function isPending()
+	{
+		return $this->role_id == 3 || in_array(3, $this->getAllRoles()->pluck('role_id'));
 	}
 
 	/**
