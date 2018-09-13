@@ -132,12 +132,9 @@ class CategoryGroup extends StructureModel {
 	{
 		$can_edit = explode('|', rtrim($this->can_edit_categories, '|'));
 		$editable = FALSE;
-		$member_roles = ee()->session->getMember()->getAllRoles()->pluck('role_id');
-
-		$in_can_edit = array_intersect($member_roles, $can_edit);
 
 		if (ee('Permission')->isSuperAdmin()
-			|| (ee('Permission')->can('edit_categories') && ! empty($in_can_edit)))
+			|| (ee('Permission')->can('edit_categories') && ee('Permission')->hasAnyRole($can_edit)))
 		{
 			$editable = TRUE;
 		}

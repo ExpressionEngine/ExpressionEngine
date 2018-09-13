@@ -90,12 +90,7 @@ class Group extends AbstractDesignController {
 					}
 
 					// Does the current member have permission to access the template group they just created?
-					$roles = $group->Roles->pluck('role_id');
-					$member_roles = ee()->session->getMember()->getAllRoles()->pluck('role_id');
-
-					$allowed = array_intersect($member_roles, $roles);
-
-					$redirect_name = (ee('Permission')->isSuperAdmin() OR ! empty($allowed)) ? TRUE : FALSE;
+					$redirect_name = (ee('Permission')->isSuperAdmin() OR ee('Permission')->hasAnyRole($roles)) ? TRUE : FALSE;
 
 					$group->save();
 
@@ -292,11 +287,7 @@ class Group extends AbstractDesignController {
 
 					// Does the current member have permission to access the template group they just created?
 					$roles = $group->Roles->pluck('role_id');
-					$member_roles = ee()->session->getMember()->getAllRoles()->pluck('role_id');
-
-					$allowed = array_intersect($member_roles, $roles);
-
-					$redirect_name = (ee('Permission')->isSuperAdmin() OR ! empty($allowed)) ? TRUE : FALSE;
+					$redirect_name = (ee('Permission')->isSuperAdmin() OR ee('Permission')->hasAnyRole($roles)) ? TRUE : FALSE;
 
 					$group->save();
 

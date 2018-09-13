@@ -305,10 +305,8 @@ class Categories extends AbstractCategoriesController {
 		if (AJAX_REQUEST)
 		{
 			$can_edit = explode('|', rtrim($cat_group->can_edit_categories, '|'));
-			$member_roles = ee()->session->getMember()->getAllRoles()->pluck('role_id');
-			$in_can_edit = array_intersect($member_roles, $can_edit);
 
-			if ( ! ee('Permission')->isSuperAdmin() AND empty($in_can_edit))
+			if ( ! ee('Permission')->isSuperAdmin() AND ! ee('Permission')->hasAnyRole($can_edit))
 			{
 				show_error(lang('unauthorized_access'), 403);
 			}
