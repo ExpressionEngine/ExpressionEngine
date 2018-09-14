@@ -906,59 +906,7 @@ class EE_Functions {
 	 */
 	public function fetch_assigned_channels($all_sites = FALSE)
 	{
-		$allowed_channels = array();
-
-		if (REQ == 'CP' AND isset(ee()->session->userdata['assigned_channels']) && $all_sites === FALSE)
-		{
-			$allowed_channels = array_keys(ee()->session->userdata['assigned_channels']);
-		}
-		elseif (ee('Permission')->isSuperAdmin())
-		{
-			if ($all_sites === TRUE)
-			{
-				ee()->db->select('channel_id');
-				$query = ee()->db->get('channels');
-			}
-			else
-			{
-				ee()->db->select('channel_id');
-				ee()->db->where('site_id', ee()->config->item('site_id'));
-				$query = ee()->db->get('channels');
-			}
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$allowed_channels[] = $row['channel_id'];
-				}
-			}
-		}
-		else
-		{
-			if ($all_sites === TRUE)
-			{
-				$result = ee()->db->query("SELECT exp_channel_member_groups.channel_id FROM exp_channel_member_groups
-									  WHERE exp_channel_member_groups.group_id = '".ee()->db->escape_str(ee()->session->userdata['group_id'])."'");
-			}
-			else
-			{
-				$result = ee()->db->query("SELECT exp_channels.channel_id FROM exp_channels, exp_channel_member_groups
-									  WHERE exp_channels.channel_id = exp_channel_member_groups.channel_id
-									  AND exp_channels.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'
-									  AND exp_channel_member_groups.group_id = '".ee()->db->escape_str(ee()->session->userdata['group_id'])."'");
-			}
-
-			if ($result->num_rows() > 0)
-			{
-				foreach ($result->result_array() as $row)
-				{
-					$allowed_channels[] = $row['channel_id'];
-				}
-			}
-		}
-
-		return array_values($allowed_channels);
+		return ee()->session->getMember()->getAssignedChannels()->pluck('channel_id');
 	}
 
 	/**
