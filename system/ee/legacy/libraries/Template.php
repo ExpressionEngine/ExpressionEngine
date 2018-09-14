@@ -2624,12 +2624,9 @@ class EE_Template {
 		// Is the current user allowed to view this template?
 		if ($query->row('enable_http_auth') != 'y' && ! ee('Permission')->isSuperAdmin())
 		{
-			ee()->db->select('COUNT(*) as count');
-			ee()->db->where('template_id', $query->row('template_id'));
-			ee()->db->where('member_group', ee()->session->userdata('group_id'));
-			$result = ee()->db->get('template_no_access');
+			$templates = ee()->session->getMemberI()->getAssignedTemplates()->pluck('template_id');
 
-			if ($result->row('count') > 0)
+			if ( ! in_array($query->row('template_id'), $templates))
 			{
 				$this->log_item("No Template Access Privileges");
 
@@ -2651,12 +2648,7 @@ class EE_Template {
 						->get();
 
 					// If the redirect template is not allowed, give them a 404
-					ee()->db->select('COUNT(*) as count');
-					ee()->db->where('template_id', $query->row('template_id'));
-					ee()->db->where('member_group', ee()->session->userdata('group_id'));
-					$result = ee()->db->get('template_no_access');
-
-					if ($result->row('count') > 0)
+					if ( ! in_array($query->row('template_id'), $templates))
 					{
 						$this->log_item("Access redirect denied, Show 404");
 
