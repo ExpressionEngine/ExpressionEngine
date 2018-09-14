@@ -1238,19 +1238,14 @@ class Member_model extends CI_Model {
 			return TRUE;
 		}
 
-		if ( ! $group_id)
+		$assigned_modules = [];
+
+		foreach (ee()->session->getMember()->getAssignedModules()->pluck('module_name') as $assigned_module)
 		{
-			$group_id = $this->session->userdata('group_id');
+			$assigned_modules[] = strtolower($assigned_module);
 		}
 
-		$this->db->select('modules.module_id, module_member_groups.group_id');
-		$this->db->where('LOWER('.$this->db->dbprefix.'modules.module_name)', strtolower($module));
-		$this->db->join('module_member_groups', 'module_member_groups.module_id = modules.module_id');
-		$this->db->where('module_member_groups.group_id', $group_id);
-
-		$query = $this->db->get('modules');
-
-		return ($query->num_rows() === 0) ? FALSE : TRUE;
+		return in_array(strtolower($module), $assigned_modules);
 	}
 
 
