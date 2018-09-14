@@ -127,7 +127,7 @@ abstract class AbstractFiles extends CP_Controller {
 				$member = ee()->session->getMember();
 				$upload_destinations = $upload_destinations->filter(function($dir) use ($member)
 				{
-					return $dir->memberHasAccess($member_group);
+					return $dir->memberHasAccess($member);
 				});
 			}
 
