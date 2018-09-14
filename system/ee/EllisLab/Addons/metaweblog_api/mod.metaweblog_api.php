@@ -1150,7 +1150,7 @@ class Metaweblog_api {
 
 		// load userdata from Auth object, a few fields from the members table, but most from the group
 
-		foreach (array('screen_name', 'member_id', 'email', 'url', 'group_id') as $member_item)
+		foreach (array('screen_name', 'member_id', 'email', 'url', 'role_id') as $member_item)
 		{
 			$this->userdata[$member_item] = $auth->member($member_item);
 		}
@@ -1164,32 +1164,14 @@ class Metaweblog_api {
 		/**  Find Assigned Channels
 		/** -------------------------------------------------*/
 
-		$assigned_channels = array();
+		$assigned_channels = ee()->session->getMember()->getAssignedChannels()->pluck('channel_id');
 
-		if ($this->userdata['group_id'] == 1)
+		if (empty($assigned_channels))
 		{
-			$result = ee()->db->query("SELECT channel_id FROM exp_channels");
-		}
-		else
-		{
-			$result = ee()->db->query("SELECT channel_id FROM exp_channel_member_groups WHERE group_id = '".$this->userdata['group_id']."'");
-		}
-
-		if ($result->num_rows() > 0)
-		{
-			foreach ($result->result_array() as $row)
-			{
-				$assigned_channels[] = $row['channel_id'];
-			}
-		}
-		else
-		{
-
 			return FALSE; // Nowhere to Post!!
 		}
 
 		$this->userdata['assigned_channels'] = $assigned_channels;
-
 
 		ee()->session->userdata = array_merge(
 			ee()->session->userdata,
