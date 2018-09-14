@@ -66,7 +66,7 @@ class File_field {
 		// for this field
 		$upload_dirs[''] = lang('directory');
 		$upload_dirs = ee()->file_upload_preferences_model->get_dropdown_array(
-			ee()->session->userdata('group_id'),
+			NULL,
 			$allowed_file_dirs,
 			$upload_dirs
 		);
