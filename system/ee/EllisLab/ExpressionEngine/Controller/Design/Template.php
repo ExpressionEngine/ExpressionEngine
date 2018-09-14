@@ -999,7 +999,7 @@ class Template extends AbstractDesignController {
 							'choices' => $roles,
 							'value' => $template->Roles->pluck('role_id'),
 							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								'text' => sprintf(lang('no_found'), lang('roles'))
 							]
 						)
 					)

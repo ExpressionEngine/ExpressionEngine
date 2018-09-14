@@ -196,7 +196,7 @@ class Status extends AbstractChannelsController {
 							'choices' => $roles,
 							'value' => $status->Roles->pluck('role_id'),
 							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								'text' => sprintf(lang('no_found'), lang('roles'))
 							]
 						)
 					)
