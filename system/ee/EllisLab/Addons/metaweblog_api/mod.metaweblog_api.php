@@ -1464,7 +1464,7 @@ class Metaweblog_api {
 
 		if ( ! ee('Permission')->isSuperAdmin())
 		{
-			$assigned_upload_dest = ee()->session->getMember()->getAssignedUploadDestinations()->indexBy('channel_id');
+			$assigned_upload_dest = ee()->session->getMember()->getAssignedUploadDestinations()->indexBy('id');
 
 			if ( ! isset($assigned_upload_dest[$this->upload_dir]))
 			{
