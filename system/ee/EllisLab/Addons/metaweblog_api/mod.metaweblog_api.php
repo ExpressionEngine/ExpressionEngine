@@ -556,7 +556,7 @@ class Metaweblog_api {
 			$this->channel_id = $this->entry->channel_id;
 
 
-			if ( ! in_array($this->channel_id, array_keys($this->userdata['assigned_channels'])) && $this->userdata['group_id'] != '1')
+			if ( ! in_array($this->channel_id, array_keys($this->userdata['assigned_channels'])) && ! ee('Permission')->isSuperAdmin())
 			{
 				return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 			}
@@ -684,7 +684,7 @@ class Metaweblog_api {
 			return ee()->xmlrpc->send_error_message('805', ee()->lang->line('no_entries_found'));
 		}
 
-		if ( ! in_array($this->channel_id, array_keys($this->userdata['assigned_channels'])) && $this->userdata['group_id'] != '1')
+		if ( ! in_array($this->channel_id, array_keys($this->userdata['assigned_channels'])) && ! ee('Permission')->isSuperAdmin())
 		{
 			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 		}
@@ -914,7 +914,7 @@ class Metaweblog_api {
 			return ee()->xmlrpc->send_error_message('805', ee()->lang->line('no_entries_found'));
 		}
 
-		if ( ! in_array($query->row('channel_id'), array_keys($this->userdata['assigned_channels'])) && $this->userdata['group_id'] != '1')
+		if ( ! in_array($query->row('channel_id'), array_keys($this->userdata['assigned_channels'])) && ! ee('Permission')->isSuperAdmin())
 		{
 			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 		}
@@ -971,7 +971,7 @@ class Metaweblog_api {
 			return ee()->xmlrpc->send_error_message('804', ee()->lang->line('invalid_channel'));
 		}
 
-		if ($this->userdata['group_id'] != '1' && ! in_array($query->row('channel_id') , $this->userdata['assigned_channels']))
+		if ( ! ee('Permission')->isSuperAdmin() && ! in_array($query->row('channel_id') , $this->userdata['assigned_channels']))
 		{
 			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 		}
@@ -1049,7 +1049,7 @@ class Metaweblog_api {
 			return ee()->xmlrpc->send_error_message('805', ee()->lang->line('no_entry_found'));
 		}
 
-		if ( ! in_array($query->row('channel_id'), array_keys($this->userdata['assigned_channels'])) && $this->userdata['group_id'] != '1')
+		if ( ! in_array($query->row('channel_id'), array_keys($this->userdata['assigned_channels'])) && ! ee('Permission')->isSuperAdmin())
 		{
 			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 		}
@@ -1155,10 +1155,10 @@ class Metaweblog_api {
 			$this->userdata[$member_item] = $auth->member($member_item);
 		}
 
-		foreach (ee()->db->list_fields('member_groups') as $field)
-		{
-			$this->userdata[$field] = $auth->group($field);
-		}
+		// foreach (ee()->db->list_fields('member_groups') as $field)
+		// {
+		// 	$this->userdata[$field] = $auth->group($field);
+		// }
 
 		/** -------------------------------------------------
 		/**  Find Assigned Channels
@@ -1197,7 +1197,7 @@ class Metaweblog_api {
 			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
-		if ($this->userdata['group_id'] != '1' && ! in_array($parameters['0'], $this->userdata['assigned_channels']))
+		if ( ! ee('Permission')->isSuperAdmin() && ! in_array($parameters['0'], $this->userdata['assigned_channels']))
 		{
 			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_channel'));
 		}
@@ -1250,7 +1250,7 @@ class Metaweblog_api {
 			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
-		if ($this->userdata['group_id'] != '1' && ! in_array($parameters['0'], $this->userdata['assigned_channels']))
+		if ( ! ee('Permission')->isSuperAdmin() && ! in_array($parameters['0'], $this->userdata['assigned_channels']))
 		{
 			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_channel'));
 		}
@@ -1316,7 +1316,7 @@ class Metaweblog_api {
 			$this->assign_parents = (ee()->config->item('auto_assign_cat_parents') == 'n') ? FALSE : TRUE;
 		}
 
-		if ( ! in_array($channel->channel_id, $this->userdata['assigned_channels']) && $this->userdata['group_id'] != '1')
+		if ( ! in_array($channel->channel_id, $this->userdata['assigned_channels']) && ! ee('Permission')->isSuperAdmin())
 		{
 			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_channel'));
 		}
@@ -1457,17 +1457,16 @@ class Metaweblog_api {
 			return ee()->xmlrpc->send_error_message('802', ee()->lang->line('invalid_access'));
 		}
 
-		if ($this->userdata['group_id'] != '1' && ! in_array($parameters['0'], $this->userdata['assigned_channels']))
+		if ( ! ee('Permission')->isSuperAdmin() && ! in_array($parameters['0'], $this->userdata['assigned_channels']))
 		{
 			return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_channel'));
 		}
 
-		if ($this->userdata['group_id'] != '1')
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
-			ee()->db->where('upload_id', $this->upload_dir);
-			ee()->db->where('member_group', $this->userdata['group_id']);
+			$assigned_upload_dest = ee()->session->getMember()->getAssignedUploadDestinations()->indexBy('channel_id');
 
-			if (ee()->db->count_all_results('upload_no_access') != 0)
+			if ( ! isset($assigned_upload_dest[$this->upload_dir]))
 			{
 				return ee()->xmlrpc->send_error_message('803', ee()->lang->line('invalid_access'));
 			}
