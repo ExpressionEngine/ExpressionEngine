@@ -283,7 +283,7 @@ class UploadDestination extends Model {
 	}
 
 	/**
-	 * Determines if the member group (by ID) has access permission to this
+	 * Determines if the member has access permission to this
 	 * upload destination.
 	 *
 	 * @throws InvalidArgumentException
