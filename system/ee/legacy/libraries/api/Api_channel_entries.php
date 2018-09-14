@@ -809,29 +809,24 @@ class Api_channel_entries extends Api {
 
 		if ( ! ee('Permission')->isSuperAdmin())
 		{
-			$disallowed_statuses = array();
+			$allowed_statuses = [];
 			$valid_statuses = ee('Model')->get('Channel', $this->channel_id)->first()
 				->Statuses
 				->getDictionary('status_id', 'status');
 
+			$assigned_statusues = ee()->session->getMember()
+				->getAssignedStatuses()
+				->getDictionary('status_id', 'status');
+
 			foreach ($valid_statuses as $status_id => $status)
 			{
-				$valid_statuses[$status_id] = strtolower($status); // lower case to match MySQL's case-insensitivity
-			}
-
-			$query = ee()->status_model->get_disallowed_statuses(ee()->session->userdata('group_id'));
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
+				if (isset($assigned_statusues[$status_id]))
 				{
-					$disallowed_statuses[$row['status_id']] = strtolower($row['status']); // lower case to match MySQL's case-insensitivity
+					$allowed_statuses[$status_id] = strtolower($status); // lower case to match MySQL's case-insensitivity
 				}
-
-				$valid_statuses = array_diff_assoc($valid_statuses, $disallowed_statuses);
 			}
 
-			if ( ! in_array(strtolower($data['status']), $valid_statuses))
+			if ( ! in_array(strtolower($data['status']), $allowed_statuses))
 			{
 				// if there are no valid statuses, set to closed
 				$data['status'] = 'closed';
