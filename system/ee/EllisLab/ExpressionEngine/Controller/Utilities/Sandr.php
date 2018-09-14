@@ -134,11 +134,6 @@ class Sandr extends Utilities {
 					'file_properties',
 					'url'
 				),
-				'exp_member_groups' => array(
-					'group_title',
-					'group_description',
-					'mbr_delete_notify_emails'
-				),
 				'exp_global_variables'	=> array('variable_data'),
 				'exp_categories'		=> array('cat_image'),
 				'exp_forums'			=> array(
