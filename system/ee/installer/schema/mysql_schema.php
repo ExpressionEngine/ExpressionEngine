@@ -948,7 +948,7 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE exp_templates_roles (
 			role_id int(10) unsigned NOT NULL,
 			template_id int(10) unsigned NOT NULL,
-			PRIMARY KEY `template_id_member_group` (`template_id`, `role_id`)
+			PRIMARY KEY `template_id_role_id` (`template_id`, `role_id`)
 		)";
 
 		// Specialty Templates
@@ -1474,36 +1474,36 @@ class EE_Schema {
 
 		$Q[] = ee()->db->insert_string('sites', $site);
 
-		// Member Groups
-		$member_groups = array(
+		// Roles
+		$roles = array(
 			array(
-				'group_title'                    => 'Super Admin',
-				'role_id'                        => 1,
-				'is_locked'                      => 'y',
-				'exclude_from_moderation'        => 'y',
-				'include_in_authorlist'          => 'y',
-				'search_flood_control'           => '0'
+				'name'                    => 'Super Admin',
+				'role_id'                 => 1,
+				'is_locked'               => 'y',
+				'exclude_from_moderation' => 'y',
+				'include_in_authorlist'   => 'y',
+				'search_flood_control'    => '0'
 			),
 			array(
-				'group_title'                    => 'Banned',
-				'role_id'                        => 2,
-				'include_in_memberlist'          => 'n',
-				'search_flood_control'           => '60'
+				'name'                    => 'Banned',
+				'role_id'                 => 2,
+				'include_in_memberlist'   => 'n',
+				'search_flood_control'    => '60'
 			),
 			array(
-				'group_title'                    => 'Guests',
-				'role_id'                        => 3,
-				'search_flood_control'           => '10'
+				'name'                    => 'Guests',
+				'role_id'                 => 3,
+				'search_flood_control'    => '10'
 			),
 			array(
-				'group_title'                    => 'Pending',
-				'role_id'                        => 4,
-				'search_flood_control'           => '10'
+				'name'                    => 'Pending',
+				'role_id'                 => 4,
+				'search_flood_control'    => '10'
 			),
 			array(
-				'group_title'                    => 'Members',
-				'role_id'                        => 5,
-				'search_flood_control'           => '10'
+				'name'                    => 'Members',
+				'role_id'                 => 5,
+				'search_flood_control'    => '10'
 			)
 		);
 
@@ -1511,21 +1511,21 @@ class EE_Schema {
 			return (is_string($value)) ? "'{$value}'" : $value;
 		};
 
-		foreach ($member_groups as $group)
+		foreach ($roles as $role)
 		{
 			$Q[] = "INSERT INTO exp_roles
 				(role_id, name)
-				VALUES (" . $group['role_id'] . ", '" . $group['group_title'] . "')";
+				VALUES (" . $role['role_id'] . ", '" . $role['name'] . "')";
 
-			unset($group['group_title']);
+			unset($role['name']);
 
 			$Q[] = "INSERT INTO exp_role_settings
-				(".implode(', ', array_keys($group)).")
-				VALUES (".implode(', ' , array_map($add_quotes, $group)).")";
+				(".implode(', ', array_keys($role)).")
+				VALUES (".implode(', ' , array_map($add_quotes, $role)).")";
 
 		}
 
-		$group_permissions = [
+		$role_permisisons = [
 			1 => [
 				'can_view_offline_system',
 				'can_access_cp',
@@ -1628,7 +1628,7 @@ class EE_Schema {
 			]
 		];
 
-		foreach ($group_permissions as $role_id => $permissions)
+		foreach ($role_permisisons as $role_id => $permissions)
 		{
 			foreach ($permissions as $permission)
 			{
