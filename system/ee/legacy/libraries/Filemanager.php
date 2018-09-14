@@ -1566,7 +1566,7 @@ class Filemanager {
 		ee()->load->model('file_upload_preferences_model');
 
 		$directories = ee()->file_upload_preferences_model->get_file_upload_preferences(
-			ee()->session->userdata('group_id'),
+			NULL,
 			NULL,
 			$ignore_site_id
 		);
@@ -2387,7 +2387,7 @@ class Filemanager {
 		ee()->load->model('file_upload_preferences_model');
 
 		$upload_dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(
-										ee()->session->userdata('group_id'),
+										NULL,
 										$file_dir_id);
 
 		$dirs = new stdclass();
