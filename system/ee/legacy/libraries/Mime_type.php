@@ -72,7 +72,7 @@ class Mime_type {
 			$excluded_member_groups = preg_split('/[\s|,]/', $excluded_member_groups, -1, PREG_SPLIT_NO_EMPTY);
 			$excluded_member_groups = is_array($excluded_member_groups) ? $excluded_member_groups : array($excluded_member_groups);
 
-			if (in_array(ee()->session->userdata('group_id'), $excluded_member_groups))
+			if (ee('Permission')->hasAnyRole($excluded_member_groups))
 			{
 				return TRUE;
 			}
