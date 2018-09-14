@@ -49,24 +49,7 @@ class Channel_form_session extends EE_Session
 			$this->userdata['group_id'] = $this->logged_out_group_id;
 		}
 
-		$this->userdata['assigned_channels'] = array();
-
-		ee()->db->select('exp_channels.channel_id, exp_channels.channel_title');
-		ee()->db->where('exp_channels.site_id', ee()->config->item('site_id'));
-		ee()->db->order_by('exp_channels.channel_title');
-
-		if ($this->userdata('group_id') != 1)
-		{
-			ee()->db->join('exp_channel_member_groups', 'exp_channel_member_groups.channel_id = exp_channels.channel_id');
-			ee()->db->where('exp_channel_member_groups.group_id', $this->userdata('group_id'));
-		}
-
-		$query = ee()->db->get('exp_channels');
-
-		foreach ($query->result() as $row)
-		{
-			$this->userdata['assigned_channels'][$row->channel_id] = $row->channel_title;
-		}
+		$this->userdata['assigned_channels'] = ee()->session->getMember()->getAssignedChannels()->getDictionary('channel_id', 'channel_title');
 	}
 
 	/**
