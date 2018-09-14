@@ -463,7 +463,7 @@ class Fields extends AbstractFieldsController {
 	{
 		$field->field_list_items = ($field->field_list_items) ?: '';
 		$field->field_order = ($field->field_order) ?: 0;
-		$field->site_id = ($field->site_id) ?: 0;
+		$field->site_id = (int) $field->site_id ?: 0;
 
 		$field->set($_POST);
 
