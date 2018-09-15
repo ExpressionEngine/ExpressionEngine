@@ -21,6 +21,27 @@ class Grid_images_ft extends Grid_ft {
 
 	public $settings_form_field_name = 'grid_images';
 
+	public function display_field($data)
+	{
+		$grid_markup = parent::display_field($data);
+
+		ee()->cp->add_js_script([
+			'file' => 'fields/grid/grid_images',
+		]);
+
+		return ee('View')->make('grid:grid_images')->render([
+			'grid_markup' => $grid_markup,
+			'lang' => [
+				'grid_images_choose_directory' => lang('grid_images_choose_directory'),
+				'grid_images_choose_existing' => lang('grid_images_choose_existing'),
+				'grid_images_drop_files' => lang('grid_images_drop_files'),
+				'grid_images_setup' => lang('grid_images_setup'),
+				'grid_images_uploading_to' => lang('grid_images_uploading_to'),
+				'grid_images_upload_new' => lang('grid_images_upload_new'),
+			]
+		]);
+	}
+
 	public function display_settings($data)
 	{
 		$directory_choices = array('all' => lang('all'));

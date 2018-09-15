@@ -196,7 +196,17 @@ $lang = array(
 
 /* Grid Images */
 
+'grid_images_choose_directory' => 'Please choose a directory',
+
+'grid_images_choose_existing' => 'Choose Existing',
+
+'grid_images_drop_files' => 'Drop File(s) Here to Upload',
+
 'grid_images_setup' => 'Grid Images Setup',
+
+'grid_images_uploading_to' => 'uploading to %s',
+
+'grid_images_upload_new' => 'Upload New',
 
 /* URL */
 'url_ft_allowed_url_schemes' => 'Allowed URL Schemes',
