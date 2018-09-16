@@ -85,7 +85,7 @@
 						<?=$errors->renderError($field->getName())?>
 					<?php endif; ?>
 				</div>
-			<?php if ($field->getType() == 'grid'): ?>
+			<?php if ($field->getType() == 'grid' || $field->getType() == 'grid_images'): ?>
 			</div>
 			<?php else: ?>
 			</fieldset>
