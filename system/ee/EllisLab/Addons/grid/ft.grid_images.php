@@ -44,15 +44,7 @@ class Grid_images_ft extends Grid_ft {
 
 	public function display_settings($data)
 	{
-		$directory_choices = array('all' => lang('all'));
-
-		$directory_choices += ee('Model')->get('UploadDestination')
-			->fields('id', 'name')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('module_id', 0)
-			->order('name', 'asc')
-			->all()
-			->getDictionary('id', 'name');
+		$directory_choices = ['all' => lang('all')] + $this->getUploadDestinations();
 
 		$vars = $this->getSettingsVars();
 		$vars['group'] = $this->settings_form_field_name;
@@ -140,6 +132,24 @@ class Grid_images_ft extends Grid_ft {
 		});');
 
 		return $settings;
+	}
+
+	private function getUploadDestinations()
+	{
+		if (($upload_destinations = ee()->session->cache(__CLASS__, 'upload_destinations', FALSE)) === FALSE)
+		{
+			$upload_destinations = ee('Model')->get('UploadDestination')
+				->fields('id', 'name')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('module_id', 0)
+				->order('name', 'asc')
+				->all()
+				->getDictionary('id', 'name');
+
+			ee()->session->set_cache(__CLASS__, 'upload_destinations', $upload_destinations);
+		}
+
+		return $upload_destinations;
 	}
 
 	/**
