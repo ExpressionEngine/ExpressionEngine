@@ -3,7 +3,9 @@
 
 	<?php
 	$component = [
-		'lang' => $lang
+		'lang'               => $lang,
+		'allowedDirectory'   => $allowed_directory,
+		'uploadDestinations' => ee('View/Helpers')->normalizedChoices($upload_destinations)
 	];
 	?>
 

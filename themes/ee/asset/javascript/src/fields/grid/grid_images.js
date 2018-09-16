@@ -22,12 +22,26 @@ var GridImages = function (_React$Component) {
   function GridImages(props) {
     _classCallCheck(this, GridImages);
 
-    return _possibleConstructorReturn(this, (GridImages.__proto__ || Object.getPrototypeOf(GridImages)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (GridImages.__proto__ || Object.getPrototypeOf(GridImages)).call(this, props));
+
+    _this.chooseExisting = function (directory) {
+      directory = directory || _this.props.allowedDirectory;
+      console.log(directory);
+    };
+
+    _this.uploadNew = function (directory) {
+      directory = directory || _this.props.allowedDirectory;
+      console.log(directory);
+    };
+
+    return _this;
   }
 
   _createClass(GridImages, [{
     key: 'render',
     value: function render() {
+      var _this2 = this;
+
       var lang = this.props.lang;
       return React.createElement(
         'div',
@@ -44,18 +58,66 @@ var GridImages = function (_React$Component) {
               null,
               lang.grid_images_uploading_to
             )
+          ),
+          this.props.allowedDirectory == 'all' && React.createElement(
+            'div',
+            { 'class': 'field-file-upload__controls' },
+            React.createElement(FilterSelect, { key: lang.grid_images_choose_existing,
+              center: true,
+              keepSelectedState: false,
+              title: lang.grid_images_choose_existing,
+              placeholder: 'filter directories',
+              items: this.props.uploadDestinations,
+              onSelect: function onSelect(directory) {
+                return _this2.chooseExisting(directory);
+              }
+            })
           )
         ),
-        React.createElement(
-          'a',
-          { href: '#', className: 'btn action', rel: 'modal-file-chooser' },
-          lang.grid_images_choose_existing
+        this.props.allowedDirectory != 'all' && React.createElement(
+          'div',
+          null,
+          React.createElement(
+            'a',
+            { href: '#', className: 'btn action', onClick: function onClick(e) {
+                e.preventDefault();
+                _this2.chooseExisting();
+              } },
+            lang.grid_images_choose_existing
+          ),
+          '\xA0',
+          React.createElement(
+            'a',
+            { href: '#', className: 'btn action', onClick: function onClick(e) {
+                e.preventDefault();
+                _this2.uploadNew();
+              } },
+            lang.grid_images_upload_new
+          )
         ),
-        '\xA0',
-        React.createElement(
-          'a',
-          { href: '#', className: 'btn action', rel: 'modal-file-uploader' },
-          lang.grid_images_upload_new
+        this.props.allowedDirectory == 'all' && React.createElement(
+          'div',
+          { 'class': 'filter-bar filter-bar--inline' },
+          React.createElement(FilterSelect, { key: lang.grid_images_choose_existing,
+            action: true,
+            keepSelectedState: false,
+            title: lang.grid_images_choose_existing,
+            placeholder: 'filter directories',
+            items: this.props.uploadDestinations,
+            onSelect: function onSelect(directory) {
+              return _this2.chooseExisting(directory);
+            }
+          }),
+          React.createElement(FilterSelect, { key: lang.grid_images_upload_new,
+            action: true,
+            keepSelectedState: false,
+            title: lang.grid_images_upload_new,
+            placeholder: 'filter directories',
+            items: this.props.uploadDestinations,
+            onSelect: function onSelect(directory) {
+              return _this2.uploadNew(directory);
+            }
+          })
         )
       );
     }

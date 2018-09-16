@@ -18,6 +18,16 @@ class GridImages extends React.Component {
     })
   }
 
+  chooseExisting = (directory) => {
+    directory = directory || this.props.allowedDirectory
+    console.log(directory)
+  }
+
+  uploadNew = (directory) => {
+    directory = directory || this.props.allowedDirectory
+    console.log(directory)
+  }
+
   render () {
     let lang = this.props.lang
     return (
@@ -27,9 +37,53 @@ class GridImages extends React.Component {
             {lang.grid_images_drop_files}
             <em>{lang.grid_images_uploading_to}</em>
           </div>
+          {this.props.allowedDirectory == 'all' &&
+            <div class="field-file-upload__controls">
+              <FilterSelect key={lang.grid_images_choose_existing}
+                center={true}
+                keepSelectedState={false}
+                title={lang.grid_images_choose_existing}
+                placeholder='filter directories'
+                items={this.props.uploadDestinations}
+                onSelect={(directory) => this.chooseExisting(directory)}
+              />
+            </div>
+          }
         </div>
-        <a href="#" className="btn action" rel="modal-file-chooser">{lang.grid_images_choose_existing}</a>&nbsp;
-        <a href="#" className="btn action" rel="modal-file-uploader">{lang.grid_images_upload_new}</a>
+
+        {this.props.allowedDirectory != 'all' &&
+          <div>
+            <a href="#" className="btn action" onClick={(e) => {
+              e.preventDefault()
+              this.chooseExisting()
+            }}>{lang.grid_images_choose_existing}</a>&nbsp;
+            <a href="#" className="btn action" onClick={(e) => {
+              e.preventDefault()
+              this.uploadNew()
+            }}>{lang.grid_images_upload_new}</a>
+          </div>
+        }
+        {this.props.allowedDirectory == 'all' && (
+          <div class="filter-bar filter-bar--inline">
+            <FilterSelect key={lang.grid_images_choose_existing}
+              action={true}
+              keepSelectedState={false}
+              title={lang.grid_images_choose_existing}
+              placeholder='filter directories'
+              items={this.props.uploadDestinations}
+              onSelect={(directory) => this.chooseExisting(directory)}
+            />
+
+            <FilterSelect key={lang.grid_images_upload_new}
+              action={true}
+              keepSelectedState={false}
+              title={lang.grid_images_upload_new}
+              placeholder='filter directories'
+              items={this.props.uploadDestinations}
+              onSelect={(directory) => this.uploadNew(directory)}
+            />
+          </div>
+        )}
       </div>
     )
   }
