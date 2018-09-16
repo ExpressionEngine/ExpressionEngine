@@ -87,7 +87,9 @@ class FilterSelect extends React.Component {
   }
 
   selectItem = (event, item) => {
-    this.setState({ selected: item })
+    if (this.props.keepSelectedState) {
+      this.setState({ selected: item })
+    }
     this.props.onSelect(item ? item.value : null)
     $(event.target).closest('.filter-item').find('.js-filter-link').click()
     event.preventDefault()
@@ -95,8 +97,8 @@ class FilterSelect extends React.Component {
 
   render () {
     return (
-      <div className="filter-item">
-        <a href="#" className="js-filter-link filter-item__link filter-item__link--has-submenu" onClick={this.toggle}>{this.props.title}</a>
+      <div className={"filter-item" + (this.props.center ? ' filter-item--center' : '')}>
+        <a href="#" className={"js-filter-link filter-item__link filter-item__link--has-submenu" + (this.props.action ? ' filter-item__link--action' : '')} onClick={this.toggle}>{this.props.title}</a>
         <div className="filter-submenu">
           {this.state.items.length > 7 &&
             <div className="filter-submenu__search">

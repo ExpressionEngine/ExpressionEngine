@@ -103,7 +103,9 @@ var FilterSelect = function (_React$Component2) {
     };
 
     _this2.selectItem = function (event, item) {
-      _this2.setState({ selected: item });
+      if (_this2.props.keepSelectedState) {
+        _this2.setState({ selected: item });
+      }
       _this2.props.onSelect(item ? item.value : null);
       $(event.target).closest('.filter-item').find('.js-filter-link').click();
       event.preventDefault();
@@ -124,10 +126,10 @@ var FilterSelect = function (_React$Component2) {
 
       return React.createElement(
         "div",
-        { className: "filter-item" },
+        { className: "filter-item" + (this.props.center ? ' filter-item--center' : '') },
         React.createElement(
           "a",
-          { href: "#", className: "js-filter-link filter-item__link filter-item__link--has-submenu", onClick: this.toggle },
+          { href: "#", className: "js-filter-link filter-item__link filter-item__link--has-submenu" + (this.props.action ? ' filter-item__link--action' : ''), onClick: this.toggle },
           this.props.title
         ),
         React.createElement(

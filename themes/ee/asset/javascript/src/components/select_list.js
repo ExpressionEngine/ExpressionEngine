@@ -354,6 +354,7 @@ var SelectList = function (_React$Component) {
             props.filters && props.filters.map(function (filter) {
               return React.createElement(FilterSelect, { key: filter.name,
                 name: filter.name,
+                keepSelectedState: true,
                 title: filter.title,
                 placeholder: filter.placeholder,
                 items: filter.items,
