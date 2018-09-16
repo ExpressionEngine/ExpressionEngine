@@ -179,6 +179,16 @@ class Grid_images_ft extends Grid_ft {
 		return $columns;
 	}
 
+	public function save_settings($data)
+	{
+		$settings = parent::save_settings($data);
+
+		$settings['field_content_type'] = $data['field_content_type'];
+		$settings['allowed_directories'] = $data['allowed_directories'];
+
+		return $settings;
+	}
+
 	/**
 	 * Override parent apply Grid Images upload preference settings to phantom file column
 	 */
