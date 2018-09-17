@@ -278,7 +278,6 @@ class Template extends FileSyncedModel {
 		return $updatable;
 
 	}
-
 }
 
 // EOF
