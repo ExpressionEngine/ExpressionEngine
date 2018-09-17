@@ -252,6 +252,33 @@ class Template extends FileSyncedModel {
 		parent::onAfterSave();
 		ee()->functions->clear_caching('all');
 	}
+
+	public function  onAfterDelete()
+	{
+		parent::onAfterDelete();
+
+		$updatable = $this->getAffectedNoBounce();
+
+		if ( ! empty($updatable))
+		{
+			$templates = $this->getModelFacade()->get('Template', $updatable)->all();
+			$templates->no_auth_bounce = '';
+			$templates->save();
+		}
+	}
+
+	private function getAffectedNoBounce()
+	{
+		$updatable = $this->getModelFacade()->get('Template')
+			->fields('template_id')
+			->filter('no_auth_bounce', $this->template_id)
+			->all()
+			->pluck('template_id');
+
+		return $updatable;
+
+	}
+
 }
 
 // EOF
