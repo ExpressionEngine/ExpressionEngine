@@ -253,6 +253,9 @@ class Template extends FileSyncedModel {
 		ee()->functions->clear_caching('all');
 	}
 
+	/**
+	 * Manually clean out no_auth_bounce template field after delete.
+	 */
 	public function  onAfterDelete()
 	{
 		parent::onAfterDelete();
@@ -276,7 +279,6 @@ class Template extends FileSyncedModel {
 			->pluck('template_id');
 
 		return $updatable;
-
 	}
 }
 
