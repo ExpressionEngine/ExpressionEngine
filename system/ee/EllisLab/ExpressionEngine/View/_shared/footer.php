@@ -95,8 +95,8 @@
 					<div class="app-footer__license">
 						<?php if ($ee_license->isValid()): ?>
 							<?=lang('license_no')?>: <?=$ee_license->getData('license_number')?>
-							<br><?=lang('owned_by')?>: <a href="mailto:<?=ee('Format')->make('Text', $license->getData('license_contact'))->attributeEscape()?>">
-								<?=ee('Format')->make('Text', ($license->getData('license_contact_name')) ?: $license->getData('license_contact'))->attributeEscape()?>
+							<br><?=lang('owned_by')?>: <a href="mailto:<?=ee('Format')->make('Text', $ee_license->getData('license_contact'))->attributeEscape()?>">
+								<?=ee('Format')->make('Text', ($ee_license->getData('license_contact_name')) ?: $ee_license->getData('license_contact'))->attributeEscape()?>
 							</a>
 						<?php else: ?>
 							<?php if (ee()->cp->allowed_group('can_access_sys_prefs')): ?>
