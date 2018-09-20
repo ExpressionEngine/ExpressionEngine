@@ -2605,14 +2605,25 @@ class Channel {
 		if (ee('LivePreview')->hasEntryData())
 		{
 			$found = FALSE;
+			$show_closed = FALSE;
+			$show_expired = (ee()->TMPL->fetch_param('show_expired') == 'yes');
+
+			if (($status = ee()->TMPL->fetch_param('status')) !== FALSE)
+			{
+				$status = strtolower($status);
+				$parts = preg_split('/\|/', $status, -1, PREG_SPLIT_NO_EMPTY);
+				$parts = array_map('trim', $parts);
+				$show_closed = in_array('closed', $parts);
+			}
+
 			$data = ee('LivePreview')->getEntryData();
 
 			foreach ($result_array as $i => $row)
 			{
 				if ($row['entry_id'] == $data['entry_id'])
 				{
-					if ($data['status'] == 'closed'
-						|| ($data['expiration_date'] && $data['expiration_date'] < ee()->localize->now))
+					if (( ! $show_closed && $data['status'] == 'closed')
+						|| ( ! $show_expired && $data['expiration_date'] && $data['expiration_date'] < ee()->localize->now))
 					{
 						unset($result_array[$i]);
 					}
