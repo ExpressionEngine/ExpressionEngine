@@ -34,13 +34,96 @@ var GridImages = function (_React$Component) {
       console.log(directory);
     };
 
+    _this.state = {
+      files: []
+    };
+    _this.queue = new ConcurrencyQueue({ concurrency: 1 });
     return _this;
   }
 
   _createClass(GridImages, [{
+    key: 'bindDragAndDropEvents',
+    value: function bindDragAndDropEvents() {
+      var _this2 = this;
+
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(function (eventName) {
+        _this2.dropZone.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      this.dropZone.addEventListener('drop', function (e) {
+        var files = Array.from(e.dataTransfer.files);
+
+        files = files.filter(function (file) {
+          return file.type != '';
+        });
+        files = files.map(function (file) {
+          file.progress = 0;
+          return file;
+        });
+
+        _this2.setState({
+          files: _this2.state.files.concat(files)
+        });
+
+        _this2.queue.enqueue(files, function (file) {
+          return _this2.makeUploadPromise(file);
+        });
+      });
+    }
+  }, {
+    key: 'makeUploadPromise',
+    value: function makeUploadPromise(file) {
+      var _this3 = this;
+
+      return new Promise(function (resolve, reject) {
+        var url = 'http://eecms.localhost/test.php';
+        var xhr = new XMLHttpRequest();
+        var formData = new FormData();
+        xhr.open('POST', url, true);
+
+        xhr.upload.addEventListener('progress', function (e) {
+          var fileIndex = _this3.state.files.findIndex(function (thisFile) {
+            return thisFile.name == file.name;
+          });
+          _this3.state.files[fileIndex].progress = e.loaded * 100.0 / e.total || 100;
+          _this3.setState({
+            files: _this3.state.files
+          });
+        });
+
+        xhr.addEventListener('readystatechange', function () {
+          if (xhr.readyState == 4 && xhr.status == 200) {
+            var fileIndex = _this3.state.files.findIndex(function (thisFile) {
+              return thisFile.name == file.name;
+            });
+            _this3.state.files.splice(fileIndex, 1);
+            _this3.setState({
+              files: _this3.state.files
+            });
+            resolve(file);
+          } else if (xhr.readyState == 4 && xhr.status != 200) {
+            reject(file);
+          }
+        });
+
+        formData.append('file', file);
+        xhr.send(formData);
+      });
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.bindDragAndDropEvents();
+    }
+  }, {
     key: 'render',
     value: function render() {
-      var _this2 = this;
+      var _this4 = this;
 
       var lang = this.props.lang;
       return React.createElement(
@@ -48,7 +131,10 @@ var GridImages = function (_React$Component) {
         null,
         React.createElement(
           'div',
-          { className: 'field-file-upload mt' },
+          { className: 'field-file-upload mt', ref: function ref(dropZone) {
+              _this4.dropZone = dropZone;
+            } },
+          React.createElement(GridImagesProgressTable, { files: this.state.files }),
           React.createElement(
             'div',
             { className: 'field-file-upload__content' },
@@ -61,7 +147,7 @@ var GridImages = function (_React$Component) {
           ),
           this.props.allowedDirectory == 'all' && React.createElement(
             'div',
-            { 'class': 'field-file-upload__controls' },
+            { className: 'field-file-upload__controls' },
             React.createElement(FilterSelect, { key: lang.grid_images_choose_existing,
               center: true,
               keepSelectedState: false,
@@ -69,7 +155,7 @@ var GridImages = function (_React$Component) {
               placeholder: 'filter directories',
               items: this.props.uploadDestinations,
               onSelect: function onSelect(directory) {
-                return _this2.chooseExisting(directory);
+                return _this4.chooseExisting(directory);
               }
             })
           )
@@ -81,7 +167,7 @@ var GridImages = function (_React$Component) {
             'a',
             { href: '#', className: 'btn action', onClick: function onClick(e) {
                 e.preventDefault();
-                _this2.chooseExisting();
+                _this4.chooseExisting();
               } },
             lang.grid_images_choose_existing
           ),
@@ -90,14 +176,14 @@ var GridImages = function (_React$Component) {
             'a',
             { href: '#', className: 'btn action', onClick: function onClick(e) {
                 e.preventDefault();
-                _this2.uploadNew();
+                _this4.uploadNew();
               } },
             lang.grid_images_upload_new
           )
         ),
         this.props.allowedDirectory == 'all' && React.createElement(
           'div',
-          { 'class': 'filter-bar filter-bar--inline' },
+          { className: 'filter-bar filter-bar--inline' },
           React.createElement(FilterSelect, { key: lang.grid_images_choose_existing,
             action: true,
             keepSelectedState: false,
@@ -105,7 +191,7 @@ var GridImages = function (_React$Component) {
             placeholder: 'filter directories',
             items: this.props.uploadDestinations,
             onSelect: function onSelect(directory) {
-              return _this2.chooseExisting(directory);
+              return _this4.chooseExisting(directory);
             }
           }),
           React.createElement(FilterSelect, { key: lang.grid_images_upload_new,
@@ -115,7 +201,7 @@ var GridImages = function (_React$Component) {
             placeholder: 'filter directories',
             items: this.props.uploadDestinations,
             onSelect: function onSelect(directory) {
-              return _this2.uploadNew(directory);
+              return _this4.uploadNew(directory);
             }
           })
         )

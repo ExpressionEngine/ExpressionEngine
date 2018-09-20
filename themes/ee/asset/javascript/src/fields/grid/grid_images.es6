@@ -9,12 +9,78 @@
 class GridImages extends React.Component {
   constructor (props) {
     super(props)
+
+    this.state = {
+      files: []
+    }
+    this.queue = new ConcurrencyQueue({concurrency: 1})
   }
 
   static renderFields(context) {
     $('div[data-grid-images-react]', context).each(function () {
       let props = JSON.parse(window.atob($(this).data('gridImagesReact')))
       ReactDOM.render(React.createElement(GridImages, props, null), this)
+    })
+  }
+
+  bindDragAndDropEvents() {
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      this.dropZone.addEventListener(eventName, preventDefaults, false)
+    })
+
+    function preventDefaults (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+
+    this.dropZone.addEventListener('drop', (e) => {
+      let files = Array.from(e.dataTransfer.files)
+
+      files = files.filter(file => file.type != '')
+      files = files.map(file => {
+        file.progress = 0
+        return file
+      })
+
+      this.setState({
+        files: this.state.files.concat(files)
+      })
+
+      this.queue.enqueue(files, (file => this.makeUploadPromise(file)))
+    })
+  }
+
+  makeUploadPromise(file) {
+    return new Promise((resolve, reject) => {
+      let url = 'http://eecms.localhost/test.php'
+      let xhr = new XMLHttpRequest()
+      let formData = new FormData()
+      xhr.open('POST', url, true)
+
+      xhr.upload.addEventListener('progress', (e) => {
+        let fileIndex = this.state.files.findIndex(thisFile => thisFile.name == file.name)
+        this.state.files[fileIndex].progress = (e.loaded * 100.0 / e.total) || 100
+        this.setState({
+          files: this.state.files
+        })
+      })
+
+      xhr.addEventListener('readystatechange', () => {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+          let fileIndex = this.state.files.findIndex(thisFile => thisFile.name == file.name)
+          this.state.files.splice(fileIndex, 1)
+          this.setState({
+            files: this.state.files
+          })
+          resolve(file)
+        }
+        else if (xhr.readyState == 4 && xhr.status != 200) {
+          reject(file)
+        }
+      })
+
+      formData.append('file', file)
+      xhr.send(formData)
     })
   }
 
@@ -28,17 +94,22 @@ class GridImages extends React.Component {
     console.log(directory)
   }
 
-  render () {
+  componentDidMount () {
+    this.bindDragAndDropEvents()
+  }
+
+  render() {
     let lang = this.props.lang
     return (
       <div>
-        <div className="field-file-upload mt">
+        <div className="field-file-upload mt" ref={(dropZone) => { this.dropZone = dropZone; }}>
+          <GridImagesProgressTable files={this.state.files} />
           <div className="field-file-upload__content">
             {lang.grid_images_drop_files}
             <em>{lang.grid_images_uploading_to}</em>
           </div>
           {this.props.allowedDirectory == 'all' &&
-            <div class="field-file-upload__controls">
+            <div className="field-file-upload__controls">
               <FilterSelect key={lang.grid_images_choose_existing}
                 center={true}
                 keepSelectedState={false}
@@ -64,7 +135,7 @@ class GridImages extends React.Component {
           </div>
         }
         {this.props.allowedDirectory == 'all' && (
-          <div class="filter-bar filter-bar--inline">
+          <div className="filter-bar filter-bar--inline">
             <FilterSelect key={lang.grid_images_choose_existing}
               action={true}
               keepSelectedState={false}
