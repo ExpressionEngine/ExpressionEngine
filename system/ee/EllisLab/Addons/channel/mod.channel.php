@@ -2582,7 +2582,7 @@ class Channel {
 		if (ee('LivePreview')->hasEntryData())
 		{
 			$data = ee('LivePreview')->getEntryData();
-			if ($data['entry_id'] == PHP_INT_MAX && in_array($this->query_string, [$data['entry_id'], $data['url_title']]))
+			if (in_array($this->query_string, [$data['entry_id'], $data['url_title']]))
 			{
 				$return = TRUE;
 
@@ -2644,7 +2644,7 @@ class Channel {
 			{
 				$add = FALSE;
 
-				if ($data['entry_id'] == PHP_INT_MAX && in_array($this->query_string, [$data['entry_id'], $data['url_title']]))
+				if (in_array($this->query_string, [$data['entry_id'], $data['url_title']]))
 				{
 					$add = TRUE;
 				}
