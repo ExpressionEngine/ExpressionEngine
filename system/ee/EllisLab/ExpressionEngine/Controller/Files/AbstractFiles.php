@@ -23,6 +23,8 @@ use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
  */
 abstract class AbstractFiles extends CP_Controller {
 
+	protected $no_access;
+
 	/**
 	 * Constructor
 	 */
@@ -38,6 +40,29 @@ abstract class AbstractFiles extends CP_Controller {
 		ee()->lang->loadfile('filemanager');
 
 		ee()->view->can_edit_upload_directories = ee()->cp->allowed_group('can_edit_upload_directories');
+	}
+
+	protected function getNoAccess()
+	{
+		if ( ! is_array($this->no_access))
+		{
+			$this->no_access = [];
+
+			if (ee()->session->userdata('group_id') != 1)
+			{
+				$query = ee('Model/Datastore')->rawQuery();
+				$query->where('member_group', ee()->session->userdata('group_id'));
+				$query->from('upload_no_access');
+				$result = $query->get();
+
+				foreach ($result->result_array() as $row)
+				{
+					$this->no_access[] = $row['upload_id'];
+				}
+			}
+		}
+
+		return $this->no_access;
 	}
 
 	protected function generateSidebar($active = NULL)
@@ -72,18 +97,19 @@ abstract class AbstractFiles extends CP_Controller {
 		}
 
 		$upload_destinations = ee('Model')->get('UploadDestination')
-			->with('NoAccess')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('module_id', 0)
 			->order('name', 'asc');
 
+		$no_access = $this->getNoAccess();
+
+		if ( ! empty($no_access))
+		{
+			$upload_destinations->filter('id', 'NOT IN', $no_access);
+		}
+
 		foreach ($upload_destinations->all() as $destination)
 		{
-			if ($destination->memberGroupHasAccess(ee()->session->userdata['group_id']) === FALSE)
-			{
-				continue;
-			}
-
 			$display_name = htmlspecialchars($destination->name, ENT_QUOTES, 'UTF-8');
 
 			$item = $list->addItem($display_name, ee('CP/URL')->make('files/directory/' . $destination->id))
@@ -118,19 +144,16 @@ abstract class AbstractFiles extends CP_Controller {
 		if (ee()->cp->allowed_group('can_upload_new_files'))
 		{
 			$upload_destinations = ee('Model')->get('UploadDestination')
-				->with('NoAccess')
 				->fields('id', 'name')
 				->filter('site_id', ee()->config->item('site_id'))
 				->filter('module_id', 0)
 				->all();
 
-			if (ee()->session->userdata['group_id'] != 1)
+			$no_access = $this->getNoAccess();
+
+			if ( ! empty($no_access))
 			{
-				$member_group = ee()->session->userdata['group_id'];
-				$upload_destinations = $upload_destinations->filter(function($dir) use ($member_group)
-				{
-					return $dir->memberGroupHasAccess($member_group);
-				});
+				$upload_destinations->filter('id', 'NOT IN', $no_access);
 			}
 
 			$choices = [];
