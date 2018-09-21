@@ -240,13 +240,13 @@ class Channel {
 			}
 		}
 
+		if ($this->sql == '')
+		{
+			$this->build_sql_query();
+		}
+
 		if ( ! $this->isLivePreviewEntry())
 		{
-			if ($this->sql == '')
-			{
-				$this->build_sql_query();
-			}
-
 			if ($this->sql == '')
 			{
 				return ee()->TMPL->no_results();
