@@ -134,8 +134,8 @@ var GridImages = function (_React$Component) {
           { className: 'field-file-upload mt', ref: function ref(dropZone) {
               _this4.dropZone = dropZone;
             } },
-          React.createElement(GridImagesProgressTable, { files: this.state.files }),
-          React.createElement(
+          this.state.files.length > 0 && React.createElement(GridImagesProgressTable, { files: this.state.files }),
+          this.state.files.length == 0 && React.createElement(
             'div',
             { className: 'field-file-upload__content' },
             lang.grid_images_drop_files,
@@ -145,7 +145,7 @@ var GridImages = function (_React$Component) {
               lang.grid_images_uploading_to
             )
           ),
-          this.props.allowedDirectory == 'all' && React.createElement(
+          this.state.files.length == 0 && this.props.allowedDirectory == 'all' && React.createElement(
             'div',
             { className: 'field-file-upload__controls' },
             React.createElement(FilterSelect, { key: lang.grid_images_choose_existing,

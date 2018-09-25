@@ -103,12 +103,12 @@ class GridImages extends React.Component {
     return (
       <div>
         <div className="field-file-upload mt" ref={(dropZone) => { this.dropZone = dropZone; }}>
-          <GridImagesProgressTable files={this.state.files} />
-          <div className="field-file-upload__content">
+          {this.state.files.length > 0 && <GridImagesProgressTable files={this.state.files} />}
+          {this.state.files.length == 0 && <div className="field-file-upload__content">
             {lang.grid_images_drop_files}
             <em>{lang.grid_images_uploading_to}</em>
-          </div>
-          {this.props.allowedDirectory == 'all' &&
+          </div>}
+          {this.state.files.length == 0 && this.props.allowedDirectory == 'all' &&
             <div className="field-file-upload__controls">
               <FilterSelect key={lang.grid_images_choose_existing}
                 center={true}
