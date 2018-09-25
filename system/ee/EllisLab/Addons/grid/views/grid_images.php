@@ -5,7 +5,8 @@
 	$component = [
 		'lang'               => $lang,
 		'allowedDirectory'   => $allowed_directory,
-		'uploadDestinations' => ee('View/Helpers')->normalizedChoices($upload_destinations)
+		'uploadDestinations' => ee('View/Helpers')->normalizedChoices($upload_destinations),
+		'endpoint'           => ee('CP/URL')->make('addons/settings/filepicker/ajax-upload')->compile()
 	];
 	?>
 

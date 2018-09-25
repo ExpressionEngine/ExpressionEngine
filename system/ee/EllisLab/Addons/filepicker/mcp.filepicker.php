@@ -433,6 +433,48 @@ class Filepicker_mcp {
 		exit();
 	}
 
+	public function ajaxUpload()
+	{
+		$dir_id = ee('Request')->post('directory');
+
+		if (empty($dir_id))
+		{
+			show_404();
+		}
+
+		$errors = NULL;
+
+		$result = ee('File')->makeUpload()->uploadTo($dir_id);
+
+		$file = $result['file'];
+
+		if ($result['posted'])
+		{
+			$errors = $result['validation_result'];
+
+			if ($result['uploaded'])
+			{
+				if ($file->file_name != $result['upload_response']['file_data_orig_name'])
+				{
+					$file->save();
+					return [
+						'ajax' => TRUE,
+						'body' => [
+							'duplicate'
+						]
+					];
+				}
+
+				return [
+					'ajax' => TRUE,
+					'body' => [
+						'success'
+					]
+				];
+			}
+		}
+	}
+
 	protected function overwriteOrRename($file, $original_name)
 	{
 		$vars = array(

@@ -73,7 +73,13 @@ var GridImages = function (_React$Component) {
         e.stopPropagation();
       }
 
+      // Handle upload
       this.dropZone.addEventListener('drop', function (e) {
+        if (_this2.state.directory == 'all') {
+          // TODO: Show this using invalid state
+          alert('Please choose a directory');
+        }
+
         var files = Array.from(e.dataTransfer.files);
 
         files = files.filter(function (file) {
@@ -111,10 +117,13 @@ var GridImages = function (_React$Component) {
       var _this3 = this;
 
       return new Promise(function (resolve, reject) {
-        var url = 'http://eecms.localhost/test.php';
-        var xhr = new XMLHttpRequest();
         var formData = new FormData();
-        xhr.open('POST', url, true);
+        formData.append('directory', _this3.state.directory);
+        formData.append('file', file);
+        formData.append('csrf_token', EE.CSRF_TOKEN);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', _this3.props.endpoint, true);
 
         xhr.upload.addEventListener('progress', function (e) {
           var fileIndex = _this3.state.files.findIndex(function (thisFile) {

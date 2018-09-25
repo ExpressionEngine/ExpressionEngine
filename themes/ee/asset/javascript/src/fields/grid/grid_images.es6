@@ -44,7 +44,13 @@ class GridImages extends React.Component {
       e.stopPropagation()
     }
 
+    // Handle upload
     this.dropZone.addEventListener('drop', (e) => {
+      if (this.state.directory == 'all') {
+        // TODO: Show this using invalid state
+        alert('Please choose a directory')
+      }
+
       let files = Array.from(e.dataTransfer.files)
 
       files = files.filter(file => file.type != '')
@@ -79,13 +85,18 @@ class GridImages extends React.Component {
 
   makeUploadPromise(file) {
     return new Promise((resolve, reject) => {
-      let url = 'http://eecms.localhost/test.php'
-      let xhr = new XMLHttpRequest()
       let formData = new FormData()
-      xhr.open('POST', url, true)
+      formData.append('directory', this.state.directory)
+      formData.append('file', file)
+      formData.append('csrf_token', EE.CSRF_TOKEN)
+
+      let xhr = new XMLHttpRequest()
+      xhr.open('POST', this.props.endpoint, true)
 
       xhr.upload.addEventListener('progress', (e) => {
-        let fileIndex = this.state.files.findIndex(thisFile => thisFile.name == file.name)
+        let fileIndex = this.state.files.findIndex(
+          thisFile => thisFile.name == file.name
+        )
         this.state.files[fileIndex].progress = (e.loaded * 100.0 / e.total) || 100
         this.setState({
           files: this.state.files
