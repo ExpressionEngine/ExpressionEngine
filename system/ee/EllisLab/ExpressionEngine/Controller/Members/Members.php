@@ -736,7 +736,7 @@ class Members extends CP_Controller {
 		$options = $group_ids;
 		$options['all'] = lang('all');
 
-		$group = ee('CP/Filter')->make('group', 'member_group', $options);
+		$group = ee('CP/Filter')->make('group', 'member_group_filter', $options);
 		$group->setPlaceholder(lang('all'));
 		$group->disableCustomValue();
 

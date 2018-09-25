@@ -55,13 +55,13 @@ class Fields extends AbstractFieldsController {
 			->getDictionary('group_id', 'group_name');
 
 		$filters = ee('CP/Filter');
-		$group_filter = $filters->make('group_id', 'group', $group_ids);
+		$group_filter = $filters->make('group_id', 'group_filter', $group_ids);
 		$group_filter->setPlaceholder(lang('all'));
 		$group_filter->disableCustomValue();
 
 		$fieldtypes = ee('Model')->make('ChannelField')->getCompatibleFieldtypes();
 
-		$fieldtype_filter = $filters->make('fieldtype', 'type', $fieldtypes);
+		$fieldtype_filter = $filters->make('fieldtype', 'type_filter', $fieldtypes);
 		$fieldtype_filter->setPlaceholder(lang('all'));
 		$fieldtype_filter->disableCustomValue();
 

@@ -39,7 +39,7 @@ class Date extends Filter {
 	public function __construct()
 	{
 		$this->name = 'filter_by_date';
-		$this->label = 'date';
+		$this->label = 'date_filter';
 		$this->placeholder = lang('custom_date');
 		$this->options = array(
 			'86400'     => ucwords(lang('last').' 24 '.lang('hours')),
