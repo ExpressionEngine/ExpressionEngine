@@ -184,7 +184,7 @@ function DropdownItem(props) {
     return React.createElement(
       'div',
       { className: 'field-group-head' },
-      React.createElement('span', { 'class': 'icon--folder' }),
+      React.createElement('span', { className: 'icon--folder' }),
       ' ',
       item.section
     );

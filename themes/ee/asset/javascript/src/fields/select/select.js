@@ -78,7 +78,7 @@ var SelectField = function (_React$Component) {
           selectItem,
           this.props.addLabel && React.createElement(
             'a',
-            { 'class': 'btn action submit', rel: 'add_new', href: '#' },
+            { className: 'btn action submit', rel: 'add_new', href: '#' },
             this.props.addLabel
           ),
           React.createElement(
