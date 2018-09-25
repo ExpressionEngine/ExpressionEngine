@@ -25,6 +25,12 @@ class Grid_images_ft extends Grid_ft {
 	{
 		$grid_markup = parent::display_field($data);
 
+		// Just use regular Grid if in Channel Form
+		if (REQ != 'CP')
+		{
+			return $grid_markup;
+		}
+
 		$upload_destinations = $this->getUploadDestinations();
 		$allowed_directory = $this->get_setting('allowed_directories', 'all');
 		$uploading_to_lang = lang('grid_images_choose_directory');
