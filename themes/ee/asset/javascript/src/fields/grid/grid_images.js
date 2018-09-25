@@ -92,6 +92,18 @@ var GridImages = function (_React$Component) {
           return _this2.makeUploadPromise(file);
         });
       });
+
+      var highlight = function highlight(e) {
+        _this2.dropZone.classList.add('field-file-upload--drop');
+      };
+
+      var unhighlight = function unhighlight(e) {
+        _this2.dropZone.classList.remove('field-file-upload--drop');
+      };['dragenter', 'dragover'].forEach(function (eventName) {
+        _this2.dropZone.addEventListener(eventName, highlight, false);
+      });['dragleave', 'drop'].forEach(function (eventName) {
+        _this2.dropZone.addEventListener(eventName, unhighlight, false);
+      });
     }
   }, {
     key: 'makeUploadPromise',

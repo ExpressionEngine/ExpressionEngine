@@ -59,6 +59,22 @@ class GridImages extends React.Component {
 
       this.queue.enqueue(files, (file => this.makeUploadPromise(file)))
     })
+
+    let highlight = (e) => {
+      this.dropZone.classList.add('field-file-upload--drop')
+    }
+
+    let unhighlight = (e) => {
+      this.dropZone.classList.remove('field-file-upload--drop')
+    }
+
+    ;['dragenter', 'dragover'].forEach(eventName => {
+      this.dropZone.addEventListener(eventName, highlight, false)
+    })
+
+    ;['dragleave', 'drop'].forEach(eventName => {
+      this.dropZone.addEventListener(eventName, unhighlight, false)
+    })
   }
 
   makeUploadPromise(file) {
