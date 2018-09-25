@@ -253,33 +253,23 @@ class Template extends FileSyncedModel {
 		ee()->functions->clear_caching('all');
 	}
 
-	/**
-	 * Manually clean out no_auth_bounce template field after delete.
-	 */
-	public function  onAfterDelete()
-	{
-		parent::onAfterDelete();
+    /**
+     * Manually clean out no_auth_bounce template field after delete.
+     */
+    public function onAfterDelete()
+    {
+        parent::onAfterDelete();
 
-		$updatable = $this->getAffectedNoBounce();
+        $updatable = $this->getModelFacade()->get('Template')
+            ->filter('no_auth_bounce', $this->template_id)
+            ->all();
 
-		if ( ! empty($updatable))
-		{
-			$templates = $this->getModelFacade()->get('Template', $updatable)->all();
-			$templates->no_auth_bounce = '';
-			$templates->save();
-		}
-	}
-
-	private function getAffectedNoBounce()
-	{
-		$updatable = $this->getModelFacade()->get('Template')
-			->fields('template_id')
-			->filter('no_auth_bounce', $this->template_id)
-			->all()
-			->pluck('template_id');
-
-		return $updatable;
-	}
+        if ($updatable)
+        {
+            $updatable->no_auth_bounce = '';
+            $updatable->save();
+        }
+    }
 }
 
 // EOF
