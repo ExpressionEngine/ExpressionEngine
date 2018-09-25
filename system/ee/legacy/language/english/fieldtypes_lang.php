@@ -198,7 +198,7 @@ $lang = array(
 
 'grid_images_choose_directory' => 'Please choose a directory',
 
-'grid_images_choose_existing' => 'Choose Existing',
+'grid_images_choose_existing' => 'Choose Directory',
 
 'grid_images_drop_files' => 'Drop File(s) Here to Upload',
 

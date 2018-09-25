@@ -169,12 +169,12 @@ var GridImages = function (_React$Component) {
             { className: 'field-file-upload__controls' },
             React.createElement(FilterSelect, { key: lang.grid_images_choose_existing,
               center: true,
-              keepSelectedState: false,
+              keepSelectedState: true,
               title: lang.grid_images_choose_existing,
               placeholder: 'filter directories',
               items: this.props.uploadDestinations,
               onSelect: function onSelect(directory) {
-                return _this4.chooseExisting(directory);
+                return _this4.setDirectory(directory);
               }
             })
           )

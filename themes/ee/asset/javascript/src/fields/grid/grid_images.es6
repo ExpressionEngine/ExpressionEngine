@@ -95,13 +95,19 @@ class GridImages extends React.Component {
     })
   }
 
+  setDirectory = (directory) => {
+    this.setState({
+      directory: directory || 'all'
+    })
+  }
+
   chooseExisting = (directory) => {
-    directory = directory || this.props.allowedDirectory
+    directory = directory || this.state.directory
     console.log(directory)
   }
 
   uploadNew = (directory) => {
-    directory = directory || this.props.allowedDirectory
+    directory = directory || this.state.directory
     console.log(directory)
   }
 
@@ -126,11 +132,11 @@ class GridImages extends React.Component {
             <div className="field-file-upload__controls">
               <FilterSelect key={lang.grid_images_choose_existing}
                 center={true}
-                keepSelectedState={false}
+                keepSelectedState={true}
                 title={lang.grid_images_choose_existing}
                 placeholder='filter directories'
                 items={this.props.uploadDestinations}
-                onSelect={(directory) => this.chooseExisting(directory)}
+                onSelect={(directory) => this.setDirectory(directory)}
               />
             </div>
           }
