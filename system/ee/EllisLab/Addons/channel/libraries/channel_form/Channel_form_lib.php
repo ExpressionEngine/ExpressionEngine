@@ -1161,7 +1161,6 @@ GRID_FALLBACK;
 			$script = '$(document).ready(function() {' . "\n";
 			$script .= implode('', ee()->jquery->jquery_code_for_compile);
 			$script .= '});';
-			$script = preg_replace('/\s*eeSpell\.init\(\);\s*/', '', $script);
 
 			$this->head .= ee()->javascript->inline($script);
 
