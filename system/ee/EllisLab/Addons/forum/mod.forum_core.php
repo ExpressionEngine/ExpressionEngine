@@ -4413,28 +4413,9 @@ class Forum_Core extends Forum {
 		//
 		// -------------------------------------------
 
-		// Spell Check
-		if ( ! defined('NL'))  define('NL',  "\n");
 
-		if ( ! class_exists('EE_Spellcheck'))
-		{
-			require APPPATH.'libraries/Spellcheck.php';
-		}
-
-		if ($this->SPELL === FALSE)
-		{
-			$this->SPELL = new EE_Spellcheck();
-			$this->spellcheck_enabled = $this->SPELL->enabled;
-		}
-
-		if ($this->spellcheck_enabled === TRUE)
-		{
-			$str = $this->allow_if('spellcheck', $str);
-		}
-		else
-		{
-			$str = $this->deny_if('spellcheck', $str);
-		}
+		// Spellcheck is deprecated and always false
+		$str = $this->deny_if('spellcheck', $str);
 
 		ee()->lang->loadfile('spellcheck');
 

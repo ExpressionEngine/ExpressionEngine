@@ -2016,17 +2016,7 @@ class Forum {
 	 */
 	public function spellcheck_iframe()
 	{
-		if (isset(ee()->session->tracker[0]) && substr(ee()->session->tracker[0], -17) == 'spellcheck_iframe')
-		{
-			ee()->session->do_not_track();
-		}
-
-		if ( ! class_exists('EE_Spellcheck'))
-		{
-			require APPPATH.'libraries/Spellcheck.php';
-		}
-
-		return EE_Spellcheck::iframe();
+		return '';
 	}
 
 	/**
@@ -2034,12 +2024,7 @@ class Forum {
 	 */
 	public function spellcheck()
 	{
-		if ( ! class_exists('EE_Spellcheck'))
-		{
-			require APPPATH.'libraries/Spellcheck.php';
-		}
-
-		return EE_Spellcheck::check();
+		return '';
 	}
 
 	/**
@@ -2047,20 +2032,7 @@ class Forum {
 	 */
 	public function spellcheck_js()
 	{
-		if ( ! defined('NL'))  define('NL',  "\n");
-
-		if ( ! class_exists('EE_Spellcheck'))
-		{
-			require APPPATH.'libraries/Spellcheck.php';
-		}
-
-		if ($this->SPELL === FALSE)
-		{
-			$this->SPELL = new EE_Spellcheck();
-			$this->spellcheck_enabled = $this->SPELL->enabled;
-		}
-
-		return $this->SPELL->JavaScript($this->forum_path('/spellcheck/'), TRUE);
+		return '';
 	}
 
 	/**
