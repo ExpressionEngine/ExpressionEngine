@@ -155,25 +155,6 @@ function addPollField()
 
 </tr>
 
-{if spellcheck}
-<tr>
-<td class="tableCellTwo" style="width:18%" valign="top" align="right"><div class="default"><div class="itempadbig"><b>{lang:spell_check}</b></div></div></td>
-<td class="tableCellTwo" style="width:82%" valign="top">
-<div class="default">
-<div class="itempadbig">
-&nbsp;&nbsp;<a href="javascript:void(0);" onclick="eeSpell.getResults('body');return false;">{lang:check_spelling}</a>
-<span id="spellcheck_hidden_body" style="visibility:hidden;">&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:void(0);" onclick="SP_saveSpellCheck();return false">{lang:save_spellcheck}</a>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:void(0);" onclick="SP_revertToOriginal();return false">{lang:revert_spellcheck}</a></span>
-</div>
-</div>
-
-<iframe src="{path:spellcheck_iframe}" width="100%" style="display:none;" class="iframe" id="spellcheck_frame_body" name="spellcheck_frame_body"></iframe>
-<div id="spellcheck_popup" class="wordSuggestion" style="position:absolute;visibility:hidden;"></div>
-
-</td>
-</tr>
-{/if}
-
-
 <tr>
 <td class="tableCellTwo" style="width:18%;" align="right"><b>{lang:max_characters}</b></td>
 <td class="tableCellTwo" style="width:82%;"><input type="text" class="input" name="charsleft" size="5" maxlength="5" value="{total_characters}" readonly="readonly"/></td>
