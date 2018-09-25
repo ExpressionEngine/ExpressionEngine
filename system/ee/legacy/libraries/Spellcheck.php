@@ -19,6 +19,9 @@ class EE_Spellcheck {
 	 */
 	public function __construct()
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('3.4.5');
+
 		ee()->lang->loadfile('spellcheck');
 
 		if (function_exists('pspell_new') OR function_exists('curl_init') OR extension_loaded('openssl'))
@@ -1232,6 +1235,7 @@ EOH;
 		$items = array();
 		$prechecked  = array();
 
+
 		if ( ! function_exists('pspell_new'))
 		{
 			$content = str_replace('&', ' ', stripslashes($content));
@@ -1246,11 +1250,11 @@ EOH;
 
 			if (function_exists('curl_init'))
 			{
-				$data = EE_Spellcheck::curl_process($url, $payload);
+				$data = $this->curl_process($url, $payload);
 			}
 			else
 			{
-				$data = EE_Spellcheck::fsockopen_process($url, $payload);
+				$data = $this->fsockopen_process($url, $payload);
 			}
 
 			if ($data == '')
