@@ -24,24 +24,42 @@ var GridImages = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (GridImages.__proto__ || Object.getPrototypeOf(GridImages)).call(this, props));
 
+    _this.setDirectory = function (directory) {
+      _this.setState({
+        directory: directory || 'all'
+      });
+    };
+
     _this.chooseExisting = function (directory) {
-      directory = directory || _this.props.allowedDirectory;
+      directory = directory || _this.state.directory;
       console.log(directory);
     };
 
     _this.uploadNew = function (directory) {
-      directory = directory || _this.props.allowedDirectory;
+      directory = directory || _this.state.directory;
       console.log(directory);
     };
 
     _this.state = {
-      files: []
+      files: [],
+      directory: props.allowedDirectory,
+      directoryName: _this.getDirectoryName(props.allowedDirectory)
     };
     _this.queue = new ConcurrencyQueue({ concurrency: 1 });
     return _this;
   }
 
   _createClass(GridImages, [{
+    key: 'getDirectoryName',
+    value: function getDirectoryName(directory) {
+      if (directory == 'all') return null;
+
+      directory = this.props.uploadDestinations.find(function (thisDirectory) {
+        return thisDirectory.value == directory;
+      });
+      return directory.label;
+    }
+  }, {
     key: 'bindDragAndDropEvents',
     value: function bindDragAndDropEvents() {
       var _this2 = this;
@@ -142,7 +160,8 @@ var GridImages = function (_React$Component) {
             React.createElement(
               'em',
               null,
-              lang.grid_images_uploading_to
+              this.state.directory == 'all' && lang.grid_images_choose_directory,
+              this.state.directory != 'all' && lang.grid_images_uploading_to.replace('%s', this.getDirectoryName(this.state.directory))
             )
           ),
           this.state.files.length == 0 && this.props.allowedDirectory == 'all' && React.createElement(

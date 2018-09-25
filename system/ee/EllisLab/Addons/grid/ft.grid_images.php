@@ -29,14 +29,7 @@ class Grid_images_ft extends Grid_ft {
 		$allowed_directory = $this->get_setting('allowed_directories', 'all');
 		$uploading_to_lang = lang('grid_images_choose_directory');
 
-		if (isset($upload_destinations[$allowed_directory]))
-		{
-			$uploading_to_lang = sprintf(
-				lang('grid_images_uploading_to'),
-				$upload_destinations[$allowed_directory]
-			);
-		}
-		else
+		if ( ! isset($upload_destinations[$allowed_directory]))
 		{
 			$allowed_directory = 'all';
 		}
@@ -58,7 +51,7 @@ class Grid_images_ft extends Grid_ft {
 				'grid_images_choose_existing' => lang('grid_images_choose_existing'),
 				'grid_images_drop_files' => lang('grid_images_drop_files'),
 				'grid_images_setup' => lang('grid_images_setup'),
-				'grid_images_uploading_to' => $uploading_to_lang,
+				'grid_images_uploading_to' => lang('grid_images_uploading_to'),
 				'grid_images_upload_new' => lang('grid_images_upload_new'),
 			]
 		]);

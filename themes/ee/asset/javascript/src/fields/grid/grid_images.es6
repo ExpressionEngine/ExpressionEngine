@@ -11,7 +11,9 @@ class GridImages extends React.Component {
     super(props)
 
     this.state = {
-      files: []
+      files: [],
+      directory: props.allowedDirectory,
+      directoryName: this.getDirectoryName(props.allowedDirectory)
     }
     this.queue = new ConcurrencyQueue({concurrency: 1})
   }
@@ -21,6 +23,15 @@ class GridImages extends React.Component {
       let props = JSON.parse(window.atob($(this).data('gridImagesReact')))
       ReactDOM.render(React.createElement(GridImages, props, null), this)
     })
+  }
+
+  getDirectoryName(directory) {
+    if (directory == 'all') return null;
+
+    directory = this.props.uploadDestinations.find(
+      thisDirectory => thisDirectory.value == directory
+    )
+    return directory.label
   }
 
   bindDragAndDropEvents() {
@@ -106,7 +117,10 @@ class GridImages extends React.Component {
           {this.state.files.length > 0 && <GridImagesProgressTable files={this.state.files} />}
           {this.state.files.length == 0 && <div className="field-file-upload__content">
             {lang.grid_images_drop_files}
-            <em>{lang.grid_images_uploading_to}</em>
+            <em>
+              {this.state.directory == 'all' && lang.grid_images_choose_directory}
+              {this.state.directory != 'all' && lang.grid_images_uploading_to.replace('%s', this.getDirectoryName(this.state.directory))}
+            </em>
           </div>}
           {this.state.files.length == 0 && this.props.allowedDirectory == 'all' &&
             <div className="field-file-upload__controls">
