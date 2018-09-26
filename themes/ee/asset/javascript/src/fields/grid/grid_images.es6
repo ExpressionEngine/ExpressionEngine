@@ -105,20 +105,39 @@ class GridImages extends React.Component {
 
       xhr.addEventListener('readystatechange', () => {
         if (xhr.readyState == 4 && xhr.status == 200) {
-          let fileIndex = this.state.files.findIndex(thisFile => thisFile.name == file.name)
-          this.state.files.splice(fileIndex, 1)
-          this.setState({
-            files: this.state.files
-          })
+          this.addFileToGrid(file, JSON.parse(xhr.responseText))
           resolve(file)
         }
         else if (xhr.readyState == 4 && xhr.status != 200) {
+          console.error(xhr.responseText)
           reject(file)
         }
       })
 
       formData.append('file', file)
       xhr.send(formData)
+    })
+  }
+
+  addFileToGrid = (file, response) => {
+    let fileIndex = this.state.files.findIndex(thisFile => thisFile.name == file.name)
+    this.state.files.splice(fileIndex, 1)
+    this.setState({
+      files: this.state.files
+    })
+
+    let gridInstance = $(this.dropZone)
+      .closest('.js-grid-images')
+      .find('.grid-input-form')
+      .data('GridInstance')
+
+    let fileField = gridInstance._addRow()
+      .find('.grid-file-upload')
+      .first()
+
+    EE.FileField.pickerCallback(response, {
+      input_value: fileField.find('input:hidden').first(),
+      input_img: fileField.find('img').first()
     })
   }
 

@@ -24,6 +24,25 @@ var GridImages = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (GridImages.__proto__ || Object.getPrototypeOf(GridImages)).call(this, props));
 
+    _this.addFileToGrid = function (file, response) {
+      var fileIndex = _this.state.files.findIndex(function (thisFile) {
+        return thisFile.name == file.name;
+      });
+      _this.state.files.splice(fileIndex, 1);
+      _this.setState({
+        files: _this.state.files
+      });
+
+      var gridInstance = $(_this.dropZone).closest('.js-grid-images').find('.grid-input-form').data('GridInstance');
+
+      var fileField = gridInstance._addRow().find('.grid-file-upload').first();
+
+      EE.FileField.pickerCallback(response, {
+        input_value: fileField.find('input:hidden').first(),
+        input_img: fileField.find('img').first()
+      });
+    };
+
     _this.setDirectory = function (directory) {
       _this.setState({
         directory: directory || 'all'
@@ -137,15 +156,10 @@ var GridImages = function (_React$Component) {
 
         xhr.addEventListener('readystatechange', function () {
           if (xhr.readyState == 4 && xhr.status == 200) {
-            var fileIndex = _this3.state.files.findIndex(function (thisFile) {
-              return thisFile.name == file.name;
-            });
-            _this3.state.files.splice(fileIndex, 1);
-            _this3.setState({
-              files: _this3.state.files
-            });
+            _this3.addFileToGrid(file, JSON.parse(xhr.responseText));
             resolve(file);
           } else if (xhr.readyState == 4 && xhr.status != 200) {
+            console.error(xhr.responseText);
             reject(file);
           }
         });
