@@ -128,6 +128,10 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		// Disable input elements in our blank template container so they
 		// don't get submitted on form submission
 		this.blankRow.find(':input').attr('disabled', 'disabled');
+
+		// Allow access to this Grid.Publish object from the DOM element;
+		// this may be a bad idea
+		this.root.data('GridInstance', this)
 	},
 
 	/**
