@@ -60,6 +60,7 @@ Grid.Publish = function(field, settings) {
 	this.rowContainer = this.root.find('> tbody');
 	this.addButtonToolbar = $('ul.toolbar:has(li.add)', this.parentContainer);
 	this.header = null;
+	this.isGridImages = this.root.closest('.js-grid-images').size() > 0;
 
 	this.rowSelector = 'tr';
 	this.cellSelector = 'td';
@@ -84,6 +85,7 @@ Grid.MiniField = function(field, settings) {
 	this.rowContainer = $('.keyvalue-item-container', this.root);
 	this.addButtonToolbar = $('> [rel=add_row]', this.parentContainer);
 	this.header = $('.fields-keyvalue-header', this.root);
+	this.isGridImages = false;
 
 	this.rowSelector = '.fields-keyvalue-item';
 	this.cellSelector = '.field-control';
@@ -183,6 +185,11 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	 * and how many rows already exist
 	 */
 	_addMinimumRows: function() {
+		// Grid images minimum row count validated on server
+		if (this.isGridImages) {
+			return
+		}
+
 		// Figure out how many rows we need to add
 		var rowsCount = this._getRows().size(),
 			neededRows = this.settings.grid_min_rows - rowsCount;
@@ -209,7 +216,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			showControls = rowCount > 0;
 
 		// Show add button below field when there are more than zero rows
-		this.addButtonToolbar.toggle(showControls);
+		this.addButtonToolbar.toggle(showControls && ! this.isGridImages);
 		$(this.reorderHandleContainerSelector, this.root).toggle(showControls);
 		$(this.deleteContainerHeaderSelector, this.root).toggle(showControls);
 
@@ -220,7 +227,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		if (this.settings.grid_max_rows !== '') {
 			// Show add button if row count is below the max rows setting,
 			// and only if there are already other rows present
-			this.addButtonToolbar.toggle(rowCount < this.settings.grid_max_rows && rowCount > 0);
+			this.addButtonToolbar.toggle(rowCount < this.settings.grid_max_rows && rowCount > 0 && ! this.isGridImages);
 		}
 
 		if (this.settings.grid_min_rows !== '') {
@@ -232,6 +239,11 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		// the row becomes detached from the table and column headers change
 		// width in a fluid-column-width table
 		$(this.reorderHandleContainerSelector, this.rowContainer).toggleClass('sort-cancel', rowCount == 1);
+
+		// Inside Grid Images? Hide Grid completely if there are no rows
+		if (this.isGridImages) {
+			this.root.toggleClass('hidden', rowCount == 0)
+		}
 	},
 
 	/**
