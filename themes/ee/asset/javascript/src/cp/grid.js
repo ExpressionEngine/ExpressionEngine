@@ -202,8 +202,6 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	 */
 	_toggleRowManipulationButtons: function() {
 		var rowCount = this._getRows().size(),
-			reorderCol = this.root.find('th.reorder-col'),
-			gridRemove = this.root.find('th.grid-remove'),
 			showControls = rowCount > 0;
 
 		// Show add button below field when there are more than zero rows
