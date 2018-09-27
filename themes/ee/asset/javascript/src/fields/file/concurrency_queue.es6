@@ -30,6 +30,10 @@ class ConcurrencyQueue {
         this.currentlyRunning--
         this.start()
       })
+      .catch(() => {
+        this.currentlyRunning--
+        this.start()
+      })
     }
   }
 }

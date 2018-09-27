@@ -48,6 +48,9 @@ var ConcurrencyQueue = function () {
         factory(item).then(function () {
           _this2.currentlyRunning--;
           _this2.start();
+        }).catch(function () {
+          _this2.currentlyRunning--;
+          _this2.start();
         });
       }
     }
