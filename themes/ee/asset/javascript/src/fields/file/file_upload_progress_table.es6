@@ -6,7 +6,7 @@
  * @license   https://expressionengine.com/license
  */
 
-function GridImagesProgressTable(props) {
+function FileUploadProgressTable(props) {
   return (
     <div className="field-file-upload__table">
       <div className="tbl-wrap">

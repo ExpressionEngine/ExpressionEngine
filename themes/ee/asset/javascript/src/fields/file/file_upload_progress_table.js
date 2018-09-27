@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license
  */
 
-function GridImagesProgressTable(props) {
+function FileUploadProgressTable(props) {
   return React.createElement(
     "div",
     { className: "field-file-upload__table" },

@@ -42,8 +42,9 @@ class Grid_images_ft extends Grid_ft {
 
 		ee()->cp->add_js_script([
 			'file' => [
-				'fields/grid/concurrency_queue',
-				'fields/grid/progress_table',
+				'fields/file/concurrency_queue',
+				'fields/file/file_upload_progress_table',
+				'fields/file/drag_and_drop_upload',
 				'fields/grid/grid_images'
 			],
 		]);

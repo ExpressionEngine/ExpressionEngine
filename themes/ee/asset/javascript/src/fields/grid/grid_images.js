@@ -1,5 +1,7 @@
 'use strict';
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -25,14 +27,6 @@ var GridImages = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, (GridImages.__proto__ || Object.getPrototypeOf(GridImages)).call(this, props));
 
     _this.addFileToGrid = function (file, response) {
-      var fileIndex = _this.state.files.findIndex(function (thisFile) {
-        return thisFile.name == file.name;
-      });
-      _this.state.files.splice(fileIndex, 1);
-      _this.setState({
-        files: _this.state.files
-      });
-
       var gridInstance = $(_this.dropZone).closest('.js-grid-images').find('.grid-input-form').data('GridInstance');
 
       var fileField = gridInstance._addRow().find('.grid-file-upload').first();
@@ -43,223 +37,22 @@ var GridImages = function (_React$Component) {
       });
     };
 
-    _this.setDirectory = function (directory) {
-      _this.setState({
-        directory: directory || 'all'
-      });
-    };
-
-    _this.chooseExisting = function (directory) {
-      directory = directory || _this.state.directory;
-      console.log(directory);
-    };
-
-    _this.uploadNew = function (directory) {
-      directory = directory || _this.state.directory;
-      console.log(directory);
-    };
-
-    _this.state = {
-      files: [],
-      directory: props.allowedDirectory,
-      directoryName: _this.getDirectoryName(props.allowedDirectory)
-    };
-    _this.queue = new ConcurrencyQueue({ concurrency: 1 });
     return _this;
   }
 
   _createClass(GridImages, [{
-    key: 'getDirectoryName',
-    value: function getDirectoryName(directory) {
-      if (directory == 'all') return null;
-
-      directory = this.props.uploadDestinations.find(function (thisDirectory) {
-        return thisDirectory.value == directory;
-      });
-      return directory.label;
-    }
-  }, {
-    key: 'bindDragAndDropEvents',
-    value: function bindDragAndDropEvents() {
-      var _this2 = this;
-
-      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(function (eventName) {
-        _this2.dropZone.addEventListener(eventName, preventDefaults, false);
-      });
-
-      function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-
-      // Handle upload
-      this.dropZone.addEventListener('drop', function (e) {
-        if (_this2.state.directory == 'all') {
-          // TODO: Show this using invalid state
-          alert('Please choose a directory');
-        }
-
-        var files = Array.from(e.dataTransfer.files);
-
-        files = files.filter(function (file) {
-          return file.type != '';
-        });
-        files = files.map(function (file) {
-          file.progress = 0;
-          return file;
-        });
-
-        _this2.setState({
-          files: _this2.state.files.concat(files)
-        });
-
-        _this2.queue.enqueue(files, function (file) {
-          return _this2.makeUploadPromise(file);
-        });
-      });
-
-      var highlight = function highlight(e) {
-        _this2.dropZone.classList.add('field-file-upload--drop');
-      };
-
-      var unhighlight = function unhighlight(e) {
-        _this2.dropZone.classList.remove('field-file-upload--drop');
-      };['dragenter', 'dragover'].forEach(function (eventName) {
-        _this2.dropZone.addEventListener(eventName, highlight, false);
-      });['dragleave', 'drop'].forEach(function (eventName) {
-        _this2.dropZone.addEventListener(eventName, unhighlight, false);
-      });
-    }
-  }, {
-    key: 'makeUploadPromise',
-    value: function makeUploadPromise(file) {
-      var _this3 = this;
-
-      return new Promise(function (resolve, reject) {
-        var formData = new FormData();
-        formData.append('directory', _this3.state.directory);
-        formData.append('file', file);
-        formData.append('csrf_token', EE.CSRF_TOKEN);
-
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', _this3.props.endpoint, true);
-
-        xhr.upload.addEventListener('progress', function (e) {
-          var fileIndex = _this3.state.files.findIndex(function (thisFile) {
-            return thisFile.name == file.name;
-          });
-          _this3.state.files[fileIndex].progress = e.loaded * 100.0 / e.total || 100;
-          _this3.setState({
-            files: _this3.state.files
-          });
-        });
-
-        xhr.addEventListener('readystatechange', function () {
-          if (xhr.readyState == 4 && xhr.status == 200) {
-            _this3.addFileToGrid(file, JSON.parse(xhr.responseText));
-            resolve(file);
-          } else if (xhr.readyState == 4 && xhr.status != 200) {
-            console.error(xhr.responseText);
-            reject(file);
-          }
-        });
-
-        formData.append('file', file);
-        xhr.send(formData);
-      });
-    }
-  }, {
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      this.bindDragAndDropEvents();
-    }
-  }, {
     key: 'render',
     value: function render() {
-      var _this4 = this;
+      var _this2 = this;
 
-      var lang = this.props.lang;
-      return React.createElement(
-        'div',
-        null,
-        React.createElement(
-          'div',
-          { className: 'field-file-upload mt', ref: function ref(dropZone) {
-              _this4.dropZone = dropZone;
-            } },
-          this.state.files.length > 0 && React.createElement(GridImagesProgressTable, { files: this.state.files }),
-          this.state.files.length == 0 && React.createElement(
-            'div',
-            { className: 'field-file-upload__content' },
-            lang.grid_images_drop_files,
-            React.createElement(
-              'em',
-              null,
-              this.state.directory == 'all' && lang.grid_images_choose_directory,
-              this.state.directory != 'all' && lang.grid_images_uploading_to.replace('%s', this.getDirectoryName(this.state.directory))
-            )
-          ),
-          this.state.files.length == 0 && this.props.allowedDirectory == 'all' && React.createElement(
-            'div',
-            { className: 'field-file-upload__controls' },
-            React.createElement(FilterSelect, { key: lang.grid_images_choose_existing,
-              center: true,
-              keepSelectedState: true,
-              title: lang.grid_images_choose_existing,
-              placeholder: 'filter directories',
-              items: this.props.uploadDestinations,
-              onSelect: function onSelect(directory) {
-                return _this4.setDirectory(directory);
-              }
-            })
-          )
-        ),
-        this.props.allowedDirectory != 'all' && React.createElement(
-          'div',
-          null,
-          React.createElement(
-            'a',
-            { href: '#', className: 'btn action', onClick: function onClick(e) {
-                e.preventDefault();
-                _this4.chooseExisting();
-              } },
-            lang.grid_images_choose_existing
-          ),
-          '\xA0',
-          React.createElement(
-            'a',
-            { href: '#', className: 'btn action', onClick: function onClick(e) {
-                e.preventDefault();
-                _this4.uploadNew();
-              } },
-            lang.grid_images_upload_new
-          )
-        ),
-        this.props.allowedDirectory == 'all' && React.createElement(
-          'div',
-          { className: 'filter-bar filter-bar--inline' },
-          React.createElement(FilterSelect, { key: lang.grid_images_choose_existing,
-            action: true,
-            keepSelectedState: false,
-            title: lang.grid_images_choose_existing,
-            placeholder: 'filter directories',
-            items: this.props.uploadDestinations,
-            onSelect: function onSelect(directory) {
-              return _this4.chooseExisting(directory);
-            }
-          }),
-          React.createElement(FilterSelect, { key: lang.grid_images_upload_new,
-            action: true,
-            keepSelectedState: false,
-            title: lang.grid_images_upload_new,
-            placeholder: 'filter directories',
-            items: this.props.uploadDestinations,
-            onSelect: function onSelect(directory) {
-              return _this4.uploadNew(directory);
-            }
-          })
-        )
-      );
+      return React.createElement(DragAndDropUpload, _extends({}, this.props, {
+        onFileUploadSuccess: function onFileUploadSuccess(file, response) {
+          return _this2.addFileToGrid(file, response);
+        },
+        assignDropZoneRef: function assignDropZoneRef(dropZone) {
+          _this2.dropZone = dropZone;
+        }
+      }));
     }
   }], [{
     key: 'renderFields',
