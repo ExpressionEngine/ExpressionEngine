@@ -18,11 +18,16 @@ function FileUploadProgressTable(props) {
             </tr>
             {props.files.map(file =>
               <tr key={file.name}>
-                <td>{file.name}</td>
+                <td>{(file.error || file.duplicate) && <span className="icon--issue"></span>}{file.name}</td>
                 <td>
-                  <div className="progress-bar">
+                  {file.error}
+                  {file.error &&
+                    <span>&nbsp;<a href="#" onClick={(e) => props.onFileErrorDismiss(e, file)}>Dismiss</a></span>}
+                  {file.duplicate &&
+                    <a href="#" onClick={(e) => props.onResolveConflict(e, file)}>Resolve Conflict</a>}
+                  { ! file.error && ! file.duplicate && <div className="progress-bar">
                     <div className="progress" style={{width: file.progress+'%'}}></div>
-                  </div>
+                  </div>}
                 </td>
               </tr>
             )}

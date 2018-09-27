@@ -42,12 +42,33 @@ function FileUploadProgressTable(props) {
               React.createElement(
                 "td",
                 null,
+                (file.error || file.duplicate) && React.createElement("span", { className: "icon--issue" }),
                 file.name
               ),
               React.createElement(
                 "td",
                 null,
-                React.createElement(
+                file.error,
+                file.error && React.createElement(
+                  "span",
+                  null,
+                  "\xA0",
+                  React.createElement(
+                    "a",
+                    { href: "#", onClick: function onClick(e) {
+                        return props.onFileErrorDismiss(e, file);
+                      } },
+                    "Dismiss"
+                  )
+                ),
+                file.duplicate && React.createElement(
+                  "a",
+                  { href: "#", onClick: function onClick(e) {
+                      return props.onResolveConflict(e, file);
+                    } },
+                  "Resolve Conflict"
+                ),
+                !file.error && !file.duplicate && React.createElement(
                   "div",
                   { className: "progress-bar" },
                   React.createElement("div", { className: "progress", style: { width: file.progress + '%' } })

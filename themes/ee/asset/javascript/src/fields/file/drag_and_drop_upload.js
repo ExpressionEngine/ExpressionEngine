@@ -45,6 +45,16 @@ var DragAndDropUpload = function (_React$Component) {
       _this.props.assignDropZoneRef(dropZone);
     };
 
+    _this.removeFile = function (file) {
+      var fileIndex = _this.state.files.findIndex(function (thisFile) {
+        return thisFile.name == file.name;
+      });
+      _this.state.files.splice(fileIndex, 1);
+      _this.setState({
+        files: _this.state.files
+      });
+    };
+
     _this.state = {
       files: [],
       directory: props.allowedDirectory,
@@ -146,26 +156,66 @@ var DragAndDropUpload = function (_React$Component) {
         });
 
         xhr.addEventListener('readystatechange', function () {
-          if (xhr.readyState == 4 && xhr.status == 200) {
-            var fileIndex = _this3.state.files.findIndex(function (thisFile) {
-              return thisFile.name == file.name;
-            });
-            _this3.state.files.splice(fileIndex, 1);
-            _this3.setState({
-              files: _this3.state.files
-            });
+          var fileIndex = _this3.state.files.findIndex(function (thisFile) {
+            return thisFile.name == file.name;
+          });
 
-            _this3.props.onFileUploadSuccess(file, JSON.parse(xhr.responseText));
-            resolve(file);
-          } else if (xhr.readyState == 4 && xhr.status != 200) {
-            console.error(xhr.responseText);
-            reject(file);
+          if (xhr.readyState == 4 && xhr.status == 200) {
+            var response = JSON.parse(xhr.responseText);
+
+            if (!response.file_name) {
+              // Known error
+              if (response.error) {
+                // Strip tags from error
+                var div = document.createElement('div');
+                div.innerHTML = response.error;
+                _this3.state.files[fileIndex].error = div.textContent || div.innerText || "";
+                _this3.setState({
+                  files: _this3.state.files
+                });
+                // Duplicate file name
+              } else if (response.duplicate) {
+                _this3.state.files[fileIndex].duplicate = true;
+                _this3.state.files[fileIndex].response = response;
+                _this3.setState({
+                  files: _this3.state.files
+                });
+              }
+              reject(response);
+              // Upload success
+            } else {
+              _this3.removeFile(file);
+              _this3.props.onFileUploadSuccess(file, JSON.parse(xhr.responseText));
+              resolve(file);
+            }
           }
+          // Unexpected error
+          else if (xhr.readyState == 4 && xhr.status != 200) {
+              _this3.state.files[fileIndex].error = 'Unknown error';
+              _this3.setState({
+                files: _this3.state.files
+              });
+              console.error(xhr);
+              reject(file);
+            }
         });
 
         formData.append('file', file);
         xhr.send(formData);
       });
+    }
+  }, {
+    key: 'errorsExist',
+    value: function errorsExist() {
+      var erroredFile = this.state.files.find(function (file) {
+        return file.error || file.duplicate;
+      });
+      return erroredFile != null;
+    }
+  }, {
+    key: 'resolveConflict',
+    value: function resolveConflict(file) {
+      console.log(file);
     }
   }, {
     key: 'render',
@@ -178,10 +228,21 @@ var DragAndDropUpload = function (_React$Component) {
         null,
         React.createElement(
           'div',
-          { className: 'field-file-upload mt', ref: function ref(dropZone) {
+          { className: "field-file-upload mt" + (this.errorsExist() ? ' field-file-upload---warning' : ''),
+            ref: function ref(dropZone) {
               return _this4.assignDropZoneRef(dropZone);
             } },
-          this.state.files.length > 0 && React.createElement(FileUploadProgressTable, { files: this.state.files }),
+          this.state.files.length > 0 && React.createElement(FileUploadProgressTable, {
+            files: this.state.files,
+            onFileErrorDismiss: function onFileErrorDismiss(e, file) {
+              e.preventDefault();
+              _this4.removeFile(file);
+            },
+            onResolveConflict: function onResolveConflict(e, file) {
+              e.preventDefault();
+              _this4.resolveConflict(file);
+            }
+          }),
           this.state.files.length == 0 && React.createElement(
             'div',
             { className: 'field-file-upload__content' },

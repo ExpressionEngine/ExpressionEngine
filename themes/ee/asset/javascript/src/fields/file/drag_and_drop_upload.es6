@@ -102,9 +102,7 @@ class DragAndDropUpload extends React.Component {
       xhr.open('POST', this.props.endpoint, true)
 
       xhr.upload.addEventListener('progress', (e) => {
-        let fileIndex = this.state.files.findIndex(
-          thisFile => thisFile.name == file.name
-        )
+        let fileIndex = this.state.files.findIndex(thisFile => thisFile.name == file.name)
         this.state.files[fileIndex].progress = (e.loaded * 100.0 / e.total) || 100
         this.setState({
           files: this.state.files
@@ -112,18 +110,44 @@ class DragAndDropUpload extends React.Component {
       })
 
       xhr.addEventListener('readystatechange', () => {
+        let fileIndex = this.state.files.findIndex(thisFile => thisFile.name == file.name)
+
         if (xhr.readyState == 4 && xhr.status == 200) {
-          let fileIndex = this.state.files.findIndex(thisFile => thisFile.name == file.name)
-          this.state.files.splice(fileIndex, 1)
+          let response = JSON.parse(xhr.responseText)
+
+          if ( ! response.file_name) {
+            // Known error
+            if (response.error) {
+              // Strip tags from error
+              let div = document.createElement('div');
+              div.innerHTML = response.error;
+              this.state.files[fileIndex].error = div.textContent || div.innerText || ""
+              this.setState({
+                files: this.state.files
+              })
+            // Duplicate file name
+            } else if (response.duplicate) {
+              this.state.files[fileIndex].duplicate = true
+              this.state.files[fileIndex].response = response
+              this.setState({
+                files: this.state.files
+              })
+            }
+            reject(response)
+          // Upload success
+          } else {
+            this.removeFile(file)
+            this.props.onFileUploadSuccess(file, JSON.parse(xhr.responseText))
+            resolve(file)
+          }
+        }
+        // Unexpected error
+        else if (xhr.readyState == 4 && xhr.status != 200) {
+          this.state.files[fileIndex].error = 'Unknown error'
           this.setState({
             files: this.state.files
           })
-
-          this.props.onFileUploadSuccess(file, JSON.parse(xhr.responseText))
-          resolve(file)
-        }
-        else if (xhr.readyState == 4 && xhr.status != 200) {
-          console.error(xhr.responseText)
+          console.error(xhr)
           reject(file)
         }
       })
@@ -154,12 +178,43 @@ class DragAndDropUpload extends React.Component {
     this.props.assignDropZoneRef(dropZone)
   }
 
+  removeFile = (file) => {
+    let fileIndex = this.state.files.findIndex(thisFile => thisFile.name == file.name)
+    this.state.files.splice(fileIndex, 1)
+    this.setState({
+      files: this.state.files
+    })
+  }
+
+  errorsExist() {
+    let erroredFile = this.state.files.find(file => {
+      return file.error || file.duplicate
+    })
+    return erroredFile != null
+  }
+
+  resolveConflict(file) {
+    console.log(file)
+  }
+
   render() {
     let lang = this.props.lang
     return (
       <div>
-        <div className="field-file-upload mt" ref={(dropZone) => this.assignDropZoneRef(dropZone)}>
-          {this.state.files.length > 0 && <FileUploadProgressTable files={this.state.files} />}
+        <div className={"field-file-upload mt" + (this.errorsExist() ? ' field-file-upload---warning' : '')}
+          ref={(dropZone) => this.assignDropZoneRef(dropZone)}>
+          {this.state.files.length > 0 &&
+            <FileUploadProgressTable
+              files={this.state.files}
+              onFileErrorDismiss={(e, file) => {
+                e.preventDefault()
+                this.removeFile(file)
+              }}
+              onResolveConflict={(e, file) => {
+                e.preventDefault()
+                this.resolveConflict(file)
+              }}
+            />}
           {this.state.files.length == 0 && <div className="field-file-upload__content">
             {lang.grid_images_drop_files}
             <em>
