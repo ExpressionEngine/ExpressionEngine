@@ -10,7 +10,7 @@ function FileUploadProgressTable(props) {
   return (
     <div className="field-file-upload__table">
       <div className="tbl-wrap">
-        <table>
+        <table className="tbl-fixed tables--uploads">
           <tbody>
             <tr>
               <th>File Name</th>

@@ -17,7 +17,7 @@ function FileUploadProgressTable(props) {
       { className: "tbl-wrap" },
       React.createElement(
         "table",
-        null,
+        { className: "tbl-fixed tables--uploads" },
         React.createElement(
           "tbody",
           null,
