@@ -146,63 +146,61 @@ var DragAndDropUpload = function (_React$Component) {
         xhr.open('POST', _this3.props.endpoint, true);
 
         xhr.upload.addEventListener('progress', function (e) {
-          var fileIndex = _this3.state.files.findIndex(function (thisFile) {
-            return thisFile.name == file.name;
-          });
-          _this3.state.files[fileIndex].progress = e.loaded * 100.0 / e.total || 100;
+          file.progress = e.loaded * 100.0 / e.total || 100;
           _this3.setState({
             files: _this3.state.files
           });
         });
 
         xhr.addEventListener('readystatechange', function () {
-          var fileIndex = _this3.state.files.findIndex(function (thisFile) {
-            return thisFile.name == file.name;
-          });
-
           if (xhr.readyState == 4 && xhr.status == 200) {
             var response = JSON.parse(xhr.responseText);
 
-            if (!response.file_name) {
-              // Known error
-              if (response.error) {
-                // Strip tags from error
-                var div = document.createElement('div');
-                div.innerHTML = response.error;
-                _this3.state.files[fileIndex].error = div.textContent || div.innerText || "";
-                _this3.setState({
-                  files: _this3.state.files
-                });
-                // Duplicate file name
-              } else if (response.duplicate) {
-                _this3.state.files[fileIndex].duplicate = true;
-                _this3.state.files[fileIndex].response = response;
-                _this3.setState({
-                  files: _this3.state.files
-                });
-              }
-              reject(response);
-              // Upload success
-            } else {
-              _this3.removeFile(file);
-              _this3.props.onFileUploadSuccess(file, JSON.parse(xhr.responseText));
-              resolve(file);
+            switch (response.status) {
+              case 'success':
+                _this3.removeFile(file);
+                _this3.props.onFileUploadSuccess(file, JSON.parse(xhr.responseText));
+                resolve(file);
+                break;
+              case 'duplicate':
+                file.duplicate = true;
+                file.fileId = response.fileId;
+                file.originalFileName = response.originalFileName;
+                reject(file);
+                break;
+              case 'error':
+                file.error = _this3.stripTags(response.error);
+                reject(file);
+                break;
+              default:
+                file.error = 'Unknown error';
+                console.error(xhr);
+                reject(file);
+                break;
             }
           }
           // Unexpected error
           else if (xhr.readyState == 4 && xhr.status != 200) {
-              _this3.state.files[fileIndex].error = 'Unknown error';
-              _this3.setState({
-                files: _this3.state.files
-              });
+              file.error = 'Unknown error';
               console.error(xhr);
               reject(file);
             }
+
+          _this3.setState({
+            files: _this3.state.files
+          });
         });
 
         formData.append('file', file);
         xhr.send(formData);
       });
+    }
+  }, {
+    key: 'stripTags',
+    value: function stripTags(string) {
+      var div = document.createElement('div');
+      div.innerHTML = string;
+      return div.textContent || div.innerText || "";
     }
   }, {
     key: 'errorsExist',

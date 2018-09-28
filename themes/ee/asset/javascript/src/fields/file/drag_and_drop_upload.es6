@@ -102,59 +102,60 @@ class DragAndDropUpload extends React.Component {
       xhr.open('POST', this.props.endpoint, true)
 
       xhr.upload.addEventListener('progress', (e) => {
-        let fileIndex = this.state.files.findIndex(thisFile => thisFile.name == file.name)
-        this.state.files[fileIndex].progress = (e.loaded * 100.0 / e.total) || 100
+        file.progress = (e.loaded * 100.0 / e.total) || 100
         this.setState({
           files: this.state.files
         })
       })
 
       xhr.addEventListener('readystatechange', () => {
-        let fileIndex = this.state.files.findIndex(thisFile => thisFile.name == file.name)
-
         if (xhr.readyState == 4 && xhr.status == 200) {
           let response = JSON.parse(xhr.responseText)
 
-          if ( ! response.file_name) {
-            // Known error
-            if (response.error) {
-              // Strip tags from error
-              let div = document.createElement('div');
-              div.innerHTML = response.error;
-              this.state.files[fileIndex].error = div.textContent || div.innerText || ""
-              this.setState({
-                files: this.state.files
-              })
-            // Duplicate file name
-            } else if (response.duplicate) {
-              this.state.files[fileIndex].duplicate = true
-              this.state.files[fileIndex].response = response
-              this.setState({
-                files: this.state.files
-              })
-            }
-            reject(response)
-          // Upload success
-          } else {
-            this.removeFile(file)
-            this.props.onFileUploadSuccess(file, JSON.parse(xhr.responseText))
-            resolve(file)
+          switch (response.status) {
+            case 'success':
+              this.removeFile(file)
+              this.props.onFileUploadSuccess(file, JSON.parse(xhr.responseText))
+              resolve(file)
+              break
+            case 'duplicate':
+              file.duplicate = true
+              file.fileId = response.fileId
+              file.originalFileName = response.originalFileName
+              reject(file)
+              break
+            case 'error':
+              file.error = this.stripTags(response.error)
+              reject(file)
+              break
+            default:
+              file.error = 'Unknown error'
+              console.error(xhr)
+              reject(file)
+              break
           }
         }
         // Unexpected error
         else if (xhr.readyState == 4 && xhr.status != 200) {
-          this.state.files[fileIndex].error = 'Unknown error'
-          this.setState({
-            files: this.state.files
-          })
+          file.error = 'Unknown error'
           console.error(xhr)
           reject(file)
         }
+
+        this.setState({
+          files: this.state.files
+        })
       })
 
       formData.append('file', file)
       xhr.send(formData)
     })
+  }
+
+  stripTags(string) {
+    let div = document.createElement('div')
+    div.innerHTML = string
+    return div.textContent || div.innerText || ""
   }
 
   setDirectory = (directory) => {
