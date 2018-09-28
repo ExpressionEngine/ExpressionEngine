@@ -245,13 +245,13 @@ class Channel {
 			$this->build_sql_query();
 		}
 
-		if ( ! $this->isLivePreviewEntry())
+		if ( ! $this->isLivePreviewEntry() && $this->sql == '')
 		{
-			if ($this->sql == '')
-			{
-				return ee()->TMPL->no_results();
-			}
+			return ee()->TMPL->no_results();
+		}
 
+		if ($this->sql)
+		{
 			if ($save_cache == TRUE)
 			{
 				$this->save_cache($this->sql);
