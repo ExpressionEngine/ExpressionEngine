@@ -22,9 +22,9 @@ function FileUploadProgressTable(props) {
                 <td>
                   {file.error}
                   {file.error &&
-                    <span>&nbsp;<a href="#" onClick={(e) => props.onFileErrorDismiss(e, file)}>Dismiss</a></span>}
-                  {file.duplicate &&
-                    <a href="#" onClick={(e) => props.onResolveConflict(e, file)}>Resolve Conflict</a>}
+                    <span>&nbsp;<a href="#" onClick={(e) => props.onFileErrorDismiss(e, file)}>Dismiss</a></span>
+                  }
+                  {file.duplicate && <ResolveFilenameConflict file={file} />}
                   { ! file.error && ! file.duplicate && <div className="progress-bar">
                     <div className="progress" style={{width: file.progress+'%'}}></div>
                   </div>}
@@ -36,4 +36,49 @@ function FileUploadProgressTable(props) {
       </div>
     </div>
   )
+}
+
+class ResolveFilenameConflict extends React.Component {
+  resolveConflict = (e, file) => {
+    e.preventDefault()
+    console.log(file)
+
+    let url = 'http://eecms.localhost/admin.php?/cp/addons/settings/filepicker/ajax-overwrite-or-rename&file_id='+file.fileId+'&original_file_name='+file.originalFileName
+    let modal = $('.modal-file')
+    $('div.box', modal).html('<iframe></iframe>')
+    let iframe = $('iframe', modal)
+    iframe.css({
+      border: 'none',
+      width: '100%'
+    })
+    iframe.attr('src', url)
+    modal.find('div.box').html(iframe)
+
+    iframe.load(() => {
+      var height = iframe.contents().find('body').height()
+      $('.box', modal).height(height)
+      iframe.height(height)
+
+      $(modal).on('modal:close', () => {
+        $.ajax({
+          type: 'POST',
+          url: $(iframe).contents().find('form').attr('action'),
+          data: $(iframe).contents().find('form').serialize() + '&submit=cancel',
+          async: false
+        })
+      })
+
+      $(iframe[0].contentWindow).on('unload', () => {
+        iframe.hide();
+        $('.box', modal).height('auto')
+        $(modal).height('auto')
+      })
+    })
+  }
+
+  render() {
+    return (
+      <a href="#" className="m-link" rel="modal-file" onClick={(e) => this.resolveConflict(e, this.props.file)}>Resolve Conflict</a>
+    )
+  }
 }

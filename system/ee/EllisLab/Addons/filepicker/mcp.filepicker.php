@@ -503,6 +503,16 @@ class Filepicker_mcp {
 		];
 	}
 
+	public function ajaxOverwriteOrRename()
+	{
+		$file_id = ee('Request')->get('file_id');
+		$original_name = ee('Request')->get('original_name');
+
+		$file = ee('Model')->get('File', $file_id)->first();
+
+		return $this->overwriteOrRename($file, $original_name);
+	}
+
 	protected function overwriteOrRename($file, $original_name)
 	{
 		$vars = array(
