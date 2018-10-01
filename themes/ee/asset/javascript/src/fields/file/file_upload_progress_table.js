@@ -69,7 +69,12 @@ function FileUploadProgressTable(props) {
                     "Dismiss"
                   )
                 ),
-                file.duplicate && React.createElement(ResolveFilenameConflict, { file: file }),
+                file.duplicate && React.createElement(ResolveFilenameConflict, {
+                  file: file,
+                  onResolveConflict: function onResolveConflict(file, response) {
+                    return props.onResolveConflict(file, response);
+                  }
+                }),
                 file.progress && React.createElement(
                   "div",
                   { className: "progress-bar" },
@@ -100,7 +105,6 @@ var ResolveFilenameConflict = function (_React$Component) {
 
     return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = ResolveFilenameConflict.__proto__ || Object.getPrototypeOf(ResolveFilenameConflict)).call.apply(_ref, [this].concat(args))), _this), _this.resolveConflict = function (e, file) {
       e.preventDefault();
-      console.log(file);
 
       var url = 'http://eecms.localhost/admin.php?/cp/addons/settings/filepicker/ajax-overwrite-or-rename&file_id=' + file.fileId + '&original_file_name=' + file.originalFileName;
       var modal = $('.modal-file');
@@ -114,18 +118,16 @@ var ResolveFilenameConflict = function (_React$Component) {
       modal.find('div.box').html(iframe);
 
       iframe.load(function () {
-        var height = iframe.contents().find('body').height();
-        $('.box', modal).height(height);
-        iframe.height(height);
-
-        $(modal).on('modal:close', function () {
-          $.ajax({
-            type: 'POST',
-            url: $(iframe).contents().find('form').attr('action'),
-            data: $(iframe).contents().find('form').serialize() + '&submit=cancel',
-            async: false
-          });
-        });
+        var response = iframe.contents().find('body').text();
+        try {
+          response = JSON.parse(response);
+          modal.trigger('modal:close');
+          return _this.props.onResolveConflict(file, response);
+        } catch (e) {
+          var height = iframe.contents().find('body').height();
+          $('.box', modal).height(height);
+          iframe.height(height);
+        }
 
         $(iframe[0].contentWindow).on('unload', function () {
           iframe.hide();

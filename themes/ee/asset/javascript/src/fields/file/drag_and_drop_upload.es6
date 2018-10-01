@@ -195,8 +195,9 @@ class DragAndDropUpload extends React.Component {
     return erroredFile != null
   }
 
-  resolveConflict(file) {
-    console.log(file)
+  resolveConflict(file, response) {
+    this.removeFile(file)
+    this.props.onFileUploadSuccess(file, response)
   }
 
   render() {
@@ -212,10 +213,7 @@ class DragAndDropUpload extends React.Component {
                 e.preventDefault()
                 this.removeFile(file)
               }}
-              onResolveConflict={(e, file) => {
-                e.preventDefault()
-                this.resolveConflict(file)
-              }}
+              onResolveConflict={(file, response) => this.resolveConflict(file, response)}
             />}
           {this.state.files.length == 0 && <div className="field-file-upload__content">
             {lang.grid_images_drop_files}

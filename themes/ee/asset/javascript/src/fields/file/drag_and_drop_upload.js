@@ -213,8 +213,9 @@ var DragAndDropUpload = function (_React$Component) {
     }
   }, {
     key: 'resolveConflict',
-    value: function resolveConflict(file) {
-      console.log(file);
+    value: function resolveConflict(file, response) {
+      this.removeFile(file);
+      this.props.onFileUploadSuccess(file, response);
     }
   }, {
     key: 'render',
@@ -237,9 +238,8 @@ var DragAndDropUpload = function (_React$Component) {
               e.preventDefault();
               _this4.removeFile(file);
             },
-            onResolveConflict: function onResolveConflict(e, file) {
-              e.preventDefault();
-              _this4.resolveConflict(file);
+            onResolveConflict: function onResolveConflict(file, response) {
+              return _this4.resolveConflict(file, response);
             }
           }),
           this.state.files.length == 0 && React.createElement(
