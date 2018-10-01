@@ -48,7 +48,7 @@ class Perpage extends Filter {
 		}
 
 		$this->name = 'perpage';
-		$this->label = 'show';
+		$this->label = 'perpage_filter';
 		$this->placeholder = lang('custom_limit');
 		$this->options = array(
 			'25'  => '25 '.lang('results'),

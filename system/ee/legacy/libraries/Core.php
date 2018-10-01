@@ -69,8 +69,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20180817');
-		define('APP_VER',		'4.3.4');
+		define('APP_BUILD',		'20180928');
+		define('APP_VER',		'4.3.5');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -456,7 +456,7 @@ class EE_Core {
 		// Does an admin session exist?
 		// Only the "login" class can be accessed when there isn't an admin session
 		if (ee()->session->userdata('admin_sess') == 0 &&
-			ee()->router->fetch_class() != 'login' &&
+			ee()->router->fetch_class(TRUE) != 'login' &&
 			ee()->router->fetch_class() != 'css')
 		{
 			// has their session Timed out and they are requesting a page?

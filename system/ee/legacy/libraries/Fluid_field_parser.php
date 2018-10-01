@@ -435,6 +435,7 @@ class Fluid_field_parser {
 				break;
 
 			case 'count':
+				$return = "''";
 				foreach ($fluid_field_data as $i => $field)
 				{
 					if ($current_field->getId() == $field->getId())
@@ -446,6 +447,7 @@ class Fluid_field_parser {
 				break;
 
 			case 'index':
+				$return = "''";
 				foreach ($fluid_field_data as $i => $field)
 				{
 					if ($current_field->getId() == $field->getId())

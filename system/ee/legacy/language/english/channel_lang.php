@@ -184,6 +184,8 @@ $lang = array(
 
 'channel_not_updated_desc' => 'We were unable to update this channel, please review and fix errors below.',
 
+'channel_preview_url_invalid' => 'The Preview URL must be just a template path or route, it cannot be a full URL (including {base_url})',
+
 'channel_publishing_options' => 'Publishing Options',
 
 'channel_publishing_options_warning' => '<b>Warning</b>: Channels require custom field groups to collect any data other than title, and date.',

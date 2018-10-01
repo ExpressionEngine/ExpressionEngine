@@ -204,19 +204,14 @@ class License {
 			return FALSE;
 		}
 
-		if ($this->isSigned())
+		$valid = $this->signatureIsValid();
+
+		if ( ! $valid)
 		{
-			$valid = $this->signatureIsValid();
-
-			if ( ! $valid)
-			{
-				$this->errors['invalid_signature'] = "The license file has been tampered with";
-			}
-
-			return $valid;
+			$this->errors['invalid_signature'] = "The license file has been tampered with";
 		}
 
-		return TRUE;
+		return $valid;
 	}
 
 	/**

@@ -198,7 +198,13 @@ class CategoryGroup extends StructureModel {
 	public function populateCategories($field)
 	{
 		$categories = $this->getModelFacade()->get('Category')
-			->with(array('Children as C0' => array('Children as C1' => 'Children as C2')))
+			->with(
+				['Children as C0' =>
+					['Children as C1' =>
+						['Children as C2' => 'Children as C3']
+					]
+				]
+			)
 			->with('CategoryGroup')
 			->filter('CategoryGroup.group_id', $field->getItem('group_id'))
 			->filter('Category.parent_id', 0)

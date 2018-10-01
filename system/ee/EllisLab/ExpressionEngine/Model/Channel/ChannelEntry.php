@@ -1075,8 +1075,10 @@ class ChannelEntry extends ContentModel {
 		$channel_filter_options = array();
 
 		$channels = $this->getModelFacade()->get('Channel', $allowed_channel_ids)
+			->with('Statuses', 'CustomFields', ['FieldGroups' => 'ChannelFields'])
 			->filter('site_id', ee()->config->item('site_id'))
-			->fields('channel_id', 'channel_title')
+			// Include custom field information because it may be cached for later calls
+			->fields('channel_id', 'channel_title', 'ChannelFields.*', 'CustomFields.*')
 			->all();
 
 		foreach ($channels as $channel)

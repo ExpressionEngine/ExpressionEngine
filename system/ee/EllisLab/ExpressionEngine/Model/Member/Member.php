@@ -785,6 +785,7 @@ class Member extends ContentModel {
 			{
 				if ($val == 0)
 				{
+					ee()->lang->loadfile('myaccount');
 					return 'not_secure_password';
 				}
 			}

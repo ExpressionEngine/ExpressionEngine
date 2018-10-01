@@ -244,6 +244,8 @@ $lang = array(
 
 'member_group' => 'Member Group',
 
+'member_group_filter' => 'member group',
+
 'member_group_assignment' => 'Member Group Assignment',
 
 'member_group_deleted' => 'Member Group Deleted',

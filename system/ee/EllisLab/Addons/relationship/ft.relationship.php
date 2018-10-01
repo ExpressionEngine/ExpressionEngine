@@ -21,11 +21,6 @@ class Relationship_ft extends EE_Fieldtype {
 
 	private $_table = 'relationships';
 
-	// Cache variables
-	protected $channels = array();
-	protected $entries = array();
-	protected $children = array();
-
 	/**
 	 * Validate Field
 	 *
@@ -340,24 +335,22 @@ class Relationship_ft extends EE_Fieldtype {
 		);
 
 		// Create a cache of channel names
-		if (empty($this->channels))
+		if ( ! $channels = ee()->session->cache(__CLASS__, 'channels'))
 		{
-			$this->channels = ee('Model')->get('Channel')
+			$channels = ee('Model')->get('Channel')
 				->fields('channel_title', 'max_entries', 'total_records')
 				->all();
+
+			ee()->session->set_cache(__CLASS__, 'channels', $channels);
 		}
 
 		$limit_channels = $this->settings['channels'];
 		if (count($limit_channels))
 		{
-			$channels = $this->channels->filter(function($channel) use ($limit_channels)
+			$channels = $channels->filter(function($channel) use ($limit_channels)
 			{
 				return in_array($channel->getId(), $limit_channels);
 			});
-		}
-		else
-		{
-			$channels = $this->channels;
 		}
 
 		if (REQ != 'CP')
@@ -390,23 +383,28 @@ class Relationship_ft extends EE_Fieldtype {
 			'ui' => 'sortable'
 		]);
 
+		$children_cache = ee()->session->cache(__CLASS__, 'children');
+
 		if ($entry_id)
 		{
-			if ( ! isset($this->children[$entry_id]))
+			if ( ! is_array($children_cache))
 			{
-				// Cache children for this entry
-				$this->children[$entry_id] = $children = ee('Model')->get('ChannelEntry', $entry_id)
-					->with('Children')
-					->fields('Children.entry_id', 'Children.title', 'Children.channel_id')
-					->first()
-					->Children;
-			}
-			else
-			{
-				$children = $this->children[$entry_id];
+				$children_cache = [];
 			}
 
-			$children = $children->indexBy('entry_id');
+			if ( ! isset($children_cache[$entry_id]))
+			{
+				// Cache children for this entry
+				$children_cache[$entry_id] = ee('Model')->get('ChannelEntry', $entry_id)
+					->with('Children', 'Channel')
+					->fields('Channel.channel_title', 'Children.entry_id', 'Children.title', 'Children.channel_id')
+					->first()
+					->Children;
+
+				ee()->session->set_cache(__CLASS__, 'children', $children_cache);
+			}
+
+			$children = $children_cache[$entry_id]->indexBy('entry_id');
 		}
 		else
 		{

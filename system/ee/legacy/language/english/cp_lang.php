@@ -293,6 +293,16 @@ $lang = array(
 
 'show' => 'Show',
 
+'search_in_filter' => 'search in',
+
+'perpage_filter' => 'show',
+
+'date_filter' => 'date',
+
+'group_filter' => 'group',
+
+'type_filter' => 'type',
+
 'site' => 'Site',
 
 'site_filter' => 'site',
