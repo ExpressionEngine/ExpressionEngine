@@ -7,9 +7,6 @@
  */
 
 class GridImages extends React.Component {
-  constructor (props) {
-    super(props)
-  }
 
   static renderFields(context) {
     $('div[data-grid-images-react]', context).each(function () {

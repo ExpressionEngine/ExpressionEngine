@@ -21,12 +21,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var GridImages = function (_React$Component) {
   _inherits(GridImages, _React$Component);
 
-  function GridImages(props) {
+  function GridImages() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
     _classCallCheck(this, GridImages);
 
-    var _this = _possibleConstructorReturn(this, (GridImages.__proto__ || Object.getPrototypeOf(GridImages)).call(this, props));
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-    _this.addFileToGrid = function (file, response) {
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = GridImages.__proto__ || Object.getPrototypeOf(GridImages)).call.apply(_ref, [this].concat(args))), _this), _this.addFileToGrid = function (file, response) {
       var gridInstance = $(_this.dropZone).closest('.js-grid-images').find('.grid-input-form').data('GridInstance');
 
       var fileField = gridInstance._addRow().find('.grid-file-upload').first();
@@ -35,9 +41,7 @@ var GridImages = function (_React$Component) {
         input_value: fileField.find('input:hidden').first(),
         input_img: fileField.find('img').first()
       });
-    };
-
-    return _this;
+    }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
   _createClass(GridImages, [{
