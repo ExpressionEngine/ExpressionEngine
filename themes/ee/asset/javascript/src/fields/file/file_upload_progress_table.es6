@@ -25,7 +25,7 @@ function FileUploadProgressTable(props) {
                     <span>&nbsp;<a href="#" onClick={(e) => props.onFileErrorDismiss(e, file)}>Dismiss</a></span>
                   }
                   {file.duplicate && <ResolveFilenameConflict file={file} />}
-                  { ! file.error && ! file.duplicate && <div className="progress-bar">
+                  {file.progress && <div className="progress-bar">
                     <div className="progress" style={{width: file.progress+'%'}}></div>
                   </div>}
                 </td>

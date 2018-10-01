@@ -142,6 +142,7 @@ class DragAndDropUpload extends React.Component {
           reject(file)
         }
 
+        file.progress = false
         this.setState({
           files: this.state.files
         })

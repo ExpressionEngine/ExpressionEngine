@@ -70,7 +70,7 @@ function FileUploadProgressTable(props) {
                   )
                 ),
                 file.duplicate && React.createElement(ResolveFilenameConflict, { file: file }),
-                !file.error && !file.duplicate && React.createElement(
+                file.progress && React.createElement(
                   "div",
                   { className: "progress-bar" },
                   React.createElement("div", { className: "progress", style: { width: file.progress + '%' } })
