@@ -26,7 +26,8 @@ function FileUploadProgressTable(props) {
                   }
                   {file.duplicate && <ResolveFilenameConflict
                     file={file}
-                    onResolveConflict={(file, response) => props.onResolveConflict(file, response)}
+                    onResolveConflict={props.onResolveConflict}
+                    onFileUploadCancel={(e) => props.onFileErrorDismiss(e, file)}
                   />}
                   {file.progress && <div className="progress-bar">
                     <div className="progress" style={{width: file.progress+'%'}}></div>
@@ -60,6 +61,10 @@ class ResolveFilenameConflict extends React.Component {
       let response = iframe.contents().find('body').text()
       try {
         response = JSON.parse(response)
+        modal.trigger('modal:close')
+        if (response.cancel) {
+          return this.props.onFileUploadCancel(e, file)
+        }
         modal.trigger('modal:close')
         return this.props.onResolveConflict(file, response)
       } catch(e) {

@@ -71,8 +71,9 @@ function FileUploadProgressTable(props) {
                 ),
                 file.duplicate && React.createElement(ResolveFilenameConflict, {
                   file: file,
-                  onResolveConflict: function onResolveConflict(file, response) {
-                    return props.onResolveConflict(file, response);
+                  onResolveConflict: props.onResolveConflict,
+                  onFileUploadCancel: function onFileUploadCancel(e) {
+                    return props.onFileErrorDismiss(e, file);
                   }
                 }),
                 file.progress && React.createElement(
@@ -121,6 +122,10 @@ var ResolveFilenameConflict = function (_React$Component) {
         var response = iframe.contents().find('body').text();
         try {
           response = JSON.parse(response);
+          modal.trigger('modal:close');
+          if (response.cancel) {
+            return _this.props.onFileUploadCancel(e, file);
+          }
           modal.trigger('modal:close');
           return _this.props.onResolveConflict(file, response);
         } catch (e) {
