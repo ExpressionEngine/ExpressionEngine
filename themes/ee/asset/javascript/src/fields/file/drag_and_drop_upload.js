@@ -186,7 +186,6 @@ var DragAndDropUpload = function (_React$Component) {
               reject(file);
             }
 
-          file.progress = false;
           _this3.setState({
             files: _this3.state.files
           });

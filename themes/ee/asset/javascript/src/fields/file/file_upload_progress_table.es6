@@ -29,7 +29,7 @@ function FileUploadProgressTable(props) {
                     onResolveConflict={props.onResolveConflict}
                     onFileUploadCancel={(e) => props.onFileErrorDismiss(e, file)}
                   />}
-                  {file.progress && <div className="progress-bar">
+                  { ! file.error && ! file.duplicate && <div className="progress-bar">
                     <div className="progress" style={{width: file.progress+'%'}}></div>
                   </div>}
                 </td>
