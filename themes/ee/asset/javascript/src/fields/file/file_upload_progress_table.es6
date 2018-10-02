@@ -13,8 +13,8 @@ function FileUploadProgressTable(props) {
         <table className="tbl-fixed tables--uploads">
           <tbody>
             <tr>
-              <th>File Name</th>
-              <th>Progress</th>
+              <th>{EE.lang.file_dnd_file_name}</th>
+              <th>{EE.lang.file_dnd_progress}</th>
             </tr>
             {props.files.map(file =>
               <tr key={file.name}>
@@ -22,7 +22,7 @@ function FileUploadProgressTable(props) {
                 <td>
                   {file.error}
                   {file.error &&
-                    <span>&nbsp;<a href="#" onClick={(e) => props.onFileErrorDismiss(e, file)}>Dismiss</a></span>
+                    <span>&nbsp;<a href="#" onClick={(e) => props.onFileErrorDismiss(e, file)}>{EE.lang.file_dnd_dismiss}</a></span>
                   }
                   {file.duplicate && <ResolveFilenameConflict
                     file={file}
@@ -83,7 +83,9 @@ class ResolveFilenameConflict extends React.Component {
 
   render() {
     return (
-      <a href="#" className="m-link" rel="modal-file" onClick={(e) => this.resolveConflict(e, this.props.file)}>Resolve Conflict</a>
+      <a href="#" className="m-link" rel="modal-file" onClick={(e) => this.resolveConflict(e, this.props.file)}>
+        {EE.lang.file_dnd_resolve_conflict}
+      </a>
     )
   }
 }

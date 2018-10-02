@@ -35,12 +35,12 @@ function FileUploadProgressTable(props) {
             React.createElement(
               "th",
               null,
-              "File Name"
+              EE.lang.file_dnd_file_name
             ),
             React.createElement(
               "th",
               null,
-              "Progress"
+              EE.lang.file_dnd_progress
             )
           ),
           props.files.map(function (file) {
@@ -66,7 +66,7 @@ function FileUploadProgressTable(props) {
                     { href: "#", onClick: function onClick(e) {
                         return props.onFileErrorDismiss(e, file);
                       } },
-                    "Dismiss"
+                    EE.lang.file_dnd_dismiss
                   )
                 ),
                 file.duplicate && React.createElement(ResolveFilenameConflict, {
@@ -153,7 +153,7 @@ var ResolveFilenameConflict = function (_React$Component) {
         { href: "#", className: "m-link", rel: "modal-file", onClick: function onClick(e) {
             return _this2.resolveConflict(e, _this2.props.file);
           } },
-        "Resolve Conflict"
+        EE.lang.file_dnd_resolve_conflict
       );
     }
   }]);

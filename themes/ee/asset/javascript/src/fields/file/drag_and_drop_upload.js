@@ -55,10 +55,11 @@ var DragAndDropUpload = function (_React$Component) {
       });
     };
 
+    var directoryName = _this.getDirectoryName(props.allowedDirectory);
     _this.state = {
       files: [],
-      directory: props.allowedDirectory,
-      directoryName: _this.getDirectoryName(props.allowedDirectory)
+      directory: directoryName ? props.allowedDirectory : 'all',
+      directoryName: directoryName
     };
     _this.queue = new ConcurrencyQueue({ concurrency: _this.props.concurrency });
     return _this;
@@ -74,7 +75,7 @@ var DragAndDropUpload = function (_React$Component) {
     value: function getDirectoryName(directory) {
       if (directory == 'all') return null;
 
-      directory = this.props.uploadDestinations.find(function (thisDirectory) {
+      directory = EE.dragAndDrop.uploadDesinations.find(function (thisDirectory) {
         return thisDirectory.value == directory;
       });
       return directory.label;
@@ -173,15 +174,15 @@ var DragAndDropUpload = function (_React$Component) {
                 reject(file);
                 break;
               default:
-                file.error = 'Unknown error';
+                file.error = EE.lang.file_dnd_unexpected_error;
                 console.error(xhr);
                 reject(file);
                 break;
             }
           }
-          // Unexpected error
+          // Unexpected error, probably post_max_size is too low
           else if (xhr.readyState == 4 && xhr.status != 200) {
-              file.error = 'Unknown error';
+              file.error = EE.lang.file_dnd_unexpected_error;
               console.error(xhr);
               reject(file);
             }
@@ -221,7 +222,6 @@ var DragAndDropUpload = function (_React$Component) {
     value: function render() {
       var _this4 = this;
 
-      var lang = this.props.lang;
       return React.createElement(
         'div',
         null,
@@ -244,23 +244,23 @@ var DragAndDropUpload = function (_React$Component) {
           this.state.files.length == 0 && React.createElement(
             'div',
             { className: 'field-file-upload__content' },
-            lang.grid_images_drop_files,
+            EE.lang.file_dnd_drop_files,
             React.createElement(
               'em',
               null,
-              this.state.directory == 'all' && lang.grid_images_choose_directory,
-              this.state.directory != 'all' && lang.grid_images_uploading_to.replace('%s', this.getDirectoryName(this.state.directory))
+              this.state.directory == 'all' && EE.lang.file_dnd_choose_directory,
+              this.state.directory != 'all' && EE.lang.file_dnd_uploading_to.replace('%s', this.getDirectoryName(this.state.directory))
             )
           ),
           this.state.files.length == 0 && this.props.allowedDirectory == 'all' && React.createElement(
             'div',
             { className: 'field-file-upload__controls' },
-            React.createElement(FilterSelect, { key: lang.grid_images_choose_existing,
+            React.createElement(FilterSelect, { key: EE.lang.file_dnd_choose_existing,
               center: true,
               keepSelectedState: true,
-              title: lang.grid_images_choose_existing,
-              placeholder: 'filter directories',
-              items: this.props.uploadDestinations,
+              title: EE.lang.file_dnd_choose_existing,
+              placeholder: EE.lang.file_dnd_filter_directories,
+              items: EE.dragAndDrop.uploadDesinations,
               onSelect: function onSelect(directory) {
                 return _this4.setDirectory(directory);
               }
@@ -276,7 +276,7 @@ var DragAndDropUpload = function (_React$Component) {
                 e.preventDefault();
                 _this4.chooseExisting();
               } },
-            lang.grid_images_choose_existing
+            EE.lang.file_dnd_choose_existing
           ),
           '\xA0',
           React.createElement(
@@ -285,28 +285,28 @@ var DragAndDropUpload = function (_React$Component) {
                 e.preventDefault();
                 _this4.uploadNew();
               } },
-            lang.grid_images_upload_new
+            EE.lang.file_dnd_upload_new
           )
         ),
         this.props.allowedDirectory == 'all' && React.createElement(
           'div',
           { className: 'filter-bar filter-bar--inline' },
-          React.createElement(FilterSelect, { key: lang.grid_images_choose_existing,
+          React.createElement(FilterSelect, { key: EE.lang.file_dnd_choose_existing,
             action: true,
             keepSelectedState: false,
-            title: lang.grid_images_choose_existing,
-            placeholder: 'filter directories',
-            items: this.props.uploadDestinations,
+            title: EE.lang.file_dnd_choose_existing,
+            placeholder: EE.lang.file_dnd_filter_directories,
+            items: EE.dragAndDrop.uploadDesinations,
             onSelect: function onSelect(directory) {
               return _this4.chooseExisting(directory);
             }
           }),
-          React.createElement(FilterSelect, { key: lang.grid_images_upload_new,
+          React.createElement(FilterSelect, { key: EE.lang.file_dnd_upload_new,
             action: true,
             keepSelectedState: false,
-            title: lang.grid_images_upload_new,
-            placeholder: 'filter directories',
-            items: this.props.uploadDestinations,
+            title: EE.lang.file_dnd_upload_new,
+            placeholder: EE.lang.file_dnd_filter_directories,
+            items: EE.dragAndDrop.uploadDesinations,
             onSelect: function onSelect(directory) {
               return _this4.uploadNew(directory);
             }

@@ -120,6 +120,29 @@ $lang = array(
 
 'file_ft_upload_directories' => 'Upload Directories',
 
+/* File Drag and Drop */
+
+'file_dnd_choose_directory' => 'Please choose a directory',
+
+'file_dnd_choose_existing' => 'Choose Directory',
+
+'file_dnd_dismiss' => 'Dismiss',
+
+'file_dnd_drop_files' => 'Drop File(s) Here to Upload',
+
+'file_dnd_file_name' => 'File Name',
+
+'file_dnd_filter_directories' => 'filter directories',
+
+'file_dnd_progress' => 'Progress',
+
+'file_dnd_resolve_conflict' => 'Resolve Conflict',
+
+'file_dnd_unexpected_error' => 'Unexpected error. Check your post_max_size setting in your PHP configuration.',
+
+'file_dnd_uploading_to' => 'uploading to %s',
+
+'file_dnd_upload_new' => 'Upload New',
 
 /* Grid */
 'grid_add_field' => 'add new field',
@@ -196,17 +219,7 @@ $lang = array(
 
 /* Grid Images */
 
-'grid_images_choose_directory' => 'Please choose a directory',
-
-'grid_images_choose_existing' => 'Choose Directory',
-
-'grid_images_drop_files' => 'Drop File(s) Here to Upload',
-
 'grid_images_setup' => 'Grid Images Setup',
-
-'grid_images_uploading_to' => 'uploading to %s',
-
-'grid_images_upload_new' => 'Upload New',
 
 /* URL */
 'url_ft_allowed_url_schemes' => 'Allowed URL Schemes',

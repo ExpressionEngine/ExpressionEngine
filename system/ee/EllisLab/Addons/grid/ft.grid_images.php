@@ -31,36 +31,16 @@ class Grid_images_ft extends Grid_ft {
 			return $grid_markup;
 		}
 
-		$upload_destinations = $this->getUploadDestinations();
 		$allowed_directory = $this->get_setting('allowed_directories', 'all');
-		$uploading_to_lang = lang('grid_images_choose_directory');
 
-		if ( ! isset($upload_destinations[$allowed_directory]))
-		{
-			$allowed_directory = 'all';
-		}
+		ee()->load->library('file_field');
+		ee()->file_field->loadDragAndDropAssets();
 
-		ee()->cp->add_js_script([
-			'file' => [
-				'fields/file/concurrency_queue',
-				'fields/file/file_upload_progress_table',
-				'fields/file/drag_and_drop_upload',
-				'fields/grid/grid_images'
-			],
-		]);
+		ee()->cp->add_js_script('file', 'fields/grid/grid_images');
 
 		return ee('View')->make('grid:grid_images')->render([
 			'grid_markup'         => $grid_markup,
-			'upload_destinations' => $upload_destinations,
-			'allowed_directory'   => $allowed_directory,
-			'lang' => [
-				'grid_images_choose_directory' => lang('grid_images_choose_directory'),
-				'grid_images_choose_existing' => lang('grid_images_choose_existing'),
-				'grid_images_drop_files' => lang('grid_images_drop_files'),
-				'grid_images_setup' => lang('grid_images_setup'),
-				'grid_images_uploading_to' => lang('grid_images_uploading_to'),
-				'grid_images_upload_new' => lang('grid_images_upload_new'),
-			]
+			'allowed_directory'   => $this->get_setting('allowed_directories', 'all')
 		]);
 	}
 
@@ -154,24 +134,6 @@ class Grid_images_ft extends Grid_ft {
 		});');
 
 		return $settings;
-	}
-
-	private function getUploadDestinations()
-	{
-		if (($upload_destinations = ee()->session->cache(__CLASS__, 'upload_destinations', FALSE)) === FALSE)
-		{
-			$upload_destinations = ee('Model')->get('UploadDestination')
-				->fields('id', 'name')
-				->filter('site_id', ee()->config->item('site_id'))
-				->filter('module_id', 0)
-				->order('name', 'asc')
-				->all()
-				->getDictionary('id', 'name');
-
-			ee()->session->set_cache(__CLASS__, 'upload_destinations', $upload_destinations);
-		}
-
-		return $upload_destinations;
 	}
 
 	/**

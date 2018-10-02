@@ -805,6 +805,48 @@ class File_field {
 
 		return $this->_manipulations[$dir_id];
 	}
+
+	/**
+	 * Loads proper JavaScript for drag and drop uploading
+	 */
+	public function loadDragAndDropAssets()
+	{
+		$upload_prefs = $this->_get_upload_prefs();
+
+		$upload_destinations = [];
+		foreach	($upload_prefs as $upload_pref)
+		{
+			if ($upload_pref['site_id'] == ee()->config->item('site_id') &&
+				$upload_pref['module_id'] == 0)
+			{
+				$upload_destinations[$upload_pref['id']] = $upload_pref['name'];
+			}
+		}
+
+		ee()->javascript->set_global([
+			'lang.file_dnd_choose_directory' => lang('file_dnd_choose_directory'),
+			'lang.file_dnd_choose_existing' => lang('file_dnd_choose_existing'),
+			'lang.file_dnd_dismiss' => lang('file_dnd_dismiss'),
+			'lang.file_dnd_drop_files' => lang('file_dnd_drop_files'),
+			'lang.file_dnd_file_name' => lang('file_dnd_file_name'),
+			'lang.file_dnd_filter_directories' => lang('file_dnd_filter_directories'),
+			'lang.file_dnd_progress' => lang('file_dnd_progress'),
+			'lang.file_dnd_resolve_conflict' => lang('file_dnd_resolve_conflict'),
+			'lang.file_dnd_unexpected_error' => lang('file_dnd_unexpected_error'),
+			'lang.file_dnd_uploading_to' => lang('file_dnd_uploading_to'),
+			'lang.file_dnd_upload_new' => lang('file_dnd_upload_new'),
+			'dragAndDrop.uploadDesinations' => ee('View/Helpers')->normalizedChoices($upload_destinations)
+		]);
+
+		ee()->cp->add_js_script([
+			'file' => [
+				'fields/file/concurrency_queue',
+				'fields/file/file_upload_progress_table',
+				'fields/file/drag_and_drop_upload',
+				'fields/grid/grid_images'
+			],
+		]);
+	}
 }
 
 // END File_field class

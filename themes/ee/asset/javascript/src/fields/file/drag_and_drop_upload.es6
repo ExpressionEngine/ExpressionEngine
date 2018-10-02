@@ -14,10 +14,11 @@ class DragAndDropUpload extends React.Component {
   constructor (props) {
     super(props)
 
+    let directoryName = this.getDirectoryName(props.allowedDirectory)
     this.state = {
       files: [],
-      directory: props.allowedDirectory,
-      directoryName: this.getDirectoryName(props.allowedDirectory)
+      directory: directoryName ? props.allowedDirectory : 'all',
+      directoryName: directoryName
     }
     this.queue = new ConcurrencyQueue({concurrency: this.props.concurrency})
   }
@@ -36,7 +37,7 @@ class DragAndDropUpload extends React.Component {
   getDirectoryName(directory) {
     if (directory == 'all') return null;
 
-    directory = this.props.uploadDestinations.find(
+    directory = EE.dragAndDrop.uploadDesinations.find(
       thisDirectory => thisDirectory.value == directory
     )
     return directory.label
@@ -129,15 +130,15 @@ class DragAndDropUpload extends React.Component {
               reject(file)
               break
             default:
-              file.error = 'Unknown error'
+              file.error = EE.lang.file_dnd_unexpected_error
               console.error(xhr)
               reject(file)
               break
           }
         }
-        // Unexpected error
+        // Unexpected error, probably post_max_size is too low
         else if (xhr.readyState == 4 && xhr.status != 200) {
-          file.error = 'Unknown error'
+          file.error = EE.lang.file_dnd_unexpected_error
           console.error(xhr)
           reject(file)
         }
@@ -200,7 +201,6 @@ class DragAndDropUpload extends React.Component {
   }
 
   render() {
-    let lang = this.props.lang
     return (
       <div>
         <div className={"field-file-upload mt" + (this.errorsExist() ? ' field-file-upload---warning' : '')}
@@ -215,20 +215,20 @@ class DragAndDropUpload extends React.Component {
               onResolveConflict={(file, response) => this.resolveConflict(file, response)}
             />}
           {this.state.files.length == 0 && <div className="field-file-upload__content">
-            {lang.grid_images_drop_files}
+            {EE.lang.file_dnd_drop_files}
             <em>
-              {this.state.directory == 'all' && lang.grid_images_choose_directory}
-              {this.state.directory != 'all' && lang.grid_images_uploading_to.replace('%s', this.getDirectoryName(this.state.directory))}
+              {this.state.directory == 'all' && EE.lang.file_dnd_choose_directory}
+              {this.state.directory != 'all' && EE.lang.file_dnd_uploading_to.replace('%s', this.getDirectoryName(this.state.directory))}
             </em>
           </div>}
           {this.state.files.length == 0 && this.props.allowedDirectory == 'all' &&
             <div className="field-file-upload__controls">
-              <FilterSelect key={lang.grid_images_choose_existing}
+              <FilterSelect key={EE.lang.file_dnd_choose_existing}
                 center={true}
                 keepSelectedState={true}
-                title={lang.grid_images_choose_existing}
-                placeholder='filter directories'
-                items={this.props.uploadDestinations}
+                title={EE.lang.file_dnd_choose_existing}
+                placeholder={EE.lang.file_dnd_filter_directories}
+                items={EE.dragAndDrop.uploadDesinations}
                 onSelect={(directory) => this.setDirectory(directory)}
               />
             </div>
@@ -240,30 +240,30 @@ class DragAndDropUpload extends React.Component {
             <a href="#" className="btn action" onClick={(e) => {
               e.preventDefault()
               this.chooseExisting()
-            }}>{lang.grid_images_choose_existing}</a>&nbsp;
+            }}>{EE.lang.file_dnd_choose_existing}</a>&nbsp;
             <a href="#" className="btn action" onClick={(e) => {
               e.preventDefault()
               this.uploadNew()
-            }}>{lang.grid_images_upload_new}</a>
+            }}>{EE.lang.file_dnd_upload_new}</a>
           </div>
         }
         {this.props.allowedDirectory == 'all' && (
           <div className="filter-bar filter-bar--inline">
-            <FilterSelect key={lang.grid_images_choose_existing}
+            <FilterSelect key={EE.lang.file_dnd_choose_existing}
               action={true}
               keepSelectedState={false}
-              title={lang.grid_images_choose_existing}
-              placeholder='filter directories'
-              items={this.props.uploadDestinations}
+              title={EE.lang.file_dnd_choose_existing}
+              placeholder={EE.lang.file_dnd_filter_directories}
+              items={EE.dragAndDrop.uploadDesinations}
               onSelect={(directory) => this.chooseExisting(directory)}
             />
 
-            <FilterSelect key={lang.grid_images_upload_new}
+            <FilterSelect key={EE.lang.file_dnd_upload_new}
               action={true}
               keepSelectedState={false}
-              title={lang.grid_images_upload_new}
-              placeholder='filter directories'
-              items={this.props.uploadDestinations}
+              title={EE.lang.file_dnd_upload_new}
+              placeholder={EE.lang.file_dnd_filter_directories}
+              items={EE.dragAndDrop.uploadDesinations}
               onSelect={(directory) => this.uploadNew(directory)}
             />
           </div>
