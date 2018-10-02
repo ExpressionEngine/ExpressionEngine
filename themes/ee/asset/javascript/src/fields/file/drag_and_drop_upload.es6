@@ -120,7 +120,7 @@ class DragAndDropUpload extends React.Component {
           switch (response.status) {
             case 'success':
               this.removeFile(file)
-              this.props.onFileUploadSuccess(file, JSON.parse(xhr.responseText))
+              this.props.onFileUploadSuccess(JSON.parse(xhr.responseText))
               resolve(file)
               break
             case 'duplicate':
@@ -170,8 +170,14 @@ class DragAndDropUpload extends React.Component {
   }
 
   chooseExisting = (directory) => {
-    directory = directory || this.state.directory
-    console.log(directory)
+    let url = EE.dragAndDrop.filepickerEndpoint.replace('=all', '='+directory)
+    let link = $('<a/>', {
+      href: url,
+      rel: 'modal-file'
+    }).FilePicker({
+      callback: (data, references) => this.props.onFileUploadSuccess(data)
+    })
+    link.click()
   }
 
   uploadNew = (directory) => {
@@ -201,7 +207,7 @@ class DragAndDropUpload extends React.Component {
 
   resolveConflict(file, response) {
     this.removeFile(file)
-    this.props.onFileUploadSuccess(file, response)
+    this.props.onFileUploadSuccess(response)
   }
 
   render() {
@@ -230,7 +236,7 @@ class DragAndDropUpload extends React.Component {
               <FilterSelect key={EE.lang.file_dnd_choose_existing}
                 center={true}
                 keepSelectedState={true}
-                title={EE.lang.file_dnd_choose_existing}
+                title={EE.lang.file_dnd_choose_directory_btn}
                 placeholder={EE.lang.file_dnd_filter_directories}
                 items={EE.dragAndDrop.uploadDesinations}
                 onSelect={(directory) => this.setDirectory(directory)}
@@ -241,9 +247,9 @@ class DragAndDropUpload extends React.Component {
 
         {this.props.allowedDirectory != 'all' &&
           <div>
-            <a href="#" className="btn action" onClick={(e) => {
+            <a href="#" className="btn action m-link" rel="modal-file" onClick={(e) => {
               e.preventDefault()
-              this.chooseExisting()
+              this.chooseExisting(this.state.directory)
             }}>{EE.lang.file_dnd_choose_existing}</a>&nbsp;
             <a href="#" className="btn action" onClick={(e) => {
               e.preventDefault()
@@ -260,6 +266,8 @@ class DragAndDropUpload extends React.Component {
               placeholder={EE.lang.file_dnd_filter_directories}
               items={EE.dragAndDrop.uploadDesinations}
               onSelect={(directory) => this.chooseExisting(directory)}
+              rel="modal-file"
+              itemClass="m-link"
             />
 
             <FilterSelect key={EE.lang.file_dnd_upload_new}

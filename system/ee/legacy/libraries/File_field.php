@@ -823,8 +823,11 @@ class File_field {
 			}
 		}
 
+		$filepicker_link = ee('CP/FilePicker')->make('all')->getUrl();
+
 		ee()->javascript->set_global([
 			'lang.file_dnd_choose_directory' => lang('file_dnd_choose_directory'),
+			'lang.file_dnd_choose_directory_btn' => lang('file_dnd_choose_directory_btn'),
 			'lang.file_dnd_choose_existing' => lang('file_dnd_choose_existing'),
 			'lang.file_dnd_dismiss' => lang('file_dnd_dismiss'),
 			'lang.file_dnd_drop_files' => lang('file_dnd_drop_files'),
@@ -836,9 +839,11 @@ class File_field {
 			'lang.file_dnd_unexpected_error' => lang('file_dnd_unexpected_error'),
 			'lang.file_dnd_uploading_to' => lang('file_dnd_uploading_to'),
 			'lang.file_dnd_upload_new' => lang('file_dnd_upload_new'),
+
 			'dragAndDrop.uploadDesinations' => ee('View/Helpers')->normalizedChoices($upload_destinations),
 			'dragAndDrop.endpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-upload')->compile(),
-			'dragAndDrop.resolveConflictEndpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-overwrite-or-rename')->compile()
+			'dragAndDrop.resolveConflictEndpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-overwrite-or-rename')->compile(),
+			'dragAndDrop.filepickerEndpoint' => $filepicker_link->compile()
 		]);
 
 		ee()->cp->add_js_script([

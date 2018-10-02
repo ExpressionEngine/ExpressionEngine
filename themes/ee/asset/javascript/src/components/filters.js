@@ -161,7 +161,7 @@ var FilterSelect = function (_React$Component2) {
             this.state.items.map(function (item) {
               return React.createElement(
                 "a",
-                { href: "#", key: item.value, className: "filter-submenu__link filter-submenu__link---active", onClick: function onClick(e) {
+                { href: "#", key: item.value, className: "filter-submenu__link filter-submenu__link---active " + _this3.props.itemClass, rel: _this3.props.rel, onClick: function onClick(e) {
                     return _this3.selectItem(e, item);
                   } },
                 item.label

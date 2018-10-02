@@ -124,7 +124,9 @@ $lang = array(
 
 'file_dnd_choose_directory' => 'Please choose a directory',
 
-'file_dnd_choose_existing' => 'Choose Directory',
+'file_dnd_choose_directory_btn' => 'Choose Directory',
+
+'file_dnd_choose_existing' => 'Choose Existing',
 
 'file_dnd_dismiss' => 'Dismiss',
 

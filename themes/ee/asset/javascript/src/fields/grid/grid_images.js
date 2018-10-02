@@ -32,14 +32,15 @@ var GridImages = function (_React$Component) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = GridImages.__proto__ || Object.getPrototypeOf(GridImages)).call.apply(_ref, [this].concat(args))), _this), _this.addFileToGrid = function (file, response) {
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = GridImages.__proto__ || Object.getPrototypeOf(GridImages)).call.apply(_ref, [this].concat(args))), _this), _this.addFileToGrid = function (response) {
       var gridInstance = $(_this.dropZone).closest('.js-grid-images').find('.grid-input-form').data('GridInstance');
 
       var fileField = gridInstance._addRow().find('.grid-file-upload').first();
 
       EE.FileField.pickerCallback(response, {
         input_value: fileField.find('input:hidden').first(),
-        input_img: fileField.find('img').first()
+        input_img: fileField.find('img').first(),
+        modal: $('.modal-file')
       });
     }, _temp), _possibleConstructorReturn(_this, _ret);
   }
@@ -50,9 +51,7 @@ var GridImages = function (_React$Component) {
       var _this2 = this;
 
       return React.createElement(DragAndDropUpload, _extends({}, this.props, {
-        onFileUploadSuccess: function onFileUploadSuccess(file, response) {
-          return _this2.addFileToGrid(file, response);
-        },
+        onFileUploadSuccess: this.addFileToGrid,
         assignDropZoneRef: function assignDropZoneRef(dropZone) {
           _this2.dropZone = dropZone;
         }

@@ -114,7 +114,7 @@ class FilterSelect extends React.Component {
           }
           <div className="filter-submenu__scroll">
             {this.state.items.map(item =>
-              <a href="#" key={item.value} className="filter-submenu__link filter-submenu__link---active" onClick={(e) => this.selectItem(e, item)}>{item.label}</a>
+              <a href="#" key={item.value} className={"filter-submenu__link filter-submenu__link---active " + this.props.itemClass} rel={this.props.rel} onClick={(e) => this.selectItem(e, item)}>{item.label}</a>
             )}
           </div>
         </div>

@@ -15,7 +15,7 @@ class GridImages extends React.Component {
     })
   }
 
-  addFileToGrid = (file, response) => {
+  addFileToGrid = (response) => {
     let gridInstance = $(this.dropZone)
       .closest('.js-grid-images')
       .find('.grid-input-form')
@@ -27,14 +27,15 @@ class GridImages extends React.Component {
 
     EE.FileField.pickerCallback(response, {
       input_value: fileField.find('input:hidden').first(),
-      input_img: fileField.find('img').first()
+      input_img: fileField.find('img').first(),
+      modal: $('.modal-file')
     })
   }
 
   render() {
     return <DragAndDropUpload
       {...this.props}
-      onFileUploadSuccess={(file, response) => this.addFileToGrid(file, response)}
+      onFileUploadSuccess={this.addFileToGrid}
       assignDropZoneRef={(dropZone) => { this.dropZone = dropZone }}
     />
   }

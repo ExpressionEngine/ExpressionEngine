@@ -31,8 +31,16 @@ var DragAndDropUpload = function (_React$Component) {
     };
 
     _this.chooseExisting = function (directory) {
-      directory = directory || _this.state.directory;
-      console.log(directory);
+      var url = EE.dragAndDrop.filepickerEndpoint.replace('=all', '=' + directory);
+      var link = $('<a/>', {
+        href: url,
+        rel: 'modal-file'
+      }).FilePicker({
+        callback: function callback(data, references) {
+          return _this.props.onFileUploadSuccess(data);
+        }
+      });
+      link.click();
     };
 
     _this.uploadNew = function (directory) {
@@ -166,7 +174,7 @@ var DragAndDropUpload = function (_React$Component) {
             switch (response.status) {
               case 'success':
                 _this3.removeFile(file);
-                _this3.props.onFileUploadSuccess(file, JSON.parse(xhr.responseText));
+                _this3.props.onFileUploadSuccess(JSON.parse(xhr.responseText));
                 resolve(file);
                 break;
               case 'duplicate':
@@ -221,7 +229,7 @@ var DragAndDropUpload = function (_React$Component) {
     key: 'resolveConflict',
     value: function resolveConflict(file, response) {
       this.removeFile(file);
-      this.props.onFileUploadSuccess(file, response);
+      this.props.onFileUploadSuccess(response);
     }
   }, {
     key: 'render',
@@ -264,7 +272,7 @@ var DragAndDropUpload = function (_React$Component) {
             React.createElement(FilterSelect, { key: EE.lang.file_dnd_choose_existing,
               center: true,
               keepSelectedState: true,
-              title: EE.lang.file_dnd_choose_existing,
+              title: EE.lang.file_dnd_choose_directory_btn,
               placeholder: EE.lang.file_dnd_filter_directories,
               items: EE.dragAndDrop.uploadDesinations,
               onSelect: function onSelect(directory) {
@@ -278,9 +286,9 @@ var DragAndDropUpload = function (_React$Component) {
           null,
           React.createElement(
             'a',
-            { href: '#', className: 'btn action', onClick: function onClick(e) {
+            { href: '#', className: 'btn action m-link', rel: 'modal-file', onClick: function onClick(e) {
                 e.preventDefault();
-                _this4.chooseExisting();
+                _this4.chooseExisting(_this4.state.directory);
               } },
             EE.lang.file_dnd_choose_existing
           ),
@@ -305,7 +313,9 @@ var DragAndDropUpload = function (_React$Component) {
             items: EE.dragAndDrop.uploadDesinations,
             onSelect: function onSelect(directory) {
               return _this4.chooseExisting(directory);
-            }
+            },
+            rel: 'modal-file',
+            itemClass: 'm-link'
           }),
           React.createElement(FilterSelect, { key: EE.lang.file_dnd_upload_new,
             action: true,
