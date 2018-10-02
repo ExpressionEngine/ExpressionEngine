@@ -144,7 +144,7 @@ var DragAndDropUpload = function (_React$Component) {
         formData.append('csrf_token', EE.CSRF_TOKEN);
 
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', _this3.props.endpoint, true);
+        xhr.open('POST', EE.dragAndDrop.endpoint, true);
 
         xhr.upload.addEventListener('progress', function (e) {
           file.progress = e.loaded * 100.0 / e.total || 100;

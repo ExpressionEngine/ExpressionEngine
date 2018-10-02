@@ -46,7 +46,6 @@ class ResolveFilenameConflict extends React.Component {
   resolveConflict = (e, file) => {
     e.preventDefault()
 
-    let url = 'http://eecms.localhost/admin.php?/cp/addons/settings/filepicker/ajax-overwrite-or-rename&file_id='+file.fileId+'&original_file_name='+file.originalFileName
     let modal = $('.modal-file')
     $('div.box', modal).html('<iframe></iframe>')
     let iframe = $('iframe', modal)
@@ -54,6 +53,13 @@ class ResolveFilenameConflict extends React.Component {
       border: 'none',
       width: '100%'
     })
+
+    let params = {
+      file_id: file.fileId,
+      original_name: file.originalFileName
+    }
+    let url = EE.dragAndDrop.resolveConflictEndpoint + '&' + $.param(params)
+
     iframe.attr('src', url)
     modal.find('div.box').html(iframe)
 
@@ -65,7 +71,6 @@ class ResolveFilenameConflict extends React.Component {
         if (response.cancel) {
           return this.props.onFileUploadCancel(e, file)
         }
-        modal.trigger('modal:close')
         return this.props.onResolveConflict(file, response)
       } catch(e) {
         var height = iframe.contents().find('body').height()
@@ -74,7 +79,7 @@ class ResolveFilenameConflict extends React.Component {
       }
 
       $(iframe[0].contentWindow).on('unload', () => {
-        iframe.hide();
+        iframe.hide()
         $('.box', modal).height('auto')
         $(modal).height('auto')
       })

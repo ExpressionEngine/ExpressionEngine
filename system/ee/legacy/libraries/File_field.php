@@ -835,7 +835,9 @@ class File_field {
 			'lang.file_dnd_unexpected_error' => lang('file_dnd_unexpected_error'),
 			'lang.file_dnd_uploading_to' => lang('file_dnd_uploading_to'),
 			'lang.file_dnd_upload_new' => lang('file_dnd_upload_new'),
-			'dragAndDrop.uploadDesinations' => ee('View/Helpers')->normalizedChoices($upload_destinations)
+			'dragAndDrop.uploadDesinations' => ee('View/Helpers')->normalizedChoices($upload_destinations),
+			'dragAndDrop.endpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-upload')->compile(),
+			'dragAndDrop.resolveConflictEndpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-overwrite-or-rename')->compile()
 		]);
 
 		ee()->cp->add_js_script([

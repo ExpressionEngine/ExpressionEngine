@@ -3,8 +3,7 @@
 
 	<?php
 	$component = [
-		'allowedDirectory'   => $allowed_directory,
-		'endpoint'           => ee('CP/URL')->make('addons/settings/filepicker/ajax-upload')->compile()
+		'allowedDirectory' => $allowed_directory
 	];
 	?>
 

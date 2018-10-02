@@ -100,7 +100,7 @@ class DragAndDropUpload extends React.Component {
       formData.append('csrf_token', EE.CSRF_TOKEN)
 
       let xhr = new XMLHttpRequest()
-      xhr.open('POST', this.props.endpoint, true)
+      xhr.open('POST', EE.dragAndDrop.endpoint, true)
 
       xhr.upload.addEventListener('progress', (e) => {
         file.progress = (e.loaded * 100.0 / e.total) || 100

@@ -107,7 +107,6 @@ var ResolveFilenameConflict = function (_React$Component) {
     return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = ResolveFilenameConflict.__proto__ || Object.getPrototypeOf(ResolveFilenameConflict)).call.apply(_ref, [this].concat(args))), _this), _this.resolveConflict = function (e, file) {
       e.preventDefault();
 
-      var url = 'http://eecms.localhost/admin.php?/cp/addons/settings/filepicker/ajax-overwrite-or-rename&file_id=' + file.fileId + '&original_file_name=' + file.originalFileName;
       var modal = $('.modal-file');
       $('div.box', modal).html('<iframe></iframe>');
       var iframe = $('iframe', modal);
@@ -115,6 +114,13 @@ var ResolveFilenameConflict = function (_React$Component) {
         border: 'none',
         width: '100%'
       });
+
+      var params = {
+        file_id: file.fileId,
+        original_name: file.originalFileName
+      };
+      var url = EE.dragAndDrop.resolveConflictEndpoint + '&' + $.param(params);
+
       iframe.attr('src', url);
       modal.find('div.box').html(iframe);
 
@@ -126,7 +132,6 @@ var ResolveFilenameConflict = function (_React$Component) {
           if (response.cancel) {
             return _this.props.onFileUploadCancel(e, file);
           }
-          modal.trigger('modal:close');
           return _this.props.onResolveConflict(file, response);
         } catch (e) {
           var height = iframe.contents().find('body').height();
