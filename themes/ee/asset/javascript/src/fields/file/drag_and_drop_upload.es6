@@ -171,18 +171,23 @@ class DragAndDropUpload extends React.Component {
 
   chooseExisting = (directory) => {
     let url = EE.dragAndDrop.filepickerEndpoint.replace('=all', '='+directory)
+    this.presentFilepicker(url, false)
+  }
+
+  uploadNew = (directory) => {
+    let url = EE.dragAndDrop.filepickerUploadEndpoint+'&directory='+directory
+    this.presentFilepicker(url, true)
+  }
+
+  presentFilepicker(url, iframe) {
     let link = $('<a/>', {
       href: url,
       rel: 'modal-file'
     }).FilePicker({
+      iframe: iframe,
       callback: (data, references) => this.props.onFileUploadSuccess(data)
     })
     link.click()
-  }
-
-  uploadNew = (directory) => {
-    directory = directory || this.state.directory
-    console.log(directory)
   }
 
   assignDropZoneRef = (dropZone) => {
@@ -251,9 +256,9 @@ class DragAndDropUpload extends React.Component {
               e.preventDefault()
               this.chooseExisting(this.state.directory)
             }}>{EE.lang.file_dnd_choose_existing}</a>&nbsp;
-            <a href="#" className="btn action" onClick={(e) => {
+            <a href="#" className="btn action m-link" rel="modal-file" onClick={(e) => {
               e.preventDefault()
-              this.uploadNew()
+              this.uploadNew(this.state.directory)
             }}>{EE.lang.file_dnd_upload_new}</a>
           </div>
         }
@@ -277,6 +282,8 @@ class DragAndDropUpload extends React.Component {
               placeholder={EE.lang.file_dnd_filter_directories}
               items={EE.dragAndDrop.uploadDesinations}
               onSelect={(directory) => this.uploadNew(directory)}
+              rel="modal-file"
+              itemClass="m-link"
             />
           </div>
         )}
