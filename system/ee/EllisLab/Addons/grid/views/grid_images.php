@@ -3,7 +3,8 @@
 
 	<?php
 	$component = [
-		'allowedDirectory' => $allowed_directory
+		'allowedDirectory' => $allowed_directory,
+		'contentType' => $content_type,
 	];
 	?>
 

@@ -108,6 +108,9 @@ var DragAndDropUpload = function (_React$Component) {
         });
         files = files.map(function (file) {
           file.progress = 0;
+          if (_this2.props.contentType == 'image' && !file.type.match(/^image\//)) {
+            file.error = EE.lang.file_dnd_images_only;
+          }
           return file;
         });
 
@@ -115,6 +118,9 @@ var DragAndDropUpload = function (_React$Component) {
           files: _this2.state.files.concat(files)
         });
 
+        files = files.filter(function (file) {
+          return !file.error;
+        });
         _this2.queue.enqueue(files, function (file) {
           return _this2.makeUploadPromise(file);
         });

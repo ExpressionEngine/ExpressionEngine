@@ -134,6 +134,8 @@ $lang = array(
 
 'file_dnd_filter_directories' => 'filter directories',
 
+'file_dnd_images_only' => 'This field only accepts images.',
+
 'file_dnd_progress' => 'Progress',
 
 'file_dnd_resolve_conflict' => 'Resolve Conflict',

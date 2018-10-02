@@ -65,6 +65,9 @@ class DragAndDropUpload extends React.Component {
       files = files.filter(file => file.type != '')
       files = files.map(file => {
         file.progress = 0
+        if (this.props.contentType == 'image' && ! file.type.match(/^image\//)) {
+          file.error = EE.lang.file_dnd_images_only
+        }
         return file
       })
 
@@ -72,6 +75,7 @@ class DragAndDropUpload extends React.Component {
         files: this.state.files.concat(files)
       })
 
+      files = files.filter(file => ! file.error)
       this.queue.enqueue(files, (file => this.makeUploadPromise(file)))
     })
 

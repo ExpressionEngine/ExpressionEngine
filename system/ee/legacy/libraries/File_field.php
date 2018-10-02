@@ -830,6 +830,7 @@ class File_field {
 			'lang.file_dnd_drop_files' => lang('file_dnd_drop_files'),
 			'lang.file_dnd_file_name' => lang('file_dnd_file_name'),
 			'lang.file_dnd_filter_directories' => lang('file_dnd_filter_directories'),
+			'lang.file_dnd_images_only' => lang('file_dnd_images_only'),
 			'lang.file_dnd_progress' => lang('file_dnd_progress'),
 			'lang.file_dnd_resolve_conflict' => lang('file_dnd_resolve_conflict'),
 			'lang.file_dnd_unexpected_error' => lang('file_dnd_unexpected_error'),

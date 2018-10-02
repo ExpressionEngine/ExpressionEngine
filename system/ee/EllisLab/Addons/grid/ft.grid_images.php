@@ -31,22 +31,27 @@ class Grid_images_ft extends Grid_ft {
 			return $grid_markup;
 		}
 
-		$allowed_directory = $this->get_setting('allowed_directories', 'all');
-
 		ee()->load->library('file_field');
 		ee()->file_field->loadDragAndDropAssets();
 
 		ee()->cp->add_js_script('file', 'fields/grid/grid_images');
 
 		return ee('View')->make('grid:grid_images')->render([
-			'grid_markup'         => $grid_markup,
-			'allowed_directory'   => $this->get_setting('allowed_directories', 'all')
+			'grid_markup'        => $grid_markup,
+			'allowed_directory'  => $this->get_setting('allowed_directories', 'all'),
+			'content_type'       => $this->get_setting('field_content_type', 'all')
 		]);
 	}
 
 	public function display_settings($data)
 	{
-		$directory_choices = ['all' => lang('all')] + $this->getUploadDestinations();
+		$directory_choices = ['all' => lang('all')] + ee('Model')->get('UploadDestination')
+			->fields('id', 'name')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('module_id', 0)
+			->order('name', 'asc')
+			->all()
+			->getDictionary('id', 'name');
 
 		$vars = $this->getSettingsVars();
 		$vars['group'] = $this->settings_form_field_name;
