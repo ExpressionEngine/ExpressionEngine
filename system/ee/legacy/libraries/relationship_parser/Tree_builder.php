@@ -214,7 +214,14 @@ class EE_relationship_tree_builder {
 			return NULL;
 		}
 
-		$all_fields = array_merge($this->relationship_field_names, array('parents', 'siblings'));
+		$all_fields = ['parents', 'siblings'];
+		foreach ($this->relationship_field_names as $field_name)
+		{
+			if (strpos($field_name, ':') === FALSE)
+			{
+				$all_fields[] = $field_name;
+			}
+		}
 		$all_fields = implode('|', $all_fields);
 
 		// Regex to separate out the relationship prefix part from the rest
