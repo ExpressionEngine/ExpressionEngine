@@ -56,8 +56,7 @@ class DragAndDropUpload extends React.Component {
     // Handle upload
     this.dropZone.addEventListener('drop', (e) => {
       if (this.state.directory == 'all') {
-        // TODO: Show this using invalid state
-        alert('Please choose a directory')
+        return this.showErrorWithInvalidState(EE.lang.file_dnd_choose_directory)
       }
 
       let files = Array.from(e.dataTransfer.files)
@@ -167,6 +166,7 @@ class DragAndDropUpload extends React.Component {
     this.setState({
       directory: directory || 'all'
     })
+    this.toggleErrorState(false)
   }
 
   chooseExisting = (directory) => {
@@ -213,6 +213,25 @@ class DragAndDropUpload extends React.Component {
   resolveConflict(file, response) {
     this.removeFile(file)
     this.props.onFileUploadSuccess(response)
+  }
+
+  showErrorWithInvalidState(error) {
+    this.toggleErrorState(true)
+    $(this.dropZone).closest('.field-control').append($('<em/>').text(error))
+  }
+
+  toggleErrorState(toggle) {
+    $(this.dropZone)
+      .toggleClass('field-file-upload---invalid', toggle)
+      .closest('.fieldset-faux')
+      .toggleClass('fieldset-invalid', toggle)
+
+    if ( ! toggle) {
+      $(this.dropZone)
+        .closest('.field-control')
+        .find('> em')
+        .remove()
+    }
   }
 
   render() {

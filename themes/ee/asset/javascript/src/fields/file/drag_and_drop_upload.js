@@ -28,6 +28,7 @@ var DragAndDropUpload = function (_React$Component) {
       _this.setState({
         directory: directory || 'all'
       });
+      _this.toggleErrorState(false);
     };
 
     _this.chooseExisting = function (directory) {
@@ -97,8 +98,7 @@ var DragAndDropUpload = function (_React$Component) {
       // Handle upload
       this.dropZone.addEventListener('drop', function (e) {
         if (_this2.state.directory == 'all') {
-          // TODO: Show this using invalid state
-          alert('Please choose a directory');
+          return _this2.showErrorWithInvalidState(EE.lang.file_dnd_choose_directory);
         }
 
         var files = Array.from(e.dataTransfer.files);
@@ -238,6 +238,21 @@ var DragAndDropUpload = function (_React$Component) {
     value: function resolveConflict(file, response) {
       this.removeFile(file);
       this.props.onFileUploadSuccess(response);
+    }
+  }, {
+    key: 'showErrorWithInvalidState',
+    value: function showErrorWithInvalidState(error) {
+      this.toggleErrorState(true);
+      $(this.dropZone).closest('.field-control').append($('<em/>').text(error));
+    }
+  }, {
+    key: 'toggleErrorState',
+    value: function toggleErrorState(toggle) {
+      $(this.dropZone).toggleClass('field-file-upload---invalid', toggle).closest('.fieldset-faux').toggleClass('fieldset-invalid', toggle);
+
+      if (!toggle) {
+        $(this.dropZone).closest('.field-control').find('> em').remove();
+      }
     }
   }, {
     key: 'render',
