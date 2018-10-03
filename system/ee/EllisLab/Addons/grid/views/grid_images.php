@@ -5,6 +5,7 @@
 	$component = [
 		'allowedDirectory' => $allowed_directory,
 		'contentType' => $content_type,
+		'maxRows' => $grid_max_rows,
 	];
 	?>
 

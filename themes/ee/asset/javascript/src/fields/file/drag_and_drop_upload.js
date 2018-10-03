@@ -28,7 +28,6 @@ var DragAndDropUpload = function (_React$Component) {
       _this.setState({
         directory: directory || 'all'
       });
-      _this.toggleErrorState(false);
     };
 
     _this.chooseExisting = function (directory) {
@@ -72,6 +71,11 @@ var DragAndDropUpload = function (_React$Component) {
       this.bindDragAndDropEvents();
     }
   }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate() {
+      this.toggleErrorState(false);
+    }
+  }, {
     key: 'getDirectoryName',
     value: function getDirectoryName(directory) {
       if (directory == 'all') return null;
@@ -102,10 +106,17 @@ var DragAndDropUpload = function (_React$Component) {
         }
 
         var files = Array.from(e.dataTransfer.files);
-
         files = files.filter(function (file) {
           return file.type != '';
         });
+
+        if (_this2.props.shouldAcceptFiles && typeof _this2.props.shouldAcceptFiles(files) == 'string') {
+          var shouldAccept = _this2.props.shouldAcceptFiles(files);
+          if (typeof shouldAccept == 'string') {
+            return _this2.showErrorWithInvalidState(shouldAccept);
+          }
+        }
+
         files = files.map(function (file) {
           file.progress = 0;
           if (_this2.props.contentType == 'image' && !file.type.match(/^image\//)) {

@@ -32,10 +32,15 @@ var GridImages = function (_React$Component) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = GridImages.__proto__ || Object.getPrototypeOf(GridImages)).call.apply(_ref, [this].concat(args))), _this), _this.addFileToGrid = function (response) {
-      var gridInstance = $(_this.dropZone).closest('.js-grid-images').find('.grid-input-form').data('GridInstance');
-
-      var fileField = gridInstance._addRow().find('.grid-file-upload').first();
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = GridImages.__proto__ || Object.getPrototypeOf(GridImages)).call.apply(_ref, [this].concat(args))), _this), _this.shouldAcceptFiles = function (files) {
+      if (_this.props.maxRows !== '') {
+        if (files.length + _this.getRowCount() > _this.props.maxRows) {
+          return EE.lang.grid_images_maximum_rows_hit;
+        }
+      }
+      return true;
+    }, _this.addFileToGrid = function (response) {
+      var fileField = _this.getGridInstance()._addRow().find('.grid-file-upload').first();
 
       EE.FileField.pickerCallback(response, {
         input_value: fileField.find('input:hidden').first(),
@@ -46,6 +51,20 @@ var GridImages = function (_React$Component) {
   }
 
   _createClass(GridImages, [{
+    key: 'getGridInstance',
+    value: function getGridInstance() {
+      if (!this.gridInstance) {
+        this.gridInstance = $(this.dropZone).closest('.js-grid-images').find('.grid-input-form').data('GridInstance');
+      }
+
+      return this.gridInstance;
+    }
+  }, {
+    key: 'getRowCount',
+    value: function getRowCount() {
+      return this.getGridInstance()._getRows().size();
+    }
+  }, {
     key: 'render',
     value: function render() {
       var _this2 = this;
@@ -54,7 +73,8 @@ var GridImages = function (_React$Component) {
         onFileUploadSuccess: this.addFileToGrid,
         assignDropZoneRef: function assignDropZoneRef(dropZone) {
           _this2.dropZone = dropZone;
-        }
+        },
+        shouldAcceptFiles: this.shouldAcceptFiles
       }));
     }
   }], [{

@@ -36,10 +36,15 @@ class Grid_images_ft extends Grid_ft {
 
 		ee()->cp->add_js_script('file', 'fields/grid/grid_images');
 
+		ee()->javascript->set_global([
+			'lang.grid_images_maximum_rows_hit' => lang('grid_images_maximum_rows_hit'),
+		]);
+
 		return ee('View')->make('grid:grid_images')->render([
 			'grid_markup'        => $grid_markup,
 			'allowed_directory'  => $this->get_setting('allowed_directories', 'all'),
-			'content_type'       => $this->get_setting('field_content_type', 'all')
+			'content_type'       => $this->get_setting('field_content_type', 'all'),
+			'grid_max_rows'      => $this->get_setting('grid_max_rows')
 		]);
 	}
 

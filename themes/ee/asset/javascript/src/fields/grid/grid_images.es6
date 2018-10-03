@@ -15,13 +15,17 @@ class GridImages extends React.Component {
     })
   }
 
-  addFileToGrid = (response) => {
-    let gridInstance = $(this.dropZone)
-      .closest('.js-grid-images')
-      .find('.grid-input-form')
-      .data('GridInstance')
+  shouldAcceptFiles = (files) => {
+    if (this.props.maxRows !== '') {
+      if (files.length + this.getRowCount() > this.props.maxRows) {
+        return EE.lang.grid_images_maximum_rows_hit
+      }
+    }
+    return true
+  }
 
-    let fileField = gridInstance._addRow()
+  addFileToGrid = (response) => {
+    let fileField = this.getGridInstance()._addRow()
       .find('.grid-file-upload')
       .first()
 
@@ -32,11 +36,27 @@ class GridImages extends React.Component {
     })
   }
 
+  getGridInstance() {
+    if ( ! this.gridInstance) {
+      this.gridInstance = $(this.dropZone)
+        .closest('.js-grid-images')
+        .find('.grid-input-form')
+        .data('GridInstance')
+    }
+
+    return this.gridInstance
+  }
+
+  getRowCount() {
+    return this.getGridInstance()._getRows().size()
+  }
+
   render() {
     return <DragAndDropUpload
       {...this.props}
       onFileUploadSuccess={this.addFileToGrid}
       assignDropZoneRef={(dropZone) => { this.dropZone = dropZone }}
+      shouldAcceptFiles={this.shouldAcceptFiles}
     />
   }
 }

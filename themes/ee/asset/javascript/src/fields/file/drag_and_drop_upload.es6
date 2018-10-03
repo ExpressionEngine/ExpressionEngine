@@ -34,6 +34,10 @@ class DragAndDropUpload extends React.Component {
     this.bindDragAndDropEvents()
   }
 
+  componentDidUpdate() {
+    this.toggleErrorState(false)
+  }
+
   getDirectoryName(directory) {
     if (directory == 'all') return null;
 
@@ -60,8 +64,15 @@ class DragAndDropUpload extends React.Component {
       }
 
       let files = Array.from(e.dataTransfer.files)
-
       files = files.filter(file => file.type != '')
+
+      if (this.props.shouldAcceptFiles && typeof this.props.shouldAcceptFiles(files) == 'string') {
+        let shouldAccept = this.props.shouldAcceptFiles(files)
+        if (typeof shouldAccept == 'string') {
+          return this.showErrorWithInvalidState(shouldAccept)
+        }
+      }
+
       files = files.map(file => {
         file.progress = 0
         if (this.props.contentType == 'image' && ! file.type.match(/^image\//)) {
@@ -166,7 +177,6 @@ class DragAndDropUpload extends React.Component {
     this.setState({
       directory: directory || 'all'
     })
-    this.toggleErrorState(false)
   }
 
   chooseExisting = (directory) => {

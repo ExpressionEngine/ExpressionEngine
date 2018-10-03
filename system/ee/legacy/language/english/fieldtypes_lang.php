@@ -225,6 +225,8 @@ $lang = array(
 
 'grid_images_setup' => 'Grid Images Setup',
 
+'grid_images_maximum_rows_hit' => 'Uploading this many files will exceed the field\'s maximum rows setting',
+
 /* URL */
 'url_ft_allowed_url_schemes' => 'Allowed URL Schemes',
 
