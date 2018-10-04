@@ -71,6 +71,7 @@ class FileField extends React.Component {
       onFileUploadSuccess={this.setFile}
       assignDropZoneRef={(dropZone) => { this.dropZone = dropZone }}
       shouldAcceptFiles={this.shouldAcceptFiles}
+      marginTop={false}
     />
   }
 }

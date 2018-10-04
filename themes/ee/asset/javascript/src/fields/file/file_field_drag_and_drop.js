@@ -87,7 +87,8 @@ var FileField = function (_React$Component) {
         assignDropZoneRef: function assignDropZoneRef(dropZone) {
           _this3.dropZone = dropZone;
         },
-        shouldAcceptFiles: this.shouldAcceptFiles
+        shouldAcceptFiles: this.shouldAcceptFiles,
+        marginTop: false
       }));
     }
   }], [{

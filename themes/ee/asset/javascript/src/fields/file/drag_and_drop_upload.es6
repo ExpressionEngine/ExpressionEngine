@@ -258,7 +258,7 @@ class DragAndDropUpload extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <div className={"field-file-upload mt" + (this.errorsExist() ? ' field-file-upload---warning' : '')}
+        <div className={"field-file-upload" + (this.props.marginTop ? ' mt' : '') + (this.errorsExist() ? ' field-file-upload---warning' : '')}
           ref={(dropZone) => this.assignDropZoneRef(dropZone)}>
           {this.state.files.length > 0 &&
             <FileUploadProgressTable

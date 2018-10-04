@@ -57,6 +57,7 @@ class GridImages extends React.Component {
       onFileUploadSuccess={this.addFileToGrid}
       assignDropZoneRef={(dropZone) => { this.dropZone = dropZone }}
       shouldAcceptFiles={this.shouldAcceptFiles}
+      marginTop={true}
     />
   }
 }

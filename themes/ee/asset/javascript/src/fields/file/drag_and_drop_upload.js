@@ -284,7 +284,7 @@ var DragAndDropUpload = function (_React$Component) {
         null,
         React.createElement(
           'div',
-          { className: "field-file-upload mt" + (this.errorsExist() ? ' field-file-upload---warning' : ''),
+          { className: "field-file-upload" + (this.props.marginTop ? ' mt' : '') + (this.errorsExist() ? ' field-file-upload---warning' : ''),
             ref: function ref(dropZone) {
               return _this5.assignDropZoneRef(dropZone);
             } },

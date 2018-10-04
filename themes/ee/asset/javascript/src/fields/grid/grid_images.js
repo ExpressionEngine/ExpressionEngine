@@ -74,7 +74,8 @@ var GridImages = function (_React$Component) {
         assignDropZoneRef: function assignDropZoneRef(dropZone) {
           _this2.dropZone = dropZone;
         },
-        shouldAcceptFiles: this.shouldAcceptFiles
+        shouldAcceptFiles: this.shouldAcceptFiles,
+        marginTop: true
       }));
     }
   }], [{
