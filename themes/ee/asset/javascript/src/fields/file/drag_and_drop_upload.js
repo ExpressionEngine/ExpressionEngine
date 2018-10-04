@@ -271,7 +271,7 @@ var DragAndDropUpload = function (_React$Component) {
       var _this5 = this;
 
       return React.createElement(
-        'div',
+        React.Fragment,
         null,
         React.createElement(
           'div',
