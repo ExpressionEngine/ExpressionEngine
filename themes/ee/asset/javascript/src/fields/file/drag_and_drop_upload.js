@@ -256,12 +256,19 @@ var DragAndDropUpload = function (_React$Component) {
     key: 'showErrorWithInvalidState',
     value: function showErrorWithInvalidState(error) {
       this.toggleErrorState(true);
-      $(this.dropZone).closest('.field-control').append($('<em/>').text(error));
+
+      var errorElement = $(this.dropZone).closest('.field-control').find('> em');
+
+      if (errorElement.size() == 0) {
+        errorElement = $('<em/>');
+      }
+
+      $(this.dropZone).closest('.field-control').append(errorElement.text(error));
     }
   }, {
     key: 'toggleErrorState',
     value: function toggleErrorState(toggle) {
-      $(this.dropZone).toggleClass('field-file-upload---invalid', toggle).closest('.fieldset-faux').toggleClass('fieldset-invalid', toggle);
+      $(this.dropZone).toggleClass('field-file-upload---invalid', toggle).closest('fieldset, .fieldset-faux').toggleClass('fieldset-invalid', toggle);
 
       if (!toggle) {
         $(this.dropZone).closest('.field-control').find('> em').remove();

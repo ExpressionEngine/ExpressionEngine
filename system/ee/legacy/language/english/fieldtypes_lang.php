@@ -142,6 +142,8 @@ $lang = array(
 
 'file_dnd_resolve_conflict' => 'Resolve Conflict',
 
+'file_dnd_single_file_allowed' => 'This field can only contain one file',
+
 'file_dnd_unexpected_error' => 'Unexpected error. Check your post_max_size setting in your PHP configuration.',
 
 'file_dnd_uploading_to' => 'uploading to %s',

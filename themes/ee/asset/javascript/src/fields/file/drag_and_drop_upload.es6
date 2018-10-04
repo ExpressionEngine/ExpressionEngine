@@ -229,13 +229,22 @@ class DragAndDropUpload extends React.Component {
 
   showErrorWithInvalidState(error) {
     this.toggleErrorState(true)
-    $(this.dropZone).closest('.field-control').append($('<em/>').text(error))
+
+    let errorElement = $(this.dropZone)
+      .closest('.field-control')
+      .find('> em')
+
+    if (errorElement.size() == 0) {
+      errorElement = $('<em/>')
+    }
+
+    $(this.dropZone).closest('.field-control').append(errorElement.text(error))
   }
 
   toggleErrorState(toggle) {
     $(this.dropZone)
       .toggleClass('field-file-upload---invalid', toggle)
-      .closest('.fieldset-faux')
+      .closest('fieldset, .fieldset-faux')
       .toggleClass('fieldset-invalid', toggle)
 
     if ( ! toggle) {

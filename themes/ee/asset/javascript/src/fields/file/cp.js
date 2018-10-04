@@ -23,7 +23,9 @@
 			}
 
 			// Assign the value {filedir_#}filename.ext
-			input.val('{filedir_' + data.upload_location_id + '}' + data.file_name).trigger('change');
+			input.val('{filedir_' + data.upload_location_id + '}' + data.file_name)
+				.trigger('change')
+				.trigger('hasFile', data);
 
 			figure.toggleClass('no-img', ! data.isImage);
 			figure.find('img').toggleClass('hidden', ! data.isImage);
@@ -61,6 +63,9 @@
 				figure_container.siblings('.fields-upload-btn').removeClass('hidden');
 				e.preventDefault();
 			});
+
+			// Drag and drop component
+			FileField.renderFields(container)
 		}
 
 		function sanitizeFileField(el) {

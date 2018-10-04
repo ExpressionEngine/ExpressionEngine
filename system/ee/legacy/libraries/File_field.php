@@ -834,6 +834,7 @@ class File_field {
 			'lang.file_dnd_images_only' => lang('file_dnd_images_only'),
 			'lang.file_dnd_progress' => lang('file_dnd_progress'),
 			'lang.file_dnd_resolve_conflict' => lang('file_dnd_resolve_conflict'),
+			'lang.file_dnd_single_file_allowed' => lang('file_dnd_single_file_allowed'),
 			'lang.file_dnd_unexpected_error' => lang('file_dnd_unexpected_error'),
 			'lang.file_dnd_uploading_to' => lang('file_dnd_uploading_to'),
 			'lang.file_dnd_upload_new' => lang('file_dnd_upload_new'),
