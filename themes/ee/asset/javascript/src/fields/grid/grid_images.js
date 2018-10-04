@@ -35,7 +35,7 @@ var GridImages = function (_React$Component) {
     return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = GridImages.__proto__ || Object.getPrototypeOf(GridImages)).call.apply(_ref, [this].concat(args))), _this), _this.shouldAcceptFiles = function (files) {
       if (_this.props.maxRows !== '') {
         if (files.length + _this.getRowCount() > _this.props.maxRows) {
-          return EE.lang.grid_images_maximum_rows_hit;
+          return EE.lang.grid_images_maximum_rows_hit.replace('%s', _this.props.maxRows);
         }
       }
       return true;

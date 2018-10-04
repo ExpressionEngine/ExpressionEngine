@@ -18,7 +18,7 @@ class GridImages extends React.Component {
   shouldAcceptFiles = (files) => {
     if (this.props.maxRows !== '') {
       if (files.length + this.getRowCount() > this.props.maxRows) {
-        return EE.lang.grid_images_maximum_rows_hit
+        return EE.lang.grid_images_maximum_rows_hit.replace('%s', this.props.maxRows)
       }
     }
     return true
