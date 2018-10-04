@@ -40,13 +40,6 @@ class FileField extends React.Component {
     return $(this.dropZone).closest('.grid-file-upload, .field-control')
   }
 
-  shouldAcceptFiles = (files) => {
-    if (files.length > 1) {
-      return EE.lang.file_dnd_single_file_allowed
-    }
-    return true
-  }
-
   setFile = (response) => {
     let fileField = this.getFieldContainer()
 
@@ -70,8 +63,8 @@ class FileField extends React.Component {
       {...this.props}
       onFileUploadSuccess={this.setFile}
       assignDropZoneRef={(dropZone) => { this.dropZone = dropZone }}
-      shouldAcceptFiles={this.shouldAcceptFiles}
       marginTop={false}
+      multiFile={false}
     />
   }
 }

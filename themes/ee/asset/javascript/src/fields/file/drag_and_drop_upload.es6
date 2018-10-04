@@ -66,6 +66,10 @@ class DragAndDropUpload extends React.Component {
       let files = Array.from(e.dataTransfer.files)
       files = files.filter(file => file.type != '')
 
+      if ( ! this.props.multiUpload && files.length > 1) {
+        return this.showErrorWithInvalidState(EE.lang.file_dnd_single_file_allowed)
+      }
+
       if (this.props.shouldAcceptFiles && typeof this.props.shouldAcceptFiles(files) == 'string') {
         let shouldAccept = this.props.shouldAcceptFiles(files)
         if (typeof shouldAccept == 'string') {
@@ -270,7 +274,8 @@ class DragAndDropUpload extends React.Component {
               onResolveConflict={(file, response) => this.resolveConflict(file, response)}
             />}
           {this.state.files.length == 0 && <div className="field-file-upload__content">
-            {EE.lang.file_dnd_drop_files}
+            {!this.props.multiFile && EE.lang.file_dnd_drop_file}
+            {this.props.multiFile && EE.lang.file_dnd_drop_files}
             <em>
               {this.state.directory == 'all' && EE.lang.file_dnd_choose_directory}
               {this.state.directory != 'all' && EE.lang.file_dnd_uploading_to.replace('%s', this.getDirectoryName(this.state.directory))}

@@ -130,6 +130,8 @@ $lang = array(
 
 'file_dnd_dismiss' => 'Dismiss',
 
+'file_dnd_drop_file' => 'Drop File Here to Upload',
+
 'file_dnd_drop_files' => 'Drop File(s) Here to Upload',
 
 'file_dnd_file_name' => 'File Name',

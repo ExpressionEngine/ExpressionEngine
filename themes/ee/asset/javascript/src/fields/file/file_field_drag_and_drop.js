@@ -26,13 +26,6 @@ var FileField = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (FileField.__proto__ || Object.getPrototypeOf(FileField)).call(this, props));
 
-    _this.shouldAcceptFiles = function (files) {
-      if (files.length > 1) {
-        return EE.lang.file_dnd_single_file_allowed;
-      }
-      return true;
-    };
-
     _this.setFile = function (response) {
       var fileField = _this.getFieldContainer();
 
@@ -87,8 +80,8 @@ var FileField = function (_React$Component) {
         assignDropZoneRef: function assignDropZoneRef(dropZone) {
           _this3.dropZone = dropZone;
         },
-        shouldAcceptFiles: this.shouldAcceptFiles,
-        marginTop: false
+        marginTop: false,
+        multiFile: false
       }));
     }
   }], [{

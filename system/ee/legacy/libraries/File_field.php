@@ -828,6 +828,7 @@ class File_field {
 			'lang.file_dnd_choose_directory_btn' => lang('file_dnd_choose_directory_btn'),
 			'lang.file_dnd_choose_existing' => lang('file_dnd_choose_existing'),
 			'lang.file_dnd_dismiss' => lang('file_dnd_dismiss'),
+			'lang.file_dnd_drop_file' => lang('file_dnd_drop_file'),
 			'lang.file_dnd_drop_files' => lang('file_dnd_drop_files'),
 			'lang.file_dnd_file_name' => lang('file_dnd_file_name'),
 			'lang.file_dnd_filter_directories' => lang('file_dnd_filter_directories'),

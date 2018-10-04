@@ -112,6 +112,10 @@ var DragAndDropUpload = function (_React$Component) {
           return file.type != '';
         });
 
+        if (!_this2.props.multiUpload && files.length > 1) {
+          return _this2.showErrorWithInvalidState(EE.lang.file_dnd_single_file_allowed);
+        }
+
         if (_this2.props.shouldAcceptFiles && typeof _this2.props.shouldAcceptFiles(files) == 'string') {
           var shouldAccept = _this2.props.shouldAcceptFiles(files);
           if (typeof shouldAccept == 'string') {
@@ -301,7 +305,8 @@ var DragAndDropUpload = function (_React$Component) {
           this.state.files.length == 0 && React.createElement(
             'div',
             { className: 'field-file-upload__content' },
-            EE.lang.file_dnd_drop_files,
+            !this.props.multiFile && EE.lang.file_dnd_drop_file,
+            this.props.multiFile && EE.lang.file_dnd_drop_files,
             React.createElement(
               'em',
               null,
