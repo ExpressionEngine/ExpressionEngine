@@ -42,7 +42,9 @@ var DragAndDropUpload = function (_React$Component) {
 
     _this.assignDropZoneRef = function (dropZone) {
       _this.dropZone = dropZone;
-      _this.props.assignDropZoneRef(dropZone);
+      if (_this.props.assignDropZoneRef) {
+        _this.props.assignDropZoneRef(dropZone);
+      }
     };
 
     _this.removeFile = function (file) {

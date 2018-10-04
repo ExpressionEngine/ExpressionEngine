@@ -202,7 +202,9 @@ class DragAndDropUpload extends React.Component {
 
   assignDropZoneRef = (dropZone) => {
     this.dropZone = dropZone
-    this.props.assignDropZoneRef(dropZone)
+    if (this.props.assignDropZoneRef) {
+      this.props.assignDropZoneRef(dropZone)
+    }
   }
 
   removeFile = (file) => {
