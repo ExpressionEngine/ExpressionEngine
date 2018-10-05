@@ -24,7 +24,7 @@ class File_field {
 	var $_upload_prefs = array();
 
 	/**
-	 * Creates a file field
+	 * Creates a front-end-friendly file field
 	 *
 	 * @param string $field_name The name of the field
 	 * @param string $data The data stored in the file field
@@ -156,6 +156,124 @@ class File_field {
 		ee()->load->add_package_path(PATH_THEMES . 'cp/default');
 		//return ee()->load->view('_shared/file/field', $vars, TRUE);
 		return ee('View')->make('_shared/file/field')->render($vars);
+	}
+
+	/**
+	 * Creates a drag-and-drop, control-panel only file field
+	 *
+	 * @param string $field_name The name of the field
+	 * @param string $data The data stored in the file field
+	 * 		e.g. {filedir_x}filename.ext
+	 * @param string $allowed_file_dirs The allowed file directory
+	 * 		Either 'all' or ONE directory ID
+	 * @param string $content_type The content type allowed.
+	 * 		Either 'all' or 'image'
+	 * @return string Fully rendered file field
+	 */
+	public function dragAndDropField($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all')
+	{
+		ee()->lang->loadfile('fieldtypes');
+
+		$dir = NULL;
+		if ($allowed_file_dirs != 'all' && (int) $allowed_file_dirs)
+		{
+			$dir = ee('Model')->get('UploadDestination', $allowed_file_dirs)
+				->first();
+		}
+
+		if ($allowed_file_dirs == '' OR ! $dir)
+		{
+			$allowed_file_dirs = 'all';
+		}
+
+		$fp = ee('CP/FilePicker')->make($allowed_file_dirs);
+
+		$fp_link = $fp->getLink()
+			->withValueTarget($field_name)
+			->withNameTarget($field_name)
+			->withImage($field_name);
+
+		// If we are showing a single directory respect its default modal view
+		if ($dir)
+		{
+			switch ($dir->default_modal_view)
+			{
+				case 'thumb':
+					$fp_link->asThumbs();
+					break;
+
+				default:
+					$fp_link->asList();
+					break;
+			}
+		}
+
+		$fp_edit = clone $fp_link;
+		$fp_edit
+			->setText('')
+			->setAttribute('title', lang('edit'))
+			->setAttribute('class', 'file-field-filepicker');
+
+		$file = $this->getFileModelForFieldData($data);
+
+		if ($file)
+		{
+			$fp_edit->setSelected($file->file_id);
+		}
+
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'fields/file/cp',
+				'fields/file/file_field_drag_and_drop'
+			),
+		));
+
+		ee()->file_field->loadDragAndDropAssets();
+
+		return ee('View')->make('file:publish')->render(array(
+			'field_name' => $field_name,
+			'value' => $data,
+			'file' => $file,
+			'title' => ($file) ? $file->title : '',
+			'is_image' => ($file && $file->isImage()),
+			'thumbnail' => ee('Thumbnail')->get($file)->url,
+			'fp_url' => $fp->getUrl(),
+			'fp_edit' => $fp_edit,
+			'allowed_directory' => $allowed_file_dirs,
+			'content_type' => $content_type
+		));
+	}
+
+	/**
+	 * Takes a string like `{filedir_1}somefile.jpg` and returns a file model for it
+	 *
+	 * @param string $data Standard file field data string
+	 * @return File Model
+	 */
+	private function getFileModelForFieldData($data)
+	{
+		$file = NULL;
+
+		// If the file field is in the "{filedir_n}image.jpg" format
+		if (preg_match('/^{filedir_(\d+)}/', $data, $matches))
+		{
+			// Set upload directory ID and file name
+			$dir_id = $matches[1];
+			$file_name = str_replace($matches[0], '', $data);
+
+			$file = ee('Model')->get('File')
+				->filter('file_name', $file_name)
+				->filter('upload_location_id', $dir_id)
+				->filter('site_id', ee()->config->item('site_id'))
+				->first();
+		}
+		// If file field is just a file ID
+		else if (! empty($data) && is_numeric($data))
+		{
+			$file = ee('Model')->get('File', $data)->first();
+		}
+
+		return $file;
 	}
 
 	/**
