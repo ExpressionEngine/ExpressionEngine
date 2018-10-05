@@ -64,22 +64,17 @@ var FileField = function (_React$Component) {
   }, {
     key: 'getFieldContainer',
     value: function getFieldContainer() {
-      return $(this.dropZone).closest('.grid-file-upload, .field-control');
+      return $(this.props.thisField).closest('.grid-file-upload, .field-control');
     }
   }, {
     key: 'render',
     value: function render() {
-      var _this3 = this;
-
       if (this.state.file) {
         return null;
       }
 
       return React.createElement(DragAndDropUpload, _extends({}, this.props, {
         onFileUploadSuccess: this.setFile,
-        assignDropZoneRef: function assignDropZoneRef(dropZone) {
-          _this3.dropZone = dropZone;
-        },
         marginTop: false,
         multiFile: false
       }));
@@ -89,6 +84,7 @@ var FileField = function (_React$Component) {
     value: function renderFields(context) {
       $('div[data-file-field-react]', context).each(function () {
         var props = JSON.parse(window.atob($(this).data('fileFieldReact')));
+        props.thisField = $(this);
         ReactDOM.render(React.createElement(FileField, props, null), this);
       });
     }

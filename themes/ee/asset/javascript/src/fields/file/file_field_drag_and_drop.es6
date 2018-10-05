@@ -18,6 +18,7 @@ class FileField extends React.Component {
   static renderFields(context) {
     $('div[data-file-field-react]', context).each(function () {
       let props = JSON.parse(window.atob($(this).data('fileFieldReact')))
+      props.thisField = $(this)
       ReactDOM.render(React.createElement(FileField, props, null), this)
     })
   }
@@ -37,7 +38,7 @@ class FileField extends React.Component {
   }
 
   getFieldContainer() {
-    return $(this.dropZone).closest('.grid-file-upload, .field-control')
+    return $(this.props.thisField).closest('.grid-file-upload, .field-control')
   }
 
   setFile = (response) => {
@@ -62,7 +63,6 @@ class FileField extends React.Component {
     return <DragAndDropUpload
       {...this.props}
       onFileUploadSuccess={this.setFile}
-      assignDropZoneRef={(dropZone) => { this.dropZone = dropZone }}
       marginTop={false}
       multiFile={false}
     />
