@@ -322,11 +322,18 @@ class Fluid_field_parser {
 			$my_tagdata = ee()->functions->prep_conditionals($cond_tagdata, $cond);
 			$cond[$fluid_field_name.':'.$field_name] = FALSE; // Reset for the next pass
 
+			$series_name_index = ($i > 0 && $fluid_field_data[$i-1]->ChannelField->field_name == $field_name) ? $series_type_index + 1 : 0;
+			$series_type_index = ($i > 0 && $fluid_field_data[$i-1]->ChannelField->field_type == $fluid_field_data[$i]->ChannelField->field_type) ? $series_type_index + 1 : 0;
+
 			$meta = [
 				$fluid_field_name . ':first' => (int) ($i == 0),
 				$fluid_field_name . ':last' => (int) (($i + 1) == $total_fields),
 				$fluid_field_name . ':count' => $i + 1,
+				$fluid_field_name . ':series_type_count' => $series_type_index + 1,
+				$fluid_field_name . ':series_name_count' => $series_name_index + 1,
 				$fluid_field_name . ':index' => $i,
+				$fluid_field_name . ':series_type_index' => $series_type_index,
+				$fluid_field_name . ':series_name_index' => $series_name_index,
 				$fluid_field_name . ':current_field_name' => $field_name,
 				$fluid_field_name . ':next_field_name' => (($i + 1) < $total_fields) ? $fluid_field_data[$i+1]->ChannelField->field_name : NULL,
 				$fluid_field_name . ':prev_field_name' => ($i > 0) ? $fluid_field_data[$i-1]->ChannelField->field_name : NULL,
