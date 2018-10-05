@@ -31,12 +31,12 @@ var DragAndDropUpload = function (_React$Component) {
     };
 
     _this.chooseExisting = function (directory) {
-      var url = EE.dragAndDrop.filepickerEndpoint.replace('=all', '=' + directory);
+      var url = _this.props.filebrowserEndpoint.replace('=all', '=' + directory);
       _this.presentFilepicker(url, false);
     };
 
     _this.uploadNew = function (directory) {
-      var url = EE.dragAndDrop.filepickerUploadEndpoint + '&directory=' + directory;
+      var url = _this.props.uploadEndpoint + '&directory=' + directory;
       _this.presentFilepicker(url, true);
     };
 
@@ -329,8 +329,8 @@ var DragAndDropUpload = function (_React$Component) {
             })
           )
         ),
-        this.props.allowedDirectory != 'all' && React.createElement(
-          'div',
+        this.props.showActionButtons && this.props.allowedDirectory != 'all' && React.createElement(
+          React.Fragment,
           null,
           React.createElement(
             'a',
@@ -350,7 +350,7 @@ var DragAndDropUpload = function (_React$Component) {
             EE.lang.file_dnd_upload_new
           )
         ),
-        this.props.allowedDirectory == 'all' && React.createElement(
+        this.props.showActionButtons && this.props.allowedDirectory == 'all' && React.createElement(
           'div',
           { className: 'filter-bar filter-bar--inline' },
           React.createElement(FilterSelect, { key: EE.lang.file_dnd_choose_existing,
@@ -394,7 +394,10 @@ var DragAndDropUpload = function (_React$Component) {
 }(React.Component);
 
 DragAndDropUpload.defaultProps = {
-  concurrency: 5
+  concurrency: 5,
+  showActionButtons: true,
+  filebrowserEndpoint: EE.dragAndDrop.filepickerEndpoint,
+  uploadEndpoint: EE.dragAndDrop.filepickerUploadEndpoint
 };
 
 

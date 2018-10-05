@@ -8,7 +8,10 @@
 
 class DragAndDropUpload extends React.Component {
   static defaultProps = {
-    concurrency: 5
+    concurrency: 5,
+    showActionButtons: true,
+    filebrowserEndpoint: EE.dragAndDrop.filepickerEndpoint,
+    uploadEndpoint: EE.dragAndDrop.filepickerUploadEndpoint
   }
 
   constructor (props) {
@@ -184,12 +187,12 @@ class DragAndDropUpload extends React.Component {
   }
 
   chooseExisting = (directory) => {
-    let url = EE.dragAndDrop.filepickerEndpoint.replace('=all', '='+directory)
+    let url = this.props.filebrowserEndpoint.replace('=all', '='+directory)
     this.presentFilepicker(url, false)
   }
 
   uploadNew = (directory) => {
-    let url = EE.dragAndDrop.filepickerUploadEndpoint+'&directory='+directory
+    let url = this.props.uploadEndpoint+'&directory='+directory
     this.presentFilepicker(url, true)
   }
 
@@ -295,8 +298,8 @@ class DragAndDropUpload extends React.Component {
           }
         </div>
 
-        {this.props.allowedDirectory != 'all' &&
-          <div>
+        {this.props.showActionButtons && this.props.allowedDirectory != 'all' &&
+          <React.Fragment>
             <a href="#" className="btn action m-link" rel="modal-file" onClick={(e) => {
               e.preventDefault()
               this.chooseExisting(this.state.directory)
@@ -305,9 +308,9 @@ class DragAndDropUpload extends React.Component {
               e.preventDefault()
               this.uploadNew(this.state.directory)
             }}>{EE.lang.file_dnd_upload_new}</a>
-          </div>
+          </React.Fragment>
         }
-        {this.props.allowedDirectory == 'all' && (
+        {this.props.showActionButtons && this.props.allowedDirectory == 'all' && (
           <div className="filter-bar filter-bar--inline">
             <FilterSelect key={EE.lang.file_dnd_choose_existing}
               action={true}
