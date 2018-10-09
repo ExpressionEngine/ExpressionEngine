@@ -69,7 +69,7 @@ class DragAndDropUpload extends React.Component {
       let files = Array.from(e.dataTransfer.files)
       files = files.filter(file => file.type != '')
 
-      if ( ! this.props.multiUpload && files.length > 1) {
+      if ( ! this.props.multiFile && files.length > 1) {
         return this.showErrorWithInvalidState(EE.lang.file_dnd_single_file_allowed)
       }
 

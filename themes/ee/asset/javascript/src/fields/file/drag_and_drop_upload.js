@@ -112,7 +112,7 @@ var DragAndDropUpload = function (_React$Component) {
           return file.type != '';
         });
 
-        if (!_this2.props.multiUpload && files.length > 1) {
+        if (!_this2.props.multiFile && files.length > 1) {
           return _this2.showErrorWithInvalidState(EE.lang.file_dnd_single_file_allowed);
         }
 
