@@ -526,7 +526,7 @@ class EE_relationship_tree_builder {
 					break;
 				}
 
-				if ($i == 0 && $leaf['L0_grid_col_id'] && ! empty($this->grid_relationship_names))
+				if ($i == 0 && $leaf['L0_grid_col_id'])
 				{
 					$names = $this->grid_relationship_names;
 				}
