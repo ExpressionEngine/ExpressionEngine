@@ -44,28 +44,27 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 
 		try
 		{
-			$relationships = $pre->channel()->rfields;
-			foreach ($pre->channel()->gfields as $site_id => $fields)
+			$grid_relationships = [];
+			foreach ($pre->channel()->gfields[ee()->config->item('site_id')] as $field_name => $field_id)
 			{
-				foreach ($fields as $field_name => $field_id)
+				$prefix = $field_name.':';
+
+				$columns = ee()->grid_model->get_columns_for_field($field_id, 'channel');
+
+				foreach ($columns as $col)
 				{
-					$prefix = $field_name.':';
-
-					$columns = ee()->grid_model->get_columns_for_field($field_id, 'channel');
-
-					foreach ($columns as $col)
+					if ($col['col_type'] == 'relationship')
 					{
-						if ($col['col_type'] == 'relationship')
-						{
-							$relationships[$site_id][$prefix.$col['col_name']] = $col['col_id'];
-						}
+						$grid_relationships[$prefix.$col['col_name']] = $col['col_id'];
 					}
 				}
 			}
 
 			return ee()->relationships_parser->create(
-				$relationships,
-				$pre->entry_ids()
+				$pre->channel()->rfields,
+				$pre->entry_ids(),
+				NULL,
+				$grid_relationships
 			);
 		}
 		catch (EE_Relationship_exception $e)
