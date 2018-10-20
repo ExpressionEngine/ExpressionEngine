@@ -26,11 +26,6 @@ class Create extends Members {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		if ($this->hasMaximumMembers())
-		{
-			show_error(lang('maximum_members_reached'));
-		}
-
 		$this->base_url = ee('CP/URL')->make('members/create');
 		$groups = ee('Model')->get('MemberGroup')->order('group_title', 'asc')->all();
 		$choices = array();

@@ -96,7 +96,7 @@ class EE_Functions {
 		$template = trim($template, '"\' ');
 		list($group, $template) = explode('/', $template);
 
-		if ( ! empty($group) && ! empty($template) && ! IS_CORE)
+		if ( ! empty($group) && ! empty($template))
 		{
 			ee()->load->library('template_router');
 			$route = ee()->template_router->fetch_route($group, $template);

@@ -162,11 +162,6 @@ class Channels extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		if ($this->hasMaximumChannels())
-		{
-			show_error(lang('maximum_channels_reached'));
-		}
-
 		return $this->form();
 	}
 
@@ -192,11 +187,6 @@ class Channels extends AbstractChannelsController {
 	{
 		if (is_null($channel_id))
 		{
-			if ($this->hasMaximumChannels())
-			{
-				show_error(lang('maximum_channels_reached'));
-			}
-
 			// Only auto-complete channel short name for new channels
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
 
@@ -1439,16 +1429,6 @@ class Channels extends AbstractChannelsController {
 		}
 
 		return $channel;
-	}
-
-	/**
-	 * Maximum number of channels reached?
-	 *
-	 * @return bool
-	 **/
-	private function hasMaximumChannels()
-	{
-		return (IS_CORE && ee('Model')->get('Channel')->count() >= 3);
 	}
 }
 

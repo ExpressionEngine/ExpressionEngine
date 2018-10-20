@@ -25,7 +25,7 @@
 						}
 						?>
 
-						<a class="app-about__link" href="https://expressionengine.com" rel="external noreferrer">ExpressionEngine&reg; <b><?=IS_CORE ? 'Core' : 'CMS'?></b></a>
+						<a class="app-about__link" href="https://expressionengine.com" rel="external noreferrer">ExpressionEngine&reg; <b>CMS</b></a>
 
 						<span class="<?=$version_class?> js-about"><?=$formatted_version?></span>
 

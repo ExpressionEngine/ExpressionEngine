@@ -37,16 +37,6 @@ class Cache extends EE_Driver_Library {
 	);
 
 	/**
-	 * Valid cache drivers for EE Core
-	 *
-	 * @var array
-	 */
-	protected $_core_valid_drivers = array(
-		'file',
-		'dummy'
-	);
-
-	/**
 	 * Reference to the driver
 	 *
 	 * @var mixed
@@ -67,12 +57,6 @@ class Cache extends EE_Driver_Library {
 	 */
 	public function __construct()
 	{
-		// Only allow certain drivers for EE Core
-		if (IS_CORE)
-		{
-			$this->valid_drivers = $this->_core_valid_drivers;
-		}
-
 		/* -------------------------------------------
 		/*	Hidden Configuration Variables
 		/*	- cache_driver => Name of desired caching driver ('file', 'memcached'...)

@@ -219,10 +219,7 @@ abstract class AbstractDesign extends CP_Controller {
 
 
 		// Template Routes
-		if (! IS_CORE
-			&& ! TemplateRoute::getConfig()
-			&& ee()->cp->allowed_group('can_admin_design')
-			)
+		if ( ! TemplateRoute::getConfig() && ee()->cp->allowed_group('can_admin_design'))
 		{
 			$header = $sidebar->addHeader(lang('template_routes'), ee('CP/URL')->make('design/routes'));
 

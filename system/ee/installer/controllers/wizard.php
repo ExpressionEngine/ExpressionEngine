@@ -137,7 +137,9 @@ class Wizard extends CI_Controller {
 	{
 		parent::__construct();
 
+		// retain in case third-party add-ons expect IS_CORE to be defined
 		define('IS_CORE', FALSE);
+
 		define('USERNAME_MAX_LENGTH', 75);
 		define('PASSWORD_MAX_LENGTH', 72);
 		define('URL_TITLE_MAX_LENGTH', 200);
@@ -391,9 +393,8 @@ class Wizard extends CI_Controller {
 		}
 
 		// Make sure the Member module is installed in the case the user is
-		// upgrading from Core to Standard
-		if ( ! IS_CORE
-			&& (ee('Addon')->get('member') !== NULL && ! ee('Addon')->get('member')->isInstalled()))
+		// upgrading from an old Core installation
+		if (ee('Addon')->get('member') !== NULL && ! ee('Addon')->get('member')->isInstalled())
 		{
 			ee()->load->library('addons');
 			ee()->addons->install_modules(array('member'));
@@ -1448,15 +1449,6 @@ class Wizard extends CI_Controller {
 	{
 		ee()->load->library('view');
 
-		if (IS_CORE)
-		{
-			$this->title = str_replace(
-				'ExpressionEngine',
-				'ExpressionEngine Core',
-				$this->title
-			);
-		}
-
 		// If we're dealing with an error, change the title to indicate that
 		if ($view == "error")
 		{
@@ -1491,7 +1483,6 @@ class Wizard extends CI_Controller {
 			'next_version'      => substr($this->next_update, 0, 1).'.'.substr($this->next_update, 1, 1).'.'.substr($this->next_update, 2, 1),
 			'languages'         => $this->languages,
 			'theme_url'         => $this->set_path('themes'),
-			'is_core'           => (IS_CORE) ? 'Core' : '',
 
 			'action'            => '',
 			'method'            => 'post',

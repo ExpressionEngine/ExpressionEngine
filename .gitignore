@@ -36,8 +36,6 @@ system/ee/legacy/third_party/*
 !system/ee/legacy/third_party/safecracker_file
 !system/ee/legacy/third_party/cookie_check
 !system/ee/legacy/third_party/cookie_consent
-!system/ee/legacy/third_party/nannerbanner
-!system/ee/legacy/third_party/unregisteredbanner
 !system/ee/legacy/third_party/ellislab_high_ascii_decode
 
 
@@ -53,8 +51,6 @@ system/user/addons/*
 !system/user/addons/safecracker_file
 !system/user/addons/cookie_check
 !system/user/addons/cookie_consent
-!system/user/addons/nannerbanner
-!system/user/addons/unregisteredbanner
 !system/user/addons/ellislab_high_ascii_decode
 !system/user/addons/wiki
 

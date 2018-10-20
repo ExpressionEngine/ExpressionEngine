@@ -295,11 +295,6 @@ function trim_nbs($string)
  **/
 function valid_license_pattern($license)
 {
-	if (IS_CORE && $license == 'CORE LICENSE')
-	{
-		return TRUE;
-	}
-
 	if (count(count_chars(str_replace('-', '', $license), 1)) == 1 OR $license == '1234-1234-1234-1234')
 	{
 		return FALSE;

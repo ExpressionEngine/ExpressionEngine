@@ -66,9 +66,11 @@ class EE_Core {
 		define('PATH_JS',     'src');
 		define('PATH_DICT',   SYSPATH . 'user/config/');
 
-		// application constants
+		// retain in case third-party add-ons expect IS_CORE to be defined
 		define('IS_CORE',		FALSE);
-		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
+
+		// application constants
+		define('APP_NAME',		'ExpressionEngine');
 		define('APP_BUILD',		'20181002');
 		define('APP_VER',		'4.3.6');
 		define('APP_VER_ID',	'');
@@ -94,13 +96,6 @@ class EE_Core {
 		ee()->load->database();
 		ee()->db->swap_pre = 'exp_';
 		ee()->db->db_debug = FALSE;
-
-		// For core we need to alias our replacement classes or they'll get
-		// not found errors
-		if (IS_CORE)
-		{
-			require_once SYSPATH.'ee/EllisLab/ExpressionEngine/FreeVersion/aliases.php';
-		}
 
 		// boot the addons
 		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
@@ -174,11 +169,6 @@ class EE_Core {
 		if (ee()->config->item('index_page') == FALSE)
 		{
 			ee()->config->set_item('index_page', ee()->config->item('site_index'));
-		}
-
-		if (IS_CORE)
-		{
-			ee()->config->set_item('enable_template_routes', 'n');
 		}
 
 		// Backwards compatibility for the removed secure forms setting.
@@ -563,7 +553,7 @@ class EE_Core {
 		$forum_trigger = (ee()->config->item('forum_is_installed') == "y") ? ee()->config->item('forum_trigger') : '';
 		$profile_trigger = ee()->config->item('profile_trigger');
 
-		if ( ! IS_CORE && $forum_trigger &&
+		if ($forum_trigger &&
 			in_array(ee()->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY)))
 		{
 			require PATH_MOD.'forum/mod.forum.php';
@@ -572,7 +562,7 @@ class EE_Core {
 			return;
 		}
 
-		if ( ! IS_CORE && $profile_trigger && $profile_trigger == ee()->uri->segment(1))
+		if ($profile_trigger && $profile_trigger == ee()->uri->segment(1))
 		{
 			// We do the same thing with the member profile area.
 

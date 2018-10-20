@@ -38,7 +38,7 @@ class El_pings {
 	public function is_registered($license = NULL)
 	{
 		$license = ($license) ?: ee('License')->getEELicense();
-		if ( ! IS_CORE && ! $license->isValid())
+		if ( ! $license->isValid())
 		{
 			return FALSE;
 		}
@@ -56,7 +56,7 @@ class El_pings {
 			{
 				$payload = array(
 					'contact'			=> $license->getData('license_contact'),
-					'license_number'	=> (IS_CORE) ? 'CORE LICENSE' : $license->getData('license_number'),
+					'license_number'	=> $license->getData('license_number'),
 					'domain'			=> ee()->config->item('site_url'),
 					'server_name'		=> (isset($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : '',
 					'ee_version'		=> ee()->config->item('app_version'),
@@ -174,12 +174,6 @@ class El_pings {
 			'build' => $version_file['build_date'],
 			'security' => $version_file['severity'] == 'high'
 		);
-
-		// Upgrading form Core to Pro?
-		if (IS_CORE && $version_file['license_type'] == 'pro')
-		{
-			return $version_info;
-		}
 
 		if (version_compare($version_info['version'], ee()->config->item('app_version')) < 1)
 		{

@@ -43,9 +43,8 @@ class Updater extends CP_Controller {
 		$to_version = $version_file['latest_version'];
 
 		$newer_version_available = version_compare($current_version, $to_version, '<');
-		$core_to_pro = (IS_CORE && $version_file['license_type'] == 'pro');
 
-		if ( ! $newer_version_available && ! $core_to_pro)
+		if ( ! $newer_version_available)
 		{
 			return ee()->functions->redirect(ee('CP/URL', 'homepage'));
 		}

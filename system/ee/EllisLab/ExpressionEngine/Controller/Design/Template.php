@@ -667,7 +667,7 @@ class Template extends AbstractDesignController {
 	 */
 	private function validateTemplateRoute(TemplateModel $template)
 	{
-		if (IS_CORE || ! ee()->input->post('route'))
+		if ( ! ee()->input->post('route'))
 		{
 			$template->TemplateRoute = NULL;
 			return FALSE;
@@ -1031,36 +1031,33 @@ class Template extends AbstractDesignController {
 			)
 		);
 
-		if ( ! IS_CORE)
+		$route = $template->getTemplateRoute();
+
+		if ( ! $route)
 		{
-			$route = $template->getTemplateRoute();
-
-			if ( ! $route)
-			{
-				$route = ee('Model')->make('TemplateRoute');
-			}
-
-			$sections[0][] = array(
-				'title' => 'template_route_override',
-				'desc' => 'template_route_override_desc',
-				'fields' => array(
-					'route' => array(
-						'type' => 'text',
-						'value' => $route->route
-					)
-				)
-			);
-			$sections[0][] = array(
-				'title' => 'require_all_segments',
-				'desc' => 'require_all_segments_desc',
-				'fields' => array(
-					'route_required' => array(
-						'type' => 'yes_no',
-						'value' => $route->route_required
-					)
-				)
-			);
+			$route = ee('Model')->make('TemplateRoute');
 		}
+
+		$sections[0][] = array(
+			'title' => 'template_route_override',
+			'desc' => 'template_route_override_desc',
+			'fields' => array(
+				'route' => array(
+					'type' => 'text',
+					'value' => $route->route
+				)
+			)
+		);
+		$sections[0][] = array(
+			'title' => 'require_all_segments',
+			'desc' => 'require_all_segments_desc',
+			'fields' => array(
+				'route_required' => array(
+					'type' => 'yes_no',
+					'value' => $route->route_required
+				)
+			)
+		);
 
 		$html = '';
 

@@ -110,7 +110,7 @@ class EE_Menu {
 		ee()->load->model('site_model');
 
 		$site_list = ee()->session->userdata('assigned_sites');
-		$site_list = (ee()->config->item('multiple_sites_enabled') === 'y' && ! IS_CORE) ? $site_list : FALSE;
+		$site_list = (ee()->config->item('multiple_sites_enabled') === 'y') ? $site_list : FALSE;
 
 		$menu = array();
 

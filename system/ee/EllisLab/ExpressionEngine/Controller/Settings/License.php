@@ -85,16 +85,6 @@ class License extends Settings {
 			}
 		}
 
-		if (IS_CORE)
-		{
-			ee('CP/Alert')->makeInline('core-license')
-				->asWarning()
-				->cannotClose()
-				->withTitle(lang('features_limited'))
-				->addtoBody(sprintf(lang('features_limited_desc'), 'https://expressionengine.com/store'))
-				->now();
-		}
-
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'base_url' => $base_url,
