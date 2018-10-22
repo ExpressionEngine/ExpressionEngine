@@ -135,16 +135,6 @@ class Site extends Model {
 
 	public function onBeforeInsert()
 	{
-		$current_number_of_sites = $this->getModelFacade()->get('Site')->count();
-
-		$can_add = ee('License')->getEELicense()
-			->canAddSites($current_number_of_sites);
-
-		if ( ! $can_add)
-		{
-			throw new \Exception("Site limit reached.");
-		}
-
 		$this->setDefaultPreferences('system');
 		$this->setDefaultPreferences('channel');
 		$this->setDefaultPreferences('template');

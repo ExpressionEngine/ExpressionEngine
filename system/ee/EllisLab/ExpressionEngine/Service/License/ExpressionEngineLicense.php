@@ -47,12 +47,7 @@ class ExpressionEngineLicense extends License {
 	 */
 	public function canAddSites($current_number_of_sites)
 	{
-		if ( ! $this->isValid() || $current_number_of_sites < 1)
-		{
-			return FALSE;
-		}
-
-		return ($current_number_of_sites < $this->getData('sites'));
+		return TRUE;
 	}
 
 	/**
