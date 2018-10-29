@@ -98,12 +98,6 @@
 							<br><?=lang('owned_by')?>: <a href="mailto:<?=ee('Format')->make('Text', $ee_license->getData('license_contact'))->attributeEscape()?>">
 								<?=ee('Format')->make('Text', ($ee_license->getData('license_contact_name')) ?: $ee_license->getData('license_contact'))->attributeEscape()?>
 							</a>
-						<?php else: ?>
-							<?php if (ee()->cp->allowed_group('can_access_sys_prefs')): ?>
-								<a class="btn no-reg" href="<?=ee('CP/URL')->make('settings/license')?>"><?=lang('register_now')?></a>
-							<?php else: ?>
-								<?=lang('not_entered')?>
-							<?php endif ?>
 						<?php endif; ?>
 					</div>
 					<div class="app-footer__copyright">

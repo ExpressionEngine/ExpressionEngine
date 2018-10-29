@@ -245,8 +245,7 @@ class Cp {
 		ee()->view->version_identifier = APP_VER_ID;
 		ee()->view->show_news_button = $this->shouldShowNewsButton();
 
-		$license = $this->validateLicense();
-		ee()->view->ee_license = $license;
+		ee()->view->ee_license = ee('License')->getEELicense();
 		$sidebar = ee('CP/Sidebar')->render();
 
 		if ( ! empty($sidebar))
@@ -270,39 +269,6 @@ class Cp {
 			->first();
 
 		return ( ! $news_view OR version_compare(APP_VER, $news_view->version, '>'));
-	}
-
-	protected function validateLicense()
-	{
-		$license = ee('License')->getEELicense();
-
-		require_once(APPPATH.'libraries/El_pings.php');
-		$pings = new El_pings();
-		$registered = $pings->is_registered($license);
-
-		if ( ! $license->isValid())
-		{
-			$alert = ee('CP/Alert')->makeBanner('invalid-license')
-				->asWarning()
-				->cannotClose()
-				->withTitle(lang('software_unregistered'));
-
-			foreach ($license->getErrors() as $key => $value)
-			{
-				if ($key == 'missing_pubkey')
-				{
-					$alert->addToBody(sprintf(lang($key), 'https://expressionengine.com/store/purchases'));
-				}
-				else
-				{
-					$alert->addToBody(sprintf(lang($key), ee('CP/URL')->make('settings/license')));
-				}
-			}
-
-			$alert->now();
-		}
-
-		return $license;
 	}
 
 	/**
