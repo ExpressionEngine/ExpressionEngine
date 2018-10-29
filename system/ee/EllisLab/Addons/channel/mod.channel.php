@@ -464,6 +464,11 @@ class Channel {
 				$categories[] = $row['entry_id'];
 			}
 
+			if (empty($categories) && ! ee('LivePreview')->hasEntryData())
+			{
+				return;
+			}
+
 			$sql .= implode(array_unique(array_filter($categories)), ',') . ')';
 
 			$sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
