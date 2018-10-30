@@ -183,11 +183,6 @@ class Msm extends CP_Controller {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		if ( ! empty($_POST))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('msm')->compile() => lang('msm_manager'),
 		);
