@@ -23,7 +23,27 @@ class Updater {
 	 */
 	public function do_update()
 	{
+		$steps = new \ProgressIterator(
+			[
+				'optInToAnalytics',
+			]
+		);
+
+		foreach ($steps as $k => $v)
+		{
+			$this->$v();
+		}
+
 		return TRUE;
+	}
+
+	/**
+	* Analytics-collecting is now opt-in for new installs, but continue
+	* collecting on existing installs
+	*/
+	private function optInToAnalytics()
+	{
+		ee()->config->_update_config(['share_analytics' => 'y']);
 	}
 }
 

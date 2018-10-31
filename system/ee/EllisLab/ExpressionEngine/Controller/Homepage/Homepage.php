@@ -150,6 +150,13 @@ class Homepage extends CP_Controller {
 			// Nothing to see here, the view will take care of it
 		}
 
+		if (bool_config_item('share_analytics'))
+		{
+			require_once(APPPATH.'libraries/El_pings.php');
+			$pings = new \El_pings();
+			$pings->shareAnalytics();
+		}
+
 		$vars['news']    = $news;
 		$vars['url_rss'] = ee()->cp->masked_url($url_rss);
 

@@ -35,59 +35,38 @@ class El_pings {
 	 *
 	 * @return bool
 	 **/
-	public function is_registered($license = NULL)
+	public function shareAnalytics()
 	{
-		$license = ($license) ?: ee('License')->getEELicense();
-		if ( ! $license->isValid())
-		{
-			return FALSE;
-		}
+		$cached = $this->cache->get('analytics_sent', Cache::GLOBAL_SCOPE);
 
-		$cached = $this->cache->get('software_registration', Cache::GLOBAL_SCOPE);
-		$exp_response = md5($license->getData('license_number').$license->getData('license_contact'));
+		$payload = array(
+			'domain'      => ee()->config->item('site_url'),
+			'ee_version'  => APP_VER,
+			'php_version' => PHP_VERSION
+		);
+
+		$exp_response = md5(json_encode($payload));
 
 		if ( ! $cached OR $cached != $exp_response)
 		{
-			// restrict the call to certain pages for performance and user experience
-			$class = ee()->router->fetch_class();
-			$method = ee()->router->fetch_method();
-
-			if ($class == 'homepage' OR ($class == 'license' && $method == 'index'))
+			if ( ! $response = $this->_do_ping('https://ping.ellislab.com/register.php', $payload))
 			{
-				$payload = array(
-					'contact'			=> $license->getData('license_contact'),
-					'license_number'	=> $license->getData('license_number'),
-					'domain'			=> ee()->config->item('site_url'),
-					'server_name'		=> (isset($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : '',
-					'ee_version'		=> ee()->config->item('app_version'),
-					'php_version'		=> PHP_VERSION
-				);
-
-				if ( ! $registration = $this->_do_ping('https://ping.ellislab.com/register.php', $payload))
+				// save the failed request for a day only
+				$this->cache->save('analytics_sent', $exp_response, 60*60*24, Cache::GLOBAL_SCOPE);
+			}
+			else
+			{
+				if ($response != $exp_response)
 				{
-					// save the failed request for a day only
-					$this->cache->save('software_registration', $exp_response, 60*60*24, Cache::GLOBAL_SCOPE);
+					// may have been a server error, save the failed request for a day
+					$this->cache->save('analytics_sent', $exp_response, 60*60*24, Cache::GLOBAL_SCOPE);
 				}
 				else
 				{
-					if ($registration != $exp_response)
-					{
-						// may have been a server error, save the failed request for a day
-						$this->cache->save('software_registration', $exp_response, 60*60*24, Cache::GLOBAL_SCOPE);
-					}
-					else
-					{
-						// keep for two weeks
-						$this->cache->save('software_registration', $registration, 60*60*24*7*2, Cache::GLOBAL_SCOPE);
-					}
+					// keep for two weeks
+					$this->cache->save('analytics_sent', $response, 60*60*24*7*2, Cache::GLOBAL_SCOPE);
 				}
 			}
-		}
-
-		// hard fail only when no valid license is entered or it doesn't even match a valid pattern
-		if ( ! $license->isValid())
-		{
-			return FALSE;
 		}
 
 		return TRUE;

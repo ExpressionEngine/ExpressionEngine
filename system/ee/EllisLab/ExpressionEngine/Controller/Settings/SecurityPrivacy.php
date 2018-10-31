@@ -63,6 +63,15 @@ class SecurityPrivacy extends Settings {
 							)
 						)
 					)
+				),
+				array(
+					'title' => 'share_analytics',
+					'desc' => 'share_analytics_desc',
+					'fields' => array(
+						'share_analytics' => array(
+							'type' => 'yes_no'
+						)
+					)
 				)
 			),
 			'cookie_settings' => array(

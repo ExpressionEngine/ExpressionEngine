@@ -45,6 +45,10 @@ $lang = array(
 	// License Agreement
 	'license_agreement'          => 'I agree to the license <a href="https://expressionengine.com/license/" rel="external">Terms and Conditions</a>',
 
+	// Share Analytics
+	'share_analytics' => 'I want to share analytics with the ExpressionEngine Development Team',
+	'share_analytics_desc' => 'EllisLab asks users to help improve ExpressionEngine by occasionally providing analytics, diagnostic, and usage information.',
+
 	'start_installation'         => 'Install',
 
 // Update Form
