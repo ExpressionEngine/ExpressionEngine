@@ -88,6 +88,15 @@ class General extends Settings {
 						)
 					)
 				),
+				array(
+					'title' => 'show_ee_news',
+					'desc' => 'show_ee_news_desc',
+					'fields' => array(
+						'show_ee_news' => array(
+							'type' => 'yes_no',
+						)
+					)
+				),
 			),
 			'defaults' => array(
 				array(
