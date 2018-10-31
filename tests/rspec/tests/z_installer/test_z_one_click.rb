@@ -3,6 +3,9 @@ require './bootstrap.rb'
 feature 'One-Click Updater' do
 
   before(:each) do
+    skip 'Need to figure out how to automate build creation again under open source' do
+    end
+
     Capybara.default_max_wait_time = 50
     system = '../../system/'
     @config_path = File.expand_path('user/config/config.php', system)
