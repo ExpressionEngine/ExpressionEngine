@@ -67,12 +67,6 @@ class Base_Controller extends CI_Controller {
 
 /**
  * ExpressionEngine Controller
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class EE_Controller extends Base_Controller {
 
@@ -96,12 +90,6 @@ class EE_Controller extends Base_Controller {
 
 /**
  * ExpressionEngine Control Panel Controller
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class CP_Controller extends EE_Controller {
 

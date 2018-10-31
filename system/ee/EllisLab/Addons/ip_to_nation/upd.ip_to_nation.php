@@ -8,15 +8,8 @@
  */
 
 /**
- * ExpressionEngine IP To Nation Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Update File
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * IP to Nation Update / Installer Class
  */
-
 class Ip_to_nation_upd {
 
 	var $version = '3.0.0';

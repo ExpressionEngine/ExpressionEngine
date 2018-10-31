@@ -7,16 +7,9 @@
  * @license   https://expressionengine.com/license
  */
 
-/**
- * ExpressionEngine Discussion Forum Module
- *
- * @package		ExpressionEngine
- * @subpackage	Modules
- * @category	Modules
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ /**
+ * Forum Module Updater / Installer Class
  */
-
 class Forum_upd {
 
 	var $version;

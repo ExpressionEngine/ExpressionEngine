@@ -6,14 +6,8 @@
  * @license   https://expressionengine.com/license
  */
 
-/*!
+/**
  * ExpressionEngine Custom Interact jQuery Event
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 
 /* Usage Notes:

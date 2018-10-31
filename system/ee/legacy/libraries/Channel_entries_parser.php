@@ -69,16 +69,10 @@ class EE_Channel_entries_parser {
 		$this->_components->$fn($class, $add_to_front);
 	}
 }
-
+// END CLASS
 
 /**
  * ExpressionEngine Channel Entry Parser
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class EE_Channel_parser {
 

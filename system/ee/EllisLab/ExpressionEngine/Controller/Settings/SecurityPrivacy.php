@@ -13,12 +13,6 @@ use CP_Controller;
 
 /**
  * Security & Privacy Settings Controller
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class SecurityPrivacy extends Settings {
 

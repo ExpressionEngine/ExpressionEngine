@@ -142,16 +142,10 @@ class EE_Channel_parser_components {
 		return $this->once;
 	}
 }
-
+// END CLASS
 
 /**
  * Channel Parser Component ()Interface
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 interface EE_Channel_parser_component {
 
