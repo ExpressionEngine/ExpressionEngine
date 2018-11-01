@@ -10,8 +10,9 @@
 namespace EllisLab\Tests\ExpressionEngine\Library\Data;
 
 use EllisLab\ExpressionEngine\Library\Data\Collection;
+use PHPUnit\Framework\TestCase;
 
-class CollectionTest extends \PHPUnit_Framework_TestCase {
+class CollectionTest extends TestCase {
 
 	public function testWorksAsArray()
 	{

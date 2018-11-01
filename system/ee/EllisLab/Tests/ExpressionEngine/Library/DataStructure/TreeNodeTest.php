@@ -10,8 +10,9 @@
 namespace EllisLab\Tests\ExpressionEngine\Library\DataStructure\Tree;
 
 use EllisLab\ExpressionEngine\Library\DataStructure\Tree\TreeNode;
+use PHPUnit\Framework\TestCase;
 
-class TreeNodeTest extends \PHPUnit_Framework_TestCase {
+class TreeNodeTest extends TestCase {
 
 
 	public function validNodeNames()

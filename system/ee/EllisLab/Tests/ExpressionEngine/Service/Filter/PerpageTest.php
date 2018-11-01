@@ -11,8 +11,9 @@ namespace EllisLab\Tests\ExpressionEngine\Service;
 
 use EllisLab\ExpressionEngine\Service\Filter\Perpage;
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 
-class PerpageTest extends \PHPUnit_Framework_TestCase {
+class PerpageTest extends TestCase {
 
 	public function tearDown()
 	{

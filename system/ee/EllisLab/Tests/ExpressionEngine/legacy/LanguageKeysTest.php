@@ -4,7 +4,9 @@ require_once APPPATH.'helpers/directory_helper.php';
 
 define('PASSWORD_MAX_LENGTH', 72);
 
-class LanguageKeysTest extends \PHPUnit_Framework_TestCase {
+use PHPUnit\Framework\TestCase;
+
+class LanguageKeysTest extends TestCase {
 
 	private $language_path = '';
 

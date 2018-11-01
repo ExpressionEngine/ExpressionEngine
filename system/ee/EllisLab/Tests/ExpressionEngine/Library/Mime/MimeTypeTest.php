@@ -10,8 +10,9 @@
 namespace EllisLab\Tests\ExpressionEngine\Library\Mime;
 
 use EllisLab\ExpressionEngine\Library\Mime\MimeType;
+use PHPUnit\Framework\TestCase;
 
-class MimeTypeTest extends \PHPUnit_Framework_TestCase {
+class MimeTypeTest extends TestCase {
 
 	protected $mime_type;
 	protected $safe_mime_types = array();
@@ -167,6 +168,11 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 
 	public function ofFileDataProvider()
 	{
+		$xml_mime = 'text/xml';
+		if (version_compare(PHP_VERSION, '7.0', '<'))
+		{
+			$xml_mime = 'application/xml';
+		}
 		return array(
 			array('Bad Path',      'foo.bar', '', TRUE),
 			array('CSS File',      realpath(__DIR__.'/../../../support/test.css'),  'text/css', FALSE),
@@ -180,7 +186,7 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 			array('PHP File',      realpath(__DIR__.'/../../../support/test.php'),  'text/x-php', FALSE),
 			array('PNG File',      realpath(__DIR__.'/../../../support/test.png'),  'image/png', FALSE),
 			array('Text File',     realpath(__DIR__.'/../../../support/test.txt'),  'text/plain', FALSE),
-			array('XML File',      realpath(__DIR__.'/../../../support/test.xml'),  'application/xml', FALSE),
+			array('XML File',      realpath(__DIR__.'/../../../support/test.xml'),  $xml_mime, FALSE),
 		);
 	}
 
@@ -283,11 +289,17 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 
 	public function ofBufferDataProvider()
 	{
+		$random_mime = 'application/octet-stream';
+		if (version_compare(PHP_VERSION, '7.0', '<'))
+		{
+			$random_mime = 'binary';
+		}
+
 		return array(
 			array('HTML Data',    '<html><body>Hello world</body></html>',    'text/html'),
 			array('PHP Data',     '<?php echo "Hello world";?>',              'text/x-php'),
 			array('Empty Data',   '',                                         'application/x-empty'),
-			array('Random Bytes', pack('l', openssl_random_pseudo_bytes(42)), 'application/octet-stream'),
+			array('Random Bytes', pack('l', openssl_random_pseudo_bytes(42)), $random_mime),
 
 			array('Boolen Argument',         TRUE,                        'application/octet-stream'),
 			array('Integer Argument',        1,                           'application/octet-stream'),

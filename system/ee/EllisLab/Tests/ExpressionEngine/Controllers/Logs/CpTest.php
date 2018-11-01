@@ -9,7 +9,9 @@
 
 namespace EllisLab\Tests\ExpressionEngine\Controllers\Logs;
 
-class CpTest extends \PHPUnit_Framework_TestCase {
+use PHPUnit\Framework\TestCase;
+
+class CpTest extends TestCase {
 
 	public static function setUpBeforeClass()
 	{

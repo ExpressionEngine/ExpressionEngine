@@ -10,8 +10,9 @@
 namespace EllisLab\Tests\ExpressionEngine\Library\CP;
 
 use EllisLab\ExpressionEngine\Library\CP\URL;
+use PHPUnit\Framework\TestCase;
 
-class URLTest extends \PHPUnit_Framework_TestCase {
+class URLTest extends TestCase {
 
 	/**
 	 * @dataProvider dataProvider

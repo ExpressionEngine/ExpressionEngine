@@ -9,7 +9,9 @@
 
 namespace EllisLab\Tests\ExpressionEngine\Controllers\Logs;
 
-class ThrottleTest extends \PHPUnit_Framework_TestCase {
+use PHPUnit\Framework\TestCase;
+
+class ThrottleTest extends TestCase {
 
 	public static function setUpBeforeClass()
 	{

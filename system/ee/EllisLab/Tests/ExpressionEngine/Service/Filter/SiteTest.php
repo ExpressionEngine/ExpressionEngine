@@ -12,8 +12,9 @@ namespace EllisLab\Tests\ExpressionEngine\Service;
 use EllisLab\ExpressionEngine\Service\Filter\Site;
 use Mockery as m;
 use stdClass;
+use PHPUnit\Framework\TestCase;
 
-class SiteTest extends \PHPUnit_Framework_TestCase {
+class SiteTest extends TestCase {
 
 	protected $sites = array(
 		'1' => "Main",

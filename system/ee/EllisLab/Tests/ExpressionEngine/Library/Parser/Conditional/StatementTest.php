@@ -8,8 +8,9 @@
  */
 
 namespace EllisLab\Tests\ExpressionEngine\Library\Parser\Conditional;
+use PHPUnit\Framework\TestCase;
 
-class StatementTest extends \PHPUnit_Framework_TestCase {
+class StatementTest extends TestCase {
 
 	public function setUp()
 	{

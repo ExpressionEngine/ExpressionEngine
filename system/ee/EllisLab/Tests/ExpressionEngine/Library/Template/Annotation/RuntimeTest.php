@@ -10,8 +10,9 @@
 namespace EllisLab\Tests\ExpressionEngine\Library\Template\Annotation;
 
 use EllisLab\ExpressionEngine\Library\Template\Annotation\Runtime as RuntimeAnnotation;
+use PHPUnit\Framework\TestCase;
 
-class RuntimeTest extends \PHPUnit_Framework_TestCase {
+class RuntimeTest extends TestCase {
 
 	public function testCreatesUniqueComments()
 	{

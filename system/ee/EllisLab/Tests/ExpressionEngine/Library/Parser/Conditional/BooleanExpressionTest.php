@@ -11,8 +11,9 @@ namespace EllisLab\Tests\ExpressionEngine\Library\Parser\Conditional;
 
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\BooleanExpression;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Token;
+use PHPUnit\Framework\TestCase;
 
-class BooleanExpressionTest extends \PHPUnit_Framework_TestCase {
+class BooleanExpressionTest extends TestCase {
 
 	private $expr;
 

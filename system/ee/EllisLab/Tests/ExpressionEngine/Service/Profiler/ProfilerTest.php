@@ -10,8 +10,9 @@
 namespace EllisLab\Tests\ExpressionEngine\Service\Profiler;
 
 use EllisLab\ExpressionEngine\Service\Profiler\Profiler;
+use PHPUnit\Framework\TestCase;
 
-class ProfilerTest extends \PHPUnit_Framework_TestCase {
+class ProfilerTest extends TestCase {
 
 	public function testSomething()
 	{

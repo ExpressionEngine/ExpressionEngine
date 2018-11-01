@@ -11,8 +11,9 @@ namespace EllisLab\Tests\ExpressionEngine\Service;
 
 use EllisLab\ExpressionEngine\Service\Filter\Custom;
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 
-class CustomTest extends \PHPUnit_Framework_TestCase {
+class CustomTest extends TestCase {
 
 	protected $options = array(
 		'whatthefoxsay' => 'Ring-ding-ding-ding-dingeringeding!',

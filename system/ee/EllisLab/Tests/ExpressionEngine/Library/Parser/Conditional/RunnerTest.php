@@ -10,8 +10,9 @@
 namespace EllisLab\Tests\ExpressionEngine\Library\Parser\Conditional;
 
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Runner;
+use PHPUnit\Framework\TestCase;
 
-class RunnerTest extends \PHPUnit_Framework_TestCase {
+class RunnerTest extends TestCase {
 
 	public function setUp()
 	{

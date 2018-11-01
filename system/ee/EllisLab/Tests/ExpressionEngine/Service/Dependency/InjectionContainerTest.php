@@ -11,8 +11,9 @@ namespace EllisLab\Tests\ExpressionEngine\Service\Dependency;
 
 use stdClass;
 use EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer;
+use PHPUnit\Framework\TestCase;
 
-class InjectionContainerTest extends \PHPUnit_Framework_TestCase {
+class InjectionContainerTest extends TestCase {
 
 	protected $di;
 

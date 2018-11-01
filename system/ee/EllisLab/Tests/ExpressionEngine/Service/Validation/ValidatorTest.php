@@ -10,8 +10,9 @@
 namespace EllisLab\Tests\ExpressionEngine\Service\Validation;
 
 use EllisLab\ExpressionEngine\Service\Validation\Validator;
+use PHPUnit\Framework\TestCase;
 
-class ValidatorTest extends \PHPUnit_Framework_TestCase {
+class ValidatorTest extends TestCase {
 
 	public function setUp()
 	{

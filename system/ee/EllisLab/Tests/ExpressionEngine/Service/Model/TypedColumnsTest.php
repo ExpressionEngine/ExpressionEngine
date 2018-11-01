@@ -11,8 +11,9 @@ namespace EllisLab\Tests\ExpressionEngine\Service\Model;
 
 use Mockery as m;
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use PHPUnit\Framework\TestCase;
 
-class TypedColumnsTest extends \PHPUnit_Framework_TestCase {
+class TypedColumnsTest extends TestCase {
 
 	public function setUp()
 	{

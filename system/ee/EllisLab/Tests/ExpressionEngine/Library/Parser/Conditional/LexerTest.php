@@ -10,8 +10,9 @@
 namespace EllisLab\Tests\ExpressionEngine\Library\Parser\Conditional;
 
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Lexer;
+use PHPUnit\Framework\TestCase;
 
-class LexerTest extends \PHPUnit_Framework_TestCase {
+class LexerTest extends TestCase {
 
 	protected $valueTypes = array(
 		'bool'				=> array('token' => array('BOOL', 'TRUE'),									'value' => 'TRUE'),

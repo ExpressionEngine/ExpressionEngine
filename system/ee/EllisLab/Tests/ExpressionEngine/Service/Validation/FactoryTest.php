@@ -10,8 +10,9 @@
 namespace EllisLab\Tests\ExpressionEngine\Service\Validation;
 
 use EllisLab\ExpressionEngine\Service\Validation\Factory;
+use PHPUnit\Framework\TestCase;
 
-class FactoryTest extends \PHPUnit_Framework_TestCase {
+class FactoryTest extends TestCase {
 
 	public function setUp()
 	{

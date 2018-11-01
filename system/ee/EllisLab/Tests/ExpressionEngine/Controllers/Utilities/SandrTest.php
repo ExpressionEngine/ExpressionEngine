@@ -9,7 +9,9 @@
 
 namespace EllisLab\Tests\ExpressionEngine\Controllers\Utilities;
 
-class SandrTest extends \PHPUnit_Framework_TestCase {
+use PHPUnit\Framework\TestCase;
+
+class SandrTest extends TestCase {
 
 	public static function setUpBeforeClass()
 	{

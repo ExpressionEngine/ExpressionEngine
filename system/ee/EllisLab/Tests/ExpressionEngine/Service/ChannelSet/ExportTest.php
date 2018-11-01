@@ -10,8 +10,9 @@
 namespace EllisLab\Tests\ExpressionEngine\Service\ChannelSet;
 
 use EllisLab\ExpressionEngine\Service\ChannelSet\Export;
+use PHPUnit\Framework\TestCase;
 
-class ExportTest extends \PHPUnit_Framework_TestCase {
+class ExportTest extends TestCase {
 
 	private $export;
 

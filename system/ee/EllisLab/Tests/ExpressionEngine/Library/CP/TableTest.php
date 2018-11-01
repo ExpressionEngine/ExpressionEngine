@@ -10,8 +10,9 @@
 namespace EllisLab\Tests\ExpressionEngine\Library\CP;
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
+use PHPUnit\Framework\TestCase;
 
-class TableTest extends \PHPUnit_Framework_TestCase {
+class TableTest extends TestCase {
 
 	private $table;
 

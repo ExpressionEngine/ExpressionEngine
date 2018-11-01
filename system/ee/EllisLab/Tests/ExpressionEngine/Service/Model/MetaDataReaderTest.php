@@ -8,8 +8,9 @@ namespace EllisLab\Tests\ExpressionEngine\Service\Model {
 	use EllisLab\ExpressionEngine\Service\Model\Model;
 	use EllisLab\ExpressionEngine\Service\Model\Gateway;
 	use EllisLab\ExpressionEngine\Service\Model\MetaDataReader;
+	use PHPUnit\Framework\TestCase;
 
-	class MetaDataReaderTest extends \PHPUnit_Framework_TestCase {
+	class MetaDataReaderTest extends TestCase {
 
 		public function setUp()
 		{

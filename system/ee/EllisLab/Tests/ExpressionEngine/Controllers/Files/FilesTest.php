@@ -9,7 +9,9 @@
 
 namespace EllisLab\Tests\ExpressionEngine\Controllers\Files;
 
-class FilesTest extends \PHPUnit_Framework_TestCase {
+use PHPUnit\Framework\TestCase;
+
+class FilesTest extends TestCase {
 
 	public static function setUpBeforeClass()
 	{

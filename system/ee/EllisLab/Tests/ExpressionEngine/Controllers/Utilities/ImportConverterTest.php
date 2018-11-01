@@ -9,7 +9,9 @@
 
 namespace EllisLab\Tests\ExpressionEngine\Controllers\Utilities;
 
-class ImportConverterTest extends \PHPUnit_Framework_TestCase {
+use PHPUnit\Framework\TestCase;
+
+class ImportConverterTest extends TestCase {
 
 	public static function setUpBeforeClass()
 	{

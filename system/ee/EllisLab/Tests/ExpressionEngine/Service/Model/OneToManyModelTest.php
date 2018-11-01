@@ -13,8 +13,9 @@ use Mockery as m;
 use EllisLab\ExpressionEngine\Service\Model\Association;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 use EllisLab\ExpressionEngine\Service\Model\Collection;
+use PHPUnit\Framework\TestCase;
 
-class OneToManyModelTest extends \PHPUnit_Framework_TestCase {
+class OneToManyModelTest extends TestCase {
 
 	public function setUp()
 	{

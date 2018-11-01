@@ -11,8 +11,9 @@ namespace EllisLab\Tests\ExpressionEngine\Library\Parser\Conditional;
 
 use EllisLab\ExpressionEngine\Library\Template\Annotation\Runtime as RuntimeAnnotations;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Runner as ConditionalRunner;
+use PHPUnit\Framework\TestCase;
 
-class ConditionalAnnotationsIntegrationTest extends \PHPUnit_Framework_TestCase {
+class ConditionalAnnotationsIntegrationTest extends TestCase {
 
 	private $annotations;
 	private $runner;

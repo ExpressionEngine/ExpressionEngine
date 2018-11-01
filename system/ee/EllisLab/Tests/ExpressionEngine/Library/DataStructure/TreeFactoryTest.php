@@ -10,8 +10,9 @@
 namespace EllisLab\Tests\ExpressionEngine\Library\DataStructure\Tree;
 
 use EllisLab\ExpressionEngine\Library\DataStructure\Tree\TreeFactory;
+use PHPUnit\Framework\TestCase;
 
-class TreeFactoryTest extends \PHPUnit_Framework_TestCase {
+class TreeFactoryTest extends TestCase {
 
 	public function setUp()
 	{

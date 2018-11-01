@@ -11,8 +11,9 @@ namespace EllisLab\Tests\ExpressionEngine\Service\Model;
 
 use Mockery as m;
 use EllisLab\ExpressionEngine\Service\Model\Facade;
+use PHPUnit\Framework\TestCase;
 
-class FacadeTest extends \PHPUnit_Framework_TestCase {
+class FacadeTest extends TestCase {
 
 	public function tearDown()
 	{

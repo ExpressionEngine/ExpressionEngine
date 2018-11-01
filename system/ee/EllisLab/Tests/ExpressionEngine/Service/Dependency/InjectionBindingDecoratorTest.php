@@ -11,8 +11,9 @@ namespace EllisLab\Tests\ExpressionEngine\Service\Dependency;
 
 use EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer;
 use EllisLab\ExpressionEngine\Service\Dependency\InjectionBindingDecorator;
+use PHPUnit\Framework\TestCase;
 
-class InjectionBindingDecoratorTest extends \PHPUnit_Framework_TestCase {
+class InjectionBindingDecoratorTest extends TestCase {
 
 	protected $di;
 

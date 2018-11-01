@@ -10,8 +10,9 @@
 namespace EllisLab\Tests\ExpressionEngine\Service\Encrypt;
 
 use EllisLab\ExpressionEngine\Service\Encrypt;
+use PHPUnit\Framework\TestCase;
 
-class EncryptTest extends \PHPUnit_Framework_TestCase {
+class EncryptTest extends TestCase {
 
 	protected $base64_regex = '#^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$#';
 

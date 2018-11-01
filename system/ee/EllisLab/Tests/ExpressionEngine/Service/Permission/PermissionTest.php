@@ -10,8 +10,9 @@
 namespace EllisLab\Tests\ExpressionEngine\Service\Permission;
 
 use EllisLab\ExpressionEngine\Service\Permission\Permission;
+use PHPUnit\Framework\TestCase;
 
-class PermissionTest extends \PHPUnit_Framework_TestCase {
+class PermissionTest extends TestCase {
 
 	public function testHas()
 	{

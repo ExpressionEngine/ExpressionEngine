@@ -9,7 +9,9 @@
 
 namespace EllisLab\Tests\ExpressionEngine\Controllers\Logs;
 
-class EmailTest extends \PHPUnit_Framework_TestCase {
+use PHPUnit\Framework\TestCase;
+
+class EmailTest extends TestCase {
 
 	public static function setUpBeforeClass()
 	{

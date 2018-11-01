@@ -12,8 +12,9 @@ namespace EllisLab\Test\ExpressionEngine\Service\Model\Query;
 use Mockery as m;
 
 use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
+use PHPUnit\Framework\TestCase;
 
-class BuilderTest extends \PHPUnit_Framework_TestCase {
+class BuilderTest extends TestCase {
 
 	public function tearDown()
 	{

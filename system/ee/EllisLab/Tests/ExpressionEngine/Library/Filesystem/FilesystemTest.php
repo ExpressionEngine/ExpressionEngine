@@ -10,8 +10,9 @@
 namespace EllisLab\Tests\ExpressionEngine\Library\Filesystem;
 
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
+use PHPUnit\Framework\TestCase;
 
-class FilesystemTest extends \PHPUnit_Framework_TestCase {
+class FilesystemTest extends TestCase {
 
 	protected $fs;
 	protected $dummy_files;

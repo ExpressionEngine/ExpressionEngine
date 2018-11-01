@@ -9,8 +9,9 @@
 
 namespace EllisLab\Tests\ExpressionEngine\Library\DataStructure\Tree;
 
+use PHPUnit\Framework\TestCase;
 
-class TreeIteratorTest extends \PHPUnit_Framework_TestCase {
+class TreeIteratorTest extends TestCase {
 
 	public function testTreeIterator()
 	{

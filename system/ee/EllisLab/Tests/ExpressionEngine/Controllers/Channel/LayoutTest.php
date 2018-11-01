@@ -9,7 +9,9 @@
 
 namespace EllisLab\Tests\ExpressionEngine\Controllers\Channels;
 
-class LayoutTest extends \PHPUnit_Framework_TestCase {
+use PHPUnit\Framework\TestCase;
+
+class LayoutTest extends TestCase {
 
 	public static function setUpBeforeClass()
 	{

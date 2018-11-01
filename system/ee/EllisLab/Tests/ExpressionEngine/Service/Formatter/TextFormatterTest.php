@@ -11,10 +11,11 @@ namespace EllisLab\Tests\ExpressionEngine\Service\Formatter;
 
 use Mockery as m;
 use EllisLab\ExpressionEngine\Service\Formatter\Formats\Text;
+use PHPUnit\Framework\TestCase;
 
 require_once __DIR__.'/../../../../../EllisLab/ExpressionEngine/Boot/boot.common.php';
 
-class TextFormatterTest extends \PHPUnit_Framework_TestCase {
+class TextFormatterTest extends TestCase {
 
 	public function setUp()
 	{

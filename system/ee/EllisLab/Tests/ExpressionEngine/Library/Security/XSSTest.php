@@ -10,10 +10,11 @@
 namespace EllisLab\Tests\ExpressionEngine\Library\Security;
 
 use EllisLab\ExpressionEngine\Library\Security\XSS;
+use PHPUnit\Framework\TestCase;
 
 require_once SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.common.php';
 
-class XSSTest extends \PHPUnit_Framework_TestCase {
+class XSSTest extends TestCase {
 
 	public function setUp()
 	{

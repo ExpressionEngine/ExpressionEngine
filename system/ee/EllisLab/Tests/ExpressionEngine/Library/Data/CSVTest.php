@@ -10,8 +10,9 @@
 namespace EllisLab\Tests\ExpressionEngine\Library\Data;
 
 use EllisLab\ExpressionEngine\Library\Data\CSV;
+use PHPUnit\Framework\TestCase;
 
-class CSVTest extends \PHPUnit_Framework_TestCase {
+class CSVTest extends TestCase {
 
 	protected $csv;
 

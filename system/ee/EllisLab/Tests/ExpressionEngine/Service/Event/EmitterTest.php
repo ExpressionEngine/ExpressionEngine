@@ -14,8 +14,9 @@ use EllisLab\ExpressionEngine\Service\Event\Emitter;
 use EllisLab\ExpressionEngine\Service\Event\Publisher;
 use EllisLab\ExpressionEngine\Service\Event\Subscriber;
 use EllisLab\ExpressionEngine\Service\Event\ReflexiveSubscriber;
+use PHPUnit\Framework\TestCase;
 
-class EmitterTest extends \PHPUnit_Framework_TestCase {
+class EmitterTest extends TestCase {
 
 	public function tearDown()
 	{

@@ -12,10 +12,10 @@ namespace EllisLab\Tests\ExpressionEngine\Service\Model;
 use Mockery as m;
 use EllisLab\ExpressionEngine\Service\Model\Association;
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use PHPUnit\Framework\TestCase;
 
 
-
-class OneToOneModelTest extends \PHPUnit_Framework_TestCase {
+class OneToOneModelTest extends TestCase {
 
 	public function setUp()
 	{

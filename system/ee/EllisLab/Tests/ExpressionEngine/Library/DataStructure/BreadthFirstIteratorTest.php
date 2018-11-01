@@ -9,8 +9,9 @@
 
 namespace EllisLab\Tests\ExpressionEngine\Library\DataStructure\Tree;
 
+use PHPUnit\Framework\TestCase;
 
-class BreadthFirstIteratorTest extends \PHPUnit_Framework_TestCase {
+class BreadthFirstIteratorTest extends TestCase {
 
 	public function testBreadthFirstIterator()
 	{

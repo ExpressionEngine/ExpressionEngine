@@ -9,7 +9,8 @@
 
 namespace EllisLab\Tests\ExpressionEngine\Controllers\Design;
 
-class DesignTest extends \PHPUnit_Framework_TestCase {
+use PHPUnit\Framework\TestCase;
+class DesignTest extends TestCase {
 
 	public static function setUpBeforeClass()
 	{

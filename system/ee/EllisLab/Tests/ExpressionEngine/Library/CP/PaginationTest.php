@@ -10,8 +10,9 @@
 namespace EllisLab\Tests\ExpressionEngine\Library\CP;
 
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
+use PHPUnit\Framework\TestCase;
 
-class PaginationTest extends \PHPUnit_Framework_TestCase {
+class PaginationTest extends TestCase {
 
 	public function testGreen()
 	{

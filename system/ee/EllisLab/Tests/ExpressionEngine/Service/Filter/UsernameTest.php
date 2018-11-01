@@ -12,8 +12,9 @@ namespace EllisLab\Tests\ExpressionEngine\Service;
 use EllisLab\ExpressionEngine\Service\Filter\Username;
 use Mockery as m;
 use stdClass;
+use PHPUnit\Framework\TestCase;
 
-class UsernameTest extends \PHPUnit_Framework_TestCase {
+class UsernameTest extends TestCase {
 
 	public function setUp()
 	{
@@ -135,8 +136,8 @@ class UsernameTest extends \PHPUnit_Framework_TestCase {
 			$usernames[] = $user;
 		}
 
-		$this->query->shouldReceive('count')->withNoArgs()->andReturn(count($this->usernames));
-		$this->query->shouldReceive('all')->withNoArgs()->andReturn($usernames);
+		$this->query->shouldReceive('count')->andReturn(count($this->usernames));
+		$this->query->shouldReceive('all')->andReturn($usernames);
 		$filter->setQuery($this->query);
 		return $filter;
 	}
@@ -152,7 +153,7 @@ class UsernameTest extends \PHPUnit_Framework_TestCase {
 	{
 		$filter = new Username($this->usernames);
 
-		$this->query->shouldReceive('count')->withNoArgs()->andReturn(5);
+		$this->query->shouldReceive('count')->andReturn(5);
 		$filter->setQuery($this->query);
 		$this->assertSame($this->usernames, $filter->getOptions(), "setQuery should leave the options alone if they are set in the constructor");
 	}
@@ -162,7 +163,7 @@ class UsernameTest extends \PHPUnit_Framework_TestCase {
 	{
 		$filter = new Username();
 
-		$this->query->shouldReceive('count')->withNoArgs()->andReturn(26);
+		$this->query->shouldReceive('count')->andReturn(26);
 		$filter->setQuery($this->query);
 		$this->assertEquals(array(), $filter->getOptions(), "setQuery should leave the options alone if there are more than 25 users");
 	}
@@ -190,7 +191,7 @@ class UsernameTest extends \PHPUnit_Framework_TestCase {
 
 		$members = m::mock('EllisLab\ExpressionEngine\Service\Model\Collection');
 		$this->query->shouldReceive("filter->all")->andReturn($members);
-		$members->shouldReceive('count')->withNoArgs()->andReturn(1);
+		$members->shouldReceive('count')->andReturn(1);
 		$members->shouldReceive('pluck')->with('member_id')->andReturn(1);
 
 		$this->assertEquals(1, $filter->value(), 'The value reflects the id of the username');
@@ -204,7 +205,7 @@ class UsernameTest extends \PHPUnit_Framework_TestCase {
 
 		$members = m::mock('EllisLab\ExpressionEngine\Service\Model\Collection');
 		$this->query->shouldReceive("filter->all")->andReturn($members);
-		$members->shouldReceive('count')->withNoArgs()->andReturn(0);
+		$members->shouldReceive('count')->andReturn(0);
 
 		$this->assertEquals(-1, $filter->value(), 'We should have an array of -1 for failed searches');
 		$this->assertFalse($filter->isValid(), 'Submitting an non-existing username is invalid');

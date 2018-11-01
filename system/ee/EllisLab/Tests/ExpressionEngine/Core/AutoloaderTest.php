@@ -11,8 +11,9 @@ namespace EllisLab\Tests\ExpressionEngine\Core;
 
 use EllisLab\AutoloaderTest as TestAlias;
 use EllisLab\ExpressionEngine\Core\Autoloader as Autoloader;
+use PHPUnit\Framework\TestCase;
 
-class AutoloaderTest extends \PHPUnit_Framework_TestCase {
+class AutoloaderTest extends TestCase {
 
 	private $autoloader;
 
