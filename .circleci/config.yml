@@ -15,10 +15,10 @@ jobs:
           apk upgrade
           apk add bash
       - run: chmod +x ./eetools
-      - run: bash ./eetools circleci -p 5.6.0
+      - run: bash ./eetools circleci -p 5.6.32
       - store_artifacts:
           path: /tmp/artifacts
-  test_php_72:
+  test_php_71:
     docker:
       - image: docker:stable-git
     steps:
@@ -33,7 +33,7 @@ jobs:
           apk upgrade
           apk add bash
       - run: chmod +x ./eetools
-      - run: bash ./eetools circleci -p 7.2.11
+      - run: bash ./eetools circleci -p 7.1.11
       - store_artifacts:
           path: /tmp/artifacts
 
@@ -42,4 +42,4 @@ workflows:
   build_and_test:
     jobs:
       - test_php_56
-      - test_php_72
+      - test_php_71

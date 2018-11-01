@@ -169,7 +169,7 @@ class MimeTypeTest extends TestCase {
 	public function ofFileDataProvider()
 	{
 		$xml_mime = 'text/xml';
-		if (version_compare(PHP_VERSION, '7.0', '<'))
+		if (version_compare(PHP_VERSION, '7.2', '<'))
 		{
 			$xml_mime = 'application/xml';
 		}
@@ -290,7 +290,7 @@ class MimeTypeTest extends TestCase {
 	public function ofBufferDataProvider()
 	{
 		$random_mime = 'application/octet-stream';
-		if (version_compare(PHP_VERSION, '7.0', '<'))
+		if (version_compare(PHP_VERSION, '5.6.32', '<'))
 		{
 			$random_mime = 'binary';
 		}

@@ -28,7 +28,7 @@ while [[ $# > 0 ]]
 	key="$1"
 
 	# Default PHP version
-	PHP_VERSION="7.2.11"
+	PHP_VERSION="7.1.11"
 
 	case $key in
 		-p|--php)
