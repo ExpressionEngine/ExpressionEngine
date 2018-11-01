@@ -1,4 +1,4 @@
-/**
+/*!
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
@@ -6,7 +6,7 @@
  * @license   https://expressionengine.com/license
  */
 
-/**
+/*!
  * ExpressionEngine Custom Interact jQuery Event
  */
 

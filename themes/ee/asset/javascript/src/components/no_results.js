@@ -1,6 +1,6 @@
 "use strict";
 
-/**
+/*!
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/

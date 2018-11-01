@@ -1,3 +1,11 @@
+/*!
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
+ */
+
 EE.cp.DbBackup = {
 
 	buttons: $('.form-btns input.btn:visible'),
