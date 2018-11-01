@@ -237,9 +237,6 @@ The following subcomponents are licensed under the MIT License:
     The jQuery Cycle2 component:
         Copyright © 2012-2014 M. Alsup
 
-    The jQuery Jcrop component:
-        Copyright (c) 2008-2009 Kelly Hallman
-
     The jQuery markItUp component:
         Copyright (C) 2007-2010 Jay Salvat
 
