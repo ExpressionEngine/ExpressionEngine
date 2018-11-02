@@ -57,7 +57,7 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 					{
 						if ($col['col_type'] == 'relationship')
 						{
-							$relationships[$site_id][$prefix.$col['col_name']] = $field_id . ':' . $col['col_id'];
+							$relationships[$site_id][$prefix.$col['col_name']] = $col['col_id'];
 						}
 					}
 				}
