@@ -237,6 +237,7 @@ class El_pings {
 		}
 
 		$headers = TRUE;
+		$chunked = FALSE;
 		$response = '';
 		while ( ! feof($fp))
 		{
@@ -246,6 +247,10 @@ class El_pings {
 			{
 				$response .= $line;
 			}
+			elseif (strstr($line, 'Transfer-Encoding: chunked') !== FALSE)
+			{
+				$chunked = TRUE;
+			}
 			elseif (trim($line) == '')
 			{
 				$headers = FALSE;
@@ -254,7 +259,28 @@ class El_pings {
 
 		fclose($fp);
 
+		if ($chunked)
+		{
+			return $this->decodeChunked($response);
+		}
+
 		return $response;
+	}
+
+	/**
+	 * Decode chunk-encoded response, thanks https://stackoverflow.com/questions/10793017
+	 *
+	 * @param string $response Chunk-encoded response
+	 * @return string De-chunked response
+	 **/
+	private function decodeChunked($str) {
+		for ($res = ''; !empty($str); $str = trim($str)) {
+			$pos = strpos($str, "\r\n");
+			$len = hexdec(substr($str, 0, $pos));
+			$res.= substr($str, $pos + 2, $len);
+			$str = substr($str, $pos + 2 + $len);
+		}
+		return $res;
 	}
 }
 // END CLASS
