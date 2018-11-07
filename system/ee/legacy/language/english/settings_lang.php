@@ -761,6 +761,10 @@ $lang = array(
 
 'security_tip_desc' => 'Any setting marked with <span class="icon--caution" title="security enhancement"></span> will further enhance and improve site security.',
 
+'share_analytics' => 'Share analytics with the ExpressionEngine Development Team?',
+
+'share_analytics_desc' => 'EllisLab asks users to help improve ExpressionEngine by occasionally <a href="%s">providing analytics, diagnostic, and usage information</a>.',
+
 'un_min_len' => 'Minimum username length',
 
 'un_min_len_desc' => 'Minimum number of characters required for new members\' usernames.',

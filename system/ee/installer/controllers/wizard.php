@@ -114,7 +114,8 @@ class Wizard extends CI_Controller {
 		'theme_folder_path'     => '../themes/',
 		'modules'               => array(),
 		'install_default_theme' => 'n',
-		'utf8mb4_supported'     => NULL
+		'utf8mb4_supported'     => NULL,
+		'share_analytics'       => 'n'
 	);
 
 	// These are the default values for the config array.  Since the
@@ -2009,6 +2010,11 @@ class Wizard extends CI_Controller {
 		if (isset($config['site_index']))
 		{
 			$config['index_page'] = $config['site_index'];
+		}
+
+		if ($this->userdata['share_analytics'] == 'y')
+		{
+			$config['share_analytics'] = 'y';
 		}
 
 		// Fetch the config template

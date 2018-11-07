@@ -159,6 +159,13 @@ class Homepage extends CP_Controller {
 			}
 		}
 
+		if (bool_config_item('share_analytics'))
+		{
+			require_once(APPPATH.'libraries/El_pings.php');
+			$pings = new \El_pings();
+			$pings->shareAnalytics();
+		}
+
 		$vars['can_moderate_comments'] = ee()->cp->allowed_group('can_moderate_comments');
 		$vars['can_edit_comments'] = ee()->cp->allowed_group('can_edit_all_comments');
 		$vars['can_access_members'] = ee()->cp->allowed_group('can_access_members');
