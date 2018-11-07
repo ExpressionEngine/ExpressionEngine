@@ -49,7 +49,7 @@ class Updater {
 	}
 
 	/**
-	 * Showing EE news on the CP hompage is now opt-in for new installs, but
+	 * Showing EE news on the CP homepage is now opt-in for new installs, but
 	 * continue showing on existing installs
 	 */
 	private function optInToNews()
