@@ -3,8 +3,9 @@
 namespace EllisLab\Tests\ExpressionEngine\Service\Template\Variables;
 
 use EllisLab\ExpressionEngine\Service\Template\Variables\LegacyParser;
+use PHPUnit\Framework\TestCase;
 
-class LegacyParserTest extends \PHPUnit_Framework_TestCase {
+class LegacyParserTest extends TestCase {
 
 	public function setUp()
 	{

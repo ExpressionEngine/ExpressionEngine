@@ -1,18 +1,20 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\Tests\ExpressionEngine\Core;
 
 use EllisLab\AutoloaderTest as TestAlias;
 use EllisLab\ExpressionEngine\Core\Autoloader as Autoloader;
+use PHPUnit\Framework\TestCase;
 
-class AutoloaderTest extends \PHPUnit_Framework_TestCase {
+class AutoloaderTest extends TestCase {
 
 	private $autoloader;
 

@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -462,6 +463,11 @@ class Channel {
 			foreach ($this->query->result_array() as $row)
 			{
 				$categories[] = $row['entry_id'];
+			}
+
+			if (empty($categories) && ! ee('LivePreview')->hasEntryData())
+			{
+				return;
 			}
 
 			$sql .= implode(array_unique(array_filter($categories)), ',') . ')';

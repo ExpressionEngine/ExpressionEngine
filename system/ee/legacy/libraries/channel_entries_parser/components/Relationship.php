@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -57,7 +58,7 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 					{
 						if ($col['col_type'] == 'relationship')
 						{
-							$relationships[$site_id][$prefix.$col['col_name']] = $field_id . ':' . $col['col_id'];
+							$relationships[$site_id][$prefix.$col['col_name']] = $col['col_id'];
 						}
 					}
 				}

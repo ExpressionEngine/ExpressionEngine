@@ -5,8 +5,9 @@ namespace EllisLab\Tests\ExpressionEngine\Service\Updater;
 use EllisLab\ExpressionEngine\Updater\Service\Updater\FileUpdater;
 use EllisLab\ExpressionEngine\Updater\Service\Updater\UpdaterException;
 use Mockery;
+use PHPUnit\Framework\TestCase;
 
-class FileUpdaterTest extends \PHPUnit_Framework_TestCase {
+class FileUpdaterTest extends TestCase {
 
 	public function setUp()
 	{

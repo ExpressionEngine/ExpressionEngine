@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 require_once APPPATH.'libraries/channel_entries_parser/components/Category.php';
@@ -142,16 +143,10 @@ class EE_Channel_parser_components {
 		return $this->once;
 	}
 }
-
+// END CLASS
 
 /**
  * Channel Parser Component ()Interface
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 interface EE_Channel_parser_component {
 

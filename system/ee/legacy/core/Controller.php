@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 use EllisLab\ExpressionEngine\Library\Core\LoaderFacade;
@@ -67,12 +68,6 @@ class Base_Controller extends CI_Controller {
 
 /**
  * ExpressionEngine Controller
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class EE_Controller extends Base_Controller {
 
@@ -96,12 +91,6 @@ class EE_Controller extends Base_Controller {
 
 /**
  * ExpressionEngine Control Panel Controller
- *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class CP_Controller extends EE_Controller {
 

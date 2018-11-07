@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Controller\Settings;
@@ -84,6 +85,15 @@ class General extends Settings {
 					'desc' => 'enable_msm_desc',
 					'fields' => array(
 						'multiple_sites_enabled' => array(
+							'type' => 'yes_no',
+						)
+					)
+				),
+				array(
+					'title' => 'show_ee_news',
+					'desc' => 'show_ee_news_desc',
+					'fields' => array(
+						'show_ee_news' => array(
 							'type' => 'yes_no',
 						)
 					)

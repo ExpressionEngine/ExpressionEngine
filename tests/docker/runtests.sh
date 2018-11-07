@@ -27,6 +27,7 @@ while [[ $# > 0 ]]
 	do
 	key="$1"
 
+	# Default PHP version
 	PHP_VERSION="7.1.11"
 
 	case $key in
@@ -53,7 +54,6 @@ function setup_permissions {
 		cp tests/docker/config.php system/user/config/
 		cp tests/docker/config.rb tests/rspec/
 		cp tests/docker/EllisLabUpdate.pub system/ee/EllisLab/ExpressionEngine
-		cp tests/circleci/license.key system/user/config/
 		chmod 666 system/user/config/config.php
 		chmod -R 777 system/user/cache
 		chmod -R 777 system/user/templates

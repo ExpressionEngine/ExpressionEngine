@@ -1,244 +1,47 @@
-# ExpressionEngine
+<img src="https://expressionengine.com/asset/img/expressionengine-with-text.svg" alt="ExpressionEngine Logo" height="70" >
 
-**These repositories must remain private and all work under NDA.**
+# ExpressionEngine CMS
 
-[Working with Git](#working-with-git)
-* [Naming Branches](#naming-branches)
-* [Commit Messages](#commit-messages)
+ExpressionEngine is a mature, flexible, secure, free open-source content management system. It is beloved by designers for giving you complete control of all output, and by content authors for enabling reusable, high-performing content. With ExpressionEngine, you can build full-featured websites, create a web app, or serve content to mobile applications. All without requiring complex programming skills.
 
-[Development Installs](#development-installs)
-* [Configuration](#configuration)
-* [Installing from the Repo](#installing-from-the-repo)
-* [Updating from the Repo](#updating-from-the-repo)
+Visit [expressionengine.com](https://expressionengine.com/) to see what it's all about, or if you prefer to download a ZIP and jump right in!
 
-[Testing](#testing)
-* [Unit Testing](#unit-testing)
+## System Requirements
 
-## Working with Git
+ExpressionEngine requires a web server running PHP & MySQL. We recommend:
 
-### Naming Branches
+- PHP 7 or newer
+- MySQL 5.6 or newer
 
-We have two base branches:
+But ExpressionEngine _can_ run on PHP 5.6+ and MySQL 5.5.3+. For full details and a server compatibility wizard, please visit the system requirements [in the User Guide](https://docs.expressionengine.com/latest/installation/requirements.html).
 
-* `stability` - for bug fixes, always releasable (next minor version)
-* `master` - no development, matches the last release
+## How To Install
 
-Feature development should take place in feature branches. These should be prefixed with `feature/`:
+1. Create a database
+2. Upload the files
+3. Verify file permissions
+4. Point your browser to `/admin.php` and run the Installation Wizard.
 
-* `feature/commerce`
-* `feature/pandora-accessory`
+Read [Installing ExpressionEngine](https://docs.expressionengine.com/latest/installation/installation.html) in the User GUide for full instructions, tips, and post-install best practices.
 
-Feature branches should be turned into pull-requests before they are merged into stability. Large pull requests should target a release branch instead of stability.
+## How to Get Started
 
-When code for a release is frozen, or development on a non-patch version is started, a branch prefixed with `release/` should be created. Version numbers should follow [semver](http://semver.org) conventions.
+ExpressionEngine separates your content from your design, enabling you to make small or large changes to your website with ease. Your content is stored in Channels, and your design is kept in Templates, both of which are entirely under your control. ExpressionEngine bends to _your_ needs, not the other way around like many other CMSes.
 
-* `release/2.9.0`
-* `release/2.22.0-dp.15+intrepid-earwig`
+If you're new to ExpressionEngine, check out:
 
-### Commit Messages
+- [The Big Picture](https://docs.expressionengine.com/latest/intro/the_big_picture.html)
+- [Building a Simple News Site from Start to Finish](https://docs.expressionengine.com/latest/how_to/building_a_simple_news_site.html)
+- [10-minute ExpressionEngine Primer](https://www.youtube.com/watch?v=qKaOirMRz2s) on ExpressionEngineTV
 
-* Limit the first line to 72 characters or less
-* Reference issues and pull requests liberally
-* When only changing documentation, include [ci skip] in the commit description
-* Consider starting the commit message with an applicable emoji:
-    * :art: `:art:` when improving the format/structure of the code
-    * :racehorse: `:racehorse:` when improving performance
-    * :memo: `:memo:` when writing docs
-    * :bug: `:bug:` when fixing a bug
-    * :fire: `:fire:` when removing code or files
-    * :green_heart: `:green_heart:` when fixing the CI build
-    * :white_check_mark: `:white_check_mark:` when adding tests
-    * :lock: `:lock:` when dealing with security
-    * :alien: `:alien:` when adding a third-party dependency
-    * :bathtub: `:bathtub:` when refactoring
-    * :spaghetti: `:spaghetti:` for WIP
-    * :twisted_rightwards_arrows: `:twisted_rightwards_arrows:` for merges
+## How to Contribute
 
-## Development Installs
+There are many ways you get get involved and contribute to the ExpressionEngine application and it's amazing community. Check out [CONTRIBUTING.md](CONTRIBUTING.md) in the root of this repository to get started!
 
-### Configuration
+## Copyright / License Notice
 
-Force MySQL strict mode:
+The ExpressionEngine project is copyright (c) 2003-2018 EllisLab, Inc ([https://ellislab.com](https://ellislab.com)) and is licensed under Apache License, Version 2.0. This project contains subcomponents with separate copyright and license terms, all of which are fully FOSS and compatible with Apache-2.0.
 
-```php
-$config['database']['expressionengine']['stricton'] = TRUE;
-```
+Complete license terms and copyright information can be found in [LICENSE.txt](LICENSE.txt) in the root of this repository.
 
-Turn debug on:
-
-```php
-$debug = 1;
-$config['debug'] = '2';
-```
-
-### Installing from the Repo
-
-Modify installer conditional in `system/ee/EllisLab/ExpressionEngine/Boot/boot.php` around line 60:
-
-```php
-// from
-if (FALSE && defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
-// to
-if (defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
-```
-
-1. Create an empty `config.php` file in `/system/user/config/`
-2. Run the installer.
-3. Set the development configuration items above.
-
-### Updating from the repo
-
-Modify installer conditional in `system/ee/EllisLab/ExpressionEngine/Boot/boot.php` around line 60:
-
-```php
-// from
-if (FALSE && defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
-// to
-if (defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
-```
-
-Modify the `app_version` config item in `system/user/config/config.php` around line 14 to a previous version. For example:
-
-```php
-// from
-$config['app_version'] = '3.0.0';
-// to
-$config['app_version'] = '2.9.0';
-```
-
-Run updater, login.
-
-## Testing
-
-### Unit Testing
-
-In order to run unit tests you will need Composer and PHPUnit. In the system/Tests directory run:
-
-```shell
-composer install
-```
-
-This will install the versions listed in the composer.lock file. If you wish to update phpunit, mockery, or any of the others, run `composer update` instead and commit the new lock file after testing.
-
-From there you can run the ExpressionEngine tests with:
-
-```shell
-phpunit ExpressionEngine/
-```
-
-### Writing Unit Tests
-
-Before beginning to write tests, please read the documentation for:
-
-* Mockery: https://github.com/padraic/mockery#documentation, especially the sections on expectation declarations, argument validation, and partial mocking.
-
-* PHPUnit: http://phpunit.de/manual/current/en/index.html, especially the sections on assertions and database testing.
-
-General Guidelines:
-
- - Use mockery for mocks
- - Prefer the matchesPattern hamcrest matcher instead of the mockery regex default for clarity.
- - Use array datasets for database tests
-
-Each test case should look as close to a minimal production or documentation code sample as possible and should be self documenting. They should be easy to find, quick to add, and on the rare occasion that they are edited it should be very difficult to make the test unclear or nullify the assertion. As a result, slightly different rules apply to test writing than what you might be used to in regular code.
-
-The Good:
-
-* Write tests for bugs
-* Write tests while building a feature
-* Mirror the existing folder structure for your test
-* Name your class test files `<ClassName>Test.php`
-* Name your test methods `tests<MethodName>`
-* Use annotations wherever possible.
-* Use separate methods to test exceptions
-  * Call them `tests<MethodName>ThrowsException<condition>` and use the `@expectedException` annotation.
-* Use the `$message` parameter on assertions to help document the tests
-  * This helps pinpoint the failing assertion. Use this when there are a lot of assertions in your method or when it is not immediately clear from the `$expected`/`$actual` pair which assertion failed. Try failing a few assertions on purpose to get a feel for how to find them.
-  * This field is a comment to your assertion. It should describe the expected behavior. Keep it short, it is not documentation for the code -- that belongs with the code.
-  * If your class has a lot of methods, especially if they are similar consider prefixing the message. `func() accepts no arguments`
-* For testing a range of options, use `dataProviders` to keep the test short.
-* Include the `$message` parameter in your `dataProvider` array
-* Use `tearDown` to cleanup your setUp
-* Use `@covers` on methods that you cannot fully isolate or on constructors. Always set it on constructor tests as they may grow to include things that are verified in a separate test.
-
-  `@covers EllisLab\ExpressionEngine\Something::__construct`
-
-The Bad:
-
-* Never assume that the test is wrong. A bug has probably been introduced.
-* Never commit a new test that is broken unless it tests new code.
-* Never commit a test that you did not see fail first. It may not be running.
-* Avoid control structures (`if`/`while`/`try`/`foreach`).
-  * Loops can be avoided by using `@dataProvider`
-  * Try statements can be avoided using `@expectedException`
-  * If statements can be avoided by creating multiple methods
-* Avoid needless comments
-    * They obscure the annotations, making the test harder to follow
-    * They increase the perceived effort of adding a test, resulting in lower coverage
-    * Consider putting the comment on the code you're testing instead. Do not duplicate code documentation in the test.
-    * If your test needs more explanation than fits into the `$message` parameter, then you should reconsider the test case or the code it is testing.
-* If you're stubbing a lot, take a step back and consider if you can decouple your class more cleanly.
-
-
-Example of a class to test:
-
-```php
-class Math {
-
-  function divide($a, $b)
-  {
-    if ($b == 0)
-    {
-      throw new InvalidArgumentException('Cannot divide by 0');
-    }
-
-    return $a / $b;
-  }
-}
-```
-
-
-Example of a good test:
-
-```php
-class MathTest {
-
-  protected function setUp()
-  {
-    $this->math = new Math();
-  }
-
-  protected function tearDown()
-  {
-    $this->math = NULL;
-  }
-
-  public function validDivisons()
-  {
-    return array(
-      array(6, 2, 3, 'divide() handles positive numbers'),
-      array(-6, -2, 3, 'divide() handles negative numbers'),
-      array(10, 2.5, 4, 'divide() handles floats'),
-      array(INF, 2, INF, 'divide() is infinite with infinity in the dividend'),
-      array(6, INF, 0, 'divide() is 0 with infinity in the divisor'),
-      array(INF, INF, NAN, 'divide() is NotANumber with infinity in both arguments')
-    )
-  }
-
-  /**
-   * @dataProvider validDivisions
-   */
-  public function testDivide($a, $b, $result, $message)
-  {
-    $this->assertEquals($result, $this->math->divide($a, $b), $message);
-  }
-
-  /**
-   * @expectedException InvalidArgumentException
-   */
-  public function testDivideThrowsExceptionForDivisonByZero()
-  {
-    $this->math->divide(10, 0);
-  }
-}
-```
+"ExpressionEngine" is a registered trademark of EllisLab, Inc. in the United States and around the world. Refer to EllisLab's [Trademark Use Policy](https://ellislab.com/trademark-use-policy) for access to logos and acceptable use.

@@ -1,23 +1,5 @@
 version: 2
 jobs:
-  test_php_54:
-    docker:
-      - image: docker:stable-git
-    steps:
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - checkout
-      - run: |
-          git config --global user.email "you@example.com"
-          git config --global user.name "Your Name"
-      - run: |
-          apk update
-          apk upgrade
-          apk add bash
-      - run: chmod +x ./eetools
-      - run: bash ./eetools circleci -p 5.4.45
-      - store_artifacts:
-          path: /tmp/artifacts
   test_php_56:
     docker:
       - image: docker:stable-git
@@ -59,6 +41,5 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - test_php_54
       - test_php_56
       - test_php_71

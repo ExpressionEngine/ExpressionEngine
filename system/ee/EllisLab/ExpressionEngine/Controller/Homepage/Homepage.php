@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Controller\Homepage;
@@ -108,46 +109,54 @@ class Homepage extends CP_Controller {
 			$vars['can_moderate_spam'] = ee()->cp->allowed_group('can_moderate_spam');
 		}
 
+		$vars['can_view_homepage_news'] = bool_config_item('show_ee_news')
+			&& ee()->cp->allowed_group('can_view_homepage_news');
 
-		// Gather the news
-		ee()->load->library(array('rss_parser', 'typography'));
-		$url_rss = 'https://expressionengine.com/blog/rss-feed/cpnews/';
-		$news = array();
-
-		try
+		if ($vars['can_view_homepage_news'])
 		{
-			$feed = ee()->rss_parser->create(
-				$url_rss,
-				60 * 6, // 6 hour cache
-				'cpnews_feed'
-			);
+			// Gather the news
+			ee()->load->library(array('rss_parser', 'typography'));
+			$url_rss = 'https://expressionengine.com/blog/rss-feed/cpnews/';
+			$news = array();
 
-			foreach ($feed->get_items(0, 10) as $item)
+			try
 			{
-				$news[] = array(
-					'title'   => strip_tags($item->get_title()),
-					'date'    => ee()->localize->format_date(
-						"%j%S %F, %Y",
-						$item->get_date('U')
-					),
-					'content' => ee('Security/XSS')->clean(
-						ee()->typography->parse_type(
-							$item->get_content(),
-							array(
-								'text_format'   => 'xhtml',
-								'html_format'   => 'all',
-								'auto_links'    => 'y',
-								'allow_img_url' => 'n'
-							)
-						)
-					),
-					'link'    => ee()->cp->masked_url($item->get_permalink())
+				$feed = ee()->rss_parser->create(
+					$url_rss,
+					60 * 6, // 6 hour cache
+					'cpnews_feed'
 				);
+
+				foreach ($feed->get_items(0, 10) as $item)
+				{
+					$news[] = array(
+						'title'   => strip_tags($item->get_title()),
+						'date'    => ee()->localize->format_date(
+							"%j%S %F, %Y",
+							$item->get_date('U')
+						),
+						'content' => ee('Security/XSS')->clean(
+							ee()->typography->parse_type(
+								$item->get_content(),
+								array(
+									'text_format'   => 'xhtml',
+									'html_format'   => 'all',
+									'auto_links'    => 'y',
+									'allow_img_url' => 'n'
+								)
+							)
+						),
+						'link'    => ee()->cp->masked_url($item->get_permalink())
+					);
+				}
+
+				$vars['news'] = $news;
+				$vars['url_rss'] = ee()->cp->masked_url($url_rss);
 			}
-		}
-		catch (\Exception $e)
-		{
-			// Nothing to see here, the view will take care of it
+			catch (\Exception $e)
+			{
+				// Nothing to see here, the view will take care of it
+			}
 		}
 
 		if (bool_config_item('share_analytics'))
@@ -157,9 +166,6 @@ class Homepage extends CP_Controller {
 			$pings->shareAnalytics();
 		}
 
-		$vars['news']    = $news;
-		$vars['url_rss'] = ee()->cp->masked_url($url_rss);
-
 		$vars['can_moderate_comments'] = ee()->cp->allowed_group('can_moderate_comments');
 		$vars['can_edit_comments'] = ee()->cp->allowed_group('can_edit_all_comments');
 		$vars['can_access_members'] = ee()->cp->allowed_group('can_access_members');
@@ -168,7 +174,6 @@ class Homepage extends CP_Controller {
 		$vars['can_create_channels'] = ee()->cp->allowed_group('can_create_channels');
 		$vars['can_access_fields'] = ee()->cp->allowed_group('can_create_channel_fields', 'can_edit_channel_fields', 'can_delete_channel_fields');
 		$vars['can_access_member_settings'] = ee()->cp->allowed_group('can_access_sys_prefs', 'can_access_members');
-		$vars['can_view_homepage_news'] = ee()->cp->allowed_group('can_view_homepage_news');
 
 		ee()->view->cp_page_title = ee()->config->item('site_name') . ' ' . lang('overview');
 		ee()->cp->render('homepage', $vars);
