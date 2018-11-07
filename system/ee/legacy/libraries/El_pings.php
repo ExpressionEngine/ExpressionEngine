@@ -39,27 +39,31 @@ class El_pings {
 	{
 		$cached = $this->cache->get('analytics_sent', Cache::GLOBAL_SCOPE);
 
-		$payload = array(
-			'domain'      => ee()->config->item('site_url'),
-			'ee_version'  => APP_VER,
-			'php_version' => PHP_VERSION
-		);
-
-		$exp_response = md5(json_encode($payload));
+		$server_name = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '';
+		$exp_response = md5($server_name.PHP_VERSION);
 
 		if ( ! $cached OR $cached != $exp_response)
 		{
-			if ( ! $response = $this->_do_ping('https://ping.ellislab.com/register.php', $payload))
+			$payload = array(
+				'domain'           => ee()->config->item('site_url'),
+				'server_name'      => (isset($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : '',
+				'ee_version'       => APP_VER,
+				'php_version'      => PHP_VERSION,
+				'mysql_version'    => ee('Database')->getConnection()->getNative()->getAttribute(PDO::ATTR_SERVER_VERSION),
+				'installed_addons' => json_encode($this->getInstalledAddons())
+			);
+
+			if ( ! $response = $this->_do_ping('https://ping.expressionengine.com/analytics/'.APP_VER, $payload))
 			{
 				// save the failed request for a day only
-				$this->cache->save('analytics_sent', $exp_response, 60*60*24, Cache::GLOBAL_SCOPE);
+				$this->cache->save('analytics_sent', $response, 60*60*24, Cache::GLOBAL_SCOPE);
 			}
 			else
 			{
 				if ($response != $exp_response)
 				{
 					// may have been a server error, save the failed request for a day
-					$this->cache->save('analytics_sent', $exp_response, 60*60*24, Cache::GLOBAL_SCOPE);
+					$this->cache->save('analytics_sent', $response, 60*60*24, Cache::GLOBAL_SCOPE);
 				}
 				else
 				{
@@ -70,6 +74,24 @@ class El_pings {
 		}
 
 		return TRUE;
+	}
+
+	/**
+	 * Returns an array of installed add-on names
+	 *
+	 * @return array[string] Names of installed add-ons
+	 */
+	private function getInstalledAddons()
+	{
+		$installed_addons = ee('Addon')->installed();
+
+		$third_party = array_filter($installed_addons, function($addon) {
+			return $addon->getAuthor() != 'EllisLab';
+		});
+
+		return array_map(function($addon) {
+			return $addon->getName();
+		}, array_values($third_party));
 	}
 
 	/**
