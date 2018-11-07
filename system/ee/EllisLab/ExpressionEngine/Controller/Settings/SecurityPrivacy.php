@@ -67,6 +67,7 @@ class SecurityPrivacy extends Settings {
 				array(
 					'title' => 'share_analytics',
 					'desc' => 'share_analytics_desc',
+					'desc' => sprintf(lang('share_analytics_desc'), ee()->cp->masked_url('https://docs.expressionengine.com/latest/cp/settings/security-privacy.html#share-analytics-with-the-expressionengine-development-team')),
 					'fields' => array(
 						'share_analytics' => array(
 							'type' => 'yes_no'
