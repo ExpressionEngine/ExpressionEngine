@@ -333,7 +333,7 @@ class Cp {
 			$notices[] = sprintf(
 				lang('missing_encryption_key'),
 				'session_crypt_key',
-				'https://expressionengine.com/support'
+				DOC_URL.'troubleshooting/error_messages/missing_encryption_keys.html'
 			);
 		}
 
@@ -342,7 +342,7 @@ class Cp {
 			$notices[] = sprintf(
 				lang('missing_encryption_key'),
 				'encryption_key',
-				'https://expressionengine.com/support'
+				DOC_URL.'troubleshooting/error_messages/missing_encryption_keys.html'
 			);
 		}
 

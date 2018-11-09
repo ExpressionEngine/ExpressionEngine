@@ -76,14 +76,6 @@
 							<?php endif; ?>
 						<?php endif; ?>
 
-						<?php if (ee()->cp->allowed_group('can_access_footer_new_ticket')): ?>
-							<a href="https://expressionengine.com/support" class="app-about__link" rel="external noreferrer"><?=lang('new_ticket')?></a>
-
-							<?php if (ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
-								<b class="sep">&middot;</b>
-							<?php endif; ?>
-						<?php endif; ?>
-
 						<?php if (ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
 							<a href="<?=DOC_URL?>" class="app-about__link" rel="external noreferrer"><?=lang('user_guide')?></a>
 						<?php endif; ?>
