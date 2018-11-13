@@ -2,7 +2,7 @@
 
 # ExpressionEngine CMS
 
-ExpressionEngine is a mature, flexible, secure, free open-source content management system. It is beloved by designers for giving you complete control of all output, and by content authors for enabling reusable, high-performing content. With ExpressionEngine, you can build full-featured websites, create a web app, or serve content to mobile applications. All without requiring complex programming skills.
+ExpressionEngine is a mature, flexible, secure, free open-source content management system. It is beloved by designers for giving them complete control of all output, and by content authors for enabling reusable, high-performing content. With ExpressionEngine, you can build full-featured websites, create a web app, or serve content to mobile applications. All without requiring complex programming skills.
 
 Visit [expressionengine.com](https://expressionengine.com/) to see what it's all about, or if you prefer to download a ZIP and jump right in!
 
