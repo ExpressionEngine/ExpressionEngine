@@ -289,19 +289,6 @@ class Status extends AbstractChannelsController {
 	 * Retrieve the foreground color for a given status color
 	 *
 	 * @param string $color The hex color for the background
-	 * @return void
-	 */
-	public function getForegroundColor($color = '')
-	{
-		$color = ee()->input->post('highlight');
-		$foreground = $this->calculateForegroundFor($color);
-		ee()->output->send_ajax_response($foreground);
-	}
-
-	/**
-	 * Retrieve the foreground color for a given status color
-	 *
-	 * @param string $color The hex color for the background
 	 * @return string The hex color best suited for the background color
 	 */
 	protected function calculateForegroundFor($background)
