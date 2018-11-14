@@ -21,23 +21,19 @@ $(document).ready(function() {
 		$status_tag.text(status);
 	});
 
-	$('input.color-picker').minicolors({
-		changeDelay: 200,
-		change: function (value, opacity) {
-			// Change background and border colors
-			$status_tag.css('background-color', value)
-				.css('border-color', value);
+	$("input.color-picker").each(function() {
+		new ColorPicker(this, {
+			mode: 'both',
+			swatches: ['E34834', 'F8BD00', '1DC969', '2B92D8', 'DE32E0', 'fff', '000'],
+			onChange: function(newColor) {
+				// Change background and border colors
+				$status_tag.css('background-color', newColor).css('border-color', newColor);
 
-			// Get foreground color
-			$.post(
-				EE.status.foreground_color_url,
-				{highlight: value},
-				function (data) {
-					$status_tag.css('color', '#'+data);
-				},
-				'json'
-			);
-		}
+				// Set foreground color
+				var foregroundColor = new SimpleColor(newColor).fullContrastColor().hexStr;
+				$status_tag.css('color', foregroundColor);
+			}
+		});
 	});
 
 });
