@@ -66,7 +66,11 @@
  */
 	use EllisLab\ExpressionEngine\Core;
 
-	if (FALSE && defined('REQ') && in_array(REQ, ['CP', 'CLI']) && is_dir(SYSPATH.'ee/installer/'))
+	if (
+		defined('REQ') && in_array(REQ, ['CP', 'CLI']) &&
+		is_dir(SYSPATH.'ee/installer/') &&
+		( ! defined('INSTALL_MODE') OR INSTALL_MODE != FALSE)
+	)
 	{
 		$core = new Core\Installer();
 	}

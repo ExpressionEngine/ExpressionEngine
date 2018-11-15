@@ -108,6 +108,16 @@
 	// The control panel access constant ensures the CP will be invoked.
 	define('REQ', 'CP');
 
+	// force the installer/updater?
+	if (file_exists(FCPATH.'.env.php') && (require FCPATH.'.env.php') == TRUE && getenv('EE_INSTALL_MODE') === 'TRUE')
+	{
+		define('INSTALL_MODE', TRUE);
+	}
+	else
+	{
+		define('INSTALL_MODE', FALSE);
+	}
+
 /*
  * --------------------------------------------------------------------
  *  Set the error reporting level
@@ -122,7 +132,6 @@
 	{
 		error_reporting(0);
 	}
-
 
 /*
  *---------------------------------------------------------------
