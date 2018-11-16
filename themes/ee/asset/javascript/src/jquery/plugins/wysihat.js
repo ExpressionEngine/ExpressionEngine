@@ -1,4 +1,4 @@
-/*  WysiHat - WYSIWYG JavaScript framework, version 0.2.1
+/*!  WysiHat - WYSIWYG JavaScript framework, version 0.2.1
  *  (c) 2008-2010 Joshua Peek
  *  JQ-WysiHat - jQuery port of WysiHat to run on jQuery
  *  (c) 2010 Scott Williams & Aaron Gustafson

@@ -4,8 +4,9 @@ namespace EllisLab\Tests\ExpressionEngine\Service\Database\Backup;
 
 use EllisLab\ExpressionEngine\Service\Database\Backup\Query;
 use Mockery;
+use PHPUnit\Framework\TestCase;
 
-class QueryTest extends \PHPUnit_Framework_TestCase {
+class QueryTest extends TestCase {
 
 	public function setUp()
 	{

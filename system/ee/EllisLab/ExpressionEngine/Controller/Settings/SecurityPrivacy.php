@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Controller\Settings;
@@ -13,12 +14,6 @@ use CP_Controller;
 
 /**
  * Security & Privacy Settings Controller
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
  */
 class SecurityPrivacy extends Settings {
 
@@ -61,6 +56,16 @@ class SecurityPrivacy extends Settings {
 								'c' => lang('c_session'),
 								's' => lang('s_session')
 							)
+						)
+					)
+				),
+				array(
+					'title' => 'share_analytics',
+					'desc' => 'share_analytics_desc',
+					'desc' => sprintf(lang('share_analytics_desc'), ee()->cp->masked_url(DOC_URL.'cp/settings/security-privacy.html#share-analytics-with-the-expressionengine-development-team')),
+					'fields' => array(
+						'share_analytics' => array(
+							'type' => 'yes_no'
 						)
 					)
 				)

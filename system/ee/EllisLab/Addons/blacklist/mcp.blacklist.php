@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -557,18 +558,10 @@ class Blacklist_mcp {
 			show_error(lang("ref_no_{$listtype}list_table"));
 		}
 
-		$license = ee('License')->getEELicense();
-
-		if ( ! $license->isValid())
-		{
-			show_error(lang('ref_no_license'));
-		}
-
 		//  Get Current List from ExpressionEngine.com
 		ee()->load->library('xmlrpc');
 		ee()->xmlrpc->server('http://ping.expressionengine.com/index.php', 80);
 		ee()->xmlrpc->method("ExpressionEngine.{$listtype}list");
-		ee()->xmlrpc->request(array($license->getData('license_number')));
 
 		if (ee()->xmlrpc->send_request() === FALSE)
 		{

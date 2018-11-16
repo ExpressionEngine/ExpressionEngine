@@ -25,7 +25,7 @@
 						}
 						?>
 
-						<a class="app-about__link" href="https://expressionengine.com" rel="external noreferrer">ExpressionEngine&reg; <b><?=IS_CORE ? 'Core' : 'CMS'?></b></a>
+						<a class="app-about__link" href="https://expressionengine.com" rel="external noreferrer">ExpressionEngine&reg; <b>CMS</b></a>
 
 						<span class="<?=$version_class?> js-about"><?=$formatted_version?></span>
 
@@ -76,14 +76,6 @@
 							<?php endif; ?>
 						<?php endif; ?>
 
-						<?php if (ee()->cp->allowed_group('can_access_footer_new_ticket')): ?>
-							<a href="https://expressionengine.com/support" class="app-about__link" rel="external noreferrer"><?=lang('new_ticket')?></a>
-
-							<?php if (ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
-								<b class="sep">&middot;</b>
-							<?php endif; ?>
-						<?php endif; ?>
-
 						<?php if (ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
 							<a href="<?=DOC_URL?>" class="app-about__link" rel="external noreferrer"><?=lang('user_guide')?></a>
 						<?php endif; ?>
@@ -98,12 +90,6 @@
 							<br><?=lang('owned_by')?>: <a href="mailto:<?=ee('Format')->make('Text', $ee_license->getData('license_contact'))->attributeEscape()?>">
 								<?=ee('Format')->make('Text', ($ee_license->getData('license_contact_name')) ?: $ee_license->getData('license_contact'))->attributeEscape()?>
 							</a>
-						<?php else: ?>
-							<?php if (ee()->cp->allowed_group('can_access_sys_prefs')): ?>
-								<a class="btn no-reg" href="<?=ee('CP/URL')->make('settings/license')?>"><?=lang('register_now')?></a>
-							<?php else: ?>
-								<?=lang('not_entered')?>
-							<?php endif ?>
 						<?php endif; ?>
 					</div>
 					<div class="app-footer__copyright">

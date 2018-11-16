@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /*
@@ -107,6 +108,16 @@
 	// The control panel access constant ensures the CP will be invoked.
 	define('REQ', 'CP');
 
+	// force the installer/updater?
+	if (file_exists(FCPATH.'.env.php') && (require FCPATH.'.env.php') == TRUE && getenv('EE_INSTALL_MODE') === 'TRUE')
+	{
+		define('INSTALL_MODE', TRUE);
+	}
+	else
+	{
+		define('INSTALL_MODE', FALSE);
+	}
+
 /*
  * --------------------------------------------------------------------
  *  Set the error reporting level
@@ -121,7 +132,6 @@
 	{
 		error_reporting(0);
 	}
-
 
 /*
  *---------------------------------------------------------------

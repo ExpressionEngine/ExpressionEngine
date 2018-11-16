@@ -4,8 +4,9 @@ namespace EllisLab\Tests\ExpressionEngine\Service\Updater;
 
 use EllisLab\ExpressionEngine\Service\Updater\SteppableTrait;
 use Mockery;
+use PHPUnit\Framework\TestCase;
 
-class SteppableTest extends \PHPUnit_Framework_TestCase {
+class SteppableTest extends TestCase {
 
 	public function setUp()
 	{
