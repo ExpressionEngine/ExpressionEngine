@@ -121,7 +121,7 @@ class View {
 	 */
 	public function head_title($title)
 	{
-		return '<title>' . strip_tags($title) . ' | ExpressionEngine</title>'.PHP_EOL;
+		return '<title>' . strip_tags($title) . ' | ' . APP_NAME . '</title>'.PHP_EOL;
 	}
 
 	/**
