@@ -116,9 +116,14 @@ class MemberImport extends Utilities {
 						'date_format' => array(
 							'type' => 'radio',
 							'choices' => array(
-								'%n/%j/%Y' => 'mm/dd/yyyy',
-								'%j/%n/%Y' => 'dd/mm/yyyy',
-								'%j-%n-%Y' => 'dd-mm-yyyy',
+								'%n/%j/%Y' => 'm/d/yyyy',
+								'%m/%d/%Y' => 'mm/dd/yyyy',
+								'%j/%n/%Y' => 'd/m/yyyy',
+								'%d/%m/%Y' => 'dd/mm/yyyy',
+								'%j-%n-%Y' => 'd-m-yyyy',
+								'%d-%m-%Y' => 'dd-mm-yyyy',
+								'%j.%n.%Y' => 'd.m.yyyy',
+								'%d.%m.%Y' => 'dd.mm.yyyy',
 								'%Y-%m-%d' => 'yyyy-mm-dd'
 							)
 						),

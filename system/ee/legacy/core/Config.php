@@ -1419,9 +1419,14 @@ class EE_Config {
 				'site_default'       => array('r', array('y' => 'yes', 'n' => 'no')),
 				'default_site_timezone' => array('f', 'timezone'),
 				'date_format'           => array('s', array(
-					'%n/%j/%Y' => 'mm/dd/yyyy',
-					'%j/%n/%Y' => 'dd/mm/yyyy',
-					'%j-%n-%Y' => 'dd-mm-yyyy',
+					'%n/%j/%Y' => 'm/d/yyyy',
+					'%m/%d/%Y' => 'mm/dd/yyyy',
+					'%j/%n/%Y' => 'd/m/yyyy',
+					'%d/%m/%Y' => 'dd/mm/yyyy',
+					'%j-%n-%Y' => 'd-m-yyyy',
+					'%d-%m-%Y' => 'dd-mm-yyyy',
+					'%j.%n.%Y' => 'd.m.yyyy',
+					'%d.%m.%Y' => 'dd.mm.yyyy',
 					'%Y-%m-%d' => 'yyyy-mm-dd'
 				)),
 				'time_format'           => array('r', array('24' => '24_hour', '12' => '12_hour')),
