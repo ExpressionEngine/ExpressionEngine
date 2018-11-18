@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 	<head>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8" lang="en-us" dir="ltr">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" lang="<?=ee()->config->item('xml_lang')?>" dir="ltr">
 		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"  name="viewport">
 		<?php if (isset($meta_refresh)): ?>
 		<meta http-equiv='refresh' content='<?=$meta_refresh['rate']?>; url=<?=$meta_refresh['url']?>'>

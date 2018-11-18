@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<title>Exception | <?=APP_NAME?></title>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8" lang="en-us" dir="ltr">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" lang="<?=ee()->config->item('xml_lang')?>" dir="ltr">
 		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"  name="viewport">
 		<style>
 			<?php echo file_get_contents(__DIR__.'/eecms-error.min.css'); ?>

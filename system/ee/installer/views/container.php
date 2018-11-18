@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<title><?=$title?></title>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8" lang="en-us" dir="ltr">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" lang="<?=ee()->config->item('xml_lang')?>" dir="ltr">
 		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"  name="viewport">
 		<link href="<?=$theme_url?>/ee/cp/css/out.min.css" rel="stylesheet">
 		<?php
@@ -27,7 +27,7 @@
 				<?=$content?>
 			</div>
 			<section class="bar">
-				<p class="left"><a href="https://expressionengine.com/" rel="external"><b>ExpressionEngine</b></a></p>
+				<p class="left"><a href="https://expressionengine.com/" rel="external"><b><?=APP_NAME?></b></a></p>
 				<p class="right">&copy;<?=date('Y')?> <a href="https://ellislab.com/" rel="external">EllisLab</a>, Inc.</p>
 			</section>
 		</section>
