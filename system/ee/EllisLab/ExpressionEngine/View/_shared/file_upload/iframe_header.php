@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" id="file_upload_iframe">
+<html lang="<?=ee()->config->item('xml_lang')?>" id="file_upload_iframe">
 <head>
 	<meta charset="utf-8">
 
