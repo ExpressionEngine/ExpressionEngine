@@ -952,7 +952,7 @@ class Comment {
 
 			// If there is no conditional- just return the message
 			ee()->lang->loadfile('comment');
-			return ee()->lang->line('cmt_commenting_has_expired');
+			return '<div class="commenting_has_expired">'.ee()->lang->line('cmt_commenting_has_expired').'</div>';
 		}
 
 
