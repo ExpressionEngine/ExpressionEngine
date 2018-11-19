@@ -47,13 +47,11 @@ class Addon {
 	 */
 	public function isInstalled()
 	{
-		$types = array('modules', 'fieldtypes', 'extensions');
-
 		ee()->load->model('addons_model');
-
 
 		if (is_null(self::$installed_modules))
 		{
+			/** @var \CI_DB_result $query */
 			$query = ee()->addons_model->get_installed_modules();
 
 			self::$installed_modules = array();
@@ -71,6 +69,7 @@ class Addon {
 
 		if (is_null(self::$installed_extensions))
 		{
+			/** @var \CI_DB_result $query */
 			$query = ee()->addons_model->get_installed_extensions();
 
 			self::$installed_extensions = array();
@@ -89,9 +88,10 @@ class Addon {
 
 		if (is_null(self::$installed_fieldtypes))
 		{
+			/** @var \CI_DB_result $query */
 			$query = ee()->db->select('name')->get('fieldtypes');
 
-			self::$installed_fieldtypes = array();
+			self::$installed_fieldtypes = [];
 
 			foreach ($query->result() as $row)
 			{
@@ -138,9 +138,9 @@ class Addon {
 			if (is_null($installed_plugins))
 			{
 				$installed_plugins = array_map('array_pop', ee()->db
-				    ->select('plugin_package')
-				    ->get('plugins')
-				    ->result_array());
+					->select('plugin_package')
+					->get('plugins')
+					->result_array());
 
 				self::$installed_plugins = $installed_plugins;
 			}
@@ -236,7 +236,7 @@ class Addon {
 	}
 
 	/**
-	 * Gets the 'name' of the add-on, prefering to use the module's lang() key
+	 * Gets the 'name' of the add-on, preferring to use the module's lang() key
 	 * if it is defined, otherwise using the 'name' key in the provider file.
 	 *
 	 * @return string product name
@@ -437,6 +437,7 @@ class Addon {
 	{
 		$files = $this->getFilesMatching('ft.*.php');
 		$this->requireFieldtypes($files);
+
 		return ! empty($files);
 	}
 
@@ -458,6 +459,7 @@ class Addon {
     public function getFieldtypeClasses()
     {
 		$files = $this->getFilesMatching('ft.*.php');
+
 		return $this->requireFieldtypes($files);
     }
 
@@ -471,7 +473,7 @@ class Addon {
 	 */
 	public function getFieldtypeNames()
 	{
-		$names = array();
+		$names = [];
 
 		$fieldtypes = $this->get('fieldtypes');
 
@@ -484,6 +486,9 @@ class Addon {
 		return $names;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getInstalledConsentRequests()
 	{
 		$return = [];
@@ -522,6 +527,10 @@ class Addon {
 		}
 	}
 
+	/**
+	 * @param string $name
+	 * @return bool
+	 */
 	private function hasConsentRequestInstalled($name)
 	{
 		return (bool) ee('Model')->get('ConsentRequest')
@@ -529,7 +538,11 @@ class Addon {
 			->count();
 	}
 
-	private function makeConsentRequest($name, $values)
+	/**
+	 * @param string $name
+	 * @param array $values
+	 */
+	private function makeConsentRequest($name, array $values = [])
 	{
 		$request = ee('Model')->make('ConsentRequest');
 		$request->user_created = FALSE; // App-generated request
@@ -588,6 +601,9 @@ class Addon {
 		}
 	}
 
+	/**
+	 * @return string
+	 */
 	private function getConsentPrefix()
 	{
 		if (strpos($this->getPath(), PATH_ADDONS) === 0)
@@ -603,23 +619,24 @@ class Addon {
 	/**
 	 * Find files in this add-on matching a pattern
 	 *
-	 * @return array An array of pathnames
+	 * @param string $glob
+	 * @return array An array of path names
 	 */
     protected function getFilesMatching($glob)
     {
-		return glob($this->getPath()."/{$glob}") ?: array();
+		return glob($this->getPath()."/{$glob}") ?: [];
     }
 
 	/**
-	 * Includes each filetype via PHP's `require_once` command and returns an
+	 * Includes each file type via PHP's `require_once` command and returns an
 	 * array of the classes that were included.
 	 *
 	 * @param array $files An array of file names
 	 * @return array An array of classes
 	 */
-    protected function requireFieldtypes(array $files)
+    protected function requireFieldtypes(array $files = [])
     {
-		$classes = array();
+		$classes = [];
 
 		require_once SYSPATH.'ee/legacy/fieldtypes/EE_Fieldtype.php';
 
@@ -636,7 +653,7 @@ class Addon {
 	/**
 	 * Get the add-on Provider
 	 *
-	 * @return EllisLab\ExpressionEngine\Core\Provider
+	 * @return Provider
 	 */
 	 public function getProvider()
 	 {
@@ -649,7 +666,7 @@ class Addon {
 	 * Checks the namespace and if that doesn't exists falls back to the
 	 * old name
 	 *
-	 * @param string $class The classname relative to their namespace
+	 * @param string $class The class name relative to their namespace
 	 * @return string The fqcn or $class
 	 */
 	protected function getFullyQualified($class)
@@ -669,7 +686,7 @@ class Addon {
 	/**
 	 * Check if the file with a given prefix exists
 	 *
-	 * @param array $prefix A prefix for the file (i.e. 'ft', 'mod', 'mcp')
+	 * @param string $prefix A prefix for the file (i.e. 'ft', 'mod', 'mcp')
 	 * @return bool TRUE if it has the file, FALSE if not
 	 */
 	protected function hasFile($prefix)
@@ -680,7 +697,7 @@ class Addon {
 	/**
 	 * Call require on a given file
 	 *
-	 * @param array $prefix A prefix for the file (i.e. 'ft', 'mod', 'mcp')
+	 * @param string $prefix A prefix for the file (i.e. 'ft', 'mod', 'mcp')
 	 * @return void
 	 */
 	protected function requireFile($prefix)

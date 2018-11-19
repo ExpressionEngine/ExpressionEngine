@@ -89,6 +89,7 @@ class Factory {
 	/**
 	 * Is a given provider an addon?
 	 *
+	 * @param Provider $provider
 	 * @return bool Is an addon?
 	 */
 	protected function isAddon(Provider $provider)
