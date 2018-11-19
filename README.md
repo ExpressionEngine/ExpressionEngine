@@ -4,7 +4,7 @@
 
 ExpressionEngine is a mature, flexible, secure, free open-source content management system. It is beloved by designers for giving them complete control of all output, and by content authors for enabling reusable, high-performing content. With ExpressionEngine, you can build full-featured websites, create a web app, or serve content to mobile applications. All without requiring complex programming skills.
 
-Visit [expressionengine.com](https://expressionengine.com/) to see what it's all about, or if you prefer to download a ZIP and jump right in!
+Visit [expressionengine.com](https://expressionengine.com/) to see what it's all about or, if you prefer, download a ZIP and jump right in!
 
 ## System Requirements
 
@@ -13,7 +13,7 @@ ExpressionEngine requires a web server running PHP & MySQL. We recommend:
 - PHP 7 or newer
 - MySQL 5.6 or newer
 
-But ExpressionEngine _can_ run on PHP 5.6+ and MySQL 5.5.3+. For full details and a server compatibility wizard, please visit the system requirements [in the User Guide](https://docs.expressionengine.com/latest/installation/requirements.html).
+ExpressionEngine _can_ run on PHP 5.6+ and MySQL 5.5.3+. For full details and a server compatibility wizard, please visit the system requirements [in the User Guide](https://docs.expressionengine.com/latest/installation/requirements.html).
 
 ## How To Install
 
@@ -22,7 +22,7 @@ But ExpressionEngine _can_ run on PHP 5.6+ and MySQL 5.5.3+. For full details an
 3. Verify file permissions
 4. Point your browser to `/admin.php` and run the Installation Wizard.
 
-Read [Installing ExpressionEngine](https://docs.expressionengine.com/latest/installation/installation.html) in the User GUide for full instructions, tips, and post-install best practices.
+Read [Installing ExpressionEngine](https://docs.expressionengine.com/latest/installation/installation.html) in the User Guide for full instructions, tips, and post-install best practices.
 
 Note: If you're installing from the repository, you will also need to:
 

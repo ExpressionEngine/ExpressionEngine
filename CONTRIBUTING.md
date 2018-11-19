@@ -55,6 +55,8 @@ Even if you can't write code, you can help triage bugs!
 
 Coming Soon!
 
+Please note, all code contributors must sign a <a href="https://www.clahub.com/agreements/ExpressionEngine/ExpressionEngine">Contributor License Agreement</a> to ensure all code is legally contributed and able to be redistributed under the project's open-source license.
+
 ## Helping Guide ExpressionEngine's Future
 
 Coming Soon!
