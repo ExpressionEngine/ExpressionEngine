@@ -632,12 +632,16 @@ class Channel_calendar extends Channel {
 					{
 						$out = str_replace(LD.'switch'.RD, $switch_c, $out);
 					}
+					
+					$out = str_replace(LD . 'cur_month' . RD, '1', $out);
 				}
 				else
 				{
 					$out .= str_replace($if_blank_m, $if_blank, $row_chunk);
 
 					$out = str_replace(LD.'day_number'.RD, ($day <= 0) ? sprintf($day_num_fmt, $prev_total_days + $day) : sprintf($day_num_fmt, $day - $total_days), $out);
+					
+					$out = str_replace(LD . 'cur_month' . RD, '0', $out);
 				}
 
 				$day++;
