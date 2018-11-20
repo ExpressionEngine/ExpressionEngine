@@ -26,7 +26,7 @@ Read [Installing ExpressionEngine](https://docs.expressionengine.com/latest/inst
 
 Note: If you're installing from the repository, you will also need to:
 
-- add an empty config file, e.g. `touch system/user/config.php`
+- add an empty config file, e.g. `touch system/user/config/config.php`
 - route requests to the installer app instead of the main app by changing `EE_INSTALL_MODE` to `TRUE` in [.env.php](.env.php). You can change this back when you're done.
 
 ## How to Get Started
