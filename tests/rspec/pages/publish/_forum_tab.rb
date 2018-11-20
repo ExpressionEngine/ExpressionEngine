@@ -7,7 +7,7 @@ class ForumTab < SitePrism::Section
 
   # Install forum, create a board, category, and forum
   def install_forum
-    visit '/system/index.php?/cp/addons'
+    visit '/admin.php?/cp/addons'
     find('ul.toolbar a[data-post-url*="cp/addons/install/forum"]').click
     find('ul.toolbar a[href*="cp/addons/settings/forum"]').click
 
