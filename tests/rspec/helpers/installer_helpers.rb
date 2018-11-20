@@ -1,11 +1,11 @@
 module Installer
   # Helps prepare the Installer for rspec tests
   class Prepare
-    attr_reader :boot, :wizard
+    attr_reader :env, :wizard
 
     def initialize
       system             = '../../system/'
-      @boot              = File.expand_path('ee/EllisLab/ExpressionEngine/Boot/boot.php', system)
+      @env               = File.expand_path('../.env.php', system)
       @config            = File.expand_path('user/config/config.php', system)
       @database          = File.expand_path('user/config/database.php', system)
       @wizard            = File.expand_path('ee/installer/controllers/wizard.php', system)
@@ -13,21 +13,19 @@ module Installer
       @current_templates = File.expand_path('user/templates/default_site', system)
     end
 
-    # Enables installer by removing `FALSE &&` from boot.php
     def enable_installer
       swap(
-        @boot,
-        "if (FALSE && defined('REQ') && in_array(REQ, ['CP', 'CLI']) && is_dir(SYSPATH.'ee/installer/'))",
-        "if (defined('REQ') && in_array(REQ, ['CP', 'CLI']) && is_dir(SYSPATH.'ee/installer/'))"
+        @env,
+        "putenv('EE_INSTALL_MODE=FALSE');",
+        "putenv('EE_INSTALL_MODE=TRUE');"
       )
     end
 
-    # Disables installer by adding `FALSE &&` to boot.php
     def disable_installer
       swap(
-        @boot,
-        "if (defined('REQ') && in_array(REQ, ['CP', 'CLI']) && is_dir(SYSPATH.'ee/installer/'))",
-        "if (FALSE && defined('REQ') && in_array(REQ, ['CP', 'CLI']) && is_dir(SYSPATH.'ee/installer/'))"
+        @env,
+        "putenv('EE_INSTALL_MODE=TRUE');",
+        "putenv('EE_INSTALL_MODE=FALSE');"
       )
     end
 
