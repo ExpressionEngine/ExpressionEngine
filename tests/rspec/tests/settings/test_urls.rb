@@ -30,7 +30,7 @@ feature 'URL and Path Settings' do
     @page.site_url.value.should == @site_url
     @page.cp_url.value.should == @cp_url
     @page.theme_folder_url.value.should == @theme_folder_url
-    @page.theme_folder_path.value.should == @theme_folder_path
+    @page.theme_folder_path.value.should == '{base_path}/themes/'
     @page.profile_trigger.value.should == @profile_trigger
     @page.category_segment_trigger.value.should == @reserved_category_word
     @page.use_category_name.has_checked_radio(@use_category_name).should == true
