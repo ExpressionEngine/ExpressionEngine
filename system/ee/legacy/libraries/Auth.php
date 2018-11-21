@@ -323,7 +323,7 @@ class Auth {
 		{
 			return [
 				'salt' => '',
-				'password' => password_hash($password, PASSWORD_BCRYPT, ['cost' => 12])
+				'password' => password_hash($password, PASSWORD_BCRYPT)
 			];
 		}
 		elseif ( ! isset($this->hash_algos[$h_byte_size]))
