@@ -18,6 +18,7 @@ Patch Release
    - Fixed Bug (#<issue number>) where <bug behavior>.
 
 - Fixed a bug where a PHP error may appear when the CP homepage newsfeed cannot be fetched.
+- Fixed a bug where extension hooks may run during a one-click upgrade.
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
