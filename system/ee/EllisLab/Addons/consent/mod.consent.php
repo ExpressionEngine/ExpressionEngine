@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\Addons\Consent;
@@ -344,7 +345,12 @@ class Consent {
 
 		if ($token != CSRF_TOKEN)
 		{
-			ee()->output->throwAuthError();
+			if (AJAX_REQUEST)
+			{
+				ee()->output->send_ajax_response(lang('csrf_token_expired'), TRUE);
+			}
+
+			ee()->output->show_user_error('general', array(lang('csrf_token_expired')));
 		}
 	}
 }

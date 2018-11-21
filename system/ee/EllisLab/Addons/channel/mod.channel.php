@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -240,18 +241,18 @@ class Channel {
 			}
 		}
 
-		if ( ! $this->isLivePreviewEntry())
+		if ($this->sql == '')
 		{
-			if ($this->sql == '')
-			{
-				$this->build_sql_query();
-			}
+			$this->build_sql_query();
+		}
 
-			if ($this->sql == '')
-			{
-				return ee()->TMPL->no_results();
-			}
+		if ( ! $this->isLivePreviewEntry() && $this->sql == '')
+		{
+			return ee()->TMPL->no_results();
+		}
 
+		if ($this->sql)
+		{
 			if ($save_cache == TRUE)
 			{
 				$this->save_cache($this->sql);
@@ -462,6 +463,11 @@ class Channel {
 			foreach ($this->query->result_array() as $row)
 			{
 				$categories[] = $row['entry_id'];
+			}
+
+			if (empty($categories) && ! ee('LivePreview')->hasEntryData())
+			{
+				return;
 			}
 
 			$sql .= implode(array_unique(array_filter($categories)), ',') . ')';
@@ -2133,11 +2139,13 @@ class Channel {
 							$vc = $order.$view_ct;
 
 							$end .= " t.{$vc} ".$sort_array[$key];
+							$distinct_select .= ",  t.{$vc} ";
 
 							if (count($order_array)-1 == $key)
 							{
 								$end .= ", t.entry_date ".$sort_array[$key];
 							}
+
 
 							$sort_array[$key] = FALSE;
 						break;
@@ -2427,7 +2435,7 @@ class Channel {
 		}
 
 		$entries = array();
-		$channel_ids = isset($channel_ids) ? $channel_ids : array();
+		$channel_ids = array();
 
 		foreach ($query->result_array() as $row)
 		{
@@ -2580,7 +2588,7 @@ class Channel {
 		if (ee('LivePreview')->hasEntryData())
 		{
 			$data = ee('LivePreview')->getEntryData();
-			if ($data['entry_id'] == PHP_INT_MAX && in_array($this->query_string, [$data['entry_id'], $data['url_title']]))
+			if (in_array($this->query_string, [$data['entry_id'], $data['url_title']]))
 			{
 				$return = TRUE;
 
@@ -2603,14 +2611,25 @@ class Channel {
 		if (ee('LivePreview')->hasEntryData())
 		{
 			$found = FALSE;
+			$show_closed = FALSE;
+			$show_expired = (ee()->TMPL->fetch_param('show_expired') == 'yes');
+
+			if (($status = ee()->TMPL->fetch_param('status')) !== FALSE)
+			{
+				$status = strtolower($status);
+				$parts = preg_split('/\|/', $status, -1, PREG_SPLIT_NO_EMPTY);
+				$parts = array_map('trim', $parts);
+				$show_closed = in_array('closed', $parts);
+			}
+
 			$data = ee('LivePreview')->getEntryData();
 
 			foreach ($result_array as $i => $row)
 			{
 				if ($row['entry_id'] == $data['entry_id'])
 				{
-					if ($data['status'] == 'closed'
-						|| ($data['expiration_date'] && $data['expiration_date'] < ee()->localize->now))
+					if (( ! $show_closed && $data['status'] == 'closed')
+						|| ( ! $show_expired && $data['expiration_date'] && $data['expiration_date'] < ee()->localize->now))
 					{
 						unset($result_array[$i]);
 					}
@@ -2631,7 +2650,7 @@ class Channel {
 			{
 				$add = FALSE;
 
-				if ($data['entry_id'] == PHP_INT_MAX && in_array($this->query_string, [$data['entry_id'], $data['url_title']]))
+				if (in_array($this->query_string, [$data['entry_id'], $data['url_title']]))
 				{
 					$add = TRUE;
 				}
@@ -2766,7 +2785,9 @@ class Channel {
 
 		if (empty($query_result))
 		{
-			return ee()->TMPL->no_results();
+			$this->enable['pagination'] = FALSE;
+			$this->return_data = ee()->TMPL->no_results();
+			return;
 		}
 
 		ee()->load->library('channel_entries_parser');
@@ -5438,7 +5459,6 @@ class Channel {
 		{
 			return ee()->TMPL->no_results();
 		}
-
 
 		$this->query = ee()->db->query($this->sql);
 

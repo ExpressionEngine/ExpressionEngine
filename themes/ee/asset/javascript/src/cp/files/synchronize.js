@@ -1,9 +1,10 @@
-/**
+/*!
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 EE.file_manager = EE.file_manager || {};
@@ -49,8 +50,14 @@ EE.file_manager.sync_listen = function() {
 EE.file_manager.resize_ids = function() {
 	var resize_ids = [];
 
-	$('input[name="sizes[]"]:checked').each(function() {
-		resize_ids.push($(this).val());
+	$('input[name="sizes[]"]').each(function() {
+		var field = $(this);
+
+		if (field.attr('type') == 'hidden' || // Hidden input from React
+            (field.attr('type') == 'checkbox' && field.prop('checked') == true)) // Real checkbox
+		{
+			resize_ids.push($(this).val());
+		}
 	});
 
 	return resize_ids;

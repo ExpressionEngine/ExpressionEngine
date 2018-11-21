@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -104,7 +105,7 @@ class Relationship_model extends CI_Model {
 		{
 			$db->where('L0.fluid_field_data_id', $fluid_field_data_id);
 		}
-		else
+		elseif ($type != self::PARENT)
 		{
 			$db->where('L0.fluid_field_data_id', 0);
 		}
@@ -113,7 +114,7 @@ class Relationship_model extends CI_Model {
 		{
 			$db->where_in('L0.grid_field_id', array($grid_field_id, '0'));
 		}
-		else
+		elseif ($type != self::PARENT)
 		{
 			$db->where('L0.grid_field_id', 0);
 		}

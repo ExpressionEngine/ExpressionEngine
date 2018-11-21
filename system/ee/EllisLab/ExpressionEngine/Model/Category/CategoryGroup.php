@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Model\Category;
@@ -198,7 +199,13 @@ class CategoryGroup extends StructureModel {
 	public function populateCategories($field)
 	{
 		$categories = $this->getModelFacade()->get('Category')
-			->with(array('Children as C0' => array('Children as C1' => 'Children as C2')))
+			->with(
+				['Children as C0' =>
+					['Children as C1' =>
+						['Children as C2' => 'Children as C3']
+					]
+				]
+			)
 			->with('CategoryGroup')
 			->filter('CategoryGroup.group_id', $field->getItem('group_id'))
 			->filter('Category.parent_id', 0)

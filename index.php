@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /*
@@ -30,7 +31,7 @@
  * --------------------------------------------------------------------
  *
  * Uncomment the following variables if you are using the Multiple
- * Site Manager: https://ellislab.com/expressionengine/user-guide/cp/sites
+ * Site Manager: https://docs.expressionengine.com/latest/msm/index.html
  *
  * Set the Short Name of the site this file will display, the URL of
  * this site's admin.php file, and the main URL of the site (without

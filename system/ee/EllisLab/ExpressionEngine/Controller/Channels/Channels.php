@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Controller\Channels;
@@ -162,11 +163,6 @@ class Channels extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		if ($this->hasMaximumChannels())
-		{
-			show_error(lang('maximum_channels_reached'));
-		}
-
 		return $this->form();
 	}
 
@@ -192,11 +188,6 @@ class Channels extends AbstractChannelsController {
 	{
 		if (is_null($channel_id))
 		{
-			if ($this->hasMaximumChannels())
-			{
-				show_error(lang('maximum_channels_reached'));
-			}
-
 			// Only auto-complete channel short name for new channels
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
 
@@ -859,6 +850,7 @@ class Channels extends AbstractChannelsController {
 		// Add "Use Channel Default" option for channel form default status
 		$channel_form_statuses = array('' => lang('channel_form_default_status_empty'));
 		$channel_form_statuses = array_merge($channel_form_statuses, $deft_status_options);
+		ee()->load->model('admin_model');
 
 		$sections = array(
 			array(
@@ -878,8 +870,8 @@ class Channels extends AbstractChannelsController {
 					'fields' => array(
 						'channel_lang' => array(
 							'type' => 'radio',
-							'choices' => ee()->lang->language_pack_names(),
-							'value' => $channel->channel_lang ?: 'english'
+							'choices' => ee()->admin_model->get_xml_encodings(),
+							'value' => $channel->channel_lang ?: 'en'
 						)
 					)
 				),
@@ -1438,16 +1430,6 @@ class Channels extends AbstractChannelsController {
 		}
 
 		return $channel;
-	}
-
-	/**
-	 * Maximum number of channels reached?
-	 *
-	 * @return bool
-	 **/
-	private function hasMaximumChannels()
-	{
-		return (IS_CORE && ee('Model')->get('Channel')->count() >= 3);
 	}
 }
 

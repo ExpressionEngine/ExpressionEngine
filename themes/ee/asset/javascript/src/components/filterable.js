@@ -10,12 +10,13 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-/**
+/*!
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 function makeFilterableComponent(WrappedComponent) {
@@ -65,9 +66,7 @@ function makeFilterableComponent(WrappedComponent) {
         if (_this.ajaxRequest) _this.ajaxRequest.abort();
 
         var params = filterState;
-        params.selected = _this.props.selected.map(function (item) {
-          return item.value;
-        });
+        params.selected = _this.getSelectedValues(_this.props.selected);
 
         _this.setState({ loading: true });
 
@@ -79,6 +78,7 @@ function makeFilterableComponent(WrappedComponent) {
       _this.initialItems = SelectList.formatItems(props.items);
       _this.state = {
         items: _this.initialItems,
+        initialCount: _this.initialItems.length,
         filterValues: {},
         loading: false
       };
@@ -112,15 +112,26 @@ function makeFilterableComponent(WrappedComponent) {
         });
       }
     }, {
+      key: 'getSelectedValues',
+      value: function getSelectedValues(selected) {
+        var values = [];
+        if (selected instanceof Array) {
+          values = selected.map(function (item) {
+            return item.value;
+          });
+        } else if (selected.value) {
+          values = [selected.value];
+        }
+        return values.join('|');
+      }
+    }, {
       key: 'forceAjaxRefresh',
       value: function forceAjaxRefresh(params) {
         var _this3 = this;
 
         if (!params) {
           params = this.state.filterValues;
-          params.selected = this.props.selected.map(function (item) {
-            return item.value;
-          });
+          params.selected = this.getSelectedValues(this.props.selected);
         }
 
         return $.ajax({
@@ -145,6 +156,7 @@ function makeFilterableComponent(WrappedComponent) {
             return _this4.filterChange(name, value);
           },
           initialItems: this.initialItems,
+          initialCount: this.state.initialCount,
           items: this.state.items,
           itemsChanged: this.initialItemsChanged
         }));

@@ -5,6 +5,6 @@ class FieldGroups < ControlPanelPage
   elements :field_groups_fields, '.folder-list > li > a'
 
   def load
-    visit '/system/index.php?/cp/fields'
+    visit '/admin.php?/cp/fields'
   end
 end

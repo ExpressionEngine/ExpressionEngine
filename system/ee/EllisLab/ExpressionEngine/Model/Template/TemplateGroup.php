@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Model\Template;
@@ -224,9 +225,14 @@ class TemplateGroup extends Model {
 	public function validateUnique($key, $value, array $params = array())
 	{
 		$return = parent::validateUnique($key, $value, $params);
-
 		if (is_bool($return))
 		{
+			// Don't allow case insensitive matches on template group names
+			if (strcasecmp($value, $this->getBackup($key)) == 0)
+			{
+				return 'template_group_taken';
+			}
+
 			return $return;
 		}
 

@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2017, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Updater\Version_4_2_2;
@@ -43,9 +44,9 @@ class Updater {
 		$warning = FALSE;
 		$directories = array();
 		// Get all of the file upload directories and see if any are using themes/ee
-		$upload_destinations = ee('Model')->get('UploadDestination')->all();
+		$upload_destinations = ee()->db->get('upload_prefs');
 
-		foreach ($upload_destinations as $upload)
+		foreach ($upload_destinations->result() as $upload)
 		{
 			if (strpos($upload->server_path, 'themes/ee/site/default/asset/img/') !== FALSE)
 			{

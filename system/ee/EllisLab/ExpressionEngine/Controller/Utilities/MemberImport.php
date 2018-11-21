@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Controller\Utilities;
@@ -553,6 +554,12 @@ class MemberImport extends Utilities {
 									$errors[] = array(str_replace("%x", $tag->value, lang('duplicate_member_id')));
 								}
 								break;
+							case 'avatar_filename':
+									if (strlen($tag->value) > 120)
+									{
+										$errors[] = array(str_replace("%x", $tag->value, lang('invalid_avatar_filename')));
+									}
+									break;
 							case 'password':
 								// We require a type attribute here, as outlined in the docs.
 								// This is a quick error check to ensure its present.

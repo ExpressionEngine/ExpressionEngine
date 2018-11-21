@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Controller\Members\Profile;
@@ -349,12 +350,12 @@ class Profile extends CP_Controller {
 							}
 						}
 
-						$name = str_replace('m_field_id_', 'field_ft_', $field_name);
+						$name = str_replace('m_field_id_', 'm_field_ft_', $field_name);
 
 						// Set custom field format override if available, too
 						if (strpos($name, 'field_ft_') !== FALSE && ee()->input->post($name))
 						{
-							$this->member->{"m_$name"} = ee()->input->post($name);
+							$this->member->$name = ee()->input->post($name);
 						}
 					}
 				}

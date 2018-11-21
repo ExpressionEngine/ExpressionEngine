@@ -10,6 +10,6 @@ $build = ee()->localize->format_date(
 ?>
 <div class="app-about-info__latest">
 	<h3><?=lang('latest_version')?></h3>
-	<?=lang('version')?>: <?=formatted_version($version)?><br>
+	<?=lang('version')?>: <?=formatted_version($version)?> <a href="<?=ee()->cp->makeChangelogLinkForVersion($version)?>" rel="external noreferrer"><span class="icon--changes"></span></a><br>
 	<em><?=lang('build')?> <?=$build?></em>
 </div>

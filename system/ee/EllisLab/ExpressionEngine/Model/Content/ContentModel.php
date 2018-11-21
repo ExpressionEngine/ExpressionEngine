@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Model\Content;
@@ -449,7 +450,7 @@ abstract class ContentModel extends VariableColumnModel {
 	 *
 	 * @param array $changed An associative array of class properties that have changed
 	 */
-	protected function saveFieldData($changed = NULL)
+	public function saveFieldData($changed = NULL)
 	{
 		$dirty = ($changed) ?: $this->getDirty();
 

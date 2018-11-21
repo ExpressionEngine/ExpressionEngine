@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Controller\Publish;
@@ -461,21 +462,25 @@ abstract class AbstractPublish extends CP_Controller {
 				'type' => 'submit',
 				'value' => 'save',
 				'text' => 'save',
-				'working' => 'btn_saving'
+				'working' => 'btn_saving',
+				// Disable these while JS is still loading key components, re-enabled in publish.js
+				'attrs' => 'disabled="disabled"'
 			],
 			[
 				'name' => 'submit',
 				'type' => 'submit',
 				'value' => 'save_and_new',
 				'text' => 'save_and_new',
-				'working' => 'btn_saving'
+				'working' => 'btn_saving',
+				'attrs' => 'disabled="disabled"'
 			],
 			[
 				'name' => 'submit',
 				'type' => 'submit',
 				'value' => 'save_and_close',
 				'text' => 'save_and_close',
-				'working' => 'btn_saving'
+				'working' => 'btn_saving',
+				'attrs' => 'disabled="disabled"'
 			]
 		];
 
@@ -514,7 +519,7 @@ abstract class AbstractPublish extends CP_Controller {
 				'value'   => 'preview',
 				'text'    => 'preview',
 				'class'   => 'action js-modal-link--side' . $extra_class,
-				'attrs'   => 'rel=live-preview',
+				'attrs'   => 'rel="live-preview" disabled="disabled"',
 				'working' => 'btn_previewing'
 			];
 		}

@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 use EllisLab\ExpressionEngine\Library;
@@ -34,6 +35,7 @@ use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Permission;
 use EllisLab\ExpressionEngine\Service\Profiler;
+use EllisLab\ExpressionEngine\Service\Session;
 use EllisLab\ExpressionEngine\Service\Sidebar;
 use EllisLab\ExpressionEngine\Service\Theme;
 use EllisLab\ExpressionEngine\Service\Thumbnail;
@@ -132,7 +134,7 @@ return [
 			$session_id = ee()->session->session_id();
 			$default_cp_url = SELF;
 
-			$factory = new URL\URLFactory($cp_url, $site_index, $uri_string, $session_id, $default_cp_url);
+			$factory = new URL\URLFactory($cp_url, $site_index, $uri_string, $session_id, $default_cp_url, $ee->make('Encrypt'));
 
 			return (is_null($path)) ? $factory : $factory->make($path);
 		},
@@ -283,11 +285,16 @@ return [
 
 		'Updater/Preflight' => function($ee)
 		{
+			$theme_paths = $ee->make('Model')->get('Config')
+					->filter('key', 'theme_folder_path')
+					->all()
+					->pluck('parsed_value');
+
 			return new Updater\Downloader\Preflight(
 				$ee->make('Filesystem'),
 				$ee->make('Updater/Logger'),
 				$ee->make('Config')->getFile(),
-				$ee->make('Model')->get('Site')->all()
+				array_unique($theme_paths)
 			);
 		},
 
@@ -501,6 +508,13 @@ return [
 			return new Library\Security\XSS();
 		},
 
+		'Session' => function($ee)
+		{
+			$session = ee()->session->getSessionModel();
+
+			return new Session\Session($session);
+		},
+
 		'Validation' => function($ee)
 		{
 			return new Validation\Factory();
@@ -612,8 +626,12 @@ return [
 			'Consent' => 'Model\Consent\Consent',
 			'ConsentAuditLog' => 'Model\Consent\ConsentAuditLog',
 			'ConsentRequest' => 'Model\Consent\ConsentRequest',
-			'ConsentRequestVersion' => 'Model\Consent\ConsentRequestVersion'
+			'ConsentRequestVersion' => 'Model\Consent\ConsentRequestVersion',
+
+			// ..\Config
+			'Config' => 'Model\Config\Config',
 	),
+
 	'cookies.necessary' => [
 		'cp_last_site_id',
 		'csrf_token',
@@ -626,6 +644,7 @@ return [
 	],
 	'cookies.functionality' => [
 		'anon',
+		'expiration',
 		'forum_theme',
 		'forum_topics',
 		'my_email',

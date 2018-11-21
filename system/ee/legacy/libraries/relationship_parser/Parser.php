@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -492,6 +493,7 @@ class EE_Relationship_data_parser {
 			{
 				$not = FALSE;
 				$cat_match = FALSE;
+				$inclusive_stack = FALSE;
 
 				if (strpos($requested_cats, 'not ') === 0)
 				{
@@ -499,7 +501,12 @@ class EE_Relationship_data_parser {
 					$not = TRUE;
 				}
 
-				if (! isset($categories[$entry_id]))
+				if (strpos($requested_cats, '&') !== FALSE)
+				{
+					$inclusive_stack = TRUE;
+				}
+
+				if ( ! isset($categories[$entry_id]))
 				{
 					// If the entry has no categories and the category parameter
 					// specifies 'not x', include it.
@@ -511,15 +518,20 @@ class EE_Relationship_data_parser {
 					continue;
 				}
 
-				$requested_cats = explode('|', $requested_cats);
+				$requested_cats = ($inclusive_stack) ? explode('&', $requested_cats) : explode('|', $requested_cats);
+				$cat_id_array = array();
 
 				foreach ($categories[$entry_id] as $cat)
 				{
-					if (in_array($cat['cat_id'], $requested_cats))
+					if ($inclusive_stack)
+					{
+						$cat_id_array[] = $cat['cat_id'];
+					}
+					elseif (in_array($cat['cat_id'], $requested_cats))
 					{
 						if ($not)
 						{
-						continue 2;
+							continue 2;
 						}
 
 						$cat_match = TRUE;
@@ -527,6 +539,18 @@ class EE_Relationship_data_parser {
 					elseif ($not)
 					{
 						$cat_match = TRUE;
+					}
+				}
+
+				if ($inclusive_stack)
+				{
+					if ($not)
+					{
+						$cat_match = (array_intersect($cat_id_array, $requested_cats)) ? FALSE : TRUE;
+					}
+					else
+					{
+						$cat_match = (array_diff($requested_cats, $cat_id_array)) ? FALSE : TRUE;
 					}
 				}
 

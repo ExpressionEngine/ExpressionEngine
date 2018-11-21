@@ -1,18 +1,20 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\Tests\ExpressionEngine\Library\Parser\Conditional;
 
 use EllisLab\ExpressionEngine\Library\Template\Annotation\Runtime as RuntimeAnnotations;
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Runner as ConditionalRunner;
+use PHPUnit\Framework\TestCase;
 
-class ConditionalAnnotationsIntegrationTest extends \PHPUnit_Framework_TestCase {
+class ConditionalAnnotationsIntegrationTest extends TestCase {
 
 	private $annotations;
 	private $runner;

@@ -32,7 +32,7 @@ class Channel < ControlPanelPage
 
   # Settings Tab
   element :channel_description, 'textarea[name=channel_description]', :visible => false
-  elements :channel_lang, 'input[name=channel_lang]', :visible => false
+  elements :channel_lang, 'div[data-input-value="channel_lang"] input[type="radio"]', :visible => false
 
   element :channel_url, 'input[name=channel_url]', :visible => false
   element :comment_url, 'input[name=comment_url]', :visible => false

@@ -79,6 +79,10 @@
 			<label><input type="checkbox" name="license_agreement" value="y" <?=set_checkbox('license_agreement', 'y')?>> <?=lang('license_agreement')?></label>
 			<?=form_error('license_agreement')?>
 		</fieldset>
+		<fieldset class="options <?=form_error_class('share_analytics')?>">
+			<label><input type="checkbox" name="share_analytics" value="y" <?=set_checkbox('share_analytics', 'y')?>> <?=lang('share_analytics')?></label>
+			<em><?=lang('share_analytics_desc')?></em>
+		</fieldset>
 		<fieldset class="form-ctrls">
 			<input class="btn" type="submit" value="<?=lang('start_installation')?>">
 		</fieldset>

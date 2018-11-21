@@ -1,20 +1,22 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\Tests\ExpressionEngine\Service\Formatter;
 
 use Mockery as m;
 use EllisLab\ExpressionEngine\Service\Formatter\Formats\Text;
+use PHPUnit\Framework\TestCase;
 
 require_once __DIR__.'/../../../../../EllisLab/ExpressionEngine/Boot/boot.common.php';
 
-class TextFormatterTest extends \PHPUnit_Framework_TestCase {
+class TextFormatterTest extends TestCase {
 
 	public function setUp()
 	{
@@ -171,7 +173,8 @@ class TextFormatterTest extends \PHPUnit_Framework_TestCase {
 			['Flying a :rocket: to Mars with my :moneybag: and Elon Musk', 'Flying a &#x1F680; to Mars with my &#x1F4B0; and Elon Musk'],
 			['Emoji aliases like :moon: and :waxing_gibbous_moon: work', 'Emoji aliases like &#x1F314; and &#x1F314; work'],
 			['Handle multi-character emoji like :man-woman-girl-boy:', 'Handle multi-character emoji like &#x1F468;&#x200D;&#x1F469;&#x200D;&#x1F467;&#x200D;&#x1F466;'],
-			['Newer emoji like :fu: and :merman: are sadly not yet supported', 'Newer emoji like :fu: and :merman: are sadly not yet supported'],
+			['Emoji 5 shortcodes like :hedgehog: and :merman: are supported', 'Emoji 5 shortcodes like &#x1F994; and &#x1F9DC;&#x200D;&#x2642;&#xFE0F; are supported'],
+			['Emoji 11 (there is no 6) shortcodes like :supervillain: and :lobster: are not yet supported', 'Emoji 11 (there is no 6) shortcodes like :supervillain: and :lobster: are not yet supported'],
 			[
 // larger sample with multi-line code samples
 'Unlike :lock:, emoji in [code]code samples :lock:[/code] should be left alone.
@@ -196,7 +199,7 @@ Another code block with a :rabbit::hole:.
 We don\'t want this parsed.
 [/code]
 
-And if you made it to this &#x1F573; you did pretty good.']
+And if you made it to this &#x1F573;&#xFE0F; you did pretty good.']
 		];
 	}
 

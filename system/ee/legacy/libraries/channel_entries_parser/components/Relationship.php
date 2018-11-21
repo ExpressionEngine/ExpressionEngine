@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -40,11 +41,31 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 		}
 
 		ee()->load->library('relationships_parser');
+		ee()->load->model('grid_model');
 
 		try
 		{
+			$relationships = $pre->channel()->rfields;
+			foreach ($pre->channel()->gfields as $site_id => $fields)
+			{
+				foreach ($fields as $field_name => $field_id)
+				{
+					$prefix = $field_name.':';
+
+					$columns = ee()->grid_model->get_columns_for_field($field_id, 'channel');
+
+					foreach ($columns as $col)
+					{
+						if ($col['col_type'] == 'relationship')
+						{
+							$relationships[$site_id][$prefix.$col['col_name']] = $col['col_id'];
+						}
+					}
+				}
+			}
+
 			return ee()->relationships_parser->create(
-				$pre->channel()->rfields,
+				$relationships,
 				$pre->entry_ids()
 			);
 		}

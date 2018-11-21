@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -87,6 +88,8 @@ class EE_Session {
 	// e.g. $this->cache['module']['var_name']
 	// Use set_cache() and cache() methods.
 	public $cache				= array();
+
+	private $session_model      = NULL;
 
 	/**
 	 * Session Class Constructor
@@ -238,6 +241,11 @@ class EE_Session {
 
 		$this->_prep_flashdata();
 		ee()->remember->refresh();
+	}
+
+	public function getSessionModel()
+	{
+		return $this->session_model;
 	}
 
 	/**
@@ -681,44 +689,46 @@ class EE_Session {
 	 */
 	public function fetch_session_data()
 	{
-		ee()->db->select('member_id, can_debug, admin_sess, last_activity, fingerprint, sess_start, login_state');
-		ee()->db->where('session_id', (string) $this->sdata['session_id']);
+		$session = ee('Model')->get('Session')
+			->filter('session_id', (string) $this->sdata['session_id']);
 
 		// We already have a fingerprint to compare if they're running cs sessions
 		// otherwise we'll do it after fetching their member data, presuming the session ID is valid
 		if ($this->validation == 'cs')
 		{
-			ee()->db->where('fingerprint', (string) $this->sdata['fingerprint']);
+			$session = $session->filter('fingerprint', (string) $this->sdata['fingerprint']);
 		}
 
-		$query = ee()->db->get('sessions');
+		$session = $session->first();
 
-		if ($query->num_rows() == 0 OR $query->row('member_id') == 0)
+		if ( ! $session OR $session->member_id == 0)
 		{
 			$this->_initialize_session();
 			return FALSE;
 		}
 
+		$this->session_model = $session;
+
 		// Assign member ID to session array
-		$this->sdata['member_id'] = (int) $query->row('member_id');
+		$this->sdata['member_id'] = (int) $session->member_id;
 
 		// Assign masquerader ID to session array
-		$this->sdata['can_debug'] = $query->row('can_debug');
+		$this->sdata['can_debug'] = $session->can_debug;
 
 		// Is this an admin session?
-		$this->sdata['admin_sess'] = ($query->row('admin_sess') == 1) ? 1 : 0;
+		$this->sdata['admin_sess'] = ($session->admin_sess == 1) ? 1 : 0;
 
 		// Log last activity
-		$this->sdata['last_activity'] = $query->row('last_activity');
-		$this->sdata['sess_start'] = $query->row('sess_start');
+		$this->sdata['last_activity'] = $session->last_activity;
+		$this->sdata['sess_start'] = $session->sess_start;
 
 		// Set the fingerprint for c and s sessions to validate when fetching member data
-		$this->sdata['fingerprint'] = $query->row('fingerprint');
+		$this->sdata['fingerprint'] = $session->fingerprint;
 
 		// If session has expired, delete it and set session data to GUEST
 		if ($this->validation != 'c')
 		{
-			if ($query->row('last_activity')  < (ee()->localize->now - $this->session_length))
+			if ($session->last_activity  < (ee()->localize->now - $this->session_length))
 			{
 				ee()->db->where('session_id', $this->sdata['session_id']);
 				ee()->db->delete(array('sessions', 'security_hashes'));

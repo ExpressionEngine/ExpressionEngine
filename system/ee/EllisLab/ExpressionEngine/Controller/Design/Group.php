@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Controller\Design;
@@ -205,7 +206,6 @@ class Group extends AbstractDesignController {
 					'fields' => array(
 						'member_groups' => array(
 							'type' => 'checkbox',
-							'required' => TRUE,
 							'choices' => $member_groups,
 							'value' => $selected_member_groups,
 							'no_results' => [

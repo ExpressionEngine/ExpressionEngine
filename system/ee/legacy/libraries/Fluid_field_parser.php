@@ -1,11 +1,12 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 use EllisLab\Addons\FluidField\Model\FluidField;
@@ -435,6 +436,7 @@ class Fluid_field_parser {
 				break;
 
 			case 'count':
+				$return = "''";
 				foreach ($fluid_field_data as $i => $field)
 				{
 					if ($current_field->getId() == $field->getId())
@@ -446,6 +448,7 @@ class Fluid_field_parser {
 				break;
 
 			case 'index':
+				$return = "''";
 				foreach ($fluid_field_data as $i => $field)
 				{
 					if ($current_field->getId() == $field->getId())

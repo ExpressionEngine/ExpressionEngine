@@ -1,9 +1,10 @@
-/**
+/*!
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 $(document).ready(function () {
@@ -159,11 +160,14 @@ $(document).ready(function () {
 		});
 
 		$('button[rel="live-preview"]').hide();
+
+		$(document).trigger('entry:preview-open')
 	});
 
 	$('.app-modal--live-preview').on('modal:close', function(e) {
 		$('[data-publish]').append($('.app-modal--live-preview .form-standard > form'));
 		$('button[rel="live-preview"]').show();
+		$(document).trigger('entry:preview-close')
 	});
 
 	if (window.location.search.includes('&preview=y')) {
@@ -206,4 +210,7 @@ $(document).ready(function () {
 
 	$('input[name="pages__pages_uri"]').on('interact', showPreviewButton);
 	$('div[data-input-value="pages__pages_template_id"] .field-inputs label').on('click', showPreviewButton);
+
+	// Everything's probably ready, re-enable publish buttons
+	$('[data-publish] .form-btns button:disabled').removeAttr('disabled');
 });

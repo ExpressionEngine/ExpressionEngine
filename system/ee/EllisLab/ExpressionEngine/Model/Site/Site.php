@@ -23,18 +23,7 @@ class Site extends Model {
 	protected static $_primary_key = 'site_id';
 	protected static $_table_name = 'sites';
 
-	protected static $_type_classes = array(
-		'ChannelPreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\ChannelPreferences',
-		'MemberPreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\MemberPreferences',
-		'SystemPreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\SystemPreferences',
-		'TemplatePreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\TemplatePreferences',
-	);
-
 	protected static $_typed_columns = array(
-		'site_channel_preferences' => 'ChannelPreferences',
-		'site_member_preferences' => 'MemberPreferences',
-		'site_system_preferences' => 'SystemPreferences',
-		'site_template_preferences' => 'TemplatePreferences',
 		'site_bootstrap_checksums' => 'base64Serialized',
 		'site_pages' => 'base64Serialized',
 	);
@@ -98,6 +87,10 @@ class Site extends Model {
 		'Snippets' => array(
 			'model' => 'Snippet',
 			'type' => 'hasMany'
+		),
+		'Configs' => array(
+			'model' => 'Config',
+			'type' => 'hasMany'
 		)
 	);
 
@@ -116,10 +109,6 @@ class Site extends Model {
 	protected $site_label;
 	protected $site_name;
 	protected $site_description;
-	protected $site_system_preferences;
-	protected $site_member_preferences;
-	protected $site_template_preferences;
-	protected $site_channel_preferences;
 	protected $site_bootstrap_checksums;
 	protected $site_pages;
 
@@ -144,15 +133,15 @@ class Site extends Model {
 		{
 			throw new \Exception("Site limit reached.");
 		}
-
-		$this->setDefaultPreferences('system');
-		$this->setDefaultPreferences('channel');
-		$this->setDefaultPreferences('template');
-		$this->setDefaultPreferences('member');
 	}
 
 	public function onAfterInsert()
     {
+		$this->setDefaultPreferences('system');
+		$this->setDefaultPreferences('channel');
+		$this->setDefaultPreferences('template');
+		$this->setDefaultPreferences('member');
+
 		$this->createNewStats();
 		$this->createHTMLButtons();
 		$this->createSpecialtyTemplates();
@@ -168,11 +157,13 @@ class Site extends Model {
 	 */
 	protected function setDefaultPreferences($type)
 	{
-		$prefs = $this->getProperty('site_' . $type . '_preferences');
-
-		foreach(ee()->config->divination($type) as $value)
+		foreach(ee()->config->divination($type) as $key)
 		{
-			$prefs->$value = ee()->config->item($value);
+			$this->getModelFacade()->make('Config', [
+				'site_id' => $this->site_id,
+				'key' => $key,
+				'value' => ee()->config->item($key)
+			])->save();
 		}
 	}
 

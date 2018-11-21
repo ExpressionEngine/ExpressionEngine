@@ -1,9 +1,10 @@
-/**
+/*!
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 class Dropdown extends React.Component {
@@ -102,7 +103,7 @@ class Dropdown extends React.Component {
           </label>
         </div>
         <div className="field-drop-choices" style={this.state.open ? {display: 'block'} : {}}>
-          {this.props.initialItems.length > this.props.tooMany &&
+          {this.props.initialCount > this.props.tooMany &&
             <FieldTools>
               <FilterBar>
                 <FilterSearch onSearch={(e) => this.handleSearch(e.target.value)} />

@@ -5,8 +5,9 @@ namespace EllisLab\Tests\ExpressionEngine\Service\Updater\Downloader;
 use EllisLab\ExpressionEngine\Service\Updater\Downloader\Downloader;
 use EllisLab\ExpressionEngine\Service\Updater\UpdaterException;
 use Mockery;
+use PHPUnit\Framework\TestCase;
 
-class DownloaderTest extends \PHPUnit_Framework_TestCase {
+class DownloaderTest extends TestCase {
 
 	public function setUp()
 	{

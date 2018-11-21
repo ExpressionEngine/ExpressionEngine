@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Service\Member;
@@ -17,10 +18,11 @@ class Member {
 	/**
 	 * Gets array of members who can be authors
 	 *
-	 * @param string Optional search string to filter members by
+	 * @param string $search Optional search string to filter members by
+	 * @param boolean $limited Limit the list to the default 100? Use FALSE sparingly
 	 * @return array ID => Screen name array of authors
 	 */
-	public function getAuthors($search = NULL)
+	public function getAuthors($search = NULL, $limited = TRUE)
 	{
 		// First, get member groups who should be in the list
 		$member_groups = ee('Model')->get('MemberGroup')
@@ -31,8 +33,12 @@ class Member {
 		// Then authors who are individually selected to appear in author list
 		$authors = ee('Model')->get('Member')
 			->fields('username', 'screen_name')
-			->filter('in_authorlist', 'y')
-			->limit(100);
+			->filter('in_authorlist', 'y');
+
+		if ($limited)
+		{
+			$authors->limit(100);
+		}
 
 		// Then grab any members that are part of the member groups we found
 		if ($member_groups->count())

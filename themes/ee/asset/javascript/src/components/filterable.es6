@@ -1,9 +1,10 @@
-/**
+/*!
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 function makeFilterableComponent(WrappedComponent) {
@@ -13,6 +14,7 @@ function makeFilterableComponent(WrappedComponent) {
       this.initialItems = SelectList.formatItems(props.items)
       this.state = {
         items: this.initialItems,
+        initialCount: this.initialItems.length,
         filterValues: {},
         loading: false
       }
@@ -77,9 +79,7 @@ function makeFilterableComponent(WrappedComponent) {
       if (this.ajaxRequest) this.ajaxRequest.abort()
 
       let params = filterState
-      params.selected = this.props.selected.map(item => {
-        return item.value
-      })
+      params.selected = this.getSelectedValues(this.props.selected)
 
       this.setState({ loading: true })
 
@@ -88,12 +88,22 @@ function makeFilterableComponent(WrappedComponent) {
       }, 300)
     }
 
+    getSelectedValues (selected) {
+      let values = []
+      if (selected instanceof Array) {
+        values = selected.map(item => {
+          return item.value
+        })
+      } else if (selected.value) {
+        values = [selected.value]
+      }
+      return values.join('|')
+    }
+
     forceAjaxRefresh (params) {
       if ( ! params) {
         params = this.state.filterValues
-        params.selected = this.props.selected.map(item => {
-          return item.value
-        })
+        params.selected = this.getSelectedValues(this.props.selected)
       }
 
       return $.ajax({
@@ -114,6 +124,7 @@ function makeFilterableComponent(WrappedComponent) {
         loading={this.state.loading}
         filterChange={(name, value) => this.filterChange(name, value)}
         initialItems={this.initialItems}
+        initialCount={this.state.initialCount}
         items={this.state.items}
         itemsChanged={this.initialItemsChanged}
       />

@@ -7,7 +7,9 @@ require_once APPPATH.'libraries/typography/Markdown/Michelf/MarkdownExtra.inc.ph
 
 define('PATH_ADDONS', APPPATH.'modules/');
 
-class TypographyTest extends \PHPUnit_Framework_TestCase {
+use PHPUnit\Framework\TestCase;
+
+class TypographyTest extends TestCase {
 
 	private $typography;
 

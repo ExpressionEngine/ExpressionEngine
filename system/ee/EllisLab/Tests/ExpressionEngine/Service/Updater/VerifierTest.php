@@ -5,8 +5,9 @@ namespace EllisLab\Tests\ExpressionEngine\Service\Updater;
 use EllisLab\ExpressionEngine\Service\Updater\Verifier;
 use EllisLab\ExpressionEngine\Service\Updater\UpdaterException;
 use Mockery;
+use PHPUnit\Framework\TestCase;
 
-class VerifierTest extends \PHPUnit_Framework_TestCase {
+class VerifierTest extends TestCase {
 
 	public function setUp()
 	{

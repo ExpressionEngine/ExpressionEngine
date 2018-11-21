@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -1096,11 +1097,19 @@ abstract class EE_Fieldtype {
 
 		$channels_options = array();
 
+		// Make a dummy text fieldtype to get
+		$dummy_text = ee('Model')->make('ChannelField');
+		$dummy_text->field_type = 'text';
+		$text_compatible_fields = $dummy_text->getCompatibleFieldtypes();
+
 		foreach ($channels as $channel)
 		{
 			foreach ($channel->getAllCustomFields() as $field)
 			{
-				$channels_options[$channel->channel_title][$channel->channel_id . '_' . $field->field_id] = htmlentities($field->field_label, ENT_QUOTES, 'UTF-8');
+				if (isset($text_compatible_fields[$field->field_type]))
+				{
+					$channels_options[$channel->channel_title][$channel->channel_id . '_' . $field->field_id] = htmlentities($field->field_label, ENT_QUOTES, 'UTF-8');
+				}
 			}
 		}
 

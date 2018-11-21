@@ -6,11 +6,11 @@ class ChannelFieldForm < ControlPanelPage
   element :field_name, 'input[name=field_name]'
 
   def load
-    visit '/system/index.php?/cp/fields/create'
+    visit '/admin.php?/cp/fields/create'
   end
 
   def load_edit_for_custom_field(name)
-    visit '/system/index.php?/cp/fields'
+    visit '/admin.php?/cp/fields'
 
     all('.tbl-row').each do |row|
       link = row.find('.main > a')
@@ -39,7 +39,7 @@ class ChannelFieldForm < ControlPanelPage
     }
     options = defaults.merge(options)
 
-    visit "/system/index.php?/cp/fields/create/#{options[:group_id]}"
+    visit "/admin.php?/cp/fields/create/#{options[:group_id]}"
 
     select_field_type(options[:type])
 

@@ -28,7 +28,7 @@
 					$class = ' class="' . $class . '"';
 				}
 			?>
-			<li><a<?=$class?> href="" rel="t-<?=$index?>"><?=lang($tab->title)?></a></li>
+			<li><a<?=$class?> rel="t-<?=$index?>"><?=lang($tab->title)?></a></li>
 			<?php endforeach; ?>
 			<?php if ($entry->getAutosaves()->count()): ?>
 				<li><a href="" rel="t-autosaves"><?=lang('autosaves')?></a></li>

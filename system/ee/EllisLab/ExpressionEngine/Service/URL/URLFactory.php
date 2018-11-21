@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Service\URL;
@@ -42,6 +43,11 @@ class URLFactory {
 	protected $uri_string;
 
 	/**
+	 * @var string $encrypt_delegate An Encryption Service delegate.
+	 */
+	protected $encrypt_delegate;
+
+	/**
 	 * Constructor
 	 *
 	 * @param string $cp_url The URL to the CP
@@ -50,15 +56,17 @@ class URLFactory {
 	 * @param string|NULL $session_id The session id
 	 * @param string $default_cp_url The default value to use for the $cp_url
 	 *   parameter when constructing a URL
+	 * @param obj $encrypt An Encryption Service instance
 	 * @return void
 	 */
-	public function __construct($cp_url, $site_index, $uri_string, $session_id = NULL, $default_cp_url = '')
+	public function __construct($cp_url, $site_index, $uri_string, $session_id = NULL, $default_cp_url = '', $encrypt = NULL)
 	{
 		$this->cp_url = $cp_url;
 		$this->site_index = $site_index;
 		$this->uri_string = $uri_string;
 		$this->session_id = $session_id;
 		$this->default_cp_url = ($default_cp_url) ?: SELF;
+		$this->encrypt_delegate = $encrypt;
 	}
 
 	/**
@@ -80,7 +88,7 @@ class URLFactory {
 
 		$cp_url = ($cp_url) ?: $this->default_cp_url;
 
-		return new URL($path, $session_id, $qs, $cp_url, $this->uri_string);
+		return new URL($path, $session_id, $qs, $cp_url, $this->uri_string, $this->encrypt_delegate);
 	}
 
 	/**
@@ -167,7 +175,7 @@ class URLFactory {
 	public function decodeUrl($data)
 	{
 		$url = $this->make('');
-		$success = $url->unserialize(base64_decode($data));
+		$success = $url->unserialize($this->encrypt_delegate->decode($data));
 
 		return ($success) ? $url : NULL;
 	}

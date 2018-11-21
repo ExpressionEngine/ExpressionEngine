@@ -293,6 +293,16 @@ $lang = array(
 
 'show' => 'Show',
 
+'search_in_filter' => 'search in',
+
+'perpage_filter' => 'show',
+
+'date_filter' => 'date',
+
+'group_filter' => 'group',
+
+'type_filter' => 'type',
+
 'site' => 'Site',
 
 'site_filter' => 'site',
@@ -631,6 +641,18 @@ $lang = array(
 'html_button_ajax_reorder_fail' => 'Attention: Failed to save html buttons order',
 
 'html_button_ajax_reorder_fail_desc' => 'We failed to save your new html buttons order. Refresh the page and make sure you\'re logged in.',
+
+/* Search Reindex tip */
+
+'search_reindex_tip' => 'Search Reindex',
+
+'search_reindex_tip_desc' => "Please <a href='%s'>run the search reindex tool</a> tool to keep your searchable data up-to-date.",
+
+'reindex_not_needed' => 'Reindexing Not Necessary',
+
+'reindex_not_needed_desc' => 'Your search index is up-to-date!',
+
+'reindex_explained_desc' => 'The search index can become stale if you have recently changed whether or not certain field types are searchable.<br>Please see the <a href="' . DOC_URL .'/cp/utilities/reindex.html">user guide</a> for more details.',
 
 );
 

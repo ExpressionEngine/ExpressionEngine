@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -16,6 +17,7 @@ global $el_config__emoji_map;
 if (empty($el_config__emoji_map))
 {
 	// sourced from https://github.com/iamcal/emoji-data, MIT License
+	// currently at v4.0.4 2018-04-16 build
 	$emoji = @json_decode(file_get_contents(SYSPATH.'ee/EllisLab/ExpressionEngine/Config/emoji.json'));
 
 	if (empty($emoji))

@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Controller\Msm;
@@ -17,8 +18,6 @@ use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
  * Multiple Site Manager Controller
  */
 class Msm extends CP_Controller {
-
-	protected $can_add = FALSE;
 
 	/**
 	 * Constructor
@@ -36,31 +35,24 @@ class Msm extends CP_Controller {
 
 		ee()->lang->loadfile('sites');
 
-		$license = ee('License')->getEELicense();
-		$this->can_add = $license->canAddSites(ee('Model')->get('Site')->count());
-
 		$this->stdHeader();
 	}
 
 	protected function stdHeader()
 	{
-		$header = array(
+		$header = [
 			'title' => lang('msm_manager'),
-			'toolbar_items' => array(
-				'settings' => array(
+			'toolbar_items' => [
+				'settings' => [
 					'href' => ee('CP/URL')->make('settings/general'),
 					'title' => lang('settings')
-				)
-			)
-		);
-
-		if ($this->can_add)
-		{
-			$header['action_button'] = [
+				]
+			],
+			'action_button' => [
 				'text' => lang('add_site'),
 				'href' => ee('CP/URL')->make('msm/create')
-			];
-		}
+			]
+		];
 
 		ee()->view->header = $header;
 	}
@@ -79,16 +71,6 @@ class Msm extends CP_Controller {
 		}
 
 		$base_url = ee('CP/URL')->make('msm');
-
-		if ( ! $this->can_add)
-		{
-			ee('CP/Alert')->makeInline('site-limit-reached')
-				->asIssue()
-				->withTitle(lang('site_limit_reached'))
-				->addToBody(sprintf(lang('site_limit_reached_desc'), 'https://expressionengine.com/store/purchases'))
-				->cannotClose()
-				->now();
-		}
 
 		$sites = ee('Model')->get('Site', array_keys(ee()->session->userdata('assigned_sites')))->all();
 
@@ -118,7 +100,13 @@ class Msm extends CP_Controller {
 
 		foreach ($sites as $site)
 		{
-			if ($site->site_system_preferences->is_site_on == 'y')
+			$site_on = ee('Model')->get('Config')
+				->filter('site_id', $site->site_id)
+				->filter('key', 'is_site_on')
+				->filter('value', 'y')
+				->count();
+
+			if ($site_on)
 			{
 				$status = array(
 					'class' => 'enable',
@@ -198,11 +186,6 @@ class Msm extends CP_Controller {
 	public function create()
 	{
 		if ( ! ee()->cp->allowed_group('can_admin_sites')) // permission not currently setable, thus admin only
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
-		if ( ! $this->can_add && ! empty($_POST))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -287,34 +270,17 @@ class Msm extends CP_Controller {
 				]
 
 			],
-			'sections' => $this->getForm($site, $this->can_add),
+			'sections' => $this->getForm($site),
 		);
-
-		if ( ! $this->can_add)
-		{
-			$vars['buttons'] = array(
-				array(
-					'text' => 'btn_site_limit_reached',
-					'working' => 'btn_site_limit_reached',
-					'value' => 'btn_site_limit_reached',
-					'class' => 'disable',
-					'name' => 'submit',
-					'type' => 'submit'
-				)
-			);
-		}
 
 		ee()->view->cp_page_title = lang('create_site');
 
-		if ($this->can_add)
-		{
-			ee()->cp->add_js_script('plugin', 'ee_url_title');
-			ee()->javascript->output('
-				$("input[name=site_label]").bind("keyup keydown", function() {
-					$(this).ee_url_title("input[name=site_name]");
-				});
-			');
-		}
+		ee()->cp->add_js_script('plugin', 'ee_url_title');
+		ee()->javascript->output('
+			$("input[name=site_label]").bind("keyup keydown", function() {
+				$(this).ee_url_title("input[name=site_name]");
+			});
+		');
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -410,11 +376,6 @@ class Msm extends CP_Controller {
 			'sections' => $this->getForm($site, TRUE),
 		);
 
-		if ( ! $this->can_add)
-		{
-			unset($vars['buttons'][1]);
-		}
-
 		ee()->view->cp_page_title = lang('edit_site');
 
 		ee()->cp->render('settings/form', $vars);
@@ -425,24 +386,10 @@ class Msm extends CP_Controller {
 	 * shared/form view.
 	 *
 	 * @param Site $site A Site entity for populating the values of this form
-	 * @param bool $can_add Have they reached their site limit?
 	 */
-	private function getForm($site, $can_add = FALSE)
+	private function getForm($site)
 	{
 		$sections = array(array());
-
-		$disabled = ! $can_add;
-
-		if ( ! $can_add)
-		{
-			$alert = ee('CP/Alert')->makeInline('site-limit-reached')
-				->asIssue()
-				->withTitle(lang('site_limit_reached'))
-				->addToBody(sprintf(lang('site_limit_reached_desc'), 'https://expressionengine.com/store/purchases'))
-				->cannotClose()
-				->render();
-			$sections[0][] = $alert;
-		}
 
 		$name = array(
 			'title' => 'name',
@@ -452,7 +399,6 @@ class Msm extends CP_Controller {
 					'type' => 'text',
 					'value' => $site->site_label ?: '',
 					'required' => TRUE,
-					'disabled' => $disabled
 				)
 			)
 		);
@@ -466,7 +412,6 @@ class Msm extends CP_Controller {
 					'type' => 'text',
 					'value' => $site->site_name ?: '',
 					'required' => TRUE,
-					'disabled' => $disabled
 				)
 			)
 		);
@@ -474,13 +419,18 @@ class Msm extends CP_Controller {
 
 		if ( ! $site->isNew())
 		{
+			$site_on = ee('Model')->get('Config')
+				->filter('site_id', $site->site_id)
+				->filter('key', 'is_site_on')
+				->first();
+
 			$site_online = array(
 				'title' => 'site_online',
 				'desc' => 'site_online_desc',
 				'fields' => array(
 					'is_site_on' => array(
 						'type' => 'yes_no',
-						'value' => $site->site_system_preferences->is_site_on
+						'value' => ($site_on) ? $site_on->value : 'y'
 					)
 				)
 			);
@@ -494,7 +444,6 @@ class Msm extends CP_Controller {
 				'site_description' => array(
 					'type' => 'textarea',
 					'value' => $site->site_description,
-					'disabled' => $disabled
 				)
 			)
 		);
@@ -524,7 +473,7 @@ class Msm extends CP_Controller {
 
 		if ($action == 'edit')
 		{
-			$site->site_system_preferences->is_site_on = ee()->input->post('is_site_on');
+			ee()->config->update_site_prefs(['is_site_on' => ee()->input->post('is_site_on')], [$site->site_id]);
 		}
 
 		$result = $site->validate();

@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
  require_once APPPATH.'libraries/datastructures/Tree.php';
@@ -214,7 +215,14 @@ class EE_relationship_tree_builder {
 			return NULL;
 		}
 
-		$all_fields = array_merge($this->relationship_field_names, array('parents', 'siblings'));
+		$all_fields = ['parents', 'siblings'];
+		foreach ($this->relationship_field_names as $field_name)
+		{
+			if (strpos($field_name, ':') === FALSE)
+			{
+				$all_fields[] = $field_name;
+			}
+		}
 		$all_fields = implode('|', $all_fields);
 
 		// Regex to separate out the relationship prefix part from the rest
@@ -526,7 +534,7 @@ class EE_relationship_tree_builder {
 					break;
 				}
 
-				if ($i == 0 && $leaf['L0_grid_col_id'])
+				if ($i == 0 && $leaf['L0_grid_col_id'] && ! empty($this->grid_relationship_names))
 				{
 					$names = $this->grid_relationship_names;
 				}

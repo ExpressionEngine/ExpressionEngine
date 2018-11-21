@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\Addons\FluidField\Service;
@@ -97,7 +98,6 @@ class Tag {
 	public function parse(FieldFacade $field, array $meta = [])
 	{
 		$tagdata = $this->replaceMetaTags($meta);
-		$tagdata = $this->parseConditionals($field, $tagdata, $meta);
 
 		if ($field->getType() == 'relationship')
 		{
@@ -143,6 +143,7 @@ class Tag {
 			$tagdata = $this->parsePairs($field, $tagdata);
 		}
 
+		$tagdata = $this->parseConditionals($field, $tagdata, $meta);
 		return $this->parseSingle($field, $tagdata);
 	}
 

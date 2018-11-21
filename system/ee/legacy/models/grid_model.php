@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -983,6 +984,39 @@ class Grid_model extends CI_Model {
 
 			ee()->db->update_batch($table, $entry_data, 'entry_id');
 		}
+	}
+
+	/**
+	 * Search and replace a single Grid field's contents
+	 *
+	 * @param string $content_type Content type (typically 'channel')
+	 * @param int $field_id Grid field id
+	 * @param string $search String to search for in the Grid's rows
+	 * @param string $replace Replacement string
+	 * @return int Number of affected rows
+	 */
+	public function search_and_replace($content_type, $field_id, $search, $replace)
+	{
+		$table = $this->_data_table($content_type, $field_id);
+		$columns = $this->get_columns_for_field($field_id, 'channel');
+
+		if (empty($columns))
+		{
+			return 0;
+		}
+
+		$sql = "UPDATE `exp_{$table}` SET ";
+
+		foreach ($columns as $column)
+		{
+			$column_name = 'col_id_'.$column['col_id'];
+			$sql .= "`{$column_name}` = REPLACE(`{$column_name}`, '{$search}', '{$replace}'),";
+		}
+
+		$sql = rtrim($sql, ',');
+
+		ee()->db->query($sql);
+		return ee()->db->affected_rows();
 	}
 }
 

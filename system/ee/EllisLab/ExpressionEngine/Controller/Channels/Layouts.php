@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Controller\Channels;
@@ -441,7 +442,7 @@ class Layouts extends AbstractChannelsController {
 		ee()->view->cp_page_title = lang('edit_form_layout');
 
 		$this->addJSAlerts();
-		ee()->javascript->set_global('publish_layout', $channel_layout->field_layout);
+		ee()->javascript->set_global('publish_layout', $this->prepareLayoutForJS($channel_layout));
 
 		ee()->cp->add_js_script('ui', array('droppable', 'sortable'));
 		ee()->cp->add_js_script('file', 'cp/channel/layout');
@@ -568,6 +569,62 @@ class Layouts extends AbstractChannelsController {
 			->addToBody(lang('layouts_removed_desc'))
 			->addToBody($layout_names)
 			->defer();
+	}
+
+	private function prepareLayoutForJS($channel_layout)
+	{
+		$field_layout = $channel_layout->field_layout;
+
+		if (bool_config_item('enable_comments') && $channel_layout->Channel->comment_system_enabled)
+		{
+			$comment_expiration_date = [
+				'field'     => 'comment_expiration_date',
+				'visible'   => TRUE,
+				'collapsed' => FALSE
+			];
+
+			$allow_comments = [
+				'field'     => 'allow_comments',
+				'visible'   => TRUE,
+				'collapsed' => FALSE
+			];
+
+			$has_comment_expiration_date = FALSE;
+			$has_allow_comments = FALSE;
+
+			foreach ($field_layout as $i => $section)
+			{
+				foreach ($section['fields'] as $j => $field_info)
+				{
+					if ($field_info['field'] == 'comment_expiration_date')
+					{
+						$has_comment_expiration_date = TRUE;
+						continue;
+					}
+
+					if ($field_info['field'] == 'allow_comments')
+					{
+						$has_allow_comments = TRUE;
+						continue;
+					}
+				}
+			}
+
+			// Order matters...
+
+			if ( ! $has_allow_comments)
+			{
+				$field_layout[0]['fields'][] = $allow_comments;
+			}
+
+			if ( ! $has_comment_expiration_date)
+			{
+				$field_layout[0]['fields'][] = $comment_expiration_date;
+			}
+
+		}
+
+		return $field_layout;
 	}
 }
 

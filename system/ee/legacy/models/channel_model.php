@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -498,21 +499,30 @@ class Channel_model extends CI_Model {
 	 */
 	private function _exact_field_search($terms, $col_name, $site_id = FALSE)
 	{
-		// Trivial case, we don't have special IS_EMPTY handling.
-		if(strpos($terms, 'IS_EMPTY') === FALSE)
-		{
-			return substr(ee()->functions->sql_andor_string($terms, $col_name), 3).' ';
-		}
-
 		// Did this because I don't like repeatedly checking
 		// the beginning of the string with strncmp for that
 		// 'not', much prefer to do it once and then set a
 		// boolean.  But.. [cont:1]
-		$not = false;
-		if (strncmp($terms, 'not ', 4) == 0)
+		$not = FALSE;
+		$site_id = ($site_id !== FALSE) ? 'wd.site_id=' . $site_id . ' AND ' : '';
+
+		if (strncasecmp($terms, 'not ', 4) == 0)
 		{
 			$not = true;
 			$terms = substr($terms, 4);
+		}
+
+		// Trivial case, we don't have special IS_EMPTY handling.
+		if(strpos($terms, 'IS_EMPTY') === FALSE)
+		{
+			$no_is_empty = substr(ee()->functions->sql_andor_string(($not ? 'not ' . $terms : $terms), $col_name), 3).' ';
+
+			if ($not)
+			{
+				$no_is_empty = '('.$no_is_empty .' OR (' . $site_id . $col_name . ' IS NULL)) ';
+			}
+
+			return $no_is_empty;
 		}
 
 		if (strpos($terms, '|') !== false)
@@ -526,8 +536,6 @@ class Channel_model extends CI_Model {
 
 		$add_search = '';
 		$conj = '';
-
-		$site_id = ($site_id !== FALSE) ? 'wd.site_id=' . $site_id . ' AND ' : '';
 
 		// If we have search terms, then we need to build the search.
 		if ( ! empty($terms))
@@ -545,10 +553,10 @@ class Channel_model extends CI_Model {
 		// Add the empty check condition.
 		if ($not)
 		{
-			return $add_search . ' ' . $conj . ' (' . $site_id . $col_name . ' != "")';
+			return $add_search . ' ' . $conj . ' ((' . $site_id . $col_name . ' != "") AND (' . $site_id . $col_name . ' IS NOT NULL))';
 		}
 
-		return $add_search.' '.$conj.' (' . $site_id . $col_name . ' = "")';
+		return $add_search.' '.$conj.' ((' . $site_id . $col_name . ' = "") OR (' . $site_id . $col_name . ' IS NULL))';
 	}
 
 	/**
@@ -559,7 +567,7 @@ class Channel_model extends CI_Model {
 	private function _field_search($terms, $col_name, $site_id = FALSE)
 	{
 		$not = '';
-		if (strncmp($terms, 'not ', 4) == 0)
+		if (strncasecmp($terms, 'not ', 4) == 0)
 		{
 			$terms = substr($terms, 4);
 			$not = 'NOT';
@@ -580,6 +588,7 @@ class Channel_model extends CI_Model {
 
 		$search_sql = '';
 		$col_name = $site_id . $col_name;
+		$empty = FALSE;
 		foreach ($terms as $term)
 		{
 			if($search_sql !== '')
@@ -588,6 +597,7 @@ class Channel_model extends CI_Model {
 			}
 			if ($term == 'IS_EMPTY')
 			{
+				$empty = TRUE;
 				// Empty string
 				$search_sql .= ' (' . $col_name . ($not ? '!' : '') . '=""';
 				// IS (NOT) NULL
@@ -605,6 +615,12 @@ class Channel_model extends CI_Model {
 			{
 				$search_sql .= ' (' . $col_name . ' ' . $not . ' LIKE "%' . ee()->db->escape_like_str($term) . '%") ';
 			}
+		}
+
+		if ($not && ! $empty)
+		{
+
+			$search_sql =  '('.$search_sql .') OR (' . $col_name . ' IS NULL) ';
 		}
 
 		return $search_sql;

@@ -1,28 +1,17 @@
 <?php
+/**
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
 
 namespace EllisLab\ExpressionEngine\Service\Encrypt;
 
 /**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2017, EllisLab, Inc.
- * @license		https://expressionengine.com/license
- * @link		https://ellislab.com
- * @since		Version 3.5.5
- * @filesource
- */
-
-// ------------------------------------------------------------------------
-
-/**
- * ExpressionEngine Encrypt Class
- *
- * @package		ExpressionEngine
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		https://ellislab.com
+ * ExpressionEngine Encrypt Service Cookie Class
  */
 class Cookie {
 
@@ -63,10 +52,7 @@ class Cookie {
 	 */
 	public function signCookieData($data)
 	{
-		// JSON_UNESCAPED_SLASHES not available until PHP 5.4; but we need to
-		// do this because our flashdata often has markup in it and json_encode
-		// will break closing tags by escaping their forward slashes
-		$payload = str_replace("\\/","/", json_encode($data));
+		$payload = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
 		return $payload.$this->generateHashForCookieData($payload);
 	}

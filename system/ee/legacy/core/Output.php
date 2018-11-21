@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -334,7 +335,7 @@ class EE_Output {
 
 		// Do we need to generate profile data?
 		// If so, load the Profile service and run it.
-		if ($this->enable_profiler == TRUE && ! ee()->input->is_ajax_request())
+		if ($this->enable_profiler == TRUE && ( ! AJAX_REQUEST OR ee('LivePreview')->hasEntryData()))
 		{
 			$performance = 	array(
 				'database' => number_format(ee('Database')->currentExecutionTime(), 4),

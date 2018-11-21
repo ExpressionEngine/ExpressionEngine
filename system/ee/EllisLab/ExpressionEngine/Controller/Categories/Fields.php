@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Controller\Categories;
@@ -118,7 +119,7 @@ class Fields extends AbstractCategoriesController {
 				->filter('field_id', (int) $field_id)
 				->first();
 
-			$fieldtype_choices = array_intersect_key($fieldtype_choices, $field->getCompatibleFieldtypes());
+			$fieldtype_choices = array_intersect_key($fieldtype_choices, $cat_field->getCompatibleFieldtypes());
 
 			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_category_field');

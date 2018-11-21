@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Service\Filter;
@@ -39,7 +40,7 @@ class Date extends Filter {
 	public function __construct()
 	{
 		$this->name = 'filter_by_date';
-		$this->label = 'date';
+		$this->label = 'date_filter';
 		$this->placeholder = lang('custom_date');
 		$this->options = array(
 			'86400'     => ucwords(lang('last').' 24 '.lang('hours')),
@@ -110,7 +111,7 @@ class Date extends Filter {
 			}
 			else
 			{
-				$date = ee()->localize->string_to_timestamp($value);
+				$date = ee()->localize->string_to_timestamp($value.' 0:00', TRUE, $date_format.' G:i');
 				$this->timestamp = $date;
 				$this->display_value = ee()->localize->format_date($date_format, $date);
 				$this->selected_value = array($date, $date+86400);

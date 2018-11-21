@@ -5,8 +5,9 @@ namespace EllisLab\Tests\ExpressionEngine\Service\Updater;
 use EllisLab\ExpressionEngine\Updater\Service\Updater\DatabaseUpdater;
 use EllisLab\ExpressionEngine\Updater\Service\Updater\UpdaterException;
 use Mockery;
+use PHPUnit\Framework\TestCase;
 
-class DatabaseUpdaterTest extends \PHPUnit_Framework_TestCase {
+class DatabaseUpdaterTest extends TestCase {
 
 	public function setUp()
 	{
