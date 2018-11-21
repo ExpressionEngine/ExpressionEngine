@@ -8,7 +8,7 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace EllisLab\ExpressionEngine\Updater\Version_5_0_0;
+namespace EllisLab\ExpressionEngine\Updater\Version_5_1_0;
 
 /**
  * Update
