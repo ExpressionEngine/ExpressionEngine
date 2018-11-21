@@ -47,9 +47,8 @@ class Command {
 		ee()->load->library('el_pings');
 		$version_file = ee()->el_pings->get_version_info(TRUE);
 		$to_version = $version_file['latest_version'];
-		$core_to_pro = (IS_CORE && $version_file['license_type'] == 'pro');
 
-		if (version_compare(ee()->config->item('app_version'), $to_version, '>=') && ! $core_to_pro)
+		if (version_compare(ee()->config->item('app_version'), $to_version, '>='))
 		{
 			exit('ExpressionEngine '.APP_VER.' is already up-to-date!');
 		}

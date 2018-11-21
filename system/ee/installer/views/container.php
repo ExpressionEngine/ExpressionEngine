@@ -27,7 +27,7 @@
 				<?=$content?>
 			</div>
 			<section class="bar">
-				<p class="left"><a href="https://expressionengine.com/" rel="external"><b>ExpressionEngine<?php if ($is_core): echo ' '.$is_core; endif;?></b></a></p>
+				<p class="left"><a href="https://expressionengine.com/" rel="external"><b>ExpressionEngine</b></a></p>
 				<p class="right">&copy;<?=date('Y')?> <a href="https://ellislab.com/" rel="external">EllisLab</a>, Inc.</p>
 			</section>
 		</section>

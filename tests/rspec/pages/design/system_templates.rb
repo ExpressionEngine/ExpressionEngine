@@ -13,7 +13,7 @@ class SystemTemplates < ControlPanelPage
   end
 
   def load(group = 'system')
-    visit '/system/index.php?/cp/addons'
+    visit '/admin.php?/cp/addons'
     find('ul.toolbar a[data-post-url*="cp/addons/install/forum"]').click
 
     self.open_dev_menu

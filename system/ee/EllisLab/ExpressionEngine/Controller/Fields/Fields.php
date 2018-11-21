@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Controller\Fields;
@@ -55,13 +56,13 @@ class Fields extends AbstractFieldsController {
 			->getDictionary('group_id', 'group_name');
 
 		$filters = ee('CP/Filter');
-		$group_filter = $filters->make('group_id', 'group', $group_ids);
+		$group_filter = $filters->make('group_id', 'group_filter', $group_ids);
 		$group_filter->setPlaceholder(lang('all'));
 		$group_filter->disableCustomValue();
 
 		$fieldtypes = ee('Model')->make('ChannelField')->getCompatibleFieldtypes();
 
-		$fieldtype_filter = $filters->make('fieldtype', 'type', $fieldtypes);
+		$fieldtype_filter = $filters->make('fieldtype', 'type_filter', $fieldtypes);
 		$fieldtype_filter->setPlaceholder(lang('all'));
 		$fieldtype_filter->disableCustomValue();
 
@@ -466,7 +467,7 @@ class Fields extends AbstractFieldsController {
 	{
 		$field->field_list_items = ($field->field_list_items) ?: '';
 		$field->field_order = ($field->field_order) ?: 0;
-		$field->site_id = ($field->site_id) ?: 0;
+		$field->site_id = (int) $field->site_id ?: 0;
 
 		$field->set($_POST);
 

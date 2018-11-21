@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Service\License;
@@ -47,12 +48,7 @@ class ExpressionEngineLicense extends License {
 	 */
 	public function canAddSites($current_number_of_sites)
 	{
-		if ( ! $this->isValid() || $current_number_of_sites < 1)
-		{
-			return FALSE;
-		}
-
-		return ($current_number_of_sites < $this->getData('sites'));
+		return TRUE;
 	}
 
 	/**
@@ -63,11 +59,6 @@ class ExpressionEngineLicense extends License {
 	protected function validLicenseNumber()
 	{
 		$license = $this->getData('license_number');
-
-		if (IS_CORE)
-		{
-			return ($license == 'CORE LICENSE');
-		}
 
 		if (count(count_chars(str_replace('-', '', $license), 1)) == 1 OR $license == '1234-1234-1234-1234')
 		{
@@ -81,23 +72,4 @@ class ExpressionEngineLicense extends License {
 
 		return TRUE;
 	}
-
-	/**
-	 * Parses the license file and if this is a Core build, forces the license
-	 * data to be Core regardless of the data in the license file.
-	 *
-	 * @see License::parseLicenseFile()
-	 * @return void
-	 */
-	protected function parseLicenseFile()
-	{
-		parent::parseLicenseFile();
-
-		if (IS_CORE)
-		{
-			$this->data['license_number'] = 'CORE LICENSE';
-			$this->data['sites'] = 1;
-		}
-	}
-
 }

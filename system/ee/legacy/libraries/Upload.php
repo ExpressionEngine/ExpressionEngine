@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -66,6 +67,8 @@ class EE_Upload {
 			'php',
 			'php3',
 			'php4',
+			'php5',
+			'php7',
 			'phps',
 			'phtml'
 		);
@@ -797,7 +800,7 @@ class EE_Upload {
 
 		// We can't simply check for `<?` because that's valid XML and is
 		// allowed in files.
-		return (strpos($data, '<?php') === FALSE);
+		return (stripos($data, '<?php') === FALSE);
 	}
 
 	/**

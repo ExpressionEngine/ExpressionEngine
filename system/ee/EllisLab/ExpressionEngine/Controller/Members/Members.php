@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Controller\Members;
@@ -58,7 +59,7 @@ class Members extends CP_Controller {
 
 		$header = $sidebar->addHeader(lang('all_members'), ee('CP/URL')->make('members')->compile());
 
-		if ( ! $this->hasMaximumMembers() && ee()->cp->allowed_group('can_create_members'))
+		if (ee()->cp->allowed_group('can_create_members'))
 		{
 			$header->withButton(lang('new'), ee('CP/URL')->make('members/create'));
 		}
@@ -107,16 +108,6 @@ class Members extends CP_Controller {
 				$header->isActive();
 			}
 		}
-	}
-
-	/**
-	 * Maximum number of members reached?
-	 *
-	 * @return bool
-	 **/
-	protected function hasMaximumMembers()
-	{
-		return (IS_CORE && ee('Model')->get('Member')->count() >= 3);
 	}
 
 	/**
@@ -734,7 +725,7 @@ class Members extends CP_Controller {
 		$options = $group_ids;
 		$options['all'] = lang('all');
 
-		$group = ee('CP/Filter')->make('group', 'member_group', $options);
+		$group = ee('CP/Filter')->make('group', 'member_group_filter', $options);
 		$group->setPlaceholder(lang('all'));
 		$group->disableCustomValue();
 

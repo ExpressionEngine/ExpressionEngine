@@ -1,5 +1,5 @@
 class Publish < ControlPanelPage
-  set_url '/system/index.php?/cp/publish/create/{channel_id}'
+  set_url '/admin.php?/cp/publish/create/{channel_id}'
 
   element :title, 'input[name=title]'
   element :url_title, 'input[name=url_title]'

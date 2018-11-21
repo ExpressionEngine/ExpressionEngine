@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -111,26 +112,22 @@ class Updater {
 	 */
 	private function _recompile_template_routes()
 	{
-		// Core will not have the necessary files
-		if ( ! IS_CORE)
+		ee()->load->model('template_model');
+		ee()->lang->loadfile('template_router');
+		require_once EE_APPPATH . 'libraries/template_router/Route.php';
+
+		ee()->db->select('template_routes.template_id, route_required, route');
+		ee()->db->from('templates');
+		ee()->db->join('template_routes', 'templates.template_id = template_routes.template_id');
+		ee()->db->where('route_parsed is not null');
+		$query = ee()->db->get();
+
+		foreach ($query->result() as $template)
 		{
-			ee()->load->model('template_model');
-			ee()->lang->loadfile('template_router');
-			require_once EE_APPPATH . 'libraries/template_router/Route.php';
-
-			ee()->db->select('template_routes.template_id, route_required, route');
-			ee()->db->from('templates');
-			ee()->db->join('template_routes', 'templates.template_id = template_routes.template_id');
-			ee()->db->where('route_parsed is not null');
-			$query = ee()->db->get();
-
-			foreach ($query->result() as $template)
-			{
-				$ee_route = new EE_Route($template->route, $template->route_required == 'y');
-				$compiled = $ee_route->compile();
-				$data = array('route_parsed' => $compiled);
-				ee()->template_model->update_template_route($template->template_id, $data);
-			}
+			$ee_route = new EE_Route($template->route, $template->route_required == 'y');
+			$compiled = $ee_route->compile();
+			$data = array('route_parsed' => $compiled);
+			ee()->template_model->update_template_route($template->template_id, $data);
 		}
 	}
 

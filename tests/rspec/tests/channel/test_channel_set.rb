@@ -15,7 +15,7 @@ feature 'Channel Sets' do
   #
   # @param Integer id The ID of the channel to download
   def download_channel_set(id)
-    @page.execute_script("window.downloadCSVXHR = function(){ var url = window.location.protocol + '//' + window.location.host + '//system/index.php?/cp/channels/sets/export/#{id}'; return getFile(url); }")
+    @page.execute_script("window.downloadCSVXHR = function(){ var url = window.location.protocol + '//' + window.location.host + '//admin.php?/cp/channels/sets/export/#{id}'; return getFile(url); }")
     @page.execute_script('window.getFile = function(url) { var xhr = new XMLHttpRequest();  xhr.open("GET", url, false);  xhr.send(null); return xhr.responseText; }')
     data = @page.evaluate_script('downloadCSVXHR()')
     data.should start_with('PK')
@@ -647,7 +647,7 @@ feature 'Channel Sets' do
         it 'imports a channel with a fluid field' do
 			import_channel_set 'channel-with-fluid-field', method: 'issue_duplicate'
 
-            @page.find('input[name="ee:UploadDestination[Images][server_path]"]').set '../images/uploads'
+            @page.find('input[name="ee:UploadDestination[Images][server_path]"]').set '{base_path}/images/uploads'
             @page.find('input[name="ee:UploadDestination[Images][url]"]').set '/images/uploads'
             @page.find('input[name="ee:UploadDestination[Images][url]"]').trigger 'blur'
             @page.submit
@@ -837,7 +837,7 @@ feature 'Channel Sets' do
         import_channel_set 'file-specified-directory', method: 'issue_duplicate'
 
         @page.find('input[name="ee:UploadDestination[Main Upload Directory][name]"]').set 'Uploads'
-        @page.find('input[name="ee:UploadDestination[Main Upload Directory][server_path]"]').set '../images/uploads'
+        @page.find('input[name="ee:UploadDestination[Main Upload Directory][server_path]"]').set '{base_path}/images/uploads'
         @page.find('input[name="ee:UploadDestination[Main Upload Directory][url]"]').set '/images/uploads'
         @page.find('input[name="ee:UploadDestination[Main Upload Directory][url]"]').trigger 'blur'
         @page.submit

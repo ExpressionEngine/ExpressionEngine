@@ -23,14 +23,7 @@
 				<div class="md-wrap">
 					<h1><?=$version->ConsentRequest->title?> (#<?=$version->getId()?>)</h1>
 					<p><?=ee()->localize->human_time($version->create_date->format('U'))?></p>
-					<?php
-					$contents = $version->render();
-					if (strpos($contents, '<p>') !== 0)
-					{
-						$contents = '<p>' . $contents . '</p>';
-					}
-					echo $contents;
-					?>
+					<textarea readonly="readonly"><?=ee('Format')->make('Text', $version->request)->convertToEntities()?></textarea>
 				</div>
 			</div>
 		</div>

@@ -7,44 +7,9 @@ env_local.rb
 node_modules/
 .vscode/
 
-
-# 2.0 Paths ====================================================================
-
-system/ee/legacy/cache/*
-!system/ee/legacy/cache/index.html
-!system/ee/legacy/cache/.htaccess
-
-system/ee/legacy/config/config*.php
-system/ee/legacy/config/database.php
-system/ee/legacy/config/config1x.php
-system/ee/legacy/config/config_1x.php
-
-system/ee/legacy/language/*
-!system/ee/legacy/language/english
-
-system/ee/legacy/templates/*
-!system/ee/legacy/templates/index.html
-!system/ee/legacy/templates/.htaccess
-
-system/ee/legacy/third_party/*
-!system/ee/legacy/third_party/index.html
-!system/ee/legacy/third_party/download
-!system/ee/legacy/third_party/google_maps
-!system/ee/legacy/third_party/js_tool
-!system/ee/legacy/third_party/testage
-!system/ee/legacy/third_party/debug
-!system/ee/legacy/third_party/safecracker_file
-!system/ee/legacy/third_party/cookie_check
-!system/ee/legacy/third_party/cookie_consent
-!system/ee/legacy/third_party/nannerbanner
-!system/ee/legacy/third_party/unregisteredbanner
-!system/ee/legacy/third_party/ellislab_high_ascii_decode
-
-
-# 3.0 Paths ====================================================================
-
 system/user/addons/*
 !system/user/addons/index.html
+
 !system/user/addons/download
 !system/user/addons/google_maps
 !system/user/addons/js_tool
@@ -53,8 +18,6 @@ system/user/addons/*
 !system/user/addons/safecracker_file
 !system/user/addons/cookie_check
 !system/user/addons/cookie_consent
-!system/user/addons/nannerbanner
-!system/user/addons/unregisteredbanner
 !system/user/addons/ellislab_high_ascii_decode
 !system/user/addons/wiki
 
@@ -67,7 +30,6 @@ system/user/config/config.php
 system/user/config/database.php
 !system/user/config/.htaccess
 !system/user/config/license.key
-!system/user/config/license.dp.key
 !system/user/config/index.html
 
 system/user/language/*
@@ -101,11 +63,6 @@ system/ee/installer/updater/EllisLab/Tests/composer.lock
 
 media/*
 
-images/test1/
-images/design/
-
-^images/(captchas|avatars/uploads|forum_attachments|member_photos|signature_attachments|pm_attachments|uploads)/(?!index\.html)
-
 images/captchas/*
 !images/captchas/index.html
 !images/captchas/.htaccess
@@ -135,16 +92,6 @@ images/uploads/*
 !images/uploads/index.html
 !images/uploads/.htaccess
 
-themes/site/agile_records/images/uploads/_thumb/*
-!themes/site/agile_records/images/uploads/_thumb/index.html
-!themes/site/agile_records/images/uploads/_thumb/testband300.jpg
-!themes/site/agile_records/images/uploads/_thumb/ee_banner*
-!themes/site/agile_records/images/uploads/_thumb/map*.jpg
-!themes/site/agile_records/images/uploads/_thumb/staff*.png
-
-themes/cp/brilliant_retail/
-themes/site/brilliant_retail/
-themes/solspace_themes/
 themes/third_party/
 
 asset/*
