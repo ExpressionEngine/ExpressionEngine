@@ -36,6 +36,17 @@ class HasAndBelongsToMany extends Relation {
 		return $this->pivot;
 	}
 
+	public function getInverseOptions()
+	{
+		$options = parent::getInverseOptions();
+		$options['pivot'] = [
+			'table' => $this->pivot['table'],
+			'left'  => $this->pivot['right'],
+			'right' => $this->pivot['left'],
+		];
+
+		return $options;
+	}
 
 	/**
 	 *
