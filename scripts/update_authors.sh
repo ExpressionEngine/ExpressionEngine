@@ -16,7 +16,7 @@ gravatars=""
 for email in "${array[@]}"
 do
     hash=$(echo -n $email | md5sum | awk '{ print $1 }')
-    gravatars="${gravatars}![](https://www.gravatar.com/avatar/$hash.jpg?r=pg&d=robohash&s=40)"
+    gravatars="${gravatars}![](https://www.gravatar.com/avatar/$hash.jpg?r=pg&d=robohash )"
 done
 
 cat > "$here/../AUTHORS.md" <<- EOF
