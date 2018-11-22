@@ -14,7 +14,7 @@ Replace this paragraph with a description of your changes and reasoning. Provide
 <!-- If this pull request resolves a project issue, provide a link: -->
 Resolves [#NN](https://github.com/ExpressionEngine/ExpressionEngine/issues/NN).
 
-## Nature of This Change**
+## Nature of This Change
 
 <!-- Check all that apply: -->
 
@@ -27,12 +27,12 @@ Resolves [#NN](https://github.com/ExpressionEngine/ExpressionEngine/issues/NN).
 - [ ] 🔥 Removes unused files / code
 - [ ] 🔒 Improves security <!-- if your fix would EXPOSE a current security flaw, do not submit a pull request. Instead report a security bug at https://docs.expressionengine.com/latest/bugs_and_security_reports -->
 
-## Is this backwards compatible?**
+## Is this backwards compatible?
 
 - [ ] Yes
 - [ ] No
 
-## Documentation**
+## Documentation
 <!-- Required for new features -->
 User Guide Pull Request: https://github.com/ExpressionEngine/ExpressionEngine-User-Guide/pulls/NNN
 
