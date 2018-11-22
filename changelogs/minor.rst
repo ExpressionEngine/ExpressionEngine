@@ -17,7 +17,7 @@ Minor Release
    - Added <new feature>
    - Fixed Bug (#<issue number>) where <bug behavior>.
 
-
+- Fixed model bug where HasAndBelongstoMany relationships wouldn't work properly.
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
