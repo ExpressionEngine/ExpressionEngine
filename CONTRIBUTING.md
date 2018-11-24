@@ -113,7 +113,7 @@ Large changes have a few problems:
 
 Therefore if you have a large change you'd like to propose, start with a [Feature Request Issue](https://github.com/ExpressionEngine/ExpressionEngine/issues/new?template=2-feature-request.md). Before spending a lot of time developing your idea, you'll want to make sure that the ExpressionEngine Maintainers will consider the request. They can also help you plot out how to tackle it in a way that is most likely to lead to inclusion in the project.
 
-Often, new features have the best implementation when user-facing documentation is written before any code. This also helps make large-scale proposals easier to understand and digest, with the intended behavior and usage made clear in advance. Feel free to open a [User Guide Pull Request](https://github.com/ExpressionEngine/ExpresionEngine-User-Guide) to accompany your proposal.
+Often, new features have the best implementation when user-facing documentation is written before any code. This also helps make large-scale proposals easier to understand and digest, with the intended behavior and usage made clear in advance. Feel free to open a [User Guide Pull Request](https://github.com/ExpressionEngine/ExpressionEngine-User-Guide) to accompany your proposal.
 
 If your idea is not useful to 80% of users and typical use cases, it may be better to build your idea as an add-on.
 
@@ -127,7 +127,7 @@ Every pull request should have a single line descriptive changelog message in th
 | changelogs/minor.rst | x.**X**.x |
 | changelogs/major.rst | **X**.x.x |
 
-All additive changes and new features should have a corresponding pull request in the [User Guide repository](https://github.com/ExpressionEngine/ExpresionEngine-User-Guide) that documents the changes.
+All additive changes and new features should have a corresponding pull request in the [User Guide repository](https://github.com/ExpressionEngine/ExpressionEngine-User-Guide) that documents the changes.
 
 ### Tests
 
