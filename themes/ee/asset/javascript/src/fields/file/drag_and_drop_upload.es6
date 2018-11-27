@@ -26,13 +26,6 @@ class DragAndDropUpload extends React.Component {
     this.queue = new ConcurrencyQueue({concurrency: this.props.concurrency})
   }
 
-  static renderFields(context) {
-    $('div[data-grid-images-react]', context).each(function () {
-      let props = JSON.parse(window.atob($(this).data('gridImagesReact')))
-      ReactDOM.render(React.createElement(GridImages, props, null), this)
-    })
-  }
-
   componentDidMount () {
     this.bindDragAndDropEvents()
   }
@@ -339,11 +332,3 @@ class DragAndDropUpload extends React.Component {
     )
   }
 }
-
-$(document).ready(function () {
-  DragAndDropUpload.renderFields()
-})
-
-FluidField.on('file', 'add', function(field) {
-  DragAndDropUpload.renderFields(field)
-})
