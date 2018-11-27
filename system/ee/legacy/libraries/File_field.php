@@ -970,7 +970,7 @@ class File_field {
 				'fields/file/concurrency_queue',
 				'fields/file/file_upload_progress_table',
 				'fields/file/drag_and_drop_upload',
-				'fields/grid/grid_images'
+				'fields/grid/file_grid'
 			],
 		]);
 	}

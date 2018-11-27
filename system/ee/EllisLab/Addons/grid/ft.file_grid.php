@@ -10,16 +10,16 @@
 require_once PATH_ADDONS.'grid/ft.grid.php';
 
 /**
- * Grid Images Fieldtype
+ * File Grid Fieldtype
  */
-class Grid_images_ft extends Grid_ft {
+class file_grid_ft extends Grid_ft {
 
 	public $info = [
-		'name'		=> 'Grid Images',
+		'name'		=> 'File Grid',
 		'version'	=> '1.0.0'
 	];
 
-	public $settings_form_field_name = 'grid_images';
+	public $settings_form_field_name = 'file_grid';
 
 	public function display_field($data)
 	{
@@ -34,13 +34,13 @@ class Grid_images_ft extends Grid_ft {
 		ee()->load->library('file_field');
 		ee()->file_field->loadDragAndDropAssets();
 
-		ee()->cp->add_js_script('file', 'fields/grid/grid_images');
+		ee()->cp->add_js_script('file', 'fields/grid/file_grid');
 
 		ee()->javascript->set_global([
-			'lang.grid_images_maximum_rows_hit' => lang('grid_images_maximum_rows_hit'),
+			'lang.file_grid_maximum_rows_hit' => lang('file_grid_maximum_rows_hit'),
 		]);
 
-		return ee('View')->make('grid:grid_images')->render([
+		return ee('View')->make('grid:file_grid')->render([
 			'grid_markup'        => $grid_markup,
 			'allowed_directory'  => $this->get_setting('allowed_directories', 'all'),
 			'content_type'       => $this->get_setting('field_content_type', 'all'),
@@ -62,7 +62,7 @@ class Grid_images_ft extends Grid_ft {
 		$vars['group'] = $this->settings_form_field_name;
 
 		$settings = [
-			'field_options_grid_images' => [
+			'field_options_file_grid' => [
 				'label' => 'field_options',
 				'group' => $vars['group'],
 				'settings' => [
@@ -127,8 +127,8 @@ class Grid_images_ft extends Grid_ft {
 					]
 				]
 			],
-			'field_options_grid_images_fields' => [
-				'label' => 'grid_images_setup',
+			'field_options_file_grid_fields' => [
+				'label' => 'file_grid_setup',
 				'group' => $vars['group'],
 				'settings' => [$vars['grid_alert'], ee('View')->make('grid:settings')->render($vars)]
 			]
@@ -136,11 +136,11 @@ class Grid_images_ft extends Grid_ft {
 
 		$this->loadGridSettingsAssets();
 
-		$settings_json = '{ minColumns: 0, fieldName: "grid_images" }';
+		$settings_json = '{ minColumns: 0, fieldName: "file_grid" }';
 
-		ee()->javascript->output('EE.grid_settings($(".fields-grid-setup[data-group=grid_images]"), '.$settings_json.');');
+		ee()->javascript->output('EE.grid_settings($(".fields-grid-setup[data-group=file_grid]"), '.$settings_json.');');
 		ee()->javascript->output('FieldManager.on("fieldModalDisplay", function(modal) {
-			EE.grid_settings($(".fields-grid-setup[data-group=grid_images]", modal), '.$settings_json.');
+			EE.grid_settings($(".fields-grid-setup[data-group=file_grid]", modal), '.$settings_json.');
 		});');
 
 		return $settings;
@@ -194,7 +194,7 @@ class Grid_images_ft extends Grid_ft {
 	}
 
 	/**
-	 * Override parent apply Grid Images upload preference settings to phantom file column
+	 * Override parent apply File Grid upload preference settings to phantom file column
 	 */
 	public function post_save_settings($data)
 	{

@@ -6,19 +6,19 @@
  * @license   https://expressionengine.com/license
  */
 
-class GridImages extends React.Component {
+class FileGrid extends React.Component {
 
   static renderFields(context) {
-    $('div[data-grid-images-react]', context).each(function () {
-      let props = JSON.parse(window.atob($(this).data('gridImagesReact')))
-      ReactDOM.render(React.createElement(GridImages, props, null), this)
+    $('div[data-file-grid-react]', context).each(function () {
+      let props = JSON.parse(window.atob($(this).data('fileGridReact')))
+      ReactDOM.render(React.createElement(FileGrid, props, null), this)
     })
   }
 
   shouldAcceptFiles = (files) => {
     if (this.props.maxRows !== '') {
       if (files.length + this.getRowCount() > this.props.maxRows) {
-        return EE.lang.grid_images_maximum_rows_hit.replace('%s', this.props.maxRows)
+        return EE.lang.file_grid_maximum_rows_hit.replace('%s', this.props.maxRows)
       }
     }
     return true
@@ -39,7 +39,7 @@ class GridImages extends React.Component {
   getGridInstance() {
     if ( ! this.gridInstance) {
       this.gridInstance = $(this.dropZone)
-        .closest('.js-grid-images')
+        .closest('.js-file-grid')
         .find('.grid-input-form')
         .data('GridInstance')
     }
@@ -64,9 +64,9 @@ class GridImages extends React.Component {
 }
 
 $(document).ready(function () {
-  GridImages.renderFields()
+  FileGrid.renderFields()
 })
 
-FluidField.on('grid_images', 'add', function(field) {
-  GridImages.renderFields(field)
+FluidField.on('file_grid', 'add', function(field) {
+  FileGrid.renderFields(field)
 })

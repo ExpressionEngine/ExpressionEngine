@@ -1,4 +1,4 @@
-<div class="js-grid-images">
+<div class="js-file-grid">
 	<?=$grid_markup?>
 
 	<?php
@@ -9,7 +9,7 @@
 	];
 	?>
 
-	<div data-grid-images-react="<?=base64_encode(json_encode($component))?>">
+	<div data-file-grid-react="<?=base64_encode(json_encode($component))?>">
 		<div class="fields-select">
 			<div class="field-inputs">
 				<label class="field-loading">

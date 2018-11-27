@@ -14,9 +14,9 @@ return [
 			'name' => 'Grid',
 			'compatibility' => 'grid'
 		],
-		'grid_images' => [
-			'name' => 'Grid Images',
-			'compatibility' => 'grid_images'
+		'file_grid' => [
+			'name' => 'File Grid',
+			'compatibility' => 'file_grid'
 		]
 	]
 ];

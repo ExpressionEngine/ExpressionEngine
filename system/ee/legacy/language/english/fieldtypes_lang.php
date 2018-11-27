@@ -225,11 +225,11 @@ $lang = array(
 
 'grid_validation_error' => 'There was a problem with one or more Grid fields',
 
-/* Grid Images */
+/* File Grid */
 
-'grid_images_setup' => 'Grid Images Setup',
+'file_grid_setup' => 'File Grid Setup',
 
-'grid_images_maximum_rows_hit' => 'Uploading this many files will exceed the field\'s maximum rows setting of %s',
+'file_grid_maximum_rows_hit' => 'Uploading this many files will exceed the field\'s maximum rows setting of %s',
 
 /* URL */
 'url_ft_allowed_url_schemes' => 'Allowed URL Schemes',

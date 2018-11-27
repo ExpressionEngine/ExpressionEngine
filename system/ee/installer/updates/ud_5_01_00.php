@@ -26,7 +26,7 @@ class Updater {
 	{
 		$steps = new \ProgressIterator(
 			[
-				'installGridImages',
+				'installFileGrid',
 			]
 		);
 
@@ -38,16 +38,16 @@ class Updater {
 		return TRUE;
 	}
 
-	private function installGridImages()
+	private function installFileGrid()
 	{
 		$installed = ee('Model')->get('Fieldtype')
-			->filter('name', 'grid_images')
+			->filter('name', 'file_grid')
 			->first();
 
 		if ( ! $installed)
 		{
 			ee('Model')->make('Fieldtype', [
-				'name'                => 'grid_images',
+				'name'                => 'file_grid',
 				'version'             => '1.0',
 				'settings'            => [],
 				'has_global_settings' => 'n',
