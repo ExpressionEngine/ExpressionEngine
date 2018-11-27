@@ -89,7 +89,7 @@ class Relationship_model extends CI_Model {
 			return $this->overrideWithPreviewData([], $type, $fluid_field_data_id);
 		}
 
-		$db = $this->db;
+		$db = ee('db');
 
 		$db->distinct();
 		$db->select('L0.field_id as L0_field');
