@@ -1,8 +1,10 @@
 "use strict";
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
  * ExpressionEngine (https://expressionengine.com)
@@ -11,8 +13,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
  * @license   https://expressionengine.com/license
  */
-
-var ConcurrencyQueue = function () {
+var ConcurrencyQueue =
+/*#__PURE__*/
+function () {
   function ConcurrencyQueue(_ref) {
     var concurrency = _ref.concurrency;
 
@@ -29,7 +32,10 @@ var ConcurrencyQueue = function () {
       var _this = this;
 
       items.forEach(function (item) {
-        _this.queue.push({ item: item, factory: factory });
+        _this.queue.push({
+          item: item,
+          factory: factory
+        });
       });
       this.start();
     }
@@ -39,17 +45,18 @@ var ConcurrencyQueue = function () {
       var _this2 = this;
 
       while (this.currentlyRunning < this.concurrency && this.queue.length > 0) {
-        var _queue$shift = this.queue.shift(),
-            item = _queue$shift.item,
-            factory = _queue$shift.factory;
+        var _this$queue$shift = this.queue.shift(),
+            item = _this$queue$shift.item,
+            factory = _this$queue$shift.factory;
 
         this.currentlyRunning++;
-
         factory(item).then(function () {
           _this2.currentlyRunning--;
+
           _this2.start();
         }).catch(function () {
           _this2.currentlyRunning--;
+
           _this2.start();
         });
       }
