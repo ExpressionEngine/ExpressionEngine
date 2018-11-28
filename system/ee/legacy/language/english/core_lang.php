@@ -116,8 +116,6 @@ If you made these changes, please accept the modifications on the control panel 
 
 'invalid_url' => 'The URL you submitted is not valid.',
 
-'license_disabled' => 'Your software license has been disabled or upgraded. Please visit your <a href="%s">License & Registration</a> page and install the active license from your <a href="%s" title="download account" rel="external">Download Account</a>. If this error persists, please contact your system administrator.',
-
 'missing_encryption_key' => 'You do not have value set for <code>%s</code> in your config.php. This may leave your install open to security vulnerabilities. Restore the keys or see <a href="%s">this troubleshooting article</a> in the user guide for help.',
 
 'missing_mime_config' => 'Cannot import your mime-type whitelist: the file %s does not exist or cannot be read.',
