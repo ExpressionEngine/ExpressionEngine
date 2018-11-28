@@ -445,7 +445,7 @@ class Cp {
 				->withTitle(lang('cp_message_warn'))
 				->addToBody(sprintf(
 					lang('new_version_error'),
-					ee()->cp->masked_url('https://expressionengine.com/store/purchases')
+					ee()->cp->masked_url(DOC_URL.'troubleshooting/error_messages/unexpected_error_occurred_attempting_to_download_the_current_expressionengine_version_number.html')
 				))
 				->now();
 		}
