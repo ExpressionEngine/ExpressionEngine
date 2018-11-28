@@ -961,7 +961,7 @@ class Wizard extends CI_Controller {
 
 	public function themes_user_writable($radio)
 	{
-		if ( ! is_really_writable($this->root_theme_path.'user'))
+		if ( $radio == 'y' && ! is_really_writable($this->root_theme_path.'user'))
 		{
 			ee()->form_validation->set_message(
 				'themes_user_writable',
