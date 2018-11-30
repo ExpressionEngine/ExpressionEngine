@@ -17,7 +17,8 @@ Minor Release
    - Added <new feature>
    - Fixed Bug (#<issue number>) where <bug behavior>.
 
-
+- Added drag and drop uploading to the File field
+- Added a new fieldtype, File Grid, for uploading multiple files at once and populating them into a Grid
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
