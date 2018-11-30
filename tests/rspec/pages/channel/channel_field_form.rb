@@ -72,6 +72,6 @@ class ChannelFieldForm < ControlPanelPage
   def select_field_type(type)
     field_type.find('.field-drop-selected').click
     wait_until_field_type_choices_visible
-    first('div[data-input-value="field_type"] .field-drop-choices label', text: type).click
+    first('div[data-input-value="field_type"] .field-drop-choices label', exact_text: type).click
   end
 end
