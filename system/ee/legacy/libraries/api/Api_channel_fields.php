@@ -199,7 +199,7 @@ class Api_channel_fields extends Api {
 				$this->set_settings($row['field_id'], $settings);
 			}
 
-			if ($row['field_type'] == 'grid')
+			if ($row['field_type'] == 'grid' || $row['field_type'] == 'file_grid')
 			{
 				$gfields[$row['site_id']][$row['field_name']] = $row['field_id'];
 			}
