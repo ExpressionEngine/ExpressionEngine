@@ -37,20 +37,32 @@ var options = {
 			$status_tag.text(status);
 		});
 
-		$("input.color-picker").each(function() {
-			new ColorPicker(this, {
-				mode: 'both',
-				swatches: ['E34834', 'F8BD00', '1DC969', '2B92D8', 'DE32E0', 'fff', '000'],
-				onChange: function(newColor) {
-					// Change background and border colors
-					$status_tag.css('background-color', newColor).css('border-color', newColor);
+        $('div.colorpicker-init').each(function() {
+            var container = this;
 
-					// Set foreground color
-					var foregroundColor = new SimpleColor(newColor).fullContrastColor().hexStr;
-					$status_tag.css('color', foregroundColor);
-				}
-			});
-		});
+            // TMP css
+            // TODO: REMOVE ME
+            $(tmpCss()).insertBefore(container)
+
+            ReactDOM.render(React.createElement(ColorPicker, {
+                inputName: 'highlight',
+                initialColor: this.dataset.color,
+                mode: 'both',
+                swatches: ['E34834', 'F8BD00', '1DC969', '2B92D8', 'DE32E0', 'fff', '000'],
+
+                onChange: function(newColor) {
+                    // Change background and border colors
+                    $status_tag.css('background-color', newColor).css('border-color', newColor);
+
+                    // Set foreground color
+                    var foregroundColor = new SimpleColor(newColor).fullContrastColor().hexStr;
+                    $status_tag.css('color', foregroundColor);
+                },
+                componentDidMount: function () {
+                    EE.cp.formValidation.bindInputs(container);
+                }
+            }, null), container);
+        });
 	}
 }
 

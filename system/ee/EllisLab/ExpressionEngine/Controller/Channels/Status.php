@@ -160,19 +160,18 @@ class Status extends AbstractChannelsController {
 						)
 					)
 				),
-				array(
-					'title' => 'highlight_color',
-					'desc' => 'highlight_color_desc',
-					'example' => $status_example,
-					'fields' => array(
-						'highlight' => array(
-							'type' => 'text',
-							'attrs' => 'class="color-picker"',
-							'value' => $status->highlight ?: '000000',
-							'required' => TRUE
-						)
-					)
-				)
+                array(
+                    'title' => 'highlight_color',
+                    'desc' => 'highlight_color_desc',
+                    'example' => $status_example,
+                    'fields' => array(
+                        'highlight' => array(
+                            'type' => 'html',
+                            'content' => '<div class="colorpicker-init" data-color="' . ($status->highlight ?: '000000') . '"></div>',
+                            'required' => TRUE
+                        )
+                    )
+                )
 			),
 			'permissions' => array(
 				ee('CP/Alert')->makeInline('permissions-warn')
