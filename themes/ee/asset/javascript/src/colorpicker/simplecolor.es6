@@ -1,9 +1,10 @@
-/**
+/*!
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 
@@ -11,8 +12,6 @@
  *  A class for basic color conversion, manipulation, and formatting.
  */
 class SimpleColor {
-
-    // -------------------------------------------------------------------
 
     /**
     * Create a new SimpleColor
@@ -29,38 +28,39 @@ class SimpleColor {
     *    rgba(255, 255, 255, 0.6)
     */
     constructor(color) {
+
         this.isValid   = false
         this.initValue = color
 
         this._rgba     = { r: 1, g: 1, b: 1, a: 1 }
 
-        if(typeof color === 'string') {
+        const foundColor = rgba => {
+            this._rgba   = this._safeRGB(rgba)
+            this.isValid = true
+        }
+
+        if(typeof color === 'string')
+        {
             var fromHex = SimpleColor.hexToRgb(color)
-            if (fromHex !== null) {
-                this._rgba   = fromHex
-                this.isValid = true
+
+            if (fromHex != null) {
+                foundColor(fromHex)
             }
             else {
                 var rgb = SimpleColor.getRgbFromString(color)
-                if (rgb !== null) {
-                    this._rgba   = rgb
-                    this.isValid = true
-                }
-            }
-        }
-        else if (this._isObject(color)) {
-            if (this._objectHasKeys(color, ['r', 'g', 'b'])) {
-                this._rgba   = color
-                this.isValid = true
-            }
-
-            else if (this._objectHasKeys(color, ['h', 's', 'v'])) {
-                this._rgba   = SimpleColor.hsvToRgb(this._safeHSVColor(color))
-                this.isValid = true
+                if (rgb != null)
+                    foundColor(rgb)
             }
         }
 
-        this._rgba = this._safeRGB(this._rgba)
+        else if (this._isObject(color))
+        {
+            if (this._objectHasKeys(color, ['r', 'g', 'b']))
+                foundColor(color)
+
+            else if (this._objectHasKeys(color, ['h', 's', 'v']))
+                foundColor(SimpleColor.hsvToRgb(this._safeHSVColor(color)))
+        }
     }
 
     // -------------------------------------------------------------------
@@ -92,7 +92,7 @@ class SimpleColor {
     get hexStr() {
         var rgb255 = this.rgb255
 
-        function componentToHex(c) {
+        const componentToHex = (c) => {
             var hex = c.toString(16)
             return hex.length == 1 ? '0' + hex : hex
         }
@@ -103,7 +103,7 @@ class SimpleColor {
     /** Returns a css rgba() string representing this color */
     get rgbaStr() {
         var rgb255 = this.rgb255
-        return 'rgba(' + rgb255.r + ', ' + rgb255.g + ', ' + rgb255.b + ', ' + this._roundToPlaces(this._rgba.a, 2) + ')'
+        return 'rgba(' + rgb255.r + ', ' + rgb255.g + ', ' + rgb255.b + ', ' + (+this._rgba.a.toFixed(2)) + ')'
     }
 
     // -------------------------------------------------------------------
@@ -122,12 +122,22 @@ class SimpleColor {
     shade(percent) {
         return new SimpleColor(
             {r: this._rgba.r + (percent / 100), g: this._rgba.g + (percent / 100), b: this._rgba.b + (percent / 100), a: this._rgba.a}
-        )    
+        )
     }
 
-    /** Returns a duplicate color with the specified alpha component */
+    /** Returns a new color with the specified alpha component */
     withAlpha(newAlpha) {
-        return new SimpleColor({r: this._rgba.r, g: this._rgba.g, b: this._rgba.b, a: newAlpha})
+        return new SimpleColor(Object.assign({}, this.rgb, { a: newAlpha }))
+    }
+
+    /** Returns a new color with any specified hsv components   */
+    withHsv(newHsv) {
+        return new SimpleColor(Object.assign({}, this.hsv, newHsv))
+    }
+
+    /** Returns a new color with any specified rgb components    */
+    withRgb(newRgb) {
+        return new SimpleColor(Object.assign({}, this.rgb, newRgb))
     }
 
     /** Checks if a SimpleColor is equal to this one */
@@ -156,7 +166,7 @@ class SimpleColor {
     static getRgbFromString(str) {
         var regex = /rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)?(?:\s*,\s*(\d+\.\d+|\d+)\s*\))?/mi
         var match = str.match(regex);
-        
+
         if (match) {
             var r = match[1], g = match[2], b = match[3], a = match[4]
             function checkMatch(m) {
@@ -277,43 +287,21 @@ class SimpleColor {
 
     /** Makes sure all rgba values are present, are a number, and are between 0-1 */
     _safeRGB(rgb) {
-        var _this = this
-        function check(n) {
-            if (isNaN(n)) return 1
-            return _this._clamp(n, 0, 1)
+        const check = (n) => {
+            if (isNaN(n))
+                return 1
+
+            // Clamp the value
+            return Math.min(Math.max(n, 0), 1)
         }
 
-        return {r: check(rgb.r), g: check(rgb.g), b: check(rgb.b), a: check(rgb.a)}
-    }
-
-    /** Ridiculously complex in order to be accurate. Thanks javascript: https://stackoverflow.com/a/12830454 */
-    _roundToPlaces(num, scale) {
-        if(!("" + num).includes("e")) {
-            return +(Math.round(num + "e+" + scale)  + "e-" + scale);
-        } else {
-            var arr = ("" + num).split("e");
-            var sig = ""
-            if(+arr[1] + scale > 0) {
-                sig = "+";
-            }
-            return +(Math.round(+arr[0] + "e" + sig + (+arr[1] + scale)) + "e-" + scale);
-        }
-    }
-
-    /** Clamps a value between two numbers */
-    _clamp(value, min, max) {
-        return Math.min(Math.max(value, min), max)
+        return { r: check(rgb.r), g: check(rgb.g), b: check(rgb.b), a: check(rgb.a) }
     }
 
     /** Returns true if an object has all the keys in the specified array */
     _objectHasKeys(object, keys) {
-        for(var i = 0; i < keys.length; i++){
-            if (!object.hasOwnProperty(keys[i])) {
-                return false
-            }
-        }
-
-        return true
+        var objKeys = Object.keys(object)
+        return keys.some(v => objKeys.indexOf(v) !== -1)
     }
 
     _isObject(val) {

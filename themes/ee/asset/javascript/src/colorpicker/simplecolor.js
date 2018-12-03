@@ -6,20 +6,19 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-/**
+/*!
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
  *  A class for basic color conversion, manipulation, and formatting.
  */
 var SimpleColor = function () {
-
-    // -------------------------------------------------------------------
 
     /**
     * Create a new SimpleColor
@@ -36,6 +35,8 @@ var SimpleColor = function () {
     *    rgba(255, 255, 255, 0.6)
     */
     function SimpleColor(color) {
+        var _this = this;
+
         _classCallCheck(this, SimpleColor);
 
         this.isValid = false;
@@ -43,29 +44,23 @@ var SimpleColor = function () {
 
         this._rgba = { r: 1, g: 1, b: 1, a: 1 };
 
+        var foundColor = function foundColor(rgba) {
+            _this._rgba = _this._safeRGB(rgba);
+            _this.isValid = true;
+        };
+
         if (typeof color === 'string') {
             var fromHex = SimpleColor.hexToRgb(color);
-            if (fromHex !== null) {
-                this._rgba = fromHex;
-                this.isValid = true;
+
+            if (fromHex != null) {
+                foundColor(fromHex);
             } else {
                 var rgb = SimpleColor.getRgbFromString(color);
-                if (rgb !== null) {
-                    this._rgba = rgb;
-                    this.isValid = true;
-                }
+                if (rgb != null) foundColor(rgb);
             }
         } else if (this._isObject(color)) {
-            if (this._objectHasKeys(color, ['r', 'g', 'b'])) {
-                this._rgba = color;
-                this.isValid = true;
-            } else if (this._objectHasKeys(color, ['h', 's', 'v'])) {
-                this._rgba = SimpleColor.hsvToRgb(this._safeHSVColor(color));
-                this.isValid = true;
-            }
+            if (this._objectHasKeys(color, ['r', 'g', 'b'])) foundColor(color);else if (this._objectHasKeys(color, ['h', 's', 'v'])) foundColor(SimpleColor.hsvToRgb(this._safeHSVColor(color)));
         }
-
-        this._rgba = this._safeRGB(this._rgba);
     }
 
     // -------------------------------------------------------------------
@@ -102,12 +97,28 @@ var SimpleColor = function () {
             return new SimpleColor({ r: this._rgba.r + percent / 100, g: this._rgba.g + percent / 100, b: this._rgba.b + percent / 100, a: this._rgba.a });
         }
 
-        /** Returns a duplicate color with the specified alpha component */
+        /** Returns a new color with the specified alpha component */
 
     }, {
         key: 'withAlpha',
         value: function withAlpha(newAlpha) {
-            return new SimpleColor({ r: this._rgba.r, g: this._rgba.g, b: this._rgba.b, a: newAlpha });
+            return new SimpleColor(Object.assign({}, this.rgb, { a: newAlpha }));
+        }
+
+        /** Returns a new color with any specified hsv components   */
+
+    }, {
+        key: 'withHsv',
+        value: function withHsv(newHsv) {
+            return new SimpleColor(Object.assign({}, this.hsv, newHsv));
+        }
+
+        /** Returns a new color with any specified rgb components    */
+
+    }, {
+        key: 'withRgb',
+        value: function withRgb(newRgb) {
+            return new SimpleColor(Object.assign({}, this.rgb, newRgb));
         }
 
         /** Checks if a SimpleColor is equal to this one */
@@ -149,38 +160,14 @@ var SimpleColor = function () {
     }, {
         key: '_safeRGB',
         value: function _safeRGB(rgb) {
-            var _this = this;
-            function check(n) {
+            var check = function check(n) {
                 if (isNaN(n)) return 1;
-                return _this._clamp(n, 0, 1);
-            }
+
+                // Clamp the value
+                return Math.min(Math.max(n, 0), 1);
+            };
 
             return { r: check(rgb.r), g: check(rgb.g), b: check(rgb.b), a: check(rgb.a) };
-        }
-
-        /** Ridiculously complex in order to be accurate. Thanks javascript: https://stackoverflow.com/a/12830454 */
-
-    }, {
-        key: '_roundToPlaces',
-        value: function _roundToPlaces(num, scale) {
-            if (!("" + num).includes("e")) {
-                return +(Math.round(num + "e+" + scale) + "e-" + scale);
-            } else {
-                var arr = ("" + num).split("e");
-                var sig = "";
-                if (+arr[1] + scale > 0) {
-                    sig = "+";
-                }
-                return +(Math.round(+arr[0] + "e" + sig + (+arr[1] + scale)) + "e-" + scale);
-            }
-        }
-
-        /** Clamps a value between two numbers */
-
-    }, {
-        key: '_clamp',
-        value: function _clamp(value, min, max) {
-            return Math.min(Math.max(value, min), max);
         }
 
         /** Returns true if an object has all the keys in the specified array */
@@ -188,13 +175,10 @@ var SimpleColor = function () {
     }, {
         key: '_objectHasKeys',
         value: function _objectHasKeys(object, keys) {
-            for (var i = 0; i < keys.length; i++) {
-                if (!object.hasOwnProperty(keys[i])) {
-                    return false;
-                }
-            }
-
-            return true;
+            var objKeys = Object.keys(object);
+            return keys.some(function (v) {
+                return objKeys.indexOf(v) !== -1;
+            });
         }
     }, {
         key: '_isObject',
@@ -243,10 +227,10 @@ var SimpleColor = function () {
         get: function get() {
             var rgb255 = this.rgb255;
 
-            function componentToHex(c) {
+            var componentToHex = function componentToHex(c) {
                 var hex = c.toString(16);
                 return hex.length == 1 ? '0' + hex : hex;
-            }
+            };
 
             return '#' + componentToHex(rgb255.r) + componentToHex(rgb255.g) + componentToHex(rgb255.b);
         }
@@ -257,7 +241,7 @@ var SimpleColor = function () {
         key: 'rgbaStr',
         get: function get() {
             var rgb255 = this.rgb255;
-            return 'rgba(' + rgb255.r + ', ' + rgb255.g + ', ' + rgb255.b + ', ' + this._roundToPlaces(this._rgba.a, 2) + ')';
+            return 'rgba(' + rgb255.r + ', ' + rgb255.g + ', ' + rgb255.b + ', ' + +this._rgba.a.toFixed(2) + ')';
         }
     }], [{
         key: 'getRgbFromString',
