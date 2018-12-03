@@ -22,7 +22,7 @@ Patch Release
 - Fixed a bug where a supplied class was not added to "select" fields in the shared form view.
 - Fixed a potential malformed query issue in the relationships_query hook.
 - Fixed a potential PHP error (#21) when saving option-type Grid columns.
-
+- Fixed a bug where the installer checks if the user theme directory is writable even when not installing the default theme.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
