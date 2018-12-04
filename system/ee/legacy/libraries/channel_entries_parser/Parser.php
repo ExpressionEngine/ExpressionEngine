@@ -452,9 +452,15 @@ class EE_Channel_data_parser {
 		// conditionals array to make the conditional evaluate with the
 		// :total_rows modifier, otherwise it will evaluate based on what's
 		// in channel_data, and only data from searchable fields is there
-		foreach	($this->getGridsInConditionals($tagdata) as $field_name)
+		foreach	($this->getFieldsInConditionals($this->_preparser->grid_field_names, $tagdata) as $field_name)
 		{
 			$modified_conditionals[$field_name][] = 'total_rows';
+		}
+
+		// Make {if fluid_field} work
+		foreach	($this->getFieldsInConditionals($this->_preparser->fluid_field_names, $tagdata) as $field_name)
+		{
+			$modified_conditionals[$field_name][] = 'total_fields';
 		}
 
 		return array_map('array_unique', $modified_conditionals);
@@ -465,12 +471,11 @@ class EE_Channel_data_parser {
 	 *
 	 * @return Array Standalone Grid field names in conditionals
 	 */
-	protected function getGridsInConditionals($tagdata)
+	protected function getFieldsInConditionals($field_names, $tagdata)
 	{
-		$grid_field_names = $this->_preparser->grid_field_names;
-		$grid_field_names = $this->prefix().implode('|'.$this->prefix(), $grid_field_names);
+		$field_names = $this->prefix().implode('|'.$this->prefix(), $field_names);
 
-		preg_match_all("/".preg_quote(LD)."((if:(else))*if)\s+($grid_field_names)(?!:)(\s+|".preg_quote(RD).")/s", $tagdata, $matches);
+		preg_match_all("/".preg_quote(LD)."((if:(else))*if)\s+($field_names)(?!:)(\s+|".preg_quote(RD).")/s", $tagdata, $matches);
 
 		if (isset($matches[4]) && ! empty($matches[4]))
 		{
@@ -590,6 +595,15 @@ class EE_Channel_data_parser {
 							// conditionals
 							if (isset($channel->gfields[$row['site_id']][$key]) &&
 								$modifier == 'total_rows')
+							{
+								$cond[$key] = (int) $result;
+							}
+
+							// If this key also happens to be a Fluid field with the modifier
+							// "total_fields", make it the default value for evaluating
+							// conditionals
+							if (isset($channel->ffields[$row['site_id']][$key]) &&
+								$modifier == 'total_fields')
 							{
 								$cond[$key] = (int) $result;
 							}
