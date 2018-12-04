@@ -25,6 +25,7 @@ Patch Release
 - Fixed a bug (#20) where the installer checks if the user theme directory is writable even when not installing the default theme.
 - Fixed a bug (#13) where `{if fluid_field}` conditionals would not work as expected.
 - Fixed a bug (#14) where entries would fail to save when a Toggle field was hidden and MySQL was in strict mode.
+- Fixed a bug (#22) where the JavaScript-based URL title generation did not match the PHP version.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
