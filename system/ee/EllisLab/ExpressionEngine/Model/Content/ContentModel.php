@@ -508,7 +508,7 @@ abstract class ContentModel extends VariableColumnModel {
 			{
 				// Don't try to insert null values in case they're not allowed,
 				// fall back to column default instead
-				$values = array_filter($values, function($values) {
+				$values = array_filter($values, function($value) {
 					return ! is_null($value);
 				});
 				$values[$key_column] = $this->getId();
