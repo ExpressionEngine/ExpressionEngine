@@ -17,6 +17,7 @@ Patch Release
    - Added <new feature>
    - Fixed Bug (#<issue number>) where <bug behavior>.
 
+- Optimized the member delete routine's heir assignments.
 - Fixed a bug where a PHP error may appear when the CP homepage newsfeed cannot be fetched.
 - Fixed a bug where extension hooks may run during a one-click upgrade.
 - Fixed a bug where a supplied class was not added to "select" fields in the shared form view.
