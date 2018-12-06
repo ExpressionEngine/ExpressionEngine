@@ -27,6 +27,7 @@ Patch Release
 - Fixed a bug (#13) where `{if fluid_field}` conditionals would not work as expected.
 - Fixed a bug (#14) where entries would fail to save when a Toggle field was hidden and MySQL was in strict mode.
 - Fixed a bug (#22) where the JavaScript-based URL title generation did not match the PHP version.
+- Fixed a bug (#24) where Channel settings could not be saved if the default Channel Form author didn't exist.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
