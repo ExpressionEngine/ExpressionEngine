@@ -26,7 +26,11 @@ class StringLiteral extends Token {
 
 	public function canEvaluate()
 	{
-		return (stristr($this->value, LD) === FALSE);
+		// Remove regex quantifiers like {2} or {2,4} so they're not considered
+		// unparsed variables
+		$value = preg_replace('/\{\d+,?\d*\}/', '', $this->value);
+
+		return (stristr($value, LD) === FALSE);
 	}
 
 	public function __toString()

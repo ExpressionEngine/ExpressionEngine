@@ -29,6 +29,7 @@ Patch Release
 - Fixed a bug (#22) where the JavaScript-based URL title generation did not match the PHP version.
 - Fixed a bug (#37) where Channel settings could not be saved if the default Channel Form author didn't exist.
 - Fixed a bug (#36) where deleting multiple statuses would not reset the confirmation modal button state.
+- Fixed a bug (#29) where curly-braced quantifiers could not be used in regular expression conditionals.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
