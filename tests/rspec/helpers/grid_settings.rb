@@ -184,6 +184,7 @@ module GridSettings
 
   # Get nth column
   def self.column(number)
+    number = number + 1 # Skip over "no results" div
     node = find('.fields-grid-setup .fields-grid-item:nth-child('+number.to_s+')')
     GridSettingsColumn.new(node)
   end

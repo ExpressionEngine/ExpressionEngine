@@ -19,7 +19,7 @@ if (function_exists('opcache_reset'))
 }
 
 $config['site_url'] = 'http://ee2.test:8080/';
-$config['app_version'] = '5.0.1';
+$config['app_version'] = '5.1.0';
 $config['license_contact'] = 'ellislab.developers@gmail.com';
 $config['license_number'] = '1234-5678-9123-4567';
 $config['debug'] = '1';

@@ -10,40 +10,49 @@
 "use strict";
 
 (function ($) {
+
+	EE.FileField = {
+		pickerCallback: function(data, references) {
+			var input = references.input_value,
+				figure = references.input_img.closest('figure'),
+				name = references.input_img.closest('.fields-upload-chosen-file').next('.fields-upload-chosen-name');
+
+			// Close the modal
+			if (references.modal) {
+				references.modal.find('.m-close').click();
+			}
+
+			// Assign the value {filedir_#}filename.ext
+			input.val('{filedir_' + data.upload_location_id + '}' + data.file_name)
+				.trigger('change')
+				.trigger('hasFile', data);
+
+			figure.toggleClass('no-img', ! data.isImage);
+			figure.find('img').toggleClass('hidden', ! data.isImage);
+
+			if (data.isImage) {
+				// Set the thumbnail
+				references.input_img.attr('src', data.thumb_path);
+			}
+
+			// Fill in formatted caption
+			name.html('<p><b>'+data.title+'</b></p>');
+
+			// Show the image
+			input.siblings('.fields-upload-chosen').removeClass('hidden');
+
+			// Hide the upload button
+			input.siblings('.fields-upload-btn').addClass('hidden');
+
+			// Hide the "missing file" error
+			input.siblings('em').remove();
+		}
+	}
+
 	$(document).ready(function () {
 		function setupFileField(container) {
 			$('.file-field-filepicker', container).FilePicker({
-				callback: function(data, references) {
-					var input = references.input_value,
-						figure = references.input_img.closest('figure'),
-						name = references.input_img.closest('.fields-upload-chosen-file').next('.fields-upload-chosen-name');
-
-					// Close the modal
-					references.modal.find('.m-close').click();
-
-					// Assign the value {filedir_#}filename.ext
-					input.val('{filedir_' + data.upload_location_id + '}' + data.file_name).trigger('change');
-
-					figure.toggleClass('no-img', ! data.isImage);
-					figure.find('img').toggleClass('hidden', ! data.isImage);
-
-					if (data.isImage) {
-						// Set the thumbnail
-						references.input_img.attr('src', data.thumb_path);
-					}
-
-					// Fill in formatted caption
-					name.html('<p><b>'+data.title+'</b></p>');
-
-					// Show the image
-					input.siblings('.fields-upload-chosen').removeClass('hidden');
-
-					// Hide the upload button
-					input.siblings('.fields-upload-btn').addClass('hidden');
-
-					// Hide the "missing file" error
-					input.siblings('em').remove();
-				}
+				callback: EE.FileField.pickerCallback
 			});
 
 			$('li.remove a').click(function (e) {
@@ -54,6 +63,9 @@
 				figure_container.siblings('.fields-upload-btn').removeClass('hidden');
 				e.preventDefault();
 			});
+
+			// Drag and drop component
+			FileField.renderFields(container)
 		}
 
 		function sanitizeFileField(el) {

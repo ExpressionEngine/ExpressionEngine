@@ -22,109 +22,99 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-/*!
- * This source file is part of the open source project
+/**
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
  * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ * @license   https://expressionengine.com/license
  */
-var FilterableSelectList = makeFilterableComponent(SelectList);
-
-var SelectField =
+var FileGrid =
 /*#__PURE__*/
 function (_React$Component) {
-  _inherits(SelectField, _React$Component);
+  _inherits(FileGrid, _React$Component);
 
-  function SelectField(props) {
+  function FileGrid() {
+    var _getPrototypeOf2;
+
     var _this;
 
-    _classCallCheck(this, SelectField);
+    _classCallCheck(this, FileGrid);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(SelectField).call(this, props));
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "selectionChanged", function (selected) {
-      _this.setState({
-        selected: selected
+    _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(FileGrid)).call.apply(_getPrototypeOf2, [this].concat(args)));
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "shouldAcceptFiles", function (files) {
+      if (_this.props.maxRows !== '') {
+        if (files.length + _this.getRowCount() > _this.props.maxRows) {
+          return EE.lang.file_grid_maximum_rows_hit.replace('%s', _this.props.maxRows);
+        }
+      }
+
+      return true;
+    });
+
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "addFileToGrid", function (response) {
+      var fileField = _this.getGridInstance()._addRow().find('.grid-file-upload').first();
+
+      EE.FileField.pickerCallback(response, {
+        input_value: fileField.find('input:hidden').first(),
+        input_img: fileField.find('img').first(),
+        modal: $('.modal-file')
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setEditingMode", function (editing) {
-      _this.setState({
-        editing: editing
-      });
-    });
-
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleRemove", function (event, item) {
-      event.preventDefault();
-      $(event.target).closest('[data-id]').trigger('select:removeItem', [item]);
-    });
-
-    _this.props.items = SelectList.formatItems(props.items);
-    _this.state = {
-      selected: SelectList.formatItems(props.selected, null, props.multi),
-      editing: props.editing || false
-    };
     return _this;
   }
 
-  _createClass(SelectField, [{
+  _createClass(FileGrid, [{
+    key: "getGridInstance",
+    value: function getGridInstance() {
+      if (!this.gridInstance) {
+        this.gridInstance = $(this.dropZone).closest('.js-file-grid').find('.grid-input-form').data('GridInstance');
+      }
+
+      return this.gridInstance;
+    }
+  }, {
+    key: "getRowCount",
+    value: function getRowCount() {
+      return this.getGridInstance()._getRows().size();
+    }
+  }, {
     key: "render",
     value: function render() {
       var _this2 = this;
 
-      var selectItem = React.createElement(FilterableSelectList, _extends({}, this.props, {
-        selected: this.state.selected,
-        selectionChanged: this.selectionChanged,
-        tooMany: SelectList.countItems(this.props.items) > SelectList.defaultProps.tooManyLimit,
-        reorderable: this.props.reorderable || this.state.editing,
-        removable: this.props.removable || this.state.editing,
-        handleRemove: function handleRemove(e, item) {
-          return _this2.handleRemove(e, item);
+      return React.createElement(DragAndDropUpload, _extends({}, this.props, {
+        onFileUploadSuccess: this.addFileToGrid,
+        assignDropZoneRef: function assignDropZoneRef(dropZone) {
+          _this2.dropZone = dropZone;
         },
-        editable: this.props.editable || this.state.editing
+        shouldAcceptFiles: this.shouldAcceptFiles,
+        marginTop: true,
+        multiFile: true
       }));
-
-      if (this.props.manageable) {
-        return React.createElement("div", null, selectItem, this.props.addLabel && React.createElement("a", {
-          className: "btn action submit",
-          rel: "add_new",
-          href: "#"
-        }, this.props.addLabel), React.createElement(ToggleTools, {
-          label: this.props.manageLabel
-        }, React.createElement(Toggle, {
-          on: this.props.editing,
-          handleToggle: function handleToggle(toggle) {
-            return _this2.setEditingMode(toggle);
-          }
-        })));
-      }
-
-      return selectItem;
     }
   }], [{
     key: "renderFields",
     value: function renderFields(context) {
-      $('div[data-select-react]', context).each(function () {
-        var props = JSON.parse(window.atob($(this).data('selectReact')));
-        props.name = $(this).data('inputValue');
-        ReactDOM.render(React.createElement(SelectField, props, null), this);
+      $('div[data-file-grid-react]', context).each(function () {
+        var props = JSON.parse(window.atob($(this).data('fileGridReact')));
+        ReactDOM.render(React.createElement(FileGrid, props, null), this);
       });
     }
   }]);
 
-  return SelectField;
+  return FileGrid;
 }(React.Component);
 
 $(document).ready(function () {
-  SelectField.renderFields();
+  FileGrid.renderFields();
 });
-Grid.bind('relationship', 'displaySettings', SelectField.renderFields);
-Grid.bind('file', 'displaySettings', SelectField.renderFields);
-Grid.bind('checkboxes', 'display', SelectField.renderFields);
-FluidField.on('checkboxes', 'add', SelectField.renderFields);
-Grid.bind('radio', 'display', SelectField.renderFields);
-FluidField.on('radio', 'add', SelectField.renderFields);
-Grid.bind('multi_select', 'display', SelectField.renderFields);
-FluidField.on('multi_select', 'add', SelectField.renderFields);
+FluidField.on('file_grid', 'add', function (field) {
+  FileGrid.renderFields(field);
+});

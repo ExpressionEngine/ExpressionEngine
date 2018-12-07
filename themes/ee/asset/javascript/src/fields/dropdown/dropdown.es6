@@ -136,7 +136,7 @@ function DropdownItem (props) {
   if (item.section) {
     return (
       <div className="field-group-head">
-        <span class="icon--folder"></span> {item.section}
+        <span className="icon--folder"></span> {item.section}
       </div>
     )
   }

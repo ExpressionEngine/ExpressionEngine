@@ -199,7 +199,7 @@ class Api_channel_fields extends Api {
 				$this->set_settings($row['field_id'], $settings);
 			}
 
-			if ($row['field_type'] == 'grid')
+			if ($row['field_type'] == 'grid' || $row['field_type'] == 'file_grid')
 			{
 				$gfields[$row['site_id']][$row['field_name']] = $row['field_id'];
 			}
@@ -252,6 +252,7 @@ class Api_channel_fields extends Api {
 			if (isset($fts[$field_type]))
 			{
 				$paths[] = PATH_THIRD.$fts[$field_type]['package'].'/';
+				$paths[] = PATH_ADDONS.$fts[$field_type]['package'].'/';
 			}
 
 			$paths[] = PATH_ADDONS.$field_type.'/';
