@@ -977,7 +977,8 @@ class Channel_form_lib
 
 		$this->output_js['json'] = array(
 			'EE'					=> $addt_js,
-			'mySettings'			=> $markItUp,
+			'EE.markitup'			=> new StdClass(),
+			'EE.markitup.settings'			=> $markItUp,
 		);
 
 		$include_jquery = ee()->TMPL->fetch_param('include_jquery');
