@@ -117,6 +117,7 @@ class Homepage extends CP_Controller {
 			// Gather the news
 			ee()->load->library(array('rss_parser', 'typography'));
 			$url_rss = 'https://expressionengine.com/blog/rss-feed/cpnews/';
+			$vars['url_rss'] = ee()->cp->masked_url($url_rss);
 			$news = array();
 
 			try
@@ -151,7 +152,6 @@ class Homepage extends CP_Controller {
 				}
 
 				$vars['news'] = $news;
-				$vars['url_rss'] = ee()->cp->masked_url($url_rss);
 			}
 			catch (\Exception $e)
 			{

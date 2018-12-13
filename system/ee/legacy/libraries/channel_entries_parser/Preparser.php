@@ -19,6 +19,7 @@ class EE_Channel_preparser {
 	public $subscriber_totals = array();
 	public $field_names = [];
 	public $grid_field_names = [];
+	public $fluid_field_names = [];
 
 	protected $_prefix;
 	protected $_tagdata;
@@ -84,6 +85,7 @@ class EE_Channel_preparser {
 		$this->subscriber_totals	 = $this->_subscriber_totals();
 		$this->field_names = $this->getFieldNamesInTagdata();
 		$this->grid_field_names = $this->getFieldNamesInTagdata('gfields');
+		$this->fluid_field_names = $this->getFieldNamesInTagdata('ffields');
 
 		// Run through component pre_processing steps, skipping any that
 		// were specified as being disabled.

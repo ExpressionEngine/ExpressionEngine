@@ -190,6 +190,12 @@ class Textarea_ft extends EE_Fieldtype {
 			'dir'      => $this->settings['field_text_direction']
 		);
 
+		if (isset($this->settings['field_show_formatting_btns']) &&
+			$this->settings['field_show_formatting_btns'] == 'y')
+		{
+			$params['data-markitup'] = 'yes';
+		}
+
 		if ($this->get_setting('field_disabled'))
 		{
 			$params['disabled'] = 'disabled';

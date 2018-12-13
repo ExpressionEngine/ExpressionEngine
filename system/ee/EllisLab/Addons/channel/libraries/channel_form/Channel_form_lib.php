@@ -977,7 +977,8 @@ class Channel_form_lib
 
 		$this->output_js['json'] = array(
 			'EE'					=> $addt_js,
-			'mySettings'			=> $markItUp,
+			'EE.markitup'			=> new StdClass(),
+			'EE.markitup.settings'			=> $markItUp,
 		);
 
 		$include_jquery = ee()->TMPL->fetch_param('include_jquery');
@@ -1123,7 +1124,7 @@ GRID_FALLBACK;
 		$include_jquery = ($this->bool_string($include_jquery, TRUE)) ? '&include_jquery=y' : '';
 
 		// RTE Selector parameter?
-		$rte_selector = ee()->TMPL->fetch_param('rte_selector', '.WysiHat-field');
+		$rte_selector = ee()->TMPL->fetch_param('rte_selector');
 
 		if ($rte_selector)
 		{

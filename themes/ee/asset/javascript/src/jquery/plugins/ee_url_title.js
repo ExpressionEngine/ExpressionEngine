@@ -26,6 +26,7 @@
 				newText       = $(this).val() || '',
 				multiReg      = new RegExp(separator + '{2,}', 'g'),
 				separatorReg  = (separator !== '_') ? (/\_/g) : (/\-/g),
+				dotSeparatorReg = (separator == '_') ? /\._/g : /\.\-/g,
 				newTextTemp   = '',
 				prefix        = (EE.publish.url_title_prefix) ? EE.publish.url_title_prefix : '',
 				pos,
@@ -66,6 +67,7 @@
 			newText = newText.replace(/\s+/g, separator);
 			newText = newText.replace(/\//g, separator);
 			newText = newText.replace(/[^a-z0-9\-\._]/g, '');
+			newText = newText.replace(dotSeparatorReg, separator);
 			newText = newText.replace(/\+/g, separator);
 			newText = newText.replace(multiReg, separator);
 			newText = newText.replace(/^[\-\_]|[\-\_]$/g, '');

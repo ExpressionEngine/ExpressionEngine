@@ -106,7 +106,7 @@ abstract class OptionFieldtype extends EE_Fieldtype {
 		{
 			if ($this->content_type() == 'grid')
 			{
-				if ( ! isset($data['field_pre_populate_id']))
+				if (empty($data['field_pre_populate_id']))
 				{
 					$data['field_pre_populate_id'] = '0_0';
 				}

@@ -388,7 +388,9 @@ class RunnerTest extends TestCase {
 			array('String Ends With',			'{if "testing" $= "ing"}yes{if:else}no{/if}',		'yes'),
 			array('Integer Ends With',			'{if 123456 $= 456}yes{if:else}no{/if}',			'yes'),
 			array('Float Ends With',			'{if 42.7 $= ".7"}yes{if:else}no{/if}',				'yes'),
-			array('String Regex Compare',		'{if "P25" ~ "/^P[0-9]+/"}yes{if:else}no{/if}',	'yes'),
+			array('String Regex Compare',		'{if "P25" ~ "/^P[0-9]+/"}yes{if:else}no{/if}',		'yes'),
+			array('String Regex Quanifier',		'{if "P25" ~ "/^P[0-9]{2}/"}yes{if:else}no{/if}',	'yes'),
+			array('String Regex Quanifier 2',	'{if "P25" ~ "/^P[0-9]{2,4}/"}yes{if:else}no{/if}',	'yes'),
 			array('Integer Regex Compare',		'{if 1234 ~ "/\d+/"}yes{if:else}no{/if}',			'yes'),
 			array('Float Regex Compare',		'{if 42.7 ~ "/\d+\.\d/"}yes{if:else}no{/if}',		'yes'),
 
@@ -404,7 +406,9 @@ class RunnerTest extends TestCase {
 			array('False String Ends With',		'{if "testing" $= "test"}no{if:else}yes{/if}',		'yes'),
 			array('False Integer Ends With',	'{if 123456 $= 123}no{if:else}yes{/if}',			'yes'),
 			array('False Float Ends With',		'{if 42.7 $= 42}no{if:else}yes{/if}',				'yes'),
-			array('False String Regex',			'{if "C25" ~ "/^P[0-9]+/"}no{if:else}yes{/if}',	'yes'),
+			array('False String Regex',			'{if "C25" ~ "/^P[0-9]+/"}no{if:else}yes{/if}',		'yes'),
+			array('False String Quanifier',		'{if "C25" ~ "/^P[0-9]{2}+/"}no{if:else}yes{/if}',	'yes'),
+			array('False String Quanifier 2',	'{if "C25" ~ "/^P[0-9]{2,4}+/"}no{if:else}yes{/if}','yes'),
 			array('False Integer Regex',		'{if 1234 ~ "/[^\d]+/"}no{if:else}yes{/if}',		'yes'),
 			array('False Float Regex',			'{if 42.7 ~ "/[^\d+\.\d]/"}no{if:else}yes{/if}',	'yes'),
 

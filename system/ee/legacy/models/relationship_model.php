@@ -89,7 +89,7 @@ class Relationship_model extends CI_Model {
 			return $this->overrideWithPreviewData([], $type, $fluid_field_data_id);
 		}
 
-		$db = $this->db;
+		$db = ee('db');
 
 		$db->distinct();
 		$db->select('L0.field_id as L0_field');
@@ -239,7 +239,7 @@ class Relationship_model extends CI_Model {
 
 				return $this->overrideGridRelationships($result, $data, array_keys($grid_field_ids), $fluid_field_data_id);
 			}
-			elseif ($fluid_field_data_id)
+			elseif ($fluid_field_data_id && ! is_int($fluid_field_data_id))
 			{
 				list($fluid_field, $field_id) = explode(',', $fluid_field_data_id);
 				$data = $data[$fluid_field]['fields'][$field_id];

@@ -537,8 +537,14 @@ class Rte_lib {
 	{
 		if ( ! ee()->session->cache('rte', 'loaded'))
 		{
+			$rte_toolset_id = 0;
+			if (isset(ee()->TMPL))
+			{
+				$rte_toolset_id = (int) ee()->TMPL->fetch_param('rte_toolset_id', 0);
+			}
+
 			ee()->javascript->output(
-				ee()->rte_lib->build_js(0, '.WysiHat-field', NULL, (REQ == 'CP'))
+				ee()->rte_lib->build_js($rte_toolset_id, '.WysiHat-field', NULL, (REQ == 'CP'))
 			);
 
 			ee()->session->set_cache('rte', 'loaded', TRUE);

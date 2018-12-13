@@ -440,26 +440,12 @@ class Cp {
 
 		if ( ! $version_file)
 		{
-			if (ee()->el_pings->getError() == 'license_disabled')
-			{
-				ee('CP/Alert')->makeBanner('error-getting-version')
-					->asIssue()
-					->withTitle(lang('cp_message_issue'))
-					->addToBody(sprintf(
-						lang('license_disabled'),
-						ee('CP/URL')->make('settings/license'),
-						ee()->cp->masked_url('https://expressionengine.com/store/purchases')
-					))
-					->now();
-				return;
-			}
-
 			ee('CP/Alert')->makeBanner('notices')
 				->asWarning()
 				->withTitle(lang('cp_message_warn'))
 				->addToBody(sprintf(
 					lang('new_version_error'),
-					ee()->cp->masked_url('https://expressionengine.com/store/purchases')
+					ee()->cp->masked_url(DOC_URL.'troubleshooting/error_messages/unexpected_error_occurred_attempting_to_download_the_current_expressionengine_version_number.html')
 				))
 				->now();
 		}

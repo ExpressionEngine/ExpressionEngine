@@ -124,6 +124,8 @@ class Runner {
 	 */
 	public function updateDatabase($step = NULL)
 	{
+		ee()->config->config['allow_extensions'] = 'n';
+
 		$db_updater = $this->makeDatabaseUpdaterService();
 
 		if ($db_updater->hasUpdatesToRun())
@@ -217,6 +219,8 @@ class Runner {
 		{
 			stdout('Successfully updated to ExpressionEngine ' . APP_VER, CLI_STDOUT_SUCCESS);
 		}
+
+		ee()->config->config['allow_extensions'] = 'n';
 
 		ee()->lang->loadfile('updater');
 		ee()->load->library('session');
