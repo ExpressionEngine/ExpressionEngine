@@ -347,7 +347,7 @@ class EE_Core {
 		}
 
 		// Load up any Snippets
-		if (REQ == 'ACTION' OR REQ == 'PAGE')
+		if (REQ == 'PAGE')
 		{
 			$this->loadSnippets();
 		}
