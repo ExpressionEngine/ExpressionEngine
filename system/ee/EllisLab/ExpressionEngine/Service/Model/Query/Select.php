@@ -54,11 +54,7 @@ class Select extends Query {
 			$aliases = array_merge(array($this->root_alias), array_keys($withs));
 			foreach ($aliases as $alias)
 			{
-				if (stripos($alias, ' as ') !== FALSE)
-				{
-					$parts = explode(' ', $alias);
-					$alias = end($parts);
-				}
+				list($from, $alias) = $this->splitAlias($alias);
 
 				$class = $this->getClass($alias);
 				if ( ! is_null($class::getMetaData('field_data')))
