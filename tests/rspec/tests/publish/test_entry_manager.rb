@@ -39,7 +39,7 @@ feature 'Entry Manager' do
 
     @page.find('.nav-create .nav-has-sub').click
     @page.all('.nav-create .nav-sub-menu a').each do |i|
-      i['href'].should_not include 'index.php?/cp/publish/create/' + channel[:channel_id].to_s
+      i['href'].should_not include 'admin.php.php?/cp/publish/create/' + channel[:channel_id].to_s
     end
   end
 
@@ -53,7 +53,7 @@ feature 'Entry Manager' do
     @page.find('.nav-edit .nav-has-sub').click
     @page.all('.nav-edit .nav-sub-menu a').each do |i|
       if i.text == channel[:channel_title]
-        i['href'].should include 'index.php?/cp/publish/edit/entry'
+        i['href'].should include 'admin.php?/cp/publish/edit/entry'
       end
     end
   end

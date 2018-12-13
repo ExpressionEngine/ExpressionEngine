@@ -852,6 +852,8 @@ class Channels extends AbstractChannelsController {
 		$channel_form_statuses = array_merge($channel_form_statuses, $deft_status_options);
 		ee()->load->model('admin_model');
 
+		$author_list = $this->authorList();
+
 		$sections = array(
 			array(
 				array(
@@ -1057,7 +1059,9 @@ class Channels extends AbstractChannelsController {
 							'type' => 'radio',
 							'choices' => $this->authorList(),
 							'filter_url' => ee('CP/URL')->make('channels/author-list')->compile(),
-							'value' => $channel_form->default_author,
+							'value' => isset($author_list[$channel_form->default_author])
+								? $channel_form->default_author
+								: NULL,
 							'no_results' => [
 								'text' => sprintf(lang('no_found'), lang('authors'))
 							]

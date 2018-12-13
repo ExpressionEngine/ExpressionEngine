@@ -418,8 +418,6 @@ $lang = array(
 
 'missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="%s" rel="external">expressionengine.com</a> and download a fresh copy.',
 
-'software_unregistered' => 'Software Unregistered',
-
 
 /* CP Errors */
 '404_does_not_exist' => '404: Item does not exist',

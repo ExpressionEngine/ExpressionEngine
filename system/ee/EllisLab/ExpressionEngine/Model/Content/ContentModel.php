@@ -506,6 +506,11 @@ abstract class ContentModel extends VariableColumnModel {
 			}
 			else
 			{
+				// Don't try to insert null values in case they're not allowed,
+				// fall back to column default instead
+				$values = array_filter($values, function($value) {
+					return ! is_null($value);
+				});
 				$values[$key_column] = $this->getId();
 				$query->set($values);
 				$query->insert($field->getTableName());
