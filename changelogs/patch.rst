@@ -33,6 +33,7 @@ Patch Release
 - Fixed a bug (#41) where text formatting buttons would not appear in Channel Form.
 - Fixed a bug (#42) where the ``rte_toolset_id=`` parameter in Channel Form wouldn't work.
 - Fixed a bug (#31) where the Model service could not eager-load third-party inverse relationships.
+- Fixed a bug (#34) where `app-about-info` would sometimes appear under some content elements.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
