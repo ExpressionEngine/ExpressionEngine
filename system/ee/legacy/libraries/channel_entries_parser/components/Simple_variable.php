@@ -285,8 +285,12 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 	 */
 	protected function _urls($data, $tagdata, $key, $val, $prefix, $mfields)
 	{
-			// URL was moved to a custom member field or dropped
-			$member_url = (isset($mfields['url'])) ? $data['m_field_id_'.$mfields['url'][0]] : '';
+		// URL was moved to a custom member field or dropped
+		if(isset($mfields['url']) && isset($data['m_field_id_'.$mfields['url'][0]])) {
+			$member_url = $data['m_field_id_'.$mfields['url'][0]];
+		} else {
+			$member_url = '';
+		}
 
 		if ($key == $prefix.'url_title')
 		{
