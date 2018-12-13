@@ -273,7 +273,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 	}
 
 	/**
-	 * Handle variables that end in _url.
+	 * Handle variables that contain "url"
 	 *
 	 * @param Array		The row data
 	 * @param String	The template text
