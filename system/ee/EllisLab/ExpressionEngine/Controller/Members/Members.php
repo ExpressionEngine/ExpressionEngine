@@ -1274,29 +1274,17 @@ class Members extends CP_Controller {
 
 			$heir = ee('Model')->get('Member', ee()->input->post('heir'))->first();
 
-			// We need to update the versions first else we'll trigger a new
-			// version when we update the entries
-			$entries = ee('Model')->get('ChannelEntryVersion')->filter('author_id', 'IN', $member_ids)->all();
+			ee()->db->where_in('author_id', $member_ids);
+			ee()->db->update('entry_versioning', array('author_id' => $heir->getId()));
 
-			foreach ($entries as $entry)
-			{
-				$entry->version_data['author_id'] = $heir->getId();
-			}
+			ee()->db->where_in('author_id', $member_ids);
+			ee()->db->update('channel_titles', array('author_id' => $heir->getId()));
 
-			$entries->Author = $heir;
-			$entries->save();
+			ee()->db->where_in('uploaded_by_member_id', $member_ids);
+			ee()->db->update('files', array('uploaded_by_member_id' => $heir->getId()));
 
-			$entries = ee('Model')->get('ChannelEntry')->filter('author_id', 'IN', $member_ids)->all();
-			$entries->Author = $heir;
-			$entries->save();
-
-			$entries = ee('Model')->get('File')->filter('uploaded_by_member_id', 'IN', $member_ids)->all();
-			$entries->UploadAuthor = $heir;
-			$entries->save();
-
-			$entries = ee('Model')->get('File')->filter('modified_by_member_id', 'IN', $member_ids)->all();
-			$entries->ModifyAuthor = $heir;
-			$entries->save();
+			ee()->db->where_in('modified_by_member_id', $member_ids);
+			ee()->db->update('files', array('modified_by_member_id' => $heir->getId()));
 
 			$heir->updateAuthorStats();
 		}

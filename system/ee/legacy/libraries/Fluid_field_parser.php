@@ -99,7 +99,7 @@ class Fluid_field_parser {
 			$fluid_field_ids[] = $fluid_field_fields[$field_name];
 		}
 
-		$this->data = $this->fetchFluidFields($pre_parser->entry_ids(), $fluid_field_ids);
+		$this->data = $this->fetchFluidFields($pre_parser->entry_ids(), array_unique($fluid_field_ids));
 
 		return TRUE;
 	}
@@ -207,7 +207,7 @@ class Fluid_field_parser {
 	 * @param array An array of fluid field ids
 	 * @return obj A Colletion of FluidField model entities
 	 */
-	private function overrideWithPreviewData(Collection $fluid_field_data, array $fluid_field_ids)
+	public function overrideWithPreviewData(Collection $fluid_field_data, array $fluid_field_ids)
 	{
 		$fluid_fields = $fluid_field_data->asArray();
 
@@ -215,6 +215,12 @@ class Fluid_field_parser {
 		{
 			$data = ee('LivePreview')->getEntryData();
 			$entry_id = $data['entry_id'];
+
+			// Remove existing fields for the previewed entry, we'll create dummy fields
+			// in their place
+			$fluid_fields = array_filter($fluid_fields, function($field) use ($entry_id) {
+				return $field->entry_id != $entry_id;
+			});
 
 			foreach ($fluid_field_ids as $fluid_field_id)
 			{
