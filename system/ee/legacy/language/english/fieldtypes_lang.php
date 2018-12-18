@@ -124,6 +124,10 @@ $lang = array(
 
 'file_dnd_choose_directory' => 'Please choose a directory',
 
+'file_dnd_choose_file_directory' => 'Choose a File Directory',
+
+'file_dnd_choose_directory_before_uploading' => 'you must choose a directory before uploading files',
+
 'file_dnd_choose_directory_btn' => 'Choose Directory',
 
 'file_dnd_choose_existing' => 'Choose Existing',

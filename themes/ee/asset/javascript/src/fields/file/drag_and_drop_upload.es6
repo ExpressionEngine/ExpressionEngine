@@ -21,7 +21,9 @@ class DragAndDropUpload extends React.Component {
     this.state = {
       files: [],
       directory: directoryName ? props.allowedDirectory : 'all',
-      directoryName: directoryName
+      directoryName: directoryName,
+      pendingFiles: null,
+      error: null
     }
     this.queue = new ConcurrencyQueue({concurrency: this.props.concurrency})
   }
@@ -30,8 +32,26 @@ class DragAndDropUpload extends React.Component {
     this.bindDragAndDropEvents()
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
     this.toggleErrorState(false)
+
+    if (this.state.directory != prevState.directory && this.state.pendingFiles) {
+      this.handleDroppedFiles(this.state.pendingFiles)
+    }
+
+    if (this.state.error && ! prevState.error) {
+      this.showErrorWithInvalidState(this.state.error)
+    }
+
+    if ( ! this.state.error && prevState.error) {
+      this.toggleErrorState(false)
+    }
+
+    if (prevState.error) {
+      this.setState({
+        error: null
+      })
+    }
   }
 
   getDirectoryName(directory) {
@@ -55,38 +75,15 @@ class DragAndDropUpload extends React.Component {
 
     // Handle upload
     this.dropZone.addEventListener('drop', (e) => {
+      let droppedFiles = e.dataTransfer.files
+
       if (this.state.directory == 'all') {
-        return this.showErrorWithInvalidState(EE.lang.file_dnd_choose_directory)
+        return this.setState({
+          pendingFiles: droppedFiles
+        })
       }
 
-      let files = Array.from(e.dataTransfer.files)
-      files = files.filter(file => file.type != '')
-
-      if ( ! this.props.multiFile && files.length > 1) {
-        return this.showErrorWithInvalidState(EE.lang.file_dnd_single_file_allowed)
-      }
-
-      if (this.props.shouldAcceptFiles && typeof this.props.shouldAcceptFiles(files) == 'string') {
-        let shouldAccept = this.props.shouldAcceptFiles(files)
-        if (typeof shouldAccept == 'string') {
-          return this.showErrorWithInvalidState(shouldAccept)
-        }
-      }
-
-      files = files.map(file => {
-        file.progress = 0
-        if (this.props.contentType == 'image' && ! file.type.match(/^image\//)) {
-          file.error = EE.lang.file_dnd_images_only
-        }
-        return file
-      })
-
-      this.setState({
-        files: this.state.files.concat(files)
-      })
-
-      files = files.filter(file => ! file.error)
-      this.queue.enqueue(files, (file => this.makeUploadPromise(file)))
+      this.handleDroppedFiles(droppedFiles)
     })
 
     let highlight = (e) => {
@@ -104,6 +101,45 @@ class DragAndDropUpload extends React.Component {
     ;['dragleave', 'drop'].forEach(eventName => {
       this.dropZone.addEventListener(eventName, unhighlight, false)
     })
+  }
+
+  handleDroppedFiles = (droppedFiles) => {
+    this.setState({
+      pendingFiles: null
+    })
+
+    let files = Array.from(droppedFiles)
+    files = files.filter(file => file.type != '')
+
+    if ( ! this.props.multiFile && files.length > 1) {
+      return this.setState({
+        error: EE.lang.file_dnd_single_file_allowed
+      })
+    }
+
+    if (this.props.shouldAcceptFiles && typeof this.props.shouldAcceptFiles(files) == 'string') {
+      let shouldAccept = this.props.shouldAcceptFiles(files)
+      if (typeof shouldAccept == 'string') {
+        return this.setState({
+          error: shouldAccept
+        })
+      }
+    }
+
+    files = files.map(file => {
+      file.progress = 0
+      if (this.props.contentType == 'image' && ! file.type.match(/^image\//)) {
+        file.error = EE.lang.file_dnd_images_only
+      }
+      return file
+    })
+
+    this.setState({
+      files: this.state.files.concat(files)
+    })
+
+    files = files.filter(file => ! file.error)
+    this.queue.enqueue(files, (file => this.makeUploadPromise(file)))
   }
 
   makeUploadPromise(file) {
@@ -215,11 +251,11 @@ class DragAndDropUpload extends React.Component {
     })
   }
 
-  errorsExist() {
+  warningsExist() {
     let erroredFile = this.state.files.find(file => {
       return file.error || file.duplicate
     })
-    return erroredFile != null
+    return erroredFile != null || this.state.pendingFiles
   }
 
   resolveConflict(file, response) {
@@ -243,7 +279,6 @@ class DragAndDropUpload extends React.Component {
 
   toggleErrorState(toggle) {
     $(this.dropZone)
-      .toggleClass('field-file-upload---invalid', toggle)
       .closest('fieldset, .fieldset-faux')
       .toggleClass('fieldset-invalid', toggle)
 
@@ -256,9 +291,22 @@ class DragAndDropUpload extends React.Component {
   }
 
   render() {
+    let heading = this.props.multiFile
+      ? EE.lang.file_dnd_drop_files
+      : EE.lang.file_dnd_drop_file
+
+    let subheading = this.state.directory == 'all'
+      ? EE.lang.file_dnd_choose_directory
+      : EE.lang.file_dnd_uploading_to.replace('%s', this.getDirectoryName(this.state.directory))
+
+    if (this.state.pendingFiles) {
+      heading = EE.lang.file_dnd_choose_file_directory
+      subheading = EE.lang.file_dnd_choose_directory_before_uploading
+    }
+
     return (
       <React.Fragment>
-        <div className={"field-file-upload" + (this.props.marginTop ? ' mt' : '') + (this.errorsExist() ? ' field-file-upload---warning' : '')}
+        <div className={"field-file-upload" + (this.props.marginTop ? ' mt' : '') + (this.warningsExist() ? ' field-file-upload---warning' : '') + (this.state.error ? ' field-file-upload---invalid' : '')}
           ref={(dropZone) => this.assignDropZoneRef(dropZone)}>
           {this.state.files.length > 0 &&
             <FileUploadProgressTable
@@ -270,16 +318,13 @@ class DragAndDropUpload extends React.Component {
               onResolveConflict={(file, response) => this.resolveConflict(file, response)}
             />}
           {this.state.files.length == 0 && <div className="field-file-upload__content">
-            {!this.props.multiFile && EE.lang.file_dnd_drop_file}
-            {this.props.multiFile && EE.lang.file_dnd_drop_files}
-            <em>
-              {this.state.directory == 'all' && EE.lang.file_dnd_choose_directory}
-              {this.state.directory != 'all' && EE.lang.file_dnd_uploading_to.replace('%s', this.getDirectoryName(this.state.directory))}
-            </em>
+            {heading}
+            <em>{subheading}</em>
           </div>}
           {this.state.files.length == 0 && this.props.allowedDirectory == 'all' &&
             <div className="field-file-upload__controls">
               <FilterSelect key={EE.lang.file_dnd_choose_existing}
+                action={this.state.directory == 'all'}
                 center={true}
                 keepSelectedState={true}
                 title={EE.lang.file_dnd_choose_directory_btn}

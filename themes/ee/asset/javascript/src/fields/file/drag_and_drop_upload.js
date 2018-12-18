@@ -39,6 +39,55 @@ function (_React$Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(DragAndDropUpload).call(this, props));
 
+    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleDroppedFiles", function (droppedFiles) {
+      _this.setState({
+        pendingFiles: null
+      });
+
+      var files = Array.from(droppedFiles);
+      files = files.filter(function (file) {
+        return file.type != '';
+      });
+
+      if (!_this.props.multiFile && files.length > 1) {
+        return _this.setState({
+          error: EE.lang.file_dnd_single_file_allowed
+        });
+      }
+
+      if (_this.props.shouldAcceptFiles && typeof _this.props.shouldAcceptFiles(files) == 'string') {
+        var shouldAccept = _this.props.shouldAcceptFiles(files);
+
+        if (typeof shouldAccept == 'string') {
+          return _this.setState({
+            error: shouldAccept
+          });
+        }
+      }
+
+      files = files.map(function (file) {
+        file.progress = 0;
+
+        if (_this.props.contentType == 'image' && !file.type.match(/^image\//)) {
+          file.error = EE.lang.file_dnd_images_only;
+        }
+
+        return file;
+      });
+
+      _this.setState({
+        files: _this.state.files.concat(files)
+      });
+
+      files = files.filter(function (file) {
+        return !file.error;
+      });
+
+      _this.queue.enqueue(files, function (file) {
+        return _this.makeUploadPromise(file);
+      });
+    });
+
     _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setDirectory", function (directory) {
       _this.setState({
         directory: directory || 'all'
@@ -82,7 +131,9 @@ function (_React$Component) {
     _this.state = {
       files: [],
       directory: directoryName ? props.allowedDirectory : 'all',
-      directoryName: directoryName
+      directoryName: directoryName,
+      pendingFiles: null,
+      error: null
     };
     _this.queue = new ConcurrencyQueue({
       concurrency: _this.props.concurrency
@@ -97,8 +148,26 @@ function (_React$Component) {
     }
   }, {
     key: "componentDidUpdate",
-    value: function componentDidUpdate() {
+    value: function componentDidUpdate(prevProps, prevState) {
       this.toggleErrorState(false);
+
+      if (this.state.directory != prevState.directory && this.state.pendingFiles) {
+        this.handleDroppedFiles(this.state.pendingFiles);
+      }
+
+      if (this.state.error && !prevState.error) {
+        this.showErrorWithInvalidState(this.state.error);
+      }
+
+      if (!this.state.error && prevState.error) {
+        this.toggleErrorState(false);
+      }
+
+      if (prevState.error) {
+        this.setState({
+          error: null
+        });
+      }
     }
   }, {
     key: "getDirectoryName",
@@ -125,48 +194,15 @@ function (_React$Component) {
 
 
       this.dropZone.addEventListener('drop', function (e) {
+        var droppedFiles = e.dataTransfer.files;
+
         if (_this2.state.directory == 'all') {
-          return _this2.showErrorWithInvalidState(EE.lang.file_dnd_choose_directory);
+          return _this2.setState({
+            pendingFiles: droppedFiles
+          });
         }
 
-        var files = Array.from(e.dataTransfer.files);
-        files = files.filter(function (file) {
-          return file.type != '';
-        });
-
-        if (!_this2.props.multiFile && files.length > 1) {
-          return _this2.showErrorWithInvalidState(EE.lang.file_dnd_single_file_allowed);
-        }
-
-        if (_this2.props.shouldAcceptFiles && typeof _this2.props.shouldAcceptFiles(files) == 'string') {
-          var shouldAccept = _this2.props.shouldAcceptFiles(files);
-
-          if (typeof shouldAccept == 'string') {
-            return _this2.showErrorWithInvalidState(shouldAccept);
-          }
-        }
-
-        files = files.map(function (file) {
-          file.progress = 0;
-
-          if (_this2.props.contentType == 'image' && !file.type.match(/^image\//)) {
-            file.error = EE.lang.file_dnd_images_only;
-          }
-
-          return file;
-        });
-
-        _this2.setState({
-          files: _this2.state.files.concat(files)
-        });
-
-        files = files.filter(function (file) {
-          return !file.error;
-        });
-
-        _this2.queue.enqueue(files, function (file) {
-          return _this2.makeUploadPromise(file);
-        });
+        _this2.handleDroppedFiles(droppedFiles);
       });
 
       var highlight = function highlight(e) {
@@ -273,12 +309,12 @@ function (_React$Component) {
       link.click();
     }
   }, {
-    key: "errorsExist",
-    value: function errorsExist() {
+    key: "warningsExist",
+    value: function warningsExist() {
       var erroredFile = this.state.files.find(function (file) {
         return file.error || file.duplicate;
       });
-      return erroredFile != null;
+      return erroredFile != null || this.state.pendingFiles;
     }
   }, {
     key: "resolveConflict",
@@ -301,7 +337,7 @@ function (_React$Component) {
   }, {
     key: "toggleErrorState",
     value: function toggleErrorState(toggle) {
-      $(this.dropZone).toggleClass('field-file-upload---invalid', toggle).closest('fieldset, .fieldset-faux').toggleClass('fieldset-invalid', toggle);
+      $(this.dropZone).closest('fieldset, .fieldset-faux').toggleClass('fieldset-invalid', toggle);
 
       if (!toggle) {
         $(this.dropZone).closest('.field-control').find('> em').remove();
@@ -312,8 +348,16 @@ function (_React$Component) {
     value: function render() {
       var _this5 = this;
 
+      var heading = this.props.multiFile ? EE.lang.file_dnd_drop_files : EE.lang.file_dnd_drop_file;
+      var subheading = this.state.directory == 'all' ? EE.lang.file_dnd_choose_directory : EE.lang.file_dnd_uploading_to.replace('%s', this.getDirectoryName(this.state.directory));
+
+      if (this.state.pendingFiles) {
+        heading = EE.lang.file_dnd_choose_file_directory;
+        subheading = EE.lang.file_dnd_choose_directory_before_uploading;
+      }
+
       return React.createElement(React.Fragment, null, React.createElement("div", {
-        className: "field-file-upload" + (this.props.marginTop ? ' mt' : '') + (this.errorsExist() ? ' field-file-upload---warning' : ''),
+        className: "field-file-upload" + (this.props.marginTop ? ' mt' : '') + (this.warningsExist() ? ' field-file-upload---warning' : '') + (this.state.error ? ' field-file-upload---invalid' : ''),
         ref: function ref(dropZone) {
           return _this5.assignDropZoneRef(dropZone);
         }
@@ -329,10 +373,11 @@ function (_React$Component) {
         }
       }), this.state.files.length == 0 && React.createElement("div", {
         className: "field-file-upload__content"
-      }, !this.props.multiFile && EE.lang.file_dnd_drop_file, this.props.multiFile && EE.lang.file_dnd_drop_files, React.createElement("em", null, this.state.directory == 'all' && EE.lang.file_dnd_choose_directory, this.state.directory != 'all' && EE.lang.file_dnd_uploading_to.replace('%s', this.getDirectoryName(this.state.directory)))), this.state.files.length == 0 && this.props.allowedDirectory == 'all' && React.createElement("div", {
+      }, heading, React.createElement("em", null, subheading)), this.state.files.length == 0 && this.props.allowedDirectory == 'all' && React.createElement("div", {
         className: "field-file-upload__controls"
       }, React.createElement(FilterSelect, {
         key: EE.lang.file_dnd_choose_existing,
+        action: this.state.directory == 'all',
         center: true,
         keepSelectedState: true,
         title: EE.lang.file_dnd_choose_directory_btn,

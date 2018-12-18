@@ -943,6 +943,8 @@ class File_field {
 
 		ee()->javascript->set_global([
 			'lang.file_dnd_choose_directory' => lang('file_dnd_choose_directory'),
+			'lang.file_dnd_choose_file_directory' => lang('file_dnd_choose_file_directory'),
+			'lang.file_dnd_choose_directory_before_uploading' => lang('file_dnd_choose_directory_before_uploading'),
 			'lang.file_dnd_choose_directory_btn' => lang('file_dnd_choose_directory_btn'),
 			'lang.file_dnd_choose_existing' => lang('file_dnd_choose_existing'),
 			'lang.file_dnd_dismiss' => lang('file_dnd_dismiss'),
