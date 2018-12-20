@@ -882,6 +882,7 @@ class Members extends CP_Controller {
 
 		$members = ee('Model')->get('Member', $ids)
 			->fields('member_id', 'username', 'screen_name', 'email', 'group_id')
+			->filter('group_id', 4)
 			->all();
 
 		if (ee()->config->item('approved_member_notification') == 'y')
@@ -948,6 +949,7 @@ class Members extends CP_Controller {
 
 		$members = ee('Model')->get('Member', $ids)
 			->fields('member_id', 'username', 'screen_name', 'email', 'group_id')
+			->filter('group_id', 4)
 			->all();
 
 		if (ee()->config->item('declined_member_notification') == 'y')
@@ -1014,6 +1016,7 @@ class Members extends CP_Controller {
 
 		$members = ee('Model')->get('Member', $ids)
 			->fields('member_id', 'username', 'screen_name', 'email', 'group_id', 'authcode')
+			->filter('group_id', 4)
 			->all();
 
 		$template = ee('Model')->get('SpecialtyTemplate')
