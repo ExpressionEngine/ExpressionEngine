@@ -409,23 +409,18 @@ class Categories extends AbstractCategoriesController {
 
 		if ( ! AJAX_REQUEST)
 		{
+			ee()->load->library('file_field');
 			$vars['sections'][0][] = array(
 				'title' => 'image',
 				'fields' => array(
-					'cat_image_select' => array(
-						'type' => 'radio',
-						'choices' => array(
-							'none' => 'cat_image_none',
-							'choose' => 'cat_image_choose'
-						),
-						'value' => 'none',
-						'encode' => FALSE
-					),
 					'cat_image' => array(
-						'type' => 'image',
-						'id' => 'cat_image',
-						'image' => ee()->file_field->parse_string($category->cat_image),
-						'value' => $category->cat_image
+						'type' => 'html',
+						'content' => ee()->file_field->dragAndDropField(
+							'cat_image',
+							$category->cat_image,
+							'all',
+							'image'
+						)
 					)
 				)
 			);
@@ -553,18 +548,6 @@ class Categories extends AbstractCategoriesController {
 		{
 			return ee()->cp->render('_shared/form', $vars);
 		}
-
-		$filepicker = new FilePicker();
-		$filepicker->inject(ee()->view);
-		ee()->cp->add_js_script('file', 'cp/channel/category_edit');
-		ee()->javascript->set_global(
-			'category_edit.filepicker_url',
-			ee('CP/URL')->make($filepicker->controller, array('directory' => 'all', 'type' => 'img'))->compile()
-		);
-
-		ee()->javascript->output('$(document).ready(function () {
-			EE.cp.categoryEdit.init();
-		});');
 
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('categories'), lang('category_manager'));
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('categories/group/'.$cat_group->group_id), $cat_group->group_name . ' &mdash; ' . lang('categories'));

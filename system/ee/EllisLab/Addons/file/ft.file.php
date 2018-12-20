@@ -154,80 +154,10 @@ class File_ft extends EE_Fieldtype {
 		$existing_limit			= (isset($this->settings['num_existing'])) ? $this->settings['num_existing'] : 0;
 		$show_existing			= (isset($this->settings['show_existing'])) ? $this->settings['show_existing'] : 'n';
 		$filebrowser			= (REQ == 'CP');
-		$dir					= NULL;
 
 		if (REQ == 'CP')
 		{
-			ee()->lang->loadfile('fieldtypes');
-
-			if ($allowed_file_dirs != 'all' && (int) $allowed_file_dirs)
-			{
-				$dir = ee('Model')->get('UploadDestination', $allowed_file_dirs)
-					->first();
-			}
-
-			if ($allowed_file_dirs == '' OR ! $dir)
-			{
-				$allowed_file_dirs = 'all';
-			}
-
-			$fp = ee('CP/FilePicker')->make($allowed_file_dirs);
-
-			$fp_link = $fp->getLink()
-				->withValueTarget($this->field_name)
-				->withNameTarget($this->field_name)
-				->withImage($this->field_name);
-
-			// If we are showing a single directory respect its default modal view
-			if ($dir)
-			{
-				switch ($dir->default_modal_view)
-				{
-					case 'thumb':
-						$fp_link->asThumbs();
-						break;
-
-					default:
-						$fp_link->asList();
-						break;
-				}
-			}
-
-			$fp_upload = clone $fp_link;
-			$fp_upload
-				->setText(lang('upload_file'))
-				->setAttribute('class', 'btn action file-field-filepicker');
-
-			$fp_edit = clone $fp_link;
-			$fp_edit
-				->setText('')
-				->setAttribute('title', lang('edit'))
-				->setAttribute('class', 'file-field-filepicker');
-
-			$file = $this->_parse_field($data);
-
-			if ($file)
-			{
-				$fp_edit->setSelected($file->file_id);
-			}
-
-			ee()->cp->add_js_script(array(
-				'file' => array(
-					'fields/file/cp'
-				),
-			));
-
-			return ee('View')->make('file:publish')->render(array(
-				'field_name' => $this->field_name,
-				'value' => $data,
-				'file' => $file,
-				'title' => ($file) ? $file->title : '',
-				'is_image' => ($file && $file->isImage()),
-				'thumbnail' => ee('Thumbnail')->get($file)->url,
-				'fp_url' => $fp->getUrl(),
-				'fp_upload' => $fp_upload,
-				'fp_edit' => $fp_edit
-			));
+			return ee()->file_field->dragAndDropField($this->field_name, $data, $allowed_file_dirs, $content_type);
 		}
 
 		$this->_frontend_js();

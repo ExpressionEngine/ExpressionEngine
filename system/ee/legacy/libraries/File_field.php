@@ -24,7 +24,7 @@ class File_field {
 	var $_upload_prefs = array();
 
 	/**
-	 * Creates a file field
+	 * Creates a front-end-friendly file field
 	 *
 	 * @param string $field_name The name of the field
 	 * @param string $data The data stored in the file field
@@ -156,6 +156,124 @@ class File_field {
 		ee()->load->add_package_path(PATH_THEMES . 'cp/default');
 		//return ee()->load->view('_shared/file/field', $vars, TRUE);
 		return ee('View')->make('_shared/file/field')->render($vars);
+	}
+
+	/**
+	 * Creates a drag-and-drop, control-panel only file field
+	 *
+	 * @param string $field_name The name of the field
+	 * @param string $data The data stored in the file field
+	 * 		e.g. {filedir_x}filename.ext
+	 * @param string $allowed_file_dirs The allowed file directory
+	 * 		Either 'all' or ONE directory ID
+	 * @param string $content_type The content type allowed.
+	 * 		Either 'all' or 'image'
+	 * @return string Fully rendered file field
+	 */
+	public function dragAndDropField($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all')
+	{
+		ee()->lang->loadfile('fieldtypes');
+
+		$dir = NULL;
+		if ($allowed_file_dirs != 'all' && (int) $allowed_file_dirs)
+		{
+			$dir = ee('Model')->get('UploadDestination', $allowed_file_dirs)
+				->first();
+		}
+
+		if ($allowed_file_dirs == '' OR ! $dir)
+		{
+			$allowed_file_dirs = 'all';
+		}
+
+		$fp = ee('CP/FilePicker')->make($allowed_file_dirs);
+
+		$fp_link = $fp->getLink()
+			->withValueTarget($field_name)
+			->withNameTarget($field_name)
+			->withImage($field_name);
+
+		// If we are showing a single directory respect its default modal view
+		if ($dir)
+		{
+			switch ($dir->default_modal_view)
+			{
+				case 'thumb':
+					$fp_link->asThumbs();
+					break;
+
+				default:
+					$fp_link->asList();
+					break;
+			}
+		}
+
+		$fp_edit = clone $fp_link;
+		$fp_edit
+			->setText('')
+			->setAttribute('title', lang('edit'))
+			->setAttribute('class', 'file-field-filepicker');
+
+		$file = $this->getFileModelForFieldData($data);
+
+		if ($file)
+		{
+			$fp_edit->setSelected($file->file_id);
+		}
+
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'fields/file/cp',
+				'fields/file/file_field_drag_and_drop'
+			),
+		));
+
+		ee()->file_field->loadDragAndDropAssets();
+
+		return ee('View')->make('file:publish')->render(array(
+			'field_name' => $field_name,
+			'value' => $data,
+			'file' => $file,
+			'title' => ($file) ? $file->title : '',
+			'is_image' => ($file && $file->isImage()),
+			'thumbnail' => ee('Thumbnail')->get($file)->url,
+			'fp_url' => $fp->getUrl(),
+			'fp_edit' => $fp_edit,
+			'allowed_directory' => $allowed_file_dirs,
+			'content_type' => $content_type
+		));
+	}
+
+	/**
+	 * Takes a string like `{filedir_1}somefile.jpg` and returns a file model for it
+	 *
+	 * @param string $data Standard file field data string
+	 * @return File Model
+	 */
+	private function getFileModelForFieldData($data)
+	{
+		$file = NULL;
+
+		// If the file field is in the "{filedir_n}image.jpg" format
+		if (preg_match('/^{filedir_(\d+)}/', $data, $matches))
+		{
+			// Set upload directory ID and file name
+			$dir_id = $matches[1];
+			$file_name = str_replace($matches[0], '', $data);
+
+			$file = ee('Model')->get('File')
+				->filter('file_name', $file_name)
+				->filter('upload_location_id', $dir_id)
+				->filter('site_id', ee()->config->item('site_id'))
+				->first();
+		}
+		// If file field is just a file ID
+		else if (! empty($data) && is_numeric($data))
+		{
+			$file = ee('Model')->get('File', $data)->first();
+		}
+
+		return $file;
 	}
 
 	/**
@@ -804,6 +922,59 @@ class File_field {
 		}
 
 		return $this->_manipulations[$dir_id];
+	}
+
+	/**
+	 * Loads proper JavaScript for drag and drop uploading
+	 */
+	public function loadDragAndDropAssets()
+	{
+		$upload_prefs = $this->_get_upload_prefs();
+
+		$upload_destinations = [];
+		foreach	($upload_prefs as $upload_pref)
+		{
+			if ($upload_pref['site_id'] == ee()->config->item('site_id') &&
+				$upload_pref['module_id'] == 0)
+			{
+				$upload_destinations[$upload_pref['id']] = $upload_pref['name'];
+			}
+		}
+
+		ee()->javascript->set_global([
+			'lang.file_dnd_choose_directory' => lang('file_dnd_choose_directory'),
+			'lang.file_dnd_choose_file_directory' => lang('file_dnd_choose_file_directory'),
+			'lang.file_dnd_choose_directory_before_uploading' => lang('file_dnd_choose_directory_before_uploading'),
+			'lang.file_dnd_choose_directory_btn' => lang('file_dnd_choose_directory_btn'),
+			'lang.file_dnd_choose_existing' => lang('file_dnd_choose_existing'),
+			'lang.file_dnd_dismiss' => lang('file_dnd_dismiss'),
+			'lang.file_dnd_drop_file' => lang('file_dnd_drop_file'),
+			'lang.file_dnd_drop_files' => lang('file_dnd_drop_files'),
+			'lang.file_dnd_file_name' => lang('file_dnd_file_name'),
+			'lang.file_dnd_filter_directories' => lang('file_dnd_filter_directories'),
+			'lang.file_dnd_images_only' => lang('file_dnd_images_only'),
+			'lang.file_dnd_progress' => lang('file_dnd_progress'),
+			'lang.file_dnd_resolve_conflict' => lang('file_dnd_resolve_conflict'),
+			'lang.file_dnd_single_file_allowed' => lang('file_dnd_single_file_allowed'),
+			'lang.file_dnd_unexpected_error' => lang('file_dnd_unexpected_error'),
+			'lang.file_dnd_uploading_to' => lang('file_dnd_uploading_to'),
+			'lang.file_dnd_upload_new' => lang('file_dnd_upload_new'),
+
+			'dragAndDrop.uploadDesinations' => ee('View/Helpers')->normalizedChoices($upload_destinations),
+			'dragAndDrop.endpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-upload')->compile(),
+			'dragAndDrop.resolveConflictEndpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-overwrite-or-rename')->compile(),
+			'dragAndDrop.filepickerEndpoint' => ee('CP/FilePicker')->make('all')->getUrl()->compile(),
+			'dragAndDrop.filepickerUploadEndpoint' => ee('CP/URL')->make('addons/settings/filepicker/upload')->compile()
+		]);
+
+		ee()->cp->add_js_script([
+			'file' => [
+				'fields/file/concurrency_queue',
+				'fields/file/file_upload_progress_table',
+				'fields/file/drag_and_drop_upload',
+				'fields/grid/file_grid'
+			],
+		]);
 	}
 }
 

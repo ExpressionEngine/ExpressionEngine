@@ -47,7 +47,9 @@
 				{
 					$field_class .= ' warned';
 				}
-				if ($errors->hasErrors($field->getName()) && $field->getType() != 'grid')
+				if ($errors->hasErrors($field->getName())
+					&& $field->getType() != 'grid'
+					&& $field->getType() != 'file_grid')
 				{
 					$field_class .= ' fieldset-invalid';
 				}
@@ -64,7 +66,7 @@
 					$field_class .= ' fieldset-faux-fluid';
 				}
 			?>
-			<?php if ($field->getType() == 'grid'): ?>
+			<?php if ($field->getType() == 'grid' || $field->getType() == 'file_grid'): ?>
 			<div class="fieldset-faux <?=$field_class?>">
 			<?php else: ?>
 			<fieldset class="<?=$field_class?>">
@@ -83,7 +85,7 @@
 						<?=$errors->renderError($field->getName())?>
 					<?php endif; ?>
 				</div>
-			<?php if ($field->getType() == 'grid'): ?>
+			<?php if ($field->getType() == 'grid' || $field->getType() == 'file_grid'): ?>
 			</div>
 			<?php else: ?>
 			</fieldset>

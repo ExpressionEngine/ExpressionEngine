@@ -164,6 +164,7 @@ EE.cp.fieldToggleDisable = function(context, fieldName) {
 	$('fieldset :input:hidden', context)
 		.not('.filter-item__search input')
 		.not('.fields-grid-item:visible :input') // Don't disable collapsed Grid settings
+		.not('.fields-grid-setup:visible .fields-grid-item.hidden :input') // Don't disable phantom Grid columns
 		.attr('disabled', true);
 	$('fieldset:visible input[type=hidden]', context).attr('disabled', false);
 
@@ -174,6 +175,8 @@ EE.cp.fieldToggleDisable = function(context, fieldName) {
 			.attr('disabled', true);
 		$('fieldset:visible :input', context)
 			.not('.grid-blank-row :input')
+			.attr('disabled', false);
+		$('.fields-grid-setup:visible .fields-grid-item.hidden :input')
 			.attr('disabled', false);
 	});
 }

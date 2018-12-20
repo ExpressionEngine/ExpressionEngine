@@ -1702,11 +1702,19 @@ class EE_Schema {
 		}
 
 		// Default field types
-		$default_fts = array('select', 'text', 'textarea', 'date', 'duration', 'email_address', 'file', 'fluid_field', 'grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'toggle', 'url');
+		$default_fts = array('select', 'text', 'textarea', 'date', 'duration', 'email_address', 'file', 'fluid_field', 'grid', 'file_grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'toggle', 'url');
 
 		foreach($default_fts as $name)
 		{
-			$fieldtype = require SYSPATH.'/ee/EllisLab/Addons/'.$name.'/addon.setup.php';
+			$addon_setup_path = SYSPATH.'/ee/EllisLab/Addons/'.$name.'/addon.setup.php';
+			if (file_exists($addon_setup_path))
+			{
+				$fieldtype = require SYSPATH.'/ee/EllisLab/Addons/'.$name.'/addon.setup.php';
+			}
+			else
+			{
+				$fieldtype = ['version' => '1.0.0'];
+			}
 
 			$Q[] = "INSERT INTO `exp_fieldtypes`
 				(`name`,`version`,`settings`,`has_global_settings`)

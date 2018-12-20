@@ -357,6 +357,7 @@ class SelectList extends React.Component {
                 {props.filters && props.filters.map(filter =>
                   <FilterSelect key={filter.name}
                     name={filter.name}
+                    keepSelectedState={true}
                     title={filter.title}
                     placeholder={filter.placeholder}
                     items={filter.items}

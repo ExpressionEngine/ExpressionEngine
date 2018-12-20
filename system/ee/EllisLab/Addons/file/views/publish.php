@@ -1,7 +1,4 @@
 <input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
-<div class="fields-upload-btn<?php if ($file) echo " hidden";?>">
-	<?= $fp_upload ?>
-</div>
 
 <div class="fields-upload-chosen <?php if ( ! $file) echo " hidden";?>">
 	<div class="fields-upload-chosen-file">
@@ -23,5 +20,23 @@
 				<b><?=$file_info['filename']?></b>.<?=$file_info['extension']?>
 			<?php endif ?>
 		</p>
+	</div>
+</div>
+
+<?php
+$component = [
+	'allowedDirectory' => $allowed_directory,
+	'contentType' => $content_type,
+	'file' => $file
+];
+?>
+
+<div data-file-field-react="<?=base64_encode(json_encode($component))?>">
+	<div class="fields-select">
+		<div class="field-inputs">
+			<label class="field-loading">
+				<?=lang('loading')?><span></span>
+			</label>
+		</div>
 	</div>
 </div>

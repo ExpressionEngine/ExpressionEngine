@@ -590,6 +590,8 @@ class Members extends CP_Controller {
 
 		foreach ($members as $member)
 		{
+			$can_edit_member = ee()->session->userdata('group_id') == 1 || $member->MemberGroup->getId() == 1;
+
 			$edit_link = ee('CP/URL')->make('members/profile/', array('id' => $member->member_id));
 			$toolbar = array(
 				'edit' => array(
@@ -624,13 +626,13 @@ class Members extends CP_Controller {
 
 			$email = "<a href = '" . ee('CP/URL')->make('utilities/communicate/member/' . $member->member_id) . "'>".$member->email."</a>";
 
-			if (ee()->cp->allowed_group('can_edit_members'))
+			if ($can_edit_member && ee()->cp->allowed_group('can_edit_members'))
 			{
 				$username_display = "<a href = '" . $edit_link . "'>". $member->username."</a>";
 			}
 			else
 			{
-				$username_display = $member['username'];
+				$username_display = $member->username;
 				unset($toolbar['edit']);
 			}
 
@@ -650,9 +652,13 @@ class Members extends CP_Controller {
 			$toolbar = array('toolbar_items' => $toolbar);
 
 			// add the toolbar if they can edit members
-			if (ee()->cp->allowed_group('can_edit_members'))
+			if ($can_edit_member && ee()->cp->allowed_group('can_edit_members'))
 			{
 				$column[] = $toolbar;
+			}
+			else
+			{
+				$column[] = ['toolbar_items' => []];
 			}
 
 			// add the checkbox if they can delete members
@@ -663,7 +669,8 @@ class Members extends CP_Controller {
 					'value' => $member->member_id,
 					'data' => array(
 						'confirm' => lang('member') . ': <b>' . htmlentities($member->username, ENT_QUOTES, 'UTF-8') . '</b>'
-					)
+					),
+					'disabled' => ! $can_edit_member
 				);
 			}
 
@@ -755,6 +762,8 @@ class Members extends CP_Controller {
 
 		foreach ($members as $member)
 		{
+			$can_edit_member = ee()->session->userdata('group_id') == 1 || $member['group_id'] != 1;
+
 			$attributes = array();
 			$edit_link = ee('CP/URL')->make('members/profile/', array('id' => $member['member_id']));
 			$toolbar = array('toolbar_items' => array(
@@ -773,7 +782,7 @@ class Members extends CP_Controller {
 				case 'Pending':
 					$group = "<span class='st-pending'>" . lang('pending') . "</span>";
 					$attributes['class'] = 'pending';
-					if (ee()->cp->allowed_group('can_edit_members'))
+					if ($can_edit_member && ee()->cp->allowed_group('can_edit_members'))
 					{
 						$toolbar['toolbar_items']['approve'] = array(
 							'href' => '#',
@@ -793,7 +802,7 @@ class Members extends CP_Controller {
 
 			$email = "<a href = '" . ee('CP/URL')->make('utilities/communicate/member/' . $member['member_id']) . "'>".$member['email']."</a>";
 
-			if (ee()->cp->allowed_group('can_edit_members'))
+			if ($can_edit_member && ee()->cp->allowed_group('can_edit_members'))
 			{
 				$username_display = "<a href = '" . $edit_link . "'>". $member['username']."</a>";
 			}
@@ -818,9 +827,13 @@ class Members extends CP_Controller {
 			);
 
 			// add the toolbar if they can edit members
-			if (ee()->cp->allowed_group('can_edit_members'))
+			if ($can_edit_member && ee()->cp->allowed_group('can_edit_members'))
 			{
 				$row['columns'][] = $toolbar;
+			}
+			else
+			{
+				$row['columns'][] = ['toolbar_items' => []];
 			}
 
 			// add the checkbox if they can delete members
@@ -831,7 +844,8 @@ class Members extends CP_Controller {
 					'value' => $member['member_id'],
 					'data'	=> array(
 						'confirm' => lang('member') . ': <b>' . htmlentities($member['username'], ENT_QUOTES, 'UTF-8') . '</b>'
-					)
+					),
+					'disabled' => ! $can_edit_member
 				);
 			}
 
@@ -868,6 +882,7 @@ class Members extends CP_Controller {
 
 		$members = ee('Model')->get('Member', $ids)
 			->fields('member_id', 'username', 'screen_name', 'email', 'group_id')
+			->filter('group_id', 4)
 			->all();
 
 		if (ee()->config->item('approved_member_notification') == 'y')
@@ -934,6 +949,7 @@ class Members extends CP_Controller {
 
 		$members = ee('Model')->get('Member', $ids)
 			->fields('member_id', 'username', 'screen_name', 'email', 'group_id')
+			->filter('group_id', 4)
 			->all();
 
 		if (ee()->config->item('declined_member_notification') == 'y')
@@ -1000,6 +1016,7 @@ class Members extends CP_Controller {
 
 		$members = ee('Model')->get('Member', $ids)
 			->fields('member_id', 'username', 'screen_name', 'email', 'group_id', 'authcode')
+			->filter('group_id', 4)
 			->all();
 
 		$template = ee('Model')->get('SpecialtyTemplate')

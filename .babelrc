@@ -1,12 +1,9 @@
 {
-	"only": [
-		"*.babel",
-		"*.jsx",
-		"*.es6"
-	],
 	"presets": [
-		"es2015",
-		"react"
+		"@babel/preset-env",
+		"@babel/preset-react"
 	],
-	"plugins": ["transform-class-properties"]
+	"plugins": [
+		"@babel/plugin-proposal-class-properties"
+	]
 }

@@ -87,7 +87,9 @@ class FilterSelect extends React.Component {
   }
 
   selectItem = (event, item) => {
-    this.setState({ selected: item })
+    if (this.props.keepSelectedState) {
+      this.setState({ selected: item })
+    }
     this.props.onSelect(item ? item.value : null)
     $(event.target).closest('.filter-item').find('.js-filter-link').click()
     event.preventDefault()
@@ -95,8 +97,8 @@ class FilterSelect extends React.Component {
 
   render () {
     return (
-      <div className="filter-item">
-        <a href="#" className="js-filter-link filter-item__link filter-item__link--has-submenu" onClick={this.toggle}>{this.props.title}</a>
+      <div className={"filter-item" + (this.props.center ? ' filter-item--center' : '')}>
+        <a href="#" className={"js-filter-link filter-item__link filter-item__link--has-submenu" + (this.props.action ? ' filter-item__link--action' : '')} onClick={this.toggle}>{this.props.title}</a>
         <div className="filter-submenu">
           {this.state.items.length > 7 &&
             <div className="filter-submenu__search">
@@ -112,7 +114,7 @@ class FilterSelect extends React.Component {
           }
           <div className="filter-submenu__scroll">
             {this.state.items.map(item =>
-              <a href="#" key={item.value} className="filter-submenu__link filter-submenu__link---active" onClick={(e) => this.selectItem(e, item)}>{item.label}</a>
+              <a href="#" key={item.value} className={"filter-submenu__link filter-submenu__link---active " + this.props.itemClass} rel={this.props.rel} onClick={(e) => this.selectItem(e, item)}>{item.label}</a>
             )}
           </div>
         </div>
