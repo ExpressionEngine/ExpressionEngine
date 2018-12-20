@@ -17,7 +17,7 @@ Patch Release
    - Added <new feature>
    - Fixed Bug (#<issue number>) where <bug behavior>.
 
-- Fixed a bug (#34) where `app-about-info` would sometimes appear under some content elements.
+
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
