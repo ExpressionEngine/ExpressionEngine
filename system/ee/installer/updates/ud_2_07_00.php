@@ -379,7 +379,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 								$setting_name = 'default_author';
 								break;
 							default:
-								continue; // unknown setting name
+								continue 2; // unknown setting name
 						}
 
 						$grouped_settings[$site_id][$channel_id][$setting_name] = $value;

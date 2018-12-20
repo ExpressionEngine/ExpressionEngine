@@ -57,6 +57,11 @@ class Profile extends CP_Controller {
 			show_404();
 		}
 
+		if ($this->member->group_id == 1 && ee()->session->userdata('group_id') != 1)
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+
 		ee()->lang->loadfile('members');
 		ee()->lang->loadfile('myaccount');
 		ee()->load->model('member_model');
@@ -244,6 +249,7 @@ class Profile extends CP_Controller {
 							->limit(100)
 							->all();
 
+						$vars['heirs'] = [];
 						foreach ($heirs as $heir)
 						{
 							$vars['heirs'][$heir->getId()] = ($heir->screen_name != '') ? $heir->screen_name : $heir->username;;
