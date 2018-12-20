@@ -244,6 +244,7 @@ class Profile extends CP_Controller {
 							->limit(100)
 							->all();
 
+						$vars['heirs'] = [];
 						foreach ($heirs as $heir)
 						{
 							$vars['heirs'][$heir->getId()] = ($heir->screen_name != '') ? $heir->screen_name : $heir->username;;
