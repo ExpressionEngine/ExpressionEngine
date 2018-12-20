@@ -894,7 +894,7 @@ class EE_Typography {
 	{
 		if ( ! isset($this->quote_marker) )
 		{
-			$this->quote_marker = md5(time(0) . 'quote_marker');
+			$this->quote_marker = md5(time() . 'quote_marker');
 		}
 
 		$single_quote_marker = '{{SINGLEQUOTE:' . $this->quote_marker . '}}';
