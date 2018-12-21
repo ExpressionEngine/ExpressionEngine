@@ -17,7 +17,7 @@ class Updater {
 
 	var $version_suffix = '';
 
-	public $affected_tables = ['exp_channels'];
+	public $affected_tables = ['channels'];
 
 	/**
 	 * Do Update

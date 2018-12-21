@@ -18,7 +18,7 @@ class Updater {
 	var $version_suffix = '';
 
 	// This isn't complete, more for testing
-	public $affected_tables = ['exp_member_groups', 'exp_channels'];
+	public $affected_tables = ['member_groups', 'channels'];
 
 	/**
 	 * Do Update
