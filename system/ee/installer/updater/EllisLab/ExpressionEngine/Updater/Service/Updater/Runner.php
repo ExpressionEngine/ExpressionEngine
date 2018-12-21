@@ -76,6 +76,12 @@ class Runner {
 
 		$backup = ee('Database/Backup', $working_file);
 		$backup->makeCompactFile();
+
+		$dbprefix = ee('Database')->getConfig()->get('dbprefix');
+		$affected_tables = array_map(function($table) use ($dbprefix) {
+			return $dbprefix.$table;
+		}, $affected_tables);
+
 		$backup->setTablesToBackup($affected_tables);
 
 		if (empty($table_name))

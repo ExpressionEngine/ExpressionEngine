@@ -17,7 +17,7 @@ class Updater {
 
 	var $version_suffix = '';
 
-	public $affected_tables = ['exp_fieldtypes'];
+	public $affected_tables = ['fieldtypes'];
 
 	/**
 	 * Do Update

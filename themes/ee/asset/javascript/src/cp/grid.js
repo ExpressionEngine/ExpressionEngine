@@ -53,7 +53,7 @@ Grid.Publish = function(field, settings) {
 		return;
 	}
 	this.root = $(field);
-	this.parentContainer = this.root.parents('.fieldset-faux');
+	this.parentContainer = this.root.parents('.fieldset-faux, .fluid-field');
 	this.blankRow = $('tr.grid-blank-row', this.root);
 	this.emptyField = $('tr.no-results', this.root);
 	this.tableActions = $('tr.tbl-action', this.root);

@@ -116,5 +116,6 @@ $(document).ready(function () {
   FileGrid.renderFields();
 });
 FluidField.on('file_grid', 'add', function (field) {
+  EE.grid($('table[data-grid-settings]', field));
   FileGrid.renderFields(field);
 });
