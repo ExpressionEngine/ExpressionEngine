@@ -17,7 +17,7 @@ Patch Release
    - Added <new feature>
    - Fixed Bug (#<issue number>) where <bug behavior>.
 
-
+- Fixed Bug (#70) where a template rendered on a POST submission could break Channel Form behavior on that template.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
