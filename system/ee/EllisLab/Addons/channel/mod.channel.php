@@ -5532,30 +5532,6 @@ class Channel {
 	}
 
 	/**
-	  *  Ajax Image Upload
-	  *
-	  * Used by the SAEF
-	  */
-
-	public function filemanager_endpoint($function = '', $params = array())
-	{
-		ee()->load->library('filemanager');
-		ee()->lang->loadfile('content');
-		//ee()->load->library('cp');
-
-		$config = array();
-
-		if ($function)
-		{
-			ee()->filemanager->_initialize($config);
-
-			return call_user_func_array(array($this->filemanager, $function), $params);
-		}
-
-		ee()->filemanager->process_request($config);
-	}
-
-	/**
 	  *  Smiley pop up
 	  *
 	  * Used by the SAEF
