@@ -456,7 +456,7 @@ class Member_auth extends Member {
 		$return = reduce_double_slashes(ee()->functions->form_backtrack());
 
 		// Is this a forum request?
-		if (ee()->input->get_post('FROM') == 'forum')
+		if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed'))
 		{
 			if (ee()->input->get_post('board_id') !== FALSE &&
 				is_numeric(ee()->input->get_post('board_id')))
@@ -567,7 +567,7 @@ class Member_auth extends Member {
 		$name = '';
 		unset($url);
 
-		if (ee()->input->get_post('FROM') == 'forum')
+		if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed'))
 		{
 			if (ee()->input->get_post('board_id') !== FALSE &&
 				is_numeric(ee()->input->get_post('board_id')))
@@ -682,7 +682,7 @@ class Member_auth extends Member {
 			return ee()->output->show_user_error('submission', array(lang('invalid_email_address')));
 		}
 
-		if (ee()->input->get_post('FROM') == 'forum')
+		if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed'))
 		{
 			if (ee()->input->get_post('board_id') !== FALSE &&
 				is_numeric(ee()->input->get_post('board_id')))
@@ -967,7 +967,7 @@ class Member_auth extends Member {
 		// their session has expired.  In that case, the only information we have
 		// about where they came from is in the POST data (where it came from the GET data).
 		// Use it to get them as close as possible to where they started.
-		else if (ee()->input->get_post('FROM') == 'forum')
+		else if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed'))
 		{
 			$board_id = ee()->input->get_post('board_id');
 			$board_id = ($board_id === FALSE OR ! is_numeric($board_id)) ? 1 : $board_id;
