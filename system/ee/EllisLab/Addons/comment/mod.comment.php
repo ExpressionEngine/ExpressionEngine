@@ -1998,10 +1998,10 @@ class Comment {
 		if (ee()->input->post('save_info'))
 		{
 			ee()->input->set_cookie('save_info', 'yes', 60*60*24*365);
-			ee()->input->set_cookie('my_name', $_POST['name'], 60*60*24*365);
-			ee()->input->set_cookie('my_email', $_POST['email'], 60*60*24*365);
-			ee()->input->set_cookie('my_url', $_POST['url'], 60*60*24*365);
-			ee()->input->set_cookie('my_location', $_POST['location'], 60*60*24*365);
+			ee('Cookie')->setSignedCookie('my_name', $_POST['name'], 60*60*24*365);
+			ee('Cookie')->setSignedCookie('my_email', $_POST['email'], 60*60*24*365);
+			ee('Cookie')->setSignedCookie('my_url', $_POST['url'], 60*60*24*365);
+			ee('Cookie')->setSignedCookie('my_location', $_POST['location'], 60*60*24*365);
 		}
 		else
 		{
