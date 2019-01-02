@@ -1007,6 +1007,8 @@ class Comment {
 
 				$name = ( ! isset($_POST['name'])) ? $name : $_POST['name'];
 
+				$name = ee()->functions->encode_ee_tags($name, TRUE);
+
 				$tagdata = ee()->TMPL->swap_var_single($key, form_prep($name), $tagdata);
 			}
 
@@ -1018,6 +1020,8 @@ class Comment {
 			{
 				$email = ( ! isset($_POST['email'])) ? ee()->session->userdata['email'] : $_POST['email'];
 
+				$email = ee()->functions->encode_ee_tags($email, TRUE);
+
 				$tagdata = ee()->TMPL->swap_var_single($key, form_prep($email), $tagdata);
 			}
 
@@ -1028,6 +1032,8 @@ class Comment {
 			if ($key == 'url')
 			{
 				$url = ( ! isset($_POST['url'])) ? ee()->session->userdata['url'] : $_POST['url'];
+
+				$url = ee()->functions->encode_ee_tags($url, TRUE);
 
 				if ($url == '')
 				{
@@ -1044,6 +1050,8 @@ class Comment {
 			if ($key == 'location')
 			{
 				$location = ( ! isset($_POST['location'])) ? ee()->session->userdata['location'] : $_POST['location'];
+
+				$location = ee()->functions->encode_ee_tags($location, TRUE);
 
 				$tagdata = ee()->TMPL->swap_var_single($key, form_prep($location), $tagdata);
 			}
