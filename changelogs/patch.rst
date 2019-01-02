@@ -17,7 +17,7 @@ Patch Release
    - Added <new feature>
    - Fixed Bug (#<issue number>) where <bug behavior>.
 
-
+- Fixed a bug where the Member Auth module could run queries on Forum tables if Forum was not installed.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
