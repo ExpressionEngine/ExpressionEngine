@@ -162,7 +162,7 @@ class Tag {
 		{
 			list($modifier, $content, $params, $chunk) = $chk_data;
 
-			if ($field->getType() == 'grid')
+			if ($field->getType() == 'grid' || $field->getType() == 'file_grid')
 			{
 				ee()->load->library('grid_parser');
 				ee()->grid_parser->grid_field_names[$field->getId()][$field->getItem('fluid_field_data_id')] = $field->getName();

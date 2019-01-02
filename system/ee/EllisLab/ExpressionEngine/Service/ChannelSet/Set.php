@@ -854,7 +854,7 @@ class Set {
 
 		foreach ($data as $key => $value)
 		{
-			if ($type == 'grid' && $key == 'columns')
+			if (($type == 'grid' || $type == 'file_grid') && $key == 'columns')
 			{
 				$this->importGrid($field, $value);
 

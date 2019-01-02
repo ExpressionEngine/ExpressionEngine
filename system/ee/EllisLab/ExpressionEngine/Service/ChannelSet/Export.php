@@ -357,7 +357,7 @@ class Export {
 		{
 			$result->settings = $this->exportFileFieldSettings($field);
 		}
-		elseif ($field->field_type == 'grid')
+		elseif ($field->field_type == 'grid' || $field->field_type == 'file_grid')
 		{
 			$result->columns = $this->exportGridFieldColumns($field);
 		}

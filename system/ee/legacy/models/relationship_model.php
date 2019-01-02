@@ -215,7 +215,7 @@ class Relationship_model extends CI_Model {
 
 				foreach ($all_fields as $field)
 				{
-					if ($field->field_type == 'grid')
+					if ($field->field_type == 'grid' || $field->field_type == 'file_grid')
 					{
 						$grid_field_ids[$field->getId()] = TRUE;
 					}

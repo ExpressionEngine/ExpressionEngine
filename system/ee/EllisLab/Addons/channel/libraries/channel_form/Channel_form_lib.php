@@ -478,7 +478,9 @@ class Channel_form_lib
 				// use fieldtype display_field method
 				elseif (preg_match('/^field:(.*)$/', $key, $match))
 				{
-					if ($this->get_field_type($match[1]) == 'checkboxes' OR $this->get_field_type($match[1]) == 'grid')
+					if ($this->get_field_type($match[1]) == 'checkboxes' ||
+						$this->get_field_type($match[1]) == 'grid' ||
+						$this->get_field_type($match[1]) == 'file_grid')
 					{
 						$checkbox_fields[] = $match[1];
 					}
