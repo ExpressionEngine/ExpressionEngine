@@ -1214,11 +1214,11 @@ class EE_Session {
 	{
 		// my_* cookies used by guests in the comment form
 		$this->userdata = array(
-			'username'			=> ee()->input->cookie('my_name', TRUE),
+			'username'			=> ee('Cookie')->getSignedCookie('my_name', TRUE),
 			'screen_name'		=> '',
-			'email'				=> ee()->input->cookie('my_email', TRUE),
-			'url'				=> ee()->input->cookie('my_url', TRUE),
-			'location'			=> ee()->input->cookie('my_location', TRUE),
+			'email'				=> ee('Cookie')->getSignedCookie('my_email', TRUE),
+			'url'				=> ee('Cookie')->getSignedCookie('my_url', TRUE),
+			'location'			=> ee('Cookie')->getSignedCookie('my_location', TRUE),
 			'language'			=> '',
 			'timezone'			=> ee()->config->item('default_site_timezone'),
 			'date_format'		=> ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y',
