@@ -1240,13 +1240,10 @@ class EE_Session {
 	 */
 	protected function _prep_flashdata()
 	{
-		if ($cookie = ee()->input->cookie('flash'))
+		if ($this->flashdata = ee('Cookie')->getSignedCookie('flash'))
 		{
-			if ($this->flashdata = ee('Encrypt/Cookie')->getVerifiedCookieData($cookie))
-			{
-				$this->_age_flashdata();
-				return;
-			}
+			$this->_age_flashdata();
+			return;
 		}
 
 		$this->flashdata = array();
@@ -1271,8 +1268,7 @@ class EE_Session {
 	{
 		if (count($this->flashdata) > 0)
 		{
-			$payload = ee('Encrypt/Cookie')->signCookieData($this->flashdata);
-			ee()->input->set_cookie('flash' , $payload, 86500);
+			ee('Cookie')->setSignedCookie('flash', $this->flashdata, 86500);
 		}
 	}
 
