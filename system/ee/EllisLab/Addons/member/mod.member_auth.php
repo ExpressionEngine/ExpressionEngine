@@ -462,7 +462,7 @@ class Member_auth extends Member {
 				is_numeric(ee()->input->get_post('board_id')))
 			{
 				$query = ee()->db->select('board_label')
-					->where('board_id', ee()->input->get_post('board_id'))
+					->where('board_id', (int) ee()->input->get_post('board_id'))
 					->get('forum_boards');
 			}
 			else
@@ -573,7 +573,7 @@ class Member_auth extends Member {
 				is_numeric(ee()->input->get_post('board_id')))
 			{
 				$query = ee()->db->select("board_forum_url, board_label")
-					->where('board_id', ee()->input->get_post('board_id'))
+					->where('board_id', (int) ee()->input->get_post('board_id'))
 					->get('forum_boards');
 			}
 			else
@@ -688,7 +688,7 @@ class Member_auth extends Member {
 				is_numeric(ee()->input->get_post('board_id')))
 			{
 				$query = ee()->db->select('board_forum_url, board_id, board_label')
-					->where('board_id', ee()->input->get_post('board_id'))
+					->where('board_id', (int) ee()->input->get_post('board_id'))
 					->get('forum_boards');
 			}
 			else
