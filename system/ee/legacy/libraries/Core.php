@@ -69,8 +69,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20181221');
-		define('APP_VER',		'4.3.7');
+		define('APP_BUILD',		'20190103');
+		define('APP_VER',		'4.3.8');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
