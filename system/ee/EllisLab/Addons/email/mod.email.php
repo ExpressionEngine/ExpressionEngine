@@ -94,6 +94,7 @@ class Email {
 			if ($key == 'member_name')
 			{
 				$name = (ee()->session->userdata['screen_name'] != '') ? ee()->session->userdata['screen_name'] : ee()->session->userdata['username'];
+				$name = ee()->functions->encode_ee_tags($name, TRUE);
 				$tagdata = ee()->TMPL->swap_var_single($key, form_prep($name), $tagdata);
 			}
 
@@ -101,6 +102,7 @@ class Email {
 			if ($key == 'member_email')
 			{
 				$email = (ee()->session->userdata['email'] == '') ? '' : ee()->session->userdata['email'];
+				$email = ee()->functions->encode_ee_tags($email, TRUE);
 				$tagdata = ee()->TMPL->swap_var_single($key, form_prep($email), $tagdata);
 			}
 
