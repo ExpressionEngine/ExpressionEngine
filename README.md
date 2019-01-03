@@ -45,7 +45,7 @@ There are many ways you get get involved and contribute to the ExpressionEngine 
 
 ## Copyright / License Notice
 
-The ExpressionEngine project is copyright (c) 2003-2018 EllisLab, Inc ([https://ellislab.com](https://ellislab.com)) and is licensed under Apache License, Version 2.0. This project contains subcomponents with separate copyright and license terms, all of which are fully FOSS and compatible with Apache-2.0.
+The ExpressionEngine project is copyright (c) 2003-2019 EllisLab, Inc ([https://ellislab.com](https://ellislab.com)) and is licensed under Apache License, Version 2.0. This project contains subcomponents with separate copyright and license terms, all of which are fully FOSS and compatible with Apache-2.0.
 
 Complete license terms and copyright information can be found in [LICENSE.txt](LICENSE.txt) in the root of this repository.
 
