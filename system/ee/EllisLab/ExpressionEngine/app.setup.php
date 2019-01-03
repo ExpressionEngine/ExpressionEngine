@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -17,6 +17,7 @@ use EllisLab\ExpressionEngine\Service\Category;
 use EllisLab\ExpressionEngine\Service\ChannelSet;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\Consent;
+use EllisLab\ExpressionEngine\Service\Cookie;
 use EllisLab\ExpressionEngine\Service\CustomMenu;
 use EllisLab\ExpressionEngine\Service\Database;
 use EllisLab\ExpressionEngine\Service\Encrypt;
@@ -376,6 +377,11 @@ return [
 			return new ChannelSet\Factory(
 				ee()->config->item('site_id')
 			);
+		},
+
+		'Cookie' => function($ee)
+		{
+			return new Cookie\Cookie();
 		},
 
 		'CookieRegistry' => function($ee)

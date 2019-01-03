@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -1214,11 +1214,11 @@ class EE_Session {
 	{
 		// my_* cookies used by guests in the comment form
 		$this->userdata = array(
-			'username'			=> ee()->input->cookie('my_name', TRUE),
+			'username'			=> ee('Cookie')->getSignedCookie('my_name', TRUE),
 			'screen_name'		=> '',
-			'email'				=> ee()->input->cookie('my_email', TRUE),
-			'url'				=> ee()->input->cookie('my_url', TRUE),
-			'location'			=> ee()->input->cookie('my_location', TRUE),
+			'email'				=> ee('Cookie')->getSignedCookie('my_email', TRUE),
+			'url'				=> ee('Cookie')->getSignedCookie('my_url', TRUE),
+			'location'			=> ee('Cookie')->getSignedCookie('my_location', TRUE),
 			'language'			=> '',
 			'timezone'			=> ee()->config->item('default_site_timezone'),
 			'date_format'		=> ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y',
@@ -1241,13 +1241,10 @@ class EE_Session {
 	 */
 	protected function _prep_flashdata()
 	{
-		if ($cookie = ee()->input->cookie('flash'))
+		if ($this->flashdata = ee('Cookie')->getSignedCookie('flash'))
 		{
-			if ($this->flashdata = ee('Encrypt/Cookie')->getVerifiedCookieData($cookie))
-			{
-				$this->_age_flashdata();
-				return;
-			}
+			$this->_age_flashdata();
+			return;
 		}
 
 		$this->flashdata = array();
@@ -1272,8 +1269,7 @@ class EE_Session {
 	{
 		if (count($this->flashdata) > 0)
 		{
-			$payload = ee('Encrypt/Cookie')->signCookieData($this->flashdata);
-			ee()->input->set_cookie('flash' , $payload, 86500);
+			ee('Cookie')->setSignedCookie('flash', $this->flashdata, 86500);
 		}
 	}
 

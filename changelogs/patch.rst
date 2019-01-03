@@ -17,8 +17,9 @@ Patch Release
    - Added <new feature>
    - Fixed Bug (#<issue number>) where <bug behavior>.
 
-- Fixed a bug where File Grid wouldn't work in a Fluid field.
-- Fixed a bug (`#60 <https://github.com/ExpressionEngine/ExpressionEngine/issues/60>`__) where the one-click updater could not back up database tables with a custom prefix.
+- Fixed a bug where the Member Auth module could run queries on Forum tables if Forum was not installed.
+- Fixed Bug (#70) where a template rendered on a POST submission could break Channel Form behavior on that template.
+- Fixed a bug (#74) where File Grid might not parse when used inside a Fluid field.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists

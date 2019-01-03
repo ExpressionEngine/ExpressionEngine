@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -385,6 +385,16 @@ And if you made it to this &#x1F573;&#xFE0F; you did pretty good.']
 					'regex' => 'yes'
 				],
 				'Foo food battletanks.'
+			],
+			[
+				$sample,
+				[
+					// Ignore eval modifier
+					'find' => '/(foo)/ei',
+					'replace' => 'phpinfo()',
+					'regex' => 'yes'
+				],
+				'phpinfo() phpinfo()d battletanks.'
 			],
 		];
 	}

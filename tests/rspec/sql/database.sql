@@ -1597,7 +1597,6 @@ LOCK TABLES `exp_actions` WRITE;
 ALTER TABLE `exp_actions` DISABLE KEYS;
 INSERT INTO `exp_actions` (`action_id`, `class`, `method`, `csrf_exempt`) VALUES
 	(1,'Channel','submit_entry',0),
-	(2,'Channel','filemanager_endpoint',0),
 	(3,'Channel','smiley_pop',0),
 	(4,'Channel','combo_loader',0),
 	(5,'Member','registration_form',0),

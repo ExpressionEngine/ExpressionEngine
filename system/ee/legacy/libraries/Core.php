@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -72,8 +72,8 @@ class EE_Core {
 
 		// application constants
 		define('APP_NAME',		'ExpressionEngine');
-		define('APP_BUILD',		'20181221');
-		define('APP_VER',		'5.1.1');
+		define('APP_BUILD',		'20190103');
+		define('APP_VER',		'5.1.2');
 		define('APP_VER_ID',	'');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -5529,30 +5529,6 @@ class Channel {
 
 		$WC = new Channel_calendar();
 		return $WC->calendar();
-	}
-
-	/**
-	  *  Ajax Image Upload
-	  *
-	  * Used by the SAEF
-	  */
-
-	public function filemanager_endpoint($function = '', $params = array())
-	{
-		ee()->load->library('filemanager');
-		ee()->lang->loadfile('content');
-		//ee()->load->library('cp');
-
-		$config = array();
-
-		if ($function)
-		{
-			ee()->filemanager->_initialize($config);
-
-			return call_user_func_array(array($this->filemanager, $function), $params);
-		}
-
-		ee()->filemanager->process_request($config);
 	}
 
 	/**
