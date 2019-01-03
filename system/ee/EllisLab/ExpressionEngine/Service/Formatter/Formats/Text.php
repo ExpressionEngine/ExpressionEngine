@@ -485,6 +485,7 @@ class Text extends Formatter {
 			return $this;
 		}
 
+		$find = $this->removeEvalModifier($find);
 		$valid = @preg_match($find, NULL);
 
 		// valid regex only, unless DEBUG is enabled
@@ -494,6 +495,22 @@ class Text extends Formatter {
 		}
 
 		return $this;
+	}
+
+	/**
+	 * Remove deprecated and potentially unsafe eval (`e`) modifier from regex
+	 * patterns, assumes the pattern is already properly delimited
+	 *
+	 * @param string $pattern Regex pattern
+	 * @return string Regex pattern sans eval modifier
+	 */
+	private function removeEvalModifier($pattern)
+	{
+		$pattern_parts = explode($pattern[0], trim($pattern));
+		$pattern_last = sizeof($pattern_parts) - 1;
+		$pattern_parts[$pattern_last] = str_replace('e', '', $pattern_parts[$pattern_last]);
+
+		return implode($pattern[0], $pattern_parts);
 	}
 
 	/**

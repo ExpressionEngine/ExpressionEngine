@@ -384,6 +384,16 @@ And if you made it to this &#x1F573;&#xFE0F; you did pretty good.']
 				],
 				'Foo food battletanks.'
 			],
+			[
+				$sample,
+				[
+					// Ignore eval modifier
+					'find' => '/(foo)/ei',
+					'replace' => 'phpinfo()',
+					'regex' => 'yes'
+				],
+				'phpinfo() phpinfo()d battletanks.'
+			],
 		];
 	}
 
