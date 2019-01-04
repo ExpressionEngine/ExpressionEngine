@@ -45,8 +45,8 @@ function (_React$Component) {
       var fileField = _this.getFieldContainer();
 
       EE.FileField.pickerCallback(response, {
-        input_value: fileField.find('input:hidden').first(),
-        input_img: fileField.find('img').first(),
+        input_value: fileField.find('input.js-file-input'),
+        input_img: fileField.find('img.js-file-image'),
         modal: $('.modal-file')
       });
 
