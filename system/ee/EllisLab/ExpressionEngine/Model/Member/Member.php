@@ -733,6 +733,8 @@ class Member extends ContentModel {
 	 */
 	public function validatePassword($key, $password)
 	{
+		ee()->lang->loadfile('myaccount');
+
 		$pw_length = ee()->config->item('pw_min_len');
 		if (strlen($password) < $pw_length)
 		{
@@ -786,7 +788,6 @@ class Member extends ContentModel {
 			{
 				if ($val == 0)
 				{
-					ee()->lang->loadfile('myaccount');
 					return 'not_secure_password';
 				}
 			}
