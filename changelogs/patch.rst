@@ -17,7 +17,7 @@ Patch Release
    - Added <new feature>
    - Fixed Bug (#<issue number>) where <bug behavior>.
 
-
+- Fixed a bug where some member validation language keys may appear unparsed in some third-party contexts.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
