@@ -216,6 +216,8 @@ feature 'Member Group List' do
 
   context 'when using MSM' do
     before :each do
+      skip 'Need a license in order to test MSM stuff' do
+      end
       create_msm_site
       create_member_group
     end

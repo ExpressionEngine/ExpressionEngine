@@ -21,7 +21,7 @@ class ControlPanelPage < SitePrism::Page
   elements :pages, 'div.paginate ul li a'
 
   # Alert
-  element :alert, 'div.app-notice'
+  element :alert, 'div.app-notice--inline'
   element :alert_success, 'div.app-notice---success'
   element :alert_important, 'div.app-notice---important'
   element :alert_error, 'div.app-notice---error'

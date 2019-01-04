@@ -2,6 +2,8 @@ require './bootstrap.rb'
 
 feature 'Site Manager' do
   before(:each) do
+    skip 'Need a license in order to test MSM stuff' do
+    end
     ee_config(item: 'multiple_sites_enabled', value: 'y')
     cp_session
     @page = SiteManager.new

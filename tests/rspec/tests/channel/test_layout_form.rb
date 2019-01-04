@@ -177,14 +177,14 @@ feature 'Channel Layouts: Create/Edit' do
     @page.fields[0].text.should eq field_text
 
     @page.all('ul.tabs li')[-1].find('.tab-remove').trigger('click')
-    @page.should have_alert
-    @page.alert.text.should include 'Cannot Remove Tab'
+    @page.should have_alert_error
+    @page.alert_error.text.should include 'Cannot Remove Tab'
   end
 
   it 'cannot hide a tab with a required field' do
     @page.hide_date_tab.trigger('click')
-    @page.should have_alert
-    @page.alert.text.should include 'Cannot Hide Tab'
+    @page.should have_alert_error
+    @page.alert_error.text.should include 'Cannot Hide Tab'
   end
 
   it 'makes a hidden tab visible when a required field is moved into it' do
