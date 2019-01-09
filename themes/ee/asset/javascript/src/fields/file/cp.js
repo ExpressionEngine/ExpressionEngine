@@ -28,6 +28,7 @@
 				.trigger('hasFile', data);
 
 			figure.toggleClass('no-img', ! data.isImage);
+			figure.toggleClass('is-svg', data.isSVG);
 			figure.find('img').toggleClass('hidden', ! data.isImage);
 
 			if (data.isImage) {
