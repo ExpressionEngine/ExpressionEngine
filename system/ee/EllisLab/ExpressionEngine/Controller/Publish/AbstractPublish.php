@@ -135,7 +135,12 @@ abstract class AbstractPublish extends CP_Controller {
 
 	protected function getRevisionsTable($entry, $version_id = FALSE)
 	{
-		$table = ee('CP/Table');
+		$table = ee('CP/Table', array(
+			'autosort' => TRUE,
+			'sort_col' => 'rev_id',
+			'sort_dir' => 'desc',
+			)
+		);
 
 		$table->setColumns(
 			array(
@@ -220,7 +225,12 @@ abstract class AbstractPublish extends CP_Controller {
 
 	protected function getAutosavesTable($entry, $autosave_id = FALSE)
 	{
-		$table = ee('CP/Table');
+		$table = ee('CP/Table', array(
+			'autosort' => TRUE,
+			'sort_col' => 'rev_id',
+			'sort_dir' => 'desc'
+			)
+		);
 
 		$table->setColumns(
 			array(

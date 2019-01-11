@@ -354,7 +354,12 @@ class Template extends AbstractDesignController {
 			return FALSE;
 		}
 
-		$table = ee('CP/Table');
+		$table = ee('CP/Table', array(
+			'autosort' => TRUE,
+			'sort_col' => 'rev_id',
+			'sort_dir' => 'desc'
+			)
+		);
 
 		$table->setColumns(
 			array(
