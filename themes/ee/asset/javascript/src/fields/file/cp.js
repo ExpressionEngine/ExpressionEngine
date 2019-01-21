@@ -49,7 +49,7 @@
 			input.siblings('em').remove();
 		},
 
-		setup(container) {
+		setup: function(container) {
 			$('.file-field-filepicker', container).FilePicker({
 				callback: EE.FileField.pickerCallback
 			});
