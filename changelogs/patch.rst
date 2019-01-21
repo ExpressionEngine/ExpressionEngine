@@ -22,6 +22,7 @@ Patch Release
 - Fixed a potential issue (#76) where some jQuery selectors weren't specific enough.
 - Fixed a bug where some SVGs in File fields would not render a preview on the publish form.
 - Fixed a bug (#64) where the ``absolute_count`` variable in the File Entries tag did not show the correct number.
+- Fixed a bug (#23587) where Markdown links with inline title attributes would not parse correctly.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
