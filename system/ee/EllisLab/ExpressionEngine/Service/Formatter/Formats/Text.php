@@ -622,7 +622,7 @@ class Text extends Formatter {
 			// remove named entities
 			'#&\S+?;#i' => '',
 			// replace whitespace and forward slashes with the separator
-			'#\s+|/+#i' => $options['separator'],
+			'#\s+|/+|\|+#i' => $options['separator'],
 			// only allow low ascii letters, numbers, dash, dot, underscore, and emoji
 			 '#[^a-z0-9\-\._'.$this->getConfig('emoji_regex').']#iu' => '',
 			// no dot-then-separator (in case multiple sentences were passed)

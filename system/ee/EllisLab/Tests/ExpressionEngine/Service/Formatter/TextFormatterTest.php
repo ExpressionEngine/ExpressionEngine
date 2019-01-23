@@ -466,7 +466,7 @@ And if you made it to this &#x1F573;&#xFE0F; you did pretty good.']
 
 	public function urlSlugProvider()
 	{
-		$sample = 'Sample Title to Turn Into a Slug, including 💩, <samp>tags</samp>, &quot;quotes and high ascii: ßæ and----seps____in....content....';
+		$sample = 'Sample Title | to Turn Into a Slug, including 💩, <samp>tags</samp>, &quot;quotes and high ascii: ßæ and----seps____in....content....';
 
 		return [
 			[$sample, [], 'sample-title-to-turn-into-a-slug-including-💩-tags-quotes-and-high-ascii-ssae-and-seps____in....content'],
