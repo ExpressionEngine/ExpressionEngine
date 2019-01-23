@@ -26,6 +26,7 @@ Patch Release
 - Fixed a bug (#94) where the ``:limit`` modifier would not preserve whole words as documented.
 - Fixed a bug (#101) where there may be errors on a member profile page after creating a new MSM site.
 - Fixed a bug (#104) where pipe characters would not be stripped in the Text formatter's ``urlSlug()`` method.
+- Fixed a bug where Relationship fields may appear unparsed.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
