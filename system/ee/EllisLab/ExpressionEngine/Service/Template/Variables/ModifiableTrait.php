@@ -89,6 +89,11 @@ trait ModifiableTrait {
 	 */
 	public function replace_limit($data, $params = array(), $tagdata = FALSE)
 	{
+		if ( ! isset($params['preserve_words']))
+		{
+			$params['preserve_words'] = TRUE;
+		}
+
 		return (string) ee('Format')->make('Text', $data)->limitChars($params);
 	}
 

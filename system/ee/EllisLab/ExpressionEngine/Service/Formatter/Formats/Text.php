@@ -414,15 +414,14 @@ class Text extends Formatter {
 	/**
 	 * Limit to X characters, with an optional end character. Strips HTML.
 	 *
-	 * @param  array  $options Options: (int) characters, (string) end_char
+	 * @param  array  $options Options: (int) characters, (string) end_char, (boolean) preserve_words
 	 * @return self $this
 	 */
 	public function limitChars($options = [])
 	{
-
-
 		$limit = (isset($options['characters'])) ? (int) $options['characters'] : 500;
 		$end_char = (isset($options['end_char'])) ? $options['end_char'] : '&#8230;';
+		$preserve_words = (isset($options['preserve_words'])) ? $options['preserve_words'] : FALSE;
 		$this->content = strip_tags($this->content);
 
 		$length = ($this->multibyte) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
@@ -449,7 +448,23 @@ class Text extends Formatter {
 			return $this;
 		}
 
-		$cut = ($this->multibyte) ? mb_substr($this->content, 0, $limit, 'utf8') : substr($this->content, 0, $limit);
+		if ($preserve_words)
+		{
+			// wordwrap() currently doesn't account for multi-byte, so those
+			// characters may affect where the wrap occurs
+			$this->content = wordwrap($this->content, $limit, "\n", true);
+
+			$cut = ($this->multibyte)
+				? mb_substr($this->content, 0, mb_strpos($this->content, "\n"), 'utf8')
+				: substr($this->content, 0, strpos($this->content, "\n"));
+		}
+		else
+		{
+			$cut = ($this->multibyte)
+				? mb_substr($this->content, 0, $limit, 'utf8')
+				: substr($this->content, 0, $limit);
+		}
+
 		$this->content = (strlen($cut) == strlen($this->content)) ? $cut : $cut.$end_char;
 
 		return $this;

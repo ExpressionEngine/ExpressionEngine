@@ -328,6 +328,9 @@ And if you made it to this &#x1F573;&#xFE0F; you did pretty good.']
 
 		$text = (string) $this->format('Sample Text')->limitChars(['characters' => 4, 'end_char' => 'TEST']);
 		$this->assertEquals('SampTEST', $text);
+
+		$text = (string) $this->format('Sample Text')->limitChars(['characters' => 9, 'end_char' => 'TEST', 'preserve_words' => TRUE]);
+		$this->assertEquals('SampleTEST', $text);
 	}
 
 	/**
