@@ -27,6 +27,7 @@ Patch Release
 - Fixed a bug (#101) where there may be errors on a member profile page after creating a new MSM site.
 - Fixed a bug (#104) where pipe characters would not be stripped in the Text formatter's ``urlSlug()`` method.
 - Fixed a bug where Relationship fields may appear unparsed.
+- Fixed a bug where required Grid columns may not have the proper styling on the publish form.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists

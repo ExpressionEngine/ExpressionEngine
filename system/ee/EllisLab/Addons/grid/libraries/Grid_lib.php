@@ -147,7 +147,7 @@ class Grid_lib {
 
 				if ($column['col_required'] == 'y')
 				{
-					$col['attrs']['class'] = 'required';
+					$col['attrs']['class'] .= ' required';
 				}
 
 				$field_columns[] = $col;
