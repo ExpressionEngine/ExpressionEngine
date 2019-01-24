@@ -665,7 +665,8 @@ class Grid_model extends CI_Model {
 	 * Gets array of all columns and settings for a given field ID
 	 *
 	 * @param	int		Field ID to get columns for
-	 * @param	boolean	Skip the cache and get a fresh set of columns
+	 * @param	string	Content type
+	 * @param	boolean	When FALSE, skip the cache and get a fresh set of columns
 	 * @return	array	Settings from grid_columns table
 	 */
 	public function get_columns_for_field($field_ids, $content_type, $cache = TRUE)

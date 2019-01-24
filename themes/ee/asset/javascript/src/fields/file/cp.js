@@ -28,6 +28,7 @@
 				.trigger('hasFile', data);
 
 			figure.toggleClass('no-img', ! data.isImage);
+			figure.toggleClass('is-svg', data.isSVG);
 			figure.find('img').toggleClass('hidden', ! data.isImage);
 
 			if (data.isImage) {
@@ -46,16 +47,14 @@
 
 			// Hide the "missing file" error
 			input.siblings('em').remove();
-		}
-	}
+		},
 
-	$(document).ready(function () {
-		function setupFileField(container) {
+		setup: function(container) {
 			$('.file-field-filepicker', container).FilePicker({
 				callback: EE.FileField.pickerCallback
 			});
 
-			$('li.remove a').click(function (e) {
+			$('li.remove a', container).click(function (e) {
 				var figure_container = $(this).closest('.fields-upload-chosen');
 				figure_container.addClass('hidden');
 				figure_container.siblings('em').remove(); // Hide the "missing file" erorr
@@ -67,7 +66,9 @@
 			// Drag and drop component
 			FileField.renderFields(container)
 		}
+	}
 
+	$(document).ready(function () {
 		function sanitizeFileField(el) {
 			var button = $('.file-field-filepicker', el),
 				input = $('input[type="hidden"]', el),
@@ -79,16 +80,16 @@
 			$('.fields-upload-chosen img', el).attr('id', safe_name);
 		}
 
-		setupFileField();
+		EE.FileField.setup();
 
 		FluidField.on('file', 'add', function(el) {
 			sanitizeFileField(el);
-			setupFileField(el);
+			EE.FileField.setup(el);
 		});
 
 		Grid.bind('file', 'display', function(cell) {
 			sanitizeFileField(cell);
-			setupFileField(cell);
+			EE.FileField.setup(cell);
 		});
 	});
 })(jQuery);

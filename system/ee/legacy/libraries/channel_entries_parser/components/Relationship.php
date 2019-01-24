@@ -45,10 +45,21 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 
 		try
 		{
-			$relationships = $pre->channel()->rfields;
-			foreach ($pre->channel()->gfields as $site_id => $fields)
+			$grid_relationships = [];
+			$gfields = $pre->channel()->gfields;
+
+			foreach ($pre->site_ids() as $site_id)
 			{
-				foreach ($fields as $field_name => $field_id)
+				// Skip a site if it has no Grid fields
+				if ( ! isset($gfields[$site_id]) OR empty($gfields[$site_id]))
+				{
+					continue;
+				}
+
+				// Cache all fields for this site for lookup below
+				ee()->grid_model->get_columns_for_field(array_values($gfields[$site_id]), 'channel');
+
+				foreach ($gfields[$site_id] as $field_name => $field_id)
 				{
 					$prefix = $field_name.':';
 
@@ -58,15 +69,17 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 					{
 						if ($col['col_type'] == 'relationship')
 						{
-							$relationships[$site_id][$prefix.$col['col_name']] = $col['col_id'];
+							$grid_relationships[$prefix.$col['col_name']] = $col['col_id'];
 						}
 					}
 				}
 			}
 
 			return ee()->relationships_parser->create(
-				$relationships,
-				$pre->entry_ids()
+				$pre->channel()->rfields,
+				$pre->entry_ids(),
+				NULL,
+				$grid_relationships
 			);
 		}
 		catch (EE_Relationship_exception $e)

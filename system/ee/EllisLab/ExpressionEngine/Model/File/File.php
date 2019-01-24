@@ -121,6 +121,16 @@ class File extends Model {
 	}
 
 	/**
+	 * Uses the file's mime-type to determine if the file is an SVG or not.
+	 *
+	 * @return bool TRUE if the file is an SVG, FALSE otherwise
+	 */
+	public function isSVG()
+	{
+		return (strpos($this->mime_type, 'image/svg') === 0);
+	}
+
+	/**
 	 * Uses the file's upload destination's server path to compute the absolute
 	 * path of the file
 	 *

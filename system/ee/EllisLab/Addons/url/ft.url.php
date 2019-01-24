@@ -68,6 +68,16 @@ class Url_Ft extends EE_Fieldtype {
 				return TRUE;
 			}
 
+			// mailto: won't have a 'host', but should have a 'path'
+			if (
+				isset($parsed_url['scheme'], $parsed_url['path']) &&
+				$parsed_url['scheme'] == 'mailto' &&
+				in_array('mailto:', $this->get_setting('allowed_url_schemes'))
+				)
+			{
+				return TRUE;
+			}
+
 			return sprintf(lang('url_ft_invalid_url_scheme'), '<code>'.implode('</code>, <code>', $this->get_setting('allowed_url_schemes')).'</code>');
 		}
 
@@ -227,6 +237,7 @@ class Url_Ft extends EE_Fieldtype {
 		$protocols += array(
 			'//'      => '// ('.lang('url_ft_protocol_relative_url').')',
 			'ftp://'  => 'ftp://',
+			'mailto:' => 'mailto:',
 			'sftp://' => 'sftp://',
 			'ssh://'  => 'ssh://',
 		);

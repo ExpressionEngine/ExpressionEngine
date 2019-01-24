@@ -65,7 +65,7 @@ class File {
 
 		$this->fetch_categories();
 		$this->fetch_valid_thumbs();
-		$this->parse_file_entries();
+		$this->parse_file_entries($pagination);
 
 		if ($this->enable['pagination'] && $pagination->paginate == TRUE)
 		{
@@ -381,7 +381,7 @@ class File {
 	/**
 	  *  Parse file entries
 	  */
-	function parse_file_entries()
+	function parse_file_entries($pagination)
 	{
 		ee()->load->library('typography');
 		ee()->typography->initialize(array(
@@ -406,13 +406,19 @@ class File {
 		ee()->load->model('file_upload_preferences_model');
 		$upload_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences(1, NULL, TRUE);
 
+		$offset = (int) ee()->TMPL->fetch_param('offset', 0);
+		if ($this->enable['pagination'] && $pagination->paginate == TRUE)
+		{
+			$offset = $pagination->offset;
+		}
+
 		$parse_data = array();
 		foreach ($this->query->result_array() as $count => $row)
 		{
 			$row_prefs = $upload_prefs[$row['upload_location_id']];
 
 			//  More Variables, Mostly for Conditionals
-			$row['absolute_count']  = (int) ee()->TMPL->fetch_param('limit') + $count + 1;
+			$row['absolute_count']  = (int) $offset + $count + 1;
 			$row['logged_in']       = (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
 			$row['logged_out']      = (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
 			$row['directory_id']    = $row['id'];

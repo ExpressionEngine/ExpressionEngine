@@ -61,7 +61,6 @@ class Settings extends Profile {
 
 		$directories = ee('Model')->get('UploadDestination')
 			->filter('name', 'IN', array('Default Avatars', 'Avatars'))
-			->filter('site_id', ee()->config->item('site_id'))
 			->all()
 			->indexBy('name');
 

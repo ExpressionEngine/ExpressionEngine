@@ -1,9 +1,9 @@
-<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
+<input type="hidden" class="js-file-input" name="<?=$field_name?>" value="<?=$value?>">
 
 <div class="fields-upload-chosen <?php if ( ! $file) echo " hidden";?>">
 	<div class="fields-upload-chosen-file">
-		<figure<?php if ( ! $is_image): ?> class="no-img"<?php endif ?>>
-			<img src="<?=$thumbnail?>" id="<?=$field_name?>" alt="<?=($file) ? $file->title : ''?>" <?php if ( ! $is_image): ?> class="hidden"<?php endif ?> style="max-height: 125px; max-width: 125px">
+		<figure class="<?php if ( ! $is_image): ?>no-img<?php endif ?> <?php if ($file && $file->isSVG()): ?>is-svg<?php endif ?>"">
+			<img src="<?=$thumbnail?>" id="<?=$field_name?>" alt="<?=($file) ? $file->title : ''?>" class="js-file-image<?php if ( ! $is_image): ?> hidden<?php endif ?>">
 		</figure>
 		<div class="fields-upload-tools">
 			<ul class="toolbar">
