@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -55,6 +55,11 @@ class Profile extends CP_Controller {
 		if (is_null($this->member))
 		{
 			show_404();
+		}
+
+		if ($this->member->group_id == 1 && ee()->session->userdata('group_id') != 1)
+		{
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->lang->loadfile('members');
@@ -244,6 +249,7 @@ class Profile extends CP_Controller {
 							->limit(100)
 							->all();
 
+						$vars['heirs'] = [];
 						foreach ($heirs as $heir)
 						{
 							$vars['heirs'][$heir->getId()] = ($heir->screen_name != '') ? $heir->screen_name : $heir->username;;

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -733,6 +733,8 @@ class Member extends ContentModel {
 	 */
 	public function validatePassword($key, $password)
 	{
+		ee()->lang->loadfile('myaccount');
+
 		$pw_length = ee()->config->item('pw_min_len');
 		if (strlen($password) < $pw_length)
 		{
@@ -786,7 +788,6 @@ class Member extends ContentModel {
 			{
 				if ($val == 0)
 				{
-					ee()->lang->loadfile('myaccount');
 					return 'not_secure_password';
 				}
 			}

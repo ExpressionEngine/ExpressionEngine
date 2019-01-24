@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -379,7 +379,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 								$setting_name = 'default_author';
 								break;
 							default:
-								continue; // unknown setting name
+								continue 2; // unknown setting name
 						}
 
 						$grouped_settings[$site_id][$channel_id][$setting_name] = $value;

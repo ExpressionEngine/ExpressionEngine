@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -53,13 +53,14 @@ Grid.Publish = function(field, settings) {
 		return;
 	}
 	this.root = $(field);
-	this.parentContainer = this.root.parents('.fieldset-faux');
+	this.parentContainer = this.root.parents('.fieldset-faux, .fluid-field');
 	this.blankRow = $('tr.grid-blank-row', this.root);
 	this.emptyField = $('tr.no-results', this.root);
 	this.tableActions = $('tr.tbl-action', this.root);
 	this.rowContainer = this.root.find('> tbody');
 	this.addButtonToolbar = $('ul.toolbar:has(li.add)', this.parentContainer);
 	this.header = null;
+	this.isFileGrid = this.root.closest('.js-file-grid').size() > 0;
 
 	this.rowSelector = 'tr';
 	this.cellSelector = 'td';
@@ -84,6 +85,7 @@ Grid.MiniField = function(field, settings) {
 	this.rowContainer = $('.keyvalue-item-container', this.root);
 	this.addButtonToolbar = $('> [rel=add_row]', this.parentContainer);
 	this.header = $('.fields-keyvalue-header', this.root);
+	this.isFileGrid = false;
 
 	this.rowSelector = '.fields-keyvalue-item';
 	this.cellSelector = '.field-control';
@@ -128,6 +130,10 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		// Disable input elements in our blank template container so they
 		// don't get submitted on form submission
 		this.blankRow.find(':input').attr('disabled', 'disabled');
+
+		// Allow access to this Grid.Publish object from the DOM element;
+		// this may be a bad idea
+		this.root.data('GridInstance', this)
 	},
 
 	/**
@@ -179,6 +185,11 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	 * and how many rows already exist
 	 */
 	_addMinimumRows: function() {
+		// File Grid minimum row count validated on server
+		if (this.isFileGrid) {
+			return
+		}
+
 		// Figure out how many rows we need to add
 		var rowsCount = this._getRows().size(),
 			neededRows = this.settings.grid_min_rows - rowsCount;
@@ -202,12 +213,10 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	 */
 	_toggleRowManipulationButtons: function() {
 		var rowCount = this._getRows().size(),
-			reorderCol = this.root.find('th.reorder-col'),
-			gridRemove = this.root.find('th.grid-remove'),
 			showControls = rowCount > 0;
 
 		// Show add button below field when there are more than zero rows
-		this.addButtonToolbar.toggle(showControls);
+		this.addButtonToolbar.toggle(showControls && ! this.isFileGrid);
 		$(this.reorderHandleContainerSelector, this.root).toggle(showControls);
 		$(this.deleteContainerHeaderSelector, this.root).toggle(showControls);
 
@@ -218,7 +227,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		if (this.settings.grid_max_rows !== '') {
 			// Show add button if row count is below the max rows setting,
 			// and only if there are already other rows present
-			this.addButtonToolbar.toggle(rowCount < this.settings.grid_max_rows && rowCount > 0);
+			this.addButtonToolbar.toggle(rowCount < this.settings.grid_max_rows && rowCount > 0 && ! this.isFileGrid);
 		}
 
 		if (this.settings.grid_min_rows !== '') {
@@ -230,6 +239,11 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		// the row becomes detached from the table and column headers change
 		// width in a fluid-column-width table
 		$(this.reorderHandleContainerSelector, this.rowContainer).toggleClass('sort-cancel', rowCount == 1);
+
+		// Inside File Grid? Hide Grid completely if there are no rows
+		if (this.isFileGrid) {
+			this.root.toggleClass('hidden', rowCount == 0)
+		}
 	},
 
 	/**
@@ -313,6 +327,8 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		if (EE.cp && EE.cp.formValidation !== undefined) {
 			EE.cp.formValidation.bindInputs(el);
 		}
+
+		return el;
 	},
 
 	/**
@@ -405,11 +421,12 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 /**
  * Grid Settings class
  */
-Grid.Settings = function(settings) {
-	this.root = $('.fields-grid-setup');
-	this.colTemplateContainer = $('#grid_col_settings_elements');
+Grid.Settings = function(root, settings) {
+	this.root = root || $('.fields-grid-setup[data-group=grid]');
+	this.settings = settings || { minColumns: 1, fieldName: 'grid' };
+	this.colTemplateContainer = $('.'+this.settings.fieldName+'-col-settings-elements');
 	this.blankColumn = this.colTemplateContainer.find('.fields-grid-item');
-	this.settings = settings;
+	this.noResults = this.root.find('.field-no-results');
 
 	this.init();
 }
@@ -422,6 +439,7 @@ Grid.Settings.prototype = {
 		this._expandErroredColumns();
 		this._bindActionButtons(this.root);
 		this._toggleDeleteButtons();
+		this._toggleNoResults();
 		this._bindColTypeChange();
 
 		// If this is a new field, bind the automatic column title plugin
@@ -520,13 +538,17 @@ Grid.Settings.prototype = {
 	_bindAddButton: function(context) {
 		var that = this;
 
-		context.find('.fields-grid-tool-add').on('click', function(event) {
-			event.preventDefault();
+		context.find('.fields-grid-tool-add')
+			.add(that.noResults.find('a[rel=add_new]'))
+			.on('click', function(event) {
+				event.preventDefault();
 
-			var parentCol = $(this).parents('.fields-grid-item');
+				that.noResults.hide();
 
-			that._insertColumn(that._buildNewColumn(), parentCol);
-		});
+				var parentCol = $(this).parents('.fields-grid-item');
+
+				that._insertColumn(that._buildNewColumn(), parentCol);
+			});
 	},
 
 	/**
@@ -572,6 +594,7 @@ Grid.Settings.prototype = {
 			if (settings.index() == $('.fields-grid-item:last', that.root).index()) {
 				settings.remove();
 				that._toggleDeleteButtons();
+				that._toggleNoResults();
 			} else {
 				settings.animate({
 					opacity: 0
@@ -585,6 +608,7 @@ Grid.Settings.prototype = {
 					}, 200, function() {
 						settings.remove();
 						that._toggleDeleteButtons();
+						that._toggleNoResults();
 					});
 				});
 			}
@@ -603,15 +627,28 @@ Grid.Settings.prototype = {
 	},
 
 	/**
-	 * Looks at current column count, and if there are multiple columns,
-	 * shows the delete buttons; otherwise, hides delete buttons if there is
-	 * only one column
+	 * Toggles the delete buttons on the columns if there are more columns than
+	 * the minColumns setting, also handles showing no
 	 */
 	_toggleDeleteButtons: function() {
-		var multiCol = this.root.find('.fields-grid-item').size() > 1,
+		var moreThanMinimum = this._getColumnCount() > this.settings.minColumns,
 			deleteButtons = this.root.find('.fields-grid-tool-remove');
 
-		deleteButtons.toggle(multiCol);
+		deleteButtons.toggle(moreThanMinimum);
+	},
+
+	/**
+	 * Toggles No Results message based on existence of columns
+	 */
+	_toggleNoResults: function() {
+		this.noResults.toggle(this._getColumnCount() == 0)
+	},
+
+	/**
+	 * Get the number of columns for this Grid field
+	 */
+	_getColumnCount: function() {
+		return this.root.find('.fields-grid-item:visible').size()
 	},
 
 	/**
@@ -635,7 +672,11 @@ Grid.Settings.prototype = {
 			column.css({ opacity: 0 })
 		}
 
-		column.insertAfter(insertAfter);
+		if (insertAfter.length) {
+			column.insertAfter(insertAfter)
+		} else {
+			this.root.append(column)
+		}
 
 		this._toggleDeleteButtons();
 
@@ -767,11 +808,11 @@ Grid.Settings.prototype = {
 	 */
 	_swapNamespace: function(html, oldNamespace, newNamespace) {
 		return html.replace(
-				RegExp('name="grid\\[cols\\]\\[' + oldNamespace + '\\]', 'g'),
-				'name="grid[cols][' + newNamespace + ']'
+				RegExp('name="'+this.settings.fieldName+'\\[cols\\]\\[' + oldNamespace + '\\]', 'g'),
+				'name="'+this.settings.fieldName+'[cols][' + newNamespace + ']'
 			).replace(
-				RegExp('data-input-value="grid\\[cols\\]\\[' + oldNamespace + '\\]', 'g'),
-				'data-input-value="grid[cols][' + newNamespace + ']'
+				RegExp('data-input-value="'+this.settings.fieldName+'\\[cols\\]\\[' + oldNamespace + '\\]', 'g'),
+				'data-input-value="'+this.settings.fieldName+'[cols][' + newNamespace + ']'
 			)
 	},
 
@@ -873,8 +914,8 @@ EE.grid = function(field, settings) {
 /**
  * Public method to instantiate Grid settings
  */
-EE.grid_settings = function(settings) {
-	return new Grid.Settings(settings);
+EE.grid_settings = function(root, settings) {
+	return new Grid.Settings(root, settings);
 };
 
 if (typeof _ !== 'undefined' && EE.grid_cache !== 'undefined') {

@@ -234,7 +234,7 @@ $lang = array(
 
 'field' => 'Field',
 
-'fields_assign_to_group' => 'Assign one of more fields to this group.',
+'fields_assign_to_group' => 'Assign one or more fields to this group.',
 
 'field_content_text' => 'Allowed content',
 

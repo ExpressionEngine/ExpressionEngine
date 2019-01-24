@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -372,6 +372,7 @@ class Filepicker_mcp {
 		$result['path'] = $file->getAbsoluteURL();
 		$result['thumb_path'] = ee('Thumbnail')->get($file)->url;
 		$result['isImage'] = $file->isImage();
+		$result['isSVG'] = $file->isSVG();
 
 		ee()->output->send_ajax_response($result);
 	}
@@ -431,6 +432,87 @@ class Filepicker_mcp {
 		ee()->output->enable_profiler(FALSE);
 		ee()->output->_display($out);
 		exit();
+	}
+
+	public function ajaxUpload()
+	{
+		$dir_id = ee('Request')->post('directory');
+
+		if (empty($dir_id))
+		{
+			show_404();
+		}
+
+		$errors = NULL;
+
+		$result = ee('File')->makeUpload()->uploadTo($dir_id);
+
+		$file = $result['file'];
+
+		if (isset($result['upload_response']['error']))
+		{
+			return [
+				'ajax' => TRUE,
+				'body' => [
+					'status' => 'error',
+					'error' => $result['upload_response']['error']
+				]
+			];
+		}
+
+		if ($result['posted'])
+		{
+			$errors = $result['validation_result'];
+
+			if ($result['uploaded'])
+			{
+				if ($file->file_name != $result['upload_response']['file_data_orig_name'])
+				{
+					$file->save();
+					return [
+						'ajax' => TRUE,
+						'body' => [
+							'status'           => 'duplicate',
+							'duplicate'        => TRUE,
+							'fileId'           => $file->getId(),
+							'originalFileName' => $result['upload_response']['file_data_orig_name']
+						]
+					];
+				}
+
+				return [
+					'ajax' => TRUE,
+					'body' => [
+						// Inconsistent casing for backwards compatibility
+						'status'             => 'success',
+						'title'              => $file->file_name,
+						'file_name'          => $file->file_name,
+						'isImage'            => $file->isImage(),
+						'isSVG'              => $file->isSVG(),
+						'thumb_path'         => $file->getAbsoluteThumbnailURL(),
+						'upload_location_id' => $file->upload_location_id
+					]
+				];
+			}
+		}
+
+		return [
+			'ajax' => TRUE,
+			'body' => [
+				'status' => 'error',
+				'error' => $errors
+			]
+		];
+	}
+
+	public function ajaxOverwriteOrRename()
+	{
+		$file_id = ee('Request')->get('file_id');
+		$original_name = ee('Request')->get('original_name');
+
+		$file = ee('Model')->get('File', $file_id)->first();
+
+		return $this->overwriteOrRename($file, $original_name);
 	}
 
 	protected function overwriteOrRename($file, $original_name)

@@ -18,7 +18,7 @@ $lang = array(
 
 'category_groups' => 'Category groups',
 
-'category_groups_desc' => 'Assign one of more category groups to this channel.',
+'category_groups_desc' => 'Assign one or more category groups to this channel.',
 
 'channel' => 'Channel',
 
@@ -106,9 +106,9 @@ $lang = array(
 
 'field_groups' => 'Field groups',
 
-'field_groups_desc' => 'Assign one of more field groups to this channel.',
+'field_groups_desc' => 'Assign one or more field groups to this channel.',
 
-'fields_desc' => 'Assign one of more fields to this channel.',
+'fields_desc' => 'Assign one or more fields to this channel.',
 
 'form_layouts' => 'Publish Layouts',
 
@@ -594,7 +594,7 @@ $lang = array(
 
 'statuses' => 'Statuses',
 
-'statuses_desc' => 'Assign one of more statuses to this channel.',
+'statuses_desc' => 'Assign one or more statuses to this channel.',
 
 'statuses_removed' => 'Statuses removed',
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -894,7 +894,7 @@ class EE_Typography {
 	{
 		if ( ! isset($this->quote_marker) )
 		{
-			$this->quote_marker = md5(time(0) . 'quote_marker');
+			$this->quote_marker = md5(time() . 'quote_marker');
 		}
 
 		$single_quote_marker = '{{SINGLEQUOTE:' . $this->quote_marker . '}}';
@@ -1243,18 +1243,7 @@ class EE_Typography {
 		return $str;
 	}
 
-	/**
-	 * Unencode Markdown Links
-	 *
-	 * Turns:
-	 * 		[Link](&#x68;&#x74;&#x74;&#x70;&#x73;&#x3A;&#x2F;&#x2F;&#x65;&#x78;&#x61;&#x6D;&#x70;&#x6C;&#x65;&#x2E;&#x63;&#x6F;&#x6D;&#x2F;)
-	 * Into:
-	 * 		[Link](https://example.com/)
-	 *
-	 * @param string $str the text to be processed
-	 * @return string String with entities decoded in Markdown reference links
-	 **/
-	private function unencodeMarkdownLinks($str)
+	private function getMarkdownLinks($str, $options = 0)
 	{
 		// these are protected class properties of Markdown
 		// copied here to keep the regex below sane
@@ -1269,7 +1258,7 @@ class EE_Typography {
 			str_repeat('(?>\)))*', $nested_url_parenthesis_depth);
 
 		// regex from in-line style links in Markdown::doAnchors()
-		if ( ! $count = preg_match_all('{
+		if (preg_match_all('{
 			(				# wrap whole match in $1
 			  \[
 				('.$nested_brackets_re.')	# link text = $2
@@ -1292,11 +1281,35 @@ class EE_Typography {
 			)
 			}xs',
 			$str,
-			$link_matches)
+			$link_matches,
+			$options)
 			)
+		{
+			return $link_matches;
+		}
+
+		return NULL;
+	}
+
+	/**
+	 * Unencode Markdown Links
+	 *
+	 * Turns:
+	 * 		[Link](&#x68;&#x74;&#x74;&#x70;&#x73;&#x3A;&#x2F;&#x2F;&#x65;&#x78;&#x61;&#x6D;&#x70;&#x6C;&#x65;&#x2E;&#x63;&#x6F;&#x6D;&#x2F;)
+	 * Into:
+	 * 		[Link](https://example.com/)
+	 *
+	 * @param string $str the text to be processed
+	 * @return string String with entities decoded in Markdown reference links
+	 **/
+	private function unencodeMarkdownLinks($str)
+	{
+		if ( ! $link_matches = $this->getMarkdownLinks($str))
 		{
 			return $str;
 		}
+
+		$count = count($link_matches[0]);
 
 		// decode entities in captures we will use for replacement
 		for ($i = 2; $i <= 7; $i++)
@@ -1310,10 +1323,12 @@ class EE_Typography {
 		// replace original full match with the decoded version
 		foreach ($link_matches[0] as $key => $match)
 		{
+			$space = $link_matches[7][$key] ? ' ' : '';
 			$new = '['.
 						$link_matches[2][$key]. // link text
 					']('.
 						$link_matches[3][$key].$link_matches[4][$key]. // one of these will be the href
+						$space. // Space between URL and title= attribute, if needed
 						$link_matches[6][$key]. // " or '
 						$link_matches[7][$key]. // optional title= attribute
 						$link_matches[6][$key]. // " or '
@@ -1495,22 +1510,17 @@ class EE_Typography {
 	 */
 	public function markdown($str, $options = array())
 	{
-		// and since XSS protection changed any %20's to actual spaces,
-		// let's restore the ones that are in Markdown formatted links
-		$nested_url_paren_regex =
-			str_repeat('(?>[^()]+|\(', 4).
-			str_repeat('(?>\)))*', 4);
-
-		if (preg_match_all('/\[(.*?)\]\(('.$nested_url_paren_regex.')\)/', $str, $matches, PREG_SET_ORDER))
+		if ($link_matches = $this->getMarkdownLinks($str, PREG_SET_ORDER))
 		{
-			foreach ($matches as $match)
+			foreach ($link_matches as $match)
 			{
 				// It felt too heavy handed to do a global replace of all URLs
 				// that matched, so (for now) we'll only replace the URLs that
-				// the REGEX matched. (that's why the '[]' are being
+				// the REGEX matched. (that's why the '[]' and '(' are being
 				// concatenated)
-				$str = str_replace('['.$match[1].']', '['.$this->decodeIDN($match[1]).']', $str);
-				$str = str_replace($match[2], str_replace(' ', '%20', $match[2]), $str);
+				$str = str_replace('['.$match[2].']', '['.$this->decodeIDN($match[2]).']', $str);
+				$str = str_replace('('.$match[4], '('.$this->decodeIDN($match[4]), $str);
+				$str = str_replace($match[4], str_replace(' ', '%20', $match[4]), $str);
 			}
 		}
 

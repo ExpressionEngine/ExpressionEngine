@@ -17,8 +17,6 @@ Minor Release
    - Added <new feature>
    - Fixed Bug (#<issue number>) where <bug behavior>.
 
-- Fixed model bug where HasAndBelongstoMany relationships wouldn't work properly.
-- Fixed a bug in the installer where a MySQL error could occur in update 4.0.1 if the layout model was used.
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are

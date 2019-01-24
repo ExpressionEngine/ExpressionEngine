@@ -104,6 +104,8 @@ $lang = array(
 
 'file_ft_content_type_desc' => 'Types of files that can be uploaded from this field.',
 
+'file_ft_images_only' => 'Images Only',
+
 'file_ft_limit' => 'Existing files limit',
 
 'file_ft_limit_desc' => 'Maximum number of files to show in the drop down.<br><i>Leave blank to show all files.</i>',
@@ -118,6 +120,41 @@ $lang = array(
 
 'file_ft_upload_directories' => 'Upload Directories',
 
+/* File Drag and Drop */
+
+'file_dnd_choose_directory' => 'Please choose a directory',
+
+'file_dnd_choose_file_directory' => 'Choose a File Directory',
+
+'file_dnd_choose_directory_before_uploading' => 'You must choose a directory to upload files',
+
+'file_dnd_choose_directory_btn' => 'Choose Directory',
+
+'file_dnd_choose_existing' => 'Choose Existing',
+
+'file_dnd_dismiss' => 'Dismiss',
+
+'file_dnd_drop_file' => 'Drop File Here to Upload',
+
+'file_dnd_drop_files' => 'Drop File(s) Here to Upload',
+
+'file_dnd_file_name' => 'File Name',
+
+'file_dnd_filter_directories' => 'filter directories',
+
+'file_dnd_images_only' => 'This field only accepts images.',
+
+'file_dnd_progress' => 'Progress',
+
+'file_dnd_resolve_conflict' => 'Resolve Conflict',
+
+'file_dnd_single_file_allowed' => 'This field can only contain one file',
+
+'file_dnd_unexpected_error' => 'Unexpected error. Check your post_max_size setting in your PHP configuration.',
+
+'file_dnd_uploading_to' => 'uploading to %s',
+
+'file_dnd_upload_new' => 'Upload New',
 
 /* Grid */
 'grid_add_field' => 'add new field',
@@ -192,6 +229,11 @@ $lang = array(
 
 'grid_validation_error' => 'There was a problem with one or more Grid fields',
 
+/* File Grid */
+
+'file_grid_setup' => 'File Grid Setup',
+
+'file_grid_maximum_rows_hit' => 'Uploading this many files will exceed the field\'s maximum rows setting of %s',
 
 /* URL */
 'url_ft_allowed_url_schemes' => 'Allowed URL Schemes',

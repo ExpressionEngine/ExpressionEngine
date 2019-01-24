@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -239,7 +239,7 @@ class Sandr extends Utilities {
 			$sql = "UPDATE `exp_{$field->getDataStorageTable()}` SET `{$where}` = REPLACE(`{$where}`, '{$search}', '{$replace}')";
 			$show_reindex_tip = $field->getField()->hasReindex();
 
-			if ($field->field_type == 'grid')
+			if ($field->field_type == 'grid' || $field->field_type == 'file_grid')
 			{
 				ee()->load->model('grid_model');
 				$affected_grid_rows = ee()->grid_model->search_and_replace(
