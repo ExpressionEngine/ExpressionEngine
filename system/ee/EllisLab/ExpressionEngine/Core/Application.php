@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Core;
@@ -85,11 +86,6 @@ class Application {
 	 */
 	public function setupAddons($path)
 	{
-		$standard_modules = array(
-			'blacklist', 'email', 'forum', 'ip_to_nation', 'member', 'moblog', 'query',
-			'simple_commerce', 'spam', 'wiki'
-		);
-
 		$folders = new FilesystemIterator($path, FilesystemIterator::UNIX_PATHS);
 
 		foreach ($folders as $item)
@@ -100,11 +96,6 @@ class Application {
 
 				// for now only setup those that define an addon.setup file
 				if ( ! file_exists($path.'/addon.setup.php'))
-				{
-					continue;
-				}
-
-				if (IS_CORE && in_array($item->getFileName(), $standard_modules))
 				{
 					continue;
 				}

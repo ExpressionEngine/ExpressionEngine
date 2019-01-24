@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -339,6 +340,12 @@ class Grid_parser {
 			foreach ($columns as $col_id => $col)
 			{
 				$value = (isset($row['col_id_'.$col_id])) ? $row['col_id_'.$col_id] : '';
+
+				if ($col['col_type'] == 'date')
+				{
+					// don't want to cast non-existent values to 0, which is a valid date
+					$value = ($value === '') ? FALSE : (int) $value;
+				}
 
 				$cond[$prefix.$col['col_name']] = $value;
 			}

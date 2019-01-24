@@ -217,7 +217,7 @@ feature 'Channel Layouts: Create/Edit' do
   # Bug #21191
   context '(Bug #21191) Channel has no Categories' do
     before(:each) do
-      visit '/system/index.php?/cp/channels/edit/1'
+      visit '/admin.php?/cp/channels/edit/1'
       channel = Channel.new
       channel.categories_tab.click
       channel.cat_group.each {|cat| cat.set false}

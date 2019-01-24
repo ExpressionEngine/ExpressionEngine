@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Controller\Homepage;
@@ -108,49 +109,64 @@ class Homepage extends CP_Controller {
 			$vars['can_moderate_spam'] = ee('Permission')->can('moderate_spam');
 		}
 
-		// Gather the news
-		ee()->load->library(array('rss_parser', 'typography'));
-		$url_rss = 'https://expressionengine.com/blog/rss-feed/cpnews/';
-		$news = array();
+		$vars['can_view_homepage_news'] = bool_config_item('show_ee_news')
+			&& ee('Permission')->can('view_homepage_news');
 
-		try
+		if ($vars['can_view_homepage_news'])
 		{
-			$feed = ee()->rss_parser->create(
-				$url_rss,
-				60 * 6, // 6 hour cache
-				'cpnews_feed'
-			);
+			// Gather the news
+			ee()->load->library(array('rss_parser', 'typography'));
+			$url_rss = 'https://expressionengine.com/blog/rss-feed/cpnews/';
+			$vars['url_rss'] = ee()->cp->masked_url($url_rss);
+			$news = array();
 
-			foreach ($feed->get_items(0, 10) as $item)
+			try
 			{
-				$news[] = array(
-					'title'   => strip_tags($item->get_title()),
-					'date'    => ee()->localize->format_date(
-						"%j%S %F, %Y",
-						$item->get_date('U')
-					),
-					'content' => ee('Security/XSS')->clean(
-						ee()->typography->parse_type(
-							$item->get_content(),
-							array(
-								'text_format'   => 'xhtml',
-								'html_format'   => 'all',
-								'auto_links'    => 'y',
-								'allow_img_url' => 'n'
-							)
-						)
-					),
-					'link'    => ee()->cp->masked_url($item->get_permalink())
+				$feed = ee()->rss_parser->create(
+					$url_rss,
+					60 * 6, // 6 hour cache
+					'cpnews_feed'
 				);
+
+				foreach ($feed->get_items(0, 10) as $item)
+				{
+					$news[] = array(
+						'title'   => strip_tags($item->get_title()),
+						'date'    => ee()->localize->format_date(
+							"%j%S %F, %Y",
+							$item->get_date('U')
+						),
+						'content' => ee('Security/XSS')->clean(
+							ee()->typography->parse_type(
+								$item->get_content(),
+								array(
+									'text_format'   => 'xhtml',
+									'html_format'   => 'all',
+									'auto_links'    => 'y',
+									'allow_img_url' => 'n'
+								)
+							)
+						),
+						'link'    => ee()->cp->masked_url($item->get_permalink())
+					);
+				}
+
+				$vars['news'] = $news;
+			}
+			catch (\Exception $e)
+			{
+				// Nothing to see here, the view will take care of it
 			}
 		}
-		catch (\Exception $e)
+
+		if (bool_config_item('share_analytics'))
 		{
-			// Nothing to see here, the view will take care of it
+			require_once(APPPATH.'libraries/El_pings.php');
+			$pings = new \El_pings();
+			$pings->shareAnalytics();
 		}
 
 		$vars['news']    = $news;
-		$vars['url_rss'] = ee()->cp->masked_url($url_rss);
 
 		$vars['can_moderate_comments'] = ee('Permission')->can('moderate_comments');
 		$vars['can_edit_comments'] = ee('Permission')->can('edit_all_comments');
@@ -160,7 +176,6 @@ class Homepage extends CP_Controller {
 		$vars['can_create_channels'] = ee('Permission')->can('create_channels');
 		$vars['can_access_fields'] = ee('Permission')->hasAll('can_create_channel_fields', 'can_edit_channel_fields', 'can_delete_channel_fields');
 		$vars['can_access_member_settings'] = ee('Permission')->hasAll('can_access_sys_prefs', 'can_access_members');
-		$vars['can_view_homepage_news'] = ee('Permission')->can('view_homepage_news');
 
 		ee()->view->cp_page_title = ee()->config->item('site_name') . ' ' . lang('overview');
 		ee()->cp->render('homepage', $vars);
@@ -249,11 +264,9 @@ class Homepage extends CP_Controller {
 		$news_view->version = APP_VER;
 		$news_view->save();
 
-		// Version in anchor is separated by dashes instead of dots
-		$dashed_version = implode('-', explode('.', APP_VER));
-		$changelog_url = 'https://docs.expressionengine.com/latest/about/changelog.html#version-'.$dashed_version;
-
-		ee()->functions->redirect($changelog_url);
+		ee()->functions->redirect(
+			ee()->cp->makeChangelogLinkForVersion(APP_VER)
+		);
 	}
 
 }

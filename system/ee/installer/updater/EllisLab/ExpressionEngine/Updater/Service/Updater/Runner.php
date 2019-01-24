@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Updater\Service\Updater;
@@ -75,6 +76,12 @@ class Runner {
 
 		$backup = ee('Database/Backup', $working_file);
 		$backup->makeCompactFile();
+
+		$dbprefix = ee('Database')->getConfig()->get('dbprefix');
+		$affected_tables = array_map(function($table) use ($dbprefix) {
+			return $dbprefix.$table;
+		}, $affected_tables);
+
 		$backup->setTablesToBackup($affected_tables);
 
 		if (empty($table_name))
@@ -123,6 +130,8 @@ class Runner {
 	 */
 	public function updateDatabase($step = NULL)
 	{
+		ee()->config->config['allow_extensions'] = 'n';
+
 		$db_updater = $this->makeDatabaseUpdaterService();
 
 		if ($db_updater->hasUpdatesToRun())
@@ -216,6 +225,8 @@ class Runner {
 		{
 			stdout('Successfully updated to ExpressionEngine ' . APP_VER, CLI_STDOUT_SUCCESS);
 		}
+
+		ee()->config->config['allow_extensions'] = 'n';
 
 		ee()->lang->loadfile('updater');
 		ee()->load->library('session');

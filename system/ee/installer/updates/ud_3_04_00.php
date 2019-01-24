@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Updater\Version_3_4_0;
@@ -17,7 +18,7 @@ class Updater {
 	var $version_suffix = '';
 
 	// This isn't complete, more for testing
-	public $affected_tables = ['exp_member_groups', 'exp_channels'];
+	public $affected_tables = ['member_groups', 'channels'];
 
 	/**
 	 * Do Update

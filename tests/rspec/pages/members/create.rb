@@ -1,7 +1,7 @@
 module Member
   # Member Registration
   class Create < ControlPanelPage
-    set_url '/system/index.php?/cp/members/create'
+    set_url '/admin.php?/cp/members/create'
 
     element :save_button, 'form .form-btns-top button[type=submit][value=save]'
     element :save_and_new_button, 'form .form-btns-top button[type=submit][value=save_and_new]'

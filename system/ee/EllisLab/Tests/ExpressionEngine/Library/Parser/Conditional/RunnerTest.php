@@ -1,17 +1,19 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\Tests\ExpressionEngine\Library\Parser\Conditional;
 
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Runner;
+use PHPUnit\Framework\TestCase;
 
-class RunnerTest extends \PHPUnit_Framework_TestCase {
+class RunnerTest extends TestCase {
 
 	public function setUp()
 	{
@@ -386,7 +388,9 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			array('String Ends With',			'{if "testing" $= "ing"}yes{if:else}no{/if}',		'yes'),
 			array('Integer Ends With',			'{if 123456 $= 456}yes{if:else}no{/if}',			'yes'),
 			array('Float Ends With',			'{if 42.7 $= ".7"}yes{if:else}no{/if}',				'yes'),
-			array('String Regex Compare',		'{if "P25" ~ "/^P[0-9]+/"}yes{if:else}no{/if}',	'yes'),
+			array('String Regex Compare',		'{if "P25" ~ "/^P[0-9]+/"}yes{if:else}no{/if}',		'yes'),
+			array('String Regex Quanifier',		'{if "P25" ~ "/^P[0-9]{2}/"}yes{if:else}no{/if}',	'yes'),
+			array('String Regex Quanifier 2',	'{if "P25" ~ "/^P[0-9]{2,4}/"}yes{if:else}no{/if}',	'yes'),
 			array('Integer Regex Compare',		'{if 1234 ~ "/\d+/"}yes{if:else}no{/if}',			'yes'),
 			array('Float Regex Compare',		'{if 42.7 ~ "/\d+\.\d/"}yes{if:else}no{/if}',		'yes'),
 
@@ -402,7 +406,9 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			array('False String Ends With',		'{if "testing" $= "test"}no{if:else}yes{/if}',		'yes'),
 			array('False Integer Ends With',	'{if 123456 $= 123}no{if:else}yes{/if}',			'yes'),
 			array('False Float Ends With',		'{if 42.7 $= 42}no{if:else}yes{/if}',				'yes'),
-			array('False String Regex',			'{if "C25" ~ "/^P[0-9]+/"}no{if:else}yes{/if}',	'yes'),
+			array('False String Regex',			'{if "C25" ~ "/^P[0-9]+/"}no{if:else}yes{/if}',		'yes'),
+			array('False String Quanifier',		'{if "C25" ~ "/^P[0-9]{2}+/"}no{if:else}yes{/if}',	'yes'),
+			array('False String Quanifier 2',	'{if "C25" ~ "/^P[0-9]{2,4}+/"}no{if:else}yes{/if}','yes'),
 			array('False Integer Regex',		'{if 1234 ~ "/[^\d]+/"}no{if:else}yes{/if}',		'yes'),
 			array('False Float Regex',			'{if 42.7 ~ "/[^\d+\.\d]/"}no{if:else}yes{/if}',	'yes'),
 

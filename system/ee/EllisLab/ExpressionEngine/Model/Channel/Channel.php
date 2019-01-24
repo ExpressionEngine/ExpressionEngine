@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Model\Channel;
@@ -108,7 +109,7 @@ class Channel extends StructureModel {
 		'channel_title'              => 'required|unique[site_id]|xss',
 		'channel_name'               => 'required|unique[site_id]|alphaDash',
 		'channel_url'                => 'xss',
-		'preview_url'                => 'xss',
+		'preview_url'                => 'xss|validatePreviewURL',
 		'comment_url'                => 'xss',
 		'channel_description'        => 'xss',
 		'deft_comments'              => 'enum[y,n]',
@@ -227,6 +228,27 @@ class Channel extends StructureModel {
 
 		return TRUE;
 	}
+
+	/**
+	 * Custom validation callback to validate preview URL- needs to be relative URL
+	 */
+	public function validatePreviewURL($key, $value, $params, $rule)
+	{
+		if (empty($value))
+		{
+			return TRUE;
+		}
+
+		$parsed_url = parse_url($value);
+
+		if (strpos($value, '{base_url}') !== FALSE OR isset($parsed_url['scheme']))
+		{
+			return lang('channel_preview_url_invalid');
+		}
+
+		return TRUE;
+	}
+
 
 	/**
 	 * Parses URL properties for any config variables
@@ -576,35 +598,23 @@ class Channel extends StructureModel {
 	{
 		$fields = $this->CustomFields->indexBy('field_name');
 
-		foreach ($this->FieldGroups->pluck('group_id') as $group_id)
+		$cache_key = "ChannelFieldGroups/{$this->getId()}/";
+		if (($field_groups = ee()->session->cache(__CLASS__, $cache_key, FALSE)) == FALSE)
 		{
-			$field_group = $this->getFieldGroup($group_id);
+			$field_groups = $this->FieldGroups;
+		}
 
+		foreach ($field_groups as $field_group)
+		{
 			foreach($field_group->ChannelFields as $field)
 			{
 				$fields[$field->field_name] = $field;
 			}
 		}
 
+		ee()->session->set_cache(__CLASS__, $cache_key, $field_groups);
+
 		return new Collection($fields);
-	}
-
-	private function getFieldGroup($id)
-	{
-		$cache_key = "ChannelFieldGroup/{$id}/";
-
-		if (($group = ee()->session->cache(__CLASS__, $cache_key, FALSE)) === FALSE)
-		{
-			$group = $this->getModelFacade()->get('ChannelFieldGroup', $id)
-				->with('ChannelFields')
-				->all();
-
-			$group = $group[0];
-
-			ee()->session->set_cache(__CLASS__, $cache_key, $group);
-		}
-
-		return $group;
 	}
 
 	public function maxEntriesLimitReached()

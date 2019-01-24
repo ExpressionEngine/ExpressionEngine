@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Model\Member;
@@ -747,6 +748,8 @@ class Member extends ContentModel {
 	 */
 	public function validatePassword($key, $password)
 	{
+		ee()->lang->loadfile('myaccount');
+
 		$pw_length = ee()->config->item('pw_min_len');
 		if (strlen($password) < $pw_length)
 		{

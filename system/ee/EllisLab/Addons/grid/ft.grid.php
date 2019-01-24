@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -18,6 +19,8 @@ class Grid_ft extends EE_Fieldtype {
 	);
 
 	var $has_array_data = TRUE;
+
+	public $settings_form_field_name = 'grid';
 
 	private $errors;
 
@@ -79,6 +82,48 @@ class Grid_ft extends EE_Fieldtype {
 
 			ee()->grid_lib->save($data);
 		}
+	}
+
+	public function reindex($data)
+	{
+		// we save compounded searchable data to the field data table,
+		// real data gets saved to the grid's own table
+		$searchable_data = NULL;
+		if ($this->get_setting('field_search'))
+		{
+			$this->_load_grid_lib();
+
+			$rows = ee()->grid_model->get_entry(ee()->grid_lib->entry_id, ee()->grid_lib->field_id, ee()->grid_lib->content_type, ee()->grid_lib->fluid_field_data_id);
+
+			$columns = ee()->grid_model->get_columns_for_field(ee()->grid_lib->field_id, 'channel');
+			$searchable_columns = array_filter($columns, function($column) {
+				return ($column['col_search'] == 'y');
+			});
+			$searchable_columns = array_map(function($element) {
+				return 'col_id_'.$element['col_id'];
+			}, $searchable_columns);
+
+			$search_data = [];
+
+			foreach ($rows as $row)
+			{
+				// We need only the column data for insertion
+				$column_data = [];
+				foreach ($row as $key => $value)
+				{
+					if (in_array($key, $searchable_columns))
+					{
+						$column_data[$key] = $value;
+					}
+				}
+				$search_data[$row['row_id']] = $column_data;
+			}
+
+			ee()->load->helper('custom_field_helper');
+			$searchable_data = encode_multi_field($search_data) ?: NULL;
+		}
+
+		return $searchable_data;
 	}
 
 	// This fieldtype has been converted, so it accepts all content types
@@ -450,13 +495,54 @@ class Grid_ft extends EE_Fieldtype {
 		return ee()->grid_parser->parse($this->row, $this->id(), $params, $tagdata, $this->content_type());
 	}
 
-	public function display_settings($data)
+	/**
+	 * Gathers column data ready to be rendered as a view
+	 */
+	public function getColumnsForSettingsView()
 	{
 		$field_id = (int) $this->id();
 
+		$columns = [];
+
+		// Validation error, repopulate
+		if (isset($_POST[$this->settings_form_field_name]))
+		{
+			$columns = $_POST[$this->settings_form_field_name]['cols'];
+
+			foreach ($columns as $field_name => &$column)
+			{
+				$column['col_id'] = $field_name;
+			}
+		}
+		elseif ( ! empty($field_id))
+		{
+			$columns = ee()->grid_model->get_columns_for_field($field_id, $this->content_type());
+		}
+
+		return $columns;
+	}
+
+	/**
+	 * Gather all view variables needed to construct a Grid settings view
+	 */
+	protected function getSettingsVars()
+	{
 		$this->_load_grid_lib();
 
 		$vars = array();
+
+		// Gather columns for current field
+		$vars['columns'] = array();
+
+		$columns = $this->getColumnsForSettingsView();
+
+		foreach ($columns as $column)
+		{
+			$vars['columns'][] = ee()->grid_lib->get_column_view($column, $this->errors);
+		}
+
+		// Will be our template for newly-created columns
+		$vars['blank_col'] = ee()->grid_lib->get_column_view();
 
 		// Fresh settings forms ready to be used for added columns
 		$vars['settings_forms'] = array();
@@ -466,47 +552,23 @@ class Grid_ft extends EE_Fieldtype {
 			$vars['settings_forms'][$field_name] = ee()->grid_lib->get_settings_form($field_name);
 		}
 
-		// Gather columns for current field
-		$vars['columns'] = array();
-
-		// Validation error, repopulate
-		if (isset($_POST['grid']))
-		{
-			$columns = $_POST['grid']['cols'];
-
-			foreach ($columns as $field_name => &$column)
-			{
-				$column['col_id'] = $field_name;
-				$vars['columns'][] = ee()->grid_lib->get_column_view($column, $this->errors);
-			}
-		}
-		elseif ( ! empty($field_id))
-		{
-			$columns = ee()->grid_model->get_columns_for_field($field_id, $this->content_type());
-
-			foreach ($columns as $column)
-			{
-				$vars['columns'][] = ee()->grid_lib->get_column_view($column);
-			}
-		}
-
-		// Will be our template for newly-created columns
-		$vars['blank_col'] = ee()->grid_lib->get_column_view();
-
-		if (empty($vars['columns']))
-		{
-			$vars['columns'][] = $vars['blank_col'];
-		}
-
-		$grid_alert = '';
+		$vars['grid_alert'] = '';
 		if ( ! empty($this->error_string))
 		{
-			$grid_alert = ee('CP/Alert')->makeInline('grid-error')
+			$vars['grid_alert'] = ee('CP/Alert')->makeInline('grid-error')
 				->asIssue()
 				->addToBody($this->error_string)
 				->render();
 		}
 
+		return $vars;
+	}
+
+	/**
+	 * Load global assets needed for Grid settings
+	 */
+	protected function loadGridSettingsAssets()
+	{
 		// Create a template of the banner we generally use for alerts
 		// so we can manipulate it for AJAX validation
 		$alert_template = ee('CP/Alert')->makeInline('grid-error')
@@ -514,6 +576,22 @@ class Grid_ft extends EE_Fieldtype {
 			->render();
 
 		ee()->javascript->set_global('alert.grid_error', $alert_template);
+
+		ee()->cp->add_js_script('plugin', 'ee_url_title');
+		ee()->cp->add_js_script('plugin', 'ui.touch.punch');
+		ee()->cp->add_js_script('ui', 'sortable');
+		ee()->cp->add_js_script('file', 'cp/grid');
+	}
+
+	public function display_settings($data)
+	{
+		$vars = $this->getSettingsVars();
+		$vars['group'] = 'grid';
+
+		if (empty($vars['columns']))
+		{
+			$vars['columns'][] = $vars['blank_col'];
+		}
 
 		$settings = array(
 			'field_options_grid' => array(
@@ -554,17 +632,11 @@ class Grid_ft extends EE_Fieldtype {
 			'grid_fields' => array(
 				'label' => 'grid_fields',
 				'group' => 'grid',
-				'settings' => array($grid_alert, ee('View')->make('grid:settings')->render($vars))
+				'settings' => array($vars['grid_alert'], ee('View')->make('grid:settings')->render($vars))
 			)
 		);
 
-		// Settings to initialize JS with
-		$field_settings = array();
-
-		ee()->cp->add_js_script('plugin', 'ee_url_title');
-		ee()->cp->add_js_script('plugin', 'ui.touch.punch');
-		ee()->cp->add_js_script('ui', 'sortable');
-		ee()->cp->add_js_script('file', 'cp/grid');
+		$this->loadGridSettingsAssets();
 
 		ee()->javascript->output('EE.grid_settings();');
 		ee()->javascript->output('FieldManager.on("fieldModalDisplay", function(modal) {
@@ -585,9 +657,14 @@ class Grid_ft extends EE_Fieldtype {
 			'fieldtype_errors' => 'ensureNoFieldtypeErrors'
 		];
 
-		$grid_settings = ee()->input->post('grid');
+		$grid_settings = ee()->input->post($this->settings_form_field_name);
 		$col_labels = [];
 		$col_names = [];
+
+		if ( ! isset($grid_settings['cols']))
+		{
+			return $this->errors;
+		}
 
 		// Create a flattened version of the grid settings data to pass to the
 		// validator, but also assign rules to the dynamic field names
@@ -599,7 +676,7 @@ class Grid_ft extends EE_Fieldtype {
 
 			foreach ($column as $field => $value)
 			{
-				$field_name = 'grid[cols]['.$column_id.']['.$field.']';
+				$field_name = $this->settings_form_field_name.'[cols]['.$column_id.']['.$field.']';
 				$data[$field_name] = $value;
 
 				switch ($field) {
@@ -682,7 +759,7 @@ class Grid_ft extends EE_Fieldtype {
 		{
 			foreach ($error->getFailed() as $field => $rules)
 			{
-				$field_name = 'grid[cols]['.$field_name.'][col_settings]['.$field.']';
+				$field_name = $this->settings_form_field_name.'[cols]['.$field_name.'][col_settings]['.$field.']';
 				foreach ($rules as $rule)
 				{
 					$this->errors->addFailed($field_name, $rule);
@@ -695,6 +772,18 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function save_settings($data)
 	{
+		if ( ! $this->get_setting('field_search')
+			&& (isset($data['field_search']) && $data['field_search'] == 'y'))
+		{
+			ee('CP/Alert')->makeInline('search-reindex')
+				->asImportant()
+				->withTitle(lang('search_reindex_tip'))
+				->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
+				->defer();
+
+			ee()->config->update_site_prefs(['search_reindex_needed' => ee()->localize->now], 0);
+		}
+
 		// Make sure grid_min_rows is at least zero
 		return array(
 			'grid_min_rows' => empty($data['grid_min_rows']) ? 0 : $data['grid_min_rows'],
@@ -705,7 +794,7 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function post_save_settings($data)
 	{
-		if ( ! isset($_POST['grid']))
+		if ( ! isset($_POST[$this->settings_form_field_name]))
 		{
 			return;
 		}
@@ -713,7 +802,7 @@ class Grid_ft extends EE_Fieldtype {
 		// Need to get the field ID of the possibly newly-created field, so
 		// we'll actually re-save the field settings in the Grid library
 		$data['field_id'] = $this->id();
-		$data['grid'] = ee()->input->post('grid');
+		$data['grid'] = ee()->input->post($this->settings_form_field_name);
 
 		$this->_load_grid_lib();
 		ee()->grid_lib->apply_settings($data);
@@ -766,6 +855,7 @@ class Grid_ft extends EE_Fieldtype {
 		ee()->grid_lib->content_type = $this->content_type();
 		ee()->grid_lib->fluid_field_data_id = (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0;
 		ee()->grid_lib->in_modal_context = $this->get_setting('in_modal_context');
+		ee()->grid_lib->settings_form_field_name = $this->settings_form_field_name;
 	}
 
 	/**

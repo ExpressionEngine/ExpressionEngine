@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 use EllisLab\ExpressionEngine\Service\Validation\Result;
@@ -20,6 +21,7 @@ class Grid_lib {
 	public $entry_id;
 	public $fluid_field_data_id = 0;
 	public $in_modal_context = FALSE;
+	public $settings_form_field_name;
 
 	protected $_fieldtypes = [];
 	protected $_validated = [];
@@ -55,11 +57,23 @@ class Grid_lib {
 		{
 			$rows = isset($data['rows']) ? $data['rows'] : $data;
 		}
-		// Otherwise, we're editing or creating a new entry
+		// Editing an existing entry
+		elseif ($this->entry_id)
+		{
+			$rows = ee()->grid_model->get_entry_rows(
+				$this->entry_id,
+				$this->field_id,
+				$this->content_type,
+				[],
+				FALSE,
+				$this->fluid_field_data_id
+			);
+			$rows = (isset($rows[$this->entry_id])) ? $rows[$this->entry_id] : array();
+		}
+		// Creating a new entry
 		else
 		{
-			$rows = ee()->grid_model->get_entry_rows($this->entry_id, $this->field_id, $this->content_type, array(), FALSE, $this->fluid_field_data_id);
-			$rows = (isset($rows[$this->entry_id])) ? $rows[$this->entry_id] : array();
+			$rows = [];
 		}
 
 		$column_headings = array();
@@ -133,7 +147,7 @@ class Grid_lib {
 
 				if ($column['col_required'] == 'y')
 				{
-					$col['attrs']['class'] = 'required';
+					$col['attrs']['class'] .= ' required';
 				}
 
 				$field_columns[] = $col;
@@ -736,6 +750,10 @@ class Grid_lib {
 		// other columns in the DB to see which we should delete
 		$col_ids = array();
 
+		$columns = ee()->grid_model->get_columns_for_field($settings['field_id'], $this->content_type, FALSE);
+
+		$col_search_settings_changed = FALSE;
+
 		// Go through ALL posted columns for this field
 		foreach ($settings['grid']['cols'] as $col_field => $column)
 		{
@@ -767,9 +785,25 @@ class Grid_lib {
 				'col_settings'		=> json_encode($column['col_settings'])
 			);
 
+			if (isset($columns[$column['col_id']]) && $column['col_search'] != $columns[$column['col_id']]['col_search'])
+			{
+				$col_search_settings_changed = TRUE;
+			}
+
 			$col_ids[] = ee()->grid_model->save_col_settings($column_data, $column['col_id'], $this->content_type);
 
 			$count++;
+		}
+
+		if ($col_search_settings_changed)
+		{
+			ee('CP/Alert')->makeInline('search-reindex')
+				->asImportant()
+				->withTitle(lang('search_reindex_tip'))
+				->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
+				->defer();
+
+			ee()->config->update_site_prefs(['search_reindex_needed' => ee()->localize->now], 0);
 		}
 
 		// Channel content type only searchable at the moment
@@ -781,12 +815,16 @@ class Grid_lib {
 		// Delete columns that were not including in new field settings
 		if ( ! $new_field)
 		{
-			$columns = ee()->grid_model->get_columns_for_field($settings['field_id'], $this->content_type, FALSE);
+			$had_searchable_data = FALSE;
 
 			$old_cols = array();
 			foreach ($columns as $column)
 			{
 				$old_cols[$column['col_id']] = $column['col_type'];
+				if ($column['col_search'] == 'y')
+				{
+					$had_searchable_data = TRUE;
+				}
 			}
 
 			// Compare columns in DB to ones we gathered from the settings array
@@ -801,6 +839,15 @@ class Grid_lib {
 					$settings['field_id'],
 					$this->content_type
 				);
+
+				if ($had_searchable_data)
+				{
+					ee('CP/Alert')->makeInline('search-reindex')
+						->asImportant()
+						->withTitle(lang('search_reindex_tip'))
+						->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
+						->defer();
+				}
 			}
 		}
 	}
@@ -873,7 +920,7 @@ class Grid_lib {
 					'title' => 'type',
 					'desc' => '',
 					'fields' => [
-						'grid[cols]['.$field_name.'][col_type]' => [
+						$this->settings_form_field_name.'[cols]['.$field_name.'][col_type]' => [
 							'type' => 'dropdown',
 							'choices' => $this->getGridFieldtypeDropdownForColumn($is_new ? NULL : $column['col_type']),
 							'value' => $column['col_type'] ?: 'text',
@@ -884,7 +931,7 @@ class Grid_lib {
 				[
 					'title' => 'name',
 					'fields' => [
-						'grid[cols]['.$field_name.'][col_label]' => [
+						$this->settings_form_field_name.'[cols]['.$field_name.'][col_label]' => [
 							'type' => 'text',
 							'value' => $column['col_label'],
 							'required' => TRUE
@@ -895,7 +942,7 @@ class Grid_lib {
 					'title' => 'short_name',
 					'desc' => 'alphadash_desc',
 					'fields' => [
-						'grid[cols]['.$field_name.'][col_name]' => [
+						$this->settings_form_field_name.'[cols]['.$field_name.'][col_name]' => [
 							'type' => 'text',
 							'value' => $column['col_name'],
 							'required' => TRUE
@@ -906,7 +953,7 @@ class Grid_lib {
 					'title' => 'instructions',
 					'desc' => 'instructions_desc',
 					'fields' => [
-						'grid[cols]['.$field_name.'][col_instructions]' => [
+						$this->settings_form_field_name.'[cols]['.$field_name.'][col_instructions]' => [
 							'type' => 'textarea',
 							'value' => $column['col_instructions'],
 						]
@@ -919,7 +966,7 @@ class Grid_lib {
 					'desc' => 'require_field_desc',
 					'columns' => '3rds',
 					'fields' => [
-						'grid[cols]['.$field_name.'][col_required]' => [
+						$this->settings_form_field_name.'[cols]['.$field_name.'][col_required]' => [
 							'type' => 'yes_no',
 							'value' => $column['col_required'],
 						]
@@ -930,7 +977,7 @@ class Grid_lib {
 					'desc' => 'include_in_search_desc',
 					'columns' => '3rds',
 					'fields' => [
-						'grid[cols]['.$field_name.'][col_search]' => [
+						$this->settings_form_field_name.'[cols]['.$field_name.'][col_search]' => [
 							'type' => 'yes_no',
 							'value' => $column['col_search'],
 						]
@@ -941,7 +988,7 @@ class Grid_lib {
 					'desc' => 'grid_col_width_desc',
 					'columns' => '3rds',
 					'fields' => [
-						'grid[cols]['.$field_name.'][col_width]' => [
+						$this->settings_form_field_name.'[cols]['.$field_name.'][col_width]' => [
 							'type' => 'text',
 							'value' => $column['col_width'],
 						]
@@ -1038,7 +1085,7 @@ class Grid_lib {
 				'col_type' => $type,
 				'col_label' => '',
 				'col_required' => 'n',
-				'col_name' => 'n',
+				'col_name' => '',
 				'col_settings' => array()
 			);
 		}
@@ -1096,12 +1143,12 @@ class Grid_lib {
 		// Namespace form field names
 		$view_namespaced = $this->_namespace_inputs(
 			$settings_view,
-			'$1name="grid[cols]['.$col_id.'][col_settings][$2]$3"'
+			'$1name="'.$this->settings_form_field_name.'[cols]['.$col_id.'][col_settings][$2]$3"'
 		);
 
 		return preg_replace(
 			'/data-input-value=["\']([^"\'\[\]]+)([^"\']*)["\']/',
-			'data-input-value="grid[cols]['.$col_id.'][col_settings][$1]$2"',
+			'data-input-value="'.$this->settings_form_field_name.'[cols]['.$col_id.'][col_settings][$1]$2"',
 			$view_namespaced
 		);
 	}

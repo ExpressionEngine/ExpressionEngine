@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 use EllisLab\ExpressionEngine\Service\Template;
@@ -336,7 +337,8 @@ class EE_Template {
 
 		ee()->config->_global_vars = array_merge(ee()->config->_global_vars, $added_globals);
 
-		ee()->config->_global_vars['is_core'] = (IS_CORE) ? TRUE : FALSE;
+		// retain in case templates contain is_core conditionals
+		ee()->config->_global_vars['is_core'] = FALSE;
 
 		// Mark our template for better errors
 		$this->template = $this->markContext().$this->template;
@@ -1192,7 +1194,7 @@ class EE_Template {
 		{
 			$name = substr($ex[0], 0, strpos($ex[0], ':'));
 
-			if (ee()->config->item('multiple_sites_enabled') == 'y' && ! IS_CORE)
+			if (ee()->config->item('multiple_sites_enabled') == 'y')
 			{
 				if (count($this->sites) == 0)
 				{
@@ -3564,7 +3566,7 @@ class EE_Template {
 		if (isset($this->tagparams['site']))
 		{
 			if (count($this->sites) == 0 &&
-				ee()->config->item('multiple_sites_enabled') == 'y' && ! IS_CORE)
+				ee()->config->item('multiple_sites_enabled') == 'y')
 			{
 				$sites_query = ee()->db->query("SELECT site_id, site_name FROM exp_sites ORDER BY site_id");
 

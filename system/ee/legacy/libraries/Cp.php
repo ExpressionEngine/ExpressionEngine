@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -245,8 +246,7 @@ class Cp {
 		ee()->view->version_identifier = APP_VER_ID;
 		ee()->view->show_news_button = $this->shouldShowNewsButton();
 
-		$license = $this->validateLicense();
-		ee()->view->ee_license = $license;
+		ee()->view->ee_license = ee('License')->getEELicense();
 		$sidebar = ee('CP/Sidebar')->render();
 
 		if ( ! empty($sidebar))
@@ -270,39 +270,6 @@ class Cp {
 			->first();
 
 		return ( ! $news_view OR version_compare(APP_VER, $news_view->version, '>'));
-	}
-
-	protected function validateLicense()
-	{
-		$license = ee('License')->getEELicense();
-
-		require_once(APPPATH.'libraries/El_pings.php');
-		$pings = new El_pings();
-		$registered = $pings->is_registered($license);
-
-		if ( ! $license->isValid())
-		{
-			$alert = ee('CP/Alert')->makeBanner('invalid-license')
-				->asWarning()
-				->cannotClose()
-				->withTitle(lang('software_unregistered'));
-
-			foreach ($license->getErrors() as $key => $value)
-			{
-				if ($key == 'missing_pubkey')
-				{
-					$alert->addToBody(sprintf(lang($key), 'https://expressionengine.com/store/purchases'));
-				}
-				else
-				{
-					$alert->addToBody(sprintf(lang($key), ee('CP/URL')->make('settings/license')));
-				}
-			}
-
-			$alert->now();
-		}
-
-		return $license;
 	}
 
 	/**
@@ -366,7 +333,7 @@ class Cp {
 			$notices[] = sprintf(
 				lang('missing_encryption_key'),
 				'session_crypt_key',
-				'https://expressionengine.com/support'
+				DOC_URL.'troubleshooting/error_messages/missing_encryption_keys.html'
 			);
 		}
 
@@ -375,7 +342,7 @@ class Cp {
 			$notices[] = sprintf(
 				lang('missing_encryption_key'),
 				'encryption_key',
-				'https://expressionengine.com/support'
+				DOC_URL.'troubleshooting/error_messages/missing_encryption_keys.html'
 			);
 		}
 
@@ -473,26 +440,12 @@ class Cp {
 
 		if ( ! $version_file)
 		{
-			if (ee()->el_pings->getError() == 'license_disabled')
-			{
-				ee('CP/Alert')->makeBanner('error-getting-version')
-					->asIssue()
-					->withTitle(lang('cp_message_issue'))
-					->addToBody(sprintf(
-						lang('license_disabled'),
-						ee('CP/URL')->make('settings/license'),
-						ee()->cp->masked_url('https://expressionengine.com/store/purchases')
-					))
-					->now();
-				return;
-			}
-
 			ee('CP/Alert')->makeBanner('notices')
 				->asWarning()
 				->withTitle(lang('cp_message_warn'))
 				->addToBody(sprintf(
 					lang('new_version_error'),
-					ee()->cp->masked_url('https://expressionengine.com/store/purchases')
+					ee()->cp->masked_url(DOC_URL.'troubleshooting/error_messages/unexpected_error_occurred_attempting_to_download_the_current_expressionengine_version_number.html')
 				))
 				->now();
 		}
@@ -1118,6 +1071,13 @@ class Cp {
 		ee()->config->site_prefs('', $site_id);
 
 		ee()->functions->redirect($redirect);
+	}
+
+	public function makeChangelogLinkForVersion($version)
+	{
+		// Version in anchor is separated by dashes instead of dots
+		$dashed_version = implode('-', explode('.', $version));
+		return 'https://docs.expressionengine.com/latest/about/changelog.html#version-'.$dashed_version;
 	}
 }
 

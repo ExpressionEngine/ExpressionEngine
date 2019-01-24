@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 require_once PATH_ADDONS.'channel/libraries/channel_form/Channel_form_exception.php';
@@ -454,7 +455,7 @@ class Channel_form_lib
 		}
 
 		//edit form or post-error submission
-		if ($this->edit OR ! empty($_POST))
+		if ($this->edit OR ee()->input->post('ACT') == $this->_hidden_fields['ACT'])
 		{
 			//not necessary for edit forms
 			ee()->TMPL->tagparams['use_live_url'] = 'no';
@@ -477,7 +478,9 @@ class Channel_form_lib
 				// use fieldtype display_field method
 				elseif (preg_match('/^field:(.*)$/', $key, $match))
 				{
-					if ($this->get_field_type($match[1]) == 'checkboxes' OR $this->get_field_type($match[1]) == 'grid')
+					if ($this->get_field_type($match[1]) == 'checkboxes' ||
+						$this->get_field_type($match[1]) == 'grid' ||
+						$this->get_field_type($match[1]) == 'file_grid')
 					{
 						$checkbox_fields[] = $match[1];
 					}
@@ -976,7 +979,8 @@ class Channel_form_lib
 
 		$this->output_js['json'] = array(
 			'EE'					=> $addt_js,
-			'mySettings'			=> $markItUp,
+			'EE.markitup'			=> new StdClass(),
+			'EE.markitup.settings'			=> $markItUp,
 		);
 
 		$include_jquery = ee()->TMPL->fetch_param('include_jquery');
@@ -1122,7 +1126,7 @@ GRID_FALLBACK;
 		$include_jquery = ($this->bool_string($include_jquery, TRUE)) ? '&include_jquery=y' : '';
 
 		// RTE Selector parameter?
-		$rte_selector = ee()->TMPL->fetch_param('rte_selector', '.WysiHat-field');
+		$rte_selector = ee()->TMPL->fetch_param('rte_selector');
 
 		if ($rte_selector)
 		{

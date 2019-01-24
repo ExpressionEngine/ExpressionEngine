@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Controller\Members;
@@ -450,10 +451,10 @@ class Groups extends Members\Members {
 
 		if ($replacement)
 		{
-			ee('Model')->get('Member')
-				->filter('group_id', $group_id)
-				->set('group_id', $replacement)
-				->update();
+			// Query bulder for speed as model update() is broken
+			$db = ee('db');
+			$db->where('group_id', $group_id);
+			$db->update('exp_members', ['group_id' => $replacement]);
 		}
 		else
 		{

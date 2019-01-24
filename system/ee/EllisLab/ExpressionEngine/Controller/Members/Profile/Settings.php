@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Controller\Members\Profile;
@@ -60,7 +61,6 @@ class Settings extends Profile {
 
 		$directories = ee('Model')->get('UploadDestination')
 			->filter('name', 'IN', array('Default Avatars', 'Avatars'))
-			->filter('site_id', ee()->config->item('site_id'))
 			->all()
 			->indexBy('name');
 

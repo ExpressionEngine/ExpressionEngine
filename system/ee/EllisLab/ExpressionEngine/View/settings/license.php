@@ -8,8 +8,8 @@
 		<?=ee('CP/Alert')->get('core-license')?>
 		<ul class="checklist">
 			<li><b><?=lang('license_no')?></b>: <?=$license->getData('license_number')?></li>
-			<li><b><?=lang('owned_by')?></b>: <a href="mailto:<?=$license->getData('license_contact')?>">
-				<?=($license->getData('license_contact_name')) ?: $license->getData('license_contact')?>
+			<li><b><?=lang('owned_by')?></b>: <a href="mailto:<?=ee('Format')->make('Text', $license->getData('license_contact'))->attributeEscape()?>">
+				<?=ee('Format')->make('Text', ($license->getData('license_contact_name')) ?: $license->getData('license_contact'))->attributeEscape()?>
 			</a></li>
 			<li class="last"><b><?=lang('site_limit')?></b>: <?=$license->getData('sites')?></li>
 		</ul>

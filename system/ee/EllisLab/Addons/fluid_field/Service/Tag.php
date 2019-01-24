@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\Addons\FluidField\Service;
@@ -161,7 +162,7 @@ class Tag {
 		{
 			list($modifier, $content, $params, $chunk) = $chk_data;
 
-			if ($field->getType() == 'grid')
+			if ($field->getType() == 'grid' || $field->getType() == 'file_grid')
 			{
 				ee()->load->library('grid_parser');
 				ee()->grid_parser->grid_field_names[$field->getId()][$field->getItem('fluid_field_data_id')] = $field->getName();

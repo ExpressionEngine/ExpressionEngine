@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Controller\Channels;
@@ -162,11 +163,6 @@ class Channels extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		if ($this->hasMaximumChannels())
-		{
-			show_error(lang('maximum_channels_reached'));
-		}
-
 		return $this->form();
 	}
 
@@ -192,11 +188,6 @@ class Channels extends AbstractChannelsController {
 	{
 		if (is_null($channel_id))
 		{
-			if ($this->hasMaximumChannels())
-			{
-				show_error(lang('maximum_channels_reached'));
-			}
-
 			// Only auto-complete channel short name for new channels
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
 
@@ -861,6 +852,8 @@ class Channels extends AbstractChannelsController {
 		$channel_form_statuses = array_merge($channel_form_statuses, $deft_status_options);
 		ee()->load->model('admin_model');
 
+		$author_list = $this->authorList();
+
 		$sections = array(
 			array(
 				array(
@@ -1066,7 +1059,9 @@ class Channels extends AbstractChannelsController {
 							'type' => 'radio',
 							'choices' => $this->authorList(),
 							'filter_url' => ee('CP/URL')->make('channels/author-list')->compile(),
-							'value' => $channel_form->default_author,
+							'value' => isset($author_list[$channel_form->default_author])
+								? $channel_form->default_author
+								: NULL,
 							'no_results' => [
 								'text' => sprintf(lang('no_found'), lang('authors'))
 							]
@@ -1439,16 +1434,6 @@ class Channels extends AbstractChannelsController {
 		}
 
 		return $channel;
-	}
-
-	/**
-	 * Maximum number of channels reached?
-	 *
-	 * @return bool
-	 **/
-	private function hasMaximumChannels()
-	{
-		return (IS_CORE && ee('Model')->get('Channel')->count() >= 3);
 	}
 }
 

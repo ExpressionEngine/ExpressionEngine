@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Model\Content;
@@ -209,6 +210,27 @@ class FieldFacade {
 		return $this->data = $this->api->apply('post_save', array($value));
 	}
 
+	public function hasReindex()
+	{
+		$ft = $this->getNativeField();
+
+		return method_exists($ft, 'reindex');
+	}
+
+	public function reindex($model = NULL)
+	{
+		if ( ! $this->hasReindex())
+		{
+			return FALSE;
+		}
+
+		$this->ensurePopulatedDefaults();
+
+		$value = $this->data;
+		$this->initField();
+		return $this->data = $this->api->apply('reindex', array($value, $model));
+	}
+
 	public function getForm()
 	{
 		$data = $this->initField();
@@ -274,8 +296,6 @@ class FieldFacade {
 	public function replaceTag($tagdata, $params = array(), $modifier = '', $full_modifier = '')
 	{
 		$ft = $this->getNativeField();
-
-		$this->initField();
 
 		$data = $this->getItem('row');
 

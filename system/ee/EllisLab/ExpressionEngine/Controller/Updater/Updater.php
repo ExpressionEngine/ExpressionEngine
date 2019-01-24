@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Controller\Updater;
@@ -43,9 +44,8 @@ class Updater extends CP_Controller {
 		$to_version = $version_file['latest_version'];
 
 		$newer_version_available = version_compare($current_version, $to_version, '<');
-		$core_to_pro = (IS_CORE && $version_file['license_type'] == 'pro');
 
-		if ( ! $newer_version_available && ! $core_to_pro)
+		if ( ! $newer_version_available)
 		{
 			return ee()->functions->redirect(ee('CP/URL', 'homepage'));
 		}

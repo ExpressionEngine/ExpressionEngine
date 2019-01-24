@@ -141,7 +141,7 @@ feature 'SQL Manager' do
     no_php_js_errors
     results.should have_text 'SQL Managerexp_actions Table' # How Capybara sees the breadcrumb
     results.should have_text 'exp_actions Table'
-    results.should have(22).rows
+    results.should have(21).rows
 
     # Make sure breadcrumb info persists in base URL
     results.sort_links[0].click

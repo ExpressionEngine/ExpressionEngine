@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Library\Parser\Conditional\Token;
@@ -25,7 +26,11 @@ class StringLiteral extends Token {
 
 	public function canEvaluate()
 	{
-		return (stristr($this->value, LD) === FALSE);
+		// Remove regex quantifiers like {2} or {2,4} so they're not considered
+		// unparsed variables
+		$value = preg_replace('/\{\d+,?\d*\}/', '', $this->value);
+
+		return (stristr($value, LD) === FALSE);
 	}
 
 	public function __toString()

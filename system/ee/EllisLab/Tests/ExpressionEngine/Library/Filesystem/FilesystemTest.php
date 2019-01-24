@@ -1,17 +1,19 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\Tests\ExpressionEngine\Library\Filesystem;
 
 use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
+use PHPUnit\Framework\TestCase;
 
-class FilesystemTest extends \PHPUnit_Framework_TestCase {
+class FilesystemTest extends TestCase {
 
 	protected $fs;
 	protected $dummy_files;

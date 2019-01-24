@@ -1,10 +1,11 @@
 <?php  if ( ! defined('SYSPATH')) exit('No direct script access allowed');
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /*
@@ -65,7 +66,11 @@
  */
 	use EllisLab\ExpressionEngine\Core;
 
-	if (FALSE && defined('REQ') && in_array(REQ, ['CP', 'CLI']) && is_dir(SYSPATH.'ee/installer/'))
+	if (
+		defined('REQ') && in_array(REQ, ['CP', 'CLI']) &&
+		is_dir(SYSPATH.'ee/installer/') &&
+		( ! defined('INSTALL_MODE') OR INSTALL_MODE != FALSE)
+	)
 	{
 		$core = new Core\Installer();
 	}

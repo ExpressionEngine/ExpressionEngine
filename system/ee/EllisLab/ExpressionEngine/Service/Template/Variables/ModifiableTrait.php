@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Service\Template\Variables;
@@ -88,6 +89,11 @@ trait ModifiableTrait {
 	 */
 	public function replace_limit($data, $params = array(), $tagdata = FALSE)
 	{
+		if ( ! isset($params['preserve_words']))
+		{
+			$params['preserve_words'] = TRUE;
+		}
+
 		return (string) ee('Format')->make('Text', $data)->limitChars($params);
 	}
 

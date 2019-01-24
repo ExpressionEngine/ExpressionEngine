@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -54,10 +55,12 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 		$cfields = $obj->channel()->cfields;
 		$rfields = $obj->channel()->rfields;
 		$gfields = $obj->channel()->gfields;
+		$ffields = $obj->channel()->ffields;
 
 		$rfields = isset($rfields[$site_id]) ? $rfields[$site_id] : [];
 		$cfields = isset($cfields[$site_id]) ? $cfields[$site_id] : [];
 		$gfields = isset($gfields[$site_id]) ? $gfields[$site_id] : [];
+		$ffields = isset($ffields[$site_id]) ? $ffields[$site_id] : [];
 
 		$cfields = array_diff_key($cfields, $rfields);
 
@@ -74,7 +77,8 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 			$field_id = $cfields[$field['field_name']];
 
 			if ((isset($data['field_id_'.$field_id]) && $data['field_id_'.$field_id] !== '') OR
-				array_key_exists($field['field_name'], $gfields)) // is a Grid single
+				array_key_exists($field['field_name'], $gfields) OR // is a Grid single
+				array_key_exists($field['field_name'], $ffields)) // is a Fluid single
 			{
 				$modifier = $field['modifier'];
 

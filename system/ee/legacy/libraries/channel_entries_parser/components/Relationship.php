@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -40,12 +41,45 @@ class EE_Channel_relationship_parser implements EE_Channel_parser_component {
 		}
 
 		ee()->load->library('relationships_parser');
+		ee()->load->model('grid_model');
 
 		try
 		{
+			$grid_relationships = [];
+			$gfields = $pre->channel()->gfields;
+
+			foreach ($pre->site_ids() as $site_id)
+			{
+				// Skip a site if it has no Grid fields
+				if ( ! isset($gfields[$site_id]) OR empty($gfields[$site_id]))
+				{
+					continue;
+				}
+
+				// Cache all fields for this site for lookup below
+				ee()->grid_model->get_columns_for_field(array_values($gfields[$site_id]), 'channel');
+
+				foreach ($gfields[$site_id] as $field_name => $field_id)
+				{
+					$prefix = $field_name.':';
+
+					$columns = ee()->grid_model->get_columns_for_field($field_id, 'channel');
+
+					foreach ($columns as $col)
+					{
+						if ($col['col_type'] == 'relationship')
+						{
+							$grid_relationships[$prefix.$col['col_name']] = $col['col_id'];
+						}
+					}
+				}
+			}
+
 			return ee()->relationships_parser->create(
 				$pre->channel()->rfields,
-				$pre->entry_ids()
+				$pre->entry_ids(),
+				NULL,
+				$grid_relationships
 			);
 		}
 		catch (EE_Relationship_exception $e)

@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -37,16 +38,6 @@ class Cache extends EE_Driver_Library {
 	);
 
 	/**
-	 * Valid cache drivers for EE Core
-	 *
-	 * @var array
-	 */
-	protected $_core_valid_drivers = array(
-		'file',
-		'dummy'
-	);
-
-	/**
 	 * Reference to the driver
 	 *
 	 * @var mixed
@@ -67,12 +58,6 @@ class Cache extends EE_Driver_Library {
 	 */
 	public function __construct()
 	{
-		// Only allow certain drivers for EE Core
-		if (IS_CORE)
-		{
-			$this->valid_drivers = $this->_core_valid_drivers;
-		}
-
 		/* -------------------------------------------
 		/*	Hidden Configuration Variables
 		/*	- cache_driver => Name of desired caching driver ('file', 'memcached'...)

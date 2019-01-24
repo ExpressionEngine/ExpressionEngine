@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -198,7 +199,7 @@ class Api_channel_fields extends Api {
 				$this->set_settings($row['field_id'], $settings);
 			}
 
-			if ($row['field_type'] == 'grid')
+			if ($row['field_type'] == 'grid' || $row['field_type'] == 'file_grid')
 			{
 				$gfields[$row['site_id']][$row['field_name']] = $row['field_id'];
 			}
@@ -251,6 +252,7 @@ class Api_channel_fields extends Api {
 			if (isset($fts[$field_type]))
 			{
 				$paths[] = PATH_THIRD.$fts[$field_type]['package'].'/';
+				$paths[] = PATH_ADDONS.$fts[$field_type]['package'].'/';
 			}
 
 			$paths[] = PATH_ADDONS.$field_type.'/';

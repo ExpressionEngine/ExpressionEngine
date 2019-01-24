@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 use EllisLab\ExpressionEngine\Library;
@@ -16,6 +17,7 @@ use EllisLab\ExpressionEngine\Service\Category;
 use EllisLab\ExpressionEngine\Service\ChannelSet;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\Consent;
+use EllisLab\ExpressionEngine\Service\Cookie;
 use EllisLab\ExpressionEngine\Service\CustomMenu;
 use EllisLab\ExpressionEngine\Service\Database;
 use EllisLab\ExpressionEngine\Service\Encrypt;
@@ -133,7 +135,7 @@ return [
 			$session_id = ee()->session->session_id();
 			$default_cp_url = SELF;
 
-			$factory = new URL\URLFactory($cp_url, $site_index, $uri_string, $session_id, $default_cp_url);
+			$factory = new URL\URLFactory($cp_url, $site_index, $uri_string, $session_id, $default_cp_url, $ee->make('Encrypt'));
 
 			return (is_null($path)) ? $factory : $factory->make($path);
 		},
@@ -390,6 +392,11 @@ return [
 			return new ChannelSet\Factory(
 				ee()->config->item('site_id')
 			);
+		},
+
+		'Cookie' => function($ee)
+		{
+			return new Cookie\Cookie();
 		},
 
 		'CookieRegistry' => function($ee)
@@ -659,6 +666,7 @@ return [
 	],
 	'cookies.functionality' => [
 		'anon',
+		'expiration',
 		'forum_theme',
 		'forum_topics',
 		'my_email',

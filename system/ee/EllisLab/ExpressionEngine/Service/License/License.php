@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace EllisLab\ExpressionEngine\Service\License;
@@ -204,19 +205,14 @@ class License {
 			return FALSE;
 		}
 
-		if ($this->isSigned())
+		$valid = $this->signatureIsValid();
+
+		if ( ! $valid)
 		{
-			$valid = $this->signatureIsValid();
-
-			if ( ! $valid)
-			{
-				$this->errors['invalid_signature'] = "The license file has been tampered with";
-			}
-
-			return $valid;
+			$this->errors['invalid_signature'] = "The license file has been tampered with";
 		}
 
-		return TRUE;
+		return $valid;
 	}
 
 	/**

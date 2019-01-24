@@ -3,6 +3,6 @@ class FieldGroupForm < ControlPanelPage
   elements :submit, 'button[value="save"]'
 
   def load
-    visit '/system/index.php?/cp/fields/groups/create'
+    visit '/admin.php?/cp/fields/groups/create'
   end
 end

@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -177,7 +178,7 @@ class Member_auth extends Member {
 		}
 
 		// More sites?
-		if ($sites && ee()->config->item('allow_multi_logins') == 'y')
+		if ($sites)
 		{
 			$this->_redirect_next_site($sites, $current_idx, $current_url, $login_state);
 		}
@@ -299,7 +300,6 @@ class Member_auth extends Member {
 	private function _do_multi_auth($sites, $login_state)
 	{
 		if ( ! $sites
-			OR ee()->config->item('allow_multi_logins') == 'n'
 			OR empty($login_state))
 		{
 			return ee()->output->show_user_error('general', lang('not_authorized'));
@@ -400,7 +400,6 @@ class Member_auth extends Member {
 
 			return ee()->functions->redirect($next_url);
 		}
-
 	}
 
 	private function _build_multi_success_message($sites)
@@ -458,13 +457,13 @@ class Member_auth extends Member {
 		$return = reduce_double_slashes(ee()->functions->form_backtrack());
 
 		// Is this a forum request?
-		if (ee()->input->get_post('FROM') == 'forum')
+		if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed'))
 		{
 			if (ee()->input->get_post('board_id') !== FALSE &&
 				is_numeric(ee()->input->get_post('board_id')))
 			{
 				$query = ee()->db->select('board_label')
-					->where('board_id', ee()->input->get_post('board_id'))
+					->where('board_id', (int) ee()->input->get_post('board_id'))
 					->get('forum_boards');
 			}
 			else
@@ -569,13 +568,13 @@ class Member_auth extends Member {
 		$name = '';
 		unset($url);
 
-		if (ee()->input->get_post('FROM') == 'forum')
+		if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed'))
 		{
 			if (ee()->input->get_post('board_id') !== FALSE &&
 				is_numeric(ee()->input->get_post('board_id')))
 			{
 				$query = ee()->db->select("board_forum_url, board_label")
-					->where('board_id', ee()->input->get_post('board_id'))
+					->where('board_id', (int) ee()->input->get_post('board_id'))
 					->get('forum_boards');
 			}
 			else
@@ -684,13 +683,13 @@ class Member_auth extends Member {
 			return ee()->output->show_user_error('submission', array(lang('invalid_email_address')));
 		}
 
-		if (ee()->input->get_post('FROM') == 'forum')
+		if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed'))
 		{
 			if (ee()->input->get_post('board_id') !== FALSE &&
 				is_numeric(ee()->input->get_post('board_id')))
 			{
 				$query = ee()->db->select('board_forum_url, board_id, board_label')
-					->where('board_id', ee()->input->get_post('board_id'))
+					->where('board_id', (int) ee()->input->get_post('board_id'))
 					->get('forum_boards');
 			}
 			else
@@ -969,7 +968,7 @@ class Member_auth extends Member {
 		// their session has expired.  In that case, the only information we have
 		// about where they came from is in the POST data (where it came from the GET data).
 		// Use it to get them as close as possible to where they started.
-		else if (ee()->input->get_post('FROM') == 'forum')
+		else if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed'))
 		{
 			$board_id = ee()->input->get_post('board_id');
 			$board_id = ($board_id === FALSE OR ! is_numeric($board_id)) ? 1 : $board_id;

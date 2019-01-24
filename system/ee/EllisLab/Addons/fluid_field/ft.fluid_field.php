@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -138,7 +139,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 
 		$fluid_field_data = $this->getFieldData()->indexBy('id');
 
-		$compiled_data_for_search = array();
+		$compiled_data_for_search = [];
 
 		foreach ($data['fields'] as $key => $value)
 		{
@@ -182,6 +183,7 @@ class Fluid_field_ft extends EE_Fieldtype {
 			foreach ($value as $field_data)
 			{
 				$field->setData($field_data);
+				$field->validate($field_data);
 				$compiled_data_for_search[] = $field->save($field_data);
 			}
 		}
@@ -237,6 +239,31 @@ class Fluid_field_ft extends EE_Fieldtype {
 		{
 			$this->removeField($fluid_field);
 		}
+	}
+
+	public function reindex($data)
+	{
+		$compiled_data_for_search = [];
+
+		$fluid_field_data = $this->getFieldData();
+		foreach ($fluid_field_data as $fluid_field)
+		{
+			$field = $fluid_field->getField();
+			$field_data = $fluid_field->getFieldData();
+
+			if ($field->hasReindex())
+			{
+				$field->setItem('field_search', true);
+				$compiled_data_for_search[] = $field->reindex($field_data);
+			}
+			else
+			{
+				$compiled_data_for_search[] = $field->getData();
+			}
+
+		}
+
+		return implode(' ', $compiled_data_for_search);
 	}
 
 	private function prepareData($fluid_field, array $values)
@@ -525,6 +552,14 @@ class Fluid_field_ft extends EE_Fieldtype {
 					->all()
 					->delete();
 
+				ee('CP/Alert')->makeInline('search-reindex')
+					->asImportant()
+					->withTitle(lang('search_reindex_tip'))
+					->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
+					->defer();
+
+				ee()->config->update_site_prefs(['search_reindex_needed' => ee()->localize->now], 0);
+
 				$fields = ee('Model')->get('ChannelField', $removed_fields)
 					->fields('field_label')
 					->all()
@@ -685,7 +720,28 @@ class Fluid_field_ft extends EE_Fieldtype {
 	 */
 	public function replace_total_fields($data, $params = '', $tagdata = '')
 	{
-		$fluid_field_data = $this->getFieldData($this->id(), $this->row('entry_id'));
+		ee()->load->library('fluid_field_parser');
+
+		$fluid_field_data = $this->getFieldData();
+
+		if (ee('LivePreview')->hasEntryData())
+		{
+			$data = ee('LivePreview')->getEntryData();
+
+			if ($data['entry_id'] == $this->content_id())
+			{
+				$fluid_field_data = ee()->fluid_field_parser->overrideWithPreviewData(
+					$fluid_field_data,
+					[$this->id()]
+				);
+
+				if ( ! isset($data["field_id_{$this->id()}"])
+					|| ! isset($data["field_id_{$this->id()}"]['fields']))
+				{
+					return 0;
+				}
+			}
+		}
 
 		if (isset($params['type']))
 		{

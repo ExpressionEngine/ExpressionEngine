@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -458,7 +459,7 @@ class Grid_model extends CI_Model {
 			$entry_id = $data['entry_id'];
 			$fluid_field = 0;
 
-			if ($fluid_field_data_id)
+			if ($fluid_field_data_id && ! is_int($fluid_field_data_id))
 			{
 				list($fluid_field, $sub_field_id) = explode(',', $fluid_field_data_id);
 				$data = $data[$fluid_field]['fields'][$sub_field_id];
@@ -664,7 +665,8 @@ class Grid_model extends CI_Model {
 	 * Gets array of all columns and settings for a given field ID
 	 *
 	 * @param	int		Field ID to get columns for
-	 * @param	boolean	Skip the cache and get a fresh set of columns
+	 * @param	string	Content type
+	 * @param	boolean	When FALSE, skip the cache and get a fresh set of columns
 	 * @return	array	Settings from grid_columns table
 	 */
 	public function get_columns_for_field($field_ids, $content_type, $cache = TRUE)
@@ -983,6 +985,39 @@ class Grid_model extends CI_Model {
 
 			ee()->db->update_batch($table, $entry_data, 'entry_id');
 		}
+	}
+
+	/**
+	 * Search and replace a single Grid field's contents
+	 *
+	 * @param string $content_type Content type (typically 'channel')
+	 * @param int $field_id Grid field id
+	 * @param string $search String to search for in the Grid's rows
+	 * @param string $replace Replacement string
+	 * @return int Number of affected rows
+	 */
+	public function search_and_replace($content_type, $field_id, $search, $replace)
+	{
+		$table = $this->_data_table($content_type, $field_id);
+		$columns = $this->get_columns_for_field($field_id, 'channel');
+
+		if (empty($columns))
+		{
+			return 0;
+		}
+
+		$sql = "UPDATE `exp_{$table}` SET ";
+
+		foreach ($columns as $column)
+		{
+			$column_name = 'col_id_'.$column['col_id'];
+			$sql .= "`{$column_name}` = REPLACE(`{$column_name}`, '{$search}', '{$replace}'),";
+		}
+
+		$sql = rtrim($sql, ',');
+
+		ee()->db->query($sql);
+		return ee()->db->affected_rows();
 	}
 }
 

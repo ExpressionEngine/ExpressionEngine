@@ -1,10 +1,11 @@
 <?php
 /**
+ * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
- * @license   https://expressionengine.com/license
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
@@ -96,7 +97,7 @@ class EE_Functions {
 		$template = trim($template, '"\' ');
 		list($group, $template) = explode('/', $template);
 
-		if ( ! empty($group) && ! empty($template) && ! IS_CORE)
+		if ( ! empty($group) && ! empty($template))
 		{
 			ee()->load->library('template_router');
 			$route = ee()->template_router->fetch_route($group, $template);
