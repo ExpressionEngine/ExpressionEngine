@@ -293,7 +293,7 @@ class ChannelEntry extends ContentModel {
 		if (ee()->session->userdata('member_id'))
 		{
 			// A super admin always has channel permission to post as themself
-			$channel_permission = (ee()->session->userdata('group_id') == 1 && ($this->author_id == ee()->session->userdata('member_id'))) ? TRUE : FALSE;
+			$channel_permission = (ee('Permission')->isSuperAdmin() && ($this->author_id == ee()->session->userdata('member_id'))) ? TRUE : FALSE;
 
 			if ($this->author_id != ee()->session->userdata('member_id') && ! ee('Permission')->can('edit_other_entries'))
 			{
