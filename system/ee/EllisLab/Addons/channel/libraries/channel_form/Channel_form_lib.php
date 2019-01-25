@@ -145,7 +145,9 @@ class Channel_form_lib
 		$this->fetch_logged_out_member(ee()->TMPL->fetch_param('logged_out_member_id'));
 
 		$member_id = ee()->session->userdata('member_id') ?: $this->logged_out_member_id;
-		$this->member = ee('Model')->get('Member', $member_id)->first();
+		$this->member = ee('Model')->get('Member', $member_id)
+			->with('PrimaryRole')
+			->first();
 
 		if ( ! $this->member)
 		{
@@ -2365,19 +2367,18 @@ GRID_FALLBACK;
 
 		if ($logged_out_member_id)
 		{
-			ee()->db->select('member_id, group_id');
-			ee()->db->where('member_id', $logged_out_member_id);
+			$member = ee('Model')->get('Member', $logged_out_member_id)
+				->with('PrimaryRole')
+				->first();
 
-			$query = ee()->db->get('members');
-
-			if ($query->num_rows() == 0)
+			if ( ! $member)
 			{
 				// Invalid guest member id was specified
 				throw new Channel_form_exception(lang('channel_form_invalid_guest_member_id'), 'general');
 			}
 
-			$this->logged_out_member_id = $query->row('member_id');
-			$this->logged_out_group_id = $query->row('group_id');
+			$this->logged_out_member_id = $member->getId();
+			$this->logged_out_group_id = $member->PrimaryRole->getId();
 		}
 	}
 
@@ -2571,7 +2572,7 @@ GRID_FALLBACK;
 		$bool_variable = array('secure_return', 'json', 'author_only');
 		// required, channel, return
 
-		$m_group_id = $this->member->MemberGroup->getId();
+		$m_group_id = $this->member->PrimaryRole->getId();
 
 		// We'll just take all of the parameters and put then in an array
 		$params = array_merge(array_keys(ee()->TMPL->tagparams), $bool_variable);
