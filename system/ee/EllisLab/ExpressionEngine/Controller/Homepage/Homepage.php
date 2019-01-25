@@ -166,8 +166,6 @@ class Homepage extends CP_Controller {
 			$pings->shareAnalytics();
 		}
 
-		$vars['news']    = $news;
-
 		$vars['can_moderate_comments'] = ee('Permission')->can('moderate_comments');
 		$vars['can_edit_comments'] = ee('Permission')->can('edit_all_comments');
 		$vars['can_access_members'] = ee('Permission')->can('access_members');
