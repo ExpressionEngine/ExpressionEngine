@@ -2227,7 +2227,7 @@ class Member {
 			return ee()->TMPL->tagdata = '';
 		}
 
-		$results = $member->getValues() + array('group_title' => $member->MemberGroup->group_title);
+		$results = $member->getValues() + ['group_title' => $member->PrimaryRole->name, 'primary_role_name' => $member->PrimaryRole->name];
 		$default_fields = $results;
 
 		// Is there an avatar?

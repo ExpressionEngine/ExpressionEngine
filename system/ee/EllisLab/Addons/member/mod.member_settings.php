@@ -132,7 +132,7 @@ class Member_settings extends Member {
 		}
 
 		// Fetch the row
-		$row = array_merge($member->getValues(), $member->MemberGroup->getValues());
+		$row = array_merge($member->getValues(), $member->PrimaryRole->getValues());
 
 		// Use member field names
 		$member_fields = ee('Model')->get('MemberField')

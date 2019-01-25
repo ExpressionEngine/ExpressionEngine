@@ -319,7 +319,7 @@ class ChannelEntry extends ContentModel {
 		// the author_id should either have permission to post to the channel or be in include_in_authorlist
 		if ($this->getBackup('author_id') != $this->author_id && ! $channel_permission)
 		{
-			$assigned_channels = $this->Author->MemberGroup->AssignedChannels->pluck('channel_id');
+			$assigned_channels = $this->Author->getAssignedChannels()->pluck('channel_id');
 			$channel_permission = (in_array($this->channel_id, $assigned_channels)) ? TRUE : FALSE;
 
 			$authors = ee('Member')->getAuthors(NULL, FALSE);

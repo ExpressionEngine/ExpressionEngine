@@ -751,7 +751,7 @@ class Channel_form_lib
 		}
 
 		//set group-based return url
-		$this->form_hidden('return', (ee()->TMPL->fetch_param('return_'.$this->member->MemberGroup->getId())) ? ee()->TMPL->fetch_param('return_'.$this->member->MemberGroup->getId()) : ee()->TMPL->fetch_param('return'));
+		$this->form_hidden('return', (ee()->TMPL->fetch_param('return_'.$this->member->PrimaryRole->getId())) ? ee()->TMPL->fetch_param('return_'.$this->member->PrimaryRole->getId()) : ee()->TMPL->fetch_param('return'));
 
 		// build the form
 
@@ -3530,7 +3530,7 @@ SCRIPT;
 			return;
 		}
 
-		$id = ( ! $reset) ? $this->member->MemberGroup->getId() : 0;
+		$id = ( ! $reset) ? $this->member->PrimaryRole->getId() : 0;
 
 		ee()->session->userdata['group_id'] = $id;
 	}
