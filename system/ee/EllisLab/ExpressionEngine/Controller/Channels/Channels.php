@@ -1417,11 +1417,11 @@ class Channels extends AbstractChannelsController {
 			if ( ! ee('Permission')->isSuperAdmin())
 			{
 				$data = array(
-					'group_id'		=> ee()->session->userdata('group_id'),
-					'channel_id'	=> $channel->channel_id
+					'role_id'    => ee()->session->getMember()->PrimaryRole->getId(),
+					'channel_id' => $channel->channel_id
 				);
 
-				ee()->db->insert('channel_member_groups', $data);
+				ee()->db->insert('channel_member_roles', $data);
 			}
 
 			$success_msg = lang('channel_created');
