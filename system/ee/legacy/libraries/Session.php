@@ -1217,7 +1217,9 @@ class EE_Session {
 
 		if ( ! is_object($this->member_model) || $member_model->member_id != $member_id)
 		{
-			$this->member_model = ee('Model')->get('Member', $member_id)->first();
+			$this->member_model = ee('Model')->get('Member', $member_id)
+				->with('PrimaryRole')
+				->first();
 		}
 
 		return $data;
