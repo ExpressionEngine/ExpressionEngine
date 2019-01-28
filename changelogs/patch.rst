@@ -17,7 +17,7 @@ Patch Release
    - Added <new feature>
    - Fixed Bug (#<issue number>) where <bug behavior>.
 
-
+- Fixed a bug (`#55 <https://github.com/ExpressionEngine/ExpressionEngine/issues/55>`__) where fields may parse incorrectly if they shared similar names.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
