@@ -432,6 +432,14 @@ class Updater {
 			'can_manage_consents'
 		];
 
+		$rename = [
+			'can_admin_mbr_groups'     => 'can_admin_roles',
+			'can_email_member_groups'  => 'can_email_roles',
+			'can_create_member_groups' => 'can_create_roles',
+			'can_delete_member_groups' => 'can_delete_roles',
+			'can_edit_member_groups'   => 'can_edit_roles',
+		];
+
 		$groups = ee()->db->get('member_groups');
 
 		foreach ($groups->result() as $group)
@@ -441,6 +449,7 @@ class Updater {
 				// Since we assume "no" we only need to store "yes"
 				if ($group->$permission == 'y')
 				{
+					$permission = (array_key_exists($permission, $rename)) ? $rename[$permission] : $permission;
 					$insert[] = [
 						'role_id'   => $group->group_id,
 						'site_id'    => $group->site_id,

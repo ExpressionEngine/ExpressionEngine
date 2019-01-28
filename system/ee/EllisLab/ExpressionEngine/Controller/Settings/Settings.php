@@ -91,7 +91,7 @@ class Settings extends CP_Controller {
 		$list->addItem(lang('word_censoring'), ee('CP/URL')->make('settings/word-censor'));
 		$list->addItem(lang('menu_manager'), ee('CP/URL')->make('settings/menu-manager'));
 
-		if (ee('Permission')->hasAll('can_access_members', 'can_admin_mbr_groups'))
+		if (ee('Permission')->hasAll('can_access_members', 'can_admin_roles'))
 		{
 			$list = $sidebar->addHeader(lang('members'), ee('CP/URL')->make('settings/members'))
 				->addBasicList();

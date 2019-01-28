@@ -80,11 +80,11 @@ class Group extends AbstractDesignController {
 				if ($result->isValid())
 				{
 					// Only set member groups from post if they have permission to admin member groups and a value is set
-					if (ee()->input->post('roles') && (ee('Permission')->isSuperAdmin() OR ee('Permission')->can('admin_mbr_groups')))
+					if (ee()->input->post('roles') && (ee('Permission')->isSuperAdmin() OR ee('Permission')->can('admin_roles')))
 					{
 						$group->Roles = ee('Model')->get('Role', ee('Request')->post('roles'))->all();
 					}
-					elseif ( ! ee('Permission')->isSuperAdmin() AND ! ee('Permission')->can('admin_mbr_groups'))
+					elseif ( ! ee('Permission')->isSuperAdmin() AND ! ee('Permission')->can('admin_roles'))
 					{
 						// No permission to admin, so their group is automatically added to the template group
 						$group->Roles = ee()->session->getMember()->getAllRoles()->pluck('role_id');
@@ -216,7 +216,7 @@ class Group extends AbstractDesignController {
 		);
 
 		// Permission check for assigning member groups to templates
-		if ( ! ee('Permission')->can('admin_mbr_groups'))
+		if ( ! ee('Permission')->can('admin_roles'))
 		{
 			unset($vars['sections'][0][3]);
 		}
@@ -271,7 +271,7 @@ class Group extends AbstractDesignController {
 				{
 					// On edit, if they don't have permission to edit member group permissions, they can't change
 					// template member group settings
-					if (ee('Permission')->isSuperAdmin() OR ee('Permission')->can('admin_mbr_groups'))
+					if (ee('Permission')->isSuperAdmin() OR ee('Permission')->can('admin_roles'))
 					{
 						// If post is null and field should be present, unassign members
 						// If field isn't present, we don't change whatever it's currently set to
@@ -354,7 +354,7 @@ class Group extends AbstractDesignController {
 		);
 
 		// Permission check for assigning member groups to templates
-		if ( ! ee('Permission')->can('admin_mbr_groups'))
+		if ( ! ee('Permission')->can('admin_roles'))
 		{
 			unset($vars['sections'][0][2]);
 		}

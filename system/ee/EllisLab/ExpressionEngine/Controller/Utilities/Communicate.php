@@ -80,7 +80,7 @@ class Communicate extends Utilities {
 		}
 
 		// Set up member role emailing options
-		if (ee('Permission')->can('email_member_groups'))
+		if (ee('Permission')->can('email_roles'))
 		{
 			$roles = ee('Model')->get('Role')->all();
 
@@ -203,7 +203,7 @@ class Communicate extends Utilities {
 			)
 		);
 
-		if (ee('Permission')->can('email_member_groups'))
+		if (ee('Permission')->can('email_roles'))
 		{
 			$vars['sections']['recipient_options'][] = array(
 				'title' => 'add_member_roles',
@@ -293,7 +293,7 @@ class Communicate extends Utilities {
 		}
 
 		//  Verify privileges
-		if (count($roles) > 0 && ! ee('Permission')->can('email_member_groups'))
+		if (count($roles) > 0 && ! ee('Permission')->can('email_roles'))
 		{
 			show_error(lang('not_allowed_to_email_member_groups'));
 		}

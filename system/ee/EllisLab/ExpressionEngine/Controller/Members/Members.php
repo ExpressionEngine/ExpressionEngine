@@ -86,11 +86,11 @@ class Members extends CP_Controller {
 			$list->addItem(lang('manage_bans'), ee('CP/URL')->make('members/ban-settings'));
 		}
 
-		if (ee('Permission')->can('admin_mbr_groups'))
+		if (ee('Permission')->can('admin_roles'))
 		{
 			$header = $sidebar->addHeader(lang('member_groups'), ee('CP/URL')->make('members/groups'));
 
-			if (ee('Permission')->can('create_member_groups'))
+			if (ee('Permission')->can('create_roles'))
 			{
 				$header->withButton(lang('new'), ee('CP/URL')->make('members/groups/create'));
 			}
