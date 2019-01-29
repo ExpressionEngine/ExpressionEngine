@@ -119,8 +119,21 @@
 					<a class="nav-files" href="<?=ee('CP/URL', 'files')?>"><i class="icon-files"></i><span class="nav-txt-collapse"><?=lang('menu_files')?></span></a>
 					<?php endif; ?>
 					<?php if (ee('Permission')->can('access_members')): ?>
-					<a class="nav-members" href="<?=ee('CP/URL', 'members')?>"><i class="icon-members"></i><span class="nav-txt-collapse"><?=lang('menu_members')?></span></a>
-					<?php endif; ?>
+					<div class="nav-members">
+						<a class="nav-has-sub" href=""><i class="icon-members"></i><span class="nav-txt-collapse"><?=lang('menu_members')?></span></a>
+						<div class="nav-sub-menu">
+							<ul>
+								<li><a href="<?=ee('CP/URL', 'members')?>"><?=lang('all_members')?></a></li>
+								<li><a href="<?=ee('CP/URL', 'members/pending')?>"><?=lang('pending_members')?></a></li>
+								<li><a href="<?=ee('CP/URL', 'members/banned')?>"><?=lang('ban_management')?></a></li>
+								<li><a href="<?=ee('CP/URL', 'members/roles')?>"><?=lang('roles')?></a></li>
+							</ul>
+							<?php if (ee('Permission')->can('create_member')): ?>
+								<a class="nav-add" href="<?=ee('CP/URL', 'member/create')?>"><i class="icon-add"></i><?=lang('new_member')?></a>
+							<?php endif; ?>
+						</div>
+					</div>
+				<?php endif; ?>
 				</div>
 				<div class="nav-main-develop">
 					<?php if (count($cp_main_menu['develop'])): ?>
