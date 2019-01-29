@@ -4,7 +4,7 @@ $lang = array(
 
 'admin_members' => 'Admin Members',
 
-'all_member_groups' => 'All Member Groups',
+'all_roles' => 'All Roles',
 
 'all_members' => 'All Members',
 
@@ -56,15 +56,15 @@ $lang = array(
 
 'control_panel' => 'Control Panel',
 
-'copy_member_group' => 'Create a New Member Group based on <b>%s</b>',
+'copy_role' => 'Create a New Role based on <b>%s</b>',
 
 'cp_log' => 'Control Panel Activity',
 
 'create_member' => 'Create Member',
 
-'create_member_group' => 'Create Member Group',
+'create_role' => 'Create Role',
 
-'create_new_member_group' => 'Create a New Member Group',
+'create_new_role' => 'Create a New Role',
 
 'custom_fields' => 'Custom Fields',
 
@@ -78,9 +78,9 @@ $lang = array(
 
 'delete_member_confirm' => 'Are you sure you want to delete this member?',
 
-'delete_member_group' => 'Delete Member Group',
+'delete_role' => 'Delete Role',
 
-'delete_member_group_confirm' => 'Are you sure you want to delete this member group?',
+'delete_role_confirm' => 'Are you sure you want to delete this role?',
 
 'delete_members_confirm' => 'Are you sure you want to delete these members?',
 
@@ -90,7 +90,7 @@ $lang = array(
 
 'edit_group' => 'Edit Group',
 
-'edit_member_group' => 'Edit Member Group',
+'edit_role' => 'Edit Role',
 
 'edit_profile' => 'Edit Profile',
 
@@ -120,7 +120,7 @@ $lang = array(
 
 'filter_by' => 'Filter by',
 
-'filter_member_group' => 'Filter by Member Group',
+'filter_role' => 'Filter by Role',
 
 'filter_member_name' => 'Filter by Member Name',
 
@@ -132,7 +132,7 @@ $lang = array(
 
 'group_id' => 'Group ID',
 
-'group_lock' => 'Member Group Security Lock',
+'group_lock' => 'Role Security Lock',
 
 'group_title' => 'Group Title',
 
@@ -212,11 +212,11 @@ $lang = array(
 
 'member_assignment_none' => 'None, members in this group will be deleted',
 
-'member_assignment_warning' => 'Members are currently assigned to some of these groups. What member group should they be re-assigned to?',
+'member_assignment_warning' => 'Members are currently assigned to some of these groups. What role should they be re-assigned to?',
 
-'member_cfg' => 'Member Group Settings',
+'member_cfg' => 'Role Settings',
 
-'member_cfg_existing' => 'Member Group \'%s\' Settings',
+'member_cfg_existing' => 'Role \'%s\' Settings',
 
 'member_created' => 'Member Created',
 
@@ -242,23 +242,25 @@ $lang = array(
 
 'member_fields_removed_desc' => 'The following Member Fields have been removed:',
 
-'member_group' => 'Member Group',
+'primary_role' => 'Primary Role',
 
-'member_group_filter' => 'member group',
+'role' => 'Role',
 
-'member_group_assignment' => 'Member Group Assignment',
+'role_filter' => 'role',
 
-'member_group_deleted' => 'Member Group Deleted',
+'role_assignment' => 'Role Assignment',
 
-'member_group_desc' => 'Assign this user access permissions.',
+'role_deleted' => 'Role Deleted',
 
-'member_group_updated_desc' => 'Member Group has been saved successfully.',
+'role_desc' => 'Assign this user access permissions.',
 
-'member_groups' => 'Member Groups',
+'role_updated_desc' => 'Role has been saved successfully.',
 
-'member_groups_removed_desc' => 'Member Group has been deleted successfully.',
+'roles' => 'Roles',
 
-'member_groups_remove_problem' => 'There was a problem deleting member groups.',
+'roles_removed_desc' => 'Role has been deleted successfully.',
+
+'roles_remove_problem' => 'There was a problem deleting roles.',
 
 'member_has_cp_access' => 'Can access the control panel',
 
@@ -304,6 +306,8 @@ $lang = array(
 
 'moderation_actions_desc' => 'Users in this group will be allowed to perform all of the selected actions.',
 
+'new_member' => 'New Member',
+
 'new_member_added' => 'New member created:',
 
 'no_banned_members_found' => 'No <b>Banned members</b> found.',
@@ -332,7 +336,7 @@ $lang = array(
 
 'pending_activation' => 'Pending Activation',
 
-'pending_members' => 'All Members (Pending Activation)',
+'pending_members' => 'Pending Members',
 
 'personal_messaging' => 'Personal Messaging',
 
@@ -346,7 +350,7 @@ $lang = array(
 
 'resend' => 'Resend Activation Email',
 
-'save_member_group' => 'Edit Member Group',
+'save_role' => 'Edit Role',
 
 'screen_name' => 'Screen Name',
 
@@ -412,7 +416,7 @@ $lang = array(
 
 'your_password_delete_members_desc' => 'You <b>must</b> enter your password in order to delete members.',
 
-'your_password_delete_member_groups_desc' => 'You <b>must</b> enter your password in order to delete member groups.',
+'your_password_delete_roles_desc' => 'You <b>must</b> enter your password in order to delete roles.',
 
 
 /* Member banning */
@@ -425,6 +429,8 @@ $lang = array(
 'ban_settings_updated' => 'Ban Settings updated',
 
 'banned_members' => 'Banned Members',
+
+'ban_management' => 'Ban Management',
 
 'email_address_banning' => 'Email Addresses',
 
@@ -538,9 +544,9 @@ $lang = array(
 
 'can_admin_design_desc' => 'When enabled, users assigned to this group may access the global template settings and template routes.',
 
-'can_admin_mbr_groups' => 'Access member groups',
+'can_admin_mbr_groups' => 'Access roles',
 
-'can_admin_mbr_groups_desc' => 'When enabled, users assigned to this group may access member group settings in the software.',
+'can_admin_mbr_groups_desc' => 'When enabled, users assigned to this group may access role settings in the software.',
 
 'can_admin_mbr_templates' => 'Can administrate member profile templates',
 
@@ -580,7 +586,7 @@ $lang = array(
 
 'can_email_from_profile' => 'Can email other members via the profile email console',
 
-'can_email_member_groups' => 'Send email to Member Groups',
+'can_email_roles' => 'Send email to Roles',
 
 'can_post_comments' => 'Submit comments',
 
@@ -664,7 +670,7 @@ $lang = array(
 
 'footer_helper_links' => 'Access footer helper links',
 
-'footer_helper_links_desc' => 'Choose which links this member group can access in the CP footer.',
+'footer_helper_links_desc' => 'Choose which links this role can access in the CP footer.',
 
 'global_cp_access' => 'Control Panel Access',
 
@@ -672,7 +678,7 @@ $lang = array(
 
 'group_name_desc' => 'Be descriptive, like authors or editors',
 
-'group_title_exists' => 'There is already a Member Group with that name.',
+'group_title_exists' => 'There is already a Role with that name.',
 
 'homepage_news' => 'Show news on CP homepage',
 
@@ -688,19 +694,19 @@ $lang = array(
 
 'mbr_delete_notify_emails_desc' => 'All recipients will be notified anytime a user deletes their account. Separate e-mails with a comma.',
 
-'member_group_created' => 'Member Group Created:',
+'role_created' => 'Role Created:',
 
-'member_group_updated' => 'Member Group Updated:',
+'role_updated' => 'Role Updated:',
 
 'members' => 'Members',
 
-'missing_group_title' => 'The member group must have a name',
+'missing_group_title' => 'The role must have a name',
 
 'must_have_channels' => 'All sites must have channels.',
 
 'no_cp_modules_installed' => 'No Modules with Control Panel Access Installed',
 
-'only_superadmins_can_admin_groups' => 'Only Super Admins can access the Member Groups page',
+'only_superadmins_can_admin_groups' => 'Only Super Admins can access the Roles page',
 
 'prv_msg_send_limit' => 'Per day maximum',
 
@@ -768,7 +774,7 @@ $lang = array(
 
 'can_send_bulletins_desc' => 'When enabled, users assigned to this group may send bulletins.',
 
-'cannot_change_your_group' => 'Super Admins cannot change their member group assignment. Please have another Super Admin reassign you.',
+'cannot_change_your_group' => 'Super Admins cannot change their role assignment. Please have another Super Admin reassign you.',
 
 'cannot_delete_super_admin' => 'You may not delete the only Super Admin. Please create a new Super Admin first.',
 
@@ -788,7 +794,7 @@ $lang = array(
 
 'create_member_field' => 'Create Member Field',
 
-'create_member_groups' => 'Create new groups',
+'create_roles' => 'Create new groups',
 
 'create_members' => 'Create new members',
 
@@ -818,7 +824,7 @@ $lang = array(
 
 'delete_files' => 'Delete files',
 
-'delete_member_groups' => 'Delete groups',
+'delete_roles' => 'Delete groups',
 
 'delete_profile_field_confirmation' => 'Are you sure you want to permanently delete this Member Profile Field?',
 
@@ -844,7 +850,7 @@ $lang = array(
 
 'edit_member_field' => 'Edit Field',
 
-'edit_member_groups' => 'Edit groups',
+'edit_roles' => 'Edit groups',
 
 'edit_members' => 'Edit members',
 
@@ -954,7 +960,7 @@ $lang = array(
 
 'rte_toolsets' => 'RTE toolsets',
 
-'search_member_groups_button' => 'Search Member Groups',
+'search_roles_button' => 'Search Roles',
 
 'search_members_button' => 'Search Members',
 
@@ -964,7 +970,7 @@ $lang = array(
 
 'show_all_banned' => 'All %d banned',
 
-'show_all_member_groups' => 'All %d member groups',
+'show_all_roles' => 'All %d roles',
 
 'show_all_members' => 'All %d members',
 
