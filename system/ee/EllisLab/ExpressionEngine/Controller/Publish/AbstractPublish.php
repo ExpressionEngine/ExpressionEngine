@@ -135,12 +135,7 @@ abstract class AbstractPublish extends CP_Controller {
 
 	protected function getRevisionsTable($entry, $version_id = FALSE)
 	{
-		$table = ee('CP/Table', array(
-			'autosort' => TRUE,
-			'sort_col' => 'rev_id',
-			'sort_dir' => 'desc',
-			)
-		);
+		$table = ee('CP/Table');
 
 		$table->setColumns(
 			array(
@@ -156,9 +151,37 @@ abstract class AbstractPublish extends CP_Controller {
 
 		$data = array();
 		$authors = array();
-		$i = 1;
+		$i = $entry->Versions->count();
 
-		foreach ($entry->Versions as $version)
+		if ( ! $entry->isNew())
+		{
+			$i++;
+
+			$attrs = (!$version_id) ? array('class' => 'selected') : array();
+
+			if ( ! isset($authors[$entry->author_id]))
+			{
+				$authors[$entry->author_id] = $entry->getAuthorName();
+			}
+
+			// Current
+			$edit_date = ($entry->edit_date)
+				? ee()->localize->human_time($entry->edit_date->format('U'))
+				: NULL;
+
+			$data[] = array(
+				'attrs'   => $attrs,
+				'columns' => array(
+					$i,
+					$edit_date,
+					$authors[$entry->author_id],
+					'<span class="st-open">' . lang('current') . '</span>'
+				)
+			);
+			$i--;
+		}
+
+		foreach ($entry->Versions->sortBy('version_date')->reverse() as $version)
 		{
 			if ( ! isset($authors[$version->author_id]))
 			{
@@ -187,15 +210,37 @@ abstract class AbstractPublish extends CP_Controller {
 					$toolbar
 				)
 			);
-			$i++;
+			$i--;
 		}
+
+		$table->setData($data);
+
+		return ee('View')->make('_shared/table')->render($table->viewData(''));
+	}
+
+	protected function getAutosavesTable($entry, $autosave_id = FALSE)
+	{
+		$table = ee('CP/Table');
+		
+		$table->setColumns(
+			array(
+				'rev_id',
+				'rev_date',
+				'rev_author',
+				'manage' => array(
+					'encode' => FALSE
+				)
+			)
+		);
+
+		$data = array();
+		$authors = array();
+		$i = $entry->getAutosaves()->count();
 
 		if ( ! $entry->isNew())
 		{
-			if ( ! $version_id)
-			{
-				$attrs = array('class' => 'selected');
-			}
+			$i++;
+			$attrs = ( ! $autosave_id) ? ['class' => 'selected'] : [];
 
 			if ( ! isset($authors[$entry->author_id]))
 			{
@@ -216,38 +261,10 @@ abstract class AbstractPublish extends CP_Controller {
 					'<span class="st-open">' . lang('current') . '</span>'
 				)
 			);
+			$i--;
 		}
 
-		$table->setData($data);
-
-		return ee('View')->make('_shared/table')->render($table->viewData(''));
-	}
-
-	protected function getAutosavesTable($entry, $autosave_id = FALSE)
-	{
-		$table = ee('CP/Table', array(
-			'autosort' => TRUE,
-			'sort_col' => 'rev_id',
-			'sort_dir' => 'desc'
-			)
-		);
-
-		$table->setColumns(
-			array(
-				'rev_id',
-				'rev_date',
-				'rev_author',
-				'manage' => array(
-					'encode' => FALSE
-				)
-			)
-		);
-
-		$data = array();
-		$authors = array();
-		$i = 1;
-
-		foreach ($entry->getAutosaves()->sortBy('edit_date') as $autosave)
+		foreach ($entry->getAutosaves()->sortBy('edit_date')->reverse() as $autosave)
 		{
 			if ( ! isset($authors[$autosave->author_id]) && $autosave->Author)
 			{
@@ -278,32 +295,7 @@ abstract class AbstractPublish extends CP_Controller {
 					$toolbar
 				)
 			);
-			$i++;
-		}
-
-		if ( ! $entry->isNew())
-		{
-			$attrs = ( ! $autosave_id) ? ['class' => 'selected'] : [];
-
-			if ( ! isset($authors[$entry->author_id]))
-			{
-				$authors[$entry->author_id] = $entry->getAuthorName();
-			}
-
-			// Current
-			$edit_date = ($entry->edit_date)
-				? ee()->localize->human_time($entry->edit_date->format('U'))
-				: NULL;
-
-			$data[] = array(
-				'attrs'   => $attrs,
-				'columns' => array(
-					$i,
-					$edit_date,
-					$authors[$entry->author_id],
-					'<span class="st-open">' . lang('current') . '</span>'
-				)
-			);
+			$i--;
 		}
 
 		$table->setData($data);
