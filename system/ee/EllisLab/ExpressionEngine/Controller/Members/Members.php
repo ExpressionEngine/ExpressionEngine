@@ -148,12 +148,13 @@ class Members extends CP_Controller {
 			];
 		}
 
-		$vars['can_delete_members'] = ee('Permission')->can('delete_members');
+		$vars['can_edit'] = ee('Permission')->can('edit_members');
+		$vars['can_delete'] = ee('Permission')->can('delete_members');
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('pending_members');
-		ee()->cp->render('members/view_members', $vars);
+		ee()->cp->render('members/pending', $vars);
 	}
 
 	public function banned()
@@ -165,8 +166,8 @@ class Members extends CP_Controller {
 
 		ee()->load->library('form_validation');
 
-		$this->base_url = ee('CP/URL', 'members/banned');
 		$this->stdHeader($this->base_url);
+		$this->base_url = ee('CP/URL', 'members/banned');
 
 		$members = ee('Model')->get('Member')
 			->filter('role_id', 2);
@@ -635,9 +636,77 @@ class Members extends CP_Controller {
 
 	}
 
-	public function approve($id)
+	/**
+	 * Approve pending members
+	 *
+	 * @param int|array $ids The ID(s) of the member(s) being approved
+	 * @return void
+	 */
+	public function approve($ids)
 	{
+		if ( ! ee('Permission')->can('edit_members') OR
+			ee('Request')->method() !== 'POST')
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
 
+		if ( ! is_array($ids))
+		{
+			$ids = array($ids);
+		}
+
+		$members = ee('Model')->get('Member', $ids)
+			->fields('member_id', 'username', 'screen_name', 'email', 'role_id')
+			->filter('role_id', 4)
+			->all();
+
+		if (ee()->config->item('approved_member_notification') == 'y')
+		{
+			$template = ee('Model')->get('SpecialtyTemplate')
+				->filter('template_name', 'validated_member_notify')
+				->first();
+
+			foreach ($members as $member)
+			{
+				$this->pendingMemberNotification($template, $member, array('email' => $member->email));
+			}
+		}
+
+		$members->role_id = ee()->config->item('default_primary_role');
+		$members->save();
+
+		/* -------------------------------------------
+		/* 'cp_members_validate_members' hook.
+		/*  - Additional processing when member(s) are validated in the CP
+		/*  - Added 1.5.2, 2006-12-28
+		*/
+			ee()->extensions->call('cp_members_validate_members', $ids);
+			if (ee()->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
+
+		// Update
+		ee()->stats->update_member_stats();
+
+		if ($members->count() == 1)
+		{
+			ee('CP/Alert')->makeInline('view-members')
+				->asSuccess()
+				->withTitle(lang('member_approved_success'))
+				->addToBody(sprintf(lang('member_approved_success_desc'), $members->first()->username))
+				->defer();
+		}
+		else
+		{
+			ee('CP/Alert')->makeInline('view-members')
+				->asSuccess()
+				->withTitle(lang('members_approved_success'))
+				->addToBody(lang('members_approved_success_desc'))
+				->addToBody($members->pluck('username'))
+				->defer();
+		}
+
+		ee()->functions->redirect(ee('CP/URL', 'members/pending'));
 	}
 
 	/**
