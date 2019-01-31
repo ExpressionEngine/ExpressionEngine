@@ -34,7 +34,7 @@ class Members extends CP_Controller {
 		ee()->lang->loadfile('members');
 
 		$this->base_url = ee('CP/URL')->make('members');
-		$this->stdHeader($this->base_url);
+		$this->stdHeader();
 	}
 
 	public function index()
@@ -166,7 +166,6 @@ class Members extends CP_Controller {
 
 		ee()->load->library('form_validation');
 
-		$this->stdHeader($this->base_url);
 		$this->base_url = ee('CP/URL', 'members/banned');
 
 		$members = ee('Model')->get('Member')
@@ -714,25 +713,24 @@ class Members extends CP_Controller {
 	 * @param String $form_url Form URL
 	 * @param String $search_button_value The text for the search button
 	 */
-	protected function stdHeader($form_url, $search_button_value = '')
+	protected function stdHeader()
 	{
-		$search_button_value = ($search_button_value) ?: lang('search_members_button');
-
-		$header = array(
+		$header = [
 			'title' => lang('member_manager'),
-			'toolbar_items' => array(
-				'settings' => array(
+			'toolbar_items' => [
+				'settings' => [
 					'href' => ee('CP/URL')->make('settings/members'),
 					'title' => lang('member_settings')
-				),
-			),
-			'form_url' => $form_url,
-			'search_button_value' => $search_button_value
-		);
+				],
+			],
+		];
 
-		if ( ! ee('Permission')->can('access_settings'))
+		if (ee('Permission')->can('create_members'))
 		{
-			unset($header['toolbar_items']);
+			$header['action_button'] = [
+				'text' => lang('new_member'),
+				'href' => ee('CP/URL')->make('members/create')
+			];
 		}
 
 		ee()->view->header = $header;
