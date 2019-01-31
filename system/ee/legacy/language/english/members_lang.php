@@ -6,8 +6,6 @@ $lang = array(
 
 'all_roles' => 'All Roles',
 
-'all_members' => 'All Members',
-
 'alpha' => 'Alphabetical Ascending',
 
 'alpha_desc' => 'Alphabetical Descending',
@@ -256,8 +254,6 @@ $lang = array(
 
 'role_updated_desc' => 'Role has been saved successfully.',
 
-'roles' => 'Roles',
-
 'roles_removed_desc' => 'Role has been deleted successfully.',
 
 'roles_remove_problem' => 'There was a problem deleting roles.',
@@ -306,8 +302,6 @@ $lang = array(
 
 'moderation_actions_desc' => 'Users in this group will be allowed to perform all of the selected actions.',
 
-'new_member' => 'New Member',
-
 'new_member_added' => 'New member created:',
 
 'no_banned_members_found' => 'No <b>Banned members</b> found.',
@@ -335,8 +329,6 @@ $lang = array(
 'password_too_short' => 'Your password must be at least %d characters long',
 
 'pending_activation' => 'Pending Activation',
-
-'pending_members' => 'Pending Members',
 
 'personal_messaging' => 'Personal Messaging',
 
@@ -429,8 +421,6 @@ $lang = array(
 'ban_settings_updated' => 'Ban Settings updated',
 
 'banned_members' => 'Banned Members',
-
-'ban_management' => 'Ban Management',
 
 'email_address_banning' => 'Email Addresses',
 

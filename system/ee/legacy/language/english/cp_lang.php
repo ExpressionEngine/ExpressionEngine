@@ -548,6 +548,17 @@ $lang = array(
 
 'xhtml' => 'XHTML',
 
+/* Members Menu */
+
+'new_member' => 'New Member',
+
+'all_members' => 'All Members',
+
+'pending_members' => 'Pending Members',
+
+'ban_management' => 'Ban Management',
+
+'roles' => 'Roles',
 
 /* Footer */
 'about_expressionengine' => 'About ExpressionEngine',
