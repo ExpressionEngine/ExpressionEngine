@@ -39,6 +39,12 @@ class Members extends CP_Controller {
 
 	public function index()
 	{
+		if (ee('Request')->post('bulk_action') == 'remove')
+		{
+			$this->delete();
+			ee()->functions->redirect($this->base_url);
+		}
+
 		$members = ee('Model')->get('Member');
 
 		$filters = $this->makeAndApplyFilters($members, TRUE);
@@ -627,7 +633,242 @@ class Members extends CP_Controller {
 
 	public function delete()
 	{
+		$member_ids = ee()->input->post('selection', TRUE);
 
+		if ( ! ee('Permission')->can('delete_members') ||
+			! $member_ids)
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+
+		if ( ! ee('Session')->isWithinAuthTimeout())
+		{
+			$validator = ee('Validation')->make();
+			$validator->setRules(array(
+				'verify_password'  => 'required|authenticated'
+			));
+			$password_confirm = $validator->validate($_POST);
+
+			if ($password_confirm->failed())
+			{
+				ee('CP/Alert')->makeInline('view-members')
+					->asIssue()
+					->withTitle(lang('member_delete_problem'))
+					->addToBody(lang('invalid_password'))
+					->defer();
+
+				return ee()->functions->redirect($this->base_url);
+			}
+
+			ee('Session')->resetAuthTimeout();
+		}
+
+		if ( ! is_array($member_ids))
+		{
+			$member_ids = array($member_ids);
+		}
+
+		if (in_array(ee()->session->userdata('member_id'), $member_ids))
+		{
+			show_error(lang('can_not_delete_self'));
+		}
+
+		// Check to see if they're deleting super admins
+		$this->_super_admin_delete_check($member_ids);
+
+		// If we got this far we're clear to delete the members
+		// First, assign an heir if we are to do so
+		if (ee()->input->post('heir_action') == 'assign')
+		{
+			if ( ! ee()->input->post('heir'))
+			{
+				show_error(lang('heir_required'));
+			}
+
+			$heir = ee('Model')->get('Member', ee()->input->post('heir'))->first();
+
+			ee()->db->where_in('author_id', $member_ids);
+			ee()->db->update('entry_versioning', array('author_id' => $heir->getId()));
+
+			ee()->db->where_in('author_id', $member_ids);
+			ee()->db->update('channel_titles', array('author_id' => $heir->getId()));
+
+			ee()->db->where_in('uploaded_by_member_id', $member_ids);
+			ee()->db->update('files', array('uploaded_by_member_id' => $heir->getId()));
+
+			ee()->db->where_in('modified_by_member_id', $member_ids);
+			ee()->db->update('files', array('modified_by_member_id' => $heir->getId()));
+
+			$heir->updateAuthorStats();
+		}
+
+		// If we got this far we're clear to delete the members
+		ee('Model')->get('Member')->filter('member_id', 'IN', $member_ids)->delete();
+
+		// Send member deletion notifications
+		$this->_member_delete_notifications($member_ids);
+
+		/* -------------------------------------------
+		/* 'cp_members_member_delete_end' hook.
+		/*  - Additional processing when a member is deleted through the CP
+		*/
+			ee()->extensions->call('cp_members_member_delete_end', $member_ids);
+			if (ee()->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
+
+		$cp_message = (count($member_ids) == 1) ?
+			lang('member_deleted') : lang('members_deleted');
+
+		ee('CP/Alert')->makeInline('view-members')
+			->asSuccess()
+			->withTitle(lang('member_delete_success'))
+			->addToBody($cp_message)
+			->defer();
+
+		ee()->functions->redirect($this->base_url);
+	}
+
+	/**
+	 * Check to see if the members being deleted are super admins. If they are
+	 * we need to make sure that the deleting user is a super admin and that
+	 * there is at least one more super admin remaining.
+	 *
+	 * @param  Array  $member_ids Array of member_ids being deleted
+	 * @return void
+	 */
+	private function _super_admin_delete_check($member_ids)
+	{
+		if ( ! is_array($member_ids))
+		{
+			$member_ids = array($member_ids);
+		}
+
+		$super_admins = ee()->db->select('COUNT(member_id) AS count')
+			->where('role_id', '1')
+			->where_in('member_id', $member_ids)
+			->get('members_roles')
+			->result();
+
+		$super_admins = $super_admins[0]->count;
+
+		if ($super_admins > 0)
+		{
+			// You must be a Super Admin to delete a Super Admin
+
+			if ( ! ee('Permission')->isSuperAdmin())
+			{
+				show_error(lang('must_be_superadmin_to_delete_one'));
+			}
+
+			// You can't delete the only Super Admin
+			$total_super_admins = ee()->db->select('COUNT(member_id) AS count')
+				->where('role_id', '1')
+				->get('members_roles')
+				->result();
+
+			$total_super_admins = $total_super_admins[0]->count;
+
+			if ($super_admins >= $total_super_admins)
+			{
+				show_error(lang('cannot_delete_super_admin'));
+			}
+		}
+	}
+
+	/**
+	 * Send email notifications to email addresses for the respective member
+	 * group of the users being deleted
+	 *
+	 * @param  Array  $member_ids Array of member_ids being deleted
+	 * @return void
+	 */
+	private function _member_delete_notifications($member_ids)
+	{
+		$role_ids = ee('Model')->get('RoleSetting')
+			->fields('role_id', 'mbr_delete_notify_emails')
+			->filter('mbr_delete_notify_emails', '!=', '')
+			->all();
+
+		if (empty($role_ids))
+		{
+			return; // No configured notifications at all
+		}
+
+		ee()->load->helper('string');
+
+		$role_ids = $role_ids->indexBy('role_id');
+
+		$members = ee('Model')->get('Member', $member_ids)
+			->fields('member_id', 'screen_name', 'email')
+			->all();
+
+		foreach ($members as $member)
+		{
+			$notify_address = [];
+
+			foreach ($member->getAllRoles() as $role)
+			{
+				if (isset($role_ids[$role->getId()]))
+				{
+					$notify_address[] = $role_ids[$role->getId()];
+				}
+			}
+
+			// This member does not belong to a Role with email notifcations
+			if (empty($notify_address))
+			{
+				continue;
+			}
+
+			$notify_address = implode(',', $notify_address);
+
+			$swap = array(
+				'name'		=> $member->screen_name,
+				'email'		=> $member->email,
+				'site_name'	=> stripslashes(ee()->config->item('site_name'))
+			);
+
+			ee()->lang->loadfile('member');
+			$email_title = ee()->functions->var_swap(
+				lang('mbr_delete_notify_title'),
+				$swap
+			);
+			$email_message = ee()->functions->var_swap(
+				lang('mbr_delete_notify_message'),
+				$swap
+			);
+
+			// No notification for the user themselves, if they're in the list
+			if (strpos($notify_address, $member->email) !== FALSE)
+			{
+				$notify_address = str_replace($member->email, "", $notify_address);
+			}
+
+			// Remove multiple commas
+			$notify_address = reduce_multiples($notify_address, ',', TRUE);
+
+			if ($notify_address != '')
+			{
+				ee()->load->library('email');
+				ee()->load->helper('text');
+
+				foreach (explode(',', $notify_address) as $addy)
+				{
+					ee()->email->EE_initialize();
+					ee()->email->wordwrap = FALSE;
+					ee()->email->from(
+						ee()->config->item('webmaster_email'),
+						ee()->config->item('webmaster_name')
+					);
+					ee()->email->to($addy);
+					ee()->email->reply_to(ee()->config->item('webmaster_email'));
+					ee()->email->subject($email_title);
+					ee()->email->message(entities_to_ascii($email_message));
+					ee()->email->send();
+				}
+			}
+		}
 	}
 
 	public function create()
