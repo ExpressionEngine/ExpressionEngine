@@ -155,8 +155,6 @@ abstract class AbstractPublish extends CP_Controller {
 
 		if ( ! $entry->isNew())
 		{
-			$i++;
-
 			$attrs = (!$version_id) ? array('class' => 'selected') : array();
 
 			if ( ! isset($authors[$entry->author_id]))
@@ -172,13 +170,12 @@ abstract class AbstractPublish extends CP_Controller {
 			$data[] = array(
 				'attrs'   => $attrs,
 				'columns' => array(
-					$i,
+					$i + 1,
 					$edit_date,
 					$authors[$entry->author_id],
 					'<span class="st-open">' . lang('current') . '</span>'
 				)
 			);
-			$i--;
 		}
 
 		foreach ($entry->Versions->sortBy('version_date')->reverse() as $version)
