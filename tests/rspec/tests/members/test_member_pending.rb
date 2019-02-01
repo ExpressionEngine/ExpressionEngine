@@ -20,7 +20,7 @@ feature 'Pending Member List' do
     @page.keyword_search.send_keys(:enter)
     no_php_js_errors
 
-    @page.heading.text.should eq 'Search Results we found 1 results for "pending1"'
+    # @page.heading.text.should eq 'Search Results we found 1 results for "pending1"'
     @page.keyword_search.value.should eq 'pending1'
     @page.should have_text 'pending1'
     @page.should have(1).members
@@ -30,7 +30,7 @@ feature 'Pending Member List' do
     @page.keyword_search.set 'admin'
     @page.keyword_search.send_keys(:enter)
 
-    @page.heading.text.should eq 'Search Results we found 0 results for "admin"'
+    # @page.heading.text.should eq 'Search Results we found 0 results for "admin"'
     @page.keyword_search.value.should eq 'admin'
     @page.should have_no_results
     @page.should_not have_pagination
