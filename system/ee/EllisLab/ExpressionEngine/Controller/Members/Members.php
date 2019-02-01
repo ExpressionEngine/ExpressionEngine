@@ -508,14 +508,14 @@ class Members extends CP_Controller {
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			$prefs = [
-				'ban_action'      => ee()->input->post('ban_action'),
-				'ban_message'     => ee()->input->post('ban_message'),
-				'ban_destination' => ee()->input->post('ban_destination'),
+				'ban_action'      => ee('Request')->post('ban_action'),
+				'ban_message'     => ee('Request')->post('ban_message'),
+				'ban_destination' => ee('Request')->post('ban_destination'),
 			];
 
 			foreach (array_keys($values) as $item)
 			{
-				$value = ee()->input->post($item);
+				$value = ee('Request')->post($item);
 				$value = implode('|', explode(NL, $value));
 				$prefs[$item] = $value;
 			}
@@ -559,14 +559,14 @@ class Members extends CP_Controller {
 			$order_by = 'total_forum_posts';
 		}
 
-		$sort_col = ee()->input->get('sort_col') ?: $order_by;
-		$sort_dir = ee()->input->get('sort_dir') ?: $sort;
+		$sort_col = ee('Request')->get('sort_col') ?: $order_by;
+		$sort_dir = ee('Request')->get('sort_dir') ?: $sort;
 
 		$table = ee('CP/Table', array(
 			'sort_col' => $sort_col,
 			'sort_dir' => $sort_dir,
 			'limit' => ee()->config->item('memberlist_row_limit'),
-			// 'search' => ee()->input->get_post('filter_by_keyword'),
+			// 'search' => ee('Request')->get_post('filter_by_keyword'),
 		));
 
 		$table->setNoResultsText('no_members_found');
@@ -778,7 +778,7 @@ class Members extends CP_Controller {
 
 	public function delete()
 	{
-		$member_ids = ee()->input->post('selection', TRUE);
+		$member_ids = ee('Request')->post('selection', TRUE);
 
 		if ( ! ee('Permission')->can('delete_members') ||
 			! $member_ids)
@@ -823,14 +823,14 @@ class Members extends CP_Controller {
 
 		// If we got this far we're clear to delete the members
 		// First, assign an heir if we are to do so
-		if (ee()->input->post('heir_action') == 'assign')
+		if (ee('Request')->post('heir_action') == 'assign')
 		{
-			if ( ! ee()->input->post('heir'))
+			if ( ! ee('Request')->post('heir'))
 			{
 				show_error(lang('heir_required'));
 			}
 
-			$heir = ee('Model')->get('Member', ee()->input->post('heir'))->first();
+			$heir = ee('Model')->get('Member', ee('Request')->post('heir'))->first();
 
 			ee()->db->where_in('author_id', $member_ids);
 			ee()->db->update('entry_versioning', array('author_id' => $heir->getId()));
