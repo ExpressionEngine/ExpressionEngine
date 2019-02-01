@@ -4,7 +4,7 @@
 	<div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
 		<h1>
-			<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
+			<?=lang('banned_members')?>
 		</h1>
 
 		<div class="app-notice-wrap">
