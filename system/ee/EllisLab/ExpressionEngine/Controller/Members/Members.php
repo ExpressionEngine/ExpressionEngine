@@ -319,6 +319,12 @@ class Members extends CP_Controller {
 
 		$this->base_url = ee('CP/URL', 'members/banned');
 
+		if (ee('Request')->post('bulk_action') == 'remove')
+		{
+			$this->delete();
+			ee()->functions->redirect($this->base_url);
+		}
+
 		$members = ee('Model')->get('Member')
 			->filter('role_id', 2);
 
