@@ -776,6 +776,90 @@ class Members extends CP_Controller {
 		return $filters;
 	}
 
+	/**
+	 * Generate post re-assignment view if applicable
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function confirm()
+	{
+		$vars = array();
+		$selected = ee('Request')->post('selection');
+		$vars['selected'] = $selected;
+
+		$entries = ee('Model')->get('ChannelEntry')
+			->fields('author_id')
+			->filter('author_id', 'IN', $selected)
+			->count();
+
+		// Do the users being deleted have entries assigned to them?
+		// If so, fetch the member names for reassigment
+		if ($entries > 0)
+		{
+			$group_ids = ee('Model')->get('Member', $selected)
+				->fields('role_id')
+				->all()
+				->pluck('role_id');
+
+			$vars['heirs'] = $this->heirFilter($group_ids, $selected);
+
+			$vars['fields'] = array(
+				'heir' => array(
+					'type' => 'radio',
+					'choices' => $vars['heirs'],
+					'filter_url' => ee('CP/URL')->make(
+						'members/heir-filter',
+						[
+							'group_ids' => implode('|', $group_ids),
+							'selected' => implode('|', $selected)
+						]
+					)->compile(),
+					'no_results' => ['text' => 'no_members_found'],
+					'margin_top' => TRUE,
+					'margin_left' => TRUE
+				)
+			);
+		}
+
+		ee()->view->cp_page_title = lang('delete_member') ;
+		ee()->cp->render('members/delete_confirm', $vars);
+	}
+
+	/**
+	 * AJAX endpoint for filtering heir selection
+	 *
+	 * @param array $group_ids Group IDs to search
+	 * @param array $selected Members to exclude from search
+	 * @return array List of members normalized for SelectField
+	 */
+	public function heirFilter($group_ids = NULL, $selected = NULL)
+	{
+		$search_term = ee('Request')->get('search') ?: '';
+		$group_ids = $group_ids ?: explode('|', ee('Request')->get('group_ids'));
+		$selected = $selected ?: explode('|', ee('Request')->get('selected'));
+
+		$members = ee('Model')->get('Member')
+			->fields('screen_name', 'username')
+			->search(
+				['screen_name', 'username', 'email', 'member_id'], $search_term
+			)
+			->filter('role_id', 'IN', $group_ids)
+			->filter('member_id', 'NOT IN', $selected)
+			->order('screen_name')
+			->limit(100)
+			->all();
+
+		$heirs = [];
+		foreach($members as $heir)
+		{
+			$name = ($heir->screen_name != '') ? 'screen_name' : 'username';
+			$heirs[$heir->getId()] = $heir->$name;
+		}
+
+		return ee('View/Helpers')->normalizedChoices($heirs);
+	}
+
 	public function delete()
 	{
 		$member_ids = ee('Request')->post('selection', TRUE);
