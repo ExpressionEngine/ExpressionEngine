@@ -143,10 +143,8 @@ class CategoryGroup extends StructureModel {
 		$can_delete = explode('|', rtrim($this->can_delete_categories, '|'));
 		$deletable = FALSE;
 
-		$in_can_delete = array_intersect($member_roles, $can_delete);
-
 		if (ee('Permission')->isSuperAdmin()
-			|| (ee('Permission')->can('delete_categories') && ! empty($in_can_delete)))
+			|| (ee('Permission')->can('delete_categories') && ee('Permission')->hasAnyRole($can_delete)))
 		{
 			$deletable = TRUE;
 		}
