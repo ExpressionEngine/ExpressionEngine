@@ -242,7 +242,17 @@ $lang = array(
 
 'primary_role' => 'Primary Role',
 
+'primary_role_desc' => 'Assign the primary role for this user.',
+
+'role_groups' => 'Role Groups',
+
+'role_groups_desc' => 'Assign this user a group of access permissions.',
+
+'additional_roles' => 'Additional Roles',
+
 'role' => 'Role',
+
+'roles_desc' => 'Assign this user access permissions.',
 
 'role_filter' => 'role',
 
@@ -338,7 +348,7 @@ $lang = array(
 
 'profile_templates' => 'Member Profile Templates',
 
-'register_member' => 'New Member',
+'register_member' => 'Register New Member',
 
 'resend' => 'Resend Activation Email',
 
