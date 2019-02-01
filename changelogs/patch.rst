@@ -17,6 +17,7 @@ Patch Release
    - Added <new feature>
    - Fixed Bug (#<issue number>) where <bug behavior>.
 
+- Improved revision listings (`#87 <https://github.com/ExpressionEngine/ExpressionEngine/pull/87>`__) for entry and template versioning, to sort in reverse chronological order.
 - Fixed a bug (`#55 <https://github.com/ExpressionEngine/ExpressionEngine/issues/55>`__) where fields may parse incorrectly if they shared similar names.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
