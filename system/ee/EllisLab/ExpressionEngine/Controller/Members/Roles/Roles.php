@@ -152,7 +152,7 @@ class Roles extends AbstractRolesController {
 			];
 		}
 
-		if (ee('Permission')->can('delete_channel_roles'))
+		if (ee('Permission')->can('delete_roles'))
 		{
 			ee()->javascript->set_global('lang.remove_confirm', lang('role') . ': <b>### ' . lang('roles') . '</b>');
 			ee()->cp->add_js_script(array(
@@ -178,7 +178,7 @@ class Roles extends AbstractRolesController {
 
 	public function create($group_id = NULL)
 	{
-		if ( ! ee('Permission')->can('create_channel_roles'))
+		if ( ! ee('Permission')->can('create_roles'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -324,7 +324,7 @@ class Roles extends AbstractRolesController {
 
 	public function edit($id)
 	{
-		if ( ! ee('Permission')->can('edit_channel_roles'))
+		if ( ! ee('Permission')->can('edit_roles'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -600,7 +600,7 @@ class Roles extends AbstractRolesController {
 
 	private function remove($role_ids)
 	{
-		if ( ! ee('Permission')->can('delete_channel_roles'))
+		if ( ! ee('Permission')->can('delete_roles'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
