@@ -13,7 +13,7 @@ namespace EllisLab\ExpressionEngine\Controller\Members\Roles;
 use EllisLab\ExpressionEngine\Controller\Members\Roles\AbstractRoles as AbstractRolesController;
 
 /**
- * Roles Controller
+ * Members\Roles\Roles Controller
  */
 class Roles extends AbstractRolesController {
 
@@ -168,7 +168,7 @@ class Roles extends AbstractRolesController {
 			->render($vars['base_url']);
 
 		$vars['cp_page_title'] = $group
-			? $group->group_name . '&mdash;' . lang('roles' )
+			? $group->name . '&mdash;' . lang('roles' )
 			: lang('all_roles');
 		$vars['roles'] = $data;
 		$vars['no_results'] = ['text' => sprintf(lang('no_found'), lang('roles')), 'href' => $vars['create_url']];

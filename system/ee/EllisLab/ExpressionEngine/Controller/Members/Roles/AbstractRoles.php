@@ -35,7 +35,7 @@ abstract class AbstractRoles extends CP_Controller {
 
 		ee()->lang->loadfile('admin');
 		ee()->lang->loadfile('admin_content');
-		ee()->lang->loadfile('channel');
+		ee()->lang->loadfile('members');
 
 		$header = [
 			'title' => lang('roles_manager')
@@ -50,6 +50,10 @@ abstract class AbstractRoles extends CP_Controller {
 		}
 
 		ee()->view->header = $header;
+
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/members/roles/menu'),
+		));
 	}
 
 	protected function generateSidebar($active = NULL)
@@ -58,11 +62,11 @@ abstract class AbstractRoles extends CP_Controller {
 		$active_groups = (is_array($active)) ? $active : array($active);
 
 		$all_roles = ee('CP/Sidebar')->makeNew()->addMarginBottom();
-		$all_roles->addHeader(lang('all_roles'), ee('CP/URL')->make('roles'))->isInactive();
+		$all_roles->addHeader(lang('all_roles'), ee('CP/URL')->make('members/roles'))->isInactive();
 
 		$sidebar = ee('CP/Sidebar')->makeNew();
 
-		$list = $sidebar->addHeader(lang('role_groups_uc'));
+		$list = $sidebar->addHeader(lang('role_groups'));
 
 		$list = $list->addFolderList('role_groups')
 			->withNoResultsText(sprintf(lang('no_found'), lang('role_groups')));
@@ -85,7 +89,7 @@ abstract class AbstractRoles extends CP_Controller {
 
 			$item = $list->addItem(
 				$name,
-				ee('CP/URL')->make('roles', ['group_id' => $group->getId()])
+				ee('CP/URL')->make('members/roles', ['group_id' => $group->getId()])
 			);
 
 			if (ee('Permission')->can('edit_roles'))

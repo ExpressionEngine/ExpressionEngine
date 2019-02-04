@@ -996,6 +996,40 @@ $lang = array(
 
 'upload_new_toolsets' => 'Upload new toolsets',
 
+/* Roles */
+
+'roles_manager' => 'Roles Manager',
+
+'role_groups' => 'Role Groups',
+
+'role_group' => 'Role Group',
+
+'new_role' => 'New Role',
+
+'group_roles_desc' => 'Assign one of more roles to this group.',
+
+'create_role_group' => 'New Role Group',
+
+'create_role_group_error' => 'Cannot Create Role Group',
+
+'create_role_group_error_desc' => 'We were unable to create this role group, please review and fix errors below.',
+
+'create_role_group_success' => 'Role Group Created',
+
+'create_role_group_success_desc' => 'The role group <b>%s</b> has been created.',
+
+'edit_role_group' => 'Edit Role Group',
+
+'edit_role_group_error' => 'Cannot Update Role Group',
+
+'edit_role_group_error_desc' => 'We were unable to update this role group, please review and fix errors below.',
+
+'edit_role_group_success' => 'Role Group Updated',
+
+'edit_role_group_success_desc' => 'The role group <b>%s</b> has been updated.',
+
+'role_groups_removed_desc' => 'The following role groups were removed',
+
 );
 
 // EOF
