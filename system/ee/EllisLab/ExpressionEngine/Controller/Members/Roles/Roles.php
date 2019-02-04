@@ -30,9 +30,9 @@ class Roles extends AbstractRolesController {
 			$base_url = ee('CP/URL')->make('roles');
 		}
 
-		if (ee()->input->post('bulk_action') == 'remove')
+		if (ee('Request')->post('bulk_action') == 'remove')
 		{
-			$this->remove(ee()->input->post('selection'));
+			$this->remove(ee('Request')->post('selection'));
 			ee()->functions->redirect($base_url);
 		}
 
@@ -64,6 +64,7 @@ class Roles extends AbstractRolesController {
 		$filters->add($group_filter);
 
 		$filter_values = $filters->values();
+		$search = $filter_values['filter_by_keyword'];
 
 		$total_roles = 0;
 
@@ -77,11 +78,11 @@ class Roles extends AbstractRolesController {
 		{
 			$roles = $group->Roles->sortBy('name')->asArray();
 
-			if ($search = ee()->input->get_post('filter_by_keyword'))
+			if ($search)
 			{
 				$roles = array_filter($roles, function($role) use ($search) {
 					return strpos(
-						strtolower($role->name).strtolower($role->role_name),
+						strtolower($role->name),
 						strtolower($search)
 					) !== FALSE;
 				});
@@ -93,7 +94,7 @@ class Roles extends AbstractRolesController {
 		{
 			$roles = ee('Model')->get('Role');
 
-			if ($search = ee()->input->get_post('filter_by_keyword'))
+			if ($search)
 			{
 				$roles->search(['name'], $search);
 			}
@@ -133,7 +134,6 @@ class Roles extends AbstractRolesController {
 			$data[] = [
 				'id' => $role->getId(),
 				'label' => $role->name,
-				// 'faded' => strtolower($roletype),
 				'href' => $edit_url,
 				'selected' => ($role_id && $role->getId() == $role_id),
 				'toolbar_items' => ee('Permission')->can('edit_roles') ? [
@@ -189,7 +189,7 @@ class Roles extends AbstractRolesController {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('roles')->compile() => lang('role_manager')
+			ee('CP/URL')->make('members/roles')->compile() => lang('role_manager')
 		);
 
 		$this->generateSidebar($group_id);
@@ -235,15 +235,15 @@ class Roles extends AbstractRolesController {
 				if (ee('Request')->post('submit') == 'save_and_new')
 				{
 					$return = (empty($group_id)) ? '' : '/'.$group_id;
-					ee()->functions->redirect(ee('CP/URL')->make('roles/create'.$return));
+					ee()->functions->redirect(ee('CP/URL')->make('members/roles/create'.$return));
 				}
-				elseif (ee()->input->post('submit') == 'save_and_close')
+				elseif (ee('Request')->post('submit') == 'save_and_close')
 				{
-					ee()->functions->redirect(ee('CP/URL')->make('roles'));
+					ee()->functions->redirect(ee('CP/URL')->make('members/roles'));
 				}
 				else
 				{
-					ee()->functions->redirect(ee('CP/URL')->make('roles/edit/'.$role->getId()));
+					ee()->functions->redirect(ee('CP/URL')->make('members/roles/edit/'.$role->getId()));
 				}
 			}
 			else
@@ -262,9 +262,9 @@ class Roles extends AbstractRolesController {
 			'errors' => $errors,
 			'ajax_validate' => TRUE,
 			'base_url' => $group_id
-				? ee('CP/URL')->make('roles/create/'.$group_id)
-				: ee('CP/URL')->make('roles/create'),
 			'sections' => $this->form($role),
+				? ee('CP/URL')->make('members/roles/create/'.$group_id)
+				: ee('CP/URL')->make('members/roles/create'),
 			'buttons' => [
 				[
 					'name' => 'submit',
@@ -361,7 +361,7 @@ class Roles extends AbstractRolesController {
 			{
 				$role->save();
 
-				if (ee()->input->post('update_formatting') == 'y')
+				if (ee('Request')->post('update_formatting') == 'y')
 				{
 					ee()->db->where('role_ft_' . $role->role_id . ' IS NOT NULL', NULL, FALSE);
 					ee()->db->update(
@@ -378,15 +378,15 @@ class Roles extends AbstractRolesController {
 
 				if (ee('Request')->post('submit') == 'save_and_new')
 				{
-					ee()->functions->redirect(ee('CP/URL')->make('roles/create'));
+					ee()->functions->redirect(ee('CP/URL')->make('members/roles/create'));
 				}
-				elseif (ee()->input->post('submit') == 'save_and_close')
+				elseif (ee('Request')->post('submit') == 'save_and_close')
 				{
-					ee()->functions->redirect(ee('CP/URL')->make('roles'));
+					ee()->functions->redirect(ee('CP/URL')->make('members/roles'));
 				}
 				else
 				{
-					ee()->functions->redirect(ee('CP/URL')->make('roles/edit/'.$role->getId()));
+					ee()->functions->redirect(ee('CP/URL')->make('members/roles/edit/'.$role->getId()));
 				}
 			}
 			else
@@ -404,7 +404,7 @@ class Roles extends AbstractRolesController {
 		$vars = array(
 			'errors' => $errors,
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL')->make('roles/edit/' . $id),
+			'base_url' => ee('CP/URL')->make('members/roles/edit/' . $id),
 			'sections' => $this->form($role),
 			'buttons' => [
 				[
