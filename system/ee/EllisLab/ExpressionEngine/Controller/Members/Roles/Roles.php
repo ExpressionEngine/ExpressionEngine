@@ -900,26 +900,7 @@ class Roles extends AbstractRolesController {
 
 		foreach ($permissions['choices'] as $group => $choices)
 		{
-			$permissions['values'][$group] = [];
-			foreach ($choices as $perm => $data)
-			{
-				if ($role->has($perm))
-				{
-					$permissions['values'][$group][] = $perm;
-				}
-
-				// Nested choices
-				if (is_array($data) && isset($data['children']))
-				{
-					foreach (array_keys($data['children']) as $child_perm)
-					{
-						if ($role->has($child_perm))
-						{
-							$permissions['values'][$group][] = $child_perm;
-						}
-					}
-				}
-			}
+			$permissions['values'][$group] = $this->getPermissionValues($role, $choices);
 		}
 
 		$sections = [
@@ -1377,6 +1358,27 @@ class Roles extends AbstractRolesController {
 		}
 
 		return $html;
+	}
+
+	private function getPermissionValues(Role $role, $choices)
+	{
+		$values = [];
+
+		foreach ($choices as $perm => $data)
+		{
+			if ($role->has($perm))
+			{
+				$values[] = $perm;
+			}
+
+			// Nested choices
+			if (is_array($data) && isset($data['children']))
+			{
+				$values = array_merge($values, $this->getPermissionValues($role, $data['children']));
+			}
+		}
+
+		return $values;
 	}
 
 	private function form(Role $role = NULL)
