@@ -170,7 +170,7 @@ $lang = array(
 
 'last_visit' => 'Last Visit',
 
-'lock_description' => 'When enabled, only Super Admins can add or remove members from this group.',
+'lock_description' => 'Only <mark>Super Admin</mark>s can add or remove members from this role.',
 
 'locked' => 'Locked',
 
@@ -208,7 +208,7 @@ $lang = array(
 
 'member_approved_success_desc' => 'The member <b>%s</b> has been approved.',
 
-'member_assignment_none' => 'None, members in this group will be deleted',
+'member_assignment_none' => 'None, members with this role will be deleted',
 
 'member_assignment_warning' => 'Members are currently assigned to some of these groups. What role should they be re-assigned to?',
 
@@ -310,7 +310,7 @@ $lang = array(
 
 'moderation_actions' => 'Moderation actions',
 
-'moderation_actions_desc' => 'Users in this group will be allowed to perform all of the selected actions.',
+'moderation_actions_desc' => 'Users with this role will be allowed to perform all of the selected actions.',
 
 'new_member_added' => 'New member created:',
 
@@ -526,7 +526,7 @@ $lang = array(
 
 'can_access_sys_prefs_desc' => 'When enabled, users assigned to this group may access the software settings.',
 
-'can_access_tg' => 'Can edit templates in this group:',
+'can_access_tg' => 'Can edit templates with this role:',
 
 'can_access_translate' => 'Translation',
 
@@ -628,7 +628,7 @@ $lang = array(
 
 'comment_actions' => 'Moderation actions',
 
-'comment_actions_desc' => 'Users in this group will be allowed to perform all of the selected actions.',
+'comment_actions_desc' => 'Users with this role will be allowed to perform all of the selected actions.',
 
 'commenting' => 'Commenting',
 
@@ -686,7 +686,7 @@ $lang = array(
 
 'include_members_in' => 'Include members in',
 
-'include_members_in_desc' => 'Users in this group will be included in all of the selected list types.',
+'include_members_in_desc' => 'Users with this role will be included in all of the selected list types.',
 
 'mbr_account_privs' => 'Member Account Privileges',
 
@@ -724,9 +724,11 @@ $lang = array(
 
 'search_privs' => 'Search Privileges',
 
+'cp_access' => 'CP Access',
+
 'site_access' => 'Website Access',
 
-'site_access_desc' => 'Users in this group will be allowed access to the website for each status mode selected.',
+'site_access_desc' => 'Users with this role will be allowed access to the website for each status mode selected.',
 
 'super_admin_edit_note' => 'Note: You can only edit the name and description for the Super Admin group',
 

@@ -11,6 +11,7 @@
 namespace EllisLab\ExpressionEngine\Controller\Members\Roles;
 
 use EllisLab\ExpressionEngine\Controller\Members\Roles\AbstractRoles as AbstractRolesController;
+use EllisLab\ExpressionEngine\Model\Role\Role;
 
 /**
  * Members\Roles\Roles Controller
@@ -64,7 +65,7 @@ class Roles extends AbstractRolesController {
 		$filters->add($group_filter);
 
 		$filter_values = $filters->values();
-		$search = $filter_values['filter_by_keyword'];
+		$search = isset($filter_values['filter_by_keyword']) ? $filter_values['filter_by_keyword'] : NULL;
 
 		$total_roles = 0;
 
@@ -189,7 +190,7 @@ class Roles extends AbstractRolesController {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('members/roles')->compile() => lang('role_manager')
+			ee('CP/URL')->make('members/roles')->compile() => lang('roles_manager')
 		);
 
 		$this->generateSidebar($group_id);
@@ -262,9 +263,10 @@ class Roles extends AbstractRolesController {
 			'errors' => $errors,
 			'ajax_validate' => TRUE,
 			'base_url' => $group_id
-			'sections' => $this->form($role),
 				? ee('CP/URL')->make('members/roles/create/'.$group_id)
 				: ee('CP/URL')->make('members/roles/create'),
+			'sections' => [],
+			'tabs' => $this->getTabs($role, $errors),
 			'buttons' => [
 				[
 					'name' => 'submit',
@@ -309,16 +311,6 @@ class Roles extends AbstractRolesController {
 
 		ee()->cp->add_js_script('plugin', 'ee_url_title');
 
-		ee()->javascript->set_global([
-			'publish.foreignChars' => ee()->config->loadFile('foreign_chars')
-		]);
-
-		ee()->javascript->output('
-			$("input[name=name]").bind("keyup keydown", function() {
-				$(this).ee_url_title("input[name=role_name]", true);
-			});
-		');
-
 		ee()->cp->render('settings/form', $vars);
 	}
 
@@ -342,7 +334,7 @@ class Roles extends AbstractRolesController {
 		$this->generateSidebar($active_groups);
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('roles')->compile() => lang('role_manager'),
+			ee('CP/URL')->make('roles')->compile() => lang('roles_manager'),
 		);
 
 		$errors = NULL;
@@ -405,7 +397,8 @@ class Roles extends AbstractRolesController {
 			'errors' => $errors,
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL')->make('members/roles/edit/' . $id),
-			'sections' => $this->form($role),
+			'sections' => [],
+			'tabs' => $this->getTabs($role, $errors),
 			'buttons' => [
 				[
 					'name' => 'submit',
@@ -442,21 +435,948 @@ class Roles extends AbstractRolesController {
 
 	private function setWithPost(Role $role)
 	{
-		$role->role_list_items = ($role->role_list_items) ?: '';
-		$role->role_order = ($role->role_order) ?: 0;
-		$role->site_id = (int) $role->site_id ?: 0;
-
 		$role->set($_POST);
 
-		if ($role->role_pre_populate)
-		{
-			list($channel_id, $role_id) = explode('_', $_POST['role_pre_populate_id']);
+		return $role;
+	}
 
-			$role->role_pre_channel_id = $channel_id;
-			$role->role_pre_role_id = $role_id;
+	private function getTabs(Role $role, $errors)
+	{
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/form_group'),
+		));
+
+		return [
+			'role'        => $this->renderRoleTab($role, $errors),
+			'site_access' => $this->renderSiteAccessTab($role, $errors),
+			'cp_access'   => $this->renderCPAccessTab($role, $errors),
+			// 'fields'         => '',
+		];
+	}
+
+	private function renderRoleTab(Role $role, $errors)
+	{
+		$settings = $role->RoleSettings->indexBy('site_id');
+		$site_id = ee()->config->item('site_id');
+
+		$settings = (isset($settings[$site_id])) ? $settings[$site_id] : ee('Model')->make('RoleSetting', ['site_id' => $site_id]);
+
+		$role_groups = ee('Model')->get('RoleGroup')
+			->fields('group_id', 'name')
+			->order('name')
+			->all()
+			->getDictionary('group_id', 'name');
+
+		$section = [
+			[
+				'title' => 'name',
+				'fields' => [
+					'name' => [
+						'type' => 'text',
+						'required' => TRUE,
+						'value' => $role->name
+					]
+				]
+			],
+			[
+				'title' => 'description',
+				'fields' => [
+					'description' => [
+						'type' => 'textarea',
+						'value' => $role->description
+					]
+				]
+			],
+			[
+				'title' => 'security_lock',
+				'desc' => 'lock_description',
+				'fields' => [
+					'is_locked' => [
+						'type' => 'yes_no',
+						'value' => $settings->is_locked,
+					]
+				]
+			],
+			[
+				'title' => 'role_groups',
+				'desc' => 'role_groups_desc',
+				'fields' => [
+					'role_groups' => [
+						'type' => 'checkbox',
+						'choices' => $role_groups,
+						'value' => $role->RoleGroups->pluck('group_id')
+					]
+				]
+			]
+		];
+
+		return ee('View')->make('_shared/form/section')
+				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
+	}
+
+	private function renderSiteAccessTab(Role $role, $errors)
+	{
+		$settings = $role->RoleSettings->indexBy('site_id');
+		$site_id = ee()->config->item('site_id');
+
+		$settings = (isset($settings[$site_id])) ? $settings[$site_id] : ee('Model')->make('RoleSetting', ['site_id' => $site_id]);
+
+		$website_access_choices = [
+			'can_view_online_system'  => lang('can_view_online_system'),
+			'can_view_offline_system' => lang('can_view_offline_system')
+		];
+		$website_access_value = [];
+		foreach (array_keys($website_access_choices) as $perm)
+		{
+			if ($role->has($perm))
+			{
+				$website_access_value[] = $perm;
+			}
 		}
 
-		return $role;
+		$include_members_in_choices = [
+			'include_in_authorlist' => lang('include_in_authorlist'),
+			'include_in_memberlist' => lang('include_in_memberlist'),
+		];
+		$include_members_in_value = [];
+		foreach (array_keys($include_members_in_choices) as $key)
+		{
+			if ($settings->$key)
+			{
+				$include_members_in_value[] = $key;
+			}
+		}
+
+		$comment_actions_choices = [
+			'can_moderate_comments'   => lang('can_moderate_comments'),
+			'can_edit_own_comments'   => lang('can_edit_own_comments'),
+			'can_delete_own_comments' => lang('can_delete_own_comments'),
+			'can_edit_all_comments'   => lang('can_edit_all_comments'),
+			'can_delete_all_comments' => lang('can_delete_all_comments')
+		];
+		$comment_actions_value = [];
+		foreach (array_keys($comment_actions_choices) as $perm)
+		{
+			if ($role->has($perm))
+			{
+				$comment_actions_value[] = $perm;
+			}
+		}
+
+		$sections = [
+			[
+				[
+					'title' => 'site_access',
+					'desc' => 'site_access_desc',
+					'fields' => [
+						'website_access' => [
+							'type' => 'checkbox',
+							'choices' => $website_access_choices,
+							'value' => $website_access_value,
+							'encode' => FALSE
+						]
+					]
+				],
+				[
+					'title' => 'can_view_profiles',
+					'desc' => 'can_view_profiles_desc',
+					'fields' => [
+						'can_view_profiles' => [
+							'type' => 'yes_no',
+							'value' => $role->has('can_view_profiles')
+						]
+					]
+				],
+				[
+					'title' => 'can_delete_self',
+					'desc' => 'can_delete_self_desc',
+					'fields' => [
+						'can_delete_self' => [
+							'type' => 'yes_no',
+							'value' => $role->has('can_delete_self')
+						]
+					]
+				],
+				[
+					'title' => 'mbr_delete_notify_emails',
+					'desc' => 'mbr_delete_notify_emails_desc',
+					'fields' => [
+						'mbr_delete_notify_emails' => [
+							'type' => 'text',
+							'value' => $settings->mbr_delete_notify_emails
+						]
+					]
+				],
+				[
+					'title' => 'include_members_in',
+					'desc' => 'include_members_in_desc',
+					'fields' => [
+						'include_members_in' => [
+							'type' => 'checkbox',
+							'choices' => $include_members_in_choices,
+							'value' => $include_members_in_value
+						]
+					]
+				]
+			],
+			'commenting' => [
+				[
+					'title' => 'can_post_comments',
+					'desc' => 'can_post_comments_desc',
+					'fields' => [
+						'can_post_comments' => [
+							'type' => 'yes_no',
+							'value' => $role->has('can_post_comments'),
+							'group_toggle' => [
+								'y' => 'can_post_comments'
+							]
+						]
+					]
+				],
+				[
+					'title' => 'exclude_from_moderation',
+					'desc' => sprintf(lang('exclude_from_moderation_desc'), ee('CP/URL', 'settings/comments')),
+					'group' => 'can_post_comments',
+					'fields' => [
+						'exclude_from_moderation' => [
+							'type' => 'yes_no',
+							'value' => $settings->exclude_from_moderation,
+						]
+					]
+				],
+				[
+					'title' => 'comment_actions',
+					'desc' => 'comment_actions_desc',
+					'caution' => TRUE,
+					'fields' => [
+						'comment_actions' => [
+							'type' => 'checkbox',
+							'choices' => $comment_actions_choices,
+							'value' => $comment_actions_value,
+						]
+					]
+				],
+			],
+			'search' => [
+				[
+					'title' => 'can_search',
+					'desc' => 'can_search_desc',
+					'fields' => [
+						'can_search' => [
+							'type' => 'yes_no',
+							'value' => $role->has('can_search'),
+							'group_toggle' => [
+								'y' => 'can_search'
+							]
+						]
+					]
+				],
+				[
+					'title' => 'search_flood_control',
+					'desc' => 'search_flood_control_desc',
+					'group' => 'can_search',
+					'fields' => [
+						'search_flood_control' => [
+							'type' => 'text',
+							'value' => $settings->search_flood_control,
+						]
+					]
+				],
+			],
+			'personal_messaging' => [
+				[
+					'title' => 'can_send_private_messages',
+					'desc' => 'can_send_private_messages_desc',
+					'fields' => [
+						'can_send_private_messages' => [
+							'type' => 'yes_no',
+							'value' => $role->has('can_send_private_messages'),
+							'group_toggle' => [
+								'y' => 'can_access_pms'
+							]
+						]
+					]
+				],
+				[
+					'title' => 'prv_msg_send_limit',
+					'desc' => 'prv_msg_send_limit_desc',
+					'group' => 'can_access_pms',
+					'fields' => [
+						'prv_msg_send_limit' => [
+							'type' => 'text',
+							'value' => $settings->prv_msg_send_limit,
+						]
+					]
+				],
+				[
+					'title' => 'prv_msg_storage_limit',
+					'desc' => 'prv_msg_storage_limit_desc',
+					'group' => 'can_access_pms',
+					'fields' => [
+						'prv_msg_storage_limit' => [
+							'type' => 'text',
+							'value' => $settings->prv_msg_storage_limit,
+						]
+					]
+				],
+				[
+					'title' => 'can_attach_in_private_messages',
+					'desc' => 'can_attach_in_private_messages_desc',
+					'group' => 'can_access_pms',
+					'fields' => [
+						'can_attach_in_private_messages' => [
+							'type' => 'yes_no',
+							'value' => $role->has('can_attach_in_private_messages'),
+						]
+					]
+				],
+				[
+					'title' => 'can_send_bulletins',
+					'desc' => 'can_send_bulletins_desc',
+					'group' => 'can_access_pms',
+					'fields' => [
+						'can_send_bulletins' => [
+							'type' => 'yes_no',
+							'value' => $role->has('can_send_bulletins'),
+						]
+					]
+				],
+			]
+		];
+
+		$html = '';
+
+		foreach ($sections as $name => $settings)
+		{
+			$html .= ee('View')->make('_shared/form/section')
+				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
+		}
+
+		return $html;
+	}
+
+	private function renderCPAccessTab(Role $role, $errors)
+	{
+		$settings = $role->RoleSettings->indexBy('site_id');
+		$site_id = ee()->config->item('site_id');
+
+		$settings = (isset($settings[$site_id])) ? $settings[$site_id] : ee('Model')->make('RoleSetting', ['site_id' => $site_id]);
+
+		$default_homepage_choices = array(
+			'overview' => lang('cp_overview').' &mdash; <i>'.lang('default').'</i>',
+			'entries_edit' => lang('edit_listing')
+		);
+
+		$allowed_channels = ee('Model')->get('Channel')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all()
+			->getDictionary('channel_id', 'channel_title');
+
+		if (count($allowed_channels))
+		{
+			$default_homepage_choices['publish_form'] = lang('publish_form').' &mdash; '.
+				form_dropdown('cp_homepage_channel', $allowed_channels, $settings->cp_homepage_channel);
+		}
+
+		$default_homepage_choices['custom'] = lang('custom_uri');
+		$default_homepage_value = [];
+
+		$addons = ee('Model')->get('Module')
+			->fields('module_id', 'module_name')
+			->filter('module_name', 'NOT IN', array('Channel', 'Comment', 'Member', 'File', 'Filepicker')) // @TODO This REALLY needs abstracting.
+			->all()
+			->filter(function($addon) {
+				$provision = ee('Addon')->get(strtolower($addon->module_name));
+
+				if ( ! $provision)
+				{
+					return FALSE;
+				}
+
+				$addon->module_name = $provision->getName();
+				return TRUE;
+			})
+			->getDictionary('module_id', 'module_name');
+
+		$permissions = [
+			'choices' => [
+				'footer' => [
+					'can_access_footer_report_bug' => lang('report_bug'),
+					'can_access_footer_new_ticket' => lang('new_ticket'),
+					'can_access_footer_user_guide' => lang('user_guide'),
+				],
+				'channel' => [
+					'can_create_channels' => lang('create_channels'),
+					'can_edit_channels'   => lang('edit_channels'),
+					'can_delete_channels' => lang('delete_channels')
+				],
+				'channel_field' => [
+					'can_create_channel_fields' => lang('create_channel_fields'),
+					'can_edit_channel_fields'   => lang('edit_channel_fields'),
+					'can_delete_channel_fields' => lang('delete_channel_fields')
+				],
+				'channel_category' => [
+					'can_create_categories' => lang('create_categories'),
+					'can_edit_categories'   => lang('edit_categories'),
+					'can_delete_categories' => lang('delete_categories')
+				],
+				'channel_status' => [
+					'can_create_statuses' => lang('create_statuses'),
+					'can_edit_statuses'   => lang('edit_statuses'),
+					'can_delete_statuses' => lang('delete_statuses')
+				],
+				'file_upload_directories' => [
+					'can_create_upload_directories' => lang('create_upload_directories'),
+					'can_edit_upload_directories'   => lang('edit_upload_directories'),
+					'can_delete_upload_directories' => lang('delete_upload_directories'),
+				],
+				'files' => [
+					'can_upload_new_files' => lang('upload_new_files'),
+					'can_edit_files'       => lang('edit_files'),
+					'can_delete_files'     => lang('delete_files'),
+				],
+				'role_actions' => [
+					'can_create_roles' => lang('create_roles'),
+					'can_edit_roles'   => lang('edit_roles'),
+					'can_delete_roles' => lang('delete_roles'),
+				],
+				'member_actions' => [
+					'can_create_members'     => lang('create_members'),
+					'can_edit_members'       => lang('edit_members'),
+					'can_delete_members'     => lang('can_delete_members'),
+					'can_ban_users'          => lang('can_ban_users'),
+					'can_email_from_profile' => lang('can_email_from_profile'),
+					'can_edit_html_buttons'  => lang('can_edit_html_buttons')
+				],
+				'template_group' => [
+					'can_create_template_groups' => lang('create_template_groups'),
+					'can_edit_template_groups'   => lang('edit_template_groups'),
+					'can_delete_template_groups' => lang('delete_template_groups'),
+				],
+				'template_partials' => [
+					'can_create_template_partials' => lang('create_template_partials'),
+					'can_edit_template_partials'   => lang('edit_template_partials'),
+					'can_delete_template_partials' => lang('delete_template_partials'),
+				],
+				'template_variables' => [
+					'can_create_template_variables' => lang('create_template_variables'),
+					'can_edit_template_variables'   => lang('edit_template_variables'),
+					'can_delete_template_variables' => lang('delete_template_variables'),
+				],
+				'rte_toolsets' => [
+					'can_upload_new_toolsets' => lang('upload_new_toolsets'),
+					'can_edit_toolsets'       => lang('edit_toolsets'),
+					'can_delete_toolsets'     => lang('delete_toolsets')
+				],
+				'access_tools' => [
+					'can_access_comm' => [
+						'label' => lang('can_access_communicate'),
+						'instructions' => lang('utility'),
+						'children' => [
+							'can_email_roles' => lang('can_email_roles'),
+							'can_send_cached_email' => lang('can_send_cached_email'),
+						]
+					],
+					'can_access_translate' => [
+						'label' => lang('can_access_translate'),
+						'instructions' => lang('utility')
+					],
+					'can_access_import' => [
+						'label' => lang('can_access_import'),
+						'instructions' => lang('utility')
+					],
+					'can_access_sql_manager' => [
+						'label' => lang('can_access_sql'),
+						'instructions' => lang('utility')
+					],
+					'can_access_data' => [
+						'label' => lang('can_access_data'),
+						'instructions' => lang('utility')
+					]
+				],
+			],
+			'values' => []
+		];
+
+		foreach ($permissions['choices'] as $group => $choices)
+		{
+			$permissions['values'][$group] = [];
+			foreach ($choices as $perm => $data)
+			{
+				if ($role->has($perm))
+				{
+					$permissions['values'][$group][] = $perm;
+				}
+
+				// Nested choices
+				if (is_array($data) && isset($data['children']))
+				{
+					foreach (array_keys($data['children']) as $child_perm)
+					{
+						if ($role->has($child_perm))
+						{
+							$permissions['values'][$group][] = $child_perm;
+						}
+					}
+				}
+			}
+		}
+
+		$sections = [
+			[
+				[
+					'title' => 'can_access_cp',
+					'desc' => 'can_access_cp_desc',
+					'caution' => TRUE,
+					'fields' => [
+						'can_access_cp' => [
+							'type' => 'yes_no',
+							'value' => $role->has('can_access_cp'),
+							'group_toggle' => [
+								'y' => 'can_access_cp'
+							]
+						]
+					]
+				],
+				[
+					'title' => 'default_cp_homepage',
+					'desc' => 'default_cp_homepage_desc',
+					'group' => 'can_access_cp',
+					'fields' => [
+						'cp_homepage' => [
+							'type' => 'radio',
+							'choices' => $default_homepage_choices,
+							'value' => $default_homepage_value,
+							'encode' => FALSE
+						],
+						'cp_homepage_custom' => [
+							'type' => 'text',
+							'value' => $settings->cp_homepage_custom,
+						]
+					]
+				],
+				[
+					'title' => 'footer_helper_links',
+					'desc' => 'footer_helper_links_desc',
+					'group' => 'can_access_cp',
+					'fields' => [
+						'footer_helper_links' => [
+							'type' => 'checkbox',
+							'choices' => $permissions['choices']['footer'],
+							'value' => $permissions['values']['footer'],
+						]
+					]
+				],
+				[
+					'title'  => 'homepage_news',
+					'desc'   => 'homepage_news_desc',
+					'group'  => 'can_access_cp',
+					'fields' => [
+						'can_view_homepage_news' => [
+							'type' => 'yes_no',
+							'value' => $role->has('can_view_homepage_news'),
+						]
+					]
+				],
+			],
+			'channels' => [
+				'group' => 'can_access_cp',
+				'settings' => [
+					[
+						'title' => 'can_admin_channels',
+						'desc' => 'can_admin_channels_desc',
+						'caution' => TRUE,
+						'fields' => [
+							'can_admin_channels' => [
+								'type' => 'yes_no',
+								'value' => $role->has('can_admin_channels'),
+								'group_toggle' => [
+									'y' => 'can_admin_channels'
+								]
+							]
+						]
+					],
+					[
+						'title' => 'channels',
+						'desc' => 'allowed_actions_desc',
+						'group' => 'can_admin_channels',
+						'fields' => [
+							'channel_permissions' => [
+								'type' => 'checkbox',
+								'choices' => $permissions['choices']['channel'],
+								'value' => $permissions['values']['channel'],
+							]
+						]
+					],
+					[
+						'title' => 'channel_fields',
+						'desc' => 'allowed_actions_desc',
+						'group' => 'can_admin_channels',
+						'fields' => [
+							'channel_field_permissions' => [
+								'type' => 'checkbox',
+								'choices' => $permissions['choices']['channel_field'],
+								'value' => $permissions['values']['channel_field'],
+							]
+						]
+					],
+					[
+						'title' => 'channel_categories',
+						'desc' => 'allowed_actions_desc',
+						'group' => 'can_admin_channels',
+						'fields' => [
+							'channel_category_permissions' => [
+								'type' => 'checkbox',
+								'choices' => $permissions['choices']['channel_category'],
+								'value' => $permissions['values']['channel_category'],
+							]
+						]
+					],
+					[
+						'title' => 'channel_statuses',
+						'desc' => 'allowed_actions_desc',
+						'group' => 'can_admin_channels',
+						'fields' => [
+							'channel_status_permissions' => [
+								'type' => 'checkbox',
+								'choices' => $permissions['choices']['channel_status'],
+								'value' => $permissions['values']['channel_status'],
+							]
+						]
+					],
+				]
+			],
+			'channel_entries_management' => [
+
+			],
+			'file_manager' => [
+				'group' => 'can_access_cp',
+				'settings' => [
+					[
+						'title' => 'can_access_file_manager',
+						'desc' => 'file_manager_desc',
+						'fields' => [
+							'can_access_files' => [
+								'type' => 'yes_no',
+								'value' => $role->has('can_access_files'),
+								'group_toggle' => [
+									'y' => 'can_access_files'
+								]
+							]
+						]
+					],
+					[
+						'title' => 'file_upload_directories',
+						'desc' => 'allowed_actions_desc',
+						'group' => 'can_access_files',
+						'fields' => [
+							'file_upload_directories' => [
+								'type' => 'checkbox',
+								'choices' => $permissions['choices']['file_upload_directories'],
+								'value' => $permissions['values']['file_upload_directories'],
+							]
+						]
+					],
+					[
+						'title' => 'files',
+						'desc' => 'allowed_actions_desc',
+						'group' => 'can_access_files',
+						'fields' => [
+							'files' => [
+								'type' => 'checkbox',
+								'choices' => $permissions['choices']['files'],
+								'value' => $permissions['values']['files'],
+							]
+						]
+					],
+				]
+			],
+			'members' => [
+				'group' => 'can_access_cp',
+				'settings' => [
+					[
+						'title' => 'can_access_members',
+						'desc' => 'can_access_members_desc',
+						'fields' => [
+							'can_access_members' => [
+								'type' => 'yes_no',
+								'value' => $role->has('can_access_members'),
+								'group_toggle' => [
+									'y' => 'can_access_members'
+								]
+							]
+						]
+					],
+					[
+						'title' => 'can_admin_roles',
+						'desc' => 'can_admin_roles_desc',
+						'caution' => TRUE,
+						'group' => 'can_access_members',
+						'fields' => [
+							'can_admin_roles' => [
+								'type' => 'yes_no',
+								'value' => $role->has('can_admin_roles'),
+							]
+						]
+					],
+					[
+						'title' => 'roles',
+						'desc' => 'allowed_actions_desc',
+						'group' => 'can_access_members',
+						'caution' => TRUE,
+						'fields' => [
+							'role_actions' => [
+								'type' => 'checkbox',
+								'choices' => $permissions['choices']['role_actions'],
+								'value' => $permissions['values']['role_actions'],
+							]
+						]
+					],
+					[
+						'title' => 'members',
+						'desc' => 'allowed_actions_desc',
+						'group' => 'can_access_members',
+						'caution' => TRUE,
+						'fields' => [
+							'member_actions' => [
+								'type' => 'checkbox',
+								'choices' => $permissions['choices']['member_actions'],
+								'value' => $permissions['values']['member_actions'],
+								'encode' => FALSE
+							]
+						]
+					],
+				]
+			],
+			'template_manager' => [
+				'group' => 'can_access_cp',
+				'settings' => [
+					[
+						'title' => 'can_access_design',
+						'desc' => 'can_access_design_desc',
+						'fields' => [
+							'can_access_design' => [
+								'type' => 'yes_no',
+								'value' => $role->has('can_access_design'),
+								'group_toggle' => [
+									'y' => 'can_access_design'
+								]
+							]
+						]
+					],
+					[
+						'title' => 'can_admin_design',
+						'desc' => 'can_admin_design_desc',
+						'group' => 'can_access_design',
+						'caution' => TRUE,
+						'fields' => [
+							'can_admin_design' => [
+								'type' => 'yes_no',
+								'value' => $role->has('can_admin_design'),
+							]
+						]
+					],
+					[
+						'title' => 'template_groups',
+						'desc' => 'allowed_actions_desc',
+						'group' => 'can_access_design',
+						'caution' => TRUE,
+						'fields' => [
+							'template_group_permissions' => [
+								'type' => 'checkbox',
+								'choices' => $permissions['choices']['template_group'],
+								'value' => $permissions['values']['template_group']
+							]
+						]
+					],
+					[
+						'title' => 'template_partials',
+						'desc' => 'allowed_actions_desc',
+						'group' => 'can_access_design',
+						'caution' => TRUE,
+						'fields' => [
+							'template_partials' => [
+								'type' => 'checkbox',
+								'choices' => $permissions['choices']['template_partials'],
+								'value' => $permissions['values']['template_partials']
+							]
+						]
+					],
+					[
+						'title' => 'template_variables',
+						'desc' => 'allowed_actions_desc',
+						'group' => 'can_access_design',
+						'caution' => TRUE,
+						'fields' => [
+							'template_variables' => [
+								'type' => 'checkbox',
+								'choices' => $permissions['choices']['template_variables'],
+								'value' => $permissions['values']['template_variables']
+							]
+						]
+					],
+				]
+			],
+			'addons' => [
+				'group' => 'can_access_cp',
+				'settings' => [
+					[
+						'title' => 'can_access_addons',
+						'desc' => 'can_access_addons_desc',
+						'fields' => [
+							'can_access_addons' => [
+								'type' => 'yes_no',
+								'value' => $role->has('can_access_addons'),
+								'group_toggle' => [
+									'y' => 'can_access_addons'
+								]
+							]
+						]
+					],
+					[
+						'title' => 'can_admin_addons',
+						'desc' => 'can_admin_addons_desc',
+						'group' => 'can_access_addons',
+						'caution' => TRUE,
+						'fields' => [
+							'can_admin_addons' => [
+								'type' => 'yes_no',
+								'value' => $role->has('can_admin_addons'),
+							]
+						]
+					],
+					[
+						'title' => 'addons_access',
+						'desc' => 'addons_access_desc',
+						'group' => 'can_access_addons',
+						'caution' => TRUE,
+						'fields' => [
+							'addons_access' => [
+								'type' => 'checkbox',
+								'choices' => $addons,
+								'value' => $role->AssignedModules->pluck('module_id'),
+								'no_results' => [
+									'text' => sprintf(lang('no_found'), lang('addons'))
+								]
+							]
+						]
+					],
+					[
+						'title' => 'rte_toolsets',
+						'desc' => 'allowed_actions_desc',
+						'group' => 'can_access_addons',
+						'fields' => [
+							'rte_toolsets' => [
+								'type' => 'checkbox',
+								'choices' => $permissions['choices']['rte_toolsets'],
+								'value' => $permissions['values']['rte_toolsets']
+							]
+						]
+					],
+				]
+			],
+			'tools_utilities' => [
+				'group' => 'can_access_cp',
+				'settings' => [
+					[
+						'title' => 'access_utilities',
+						'desc' => 'access_utilities_desc',
+						'fields' => [
+							'can_access_utilities' => [
+								'type' => 'yes_no',
+								'value' => $role->has('can_access_utilities'),
+								'group_toggle' => [
+									'y' => 'can_access_utilities'
+								]
+							]
+						]
+					],
+					[
+						'title' => 'utilities_section',
+						'desc' => 'utilities_section_desc',
+						'group' => 'can_access_utilities',
+						'caution' => TRUE,
+						'fields' => [
+							'access_tools' => [
+								'type' => 'checkbox',
+								'nested' => TRUE,
+								'auto_select_parents' => TRUE,
+								'choices' => $permissions['choices']['access_tools'],
+								'value' => $permissions['values']['access_tools']
+							]
+						]
+					],
+				]
+			],
+			'logs' => [
+				'group' => 'can_access_cp',
+				'settings' => [
+					[
+						'title' => 'can_access_logs',
+						'desc' => 'can_access_logs_desc',
+						'fields' => [
+							'can_access_logs' => [
+								'type' => 'yes_no',
+								'value' => $role->has('can_access_logs'),
+							]
+						]
+					]
+				]
+			],
+			'settings' => [
+				'group' => 'can_access_cp',
+				'settings' => [
+					[
+						'title' => 'can_access_sys_prefs',
+						'desc' => 'can_access_sys_prefs_desc',
+						'caution' => TRUE,
+						'fields' => [
+							'can_access_sys_prefs' => [
+								'type' => 'yes_no',
+								'value' => $role->has('can_access_sys_prefs'),
+								'group_toggle' => [
+									'y' => 'can_access_sys_prefs'
+								]
+							]
+						]
+					],
+					[
+						'title' => 'can_access_security_settings',
+						'desc' => 'can_access_security_settings_desc',
+						'group' => 'can_access_sys_prefs',
+						'caution' => TRUE,
+						'fields' => [
+							'can_access_security_settings' => [
+								'type' => 'yes_no',
+								'value' => $role->has('can_access_security_settings'),
+							]
+						]
+					],
+					[
+						'title' => 'can_manage_consents',
+						'desc' => 'can_manage_consents_desc',
+						'group' => 'can_access_sys_prefs',
+						'caution' => TRUE,
+						'fields' => [
+							'can_manage_consents' => [
+								'type' => 'yes_no',
+								'value' => $role->has('can_manage_consents'),
+							]
+						]
+					]
+				]
+			]
+		];
+
+		$html = '';
+
+		foreach ($sections as $name => $settings)
+		{
+			$html .= ee('View')->make('_shared/form/section')
+				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
+		}
+
+		return $html;
 	}
 
 	private function form(Role $role = NULL)
@@ -465,16 +1385,6 @@ class Roles extends AbstractRolesController {
 		{
 			$role = ee('Model')->make('Role');
 		}
-
-		$roletype_choices = $role->getCompatibleFieldtypes();
-
-		$roletypes = ee('Model')->get('Fieldtype')
-			->roles('name')
-			->filter('name', 'IN', array_keys($roletype_choices))
-			->order('name')
-			->all();
-
-		$role->role_type = ($role->role_type) ?: 'text';
 
 		$sections = array(
 			array(
