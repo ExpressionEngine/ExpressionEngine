@@ -142,6 +142,56 @@ class Role extends Model {
 
 		return new Collection($members);
 	}
+
+	protected function saveToCache($key, $data)
+	{
+		if (isset(ee()->session))
+		{
+			ee()->session->set_cache(__CLASS__, $key, $data);
+		}
+	}
+
+	protected function getFromCache($key)
+	{
+		if (isset(ee()->session))
+		{
+			return ee()->session->cache(__CLASS__, $key, FALSE);
+		}
+
+		return FALSE;
+	}
+
+	public function getPermissions()
+	{
+		$cache_key = "Role/{$this->role_id}/Permissions";
+
+		$permissions = $this->getFromCache($cache_key);
+
+		if ($permissions === FALSE)
+		{
+			$permissions = $this->getModelFacade()->get('Permission')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('role_id', $this->getId())
+				->all()
+				->getDictionary('permission', 'permission_id');
+
+			$this->saveToCache($cache_key, $permissions);
+		}
+
+		return $permissions;
+	}
+
+	public function can($permission)
+	{
+		$permissions = $this->getPermissions();
+		return array_key_exists('can_' . $permission, $permissions);
+	}
+
+	public function has($permission)
+	{
+		$permissions = $this->getPermissions();
+		return array_key_exists($permission, $permissions);
+	}
 }
 
 // EOF
