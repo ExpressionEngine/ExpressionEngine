@@ -1188,6 +1188,7 @@ class Member extends ContentModel {
 
 	public function has($permission)
 	{
+		$permissions = $this->getPermissions();
 		return array_key_exists($permission, $permissions);
 	}
 
