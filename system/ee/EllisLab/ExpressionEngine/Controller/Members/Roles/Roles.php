@@ -772,6 +772,35 @@ class Roles extends AbstractRolesController {
 			->all()
 			->getDictionary('channel_id', 'channel_title');
 
+		$channel_access = [
+			'choices' => [],
+			'values' => []
+		];
+		foreach ($allowed_channels as $id => $title)
+		{
+			$channel_access['choices']['channel_id_' . $id] = [
+				'label' => $title,
+				'children' => [
+					'can_create_entries_channel_id_' . $id      => lang('can_create_entries'),
+					'can_edit_self_entries_channel_id_' . $id   => lang('can_edit_self_entries'),
+					'can_delete_self_entries_channel_id_' . $id => lang('can_delete_self_entries'),
+					'can_edit_other_entries_channel_id_' . $id  => lang('can_edit_other_entries'),
+					'can_delete_all_entries_channel_id_' . $id  => lang('can_delete_all_entries'),
+					'can_assign_post_authors_channel_id_' . $id => lang('can_assign_post_authors')
+				]
+			];
+		}
+
+		foreach ($role->AssignedChannels as $channel)
+		{
+			$channel_access['values'][] = 'channel_id_' . $channel->getId();
+		}
+
+		foreach ($channel_access['choices'] as $group => $choices)
+		{
+			$channel_access['values'] = array_merge($channel_access['values'], $this->getPermissionValues($role, $choices['children']));
+		}
+
 		if (count($allowed_channels))
 		{
 			$default_homepage_choices['publish_form'] = lang('publish_form').' &mdash; '.
@@ -1028,7 +1057,20 @@ class Roles extends AbstractRolesController {
 				]
 			],
 			'channel_entries_management' => [
-
+				[
+					'title' => 'channel_access',
+					'desc' => 'channel_access_desc',
+					'caution' => TRUE,
+					'fields' => [
+						'channel_access' => [
+							'type' => 'checkbox',
+							'nested' => TRUE,
+							'auto_select_parents' => TRUE,
+							'choices' => $channel_access['choices'],
+							'value' => $channel_access['values'],
+						]
+					]
+				],
 			],
 			'file_manager' => [
 				'group' => 'can_access_cp',
