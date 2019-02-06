@@ -772,34 +772,8 @@ class Roles extends AbstractRolesController {
 			->all()
 			->getDictionary('channel_id', 'channel_title');
 
-		$channel_access = [
-			'choices' => [],
-			'values' => []
-		];
-		foreach ($allowed_channels as $id => $title)
-		{
-			$channel_access['choices']['channel_id_' . $id] = [
-				'label' => $title,
-				'children' => [
-					'can_create_entries_channel_id_' . $id      => lang('can_create_entries'),
-					'can_edit_self_entries_channel_id_' . $id   => lang('can_edit_self_entries'),
-					'can_delete_self_entries_channel_id_' . $id => lang('can_delete_self_entries'),
-					'can_edit_other_entries_channel_id_' . $id  => lang('can_edit_other_entries'),
-					'can_delete_all_entries_channel_id_' . $id  => lang('can_delete_all_entries'),
-					'can_assign_post_authors_channel_id_' . $id => lang('can_assign_post_authors')
-				]
-			];
-		}
-
-		foreach ($role->AssignedChannels as $channel)
-		{
-			$channel_access['values'][] = 'channel_id_' . $channel->getId();
-		}
-
-		foreach ($channel_access['choices'] as $group => $choices)
-		{
-			$channel_access['values'] = array_merge($channel_access['values'], $this->getPermissionValues($role, $choices['children']));
-		}
+		$channel_access = $this->getChannelAccess($role, $allowed_channels);
+		$template_group_access = $this->getTemplateGroupAccess($role);
 
 		if (count($allowed_channels))
 		{
@@ -1238,6 +1212,20 @@ class Roles extends AbstractRolesController {
 							]
 						]
 					],
+					[
+						'title' => 'template_gruop_access',
+						'desc' => 'template_gruop_access_desc',
+						'caution' => TRUE,
+						'fields' => [
+							'template_gruop_access' => [
+								'type' => 'checkbox',
+								'nested' => TRUE,
+								'auto_select_parents' => TRUE,
+								'choices' => $template_group_access['choices'],
+								'value' => $template_group_access['values'],
+							]
+						]
+					],
 				]
 			],
 			'addons' => [
@@ -1400,6 +1388,79 @@ class Roles extends AbstractRolesController {
 		}
 
 		return $html;
+	}
+
+	private function getChannelAccess(Role $role, $channels)
+	{
+		$channel_access = [
+			'choices' => [],
+			'values' => []
+		];
+		foreach ($channels as $id => $title)
+		{
+			$channel_access['choices']['channel_id_' . $id] = [
+				'label' => $title,
+				'children' => [
+					'can_create_entries_channel_id_' . $id      => lang('can_create_entries'),
+					'can_edit_self_entries_channel_id_' . $id   => lang('can_edit_self_entries'),
+					'can_delete_self_entries_channel_id_' . $id => lang('can_delete_self_entries'),
+					'can_edit_other_entries_channel_id_' . $id  => lang('can_edit_other_entries'),
+					'can_delete_all_entries_channel_id_' . $id  => lang('can_delete_all_entries'),
+					'can_assign_post_authors_channel_id_' . $id => lang('can_assign_post_authors')
+				]
+			];
+		}
+
+		foreach ($role->AssignedChannels as $channel)
+		{
+			$channel_access['values'][] = 'channel_id_' . $channel->getId();
+		}
+
+		foreach ($channel_access['choices'] as $group => $choices)
+		{
+			$channel_access['values'] = array_merge($channel_access['values'], $this->getPermissionValues($role, $choices['children']));
+		}
+
+		return $channel_access;
+	}
+
+	private function getTemplateGroupAccess(Role $role)
+	{
+		$template_groups = ee('Model')->get('TemplateGroup')
+			->fields('group_id', 'group_name')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_name')
+			->all()
+			->getDictionary('group_id', 'group_name');
+
+		$template_group_access = [
+			'choices' => [],
+			'values' => []
+		];
+		foreach ($template_groups as $id => $name)
+		{
+			$template_group_access['choices']['template_group_' . $id] = [
+				'label' => $name,
+				'children' => [
+					'can_create_templates_template_group_id_' . $id => lang('can_create_templates'),
+					'can_edit_templates_template_group_id_' . $id   => lang('can_edit_templates'),
+					'can_delete_templates_template_group_id_' . $id => lang('can_delete_templates'),
+					'can_manage_settings_channel_id_' . $id         => lang('can_manage_settings'),
+				]
+			];
+		}
+
+		foreach ($role->AssignedTemplateGroups as $template_group)
+		{
+			$template_group_access['values'][] = 'template_group_' . $template_group->getId();
+		}
+
+		foreach ($template_group_access['choices'] as $group => $choices)
+		{
+			$template_group_access['values'] = array_merge($template_group_access['values'], $this->getPermissionValues($role, $choices['children']));
+		}
+
+		return $template_group_access;
 	}
 
 	private function getPermissionValues(Role $role, $choices)
