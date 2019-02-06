@@ -19,6 +19,7 @@ Patch Release
 
 - Improved revision listings (`#87 <https://github.com/ExpressionEngine/ExpressionEngine/pull/87>`__) for entry and template versioning, to sort in reverse chronological order.
 - Fixed a bug (`#55 <https://github.com/ExpressionEngine/ExpressionEngine/issues/55>`__) where fields may parse incorrectly if they shared similar names.
+- Fixed a bug (`#119 <https://github.com/ExpressionEngine/ExpressionEngine/issues/119>`__) where Simple Commerce subscription end date was not correctly formatted before output.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
