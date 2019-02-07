@@ -1054,6 +1054,26 @@ $lang = array(
 
 'roles_removed_desc' => 'The following role were removed',
 
+'channel_access' => 'Channel access',
+
+'channel_access_desc' => 'Users can perform each selected action on the selected channel.',
+
+'can_admin_roles' => 'Access member roles',
+
+'can_admin_roles_desc' => 'When enabled, users assigned to this role may access member role settings in the software.',
+
+'template_group_access' => 'Template group access',
+
+'template_group_access_desc' => 'Users can perform each selected action on the selected template group.',
+
+'can_create_templates' => 'Create templates',
+
+'can_edit_templates' => 'Edit templates',
+
+'can_delete_templates' => 'Delete templates',
+
+'can_manage_settings' => 'Manage settings & access',
+
 );
 
 // EOF
