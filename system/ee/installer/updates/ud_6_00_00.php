@@ -325,7 +325,7 @@ class Updater {
 				],
 				'permission' => [
 					'type'       => 'varchar',
-					'constraint' => 32,
+					'constraint' => 64,
 					'null'       => FALSE
 				],
 			]
