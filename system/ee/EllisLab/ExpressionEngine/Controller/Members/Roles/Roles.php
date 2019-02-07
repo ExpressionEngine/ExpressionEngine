@@ -523,7 +523,7 @@ class Roles extends AbstractRolesController {
 
 		foreach ($_POST as $key => $value)
 		{
-			if (strpos($key, 'can_') === 0 && $value = 'y')
+			if (strpos($key, 'can_') === 0 && $value == 'y')
 			{
 				$allowed_perms[] = $key;
 			}
