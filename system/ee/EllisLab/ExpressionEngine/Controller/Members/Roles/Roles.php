@@ -24,11 +24,11 @@ class Roles extends AbstractRolesController {
 
 		if ($group_id)
 		{
-			$base_url = ee('CP/URL')->make('roles', ['group_id' => $group_id]);
+			$base_url = ee('CP/URL')->make('members/roles', ['group_id' => $group_id]);
 		}
 		else
 		{
-			$base_url = ee('CP/URL')->make('roles');
+			$base_url = ee('CP/URL')->make('members/roles');
 		}
 
 		if (ee('Request')->post('bulk_action') == 'remove')
@@ -198,6 +198,11 @@ class Roles extends AbstractRolesController {
 		$errors = NULL;
 		$role = ee('Model')->make('Role');
 
+		if ($group_id)
+		{
+			$role->RoleGroups = ee('Model')->get('RoleGroup', $group_id)->all();
+		}
+
 		if ( ! empty($_POST))
 		{
 			$role = $this->setWithPost($role);
@@ -211,16 +216,6 @@ class Roles extends AbstractRolesController {
 			if ($result->isValid())
 			{
 				$role->save();
-
-				if ($group_id)
-				{
-					$role_group = ee('Model')->get('RoleGroup', $group_id)->first();
-					if ($role_group)
-					{
-						$role_group->Roles->getAssociation()->add($role);
-						$role_group->save();
-					}
-				}
 
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
@@ -334,7 +329,7 @@ class Roles extends AbstractRolesController {
 		$this->generateSidebar($active_groups);
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('roles')->compile() => lang('roles_manager'),
+			ee('CP/URL')->make('members/roles')->compile() => lang('roles_manager'),
 		);
 
 		$errors = NULL;
@@ -435,7 +430,137 @@ class Roles extends AbstractRolesController {
 
 	private function setWithPost(Role $role)
 	{
-		$role->set($_POST);
+		$role->name = ee('Request')->post('name');
+		$role->description = ee('Request')->post('description');
+		$role->RoleGroups = ee('Model')->get('RoleGroup', ee('Request')->post('role_groups'))->all();
+		$role->AssignedModules = ee('Model')->get('Module', ee('Request')->post('addons_access'))->all();
+
+		// Settings
+		$settings = ee('Model')->make('RoleSetting')->getValues();
+		unset($settings['id'], $settings['role_id'], $settings['site_id']);
+
+		foreach (array_keys($settings) as $key)
+		{
+			$settings[$key] = ee('Request')->post($key);
+		}
+
+		foreach (ee('Request')->post('include_members_in', []) as $key)
+		{
+			$settings[$key] = 'y';
+		}
+
+		if ($role->isNew())
+		{
+			// Apply these to all sites
+			$sites = ee('Model')->get('Site')->all();
+			foreach ($sites as $site)
+			{
+				$role_settings = ee('Model')->make('RoleSetting', ['site_id' => $site->getId()]);
+				$role_settings->set($settings);
+				$role->RoleSettings->getAssociation()->add($role_settings);
+			}
+		}
+		else
+		{
+			$role_settings = $role->RoleSettings->indexBy('site_id');
+			$site_id = ee()->config->item('site_id');
+			$role_settings = $role_settings[$site_id];
+
+			$role_settings->set($settings);
+		}
+
+		$allowed_perms = [];
+
+		// channel_access
+		$channel_ids = [];
+		foreach (ee('Request')->post('channel_access') as $value)
+		{
+			if (strpos($value, 'channel_id_') === 0)
+			{
+				$channel_ids[] = str_replace('channel_id_', '', $value);
+			}
+			else
+			{
+				$allowed_perms[] = $value;
+			}
+		}
+
+		if ( ! empty($channel_ids))
+		{
+			$role->AssignedChannels = ee('Model')->get('Channel', $channel_ids)->all();
+		}
+
+		// template_group_access
+		$template_group_ids = [];
+		foreach (ee('Request')->post('template_group_access') as $value)
+		{
+			if (strpos($value, 'template_group_') === 0)
+			{
+				$template_group_ids[] = str_replace('template_group_', '', $value);
+			}
+			else
+			{
+				$allowed_perms[] = $value;
+			}
+		}
+
+		if ( ! empty($template_group_ids))
+		{
+			$role->AssignedTemplateGroups = ee('Model')->get('TemplateGroup', $template_group_ids)->all();
+		}
+
+		// Permissions
+		$permissions = $this->getPermissions();
+
+		foreach (array_keys($permissions['choices']) as $key)
+		{
+			$perms = ee('Request')->post($key);
+			if ( ! empty($perms) and ! empty($perms[0]))
+			{
+				$allowed_perms = array_merge($allowed_perms, $perms);
+			}
+		}
+
+		foreach ($_POST as $key => $value)
+		{
+			if (strpos($key, 'can_') === 0 && $value = 'y')
+			{
+				$allowed_perms[] = $key;
+			}
+		}
+
+		if ($role->isNew())
+		{
+			// Apply these to all sites
+			$sites = ee('Model')->get('Site')->all();
+			foreach ($sites as $site)
+			{
+				foreach ($allowed_perms as $perm)
+				{
+					$p = ee('Model')->make('Permission', [
+						'site_id'    => $site->getId(),
+						'permission' => $perm
+					]);
+					$role->Permisisons->getAssociation()->add($p);
+				}
+			}
+		}
+		else
+		{
+			ee('Model')->get('Permission')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('role_id', $role->getId())
+				->delete();
+
+			foreach ($allowed_perms as $perm)
+			{
+				ee('Model')->make('Permission', [
+					'role_id'    => $role->getId(),
+					'site_id'    => ee()->config->item('site_id'),
+					'permission' => $perm
+				])->save();
+			}
+		}
 
 		return $role;
 	}
@@ -1476,135 +1601,6 @@ class Roles extends AbstractRolesController {
 		}
 
 		return $values;
-	}
-
-	private function form(Role $role = NULL)
-	{
-		if ( ! $role)
-		{
-			$role = ee('Model')->make('Role');
-		}
-
-		$sections = array(
-			array(
-				array(
-					'title' => 'type',
-					'desc' => '',
-					'roles' => array(
-						'role_type' => array(
-							'type' => 'dropdown',
-							'choices' => $roletype_choices,
-							'group_toggle' => $roletypes->getDictionary('name', 'name'),
-							'value' => $role->role_type,
-							'no_results' => ['text' => sprintf(lang('no_found'), lang('roletypes'))]
-						)
-					)
-				),
-				array(
-					'title' => 'name',
-					'roles' => array(
-						'name' => array(
-							'type' => 'text',
-							'value' => $role->name,
-							'required' => TRUE
-						)
-					)
-				),
-				array(
-					'title' => 'short_name',
-					'desc' => 'alphadash_desc',
-					'roles' => array(
-						'role_name' => array(
-							'type' => 'text',
-							'value' => $role->role_name,
-							'required' => TRUE
-						)
-					)
-				),
-				array(
-					'title' => 'instructions',
-					'desc' => 'instructions_desc',
-					'roles' => array(
-						'role_instructions' => array(
-							'type' => 'textarea',
-							'value' => $role->role_instructions,
-						)
-					)
-				),
-				array(
-					'title' => 'require_role',
-					'desc' => 'require_role_desc',
-					'roles' => array(
-						'role_required' => array(
-							'type' => 'yes_no',
-							'value' => $role->role_required,
-						)
-					)
-				),
-				array(
-					'title' => 'include_in_search',
-					'desc' => 'include_in_search_desc',
-					'roles' => array(
-						'role_search' => array(
-							'type' => 'yes_no',
-							'value' => $role->role_search,
-						)
-					)
-				),
-				array(
-					'title' => 'hide_role',
-					'desc' => 'hide_role_desc',
-					'roles' => array(
-						'role_is_hidden' => array(
-							'type' => 'yes_no',
-							'value' => $role->role_is_hidden,
-						)
-					)
-				),
-			),
-		);
-
-		$role_options = $role->getSettingsForm();
-		if (is_array($role_options) && ! empty($role_options))
-		{
-			$sections = array_merge($sections, $role_options);
-		}
-
-		foreach ($roletypes as $roletype)
-		{
-			if ($roletype->name == $role->role_type)
-			{
-				continue;
-			}
-
-			// If editing an option role, populate the dummy roletype with the
-			// same settings to make switching between the different types easy
-			if ( ! $role->isNew() &&
-				in_array(
-					$roletype->name,
-					array('checkboxes', 'multi_select', 'radio', 'select')
-				))
-			{
-				$dummy_role = clone $role;
-			}
-			else
-			{
-				$dummy_role = ee('Model')->make('Role');
-			}
-			$dummy_role->role_type = $roletype->name;
-			$role_options = $dummy_role->getSettingsForm();
-
-			if (is_array($role_options) && ! empty($role_options))
-			{
-				$sections = array_merge($sections, $role_options);
-			}
-		}
-
-		ee()->javascript->output('$(document).ready(function () {
-			EE.cp.roleToggleDisable();
-		});');
-
-		return $sections;
 	}
 
 	private function remove($role_ids)
