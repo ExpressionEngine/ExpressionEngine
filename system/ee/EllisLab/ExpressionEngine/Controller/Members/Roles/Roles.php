@@ -521,17 +521,26 @@ class Roles extends AbstractRolesController {
 
 		$settings = (isset($settings[$site_id])) ? $settings[$site_id] : ee('Model')->make('RoleSetting', ['site_id' => $site_id]);
 
-		$website_access_choices = [
-			'can_view_online_system'  => lang('can_view_online_system'),
-			'can_view_offline_system' => lang('can_view_offline_system')
+		$permissions = [
+			'choices' => [
+				'website_access' => [
+					'can_view_online_system'  => lang('can_view_online_system'),
+					'can_view_offline_system' => lang('can_view_offline_system')
+				],
+				'comment_actions' => [
+					'can_moderate_comments'   => lang('can_moderate_comments'),
+					'can_edit_own_comments'   => lang('can_edit_own_comments'),
+					'can_delete_own_comments' => lang('can_delete_own_comments'),
+					'can_edit_all_comments'   => lang('can_edit_all_comments'),
+					'can_delete_all_comments' => lang('can_delete_all_comments')
+				]
+			],
+			'values' => []
 		];
-		$website_access_value = [];
-		foreach (array_keys($website_access_choices) as $perm)
+
+		foreach ($permissions['choices'] as $group => $choices)
 		{
-			if ($role->has($perm))
-			{
-				$website_access_value[] = $perm;
-			}
+			$permissions['values'][$group] = $this->getPermissionValues($role, $choices);
 		}
 
 		$include_members_in_choices = [
@@ -547,22 +556,6 @@ class Roles extends AbstractRolesController {
 			}
 		}
 
-		$comment_actions_choices = [
-			'can_moderate_comments'   => lang('can_moderate_comments'),
-			'can_edit_own_comments'   => lang('can_edit_own_comments'),
-			'can_delete_own_comments' => lang('can_delete_own_comments'),
-			'can_edit_all_comments'   => lang('can_edit_all_comments'),
-			'can_delete_all_comments' => lang('can_delete_all_comments')
-		];
-		$comment_actions_value = [];
-		foreach (array_keys($comment_actions_choices) as $perm)
-		{
-			if ($role->has($perm))
-			{
-				$comment_actions_value[] = $perm;
-			}
-		}
-
 		$sections = [
 			[
 				[
@@ -571,8 +564,8 @@ class Roles extends AbstractRolesController {
 					'fields' => [
 						'website_access' => [
 							'type' => 'checkbox',
-							'choices' => $website_access_choices,
-							'value' => $website_access_value,
+							'choices' => $permissions['choices']['website_access'],
+							'value' => $permissions['values']['website_access'],
 							'encode' => FALSE
 						]
 					]
@@ -651,8 +644,8 @@ class Roles extends AbstractRolesController {
 					'fields' => [
 						'comment_actions' => [
 							'type' => 'checkbox',
-							'choices' => $comment_actions_choices,
-							'value' => $comment_actions_value,
+							'choices' => $permissions['choices']['comment_actions'],
+							'value' => $permissions['values']['comment_actions'],
 						]
 					]
 				],
@@ -1213,11 +1206,11 @@ class Roles extends AbstractRolesController {
 						]
 					],
 					[
-						'title' => 'template_gruop_access',
-						'desc' => 'template_gruop_access_desc',
+						'title' => 'template_group_access',
+						'desc' => 'template_group_access_desc',
 						'caution' => TRUE,
 						'fields' => [
-							'template_gruop_access' => [
+							'template_group_access' => [
 								'type' => 'checkbox',
 								'nested' => TRUE,
 								'auto_select_parents' => TRUE,
