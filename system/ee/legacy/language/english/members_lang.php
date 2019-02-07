@@ -1032,6 +1032,28 @@ $lang = array(
 
 'role_groups_removed_desc' => 'The following role groups were removed',
 
+'create_role' => 'New Role',
+
+'create_role_error' => 'Cannot Create Role',
+
+'create_role_error_desc' => 'We were unable to create this role, please review and fix errors below.',
+
+'create_role_success' => 'Role Created',
+
+'create_role_success_desc' => 'The role <b>%s</b> has been created.',
+
+'edit_role' => 'Edit Role',
+
+'edit_role_error' => 'Cannot Update Role',
+
+'edit_role_error_desc' => 'We were unable to update this role, please review and fix errors below.',
+
+'edit_role_success' => 'Role Updated',
+
+'edit_role_success_desc' => 'The role <b>%s</b> has been updated.',
+
+'roles_removed_desc' => 'The following role were removed',
+
 );
 
 // EOF
