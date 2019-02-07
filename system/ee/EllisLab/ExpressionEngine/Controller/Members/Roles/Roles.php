@@ -521,27 +521,7 @@ class Roles extends AbstractRolesController {
 
 		$settings = (isset($settings[$site_id])) ? $settings[$site_id] : ee('Model')->make('RoleSetting', ['site_id' => $site_id]);
 
-		$permissions = [
-			'choices' => [
-				'website_access' => [
-					'can_view_online_system'  => lang('can_view_online_system'),
-					'can_view_offline_system' => lang('can_view_offline_system')
-				],
-				'comment_actions' => [
-					'can_moderate_comments'   => lang('can_moderate_comments'),
-					'can_edit_own_comments'   => lang('can_edit_own_comments'),
-					'can_delete_own_comments' => lang('can_delete_own_comments'),
-					'can_edit_all_comments'   => lang('can_edit_all_comments'),
-					'can_delete_all_comments' => lang('can_delete_all_comments')
-				]
-			],
-			'values' => []
-		];
-
-		foreach ($permissions['choices'] as $group => $choices)
-		{
-			$permissions['values'][$group] = $this->getPermissionValues($role, $choices);
-		}
+		$permissions = $this->getPermissions($role);
 
 		$include_members_in_choices = [
 			'include_in_authorlist' => lang('include_in_authorlist'),
@@ -794,110 +774,7 @@ class Roles extends AbstractRolesController {
 			})
 			->getDictionary('module_id', 'module_name');
 
-		$permissions = [
-			'choices' => [
-				'footer' => [
-					'can_access_footer_report_bug' => lang('report_bug'),
-					'can_access_footer_new_ticket' => lang('new_ticket'),
-					'can_access_footer_user_guide' => lang('user_guide'),
-				],
-				'channel' => [
-					'can_create_channels' => lang('create_channels'),
-					'can_edit_channels'   => lang('edit_channels'),
-					'can_delete_channels' => lang('delete_channels')
-				],
-				'channel_field' => [
-					'can_create_channel_fields' => lang('create_channel_fields'),
-					'can_edit_channel_fields'   => lang('edit_channel_fields'),
-					'can_delete_channel_fields' => lang('delete_channel_fields')
-				],
-				'channel_category' => [
-					'can_create_categories' => lang('create_categories'),
-					'can_edit_categories'   => lang('edit_categories'),
-					'can_delete_categories' => lang('delete_categories')
-				],
-				'channel_status' => [
-					'can_create_statuses' => lang('create_statuses'),
-					'can_edit_statuses'   => lang('edit_statuses'),
-					'can_delete_statuses' => lang('delete_statuses')
-				],
-				'file_upload_directories' => [
-					'can_create_upload_directories' => lang('create_upload_directories'),
-					'can_edit_upload_directories'   => lang('edit_upload_directories'),
-					'can_delete_upload_directories' => lang('delete_upload_directories'),
-				],
-				'files' => [
-					'can_upload_new_files' => lang('upload_new_files'),
-					'can_edit_files'       => lang('edit_files'),
-					'can_delete_files'     => lang('delete_files'),
-				],
-				'role_actions' => [
-					'can_create_roles' => lang('create_roles'),
-					'can_edit_roles'   => lang('edit_roles'),
-					'can_delete_roles' => lang('delete_roles'),
-				],
-				'member_actions' => [
-					'can_create_members'     => lang('create_members'),
-					'can_edit_members'       => lang('edit_members'),
-					'can_delete_members'     => lang('can_delete_members'),
-					'can_ban_users'          => lang('can_ban_users'),
-					'can_email_from_profile' => lang('can_email_from_profile'),
-					'can_edit_html_buttons'  => lang('can_edit_html_buttons')
-				],
-				'template_group' => [
-					'can_create_template_groups' => lang('create_template_groups'),
-					'can_edit_template_groups'   => lang('edit_template_groups'),
-					'can_delete_template_groups' => lang('delete_template_groups'),
-				],
-				'template_partials' => [
-					'can_create_template_partials' => lang('create_template_partials'),
-					'can_edit_template_partials'   => lang('edit_template_partials'),
-					'can_delete_template_partials' => lang('delete_template_partials'),
-				],
-				'template_variables' => [
-					'can_create_template_variables' => lang('create_template_variables'),
-					'can_edit_template_variables'   => lang('edit_template_variables'),
-					'can_delete_template_variables' => lang('delete_template_variables'),
-				],
-				'rte_toolsets' => [
-					'can_upload_new_toolsets' => lang('upload_new_toolsets'),
-					'can_edit_toolsets'       => lang('edit_toolsets'),
-					'can_delete_toolsets'     => lang('delete_toolsets')
-				],
-				'access_tools' => [
-					'can_access_comm' => [
-						'label' => lang('can_access_communicate'),
-						'instructions' => lang('utility'),
-						'children' => [
-							'can_email_roles' => lang('can_email_roles'),
-							'can_send_cached_email' => lang('can_send_cached_email'),
-						]
-					],
-					'can_access_translate' => [
-						'label' => lang('can_access_translate'),
-						'instructions' => lang('utility')
-					],
-					'can_access_import' => [
-						'label' => lang('can_access_import'),
-						'instructions' => lang('utility')
-					],
-					'can_access_sql_manager' => [
-						'label' => lang('can_access_sql'),
-						'instructions' => lang('utility')
-					],
-					'can_access_data' => [
-						'label' => lang('can_access_data'),
-						'instructions' => lang('utility')
-					]
-				],
-			],
-			'values' => []
-		];
-
-		foreach ($permissions['choices'] as $group => $choices)
-		{
-			$permissions['values'][$group] = $this->getPermissionValues($role, $choices);
-		}
+		$permissions = $this->getPermissions($role);
 
 		$sections = [
 			[
@@ -1454,6 +1331,130 @@ class Roles extends AbstractRolesController {
 		}
 
 		return $template_group_access;
+	}
+
+	private function getPermissions(Role $role = NULL)
+	{
+		$permissions = [
+			'choices' => [
+				'website_access' => [
+					'can_view_online_system'  => lang('can_view_online_system'),
+					'can_view_offline_system' => lang('can_view_offline_system')
+				],
+				'comment_actions' => [
+					'can_moderate_comments'   => lang('can_moderate_comments'),
+					'can_edit_own_comments'   => lang('can_edit_own_comments'),
+					'can_delete_own_comments' => lang('can_delete_own_comments'),
+					'can_edit_all_comments'   => lang('can_edit_all_comments'),
+					'can_delete_all_comments' => lang('can_delete_all_comments')
+				],
+				'footer' => [
+					'can_access_footer_report_bug' => lang('report_bug'),
+					'can_access_footer_new_ticket' => lang('new_ticket'),
+					'can_access_footer_user_guide' => lang('user_guide'),
+				],
+				'channel' => [
+					'can_create_channels' => lang('create_channels'),
+					'can_edit_channels'   => lang('edit_channels'),
+					'can_delete_channels' => lang('delete_channels')
+				],
+				'channel_field' => [
+					'can_create_channel_fields' => lang('create_channel_fields'),
+					'can_edit_channel_fields'   => lang('edit_channel_fields'),
+					'can_delete_channel_fields' => lang('delete_channel_fields')
+				],
+				'channel_category' => [
+					'can_create_categories' => lang('create_categories'),
+					'can_edit_categories'   => lang('edit_categories'),
+					'can_delete_categories' => lang('delete_categories')
+				],
+				'channel_status' => [
+					'can_create_statuses' => lang('create_statuses'),
+					'can_edit_statuses'   => lang('edit_statuses'),
+					'can_delete_statuses' => lang('delete_statuses')
+				],
+				'file_upload_directories' => [
+					'can_create_upload_directories' => lang('create_upload_directories'),
+					'can_edit_upload_directories'   => lang('edit_upload_directories'),
+					'can_delete_upload_directories' => lang('delete_upload_directories'),
+				],
+				'files' => [
+					'can_upload_new_files' => lang('upload_new_files'),
+					'can_edit_files'       => lang('edit_files'),
+					'can_delete_files'     => lang('delete_files'),
+				],
+				'role_actions' => [
+					'can_create_roles' => lang('create_roles'),
+					'can_edit_roles'   => lang('edit_roles'),
+					'can_delete_roles' => lang('delete_roles'),
+				],
+				'member_actions' => [
+					'can_create_members'     => lang('create_members'),
+					'can_edit_members'       => lang('edit_members'),
+					'can_delete_members'     => lang('can_delete_members'),
+					'can_ban_users'          => lang('can_ban_users'),
+					'can_email_from_profile' => lang('can_email_from_profile'),
+					'can_edit_html_buttons'  => lang('can_edit_html_buttons')
+				],
+				'template_group' => [
+					'can_create_template_groups' => lang('create_template_groups'),
+					'can_edit_template_groups'   => lang('edit_template_groups'),
+					'can_delete_template_groups' => lang('delete_template_groups'),
+				],
+				'template_partials' => [
+					'can_create_template_partials' => lang('create_template_partials'),
+					'can_edit_template_partials'   => lang('edit_template_partials'),
+					'can_delete_template_partials' => lang('delete_template_partials'),
+				],
+				'template_variables' => [
+					'can_create_template_variables' => lang('create_template_variables'),
+					'can_edit_template_variables'   => lang('edit_template_variables'),
+					'can_delete_template_variables' => lang('delete_template_variables'),
+				],
+				'rte_toolsets' => [
+					'can_upload_new_toolsets' => lang('upload_new_toolsets'),
+					'can_edit_toolsets'       => lang('edit_toolsets'),
+					'can_delete_toolsets'     => lang('delete_toolsets')
+				],
+				'access_tools' => [
+					'can_access_comm' => [
+						'label' => lang('can_access_communicate'),
+						'instructions' => lang('utility'),
+						'children' => [
+							'can_email_roles' => lang('can_email_roles'),
+							'can_send_cached_email' => lang('can_send_cached_email'),
+						]
+					],
+					'can_access_translate' => [
+						'label' => lang('can_access_translate'),
+						'instructions' => lang('utility')
+					],
+					'can_access_import' => [
+						'label' => lang('can_access_import'),
+						'instructions' => lang('utility')
+					],
+					'can_access_sql_manager' => [
+						'label' => lang('can_access_sql'),
+						'instructions' => lang('utility')
+					],
+					'can_access_data' => [
+						'label' => lang('can_access_data'),
+						'instructions' => lang('utility')
+					]
+				],
+			],
+			'values' => []
+		];
+
+		if ($role)
+		{
+			foreach ($permissions['choices'] as $group => $choices)
+			{
+				$permissions['values'][$group] = $this->getPermissionValues($role, $choices);
+			}
+		}
+
+		return $permissions;
 	}
 
 	private function getPermissionValues(Role $role, $choices)
