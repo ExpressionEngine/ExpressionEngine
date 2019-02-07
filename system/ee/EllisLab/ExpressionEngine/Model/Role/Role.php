@@ -117,8 +117,7 @@ class Role extends Model {
 	];
 
 	protected static $_validation_rules = [
-		'role_id' => 'required',
-		'name'    => 'required',
+		'name'    => 'required|unique',
 	];
 
 	// protected static $_events = [];
