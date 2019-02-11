@@ -108,7 +108,7 @@ function toggleSections(sections, show, key) {
 			}
 
 			if (show && group) {
-				toggleFields(field, states[group], key);
+				toggleFields(field, hidden[group], key);
 			} else {
 				toggleFields(field, show, key);
 			}
