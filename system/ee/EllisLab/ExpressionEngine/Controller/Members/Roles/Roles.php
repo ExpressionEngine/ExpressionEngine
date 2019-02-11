@@ -434,6 +434,7 @@ class Roles extends AbstractRolesController {
 		$role->description = ee('Request')->post('description');
 		$role->RoleGroups = ee('Model')->get('RoleGroup', ee('Request')->post('role_groups'))->all();
 		$role->AssignedModules = ee('Model')->get('Module', ee('Request')->post('addons_access'))->all();
+		$role->AssingedUploadDestinations = ee('Model')->get('UploadDestination', ee('Request')->post('upload_destination_access'))->all();
 
 		// Settings
 		$settings = ee('Model')->make('RoleSetting')->getValues();
@@ -899,6 +900,12 @@ class Roles extends AbstractRolesController {
 			})
 			->getDictionary('module_id', 'module_name');
 
+		$allowed_upload_destinations = ee('Model')->get('UploadDestination')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('module_id', 0)
+			->all()
+			->getDictionary('id', 'name');
+
 		$permissions = $this->getPermissions($role);
 
 		$sections = [
@@ -1066,6 +1073,19 @@ class Roles extends AbstractRolesController {
 								'type' => 'checkbox',
 								'choices' => $permissions['choices']['file_upload_directories'],
 								'value' => $permissions['values']['file_upload_directories'],
+							]
+						]
+					],
+					[
+						'title' => 'upload_destination_access',
+						'desc' => 'upload_destination_access_desc',
+						'caution' => TRUE,
+						'group' => 'can_access_files',
+						'fields' => [
+							'upload_destination_access' => [
+								'type' => 'checkbox',
+								'choices' => $allowed_upload_destinations,
+								'value' => $role->AssingedUploadDestinations->pluck('id')
 							]
 						]
 					],

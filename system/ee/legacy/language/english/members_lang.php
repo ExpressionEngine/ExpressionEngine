@@ -1074,6 +1074,10 @@ $lang = array(
 
 'can_manage_settings' => 'Manage settings & access',
 
+'upload_destination_access' => 'Allowed upload directory access',
+
+'upload_destination_access_desc' => 'Users can access all of the selected upload directories.',
+
 );
 
 // EOF
