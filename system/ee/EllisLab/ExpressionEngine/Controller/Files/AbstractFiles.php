@@ -194,7 +194,7 @@ abstract class AbstractFiles extends CP_Controller {
 		);
 	}
 
-	protected function buildTable($files, $limit, $offset)
+	protected function buildTable($files, $limit, $offset, $show_upload_directory = FALSE)
 	{
 		$table = ee('CP/Table', array(
 			'sort_col'   => 'date_added',
@@ -202,34 +202,47 @@ abstract class AbstractFiles extends CP_Controller {
 			'class'      => 'tbl-fixed'
 		));
 
-		$table->setColumns(
+		$columns = array(
+			'title_or_name' => array(
+				'encode' => FALSE,
+				'attrs' => array(
+					'width' => '40%'
+				),
+			),
+			'file_type',
+			'date_added',
+			'upload_directory',
+			'manage' => array(
+				'type'	=> Table::COL_TOOLBAR
+			),
 			array(
-				'title_or_name' => array(
-					'encode' => FALSE,
-					'attrs' => array(
-						'width' => '40%'
-					),
-				),
-				'file_type',
-				'date_added',
-				'manage' => array(
-					'type'	=> Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> Table::COL_CHECKBOX
-				)
+				'type'	=> Table::COL_CHECKBOX
 			)
 		);
+
+		$sort_map = array(
+			'title_or_name' => 'title',
+			'file_type' => 'mime_type',
+			'date_added' => 'upload_date',
+			'upload_directory' => 'UploadDestination.name'
+		);
+
+		if( ! $show_upload_directory)
+		{
+			unset($columns[2]);
+			unset($sort_map['upload_directory']);
+		}
+		else
+		{
+			$columns['title_or_name']['attrs']['width'] = '30%';
+		}
+
+		$table->setColumns($columns);
 
 		$table->setNoResultsText(sprintf(lang('no_found'), lang('files')));
 
 		$sort_col = $table->sort_col;
 
-		$sort_map = array(
-			'title_or_name' => 'title',
-			'file_type' => 'mime_type',
-			'date_added' => 'upload_date'
-		);
 
 		if ( ! array_key_exists($sort_col, $sort_map))
 		{
@@ -301,6 +314,7 @@ abstract class AbstractFiles extends CP_Controller {
 				$file_description.'<br><em class="faded">' . $file->file_name . '</em>',
 				$file->mime_type,
 				ee()->localize->human_time($file->upload_date),
+				$file->UploadDestination->name,
 				array('toolbar_items' => $toolbar),
 				array(
 					'name' => 'selection[]',
@@ -310,6 +324,11 @@ abstract class AbstractFiles extends CP_Controller {
 					)
 				)
 			);
+
+			if( ! $show_upload_directory)
+			{
+				unset($column[3]);
+			}
 
 			$attrs = array();
 
@@ -396,6 +415,10 @@ abstract class AbstractFiles extends CP_Controller {
 	{
 		$vars = array();
 		$search_terms = ee()->input->get_post('filter_by_keyword');
+		
+		$current_base_url = "" . $base_url;
+		$files_page_url = ee('CP/URL')->make('files');
+		$show_upload_directory = ($current_base_url == $files_page_url);
 
 		if ($search_terms)
 		{
@@ -418,8 +441,8 @@ abstract class AbstractFiles extends CP_Controller {
 		$offset = ($page - 1) * $perpage;
 
 		$base_url->addQueryStringVariables($filter_values);
-		$table = $this->buildTable($files, $perpage, $offset);
-
+		$table = $this->buildTable($files, $perpage, $offset, $show_upload_directory);
+		
 		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
 		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
 
