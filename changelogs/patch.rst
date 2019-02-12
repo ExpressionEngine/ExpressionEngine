@@ -21,6 +21,7 @@ Patch Release
 - Fixed a bug (`#55 <https://github.com/ExpressionEngine/ExpressionEngine/issues/55>`__) where fields may parse incorrectly if they shared similar names.
 - Fixed a bug (`#119 <https://github.com/ExpressionEngine/ExpressionEngine/issues/119>`__) where Simple Commerce subscription end date was not correctly formatted before output.
 - Fixed a bug (`#114 <https://github.com/ExpressionEngine/ExpressionEngine/issues/114>`__) where dates may be incorrectly localized.
+- Fixed a bug (`#124 <https://github.com/ExpressionEngine/ExpressionEngine/issues/124>`__) where new Channels could not be saved if there were a large number of authors.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
