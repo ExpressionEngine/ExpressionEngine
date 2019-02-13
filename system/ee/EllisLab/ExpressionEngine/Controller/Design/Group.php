@@ -64,8 +64,42 @@ class Group extends AbstractDesignController {
 		$roles = ee('Model')->get('Role', ee('Permission')->rolesThatCan('access_design'))
 			->filter('role_id', 'NOT IN', array(1, 2, 4))
 			->order('name', 'asc')
-			->all()
-			->getDictionary('role_id', 'name');
+			->all();
+
+		$choices = [];
+		$values = [];
+
+		foreach ($roles as $role)
+		{
+			$choices = ['role_id_' . $role->getId() =>
+				[
+					'label' => $role->name,
+					'children' => [
+						'can_create_templates_template_group_id_' . ':role_id_' . $role->getId() => lang('can_create_templates'),
+						'can_edit_templates_template_group_id_' . ':role_id_' . $role->getId()   => lang('can_edit_templates'),
+						'can_delete_templates_template_group_id_' . ':role_id_' . $role->getId() => lang('can_delete_templates'),
+						'can_manage_settings_template_group_id_' . ':role_id_' . $role->getId()  => lang('can_manage_settings'),
+					]
+				]
+			];
+		}
+
+		$perms = [
+			'can_create_templates_template_group_id_',
+			'can_edit_templates_template_group_id_',
+			'can_delete_templates_template_group_id_',
+			'can_manage_settings_template_group_id_',
+		];
+
+		foreach ($selected_roles as $role_id)
+		{
+			$values[] = 'role_id_' . $role_id;
+
+			foreach ($perms as $perm)
+			{
+				$values[] = $perm . ':role_id_' . $role_id;
+			}
+		}
 
 		if ( ! empty($_POST))
 		{
@@ -79,21 +113,64 @@ class Group extends AbstractDesignController {
 
 				if ($result->isValid())
 				{
+					$permissions = [];
+
 					// Only set member groups from post if they have permission to admin member groups and a value is set
 					if (ee()->input->post('roles') && (ee('Permission')->isSuperAdmin() OR ee('Permission')->can('admin_roles')))
 					{
-						$group->Roles = ee('Model')->get('Role', ee('Request')->post('roles'))->all();
+						$role_ids = [];
+
+						foreach (ee('Request')->post('roles') as $value)
+						{
+							if (empty($value))
+							{
+								continue;
+							}
+
+							if (strpos($value, 'role_id_') === 0)
+							{
+								$role_ids[] = str_replace('role_id_', '', $value);
+							}
+							else
+							{
+								list($permission, $role_id) = explode(':role_id_', $value);
+
+								$permissions[] = ee('Model')->make('Permission', [
+									'role_id'    => $role_id,
+									'site_id'    => ee()->config->item('site_id'),
+									'permission' => $permission
+								]);
+							}
+						}
+
+						$group->Roles = ee('Model')->get('Role', $role_ids)->all();
 					}
 					elseif ( ! ee('Permission')->isSuperAdmin() AND ! ee('Permission')->can('admin_roles'))
 					{
 						// No permission to admin, so their group is automatically added to the template group
-						$group->Roles = ee()->session->getMember()->getAllRoles()->pluck('role_id');
+						$role_id = ee()->session->getMember()->PrimaryRole->getId();
+						$group->Roles = ee('Model')->get('Role', $role_id)->all();
+
+						foreach ($perms as $perm)
+						{
+							$permissions[] = ee('Model')->make('Permission', [
+								'role_id'    => $role_id,
+								'site_id'    => ee()->config->item('site_id'),
+								'permission' => $perm
+							]);
+						}
 					}
 
 					// Does the current member have permission to access the template group they just created?
 					$redirect_name = (ee('Permission')->isSuperAdmin() OR ee('Permission')->hasAnyRole($roles)) ? TRUE : FALSE;
 
 					$group->save();
+
+					foreach ($permissions as $perm)
+					{
+						$perm->permission .= $group->getId();
+						$perm->save();
+					}
 
 					$duplicate = FALSE;
 
@@ -203,8 +280,11 @@ class Group extends AbstractDesignController {
 					'fields' => array(
 						'roles' => array(
 							'type' => 'checkbox',
-							'choices' => $roles,
-							'value' => $selected_roles,
+							'required' => TRUE,
+							'nested' => TRUE,
+							'auto_select_parents' => TRUE,
+							'choices' => $choices,
+							'value' => $values,
 							'no_results' => [
 								'text' => sprintf(lang('no_found'), lang('roles'))
 								]
