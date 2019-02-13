@@ -548,11 +548,14 @@ class Roles extends AbstractRolesController {
 		}
 		else
 		{
+			// Clear the slate and remove all the permissions this form has set
 			ee('Model')->get('Permission')
+				->filter('permission', 'IN', $this->getPermissionKeys())
 				->filter('site_id', ee()->config->item('site_id'))
 				->filter('role_id', $role->getId())
 				->delete();
 
+			// Add back in all the allowances
 			foreach ($allowed_perms as $perm)
 			{
 				ee('Model')->make('Permission', [
@@ -680,20 +683,14 @@ class Roles extends AbstractRolesController {
 					'title' => 'can_view_profiles',
 					'desc' => 'can_view_profiles_desc',
 					'fields' => [
-						'can_view_profiles' => [
-							'type' => 'yes_no',
-							'value' => $role->has('can_view_profiles')
-						]
+						'can_view_profiles' => $permissions['fields']['can_view_profiles']
 					]
 				],
 				[
 					'title' => 'can_delete_self',
 					'desc' => 'can_delete_self_desc',
 					'fields' => [
-						'can_delete_self' => [
-							'type' => 'yes_no',
-							'value' => $role->has('can_delete_self')
-						]
+						'can_delete_self' => $permissions['fields']['can_delete_self']
 					]
 				],
 				[
@@ -723,13 +720,7 @@ class Roles extends AbstractRolesController {
 					'title' => 'can_post_comments',
 					'desc' => 'can_post_comments_desc',
 					'fields' => [
-						'can_post_comments' => [
-							'type' => 'yes_no',
-							'value' => $role->has('can_post_comments'),
-							'group_toggle' => [
-								'y' => 'can_post_comments'
-							]
-						]
+						'can_post_comments' => $permissions['fields']['can_post_comments']
 					]
 				],
 				[
@@ -761,13 +752,7 @@ class Roles extends AbstractRolesController {
 					'title' => 'can_search',
 					'desc' => 'can_search_desc',
 					'fields' => [
-						'can_search' => [
-							'type' => 'yes_no',
-							'value' => $role->has('can_search'),
-							'group_toggle' => [
-								'y' => 'can_search'
-							]
-						]
+						'can_search' => $permissions['fields']['can_search']
 					]
 				],
 				[
@@ -787,13 +772,7 @@ class Roles extends AbstractRolesController {
 					'title' => 'can_send_private_messages',
 					'desc' => 'can_send_private_messages_desc',
 					'fields' => [
-						'can_send_private_messages' => [
-							'type' => 'yes_no',
-							'value' => $role->has('can_send_private_messages'),
-							'group_toggle' => [
-								'y' => 'can_access_pms'
-							]
-						]
+						'can_send_private_messages' => $permissions['fields']['can_send_private_messages']
 					]
 				],
 				[
@@ -823,10 +802,7 @@ class Roles extends AbstractRolesController {
 					'desc' => 'can_attach_in_private_messages_desc',
 					'group' => 'can_access_pms',
 					'fields' => [
-						'can_attach_in_private_messages' => [
-							'type' => 'yes_no',
-							'value' => $role->has('can_attach_in_private_messages'),
-						]
+						'can_attach_in_private_messages' => $permissions['fields']['can_attach_in_private_messages']
 					]
 				],
 				[
@@ -834,10 +810,7 @@ class Roles extends AbstractRolesController {
 					'desc' => 'can_send_bulletins_desc',
 					'group' => 'can_access_pms',
 					'fields' => [
-						'can_send_bulletins' => [
-							'type' => 'yes_no',
-							'value' => $role->has('can_send_bulletins'),
-						]
+						'can_send_bulletins' => $permissions['fields']['can_send_bulletins']
 					]
 				],
 			]
@@ -871,7 +844,7 @@ class Roles extends AbstractRolesController {
 			->all()
 			->getDictionary('channel_id', 'channel_title');
 
-		$channel_access = $this->getChannelAccess($role, $allowed_channels);
+		$channel_access = $this->getChannelAccess($allowed_channels, $role);
 		$template_group_access = $this->getTemplateGroupAccess($role);
 
 		if (count($allowed_channels))
@@ -915,13 +888,7 @@ class Roles extends AbstractRolesController {
 					'desc' => 'can_access_cp_desc',
 					'caution' => TRUE,
 					'fields' => [
-						'can_access_cp' => [
-							'type' => 'yes_no',
-							'value' => $role->has('can_access_cp'),
-							'group_toggle' => [
-								'y' => 'can_access_cp'
-							]
-						]
+						'can_access_cp' => $permissions['fields']['can_access_cp']
 					]
 				],
 				[
@@ -958,10 +925,7 @@ class Roles extends AbstractRolesController {
 					'desc'   => 'homepage_news_desc',
 					'group'  => 'can_access_cp',
 					'fields' => [
-						'can_view_homepage_news' => [
-							'type' => 'yes_no',
-							'value' => $role->has('can_view_homepage_news'),
-						]
+						'can_view_homepage_news' => $permissions['fields']['can_view_homepage_news']
 					]
 				],
 			],
@@ -973,13 +937,7 @@ class Roles extends AbstractRolesController {
 						'desc' => 'can_admin_channels_desc',
 						'caution' => TRUE,
 						'fields' => [
-							'can_admin_channels' => [
-								'type' => 'yes_no',
-								'value' => $role->has('can_admin_channels'),
-								'group_toggle' => [
-									'y' => 'can_admin_channels'
-								]
-							]
+							'can_admin_channels' => $permissions['fields']['can_admin_channels']
 						]
 					],
 					[
@@ -1055,13 +1013,7 @@ class Roles extends AbstractRolesController {
 						'title' => 'can_access_file_manager',
 						'desc' => 'file_manager_desc',
 						'fields' => [
-							'can_access_files' => [
-								'type' => 'yes_no',
-								'value' => $role->has('can_access_files'),
-								'group_toggle' => [
-									'y' => 'can_access_files'
-								]
-							]
+							'can_access_files' => $permissions['fields']['can_access_files']
 						]
 					],
 					[
@@ -1110,13 +1062,7 @@ class Roles extends AbstractRolesController {
 						'title' => 'can_access_members',
 						'desc' => 'can_access_members_desc',
 						'fields' => [
-							'can_access_members' => [
-								'type' => 'yes_no',
-								'value' => $role->has('can_access_members'),
-								'group_toggle' => [
-									'y' => 'can_access_members'
-								]
-							]
+							'can_access_members' => $permissions['fields']['can_access_members']
 						]
 					],
 					[
@@ -1125,10 +1071,7 @@ class Roles extends AbstractRolesController {
 						'caution' => TRUE,
 						'group' => 'can_access_members',
 						'fields' => [
-							'can_admin_roles' => [
-								'type' => 'yes_no',
-								'value' => $role->has('can_admin_roles'),
-							]
+							'can_admin_roles' => $permissions['fields']['can_admin_roles']
 						]
 					],
 					[
@@ -1167,13 +1110,7 @@ class Roles extends AbstractRolesController {
 						'title' => 'can_access_design',
 						'desc' => 'can_access_design_desc',
 						'fields' => [
-							'can_access_design' => [
-								'type' => 'yes_no',
-								'value' => $role->has('can_access_design'),
-								'group_toggle' => [
-									'y' => 'can_access_design'
-								]
-							]
+							'can_access_design' => $permissions['fields']['can_access_design']
 						]
 					],
 					[
@@ -1182,10 +1119,7 @@ class Roles extends AbstractRolesController {
 						'group' => 'can_access_design',
 						'caution' => TRUE,
 						'fields' => [
-							'can_admin_design' => [
-								'type' => 'yes_no',
-								'value' => $role->has('can_admin_design'),
-							]
+							'can_admin_design' => $permissions['fields']['can_admin_design']
 						]
 					],
 					[
@@ -1250,13 +1184,7 @@ class Roles extends AbstractRolesController {
 						'title' => 'can_access_addons',
 						'desc' => 'can_access_addons_desc',
 						'fields' => [
-							'can_access_addons' => [
-								'type' => 'yes_no',
-								'value' => $role->has('can_access_addons'),
-								'group_toggle' => [
-									'y' => 'can_access_addons'
-								]
-							]
+							'can_access_addons' => $permissions['fields']['can_access_addons']
 						]
 					],
 					[
@@ -1265,10 +1193,7 @@ class Roles extends AbstractRolesController {
 						'group' => 'can_access_addons',
 						'caution' => TRUE,
 						'fields' => [
-							'can_admin_addons' => [
-								'type' => 'yes_no',
-								'value' => $role->has('can_admin_addons'),
-							]
+							'can_admin_addons' => $permissions['fields']['can_admin_addons']
 						]
 					],
 					[
@@ -1308,13 +1233,7 @@ class Roles extends AbstractRolesController {
 						'title' => 'access_utilities',
 						'desc' => 'access_utilities_desc',
 						'fields' => [
-							'can_access_utilities' => [
-								'type' => 'yes_no',
-								'value' => $role->has('can_access_utilities'),
-								'group_toggle' => [
-									'y' => 'can_access_utilities'
-								]
-							]
+							'can_access_utilities' => $permissions['fields']['can_access_utilities']
 						]
 					],
 					[
@@ -1341,10 +1260,7 @@ class Roles extends AbstractRolesController {
 						'title' => 'can_access_logs',
 						'desc' => 'can_access_logs_desc',
 						'fields' => [
-							'can_access_logs' => [
-								'type' => 'yes_no',
-								'value' => $role->has('can_access_logs'),
-							]
+							'can_access_logs' => $permissions['fields']['can_access_logs']
 						]
 					]
 				]
@@ -1357,13 +1273,7 @@ class Roles extends AbstractRolesController {
 						'desc' => 'can_access_sys_prefs_desc',
 						'caution' => TRUE,
 						'fields' => [
-							'can_access_sys_prefs' => [
-								'type' => 'yes_no',
-								'value' => $role->has('can_access_sys_prefs'),
-								'group_toggle' => [
-									'y' => 'can_access_sys_prefs'
-								]
-							]
+							'can_access_sys_prefs' => $permissions['fields']['can_access_sys_prefs']
 						]
 					],
 					[
@@ -1372,10 +1282,7 @@ class Roles extends AbstractRolesController {
 						'group' => 'can_access_sys_prefs',
 						'caution' => TRUE,
 						'fields' => [
-							'can_access_security_settings' => [
-								'type' => 'yes_no',
-								'value' => $role->has('can_access_security_settings'),
-							]
+							'can_access_security_settings' => $permissions['fields']['can_access_security_settings']
 						]
 					],
 					[
@@ -1384,10 +1291,7 @@ class Roles extends AbstractRolesController {
 						'group' => 'can_access_sys_prefs',
 						'caution' => TRUE,
 						'fields' => [
-							'can_manage_consents' => [
-								'type' => 'yes_no',
-								'value' => $role->has('can_manage_consents'),
-							]
+							'can_manage_consents' => $permissions['fields']['can_manage_consents']
 						]
 					]
 				]
@@ -1405,7 +1309,7 @@ class Roles extends AbstractRolesController {
 		return $html;
 	}
 
-	private function getChannelAccess(Role $role, $channels)
+	private function getChannelAccess($channels, Role $role = NULL)
 	{
 		$channel_access = [
 			'choices' => [],
@@ -1426,20 +1330,23 @@ class Roles extends AbstractRolesController {
 			];
 		}
 
-		foreach ($role->AssignedChannels as $channel)
+		if ($role)
 		{
-			$channel_access['values'][] = 'channel_id_' . $channel->getId();
-		}
+			foreach ($role->AssignedChannels as $channel)
+			{
+				$channel_access['values'][] = 'channel_id_' . $channel->getId();
+			}
 
-		foreach ($channel_access['choices'] as $group => $choices)
-		{
-			$channel_access['values'] = array_merge($channel_access['values'], $this->getPermissionValues($role, $choices['children']));
+			foreach ($channel_access['choices'] as $group => $choices)
+			{
+				$channel_access['values'] = array_merge($channel_access['values'], $this->getPermissionValues($role, $choices['children']));
+			}
 		}
 
 		return $channel_access;
 	}
 
-	private function getTemplateGroupAccess(Role $role)
+	private function getTemplateGroupAccess(Role $role = NULL)
 	{
 		$template_groups = ee('Model')->get('TemplateGroup')
 			->fields('group_id', 'group_name')
@@ -1460,19 +1367,22 @@ class Roles extends AbstractRolesController {
 					'can_create_templates_template_group_id_' . $id => lang('can_create_templates'),
 					'can_edit_templates_template_group_id_' . $id   => lang('can_edit_templates'),
 					'can_delete_templates_template_group_id_' . $id => lang('can_delete_templates'),
-					'can_manage_settings_channel_id_' . $id         => lang('can_manage_settings'),
+					'can_manage_settings_template_group_id_' . $id  => lang('can_manage_settings'),
 				]
 			];
 		}
 
-		foreach ($role->AssignedTemplateGroups as $template_group)
+		if ($role)
 		{
-			$template_group_access['values'][] = 'template_group_' . $template_group->getId();
-		}
+			foreach ($role->AssignedTemplateGroups as $template_group)
+			{
+				$template_group_access['values'][] = 'template_group_' . $template_group->getId();
+			}
 
-		foreach ($template_group_access['choices'] as $group => $choices)
-		{
-			$template_group_access['values'] = array_merge($template_group_access['values'], $this->getPermissionValues($role, $choices['children']));
+			foreach ($template_group_access['choices'] as $group => $choices)
+			{
+				$template_group_access['values'] = array_merge($template_group_access['values'], $this->getPermissionValues($role, $choices['children']));
+			}
 		}
 
 		return $template_group_access;
@@ -1481,6 +1391,107 @@ class Roles extends AbstractRolesController {
 	private function getPermissions(Role $role = NULL)
 	{
 		$permissions = [
+			'fields'  => [
+				'can_admin_channels' => [
+					'type' => 'yes_no',
+					'group_toggle' => [
+						'y' => 'can_admin_channels'
+					]
+				],
+				'can_access_files' => [
+					'type' => 'yes_no',
+					'group_toggle' => [
+						'y' => 'can_access_files'
+					]
+				],
+				'can_access_members' => [
+					'type' => 'yes_no',
+					'group_toggle' => [
+						'y' => 'can_access_members'
+					]
+				],
+				'can_admin_roles' => [
+					'type' => 'yes_no',
+				],
+				'can_access_design' => [
+					'type' => 'yes_no',
+					'group_toggle' => [
+						'y' => 'can_access_design'
+					]
+				],
+				'can_admin_design' => [
+					'type' => 'yes_no',
+				],
+				'can_access_addons' => [
+					'type' => 'yes_no',
+					'group_toggle' => [
+						'y' => 'can_access_addons'
+					]
+				],
+				'can_admin_addons' => [
+					'type' => 'yes_no',
+				],
+				'can_access_utilities' => [
+					'type' => 'yes_no',
+					'group_toggle' => [
+						'y' => 'can_access_utilities'
+					]
+				],
+				'can_access_logs' => [
+					'type' => 'yes_no',
+				],
+				'can_access_sys_prefs' => [
+					'type' => 'yes_no',
+					'group_toggle' => [
+						'y' => 'can_access_sys_prefs'
+					]
+				],
+				'can_access_security_settings' => [
+					'type' => 'yes_no',
+				],
+				'can_manage_consents' => [
+					'type' => 'yes_no',
+				],
+				'can_view_profiles' => [
+					'type' => 'yes_no',
+				],
+				'can_delete_self' => [
+					'type' => 'yes_no',
+				],
+				'can_post_comments' => [
+					'type' => 'yes_no',
+					'group_toggle' => [
+						'y' => 'can_post_comments'
+					]
+				],
+				'can_search' => [
+					'type' => 'yes_no',
+					'group_toggle' => [
+						'y' => 'can_search'
+					]
+				],
+				'can_send_private_messages' => [
+					'type' => 'yes_no',
+					'group_toggle' => [
+						'y' => 'can_access_pms'
+					]
+				],
+				'can_attach_in_private_messages' => [
+					'type' => 'yes_no',
+				],
+				'can_send_bulletins' => [
+					'type' => 'yes_no',
+				],
+				'can_access_cp' => [
+					'type' => 'yes_no',
+					'group_toggle' => [
+						'y' => 'can_access_cp'
+					]
+				],
+				'can_view_homepage_news' => [
+					'type' => 'yes_no',
+				],
+			],
 			'choices' => [
 				'website_access' => [
 					'can_view_online_system'  => lang('can_view_online_system'),
@@ -1588,11 +1599,16 @@ class Roles extends AbstractRolesController {
 					]
 				],
 			],
-			'values' => []
+			'values'  => []
 		];
 
 		if ($role)
 		{
+			foreach ($permissions['fields'] as $field => $data)
+			{
+				$permissions['fields'][$field]['value'] = $role->has($field);
+			}
+
 			foreach ($permissions['choices'] as $group => $choices)
 			{
 				$permissions['values'][$group] = $this->getPermissionValues($role, $choices);
@@ -1600,6 +1616,38 @@ class Roles extends AbstractRolesController {
 		}
 
 		return $permissions;
+	}
+
+	private function getPermissionKeys()
+	{
+		$permissions = $this->getPermissions();
+
+		$all_perms = array_keys($permissions['fields']);
+
+		foreach ($permissions['choices'] as $key => $values)
+		{
+			$all_perms = array_merge($all_perms, array_keys($values));
+		}
+
+		$channels = ee('Model')->get('Channel')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all()
+			->getDictionary('channel_id', 'channel_title');
+		$channels = $this->getChannelAccess($channels);
+
+		foreach ($channels['choices'] as $key => $values)
+		{
+			$all_perms = array_merge($all_perms, array_keys($values['children']));
+		}
+
+		$templateGroups = $this->getTemplateGroupAccess();
+
+		foreach ($templateGroups['choices'] as $key => $values)
+		{
+			$all_perms = array_merge($all_perms, array_keys($values['children']));
+		}
+
+		return $all_perms;
 	}
 
 	private function getPermissionValues(Role $role, $choices)
