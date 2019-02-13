@@ -1130,8 +1130,8 @@ class Roles extends AbstractRolesController {
 						'fields' => [
 							'template_group_permissions' => [
 								'type' => 'checkbox',
-								'choices' => $permissions['choices']['template_group'],
-								'value' => $permissions['values']['template_group']
+								'choices' => $permissions['choices']['template_group_permissions'],
+								'value' => $permissions['values']['template_group_permissions']
 							]
 						]
 					],
@@ -1552,7 +1552,7 @@ class Roles extends AbstractRolesController {
 					'can_email_from_profile' => lang('can_email_from_profile'),
 					'can_edit_html_buttons'  => lang('can_edit_html_buttons')
 				],
-				'template_group' => [
+				'template_group_permissions' => [
 					'can_create_template_groups' => lang('create_template_groups'),
 					'can_edit_template_groups'   => lang('edit_template_groups'),
 					'can_delete_template_groups' => lang('delete_template_groups'),
