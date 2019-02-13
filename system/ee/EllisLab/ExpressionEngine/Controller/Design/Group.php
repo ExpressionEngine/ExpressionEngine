@@ -251,14 +251,49 @@ class Group extends AbstractDesignController {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$selected_roles = ($group->Roles) ? $group->Roles->pluck('role_id') : array();
-
 		// only roles with design manager access
 		$roles = ee('Model')->get('Role', ee('Permission')->rolesThatCan('access_design'))
 			->filter('role_id', 'NOT IN', array(1, 2, 4))
 			->order('name', 'asc')
-			->all()
-			->getDictionary('role_id', 'name');
+			->all();
+
+		$choices = [];
+		$values = [];
+
+		foreach ($roles as $role)
+		{
+			$choices = ['role_id_' . $role->getId() =>
+				[
+					'label' => $role->name,
+					'children' => [
+						'can_create_templates_template_group_id_' . $group->getId() . ':role_id_' . $role->getId() => lang('can_create_templates'),
+						'can_edit_templates_template_group_id_' . $group->getId() . ':role_id_' . $role->getId()   => lang('can_edit_templates'),
+						'can_delete_templates_template_group_id_' . $group->getId() . ':role_id_' . $role->getId() => lang('can_delete_templates'),
+						'can_manage_settings_template_group_id_' . $group->getId() . ':role_id_' . $role->getId()  => lang('can_manage_settings'),
+					]
+				]
+			];
+		}
+
+		$perms = [
+			'can_create_templates_template_group_id_' . $group->getId(),
+			'can_edit_templates_template_group_id_' . $group->getId(),
+			'can_delete_templates_template_group_id_' . $group->getId(),
+			'can_manage_settings_template_group_id_' . $group->getId(),
+		];
+
+		foreach ($group->Roles as $role)
+		{
+			$values[] = 'role_id_' . $role->getId();
+
+			foreach ($perms as $perm)
+			{
+				if ($role->has($perm))
+				{
+					$values[] = $perm . ':role_id_' . $role->getId();
+				}
+			}
+		}
 
 		if ( ! empty($_POST))
 		{
@@ -273,15 +308,46 @@ class Group extends AbstractDesignController {
 					// template member group settings
 					if (ee('Permission')->isSuperAdmin() OR ee('Permission')->can('admin_roles'))
 					{
+						ee('Model')->get('Permission')
+							->filter('permission', 'IN', $perms)
+							->filter('site_id', ee()->config->item('site_id'))
+							->delete();
+
 						// If post is null and field should be present, unassign members
 						// If field isn't present, we don't change whatever it's currently set to
-						if ( ! ee()->input->post('roles'))
+						if ( ! ee('Request')->post('roles'))
 						{
-							$group->Roles = array();
+							$group->Roles = [];
 						}
 						else
 						{
-							$group->Roles = ee('Model')->get('Role', ee('Request')->post('roles'))->all();
+							$role_ids = [];
+							$permisisons = [];
+
+							foreach (ee('Request')->post('roles') as $value)
+							{
+								if (empty($value))
+								{
+									continue;
+								}
+
+								if (strpos($value, 'role_id_') === 0)
+								{
+									$role_ids[] = str_replace('role_id_', '', $value);
+								}
+								else
+								{
+									list($permission, $role_id) = explode(':role_id_', $value);
+
+									ee('Model')->make('Permission', [
+										'role_id'    => $role_id,
+										'site_id'    => ee()->config->item('site_id'),
+										'permission' => $permission
+									])->save();
+								}
+							}
+
+							$group->Roles = ee('Model')->get('Role', $role_ids)->all();
 						}
 					}
 
@@ -341,8 +407,10 @@ class Group extends AbstractDesignController {
 						'roles' => array(
 							'type' => 'checkbox',
 							'required' => TRUE,
-							'choices' => $roles,
-							'value' => $selected_roles,
+							'nested' => TRUE,
+							'auto_select_parents' => TRUE,
+							'choices' => $choices,
+							'value' => $values,
 							'no_results' => [
 								'text' => sprintf(lang('no_found'), lang('roles'))
 								]

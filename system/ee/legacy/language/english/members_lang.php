@@ -1066,14 +1066,6 @@ $lang = array(
 
 'template_group_access_desc' => 'Users can perform each selected action on the selected template group.',
 
-'can_create_templates' => 'Create templates',
-
-'can_edit_templates' => 'Edit templates',
-
-'can_delete_templates' => 'Delete templates',
-
-'can_manage_settings' => 'Manage settings & access',
-
 'upload_destination_access' => 'Allowed upload directory access',
 
 'upload_destination_access_desc' => 'Users can access all of the selected upload directories.',

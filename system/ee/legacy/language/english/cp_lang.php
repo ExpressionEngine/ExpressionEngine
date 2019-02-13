@@ -663,6 +663,14 @@ $lang = array(
 
 'reindex_explained_desc' => 'The search index can become stale if you have recently changed whether or not certain field types are searchable.<br>Please see the <a href="' . DOC_URL .'/cp/utilities/reindex.html">user guide</a> for more details.',
 
+'can_create_templates' => 'Create templates',
+
+'can_edit_templates' => 'Edit templates',
+
+'can_delete_templates' => 'Delete templates',
+
+'can_manage_settings' => 'Manage settings & access',
+
 );
 
 // EOF
