@@ -633,7 +633,7 @@ class Members extends CP_Controller {
 		{
 			$can_edit_member = ee('Permission')->isSuperAdmin() || $member->isSuperAdmin();
 
-			$edit_link = ee('CP/URL')->make('members/profile/' . $member->member_id);
+			$edit_link = ee('CP/URL')->make('members/profile/', ['id' => $member->member_id]);
 			$toolbar = array(
 				'edit' => array(
 					'href' => $edit_link,
@@ -1234,7 +1234,7 @@ class Members extends CP_Controller {
 				else
 				{
 					ee()->session->set_flashdata('highlight_id', $member->getId());
-					ee()->functions->redirect(ee('CP/URL')->make('members/profile/settings/' . $member->getId()));
+					ee()->functions->redirect(ee('CP/URL')->make('members/profile/settings/', ['id' => $member->getId()]));
 				}
 			}
 			else
