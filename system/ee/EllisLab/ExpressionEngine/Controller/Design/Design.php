@@ -191,6 +191,8 @@ class Design extends AbstractDesignController {
 			return FALSE;
 		}
 
+		$roles = ee('Model')->get('Role')->all();
+
 		ee()->load->library('api');
 		ee()->legacy_api->instantiate('template_structure');
 
@@ -326,7 +328,9 @@ class Design extends AbstractDesignController {
 					 );
 
 					// do it!
-					$template_model = ee('Model')->make('Template', $data)->save();
+					$template_model = ee('Model')->make('Template', $data);
+					$template_model->Roles = $roles;
+					$template_model->save();
 					$this->saveNewTemplateRevision($template_model);
 
 					// add to existing array so we don't try to create this template again
@@ -346,7 +350,9 @@ class Design extends AbstractDesignController {
 						'site_id'				=> ee()->config->item('site_id')
 					 );
 
-					$template_model = ee('Model')->make('Template', $data)->save();
+ 					$template_model = ee('Model')->make('Template', $data);
+ 					$template_model->Roles = $roles;
+ 					$template_model->save();
 					$this->saveNewTemplateRevision($template_model);
 				}
 

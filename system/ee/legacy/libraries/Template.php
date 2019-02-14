@@ -2960,7 +2960,11 @@ class EE_Template {
 			'site_id'				=> ee()->config->item('site_id')
 		 );
 
-		$template_id = ee()->template_model->create_template($data);
+		$template_model = ee('Model')->make('Template', $data);
+		$template_model->Roles = ee('Model')->get('Role')->all();
+		$template_model->save();
+
+		$template_id = $template_model->getId();
 
 		// Clear db cache or it will create a new template record each page load!
 		ee()->functions->clear_caching('db');

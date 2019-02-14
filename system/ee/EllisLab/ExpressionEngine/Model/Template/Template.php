@@ -86,6 +86,7 @@ class Template extends FileSyncedModel {
 	);
 
 	protected static $_events = array(
+		'beforeInsert',
 		'afterSave',
 	);
 
@@ -246,6 +247,14 @@ class Template extends FileSyncedModel {
 		}
 
 		return TRUE;
+	}
+
+	public function onBeforeInsert()
+	{
+		if (is_null($this->Roles))
+		{
+			$this->Roles = $this->getModelFacade()->get('Role')->all();
+		}
 	}
 
 	public function onAfterSave()
