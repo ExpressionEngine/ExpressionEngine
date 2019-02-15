@@ -71,15 +71,13 @@ class Group extends AbstractDesignController {
 
 		foreach ($roles as $role)
 		{
-			$choices = ['role_id_' . $role->getId() =>
-				[
-					'label' => $role->name,
-					'children' => [
-						'can_create_templates_template_group_id_' . ':role_id_' . $role->getId() => lang('can_create_templates'),
-						'can_edit_templates_template_group_id_' . ':role_id_' . $role->getId()   => lang('can_edit_templates'),
-						'can_delete_templates_template_group_id_' . ':role_id_' . $role->getId() => lang('can_delete_templates'),
-						'can_manage_settings_template_group_id_' . ':role_id_' . $role->getId()  => lang('can_manage_settings'),
-					]
+			$choices['role_id_' . $role->getId()] = [
+				'label' => $role->name,
+				'children' => [
+					'can_create_templates_template_group_id_' . ':role_id_' . $role->getId() => lang('can_create_templates'),
+					'can_edit_templates_template_group_id_' . ':role_id_' . $role->getId()   => lang('can_edit_templates'),
+					'can_delete_templates_template_group_id_' . ':role_id_' . $role->getId() => lang('can_delete_templates'),
+					'can_manage_settings_template_group_id_' . ':role_id_' . $role->getId()  => lang('can_manage_settings'),
 				]
 			];
 		}
@@ -342,15 +340,13 @@ class Group extends AbstractDesignController {
 
 		foreach ($roles as $role)
 		{
-			$choices = ['role_id_' . $role->getId() =>
-				[
-					'label' => $role->name,
-					'children' => [
-						'can_create_templates_template_group_id_' . $group->getId() . ':role_id_' . $role->getId() => lang('can_create_templates'),
-						'can_edit_templates_template_group_id_' . $group->getId() . ':role_id_' . $role->getId()   => lang('can_edit_templates'),
-						'can_delete_templates_template_group_id_' . $group->getId() . ':role_id_' . $role->getId() => lang('can_delete_templates'),
-						'can_manage_settings_template_group_id_' . $group->getId() . ':role_id_' . $role->getId()  => lang('can_manage_settings'),
-					]
+			$choices['role_id_' . $role->getId()] = [
+				'label' => $role->name,
+				'children' => [
+					'can_create_templates_template_group_id_' . $group->getId() . ':role_id_' . $role->getId() => lang('can_create_templates'),
+					'can_edit_templates_template_group_id_' . $group->getId() . ':role_id_' . $role->getId()   => lang('can_edit_templates'),
+					'can_delete_templates_template_group_id_' . $group->getId() . ':role_id_' . $role->getId() => lang('can_delete_templates'),
+					'can_manage_settings_template_group_id_' . $group->getId() . ':role_id_' . $role->getId()  => lang('can_manage_settings'),
 				]
 			];
 		}
