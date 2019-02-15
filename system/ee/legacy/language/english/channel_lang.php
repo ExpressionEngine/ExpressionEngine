@@ -600,6 +600,10 @@ $lang = array(
 
 'statuses_removed_desc' => '%d statuses were removed.',
 
+'channel_roles' => 'Allowed Roles',
+
+'channel_roles_desc' => 'Users in these roles can perform each selected action in this channel.',
+
 );
 
 // EOF
