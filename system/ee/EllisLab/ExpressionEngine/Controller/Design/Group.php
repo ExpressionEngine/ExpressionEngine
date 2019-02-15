@@ -275,18 +275,18 @@ class Group extends AbstractDesignController {
 						)
 					),
 					array(
-					'title' => 'template_roles',
-					'desc' => 'template_roles_desc',
-					'fields' => array(
-						'roles' => array(
-							'type' => 'checkbox',
-							'required' => TRUE,
-							'nested' => TRUE,
-							'auto_select_parents' => TRUE,
-							'choices' => $choices,
-							'value' => $values,
-							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('roles'))
+						'title' => 'template_roles',
+						'desc' => 'template_roles_desc',
+						'fields' => array(
+							'roles' => array(
+								'type' => 'checkbox',
+								'required' => TRUE,
+								'nested' => TRUE,
+								'auto_select_parents' => TRUE,
+								'choices' => $choices,
+								'value' => $values,
+								'no_results' => [
+									'text' => sprintf(lang('no_found'), lang('roles'))
 								]
 							)
 						)
