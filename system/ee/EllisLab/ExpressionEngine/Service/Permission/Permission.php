@@ -130,8 +130,7 @@ class Permission {
 	 */
 	public function hasAll()
 	{
-
-		$which = func_get_args();
+		$which = $this->prepareArguments(func_get_args());
 
 		if ( ! count($which))
 		{
@@ -165,7 +164,7 @@ class Permission {
 	 */
 	public function hasAny()
 	{
-		$which = func_get_args();
+		$which = $this->prepareArguments(func_get_args());
 
 		if ( ! count($which))
 		{
@@ -187,6 +186,25 @@ class Permission {
 		}
 
 		return FALSE;
+	}
+
+	protected function prepareArguments($which)
+	{
+		$args = [];
+
+		foreach ($which as $w)
+		{
+			if (is_array($w))
+			{
+				$args += $w;
+			}
+			else
+			{
+				$args[] = $w;
+			}
+		}
+
+		return $args;
 	}
 
 	/**
