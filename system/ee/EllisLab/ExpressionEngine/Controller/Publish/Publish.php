@@ -28,18 +28,14 @@ class Publish extends AbstractPublishController {
 			->all()
 			->pluck('channel_id');
 
-		$authorized = FALSE;
+		$perms = [];
 
 		foreach ($channel_ids as $channel_id)
 		{
-			if (ee('Permission')->can('create_entries_channel_id_' . $channel_id))
-			{
-				$authorized = TRUE;
-				break;
-			}
+			$perms[] = 'can_create_entries_channel_id_' . $channel_id;
 		}
 
-		if ( ! $authorized)
+		if ( ! ee('Permission')->hasAny($perms))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
