@@ -30,6 +30,7 @@ abstract class AbstractDesign extends CP_Controller {
 	protected $perpage = 25;
 	protected $page = 1;
 	protected $offset = 0;
+	protected $assigned_template_groups = [];
 
 	/**
 	 * Constructor
@@ -47,6 +48,8 @@ abstract class AbstractDesign extends CP_Controller {
 		}
 
 		ee()->lang->loadfile('design');
+
+		$this->assigned_template_groups = array_keys(ee()->session->userdata('assigned_template_groups'));
 	}
 
 	/**
@@ -101,10 +104,9 @@ abstract class AbstractDesign extends CP_Controller {
 
 		if ( ! ee('Permission')->isSuperAdmin())
 		{
-			$assigned_groups =  array_keys(ee()->session->userdata['assigned_template_groups']);
-			$template_groups->filter('group_id', 'IN', $assigned_groups);
+			$template_groups->filter('group_id', 'IN', $this->assigned_template_groups);
 
-			if (empty($assigned_groups))
+			if (empty($this->assigned_template_groups))
 			{
 				$template_groups->markAsFutile();
 			}
@@ -275,41 +277,6 @@ abstract class AbstractDesign extends CP_Controller {
 		}
 
 		ee()->view->header = $header;
-	}
-
-	/**
-	 * Determines if the logged in user has edit privileges for a given template
-	 * group. We need either a group's unique id or a template's unique id to
-	 * determine access.
-	 *
-	 * @param  int  $group_id    The id of the template group in question (optional)
-	 * @param  int  $template_id The id of the template in question (optional)
-	 * @return bool TRUE if the user has edit privileges, FALSE if not
-	 */
-	protected function hasEditTemplatePrivileges($group_id = NULL, $template_id = NULL)
-	{
-		// If the user is a Super Admin, return true
-		if (ee('Permission')->isSuperAdmin())
-		{
-			return TRUE;
-		}
-
-		if ( ! $group_id)
-		{
-			if ( ! $template_id)
-			{
-				return FALSE;
-			}
-			else
-			{
-				$group_id = ee('Model')->get('Template', $template_id)
-					->fields('group_id')
-					->first()
-					->group_id;
-			}
-		}
-
-		return array_key_exists($group_id, ee()->session->userdata['assigned_template_groups']);
 	}
 
 	protected function loadCodeMirrorAssets($selector = 'template_data')
@@ -516,7 +483,7 @@ abstract class AbstractDesign extends CP_Controller {
 				$template_name = $group->group_name . '/' . $template_name;
 			}
 
-			if (ee('Permission')->can('edit_templates'))
+			if (ee('Permission')->can('edit_templates_template_group_id_' . $group->getId()))
 			{
 				$template_name = '<a href="' . $edit_url->compile() . '">' . $template_name . '</a>';
 			}
@@ -568,9 +535,13 @@ abstract class AbstractDesign extends CP_Controller {
 				)
 			);
 
-			if ( ! ee('Permission')->can('edit_templates'))
+			if ( ! ee('Permission')->can('edit_templates_template_group_id_' . $group->getId()))
 			{
 				unset($toolbar['edit']);
+			}
+
+			if ( ! ee('Permission')->can('manage_settings_template_group_id_' . $group->getId()))
+			{
 				unset($toolbar['settings']);
 			}
 
@@ -661,7 +632,19 @@ abstract class AbstractDesign extends CP_Controller {
 
 	protected function removeTemplates($template_ids)
 	{
-		if ( ! ee('Permission')->can('delete_templates'))
+		$group_ids = [];
+		$authorized = FALSE;
+
+		foreach ($this->assigned_template_groups as $group_id)
+		{
+			if (ee('Permission')->can('can_delete_templates_template_group_id_' . $group_id))
+			{
+				$authorized = TRUE;
+				$group_ids[] = $group_id;
+			}
+		}
+
+		if ( ! $authorized)
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -674,7 +657,14 @@ abstract class AbstractDesign extends CP_Controller {
 		$template_names = array();
 		$templates = ee('Model')->get('Template', $template_ids)
 			->filter('site_id', ee()->config->item('site_id'))
-			->all();
+			->filter('group_id', 'IN', $group_ids);
+
+		if (empty($group_ids))
+		{
+			$templates->markAsFutile();
+		}
+
+		$templates = $templates->all();
 
 		foreach ($templates as $template)
 		{

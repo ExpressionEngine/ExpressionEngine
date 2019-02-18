@@ -324,7 +324,7 @@ class Group extends AbstractDesignController {
 			show_error(sprintf(lang('error_no_template_group'), $group_name));
 		}
 
-		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
+		if ( ! in_array($group->group_id, $this->assigned_template_groups))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -527,7 +527,7 @@ class Group extends AbstractDesignController {
 		}
 		else
 		{
-			if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
+			if ( ! in_array($group->group_id, $this->assigned_template_groups))
 			{
 				show_error(lang('unauthorized_access'), 403);
 			}

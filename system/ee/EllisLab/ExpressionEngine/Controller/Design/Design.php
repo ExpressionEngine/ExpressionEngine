@@ -106,7 +106,7 @@ class Design extends AbstractDesignController {
 
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
-			if ($this->hasEditTemplatePrivileges($group->group_id))
+			if (ee('Permission')->can('delete_templates_template_group_id_' . $group->getId()))
 			{
 				$this->removeTemplates(ee()->input->post('selection'));
 				ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $group_name, ee()->cp->get_url_state()));
@@ -130,8 +130,8 @@ class Design extends AbstractDesignController {
 
 		$vars = $this->buildTableFromTemplateQueryBuilder($templates);
 
-		$vars['show_new_template_button'] = ee('Permission')->can('create_new_templates');
-		$vars['show_bulk_delete'] = ee('Permission')->can('delete_templates');
+		$vars['show_new_template_button'] = ee('Permission')->can('can_create_templates_template_group_id_' . $group->getId());
+		$vars['show_bulk_delete'] = ee('Permission')->can('delete_templates_template_group_id_' . $group->getId());
 		$vars['group_id'] = $group->group_name;
 
 		ee()->javascript->set_global('template_settings_url', ee('CP/URL')->make('design/template/settings/###')->compile());

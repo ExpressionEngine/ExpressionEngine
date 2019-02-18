@@ -36,11 +36,6 @@ class Template extends AbstractDesignController {
 	{
 		$errors = NULL;
 
-		if ( ! ee('Permission')->can('create_new_templates'))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
 		$group = ee('Model')->get('TemplateGroup')
 			->filter('group_name', $group_name)
 			->filter('site_id', ee()->config->item('site_id'))
@@ -51,7 +46,8 @@ class Template extends AbstractDesignController {
 			show_error(sprintf(lang('error_no_template_group'), $group_name));
 		}
 
-		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
+		if ( ! in_array($group->group_id, $this->assigned_template_groups) ||
+			 ! ee('Permission')->can('create_templates_template_group_id_' . $group->getId()))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -195,11 +191,6 @@ class Template extends AbstractDesignController {
 	{
 		$errors = NULL;
 
-		if ( ! ee('Permission')->can('edit_templates'))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
 		$template = ee('Model')->get('Template', $template_id)
 			->with('TemplateGroup')
 			->filter('site_id', ee()->config->item('site_id'))
@@ -222,7 +213,8 @@ class Template extends AbstractDesignController {
 
 		$group = $template->getTemplateGroup();
 
-		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
+		if ( ! in_array($group->group_id, $this->assigned_template_groups) ||
+			 ! ee('Permission')->can('edit_templates_template_group_id_' . $group->getId()))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -280,8 +272,6 @@ class Template extends AbstractDesignController {
 			'tabs' => array(
 				'edit' => $this->renderEditPartial($template, $errors),
 				'notes' => $this->renderNotesPartial($template, $errors),
-				'settings' => $this->renderSettingsPartial($template, $errors),
-				'access' => $this->renderAccessPartial($template, $errors),
 			),
 			'buttons' => array(
 				array(
@@ -301,6 +291,12 @@ class Template extends AbstractDesignController {
 			),
 			'sections' => array(),
 		);
+
+		if (ee('Permission')->can('manage_settings_template_group_id_' . $group->getId()))
+		{
+			$vars['tabs']['settings'] = $this->renderSettingsPartial($template, $errors);
+			$vars['tabs']['access'] = $this->renderAccessPartial($template, $errors);
+		}
 
 		if (bool_config_item('save_tmpl_revisions'))
 		{
@@ -423,11 +419,6 @@ class Template extends AbstractDesignController {
 	{
 		$errors = NULL;
 
-		if ( ! ee('Permission')->can('edit_templates'))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
 		$template = ee('Model')->get('Template', $template_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -439,7 +430,8 @@ class Template extends AbstractDesignController {
 
 		$group = $template->getTemplateGroup();
 
-		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
+		if ( ! in_array($group->group_id, $this->assigned_template_groups) ||
+			 ! ee('Permission')->can('manage_settings_template_group_id_' . $group->getId()))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
