@@ -23,14 +23,9 @@ class Publish extends AbstractPublishController {
 	{
 		parent::__construct();
 
-		$channel_ids = ee('Model')->get('Channel')
-			->fields('channel_id')
-			->all()
-			->pluck('channel_id');
-
 		$perms = [];
 
-		foreach ($channel_ids as $channel_id)
+		foreach ($this->assigned_channel_ids as $channel_id)
 		{
 			$perms[] = 'can_create_entries_channel_id_' . $channel_id;
 		}
