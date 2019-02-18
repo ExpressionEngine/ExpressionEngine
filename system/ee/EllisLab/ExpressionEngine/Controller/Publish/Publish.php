@@ -23,7 +23,23 @@ class Publish extends AbstractPublishController {
 	{
 		parent::__construct();
 
-		if ( ! ee('Permission')->can('create_entries'))
+		$channel_ids = ee('Model')->get('Channel')
+			->fields('channel_id')
+			->all()
+			->pluck('channel_id');
+
+		$authorized = FALSE;
+
+		foreach ($channel_ids as $channel_id)
+		{
+			if (ee('Permission')->can('create_entries_channel_id_' . $channel_id))
+			{
+				$authorized = TRUE;
+				break;
+			}
+		}
+
+		if ( ! $authorized)
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -152,7 +168,7 @@ class Publish extends AbstractPublishController {
 			show_404();
 		}
 
-		if ( ! ee('Permission')->can('create_entries') OR
+		if ( ! ee('Permission')->can('create_entries_channel_id_' . $channel_id) OR
 			 ! in_array($channel_id, $this->assigned_channel_ids))
 		{
 			show_error(lang('unauthorized_access'), 403);

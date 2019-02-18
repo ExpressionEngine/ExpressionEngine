@@ -157,29 +157,35 @@ class EE_Menu {
 			{
 				$filtered_by_channel = ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $channel->channel_id));
 
-				// Edit link
-				$menu['edit'][$channel->channel_title] = $filtered_by_channel;
-
-				// Only add Create link if channel has room for more entries
-				if (empty($channel->max_entries) OR
-					($channel->max_entries != 0 && $channel->total_records < $channel->max_entries))
+				if (ee('Permission')->can('create_entries_channel_id_' . $channel->getId()))
 				{
-					// Create link
-					$menu['create'][$channel->channel_title] = ee('CP/URL')->make('publish/create/' . $channel->channel_id);
+					// Only add Create link if channel has room for more entries
+					if (empty($channel->max_entries) OR
+						($channel->max_entries != 0 && $channel->total_records < $channel->max_entries))
+					{
+						// Create link
+						$menu['create'][$channel->channel_title] = ee('CP/URL')->make('publish/create/' . $channel->channel_id);
+					}
 				}
 
-				// If there's a limit of 1, just send them to the edit screen for that entry
-				if ( ! empty($channel->max_entries) &&
-					$channel->total_records == 1 && $channel->max_entries == 1)
+				if (ee('Permission')->hasAny('can_edit_other_entries_channel_id_' . $channel->getId(), 'can_edit_self_entries_channel_id_' . $channel->getId()))
 				{
-					$entry = ee('Model')->get('ChannelEntry')
-						->filter('channel_id', $channel->channel_id)
-						->first();
+					// Edit link
+					$menu['edit'][$channel->channel_title] = $filtered_by_channel;
 
-					// Just in case $channel->total_records is inaccurate
-					if ($entry)
+					// If there's a limit of 1, just send them to the edit screen for that entry
+					if ( ! empty($channel->max_entries) &&
+						$channel->total_records == 1 && $channel->max_entries == 1)
 					{
-						$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
+						$entry = ee('Model')->get('ChannelEntry')
+							->filter('channel_id', $channel->channel_id)
+							->first();
+
+						// Just in case $channel->total_records is inaccurate
+						if ($entry)
+						{
+							$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
+						}
 					}
 				}
 			}

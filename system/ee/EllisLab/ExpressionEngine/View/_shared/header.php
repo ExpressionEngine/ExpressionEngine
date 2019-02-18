@@ -71,7 +71,7 @@
 		<div class="nav-main-wrap">
 			<nav class="nav-main">
 				<div class="nav-main-author">
-					<?php if (ee('Permission')->can('create_entries') && (count($cp_main_menu['channels']['create']) || ee('Permission')->can('create_channels'))): ?>
+					<?php if (count($cp_main_menu['channels']['create']) || ee('Permission')->can('create_channels')): ?>
 					<div class="nav-create">
 						<a class="nav-has-sub" href=""><?=lang('menu_create')?></a>
 						<div class="nav-sub-menu">
@@ -92,7 +92,7 @@
 						</div>
 					</div>
 					<?php endif; ?>
-					<?php if (ee('Permission')->hasAny('can_edit_other_entries', 'can_edit_self_entries')): ?>
+					<?php if (count($cp_main_menu['channels']['edit'])): ?>
 					<div class="nav-edit">
 					<?php if (count($cp_main_menu['channels']['edit']) == 1): ?>
 						<a href="<?=current($cp_main_menu['channels']['edit'])?>"><?=lang('menu_edit')?></a>
