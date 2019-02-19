@@ -866,6 +866,64 @@ class Members extends CP_Controller {
 		return ee('View/Helpers')->normalizedChoices($heirs);
 	}
 
+	/**
+	 * Member Anonymize
+	 */
+	public function anonymize()
+	{
+		$member_id = ee()->input->post('selection', TRUE);
+		$member = ee('Model')->get('Member')
+			->filter('member_id', $member_id)
+			->first();
+
+		if ( ! ee('Permission')->can('delete_members') ||
+			! $member)
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+
+		$profile_url = ee('CP/URL')->make('members/profile/settings', ['id' => $member_id]);
+
+		if ( ! ee('Session')->isWithinAuthTimeout())
+		{
+			$validator = ee('Validation')->make();
+			$validator->setRules(array(
+				'verify_password'  => 'required|authenticated'
+			));
+			$password_confirm = $validator->validate($_POST);
+
+			if ($password_confirm->failed())
+			{
+				ee('CP/Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('member_anonymize_problem'))
+					->addToBody(lang('invalid_password'))
+					->defer();
+
+				return ee()->functions->redirect($profile_url);
+			}
+
+			ee('Session')->resetAuthTimeout();
+		}
+
+		if ($member_id == ee()->session->userdata('member_id'))
+		{
+			show_error(lang('can_not_delete_self'));
+		}
+
+		$this->_super_admin_delete_check($member_id);
+
+		$member->anonymize();
+
+		ee('CP/Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang('member_anonymize_success'))
+			->addToBody(lang('member_anonymize_success_desc'))
+			->defer();
+
+		ee()->functions->redirect($profile_url);
+	}
+
 	public function delete()
 	{
 		$member_ids = ee('Request')->post('selection', TRUE);

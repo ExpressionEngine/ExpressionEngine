@@ -20,6 +20,8 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  */
 class Profile extends CP_Controller {
 
+	protected $query_string;
+	protected $member;
 	private $base_url = 'members/profile/settings';
 
 	/**
@@ -57,7 +59,7 @@ class Profile extends CP_Controller {
 			show_404();
 		}
 
-		if ($this->member->group_id == 1 && ee()->session->userdata('group_id') != 1)
+		if ($this->member->isSuperAdmin() && ! ee('Permission')->isSuperAdmin())
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -157,12 +159,12 @@ class Profile extends CP_Controller {
 
 			$list->addItem(lang('blocked_members'), ee('CP/URL')->make('members/profile/ignore', $this->query_string));
 
-			$sa_editing_self = ($this->member->group_id == 1 && $this->member->member_id == ee()->session->userdata['member_id']);
-			$group_locked = (! ee('Permission')->isSuperAdmin() && $this->member->MemberGroup->is_locked);
+			$sa_editing_self = ($this->member->isSuperAdmin() && $this->member->member_id == ee()->session->userdata['member_id']);
+			$group_locked = (! ee('Permission')->isSuperAdmin() && $this->member->PrimaryRole->is_locked);
 
 			if ( ! $sa_editing_self && ! $group_locked)
 			{
-				$list->addItem(lang('member_group'), ee('CP/URL')->make('members/profile/group', $this->query_string));
+				$list->addItem(lang('role'), ee('CP/URL')->make('members/profile/roles', $this->query_string));
 			}
 
 			$list->addItem(lang('cp_settings'), ee('CP/URL')->make('members/profile/cp-settings', $this->query_string));
@@ -239,11 +241,11 @@ class Profile extends CP_Controller {
 					$heirs_view = '';
 					if (ee('Model')->get('ChannelEntry')->filter('author_id', $this->member->getId())->count() > 0)
 					{
-						$group_ids = array(1, $this->member->MemberGroup->getId());
+						$role_ids = array(1, $this->member->role_id);
 
 						$heirs = ee('Model')->get('Member')
 							->fields('username', 'screen_name')
-							->filter('group_id', 'IN', $group_ids)
+							->filter('role_id', 'IN', $role_ids)
 							->filter('member_id', '!=', $this->member->getId())
 							->order('screen_name')
 							->limit(100)
@@ -264,7 +266,7 @@ class Profile extends CP_Controller {
 								'filter_url' => ee('CP/URL')->make(
 									'members/heir-filter',
 									[
-										'group_ids' => implode('|', $group_ids),
+										'role_ids' => implode('|', $role_ids),
 										'selected' => $this->member->getId()
 									]
 								)->compile(),

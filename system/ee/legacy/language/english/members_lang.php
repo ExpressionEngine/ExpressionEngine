@@ -558,13 +558,9 @@ $lang = array(
 
 'can_admin_upload_prefs' => 'Can administrate file upload preferences',
 
-'can_assign_post_authors' => 'Change entry author',
-
 'can_ban_users' => 'Ban members',
 
 'can_delete_all_comments' => 'Delete comments by others',
-
-'can_delete_all_entries' => 'Delete entries, by others',
 
 'can_delete_members' => 'Delete members',
 
@@ -574,13 +570,9 @@ $lang = array(
 
 'can_delete_self_desc' => 'When enabled, users assigned to this group may delete their own accounts without approval',
 
-'can_delete_self_entries' => 'Delete own entries',
-
 'can_edit_all_comments' => 'Edit comments by others',
 
 'can_edit_html_buttons' => 'Can edit own HTML formatting buttons',
-
-'can_edit_other_entries' => 'Edit entries, by others',
 
 'can_edit_own_comments' => 'Edit own comments',
 
@@ -765,10 +757,6 @@ $lang = array(
 'can_access_security_settings_desc' => 'When enabled members of this group will be able to access the system security and privacy settings.',
 
 'can_access_site' => 'Can Access Site',
-
-'can_create_entries' => 'Create entries',
-
-'can_edit_self_entries' => 'Edit own entries',
 
 'can_not_delete_only_member' => 'You cannot delete the only member in the database',
 
