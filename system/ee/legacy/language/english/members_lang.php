@@ -1058,6 +1058,22 @@ $lang = array(
 
 'upload_destination_access_desc' => 'Users can access all of the selected upload directories.',
 
+'member_role_assignment' => 'Member Role Assignment',
+
+'access_overview' => 'Access Overview',
+
+'access_permissions' => 'Access permissions',
+
+'access' => 'Access?',
+
+'granted_by' => 'Granted by',
+
+'primary_role' => 'Primary Role',
+
+'permissions_granted' => 'The following permissions are granted to <b>%s</b>.',
+
+'member_roles' => 'Member Roles',
+
 );
 
 // EOF

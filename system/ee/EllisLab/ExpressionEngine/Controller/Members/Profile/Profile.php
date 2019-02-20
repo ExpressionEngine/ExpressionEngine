@@ -163,9 +163,10 @@ class Profile extends CP_Controller {
 
 			if ( ! $sa_editing_self && ! $group_locked)
 			{
-				$list->addItem(lang('role'), ee('CP/URL')->make('members/profile/roles', $this->query_string));
+				$list->addItem(lang('member_roles'), ee('CP/URL')->make('members/profile/roles', $this->query_string));
 			}
 
+			$list->addItem(lang('access_overview'), ee('CP/URL')->make('members/profile/access', $this->query_string));
 			$list->addItem(lang('cp_settings'), ee('CP/URL')->make('members/profile/cp-settings', $this->query_string));
 
 			if ($this->member->member_id != ee()->session->userdata['member_id'])
