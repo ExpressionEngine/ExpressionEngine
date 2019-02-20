@@ -31,7 +31,7 @@ class Roles extends Profile {
 	}
 
 	/**
-	 * Member Group assignment
+	 * Role assignment
 	 */
 	public function index()
 	{
