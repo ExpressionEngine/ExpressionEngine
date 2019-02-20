@@ -33,6 +33,7 @@ class Profile extends CP_Controller {
 
 		ee()->lang->loadfile('settings');
 		ee()->lang->loadfile('myaccount');
+		ee()->lang->loadfile('members');
 
 		// check permissions everywhere except for this landing page controller,
 		// which redirects in its index function
@@ -64,8 +65,6 @@ class Profile extends CP_Controller {
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		ee()->lang->loadfile('members');
-		ee()->lang->loadfile('myaccount');
 		ee()->load->model('member_model');
 		ee()->load->library('form_validation');
 
