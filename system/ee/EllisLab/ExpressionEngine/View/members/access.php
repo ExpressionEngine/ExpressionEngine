@@ -1,8 +1,12 @@
 <?php $this->extend('_templates/default-nav', [], 'outer_box'); ?>
 
+<?=form_open($base_url, 'class="tbl-ctrls"')?>
+
 <div class="app-notice-wrap">
 	<?=ee('CP/Alert')->getAllInlines()?>
 </div>
+
+<?php if (isset($filters)) echo $filters; ?>
 
 <?php $i = 0; ?>
 
@@ -57,3 +61,5 @@
 		</tbody>
 	</table>
 </div>
+
+</form>

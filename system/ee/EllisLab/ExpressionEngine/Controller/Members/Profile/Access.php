@@ -16,9 +16,17 @@ namespace EllisLab\ExpressionEngine\Controller\Members\Profile;
 class Access extends Profile {
 
 	private $base_url = 'members/profile/access';
+	private $role_ids;
+	private $keyword;
 
 	public function index()
 	{
+		$filters = $this->makeFilters();
+		$values = $filters->values();
+
+		$this->role_ids = ($values['role']) ?: $this->member->getAllRoles()->pluck('role_id');
+		$this->keyword  = $values['filter_by_keyword'];
+
 		$data = [];
 
 		foreach ($this->getPermissionKeys() as $section => $keys)
@@ -28,17 +36,27 @@ class Access extends Profile {
 			{
 				if (is_string($value))
 				{
-					$data[$section][] = $this->getAccessRow($value);
+					if (empty($this->keyword) || strpos(lang($value), $this->keyword) !== FALSE)
+					{
+						$data[$section][] = $this->getAccessRow($value);
+					}
 				}
 				elseif (is_array($value))
 				{
-					$data[$section][] = $this->getAccessRow($key);
+					if (empty($this->keyword) || strpos(lang($key), $this->keyword) !== FALSE)
+					{
+						$data[$section][] = $this->getAccessRow($key);
+					}
+
 					foreach ($value as $key)
 					{
-						$datum = $this->getAccessRow($key);
-						$datum['nested'] = TRUE;
+						if (empty($this->keyword) || strpos(lang($key), $this->keyword) !== FALSE)
+						{
+							$datum = $this->getAccessRow($key);
+							$datum['nested'] = TRUE;
 
-						$data[$section][] = $datum;
+							$data[$section][] = $datum;
+						}
 					}
 				}
 			}
@@ -54,10 +72,33 @@ class Access extends Profile {
 
 		$vars = [
 			'data'            => $data,
-			'cp_page_title'   => lang('access_overview')
+			'cp_page_title'   => lang('access_overview'),
+			'filters'         => $filters->render(ee('CP/URL')->make($this->base_url, $this->query_string)),
+			'base_url'        => ee('CP/URL')->make($this->base_url, $this->query_string),
 		];
 
 		ee()->cp->render('members/access', $vars);
+	}
+
+	protected function makeFilters()
+	{
+		$filters = ee('CP/Filter');
+
+		$role_ids = $this->member->getAllRoles()->pluck('role_id');
+
+		$role_filter_values = ee('Model')->get('Role', $role_ids)
+			->order('name')
+			->all()
+			->getDictionary('role_id', 'name');
+
+		$role_filter = $filters->make('role', 'role_filter', $role_filter_values)
+			->setPlaceholder(lang('all'))
+			->disableCustomValue();
+
+		$filters->add($role_filter)
+			->add('Keyword');
+
+		return $filters;
 	}
 
 	protected function getPermissions()
@@ -68,11 +109,10 @@ class Access extends Profile {
 		{
 			$primary_icon = ' <span class="icon--primary" title="' . lang('primary_role') . '"></span>';
 
-			$role_ids = $this->member->getAllRoles()->pluck('role_id');
 			$allowed = ee('Model')->get('Permission')
 				->with('Role')
 				->filter('site_id', ee()->config->item('site_id'))
-				->filter('role_id', 'IN', $role_ids)
+				->filter('role_id', 'IN', $this->role_ids)
 				->order('Role.name')
 				->all();
 
