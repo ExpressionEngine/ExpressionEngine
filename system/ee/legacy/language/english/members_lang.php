@@ -1074,6 +1074,8 @@ $lang = array(
 
 'member_roles' => 'Member Roles',
 
+'access_to' => 'Access <b>%s</b>',
+
 );
 
 // EOF

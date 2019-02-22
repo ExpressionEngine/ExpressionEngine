@@ -36,25 +36,28 @@ class Access extends Profile {
 			{
 				if (is_string($value))
 				{
-					if (empty($this->keyword) || strpos(lang($value), $this->keyword) !== FALSE)
+					$datum = $this->getAccessRow($value);
+
+					if ( ! empty($datum))
 					{
-						$data[$section][] = $this->getAccessRow($value);
+						$data[$section][] = $datum;
 					}
 				}
 				elseif (is_array($value))
 				{
-					if (empty($this->keyword) || strpos(lang($key), $this->keyword) !== FALSE)
+					$datum = $this->getAccessRow($key);
+					if ( ! empty($datum))
 					{
-						$data[$section][] = $this->getAccessRow($key);
+						$data[$section][] = $datum;
 					}
 
 					foreach ($value as $key)
 					{
-						if (empty($this->keyword) || strpos(lang($key), $this->keyword) !== FALSE)
-						{
-							$datum = $this->getAccessRow($key);
-							$datum['nested'] = TRUE;
+						$datum = $this->getAccessRow($key);
 
+						if ( ! empty($datum))
+						{
+							$datum['nested'] = TRUE;
 							$data[$section][] = $datum;
 						}
 					}
@@ -132,6 +135,54 @@ class Access extends Profile {
 
 				$permissions[$perm->permission][] = $display;
 			}
+
+			$roles = $this->member->getAllRoles();
+
+			foreach ($roles as $role)
+			{
+				$display = ee('Format')->make('Text', $role->name)->convertToEntities();
+
+				if ($role->getId() == $this->member->role_id)
+				{
+					$display .= $primary_icon;
+				}
+
+				foreach ($role->AssignedChannels as $channel)
+				{
+					$key = 'access_to_channel_id_' . $channel->getId() . ':' . $channel->channel_title;
+
+					if ( ! array_key_exists($key, $permissions))
+					{
+						$permissions[$key] = [];
+					}
+
+					$permissions[$key][] = $display;
+				}
+
+				foreach ($role->AssignedTemplateGroups as $template_group)
+				{
+					$key = 'access_to_template_group_id_' . $template_group->getId() . ':' . $template_group->group_name;
+
+					if ( ! array_key_exists($key, $permissions))
+					{
+						$permissions[$key] = [];
+					}
+
+					$permissions[$key][] = $display;
+				}
+
+				foreach ($role->AssignedModules as $module)
+				{
+					$key = 'access_to_add_on_id_' . $module->getId() . ':' . $module->module_name;
+
+					if ( ! array_key_exists($key, $permissions))
+					{
+						$permissions[$key] = [];
+					}
+
+					$permissions[$key][] = $display;
+				}
+			}
 		}
 
 		return $permissions;
@@ -139,9 +190,19 @@ class Access extends Profile {
 
 	protected function getAccessRow($permission)
 	{
+		$desc = $this->getPermissionDescription($permission);
+
+		if ($this->keyword)
+		{
+			if (strpos($desc, $this->keyword) === FALSE)
+			{
+				return [];
+			}
+		}
+
 		$data = [
 			'caution' => $this->isTrustedPermission($permission),
-			'permission' => lang($permission),
+			'permission' => $desc,
 			'access' => FALSE,
 			'granted' => '-'
 		];
@@ -155,6 +216,28 @@ class Access extends Profile {
 		}
 
 		return $data;
+	}
+
+	protected function getPermissionDescription($permission)
+	{
+		$key = $permission;
+		$name = '';
+
+		foreach (['_channel_id_', '_template_group_id_', '_add_on_id_'] as $delim)
+		{
+			if (strpos($permission, $delim))
+			{
+				list($key, $id) = explode($delim, $permission);
+				if ($key == 'access_to')
+				{
+					list($id, $name) = explode(':', $id);
+				}
+			}
+		}
+
+		$description = ($key == 'access_to') ? sprintf(lang($key), $name) : lang($key);
+
+		return $description;
 	}
 
 	protected function getPermissionKeys()
@@ -248,9 +331,6 @@ class Access extends Profile {
 			'add_on_manager'     => [
 				'can_access_addons',
 				'can_admin_addons',
-				'can_upload_new_toolsets',
-				'can_edit_toolsets',
-				'can_delete_toolsets',
 			],
 			'utilities'          => [
 				'can_access_utilities',
@@ -274,8 +354,70 @@ class Access extends Profile {
 		];
 
 		// Per-Channel Permissons
+		$channels = ee('Model')->get('Channel')
+			->fields('channel_id', 'channel_title')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('channel_name')
+			->all();
+
+		foreach ($channels as $channel)
+		{
+			$key = 'access_to_channel_id_' . $channel->getId() . ':' . $channel->channel_title;
+			$permissions['channel_manager'][$key] = [
+				'can_create_entries_channel_id_' . $channel->getId(),
+				'can_edit_self_entries_channel_id_' . $channel->getId(),
+				'can_delete_self_entries_channel_id_' . $channel->getId(),
+				'can_edit_other_entries_channel_id_' . $channel->getId(),
+				'can_delete_all_entries_channel_id_' . $channel->getId(),
+				'can_assign_post_authors_channel_id_' . $channel->getId(),
+			];
+		}
+
 		// Per-Template Group Permissions
+		$template_groups = ee('Model')->get('TemplateGroup')
+			->fields('group_id', 'group_name')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_name')
+			->all();
+
+		foreach ($template_groups as $group)
+		{
+			$key = 'access_to_template_group_id_' . $group->getId() . ':' . $group->group_name;
+			$permissions['template_manager'][$key] = [
+				'can_create_templates_template_group_id_' . $group->getId(),
+				'can_edit_templates_template_group_id_' . $group->getId(),
+				'can_delete_templates_template_group_id_' . $group->getId(),
+				'can_manage_settings_template_group_id_' . $group->getId(),
+			];
+		}
+
 		// Add-on access
+		$addons = ee('Model')->get('Module')
+			->fields('module_id', 'module_name')
+			->filter('module_name', 'NOT IN', array('Channel', 'Comment', 'Member', 'File', 'Filepicker')) // @TODO This REALLY needs abstracting.
+			->all()
+			->filter(function($addon) {
+				$provision = ee('Addon')->get(strtolower($addon->module_name));
+
+				if ( ! $provision)
+				{
+					return FALSE;
+				}
+
+				$addon->module_name = $provision->getName();
+				return TRUE;
+			})
+			->getDictionary('module_id', 'module_name');
+
+		foreach ($addons as $id => $name)
+		{
+			$permissions['add_on_manager'][] = 'access_to_add_on_id_' . $id . ':' . $name;
+		}
+
+		$permissions['add_on_manager'][] = 'can_upload_new_toolsets';
+		$permissions['add_on_manager'][] = 'can_edit_toolsets';
+		$permissions['add_on_manager'][] = 'can_delete_toolsets';
+
 
 		return $permissions;
 	}
@@ -322,7 +464,19 @@ class Access extends Profile {
 			'can_manage_consents',
 		];
 
-		return in_array($permission, $keys);
+		if (in_array($permission, $keys))
+		{
+			return TRUE;
+		}
+
+		if (strpos($permission, '_channel_id_') ||
+			strpos($permission, '_template_group_id_') ||
+			strpos($permission, '_add_on_id_'))
+		{
+			return TRUE;
+		}
+
+		return FALSE;
 	}
 
 }
