@@ -1060,6 +1060,8 @@ $lang = array(
 
 'member_role_assignment' => 'Member Role Assignment',
 
+/* Access Overview */
+
 'access_overview' => 'Access Overview',
 
 'access_permissions' => 'Access permissions',
@@ -1075,6 +1077,182 @@ $lang = array(
 'member_roles' => 'Member Roles',
 
 'access_to' => 'Access <b>%s</b>',
+
+'access_overview_can_view_online_system' => 'Website access (online)',
+
+'access_overview_can_view_offline_system' => 'Website access (offline)',
+
+'access_overview_can_view_profiles' => 'Access public profiles',
+
+'access_overview_can_delete_self' => 'Delete account',
+
+'access_overview_can_post_comments' => 'Submit comments',
+
+'access_overview_can_moderate_comments' => 'Moderate comments',
+
+'access_overview_can_edit_own_comments' => 'Edit own comments',
+
+'access_overview_can_delete_own_comments' => 'Delete own comments',
+
+'access_overview_can_edit_all_comments' => 'Edit comments by others',
+
+'access_overview_can_delete_all_comments' => 'Delete comments by others',
+
+'access_overview_can_search' => 'Access search utility',
+
+'access_overview_can_send_private_messages' => 'Access personal messages',
+
+'access_overview_can_attach_in_private_messages' => 'Allow attachments',
+
+'access_overview_can_send_bulletins' => 'Send bulletins',
+
+'access_overview_can_access_cp' => 'Access control panel',
+
+'access_overview_can_access_footer_report_bug' => 'Access Report Bug link',
+
+'access_overview_can_access_footer_new_ticket' => 'Access New ticket link',
+
+'access_overview_can_access_footer_user_guide' => 'Access User Guide link',
+
+'access_overview_can_view_homepage_news' => 'See homepage news',
+
+'access_overview_can_admin_channels' => 'Access channel manager',
+
+'access_overview_can_create_channels' => 'Create channels',
+
+'access_overview_can_edit_channels' => 'Edit channels',
+
+'access_overview_can_delete_channels' => 'Delete channels',
+
+'access_overview_can_create_channel_fields' => 'Create fields',
+
+'access_overview_can_edit_channel_fields' => 'Edit fields',
+
+'access_overview_can_delete_channel_fields' => 'Delete fields',
+
+'access_overview_can_create_categories' => 'Create categories',
+
+'access_overview_can_edit_categories' => 'Edit categories',
+
+'access_overview_can_delete_categories' => 'Delete categories',
+
+'access_overview_can_create_statuses' => 'Create statuses',
+
+'access_overview_can_edit_statuses' => 'Edit statuses',
+
+'access_overview_can_delete_statuses' => 'Delete statuses',
+
+'access_overview_can_create_entries' => 'Create entries',
+
+'access_overview_can_edit_self_entries' => 'Edit own entries',
+
+'access_overview_can_delete_self_entries' => 'Delete own entries',
+
+'access_overview_can_edit_other_entries' => 'Edit entries, by others',
+
+'access_overview_can_delete_all_entries' => 'Delete entries, by others',
+
+'access_overview_can_assign_post_authors' => 'Change author',
+
+'access_overview_can_access_files' => 'Access file manager',
+
+'access_overview_can_create_upload_directories' => 'Create upload directories',
+
+'access_overview_can_edit_upload_directories' => 'Edit upload directories',
+
+'access_overview_can_delete_upload_directories' => 'Delete upload directories',
+
+'access_overview_can_upload_new_files' => 'Upload files',
+
+'access_overview_can_edit_files' => 'Edit files',
+
+'access_overview_can_delete_files' => 'Delete files',
+
+'access_overview_can_access_members' => 'Access members',
+
+'access_overview_can_create_members' => 'Create members',
+
+'access_overview_can_edit_members' => 'Edit members',
+
+'access_overview_can_delete_members' => 'Delete members',
+
+'access_overview_can_ban_users' => 'Ban members',
+
+'access_overview_can_email_from_profile' => 'Email members',
+
+'access_overview_can_edit_html_buttons' => 'Manage own HTML Buttons',
+
+'access_overview_can_admin_roles' => 'Access roles',
+
+'access_overview_can_create_roles' => 'Create roles',
+
+'access_overview_can_edit_roles' => 'Edit roles',
+
+'access_overview_can_delete_roles' => 'Delete roles',
+
+'access_overview_can_access_design' => 'Access template manager',
+
+'access_overview_can_admin_design' => 'Access global template settings',
+
+'access_overview_can_create_template_groups' => 'Create template groups',
+
+'access_overview_can_edit_template_groups' => 'Edit template groups',
+
+'access_overview_can_delete_template_groups' => 'Delete template groups',
+
+'access_overview_can_create_template_partials' => 'Create template partials',
+
+'access_overview_can_edit_template_partials' => 'Edit template partials',
+
+'access_overview_can_delete_template_partials' => 'Delete template partials',
+
+'access_overview_can_create_template_variables' => 'Create template variables',
+
+'access_overview_can_edit_template_variables' => 'Edit template variables',
+
+'access_overview_can_delete_template_variables' => 'Delete template variables',
+
+'access_overview_can_create_templates' => 'Create templates',
+
+'access_overview_can_edit_templates' => 'Edit templates',
+
+'access_overview_can_delete_templates' => 'Delete templates',
+
+'access_overview_can_manage_settings' => 'Manage settings & access',
+
+'access_overview_can_access_addons' => 'Access add-on manager',
+
+'access_overview_can_admin_addons' => 'Manage add-ons (install/remove)',
+
+'access_overview_can_upload_new_toolsets' => 'Upload RTE toolsets',
+
+'access_overview_can_edit_toolsets' => 'Edit RTE toolsets',
+
+'access_overview_can_delete_toolsets' => 'Delete RTE toolsets',
+
+'access_overview_can_access_utilities' => 'Access system utilities',
+
+'access_overview_can_access_comm' => 'Access communicate',
+
+'access_overview_can_email_roles' => 'Send email to specific roles',
+
+'access_overview_can_send_cached_email' => 'View/Send cached email',
+
+'access_overview_can_access_translate' => 'Access translation',
+
+'access_overview_can_access_import' => 'Access Import',
+
+'access_overview_can_access_sql_manager' => 'Access SQL management',
+
+'access_overview_can_access_data' => 'Access data operations',
+
+'access_overview_can_access_logs' => 'Access system logs',
+
+'access_overview_can_access_sys_prefs' => 'Access system settings',
+
+'access_overview_can_access_security_settings' => 'Access security & privacy',
+
+'access_overview_can_manage_consents' => 'Access consent requests',
 
 );
 

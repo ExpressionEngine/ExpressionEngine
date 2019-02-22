@@ -235,7 +235,7 @@ class Access extends Profile {
 			}
 		}
 
-		$description = ($key == 'access_to') ? sprintf(lang($key), $name) : lang($key);
+		$description = ($key == 'access_to') ? sprintf(lang($key), $name) : lang('access_overview_' . $key);
 
 		return $description;
 	}
