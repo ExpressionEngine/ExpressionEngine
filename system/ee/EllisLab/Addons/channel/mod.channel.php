@@ -2216,7 +2216,7 @@ class Channel {
 									{
 										if (strpos($sql, "exp_channel_data_field_{$field_id}") === FALSE)
 										{
-											$join .= "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
+											$join = "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
 											$sql = str_replace('WHERE ', $join . 'WHERE ', $sql);
 										}
 
@@ -2224,6 +2224,8 @@ class Channel {
 
 									}
 								}
+
+								$field_list = implode(', ', $field_list);
 
 								$end .= "CONCAT(".$field_list.")";
 								$distinct_select .= ', '.$field_list.' ';
