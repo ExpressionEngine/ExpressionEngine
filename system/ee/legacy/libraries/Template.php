@@ -3146,7 +3146,7 @@ class EE_Template {
 		// Restore XML declaration if it was encoded
 		$str = $this->restore_xml_declaration($str);
 
-		ee()->session->userdata['member_group'] = ee()->session->userdata['group_id'];
+		ee()->session->userdata['member_group'] = ee()->session->userdata['role_id'];
 		$this->user_vars[] = 'member_group';
 
 		// parse all standard global variables
@@ -3402,7 +3402,7 @@ class EE_Template {
 		// Define an alternate variable for {group_id} since some tags use
 		// it natively, causing it to be unavailable as a global
 
-		$data['member_group'] = $data['logged_in_member_group'] = ee()->session->userdata['group_id'];
+		$data['member_group'] = $data['logged_in_member_group'] = ee()->session->userdata['role_id'];
 
 		// Logged in and logged out variables
 		$data['logged_in'] = (ee()->session->userdata['member_id'] != 0);

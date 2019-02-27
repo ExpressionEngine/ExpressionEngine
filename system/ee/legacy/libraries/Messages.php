@@ -3129,7 +3129,7 @@ DOH;
 
 		$sql =  "FROM exp_member_bulletin_board b, exp_members m
 				 WHERE b.sender_id = m.member_id
-				 AND b.bulletin_group = ".ee()->db->escape_str(ee()->session->userdata['group_id'])."
+				 AND b.bulletin_group = ".ee()->db->escape_str(ee()->session->userdata('role_id'))."
 				 AND bulletin_date < ".ee()->localize->now."
 				 AND
 				 (
@@ -3212,7 +3212,7 @@ DOH;
 
 		if ($query->row('bulletin_date')  != ee()->session->userdata['last_bulletin_date'])
 		{
-			ee()->db->query(ee()->db->update_string('exp_members', array('last_bulletin_date' => $query->row('bulletin_date') ), "group_id = '".ee()->db->escape_str(ee()->session->userdata['group_id'])."'"));
+			ee()->db->query(ee()->db->update_string('exp_members', array('last_bulletin_date' => $query->row('bulletin_date') ), "role_id = '".ee()->db->escape_str(ee()->session->userdata('role_id'))."'"));
 		}
 
 		foreach($query->result_array() as $row)
