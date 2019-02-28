@@ -94,12 +94,12 @@ class Sandr extends Utilities {
 	{
 		// escape search and replace for use in queries
 		$search = $this->db->escape_str($search);
-		$replace = $this->db->escape_str($replace);
+		$replace_escaped = $this->db->escape_str($replace);
 		$where = $this->db->escape_str($where);
 
 		if ($where == 'title')
 		{
-			$sql = "UPDATE `exp_channel_titles` SET `{$where}` = REPLACE(`{$where}`, '{$search}', '{$replace}')";
+			$sql = "UPDATE `exp_channel_titles` SET `{$where}` = REPLACE(`{$where}`, '{$search}', '{$replace_escaped}')";
 		}
 		elseif ($where == 'preferences' OR strncmp($where, 'site_preferences_', 17) == 0)
 		{
@@ -167,7 +167,7 @@ class Sandr extends Utilities {
 				foreach($fields as $field)
 				{
 					$this->db->query("UPDATE `{$table}`
-								SET `{$field}` = REPLACE(`{$field}`, '{$search}', '{$replace}')
+								SET `{$field}` = REPLACE(`{$field}`, '{$search}', '{$replace_escaped}')
 								WHERE `{$site_field}` = '".$this->db->escape_str($site_id)."'");
 
 					$rows += $this->db->affected_rows();
@@ -187,7 +187,7 @@ class Sandr extends Utilities {
 						foreach($preferences['exp_forums'] as $field)
 						{
 							$this->db->query("UPDATE `exp_forums`
-										SET `{$field}` = REPLACE(`{$field}`, '{$search}', '{$replace}')
+										SET `{$field}` = REPLACE(`{$field}`, '{$search}', '{$replace_escaped}')
 										WHERE `board_id` = '".$this->db->escape_str($row['board_id'])."'");
 
 							$rows += $this->db->affected_rows();
@@ -234,7 +234,7 @@ class Sandr extends Utilities {
 		{
 			$field_id = str_replace('field_id_', '', $where);
 			$field = ee('Model')->get('ChannelField', $field_id)->first();
-			$sql = "UPDATE `exp_{$field->getDataStorageTable()}` SET `{$where}` = REPLACE(`{$where}`, '{$search}', '{$replace}')";
+			$sql = "UPDATE `exp_{$field->getDataStorageTable()}` SET `{$where}` = REPLACE(`{$where}`, '{$search}', '{$replace_escaped}')";
 
 			if ($field->field_type == 'grid' || $field->field_type == 'file_grid')
 			{
@@ -243,7 +243,7 @@ class Sandr extends Utilities {
 					'channel',
 					$field->getId(),
 					$search,
-					$replace
+					$replace_escaped
 				);
 			}
 		}
