@@ -264,10 +264,6 @@ $(document).ready(function(){
 			$(this).addClass('act');
 			// add a class of .open to the proper .tab
 			$('.tb-act .tab.'+tabClassIs).addClass('tab-open');
-			// stop THIS from reloading
-			// the source window and appending to the URI
-			// and stop propagation up to document
-			return false;
 		});
 
 	// ==============
