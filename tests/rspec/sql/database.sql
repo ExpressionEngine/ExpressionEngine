@@ -1816,7 +1816,7 @@ INSERT INTO `exp_config` (`config_id`, `site_id`, `key`, `value`) VALUES
 	(25,1,'enable_avatars','y'),
 	(26,1,'allow_avatar_uploads','n'),
 	(27,1,'avatar_url','http://ee2/images/avatars/'),
-	(28,1,'avatar_path','../images/avatars/'),
+	(28,1,'avatar_path','{base_path}/images/avatars/'),
 	(29,1,'avatar_max_width','100'),
 	(30,1,'avatar_max_height','100'),
 	(31,1,'avatar_max_kb','50'),
@@ -1835,7 +1835,7 @@ INSERT INTO `exp_config` (`config_id`, `site_id`, `key`, `value`) VALUES
 	(44,1,'sig_img_max_width','480'),
 	(45,1,'sig_img_max_height','80'),
 	(46,1,'sig_img_max_kb','30'),
-	(47,1,'prv_msg_upload_path','../images/pm_attachments/'),
+	(47,1,'prv_msg_upload_path','{base_path}/images/pm_attachments/'),
 	(48,1,'prv_msg_max_attachments','3'),
 	(49,1,'prv_msg_attach_maxsize','250'),
 	(50,1,'prv_msg_attach_total','100'),
@@ -2795,12 +2795,12 @@ UNLOCK TABLES;
 LOCK TABLES `exp_upload_prefs` WRITE;
 ALTER TABLE `exp_upload_prefs` DISABLE KEYS;
 INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, `url`, `allowed_types`, `default_modal_view`, `max_size`, `max_height`, `max_width`, `properties`, `pre_format`, `post_format`, `file_properties`, `file_pre_format`, `file_post_format`, `cat_group`, `batch_location`, `module_id`) VALUES
-	(1,1,'Main Upload Directory','../images/uploads/','/images/uploads/','all','list','','','','style="border: 0;" alt="image"','','','','','',NULL,NULL,0),
-	(2,1,'About','../images/about/','/images/about/','img','list','','','','','','','','','',NULL,NULL,0),
-	(3,1,'Avatars','../images/avatars/','/images/avatars/','img','list','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
-	(4,1,'Default Avatars','../images/avatars/default/','/images/avatars/default/','img','list','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
-	(5,1,'Signature Attachments','../images/signature_attachments/','/images/signature_attachments/','img','list','30','80','480',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
-	(6,1,'PM Attachments','../images/pm_attachments/','/images/pm_attachments/','img','list','250',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4);
+	(1,1,'Main Upload Directory','{base_path}/images/uploads/','/images/uploads/','all','list','','','','style="border: 0;" alt="image"','','','','','',NULL,NULL,0),
+	(2,1,'About','{base_path}/images/about/','/images/about/','img','list','','','','','','','','','',NULL,NULL,0),
+	(3,1,'Avatars','{base_path}/images/avatars/','/images/avatars/','img','list','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
+	(4,1,'Default Avatars','{base_path}/images/avatars/default/','/images/avatars/default/','img','list','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
+	(5,1,'Signature Attachments','{base_path}/images/signature_attachments/','/images/signature_attachments/','img','list','30','80','480',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
+	(6,1,'PM Attachments','{base_path}/images/pm_attachments/','/images/pm_attachments/','img','list','250',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4);
 ALTER TABLE `exp_upload_prefs` ENABLE KEYS;
 UNLOCK TABLES;
 
