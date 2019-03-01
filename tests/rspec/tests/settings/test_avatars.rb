@@ -16,13 +16,10 @@ feature 'Avatar Settings' do
   end
 
   it 'should load current settings into form fields' do
-    enable_avatars = ee_config(item: 'enable_avatars')
-    allow_avatar_uploads = ee_config(item: 'allow_avatar_uploads')
-
-    @page.enable_avatars.value.should == enable_avatars
-    @page.allow_avatar_uploads.value.should == allow_avatar_uploads
-    @page.avatar_url.value.should == ee_config(item: 'avatar_url')
-    @page.avatar_path.value.should == ee_config(item: 'avatar_path')
+    @page.enable_avatars.value.should == ee_config(item: 'enable_avatars')
+    @page.allow_avatar_uploads.value.should == ee_config(item: 'allow_avatar_uploads')
+    @page.avatar_url.value.should == ee_config(item: 'avatar_url', raw: true)
+    @page.avatar_path.value.should == ee_config(item: 'avatar_path', raw: true)
     @page.avatar_max_width.value.should == ee_config(item: 'avatar_max_width')
     @page.avatar_max_height.value.should == ee_config(item: 'avatar_max_height')
     @page.avatar_max_kb.value.should == ee_config(item: 'avatar_max_kb')
