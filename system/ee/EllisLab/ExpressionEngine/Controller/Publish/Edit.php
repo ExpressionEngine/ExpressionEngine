@@ -403,7 +403,7 @@ class Edit extends AbstractPublishController {
 			$edit_perms = [];
 			$del_perms  = [];
 
-			foreach ($entries->pluck('channel_id') as $channel_id)
+			foreach ($entries->all()->pluck('channel_id') as $channel_id)
 			{
 				$edit_perms[] = 'can_edit_self_entries_channel_id_' . $channel_id;
 				$edit_perms[] = 'can_edit_other_entries_channel_id_' . $channel_id;
