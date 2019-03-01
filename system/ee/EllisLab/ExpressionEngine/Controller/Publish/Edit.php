@@ -609,7 +609,7 @@ class Edit extends AbstractPublishController {
 			$perms[] = 'can_delete_self_entries_channel_id_' . $channel_id;
 		}
 
-		if ( ! ee('Permission')->haveAny($perms))
+		if ( ! ee('Permission')->hasAny($perms))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
