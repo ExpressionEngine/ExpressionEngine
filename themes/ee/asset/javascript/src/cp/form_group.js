@@ -103,11 +103,11 @@ function toggleSections(sections, show, key) {
 
 			// if we're showing this section, but the field is hidden
 			// from another toggle, then don't show it
-			if (group) {
+			if (group && group != key) {
 				hidden[group] = ! show;
 			}
 
-			if (show && group) {
+			if (show && group && hidden[group] != undefined) {
 				toggleFields(field, hidden[group], key);
 			} else {
 				toggleFields(field, show, key);
@@ -143,7 +143,7 @@ EE.cp.form_group_toggle = function(element) {
 			states[data] = (key == value);
 		}
 		toggleFields(field_targets, hidden[data] ? false : (key == value));
-		toggleSections(section_targets, states[data]);
+		toggleSections(section_targets, states[data], data);
 	};
 
 	// Hide all the toggled fields and sections
