@@ -1436,12 +1436,9 @@ class EE_Session {
 	{
 		$assigned_template_groups = [];
 
-		foreach ($this->member_model->Roles as $role)
+		foreach ($this->member_model->getAssignedTemplateGroups() as $template_group)
 		{
-			foreach ($role->AssignedTemplateGroups as $template_group)
-			{
-				$assigned_template_groups[$template_group->getId()] = TRUE;
-			}
+			$assigned_template_groups[$template_group->getId()] = TRUE;
 		}
 
 		$this->userdata['assigned_template_groups'] = $assigned_template_groups;
