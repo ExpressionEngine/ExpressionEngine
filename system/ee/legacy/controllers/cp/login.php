@@ -465,7 +465,7 @@ class Login extends CP_Controller {
 	 */
 	public function logout()
 	{
-		if (ee()->session->getMemeber()->isPending())
+		if (ee()->session->getMember() && ee()->session->getMember()->isPending())
 		{
 			$this->functions->redirect(BASE.AMP.'C=login');
 		}
