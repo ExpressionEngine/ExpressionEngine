@@ -587,6 +587,16 @@ class EE_Session {
 			}
 		}
 
+		// Add in Primary Role data
+		$this->userdata['primary_role_id']          = $this->member_model->PrimaryRole->getId();
+		$this->userdata['primary_role_name']        = $this->member_model->PrimaryRole->name;
+		$this->userdata['primary_role_description'] = $this->member_model->PrimaryRole->description;
+
+		// Member Group backwards compatibility
+		$this->userdata['group_id']          = $this->member_model->PrimaryRole->getId();
+		$this->userdata['group_title']       = $this->member_model->PrimaryRole->name;
+		$this->userdata['group_description'] = $this->member_model->PrimaryRole->description;
+
 		// Add in the Permissions for backwards compatibility
 		foreach ($this->member_model->getPermissions() as $perm => $perm_id)
 		{
