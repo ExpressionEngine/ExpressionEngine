@@ -412,8 +412,8 @@ class Edit extends AbstractPublishController {
 				$del_perms[] = 'can_delete_self_entries_channel_id_' . $channel_id;
 			}
 
-			$vars['can_edit']   = ee('Permission')->hasAny($edit_perms);
-			$vars['can_delete'] = ee('Permission')->hasAny($del_perms);
+			$vars['can_edit']   = (empty($edit_perms)) ? FALSE : ee('Permission')->hasAny($edit_perms);
+			$vars['can_delete'] = (empty($del_perms)) ? FALSE : ee('Permission')->hasAny($del_perms);
 		}
 
 		if (AJAX_REQUEST)
@@ -619,7 +619,7 @@ class Edit extends AbstractPublishController {
 			$entry_ids = array($entry_ids);
 		}
 
-		$entry_names = array_merge($this->removeAllEntries(), $this->removeSelfEntries());
+		$entry_names = array_merge($this->removeAllEntries($entry_ids), $this->removeSelfEntries($entry_ids));
 
 		ee('CP/Alert')->makeInline('entries-form')
 			->asSuccess()
