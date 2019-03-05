@@ -417,25 +417,26 @@ class Member_memberlist extends Member {
 			$mcf_sql = '';
 		}
 
-		$f_sql	= "SELECT m.member_id, m.username, m.screen_name, m.email, m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date, m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts, m.language, m.timezone, m.accept_user_email, m.avatar_filename, m.avatar_width, m.avatar_height, (m.total_forum_topics + m.total_forum_posts) AS total_posts, g.group_title as member_group {$mcf_select} ";
+		$f_sql	= "SELECT m.member_id, m.username, m.screen_name, m.email, m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date, m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts, m.language, m.timezone, m.accept_user_email, m.avatar_filename, m.avatar_width, m.avatar_height, (m.total_forum_topics + m.total_forum_posts) AS total_posts, g.name as member_group {$mcf_select} ";
 		$p_sql	= "SELECT COUNT(m.member_id) AS count ";
 		$sql	= "FROM exp_members m
-					LEFT JOIN exp_member_groups g ON g.group_id = m.group_id
-					WHERE g.group_id != '3'
-					AND g.group_id != '4'
-					AND g.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'
-					AND g.include_in_memberlist = 'y' ";
+					LEFT JOIN exp_roles g ON g.role_id = m.role_id
+					INNER JOIN exp_role_settings s ON g.role_id = s.role_id
+					WHERE g.role_id != '3'
+					AND g.role_id != '4'
+					AND s.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'
+					AND s.include_in_memberlist = 'y' ";
 
 		if ($this->is_admin == FALSE OR ! ee('Permission')->isSuperAdmin())
 		{
-			$sql .= "AND g.group_id != '2' ";
+			$sql .= "AND g.role_id != '2' ";
 		}
 
 		// 2 = Banned 3 = Guests 4 = Pending
 
 		if ($group_id != 0)
 		{
-			$sql .= " AND g.group_id = '$group_id'";
+			$sql .= " AND g.role_id = '$group_id'";
 		}
 
 		/** ----------------------------------------
@@ -827,34 +828,37 @@ class Member_memberlist extends Member {
 
 		$english = array('Guests', 'Banned', 'Members', 'Pending', 'Super Admins');
 
-		$sql = "SELECT group_id, group_title FROM exp_member_groups
-				WHERE include_in_memberlist = 'y' AND site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' AND group_id != '3' AND group_id != '4' ";
+		$excluded = [3, 4];
 
 		if ($this->is_admin == FALSE OR ! ee('Permission')->isSuperAdmin())
 		{
-			$sql .= "AND group_id != '2' ";
+			$excluded[] = 2;
 		}
 
-		$sql .= " order by group_title";
-
-		$query = ee()->db->query($sql);
+		$role_settings = ee('Model')->get('RoleSetting')
+			->with('Role')
+			->filter('include_in_memberlist', 'y')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('role_id', 'NOT IN', $excluded)
+			->order('Role.name')
+			->all();
 
 		$selected = ($group_id == 0) ? " selected='selected' " : '';
 
 		$menu = "<option value='0'".$selected.">".ee()->lang->line('mbr_all_member_groups')."</option>\n";
 
-		foreach ($query->result_array() as $row)
+		foreach ($role_settings as $role_setting)
 		{
-			$group_title = $row['group_title'];
+			$group_title = $role_setting->Role->name;
 
 			if (in_array($group_title, $english))
 			{
 				$group_title = ee()->lang->line(strtolower(str_replace(" ", "_", $group_title)));
 			}
 
-			$selected = ($group_id == $row['group_id']) ? " selected='selected' " : '';
+			$selected = ($group_id == $role_setting->Role->getId()) ? " selected='selected' " : '';
 
-			$menu .= "<option value='".$row['group_id']."'".$selected.">".$group_title."</option>\n";
+			$menu .= "<option value='".$role_setting->Role->getId()."'".$selected.">".$group_title."</option>\n";
 		}
 
 		$template = str_replace(LD.'group_id_options'.RD, $menu, $template);

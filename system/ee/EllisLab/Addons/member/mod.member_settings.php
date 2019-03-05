@@ -123,6 +123,7 @@ class Member_settings extends Member {
 		ee()->load->model('member_model');
 
 		$member = ee('Model')->get('Member', (int)$this->cur_id)
+			->with(['PrimaryRole' => 'RoleSettings'])
 			->filter('role_id', 'NOT IN', $not_in)
 			->first();
 
@@ -132,7 +133,11 @@ class Member_settings extends Member {
 		}
 
 		// Fetch the row
-		$row = array_merge($member->getValues(), $member->PrimaryRole->getValues());
+		$row = array_merge(
+			$member->getValues(),
+			$member->PrimaryRole->getValues(),
+			$member->PrimaryRole->RoleSettings->getValues()
+		);
 
 		// Use member field names
 		$member_fields = ee('Model')->get('MemberField')
@@ -432,7 +437,7 @@ class Member_settings extends Member {
 			/** ----------------------------------------*/
 			if (stristr($val['0'], 'can_private_message'))
 			{
-				if ($row['can_send_private_messages'] == 'n' OR $row['accept_messages'] == 'n')
+				if ( ! $member->can('send_private_messages') OR $row['accept_messages'] == 'n')
 				{
 					$content = preg_replace("/".LD.$val['0'].RD."(.+?)".LD.'\/if'.RD."/s", "", $content);
 				}
@@ -548,7 +553,7 @@ class Member_settings extends Member {
 
 			if ($key == "member_group")
 			{
-				$content = $this->_var_swap_single($val, $row['group_title'] , $content);
+				$content = $this->_var_swap_single($val, $member->PrimaryRole->name , $content);
 			}
 
 			/** ----------------------
