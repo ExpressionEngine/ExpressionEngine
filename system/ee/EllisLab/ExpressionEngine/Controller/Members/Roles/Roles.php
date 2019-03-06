@@ -899,7 +899,7 @@ class Roles extends AbstractRolesController {
 						'cp_homepage' => [
 							'type' => 'radio',
 							'choices' => $default_homepage_choices,
-							'value' => $default_homepage_value,
+							'value' => $settings->cp_homepage ?: $default_homepage_value,
 							'encode' => FALSE
 						],
 						'cp_homepage_custom' => [
@@ -915,8 +915,8 @@ class Roles extends AbstractRolesController {
 					'fields' => [
 						'footer_helper_links' => [
 							'type' => 'checkbox',
-							'choices' => $permissions['choices']['footer'],
-							'value' => $permissions['values']['footer'],
+							'choices' => $permissions['choices']['footer_helper_links'],
+							'value' => $permissions['values']['footer_helper_links'],
 						]
 					]
 				],
@@ -947,8 +947,8 @@ class Roles extends AbstractRolesController {
 						'fields' => [
 							'channel_permissions' => [
 								'type' => 'checkbox',
-								'choices' => $permissions['choices']['channel'],
-								'value' => $permissions['values']['channel'],
+								'choices' => $permissions['choices']['channel_permissions'],
+								'value' => $permissions['values']['channel_permissions'],
 							]
 						]
 					],
@@ -959,8 +959,8 @@ class Roles extends AbstractRolesController {
 						'fields' => [
 							'channel_field_permissions' => [
 								'type' => 'checkbox',
-								'choices' => $permissions['choices']['channel_field'],
-								'value' => $permissions['values']['channel_field'],
+								'choices' => $permissions['choices']['channel_field_permissions'],
+								'value' => $permissions['values']['channel_field_permissions'],
 							]
 						]
 					],
@@ -971,8 +971,8 @@ class Roles extends AbstractRolesController {
 						'fields' => [
 							'channel_category_permissions' => [
 								'type' => 'checkbox',
-								'choices' => $permissions['choices']['channel_category'],
-								'value' => $permissions['values']['channel_category'],
+								'choices' => $permissions['choices']['channel_category_permissions'],
+								'value' => $permissions['values']['channel_category_permissions'],
 							]
 						]
 					],
@@ -983,8 +983,8 @@ class Roles extends AbstractRolesController {
 						'fields' => [
 							'channel_status_permissions' => [
 								'type' => 'checkbox',
-								'choices' => $permissions['choices']['channel_status'],
-								'value' => $permissions['values']['channel_status'],
+								'choices' => $permissions['choices']['channel_status_permissions'],
+								'value' => $permissions['values']['channel_status_permissions'],
 							]
 						]
 					],
@@ -1504,27 +1504,27 @@ class Roles extends AbstractRolesController {
 					'can_edit_all_comments'   => lang('can_edit_all_comments'),
 					'can_delete_all_comments' => lang('can_delete_all_comments')
 				],
-				'footer' => [
+				'footer_helper_links' => [
 					'can_access_footer_report_bug' => lang('report_bug'),
 					'can_access_footer_new_ticket' => lang('new_ticket'),
 					'can_access_footer_user_guide' => lang('user_guide'),
 				],
-				'channel' => [
+				'channel_permissions' => [
 					'can_create_channels' => lang('create_channels'),
 					'can_edit_channels'   => lang('edit_channels'),
 					'can_delete_channels' => lang('delete_channels')
 				],
-				'channel_field' => [
+				'channel_field_permissions' => [
 					'can_create_channel_fields' => lang('create_channel_fields'),
 					'can_edit_channel_fields'   => lang('edit_channel_fields'),
 					'can_delete_channel_fields' => lang('delete_channel_fields')
 				],
-				'channel_category' => [
+				'channel_category_permissions' => [
 					'can_create_categories' => lang('create_categories'),
 					'can_edit_categories'   => lang('edit_categories'),
 					'can_delete_categories' => lang('delete_categories')
 				],
-				'channel_status' => [
+				'channel_status_permissions' => [
 					'can_create_statuses' => lang('create_statuses'),
 					'can_edit_statuses'   => lang('edit_statuses'),
 					'can_delete_statuses' => lang('delete_statuses')
@@ -1612,6 +1612,11 @@ class Roles extends AbstractRolesController {
 			foreach ($permissions['choices'] as $group => $choices)
 			{
 				$permissions['values'][$group] = $this->getPermissionValues($role, $choices);
+			}
+
+			if ($role->isNew())
+			{
+				$permissions['values']['website_access'] = ['can_view_online_system'];
 			}
 		}
 
