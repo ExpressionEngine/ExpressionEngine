@@ -62,7 +62,8 @@ class Roles extends AbstractRolesController {
 		$page = ee('Request')->get('page') ?: 1;
 		$per_page = 10;
 
-		$filters->add($group_filter);
+		$filters->add($group_filter)
+			->add('Keyword');
 
 		$filter_values = $filters->values();
 		$search = isset($filter_values['filter_by_keyword']) ? $filter_values['filter_by_keyword'] : NULL;
@@ -103,8 +104,7 @@ class Roles extends AbstractRolesController {
 			$total_roles = $roles->count();
 		}
 
-		$filters->add('Keyword')
-			->add('Perpage', $total_roles, 'all_roles', TRUE);
+		$filters->add('Perpage', $total_roles, 'all_roles', TRUE);
 
 		$filter_values = $filters->values();
 		$vars['base_url']->addQueryStringVariables($filter_values);
