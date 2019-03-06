@@ -23,7 +23,11 @@ class Publish extends AbstractPublishController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_create_entries'))
+		if ( ! ee('Permission')->hasAny(
+			'can_create_entries',
+			'can_edit_self_entries',
+			'can_edit_other_entries'
+		))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

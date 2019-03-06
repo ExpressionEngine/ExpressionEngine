@@ -25,6 +25,7 @@ Bullet list below, e.g.
 - Fixed a bug ([\#132](https://github.com/ExpressionEngine/ExpressionEngine/issues/132)) where the smiley picker would not work in Fluid or Grid.
 - Fixed a bug ([\#144](https://github.com/ExpressionEngine/ExpressionEngine/issues/144)) where the Save & New button was visible without entry creation permissions.
 - Fixed a bug where POST detection of the Channel Form that fixed [\#70](https://github.com/ExpressionEngine/ExpressionEngine/issues/70) would fail if ACTion IDs were not already inserted.
+- Fixed a bug ([\#145](https://github.com/ExpressionEngine/ExpressionEngine/issues/145)) where Live Preview wouldn't work without entry creation permissions.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
