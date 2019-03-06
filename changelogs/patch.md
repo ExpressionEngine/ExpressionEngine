@@ -8,6 +8,7 @@ Bullet list below, e.g.
    - Added <new feature>
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
 
+- Added [`db_backup_row_limit` config](general/system-configuration-overrides.html#db_backup_row_limit) to help the database backup utility complete on limited resources.
 - Improved revision listings ([\#87](https://github.com/ExpressionEngine/ExpressionEngine/pull/87)) for entry and template versioning, to sort in reverse chronological order.
 - Fixed a bug ([\#55](https://github.com/ExpressionEngine/ExpressionEngine/issues/55) where fields may parse incorrectly if they shared similar names.
 - Fixed a bug ([\#119](https://github.com/ExpressionEngine/ExpressionEngine/issues/119)) where Simple Commerce subscription end date was not correctly formatted before output.
