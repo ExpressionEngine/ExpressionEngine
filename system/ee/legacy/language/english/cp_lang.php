@@ -560,6 +560,8 @@ $lang = array(
 
 'roles' => 'Roles',
 
+'custom_member_fields' => 'Member Fields',
+
 /* Footer */
 'about_expressionengine' => 'About ExpressionEngine',
 

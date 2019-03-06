@@ -127,6 +127,7 @@
 								<li><a href="<?=ee('CP/URL', 'members/pending')?>"><?=lang('pending_members')?></a></li>
 								<li><a href="<?=ee('CP/URL', 'members/banned')?>"><?=lang('ban_management')?></a></li>
 								<li><a href="<?=ee('CP/URL', 'members/roles')?>"><?=lang('roles')?></a></li>
+								<li><a href="<?=ee('CP/URL', 'members/fields')?>"><?=lang('custom_member_fields')?></a></li>
 							</ul>
 							<?php if (ee('Permission')->can('create_member')): ?>
 								<a class="nav-add" href="<?=ee('CP/URL', 'members/create')?>"><i class="icon-add"></i><?=lang('new_member')?></a>

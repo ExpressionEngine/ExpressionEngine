@@ -804,8 +804,6 @@ $lang = array(
 
 'current_fields' => 'Member Fields',
 
-'custom_member_fields' => 'Member Fields',
-
 'delete_categories' => 'Delete categories',
 
 'delete_channel_fields' => 'Delete channel fields',
