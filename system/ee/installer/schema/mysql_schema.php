@@ -364,6 +364,7 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE `exp_members_roles` (
 			`member_id` int(10) unsigned NOT NULL,
 			`role_id` int(10) unsigned NOT NULL,
+			`is_locked` char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY (`member_id`,`role_id`)
 		)";
 
@@ -389,7 +390,7 @@ class EE_Schema {
 			`permission_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 		    `role_id` int(10) unsigned NOT NULL,
 			`site_id` int(5) unsigned NOT NULL,
-			`permission` varchar(32) NOT NULL,
+			`permission` varchar(64) NOT NULL,
 			PRIMARY KEY (`permission_id`),
 			KEY `role_id_site_id` (`role_id`,`site_id`)
 		)";
@@ -401,7 +402,6 @@ class EE_Schema {
 			`role_id` int(10) unsigned NOT NULL,
 			`site_id` int(4) unsigned NOT NULL DEFAULT '1',
 			`menu_set_id` int(5) unsigned NOT NULL DEFAULT '1',
-			`is_locked` char(1) NOT NULL DEFAULT 'n',
 			`mbr_delete_notify_emails` varchar(255) DEFAULT NULL,
 			`exclude_from_moderation` char(1) NOT NULL DEFAULT 'n',
 			`search_flood_control` mediumint(5) unsigned NOT NULL,

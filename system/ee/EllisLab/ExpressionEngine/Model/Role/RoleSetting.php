@@ -23,7 +23,6 @@ class RoleSetting extends Model {
 		'role_id'                 => 'int',
 		'site_id'                 => 'int',
 		'menu_set_id'             => 'int',
-		'is_locked'               => 'boolString',
 		'exclude_from_moderation' => 'boolString',
 		'search_flood_control'    => 'int',
 		'prv_msg_send_limit'      => 'int',
@@ -56,7 +55,6 @@ class RoleSetting extends Model {
 	protected $id;
 	protected $role_id;
 	protected $site_id;
-	protected $is_locked;
 	protected $menu_set_id;
 	protected $mbr_delete_notify_emails;
 	protected $exclude_from_moderation;

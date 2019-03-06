@@ -432,6 +432,7 @@ class Roles extends AbstractRolesController {
 	{
 		$role->name = ee('Request')->post('name');
 		$role->description = ee('Request')->post('description');
+		$role->is_locked = ee('Request')->post('is_locked');
 		$role->RoleGroups = ee('Model')->get('RoleGroup', ee('Request')->post('role_groups'))->all();
 		$role->AssignedModules = ee('Model')->get('Module', ee('Request')->post('addons_access'))->all();
 		$role->AssingedUploadDestinations = ee('Model')->get('UploadDestination', ee('Request')->post('upload_destination_access'))->all();
@@ -622,7 +623,7 @@ class Roles extends AbstractRolesController {
 				'fields' => [
 					'is_locked' => [
 						'type' => 'yes_no',
-						'value' => $settings->is_locked,
+						'value' => $role->is_locked,
 					]
 				]
 			],

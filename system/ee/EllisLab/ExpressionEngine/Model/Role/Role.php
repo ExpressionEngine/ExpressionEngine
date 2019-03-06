@@ -21,7 +21,8 @@ class Role extends Model {
 	protected static $_table_name = 'roles';
 
 	protected static $_typed_columns = [
-		'role_id' => 'int',
+		'role_id'   => 'int',
+		'is_locked' => 'boolString',
 	];
 
 	protected static $_relationships = [
@@ -126,6 +127,7 @@ class Role extends Model {
 	protected $role_id;
 	protected $name;
 	protected $description;
+	protected $is_locked;
 
 	public function getAllMembers()
 	{

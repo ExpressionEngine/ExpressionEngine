@@ -40,8 +40,7 @@ class Roles extends Profile {
 
 		if ( ! ee('Permission')->isSuperAdmin())
 		{
-			$roles = $roles->with('RoleSettings')
-				->filter('RoleSettings.is_locked', FALSE);
+			$roles = $roles->filter('is_locked', FALSE);
 		}
 
 		$roles = $roles->all()
@@ -204,8 +203,7 @@ class Roles extends Profile {
 
 		if ( ! ee('Permission')->isSuperAdmin())
 		{
-			$roles = $roles->with('RoleSettings')
-				->filter('RoleSettings.is_locked', FALSE);
+			$roles = $roles->filter('is_locked', FALSE);
 		}
 
 		$num_roles = $roles->count();

@@ -168,6 +168,12 @@ class Updater {
 				'description' => [
 					'type'       => 'text',
 					'null'       => TRUE
+				],
+				'is_locked' => [
+					'type'       => 'char',
+					'constraint' => 1,
+					'null'       => FALSE,
+					'default'    => 'n'
 				]
 			]
 		);
@@ -175,7 +181,7 @@ class Updater {
 		ee()->smartforge->create_table('roles');
 
 		// Populate Roles with existing Groups
-		ee()->db->select('group_id, group_title, group_description');
+		ee()->db->select('group_id, group_title, group_description, is_locked');
 		ee()->db->where('site_id', 1);
 		$groups = ee()->db->get('member_groups');
 		$insert = [];
@@ -185,7 +191,8 @@ class Updater {
 			$insert[] = [
 				'role_id' => $group->group_id,
 				'name' => $group->group_title,
-				'description' => $group->group_description
+				'description' => $group->group_description,
+				'is_locked' => $group->is_locked,
 			];
 		}
 
@@ -325,7 +332,7 @@ class Updater {
 				],
 				'permission' => [
 					'type'       => 'varchar',
-					'constraint' => 64,
+					'constraint' => 255,
 					'null'       => FALSE
 				],
 			]
