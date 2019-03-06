@@ -1409,7 +1409,8 @@ class Members extends CP_Controller {
 						'role_id' => [
 							'type' => 'radio',
 							'required' => TRUE,
-							'choices' => $roles
+							'choices' => $roles,
+							'value' => ee()->config->item('default_primary_role')
 						]
 					]
 				],
