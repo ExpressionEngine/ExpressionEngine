@@ -172,7 +172,7 @@ feature 'Query Form' do
     click_link "Next"
 
     no_php_js_errors
-    results.should have(8).rows
+    results.should have(9).rows
     results.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
   end
 
