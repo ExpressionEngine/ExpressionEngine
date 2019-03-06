@@ -16,7 +16,7 @@ module Member
     element :roles_tab, '.tabs li a[rel="t-1"]'
 
     elements :primary_roles, 'input[name=role_id]'
-    elements :role_groups, 'input[name=role_groups]'
-    elements :roles, 'input[name=roles]'
+    elements :role_groups, 'input[name=role_groups[]]'
+    elements :roles, 'input[name=roles[]]'
   end
 end
