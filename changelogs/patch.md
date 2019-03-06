@@ -28,6 +28,8 @@ Bullet list below, e.g.
 - Fixed a bug where POST detection of the Channel Form that fixed [\#70](https://github.com/ExpressionEngine/ExpressionEngine/issues/70) would fail if ACTion IDs were not already inserted.
 - Fixed a bug ([\#145](https://github.com/ExpressionEngine/ExpressionEngine/issues/145)) where Live Preview wouldn't work without entry creation permissions.
 - Fixed a bug ([\#146](https://github.com/ExpressionEngine/ExpressionEngine/issues/146)) where Relationship fields that shared field IDs with Grid Relationship columns may clash.
+- Fixed a bug ([\#141](https://github.com/ExpressionEngine/ExpressionEngine/issues/141)) in the search module where the absolute count variable and the total result tag were incorrect.
+
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
