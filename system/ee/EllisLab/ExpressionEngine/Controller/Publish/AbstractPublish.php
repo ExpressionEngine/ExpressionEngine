@@ -464,23 +464,28 @@ abstract class AbstractPublish extends CP_Controller {
 				'working' => 'btn_saving',
 				// Disable these while JS is still loading key components, re-enabled in publish.js
 				'attrs' => 'disabled="disabled"'
-			],
-			[
+			]
+		];
+
+		if (ee('Permission')->has('can_create_entries'))
+		{
+			$buttons[] = [
 				'name' => 'submit',
 				'type' => 'submit',
 				'value' => 'save_and_new',
 				'text' => 'save_and_new',
 				'working' => 'btn_saving',
 				'attrs' => 'disabled="disabled"'
-			],
-			[
-				'name' => 'submit',
-				'type' => 'submit',
-				'value' => 'save_and_close',
-				'text' => 'save_and_close',
-				'working' => 'btn_saving',
-				'attrs' => 'disabled="disabled"'
-			]
+			];
+		}
+
+		$buttons[] = [
+			'name' => 'submit',
+			'type' => 'submit',
+			'value' => 'save_and_close',
+			'text' => 'save_and_close',
+			'working' => 'btn_saving',
+			'attrs' => 'disabled="disabled"'
 		];
 
 		// get rid of Save & New button if we've reached the max entries for this channel
