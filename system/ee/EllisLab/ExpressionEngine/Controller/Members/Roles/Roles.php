@@ -208,7 +208,7 @@ class Roles extends AbstractRolesController {
 			$role = $this->setWithPost($role);
 			$result = $role->validate();
 
-			if (isset($_POST['ee_fv_role']) && $response = $this->ajaxValidation($result))
+			if (isset($_POST['ee_fv_field']) && $response = $this->ajaxValidation($result))
 			{
 			    return $response;
 			}
