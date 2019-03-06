@@ -90,6 +90,11 @@ EE.cp.DbBackup = {
 		request.setRequestHeader('X-CSRF-TOKEN', EE.CSRF_TOKEN);
 
 		request.onload = function() {
+			if (request.responseText.indexOf('bytes exhausted') != -1) {
+				that._presentError(EE.db_backup.out_of_memory_lang);
+				return;
+			}
+
 			try {
 				var response = JSON.parse(request.responseText);
 			} catch(e) {
