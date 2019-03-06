@@ -190,11 +190,10 @@ EE.cp.DbBackup = {
 	 */
 	_presentError: function(text) {
 		var alert = EE.db_backup.backup_ajax_fail_banner.replace('%body%', text),
-			alert_div = document.createElement('div'),
-			form = document.querySelectorAll('.form-standard form')[0];
+			alert_div = document.createElement('div');
 
 		alert_div.innerHTML = alert;
-		form.insertBefore(alert_div, form.firstChild);
+		$('.form-standard .form-btns-top').after(alert_div);
 
 		this._enableButton();
 		this._disableButton();
