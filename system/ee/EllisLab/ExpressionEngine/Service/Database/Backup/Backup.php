@@ -46,7 +46,7 @@ class Backup {
 	 * decide to advise the caller to start a new request, should they be backing
 	 * up via a web interface
 	 */
-	protected $row_limit = 5000;
+	protected $row_limit = 4000;
 
 	/**
 	 * @var int Number of rows exported in the current session for when we need
