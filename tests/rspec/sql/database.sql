@@ -1160,7 +1160,7 @@ CREATE TABLE `exp_permissions` (
   `permission_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `role_id` int(10) unsigned NOT NULL,
   `site_id` int(5) unsigned NOT NULL,
-  `permission` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `permission` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`permission_id`),
   KEY `role_id_site_id` (`role_id`,`site_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=97 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1242,7 +1242,6 @@ CREATE TABLE `exp_role_settings` (
   `role_id` int(10) NOT NULL,
   `site_id` int(4) unsigned NOT NULL DEFAULT '1',
   `menu_set_id` int(5) unsigned NOT NULL DEFAULT '1',
-  `is_locked` char(1) NOT NULL DEFAULT 'n',
   `mbr_delete_notify_emails` varchar(255) DEFAULT NULL,
   `exclude_from_moderation` char(1) NOT NULL DEFAULT 'n',
   `search_flood_control` mediumint(5) unsigned NOT NULL,
@@ -1262,6 +1261,7 @@ CREATE TABLE `exp_roles` (
   `role_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text COLLATE utf8mb4_unicode_ci,
+  `is_locked` char(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`role_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -2491,24 +2491,24 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_role_settings` WRITE;
 ALTER TABLE `exp_role_settings` DISABLE KEYS;
-INSERT INTO `exp_role_settings` (`id`, `role_id`, `site_id`, `menu_set_id`, `is_locked`, `mbr_delete_notify_emails`, `exclude_from_moderation`, `search_flood_control`, `prv_msg_send_limit`, `prv_msg_storage_limit`, `include_in_authorlist`, `include_in_memberlist`, `cp_homepage`, `cp_homepage_channel`, `cp_homepage_custom`) VALUES
-	(1,1,1,1,'n',NULL,'y',0,20,60,'y','y',NULL,0,NULL),
-	(2,2,1,1,'n',NULL,'n',60,20,60,'n','n',NULL,0,NULL),
-	(3,3,1,1,'n',NULL,'n',10,20,60,'n','y',NULL,0,NULL),
-	(4,4,1,1,'n',NULL,'n',10,20,60,'n','y',NULL,0,NULL),
-	(5,5,1,1,'n',NULL,'n',10,20,60,'n','y',NULL,0,NULL);
+INSERT INTO `exp_role_settings` (`id`, `role_id`, `site_id`, `menu_set_id`, `mbr_delete_notify_emails`, `exclude_from_moderation`, `search_flood_control`, `prv_msg_send_limit`, `prv_msg_storage_limit`, `include_in_authorlist`, `include_in_memberlist`, `cp_homepage`, `cp_homepage_channel`, `cp_homepage_custom`) VALUES
+	(1,1,1,1,NULL,'y',0,20,60,'y','y',NULL,0,NULL),
+	(2,2,1,1,NULL,'n',60,20,60,'n','n',NULL,0,NULL),
+	(3,3,1,1,NULL,'n',10,20,60,'n','y',NULL,0,NULL),
+	(4,4,1,1,NULL,'n',10,20,60,'n','y',NULL,0,NULL),
+	(5,5,1,1,NULL,'n',10,20,60,'n','y',NULL,0,NULL);
 ALTER TABLE `exp_role_settings` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_roles` WRITE;
 ALTER TABLE `exp_roles` DISABLE KEYS;
-INSERT INTO `exp_roles` (`role_id`, `name`, `description`) VALUES
-	(1,'Super Admin',''),
-	(2,'Banned',''),
-	(3,'Guests',''),
-	(4,'Pending',''),
-	(5,'Members','');
+INSERT INTO `exp_roles` (`role_id`, `name`, `description`, `is_locked`) VALUES
+	(1,'Super Admin','','n'),
+	(2,'Banned','','n'),
+	(3,'Guests','','n'),
+	(4,'Pending','','n'),
+	(5,'Members','','n');
 ALTER TABLE `exp_roles` ENABLE KEYS;
 UNLOCK TABLES;
 

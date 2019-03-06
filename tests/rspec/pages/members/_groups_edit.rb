@@ -1,11 +1,18 @@
 class MemberGroupsEdit < SitePrism::Section
-  element :submit, 'div.form-btns.form-btns-top input[type=submit]'
+  element :save, 'div.form-btns.form-btns-top button[type=submit][value="save"]'
+  element :save_and_new, 'div.form-btns.form-btns-top button[type=submit][value="save"]'
+  element :save_and_close, 'div.form-btns.form-btns-top button[type=submit][value="save_and_close"]'
+
+  element :role_tab, '.tabs li a[rel="t-0"]'
+  element :website_access_tab, '.tabs li a[rel="t-1"]'
+  element :cp_access_tab, '.tabs li a[rel="t-2"]'
 
   # Fields
-  element :name, 'input[name="group_title"]'
-  element :description, 'textarea[name="group_description"]'
+  element :name, 'input[name="name"]'
+  element :description, 'textarea[name="description"]'
   element :is_locked, 'input[name="is_locked"]', :visible => false
   element :is_locked_toggle, 'a[data-toggle-for=is_locked]'
+  elements :role_groups, 'input[name="role_groups[]"]'
 
   elements :website_access, 'input[name="website_access[]"]'
   element :can_view_profiles, 'input[name="can_view_profiles"]', :visible => false
@@ -104,7 +111,7 @@ class MemberGroupsEdit < SitePrism::Section
   element :template_permissions, 'div[data-input-value="template_permissions"]', :visible => false
   elements :template_permissions_options, 'div[data-input-value="template_permissions"] input[type="checkbox"]', :visible => false
   element :allowed_template_groups, 'div[data-input-value="allowed_template_groups"]', :visible => false
-  elements :allowed_template_groups_options, 'div[data-input-value="allowed_template_groups"] input[type="checkbox"]', :visible => false
+  elements :allowed_template_groups_options, 'div[data-input-value="template_group_access"] input[type="checkbox"]', :visible => false
 
   element :can_access_addons, 'input[name="can_access_addons"]', :visible => false
   element :can_access_addons_toggle, 'a[data-toggle-for=can_access_addons]', :visible => false
