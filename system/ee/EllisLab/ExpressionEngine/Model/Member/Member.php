@@ -213,7 +213,7 @@ class Member extends ContentModel {
 	);
 
 	protected static $_validation_rules = array(
-		'role_id'         => 'required|isNatural|validateGroupId',
+		'role_id'         => 'required|isNatural|validateRoleId',
 		'username'        => 'required|unique|validateUsername',
 		'screen_name'     => 'validateScreenName',
 		'email'           => 'required|email|uniqueEmail|validateEmail',
@@ -572,7 +572,7 @@ class Member extends ContentModel {
 		}
 
 		// Make sure to get the correct site, revert once issue #1285 is fixed
-		$member_group = $this->getModelFacade()->get('RoleSetting')
+		$primary_role = $this->getModelFacade()->get('RoleSetting')
 			->filter('role_id', $this->role_id)
 			->filter('site_id', $site_id)
 			->first();
@@ -597,11 +597,11 @@ class Member extends ContentModel {
 				}
 			}
 		}
-		elseif ( ! empty($member_group->cp_homepage))
+		elseif ( ! empty($primary_role->cp_homepage))
 		{
-			$cp_homepage = $member_group->cp_homepage;
-			$cp_homepage_channel = $member_group->cp_homepage_channel;
-			$cp_homepage_custom = $member_group->cp_homepage_custom;
+			$cp_homepage = $primary_role->cp_homepage;
+			$cp_homepage_channel = $primary_role->cp_homepage_channel;
+			$cp_homepage_custom = $primary_role->cp_homepage_custom;
 		}
 
 		switch ($cp_homepage) {
@@ -646,17 +646,16 @@ class Member extends ContentModel {
 	/**
 	 * Ensures the group ID exists and the member has permission to add to the group
 	 */
-	public function validateGroupId($key, $role_id)
+	public function validateRoleId($key, $role_id)
 	{
-		$member_groups = $this->getModelFacade()->get('Role')
-			->with('RoleSettings');
+		$roles = $this->getModelFacade()->get('Role');
 
 		if ( ! ee('Permission')->isSuperAdmin())
 		{
-			$member_groups->filter('is_locked', 'n');
+			$roles->filter('is_locked', 'n');
 		}
 
-		if ( ! in_array($role_id, $member_groups->all()->pluck('role_id')))
+		if ( ! in_array($role_id, $roles->all()->pluck('role_id')))
 		{
 			return 'invalid_role_id';
 		}

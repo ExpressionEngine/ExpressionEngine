@@ -1578,11 +1578,14 @@ class Member_settings extends Member {
 
 		$group_opts = '';
 
-		$query = ee()->db->query("SELECT group_id, group_title FROM exp_member_groups WHERE site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."' ORDER BY group_title");
+		$roles = ee('Model')->get('Role')
+			->fields('role_id', 'name')
+			->order('name')
+			->all();
 
-		foreach ($query->result_array() as $row)
+		foreach ($roles as $role)
 		{
-			$group_opts .= "<option value='{$row['group_id']}'>{$row['group_title']}</option>";
+			$group_opts .= "<option value='{$role->getId()}'>{$role->name()}</option>";
 		}
 
 		$template = $this->_var_swap($this->_load_element('search_members'),
@@ -1634,7 +1637,7 @@ class Member_settings extends Member {
 			{
 				if ($val != 'any')
 				{
-					$search_query[] = " group_id ='".ee()->db->escape_str($_POST['group_id'])."'";
+					$search_query[] = " role_id ='".ee()->db->escape_str($_POST['group_id'])."'";
 				}
 			}
 			else
@@ -1654,8 +1657,8 @@ class Member_settings extends Member {
 
   		$Q = implode(" AND ", $search_query);
 
-		$sql = "SELECT DISTINCT exp_members.member_id, exp_members.screen_name FROM exp_members, exp_member_groups
-				WHERE exp_members.group_id = exp_member_groups.group_id AND exp_member_groups.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'
+		$sql = "SELECT DISTINCT exp_members.member_id, exp_members.screen_name FROM exp_members, exp_roles
+				WHERE exp_members.role_id = exp_roles.role_id '
 				AND ".$Q;
 
 		$query = ee()->db->query($sql);

@@ -128,10 +128,10 @@ class Members extends Settings {
 						'memberlist_order_by' => array(
 							'type' => 'radio',
 							'choices' => array(
-								'member_id'    => lang('id'),
-								'username'     => lang('username'),
-								'dates'        => lang('join_date'),
-								'member_group' => lang('member_group')
+								'member_id' => lang('id'),
+								'username'  => lang('username'),
+								'dates'     => lang('join_date'),
+								'role'      => lang('role')
 							)
 						)
 					)

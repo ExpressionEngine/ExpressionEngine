@@ -1181,7 +1181,7 @@ class Forum_mcp extends CP_Controller {
 							'choices' => $roles,
 							'value' => $board->getPermission('can_post_reply'),
 							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								'text' => sprintf(lang('no_found'), lang('roles'))
 							]
 						)
 					)
@@ -1195,7 +1195,7 @@ class Forum_mcp extends CP_Controller {
 							'choices' => $roles,
 							'value' => $board->getPermission('can_upload_files'),
 							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								'text' => sprintf(lang('no_found'), lang('roles'))
 							]
 						)
 					)
@@ -3277,7 +3277,7 @@ class Forum_mcp extends CP_Controller {
 							'value' => 5,
 							'margin_left' => TRUE,
 							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								'text' => sprintf(lang('no_found'), lang('roles'))
 							]
 						),
 						'administrator_type_individual' => array(
@@ -3710,7 +3710,7 @@ class Forum_mcp extends CP_Controller {
 							'choices' => $roles,
 							'value' => ($moderator->mod_group_id) ?: 5,
 							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								'text' => sprintf(lang('no_found'), lang('roles'))
 							]
 						),
 						'moderator_type_individual' => array(

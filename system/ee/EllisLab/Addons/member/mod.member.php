@@ -2548,10 +2548,9 @@ class Member {
 			$ignored = ee()->session->userdata('ignore_list');
 		}
 
-		$query = ee()->db->query("SELECT m.member_id, m.group_id, m.username, m.screen_name, m.email, m.ip_address, m.total_entries, m.total_comments, m.private_messages, m.total_forum_topics, m.total_forum_posts AS total_forum_replies, m.total_forum_topics + m.total_forum_posts AS total_forum_posts,
-							g.group_title AS group_description FROM exp_members AS m, exp_member_groups AS g
-							WHERE g.group_id = m.group_id
-							AND g.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'
+		$query = ee()->db->query("SELECT m.member_id, m.role_id, m.role_id AS group_id, m.username, m.screen_name, m.email, m.ip_address, m.total_entries, m.total_comments, m.private_messages, m.total_forum_topics, m.total_forum_posts AS total_forum_replies, m.total_forum_topics + m.total_forum_posts AS total_forum_posts,
+							r.name AS group_description FROM exp_members AS m, exp_roles AS r
+							WHERE r.role_id = m.role_id
 							AND m.member_id IN ('".implode("', '", $ignored)."')");
 
 		if ($query->num_rows() == 0)
