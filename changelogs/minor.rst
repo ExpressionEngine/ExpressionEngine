@@ -17,7 +17,7 @@ Minor Release
    - Added <new feature>
    - Fixed Bug (#<issue number>) where <bug behavior>.
 
-
+- Added `:number_format` to [Variable Modifiers](templates/variable-modifiers.md#number_format)
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists

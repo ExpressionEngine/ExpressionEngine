@@ -567,6 +567,11 @@ class EE_Session {
 		// Turn the query rows into array values
 		foreach ($member_query->row_array() as $key => $val)
 		{
+			if (in_array($key, ['timezone', 'date_format', 'time_format', 'include_seconds']) && $val === '')
+			{
+				$val = NULL;
+			}
+
 			if ($key != 'crypt_key')
 			{
 				$this->userdata[$key] = $val;

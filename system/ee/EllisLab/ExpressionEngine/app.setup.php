@@ -159,8 +159,9 @@ return [
 		{
 			$filesystem = $ee->make('Filesystem');
 			$backup_query = $ee->make('Database/Backup/Query');
+			$row_limit = ee()->config->item('db_backup_row_limit');
 
-			return new Database\Backup\Backup($filesystem, $backup_query, $file_path);
+			return new Database\Backup\Backup($filesystem, $backup_query, $file_path, $row_limit);
 		},
 
 		'Database/Backup/Query' => function($ee)

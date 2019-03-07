@@ -369,9 +369,10 @@ class Template extends AbstractDesignController {
 		$table->setNoResultsText(lang('no_revisions'));
 
 		$data = array();
-		$i = 1;
+		
+		$i = $template->Versions->count();
 
-		foreach ($template->Versions->sortBy('item_date') as $version)
+		foreach ($template->Versions->sortBy('item_date')->reverse() as $version)
 		{
 			$attrs = array();
 
@@ -409,7 +410,7 @@ class Template extends AbstractDesignController {
 					$toolbar
 				)
 			);
-			$i++;
+			$i--;
 		}
 
 		$table->setData($data);
