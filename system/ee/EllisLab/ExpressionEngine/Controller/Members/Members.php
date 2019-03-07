@@ -45,7 +45,7 @@ class Members extends CP_Controller {
 			ee()->functions->redirect($this->base_url);
 		}
 
-		$members = ee('Model')->get('Member');
+		$members = ee('Model')->get('Member')->with('PrimaryRole');
 
 		$filters = $this->makeAndApplyFilters($members, TRUE);
 		$vars['filters'] = $filters->render($this->base_url);
@@ -619,7 +619,7 @@ class Members extends CP_Controller {
 			'member_id'    => 'member_id',
 			'username'     => 'username',
 			'dates'        => 'join_date',
-			'member_group' => 'group_id'
+			'primary_role' => 'PrimaryRole.name'
 		);
 
 		$members = $members->order($sort_map[$table->sort_col], $table->config['sort_dir'])
