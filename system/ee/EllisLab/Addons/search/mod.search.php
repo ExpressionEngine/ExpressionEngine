@@ -1065,8 +1065,6 @@ class Search {
 			return FALSE;
 		}
 
-		$this->num_rows = $query->num_rows();
-
 		$return = array(
 			'entries' => array(),
 			'channel_ids' => array(),
@@ -1144,6 +1142,9 @@ class Search {
 				}
 			}
 		}
+
+		// Set absolute count
+		$this->num_rows = count(array_unique($query_parts['entries']));
 
 		return $query_parts;
 	}
@@ -1283,6 +1284,7 @@ class Search {
 		$fields	= ($query->row('custom_fields') == '') ? array() : unserialize(stripslashes($query->row('custom_fields') ));
 		$query_parts = unserialize($query->row('query'));
 
+		$this->num_rows = (int) $query->row('total_results');
 		$pagination->per_page = (int) $query->row('per_page');
 		$res_page = $query->row('result_page');
 
@@ -1377,6 +1379,7 @@ class Search {
 		$channel->pagination->offset = ($pagination->per_page * $pagination->current_page) - $pagination->per_page;
 
 		$channel->query = $query;
+		$channel->absolute_results = $this->num_rows;
 
 		if ($channel->query->num_rows() == 0)
 		{
