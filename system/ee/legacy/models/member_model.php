@@ -651,11 +651,11 @@ class Member_model extends CI_Model {
 	 */
 	function get_author_groups($channel_id = '')
 	{
-		$this->db->select('member_groups.group_id');
-		$this->db->join("channel_member_groups", "member_groups.group_id = channel_member_groups.group_id", 'left');
-		$this->db->where('member_groups.include_in_authorlist', 'y');
-		$this->db->where("channel_member_groups.channel_id", $channel_id);
-		$this->db->or_where("member_groups.group_id", 1);
+		$this->db->select('role_settings.role_id');
+		$this->db->join("channel_member_roles", "role_settings.role_id = channel_member_roles.role_id", 'left');
+		$this->db->where('role_settings.include_in_authorlist', 'y');
+		$this->db->where("channel_member_roles.channel_id", $channel_id);
+		$this->db->or_where("role_settings.group_id", 1);
 		$results = $this->db->get('member_groups');
 
 		$group_ids = array();
@@ -682,17 +682,17 @@ class Member_model extends CI_Model {
 		// Please don't combine these two queries. Mysql won't hit an index
 		// on any combination that I've tried; except with a subquery which
 		// is close enough to what we have here. -pk
-		$groups = $this->db
-			->select('group_id')
+		$roles = $this->db
+			->select('role_id')
 			->where('include_in_authorlist', 'y')
 			->where('site_id', $this->config->item('site_id'))
-			->get('member_groups')
+			->get('role_settings')
 			->result_array();
 
-		$groups = array_map('array_pop', $groups);
+		$roles = array_map('array_pop', $roles);
 
 
-		$this->db->select('member_id, group_id, username, screen_name, in_authorlist');
+		$this->db->select('member_id, role_id, username, screen_name, in_authorlist');
 
 		if ($author_id)
 		{
@@ -701,9 +701,9 @@ class Member_model extends CI_Model {
 
 		$this->db->where('in_authorlist', 'y');
 
-		if (count($groups))
+		if (count($roles))
 		{
-			$this->db->or_where_in('group_id', $groups);
+			$this->db->or_where_in('role_id', $roles);
 		}
 
 		$this->db->order_by('screen_name', 'ASC');
@@ -746,9 +746,10 @@ class Member_model extends CI_Model {
 			$this->db->select(implode(',', $additional_fields));
 		}
 
-		$this->db->select("group_id, group_title");
-		$this->db->from("member_groups");
-		$this->db->where("site_id", $this->config->item('site_id'));
+		$this->db->select("role_id, name");
+		$this->db->from("roles");
+		$this->db->join("role_settings", "roles.role_id = role_settings.role_id", 'inner');
+		$this->db->where("role_settings.site_id", $this->config->item('site_id'));
 
 		if ($limit != '')
 		{
@@ -775,7 +776,7 @@ class Member_model extends CI_Model {
 			}
 		}
 
-		$this->db->order_by('group_id, group_title');
+		$this->db->order_by('role_id, name');
 
 		return $this->db->get();
 	}

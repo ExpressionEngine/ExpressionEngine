@@ -680,11 +680,11 @@ class EE_Messages_send extends EE_Messages {
 			/*  for error message
 			/* -------------------------------------*/
 
-			$query = ee()->db->query("SELECT exp_members.screen_name, exp_members.email, exp_members.accept_messages, exp_member_groups.prv_msg_storage_limit
+			$query = ee()->db->query("SELECT exp_members.screen_name, exp_members.email, exp_members.accept_messages, exp_role_settings.prv_msg_storage_limit
 								 FROM exp_members
-								 LEFT JOIN exp_member_groups ON exp_member_groups.group_id = exp_members.group_id
+								 LEFT JOIN exp_role_settings ON exp_role_settings.role_id = exp_members.role_id
 								 WHERE exp_members.member_id IN ('".implode("','",array_merge($details['overflow_recipients'], $details['overflow_cc']))."')
-								 AND exp_member_groups.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'");
+								 AND exp_role_settings.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'");
 
 			if ($query->num_rows() > 0)
 			{
