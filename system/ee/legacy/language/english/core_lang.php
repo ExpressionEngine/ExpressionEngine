@@ -130,9 +130,9 @@ If you made these changes, please accept the modifications on the control panel 
 
 'theme_folder_wrong' => 'Your theme folder path is incorrect. Please go to <a href="%s">URL and Path Settings</a> and check the <mark>Themes Path</mark> and <mark>Themes URL</mark>.',
 
-'unable_to_load_field_type' => 'Unable to load requested field type file: %s.<br /> Confirm the fieldtype file is located in the /system/user/addons/ directory',
+'unable_to_load_field_type' => 'Unable to load requested field type file: %s.<br /> Confirm the fieldtype file is located in the /'.SYSDIR.'/user/addons/ directory',
 
-'unwritable_cache_folder' => 'Your cache folder does not have proper permissions.<br />To fix: Set the cache folder (/system/user/cache/) permissions to 777 (or equivalent for your server).',
+'unwritable_cache_folder' => 'Your cache folder does not have proper permissions.<br />To fix: Set the cache folder (/'.SYSDIR.'/user/cache/) permissions to 777 (or equivalent for your server).',
 
 'unwritable_config_file' => 'Your configuration file does not have the proper permissions.<br />To fix: Set the config file (/'.SYSDIR.'/user/config/config.php) permissions to 666 (or equivalent for your server).',
 

@@ -454,7 +454,13 @@ class Channel_form_lib
 			}
 		}
 
-		//edit form or post-error submission
+		// edit form or post-error submission
+		// check to make sure the POST request is meant for this form
+		if ( ! empty($_POST) && ! is_numeric($this->_hidden_fields['ACT']))
+		{
+			$this->_hidden_fields['ACT'] = ee()->functions->insert_action_ids($this->_hidden_fields['ACT']);
+		}
+
 		if ($this->edit OR ee()->input->post('ACT') == $this->_hidden_fields['ACT'])
 		{
 			//not necessary for edit forms
