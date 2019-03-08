@@ -103,7 +103,7 @@ abstract class AbstractPublish extends CP_Controller {
 			'publish.default_entry_title'    => $entry->Channel->default_entry_title,
 			'publish.foreignChars'           => $foreign_characters,
 			'publish.urlLength'              => URL_TITLE_MAX_LENGTH,
-			'publish.lang.no_member_groups'  => lang('no_member_groups'),
+			'publish.lang.no_member_groups'  => lang('no_member_roles'),
 			'publish.lang.refresh_layout'    => lang('refresh_layout'),
 			'publish.lang.tab_count_zero'    => lang('tab_count_zero'),
 			'publish.lang.tab_has_req_field' => lang('tab_has_req_field'),
