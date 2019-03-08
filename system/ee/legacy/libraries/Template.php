@@ -2602,7 +2602,7 @@ class EE_Template {
 		{
 			$this->log_item("HTTP Authentication in Progress");
 
-			$not_allowed_groups = ee('Model')->get('Role')
+			$disallowed_roles = ee('Model')->get('Role')
 				->all()
 				->getDictionary('role_id', 'name');
 
@@ -2614,13 +2614,13 @@ class EE_Template {
 			{
 				foreach($results->result_array() as $row)
 				{
-					unset($not_allowed_groups[$row['role_id']]);
+					unset($disallowed_roles[$row['role_id']]);
 				}
 			}
 
 			ee()->load->library('auth');
 			ee()->auth->authenticate_http_basic(
-				array_keys($not_allowed_groups),
+				array_keys($disallowed_roles),
 				$this->realm
 			);
 		}
