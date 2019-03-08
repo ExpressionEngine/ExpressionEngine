@@ -122,9 +122,18 @@ class Auth {
 
 		if ($authed !== FALSE)
 		{
-			if (in_array($authed->member('role_id'), $not_allowed_groups))
+			$member = ee('Model')->get('Member', $authed->member('member_id'))->first();
+
+			$authed = FALSE;
+
+			foreach ($member->getAllRoles()->pluck('role_id') as $role_id)
 			{
-				$authed = FALSE;
+				// If they have even a single Role that is allowed, then they are allowed
+				if ( ! in_array($role_id, $not_allowed_groups))
+				{
+					$authed = TRUE;
+					break;
+				}
 			}
 		}
 

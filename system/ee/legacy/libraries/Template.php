@@ -2602,23 +2602,25 @@ class EE_Template {
 		{
 			$this->log_item("HTTP Authentication in Progress");
 
-			ee()->db->select('member_group');
-			ee()->db->where('template_id', $query->row('template_id'));
-			$results = ee()->db->get('template_no_access');
+			$not_allowed_groups = ee('Model')->get('Role')
+				->all()
+				->getDictionary('role_id', 'name');
 
-			$not_allowed_groups = array();
+			ee()->db->select('role_id');
+			ee()->db->where('template_id', $query->row('template_id'));
+			$results = ee()->db->get('templates_roles');
 
 			if ($results->num_rows() > 0)
 			{
 				foreach($results->result_array() as $row)
 				{
-					$not_allowed_groups[] = $row['member_group'];
+					unset($not_allowed_groups[$row['role_id']]);
 				}
 			}
 
 			ee()->load->library('auth');
 			ee()->auth->authenticate_http_basic(
-				$not_allowed_groups,
+				array_keys($not_allowed_groups),
 				$this->realm
 			);
 		}
@@ -2626,7 +2628,7 @@ class EE_Template {
 		// Is the current user allowed to view this template?
 		if ($query->row('enable_http_auth') != 'y' && ! ee('Permission')->isSuperAdmin())
 		{
-			$templates = ee()->session->getMemberI()->getAssignedTemplates()->pluck('template_id');
+			$templates = ee()->session->getMember()->getAssignedTemplates()->pluck('template_id');
 
 			if ( ! in_array($query->row('template_id'), $templates))
 			{
