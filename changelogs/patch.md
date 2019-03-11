@@ -12,3 +12,5 @@ Bullet list below, e.g.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
+
+- Fixed a bug where RTE fields did not display properly in the channel form for non-logged in users.
