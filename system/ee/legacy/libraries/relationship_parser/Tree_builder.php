@@ -216,6 +216,11 @@ class EE_relationship_tree_builder {
 		}
 
 		$all_fields = array_merge($this->relationship_field_names, ['parents', 'siblings']);
+
+		usort($all_fields, function ($a, $b){
+			return strlen($b) - strlen($a);
+		});
+
 		$all_fields = implode('|', $all_fields);
 
 		// Regex to separate out the relationship prefix part from the rest
@@ -227,12 +232,12 @@ class EE_relationship_tree_builder {
 
 		if ( ! $is_grid)
 		{
-			$regex = '\/?((?:(?:'.$all_fields.'):?)+)(?![\w-])([^}{]*)?';
+			$regex = '\/?((?:(?:'.$all_fields.'):?)+)\b([^}{]*)?';
 		}
 		else
 		{
 			$force_parent = implode('|', $this->grid_relationship_names);
-			$regex = '\/?((?:'.$force_parent.')(?:[:](?:(?:'.$all_fields.'):?)+)?)(?![\w-])([^}{]*)?';
+			$regex = '\/?((?:'.$force_parent.')(?:[:](?:(?:'.$all_fields.'):?)+)?)\b([^}{]*)?';
 		}
 
 		require_once __DIR__.'/VariableFinder.php';
