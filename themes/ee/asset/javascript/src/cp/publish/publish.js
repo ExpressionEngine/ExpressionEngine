@@ -42,7 +42,7 @@ $(document).ready(function () {
 
 	// Emoji
 	if (EE.publish.smileys === true) {
-		$('.format-options .toolbar .emoji a').click(function(e) {
+		$('body').on('click', '.format-options .toolbar .emoji a', function(e) {
 			$(this).parents('.format-options').find('.emoji-wrap').slideToggle('fast');
 			e.preventDefault();
 		});

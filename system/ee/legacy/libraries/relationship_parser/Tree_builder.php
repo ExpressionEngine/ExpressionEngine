@@ -227,12 +227,12 @@ class EE_relationship_tree_builder {
 
 		if ( ! $is_grid)
 		{
-			$regex = '\/?((?:(?:'.$all_fields.'):?)+)\b([^}{]*)?';
+			$regex = '\/?((?:(?:'.$all_fields.'):?)+)(?![\w-])([^}{]*)?';
 		}
 		else
 		{
 			$force_parent = implode('|', $this->grid_relationship_names);
-			$regex = '\/?((?:'.$force_parent.')(?:[:](?:(?:'.$all_fields.'):?)+)?)\b([^}{]*)?';
+			$regex = '\/?((?:'.$force_parent.')(?:[:](?:(?:'.$all_fields.'):?)+)?)(?![\w-])([^}{]*)?';
 		}
 
 		require_once __DIR__.'/VariableFinder.php';

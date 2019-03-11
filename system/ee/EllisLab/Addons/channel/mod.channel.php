@@ -721,18 +721,18 @@ class Channel {
 			$sites = ($site_ids ? $site_ids : array(ee()->config->item('site_id')));
 			foreach ($sites as $site_name => $site_id)
 			{
-				// If fields_sql isn't empty then this isn't a first
-				// loop and we have terms that need to be ored together.
-				if($fields_sql !== '') {
-					$fields_sql .= ' OR ';
-				}
-
 				// We're goign to repeat the search on each site
 				// so store the terms in a temp.  FIXME Necessary?
 				$terms = $search_terms;
 				if ( ! isset($this->cfields[$site_id][$field_name]))
 				{
 					continue;
+				}
+
+				// If fields_sql isn't empty then this isn't a first
+				// loop and we have terms that need to be ored together.
+				if($fields_sql !== '') {
+					$fields_sql .= ' OR ';
 				}
 
 				$field_id = $this->cfields[$site_id][$field_name];
@@ -2010,6 +2010,7 @@ class Channel {
 		{
 			$joins = '';
 			$legacy_fields = array();
+			$joined_fields = [];
 			foreach (array_keys(ee()->TMPL->search_fields) as $field_name)
 			{
 				$sites = (ee()->TMPL->site_ids ? ee()->TMPL->site_ids : array(ee()->config->item('site_id')));
@@ -2018,12 +2019,21 @@ class Channel {
 					if (isset($this->cfields[$site_id][$field_name]))
 					{
 						$field_id = $this->cfields[$site_id][$field_name];
+
+						if (isset($joined_fields[$field_id]))
+						{
+							continue;
+						}
+
 						$field = ee('Model')->get('ChannelField', $field_id)
 							->fields('legacy_field_data')
 							->first();
+
 						if ( ! $field->legacy_field_data)
 						{
 							$joins .= "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
+
+							$joined_fields[$field_id] = TRUE;
 						}
 						else
 						{
@@ -2189,6 +2199,7 @@ class Channel {
 						break;
 
 						case 'custom_field' :
+
 							if (strpos($corder[$key], '|') !== FALSE)
 							{
 								$field_list = [];
@@ -2205,7 +2216,7 @@ class Channel {
 									{
 										if (strpos($sql, "exp_channel_data_field_{$field_id}") === FALSE)
 										{
-											$join .= "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
+											$join = "LEFT JOIN exp_channel_data_field_{$field_id} ON exp_channel_data_field_{$field_id}.entry_id = t.entry_id ";
 											$sql = str_replace('WHERE ', $join . 'WHERE ', $sql);
 										}
 
@@ -2213,6 +2224,8 @@ class Channel {
 
 									}
 								}
+
+								$field_list = implode(', ', $field_list);
 
 								$end .= "CONCAT(".$field_list.")";
 								$distinct_select .= ', '.$field_list.' ';

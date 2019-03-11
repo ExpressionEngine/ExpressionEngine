@@ -262,9 +262,9 @@ class Homepage extends CP_Controller {
 		$news_view->version = APP_VER;
 		$news_view->save();
 
-		// Version in anchor is separated by dashes instead of dots
-		$dashed_version = implode('-', explode('.', APP_VER));
-		$changelog_url = 'https://docs.expressionengine.com/latest/about/changelog.html#version-'.$dashed_version;
+		// Version in anchor is sans dots
+		$version = implode('', explode('.', APP_VER));
+		$changelog_url = DOC_URL.'installation/changelog.html#version-'.$version;
 
 		ee()->functions->redirect($changelog_url);
 	}
