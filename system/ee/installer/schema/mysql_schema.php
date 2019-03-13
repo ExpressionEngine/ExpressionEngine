@@ -358,13 +358,13 @@ class EE_Schema {
 			`role_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`name` varchar(100) NOT NULL,
 			`description` text,
+			`is_locked` char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY (`role_id`)
 		)";
 
 		$Q[] = "CREATE TABLE `exp_members_roles` (
 			`member_id` int(10) unsigned NOT NULL,
 			`role_id` int(10) unsigned NOT NULL,
-			`is_locked` char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY (`member_id`,`role_id`)
 		)";
 
@@ -1488,22 +1488,26 @@ class EE_Schema {
 			array(
 				'name'                    => 'Banned',
 				'role_id'                 => 2,
+				'is_locked'               => 'n',
 				'include_in_memberlist'   => 'n',
 				'search_flood_control'    => '60'
 			),
 			array(
 				'name'                    => 'Guests',
 				'role_id'                 => 3,
+				'is_locked'               => 'n',
 				'search_flood_control'    => '10'
 			),
 			array(
 				'name'                    => 'Pending',
 				'role_id'                 => 4,
+				'is_locked'               => 'n',
 				'search_flood_control'    => '10'
 			),
 			array(
 				'name'                    => 'Members',
 				'role_id'                 => 5,
+				'is_locked'               => 'n',
 				'search_flood_control'    => '10'
 			)
 		);
@@ -1515,10 +1519,11 @@ class EE_Schema {
 		foreach ($roles as $role)
 		{
 			$Q[] = "INSERT INTO exp_roles
-				(role_id, name)
-				VALUES (" . $role['role_id'] . ", '" . $role['name'] . "')";
+				(role_id, name, is_locked)
+				VALUES (" . $role['role_id'] . ", '" . $role['name'] . "', '" . $role['is_locked'] . "')";
 
 			unset($role['name']);
+			unset($role['is_locked']);
 
 			$Q[] = "INSERT INTO exp_role_settings
 				(".implode(', ', array_keys($role)).")
