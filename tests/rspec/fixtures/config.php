@@ -10,7 +10,7 @@ $longopts = array(
 	"help",
 );
 
-$options = getopt('h', $longopts, $optind);
+$options = getopt('h', $longopts);
 
 if (empty($argv) || isset($options['h']) || isset($options['help']))
 {
@@ -27,11 +27,23 @@ $raw = isset($options['raw']) ? TRUE : FALSE;
 
 ee()->config->site_prefs('', $site_id);
 
-$argv = array_slice($argv, $optind - 1);
+$item = NULL;
+$value = NULL;
 
-$item = array_shift($argv);
+$item = array_pop($argv);
 
-if (empty($argv))
+if ( ! empty($argv))
+{
+	$arg = array_pop($argv);
+
+	if ($arg[0] != '-' && (end($argv) != '--site-id'))
+	{
+		$value = $item;
+		$item = $arg;
+	}
+}
+
+if (empty($value))
 {
 	$value = ee()->config->item($item, $index, $raw);
 	if (empty($value))
@@ -40,8 +52,6 @@ if (empty($argv))
 	}
 	exit((string)$value);
 }
-
-$value = array_shift($argv);
 
 ee()->config->update_site_prefs(array($item => $value), $site_id);
 ee()->config->site_prefs('', $site_id);
