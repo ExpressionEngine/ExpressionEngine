@@ -1144,7 +1144,7 @@ class Search {
 		}
 
 		// Set absolute count
-		$this->num_rows = count(array_unique($query_parts['entries']));
+		$this->num_rows = $query_parts ? count(array_unique($query_parts['entries'])) : 0;
 
 		return $query_parts;
 	}
