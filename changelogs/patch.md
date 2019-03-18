@@ -8,7 +8,7 @@ Bullet list below, e.g.
    - Added <new feature>
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
 
-
+- Fixed a bug where searching an AJAX-filtered list in the control panel by something other than its label may not return the expected result.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists

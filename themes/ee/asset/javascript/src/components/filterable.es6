@@ -33,7 +33,7 @@ function makeFilterableComponent(WrappedComponent) {
     initialItemsChanged = (items) => {
       this.initialItems = items
 
-      if (this.state.filterValues.search) {
+      if ( ! this.ajaxFilter && this.state.filterValues.search) {
         items = this.filterItems(items, this.state.filterValues.search)
       }
 
