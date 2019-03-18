@@ -976,10 +976,6 @@ class Search {
 		{
 			$this->_meta['category'] = $_POST['cat_id'];
 		}
-		else
-		{
-			$this->_meta['category'] = '';
-		}
 
 		if (is_array($this->_meta['category']))
 		{
