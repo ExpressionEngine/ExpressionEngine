@@ -10,6 +10,7 @@ Bullet list below, e.g.
 
 - Fixed a bug where searching an AJAX-filtered list in the control panel by something other than its label may not return the expected result.
 - Fixed a bug where default value selection of a Select list might show an empty selected value.
+- Fixed a bug([\#158](https://github.com/ExpressionEngine/ExpressionEngine/issues/158)) where a link to create new content would appear on the homepage despite content creation permissions.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
