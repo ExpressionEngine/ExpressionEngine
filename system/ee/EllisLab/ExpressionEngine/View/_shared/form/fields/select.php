@@ -103,7 +103,11 @@ else:
 	if ($value !== FALSE && $value !== NULL && ! is_array($value) && ! $multi)
 	{
 		$label = ee('View/Helpers')->findLabelForValue($value, $normalized_choices);
-		$value = [$value => $label];
+
+		if ($label)
+		{
+			$value = [$value => $label];
+		}
 	}
 	elseif ($multi && ! is_array($value))
 	{
