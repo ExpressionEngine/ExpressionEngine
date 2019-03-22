@@ -564,7 +564,7 @@ class Rte_lib {
 		$data = htmlspecialchars_decode($data, ENT_QUOTES);
 
 		// Check the RTE module and user's preferences
-		if (ee()->session->userdata('rte_enabled') == 'y'
+		if ((ee()->session->userdata('rte_enabled') == 'y' OR (ee()->session->userdata('rte_enabled') != 'y'AND ee()->session->userdata('group_id') == 3))
 			AND ee()->config->item('rte_enabled') == 'y')
 		{
 			$field['class']	.= ' WysiHat-field';

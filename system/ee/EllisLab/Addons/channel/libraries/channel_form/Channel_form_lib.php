@@ -2339,6 +2339,7 @@ GRID_FALLBACK;
 			$query->filter('url_title', $url_title);
 		}
 
+		$query->filter('ChannelEntry.channel_id', $this->channel->channel_id);
 		$query->filter('ChannelEntry.site_id', $this->site_id);
 
 		$entry = $query->first();

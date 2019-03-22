@@ -1349,7 +1349,7 @@ class Channels extends AbstractChannelsController {
 
 		$channel->ChannelFormSettings->default_status = ee('Request')->post('default_status');
 		$channel->ChannelFormSettings->allow_guest_posts = ee('Request')->post('allow_guest_posts');
-		$channel->ChannelFormSettings->default_author = ee('Request')->post('default_author');
+		$channel->ChannelFormSettings->default_author = ee('Request')->post('default_author') ?: 0;
 
 		return $channel;
 	}
