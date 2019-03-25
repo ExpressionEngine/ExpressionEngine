@@ -369,7 +369,7 @@ class Template extends AbstractDesignController {
 		$table->setNoResultsText(lang('no_revisions'));
 
 		$data = array();
-		
+
 		$i = $template->Versions->count();
 
 		foreach ($template->Versions->sortBy('item_date')->reverse() as $version)
@@ -832,6 +832,7 @@ class Template extends AbstractDesignController {
 				'fields' => array(
 					'template_notes' => array(
 						'type' => 'textarea',
+						'attrs' => 'class="textarea--large"',
 						'value' => $template->template_notes,
 					)
 				)

@@ -8,6 +8,7 @@ Bullet list below, e.g.
    - Added <new feature>
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
 
+- Added a new class to the comment edit field and template notes field, increasing the size of the fields.
 - Fixed a bug where searching an AJAX-filtered list in the control panel by something other than its label may not return the expected result.
 - Fixed a bug where default value selection of a Select list might show an empty selected value.
 - Fixed a bug([\#150](https://github.com/ExpressionEngine/ExpressionEngine/issues/150)) where the Search Module may not filter by category.
