@@ -8,6 +8,7 @@ Bullet list below, e.g.
    - Added <new feature>
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
 
+- Security: Fixed a potential remote template code execution bug.
 - Added a new class to the comment edit field and template notes field, increasing the size of the fields.
 - Fixed a bug where searching an AJAX-filtered list in the control panel by something other than its label may not return the expected result.
 - Fixed a bug where default value selection of a Select list might show an empty selected value.
