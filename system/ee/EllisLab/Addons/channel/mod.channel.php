@@ -217,26 +217,9 @@ class Channel {
 					$per_page = ( ! is_numeric(ee()->TMPL->fetch_param('limit'))) ? '100' : ee()->TMPL->fetch_param('limit');
 				}
 
-				if (($this->fetch_cache('field_pagination')) !== FALSE)
+				if ($this->pagination->build(trim($cache), $per_page) == FALSE)
 				{
-					if (($pg_query = $this->fetch_cache('pagination_query')) !== FALSE)
-					{
-						$this->pagination->paginate = TRUE;
-						$this->pagination->field_pagination = TRUE;
-						$this->pagination->cfields = $this->cfields;
-						$this->pagination->field_pagination_query = ee()->db->query(trim($pg_query));
-						if ($this->pagination->build(trim($cache), $per_page) == FALSE)
-						{
-							$this->sql = '';
-						}
-					}
-				}
-				else
-				{
-					if ($this->pagination->build(trim($cache), $per_page) == FALSE)
-					{
-						$this->sql = '';
-					}
+					$this->sql = '';
 				}
 			}
 		}
@@ -263,6 +246,14 @@ class Channel {
 			}
 
 			$this->query = ee()->db->query($this->sql);
+
+			// Spanning an entry pagination needs the query result
+			if ($this->pagination->field_pagination	== TRUE)
+			{
+				$this->pagination->cfields = $this->cfields;
+				$this->pagination->field_pagination_query = ($this->query->num_rows() == 1) ? $this->query : NULL;
+				$this->pagination->build(1, 1);
+			}
 
 			// -------------------------------------
 			//  "Relaxed" View Tracking
@@ -1280,19 +1271,10 @@ class Channel {
 
 		$sql_b .= ", exp_channels.channel_id ";
 
-		if ($this->pagination->field_pagination == TRUE)
-		{
-			$sql_b .= ",wd.* ";
-		}
-
 		$sql = "FROM exp_channel_titles AS t
 				LEFT JOIN exp_channels ON t.channel_id = exp_channels.channel_id ";
 
-		if ($this->pagination->field_pagination == TRUE)
-		{
-			$sql .= "LEFT JOIN exp_channel_data AS wd ON t.entry_id = wd.entry_id ";
-		}
-		elseif (in_array('custom_field', $order_array))
+		if (in_array('custom_field', $order_array))
 		{
 			$sql .= "LEFT JOIN exp_channel_data AS wd ON t.entry_id = wd.entry_id ";
 		}
@@ -2321,7 +2303,7 @@ class Channel {
 		// We do this hear so we can use the offset into next, then later one as well
 		$offset = ( ! ee()->TMPL->fetch_param('offset') OR ! is_numeric(ee()->TMPL->fetch_param('offset'))) ? '0' : ee()->TMPL->fetch_param('offset');
 
-		// Do we need pagination?
+		// Do we need entry pagination?
 		// We'll run the query to find out
 		if ($this->pagination->paginate == TRUE)
 		{
@@ -2349,30 +2331,11 @@ class Channel {
 				}
 
 				$this->pagination->build($total, $this->pagination->per_page);
-			}
-			else
-			{
-				$this->pager_sql = $sql_a.$sql_b.$sql;
-
-				$query = ee()->db->query($this->pager_sql);
-
-				$total = $query->num_rows;
-				$this->absolute_results = $total;
-
-				$this->pagination->cfields = $this->cfields;
-				$this->pagination->field_pagination_query = $query;
-				$this->pagination->build($total, 1);
 
 				if (ee()->config->item('enable_sql_caching') == 'y')
 				{
-					$this->save_cache($this->pager_sql, 'pagination_query');
-					$this->save_cache('1', 'field_pagination');
+					$this->save_cache($total, 'pagination_count');
 				}
-			}
-
-			if (ee()->config->item('enable_sql_caching') == 'y')
-			{
-				$this->save_cache($total, 'pagination_count');
 			}
 		}
 
