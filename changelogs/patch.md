@@ -17,6 +17,7 @@ Bullet list below, e.g.
 - Fixed a bug([\#161](https://github.com/ExpressionEngine/ExpressionEngine/issues/161)) where searching for terms wrapped in quotes using the Search Module would return all entries.
 - Fixed a bug([\#162](https://github.com/ExpressionEngine/ExpressionEngine/issues/162)) where the `{switch=}` variable would not parse inside the Comment Entries tag.
 - Fixed a bug where Channel Form edit forms might not respect the `channel=` parameter.
+- Fixed a bug([\#140](https://github.com/ExpressionEngine/ExpressionEngine/issues/140)) where channel field pagination did not recognize fields using the new table structure.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
