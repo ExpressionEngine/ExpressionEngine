@@ -112,7 +112,6 @@ class FieldFacade {
 
 	public function setData($data)
 	{
-		$this->ensurePopulatedDefaults();
 		$this->data = $data;
 	}
 
@@ -196,10 +195,8 @@ class FieldFacade {
 
 	public function save($model = NULL)
 	{
-		$this->ensurePopulatedDefaults();
-
-		$value = $this->data;
 		$this->initField();
+		$value = $this->data;
 		return $this->data = $this->api->apply('save', array($value, $model));
 	}
 
