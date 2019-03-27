@@ -10,8 +10,7 @@
 $(document).ready(function () {
 
 	var replaceData = function(data) {
-		$('.wrap .col-group:nth-child(2) .box').html(data.html);
-		$.fuzzyFilter();
+		$('#edit-table').html(data.html);
 
 		$('input[name="search"]').closest('form').attr('action', data.url);
 
@@ -59,4 +58,14 @@ $(document).ready(function () {
 		event.preventDefault();
 	});
 
+	$('body').on('change', 'input[name="columns[]"]', function(e) {
+		var form = $(this).closest('form')
+		$.ajax({
+			url: form.attr('actions'),
+			data: form.serialize(),
+			type: 'GET',
+			dataType: 'json',
+			success: replaceData
+		})
+	})
 });

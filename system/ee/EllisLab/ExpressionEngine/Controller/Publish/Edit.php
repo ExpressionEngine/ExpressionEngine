@@ -222,6 +222,20 @@ class Edit extends AbstractPublishController {
 		$vars['can_edit'] = ee('Permission')->hasAny('can_edit_self_entries', 'can_edit_other_entries');
 		$vars['can_delete'] = ee('Permission')->hasAny('can_delete_all_entries', 'can_delete_self_entries');
 
+		// Gather data for column selection tool
+		$available_columns = EntryManager\ColumnFactory::getAvailableColumns();
+
+		$vars['available_columns'] = $this->getColumnChoices($available_columns);
+		$vars['selected_columns'] = $this->getColumnChoices($columns);
+
+		$vars += $this->getColumnChoices($columns);
+
+		ee()->cp->add_js_script([
+			'plugin' => ['ui.touch.punch', 'ee_interact.event'],
+			'file' => ['fields/relationship/mutable_relationship', 'fields/relationship/relationship'],
+			'ui' => 'sortable'
+		]);
+
 		if (AJAX_REQUEST)
 		{
 			return array(
@@ -231,6 +245,32 @@ class Edit extends AbstractPublishController {
 		}
 
 		ee()->cp->render('publish/edit/index', $vars);
+	}
+
+	/**
+	 * Formats column data for use in selection UI
+	 *
+	 * @param array[Column]
+	 * @return array Identifier => Label
+	 */
+	private function getColumnChoices($columns)
+	{
+		$column_choices = [];
+
+		foreach ($columns as $column)
+		{
+			$identifier = $column->getTableColumnIdentifier();
+
+			// This column is mandatory, not optional
+			if ($identifier == 'checkbox')
+			{
+				continue;
+			}
+
+			$column_choices[$identifier] = strip_tags(lang($column->getTableColumnLabel()));
+		}
+
+		return $column_choices;
 	}
 
 	public function entry($id = NULL, $autosave_id = NULL)

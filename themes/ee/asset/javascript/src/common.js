@@ -694,6 +694,13 @@ $(document).ready(function(){
 			e.preventDefault();
 		});
 
+		$('body').on('click', '.js-toggle-link', function(e) {
+			e.preventDefault()
+
+			var rel = $(this).attr('rel')
+			$('div[rev='+rel+']').toggle()
+		})
+
 	// =============
 	// filter-bar
 	// =============
