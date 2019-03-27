@@ -18,6 +18,7 @@ Bullet list below, e.g.
 - Fixed a bug([\#162](https://github.com/ExpressionEngine/ExpressionEngine/issues/162)) where the `{switch=}` variable would not parse inside the Comment Entries tag.
 - Fixed a bug where Channel Form edit forms might not respect the `channel=` parameter.
 - Fixed a bug([\#140](https://github.com/ExpressionEngine/ExpressionEngine/issues/140)) where channel field pagination did not recognize fields using the new table structure.
+- Fixed a bug([\#164](https://github.com/ExpressionEngine/ExpressionEngine/issues/164)) where upload directories were not ordered alphabetically in the upload modal filter.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists

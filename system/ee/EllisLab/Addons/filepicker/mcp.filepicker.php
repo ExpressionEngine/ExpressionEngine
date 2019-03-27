@@ -38,6 +38,7 @@ class Filepicker_mcp {
 			->with('NoAccess')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('module_id', 0)
+			->order('name', 'asc')
 			->all();
 
 		$member_group = ee()->session->userdata['group_id'];
