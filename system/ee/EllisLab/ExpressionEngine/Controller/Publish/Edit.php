@@ -15,6 +15,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry as ChannelEntry;
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 use Mexitek\PHPColors\Color;
+use EllisLab\ExpressionEngine\Library\CP\EntryManager;
 
 /**
  * Publish/Edit Controller
@@ -77,42 +78,25 @@ class Edit extends AbstractPublishController {
 			'sort_col' => 'column_entry_date',
 		));
 
-		$columns = array(
-			'column_entry_id',
-			'column_title' => array(
-				'encode' => FALSE
-			)
-		);
+		$default_columns = ee()->input->get_post('columns') ?: [
+			'entry_id',
+			'title',
+			'entry_date',
+			'author',
+			'status'
+		];
 
-		$show_comments_column = (
-			ee()->config->item('enable_comments') == 'y' OR
-			ee('Model')->get('Comment')
-				->filter('site_id', ee()->config->item('site_id'))
-				->count() > 0);
+		$default_columns[] = 'checkbox';
 
-		if ($show_comments_column)
-		{
-			$columns = array_merge($columns, array(
-				'column_comment_total' => array(
-					'encode' => FALSE
-				)
-			));
-		}
+		$columns = array_map(function($identifier) {
+			return EntryManager\ColumnFactory::getColumn($identifier);
+		}, $default_columns);
 
-		$columns = array_merge($columns, array(
-			'column_entry_date',
-			'column_status' => array(
-				'type'	=> Table::COL_STATUS
-			),
-			'manage' => array(
-				'type'	=> Table::COL_TOOLBAR
-			),
-			array(
-				'type'	=> Table::COL_CHECKBOX
-			)
-		));
+		$columns = array_filter($columns);
 
-		$table->setColumns($columns);
+		$column_renderer = new EntryManager\ColumnRenderer($columns);
+
+		$table->setColumns($column_renderer->getTableColumnsConfig());
 		$table->setNoResultsText(lang('no_entries_exist'));
 
 		$show_new_button = TRUE;
@@ -151,140 +135,6 @@ class Edit extends AbstractPublishController {
 
 		foreach ($entries->all() as $entry)
 		{
-			if (ee()->cp->allowed_group('can_edit_other_entries')
-				|| (ee()->cp->allowed_group('can_edit_self_entries') &&
-					$entry->author_id == ee()->session->userdata('member_id')
-					)
-				)
-			{
-				$can_edit = TRUE;
-			}
-			else
-			{
-				$can_edit = FALSE;
-			}
-
-			// wW had a delete cascade issue that could leave entries orphaned and
-			// resulted in errors, so we'll sneakily use this controller to clean up
-			// for now.
-			if (is_null($entry->Channel))
-			{
-				$entry->delete();
-				continue;
-			}
-
-			$autosaves = $entry->Autosaves->count();
-
-			// Escape markup in title
-			$escaped_title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
-
-			if ($can_edit)
-			{
-				$edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
-				$title = '<a href="' . $edit_link . '">' . $escaped_title . '</a>';
-			}
-
-			if ($autosaves)
-			{
-				$title .= ' <span class="auto-save" title="' . lang('auto_saved') . '">&#10033;</span>';
-			}
-
-			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->getAuthorName(), ENT_QUOTES, 'UTF-8') . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES, 'UTF-8') . '</span>';
-
-			if ($entry->comment_total > 0)
-			{
-				if (ee()->cp->allowed_group('can_moderate_comments'))
-				{
-					$comments = '(<a href="' . ee('CP/URL')->make('publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>)';
-				}
-				else
-				{
-					$comments = '(' . $entry->comment_total . ')';
-				}
-			}
-			else
-			{
-				$comments = '(0)';
-			}
-
-			$toolbar = array();
-
-			if ($entry->hasLivePreview())
-			{
-				$toolbar['view'] = array(
-					'href' => ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, ['preview' => 'y']),
-					'title' => lang('preview'),
-				);
-			}
-
-			if ($can_edit)
-			{
-				$toolbar['edit'] = array(
-					'href' => $edit_link,
-					'title' => lang('edit')
-				);
-			}
-
-			if (ee()->cp->allowed_group('can_delete_all_entries')
-				|| (ee()->cp->allowed_group('can_delete_self_entries') &&
-					$entry->author_id == ee()->session->userdata('member_id')
-					)
-				)
-			{
-				$can_delete = TRUE;
-			}
-			else
-			{
-				$can_delete = FALSE;
-			}
-
-			$disabled_checkbox = ! $can_edit && ! $can_delete;
-
-			// Display status highlight if one exists
-			$status = isset($statuses[$entry->status]) ? $statuses[$entry->status] : NULL;
-
-			if ($status)
-			{
-				$highlight = new Color($status->highlight);
-				$color = ($highlight->isLight())
-					? $highlight->darken(100)
-					: $highlight->lighten(100);
-
-				$status = array(
-					'content'          => (in_array($status->status, array('open', 'closed'))) ? lang($status->status) : $status->status,
-					'status'           => $status->status,
-					'color'            => $color,
-					'background-color' => $status->highlight
-				);
-			}
-			else
-			{
-				$status = (in_array($entry->status, array('open', 'closed'))) ? lang($entry->status) : $entry->status;
-			}
-
-			$column = array(
-				$entry->entry_id,
-				$title,
-				ee()->localize->human_time($entry->entry_date),
-				$status,
-				array('toolbar_items' => $toolbar),
-				array(
-					'name' => 'selection[]',
-					'value' => $entry->entry_id,
-					'disabled' => $disabled_checkbox,
-					'data' => array(
-						'title' => $escaped_title,
-						'channel-id' => $entry->Channel->getId(),
-						'confirm' => lang('entry') . ': <b>' . $escaped_title . '</b>'
-					)
-				)
-			);
-
-			if ($show_comments_column)
-			{
-				array_splice($column, 2, 0, array($comments));
-			}
-
 			$attrs = array();
 
 			if ($entry_id && $entry->entry_id == $entry_id)
@@ -292,14 +142,14 @@ class Edit extends AbstractPublishController {
 				$attrs = array('class' => 'selected');
 			}
 
-			if ($autosaves)
+			if ($entry->Autosaves->count())
 			{
 				$attrs = array('class' => 'auto-saved');
 			}
 
 			$data[] = array(
 				'attrs'		=> $attrs,
-				'columns'	=> $column
+				'columns'	=> $column_renderer->getRenderedTableRowForEntry($entry)
 			);
 
 		}

@@ -132,7 +132,7 @@ feature 'Forum Tab' do
 
     edit = EntryManager.new
     edit.load
-    edit.entry_rows[0].find('.toolbar-wrap a[href*="publish/edit/entry"]').click
+    edit.entry_rows[0].find('a[href*="publish/edit/entry"]').click
 
     @page.title.set title + " Edited"
     @page.submit_buttons[2].click

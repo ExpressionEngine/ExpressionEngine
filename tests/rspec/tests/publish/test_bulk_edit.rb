@@ -102,7 +102,7 @@ feature 'Bulk Edit' do
 
     @bulk_edit.add_field.click
     @bulk_edit.wait_for_field_options
-    @bulk_edit.click_link 'Status'
+    @bulk_edit.add_new_field 'Status'
 
     # This channel has comments disabled
     expected_fields = ['Expiration date', 'Make entry sticky?', 'Author', 'Categories']
@@ -137,7 +137,7 @@ feature 'Bulk Edit' do
 
     @bulk_edit.add_field.click
     @bulk_edit.wait_for_field_options
-    @bulk_edit.click_link 'Status'
+    @bulk_edit.add_new_field 'Status'
 
     @bulk_edit.wait_for_fluid_fields
     @bulk_edit.fluid_fields[0].find('input[value=closed]').click
@@ -161,40 +161,40 @@ feature 'Bulk Edit' do
 
     @bulk_edit.add_field.click
     @bulk_edit.wait_for_field_options
-    @bulk_edit.click_link 'Status'
+    @bulk_edit.add_new_field 'Status'
     @bulk_edit.wait_for_fluid_fields
     @bulk_edit.fluid_fields[0].find('input[value="closed"]').click
 
     @bulk_edit.add_field.click
     @bulk_edit.wait_for_field_options
-    @bulk_edit.click_link 'Expiration date'
+    @bulk_edit.add_new_field 'Expiration date'
     @bulk_edit.fluid_fields[1].find('input[name=expiration_date]').set '2/14/2018 4:00 PM'
     @bulk_edit.fluid_fields[1].click # Close date picker
 
     @bulk_edit.add_field.click
     @bulk_edit.wait_for_field_options
-    @bulk_edit.click_link 'Comment expiration date'
+    @bulk_edit.add_new_field 'Comment expiration date'
     @bulk_edit.fluid_fields[2].find('input[name=comment_expiration_date]').set '2/14/2018 5:00 PM'
     @bulk_edit.fluid_fields[2].click
 
     @bulk_edit.add_field.click
     @bulk_edit.wait_for_field_options
-    @bulk_edit.click_link 'Make entry sticky?'
+    @bulk_edit.add_new_field 'Make entry sticky?'
     @bulk_edit.fluid_fields[3].find('a.toggle-btn').click
 
     @bulk_edit.add_field.click
     @bulk_edit.wait_for_field_options
-    @bulk_edit.click_link 'Allow comments?'
+    @bulk_edit.add_new_field 'Allow comments?'
     @bulk_edit.fluid_fields[4].find('a.toggle-btn').click
 
     @bulk_edit.add_field.click
     @bulk_edit.wait_for_field_options
-    @bulk_edit.click_link 'Author'
+    @bulk_edit.add_new_field 'Author'
     @bulk_edit.fluid_fields[5].find('input[value="2"]').click
 
     @bulk_edit.add_field.click
     @bulk_edit.wait_for_field_options
-    @bulk_edit.click_link 'Categories'
+    @bulk_edit.add_new_field 'Categories'
     @bulk_edit.fluid_fields[6].find('input[value="2"]').click
 
     # Make sure fields retain values after removing an entry!

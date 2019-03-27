@@ -125,14 +125,14 @@ feature 'Publish Page - Create' do
 
       edit = EntryManager.new
       edit.load
-      edit.entry_rows[0].find('.toolbar-wrap a[href*="publish/edit/entry"]').click
+      edit.entry_rows[0].find('a[href*="publish/edit/entry"]').click
 
       @page.chosen_files.should have(2).items
       @page.submit
 
       edit = EntryManager.new
       edit.load
-      edit.entry_rows[0].find('.toolbar-wrap a[href*="publish/edit/entry"]').click
+      edit.entry_rows[0].find('a[href*="publish/edit/entry"]').click
 
       @page.chosen_files.should have(2).items
     end

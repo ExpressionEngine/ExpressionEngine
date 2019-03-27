@@ -1132,6 +1132,38 @@ abstract class EE_Fieldtype {
 
 		return $this->row('field_ft_'.$this->field_id) ?: $field_fmt;
 	}
+
+	/**
+	 * Implements EntryManager\ColumnInterface, but unused
+	 */
+	public function getTableColumnIdentifier()
+	{
+		return $this->field_name;
+	}
+
+	/**
+	 * Implements EntryManager\ColumnInterface, but unused
+	 */
+	public function getTableColumnLabel()
+	{
+		return '';
+	}
+
+	/**
+	 * Implements EntryManager\ColumnInterface
+	 */
+	public function renderTableCell($data)
+	{
+		return $data;
+	}
+
+	/**
+	 * Implements EntryManager\ColumnInterface
+	 */
+	public function getTableColumnConfig()
+	{
+		return [];
+	}
 }
 // END EE_Fieldtype class
 

@@ -334,7 +334,6 @@ class FieldFacade {
 	}
 
 
-	// TODO THIS WILL MOST DEFINITELY GO AWAY! BAD DEVELOPER!
 	public function getNativeField()
 	{
 		$data = $this->initField();
@@ -345,6 +344,31 @@ class FieldFacade {
 		return $ft;
 	}
 
+	public function implementsInterace($interface)
+	{
+		$fieldtype = $this->getNativeField();
+		$interfaces = class_implements(get_class($fieldtype));
+
+		return isset($interfaces[$interface]);
+	}
+
+	/**
+	 * Forward methods to implementers of EntryManager\ColumnInterface
+	 */
+	public function getTableColumnLabel()
+	{
+		return $this->getNativeField()->getTableColumnLabel();
+	}
+
+	public function getTableColumnConfig()
+	{
+		return $this->getNativeField()->getTableColumnConfig();
+	}
+
+	public function renderTableCell($data)
+	{
+		return $this->getNativeField()->renderTableCell($data);
+	}
 
 	public function initField()
 	{
