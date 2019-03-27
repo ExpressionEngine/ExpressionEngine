@@ -86,8 +86,20 @@ class SelectList extends React.Component {
   }
 
   componentDidUpdate (prevProps, prevState) {
-    if ((this.props.multi && prevProps.selected.length != this.props.selected.length)
-      || ( ! this.props.multi && prevProps.selected != this.props.selected)) {
+    if (this.props.multi) {
+      var getSelectedValues = function(selected) {
+        return selected.value
+      }
+
+      var prevSelected = prevProps.selected.map(getSelectedValues)
+      var selected = this.props.selected.map(getSelectedValues)
+
+      if (JSON.stringify(prevSelected) != JSON.stringify(selected)) {
+        $(this.input).trigger('change')
+      }
+    }
+
+    if ( ! this.props.multi && prevProps.selected != this.props.selected) {
       $(this.input).trigger('change')
     }
 
