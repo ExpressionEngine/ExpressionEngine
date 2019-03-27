@@ -15,7 +15,7 @@ feature 'Debug Extensions' do
   end
 
   it 'shows the Manage Add-on Extensions page' do
-    @page.addon_name_header[:class].should eq 'highlight'
+    @page.addon_name_header[:class].should include 'column-sort---active'
     @page.should have(2).addons # RTE + Header
   end
 

@@ -20,7 +20,7 @@ class TemplateManager < ControlPanelPage
   element :default_template_group, '.sidebar .scroll-wrap ul.folder-list[data-name="template-group"] > li.default'
   element :active_template_group, '.sidebar .scroll-wrap ul.folder-list[data-name="template-group"] > li.act'
 
-  sections :templates, '.tbl-wrap table tbody tr' do
+  sections :templates, 'table.app-listing tbody tr' do
     element :name, 'td:first-child'
     element :type, 'td:nth-child(2)'
     section :manage, 'td:nth-child(3)' do

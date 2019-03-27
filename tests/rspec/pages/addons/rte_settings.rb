@@ -11,14 +11,14 @@ class RTESettings < ControlPanelPage
   element :save_settings_button, 'div.form-btns.form-btns-top input.btn[type="submit"]'
 
   element :create_new_button, 'div.tbl-ctrls form fieldset.tbl-search a.btn.action'
-  elements :tool_sets, 'div.tbl-ctrls form div.tbl-wrap table tr'
-  element :tool_set_name_header, 'div.tbl-ctrls form div.tbl-wrap table tr th:first-child'
-  element :status_header, 'div.tbl-ctrls form div.tbl-wrap table tr th:nth-child(2)'
-  element :manage_header, 'div.tbl-ctrls form div.tbl-wrap table tr th:nth-child(3)'
-  element :checkbox_header, 'div.tbl-ctrls form div.tbl-wrap table tr th:nth-child(4)'
+  elements :tool_sets, 'div.tbl-ctrls form table.app-listing tr'
+  element :tool_set_name_header, 'div.tbl-ctrls form table.app-listing tr th:first-child'
+  element :status_header, 'div.tbl-ctrls form table.app-listing tr th:nth-child(2)'
+  element :manage_header, 'div.tbl-ctrls form table.app-listing tr th:nth-child(3)'
+  element :checkbox_header, 'div.tbl-ctrls form table.app-listing tr th:nth-child(4)'
 
-  elements :tool_set_names, 'div.tbl-ctrls form div.tbl-wrap table tr td:first-child'
-  elements :statuses, 'div.tbl-ctrls form div.tbl-wrap table tr td:nth-child(2)'
+  elements :tool_set_names, 'div.tbl-ctrls form table.app-listing tr td:first-child'
+  elements :statuses, 'div.tbl-ctrls form table.app-listing tr td:nth-child(2)'
 
   element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
   element :action_submit_button, 'form fieldset.tbl-bulk-act input.submit'

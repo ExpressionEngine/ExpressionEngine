@@ -5,7 +5,7 @@ class SiteManager < ControlPanelPage
   element :title, '.section-header__title'
   element :add_site_button, '.section-header__controls a.btn.action'
 
-  sections :sites, '.tbl-wrap table tbody tr' do
+  sections :sites, 'table.app-listing tbody tr' do
     element :id, 'td:first-child'
     element :name, 'td:nth-child(2)'
     element :short_name, 'td:nth-child(3)'

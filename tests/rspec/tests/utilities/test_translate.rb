@@ -108,22 +108,22 @@ feature 'Translate Tool' do
   end
 
   it 'sorts by file name', :edit => false do
-    @list_page.find('a.sort').click
+    @list_page.find('a.column-sort').click
     no_php_js_errors
 
-    @list_page.should have_css('a.desc')
-    @list_page.should_not have_css('a.asc')
+    @list_page.should have_css('a.column-sort--desc')
+    @list_page.should_not have_css('a.column-sort--asc')
   end
 
   it 'keeps sort while paginating', :edit => false do
-    @list_page.find('a.sort').click
+    @list_page.find('a.column-sort').click
     no_php_js_errors
 
     click_link "Next"
     no_php_js_errors
 
-    @list_page.should have_css('a.desc')
-    @list_page.should_not have_css('a.asc')
+    @list_page.should have_css('a.column-sort--desc')
+    @list_page.should_not have_css('a.column-sort--asc')
   end
 
   # The capybara/webkit driver is munging headers.

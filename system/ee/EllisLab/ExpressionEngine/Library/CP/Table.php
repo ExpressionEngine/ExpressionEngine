@@ -20,6 +20,7 @@ class Table {
 	const COL_STATUS = 3;
 	const COL_TOOLBAR = 4;
 	const COL_ID = 5;
+	const COL_SMALL = 6;
 
 	public $config = array();
 	protected $columns = array();

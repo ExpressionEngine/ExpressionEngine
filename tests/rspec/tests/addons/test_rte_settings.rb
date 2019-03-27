@@ -261,10 +261,10 @@ feature 'RTE Settings' do
   it 'can reverse sort tool sets by name', :stage => 'settings' do
     a_to_z_tool_sets = @page.tool_set_names.map {|tool_set| tool_set.text}
 
-    @page.tool_set_name_header.find('a.sort').click
+    @page.tool_set_name_header.find('a.column-sort').click
     no_php_js_errors
 
-    @page.tool_set_name_header[:class].should eq 'highlight'
+    @page.tool_set_name_header[:class].should include 'column-sort---active'
     @page.tool_set_names.map {|tool_set| tool_set.text}.should == a_to_z_tool_sets.reverse!
   end
 
@@ -284,13 +284,13 @@ feature 'RTE Settings' do
     @page.statuses.map {|status| status.text}.should == before_sorting
 
     # Sort a-z
-    @page.status_header.find('a.sort').click
+    @page.status_header.find('a.column-sort').click
     no_php_js_errors
 
     @page.statuses.map {|status| status.text}.should == a_to_z
 
     # Sort z-a
-    @page.status_header.find('a.sort').click
+    @page.status_header.find('a.column-sort').click
     no_php_js_errors
 
     @page.statuses.map {|status| status.text}.should == z_to_a

@@ -10,9 +10,9 @@ class ControlPanelPage < SitePrism::Page
   element :page_title, '.wrap .box h1'
 
   # Tables
-  element :select_all, 'th.check-ctrl input'
-  element :sort_col, 'table th.highlight'
-  elements :sort_links, 'table a.sort'
+  element :select_all, 'th.text--center input'
+  element :sort_col, 'table th.column-sort---active'
+  elements :sort_links, 'table a.column-sort'
   element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
   element :action_submit_button, 'form fieldset.tbl-bulk-act .submit'
 

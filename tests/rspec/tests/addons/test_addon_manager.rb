@@ -26,16 +26,16 @@ feature 'Add-On Manager' do
     end
 
     it 'shows the Add-On Manager' do
-      @page.first_party_addon_name_header[:class].should eq 'highlight'
+      @page.first_party_addon_name_header[:class].should include 'column-sort---active'
     end
 
     it 'can reverse sort by Add-On name' do
       a_to_z_addons = @page.first_party_addon_names.map {|addon| addon.text}
 
-      @page.first_party_addon_name_header.find('a.sort').click
+      @page.first_party_addon_name_header.find('a.column-sort').click
       no_php_js_errors
 
-      @page.first_party_addon_name_header[:class].should eq 'highlight'
+      @page.first_party_addon_name_header[:class].should include 'column-sort---active'
       @page.first_party_addon_names.map {|addon| addon.text}.should == a_to_z_addons.reverse!
 
       @page.should_not have_first_party_pagination
@@ -44,10 +44,10 @@ feature 'Add-On Manager' do
     it 'can sort by Version' do
       versions = @page.first_party_versions.map {|version| version.text}
 
-      @page.first_party_version_header.find('a.sort').click
+      @page.first_party_version_header.find('a.column-sort').click
       no_php_js_errors
 
-      @page.first_party_version_header[:class].should eq 'highlight'
+      @page.first_party_version_header[:class].should include 'column-sort---active'
       sorted_versions = @page.first_party_versions.map {|version| version.text}
       sorted_versions.should_not == versions
       sorted_versions[0].should == '--'
@@ -58,13 +58,13 @@ feature 'Add-On Manager' do
     it 'can reverse sort by Version' do
       versions = @page.first_party_versions.map {|version| version.text}
 
-      @page.first_party_version_header.find('a.sort').click
+      @page.first_party_version_header.find('a.column-sort').click
       no_php_js_errors
 
-      @page.first_party_version_header.find('a.sort').click
+      @page.first_party_version_header.find('a.column-sort').click
       no_php_js_errors
 
-      @page.first_party_version_header[:class].should eq 'highlight'
+      @page.first_party_version_header[:class].should include 'column-sort---active'
       sorted_versions = @page.first_party_versions.map {|version| version.text}
       sorted_versions.should_not == versions
       sorted_versions[-1].should == '--'
@@ -124,11 +124,11 @@ feature 'Add-On Manager' do
       versions = @page.first_party_versions.map {|version| version.text}
 
       # Sort by Version
-      @page.first_party_version_header.find('a.sort').click
+      @page.first_party_version_header.find('a.column-sort').click
       no_php_js_errors
 
       @page.first_party_status_filter.text.should eq "status (installed)"
-      @page.first_party_version_header[:class].should eq 'highlight'
+      @page.first_party_version_header[:class].should include 'column-sort---active'
       sorted_versions = @page.first_party_versions.map {|version| version.text}
       sorted_versions.should_not == versions
     end
@@ -137,13 +137,13 @@ feature 'Add-On Manager' do
       # Reverse sort by Version
       versions = @page.first_party_versions.map {|version| version.text}
 
-      @page.first_party_version_header.find('a.sort').click
+      @page.first_party_version_header.find('a.column-sort').click
       no_php_js_errors
 
-      @page.first_party_version_header.find('a.sort').click
+      @page.first_party_version_header.find('a.column-sort').click
       no_php_js_errors
 
-      @page.first_party_version_header[:class].should eq 'highlight'
+      @page.first_party_version_header[:class].should include 'column-sort---active'
       sorted_versions = @page.first_party_versions.map {|version| version.text}
       sorted_versions.should_not == versions
       sorted_versions[-1].should == '--'
@@ -154,7 +154,7 @@ feature 'Add-On Manager' do
       @page.first_party_status_filter_menu.click_link "installed"
       no_php_js_errors
 
-      @page.first_party_version_header[:class].should eq 'highlight'
+      @page.first_party_version_header[:class].should include 'column-sort---active'
       sorted_versions = @page.first_party_versions.map {|version| version.text}
       sorted_versions[-1].should == '1.0.0'
     end
@@ -319,7 +319,7 @@ feature 'Add-On Manager' do
     describe "Just this Table" do
 
       it 'shows the third party add-ons' do
-        @page.third_party_addon_name_header[:class].should eq 'highlight'
+        @page.third_party_addon_name_header[:class].should include 'column-sort---active'
         @page.should_not have_third_party_pagination
         @page.should have(6).third_party_addons
       end
@@ -327,20 +327,20 @@ feature 'Add-On Manager' do
       it 'can reverse sort by Add-On name' do
         a_to_z_addons = @page.third_party_addon_names.map {|addon| addon.text}
 
-        @page.third_party_addon_name_header.find('a.sort').click
+        @page.third_party_addon_name_header.find('a.column-sort').click
         no_php_js_errors
 
-        @page.third_party_addon_name_header[:class].should eq 'highlight'
+        @page.third_party_addon_name_header[:class].should include 'column-sort---active'
         @page.third_party_addon_names.map {|addon| addon.text}.should == a_to_z_addons.reverse!
       end
 
       it 'can sort by Version', :install => true do
         versions = @page.third_party_versions.map {|version| version.text}
 
-        @page.third_party_version_header.find('a.sort').click
+        @page.third_party_version_header.find('a.column-sort').click
         no_php_js_errors
 
-        @page.third_party_version_header[:class].should eq 'highlight'
+        @page.third_party_version_header[:class].should include 'column-sort---active'
         sorted_versions = @page.third_party_versions.map {|version| version.text}
         sorted_versions.should_not == versions
         sorted_versions[0].should == '1.1'
@@ -350,13 +350,13 @@ feature 'Add-On Manager' do
       it 'can reverse sort by Version', :install => true do
         versions = @page.third_party_versions.map {|version| version.text}
 
-        @page.third_party_version_header.find('a.sort').click
+        @page.third_party_version_header.find('a.column-sort').click
         no_php_js_errors
 
-        @page.third_party_version_header.find('a.sort').click
+        @page.third_party_version_header.find('a.column-sort').click
         no_php_js_errors
 
-        @page.third_party_version_header[:class].should eq 'highlight'
+        @page.third_party_version_header[:class].should include 'column-sort---active'
         sorted_versions = @page.third_party_versions.map {|version| version.text}
         sorted_versions.should_not == versions
         sorted_versions[0].should == '1.6'
@@ -433,24 +433,24 @@ feature 'Add-On Manager' do
         @page.should have(6).third_party_addons
 
         # Sort by Version
-        @page.third_party_version_header.find('a.sort').click
+        @page.third_party_version_header.find('a.column-sort').click
         no_php_js_errors
 
         @page.third_party_status_filter.text.should eq "status (uninstalled)"
-        @page.third_party_version_header[:class].should eq 'highlight'
+        @page.third_party_version_header[:class].should include 'column-sort---active'
       end
 
       it 'retains sort on filtering' do
         # Reverse sort by Version
         versions = @page.third_party_versions.map {|version| version.text}
 
-        @page.third_party_version_header.find('a.sort').click
+        @page.third_party_version_header.find('a.column-sort').click
         no_php_js_errors
 
-        @page.third_party_version_header.find('a.sort').click
+        @page.third_party_version_header.find('a.column-sort').click
         no_php_js_errors
 
-        @page.third_party_version_header[:class].should eq 'highlight'
+        @page.third_party_version_header[:class].should include 'column-sort---active'
 
         # Filter by Status
         @page.third_party_status_filter.click
@@ -459,7 +459,7 @@ feature 'Add-On Manager' do
         no_php_js_errors
 
         @page.third_party_status_filter.text.should eq "status (uninstalled)"
-        @page.third_party_version_header[:class].should eq 'highlight'
+        @page.third_party_version_header[:class].should include 'column-sort---active'
       end
 
       it 'can combine filters' do
@@ -619,59 +619,59 @@ feature 'Add-On Manager' do
       end
 
       it "sorts independently" do
-        @page.first_party_addon_name_header[:class].should eq 'highlight'
-        @page.third_party_addon_name_header[:class].should eq 'highlight'
+        @page.first_party_addon_name_header[:class].should include 'column-sort---active'
+        @page.third_party_addon_name_header[:class].should include 'column-sort---active'
 
-        @page.first_party_version_header.find('a.sort').click
+        @page.first_party_version_header.find('a.column-sort').click
         no_php_js_errors
 
-        @page.first_party_version_header[:class].should eq 'highlight'
-        @page.third_party_addon_name_header[:class].should eq 'highlight'
+        @page.first_party_version_header[:class].should include 'column-sort---active'
+        @page.third_party_addon_name_header[:class].should include 'column-sort---active'
 
-        @page.third_party_version_header.find('a.sort').click
+        @page.third_party_version_header.find('a.column-sort').click
         no_php_js_errors
 
-        @page.first_party_version_header[:class].should eq 'highlight'
-        @page.third_party_version_header[:class].should eq 'highlight'
+        @page.first_party_version_header[:class].should include 'column-sort---active'
+        @page.third_party_version_header[:class].should include 'column-sort---active'
       end
 
       describe "keeps sort when paging the other table" do
         it "can sort First Party & page Third Party" do
-          @page.first_party_version_header.find('a.sort').click
+          @page.first_party_version_header.find('a.column-sort').click
           no_php_js_errors
 
-          @page.first_party_version_header[:class].should eq 'highlight'
+          @page.first_party_version_header[:class].should include 'column-sort---active'
         end
 
         it "can sort Third Party & page First Party" do
-          @page.third_party_version_header.find('a.sort').click
+          @page.third_party_version_header.find('a.column-sort').click
           no_php_js_errors
 
-          @page.third_party_version_header[:class].should eq 'highlight'
+          @page.third_party_version_header[:class].should include 'column-sort---active'
         end
       end
 
       describe "keeps sort when filtering the other table" do
         it "can sort First Party & page Third Party" do
-          @page.first_party_version_header.find('a.sort').click
+          @page.first_party_version_header.find('a.column-sort').click
           no_php_js_errors
 
-          @page.first_party_version_header[:class].should eq 'highlight'
+          @page.first_party_version_header[:class].should include 'column-sort---active'
 
           @page.third_party_status_filter.click
           @page.wait_until_third_party_status_filter_menu_visible
           @page.third_party_status_filter_menu.click_link "uninstalled"
           no_php_js_errors
 
-          @page.first_party_version_header[:class].should eq 'highlight'
+          @page.first_party_version_header[:class].should include 'column-sort---active'
           @page.third_party_status_filter.text.should eq "status (uninstalled)"
         end
 
         it "can sort Third Party & page First Party" do
-          @page.third_party_version_header.find('a.sort').click
+          @page.third_party_version_header.find('a.column-sort').click
           no_php_js_errors
 
-          @page.third_party_version_header[:class].should eq 'highlight'
+          @page.third_party_version_header[:class].should include 'column-sort---active'
 
           @page.first_party_status_filter.click
           @page.wait_until_first_party_status_filter_menu_visible
@@ -679,7 +679,7 @@ feature 'Add-On Manager' do
           no_php_js_errors
 
           @page.first_party_status_filter.text.should eq "status (installed)"
-          @page.third_party_version_header[:class].should eq 'highlight'
+          @page.third_party_version_header[:class].should include 'column-sort---active'
         end
       end
 
@@ -712,11 +712,11 @@ feature 'Add-On Manager' do
 
           @page.first_party_status_filter.text.should eq "status (installed)"
 
-          @page.third_party_version_header.find('a.sort').click
+          @page.third_party_version_header.find('a.column-sort').click
           no_php_js_errors
 
           @page.first_party_status_filter.text.should eq "status (installed)"
-          @page.third_party_version_header[:class].should eq 'highlight'
+          @page.third_party_version_header[:class].should include 'column-sort---active'
         end
 
         it "can filter Third Party & page First Party" do
@@ -727,10 +727,10 @@ feature 'Add-On Manager' do
 
           @page.third_party_status_filter.text.should eq "status (uninstalled)"
 
-          @page.first_party_version_header.find('a.sort').click
+          @page.first_party_version_header.find('a.column-sort').click
           no_php_js_errors
 
-          @page.first_party_version_header[:class].should eq 'highlight'
+          @page.first_party_version_header[:class].should include 'column-sort---active'
           @page.third_party_status_filter.text.should eq "status (uninstalled)"
         end
       end

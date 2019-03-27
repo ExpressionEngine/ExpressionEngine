@@ -6,7 +6,7 @@ class TemplateVariables < ControlPanelPage
   element :keyword_search, '.filters ul li:first-child input'
   element :perpage_filter, '.filters ul li:nth-child(2) a'
 
-  sections :variables, '.tbl-wrap table tbody tr' do
+  sections :variables, 'table.app-listing tbody tr' do
     element :name, 'td:first-child'
     element :all_sites, 'td:nth-child(2)'
     section :manage, 'td:nth-child(3)' do

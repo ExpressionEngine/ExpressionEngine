@@ -8,7 +8,7 @@ feature 'Spam Module' do
       cp_session
       @page = AddonManager.new
       @page.load
-      spam_row = @page.find('div.tbl-wrap table tr', :text => 'Spam')
+      spam_row = @page.find('table.app-listing tr', :text => 'Spam')
       spam_row.find('a', :text => 'Install').click
 
       no_php_js_errors
@@ -43,7 +43,7 @@ feature 'Spam Module' do
     end
 
     it 'can mark as ham' do
-      @page.find('.check-ctrl input[type="checkbox"]').set true
+      @page.find('th input[type="checkbox"]').set true
       @page.wait_until_bulk_action_visible
       @page.bulk_action.select "approve"
       @page.action_submit_button.click
@@ -51,7 +51,7 @@ feature 'Spam Module' do
     end
 
     it 'can mark as spam' do
-      @page.find('.check-ctrl input[type="checkbox"]').set true
+      @page.find('th input[type="checkbox"]').set true
       @page.wait_until_bulk_action_visible
       @page.bulk_action.select "approve"
       @page.action_submit_button.click

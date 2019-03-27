@@ -45,8 +45,8 @@ feature 'Communicate > Sent' do
     end
     load_page
 
-    @page.find('th.highlight').text.should eq 'Subject'
-    @page.find('th.highlight').should have_css 'a.sort.asc'
+    @page.find('th.column-sort---active').text.should eq 'Subject'
+    @page.find('th.column-sort---active').should have_css 'a.column-sort.column-sort--asc'
     @page.subjects.map {|subject| subject.text}.should == subjects[0..19]
     @page.should have(21).rows # +1 for the header
   end
@@ -60,11 +60,11 @@ feature 'Communicate > Sent' do
     end
     subjects.reverse!
     load_page
-    @page.subject_header.find('a.sort').click
+    @page.subject_header.find('a.column-sort').click
     no_php_js_errors
 
-    @page.find('th.highlight').text.should eq 'Subject'
-    @page.find('th.highlight').should have_css 'a.sort.desc'
+    @page.find('th.column-sort---active').text.should eq 'Subject'
+    @page.find('th.column-sort---active').should have_css 'a.column-sort.column-sort--desc'
     @page.subjects.map {|subject| subject.text}.should == subjects[0..19]
     @page.should have(21).rows # +1 for the header
   end
@@ -80,11 +80,11 @@ feature 'Communicate > Sent' do
     end
     dates.reverse!
     load_page
-    @page.date_header.find('a.sort').click
+    @page.date_header.find('a.column-sort').click
     no_php_js_errors
 
-    @page.find('th.highlight').text.should eq 'Date'
-    @page.find('th.highlight').should have_css 'a.sort.asc'
+    @page.find('th.column-sort---active').text.should eq 'Date'
+    @page.find('th.column-sort---active').should have_css 'a.column-sort.column-sort--asc'
     @page.dates.map {|date| date.text}.should == dates[0..19]
     @page.should have(21).rows # +1 for the header
   end
@@ -99,14 +99,14 @@ feature 'Communicate > Sent' do
       @page.generate_data(timestamp: my_date.to_i, count: 1)
     end
     load_page
-    @page.date_header.find('a.sort').click # To sort by date
+    @page.date_header.find('a.column-sort').click # To sort by date
     no_php_js_errors
 
-    @page.date_header.find('a.sort').click # DESC sort
+    @page.date_header.find('a.column-sort').click # DESC sort
     no_php_js_errors
 
-    @page.find('th.highlight').text.should eq 'Date'
-    @page.find('th.highlight').should have_css 'a.sort.desc'
+    @page.find('th.column-sort---active').text.should eq 'Date'
+    @page.find('th.column-sort---active').should have_css 'a.column-sort.column-sort--desc'
     @page.dates.map {|date| date.text}.should == dates[0..19]
     @page.should have(21).rows # +1 for the header
   end
@@ -119,11 +119,11 @@ feature 'Communicate > Sent' do
       @page.generate_data(total_sent: n, count: 1)
     end
     load_page
-    @page.total_sent_header.find('a.sort').click
+    @page.total_sent_header.find('a.column-sort').click
     no_php_js_errors
 
-    @page.find('th.highlight').text.should eq 'Total Sent'
-    @page.find('th.highlight').should have_css 'a.sort.asc'
+    @page.find('th.column-sort---active').text.should eq 'Total Sent'
+    @page.find('th.column-sort---active').should have_css 'a.column-sort.column-sort--asc'
     @page.total_sents.map {|sent| sent.text}.should == sent[0..19]
     @page.should have(21).rows # +1 for the header
   end
@@ -137,14 +137,14 @@ feature 'Communicate > Sent' do
     end
     sent.reverse!
     load_page
-    @page.total_sent_header.find('a.sort').click # To sort by total sent
+    @page.total_sent_header.find('a.column-sort').click # To sort by total sent
     no_php_js_errors
 
-    @page.total_sent_header.find('a.sort').click # DESC sort
+    @page.total_sent_header.find('a.column-sort').click # DESC sort
     no_php_js_errors
 
-    @page.find('th.highlight').text.should eq 'Total Sent'
-    @page.find('th.highlight').should have_css 'a.sort.desc'
+    @page.find('th.column-sort---active').text.should eq 'Total Sent'
+    @page.find('th.column-sort---active').should have_css 'a.column-sort.column-sort--desc'
     @page.total_sents.map {|sent| sent.text}.should == sent[0..19]
     @page.should have(21).rows # +1 for the header
   end
@@ -307,15 +307,15 @@ feature 'Communicate > Sent' do
     end
     sent.sort!
     load_page
-    @page.total_sent_header.find('a.sort').click
+    @page.total_sent_header.find('a.column-sort').click
     no_php_js_errors
 
     @page.phrase_search.set phrase
     @page.search_submit_button.click
     no_php_js_errors
 
-    @page.find('th.highlight').text.should eq 'Total Sent'
-    @page.find('th.highlight').should have_css 'a.sort.asc'
+    @page.find('th.column-sort---active').text.should eq 'Total Sent'
+    @page.find('th.column-sort---active').should have_css 'a.column-sort.column-sort--asc'
     @page.should_not have_no_results
     @page.heading.text.should eq 'Search Results we found 20 results for "' + phrase + '"'
     @page.phrase_search.value.should eq phrase
@@ -368,14 +368,14 @@ feature 'Communicate > Sent' do
     @page.generate_data
     load_page
 
-    @page.total_sent_header.find('a.sort').click
+    @page.total_sent_header.find('a.column-sort').click
     no_php_js_errors
 
       click_link "Next"
     no_php_js_errors
 
-    @page.find('th.highlight').text.should eq 'Total Sent'
-    @page.find('th.highlight').should have_css 'a.sort.asc'
+    @page.find('th.column-sort---active').text.should eq 'Total Sent'
+    @page.find('th.column-sort---active').should have_css 'a.column-sort.column-sort--asc'
   end
 
   it 'maintains search while paging' do
@@ -410,7 +410,7 @@ feature 'Communicate > Sent' do
     @page.search_submit_button.click
     no_php_js_errors
 
-    @page.total_sent_header.find('a.sort').click
+    @page.total_sent_header.find('a.column-sort').click
     no_php_js_errors
 
       click_link "Next"
@@ -421,8 +421,8 @@ feature 'Communicate > Sent' do
     @page.phrase_search.value.should eq phrase
     @page.should have_text data
     @page.should_not have_text "Albatross"
-    @page.find('th.highlight').text.should eq 'Total Sent'
-    @page.find('th.highlight').should have_css 'a.sort.asc'
+    @page.find('th.column-sort---active').text.should eq 'Total Sent'
+    @page.find('th.column-sort---active').should have_css 'a.column-sort.column-sort--asc'
   end
 
   it 'resets the page on a new sort' do
@@ -440,7 +440,7 @@ feature 'Communicate > Sent' do
       @page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
     @page.pagination.find('a.act').text.should eq '2'
 
-    @page.total_sent_header.find('a.sort').click
+    @page.total_sent_header.find('a.column-sort').click
     no_php_js_errors
 
       @page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]

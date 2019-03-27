@@ -14,7 +14,7 @@ class EditFile < FileManagerPage
 
   def load
     click_link 'Files'
-    find('div.box form div.tbl-wrap table tr:nth-child(2) td:nth-child(4) ul.toolbar li.edit').click
+    find('div.box form table.app-listing tr:nth-child(2) td:nth-child(4) ul.toolbar li.edit').click
   end
 
 end

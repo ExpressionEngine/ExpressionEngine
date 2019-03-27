@@ -37,14 +37,14 @@ feature 'SQL Manager' do
   end
 
   it 'should sort the table' do
-    @page.table.find('th.highlight').text.should eq 'Table Name'
+    @page.table.find('th.column-sort---active').text.should eq 'Table Name'
     @page.sort_links[0].click
 
     tables = get_tables
 
     @page.tables.map {|source| source.text}.should == tables.reverse
     @page.should have(tables.count).tables
-    @page.table.find('th.highlight').text.should eq 'Table Name'
+    @page.table.find('th.column-sort---active').text.should eq 'Table Name'
   end
 
   it 'should search the table names' do

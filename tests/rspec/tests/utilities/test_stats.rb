@@ -19,23 +19,23 @@ feature 'Statistics' do
   end
 
   it "can sort by source" do
-    @page.all('a.sort')[0].click
+    @page.all('a.column-sort')[0].click
     @page.sources.map {|source| source.text}.should == ["Sites", "Members", "Channel Entries"]
-    @page.content_table.find('th.highlight').text.should eq 'Source'
+    @page.content_table.find('th.column-sort---active').text.should eq 'Source'
 
-    @page.all('a.sort')[0].click
+    @page.all('a.column-sort')[0].click
     @page.sources.map {|source| source.text}.should == ["Channel Entries", "Members", "Sites"]
-    @page.content_table.find('th.highlight').text.should eq 'Source'
+    @page.content_table.find('th.column-sort---active').text.should eq 'Source'
   end
 
   it "can sort by count" do
-    @page.all('a.sort')[1].click
+    @page.all('a.column-sort')[1].click
     @page.counts.map {|count| count.text}.should == ["1", "7", "10"]
-    @page.content_table.find('th.highlight').text.should eq 'Record Count'
+    @page.content_table.find('th.column-sort---active').text.should eq 'Record Count'
 
-    @page.all('a.sort')[1].click
+    @page.all('a.column-sort')[1].click
     @page.counts.map {|count| count.text}.should == ["10", "7", "1"]
-    @page.content_table.find('th.highlight').text.should eq 'Record Count'
+    @page.content_table.find('th.column-sort---active').text.should eq 'Record Count'
   end
 
   it "reports accurate record count after adding a member" do

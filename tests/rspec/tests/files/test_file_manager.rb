@@ -84,7 +84,7 @@ feature 'File Manager' do
 
 	it 'shows the "All Files" File Manager page', :all_files => true do
 		@page.perpage_filter.text.should eq 'show (25)'
-		@page.date_added_header[:class].should eq 'highlight'
+		@page.date_added_header[:class].should include 'column-sort---active'
 		@page.should have(11).files
 	end
 
@@ -133,63 +133,63 @@ feature 'File Manager' do
 	end
 
 	it 'can reverse sort by title/name', :all_files => true, :perpage => 50 do
-		@page.title_name_header.find('a.sort').click
+		@page.title_name_header.find('a.column-sort').click
 		no_php_js_errors
 
 		a_to_z_titles = @page.title_names.map {|title| title.text}
 
-		@page.title_name_header.find('a.sort').click
+		@page.title_name_header.find('a.column-sort').click
 		no_php_js_errors
 
-		@page.title_name_header[:class].should eq 'highlight'
+		@page.title_name_header[:class].should include 'column-sort---active'
 		@page.title_names.map {|title| title.text}.should == a_to_z_titles.reverse!
 	end
 
 	it 'can sort by file type', :all_files => true, :perpage => 50 do
 		file_types = @page.file_types.map {|file_type| file_type.text}
 
-		@page.file_type_header.find('a.sort').click
+		@page.file_type_header.find('a.column-sort').click
 		no_php_js_errors
 
-		@page.file_type_header[:class].should eq 'highlight'
+		@page.file_type_header[:class].should include 'column-sort---active'
 		sorted_file_types = @page.file_types.map {|file_type| file_type.text}
 		sorted_file_types.should_not == file_types
 	end
 
 	it 'can reverse sort by file type', :all_files => true, :perpage => 50 do
-		@page.file_type_header.find('a.sort').click
+		@page.file_type_header.find('a.column-sort').click
 		no_php_js_errors
 
-		@page.file_type_header[:class].should eq 'highlight'
+		@page.file_type_header[:class].should include 'column-sort---active'
 		a_to_z_file_types = @page.file_types.map {|file_type| file_type.text}
-		@page.file_type_header.find('a.sort').click
+		@page.file_type_header.find('a.column-sort').click
 		no_php_js_errors
 
-		@page.file_type_header[:class].should eq 'highlight'
+		@page.file_type_header[:class].should include 'column-sort---active'
 		@page.file_types.map {|file_type| file_type.text}.should == a_to_z_file_types.reverse!
 	end
 
 	# it 'can sort by date added', :all_files => true, :perpage => 50 do
 	# 	dates_added = @page.dates_added.map {|date_added| date_added.text}
 	#
-	# 	@page.date_added_header.find('a.sort').click
+	# 	@page.date_added_header.find('a.column-sort').click
 	# 	no_php_js_errors
 	#
-	# 	@page.date_added_header[:class].should eq 'highlight'
+	# 	@page.date_added_header[:class].should include 'column-sort---active'
 	# 	sorted_dates_added = @page.dates_added.map {|date_added| date_added.text}
 	# 	sorted_dates_added.should_not == dates_added
 	# end
 
 	it 'can reverse sort by date added', :all_files => true, :perpage => 50 do
-		@page.date_added_header.find('a.sort').click
+		@page.date_added_header.find('a.column-sort').click
 		no_php_js_errors
 
-		@page.date_added_header[:class].should eq 'highlight'
+		@page.date_added_header[:class].should include 'column-sort---active'
 		a_to_z_dates_added = @page.dates_added.map {|date_added| date_added.text}
-		@page.date_added_header.find('a.sort').click
+		@page.date_added_header.find('a.column-sort').click
 		no_php_js_errors
 
-		@page.date_added_header[:class].should eq 'highlight'
+		@page.date_added_header[:class].should include 'column-sort---active'
 		@page.dates_added.map {|date_added| date_added.text}.should == a_to_z_dates_added.reverse!
 	end
 
