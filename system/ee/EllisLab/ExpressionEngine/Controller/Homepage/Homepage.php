@@ -174,6 +174,7 @@ class Homepage extends CP_Controller {
 		$vars['can_create_channels'] = ee()->cp->allowed_group('can_create_channels');
 		$vars['can_access_fields'] = ee()->cp->allowed_group('can_create_channel_fields', 'can_edit_channel_fields', 'can_delete_channel_fields');
 		$vars['can_access_member_settings'] = ee()->cp->allowed_group('can_access_sys_prefs', 'can_access_members');
+		$vars['can_create_entries'] = ee()->cp->allowed_group('can_create_entries');
 
 		ee()->view->cp_page_title = ee()->config->item('site_name') . ' ' . lang('overview');
 		ee()->cp->render('homepage', $vars);

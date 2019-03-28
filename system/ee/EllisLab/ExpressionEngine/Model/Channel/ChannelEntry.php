@@ -802,6 +802,11 @@ class ChannelEntry extends ContentModel {
 			return array_key_exists('cat_group_id_'.$cat_group_id, $categories);
 		});
 
+		if (empty($cat_groups))
+		{
+			return;
+		}
+
 		$category_ids = array();
 
 		// Set the data on the fields in case we come back from a validation error
