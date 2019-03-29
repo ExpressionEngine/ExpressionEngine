@@ -14,6 +14,12 @@
 					Columns
 				</a>
 			</div>
+			<div class="filter-item">
+				<a href="#" class="filter-item__link filter-item__link--save js-modal-link--side" rel="modal-filter-settings">
+					<span class="icon--save"></span>
+					Save
+				</a>
+			</div>
 		</div>
 		<div class="app-toggle" rev="toggle-columns">
 			<?php

@@ -68,4 +68,23 @@ $(document).ready(function () {
 			success: replaceData
 		})
 	})
+
+	$('body').on('click', '.filter-item__link--save', function(e) {
+
+		var columns = $(this).closest('form').find('input[name="columns[]"]').serialize()
+
+		EE.cp.ModalForm.openForm({
+			url: EE.viewManager.createUrl + '&' + columns,
+			createUrl: EE.viewManager.createUrl,
+			load: function (modal) {
+				SelectField.renderFields(modal)
+			},
+			success: function(result) {
+				if (result.redirect) {
+					window.location = result.redirect
+				}
+				console.log(result)
+			}
+		})
+	})
 });
