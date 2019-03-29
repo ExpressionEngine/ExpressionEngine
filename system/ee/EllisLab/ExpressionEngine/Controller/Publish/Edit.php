@@ -194,7 +194,11 @@ class Edit extends AbstractPublishController {
 				'of'                    => lang('of'),
 				'clearAll'              => lang('clear_all'),
 				'removeFromSelection'   => lang('remove_from_selection'),
-			]
+			],
+			'viewManager.createUrl' => ee('CP/URL')->make('publish/views/create')->compile(),
+			'viewManager.editUrl'   => ee('CP/URL')->make('publish/views/edit/###')->compile(),
+			'viewManager.cloneUrl'  => ee('CP/URL')->make('publish/views/clone/###')->compile(),
+			'viewManager.removeUrl' => ee('CP/URL')->make('publish/views/remove/###')->compile()
 		]);
 
 		ee()->cp->add_js_script(array(
