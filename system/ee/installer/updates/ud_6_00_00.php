@@ -27,6 +27,7 @@ class Updater {
 		$steps = new \ProgressIterator(
 			[
 				'addConfigTable',
+				'addEntryManagerTables',
 			]
 		);
 
@@ -122,6 +123,69 @@ class Updater {
 					'value' => $value
 				])->save();
 			}
+		}
+	}
+
+	private function addEntryManagerTables()
+	{
+		if ( ! ee()->db->table_exists('entry_manager_views'))
+		{
+			ee()->dbforge->add_field(
+				[
+					'view_id' => [
+						'type'           => 'int',
+						'constraint'     => 10,
+						'unsigned'       => TRUE,
+						'null'           => FALSE,
+						'auto_increment' => TRUE
+					],
+					'name' => [
+						'type'       => 'varchar',
+						'constraint' => 128,
+						'null'       => FALSE,
+						'default'    => '',
+					]
+				]
+			);
+			ee()->dbforge->add_key('view_id', TRUE);
+			ee()->smartforge->create_table('entry_manager_views');
+		}
+
+		if ( ! ee()->db->table_exists('entry_manager_views_columns'))
+		{
+			ee()->dbforge->add_field(
+				[
+					'column_view_id' => [
+						'type'           => 'int',
+						'constraint'     => 10,
+						'unsigned'       => TRUE,
+						'null'           => FALSE,
+						'auto_increment' => TRUE
+					],
+					'view_id' => [
+						'type'       => 'int',
+						'constraint' => 10,
+						'unsigned'   => TRUE,
+						'null'       => FALSE,
+						'defalult'   => 0
+					],
+					'identifier' => [
+						'type'       => 'varchar',
+						'constraint' => 128,
+						'null'       => FALSE,
+						'default'    => '',
+					],
+					'order' => [
+						'type'       => 'int',
+						'constraint' => 10,
+						'unsigned'   => TRUE,
+						'null'       => FALSE,
+						'defalult'   => 0
+					],
+				]
+			);
+			ee()->dbforge->add_key('column_view_id', TRUE);
+			ee()->smartforge->create_table('entry_manager_views_columns');
 		}
 	}
 }

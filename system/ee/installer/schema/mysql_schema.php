@@ -1460,6 +1460,20 @@ class EE_Schema {
 			KEY `site_key` (`site_id`,`key`)
 		);";
 
+		$Q[] = "CREATE TABLE `exp_entry_manager_views` (
+			`view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`name` varchar(128) NOT NULL DEFAULT '',
+			PRIMARY KEY (`view_id`)
+		);";
+
+		$Q[] = "CREATE TABLE `exp_entry_manager_views_columns` (
+			`column_view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`view_id` int(10) unsigned NOT NULL,
+			`identifier` varchar(128) NOT NULL DEFAULT '',
+			`order` int(10) unsigned NOT NULL,
+			PRIMARY KEY (`column_view_id`)
+		)";
+
 		// Default menu set
 		$Q[] = "INSERT INTO exp_menu_sets(name) VALUES ('Default')";
 

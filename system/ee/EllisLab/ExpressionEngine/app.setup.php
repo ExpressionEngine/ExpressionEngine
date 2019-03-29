@@ -637,6 +637,10 @@ return [
 
 			// ..\Config
 			'Config' => 'Model\Config\Config',
+
+			// ..\EntryManager
+			'EntryManagerView'       => 'Model\EntryManager\View',
+			'EntryManagerViewColumn' => 'Model\EntryManager\ViewColumn',
 	),
 
 	'cookies.necessary' => [
