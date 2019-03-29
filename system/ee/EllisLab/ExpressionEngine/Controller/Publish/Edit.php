@@ -40,7 +40,7 @@ class Edit extends AbstractPublishController {
 	 *
 	 * @return void
 	 */
-	public function index()
+	public function index($view_id = NULL)
 	{
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
@@ -78,13 +78,24 @@ class Edit extends AbstractPublishController {
 			'sort_col' => 'column_entry_date',
 		));
 
-		$default_columns = ee()->input->get_post('columns') ?: [
-			'entry_id',
-			'title',
-			'entry_date',
-			'author',
-			'status'
-		];
+		if (ee()->input->get_post('columns'))
+		{
+			$default_columns = ee()->input->get_post('columns');
+		}
+		elseif ($view_id && $view = ee('Model')->get('EntryManagerView', $view_id)->first())
+		{
+			$default_columns = $view->Columns->pluck('identifier');
+		}
+		else
+		{
+			$default_columns = [
+				'entry_id',
+				'title',
+				'entry_date',
+				'author',
+				'status'
+			];
+		}
 
 		$default_columns[] = 'checkbox';
 
