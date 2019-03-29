@@ -58,7 +58,7 @@ $(document).ready(function () {
 		event.preventDefault();
 	});
 
-	$('body').on('change', 'input[name="columns[]"]', function(e) {
+	$('body').on('change', 'div[rev=toggle-columns] input[name="columns[]"]', function(e) {
 		var form = $(this).closest('form')
 		$.ajax({
 			url: form.attr('actions'),
