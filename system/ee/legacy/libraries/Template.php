@@ -176,6 +176,8 @@ class EE_Template {
 			$this->final_template = $this->parse_globals($this->final_template);
 		}
 
+		$this->final_template = $this->decode_channel_form_ee_tags($this->final_template);
+
 		$this->log_item("Template Parsing Finished");
 
 		ee()->output->out_type = $this->template_type;
@@ -3089,6 +3091,19 @@ class EE_Template {
 		{
 			$this->plugins = $plugins->pluck('plugin_package');
 		}
+	}
+
+	/**
+	 * Decode tags encoded by Channel_form_lib::encode_ee_tags to prevent
+	 * modules from being parsed inside Channel Form fields but preserve
+	 * original content on edit.
+	 *
+	 * @param string $template
+	 * @return string Decoded string
+	 */
+	private function decode_channel_form_ee_tags($template)
+	{
+		return str_replace(['CFORM-ENCODE-LEFT-BRACKET', 'CFORM-ENCODE-RIGHT-BRACKET'], [LD, RD], $template);
 	}
 
 	/**
