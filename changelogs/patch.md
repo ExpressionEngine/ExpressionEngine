@@ -8,6 +8,8 @@ Bullet list below, e.g.
    - Added <new feature>
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
 
+- Fixed a bug ([\#168](https://github.com/ExpressionEngine/ExpressionEngine/issues/168)) where validation errors did not clear in the template partial editor.
+
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
