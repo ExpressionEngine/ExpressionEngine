@@ -357,6 +357,7 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE `exp_roles` (
 			`role_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`name` varchar(100) NOT NULL,
+			`short_name` varchar(50) NOT NULL,
 			`description` text,
 			`is_locked` char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY (`role_id`)
@@ -1479,6 +1480,7 @@ class EE_Schema {
 		$roles = array(
 			array(
 				'name'                    => 'Super Admin',
+				'short_name'              => 'super_admin',
 				'role_id'                 => 1,
 				'is_locked'               => 'y',
 				'exclude_from_moderation' => 'y',
@@ -1487,6 +1489,7 @@ class EE_Schema {
 			),
 			array(
 				'name'                    => 'Banned',
+				'short_name'              => 'banned',
 				'role_id'                 => 2,
 				'is_locked'               => 'n',
 				'include_in_memberlist'   => 'n',
@@ -1494,18 +1497,21 @@ class EE_Schema {
 			),
 			array(
 				'name'                    => 'Guests',
+				'short_name'              => 'guests',
 				'role_id'                 => 3,
 				'is_locked'               => 'n',
 				'search_flood_control'    => '10'
 			),
 			array(
 				'name'                    => 'Pending',
+				'short_name'              => 'pending',
 				'role_id'                 => 4,
 				'is_locked'               => 'n',
 				'search_flood_control'    => '10'
 			),
 			array(
 				'name'                    => 'Members',
+				'short_name'              => 'members',
 				'role_id'                 => 5,
 				'is_locked'               => 'n',
 				'search_flood_control'    => '10'
@@ -1519,10 +1525,11 @@ class EE_Schema {
 		foreach ($roles as $role)
 		{
 			$Q[] = "INSERT INTO exp_roles
-				(role_id, name, is_locked)
-				VALUES (" . $role['role_id'] . ", '" . $role['name'] . "', '" . $role['is_locked'] . "')";
+				(role_id, name, short_name, is_locked)
+				VALUES (" . $role['role_id'] . ", '" . $role['name'] . ", '" . $role['short_name'] . "', '" . $role['is_locked'] . "')";
 
 			unset($role['name']);
+			unset($role['short_name']);
 			unset($role['is_locked']);
 
 			$Q[] = "INSERT INTO exp_role_settings

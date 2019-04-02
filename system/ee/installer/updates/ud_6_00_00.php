@@ -165,6 +165,11 @@ class Updater {
 					'constraint' => 100,
 					'null'       => FALSE
 				],
+				'short_name' => [
+					'type'       => 'varchar',
+					'constraint' => 50,
+					'null'       => FALSE
+				],
 				'description' => [
 					'type'       => 'text',
 					'null'       => TRUE
@@ -188,9 +193,15 @@ class Updater {
 
 		foreach ($groups->result() as $group)
 		{
+			// Short name conversion
+			$short_name = strtolower($group->group_title);
+			$short_name = str_replace(' ', '_', $short_name);
+			$short_name = preg_replace('/[^a-z0-9\-\_]/iu', '', $short_name);
+
 			$insert[] = [
 				'role_id' => $group->group_id,
 				'name' => $group->group_title,
+				'short_name' => $short_name,
 				'description' => $group->group_description,
 				'is_locked' => $group->is_locked,
 			];

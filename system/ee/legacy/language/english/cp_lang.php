@@ -494,6 +494,8 @@ $lang = array(
 
 'name' => 'Name',
 
+'short_name' => 'Short name',
+
 'name_your_site' => 'Name your site',
 
 'new' => 'New',

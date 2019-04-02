@@ -118,7 +118,8 @@ class Role extends Model {
 	];
 
 	protected static $_validation_rules = [
-		'name'    => 'required|unique',
+		'name'       => 'required|unique|maxLength[100]',
+		'short_name' => 'required|unique|alphaDash|maxLength[50]',
 	];
 
 	// protected static $_events = [];
@@ -126,6 +127,7 @@ class Role extends Model {
 	// Properties
 	protected $role_id;
 	protected $name;
+	protected $short_name;
 	protected $description;
 	protected $is_locked;
 

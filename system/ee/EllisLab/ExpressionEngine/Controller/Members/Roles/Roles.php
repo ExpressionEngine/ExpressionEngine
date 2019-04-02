@@ -431,6 +431,7 @@ class Roles extends AbstractRolesController {
 	private function setWithPost(Role $role)
 	{
 		$role->name = ee('Request')->post('name');
+		$role->short_name = ee('Request')->post('short_name');
 		$role->description = ee('Request')->post('description');
 		$role->is_locked = ee('Request')->post('is_locked');
 		$role->RoleGroups = ee('Model')->get('RoleGroup', ee('Request')->post('role_groups'))->all();
@@ -605,6 +606,17 @@ class Roles extends AbstractRolesController {
 						'type' => 'text',
 						'required' => TRUE,
 						'value' => $role->name
+					]
+				]
+			],
+			[
+				'title' => 'short_name',
+				'desc' => 'alphadash_desc',
+				'fields' => [
+					'short_name' => [
+						'type' => 'text',
+						'required' => TRUE,
+						'value' => $role->short_name
 					]
 				]
 			],
