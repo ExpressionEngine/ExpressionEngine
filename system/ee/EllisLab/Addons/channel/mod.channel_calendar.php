@@ -560,28 +560,36 @@ class Channel_calendar extends Channel {
 					/**  Build Data Array
 					/** ----------------------------------------*/
 
-					$d = ee()->localize->format_date('%d', $row['entry_date']);
+                    $start = new \DateTime('@'.$row['entry_date']);
+                    $end = clone $start;
 
-					if (substr($d, 0, 1) == '0')
-					{
-						$d = substr($d, 1);
-					}
+                    if (filter_var(ee()->TMPL->fetch_param('show_date_span'), FILTER_VALIDATE_BOOLEAN) && $row['expiration_date']) {
+                        $expiration = new \DateTime('@'.$row['expiration_date']);
+                        $end = $start->format('Y-m') !== $expiration->format('Y-m')
+							? $end->modify('last day of this month')
+							: $expiration->modify('-1 day');
+                    }
 
-					$data[$d][] = array(
-						ee()->typography->parse_type($row['title'], array('text_format' => 'lite', 'html_format' => 'none', 'auto_links' => 'n', 'allow_img_url' => 'no')),
-						$row['url_title'],
-						$entry_date,
-						$permalink,
-						$title_permalink,
-						$author,
-						$profile_path,
-						$id_path,
-						$base_fields,
-						$day_path,
-						$comment_auto_path,
-						$comment_url_title_auto_path,
-						$comment_entry_id_auto_path
-					);
+                    $end->modify('+1 day');
+                    $period = new \DatePeriod($start, \DateInterval::createFromDateString('1 day'), $end);
+
+                    foreach ($period as $date) {
+                        $data[$date->format('j')][] = array(
+                            ee()->typography->parse_type($row['title'], ['text_format' => 'lite', 'html_format' => 'none', 'auto_links' => 'n', 'allow_img_url' => 'no']),
+                            $row['url_title'],
+                            $entry_date,
+                            $permalink,
+                            $title_permalink,
+                            $author,
+                            $profile_path,
+                            $id_path,
+                            $base_fields,
+                            $day_path,
+                            $comment_auto_path,
+                            $comment_url_title_auto_path,
+                            $comment_entry_id_auto_path
+						);
+                    }
 
 				} // END FOREACH
 			} // END if ($query->num_rows() > 0)

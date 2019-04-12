@@ -17,6 +17,7 @@ Minor Release
    - Added <new feature>
    - Fixed Bug (#<issue number>) where <bug behavior>.
 
+   - Added a `show_date_span="yes"` parameter to the `{exp:channel:calendar}` tag which displays an entry in every calendar cell between the entry’s publish expiration date.
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
