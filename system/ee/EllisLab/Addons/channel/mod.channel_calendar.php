@@ -564,10 +564,14 @@ class Channel_calendar extends Channel {
                     $end = clone $start;
 
                     if (filter_var(ee()->TMPL->fetch_param('show_date_span'), FILTER_VALIDATE_BOOLEAN) && $row['expiration_date']) {
+                        if ($start->format('m') < $month) {
+                            $start = new \DateTime("{$year}-{$month}-1");
+							$end = clone $start;
+                        }
                         $expiration = new \DateTime('@'.$row['expiration_date']);
-                        $end = $start->format('Y-m') !== $expiration->format('Y-m')
-							? $end->modify('last day of this month')
-							: $expiration->modify('-1 day');
+                        $end = $start->format('Y-m') === $expiration->format('Y-m')
+                            ? $expiration->modify('-1 day')
+                            : $end->modify('last day of this month');
                     }
 
                     $end->modify('+1 day');
