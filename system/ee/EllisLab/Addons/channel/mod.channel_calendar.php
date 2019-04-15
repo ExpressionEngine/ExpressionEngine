@@ -574,6 +574,9 @@ class Channel_calendar extends Channel {
                     $period = new \DatePeriod($start, \DateInterval::createFromDateString('1 day'), $end);
 
                     foreach ($period as $date) {
+						foreach ($day_path as $k => $v) {
+                            $day_path[$k] = substr($day_path[$k], 0, -2).$date->format('d');
+                        }
                         $data[$date->format('j')][] = array(
                             ee()->typography->parse_type($row['title'], ['text_format' => 'lite', 'html_format' => 'none', 'auto_links' => 'n', 'allow_img_url' => 'no']),
                             $row['url_title'],
