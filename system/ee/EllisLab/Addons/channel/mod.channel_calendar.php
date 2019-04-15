@@ -563,8 +563,10 @@ class Channel_calendar extends Channel {
                     $start = new \DateTime('@'.$row['entry_date']);
                     $end = clone $start;
 
-                    if (filter_var(ee()->TMPL->fetch_param('show_date_span'), FILTER_VALIDATE_BOOLEAN) && $row['expiration_date']) {
-                        if ($start->format('m') < $month) {
+                    if (filter_var(ee()->TMPL->fetch_param('show_date_span'), FILTER_VALIDATE_BOOLEAN) && $row['expiration_date'])
+					{
+                        if ($start->format('m') < $month)
+						{
                             $start = new \DateTime("{$year}-{$month}-1");
 							$end = clone $start;
                         }
@@ -577,8 +579,10 @@ class Channel_calendar extends Channel {
                     $end->modify('+1 day');
                     $period = new \DatePeriod($start, \DateInterval::createFromDateString('1 day'), $end);
 
-                    foreach ($period as $date) {
-						foreach ($day_path as $k => $v) {
+                    foreach ($period as $date)
+					{
+						foreach ($day_path as $k => $v)
+						{
                             $day_path[$k] = substr($day_path[$k], 0, -2).$date->format('d');
                         }
                         $data[$date->format('j')][] = array(
