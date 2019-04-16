@@ -324,7 +324,7 @@ If you made these changes, please accept the modifications on the control panel 
 
 'April' => 'April',
 
-'May_l' => 'May',
+'May' => 'May',
 
 'June' => 'June',
 
