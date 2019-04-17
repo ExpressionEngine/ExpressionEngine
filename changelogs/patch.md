@@ -12,5 +12,7 @@ Bullet list below, e.g.
 
 - Fixed a bug  ([\#86](https://github.com/ExpressionEngine/ExpressionEngine/issues/86)) where the template editor would not highlight EE comment tags correctly on newlines.
 
+- Fixed a bug ([\#180](https://github.com/ExpressionEngine/ExpressionEngine/issues/180)) where the Query Form would run a query two extra times.
+
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
