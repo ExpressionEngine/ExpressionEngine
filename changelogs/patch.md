@@ -14,5 +14,7 @@ Bullet list below, e.g.
 
 - Fixed a bug ([\#180](https://github.com/ExpressionEngine/ExpressionEngine/issues/180)) where the Query Form would run a query two extra times.
 
+- Fixed a bug  ([\#170](https://github.com/ExpressionEngine/ExpressionEngine/issues/170)) where member imports with text passwords triggered a password change email upon login.
+
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
