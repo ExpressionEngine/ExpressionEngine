@@ -40,16 +40,17 @@ class Edit extends AbstractPublishController {
 	 *
 	 * @return void
 	 */
-	public function index($view_id = NULL)
+	public function index()
 	{
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
 		}
 
-		$vars = array();
+		$template_vars = [];
 		$base_url = ee('CP/URL')->make('publish/edit');
 
+		// Create the entry listing object which handles getting the entries
 		$entry_listing = ee('CP/EntryListing',
 			ee()->input->get_post('filter_by_keyword'),
 			ee()->input->get_post('search_in') ?: 'titles',
@@ -67,12 +68,24 @@ class Edit extends AbstractPublishController {
 
 		$count = $entry_listing->getEntryCount();
 
-		$vars['filters'] = $filters->render($base_url);
-		$vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
+		$template_vars['filters'] = $filters->render($base_url);
+		$template_vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
+
+		// Get the selected view
+		$view = ee()->input->get('view') ?: '';
+
+		$base_url->setQueryStringVariable('view', $view);
+		$selected_view = $view ? ee('Model')->get('EntryManagerView', $view)->first() : NULL;
+
+		$available_views = ee('Model')->get('EntryManagerView')->all();
+
+		$template_vars['selected_view']   = $selected_view;
+		$template_vars['available_views'] = $available_views;
 
 		$filter_values = $filters->values();
 		$base_url->addQueryStringVariables($filter_values);
 
+		// Create the table that displays the entries
 		$table = ee('CP/Table', array(
 			'sort_dir' => 'desc',
 			'sort_col' => 'column_entry_date',
@@ -82,9 +95,9 @@ class Edit extends AbstractPublishController {
 		{
 			$default_columns = ee()->input->get_post('columns');
 		}
-		elseif ($view_id && $view = ee('Model')->get('EntryManagerView', $view_id)->first())
+		elseif ($selected_view)
 		{
-			$default_columns = $view->Columns->pluck('identifier');
+			$default_columns = $selected_view->Columns->pluck('identifier');
 		}
 		else
 		{
@@ -166,8 +179,8 @@ class Edit extends AbstractPublishController {
 		}
 		$table->setData($data);
 
-		$vars['table'] = $table->viewData($base_url);
-		$vars['form_url'] = $vars['table']['base_url'];
+		$template_vars['table'] = $table->viewData($base_url);
+		$template_vars['form_url'] = $template_vars['table']['base_url'];
 
 		$menu = ee()->menu->generate_menu();
 		$choices = [];
@@ -185,7 +198,7 @@ class Edit extends AbstractPublishController {
 			] : NULL
 		);
 
-		$vars['pagination'] = ee('CP/Pagination', $count)
+		$template_vars['pagination'] = ee('CP/Pagination', $count)
 			->perPage($filter_values['perpage'])
 			->currentPage($page)
 			->render($base_url);
@@ -224,26 +237,26 @@ class Edit extends AbstractPublishController {
 		ee()->view->cp_page_title = lang('edit_channel_entries');
 		if ( ! empty($filter_values['filter_by_keyword']))
 		{
-			$vars['cp_heading'] = sprintf(lang('search_results_heading'), $count, $filter_values['filter_by_keyword']);
+			$template_vars['cp_heading'] = sprintf(lang('search_results_heading'), $count, $filter_values['filter_by_keyword']);
 		}
 		else
 		{
-			$vars['cp_heading'] = sprintf(
+			$template_vars['cp_heading'] = sprintf(
 				lang('all_channel_entries'),
 				(isset($channel->channel_title)) ? $channel->channel_title : ''
 			);
 		}
 
-		$vars['can_edit'] = ee('Permission')->hasAny('can_edit_self_entries', 'can_edit_other_entries');
-		$vars['can_delete'] = ee('Permission')->hasAny('can_delete_all_entries', 'can_delete_self_entries');
+		$template_vars['can_edit'] = ee('Permission')->hasAny('can_edit_self_entries', 'can_edit_other_entries');
+		$template_vars['can_delete'] = ee('Permission')->hasAny('can_delete_all_entries', 'can_delete_self_entries');
 
 		// Gather data for column selection tool
 		$available_columns = EntryManager\ColumnFactory::getAvailableColumns();
 
-		$vars['available_columns'] = $this->getColumnChoices($available_columns);
-		$vars['selected_columns'] = $this->getColumnChoices($columns);
+		$template_vars['available_columns'] = $this->getColumnChoices($available_columns);
+		$template_vars['selected_columns'] = $this->getColumnChoices($columns);
 
-		$vars += $this->getColumnChoices($columns);
+		$template_vars += $this->getColumnChoices($columns);
 
 		ee()->cp->add_js_script([
 			'plugin' => ['ui.touch.punch', 'ee_interact.event'],
@@ -254,12 +267,12 @@ class Edit extends AbstractPublishController {
 		if (AJAX_REQUEST)
 		{
 			return array(
-				'html' => ee('View')->make('publish/partials/edit_list_table')->render($vars),
-				'url' => $vars['form_url']->compile()
+				'html' => ee('View')->make('publish/partials/edit_list_table')->render($template_vars),
+				'url' => $template_vars['form_url']->compile()
 			);
 		}
 
-		ee()->cp->render('publish/edit/index', $vars);
+		ee()->cp->render('publish/edit/index', $template_vars);
 	}
 
 	/**
