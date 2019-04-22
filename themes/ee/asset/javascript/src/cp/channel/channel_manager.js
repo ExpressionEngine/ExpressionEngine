@@ -47,7 +47,7 @@ var options = {
             ReactDOM.render(React.createElement(ColorPicker, {
                 inputName: 'highlight',
                 initialColor: container.dataset.color,
-                mode: 'both',
+                allowedColors: 'any',
                 swatches: ['E34834', 'F8BD00', '1DC969', '2B92D8', 'DE32E0', 'fff', '000'],
 
                 onChange: function(newColor) {

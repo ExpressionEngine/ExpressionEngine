@@ -105,7 +105,12 @@ var ColorPicker = function (_React$Component) {
     _createClass(ColorPicker, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
-            if (this.props.componentDidMount != null) this.props.componentDidMount();
+            if (this.props.componentDidMount != null) {
+                this.props.componentDidMount();
+            }
+
+            // Bind the EE form validation to the color picker
+            EE.cp.formValidation.bindInputs(ReactDOM.findDOMNode(this).parentNode);
         }
     }, {
         key: 'componentDidUpdate',
@@ -161,7 +166,7 @@ var ColorPicker = function (_React$Component) {
             if (!this.props.enableOpacity && color.rgb.a != 1) color = color.withAlpha(1);
 
             // Make sure the color is in the swatches
-            if (this.props.mode == 'swatches') {
+            if (this.props.allowedColors == 'swatches') {
                 var _iteratorNormalCompletion = true;
                 var _didIteratorError = false;
                 var _iteratorError = undefined;
@@ -279,7 +284,7 @@ var ColorPicker = function (_React$Component) {
                 hexStr = _currentColor.hexStr;
 
             var hueColor = new SimpleColor({ h: hsv.h, s: 1, v: 1, a: 1 }).hexStr;
-            var mode = this.props.mode;
+            var allowedColors = this.props.allowedColors;
 
             var _Array$fill = Array(4).fill('px'),
                 _Array$fill2 = _slicedToArray(_Array$fill, 4),
@@ -321,7 +326,7 @@ var ColorPicker = function (_React$Component) {
                     { className: 'colorpicker-panel', style: { display: this.state.showPanel ? 'block' : 'none' }, onMouseDown: function onMouseDown(e) {
                             e.stopPropagation();e.preventDefault();
                         } },
-                    (mode == 'custom' || mode == 'both') && React.createElement(
+                    allowedColors == 'any' && React.createElement(
                         'div',
                         { className: 'colorpicker-controls' },
                         React.createElement(
@@ -365,11 +370,14 @@ var ColorPicker = function (_React$Component) {
                             React.createElement('div', { className: 'colorpicker-slider-inner', style: { background: 'linear-gradient(to top, ' + currentColor.withAlpha(0).rgbaStr + ', ' + hexStr + ')' } })
                         )
                     ),
-                    (mode == 'swatches' || mode == 'both') && React.createElement(
+                    React.createElement(
                         'div',
                         { className: 'colorpicker-swatches' },
                         this.props.swatches.map(function (colorStr, index) {
                             var color = new SimpleColor(colorStr);
+
+                            if (!color.isValid) return '';
+
                             return React.createElement('div', { key: index, className: 'swatch ' + (color.rgbaStr == currentColor.rgbaStr ? 'selected' : ''), 'data-color': colorStr, onClick: _this3.onSwatchClick, style: { backgroundColor: color.rgbaStr, borderColor: color.shade(-15).rgbaStr } });
                         })
                     )
@@ -385,19 +393,22 @@ var ColorPicker = function (_React$Component) {
 }(React.Component);
 
 // TODO: Add this to the cp css
+// TODO: The input does not get styled red on error because the css does not go past the first nested element
+// TODO: The color picker overflows the grid field
 
 
 ColorPicker.defaultProps = {
-    // Input setup
+    // The input name
     inputName: '',
+    // The input id
     inputId: '',
+    // The input color
     initialColor: '',
 
-    // Modes:
-    //  - custom: Only shows the color controls. Allows any color to be picked.
-    //  - swatches: Only shows the swatches. Does not allow any color to be picked that's not in the swatches.
-    //  - both: Shows the swatches and controls. Allows any color to be picked.
-    mode: 'both',
+    // Allowed Colors:
+    //  - any: Allows choosing any color. Both the swatches and color controls will be shown
+    //  - swatches: Does not allow any color to be picked that's not in the swatches or default color. Only the swatches will be shown.
+    allowedColors: 'any',
     // Called when the color changes.
     onChange: null,
     // Prevents the onChange callback from being called more than once within the specified amount of time (milliseconds).

@@ -18,11 +18,10 @@ class ColorPicker extends React.Component {
         // The input color
         initialColor: '',
 
-        // Modes:
-        //  - custom: Only shows the color controls. Allows any color to be picked.
-        //  - swatches: Only shows the swatches. Does not allow any color to be picked that's not in the swatches.
-        //  - both: Shows the swatches and controls. Allows any color to be picked.
-        mode: 'both',
+        // Allowed Colors:
+        //  - any: Allows choosing any color. Both the swatches and color controls will be shown
+        //  - swatches: Does not allow any color to be picked that's not in the swatches or default color. Only the swatches will be shown.
+        allowedColors: 'any',
         // Called when the color changes.
         onChange: null,
         // Prevents the onChange callback from being called more than once within the specified amount of time (milliseconds).
@@ -61,8 +60,12 @@ class ColorPicker extends React.Component {
     }
 
     componentDidMount() {
-        if (this.props.componentDidMount != null)
+        if (this.props.componentDidMount != null) {
             this.props.componentDidMount()
+        }
+
+        // Bind the EE form validation to the color picker
+        EE.cp.formValidation.bindInputs(ReactDOM.findDOMNode(this).parentNode);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -164,7 +167,7 @@ class ColorPicker extends React.Component {
             color = color.withAlpha(1)
 
         // Make sure the color is in the swatches
-        if (this.props.mode == 'swatches') {
+        if (this.props.allowedColors == 'swatches') {
             for (let swatch of this.props.swatches) {
                 if (new SimpleColor(swatch).equalTo(color))
                     return color
@@ -242,9 +245,9 @@ class ColorPicker extends React.Component {
         if (currentColor == null)
             currentColor = new SimpleColor({r: 1, g: 1, b: 1, a: 0})
 
-        var { hsv, hexStr } = currentColor
-        var hueColor        = new SimpleColor({h: hsv.h, s: 1, v: 1, a: 1}).hexStr
-        var { mode }        = this.props
+        var { hsv, hexStr }   = currentColor
+        var hueColor          = new SimpleColor({h: hsv.h, s: 1, v: 1, a: 1}).hexStr
+        var { allowedColors } = this.props
 
         var [hueKnobPosX, hueKnobPosY, hueSliderPos, opacitySliderPos] = Array(4).fill('px')
 
@@ -271,7 +274,7 @@ class ColorPicker extends React.Component {
                 <span className="colorpicker-input-color"><span style={{background: currentColor.rgbaStr}}></span></span>
 
                 <div className="colorpicker-panel" style={{display: this.state.showPanel ? 'block' : 'none'}} onMouseDown={e => { e.stopPropagation(); e.preventDefault() }}>
-                    { (mode == 'custom' || mode == 'both') &&
+                    { (allowedColors == 'any') &&
                     <div className="colorpicker-controls">
                         <div className="colorpicker-hue-box" style={{background: hueColor}} onMouseDown={(e) => this.handleDrag(e, 'mouse', this.onHueBoxMove)} onTouchStart={(e) => this.handleDrag(e, 'touch', this.onHueBoxMove)} ref={el => this.hueBoxRef = el}>
                             <div className="colorpicker-hue-box-knob" style={{top: hueKnobPosY, left: hueKnobPosX, background: hexStr}}  ref={el => this.hueBoxKnobRef = el}></div>
@@ -284,16 +287,17 @@ class ColorPicker extends React.Component {
                     </div>
                     }
 
-                    { (mode == 'swatches' || mode == 'both') &&
                     <div className="colorpicker-swatches">
                         {
                             this.props.swatches.map((colorStr, index) => {
                                 const color = new SimpleColor(colorStr)
+
+                                if ( !color.isValid ) return '';
+
                                 return (<div key={index} className={`swatch ${color.rgbaStr == currentColor.rgbaStr ? 'selected' : ''}`} data-color={colorStr} onClick={this.onSwatchClick} style={ {backgroundColor: color.rgbaStr, borderColor: color.shade(-15).rgbaStr} }></div>)
                             })
                         }
                     </div>
-                    }
                 </div>
             </div>
         )
@@ -306,11 +310,9 @@ class ColorPicker extends React.Component {
 
 
 
-
-
-
-
 // TODO: Add this to the cp css
+// TODO: The input does not get styled red on error because the css does not go past the first nested element
+// TODO: The color picker overflows the grid field
 function tmpCss() {
     return `
 <style>
