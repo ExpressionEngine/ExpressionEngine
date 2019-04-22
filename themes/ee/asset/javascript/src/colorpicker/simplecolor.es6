@@ -39,8 +39,10 @@ class SimpleColor {
             this.isValid = true
         }
 
-        if(typeof color === 'string')
+        if (typeof color === 'string')
         {
+            color = color.trim()
+
             var fromHex = SimpleColor.hexToRgb(color)
 
             if (fromHex != null) {
@@ -305,7 +307,10 @@ class SimpleColor {
     }
 
     _isObject(val) {
-        if (val == null) return false
+        if (val == null) {
+            return false
+        }
+
         return (typeof val === 'function' || typeof val === 'object')
     }
 

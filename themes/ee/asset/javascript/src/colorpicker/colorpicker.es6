@@ -11,9 +11,11 @@
 class ColorPicker extends React.Component {
 
     static defaultProps = {
-        // Input setup
+        // The input name
         inputName: '',
+        // The input id
         inputId: '',
+        // The input color
         initialColor: '',
 
         // Modes:
@@ -36,7 +38,7 @@ class ColorPicker extends React.Component {
         enableOpacity: false
     }
 
-    lastChangeColor  = null
+    lastChangeColor = null
 
     // -------------------------------------------------------------------
 

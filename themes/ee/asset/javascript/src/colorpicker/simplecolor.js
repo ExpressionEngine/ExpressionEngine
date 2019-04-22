@@ -50,6 +50,8 @@ var SimpleColor = function () {
         };
 
         if (typeof color === 'string') {
+            color = color.trim();
+
             var fromHex = SimpleColor.hexToRgb(color);
 
             if (fromHex != null) {
@@ -183,7 +185,10 @@ var SimpleColor = function () {
     }, {
         key: '_isObject',
         value: function _isObject(val) {
-            if (val == null) return false;
+            if (val == null) {
+                return false;
+            }
+
             return typeof val === 'function' || (typeof val === 'undefined' ? 'undefined' : _typeof(val)) === 'object';
         }
 

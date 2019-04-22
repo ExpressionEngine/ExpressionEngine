@@ -29,15 +29,15 @@ new MutableSelectField('cat_group', EE.channelManager.catGroup)
 
 var options = {
 	onFormLoad: function(modal) {
-		var $status_tag = $('.status-tag', modal);
-
+		var status_tag = modal[0].querySelector('.status-tag');
+        
 		// Change the status example's name when you change the name
 		$('input[name="status"]', modal).on('keyup', function(event) {
-			var status = $(this).val() ? $(this).val() : EE.status.default_name;
-			$status_tag.text(status);
+			var status = this.value || EE.status.default_name;
+			status_tag.innerText = status;
 		});
 
-        $('div.colorpicker-init').each(function() {
+        $('div.colorpicker-init', model).each(function() {
             var container = this;
 
             // TMP css
@@ -46,20 +46,18 @@ var options = {
 
             ReactDOM.render(React.createElement(ColorPicker, {
                 inputName: 'highlight',
-                initialColor: this.dataset.color,
+                initialColor: container.dataset.color,
                 mode: 'both',
                 swatches: ['E34834', 'F8BD00', '1DC969', '2B92D8', 'DE32E0', 'fff', '000'],
 
                 onChange: function(newColor) {
                     // Change background and border colors
-                    $status_tag.css('background-color', newColor).css('border-color', newColor);
+                    status_tag.style.backgroundColor = newColor;
+                    status_tag.style.borderColor = newColor;
 
                     // Set foreground color
                     var foregroundColor = new SimpleColor(newColor).fullContrastColor().hexStr;
-                    $status_tag.css('color', foregroundColor);
-                },
-                componentDidMount: function () {
-                    EE.cp.formValidation.bindInputs(container);
+                    status_tag.style.color = foregroundColor;
                 }
             }, null), container);
         });
