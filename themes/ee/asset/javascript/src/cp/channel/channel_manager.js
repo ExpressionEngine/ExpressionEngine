@@ -37,7 +37,7 @@ var options = {
 			status_tag.innerText = status;
 		});
 
-        $('div.colorpicker-init', model).each(function() {
+        $('div.colorpicker-init', modal).each(function() {
             var container = this;
 
             // TMP css
