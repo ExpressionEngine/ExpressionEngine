@@ -118,6 +118,9 @@ var ColorPicker = function (_React$Component) {
             if (this.state.selectedColor !== prevState.selectedColor) {
                 // Notify when the color has changed
                 this.colorChanged();
+
+                // TODO: Should live preview be here?
+                $(document).trigger('entry:preview');
             }
         }
 
@@ -314,71 +317,71 @@ var ColorPicker = function (_React$Component) {
 
             return React.createElement(
                 'div',
-                { className: 'colorpicker' },
-                React.createElement('input', { type: 'text', id: this.props.inputId, name: this.props.inputName, value: this.state.inputValue, onChange: this.onInputChange, onFocus: this.showColorPanel, onBlur: this.hideColorPanel, autoComplete: 'off' }),
+                { className: 'c-colorpicker' },
+                React.createElement('input', { 'class': 'c-colorpicker-input', type: 'text', id: this.props.inputId, name: this.props.inputName, value: this.state.inputValue, onChange: this.onInputChange, onFocus: this.showColorPanel, onBlur: this.hideColorPanel, autoComplete: 'off' }),
                 React.createElement(
                     'span',
-                    { className: 'colorpicker-input-color' },
+                    { className: 'c-colorpicker-input-color' },
                     React.createElement('span', { style: { background: currentColor.rgbaStr } })
                 ),
                 React.createElement(
                     'div',
-                    { className: 'colorpicker-panel', style: { display: this.state.showPanel ? 'block' : 'none' }, onMouseDown: function onMouseDown(e) {
+                    { className: 'c-colorpicker-panel', style: { display: this.state.showPanel ? 'block' : 'none' }, onMouseDown: function onMouseDown(e) {
                             e.stopPropagation();e.preventDefault();
                         } },
                     allowedColors == 'any' && React.createElement(
                         'div',
-                        { className: 'colorpicker-controls' },
+                        { className: 'c-colorpicker-controls' },
                         React.createElement(
                             'div',
-                            { className: 'colorpicker-hue-box', style: { background: hueColor }, onMouseDown: function onMouseDown(e) {
+                            { className: 'c-colorpicker-hue-box', style: { background: hueColor }, onMouseDown: function onMouseDown(e) {
                                     return _this3.handleDrag(e, 'mouse', _this3.onHueBoxMove);
                                 }, onTouchStart: function onTouchStart(e) {
                                     return _this3.handleDrag(e, 'touch', _this3.onHueBoxMove);
                                 }, ref: function ref(el) {
                                     return _this3.hueBoxRef = el;
                                 } },
-                            React.createElement('div', { className: 'colorpicker-hue-box-knob', style: { top: hueKnobPosY, left: hueKnobPosX, background: hexStr }, ref: function ref(el) {
+                            React.createElement('div', { className: 'c-colorpicker-hue-box-knob', style: { top: hueKnobPosY, left: hueKnobPosX, background: hexStr }, ref: function ref(el) {
                                     return _this3.hueBoxKnobRef = el;
                                 } })
                         ),
                         React.createElement(
                             'div',
-                            { className: 'colorpicker-slider colorpicker-hue-slider', onMouseDown: function onMouseDown(e) {
+                            { className: 'c-colorpicker-slider c-colorpicker-hue-slider', onMouseDown: function onMouseDown(e) {
                                     return _this3.handleDrag(e, 'mouse', _this3.onHueSliderMove);
                                 }, onTouchStart: function onTouchStart(e) {
                                     return _this3.handleDrag(e, 'touch', _this3.onHueSliderMove);
                                 }, ref: function ref(el) {
                                     return _this3.hueSliderRef = el;
                                 } },
-                            React.createElement('div', { className: 'colorpicker-slider-knob', ref: function ref(el) {
+                            React.createElement('div', { className: 'c-colorpicker-slider-knob', ref: function ref(el) {
                                     return _this3.hueSliderKnobRef = el;
                                 }, style: { background: hueColor, top: hueSliderPos } })
                         ),
                         this.props.enableOpacity && React.createElement(
                             'div',
-                            { className: 'colorpicker-slider colorpicker-opacity-slider', onMouseDown: function onMouseDown(e) {
+                            { className: 'c-colorpicker-slider c-colorpicker-opacity-slider', onMouseDown: function onMouseDown(e) {
                                     return _this3.handleDrag(e, 'mouse', _this3.onOpacitySliderMove);
                                 }, onTouchStart: function onTouchStart(e) {
                                     return _this3.handleDrag(e, 'touch', _this3.onOpacitySliderMove);
                                 }, ref: function ref(el) {
                                     return _this3.opacitySliderRef = el;
                                 } },
-                            React.createElement('div', { className: 'colorpicker-slider-knob', ref: function ref(el) {
+                            React.createElement('div', { className: 'c-colorpicker-slider-knob', ref: function ref(el) {
                                     return _this3.opacitySliderKnobRef = el;
                                 }, style: { background: hexStr, top: opacitySliderPos } }),
-                            React.createElement('div', { className: 'colorpicker-slider-inner', style: { background: 'linear-gradient(to top, ' + currentColor.withAlpha(0).rgbaStr + ', ' + hexStr + ')' } })
+                            React.createElement('div', { className: 'c-colorpicker-slider-inner', style: { background: 'linear-gradient(to top, ' + currentColor.withAlpha(0).rgbaStr + ', ' + hexStr + ')' } })
                         )
                     ),
                     React.createElement(
                         'div',
-                        { className: 'colorpicker-swatches' },
+                        { className: 'c-colorpicker-swatches' },
                         this.props.swatches.map(function (colorStr, index) {
                             var color = new SimpleColor(colorStr);
 
                             if (!color.isValid) return '';
 
-                            return React.createElement('div', { key: index, className: 'swatch ' + (color.rgbaStr == currentColor.rgbaStr ? 'selected' : ''), 'data-color': colorStr, onClick: _this3.onSwatchClick, style: { backgroundColor: color.rgbaStr, borderColor: color.shade(-15).rgbaStr } });
+                            return React.createElement('div', { key: index, className: 'c-colorpicker-swatch ' + (color.rgbaStr == currentColor.rgbaStr ? 'is-selected' : ''), 'data-color': colorStr, onClick: _this3.onSwatchClick, style: { backgroundColor: color.rgbaStr, borderColor: color.shade(-15).rgbaStr } });
                         })
                     )
                 )
@@ -387,13 +390,31 @@ var ColorPicker = function (_React$Component) {
 
         // -------------------------------------------------------------------
 
+    }], [{
+        key: 'renderFields',
+        value: function renderFields(context) {
+            var colorPickers = (context || document).querySelectorAll('input[data-colorpicker-react]');
+
+            for (var index = 0; index < colorPickers.length; index++) {
+                var container = colorPickers[index];
+                // console.log(container, container.disabled);
+                // continue;
+                if (container.disabled) continue;
+
+                var props = JSON.parse(window.atob(container.dataset.colorpickerReact));
+                props.inputName = container.name;
+
+                var newContainer = document.createElement('div');
+                container.parentNode.replaceChild(newContainer, container);
+
+                ReactDOM.render(React.createElement(ColorPicker, props, null), newContainer);
+            }
+        }
     }]);
 
     return ColorPicker;
 }(React.Component);
 
-// TODO: Add this to the cp css
-// TODO: The input does not get styled red on error because the css does not go past the first nested element
 // TODO: The color picker overflows the grid field
 
 
@@ -423,6 +444,3 @@ ColorPicker.defaultProps = {
     // If false, prevents the color from having transparency and hides the opacity slider
     enableOpacity: false
 };
-function tmpCss() {
-    return '\n<style>\n.colorpicker {\n    position: relative;\n}\n\n.colorpicker input {\n    padding-left: 28px;\n}\n.colorpicker-input-color {\n    pointer-events: none;\n    display: inline-block;\n    position: absolute;\n    left: 6px;\n    top: 6px;\n    width: 14px;\n    height: 14px;\n    padding: 0;\n    margin: 0;\n    vertical-align: middle;\n\n    border: solid 1px #ccc;\n    cursor: text;\n\n    /* Opacity Checks */\n    background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+Cjxzdmcgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDggOCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxuczpzZXJpZj0iaHR0cDovL3d3dy5zZXJpZi5jb20vIiBzdHlsZT0iZmlsbC1ydWxlOmV2ZW5vZGQ7Y2xpcC1ydWxlOmV2ZW5vZGQ7c3Ryb2tlLWxpbmVqb2luOnJvdW5kO3N0cm9rZS1taXRlcmxpbWl0OjEuNDE0MjE7Ij4KICAgIDxnIHRyYW5zZm9ybT0ibWF0cml4KDEsMCwwLDEsLTQsLTQpIj4KICAgICAgICA8ZyB0cmFuc2Zvcm09Im1hdHJpeCgxLDAsMCwxLDQsNCkiPgogICAgICAgICAgICA8cmVjdCB4PSI2IiB5PSIwIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBzdHlsZT0iZmlsbDpyZ2IoMjA0LDIwNCwyMDQpO2ZpbGwtcnVsZTpub256ZXJvOyIvPgogICAgICAgIDwvZz4KICAgICAgICA8ZyB0cmFuc2Zvcm09Im1hdHJpeCgxLDAsMCwxLDQsNCkiPgogICAgICAgICAgICA8cmVjdCB4PSIwIiB5PSIyIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBzdHlsZT0iZmlsbDpyZ2IoMjA0LDIwNCwyMDQpO2ZpbGwtcnVsZTpub256ZXJvOyIvPgogICAgICAgIDwvZz4KICAgICAgICA8ZyB0cmFuc2Zvcm09Im1hdHJpeCgxLDAsMCwxLDQsNCkiPgogICAgICAgICAgICA8cmVjdCB4PSIyIiB5PSIwIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBzdHlsZT0iZmlsbDpyZ2IoMjA0LDIwNCwyMDQpO2ZpbGwtcnVsZTpub256ZXJvOyIvPgogICAgICAgIDwvZz4KICAgICAgICA8ZyB0cmFuc2Zvcm09Im1hdHJpeCgxLDAsMCwxLDQsNCkiPgogICAgICAgICAgICA8cmVjdCB4PSIwIiB5PSI2IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBzdHlsZT0iZmlsbDpyZ2IoMjA0LDIwNCwyMDQpO2ZpbGwtcnVsZTpub256ZXJvOyIvPgogICAgICAgIDwvZz4KICAgICAgICA8ZyB0cmFuc2Zvcm09Im1hdHJpeCgxLDAsMCwxLDQsNCkiPgogICAgICAgICAgICA8cmVjdCB4PSI0IiB5PSIyIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBzdHlsZT0iZmlsbDpyZ2IoMjA0LDIwNCwyMDQpO2ZpbGwtcnVsZTpub256ZXJvOyIvPgogICAgICAgIDwvZz4KICAgICAgICA8ZyB0cmFuc2Zvcm09Im1hdHJpeCgxLDAsMCwxLDQsNCkiPgogICAgICAgICAgICA8cmVjdCB4PSI0IiB5PSI2IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBzdHlsZT0iZmlsbDpyZ2IoMjA0LDIwNCwyMDQpO2ZpbGwtcnVsZTpub256ZXJvOyIvPgogICAgICAgIDwvZz4KICAgICAgICA8ZyB0cmFuc2Zvcm09Im1hdHJpeCgxLDAsMCwxLDQsNCkiPgogICAgICAgICAgICA8cmVjdCB4PSI2IiB5PSI0IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBzdHlsZT0iZmlsbDpyZ2IoMjA0LDIwNCwyMDQpO2ZpbGwtcnVsZTpub256ZXJvOyIvPgogICAgICAgIDwvZz4KICAgICAgICA8ZyB0cmFuc2Zvcm09Im1hdHJpeCgxLDAsMCwxLDQsNCkiPgogICAgICAgICAgICA8cmVjdCB4PSIyIiB5PSI0IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBzdHlsZT0iZmlsbDpyZ2IoMjA0LDIwNCwyMDQpO2ZpbGwtcnVsZTpub256ZXJvOyIvPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+Cg==);\n    background-size: 12px;\n    background-repeat: repeat;\n}\n.colorpicker-input-color span {\n    position: absolute;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n}\n\n.colorpicker-panel {\n    width: auto;\n    position: absolute;\n    left: 0;\n    margin-top: 3px;\n    z-index: 105;\n    padding-bottom: 10px;\n\n    background-color: #fff;\n    border: 1px solid #ccc;\n    border-radius: 5px;\n    box-shadow: 0 2px 4px 0 rgba(0,0,0,.08);\n}\n\n\n.colorpicker-controls {\n    box-sizing: border-box;\n    padding: 10px 10px 0 10px;\n    display: flex;\n    flex-direction: row;\n}\n/* Clear fix */\n.colorpicker-controls:after {\n  content: "";\n  display: table;\n  clear: both;\n}\n\n.colorpicker-slider {\n    position: relative;\n    height: 120px;\n    width: 14px;\n    touch-action: pan-y;\n\n    cursor: row-resize;\n    border-radius: 4px;\n\n    /* Opacity Checks */\n    background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+Cjxzdmcgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDggOCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxuczpzZXJpZj0iaHR0cDovL3d3dy5zZXJpZi5jb20vIiBzdHlsZT0iZmlsbC1ydWxlOmV2ZW5vZGQ7Y2xpcC1ydWxlOmV2ZW5vZGQ7c3Ryb2tlLWxpbmVqb2luOnJvdW5kO3N0cm9rZS1taXRlcmxpbWl0OjEuNDE0MjE7Ij4KICAgIDxnIHRyYW5zZm9ybT0ibWF0cml4KDEsMCwwLDEsLTQsLTQpIj4KICAgICAgICA8ZyB0cmFuc2Zvcm09Im1hdHJpeCgxLDAsMCwxLDQsNCkiPgogICAgICAgICAgICA8cmVjdCB4PSI2IiB5PSIwIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBzdHlsZT0iZmlsbDpyZ2IoMjA0LDIwNCwyMDQpO2ZpbGwtcnVsZTpub256ZXJvOyIvPgogICAgICAgIDwvZz4KICAgICAgICA8ZyB0cmFuc2Zvcm09Im1hdHJpeCgxLDAsMCwxLDQsNCkiPgogICAgICAgICAgICA8cmVjdCB4PSIwIiB5PSIyIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBzdHlsZT0iZmlsbDpyZ2IoMjA0LDIwNCwyMDQpO2ZpbGwtcnVsZTpub256ZXJvOyIvPgogICAgICAgIDwvZz4KICAgICAgICA8ZyB0cmFuc2Zvcm09Im1hdHJpeCgxLDAsMCwxLDQsNCkiPgogICAgICAgICAgICA8cmVjdCB4PSIyIiB5PSIwIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBzdHlsZT0iZmlsbDpyZ2IoMjA0LDIwNCwyMDQpO2ZpbGwtcnVsZTpub256ZXJvOyIvPgogICAgICAgIDwvZz4KICAgICAgICA8ZyB0cmFuc2Zvcm09Im1hdHJpeCgxLDAsMCwxLDQsNCkiPgogICAgICAgICAgICA8cmVjdCB4PSIwIiB5PSI2IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBzdHlsZT0iZmlsbDpyZ2IoMjA0LDIwNCwyMDQpO2ZpbGwtcnVsZTpub256ZXJvOyIvPgogICAgICAgIDwvZz4KICAgICAgICA8ZyB0cmFuc2Zvcm09Im1hdHJpeCgxLDAsMCwxLDQsNCkiPgogICAgICAgICAgICA8cmVjdCB4PSI0IiB5PSIyIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBzdHlsZT0iZmlsbDpyZ2IoMjA0LDIwNCwyMDQpO2ZpbGwtcnVsZTpub256ZXJvOyIvPgogICAgICAgIDwvZz4KICAgICAgICA8ZyB0cmFuc2Zvcm09Im1hdHJpeCgxLDAsMCwxLDQsNCkiPgogICAgICAgICAgICA8cmVjdCB4PSI0IiB5PSI2IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBzdHlsZT0iZmlsbDpyZ2IoMjA0LDIwNCwyMDQpO2ZpbGwtcnVsZTpub256ZXJvOyIvPgogICAgICAgIDwvZz4KICAgICAgICA8ZyB0cmFuc2Zvcm09Im1hdHJpeCgxLDAsMCwxLDQsNCkiPgogICAgICAgICAgICA8cmVjdCB4PSI2IiB5PSI0IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBzdHlsZT0iZmlsbDpyZ2IoMjA0LDIwNCwyMDQpO2ZpbGwtcnVsZTpub256ZXJvOyIvPgogICAgICAgIDwvZz4KICAgICAgICA8ZyB0cmFuc2Zvcm09Im1hdHJpeCgxLDAsMCwxLDQsNCkiPgogICAgICAgICAgICA8cmVjdCB4PSIyIiB5PSI0IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBzdHlsZT0iZmlsbDpyZ2IoMjA0LDIwNCwyMDQpO2ZpbGwtcnVsZTpub256ZXJvOyIvPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+Cg==);\n    background-size: 20px;\n    background-repeat: repeat;\n}\n.colorpicker-slider-inner {\n    position: absolute;\n    top: 0;\n    right: 0;\n    bottom: 0;\n    left: 0;\n    z-index: 5;\n    border-radius: 4px;\n}\n.colorpicker-slider-knob {\n    width: 100%;\n    height: 5px;\n    position: absolute;\n    top: 0;\n    left: 0;\n    z-index: 10;\n    box-sizing: border-box;\n    border-radius: 2px;\n    border: 1px solid #fff;\n    box-shadow: 0 0 0 1px #000;\n    background-color: #fff;\n}\n\n.colorpicker-hue-slider {\n    margin-left: 10px;\n    background: linear-gradient(#ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);\n}\n\n.colorpicker-opacity-slider {\n    margin-left: 10px;\n}\n\n.colorpicker-hue-box {\n    touch-action: pan-x pan-y;\n    margin: 0;\n    flex-grow: 1;\n    min-width: 150px;\n    height: 120px;\n    position: relative;\n    cursor: crosshair;\n    border-radius: 4px;\n}\n.colorpicker-hue-box:before, .colorpicker-hue-box:after {\n    content: \'\';\n    position: absolute;\n    width: 100%;\n    height: 100%;\n    border-radius: 4px;\n}\n/* Saturation Gradient */\n.colorpicker-hue-box:before {\n    z-index: 5;\n    background: linear-gradient(to right, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%);\n}\n/* Brightness Gradient */\n.colorpicker-hue-box:after {\n    z-index: 6;\n    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%);\n}\n.colorpicker-hue-box-knob {\n    width: 12px;\n    height: 12px;\n    border: 2px solid #fff;\n    border-radius: 50%;\n    position: absolute;\n    z-index: 10;\n    top: 40px;\n    left: 20px;\n    box-shadow: inset 0 0 0 1px #000;\n}\n\n.colorpicker-swatches {\n    padding: 0 10px 0 10px;\n}\n.colorpicker-swatches .swatch {\n    width: 20px;\n    height: 20px;\n    float: left;\n    margin: 8px 0 0 8px;\n    border: solid 1px #fff;\n    border-radius: 50%;\n    cursor: pointer;\n    box-sizing: border-box;\n}\n/* Wrap at every 7th swatch */\n.colorpicker-swatches .swatch:nth-child(7n+1) {\n   margin-left: 0;\n   display: block;\n   clear: both;\n}\n.colorpicker-swatches .swatch.selected {\n    box-shadow: 0 0 0 2px #74C0FC;\n}\n</style>\n';
-}

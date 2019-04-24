@@ -30,7 +30,7 @@ new MutableSelectField('cat_group', EE.channelManager.catGroup)
 var options = {
 	onFormLoad: function(modal) {
 		var status_tag = modal[0].querySelector('.status-tag');
-        
+
 		// Change the status example's name when you change the name
 		$('input[name="status"]', modal).on('keyup', function(event) {
 			var status = this.value || EE.status.default_name;
@@ -39,10 +39,6 @@ var options = {
 
         $('div.colorpicker-init', modal).each(function() {
             var container = this;
-
-            // TMP css
-            // TODO: REMOVE ME
-            $(tmpCss()).insertBefore(container)
 
             ReactDOM.render(React.createElement(ColorPicker, {
                 inputName: 'highlight',
