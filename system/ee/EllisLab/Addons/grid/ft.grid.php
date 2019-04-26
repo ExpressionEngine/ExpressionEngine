@@ -84,6 +84,48 @@ class Grid_ft extends EE_Fieldtype {
 		}
 	}
 
+	public function reindex($data)
+	{
+		// we save compounded searchable data to the field data table,
+		// real data gets saved to the grid's own table
+		$searchable_data = NULL;
+		if ($this->get_setting('field_search'))
+		{
+			$this->_load_grid_lib();
+
+			$rows = ee()->grid_model->get_entry(ee()->grid_lib->entry_id, ee()->grid_lib->field_id, ee()->grid_lib->content_type, ee()->grid_lib->fluid_field_data_id);
+
+			$columns = ee()->grid_model->get_columns_for_field(ee()->grid_lib->field_id, 'channel');
+			$searchable_columns = array_filter($columns, function($column) {
+				return ($column['col_search'] == 'y');
+			});
+			$searchable_columns = array_map(function($element) {
+				return 'col_id_'.$element['col_id'];
+			}, $searchable_columns);
+
+			$search_data = [];
+
+			foreach ($rows as $row)
+			{
+				// We need only the column data for insertion
+				$column_data = [];
+				foreach ($row as $key => $value)
+				{
+					if (in_array($key, $searchable_columns))
+					{
+						$column_data[$key] = $value;
+					}
+				}
+				$search_data[$row['row_id']] = $column_data;
+			}
+
+			ee()->load->helper('custom_field_helper');
+			$searchable_data = encode_multi_field($search_data) ?: NULL;
+		}
+
+		return $searchable_data;
+	}
+
 	// This fieldtype has been converted, so it accepts all content types
 	public function accepts_content_type($name)
 	{
@@ -730,6 +772,18 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function save_settings($data)
 	{
+		if ( ! $this->get_setting('field_search')
+			&& (isset($data['field_search']) && $data['field_search'] == 'y'))
+		{
+			ee('CP/Alert')->makeInline('search-reindex')
+				->asImportant()
+				->withTitle(lang('search_reindex_tip'))
+				->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
+				->defer();
+
+			ee()->config->update_site_prefs(['search_reindex_needed' => ee()->localize->now], 0);
+		}
+
 		// Make sure grid_min_rows is at least zero
 		return array(
 			'grid_min_rows' => empty($data['grid_min_rows']) ? 0 : $data['grid_min_rows'],

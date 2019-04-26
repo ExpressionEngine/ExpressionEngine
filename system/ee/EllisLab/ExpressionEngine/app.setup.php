@@ -36,6 +36,7 @@ use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Permission;
 use EllisLab\ExpressionEngine\Service\Profiler;
+use EllisLab\ExpressionEngine\Service\Session;
 use EllisLab\ExpressionEngine\Service\Sidebar;
 use EllisLab\ExpressionEngine\Service\Theme;
 use EllisLab\ExpressionEngine\Service\Thumbnail;
@@ -286,11 +287,16 @@ return [
 
 		'Updater/Preflight' => function($ee)
 		{
+			$theme_paths = $ee->make('Model')->get('Config')
+					->filter('key', 'theme_folder_path')
+					->all()
+					->pluck('parsed_value');
+
 			return new Updater\Downloader\Preflight(
 				$ee->make('Filesystem'),
 				$ee->make('Updater/Logger'),
 				$ee->make('Config')->getFile(),
-				$ee->make('Model')->get('Site')->all()
+				array_unique($theme_paths)
 			);
 		},
 
@@ -509,6 +515,13 @@ return [
 			return new Library\Security\XSS();
 		},
 
+		'Session' => function($ee)
+		{
+			$session = ee()->session->getSessionModel();
+
+			return new Session\Session($session);
+		},
+
 		'Validation' => function($ee)
 		{
 			return new Validation\Factory();
@@ -620,8 +633,12 @@ return [
 			'Consent' => 'Model\Consent\Consent',
 			'ConsentAuditLog' => 'Model\Consent\ConsentAuditLog',
 			'ConsentRequest' => 'Model\Consent\ConsentRequest',
-			'ConsentRequestVersion' => 'Model\Consent\ConsentRequestVersion'
+			'ConsentRequestVersion' => 'Model\Consent\ConsentRequestVersion',
+
+			// ..\Config
+			'Config' => 'Model\Config\Config',
 	),
+
 	'cookies.necessary' => [
 		'cp_last_site_id',
 		'csrf_token',

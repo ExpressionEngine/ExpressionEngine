@@ -44,9 +44,9 @@ class Updater {
 		$warning = FALSE;
 		$directories = array();
 		// Get all of the file upload directories and see if any are using themes/ee
-		$upload_destinations = ee('Model')->get('UploadDestination')->all();
+		$upload_destinations = ee()->db->get('upload_prefs');
 
-		foreach ($upload_destinations as $upload)
+		foreach ($upload_destinations->result() as $upload)
 		{
 			if (strpos($upload->server_path, 'themes/ee/site/default/asset/img/') !== FALSE)
 			{

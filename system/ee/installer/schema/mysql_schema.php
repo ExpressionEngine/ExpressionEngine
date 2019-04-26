@@ -50,10 +50,6 @@ class EE_Schema {
 			`site_label` varchar(100) NOT NULL default '',
 			`site_name` varchar(50) NOT NULL default '',
 			`site_description` text NULL,
-			`site_system_preferences` mediumtext NOT NULL ,
-			`site_member_preferences` TEXT NOT NULL ,
-			`site_template_preferences` TEXT NOT NULL ,
-			`site_channel_preferences` TEXT NOT NULL ,
 			`site_bootstrap_checksums` TEXT NOT NULL ,
 			`site_pages` TEXT NOT NULL ,
 			PRIMARY KEY `site_id` (`site_id`),
@@ -1455,6 +1451,15 @@ class EE_Schema {
 			KEY `consent_request_id` (`consent_request_id`)
 		)";
 
+		$Q[] = "CREATE TABLE `exp_config` (
+			`config_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`site_id` int(5) unsigned NOT NULL DEFAULT '0',
+			`key` varchar(64) NOT NULL DEFAULT '',
+			`value` text,
+			PRIMARY KEY (`config_id`),
+			KEY `site_key` (`site_id`,`key`)
+		);";
+
 		// Default menu set
 		$Q[] = "INSERT INTO exp_menu_sets(name) VALUES ('Default')";
 
@@ -1520,10 +1525,6 @@ class EE_Schema {
 			'site_id' 		=> 1,
 			'site_label'	=> $this->userdata['site_label'],
 			'site_name'		=> $this->userdata['site_name'],
-			'site_system_preferences'      => '',
-			'site_member_preferences'      => '',
-			'site_template_preferences'    => '',
-			'site_channel_preferences'     => '',
 			'site_bootstrap_checksums'     => '',
 			'site_pages'                   => '',
 		);

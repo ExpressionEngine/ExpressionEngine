@@ -88,34 +88,41 @@ class Email extends Settings {
 						),
 					)
 				)
-			),
-			'secure_form_ctrls' => array(
+			)
+		);
+
+		$rules = [
+			[
+				'field' => 'email',
+				'label' => 'lang:email',
+				'rules' => 'required|valid_email|max_length['.USERNAME_MAX_LENGTH.']'
+			]
+		];
+
+		if ( ! ee('Session')->isWithinAuthTimeout())
+		{
+			$vars['sections']['secure_form_ctrls'] = array(
 				array(
 					'title' => 'existing_password',
 					'desc' => 'existing_password_exp',
 					'fields' => array(
-						'current_password' => array(
+						'verify_password' => array(
 							'type'      => 'password',
-							'required' => TRUE,
+							'required'  => TRUE,
 							'maxlength' => PASSWORD_MAX_LENGTH
 						)
 					)
 				)
-			)
-		);
+			);
 
-		ee()->form_validation->set_rules(array(
-			array(
-				 'field'   => 'email',
-				 'label'   => 'lang:email',
-				 'rules'   => 'required|valid_email|max_length['.USERNAME_MAX_LENGTH.']'
-			),
-			array(
-				 'field'   => 'current_password',
-				 'label'   => 'lang:current_password',
-				 'rules'   => 'required|auth_password'
-			)
-		));
+			$rules[] = [
+				'field' => 'verify_password',
+				'label' => 'lang:verify_password',
+				'rules' => 'required|auth_password[useAuthTimeout]'
+			];
+		}
+
+		ee()->form_validation->set_rules($rules);
 
 		if (AJAX_REQUEST)
 		{

@@ -598,63 +598,15 @@ class Comment {
 			);
 		}
 
-		// We could do this in one fell, performant swoop with:
-		//
-		// 		$tagdata = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
-		//
-		// But we have a legacy extension hook here that fires on EVERY row's tagdata...
-		// So we need to loop it for now, deprecate it, and change/remove it in v5
-		$return = '';
-
-		// Custom parse {switch=} until we can use parse_variables()
-		if (preg_match_all("/".LD."(switch\s*=.+?)".RD."/i", ee()->TMPL->tagdata, $matches, PREG_SET_ORDER))
-		{
-			foreach ($matches as $match)
-			{
-				$sparam = ee('Variables/Parser')->parseTagParameters($match[1]);
-
-				if (isset($sparam['switch']))
-				{
-					$sopt = explode("|", $sparam['switch']);
-
-					$switch[$match[1]] = $sopt;
-				}
-			}
-		}
-
-		$count = 0;
-		foreach ($vars as $variables)
-		{
-			$tagdata = ee()->TMPL->tagdata;
-
-			// -------------------------------------------
-			// 'comment_entries_tagdata' hook.
-			//  - Modify and play with the tagdata before everyone else
-			//
-			if (ee()->extensions->active_hook('comment_entries_tagdata') === TRUE)
-			{
-				$tagdata = ee()->extensions->call('comment_entries_tagdata', $tagdata, $variables);
-				if (ee()->extensions->end_script === TRUE) return $tagdata;
-			}
-			//
-			// -------------------------------------------
-
-			$count++;
-			foreach ($switch as $key => $val)
-			{
-				$variables[$key] = $switch[$key][($count + count($val) -1) % count($val)];
-			}
-
-			$return .= ee()->TMPL->parse_variables_row($tagdata, $variables);
-		}
+		$tagdata = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
 
 		if ($enabled['pagination'])
 		{
-			return $pagination->render($return);
+			return $pagination->render($tagdata);
 		}
 		else
 		{
-			return $return;
+			return $tagdadta;
 		}
 	}
 

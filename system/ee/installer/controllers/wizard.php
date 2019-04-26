@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller {
 
-	public $version           = '5.2.1';	// The version being installed
+	public $version           = '6.0.0';	// The version being installed
 	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
 	public $schema            = NULL;		// This will contain the schema object with our queries
 	public $languages         = array(); 	// Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -1722,7 +1722,6 @@ class Wizard extends CI_Controller {
 			'site_404'                  => '',
 			'save_tmpl_revisions'       => 'n',
 			'max_tmpl_revisions'        => '5',
-			'save_tmpl_files'           => 'y',
 			'deny_duplicate_data'       => 'y',
 			'redirect_submitted_links'  => 'n',
 			'enable_censoring'          => 'n',
@@ -1765,219 +1764,21 @@ class Wizard extends CI_Controller {
 			'theme_folder_path'         => $this->userdata['theme_folder_path'],
 		);
 
-		// Default Administration Prefs
-		$admin_default = array(
-			'site_index',
-			'base_url',
-			'base_path',
-			'cp_url',
-			'site_url',
-			'theme_folder_url',
-			'webmaster_email',
-			'webmaster_name',
-			'channel_nomenclature',
-			'max_caches',
-			'captcha_url',
-			'captcha_path',
-			'captcha_font',
-			'captcha_rand',
-			'captcha_require_members',
-			'require_captcha',
-			'enable_sql_caching',
-			'force_query_string',
-			'show_profiler',
-			'include_seconds',
-			'cookie_domain',
-			'cookie_path',
-			'website_session_type',
-			'cp_session_type',
-			'allow_username_change',
-			'allow_multi_logins',
-			'password_lockout',
-			'password_lockout_interval',
-			'require_ip_for_login',
-			'require_ip_for_posting',
-			'require_secure_passwords',
-			'allow_dictionary_pw',
-			'name_of_dictionary_file',
-			'xss_clean_uploads',
-			'redirect_method',
-			'deft_lang',
-			'xml_lang',
-			'send_headers',
-			'gzip_output',
-			'date_format',
-			'time_format',
-			'include_seconds',
-			'server_offset',
-			'default_site_timezone',
-			'mail_protocol',
-			'email_newline',
-			'smtp_server',
-			'smtp_username',
-			'smtp_password',
-			'email_smtp_crypto',
-			'email_debug',
-			'email_charset',
-			'email_batchmode',
-			'email_batch_size',
-			'mail_format',
-			'word_wrap',
-			'email_console_timelock',
-			'log_email_console_msgs',
-			'log_search_terms',
-			'deny_duplicate_data',
-			'redirect_submitted_links',
-			'enable_censoring',
-			'censored_words',
-			'censor_replacement',
-			'banned_ips',
-			'banned_emails',
-			'banned_usernames',
-			'banned_screen_names',
-			'ban_action',
-			'ban_message',
-			'ban_destination',
-			'enable_emoticons',
-			'emoticon_url',
-			'recount_batch_total',
-			'new_version_check',
-			'enable_throttling',
-			'banish_masked_ips',
-			'max_page_loads',
-			'time_interval',
-			'lockout_time',
-			'banishment_type',
-			'banishment_url',
-			'banishment_message',
-			'enable_search_log',
-			'max_logged_searches',
-			'theme_folder_path',
-			'is_site_on'
-		);
-
-		$site_prefs = array();
-
-		foreach($admin_default as $value)
+		$inserts = [];
+		$install_wide = ee()->config->divination('install');
+		foreach (ee()->config->divineAll() as $key)
 		{
-			$site_prefs[$value] = $config[$value];
-		}
-
-		ee()->db->where('site_id', 1);
-		ee()->db->update('sites', array('site_system_preferences' => base64_encode(serialize($site_prefs))));
-
-		// Default Members Prefs
-		$member_default = array(
-			'un_min_len',
-			'pw_min_len',
-			'allow_member_registration',
-			'allow_member_localization',
-			'req_mbr_activation',
-			'new_member_notification',
-			'mbr_notification_emails',
-			'require_terms_of_service',
-			'default_member_group',
-			'profile_trigger',
-			'member_theme',
-			'enable_avatars',
-			'allow_avatar_uploads',
-			'avatar_url',
-			'avatar_path',
-			'avatar_max_width',
-			'avatar_max_height',
-			'avatar_max_kb',
-			'enable_photos',
-			'photo_url',
-			'photo_path',
-			'photo_max_width',
-			'photo_max_height',
-			'photo_max_kb',
-			'allow_signatures',
-			'sig_maxlength',
-			'sig_allow_img_hotlink',
-			'sig_allow_img_upload',
-			'sig_img_url',
-			'sig_img_path',
-			'sig_img_max_width',
-			'sig_img_max_height',
-			'sig_img_max_kb',
-			'prv_msg_enabled',
-			'prv_msg_allow_attachments',
-			'prv_msg_upload_path',
-			'prv_msg_max_attachments',
-			'prv_msg_attach_maxsize',
-			'prv_msg_attach_total',
-			'prv_msg_html_format',
-			'prv_msg_auto_links',
-			'prv_msg_max_chars',
-			'memberlist_order_by',
-			'memberlist_sort_order',
-			'memberlist_row_limit'
-		);
-
-		$site_prefs = array();
-
-		foreach($member_default as $value)
-		{
-			$site_prefs[$value] = $config[$value];
-		}
-
-		ee()->db->where('site_id', 1);
-		ee()->db->update('sites', array('site_member_preferences' => base64_encode(serialize($site_prefs))));
-
-		// Default Templates Prefs
-		$template_default = array(
-			'enable_template_routes',
-			'strict_urls',
-			'site_404',
-			'save_tmpl_revisions',
-			'max_tmpl_revisions',
-		);
-		$site_prefs = array();
-
-		foreach($template_default as $value)
-		{
-			$site_prefs[$value] = $config[$value];
-		}
-
-		ee()->db->where('site_id', 1);
-		ee()->db->update('sites', array('site_template_preferences' => base64_encode(serialize($site_prefs))));
-
-		// Default Channels Prefs
-		$channel_default = array(
-			'image_resize_protocol',
-			'image_library_path',
-			'thumbnail_prefix',
-			'word_separator',
-			'use_category_name',
-			'reserved_category_word',
-			'auto_convert_high_ascii',
-			'new_posts_clear_caches',
-			'auto_assign_cat_parents',
-			'enable_comments',
-			'comment_word_censoring',
-			'comment_moderation_override',
-			'comment_edit_time_limit'
-		);
-
-		$site_prefs = array();
-
-		foreach($channel_default as $value)
-		{
-			if (isset($config[$value]))
+			if (array_key_exists($key, $config))
 			{
-				$site_prefs[$value] = $config[$value];
+				$inserts[] = [
+					'site_id' => (in_array($key, $install_wide)) ? 0 : 1,
+					'key' => $key,
+					'value' => $config[$key]
+				];
+				unset($config[$key]);
 			}
 		}
-
-		ee()->db->where('site_id', 1);
-		ee()->db->update('sites', array('site_channel_preferences' => base64_encode(serialize($site_prefs))));
-
-		// Remove Site Prefs from Config
-		foreach(array_merge($admin_default, $member_default, $template_default, $channel_default) as $value)
-		{
-			unset($config[$value]);
-		}
+		ee()->db->insert_batch('config', $inserts);
 
 		// Write the config file data
 		$this->write_config_from_template($config);

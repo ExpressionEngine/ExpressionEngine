@@ -59,6 +59,8 @@ class Auth {
 		32		=> 'md5'
 	);
 
+	const BCRYPT_HASH_LENGTH = 60;
+
 	/**
 	 * Constructor
 	 *
@@ -318,10 +320,12 @@ class Auth {
 
 		// No hash function specified? Use the best one
 		// we have access to in this environment.
-		if ($h_byte_size === FALSE)
+		if ($h_byte_size === FALSE || $h_byte_size == self::BCRYPT_HASH_LENGTH)
 		{
-			reset($this->hash_algos);
-			$h_byte_size = key($this->hash_algos);
+			return [
+				'salt' => '',
+				'password' => password_hash($password, PASSWORD_BCRYPT)
+			];
 		}
 		elseif ( ! isset($this->hash_algos[$h_byte_size]))
 		{
@@ -434,21 +438,27 @@ class Auth {
 
 		// hash using the algo used for this password
 		$h_byte_size = strlen($m_pass);
-		$hashed_pair = $this->hash_password($password, $m_salt, $h_byte_size);
 
-		if ($hashed_pair === FALSE OR $m_pass !== $hashed_pair['password'])
+		// Bcrypt hash
+		if ($h_byte_size == self::BCRYPT_HASH_LENGTH && ! password_verify($password, $m_pass))
 		{
 			return FALSE;
 		}
+		elseif ($h_byte_size != self::BCRYPT_HASH_LENGTH)
+		{
+			$hashed_pair = $this->hash_password($password, $m_salt, $h_byte_size);
 
+			if ($hashed_pair === FALSE OR $m_pass !== $hashed_pair['password'])
+			{
+				return FALSE;
+			}
+		}
 
 		// Officially a valid user, but are they as secure as possible?
 		// ----------------------------------------------------------------
 
-		reset($this->hash_algos);
-
 		// Not hashed or better algo available?
-		if ( ! $m_salt OR $h_byte_size != key($this->hash_algos))
+		if ($h_byte_size != self::BCRYPT_HASH_LENGTH)
 		{
 			$m_id = $member->row('member_id');
 			$this->update_password($m_id, $password);

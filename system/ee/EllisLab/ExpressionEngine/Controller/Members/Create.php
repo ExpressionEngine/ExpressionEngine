@@ -132,20 +132,23 @@ class Create extends Members {
 			}
 		}
 
-		$vars['sections']['secure_form_ctrls'] = array(
-			array(
-				'title' => 'your_password',
-				'desc' => 'your_password_desc',
-				'group' => 'verify_password',
-				'fields' => array(
-					'verify_password' => array(
-						'type'      => 'password',
-						'required'  => TRUE,
-						'maxlength' => PASSWORD_MAX_LENGTH
+		if ( ! ee('Session')->isWithinAuthTimeout())
+		{
+			$vars['sections']['secure_form_ctrls'] = array(
+				array(
+					'title' => 'your_password',
+					'desc' => 'your_password_desc',
+					'group' => 'verify_password',
+					'fields' => array(
+						'verify_password' => array(
+							'type'      => 'password',
+							'required'  => TRUE,
+							'maxlength' => PASSWORD_MAX_LENGTH
+						)
 					)
 				)
-			)
-		);
+			);
+		}
 
 		if ( ! empty($_POST))
 		{
@@ -153,7 +156,7 @@ class Create extends Members {
 			$validator = ee('Validation')->make();
 			$validator->setRules(array(
 				'confirm_password' => 'matches[password]',
-				'verify_password'  => 'whenGroupIdIs['.implode(',', array_keys($group_toggle)).']|authenticated'
+				'verify_password'  => 'whenGroupIdIs['.implode(',', array_keys($group_toggle)).']|authenticated[useAuthTimeout]'
 			));
 
 			$validator->defineRule('whenGroupIdIs', function($key, $password, $parameters, $rule)

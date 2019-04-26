@@ -263,11 +263,9 @@ class Homepage extends CP_Controller {
 		$news_view->version = APP_VER;
 		$news_view->save();
 
-		// Version in anchor is sans dots
-		$version = implode('', explode('.', APP_VER));
-		$changelog_url = DOC_URL.'installation/changelog.html#version-'.$version;
-
-		ee()->functions->redirect($changelog_url);
+		ee()->functions->redirect(
+			ee()->cp->makeChangelogLinkForVersion(APP_VER)
+		);
 	}
 
 }
