@@ -323,7 +323,9 @@ class Channel_form_lib
 
 				if (strpos($temp, LD.'display_field'.RD) !== FALSE)
 				{
-					$custom_field_variables_row['display_field'] = $this->display_field($field_name);
+					$custom_field_variables_row['display_field'] = $this->encode_ee_tags(
+						$this->display_field($field_name)
+					);
 				}
 
 				foreach ($custom_field_variables_row as $key => $value)
@@ -352,7 +354,11 @@ class Channel_form_lib
 				$custom_field_output .= $temp;
 			}
 
-			ee()->TMPL->tagdata = str_replace($match[0], $custom_field_output, ee()->TMPL->tagdata);
+			ee()->TMPL->tagdata = str_replace(
+				$match[0],
+				$this->encode_ee_tags($custom_field_output),
+				ee()->TMPL->tagdata
+			);
 		}
 
 		if ( ! empty($this->markitup))
@@ -399,7 +405,13 @@ class Channel_form_lib
 
 					foreach ($matches[1] as $match_index => $var_pair_tagdata)
 					{
-						ee()->TMPL->tagdata = str_replace($matches[0][$match_index], $this->replace_tag($tag_name, $this->entry($name), $tagparams, $var_pair_tagdata), ee()->TMPL->tagdata);
+						ee()->TMPL->tagdata = str_replace(
+							$matches[0][$match_index],
+							$this->encode_ee_tags(
+								$this->replace_tag($tag_name, $this->entry($name), $tagparams, $var_pair_tagdata)
+							),
+							ee()->TMPL->tagdata
+						);
 					}
 				}
 			}
@@ -454,7 +466,13 @@ class Channel_form_lib
 			}
 		}
 
-		//edit form or post-error submission
+		// edit form or post-error submission
+		// check to make sure the POST request is meant for this form
+		if ( ! empty($_POST) && ! is_numeric($this->_hidden_fields['ACT']))
+		{
+			$this->_hidden_fields['ACT'] = ee()->functions->insert_action_ids($this->_hidden_fields['ACT']);
+		}
+
 		if ($this->edit OR ee()->input->post('ACT') == $this->_hidden_fields['ACT'])
 		{
 			//not necessary for edit forms
@@ -485,7 +503,9 @@ class Channel_form_lib
 						$checkbox_fields[] = $match[1];
 					}
 
-					$this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->display_field($match[1]) : '';
+					$this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields))
+						? $this->encode_ee_tags($this->display_field($match[1]))
+						: '';
 				}
 
 				elseif (preg_match('/^label:(.*)$/', $key, $match))
@@ -571,7 +591,9 @@ class Channel_form_lib
 					}
 					elseif (property_exists($this->entry, $name) OR $this->entry->hasCustomField($name))
 					{
-						$this->parse_variables[$key] = form_prep($this->entry($name), $name);
+						$this->parse_variables[$key] = $this->encode_ee_tags(
+							form_prep($this->entry($name), $name)
+						);
 					}
 				}
 			}
@@ -694,7 +716,9 @@ class Channel_form_lib
 						$checkbox_fields[] = $field->field_name;
 					}
 
-					$this->parse_variables['field:'.$field->field_name] = (array_key_exists($field->field_name, $this->custom_fields)) ? $this->display_field($field->field_name) : '';
+					$this->parse_variables['field:'.$field->field_name] = (array_key_exists($field->field_name, $this->custom_fields))
+						? $this->encode_ee_tags($this->display_field($field->field_name))
+						: '';
 				}
 			}
 
@@ -2127,7 +2151,22 @@ GRID_FALLBACK;
 		{
 			return $this->entry->getProperty($key);
 		}
+	}
 
+	/**
+	 * Encode EE tags in field contents. Channel Form may output module tags or
+	 * other when they're in the data of an entry, and since they will be output
+	 * during module parsing, the template engine will parse any module code
+	 * that is output. So we'll encode EE tags with a special marker that we can
+	 * reverse after template parsing has completed so the original field
+	 * contents aren't altered on edit.
+	 *
+	 * @param string $string Field data
+	 * @return string Encoded string
+	 */
+	private function encode_ee_tags($string)
+	{
+		return str_replace([LD, RD], ['CFORM-ENCODE-LEFT-BRACKET', 'CFORM-ENCODE-RIGHT-BRACKET'], $string);
 	}
 
 	/**
@@ -2333,6 +2372,7 @@ GRID_FALLBACK;
 			$query->filter('url_title', $url_title);
 		}
 
+		$query->filter('ChannelEntry.channel_id', $this->channel->channel_id);
 		$query->filter('ChannelEntry.site_id', $this->site_id);
 
 		$entry = $query->first();

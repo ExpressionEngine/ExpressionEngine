@@ -732,7 +732,7 @@ class Simple_commerce_mcp {
 				),
 				$purchase->Member->screen_name,
 				ee()->localize->human_time($purchase->purchase_date),
-				$purchase->subscription_end_date ?: '--',
+				$purchase->subscription_end_date ?  ee()->localize->human_time($purchase->subscription_end_date) : '--',
 				'$'.$purchase->item_cost,
 				array('toolbar_items' => array(
 					'edit' => array(

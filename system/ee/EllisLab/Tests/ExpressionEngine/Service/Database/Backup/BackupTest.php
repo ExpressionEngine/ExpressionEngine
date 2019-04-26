@@ -14,7 +14,7 @@ class BackupTest extends TestCase {
 		$this->query = Mockery::mock('EllisLab\ExpressionEngine\Service\Database\Backup\Query');
 		$this->filesystem->shouldReceive('write');
 
-		$this->backup = new Backup($this->filesystem, $this->query, 'some/path.sql');
+		$this->backup = new Backup($this->filesystem, $this->query, 'some/path.sql', 0);
 	}
 
 	public function tearDown()

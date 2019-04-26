@@ -17,6 +17,7 @@ class Search {
 	var	$max_length		= 200;			// Maximum length of search keywords (logged to varchar(200))...
 	var	$cache_expire	= 2;			// How many hours should we keep search caches?
 	var	$keywords		= "";
+	var	$terms			= [];
 	var	$text_format	= 'xhtml';		// Excerpt text formatting
 	var	$html_format	= 'all';		// Excerpt html formatting
 	var	$auto_links		= 'y';			// Excerpt auto-linking: y/n
@@ -646,7 +647,7 @@ class Search {
 		/**  Add keyword to the query
 		/** ----------------------------------------------*/
 
-		if (trim($this->keywords) != '')
+		if (trim($this->keywords) != '' || ! empty($this->terms))
 		{
 			// So it begins
 			$sql .= "\nAND (";
@@ -656,35 +657,34 @@ class Search {
 			/** -----------------------------------------*/
 
 			$this->keywords = stripslashes($this->keywords);
-			$terms = array();
 			$criteria = (isset($this->_meta['where']) && $this->_meta['where'] == 'all') ? 'AND' : 'OR';
 
 			if (preg_match_all("/\-*\"(.*?)\"/", $this->keywords, $matches))
 			{
 				for($m=0; $m < count($matches['1']); $m++)
 				{
-					$terms[] = trim(str_replace('"','',$matches['0'][$m]));
+					$this->terms[] = trim(str_replace('"','',$matches['0'][$m]));
 					$this->keywords = str_replace($matches['0'][$m],'', $this->keywords);
 				}
 			}
 
 			if (trim($this->keywords) != '')
 			{
-				$terms = array_merge($terms, preg_split("/\s+/", trim($this->keywords)));
+				$this->terms = array_merge($this->terms, preg_split("/\s+/", trim($this->keywords)));
 			}
 
-			$not_and = (count($terms) > 2) ? ') AND (' : 'AND';
-			rsort($terms);
-			$terms_like = ee()->db->escape_like_str($terms);
-			$terms = ee()->db->escape_str($terms);
+			$not_and = (count($this->terms) > 2) ? ') AND (' : 'AND';
+			rsort($this->terms);
+			$terms_like = ee()->db->escape_like_str($this->terms);
+			$this->terms = ee()->db->escape_str($this->terms);
 
 			/** ----------------------------------
 			/**  Search in Title Field
 			/** ----------------------------------*/
 
-			if (count($terms) == 1 && isset($this->_meta['where']) && $this->_meta['where'] == 'word') // Exact word match
+			if (count($this->terms) == 1 && isset($this->_meta['where']) && $this->_meta['where'] == 'word') // Exact word match
 			{
-				$sql .= "((exp_channel_titles.title = '".$terms['0']."' OR exp_channel_titles.title LIKE '".$terms_like['0']." %' OR exp_channel_titles.title LIKE '% ".$terms_like['0']." %') ";
+				$sql .= "((exp_channel_titles.title = '".$this->terms['0']."' OR exp_channel_titles.title LIKE '".$terms_like['0']." %' OR exp_channel_titles.title LIKE '% ".$terms_like['0']." %') ";
 
 				// and close up the member clause
 				if ($member_ids != '')
@@ -698,18 +698,18 @@ class Search {
 			}
 			elseif ( ! isset($_POST['exact_keyword']))  // Any terms, all terms
 			{
-				$mysql_function	= (substr($terms['0'], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';
-				$search_term	= (substr($terms['0'], 0,1) == '-') ? substr($terms_like['0'], 1) : $terms_like['0'];
+				$mysql_function	= (substr($this->terms['0'], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';
+				$search_term	= (substr($this->terms['0'], 0,1) == '-') ? substr($terms_like['0'], 1) : $terms_like['0'];
 
 				// We have three parentheses in the beginning in case
 				// there are any NOT LIKE's being used and to allow for a member clause
 				$sql .= "\n(((exp_channel_titles.title $mysql_function '%".$search_term."%' ";
 
-				for ($i=1; $i < count($terms); $i++)
+				for ($i=1; $i < count($this->terms); $i++)
 				{
-					$mysql_criteria	= ($mysql_function == 'NOT LIKE' OR substr($terms[$i], 0,1) == '-') ? $not_and : $criteria;
-					$mysql_function	= (substr($terms[$i], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';
-					$search_term	= (substr($terms[$i], 0,1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
+					$mysql_criteria	= ($mysql_function == 'NOT LIKE' OR substr($this->terms[$i], 0,1) == '-') ? $not_and : $criteria;
+					$mysql_function	= (substr($this->terms[$i], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';
+					$search_term	= (substr($this->terms[$i], 0,1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
 
 					$sql .= "$mysql_criteria exp_channel_titles.title $mysql_function '%".$search_term."%' ";
 				}
@@ -728,7 +728,7 @@ class Search {
 			}
 			else // exact phrase match
 			{
-				$search_term = (count($terms) == 1) ? $terms_like[0] : ee()->db->escape_str($this->keywords);
+				$search_term = (count($this->terms) == 1) ? $terms_like[0] : ee()->db->escape_str($this->keywords);
 				$sql .= "(exp_channel_titles.title LIKE '%".$search_term."%' ";
 
 				// and close up the member clause
@@ -748,7 +748,7 @@ class Search {
 
 			if (isset($this->_meta['search_in']) AND ($this->_meta['search_in'] == 'entries' OR $this->_meta['search_in'] == 'everywhere'))
 			{
-				if (count($terms) > 1 && isset($this->_meta['where']) && $this->_meta['where'] == 'all' && ! isset($_POST['exact_keyword']) && count($fields) > 0)
+				if (count($this->terms) > 1 && isset($this->_meta['where']) && $this->_meta['where'] == 'all' && ! isset($_POST['exact_keyword']) && count($fields) > 0)
 				{
 					$concat_tables = [];
 					foreach ($fields as $val)
@@ -758,19 +758,19 @@ class Search {
 					}
 					$concat_fields = "CAST(CONCAT_WS(' ', ".implode(', ', $concat_tables).") AS CHAR)";
 
-					$mysql_function	= (substr($terms['0'], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';
-					$search_term	= (substr($terms['0'], 0,1) == '-') ? substr($terms['0'], 1) : $terms['0'];
+					$mysql_function	= (substr($this->terms['0'], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';
+					$search_term	= (substr($this->terms['0'], 0,1) == '-') ? substr($this->terms['0'], 1) : $this->terms['0'];
 
 					// Since Title is always required in a search we use OR
 					// And then three parentheses just like above in case
 					// there are any NOT LIKE's being used and to allow for a member clause
 					$sql .= "\nOR ((($concat_fields $mysql_function '%".$search_term."%' ";
 
-					for ($i=1; $i < count($terms); $i++)
+					for ($i=1; $i < count($this->terms); $i++)
 					{
-						$mysql_criteria	= ($mysql_function == 'NOT LIKE' OR substr($terms[$i], 0,1) == '-') ? $not_and : $criteria;
-						$mysql_function	= (substr($terms[$i], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';
-						$search_term	= (substr($terms[$i], 0,1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
+						$mysql_criteria	= ($mysql_function == 'NOT LIKE' OR substr($this->terms[$i], 0,1) == '-') ? $not_and : $criteria;
+						$mysql_function	= (substr($this->terms[$i], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';
+						$search_term	= (substr($this->terms[$i], 0,1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
 
 						$sql .= "$mysql_criteria $concat_fields $mysql_function '%".$search_term."%' ";
 					}
@@ -793,9 +793,9 @@ class Search {
 					{
 						$table = ($legacy_fields[$val]) ? "exp_channel_data" : "exp_channel_data_field_{$val}";
 
-						if (count($terms) == 1 && isset($this->_meta['where']) && $this->_meta['where'] == 'word')
+						if (count($this->terms) == 1 && isset($this->_meta['where']) && $this->_meta['where'] == 'word')
 						{
-							$sql .= "\nOR (({$table}.field_id_".$val." LIKE '".$terms_like['0']." %' OR {$table}.field_id_".$val." LIKE '% ".$terms_like['0']." %' OR {$table}.field_id_".$val." LIKE '% ".$terms_like['0']."' OR {$table}.field_id_".$val." = '".$terms['0']."') ";
+							$sql .= "\nOR (({$table}.field_id_".$val." LIKE '".$terms_like['0']." %' OR {$table}.field_id_".$val." LIKE '% ".$terms_like['0']." %' OR {$table}.field_id_".$val." LIKE '% ".$terms_like['0']."' OR {$table}.field_id_".$val." = '".$this->terms['0']."') ";
 
 							// and close up the member clause
 							if ($member_ids != '')
@@ -809,19 +809,19 @@ class Search {
 						}
 						elseif ( ! isset($_POST['exact_keyword']))
 						{
-							$mysql_function	= (substr($terms['0'], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';
-							$search_term	= (substr($terms['0'], 0,1) == '-') ? substr($terms_like['0'], 1) : $terms_like['0'];
+							$mysql_function	= (substr($this->terms['0'], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';
+							$search_term	= (substr($this->terms['0'], 0,1) == '-') ? substr($terms_like['0'], 1) : $terms_like['0'];
 
 							// Since Title is always required in a search we use OR
 							// And then three parentheses just like above in case
 							// there are any NOT LIKE's being used and to allow for a member clause
 							$sql .= "\nOR ((({$table}.field_id_".$val." $mysql_function '%".$search_term."%' ";
 
-							for ($i=1; $i < count($terms); $i++)
+							for ($i=1; $i < count($this->terms); $i++)
 							{
-								$mysql_criteria	= ($mysql_function == 'NOT LIKE' OR substr($terms[$i], 0,1) == '-') ? $not_and : $criteria;
-								$mysql_function	= (substr($terms[$i], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';
-								$search_term	= (substr($terms[$i], 0,1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
+								$mysql_criteria	= ($mysql_function == 'NOT LIKE' OR substr($this->terms[$i], 0,1) == '-') ? $not_and : $criteria;
+								$mysql_function	= (substr($this->terms[$i], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';
+								$search_term	= (substr($this->terms[$i], 0,1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
 
 								$sql .= "$mysql_criteria {$table}.field_id_".$val." $mysql_function '%".$search_term."%' ";
 							}
@@ -841,7 +841,7 @@ class Search {
 						}
 						else
 						{
-							$search_term = (count($terms) == 1) ? $terms_like[0] : ee()->db->escape_str($this->keywords);
+							$search_term = (count($this->terms) == 1) ? $terms_like[0] : ee()->db->escape_str($this->keywords);
 							$sql .= "\nOR ({$table}.field_id_".$val." LIKE '%".$search_term."%' ";
 
 							// and close up the member clause
@@ -865,7 +865,7 @@ class Search {
 
 			if (isset($this->_meta['search_in']) AND $this->_meta['search_in'] == 'everywhere' AND ee()->addons_model->module_installed('comment'))
 			{
-				if (count($terms) == 1 && isset($this->_meta['where']) && $this->_meta['where'] == 'word')
+				if (count($this->terms) == 1 && isset($this->_meta['where']) && $this->_meta['where'] == 'word')
 				{
 					$sql .= " OR (exp_comments.comment LIKE '% ".$terms_like['0']." %' ";
 
@@ -882,18 +882,18 @@ class Search {
 				}
 				elseif ( ! isset($_POST['exact_keyword']))
 				{
-					$mysql_function	= (substr($terms['0'], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';
-					$search_term	= (substr($terms['0'], 0,1) == '-') ? substr($terms_like['0'], 1) : $terms_like['0'];
+					$mysql_function	= (substr($this->terms['0'], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';
+					$search_term	= (substr($this->terms['0'], 0,1) == '-') ? substr($terms_like['0'], 1) : $terms_like['0'];
 
 					// We have three parentheses in the beginning in case
 					// there are any NOT LIKE's being used and to allow a member clause
 					$sql .= "\nOR (((exp_comments.comment $mysql_function '%".$search_term."%' ";
 
-					for ($i=1; $i < count($terms); $i++)
+					for ($i=1; $i < count($this->terms); $i++)
 					{
-						$mysql_criteria	= ($mysql_function == 'NOT LIKE' OR substr($terms[$i], 0,1) == '-') ? $not_and : $criteria;
-						$mysql_function	= (substr($terms[$i], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';
-						$search_term	= (substr($terms[$i], 0,1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
+						$mysql_criteria	= ($mysql_function == 'NOT LIKE' OR substr($this->terms[$i], 0,1) == '-') ? $not_and : $criteria;
+						$mysql_function	= (substr($this->terms[$i], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';
+						$search_term	= (substr($this->terms[$i], 0,1) == '-') ? substr($terms_like[$i], 1) : $terms_like[$i];
 
 						$sql .= "$mysql_criteria exp_comments.comment $mysql_function '%".$search_term."%' ";
 					}
@@ -913,7 +913,7 @@ class Search {
 				}
 				else
 				{
-					$search_term = (count($terms) == 1) ? $terms_like[0] : ee()->db->escape_str($this->keywords);
+					$search_term = (count($this->terms) == 1) ? $terms_like[0] : ee()->db->escape_str($this->keywords);
 					$sql .= " OR ((exp_comments.comment LIKE '%".$search_term."%') ";
 
 					// and close up the member clause
@@ -975,10 +975,6 @@ class Search {
 		)
 		{
 			$this->_meta['category'] = $_POST['cat_id'];
-		}
-		else
-		{
-			$this->_meta['category'] = '';
 		}
 
 		if (is_array($this->_meta['category']))
@@ -1065,8 +1061,6 @@ class Search {
 			return FALSE;
 		}
 
-		$this->num_rows = $query->num_rows();
-
 		$return = array(
 			'entries' => array(),
 			'channel_ids' => array(),
@@ -1144,6 +1138,9 @@ class Search {
 				}
 			}
 		}
+
+		// Set absolute count
+		$this->num_rows = $query_parts ? count(array_unique($query_parts['entries'])) : 0;
 
 		return $query_parts;
 	}
@@ -1283,6 +1280,7 @@ class Search {
 		$fields	= ($query->row('custom_fields') == '') ? array() : unserialize(stripslashes($query->row('custom_fields') ));
 		$query_parts = unserialize($query->row('query'));
 
+		$this->num_rows = (int) $query->row('total_results');
 		$pagination->per_page = (int) $query->row('per_page');
 		$res_page = $query->row('result_page');
 
@@ -1377,6 +1375,7 @@ class Search {
 		$channel->pagination->offset = ($pagination->per_page * $pagination->current_page) - $pagination->per_page;
 
 		$channel->query = $query;
+		$channel->absolute_results = $this->num_rows;
 
 		if ($channel->query->num_rows() == 0)
 		{

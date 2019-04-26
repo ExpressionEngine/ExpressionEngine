@@ -186,6 +186,32 @@ class Number extends Formatter {
 	}
 
 	/**
+	 * Number Format Formatter
+	 *
+	 * Formats a number with typical options
+	 *
+	 * @param  array  $options (int) decimals, (string) decimal_point, (string) thousands_separator
+	 * @return self This returns a reference to itself
+	 */
+	public function number_format($options = [])
+	{
+		$options = [
+			'decimals' => (isset($options['decimals'])) ? (int) $options['decimals'] : 0,
+			'decimal_point' => (isset($options['decimal_point'])) ? $options['decimal_point'] : '.',
+			'thousands_separator' => (isset($options['thousands_separator'])) ? $options['thousands_separator'] : ',',
+		];
+
+		$this->content = number_format(
+			(float) $this->content,
+			$options['decimals'],
+			$options['decimal_point'],
+			$options['thousands_separator']
+		);
+
+		return $this;
+	}
+
+	/**
 	 * Ordinal Formatter
 	 *
 	 * Locales other than English require the intl extension
