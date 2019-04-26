@@ -16,5 +16,8 @@ Bullet list below, e.g.
 
 - Fixed a bug  ([\#170](https://github.com/ExpressionEngine/ExpressionEngine/issues/170)) where member imports with text passwords triggered a password change email upon login.
 
+- Fixed a bug where logins to the control panel were not always redirected to the proper page.
+
+
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
