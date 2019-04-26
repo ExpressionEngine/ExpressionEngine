@@ -10,11 +10,13 @@ Bullet list below, e.g.
 
 - Fixed a bug ([\#168](https://github.com/ExpressionEngine/ExpressionEngine/issues/168)) where validation errors did not clear in the template partial editor.
 
-- Fixed a bug  ([\#86](https://github.com/ExpressionEngine/ExpressionEngine/issues/86)) where the template editor would not highlight EE comment tags correctly on newlines.
+- Fixed a bug ([\#86](https://github.com/ExpressionEngine/ExpressionEngine/issues/86)) where the template editor would not highlight EE comment tags correctly on newlines.
 
 - Fixed a bug ([\#180](https://github.com/ExpressionEngine/ExpressionEngine/issues/180)) where the Query Form would run a query two extra times.
 
-- Fixed a bug  ([\#170](https://github.com/ExpressionEngine/ExpressionEngine/issues/170)) where member imports with text passwords triggered a password change email upon login.
+- Fixed a bug ([\#170](https://github.com/ExpressionEngine/ExpressionEngine/issues/170)) where member imports with text passwords triggered a password change email upon login.
+
+- Fixed a bug ([\#182](https://github.com/ExpressionEngine/ExpressionEngine/issues/182)) where Nested relationship fields inside of fluid fields go unparsed in some circumstances.
 
 - Fixed a bug where logins to the control panel were not always redirected to the proper page.
 
