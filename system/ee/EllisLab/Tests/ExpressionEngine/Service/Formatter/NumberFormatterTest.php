@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -144,6 +144,33 @@ class NumberFormatterTest extends TestCase {
 			['fake', 'formatter_duration_seconds_only', 0],
 		];
 	}
+
+	/**
+	 * @dataProvider numberFormatProvider
+	 */
+	public function testNumberFormat($content, $decimals, $decimal_point, $thousands_separator, $expected)
+	{
+		$params = [
+			'decimals' => $decimals,
+			'decimal_point' => $decimal_point,
+			'thousands_separator' => $thousands_separator,
+		];
+
+		$number = (string) $this->format($content)->number_format($params);
+		$this->assertEquals($expected, $number);
+	}
+
+	public function numberFormatProvider()
+	{
+		$float = 12345.67890;
+		return [
+			[$float, 2, '.', ',', '12,345.68'],
+			[$float, 2, ',', '.', '12.345,68'],
+			[$float, 0, '.', ',', '12,346'],
+			[$float, 3, ',', '.', '12.345,679'],
+		];
+	}
+
 	/**
 	 * @dataProvider ordinalProvider
 	 */

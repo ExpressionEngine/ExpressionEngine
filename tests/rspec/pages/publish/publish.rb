@@ -6,7 +6,7 @@ class Publish < ControlPanelPage
   element :save, '.form-btns-top button[name=submit][value=save]'
   element :save_and_close, '.form-btns-top button[name=submit][value=save_and_close]'
 
-  elements :file_fields, 'a.file-field-filepicker'
+  elements :file_fields, 'div[data-file-field-react]'
   elements :chosen_files, '.fields-upload-chosen img'
 
   elements :tab_links, 'ul.tabs li'

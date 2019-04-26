@@ -356,6 +356,8 @@ $lang = array(
 
 'backup_error' => 'Cannot Make Backup',
 
+'backup_out_of_memory' => 'Your server ran out of memory while trying to export your database. Try setting the <a href="%s" rel="external noreferrer"><code>db_backup_row_limit</code></a> config to a lower number.',
+
 'backup_success' => 'Backup Succeeded',
 
 'backup_success_desc' => 'Your backup has been stored in your system folder at: <b>%s</b>',

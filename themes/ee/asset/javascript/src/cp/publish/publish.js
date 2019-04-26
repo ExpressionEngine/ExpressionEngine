@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -42,7 +42,7 @@ $(document).ready(function () {
 
 	// Emoji
 	if (EE.publish.smileys === true) {
-		$('.format-options .toolbar .emoji a').click(function(e) {
+		$('body').on('click', '.format-options .toolbar .emoji a', function(e) {
 			$(this).parents('.format-options').find('.emoji-wrap').slideToggle('fast');
 			e.preventDefault();
 		});

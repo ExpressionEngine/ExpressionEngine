@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -123,6 +123,16 @@ EE.cp.Modal = {
 		$('.checklist', modal)
 			.html('')
 			.append('<li>' + label + '</li>')
+
+		// Reset buttons back to non-working state
+		$('.form-btns .btn', modal)
+			.removeClass('work')
+			.each(function(index, button) {
+				console.log(button)
+				if ($(button).data('submit-text')) {
+					$(button).attr('value', $(button).data('submit-text'))
+				}
+			})
 
 		input.val(value)
 		form.attr('action', actionUrl)

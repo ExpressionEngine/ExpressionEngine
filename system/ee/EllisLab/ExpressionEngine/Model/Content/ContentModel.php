@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -506,6 +506,11 @@ abstract class ContentModel extends VariableColumnModel {
 			}
 			else
 			{
+				// Don't try to insert null values in case they're not allowed,
+				// fall back to column default instead
+				$values = array_filter($values, function($value) {
+					return ! is_null($value);
+				});
 				$values[$key_column] = $this->getId();
 				$query->set($values);
 				$query->insert($field->getTableName());

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -1883,6 +1883,24 @@ class Filemanager {
 			$this->xss_clean_off();
 		}
 
+		/* -------------------------------------------
+		/*	Hidden Configuration Variable
+		/*	- channel_form_overwrite => Allow authors to overwrite their own files via Channel Form
+		/* -------------------------------------------*/
+
+		if (bool_config_item('channel_form_overwrite'))
+		{
+			$original = ee('Model')->get('File')
+				->filter('file_name', $clean_filename)
+				->filter('upload_location_id', $dir['id'])
+				->first();
+
+			if ($original && $original->uploaded_by_member_id == ee()->session->userdata('member_id'))
+			{
+				$config['overwrite'] = TRUE;
+			}
+		}
+
 		// Upload the file
 		ee()->load->library('upload');
 		ee()->upload->initialize($config);
@@ -1943,6 +1961,15 @@ class Filemanager {
 			'max_height'			=> $dir['max_height']
 		);
 
+		/* -------------------------------------------
+		/*	Hidden Configuration Variable
+		/*	- channel_form_overwrite => Allow authors to overwrite their own files via Channel Form
+		/* -------------------------------------------*/
+
+		if (isset($config['overwrite']) && $config['overwrite'] === TRUE)
+		{
+			$file_data['file_id'] = $original->file_id;
+		}
 
 		// Check to see if its an editable image, if it is, check max h/w
 		if ($this->is_editable_image($file['full_path'], $file['file_type']))

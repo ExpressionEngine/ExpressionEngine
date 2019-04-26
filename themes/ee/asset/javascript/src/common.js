@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -247,7 +247,9 @@ $(document).ready(function(){
 	// ====
 
 		// listen for clicks on tabs
-		$('body').on('click', '.tab-wrap ul.tabs a', function(){
+		$('body').on('click', '.tab-wrap ul.tabs a', function(e){
+			e.preventDefault()
+
 			// set the tabClassIs variable
 			// tells us which .tab to control
 			var tabClassIs = $(this).attr('rel');
@@ -264,10 +266,6 @@ $(document).ready(function(){
 			$(this).addClass('act');
 			// add a class of .open to the proper .tab
 			$('.tb-act .tab.'+tabClassIs).addClass('tab-open');
-			// stop THIS from reloading
-			// the source window and appending to the URI
-			// and stop propagation up to document
-			return false;
 		});
 
 	// ==============

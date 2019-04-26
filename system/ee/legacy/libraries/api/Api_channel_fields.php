@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -199,7 +199,7 @@ class Api_channel_fields extends Api {
 				$this->set_settings($row['field_id'], $settings);
 			}
 
-			if ($row['field_type'] == 'grid')
+			if ($row['field_type'] == 'grid' || $row['field_type'] == 'file_grid')
 			{
 				$gfields[$row['site_id']][$row['field_name']] = $row['field_id'];
 			}
@@ -252,6 +252,7 @@ class Api_channel_fields extends Api {
 			if (isset($fts[$field_type]))
 			{
 				$paths[] = PATH_THIRD.$fts[$field_type]['package'].'/';
+				$paths[] = PATH_ADDONS.$fts[$field_type]['package'].'/';
 			}
 
 			$paths[] = PATH_ADDONS.$field_type.'/';
@@ -1536,13 +1537,16 @@ class Api_channel_fields extends Api {
 		$pfield_chunk = array();
 		$offset = 0;
 		$field_name = $prefix.$field_name;
+		$end = strpos($tagdata, LD.'/'.$field_name, $offset);
 
-		while (($end = strpos($tagdata, LD.'/'.$field_name, $offset)) !== FALSE)
+		while ($end !== FALSE)
 		{
 			// This hurts soo much. Using custom fields as pair and single vars in the same
 			// channel tags could lead to something like this: {field}...{field}inner{/field}
 			// There's no efficient regex to match this case, so we'll find the last nested
 			// opening tag and re-cut the chunk.
+
+			$modifier = '';
 
 			if (preg_match("/".LD."{$field_name}((?::\S+)?)(\s.*?)?".RD."(.*?)".LD.'\/'."{$field_name}\\1".RD."/s", $tagdata, $matches, 0, $offset))
 			{
@@ -1562,8 +1566,8 @@ class Api_channel_fields extends Api {
 					$params = $match[1][$idx];
 
 					// Cut the chunk at the last opening tag
-					$offset = strrpos($chunk, $tag);
-					$chunk = substr($chunk, $offset);
+					$chunk_offset = strrpos($chunk, $tag);
+					$chunk = substr($chunk, $chunk_offset);
 					$chunk = strstr($chunk, LD.$field_name);
 					$content = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.RD));
 				}
@@ -1581,7 +1585,8 @@ class Api_channel_fields extends Api {
 				$pfield_chunk[] = $chunk_array;
 			}
 
-			$offset = $end + 1;
+			$end = strpos($tagdata, LD.'/'.$field_name.$modifier.RD, $offset);
+			$offset = (int) $end + 1;
 		}
 
 		return $pfield_chunk;

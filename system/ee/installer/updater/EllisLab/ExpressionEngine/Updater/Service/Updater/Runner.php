@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -76,6 +76,12 @@ class Runner {
 
 		$backup = ee('Database/Backup', $working_file);
 		$backup->makeCompactFile();
+
+		$dbprefix = ee('Database')->getConfig()->get('dbprefix');
+		$affected_tables = array_map(function($table) use ($dbprefix) {
+			return $dbprefix.$table;
+		}, $affected_tables);
+
 		$backup->setTablesToBackup($affected_tables);
 
 		if (empty($table_name))

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -89,7 +89,20 @@ trait ModifiableTrait {
 	 */
 	public function replace_limit($data, $params = array(), $tagdata = FALSE)
 	{
+		if ( ! isset($params['preserve_words']))
+		{
+			$params['preserve_words'] = TRUE;
+		}
+
 		return (string) ee('Format')->make('Text', $data)->limitChars($params);
+	}
+
+	/**
+	 * :number_format modifier
+	 */
+	public function replace_number_format($data, $params = array(), $tagdata = FALSE)
+	{
+		return (string) ee('Format')->make('Number', $data)->number_format($params);
 	}
 
 	/**

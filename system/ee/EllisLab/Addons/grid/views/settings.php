@@ -6,13 +6,18 @@
 }
 </style>
 
-<div class="fields-grid-setup" data-group="grid">
+<div class="fields-grid-setup" data-group="<?=$group?>">
+	<?=$this->embed('ee:_shared/form/no_results', [
+		'text' => sprintf(lang('no_found'), lang('columns')),
+		'link_href' => '#',
+		'link_text' => lang('add_new')
+	])?>
 	<?php foreach ($columns as $column): ?>
 		<?=$column?>
 	<?php endforeach ?>
 </div>
 
-<div id="grid_col_settings_elements" data-group="always-hidden" class="hidden">
+<div class="<?=$group?>-col-settings-elements" data-group="always-hidden" class="hidden">
 	<?=$blank_col?>
 
 	<?php foreach ($settings_forms as $form): ?>

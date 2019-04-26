@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -118,6 +118,16 @@ class File extends Model {
 	public function isImage()
 	{
 		return (strpos($this->mime_type, 'image/') === 0);
+	}
+
+	/**
+	 * Uses the file's mime-type to determine if the file is an SVG or not.
+	 *
+	 * @return bool TRUE if the file is an SVG, FALSE otherwise
+	 */
+	public function isSVG()
+	{
+		return (strpos($this->mime_type, 'image/svg') === 0);
 	}
 
 	/**

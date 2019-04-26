@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -182,6 +182,32 @@ class Number extends Formatter {
 		$hours = number_format($remainder);
 
 		$this->content = $hours.':'.$minutes.':'.$seconds;
+		return $this;
+	}
+
+	/**
+	 * Number Format Formatter
+	 *
+	 * Formats a number with typical options
+	 *
+	 * @param  array  $options (int) decimals, (string) decimal_point, (string) thousands_separator
+	 * @return self This returns a reference to itself
+	 */
+	public function number_format($options = [])
+	{
+		$options = [
+			'decimals' => (isset($options['decimals'])) ? (int) $options['decimals'] : 0,
+			'decimal_point' => (isset($options['decimal_point'])) ? $options['decimal_point'] : '.',
+			'thousands_separator' => (isset($options['thousands_separator'])) ? $options['thousands_separator'] : ',',
+		];
+
+		$this->content = number_format(
+			(float) $this->content,
+			$options['decimals'],
+			$options['decimal_point'],
+			$options['thousands_separator']
+		);
+
 		return $this;
 	}
 

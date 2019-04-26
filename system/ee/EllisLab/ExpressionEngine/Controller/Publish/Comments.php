@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -397,6 +397,7 @@ class Comments extends AbstractPublishController {
 							'comment' => [
 								'type' => 'textarea',
 								'value' => $comment->comment,
+								'attrs' => 'class="textarea--large"',
 								'required' => FALSE,
 								'disabled' => TRUE,
 							]
