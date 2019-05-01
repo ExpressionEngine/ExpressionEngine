@@ -20,6 +20,8 @@ Bullet list below, e.g.
 
 - Fixed a bug where logins to the control panel were not always redirected to the proper page.
 
+- Fixed a bug where Live Preview threw errors if the template used a category parameter in the channel entry tag.
+
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
