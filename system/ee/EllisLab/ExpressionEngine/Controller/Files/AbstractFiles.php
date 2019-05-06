@@ -120,6 +120,7 @@ abstract class AbstractFiles extends CP_Controller {
 				->fields('id', 'name')
 				->filter('site_id', ee()->config->item('site_id'))
 				->filter('module_id', 0)
+				->order('name', 'asc')
 				->all();
 
 			if ( ! ee('Permission')->isSuperAdmin())

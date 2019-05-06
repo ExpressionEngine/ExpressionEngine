@@ -98,6 +98,14 @@ trait ModifiableTrait {
 	}
 
 	/**
+	 * :number_format modifier
+	 */
+	public function replace_number_format($data, $params = array(), $tagdata = FALSE)
+	{
+		return (string) ee('Format')->make('Number', $data)->number_format($params);
+	}
+
+	/**
 	 * :ordinal modifier
 	 */
 	public function replace_ordinal($data, $params = array(), $tagdata = FALSE)

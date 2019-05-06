@@ -28,6 +28,8 @@ class Publish extends AbstractPublishController {
 		foreach ($this->assigned_channel_ids as $channel_id)
 		{
 			$perms[] = 'can_create_entries_channel_id_' . $channel_id;
+			$perms[] = 'can_edit_self_entries_channel_id_' . $channel_id;
+			$perms[] = 'can_edit_other_entries_channel_id_' . $channel_id;
 		}
 
 		if ( ! ee('Permission')->hasAny($perms))
