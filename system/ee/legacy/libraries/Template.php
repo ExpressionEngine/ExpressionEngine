@@ -330,10 +330,7 @@ class EE_Template {
 			'is_live_preview_request' => ee('LivePreview')->hasEntryData(),
 		];
 
-		foreach ($this->user_vars as $user_var)
-		{
-			$added_globals['logged_in_'.$user_var] = ee()->session->userdata[$user_var];
-		}
+		$added_globals = array_merge($added_globals, $this->getMemberVariables());
 
 		ee()->config->_global_vars = array_merge(ee()->config->_global_vars, $added_globals);
 
@@ -519,14 +516,11 @@ class EE_Template {
 		}
 
 		// Set up logged_in_* variables for early conditional evaluation
-		$logged_in_user_cond = array();
+		$logged_in_user_cond = [];
 
 		if ($this->cache_status != 'EXPIRED')
 		{
-			foreach ($this->user_vars as $user_var)
-			{
-				$logged_in_user_cond['logged_in_'.$user_var] = ee()->session->userdata[$user_var];
-			}
+			$logged_in_user_cond = $this->getMemberVariables();
 		}
 
 		// Smite Our Enemies:  Conditionals & Modifiers
@@ -3398,8 +3392,9 @@ class EE_Template {
 		foreach ($this->user_vars as $user_var)
 		{
 			$data[$user_var] = ee()->session->userdata[$user_var];
-			$data['logged_in_'.$user_var] = ee()->session->userdata[$user_var];
 		}
+
+		$data = array_merge($data, $this->getMemberVariables());
 
 		// Define an alternate variable for {group_id} since some tags use
 		// it natively, causing it to be unavailable as a global
@@ -4372,6 +4367,33 @@ class EE_Template {
 		}
 
 		return $this->annotations->create($data);
+	}
+
+	protected function getMemberVariables()
+	{
+		static $vars;
+
+		if (empty($vars))
+		{
+			foreach ($this->user_vars as $user_var)
+			{
+				$vars['logged_in_'.$user_var] = ee()->session->userdata[$user_var];
+			}
+
+			$member = ee()->session->getMember();
+			$assinged_role_ids = $member->getAllRoles()->pluck('role_id');
+
+			$roles = ee('Model')->get('Role')->all();
+
+			foreach ($roles as $role)
+			{
+				$value = in_array($role->getId(), $assinged_role_ids);
+
+				$vars['has_role_'.$role->short_name] = $value;
+			}
+		}
+
+		return $vars;
 	}
 }
 // END CLASS
