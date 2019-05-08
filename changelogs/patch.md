@@ -22,6 +22,8 @@ Bullet list below, e.g.
 
 - Fixed a bug where Live Preview threw errors if the template used a category parameter in the channel entry tag.
 
+- Fixed a bug in the spam module where approving a Channel Entry that has categories generated PHP errors.
+
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
