@@ -37,12 +37,18 @@ var options = {
 			status_tag.innerText = status;
 		});
 
-        $('div.colorpicker-init', modal).each(function() {
-            var container = this;
+        $('input.color-picker', modal).each(function() {
+			var input = this;
+			var inputName = input.name;
+			var inputValue = input.value;
+
+			// Replace the input with a container to hold the color picker component
+			var newContainer = document.createElement('div');
+			input.parentNode.replaceChild(newContainer, input);
 
             ReactDOM.render(React.createElement(ColorPicker, {
-                inputName: 'highlight',
-                initialColor: container.dataset.color,
+                inputName: inputName,
+                initialColor: inputValue,
                 allowedColors: 'any',
                 swatches: ['E34834', 'F8BD00', '1DC969', '2B92D8', 'DE32E0', 'fff', '000'],
 
@@ -55,7 +61,7 @@ var options = {
                     var foregroundColor = new SimpleColor(newColor).fullContrastColor().hexStr;
                     status_tag.style.color = foregroundColor;
                 }
-            }, null), container);
+            }, null), newContainer);
         });
 	}
 }
