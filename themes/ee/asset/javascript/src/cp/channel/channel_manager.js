@@ -50,7 +50,7 @@ var options = {
                 inputName: inputName,
                 initialColor: inputValue,
                 allowedColors: 'any',
-                swatches: ['E34834', 'F8BD00', '1DC969', '2B92D8', 'DE32E0', 'fff', '000'],
+                swatches: ['FA5252', 'FD7E14', 'FCC419', '40C057', '228BE6', 'BE4BDB', 'F783AC'],
 
                 onChange: function(newColor) {
                     // Change background and border colors
