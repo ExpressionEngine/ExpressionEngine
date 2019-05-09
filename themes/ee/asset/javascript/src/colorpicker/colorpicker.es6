@@ -39,8 +39,6 @@ class ColorPicker extends React.Component {
 
     lastChangeColor = null
 
-    // -------------------------------------------------------------------
-
     constructor(props) {
         super(props)
 
@@ -75,8 +73,6 @@ class ColorPicker extends React.Component {
         }
     }
 
-    // -------------------------------------------------------------------
-
     showColorPanel = () => {
         this.setState({ showPanel: true }, () => {
             // Trigger a re-render so the slider knobs can be positioned properly
@@ -107,8 +103,6 @@ class ColorPicker extends React.Component {
             this.lastChangeColor = color
         }
     }
-
-    // ------------------------------------------------------------------
 
     onInputChange = (event) => {
         var inputColor = new SimpleColor(event.target.value)
@@ -154,8 +148,6 @@ class ColorPicker extends React.Component {
         // Subtract by one to invert the opacity so the slider knob starts at the top
         this.selectColor(this.getSafeSelectedColor().withAlpha(1 - (posY / this.opacitySliderRef.offsetHeight)))
     }
-
-    // -------------------------------------------------------------------
 
     /* Gets the color that will be returned */
     getReturnColor(color) {
@@ -237,8 +229,6 @@ class ColorPicker extends React.Component {
         return Math.min(Math.max(value, min), max)
     }
 
-    // -------------------------------------------------------------------
-
     render() {
         var currentColor = this.getReturnColor(this.state.selectedColor)
 
@@ -302,8 +292,6 @@ class ColorPicker extends React.Component {
             </div>
         )
     }
-
-    // -------------------------------------------------------------------
 }
 
 

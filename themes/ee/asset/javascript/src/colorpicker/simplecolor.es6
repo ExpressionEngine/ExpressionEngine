@@ -108,8 +108,6 @@ class SimpleColor {
         return 'rgba(' + rgb255.r + ', ' + rgb255.g + ', ' + rgb255.b + ', ' + (+this._rgba.a.toFixed(2)) + ')'
     }
 
-    // -------------------------------------------------------------------
-
     /** Returns true or false if this color is considered dark */
     isDark() {
         return this.brightness < 130
@@ -149,7 +147,7 @@ class SimpleColor {
     }
 
     // -------------------------------------------------------------------
-    // Static Methods
+    // Static
     // -------------------------------------------------------------------
 
     /** A pure black color */
@@ -161,8 +159,6 @@ class SimpleColor {
     static get white() {
         return new SimpleColor({r: 1, g: 1, b: 1, a: 1})
     }
-
-    // -------------------------------------------------------------------
 
     /** Tries to get the rgba values from a css rgb() or rgba() string */
     static getRgbFromString(str) {
@@ -273,7 +269,7 @@ class SimpleColor {
     }
 
     // -------------------------------------------------------------------
-    // Private Helpers
+    // Private
     // -------------------------------------------------------------------
 
     /**
@@ -313,6 +309,4 @@ class SimpleColor {
 
         return (typeof val === 'function' || typeof val === 'object')
     }
-
-    // -------------------------------------------------------------------
 }
