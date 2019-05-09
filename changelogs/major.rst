@@ -19,6 +19,7 @@ Major Release
 
 
 
+- Developers: Deprecated the Channel Status controller `getForegroundColor()`
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
