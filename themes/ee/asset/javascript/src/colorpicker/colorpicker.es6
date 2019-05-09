@@ -87,7 +87,7 @@ class ColorPicker extends React.Component {
 
     /** Selects a color optionally setting the input value to something other than the selected color return string */
     selectColor(newColor, inputValue = null) {
-        var inputValue = inputValue == null ? this.getReturnColorStr(newColor) : inputValue
+        inputValue = inputValue == null ? this.getReturnColorStr(newColor) : inputValue
         this.setState({ selectedColor: newColor, inputValue: inputValue })
     }
 
