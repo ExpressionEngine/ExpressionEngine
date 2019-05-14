@@ -12,7 +12,7 @@ $lang = array(
 
 'channels' => 'Channels',
 
-'channels_desc' => 'Channels are used to store content for your website. For example, if you want a Blog. You would first need to create a Channel to store the entries. Think of them as folders, or directories.',
+'channels_desc' => 'Channels are used to store content for your website. For example, if you want a blog you would first need to create a Channel to store the entries. Think of Channels as folders or directories.',
 
 'closed_entries_with_comments' => '<b>%d</b> Closed entries with %d comments.',
 
