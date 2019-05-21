@@ -207,12 +207,18 @@ abstract class AbstractFiles extends CP_Controller {
 			'title_or_name' => array(
 				'encode' => FALSE,
 				'attrs' => array(
-					'width' => '40%'
+					'width' => '35%'
 				),
 			),
 			'file_type',
-			'date_added',
-			'upload_directory',
+			'date_added' => array(
+				'encode' => FALSE
+			),
+			'upload_directory' => array(
+				'attrs' => array(
+					'width' => '25%'
+				),
+			),
 			'manage' => array(
 				'type'	=> Table::COL_TOOLBAR
 			),
@@ -311,10 +317,11 @@ abstract class AbstractFiles extends CP_Controller {
 				$file_description = '<a href="'.$edit_link.'">'.$file->title.'</a>';
 			}
 
+			$stacked_date = explode(" ", ee()->localize->human_time($file->upload_date));
 			$column = array(
-				$file_description.'<br><em class="faded">' . $file->file_name . '</em>',
+				$file_description.'<br><em class="faded">— ' . $file->file_name . ', by: ' . $file->UploadAuthor->username . '</em>',
 				$file->mime_type,
-				ee()->localize->human_time($file->upload_date),
+				'<span>' . $stacked_date[0] . '<br>' . $stacked_date[1] . ' ' . $stacked_date[2] . '</span>',
 				$file->UploadDestination->name,
 				array('toolbar_items' => $toolbar),
 				array(
