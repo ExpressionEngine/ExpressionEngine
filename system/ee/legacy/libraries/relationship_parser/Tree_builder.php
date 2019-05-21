@@ -216,6 +216,11 @@ class EE_relationship_tree_builder {
 		}
 
 		$all_fields = array_merge($this->relationship_field_names, ['parents', 'siblings']);
+
+		usort($all_fields, function ($a, $b){
+			return strlen($b) - strlen($a);
+		});
+
 		$all_fields = implode('|', $all_fields);
 
 		// Regex to separate out the relationship prefix part from the rest
@@ -344,7 +349,7 @@ class EE_relationship_tree_builder {
 				'in_cond' => $type == 'conditional' ? TRUE : FALSE
 			));
 
-			if ($is_only_relationship && ! $node->in_cond)
+			if ($is_only_relationship && ! $node->in_cond && empty($match[2]))
 			{
 				$open_nodes[$tag_name] = $node;
 			}

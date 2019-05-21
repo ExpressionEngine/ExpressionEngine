@@ -276,11 +276,16 @@ class EE_Exceptions {
 			$debug = (bool) (DEBUG OR ee()->config->item('debug') > 1 OR ee()->session->userdata('group_id') == 1);
 		}
 
-		// Only show the file name if debug isn't on
+		// Hide sensitive information such as file paths and database information
 		if ( ! $debug)
 		{
 			$location_parts = explode(DIRECTORY_SEPARATOR, $location);
 			$location = array_pop($location_parts);
+
+			if (strpos($message, 'SQLSTATE') !== FALSE)
+			{
+				$message = 'There was a database connection error or a problem with a query. Log in as a super admin or enable debugging for more information.';
+			}
 		}
 
 		if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&

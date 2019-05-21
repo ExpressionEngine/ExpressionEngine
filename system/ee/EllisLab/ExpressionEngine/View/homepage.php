@@ -135,9 +135,9 @@ if ($can_create_channels || count($menu['channels']['create'])): ?>
 						<?php if ($can_create_channels): ?>
 							<a class="btn action" href="<?=ee('CP/URL', 'channels/create')?>"><?=lang('create_new_channel')?></a>
 						<?php endif; ?>
-					<?php elseif ($number_of_channels == 1): ?>
+					<?php elseif ($can_create_entries && $number_of_channels == 1): ?>
 						<a class="btn action" href="<?=ee('CP/URL', 'publish/create/' . $channel_id)?>"><?=lang('create_new')?></a>
-					<?php else: ?>
+					<?php elseif ($can_create_entries): ?>
 					<div class="filters">
 						<ul>
 							<li>

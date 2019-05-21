@@ -397,6 +397,7 @@ class Comments extends AbstractPublishController {
 							'comment' => [
 								'type' => 'textarea',
 								'value' => $comment->comment,
+								'attrs' => 'class="textarea--large"',
 								'required' => FALSE,
 								'disabled' => TRUE,
 							]

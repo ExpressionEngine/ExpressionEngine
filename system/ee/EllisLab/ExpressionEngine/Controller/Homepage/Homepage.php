@@ -174,6 +174,7 @@ class Homepage extends CP_Controller {
 		$vars['can_create_channels'] = ee()->cp->allowed_group('can_create_channels');
 		$vars['can_access_fields'] = ee()->cp->allowed_group('can_create_channel_fields', 'can_edit_channel_fields', 'can_delete_channel_fields');
 		$vars['can_access_member_settings'] = ee()->cp->allowed_group('can_access_sys_prefs', 'can_access_members');
+		$vars['can_create_entries'] = ee()->cp->allowed_group('can_create_entries');
 
 		ee()->view->cp_page_title = ee()->config->item('site_name') . ' ' . lang('overview');
 		ee()->cp->render('homepage', $vars);
@@ -262,9 +263,9 @@ class Homepage extends CP_Controller {
 		$news_view->version = APP_VER;
 		$news_view->save();
 
-		// Version in anchor is separated by dashes instead of dots
-		$dashed_version = implode('-', explode('.', APP_VER));
-		$changelog_url = 'https://docs.expressionengine.com/latest/about/changelog.html#version-'.$dashed_version;
+		// Version in anchor is sans dots
+		$version = implode('', explode('.', APP_VER));
+		$changelog_url = DOC_URL.'installation/changelog.html#version-'.$version;
 
 		ee()->functions->redirect($changelog_url);
 	}
