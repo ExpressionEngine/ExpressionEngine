@@ -82,9 +82,16 @@ case 'short-text': ?>
 case 'file': ?>
 	<input type="file" name="<?=$field_name?>"<?=$attrs?> class="<?=$class?>">
 <?php break;
-case 'password': ?>
-	<input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="new-password"<?=$attrs?> class="<?=$class?>">
-<?php break;
+case 'password':
+
+if ($field_name == 'verify_password') {
+?>
+<input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="current-password"<?=$attrs?> class="<?=$class?>">
+<?php } else { ?>
+<input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="new-password"<?=$attrs?> class="<?=$class?>">
+<?php
+}
+break;
 case 'hidden': ?>
 	<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
 <?php break;
