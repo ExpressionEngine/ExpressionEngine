@@ -991,19 +991,6 @@ class EE_Input {
 	*/
 	function _clean_input_keys($str)
 	{
-		if ( ! preg_match("/^[a-z0-9:_\/ \-".EMOJI_REGEX."]+$/iu", $str))
-		{
-			set_status_header(503);
-			$error = 'Disallowed Key Characters';
-
-			if (DEBUG)
-			{
-				$error .= ': '.htmlentities($str, ENT_QUOTES, 'UTF-8');
-			}
-
-			exit($error);
-		}
-
 		// Clean UTF-8 if supported
 		if (UTF8_ENABLED === TRUE)
 		{
