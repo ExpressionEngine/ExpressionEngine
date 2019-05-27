@@ -438,7 +438,7 @@ class Channel {
 	  */
 	public function fetch_categories()
 	{
-		if ( ! $this->isLivePreviewEntry())
+		if ( ! is_null($this->query))
 		{
 			list($field_sqla, $field_sqlb) = $this->generateCategoryFieldSQL();
 
@@ -2679,6 +2679,7 @@ class Channel {
 		list($column, $comparison, $value) = explode(' ',  trim($condition));
 		list($table, $key) = explode('.', $column);
 
+		$datum = $data[$key];
 		$value = trim($value, "'");
 
 		$passes = FALSE;
@@ -2686,34 +2687,56 @@ class Channel {
 		switch ($comparison)
 		{
 			case '=':
-				$passes = ($data[$key] == $value);
+				if (is_array($datum))
+				{
+					$passes = in_array($value, $datum);
+				}
+				else
+				{
+					$passes = ($datum == $value);
+				}
 				break;
 
 			case '!=':
-				$passes = ($data[$key] != $value);
+				if (is_array($datum))
+				{
+					$passes = ! in_array($value, $datum);
+				}
+				else
+				{
+					$passes = ($datum != $value);
+				}
 				break;
 
 			case '>':
-				$passes = ($data[$key] > $value);
+				$passes = ($datum > $value);
 				break;
 
 			case '<':
-				$passes = ($data[$key] < $value);
+				$passes = ($datum < $value);
 				break;
 
 			case '>=':
-				$passes = ($data[$key] >= $value);
+				$passes = ($datum >= $value);
 				break;
 
 			case '<=':
-				$passes = ($data[$key] <= $value);
+				$passes = ($datum <= $value);
 				break;
 
 			case 'IN':
 				$value = trim($value, '()');
 				$value = explode(',', str_replace("'", '', $value));
 
-				$passes = in_array($data[$key], $value);
+				if (is_array($datum))
+				{
+					$passes = array_intersect($datum, $value);
+					$passes = ! empty($passes);
+				}
+				else
+				{
+					$passes = in_array($datum, $value);
+				}
 				break;
 		}
 

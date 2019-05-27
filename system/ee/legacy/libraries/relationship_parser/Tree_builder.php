@@ -349,7 +349,7 @@ class EE_relationship_tree_builder {
 				'in_cond' => $type == 'conditional' ? TRUE : FALSE
 			));
 
-			if ($is_only_relationship && ! $node->in_cond)
+			if ($is_only_relationship && ! $node->in_cond && empty($match[2]))
 			{
 				$open_nodes[$tag_name] = $node;
 			}

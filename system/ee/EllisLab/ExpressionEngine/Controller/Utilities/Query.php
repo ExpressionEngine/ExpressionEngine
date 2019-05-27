@@ -188,7 +188,7 @@ class Query extends Utilities {
 		}
 
 		// Get the total results on the orignal query before we paginate it
-		$query = (isset($new_sql)) ? ee()->db->query($new_sql) : ee()->db->query($sql);
+		$query = (isset($new_sql)) ? ee()->db->query($new_sql) : $query;
 		$total_results = (is_object($query)) ? $query->num_rows() : 0;
 
 		// Does this query already have a limit?
@@ -225,11 +225,6 @@ class Query extends Utilities {
 			{
 				$query = ee()->db->query($new_sql);
 			}
-		}
-
-		if ( ! isset($new_sql))
-		{
-			$query = ee()->db->query($sql);
 		}
 
 		$data = (is_object($query)) ? $query->result_array() : array();

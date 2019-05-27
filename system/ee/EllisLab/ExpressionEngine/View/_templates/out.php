@@ -16,7 +16,7 @@
 				<?php if ( ! isset($branded) OR $branded !== FALSE):?>
 					<section class="bar">
 						<p class="left"><a href="https://expressionengine.com/" rel="external"><b>ExpressionEngine</b></a></p>
-						<p class="right">&copy;<?=date('Y')?> <a href="https://ellislab.com/" rel="external">EllisLab</a>, Inc.</p>
+						<p class="right">&copy;<?=date('Y')?> <a href="https://ellislab.com/" rel="external">EllisLab</a> Corp.</p>
 					</section>
 				<?php endif; ?>
 			</section>
