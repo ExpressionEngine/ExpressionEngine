@@ -8,6 +8,8 @@ Bullet list below, e.g.
    - Added <new feature>
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
 
+   - Fixed a bug where relationship fields with parameters were not always parsed.
+   - Fixed a bug where relationships in grid fields could prevent parsing of standalone relationship fields.
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
