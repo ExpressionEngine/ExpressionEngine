@@ -59,6 +59,7 @@ class Search {
 			$_POST['keywords']		= '';
 			$_POST['exact_match'] 	= 'y';
 			$_POST['exact_keyword'] = 'n';
+			$this->_meta['site_ids'] = array(ee()->config->item('site_id'));
 		}
 
 		// RP can be used in a query string,
@@ -977,7 +978,7 @@ class Search {
 			$this->_meta['category'] = $_POST['cat_id'];
 		}
 
-		if (is_array($this->_meta['category']))
+		if (isset($this->_meta['category']) AND is_array($this->_meta['category']))
 		{
 			$temp = '';
 
