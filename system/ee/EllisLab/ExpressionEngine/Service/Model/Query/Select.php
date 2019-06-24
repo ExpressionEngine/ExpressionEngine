@@ -202,6 +202,9 @@ class Select extends Query {
 			foreach ($table_fields as $column)
 			{
 				// remember the name so we can translate filters and order_bys
+				// if alias column already exists, skip it
+				if (isset($this->model_fields[$alias]["{$alias}__{$column}"])) continue;
+
 				$this->model_fields[$alias]["{$alias}__{$column}"] = "{$table_alias}.{$column}";
 
 				// but only select it if they did not specify fields to select
