@@ -1148,15 +1148,21 @@ class Comment {
 		/**  Create form
 		/** ----------------------------------------*/
 
-		$RET = ee()->functions->fetch_current_uri();
+		$RET = ee('Encrypt')->encode(
+			ee()->functions->fetch_current_uri(),
+			ee()->config->item('session_crypt_key')
+		);
 
 		if (isset($_POST['RET']))
 		{
+			// previews / post should already be encoded
 			$RET = ee()->input->post('RET');
 		}
 		elseif (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "")
 		{
-			$RET =  ee()->TMPL->fetch_param('return');
+			$RET = ee('Encrypt')->encode(
+				ee()->TMPL->fetch_param('return'),
+				ee()->config->item('session_crypt_key'));
 		}
 
 		$PRV = (isset($_POST['PRV'])) ? $_POST['PRV'] : ee()->TMPL->fetch_param('preview');
@@ -1967,7 +1973,8 @@ class Comment {
 		//
 		// -------------------------------------------
 
-		$return_link = ( ! stristr($_POST['RET'],'http://') && ! stristr($_POST['RET'],'https://')) ? ee()->functions->create_url($_POST['RET']) : $_POST['RET'];
+		$RET = ee('Encrypt')->decode($_POST['RET'], ee()->config->item('session_crypt_key'));
+		$return_link = ( ! stristr($RET,'http://') && ! stristr($RET,'https://')) ? ee()->functions->create_url($RET) : $RET;
 
 		//  Insert data
 		$comment = ee('Model')->make('Comment', $data)->save();
