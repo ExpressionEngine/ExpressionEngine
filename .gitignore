@@ -41,6 +41,7 @@ system/user/templates/*
 
 themes/user/*
 themes/ee/asset/javascript/compressed/
+themes/ee/cp/js/build/
 
 
 # Tests ========================================================================

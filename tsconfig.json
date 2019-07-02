@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "module": "system",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "outDir": "themes/ee/cp/js/build",
+        "sourceMap": true
+    },
+    "include": [
+        "themes/ee/cp/js/src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts",
+        "build"
+    ]
+}
