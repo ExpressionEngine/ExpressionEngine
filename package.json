@@ -3,8 +3,10 @@
   "repository": "https://github.com/ExpressionEngine/ExpressionEngine",
   "private": true,
   "scripts": {
-    "build:js": "tsc",
-    "watch:js": "tsc --watch"
+    "build:js": "tsc && npm run build:old-js",
+    "watch:js": "concurrently --names \"TYPESCRIPT,.ES6\" -c \"bgBlue.bold,bgMagenta.bold\" \"tsc --watch\" \"npm run watch:old-js\"",
+    "build:old-js": "babel themes/ee/asset/javascript/src/ -x '.es6' --out-dir themes/ee/asset/javascript/src/",
+    "watch:old-js": "npm run build:old-js -- --watch"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.2",
@@ -13,6 +15,7 @@
     "@babel/preset-env": "^7.1.0",
     "@babel/preset-react": "^7.0.0",
     "babel-upgrade": "^0.0.23",
+    "concurrently": "^4.1.1",
     "typescript": "^3.5.2"
   }
 }
