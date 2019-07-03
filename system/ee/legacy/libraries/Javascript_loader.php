@@ -19,7 +19,7 @@ class Javascript_loader {
 	public function __construct()
 	{
 		define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/');
-		define('PATH_NEW_JAVASCRIPT', PATH_THEMES.'cp/js/build/');
+		define('PATH_JAVASCRIPT_BUILD', PATH_THEMES.'cp/js/build/');
 	}
 
 	/**
@@ -87,9 +87,11 @@ class Javascript_loader {
 				}
 
 				// Attempt to load files from the new js folder first
+				// TODO: Remove this temporary code once all js assets have been moved
+				// from asset/javascript/src to cp/js
 				if ($type == 'file')
 				{
-					$new_file = PATH_NEW_JAVASCRIPT.$file.'.js';
+					$new_file = PATH_JAVASCRIPT_BUILD.$file.'.js';
 
 					if (file_exists($new_file))
 					{
