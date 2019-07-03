@@ -300,8 +300,11 @@ class Member extends ContentModel {
 		{
 			if (isset($changed['password']))
 			{
+				// Did the hash length change? Then the algorithm changed
+				$password_change_type = (strlen($changed['password']) != strlen($this->password)) ? 'member_hash_algo_changed' : 'member_changed_password';
+
 				ee()->logger->log_action(sprintf(
-					lang('member_changed_password'),
+					lang($password_change_type),
 					$this->username,
 					$this->member_id
 				));
@@ -342,8 +345,11 @@ class Member extends ContentModel {
 
 		if (isset($changed['password']))
 		{
-			// email the current email address telling them their password changed
-			$this->notifyOfChanges('password_changed_notification', $this->email);
+			if (strlen($changed['password']) == strlen($this->password))
+			{
+				// email the current email address telling them their password changed
+				$this->notifyOfChanges('password_changed_notification', $this->email);
+			}
 		}
 
 		if (isset($changed['screen_name']))

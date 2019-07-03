@@ -17,6 +17,24 @@ class Channel_spam implements SpamModerationInterface  {
 	 */
 	public function approve($entry, $post_data)
 	{
+		// Unserializing a new ChannelEntry has two problems
+		// 1. The entity is marked clean after unserializing, and since we only save dirty
+		//    properties, nothing we unserialized gets saved.
+		// 2. The entity is initialized without a Channel, which means it has no category
+		//    groups, and thus generates a PHP error when any categories are set with the
+		//    ->set($data) call.
+		//
+		// So: we are going to just make a new entity with the unserialized entity's values
+		// and set a Channel entity, and all will be well.
+		if ($entry->isNew())
+		{
+			$data = $entry->getValues();
+
+			$entry = ee('Model')->make('ChannelEntry');
+			$entry->Channel = ee('Model')->get('Channel', $post_data['channel_id'])->first();
+			$entry->set($data);
+		}
+
 		// save it
 		$entry->set($post_data);
 		$entry->edit_date = ee()->localize->now;
