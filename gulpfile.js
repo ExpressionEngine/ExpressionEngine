@@ -13,9 +13,10 @@ function cleanJs() {
 }
 
 function buildTypeScript() {
-	return src([jsSourceFolder + '**/*.ts', '!' + jsVendorFolder + '**/*'])
+	return src([jsSourceFolder + '**/*.ts', jsSourceFolder + '**/*.tsx', '!' + jsVendorFolder + '**/*'])
         .pipe(ts({
-			noImplicitAny: true
+			noImplicitAny: true,
+			jsx: "react"
         }))
         .pipe(dest(jsBuildFolder))
 }
