@@ -90,7 +90,7 @@
 		var comment, condition, tag;
 
 		function tokenBase(stream, state) {
-			stream.eatWhile(/[^\{]/);
+			// stream.eatWhile(/[^\{]/);
 
 			if (comment = stream.match(/^\{!--/, false)) {
 				state.tokenize = inComment();
@@ -119,17 +119,16 @@
 					return 'keyword';
 				}
 
-				var ch = stream.next();
-
-				if (ch == '{') {
+				if (stream.match('{')) {
 					return 'punctuation';
 				}
 
-				if (ch == '}') {
-					stream.next();
+				if (stream.match('}')) {
 					state.tokenize = tokenBase;
 					return 'punctuation';
 				}
+
+				stream.next();
 
 				return 'punctuation';
 			};
@@ -154,17 +153,16 @@
 					return variable[0] == tagname ? 'variable' : 'variable-2';
 				}
 
-				var ch = stream.next();
-
-				if (ch == '=' || ch == '{') {
+				if (stream.match(/{|=/)) {
 					return 'punctuation';
 				}
 
-				if (ch == '}') {
-					stream.next();
+				if (stream.match(/}/)) {
 					state.tokenize = tokenBase;
 					return 'punctuation';
 				}
+
+				stream.next();
 
 				return 'punctuation';
 			};
@@ -208,18 +206,16 @@
 					return 'operator';
 				}
 
-				var ch = stream.next();
-
-				if (ch == '{' || ch == '/') {
+				if (stream.match(/{|=/)) {
 					return 'punctuation';
 				}
 
-
-				if (ch == '}') {
-					stream.next();
+				if (stream.match(/}/)) {
 					state.tokenize = tokenBase;
 					return 'punctuation';
 				}
+
+				stream.next()
 
 				return 'punctuation';
 			};
