@@ -1045,7 +1045,7 @@ GRID_FALLBACK;
 		$js_file_strings = array();
 
 		$js_defaults = array(
-			'file' => array('underscore'),
+			'file' => array('vendor/underscore'),
 			'ui' => array('core', 'widget', 'button', 'dialog'),
 			'plugin' => array('markitup'),
 		);
