@@ -17,6 +17,7 @@ Major Release
    - Added <new feature>
    - Fixed Bug (#<issue number>) where <bug behavior>.
 
+- You can now comment EE template code with `command + /` in the template editor
 
 Developers
 - Updated CodeMirror to version 5.48

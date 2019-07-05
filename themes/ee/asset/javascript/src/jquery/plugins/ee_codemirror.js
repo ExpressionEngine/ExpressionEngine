@@ -78,6 +78,17 @@ function createCodeMirror(code_textarea)
 		lint: EE.codemirror_linter
 	});
 
+	// Enable a code commenting command
+	cm.setOption("extraKeys", {
+		"Cmd-/": function(cm) {
+		  cm.toggleComment({
+			// Set the block comment tags to EE's syntax
+			blockCommentStart: "{!--",
+			blockCommentEnd: "--}",
+		  })
+		}
+	  });
+
 	$('.CodeMirror').resizable({
 		handles: "s",
 		resize: function() {

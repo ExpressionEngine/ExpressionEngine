@@ -229,10 +229,13 @@
 
 			return function(stream, state) {
 				stream.eat(/\{!--/);
-				stream.next();
+
 				if (stream.match(/^--}/, true)) {
 					state.tokenize = tokenBase;
+					return 'comment';
 				}
+
+				stream.next();
 
 				return 'comment';
 			};
@@ -245,7 +248,9 @@
 
 			token: function (stream, state) {
 				return state.tokenize(stream, state);
-			}
+			},
+			blockCommentStart: "{!--",
+			blockCommentEnd: "--}",
 		};
 	});
 
