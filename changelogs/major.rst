@@ -18,6 +18,8 @@ Major Release
    - Fixed Bug (#<issue number>) where <bug behavior>.
 
 
+Developers
+- Updated CodeMirror to version 5.48
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
