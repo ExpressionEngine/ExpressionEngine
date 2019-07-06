@@ -1212,6 +1212,13 @@ class ChannelEntry extends ContentModel {
 			$data[$key] = ($data[$key]) ? 'y' : 'n';
 		}
 
+		$cat_ids = [];
+		foreach ($this->Categories as $cat)
+		{
+			$cat_ids[] = $cat->getId();
+		}
+		$data['cat_id'] = $cat_ids;
+
 		return $data;
 	}
 

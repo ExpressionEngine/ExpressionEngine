@@ -80,7 +80,7 @@ class SecurityPrivacy extends Settings {
 				),
 				array(
 					'title' => 'cookie_path',
-					'desc' => sprintf(lang('cookie_path_desc'), ee()->cp->masked_url('https://docs.expressionengine.com/v4/cp/settings/security-privacy.html#path')),
+					'desc' => sprintf(lang('cookie_path_desc'), ee()->cp->masked_url(DOC_URL.'cp/settings/security-privacy.html#path')),
 					'fields' => array(
 						'cookie_path' => array('type' => 'text')
 					)

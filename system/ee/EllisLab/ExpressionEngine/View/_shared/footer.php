@@ -93,7 +93,7 @@
 						<?php endif; ?>
 					</div>
 					<div class="app-footer__copyright">
-						&copy;<?=date('Y')?> <a href="https://expressionengine.com/" rel="external noreferrer">EllisLab</a>, Inc.
+						&copy;<?=date('Y')?> <a href="https://expressionengine.com/" rel="external noreferrer">EllisLab</a> Corp.
 					</div>
 				</div>
 			</section>

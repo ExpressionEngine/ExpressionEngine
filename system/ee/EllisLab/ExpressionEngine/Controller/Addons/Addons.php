@@ -345,7 +345,7 @@ class Addons extends CP_Controller {
 
 						if ($info['manual_external'])
 						{
-							$toolbar['manual']['target'] = '_external';
+							$toolbar['manual']['rel'] = 'external';
 						}
 					}
 

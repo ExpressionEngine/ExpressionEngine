@@ -453,7 +453,7 @@ class EE_Core {
 			// has their session Timed out and they are requesting a page?
 			// Grab the URL, base64_encode it and send them to the login screen.
 			$safe_refresh = ee()->cp->get_safe_refresh();
-			$return_url = ($safe_refresh == 'C=homepage') ? '' : AMP.'return='.ee('Encrypt')->encode($safe_refresh);
+			$return_url = ($safe_refresh == 'C=homepage') ? '' : AMP.'return='.urlencode(ee('Encrypt')->encode($safe_refresh));
 
 			ee()->functions->redirect(BASE.AMP.'C=login'.$return_url);
 		}

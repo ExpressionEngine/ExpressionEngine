@@ -568,8 +568,17 @@ class MemberImport extends Utilities {
 									show_error(str_replace('%x', $this->validate->username, lang('missing_password_type')));
 								}
 
+								$this->members[$i][$tag->tag] = $tag->value;
+
 								// encode password if it is type="text"
-								$this->members[$i][$tag->tag] = ($tag->attributes['type'] == 'text') ? sha1($tag->value) : $tag->value;
+								if ($tag->attributes['type'] == 'text')
+								{
+									ee()->load->library('auth');
+									$password_array = ee()->auth->hash_password($tag->value);
+									$this->members[$i][$tag->tag] = $password_array['password'];
+									$this->members[$i]['salt'] = $password_array['salt'];
+								}
+
 								break;
 						}
 					}
@@ -625,7 +634,11 @@ class MemberImport extends Utilities {
 
 					if ( ! isset($this->members[$i]['password']))
 					{
-						$this->members[$i]['password'] = sha1(mt_rand());
+						ee()->load->library('auth');
+
+						$password_array = ee()->auth->hash_password(strtolower(substr(md5(mt_rand()),0,8)));
+						$this->members[$i]['password'] = $password_array['password'];
+						$this->members[$i]['salt'] = $password_array['salt'];
 					}
 					$i++;
 				}

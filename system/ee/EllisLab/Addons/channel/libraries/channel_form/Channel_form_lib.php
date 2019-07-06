@@ -140,7 +140,7 @@ class Channel_form_lib
 		//temporarily set the site_id for cross-site channel:form
 		$current_site_id = ee()->config->item('site_id');
 
-		ee()->config->set_item('site_id', $this->site_id);
+		$this->switch_site($this->site_id);
 
 		$this->fetch_logged_out_member(ee()->TMPL->fetch_param('logged_out_member_id'));
 
@@ -149,7 +149,7 @@ class Channel_form_lib
 
 		if ( ! $this->member)
 		{
-			ee()->config->set_item('site_id', $current_site_id);
+			$this->switch_site($current_site_id);
 			return ee()->TMPL->no_results();
 		}
 
@@ -158,7 +158,7 @@ class Channel_form_lib
 		// Can they post?
 		if ( ! in_array($this->channel('channel_id'), $assigned_channels) && (int) $this->member->MemberGroup->getId() != 1)
 		{
-			ee()->config->set_item('site_id', $current_site_id);
+			$this->switch_site($current_site_id);
 			return ee()->TMPL->no_results();
 		}
 
@@ -184,7 +184,7 @@ class Channel_form_lib
 		{
 			if (ee()->TMPL->no_results())
 			{
-				ee()->config->set_item('site_id', $current_site_id);
+				$this->switch_site($current_site_id);
 				return ee()->TMPL->no_results();
 			}
 
@@ -274,7 +274,7 @@ class Channel_form_lib
 			ee()->TMPL->tagdata = ee()->extensions->call('channel_form_entry_form_tagdata_start', ee()->TMPL->tagdata, $this);
 			if (ee()->extensions->end_script === TRUE)
 			{
-				ee()->config->set_item('site_id', $current_site_id);
+				$this->switch_site($current_site_id);
 				return;
 			}
 		}
@@ -830,7 +830,7 @@ class Channel_form_lib
 
 		$this->_build_javascript();
 
-		ee()->config->set_item('site_id', $current_site_id);
+		$this->switch_site($current_site_id);
 
 
 		//make head appear by default
@@ -1793,7 +1793,7 @@ GRID_FALLBACK;
 		//channel_entries api doesn't allow you to specifically set site_id
 		$current_site_id = ee()->config->item('site_id');
 
-		ee()->config->set_item('site_id', $this->site_id);
+		$this->switch_site($this->site_id);
 
 		// Structure category data the way the ChannelEntry model expects it
 		$cat_groups = explode('|', $this->entry->Channel->cat_group);
@@ -1857,7 +1857,7 @@ GRID_FALLBACK;
 			$this->errors[] = lang('unauthorized_for_this_channel');
 		}
 
-		ee()->config->set_item('site_id', $current_site_id);
+		$this->switch_site($current_site_id);
 
 		$new_id = $this->entry('entry_id');
 		$this->clear_entry();
@@ -3592,6 +3592,19 @@ SCRIPT;
 		$id = ( ! $reset) ? $this->member->MemberGroup->getId() : 0;
 
 		ee()->session->userdata['group_id'] = $id;
+	}
+
+	/**
+	 * Sets site_id, used to allow across site forms
+	 *
+	 * @param	int $site_id The site_id to switch to
+	 *
+	 * @return	void
+	 */
+	private function switch_site($site_id)
+	{
+		ee()->config->set_item('site_id', $site_id);
+		ee()->config->site_prefs('', $site_id);
 	}
 }
 
