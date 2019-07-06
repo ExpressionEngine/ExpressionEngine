@@ -72,6 +72,7 @@ function createCodeMirror(code_textarea)
 		lineWrapping: true,
 		lineNumbers: true,
 		autoCloseBrackets: true,
+		styleActiveLine: true,
 		mode: "ee",
 		smartIndent: false,
 		indentWithTabs: usetabs,

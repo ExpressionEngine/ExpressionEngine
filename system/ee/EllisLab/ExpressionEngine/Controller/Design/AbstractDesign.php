@@ -337,6 +337,7 @@ abstract class AbstractDesign extends CP_Controller {
 					'vendor/codemirror/closebrackets',
 					'vendor/codemirror/comment',
 					'vendor/codemirror/lint',
+					'vendor/codemirror/active-line',
 					'vendor/codemirror/overlay',
 					'vendor/codemirror/xml',
 					'vendor/codemirror/css',
