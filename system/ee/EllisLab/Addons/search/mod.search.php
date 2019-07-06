@@ -14,7 +14,7 @@
 class Search {
 
 	var	$min_length		= 3;			// Minimum length of search keywords
-	var	$max_length		= 200;			// Maximum length of search keywords (logged to varchar(200))...
+	var	$max_length		= 60;			// Maximum length of search keywords (logged to varchar(60))...
 	var	$cache_expire	= 2;			// How many hours should we keep search caches?
 	var	$keywords		= "";
 	var	$terms			= [];
@@ -59,6 +59,7 @@ class Search {
 			$_POST['keywords']		= '';
 			$_POST['exact_match'] 	= 'y';
 			$_POST['exact_keyword'] = 'n';
+			$this->_meta['site_ids'] = array(ee()->config->item('site_id'));
 		}
 
 		// RP can be used in a query string,
@@ -154,7 +155,7 @@ class Search {
 			// If the search terms are too long to log we'll toss an error. We do this
 			// before sanitizing because with a long enough input that process can take
 			// enough time to be a DDoS attack point. :sigh:
-			if (strlen($this->keywords) > $this->max_length)
+			if (strlen($_POST['keywords']) > $this->max_length)
 			{
 				$text = lang('search_max_length');
 
@@ -977,7 +978,7 @@ class Search {
 			$this->_meta['category'] = $_POST['cat_id'];
 		}
 
-		if (is_array($this->_meta['category']))
+		if (isset($this->_meta['category']) AND is_array($this->_meta['category']))
 		{
 			$temp = '';
 

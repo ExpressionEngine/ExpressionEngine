@@ -2441,7 +2441,7 @@ class Member {
 				}
 
 
-				// Special condideration for {total_forum_replies}, and
+				// Special consideration for {total_forum_replies}, and
 				// {total_forum_posts} whose meanings do not match the
 				// database field names
 				if ($key == 'total_forum_replies')
