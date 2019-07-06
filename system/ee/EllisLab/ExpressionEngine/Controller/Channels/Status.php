@@ -288,11 +288,15 @@ class Status extends AbstractChannelsController {
 	/**
 	 * Retrieve the foreground color for a given status color
 	 *
+	 * @deprecated 6.0.0
+	 *
 	 * @param string $color The hex color for the background
 	 * @return void
 	 */
 	public function getForegroundColor($color = '')
 	{
+		ee()->logger->deprecated('6.0.0');
+
 		$color = ee()->input->post('highlight');
 		$foreground = $this->calculateForegroundFor($color);
 		ee()->output->send_ajax_response($foreground);
