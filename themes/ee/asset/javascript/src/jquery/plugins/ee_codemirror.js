@@ -73,6 +73,7 @@ function createCodeMirror(code_textarea)
 		lineNumbers: true,
 		autoCloseBrackets: true,
 		styleActiveLine: true,
+		showCursorWhenSelecting: true,
 		mode: "ee",
 		smartIndent: false,
 		indentWithTabs: usetabs,
@@ -89,6 +90,12 @@ function createCodeMirror(code_textarea)
 		  })
 		}
 	  });
+
+	  // Select a whole line when clicking on a gutter number
+	  cm.on("gutterClick", function(cm, n) {
+		cm.setSelection({ line: n, ch: 0}, {line: n + 1, ch:0})
+		cm.focus()
+	  })
 
 	$('.CodeMirror').resizable({
 		handles: "s",
