@@ -29,32 +29,40 @@ new MutableSelectField('cat_group', EE.channelManager.catGroup)
 
 var options = {
 	onFormLoad: function(modal) {
-		var $status_tag = $('.status-tag', modal);
+		var status_tag = modal[0].querySelector('.status-tag');
 
 		// Change the status example's name when you change the name
 		$('input[name="status"]', modal).on('keyup', function(event) {
-			var status = $(this).val() ? $(this).val() : EE.status.default_name;
-			$status_tag.text(status);
+			var status = this.value || EE.status.default_name;
+			status_tag.innerText = status;
 		});
 
-		$('input.color-picker', modal).minicolors({
-			changeDelay: 200,
-			change: function (value, opacity) {
-				// Change background and border colors
-				$status_tag.css('background-color', value)
-					.css('border-color', value);
+        $('input.color-picker', modal).each(function() {
+			var input = this;
+			var inputName = input.name;
+			var inputValue = input.value;
 
-				// Get foreground color
-				$.post(
-					EE.status.foreground_color_url,
-					{highlight: value},
-					function (data) {
-						$status_tag.css('color', '#'+data);
-					},
-					'json'
-				);
-			}
-		});
+			// Replace the input with a container to hold the color picker component
+			var newContainer = document.createElement('div');
+			input.parentNode.replaceChild(newContainer, input);
+
+            ReactDOM.render(React.createElement(ColorPicker, {
+                inputName: inputName,
+                initialColor: inputValue,
+                allowedColors: 'any',
+                swatches: ['FA5252', 'FD7E14', 'FCC419', '40C057', '228BE6', 'BE4BDB', 'F783AC'],
+
+                onChange: function(newColor) {
+                    // Change background and border colors
+                    status_tag.style.backgroundColor = newColor;
+                    status_tag.style.borderColor = newColor;
+
+                    // Set foreground color
+                    var foregroundColor = new SimpleColor(newColor).fullContrastColor().hexStr;
+                    status_tag.style.color = foregroundColor;
+                }
+            }, null), newContainer);
+        });
 	}
 }
 

@@ -324,8 +324,7 @@ class Channels extends AbstractChannelsController {
 		ee()->cp->add_js_script('file', 'cp/channel/channel_manager');
 
 		ee()->javascript->set_global('status.default_name', lang('status'));
-		ee()->javascript->set_global('status.foreground_color_url', ee('CP/URL', 'channels/status/get-foreground-color')->compile());
-		ee()->cp->add_js_script('plugin', 'minicolors');
+		ee()->cp->add_js_script('file', array('colorpicker/simplecolor', 'colorpicker/colorpicker'));
 
 		ee()->view->header = array(
 			'title' => lang('channel_manager'),
