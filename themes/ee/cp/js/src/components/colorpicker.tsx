@@ -7,39 +7,65 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+declare var _: any
 
-class ColorPicker extends React.Component {
+interface ColorPickerProps {
+    // The input name
+    inputName: string,
+    // The input id
+    inputId: string,
+    // The input color
+    initialColor: string,
+    // The color to use when the user inputs an invalid color
+    // Valid options:
+    //  - color string: If a valid hex or rgb string is supplied, that color will be used on invalid input
+    //  - null: On invalid input the return color and input will become empty
+    defaultColor: string | null,
+    // Allowed Colors:
+    //  - any: Allows choosing any color. Both the swatches and color controls will be shown
+    //  - swatches: Does not allow any color to be picked that's not in the swatches or default color. Only the swatches will be shown.
+    allowedColors: 'any' | 'swatches'
+    // Called when the color changes.
+    onChange: (newColor: string) => void | null,
+    // Prevents the onChange callback from being called more than once within the specified amount of time (milliseconds).
+    onChangeDelay: number,
+    // If false, prevents the color from having transparency and hides the opacity slider
+    enableOpacity: boolean,
+    // An array of color strings
+    swatches: string[]
+}
+
+interface ColorPickerState {
+    selectedColor: SimpleColor,
+    showPanel: boolean,
+    inputValue: string
+}
+
+
+class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
 
     static defaultProps = {
-        // The input name
         inputName: '',
-        // The input id
         inputId: '',
-        // The input color
         initialColor: '',
-
-        // Allowed Colors:
-        //  - any: Allows choosing any color. Both the swatches and color controls will be shown
-        //  - swatches: Does not allow any color to be picked that's not in the swatches or default color. Only the swatches will be shown.
         allowedColors: 'any',
-        // Called when the color changes.
         onChange: null,
-        // Prevents the onChange callback from being called more than once within the specified amount of time (milliseconds).
         onChangeDelay: 50,
-        // The color to use when the user inputs an invalid color
-        // Valid options:
-        //  - color string: If a valid hex or rgb string is supplied, that color will be used on invalid input
-        //  - null: On invalid input the return color and input will become empty
         defaultColor: null,
-        // An array of colors.
         swatches: [],
-        // If false, prevents the color from having transparency and hides the opacity slider
         enableOpacity: false
     }
 
     lastChangeColor = null
 
-    constructor(props) {
+    private hueBoxRef: HTMLDivElement
+    private hueSliderRef: HTMLDivElement
+    private opacitySliderRef: HTMLDivElement
+    private hueBoxKnobRef: HTMLDivElement
+    private hueSliderKnobRef: HTMLDivElement
+    private opacitySliderKnobRef: HTMLDivElement
+
+    constructor(props: ColorPickerProps) {
         super(props)
 
         if (typeof SimpleColor === 'undefined') {
@@ -58,10 +84,6 @@ class ColorPicker extends React.Component {
     }
 
     componentDidMount() {
-        if (this.props.componentDidMount != null) {
-            this.props.componentDidMount()
-        }
-
         // Bind the EE form validation to the color picker
         EE.cp.formValidation.bindInputs(ReactDOM.findDOMNode(this).parentNode);
     }
@@ -73,26 +95,26 @@ class ColorPicker extends React.Component {
         }
     }
 
-    showColorPanel = () => {
+    public showColorPanel = () => {
         this.setState({ showPanel: true }, () => {
             // Trigger a re-render so the slider knobs can be positioned properly
             this.selectColor(this.getReturnColor(this.state.selectedColor))
         })
     }
 
-    hideColorPanel = () => {
+    public hideColorPanel = () => {
         this.setState({ showPanel: false })
         this.selectColor(this.getReturnColor(this.state.selectedColor))
     }
 
     /** Selects a color optionally setting the input value to something other than the selected color return string */
-    selectColor(newColor, inputValue = null) {
+    public selectColor(newColor, inputValue = null) {
         inputValue = inputValue == null ? this.getReturnColorStr(newColor) : inputValue
         this.setState({ selectedColor: newColor, inputValue: inputValue })
     }
 
     /** Notifies that the color has changed by calling the onChange callback  */
-    colorChanged() {
+    private colorChanged() {
         if (!this.props.onChange)
             return
 
@@ -104,23 +126,22 @@ class ColorPicker extends React.Component {
         }
     }
 
-    onInputChange = (event) => {
+    private onInputChange = (event) => {
         var inputColor = new SimpleColor(event.target.value)
-
         if (!inputColor.isValid)
             inputColor = null
 
         this.selectColor(inputColor, event.target.value)
     }
 
-    onSwatchClick = (event) => {
+    private onSwatchClick = (event:  React.MouseEvent<HTMLElement>) => {
         var clickedColor = new SimpleColor(event.currentTarget.dataset.color)
 
         if (clickedColor.isValid)
             this.selectColor(clickedColor)
     }
 
-    onHueBoxMove = (pos) => {
+    private onHueBoxMove = (pos) => {
         var rectOffset = this.hueBoxRef.getBoundingClientRect()
 
         var x = this.clamp(pos.x - rectOffset.left, 0, this.hueBoxRef.offsetWidth)
@@ -130,7 +151,7 @@ class ColorPicker extends React.Component {
         this.selectColor(newColor)
     }
 
-    onHueSliderMove = (pos) => {
+    private onHueSliderMove = (pos) => {
         var hueOffset = this.hueSliderRef.getBoundingClientRect()
         var posY      = this.clamp(pos.y - hueOffset.top, 0, this.hueSliderRef.offsetHeight)
 
@@ -141,7 +162,7 @@ class ColorPicker extends React.Component {
         this.selectColor(this.getSafeSelectedColor().withHsv({ h: newHue }))
     }
 
-    onOpacitySliderMove = (pos) => {
+    private onOpacitySliderMove = (pos) => {
         var opacityOffset = this.opacitySliderRef.getBoundingClientRect()
         var posY = this.clamp(pos.y - opacityOffset.top, 0, this.opacitySliderRef.offsetHeight)
 
@@ -150,7 +171,7 @@ class ColorPicker extends React.Component {
     }
 
     /* Gets the color that will be returned */
-    getReturnColor(color) {
+    private getReturnColor(color: SimpleColor | null) {
         if (color == null)
             return this.getDefaultColor()
 
@@ -172,7 +193,7 @@ class ColorPicker extends React.Component {
     }
 
     /** Gets the color string that will returned by the color picker */
-    getReturnColorStr(color) {
+    private getReturnColorStr(color: SimpleColor | null) {
         var returnColor = this.getReturnColor(color)
 
         if (returnColor == null)
@@ -185,18 +206,18 @@ class ColorPicker extends React.Component {
     }
 
     /** Returns the selected color making sure it's not null */
-    getSafeSelectedColor() {
+    private getSafeSelectedColor() {
         return this.state.selectedColor != null ? this.state.selectedColor : new SimpleColor({r: 1, g: 1, b: 1, a: 1})
     }
 
     /** Returns the default color or null if it's not valid */
-    getDefaultColor() {
+    private getDefaultColor() {
         var defaultColor = new SimpleColor(this.props.defaultColor)
         return defaultColor.isValid ? defaultColor : null
     }
 
     /** Gets the x and y pos from the event using the touch or mouse position */
-    getClientPosFromEvent(event) {
+    private getClientPosFromEvent(event: any): { x: number, y: number } {
         // Try to get the mouse position
         if (event.clientX != null && event.clientY != null)
             return { x: event.clientX, y: event.clientY }
@@ -207,7 +228,7 @@ class ColorPicker extends React.Component {
         return { x: 0, y: 0 }
     }
 
-    handleDrag(event, eventType, callback) {
+    private handleDrag(event: any, eventType: 'mouse' | 'touch', callback: any) {
         const doCallback = (e) => {
             callback(this.getClientPosFromEvent(e))
             e.preventDefault()
@@ -225,7 +246,7 @@ class ColorPicker extends React.Component {
         doCallback(event)
     }
 
-    clamp(value, min, max) {
+    private clamp(value: number, min: number, max: number) {
         return Math.min(Math.max(value, min), max)
     }
 
@@ -260,7 +281,7 @@ class ColorPicker extends React.Component {
 
         return (
             <div className="c-colorpicker">
-                <input class="c-colorpicker-input" type="text" id={this.props.inputId} name={this.props.inputName} value={this.state.inputValue} onChange={this.onInputChange} onFocus={this.showColorPanel} onBlur={this.hideColorPanel} autoComplete="off"/>
+                <input className="c-colorpicker-input" type="text" id={this.props.inputId} name={this.props.inputName} value={this.state.inputValue} onChange={this.onInputChange} onFocus={this.showColorPanel} onBlur={this.hideColorPanel} autoComplete="off"/>
                 <span className="c-colorpicker-input-color"><span style={{background: currentColor.rgbaStr}}></span></span>
 
                 <div className="c-colorpicker-panel" style={{display: this.state.showPanel ? 'block' : 'none'}} onMouseDown={e => { e.stopPropagation(); e.preventDefault() }}>
@@ -279,7 +300,7 @@ class ColorPicker extends React.Component {
 
                     <div className="c-colorpicker-swatches">
                         {
-                            this.props.swatches.map((colorStr, index) => {
+                            this.props.swatches.map((colorStr: string, index: number) => {
                                 const color = new SimpleColor(colorStr)
 
                                 if ( !color.isValid ) return '';
