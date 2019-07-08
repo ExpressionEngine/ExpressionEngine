@@ -18,8 +18,13 @@ Major Release
    - Fixed Bug (#<issue number>) where <bug behavior>.
 
 
+- Default avatars have been removed.
+- The system avatar settings "Allow avatar uploads?" and "Allow avatars?" have been removed.
 
-- Developers: Deprecated the Channel Status controller `getForegroundColor()`
+Developers
+- Deprecated the Channel Status controller `getForegroundColor()`
+- The member property `display_avatars` has been removed
+- The config options `enable_avatars` and `allow_avatar_uploads` have been removed
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
