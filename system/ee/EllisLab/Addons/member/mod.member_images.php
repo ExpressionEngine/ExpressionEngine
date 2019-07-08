@@ -173,12 +173,6 @@ class Member_images extends Member {
 			$template = $this->_deny_if('no_avatar', $template);
 
 			$avatar_url = ee()->config->slash_item('avatar_url');
-			$avatar_fs_path = ee()->config->slash_item('avatar_path');
-
-			if (file_exists($avatar_fs_path.'default/'.$query->row('avatar_filename')))
-			{
-				$avatar_url .= 'default/';
-			}
 
 			$cur_avatar_url	= $avatar_url.$query->row('avatar_filename');
 

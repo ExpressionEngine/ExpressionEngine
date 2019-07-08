@@ -27,6 +27,7 @@ class Updater {
 		$steps = new \ProgressIterator(
 			[
 				'addConfigTable',
+				'removeDefaultAvatars'
 			]
 		);
 
@@ -123,6 +124,15 @@ class Updater {
 				])->save();
 			}
 		}
+	}
+
+	private function removeDefaultAvatars()
+	{
+		ee('Model')->get('UploadDestination')
+			->filter('name', 'IN', ['Default Avatars'])
+			->all()
+			->indexBy('name')
+			->delete();
 	}
 }
 
