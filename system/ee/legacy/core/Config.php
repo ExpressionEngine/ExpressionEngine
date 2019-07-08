@@ -681,7 +681,6 @@ class EE_Config {
 			'profile_trigger',
 			'member_theme',
 			'enable_avatars',
-			'allow_avatar_uploads',
 			'avatar_url',
 			'avatar_path',
 			'avatar_max_width',

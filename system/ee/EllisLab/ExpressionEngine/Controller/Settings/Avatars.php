@@ -37,13 +37,6 @@ class Avatars extends Settings {
 					'fields' => array(
 						'enable_avatars' => array('type' => 'yes_no')
 					)
-				),
-				array(
-					'title' => 'allow_avatar_uploads',
-					'desc' => 'allow_avatar_uploads_desc',
-					'fields' => array(
-						'allow_avatar_uploads' => array('type' => 'yes_no')
-					)
 				)
 			),
 			'url_path_settings_title' => array(

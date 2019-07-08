@@ -1687,7 +1687,6 @@ class Wizard extends CI_Controller {
 			'profile_trigger'           => 'member',
 			'member_theme'              => 'default',
 			'enable_avatars'            => 'y',
-			'allow_avatar_uploads'      => 'n',
 			'avatar_url'                => '{base_url}'.$this->userdata['avatar_url'],
 			'avatar_path'               => $this->userdata['avatar_path'],
 			'avatar_max_width'          => '100',

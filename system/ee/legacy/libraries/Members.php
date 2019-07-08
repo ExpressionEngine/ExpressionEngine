@@ -46,7 +46,7 @@ class Members {
 		{
 			case 'avatar'	:
 								$edit_image		= 'edit_avatar';
-								$enable_pref	= 'allow_avatar_uploads';
+								$enable_pref	= 'enable_avatars';
 								$not_enabled	= 'avatars_not_enabled';
 								$remove			= 'remove_avatar';
 								$removed		= 'avatar_removed';

@@ -180,15 +180,7 @@ class Member_images extends Member {
 			$avatar_height 	= $query->row('avatar_height') ;
 		}
 
-		// Can users upload their own images?
-		if (ee()->config->item('allow_avatar_uploads') == 'y')
-		{
-			$template = $this->_allow_if('can_upload_avatar', $template);
-		}
-		else
-		{
-			$template = $this->_deny_if('can_upload_avatar', $template);
-		}
+		$template = $this->_allow_if('can_upload_avatar', $template);
 
 		// Are there pre-installed avatars?
 

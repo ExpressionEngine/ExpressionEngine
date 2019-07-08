@@ -609,10 +609,6 @@ $lang = array(
 
 
 /* Avatars */
-'allow_avatar_uploads' => 'Allow avatar uploads?',
-
-'allow_avatar_uploads_desc' => 'When enabled, members will be able to upload their own avatars (representative images).',
-
 'avatar_file_restrictions' => 'Avatar File Restrictions',
 
 'avatar_max_height' => 'Maximum height',
@@ -633,7 +629,7 @@ $lang = array(
 
 'enable_avatars' => 'Allow avatars?',
 
-'enable_avatars_desc' => 'When enabled, members will be able to use avatars (representative images) in comments and forums.',
+'enable_avatars_desc' => 'When enabled, members will be able to upload avatars and use them in comments and forums.',
 
 
 /* CAPTCHA */

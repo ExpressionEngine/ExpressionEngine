@@ -133,6 +133,8 @@ class Updater {
 			->all()
 			->indexBy('name')
 			->delete();
+
+		ee('Model')->get('Config')->filter('key', 'allow_avatar_uploads')->delete();
 	}
 }
 
