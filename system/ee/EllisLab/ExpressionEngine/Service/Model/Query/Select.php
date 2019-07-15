@@ -287,10 +287,27 @@ class Select extends Query {
 		}
 		else
 		{
-			$fields = ee('Model')->get($meta_field_data['field_model'])
+			if ($meta_field_data['field_model'] == 'MemberField')
+			{
+				$fields = ee()->session->cache('EllisLab::MemberGroupModel', 'getCustomFields');
+
+				// might be empty, so need to be specific
+				if ( ! is_array($fields))
+				{
+					$fields = ee('Model')->get($meta_field_data['field_model'])
+						->filter($column_prefix.'legacy_field_data', 'n')
+						->all()
+						->asArray();
+					ee()->session->set_cache('EllisLab::MemberGroupModel', 'getCustomFields', $fields);
+				}
+			}
+			else
+			{
+				$fields = ee('Model')->get($meta_field_data['field_model'])
 				->filter($column_prefix.'legacy_field_data', 'n')
 				->all()
 				->asArray();
+			}
 		}
 
 		if ( ! empty($fields))
