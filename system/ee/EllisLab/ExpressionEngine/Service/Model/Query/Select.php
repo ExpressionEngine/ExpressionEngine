@@ -287,7 +287,7 @@ class Select extends Query {
 		}
 		else
 		{
-			if ($meta_field_data['field_model'] == 'MemberField')
+			if ($meta_field_data['field_model'] == 'MemberField' && ! empty(ee()->session))
 			{
 				$fields = ee()->session->cache('EllisLab::MemberGroupModel', 'getCustomFields');
 
