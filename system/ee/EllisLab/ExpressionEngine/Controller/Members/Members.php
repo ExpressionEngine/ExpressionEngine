@@ -652,13 +652,16 @@ class Members extends CP_Controller {
 			$toolbar = array('toolbar_items' => $toolbar);
 
 			// add the toolbar if they can edit members
-			if ($can_edit_member && ee()->cp->allowed_group('can_edit_members'))
+			if (ee()->cp->allowed_group('can_edit_members'))
 			{
-				$column[] = $toolbar;
-			}
-			else
-			{
-				$column[] = ['toolbar_items' => []];
+				if ($can_edit_member)
+				{
+					$column[] = $toolbar;
+				}
+				else
+				{
+					$column[] = ['toolbar_items' => []];
+				}
 			}
 
 			// add the checkbox if they can delete members
@@ -827,13 +830,16 @@ class Members extends CP_Controller {
 			);
 
 			// add the toolbar if they can edit members
-			if ($can_edit_member && ee()->cp->allowed_group('can_edit_members'))
+			if (ee()->cp->allowed_group('can_edit_members'))
 			{
-				$row['columns'][] = $toolbar;
-			}
-			else
-			{
-				$row['columns'][] = ['toolbar_items' => []];
+				if ($can_edit_member)
+				{
+					$row['columns'][] = $toolbar;
+				}
+				else
+				{
+					$row['columns'][] = ['toolbar_items' => []];
+				}
 			}
 
 			// add the checkbox if they can delete members
