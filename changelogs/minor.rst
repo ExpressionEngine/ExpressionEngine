@@ -13,10 +13,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 Minor Release
 *************
 
-.. Bullet list below, e.g.
-   - Added <new feature>
-   - Fixed Bug (#<issue number>) where <bug behavior>.
-
+   - Fixed Bug (#139) where on some servers the mime type of SVG is different then we expected.
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
