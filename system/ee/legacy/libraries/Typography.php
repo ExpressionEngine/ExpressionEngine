@@ -736,8 +736,15 @@ class EE_Typography {
 		//  Parse emoticons
 		$str = $this->emoticon_replace($str);
 
-		// Parse emoji
-		$str = ee('Format')->make('Text', $str)->emojiShorthand();
+		/* -------------------------------------------
+		/*	Hidden Configuration Variables
+		/*	- disable_emoji_shorthand => prevent turning text like :rocket: into 🚀 (y/n, default n)
+		/* -------------------------------------------*/
+
+		if (bool_config_item('disable_emoji_shorthand') === FALSE)
+		{
+			$str = ee('Format')->make('Text', $str)->emojiShorthand();
+		}
 
 		//  Parse censored words
 		$str = $this->filter_censored_words($str);
