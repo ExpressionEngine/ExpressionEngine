@@ -262,7 +262,7 @@ class Snippets extends AbstractDesignController {
 			array(
 				'field' => 'snippet_name',
 				'label' => 'lang:snippet_name',
-				'rules' => 'required|callback__snippet_name_checks'
+				'rules' => 'required|max_length[50]|callback__snippet_name_checks'
 			)
 		));
 
@@ -387,7 +387,7 @@ class Snippets extends AbstractDesignController {
 			array(
 				'field' => 'snippet_name',
 				'label' => 'lang:snippet_name',
-				'rules' => 'required|callback__snippet_name_checks'
+				'rules' => 'required|max_length[50]|callback__snippet_name_checks'
 			)
 		));
 

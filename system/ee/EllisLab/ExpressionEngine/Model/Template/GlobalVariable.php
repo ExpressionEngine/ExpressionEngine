@@ -273,6 +273,12 @@ class GlobalVariable extends FileSyncedModel {
 			if ($item->isFile() && $item->getExtension() == 'html')
 			{
 				$name = $item->getBasename('.html');
+				
+				// limited to 50 characters in db
+				if (strlen($name) > 50)
+				{
+					continue;
+				}
 
 				if ( ! in_array($name, $existing))
 				{

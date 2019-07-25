@@ -50,3 +50,7 @@ The ExpressionEngine project is copyright (c) 2003-2019 EllisLab, Inc ([https://
 Complete license terms and copyright information can be found in [LICENSE.txt](LICENSE.txt) in the root of this repository.
 
 "ExpressionEngine" is a registered trademark of EllisLab Corp. in the United States and around the world. Refer to EllisLab's [Trademark Use Policy](https://ellislab.com/trademark-use-policy) for access to logos and acceptable use.
+
+> ![EECONF logo](https://eeconf.com/assets/img/logo-2019-red.png)
+>
+> The community powered EE CONF is coming to Minneapolis October 2-4. The conference features two days of top-notch speakers in two tracks plus four optional hands-on workshops. For more information visit [eeconf.com](https://eeconf.com)
