@@ -8,7 +8,7 @@ Bullet list below, e.g.
    - Added <new feature>
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
 
-
+- Fixed a bug ([\#268](https://github.com/ExpressionEngine/ExpressionEngine/issues/268)) where legacy member fields might not display in some circumstances.
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
