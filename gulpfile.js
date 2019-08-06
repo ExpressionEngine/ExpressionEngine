@@ -17,7 +17,8 @@ function buildTypeScript() {
         .pipe(ts({
 			noImplicitAny: false,
 			jsx: "react",
-			target: "es5"
+			target: "es5",
+			isolatedModules: true
         }))
         .pipe(dest(jsBuildFolder))
 }
