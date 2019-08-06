@@ -358,7 +358,10 @@ class EE_relationship_tree_builder {
 			// This is needed to tease out modifiers vs opening tags/opening tags with parameters
 			if ($is_only_relationship && ! $node->in_cond && (empty($match[2])) || ! empty($params))
 			{
-				$open_nodes[$tag_name] = $node;
+				if ($node->shortcut != 'entry_ids')
+				{
+					$open_nodes[$tag_name] = $node;
+				}
 			}
 
 			$parent_node->add($node);

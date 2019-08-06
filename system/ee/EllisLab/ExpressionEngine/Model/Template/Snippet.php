@@ -274,6 +274,12 @@ class Snippet extends FileSyncedModel {
 			{
 				$name = $item->getBasename('.html');
 
+				// limited to 50 characters in db
+				if (strlen($name) > 50)
+				{
+					continue;
+				}
+
 				if ( ! in_array($name, $existing))
 				{
 					$contents = file_get_contents($item->getRealPath());
