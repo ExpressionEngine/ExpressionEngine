@@ -20,7 +20,7 @@ class Channel extends StructureModel {
 
 	protected static $_primary_key = 'channel_id';
 	protected static $_table_name = 'channels';
-	
+
 	protected static $_hook_id = 'channel';
 
 	protected static $_typed_columns = array(

@@ -13,9 +13,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 Minor Release
 *************
 
-.. Bullet list below, e.g.
-   - Added <new feature>
-   - Fixed Bug (#<issue number>) where <bug behavior>.
+   - Added event hooks to the Channel, ChannelFormSettings, ChannelLayout, Site, Snippet, and Specialty Template models.
 
 
 
