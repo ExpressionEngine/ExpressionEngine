@@ -2350,7 +2350,6 @@ UNLOCK TABLES;
 LOCK TABLES `exp_modules` WRITE;
 ALTER TABLE `exp_modules` DISABLE KEYS;
 INSERT INTO `exp_modules` (`module_id`, `module_name`, `module_version`, `has_cp_backend`, `has_publish_fields`) VALUES
-	(1,'Emoticon','2.0.0','n','n'),
 	(2,'Jquery','1.0.0','n','n'),
 	(3,'Channel','2.0.1','n','n'),
 	(4,'Member','2.1.0','n','n'),

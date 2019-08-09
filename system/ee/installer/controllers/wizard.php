@@ -66,7 +66,7 @@ class Wizard extends CI_Controller {
 	// Native First Party ExpressionEngine Modules (everything else is in third
 	// party folder)
 	public $native_modules = array('blacklist', 'channel', 'comment', 'commerce', 'consent',
-		'email', 'emoticon', 'file', 'forum', 'gallery', 'ip_to_nation',
+		'email', 'file', 'forum', 'gallery', 'ip_to_nation',
 		'jquery', 'member', 'metaweblog_api', 'moblog', 'pages', 'query', 'relationship',
 		'rss', 'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
 

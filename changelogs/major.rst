@@ -17,7 +17,7 @@ Major Release
    - Added <new feature>
    - Fixed Bug (#<issue number>) where <bug behavior>.
 
-
+- Removed the deprecated Emoticon add-on
 
 - Developers: Deprecated the Channel Status controller `getForegroundColor()`
 
