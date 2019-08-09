@@ -63,9 +63,9 @@ function setup_permissions {
 		chmod -R 777 images
 		chmod -R 777 themes/user
 		# JS Shim for ES5/ES6 with Capybara
-		cp themes/ee/cp/js/src/vendor/react/react.min.js themes/ee/cp/js/src/vendor/react/react.min~orig.js
-		cat tests/rspec/shim.min.js themes/ee/cp/js/src/vendor/react/react.min.js > themes/ee/cp/js/src/vendor/react/react.min-shimmed.js
-		mv themes/ee/cp/js/src/vendor/react/react.min-shimmed.js themes/ee/cp/js/src/vendor/react/react.min.js
+		cp themes/ee/cp/js/build/vendor/react/react.min.js themes/ee/cp/js/build/vendor/react/react.min~orig.js
+		cat tests/rspec/shim.min.js themes/ee/cp/js/build/vendor/react/react.min.js > themes/ee/cp/js/build/vendor/react/react.min-shimmed.js
+		mv themes/ee/cp/js/build/vendor/react/react.min-shimmed.js themes/ee/cp/js/build/vendor/react/react.min.js
 	popd > /dev/null
 }
 
