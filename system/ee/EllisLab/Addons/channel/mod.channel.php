@@ -1475,7 +1475,7 @@ class Channel {
 				}
 				else
 				{
-					if (filter_var(ee()->TMPL->fetch_param('show_expired'), FILTER_VALIDATE_BOOLEAN))
+					if (get_bool_from_string(ee()->TMPL->fetch_param('show_expired')))
 					{
 						$sql .= ' AND t.expiration_date >= '.$stime;
 					}

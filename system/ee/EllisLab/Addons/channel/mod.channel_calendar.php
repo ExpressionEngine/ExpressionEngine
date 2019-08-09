@@ -563,7 +563,7 @@ class Channel_calendar extends Channel {
 					$start = new \DateTime('@'.$row['entry_date']);
 					$end = clone $start;
 
-					if (filter_var(ee()->TMPL->fetch_param('show_date_span'), FILTER_VALIDATE_BOOLEAN) && $row['expiration_date'])
+					if (get_bool_from_string(ee()->TMPL->fetch_param('show_date_span')) && $row['expiration_date'])
 					{
 						if ($start->format('m') < $month)
 						{
