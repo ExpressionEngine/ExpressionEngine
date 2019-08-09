@@ -1471,16 +1471,16 @@ class Channel {
 			{
 				if (ee()->TMPL->fetch_param('show_date_span') != 'yes')
 				{
-                    $sql .= ' AND t.entry_date >= '.$stime;
-                }
+					$sql .= ' AND t.entry_date >= '.$stime;
+				}
 				else
 				{
-                    if (filter_var(ee()->TMPL->fetch_param('show_expired'), FILTER_VALIDATE_BOOLEAN))
+					if (filter_var(ee()->TMPL->fetch_param('show_expired'), FILTER_VALIDATE_BOOLEAN))
 					{
-                        $sql .= ' AND t.expiration_date >= '.$stime;
-                    }
-                }
-                $sql .= ' AND t.entry_date <= '.$etime.' ';
+						$sql .= ' AND t.expiration_date >= '.$stime;
+					}
+				}
+				$sql .= ' AND t.entry_date <= '.$etime.' ';
 			}
 			else
 			{

@@ -560,47 +560,47 @@ class Channel_calendar extends Channel {
 					/**  Build Data Array
 					/** ----------------------------------------*/
 
-                    $start = new \DateTime('@'.$row['entry_date']);
-                    $end = clone $start;
+					$start = new \DateTime('@'.$row['entry_date']);
+					$end = clone $start;
 
-                    if (filter_var(ee()->TMPL->fetch_param('show_date_span'), FILTER_VALIDATE_BOOLEAN) && $row['expiration_date'])
+					if (filter_var(ee()->TMPL->fetch_param('show_date_span'), FILTER_VALIDATE_BOOLEAN) && $row['expiration_date'])
 					{
-                        if ($start->format('m') < $month)
+						if ($start->format('m') < $month)
 						{
-                            $start = new \DateTime("{$year}-{$month}-1");
+							$start = new \DateTime("{$year}-{$month}-1");
 							$end = clone $start;
-                        }
-                        $expiration = new \DateTime('@'.$row['expiration_date']);
-                        $end = $start->format('Y-m') === $expiration->format('Y-m')
-                            ? $expiration->modify('-1 day')
-                            : $end->modify('last day of this month');
-                    }
+						}
+						$expiration = new \DateTime('@'.$row['expiration_date']);
+						$end = $start->format('Y-m') === $expiration->format('Y-m')
+							? $expiration->modify('-1 day')
+							: $end->modify('last day of this month');
+					}
 
-                    $end->modify('+1 day');
-                    $period = new \DatePeriod($start, \DateInterval::createFromDateString('1 day'), $end);
+					$end->modify('+1 day');
+					$period = new \DatePeriod($start, \DateInterval::createFromDateString('1 day'), $end);
 
-                    foreach ($period as $date)
+					foreach ($period as $date)
 					{
 						foreach ($day_path as $k => $v)
 						{
-                            $day_path[$k] = substr($day_path[$k], 0, -2).$date->format('d');
-                        }
-                        $data[$date->format('j')][] = array(
-                            ee()->typography->parse_type($row['title'], ['text_format' => 'lite', 'html_format' => 'none', 'auto_links' => 'n', 'allow_img_url' => 'no']),
-                            $row['url_title'],
-                            $entry_date,
-                            $permalink,
-                            $title_permalink,
-                            $author,
-                            $profile_path,
-                            $id_path,
-                            $base_fields,
-                            $day_path,
-                            $comment_auto_path,
-                            $comment_url_title_auto_path,
-                            $comment_entry_id_auto_path
+							$day_path[$k] = substr($day_path[$k], 0, -2).$date->format('d');
+						}
+						$data[$date->format('j')][] = array(
+							ee()->typography->parse_type($row['title'], ['text_format' => 'lite', 'html_format' => 'none', 'auto_links' => 'n', 'allow_img_url' => 'no']),
+							$row['url_title'],
+							$entry_date,
+							$permalink,
+							$title_permalink,
+							$author,
+							$profile_path,
+							$id_path,
+							$base_fields,
+							$day_path,
+							$comment_auto_path,
+							$comment_url_title_auto_path,
+							$comment_entry_id_auto_path
 						);
-                    }
+					}
 
 				} // END FOREACH
 			} // END if ($query->num_rows() > 0)
