@@ -560,28 +560,47 @@ class Channel_calendar extends Channel {
 					/**  Build Data Array
 					/** ----------------------------------------*/
 
-					$d = ee()->localize->format_date('%d', $row['entry_date']);
+					$start = new \DateTime('@'.$row['entry_date']);
+					$end = clone $start;
 
-					if (substr($d, 0, 1) == '0')
+					if (get_bool_from_string(ee()->TMPL->fetch_param('show_date_span')) && $row['expiration_date'])
 					{
-						$d = substr($d, 1);
+						if ($start->format('m') < $month)
+						{
+							$start = new \DateTime("{$year}-{$month}-1");
+							$end = clone $start;
+						}
+						$expiration = new \DateTime('@'.$row['expiration_date']);
+						$end = $start->format('Y-m') === $expiration->format('Y-m')
+							? $expiration->modify('-1 day')
+							: $end->modify('last day of this month');
 					}
 
-					$data[$d][] = array(
-						ee()->typography->parse_type($row['title'], array('text_format' => 'lite', 'html_format' => 'none', 'auto_links' => 'n', 'allow_img_url' => 'no')),
-						$row['url_title'],
-						$entry_date,
-						$permalink,
-						$title_permalink,
-						$author,
-						$profile_path,
-						$id_path,
-						$base_fields,
-						$day_path,
-						$comment_auto_path,
-						$comment_url_title_auto_path,
-						$comment_entry_id_auto_path
-					);
+					$end->modify('+1 day');
+					$period = new \DatePeriod($start, \DateInterval::createFromDateString('1 day'), $end);
+
+					foreach ($period as $date)
+					{
+						foreach ($day_path as $k => $v)
+						{
+							$day_path[$k] = substr($day_path[$k], 0, -2).$date->format('d');
+						}
+						$data[$date->format('j')][] = array(
+							ee()->typography->parse_type($row['title'], ['text_format' => 'lite', 'html_format' => 'none', 'auto_links' => 'n', 'allow_img_url' => 'no']),
+							$row['url_title'],
+							$entry_date,
+							$permalink,
+							$title_permalink,
+							$author,
+							$profile_path,
+							$id_path,
+							$base_fields,
+							$day_path,
+							$comment_auto_path,
+							$comment_url_title_auto_path,
+							$comment_entry_id_auto_path
+						);
+					}
 
 				} // END FOREACH
 			} // END if ($query->num_rows() > 0)

@@ -1323,7 +1323,7 @@ class Channel {
 		{
 			$sql .= " AND (t.expiration_date != 0 AND t.expiration_date <= ".$timestamp.") ";
 		}
-		elseif (ee()->TMPL->fetch_param('show_expired') != 'yes')
+		elseif (ee()->TMPL->fetch_param('show_expired') != 'yes' && ee()->TMPL->fetch_param('show_date_span') != 'yes') {
 		{
 			$sql .= " AND (t.expiration_date = 0 OR t.expiration_date > ".$timestamp.") ";
 		}
@@ -1469,7 +1469,18 @@ class Channel {
 
 			if ($stime && $etime)
 			{
-				$sql .= " AND t.entry_date >= ".$stime." AND t.entry_date <= ".$etime." ";
+				if (ee()->TMPL->fetch_param('show_date_span') != 'yes')
+				{
+					$sql .= ' AND t.entry_date >= '.$stime;
+				}
+				else
+				{
+					if (get_bool_from_string(ee()->TMPL->fetch_param('show_expired')))
+					{
+						$sql .= ' AND t.expiration_date >= '.$stime;
+					}
+				}
+				$sql .= ' AND t.entry_date <= '.$etime.' ';
 			}
 			else
 			{
