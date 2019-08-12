@@ -198,7 +198,7 @@ abstract class AbstractFiles extends CP_Controller {
 	protected function buildTable($files, $limit, $offset)
 	{
 		$table = ee('CP/Table', array(
-			'sort_col'   => 'date_added',
+			'sort_col'   => 'modified_date',
 			'sort_dir'   => 'desc',
 			'class'      => 'tbl-fixed'
 		));
@@ -212,7 +212,7 @@ abstract class AbstractFiles extends CP_Controller {
 					),
 				),
 				'file_type',
-				'date_added',
+				'date_modified',
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
 				),
@@ -229,7 +229,7 @@ abstract class AbstractFiles extends CP_Controller {
 		$sort_map = array(
 			'title_or_name' => 'title',
 			'file_type' => 'mime_type',
-			'date_added' => 'upload_date'
+			'date_modified' => 'modified_date'
 		);
 
 		if ( ! array_key_exists($sort_col, $sort_map))
@@ -301,7 +301,15 @@ abstract class AbstractFiles extends CP_Controller {
 			$column = array(
 				$file_description.'<br><em class="faded">' . $file->file_name . '</em>',
 				$file->mime_type,
-				ee()->localize->human_time($file->upload_date),
+				ee()->localize->human_time(
+					if ( $file->modified_date)
+					{
+						$file->modified_date;
+					}
+					else {
+						$file->upload_date;
+					}
+				),
 				array('toolbar_items' => $toolbar),
 				array(
 					'name' => 'selection[]',
