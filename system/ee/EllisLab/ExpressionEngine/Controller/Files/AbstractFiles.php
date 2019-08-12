@@ -301,15 +301,7 @@ abstract class AbstractFiles extends CP_Controller {
 			$column = array(
 				$file_description.'<br><em class="faded">' . $file->file_name . '</em>',
 				$file->mime_type,
-				ee()->localize->human_time(
-					if ( $file->modified_date)
-					{
-						$file->modified_date;
-					}
-					else {
-						$file->upload_date;
-					}
-				),
+				($file->modified_date ? ee()->localize->human_time($file->modified_date) : ee()->localize->human_time($file->upload_date)),
 				array('toolbar_items' => $toolbar),
 				array(
 					'name' => 'selection[]',
