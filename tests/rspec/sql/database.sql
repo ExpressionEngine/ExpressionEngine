@@ -1851,7 +1851,6 @@ INSERT INTO `exp_config` (`config_id`, `site_id`, `key`, `value`) VALUES
 	(22,1,'default_member_group','5'),
 	(23,1,'profile_trigger','member'),
 	(24,1,'member_theme','default'),
-	(25,1,'enable_avatars','y'),
 	(27,1,'avatar_url','http://ee2/images/avatars/'),
 	(28,1,'avatar_path','../images/avatars/'),
 	(29,1,'avatar_max_width','100'),

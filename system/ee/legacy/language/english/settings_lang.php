@@ -627,10 +627,6 @@ $lang = array(
 
 'avatar_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <mark>avatar</mark> directory.',
 
-'enable_avatars' => 'Allow avatars?',
-
-'enable_avatars_desc' => 'When enabled, members will be able to upload avatars and use them in comments and forums.',
-
 
 /* CAPTCHA */
 'captcha_font' => 'Use TrueType font?',

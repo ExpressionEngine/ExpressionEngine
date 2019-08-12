@@ -668,7 +668,7 @@ class Member_memberlist extends Member {
 					/** ----------------------------------------*/
 					if (preg_match("/^if\s+avatar.*/i", $val['0']))
 					{
-						if (ee()->config->item('enable_avatars') == 'y' AND ee()->session->userdata('display_avatars') == 'y' )
+						if (ee()->session->userdata('display_avatars') == 'y')
 						{
 							$avatar_path	= $member->getAvatarUrl();
 							$avatar_width	= $row['avatar_width'];

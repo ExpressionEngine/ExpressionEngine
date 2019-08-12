@@ -16,9 +16,6 @@ feature 'Avatar Settings' do
   end
 
   it 'should load current settings into form fields' do
-    enable_avatars = ee_config(item: 'enable_avatars')
-
-    @page.enable_avatars.value.should == enable_avatars
     @page.avatar_url.value.should == ee_config(item: 'avatar_url')
     @page.avatar_path.value.should == ee_config(item: 'avatar_path')
     @page.avatar_max_width.value.should == ee_config(item: 'avatar_max_width')
@@ -113,9 +110,6 @@ feature 'Avatar Settings' do
   end
 
   it 'should save and load the settings' do
-    enable_avatars = ee_config(item: 'enable_avatars')
-
-    @page.enable_avatars_toggle.click
     @page.avatar_url.set 'http://hello'
     @page.avatar_path.set @upload_path
     @page.avatar_max_width.set '100'
@@ -124,7 +118,6 @@ feature 'Avatar Settings' do
     @page.submit
 
     @page.should have_text 'Preferences updated'
-    @page.enable_avatars.value.should_not == enable_avatars
     @page.avatar_url.value.should == 'http://hello'
     @page.avatar_path.value.should == @upload_path
     @page.avatar_max_width.value.should == '100'

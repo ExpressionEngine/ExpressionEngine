@@ -144,12 +144,6 @@ class Member_images extends Member {
 	 */
 	public function edit_avatar()
 	{
-		// Are avatars enabled?
-		if (ee()->config->item('enable_avatars') == 'n')
-		{
-			return $this->_trigger_error('edit_avatar', 'avatars_not_enabled');
-		}
-
 		// Fetch the avatar template
 		$template = $this->_load_element('edit_avatar');
 
@@ -277,12 +271,6 @@ class Member_images extends Member {
 	 */
 	public function browse_avatars()
 	{
-		// Are avatars enabled?
-		if (ee()->config->item('enable_avatars') == 'n')
-		{
-			return $this->_trigger_error('edit_avatar', 'avatars_not_enabled');
-		}
-
 		// Define the paths and get the images
 		$avatar_path = ee()->config->slash_item('avatar_path').ee()->security->sanitize_filename($this->cur_id).'/';
 		$avatar_url = ee()->config->slash_item('avatar_url').ee()->security->sanitize_filename($this->cur_id).'/';
@@ -383,12 +371,6 @@ class Member_images extends Member {
 	 */
 	public function select_avatar()
 	{
-		// Are avatars enabled?
-		if (ee()->config->item('enable_avatars') == 'n')
-		{
-			return $this->_trigger_error('edit_avatar', 'avatars_not_enabled');
-		}
-
 		if (ee()->input->get_post('avatar') === FALSE OR
 			ee()->input->get_post('folder') === FALSE)
 		{

@@ -93,67 +93,17 @@ class Settings extends Profile {
 
 
 		// Avatar settings
-		if (ee()->config->item('enable_avatars') == 'y')
+		$avatar_directory = ee('Model')->get('UploadDestination')
+			->filter('name', 'Avatars')
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
+
+		if (! $avatar_directory->exists())
 		{
-			$avatar_directory = ee('Model')->get('UploadDestination')
-				->filter('name', 'Avatars')
-				->filter('site_id', ee()->config->item('site_id'))
-				->first();
-
-			if (! $avatar_directory->exists())
-			{
-				$vars['sections']['avatar_settings'] = [
-					array(
-						'title' => 'change_avatar',
-						'desc' => sprintf(lang('avatar_path_does_not_exist'), ee('CP/URL', 'settings/avatars')),
-						'fields' => []
-					),
-				];
-			}
-			else
-			{
-				$avatar_exists = $avatar_directory->getFilesystem()->exists($this->member->avatar_filename);
-
-				$vars['sections']['avatar_settings'] = array(
-					array(
-						'title' => 'current_avatar',
-						'desc' => 'current_avatar_desc',
-						'fields' => array(
-							'avatar_filename' => array(
-								'type' => 'image',
-								'id' => 'avatar',
-								'edit' => FALSE,
-								'image' => $avatar_exists ? $avatar_directory->url . $this->member->avatar_filename : '',
-								'value' => $this->member->avatar_filename
-							)
-						)
-					),
-					array(
-						'title' => 'change_avatar',
-						'desc' => sprintf(lang('change_avatar_desc'), $avatar_directory->max_size),
-						'fields' => [
-							'upload_avatar' => [
-								'type' => 'html',
-								'content' => form_upload('upload_avatar')
-							]
-						]
-					)
-				);
-
-				// Hide the current avatar section if the member doesn't have one
-				if (! $avatar_exists)
-				{
-					$vars['sections']['avatar_settings'][0]['hide'] = TRUE;
-				}
-			}
-		}
-		else
-		{
-			// Inform the member that avatars are disabled
 			$vars['sections']['avatar_settings'] = [
 				array(
 					'title' => 'change_avatar',
-					'desc' => sprintf(lang('avatars_disabled'), ee('CP/URL', 'settings/avatars')),
+					'desc' => sprintf(lang('avatar_path_does_not_exist'), ee('CP/URL', 'settings/avatars')),
 					'fields' => []
 				),
 			];

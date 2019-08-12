@@ -680,7 +680,6 @@ class EE_Config {
 			'default_member_group',
 			'profile_trigger',
 			'member_theme',
-			'enable_avatars',
 			'avatar_url',
 			'avatar_path',
 			'avatar_max_width',

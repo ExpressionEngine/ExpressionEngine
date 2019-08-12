@@ -39,15 +39,6 @@ class Member_settings extends Member {
 			$menu = $this->_deny_if('enable_photos', $menu);
 		}
 
-		if (ee()->config->item('enable_avatars') == 'y')
-		{
-			$menu = $this->_allow_if('enable_avatars', $menu);
-		}
-		else
-		{
-			$menu = $this->_deny_if('enable_avatars', $menu);
-		}
-
 
 		return $this->_var_swap($menu,
 								array(
@@ -176,7 +167,7 @@ class Member_settings extends Member {
 		/**  Is there an avatar?
 		/** ----------------------------------------*/
 
-		if (ee()->config->item('enable_avatars') == 'y' AND $row['avatar_filename']  != '')
+		if ($row['avatar_filename']  != '')
 		{
 			$avatar_path	= $member->getAvatarUrl();
 			$avatar_width	= $row['avatar_width'] ;

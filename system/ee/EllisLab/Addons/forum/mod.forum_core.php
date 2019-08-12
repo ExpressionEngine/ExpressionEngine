@@ -3601,8 +3601,7 @@ class Forum_Core extends Forum {
 			}
 
 			// Parse the avatar
-			if (ee()->config->item('enable_avatars') == 'y' &&
-				$row['avatar_filename'] != '' &&
+			if ($row['avatar_filename'] != '' &&
 				ee()->session->userdata('display_avatars') == 'y' )
 			{
 				$avatar_url = ee()->config->slash_item('avatar_url');

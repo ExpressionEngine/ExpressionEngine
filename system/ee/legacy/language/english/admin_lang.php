@@ -360,8 +360,6 @@ $lang = array(
 
 'empty_stmp_fields' => 'The %s field is required for SMTP.',
 
-'enable_avatars' => 'Enable Avatars',
-
 'enable_censoring' => 'Enable Word Censoring?',
 
 'enable_emoticons' => 'Display Smileys?',

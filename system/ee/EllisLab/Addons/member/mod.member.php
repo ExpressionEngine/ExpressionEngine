@@ -2233,7 +2233,7 @@ class Member {
 
 		// Is there an avatar?
 		$avatar_path = $member->getAvatarUrl();
-		if (ee()->config->item('enable_avatars') == 'y' && ! empty($avatar_path))
+		if (! empty($avatar_path))
 		{
 			$avatar_width	= $results['avatar_width'];
 			$avatar_height	= $results['avatar_height'];

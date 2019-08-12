@@ -46,8 +46,8 @@ class Members {
 		{
 			case 'avatar'	:
 								$edit_image		= 'edit_avatar';
-								$enable_pref	= 'enable_avatars';
-								$not_enabled	= 'avatars_not_enabled';
+								$enable_pref	= '';
+								$not_enabled	= '';
 								$remove			= 'remove_avatar';
 								$removed		= 'avatar_removed';
 								$updated		= 'avatar_updated';
@@ -75,7 +75,8 @@ class Members {
 
 		if ( ! isset($_POST['remove']))
 		{
-			if (ee()->config->item($enable_pref) == 'n')
+			// Avatars don't have an enabled pref anymore
+			if ($type != 'avatar' AND ee()->config->item($enable_pref) == 'n')
 			{
 				if (REQ == 'CP')
 				{

@@ -30,15 +30,6 @@ class Avatars extends Settings {
 	public function index()
 	{
 		$vars['sections'] = array(
-			array(
-				array(
-					'title' => 'enable_avatars',
-					'desc' => 'enable_avatars_desc',
-					'fields' => array(
-						'enable_avatars' => array('type' => 'yes_no')
-					)
-				)
-			),
 			'url_path_settings_title' => array(
 				array(
 					'title' => 'avatar_url',

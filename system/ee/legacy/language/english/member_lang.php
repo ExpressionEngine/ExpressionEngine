@@ -22,10 +22,6 @@ $lang = array(
 
 'avatar_updated' => 'Avatar has been updated',
 
-'avatar_upload_disallowed' => 'Avatar uploads are not currently enabled.',
-
-'avatars_not_enabled' => 'Avatars are currently disabled',
-
 'avatars_not_found' => 'Unable to locate the desired avatars',
 
 'blue' => 'Blue',
