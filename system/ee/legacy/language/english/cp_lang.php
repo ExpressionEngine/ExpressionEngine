@@ -259,7 +259,7 @@ $lang = array(
 
 'date_added' => 'Date Added',
 	
-'date_modified' => 'Date Modified',
+'date_modified' => 'Last Modified',
 
 'edit' => 'Edit',
 
