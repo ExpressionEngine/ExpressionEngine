@@ -46,18 +46,11 @@ class Settings extends Profile {
 
 		$settings = [];
 
-		if ($this->member->parse_smileys == 'y')
-		{
+		if ($this->member->parse_smileys == 'y') {
 			$settings[] = 'parse_smileys';
 		}
 
-		if ($this->member->display_avatars == 'y')
-		{
-			$settings[] = 'display_avatars';
-		}
-
-		if ($this->member->accept_messages == 'y')
-		{
+		if ($this->member->accept_messages == 'y') {
 			$settings[] = 'accept_messages';
 		}
 
@@ -82,7 +75,6 @@ class Settings extends Profile {
 						'type' => 'checkbox',
 						'choices' => array(
 							'accept_messages' => lang('allow_messages'),
-							'display_avatars' => lang('display_avatars'),
 							'parse_smileys' => lang('parse_smileys')
 						),
 						'value' => $settings

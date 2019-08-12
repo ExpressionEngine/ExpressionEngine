@@ -134,9 +134,11 @@ class Updater {
 			->indexBy('name')
 			->delete();
 
+		// Remove avatar config items
+		ee('Model')->get('Config')->filter('key', 'IN', ['enable_avatars', 'allow_avatar_uploads'])->delete();
 
-		ee('Model')->get('Config')->filter('key', 'enable_avatars')->delete();
-		ee('Model')->get('Config')->filter('key', 'allow_avatar_uploads')->delete();
+		// Remove avatar member preference
+		ee()->dbforge->drop_column('members', 'display_avatars');
 	}
 }
 

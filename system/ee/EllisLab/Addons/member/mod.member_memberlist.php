@@ -668,18 +668,11 @@ class Member_memberlist extends Member {
 					/** ----------------------------------------*/
 					if (preg_match("/^if\s+avatar.*/i", $val['0']))
 					{
-						if (ee()->session->userdata('display_avatars') == 'y')
-						{
-							$avatar_path	= $member->getAvatarUrl();
-							$avatar_width	= $row['avatar_width'];
-							$avatar_height	= $row['avatar_height'];
+						$avatar_path	= $member->getAvatarUrl();
+						$avatar_width	= $row['avatar_width'];
+						$avatar_height	= $row['avatar_height'];
 
-							$temp = $this->_allow_if('avatar', $temp);
-						}
-						else
-						{
-							$temp = $this->_deny_if('avatar', $temp);
-						}
+						$temp = $this->_allow_if('avatar', $temp);
 					}
 
 				}

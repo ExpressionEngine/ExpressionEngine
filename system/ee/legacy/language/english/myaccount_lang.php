@@ -152,8 +152,6 @@ $lang = array(
 
 'disallowed_screen_chars' => 'Screen Name contains illegal characters',
 
-'display_avatars' => "Display other member's avatars",
-
 'do_not_show' => 'Do Not Display',
 
 'edit_bookmarklet' => 'Edit Bookmarklet',

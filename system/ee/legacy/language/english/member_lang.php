@@ -68,8 +68,6 @@ $lang = array(
 
 'disallowed_screen_chars' => 'Screen Name contains illegal characters',
 
-'display_avatars' => 'Display member avatars in entries',
-
 'display_signatures' => 'Display member signatures in entries',
 
 'edit_avatar' => 'Edit Avatar',

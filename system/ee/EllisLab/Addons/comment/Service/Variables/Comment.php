@@ -293,10 +293,6 @@ class Comment extends Variables {
 	 */
 	private function getAvatarVariable($property)
 	{
-		if (! get_bool_from_string(ee()->session->userdata('display_avatars'))) {
-			return '';
-		}
-
 		switch ($property)
 		{
 			case 'url':
