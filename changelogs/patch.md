@@ -9,6 +9,7 @@ Bullet list below, e.g.
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
 
    - Fixed a bug where the current entry revision did not always show the correct revision author.
+   - Fixed a bug where the lowercase parameter of the :url_slug variable modifier wasn't being applied.
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are

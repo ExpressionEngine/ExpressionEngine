@@ -611,7 +611,7 @@ class Text extends Formatter {
 			$options['separator'] = ($this->getConfig('word_separator') == 'underscore') ? '_' : '-';
 		}
 
-		$lowercase = (isset($options['lowercase']) && $options['lowercase'] === FALSE) ? FALSE : TRUE;
+		$lowercase = (isset($options['lowercase']) && get_bool_from_string($options['lowercase']) === FALSE) ? FALSE : TRUE;
 
 		$this->accentsToAscii();
 
