@@ -236,7 +236,7 @@ class Sandr extends Utilities {
 		{
 			$field_id = str_replace('field_id_', '', $where);
 			$field = ee('Model')->get('ChannelField', $field_id)->first();
-			$sql = "UPDATE `exp_{$field->getDataStorageTable()}` SET `{$where}` = REPLACE(`{$where}`, '{$search}', '{$replace}')";
+			$sql = "UPDATE `exp_{$field->getDataStorageTable()}` SET `{$where}` = REPLACE(`{$where}`, '{$search}', '{$replace_escaped}')";
 			$show_reindex_tip = $field->getField()->hasReindex();
 
 			if ($field->field_type == 'grid' || $field->field_type == 'file_grid')
