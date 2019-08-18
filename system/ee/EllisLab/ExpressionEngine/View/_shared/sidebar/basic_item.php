@@ -1,1 +1,1 @@
-<li<?=$class?>><a href="<?=$url?>"<?=$attrs?>><?=$text?></a></li>
+<a class="sidebar__link" <?=$class?> href="<?=$url?>" <?=$attrs?>><?=$text?></a>
