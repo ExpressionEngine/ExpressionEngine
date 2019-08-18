@@ -1,5 +1,5 @@
-		</section>
-		<footer class="app-footer">
+
+		<!-- <footer class="app-footer">
 			<section class="app-footer__product">
 				<div class="content--center">
 					<div class="app-about">
@@ -97,7 +97,8 @@
 					</div>
 				</div>
 			</section>
-		</footer>
+		</footer> -->
+
 		<div class="overlay"></div>
 		<div class="app-overlay"></div>
 
