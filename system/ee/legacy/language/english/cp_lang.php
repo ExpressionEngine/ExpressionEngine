@@ -482,7 +482,7 @@ $lang = array(
 
 'keyword_filter' => 'keywords, hit enter',
 
-'log_out' => 'log out',
+'log_out' => 'Log Out',
 
 'menu_create' => 'Create',
 
