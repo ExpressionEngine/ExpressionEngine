@@ -2,6 +2,8 @@
 $this->enabled('ee_header') && $this->embed('_shared/header');
 ?>
 
+<div class="theme-switch-circle"></div>
+
 <?php $current_page = ''; ?>
 
 <section class="ee-wrapper">

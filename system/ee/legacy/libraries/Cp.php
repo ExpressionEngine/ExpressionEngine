@@ -153,7 +153,9 @@ class Cp {
 			'clear_all'				=> lang('clear_all'),
 			'keyword_search'		=> lang('keyword_search'),
 			'loading'				=> lang('loading'),
-			'searching'				=> lang('searching')
+			'searching'				=> lang('searching'),
+			'dark_theme'			=> lang('dark_theme'),
+			'light_theme'			=> lang('light_theme')
 		);
 
 		ee()->javascript->set_global(array(

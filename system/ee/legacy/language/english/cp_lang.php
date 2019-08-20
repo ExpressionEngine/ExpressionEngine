@@ -23,6 +23,8 @@ $lang = array(
 
 'utilities' => 'Utilities',
 
+'dark_theme'  => 'Dark Theme',
+'light_theme' => 'Light Theme',
 
 /* Control Panel */
 'action_can_not_be_undone' => 'THIS ACTION CANNOT BE UNDONE',

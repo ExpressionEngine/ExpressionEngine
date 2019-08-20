@@ -244,22 +244,83 @@ $(document).ready(function(){
 
 
 	// Toggle account menu
+	// -------------------------------------------------------------------
 
-		$('.main-nav__account-icon, .account-menu__icon').on('click', function() {
-			$('.account-menu').toggle()
+	$('.main-nav__account-icon, .account-menu__icon').on('click', function() {
+		$('.account-menu').toggle()
 
-			return false;
-		})
+		return false;
+	})
 
-		$(document).on('click',function(e){
-			if (!$(e.target).closest('.account-menu').length) {
-				$('.account-menu').hide()
-			}
-		});
+	$(document).on('click',function(e){
+		if (!$(e.target).closest('.account-menu').length) {
+			$('.account-menu').hide()
+		}
+	});
 
-	// ====
-	// tabs
-	// ====
+	// Toggle Dark Theme
+	// -------------------------------------------------------------------
+
+	// Toggle theme button
+	$('.js-dark-theme-toggle').on('click', (e) => {
+		e.preventDefault()
+		toggleDarkTheme(e)
+	})
+
+	var currentTheme = localStorage.getItem('theme');
+
+	// Set the current theme from the saved state
+	if (currentTheme) {
+		document.body.dataset.theme = currentTheme
+	}
+
+	// Don't allow changing the theme when it's in the middle of changing
+	var isChangingTheme = false
+
+	updateMenuText(currentTheme)
+
+	function updateMenuText(newTheme) {
+		$('.js-dark-theme-toggle').text(newTheme == 'dark' ? EE.lang.light_theme : EE.lang.dark_theme)
+	}
+
+	function toggleDarkTheme(event = null) {
+		if (isChangingTheme) {
+			return
+		}
+
+		isChangingTheme = true
+
+		setTimeout(() => {
+			isChangingTheme = false
+		}, 1000);
+
+		// Add the transition class to the html. This will make the theme change transition smoothly
+		document.documentElement.classList.add('color-theme-in-transition')
+		window.setTimeout(() => {
+			document.documentElement.classList.remove('color-theme-in-transition')
+		}, 1000)
+
+		// Toggle the theme
+		var newTheme = document.body.dataset.theme == 'dark' ? 'light' : 'dark'
+
+		document.body.dataset.theme = newTheme;
+		localStorage.setItem('theme', newTheme);
+
+		updateMenuText(newTheme)
+
+		// Show a circle animation if there's a click event
+		if (event) {
+			$('.theme-switch-circle').addClass('animate')
+			$('.theme-switch-circle').css( { top:event.pageY, left: event.pageX })
+
+			setTimeout(() => {
+				$('.theme-switch-circle').removeClass('animate')
+			}, 1000);
+		}
+	}
+
+	// Tabs
+	// -------------------------------------------------------------------
 
 		// listen for clicks on tabs
 		$('body').on('click', '.tab-wrap ul.tabs a', function(e){

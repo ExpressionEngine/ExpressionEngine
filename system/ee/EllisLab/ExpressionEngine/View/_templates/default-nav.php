@@ -73,6 +73,7 @@
 				</div>
 
 				<a class="dropdown__link" href="<?=ee('CP/URL')->make('members/profile', array('id' => ee()->session->userdata('member_id')))?>"><?=lang('my_profile')?></a>
+				<a class="dropdown__link js-dark-theme-toggle" href=""><?= lang('dark_theme') ?></a>
 				<a class="dropdown__link" href="<?=ee('CP/URL', 'login/logout')?>"><?=lang('log_out')?></a>
 
 				<div class="dropdown__divider"></div>
