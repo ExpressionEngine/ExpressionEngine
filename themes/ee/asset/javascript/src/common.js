@@ -242,6 +242,21 @@ $(document).ready(function(){
 			}
 		});
 
+
+	// Toggle account menu
+
+		$('.main-nav__account-icon, .account-menu__icon').on('click', function() {
+			$('.account-menu').toggle()
+
+			return false;
+		})
+
+		$(document).on('click',function(e){
+			if (!$(e.target).closest('.account-menu').length) {
+				$('.account-menu').hide()
+			}
+		});
+
 	// ====
 	// tabs
 	// ====

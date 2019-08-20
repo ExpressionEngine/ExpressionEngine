@@ -56,27 +56,34 @@
 				<?php endif ?>
 			<?php endif ?>
 		<?php endif ?>
-
-
-		<a class="main-nav__account" href="">
-			<!-- <div class="nav-global-user">
-					<div class="nav-user">
-						<a class="nav-has-sub" href=""><i class="icon-user"></i><span class="nav-txt-collapse"><?=$cp_screen_name?></span></a>
-						<ul class="nav-sub-menu">
-							<li><a href="<?=ee('CP/URL')->make('members/profile', array('id' => ee()->session->userdata('member_id')))?>"><?=lang('my_profile')?></a></li>
-							<?php foreach($cp_quicklinks as $link): ?>
-							<li><a href="<?=$link['link']?>"><?=htmlentities($link['title'], ENT_QUOTES, 'UTF-8')?></a></li>
-							<?php endforeach ?>
-							<li><a class="nav-add" href="<?=ee('CP/URL')->make('members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id'), 'url' => ee('CP/URL')->getCurrentUrl()->encode(), 'name' => $cp_page_title))?>"><i class="icon-add"></i><?=lang('new_link')?></a></li>
-						</ul>
-					</div>
-					<a class="nav-logout" href="<?=ee('CP/URL', 'login/logout')?>"><i class="icon-logout"></i><span class="nav-txt-collapse"><?=lang('log_out')?></span></a>
-				</div> -->
-			<!-- <a href="<?=ee('CP/URL')->make('members/profile', array('id' => ee()->session->userdata('member_id')))?>"><?=lang('my_profile')?></a> -->
-			<img src="../build/images/profile-icon.png" alt="">
-			<!-- <span class="main-nav__account-name">Jordan Ellis</span> -->
-		</a>
 	</div>
+
+
+	<div class="main-nav__account">
+			<img class="main-nav__account-icon" src="<?= $cp_avatar_path ?>" alt="">
+
+			<div class="dropdown account-menu">
+				<div class="account-menu__header">
+					<div class="account-menu__header-title">
+						<h2><?=$cp_screen_name?></h2>
+						<span><?=$cp_member_group_title?></span>
+					</div>
+
+					<img class="account-menu__icon" src="<?= $cp_avatar_path ?>" alt="">
+				</div>
+
+				<a class="dropdown__link" href="<?=ee('CP/URL')->make('members/profile', array('id' => ee()->session->userdata('member_id')))?>"><?=lang('my_profile')?></a>
+				<a class="dropdown__link" href="<?=ee('CP/URL', 'login/logout')?>"><?=lang('log_out')?></a>
+
+				<div class="dropdown__divider"></div>
+
+				<h3 class="dropdown__section-title"><?=lang('quick_links')?></h3>
+				<?php foreach($cp_quicklinks as $link): ?>
+				<a class="dropdown__link" href="<?=$link['link']?>"><?=htmlentities($link['title'], ENT_QUOTES, 'UTF-8')?></a>
+				<?php endforeach ?>
+				<a class="dropdown__link" href="<?=ee('CP/URL')->make('members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id'), 'url' => ee('CP/URL')->getCurrentUrl()->encode(), 'name' => $cp_page_title))?>"><i class="fas fa-plus fa-sm"></i>  <?=lang('new_link')?></a>
+			</div>
+		</div>
 </div>
 <?php endif ?>
 
