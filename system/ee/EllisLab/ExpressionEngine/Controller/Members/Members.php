@@ -59,11 +59,6 @@ class Members extends CP_Controller {
 
 		$header = $sidebar->addHeader(lang('all_members'), ee('CP/URL')->make('members')->compile());
 
-		if (ee()->cp->allowed_group('can_create_members'))
-		{
-			$header->withButton(lang('new'), ee('CP/URL')->make('members/create'));
-		}
-
 		$list = $header->addBasicList();
 
 		if ($active == 'all_members')
@@ -1513,7 +1508,11 @@ class Members extends CP_Controller {
 				),
 			),
 			'form_url' => $form_url,
-			'search_button_value' => $search_button_value
+			'search_button_value' => $search_button_value,
+			'action_button' => ee()->cp->allowed_group('can_create_members') ? [
+				'text' => lang('register_member'),
+				'href' => ee('CP/URL')->make('members/create')
+			] : NULL
 		);
 
 		if ( ! ee()->cp->allowed_group('can_access_settings'))
