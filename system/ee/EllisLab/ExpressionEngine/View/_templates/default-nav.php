@@ -14,11 +14,9 @@
 
 	<div class="main-nav__toolbar">
 		<?php if (isset($header['toolbar_items']) && $header['toolbar_items']): ?>
-			<div class="section-header__options">
-				<?php foreach ($header['toolbar_items'] as $name => $item): ?>
-					<a class="icon--<?=$name?>" href="<?=$item['href']?>" title="<?=$item['title']?>"></a>
-				<?php endforeach; ?>
-			</div>
+			<?php foreach ($header['toolbar_items'] as $name => $item): ?>
+				<a class="button button--secondary icon--<?=$name?>" href="<?=$item['href']?>" title="<?=$item['title']?>"></a>
+			<?php endforeach; ?>
 		<?php endif ?>
 
 		<?php if (isset($header['action_button']) || isset($header['search_form_url'])): ?>
