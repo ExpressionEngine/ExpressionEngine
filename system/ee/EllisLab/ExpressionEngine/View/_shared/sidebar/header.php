@@ -5,6 +5,6 @@
 	<?=$text?>
 <?php endif; ?>
 <?php if (isset($button)): ?>
-	<a class="button button--action" href="<?=$button['url']?>"><?=$button['text']?></a>
+	<a class="button button--small button--action" href="<?=$button['url']?>"><?=$button['text']?></a>
 <?php endif ?>
 </h2>
