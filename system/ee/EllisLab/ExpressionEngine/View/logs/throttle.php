@@ -2,9 +2,13 @@
 
 <div class="tbl-ctrls">
 <?=form_open($form_url)?>
-	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 	<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-	<?php if (isset($filters)) echo $filters; ?>
+
+	<div class="title-bar">
+		<h2 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h2>
+		<?php if (isset($filters)) echo $filters; ?>
+	</div>
+
 	<section class="item-wrap log">
 		<?php if ($disabled): ?>
 			<p class="no-results"><?=lang('throttling_disabled')?> <a href="<?=ee('CP/URL')->make('settings/throttling')?>"><?=lang('enable_throttling')?></a></p>

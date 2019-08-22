@@ -7,9 +7,14 @@
 			<a class="btn tn action" href="<?=ee('CP/URL')->make('design/template/create/' . $group_id)?>"><?=lang('create_new_template')?></a>
 		</fieldset>
 		<?php endif; ?>
-		<h1><?=$cp_heading?></h1>
+
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-		<?php if (isset($filters)) echo $filters; ?>
+
+		<div class="title-bar">
+			<h2 class="title-bar__title"><?=$cp_heading?></h2>
+			<?php if (isset($filters)) echo $filters; ?>
+		</div>
+
 		<?php $this->embed('_shared/table', $table); ?>
 		<?php if (isset($pagination)) echo $pagination; ?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>

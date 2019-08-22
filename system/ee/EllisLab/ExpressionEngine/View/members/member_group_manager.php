@@ -2,11 +2,12 @@
 
 <div class="tbl-ctrls">
 <?=form_open($table['base_url'])?>
-	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
-
 	<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
-	<?php if (isset($filters)) echo $filters; ?>
+	<div class="title-bar">
+		<h2 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h2>
+		<?php if (isset($filters)) echo $filters; ?>
+	</div>
 
 	<?php $this->embed('_shared/table', $table); ?>
 

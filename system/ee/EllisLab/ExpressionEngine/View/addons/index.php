@@ -7,9 +7,13 @@
 <?php endif; ?>
 	<div class="tbl-ctrls">
 		<?=form_open($form_url)?>
-			<h1><?=$cp_heading['first']?></h1>
 			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-			<?php if (isset($filters['first'])) echo $filters['first']; ?>
+
+			<div class="title-bar">
+				<h2 class="title-bar__title"><?=$cp_heading['first']?></h2>
+				<?php if (isset($filters['first'])) echo $filters['first']; ?>
+			</div>
+
 			<?php $this->embed('_shared/table', $tables['first']); ?>
 			<?php if ( ! empty($tables['first']['columns']) && ! empty($tables['first']['data'])): ?>
 			<fieldset class="tbl-bulk-act hidden">
