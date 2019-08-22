@@ -243,6 +243,29 @@ $(document).ready(function(){
 		});
 
 
+	// Dropdown menus
+	// -------------------------------------------------------------------
+
+	// listen for clicks on elements with a class of has-sub
+	$('.has-sub').on('click',function(){
+		$('.dropdown--open').not($(this).siblings('.dropdown')).removeClass('dropdown--open')
+
+		$(this)
+			.siblings('.dropdown')
+			.toggleClass('dropdown--open');
+
+		return false;
+	});
+
+	// listen for clicks to the document
+	$(document).on('click',function(e){
+		// check to see if we are inside a sub-menu or not.
+		if(!$(e.target).closest('.dropdown').length) {
+			$('.dropdown--open').removeClass('dropdown--open')
+		}
+	});
+
+
 	// Toggle account menu
 	// -------------------------------------------------------------------
 

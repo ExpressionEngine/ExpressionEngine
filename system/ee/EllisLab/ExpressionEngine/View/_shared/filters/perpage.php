@@ -1,12 +1,12 @@
-<a class="has-sub" href="" data-filter-label="<?=strtolower(lang($label))?>">
+<a class="has-sub filter-bar__button" href="" data-filter-label="<?=strtolower(lang($label))?>">
 	<?=lang($label)?>
 	<?php if ($value): ?>
 	<span class="faded">(<?=htmlentities($value, ENT_QUOTES, 'UTF-8')?>)</span>
 	<?php endif; ?>
 </a>
-<div class="sub-menu">
+<div class="dropdown">
 	<?php if ($has_custom_value): ?>
-	<fieldset class="filter-search">
+	<div class="dropdown__search">
 		<input
 			type="text"
 			name="<?=$name?>"
@@ -15,17 +15,15 @@
 			data-threshold="<?=$threshold?>"
 			data-threshold-text="<?=sprintf(lang('confirm_show_all_desc'), $threshold)?>"
 		>
-	</fieldset>
+	</div>
 	<?php endif; ?>
-	<ul>
 	<?php foreach ($options as $url => $label): ?>
 		<?php if ($url == $show_all_url && $confirm_show_all): ?>
-		<li><a class="m-link" rel="modal-confirm-show-all" href="<?=$url?>"><?=$label?></a></li>
+		<a class="dropdown__link" rel="modal-confirm-show-all" href="<?=$url?>"><?=$label?></a>
 		<?php else: ?>
-		<li><a href="<?=$url?>"><?=$label?></a></li>
+		<a class="dropdown__link" href="<?=$url?>"><?=$label?></a>
 		<?php endif; ?>
 	<?php endforeach; ?>
-	</ul>
 </div>
 
 <?php if ($confirm_show_all): ?>

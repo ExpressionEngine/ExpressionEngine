@@ -1,11 +1,11 @@
-<a class="has-sub" href="" data-filter-label="<?=strtolower(lang($label))?>">
+<a class="filter-bar__button has-sub" href="" data-filter-label="<?=strtolower(lang($label))?>">
 	<?=lang($label)?>
 	<?php if ($value): ?>
 	<span class="faded">(<?=htmlentities($value, ENT_QUOTES, 'UTF-8')?>)</span>
 	<?php endif; ?>
 </a>
-<div class="sub-menu">
-	<fieldset class="filter-search">
+<div class="dropdown">
+	<div class="dropdown__search">
 		<input
 			type="text"
 			name="<?=$name?>"
@@ -14,10 +14,8 @@
 			rel="date-picker"
 			<?php if ($timestamp): ?>data-timestamp="<?=$timestamp?>" <?php endif; ?>
 		>
-	</fieldset>
-	<ul>
+	</div>
 	<?php foreach ($options as $url => $label): ?>
-		<li><a href="<?=$url?>"><?=$label?></a></li>
+		<a class="dropdown__link" href="<?=$url?>"><?=$label?></a>
 	<?php endforeach; ?>
-	</ul>
 </div>

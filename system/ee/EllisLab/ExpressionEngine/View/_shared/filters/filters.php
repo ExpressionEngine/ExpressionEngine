@@ -1,15 +1,12 @@
 <?php if ( ! empty($filters) && is_array($filters)): ?>
-<div class="filters">
-	<b><?=lang('filters')?>: </b>
-	<ul>
+<div class="filter-bar">
 	<?php foreach ($filters as $filter): ?>
-		<li<?php if ( ! empty($filter['class'])):?> class="<?=$filter['class']?>"<?php endif ?>>
+		<div class="filter-bar__item dropdown-container <?php if (!empty($filter['class'])) { echo $filter['class']; } ?>">
 			<?=$filter['html']?>
-		</li>
+		</div>
 	<?php endforeach; ?>
 	<?php if ($has_reset): ?>
-		<li class="filter-clear"><a href="<?=$reset_url?>"><?=lang('clear_filters')?></a></li>
+		<div class="filter-clear"><a href="<?=$reset_url?>"><?=lang('clear_filters')?></a></div>
 	<?php endif;?>
-	</ul>
 </div>
 <?php endif; ?>
