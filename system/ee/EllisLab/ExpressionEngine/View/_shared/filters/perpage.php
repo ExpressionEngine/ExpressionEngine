@@ -1,4 +1,4 @@
-<a class="has-sub filter-bar__button" href="" data-filter-label="<?=strtolower(lang($label))?>">
+<a class="has-sub filter-bar__button js-dropdown-toggle" href="" data-filter-label="<?=strtolower(lang($label))?>">
 	<?=lang($label)?>
 	<?php if ($value): ?>
 	<span class="faded">(<?=htmlentities($value, ENT_QUOTES, 'UTF-8')?>)</span>

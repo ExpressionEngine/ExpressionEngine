@@ -246,21 +246,52 @@ $(document).ready(function(){
 	// Dropdown menus
 	// -------------------------------------------------------------------
 
-	// listen for clicks on elements with a class of has-sub
-	$('.has-sub').on('click',function(){
-		$('.dropdown--open').not($(this).siblings('.dropdown')).removeClass('dropdown--open')
+	$('.js-dropdown-toggle').on('click', function() {
+		var dropdown = $(this).siblings('.dropdown').get(0)
 
-		$(this)
-			.siblings('.dropdown')
-			.toggleClass('dropdown--open');
+		// Does the dropdown exist?
+		if (!dropdown) {
+			return
+		}
+
+		// Hide other dropdowns
+		$('.dropdown--open').not(dropdown).removeClass('dropdown--open')
+		$('.dropdown-open').removeClass('dropdown-open')
+
+		var dropdownShown = dropdown.classList.contains('dropdown--open')
+
+		// If the dropdown doesn't has a popper, and it's going to be shown, initialize a new popper
+		if (!dropdown._popper && !dropdownShown) {
+			var placement = this.dataset.dropdownPos || 'bottom-start'
+
+			dropdown._popper = new Popper(this, dropdown, {
+				placement: placement,
+				modifiers: {
+					offset: {
+						enabled: true,
+						offset: '0, 5px'
+					},
+					preventOverflow: {
+						boundariesElement: 'viewport',
+					},
+					flip: {
+						behavior: ['right', 'left']
+					}
+				},
+			})
+		}
+
+		this.classList.toggle('dropdown-open', !dropdownShown)
+		dropdown.classList.toggle('dropdown--open');
 
 		return false;
 	});
 
-	// listen for clicks to the document
-	$(document).on('click',function(e){
-		// check to see if we are inside a sub-menu or not.
-		if(!$(e.target).closest('.dropdown').length) {
+	// Hide dropdowns when clicking outside of them
+	$(document).on('click', function(e) {
+		// Make sure we're not inside of a dropdown
+		if (!$(e.target).closest('.dropdown').length) {
+			$('.dropdown-open').removeClass('dropdown-open')
 			$('.dropdown--open').removeClass('dropdown--open')
 		}
 	});
