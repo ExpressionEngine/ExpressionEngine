@@ -44,7 +44,7 @@ $lang = array(
 
 'file_data' => 'File Data',
 
-'file_manager' => 'File Manager',
+'file_manager' => 'Files',
 
 'file_not_added_to_db' => 'File could not be recorded in the database',
 

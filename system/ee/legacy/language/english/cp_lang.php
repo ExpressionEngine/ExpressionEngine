@@ -7,9 +7,9 @@ $lang = array(
 
 
 /* Develop Menu */
-'addon_manager' => 'Add-On Manager',
+'addon_manager' => 'Add-Ons',
 
-'channel_manager' => 'Channel Manager',
+'channel_manager' => 'Channels',
 
 'logs' => 'Logs',
 
@@ -19,7 +19,7 @@ $lang = array(
 
 'nav_developer_tools' => 'Developer Tools',
 
-'template_manager' => 'Template Manager',
+'template_manager' => 'Templates',
 
 'utilities' => 'Utilities',
 

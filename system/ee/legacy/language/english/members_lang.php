@@ -264,7 +264,7 @@ $lang = array(
 
 'member_id' => 'ID',
 
-'member_manager' => 'Member Manager',
+'member_manager' => 'Members',
 
 'member_not_created' => 'Cannot Create Member',
 

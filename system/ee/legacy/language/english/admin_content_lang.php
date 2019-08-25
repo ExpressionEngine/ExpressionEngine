@@ -250,7 +250,7 @@ $lang = array(
 
 'field_label_info' => 'This is the name that will appear in the PUBLISH page',
 
-'field_manager' => 'Field Manager',
+'field_manager' => 'Fields',
 
 'field_options' => 'Field Options',
 

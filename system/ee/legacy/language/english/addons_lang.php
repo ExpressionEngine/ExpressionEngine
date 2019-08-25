@@ -5,7 +5,7 @@ $lang = array(
 /* Sidebar Menu */
 'addon' => 'Add-On',
 
-'addon_manager' => 'Add-On Manager',
+'addon_manager' => 'Add-Ons',
 
 'addons' => 'Add-Ons',
 

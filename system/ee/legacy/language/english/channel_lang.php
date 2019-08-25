@@ -24,7 +24,7 @@ $lang = array(
 
 'channel_form_layouts' => '%s &ndash; Publish Layouts',
 
-'channel_manager' => 'Channel Manager',
+'channel_manager' => 'Channels',
 
 'channel_module_description' => 'Channel module',
 
@@ -470,7 +470,7 @@ $lang = array(
 
 'category_groups_removed_desc' => 'The category group <b>%s</b> has been removed.',
 
-'category_manager' => 'Category Manager',
+'category_manager' => 'Categories',
 
 'category_not_created' => 'Cannot Create Category',
 

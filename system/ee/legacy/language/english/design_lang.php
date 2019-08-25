@@ -234,7 +234,7 @@ $lang = array(
 
 'template_groups' => 'Template Groups',
 
-'template_manager' => 'Template Manager',
+'template_manager' => 'Templates',
 
 'template_member_groups' => 'Allowed member groups',
 

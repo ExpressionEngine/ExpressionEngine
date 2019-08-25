@@ -130,7 +130,7 @@ $lang = array(
 
 'entry_limit_reached_one_desc' => 'This channel is limited to one entry.',
 
-'entry_manager' => 'Entry Manager',
+'entry_manager' => 'Entries',
 
 'entry_status' => 'Status',
 
