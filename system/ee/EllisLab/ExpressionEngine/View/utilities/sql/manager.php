@@ -17,7 +17,11 @@
 				<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
 				<input class="btn submit" type="submit" name="search_form" value="<?=lang('search_tables')?>">
 			</fieldset>
-			<h1><?=$table_heading?></h1>
+
+			<div class="title-bar">
+				<h2 class="title-bar__title"><?=$table_heading?></h2>
+			</div>
+
 			<?php $this->embed('_shared/table', $table); ?>
 			<fieldset class="tbl-bulk-act hidden">
 				<select name="table_action">

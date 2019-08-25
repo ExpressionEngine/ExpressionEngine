@@ -5,8 +5,13 @@
 		<fieldset class="tbl-search right">
 			<a class="btn tn action" href="<?=ee('CP/URL')->make('files/watermarks/create')?>"><?=lang('create_new')?></a>
 		</fieldset>
-		<h1><?=$cp_page_title?></h1>
+
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+
+		<div class="title-bar">
+			<h2 class="title-bar__title"><?=$cp_page_title?></h2>
+		</div>
+
 		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>
 		<fieldset class="tbl-bulk-act hidden">

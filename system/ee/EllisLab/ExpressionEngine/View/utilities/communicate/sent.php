@@ -6,8 +6,13 @@
 		<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
 		<input class="btn submit" type="submit" value="<?=lang('search_emails_button')?>">
 	</fieldset>
-	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
+
 	<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+
+	<div class="title-bar">
+		<h2 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h2>
+	</div>
+
 	<?php $this->embed('_shared/table', $table); ?>
 
 	<?=$pagination?>
