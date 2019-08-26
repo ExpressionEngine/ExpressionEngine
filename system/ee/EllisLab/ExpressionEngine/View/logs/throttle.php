@@ -32,8 +32,8 @@
 
 				<?=$pagination?>
 
-				<fieldset class="tbl-bulk-act">
-				<button class="btn action m-link" rel="modal-confirm-all"><?=lang('clear_throttle_logs')?></button>
+				<fieldset class="bulk-action-bar">
+				<button class="button button--action m-link" rel="modal-confirm-all"><?=lang('clear_throttle_logs')?></button>
 				</fieldset>
 			<?php endif; ?>
 		<?php endif; ?>

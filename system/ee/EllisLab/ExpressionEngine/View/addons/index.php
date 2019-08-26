@@ -16,14 +16,14 @@
 
 			<?php $this->embed('_shared/table', $tables['first']); ?>
 			<?php if ( ! empty($tables['first']['columns']) && ! empty($tables['first']['data'])): ?>
-			<fieldset class="tbl-bulk-act hidden">
+			<fieldset class="bulk-action-bar hidden">
 				<select name="bulk_action">
 					<option value="">-- <?=lang('with_selected')?> --</option>
 					<option value="install"><?=lang('install')?></option>
 					<option value="remove" data-confirm-trigger-first="selected" rel="modal-confirm-remove"><?=lang('uninstall')?></option>
 					<option value="update"><?=lang('update')?></option>
 				</select>
-				<button class="btn submit" data-conditional-modal="confirm-trigger-first"><?=lang('submit')?></button>
+				<button class="button button--primary" data-conditional-modal="confirm-trigger-first"><?=lang('submit')?></button>
 			</fieldset>
 			<?php endif; ?>
 		<?=form_close()?>
@@ -37,14 +37,14 @@
 			<?php if (isset($filters['third'])) echo $filters['third']; ?>
 			<?php $this->embed('_shared/table', $tables['third']); ?>
 			<?php if ( ! empty($tables['third']['columns']) && ! empty($tables['third']['data'])): ?>
-			<fieldset class="tbl-bulk-act hidden">
+			<fieldset class="bulk-action-bar hidden">
 				<select name="bulk_action">
 					<option value="">-- <?=lang('with_selected')?> --</option>
 					<option value="install"><?=lang('install')?></option>
 					<option value="remove" data-confirm-trigger-third="selected" rel="modal-confirm-remove"><?=lang('uninstall')?></option>
 					<option value="update"><?=lang('update')?></option>
 				</select>
-				<button class="btn submit" data-conditional-modal="confirm-trigger-third"><?=lang('submit')?></button>
+				<button class="button button--primary" data-conditional-modal="confirm-trigger-third"><?=lang('submit')?></button>
 			</fieldset>
 			<?php endif; ?>
 		<?=form_close()?>

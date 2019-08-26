@@ -14,12 +14,12 @@
 	<?php if ( ! empty($pagination)) echo $pagination; ?>
 
 	<?php if ( ! empty($table['data'])): ?>
-	<fieldset class="tbl-bulk-act hidden">
+	<fieldset class="bulk-action-bar hidden">
 		<select name="bulk_action">
 			<option value="">-- <?=lang('with_selected')?> --</option>
 			<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
 		</select>
-		<button class="btn submit" data-conditional-modal="confirm-trigger" data-confirm-ajax="<?=ee('CP/URL')->make('/members/groups/confirm')?>"><?=lang('submit')?></button>
+		<button class="button button--primary" data-conditional-modal="confirm-trigger" data-confirm-ajax="<?=ee('CP/URL')->make('/members/groups/confirm')?>"><?=lang('submit')?></button>
 	</fieldset>
 	<?php endif; ?>
 <?=form_close()?>

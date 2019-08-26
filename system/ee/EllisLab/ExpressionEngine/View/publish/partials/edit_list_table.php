@@ -11,7 +11,7 @@
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
 			<?php if ($can_edit || $can_delete): ?>
-		<fieldset class="tbl-bulk-act hidden">
+		<fieldset class="bulk-action-bar hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
 				<?php if ($can_delete): ?>
@@ -24,7 +24,7 @@
 					<option value="remove-categories" data-confirm-trigger="selected" rel="modal-bulk-edit"><?=lang('remove_categories')?></option>
 				<?php endif ?>
 			</select>
-			<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
+			<button class="button button--primary" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
 		</fieldset>
 			<?php endif; ?>
 		<?php endif; ?>

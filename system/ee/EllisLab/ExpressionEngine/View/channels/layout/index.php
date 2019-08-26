@@ -13,12 +13,12 @@
 				<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 				<?php $this->embed('_shared/table-list', ['data' => $layouts]); ?>
 				<?php if (isset($pagination)) echo $pagination; ?>
-				<fieldset class="tbl-bulk-act hidden">
+				<fieldset class="bulk-action-bar hidden">
 					<select name="bulk_action">
 						<option>-- <?=lang('with_selected')?> --</option>
 						<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
 					</select>
-					<input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
+					<input class="button button--primary" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
 				</fieldset>
 			</form>
 		<?php endif?>

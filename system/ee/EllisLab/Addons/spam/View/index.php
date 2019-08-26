@@ -19,13 +19,13 @@
 		<?php if ( ! empty($pagination)) echo $pagination; ?>
 
 		<?php if ( ! empty($table['data'])): ?>
-		<fieldset class="tbl-bulk-act">
+		<fieldset class="bulk-action-bar">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('mark_selected')?> --</option>
 				<option value="remove" rel="modal-confirm-remove"><?=lang('deny_spam')?></option>
 				<option value="approve" class="yes" rel="modal-confirm-remove"><?=lang('approve_spam')?></option>
 			</select>
-			<button class="btn submit"><?=lang('submit')?></button>
+			<button class="button button--primary"><?=lang('submit')?></button>
 		</fieldset>
 		<?php endif; ?>
 	<?=form_close()?>

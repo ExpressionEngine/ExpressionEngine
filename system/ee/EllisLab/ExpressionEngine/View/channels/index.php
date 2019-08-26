@@ -11,14 +11,14 @@
 			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 			<?php $this->embed('_shared/table-list', ['data' => $channels]); ?>
 			<?php if (isset($pagination)) echo $pagination; ?>
-			<fieldset class="tbl-bulk-act hidden">
+			<fieldset class="bulk-action-bar hidden">
 				<select name="bulk_action">
 					<option>-- <?=lang('with_selected')?> --</option>
 					<?php if (ee()->cp->allowed_group('can_delete_channels')): ?>
 						<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
 					<?php endif ?>
 				</select>
-				<input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
+				<input class="button button--primary" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
 			</fieldset>
 		</form>
 	</div>

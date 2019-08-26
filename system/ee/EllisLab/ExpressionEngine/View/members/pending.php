@@ -19,7 +19,7 @@
 		<?php if ( ! empty($pagination)) echo $pagination; ?>
 
 		<?php if ( ! empty($table['data']) && ($can_edit || $can_delete)): ?>
-		<fieldset class="tbl-bulk-act hidden">
+		<fieldset class="bulk-action-bar hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
 				<?php if ($can_edit): ?>
@@ -32,7 +32,7 @@
 				<option value="decline" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('decline')?></option>
 				<?php endif; ?>
 			</select>
-			<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
+			<button class="button button--primary" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
 		</fieldset>
 		<?php endif; ?>
 	<?=form_close()?>

@@ -9,12 +9,12 @@
 			<h1><?=$heading['user']?></h1>
 			<div class="app-notice-wrap"><?=ee('CP/Alert')->get('user-alerts')?></div>
 			<?php $this->embed('_shared/table-list', ['data' => $requests['user'], 'filters' => $filters['user']]); ?>
-			<fieldset class="tbl-bulk-act hidden">
+			<fieldset class="bulk-action-bar hidden">
 				<select name="bulk_action">
 					<option>-- <?=lang('with_selected')?> --</option>
 					<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
 				</select>
-				<input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
+				<input class="button button--primary" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
 			</fieldset>
 		</form>
 	</div>

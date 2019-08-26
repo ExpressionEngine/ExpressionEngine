@@ -680,9 +680,9 @@ $(document).ready(function(){
 		$('body').on('change', 'table tr td:last-child input[type=checkbox], table tr th:last-child input[type=checkbox]', function() {
 			$(this).parents('tr').toggleClass('selected', $(this).is(':checked'));
 			if ($(this).parents('table').find('input:checked').length == 0) {
-				$(this).parents('.tbl-wrap').siblings('.tbl-bulk-act').hide();
+				$(this).parents('.tbl-wrap').siblings('.bulk-action-bar').addClass('hidden');
 			} else {
-				$(this).parents('.tbl-wrap').siblings('.tbl-bulk-act').show();
+				$(this).parents('.tbl-wrap').siblings('.bulk-action-bar').removeClass('hidden');
 			}
 		});
 
@@ -706,10 +706,10 @@ $(document).ready(function(){
 			// Toggle the bulk actions
 			if (tableList.find('.check-ctrl input:checked').length == 0)
 			{
-				$(this).parents('.tbl-list-wrap').siblings('.tbl-bulk-act').hide();
+				$(this).parents('.tbl-list-wrap').siblings('.bulk-action-bar').addClass('hidden');
 			} else
 			{
-				$(this).parents('.tbl-list-wrap').siblings('.tbl-bulk-act').show();
+				$(this).parents('.tbl-list-wrap').siblings('.bulk-action-bar').removeClass('hidden');
 			}
 		});
 

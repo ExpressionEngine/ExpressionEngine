@@ -13,12 +13,12 @@
 		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ($can_delete_categories): ?>
-		<fieldset class="tbl-bulk-act hidden">
+		<fieldset class="bulk-action-bar hidden">
 			<select name="bulk_action">
 				<option>-- <?=lang('with_selected')?> --</option>
 				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
 			</select>
-			<input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
+			<input class="button button--primary" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
 		</fieldset>
 		<?php endif; ?>
 	</form>

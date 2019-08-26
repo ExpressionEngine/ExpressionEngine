@@ -23,13 +23,13 @@
 			</div>
 
 			<?php $this->embed('_shared/table', $table); ?>
-			<fieldset class="tbl-bulk-act hidden">
+			<fieldset class="bulk-action-bar hidden">
 				<select name="table_action">
 					<option value="none">-- <?=lang('with_selected')?> --</option>
 					<option value="REPAIR"><?=lang('repair')?></option>
 					<option value="OPTIMIZE"><?=lang('optimize')?></option>
 				</select>
-				<input class="btn submit" type="submit" value="<?=lang('submit')?>">
+				<input class="button button--primary" type="submit" value="<?=lang('submit')?>">
 			</fieldset>
 		</form>
 	</div>

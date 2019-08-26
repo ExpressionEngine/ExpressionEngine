@@ -6,12 +6,12 @@
 		<?php $this->embed('ee:_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
-		<fieldset class="tbl-bulk-act hidden">
+		<fieldset class="bulk-action-bar hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
 				<option value="add_item"><?=lang('add_item')?></option>
 			</select>
-			<button class="btn submit"><?=lang('submit')?></button>
+			<button class="button button--primary"><?=lang('submit')?></button>
 		</fieldset>
 		<?php endif; ?>
 	<?=form_close()?>
