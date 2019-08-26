@@ -2,7 +2,9 @@
 
 <?php if (isset($header)): ?>
 <div class="main-nav">
-	<a class="main-nav__mobile-menu"><i class="fas fa-bars"></i></a>
+	<a class="main-nav__mobile-menu">
+		<svg xmlns="http://www.w3.org/2000/svg" width="18.585" height="13.939" viewBox="0 0 18.585 13.939"><g transform="translate(-210.99 -17.71)"><path d="M3,12.1H19.585" transform="translate(208.99 12.575)" fill="none" stroke-linecap="round" stroke-width="2"/><path d="M3,6H19.585" transform="translate(208.99 12.71)" fill="none" stroke-linecap="round" stroke-width="2"/><path d="M3,18H9.386" transform="translate(208.99 12.649)" fill="none" stroke-linecap="round" stroke-width="2"/></g></svg>
+	</a>
 
 	<div class="main-nav__title">
 		<h1><?=$header['title']?></h1>
@@ -22,32 +24,25 @@
 		<?php if (isset($header['action_button']) || isset($header['search_form_url'])): ?>
 			<?php if (isset($header['search_form_url'])): ?>
 				<?=form_open($header['search_form_url'])?>
-					<fieldset class="tbl-search right">
-						<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=form_prep(ee()->input->get_post('search'))?>">
-						<?php if (isset($header['search_button_value'])): ?>
-						<input class="btn submit" type="submit" value="<?=$header['search_button_value']?>">
-						<?php else: ?>
-						<input class="btn submit" type="submit" value="<?=lang('search')?>">
-						<?php endif; ?>
-					</fieldset>
+					<?php if (isset($header['search_button_value'])): ?>
+					<input class="main-nav__toolbar-input" placeholder="<?=$header['search_button_value']?>" type="text" name="search" value="<?=form_prep(ee()->input->get_post('search'))?>">
+					<?php else: ?>
+					<input class="main-nav__toolbar-input" placeholder="<?=lang('search')?>" type="text" name="search" value="<?=form_prep(ee()->input->get_post('search'))?>">
+					<?php endif; ?>
 				</form>
 			<?php endif ?>
 			<?php if (isset($header['action_button'])): ?>
 				<?php if (isset($header['action_button']['choices'])): ?>
-					<div class="filter-item filter-item--right">
-						<a href="#" class="js-filter-link filter-item__link filter-item__link--has-submenu filter-item__link--action"><?=$header['action_button']['text']?></a>
-						<div class="filter-submenu">
-							<?php if (count($header['action_button']['choices']) > 8): ?>
-								<div class="filter-submenu__search">
-									<input type="text" value="" data-fuzzy-filter="true" placeholder="<?=$header['action_button']['filter_placeholder']?>">
-								</div>
-							<?php endif ?>
-							<div class="filter-submenu__scroll">
-								<?php foreach ($header['action_button']['choices'] as $link => $text): ?>
-									<a href="<?=$link?>" class="filter-submenu__link"><?=$text?></a>
-								<?php endforeach ?>
+					<a href="#" class="button button--action js-dropdown-toggle" data-dropdown-pos="bottom-end"><?=$header['action_button']['text']?> <i class="fas fa-caret-down"></i></a>
+					<div class="dropdown">
+						<?php if (count($header['action_button']['choices']) > 8): ?>
+							<div class="dropdown__search">
+								<input type="text" value="" data-fuzzy-filter="true" placeholder="<?=$header['action_button']['filter_placeholder']?>">
 							</div>
-						</div>
+						<?php endif ?>
+						<?php foreach ($header['action_button']['choices'] as $link => $text): ?>
+							<a href="<?=$link?>" class="dropdown__link"><?=$text?></a>
+						<?php endforeach ?>
 					</div>
 				<?php else: ?>
 					<a class="button button--action" href="<?=$header['action_button']['href']?>"><?=$header['action_button']['text']?></a>
