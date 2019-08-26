@@ -451,6 +451,9 @@ class Edit extends AbstractPublishController {
 		);
 
 		$vars = array(
+			'header' => [
+				'title' => lang('edit_entry'),
+			],
 			'form_url' => $base_url,
 			'form_attributes' => $form_attributes,
 			'form_title' => lang('edit_entry'),
