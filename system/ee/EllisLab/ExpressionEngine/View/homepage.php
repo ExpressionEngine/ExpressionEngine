@@ -1,17 +1,6 @@
-<?php $this->extend('_templates/wrapper'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
 <div class="home-layout">
-	<div class="col-group snap mb">
-		<div class="col w-16 last">
-			<div class="box full">
-				<div class="tbl-ctrls">
-					<h1>
-						<?=$cp_page_title?>
-					</h1>
-				</div>
-			</div>
-		</div>
-	</div>
 	<?php $spam_comment_width = ($spam_module_installed) ? '8' : '16';?>
 	<?php if (ee()->config->item('enable_comments') == 'y'): ?>
 	<div class="col-group snap mb">

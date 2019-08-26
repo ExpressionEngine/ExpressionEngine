@@ -176,6 +176,10 @@ class Homepage extends CP_Controller {
 		$vars['can_access_member_settings'] = ee()->cp->allowed_group('can_access_sys_prefs', 'can_access_members');
 		$vars['can_create_entries'] = ee()->cp->allowed_group('can_create_entries');
 
+		$vars['header'] = array(
+			'title' => ee()->config->item('site_name') . ' ' . lang('overview'),
+		);
+
 		ee()->view->cp_page_title = ee()->config->item('site_name') . ' ' . lang('overview');
 		ee()->cp->render('homepage', $vars);
 	}
