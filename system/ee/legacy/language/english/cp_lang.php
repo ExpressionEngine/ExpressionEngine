@@ -11,6 +11,8 @@ $lang = array(
 
 'channel_manager' => 'Channels',
 
+'entries' => 'Entries',
+
 'logs' => 'Logs',
 
 'msm_manager' => 'Site Manager',
