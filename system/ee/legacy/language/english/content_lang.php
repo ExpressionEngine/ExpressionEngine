@@ -114,7 +114,7 @@ $lang = array(
 
 'edit_entry_with_title' => 'Edit Entry: %s',
 
-'entries' => 'entries',
+'entries' => 'Entries',
 
 'entries_removed_desc' => 'The following entries were removed',
 
