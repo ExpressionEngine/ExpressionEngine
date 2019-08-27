@@ -4,7 +4,10 @@ $this->enabled('ee_header') && $this->embed('_shared/header');
 
 <div class="theme-switch-circle"></div>
 
-<?php $current_page = ''; ?>
+<?php
+// Get the current page to highlight it in the sidebar
+$current_page = ee()->uri->segment(2);
+?>
 
 <section class="ee-wrapper">
 
@@ -38,10 +41,10 @@ $this->enabled('ee_header') && $this->embed('_shared/header');
 					<a class="nav-home" href="<?=$cp_homepage_url?>" title="<?=lang('nav_homepage')?>"><i class="icon-home"></i><span class="nav-txt-collapse"><?=lang('nav_homepage')?></span></a>
 					<a class="nav-overview" href="<?=ee('CP/URL', 'homepage')?>" title="<?=lang('nav_overview')?>"><i class="icon-dashboard"></i><span class="nav-txt-collapse"><?=lang('nav_overview')?></span></a>
 					<?php endif; ?> -->
-				<a href="<?=ee('CP/URL', 'homepage')?>" title="<?=lang('nav_overview')?>" class="<?= ($current_page == 'dashbaord' ? 'active' : '') ?>"><i class="fas fa-tachometer-alt"></i> <?=lang('nav_overview')?></a>
+				<a href="<?=ee('CP/URL', 'homepage')?>" title="<?=lang('nav_overview')?>" class="<?= ($current_page == 'homepage' ? 'active' : '') ?>"><i class="fas fa-tachometer-alt"></i> <?=lang('nav_overview')?></a>
 
 				<?php if (ee()->cp->allowed_group('can_create_entries') && (count($cp_main_menu['channels']['create']) || ee()->cp->allowed_group('can_create_channels')) || ee()->cp->allowed_group_any('can_edit_other_entries', 'can_edit_self_entries')) : ?>
-				<a href="<?= ee('CP/URL', 'publish/edit') ?>" class="<?= (($current_page == 'entry' || $current_page == 'entries') ? 'active' : '') ?>"><i class="fas fa-newspaper"></i> <?= lang('entries') ?></a>
+				<a href="<?= ee('CP/URL', 'publish/edit') ?>" class="<?= (($current_page == 'publish') ? 'active' : '') ?>"><i class="fas fa-newspaper"></i> <?= lang('entries') ?></a>
 				<?php endif; ?>
 
 				<?php if (ee()->cp->allowed_group('can_access_files')) : ?>
@@ -57,7 +60,7 @@ $this->enabled('ee_header') && $this->embed('_shared/header');
 				<?php endif; ?>
 
 				<?php if (ee()->cp->allowed_group('can_access_addons')) : ?>
-				<a href="<?= ee('CP/URL')->make('addons') ?>" class="<?= ($current_page == 'add-ons' ? 'active' : '') ?>"><i class="fas fa-bolt"></i> <?= lang('addons') ?></a>
+				<a href="<?= ee('CP/URL')->make('addons') ?>" class="<?= ($current_page == 'addons' ? 'active' : '') ?>"><i class="fas fa-bolt"></i> <?= lang('addons') ?></a>
 				<?php endif; ?>
 
 
@@ -116,7 +119,7 @@ $this->enabled('ee_header') && $this->embed('_shared/header');
 				<?php endif; ?>
 
 				<?php if (ee()->cp->allowed_group('can_access_sys_prefs')) : ?>
-				<a href="<?= ee('CP/URL', 'settings') ?>" title="<?= lang('nav_settings') ?>"><i class="fas fa-cog"></i> <?= lang('nav_settings') ?></a>
+				<a href="<?= ee('CP/URL', 'settings') ?>" title="<?= lang('nav_settings') ?>" class="<?= ($current_page == 'settings' ? 'active' : '') ?>"><i class="fas fa-cog"></i> <?= lang('nav_settings') ?></a>
 				<?php endif; ?>
 
 				<a href="" class="ee-sidebar__version">ExpressionEngine <span>6.0.0</span></a>
