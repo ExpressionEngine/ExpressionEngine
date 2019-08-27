@@ -2,17 +2,16 @@
 
 <div class="tbl-ctrls">
 	<?=form_open($form_url)?>
-		<?php if($show_new_template_button): ?>
-		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=ee('CP/URL')->make('design/template/create/' . $group_id)?>"><?=lang('create_new_template')?></a>
-		</fieldset>
-		<?php endif; ?>
-
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
 		<div class="title-bar">
 			<h2 class="title-bar__title"><?=$cp_heading?></h2>
 			<?php if (isset($filters)) echo $filters; ?>
+			<div class="title-bar__extra-tools">
+				<?php if($show_new_template_button): ?>
+				<a class="button button--action button--small" href="<?=ee('CP/URL')->make('design/template/create/' . $group_id)?>"><?= lang('create_new_template') ?></a>
+			<?php endif; ?>
+			</div>
 		</div>
 
 		<?php $this->embed('_shared/table', $table); ?>

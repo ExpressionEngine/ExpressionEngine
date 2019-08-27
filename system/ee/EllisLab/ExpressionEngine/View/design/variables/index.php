@@ -2,12 +2,16 @@
 
 <div class="tbl-ctrls">
 	<?=form_open($form_url)?>
-		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=ee('CP/URL')->make('design/variables/create')?>"><?=lang('create_new')?></a>
-		</fieldset>
-		<h1><?=$cp_heading?></h1>
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-		<?php if (isset($filters)) echo $filters; ?>
+
+		<div class="title-bar">
+			<h2 class="title-bar__title"><?=$cp_heading?></h2>
+			<?php if (isset($filters)) echo $filters; ?>
+			<div class="title-bar__extra-tools">
+				<a class="button button--action button--small" href="<?=ee('CP/URL')->make('design/variables/create')?>"><?=lang('create_new')?></a>
+			</div>
+		</div>
+
 		<?php $this->embed('_shared/table', $table); ?>
 		<?php if (isset($pagination)) echo $pagination; ?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
