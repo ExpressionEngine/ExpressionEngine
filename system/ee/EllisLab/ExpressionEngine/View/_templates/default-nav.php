@@ -9,9 +9,13 @@
 	<div class="main-nav__title">
 		<h1><?=$header['title']?></h1>
 
-		<!-- <ul class="breadcrumb">
-			<li><a href=""></a></li>
-		</ul> -->
+		<?php if (count($cp_breadcrumbs)): ?>
+			<ul class="breadcrumb">
+				<?php foreach ($cp_breadcrumbs as $link => $title): ?>
+					<li><a href="<?=$link?>"><?=$title?></a></li>
+				<?php endforeach ?>
+			</ul>
+		<?php endif ?>
 	</div>
 
 	<div class="main-nav__toolbar">
@@ -99,17 +103,3 @@
 	</div>
 	<?php endif; ?>
 </div>
-
-
-<!-- if ($this->enabled('outer_box'))
-
-<?php if (count($cp_breadcrumbs)): ?>
-			<ul class="breadcrumb">
-				<?php foreach ($cp_breadcrumbs as $link => $title): ?>
-					<li><a href="<?=$link?>"><?=$title?></a></li>
-				<?php endforeach ?>
-				<li class="last"><?=ee('Format')->make('Text', isset($breadcrumb_title) ? $breadcrumb_title : $cp_page_title)->attributeSafe()->compile()?></li>
-			</ul>
-		<?php endif ?>
-
- -->
