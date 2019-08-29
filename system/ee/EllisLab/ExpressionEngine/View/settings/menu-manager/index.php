@@ -1,6 +1,5 @@
-<?php $this->extend('_templates/default-nav-table'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
-<div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
 		<fieldset class="tbl-search right">
 			<a class="btn tn action" href="<?=ee('CP/URL')->make('settings/menu-manager/create-set')?>"><?=lang('new')?></a>
@@ -17,7 +16,6 @@
 			<input class="button button--primary" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
 		</fieldset>
 	</form>
-</div>
 
 <?php
 

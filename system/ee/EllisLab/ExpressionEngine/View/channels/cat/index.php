@@ -1,6 +1,5 @@
-<?php $this->extend('_templates/default-nav-table'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
-<div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
 		<?php if ($can_create_categories):?>
 		<fieldset class="tbl-search right">
@@ -22,7 +21,7 @@
 		</fieldset>
 		<?php endif; ?>
 	</form>
-</div>
+
 
 <?php
 

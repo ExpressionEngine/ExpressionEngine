@@ -1,14 +1,15 @@
-<?php $this->extend('_templates/default-nav-table'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
-<div class="tbl-ctrls">
 <?=form_open($form_url)?>
-			<fieldset class="tbl-search right">
-				<a class="btn tn action" href="<?=$new?>"><?= lang('new') ?></a>
-			</fieldset>
-		 	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 		 	<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
-			 <?php if (isset($filters)) echo $filters; ?>
+			 <div class="title-bar">
+				<h2 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h2>
+				<?php if (isset($filters)) echo $filters; ?>
+				<div class="title-bar__extra-tools">
+					<a class="button button--small button--action" href="<?=$new?>"><?= lang('new') ?></a>
+				</div>
+			</div>
 
 			 <?php $this->embed('_shared/table', $table); ?>
 
@@ -24,7 +25,6 @@
 			 </fieldset>
 			 <?php endif; ?>
 <?=form_close()?>
-</div>
 
 <?php
 

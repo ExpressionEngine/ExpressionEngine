@@ -1,6 +1,5 @@
-<?php $this->extend('_templates/default-nav-table'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
-<div class="tbl-ctrls">
 <?=form_open($table['base_url'])?>
 	<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
@@ -28,7 +27,6 @@
 	</fieldset>
 	<?php endif; ?>
 <?=form_close()?>
-</div>
 
 <?php
 

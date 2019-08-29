@@ -1,6 +1,5 @@
-<?php $this->extend('_templates/default-nav-table'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
-<div class="tbl-ctrls">
 	<?=form_open($form_url)?>
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
@@ -24,6 +23,5 @@
 		</fieldset>
 		<?php endif; ?>
 	<?=form_close()?>
-</div>
 
 <?php $this->embed('files/_delete_modal'); ?>

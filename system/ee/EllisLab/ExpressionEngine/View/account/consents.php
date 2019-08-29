@@ -1,14 +1,12 @@
-<?php $this->extend('_templates/default-nav-table'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
-<div class="tbl-ctrls">
 <?=form_open($form_url)?>
-       <h1>
-			<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></br>
-       </h1>
-
 		<?=ee('CP/Alert')->get('shared-form')?>
 
-       <?php if (isset($filters)) echo $filters; ?>
+	   <div class="title-bar">
+			<h2 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h2>
+			<?php if (isset($filters)) echo $filters; ?>
+		</div>
 
        <?php $this->embed('_shared/table', $table); ?>
 
@@ -25,7 +23,6 @@
        </fieldset>
        <?php endif; ?>
 <?=form_close()?>
-</div>
 
 <?php foreach($requests as $request): ?>
 	<?php ee('CP/Modal')->startModal('modal-consent-request-' . $request->getId()); ?>

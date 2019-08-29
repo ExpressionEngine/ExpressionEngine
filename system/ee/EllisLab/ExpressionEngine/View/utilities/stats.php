@@ -1,6 +1,5 @@
-<?php $this->extend('_templates/default-nav-table'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
-<div class="tbl-ctrls">
 	<?=form_open(ee('CP/URL')->make('utilities/stats/sync'))?>
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
@@ -18,4 +17,3 @@
 			<input class="button button--primary" type="submit" value="<?=lang('submit')?>">
 		</fieldset>
 	<?=form_close()?>
-</div>

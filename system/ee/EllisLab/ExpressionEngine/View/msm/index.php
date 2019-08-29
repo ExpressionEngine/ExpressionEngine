@@ -1,6 +1,5 @@
-<?php $this->extend('_templates/default-nav-table'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
-<div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
 		<h1><?=$cp_page_title?></h1>
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
@@ -14,7 +13,6 @@
 			<input class="button button--primary" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
 		</fieldset>
 	</form>
-</div>
 
 <?php
 

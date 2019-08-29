@@ -1,6 +1,5 @@
-<?php $this->extend('_templates/default-nav-table'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
-<div class="tbl-ctrls">
 	<?=form_open($base_url)?>
 		<?php if ($can_create_categories):?>
 		<fieldset class="tbl-search right">
@@ -40,7 +39,7 @@
 			<input class="button button--primary" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
 		</fieldset>
 	</form>
-</div>
+
 
 <?php
 

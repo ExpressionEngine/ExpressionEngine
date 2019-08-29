@@ -1,6 +1,5 @@
-<?php $this->extend('_templates/default-nav-table'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
-<div class="tbl-ctrls">
 	<?=form_open($form_url)?>
 		<h1>
 			<?=$cp_heading?>
@@ -31,7 +30,6 @@
 			<?php endif; ?>
 		<?php endif; ?>
 	<?=form_close()?>
-</div>
 
 <?php
 $modal_vars = array(

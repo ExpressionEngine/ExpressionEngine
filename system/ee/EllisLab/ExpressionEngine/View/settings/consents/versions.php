@@ -1,6 +1,5 @@
-<?php $this->extend('_templates/default-nav-table'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
-<div class="tbl-ctrls">
 <?=form_open($form_url)?>
        <h1>
 			<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></br>
@@ -11,7 +10,6 @@
        <?php if ( ! empty($pagination)) $this->embed('_shared/pagination', $pagination); ?>
 
 <?=form_close()?>
-</div>
 
 <?php foreach($versions as $version): ?>
 	<?php ee('CP/Modal')->startModal('modal-consent-request-' . $version->getId()); ?>
