@@ -122,7 +122,27 @@ $current_page = ee()->uri->segment(2);
 				<a href="<?= ee('CP/URL', 'settings') ?>" title="<?= lang('nav_settings') ?>" class="<?= ($current_page == 'settings' ? 'active' : '') ?>"><i class="fas fa-cog"></i> <?= lang('nav_settings') ?></a>
 				<?php endif; ?>
 
-				<a href="" class="ee-sidebar__version">ExpressionEngine <span>6.0.0</span></a>
+
+				<?php
+					$version_class = '';
+					$update_available = isset($new_version);
+					$vital_update = $update_available && $new_version['security'];
+
+					if ( ! empty($version_identifier))
+					{
+						$version_class .= ' ee-sidebar__version--dev';
+					}
+					elseif ($update_available)
+					{
+						if ($vital_update) {
+							$version_class .= ' ee-sidebar__version--update-vital';
+						} else {
+							$version_class .= ' ee-sidebar__version--update';
+						}
+					}
+				?>
+
+				<a href="" data-dropdown-pos="top-start" data-toggle-dropdown="app-about-dropdown" class="ee-sidebar__version js-about <?=$version_class?>">ExpressionEngine <span><?=$formatted_version?></span></a>
 			</div>
 
 		</div>
@@ -132,6 +152,44 @@ $current_page = ee()->uri->segment(2);
 		<?= $child_view ?>
 	</div>
 </section>
+
+
+<div class="dropdown app-about" data-dropdown="app-about-dropdown">
+	<div class="app-about__title">ExpressionEngine <span class="float-right"><?=$formatted_version?></span></div>
+	<div class="app-about__subtitle">
+		&copy;<?=date('Y')?> <a href="https://expressionengine.com/" rel="external noreferrer">EllisLab</a> Corp.
+		<span class="float-right"><?=$ee_build_date?></span>
+	</div>
+
+	<div href="https://expressionengine.com/support" class="dropdown__link app-about__support-link"><i class="fas fa-life-ring fa-fw"></i> <?=lang('support')?></div>
+
+	<?php if (ee()->cp->allowed_group('can_access_footer_report_bug')): ?>
+		<a href="https://expressionengine.com/support/bugs/new" class="dropdown__link app-about__bug-link" rel="external noreferrer"><i class="fas fa-bug fa-fw"></i>  <?=lang('report_bug')?></a>
+	<?php endif ?>
+	<?php if (ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
+		<a href="<?=DOC_URL?>" class="dropdown__link app-about__user-guide-link" rel="external noreferrer"><i class="fas fa-book fa-fw"></i> <?=lang('user_guide')?></a>
+	<?php endif; ?>
+
+	<?php if (ee()->session->userdata('group_id') == 1): ?>
+		<div class="app-about__status app-about__status--checking">
+			<?=lang('checking_for_updates')?>
+		</div>
+		<div class="app-about__status app-about__status--update-to-date hidden">
+			<?=lang('up_to_date')?>
+		</div>
+		<div class="app-about__status app-about__status--update hidden">
+			<?=lang('out_of_date_upgrade')?>
+			<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button button--action"><?=lang('update_btn')?></a>
+			<div class="app-about__status-version"></div>
+		</div>
+		<div class="app-about__status app-about__status--update-vital hidden">
+			<?=lang('out_of_date_recommended')?>
+			<a data-post-url="<?=ee('CP/URL', 'updater')?>" class="button button--action"><?=lang('update_btn')?></a>
+			<div class="app-about__status-version"></div>
+		</div>
+	<?php endif ?>
+</div>
+
 
 <?php
 $this->enabled('ee_footer') && $this->embed('_shared/footer');

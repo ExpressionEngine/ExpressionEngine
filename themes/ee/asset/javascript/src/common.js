@@ -400,64 +400,38 @@ $(document).ready(function(){
 			$('.tb-act .tab.'+tabClassIs).addClass('tab-open');
 		});
 
-	// ==============
-	// version pop up
-	// ==============
 
-		// hide version-info box
-		$('.version-info').hide();
+	// App about / updates pop up
+	// -------------------------------------------------------------------
 
-		// listen for clicks to elements with a class of version
-		$('.version').on('click',function(e){
-			// show version-info box
-			$('.version-info').show();
-			// stop THIS href from loading
-			// in the source window
+		$('.js-about').on('click', function(e) {
+			// Trigger an event so that the about popup can check for updates when shown
+			$('.app-about').trigger('display');
 			e.preventDefault();
 		});
 
-		// listen for clicks to elements with a class of close inside of version-info
-		$('.version-info .close').on('click',function(){
-			// hide version-info box
-			$('.version-info').hide();
-			// stop THIS from reloading
-			// the source window and appending to the URI
-			// and stop propagation up to document
-			return false;
-		});
+		$('.app-about').on('display', function() {
+			// Is the checking for updates bar visible?
+			// If it's not, then we already checked for updates so there's nothing to do.
+			if ($('.app-about__status--checking:visible').size() > 0) {
+				// Hide all statuses except for the checking one
+				$('.app-about__status:not(.app-about__status--checking)').hide()
 
-		// new app-about popup
-		$('.js-about').on('click',function(e){
-			// show version-info box
-			$('.app-about-info').show().trigger('display');
-			// stop THIS href from loading
-			// in the source window
-			e.preventDefault();
-		});
-
-		$('.js-about-close').on('click',function(e){
-			// hide version-info box
-			$('.app-about-info').hide();
-			// stop THIS href from loading
-			// in the source window
-			e.preventDefault();
-		});
-
-		$('.app-about-info').on('display', function() {
-			if ($('.app-about-info__update:visible').size() > 0) {
 				$.get(EE.cp.updateCheckURL, function(data) {
 					if (data.newVersionMarkup) {
-						$('.app-about-info__status, .app-about-info__update').hide()
-						$('.app-about-info__installed').after(data.newVersionMarkup)
-
 						if (data.isVitalUpdate) {
-							$('.app-about-info__status--update-vital').show()
+							$('.app-about__status--update-vital').show()
+							$('.app-about__status--update-vital .app-about__status-version').html(data.newVersionMarkup)
 						} else {
-							$('.app-about-info__status--update').show()
+							$('.app-about__status--update').show()
+							$('.app-about__status--update .app-about__status-version').html(data.newVersionMarkup)
 						}
 					} else {
-						$('.app-about-info__update').hide()
+						$('.app-about__status--update-to-date').show()
 					}
+
+					// Hide the checking for updates bar
+					$('.app-about__status--checking').hide()
 				})
 			}
 		})
