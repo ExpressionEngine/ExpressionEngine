@@ -49,8 +49,7 @@ var Toggle = /** @class */ (function (_super) {
         return (React.createElement("a", { href: "#", className: "toggle-btn " + this.state.onOff, onClick: this.handleClick, title: this.state.onOff, "data-state": this.state.onOff, "aria-checked": this.state.trueFalse, role: "switch" },
             this.props.name &&
                 React.createElement("input", { type: "hidden", name: this.props.name, value: this.state.value }),
-            React.createElement("span", { className: "slider" }),
-            React.createElement("span", { className: "option" })));
+            React.createElement("span", { className: "slider" })));
     };
     return Toggle;
 }(React.Component));

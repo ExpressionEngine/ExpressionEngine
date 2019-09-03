@@ -60,7 +60,6 @@ class Toggle extends React.Component<ToggleProps, ToggleState> {
                     <input type="hidden" name={this.props.name} value={this.state.value} />
                 }
                 <span className="slider"></span>
-                <span className="option"></span>
             </a>
         )
     }
