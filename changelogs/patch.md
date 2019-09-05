@@ -12,6 +12,7 @@ Bullet list below, e.g.
    - Fixed a bug where the lowercase parameter of the :url_slug variable modifier wasn't being applied.
    - Fixed a bug ([#178](https://github.com/ExpressionEngine/ExpressionEngine/issues/178)) where the table row tools were not present when managing Pending members with a non-Super Admin.
    - Fixed a bug ([#299](https://github.com/ExpressionEngine/ExpressionEngine/issues/299)) where search strings with quotes in the Search and Replace utility would not be replaced in certain circumstances.
+   - Added a check to ensure proper image rotation on image upload.
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
