@@ -258,6 +258,8 @@ $lang = array(
 'custom_date_range' => 'Custom Date Range',
 
 'date_added' => 'Date Added',
+	
+'date_modified' => 'Last Modified',
 
 'edit' => 'Edit',
 
