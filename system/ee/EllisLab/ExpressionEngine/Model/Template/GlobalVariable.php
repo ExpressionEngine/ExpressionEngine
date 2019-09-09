@@ -54,7 +54,7 @@ class GlobalVariable extends FileSyncedModel {
 
 		$basepath = PATH_TMPL;
 
-		if (ee()->config->item('save_tmpl_files') != 'y' || $basepath == '')
+		if (ee()->config->item('save_tmpl_files') != 'y' || ee()->config->item('save_tmpl_globals') != 'y' || $basepath == '')
 		{
 			return NULL;
 		}
@@ -139,7 +139,7 @@ class GlobalVariable extends FileSyncedModel {
 
 		$basepath = PATH_TMPL;
 
-		if (ee()->config->item('save_tmpl_files') != 'y' || $basepath == '')
+		if (ee()->config->item('save_tmpl_files') != 'y' || ee()->config->item('save_tmpl_globals') != 'y' || $basepath == '')
 		{
 			return NULL;
 		}
