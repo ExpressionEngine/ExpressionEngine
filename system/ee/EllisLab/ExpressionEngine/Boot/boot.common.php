@@ -212,7 +212,8 @@ require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/rand
 			'subclass_prefix'      => 'EE_',
 			'uri_protocol'         => 'AUTO',
 			'enable_devlog_alerts' => 'n',
-			'save_tmpl_files'      => 'y'
+			'save_tmpl_files'      => 'y',
+			'save_tmpl_globals'    => 'y'
 		);
 	}
 
