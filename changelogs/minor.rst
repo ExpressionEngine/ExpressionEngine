@@ -15,6 +15,7 @@ Minor Release
 
   - Added event hooks to the Channel, ChannelFormSettings, ChannelLayout, Site, Snippet, and Specialty Template models.
   - Fixed a bug ([#306](https://github.com/ExpressionEngine/ExpressionEngine/issues/306)] where {encode} variable output didn't pass the WC3 validator.
+  - Added a config override `save_tmpl_globals` to allow separate saving behavior for global variables
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
