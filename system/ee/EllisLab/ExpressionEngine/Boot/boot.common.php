@@ -197,7 +197,7 @@ require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/rand
  */
 	function default_config_items()
 	{
-		return array(
+		return [
 			'allow_extensions'     => 'y',
 			'cache_driver'         => 'file',
 			'cache_path'           => '',
@@ -213,8 +213,8 @@ require_once SYSPATH . '/ee/EllisLab/ExpressionEngine/Library/Compat/Random/rand
 			'uri_protocol'         => 'AUTO',
 			'enable_devlog_alerts' => 'n',
 			'save_tmpl_files'      => 'y',
-			'save_tmpl_globals'    => 'y'
-		);
+			'save_tmpl_globals'    => 'y',
+		];
 	}
 
 /**
