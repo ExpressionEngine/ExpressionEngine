@@ -1,6 +1,5 @@
 <?php $this->extend('_templates/default-nav', [], 'outer_box'); ?>
 
-<div class="box table-list-wrap">
 	<div class="tbl-ctrls">
 		<?=form_open($base_url)?>
 			<fieldset class="tbl-search right">
@@ -18,10 +17,8 @@
 			</fieldset>
 		</form>
 	</div>
-</div>
 
 <?php if ( ! empty($requests['app'])) : ?>
-<div class="box table-list-wrap">
 	<div class="tbl-ctrls">
 		<?=form_open($base_url)?>
 			<h1><?=$heading['app']?></h1>
@@ -32,7 +29,6 @@
 			<?php $this->embed('_shared/table-list', ['data' => $requests['app'], 'filters' => $filters['app']]); ?>
 		</form>
 	</div>
-</div>
 <?php endif; ?>
 
 <?php

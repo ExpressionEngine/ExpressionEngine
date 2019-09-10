@@ -1,6 +1,5 @@
 <?php $this->extend('_templates/default-nav', [], 'outer_box'); ?>
 
-<div class="box table-list-wrap">
 	<div class="tbl-ctrls">
 		<?=form_open($base_url)?>
 			<fieldset class="tbl-search right">
@@ -22,7 +21,6 @@
 			</fieldset>
 		</form>
 	</div>
-</div>
 
 <?php
 

@@ -1,6 +1,5 @@
 <?php $this->extend('_templates/default-nav', [], 'outer_box'); ?>
 
-<div class="box table-list-wrap">
 	<div class="tbl-ctrls">
 		<?=form_open($base_url)?>
 			<h1><?=$cp_page_title?></h1>
@@ -16,7 +15,6 @@
 			</fieldset>
 		</form>
 	</div>
-</div>
 
 <?php
 

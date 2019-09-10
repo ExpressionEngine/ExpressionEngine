@@ -9,7 +9,6 @@
 		</ul>
 	</div>
 </div>
-<div class="box table-list-wrap">
 	<div class="tbl-ctrls">
 		<?=form_open($table['base_url'])?>
 			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
@@ -33,4 +32,3 @@
 			</fieldset>
 		</form>
 	</div>
-</div>

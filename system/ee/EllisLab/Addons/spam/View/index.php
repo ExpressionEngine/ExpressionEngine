@@ -1,4 +1,3 @@
-<div class="box table-list-wrap">
 	<div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
 		<h1>
@@ -30,7 +29,6 @@
 		<?php endif; ?>
 	<?=form_close()?>
 	</div>
-</div>
 
 <?php $this->startOrAppendBlock('modals'); ?>
 

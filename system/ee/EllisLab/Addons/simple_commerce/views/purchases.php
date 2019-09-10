@@ -1,4 +1,3 @@
-<div class="box table-list-wrap">
 	<?=form_open($base_url, 'class="tbl-ctrls"')?>
 		<fieldset class="tbl-search right">
 			<a class="btn tn action" href="<?=ee('CP/URL')->make('addons/settings/simple_commerce/create-purchase')?>"><?=lang('create_new')?></a>
@@ -23,7 +22,6 @@
 		</fieldset>
 		<?php endif; ?>
 	<?=form_close();?>
-</div>
 
 <?php
 $modal_vars = array(

@@ -1,4 +1,3 @@
-<div class="box table-list-wrap">
 	<div class="tbl-ctrls">
 		<?=form_open($base_url)?>
 			<fieldset class="tbl-search right">
@@ -23,7 +22,6 @@
 
 		<?=form_close();?>
 	</div>
-</div>
 
 <?php
 

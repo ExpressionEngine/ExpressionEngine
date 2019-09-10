@@ -1,4 +1,3 @@
-<div class="box table-list-wrap">
 	<?=form_open($base_url, 'class="tbl-ctrls"')?>
 		<fieldset class="tbl-search right">
 			<div class="filters">
@@ -35,7 +34,6 @@
 		</fieldset>
 		<?php endif; ?>
 	<?=form_close();?>
-</div>
 
 <?php
 $modal_vars = array(

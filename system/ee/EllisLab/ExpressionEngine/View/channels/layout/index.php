@@ -1,6 +1,5 @@
 <?php $this->extend('_templates/default-nav', [], 'outer_box'); ?>
 
-<div class="box table-list-wrap">
 	<div class="tbl-ctrls">
 		<?php if (empty($layouts) && empty($channel_id)): ?>
 			<?php $this->embed('_shared/table-list', ['data' => []]); ?>
@@ -23,7 +22,6 @@
 			</form>
 		<?php endif?>
 	</div>
-</div>
 
 <?php
 

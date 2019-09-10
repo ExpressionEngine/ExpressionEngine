@@ -1,4 +1,3 @@
-<div class="box table-list-wrap">
 	<div class="tbl-ctrls">
 		<?=form_open(ee('CP/URL')->make('addons/settings/forum'))?>
 			<?php if (empty($board)): ?>
@@ -54,7 +53,6 @@
 
 		<?=form_close();?>
 	</div>
-</div>
 
 <?php
 $modal_vars = array(
