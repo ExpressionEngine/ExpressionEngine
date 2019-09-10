@@ -20,49 +20,12 @@ class File extends AbstractFilesController {
 
 	public function view($id)
 	{
-		$file = ee('Model')->get('File', $id)
-			->filter('site_id', ee()->config->item('site_id'))
-			->first();
-
-		if ( ! $file)
-		{
-			show_error(lang('no_file'));
-		}
-
-		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
-		if ( ! $file->isImage())
-		{
-			show_error(lang('not_an_image'));
-		}
-
-		ee()->load->library('image_lib');
-		$info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), TRUE);
-
-		$vars = array(
-			'file' => $file,
-			'height' => $info['height'],
-			'width' => $info['width'],
-			'size' => (string) ee('Format')->make('Number', $file->file_size)->bytes()
-		);
-
-		ee()->cp->render('files/view', $vars);
-	}
-
-	public function edit($id)
-	{
 		if ( ! ee()->cp->allowed_group('can_edit_files'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$errors = NULL;
-
 		$file = ee('Model')->get('File', $id)
-			->with('UploadDestination')
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
@@ -77,7 +40,9 @@ class File extends AbstractFilesController {
 		}
 
 		$result = $this->validateFile($file);
+		$errors = NULL;
 
+		// Save any changes made to the file
 		if ($result instanceOf ValidationResult)
 		{
 			$errors = $result;
@@ -88,9 +53,23 @@ class File extends AbstractFilesController {
 			}
 		}
 
-		$vars = array(
+		$is_image = $file->isImage();
+		$image_info = [];
+
+		if ($is_image) {
+			ee()->load->library('image_lib');
+			$image_info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), TRUE);
+		}
+
+		$vars = [
+			'file' => $file,
+			'is_image' => $is_image,
+			'image_info' => $image_info,
+			'size' => (string) ee('Format')->make('Number', $file->file_size)->bytes(),
+			'download_url' => ee('CP/URL')->make('files/file/download/' . $file->file_id),
+
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL')->make('files/file/edit/' . $id),
+			'base_url' => ee('CP/URL')->make('files/file/view/' . $id),
 			'save_btn_text' => 'btn_edit_file_meta',
 			'save_btn_text_working' => 'btn_saving',
 			'tabs' => array(
@@ -98,17 +77,15 @@ class File extends AbstractFilesController {
 				'categories' => ee('File')->makeUpload()->getCategoryForm($file, $errors),
 			),
 			'sections' => array(),
-		);
+		];
 
-		$this->generateSidebar($file->upload_location_id);
-		$this->stdHeader();
 		ee()->view->cp_page_title = sprintf(lang('edit_file_metadata'), $file->title);
 
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('files')->compile() => lang('file_manager'),
 		);
 
-		ee()->cp->render('settings/form', $vars);
+		ee()->cp->render('files/edit', $vars);
 	}
 
 	public function crop($id)
@@ -303,8 +280,7 @@ class File extends AbstractFilesController {
 		ee()->view->cp_page_title = sprintf(lang('crop_file'), $file->file_name);
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('files')->compile() => lang('file_manager'),
-			ee('CP/URL')->make('files/file/edit/' . $id)->compile() => sprintf(lang('edit_file_name'), $file->file_name)
+			ee('CP/URL')->make('files')->compile() => lang('file_manager')
 		);
 
 		$this->stdHeader();

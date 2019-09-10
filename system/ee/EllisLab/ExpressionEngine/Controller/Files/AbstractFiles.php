@@ -255,18 +255,13 @@ abstract class AbstractFiles extends CP_Controller {
 				continue;
 			}
 
-			$edit_link =  ee('CP/URL')->make('files/file/edit/' . $file->file_id);
 			$toolbar = array(
-				'view' => array(
+				'edit' => array(
 					'href' => '',
 					'rel' => 'modal-view-file',
 					'class' => 'm-link',
-					'title' => lang('view'),
+					'title' => lang('edit'),
 					'data-file-id' => $file->file_id
-				),
-				'edit' => array(
-					'href' => $edit_link,
-					'title' => lang('edit')
 				),
 				'crop' => array(
 					'href' => ee('CP/URL')->make('files/file/crop/' . $file->file_id),
@@ -281,7 +276,6 @@ abstract class AbstractFiles extends CP_Controller {
 			if ( ! ee()->cp->allowed_group('can_edit_files'))
 			{
 				unset($toolbar['view']);
-				unset($toolbar['edit']);
 				unset($toolbar['crop']);
 			}
 
@@ -295,7 +289,7 @@ abstract class AbstractFiles extends CP_Controller {
 
 			if (ee()->cp->allowed_group('can_edit_files'))
 			{
-				$file_description = '<a href="'.$edit_link.'">'.$file->title.'</a>';
+				$file_description = '<a href data-file-id="'.$file->file_id.'" rel="modal-view-file" class="m-link">'.$file->title.'</a>';
 			}
 
 			$column = array(
