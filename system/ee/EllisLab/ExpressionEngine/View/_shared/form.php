@@ -28,13 +28,14 @@
 		<?php if (isset($tabs)):?>
 			<?php $active_tab = (isset($active_tab)) ? $active_tab : 0; ?>
 			<div class="tab-wrap">
-				<ul class="tabs">
+				<div class="tab-bar">
+					<div class="tab-bar__tabs">
 					<?php
 						foreach (array_keys($tabs) as $i => $name):
 							$class = '';
 							if ($i == $active_tab)
 							{
-								$class = 'act';
+								$class = 'active';
 							}
 
 							if (strpos($tabs[$name], 'class="ee-form-error-message"') !== FALSE)
@@ -42,9 +43,10 @@
 								$class .= ' invalid';
 							}
 						?>
-						<li><a<?php if ($class) echo ' class="' . $class . '"'?> href="" rel="t-<?=$i?>"><?=lang($name)?></a></li>
+						<a class="js-tab-button tab-bar__tab <?=$class?>" href="" rel="t-<?=$i?>"><?=lang($name)?></a>
 					<?php endforeach; ?>
-				</ul>
+					</div>
+				</div>
 		<?php endif; ?>
 
 			<?=ee('CP/Alert')->get($alerts_name)?>

@@ -7,10 +7,12 @@
 <div class="box">
 	<h1><?=lang('lists')?></h1>
 	<div class="tab-wrap">
-		<ul class="tabs">
-			<li><a class="act" href="" rel="t-0"><?=lang('blacklist')?></a></li>
-			<li><a href="" rel="t-1"><?=lang('whitelist')?></a></li>
-		</ul>
+		<div class="tab-bar">
+			<div class="tab-bar__tabs">
+				<a class="tab-bar__tab js-tab-button active" href="" rel="t-0"><?=lang('blacklist')?></a>
+				<a class="tab-bar__tab js-tab-button" href="" rel="t-1"><?=lang('whitelist')?></a>
+			</div>
+		</div>
 		<?=form_open(ee('CP/URL')->make('addons/settings/blacklist/save_lists'), 'class="settings"')?>
 			<?=ee('CP/Alert')->get('lists-form')?>
 			<div class="tab t-0 tab-open">

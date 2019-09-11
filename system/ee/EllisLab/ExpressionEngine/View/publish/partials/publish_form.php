@@ -5,7 +5,8 @@
 		<?php $this->embed('ee:_shared/form/buttons'); ?>
 	</div>
 	<div class="tab-wrap">
-		<ul class="tabs">
+		<div class="tab-bar">
+			<div class="tab-bar__tabs">
 			<?php
 			foreach ($layout->getTabs() as $index => $tab):
 				if ( ! $tab->isVisible()) continue;
@@ -13,27 +14,21 @@
 
 				if ($index == 0)
 				{
-					$class .= ' act';
+					$class .= ' active';
 				}
 
 				if ($tab->hasErrors($errors))
 				{
 					$class .= ' invalid';
 				}
-
-				$class = trim($class);
-
-				if ( ! empty($class))
-				{
-					$class = ' class="' . $class . '"';
-				}
 			?>
-			<li><a<?=$class?> rel="t-<?=$index?>"><?=lang($tab->title)?></a></li>
+			<a class="tab-bar__tab js-tab-button <?=$class?>" rel="t-<?=$index?>"><?=lang($tab->title)?></a>
 			<?php endforeach; ?>
 			<?php if ($entry->getAutosaves()->count()): ?>
-				<li><a href="" rel="t-autosaves"><?=lang('autosaves')?></a></li>
+				<a href="" class="tab-bar__tab js-tab-button" rel="t-autosaves"><?=lang('autosaves')?></a>
 			<?php endif ?>
-		</ul>
+			</div>
+		</div>
 		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php foreach ($layout->getTabs() as $index => $tab): ?>
 		<?php if ( ! $tab->isVisible()) continue; ?>
