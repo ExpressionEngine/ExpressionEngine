@@ -243,6 +243,36 @@ $(document).ready(function(){
 		});
 
 
+
+	// Side bar toggle
+	// -------------------------------------------------------------------
+
+	// Hides the sidebar when the window width is too small for it and shows the mobile menu button
+	function updateMainSidebar() {
+		if (window.innerWidth < 900) {
+			$('.ee-wrapper').addClass('sidebar-hidden-no-anim is-mobile');
+			$('.main-nav__mobile-menu').removeClass('hidden');
+		} else {
+			$('.ee-wrapper').removeClass('sidebar-hidden-no-anim sidebar-hidden');
+			$('.main-nav__mobile-menu').addClass('hidden');
+		}
+	}
+
+	// Update the sidebar visibility on page load, and when the window width changes
+	window.addEventListener('resize', function () { updateMainSidebar() })
+	updateMainSidebar()
+
+	$('.js-toggle-main-sidebar').on('click', function () {
+		let isHidden = $('.ee-wrapper').hasClass('sidebar-hidden-no-anim');
+		$('.ee-wrapper').removeClass('sidebar-hidden-no-anim');
+
+		if (isHidden) {
+			$('.ee-wrapper').removeClass('sidebar-hidden');
+		} else {
+			$('.ee-wrapper').toggleClass('sidebar-hidden');
+		}
+	})
+
 	// Dropdown menus
 	// -------------------------------------------------------------------
 

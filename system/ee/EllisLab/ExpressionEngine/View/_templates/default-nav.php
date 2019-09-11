@@ -2,7 +2,7 @@
 
 <?php if (isset($header)): ?>
 <div class="main-nav">
-	<a class="main-nav__mobile-menu">
+	<a class="main-nav__mobile-menu js-toggle-main-sidebar hidden">
 		<svg xmlns="http://www.w3.org/2000/svg" width="18.585" height="13.939" viewBox="0 0 18.585 13.939"><g transform="translate(-210.99 -17.71)"><path d="M3,12.1H19.585" transform="translate(208.99 12.575)" fill="none" stroke-linecap="round" stroke-width="2"/><path d="M3,6H19.585" transform="translate(208.99 12.71)" fill="none" stroke-linecap="round" stroke-width="2"/><path d="M3,18H9.386" transform="translate(208.99 12.649)" fill="none" stroke-linecap="round" stroke-width="2"/></g></svg>
 	</a>
 
