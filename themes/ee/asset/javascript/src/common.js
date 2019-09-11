@@ -253,7 +253,7 @@ $(document).ready(function(){
 			$('.ee-wrapper').addClass('sidebar-hidden-no-anim is-mobile');
 			$('.main-nav__mobile-menu').removeClass('hidden');
 		} else {
-			$('.ee-wrapper').removeClass('sidebar-hidden-no-anim sidebar-hidden');
+			$('.ee-wrapper').removeClass('sidebar-hidden-no-anim sidebar-hidden is-mobile');
 			$('.main-nav__mobile-menu').addClass('hidden');
 		}
 	}
