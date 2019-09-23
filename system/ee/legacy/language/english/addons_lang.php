@@ -7,6 +7,10 @@ $lang = array(
 
 'addon_manager' => 'Add-Ons',
 
+'updates' => 'Updates',
+
+'add-on-store' => 'Add-On Store',
+
 'addons' => 'Add-Ons',
 
 'all_addons' => 'All Add-Ons',
