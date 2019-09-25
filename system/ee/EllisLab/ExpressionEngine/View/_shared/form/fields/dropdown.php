@@ -33,10 +33,12 @@ else
 ?>
 <div <?=$react?> class="<?=$class?>">
 	<div class="<?=$sub_class?>">
-		<div class="field-drop-selected">
-			<label>
-				<i><?=$display_text?></i>
-			</label>
+		<div class="select">
+			<div class="select__button">
+				<label class="select__button-label">
+				<?=$display_text?>
+				</label>
+			</div>
 		</div>
 	</div>
 </div>
