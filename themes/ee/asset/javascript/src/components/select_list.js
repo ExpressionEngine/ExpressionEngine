@@ -14,11 +14,11 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -44,7 +44,7 @@ function (_React$Component) {
     // increment this variable which is set as a key on the root element,
     // telling React to destroy it and start anew
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleSelect", function (event, item) {
+    _defineProperty(_assertThisInitialized(_this), "handleSelect", function (event, item) {
       var selected = [],
           checked = event.target.checked,
           XORvalue = '--';
@@ -82,17 +82,17 @@ function (_React$Component) {
       if (_this.props.groupToggle) EE.cp.form_group_toggle(event.target);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "clearSelection", function (event) {
+    _defineProperty(_assertThisInitialized(_this), "clearSelection", function (event) {
       _this.props.selectionChanged([]);
 
       event.preventDefault();
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "filterChange", function (name, value) {
+    _defineProperty(_assertThisInitialized(_this), "filterChange", function (name, value) {
       _this.props.filterChange(name, value);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleToggleAll", function (check) {
+    _defineProperty(_assertThisInitialized(_this), "handleToggleAll", function (check) {
       // If checking, merge the newly-selected items on to the existing stack
       // in case the current view is limited by a filter
       if (check) {
@@ -438,10 +438,8 @@ function (_React$Component) {
       var itemsArray = [];
       var currentSection = null;
 
-      var _arr = Object.keys(items);
-
-      for (var _i = 0; _i < _arr.length; _i++) {
-        key = _arr[_i];
+      for (var _i = 0, _Object$keys = Object.keys(items); _i < _Object$keys.length; _i++) {
+        key = _Object$keys[_i];
 
         if (items[key].section) {
           currentSection = items[key].section;
@@ -549,13 +547,13 @@ function (_React$Component2) {
       if (props.item.component) {
         var Tag = "".concat(props.item.component.tag);
         label = React.createElement(Tag, {
-          className: props.item.component.class,
+          className: props.item.component["class"],
           style: props.item.component.style
         }, props.item.component.label);
       }
 
       var listItem = React.createElement("label", {
-        className: checked ? 'act' : '',
+        className: 'checkbox-label' + (checked ? ' act' : ''),
         "data-id": props.reorderable && !props.nested ? props.item.value : null
       }, props.reorderable && React.createElement("span", {
         className: "icon-reorder"
@@ -568,7 +566,9 @@ function (_React$Component2) {
         checked: checked ? 'checked' : '',
         "data-group-toggle": props.groupToggle ? JSON.stringify(props.groupToggle) : '[]',
         disabled: disabled ? 'disabled' : ''
-      }), props.editable && React.createElement("a", {
+      }), React.createElement("div", {
+        className: "checkbox-label__text"
+      }, props.editable && React.createElement("a", {
         href: "#"
       }, label), !props.editable && label, " ", props.item.instructions && React.createElement("i", null, props.item.instructions), props.removable && React.createElement("ul", {
         className: "toolbar"
@@ -579,7 +579,7 @@ function (_React$Component2) {
         onClick: function onClick(e) {
           return props.handleRemove(e, props.item);
         }
-      }))));
+      })))));
 
       if (props.nested) {
         return React.createElement("li", {
@@ -625,7 +625,7 @@ function (_React$Component3) {
       if (props.item.component) {
         var Tag = "".concat(props.item.component.tag);
         label = React.createElement(Tag, {
-          className: props.item.component.class,
+          className: props.item.component["class"],
           style: props.item.component.style
         }, props.item.component.label);
       }
