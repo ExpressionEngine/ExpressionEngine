@@ -125,7 +125,7 @@ abstract class ListItem {
 	 */
 	public function isActive()
 	{
-		return $this->addClass('act');
+		return $this->addClass('active');
 	}
 
 	/**
