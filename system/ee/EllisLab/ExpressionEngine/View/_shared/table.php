@@ -57,13 +57,19 @@ if ($wrap): ?>
 					<?php else: ?>
 						<?php
 						$header_class = '';
+						$header_sorts = ($sortable && $settings['sort'] && $base_url != NULL);
+
 						if ($settings['type'] == Table::COL_ID)
 						{
 							$header_class .= ' id-col';
 						}
+						if ($header_sorts)
+						{
+							$header_class .= ' column-sort-header';
+						}
 						if ($sortable && $settings['sort'] && $sort_col == $label)
 						{
-							$header_class .= ' highlight';
+							$header_class .= ' column-sort-header--active';
 						}
 						if (isset($settings['class']))
 						{
@@ -71,13 +77,7 @@ if ($wrap): ?>
 						}
 						?>
 						<th<?php if ( ! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?><?php foreach ($attrs as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
-							<?php if (isset($settings['required']) && $settings['required']): ?><span class="required"><?php endif; ?>
-							<?=($lang_cols) ? lang($label) : $label ?>
-							<?php if (isset($settings['required']) && $settings['required']): ?></span><?php endif; ?>
-							<?php if (isset($settings['desc']) && ! empty($settings['desc'])): ?>
-								<span class="grid-instruct"><?=lang($settings['desc'])?></span>
-							<?php endif ?>
-							<?php if ($sortable && $settings['sort'] && $base_url != NULL): ?>
+							<?php if ($header_sorts): ?>
 								<?php
 								$url = clone $base_url;
 								$arrow_dir = ($sort_col == $label) ? $sort_dir : 'desc';
@@ -85,7 +85,18 @@ if ($wrap): ?>
 								$url->setQueryStringVariable($sort_col_qs_var, $label);
 								$url->setQueryStringVariable($sort_dir_qs_var, $link_dir);
 								?>
-								<a href="<?=$url?>" class="sort <?=$arrow_dir?>"></a>
+								<a href="<?=$url?>" class="column-sort column-sort--<?=$arrow_dir?>">
+							<?php endif ?>
+
+							<?php if (isset($settings['required']) && $settings['required']): ?><span class="required"><?php endif; ?>
+							<?=($lang_cols) ? lang($label) : $label ?>
+							<?php if (isset($settings['required']) && $settings['required']): ?></span><?php endif; ?>
+							<?php if (isset($settings['desc']) && ! empty($settings['desc'])): ?>
+								<span class="grid-instruct"><?=lang($settings['desc'])?></span>
+							<?php endif ?>
+
+							<?php if ($header_sorts): ?>
+								</a>
 							<?php endif ?>
 						</th>
 					<?php endif ?>
