@@ -57,13 +57,15 @@ class Members extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$header = $sidebar->addHeader(lang('all_members'), ee('CP/URL')->make('members')->compile());
+		$header = $sidebar->addHeader(lang('members'));
 
 		$list = $header->addBasicList();
 
+		$all = $list->addItem(lang('all_members'), ee('CP/URL')->make('members')->compile());
+
 		if ($active == 'all_members')
 		{
-			$header->isActive();
+			$all->isActive();
 		}
 
 		if (ee()->cp->allowed_group('can_edit_members'))
@@ -83,24 +85,19 @@ class Members extends CP_Controller {
 
 		if (ee()->cp->allowed_group('can_admin_mbr_groups'))
 		{
-			$header = $sidebar->addHeader(lang('member_groups'), ee('CP/URL')->make('members/groups'));
+			$header = $sidebar->addHeader(lang('member_settings'));
 
-			if (ee()->cp->allowed_group('can_create_member_groups'))
-			{
-				$header->withButton(lang('new'), ee('CP/URL')->make('members/groups/create'));
+			$list = $header->addBasicList();
+
+			$member_groups = $list->addItem(lang('member_groups'), ee('CP/URL')->make('members/groups'));
+			$custom_member_fields = $list->addItem(lang('custom_member_fields'), ee('CP/URL')->make('members/fields'));
+
+			if ($active == 'fields') {
+				$custom_member_fields->isActive();
 			}
 
-			$item = $header->addBasicList()
-				->addItem(lang('custom_member_fields'), ee('CP/URL')->make('members/fields'));
-
-			if ($active == 'fields')
-			{
-				$item->isActive();
-			}
-
-			if ($active == 'groups')
-			{
-				$header->isActive();
+			if ($active == 'groups') {
+				$member_groups->isActive();
 			}
 		}
 	}
