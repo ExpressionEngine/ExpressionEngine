@@ -138,7 +138,7 @@ function DropdownItem (props) {
 
   if (item.section) {
     return (
-      <div className="select__dropdown-item">
+      <div className="select__dropdown-item select__dropdown-item--head">
         <span className="icon--folder"></span> {item.section}
       </div>
     )

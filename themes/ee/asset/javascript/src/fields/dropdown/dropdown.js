@@ -172,7 +172,7 @@ function DropdownItem(props) {
 
   if (item.section) {
     return React.createElement("div", {
-      className: "select__dropdown-item"
+      className: "select__dropdown-item select__dropdown-item--head"
     }, React.createElement("span", {
       className: "icon--folder"
     }), " ", item.section);
