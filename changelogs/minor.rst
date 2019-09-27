@@ -15,6 +15,7 @@ Minor Release
 
    - Fixed Bug (#139) where on some servers the mime type of SVG is different then we expected.
    - Fixed Bug (#143) where dbforge->add_key(array()) would create individual, non-sequenced keys rather than make a multi-column key.
+   - Fixed Bug in the forum RSS feed where a PHP error caused an invalid feed.
 
 
 EOF MARKER: This line helps prevent merge conflicts when things are
