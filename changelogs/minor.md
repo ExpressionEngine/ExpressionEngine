@@ -1,8 +1,8 @@
 # ExpressionEngine Changelog
 
-ExpressionEngine uses semantic versioning. This file contains changes to ExpressionEngine since the last Build / Version release for PATCH version changes only.
+ExpressionEngine uses semantic versioning. This file contains changes to ExpressionEngine since the last Build / Version release for MINOR version changes only.
 
-## Patch Release
+## Minor Release
 
 Bullet list below, e.g.
    - Added <new feature>
