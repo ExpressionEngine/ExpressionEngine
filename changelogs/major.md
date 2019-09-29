@@ -8,7 +8,7 @@ Bullet list below, e.g.
    - Added <new feature>
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
 
-
+- Developers: Deprecated the Channel Status controller `getForegroundColor()`
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
