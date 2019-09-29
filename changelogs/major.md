@@ -8,6 +8,7 @@ Bullet list below, e.g.
    - Added <new feature>
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
 
+- Forgot Password emails will now respect your "Mail Format" preference (essentially enabling the ability to use HTML in Forgot Password emails).
 - Developers: Deprecated the Channel Status controller `getForegroundColor()`
 
 EOF MARKER: This line helps prevent merge conflicts when things are
