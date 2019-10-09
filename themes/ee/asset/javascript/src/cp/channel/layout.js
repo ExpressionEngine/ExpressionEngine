@@ -10,7 +10,7 @@
 $(document).ready(function () {
 	// remove debug - it has tabs and we don't want fields to end up in them
 	// we'll add it back in after all the events are bound
-	var debug = $('#debug').remove();
+	var debug = $('.ee-debugger').remove();
 
 	// Cache the elements - these selectors shouldn't grab debug even if it's
 	// somehow still there.  Doppelt gemoppelt hält besser.
