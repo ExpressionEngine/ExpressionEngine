@@ -81,4 +81,10 @@
 
 <link rel="stylesheet" href="<?=URL_THEMES?>debug/css/highlight.css">
 <script src="<?=URL_THEMES?>debug/javascript/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+	document.querySelectorAll('#debug pre code').forEach(function (block) {
+		hljs.highlightBlock(block);
+	});
+});
+</script>
