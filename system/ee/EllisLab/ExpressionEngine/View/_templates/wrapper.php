@@ -13,25 +13,22 @@ $current_page = ee()->uri->segment(2);
 
 	<div class="ee-sidebar">
 		<?php if (ee()->config->item('multiple_sites_enabled') === 'y' && (count($cp_main_menu['sites']) > 0 || ee()->cp->allowed_group('can_admin_sites'))): ?>
-		<div class="nav-sites">
-			<a class="nav-has-sub" href=""><?=ee()->config->item('site_name')?></a>
-			<a class="nav-view" href="<?=ee()->config->item('site_url')?>" rel="external"><i class="icon-view"></i><span class="nav-txt-collapse"><?=lang('view')?></span></a>
-			<ul class="nav-sub-menu">
-				<?php foreach ($cp_main_menu['sites'] as $site_name => $link): ?>
-					<li><a href="<?=$link?>"><?=$site_name?></a></li>
-				<?php endforeach ?>
-				<?php if (ee()->cp->allowed_group('can_admin_sites')): ?>
-					<li><a class="nav-manage" href="<?=ee('CP/URL', 'msm')?>"><i class="icon-settings"></i>Manage Sites</a></li>
-					<li><a class="nav-add" href="<?=ee('CP/URL', 'msm/create')?>"><i class="icon-add"></i><?=lang('new_site')?></a></li>
-				<?php endif ?>
-			</ul>
+		<a class="ee-sidebar__title js-dropdown-toggle" data-dropdown-pos="bottom-center"><?=ee()->config->item('site_name')?><span class="ee-sidebar__title-down-arrow"><i class="fas fa-chevron-down"></i></span></a>
+
+		<div class="dropdown">
+			<a class="dropdown__link" href="<?=ee()->config->item('site_url')?>" rel="external"><i class="fas fa-eye"></i> <?=lang('view_site')?></a>
+			<div class="dropdown__divider"></div>
+			<div class="dropdown__section-title"><?=lang('sites')?></div>
+
+			<?php foreach ($cp_main_menu['sites'] as $site_name => $link): ?>
+				<a class="dropdown__link" href="<?=$link?>"><?=$site_name?></a>
+			<?php endforeach ?>
 		</div>
 		<?php elseif ( ! ($site_name = ee()->config->item('site_name')) OR empty($site_name)): ?>
-			<a class="nav-no-name" href="<?=ee('CP/URL', 'settings')?>" class="no-name"><i class="icon-settings"></i><?=lang('name_your_site')?></a>
+			<a class="ee-sidebar__title ee-sidebar__title--needs-name" href="<?=ee('CP/URL', 'settings')?>"><i class="fas fa-cog"></i> <?=lang('name_your_site')?></a>
 		<?php else: ?>
-			<a class="nav-site" href="<?=ee()->config->item('site_url')?>" rel="external"><?=ee()->config->item('site_name')?></a>
+			<a class="ee-sidebar__title" href="<?=ee()->config->item('site_url')?>" rel="external"><?=ee()->config->item('site_name')?></a>
 		<?php endif ?>
-		<div class="ee-sidebar-title">EllisLab</div>
 
 		<div class="ee-sidebar__items">
 			<div>
