@@ -193,7 +193,7 @@ var ColorPicker = /** @class */ (function (_super) {
         }
         return (React.createElement("div", { className: "c-colorpicker" },
             React.createElement("input", { className: "c-colorpicker-input", type: "text", id: this.props.inputId, name: this.props.inputName, value: this.state.inputValue, onChange: this.onInputChange, onFocus: this.showColorPanel, onBlur: this.hideColorPanel, autoComplete: "off" }),
-            React.createElement("span", { className: "c-colorpicker-input-color" },
+            React.createElement("span", { className: "c-colorpicker-input-color", style: { borderColor: currentColor.shade(-15).rgbaStr } },
                 React.createElement("span", { style: { background: currentColor.rgbaStr } })),
             React.createElement("div", { className: "c-colorpicker-panel", style: { display: this.state.showPanel ? 'block' : 'none' }, onMouseDown: function (e) { e.stopPropagation(); e.preventDefault(); } },
                 (allowedColors == 'any') &&

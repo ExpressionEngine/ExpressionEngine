@@ -282,7 +282,7 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
         return (
             <div className="c-colorpicker">
                 <input className="c-colorpicker-input" type="text" id={this.props.inputId} name={this.props.inputName} value={this.state.inputValue} onChange={this.onInputChange} onFocus={this.showColorPanel} onBlur={this.hideColorPanel} autoComplete="off"/>
-                <span className="c-colorpicker-input-color"><span style={{background: currentColor.rgbaStr}}></span></span>
+                <span className="c-colorpicker-input-color" style={{borderColor: currentColor.shade(-15).rgbaStr}}><span style={{background: currentColor.rgbaStr}}></span></span>
 
                 <div className="c-colorpicker-panel" style={{display: this.state.showPanel ? 'block' : 'none'}} onMouseDown={e => { e.stopPropagation(); e.preventDefault() }}>
                     { (allowedColors == 'any') &&
