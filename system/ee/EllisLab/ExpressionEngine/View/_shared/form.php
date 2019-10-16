@@ -17,13 +17,18 @@
 	?>
 	<?=form_open($base_url, $attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 		<div class="form-btns form-btns-top">
-			<h1><?=ee('Format')->make('Text', (isset($cp_page_title_alt)) ? $cp_page_title_alt : $cp_page_title)->attributeSafe()->compile()?></h1>
+			<div class="title-bar title-bar--large">
+				<h1 class="title-bar__title"><?=ee('Format')->make('Text', (isset($cp_page_title_alt)) ? $cp_page_title_alt : $cp_page_title)->attributeSafe()->compile()?></h1>
+
+			<div class="title-bar__extra-tools">
 			<?php if (isset($action_button)):
 				$rel = isset($action_button['rel']) ? $action_button['rel'] : ''; ?>
-				<a class="btn action" href="<?=$action_button['href']?>" rel="<?=$rel?>"><?=lang($action_button['text'])?></a>
+				<a class="button button--action" href="<?=$action_button['href']?>" rel="<?=$rel?>"><?=lang($action_button['text'])?></a>
 			<?php elseif ( ! isset($hide_top_buttons) OR ! $hide_top_buttons): ?>
 				<?php $this->embed('ee:_shared/form/buttons'); ?>
 			<?php endif ?>
+			</div>
+			</div>
 		</div>
 		<?php if (isset($tabs)):?>
 			<?php $active_tab = (isset($active_tab)) ? $active_tab : 0; ?>
