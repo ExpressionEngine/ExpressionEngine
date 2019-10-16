@@ -101,18 +101,17 @@ $current_page = ee()->uri->segment(2);
 			</div>
 
 			<div class="ee-sidebar__items-bottom">
-				<a href=""><i class="fas fa-database"></i> Developer</a>
 				<?php if (count($cp_main_menu['develop'])) : ?>
-				<div class="nav-tools">
-					<a class="nav-has-sub" href="" title="<?= lang('nav_developer_tools') ?>"><i class="icon-tools"></i><span class="nav-txt-collapse"><?= lang('nav_developer') ?></span></a>
-					<div class="nav-sub-menu">
-						<ul>
-							<?php foreach ($cp_main_menu['develop'] as $key => $link) : ?>
-							<li><a href="<?= $link ?>"><?= lang($key) ?></a></li>
-							<?php endforeach ?>
-						</ul>
+					<?php
+						$developer_pages = ['fields', 'channels', 'design', 'msm', 'utilities', 'logs'];
+						$developer_menu_active = (in_array($current_page, $developer_pages) ? 'active' : '');
+					?>
+					<a href="" class="js-toggle-developer-menu <?=$developer_menu_active?>"><i class="fas fa-database"></i> <?=lang('nav_developer')?></a>
+					<div class="developer-menu js-developer-menu-content hidden">
+						<?php foreach ($cp_main_menu['develop'] as $key => $link) : ?>
+							<a href="<?= $link ?>"><?= lang($key) ?></a>
+						<?php endforeach ?>
 					</div>
-				</div>
 				<?php endif; ?>
 
 				<?php if (ee()->cp->allowed_group('can_access_sys_prefs')) : ?>

@@ -344,6 +344,15 @@ $(document).ready(function(){
 		}
 	});
 
+	// Toggle Developer Menu
+	// -------------------------------------------------------------------
+
+	$('.js-toggle-developer-menu').on('click', function(e) {
+		e.preventDefault()
+
+		$('.js-developer-menu-content').toggleClass('hidden');
+	})
+
 	// Toggle Dark Theme
 	// -------------------------------------------------------------------
 
