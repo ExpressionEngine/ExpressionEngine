@@ -17,6 +17,8 @@ Developers
 - The member property `display_avatars` has been removed
 - The config options `enable_avatars` and `allow_avatar_uploads` have been removed
    - Fixed a bug (#<linked issue number>) where <bug behavior>.
+- Removed the deprecated jQuery add-on
+- Removed the deprecated Emoticon add-on
 
 - Forgot Password emails will now respect your "Mail Format" preference (essentially enabling the ability to use HTML in Forgot Password emails).
 
