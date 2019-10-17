@@ -146,6 +146,7 @@ abstract class AbstractDesign extends CP_Controller {
 
 		$item = $system_templates->addItem(lang('messages'), ee('CP/URL')->make('design/system'))
 			->withEditUrl(ee('CP/URL')->make('design/system'))
+			->cannotEdit()
 			->cannotRemove();
 
 		if ($active == 'messages')
@@ -155,6 +156,7 @@ abstract class AbstractDesign extends CP_Controller {
 
 		$item = $system_templates->addItem(lang('email'), ee('CP/URL')->make('design/email'))
 			->withEditUrl(ee('CP/URL')->make('design/email'))
+			->cannotEdit()
 			->cannotRemove();
 
 		if ($active == 'email')
@@ -166,6 +168,7 @@ abstract class AbstractDesign extends CP_Controller {
 		{
 			$item = $system_templates->addItem(lang('members'), ee('CP/URL')->make('design/members'))
 				->withEditUrl(ee('CP/URL')->make('design/members'))
+				->cannotEdit()
 				->cannotRemove();
 
 			if ($active == 'members')
@@ -178,6 +181,7 @@ abstract class AbstractDesign extends CP_Controller {
 		{
 			$item = $system_templates->addItem(lang('forums'), ee('CP/URL')->make('design/forums'))
 				->withEditUrl(ee('CP/URL')->make('design/forums'))
+				->cannotEdit()
 				->cannotRemove();
 
 			if ($active == 'forums')
