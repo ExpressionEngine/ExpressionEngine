@@ -27,7 +27,8 @@ class Updater {
 		$steps = new \ProgressIterator(
 			[
 				'addConfigTable',
-				'removeJqueryAddon'
+				'removeJqueryAddon',
+				'removeEmoticonAddon'
 			]
 		);
 
@@ -134,7 +135,17 @@ class Updater {
 			->delete();
 
 		ee('Model')->get('Action')
-			->filter('class', 'IN', ['Jquery', 'Jquery_mcp'])
+			->filter('class', 'IN', ['Jquery', 'Jquery_mcp']);
+	}
+
+	private function removeEmoticonAddon()
+	{
+		ee('Model')->get('Module')
+			->filter('module_name', 'Emoticon')
+			->delete();
+
+		ee('Model')->get('Action')
+			->filter('class', 'IN', ['Emoticon', 'Emoticon_mcp'])
 			->delete();
 	}
 }
