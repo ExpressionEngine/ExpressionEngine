@@ -12,11 +12,11 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -52,7 +52,7 @@ function (_React$Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(FilterToggleAll).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleClick", function () {
+    _defineProperty(_assertThisInitialized(_this), "handleClick", function () {
       // Clear all will always be "unchecked" to the parent
       if (!_this.props.checkAll) {
         _this.props.onToggleAll(false);
@@ -112,7 +112,7 @@ function (_React$Component2) {
 
     _this2 = _possibleConstructorReturn(this, _getPrototypeOf(FilterSelect).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "handleSearch", function (event) {
+    _defineProperty(_assertThisInitialized(_this2), "handleSearch", function (event) {
       _this2.setState({
         items: _this2.initialItems.filter(function (item) {
           return item.label.toLowerCase().includes(event.target.value.toLowerCase());
@@ -120,7 +120,7 @@ function (_React$Component2) {
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this2)), "selectItem", function (event, item) {
+    _defineProperty(_assertThisInitialized(_this2), "selectItem", function (event, item) {
       if (_this2.props.keepSelectedState) {
         _this2.setState({
           selected: item

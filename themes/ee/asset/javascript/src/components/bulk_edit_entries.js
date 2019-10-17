@@ -67,7 +67,7 @@ function (_React$Component) {
       var totalItems = this.props.initialItems.length;
       var lang = this.props.lang;
       return React.createElement("div", null, React.createElement("h2", null, totalItems, " ", lang.selectedEntries), React.createElement("form", {
-        class: "field-search add-mrg-top"
+        "class": "field-search add-mrg-top"
       }, React.createElement("input", {
         type: "text",
         placeholder: lang.filterSelectedEntries,
@@ -75,9 +75,9 @@ function (_React$Component) {
           return _this.handleSearch(e.target.value);
         }
       })), React.createElement("ul", {
-        class: "entry-list"
+        "class": "entry-list"
       }, limitedItems.length == 0 && React.createElement("li", {
-        class: "entry-list__item entry-list__item---empty",
+        "class": "entry-list__item entry-list__item---empty",
         dangerouslySetInnerHTML: {
           __html: lang.noEntriesFound
         }
@@ -90,11 +90,11 @@ function (_React$Component) {
           lang: lang
         });
       })), React.createElement("div", {
-        class: "entry-list__note"
+        "class": "entry-list__note"
       }, lang.showing, " ", limitedItems.length, " ", lang.of, " ", totalItems, " \u2014 ", React.createElement("a", {
         href: ""
       }, React.createElement("span", {
-        class: "icon--remove"
+        "class": "icon--remove"
       }), lang.clearAll)));
     }
   }], [{
@@ -117,14 +117,14 @@ _defineProperty(BulkEditEntries, "defaultProps", {
 
 function BulkEditEntryItem(props) {
   return React.createElement("li", {
-    class: "entry-list__item"
+    "class": "entry-list__item"
   }, React.createElement("h2", null, props.item.label), React.createElement("a", {
     href: "#",
     onClick: function onClick(e) {
       return props.handleRemove(props.item);
     }
   }, React.createElement("span", {
-    class: "icon--remove"
+    "class": "icon--remove"
   }), props.lang.removeFromSelection));
 }
 

@@ -12,11 +12,11 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -39,7 +39,7 @@ function (_React$Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(DragAndDropUpload).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "handleDroppedFiles", function (droppedFiles) {
+    _defineProperty(_assertThisInitialized(_this), "handleDroppedFiles", function (droppedFiles) {
       _this.setState({
         pendingFiles: null
       });
@@ -88,25 +88,25 @@ function (_React$Component) {
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "setDirectory", function (directory) {
+    _defineProperty(_assertThisInitialized(_this), "setDirectory", function (directory) {
       _this.setState({
         directory: directory || 'all'
       });
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "chooseExisting", function (directory) {
+    _defineProperty(_assertThisInitialized(_this), "chooseExisting", function (directory) {
       var url = _this.props.filebrowserEndpoint.replace('=all', '=' + directory);
 
       _this.presentFilepicker(url, false);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "uploadNew", function (directory) {
+    _defineProperty(_assertThisInitialized(_this), "uploadNew", function (directory) {
       var url = _this.props.uploadEndpoint + '&directory=' + directory;
 
       _this.presentFilepicker(url, true);
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "assignDropZoneRef", function (dropZone) {
+    _defineProperty(_assertThisInitialized(_this), "assignDropZoneRef", function (dropZone) {
       _this.dropZone = dropZone;
 
       if (_this.props.assignDropZoneRef) {
@@ -114,7 +114,7 @@ function (_React$Component) {
       }
     });
 
-    _defineProperty(_assertThisInitialized(_assertThisInitialized(_this)), "removeFile", function (file) {
+    _defineProperty(_assertThisInitialized(_this), "removeFile", function (file) {
       var fileIndex = _this.state.files.findIndex(function (thisFile) {
         return thisFile.name == file.name;
       });

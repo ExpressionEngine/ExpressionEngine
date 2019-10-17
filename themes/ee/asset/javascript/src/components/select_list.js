@@ -553,7 +553,7 @@ function (_React$Component2) {
       }
 
       var listItem = React.createElement("label", {
-        className: 'checkbox-label' + (checked ? ' act' : ''),
+        className: 'checkbox-label',
         "data-id": props.reorderable && !props.nested ? props.item.value : null
       }, props.reorderable && React.createElement("span", {
         className: "icon-reorder"
