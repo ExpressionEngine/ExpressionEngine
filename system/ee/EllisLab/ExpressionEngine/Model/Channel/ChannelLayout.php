@@ -24,6 +24,8 @@ class ChannelLayout extends Model implements LayoutInterface {
 	protected static $_primary_key = 'layout_id';
 	protected static $_table_name = 'layout_publish';
 
+	protected static $_hook_id = 'channel_layout';
+
 	protected static $_typed_columns = array(
 		'field_layout' => 'serialized',
 	);

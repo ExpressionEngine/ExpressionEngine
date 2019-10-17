@@ -2378,7 +2378,7 @@ class Member {
 			$dates = array(
 				'last_visit' => (empty($default_fields['last_visit'])) ? '' : $default_fields['last_visit'],
 				'last_activity' => (empty($default_fields['last_activity'])) ? '' : $default_fields['last_activity'],
-				'join_date' => (empty($default_fields['join_date'])) ? '' : $default_fields['last_entry_date'],
+				'join_date' => (empty($default_fields['join_date'])) ? '' : $default_fields['join_date'],
 				'last_entry_date' => (empty($default_fields['last_entry_date'])) ? '' : $default_fields['last_entry_date'],
 				'last_forum_post_date' => (empty($default_fields['last_forum_post_date'])) ? '' : $default_fields['last_forum_post_date'],
 				'last_comment_date' => (empty($default_fields['last_comment_date'])) ? '' : $default_fields['last_comment_date']

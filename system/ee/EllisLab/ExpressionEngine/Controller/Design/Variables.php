@@ -264,7 +264,7 @@ class Variables extends AbstractDesignController {
 			array(
 				'field' => 'variable_name',
 				'label' => 'lang:variable_name',
-				'rules' => 'required|callback__variable_name_checks'
+				'rules' => 'required|max_length[50]|callback__variable_name_checks'
 			)
 		));
 
@@ -389,7 +389,7 @@ class Variables extends AbstractDesignController {
 			array(
 				'field' => 'variable_name',
 				'label' => 'lang:variable_name',
-				'rules' => 'required|callback__variable_name_checks'
+				'rules' => 'required|max_length[50]|callback__variable_name_checks'
 			)
 		));
 
