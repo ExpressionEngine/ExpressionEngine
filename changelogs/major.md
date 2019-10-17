@@ -12,7 +12,13 @@ Bullet list below, e.g.
 - Default avatars have been removed.
 - The system avatar settings "Allow avatar uploads?" and "Allow avatars?" have been removed.
 
+- Template editor improvements
+    - You can now comment EE code with `command + /` in the template editor
+    - You can now select a single line of text when clicking on a gutter number in the template editor
+    - Improved EE syntax highlighting
+
 Developers
+- Updated CodeMirror to version 5.48
 - Deprecated the Channel Status controller `getForegroundColor()`
 - The member property `display_avatars` has been removed
 - The config options `enable_avatars` and `allow_avatar_uploads` have been removed
