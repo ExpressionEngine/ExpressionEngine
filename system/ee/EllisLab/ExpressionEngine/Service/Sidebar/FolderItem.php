@@ -179,11 +179,6 @@ class FolderItem extends ListItem {
 	{
 		$class = $this->getClass();
 
-		if ($class)
-		{
-			$class = ' class="' . $class . '"';
-		}
-
 		$vars = array(
 			'text' => $this->text,
 			'url' => $this->url,

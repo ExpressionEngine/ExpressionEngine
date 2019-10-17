@@ -1,7 +1,7 @@
 <div class="scroll-wrap">
-	<ul class="folder-list<?php if ($can_reorder): ?> reorderable<?php endif ?>" <?php if ($can_reorder): ?> data-name="<?=$name?>"<?php endif ?>>
+	<div class="folder-list<?php if ($can_reorder): ?> reorderable<?php endif ?>" <?php if ($can_reorder): ?> data-name="<?=$name?>"<?php endif ?>>
 		<?=$items?>
-	</ul>
+	</div>
 </div>
 
 <?php
