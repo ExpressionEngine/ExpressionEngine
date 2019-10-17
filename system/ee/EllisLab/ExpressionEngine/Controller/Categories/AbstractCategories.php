@@ -76,7 +76,9 @@ abstract class AbstractCategories extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$list = $sidebar->addFolderList('categories')
+		$header = $sidebar->addHeader(lang('category_groups'));
+
+		$list = $header->addFolderList('categories')
 			->withNoResultsText(sprintf(lang('no_found'), lang('category_groups')));
 
 		if (ee()->cp->allowed_group('can_delete_categories'))
