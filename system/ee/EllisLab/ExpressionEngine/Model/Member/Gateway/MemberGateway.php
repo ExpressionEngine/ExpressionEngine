@@ -63,7 +63,6 @@ class MemberGateway extends Gateway {
 	protected $accept_user_email;
 	protected $notify_by_default;
 	protected $notify_of_pm;
-	protected $display_avatars;
 	protected $display_signatures;
 	protected $parse_smileys;
 	protected $smart_notifications;

@@ -374,18 +374,17 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component {
 
 		elseif ($key == $prefix."avatar_url")
 		{
-			if (ee()->session->userdata('display_avatars') == 'n' OR $data['avatar_filename'] == ''  OR ee()->session->userdata('display_avatars') == 'n')
-			{
-				$tagdata = str_replace(LD.$key.RD, '', $tagdata);
-				$tagdata = str_replace(LD.$prefix.'avatar_image_width'.RD, '', $tagdata);
-				$tagdata = str_replace(LD.$prefix.'avatar_image_height'.RD, '', $tagdata);
+			$avatar_url = ee()->config->slash_item('avatar_url');
+
+			if ($data['avatar_filename'] == '') {
+				$avatar_url .= 'default/default-avatar.png';
+			} else {
+				$avatar_url .= $data['avatar_filename'];
 			}
-			else
-			{
-				$tagdata = str_replace(LD.$key.RD, ee()->config->slash_item('avatar_url').$data['avatar_filename'], $tagdata);
-				$tagdata = str_replace(LD.$prefix.'avatar_image_width'.RD, $data['avatar_width'], $tagdata);
-				$tagdata = str_replace(LD.$prefix.'avatar_image_height'.RD, $data['avatar_height'], $tagdata);
-			}
+
+			$tagdata = str_replace(LD.$key.RD, $avatar_url, $tagdata);
+			$tagdata = str_replace(LD.$prefix.'avatar_image_width'.RD, $data['avatar_width'], $tagdata);
+			$tagdata = str_replace(LD.$prefix.'avatar_image_height'.RD, $data['avatar_height'], $tagdata);
 		}
 
 		elseif ($key == $prefix."photo_url")

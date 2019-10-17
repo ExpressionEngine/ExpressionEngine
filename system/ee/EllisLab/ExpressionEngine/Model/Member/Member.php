@@ -254,7 +254,6 @@ class Member extends ContentModel {
 	protected $accept_user_email;
 	protected $notify_by_default;
 	protected $notify_of_pm;
-	protected $display_avatars;
 	protected $display_signatures;
 	protected $parse_smileys;
 	protected $smart_notifications;
@@ -883,12 +882,6 @@ class Member extends ContentModel {
 		if ($this->avatar_filename)
 		{
 			$avatar_url = ee()->config->slash_item('avatar_url');
-			$avatar_fs_path = ee()->config->slash_item('avatar_path');
-
-			if (file_exists($avatar_fs_path.'default/'.$this->avatar_filename))
-			{
-				$avatar_url .= 'default/';
-			}
 
 			return $avatar_url.$this->avatar_filename;
 		}

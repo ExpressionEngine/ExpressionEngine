@@ -524,7 +524,6 @@ class EE_Session {
 		$this->userdata['total_forum_topics']	= 0;
 		$this->userdata['total_forum_replies']	= 0;
 		$this->userdata['display_signatures']	= 'y';
-		$this->userdata['display_avatars']		= 'y';
 		$this->userdata['display_photos']		= 'y';
 		$this->userdata['parse_smileys']		= 'y';
 

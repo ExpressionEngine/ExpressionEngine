@@ -323,7 +323,6 @@ class EE_Schema {
 			accept_user_email char(1) NOT NULL default 'y',
 			notify_by_default char(1) NOT NULL default 'y',
 			notify_of_pm char(1) NOT NULL default 'y',
-			display_avatars char(1) NOT NULL default 'y',
 			display_signatures char(1) NOT NULL default 'y',
 			parse_smileys char(1) NOT NULL default 'y',
 			smart_notifications char(1) NOT NULL default 'y',
