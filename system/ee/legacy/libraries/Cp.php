@@ -114,7 +114,7 @@ class Cp {
 			'cp_current_site_label'	=> ee()->config->item('site_name'),
 			'cp_screen_name'		=> $member->screen_name,
 			'cp_member_group_title' => $member->MemberGroup->group_title,
-			'cp_avatar_path'		=> ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : '',
+			'cp_avatar_path'		=> ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (ee()->config->slash_item('avatar_url') . 'default/default-avatar.png'),
 			'cp_avatar_width'		=> ($member->avatar_filename) ? $member->avatar_width : '',
 			'cp_avatar_height'		=> ($member->avatar_filename) ? $member->avatar_height : '',
 			'cp_quicklinks'			=> $this->_get_quicklinks($member->quick_links),
