@@ -6,7 +6,9 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 
 Bullet list below, e.g.
    - Added <new feature>
-   - Fixed a bug (#<linked issue number>) where <bug behavior>.
+   - Fixed Bug (#<issue number>) where <bug behavior>.
+
+- Removed the deprecated Emoticon add-on
 
 - Forgot Password emails will now respect your "Mail Format" preference (essentially enabling the ability to use HTML in Forgot Password emails).
 - Developers: Deprecated the Channel Status controller `getForegroundColor()`
