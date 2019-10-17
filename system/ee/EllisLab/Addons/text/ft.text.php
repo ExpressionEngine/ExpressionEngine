@@ -287,14 +287,6 @@ class Text_ft extends EE_Fieldtype {
 					'title' => 'field_tools',
 					'desc' => '',
 					'fields' => array(
-						'field_show_smileys' => array(
-							'type' => 'checkbox',
-							'scalar' => TRUE,
-							'choices' => array(
-								'y' => lang('show_smileys'),
-							),
-							'value' => isset($data['field_show_smileys']) ? $data['field_show_smileys'] : 'n'
-						),
 						'field_show_file_selector' => array(
 							'type' => 'checkbox',
 							'scalar' => TRUE,
@@ -305,11 +297,6 @@ class Text_ft extends EE_Fieldtype {
 						)
 					)
 				);
-
-				if ( ! ee('Addon')->get('emoticon')->isInstalled())
-				{
-					unset($field_tools['fields']['field_show_smileys']);
-				}
 
 				$settings[] = $field_tools;
 			}
