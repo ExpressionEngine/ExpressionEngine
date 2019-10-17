@@ -1,7 +1,7 @@
 <?php ee('CP/Modal')->startModal('view-file'); ?>
 
 <div class="modal-wrap modal-view-file hidden">
-	<div class="modal">
+	<div class="modal modal--no-padding">
 		<div class="col-group">
 			<div class="col w-16">
 				<a class="m-close" href="#"></a>
