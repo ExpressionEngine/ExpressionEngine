@@ -1224,7 +1224,7 @@ class Forum_Core extends Forum {
 				f.forum_text_formatting, f.forum_html_formatting,
 				f.forum_auto_link_urls, f.forum_allow_img_urls,
 				lp.screen_name AS last_post_author,
-				m.screen_name AS author, m.email, m.url'
+				m.screen_name AS author, m.email'
 			)
 			->from('forum_topics t')
 			->join('forums f', 'f.forum_id = t.forum_id', 'left')
@@ -1361,7 +1361,6 @@ class Forum_Core extends Forum {
 			$temp = str_replace('{body}', $body, $temp);
 			$temp = str_replace('{author}', $row['author'], $temp);
 			$temp = str_replace('{email}', $row['email'], $temp);
-			$temp = str_replace('{url}', $row['url'], $temp);
 			$temp = str_replace('{path:view_thread}', $this->forum_path('/viewthread/'.$row['topic_id'].'/'), $temp);
 			$temp = str_replace('{trimmed_url}', $trimmed_url, $temp);
 			$temp = str_replace('{relative_url}', $relative_url, $temp);
@@ -3601,17 +3600,9 @@ class Forum_Core extends Forum {
 			}
 
 			// Parse the avatar
-			if (ee()->config->item('enable_avatars') == 'y' &&
-				$row['avatar_filename'] != '' &&
-				ee()->session->userdata('display_avatars') == 'y' )
+			if ($row['avatar_filename'] != '')
 			{
 				$avatar_url = ee()->config->slash_item('avatar_url');
-				$avatar_fs_path = ee()->config->slash_item('avatar_path');
-
-				if (file_exists($avatar_fs_path.'default/'.$row['avatar_filename']))
-				{
-					$avatar_url .= 'default/';
-				}
 
 				$avatar_path	= $avatar_url.$row['avatar_filename'];
 				$avatar_width	= $row['avatar_width'];

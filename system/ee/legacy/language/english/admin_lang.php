@@ -142,8 +142,6 @@ $lang = array(
 
 'all_caching' => 'All caches',
 
-'allow_avatar_uploads' => 'Allow members to upload their own avatars?',
-
 'allow_member_loc_notes' => 'If set to \'no\' all dates and times will be localized to the master site default.',
 
 'allow_member_localization' => 'Allow members to set their own localization preferences?',
@@ -361,8 +359,6 @@ $lang = array(
 'empty_profile_trigger' => 'You must specify a Profile Triggering Word',
 
 'empty_stmp_fields' => 'The %s field is required for SMTP.',
-
-'enable_avatars' => 'Enable Avatars',
 
 'enable_censoring' => 'Enable Word Censoring?',
 

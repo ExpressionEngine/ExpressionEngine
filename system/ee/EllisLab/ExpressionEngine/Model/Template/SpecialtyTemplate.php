@@ -20,6 +20,8 @@ class SpecialtyTemplate extends Model {
 	protected static $_primary_key = 'template_id';
 	protected static $_table_name = 'specialty_templates';
 
+	protected static $_hook_id = 'specialty_template';
+
 	protected static $_typed_columns = array(
 		'enable_template' => 'boolString'
 	);

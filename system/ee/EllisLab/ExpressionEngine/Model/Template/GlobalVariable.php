@@ -22,6 +22,8 @@ class GlobalVariable extends FileSyncedModel {
 	protected static $_primary_key = 'variable_id';
 	protected static $_table_name  = 'global_variables';
 
+	protected static $_hook_id = 'global_variable';
+
 	protected static $_relationships = array(
 		'Site' => array(
 			'type' => 'belongsTo'
@@ -52,7 +54,7 @@ class GlobalVariable extends FileSyncedModel {
 
 		$basepath = PATH_TMPL;
 
-		if (ee()->config->item('save_tmpl_files') != 'y' || $basepath == '')
+		if (ee()->config->item('save_tmpl_files') != 'y' || ee()->config->item('save_tmpl_globals') != 'y' || $basepath == '')
 		{
 			return NULL;
 		}
@@ -137,7 +139,7 @@ class GlobalVariable extends FileSyncedModel {
 
 		$basepath = PATH_TMPL;
 
-		if (ee()->config->item('save_tmpl_files') != 'y' || $basepath == '')
+		if (ee()->config->item('save_tmpl_files') != 'y' || ee()->config->item('save_tmpl_globals') != 'y' || $basepath == '')
 		{
 			return NULL;
 		}
@@ -273,6 +275,12 @@ class GlobalVariable extends FileSyncedModel {
 			if ($item->isFile() && $item->getExtension() == 'html')
 			{
 				$name = $item->getBasename('.html');
+				
+				// limited to 50 characters in db
+				if (strlen($name) > 50)
+				{
+					continue;
+				}
 
 				if ( ! in_array($name, $existing))
 				{

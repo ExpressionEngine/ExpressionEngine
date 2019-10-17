@@ -293,11 +293,6 @@ class Comment extends Variables {
 	 */
 	private function getAvatarVariable($property)
 	{
-		if ( ! $this->avatarsEnabled())
-		{
-			return '';
-		}
-
 		switch ($property)
 		{
 			case 'url':
@@ -310,24 +305,6 @@ class Comment extends Variables {
 
 		// er, something wrong?
 		return FALSE;
-	}
-
-	/**
-	 * @return boolean Whether avatars are enabled or not
-	 */
-	private function avatarsEnabled()
-	{
-		if ( ! bool_config_item('enable_avatars'))
-		{
-			return FALSE;
-		}
-
-		if ( ! get_bool_from_string(ee()->session->userdata('display_avatars')))
-		{
-			return FALSE;
-		}
-
-		return TRUE;
 	}
 
 	/**

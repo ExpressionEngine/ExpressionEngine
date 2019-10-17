@@ -27,6 +27,9 @@ class Updater {
 		$steps = new \ProgressIterator(
 			[
 				'addConfigTable',
+				'removeDefaultAvatars'
+				'removeJqueryAddon',
+				'removeEmoticonAddon'
 			]
 		);
 
@@ -123,6 +126,42 @@ class Updater {
 				])->save();
 			}
 		}
+	}
+
+	private function removeDefaultAvatars()
+	{
+		ee('Model')->get('UploadDestination')
+			->filter('name', 'IN', ['Default Avatars'])
+			->all()
+			->indexBy('name')
+			->delete();
+
+		// Remove avatar config items
+		ee('Model')->get('Config')->filter('key', 'IN', ['enable_avatars', 'allow_avatar_uploads'])->delete();
+
+		// Remove avatar member preference
+		ee()->dbforge->drop_column('members', 'display_avatars');
+  }
+
+	private function removeJqueryAddon()
+	{
+		ee('Model')->get('Module')
+			->filter('module_name', 'Jquery')
+			->delete();
+
+		ee('Model')->get('Action')
+			->filter('class', 'IN', ['Jquery', 'Jquery_mcp']);
+	}
+
+	private function removeEmoticonAddon()
+	{
+		ee('Model')->get('Module')
+			->filter('module_name', 'Emoticon')
+			->delete();
+
+		ee('Model')->get('Action')
+			->filter('class', 'IN', ['Emoticon', 'Emoticon_mcp'])
+			->delete();
 	}
 }
 
