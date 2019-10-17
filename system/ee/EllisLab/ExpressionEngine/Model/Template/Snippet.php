@@ -22,6 +22,8 @@ class Snippet extends FileSyncedModel {
 	protected static $_primary_key = 'snippet_id';
 	protected static $_table_name = 'snippets';
 
+	protected static $_hook_id = 'snippet';
+
 	protected static $_relationships = array(
 		'Site' => array(
 			'type' => 'BelongsTo'
@@ -273,6 +275,12 @@ class Snippet extends FileSyncedModel {
 			if ($item->isFile() && $item->getExtension() == 'html')
 			{
 				$name = $item->getBasename('.html');
+
+				// limited to 50 characters in db
+				if (strlen($name) > 50)
+				{
+					continue;
+				}
 
 				if ( ! in_array($name, $existing))
 				{

@@ -487,7 +487,7 @@ And if you made it to this &#x1F573;&#xFE0F; you did pretty good.']
 			[
 				$sample,
 				[
-					'lowercase' => FALSE,
+					'lowercase' => 'no',
 				],
 				'Sample-Title-to-Turn-Into-a-Slug-including-💩-tags-quotes-and-high-ascii-ssae-and-seps____in....content'
 			],

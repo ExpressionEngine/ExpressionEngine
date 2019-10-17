@@ -1514,21 +1514,6 @@ GRID_FALLBACK;
 		else
 		{
 			$this->fetch_entry(0);
-
-			if (ee()->input->post('unique_url_title', TRUE))
-			{
-				$title = ee()->input->post('title', TRUE);
-				$url_title = ($this->_meta['url_title']) ?: ee('Format')->make('Text', $title)->urlSlug();
-
-				// Max URL title length, minus uniqid length, minus separator
-				$url_title = substr($url_title, 0, URL_TITLE_MAX_LENGTH-23-1);
-
-				$separator = (ee()->config->item('word_separator') == 'dash') ? '-' : '_';
-
-				$_POST['url_title'] = uniqid($url_title . $separator, TRUE);
-
-				$this->_meta['url_title'] = $_POST['url_title'];
-			}
 		}
 
 		ee()->legacy_api->instantiate('channel_fields');
@@ -1787,6 +1772,20 @@ GRID_FALLBACK;
 		if ( ! isset($_POST['url_title']))
 		{
 			$_POST['url_title'] = ee('Format')->make('Text', ee()->input->post('title', TRUE))->urlSlug()->compile();
+		}
+
+		if (ee()->input->post('unique_url_title', TRUE))
+		{
+			$url_title = $_POST['url_title'];
+
+			// Max URL title length, minus uniqid length, minus separator
+			$url_title = substr($url_title, 0, URL_TITLE_MAX_LENGTH-23-1);
+
+			$separator = (ee()->config->item('word_separator') == 'dash') ? '-' : '_';
+
+			$_POST['url_title'] = uniqid($url_title . $separator, TRUE);
+
+			$this->_meta['url_title'] = $_POST['url_title'];
 		}
 
 		//temporarily change site_id for cross-site forms

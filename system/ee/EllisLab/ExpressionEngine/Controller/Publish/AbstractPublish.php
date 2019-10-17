@@ -152,37 +152,19 @@ abstract class AbstractPublish extends CP_Controller {
 		$data = array();
 		$authors = array();
 		$i = $entry->Versions->count();
-
-		if ( ! $entry->isNew())
-		{
-			$attrs = (!$version_id) ? array('class' => 'selected') : array();
-
-			if ( ! isset($authors[$entry->author_id]))
-			{
-				$authors[$entry->author_id] = $entry->getAuthorName();
-			}
-
-			// Current
-			$edit_date = ($entry->edit_date)
-				? ee()->localize->human_time($entry->edit_date->format('U'))
-				: NULL;
-
-			$data[] = array(
-				'attrs'   => $attrs,
-				'columns' => array(
-					$i + 1,
-					$edit_date,
-					$authors[$entry->author_id],
-					'<span class="st-open">' . lang('current') . '</span>'
-				)
-			);
-		}
+		$current_author_id = FALSE;
+		$current_id = $i+1;
 
 		foreach ($entry->Versions->sortBy('version_date')->reverse() as $version)
 		{
 			if ( ! isset($authors[$version->author_id]))
 			{
 				$authors[$version->author_id] = $version->getAuthorName();
+			}
+
+			if ( ! $current_author_id)
+			{
+				$current_author_id = $authors[$version->author_id];
 			}
 
 			$toolbar = ee('View')->make('_shared/toolbar')->render(array(
@@ -210,6 +192,31 @@ abstract class AbstractPublish extends CP_Controller {
 			$i--;
 		}
 
+
+		if ( ! $entry->isNew())
+		{
+			$attrs = (!$version_id) ? array('class' => 'selected') : array();
+
+			$current_author_id = (!$current_author_id) ? $entry->getAuthorName() : $current_author_id;
+
+
+			// Current
+			$edit_date = ($entry->edit_date)
+				? ee()->localize->human_time($entry->edit_date->format('U'))
+				: NULL;
+
+			array_unshift($data, array(
+				'attrs'   => $attrs,
+				'columns' => array(
+					$current_id,
+					$edit_date,
+					$current_author_id,
+					'<span class="st-open">' . lang('current') . '</span>'
+				))
+			);
+		}
+
+
 		$table->setData($data);
 
 		return ee('View')->make('_shared/table')->render($table->viewData(''));
@@ -218,7 +225,7 @@ abstract class AbstractPublish extends CP_Controller {
 	protected function getAutosavesTable($entry, $autosave_id = FALSE)
 	{
 		$table = ee('CP/Table');
-		
+
 		$table->setColumns(
 			array(
 				'rev_id',
