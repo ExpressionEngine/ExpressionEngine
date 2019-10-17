@@ -8,6 +8,8 @@ Bullet list below, e.g.
    - Added <new feature>
    - Fixed Bug (#<issue number>) where <bug behavior>.
 
+- Removed the deprecated jQuery add-on
+
 - Removed the deprecated Emoticon add-on
 
 - Forgot Password emails will now respect your "Mail Format" preference (essentially enabling the ability to use HTML in Forgot Password emails).

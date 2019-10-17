@@ -251,7 +251,7 @@ class EE_Core {
 		$this->native_plugins = array('markdown', 'rss_parser', 'xml_encode');
 		$this->native_modules = array(
 			'blacklist', 'channel', 'comment', 'commerce', 'email',
-			'file', 'filepicker', 'forum', 'ip_to_nation', 'jquery', 'member',
+			'file', 'filepicker', 'forum', 'ip_to_nation', 'member',
 			'metaweblog_api', 'moblog', 'pages', 'query', 'relationship', 'rss',
 			 'rte', 'search', 'simple_commerce', 'spam', 'stats'
 		);
