@@ -82,7 +82,7 @@ feature 'Add-On Manager' do
       @page.first_party_status_filter.text.should eq "status (installed)"
       @page.should_not have_css 'tr.not-installed'
       @page.should_not have_first_party_pagination
-      @page.should have(6).first_party_addons
+      @page.should have(5).first_party_addons
 
       # By uninstalled
       @page.first_party_status_filter.click
@@ -92,8 +92,8 @@ feature 'Add-On Manager' do
 
       @page.first_party_status_filter.text.should eq "status (uninstalled)"
       @page.should have_css 'tr.not-installed'
-      @page.all('tr.not-installed').count().should == 14
-      @page.should have(14).first_party_addons
+      @page.all('tr.not-installed').count().should == 13
+      @page.should have(13).first_party_addons
 
       # By 'needs updates'
       @page.first_party_status_filter.click
@@ -119,7 +119,7 @@ feature 'Add-On Manager' do
       @page.first_party_status_filter.text.should eq "status (installed)"
       @page.should_not have_css 'tr.not-installed'
       @page.should_not have_first_party_pagination
-      @page.should have(6).first_party_addons
+      @page.should have(5).first_party_addons
 
       versions = @page.first_party_versions.map {|version| version.text}
 

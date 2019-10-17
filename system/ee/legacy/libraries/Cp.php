@@ -1119,9 +1119,9 @@ class Cp {
 
 	public function makeChangelogLinkForVersion($version)
 	{
-		// Version in anchor is separated by dashes instead of dots
-		$dashed_version = implode('-', explode('.', $version));
-		return 'https://docs.expressionengine.com/latest/about/changelog.html#version-'.$dashed_version;
+		// Version in anchor is sans dots
+		$version = implode('', explode('.', $version));
+		$changelog_url = DOC_URL.'installation/changelog.html#version-'.$version;
 	}
 }
 

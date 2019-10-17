@@ -39,15 +39,6 @@ class Member_settings extends Member {
 			$menu = $this->_deny_if('enable_photos', $menu);
 		}
 
-		if (ee()->config->item('enable_avatars') == 'y')
-		{
-			$menu = $this->_allow_if('enable_avatars', $menu);
-		}
-		else
-		{
-			$menu = $this->_deny_if('enable_avatars', $menu);
-		}
-
 
 		return $this->_var_swap($menu,
 								array(
@@ -176,7 +167,7 @@ class Member_settings extends Member {
 		/**  Is there an avatar?
 		/** ----------------------------------------*/
 
-		if (ee()->config->item('enable_avatars') == 'y' AND $row['avatar_filename']  != '')
+		if ($row['avatar_filename']  != '')
 		{
 			$avatar_path	= $member->getAvatarUrl();
 			$avatar_width	= $row['avatar_width'] ;
@@ -1044,7 +1035,7 @@ class Member_settings extends Member {
 	/** ----------------------------------------*/
 	function edit_preferences()
 	{
-		$query = ee()->db->query("SELECT display_avatars, display_signatures, smart_notifications, accept_messages, parse_smileys FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
+		$query = ee()->db->query("SELECT display_signatures, smart_notifications, accept_messages, parse_smileys FROM exp_members WHERE member_id = '".ee()->session->userdata('member_id')."'");
 
 	 	$element = $this->_load_element('edit_preferences');
 
@@ -1066,7 +1057,6 @@ class Member_settings extends Member {
 					array('action' => $this->_member_path('update_preferences'))
 				),
 				'path:update_edit_preferences'	=> $this->_member_path('update_preferences'),
-				'state:display_avatars'			=> ($query->row('display_avatars')  == 'y') ? " checked='checked'" : '',
 				'state:accept_messages'			=> ($query->row('accept_messages')  == 'y') ? " checked='checked'" : '',
 				'state:display_signatures'		=> ($query->row('display_signatures')  == 'y') ? " checked='checked'" : '',
 				'state:parse_smileys'			=> ($query->row('parse_smileys')  == 'y') ? " checked='checked'" : ''
@@ -1096,7 +1086,6 @@ class Member_settings extends Member {
 
 		$data = array(
 						'accept_messages'		=> (isset($_POST['accept_messages'])) ? 'y' : 'n',
-						'display_avatars'		=> (isset($_POST['display_avatars'])) ? 'y' : 'n',
 						'display_signatures'	=> (isset($_POST['display_signatures']))  ? 'y' : 'n',
 						'parse_smileys'			=> (isset($_POST['parse_smileys']))  ? 'y' : 'n'
 					  );

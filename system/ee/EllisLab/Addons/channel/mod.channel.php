@@ -3542,6 +3542,23 @@ class Channel {
 		// Combine the group IDs from multiple channels into a string
 		$group_ids = implode('|', $group_ids);
 
+		if ($category_group = ee()->TMPL->fetch_param('category_group'))
+		{
+			if (substr($category_group, 0, 4) == 'not ')
+			{
+				$x = explode('|', substr($category_group, 4));
+				$group_ids = array_diff(explode('|', $group_ids), $x);
+			}
+			else
+			{
+				$x = explode('|', $category_group);
+
+				$group_ids = array_intersect(explode('|', $group_ids), $x);
+			}
+
+			$group_ids = implode('|', $group_ids);
+		}
+
 		$sql = "SELECT exp_category_posts.cat_id, exp_channel_titles.entry_id, exp_channel_titles.title, exp_channel_titles.url_title, exp_channel_titles.entry_date
 				FROM exp_channel_titles, exp_category_posts
 				WHERE channel_id IN ('".implode("','", $channel_ids)."')
@@ -3577,7 +3594,6 @@ class Channel {
 		{
 			$sql .= ee()->functions->sql_andor_string(ee()->TMPL->fetch_param('show'), 'exp_category_posts.cat_id').' ';
 		}
-
 
 		$orderby  = ee()->TMPL->fetch_param('orderby');
 

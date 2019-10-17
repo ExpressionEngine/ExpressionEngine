@@ -2233,7 +2233,7 @@ class Member {
 
 		// Is there an avatar?
 		$avatar_path = $member->getAvatarUrl();
-		if (ee()->config->item('enable_avatars') == 'y' && ! empty($avatar_path))
+		if (! empty($avatar_path))
 		{
 			$avatar_width	= $results['avatar_width'];
 			$avatar_height	= $results['avatar_height'];
@@ -2378,7 +2378,7 @@ class Member {
 			$dates = array(
 				'last_visit' => (empty($default_fields['last_visit'])) ? '' : $default_fields['last_visit'],
 				'last_activity' => (empty($default_fields['last_activity'])) ? '' : $default_fields['last_activity'],
-				'join_date' => (empty($default_fields['join_date'])) ? '' : $default_fields['last_entry_date'],
+				'join_date' => (empty($default_fields['join_date'])) ? '' : $default_fields['join_date'],
 				'last_entry_date' => (empty($default_fields['last_entry_date'])) ? '' : $default_fields['last_entry_date'],
 				'last_forum_post_date' => (empty($default_fields['last_forum_post_date'])) ? '' : $default_fields['last_forum_post_date'],
 				'last_comment_date' => (empty($default_fields['last_comment_date'])) ? '' : $default_fields['last_comment_date']

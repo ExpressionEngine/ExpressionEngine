@@ -82,7 +82,7 @@ $lang = array(
 
 'change_avatar' => 'Change avatar',
 
-'change_avatar_desc' => 'Add an avatar to your profile.',
+'change_avatar_desc' => 'Add an avatar to your profile — .gif, .jpg, .png (max %skb)',
 
 'change_password' => 'Change Password',
 
@@ -151,8 +151,6 @@ $lang = array(
 'delete_username' => 'Delete %s',
 
 'disallowed_screen_chars' => 'Screen Name contains illegal characters',
-
-'display_avatars' => "Display other member's avatars",
 
 'do_not_show' => 'Do Not Display',
 
@@ -524,9 +522,10 @@ $lang = array(
 
 'unsubscribe'=> 'Unsubscribe',
 
-'unsubscribe_success' => 'You have been succesfully unsubscribed.',
+'unsubscribe_success' => 'You have been successfully unsubscribed.',
 
-'update_avatar_path' => '</em><em>Please update your <a href="%s">avatar</a> upload settings.',
+'avatar_path_does_not_exist' => 'You avatar upload directory does not exist. Please check your <a href="%s">avatar</a> upload settings.',
+'avatars_disabled' => 'Avatars are disabled. Please update your <a href="%s">avatar</a> upload settings.',
 
 'upload_avatar' => 'Upload — .gif, .jpg, .png (max %skb)',
 

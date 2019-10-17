@@ -23,6 +23,15 @@ class Site extends Model {
 	protected static $_primary_key = 'site_id';
 	protected static $_table_name = 'sites';
 
+	protected static $_hook_id = 'site';
+
+	protected static $_type_classes = array(
+		'ChannelPreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\ChannelPreferences',
+		'MemberPreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\MemberPreferences',
+		'SystemPreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\SystemPreferences',
+		'TemplatePreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\TemplatePreferences',
+	);
+
 	protected static $_typed_columns = array(
 		'site_bootstrap_checksums' => 'base64Serialized',
 		'site_pages' => 'base64Serialized',

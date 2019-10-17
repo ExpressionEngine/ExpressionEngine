@@ -66,8 +66,8 @@ class Wizard extends CI_Controller {
 	// Native First Party ExpressionEngine Modules (everything else is in third
 	// party folder)
 	public $native_modules = array('blacklist', 'channel', 'comment', 'commerce', 'consent',
-		'email', 'emoticon', 'file', 'forum', 'gallery', 'ip_to_nation',
-		'jquery', 'member', 'metaweblog_api', 'moblog', 'pages', 'query', 'relationship',
+		'email', 'file', 'forum', 'gallery', 'ip_to_nation',
+		'member', 'metaweblog_api', 'moblog', 'pages', 'query', 'relationship',
 		'rss', 'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
 
 	// Third Party Modules may send error messages if something goes wrong.
@@ -1686,8 +1686,6 @@ class Wizard extends CI_Controller {
 			'default_member_group'      => '5',
 			'profile_trigger'           => 'member',
 			'member_theme'              => 'default',
-			'enable_avatars'            => 'y',
-			'allow_avatar_uploads'      => 'n',
 			'avatar_url'                => '{base_url}'.$this->userdata['avatar_url'],
 			'avatar_path'               => $this->userdata['avatar_path'],
 			'avatar_max_width'          => '100',
