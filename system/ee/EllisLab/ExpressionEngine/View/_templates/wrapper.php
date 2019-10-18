@@ -18,7 +18,7 @@ $current_page = ee()->uri->segment(2);
 		<div class="dropdown">
 			<a class="dropdown__link" href="<?=ee()->config->item('site_url')?>" rel="external"><i class="fas fa-eye"></i> <?=lang('view_site')?></a>
 			<div class="dropdown__divider"></div>
-			<div class="dropdown__section-title"><?=lang('sites')?></div>
+			<div class="dropdown__header"><?=lang('sites')?></div>
 
 			<?php foreach ($cp_main_menu['sites'] as $site_name => $link): ?>
 				<a class="dropdown__link" href="<?=$link?>"><?=$site_name?></a>

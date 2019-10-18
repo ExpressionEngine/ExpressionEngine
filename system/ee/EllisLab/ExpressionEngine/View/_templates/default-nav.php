@@ -75,7 +75,7 @@
 
 				<div class="dropdown__divider"></div>
 
-				<h3 class="dropdown__section-title"><?=lang('quick_links')?></h3>
+				<h3 class="dropdown__header"><?=lang('quick_links')?></h3>
 				<?php foreach($cp_quicklinks as $link): ?>
 				<a class="dropdown__link" href="<?=$link['link']?>"><?=htmlentities($link['title'], ENT_QUOTES, 'UTF-8')?></a>
 				<?php endforeach ?>
