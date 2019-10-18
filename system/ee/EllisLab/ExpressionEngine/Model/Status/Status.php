@@ -21,6 +21,8 @@ class Status extends Model {
 	protected static $_primary_key = 'status_id';
 	protected static $_table_name = 'statuses';
 
+	protected static $_hook_id = 'status';
+
 	protected static $_typed_columns = array(
 		'site_id'         => 'int',
 		'group_id'        => 'int',

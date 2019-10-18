@@ -22,6 +22,8 @@ class Snippet extends FileSyncedModel {
 	protected static $_primary_key = 'snippet_id';
 	protected static $_table_name = 'snippets';
 
+	protected static $_hook_id = 'snippet';
+
 	protected static $_relationships = array(
 		'Site' => array(
 			'type' => 'BelongsTo'

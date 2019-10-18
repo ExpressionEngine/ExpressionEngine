@@ -590,7 +590,18 @@ class Members extends CP_Controller {
 
 		foreach ($members as $member)
 		{
-			$can_edit_member = ee()->session->userdata('group_id') == 1 || $member->MemberGroup->getId() == 1;
+			$can_edit_member = FALSE;
+			if (ee()->cp->allowed_group('can_edit_members'))
+			{
+				if ($member->MemberGroup->getId() == 1)
+				{
+					$can_edit_member = (bool) (ee()->session->userdata('group_id') == 1);
+				}
+				else
+				{
+					$can_edit_member = TRUE;
+				}
+			}
 
 			$edit_link = ee('CP/URL')->make('members/profile/', array('id' => $member->member_id));
 			$toolbar = array(
@@ -626,7 +637,7 @@ class Members extends CP_Controller {
 
 			$email = "<a href = '" . ee('CP/URL')->make('utilities/communicate/member/' . $member->member_id) . "'>".$member->email."</a>";
 
-			if ($can_edit_member && ee()->cp->allowed_group('can_edit_members'))
+			if ($can_edit_member)
 			{
 				$username_display = "<a href = '" . $edit_link . "'>". $member->username."</a>";
 			}
@@ -652,16 +663,13 @@ class Members extends CP_Controller {
 			$toolbar = array('toolbar_items' => $toolbar);
 
 			// add the toolbar if they can edit members
-			if (ee()->cp->allowed_group('can_edit_members'))
+			if ($can_edit_member)
 			{
-				if ($can_edit_member)
-				{
-					$column[] = $toolbar;
-				}
-				else
-				{
-					$column[] = ['toolbar_items' => []];
-				}
+				$column[] = $toolbar;
+			}
+			else
+			{
+				$column[] = ['toolbar_items' => []];
 			}
 
 			// add the checkbox if they can delete members
