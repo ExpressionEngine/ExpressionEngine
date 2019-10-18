@@ -279,7 +279,7 @@ $(document).ready(function(){
 	$('[data-toggle-dropdown], .js-dropdown-toggle').on('click', function(e) {
 		e.preventDefault()
 
-		var dropdown = $(this).siblings('.dropdown').get(0) || $(`[data-dropdown='${this.dataset.toggleDropdown}']`).get(0)
+		var dropdown = $(this).next('.dropdown').get(0) || $(`[data-dropdown='${this.dataset.toggleDropdown}']`).get(0)
 
 		// Does the dropdown exist?
 		if (!dropdown) {
