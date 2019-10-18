@@ -280,32 +280,32 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
         }
 
         return (
-            <div className="c-colorpicker">
-                <input className="c-colorpicker-input" type="text" id={this.props.inputId} name={this.props.inputName} value={this.state.inputValue} onChange={this.onInputChange} onFocus={this.showColorPanel} onBlur={this.hideColorPanel} autoComplete="off"/>
-                <span className="c-colorpicker-input-color" style={{borderColor: currentColor.shade(-15).rgbaStr}}><span style={{background: currentColor.rgbaStr}}></span></span>
+            <div className="colorpicker">
+                <input className="colorpicker__input" type="text" id={this.props.inputId} name={this.props.inputName} value={this.state.inputValue} onChange={this.onInputChange} onFocus={this.showColorPanel} onBlur={this.hideColorPanel} autoComplete="off"/>
+                <span className="colorpicker__input-color" style={{borderColor: currentColor.shade(-15).rgbaStr}}><span style={{background: currentColor.rgbaStr}}></span></span>
 
-                <div className="c-colorpicker-panel" style={{display: this.state.showPanel ? 'block' : 'none'}} onMouseDown={e => { e.stopPropagation(); e.preventDefault() }}>
+                <div className="colorpicker__panel" style={{display: this.state.showPanel ? 'block' : 'none'}} onMouseDown={e => { e.stopPropagation(); e.preventDefault() }}>
                     { (allowedColors == 'any') &&
-                    <div className="c-colorpicker-controls">
-                        <div className="c-colorpicker-hue-box" style={{background: hueColor}} onMouseDown={(e) => this.handleDrag(e, 'mouse', this.onHueBoxMove)} onTouchStart={(e) => this.handleDrag(e, 'touch', this.onHueBoxMove)} ref={el => this.hueBoxRef = el}>
-                            <div className="c-colorpicker-hue-box-knob" style={{top: hueKnobPosY, left: hueKnobPosX, background: hexStr}}  ref={el => this.hueBoxKnobRef = el}></div>
+                    <div className="colorpicker__controls">
+                        <div className="colorpicker__hue-box" style={{background: hueColor}} onMouseDown={(e) => this.handleDrag(e, 'mouse', this.onHueBoxMove)} onTouchStart={(e) => this.handleDrag(e, 'touch', this.onHueBoxMove)} ref={el => this.hueBoxRef = el}>
+                            <div className="colorpicker__hue-box-knob" style={{top: hueKnobPosY, left: hueKnobPosX, background: hexStr}}  ref={el => this.hueBoxKnobRef = el}></div>
                         </div>
 
-                        <div className="c-colorpicker-slider c-colorpicker-hue-slider" onMouseDown={e => this.handleDrag(e, 'mouse', this.onHueSliderMove)} onTouchStart={(e) => this.handleDrag(e, 'touch', this.onHueSliderMove)} ref={el => this.hueSliderRef = el}><div className="c-colorpicker-slider-knob" ref={el => this.hueSliderKnobRef = el} style={{background: hueColor, top: hueSliderPos}}></div></div>
+                        <div className="colorpicker__slider colorpicker__hue-slider" onMouseDown={e => this.handleDrag(e, 'mouse', this.onHueSliderMove)} onTouchStart={(e) => this.handleDrag(e, 'touch', this.onHueSliderMove)} ref={el => this.hueSliderRef = el}><div className="colorpicker__slider-knob" ref={el => this.hueSliderKnobRef = el} style={{background: hueColor, top: hueSliderPos}}></div></div>
                         { this.props.enableOpacity &&
-                            <div className="c-colorpicker-slider c-colorpicker-opacity-slider" onMouseDown={e => this.handleDrag(e, 'mouse', this.onOpacitySliderMove)} onTouchStart={(e) => this.handleDrag(e, 'touch', this.onOpacitySliderMove)} ref={el => this.opacitySliderRef = el}><div className="c-colorpicker-slider-knob" ref={el => this.opacitySliderKnobRef = el} style={{background: hexStr, top: opacitySliderPos}}></div><div className="c-colorpicker-slider-inner" style={{background: `linear-gradient(to top, ${currentColor.withAlpha(0).rgbaStr}, ${hexStr})`}}></div></div>
+                            <div className="colorpicker__slider colorpicker__opacity-slider" onMouseDown={e => this.handleDrag(e, 'mouse', this.onOpacitySliderMove)} onTouchStart={(e) => this.handleDrag(e, 'touch', this.onOpacitySliderMove)} ref={el => this.opacitySliderRef = el}><div className="colorpicker__slider-knob" ref={el => this.opacitySliderKnobRef = el} style={{background: hexStr, top: opacitySliderPos}}></div><div className="colorpicker__slider-inner" style={{background: `linear-gradient(to top, ${currentColor.withAlpha(0).rgbaStr}, ${hexStr})`}}></div></div>
                         }
                     </div>
                     }
 
-                    <div className="c-colorpicker-swatches">
+                    <div className="colorpicker__swatches">
                         {
                             this.props.swatches.map((colorStr: string, index: number) => {
                                 const color = new SimpleColor(colorStr)
 
                                 if ( !color.isValid ) return '';
 
-                                return (<div key={index} className={`c-colorpicker-swatch ${color.rgbaStr == currentColor.rgbaStr ? 'is-selected' : ''}`} data-color={colorStr} onClick={this.onSwatchClick} style={ {backgroundColor: color.rgbaStr, borderColor: color.shade(-15).rgbaStr} }></div>)
+                                return (<div key={index} className={`colorpicker__swatch ${color.rgbaStr == currentColor.rgbaStr ? 'is-selected' : ''}`} data-color={colorStr} onClick={this.onSwatchClick} style={ {backgroundColor: color.rgbaStr, borderColor: color.shade(-15).rgbaStr} }></div>)
                             })
                         }
                     </div>
