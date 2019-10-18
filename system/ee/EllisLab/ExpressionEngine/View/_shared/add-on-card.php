@@ -1,10 +1,12 @@
 <div class="add-on-card <?php if (!$installed) : ?>add-on-card--uninstalled<?php endif; ?>">
-	<!-- <div class="add-on-card__icon">
+	<?php if (isset($icon_url)): ?>
+    <div class="add-on-card__icon">
 		<div class="add-on-card__image">
-			<img src="" alt="<?= $name ?>">
+			<img src="<?= $icon_url ?>" alt="<?= $name ?>">
 		</div>
-		<span class="price"><?= $version ?></span>
-	</div> -->
+		<!-- <span class="price"><?= $version ?></span> -->
+	</div>
+    <?php endif; ?>
 	<div class="add-on-card__text">
 		<h2 class="add-on-card__title">
 			<?php if (isset($settings_url)) : ?>
