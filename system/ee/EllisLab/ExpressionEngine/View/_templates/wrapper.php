@@ -107,7 +107,7 @@ $current_page = ee()->uri->segment(2);
 					<a href="" class="ee-sidebar__item js-toggle-developer-menu <?=$developer_menu_active?>"><i class="fas fa-database"></i> <?=lang('nav_developer')?></a>
 					<div class="developer-menu js-developer-menu-content hidden">
 						<?php foreach ($cp_main_menu['develop'] as $key => $link) : ?>
-							<a href="<?= $link ?>"><?= lang($key) ?></a>
+							<a class="ee-sidebar__item" href="<?= $link ?>"><?= lang($key) ?></a>
 						<?php endforeach ?>
 					</div>
 				<?php endif; ?>
