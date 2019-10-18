@@ -28,6 +28,11 @@ class Header {
 	 */
 	protected $class = '';
 
+    /**
+     * @var string $icon_class The class of the icon to use
+     */
+    protected $icon_class = '';
+
 	/**
 	 * @var URL|string $url The URL to use as an href attribute
 	 */
@@ -115,6 +120,19 @@ class Header {
 		return $this;
 	}
 
+    /**
+     * Sets the icon class property of the header
+     *
+     * @param string $icon_class The class of the icon to use
+     *   URL for the button.
+     * @return self This returns a reference to itself
+     */
+    public function withIcon($icon_class)
+    {
+        $this->icon_class = $icon_class;
+        return $this;
+    }
+
 	/**
 	 * Sets the button property of the header
 	 *
@@ -168,6 +186,7 @@ class Header {
 		$vars = array(
 			'text' => $this->text,
 			'class' => $this->class,
+            'icon_class' => $this->icon_class,
 			'url' => $this->url,
 			'external' => $this->url_is_external,
 			'button' => $this->button
