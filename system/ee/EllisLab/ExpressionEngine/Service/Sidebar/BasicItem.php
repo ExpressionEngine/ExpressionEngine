@@ -69,7 +69,8 @@ class BasicItem extends ListItem {
 			'text' => $this->text,
 			'url' => $this->url,
 			'attrs' => $attrs,
-			'class' => $class
+			'class' => $class,
+            'icon_class' => $this->icon_class
 		);
 
 		return $view->make('_shared/sidebar/basic_item')->render($vars);

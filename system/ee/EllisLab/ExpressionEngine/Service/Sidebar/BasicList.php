@@ -30,9 +30,9 @@ class BasicList {
 	 *   URL for the item.
 	 * @return BasicItem A new BasicItem object
 	 */
-	public function addItem($text, $url = NULL)
+	public function addItem($text, $url = NULL, $icon_class = NULL)
 	{
-		$item = new BasicItem($text, $url);
+		$item = new BasicItem($text, $url, $icon_class);
 		$this->items[] = $item;
 
 		return $item;
