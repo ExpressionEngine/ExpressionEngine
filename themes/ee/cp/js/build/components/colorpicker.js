@@ -88,6 +88,19 @@ var ColorPicker = /** @class */ (function (_super) {
             this.colorChanged();
         }
     };
+    ColorPicker.renderFields = function (context) {
+        var colorPickers = (context || document).querySelectorAll('input[data-colorpicker-react]');
+        for (var index = 0; index < colorPickers.length; index++) {
+            var container = colorPickers[index];
+            if (container.disabled)
+                continue;
+            var props = JSON.parse(window.atob(container.dataset.colorpickerReact));
+            props.inputName = container.name;
+            var newContainer = document.createElement('div');
+            container.parentNode.replaceChild(newContainer, container);
+            ReactDOM.render(React.createElement(ColorPicker, props, null), newContainer);
+        }
+    };
     /** Selects a color optionally setting the input value to something other than the selected color return string */
     ColorPicker.prototype.selectColor = function (newColor, inputValue) {
         if (inputValue === void 0) { inputValue = null; }
@@ -227,3 +240,23 @@ var ColorPicker = /** @class */ (function (_super) {
     return ColorPicker;
 }(React.Component));
 // TODO: The color picker overflows the grid field
+// Render color picker inputs when created:
+$(document).ready(function () {
+    // Using window.load to make sure this code gets called after all document.readys
+    $(window).load(function () {
+        ColorPicker.renderFields();
+    });
+});
+Grid.bind('colorpicker', 'display', function (cell) {
+    ColorPicker.renderFields(cell[0]);
+});
+$(document).on('grid:addRow', function (cell) {
+    ColorPicker.renderFields(cell[0]);
+});
+FluidField.on('colorpicker', 'add', function (field) {
+    ColorPicker.renderFields(field[0]);
+});
+// Load any color pickers when the field manager selects a fieldtype
+FieldManager.on('fieldModalDisplay', function (modal) {
+    ColorPicker.renderFields(modal[0]);
+});

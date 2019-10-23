@@ -95,6 +95,24 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
         }
     }
 
+    public static renderFields(context) {
+        let colorPickers = (context || document).querySelectorAll('input[data-colorpicker-react]')
+
+        for (let index = 0; index < colorPickers.length; index++) {
+            let container = colorPickers[index];
+
+            if (container.disabled) continue;
+
+            let props = JSON.parse(window.atob(container.dataset.colorpickerReact))
+            props.inputName = container.name
+
+            let newContainer = document.createElement('div')
+            container.parentNode.replaceChild(newContainer, container)
+
+            ReactDOM.render(React.createElement(ColorPicker as any, props, null), newContainer)
+        }
+    }
+
     public showColorPanel = () => {
         this.setState({ showPanel: true }, () => {
             // Trigger a re-render so the slider knobs can be positioned properly
@@ -318,3 +336,29 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
 
 
 // TODO: The color picker overflows the grid field
+
+// Render color picker inputs when created:
+
+$(document).ready(function () {
+    // Using window.load to make sure this code gets called after all document.readys
+    $(window).load(() => {
+        ColorPicker.renderFields()
+    })
+})
+
+Grid.bind('colorpicker', 'display', function(cell) {
+    ColorPicker.renderFields(cell[0])
+});
+
+$(document).on('grid:addRow', function(cell) {
+    ColorPicker.renderFields(cell[0])
+});
+
+FluidField.on('colorpicker', 'add', function(field) {
+    ColorPicker.renderFields(field[0])
+});
+
+// Load any color pickers when the field manager selects a fieldtype
+FieldManager.on('fieldModalDisplay', function(modal) {
+    ColorPicker.renderFields(modal[0])
+});
