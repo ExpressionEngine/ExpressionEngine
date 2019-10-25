@@ -276,27 +276,20 @@ $(document).ready(function(){
 	// Dropdown menus
 	// -------------------------------------------------------------------
 
-	$('[data-toggle-dropdown], .js-dropdown-toggle').on('click', function(e) {
-		e.preventDefault()
-
-		var dropdown = $(this).next('.dropdown').get(0) || $(`[data-dropdown='${this.dataset.toggleDropdown}']`).get(0)
+	// Gets a dropdown for a element, and makes sure its initialized
+	function getDropdownForElement(element) {
+		var dropdown = $(element).next('.dropdown').get(0) || $(`[data-dropdown='${element.dataset.toggleDropdown}']`).get(0)
 
 		// Does the dropdown exist?
 		if (!dropdown) {
-			return
+			return null
 		}
 
-		// Hide other dropdowns
-		$('.dropdown--open').not(dropdown).removeClass('dropdown--open')
-		$('.dropdown-open').removeClass('dropdown-open')
+		// If the dropdown doesn't has a popper, initialize a new popper
+		if (!dropdown._popper) {
+			var placement = element.dataset.dropdownPos || 'bottom-start'
 
-		var dropdownShown = dropdown.classList.contains('dropdown--open')
-
-		// If the dropdown doesn't has a popper, and it's going to be shown, initialize a new popper
-		if (!dropdown._popper && !dropdownShown) {
-			var placement = this.dataset.dropdownPos || 'bottom-start'
-
-			dropdown._popper = new Popper(this, dropdown, {
+			dropdown._popper = new Popper(element, dropdown, {
 				placement: placement,
 				modifiers: {
 					offset: {
@@ -312,6 +305,75 @@ $(document).ready(function(){
 				},
 			})
 		}
+
+		return dropdown
+	}
+
+
+	$('.js-dropdown-hover').each(function() {
+		var reference = this
+		var dropdown = getDropdownForElement(reference)
+
+		if (!dropdown) {
+			return
+		}
+
+		var count = 0;
+		var tolerance = 200;
+
+		$(reference).add(dropdown).mouseenter(function() {
+			count++
+
+			reference.classList.add('dropdown-open')
+			dropdown.classList.add('dropdown--open');
+		}).mouseleave(function() {
+			count = Math.max(0, count - 1)
+
+			setTimeout(function() {
+				if (count == 0) {
+					reference.classList.remove('dropdown-open')
+					dropdown.classList.remove('dropdown--open');
+				}
+			}, tolerance);
+		});
+	})
+
+	// Hoverable dropdowns should be clickable on mobile
+	$('js-dropdown-hover').on('touchstart', function(e) {
+		e.preventDefault()
+
+		var dropdown = getDropdownForElement(this)
+
+		if (!dropdown) {
+			return
+		}
+
+		// Hide other dropdowns
+		$('.dropdown--open').not(dropdown).removeClass('dropdown--open')
+		$('.dropdown-open').removeClass('dropdown-open')
+
+		var dropdownShown = dropdown.classList.contains('dropdown--open')
+
+		this.classList.toggle('dropdown-open', !dropdownShown)
+		dropdown.classList.toggle('dropdown--open');
+
+		return false;
+	})
+
+	$('[data-toggle-dropdown], .js-dropdown-toggle').on('click', function(e) {
+		e.preventDefault()
+
+		var dropdown = getDropdownForElement(this)
+
+		if (!dropdown) {
+			return
+		}
+
+		// Hide other dropdowns
+		$('.dropdown--open').not(dropdown).removeClass('dropdown--open')
+		$('.dropdown-open').removeClass('dropdown-open')
+
+		var dropdownShown = dropdown.classList.contains('dropdown--open')
 
 		this.classList.toggle('dropdown-open', !dropdownShown)
 		dropdown.classList.toggle('dropdown--open');
