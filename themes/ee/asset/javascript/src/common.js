@@ -741,6 +741,9 @@ $(document).ready(function(){
 			})
 		})
 
+	// Table checkbox selection and bulk action display
+	// -------------------------------------------------------------------
+
 		// Highlight table rows when checked
 		$('body').on('click', 'table tr', function(event) {
 			if (event.target.nodeName != 'A') {
@@ -763,37 +766,38 @@ $(document).ready(function(){
 			}
 		});
 
-		// Check a table list row's checkbox when its item body is clicked
-		$('body').on('click', '.tbl-row', function(event) {
+	// List group checkbox selection and bulk action display
+	// -------------------------------------------------------------------
+
+		// Check a list item checkbox if its container is clicked
+		$('body').on('click', '.list-item__checkbox', function(event) {
 			if (event.target.nodeName == 'DIV') {
-				$(this).find('> .check-ctrl input').click()
+				$(this).find('> input').click()
 			}
 		});
 
-		// "Table" lists
-		$('body').on('click change', '.tbl-list .check-ctrl input', function() {
-			$(this).parents('.tbl-row').toggleClass('selected', $(this).is(':checked'));
+		// List group selection
+		$('body').on('click change', '.list-group .list-item__checkbox input', function() {
+			$(this).parents('.list-item').toggleClass('list-item--selected', $(this).is(':checked'));
 
-			var tableList = $(this).parents('.tbl-list');
+			var tableList = $(this).parents('.list-group');
 
 			// If all checkboxes are checked, check the Select All box
-			var allSelected = (tableList.find('.check-ctrl input:checked').length == tableList.find('.check-ctrl input').length);
-			$(this).parents('.tbl-list-wrap').find('.tbl-list-ctrl input').prop('checked', allSelected);
+			var allSelected = (tableList.find('.list-item__checkbox input:checked').length == tableList.find('.list-item__checkbox input').length);
+			$(this).parents('.js-list-group-wrap').find('.list-group-controls .ctrl-all input').prop('checked', allSelected);
 
 			// Toggle the bulk actions
-			if (tableList.find('.check-ctrl input:checked').length == 0)
-			{
-				$(this).parents('.tbl-list-wrap').siblings('.bulk-action-bar').addClass('hidden');
-			} else
-			{
-				$(this).parents('.tbl-list-wrap').siblings('.bulk-action-bar').removeClass('hidden');
+			if (tableList.find('.list-item__checkbox input:checked').length == 0) {
+				$(this).parents('.js-list-group-wrap').siblings('.bulk-action-bar').addClass('hidden');
+			} else {
+				$(this).parents('.js-list-group-wrap').siblings('.bulk-action-bar').removeClass('hidden');
 			}
 		});
 
 		// Select all for "table" lists
-		$('body').on('click', '.tbl-list-ctrl input', function(){
-			$(this).parents('.tbl-list-wrap')
-				.find('.tbl-list .check-ctrl input')
+		$('body').on('click', '.list-group-controls .ctrl-all input', function(){
+			$(this).parents('.js-list-group-wrap')
+				.find('.list-group .list-item__checkbox input')
 				.prop('checked', $(this).is(':checked'))
 				.trigger('change');
 		});
