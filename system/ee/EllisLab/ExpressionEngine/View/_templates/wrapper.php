@@ -40,8 +40,19 @@ $current_page = ee()->uri->segment(2);
 					<?php endif; ?> -->
 				<a href="<?=ee('CP/URL', 'homepage')?>" title="<?=lang('nav_overview')?>" class="ee-sidebar__item <?= ($current_page == 'homepage' ? 'active' : '') ?>"><i class="fas fa-tachometer-alt"></i> <?=lang('nav_overview')?></a>
 
-				<?php if (ee()->cp->allowed_group('can_create_entries') && (count($cp_main_menu['channels']['create']) || ee()->cp->allowed_group('can_create_channels')) || ee()->cp->allowed_group_any('can_edit_other_entries', 'can_edit_self_entries')) : ?>
-				<a href="<?= ee('CP/URL', 'publish/edit') ?>" class="ee-sidebar__item <?= (($current_page == 'publish') ? 'active' : '') ?>"><i class="fas fa-newspaper"></i> <?= lang('entries') ?></a>
+				<?php if (ee()->cp->allowed_group_any('can_edit_other_entries', 'can_edit_self_entries')) : ?>
+				<a data-dropdown-pos="right-start" href class="ee-sidebar__item js-dropdown-toggle <?= (($current_page == 'publish') ? 'active' : '') ?>"><i class="fas fa-newspaper"></i> <?= lang('entries') ?></a>
+				<div class="dropdown js-filterable">
+					<a href="<?= ee('CP/URL', 'publish/edit') ?>" class="dropdown__link"><b>View All</b></a>
+					<?php foreach ($cp_main_menu['channels']['edit'] as $channel_name => $link): ?>
+						<div class="dropdown__item">
+							<a href="<?=$link?>"><?=$channel_name?></a>
+							<?php if (ee()->cp->allowed_group('can_create_entries') && array_key_exists($channel_name, $cp_main_menu['channels']['create'])): ?>
+							<a href="<?=$cp_main_menu['channels']['create'][$channel_name]?>" class="dropdown__item-button button button--action button--small"><i class="fas fa-plus"></i></a>
+							<?php endif; ?>
+						</div>
+					<?php endforeach ?>
+				</div>
 				<?php endif; ?>
 
 				<?php if (ee()->cp->allowed_group('can_access_files')) : ?>
