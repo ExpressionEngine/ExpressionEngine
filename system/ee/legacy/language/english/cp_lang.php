@@ -295,7 +295,7 @@ $lang = array(
 
 'results' => 'results',
 
-'select_all' => 'select all',
+'select_all' => 'Select All',
 
 'search_in' => 'Search in',
 
