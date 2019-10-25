@@ -1,21 +1,27 @@
 <?php $this->extend('_templates/default-nav'); ?>
 
 	<?=form_open($base_url)?>
-		<?php if ($can_create_categories):?>
-		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=ee('CP/URL')->make('categories/create/'.$cat_group->group_id)?>"><?=lang('new_category')?></a>
-		</fieldset>
-		<?php endif; ?>
-		<h1><?=$cp_page_title?></h1>
+
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-		<div class="tbl-list-wrap">
+
+		<div class="title-bar">
+			<h2 class="title-bar__title"><?=$cp_page_title?></h2>
+
+			<div class="title-bar__extra-tools">
+				<?php if ($can_create_categories):?>
+					<a class="tn button button--small button--action" href="<?=ee('CP/URL')->make('categories/create/'.$cat_group->group_id)?>"><?=lang('new_category')?></a>
+				<?php endif; ?>
+			</div>
+		</div>
+
+		<div class="js-list-group-wrap">
 			<?php if (count($categories->children()) != 0 && $can_delete_categories): ?>
-				<div class="tbl-list-ctrl">
-					<label class="ctrl-all"><span>select all</span> <input type="checkbox"></label>
+				<div class="list-group-controls">
+					<label class="ctrl-all"><span><?=lang('select_all')?></span> <input type="checkbox" class="checkbox--small"></label>
 				</div>
 			<?php endif ?>
-			<div class="nestable">
-				<ul class="tbl-list">
+			<div class="js-nestable-categories">
+				<ul class="list-group list-group--nested">
 					<?php foreach ($categories->children() as $category): ?>
 						<?php $this->embed('channels/cat/_category', array('category' => $category)); ?>
 					<?php endforeach ?>
