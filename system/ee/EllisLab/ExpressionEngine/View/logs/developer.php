@@ -9,26 +9,29 @@
 		<?php if (isset($filters)) echo $filters; ?>
 	</div>
 
-	<section class="item-wrap log">
+	<section>
 		<?php if (empty($rows)): ?>
 			<p class="no-results"><?=lang('no_developer_logs_found')?></p>
 		<?php else: ?>
+			<div class="list-group">
 			<?php foreach($rows as $row): ?>
-			<div class="item">
-				<ul class="toolbar">
-					<li class="remove"><a href="" class="m-link" rel="modal-confirm-<?=$row['log_id']?>" title="remove"></a></li>
-				</ul>
-				<h3><b><?=lang('date_logged')?>:</b> <?=$row['timestamp']?></h3>
-				<div class="message">
-					<?=$row['description']?>
+			<div class="list-item">
+				<div class="list-item__content">
+					<a href="" class="m-link button button--danger float-right" rel="modal-confirm-<?=$row['log_id']?>" title="remove"><i class="fas fa-trash-alt"></i></a>
+
+					<div><b><?=lang('date_logged')?>:</b> <?=$row['timestamp']?></div>
+					<div class="list-item__body">
+						<pre><code><?=$row['description']?></pre></code>
+					</div>
 				</div>
 			</div>
 			<?php endforeach; ?>
+			</div>
 
 			<?=$pagination?>
 
 			<fieldset class="bulk-action-bar">
-				<button class="button button--action m-link" rel="modal-confirm-all"><?=lang('clear_developer_logs')?></button>
+				<button class="button button--danger m-link" rel="modal-confirm-all"><?=lang('clear_developer_logs')?></button>
 			</fieldset>
 		<?php endif; ?>
 	</section>

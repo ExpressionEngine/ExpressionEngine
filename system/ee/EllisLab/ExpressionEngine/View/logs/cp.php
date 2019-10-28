@@ -8,33 +8,35 @@
 		<?php if (isset($filters)) echo $filters; ?>
 	</form>
 	<?=form_open($form_url)?>
-		<section class="item-wrap log">
+		<section>
 			<?php if (count($logs) == 0): ?>
 				<p class="no-results"><?=lang('no_control_panel_logs_found')?></p>
 			<?php else: ?>
+				<div class="list-group">
 				<?php foreach($logs as $log): ?>
 
-				<div class="item">
-					<ul class="toolbar">
-						<li class="remove"><a href="" class="m-link" rel="modal-confirm-<?=$log->id?>" title="remove"></a></li>
-					</ul>
-					<h3>
-						<b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->act_date)?>,
-						<b><?=lang('site')?>:</b> <?=$log->getSite()->site_label?><br>
-						<b><?=lang('username')?>:</b> <a href="<?=ee('CP/URL')->make('myaccount', array('id' => $log->member_id))?>"><?=$log->username?></a>,
-						<b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$log->ip_address?>
-					</h3>
-					<div class="message">
-						<p><?=$log->action?></p>
+				<div class="list-item">
+					<div class="list-item__content">
+						<a href="" title="<?=lang('remove')?>" rel="modal-confirm-<?=$log->id?>" class="m-link button button--danger float-right"><i class="fas fa-trash-alt"></i></a>
+						<div>
+							<b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->act_date)?>,
+							<b><?=lang('site')?>:</b> <?=$log->getSite()->site_label?><br>
+							<b><?=lang('username')?>:</b> <a href="<?=ee('CP/URL')->make('myaccount', array('id' => $log->member_id))?>"><?=$log->username?></a>,
+							<b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$log->ip_address?>
+						</div>
+						<div class="list-item__body">
+							<pre><code><?=$log->action?></pre></code>
+						</div>
 					</div>
 				</div>
 
 				<?php endforeach; ?>
+				</div>
 
 				<?=$pagination?>
 
 				<fieldset class="bulk-action-bar">
-					<button class="button button--action m-link" rel="modal-confirm-all"><?=lang('clear_cp_logs')?></button>
+					<button class="button button--danger m-link" rel="modal-confirm-all"><?=lang('clear_cp_logs')?></button>
 				</fieldset>
 			<?php endif; ?>
 		</section>

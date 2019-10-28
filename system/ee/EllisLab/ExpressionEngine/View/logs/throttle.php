@@ -9,31 +9,35 @@
 		<?php if (isset($filters)) echo $filters; ?>
 	</div>
 
-	<section class="item-wrap log">
+	<section>
 		<?php if ($disabled): ?>
 			<p class="no-results"><?=lang('throttling_disabled')?> <a href="<?=ee('CP/URL')->make('settings/throttling')?>"><?=lang('enable_throttling')?></a></p>
 		<?php else: ?>
 			<?php if (count($logs) == 0): ?>
 				<p class="no-results"><?=lang('no_throttling_logs_found')?></p>
 			<?php else: ?>
+				<div class="list-group">
 				<?php foreach($logs as $log): ?>
 
-				<div class="item">
-					<ul class="toolbar">
-					<li class="remove"><a href="" class="m-link" rel="modal-confirm-<?=$log->throttle_id?>" title="remove"></a></li>
-					</ul>
-					<h3><b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->last_activity)?>, <b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$log->ip_address?></h3>
-					<div class="message">
-						<p><?=lang('front_end_requests')?>: <?=$log->hits?></p>
+				<div class="list-item">
+					<div class="list-item__content">
+						<a href="" class="m-link float-right button button--danger" rel="modal-confirm-<?=$log->throttle_id?>" title="<?=lang('remove')?>"><i class="fas fa-trash-alt"></i></a>
+
+						<div><b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->last_activity)?>, <b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$log->ip_address?></div>
+
+						<div class="list-item__body">
+							<pre><code><?=lang('front_end_requests')?>: <?=$log->hits?></pre></code>
+						</div>
 					</div>
 				</div>
 
 				<?php endforeach; ?>
+				</div>
 
 				<?=$pagination?>
 
 				<fieldset class="bulk-action-bar">
-				<button class="button button--action m-link" rel="modal-confirm-all"><?=lang('clear_throttle_logs')?></button>
+					<button class="button button--danger m-link" rel="modal-confirm-all"><?=lang('clear_throttle_logs')?></button>
 				</fieldset>
 			<?php endif; ?>
 		<?php endif; ?>
