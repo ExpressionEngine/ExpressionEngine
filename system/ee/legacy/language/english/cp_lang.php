@@ -343,6 +343,12 @@ $lang = array(
 
 'important' => 'Important!',
 
+'viewtype_list' => 'List',
+
+'viewtype_thumb' => 'Thumb',
+
+'viewtype_hybrid' => 'Hybrid',
+
 /* Sites and Channels */
 'avatar_path' => 'Avatar Path',
 
