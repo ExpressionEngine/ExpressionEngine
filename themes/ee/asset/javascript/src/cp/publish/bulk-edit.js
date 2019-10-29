@@ -143,8 +143,8 @@ EE.cp.BulkEdit = {
 
 		$.fuzzyFilter()
 		var that = this
-		this.formContainer.find('.fluid-wrap')
-			.find('.js-sorting-container .fluid-item')
+		this.formContainer.find('.fluid')
+			.find('.js-sorting-container .fluid__item')
 			.each(function(i, item) {
 				that._toggleMenuItem($(item).data('fieldName'))
 			})
@@ -177,11 +177,9 @@ EE.cp.BulkEdit = {
 	 */
 	_bindAddField: function() {
 		var that = this
-		this.modal.off('click', '.fluid-actions a[data-field-name]')
-		this.modal.on('click', '.fluid-actions a[data-field-name]', function(e) {
-			e.preventDefault()
-
-			var wrapper = $(this).closest('.fluid-wrap'),
+		this.modal.off('click', '.fluid__footer a[data-field-name]')
+		this.modal.on('click', '.fluid__footer a[data-field-name]', function(e) {
+			var wrapper = $(this).closest('.fluid'),
 				fieldName = $(this).data('fieldName'),
 				template = wrapper.find('.fluid-field-templates [data-field-name="'+fieldName+'"]'),
 				fieldContainer = wrapper.find('.js-sorting-container')
@@ -194,11 +192,7 @@ EE.cp.BulkEdit = {
 			that._enableOrDisableButtons()
 
 			// Close Add menu
-			$(this).closest('.filters')
-				.find('.open')
-				.removeClass('open')
-				.siblings('.sub-menu')
-				.hide();
+			$('.js-dropdown-toggle.dropdown-open').trigger('click');
 
 			// TODO: Once we have generic callback for fieldtypes to instantiate
 			// their stuff in a future version, use that here instead
@@ -214,10 +208,10 @@ EE.cp.BulkEdit = {
 	 */
 	_bindRemoveField: function() {
 		var that = this
-		this.modal.on('click', '.fluid-ctrls a.fluid-remove', function(e) {
+		this.modal.on('click', '.js-fluid-remove', function(e) {
 			e.preventDefault()
 
-			var item = $(this).closest('.fluid-item')
+			var item = $(this).closest('.fluid__item')
 
 			that._toggleMenuItem(item.data('fieldName'), false)
 			item.appendTo(that.formContainer.find('.fluid-field-templates'))
@@ -237,9 +231,18 @@ EE.cp.BulkEdit = {
 	 * @return {void}
 	 */
 	_toggleMenuItem: function(fieldName, toggle) {
-		this.formContainer.find('.fluid-actions a[data-field-name="'+fieldName+'"]')
-			.closest('li')
+		this.formContainer.find('.fluid__footer a[data-field-name="'+fieldName+'"]')
 			.toggleClass('hidden', toggle)
+
+		var allItems = this.formContainer.find('.fluid__footer a[data-field-name]')
+		var hiddenItems = this.formContainer.find('.fluid__footer a[data-field-name].hidden')
+
+		// Hide the add menu when there's no more filters to add
+		if (allItems.length === hiddenItems.length) {
+			this.formContainer.find('.fluid__footer').hide()
+		} else {
+			this.formContainer.find('.fluid__footer').show()
+		}
 	},
 
 	/**
@@ -250,11 +253,11 @@ EE.cp.BulkEdit = {
 	_enableOrDisableButtons: function() {
 
 		// No Fluid field? Nothing to do
-		if (this.modal.find('.fluid-wrap').size() == 0) {
+		if (this.modal.find('.fluid').size() == 0) {
 			return
 		}
 
-		var itemCount = this.formContainer.find('.js-sorting-container .fluid-item').size(),
+		var itemCount = this.formContainer.find('.js-sorting-container .fluid__item').size(),
 			buttons = this.formContainer.find('input.btn')
 
 		if (itemCount == 0) {

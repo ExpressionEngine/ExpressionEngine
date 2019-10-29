@@ -384,7 +384,8 @@ class Fluid_field_ft extends EE_Fieldtype {
 						'filters' => $filters,
 						'errors' => $this->errors,
 						'reorderable' => TRUE,
-						'show_field_type' => TRUE
+						'show_field_type' => FALSE,
+						'fields' => $filter_options
 					]);
 				}
 			}
@@ -419,7 +420,8 @@ class Fluid_field_ft extends EE_Fieldtype {
 					'filters' => $filters,
 					'errors' => $this->errors,
 					'reorderable' => TRUE,
-					'show_field_type' => TRUE
+					'show_field_type' => FALSE,
+					'fields' => $filter_options
 				]);
 			}
 		}
@@ -438,7 +440,8 @@ class Fluid_field_ft extends EE_Fieldtype {
 				'filters' => $filters,
 				'errors' => $this->errors,
 				'reorderable' => TRUE,
-				'show_field_type' => TRUE
+				'show_field_type' => FALSE,
+				'fields' => $filter_options
 			]);
 		}
 

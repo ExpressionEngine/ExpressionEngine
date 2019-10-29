@@ -832,19 +832,11 @@ $(document).ready(function(){
 
 		// Fieldset toggle
 		$('.js-toggle-field')
-			.not('.fluid-ctrls .js-toggle-field')
 			.on('click',function(){
 				$(this)
-					.parents('fieldset,.fieldset-faux-fluid,.fieldset-faux')
+					.parents('fieldset,.fieldset-faux')
 					.toggleClass('fieldset---closed');
 			});
-
-		// Fluid field item toggle, wide initial selector for Fluids brought in via AJAX
-		$('body').on('click', '.fieldset-faux-fluid .fluid-ctrls .js-toggle-field', function(){
-			$(this)
-				.closest('.fluid-item')
-				.toggleClass('fluid-closed');
-		});
 
 	// ===================
 	// input range sliders
