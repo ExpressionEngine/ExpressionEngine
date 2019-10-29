@@ -339,7 +339,7 @@ $(document).ready(function(){
 	})
 
 	// Hoverable dropdowns should be clickable on mobile
-	$('js-dropdown-hover').on('touchstart', function(e) {
+	$('body').on('touchstart', '.js-dropdown-hover', function(e) {
 		e.preventDefault()
 
 		var dropdown = getDropdownForElement(this)
@@ -360,7 +360,7 @@ $(document).ready(function(){
 		return false;
 	})
 
-	$('[data-toggle-dropdown], .js-dropdown-toggle').on('click', function(e) {
+	$('body').on('click', '[data-toggle-dropdown], .js-dropdown-toggle', function(e) {
 		e.preventDefault()
 
 		var dropdown = getDropdownForElement(this)
