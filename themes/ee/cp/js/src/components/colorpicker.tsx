@@ -220,7 +220,7 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
         if (this.props.enableOpacity && returnColor.rgb.a != 1)
             return returnColor.rgbaStr
 
-        return returnColor.hexStr
+        return returnColor.hexStr.toUpperCase()
     }
 
     /** Returns the selected color making sure it's not null */

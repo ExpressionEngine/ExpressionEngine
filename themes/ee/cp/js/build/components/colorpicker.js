@@ -142,7 +142,7 @@ var ColorPicker = /** @class */ (function (_super) {
             return '';
         if (this.props.enableOpacity && returnColor.rgb.a != 1)
             return returnColor.rgbaStr;
-        return returnColor.hexStr;
+        return returnColor.hexStr.toUpperCase();
     };
     /** Returns the selected color making sure it's not null */
     ColorPicker.prototype.getSafeSelectedColor = function () {
