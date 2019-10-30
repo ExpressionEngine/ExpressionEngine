@@ -1,6 +1,6 @@
 <div class="fluid__item <?php if ($reorderable): ?>fluid__item--reorderable<?php endif ?>" data-field-name="<?=$field_name?>" data-field-type="<?=$field->getType()?>">
 	<div class="fluid__item-content">
-		<div class="fluid__item-fieldset reorder">
+		<div class="fluid__item-fieldset reorder js-toggle-fluid-item">
 			<div class="field-instruct">
 				<label><?=$field->getItem('field_label')?> <?php if ($show_field_type): ?><span class="faded">(<?=$field->getType()?>)</span><?php endif ?></label>
 				<em><?=$field->getItem('field_instructions')?></em>
