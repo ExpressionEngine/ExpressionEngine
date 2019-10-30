@@ -141,7 +141,7 @@ class FolderList {
 
 		if (empty($items) && $this->no_results)
 		{
-			$items = '<li class="no-results">' . $this->no_results . '</li>';
+			$items = '<div class="no-results">' . $this->no_results . '</div>';
 		}
 
 		return $view->make('_shared/sidebar/folder_list')
