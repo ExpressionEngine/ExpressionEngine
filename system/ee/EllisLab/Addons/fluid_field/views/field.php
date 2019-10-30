@@ -34,11 +34,11 @@
 			<a href class="dropdown__link danger-link js-fluid-remove"><i class="fas fa-fw fa-trash-alt"></i> <?=lang('delete')?></a>
 		</div>
 		<?php else: ?>
-			<a href class="fluid__item-tool js-fluid-remove danger-link"><i class="fas fa-fw fa-trash-alt"></i></a>
+			<a href class="fluid__item-tool js-fluid-remove danger-link" title="<?=lang('remove')?>"><i class="fas fa-fw fa-trash-alt"></i></a>
 		<?php endif; ?>
 
 		<?php if ( empty($is_bulk_edit) AND isset($fields)): ?>
-			<a href data-dropdown-pos="bottom-end" class="fluid__item-tool js-dropdown-toggle"><i class="fas fa-fw fa-plus"></i></a>
+			<a href data-dropdown-pos="bottom-end" class="fluid__item-tool js-dropdown-toggle" title="<?=lang('add_field')?>"><i class="fas fa-fw fa-plus"></i></a>
 			<div class="dropdown">
 			<?php foreach ($fields as $field_item): ?>
 				<a href="#" class="dropdown__link" data-field-name="<?=$field_item->getShortName()?>">
@@ -49,6 +49,6 @@
 		<?php endif; ?>
 	</div>
 	<div class="fluid__item-tools fluid__item-tools--item-closed hidden">
-		<a href class="fluid__item-tool js-toggle-fluid-item"><i class="fas fa-fw fa-angle-double-down"></i></a>
+		<a href class="fluid__item-tool js-toggle-fluid-item" title="<?=lang('expand')?>"><i class="fas fa-fw fa-angle-double-down"></i></a>
 	</div>
 </div>

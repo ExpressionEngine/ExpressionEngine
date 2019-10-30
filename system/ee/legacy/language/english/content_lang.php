@@ -374,6 +374,8 @@ $lang = array(
 
 'fields' => 'Fields',
 
+'add_field' => 'Add Field',
+
 'file_exists' => 'A file already exists with this name',
 
 'file_exists_warning' => 'File Exists Warning',
@@ -801,6 +803,8 @@ $lang = array(
 'collapse' => 'Collapse',
 
 'collapse_all' => 'Collapse All',
+
+'expand' => 'Expand',
 
 'expand_all' => 'Expand All',
 
