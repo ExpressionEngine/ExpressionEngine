@@ -133,7 +133,7 @@ class Homepage extends CP_Controller {
 					$news[] = array(
 						'title'   => strip_tags($item->get_title()),
 						'date'    => ee()->localize->format_date(
-							"%j%S %F, %Y",
+							"%j%S %M, %Y",
 							$item->get_date('U')
 						),
 						'content' => ee('Security/XSS')->clean(
