@@ -53,6 +53,26 @@
 				<?php endif ?>
 			<?php endif ?>
 		<?php endif ?>
+
+		<?php if (isset($header['action_buttons']) && count($header['action_buttons'])): ?>
+				<?php foreach ($header['action_buttons'] as $button): ?>
+						<?php if (isset($button['choices'])): ?>
+							<a href="#" class="button button--action js-dropdown-toggle" data-dropdown-pos="bottom-end"><?=$button['text']?> <i class="fas fa-caret-down icon-right"></i></a>
+							<div class="dropdown">
+								<?php if (count($button['choices']) > 8): ?>
+									<div class="dropdown__search">
+										<input type="text" value="" data-fuzzy-filter="true" placeholder="<?=$button['filter_placeholder']?>">
+									</div>
+								<?php endif ?>
+								<?php foreach ($button['choices'] as $link => $text): ?>
+									<a href="<?=$link?>" class="dropdown__link"><?=$text?></a>
+								<?php endforeach ?>
+							</div>
+						<?php else: ?>
+							<a class="button button--action" href="<?=$button['href']?>" rel="<?=isset($button['rel']) ? $button['rel'] : ''?>"><?=$button['text']?></a>
+						<?php endif ?>
+				<?php endforeach ?>
+			<?php endif ?>
 	</div>
 
 
