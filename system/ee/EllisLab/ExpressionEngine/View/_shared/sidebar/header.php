@@ -1,7 +1,4 @@
 <h2 class="sidebar__section-title <?php if ($class) echo $class; ?>">
-<?php if (isset($icon_class)): ?>
-    <i class="fas fa-<?=$icon_class?>"></i>
-<?php endif; ?>
 <?php if ($url): ?>
 	<a href="<?=$url?>"<?php if ($external) echo ' rel="external"'?>><?=$text?></a>
 <?php else: ?>
