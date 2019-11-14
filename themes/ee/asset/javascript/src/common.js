@@ -946,4 +946,45 @@ $(document).ready(function(){
 				$('.app-about-info:visible').hide()
 			}
 		});
+
+
+		// -------------------------------------------------------------------
+
+		// This listens to the DOM, and automatically moves app alerts that are added
+		// to the top of the app into the fixed alerts container.
+		var alertObserver = new MutationObserver(function(mutations) {
+			mutations.forEach(function(mutation) {
+				if (mutation.addedNodes && mutation.addedNodes.length > 0) {
+
+					var hasClass = [].some.call(mutation.addedNodes, function(el) {
+						return el.classList.contains('app-notice')
+					})
+
+					if (hasClass) {
+						$(mutation.addedNodes).each(function () {
+							alert = $(this)
+
+							// Don't add the alert if its not at the top of the body
+							if (!alert.parent().is(document.body)) {
+								return
+							}
+
+							// Move the notice to the global alerts div, and animate it in
+							alert.hide()
+							alert.appendTo('.global-alerts')
+							alert.fadeIn()
+
+							// Make sure the app notice has a close button
+							if (!alert.find('.app-notice__controls').length) {
+								$(`<a href="#" class="app-notice__controls js-notice-dismiss"><span class="app-notice__dismiss"></span></a>`).insertAfter(alert.find('.app-notice__content'))
+							}
+						})
+					}
+				}
+			})
+		})
+
+		// Start observing changes
+		alertObserver.observe(document.body, { childList: true })
+
 }); // close (document).ready
