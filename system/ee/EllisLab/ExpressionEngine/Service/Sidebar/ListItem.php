@@ -38,11 +38,6 @@ abstract class ListItem {
 	 */
 	protected $class = array();
 
-    /**
-     * @var string $icon_class The class of the icon to use
-     */
-    protected $icon_class = '';
-
 	/**
 	 * Constructor: sets the text and url properties of the item
 	 *
@@ -50,18 +45,13 @@ abstract class ListItem {
 	 * @param URL|string $url An optional CP\URL object or string containing the
 	 *   URL for the text.
 	 */
-	public function __construct($text, $url = NULL, $icon_class = NULL)
+	public function __construct($text, $url = NULL)
 	{
 		$this->text = $text;
 		if ($url)
 		{
 			$this->withUrl($url);
 		}
-
-        if ($icon_class)
-        {
-            $this->withIcon($icon_class);
-        }
 	}
 
 	/**
@@ -147,19 +137,6 @@ abstract class ListItem {
 	{
 		return $this->removeClass('act');
 	}
-
-    /**
-     * Sets the icon class property of the header
-     *
-     * @param string $icon_class The class of the icon to use
-     *   URL for the button.
-     * @return self This returns a reference to itself
-     */
-    public function withIcon($icon_class)
-    {
-        $this->icon_class = $icon_class;
-        return $this;
-    }
 
 	/**
 	 * Marks the item as selected
