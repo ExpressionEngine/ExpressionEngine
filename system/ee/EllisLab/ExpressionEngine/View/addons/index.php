@@ -26,7 +26,7 @@
 	</div>
 
 	<?php if (count($uninstalled)): ?>
-		<h4 class="line-heading">Disabled</h4>
+		<h4 class="line-heading"><?=lang('uninstalled')?></h4>
 		<hr>
 
 		<div class="add-on-card-list">

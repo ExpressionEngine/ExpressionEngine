@@ -21,7 +21,7 @@
 
 		<div class="button-segment">
 			<?php if (!$installed) : ?>
-				<a href="" data-post-url="<?= $install_url ?>" class="button button--primary"><?= lang('enable') ?></a>
+				<a href="" data-post-url="<?= $install_url ?>" class="button button--primary"><?= lang('install') ?></a>
 			<?php endif; ?>
 
 			<?php if (isset($update)) : ?>
@@ -41,7 +41,7 @@
 			<?php if (ee()->cp->allowed_group('can_admin_addons') && $installed) : ?>
 				<a href="" class="button button--secondary js-dropdown-toggle"><i class="fas fa-fw fa-cog"></i></a>
 				<div class="dropdown">
-					<a class="dropdown__link" href="" data-post-url="<?= $remove_url ?>" class="button button--primary"><?= lang('disable') ?></a>
+					<a class="dropdown__link" href="" data-post-url="<?= $remove_url ?>" class="button button--primary"><?= lang('uninstall') ?></a>
 				</div>
 			<?php endif; ?>
 		</div>
