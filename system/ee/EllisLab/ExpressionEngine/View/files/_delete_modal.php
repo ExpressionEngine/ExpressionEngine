@@ -2,12 +2,8 @@
 
 <div class="modal-wrap modal-view-file hidden">
 	<div class="modal modal--no-padding">
-		<div class="col-group">
-			<div class="col w-16">
-				<a class="m-close" href="#"></a>
-				<div class="box">
-				</div>
-			</div>
+		<a class="m-close" href="#"></a>
+		<div class="box">
 		</div>
 	</div>
 </div>

@@ -276,27 +276,20 @@ $(document).ready(function(){
 	// Dropdown menus
 	// -------------------------------------------------------------------
 
-	$('[data-toggle-dropdown], .js-dropdown-toggle').on('click', function(e) {
-		e.preventDefault()
-
-		var dropdown = $(this).siblings('.dropdown').get(0) || $(`[data-dropdown='${this.dataset.toggleDropdown}']`).get(0)
+	// Gets a dropdown for a element, and makes sure its initialized
+	function getDropdownForElement(element) {
+		var dropdown = $(element).next('.dropdown').get(0) || $(`[data-dropdown='${element.dataset.toggleDropdown}']`).get(0)
 
 		// Does the dropdown exist?
 		if (!dropdown) {
-			return
+			return null
 		}
 
-		// Hide other dropdowns
-		$('.dropdown--open').not(dropdown).removeClass('dropdown--open')
-		$('.dropdown-open').removeClass('dropdown-open')
+		// If the dropdown doesn't has a popper, initialize a new popper
+		if (!dropdown._popper) {
+			var placement = element.dataset.dropdownPos || 'bottom-start'
 
-		var dropdownShown = dropdown.classList.contains('dropdown--open')
-
-		// If the dropdown doesn't has a popper, and it's going to be shown, initialize a new popper
-		if (!dropdown._popper && !dropdownShown) {
-			var placement = this.dataset.dropdownPos || 'bottom-start'
-
-			dropdown._popper = new Popper(this, dropdown, {
+			dropdown._popper = new Popper(element, dropdown, {
 				placement: placement,
 				modifiers: {
 					offset: {
@@ -312,6 +305,75 @@ $(document).ready(function(){
 				},
 			})
 		}
+
+		return dropdown
+	}
+
+
+	$('.js-dropdown-hover').each(function() {
+		var reference = this
+		var dropdown = getDropdownForElement(reference)
+
+		if (!dropdown) {
+			return
+		}
+
+		var count = 0;
+		var tolerance = 200;
+
+		$(reference).add(dropdown).mouseenter(function() {
+			count++
+
+			reference.classList.add('dropdown-open')
+			dropdown.classList.add('dropdown--open');
+		}).mouseleave(function() {
+			count = Math.max(0, count - 1)
+
+			setTimeout(function() {
+				if (count == 0) {
+					reference.classList.remove('dropdown-open')
+					dropdown.classList.remove('dropdown--open');
+				}
+			}, tolerance);
+		});
+	})
+
+	// Hoverable dropdowns should be clickable on mobile
+	$('body').on('touchstart', '.js-dropdown-hover', function(e) {
+		e.preventDefault()
+
+		var dropdown = getDropdownForElement(this)
+
+		if (!dropdown) {
+			return
+		}
+
+		// Hide other dropdowns
+		$('.dropdown--open').not(dropdown).removeClass('dropdown--open')
+		$('.dropdown-open').removeClass('dropdown-open')
+
+		var dropdownShown = dropdown.classList.contains('dropdown--open')
+
+		this.classList.toggle('dropdown-open', !dropdownShown)
+		dropdown.classList.toggle('dropdown--open');
+
+		return false;
+	})
+
+	$('body').on('click', '[data-toggle-dropdown], .js-dropdown-toggle', function(e) {
+		e.preventDefault()
+
+		var dropdown = getDropdownForElement(this)
+
+		if (!dropdown) {
+			return
+		}
+
+		// Hide other dropdowns
+		$('.dropdown--open').not(dropdown).removeClass('dropdown--open')
+		$('.dropdown-open').removeClass('dropdown-open')
+
+		var dropdownShown = dropdown.classList.contains('dropdown--open')
 
 		this.classList.toggle('dropdown-open', !dropdownShown)
 		dropdown.classList.toggle('dropdown--open');
@@ -679,6 +741,9 @@ $(document).ready(function(){
 			})
 		})
 
+	// Table checkbox selection and bulk action display
+	// -------------------------------------------------------------------
+
 		// Highlight table rows when checked
 		$('body').on('click', 'table tr', function(event) {
 			if (event.target.nodeName != 'A') {
@@ -701,37 +766,38 @@ $(document).ready(function(){
 			}
 		});
 
-		// Check a table list row's checkbox when its item body is clicked
-		$('body').on('click', '.tbl-row', function(event) {
+	// List group checkbox selection and bulk action display
+	// -------------------------------------------------------------------
+
+		// Check a list item checkbox if its container is clicked
+		$('body').on('click', '.list-item__checkbox', function(event) {
 			if (event.target.nodeName == 'DIV') {
-				$(this).find('> .check-ctrl input').click()
+				$(this).find('> input').click()
 			}
 		});
 
-		// "Table" lists
-		$('body').on('click change', '.tbl-list .check-ctrl input', function() {
-			$(this).parents('.tbl-row').toggleClass('selected', $(this).is(':checked'));
+		// List group selection
+		$('body').on('click change', '.list-group .list-item__checkbox input', function() {
+			$(this).parents('.list-item').toggleClass('list-item--selected', $(this).is(':checked'));
 
-			var tableList = $(this).parents('.tbl-list');
+			var tableList = $(this).parents('.list-group');
 
 			// If all checkboxes are checked, check the Select All box
-			var allSelected = (tableList.find('.check-ctrl input:checked').length == tableList.find('.check-ctrl input').length);
-			$(this).parents('.tbl-list-wrap').find('.tbl-list-ctrl input').prop('checked', allSelected);
+			var allSelected = (tableList.find('.list-item__checkbox input:checked').length == tableList.find('.list-item__checkbox input').length);
+			$(this).parents('.js-list-group-wrap').find('.list-group-controls .ctrl-all input').prop('checked', allSelected);
 
 			// Toggle the bulk actions
-			if (tableList.find('.check-ctrl input:checked').length == 0)
-			{
-				$(this).parents('.tbl-list-wrap').siblings('.bulk-action-bar').addClass('hidden');
-			} else
-			{
-				$(this).parents('.tbl-list-wrap').siblings('.bulk-action-bar').removeClass('hidden');
+			if (tableList.find('.list-item__checkbox input:checked').length == 0) {
+				$(this).parents('.js-list-group-wrap').siblings('.bulk-action-bar').addClass('hidden');
+			} else {
+				$(this).parents('.js-list-group-wrap').siblings('.bulk-action-bar').removeClass('hidden');
 			}
 		});
 
 		// Select all for "table" lists
-		$('body').on('click', '.tbl-list-ctrl input', function(){
-			$(this).parents('.tbl-list-wrap')
-				.find('.tbl-list .check-ctrl input')
+		$('body').on('click', '.list-group-controls .ctrl-all input', function(){
+			$(this).parents('.js-list-group-wrap')
+				.find('.list-group .list-item__checkbox input')
 				.prop('checked', $(this).is(':checked'))
 				.trigger('change');
 		});
@@ -766,19 +832,11 @@ $(document).ready(function(){
 
 		// Fieldset toggle
 		$('.js-toggle-field')
-			.not('.fluid-ctrls .js-toggle-field')
 			.on('click',function(){
 				$(this)
-					.parents('fieldset,.fieldset-faux-fluid,.fieldset-faux')
+					.parents('fieldset,.fieldset-faux')
 					.toggleClass('fieldset---closed');
 			});
-
-		// Fluid field item toggle, wide initial selector for Fluids brought in via AJAX
-		$('body').on('click', '.fieldset-faux-fluid .fluid-ctrls .js-toggle-field', function(){
-			$(this)
-				.closest('.fluid-item')
-				.toggleClass('fluid-closed');
-		});
 
 	// ===================
 	// input range sliders

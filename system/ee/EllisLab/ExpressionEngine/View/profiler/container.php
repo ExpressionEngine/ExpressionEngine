@@ -77,7 +77,6 @@
 	</script>
 <?php endif; ?>
 
-<link rel="stylesheet" href="<?=URL_THEMES?>debug/css/highlight.css">
 <script src="<?=URL_THEMES?>debug/javascript/highlight.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {

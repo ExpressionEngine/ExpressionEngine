@@ -24,14 +24,14 @@
 			</fieldset>
 			<h1><?=lang('all_pages')?></h1>
 			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-			<div class="tbl-list-wrap">
+			<div class="js-list-group-wrap">
 				<?php if (count($pages->children()) != 0): ?>
-					<div class="tbl-list-ctrl">
-						<label class="ctrl-all"><span>select all</span> <input type="checkbox"></label>
+					<div class="list-group-controls">
+						<label class="ctrl-all"><span><?=lang('select_all')?></span> <input type="checkbox" class="checkbox--small"></label>
 					</div>
 				<?php endif ?>
-				<div class="nestable">
-					<ul class="tbl-list">
+				<div>
+					<ul class="list-group list-group--nested">
 						<?php foreach ($pages->children() as $page): ?>
 							<?php $this->embed('pages:_page', array('page' => $page)); ?>
 						<?php endforeach ?>

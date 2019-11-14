@@ -81,7 +81,18 @@ abstract class AbstractChannels extends CP_Controller {
 					'href' => ee('CP/URL')->make('settings/content-design'),
 					'title' => lang('settings')
 				)
-			)
+			),
+			'action_buttons' => [
+				[
+					'text' => lang('import'),
+					'href' => '#',
+					'rel' => 'import-channel'
+				],
+				[
+					'text' => lang('new_channel'),
+					'href' => ee('CP/URL', 'channels/create')
+				]
+			]
 		);
 
 		ee()->javascript->set_global(

@@ -104,9 +104,6 @@ class Edit extends AbstractPublishController {
 			'column_status' => array(
 				'type'	=> Table::COL_STATUS
 			),
-			'manage' => array(
-				'type'	=> Table::COL_TOOLBAR
-			),
 			array(
 				'type'	=> Table::COL_CHECKBOX
 			)
@@ -207,24 +204,6 @@ class Edit extends AbstractPublishController {
 				$comments = '(0)';
 			}
 
-			$toolbar = array();
-
-			if ($entry->hasLivePreview())
-			{
-				$toolbar['view'] = array(
-					'href' => ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, ['preview' => 'y']),
-					'title' => lang('preview'),
-				);
-			}
-
-			if ($can_edit)
-			{
-				$toolbar['edit'] = array(
-					'href' => $edit_link,
-					'title' => lang('edit')
-				);
-			}
-
 			if (ee()->cp->allowed_group('can_delete_all_entries')
 				|| (ee()->cp->allowed_group('can_delete_self_entries') &&
 					$entry->author_id == ee()->session->userdata('member_id')
@@ -267,7 +246,6 @@ class Edit extends AbstractPublishController {
 				$title,
 				ee()->localize->human_time($entry->entry_date),
 				$status,
-				array('toolbar_items' => $toolbar),
 				array(
 					'name' => 'selection[]',
 					'value' => $entry->entry_id,

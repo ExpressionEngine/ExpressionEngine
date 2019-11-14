@@ -26,47 +26,37 @@
 		}
 
 		?>
-		<div id="idle-modal" class="modal-wrap modal-timeout hidden">
-			<div class="modal">
-				<div class="col-group snap">
-					<div class="col w-16 last">
-						<a class="m-close" href="#"></a>
-						<div class="form-standard">
-							<?=form_open(ee('CP/URL')->make('login/authenticate'))?>
-								<div class="form-btns form-btns-top">
-									<h1>Log into <?=ee()->config->item('site_name')?></h1>
-								</div>
-								<?=ee('CP/Alert')
-									->makeInline()
-									->asImportant()
-									->addToBody(lang('session_timeout'))
-									->render()?>
-								<fieldset class="fieldset-required">
-									<div class="field-instruct">
-										<label><?=lang('username')?></label>
-										<em></em>
-									</div>
-									<div class="field-control">
-										<input type="text" value="<?=form_prep(ee()->session->userdata('username'))?>" disabled="disabled">
-										<input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
-									</div>
-								</fieldset>
-								<fieldset class="fieldset-required">
-									<div class="field-instruct">
-										<label><?=lang('password')?></label>
-										<em></em>
-									</div>
-									<div class="field-control">
-										<input type="password" name="password" value="" id="logout-confirm-password">
-									</div>
-								</fieldset>
-								<div class="form-btns">
-									<?=form_submit('submit', lang('login'), 'class="btn" data-submit-text="'.lang('login').'" data-work-text="'.lang('authenticating').'"')?>
-								</div>
-							<?=form_close()?>
-						</div>
+		<div id="idle-modal" class="modal-wrap modal-wrap--small modal-timeout hidden">
+			<div class="modal modal--no-padding dialog dialog--warning">
+
+			<div class="dialog__header dialog__header--centered">
+				<div class="dialog__icon"><i class="fas fa-user-clock"></i></div>
+				<h2 class="dialog__title">Log into <?=ee()->config->item('site_name')?></h2>
+			</div>
+
+			<div class="dialog__body">
+			<?=lang('session_timeout')?>
+			</div>
+
+			<?=form_open(ee('CP/URL')->make('login/authenticate'))?>
+			<div class="dialog__actions">
+				<input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
+				<fieldset class="fieldset-required">
+					<div class="field-instruct">
+						<label><?=sprintf(lang('password_for'), form_prep(ee()->session->userdata('username')));?></label>
+					</div>
+					<div class="field-control">
+						<input type="password" name="password" value="" id="logout-confirm-password">
+					</div>
+				</fieldset>
+
+				<div class="dialog__buttons">
+					<div class="button-group">
+						<?=form_submit('submit', lang('login'), 'class="btn" data-submit-text="'.lang('login').'" data-work-text="'.lang('authenticating').'"')?>
 					</div>
 				</div>
+			</div>
+			<?=form_close()?>
 			</div>
 		</div>
 		<?=ee('CP/Alert')->getStandard()?>

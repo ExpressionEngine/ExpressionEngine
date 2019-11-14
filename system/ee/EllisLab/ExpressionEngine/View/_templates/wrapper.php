@@ -18,7 +18,7 @@ $current_page = ee()->uri->segment(2);
 		<div class="dropdown">
 			<a class="dropdown__link" href="<?=ee()->config->item('site_url')?>" rel="external"><i class="fas fa-eye"></i> <?=lang('view_site')?></a>
 			<div class="dropdown__divider"></div>
-			<div class="dropdown__section-title"><?=lang('sites')?></div>
+			<div class="dropdown__header"><?=lang('sites')?></div>
 
 			<?php foreach ($cp_main_menu['sites'] as $site_name => $link): ?>
 				<a class="dropdown__link" href="<?=$link?>"><?=$site_name?></a>
@@ -38,67 +38,76 @@ $current_page = ee()->uri->segment(2);
 					<a class="nav-home" href="<?=$cp_homepage_url?>" title="<?=lang('nav_homepage')?>"><i class="icon-home"></i><span class="nav-txt-collapse"><?=lang('nav_homepage')?></span></a>
 					<a class="nav-overview" href="<?=ee('CP/URL', 'homepage')?>" title="<?=lang('nav_overview')?>"><i class="icon-dashboard"></i><span class="nav-txt-collapse"><?=lang('nav_overview')?></span></a>
 					<?php endif; ?> -->
-				<a href="<?=ee('CP/URL', 'homepage')?>" title="<?=lang('nav_overview')?>" class="<?= ($current_page == 'homepage' ? 'active' : '') ?>"><i class="fas fa-tachometer-alt"></i> <?=lang('nav_overview')?></a>
+				<a href="<?=ee('CP/URL', 'homepage')?>" title="<?=lang('nav_overview')?>" class="ee-sidebar__item <?= ($current_page == 'homepage' ? 'active' : '') ?>"><i class="fas fa-tachometer-alt"></i> <?=lang('nav_overview')?></a>
 
-				<?php if (ee()->cp->allowed_group('can_create_entries') && (count($cp_main_menu['channels']['create']) || ee()->cp->allowed_group('can_create_channels')) || ee()->cp->allowed_group_any('can_edit_other_entries', 'can_edit_self_entries')) : ?>
-				<a href="<?= ee('CP/URL', 'publish/edit') ?>" class="<?= (($current_page == 'publish') ? 'active' : '') ?>"><i class="fas fa-newspaper"></i> <?= lang('entries') ?></a>
+				<?php if (ee()->cp->allowed_group_any('can_edit_other_entries', 'can_edit_self_entries')) : ?>
+				<a data-dropdown-pos="right-start" href class="ee-sidebar__item js-dropdown-toggle <?= (($current_page == 'publish') ? 'active' : '') ?>"><i class="fas fa-newspaper"></i> <?= lang('entries') ?></a>
+				<div class="dropdown js-filterable">
+					<a href="<?= ee('CP/URL', 'publish/edit') ?>" class="dropdown__link"><b>View All</b></a>
+					<?php foreach ($cp_main_menu['channels']['edit'] as $channel_name => $link): ?>
+						<div class="dropdown__item">
+							<a href="<?=$link?>"><?=$channel_name?></a>
+							<?php if (ee()->cp->allowed_group('can_create_entries') && array_key_exists($channel_name, $cp_main_menu['channels']['create'])): ?>
+							<a href="<?=$cp_main_menu['channels']['create'][$channel_name]?>" class="dropdown__item-button button button--action button--small"><i class="fas fa-plus"></i></a>
+							<?php endif; ?>
+						</div>
+					<?php endforeach ?>
+				</div>
 				<?php endif; ?>
 
 				<?php if (ee()->cp->allowed_group('can_access_files')) : ?>
-				<a href="<?= ee('CP/URL', 'files') ?>" class="<?= ($current_page == 'files' ? 'active' : '') ?>"><i class="fas fa-folder"></i> <?= lang('menu_files') ?></a>
+				<a href="<?= ee('CP/URL', 'files') ?>" class="ee-sidebar__item <?= ($current_page == 'files' ? 'active' : '') ?>"><i class="fas fa-folder"></i> <?= lang('menu_files') ?></a>
 				<?php endif; ?>
 
 				<?php if (ee()->cp->allowed_group('can_access_members')) : ?>
-				<a href="<?= ee('CP/URL', 'members') ?>" class="<?= ($current_page == 'members' ? 'active' : '') ?>"><i class="fas fa-users"></i> <?= lang('menu_members') ?></a>
+				<a href="<?= ee('CP/URL', 'members') ?>" class="ee-sidebar__item <?= ($current_page == 'members' ? 'active' : '') ?>"><i class="fas fa-users"></i> <?= lang('menu_members') ?></a>
 				<?php endif; ?>
 
 				<?php if (ee()->cp->allowed_group('can_admin_channels') && ee()->cp->allowed_group_any('can_create_categories', 'can_edit_categories', 'can_delete_categories')) : ?>
-				<a href="<?= ee('CP/URL')->make('categories') ?>" class="<?= ($current_page == 'categories' ? 'active' : '') ?>"><i class="fas fa-tags"></i> <?= lang('categories') ?></a>
+				<a href="<?= ee('CP/URL')->make('categories') ?>" class="ee-sidebar__item <?= ($current_page == 'categories' ? 'active' : '') ?>"><i class="fas fa-tags"></i> <?= lang('categories') ?></a>
 				<?php endif; ?>
 
 				<?php if (ee()->cp->allowed_group('can_access_addons')) : ?>
-				<a href="<?= ee('CP/URL')->make('addons') ?>" class="<?= ($current_page == 'addons' ? 'active' : '') ?>"><i class="fas fa-bolt"></i> <?= lang('addons') ?></a>
-				<?php endif; ?>
-
-
-				<!-- Custom Links -->
-				<?php $custom = $cp_main_menu['custom']; ?>
-				<?php if ($custom && $custom->hasItems()) : ?>
-				<div class="nav-custom-wrap">
-					<nav class="nav-custom">
-						<?php foreach ($custom->getItems() as $item) : ?>
-						<?php if ($item->isSubmenu()) : ?>
-						<div class="nav-item-sub">
-							<a class="nav-has-sub" href=""><?= lang($item->title) ?></a>
-							<div class="nav-sub-menu">
-								<?php if ($item->hasFilter()) : ?>
-								<form class="nav-filter">
-									<input type="text" value="" placeholder="<?= lang($item->placeholder) ?>">
-
-									<?php if (count($item->getItems()) < 10 && !empty($item->view_all_link)) : ?>
-									<hr>
-									<a class="reset" href="<?= $item->view_all_link ?>"><b><?= lang('view_all') ?></b></a>
-									<?php endif; ?>
-								</form>
-								<?php endif; ?>
-								<ul>
-									<?php foreach ($item->getItems() as $sub) : ?>
-									<li><a href="<?= $sub->url ?>"><?= lang($sub->title) ?></a></li>
-									<?php endforeach; ?>
-								</ul>
-								<?php if ($item->hasAddLink()) : ?>
-								<a class="nav-add" href="<?= $item->addlink->url ?>"><i class="icon-add"></i><?= lang($item->addlink->title) ?></a>
-								<?php endif; ?>
-							</div>
-						</div>
-						<?php else : ?>
-						<a class="nav-item" href="<?= $item->url ?>"><?= lang($item->title) ?></a>
-						<?php endif; ?>
-						<?php endforeach; ?>
-					</nav>
-				</div>
+				<a href="<?= ee('CP/URL')->make('addons') ?>" class="ee-sidebar__item <?= ($current_page == 'addons' ? 'active' : '') ?>"><i class="fas fa-bolt"></i> <?= lang('addons') ?></a>
 				<?php endif; ?>
 			</div>
+
+			<!-- Custom Links -->
+			<?php $custom = $cp_main_menu['custom']; ?>
+			<?php if ($custom && $custom->hasItems()) : ?>
+			<div class="ee-sidebar__items-custom">
+				<nav class="nav-custom">
+					<?php foreach ($custom->getItems() as $item) : ?>
+					<?php if ($item->isSubmenu()) : ?>
+						<a class="js-dropdown-toggle ee-sidebar__item" data-dropdown-pos="bottom-center" href=""><?= lang($item->title) ?></a>
+						<div class="dropdown">
+							<?php if ($item->hasFilter()) : ?>
+							<form class="dropdown__search">
+								<input type="text" value="" placeholder="<?= lang($item->placeholder) ?>">
+							</form>
+								<?php if (count($item->getItems()) < 10 && !empty($item->view_all_link)) : ?>
+								<a class="dropdown__link" href="<?= $item->view_all_link ?>"><b><?= lang('view_all') ?></b></a>
+									<?php if (count($item->getItems()) != 0): ?>
+									<div class="dropdown__divider"></div>
+									<?php endif; ?>
+								<?php endif; ?>
+							<?php endif; ?>
+
+							<?php foreach ($item->getItems() as $sub) : ?>
+							<a class="dropdown__link" href="<?= $sub->url ?>"><?= lang($sub->title) ?></a>
+							<?php endforeach; ?>
+
+							<?php if ($item->hasAddLink()) : ?>
+							<a class="dropdown__link" class="nav-add" href="<?= $item->addlink->url ?>"><i class="fas fa-plus"></i><?= lang($item->addlink->title) ?></a>
+							<?php endif; ?>
+						</div>
+					<?php else : ?>
+					<a class="ee-sidebar__item" href="<?= $item->url ?>"><?= lang($item->title) ?></a>
+					<?php endif; ?>
+					<?php endforeach; ?>
+				</nav>
+			</div>
+			<?php endif; ?>
 
 			<div class="ee-sidebar__items-bottom">
 				<?php if (count($cp_main_menu['develop'])) : ?>
@@ -106,16 +115,16 @@ $current_page = ee()->uri->segment(2);
 						$developer_pages = ['fields', 'channels', 'design', 'msm', 'utilities', 'logs'];
 						$developer_menu_active = (in_array($current_page, $developer_pages) ? 'active' : '');
 					?>
-					<a href="" class="js-toggle-developer-menu <?=$developer_menu_active?>"><i class="fas fa-database"></i> <?=lang('nav_developer')?></a>
+					<a href="" class="ee-sidebar__item js-toggle-developer-menu <?=$developer_menu_active?>"><i class="fas fa-database"></i> <?=lang('nav_developer')?></a>
 					<div class="developer-menu js-developer-menu-content hidden">
 						<?php foreach ($cp_main_menu['develop'] as $key => $link) : ?>
-							<a href="<?= $link ?>"><?= lang($key) ?></a>
+							<a class="ee-sidebar__item" href="<?= $link ?>"><?= lang($key) ?></a>
 						<?php endforeach ?>
 					</div>
 				<?php endif; ?>
 
 				<?php if (ee()->cp->allowed_group('can_access_sys_prefs')) : ?>
-				<a href="<?= ee('CP/URL', 'settings') ?>" title="<?= lang('nav_settings') ?>" class="<?= ($current_page == 'settings' ? 'active' : '') ?>"><i class="fas fa-cog"></i> <?= lang('nav_settings') ?></a>
+				<a href="<?= ee('CP/URL', 'settings') ?>" title="<?= lang('nav_settings') ?>" class="ee-sidebar__item <?= ($current_page == 'settings' ? 'active' : '') ?>"><i class="fas fa-cog"></i> <?= lang('nav_settings') ?></a>
 				<?php endif; ?>
 
 
@@ -138,7 +147,7 @@ $current_page = ee()->uri->segment(2);
 					}
 				?>
 
-				<a href="" data-dropdown-pos="top-start" data-toggle-dropdown="app-about-dropdown" class="ee-sidebar__version js-about <?=$version_class?>">ExpressionEngine <span><?=$formatted_version?></span></a>
+				<a href="" data-dropdown-pos="top-start" data-toggle-dropdown="app-about-dropdown" class="ee-sidebar__item ee-sidebar__version js-about <?=$version_class?>">ExpressionEngine <span><?=$formatted_version?></span></a>
 			</div>
 
 		</div>

@@ -88,8 +88,7 @@ abstract class AbstractFiles extends CP_Controller {
 			$list->withRemoveUrl(ee('CP/URL')->make('files/rmdir', array('return' => ee('CP/URL')->getCurrentUrl()->encode())))
 				->withRemovalKey('dir_id');
 
-			$watermark_header = $sidebar->addHeader(lang('watermarks'), ee('CP/URL')->make('files/watermarks'))
-				->withButton(lang('new'), ee('CP/URL')->make('files/watermarks/create'));
+			$watermark_header = $sidebar->addHeader(lang('watermarks'), ee('CP/URL')->make('files/watermarks'));
 
 			if ($active == 'watermark')
 			{

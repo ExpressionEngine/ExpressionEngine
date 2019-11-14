@@ -1,5 +1,5 @@
 <div class="add-on-card <?php if (!$installed) : ?>add-on-card--uninstalled<?php endif; ?>">
-    <div class="add-on-card__icon">
+	<div class="add-on-card__icon">
 		<div class="add-on-card__image">
 			<img src="<?= (!empty($icon_url) ? $icon_url : 'default-addon-on-icon.png') ?>" alt="<?= $name ?>">
 		</div>
@@ -12,16 +12,15 @@
 			<?php else: ?>
 				<?= $name ?>
 			<?php endif; ?>
-			<span class="meta-info">(<?= $version ?>)</span>
 		</h2>
 
-		<?php if (isset($description)): ?>
+		<?php if (!empty($description)): ?>
 		<p class="add-on-card__desc"><?= $description ?></p>
 		<?php endif; ?>
 
 		<div class="button-segment">
 			<?php if (!$installed) : ?>
-				<a href="" data-post-url="<?= $install_url ?>" class="button button--primary"><?= lang('enable') ?></a>
+				<a href="" data-post-url="<?= $install_url ?>" class="button button--primary"><?= lang('install') ?></a>
 			<?php endif; ?>
 
 			<?php if (isset($update)) : ?>
@@ -41,7 +40,7 @@
 			<?php if (ee()->cp->allowed_group('can_admin_addons') && $installed) : ?>
 				<a href="" class="button button--secondary js-dropdown-toggle"><i class="fas fa-fw fa-cog"></i></a>
 				<div class="dropdown">
-					<a class="dropdown__link" href="" data-post-url="<?= $remove_url ?>" class="button button--primary"><?= lang('disable') ?></a>
+					<a class="dropdown__link" href="" data-post-url="<?= $remove_url ?>" class="button button--primary"><?= lang('uninstall') ?></a>
 				</div>
 			<?php endif; ?>
 		</div>

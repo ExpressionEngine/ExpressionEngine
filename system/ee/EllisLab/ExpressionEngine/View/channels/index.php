@@ -4,15 +4,6 @@
 		<?=form_open($base_url)?>
 			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
-			<div class="title-bar">
-				<h2 class="title-bar__title"><?=$cp_page_title?></h2>
-
-				<div class="title-bar__extra-tools">
-					<a class="button button--small button--action" href="<?=$create_url?>"><?= lang('new') ?></a>
-					<a class="button button--small button--action" href="#" rel="import-channel"><?= lang('import') ?></a>
-				</div>
-			</div>
-
 			<?php $this->embed('_shared/table-list', ['data' => $channels]); ?>
 			<?php if (isset($pagination)) echo $pagination; ?>
 			<fieldset class="bulk-action-bar hidden">

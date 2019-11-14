@@ -115,6 +115,8 @@ $lang = array(
 
 'password' => 'Password',
 
+'password_for' => 'Password for %s',
+
 'password_label' => 'Password:',
 
 'powered_by' => 'Powered By',
@@ -293,7 +295,7 @@ $lang = array(
 
 'results' => 'results',
 
-'select_all' => 'select all',
+'select_all' => 'Select All',
 
 'search_in' => 'Search in',
 
@@ -592,7 +594,7 @@ $lang = array(
 
 'scroll_to_top' => 'scroll to top',
 
-'session_timeout' => 'Your administration access session has timed out. Please use the form below to log back into your control panel.',
+'session_timeout' => 'Your admin session has timed out. Please re-enter your password to log back in.',
 
 'up_to_date' => 'Up to date!',
 

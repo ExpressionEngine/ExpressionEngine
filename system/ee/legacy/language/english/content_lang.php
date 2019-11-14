@@ -374,6 +374,8 @@ $lang = array(
 
 'fields' => 'Fields',
 
+'add_field' => 'Add Field',
+
 'file_exists' => 'A file already exists with this name',
 
 'file_exists_warning' => 'File Exists Warning',
@@ -799,6 +801,12 @@ $lang = array(
 'add_new_row' => 'Add new row',
 
 'collapse' => 'Collapse',
+
+'collapse_all' => 'Collapse All',
+
+'expand' => 'Expand',
+
+'expand_all' => 'Expand All',
 
 'creating_new_in_rel' => 'Creating new entry in <b>#to_channel#</b> for a relationship with <b>#from_channel#</b>',
 

@@ -56,10 +56,6 @@
 				{
 					$field_class .= ' fieldset---closed';
 				}
-				if ($field->getType() == 'fluid_field')
-				{
-					$field_class .= ' fieldset-faux-fluid';
-				}
 			?>
 			<?php if ($field->getType() == 'grid' || $field->getType() == 'file_grid'): ?>
 			<div class="fieldset-faux <?=$field_class?>">
