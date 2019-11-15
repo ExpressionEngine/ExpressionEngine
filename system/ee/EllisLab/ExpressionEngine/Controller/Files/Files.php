@@ -61,49 +61,6 @@ class Files extends AbstractFilesController {
 		}
 
 		if ($view_type !== 'table') {
-			ee()->cp->add_js_script(['file' => ['cp/files/selection']]);
-			ee()->cp->add_to_foot("<script>const selection = Selection.create({
-
-	// Class for the selection-area
-	class: 'selection',
-
-	// All elements in this container can be selected
-	selectables: ['.selection-area > div'],
-
-	// The container is also the boundary in this case
-	boundaries: ['.box-wrap']
-}).on('start', ({inst, selected, oe}) => {
-
-	// Remove class if the user isn't pressing the control key or ⌘ key
-	if (!oe.ctrlKey && !oe.metaKey) {
-
-		// Unselect all elements
-		for (const el of selected) {
-			el.classList.remove('selected');
-			inst.removeFromSelection(el);
-		}
-
-		// Clear previous selection
-		inst.clearSelection();
-	}
-
-}).on('move', ({changed: {removed, added}}) => {
-
-	// Add a custom class to the elements that where selected.
-	for (const el of added) {
-		el.classList.add('selected');
-	}
-
-	// Remove the class from elements that where removed
-	// since the last selection
-	for (const el of removed) {
-		el.classList.remove('selected');
-	}
-
-}).on('stop', ({inst}) => {
-	inst.keepSelection();
-});</script>");
-
 			ee()->cp->render('files/index-' . $view_type, $vars);
 		} else {
 			ee()->cp->render('files/index', $vars);
@@ -112,6 +69,12 @@ class Files extends AbstractFilesController {
 
 	public function directory($id)
 	{
+		$view_type = 'table';
+
+		if (!empty($_GET['viewtype']) && $_GET['viewtype']) {
+			$view_type = $_GET['viewtype'];
+		}
+
 		$dir = ee('Model')->get('UploadDestination', $id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -145,9 +108,8 @@ class Files extends AbstractFilesController {
 			->with('UploadDestination')
 			->filter('upload_location_id', $dir->getId());
 
-		$vars = $this->listingsPage($files, $base_url);
+		$vars = $this->listingsPage($files, $base_url, $view_type);
 
-		$vars['form_url'] = $vars['table']['base_url'];
 		$vars['dir_id'] = $id;
 
 		$this->generateSidebar($id);
@@ -162,7 +124,11 @@ class Files extends AbstractFilesController {
 			ee()->view->can_sync_directory ? $id : NULL
 		);
 
-		ee()->cp->render('files/directory', $vars);
+		if ($view_type !== 'table') {
+			ee()->cp->render('files/directory-' . $view_type, $vars);
+		} else {
+			ee()->cp->render('files/directory', $vars);
+		}
 	}
 
 	public function export()
