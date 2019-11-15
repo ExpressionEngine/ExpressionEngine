@@ -394,7 +394,7 @@ abstract class AbstractFiles extends CP_Controller {
 
 		if ($search_terms)
 		{
-			$base_url->setQueryStringVariable('fliter_by_keyword', $search_terms);
+			$base_url->setQueryStringVariable('filter_by_keyword', $search_terms);
 			$files->search(['title', 'file_name', 'mime_type'], $search_terms);
 			$vars['search_terms'] = htmlentities($search_terms, ENT_QUOTES, 'UTF-8');
 		}
