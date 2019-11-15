@@ -20,6 +20,8 @@
 		?>
 	</head>
 	<body id="top">
+		<div class="global-alerts">
 		<?=ee('CP/Alert')->getAllBanners()?>
+		</div>
 
 <?php
