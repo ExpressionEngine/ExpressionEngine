@@ -40,13 +40,15 @@ class Viewtype extends Filter {
 	{
 		$this->name = 'viewtype';
 		$this->label = 'viewtype_filter';
-		$this->placeholder = 'what';
+		$this->placeholder = 'view type';
 		$this->options = $options;
 
 		$this->options = array(
 			'table'  => lang('viewtype_list'),
 			'thumb'  => lang('viewtype_thumb'),
 		);
+
+		$this->default_value = 'table';
 	}
 
 	/**
@@ -60,12 +62,12 @@ class Viewtype extends Filter {
 	{
 		$value = parent::value();
 
-		if ( ! (int) $value)
+		if ( empty($value))
 		{
 			$value = $this->default_value;
 		}
 
-		return (int) $value;
+		return $value;
 	}
 
 	/**
