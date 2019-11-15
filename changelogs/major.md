@@ -17,6 +17,7 @@ Bullet list below, e.g.
     - You can now select a single line of text when clicking on a gutter number in the template editor
     - Improved EE syntax highlighting
 - Fixed a bug where the debugger code highlighter would also highlight and overwrite other code blocks on a site's page
+- Added support for third-party add-on icons to Add-on Manager
 
 Developers
 - Updated CodeMirror to version 5.48
