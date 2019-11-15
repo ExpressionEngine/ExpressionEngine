@@ -1,8 +1,15 @@
-	<div class="file-card-wrapper selection-area">
+	<div class="file-card-wrapper">
 		<?php foreach ($files as $file): ?>
-				<div class="file-card">
+				<div class="file-card <?php if (ee('Thumbnail')->get($file)->missing): echo 'file-card--missing'; endif; ?>">
 					<div class="file-card__preview">
+					<?php if (ee('Thumbnail')->get($file)->missing): ?>
+						<div class="file-card__preview-icon">
+							<i class="fas fa-lg fa-exclamation-triangle"></i>
+							<div class="file-card__preview-icon-text">File Not Found</div>
+						</div>
+					<?php else: ?>
 						<img src="<?=ee('Thumbnail')->get($file)->url?>" />
+					<?php endif; ?>
 					</div>
 
 					<div class="file-card__info">
