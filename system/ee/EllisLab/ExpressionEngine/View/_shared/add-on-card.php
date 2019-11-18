@@ -1,7 +1,7 @@
 <div class="add-on-card <?php if (!$installed) : ?>add-on-card--uninstalled<?php endif; ?>">
 	<div class="add-on-card__icon">
 		<div class="add-on-card__image">
-			<img src="default-addon-on-icon.png">
+			<img src="<?= (!empty($icon_url) ? $icon_url : URL_THEMES . 'asset/img/default-addon-on-icon.png') ?>" alt="<?= $name ?>">
 		</div>
 		<span class="price"><?= $version ?></span>
 	</div>

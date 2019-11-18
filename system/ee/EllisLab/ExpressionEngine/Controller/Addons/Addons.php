@@ -275,6 +275,10 @@ class Addons extends CP_Controller {
 					$addon['manual_external'] = TRUE;
 				}
 
+                if (file_exists(PATH_THIRD_THEMES . $name . '/icon.png')) {
+                    $addon['icon_url'] = URL_THIRD_THEMES . $name . '/icon.png';
+                }
+
 				$addons[$name] = $addon;
 			}
 		}
