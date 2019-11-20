@@ -1,25 +1,28 @@
 <input type="hidden" class="js-file-input" name="<?=$field_name?>" value="<?=$value?>">
 
-<div class="fields-upload-chosen <?php if ( ! $file) echo " hidden";?>">
-	<div class="fields-upload-chosen-file">
+<div class="fields-upload-chosen list-item <?php if ( ! $file) echo " hidden";?>">
+	<div class="fields-upload-chosen-file list-item__content-left">
 		<figure class="<?php if ( ! $is_image): ?>no-img<?php endif ?> <?php if ($file && $file->isSVG()): ?>is-svg<?php endif ?>"">
 			<img src="<?=$thumbnail?>" id="<?=$field_name?>" alt="<?=($file) ? $file->title : ''?>" class="js-file-image<?php if ( ! $is_image): ?> hidden<?php endif ?>">
 		</figure>
-		<div class="fields-upload-tools">
-			<ul class="toolbar">
-				<li class="edit"><?=$fp_edit?></li>
-				<li class="remove"><a href="" title="<?=lang('remove')?>"></a></li>
-			</ul>
-		</div>
 	</div>
-	<div class="fields-upload-chosen-name">
-		<p>
+	<div class="fields-upload-chosen-name list-item__content">
+		<div>
 			<?php if ($title): ?>
-				<b><?=$title?></b>
+				<?=$title?>
 			<?php elseif ($file): $file_info = pathinfo($file->file_name); ?>
-				<b><?=$file_info['filename']?></b>.<?=$file_info['extension']?>
+				<?=$file_info['filename']?></b>.<?=$file_info['extension']?>
 			<?php endif ?>
-		</p>
+		</div>
+		<div class="list-item__secondary">File Size</div>
+	</div>
+	<div class="list-item__content-right">
+		<div class="fields-upload-tools">
+			<div class="button-group">
+				<?=$fp_edit?>
+				<a href="" class="remove button button--secondary-alt" title="<?=lang('remove')?>"><i class="fas fa-trash-alt"></i></a>
+			</div>
+		</div>
 	</div>
 </div>
 

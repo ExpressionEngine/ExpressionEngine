@@ -206,11 +206,11 @@ function (_React$Component) {
       });
 
       var highlight = function highlight(e) {
-        _this2.dropZone.classList.add('field-file-upload--drop');
+        _this2.dropZone.classList.add('file-field__dropzone--dragging');
       };
 
       var unhighlight = function unhighlight(e) {
-        _this2.dropZone.classList.remove('field-file-upload--drop');
+        _this2.dropZone.classList.remove('file-field__dropzone--dragging');
       };
 
       ['dragenter', 'dragover'].forEach(function (eventName) {
@@ -349,7 +349,7 @@ function (_React$Component) {
       var _this5 = this;
 
       var heading = this.props.multiFile ? EE.lang.file_dnd_drop_files : EE.lang.file_dnd_drop_file;
-      var subheading = this.state.directory == 'all' ? EE.lang.file_dnd_choose_directory : EE.lang.file_dnd_uploading_to.replace('%s', this.getDirectoryName(this.state.directory));
+      var subheading = this.state.directory == 'all' ? EE.lang.file_dnd_choose_directory : EE.lang.file_dnd_upload_to;
 
       if (this.state.pendingFiles) {
         heading = EE.lang.file_dnd_choose_file_directory;
@@ -357,25 +357,17 @@ function (_React$Component) {
       }
 
       return React.createElement(React.Fragment, null, React.createElement("div", {
-        className: "field-file-upload" + (this.props.marginTop ? ' mt' : '') + (this.warningsExist() ? ' field-file-upload---warning' : '') + (this.state.error ? ' field-file-upload---invalid' : ''),
+        className: "file-field" + (this.props.marginTop ? ' mt' : '') + (this.warningsExist() ? ' file-field--warning' : '') + (this.state.error ? ' file-field--invalid' : '')
+      }, this.state.files.length == 0 && React.createElement("div", {
+        className: "file-field__dropzone",
         ref: function ref(dropZone) {
           return _this5.assignDropZoneRef(dropZone);
         }
-      }, this.state.files.length > 0 && React.createElement(FileUploadProgressTable, {
-        files: this.state.files,
-        onFileErrorDismiss: function onFileErrorDismiss(e, file) {
-          e.preventDefault();
-
-          _this5.removeFile(file);
-        },
-        onResolveConflict: function onResolveConflict(file, response) {
-          return _this5.resolveConflict(file, response);
-        }
-      }), this.state.files.length == 0 && React.createElement("div", {
-        className: "field-file-upload__content"
-      }, heading, React.createElement("em", null, subheading)), this.state.files.length == 0 && this.props.allowedDirectory == 'all' && React.createElement("div", {
-        className: "field-file-upload__controls"
-      }, React.createElement(FilterSelect, {
+      }, this.state.files.length == 0 && React.createElement(React.Fragment, null, React.createElement("div", {
+        className: "file-field__dropzone-title"
+      }, heading), React.createElement("div", {
+        "class": "file-field__dropzone-button"
+      }, subheading, ":\xA0", this.state.files.length == 0 && this.props.allowedDirectory == 'all' && React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_choose_existing,
         action: this.state.directory == 'all',
         center: true,
@@ -385,28 +377,47 @@ function (_React$Component) {
         items: EE.dragAndDrop.uploadDesinations,
         onSelect: function onSelect(directory) {
           return _this5.setDirectory(directory);
+        },
+        buttonClass: "button--secondary-alt"
+      })), React.createElement("div", {
+        "class": "file-field__dropzone-icon"
+      }, React.createElement("i", {
+        "class": "fas fa-cloud-upload-alt"
+      })))), this.state.files.length > 0 && React.createElement(FileUploadProgressTable, {
+        files: this.state.files,
+        onFileErrorDismiss: function onFileErrorDismiss(e, file) {
+          e.preventDefault();
+
+          _this5.removeFile(file);
+        },
+        onResolveConflict: function onResolveConflict(file, response) {
+          return _this5.resolveConflict(file, response);
         }
-      }))), this.props.showActionButtons && this.props.allowedDirectory != 'all' && React.createElement(React.Fragment, null, React.createElement("a", {
+      })), React.createElement("div", {
+        className: "file-field__buttons"
+      }, this.props.showActionButtons && this.props.allowedDirectory != 'all' && React.createElement(React.Fragment, null, React.createElement("div", {
+        className: "button-segment"
+      }, React.createElement("a", {
         href: "#",
-        className: "btn action m-link",
+        className: "button button--action m-link",
         rel: "modal-file",
         onClick: function onClick(e) {
           e.preventDefault();
 
           _this5.chooseExisting(_this5.state.directory);
         }
-      }, EE.lang.file_dnd_choose_existing), "\xA0", React.createElement("a", {
+      }, EE.lang.file_dnd_choose_existing), React.createElement("a", {
         href: "#",
-        className: "btn action m-link",
+        className: "button button--action m-link",
         rel: "modal-file",
         onClick: function onClick(e) {
           e.preventDefault();
 
           _this5.uploadNew(_this5.state.directory);
         }
-      }, EE.lang.file_dnd_upload_new)), this.props.showActionButtons && this.props.allowedDirectory == 'all' && React.createElement("div", {
-        className: "filter-bar filter-bar--inline"
-      }, React.createElement(FilterSelect, {
+      }, EE.lang.file_dnd_upload_new))), this.props.showActionButtons && this.props.allowedDirectory == 'all' && React.createElement("div", {
+        className: "button-segment"
+      }, React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_choose_existing,
         action: true,
         keepSelectedState: false,
@@ -417,8 +428,9 @@ function (_React$Component) {
           return _this5.chooseExisting(directory);
         },
         rel: "modal-file",
-        itemClass: "m-link"
-      }), React.createElement(FilterSelect, {
+        itemClass: "m-link",
+        buttonClass: "button--action"
+      }), React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_upload_new,
         action: true,
         keepSelectedState: false,
@@ -429,8 +441,9 @@ function (_React$Component) {
           return _this5.uploadNew(directory);
         },
         rel: "modal-file",
-        itemClass: "m-link"
-      })));
+        itemClass: "m-link",
+        buttonClass: "button--action"
+      }))));
     }
   }]);
 

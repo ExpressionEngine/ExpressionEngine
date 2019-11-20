@@ -15,7 +15,7 @@
 		pickerCallback: function(data, references) {
 			var input = references.input_value,
 				figure = references.input_img.closest('figure'),
-				name = references.input_img.closest('.fields-upload-chosen-file').next('.fields-upload-chosen-name');
+				name = references.input_img.closest('.list-item').children('.fields-upload-chosen-name');
 
 			// Close the modal
 			if (references.modal) {
@@ -54,8 +54,9 @@
 				callback: EE.FileField.pickerCallback
 			});
 
-			$('li.remove a', container).click(function (e) {
+			$('.button.remove', container).click(function (e) {
 				var figure_container = $(this).closest('.fields-upload-chosen');
+
 				figure_container.addClass('hidden');
 				figure_container.siblings('em').remove(); // Hide the "missing file" erorr
 				figure_container.siblings('input[type="hidden"]').val('').trigger('change');

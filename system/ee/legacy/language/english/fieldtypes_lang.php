@@ -126,6 +126,8 @@ $lang = array(
 
 'file_dnd_choose_file_directory' => 'Choose a File Directory',
 
+'file_dnd_upload_to' => 'Upload To',
+
 'file_dnd_choose_directory_before_uploading' => 'You must choose a directory to upload files',
 
 'file_dnd_choose_directory_btn' => 'Choose Directory',
@@ -145,6 +147,8 @@ $lang = array(
 'file_dnd_images_only' => 'This field only accepts images.',
 
 'file_dnd_progress' => 'Progress',
+
+'file_dnd_conflict' => 'Error. File already exists.',
 
 'file_dnd_resolve_conflict' => 'Resolve Conflict',
 
