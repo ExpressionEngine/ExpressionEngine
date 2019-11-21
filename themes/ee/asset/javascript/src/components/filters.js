@@ -78,12 +78,14 @@ function (_React$Component) {
   _createClass(FilterToggleAll, [{
     key: "render",
     value: function render() {
-      return React.createElement("div", {
-        className: "field-ctrl"
-      }, React.createElement("label", {
-        className: (this.props.checkAll ? "field-toggle-all" : "field-clear-all") + (this.state.checked ? " act" : ""),
+      return React.createElement("label", {
+        className: (this.props.checkAll ? "ctrl-all" : "ctrl-all") + (this.state.checked ? " act" : ""),
         onClick: this.handleClick
-      }, this.props.checkAll ? EE.lang.check_all : EE.lang.clear_all));
+      }, React.createElement("span", null, this.props.checkAll ? EE.lang.check_all : EE.lang.clear_all), React.createElement("input", {
+        value: this.state.checked,
+        type: "checkbox",
+        "class": "checkbox--small"
+      }));
     }
   }]);
 

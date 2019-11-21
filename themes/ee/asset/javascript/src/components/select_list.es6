@@ -348,11 +348,13 @@ class SelectList extends React.Component {
     let shouldShowToggleAll = (props.multi || ! props.selectable) && props.toggleAll !== null
 
     return (
-      <div className={"fields-select" + (SelectList.countItems(props.items) > props.tooManyLimit ? ' field-resizable' : '')}
+      <div className={((shouldShowToggleAll || props.tooMany) ? ' lots-of-checkboxes' : '')}
         ref={(container) => { this.container = container }} key={this.version}>
         {(shouldShowToggleAll || props.tooMany) &&
-          <FieldTools>
+        <div class="lots-of-checkboxes__search">
+        <div class="lots-of-checkboxes__search-inner">
             {props.tooMany &&
+            <div class="lots-of-checkboxes__search-input">
               <FilterBar>
                 {props.filters && props.filters.map(filter =>
                   <FilterSelect key={filter.name}
@@ -366,12 +368,14 @@ class SelectList extends React.Component {
                 )}
                 <FilterSearch onSearch={(e) => this.filterChange('search', e.target.value)} />
               </FilterBar>
+              </div>
             }
             {shouldShowToggleAll && props.tooMany && <hr />}
             {shouldShowToggleAll &&
               <FilterToggleAll checkAll={props.toggleAll} onToggleAll={(check) => this.handleToggleAll(check)} />
             }
-          </FieldTools>
+          </div>
+          </div>
         }
         <FieldInputs nested={props.nested}>
           { ! props.loading && props.items.length == 0 &&
@@ -423,14 +427,14 @@ class SelectList extends React.Component {
 function FieldInputs (props) {
   if (props.nested) {
     return (
-      <ul className="field-inputs field-nested">
+      <ul className="lots-of-checkboxes__items field-nested">
         {props.children}
       </ul>
     )
   }
 
   return (
-    <div className="field-inputs">
+    <div className="lots-of-checkboxes__items">
       {props.children}
     </div>
   )
@@ -529,15 +533,11 @@ class SelectedItem extends React.Component {
     }
 
     return (
-      <div className="field-input-selected">
-        <label>
-          <span className="icon--success"></span> {label}
+      <div className="lots-of-checkboxes__selection">
+        <i className="fas fa-check-circle"></i> {label}
           {props.selectionRemovable &&
-            <ul className="toolbar">
-              <li className="remove"><a href="" onClick={props.clearSelection}></a></li>
-            </ul>
+            <a className="button button--secondary-alt float-right" href="" onClick={props.clearSelection}><i class="fas fa-trash-alt"></i></a>
           }
-        </label>
       </div>
     )
   }

@@ -48,15 +48,14 @@ class FilterToggleAll extends React.Component {
 
   render () {
     return (
-      <div className="field-ctrl">
         <label className={
-            (this.props.checkAll ? "field-toggle-all" : "field-clear-all")
+            (this.props.checkAll ? "ctrl-all" : "ctrl-all")
             + (this.state.checked ? " act" : "")
           }
           onClick={this.handleClick}>
-          {this.props.checkAll ? EE.lang.check_all : EE.lang.clear_all}
+            <span>{this.props.checkAll ? EE.lang.check_all : EE.lang.clear_all}</span>
+            <input value={this.state.checked} type="checkbox" class="checkbox--small" />
         </label>
-      </div>
     )
   }
 }
