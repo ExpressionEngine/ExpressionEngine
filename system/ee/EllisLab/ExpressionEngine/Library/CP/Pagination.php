@@ -151,6 +151,7 @@ class Pagination {
 		$pages_to_display = (int) $this->pages_to_display - 1;
 
 		$links['total_count'] = $this->total_count;
+		$links['total_pages'] = $pages;
 		$links['current_page'] = $this->current_page;
 		$links['first'] = $base_url->compile();
 		foreach (array('prev', 'next', 'last') as $key)
@@ -162,7 +163,8 @@ class Pagination {
 			$links[$key] = $url->compile();
 		}
 
-		$start = ($this->current_page - 1 > 1) ? $this->current_page - 1 : 1;
+		$start = max($this->current_page - ($pages_to_display / 2), 1);
+
 		if ($start + $pages_to_display <= $pages)
 		{
 			$end = $start + $pages_to_display;
