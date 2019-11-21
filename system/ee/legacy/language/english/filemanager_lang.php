@@ -24,7 +24,7 @@ $lang = array(
 
 'download' => 'Download',
 
-'edit_file_metadata' => 'Edit "%s" Meta Data',
+'edit_file_metadata' => 'Edit File Meta Data',
 
 'edit_file_metadata_error' => 'Cannot Update File Meta Data',
 

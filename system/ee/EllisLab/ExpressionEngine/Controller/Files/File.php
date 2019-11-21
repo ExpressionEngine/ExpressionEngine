@@ -79,7 +79,7 @@ class File extends AbstractFilesController {
 			'sections' => array(),
 		];
 
-		ee()->view->cp_page_title = sprintf(lang('edit_file_metadata'), $file->title);
+		ee()->view->cp_page_title = lang('edit_file_metadata');
 
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('files')->compile() => lang('file_manager'),

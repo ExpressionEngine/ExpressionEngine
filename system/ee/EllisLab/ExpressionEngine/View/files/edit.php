@@ -21,7 +21,7 @@
 			<div class="file-preview-modal__preview-file-meta">
 				<?php
 				if ($is_image) {
-					echo "{$image_info['width']} x {$image_info['height']} " . lang('pixels') . '.';
+					echo "{$image_info['width']} x {$image_info['height']} " . lang('pixels') . ' - ';
 				}
 				?><i><?= $size ?></i>
 			</div>
