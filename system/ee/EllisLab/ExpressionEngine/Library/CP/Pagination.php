@@ -40,7 +40,7 @@ class Pagination {
 	/**
 	 * @var int $pages_to_display The number of numbered pages to calculate
 	 */
-	private $pages_to_display = 3;
+	private $pages_to_display = 7;
 
 	/**
 	 * @var View $view A View object for rendering this alert
