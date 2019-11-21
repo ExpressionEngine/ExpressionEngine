@@ -1,6 +1,6 @@
 	<div class="file-card-wrapper">
 		<?php foreach ($files as $file): ?>
-				<div class="file-card <?php if (ee('Thumbnail')->get($file)->missing): echo 'file-card--missing'; endif; ?>">
+				<a href data-file-id="<?=$file->file_id?>" rel="modal-view-file" class="m-link file-card <?php if (!$file->exists()): echo 'file-card--missing'; endif; ?>">
 					<div class="file-card__preview">
 					<?php if (ee('Thumbnail')->get($file)->missing): ?>
 						<div class="file-card__preview-icon">
