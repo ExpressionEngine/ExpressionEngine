@@ -2,13 +2,27 @@
 		<?php foreach ($files as $file): ?>
 				<a href data-file-id="<?=$file->file_id?>" rel="modal-view-file" class="m-link file-card <?php if (!$file->exists()): echo 'file-card--missing'; endif; ?>">
 					<div class="file-card__preview">
-					<?php if (ee('Thumbnail')->get($file)->missing): ?>
+					<?php if (!$file->exists()): ?>
 						<div class="file-card__preview-icon">
 							<i class="fas fa-lg fa-exclamation-triangle"></i>
 							<div class="file-card__preview-icon-text">File Not Found</div>
 						</div>
 					<?php else: ?>
-						<img src="<?=ee('Thumbnail')->get($file)->url?>" />
+						<?php if ($file->isImage()): ?>
+							<div class="file-card__preview-image">
+								<img src="<?=$file->getAbsoluteURL()?>" />
+							</div>
+						<?php else: ?>
+							<div class="file-card__preview-icon">
+								<?php if ($file->mime_type == 'text/plain'): ?>
+									<i class="fas fa-file-alt fa-3x"></i>
+								<?php elseif ($file->mime_type == 'application/zip'): ?>
+									<i class="fas fa-file-archive fa-3x"></i>
+								<?php else: ?>
+									<i class="fas fa-file fa-3x"></i>
+								<?php endif; ?>
+							</div>
+						<?php endif; ?>
 					<?php endif; ?>
 					</div>
 
