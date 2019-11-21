@@ -310,11 +310,11 @@ $lang = array(
 
 'enable_channel_entry_notification' => 'Enable channel entry notification?',
 
-'enable_channel_entry_notification_desc' => 'When enabled, all recipients listed will receive Email notification when a new entry is published to this channel.</em><br /><em>Separate multiple Emails with a <mark>comma (,)</mark>.',
+'enable_channel_entry_notification_desc' => 'When enabled, all recipients listed will receive Email notification when a new entry is published to this channel.</em><br /><em>Separate multiple Emails with a <code>comma (,)</code>.',
 
 'enable_comment_notification' => 'Enable comment notification?',
 
-'enable_comment_notification_desc' => 'When enabled, all recipients listed will receive Email notification when a new comment is submitted to this channel.</em><br /><em>Separate multiple Emails with a <mark>comma (,)</mark>.',
+'enable_comment_notification_desc' => 'When enabled, all recipients listed will receive Email notification when a new comment is submitted to this channel.</em><br /><em>Separate multiple Emails with a <code>comma (,)</code>.',
 
 'enable_versioning' => 'Enable entry versioning?',
 

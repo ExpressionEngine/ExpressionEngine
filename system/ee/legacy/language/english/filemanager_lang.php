@@ -270,7 +270,7 @@ $lang = array(
 
 'constrain_or_crop' => 'Constrain or Crop',
 
-'constrain_or_crop_desc' => 'Changes to images in this <mark>upload</mark> directory, made upon upload.',
+'constrain_or_crop_desc' => 'Changes to images in this <code>upload</code> directory, made upon upload.',
 
 'create_upload_directory' => 'Create Upload Directory',
 
@@ -312,7 +312,7 @@ $lang = array(
 
 'file_sync_desc' => '<b>%d</b> files',
 
-'file_sync_desc_images' => '<b>%d</b> <mark>image</mark> files',
+'file_sync_desc_images' => '<b>%d</b> <code>image</code> files',
 
 'horizontal' => 'horizontal',
 
@@ -410,7 +410,7 @@ $lang = array(
 
 'upload_path' => 'Upload path',
 
-'upload_path_desc' => 'Full path location of this <mark>upload</mark> directory.',
+'upload_path_desc' => 'Full path location of this <code>upload</code> directory.',
 
 'upload_privileges' => 'Upload Privileges',
 
@@ -420,7 +420,7 @@ $lang = array(
 
 'upload_url' => 'Upload directory',
 
-'upload_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of this <mark>upload</mark> directory.',
+'upload_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of this <code>upload</code> directory.',
 
 'vertical' => 'vertical',
 

@@ -131,7 +131,7 @@ $lang = array(
 
 'docs_url' => 'Documentation directory',
 
-'docs_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <mark>documentation</mark> directory.',
+'docs_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <code>documentation</code> directory.',
 
 'member_segment_trigger' => 'Profile <abbr title="Uniform Resource Location">URL</abbr> segment',
 
@@ -139,25 +139,25 @@ $lang = array(
 
 'site_index' => 'Website index page',
 
-'site_index_desc' => 'Most commonly <mark>index.php</mark>.',
+'site_index_desc' => 'Most commonly <code>index.php</code>.',
 
 'site_url' => 'Website root directory',
 
-'site_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <mark>index.php</mark>.',
+'site_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <code>index.php</code>.',
 
 'themes_path' => 'Themes path',
 
-'themes_path_desc' => 'Full path location of your <mark>themes</mark> directory.',
+'themes_path_desc' => 'Full path location of your <code>themes</code> directory.',
 
 'themes_url' => 'Themes directory',
 
-'themes_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <mark>themes</mark> directory.',
+'themes_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <code>themes</code> directory.',
 
 'url_path_settings_title' => '<abbr title="Uniform Resource Location">URL</abbr> and Path Settings',
 
 'url_title_separator' => '<abbr title="Uniform Resource Location">URL</abbr> title separator',
 
-'url_title_separator_desc' => 'Character used to separate words in generated <abbr title="Uniform Resource Location">URL</abbr>s, <mark>hyphens (-)</mark> are recommended.',
+'url_title_separator_desc' => 'Character used to separate words in generated <abbr title="Uniform Resource Location">URL</abbr>s, <code>hyphens (-)</code> are recommended.',
 
 'url_title_separator_opt_hyphen' => 'Hyphen (different-words)',
 
@@ -205,7 +205,7 @@ $lang = array(
 
 'smtp_server' => 'Server address',
 
-'smtp_server_desc' => 'URL location of your <mark>SMTP server</mark>.',
+'smtp_server_desc' => 'URL location of your <code>SMTP server</code>.',
 
 'ssl' => 'SSL (ssl://)',
 
@@ -253,7 +253,7 @@ $lang = array(
 
 'force_query_string' => 'Force <abbr title="Uniform Resource Location">URL</abbr> query strings?',
 
-'force_query_string_desc' => 'When enabled, servers that do not support <mark>PATH_INFO</mark> will use query string URLs instead.',
+'force_query_string_desc' => 'When enabled, servers that do not support <code>PATH_INFO</code> will use query string URLs instead.',
 
 'gzip_output' => 'Enable <abbr title="GNU Zip Compression">GZIP</abbr> compression?',
 
@@ -273,7 +273,7 @@ $lang = array(
 
 'redirect_method' => 'Redirection type',
 
-'redirect_method_desc' => 'Indicates type of page redirection the system will use for <mark>{redirect=\'\'}</mark> and other built in redirections.',
+'redirect_method_desc' => 'Indicates type of page redirection the system will use for <code>{redirect=\'\'}</code> and other built in redirections.',
 
 'redirect_method_opt_location' => 'Location (fastest)',
 
@@ -303,7 +303,7 @@ $lang = array(
 
 'emoticon_url' => '<abbr title="Unified Resource Locator">URL</abbr>',
 
-'emoticon_url_desc' => '<abbr title="Unified Resource Locator">URL</abbr> location of the <mark>emoticon</mark> directory.',
+'emoticon_url_desc' => '<abbr title="Unified Resource Locator">URL</abbr> location of the <code>emoticon</code> directory.',
 
 'emoticons' => 'Emoticons',
 
@@ -321,7 +321,7 @@ $lang = array(
 
 'image_library_path' => 'Converter path',
 
-'image_library_path_desc' => 'Full path location of the <mark>image program</mark>.</em><br /><em><b>Required</b> for ImageMagick and NetPBM.',
+'image_library_path_desc' => 'Full path location of the <code>image program</code>.</em><br /><em><b>Required</b> for ImageMagick and NetPBM.',
 
 'image_resize_protocol' => 'Protocol',
 
@@ -601,11 +601,11 @@ $lang = array(
 
 'prv_msg_upload_path' => 'Upload path',
 
-'prv_msg_upload_path_desc' => 'Full path location for your <mark>attachment</mark> directory.',
+'prv_msg_upload_path_desc' => 'Full path location for your <code>attachment</code> directory.',
 
 'prv_msg_upload_url' => 'Upload directory',
 
-'prv_msg_upload_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <mark>attachments</mark> directory.',
+'prv_msg_upload_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <code>attachments</code> directory.',
 
 
 /* Avatars */
@@ -619,13 +619,13 @@ $lang = array(
 
 'avatar_path' => 'Avatar path',
 
-'avatar_path_desc' => 'Full path location of your <mark>avatar</mark> directory.',
+'avatar_path_desc' => 'Full path location of your <code>avatar</code> directory.',
 
 'avatar_settings' => 'Avatar Settings',
 
 'avatar_url' => 'Avatar directory',
 
-'avatar_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <mark>avatar</mark> directory.',
+'avatar_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <code>avatar</code> directory.',
 
 
 /* CAPTCHA */
@@ -635,7 +635,7 @@ $lang = array(
 
 'captcha_path' => '<abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> path',
 
-'captcha_path_desc' => 'Full path location of your <mark><abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr></mark> directory.',
+'captcha_path_desc' => 'Full path location of your <code><abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr></code> directory.',
 
 'captcha_rand' => 'Add random number?',
 
@@ -651,7 +651,7 @@ $lang = array(
 
 'captcha_url' => '<abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> directory',
 
-'captcha_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <mark><abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr></mark> directory.',
+'captcha_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of your <code><abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr></code> directory.',
 
 'require_captcha' => 'Require <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr>?',
 
@@ -661,7 +661,7 @@ $lang = array(
 /* Security & Privacy */
 'allow_dictionary_pw' => 'Allow dictionary words in passwords?',
 
-'allow_dictionary_pw_desc' => 'When enabled, members will be able to use common dictionary words in their password. <mark>requires dictionary file to be installed to enforce.</mark>',
+'allow_dictionary_pw_desc' => 'When enabled, members will be able to use common dictionary words in their password. <code>requires dictionary file to be installed to enforce.</code>',
 
 'allow_multi_logins' => 'Allow multiple sessions?',
 
@@ -675,7 +675,7 @@ $lang = array(
 
 'cookie_domain' => 'Domain',
 
-'cookie_domain_desc' => 'Use <mark>.yourdomain.com</mark> for system-wide cookies.',
+'cookie_domain_desc' => 'Use <code>.yourdomain.com</code> for system-wide cookies.',
 
 'cookie_httponly' => 'Send cookies over <abbr title="Hyper Text Transfer Protocol">HTTP</abbr> only?',
 
@@ -717,7 +717,7 @@ $lang = array(
 
 'name_of_dictionary_file' => 'Dictionary file',
 
-'name_of_dictionary_file_desc' => 'Name of your <mark>dictionary</mark> file in your config folder.',
+'name_of_dictionary_file_desc' => 'Name of your <code>dictionary</code> file in your config folder.',
 
 'password_lockout' => 'Enable password lock out?',
 
