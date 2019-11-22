@@ -1,5 +1,5 @@
-<ul class="toolbar">
+<div class="">
 <?php foreach ($options as $url => $label): ?>
-	<li class=""><a class="" href="<?=$url?>"><?=$label?></a></li>
+	<a class="filter-bar__button" href="<?=$url?>"><?=$label?></a>
 <?php endforeach; ?>
-</ul>
+</div>
