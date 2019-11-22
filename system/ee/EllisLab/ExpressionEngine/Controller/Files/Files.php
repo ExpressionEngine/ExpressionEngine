@@ -25,6 +25,12 @@ class Files extends AbstractFilesController {
 
 	public function index()
 	{
+		$view_type = 'table';
+
+		if (!empty($_GET['viewtype']) && $_GET['viewtype']) {
+			$view_type = $_GET['viewtype'];
+		}
+
 		$this->handleBulkActions(ee('CP/URL')->make('files', ee()->cp->get_url_state()));
 
 		$base_url = ee('CP/URL')->make('files');
@@ -34,7 +40,7 @@ class Files extends AbstractFilesController {
 			->filter('UploadDestination.module_id', 0)
 			->filter('site_id', ee()->config->item('site_id'));
 
-		$vars = $this->listingsPage($files, $base_url);
+		$vars = $this->listingsPage($files, $base_url, $view_type);
 
 		$this->generateSidebar(NULL);
 		$this->stdHeader();
@@ -54,11 +60,21 @@ class Files extends AbstractFilesController {
 			ee()->view->cp_heading = lang('all_files');
 		}
 
-		ee()->cp->render('files/index', $vars);
+		if ($view_type !== 'table') {
+			ee()->cp->render('files/index-' . $view_type, $vars);
+		} else {
+			ee()->cp->render('files/index', $vars);
+		}
 	}
 
 	public function directory($id)
 	{
+		$view_type = 'table';
+
+		if (!empty($_GET['viewtype']) && $_GET['viewtype']) {
+			$view_type = $_GET['viewtype'];
+		}
+
 		$dir = ee('Model')->get('UploadDestination', $id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -92,9 +108,8 @@ class Files extends AbstractFilesController {
 			->with('UploadDestination')
 			->filter('upload_location_id', $dir->getId());
 
-		$vars = $this->listingsPage($files, $base_url);
+		$vars = $this->listingsPage($files, $base_url, $view_type);
 
-		$vars['form_url'] = $vars['table']['base_url'];
 		$vars['dir_id'] = $id;
 
 		$this->generateSidebar($id);
@@ -109,7 +124,11 @@ class Files extends AbstractFilesController {
 			ee()->view->can_sync_directory ? $id : NULL
 		);
 
-		ee()->cp->render('files/directory', $vars);
+		if ($view_type !== 'table') {
+			ee()->cp->render('files/directory-' . $view_type, $vars);
+		} else {
+			ee()->cp->render('files/directory', $vars);
+		}
 	}
 
 	public function export()

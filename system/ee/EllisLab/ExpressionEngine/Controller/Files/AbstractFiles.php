@@ -386,14 +386,14 @@ abstract class AbstractFiles extends CP_Controller {
 		ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $file->upload_location_id));
 	}
 
-	protected function listingsPage($files, $base_url)
+	protected function listingsPage($files, $base_url, $view_type = 'table')
 	{
 		$vars = array();
 		$search_terms = ee()->input->get_post('filter_by_keyword');
 
 		if ($search_terms)
 		{
-			$base_url->setQueryStringVariable('fliter_by_keyword', $search_terms);
+			$base_url->setQueryStringVariable('filter_by_keyword', $search_terms);
 			$files->search(['title', 'file_name', 'mime_type'], $search_terms);
 			$vars['search_terms'] = htmlentities($search_terms, ENT_QUOTES, 'UTF-8');
 		}
@@ -403,6 +403,7 @@ abstract class AbstractFiles extends CP_Controller {
 
 		$filters = ee('CP/Filter')
 			->add('Keyword')
+			->add('ViewType')
 			->add('Perpage', $total_files, 'show_all_files');
 
 		$filter_values = $filters->values();
@@ -412,15 +413,28 @@ abstract class AbstractFiles extends CP_Controller {
 		$offset = ($page - 1) * $perpage;
 
 		$base_url->addQueryStringVariables($filter_values);
-		$table = $this->buildTable($files, $perpage, $offset);
 
-		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
-		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
+		if ($view_type === 'table') {
+			$table = $this->buildTable($files, $perpage, $offset);
 
-		ee()->view->filters = $filters->render($base_url);
+			$base_url->setQueryStringVariable('sort_col', $table->sort_col);
+			$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
 
-		$vars['table'] = $table->viewData($base_url);
-		$vars['form_url'] = $vars['table']['base_url'];
+			ee()->view->filters = $filters->render($base_url);
+
+			$vars['table'] = $table->viewData($base_url);
+			$vars['form_url'] = $vars['table']['base_url'];
+		} elseif ($view_type === 'thumb') {
+			$vars['form_url'] = $base_url;
+
+			ee()->view->filters = $filters->render($base_url);
+
+			$files = $files->limit($perpage)
+						->offset($offset)
+						->all();
+
+			$vars['files'] = $files;
+		}
 
 		$vars['pagination'] = ee('CP/Pagination', $total_files)
 			->perPage($perpage)

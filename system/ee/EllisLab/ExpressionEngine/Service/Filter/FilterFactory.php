@@ -314,6 +314,15 @@ class FilterFactory {
 		return $filter;
 	}
 
+	/**
+	 * This will instantiate and return a default ViewType filter
+	 *
+	 * @return Filter\ViewType a ViewType Filter object
+	 */
+	protected function createDefaultViewType()
+	{
+		return new Filter\ViewType();
+	}
 }
 
 // EOF
