@@ -5,7 +5,7 @@
 					<?php if (!$file->exists()): ?>
 						<div class="file-card__preview-icon">
 							<i class="fas fa-lg fa-exclamation-triangle"></i>
-							<div class="file-card__preview-icon-text">File Not Found</div>
+							<div class="file-card__preview-icon-text"><?=lang('file_not_found')?></div>
 						</div>
 					<?php else: ?>
 						<?php if ($file->isImage()): ?>
