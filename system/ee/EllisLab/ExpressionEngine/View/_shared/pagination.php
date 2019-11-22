@@ -1,5 +1,5 @@
 <?php if ( ! empty($pagination)): ?>
-<div>
+<div class="add-mrg-top">
 	<ul class="pagination">
 		<?php if (array_keys($pagination['pages'])[0] != 1): ?>
 		<li class="pagination__item"><a class="pagination__link" href="<?=$pagination['first']?>">1</a></li>
