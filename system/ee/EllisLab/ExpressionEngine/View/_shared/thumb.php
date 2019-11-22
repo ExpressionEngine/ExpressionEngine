@@ -9,9 +9,16 @@
 						</div>
 					<?php else: ?>
 						<?php if ($file->isImage()): ?>
-							<div class="file-card__preview-image">
-								<img src="<?=$file->getAbsoluteURL()?>" />
-							</div>
+							<?php if (ee('Thumbnail')->get($file)->missing): ?>
+								<div class="file-card__preview-icon">
+									<i class="fas fa-lg fa-exclamation-triangle"></i>
+									<div class="file-card__preview-icon-text"><?=lang('thumbnail_missing')?></div>
+								</div>
+							<?php else: ?>
+								<div class="file-card__preview-image">
+								<img src="<?=ee('Thumbnail')->get($file)->url?>" />
+								</div>
+							<?php endif; ?>
 						<?php else: ?>
 							<div class="file-card__preview-icon">
 								<?php if ($file->mime_type == 'text/plain'): ?>
