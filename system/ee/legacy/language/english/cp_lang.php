@@ -492,7 +492,7 @@ $lang = array(
 
 'image' => 'Image',
 
-'keyword_filter' => 'keywords, hit enter',
+'keyword_filter' => 'Search',
 
 'log_out' => 'Log Out',
 
