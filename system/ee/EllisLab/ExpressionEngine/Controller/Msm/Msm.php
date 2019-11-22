@@ -85,9 +85,6 @@ class Msm extends CP_Controller {
 				'status' => array(
 					'type' => Table::COL_STATUS
 				),
-				'manage' => array(
-					'type' => Table::COL_TOOLBAR
-				),
 				array(
 					'type' => Table::COL_CHECKBOX
 				)
@@ -129,12 +126,6 @@ class Msm extends CP_Controller {
 				),
 				'<var>{' . htmlentities($site->site_name, ENT_QUOTES) . '}</var>',
 				$status,
-				array('toolbar_items' => array(
-					'edit' => array(
-						'href' => $edit_url,
-						'title' => lang('edit')
-					)
-				)),
 				array(
 					'name' => 'selection[]',
 					'value' => $site->site_id,
@@ -146,7 +137,7 @@ class Msm extends CP_Controller {
 
 			if ($site->site_id == 1)
 			{
-				$column[5]['disabled'] = TRUE;
+				$column[4]['disabled'] = TRUE;
 			}
 
 			$attrs = array();
@@ -275,6 +266,10 @@ class Msm extends CP_Controller {
 
 		ee()->view->cp_page_title = lang('create_site');
 
+		ee()->view->header = array(
+			'title' => lang('create_site'),
+		);
+
 		ee()->cp->add_js_script('plugin', 'ee_url_title');
 		ee()->javascript->output('
 			$("input[name=site_label]").bind("keyup keydown", function() {
@@ -377,6 +372,10 @@ class Msm extends CP_Controller {
 		);
 
 		ee()->view->cp_page_title = lang('edit_site');
+
+		ee()->view->header = array(
+			'title' => lang('edit_site'),
+		);
 
 		ee()->cp->render('settings/form', $vars);
 	}
