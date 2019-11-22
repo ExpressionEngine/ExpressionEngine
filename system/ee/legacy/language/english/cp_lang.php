@@ -15,7 +15,7 @@ $lang = array(
 
 'logs' => 'Logs',
 
-'msm_manager' => 'Site Manager',
+'msm_manager' => 'Sites',
 
 'nav_developer' => 'Developer',
 

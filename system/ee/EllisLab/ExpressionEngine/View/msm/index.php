@@ -1,8 +1,8 @@
 <?php $this->extend('_templates/default-nav'); ?>
 
 	<?=form_open($table['base_url'])?>
-		<h1><?=$cp_page_title?></h1>
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+
 		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>
 		<fieldset class="bulk-action-bar hidden">
