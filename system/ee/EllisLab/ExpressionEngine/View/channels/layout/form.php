@@ -52,7 +52,7 @@
 							<div class="layout-item">
 								<div class="layout-item__handle ui-sortable-handle"></div>
 								<div class="layout-item__content">
-									<label class="layout-item__title"><?=$field->getLabel()?> <span class="faded">(<?=$field->getTypeName()?>)</label>
+									<label class="layout-item__title"><span class="faded float-right"><?=$field->getTypeName()?></span><?=$field->getLabel()?> <span class="faded">(<?=$field->getShortName()?>)</span></label>
 									<div class="layout-item__options">
 										<?php if ($field->isRequired()): ?>
 										<label class="field-option-required"><?=ucwords(lang('required_field'))?></label>
