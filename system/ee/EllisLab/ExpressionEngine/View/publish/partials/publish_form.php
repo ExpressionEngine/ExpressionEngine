@@ -1,11 +1,8 @@
 <div class="form-standard" data-publish>
 	<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
-	<div class="form-btns form-btns-top">
-		<h1><?=$form_title?> </h1>
-		<?php $this->embed('ee:_shared/form/buttons'); ?>
-	</div>
+
 	<div class="tab-wrap">
-		<div class="tab-bar">
+		<div class="tab-bar tab-bar--sticky">
 			<div class="tab-bar__tabs">
 			<?php
 			foreach ($layout->getTabs() as $index => $tab):
@@ -27,6 +24,10 @@
 			<?php if ($entry->getAutosaves()->count()): ?>
 				<a href="" class="tab-bar__tab js-tab-button" rel="t-autosaves"><?=lang('autosaves')?></a>
 			<?php endif ?>
+			</div>
+
+			<div class="tab-bar__right-buttons">
+				<div class="button-group form-btns"><?php $this->embed('ee:_shared/form/buttons'); ?></div>
 			</div>
 		</div>
 		<?=ee('CP/Alert')->getAllInlines()?>
@@ -95,9 +96,6 @@
 				</div>
 			</fieldset>
 		</div>
-	</div>
-	<div class="form-btns">
-		<?php $this->embed('ee:_shared/form/buttons'); ?>
 	</div>
 	</form>
 </div>
