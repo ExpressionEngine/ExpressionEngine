@@ -751,6 +751,12 @@ $(document).ready(function(){
 			}
 		});
 
+		// Uncheck any checkboxes when the page loads.
+		// This solves a bug where the browser may keep item checkbox selection on reload, but the items don't show the selection.
+		$('table tr td:last-child input[type=checkbox]').each(function () {
+			$(this).prop('checked', false)
+		});
+
 		// Prevent clicks on checkboxes from bubbling to the table row
 		$('body').on('click', 'table tr td:last-child input[type=checkbox]', function(e) {
 			e.stopPropagation();
@@ -768,6 +774,12 @@ $(document).ready(function(){
 
 	// List group checkbox selection and bulk action display
 	// -------------------------------------------------------------------
+
+	// Uncheck any checkboxes when the page loads.
+	// This solves a bug where the browser may keep item checkbox selection on reload, but the items don't show the selection.
+	$('.list-group .list-item__checkbox input').each(function () {
+		$(this).prop('checked', false)
+	});
 
 		// Check a list item checkbox if its container is clicked
 		$('body').on('click', '.list-item__checkbox', function(event) {
