@@ -527,12 +527,12 @@ abstract class AbstractDesign extends CP_Controller {
 
 			if (strncmp($template->template_name, $hidden_indicator, $hidden_indicator_length) == 0)
 			{
-				$template_name = '<span class="hidden-tmp">' . $template_name . '</span>';
+				$template_name = '<i class="fas fa-sm fa-eye-slash icon-left"></i>' . $template_name;
 			}
 
 			if ($template->template_name == 'index')
 			{
-				$template_name = '<span class="index">' . $template_name . '</span>';
+				$template_name = '<i class="fas fa-home fa-sm icon-left"></i>' . $template_name;
 			}
 
 			$view_url = ee()->functions->fetch_site_index();
