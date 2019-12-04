@@ -192,16 +192,16 @@ class Edit extends AbstractPublishController {
 			{
 				if (ee()->cp->allowed_group('can_moderate_comments'))
 				{
-					$comments = '(<a href="' . ee('CP/URL')->make('publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>)';
+					$comments = '<a href="' . ee('CP/URL')->make('publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>';
 				}
 				else
 				{
-					$comments = '(' . $entry->comment_total . ')';
+					$comments = $entry->comment_total;
 				}
 			}
 			else
 			{
-				$comments = '(0)';
+				$comments = '0';
 			}
 
 			if (ee()->cp->allowed_group('can_delete_all_entries')
