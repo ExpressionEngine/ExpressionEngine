@@ -348,9 +348,9 @@ class SelectList extends React.Component {
     let shouldShowToggleAll = (props.multi || ! props.selectable) && props.toggleAll !== null
 
     return (
-      <div className={((shouldShowToggleAll || props.tooMany) ? ' lots-of-checkboxes' : '')}
+      <div className={((props.tooMany) ? ' lots-of-checkboxes' : '')}
         ref={(container) => { this.container = container }} key={this.version}>
-        {(shouldShowToggleAll || props.tooMany) &&
+        {(props.tooMany) &&
         <div class="lots-of-checkboxes__search">
         <div class="lots-of-checkboxes__search-inner">
             {props.tooMany &&
@@ -371,13 +371,13 @@ class SelectList extends React.Component {
               </div>
             }
             {shouldShowToggleAll && props.tooMany && <hr />}
-            {shouldShowToggleAll &&
+            {shouldShowToggleAll && props.tooMany &&
               <FilterToggleAll checkAll={props.toggleAll} onToggleAll={(check) => this.handleToggleAll(check)} />
             }
           </div>
           </div>
         }
-        <FieldInputs nested={props.nested}>
+        <FieldInputs nested={props.nested} tooMany={props.tooMany}>
           { ! props.loading && props.items.length == 0 &&
             <NoResults text={props.noResults} />
           }
@@ -425,16 +425,18 @@ class SelectList extends React.Component {
 }
 
 function FieldInputs (props) {
+  var divClass = (props.tooMany ? ' lots-of-checkboxes__items--too-many' : '')
+
   if (props.nested) {
     return (
-      <ul className="lots-of-checkboxes__items field-nested">
+      <ul className={'lots-of-checkboxes__items field-nested' + divClass}>
         {props.children}
       </ul>
     )
   }
 
   return (
-    <div className="lots-of-checkboxes__items">
+    <div className={'lots-of-checkboxes__items' + divClass}>
       {props.children}
     </div>
   )

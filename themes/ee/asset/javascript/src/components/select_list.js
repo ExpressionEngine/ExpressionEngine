@@ -357,12 +357,12 @@ function (_React$Component) {
       var props = this.props;
       var shouldShowToggleAll = (props.multi || !props.selectable) && props.toggleAll !== null;
       return React.createElement("div", {
-        className: shouldShowToggleAll || props.tooMany ? ' lots-of-checkboxes' : '',
+        className: props.tooMany ? ' lots-of-checkboxes' : '',
         ref: function ref(container) {
           _this8.container = container;
         },
         key: this.version
-      }, (shouldShowToggleAll || props.tooMany) && React.createElement("div", {
+      }, props.tooMany && React.createElement("div", {
         "class": "lots-of-checkboxes__search"
       }, React.createElement("div", {
         "class": "lots-of-checkboxes__search-inner"
@@ -384,13 +384,14 @@ function (_React$Component) {
         onSearch: function onSearch(e) {
           return _this8.filterChange('search', e.target.value);
         }
-      }))), shouldShowToggleAll && props.tooMany && React.createElement("hr", null), shouldShowToggleAll && React.createElement(FilterToggleAll, {
+      }))), shouldShowToggleAll && props.tooMany && React.createElement("hr", null), shouldShowToggleAll && props.tooMany && React.createElement(FilterToggleAll, {
         checkAll: props.toggleAll,
         onToggleAll: function onToggleAll(check) {
           return _this8.handleToggleAll(check);
         }
       }))), React.createElement(FieldInputs, {
-        nested: props.nested
+        nested: props.nested,
+        tooMany: props.tooMany
       }, !props.loading && props.items.length == 0 && React.createElement(NoResults, {
         text: props.noResults
       }), props.loading && React.createElement(Loading, {
@@ -506,14 +507,16 @@ _defineProperty(SelectList, "defaultProps", {
 });
 
 function FieldInputs(props) {
+  var divClass = props.tooMany ? ' lots-of-checkboxes__items--too-many' : '';
+
   if (props.nested) {
     return React.createElement("ul", {
-      className: "lots-of-checkboxes__items field-nested"
+      className: 'lots-of-checkboxes__items field-nested' + divClass
     }, props.children);
   }
 
   return React.createElement("div", {
-    className: "lots-of-checkboxes__items"
+    className: 'lots-of-checkboxes__items' + divClass
   }, props.children);
 }
 
