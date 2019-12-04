@@ -9,7 +9,7 @@ a.icon--sync {
 
 <?php use EllisLab\ExpressionEngine\Library\CP\Table;
 if ($wrap): ?>
-	<div class="tbl-wrap<?php if ($grid_input): ?> pb<?php endif?>">
+	<div class="table-responsive table-responsive--collapsible<?php if ($grid_input): ?> pb<?php endif?>">
 <?php endif ?>
 
 <?php if (empty($columns) && empty($data)): ?>
@@ -148,12 +148,16 @@ if ($wrap): ?>
 						<?php if ($reorder): ?>
 							<td class="reorder-col"><span class="ico reorder"></span></td>
 						<?php endif ?>
-						<?php foreach ($row['columns'] as $column): ?>
+						<?php foreach ($row['columns'] as $key => $column):
+							$column_name = $columns[$key]['label'];
+							$column_name = ($lang_cols) ? lang($column_name) : $column_name;
+							?>
+
 							<?php if ($column['encode'] == TRUE && $column['type'] != Table::COL_STATUS): ?>
 								<?php if (isset($column['href'])): ?>
-								<td><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></a></td>
+								<td><span class="collapsed-label"><?=$column_name?></span><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></a></td>
 								<?php else: ?>
-								<td><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></td>
+								<td><span class="collapsed-label"><?=$column_name?></span><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></td>
 								<?php endif; ?>
 							<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
 								<td>
@@ -203,16 +207,17 @@ if ($wrap): ?>
 
 									$style .= '"';
 								?>
-								<td><span class="status-tag st-<?=strtolower($class)?>" <?=$style?>><?=$column['content']?></span></td>
+								<td><span class="collapsed-label"><?=$column_name?></span><span class="status-tag st-<?=strtolower($class)?>" <?=$style?>><?=$column['content']?></span></td>
 							<?php elseif (isset($column['html'])): ?>
 								<td<?php if (isset($column['error']) && ! empty($column['error'])): ?> class="invalid"<?php endif ?> <?php if (isset($column['attrs'])): foreach ($column['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
+									<span class="collapsed-label"><?=$column_name?></span>
 									<?=$column['html']?>
 									<?php if (isset($column['error']) && ! empty($column['error'])): ?>
 										<em class="ee-form-error-message"><?=$column['error']?></em>
 									<?php endif ?>
 								</td>
 							<?php else: ?>
-								<td><?=$column['content']?></td>
+								<td><span class="collapsed-label"><?=$column_name?></span><?=$column['content']?></td>
 							<?php endif ?>
 						<?php endforeach ?>
 						<?php if ($grid_input): ?>
