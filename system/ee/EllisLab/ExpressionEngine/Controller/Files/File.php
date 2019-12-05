@@ -77,6 +77,7 @@ class File extends AbstractFilesController {
 				'categories' => ee('File')->makeUpload()->getCategoryForm($file, $errors),
 			),
 			'sections' => array(),
+			'hide_top_buttons' => TRUE
 		];
 
 		ee()->view->cp_page_title = lang('edit_file_metadata');
