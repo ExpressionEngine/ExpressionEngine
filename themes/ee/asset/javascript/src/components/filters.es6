@@ -62,8 +62,8 @@ class FilterToggleAll extends React.Component {
 
 function FilterSearch (props) {
   return (
-    <div className="filter-item filter-item__search">
-      <input type="text" placeholder={EE.lang.keyword_search} onChange={props.onSearch} />
+    <div className="filter-bar__item filter-search-form">
+      <input type="text" className="filter-bar__input" placeholder={EE.lang.keyword_search} onChange={props.onSearch} />
     </div>
   )
 }
@@ -90,30 +90,29 @@ class FilterSelect extends React.Component {
       this.setState({ selected: item })
     }
     this.props.onSelect(item ? item.value : null)
-    $(event.target).closest('.filter-item').find('.js-filter-link').click()
+    $(event.target).closest('.filter-bar__item').find('.js-dropdown-toggle').click()
     event.preventDefault()
   }
 
   render () {
     return (
-      <div className={"filter-item" + (this.props.center ? ' filter-item--center' : '')}>
-        <a href="#" className={"js-filter-link filter-item__link filter-item__link--has-submenu" + (this.props.action ? ' filter-item__link--action' : '')} onClick={this.toggle}>{this.props.title}</a>
-        <div className="filter-submenu">
+      <div className="filter-bar__item">
+        <a href="#" className={"js-dropdown-toggle filter-bar__button has-sub" + (this.props.action ? ' filter-item__link--action' : '')} onClick={this.toggle}>{this.props.title}</a>
+      <div className="dropdown">
           {this.state.items.length > 7 &&
-            <div className="filter-submenu__search">
+            <div className="dropdown__search">
               <form>
                 <input type="text" placeholder={this.props.placeholder} onChange={this.handleSearch} />
               </form>
             </div>
           }
-          {this.state.selected &&
-            <div className="filter-submenu__selected">
-              <a href="#" onClick={(e) => this.selectItem(e, null)}>{this.state.selected.label}</a>
-            </div>
-          }
-          <div className="filter-submenu__scroll">
+          {this.state.selected && <>
+              <a href="#" className="dropdown__link dropdown__link--selected" onClick={(e) => this.selectItem(e, null)}>{this.state.selected.label}</a>
+              <div className="dropdown__divider"></div>
+          </> }
+          <div className="dropdown__scroll">
             {this.state.items.map(item =>
-              <a href="#" key={item.value} className={"filter-submenu__link filter-submenu__link---active " + this.props.itemClass} rel={this.props.rel} onClick={(e) => this.selectItem(e, item)}>{item.label}</a>
+              <a href="#" key={item.value} className={"dropdown__link " + this.props.itemClass} rel={this.props.rel} onClick={(e) => this.selectItem(e, item)}>{item.label}</a>
             )}
           </div>
         </div>

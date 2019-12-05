@@ -564,9 +564,7 @@ function (_React$Component2) {
       var listItem = React.createElement("label", {
         className: 'checkbox-label',
         "data-id": props.reorderable && !props.nested ? props.item.value : null
-      }, props.reorderable && React.createElement("span", {
-        className: "icon-reorder"
-      }, " "), props.selectable && React.createElement("input", {
+      }, props.selectable && React.createElement("input", {
         type: props.multi ? "checkbox" : "radio",
         value: props.item.value,
         onChange: function onChange(e) {
@@ -577,18 +575,21 @@ function (_React$Component2) {
         disabled: disabled ? 'disabled' : ''
       }), React.createElement("div", {
         className: "checkbox-label__text"
-      }, props.editable && React.createElement("a", {
+      }, props.reorderable && React.createElement("span", {
+        className: "icon-reorder icon-left"
+      }), props.editable && React.createElement("a", {
         href: "#"
-      }, label), !props.editable && label, " ", props.item.instructions && React.createElement("i", null, props.item.instructions), props.removable && React.createElement("ul", {
-        className: "toolbar"
-      }, React.createElement("li", {
-        className: "remove"
-      }, React.createElement("a", {
+      }, label), !props.editable && label, " ", props.item.instructions && React.createElement("span", {
+        className: "meta-info"
+      }, props.item.instructions), props.removable && React.createElement("a", {
         href: "",
+        className: "button button--danger button--small float-right",
         onClick: function onClick(e) {
           return props.handleRemove(e, props.item);
         }
-      })))));
+      }, React.createElement("i", {
+        "class": "fas fa-sm fa-trash"
+      }))));
 
       if (props.nested) {
         return React.createElement("li", {

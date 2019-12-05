@@ -94,9 +94,10 @@ function (_React$Component) {
 
 function FilterSearch(props) {
   return React.createElement("div", {
-    className: "filter-item filter-item__search"
+    className: "filter-bar__item filter-search-form"
   }, React.createElement("input", {
     type: "text",
+    className: "filter-bar__input",
     placeholder: EE.lang.keyword_search,
     onChange: props.onSearch
   }));
@@ -131,7 +132,7 @@ function (_React$Component2) {
 
       _this2.props.onSelect(item ? item.value : null);
 
-      $(event.target).closest('.filter-item').find('.js-filter-link').click();
+      $(event.target).closest('.filter-bar__item').find('.js-dropdown-toggle').click();
       event.preventDefault();
     });
 
@@ -149,33 +150,34 @@ function (_React$Component2) {
       var _this3 = this;
 
       return React.createElement("div", {
-        className: "filter-item" + (this.props.center ? ' filter-item--center' : '')
+        className: "filter-bar__item"
       }, React.createElement("a", {
         href: "#",
-        className: "js-filter-link filter-item__link filter-item__link--has-submenu" + (this.props.action ? ' filter-item__link--action' : ''),
+        className: "js-dropdown-toggle filter-bar__button has-sub" + (this.props.action ? ' filter-item__link--action' : ''),
         onClick: this.toggle
       }, this.props.title), React.createElement("div", {
-        className: "filter-submenu"
+        className: "dropdown"
       }, this.state.items.length > 7 && React.createElement("div", {
-        className: "filter-submenu__search"
+        className: "dropdown__search"
       }, React.createElement("form", null, React.createElement("input", {
         type: "text",
         placeholder: this.props.placeholder,
         onChange: this.handleSearch
-      }))), this.state.selected && React.createElement("div", {
-        className: "filter-submenu__selected"
-      }, React.createElement("a", {
+      }))), this.state.selected && React.createElement(React.Fragment, null, React.createElement("a", {
         href: "#",
+        className: "dropdown__link dropdown__link--selected",
         onClick: function onClick(e) {
           return _this3.selectItem(e, null);
         }
-      }, this.state.selected.label)), React.createElement("div", {
-        className: "filter-submenu__scroll"
+      }, this.state.selected.label), React.createElement("div", {
+        className: "dropdown__divider"
+      })), React.createElement("div", {
+        className: "dropdown__scroll"
       }, this.state.items.map(function (item) {
         return React.createElement("a", {
           href: "#",
           key: item.value,
-          className: "filter-submenu__link filter-submenu__link---active " + _this3.props.itemClass,
+          className: "dropdown__link " + _this3.props.itemClass,
           rel: _this3.props.rel,
           onClick: function onClick(e) {
             return _this3.selectItem(e, item);

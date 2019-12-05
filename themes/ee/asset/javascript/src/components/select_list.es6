@@ -471,9 +471,6 @@ class SelectItem extends React.Component {
     let listItem = (
       <label className={'checkbox-label'}
           data-id={props.reorderable && ! props.nested ? props.item.value : null}>
-        {props.reorderable && (
-          <span className="icon-reorder"> </span>
-        )}
         {props.selectable && (
           <input type={props.multi ? "checkbox" : "radio"}
             value={props.item.value}
@@ -484,18 +481,19 @@ class SelectItem extends React.Component {
            />
         )}
         <div className="checkbox-label__text">
+        {props.reorderable && (
+          <span className="icon-reorder icon-left"></span>
+        )}
         {props.editable && (
             <a href="#">{label}</a>
         )}
         { ! props.editable && label}
         {" "}
         {props.item.instructions && (
-          <i>{props.item.instructions}</i>
+          <span className="meta-info">{props.item.instructions}</span>
         )}
         {props.removable && (
-          <ul className="toolbar">
-            <li className="remove"><a href="" onClick={(e) => props.handleRemove(e, props.item)}></a></li>
-          </ul>
+            <a href="" className="button button--danger button--small float-right" onClick={(e) => props.handleRemove(e, props.item)}><i class="fas fa-sm fa-trash"></i></a>
         )}
         </div>
       </label>
