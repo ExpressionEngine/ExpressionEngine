@@ -132,7 +132,7 @@ $lang = array(
 
 'entry_manager' => 'Entries',
 
-'entry_status' => 'Status',
+'entry_status' => 'Entry Status',
 
 'entry_status_desc' => 'Entry status.',
 
