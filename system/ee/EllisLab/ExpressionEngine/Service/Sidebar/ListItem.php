@@ -24,6 +24,11 @@ abstract class ListItem {
 	protected $text;
 
 	/**
+	 * @var string $text Optional icon for the item
+	 */
+	protected $icon;
+
+	/**
 	 * @var URL|string $url The URL to use as an href attribute
 	 */
 	protected $url;
@@ -80,6 +85,19 @@ abstract class ListItem {
 	public function urlIsExternal($external = TRUE)
 	{
 		$this->url_is_external = $external;
+		return $this;
+	}
+
+	/**
+	 * Sets the icon of the item
+	 *
+	 * @param string $icon Name of the icon
+	 * @return self This returns a reference to itself
+	 */
+	public function withIcon($icon)
+	{
+		$this->icon = $icon;
+
 		return $this;
 	}
 
