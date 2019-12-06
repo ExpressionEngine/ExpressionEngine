@@ -25,7 +25,7 @@ class Files extends AbstractFilesController {
 
 	public function index()
 	{
-		$view_type = 'table';
+		$view_type = 'thumb';
 
 		if (!empty($_GET['viewtype']) && $_GET['viewtype']) {
 			$view_type = $_GET['viewtype'];
@@ -69,12 +69,6 @@ class Files extends AbstractFilesController {
 
 	public function directory($id)
 	{
-		$view_type = 'table';
-
-		if (!empty($_GET['viewtype']) && $_GET['viewtype']) {
-			$view_type = $_GET['viewtype'];
-		}
-
 		$dir = ee('Model')->get('UploadDestination', $id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -101,6 +95,12 @@ class Files extends AbstractFilesController {
 		}
 
 		$this->handleBulkActions(ee('CP/URL')->make('files/directory/' . $id, ee()->cp->get_url_state()));
+
+		$view_type = ($dir->default_modal_view == 'list' ? 'table' : 'thumb');
+
+		if (!empty($_GET['viewtype']) && $_GET['viewtype']) {
+			$view_type = $_GET['viewtype'];
+		}
 
 		$base_url = ee('CP/URL')->make('files/directory/' . $id);
 

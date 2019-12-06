@@ -278,7 +278,7 @@ $lang = array(
 
 'default_modal_view' => 'Default modal view?',
 
-'default_modal_view_desc' => 'Default view for this upload directory in the file picker modal.',
+'default_modal_view_desc' => 'How files should be displayed by default for this upload directory.',
 
 'default_modal_view_list' => 'List',
 
