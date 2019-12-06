@@ -18,9 +18,9 @@ use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 class Sidebar {
 
 	/**
-	 * @var array $headers The headers in this sidebar
+	 * @var array $items The items in this sidebar
 	 */
-	protected $headers = array();
+	protected $items = [];
 
 	/**
 	 * @var ViewFactory $view A ViewFactory object with which we will render the sidebar.
@@ -82,9 +82,8 @@ class Sidebar {
 			$output .= $this->list->render($this->view);
 		}
 
-		foreach ($this->headers as $header)
-		{
-			$output .= $header->render($this->view);
+		foreach ($this->items as $item) {
+			$output .= $item->render($this->view);
 		}
 
 		if ( ! empty($this->action_bar))
@@ -115,7 +114,7 @@ class Sidebar {
 	public function addHeader($text, $url = NULL)
 	{
 		$header = new Header($text, $url);
-		$this->headers[] = $header;
+		$this->items[] = $header;
 		return $header;
 	}
 
