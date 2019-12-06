@@ -119,6 +119,17 @@ class Sidebar {
 	}
 
 	/**
+	 * Adds a divider to the sidebar
+	 *
+	 * @return Divider A new divider object.
+	 */
+	public function addDivider() {
+		$divider = new Divider();
+		$this->items[] = $divider;
+		return $divider;
+	}
+
+	/**
 	 * Adds a folder list to the sidebar, without a header
 	 *
 	 * @param string $name The name of the folder list
