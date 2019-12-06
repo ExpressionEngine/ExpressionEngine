@@ -104,6 +104,21 @@ class Sidebar {
 	}
 
 	/**
+	 * Adds a basic item to the sidebar
+	 *
+	 * @param string $text The text of the item
+	 * @param URL|string $url An optional CP\URL object or string containing the
+	 *   URL for the text.
+	 * @return Header A new BasicItem object.
+	 */
+	public function addItem($text, $url = NULL)
+	{
+		$item = new BasicItem($text, $url);
+		$this->items[] = $item;
+		return $item;
+	}
+
+	/**
 	 * Adds a header to the sidebar
 	 *
 	 * @param string $text The text of the header
