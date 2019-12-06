@@ -7,6 +7,7 @@
 <div class="dropdown">
 	<?php if ($has_custom_value || $has_list_filter): ?>
 	<div class="dropdown__search">
+		<div class="search-input">
 		<input
 			type="text"
 			name="<?=$name?>"
@@ -14,8 +15,10 @@
 			placeholder="<?=htmlentities($placeholder, ENT_QUOTES, 'UTF-8')?>"
 			<?php if ($has_list_filter): ?>
 			data-fuzzy-filter="true"
+			class="search-input__input"
 			<?php endif; ?>
 		>
+		<div>
 	</div>
 	<?php endif; ?>
 	<?php foreach ($options as $url => $label): ?>

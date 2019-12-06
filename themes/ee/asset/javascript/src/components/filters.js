@@ -94,13 +94,15 @@ function (_React$Component) {
 
 function FilterSearch(props) {
   return React.createElement("div", {
-    className: "filter-bar__item filter-search-form"
+    className: "filter-bar__item"
+  }, React.createElement("div", {
+    className: "search-input"
   }, React.createElement("input", {
     type: "text",
-    className: "filter-bar__input",
+    className: "search-input__input",
     placeholder: EE.lang.keyword_search,
     onChange: props.onSearch
-  }));
+  })));
 }
 
 var FilterSelect =
@@ -159,11 +161,14 @@ function (_React$Component2) {
         className: "dropdown"
       }, this.state.items.length > 7 && React.createElement("div", {
         className: "dropdown__search"
-      }, React.createElement("form", null, React.createElement("input", {
+      }, React.createElement("form", null, React.createElement("div", {
+        className: "search-input"
+      }, React.createElement("input", {
+        className: "search-input__input",
         type: "text",
         placeholder: this.props.placeholder,
         onChange: this.handleSearch
-      }))), this.state.selected && React.createElement(React.Fragment, null, React.createElement("a", {
+      })))), this.state.selected && React.createElement(React.Fragment, null, React.createElement("a", {
         href: "#",
         className: "dropdown__link dropdown__link--selected",
         onClick: function onClick(e) {

@@ -32,7 +32,9 @@ $component = [
 					<a class="button button--secondary-alt js-dropdown-toggle has-sub" href="#">Add Entry</a>
 					<div class="dropdown">
 						<fieldset class="dropdown__search">
-							<input value="" placeholder="filter channels" type="text" data-fuzzy-filter="true">
+							<div class="search-input">
+							<input value="" class="search-input__input" placeholder="filter channels" type="text" data-fuzzy-filter="true">
+							</div>
 						</fieldset>
 							<?php foreach ($channels as $channel):
 								$channel_title = ee('Format')->make('Text', $channel->channel_title)->convertToEntities(); ?>

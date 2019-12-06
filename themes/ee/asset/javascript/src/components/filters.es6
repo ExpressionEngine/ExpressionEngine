@@ -62,8 +62,10 @@ class FilterToggleAll extends React.Component {
 
 function FilterSearch (props) {
   return (
-    <div className="filter-bar__item filter-search-form">
-      <input type="text" className="filter-bar__input" placeholder={EE.lang.keyword_search} onChange={props.onSearch} />
+    <div className="filter-bar__item">
+      <div className="search-input">
+        <input type="text" className="search-input__input" placeholder={EE.lang.keyword_search} onChange={props.onSearch} />
+      </div>
     </div>
   )
 }
@@ -102,7 +104,9 @@ class FilterSelect extends React.Component {
           {this.state.items.length > 7 &&
             <div className="dropdown__search">
               <form>
-                <input type="text" placeholder={this.props.placeholder} onChange={this.handleSearch} />
+                <div className="search-input">
+                  <input className="search-input__input" type="text" placeholder={this.props.placeholder} onChange={this.handleSearch} />
+                </div>
               </form>
             </div>
           }

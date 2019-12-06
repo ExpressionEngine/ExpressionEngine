@@ -76,11 +76,14 @@ function (_React$Component) {
         className: "dropdown"
       }, this.state.items.length > 7 && React.createElement("div", {
         className: "dropdown__search"
-      }, React.createElement("form", null, React.createElement("input", {
+      }, React.createElement("form", null, React.createElement("div", {
+        className: "search-input"
+      }, React.createElement("input", {
+        className: "search-input__input",
         type: "text",
         placeholder: this.props.placeholder,
         onChange: this.handleSearch
-      }))), React.createElement("div", {
+      })))), React.createElement("div", {
         className: "dropdown__scroll"
       }, this.state.items.map(function (item) {
         return React.createElement("a", {

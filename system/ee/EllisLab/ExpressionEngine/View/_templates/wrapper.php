@@ -83,7 +83,9 @@ $current_page = ee()->uri->segment(2);
 						<div class="dropdown">
 							<?php if ($item->hasFilter()) : ?>
 							<form class="dropdown__search">
-								<input type="text" value="" placeholder="<?= lang($item->placeholder) ?>">
+								<div class="search-input">
+									<input class="search-input__input" type="text" value="" placeholder="<?= lang($item->placeholder) ?>">
+								</div>
 							</form>
 								<?php if (count($item->getItems()) < 10 && !empty($item->view_all_link)) : ?>
 								<a class="dropdown__link" href="<?= $item->view_all_link ?>"><b><?= lang('view_all') ?></b></a>

@@ -39,7 +39,9 @@ class DropDownButton extends React.Component {
                     {this.state.items.length > 7 &&
                         <div className="dropdown__search">
                             <form>
-                                <input type="text" placeholder={this.props.placeholder} onChange={this.handleSearch} />
+                                <div className="search-input">
+                                    <input className="search-input__input" type="text" placeholder={this.props.placeholder} onChange={this.handleSearch} />
+                                </div>
                             </form>
                         </div>
                     }
