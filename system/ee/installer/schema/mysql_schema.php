@@ -1526,7 +1526,7 @@ class EE_Schema {
 		{
 			$Q[] = "INSERT INTO exp_roles
 				(role_id, name, short_name, is_locked)
-				VALUES (" . $role['role_id'] . ", '" . $role['name'] . ", '" . $role['short_name'] . "', '" . $role['is_locked'] . "')";
+				VALUES (" . $role['role_id'] . ", '" . $role['name'] . "', '" . $role['short_name'] . "', '" . $role['is_locked'] . "')";
 
 			unset($role['name']);
 			unset($role['short_name']);
