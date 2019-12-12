@@ -343,9 +343,11 @@ $lang = array(
 
 'important' => 'Important!',
 
+'view_as' => 'View as ',
+
 'viewtype_list' => 'List',
 
-'viewtype_thumb' => 'Thumb',
+'viewtype_thumb' => 'Thumbnails',
 
 'viewtype_hybrid' => 'Hybrid',
 

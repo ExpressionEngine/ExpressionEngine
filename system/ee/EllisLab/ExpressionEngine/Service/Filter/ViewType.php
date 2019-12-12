@@ -95,7 +95,19 @@ class Viewtype extends Filter {
 	 */
 	public function render(ViewFactory $view, URL $url)
 	{
+		$original_options = $this->options;
 		$options = $this->prepareOptions($url);
+		$new_options = [];
+
+		foreach ($options as $url => $label) {
+			$new_options[] = [
+				'url' => $url,
+				'label' => $label
+			];
+		}
+
+		// Merge the url and label with the viewtype so that all three options can be accessed in the view
+		$options = array_combine(array_keys($original_options), $new_options);
 
 		$filter = [
 			'name'        => $this->name,
