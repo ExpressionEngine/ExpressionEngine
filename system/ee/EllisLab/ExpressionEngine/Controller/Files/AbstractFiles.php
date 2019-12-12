@@ -244,7 +244,6 @@ abstract class AbstractFiles extends CP_Controller {
 			->all();
 
 		$data = array();
-		$missing_files = FALSE;
 
 		$file_id = ee()->session->flashdata('file_id');
 		$member_group = ee()->session->userdata['group_id'];
@@ -293,8 +292,18 @@ abstract class AbstractFiles extends CP_Controller {
 				$file_description = '<a href data-file-id="'.$file->file_id.'" rel="modal-view-file" class="m-link">'.$file->title.'</a>';
 			}
 
+			$attrs = array();
+
+			if (!$file->exists()) {
+				$attrs['class'] = 'missing';
+
+				$file_description .= '<br><em class="faded">' . lang('file_not_found') . '</em>';
+			} else {
+				$file_description .= '<br><em class="faded">' . $file->file_name . '</em>';
+			}
+
 			$column = array(
-				$file_description.'<br><em class="faded">' . $file->file_name . '</em>',
+				$file_description,
 				$file->mime_type,
 				ee()->localize->human_time($file->upload_date),
 				array('toolbar_items' => $toolbar),
@@ -306,14 +315,6 @@ abstract class AbstractFiles extends CP_Controller {
 					)
 				)
 			);
-
-			$attrs = array();
-
-			if ( ! $file->exists())
-			{
-				$attrs['class'] = 'missing';
-				$missing_files = TRUE;
-			}
 
 			if ($file_id && $file->file_id == $file_id)
 			{
@@ -334,16 +335,6 @@ abstract class AbstractFiles extends CP_Controller {
 		}
 
 		$table->setData($data);
-
-		if ($missing_files)
-		{
-			ee('CP/Alert')->makeInline('missing-files')
-				->asWarning()
-				->cannotClose()
-				->withTitle(lang('files_not_found'))
-				->addToBody(lang('files_not_found_desc'))
-				->now();
-		}
 
 		return $table;
 	}
