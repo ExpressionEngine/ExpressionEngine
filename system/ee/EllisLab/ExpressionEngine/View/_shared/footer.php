@@ -59,6 +59,28 @@
 			<?=form_close()?>
 			</div>
 		</div>
+
+		<div id="jump-menu" class="modal-wrap modal-wrap--small modal-timeout hidden" style="display:none;">
+			<div class="jump-menu">
+				<div class="jump-menu__input" id="jumpMenu1">
+					<input type="text" id="jumpEntry1" class="jump-to" placeholder="Go To..">
+				</div>
+				<div class="jump-menu__input" id="jumpMenu2" style="display:none;">
+					<span id="jumpEntry1Selection" class="action-tag">Edit Entry Titled:</span>
+					<input type="text" id="jumpEntry2" class="jump-to" placeholder="Search For..">
+				</div>
+				<div class="jump-menu__items" id="jumpMenuResults1"></div>
+				<div class="jump-menu__items" id="jumpMenuResults2"></div>
+				<div class="jump-menu__no-results" id="jumpMenuNoResults" style="display:none;"><div class="jump-menu__header text-center">No Results</div></div>
+				<div class="jump-menu__items">
+					<div class="jump-menu__header text-center">
+						<span class="jump-menu__shortcut"><i class="fa fa-spock-hand"></i> Shortcut: <i class="fas fa-sm fa-windows"></i> / &#8984; - J</span>
+						<span class="jump-menu__close">Close (esc)</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<?=ee('CP/Alert')->getStandard()?>
 	</body>
 </html>
