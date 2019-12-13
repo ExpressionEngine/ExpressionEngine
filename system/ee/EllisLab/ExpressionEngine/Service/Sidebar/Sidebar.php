@@ -82,8 +82,15 @@ class Sidebar {
 			$output .= $this->list->render($this->view);
 		}
 
+		$is_legacy = false;
+
 		foreach ($this->items as $item) {
 			$output .= $item->render($this->view);
+
+			// LEGACY: Check if the header has a link, if it does, the legacy sidebar styles need to be used.
+			if ($item instanceof Header && $item->hasUrl()) {
+				$is_legacy = true;
+			}
 		}
 
 		if ( ! empty($this->action_bar))
@@ -94,6 +101,10 @@ class Sidebar {
 		if (empty($output))
 		{
 			return '';
+		}
+
+		if ($is_legacy) {
+			$this->class .= ' legacy-sidebar';
 		}
 
 		return $this->view->make('_shared/sidebar/sidebar')

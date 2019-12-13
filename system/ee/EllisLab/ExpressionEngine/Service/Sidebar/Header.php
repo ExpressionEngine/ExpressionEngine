@@ -82,6 +82,17 @@ class Header {
 	}
 
 	/**
+	 * Returns true if the header has a url set
+	 *
+	 * @return bool
+	 * @deprecated Don't use
+	 */
+	public function hasUrl()
+	{
+		return !empty($this->url);
+	}
+
+	/**
 	 * Sets the $url_is_external property
 	 *
 	 * @param bool $external (optional) TRUE if it is external, FALSE if not
@@ -100,7 +111,7 @@ class Header {
 	 */
 	public function isActive()
 	{
-		$this->class .= 'act ';
+		$this->class .= 'active ';
 		return $this;
 	}
 
@@ -111,7 +122,7 @@ class Header {
 	 */
 	public function isInactive()
 	{
-		$this->class = str_replace('act', '', $this->class);
+		$this->class = str_replace('active', '', $this->class);
 		return $this;
 	}
 
