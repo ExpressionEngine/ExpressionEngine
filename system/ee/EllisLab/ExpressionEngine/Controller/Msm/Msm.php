@@ -344,6 +344,7 @@ class Msm extends CP_Controller {
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL')->make('msm/edit/' . $site_id),
 			'errors' => $errors,
+			'hide_top_buttons' => true,
 			'buttons' => [
 				[
 					'name' => 'submit',
@@ -370,8 +371,6 @@ class Msm extends CP_Controller {
 			],
 			'sections' => $this->getForm($site, TRUE),
 		);
-
-		ee()->view->cp_page_title = lang('edit_site');
 
 		ee()->view->header = array(
 			'title' => lang('edit_site'),
