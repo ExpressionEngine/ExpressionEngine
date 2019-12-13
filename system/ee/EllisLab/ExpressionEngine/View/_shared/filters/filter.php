@@ -15,8 +15,8 @@
 			placeholder="<?=htmlentities($placeholder, ENT_QUOTES, 'UTF-8')?>"
 			<?php if ($has_list_filter): ?>
 			data-fuzzy-filter="true"
-			class="search-input__input"
 			<?php endif; ?>
+			class="search-input__input"
 		>
 		</div>
 	</div>
