@@ -158,6 +158,11 @@ class Cp {
 			'light_theme'			=> lang('light_theme')
 		);
 
+		// Prime the jump cache commands. This will load the native commands as
+		// well as any commands from add-ons. If an add-on's commands have been
+		// updated, the cache should expire in 60 seconds or so.
+		ee('CP/JumpMenu')->primeCache(true); // pass true to force fill the cache
+
 		ee()->javascript->set_global(array(
 			'BASE'             => str_replace(AMP, '&', BASE),
 			'XID'              => CSRF_TOKEN,
@@ -170,6 +175,8 @@ class Cp {
 			'THEME_URL'        => $this->cp_theme_url,
 			'hasRememberMe'    => (bool) ee()->remember->exists(),
 			'cp.updateCheckURL' => ee('CP/URL', 'settings/general/version-check')->compile(),
+			'cp.jumpMenuURL'   => ee('CP/URL', 'JUMPTARGET')->compile(),
+			'cp.JumpMenuCommands' => ee('CP/JumpMenu')->getItems(),
 		));
 
 		if (ee()->session->flashdata('update:completed'))
@@ -184,7 +191,7 @@ class Cp {
 			'plugin'	=> array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all', 'nestable'),
 			'file'		=> array('vendor/react/react.min', 'vendor/react/react-dom.min', 'vendor/popper',
 			'vendor/underscore', 'cp/global_start', 'cp/form_validation', 'cp/sort_helper', 'cp/form_group',
-			'cp/modal_form', 'cp/confirm_remove', 'cp/fuzzy_filters',
+			'cp/modal_form', 'cp/confirm_remove', 'cp/fuzzy_filters', 'cp/jump_menu',
 			'components/no_results', 'components/loading', 'components/filters',
 			'components/filterable', 'components/toggle', 'components/select_list',
 			'fields/select/select', 'fields/select/mutable_select', 'fields/dropdown/dropdown')
