@@ -127,6 +127,7 @@ $current_page = ee()->uri->segment(2);
 				<a href="<?= ee('CP/URL', 'settings') ?>" title="<?= lang('nav_settings') ?>" class="ee-sidebar__item <?= ($current_page == 'settings' ? 'active' : '') ?>"><i class="fas fa-cog"></i> <?= lang('nav_settings') ?></a>
 				<?php endif; ?>
 
+				<a id="jumpMenuTrigger" class="ee-sidebar__item" href="#"><i class="fa fa-hand-spock"></i> Jump Menu</a>
 
 				<?php
 					$version_class = '';
