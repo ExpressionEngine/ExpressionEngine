@@ -18,7 +18,7 @@
 			class="search-input__input"
 			<?php endif; ?>
 		>
-		<div>
+		</div>
 	</div>
 	<?php endif; ?>
 	<?php foreach ($options as $url => $label): ?>
