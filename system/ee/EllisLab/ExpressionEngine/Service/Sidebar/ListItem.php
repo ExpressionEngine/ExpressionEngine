@@ -153,7 +153,7 @@ abstract class ListItem {
 	 */
 	public function isInactive()
 	{
-		return $this->removeClass('act');
+		return $this->removeClass('active');
 	}
 
 	/**
