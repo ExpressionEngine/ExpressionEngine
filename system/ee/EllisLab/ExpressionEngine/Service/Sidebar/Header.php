@@ -70,9 +70,13 @@ class Header {
 	 * @param URL|string $url A CP\URL object or string containing the
 	 *   URL for the header.
 	 * @return self This returns a reference to itself
+	 * @deprecated Deprecated in 6.0
 	 */
 	public function withUrl($url)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('6.0', 'Headers with urls are deprecated. $sidebar->addItem() should be used instead.');
+
 		$this->url = $url;
 		if ($url instanceof URL && $url->isTheRequestedURI())
 		{
