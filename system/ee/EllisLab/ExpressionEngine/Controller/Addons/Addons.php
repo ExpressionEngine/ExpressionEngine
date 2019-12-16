@@ -1164,12 +1164,12 @@ class Addons extends CP_Controller {
 	 * @param	str	$name	The add-on name
 	 * @return	array		Jump data in the following format:
 	 *   e.g. 'icon'             => 'fa-plus',
-	          'command'          => 'create new entry',
-	          'command_title'    => 'Create <b>Entry</b> in <i>[channel]</i>',
-	          'dynamic'          => true,
-	          'requires_keyword' => false,
-	          'addon'            => false,
-	          'target'           => 'publish/create'
+	 *        'command'          => 'create new entry',
+	 *        'command_title'    => 'Create <b>Entry</b> in <i>[channel]</i>',
+	 *        'dynamic'          => true,
+	 *        'requires_keyword' => false,
+	 *        'addon'            => false,
+	 *        'target'           => 'publish/create'
 	 */
 	private function getJumpMenu($name)
 	{
