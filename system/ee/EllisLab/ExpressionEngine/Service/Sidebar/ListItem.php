@@ -24,6 +24,11 @@ abstract class ListItem {
 	protected $text;
 
 	/**
+	 * @var string $text Optional icon for the item
+	 */
+	protected $icon;
+
+	/**
 	 * @var URL|string $url The URL to use as an href attribute
 	 */
 	protected $url;
@@ -84,6 +89,19 @@ abstract class ListItem {
 	}
 
 	/**
+	 * Sets the icon of the item
+	 *
+	 * @param string $icon Name of the icon
+	 * @return self This returns a reference to itself
+	 */
+	public function withIcon($icon)
+	{
+		$this->icon = $icon;
+
+		return $this;
+	}
+
+	/**
 	 * Adds a class to the class array
 	 *
 	 * @return self This returns a reference to itself
@@ -135,7 +153,7 @@ abstract class ListItem {
 	 */
 	public function isInactive()
 	{
-		return $this->removeClass('act');
+		return $this->removeClass('active');
 	}
 
 	/**

@@ -70,15 +70,30 @@ class Header {
 	 * @param URL|string $url A CP\URL object or string containing the
 	 *   URL for the header.
 	 * @return self This returns a reference to itself
+	 * @deprecated Deprecated in 6.0
 	 */
 	public function withUrl($url)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('6.0', 'Headers with urls are deprecated. $sidebar->addItem() should be used instead.');
+
 		$this->url = $url;
 		if ($url instanceof URL && $url->isTheRequestedURI())
 		{
 			$this->isActive();
 		}
 		return $this;
+	}
+
+	/**
+	 * Returns true if the header has a url set
+	 *
+	 * @return bool
+	 * @deprecated Don't use
+	 */
+	public function hasUrl()
+	{
+		return !empty($this->url);
 	}
 
 	/**
@@ -100,7 +115,7 @@ class Header {
 	 */
 	public function isActive()
 	{
-		$this->class .= 'act ';
+		$this->class .= 'active ';
 		return $this;
 	}
 
@@ -111,7 +126,7 @@ class Header {
 	 */
 	public function isInactive()
 	{
-		$this->class = str_replace('act', '', $this->class);
+		$this->class = str_replace('active', '', $this->class);
 		return $this;
 	}
 

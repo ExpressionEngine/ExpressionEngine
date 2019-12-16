@@ -128,7 +128,7 @@ If you made these changes, please accept the modifications on the control panel 
 
 'submission_error' => 'The form you submitted contained the following errors',
 
-'theme_folder_wrong' => 'Your theme folder path is incorrect. Please go to <a href="%s">URL and Path Settings</a> and check the <mark>Themes Path</mark> and <mark>Themes URL</mark>.',
+'theme_folder_wrong' => 'Your theme folder path is incorrect. Please go to <a href="%s">URL and Path Settings</a> and check the <code>Themes Path</code> and <code>Themes URL</code>.',
 
 'unable_to_load_field_type' => 'Unable to load requested field type file: %s.<br /> Confirm the fieldtype file is located in the /'.SYSDIR.'/user/addons/ directory',
 

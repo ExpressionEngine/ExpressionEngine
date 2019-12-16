@@ -24,7 +24,7 @@ function buildTypeScript() {
 }
 
 function buildJavascript() {
-	return src([jsSourceFolder + '/**/*.js', '!' + jsVendorFolder + '**/*'])
+	return src([jsSourceFolder + '/**/*.js', jsSourceFolder + '/**/*.jsx', '!' + jsVendorFolder + '**/*'])
 		.pipe(babel({
 			presets: [
 				'@babel/env',

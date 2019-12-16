@@ -328,6 +328,10 @@ class Template extends AbstractDesignController {
 		$this->stdHeader();
 		$this->loadCodeMirrorAssets();
 
+		ee()->view->header = array(
+			'title' => sprintf(lang('edit_template'), $group->group_name . '/' . $template->template_name),
+		);
+
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), $group->group_name . '/' . $template->template_name);
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL')->make('design')->compile() => lang('template_manager'),

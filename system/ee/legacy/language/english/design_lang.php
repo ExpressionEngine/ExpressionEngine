@@ -256,7 +256,7 @@ $lang = array(
 
 'template_route_override' => 'Template route override',
 
-'template_route_override_desc' => 'Overrides the ExpressionEngine standard <mark>group/template</mark> routing.',
+'template_route_override_desc' => 'Overrides the ExpressionEngine standard <code>group/template</code> routing.',
 
 'template_routes' => 'Template Routes',
 

@@ -2,8 +2,6 @@
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -22,88 +20,84 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-/**
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
- * @license   https://expressionengine.com/license
- */
-var FileField =
+var DropDownButton =
 /*#__PURE__*/
 function (_React$Component) {
-  _inherits(FileField, _React$Component);
+  _inherits(DropDownButton, _React$Component);
 
-  function FileField(props) {
+  function DropDownButton(props) {
     var _this;
 
-    _classCallCheck(this, FileField);
+    _classCallCheck(this, DropDownButton);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(FileField).call(this, props));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(DropDownButton).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_this), "setFile", function (response) {
-      var fileField = _this.getFieldContainer();
-
-      EE.FileField.pickerCallback(response, {
-        input_value: fileField.find('input.js-file-input'),
-        input_img: fileField.find('img.js-file-image'),
-        modal: $('.modal-file')
-      });
-
+    _defineProperty(_assertThisInitialized(_this), "handleSearch", function (event) {
       _this.setState({
-        file: response
+        items: _this.initialItems.filter(function (item) {
+          return item.label.toLowerCase().includes(event.target.value.toLowerCase());
+        })
       });
     });
 
+    _defineProperty(_assertThisInitialized(_this), "selectItem", function (event, item) {
+      if (_this.props.keepSelectedState) {
+        _this.setState({
+          selected: item
+        });
+      }
+
+      _this.props.onSelect(item ? item.value : null);
+
+      $(event.target).closest('.dropdown').prev('a.button').click();
+      event.preventDefault();
+    });
+
+    _this.initialItems = SelectList.formatItems(props.items);
     _this.state = {
-      file: props.file
+      items: _this.initialItems,
+      selected: null
     };
     return _this;
   }
 
-  _createClass(FileField, [{
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      var _this2 = this;
-
-      this.getFieldContainer().on('click', '.button.remove', function () {
-        _this2.setState({
-          file: null
-        });
-      }).on('hasFile', 'input:hidden', function (data) {
-        _this2.setState({
-          file: data
-        });
-      });
-    }
-  }, {
-    key: "getFieldContainer",
-    value: function getFieldContainer() {
-      return $(this.props.thisField).closest('.grid-file-upload, .field-control');
-    }
-  }, {
+  _createClass(DropDownButton, [{
     key: "render",
     value: function render() {
-      if (this.state.file) {
-        return null;
-      }
+      var _this2 = this;
 
-      return React.createElement(DragAndDropUpload, _extends({}, this.props, {
-        onFileUploadSuccess: this.setFile,
-        marginTop: false,
-        multiFile: false
-      }));
-    }
-  }], [{
-    key: "renderFields",
-    value: function renderFields(context) {
-      $('div[data-file-field-react]', context).each(function () {
-        var props = JSON.parse(window.atob($(this).data('fileFieldReact')));
-        props.thisField = $(this);
-        ReactDOM.render(React.createElement(FileField, props, null), this);
-      });
+      return React.createElement(React.Fragment, null, React.createElement("a", {
+        href: "#",
+        className: "button js-dropdown-toggle " + this.props.buttonClass,
+        onClick: this.toggle
+      }, this.state.selected ? this.state.selected.label : this.props.title, " ", React.createElement("i", {
+        "class": "fas fa-caret-down icon-right"
+      })), React.createElement("div", {
+        className: "dropdown"
+      }, this.state.items.length > 7 && React.createElement("div", {
+        className: "dropdown__search"
+      }, React.createElement("form", null, React.createElement("div", {
+        className: "search-input"
+      }, React.createElement("input", {
+        className: "search-input__input",
+        type: "text",
+        placeholder: this.props.placeholder,
+        onChange: this.handleSearch
+      })))), React.createElement("div", {
+        className: "dropdown__scroll"
+      }, this.state.items.map(function (item) {
+        return React.createElement("a", {
+          href: "#",
+          key: item.value,
+          className: "dropdown__link " + _this2.props.itemClass,
+          rel: _this2.props.rel,
+          onClick: function onClick(e) {
+            return _this2.selectItem(e, item);
+          }
+        }, item.label);
+      }))));
     }
   }]);
 
-  return FileField;
+  return DropDownButton;
 }(React.Component);

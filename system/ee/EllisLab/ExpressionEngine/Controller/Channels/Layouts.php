@@ -129,12 +129,7 @@ class Layouts extends AbstractChannelsController {
 				'href' => $edit_url,
 				'extra' => implode(', ', $layout->MemberGroups->pluck('group_title')),
 				'selected' => ($layout_id && $layout->layout_id == $layout_id),
-				'toolbar_items' => [
-					'edit' => [
-						'href' => $edit_url,
-						'title' => lang('edit')
-					]
-				],
+				'toolbar_items' => [],
 				'selection' => [
 					'name' => 'selection[]',
 					'value' => $layout->layout_id,
@@ -170,7 +165,10 @@ class Layouts extends AbstractChannelsController {
 
 	public function create($channel_id)
 	{
-		ee()->view->header = NULL;
+		ee()->view->header = [
+			'title' => lang('create_form_layout')
+		];
+
 		ee()->view->left_nav = NULL;
 
 		$channel = ee('Model')->get('Channel', $channel_id)
@@ -319,7 +317,10 @@ class Layouts extends AbstractChannelsController {
 
 	public function edit($layout_id)
 	{
-		ee()->view->header = NULL;
+		ee()->view->header = [
+			'title' => lang('edit_form_layout')
+		];
+
 		ee()->view->left_nav = NULL;
 
 		$channel_layout = ee('Model')->get('ChannelLayout', $layout_id)

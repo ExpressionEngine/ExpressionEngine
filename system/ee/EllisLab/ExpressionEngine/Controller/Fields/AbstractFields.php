@@ -66,10 +66,13 @@ abstract class AbstractFields extends CP_Controller {
 		// More than one group can be active, so we use an array
 		$active_groups = (is_array($active)) ? $active : array($active);
 
-		$all_fields = ee('CP/Sidebar')->makeNew()->addMarginBottom();
-		$all_fields->addHeader(lang('all_fields'), ee('CP/URL')->make('fields'))->isInactive();
-
 		$sidebar = ee('CP/Sidebar')->makeNew();
+
+		$all_fields = $sidebar->addItem(lang('all_fields'), ee('CP/URL')->make('fields'));
+
+		if ($active) {
+			$all_fields->isInactive();
+		}
 
 		$list = $sidebar->addHeader(lang('field_groups_uc'));
 
@@ -133,7 +136,7 @@ abstract class AbstractFields extends CP_Controller {
 				ee('CP/URL')->make('fields/groups/create')
 			);
 
-		ee()->view->left_nav = $all_fields->render().$sidebar->render();
+		ee()->view->left_nav = $sidebar->render();
 	}
 
 	/**

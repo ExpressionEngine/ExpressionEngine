@@ -16,6 +16,7 @@ return array(
 	'author'      => 'EllisLab',
 	'author_url'  => 'https://ellislab.com/',
 	'name'        => 'ExpressionEngine Spam Module',
+	'description' => 'Block spammy comments, forum posts, and member registrations',
 	'version'     => '2.0.0',
 	'namespace'   => 'EllisLab\Addons\Spam',
 	'settings_exist' => TRUE,

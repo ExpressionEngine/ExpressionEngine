@@ -8,7 +8,7 @@ $lang = array(
 
 'add_htaccess_file' => 'Add to .htaccess file?',
 
-'add_htaccess_file_desc' => 'Full path location of your <mark>.htaccess</mark> file.',
+'add_htaccess_file_desc' => 'Full path location of your <code>.htaccess</code> file.',
 
 'btn_save_list' => 'Save List',
 
@@ -32,7 +32,7 @@ $lang = array(
 
 'ip_address' => '<abbr title="Internet Protocol">IP</abbr> address',
 
-'ip_address_desc' => '<b>Place each <abbr title="Internet Protocol">IP</abbr> address on a separate line.</b><br>You may use <mark>*</mark> as a wild-card e.g. 123.456.<mark>*</mark>',
+'ip_address_desc' => '<b>Place each <abbr title="Internet Protocol">IP</abbr> address on a separate line.</b><br>You may use <code>*</code> as a wild-card e.g. 123.456.<code>*</code>',
 
 'user_agent' => 'User Agent',
 

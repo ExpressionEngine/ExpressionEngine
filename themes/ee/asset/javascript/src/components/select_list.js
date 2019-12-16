@@ -357,12 +357,18 @@ function (_React$Component) {
       var props = this.props;
       var shouldShowToggleAll = (props.multi || !props.selectable) && props.toggleAll !== null;
       return React.createElement("div", {
-        className: "fields-select" + (SelectList.countItems(props.items) > props.tooManyLimit ? ' field-resizable' : ''),
+        className: props.tooMany ? ' lots-of-checkboxes' : '',
         ref: function ref(container) {
           _this8.container = container;
         },
         key: this.version
-      }, (shouldShowToggleAll || props.tooMany) && React.createElement(FieldTools, null, props.tooMany && React.createElement(FilterBar, null, props.filters && props.filters.map(function (filter) {
+      }, props.tooMany && React.createElement("div", {
+        "class": "lots-of-checkboxes__search"
+      }, React.createElement("div", {
+        "class": "lots-of-checkboxes__search-inner"
+      }, props.tooMany && React.createElement("div", {
+        "class": "lots-of-checkboxes__search-input"
+      }, React.createElement(FilterBar, null, props.filters && props.filters.map(function (filter) {
         return React.createElement(FilterSelect, {
           key: filter.name,
           name: filter.name,
@@ -378,13 +384,14 @@ function (_React$Component) {
         onSearch: function onSearch(e) {
           return _this8.filterChange('search', e.target.value);
         }
-      })), shouldShowToggleAll && props.tooMany && React.createElement("hr", null), shouldShowToggleAll && React.createElement(FilterToggleAll, {
+      }))), shouldShowToggleAll && props.tooMany && React.createElement("hr", null), shouldShowToggleAll && props.tooMany && React.createElement(FilterToggleAll, {
         checkAll: props.toggleAll,
         onToggleAll: function onToggleAll(check) {
           return _this8.handleToggleAll(check);
         }
-      })), React.createElement(FieldInputs, {
-        nested: props.nested
+      }))), React.createElement(FieldInputs, {
+        nested: props.nested,
+        tooMany: props.tooMany
       }, !props.loading && props.items.length == 0 && React.createElement(NoResults, {
         text: props.noResults
       }), props.loading && React.createElement(Loading, {
@@ -500,14 +507,16 @@ _defineProperty(SelectList, "defaultProps", {
 });
 
 function FieldInputs(props) {
+  var divClass = props.tooMany ? ' lots-of-checkboxes__items--too-many' : '';
+
   if (props.nested) {
     return React.createElement("ul", {
-      className: "field-inputs field-nested"
+      className: 'lots-of-checkboxes__items field-nested' + divClass
     }, props.children);
   }
 
   return React.createElement("div", {
-    className: "field-inputs"
+    className: 'lots-of-checkboxes__items' + divClass
   }, props.children);
 }
 
@@ -555,9 +564,7 @@ function (_React$Component2) {
       var listItem = React.createElement("label", {
         className: 'checkbox-label',
         "data-id": props.reorderable && !props.nested ? props.item.value : null
-      }, props.reorderable && React.createElement("span", {
-        className: "icon-reorder"
-      }, " "), props.selectable && React.createElement("input", {
+      }, props.selectable && React.createElement("input", {
         type: props.multi ? "checkbox" : "radio",
         value: props.item.value,
         onChange: function onChange(e) {
@@ -568,18 +575,21 @@ function (_React$Component2) {
         disabled: disabled ? 'disabled' : ''
       }), React.createElement("div", {
         className: "checkbox-label__text"
-      }, props.editable && React.createElement("a", {
+      }, props.reorderable && React.createElement("span", {
+        className: "icon-reorder icon-left"
+      }), props.editable && React.createElement("a", {
         href: "#"
-      }, label), !props.editable && label, " ", props.item.instructions && React.createElement("i", null, props.item.instructions), props.removable && React.createElement("ul", {
-        className: "toolbar"
-      }, React.createElement("li", {
-        className: "remove"
-      }, React.createElement("a", {
+      }, label), !props.editable && label, " ", props.item.instructions && React.createElement("span", {
+        className: "meta-info"
+      }, props.item.instructions), props.removable && React.createElement("a", {
         href: "",
+        className: "button button--danger button--small float-right",
         onClick: function onClick(e) {
           return props.handleRemove(e, props.item);
         }
-      })))));
+      }, React.createElement("i", {
+        "class": "fas fa-sm fa-trash"
+      }))));
 
       if (props.nested) {
         return React.createElement("li", {
@@ -631,17 +641,16 @@ function (_React$Component3) {
       }
 
       return React.createElement("div", {
-        className: "field-input-selected"
-      }, React.createElement("label", null, React.createElement("span", {
-        className: "icon--success"
-      }), " ", label, props.selectionRemovable && React.createElement("ul", {
-        className: "toolbar"
-      }, React.createElement("li", {
-        className: "remove"
-      }, React.createElement("a", {
+        className: "lots-of-checkboxes__selection"
+      }, React.createElement("i", {
+        className: "fas fa-check-circle"
+      }), " ", label, props.selectionRemovable && React.createElement("a", {
+        className: "button button--secondary-alt float-right",
         href: "",
         onClick: props.clearSelection
-      })))));
+      }, React.createElement("i", {
+        "class": "fas fa-trash-alt"
+      })));
     }
   }]);
 

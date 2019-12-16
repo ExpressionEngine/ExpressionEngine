@@ -41,7 +41,9 @@
 					<div class="dropdown">
 						<?php if (count($header['action_button']['choices']) > 8): ?>
 							<div class="dropdown__search">
-								<input type="text" value="" data-fuzzy-filter="true" placeholder="<?=$header['action_button']['filter_placeholder']?>">
+								<div class="search-input">
+									<input type="text" value="" class="search-input__input" data-fuzzy-filter="true" placeholder="<?=$header['action_button']['filter_placeholder']?>">
+								</div>
 							</div>
 						<?php endif ?>
 						<?php foreach ($header['action_button']['choices'] as $link => $text): ?>
@@ -61,7 +63,9 @@
 							<div class="dropdown">
 								<?php if (count($button['choices']) > 8): ?>
 									<div class="dropdown__search">
-										<input type="text" value="" data-fuzzy-filter="true" placeholder="<?=$button['filter_placeholder']?>">
+										<div class="search-input">
+											<input type="text" value="" class="search-input__input" data-fuzzy-filter="true" placeholder="<?=$button['filter_placeholder']?>">
+										</div>
 									</div>
 								<?php endif ?>
 								<?php foreach ($button['choices'] as $link => $text): ?>

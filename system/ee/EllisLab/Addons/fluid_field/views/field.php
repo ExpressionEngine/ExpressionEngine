@@ -31,7 +31,7 @@
 			<a href class="dropdown__link js-hide-all-fluid-items"><?=lang('collapse_all')?></a>
 			<a href class="dropdown__link js-show-all-fluid-items"><?=lang('expand_all')?></a>
 			<div class="dropdown__divider"></div>
-			<a href class="dropdown__link danger-link js-fluid-remove"><i class="fas fa-fw fa-trash-alt"></i> <?=lang('delete')?></a>
+			<a href class="dropdown__link dropdown__link--danger js-fluid-remove"><i class="fas fa-fw fa-trash-alt"></i> <?=lang('delete')?></a>
 		</div>
 		<?php else: ?>
 			<a href class="fluid__item-tool js-fluid-remove danger-link" title="<?=lang('remove')?>"><i class="fas fa-fw fa-trash-alt"></i></a>

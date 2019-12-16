@@ -101,7 +101,7 @@ abstract class AbstractCategories extends CP_Controller {
 			$item = $list->addItem(
 				$group_name,
 				ee('CP/URL')->make('categories/group/' . $group->getId())
-			);
+			)->withIcon('tags');
 
 			if (ee()->cp->allowed_group('can_edit_categories'))
 			{

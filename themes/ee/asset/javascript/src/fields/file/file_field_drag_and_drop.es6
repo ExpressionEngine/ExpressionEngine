@@ -25,7 +25,7 @@ class FileField extends React.Component {
 
   componentDidMount () {
     this.getFieldContainer()
-      .on('click', 'li.remove a', () => {
+      .on('click', '.button.remove', () => {
         this.setState({
           file: null
         })

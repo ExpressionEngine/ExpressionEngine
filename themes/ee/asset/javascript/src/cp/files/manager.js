@@ -20,7 +20,7 @@
 
 (function ($) {
 	$(document).ready(function () {
-		$('table a[rel=modal-view-file]').click(function (e) {
+		$('a[rel=modal-view-file]').click(function (e) {
 			var modal = $(this).attr('rel');
 			$.ajax({
 				type: "GET",

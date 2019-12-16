@@ -928,7 +928,7 @@ class ChannelEntry extends ContentModel {
 					'field_label'			=> lang('entry_status'),
 					'field_required'		=> 'n',
 					'field_show_fmt'		=> 'n',
-					'field_instructions'	=> lang('entry_status_desc'),
+					'field_instructions'	=> '',
 					'field_text_direction'	=> 'ltr',
 					'field_type'			=> 'radio',
 					'field_list_items'      => array(),

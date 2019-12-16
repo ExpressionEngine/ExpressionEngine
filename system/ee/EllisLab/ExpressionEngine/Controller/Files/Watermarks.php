@@ -46,9 +46,6 @@ class Watermarks extends AbstractFilesController {
 			array(
 				'name',
 				'type',
-				'manage' => array(
-					'type'	=> CP\Table::COL_TOOLBAR
-				),
 				array(
 					'type'	=> CP\Table::COL_CHECKBOX
 				)
@@ -79,12 +76,6 @@ class Watermarks extends AbstractFilesController {
 					'href' => $edit_url
 				),
 				$watermark->wm_type,
-				array('toolbar_items' => array(
-					'edit' => array(
-						'href' => $edit_url,
-						'title' => lang('edit')
-					)
-				)),
 				array(
 					'name' => 'watermarks[]',
 					'value' => $watermark->getId(),

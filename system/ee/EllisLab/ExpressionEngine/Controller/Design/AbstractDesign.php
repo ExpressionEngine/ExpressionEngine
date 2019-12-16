@@ -190,15 +190,12 @@ abstract class AbstractDesign extends CP_Controller {
 			}
 		}
 
+		$sidebar->addDivider();
+
 		// Template Partials
 		if (ee()->cp->allowed_group_any('can_create_template_partials', 'can_edit_template_partials', 'can_delete_template_partials'))
 		{
-			$header = $sidebar->addHeader(lang('template_partials'), ee('CP/URL')->make('design/snippets'));
-
-			if (ee()->cp->allowed_group('can_create_template_partials'))
-			{
-				$header->withButton(lang('new'), ee('CP/URL')->make('design/snippets/create'));
-			}
+			$header = $sidebar->addItem(lang('template_partials'), ee('CP/URL')->make('design/snippets'))->withIcon('shapes');
 
 			if ($active == 'partials')
 			{
@@ -209,12 +206,7 @@ abstract class AbstractDesign extends CP_Controller {
 		// Template Variables
 		if (ee()->cp->allowed_group_any('can_create_template_variables', 'can_edit_template_variables', 'can_delete_template_variables'))
 		{
-			$header = $sidebar->addHeader(lang('template_variables'), ee('CP/URL')->make('design/variables'));
-
-			if (ee()->cp->allowed_group('can_create_template_variables'))
-			{
-				$header->withButton(lang('new'), ee('CP/URL')->make('design/variables/create'));
-			}
+			$header = $sidebar->addItem(lang('template_variables'), ee('CP/URL')->make('design/variables'))->withIcon('cube');
 
 			if ($active == 'variables')
 			{
@@ -226,7 +218,7 @@ abstract class AbstractDesign extends CP_Controller {
 		// Template Routes
 		if ( ! TemplateRoute::getConfig() && ee()->cp->allowed_group('can_admin_design'))
 		{
-			$header = $sidebar->addHeader(lang('template_routes'), ee('CP/URL')->make('design/routes'));
+			$header = $sidebar->addItem(lang('template_routes'), ee('CP/URL')->make('design/routes'))->withIcon('truck');
 
 			if ($active == 'routes')
 			{
@@ -527,12 +519,12 @@ abstract class AbstractDesign extends CP_Controller {
 
 			if (strncmp($template->template_name, $hidden_indicator, $hidden_indicator_length) == 0)
 			{
-				$template_name = '<span class="hidden-tmp">' . $template_name . '</span>';
+				$template_name = '<i class="fas fa-sm fa-eye-slash icon-left"></i>' . $template_name;
 			}
 
 			if ($template->template_name == 'index')
 			{
-				$template_name = '<span class="index">' . $template_name . '</span>';
+				$template_name = '<i class="fas fa-home fa-sm icon-left"></i>' . $template_name;
 			}
 
 			$view_url = ee()->functions->fetch_site_index();

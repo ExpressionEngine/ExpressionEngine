@@ -15,7 +15,7 @@ $lang = array(
 
 'logs' => 'Logs',
 
-'msm_manager' => 'Site Manager',
+'msm_manager' => 'Sites',
 
 'nav_developer' => 'Developer',
 
@@ -347,6 +347,14 @@ $lang = array(
 
 'important' => 'Important!',
 
+'view_as' => 'View as ',
+
+'viewtype_list' => 'List',
+
+'viewtype_thumb' => 'Thumbnails',
+
+'viewtype_hybrid' => 'Hybrid',
+
 /* Sites and Channels */
 'avatar_path' => 'Avatar Path',
 
@@ -490,7 +498,7 @@ $lang = array(
 
 'image' => 'Image',
 
-'keyword_filter' => 'keywords, hit enter',
+'keyword_filter' => 'Search',
 
 'log_out' => 'Log Out',
 

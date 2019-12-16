@@ -78,19 +78,14 @@ class Members extends CP_Controller {
 			}
 		}
 
-		if (ee()->cp->allowed_group('can_ban_users'))
-		{
-			$list->addItem(lang('manage_bans'), ee('CP/URL')->make('members/ban-settings'));
-		}
-
 		if (ee()->cp->allowed_group('can_admin_mbr_groups'))
 		{
 			$header = $sidebar->addHeader(lang('member_settings'));
 
 			$list = $header->addBasicList();
 
-			$member_groups = $list->addItem(lang('member_groups'), ee('CP/URL')->make('members/groups'));
-			$custom_member_fields = $list->addItem(lang('custom_member_fields'), ee('CP/URL')->make('members/fields'));
+			$member_groups = $list->addItem(lang('member_groups'), ee('CP/URL')->make('members/groups'))->withIcon('user-tag');
+			$custom_member_fields = $list->addItem(lang('custom_member_fields'), ee('CP/URL')->make('members/fields'))->withIcon('bars');
 
 			if ($active == 'fields') {
 				$custom_member_fields->isActive();
@@ -98,6 +93,15 @@ class Members extends CP_Controller {
 
 			if ($active == 'groups') {
 				$member_groups->isActive();
+			}
+		}
+
+		if (ee()->cp->allowed_group('can_ban_users'))
+		{
+			$ban_settings = $sidebar->addItem(lang('manage_bans'), ee('CP/URL')->make('members/ban-settings'))->withIcon('ban');
+
+			if ($active == 'ban') {
+				$ban_settings->isActive();
 			}
 		}
 	}

@@ -1206,8 +1206,8 @@ class Filemanager {
 		{
 			$dimensions[] = array(
 				'short_name'	=> 'thumbs',
-				'width'			=> 73,
-				'height'		=> 60,
+				'width'			=> 380, //73,
+				'height'		=> 367, //60
 				'quality'       => 90,
 				'watermark_id'	=> 0,
 				'resize_type'	=> 'crop'

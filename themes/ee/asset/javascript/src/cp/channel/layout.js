@@ -16,13 +16,13 @@ $(document).ready(function () {
 	// somehow still there.  Doppelt gemoppelt hält besser.
 	// This will also speed up the code - we don't want to keep asking the dom
 	// for elements
-	var tabs = $('form .tab-wrap ul.tabs');
+	var tabs = $('form .tab-wrap .tab-bar__tabs');
 	var sheets = $('form .tab-wrap div.tab');
 
 	function getTabIndex()
 	{
-		var tab = tabs.find('a.act').parents('li').eq(0);
-		return tabs.find('li').index(tab);
+		var tab = tabs.find('.tab-bar__tab.active')//.eq(0);//.parents('li').eq(0);
+		return tabs.find('.tab-bar__tab').index(tab);
 	}
 
 	function getFieldIndex(element)
@@ -35,14 +35,14 @@ $(document).ready(function () {
 
 	// Sorting the tabs
 	tabs.sortable({
-		cancel: "li:first-child",
-		items: "li",
+		cancel: ".tab-bar__tab:first-child",
+		items: ".tab-bar__tab",
 		start: function (event, ui)
 		{
-			tab_index_at_start = tabs.find('li').index(ui.item[0]);
+			tab_index_at_start = tabs.find('.tab-bar__tab').index(ui.item[0]);
 		},
 		update: function (event, ui) {
-			var index_at_stop = tabs.find('li').index(ui.item[0]);
+			var index_at_stop = tabs.find('.tab-bar__tab').index(ui.item[0]);
 
 			var tab = EE.publish_layout.splice(tab_index_at_start, 1);
 			EE.publish_layout.splice(index_at_stop, 0, tab[0]);
@@ -56,8 +56,8 @@ $(document).ready(function () {
 
 	function makeTabsDroppable()
 	{
-		tabs.find('li a').droppable({
-			accept: ".layout-grid-wrap .col-group",
+		tabs.find('.tab-bar__tab').droppable({
+			accept: ".layout-item-wrapper .js-layout-item",
 			hoverClass: "highlight",
 			tolerance: "pointer",
 			drop: function(e, ui) {
@@ -71,7 +71,7 @@ $(document).ready(function () {
 				ui.draggable.remove();
 
 				// Add the fieldset to the new tab
-				$('<div class="col-group"></div>').append(ui.draggable.html()).prependTo($('div.tab-open .layout-grid-wrap'));
+				$('<div class="js-layout-item"></div>').append(ui.draggable.html()).prependTo($('div.tab-open .layout-item-wrapper'));
 
 				if ($(ui.draggable).has('.field-option-required')) {
 					var tab = $(this).closest('li');
@@ -108,12 +108,12 @@ $(document).ready(function () {
 		cursor: "move",
 		forceHelperSize: true,
 		forcePlaceholderSize: true,
-		handle: ".layout-item .reorder",
+		handle: ".layout-item .layout-item__handle",
 		helper: "clone",
-		items: ".layout-grid-wrap .col-group",
+		items: ".layout-item-wrapper .js-layout-item",
 		placeholder: "drag-placeholder",
 		start: function (event, ui) {
-			var fieldIndex = sheets.filter('.tab-open').find('.layout-grid-wrap .col-group').index(ui.item[0]);
+			var fieldIndex = sheets.filter('.tab-open').find('.layout-item-wrapper .js-layout-item').index(ui.item[0]);
 			field = EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 1)[0];
 			ui.placeholder.append('<div class="none"></div>');
 		},
@@ -123,7 +123,7 @@ $(document).ready(function () {
 			}
 
 			if (field != null) {
-				var fieldIndex = sheets.filter('.tab-open').find('.layout-grid-wrap .col-group').index(ui.item[0]);
+				var fieldIndex = sheets.filter('.tab-open').find('.layout-item-wrapper .js-layout-item').index(ui.item[0]);
 
 				EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 0, field);
 				field = null;
@@ -136,8 +136,8 @@ $(document).ready(function () {
 
 	// Saving the on/off state of tabs
 	$('.tab-on, .tab-off').on('click', function(e) {
-		var tab = $(this).parents('li').eq(0);
-		var index = tabs.find('li').index(tab);
+		var tab = $(this).parents('.tab-bar__tab').eq(0);
+		var index = tabs.find('.tab-bar__tab').index(tab);
 		var tabContents = sheets.filter('.' + $(tab).find('a').eq(0).attr('rel'));
 
 		if (EE.publish_layout[index].visible && tabContents.has('.field-option-required').length > 0) {
@@ -192,12 +192,12 @@ $(document).ready(function () {
 				};
 				EE.publish_layout.push(tab);
 
-				var index = $('form .tab-wrap ul.tabs li').length;
+				var index = $('form .tab-wrap .tab-bar .tab-bar__tab').length;
 
-				tabs.find('li a').droppable("destroy");
+				tabs.find('.tab-bar__tab').droppable("destroy");
 
-				tabs.append('<li><a href="" rel="t-' + index + '">' + tab_name + '</a> <span class="tab-remove"></span></li>');
-				sheets.filter('.t-' + (index - 1)).after('<div class="tab t-' + index + '"><div class="layout-grid-wrap"></div></div>');
+				tabs.append('<a class="tab-bar__tab js-tab-button" href="" rel="t-' + index + '">' + tab_name + '<span class="tab-remove"></span></a>');
+				sheets.filter('.t-' + (index - 1)).after('<div class="tab t-' + index + '"><div class="layout-item-wrapper"></div></div>');
 
 				makeTabsDroppable();
 
@@ -226,11 +226,11 @@ $(document).ready(function () {
 
 	// Removing a tab
 	tabs.on('click', '.tab-remove', function(e) {
-		var tab = $(this).parents('li').eq(0);
-		var index = $('ul.tabs li').index(tab);
+		var tab = $(this).parents('.tab-bar__tab').eq(0);
+		var index = $('.tab-bar .tab-bar__tab').index(tab);
 		var tabContents = sheets.filter('.' + $(tab).find('a').eq(0).attr('rel'));
 
-		if (tabContents.find('.layout-grid-wrap').html().trim()) {
+		if (tabContents.find('.layout-item-wrapper').html().trim()) {
 			$('body').prepend(EE.alert.not_empty.replace('%s', tab.text()));
 			return;
 		}

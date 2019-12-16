@@ -210,9 +210,9 @@ class File_field {
 
 		$fp_edit = clone $fp_link;
 		$fp_edit
-			->setText('')
+			->setHtml('<i class="fas fa-pen"></i>')
 			->setAttribute('title', lang('edit'))
-			->setAttribute('class', 'file-field-filepicker');
+			->setAttribute('class', 'file-field-filepicker button button--secondary-alt');
 
 		$file = $this->getFileModelForFieldData($data);
 
@@ -944,6 +944,7 @@ class File_field {
 		ee()->javascript->set_global([
 			'lang.file_dnd_choose_directory' => lang('file_dnd_choose_directory'),
 			'lang.file_dnd_choose_file_directory' => lang('file_dnd_choose_file_directory'),
+			'lang.file_dnd_upload_to' => lang('file_dnd_upload_to'),
 			'lang.file_dnd_choose_directory_before_uploading' => lang('file_dnd_choose_directory_before_uploading'),
 			'lang.file_dnd_choose_directory_btn' => lang('file_dnd_choose_directory_btn'),
 			'lang.file_dnd_choose_existing' => lang('file_dnd_choose_existing'),
@@ -955,6 +956,7 @@ class File_field {
 			'lang.file_dnd_images_only' => lang('file_dnd_images_only'),
 			'lang.file_dnd_progress' => lang('file_dnd_progress'),
 			'lang.file_dnd_resolve_conflict' => lang('file_dnd_resolve_conflict'),
+			'lang.file_dnd_conflict' => lang('file_dnd_conflict'),
 			'lang.file_dnd_single_file_allowed' => lang('file_dnd_single_file_allowed'),
 			'lang.file_dnd_unexpected_error' => lang('file_dnd_unexpected_error'),
 			'lang.file_dnd_uploading_to' => lang('file_dnd_uploading_to'),

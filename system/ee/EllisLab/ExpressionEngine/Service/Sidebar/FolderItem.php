@@ -190,7 +190,8 @@ class FolderItem extends ListItem {
 			'modal_name'=> $this->name,
 			'confirm' => $this->remove_confirmation,
 			'key' => $this->removal_key,
-			'value' => $this->removal_key_value
+			'value' => $this->removal_key_value,
+			'icon' => $this->icon
 		);
 
 		return $view->make('_shared/sidebar/folder_item')->render($vars);
