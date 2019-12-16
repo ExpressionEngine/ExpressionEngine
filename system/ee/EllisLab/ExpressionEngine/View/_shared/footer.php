@@ -74,7 +74,7 @@
 				<div class="jump-menu__no-results" id="jumpMenuNoResults" style="display:none;"><div class="jump-menu__header text-center">No Results</div></div>
 				<div class="jump-menu__items">
 					<div class="jump-menu__header text-center">
-						<span class="jump-menu__shortcut"><i class="fa fa-spock-hand"></i> Shortcut: <i class="fas fa-sm fa-windows"></i> / &#8984; - J</span>
+						<span class="jump-menu__shortcut"><i class="fa fa-hand-spock"></i> Shortcut: &nbsp;&nbsp; <i class="fab fa-sm fa-windows"></i> - J &nbsp; or &nbsp; &#8984; - J</span>
 						<span class="jump-menu__close">Close (esc)</span>
 					</div>
 				</div>
