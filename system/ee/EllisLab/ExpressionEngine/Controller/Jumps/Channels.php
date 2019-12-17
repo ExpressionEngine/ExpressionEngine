@@ -36,7 +36,23 @@ class Channels extends Jumps
 	{
 		$channels = $this->loadChannels(ee()->input->post('searchString'));
 
-		$this->sendResponse($channels);
+		$response = array();
+
+		foreach ($channels as $channel) {
+			$id = $channel->getId();
+			$title = $channel->channel_title;
+
+			$response['editChannel' . $channel->getId()] = array(
+				'icon' => 'fa-pencil-alt',
+				'command' => 'edit channel titled ' . $channel->channel_title,
+				'command_title' => $channel->channel_title,
+				'dynamic' => false,
+				'addon' => false,
+				'target' => ee('CP/URL')->make('channels/edit/' . $channel->getId())->compile()
+			);
+		}
+
+		$this->sendResponse($response);
 	}
 
 	private function loadChannels($searchString = false)
@@ -52,24 +68,6 @@ class Channels extends Jumps
 			}
 		}
 
-		$channels = $channels->all();
-
-		$response = array();
-
-		foreach ($channels as $channel) {
-			$id = $channel->getId();
-			$title = $channel->channel_title;
-
-			$response['editChannel' . $channel->getId()] = array(
-				'icon' => 'fa-pencil-alt',
-				'command' => 'edit channel titled ' . $channel->channel_title,
-				'command_title' => 'Edit <b>Channel</b> titled <b>' . $channel->channel_title . '</b>',
-				'dynamic' => false,
-				'addon' => false,
-				'target' => ee('CP/URL')->make('channels/edit/' . $channel->getId())->compile()
-			);
-		}
-
-		return $response;
+		return $channels->order('channel_title', 'ASC')->limit(11)->all();
 	}
 }
