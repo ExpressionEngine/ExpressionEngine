@@ -36,14 +36,47 @@ class Categories extends Jumps
 	{
 		$categoryGroups = $this->loadCategoryGroups(ee()->input->post('searchString'));
 
-		$this->sendResponse($categoryGroups);
+		$response = array();
+
+		foreach ($categoryGroups as $categoryGroup) {
+			$id = $categoryGroup->getId();
+			$title = $categoryGroup->group_name;
+
+			$response['createCategoryIn' . $categoryGroup->getId()] = array(
+				'icon' => 'fa-plus',
+				'command' => 'create category in ' . $categoryGroup->group_name,
+				'command_title' => $categoryGroup->group_name,
+				'dynamic' => false,
+				'addon' => false,
+				'target' => ee('CP/URL')->make('categories/create/' . $categoryGroup->getId())->compile()
+			);
+		}
+
+		$this->sendResponse($response);
 	}
 
 	public function edit()
 	{
 		$categories = $this->loadCategories(ee()->input->post('searchString'));
 
-		$this->sendResponse($categories);
+		$response = array();
+
+		foreach ($categories as $category) {
+			$id = $category->getId();
+			$title = $category->cat_name;
+
+			$response['editCategory' . $category->getId()] = array(
+				'icon' => 'fa-pencil-alt',
+				'command' => $category->getCategoryGroup()->group_name . ' ' . $category->cat_name,
+				'command_title' => $category->cat_name,
+				'command_context' => $category->getCategoryGroup()->group_name,
+				'dynamic' => false,
+				'addon' => false,
+				'target' => ee('CP/URL')->make('categories/edit/' . $category->getCategoryGroup()->getId() . '/' . $category->getId())->compile()
+			);
+		}
+
+		$this->sendResponse($response);
 	}
 
 	private function loadCategoryGroups($searchString = false)
@@ -59,25 +92,7 @@ class Categories extends Jumps
 			}
 		}
 
-		$categoryGroups = $categoryGroups->all();
-
-		$response = array();
-
-		foreach ($categoryGroups as $categoryGroup) {
-			$id = $categoryGroup->getId();
-			$title = $categoryGroup->group_name;
-
-			$response['createCategoryIn' . $categoryGroup->getId()] = array(
-				'icon' => 'fa-plus',
-				'command' => 'create category in ' . $categoryGroup->group_name,
-				'command_title' => 'Create <b>Category</b> in <b>' . $categoryGroup->group_name . '</b>',
-				'dynamic' => false,
-				'addon' => false,
-				'target' => ee('CP/URL')->make('categories/create/' . $categoryGroup->getId())->compile()
-			);
-		}
-
-		return $response;
+		return $categoryGroups->limit(11)->all();
 	}
 
 	private function loadCategories($searchString = false)
@@ -95,26 +110,6 @@ class Categories extends Jumps
 			}
 		}
 
-		$categories = $categories->order('cat_name', 'ASC')
-				->limit(11)
-				->all();
-
-		$response = array();
-
-		foreach ($categories as $category) {
-			$id = $category->getId();
-			$title = $category->cat_name;
-
-			$response['editCategory' . $category->getId()] = array(
-				'icon' => 'fa-pencil-alt',
-				'command' => $category->getCategoryGroup()->group_name . ' ' . $category->cat_name,
-				'command_title' => $category->getCategoryGroup()->group_name . ' &raquo; <b>' . $category->cat_name . '</b>',
-				'dynamic' => false,
-				'addon' => false,
-				'target' => ee('CP/URL')->make('categories/edit/' . $category->getCategoryGroup()->getId() . '/' . $category->getId())->compile()
-			);
-		}
-
-		return $response;
+		return $categories->order('cat_name', 'ASC')->limit(11)->all();
 	}
 }
