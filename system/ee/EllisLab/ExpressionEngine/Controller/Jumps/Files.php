@@ -31,13 +31,6 @@ class Files extends Jumps {
 		show_error(lang('unauthorized_access'), 403);
 	}
 
-	public function create()
-	{
-		$channels = $this->loadChannels();
-
-		$this->sendResponse($channels);
-	}
-
 	public function view()
 	{
 		$directories = $this->loadDirectories(ee()->input->post('searchString'));
@@ -50,7 +43,7 @@ class Files extends Jumps {
 			$response['viewFilesIn' . $directory->getId()] = array(
 				'icon' => 'fa-eye',
 				'command' => $directory->name,
-				'command_title' => '<b>' . $directory->name . '</b>',
+				'command_title' => $directory->name,
 				'dynamic' => false,
 				'addon' => false,
 				'target' => ee('CP/URL')->make('files/directory/' . $directory->getId())->compile()
@@ -72,7 +65,7 @@ class Files extends Jumps {
 			$response['editEntry' . $directory->getId()] = array(
 				'icon' => 'fa-pencil-alt',
 				'command' => $directory->name,
-				'command_title' => '<b>' . $directory->name . '</b>',
+				'command_title' => $directory->name,
 				'dynamic' => false,
 				'addon' => false,
 				'target' => ee('CP/URL')->make('files/uploads/edit/' . $directory->getId())->compile()
@@ -95,6 +88,6 @@ class Files extends Jumps {
 			}
 		}
 
-		return $directories->order('name', 'ASC')->limit(16)->all();
+		return $directories->order('name', 'ASC')->limit(11)->all();
 	}
 }
