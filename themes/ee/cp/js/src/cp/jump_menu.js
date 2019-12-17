@@ -19,7 +19,7 @@
 // 20   Start typing shortcut (create entry)
 // 30   Loop through static commands list for match
 // 40   Display matches
-// 50    - (match) "Create Entry in [channel]" (dynamic) (requires_keyword = false)
+// 50    - (match) "Create Entry in [channel]" (dynamic)
 // 60      - (ajax) Load Channels
 // 70        - Display Results
 // 80          - Choose Result
@@ -29,7 +29,7 @@
 // 20   Start typing shortcut (edit entry titled X)
 // 30   Loop through static commands list for match
 // 40   Display matches
-// 50    - (match) "Edit Entry with title [title]" (dynamic) (requires_keyword = true)
+// 50    - (match) "Edit Entry with title [title]" (dynamic)
 // 60      - Show secondary input bar
 // 70        - Start typing search keywords
 // 80          - (ajax) Load Matching Entry Titles
@@ -175,8 +175,6 @@ EE.cp.JumpMenu = {
 	 * @param  {string} commandKey  Unique identifier for the command we've triggered on
 	 */
 	_loadData: function(commandKey, searchString = '') {
-		console.log('_loadData', {commandKey}, EE.cp.jumpMenuURL);
-
 		// Save our "this" context as it'll be overridden inside our XHR functions.
 		var that = this;
 
@@ -220,8 +218,6 @@ EE.cp.JumpMenu = {
 					that._presentError(response.message);
 					return;
 				}
-
-				console.log('response', response);
 
 				EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus] = response.data;
 
@@ -344,7 +340,6 @@ EE.cp.JumpMenu = {
 	 * @param  {int} level Which level of results we're on.
 	 */
 	_showResults: function(level) {
-		console.log('Focusing:', level);
 		EE.cp.JumpMenu.currentFocus = level;
 
 		document.querySelector('#jumpMenuResults1').style.display = 'none';
@@ -360,7 +355,6 @@ EE.cp.JumpMenu = {
 			document.querySelector('#jumpEntry2').value = '';
 		} else if (level === 2) {
 			// Show the command we selected from the top-level.
-			console.log('CommandKeys:', EE.cp.JumpMenu.commandKeys[1]);
 			let parentCommandKey = EE.cp.JumpMenu.commandKeys[1];
 			let commandTitle = EE.cp.JumpMenuCommands[1][parentCommandKey].command_title;
 

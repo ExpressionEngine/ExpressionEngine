@@ -19,7 +19,7 @@
 // 20   Start typing shortcut (create entry)
 // 30   Loop through static commands list for match
 // 40   Display matches
-// 50    - (match) "Create Entry in [channel]" (dynamic) (requires_keyword = false)
+// 50    - (match) "Create Entry in [channel]" (dynamic)
 // 60      - (ajax) Load Channels
 // 70        - Display Results
 // 80          - Choose Result
@@ -28,7 +28,7 @@
 // 20   Start typing shortcut (edit entry titled X)
 // 30   Loop through static commands list for match
 // 40   Display matches
-// 50    - (match) "Edit Entry with title [title]" (dynamic) (requires_keyword = true)
+// 50    - (match) "Edit Entry with title [title]" (dynamic)
 // 60      - Show secondary input bar
 // 70        - Start typing search keywords
 // 80          - (ajax) Load Matching Entry Titles
@@ -174,10 +174,7 @@ EE.cp.JumpMenu = {
    */
   _loadData: function _loadData(commandKey) {
     var searchString = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-    console.log('_loadData', {
-      commandKey: commandKey
-    }, EE.cp.jumpMenuURL); // Save our "this" context as it'll be overridden inside our XHR functions.
-
+    // Save our "this" context as it'll be overridden inside our XHR functions.
     var that = this;
     var data = {
       command: commandKey,
@@ -218,7 +215,6 @@ EE.cp.JumpMenu = {
           return;
         }
 
-        console.log('response', response);
         EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus] = response.data; // Populate our results into the secondary results box as a dynamic command will
         // never have top-level results, those are reserved for static commands.
 
@@ -334,7 +330,6 @@ EE.cp.JumpMenu = {
    * @param  {int} level Which level of results we're on.
    */
   _showResults: function _showResults(level) {
-    console.log('Focusing:', level);
     EE.cp.JumpMenu.currentFocus = level;
     document.querySelector('#jumpMenuResults1').style.display = 'none';
     document.querySelector('#jumpMenuResults2').style.display = 'none';
@@ -348,7 +343,6 @@ EE.cp.JumpMenu = {
       document.querySelector('#jumpEntry2').value = '';
     } else if (level === 2) {
       // Show the command we selected from the top-level.
-      console.log('CommandKeys:', EE.cp.JumpMenu.commandKeys[1]);
       var parentCommandKey = EE.cp.JumpMenu.commandKeys[1];
       var commandTitle = EE.cp.JumpMenuCommands[1][parentCommandKey].command_title;
       commandTitle = commandTitle.replace(/\[([^\]]*)\]/g, '');
