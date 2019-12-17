@@ -111,6 +111,22 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'View <b>Members</b> in <i>[member group]</i>',
 				'dynamic' => true,
 				'addon' => false,
+				'target' => 'members/view'
+			),
+			'editMember' => array(
+				'icon' => 'fa-pencil-alt',
+				'command' => 'edit member titled',
+				'command_title' => 'Edit <b>Member</b> titled <i>[name]</i>',
+				'dynamic' => true,
+				'addon' => false,
+				'target' => 'members/edit'
+			),
+			'editMemberGroup' => array(
+				'icon' => 'fa-pencil-alt',
+				'command' => 'edit member group titled',
+				'command_title' => 'Edit <b>Member Group</b> titled <i>[group]</i>',
+				'dynamic' => true,
+				'addon' => false,
 				'target' => 'members/group'
 			),
 			'viewAddons' => array(
@@ -207,7 +223,7 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit <b>Template Group</b> titled <i>[group]</i>',
 				'dynamic' => true,
 				'addon' => false,
-				'target' => 'templates/group/edit'
+				'target' => 'templates/group'
 			),
 			'systemSettingsGeneral' => array(
 				'icon' => 'fa-wrench',
