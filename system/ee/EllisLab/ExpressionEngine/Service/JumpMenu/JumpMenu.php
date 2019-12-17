@@ -161,6 +161,54 @@ class JumpMenu extends AbstractJumpMenu
 				'addon' => false,
 				'target' => 'channels/edit'
 			),
+			'viewTemplates' => array(
+				'icon' => 'fa-eye',
+				'command' => 'view templates',
+				'command_title' => 'View <b>Templates</b>',
+				'dynamic' => false,
+				'addon' => false,
+				'target' => 'design'
+			),
+			'viewTemplatesIn' => array(
+				'icon' => 'fa-eye',
+				'command' => 'view templates in',
+				'command_title' => 'View <b>Templates</b> in <i>[group]</i>',
+				'dynamic' => true,
+				'addon' => false,
+				'target' => 'templates/view'
+			),
+			'createTemplateGroup' => array(
+				'icon' => 'fa-plus',
+				'command' => 'create new publish template group',
+				'command_title' => 'Create <b>Template Group</b>',
+				'dynamic' => false,
+				'addon' => false,
+				'target' => 'design/group/create'
+			),
+			'createTemplateIn' => array(
+				'icon' => 'fa-plus',
+				'command' => 'create new publish template in',
+				'command_title' => 'Create <b>Template</b> in <i>[group]</i>',
+				'dynamic' => true,
+				'addon' => false,
+				'target' => 'templates/create'
+			),
+			'editTemplate' => array(
+				'icon' => 'fa-pencil-alt',
+				'command' => 'edit template titled',
+				'command_title' => 'Edit <b>Template</b> titled <i>[template]</i>',
+				'dynamic' => true,
+				'addon' => false,
+				'target' => 'templates/edit'
+			),
+			'editTemplateGroup' => array(
+				'icon' => 'fa-pencil-alt',
+				'command' => 'edit template group titled',
+				'command_title' => 'Edit <b>Template Group</b> titled <i>[group]</i>',
+				'dynamic' => true,
+				'addon' => false,
+				'target' => 'templates/group/edit'
+			),
 			'systemSettingsGeneral' => array(
 				'icon' => 'fa-wrench',
 				'command' => 'edit general settings',
