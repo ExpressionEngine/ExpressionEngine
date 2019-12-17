@@ -45,7 +45,7 @@ class Publish extends Jumps
 			$response['createEntryIn' . $channel->getId()] = array(
 				'icon' => 'fa-plus',
 				'command' => 'create entry in ' . $channel->channel_title,
-				'command_title' => 'Create <b>Entry</b> in <b>' . $channel->channel_title . '</b>',
+				'command_title' => $channel->channel_title,
 				'dynamic' => false,
 				'addon' => false,
 				'target' => ee('CP/URL')->make('publish/create/' . $channel->getId())->compile()
@@ -92,9 +92,7 @@ class Publish extends Jumps
 			}
 		}
 
-		$channels = $channels->all();
-
-		return $channels;
+		return $channels->order('channel_title', 'ASC')->limit(11)->all();
 	}
 
 	private function loadEntries($searchString = false)
@@ -112,10 +110,6 @@ class Publish extends Jumps
 			}
 		}
 
-		$entries = $entries->order('title', 'ASC')
-				->limit(11)
-				->all();
-
-		return $entries;
+		return $entries->order('title', 'ASC')->limit(11)->all();
 	}
 }
