@@ -1167,7 +1167,6 @@ class Addons extends CP_Controller {
 	 *        'command'          => 'create new entry',
 	 *        'command_title'    => 'Create <b>Entry</b> in <i>[channel]</i>',
 	 *        'dynamic'          => true,
-	 *        'requires_keyword' => false,
 	 *        'addon'            => false,
 	 *        'target'           => 'publish/create'
 	 */

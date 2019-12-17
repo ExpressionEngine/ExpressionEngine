@@ -22,7 +22,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'home',
 				'command_title' => 'Go to <b>CP Home</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'homepage'
 			),
@@ -31,7 +30,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'create new publish entry in',
 				'command_title' => 'Create <b>Entry</b> in <i>[channel]</i>',
 				'dynamic' => true,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'publish/create'
 			),
@@ -40,7 +38,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit entry titled',
 				'command_title' => 'Edit <b>Entry</b> titled <i>[title]</i>',
 				'dynamic' => true,
-				'requires_keyword' => true,
 				'addon' => false,
 				'target' => 'publish/edit'
 			),
@@ -49,7 +46,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'create new publish member',
 				'command_title' => 'Create <b>Member</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'members/create'
 			),
@@ -58,7 +54,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'create new publish member group',
 				'command_title' => 'Create <b>Member Group</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'members/groups/create'
 			),
@@ -67,7 +62,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'create new publish category in',
 				'command_title' => 'Create <b>Category</b> in <i>[category group]</i>',
 				'dynamic' => true,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'categories/create'
 			),
@@ -76,7 +70,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit category titled',
 				'command_title' => 'Edit <b>Category</b> titled <i>[category]</i>',
 				'dynamic' => true,
-				'requires_keyword' => true,
 				'addon' => false,
 				'target' => 'categories/edit'
 			),
@@ -85,7 +78,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'view all files',
 				'command_title' => 'View <b>All Files</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'files'
 			),
@@ -94,7 +86,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'view files in',
 				'command_title' => 'View <b>Files</b> in <i>[upload directory]</i>',
 				'dynamic' => true,
-				'requires_keyword' => true,
 				'addon' => false,
 				'target' => 'files/view'
 			),
@@ -103,7 +94,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit upload directory',
 				'command_title' => 'Edit <b>Upload Directory</b>',
 				'dynamic' => true,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'files/directories'
 			),
@@ -112,7 +102,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'view members',
 				'command_title' => 'View <b>Members</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'members'
 			),
@@ -121,7 +110,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'view members in',
 				'command_title' => 'View <b>Members</b> in <i>[member group]</i>',
 				'dynamic' => true,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'members/group'
 			),
@@ -130,7 +118,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'view addons',
 				'command_title' => 'View <b>Add-ons</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'addons'
 			),
@@ -139,7 +126,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'view channels',
 				'command_title' => 'View <b>Channels</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'channels'
 			),
@@ -148,7 +134,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'view channel fields',
 				'command_title' => 'View <b>Channel Fields</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'fields'
 			),
@@ -157,7 +142,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'create new publish channel field',
 				'command_title' => 'Create <b>Channel Field</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'fields/create'
 			),
@@ -166,7 +150,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'create new publish channel',
 				'command_title' => 'Create <b>Channel</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'channels/create'
 			),
@@ -175,7 +158,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit channel titled',
 				'command_title' => 'Edit <b>Channel</b> titled <i>[channel]</i>',
 				'dynamic' => true,
-				'requires_keyword' => true,
 				'addon' => false,
 				'target' => 'channels/edit'
 			),
@@ -184,7 +166,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit general settings',
 				'command_title' => 'Edit <b>General</b> Settings',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'settings/general'
 			),
@@ -193,7 +174,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit general settings url and path settings',
 				'command_title' => 'Edit General Settings &raquo; <b>URL and Path</b> Settings',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'settings/urls'
 			),
@@ -202,7 +182,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit general settings email settings',
 				'command_title' => 'Edit General Settings &raquo; <b>Outgoing Email</b> Settings',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'settings/email'
 			),
@@ -211,7 +190,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit general settings debugging settings',
 				'command_title' => 'Edit General Settings &raquo; <b>Debugging</b> Settings',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'settings/debug-output'
 			),
@@ -220,7 +198,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit content and design settings',
 				'command_title' => 'Edit <b>Content & Design</b> Settings',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'settings/content-design'
 			),
@@ -229,7 +206,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit content and design comment settings',
 				'command_title' => 'Edit Content & Design &raquo; <b>Comment</b> Settings',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'settings/comments'
 			),
@@ -238,7 +214,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit content and design html buttons settings',
 				'command_title' => 'Edit Content & Design &raquo; <b>HTML Buttons</b> Settings',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'settings/buttons'
 			),
@@ -247,7 +222,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit content and design template settings',
 				'command_title' => 'Edit Content & Design &raquo; <b>Template</b> Settings',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'settings/template'
 			),
@@ -256,7 +230,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit content and design hit tracking settings',
 				'command_title' => 'Edit Content & Design &raquo; <b>Hit Tracking</b> Settings',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'settings/hit-tracking'
 			),
@@ -265,7 +238,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit content and design word censoring settings',
 				'command_title' => 'Edit Content & Design &raquo; <b>Word Censoring</b> Settings',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'settings/word-censor'
 			),
@@ -274,7 +246,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit content and design menu manager settings',
 				'command_title' => 'Edit Content & Design &raquo; <b>Menu Manager</b> Settings',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'settings/menu-manager'
 			),
@@ -283,7 +254,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit members settings',
 				'command_title' => 'Edit <b>Members</b> Settings',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'settings/members'
 			),
@@ -292,7 +262,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit members messages settings',
 				'command_title' => 'Edit Members &raquo; <b>Messages</b> Settings',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'settings/messages'
 			),
@@ -301,7 +270,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit members avatars settings',
 				'command_title' => 'Edit Members &raquo; <b>Avatars</b> Settings',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'settings/avatars'
 			),
@@ -310,7 +278,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit security and privacy settings',
 				'command_title' => 'Edit <b>Security & Privacy</b> Settings',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'settings/security-privacy'
 			),
@@ -319,7 +286,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit security and privacy access throttling settings',
 				'command_title' => 'Edit Security & Privacy &raquo; <b>Access Throttling</b> Settings',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'settings/throttling'
 			),
@@ -328,7 +294,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit security and privacy captcha settings',
 				'command_title' => 'Edit Security & Privacy &raquo; <b>CAPTCHA</b> Settings',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'settings/captcha'
 			),
@@ -337,7 +302,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'edit security and privacy consent requests settings',
 				'command_title' => 'Edit Security & Privacy &raquo; <b>Consent Requests</b> Settings',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'settings/consents'
 			),
@@ -346,7 +310,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'system utilities communicate',
 				'command_title' => 'System Utilities &raquo; <b>Communicate</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'utilities/communicate'
 			),
@@ -355,7 +318,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'system utilities communicate sent',
 				'command_title' => 'System Utilities &raquo; Communicate &raquo; <b>Sent</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'utilities/communicate/sent'
 			),
@@ -364,7 +326,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'system utilities translation',
 				'command_title' => 'System Utilities &raquo; <b>CP Translation</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'utilities/translate'
 			),
@@ -373,7 +334,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'system utilities phpinfo',
 				'command_title' => 'System Utilities &raquo; <b>PHP Info</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'utilities/php'
 			),
@@ -382,7 +342,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'system utilities extensions',
 				'command_title' => 'System Utilities &raquo; <b>Extensions</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'utilities/extensions'
 			),
@@ -391,7 +350,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'system utilities member tools import file converter',
 				'command_title' => 'System Utilities &raquo; Member Tools &raquo; <b>File Converter</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'utilities/import-converter'
 			),
@@ -400,7 +358,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'system utilities member tools member import',
 				'command_title' => 'System Utilities &raquo; Member Tools &raquo; <b>Member Import</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'utilities/member-import'
 			),
@@ -409,7 +366,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'system utilities member tools mass notification export email addresses',
 				'command_title' => 'System Utilities &raquo; Member Tools &raquo; <b>Mass Notification Export</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'utilities/export-email-addresses'
 			),
@@ -418,7 +374,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'system utilities database backup utility',
 				'command_title' => 'System Utilities &raquo; Database &raquo; <b>Backup Utility</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'utilities/db-backup'
 			),
@@ -427,7 +382,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'system utilities database sql manager',
 				'command_title' => 'System Utilities &raquo; Database &raquo; <b>SQL Manager</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'utilities/sql'
 			),
@@ -436,7 +390,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'system utilities database sql query form',
 				'command_title' => 'System Utilities &raquo; Database &raquo; <b>SQL Query Form</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'utilities/query'
 			),
@@ -445,7 +398,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'system utilities data operations clear cache manager',
 				'command_title' => 'System Utilities &raquo; Data Operations &raquo; <b>Cache Manager</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'utilities/cache'
 			),
@@ -454,7 +406,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'system utilities data operations search reindex',
 				'command_title' => 'System Utilities &raquo; Data Operations &raquo; <b>Search Reindex</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'utilities/reindex'
 			),
@@ -463,7 +414,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'system utilities data operations statistics',
 				'command_title' => 'System Utilities &raquo; Data Operations &raquo; <b>Statistics</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'utilities/stats'
 			),
@@ -472,7 +422,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => 'system utilities data operations search and replace',
 				'command_title' => 'System Utilities &raquo; Data Operations &raquo; <b>Search and Replace</b>',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'utilities/sandr'
 			),
@@ -481,7 +430,6 @@ class JumpMenu extends AbstractJumpMenu
 				'command' => '💣',
 				'command_title' => 'Destroy Website',
 				'dynamic' => false,
-				'requires_keyword' => false,
 				'addon' => false,
 				'target' => 'jumps/destroy'
 			)
@@ -543,7 +491,6 @@ class JumpMenu extends AbstractJumpMenu
 					'command' => 'addon add-on ' . $name,
 					'command_title' => 'Add-on: ' . $info->getName(),
 					'dynamic' => false,
-					'requires_keyword' => false,
 					'addon' => true,
 					'target' => 'addons/settings/' . $name
 				);
