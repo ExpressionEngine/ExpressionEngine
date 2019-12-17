@@ -100,8 +100,8 @@ class Templates extends Jumps {
 		foreach ($templates as $template) {
 			$id = $template->getId();
 
-			$response['viewFilesIn' . $template->getId()] = array(
-				'icon' => 'fa-eye',
+			$response['editTemplate' . $template->getId()] = array(
+				'icon' => 'fa-pencil-alt',
 				'command' => $template->template_name,
 				'command_title' => $template->template_name,
 				'command_context' => $template->getTemplateGroup()->group_name,
