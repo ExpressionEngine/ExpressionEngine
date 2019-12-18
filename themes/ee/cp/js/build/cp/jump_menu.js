@@ -1,5 +1,7 @@
 "use strict";
 
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 /*!
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -40,6 +42,10 @@
  * EE Jump Menu
  */
 EE.cp.JumpMenu = {
+  typingAjaxDelay: 400,
+  // Internal Variables
+  typingTimeout: false,
+  ajaxRequest: false,
   currentFocus: 1,
   commandKeys: {
     1: ''
@@ -92,7 +98,9 @@ EE.cp.JumpMenu = {
     }
   },
   _keyUp: function _keyUp(e) {
-    // Check to see if our keystroke is in one of the jump menu fields, otherwise ignore it.
+    // Make sure subsequent keystrokes don't rapid fire ajax requests.
+    clearTimeout(EE.cp.JumpMenu.typingTimeout); // Check to see if our keystroke is in one of the jump menu fields, otherwise ignore it.
+
     if (e.target && e.target.className == 'jump-to') {
       if (e.key == 'Escape') {
         // Pressing ESC should close the jump menu. We blur the field to make sure
@@ -134,8 +142,11 @@ EE.cp.JumpMenu = {
         // Check if we're on a sub-level as those will always be dynamic.
         if (EE.cp.JumpMenu.currentFocus > 1) {
           // Get the commandKey for the parent highlighted command.
-          var commandKey = EE.cp.JumpMenu.commandKeys[EE.cp.JumpMenu.currentFocus - 1];
-          EE.cp.JumpMenu.handleDynamic(commandKey, e.target.value);
+          var commandKey = EE.cp.JumpMenu.commandKeys[EE.cp.JumpMenu.currentFocus - 1]; // Only fire the dynamic ajax event after a delay to prevent flooding the requests with every keystroke.
+
+          EE.cp.JumpMenu.typingTimeout = setTimeout(function () {
+            EE.cp.JumpMenu.handleDynamic(commandKey, e.target.value);
+          }, EE.cp.JumpMenu.typingAjaxDelay);
         } else {
           EE.cp.JumpMenu._populateResults(EE.cp.JumpMenu.currentFocus, e.target.value);
         }
@@ -179,8 +190,13 @@ EE.cp.JumpMenu = {
     var data = {
       command: commandKey,
       searchString: searchString
-    };
-    var request = new XMLHttpRequest(); // Make a query string of the JSON POST data
+    }; // Abort any previous running requests.
+
+    if (_typeof(EE.cp.JumpMenu.ajaxRequest) == 'object') {
+      EE.cp.JumpMenu.ajaxRequest.abort();
+    }
+
+    EE.cp.JumpMenu.ajaxRequest = new XMLHttpRequest(); // Make a query string of the JSON POST data
 
     data = Object.keys(data).map(function (key) {
       return encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
@@ -188,21 +204,21 @@ EE.cp.JumpMenu = {
 
     var jumpTarget = EE.cp.jumpMenuURL.replace('JUMPTARGET', 'jumps/' + EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus - 1][commandKey].target); // let jumpTarget = EE.cp.jumpMenuURL + '/' + EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus-1][commandKey].target;
 
-    request.open('POST', jumpTarget, true);
-    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-    request.setRequestHeader('X-CSRF-TOKEN', EE.CSRF_TOKEN);
-    request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    EE.cp.JumpMenu.ajaxRequest.open('POST', jumpTarget, true);
+    EE.cp.JumpMenu.ajaxRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+    EE.cp.JumpMenu.ajaxRequest.setRequestHeader('X-CSRF-TOKEN', EE.CSRF_TOKEN);
+    EE.cp.JumpMenu.ajaxRequest.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 
-    request.onload = function () {
+    EE.cp.JumpMenu.ajaxRequest.onload = function () {
       try {
-        var response = JSON.parse(request.responseText);
+        var response = JSON.parse(EE.cp.JumpMenu.ajaxRequest.responseText);
       } catch (e) {
         that._presentError(e);
 
         return;
       }
 
-      if (request.status >= 200 && request.status < 400) {
+      if (EE.cp.JumpMenu.ajaxRequest.status >= 200 && EE.cp.JumpMenu.ajaxRequest.status < 400) {
         if (response.status == undefined || response.data == undefined) {
           that._presentError(response);
 
@@ -230,11 +246,11 @@ EE.cp.JumpMenu = {
       }
     };
 
-    request.onerror = function () {
+    EE.cp.JumpMenu.ajaxRequest.onerror = function () {
       that._presentError(response);
     };
 
-    request.send(data);
+    EE.cp.JumpMenu.ajaxRequest.send(data);
   },
 
   /**
