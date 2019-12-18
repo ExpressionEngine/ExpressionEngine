@@ -44,11 +44,34 @@ class Publish extends Jumps
 
 			$response['createEntryIn' . $channel->getId()] = array(
 				'icon' => 'fa-plus',
-				'command' => 'create entry in ' . $channel->channel_title,
+				'command' => $channel->channel_title,
 				'command_title' => $channel->channel_title,
 				'dynamic' => false,
 				'addon' => false,
 				'target' => ee('CP/URL')->make('publish/create/' . $channel->getId())->compile()
+			);
+		}
+
+		$this->sendResponse($response);
+	}
+
+	public function view()
+	{
+		$channels = $this->loadChannels(ee()->input->post('searchString'));
+
+		$response = array();
+
+		foreach ($channels as $channel) {
+			$id = $channel->getId();
+			$title = $channel->channel_title;
+
+			$response['viewEntriesIn' . $channel->getId()] = array(
+				'icon' => 'fa-eye',
+				'command' => $channel->channel_title,
+				'command_title' => $channel->channel_title,
+				'dynamic' => false,
+				'addon' => false,
+				'target' => ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $channel->getId()))->compile()
 			);
 		}
 
@@ -67,7 +90,7 @@ class Publish extends Jumps
 
 			$response['editEntry' . $entry->getId()] = array(
 				'icon' => 'fa-pencil-alt',
-				'command' => $entry->title . ' in ' . $entry->getChannel()->channel_title,
+				'command' => $entry->title,
 				'command_title' => $entry->title,
 				'command_context' => $entry->getChannel()->channel_title,
 				'dynamic' => false,

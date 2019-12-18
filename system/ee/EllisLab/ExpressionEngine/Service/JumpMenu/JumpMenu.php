@@ -25,6 +25,14 @@ class JumpMenu extends AbstractJumpMenu
 				'addon' => false,
 				'target' => 'homepage'
 			),
+			'viewEntriesIn' => array(
+				'icon' => 'fa-eye',
+				'command' => 'view entries in',
+				'command_title' => 'View <b>Entries</b> in <i>[channel]</i>',
+				'dynamic' => true,
+				'addon' => false,
+				'target' => 'publish/view'
+			),
 			'createEntryIn' => array(
 				'icon' => 'fa-plus',
 				'command' => 'create new publish entry in',
