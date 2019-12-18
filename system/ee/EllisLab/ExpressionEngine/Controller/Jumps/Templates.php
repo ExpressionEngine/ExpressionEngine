@@ -40,7 +40,7 @@ class Templates extends Jumps {
 		foreach ($groups as $group) {
 			$response['viewTemplateGroup' . $group->group_name] = array(
 				'icon' => 'fa-eye',
-				'command' => 'view templates in group ' . $group->group_name,
+				'command' => $group->group_name,
 				'command_title' => $group->group_name,
 				'dynamic' => false,
 				'addon' => false,
@@ -60,7 +60,7 @@ class Templates extends Jumps {
 		foreach ($groups as $group) {
 			$response['createTemplateIn' . $group->group_name] = array(
 				'icon' => 'fa-plus',
-				'command' => 'create template in ' . $group->group_name,
+				'command' => $group->group_name,
 				'command_title' => $group->group_name,
 				'dynamic' => false,
 				'addon' => false,
@@ -80,7 +80,7 @@ class Templates extends Jumps {
 		foreach ($groups as $group) {
 			$response['editTemplateGroup' . $group->group_name] = array(
 				'icon' => 'fa-pencil-alt',
-				'command' => 'edit template group ' . $group->group_name,
+				'command' => $group->group_name,
 				'command_title' => $group->group_name,
 				'dynamic' => false,
 				'addon' => false,

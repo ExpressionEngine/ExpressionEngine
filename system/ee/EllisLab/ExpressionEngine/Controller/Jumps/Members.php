@@ -37,7 +37,7 @@ class Members extends Jumps {
 		foreach ($groups as $group) {
 			$response['viewMemberGroup' . $group->group_title] = array(
 				'icon' => 'fa-eye',
-				'command' => 'view members in group ' . $group->group_title,
+				'command' => $group->group_title,
 				'command_title' => $group->group_title,
 				'dynamic' => false,
 				'addon' => false,
@@ -57,7 +57,7 @@ class Members extends Jumps {
 		foreach ($groups as $group) {
 			$response['editMemberGroup' . $group->group_title] = array(
 				'icon' => 'fa-pencil-alt',
-				'command' => 'edit member group ' . $group->group_title,
+				'command' => $group->group_title,
 				'command_title' => $group->group_title,
 				'dynamic' => false,
 				'addon' => false,

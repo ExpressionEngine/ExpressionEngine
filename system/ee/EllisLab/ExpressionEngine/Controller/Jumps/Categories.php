@@ -44,7 +44,7 @@ class Categories extends Jumps
 
 			$response['createCategoryIn' . $categoryGroup->getId()] = array(
 				'icon' => 'fa-plus',
-				'command' => 'create category in ' . $categoryGroup->group_name,
+				'command' => $categoryGroup->group_name,
 				'command_title' => $categoryGroup->group_name,
 				'dynamic' => false,
 				'addon' => false,
@@ -67,7 +67,7 @@ class Categories extends Jumps
 
 			$response['editCategory' . $category->getId()] = array(
 				'icon' => 'fa-pencil-alt',
-				'command' => $category->getCategoryGroup()->group_name . ' ' . $category->cat_name,
+				'command' => $category->cat_name,
 				'command_title' => $category->cat_name,
 				'command_context' => $category->getCategoryGroup()->group_name,
 				'dynamic' => false,

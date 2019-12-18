@@ -44,7 +44,7 @@ class Channels extends Jumps
 
 			$response['editChannel' . $channel->getId()] = array(
 				'icon' => 'fa-pencil-alt',
-				'command' => 'edit channel titled ' . $channel->channel_title,
+				'command' => $channel->channel_title,
 				'command_title' => $channel->channel_title,
 				'dynamic' => false,
 				'addon' => false,
