@@ -37,7 +37,7 @@ if ($wrap): ?>
 				}
 
 				if ($reorder_header): ?>
-					<th class="reorder-col"><span class="ico reorder"></span></th>
+					<th class="reorder-col"><span class="ico reorder fas fa-bars"></span></th>
 				<?php elseif ($reorder): ?>
 					<th class="first reorder-col"></th>
 				<?php endif ?>
@@ -146,7 +146,7 @@ if ($wrap): ?>
 					?>
 					<tr<?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
 						<?php if ($reorder): ?>
-							<td class="reorder-col"><span class="ico reorder"></span></td>
+							<td class="reorder-col"><span class="ico reorder fas fa-bars"></span></td>
 						<?php endif ?>
 						<?php foreach ($row['columns'] as $key => $column):
 							$column_name = $columns[$key]['label'];
