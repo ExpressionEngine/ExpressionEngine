@@ -90,7 +90,7 @@ $current_page = ee()->uri->segment(2);
 						<?php endif; ?>
 
 						<?php if (ee()->cp->allowed_group('can_access_addons')) : ?>
-						<a href="<?= ee('CP/URL')->make('addons') ?>" class="ee-sidebar__item <?= ($current_page == 'addons' ? 'active' : '') ?>"><i class="fas fa-bolt"></i> <?= lang('addons') ?></a>
+						<a href="<?= ee('CP/URL')->make('addons') ?>" class="ee-sidebar__item <?= ($current_page == 'addons' ? 'active' : '') ?>"><i class="fas fa-puzzle-piece"></i> <?= lang('addons') ?></a>
 						<?php endif; ?>
 					</div>
 
