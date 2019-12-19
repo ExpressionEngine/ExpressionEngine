@@ -800,6 +800,8 @@ $lang = array(
 
 'add_new_row' => 'Add new row',
 
+'add_row' => 'Add Row',
+
 'collapse' => 'Collapse',
 
 'collapse_all' => 'Collapse All',

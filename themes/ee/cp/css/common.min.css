@@ -51,8 +51,9 @@ html.color-theme-in-transition *:after {
   --ee-sidebar-icon-active: #6BB1F8;
   --ee-sidebar-bg-active: linear-gradient(to left, #322f4b, #313a5c);
   --ee-sidebar-bg: #282636;
-  --ee-secondary-sidebar-item-bg: #f0f3fc;
+  --ee-secondary-sidebar-item-bg: #eef0f7;
   --ee-secondary-sidebar-item-icon: #5fa9f4;
+  --ee-secondary-sidebar-item-bg-active: #0097f5;
   --ee-shadow-modal: rgba(69, 68, 85, 0.2);
   --ee-shadow-dropdown: rgba(23, 27, 40, 0.1);
   --ee-button-primary-color: #ffffff;
@@ -76,6 +77,8 @@ html.color-theme-in-transition *:after {
   --ee-input-placeholder: #737a85;
   --ee-input-border: #c4cdde;
   --ee-input-border-accent: #f2f3f5;
+  --ee-input-focus-border: #0097f5;
+  --ee-input-focus-shadow: 0 3px 6px rgba(174, 151, 255, 0.14), 0 5px 20px rgba(97, 114, 242, 0.05);
   --ee-input-toggle-bg: #dadade;
   --ee-input-toggle-fg: white;
   --ee-input-toggle-shadow: rgba(120, 119, 140, 0.077);
@@ -123,6 +126,7 @@ html.color-theme-in-transition *:after {
   --ee-sidebar-bg: #1d1c28;
   --ee-secondary-sidebar-item-bg: #434564;
   --ee-secondary-sidebar-item-icon: #5fa9f4;
+  --ee-secondary-sidebar-item-bg-active: #0097f5;
   --ee-shadow-modal: rgba(0, 0, 0, 0.2);
   --ee-shadow-dropdown: rgba(0, 0, 0, 0.2);
   --ee-button-primary-color: #ffffff;
@@ -142,9 +146,9 @@ html.color-theme-in-transition *:after {
   --ee-button-danger-color: #fff;
   --ee-button-danger-bg: #e34848;
   --ee-button-danger-hover-bg: #d23e3e;
-  --ee-input-bg: #434564;
+  --ee-input-bg: rgba(67, 69, 100, 0.4);
   --ee-input-placeholder: #a1a9c2;
-  --ee-input-border: transparent;
+  --ee-input-border: #565978;
   --ee-input-border-accent: #1f213a;
   --ee-input-toggle-bg: #50506c;
   --ee-input-toggle-fg: #9090b3;
@@ -153,6 +157,90 @@ html.color-theme-in-transition *:after {
   --ee-input-toggle-active-fg: white;
   --ee-mark-bg: rgba(237, 214, 114, 0.12);
   --ee-modal-overlay-bg: rgba(0, 0, 0, 0.577); }
+
+.pink-theme, body[data-theme="pink"] {
+  --ee-accent-dark: #59223a;
+  --ee-accent: #fc2d85;
+  --ee-accent-light: #fdeffe;
+  --ee-accent-medium: #dfebfe;
+  --ee-throwback-pink: #f62958;
+  --ee-success: #40c057;
+  --ee-success-light: #eaf9ed;
+  --ee-warning-light: #fffcf1;
+  --ee-warning: #f5c400;
+  --ee-warning-dark: #544200;
+  --ee-error: #e34848;
+  --ee-error-light: #fcf2f2;
+  --ee-security-caution: #f56200;
+  --ee-danger: #ee1414;
+  --ee-keyboard-focus: #7bb4fc;
+  --ee-notification: #fa5252;
+  --ee-main-bg: #faf9fa;
+  --ee-dashboard-bg: #f5f6fa;
+  --ee-bg-0: #fff;
+  --ee-bg-5: #f4f4f8;
+  --ee-bg-10: #f7ebf7;
+  --ee-bg-15: #e9dfe9;
+  --ee-bg-25: #b6b2b6;
+  --ee-bg-neutral-light: #ededed;
+  --ee-bg-neutral-dark: #434249;
+  --ee-border: #e4e4f2;
+  --ee-border-dark: #cecedc;
+  --ee-text-primary: black;
+  --ee-text-normal: #584150;
+  --ee-text-secondary: #8c7384;
+  --ee-text-tertiary: #a0a8ba;
+  --ee-text-placeholder: #9ba2ab;
+  --ee-text-selection: #ffffff;
+  --ee-text-selection-bg: #454557;
+  --ee-link: #fc2d85;
+  --ee-link-hover: rgba(252, 45, 133, 0.6);
+  --ee-sidebar-text: #a1a8c6;
+  --ee-sidebar-text-primary: #fff;
+  --ee-sidebar-text-faded: #74709f;
+  --ee-sidebar-text-active: #fff;
+  --ee-sidebar-icon-active: #fff;
+  --ee-sidebar-bg-active: transparent;
+  --ee-sidebar-bg: linear-gradient(to bottom, #382570, #240f29);
+  --ee-secondary-sidebar-item-bg: #eef0f7;
+  --ee-secondary-sidebar-item-icon: #fc2d85;
+  --ee-secondary-sidebar-item-bg-active: #fc2d85;
+  --ee-shadow-modal: rgba(85, 68, 83, 0.2);
+  --ee-shadow-dropdown: rgba(38, 23, 40, 0.1);
+  --ee-button-primary-color: #ffffff;
+  --ee-button-primary-bg: #7800c2;
+  --ee-button-primary-hover-bg: #01b06a;
+  --ee-button-action-color: #ffffff;
+  --ee-button-action-bg: #fc2d85;
+  --ee-button-action-hover-bg: #f62993;
+  --ee-button-secondary-color: #666e79;
+  --ee-button-secondary-bg: #edeff5;
+  --ee-button-secondary-hover-bg: #d7dbe6;
+  --ee-button-secondary-alt-color: #666e79;
+  --ee-button-secondary-alt-bg: #fff;
+  --ee-button-secondary-alt-border: #e3e3e9;
+  --ee-button-secondary-alt-hover-bg: #f2f4f9;
+  --ee-button-secondary-alt-shadow: 0 1px 0 #eee;
+  --ee-button-danger-color: #fff;
+  --ee-button-danger-bg: #ed0b0b;
+  --ee-button-danger-hover-bg: #d23e3e;
+  --ee-input-bg: #fff;
+  --ee-input-placeholder: #737a85;
+  --ee-input-border: #c4cdde;
+  --ee-input-border-accent: #f2f3f5;
+  --ee-input-focus-border: #f500a7;
+  --ee-input-focus-shadow: 0 5px 30px rgba(245, 0, 167, 0.1), 0 2px 10px rgba(245, 0, 167, 0.3);
+  --ee-input-toggle-bg: #dadade;
+  --ee-input-toggle-fg: white;
+  --ee-input-toggle-shadow: rgba(120, 119, 140, 0.077);
+  --ee-input-toggle-active-bg: #b62494;
+  --ee-input-toggle-active-fg: white;
+  --ee-mark-bg: #fefff3;
+  --ee-modal-overlay-bg: rgba(27, 30, 58, 0.5); }
+  .pink-theme .ee-sidebar__title, body[data-theme="pink"] .ee-sidebar__title {
+    text-shadow: 0 0 10px #fff, 0 0 15px #fff, 0 0 35px #FF1177, 0 0 40px rgba(255, 17, 120, 0.555), 0 0 50px #FF1177; }
+    .pink-theme .ee-sidebar__title .ee-sidebar__title-down-arrow, body[data-theme="pink"] .ee-sidebar__title .ee-sidebar__title-down-arrow {
+      color: #fff; }
 
 /*!
  * Font Awesome Free 5.9.0 by @fontawesome - https://fontawesome.com
@@ -200,6 +288,7 @@ select::after,
 .tab-wrap .tabs.layout .tab-remove:before,
 .tab-wrap .tabs.layout .tab-on:before,
 .tab-wrap .tabs.layout .tab-off:before,
+[class*='fields-grid-tool-']:before,
 .far,
 .fal,
 .fab {
@@ -218,7 +307,7 @@ tr.missing td:not(.reorder-col):first-child:before, tr.missing:hover td:not(.reo
 .ee-debugger .tab-bar--editable .tab-off:before, .layout-item__handle::after, .icon-reorder, [class^='icon--'],
 [class*=' icon--'], .has-sub::after, .menu-wrap .develop .has-sub::before, .toolbar li a:after, .toolbar li a:before, .toolbar li span:after, .toolbar li span:before, .tbl-list .reorder:before, .filters a.add:before, .filters .filter-clear a:before, .tab-wrap .tabs.layout .tab-remove:before,
 .tab-wrap .tabs.layout .tab-on:before,
-.tab-wrap .tabs.layout .tab-off:before {
+.tab-wrap .tabs.layout .tab-off:before, [class*='fields-grid-tool-']:before {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   display: inline-block;
@@ -273,17 +362,17 @@ tr.missing td:not(.reorder-col):first-child:before, tr.missing:hover td:not(.reo
 .jump-menu__link .tab-bar--editable .tab-off:before, .tab-bar--editable .jump-menu__link .tab-off:before, .jump-menu__link .dropdown__link--selected::before, .jump-menu__link .widget--support::before, .jump-menu__link .checkbox:after, .jump-menu__link input[type="checkbox"]:after, .jump-menu__link .checkbox--small:after, .jump-menu__link .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .jump-menu__link label:after, .jump-menu__link .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .jump-menu__link label:after, .jump-menu__link .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .jump-menu__link label:after, .jump-menu__link .select__button-label::after, .jump-menu__link .select-popup::after, .jump-menu__link select::after, .jump-menu__link .layout-item__handle::after, .jump-menu__link .icon-reorder, .jump-menu__link [class^='icon--'],
 .jump-menu__link [class*=' icon--'], .jump-menu__link .has-sub::after, .jump-menu__link .menu-wrap .develop .has-sub::before, .menu-wrap .develop .jump-menu__link .has-sub::before, .jump-menu__link .toolbar li a:after, .toolbar li .jump-menu__link a:after, .jump-menu__link .toolbar li a:before, .toolbar li .jump-menu__link a:before, .jump-menu__link .toolbar li span:after, .toolbar li .jump-menu__link span:after, .jump-menu__link .toolbar li span:before, .toolbar li .jump-menu__link span:before, .jump-menu__link .tbl-list .reorder:before, .tbl-list .jump-menu__link .reorder:before, .jump-menu__link .filters a.add:before, .filters .jump-menu__link a.add:before, .jump-menu__link .filters .filter-clear a:before, .filters .filter-clear .jump-menu__link a:before, .jump-menu__link .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .jump-menu__link .tab-remove:before,
 .jump-menu__link .tab-wrap .tabs.layout .tab-on:before, .tab-wrap .tabs.layout .jump-menu__link .tab-on:before,
-.jump-menu__link .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .jump-menu__link .tab-off:before, .sidebar__link i, .dropdown__link .fas, .dropdown__link tr.missing td:not(.reorder-col):first-child:before, tr.missing .dropdown__link td:not(.reorder-col):first-child:before, .dropdown__link .column-sort::after, .dropdown__link .app-notice__icon::before, .dropdown__link .app-notice__dismiss::before, .dropdown__link .m-close:before, .dropdown__link .tab-bar--editable .tab-remove:before, .tab-bar--editable .dropdown__link .tab-remove:before,
+.jump-menu__link .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .jump-menu__link .tab-off:before, .jump-menu__link [class*='fields-grid-tool-']:before, .sidebar__link i, .dropdown__link .fas, .dropdown__link tr.missing td:not(.reorder-col):first-child:before, tr.missing .dropdown__link td:not(.reorder-col):first-child:before, .dropdown__link .column-sort::after, .dropdown__link .app-notice__icon::before, .dropdown__link .app-notice__dismiss::before, .dropdown__link .m-close:before, .dropdown__link .tab-bar--editable .tab-remove:before, .tab-bar--editable .dropdown__link .tab-remove:before,
 .dropdown__link .tab-bar--editable .tab-on:before, .tab-bar--editable .dropdown__link .tab-on:before,
 .dropdown__link .tab-bar--editable .tab-off:before, .tab-bar--editable .dropdown__link .tab-off:before, .dropdown__link .dropdown__link--selected::before, .dropdown__link .widget--support::before, .dropdown__link .checkbox:after, .dropdown__link input[type="checkbox"]:after, .dropdown__link .checkbox--small:after, .dropdown__link .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .dropdown__link label:after, .dropdown__link .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .dropdown__link label:after, .dropdown__link .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .dropdown__link label:after, .dropdown__link .select__button-label::after, .dropdown__link .select-popup::after, .dropdown__link select::after, .dropdown__link .layout-item__handle::after, .dropdown__link .icon-reorder, .dropdown__link [class^='icon--'],
 .dropdown__link [class*=' icon--'], .dropdown__link .has-sub::after, .dropdown__link .menu-wrap .develop .has-sub::before, .menu-wrap .develop .dropdown__link .has-sub::before, .dropdown__link .toolbar li a:after, .toolbar li .dropdown__link a:after, .dropdown__link .toolbar li a:before, .toolbar li .dropdown__link a:before, .dropdown__link .toolbar li span:after, .toolbar li .dropdown__link span:after, .dropdown__link .toolbar li span:before, .toolbar li .dropdown__link span:before, .dropdown__link .tbl-list .reorder:before, .tbl-list .dropdown__link .reorder:before, .dropdown__link .filters a.add:before, .filters .dropdown__link a.add:before, .dropdown__link .filters .filter-clear a:before, .filters .filter-clear .dropdown__link a:before, .dropdown__link .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .dropdown__link .tab-remove:before,
 .dropdown__link .tab-wrap .tabs.layout .tab-on:before, .tab-wrap .tabs.layout .dropdown__link .tab-on:before,
-.dropdown__link .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .dropdown__link .tab-off:before, .dropdown__link--selected::before, .dropdown__item a:not(.dropdown__item-button) .fas, .dropdown__item a:not(.dropdown__item-button) tr.missing td:not(.reorder-col):first-child:before, tr.missing .dropdown__item a:not(.dropdown__item-button) td:not(.reorder-col):first-child:before, .dropdown__item a:not(.dropdown__item-button) .column-sort::after, .dropdown__item a:not(.dropdown__item-button) .app-notice__icon::before, .dropdown__item a:not(.dropdown__item-button) .app-notice__dismiss::before, .dropdown__item a:not(.dropdown__item-button) .m-close:before, .dropdown__item a:not(.dropdown__item-button) .tab-bar--editable .tab-remove:before, .tab-bar--editable .dropdown__item a:not(.dropdown__item-button) .tab-remove:before,
+.dropdown__link .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .dropdown__link .tab-off:before, .dropdown__link [class*='fields-grid-tool-']:before, .dropdown__link--selected::before, .dropdown__item a:not(.dropdown__item-button) .fas, .dropdown__item a:not(.dropdown__item-button) tr.missing td:not(.reorder-col):first-child:before, tr.missing .dropdown__item a:not(.dropdown__item-button) td:not(.reorder-col):first-child:before, .dropdown__item a:not(.dropdown__item-button) .column-sort::after, .dropdown__item a:not(.dropdown__item-button) .app-notice__icon::before, .dropdown__item a:not(.dropdown__item-button) .app-notice__dismiss::before, .dropdown__item a:not(.dropdown__item-button) .m-close:before, .dropdown__item a:not(.dropdown__item-button) .tab-bar--editable .tab-remove:before, .tab-bar--editable .dropdown__item a:not(.dropdown__item-button) .tab-remove:before,
 .dropdown__item a:not(.dropdown__item-button) .tab-bar--editable .tab-on:before, .tab-bar--editable .dropdown__item a:not(.dropdown__item-button) .tab-on:before,
 .dropdown__item a:not(.dropdown__item-button) .tab-bar--editable .tab-off:before, .tab-bar--editable .dropdown__item a:not(.dropdown__item-button) .tab-off:before, .dropdown__item a:not(.dropdown__item-button) .dropdown__link--selected::before, .dropdown__item a:not(.dropdown__item-button) .widget--support::before, .dropdown__item a:not(.dropdown__item-button) .checkbox:after, .dropdown__item a:not(.dropdown__item-button) input[type="checkbox"]:after, .dropdown__item a:not(.dropdown__item-button) .checkbox--small:after, .dropdown__item a:not(.dropdown__item-button) .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .dropdown__item a:not(.dropdown__item-button) label:after, .dropdown__item a:not(.dropdown__item-button) .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .dropdown__item a:not(.dropdown__item-button) label:after, .dropdown__item a:not(.dropdown__item-button) .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .dropdown__item a:not(.dropdown__item-button) label:after, .dropdown__item a:not(.dropdown__item-button) .select__button-label::after, .dropdown__item a:not(.dropdown__item-button) .select-popup::after, .dropdown__item a:not(.dropdown__item-button) select::after, .dropdown__item a:not(.dropdown__item-button) .layout-item__handle::after, .dropdown__item a:not(.dropdown__item-button) .icon-reorder, .dropdown__item a:not(.dropdown__item-button) [class^='icon--'],
 .dropdown__item a:not(.dropdown__item-button) [class*=' icon--'], .dropdown__item a:not(.dropdown__item-button) .has-sub::after, .dropdown__item a:not(.dropdown__item-button) .menu-wrap .develop .has-sub::before, .menu-wrap .develop .dropdown__item a:not(.dropdown__item-button) .has-sub::before, .dropdown__item a:not(.dropdown__item-button) .toolbar li a:after, .toolbar li .dropdown__item a:not(.dropdown__item-button) a:after, .dropdown__item a:not(.dropdown__item-button) .toolbar li a:before, .toolbar li .dropdown__item a:not(.dropdown__item-button) a:before, .dropdown__item a:not(.dropdown__item-button) .toolbar li span:after, .toolbar li .dropdown__item a:not(.dropdown__item-button) span:after, .dropdown__item a:not(.dropdown__item-button) .toolbar li span:before, .toolbar li .dropdown__item a:not(.dropdown__item-button) span:before, .dropdown__item a:not(.dropdown__item-button) .tbl-list .reorder:before, .tbl-list .dropdown__item a:not(.dropdown__item-button) .reorder:before, .dropdown__item a:not(.dropdown__item-button) .filters a.add:before, .filters .dropdown__item a:not(.dropdown__item-button) a.add:before, .dropdown__item a:not(.dropdown__item-button) .filters .filter-clear a:before, .filters .filter-clear .dropdown__item a:not(.dropdown__item-button) a:before, .dropdown__item a:not(.dropdown__item-button) .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .dropdown__item a:not(.dropdown__item-button) .tab-remove:before,
 .dropdown__item a:not(.dropdown__item-button) .tab-wrap .tabs.layout .tab-on:before, .tab-wrap .tabs.layout .dropdown__item a:not(.dropdown__item-button) .tab-on:before,
-.dropdown__item a:not(.dropdown__item-button) .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .dropdown__item a:not(.dropdown__item-button) .tab-off:before, .checkbox:after, input[type="checkbox"]:after, .checkbox--small:after, input.checkbox--small[type="checkbox"]:after, .ee-sidebar__item i {
+.dropdown__item a:not(.dropdown__item-button) .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .dropdown__item a:not(.dropdown__item-button) .tab-off:before, .dropdown__item a:not(.dropdown__item-button) [class*='fields-grid-tool-']:before, .checkbox:after, input[type="checkbox"]:after, .checkbox--small:after, input.checkbox--small[type="checkbox"]:after, .ee-sidebar__item i {
   text-align: center;
   width: 1.25em; }
 
@@ -349,6 +438,7 @@ select.fa-pull-left::after,
 .tab-wrap .tabs.layout .fa-pull-left.tab-remove:before,
 .tab-wrap .tabs.layout .fa-pull-left.tab-on:before,
 .tab-wrap .tabs.layout .fa-pull-left.tab-off:before,
+.fa-pull-left[class*='fields-grid-tool-']:before,
 .far.fa-pull-left,
 .fal.fa-pull-left,
 .fab.fa-pull-left {
@@ -391,6 +481,7 @@ select.fa-pull-right::after,
 .tab-wrap .tabs.layout .fa-pull-right.tab-remove:before,
 .tab-wrap .tabs.layout .fa-pull-right.tab-on:before,
 .tab-wrap .tabs.layout .fa-pull-right.tab-off:before,
+.fa-pull-right[class*='fields-grid-tool-']:before,
 .far.fa-pull-right,
 .fal.fa-pull-right,
 .fab.fa-pull-right {
@@ -4689,7 +4780,8 @@ select::after,
 .filters .filter-clear a:before,
 .tab-wrap .tabs.layout .tab-remove:before,
 .tab-wrap .tabs.layout .tab-on:before,
-.tab-wrap .tabs.layout .tab-off:before {
+.tab-wrap .tabs.layout .tab-off:before,
+[class*='fields-grid-tool-']:before {
   font-family: 'Font Awesome 5 Free';
   font-weight: 900; }
 
@@ -5838,7 +5930,8 @@ code {
   padding: 3px 6px;
   border-radius: 3px;
   border: 1px solid var(--ee-border);
-  font-size: 0.96em; }
+  font-size: 0.96em;
+  white-space: normal; }
 
 pre code {
   display: block;
@@ -5846,7 +5939,8 @@ pre code {
   padding: 10px 15px 10px 15px;
   border: none;
   border-radius: 7px;
-  background: var(--ee-bg-10); }
+  background: var(--ee-bg-10);
+  white-space: nowrap; }
 
 mark {
   padding: 5px 8px 5px 8px;
@@ -5888,8 +5982,8 @@ input[type='url'] {
   input[type='number']:focus,
   input[type='password']:focus,
   input[type='url']:focus {
-    border-color: var(--ee-accent);
-    box-shadow: 0 3px 6px rgba(174, 151, 255, 0.14), 0 5px 20px rgba(97, 114, 242, 0.05); }
+    border-color: var(--ee-input-focus-border);
+    box-shadow: var(--ee-input-focus-shadow); }
   textarea:disabled,
   input[type='text']:disabled,
   input[type='email']:disabled,
@@ -5941,7 +6035,13 @@ input[type='url'] {
   font-size: 0.9em;
   font-style: normal;
   font-weight: normal;
-  margin-top: 5px; }
+  text-transform: none; }
+
+.reorder-col {
+  width: 1%; }
+
+span.ico.reorder {
+  cursor: move; }
 
 .table-title {
   font-weight: 500; }
@@ -6041,9 +6141,10 @@ tr.auto-saved:hover td:not(.reorder-col) {
     color: #FF6600; }
 
 tr.sub-heading td, tr.sub-heading:hover td {
-  background-color: #F9F9F9;
-  border-bottom: 2px solid #CCCCCC;
-  color: #333333;
+  background-color: var(--ee-bg-5);
+  border-bottom: 1px solid var(--ee-border);
+  border-top: 1px solid var(--ee-border);
+  color: var(--ee-text-secondary);
   font-size: 12px;
   font-weight: bold; }
 
@@ -6791,7 +6892,7 @@ tr.selected .st-status {
   .jump-menu__link .tab-bar--editable .tab-off:before, .tab-bar--editable .jump-menu__link .tab-off:before, .jump-menu__link .dropdown__link--selected::before, .jump-menu__link .widget--support::before, .jump-menu__link .checkbox:after, .jump-menu__link input[type="checkbox"]:after, .jump-menu__link .checkbox--small:after, .jump-menu__link .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .jump-menu__link label:after, .jump-menu__link .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .jump-menu__link label:after, .jump-menu__link .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .jump-menu__link label:after, .jump-menu__link .select__button-label::after, .jump-menu__link .select-popup::after, .jump-menu__link select::after, .jump-menu__link .layout-item__handle::after, .jump-menu__link .icon-reorder, .jump-menu__link [class^='icon--'],
   .jump-menu__link [class*=' icon--'], .jump-menu__link .has-sub::after, .jump-menu__link .menu-wrap .develop .has-sub::before, .menu-wrap .develop .jump-menu__link .has-sub::before, .jump-menu__link .toolbar li a:after, .toolbar li .jump-menu__link a:after, .jump-menu__link .toolbar li a:before, .toolbar li .jump-menu__link a:before, .jump-menu__link .toolbar li span:after, .toolbar li .jump-menu__link span:after, .jump-menu__link .toolbar li span:before, .toolbar li .jump-menu__link span:before, .jump-menu__link .tbl-list .reorder:before, .tbl-list .jump-menu__link .reorder:before, .jump-menu__link .filters a.add:before, .filters .jump-menu__link a.add:before, .jump-menu__link .filters .filter-clear a:before, .filters .filter-clear .jump-menu__link a:before, .jump-menu__link .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .jump-menu__link .tab-remove:before,
   .jump-menu__link .tab-wrap .tabs.layout .tab-on:before, .tab-wrap .tabs.layout .jump-menu__link .tab-on:before,
-  .jump-menu__link .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .jump-menu__link .tab-off:before {
+  .jump-menu__link .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .jump-menu__link .tab-off:before, .jump-menu__link [class*='fields-grid-tool-']:before {
     margin-right: 5px; }
   .jump-menu__link:hover, .jump-menu__link.jump-menu__link--active {
     background: var(--ee-accent-light);
@@ -6846,10 +6947,10 @@ tr.selected .st-status {
   color: #254674; }
 
 .sidebar__link {
-  transition: background 200ms ease, color 200ms ease;
+  transition: background 50ms ease, color 50ms ease;
   position: relative;
   display: block;
-  padding: 8px 12px;
+  padding: 6px 12px;
   margin-bottom: 5px;
   color: var(--ee-text-normal); }
   .sidebar__link a {
@@ -6864,11 +6965,19 @@ tr.selected .st-status {
     color: var(--ee-text-normal);
     border-radius: 3px;
     background: var(--ee-secondary-sidebar-item-bg); }
+  .sidebar__link.active {
+    color: #fff;
+    background: var(--ee-secondary-sidebar-item-bg-active); }
+    .sidebar__link.active i {
+      color: #fff;
+      opacity: 0.95; }
+    .sidebar__link.active .toolbar {
+      border: none; }
   .sidebar__link.default i {
     color: #FF6600; }
   .sidebar__link .toolbar {
     position: absolute;
-    right: 4px;
+    right: 5px;
     top: 5px;
     font-size: 0.7em; }
 
@@ -6876,7 +6985,7 @@ tr.selected .st-status {
   padding: 0; }
   .sidebar__link--parent a {
     display: block;
-    padding: 8px 12px; }
+    padding: 6px 12px; }
 
 .sidebar__actions {
   display: flex;
@@ -6893,7 +7002,7 @@ tr.selected .st-status {
   margin-top: 20px;
   padding-bottom: 10px;
   font-size: 1em;
-  border-bottom: 2px solid var(--ee-border);
+  border-bottom: 1px solid var(--ee-border);
   color: var(--ee-text-secondary); }
   .sidebar__section-title a:not(.button) {
     color: var(--ee-link); }
@@ -6902,10 +7011,7 @@ tr.selected .st-status {
   .sidebar__section-title .button, .sidebar__section-title .no-results a, .no-results .sidebar__section-title a,
   .sidebar__section-title .field-no-results a, .field-no-results .sidebar__section-title a {
     position: relative;
-    line-height: 1 !important;
-    height: initial;
     top: 3px;
-    padding: 5px 8px 5px 8px;
     margin-left: auto;
     margin-top: -5px; }
 
@@ -6914,11 +7020,8 @@ tr.selected .st-status {
   display: none;
   color: var(--ee-text-secondary); }
 
-.sidebar__link + .sidebar__section-title {
-  margin-top: 20px; }
-
 .sidebar__section-divider {
-  border-bottom: 2px solid var(--ee-border);
+  border-bottom: 1px solid var(--ee-border);
   margin: 10px 0; }
 
 .legacy-sidebar {
@@ -6942,7 +7045,7 @@ tr.selected .st-status {
   .legacy-sidebar .sidebar__section-title {
     border-bottom: none;
     padding-bottom: 0;
-    padding: 8px 12px;
+    padding: 6px 12px;
     margin: 0;
     background: var(--ee-bg-5);
     border-bottom: 1px solid var(--ee-border); }
@@ -7190,7 +7293,7 @@ tr.selected .st-status {
   position: -webkit-sticky;
   position: sticky;
   top: 0px;
-  background: var(--ee-bg-0);
+  background: var(--ee-main-bg);
   z-index: 5;
   box-shadow: 0 4px 0 var(--ee-bg-0), 0 5px 20px var(--ee-bg-0); }
   @media (max-width: 767px) {
@@ -7383,7 +7486,7 @@ tr.selected .st-status {
   .dropdown__link .tab-bar--editable .tab-off:before, .tab-bar--editable .dropdown__link .tab-off:before, .dropdown__link .dropdown__link--selected::before, .dropdown__link .widget--support::before, .dropdown__link .checkbox:after, .dropdown__link input[type="checkbox"]:after, .dropdown__link .checkbox--small:after, .dropdown__link .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .dropdown__link label:after, .dropdown__link .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .dropdown__link label:after, .dropdown__link .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .dropdown__link label:after, .dropdown__link .select__button-label::after, .dropdown__link .select-popup::after, .dropdown__link select::after, .dropdown__link .layout-item__handle::after, .dropdown__link .icon-reorder, .dropdown__link [class^='icon--'],
   .dropdown__link [class*=' icon--'], .dropdown__link .has-sub::after, .dropdown__link .menu-wrap .develop .has-sub::before, .menu-wrap .develop .dropdown__link .has-sub::before, .dropdown__link .toolbar li a:after, .toolbar li .dropdown__link a:after, .dropdown__link .toolbar li a:before, .toolbar li .dropdown__link a:before, .dropdown__link .toolbar li span:after, .toolbar li .dropdown__link span:after, .dropdown__link .toolbar li span:before, .toolbar li .dropdown__link span:before, .dropdown__link .tbl-list .reorder:before, .tbl-list .dropdown__link .reorder:before, .dropdown__link .filters a.add:before, .filters .dropdown__link a.add:before, .dropdown__link .filters .filter-clear a:before, .filters .filter-clear .dropdown__link a:before, .dropdown__link .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .dropdown__link .tab-remove:before,
   .dropdown__link .tab-wrap .tabs.layout .tab-on:before, .tab-wrap .tabs.layout .dropdown__link .tab-on:before,
-  .dropdown__link .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .dropdown__link .tab-off:before {
+  .dropdown__link .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .dropdown__link .tab-off:before, .dropdown__link [class*='fields-grid-tool-']:before {
     margin-right: 5px;
     color: var(--ee-text-secondary); }
 
@@ -7437,7 +7540,7 @@ tr.selected .st-status {
     .dropdown__item a:not(.dropdown__item-button) .tab-bar--editable .tab-off:before, .tab-bar--editable .dropdown__item a:not(.dropdown__item-button) .tab-off:before, .dropdown__item a:not(.dropdown__item-button) .dropdown__link--selected::before, .dropdown__item a:not(.dropdown__item-button) .widget--support::before, .dropdown__item a:not(.dropdown__item-button) .checkbox:after, .dropdown__item a:not(.dropdown__item-button) input[type="checkbox"]:after, .dropdown__item a:not(.dropdown__item-button) .checkbox--small:after, .dropdown__item a:not(.dropdown__item-button) .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .dropdown__item a:not(.dropdown__item-button) label:after, .dropdown__item a:not(.dropdown__item-button) .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .dropdown__item a:not(.dropdown__item-button) label:after, .dropdown__item a:not(.dropdown__item-button) .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .dropdown__item a:not(.dropdown__item-button) label:after, .dropdown__item a:not(.dropdown__item-button) .select__button-label::after, .dropdown__item a:not(.dropdown__item-button) .select-popup::after, .dropdown__item a:not(.dropdown__item-button) select::after, .dropdown__item a:not(.dropdown__item-button) .layout-item__handle::after, .dropdown__item a:not(.dropdown__item-button) .icon-reorder, .dropdown__item a:not(.dropdown__item-button) [class^='icon--'],
     .dropdown__item a:not(.dropdown__item-button) [class*=' icon--'], .dropdown__item a:not(.dropdown__item-button) .has-sub::after, .dropdown__item a:not(.dropdown__item-button) .menu-wrap .develop .has-sub::before, .menu-wrap .develop .dropdown__item a:not(.dropdown__item-button) .has-sub::before, .dropdown__item a:not(.dropdown__item-button) .toolbar li a:after, .toolbar li .dropdown__item a:not(.dropdown__item-button) a:after, .dropdown__item a:not(.dropdown__item-button) .toolbar li a:before, .toolbar li .dropdown__item a:not(.dropdown__item-button) a:before, .dropdown__item a:not(.dropdown__item-button) .toolbar li span:after, .toolbar li .dropdown__item a:not(.dropdown__item-button) span:after, .dropdown__item a:not(.dropdown__item-button) .toolbar li span:before, .toolbar li .dropdown__item a:not(.dropdown__item-button) span:before, .dropdown__item a:not(.dropdown__item-button) .tbl-list .reorder:before, .tbl-list .dropdown__item a:not(.dropdown__item-button) .reorder:before, .dropdown__item a:not(.dropdown__item-button) .filters a.add:before, .filters .dropdown__item a:not(.dropdown__item-button) a.add:before, .dropdown__item a:not(.dropdown__item-button) .filters .filter-clear a:before, .filters .filter-clear .dropdown__item a:not(.dropdown__item-button) a:before, .dropdown__item a:not(.dropdown__item-button) .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .dropdown__item a:not(.dropdown__item-button) .tab-remove:before,
     .dropdown__item a:not(.dropdown__item-button) .tab-wrap .tabs.layout .tab-on:before, .tab-wrap .tabs.layout .dropdown__item a:not(.dropdown__item-button) .tab-on:before,
-    .dropdown__item a:not(.dropdown__item-button) .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .dropdown__item a:not(.dropdown__item-button) .tab-off:before {
+    .dropdown__item a:not(.dropdown__item-button) .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .dropdown__item a:not(.dropdown__item-button) .tab-off:before, .dropdown__item a:not(.dropdown__item-button) [class*='fields-grid-tool-']:before {
       margin-right: 5px;
       color: var(--ee-text-secondary); }
 
@@ -8050,7 +8153,7 @@ tr.selected .st-status {
   .lots-of-checkboxes__selection .tab-bar--editable .tab-off:before, .tab-bar--editable .lots-of-checkboxes__selection .tab-off:before, .lots-of-checkboxes__selection .dropdown__link--selected::before, .lots-of-checkboxes__selection .widget--support::before, .lots-of-checkboxes__selection .checkbox:after, .lots-of-checkboxes__selection input[type="checkbox"]:after, .lots-of-checkboxes__selection .checkbox--small:after, .lots-of-checkboxes__selection .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .lots-of-checkboxes__selection label:after, .lots-of-checkboxes__selection .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .lots-of-checkboxes__selection label:after, .lots-of-checkboxes__selection .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .lots-of-checkboxes__selection label:after, .lots-of-checkboxes__selection .select__button-label::after, .lots-of-checkboxes__selection .select-popup::after, .lots-of-checkboxes__selection select::after, .lots-of-checkboxes__selection .layout-item__handle::after, .lots-of-checkboxes__selection .icon-reorder, .lots-of-checkboxes__selection [class^='icon--'],
   .lots-of-checkboxes__selection [class*=' icon--'], .lots-of-checkboxes__selection .has-sub::after, .lots-of-checkboxes__selection .menu-wrap .develop .has-sub::before, .menu-wrap .develop .lots-of-checkboxes__selection .has-sub::before, .lots-of-checkboxes__selection .toolbar li a:after, .toolbar li .lots-of-checkboxes__selection a:after, .lots-of-checkboxes__selection .toolbar li a:before, .toolbar li .lots-of-checkboxes__selection a:before, .lots-of-checkboxes__selection .toolbar li span:after, .toolbar li .lots-of-checkboxes__selection span:after, .lots-of-checkboxes__selection .toolbar li span:before, .toolbar li .lots-of-checkboxes__selection span:before, .lots-of-checkboxes__selection .tbl-list .reorder:before, .tbl-list .lots-of-checkboxes__selection .reorder:before, .lots-of-checkboxes__selection .filters a.add:before, .filters .lots-of-checkboxes__selection a.add:before, .lots-of-checkboxes__selection .filters .filter-clear a:before, .filters .filter-clear .lots-of-checkboxes__selection a:before, .lots-of-checkboxes__selection .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .lots-of-checkboxes__selection .tab-remove:before,
   .lots-of-checkboxes__selection .tab-wrap .tabs.layout .tab-on:before, .tab-wrap .tabs.layout .lots-of-checkboxes__selection .tab-on:before,
-  .lots-of-checkboxes__selection .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .lots-of-checkboxes__selection .tab-off:before {
+  .lots-of-checkboxes__selection .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .lots-of-checkboxes__selection .tab-off:before, .lots-of-checkboxes__selection [class*='fields-grid-tool-']:before {
     color: var(--ee-accent); }
 
 ul.field-nested,
@@ -8417,52 +8520,26 @@ fieldset {
 
 .grid-field {
   width: 100%; }
+  .grid-field .table-responsive {
+    box-shadow: none; }
 
-.grid-field__table {
-  display: table;
-  width: 100%;
-  border: 1px solid var(--ee-border);
-  border-radius: 7px; }
+.grid-field__table tr {
+  background: var(--ee-bg-0); }
 
-.grid-field__head {
-  display: table-row;
-  border-collapse: collapse; }
+.grid-field__table tr.ui-sortable-helper {
+  box-shadow: var(--ee-shadow-dropdown);
+  background: var(--ee-accent-light); }
 
-.grid-field__head-td {
-  white-space: nowrap;
-  text-align: left;
-  text-transform: uppercase;
-  color: var(--ee-text-secondary);
-  font-weight: 600;
-  font-size: 0.85em;
-  display: table-cell;
-  border-bottom: 1px solid var(--ee-border);
-  padding: 10px 15px 10px 15px; }
+.grid-field__column-label {
+  display: none; }
 
-.grid-field__head-td--tools {
-  width: 10px; }
+.grid-field__column-remove {
+  width: 1%; }
 
-.grid-field__body {
-  display: table-row; }
-
-.grid-field__row {
-  display: table-row; }
-  .grid-field__row .grid-field__column {
-    border-bottom: 1px solid var(--ee-border); }
-  .grid-field__row:last-child .grid-field__column {
-    border-bottom: 0; }
-
-.grid-field__column {
-  display: table-cell;
-  padding: 0;
+.grid-field__column--tools {
   vertical-align: top;
-  vertical-align: middle;
-  padding: 10px 15px 10px 15px;
-  padding-right: 0; }
-  .grid-field__column:last-child {
-    border-right: none; }
-  .grid-field__column:last-child {
-    padding-right: 15px; }
+  font-size: 1rem;
+  padding: 5px 8px 5px 8px !important; }
 
 .grid-field__column-tool {
   display: block;
@@ -8474,36 +8551,37 @@ fieldset {
   .grid-field__column-tool:hover, .grid-field__column-tool.dropdown-open {
     opacity: 0.8; }
 
-.grid-field__row:last-child .grid-field__column:first-child input, .grid-field__row:last-child .grid-field__column:first-child textarea {
-  border-bottom-left-radius: 7px; }
-
-.grid-field__row:last-child .grid-field__column:last-child input, .grid-field__row:last-child .grid-field__column:last-child textarea {
-  border-bottom-right-radius: 7px; }
-
 .grid-field__footer {
   margin-top: 10px; }
 
-.grid-field__column-label {
+.grid-blank-row {
+  display: none !important; }
+
+.sort-cancel {
   display: none; }
 
 @media (max-width: 767px) {
   .grid-field__column-label {
     display: block; }
-  .grid-field__table {
+  .table-responsive {
+    box-shadow: none;
+    border: none;
+    border-radius: 0; }
+  .grid-field__table, .grid-field__table tbody, .grid-field__table th, .grid-field__table td, .grid-field__table tr {
     display: block;
     border: none; }
-  .grid-field__head {
+  .grid-field__table thead {
     display: none; }
-  .grid-field__body, .grid-field__row {
+  .grid-field__table tr {
     display: flex;
     flex-direction: column; }
-  .grid-field__row {
+  .grid-field__table tr {
     position: relative;
     border: 1px solid var(--ee-border);
     margin-bottom: 10px;
     border-radius: 7px;
     padding-bottom: 15px; }
-  .grid-field__column {
+  .grid-field__table td {
     display: block;
     border-bottom: none !important;
     padding: 10px 15px 10px 15px;
@@ -8521,6 +8599,7 @@ fieldset {
     background: var(--ee-bg-5);
     padding: 10px 15px 10px 15px;
     padding: 15px 0 0 0 !important;
+    text-align: center;
     border-radius: 7px 7px 0 0; } }
 
 .select {
@@ -8563,7 +8642,7 @@ fieldset {
   position: relative;
   display: block;
   padding: 10px 15px 10px 15px;
-  padding-right: 30px;
+  padding-right: 40px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -8598,7 +8677,8 @@ fieldset {
 .select__dropdown-search {
   padding: 10px 15px 10px 15px;
   border-bottom: 1px solid var(--ee-border);
-  background: var(--ee-bg-5); }
+  background: var(--ee-bg-5);
+  border-radius: 7px 7px 0 0; }
   .select__dropdown-search .filter-bar__item {
     width: 100%; }
   .select__dropdown-search + .select__dropdown-items {
@@ -8620,7 +8700,7 @@ fieldset {
   .select__dropdown-item .tab-bar--editable .tab-off:before, .tab-bar--editable .select__dropdown-item .tab-off:before, .select__dropdown-item .dropdown__link--selected::before, .select__dropdown-item .widget--support::before, .select__dropdown-item .checkbox:after, .select__dropdown-item input[type="checkbox"]:after, .select__dropdown-item .checkbox--small:after, .select__dropdown-item .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .select__dropdown-item label:after, .select__dropdown-item .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .select__dropdown-item label:after, .select__dropdown-item .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .select__dropdown-item label:after, .select__dropdown-item .select__button-label::after, .select__dropdown-item .select-popup::after, .select__dropdown-item select::after, .select__dropdown-item .layout-item__handle::after, .select__dropdown-item .icon-reorder, .select__dropdown-item [class^='icon--'],
   .select__dropdown-item [class*=' icon--'], .select__dropdown-item .has-sub::after, .select__dropdown-item .menu-wrap .develop .has-sub::before, .menu-wrap .develop .select__dropdown-item .has-sub::before, .select__dropdown-item .toolbar li a:after, .toolbar li .select__dropdown-item a:after, .select__dropdown-item .toolbar li a:before, .toolbar li .select__dropdown-item a:before, .select__dropdown-item .toolbar li span:after, .toolbar li .select__dropdown-item span:after, .select__dropdown-item .toolbar li span:before, .toolbar li .select__dropdown-item span:before, .select__dropdown-item .tbl-list .reorder:before, .tbl-list .select__dropdown-item .reorder:before, .select__dropdown-item .filters a.add:before, .filters .select__dropdown-item a.add:before, .select__dropdown-item .filters .filter-clear a:before, .filters .filter-clear .select__dropdown-item a:before, .select__dropdown-item .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .select__dropdown-item .tab-remove:before,
   .select__dropdown-item .tab-wrap .tabs.layout .tab-on:before, .tab-wrap .tabs.layout .select__dropdown-item .tab-on:before,
-  .select__dropdown-item .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .select__dropdown-item .tab-off:before {
+  .select__dropdown-item .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .select__dropdown-item .tab-off:before, .select__dropdown-item [class*='fields-grid-tool-']:before {
     color: var(--ee-text-secondary); }
 
 .select__dropdown-item--head {
@@ -8641,6 +8721,7 @@ fieldset {
   appearance: none;
   position: relative;
   display: inline-block;
+  max-width: 100%;
   margin: 0;
   border: 1px solid var(--ee-input-border);
   background: var(--ee-input-bg);
@@ -8728,7 +8809,7 @@ body[data-theme="dark"] .select-popup {
     position: -webkit-sticky;
     position: sticky;
     top: 0px;
-    background: var(--ee-bg-0);
+    background: var(--ee-main-bg);
     z-index: 5;
     box-shadow: 0 4px 0 var(--ee-bg-0), 0 5px 20px var(--ee-bg-0); }
     @media (max-width: 767px) {
@@ -9476,6 +9557,9 @@ body[data-theme="dark"] .select-popup {
     position: relative;
     top: -2px; }
 
+tr.no-results {
+  border: none; }
+
 .field-empty {
   display: block;
   background: var(--ee-bg-5);
@@ -9605,6 +9689,17 @@ body[data-theme="dark"] .select-popup {
   white-space: nowrap; }
   .search-input__dropdown i {
     font-size: 10px; }
+
+.tbl-search input {
+  box-shadow: none !important;
+  height: 29px;
+  line-height: 29px;
+  padding: 0 15px;
+  font-size: 0.9rem;
+  text-transform: capitalize;
+  background: var(--ee-bg-0);
+  border: 1px solid var(--ee-border);
+  border-radius: 7px; }
 
 .setting-txt h3, .setting-txt label {
   font-size: 14px;
@@ -10057,7 +10152,6 @@ body[data-theme="dark"] .status-tag--closed {
 */
 .toolbar {
   background: var(--ee-button-secondary-alt-bg);
-  box-shadow: var(--ee-button-secondary-alt-shadow);
   border: 1px solid var(--ee-button-secondary-alt-border);
   display: inline-block;
   font-size: 0.9em;
@@ -10070,10 +10164,10 @@ body[data-theme="dark"] .status-tag--closed {
     float: left; }
     .toolbar li a, .toolbar li span {
       display: block;
-      padding: 5px 10px;
+      padding: 4px 9px;
       text-align: center;
       text-decoration: none;
-      color: var(--ee-button-secondary-alt-color); }
+      color: var(--ee-text-normal); }
       .toolbar li a:after, .toolbar li a:before, .toolbar li span:after, .toolbar li span:before {
         font-weight: normal; }
       .toolbar li a:hover, .toolbar li span:hover {
@@ -11122,6 +11216,80 @@ body[data-theme="dark"] .status-tag--closed {
   .WysiHat-editor ins {
     text-decoration: underline; }
 
+.toggle-header {
+  display: block;
+  padding: 10px 0 0; }
+  @media (min-width: 768px) {
+    .toggle-header {
+      display: inline; } }
+
+.toggle-content {
+  display: none; }
+
+.fields-grid-setup {
+  background-color: var(--ee-bg-10);
+  margin: -10px 0 0;
+  padding: 10px;
+  border-radius: 3px; }
+
+.fields-grid-item {
+  background-color: var(--ee-bg-0);
+  border: 1px solid var(--ee-border);
+  margin: 0 0 10px;
+  padding: 0; }
+  .fields-grid-item:last-child {
+    margin-bottom: 0; }
+  .fields-grid-item.fields-grid-item---open .toggle-header {
+    display: none; }
+  .fields-grid-item.fields-grid-item---open .toggle-content {
+    display: block; }
+
+.toggle-content {
+  padding: 20px; }
+
+.fields-grid-tools {
+  background-color: var(--ee-bg-0);
+  padding: 10px 15px 10px 15px; }
+  .fields-grid-tools:last-child {
+    margin-top: 10px; }
+  .fields-grid-tools:after {
+    clear: both;
+    content: "";
+    display: block;
+    font-size: 0;
+    height: 0;
+    visibility: hidden; }
+
+[class*='fields-grid-tool-'] {
+  margin-right: 10px; }
+  [class*='fields-grid-tool-']:before {
+    display: inline-block; }
+
+.fields-grid-tool-expand:before {
+  content: "\f150"; }
+  .fields-grid-item---open .fields-grid-tool-expand:before {
+    content: "\f151"; }
+
+.fields-grid-tool-reorder {
+  cursor: move;
+  margin-right: 20px; }
+  .fields-grid-tool-reorder:before {
+    content: "\f0c9"; }
+
+.fields-grid-tool-copy:before {
+  content: "\f24d"; }
+
+.fields-grid-tool-add:before {
+  color: var(--ee-success);
+  content: "\f067"; }
+
+.fields-grid-tool-remove {
+  float: right;
+  margin-right: 0; }
+  .fields-grid-tool-remove:before {
+    color: var(--ee-error);
+    content: "\f2ed"; }
+
 .ee-wrapper {
   display: flex;
   min-height: 100%;
@@ -11332,7 +11500,7 @@ body[data-theme="dark"] .status-tag--closed {
   .login__title .tab-bar--editable .tab-off:before, .tab-bar--editable .login__title .tab-off:before, .login__title .dropdown__link--selected::before, .login__title .widget--support::before, .login__title .checkbox:after, .login__title input[type="checkbox"]:after, .login__title .checkbox--small:after, .login__title .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .login__title label:after, .login__title .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .login__title label:after, .login__title .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .login__title label:after, .login__title .select__button-label::after, .login__title .select-popup::after, .login__title select::after, .login__title .layout-item__handle::after, .login__title .icon-reorder, .login__title [class^='icon--'],
   .login__title [class*=' icon--'], .login__title .has-sub::after, .login__title .menu-wrap .develop .has-sub::before, .menu-wrap .develop .login__title .has-sub::before, .login__title .toolbar li a:after, .toolbar li .login__title a:after, .login__title .toolbar li a:before, .toolbar li .login__title a:before, .login__title .toolbar li span:after, .toolbar li .login__title span:after, .login__title .toolbar li span:before, .toolbar li .login__title span:before, .login__title .tbl-list .reorder:before, .tbl-list .login__title .reorder:before, .login__title .filters a.add:before, .filters .login__title a.add:before, .login__title .filters .filter-clear a:before, .filters .filter-clear .login__title a:before, .login__title .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .login__title .tab-remove:before,
   .login__title .tab-wrap .tabs.layout .tab-on:before, .tab-wrap .tabs.layout .login__title .tab-on:before,
-  .login__title .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .login__title .tab-off:before {
+  .login__title .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .login__title .tab-off:before, .login__title [class*='fields-grid-tool-']:before {
     float: right;
     color: #e0251c; }
 
@@ -11379,7 +11547,7 @@ body[data-theme="dark"] .status-tag--closed {
   .danger-link:hover .tab-bar--editable .tab-off:before, .tab-bar--editable .danger-link:hover .tab-off:before, .danger-link:hover .dropdown__link--selected::before, .danger-link:hover .widget--support::before, .danger-link:hover .checkbox:after, .danger-link:hover input[type="checkbox"]:after, .danger-link:hover .checkbox--small:after, .danger-link:hover .fieldset-required > .field-instruct label:after, .fieldset-required > .field-instruct .danger-link:hover label:after, .danger-link:hover .fieldset-security-caution > .field-instruct label:after, .fieldset-security-caution > .field-instruct .danger-link:hover label:after, .danger-link:hover .fieldset-invalid > .field-instruct label:after, .fieldset-invalid > .field-instruct .danger-link:hover label:after, .danger-link:hover .select__button-label::after, .danger-link:hover .select-popup::after, .danger-link:hover select::after, .danger-link:hover .layout-item__handle::after, .danger-link:hover .icon-reorder, .danger-link:hover [class^='icon--'],
   .danger-link:hover [class*=' icon--'], .danger-link:hover .has-sub::after, .danger-link:hover .menu-wrap .develop .has-sub::before, .menu-wrap .develop .danger-link:hover .has-sub::before, .danger-link:hover .toolbar li a:after, .toolbar li .danger-link:hover a:after, .danger-link:hover .toolbar li a:before, .toolbar li .danger-link:hover a:before, .danger-link:hover .toolbar li span:after, .toolbar li .danger-link:hover span:after, .danger-link:hover .toolbar li span:before, .toolbar li .danger-link:hover span:before, .danger-link:hover .tbl-list .reorder:before, .tbl-list .danger-link:hover .reorder:before, .danger-link:hover .filters a.add:before, .filters .danger-link:hover a.add:before, .danger-link:hover .filters .filter-clear a:before, .filters .filter-clear .danger-link:hover a:before, .danger-link:hover .tab-wrap .tabs.layout .tab-remove:before, .tab-wrap .tabs.layout .danger-link:hover .tab-remove:before,
   .danger-link:hover .tab-wrap .tabs.layout .tab-on:before, .tab-wrap .tabs.layout .danger-link:hover .tab-on:before,
-  .danger-link:hover .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .danger-link:hover .tab-off:before {
+  .danger-link:hover .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .danger-link:hover .tab-off:before, .danger-link:hover [class*='fields-grid-tool-']:before {
     color: var(--ee-danger) !important; }
 
 .clear-float:after {
@@ -11413,6 +11581,9 @@ body[data-theme="dark"] .status-tag--closed {
 
 .add-mrg-left {
   margin-left: 20px; }
+
+.cursor-move {
+  cursor: move; }
 
 /*
 	_font-icons.less
