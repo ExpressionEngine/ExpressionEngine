@@ -20,7 +20,7 @@
 <div class="tab t-0 tab-open">
 
 	<div class="add-on-card-list">
-		<?php $addons = array_merge($installed); foreach ($addons as $addon): ?>
+		<?php $addons = $installed; foreach ($addons as $addon): ?>
 			<?php $this->embed('_shared/add-on-card', ['addon' => $addon, 'show_updates' => false]); ?>
 		<?php endforeach; ?>
 	</div>
