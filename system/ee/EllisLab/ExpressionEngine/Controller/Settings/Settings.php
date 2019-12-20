@@ -83,11 +83,6 @@ class Settings extends CP_Controller {
 
 		$list->addItem(lang('hit_tracking'), ee('CP/URL')->make('settings/hit-tracking'));
 
-		if (ee()->addons_model->module_installed('pages'))
-		{
-			$list->addItem(lang('pages_settings'), ee('CP/URL')->make('addons/settings/pages/settings'));
-		}
-
 		$list->addItem(lang('word_censoring'), ee('CP/URL')->make('settings/word-censor'));
 		$list->addItem(lang('menu_manager'), ee('CP/URL')->make('settings/menu-manager'));
 
