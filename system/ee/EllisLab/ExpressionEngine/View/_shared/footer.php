@@ -102,10 +102,10 @@
 		<div id="jump-menu" class="modal-wrap modal-wrap--small modal-timeout hidden" style="display:none;">
 			<div class="jump-menu">
 				<div class="jump-menu__input" id="jumpMenu1">
-					<input type="text" id="jumpEntry1" class="jump-to" placeholder="Go To..">
+					<input type="text" id="jumpEntry1" class="jump-to" placeholder="<?=lang('go_to')?>">
 				</div>
 				<div class="jump-menu__input" id="jumpMenu2" style="display:none;">
-					<span id="jumpEntry1Selection" class="action-tag">Edit Entry Titled:</span>
+					<span id="jumpEntry1Selection" class="action-tag"></span>
 					<input type="text" id="jumpEntry2" class="jump-to" placeholder="Search For..">
 				</div>
 				<div class="jump-menu__items" id="jumpMenuResults1"></div>
