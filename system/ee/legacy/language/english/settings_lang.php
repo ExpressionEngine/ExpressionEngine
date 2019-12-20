@@ -21,7 +21,7 @@ $lang = array(
 
 'hit_tracking' => 'Hit Tracking',
 
-'html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons',
+'html_buttons' => 'HTML Buttons',
 
 'members' => 'Members',
 

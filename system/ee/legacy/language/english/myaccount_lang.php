@@ -206,7 +206,7 @@ $lang = array(
 
 'homepage_preferences' => 'Home Page Preferences',
 
-'html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons',
+'html_buttons' => 'HTML Buttons',
 
 'html_buttons_updated' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons Updated',
 
