@@ -18,6 +18,8 @@ Bullet list below, e.g.
     - Improved EE syntax highlighting
 - Fixed a bug where the debugger code highlighter would also highlight and overwrite other code blocks on a site's page
 - Added support for third-party add-on icons to Add-on Manager
+- Changed sidebar copyright company name
+- Added Jump Menu
 - You can now drag to change the width of the live preview panes
 
 Developers

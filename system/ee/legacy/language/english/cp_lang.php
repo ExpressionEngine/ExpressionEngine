@@ -159,6 +159,10 @@ $lang = array(
 
 'unauthorized_access' => 'You are not authorized to access this page',
 
+'machines_only_request' => 'You really shouldn\'t be here. This land is only for bots and machines.',
+
+'addon_missing_jump_method' => 'Add-on missing requested jump menu method.',
+
 'update_check_btn' => 'Check for Update',
 
 'update_btn' => 'Upgrade Now',

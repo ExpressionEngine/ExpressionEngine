@@ -261,6 +261,7 @@ class Addons extends CP_Controller {
 			}
 
 			$addon = $this->getExtension($name);
+			$addon = array_merge($addon, $this->getJumpMenu($name));
 			$addon = array_merge($addon, $this->getFieldType($name));
 			$addon = array_merge($addon, $this->getPlugin($name));
 			$addon = array_merge($addon, $this->getModule($name));
@@ -1156,6 +1157,39 @@ class Addons extends CP_Controller {
 				$data['settings_url'] = ee('CP/URL')->make('addons/settings/' . $name);
 			}
 		}
+
+		return $data;
+	}
+
+	/**
+	 * Get data on a jump menu
+	 *
+	 * @param	str	$name	The add-on name
+	 * @return	array		Jump data in the following format:
+	 *   e.g. 'icon'             => 'fa-plus',
+	 *        'command'          => 'create new entry',
+	 *        'command_title'    => 'Create <b>Entry</b> in <i>[channel]</i>',
+	 *        'dynamic'          => true,
+	 *        'addon'            => false,
+	 *        'target'           => 'publish/create'
+	 */
+	private function getJumpMenu($name)
+	{
+		try
+		{
+			$info = ee('Addon')->get($name);
+		}
+		catch (\Exception $e)
+		{
+			show_404();
+		}
+
+		if ( ! $info->hasJumpMenu())
+		{
+			return array();
+		}
+
+		$data['jumps'] = $info->getJumps();
 
 		return $data;
 	}
