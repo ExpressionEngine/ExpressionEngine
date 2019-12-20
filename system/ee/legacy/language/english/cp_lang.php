@@ -442,7 +442,7 @@ $lang = array(
 
 
 /* Common */
-'alphadash_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
+'alphadash_desc' => 'No spaces. Underscores and dashes are allowed.',
 
 'auto_br' => 'Auto line break',
 
