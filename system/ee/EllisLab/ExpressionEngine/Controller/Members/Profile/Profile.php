@@ -88,14 +88,11 @@ class Profile extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$header = $sidebar->addHeader(lang('personal_settings'), ee('CP/URL')->make('members/profile', $this->query_string));
-
-		if (ee()->uri->uri_string == 'cp/members/profile/settings')
-		{
-			$header->isActive();
-		}
+		$header = $sidebar->addHeader(lang('account'));
 
 		$list = $header->addBasicList();
+
+		$list->addItem(lang('personal_settings'), ee('CP/URL')->make('members/profile/settings', $this->query_string));
 
 		$list->addItem(lang('email_settings'), ee('CP/URL')->make('members/profile/email', $this->query_string));
 		$list->addItem(lang('auth_settings'), ee('CP/URL')->make('members/profile/auth', $this->query_string));
@@ -114,8 +111,10 @@ class Profile extends CP_Controller {
 			$publishing_link = ee('CP/URL')->make('members/profile/publishing', $this->query_string);
 		}
 
-		$list = $sidebar->addHeader(lang('publishing_settings'), $publishing_link)
+		$list = $sidebar->addHeader(lang('content'))
 			->addBasicList();
+
+		$list->addItem(lang('publishing_settings'), $publishing_link);
 
 		if ($this->cp->allowed_group('can_edit_html_buttons'))
 		{

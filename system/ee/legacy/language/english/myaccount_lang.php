@@ -30,6 +30,8 @@ $lang = array(
 
 'avatar_settings' => 'Avatar Settings',
 
+'account' => 'Account',
+
 'banned_email' => 'The email address you submitted is banned',
 
 'base_profile' => 'Base Profile',
