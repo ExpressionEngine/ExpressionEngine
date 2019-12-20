@@ -72,11 +72,10 @@
 				<div class="jump-menu__items" id="jumpMenuResults1"></div>
 				<div class="jump-menu__items" id="jumpMenuResults2"></div>
 				<div class="jump-menu__no-results" id="jumpMenuNoResults" style="display:none;"><div class="jump-menu__header text-center">No Results</div></div>
-				<div class="jump-menu__items">
-					<div class="jump-menu__footer text-center">
-						<span class="jump-menu__shortcut">Shortcut: &nbsp;&nbsp; <span class="key"><i class="fab fa-sm fa-windows"></i> J</span> or <span class="key">&#8984; J</span> or <span class="key">Ctrl J</span></span>
-						<span class="jump-menu__close">Close <span class="key">ESC</span></span>
-					</div>
+
+				<div class="jump-menu__footer">
+					<span class="jump-menu__shortcut">Shortcut: &nbsp;&nbsp; <span class="key"><i class="fab fa-sm fa-windows"></i> J</span> or <span class="key">&#8984; J</span> or <span class="key">Ctrl J</span></span>
+					<span class="jump-menu__close">Close <span class="key">ESC</span></span>
 				</div>
 			</div>
 		</div>
