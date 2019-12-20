@@ -497,13 +497,21 @@ class JumpMenu extends AbstractJumpMenu
 				'addon' => false,
 				'target' => 'utilities/sandr'
 			),
-			'destroyWebsite' => array(
-				'icon' => 'fa-bomb',
-				'command' => '💣',
-				'command_title' => 'Destroy Website',
-				'dynamic' => false,
+			'lightTheme' => array(
+				'icon' => 'fa-switch',
+				'command' => 'light theme',
+				'command_title' => 'Switch to <b>Light Theme</b>',
+				'dynamic' => true,
 				'addon' => false,
-				'target' => 'jumps/destroy'
+				'target' => 'themes/light'
+			),
+			'darkTheme' => array(
+				'icon' => 'fa-switch',
+				'command' => 'dark theme',
+				'command_title' => 'Switch to <b>Dark Theme</b>',
+				'dynamic' => true,
+				'addon' => false,
+				'target' => 'themes/dark'
 			)
 		)
 	);
