@@ -20,6 +20,16 @@
 		?>
 	</head>
 	<body id="top">
+		<script>
+		var currentTheme = localStorage.getItem('theme');
+
+		// Restore the currently selected theme
+		// This is at the top of the body to prevent the default theme from flashing
+		if (currentTheme) {
+			document.body.dataset.theme = currentTheme;
+		}
+		</script>
+
 		<div class="global-alerts">
 		<?=ee('CP/Alert')->getAllBanners()?>
 		</div>

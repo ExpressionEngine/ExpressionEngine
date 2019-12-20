@@ -424,13 +424,6 @@ $(document).ready(function(){
 		toggleDarkTheme(e)
 	})
 
-	var currentTheme = localStorage.getItem('theme');
-
-	// Set the current theme from the saved state
-	if (currentTheme) {
-		document.body.dataset.theme = currentTheme
-	}
-
 	// Don't allow changing the theme when it's in the middle of changing
 	var isChangingTheme = false
 
