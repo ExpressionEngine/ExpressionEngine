@@ -158,8 +158,8 @@ EE.cp.JumpMenu = {
 
 	handleClick: function(commandKey) {
 		// Check if we're changing the theme.
-		if (EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus][commandKey].target.indexOf('themes/') !== -1) {
-			document.body.dataset.theme = EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus][commandKey].target.replace('themes/', '');
+		if (EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus][commandKey].target.indexOf('theme/') !== -1) {
+			document.body.dataset.theme = EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus][commandKey].target.replace('theme/', '');
 			localStorage.setItem('theme', document.body.dataset.theme);
 
 			return false;
@@ -291,17 +291,6 @@ EE.cp.JumpMenu = {
 			commandSet = EE.cp.JumpMenuCommands[level];
 		} else {
 			commandSet = EE.cp.JumpMenuCommands[1];
-		}
-
-		if (searchString && level == 1 && searchString === 'dark theme') {
-			commandSet['pinkMode'] = {
-				icon: 'fa-switch',
-				command: 'dark theme',
-				command_title: 'Switch to <b>Pink Theme</b>',
-				dynamic: true,
-				addon: false,
-				target: 'themes/pink'
-			};
 		}
 
 		// Determine which result box to target; default to level 1.
