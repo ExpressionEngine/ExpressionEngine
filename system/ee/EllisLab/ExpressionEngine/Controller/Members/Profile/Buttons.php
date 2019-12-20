@@ -418,7 +418,7 @@ class Buttons extends Settings {
 	private function predefined()
 	{
 		$buttons = array();
-		$result = "<b>" . lang('add_preset_button') . "</b>";
+		$result = '<span class="mr-s">' . lang('add_preset_button') . "</span> ";
 
 		foreach ($this->predefined as $name => $button)
 		{
@@ -438,7 +438,7 @@ class Buttons extends Settings {
 			}
 		}
 
-		$result .= ee('View')->make('ee:_shared/toolbar')->render(array('toolbar_items' => $buttons));
+		$result = '<div class="d-flex align-items-center">' . $result . ee('View')->make('ee:_shared/toolbar')->render(array('toolbar_items' => $buttons)) . '</div>';
 		return $result;
 	}
 

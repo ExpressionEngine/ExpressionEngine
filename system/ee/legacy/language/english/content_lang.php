@@ -232,6 +232,8 @@ $lang = array(
 
 'calendar' => 'Calendar',
 
+'close_preview' => 'Close Preview',
+
 'cancel_preview' => 'Cancel Preview',
 
 'category' => 'Category',
@@ -799,6 +801,8 @@ $lang = array(
 'add_new_html_button' => 'Add New HTML button',
 
 'add_new_row' => 'Add new row',
+
+'add_row' => 'Add Row',
 
 'collapse' => 'Collapse',
 

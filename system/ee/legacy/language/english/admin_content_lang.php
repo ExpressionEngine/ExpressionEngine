@@ -298,7 +298,7 @@ $lang = array(
 
 'html_button' => 'HTML Button',
 
-'html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons',
+'html_buttons' => 'HTML Buttons',
 
 'htmlbutton_delete_instructions' => 'To delete an item submit the form with the tag name blank',
 

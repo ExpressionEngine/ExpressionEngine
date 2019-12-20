@@ -210,6 +210,9 @@ class Addons extends CP_Controller {
 			$addons[$key]['remove_url'] = ee('CP/URL')->make('addons/remove/' . $addon['package'], ['return' => $return_url->encode()]);
 		}
 
+		// Sort the add-ons alphabetically
+		ksort($addons);
+
 		$vars['uninstalled'] = array_filter($addons, function($addon) {
 			return ! $addon['installed'];
 		});
@@ -231,7 +234,7 @@ class Addons extends CP_Controller {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('addon') . ': <b>### ' . lang('addons') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/confirm_remove'),
+			'file' => ['cp/confirm_remove', 'cp/add-ons'],
 		));
 
 		ee()->cp->render('addons/index', $vars);

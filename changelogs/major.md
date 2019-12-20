@@ -20,6 +20,7 @@ Bullet list below, e.g.
 - Added support for third-party add-on icons to Add-on Manager
 - Changed sidebar copyright company name
 - Added Jump Menu
+- You can now drag to change the width of the live preview panes
 
 Developers
 - Updated CodeMirror to version 5.48
