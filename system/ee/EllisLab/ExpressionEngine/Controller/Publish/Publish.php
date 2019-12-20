@@ -300,6 +300,7 @@ class Publish extends AbstractPublishController {
 				'ee_filebrowser',
 				'ee_fileuploader',
 			),
+			'ui' => ['draggable'],
 			'file' => array('cp/publish/publish', 'cp/channel/category_edit')
 		));
 

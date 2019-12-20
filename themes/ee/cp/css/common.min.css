@@ -96,6 +96,7 @@ html.color-theme-in-transition *:after {
   --ee-success-light: rgba(154, 245, 172, 0.22);
   --ee-warning: #f5c400;
   --ee-warning-light: rgba(254, 215, 97, 0.145);
+  --ee-warning-dark: #d3ab0b;
   --ee-error: #fa5252;
   --ee-error-light: rgba(255, 89, 89, 0.173);
   --ee-security-caution: #ff6600;
@@ -6944,7 +6945,16 @@ tr.selected .st-status {
   background: #dde8fc;
   padding: 3px 8px;
   border-radius: 5px;
-  color: #254674; }
+  color: #526f97; }
+
+.jump-menu__footer {
+  padding: 14px 20px;
+  padding-top: 0;
+  font-size: 0.9rem;
+  color: var(--ee-text-secondary); }
+
+.jump-menu__close {
+  float: right; }
 
 .sidebar__link {
   transition: background 50ms ease, color 50ms ease;
@@ -7202,8 +7212,7 @@ tr.selected .st-status {
   text-transform: capitalize; }
   .filter-bar__button:hover {
     color: inherit;
-    border-color: var(--ee-border-dark);
-    box-shadow: 0 1px 2px var(--ee-shadow-dropdown); }
+    border-color: var(--ee-border-dark); }
   .filter-bar__button.dropdown-open {
     color: inherit;
     border-color: var(--ee-border-dark); }
@@ -9690,6 +9699,138 @@ tr.no-results {
   .search-input__dropdown i {
     font-size: 10px; }
 
+.live-preview-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 50;
+  display: none; }
+
+.live-preview {
+  display: flex;
+  height: 100%; }
+
+.live-preview--closed .live-preview__form {
+  transform: translateX(-100%);
+  opacity: 0; }
+
+.live-preview--closed .live-preview__preview {
+  transform: translateX(100%);
+  opacity: 0; }
+
+.live-preview--closed .live-preview__divider {
+  opacity: 0;
+  transition: none; }
+
+.live-preview__form {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-basis: 40%;
+  padding-top: 0;
+  background: var(--ee-bg-0);
+  transition: transform 600ms cubic-bezier(0.165, 0.84, 0.44, 1), opacity 600ms cubic-bezier(0.165, 0.84, 0.44, 1); }
+
+.live-preview__form-content {
+  overflow-y: auto;
+  padding: 20px;
+  padding-top: 0; }
+
+.live-preview__form-header {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  padding-bottom: 0;
+  z-index: 51; }
+  .live-preview__form-header h1 {
+    color: var(--ee-text-secondary);
+    font-size: 1rem; }
+    .live-preview__form-header h1 a {
+      color: inherit; }
+  .live-preview__form-header .button-group {
+    margin-left: auto; }
+
+.live-preview__divider {
+  width: 4px;
+  background: var(--ee-bg-15);
+  cursor: col-resize;
+  transition: transform 600ms cubic-bezier(0.165, 0.84, 0.44, 1), opacity 600ms cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition-delay: 300ms; }
+
+.live-preview__preview {
+  flex-basis: 60%;
+  background: #fff;
+  transition: transform 600ms cubic-bezier(0.165, 0.84, 0.44, 1), opacity 600ms cubic-bezier(0.165, 0.84, 0.44, 1); }
+
+.anim-pulse {
+  animation: pulse 2s infinite linear; }
+
+@keyframes anim-pulse-loader {
+  0% {
+    opacity: 0;
+    transform: rotate(0deg) scale(1); }
+  50% {
+    opacity: 1; }
+  100% {
+    opacity: 0;
+    transform: rotate(360deg) scale(1.5); } }
+
+@keyframes anim-pulse-loader-1 {
+  0% {
+    opacity: 0;
+    transform: rotate(0deg) scale(0.2); }
+  50% {
+    opacity: 0.7; }
+  100% {
+    opacity: 0;
+    transform: rotate(360deg) scale(1); } }
+
+.pulse-loader {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--ee-accent); }
+  .pulse-loader::before {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid var(--ee-accent); }
+
+.live-preview__preview-loader {
+  position: fixed;
+  right: 20px;
+  top: 20px;
+  background: var(--ee-bg-0);
+  padding: 0 15px;
+  height: 34px;
+  border-radius: 7px;
+  box-shadow: 0 5px 20px var(--ee-shadow-dropdown);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  transition: opacity 200ms ease; }
+  .live-preview__preview-loader .pulse-loader {
+    animation: anim-pulse-loader 1s infinite linear; }
+    .live-preview__preview-loader .pulse-loader::before {
+      animation: anim-pulse-loader-1 1.2s infinite linear; }
+  .live-preview__preview-loader.open {
+    opacity: 1; }
+
+.live-preview__frame {
+  border: 0;
+  display: block;
+  height: 100%;
+  width: 100%; }
+
 .tbl-search input {
   box-shadow: none !important;
   height: 29px;
@@ -11519,6 +11660,12 @@ body[data-theme="dark"] .status-tag--closed {
 .hidden {
   display: none; }
 
+.mb-s {
+  margin-bottom: 10px; }
+
+.mr-s {
+  margin-right: 10px; }
+
 .d-flex {
   display: flex !important; }
 
@@ -11584,6 +11731,16 @@ body[data-theme="dark"] .status-tag--closed {
 
 .cursor-move {
   cursor: move; }
+
+.key {
+  position: relative;
+  top: -1px;
+  padding: 2px 7px;
+  border-radius: 5px;
+  margin: 0 2px;
+  background: #727890;
+  color: #fff;
+  font-size: 0.85rem; }
 
 /*
 	_font-icons.less
@@ -12199,73 +12356,6 @@ label.field-option-required {
 }
 .has-format-options {
   margin-bottom: 5px;
-}
-.live-preview {
-  background-color: #fff;
-  bottom: 0;
-  display: none;
-  height: 50%;
-  position: fixed;
-  right: 0;
-  top: 0;
-  width: 100%;
-  z-index: 100;
-}
-@media screen and (min-width: 750px) {
-  .live-preview {
-    height: 100%;
-    width: 50%;
-  }
-}
-.live-preview .align-block-right {
-  right: 10px;
-}
-/*
-	iOS web-kit anomalies
-
-	things that need different assets called for iOS go in {}
-	should be little to nothing in there
-*/
-@supports (-webkit-overflow-scrolling: touch) {
-  .live-preview {
-    -webkit-overflow-scrolling: touch;
-    overflow-y: scroll;
-  }
-}
-.live-preview__frame {
-  border: 0;
-  display: block;
-  height: 100%;
-  width: 100%;
-}
-/*
-	reveals preview (applied via js)
-*/
-.live-preview---open {
-  display: flex;
-  flex-direction: column;
-  animation-name: slideIn;
-  animation-duration: .5s;
-  animation-timing-function: ease-in-out;
-  animation-delay: 0;
-  animation-direction: alternate;
-  animation-iteration-count: 1;
-  animation-fill-mode: none;
-  animation-play-state: running;
-}
-/*
-	hides preview (applied via js)
-*/
-.live-preview---closed {
-  animation-name: slideIn;
-  animation-duration: .5s;
-  animation-timing-function: ease-in-out;
-  animation-delay: 0;
-  animation-direction: alternate;
-  animation-iteration-count: 1;
-  animation-fill-mode: none;
-  animation-play-state: running;
-  animation-name: slideOut;
 }
 .col {
   margin-bottom: 20px;

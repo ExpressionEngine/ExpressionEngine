@@ -232,6 +232,8 @@ $lang = array(
 
 'calendar' => 'Calendar',
 
+'close_preview' => 'Close Preview',
+
 'cancel_preview' => 'Cancel Preview',
 
 'category' => 'Category',
