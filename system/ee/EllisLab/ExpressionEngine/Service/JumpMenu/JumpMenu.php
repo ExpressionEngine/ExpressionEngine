@@ -497,21 +497,13 @@ class JumpMenu extends AbstractJumpMenu
 				'addon' => false,
 				'target' => 'utilities/sandr'
 			),
-			'lightTheme' => array(
-				'icon' => 'fa-switch',
-				'command' => 'light theme',
-				'command_title' => 'Switch to <b>Light Theme</b>',
+			'switchTheme' => array(
+				'icon' => 'fa-random',
+				'command' => 'switch theme',
+				'command_title' => 'Switch <b>Theme</b> to <i>[theme]</i>',
 				'dynamic' => true,
 				'addon' => false,
-				'target' => 'themes/light'
-			),
-			'darkTheme' => array(
-				'icon' => 'fa-switch',
-				'command' => 'dark theme',
-				'command_title' => 'Switch to <b>Dark Theme</b>',
-				'dynamic' => true,
-				'addon' => false,
-				'target' => 'themes/dark'
+				'target' => 'themes/switch'
 			)
 		)
 	);
