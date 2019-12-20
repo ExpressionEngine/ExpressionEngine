@@ -13,6 +13,8 @@ $lang = array(
 
 'entries' => 'Entries',
 
+'menu_entries' => 'Entries',
+
 'logs' => 'Logs',
 
 'msm_manager' => 'Sites',
