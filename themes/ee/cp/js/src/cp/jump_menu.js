@@ -60,7 +60,7 @@ EE.cp.JumpMenu = {
 
 		document.querySelector('#jumpEntry1').addEventListener("focus", function() { EE.cp.JumpMenu._showResults(1); });
 		document.querySelector('#jumpEntry2').addEventListener("focus", function() { EE.cp.JumpMenu._showResults(2); });
-		document.querySelector('#jumpMenuTrigger').addEventListener("click", function(e) { e.preventDefault(); EE.cp.JumpMenu._showJumpMenu(1); });
+		document.querySelector('.js-jump-menu-trigger').addEventListener("click", function(e) { e.preventDefault(); EE.cp.JumpMenu._showJumpMenu(1); });
 		document.querySelector('.app-overlay').addEventListener("click", function() { document.querySelector('.jump-to').blur(); });
 	},
 
@@ -157,6 +157,14 @@ EE.cp.JumpMenu = {
 	},
 
 	handleClick: function(commandKey) {
+		// Check if we're changing the theme.
+		if (EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus][commandKey].target.indexOf('themes/') !== -1) {
+			document.body.dataset.theme = EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus][commandKey].target.replace('themes/', '');
+			localStorage.setItem('theme', document.body.dataset.theme);
+
+			return false;
+		}
+
 		// Save the command key we selected into an array for the level we're on (i.e. top level command or a sub-command).
 		EE.cp.JumpMenu.commandKeys[EE.cp.JumpMenu.currentFocus] = commandKey;
 		EE.cp.JumpMenu.currentFocus++;
@@ -283,6 +291,17 @@ EE.cp.JumpMenu = {
 			commandSet = EE.cp.JumpMenuCommands[level];
 		} else {
 			commandSet = EE.cp.JumpMenuCommands[1];
+		}
+
+		if (searchString && level == 1 && searchString === 'dark theme') {
+			commandSet['pinkMode'] = {
+				icon: 'fa-switch',
+				command: 'dark theme',
+				command_title: 'Switch to <b>Pink Theme</b>',
+				dynamic: true,
+				addon: false,
+				target: 'themes/pink'
+			};
 		}
 
 		// Determine which result box to target; default to level 1.
