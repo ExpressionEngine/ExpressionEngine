@@ -161,19 +161,17 @@ EE.cp.JumpMenu = {
 		if (EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus][commandKey].target.indexOf('theme/') !== -1) {
 			document.body.dataset.theme = EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus][commandKey].target.replace('theme/', '');
 			localStorage.setItem('theme', document.body.dataset.theme);
+		} else {
+			// Save the command key we selected into an array for the level we're on (i.e. top level command or a sub-command).
+			EE.cp.JumpMenu.commandKeys[EE.cp.JumpMenu.currentFocus] = commandKey;
+			EE.cp.JumpMenu.currentFocus++;
 
-			return false;
+			// Make sure to clear out the previous commands at this new level.
+			EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus] = {};
+			document.querySelector('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus).innerHTML = '';
+
+			this.handleDynamic(commandKey);
 		}
-
-		// Save the command key we selected into an array for the level we're on (i.e. top level command or a sub-command).
-		EE.cp.JumpMenu.commandKeys[EE.cp.JumpMenu.currentFocus] = commandKey;
-		EE.cp.JumpMenu.currentFocus++;
-
-		// Make sure to clear out the previous commands at this new level.
-		EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus] = {};
-		document.querySelector('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus).innerHTML = '';
-
-		this.handleDynamic(commandKey);
 	},
 
 	/**
@@ -332,10 +330,11 @@ EE.cp.JumpMenu = {
 					matchClass = 'jump-menu__link--active';
 				}
 
-				let jumpTarget;
+				let jumpTarget = '#';
+				let jumpClick = '';
 
 				if (commandSet[commandKey].dynamic === true) {
-					jumpTarget = "javascript:EE.cp.JumpMenu.handleClick('" + commandKey + "');";
+					jumpClick = 'onclick="EE.cp.JumpMenu.handleClick(\'' + commandKey + '\');"';
 				} else if (commandSet[commandKey].target.indexOf('?') >= 0) {
 					jumpTarget = commandSet[commandKey].target;
 				} else {
@@ -348,7 +347,7 @@ EE.cp.JumpMenu = {
 					commandContext = commandSet[commandKey].command_context;
 				}
 
-				document.querySelector(resultsTarget).innerHTML += '<a class="jump-menu__link ' + matchClass + '" href="' + jumpTarget + '"><span class="jump-menu__link-text"><i class="fas fa-sm ' + commandSet[commandKey].icon + '"></i> ' + commandSet[commandKey].command_title + '</span><span class="meta-info jump-menu__link-right">' + commandContext + '</span></a>';
+				document.querySelector(resultsTarget).innerHTML += '<a class="jump-menu__link ' + matchClass + '" href="' + jumpTarget + '" ' + jumpClick + '><span class="jump-menu__link-text"><i class="fas fa-sm ' + commandSet[commandKey].icon + '"></i> ' + commandSet[commandKey].command_title + '</span><span class="meta-info jump-menu__link-right">' + commandContext + '</span></a>';
 
 				firstMatch = false;
 				matchClass = '';
