@@ -14,7 +14,7 @@ use CP_Controller;
 
 class Themes extends Jumps {
 
-	private $themes = array('light', 'dark');
+	private $themes = array('light' => 'fa-sun', 'dark' => 'fa-moon', 'coffee' => 'fa-coffee');
 
 	public function __construct()
 	{
@@ -41,10 +41,10 @@ class Themes extends Jumps {
 			$keywords = explode(' ', $searchString);
 
 			foreach ($keywords as $keyword) {
-				foreach ($this->themes as $theme) {
+				foreach ($this->themes as $theme => $icon) {
 					if (preg_match('/' . $keyword . '/', $theme)) {
 						$response['switchTheme' . $theme] = array(
-							'icon' => 'fa-random',
+							'icon' => $icon,
 							'command' => $theme,
 							'command_title' => $theme,
 							'dynamic' => true,
@@ -57,7 +57,7 @@ class Themes extends Jumps {
 
 			if ($searchString === 'pink') {
 				$response['switchThemePink'] = array(
-					'icon' => 'fa-random',
+					'icon' => 'fa-heart',
 					'command' => 'pink',
 					'command_title' => 'pink',
 					'dynamic' => true,
@@ -66,9 +66,9 @@ class Themes extends Jumps {
 				);
 			}
 		} else {
-			foreach ($this->themes as $theme) {
+			foreach ($this->themes as $theme => $icon) {
 				$response['switchTheme' . $theme] = array(
-					'icon' => 'fa-random',
+					'icon' => $icon,
 					'command' => $theme,
 					'command_title' => $theme,
 					'dynamic' => true,

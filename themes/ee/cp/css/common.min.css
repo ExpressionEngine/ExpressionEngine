@@ -159,7 +159,7 @@ html.color-theme-in-transition *:after {
   --ee-mark-bg: rgba(237, 214, 114, 0.12);
   --ee-modal-overlay-bg: rgba(0, 0, 0, 0.577); }
 
-.pink-theme, body[data-theme="pink"] {
+body[data-theme="pink"] {
   --ee-accent-dark: #59223a;
   --ee-accent: #fc2d85;
   --ee-accent-light: #fdeffe;
@@ -177,7 +177,7 @@ html.color-theme-in-transition *:after {
   --ee-keyboard-focus: #7bb4fc;
   --ee-notification: #fa5252;
   --ee-main-bg: #faf9fa;
-  --ee-dashboard-bg: #f5f6fa;
+  --ee-dashboard-bg: #faf9fa;
   --ee-bg-0: #fff;
   --ee-bg-5: #f4f4f8;
   --ee-bg-10: #f7ebf7;
@@ -238,10 +238,94 @@ html.color-theme-in-transition *:after {
   --ee-input-toggle-active-fg: white;
   --ee-mark-bg: #fefff3;
   --ee-modal-overlay-bg: rgba(27, 30, 58, 0.5); }
-  .pink-theme .ee-sidebar__title, body[data-theme="pink"] .ee-sidebar__title {
+  body[data-theme="pink"] .ee-sidebar__title {
     text-shadow: 0 0 10px #fff, 0 0 15px #fff, 0 0 35px #FF1177, 0 0 40px rgba(255, 17, 120, 0.555), 0 0 50px #FF1177; }
-    .pink-theme .ee-sidebar__title .ee-sidebar__title-down-arrow, body[data-theme="pink"] .ee-sidebar__title .ee-sidebar__title-down-arrow {
+    body[data-theme="pink"] .ee-sidebar__title .ee-sidebar__title-down-arrow {
       color: #fff; }
+  body[data-theme="pink"] .file-card__info {
+    background: #fff; }
+
+body[data-theme="coffee"] {
+  --ee-accent-dark: #026cbd;
+  --ee-accent: #1073ab;
+  --ee-accent-light: #fef6ef;
+  --ee-accent-medium: #feeadf;
+  --ee-throwback-pink: #f62958;
+  --ee-success: #40c057;
+  --ee-success-light: #eaf9ed;
+  --ee-warning-light: #fffcf1;
+  --ee-warning: #f5c400;
+  --ee-warning-dark: #544200;
+  --ee-error: #e34848;
+  --ee-error-light: #fcf2f2;
+  --ee-security-caution: #f56200;
+  --ee-danger: #fa5252;
+  --ee-keyboard-focus: #7bb4fc;
+  --ee-notification: #fa5252;
+  --ee-main-bg: #f8f6f1;
+  --ee-dashboard-bg: #f8f6f1;
+  --ee-bg-0: #fff;
+  --ee-bg-5: #fbf9f8;
+  --ee-bg-10: #f5efed;
+  --ee-bg-15: #e4dcc8;
+  --ee-bg-25: #b2b3b6;
+  --ee-bg-neutral-light: #ededed;
+  --ee-bg-neutral-dark: #434249;
+  --ee-border: #e9e8e6;
+  --ee-border-dark: #e0dad3;
+  --ee-text-primary: #63524b;
+  --ee-text-normal: #4c432e;
+  --ee-text-secondary: #9a7750;
+  --ee-text-tertiary: #a59079;
+  --ee-text-placeholder: #9ba2ab;
+  --ee-text-selection: #ffffff;
+  --ee-text-selection-bg: #454557;
+  --ee-link: #db7875;
+  --ee-link-hover: #c26865;
+  --ee-sidebar-text: rgba(255, 255, 255, 0.9);
+  --ee-sidebar-text-primary: #fff;
+  --ee-sidebar-text-faded: rgba(255, 255, 255, 0.6);
+  --ee-sidebar-text-active: #fff;
+  --ee-sidebar-icon-active: #fff;
+  --ee-sidebar-bg-active: rgba(228, 220, 200, 0.1);
+  --ee-sidebar-bg: #b08e80;
+  --ee-secondary-sidebar-item-bg: #eee6e5;
+  --ee-secondary-sidebar-item-icon: #b8ada9;
+  --ee-secondary-sidebar-item-bg-active: #db7875;
+  --ee-shadow-modal: rgba(69, 68, 85, 0.2);
+  --ee-shadow-dropdown: rgba(23, 27, 40, 0.1);
+  --ee-button-primary-color: #ffffff;
+  --ee-button-primary-bg: #00c273;
+  --ee-button-primary-hover-bg: #01b06a;
+  --ee-button-action-color: #ffffff;
+  --ee-button-action-bg: #5d63f1;
+  --ee-button-action-hover-bg: #5667e8;
+  --ee-button-secondary-color: #666e79;
+  --ee-button-secondary-bg: #edeff5;
+  --ee-button-secondary-hover-bg: #d7dbe6;
+  --ee-button-secondary-alt-color: #666e79;
+  --ee-button-secondary-alt-bg: #fff;
+  --ee-button-secondary-alt-border: #e3e3e9;
+  --ee-button-secondary-alt-hover-bg: #f2f4f9;
+  --ee-button-secondary-alt-shadow: 0 1px 0 #eee;
+  --ee-button-danger-color: #fff;
+  --ee-button-danger-bg: #e34848;
+  --ee-button-danger-hover-bg: #d23e3e;
+  --ee-input-bg: #fff;
+  --ee-input-placeholder: #737a85;
+  --ee-input-border: #c4cdde;
+  --ee-input-border-accent: #f2f3f5;
+  --ee-input-focus-border: #0097f5;
+  --ee-input-focus-shadow: 0 3px 6px rgba(174, 151, 255, 0.14), 0 5px 20px rgba(97, 114, 242, 0.05);
+  --ee-input-toggle-bg: #dadade;
+  --ee-input-toggle-fg: white;
+  --ee-input-toggle-shadow: rgba(120, 119, 140, 0.077);
+  --ee-input-toggle-active-bg: #00c571;
+  --ee-input-toggle-active-fg: white;
+  --ee-mark-bg: #fefff3;
+  --ee-modal-overlay-bg: rgba(27, 30, 58, 0.5); }
+  body[data-theme="coffee"] .file-card__info {
+    background: #fff; }
 
 /*!
  * Font Awesome Free 5.9.0 by @fontawesome - https://fontawesome.com
@@ -7304,7 +7388,7 @@ tr.selected .st-status {
   top: 0px;
   background: var(--ee-main-bg);
   z-index: 5;
-  box-shadow: 0 4px 0 var(--ee-bg-0), 0 5px 20px var(--ee-bg-0); }
+  box-shadow: 0 4px 0 var(--ee-main-bg), 0 5px 20px var(--ee-main-bg); }
   @media (max-width: 767px) {
     .tab-bar--sticky {
       box-shadow: 0 15px 15px -15px var(--ee-shadow-dropdown);
@@ -8477,6 +8561,7 @@ fieldset {
   border-radius: 5px;
   border: 1px solid var(--ee-border);
   position: relative;
+  background: var(--ee-bg-0);
   display: flex;
   align-items: center;
   width: 100%;
@@ -8843,7 +8928,7 @@ body[data-theme="dark"] .select-popup {
     top: 0px;
     background: var(--ee-main-bg);
     z-index: 5;
-    box-shadow: 0 4px 0 var(--ee-bg-0), 0 5px 20px var(--ee-bg-0); }
+    box-shadow: 0 4px 0 var(--ee-main-bg), 0 5px 20px var(--ee-main-bg); }
     @media (max-width: 767px) {
       .ee-debugger .tab-bar--sticky {
         box-shadow: 0 15px 15px -15px var(--ee-shadow-dropdown);
@@ -9756,7 +9841,7 @@ tr.no-results {
   flex-direction: column;
   flex-basis: 40%;
   padding-top: 0;
-  background: var(--ee-bg-0);
+  background: var(--ee-main-bg);
   transition: transform 600ms cubic-bezier(0.165, 0.84, 0.44, 1), opacity 600ms cubic-bezier(0.165, 0.84, 0.44, 1); }
 
 .live-preview__form-content {
