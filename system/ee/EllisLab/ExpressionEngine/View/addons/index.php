@@ -21,7 +21,7 @@
 
 	<div class="add-on-card-list">
 		<?php $addons = array_merge($installed); foreach ($addons as $addon): ?>
-			<?php $this->embed('_shared/add-on-card', $addon); ?>
+			<?php $this->embed('_shared/add-on-card', ['addon' => $addon, 'show_updates' => false]); ?>
 		<?php endforeach; ?>
 	</div>
 
@@ -31,7 +31,7 @@
 
 		<div class="add-on-card-list">
 			<?php foreach ($uninstalled as $addon): ?>
-				<?php $this->embed('_shared/add-on-card', $addon); ?>
+				<?php $this->embed('_shared/add-on-card', ['addon' => $addon, 'show_updates' => false]); ?>
 			<?php endforeach; ?>
 		</div>
 	<?php endif; ?>
@@ -40,7 +40,7 @@
 <div class="tab t-2">
 	<div class="add-on-card-list">
 		<?php foreach ($updates as $addon): ?>
-			<?php $this->embed('_shared/add-on-card', $addon); ?>
+			<?php $this->embed('_shared/add-on-card', ['addon' => $addon, 'show_updates' => true]); ?>
 		<?php endforeach; ?>
 	</div>
 </div>
