@@ -76,6 +76,23 @@ class File extends AbstractFilesController {
 				'file_data' => ee('File')->makeUpload()->getFileDataForm($file, $errors),
 				'categories' => ee('File')->makeUpload()->getCategoryForm($file, $errors),
 			),
+			'buttons' => [
+				[
+					'name' => 'delete',
+					'type' => '',
+					'value' => 'delete',
+					'text' => 'delete_file',
+					'working' => 'btn_saving',
+					'class' => 'button--danger float-left'
+				],
+				[
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'save',
+					'text' => 'btn_edit_file_meta',
+					'working' => 'btn_saving'
+				],
+			],
 			'sections' => array(),
 			'hide_top_buttons' => TRUE
 		];

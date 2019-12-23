@@ -427,6 +427,8 @@ $(document).ready(function(){
 	// Don't allow changing the theme when it's in the middle of changing
 	var isChangingTheme = false
 
+	var currentTheme = localStorage.getItem('theme');
+
 	updateMenuText(currentTheme)
 
 	function updateMenuText(newTheme) {

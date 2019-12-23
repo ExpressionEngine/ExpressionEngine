@@ -13,8 +13,7 @@
 		<?=form_open($table['base_url'])?>
 			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 			<fieldset class="tbl-search right">
-				<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
-				<input class="btn submit" type="submit" name="search_form" value="<?=lang('search_tables')?>">
+				<input placeholder="<?=lang('search')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
 			</fieldset>
 
 			<div class="title-bar">
