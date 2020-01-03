@@ -461,7 +461,7 @@ class Channel {
 				return;
 			}
 
-			$sql .= implode(array_unique(array_filter($categories)), ',') . ')';
+			$sql .= implode(',', array_unique(array_filter($categories))) . ')';
 
 			$sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
 
@@ -2427,7 +2427,7 @@ class Channel {
 		//cache the entry_id
 		ee()->session->cache['channel']['entry_ids'] = $entries;
 
-		$end = "ORDER BY FIELD(t.entry_id, " . implode($entries, ',') . ")";
+		$end = "ORDER BY FIELD(t.entry_id, " . implode(',', $entries) . ")";
 
 		// modify the ORDER BY if displaying by week
 		if ($this->display_by == 'week' && isset($yearweek))
@@ -2521,7 +2521,7 @@ class Channel {
 
 		$sql .= $from;
 
-		$sql .= "WHERE t.entry_id IN (" . implode($entries, ',') . ")";
+		$sql .= "WHERE t.entry_id IN (" . implode(',', $entries) . ")";
 		return $sql;
 	}
 
