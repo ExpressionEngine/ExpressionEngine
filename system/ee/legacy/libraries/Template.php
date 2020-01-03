@@ -2968,7 +2968,7 @@ class EE_Template {
 			'edit_date'				=> ee()->localize->now,
 			'last_author_id'		=> '1',	// assume a super admin
 			'site_id'				=> ee()->config->item('site_id')
-		 );
+		);
 
 		$template_id = ee()->template_model->create_template($data);
 
@@ -3524,11 +3524,12 @@ class EE_Template {
 		$time = microtime(TRUE)-$this->start_microtime;
 
 		$memory_usage = memory_get_usage();
-
 		$last = end($this->log);
-		$time = number_format($time, 6);
-		$time_gain = $time - $last['time'];
-		$memory_gain = $memory_usage - $last['memory'];
+    $time = number_format($time, 6);
+    $last_time = isset($last['time']) ? $last['time'] : 0;
+    $time_gain = $time - $last_time;
+    $last_memory = isset($last['memory']) ? $last['memory'] : 0;
+		$memory_gain = $memory_usage - $last_memory;
 
 		$this->log[] = array(
 			'time' => $time,
