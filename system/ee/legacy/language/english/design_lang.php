@@ -88,6 +88,8 @@ $lang = array(
 
 'edit_template' => 'Edit Template: %s',
 
+'edit_template_title' => 'Edit Template',
+
 'edit_template_group' => 'Edit Template Group',
 
 'edit_template_group_error' => 'Cannot Update Template Group',
@@ -290,7 +292,7 @@ $lang = array(
 
 'variable_name' => 'Name',
 
-'view_rendered' => 'view rendered',
+'view_rendered' => 'View Rendered',
 
 'zero_template_groups_found' => 'No <b>Template Groups</b> found',
 
