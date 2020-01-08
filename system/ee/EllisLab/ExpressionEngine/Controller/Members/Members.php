@@ -545,13 +545,6 @@ class Members extends CP_Controller {
 			)
 		);
 
-		if (ee()->cp->allowed_group('can_edit_members'))
-		{
-			$columns['manage'] = array(
-				'type'	=> Table::COL_TOOLBAR
-			);
-		}
-
 		if ($checkboxes)
 		{
 			$columns[] = array(
@@ -598,12 +591,6 @@ class Members extends CP_Controller {
 			}
 
 			$edit_link = ee('CP/URL')->make('members/profile/', array('id' => $member->member_id));
-			$toolbar = array(
-				'edit' => array(
-					'href' => $edit_link,
-					'title' => strtolower(lang('profile'))
-				)
-			);
 
 			$attrs = array();
 
@@ -616,13 +603,9 @@ class Members extends CP_Controller {
 				case 'Pending':
 					$group = "<span class='st-pending'>" . lang('pending') . "</span>";
 					$attrs['class'] = 'pending';
-					if (ee()->cp->allowed_group('can_edit_members'))
-					{
-						$toolbar['approve'] = array(
-							'href' => '#',
-							'data-post-url' => ee('CP/URL')->make('members/approve/' . $member->member_id),
-							'title' => strtolower(lang('approve'))
-						);
+
+					if (ee()->cp->allowed_group('can_edit_members')) {
+						$group .= "<a class=\"success-link icon-right button button--small button--secondary-alt\" href=\"" . ee('CP/URL')->make('members/approve/' . $member->member_id) . "\" title=\"" . lang('approve') . "\"><i class=\"fas fa-check\"></i></a>";
 					}
 					break;
 				default:
@@ -631,14 +614,11 @@ class Members extends CP_Controller {
 
 			$email = "<a href = '" . ee('CP/URL')->make('utilities/communicate/member/' . $member->member_id) . "'>".$member->email."</a>";
 
-			if ($can_edit_member)
-			{
+			if ($can_edit_member) {
 				$username_display = "<a href = '" . $edit_link . "'>". $member->username."</a>";
 			}
-			else
-			{
+			else {
 				$username_display = $member->username;
-				unset($toolbar['edit']);
 			}
 
 			$username_display .= '<br><span class="meta-info">&mdash; '.$email.'</span>';
@@ -653,18 +633,6 @@ class Members extends CP_Controller {
 				</span>',
 				$group
 			);
-
-			$toolbar = array('toolbar_items' => $toolbar);
-
-			// add the toolbar if they can edit members
-			if ($can_edit_member)
-			{
-				$column[] = $toolbar;
-			}
-			else
-			{
-				$column[] = ['toolbar_items' => []];
-			}
 
 			// add the checkbox if they can delete members
 			if (ee()->cp->allowed_group('can_delete_members'))
@@ -771,12 +739,6 @@ class Members extends CP_Controller {
 
 			$attributes = array();
 			$edit_link = ee('CP/URL')->make('members/profile/', array('id' => $member['member_id']));
-			$toolbar = array('toolbar_items' => array(
-				'edit' => array(
-					'href' => $edit_link,
-					'title' => strtolower(lang('profile'))
-				)
-			));
 
 			switch ($groups[$member['group_id']])
 			{
@@ -789,11 +751,7 @@ class Members extends CP_Controller {
 					$attributes['class'] = 'pending';
 					if ($can_edit_member && ee()->cp->allowed_group('can_edit_members'))
 					{
-						$toolbar['toolbar_items']['approve'] = array(
-							'href' => '#',
-							'data-post-url' => ee('CP/URL')->make('members/approve/' . $member['member_id']),
-							'title' => strtolower(lang('approve'))
-						);
+						$group .= "<a class=\"success-link icon-right button button--small button--secondary-alt\" href=\"" . ee('CP/URL')->make('members/approve/' . $member['member_id']) . "\" title=\"" . lang('approve') . "\"><i class=\"fas fa-check\"></i></a>";
 					}
 					break;
 				default:
@@ -830,19 +788,6 @@ class Members extends CP_Controller {
 				),
 				'attrs' => $attributes
 			);
-
-			// add the toolbar if they can edit members
-			if (ee()->cp->allowed_group('can_edit_members'))
-			{
-				if ($can_edit_member)
-				{
-					$row['columns'][] = $toolbar;
-				}
-				else
-				{
-					$row['columns'][] = ['toolbar_items' => []];
-				}
-			}
 
 			// add the checkbox if they can delete members
 			if (ee()->cp->allowed_group('can_delete_members'))
