@@ -8,6 +8,8 @@ $lang = array(
 
 'btn_cancel_upload' => 'Cancel Upload',
 
+'delete_file' => 'Delete File',
+
 'btn_edit_file_meta' => 'Save File Meta',
 
 'btn_finish_upload' => 'Finish Upload',
