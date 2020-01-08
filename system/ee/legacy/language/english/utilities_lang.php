@@ -7,13 +7,15 @@ $lang = array(
 
 /* Menu */
 
-'backup_utility' => 'Backup Utility',
+'backup_database' => 'Backup Database',
 
 'cache_manager' => 'Cache Manager',
 
 'communicate' => 'Communicate',
 
 'cp_translation' => '<abbr title="Control Panel">CP</abbr> Translation',
+
+'cp_translations' => 'CP Translations',
 
 'data_operations' => 'Data Operations',
 
@@ -56,6 +58,8 @@ $lang = array(
 'bcc_recipients_desc' => '<abbr title="Blind Carbon Copied">BCC</abbr> Email(s). Separate multiple recipients with a comma.',
 
 'btn_send_email' => 'Send Email',
+
+'send_email' => 'Send Email',
 
 'btn_send_email_working' => 'Sending...',
 

@@ -20,7 +20,7 @@ class DbBackup extends Utilities {
 		$tables = ee('Database/Backup/Query')->getTables();
 
 		$vars = [
-			'cp_page_title' => lang('backup_utility'),
+			'cp_page_title' => lang('backup_database'),
 			'save_btn_text' => 'backup_database',
 			'save_btn_text_working' => 'backing_up',
 			'hide_top_buttons' => TRUE,
