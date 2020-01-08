@@ -1,14 +1,14 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
-<div class="box mb">
-	<h1><?=lang('sql_manager_abbr')?></h1>
-	<div class="txt-wrap">
-		<ul class="checklist">
-			<li><?=lang('mysql')?> <?=$sql_version?> / <b><?=lang('total_records')?>:</b> <?=$records?> / <b><?=lang('size')?>: </b><?=$size?></li>
-			<li class="last"><b><?=lang('uptime')?>:</b> <?=$database_uptime?></li>
-		</ul>
-	</div>
+<div class="title-bar title-bar--large">
+	<h2 class="title-bar__title"><?=lang('sql_manager_abbr')?></h2>
 </div>
+
+<div class="typography">
+	<pre><code><?=lang('mysql')?> <?=$sql_version?> / <b><?=lang('total_records')?>:</b> <?=$records?> / <b><?=lang('size')?>: </b><?=$size?>
+<br><b><?=lang('uptime')?>:</b> <?=$database_uptime?></code></pre>
+</div>
+
 	<div class="tbl-ctrls">
 		<?=form_open($table['base_url'])?>
 			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
