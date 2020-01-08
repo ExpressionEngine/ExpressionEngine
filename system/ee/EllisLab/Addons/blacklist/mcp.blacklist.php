@@ -80,9 +80,10 @@ class Blacklist_mcp {
 		$vars = array(
 			'allow_write_htaccess' => $allow_write_htaccess,
 			'base_url' => ee('CP/URL')->make('addons/settings/blacklist/save_htaccess_path'),
-			'cp_page_title' => lang('blacklist_module_name') . ' ' . lang('settings'),
+			'cp_page_title' => '',//lang('blacklist_module_name') . ' ' . lang('settings'),
 			'save_btn_text' => 'btn_save_settings',
 			'save_btn_text_working' => 'btn_saving',
+			'hide_top_buttons' => true,
 			'sections' => array(
 				array(
 					array(
