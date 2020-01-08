@@ -163,16 +163,29 @@ class Comments extends AbstractPublishController {
 				->filter('status', 's')
 				->count();
 
-			$spam_link = ee('CP/URL')->make('addons/settings/spam', array('content_type' => 'comment'));
+			if ($spam_total > 0) {
+				$spam_link = ee('CP/URL')->make('addons/settings/spam', array('content_type' => 'comment'));
 
-			ee('CP/Alert')->makeInline('comments-form')
-				->asWarning()
-				->withTitle(lang('spam_comments_header'))
-				->addToBody(sprintf(lang('spam_comments'), $spam_total, $spam_link))
-				->now();
+				ee('CP/Alert')->makeInline('comments-form')
+					->asWarning()
+					->withTitle(lang('spam_comments_header'))
+					->addToBody(sprintf(lang('spam_comments'), $spam_total, $spam_link))
+					->now();
+			}
 		}
 
 		ee()->view->cp_page_title = lang('all_comments');
+
+		ee()->view->header = array(
+			'title' => lang('all_comments'),
+			'toolbar_items' => array(
+				'settings' => array(
+					'href' => ee('CP/URL')->make('settings/comments'),
+					'title' => lang('comment_settings')
+				),
+			),
+			'action_button' => NULL
+		);
 
 		// Set the page heading
 		if ( ! empty($search_value))
@@ -181,7 +194,7 @@ class Comments extends AbstractPublishController {
 		}
 		else
 		{
-			ee()->view->cp_heading = lang('all_comments');
+			ee()->view->cp_heading = lang('comments');
 		}
 
 		ee()->cp->render('publish/comments/index', $vars);

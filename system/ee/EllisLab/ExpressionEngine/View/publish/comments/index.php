@@ -1,16 +1,20 @@
 <?php $this->extend('_templates/default-nav'); ?>
 
 	<?=form_open($form_url)?>
-		<h1>
-			<?=$cp_heading?>
-			<ul class="toolbar">
-				<li class="settings"><a href="<?=ee('CP/URL')->make('settings/comments')?>" title="<?=lang('comment_settings')?>"></a></li>
-			</ul>
-		</h1>
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-		<?php if (isset($filters)) echo $filters; ?>
+
+		<div class="title-bar">
+			<h2 class="title-bar__title">
+				<?=$cp_heading?>
+			</h2>
+
+			<?php if (isset($filters)) echo $filters; ?>
+		</div>
+
 		<?php $this->embed('_shared/table', $table); ?>
+
 		<?=$pagination?>
+
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
 			<?php if ($can_delete || $can_moderate): ?>
 		<fieldset class="bulk-action-bar hidden">
