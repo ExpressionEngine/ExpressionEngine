@@ -32,15 +32,15 @@ $lang = array(
 
 'ip_address' => '<abbr title="Internet Protocol">IP</abbr> address',
 
-'ip_address_desc' => '<b>Place each <abbr title="Internet Protocol">IP</abbr> address on a separate line.</b><br>You may use <code>*</code> as a wild-card e.g. 123.456.<code>*</code>',
+'ip_address_desc' => 'Place each <abbr title="Internet Protocol">IP</abbr> address on a separate line.<br>You may use <code>*</code> as a wild-card e.g. 123.456.<code>*</code>',
 
 'user_agent' => 'User Agent',
 
-'user_agent_desc' => '<b>Place each user agent on a separate line.</b>',
+'user_agent_desc' => 'Place each user agent on a separate line.',
 
 'url' => '<abbr title="Unified Resource Locator">URL</abbr>',
 
-'url_desc' => '<b>Place each <abbr title="Unified Resource Locator">URL</abbr> on a separate line.</b>',
+'url_desc' => 'Place each <abbr title="Unified Resource Locator">URL</abbr> on a separate line.',
 
 'htaccess_path_removed' => '.htaccess Path Removed',
 

@@ -28,7 +28,7 @@ $lang = array(
 
 'auth_settings' => 'Username & Password',
 
-'avatar_settings' => 'Avatar Settings',
+'avatar_settings' => 'Avatar',
 
 'account' => 'Account',
 
