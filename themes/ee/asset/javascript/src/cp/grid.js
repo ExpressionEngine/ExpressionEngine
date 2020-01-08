@@ -269,7 +269,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	_bindAddButton: function() {
 		var that = this;
 
-		$('a[rel=add_row]', this.parentContainer)
+		$('[rel=add_row]', this.parentContainer)
 			.add('.tbl-action a.add', this.root)
 			.on('click', function(event) {
 				event.preventDefault();

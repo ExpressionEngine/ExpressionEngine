@@ -37,7 +37,7 @@
 			<?php endif ?>
 			<?php if (isset($header['action_button'])): ?>
 				<?php if (isset($header['action_button']['choices'])): ?>
-					<a href="#" class="button button--action js-dropdown-toggle" data-dropdown-pos="bottom-end"><?=$header['action_button']['text']?> <i class="fas fa-caret-down icon-right"></i></a>
+					<button type="button" class="button button--action js-dropdown-toggle" data-dropdown-pos="bottom-end"><?=$header['action_button']['text']?> <i class="fas fa-caret-down icon-right"></i></button>
 					<div class="dropdown">
 						<?php if (count($header['action_button']['choices']) > 8): ?>
 							<div class="dropdown__search">
@@ -59,7 +59,7 @@
 		<?php if (isset($header['action_buttons']) && count($header['action_buttons'])): ?>
 				<?php foreach ($header['action_buttons'] as $button): ?>
 						<?php if (isset($button['choices'])): ?>
-							<a href="#" class="button button--action js-dropdown-toggle" data-dropdown-pos="bottom-end"><?=$button['text']?> <i class="fas fa-caret-down icon-right"></i></a>
+							<button type="button" class="button button--action js-dropdown-toggle" data-dropdown-pos="bottom-end"><?=$button['text']?> <i class="fas fa-caret-down icon-right"></i></button>
 							<div class="dropdown">
 								<?php if (count($button['choices']) > 8): ?>
 									<div class="dropdown__search">

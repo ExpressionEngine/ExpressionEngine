@@ -66,8 +66,8 @@ function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      return React.createElement(React.Fragment, null, React.createElement("a", {
-        href: "#",
+      return React.createElement(React.Fragment, null, React.createElement("button", {
+        type: "button",
         className: "button js-dropdown-toggle " + this.props.buttonClass,
         onClick: this.toggle
       }, this.state.selected ? this.state.selected.label : this.props.title, " ", React.createElement("i", {

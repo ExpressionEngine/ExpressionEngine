@@ -455,7 +455,7 @@ else: ?>
 			<?php endif; ?>
 			</div>
 
-			<a href="#" rel="add_row" class="button button--secondary-alt js-grid-add-row"><?=lang('add_row')?></a>
+			<button type="button" rel="add_row" class="button button--secondary-alt js-grid-add-row"><?=lang('add_row')?></button>
 		</div>
 	</div>
 </div>

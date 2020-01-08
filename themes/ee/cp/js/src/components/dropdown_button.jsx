@@ -34,7 +34,7 @@ class DropDownButton extends React.Component {
     render() {
         return (
             <>
-                <a href="#" className={"button js-dropdown-toggle " + this.props.buttonClass} onClick={this.toggle}>{this.state.selected ? this.state.selected.label : this.props.title} <i class="fas fa-caret-down icon-right"></i></a>
+                <button type="button" className={"button js-dropdown-toggle " + this.props.buttonClass} onClick={this.toggle}>{this.state.selected ? this.state.selected.label : this.props.title} <i class="fas fa-caret-down icon-right"></i></button>
                 <div className="dropdown">
                     {this.state.items.length > 7 &&
                         <div className="dropdown__search">

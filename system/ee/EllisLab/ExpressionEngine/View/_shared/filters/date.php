@@ -1,9 +1,9 @@
-<a class="filter-bar__button has-sub js-dropdown-toggle" href="" data-filter-label="<?=strtolower(lang($label))?>">
+<button type="button" class="filter-bar__button has-sub js-dropdown-toggle" data-filter-label="<?=strtolower(lang($label))?>">
 	<?=lang($label)?>
 	<?php if ($value): ?>
 	<span class="faded">(<?=htmlentities($value, ENT_QUOTES, 'UTF-8')?>)</span>
 	<?php endif; ?>
-</a>
+</button>
 <div class="dropdown">
 	<div class="dropdown__search">
 		<div class="search-input">
