@@ -15,7 +15,7 @@ EE.cp.reindex = {
 		var that = this;
 
 		EE.cp.reindex._init();
-		$('a.toggle-btn').on('click', function(e) {
+		$('button.toggle-btn').on('click', function(e) {
 			if ($('input[name="all_sites"]').val() == "1") {
 				that.site = 'all';
 			} else {

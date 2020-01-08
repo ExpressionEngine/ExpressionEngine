@@ -166,7 +166,7 @@ $(document).ready(function () {
 			$(document).trigger('entry:preview');
 		});
 
-		$(container).on('click', 'a.toggle-btn', function(e) {
+		$(container).on('click', 'button.toggle-btn', function(e) {
 			$(document).trigger('entry:preview');
 		});
 

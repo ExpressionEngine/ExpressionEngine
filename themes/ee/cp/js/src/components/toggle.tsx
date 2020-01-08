@@ -55,12 +55,12 @@ class Toggle extends React.Component<ToggleProps, ToggleState> {
 
     render() {
         return (
-            <a href="#" className={"toggle-btn " + this.state.onOff} onClick={this.handleClick} title={this.state.onOff} data-state={this.state.onOff} aria-checked={this.state.trueFalse} role="switch">
+            <button type="button" className={"toggle-btn " + this.state.onOff} onClick={this.handleClick} title={this.state.onOff} data-state={this.state.onOff} aria-checked={this.state.trueFalse} role="switch">
                 {this.props.name &&
                     <input type="hidden" name={this.props.name} value={this.state.value} />
                 }
                 <span className="slider"></span>
-            </a>
+            </button>
         )
     }
 }

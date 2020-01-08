@@ -873,7 +873,7 @@ $(document).ready(function(){
 	// non-React toggles
 	// =================
 
-		$('body').on('click', 'a.toggle-btn', function (e) {
+		$('body').on('click', 'button.toggle-btn', function (e) {
 			if ($(this).hasClass('disabled') ||
 				$(this).parents('.toggle-tools').size() > 0 ||
 				$(this).parents('[data-reactroot]').size() > 0) {

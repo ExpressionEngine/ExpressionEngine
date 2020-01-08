@@ -7941,6 +7941,9 @@ button.button:focus, button.filter-bar__button:focus, input.button:focus, input.
       border-radius: 0 0 7px 0; }
 
 .toggle-btn {
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
   position: relative;
   display: inline-block;
   height: 26px;
@@ -7948,7 +7951,8 @@ button.button:focus, button.filter-bar__button:focus, input.button:focus, input.
   transition: all 100ms ease;
   border-radius: 13px;
   background: var(--ee-input-toggle-bg);
-  text-decoration: none; }
+  text-decoration: none;
+  border: none; }
   .toggle-btn .slider {
     position: absolute;
     display: block;
@@ -7970,6 +7974,9 @@ button.button:focus, button.filter-bar__button:focus, input.button:focus, input.
     opacity: 0.5; }
   .invalid .toggle-btn {
     border-color: var(--ee-error); }
+  .toggle-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--ee-bg-5), 0 0 0 4px var(--ee-keyboard-focus); }
 
 .checkbox, input[type="checkbox"] {
   transition: all 100ms ease;
