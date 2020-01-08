@@ -9,8 +9,9 @@
 		</h2>
 		<?php if (isset($filters)) echo $filters; ?>
 		<div class="title-bar__extra-tools">
-			<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
-			<input class="button button--small button--action" type="submit" value="<?=lang('search_members_button')?>">
+			<div class="search-input">
+				<input class="search-input__input" placeholder="<?=lang('search')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
+			</div>
 		</div>
 	</div>
 
