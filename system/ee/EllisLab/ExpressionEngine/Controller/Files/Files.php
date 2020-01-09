@@ -457,7 +457,7 @@ class Files extends AbstractFilesController {
 		ee('CP/Alert')->makeInline('files-form')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(lang('files_removed_desc'))
+			->addToBody(lang('files_deleted_desc'))
 			->addToBody($names)
 			->defer();
 	}

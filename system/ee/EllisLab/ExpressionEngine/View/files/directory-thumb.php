@@ -15,7 +15,7 @@
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
 				<?php if (ee()->cp->allowed_group('can_delete_files')): ?>
-				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-file"><?=lang('remove')?></option>
+				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-delete-file"><?=lang('delete')?></option>
 				<?php endif; ?>
 				<option value="download"><?=lang('download')?></option>
 			</select>

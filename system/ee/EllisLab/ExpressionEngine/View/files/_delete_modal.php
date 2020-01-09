@@ -12,13 +12,13 @@
 
 <?php
 $modal_vars = array(
-	'name'		=> 'modal-confirm-remove-file',
+	'name'		=> 'modal-confirm-delete-file',
 	'form_url'	=> $form_url,
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)
 );
 
-$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
-ee('CP/Modal')->addModal('remove-file', $modal);
+$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
+ee('CP/Modal')->addModal('delete-file', $modal);
 ?>

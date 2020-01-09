@@ -192,7 +192,7 @@ $lang = array(
 
 'files_not_found_desc' => 'Highlighted files cannot be found on the server.',
 
-'files_removed_desc' => 'The following files were removed',
+'files_deleted_desc' => 'The following files were deleted',
 
 'flip_horizontally' => 'Flip, horizontally',
 
