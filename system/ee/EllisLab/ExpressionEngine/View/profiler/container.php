@@ -9,7 +9,7 @@
 			<div class="tab-bar">
 				<div class="tab-bar__tabs">
 					<?php foreach ($sections as $i => $section): ?>
-						<a class="tab-bar__tab js-tab-button <?=($i==0)?'active':''?>" href="" rel="t-<?=$i?>"><?=$section->getSummary()?></a>
+						<button type="button" class="tab-bar__tab js-tab-button <?=($i==0)?'active':''?>" rel="t-<?=$i?>"><?=$section->getSummary()?></button>
 					<?php endforeach; ?>
 				</div>
 			</div>

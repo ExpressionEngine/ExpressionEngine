@@ -2,9 +2,9 @@
 	<div class="tab-wrap">
 		<div class="tab-bar">
 			<div class="tab-bar__tabs">
-				<a class="tab-bar__tab js-tab-button active" href="" rel="t-0"><?=lang('blacklist')?></a>
-				<a class="tab-bar__tab js-tab-button" href="" rel="t-1"><?=lang('whitelist')?></a>
-				<a class="tab-bar__tab js-tab-button" href="" rel="t-2"><?=lang('settings')?></a>
+				<button type="button" class="tab-bar__tab js-tab-button active" rel="t-0"><?=lang('blacklist')?></button>
+				<button type="button" class="tab-bar__tab js-tab-button" rel="t-1"><?=lang('whitelist')?></button>
+				<button type="button" class="tab-bar__tab js-tab-button" rel="t-2"><?=lang('settings')?></button>
 			</div>
 		</div>
 		<?=form_open(ee('CP/URL')->make('addons/settings/blacklist/save_lists'), 'class="settings"')?>

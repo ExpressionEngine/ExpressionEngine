@@ -35,7 +35,7 @@
 					}
 				}
 				?>
-				<a class="tab-bar__tab js-tab-button <?php if ($index == 0): ?>active<?php endif; ?>" href="" rel="t-<?=$index?>"><?=lang($tab->title)?> <?php if ($tab->title != 'publish'): ?><?=$icon?></i><?php endif; ?></a>
+				<button type="button" class="tab-bar__tab js-tab-button <?php if ($index == 0): ?>active<?php endif; ?>" rel="t-<?=$index?>"><?=lang($tab->title)?> <?php if ($tab->title != 'publish'): ?><?=$icon?></i><?php endif; ?></button>
 			<?php endforeach; ?>
 			</div>
 

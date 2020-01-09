@@ -19,10 +19,10 @@
 					$class .= ' invalid';
 				}
 			?>
-			<a class="tab-bar__tab js-tab-button <?=$class?>" rel="t-<?=$index?>"><?=lang($tab->title)?></a>
+			<button type="button" class="tab-bar__tab js-tab-button <?=$class?>" rel="t-<?=$index?>"><?=lang($tab->title)?></button>
 			<?php endforeach; ?>
 			<?php if ($entry->getAutosaves()->count()): ?>
-				<a href="" class="tab-bar__tab js-tab-button" rel="t-autosaves"><?=lang('autosaves')?></a>
+				<button type="button" class="tab-bar__tab js-tab-button" rel="t-autosaves"><?=lang('autosaves')?></button>
 			<?php endif ?>
 			</div>
 

@@ -6,14 +6,14 @@
 
 <div class="tab-bar">
 	<div class="tab-bar__tabs">
-		<a href="" class="tab-bar__tab active js-tab-button" rel="t-0"><?=lang('installed')?></a>
-		<a href="" class="tab-bar__tab js-tab-button" rel="t-2">
+		<button type="button" class="tab-bar__tab active js-tab-button" rel="t-0"><?=lang('installed')?></button>
+		<button type="button" class="tab-bar__tab js-tab-button" rel="t-2">
 			<?=lang('updates')?>
 
 			<?php if (! empty($updates)) : ?>
 			<span class="tab-bar__tab-notification"><?=count($updates)?></span>
 			<?php endif; ?>
-		</a>
+		</button>
 	</div>
 </div>
 

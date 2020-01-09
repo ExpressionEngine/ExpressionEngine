@@ -48,7 +48,7 @@
 								$class .= ' invalid';
 							}
 						?>
-						<a class="js-tab-button tab-bar__tab <?=$class?>" href="" rel="t-<?=$i?>"><?=lang($name)?></a>
+						<button type="button" class="js-tab-button tab-bar__tab <?=$class?>" rel="t-<?=$i?>"><?=lang($name)?></button>
 					<?php endforeach; ?>
 					</div>
 				</div>
