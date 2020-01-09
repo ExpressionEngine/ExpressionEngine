@@ -543,9 +543,9 @@ $lang = array(
 
 'menu_sets' => 'Menu Sets',
 
-'menu_sets_removed' => 'Menu Sets removed',
+'menu_sets_deleted' => 'Menu Sets deleted',
 
-'menu_sets_removed_desc' => '%d menu sets were removed.',
+'menu_sets_deleted_desc' => '%d menu sets were deleted.',
 
 'menu_single' => 'Single Link',
 

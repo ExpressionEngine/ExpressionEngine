@@ -151,8 +151,8 @@ class MenuManager extends Settings {
 
 		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
-			->withTitle(lang('menu_sets_removed'))
-			->addToBody(sprintf(lang('menu_sets_removed_desc'), count($set_ids)))
+			->withTitle(lang('menu_sets_deleted'))
+			->addToBody(sprintf(lang('menu_sets_deleted_desc'), count($set_ids)))
 			->defer();
 
 		ee()->functions->redirect(ee('CP/URL')->make('settings/menu-manager'));
