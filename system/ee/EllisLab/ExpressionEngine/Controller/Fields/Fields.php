@@ -636,7 +636,7 @@ class Fields extends AbstractFieldsController {
 		ee('CP/Alert')->makeInline('fields')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(lang('fields_removed_desc'))
+			->addToBody(lang('fields_deleted_desc'))
 			->addToBody($field_names)
 			->defer();
 

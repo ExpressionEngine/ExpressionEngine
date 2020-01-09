@@ -244,7 +244,7 @@ $lang = array(
 
 'field_groups_desc' => 'Used to group together related custom fields.',
 
-'field_groups_removed_desc' => 'The following field groups were removed',
+'field_groups_deleted_desc' => 'The following field groups were deleted',
 
 'field_is_hidden' => 'Show this field by default?',
 
@@ -268,7 +268,7 @@ $lang = array(
 
 'fields' => 'Fields',
 
-'fields_removed_desc' => 'The following fields were removed',
+'fields_deleted_desc' => 'The following fields were deleted',
 
 'filter_by_group' => 'field group',
 

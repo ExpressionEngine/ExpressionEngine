@@ -382,7 +382,7 @@ class Groups extends AbstractFieldsController {
 		ee('CP/Alert')->makeInline('field-groups')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(lang('field_groups_removed_desc'))
+			->addToBody(lang('field_groups_deleted_desc'))
 			->addToBody($group_names)
 			->defer();
 
