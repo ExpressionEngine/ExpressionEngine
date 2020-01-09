@@ -226,9 +226,9 @@ $lang = array(
 
 'success' => 'Success',
 
-'upload_directory_removed' => 'Upload directory removed',
+'upload_directory_deleted' => 'Upload directory deleted',
 
-'upload_directory_removed_desc' => 'The upload directory <b>%s</b> has been removed.',
+'upload_directory_deleted_desc' => 'The upload directory <b>%s</b> has been deleted.',
 
 'upload_filedata_error' => 'Cannot Upload File',
 

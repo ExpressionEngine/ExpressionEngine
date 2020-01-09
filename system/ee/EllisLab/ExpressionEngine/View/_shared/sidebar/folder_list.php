@@ -14,6 +14,6 @@ $modal_vars = array(
 	)
 );
 
-$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
 ee('CP/Modal')->addModal($name, $modal);
 ?>

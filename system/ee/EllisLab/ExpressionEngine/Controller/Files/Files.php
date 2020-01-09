@@ -315,8 +315,8 @@ class Files extends AbstractFilesController {
 
 		ee('CP/Alert')->makeInline('files-form')
 			->asSuccess()
-			->withTitle(lang('upload_directory_removed'))
-			->addToBody(sprintf(lang('upload_directory_removed_desc'), $dir->name))
+			->withTitle(lang('upload_directory_deleted'))
+			->addToBody(sprintf(lang('upload_directory_deleted_desc'), $dir->name))
 			->defer();
 
 		$return_url = ee('CP/URL')->make('files');
