@@ -9,14 +9,19 @@
 				<span class="float-right"><?=$ee_build_date?></span>
 			</div>
 
-			<div href="https://expressionengine.com/support" class="dropdown__link app-about__support-link"><i class="fas fa-life-ring fa-fw"></i> <?=lang('support')?></div>
+			<a href="https://expressionengine.com/support" class="dropdown__link app-about__link app-about__support-link"><i class="fas fa-life-ring fa-fw"></i> <?=lang('support')?></a>
 
 			<?php if (ee()->cp->allowed_group('can_access_footer_report_bug')): ?>
-				<a href="https://expressionengine.com/support/bugs/new" class="dropdown__link app-about__bug-link" rel="external noreferrer"><i class="fas fa-bug fa-fw"></i>  <?=lang('report_bug')?></a>
+				<a href="https://expressionengine.com/support/bugs/new" class="dropdown__link app-about__link app-about__bug-link" rel="external noreferrer"><i class="fas fa-bug fa-fw"></i> <?=lang('report_bug')?></a>
 			<?php endif ?>
 			<?php if (ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
-				<a href="<?=DOC_URL?>" class="dropdown__link app-about__user-guide-link" rel="external noreferrer"><i class="fas fa-book fa-fw"></i> <?=lang('user_guide')?></a>
+				<a href="<?=DOC_URL?>" class="dropdown__link app-about__link app-about__user-guide-link" rel="external noreferrer"><i class="fas fa-book fa-fw"></i> <?=lang('user_guide')?></a>
 			<?php endif; ?>
+			<?php if ($show_news_button): ?>
+				<a href="<?=ee('CP/URL')->make('homepage/show-changelog')?>" class="dropdown__link app-about__link app-about__whats-new-link" rel="external"><i class="fas fa-gift fa-fw"></i> <?=lang('whats_new')?></a>
+			<?php endif ?>
+
+
 
 			<?php if (ee()->session->userdata('group_id') == 1): ?>
 				<div class="app-about__status app-about__status--checking">

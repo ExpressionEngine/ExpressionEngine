@@ -608,6 +608,8 @@ $lang = array(
 
 'report_bug' => 'Report Bug',
 
+'whats_new' => 'What\'s New?',
+
 'scroll_to_top' => 'scroll to top',
 
 'session_timeout' => 'Your admin session has timed out. Please re-enter your password to log back in.',
