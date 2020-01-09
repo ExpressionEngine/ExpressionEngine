@@ -27,9 +27,10 @@ class Updater {
 		$steps = new \ProgressIterator(
 			[
 				'addConfigTable',
-				'removeDefaultAvatars'
+				'removeDefaultAvatars',
 				'removeJqueryAddon',
-				'removeEmoticonAddon'
+				'removeEmoticonAddon',
+				'addColorPickerFieldType'
 			]
 		);
 
@@ -162,6 +163,21 @@ class Updater {
 		ee('Model')->get('Action')
 			->filter('class', 'IN', ['Emoticon', 'Emoticon_mcp'])
 			->delete();
+	}
+
+	private function addColorPickerFieldType()
+	{
+		if (ee()->db->where('name', 'colorpicker')->get('fieldtypes')->num_rows() > 0) {
+			return;
+		}
+
+		ee()->db->insert('fieldtypes', [
+				'name' => 'colorpicker',
+				'version' => '1.0.0',
+				'settings' => base64_encode(serialize([])),
+				'has_global_settings' => 'n'
+			]
+		);
 	}
 }
 
