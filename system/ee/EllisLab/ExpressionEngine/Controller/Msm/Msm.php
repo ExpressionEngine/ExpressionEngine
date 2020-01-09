@@ -532,7 +532,7 @@ class Msm extends CP_Controller {
 		ee('CP/Alert')->makeInline('sites')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(lang('sites_removed_desc'))
+			->addToBody(lang('sites_deleted_desc'))
 			->addToBody($site_names)
 			->defer();
 
