@@ -86,7 +86,9 @@
 
 
 	<div class="main-nav__account">
-			<img class="main-nav__account-icon" src="<?= $cp_avatar_path ?>" alt="">
+			<a href class="main-nav__account-icon">
+				<img src="<?= $cp_avatar_path ?>" alt="<?=$cp_screen_name?>">
+			</a>
 
 			<div class="dropdown account-menu">
 				<div class="account-menu__header">
