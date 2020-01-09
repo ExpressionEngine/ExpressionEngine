@@ -1,11 +1,20 @@
 <?php $this->extend('_templates/default-nav'); ?>
 
 	<?=form_open($table['base_url'])?>
-		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=ee('CP/URL')->make('settings/menu-manager/create-set')?>"><?=lang('new')?></a>
-		</fieldset>
-		<h1><?=$cp_page_title?></h1>
+
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+
+		<div class="title-bar">
+			<h2 class="title-bar__title">
+				<?=$cp_page_title?>
+			</h2>
+
+			<div class="title-bar__extra-tools">
+				<a class="button button--small button--action" href="<?=ee('CP/URL')->make('settings/menu-manager/create-set')?>"><?=lang('new')?></a>
+			</div>
+		</div>
+
+
 		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>
 		<fieldset class="bulk-action-bar hidden">
