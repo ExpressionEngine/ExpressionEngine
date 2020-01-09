@@ -574,7 +574,7 @@ class Edit extends AbstractPublishController {
 		ee('CP/Alert')->makeInline('entries-form')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(lang('entries_removed_desc'))
+			->addToBody(lang('entries_deleted_desc'))
 			->addToBody($entry_names)
 			->defer();
 

@@ -116,7 +116,7 @@ $lang = array(
 
 'entries' => 'Entries',
 
-'entries_removed_desc' => 'The following entries were removed',
+'entries_deleted_desc' => 'The following entries were deleted',
 
 'entry' => 'Entry',
 

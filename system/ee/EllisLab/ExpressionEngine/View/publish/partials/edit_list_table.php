@@ -15,7 +15,7 @@
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
 				<?php if ($can_delete): ?>
-					<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-entry"><?=lang('remove')?></option>
+					<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-delete-entry"><?=lang('delete')?></option>
 				<?php endif ?>
 				<?php if ($can_edit): ?>
 					<option value="edit" data-confirm-trigger="selected" rel="modal-edit"><?=lang('edit')?></option>
