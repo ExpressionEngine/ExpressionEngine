@@ -60,9 +60,9 @@ $lang = array(
 
 'channels' => 'Channels',
 
-'channels_removed' => 'Channels removed',
+'channels_deleted' => 'Channels deleted',
 
-'channels_removed_desc' => '%d channels were removed.',
+'channels_deleted_desc' => '%d channels were deleted.',
 
 'create_channel' => 'New Channel',
 
@@ -126,7 +126,7 @@ $lang = array(
 
 'layouts' => 'Layouts',
 
-'layouts_removed_desc' => 'The following publish layouts were removed',
+'layouts_deleted_desc' => 'The following publish layouts were deleted',
 
 'manage_channels' => 'Manage Channels',
 

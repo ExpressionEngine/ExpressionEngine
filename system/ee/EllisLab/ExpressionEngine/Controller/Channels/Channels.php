@@ -137,8 +137,8 @@ class Channels extends AbstractChannelsController {
 
 			ee('CP/Alert')->makeInline('channels')
 				->asSuccess()
-				->withTitle(lang('channels_removed'))
-				->addToBody(sprintf(lang('channels_removed_desc'), count($channel_ids)))
+				->withTitle(lang('channels_deleted'))
+				->addToBody(sprintf(lang('channels_deleted_desc'), count($channel_ids)))
 				->defer();
 		}
 		else

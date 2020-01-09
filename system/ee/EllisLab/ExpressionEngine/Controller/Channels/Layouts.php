@@ -567,7 +567,7 @@ class Layouts extends AbstractChannelsController {
 		ee('CP/Alert')->makeInline('layouts')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(lang('layouts_removed_desc'))
+			->addToBody(lang('layouts_deleted_desc'))
 			->addToBody($layout_names)
 			->defer();
 	}
