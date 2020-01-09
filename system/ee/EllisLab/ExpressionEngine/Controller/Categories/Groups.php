@@ -34,15 +34,15 @@ class Groups extends AbstractCategoriesController {
 		{
 			$group->delete();
 
-			ee()->logger->log_action(lang('category_groups_removed').':'.NBS.NBS.$group->group_name);
+			ee()->logger->log_action(lang('category_groups_deleted').':'.NBS.NBS.$group->group_name);
 
 			ee()->functions->clear_caching('all', '');
 
 			ee('CP/Alert')->makeInline('channels')
 				->asSuccess()
-				->withTitle(lang('category_groups_removed'))
+				->withTitle(lang('category_groups_deleted'))
 				->addToBody(sprintf(
-					lang('category_groups_removed_desc'),
+					lang('category_groups_deleted_desc'),
 					htmlentities($group->group_name, ENT_QUOTES, 'UTF-8')
 				))
 				->defer();

@@ -408,9 +408,9 @@ $lang = array(
 
 'categories_not_found' => 'No <b>Categories</b> found.',
 
-'categories_removed' => 'Categories removed',
+'categories_deleted' => 'Categories deleted',
 
-'categories_removed_desc' => '%d categories were removed.',
+'categories_deleted_desc' => '%d categories were deleted.',
 
 'category' => 'Category',
 
@@ -466,9 +466,9 @@ $lang = array(
 
 'category_group_updated_desc' => 'The category group <b>%s</b> has been updated.',
 
-'category_groups_removed' => 'Category group removed',
+'category_groups_deleted' => 'Category group deleted',
 
-'category_groups_removed_desc' => 'The category group <b>%s</b> has been removed.',
+'category_groups_deleted_desc' => 'The category group <b>%s</b> has been deleted.',
 
 'category_manager' => 'Categories',
 

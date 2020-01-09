@@ -210,8 +210,8 @@ class Categories extends AbstractCategoriesController {
 				{
 					ee('CP/Alert')->makeInline('shared-form')
 						->asSuccess()
-						->withTitle(lang('categories_removed'))
-						->addToBody(sprintf(lang('categories_removed_desc'), count($cat_ids)))
+						->withTitle(lang('categories_deleted'))
+						->addToBody(sprintf(lang('categories_deleted_desc'), count($cat_ids)))
 						->defer();
 				}
 			}
