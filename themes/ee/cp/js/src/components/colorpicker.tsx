@@ -133,6 +133,9 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
 
     /** Notifies that the color has changed by calling the onChange callback  */
     private colorChanged() {
+        // Refresh live preview
+        $(document).trigger('entry:preview', 225);
+
         if (!this.props.onChange)
             return
 
@@ -220,7 +223,7 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
         if (this.props.enableOpacity && returnColor.rgb.a != 1)
             return returnColor.rgbaStr
 
-        return returnColor.hexStr
+        return returnColor.hexStr.toUpperCase()
     }
 
     /** Returns the selected color making sure it's not null */

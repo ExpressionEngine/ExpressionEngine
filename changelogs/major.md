@@ -9,6 +9,8 @@ Bullet list below, e.g.
    - Fixed Bug (#<issue number>) where <bug behavior>.
 
 
+- Added a new color picker fieldtype.
+- 
 - Default avatars have been removed.
 - The system avatar settings "Allow avatar uploads?" and "Allow avatars?" have been removed.
 

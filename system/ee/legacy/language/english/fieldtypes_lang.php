@@ -252,6 +252,28 @@ $lang = array(
 
 'url_ft_url_scheme_placeholder_desc' => 'Displayed as placeholder text when no URL has been submitted.',
 
+
+/* Color Picker */
+'colorpicker_allowed_colors' => 'Allowed Colors',
+'colorpicker_allowed_colors_desc' => 'Choose what colors are allowed to be selected.',
+
+'colorpicker_allowed_colors_any' => 'Any',
+'colorpicker_allowed_colors_swatches' => 'Swatches',
+
+'colorpicker_default_color' => 'Default Color',
+'colorpicker_default_color_desc' => 'When set, if no color is selected the default color will be used instead.',
+
+'colorpicker_color_not_allowed' => 'This color is not allowed.',
+
+'no_colorpicker_swatches' => 'No <b>Swatches</b> exist.',
+
+'swatches' => 'Swatches',
+
+'colorpicker_swatches_options_desc' => 'Specify a list of pre-defined colors to show in the color picker.',
+
+'colorpicker_swatches_populate_values' => 'Values',
+'colorpicker_swatches_populate_manually' => 'Populate the swatches manually',
+
 );
 
 // EOF

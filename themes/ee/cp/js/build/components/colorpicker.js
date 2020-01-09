@@ -109,6 +109,8 @@ var ColorPicker = /** @class */ (function (_super) {
     };
     /** Notifies that the color has changed by calling the onChange callback  */
     ColorPicker.prototype.colorChanged = function () {
+        // Refresh live preview
+        $(document).trigger('entry:preview', 225);
         if (!this.props.onChange)
             return;
         var color = this.getReturnColorStr(this.state.selectedColor);
@@ -142,7 +144,7 @@ var ColorPicker = /** @class */ (function (_super) {
             return '';
         if (this.props.enableOpacity && returnColor.rgb.a != 1)
             return returnColor.rgbaStr;
-        return returnColor.hexStr;
+        return returnColor.hexStr.toUpperCase();
     };
     /** Returns the selected color making sure it's not null */
     ColorPicker.prototype.getSafeSelectedColor = function () {
