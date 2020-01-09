@@ -160,6 +160,16 @@ class Colorpicker_ft extends EE_Fieldtype {
 
 		ee()->cp->add_js_script('file', array('library/simplecolor', 'components/colorpicker'));
 
+		// The settings contain color picker fields,
+		// so when the user chooses the color picker fieldtype, render them
+		ee()->javascript->output('$(document).ready(function () {
+			$("input[name=field_type]").change(function () {
+				setTimeout(function () {
+					ColorPicker.renderFields()
+				}, 100);
+			})
+		})');
+
         $data = array_merge($this->default_settings, $data);
 
         $grid = $this->getSwatchesMiniGrid($data);
