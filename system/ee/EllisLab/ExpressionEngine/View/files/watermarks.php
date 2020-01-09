@@ -16,7 +16,7 @@
 		<fieldset class="bulk-action-bar hidden">
 			<select name="bulk_action">
 				<option>-- <?=lang('with_selected')?> --</option>
-				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('delete')?></option>
 			</select>
 			<input class="button button--primary" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
 		</fieldset>
@@ -31,6 +31,6 @@ $modal_vars = array(
 	)
 );
 
-$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
 ee('CP/Modal')->addModal('remove', $modal);
 ?>

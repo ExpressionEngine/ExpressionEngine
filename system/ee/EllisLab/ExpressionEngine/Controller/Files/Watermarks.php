@@ -136,8 +136,8 @@ class Watermarks extends AbstractFilesController {
 
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
-					->withTitle(lang('watermarks_removed'))
-					->addToBody(sprintf(lang('watermarks_removed_desc'), count($watermarks)))
+					->withTitle(lang('watermarks_deleted'))
+					->addToBody(sprintf(lang('watermarks_deleted_desc'), count($watermarks)))
 					->defer();
 			}
 		}

@@ -488,9 +488,9 @@ $lang = array(
 
 'watermarks' => 'Watermarks',
 
-'watermarks_removed' => 'Watermarks removed',
+'watermarks_deleted' => 'Watermarks deleted',
 
-'watermarks_removed_desc' => '%d watermarks were removed.',
+'watermarks_deleted_desc' => '%d watermarks were deleted.',
 
 'watermarks_true_type' => 'Enable True Type?',
 
