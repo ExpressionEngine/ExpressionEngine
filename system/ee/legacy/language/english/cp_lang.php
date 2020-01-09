@@ -630,6 +630,14 @@ $lang = array(
 
 'btn_confirm_and_save_working' => 'Saving...',
 
+/* confirm delete modal */
+'btn_confirm_and_delete' => 'Confirm and Delete',
+
+'btn_confirm_and_delete_working' => 'Deleting...',
+
+'confirm_delete' => 'Are You Sure?',
+
+'confirm_deletion_desc' => 'You are attempting to delete the following items:',
 
 /*confirm show all modal */
 'all_items' => 'All %d items',
