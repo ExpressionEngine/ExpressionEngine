@@ -239,7 +239,7 @@ class Fields extends Members\Members {
 		ee('CP/Alert')->makeInline('fields')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(lang('member_fields_removed_desc'))
+			->addToBody(lang('member_fields_deleted_desc'))
 			->addToBody($field_names)
 			->defer();
 

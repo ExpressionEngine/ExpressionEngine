@@ -240,7 +240,7 @@ $lang = array(
 
 'member_field_saved_desc' => 'Member Field has been saved successfully.',
 
-'member_fields_removed_desc' => 'The following Member Fields have been removed:',
+'member_fields_deleted_desc' => 'The following Member Fields have been deleted:',
 
 'member_group' => 'Member Group',
 

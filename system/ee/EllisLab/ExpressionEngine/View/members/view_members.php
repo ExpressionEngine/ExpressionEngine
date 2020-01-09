@@ -20,7 +20,7 @@
 		<fieldset class="bulk-action-bar hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
-				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-delete"><?=lang('delete')?></option>
 			</select>
 			<button class="button button--primary" data-conditional-modal="confirm-trigger" data-confirm-ajax="<?=ee('CP/URL')->make('/members/confirm')?>"><?=lang('submit')?></button>
 		</fieldset>
@@ -31,7 +31,7 @@
 
 <?php
 $modal_vars = array(
-	'name'		=> 'modal-confirm-remove',
+	'name'		=> 'modal-confirm-delete',
 	'form_url'	=> $form_url,
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
@@ -39,6 +39,6 @@ $modal_vars = array(
 	'secure_form_ctrls' => isset($confirm_remove_secure_form_ctrls) ? $confirm_remove_secure_form_ctrls : NULL
 );
 
-$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
-ee('CP/Modal')->addModal('remove', $modal);
+$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
+ee('CP/Modal')->addModal('delete', $modal);
 ?>
