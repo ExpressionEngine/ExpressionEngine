@@ -469,7 +469,7 @@ class Variables extends AbstractDesignController {
 		ee('CP/Alert')->makeInline('variable-form')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(lang('template_variables_removed_desc'))
+			->addToBody(lang('template_variables_deleted_desc'))
 			->addToBody($names)
 			->defer();
 	}

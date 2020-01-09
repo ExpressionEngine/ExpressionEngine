@@ -682,7 +682,7 @@ abstract class AbstractDesign extends CP_Controller {
 		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(lang('templates_removed_desc'))
+			->addToBody(lang('templates_deleted_desc'))
 			->addToBody($template_names)
 			->defer();
 	}

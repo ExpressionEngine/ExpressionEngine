@@ -222,15 +222,15 @@ $lang = array(
 
 'snippet_name_taken' => 'The template partial name you submitted is already taken',
 
-'snippets_removed_desc' => 'The following snippets were removed',
+'snippets_deleted_desc' => 'The following snippets were deleted',
 
 'sync_all_templates' => 'Sync All Templates',
 
 'system_templates' => 'System Templates',
 
-'template_group_removed' => 'Template Group Removed',
+'template_group_deleted' => 'Template Group deleted',
 
-'template_group_removed_desc' => 'The template group <b>%s</b> has been removed.',
+'template_group_deleted_desc' => 'The template group <b>%s</b> has been deleted.',
 
 'template_group_taken' => 'The template group name you submitted is already taken',
 
@@ -272,11 +272,11 @@ $lang = array(
 
 'template_variables_header' => 'Template Variables<br><i>Reusable static content replacements.</i>',
 
-'template_variables_removed_desc' => 'The following template variables were removed',
+'template_variables_deleted_desc' => 'The following template variables were deleted',
 
 'templates_in_group' => 'Templates in <b>%s</b>',
 
-'templates_removed_desc' => 'The following templates were removed',
+'templates_deleted_desc' => 'The following templates were deleted',
 
 'update_template_error' => 'Cannot Update Template',
 

@@ -407,8 +407,8 @@ class Group extends AbstractDesignController {
 			$group->delete();
 			ee('CP/Alert')->makeInline('template-group')
 				->asSuccess()
-				->withTitle(lang('template_group_removed'))
-				->addToBody(sprintf(lang('template_group_removed_desc'), ee()->input->post('group_name')))
+				->withTitle(lang('template_group_deleted'))
+				->addToBody(sprintf(lang('template_group_deleted_desc'), ee()->input->post('group_name')))
 				->defer();
 		}
 
