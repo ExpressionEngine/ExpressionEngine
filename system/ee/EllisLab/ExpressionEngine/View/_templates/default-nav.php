@@ -46,9 +46,12 @@
 								</div>
 							</div>
 						<?php endif ?>
+
+						<div class="dropdown__scroll">
 						<?php foreach ($header['action_button']['choices'] as $link => $text): ?>
 							<a href="<?=$link?>" class="dropdown__link"><?=$text?></a>
 						<?php endforeach ?>
+						</div>
 					</div>
 				<?php else: ?>
 					<a class="button button--action" href="<?=$header['action_button']['href']?>"><?=$header['action_button']['text']?></a>
@@ -68,9 +71,11 @@
 										</div>
 									</div>
 								<?php endif ?>
+								<div class="dropdown__scroll">
 								<?php foreach ($button['choices'] as $link => $text): ?>
 									<a href="<?=$link?>" class="dropdown__link"><?=$text?></a>
 								<?php endforeach ?>
+								</div>
 							</div>
 						<?php else: ?>
 							<a class="button button--action" href="<?=$button['href']?>" rel="<?=isset($button['rel']) ? $button['rel'] : ''?>"><?=$button['text']?></a>

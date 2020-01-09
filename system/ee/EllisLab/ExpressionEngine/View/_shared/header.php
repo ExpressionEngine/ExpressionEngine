@@ -127,6 +127,7 @@ $current_page = ee()->uri->segment(2);
 										<?php endif; ?>
 									<?php endif; ?>
 
+									<div class="dropdown__scroll">
 									<?php foreach ($item->getItems() as $sub) : ?>
 									<a class="dropdown__link" href="<?= $sub->url ?>"><?= lang($sub->title) ?></a>
 									<?php endforeach; ?>
@@ -134,6 +135,7 @@ $current_page = ee()->uri->segment(2);
 									<?php if ($item->hasAddLink()) : ?>
 									<a class="dropdown__link" class="nav-add" href="<?= $item->addlink->url ?>"><i class="fas fa-plus"></i><?= lang($item->addlink->title) ?></a>
 									<?php endif; ?>
+									</div>
 								</div>
 							<?php else : ?>
 							<a class="ee-sidebar__item" href="<?= $item->url ?>"><?= lang($item->title) ?></a>

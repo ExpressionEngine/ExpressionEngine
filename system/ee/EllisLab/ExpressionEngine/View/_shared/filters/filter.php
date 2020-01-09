@@ -21,7 +21,10 @@
 		</div>
 	</div>
 	<?php endif; ?>
+
+	<div class="dropdown__scroll">
 	<?php foreach ($options as $url => $label): ?>
 		<a class="dropdown__link" href="<?=$url?>"><?=$label?></a>
 	<?php endforeach; ?>
+	</div>
 </div>
