@@ -133,6 +133,9 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
 
     /** Notifies that the color has changed by calling the onChange callback  */
     private colorChanged() {
+        // Refresh live preview
+        $(document).trigger('entry:preview', 225);
+
         if (!this.props.onChange)
             return
 
