@@ -8,7 +8,10 @@ return [
 	'version'        => '1.0.0',
 	'namespace'      => 'EllisLab\Addons\ColorPicker',
 	'settings_exist' => FALSE,
-	'built_in'       => FALSE
+	'built_in'       => TRUE,
+	'fieldtypes'     => array(
+		'colorpicker' => array(
+			'compatibility' => 'text'
+		)
+	)
 ];
-
-// EOF
