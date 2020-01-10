@@ -446,14 +446,14 @@ else: ?>
 
 	<div class="grid-field__footer">
 		<div class="button-group">
-			<div class="tbl-action">
 			<?php if ( ! empty($action_buttons) || ! empty($action_content)): ?>
+			<div class="tbl-action">
 				<?php foreach ($action_buttons as $button): ?>
 					<a class="<?=$button['class']?>" href="<?=$button['url']?>"><?=$button['text']?></a></td>
 				<?php endforeach; ?>
 				<?=$action_content?>
-			<?php endif; ?>
 			</div>
+			<?php endif; ?>
 
 			<button type="button" rel="add_row" class="button button--secondary-alt js-grid-add-row"><?=lang('add_row')?></button>
 		</div>
