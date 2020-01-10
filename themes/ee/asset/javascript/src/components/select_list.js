@@ -384,7 +384,7 @@ function (_React$Component) {
         onSearch: function onSearch(e) {
           return _this8.filterChange('search', e.target.value);
         }
-      }))), shouldShowToggleAll && props.tooMany && React.createElement("hr", null), shouldShowToggleAll && props.tooMany && React.createElement(FilterToggleAll, {
+      }))), shouldShowToggleAll && props.tooMany && React.createElement(FilterToggleAll, {
         checkAll: props.toggleAll,
         onToggleAll: function onToggleAll(check) {
           return _this8.handleToggleAll(check);

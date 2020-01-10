@@ -370,7 +370,6 @@ class SelectList extends React.Component {
               </FilterBar>
               </div>
             }
-            {shouldShowToggleAll && props.tooMany && <hr />}
             {shouldShowToggleAll && props.tooMany &&
               <FilterToggleAll checkAll={props.toggleAll} onToggleAll={(check) => this.handleToggleAll(check)} />
             }
