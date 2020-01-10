@@ -25,7 +25,7 @@
 	<div class="fluid__item-tools fluid__item-tools--item-open">
 
 		<?php if ( empty($is_bulk_edit)): ?>
-		<a href data-dropdown-pos="bottom-end" class="fluid__item-tool js-dropdown-toggle"><i class="fas fa-fw fa-cog"></i></a>
+		<button type="button" data-dropdown-pos="bottom-end" class="fluid__item-tool js-dropdown-toggle"><i class="fas fa-fw fa-cog"></i></button>
 		<div class="dropdown">
 			<a href class="dropdown__link js-toggle-fluid-item"><?=lang('collapse')?></a>
 			<a href class="dropdown__link js-hide-all-fluid-items"><?=lang('collapse_all')?></a>
@@ -34,11 +34,11 @@
 			<a href class="dropdown__link dropdown__link--danger js-fluid-remove"><i class="fas fa-fw fa-trash-alt"></i> <?=lang('delete')?></a>
 		</div>
 		<?php else: ?>
-			<a href class="fluid__item-tool js-fluid-remove danger-link" title="<?=lang('remove')?>"><i class="fas fa-fw fa-trash-alt"></i></a>
+			<button type="button" class="fluid__item-tool js-fluid-remove danger-link" title="<?=lang('remove')?>"><i class="fas fa-fw fa-trash-alt"></i></button>
 		<?php endif; ?>
 
 		<?php if ( empty($is_bulk_edit) AND isset($fields)): ?>
-			<a href data-dropdown-pos="bottom-end" class="fluid__item-tool js-dropdown-toggle" title="<?=lang('add_field')?>"><i class="fas fa-fw fa-plus"></i></a>
+			<button type="button" data-dropdown-pos="bottom-end" class="fluid__item-tool js-dropdown-toggle" title="<?=lang('add_field')?>"><i class="fas fa-fw fa-plus"></i></button>
 			<div class="dropdown">
 			<?php foreach ($fields as $field_item): ?>
 				<a href="#" class="dropdown__link" data-field-name="<?=$field_item->getShortName()?>">
@@ -49,6 +49,6 @@
 		<?php endif; ?>
 	</div>
 	<div class="fluid__item-tools fluid__item-tools--item-closed hidden">
-		<a href class="fluid__item-tool js-toggle-fluid-item" title="<?=lang('expand')?>"><i class="fas fa-fw fa-angle-double-down"></i></a>
+		<button type="button" class="fluid__item-tool js-toggle-fluid-item" title="<?=lang('expand')?>"><i class="fas fa-fw fa-angle-double-down"></i></button>
 	</div>
 </div>
