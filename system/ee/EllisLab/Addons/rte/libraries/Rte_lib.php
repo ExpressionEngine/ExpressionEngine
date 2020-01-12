@@ -330,7 +330,9 @@ class Rte_lib {
 			'libraries' 	=> array(
 				'plugin' => array('wysihat')
 			)
-		);
+    );
+    
+    $include['jquery_ui'] = isset($include['jquery_ui']) ? $include['jquery_ui'] : false;
 
 		if ($include['jquery_ui'])
 		{
