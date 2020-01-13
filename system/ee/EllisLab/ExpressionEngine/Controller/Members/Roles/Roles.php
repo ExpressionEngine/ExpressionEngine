@@ -210,7 +210,7 @@ class Roles extends AbstractRolesController {
 
 			if (isset($_POST['ee_fv_field']) && $response = $this->ajaxValidation($result))
 			{
-			    return $response;
+				return $response;
 			}
 
 			if ($result->isValid())
@@ -341,7 +341,7 @@ class Roles extends AbstractRolesController {
 
 			if ($response = $this->ajaxValidation($result))
 			{
-			    return $response;
+				return $response;
 			}
 
 			if ($result->isValid())
@@ -430,11 +430,13 @@ class Roles extends AbstractRolesController {
 
 	private function setWithPost(Role $role)
 	{
+		$role_groups = !empty(ee('Request')->post('role_groups')) ? ee('Request')->post('role_groups') : array();
+
 		$role->name = ee('Request')->post('name');
 		$role->short_name = ee('Request')->post('short_name');
 		$role->description = ee('Request')->post('description');
 		$role->is_locked = ee('Request')->post('is_locked');
-		$role->RoleGroups = ee('Model')->get('RoleGroup', ee('Request')->post('role_groups'))->all();
+		$role->RoleGroups = ee('Model')->get('RoleGroup', $role_groups)->all();
 		$role->AssignedModules = ee('Model')->get('Module', ee('Request')->post('addons_access'))->all();
 		$role->AssingedUploadDestinations = ee('Model')->get('UploadDestination', ee('Request')->post('upload_destination_access'))->all();
 
