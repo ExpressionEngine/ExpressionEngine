@@ -122,11 +122,11 @@ class Roles extends Profile {
 				'label' => 'lang:role',
 				'rules' => 'callback__valid_role'
 			],
-			[
-				'field' => 'roles',
-				'label' => 'lang:role',
-				'rules' => 'callback__valid_role'
-			]
+			// [
+			// 	'field' => 'roles',
+			// 	'label' => 'lang:role',
+			// 	'rules' => 'callback__valid_role'
+			// ]
 		];
 
 		if ( ! ee('Session')->isWithinAuthTimeout())
