@@ -1204,6 +1204,7 @@ class Members extends CP_Controller {
 		if ( ! empty($_POST))
 		{
 			$member = ee('Model')->make('Member');
+
 			// Separate validator to validate confirm_password and verify_password
 			$validator = ee('Validation')->make();
 			$validator->setRules(array(
@@ -1225,7 +1226,9 @@ class Members extends CP_Controller {
 			$member->join_date = ee()->localize->now;
 			$member->language = ee()->config->item('deft_lang');
 
-			$member->RoleGroups = ee('Model')->get('RoleGroup', ee('Request')->post('role_groups'))->all();
+			$role_groups = !empty(ee('Request')->post('role_groups')) ? ee('Request')->post('role_groups') : array();
+
+			$member->RoleGroups = ee('Model')->get('RoleGroup', $role_groups)->all();
 			$member->Roles = ee('Model')->get('Role', ee('Request')->post('roles'))->all();
 
 			$result = $member->validate();
