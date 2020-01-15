@@ -156,7 +156,7 @@ EE.cp.datePicker = {
 
 					// animate the scrolling of .date-picker-clip forwards
 					// to the next .date-picker-item
-					$('.date-picker-clip').animate({ scrollLeft: '+=260' }, 200);
+					$('.date-picker-clip').animate({ scrollLeft: '+=280' }, 200);
 					// stop page from reloading
 					// the source window and appending # to the URI
 					e.preventDefault();
@@ -168,7 +168,7 @@ EE.cp.datePicker = {
 
 					// animate the scrolling of .date-picker-clip backwards
 					// to the previous .date-picker-item
-					$('.date-picker-clip').animate({ scrollLeft: '-=260' }, 200);
+					$('.date-picker-clip').animate({ scrollLeft: '-=280' }, 200);
 					// stop page from reloading
 					// the source window and appending # to the URI
 					e.preventDefault();
@@ -354,7 +354,7 @@ EE.cp.datePicker = {
 			if (html != null) {
 				$('.date-picker-clip-inner').prepend(html);
 				var pos = $('.date-picker-clip').scrollLeft();
-				$('.date-picker-clip').scrollLeft(pos + 260);
+				$('.date-picker-clip').scrollLeft(pos + 280);
 			}
 		},
 
@@ -402,7 +402,7 @@ EE.cp.datePicker = {
 			var pos = $(this).offset();
 			EE.cp.datePicker.Calendar.init(this);
 			// position and toggle the .date-picker-wrap relative to the input clicked
-			$('.date-picker-wrap').css({ 'top': pos.top + 30, 'left': pos.left }).show();
+			$('.date-picker-wrap').css({ 'top': pos.top + 45, 'left': pos.left }).show();
 			$('.date-picker-clip').scrollLeft(0);
 		});
 	}
