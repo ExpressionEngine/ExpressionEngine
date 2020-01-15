@@ -182,7 +182,7 @@ class Cp {
 		$js_scripts = array(
 			'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog', 'button'),
 			'plugin'	=> array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all', 'nestable'),
-			'file'		=> array('vendor/react/react.min', 'vendor/react/react-dom.min', 'vendor/popper',
+			'file'		=> array('vendor/react/react.min', 'vendor/react/react-dom.min', 'vendor/popper', 'vendor/focus-visible',
 			'vendor/underscore', 'cp/global_start', 'cp/form_validation', 'cp/sort_helper', 'cp/form_group',
 			'cp/modal_form', 'cp/confirm_remove', 'cp/fuzzy_filters',
 			'components/no_results', 'components/loading', 'components/filters', 'components/dropdown_button',
