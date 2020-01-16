@@ -21,7 +21,7 @@
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
 				<?php if ($can_delete): ?>
-				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-comment"><?=lang('remove')?></option>
+				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-delete-comment"><?=lang('delete')?></option>
 				<?php endif; ?>
 				<?php if ($can_moderate): ?>
 				<option value="open"><?=lang('set_to_open')?></option>
@@ -37,13 +37,13 @@
 
 <?php
 $modal_vars = array(
-	'name'		=> 'modal-confirm-remove-comment',
+	'name'		=> 'modal-confirm-delete-comment',
 	'form_url'	=> $form_url,
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)
 );
 
-$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
-ee('CP/Modal')->addModal('remove-comment', $modal);
+$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
+ee('CP/Modal')->addModal('delete-comment', $modal);
 ?>

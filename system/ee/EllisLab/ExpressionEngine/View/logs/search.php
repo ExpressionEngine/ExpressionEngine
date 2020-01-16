@@ -18,7 +18,7 @@
 
 			<div class="list-item">
 				<div class="list-item__content">
-					<a href="" class="m-link float-right button button--danger" rel="modal-confirm-<?=$log->id?>" title="<?=lang('remove')?>"><i class="fas fa-trash-alt"></i></a>
+					<a href="" class="m-link float-right button button--danger" rel="modal-confirm-<?=$log->id?>" title="<?=lang('delete')?>"><i class="fas fa-trash-alt"></i></a>
 					<div>
 						<b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->search_date)?>,
 						<b><?=lang('site')?>:</b> <?=$log->getSite()->site_label?><br>
@@ -67,7 +67,7 @@ foreach($logs as $log)
 		)
 	);
 
-	$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+	$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
 	ee('CP/Modal')->addModal($log->id, $modal);
 }
 
@@ -86,6 +86,6 @@ $modal_vars = array(
 	)
 );
 
-$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
 ee('CP/Modal')->addModal('all', $modal);
 ?>

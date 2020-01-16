@@ -21,7 +21,7 @@
 
 				<div class="list-item">
 					<div class="list-item__content">
-						<a href="" class="m-link float-right button button--danger" rel="modal-confirm-<?=$log->throttle_id?>" title="<?=lang('remove')?>"><i class="fas fa-trash-alt"></i></a>
+						<a href="" class="m-link float-right button button--danger" rel="modal-confirm-<?=$log->throttle_id?>" title="<?=lang('delete')?>"><i class="fas fa-trash-alt"></i></a>
 
 						<div><b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->last_activity)?>, <b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$log->ip_address?></div>
 
@@ -65,7 +65,7 @@ if ( ! $disabled)
 			)
 		);
 
-		$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+		$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
 		ee('CP/Modal')->addModal($log->throttle_id, $modal);
 	}
 
@@ -84,7 +84,7 @@ if ( ! $disabled)
 		)
 	);
 
-	$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+	$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
 	ee('CP/Modal')->addModal('all', $modal);
 }
 ?>

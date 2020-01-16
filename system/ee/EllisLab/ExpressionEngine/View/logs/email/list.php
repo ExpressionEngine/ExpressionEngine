@@ -18,7 +18,7 @@
 
 			<div class="list-item">
 				<div class="list-item__content">
-					<a href="" class="m-link button button--danger float-right" rel="modal-confirm-<?=$log->cache_id?>" title="<?=lang('remove')?>"><i class="fas fa-trash-alt"></i></a>
+					<a href="" class="m-link button button--danger float-right" rel="modal-confirm-<?=$log->cache_id?>" title="<?=lang('delete')?>"><i class="fas fa-trash-alt"></i></a>
 					<div>
 						<b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->cache_date)?><br>
 						<b><?=lang('username')?>:</b> <a href="<?=ee('CP/URL')->make('myaccount', array('id' => $log->member_id))?>"><?=$log->member_name?></a>,
@@ -60,7 +60,7 @@ foreach($logs as $log)
 		)
 	);
 
-	$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+	$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
 	ee('CP/Modal')->addModal($log->cache_id, $modal);
 }
 
@@ -79,6 +79,6 @@ $modal_vars = array(
 	)
 );
 
-$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
 ee('CP/Modal')->addModal('all', $modal);
 ?>

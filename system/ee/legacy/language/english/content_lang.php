@@ -76,7 +76,7 @@ $lang = array(
 
 'comment_status_desc' => 'Status of this comment.',
 
-'comments_removed_desc' => 'The following comments were removed',
+'comments_deleted_desc' => 'The following comments were deleted',
 
 'comments_status_updated_desc' => 'The following comments were set to %s',
 

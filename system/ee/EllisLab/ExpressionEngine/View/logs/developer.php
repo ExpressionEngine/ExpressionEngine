@@ -17,7 +17,7 @@
 			<?php foreach($rows as $row): ?>
 			<div class="list-item">
 				<div class="list-item__content">
-					<a href="" class="m-link button button--danger float-right" rel="modal-confirm-<?=$row['log_id']?>" title="remove"><i class="fas fa-trash-alt"></i></a>
+					<a href="" class="m-link button button--danger float-right" rel="modal-confirm-<?=$row['log_id']?>" title="<?=lang('delete')?>"><i class="fas fa-trash-alt"></i></a>
 
 					<div><b><?=lang('date_logged')?>:</b> <?=$row['timestamp']?></div>
 					<div class="list-item__body">
@@ -56,7 +56,7 @@ foreach($rows as $row)
 		)
 	);
 
-	$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+	$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
 	ee('CP/Modal')->addModal($row['log_id'], $modal);
 }
 
@@ -75,6 +75,6 @@ $modal_vars = array(
 	)
 );
 
-$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
 ee('CP/Modal')->addModal('all', $modal);
 ?>

@@ -690,7 +690,7 @@ class Comments extends AbstractPublishController {
 		ee('CP/Alert')->makeInline('comments-form')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(lang('comments_removed_desc'))
+			->addToBody(lang('comments_deleted_desc'))
 			->addToBody($comment_names)
 			->defer();
 	}

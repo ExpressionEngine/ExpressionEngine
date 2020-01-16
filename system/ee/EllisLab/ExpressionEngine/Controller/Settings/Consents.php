@@ -219,8 +219,8 @@ class Consents extends Settings {
 
 			ee('CP/Alert')->makeInline('user-alerts')
 				->asSuccess()
-				->withTitle(lang('consent_requests_removed'))
-				->addToBody(sprintf(lang('consent_requests_removed_desc'), count($request_ids)))
+				->withTitle(lang('consent_requests_deleted'))
+				->addToBody(sprintf(lang('consent_requests_deleted_desc'), count($request_ids)))
 				->defer();
 		}
 		else
