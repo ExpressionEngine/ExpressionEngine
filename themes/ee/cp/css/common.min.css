@@ -6741,12 +6741,6 @@ tr.selected .st-status {
     outline: none;
     box-shadow: none; }
 
-.account-menu {
-  display: none;
-  position: absolute;
-  top: -16px;
-  right: -21px; }
-
 @keyframes animy {
   0% {
     opacity: 1;
@@ -6999,7 +6993,8 @@ tr.selected .st-status {
   position: relative;
   display: block;
   padding: 6px 12px;
-  margin-bottom: 5px;
+  margin-bottom: 2px;
+  font-size: 0.95rem;
   color: var(--ee-text-normal); }
   .sidebar__link a {
     color: inherit; }

@@ -86,7 +86,7 @@
 
 
 	<div class="main-nav__account">
-			<a href class="main-nav__account-icon">
+			<a type="button" data-dropdown-offset="21px, -46px" data-dropdown-pos="bottom-end" class="main-nav__account-icon js-dropdown-toggle">
 				<img src="<?= $cp_avatar_path ?>" alt="<?=$cp_screen_name?>">
 			</a>
 
@@ -97,7 +97,7 @@
 						<span><?=$cp_member_group_title?></span>
 					</div>
 
-					<img class="account-menu__icon" src="<?= $cp_avatar_path ?>" alt="">
+					<img class="account-menu__icon js-hide-dropdowns" src="<?= $cp_avatar_path ?>" alt="">
 				</div>
 
 				<a class="dropdown__link" href="<?=ee('CP/URL')->make('members/profile', array('id' => ee()->session->userdata('member_id')))?>"><?=lang('my_profile')?></a>

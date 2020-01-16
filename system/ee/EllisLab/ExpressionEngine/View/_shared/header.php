@@ -183,7 +183,7 @@ $current_page = ee()->uri->segment(2);
 							}
 						?>
 
-						<a href="" data-dropdown-pos="top-start" data-toggle-dropdown="app-about-dropdown" class="ee-sidebar__item ee-sidebar__version js-about <?=$version_class?>">ExpressionEngine <span><?=$formatted_version?></span></a>
+						<a href="" data-dropdown-pos="top-start" data-toggle-dropdown="app-about-dropdown" class="ee-sidebar__item ee-sidebar__version js-dropdown-toggle js-about <?=$version_class?>">ExpressionEngine <span><?=$formatted_version?></span></a>
 					</div>
 
 				</div>
