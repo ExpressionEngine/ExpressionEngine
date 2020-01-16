@@ -93,6 +93,9 @@ class Header {
 	 */
 	public function hasUrl()
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('6.0', 'Headers with urls are deprecated. $sidebar->addItem() should be used instead.');
+
 		return !empty($this->url);
 	}
 
@@ -101,9 +104,14 @@ class Header {
 	 *
 	 * @param bool $external (optional) TRUE if it is external, FALSE if not
 	 * @return self This returns a reference to itself
+	 *
+	 * @deprecated Deprecated in 6.0
 	 */
 	public function urlIsExternal($external = TRUE)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('6.0', 'Headers with urls are deprecated. $sidebar->addItem() should be used instead.');
+
 		$this->url_is_external = $external;
 		return $this;
 	}
