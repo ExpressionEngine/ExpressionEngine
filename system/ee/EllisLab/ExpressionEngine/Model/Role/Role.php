@@ -72,7 +72,7 @@ class Role extends Model {
 				'table' => 'module_member_roles'
 			)
 		),
-		'AssingedStatuses' => array(
+		'AssignedStatuses' => array(
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'Status',
 			'pivot' => array(
@@ -81,7 +81,7 @@ class Role extends Model {
 				'right' => 'status_id'
 			)
 		),
-		'AssingedTemplates' => array(
+		'AssignedTemplates' => array(
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'Template',
 			'pivot' => array(
@@ -99,7 +99,7 @@ class Role extends Model {
 				'right' => 'template_group_id'
 			)
 		),
-		'AssingedUploadDestinations' => array(
+		'AssignedUploadDestinations' => array(
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'UploadDestination',
 			'pivot' => array(

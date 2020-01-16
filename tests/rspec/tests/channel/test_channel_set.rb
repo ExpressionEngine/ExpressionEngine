@@ -80,7 +80,7 @@ feature 'Channel Sets' do
 		end
 	end
 
-	def fields_assinged_to_group(group, fields)
+	def fields_assigned_to_group(group, fields)
 		group_id = ''
 		field_ids = []
 
@@ -583,8 +583,8 @@ feature 'Channel Sets' do
 			fields_created ['checkboxes', 'electronic_mail_address']
 			field_groups_created ['FG One', 'FG Two']
 
-			fields_assinged_to_group('FG One', ['checkboxes'])
-			fields_assinged_to_group('FG Two', ['electronic_mail_address'])
+			fields_assigned_to_group('FG One', ['checkboxes'])
+			fields_assigned_to_group('FG Two', ['electronic_mail_address'])
 		end
 
 		it 'imports a channel with fields but no field group' do
@@ -609,8 +609,8 @@ feature 'Channel Sets' do
 			fields_created ['checkboxes', 'electronic_mail_address', 'youtube_url', 'text']
 			field_groups_created ['FG One', 'FG Two']
 
-			fields_assinged_to_group('FG One', ['checkboxes'])
-			fields_assinged_to_group('FG Two', ['electronic_mail_address'])
+			fields_assigned_to_group('FG One', ['checkboxes'])
+			fields_assigned_to_group('FG Two', ['electronic_mail_address'])
 		end
 
 		it 'imports a channel with a field in two field groups' do
@@ -624,9 +624,9 @@ feature 'Channel Sets' do
 			fields_created ['checkboxes', 'electronic_mail_address', 'a_date']
 			field_groups_created ['FG One', 'FG Two', 'FG Three']
 
-			fields_assinged_to_group('FG One', ['checkboxes'])
-			fields_assinged_to_group('FG Two', ['electronic_mail_address'])
-			fields_assinged_to_group('FG Three', ['checkboxes', 'a_date'])
+			fields_assigned_to_group('FG One', ['checkboxes'])
+			fields_assigned_to_group('FG Two', ['electronic_mail_address'])
+			fields_assigned_to_group('FG Three', ['checkboxes', 'a_date'])
 		end
 
 		it 'imports a channel with a field already in an assigned field group' do
@@ -640,8 +640,8 @@ feature 'Channel Sets' do
 			fields_created ['checkboxes', 'electronic_mail_address']
 			field_groups_created ['FG One', 'FG Two']
 
-			fields_assinged_to_group('FG One', ['checkboxes'])
-			fields_assinged_to_group('FG Two', ['electronic_mail_address'])
+			fields_assigned_to_group('FG One', ['checkboxes'])
+			fields_assigned_to_group('FG Two', ['electronic_mail_address'])
 		end
 
         it 'imports a channel with a fluid field' do

@@ -1130,7 +1130,7 @@ class Channel {
 		}
 
 		/**------
-		/**  Assing the order variables
+		/**  Passing the order variables
 		/**------*/
 
 		$order  = ee()->TMPL->fetch_param('orderby');

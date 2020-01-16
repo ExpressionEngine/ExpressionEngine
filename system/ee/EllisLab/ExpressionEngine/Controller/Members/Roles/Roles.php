@@ -438,7 +438,7 @@ class Roles extends AbstractRolesController {
 		$role->is_locked = ee('Request')->post('is_locked');
 		$role->RoleGroups = ee('Model')->get('RoleGroup', $role_groups)->all();
 		$role->AssignedModules = ee('Model')->get('Module', ee('Request')->post('addons_access'))->all();
-		$role->AssingedUploadDestinations = ee('Model')->get('UploadDestination', ee('Request')->post('upload_destination_access'))->all();
+		$role->AssignedUploadDestinations = ee('Model')->get('UploadDestination', ee('Request')->post('upload_destination_access'))->all();
 
 		// Settings
 		$settings = ee('Model')->make('RoleSetting')->getValues();
@@ -1055,7 +1055,7 @@ class Roles extends AbstractRolesController {
 							'upload_destination_access' => [
 								'type' => 'checkbox',
 								'choices' => $allowed_upload_destinations,
-								'value' => $role->AssingedUploadDestinations->pluck('id')
+								'value' => $role->AssignedUploadDestinations->pluck('id')
 							]
 						]
 					],

@@ -1093,7 +1093,7 @@ class Member extends ContentModel {
 		$uploads = [];
 		foreach ($this->getAllRoles() as $role)
 		{
-			foreach ($role->AssingedUploadDestinations as $dir)
+			foreach ($role->AssignedUploadDestinations as $dir)
 			{
 				$uploads[$dir->getId()] = $dir;
 			}
@@ -1112,7 +1112,7 @@ class Member extends ContentModel {
 		$statuses = [];
 		foreach ($this->getAllRoles() as $role)
 		{
-			foreach ($role->AssingedStatuses as $status)
+			foreach ($role->AssignedStatuses as $status)
 			{
 				$statuses[$status->getId()] = $status;
 			}
@@ -1150,7 +1150,7 @@ class Member extends ContentModel {
 		$templates = [];
 		foreach ($this->getAllRoles() as $role)
 		{
-			foreach ($role->AssingedTemplates as $template)
+			foreach ($role->AssignedTemplates as $template)
 			{
 				$templates[$template->getId()] = $template;
 			}

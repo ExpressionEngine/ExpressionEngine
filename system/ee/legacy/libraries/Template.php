@@ -4381,13 +4381,13 @@ class EE_Template {
 			}
 
 			$member = ee()->session->getMember();
-			$assinged_role_ids = $member->getAllRoles()->pluck('role_id');
+			$assigned_role_ids = $member->getAllRoles()->pluck('role_id');
 
 			$roles = ee('Model')->get('Role')->all();
 
 			foreach ($roles as $role)
 			{
-				$value = in_array($role->getId(), $assinged_role_ids);
+				$value = in_array($role->getId(), $assigned_role_ids);
 
 				$vars['has_role_'.$role->short_name] = $value;
 			}
