@@ -47,17 +47,15 @@ class Settings extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$list = $sidebar->addHeader(lang('general_settings'), ee('CP/URL')->make('settings/general'))
-			->addBasicList();
-
-		$list->addItem(lang('url_path_settings'), ee('CP/URL')->make('settings/urls'));
+		$sidebar->addItem(lang('general_settings'), ee('CP/URL')->make('settings/general'));
+		$sidebar->addItem(lang('url_path_settings'), ee('CP/URL')->make('settings/urls'));
 
 		if (ee()->cp->allowed_group('can_access_comm'))
 		{
-			$list->addItem(lang('outgoing_email'), ee('CP/URL')->make('settings/email'));
+			$sidebar->addItem(lang('outgoing_email'), ee('CP/URL')->make('settings/email'));
 		}
 
-		$list->addItem(lang('debugging_output'), ee('CP/URL')->make('settings/debug-output'));
+		$sidebar->addItem(lang('debugging_output'), ee('CP/URL')->make('settings/debug-output'));
 
 		$content_and_design_link = NULL;
 
@@ -66,8 +64,10 @@ class Settings extends CP_Controller {
 			$content_and_design_link = ee('CP/URL')->make('settings/content-design');
 		}
 
-		$list = $sidebar->addHeader(lang('content_and_design'), $content_and_design_link)
+		$list = $sidebar->addHeader(lang('content_and_design'))
 			->addBasicList();
+
+		$list->addItem(lang('settings'), $content_and_design_link);
 
 		if (ee()->cp->allowed_group('can_access_addons', 'can_admin_addons'))
 		{
@@ -88,18 +88,20 @@ class Settings extends CP_Controller {
 
 		if (ee()->cp->allowed_group('can_access_members', 'can_admin_mbr_groups'))
 		{
-			$list = $sidebar->addHeader(lang('members'), ee('CP/URL')->make('settings/members'))
+			$list = $sidebar->addHeader(lang('members'))
 				->addBasicList();
 
+			$list->addItem(lang('member_settings'), ee('CP/URL')->make('settings/members'));
 			$list->addItem(lang('messages'), ee('CP/URL')->make('settings/messages'));
 			$list->addItem(lang('avatars'), ee('CP/URL')->make('settings/avatars'));
 		}
 
 		if (ee()->cp->allowed_group('can_access_security_settings'))
 		{
-			$list = $sidebar->addHeader(lang('security_privacy'), ee('CP/URL')->make('settings/security-privacy'))
+			$list = $sidebar->addHeader(lang('security_privacy'))
 				->addBasicList();
 
+			$list->addItem(lang('settings'), ee('CP/URL')->make('settings/security-privacy'));
 			$list->addItem(lang('access_throttling'), ee('CP/URL')->make('settings/throttling'));
 			$list->addItem(lang('captcha'), ee('CP/URL')->make('settings/captcha'));
 
