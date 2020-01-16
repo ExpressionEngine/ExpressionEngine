@@ -5,8 +5,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 ## Patch Release
 
 Bullet list below, e.g.
-   - Added <new feature>
-   - Fixed a bug (#<linked issue number>) where <bug behavior>.
+- Fixes bug where `after_channel_entry_save` hook would run twice.
 
 
 
