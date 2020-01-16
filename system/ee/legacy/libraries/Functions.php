@@ -415,10 +415,11 @@ class EE_Functions {
 	 * This function is used by modules when they need to create forms
 	 *
 	 * @access	public
-	 * @param	string
+	 * @param	array $data
+	 * @param   array $extra (used for additional tags in form, defaults to empty)
 	 * @return	string
 	 */
-	public function form_declaration($data)
+	public function form_declaration($data, $extra = [])
 	{
 		// Load the form helper
 		ee()->load->helper('form');
@@ -488,6 +489,13 @@ class EE_Functions {
 			$data['action'] = substr($data['action'], 0, -1);
 		}
 
+		// Create extra attributes string
+		$extraString = '';
+
+		foreach ($extra as $extraAttribute => $extraValue) {
+			$extraString .= $extraAttribute . '="' . addslashes($extraValue) . '" ';
+		}
+
 		$data['name']	= (isset($data['name']) && $data['name'] != '') ? 'name="'.$data['name'].'" '	: '';
 		$data['id']		= ($data['id'] != '') 							? 'id="'.$data['id'].'" ' 		: '';
 		$data['class']	= ($data['class'] != '')						? 'class="'.$data['class'].'" '	: '';
@@ -497,7 +505,7 @@ class EE_Functions {
 			$data['enctype'] = 'enctype="multipart/form-data" ';
 		}
 
-		$form  = '<form '.$data['id'].$data['class'].$data['name'].'method="post" action="'.$data['action'].'" '.$data['onsubmit'].' '.$data['enctype'].">\n";
+		$form  = '<form '.$data['id'].$data['class'].$data['name'].'method="post" action="'.$data['action'].'" '.$data['onsubmit'].' '.$data['enctype']. ' ' . $extraString . ">\n";
 
 		if ($data['secure'] == TRUE)
 		{
