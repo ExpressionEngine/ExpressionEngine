@@ -115,6 +115,10 @@ var DropdownController = (function() {
 		button.classList.add('dropdown-open')
 		dropdown.classList.add('dropdown--open');
 
+		if (dropdown.classList.contains('js-dropdown-auto-focus-input')) {
+			$(dropdown).find('.dropdown__search input').focus()
+		}
+
 		dropdown._popper.update()
     }
 
