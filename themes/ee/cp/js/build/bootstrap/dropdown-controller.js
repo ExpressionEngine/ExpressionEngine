@@ -113,6 +113,17 @@ var DropdownController = function () {
   function hideDropdown(dropdown, button) {
     button.classList.remove('dropdown-open');
     dropdown.classList.remove('dropdown--open');
+  } // Refreshes the position of any visible dropdowns
+
+
+  function updateDropdownPositions() {
+    $('.dropdown.dropdown--open').each(function () {
+      var dropdown = this;
+
+      if (dropdown._popper) {
+        dropdown._popper.update();
+      }
+    });
   } // Gets a dropdown for a element, and makes sure its initialized
 
 
@@ -150,6 +161,7 @@ var DropdownController = function () {
   return {
     hideAllDropdowns: hideAllDropdowns,
     showDropdown: showDropdown,
-    hideDropdown: hideDropdown
+    hideDropdown: hideDropdown,
+    updateDropdownPositions: updateDropdownPositions
   };
 }();

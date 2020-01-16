@@ -127,6 +127,17 @@ var DropdownController = (function() {
 		dropdown.classList.remove('dropdown--open');
 	}
 
+	// Refreshes the position of any visible dropdowns
+	function updateDropdownPositions() {
+		$('.dropdown.dropdown--open').each(function() {
+			var dropdown = this
+
+			if (dropdown._popper) {
+				dropdown._popper.update()
+			}
+		})
+	}
+
  	// Gets a dropdown for a element, and makes sure its initialized
 	function getDropdownForElement(element) {
 		var dropdown = $(element).next('.dropdown').get(0) || $(`[data-dropdown='${element.dataset.toggleDropdown}']`).get(0)
@@ -164,7 +175,8 @@ var DropdownController = (function() {
 	return {
 		hideAllDropdowns: hideAllDropdowns,
 		showDropdown: showDropdown,
-		hideDropdown: hideDropdown
+		hideDropdown: hideDropdown,
+		updateDropdownPositions: updateDropdownPositions
 	}
 
 })();
