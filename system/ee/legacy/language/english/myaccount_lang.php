@@ -559,6 +559,8 @@ $lang = array(
 
 'view_activity' => 'View Activity',
 
+'info_and_activity' => 'Info & Activity',
+
 'yahoo_im' => 'Yahoo IM',
 
 'year' => 'Year',

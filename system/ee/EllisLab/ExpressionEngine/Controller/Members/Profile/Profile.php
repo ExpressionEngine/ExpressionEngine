@@ -148,7 +148,7 @@ class Profile extends CP_Controller {
 			$list = $sidebar->addHeader(lang('administration'))
 				->addBasicList();
 
-			$list->addItem(lang('view_activity'), ee('CP/URL')->make('members/profile/activity', $this->query_string));
+			$list->addItem(lang('info_and_activity'), ee('CP/URL')->make('members/profile/activity', $this->query_string));
 
 			$list->addItem(lang('blocked_members'), ee('CP/URL')->make('members/profile/ignore', $this->query_string));
 
