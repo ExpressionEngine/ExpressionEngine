@@ -414,6 +414,10 @@ $(document).ready(function(){
 		});
 
 		$('body').on('modal:open', '.modal-wrap, .modal-form-wrap, .app-modal', function(e) {
+
+			// Hide any dropdowns that are currently shown
+			DropdownController.hideAllDropdowns()
+
 			// set the heightIs variable
 			// this allows the overlay to be scrolled
 			var heightIs = $(document).height();
