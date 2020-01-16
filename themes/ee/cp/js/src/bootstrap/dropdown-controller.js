@@ -1,0 +1,166 @@
+/*!
+ * This source file is part of the open source project
+ * ExpressionEngine (https://expressionengine.com)
+ *
+ * @link      https://expressionengine.com/
+ * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ */
+
+
+// This class handles showing and hiding dropdown menus within the app
+var DropdownController = (function() {
+
+	// Setup the required events for showing and hiding dropdowns
+
+	// Handle showing and hiding hoverable dropdowns
+	$('.js-dropdown-hover').each(function() {
+		var button = this
+		var dropdown = getDropdownForElement(button)
+
+		if (!dropdown) {
+			return
+		}
+
+		var count = 0;
+		var tolerance = 200;
+
+		$(button).add(dropdown).mouseenter(function() {
+			count++
+
+			showDropdown(dropdown, button)
+		}).mouseleave(function() {
+			count = Math.max(0, count - 1)
+
+			setTimeout(function() {
+				if (count == 0) {
+					hideDropdown(dropdown, button)
+				}
+			}, tolerance);
+		});
+	})
+
+	// Hoverable dropdowns should be clickable on mobile
+	$('body').on('touchstart', '.js-dropdown-hover', function(e) {
+		e.preventDefault()
+
+		var dropdown = getDropdownForElement(this)
+
+		if (!dropdown) {
+			return
+		}
+
+		var dropdownShown = dropdown.classList.contains('dropdown--open')
+
+		hideAllDropdowns()
+
+		if (dropdownShown) {
+			hideDropdown(dropdown, button)
+		} else {
+			showDropdown(dropdown, button)
+		}
+
+		return false
+	})
+
+	// Toggle dropdowns when clicking on a dropdown toggle button
+	document.body.addEventListener('click', (event) => {
+		var button = $(event.target).closest('.js-dropdown-toggle').get(0)
+
+		if (!button) {
+			return
+		}
+
+		var dropdown = getDropdownForElement(button)
+
+		if (!dropdown) {
+			return
+		}
+
+		var dropdownShown = dropdown.classList.contains('dropdown--open')
+
+		hideAllDropdowns()
+
+		if (dropdownShown) {
+			hideDropdown(dropdown, button)
+		} else {
+			showDropdown(dropdown, button)
+		}
+	})
+
+	// Hide dropdowns when clicking on a hide dropdown button
+	document.body.addEventListener('click', (event) => {
+		var button = $(event.target).closest('.js-hide-dropdowns').get(0)
+
+		if (!button) {
+			return
+		}
+
+		hideAllDropdowns()
+	})
+
+	// Hide dropdowns when clicking outside of them
+	document.addEventListener('click', (event) => {
+		if (!$(event.target).closest('.dropdown, .js-dropdown-toggle').length) {
+			hideAllDropdowns()
+		}
+	})
+
+    function hideAllDropdowns() {
+		$('.dropdown--open').removeClass('dropdown--open')
+		$('.dropdown-open').removeClass('dropdown-open')
+    }
+
+    function showDropdown(dropdown, button) {
+		button.classList.add('dropdown-open')
+		dropdown.classList.add('dropdown--open');
+
+		dropdown._popper.update()
+    }
+
+    function hideDropdown(dropdown, button) {
+		button.classList.remove('dropdown-open')
+		dropdown.classList.remove('dropdown--open');
+	}
+
+ 	// Gets a dropdown for a element, and makes sure its initialized
+	function getDropdownForElement(element) {
+		var dropdown = $(element).next('.dropdown').get(0) || $(`[data-dropdown='${element.dataset.toggleDropdown}']`).get(0)
+
+		// Does the dropdown exist?
+		if (!dropdown) {
+			return null
+		}
+
+		// If the dropdown doesn't has a popper, initialize a new popper
+		if (!dropdown._popper) {
+			var placement = element.dataset.dropdownPos || 'bottom-start'
+			var offset = element.dataset.dropdownOffset || '0, 5px'
+
+			dropdown._popper = new Popper(element, dropdown, {
+				placement: placement,
+				modifiers: {
+					offset: {
+						enabled: true,
+						offset: offset
+					},
+					preventOverflow: {
+						boundariesElement: 'viewport',
+					},
+					flip: {
+						behavior: ['right', 'left']
+					}
+				},
+			})
+		}
+
+		return dropdown
+	}
+
+	return {
+		hideAllDropdowns: hideAllDropdowns,
+		showDropdown: showDropdown,
+		hideDropdown: hideDropdown
+	}
+
+})();
