@@ -519,16 +519,19 @@ class EE_Session {
 			$this->userdata[$permission->permission] = 'y';
 		}
 
-		$this->userdata['total_comments']		= 0;
-		$this->userdata['total_entries']		= 0;
-		$this->userdata['private_messages']		= 0;
-		$this->userdata['total_forum_posts']	= 0;
-		$this->userdata['total_forum_topics']	= 0;
-		$this->userdata['total_forum_replies']	= 0;
-		$this->userdata['display_signatures']	= 'y';
-		$this->userdata['display_avatars']		= 'y';
-		$this->userdata['display_photos']		= 'y';
-		$this->userdata['parse_smileys']		= 'y';
+		$this->userdata['group_id']            = $role->getId();
+		$this->userdata['group_title']         = $role->name;
+		$this->userdata['group_description']   = $role->description;
+		$this->userdata['total_comments']      = 0;
+		$this->userdata['total_entries']       = 0;
+		$this->userdata['private_messages']	   = 0;
+		$this->userdata['total_forum_posts']   = 0;
+		$this->userdata['total_forum_topics']  = 0;
+		$this->userdata['total_forum_replies'] = 0;
+		$this->userdata['display_signatures']  = 'y';
+		$this->userdata['display_avatars']     = 'y';
+		$this->userdata['display_photos']      = 'y';
+		$this->userdata['parse_smileys']       = 'y';
 
 		// The following cookie info is only used with the forum module.
 		// It enables us to track "read topics" with users who are not

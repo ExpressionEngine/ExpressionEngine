@@ -2622,7 +2622,17 @@ class EE_Template {
 		// Is the current user allowed to view this template?
 		if ($query->row('enable_http_auth') != 'y' && ! ee('Permission')->isSuperAdmin())
 		{
-			$templates = ee()->session->getMember()->getAssignedTemplates()->pluck('template_id');
+			if(!ee()->session->getMember()) {
+				$templates = [];
+				$role = ee('Model')->get('Role', 3)->first();
+
+				foreach ($role->AssignedTemplates as $template)
+				{
+					$templates[$template->getId()] = $template->template_id;
+				}
+			}else{
+				$templates = ee()->session->getMember()->getAssignedTemplates()->pluck('template_id');
+			}
 
 			if ( ! in_array($query->row('template_id'), $templates))
 			{
@@ -4380,10 +4390,18 @@ class EE_Template {
 				$vars['logged_in_'.$user_var] = ee()->session->userdata[$user_var];
 			}
 
-			$member = ee()->session->getMember();
-			$assinged_role_ids = $member->getAllRoles()->pluck('role_id');
-
-			$roles = ee('Model')->get('Role')->all();
+			if ( ! ee()->session->getMember())
+			{
+				$role = ee('Model')->get('Role', 3)->first();
+				$roles = array($role);
+				$assigned_role_ids = array(3);
+			}
+			else
+			{
+				$member = ee()->session->getMember();
+				$assigned_role_ids = $member->getAllRoles()->pluck('role_id');
+				$roles = ee('Model')->get('Role')->all();
+			}
 
 			foreach ($roles as $role)
 			{
