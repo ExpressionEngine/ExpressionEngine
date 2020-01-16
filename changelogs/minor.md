@@ -4,9 +4,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 
 ## Minor Release
 
-Bullet list below, e.g.
-   - Added <new feature>
-   - Fixed a bug (#<linked issue number>) where <bug behavior>.
+- Added ability to add new parameters to form declaration (form_declaration function now accepts an additional array of parameters after the initial data, for use with data attributes, target, or other JavaScript actions)
 
 
 
