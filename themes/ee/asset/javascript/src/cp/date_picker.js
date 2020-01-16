@@ -148,7 +148,7 @@ EE.cp.datePicker = {
 					parent = $(this.element).closest('form');
 				}
 
-				parent.append('<div class="date-picker-wrap"><div class="date-picker-clip"><div class="date-picker-clip-inner"></div></div></div>');
+				parent.append('<div class="date-picker-wrap"><div class="date-picker-clip"><div class="date-picker-clip-inner"></div></div><div class="date-picker-footer"><button class="button date-picker-today-button">Today</button></div></div>');
 
 				// listen for clicks on elements classed with .date-picker-next
 				$('.date-picker-clip-inner').on('click', '.date-picker-next', function(e){
@@ -192,6 +192,32 @@ EE.cp.datePicker = {
 					d.setHours(now.getHours());
 					d.setMinutes(now.getMinutes());
 					d.setSeconds(now.getSeconds());
+
+					var date_format = EE.date.date_format;
+
+					// Allow custom date format via data-date-format parameter
+					if ($(that.element).data('dateFormat'))
+					{
+						date_format = $(that.element).data('dateFormat');
+					}
+
+					$(that.element).val(EE.cp.datePicker.get_formatted_date(d, date_format)).trigger('change');
+					$(that.element).data('timestamp', EE.cp.datePicker.get_formatted_date(d, '%U'));
+
+					$(that.element).focus();
+					$('.date-picker-wrap').toggle();
+
+					e.preventDefault();
+					e.stopPropagation();
+				});
+
+				$('.date-picker-wrap').on('click', '.date-picker-today-button', function(e){
+					$('.date-picker-item td.act').removeClass('act');
+					$(this).closest('td').addClass('act');
+					console.log('fafa');
+
+
+					var d = new Date();
 
 					var date_format = EE.date.date_format;
 
