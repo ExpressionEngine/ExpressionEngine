@@ -4405,7 +4405,7 @@ class EE_Template {
 
 			foreach ($roles as $role)
 			{
-				$value = in_array($role->getId(), $assinged_role_ids);
+				$value = in_array($role->getId(), $assigned_role_ids);
 
 				$vars['has_role_'.$role->short_name] = $value;
 			}
