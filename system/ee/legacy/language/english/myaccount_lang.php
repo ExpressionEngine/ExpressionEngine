@@ -476,7 +476,7 @@ $lang = array(
 
 'smart_notifications' => 'Enable smart notifications',
 
-'smart_notifications_desc' => 'When enabled, smart notifications will be possible.',
+'smart_notifications_desc' => 'When enabled, once you receive a notification from a thread, you won’t receive any more until you have visited that thread.',
 
 'subscriptions' => 'Current Subscriptions',
 
