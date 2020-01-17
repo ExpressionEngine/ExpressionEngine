@@ -406,6 +406,8 @@ $lang = array(
 
 'sql_query_form_abbr' => '<abbr title="Structured Query Language">SQL</abbr> Query Form',
 
+'query' => 'Query',
+
 'sql_query_to_run' => 'Query to run',
 
 'sql_warning' => '<p><b>Warning</b>: <b class="no">Advanced users only.</b> Please be very careful with using this feature.</p><p>Depending on the syntax used, this function can produce undesired results. Consult the user guide and backup your database.</p>',
