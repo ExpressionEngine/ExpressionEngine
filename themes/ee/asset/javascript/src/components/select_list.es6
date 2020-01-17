@@ -484,9 +484,9 @@ class SelectItem extends React.Component {
           <span className="icon-reorder icon-left"></span>
         )}
         {props.editable && (
-            <a href="#">{label}</a>
+            <a href="#" dangerouslySetInnerHTML={{ __html: label }}></a>
         )}
-        { ! props.editable && label}
+        { ! props.editable && <div dangerouslySetInnerHTML={{ __html: label }} />}
         {" "}
         {props.item.instructions && (
           <span className="meta-info">{props.item.instructions}</span>

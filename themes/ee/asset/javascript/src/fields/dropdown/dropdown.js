@@ -110,7 +110,11 @@ function (_React$Component) {
         onClick: this.toggleOpen
       }, React.createElement("label", {
         className: 'select__button-label' + (this.state.selected ? ' act' : '')
-      }, selected && React.createElement("i", null, selected.sectionLabel ? selected.sectionLabel + ' / ' : '', selected.label), !selected && React.createElement("i", null, this.props.emptyText), React.createElement("input", {
+      }, selected && React.createElement("span", null, selected.sectionLabel ? selected.sectionLabel + ' / ' : '', React.createElement("span", {
+        dangerouslySetInnerHTML: {
+          __html: selected.label
+        }
+      })), !selected && React.createElement("i", null, this.props.emptyText), React.createElement("input", {
         type: "hidden",
         ref: function ref(input) {
           _this2.input = input;
@@ -181,7 +185,11 @@ function DropdownItem(props) {
   return React.createElement("div", {
     onClick: props.onClick,
     className: 'select__dropdown-item' + (props.selected ? ' select__dropdown-item--selected' : '')
-  }, item.label, " ", item.instructions && React.createElement("i", null, item.instructions));
+  }, React.createElement("span", {
+    dangerouslySetInnerHTML: {
+      __html: item.label
+    }
+  }), item.instructions && React.createElement("i", null, item.instructions));
 }
 
 $(document).ready(function () {

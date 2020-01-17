@@ -578,8 +578,15 @@ function (_React$Component2) {
       }, props.reorderable && React.createElement("span", {
         className: "icon-reorder icon-left"
       }), props.editable && React.createElement("a", {
-        href: "#"
-      }, label), !props.editable && label, " ", props.item.instructions && React.createElement("span", {
+        href: "#",
+        dangerouslySetInnerHTML: {
+          __html: label
+        }
+      }), !props.editable && React.createElement("div", {
+        dangerouslySetInnerHTML: {
+          __html: label
+        }
+      }), " ", props.item.instructions && React.createElement("span", {
         className: "meta-info"
       }, props.item.instructions), props.removable && React.createElement("a", {
         href: "",

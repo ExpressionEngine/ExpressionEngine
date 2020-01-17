@@ -91,7 +91,7 @@ class Dropdown extends React.Component {
         <div className={"select__button"} onClick={this.toggleOpen}>
           <label className={'select__button-label' + (this.state.selected ? ' act' : '')}>
             {selected &&
-              <i>{selected.sectionLabel ? selected.sectionLabel + ' / ' : ''}{selected.label}</i>
+              <span>{selected.sectionLabel ? selected.sectionLabel + ' / ' : ''}<span dangerouslySetInnerHTML={{__html: selected.label}}></span></span>
             }
             { ! selected && <i>{this.props.emptyText}</i>}
             <input type="hidden"
@@ -146,7 +146,7 @@ function DropdownItem (props) {
 
   return (
     <div onClick={props.onClick} className={'select__dropdown-item' + (props.selected ? ' select__dropdown-item--selected' : '')}>
-      {item.label} {item.instructions && <i>{item.instructions}</i>}
+      <span dangerouslySetInnerHTML={{__html: item.label}}></span>{item.instructions && <i>{item.instructions}</i>}
     </div>
   )
 }
