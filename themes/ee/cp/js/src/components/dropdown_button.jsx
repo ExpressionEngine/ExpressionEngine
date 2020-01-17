@@ -26,7 +26,11 @@ class DropDownButton extends React.Component {
 
         this.props.onSelect(item ? item.value : null)
 
-        $(event.target).closest('.dropdown').prev('a.button').click()
+        let dropdown = this.dropdown
+
+        if (dropdown) {
+            DropdownController.hideDropdown(dropdown, $(dropdown).prev('.js-dropdown-toggle')[0])
+        }
 
         event.preventDefault()
     }
@@ -34,8 +38,8 @@ class DropDownButton extends React.Component {
     render() {
         return (
             <>
-                <button type="button" className={"button js-dropdown-toggle " + this.props.buttonClass} onClick={this.toggle}>{this.state.selected ? this.state.selected.label : this.props.title} <i class="fas fa-caret-down icon-right"></i></button>
-                <div className="dropdown">
+                <button type="button" className={"button js-dropdown-toggle has-sub " + this.props.buttonClass} onClick={this.toggle}>{this.state.selected ? this.state.selected.label : this.props.title}</button>
+                <div ref={(el) => this.dropdown = el} className="dropdown">
                     {this.state.items.length > 7 &&
                         <div className="dropdown__search">
                             <form>
