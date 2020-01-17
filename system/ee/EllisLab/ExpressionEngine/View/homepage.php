@@ -32,7 +32,12 @@ if ($can_create_channels || count($menu['channels']['create'])): ?>
 
 
 				foreach($entries as $entry): ?>
-				<li><a class="normal-link" href="<?=ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);?>"><?= $entry->title; ?> <span class="meta-info float-right"><?= ee()->localize->format_date("%j%S %M, %Y", $entry->entry_date)?></span></a></li>
+				<li>
+					<a class="normal-link" href="<?=ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);?>">
+						<span class="meta-info float-right ml-s"><?= ee()->localize->format_date("%j%S %M, %Y", $entry->entry_date)?></span>
+						<?= $entry->title; ?>
+					</a>
+				</li>
 				<?php endforeach; ?>
 			<?php endif; ?>
 		</ul>
@@ -170,7 +175,10 @@ if ($can_create_channels || count($menu['channels']['create'])): ?>
 			<ul class="simple-list">
 				<?php for ($i = 0; $i < 6; $i++) { ?>
 				<li>
-					<a class="normal-link" href="<?=$news[$i]['link']?>" rel="external"><?=$news[$i]['title']?> <span class="meta-info float-right"><?=$news[$i]['date']?></span></a>
+					<a class="normal-link" href="<?=$news[$i]['link']?>" rel="external">
+						<span class="meta-info float-right ml-s"><?=$news[$i]['date']?></span>
+						<?=$news[$i]['title']?>
+					</a>
 				</li>
 				<?php } ?>
 			</ul>

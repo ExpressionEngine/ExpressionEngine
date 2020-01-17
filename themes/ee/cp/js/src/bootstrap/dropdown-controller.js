@@ -63,6 +63,11 @@ var DropdownController = (function() {
 		return false
 	})
 
+	$('body').on('tap', '.js-dropdown-hover', function(e) {
+		e.preventDefault()
+		return false
+	})
+
 	// Toggle dropdowns when clicking on a dropdown toggle button
 	document.body.addEventListener('click', (event) => {
 		var button = $(event.target).closest('.js-dropdown-toggle').get(0)
