@@ -78,7 +78,7 @@ html.color-theme-in-transition *:after {
   --ee-input-border: #c4cdde;
   --ee-input-border-accent: #f2f3f5;
   --ee-input-focus-border: #0097f5;
-  --ee-input-focus-shadow: 0 3px 6px rgba(174, 151, 255, 0.14), 0 5px 20px rgba(97, 114, 242, 0.05);
+  --ee-input-focus-shadow: 0 3px 6px -3px rgba(174, 151, 255, 0.14), 0 5px 10px -3px rgba(97, 114, 242, 0.05);
   --ee-input-toggle-bg: #dadade;
   --ee-input-toggle-fg: white;
   --ee-input-toggle-shadow: rgba(120, 119, 140, 0.077);
@@ -5991,7 +5991,7 @@ input[type='url'] {
   background: var(--ee-input-bg);
   color: var(--ee-text-primary);
   border-radius: 7px;
-  box-shadow: 0 2px 0 var(--ee-input-border-accent); }
+  box-shadow: 0 1px 0 var(--ee-input-border-accent); }
   textarea:focus,
   input[type='text']:focus,
   input[type='email']:focus,
@@ -7515,7 +7515,6 @@ tr.selected .st-status {
   background: var(--ee-bg-0);
   padding: 10px 0;
   border-radius: 7px;
-  overflow: hidden;
   text-align: left;
   z-index: 200;
   max-width: 600px;
@@ -7524,6 +7523,10 @@ tr.selected .st-status {
 
 .dropdown--open {
   display: block; }
+
+.dropdown--full-width {
+  width: 100%;
+  max-width: 100%; }
 
 .dropdown__scroll {
   max-height: 260px;
@@ -7637,7 +7640,8 @@ tr.selected .st-status {
   padding: 10px;
   margin-top: -10px;
   margin-bottom: 10px;
-  background: var(--ee-bg-5); }
+  background: var(--ee-bg-5);
+  border-radius: 3px 3px 0 0; }
 
 .dropdown__search-input {
   min-width: 100%; }
@@ -8062,7 +8066,7 @@ tr.selected .st-status {
     content: "";
     display: block;
     position: absolute;
-    top: 20%;
+    top: 18%;
     left: 10%;
     opacity: 0;
     font-size: 11.11111px;
@@ -8100,7 +8104,7 @@ tr.selected .st-status {
     content: "";
     display: block;
     position: absolute;
-    top: 20%;
+    top: 18%;
     left: 10%;
     opacity: 0;
     font-size: 8.88889px;
@@ -8181,8 +8185,6 @@ tr.selected .st-status {
     transition: background 100ms ease;
     color: var(--ee-text-primary);
     border-radius: 5px; }
-    .checkbox-label .checkbox-label__text:hover {
-      background: var(--ee-bg-10); }
   .checkbox-label input {
     z-index: 1;
     position: absolute;
@@ -8193,10 +8195,6 @@ tr.selected .st-status {
     opacity: 0.6; }
     .checkbox-label input:disabled + .checkbox-label__text:hover {
       background: transparent; }
-    .checkbox-label input:disabled + .checkbox-label__text:hover:checked {
-      background: var(--ee-bg-10); }
-  .checkbox-label input:checked + .checkbox-label__text {
-    background: var(--ee-bg-10); }
 
 .lots-of-checkboxes {
   border: 1px solid var(--ee-border);
@@ -8739,10 +8737,6 @@ fieldset {
   height: 250px;
   max-height: 1000px;
   overflow: auto;
-  /*
-			children with overflow defined will inherit resize.
-			remember to override when needed.
-		*/
   resize: vertical; }
 
 .select__button {
@@ -8800,9 +8794,7 @@ fieldset {
 
 .select__dropdown-item {
   display: block;
-  height: 30px;
-  line-height: 30px;
-  padding: 0 20px;
+  padding: 5px 20px;
   font-size: 0.92em;
   color: var(--ee-text-primary);
   cursor: pointer; }
@@ -8816,6 +8808,12 @@ fieldset {
   .select__dropdown-item .tab-wrap .tabs.layout .tab-on:before, .tab-wrap .tabs.layout .select__dropdown-item .tab-on:before,
   .select__dropdown-item .tab-wrap .tabs.layout .tab-off:before, .tab-wrap .tabs.layout .select__dropdown-item .tab-off:before, .select__dropdown-item [class*='fields-grid-tool-']:before {
     color: var(--ee-text-secondary); }
+  .select__dropdown-item:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--ee-keyboard-focus); }
+  .select__dropdown-item:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none; }
 
 .select__dropdown-item--head {
   background: var(--ee-bg-5);

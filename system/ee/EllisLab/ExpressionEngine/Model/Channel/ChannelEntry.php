@@ -930,7 +930,7 @@ class ChannelEntry extends ContentModel {
 					'field_show_fmt'		=> 'n',
 					'field_instructions'	=> '',
 					'field_text_direction'	=> 'ltr',
-					'field_type'			=> 'radio',
+					'field_type'			=> 'select',
 					'field_list_items'      => array(),
 					'field_maxl'			=> 100,
 					'populateCallback'		=> array($this, 'populateStatus')
@@ -1176,7 +1176,13 @@ class ChannelEntry extends ContentModel {
 			$status_options[] = $status->getSelectOptionComponent();
 		}
 
-		$field->setItem('field_list_items', $status_options);
+		$field_items = [];
+
+		foreach ($status_options as $option) {
+			$field_items[$option['value']] = $option['label'];
+		}
+
+		$field->setItem('field_list_items', $field_items);
 	}
 
 	public function getAuthorName()
