@@ -79,7 +79,7 @@ var DropdownController = (function() {
 
 		var dropdownShown = dropdown.classList.contains('dropdown--open')
 
-		hideAllDropdowns()
+		hideAllDropdowns($(dropdown).parents('.dropdown'))
 
 		if (dropdownShown) {
 			hideDropdown(dropdown, button)
@@ -106,8 +106,8 @@ var DropdownController = (function() {
 		}
 	})
 
-    function hideAllDropdowns() {
-		$('.dropdown--open').removeClass('dropdown--open')
+    function hideAllDropdowns(excludeDropdown) {
+		$('.dropdown--open').not(excludeDropdown).removeClass('dropdown--open')
 		$('.dropdown-open').removeClass('dropdown-open')
     }
 
