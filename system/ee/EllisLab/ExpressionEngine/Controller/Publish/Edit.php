@@ -21,14 +21,27 @@ use Mexitek\PHPColors\Color;
  */
 class Edit extends AbstractPublishController {
 
+	protected $permisisons;
+
 	public function __construct()
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group_any(
-			'can_edit_other_entries',
-			'can_edit_self_entries'
-			))
+		$this->permissions = [
+			'all'    => [],
+			'others' => [],
+			'self'   => [],
+		];
+
+		foreach ($this->assigned_channel_ids as $channel_id)
+		{
+			$this->permissions['others'][] = 'can_edit_other_entries_channel_id_' . $channel_id;
+			$this->permissions['self'][]   = 'can_edit_self_entries_channel_id_' . $channel_id;
+		}
+
+		$this->permissions['all'] = array_merge($this->permissions['others'], $this->permissions['self']);
+
+		if ( ! ee('Permission')->hasAny($this->permissions['all']))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -52,14 +65,14 @@ class Edit extends AbstractPublishController {
 		$entry_listing = ee('CP/EntryListing',
 			ee()->input->get_post('filter_by_keyword'),
 			ee()->input->get_post('search_in') ?: 'titles',
-			ee()->cp->allowed_group('can_edit_other_entries')
+			ee('Permission')->hasAny($this->permisisons['others'])
 		);
 
 		$entries = $entry_listing->getEntries();
 		$filters = $entry_listing->getFilters();
 		$channel_id = $entry_listing->channel_filter->value();
 
-		if ( ! ee()->cp->allowed_group('can_edit_other_entries'))
+		if ( ! ee('Permission')->hasAny($this->permisisons['others']))
 		{
 			$entries->filter('author_id', ee()->session->userdata('member_id'));
 		}
@@ -151,8 +164,8 @@ class Edit extends AbstractPublishController {
 
 		foreach ($entries->all() as $entry)
 		{
-			if (ee()->cp->allowed_group('can_edit_other_entries')
-				|| (ee()->cp->allowed_group('can_edit_self_entries') &&
+			if (ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)
+				|| (ee('Permission')->can('edit_self_entries_channel_id_' . $entry->channel_id) &&
 					$entry->author_id == ee()->session->userdata('member_id')
 					)
 				)
@@ -183,6 +196,10 @@ class Edit extends AbstractPublishController {
 				$edit_link = ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);
 				$title = '<a href="' . $edit_link . '">' . $escaped_title . '</a>';
 			}
+			else
+			{
+				$title = $escaped_title;
+			}
 
 			if ($autosaves)
 			{
@@ -193,7 +210,7 @@ class Edit extends AbstractPublishController {
 
 			if ($entry->comment_total > 0)
 			{
-				if (ee()->cp->allowed_group('can_moderate_comments'))
+				if (ee('Permission')->can('moderate_comments'))
 				{
 					$comments = '(<a href="' . ee('CP/URL')->make('publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>)';
 				}
@@ -225,8 +242,8 @@ class Edit extends AbstractPublishController {
 				);
 			}
 
-			if (ee()->cp->allowed_group('can_delete_all_entries')
-				|| (ee()->cp->allowed_group('can_delete_self_entries') &&
+			if (ee('Permission')->can('delete_all_entries_channel_id_' . $entry->channel_id)
+				|| (ee('Permission')->can('delete_self_entries_channel_id_' . $entry->channel_id) &&
 					$entry->author_id == ee()->session->userdata('member_id')
 					)
 				)
@@ -316,7 +333,7 @@ class Edit extends AbstractPublishController {
 
 		ee()->view->header = array(
 			'title' => lang('entry_manager'),
-			'action_button' => ee()->cp->allowed_group('can_create_entries') && $show_new_button ? [
+			'action_button' => (count($choices) || ee('Permission')->can('create_entries_channel_id_' . $channel_id)) && $show_new_button ? [
 				'text' => $channel_id ? sprintf(lang('btn_create_new_entry_in_channel'), $channel->channel_title) : lang('new'),
 				'href' => ee('CP/URL', 'publish/create/' . $channel_id)->compile(),
 				'filter_placeholder' => lang('filter_channels'),
@@ -369,8 +386,35 @@ class Edit extends AbstractPublishController {
 			);
 		}
 
-		$vars['can_edit'] = ee('Permission')->hasAny('can_edit_self_entries', 'can_edit_other_entries');
-		$vars['can_delete'] = ee('Permission')->hasAny('can_delete_all_entries', 'can_delete_self_entries');
+		if ($channel_id)
+		{
+			$vars['can_edit']   = ee('Permission')->hasAny(
+				'can_edit_self_entries_channel_id_' . $channel_id,
+				'can_edit_other_entries_channel_id_' . $channel_id
+			);
+
+			$vars['can_delete'] = ee('Permission')->hasAny(
+				'can_delete_all_entries_channel_id_' . $channel_id,
+				'can_delete_self_entries_channel_id_' . $channel_id
+			);
+		}
+		else
+		{
+			$edit_perms = [];
+			$del_perms  = [];
+
+			foreach ($entries->all()->pluck('channel_id') as $channel_id)
+			{
+				$edit_perms[] = 'can_edit_self_entries_channel_id_' . $channel_id;
+				$edit_perms[] = 'can_edit_other_entries_channel_id_' . $channel_id;
+
+				$del_perms[] = 'can_delete_all_entries_channel_id_' . $channel_id;
+				$del_perms[] = 'can_delete_self_entries_channel_id_' . $channel_id;
+			}
+
+			$vars['can_edit']   = (empty($edit_perms)) ? FALSE : ee('Permission')->hasAny($edit_perms);
+			$vars['can_delete'] = (empty($del_perms)) ? FALSE : ee('Permission')->hasAny($del_perms);
+		}
 
 		if (AJAX_REQUEST)
 		{
@@ -421,7 +465,7 @@ class Edit extends AbstractPublishController {
 			show_error(lang('no_entries_matching_that_criteria'));
 		}
 
-		if ( ! ee()->cp->allowed_group('can_edit_other_entries')
+		if ( ! ee('Permission')->can('edit_other_entries_channel_id_' . $entry->chanel_id)
 			&& $entry->author_id != ee()->session->userdata('member_id'))
 		{
 			show_error(lang('unauthorized_access'), 403);
@@ -510,8 +554,8 @@ class Edit extends AbstractPublishController {
 		$channel_layout = ee('Model')->get('ChannelLayout')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('channel_id', $entry->channel_id)
-			->with('MemberGroups')
-			->filter('MemberGroups.group_id', ee()->session->userdata['group_id'])
+			->with('PrimaryRoles')
+			->filter('PrimaryRoles.role_id', ee()->session->userdata('role_id'))
 			->first();
 
 		$vars['layout'] = $entry->getDisplay($channel_layout);
@@ -557,8 +601,15 @@ class Edit extends AbstractPublishController {
 
 	private function remove($entry_ids)
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_all_entries')
-			&& ! ee()->cp->allowed_group('can_delete_self_entries'))
+		$perms = [];
+
+		foreach ($this->assigned_channel_ids as $channel_id)
+		{
+			$perms[] = 'can_delete_all_entries_channel_id_' . $channel_id;
+			$perms[] = 'can_delete_self_entries_channel_id_' . $channel_id;
+		}
+
+		if ( ! ee('Permission')->hasAny($perms))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -568,27 +619,7 @@ class Edit extends AbstractPublishController {
 			$entry_ids = array($entry_ids);
 		}
 
-		$entries = ee('Model')->get('ChannelEntry', $entry_ids)
-			->filter('site_id', ee()->config->item('site_id'));
-
-		if ( ! $this->is_admin)
-		{
-			if (empty($this->assigned_channel_ids))
-			{
-				show_error(lang('no_channels'));
-			}
-
-			$entries->filter('channel_id', 'IN', $this->assigned_channel_ids);
-		}
-
-		if ( ! ee()->cp->allowed_group('can_delete_all_entries'))
-		{
-			$entries->filter('author_id', ee()->session->userdata('member_id'));
-		}
-
-		$entry_names = $entries->all()->pluck('title');
-
-		$entries->delete();
+		$entry_names = array_merge($this->removeAllEntries($entry_ids), $this->removeSelfEntries($entry_ids));
 
 		ee('CP/Alert')->makeInline('entries-form')
 			->asSuccess()
@@ -600,6 +631,82 @@ class Edit extends AbstractPublishController {
 		ee()->functions->redirect(ee('CP/URL')->make('publish/edit', ee()->cp->get_url_state()));
 	}
 
+	private function removeAllEntries($entry_ids)
+	{
+		$entries = ee('Model')->get('ChannelEntry', $entry_ids)
+			->filter('site_id', ee()->config->item('site_id'));
+
+		if ( ! $this->is_admin)
+		{
+			if (empty($this->assigned_channel_ids))
+			{
+				show_error(lang('no_channels'));
+			}
+
+			$channel_ids = [];
+
+			foreach ($this->assigned_channel_ids as $channel_id)
+			{
+				if (ee('Permission')->can('delete_all_entries_channel_id_' . $channel_id))
+				{
+					$channel_ids[] = $channel_id;
+				}
+			}
+
+			// No permission to delete all entries
+			if (empty($channel_ids))
+			{
+				return [];
+			}
+
+			$entries->filter('channel_id', 'IN', $this->assigned_channel_ids);
+		}
+
+		$entry_names = $entries->all()->pluck('title');
+
+		$entries->delete();
+
+		return $entry_names;
+	}
+
+	private function removeSelfEntries($entry_ids)
+	{
+		$entries = ee('Model')->get('ChannelEntry', $entry_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('author_id', ee()->session->userdata('member_id'));
+
+		if ( ! $this->is_admin)
+		{
+			if (empty($this->assigned_channel_ids))
+			{
+				show_error(lang('no_channels'));
+			}
+
+			$channel_ids = [];
+
+			foreach ($this->assigned_channel_ids as $channel_id)
+			{
+				if (ee('Permission')->can('delete_self_entries_channel_id_' . $channel_id))
+				{
+					$channel_ids[] = $channel_id;
+				}
+			}
+
+			// No permission to delete self entries
+			if (empty($channel_ids))
+			{
+				return [];
+			}
+
+			$entries->filter('channel_id', 'IN', $this->assigned_channel_ids);
+		}
+
+		$entry_names = $entries->all()->pluck('title');
+
+		$entries->delete();
+
+		return $entry_names;
+	}
 }
 
 // EOF

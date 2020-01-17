@@ -20,6 +20,8 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 class Ignore extends Profile {
 
 	private $base_url = 'members/profile/ignore';
+	private $index_url;
+	private $ignore_list;
 
 	public function __construct()
 	{
@@ -44,7 +46,7 @@ class Ignore extends Profile {
 		$sort_map = array(
 			'member_id'    => 'member_id',
 			'username'     => 'username',
-			'member_group' => 'MemberGroup.group_title'
+			'primary_role' => 'PrimaryRole.name'
 		);
 
 		$table = ee('CP/Table', array(
@@ -56,13 +58,12 @@ class Ignore extends Profile {
 		$ignored = array();
 		$data = array();
 		$members = ee('Model')->get('Member', $this->ignore_list)
-			->with('MemberGroup')
+			->with('PrimaryRole')
 			->order($sort_map[$sort_col], $sort_dir);
 
 		$search = ee()->input->post('search');
 		if ( ! empty($search))
 		{
-			// $members = $members->filter('screen_name', 'LIKE', "%$search%");
 			$members = $members->search('screen_name', $search);
 		}
 
@@ -75,11 +76,11 @@ class Ignore extends Profile {
 			foreach ($members as $member)
 			{
 				$attributes = array();
-				$group = $member->getMemberGroup()->group_title;
+				$primary_role = $member->getPrimaryRole()->name;
 
-				if ($group == 'Banned')
+				if ($primary_role == 'Banned')
 				{
-					$group = "<span class='st-banned'>" . lang('banned') . "</span>";
+					$primary_role = "<span class='st-banned'>" . lang('banned') . "</span>";
 					$attributes['class'] = 'alt banned';
 				}
 
@@ -88,7 +89,7 @@ class Ignore extends Profile {
 					'columns' => array(
 						'member_id' => $member->member_id,
 						'username' => "{$member->screen_name} ($email)",
-						'member_group' => $group,
+						'primary_role' => $primary_role,
 						array(
 							'name' => 'selection[]',
 							'value' => $member->member_id,
@@ -106,7 +107,7 @@ class Ignore extends Profile {
 			array(
 				'member_id',
 				'username' => array('encode' => FALSE),
-				'member_group' => array('encode' => FALSE),
+				'primary_role' => array('encode' => FALSE),
 				array(
 					'type'	=> Table::COL_CHECKBOX
 				)

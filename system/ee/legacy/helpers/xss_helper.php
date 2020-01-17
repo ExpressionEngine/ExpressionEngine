@@ -31,7 +31,7 @@ function xss_check()
 	// There are a few times when xss cleaning may not be wanted, and
 	// xss_clean should be changed to FALSE from the default TRUE
 	// 1. Super admin uplaods (never filtered)
-	if (ee()->session->userdata('group_id') == 1)
+	if (ee('Permission')->isSuperAdmin())
 	{
 		$xss_clean = FALSE;
 	}
@@ -60,7 +60,7 @@ function xss_check()
 		$xss_clean_member_group_exception = preg_split('/[\s|,]/', ee()->config->item('xss_clean_member_group_exception'), -1, PREG_SPLIT_NO_EMPTY);
 		$xss_clean_member_group_exception = is_array($xss_clean_member_group_exception) ? $xss_clean_member_group_exception : array($xss_clean_member_group_exception);
 
-		if (in_array(ee()->session->userdata('group_id'), $xss_clean_member_group_exception))
+		if (ee('Permission')->hasAnyRole($xss_clean_member_group_exception))
 		{
 			$xss_clean = FALSE;
 		}

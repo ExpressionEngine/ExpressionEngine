@@ -110,7 +110,7 @@ class Ip_to_nation_upd {
 		$module_id = $module_id_row->module_id;
 
 		ee()->db->where('module_id', $module_id);
-		ee()->db->delete('module_member_groups');
+		ee()->db->delete('module_member_roles');
 
 		ee()->db->where('module_name', 'Ip_to_nation');
 		ee()->db->delete('modules');

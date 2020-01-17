@@ -271,7 +271,7 @@ class Grid_lib {
 
 					if ( ! in_array($row_key, $valid_rows))
 					{
-						if (ee()->session->userdata['group_id'] == 1)
+						if (ee('Permission')->isSuperAdmin())
 						{
 							return array('value' => '', 'error' => lang('not_authorized'));
 						}

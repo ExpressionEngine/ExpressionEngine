@@ -20,7 +20,7 @@ feature 'Member Import' do
   it 'shows the Member Import page' do
     @page.should have_text 'Member Import'
     @page.should have_text 'Member XML file'
-    @page.should have_member_group
+    @page.should have_role
     @page.should have_language
     @page.should have_tz_country
     @page.should have_timezone
@@ -35,7 +35,7 @@ feature 'Member Import' do
 
   it 'should show the confirm import screen' do
     @page.attach_file('member_xml_file', @members_xml)
-    @page.member_group.choose_radio_option('5')
+    @page.role.choose_radio_option('5')
     @page.language.choose_radio_option('english')
     @page.tz_country.select 'United States'
     @page.timezone.select 'New York'
@@ -46,7 +46,7 @@ feature 'Member Import' do
     @page.submit
 
     @page.options.map {|option| option.text}.should ==
-        ['Member group', 'Language', 'Timezone',
+        ['Role', 'Language', 'Timezone',
             'Date & time format', 'Show seconds?', 'Create custom fields?']
     @page.values.map {|value| value.text}.should ==
         ['Members', 'English',
@@ -55,7 +55,7 @@ feature 'Member Import' do
 
   it 'should import basic member import file' do
     @page.attach_file('member_xml_file', @members_xml)
-    @page.member_group.choose_radio_option('5')
+    @page.role.choose_radio_option('5')
     @page.language.choose_radio_option('english')
     @page.tz_country.select 'United States'
     @page.timezone.select 'New York'
@@ -74,7 +74,7 @@ feature 'Member Import' do
 
   it 'should fail to import duplicate data' do
     @page.attach_file('member_xml_file', @members_xml_duplicate)
-    @page.member_group.choose_radio_option '5'
+    @page.role.choose_radio_option '5'
     @page.submit
 
     # Confirm the import
@@ -88,7 +88,7 @@ feature 'Member Import' do
 
   it 'should fail to import invalid XML' do
     @page.attach_file('member_xml_file', @members_xml_invalid)
-    @page.member_group.choose_radio_option '5'
+    @page.role.choose_radio_option '5'
     @page.submit
 
     # Confirm the import
@@ -103,7 +103,7 @@ feature 'Member Import' do
     # If our XML does not contain any extra fields but Yes is selected
     # for custom field creation:
     @page.attach_file('member_xml_file', @members_xml)
-    @page.member_group.choose_radio_option '5'
+    @page.role.choose_radio_option '5'
     @page.submit
 
     @page.should have_text 'Confirm Import'
@@ -112,7 +112,7 @@ feature 'Member Import' do
     # If our XML contains extra field but we elect not to bother:
     @page.load
    @page.attach_file('member_xml_file', @members_xml_custom)
-    @page.member_group.choose_radio_option '5'
+    @page.role.choose_radio_option '5'
     @page.auto_custom_field_toggle.click
     @page.submit
 
@@ -121,7 +121,7 @@ feature 'Member Import' do
 
   it 'should create custom fields' do
     @page.attach_file('member_xml_file', @members_xml_custom)
-    @page.member_group.choose_radio_option('5')
+    @page.role.choose_radio_option('5')
     @page.language.choose_radio_option('english')
     @page.tz_country.select 'United States'
     @page.timezone.select 'New York'

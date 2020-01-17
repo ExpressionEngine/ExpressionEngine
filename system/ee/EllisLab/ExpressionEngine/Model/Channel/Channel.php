@@ -78,11 +78,11 @@ class Channel extends StructureModel {
 		'ChannelFormSettings' => array(
 			'type' => 'hasOne'
 		),
-		'AssignedMemberGroups' => array(
+		'AssignedRoles' => array(
 			'type' => 'hasAndBelongsToMany',
-			'model' => 'MemberGroup',
+			'model' => 'Role',
 			'pivot' => array(
-				'table' => 'channel_member_groups'
+				'table' => 'channel_member_roles'
 			)
 		),
 		'ChannelLayouts' => array(

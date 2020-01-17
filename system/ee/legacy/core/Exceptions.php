@@ -273,7 +273,7 @@ class EE_Exceptions {
 		// We'll only want to show certain information, like file paths, if we're allowed
 		if (isset(ee()->config) && isset(ee()->session))
 		{
-			$debug = (bool) (DEBUG OR ee()->config->item('debug') > 1 OR ee()->session->userdata('group_id') == 1);
+			$debug = (bool) (DEBUG OR ee()->config->item('debug') > 1 OR ee('Permission')->isSuperAdmin());
 		}
 
 		// Hide sensitive information such as file paths and database information

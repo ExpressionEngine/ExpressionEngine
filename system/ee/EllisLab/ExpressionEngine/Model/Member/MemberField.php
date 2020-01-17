@@ -23,7 +23,6 @@ class MemberField extends FieldModel {
 	protected static $_hook_id = 'member_field';
 
 	protected static $_events = array(
-		'afterSave',
 		'beforeInsert'
 	);
 
@@ -95,14 +94,6 @@ class MemberField extends FieldModel {
 		$this->setProperty('m_field_settings', $field->saveSettingsForm($data));
 
 		return $this;
-	}
-
-	/**
-	 * Clear MemberGroup member field cache
-	 */
-	public function onAfterSave()
-	{
-		ee()->session->set_cache('EllisLab::MemberGroupModel', 'getCustomFields', NULL);
 	}
 
 	/**

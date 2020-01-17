@@ -24,7 +24,7 @@ class ChannelLayoutForm < ControlPanelPage
 
   # Layout Options
   element :layout_name, 'form input[name=layout_name]'
-  elements :member_groups, 'form input[name="member_groups[]"]'
+  elements :roles, 'form input[name="roles[]"]'
   element :submit_button, 'div.form-btns.form-btns-top button[value="save_and_close"]'
 
   element :add_tab_modal, 'div.modal-add-new-tab'

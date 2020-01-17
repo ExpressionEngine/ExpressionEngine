@@ -319,7 +319,7 @@ class AlertCollection {
 		$alert = $this->makeStandard('deprecation-notice')
 			->asWarning();
 
-		if ($this->session->userdata('group_id') == 1 && ee()->config->item('enable_devlog_alerts') == 'y')
+		if (ee('Permission')->isSuperAdmin() && ee()->config->item('enable_devlog_alerts') == 'y')
 		{
 			$count = ee('Model')->get('DeveloperLog')
 				->filter('viewed', 'n')

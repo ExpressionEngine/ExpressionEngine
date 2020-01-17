@@ -294,14 +294,13 @@ class ThemeInstaller {
 		// Set template access
 		if (isset($template_preferences->access))
 		{
-			$member_groups = ee('Model')->get('MemberGroup')
-				->filter('site_id', 1)
-				->filter('group_id', '!=', 1)
+			$roles = ee('Model')->get('Role')
+				->filter('role_id', '!=', 1)
 				->all();
 
 			$access = $template_preferences->access;
-			$template->NoAccess = $member_groups->filter(function($group) use ($access) {
-				return ($access->{$group->group_title} == 'n');
+			$template->Roles = $roles->filter(function($role) use ($access) {
+				return ($access->{$role->name} == 'y');
 			});
 		}
 

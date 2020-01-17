@@ -593,7 +593,7 @@ class Email {
 		if ($query->num_rows() > 0)
 		{
 			// Max Emails - Quick check
-			if (ee()->session->userdata('group_id') != 1
+			if ( ! ee('Permission')->isSuperAdmin()
 				&& $query->num_rows() >= $this->email_max_emails)
 			{
 				return ee()->output->show_user_error('general', array(lang('em_limit_exceeded')));
@@ -607,7 +607,7 @@ class Email {
 				$total_sent = $total_sent + $row['number_recipients'];
 			}
 
-			if (ee()->session->userdata('group_id') != 1
+			if ( ! ee('Permission')->isSuperAdmin()
 				&& $total_sent >= $this->email_max_emails)
 			{
 				return ee()->output->show_user_error('general', array(lang('em_limit_exceeded')));

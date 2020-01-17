@@ -39,7 +39,7 @@ class Uploads extends AbstractFilesController {
 	 */
 	public function create()
 	{
-		if ( ! ee()->cp->allowed_group('can_create_upload_directories'))
+		if ( ! ee('Permission')->can('create_upload_directories'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -57,7 +57,7 @@ class Uploads extends AbstractFilesController {
 	 */
 	public function edit($upload_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_upload_directories'))
+		if ( ! ee('Permission')->can('edit_upload_directories'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -283,20 +283,23 @@ class Uploads extends AbstractFilesController {
 			)
 		);
 
-		// Member IDs NOT in $no_access have access...
-		list($allowed_groups, $member_groups) = $this->getAllowedGroups($upload_destination);
+		$roles = ee('Model')->get('Role')
+			->filter('role_id', 'NOT IN', array(1,2,3,4))
+			->order('name')
+			->all()
+			->getDictionary('role_id', 'name');
 
 		$vars['sections']['upload_privileges'] = array(
 			array(
-				'title' => 'upload_member_groups',
-				'desc' => 'upload_member_groups_desc',
+				'title' => 'upload_roles',
+				'desc' => 'upload_roles_desc',
 				'fields' => array(
-					'upload_member_groups' => array(
+					'upload_roles' => array(
 						'type' => 'checkbox',
-						'choices' => $member_groups,
-						'value' => $allowed_groups,
+						'choices' => $roles,
+						'value' => $upload_destination->Roles->pluck('role_id'),
 						'no_results' => [
-							'text' => sprintf(lang('no_found'), lang('member_groups'))
+							'text' => sprintf(lang('no_found'), lang('roles'))
 						]
 					)
 				)
@@ -548,41 +551,6 @@ class Uploads extends AbstractFilesController {
 	}
 
 	/**
-	 * Returns an array of member group IDs allowed to upload to this
-	 * upload destination in the form of id => title, along with an
-	 * array of all member groups in the same format
-	 *
-	 * @param	model	$upload_destination		Model object for upload destination
-	 * @return	array	Array containing each of the arrays mentioned above
-	 */
-	private function getAllowedGroups($upload_destination = NULL)
-	{
-		$member_groups = ee('Model')->get('MemberGroup')
-			->filter('group_id', 'NOT IN', array(1,2,3,4))
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('group_title')
-			->all()
-			->getDictionary('group_id', 'group_title');
-
-		if ( ! empty($_POST))
-		{
-			if (isset($_POST['upload_member_groups']))
-			{
-				return array($_POST['upload_member_groups'], $member_groups);
-			}
-
-			return array(array(), $member_groups);
-		}
-
-		$no_access = $upload_destination->getNoAccess()->pluck('group_id');
-
-		$allowed_groups = array_diff(array_keys($member_groups), $no_access);
-
-		// Member IDs NOT in $no_access have access...
-		return array($allowed_groups, $member_groups);
-	}
-
-	/**
 	 * Sets information on the UploadDestination object and its children and
 	 * validates them all
 	 *
@@ -608,21 +576,20 @@ class Uploads extends AbstractFilesController {
 			$upload_destination->cat_group = '';
 		}
 
-		$access = ee()->input->post('upload_member_groups') ?: array();
+		$access = ee()->input->post('upload_roles') ?: array();
 
-		$no_access = ee('Model')->get('MemberGroup')
-			->filter('group_id', 'NOT IN', array_merge(array(1,2,3,4), $access))
-			->filter('site_id', ee()->config->item('site_id'))
+		$roles = ee('Model')->get('Role', $access)
+			->filter('role_id', 'NOT IN', [1,2,3,4])
 			->all();
 
-		if ($no_access->count() > 0)
+		if ($roles->count() > 0)
 		{
-			$upload_destination->NoAccess = $no_access;
+			$upload_destination->Roles = $roles;
 		}
 		else
 		{
-			// Remove all member groups from this upload destination
-			$upload_destination->NoAccess = NULL;
+			// Remove all roles from this upload destination
+			$upload_destination->Roles = NULL;
 		}
 
 		$result = $upload_destination->validate();
@@ -719,7 +686,7 @@ class Uploads extends AbstractFilesController {
 	 */
 	public function sync($upload_id = NULL)
 	{
-		if ( ! ee()->cp->allowed_group('can_upload_new_files'))
+		if ( ! ee('Permission')->can('upload_new_files'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -731,32 +698,38 @@ class Uploads extends AbstractFilesController {
 
 		$this->stdHeader($upload_id);
 		$this->generateSidebar($upload_id);
-		ee()->load->model('file_upload_preferences_model');
+		$upload_destination = NULL;
 
-		// Get upload destination with config.php overrides in place
-		$upload_destination = ee()->file_upload_preferences_model->get_file_upload_preferences(
-			ee()->session->userdata('group_id'),
-			$upload_id
-		);
-
-		if (empty($upload_destination))
+		if (ee('Permission')->isSuperAdmin())
 		{
-			show_error(lang('unauthorized_access'), 403);
+			$upload_destination = ee('Model')->get('UploadDestination', $upload_id)
+				->filter('site_id', ee()->config->item('site_id'))
+				->first();
+		}
+		else
+		{
+			$member = ee()->session->getMember();
+			$assigned_upload_destinations = $member->getAssignedUploadDestinations()->indexBy('id');
+			if (isset($assigned_upload_destinations[$upload_id])
+				&& $assigned_upload_destinations[$upload_id]->site_id == ee()->config->item('site_id'))
+			{
+				$upload_destination = $assigned_upload_destinations[$upload_id];
+			}
 		}
 
 		// Get a listing of raw files in the directory
 		ee()->load->library('filemanager');
 		$files = ee()->filemanager->directory_files_map(
-			$upload_destination['server_path'],
+			$upload_destination->server_path,
 			1,
 			FALSE,
-			$upload_destination['allowed_types']
+			$upload_destination->allowed_types
 		);
 		$files_count = count($files);
 
 		// Change the decription of this first field depending on the
 		// type of files allowed
-		$file_sync_desc = ($upload_destination['allowed_types'] == 'all')
+		$file_sync_desc = ($upload_destination->allowed_types == 'all')
 			? lang('file_sync_desc') : lang('file_sync_desc_images');
 
 		$vars['sections'] = array(
@@ -829,13 +802,13 @@ class Uploads extends AbstractFilesController {
 				'sync_sizes'      => $js_size,
 				'sync_baseurl'    => $base_url->compile(),
 				'sync_endpoint'   => ee('CP/URL')->make('files/uploads/do_sync_files')->compile(),
-				'sync_dir_name'   => $upload_destination['name'],
+				'sync_dir_name'   => $upload_destination->name,
 			)
 		));
 
 		ee()->view->base_url = $base_url;
 		ee()->view->cp_page_title = lang('sync_title');
-		ee()->view->cp_page_title_alt = sprintf(lang('sync_alt_title'), $upload_destination['name']);
+		ee()->view->cp_page_title_alt = sprintf(lang('sync_alt_title'), $upload_destination->name);
 		ee()->view->save_btn_text = 'btn_sync_directory';
 		ee()->view->save_btn_text_working = 'btn_sync_directory_working';
 
@@ -864,7 +837,7 @@ class Uploads extends AbstractFilesController {
 		$id = ee()->input->post('upload_directory_id');
 		$sizes = ee()->input->post('sizes') ?: array($id => '');
 
-		if ( ! ee()->cp->allowed_group('can_upload_new_files') OR empty($id))
+		if ( ! ee('Permission')->can('upload_new_files') OR empty($id))
 		{
 			return ee()->output->send_ajax_response([
 				'message_type'	=> 'failure',

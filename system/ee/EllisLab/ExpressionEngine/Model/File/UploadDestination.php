@@ -11,7 +11,7 @@
 namespace EllisLab\ExpressionEngine\Model\File;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Model\Member\MemberGroup;
+use EllisLab\ExpressionEngine\Model\Member\Member;
 
 /**
  * File Upload Location Model
@@ -31,13 +31,13 @@ class UploadDestination extends Model {
 		'Site' => array(
 			'type' => 'belongsTo'
 		),
-		'NoAccess' => array(
+		'Roles' => array(
 			'type' => 'hasAndBelongsToMany',
-			'model' => 'MemberGroup',
+			'model' => 'Role',
 			'pivot' => array(
-				'table' => 'upload_no_access',
+				'table' => 'upload_prefs_roles',
 				'left' => 'upload_id',
-				'right' => 'member_group'
+				'right' => 'role_id'
 			)
 		),
 		'Module' => array(
@@ -284,51 +284,23 @@ class UploadDestination extends Model {
 	}
 
 	/**
-	 * Determines if the member group (by ID) has access permission to this
+	 * Determines if the member has access permission to this
 	 * upload destination.
 	 *
 	 * @throws InvalidArgumentException
-	 * @param int|MemberGroup $group_id The Meber Group ID
+	 * @param Member $member The Member
 	 * @return bool TRUE if access is granted; FALSE if access denied
 	 */
-	public function memberGroupHasAccess($group)
+	public function memberHasAccess(Member $member)
 	{
-		if ($group instanceOf MemberGroup)
-		{
-			$group_id = $group->group_id;
-		}
-		elseif(is_numeric($group))
-		{
-			$group_id = (int) $group;
-		}
-		else
-		{
-			throw new \InvalidArgumentException('memberGroupHasAccess expects an number or an instance of MemberGroup.');
-		}
-
-		// 2 = Banned
-		// 3 = Guests
-		// 4 = Pending
-		$hardcoded_disallowed_groups = array('2', '3', '4');
-
-		// If the user is a Super Admin, return true
-		if ($group_id == 1)
+		if(ee('Permission')->isSuperAdmin())
 		{
 			return TRUE;
 		}
 
-		if (in_array($group_id, $hardcoded_disallowed_groups))
-		{
-			return FALSE;
-		}
+		$assigned_dirs = $member->getAssignedUploadDestinations()->pluck('id');
 
-		if (in_array($group_id, $this->getNoAccess()->pluck('group_id')))
-		{
-			return FALSE;
-		}
-
-		return TRUE;
-
+		return in_array($this->getId(), $assigned_dirs);
 	}
 
 	/**

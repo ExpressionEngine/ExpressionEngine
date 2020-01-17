@@ -43,9 +43,9 @@ $lang = array(
 
 
 /* Communicate */
-'add_member_groups' => 'Add member group(s)',
+'add_member_roles' => 'Add member role(s)',
 
-'add_member_groups_desc' => 'Send Email to <b>all</b> members in chosen group(s).',
+'add_member_roles_desc' => 'Send Email to <b>all</b> members in chosen role(s).',
 
 'attachment' => 'Attachment',
 
@@ -327,6 +327,8 @@ $lang = array(
 'mbr_xml_file' => '<abbr title="Extensible Markup Language">XML</abbr> file location',
 
 'member_group' => 'Member group',
+
+'role' => 'Role',
 
 'member_import_error' => 'Attention: Import not completed',
 

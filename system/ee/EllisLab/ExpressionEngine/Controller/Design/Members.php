@@ -27,7 +27,7 @@ class Members extends AbstractDesignController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_design', 'can_admin_mbr_templates'))
+		if ( ! ee('Permission')->hasAll('can_access_design', 'can_admin_mbr_templates'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

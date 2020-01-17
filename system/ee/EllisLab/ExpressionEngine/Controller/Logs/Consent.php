@@ -23,7 +23,7 @@ class Consent extends Logs {
 	 */
 	public function index()
 	{
-		if ( ! ee('Permission')->has('can_manage_consents'))
+		if ( ! ee('Permission')->can('manage_consents'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

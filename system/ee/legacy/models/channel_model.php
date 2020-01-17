@@ -32,7 +32,7 @@ class Channel_model extends CI_Model {
 		}
 
 		// If the user is restricted to specific channels, add that to the query
-		if ($this->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$allowed_channels = $this->session->userdata('assigned_channels');
 
@@ -204,7 +204,7 @@ class Channel_model extends CI_Model {
 			->order_by($sort, 'DESC')
 			->where('site_id', $this->config->item('site_id'));
 
-		if ($this->session->userdata['can_edit_other_entries'] != 'y')
+		if ( ! ee('Permission')->can('edit_other_entries'))
 		{
 			$this->db->where('author_id', $this->session->userdata('member_id'));
 		}

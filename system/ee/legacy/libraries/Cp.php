@@ -119,7 +119,7 @@ class Cp {
 			'cp_quicklinks'			=> $this->_get_quicklinks($member->quick_links),
 
 			'EE_view_disable'		=> FALSE,
-			'is_super_admin'		=> (ee()->session->userdata['group_id'] == 1) ? TRUE : FALSE,	// for conditional use in view files
+			'is_super_admin'		=> (ee('Permission')->isSuperAdmin()) ? TRUE : FALSE,	// for conditional use in view files
 		);
 
 		// global table data
@@ -298,7 +298,7 @@ class Cp {
 		$alert = $this->_checksum_bootstrap_files();
 
 		// These are only displayed to Super Admins
-		if (ee()->session->userdata['group_id'] != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			return;
 		}
@@ -397,7 +397,7 @@ class Cp {
 				ee()->file_integrity->send_site_admin_warning($changed);
 			}
 
-			if (ee()->session->userdata('group_id') == 1)
+			if (ee('Permission')->isSuperAdmin())
 			{
 				$alert = ee('CP/Alert')->makeStandard('notices')
 					->asWarning()
@@ -889,37 +889,18 @@ class Cp {
 	 *
 	 * Member access validation
 	 *
+	 * @deprecated 5.0.0 Use ee('Permission')->hasAny() instead
 	 * @param	string  any number of permission names
 	 * @return	bool    TRUE if member has any permissions in the set
 	 */
 	public function allowed_group_any()
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('5.0.0', "ee('Permission')->hasAny()");
+
 		$which = func_get_args();
 
-		if ( ! count($which))
-		{
-			return FALSE;
-		}
-
-		// Super Admins always have access
-		if (ee()->session->userdata('group_id') == 1)
-		{
-			return TRUE;
-		}
-
-		$result = FALSE;
-
-		foreach ($which as $w)
-		{
-			$k = ee()->session->userdata($w);
-
-			if ($k === TRUE OR $k == 'y')
-			{
-				$result = TRUE;
-			}
-		}
-
-		return $result;
+		return ee('Permission')->hasAny($which);
 	}
 
 	/**
@@ -927,34 +908,18 @@ class Cp {
 	 *
 	 * Member access validation
 	 *
+	 * @deprecated 5.0.0 Use ee('Permission')->hasAll() instead
+	 * @param	string  any number of permission names
 	 * @return	bool    TRUE if member has all permissions
 	 */
 	public function allowed_group()
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('5.0.0', "ee('Permission')->hasAll()");
+
 		$which = func_get_args();
 
-		if ( ! count($which))
-		{
-			return FALSE;
-		}
-
-		// Super Admins always have access
-		if (ee()->session->userdata('group_id') == 1)
-		{
-			return TRUE;
-		}
-
-		foreach ($which as $w)
-		{
-			$k = ee()->session->userdata($w);
-
-			if ( ! $k OR $k !== 'y')
-			{
-				return FALSE;
-			}
-		}
-
-		return TRUE;
+		return ee('Permission')->hasAll($which);
 	}
 
 	/**
@@ -1089,23 +1054,14 @@ class Cp {
 	 */
 	public function switch_site($site_id, $redirect = '')
 	{
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin() && ee('Permission', $site_id)->can('access_cp'))
 		{
-			ee()->db->select('can_access_cp');
-			ee()->db->where('site_id', $site_id);
-			ee()->db->where('group_id', ee()->session->userdata['group_id']);
-
-			$query = ee()->db->get('member_groups');
-
-			if ($query->num_rows() == 0 OR $query->row('can_access_cp') !== 'y')
-			{
-				show_error(lang('unauthorized_access'), 403);
-			}
+			show_error(lang('unauthorized_access'), 403);
 		}
 
 		if (empty($redirect))
 		{
-			$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
+			$member = ee()->session->getMember();
 			$redirect = $member->getCPHomepageURL($site_id);
 		}
 

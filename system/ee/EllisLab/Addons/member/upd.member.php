@@ -70,7 +70,7 @@ class Member_upd {
 			ee()->file_upload_preferences_model->delete_upload_preferences($ids);
 		}
 
-		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '" . $module_id . "'";
+		$sql[] = "DELETE FROM exp_module_member_roles WHERE module_id = '" . $module_id . "'";
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Member'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Member'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Member_mcp'";

@@ -465,7 +465,7 @@ class Login extends CP_Controller {
 	 */
 	public function logout()
 	{
-		if ($this->session->userdata('group_id') == 3)
+		if (ee()->session->getMember() && ee()->session->getMember()->isPending())
 		{
 			$this->functions->redirect(BASE.AMP.'C=login');
 		}

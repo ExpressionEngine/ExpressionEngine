@@ -24,7 +24,7 @@ class Consents extends Settings {
 
 		ee('CP/Alert')->makeDeprecationNotice()->now();
 
-		if ( ! ee('Permission')->has('can_manage_consents'))
+		if ( ! ee('Permission')->can('manage_consents'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

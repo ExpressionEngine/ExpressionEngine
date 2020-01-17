@@ -123,7 +123,7 @@ class Simple_commerce_upd {
 	{
 		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Simple_commerce'");
 
-		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
+		$sql[] = "DELETE FROM exp_module_member_roles WHERE module_id = '".$query->row('module_id') ."'";
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Simple_commerce'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Simple_commerce'";
 		$sql[] = "DROP TABLE IF EXISTS exp_simple_commerce_items";

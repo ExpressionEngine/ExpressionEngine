@@ -20,6 +20,8 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  */
 class Profile extends CP_Controller {
 
+	protected $query_string;
+	protected $member;
 	private $base_url = 'members/profile/settings';
 
 	/**
@@ -31,6 +33,7 @@ class Profile extends CP_Controller {
 
 		ee()->lang->loadfile('settings');
 		ee()->lang->loadfile('myaccount');
+		ee()->lang->loadfile('members');
 
 		// check permissions everywhere except for this landing page controller,
 		// which redirects in its index function
@@ -57,13 +60,11 @@ class Profile extends CP_Controller {
 			show_404();
 		}
 
-		if ($this->member->group_id == 1 && ee()->session->userdata('group_id') != 1)
+		if ($this->member->isSuperAdmin() && ! ee('Permission')->isSuperAdmin())
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		ee()->lang->loadfile('members');
-		ee()->lang->loadfile('myaccount');
 		ee()->load->model('member_model');
 		ee()->load->library('form_validation');
 
@@ -82,7 +83,7 @@ class Profile extends CP_Controller {
 
 	protected function permissionCheck()
 	{
-		if ( ! $this->cp->allowed_group('can_access_members', 'can_edit_members'))
+		if ( ! ee('Permission')->hasAll('can_access_members', 'can_edit_members'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -104,7 +105,7 @@ class Profile extends CP_Controller {
 		$list->addItem(lang('email_settings'), ee('CP/URL')->make('members/profile/email', $this->query_string));
 		$list->addItem(lang('auth_settings'), ee('CP/URL')->make('members/profile/auth', $this->query_string));
 
-		if (ee()->config->item('allow_member_localization') == 'y' OR ee()->session->userdata('group_id') == 1)
+		if (ee()->config->item('allow_member_localization') == 'y' OR ee('Permission')->isSuperAdmin())
 		{
 			$list->addItem(lang('date_settings'), ee('CP/URL')->make('members/profile/date', $this->query_string));
 		}
@@ -113,7 +114,7 @@ class Profile extends CP_Controller {
 
 		$publishing_link = NULL;
 
-		if ($this->cp->allowed_group('can_access_members', 'can_edit_members'))
+		if (ee('Permission')->hasAll('can_access_members', 'can_edit_members'))
 		{
 			$publishing_link = ee('CP/URL')->make('members/profile/publishing', $this->query_string);
 		}
@@ -121,7 +122,7 @@ class Profile extends CP_Controller {
 		$list = $sidebar->addHeader(lang('publishing_settings'), $publishing_link)
 			->addBasicList();
 
-		if ($this->cp->allowed_group('can_edit_html_buttons'))
+		if (ee('Permission')->can('edit_html_buttons'))
 		{
 			$url = ee('CP/URL')->make('members/profile/buttons', $this->query_string);
 			$item = $list->addItem(lang('html_buttons'), $url);
@@ -148,7 +149,7 @@ class Profile extends CP_Controller {
 
 		$list->addItem(lang('subscriptions'), ee('CP/URL')->make('members/profile/subscriptions', $this->query_string));
 
-		if (ee()->cp->allowed_group('can_edit_members'))
+		if (ee('Permission')->can('edit_members'))
 		{
 			$list = $sidebar->addHeader(lang('administration'))
 				->addBasicList();
@@ -157,14 +158,15 @@ class Profile extends CP_Controller {
 
 			$list->addItem(lang('blocked_members'), ee('CP/URL')->make('members/profile/ignore', $this->query_string));
 
-			$sa_editing_self = ($this->member->group_id == 1 && $this->member->member_id == ee()->session->userdata['member_id']);
-			$group_locked = (ee()->session->userdata['group_id'] != 1 && $this->member->MemberGroup->is_locked);
+			$sa_editing_self = ($this->member->isSuperAdmin() && $this->member->member_id == ee()->session->userdata['member_id']);
+			$group_locked = (! ee('Permission')->isSuperAdmin() && $this->member->PrimaryRole->is_locked);
 
 			if ( ! $sa_editing_self && ! $group_locked)
 			{
-				$list->addItem(lang('member_group'), ee('CP/URL')->make('members/profile/group', $this->query_string));
+				$list->addItem(lang('member_roles'), ee('CP/URL')->make('members/profile/roles', $this->query_string));
 			}
 
+			$list->addItem(lang('access_overview'), ee('CP/URL')->make('members/profile/access', $this->query_string));
 			$list->addItem(lang('cp_settings'), ee('CP/URL')->make('members/profile/cp-settings', $this->query_string));
 
 			if ($this->member->member_id != ee()->session->userdata['member_id'])
@@ -174,12 +176,12 @@ class Profile extends CP_Controller {
 					$list->addItem(sprintf(lang('email_username'), $this->member->username), ee('CP/URL')->make('utilities/communicate/member/' . $this->member->member_id));
 				}
 
-				if (ee()->session->userdata('group_id') == 1 && ! $this->member->isAnonymized())
+				if (ee('Permission')->isSuperAdmin() && ! $this->member->isAnonymized())
 				{
 					$list->addItem(sprintf(lang('login_as'), $this->member->username), ee('CP/URL')->make('members/profile/login', $this->query_string));
 				}
 
-				if (ee()->cp->allowed_group('can_delete_members'))
+				if (ee('Permission')->can('delete_members'))
 				{
 					$session = ee('Model')->get('Session', ee()->session->userdata('session_id'))->first();
 
@@ -239,11 +241,11 @@ class Profile extends CP_Controller {
 					$heirs_view = '';
 					if (ee('Model')->get('ChannelEntry')->filter('author_id', $this->member->getId())->count() > 0)
 					{
-						$group_ids = array(1, $this->member->MemberGroup->getId());
+						$role_ids = array(1, $this->member->role_id);
 
 						$heirs = ee('Model')->get('Member')
 							->fields('username', 'screen_name')
-							->filter('group_id', 'IN', $group_ids)
+							->filter('role_id', 'IN', $role_ids)
 							->filter('member_id', '!=', $this->member->getId())
 							->order('screen_name')
 							->limit(100)
@@ -264,7 +266,7 @@ class Profile extends CP_Controller {
 								'filter_url' => ee('CP/URL')->make(
 									'members/heir-filter',
 									[
-										'group_ids' => implode('|', $group_ids),
+										'role_ids' => implode('|', $role_ids),
 										'selected' => $this->member->getId()
 									]
 								)->compile(),

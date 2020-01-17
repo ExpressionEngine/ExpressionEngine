@@ -213,13 +213,13 @@ class File extends Model {
 	/**
 	* Determines if the member group (by ID) has access permission to this
 	* upload destination.
-	* @see UploadDestination::memberGroupHasAccess
+	* @see UploadDestination::memberHasAccess
 	*
 	* @throws InvalidArgumentException
-	* @param int|MemberGroup $group_id The Member Group ID
+	* @param Member $member The Member
 	* @return bool TRUE if access is granted; FALSE if access denied
 	*/
-	public function memberGroupHasAccess($group)
+	public function memberHasAccess($member)
 	{
 		$dir = $this->UploadDestination;
 		if ( ! $dir)
@@ -227,7 +227,7 @@ class File extends Model {
 			return FALSE;
 		}
 
-		return $dir->memberGroupHasAccess($group);
+		return $dir->memberHasAccess($member);
 	}
 
 	/**

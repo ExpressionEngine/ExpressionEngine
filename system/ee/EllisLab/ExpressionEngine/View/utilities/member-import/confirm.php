@@ -26,8 +26,8 @@
 			</thead>
 			<tbody>
 				<tr class="alt">
-					<td><?=lang('member_group')?></td>
-					<td><?=$default_group_id?></td>
+					<td><?=lang('role')?></td>
+					<td><?=$default_role_id?></td>
 				</tr>
 				<tr>
 					<td><?=lang('mbr_language')?></td>

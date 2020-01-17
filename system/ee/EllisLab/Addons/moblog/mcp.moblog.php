@@ -292,36 +292,7 @@ EOT;
 				? $channel->Site->site_label.' - '.$channel->channel_title : $channel->channel_title;
 		}
 
-		$author_options = array();
-
-		// First, get member groups who should be in the list
-		$member_groups = ee('Model')->get('MemberGroup')
-			->with('AssignedChannels')
-			->filter('include_in_authorlist', 'y')
-			->fields('group_id')
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
-
-		// Then authors who are individually selected to appear in author list
-		$authors = ee('Model')->get('Member')
-			->fields('username', 'screen_name')
-			->filter('in_authorlist', 'y');
-
-		// Then grab any members that are part of the member groups we found
-		if ($member_groups->count())
-		{
-			$authors->orFilter('group_id', 'IN', $member_groups->pluck('group_id'));
-		}
-
-		$authors->order('screen_name');
-		$authors->order('username');
-
-		foreach ($authors->all() as $author)
-		{
-			$author_options[$author->getId()] = $author->getMemberName();
-		}
-
-		$moblog_authors = $author_options;// ee('Model')->get('Member')->fields('member_id', 'screen_name')->limit(100)->all()->getDictionary('member_id', 'screen_name');
+		$moblog_authors = ee('Member')->getAuthors(NULL, FALSE);
 
 		$vars['sections'] = array(
 			array(
@@ -645,7 +616,7 @@ EOT;
 				->with('Statuses')
 				->order('channel_title');
 
-			if ( ! ee()->cp->allowed_group('can_edit_other_entries'))
+			if ( ! ee('Permission')->can('edit_other_entries'))
 			{
 				$channels->filter('channel_id', 'IN', $allowed_channels);
 			}
@@ -654,11 +625,9 @@ EOT;
 				array('0', lang('none'))
 			);
 
-			$super_admins = ee('Model')->get('Member')
-				->filter('group_id', 1)
-				->all();
+			$super_admins = ee('Model')->get('Role', 1)->first();
 
-			foreach ($super_admins as $admin)
+			foreach ($super_admins->Members as $admin)
 			{
 				$authors[] = array($admin->getId(), $admin->getMemberName());
 			}
@@ -705,9 +674,9 @@ EOT;
 					'moblog_author_id' => $authors,
 				);
 
-				foreach ($channel->AssignedMemberGroups as $member_group)
+				foreach ($channel->AssignedRoles as $role)
 				{
-					foreach ($member_group->Members as $member)
+					foreach ($role->Members as $member)
 					{
 						$channel_info[$channel->getId()]['moblog_author_id'][] = array($member->getId(), $member->getMemberName());
 					}
@@ -812,19 +781,17 @@ MAGIC;
 			$sizes_array[$row['upload_location_id']][$row['id']] = $row['short_name'];
 		}
 
-		$upload_q = ee()->file_upload_preferences_model->get_file_upload_preferences(ee()->session->userdata['group_id']);
-
-		foreach ($upload_q as $row)
+		foreach (ee()->session->getMember()->getAssignedUploadDestinations() as $destination)
 		{
-			$this->image_dim_array[$row['id']] = array('0' => lang('none'));
-			$this->upload_loc_array[$row['id']] = $row['name'];
+			$this->image_dim_array[$destination->id] = array('0' => lang('none'));
+			$this->upload_loc_array[$destination->id] = $destination->name;
 
 			// Get sizes
-			if (isset($sizes_array[$row['id']]))
+			if (isset($sizes_array[$destination->id]))
 			{
-				foreach ($sizes_array[$row['id']] as $id => $title)
+				foreach ($sizes_array[$destination->id] as $id => $title)
 				{
-					$this->image_dim_array[$row['id']][$id] = $title;
+					$this->image_dim_array[$destination->id][$id] = $title;
 				}
 			}
 		}

@@ -71,7 +71,7 @@ class Blacklist_mcp {
 		$allow_write_htaccess = FALSE;
 		$htaccess_path = NULL;
 
-		if (ee()->session->userdata('group_id') == '1')
+		if (ee('Permission')->isSuperAdmin())
 		{
 			$allow_write_htaccess = TRUE;
 			$htaccess_path = ee()->config->item('htaccess_path', '', TRUE);
@@ -130,7 +130,7 @@ class Blacklist_mcp {
 	 */
 	public function save_htaccess_path()
 	{
-		if (ee()->session->userdata('group_id') != '1' OR ee()->input->get_post('htaccess_path') === FALSE OR (ee()->input->get_post('htaccess_path') == '' && ee()->config->item('htaccess_path') === FALSE))
+		if ( ! ee('Permission')->isSuperAdmin() OR ee()->input->get_post('htaccess_path') === FALSE OR (ee()->input->get_post('htaccess_path') == '' && ee()->config->item('htaccess_path') === FALSE))
 		{
 			ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 		}
@@ -201,7 +201,7 @@ class Blacklist_mcp {
 	{
 		$htaccess_path = ($htaccess_path == '') ? ee()->config->item('htaccess_path') : $htaccess_path;
 
-		if (ee()->session->userdata('group_id') != '1' OR $htaccess_path == '')
+		if ( ! ee('Permission')->isSuperAdmin() OR $htaccess_path == '')
 		{
 			ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 		}

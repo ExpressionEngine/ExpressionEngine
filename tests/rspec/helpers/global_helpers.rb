@@ -196,16 +196,22 @@ def add_member(group_id: 5, username: 'johndoe', screen_name: 'John Doe', email:
   system(command)
 end
 
-def ee_config(site_id: nil, item: nil, value: nil)
+def ee_config(site_id: nil, item: nil, value: nil, raw: false)
   if item
-    command = "cd fixtures && php config.php " + item.to_s
-
-    if value
-      command += " '" + value.to_s + "'"
-    end
+    command = "cd fixtures && php config.php"
 
     if site_id
       command += " --site-id " + site_id.to_s
+    end
+
+    if raw
+      command += " --raw"
+    end
+
+    command += " " + item.to_s
+
+    if value
+      command += " '" + value.to_s + "'"
     end
 
     # Capture stdout but ignore stderr

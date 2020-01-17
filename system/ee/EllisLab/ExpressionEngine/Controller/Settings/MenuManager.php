@@ -113,7 +113,7 @@ class MenuManager extends Settings {
 				$checkbox['disabled'] = "disabled";
 			}
 
-			$assigned = $set->MemberGroups->filter('can_access_cp', TRUE)->pluck('group_title');
+			$assigned = $set->RoleSettings->filter('role_id', 'IN', ee('Permission')->rolesThatCan('access_cp'))->pluck('role_id');
 
 			$columns = array(
 				$main_link,
@@ -188,10 +188,9 @@ class MenuManager extends Settings {
 		{
 			$set->set($_POST);
 
-			$assigned = ee('Request')->post('member_groups');
-			$set->MemberGroups = ee('Model')
-				->get('MemberGroup', (array) $assigned)
-				->filter('can_access_cp', 'y')
+			$assigned = (array) ee('Request')->post('roles');
+			$set->RoleSettings = ee('Model')
+				->get('RoleSetting', array_intersect($assigned, ee('Permission')->rolesThatCan('access_cp')))
 				->all();
 
 			$sort = (array) ee('Request')->post('sort', array());
@@ -366,15 +365,14 @@ class MenuManager extends Settings {
 	private function mainForm(MenuSet $set)
 	{
 		$disabled_choices = array();
-		$member_groups = ee('Model')->get('MemberGroup')
-			->filter('can_access_cp', 'y')
-			->filter('site_id', 1) // this is on purpose, saving the member group apply the set to other sites
+		$roles = ee('Model')->get('Role')
+			->filter('role_id', 'IN', ee('Permission')->rolesThatCan('access_cp', 1))
 			->all()
-			->getDictionary('group_id', 'group_title');
+			->getDictionary('role_id', 'name');
 
 		$other_sets = ee('Model')->get('MenuSet')
-			->with('MemberGroups')
-			->filter('MemberGroups.can_access_cp', 'y');
+			->with('RoleSettings')
+			->filter('RoleSettings.role_id', ee('Permission')->rolesThatCan('access_cp'));
 
 		if ( ! $set->isNew())
 		{
@@ -384,21 +382,18 @@ class MenuManager extends Settings {
 
 		foreach ($other_sets->all() as $other_set)
 		{
-			foreach ($other_set->MemberGroups as $group)
+			foreach ($other_set->RoleSettings as $role)
 			{
-				if ($group->can_access_cp)
-				{
-					$member_groups[$group->group_id] = [
-						'label' => $group->group_title,
-						'value' => $group->group_id,
-						'instructions' => lang('assigned_to') . ' ' . $other_set->name
-					];
-					$disabled_choices[] = $group->group_id;
-				}
+				$roles[$role->role_id] = [
+					'label' => $role->name,
+					'value' => $role->role_id,
+					'instructions' => lang('assigned_to') . ' ' . $other_set->name
+				];
+				$disabled_choices[] = $role->role_id;
 			}
 		}
 
-		$selected_member_groups = ($set->MemberGroups) ? $set->MemberGroups->pluck('group_id') : array();
+		$selected_roles = ($set->RoleSettings) ? $set->RoleSettings->pluck('role_id') : array();
 
 		$section = array(
 			array(
@@ -412,16 +407,16 @@ class MenuManager extends Settings {
 				)
 			),
 			array(
-				'title' => 'set_member_groups',
-				'desc' => 'set_member_groups_desc',
+				'title' => 'set_roles',
+				'desc' => 'set_roles_desc',
 				'fields' => array(
-					'member_groups' => array(
+					'roles' => array(
 						'type' => 'checkbox',
-						'choices' => $member_groups,
+						'choices' => $roles,
 						'disabled_choices' => $disabled_choices,
-						'value' => $selected_member_groups,
+						'value' => $selected_roles,
 						'no_results' => [
-							'text' => sprintf(lang('no_found'), lang('member_groups'))
+							'text' => sprintf(lang('no_found'), lang('roles'))
 						]
 					)
 				)

@@ -227,7 +227,7 @@ feature 'CP Log' do
     @page.modal_submit_button.click # Submits a form
 
     @page.should have_alert
-    @page.alert.text.should eq "Logs Deleted 167 log(s) deleted from Control Panel logs"
+    @page.alert.text.should eq "Logs Deleted 169 log(s) deleted from Control Panel logs"
 
     @page.should have_no_results
     @page.should_not have_pagination

@@ -598,7 +598,7 @@ class Simple_commerce_mcp {
 							'choices' => $member_groups,
 							'value' => $item->new_member_group,
 							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								'text' => sprintf(lang('no_found'), lang('roles'))
 							]
 						)
 					)
@@ -640,7 +640,7 @@ class Simple_commerce_mcp {
 							'choices' => $member_groups,
 							'value' => $item->member_group_unsubscribe,
 							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								'text' => sprintf(lang('no_found'), lang('roles'))
 							]
 						)
 					)

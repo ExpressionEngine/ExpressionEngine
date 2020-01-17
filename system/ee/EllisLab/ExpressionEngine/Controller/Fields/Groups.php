@@ -22,7 +22,7 @@ class Groups extends AbstractFieldsController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group_any(
+		if ( ! ee('Permission')->hasAny(
 			'can_create_channel_fields',
 			'can_edit_channel_fields',
 			'can_delete_channel_fields'
@@ -37,7 +37,7 @@ class Groups extends AbstractFieldsController {
 
 	public function create()
 	{
-		if ( ! ee()->cp->allowed_group('can_create_channel_fields'))
+		if ( ! ee('Permission')->can('create_channel_fields'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -143,7 +143,7 @@ class Groups extends AbstractFieldsController {
 
 	public function edit($id)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_channel_fields'))
+		if ( ! ee('Permission')->can('edit_channel_fields'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -367,7 +367,7 @@ class Groups extends AbstractFieldsController {
 
 	public function remove()
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_channel_fields'))
+		if ( ! ee('Permission')->can('delete_channel_fields'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

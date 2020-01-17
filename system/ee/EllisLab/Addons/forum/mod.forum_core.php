@@ -145,15 +145,9 @@ class Forum_Core extends Forum {
 			return;
 		}
 
-		ee()->db->select('group_id, group_title');
-		$g_query = ee()->db->get_where('member_groups',
-											array('site_id' => ee()->config->item('site_id'))
-										);
-
-		foreach ($g_query->result_array() as $row)
-		{
-			$groups[$row['group_id']] = $row['group_title'];
-		}
+		$groups = ee('Model')->get('Role')
+			->all()
+			->getDictionary('role_id', 'name');
 
 		ee()->db->select('mod_forum_id, mod_member_id, mod_group_id, mod_member_name');
 		$m_query = ee()->db->get_where('forum_moderators',
@@ -670,16 +664,8 @@ class Forum_Core extends Forum {
 			return TRUE;
 		}
 
-		$query = ee()->db->select('member_id')->get_where('members',
-													array('group_id' => (int) 1));
-
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result_array() as $row)
-			{
-				$this->admin_members[] = $row['member_id'];
-			}
-		}
+		$admin_role = ee('Model')->get('Role', 1)->first();
+		$this->admin_members = array_merge($this->admin_members, $admin_role->Members->pluck('member_id'));
 
 		$query = ee()->db->select('admin_group_id, admin_member_id')
 							  ->get_where('forum_administrators',
@@ -724,12 +710,7 @@ class Forum_Core extends Forum {
 				return FALSE;
 			}
 
-			if ($group_id == 0)
-			{
-				$group_id = ee()->session->userdata('group_id');
-			}
-
-			if ($group_id == 1)
+			if (ee('Permission')->isSuperAdmin())
 			{
 				return TRUE;
 			}
@@ -745,9 +726,20 @@ class Forum_Core extends Forum {
 			return TRUE;
 		}
 
-		if (in_array($group_id, $this->admin_groups))
+		if (is_array($group_id))
 		{
-			return TRUE;
+			$in_admin = array_intersect($role_ids, $this->admin_groups);
+			if ( ! empty($in_admin))
+			{
+				return TRUE;
+			}
+		}
+		else
+		{
+			if (in_array($group_id, $this->admin_groups))
+			{
+				return TRUE;
+			}
 		}
 
 		// If we know the member ID but not the group
@@ -755,19 +747,23 @@ class Forum_Core extends Forum {
 
 		if ($member_id != 0 AND $group_id == 0)
 		{
-			$query = ee()->db->select('group_id')
-								  ->get_where('members',
-								  		array('member_id' => (int) $member_id));
+			if ($member_id = ee()->session->userdata('member_id'))
+			{
+				return ee('Permission')->isSuperAdmin();
+			}
 
-			if ($query->num_rows() == 0)
+			$member = ee('Model')->get('Member', $member_id)->first();
+
+			if ( ! $member)
 			{
 				return FALSE;
 			}
 
-			if (in_array($query->row('group_id') , $this->admin_groups) OR $query->row('group_id')  == 1)
-			{
-				return TRUE;
-			}
+			$role_ids = $member->getAllRoles()->pluck('role_id');
+
+			$in_admin = array_intersect($role_ids, $this->admin_groups);
+
+			return ( ! empty($in_admin) || in_array(1, $role_ids));
 		}
 
 		return FALSE;
@@ -788,8 +784,15 @@ class Forum_Core extends Forum {
 			return FALSE;
 		}
 
-		$groups = explode('|', $permission_array[$item]);
-		return in_array(ee()->session->userdata('group_id'), $groups);
+		foreach (explode('|', $permission_array[$item]) as $role_id)
+		{
+			if (ee('Permission')->hasRole($role_id))
+			{
+				return TRUE;
+			}
+		}
+
+		return FALSE;
 	}
 
 	/**
@@ -815,20 +818,24 @@ class Forum_Core extends Forum {
 		}
 
 		// Check the cache for the permission
-		$group_id = ee()->session->userdata('group_id');
-		$member_id = ee()->session->userdata('member_id');
+		$role_ids = ee()->session->getMember()->getAllRoles()->pluck('role_id');
 
-		if (isset($this->current_moderator[$forum_id][$group_id][$item]))
+		foreach ($role_ids as $role_id)
 		{
-			return ($this->current_moderator[$forum_id][$group_id][$item] == 'y') ? TRUE : FALSE;
+			if (isset($this->current_moderator[$forum_id][$role_id][$item]))
+			{
+				return ($this->current_moderator[$forum_id][$role_id][$item] == 'y') ? TRUE : FALSE;
+			}
 		}
-		elseif (isset($this->current_moderator[$forum_id][$member_id][$item]))
+
+		$member_id = ee()->session->userdata('member_id');
+		if (isset($this->current_moderator[$forum_id][$member_id][$item]))
 		{
 			return ($this->current_moderator[$forum_id][$member_id][$item] == 'y') ? TRUE : FALSE;
 		}
 
 		// Fetch the permissions from the DB
-		$query = ee()->db->query("SELECT * FROM exp_forum_moderators WHERE mod_forum_id = '{$forum_id}' AND (mod_member_id = '{$member_id}' OR mod_group_id = '{$group_id}')");
+		$query = ee()->db->query("SELECT * FROM exp_forum_moderators WHERE mod_forum_id = '{$forum_id}' AND (mod_member_id = '{$member_id}' OR mod_group_id IN (" . implode($role_ids, ', ') . "))");
 
 		if ($query->num_rows() == 0)
 		{
@@ -849,11 +856,15 @@ class Forum_Core extends Forum {
 			}
 		}
 
-		if (isset($this->current_moderator[$forum_id][$group_id][$item]))
+		foreach ($role_ids as $role_id)
 		{
-			return ($this->current_moderator[$forum_id][$group_id][$item] == 'y') ? TRUE : FALSE;
+			if (isset($this->current_moderator[$forum_id][$role_id][$item]))
+			{
+				return ($this->current_moderator[$forum_id][$role_id][$item] == 'y') ? TRUE : FALSE;
+			}
 		}
-		elseif (isset($this->current_moderator[$forum_id][$member_id][$item]))
+
+		if (isset($this->current_moderator[$forum_id][$member_id][$item]))
 		{
 			return ($this->current_moderator[$forum_id][$member_id][$item] == 'y') ? TRUE : FALSE;
 		}
@@ -2977,7 +2988,7 @@ class Forum_Core extends Forum {
 		$meta = $this->_fetch_forum_metadata($forum_id);
 		$perms = unserialize(stripslashes($meta[$forum_id]['forum_permissions']));
 
-		if ( ! $this->_permission('can_post_reply', $perms) OR ($tquery->row('status')  == 'c' AND ee()->session->userdata('group_id') != 1) OR ee()->session->userdata('member_id') == 0)
+		if ( ! $this->_permission('can_post_reply', $perms) OR ($tquery->row('status')  == 'c' AND ! ee('Permission')->isSuperAdmin()) OR ee()->session->userdata('member_id') == 0)
 		{
 			$str = $this->deny_if('can_post', $str, '&nbsp;');
 		}
@@ -3517,7 +3528,7 @@ class Forum_Core extends Forum {
 			$meta = $this->_fetch_forum_metadata($row['forum_id']);
 			$perms = unserialize(stripslashes($meta[$row['forum_id']]['forum_permissions']));
 
-			if ( ! $this->_permission('can_post_reply', $perms) OR ($topic_status == 'c' AND ee()->session->userdata('group_id') != 1) OR ee()->session->userdata('member_id') == 0)
+			if ( ! $this->_permission('can_post_reply', $perms) OR ($topic_status == 'c' AND ! ee('Permission')->isSuperAdmin()) OR ee()->session->userdata('member_id') == 0)
 			{
 				$temp = $this->deny_if('can_post', $temp, '&nbsp;');
 			}
@@ -3560,7 +3571,7 @@ class Forum_Core extends Forum {
 			}
 
 			// Parse the "Delete" Button
-			if (ee()->session->userdata('group_id') == 1 OR
+			if (ee('Permission')->isSuperAdmin() OR
 				($this->_mod_permission('can_delete', $row['forum_id']) &&
 				! in_array($row['author_id'], $super_admins)))
 			{
@@ -3578,7 +3589,7 @@ class Forum_Core extends Forum {
 
 			$can_edit = FALSE;
 
-			if (ee()->session->userdata('group_id') == 1 OR
+			if (ee('Permission')->isSuperAdmin() OR
 				(ee()->session->userdata('member_id') == $row['author_id']))
 			{
 				$can_edit = TRUE;
@@ -4919,17 +4930,7 @@ class Forum_Core extends Forum {
 	 */
 	public function fetch_superadmins()
 	{
-		$super_admins = array();
-
-		ee()->db->select('member_id');
-		$ad_query = ee()->db->get_where('members', array('group_id' => 1));
-
-		foreach ($ad_query->result_array() as $row)
-		{
-			$super_admins[] = $row['member_id'];
-		}
-
-		return $super_admins;
+		return ee('Model')->get('Role', 1)->first()->Members->pluck('member_id');
 	}
 
 	/**
@@ -5250,7 +5251,7 @@ class Forum_Core extends Forum {
 		}
 		else
 		{
-			$config['xss_clean'] = (ee()->session->userdata('group_id') === 1) ? FALSE : TRUE;
+			$config['xss_clean'] = (ee('Permission')->isSuperAdmin()) ? FALSE : TRUE;
 		}
 
 		ee()->load->library('upload', $config);
@@ -5572,7 +5573,7 @@ class Forum_Core extends Forum {
 				return $this->trigger_error('topic_no_exists');
 			}
 
-			if ($meta[$this->current_id]['forum_is_cat'] == 'y' OR ($meta[$this->current_id]['status'] == 'c' AND ee()->session->userdata('group_id') != 1) OR $meta[$this->current_id]['forum_status'] == 'a')
+			if ($meta[$this->current_id]['forum_is_cat'] == 'y' OR ($meta[$this->current_id]['status'] == 'c' AND ! ee('Permission')->isSuperAdmin()) OR $meta[$this->current_id]['forum_status'] == 'a')
 			{
 				return $this->trigger_error('not_authorized');
 			}
@@ -5650,7 +5651,7 @@ class Forum_Core extends Forum {
 					//  Fetch the Super Admin IDs
 					$super_admins = $this->fetch_superadmins();
 
-					if (in_array($meta[$this->current_id]['author_id'], $super_admins) && ee()->session->userdata('group_id') != 1)
+					if (in_array($meta[$this->current_id]['author_id'], $super_admins) && ! ee('Permission')->isSuperAdmin())
 					{
 						//return $this->trigger_error('not_authorized');
 					}
@@ -5686,7 +5687,7 @@ class Forum_Core extends Forum {
 		}
 
 		// Throttle check
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$query = ee()->db->query("SELECT forum_post_timelock FROM exp_forums WHERE forum_id = '{$meta[$this->current_id]['forum_id']}'");
 
@@ -5707,7 +5708,7 @@ class Forum_Core extends Forum {
 		// Do we allow duplicate data?
 		if ($this->current_request != 'edittopic' AND $this->current_request != 'editreply')
 		{
-			if (ee()->config->item('deny_duplicate_data') == 'y' AND ee()->session->userdata['group_id'] != 1 AND ee()->input->post('body') != '')
+			if (ee()->config->item('deny_duplicate_data') == 'y' AND ! ee('Permission')->isSuperAdmin() AND ee()->input->post('body') != '')
 			{
 				$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_topics WHERE body = '".ee()->db->escape_str(ee()->input->post('body'))."'");
 
@@ -5778,7 +5779,7 @@ class Forum_Core extends Forum {
 
 		// Check for spam
 		$spam = FALSE;
-		if (ee()->input->post('preview') == FALSE && ee()->session->userdata('group_id') != 1)
+		if (ee()->input->post('preview') == FALSE && ! ee('Permission')->isSuperAdmin())
 		{
 			$body = ee()->input->post('body');
 			$title = ee()->input->post('title');
@@ -6183,20 +6184,8 @@ class Forum_Core extends Forum {
 			($this->current_request != 'newtopic' && $cmeta[$fdata['forum_parent']]['forum_notify_moderators_replies'] == 'y')
 			)
 		{
-			ee()->db->select('email');
-			ee()->db->from('members, forum_moderators');
-			ee()->db->where('(exp_members.member_id = exp_forum_moderators.mod_member_id OR exp_members.group_id =  exp_forum_moderators.mod_group_id)', NULL, FALSE);
-			ee()->db->where('exp_forum_moderators.mod_forum_id', $fdata['forum_id']);
-
-			$query = ee()->db->get();
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$notify_addresses .= ','.$row['email'];
-				}
-			}
+			$forum = ee('Model')->get('ee:Forum', $fdata['forum_id'])->first();
+			$notify_addresses .= $forum->getModeratorEmailString();
 		}
 
 		$notify_addresses = str_replace(' ', '', $notify_addresses);
@@ -6520,7 +6509,7 @@ class Forum_Core extends Forum {
 			//  Fetch the Super Admin IDs
 			$super_admins = $this->fetch_superadmins();
 
-			if (in_array($author_id, $super_admins) && ee()->session->userdata('group_id') != 1)
+			if (in_array($author_id, $super_admins) && ! ee('Permission')->isSuperAdmin())
 			{
 				return $this->trigger_error('not_authorized');
 			}
@@ -7867,24 +7856,8 @@ class Forum_Core extends Forum {
 		// Load up email addresses
 		$addresses = array();
 
-		ee()->db->select('email');
-		ee()->db->from('members, forum_moderators');
-		ee()->db->where('(exp_members.member_id = exp_forum_moderators.mod_member_id OR exp_members.group_id =  exp_forum_moderators.mod_group_id)', NULL, FALSE);
-		ee()->db->where('exp_forum_moderators.mod_forum_id', $forum_id);
-		$mquery = ee()->db->get();
-
-		if ($mquery->num_rows() == 0)
-		{
-			$addresses[] = ee()->config->item('webmaster_email');
-		}
-		else
-		{
-			foreach($mquery->result_array() as $row)
-			{
-				$addresses[] = $row['email'];
-			}
-		}
-
+		$forum = ee('Model')->get('ee:Forum', $fdata['forum_id'])->first();
+		$addresses = explode(',', $forum->getModeratorEmailString());
 		$addresses = array_unique($addresses);
 
 		// Send the notifications
@@ -7940,21 +7913,21 @@ class Forum_Core extends Forum {
 		}
 
 		// Fetch the member info
-		$query = ee()->db->query("SELECT screen_name, group_id FROM exp_members WHERE member_id = '{$this->current_id}'");
+		$member = ee('Model')->get('Member', $this->current_id)->first();
 
-		if ($query->num_rows() == 0)
+		if ( ! $member)
 		{
 			return $this->trigger_error();
 		}
 
 		// Super-admins can't be banned
-		if ($query->row('group_id')  == 1)
+		if ($member->isSuperAdmin())
 		{
 			return $this->trigger_error('can_not_ban_super_admins');
 		}
 
 		// Admins can not be banned - except by a super admin
-		if ($this->_is_admin($this->current_id, $query->row('group_id') ) AND ee()->session->userdata('group_id') != 1)
+		if ($this->_is_admin($this->current_id, $member->getAllRoles()->pluck('role_id')) AND ! ee('Permission')->isSuperAdmin())
 		{
 			return $this->trigger_error('admins_can_not_be_banned');
 		}
@@ -7974,7 +7947,7 @@ class Forum_Core extends Forum {
 								);
 
 		// Is user already banned?
-		if ($query->row('group_id')  == 2)
+		if ($member->isBanned())
 		{
 			$template = $this->allow_if('user_is_banned', $template);
 			$template = $this->deny_if('user_not_banned', $template);
@@ -8010,25 +7983,25 @@ class Forum_Core extends Forum {
 		}
 
 		// Fetch the member info
-		$query = ee()->db->query("SELECT screen_name, group_id, ip_address FROM exp_members WHERE member_id = '".ee()->db->escape_str($this->current_id)."'");
+		$member = ee('Model')->get('Member', $this->current_id)->first();
 
-		if ($query->num_rows() == 0)
+		if ( ! $member)
 		{
 			return $this->trigger_error();
 		}
 
-		$screen_name = $query->row('screen_name') ;
-		$ip_address  = $query->row('ip_address') ;
+		$screen_name = $member->screen_name;
+		$ip_address  = $member->ip_address;
 
 		// Super-admins can't be banned
-		if ($query->row('group_id')  == 1)
+		if ($member->isSuperAdmin())
 		{
 			return $this->trigger_error('can_not_ban_super_admins');
 		}
 
 		// Admins can not be banned - except by a super admin
-		if ($this->_is_admin($this->current_id, $query->row('group_id') ) &&
-			ee()->session->userdata('group_id') != 1)
+		if ($this->_is_admin($this->current_id, $member->getAllRoles()->pluck('role_id') ) &&
+			! ee('Permission')->isSuperAdmin())
 		{
 			return $this->trigger_error('admins_can_not_be_banned');
 		}
@@ -8129,7 +8102,7 @@ class Forum_Core extends Forum {
 		// Reinstate the user
 		if ($_POST['action'] == 'reinstate')
 		{
-			ee()->db->query("UPDATE exp_members SET group_id = '".ee()->config->item('default_member_group')."' WHERE member_id = '{$this->current_id}'");
+			ee()->db->query("UPDATE exp_members SET group_id = '".ee()->config->item('default_primary_role')."' WHERE member_id = '{$this->current_id}'");
 			$ban_msg = lang('user_account_reinstated');
 			$banned_user_ips = '';
 		}
@@ -8386,7 +8359,7 @@ class Forum_Core extends Forum {
 
 			if ($v['1'] == 'y')
 			{
-				if (ee()->session->userdata('group_id') == 1)
+				if (ee('Permission')->isSuperAdmin())
 				{
 					$temp = preg_replace("/\{name\}/", $v['0'].'*', $temp);
 				}
@@ -8470,15 +8443,16 @@ class Forum_Core extends Forum {
 		// Build the Member Group list
 		$groups = "<option value='all' selected='selected'>".lang('search_all_groups')."</option>\n";
 
-		ee()->db->select('group_id, group_title');
-		ee()->db->where_not_in('group_id', array('2', '3', '4'));
-		ee()->db->where('site_id', ee()->config->item('site_id'));
-		ee()->db->where('include_in_memberlist', 'y');
-		$query = ee()->db->get('member_groups');
+		$roles = ee('Model')->get('RoleSetting')
+			->with('Role')
+			->filter('role_id', 'NOT IN', [2, 3, 4])
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('include_in_memberlist', 'y')
+			->all();
 
-		foreach ($query->result_array() as $row)
+		foreach ($roles as $role)
 		{
-			$groups .= "<option value='{$row['group_id']}'>{$row['group_title']}</option>\n";
+			$groups .= "<option value='{$role->role_id}'>{$role->Role->name}</option>\n";
 		}
 
 		// Create form
@@ -8631,7 +8605,7 @@ class Forum_Core extends Forum {
 
 		// Flood control
 
-		if (ee()->session->userdata['search_flood_control'] > 0 AND ee()->session->userdata['group_id'] != 1)
+		if (ee()->session->userdata['search_flood_control'] > 0 AND ! ee('Permission')->isSuperAdmin())
 		{
 			$cutoff = time() - ee()->session->userdata['search_flood_control'];
 
@@ -8788,6 +8762,7 @@ class Forum_Core extends Forum {
 		}
 
 		// Searching by Member Group?
+		$role_join = '';
 		$sql_topic_join = '';
 		$sql_post_join = '';
 		$groups = '';
@@ -8801,8 +8776,12 @@ class Forum_Core extends Forum {
 					$_POST['member_group'][$key] = ee()->db->escape_str($value);
 				}
 
-				$sql_topic_join = "\nLEFT JOIN exp_members ON exp_forum_topics.author_id = exp_members.member_id \n";
-				$sql_post_join	= "\nLEFT JOIN exp_members ON p.author_id = exp_members.member_id \n";
+				$role_join .= "\nLEFT JOIN exp_members_roles r ON m.member_id = r.member_id";
+				$role_join .= "\nLEFT JOIN exp_members_role_groups rg ON m.member_id = rg.member_id";
+				$role_join .= "\nLEFT JOIN exp_roles_role_groups rrg ON rg.group_id = rrg.group_id \n";
+
+				$sql_topic_join = $role_join . "\nLEFT JOIN exp_members ON exp_forum_topics.author_id = exp_members.member_id \n";
+				$sql_post_join	= $role_join . "\nLEFT JOIN exp_members ON p.author_id = exp_members.member_id \n";
 				$groups = "'".implode("','", $_POST['member_group'])."'";
 			}
 		}
@@ -8817,20 +8796,27 @@ class Forum_Core extends Forum {
 		{
 			$screen_name = $_POST['member_name'];
 
-			$sql = "SELECT member_id FROM exp_members WHERE ";
+			$sql = "SELECT DISTINCT m.member_id FROM exp_members m ";
+
+			if ($groups != '')
+			{
+				$sql .= $role_join;
+			}
+
+			$sql .= " WHERE ";
 
 			if (isset($_POST['exact_match']) AND $_POST['exact_match'] == 'y')
 			{
-				$sql .= " screen_name = '".ee()->db->escape_str(ee('Security/XSS')->clean($_POST['member_name']))."' ";
+				$sql .= " m.screen_name = '".ee()->db->escape_str(ee('Security/XSS')->clean($_POST['member_name']))."' ";
 			}
 			else
 			{
-				$sql .= " screen_name LIKE '%".ee()->db->escape_like_str(ee('Security/XSS')->clean($_POST['member_name']))."%' ";
+				$sql .= " m.screen_name LIKE '%".ee()->db->escape_like_str(ee('Security/XSS')->clean($_POST['member_name']))."%' ";
 			}
 
 			if ($groups != '')
 			{
-				$sql .= "AND exp_members.group_id IN ({$groups}) ";
+				$sql .= "AND (r.role_id IN ({$groups}) OR rrg.role_id IN ({$groups})) ";
 			}
 
 			$query = ee()->db->query($sql);
@@ -8944,7 +8930,7 @@ class Forum_Core extends Forum {
 		// we'll compile into one array later.
 
 		// TOPIC QUERY
-		$sql = "SELECT topic_id
+		$sql = "SELECT DISTINCT topic_id
 				FROM exp_forum_topics {$sql_topic_join}
 				WHERE board_id = '".$this->fetch_pref('board_id')."'
 				AND ";
@@ -9034,7 +9020,7 @@ class Forum_Core extends Forum {
 		// Filter by Member Group
 		if ($sql_topic_join != '')
 		{
-			$sql .= "AND exp_members.group_id IN ({$groups}) ";
+			$sql .= "AND (r.role_id IN ({$groups}) OR rrg.role_id IN ({$groups})) ";
 		}
 
 		if ($keywords != '')
@@ -9280,7 +9266,7 @@ class Forum_Core extends Forum {
 		// Filter by member group
 		if ($sql_post_join != '')
 		{
-			$sql .= "AND exp_members.group_id IN ({$groups}) ";
+			$sql .= "AND (r.role_id IN ({$groups}) OR rrg.role_id IN ({$groups})) ";
 		}
 
 		if ($keywords != '')
@@ -10741,9 +10727,11 @@ class Forum_Core extends Forum {
 		/**  Validate Username and Password
 		/** ----------------------------------*/
 
-		$query = ee()->db->query("SELECT password, group_id FROM exp_members WHERE username = '".ee()->db->escape_str($username)."'");
+		$member = ee('Model')->get('Member')
+			->filter('username', $username)
+			->first();
 
-		if ($query->num_rows() == 0)
+		if ( ! $member)
 		{
 			ee()->session->save_password_lockout($username);
 			return FALSE;
@@ -10755,13 +10743,16 @@ class Forum_Core extends Forum {
 			$allowed_groups[] = 1;
 		}
 
-		if ( ! in_array($query->row('group_id') , $allowed_groups))
+		$role_ids = $member->getAllRoles()->pluck('role_id');
+		$in_allowed_groups = array_intersect($role_ids, $allowed_groups);
+
+		if (empty($in_allowed_groups))
 		{
 			return FALSE;
 		}
 
 		$parts = array(
-						md5($username.':'.$realm.':'.$query->row('password') ),
+						md5($username.':'.$realm.':'.$member->password ),
 						md5($_SERVER['REQUEST_METHOD'].':'.$uri)
 					  );
 

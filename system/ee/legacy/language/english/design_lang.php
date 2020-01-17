@@ -6,11 +6,11 @@ $lang = array(
 
 'all_sites' => 'All Sites',
 
-'allowed_member_groups' => 'Allowed member groups',
+'allowed_roles' => 'Allowed roles',
 
-'allowed_member_groups_desc' => 'The following user groups are allowed to access this template.',
+'allowed_roles_desc' => 'The following roles are allowed to access this template.',
 
-'allowed_member_groups_super_admin' => 'Super Administrators are <b>always</b> allowed.',
+'allowed_roles_super_admin' => 'Super Administrators are <b>always</b> allowed.',
 
 'author_unknown' => 'unknown',
 
@@ -168,7 +168,7 @@ $lang = array(
 
 'make_default_group_desc' => 'When enabled, this group will become the default group for this website.',
 
-'member_groups' => 'Member Groups',
+'roles' => 'Roles',
 
 'messages' => 'Messages',
 
@@ -236,9 +236,9 @@ $lang = array(
 
 'template_manager' => 'Template Manager',
 
-'template_member_groups' => 'Allowed member groups',
+'template_roles' => 'Allowed roles',
 
-'template_member_groups_desc' => 'Users in these member groups can create, edit, and/or delete templates in this template group.',
+'template_roles_desc' => 'Users in these roles can perform each selected action in this template group.',
 
 'template_name_taken' => 'The template name you submitted is already taken',
 
@@ -492,7 +492,7 @@ $lang = array(
 
 'group_order' => 'Group order',
 
-'group_restriction' => 'Restrict this template to specific member groups',
+'group_restriction' => 'Restrict this template to specific roles',
 
 'history_cleared' => 'Template revision history has been deleted.',
 

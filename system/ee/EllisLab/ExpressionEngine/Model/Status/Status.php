@@ -46,13 +46,13 @@ class Status extends Model {
 		'Site' => array(
 			'type' => 'BelongsTo'
 		),
-		'NoAccess' => array(
+		'Roles' => array(
 			'type' => 'hasAndBelongsToMany',
-			'model' => 'MemberGroup',
+			'model' => 'Role',
 			'pivot' => array(
-				'table' => 'status_no_access',
+				'table' => 'statuses_roles',
 				'left' => 'status_id',
-				'right' => 'member_group'
+				'right' => 'role_id'
 			)
 		)
 	);

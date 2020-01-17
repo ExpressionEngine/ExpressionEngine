@@ -44,7 +44,7 @@
 							<?php if ($update_available): ?>
 								<?=$this->embed('ee:_shared/_new_version', $new_version)?>
 							<?php endif ?>
-							<?php if (ee()->session->userdata('group_id') == 1): ?>
+							<?php if (ee('Permission')->isSuperAdmin()): ?>
 								<?php if ( ! $update_available): ?>
 									<div class="app-about-info__update">
 										<?=lang('checking_for_updates')?>
@@ -68,15 +68,15 @@
 						</div>
 					</div>
 					<div class="app-support">
-						<?php if (ee()->cp->allowed_group('can_access_footer_report_bug')): ?>
+						<?php if (ee('Permission')->can('access_footer_report_bug')): ?>
 							<a href="https://expressionengine.com/support/bugs/new" class="app-about__link" rel="external noreferrer"><?=lang('report_bug')?></a>
 
-							<?php if (ee()->cp->allowed_group('can_access_footer_new_ticket') || ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
+							<?php if (ee('Permission')->can('access_footer_new_ticket') || ee('Permission')->can('access_footer_user_guide')): ?>
 								<b class="sep">&middot;</b>
 							<?php endif; ?>
 						<?php endif; ?>
 
-						<?php if (ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
+						<?php if (ee('Permission')->can('access_footer_user_guide')): ?>
 							<a href="<?=DOC_URL?>" class="app-about__link" rel="external noreferrer"><?=lang('user_guide')?></a>
 						<?php endif; ?>
 					</div>

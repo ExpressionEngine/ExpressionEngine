@@ -23,7 +23,7 @@ class Login extends Profile {
 	{
 		parent::__construct();
 
-		if ($this->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -87,7 +87,7 @@ class Login extends Profile {
 			];
 		}
 
-		if ($this->member->getMemberGroup()->can_access_cp == 'y')
+		if ($this->member->can('access_cp'))
 		{
 			$choices =& $vars['sections'][0][0]['fields']['redirect']['choices'];
 			$choices = array_slice($choices, 0 , 1, TRUE)

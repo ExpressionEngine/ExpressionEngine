@@ -141,7 +141,7 @@ class Metaweblog_api_upd {
 		$query = ee()->db->get_where('modules', array('module_name' => 'Metaweblog_api'));
 
 		ee()->db->where('module_id', $query->row('module_id'));
-		ee()->db->delete('module_member_groups');
+		ee()->db->delete('module_member_roles');
 
 		ee()->db->where('module_name', 'Metaweblog_api');
 		ee()->db->delete('modules');

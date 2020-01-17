@@ -164,7 +164,7 @@ class Stats {
 
 				if ($v['1'] == 'y')
 				{
-					if (ee()->session->userdata('group_id') == 1)
+					if (ee('Permission')->isSuperAdmin())
 					{
 						$temp = preg_replace("/".LD."name.*?".RD."/", $v['0'].'*', $temp);
 					}

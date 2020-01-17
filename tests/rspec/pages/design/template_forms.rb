@@ -45,7 +45,7 @@ class TemplateEdit < ControlPanelPage
   element :hit_counter, 'input[name="hits"]', :visible => false
 
   # Access Tab
-  elements :allowed_member_groups, 'div[data-input-value="allowed_member_groups"] input[type="checkbox"]', :visible => false
+  elements :allowed_roles, 'div[data-input-value="allowed_roles"] input[type="checkbox"]', :visible => false
   elements :no_access_redirect, 'div[data-input-value="no_auth_bounce"] input[type="radio"]', :visible => false
   element :enable_http_auth, 'a[data-toggle-for="enable_http_auth"]', :visible => false
   element :template_route, 'input[name="route"]', :visible => false

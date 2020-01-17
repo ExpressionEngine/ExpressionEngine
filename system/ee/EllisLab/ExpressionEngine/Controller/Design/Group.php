@@ -26,7 +26,7 @@ class Group extends AbstractDesignController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_design'))
+		if ( ! ee('Permission')->can('access_design'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -36,7 +36,7 @@ class Group extends AbstractDesignController {
 
 	public function create()
 	{
-		if ( ! ee()->cp->allowed_group('can_create_template_groups'))
+		if ( ! ee('Permission')->can('create_template_groups'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -58,16 +58,46 @@ class Group extends AbstractDesignController {
 			});
 
 		// Not a superadmin?  Preselect their member group as allowed to view templates
-		$selected_member_groups = ($this->session->userdata('group_id') != 1) ? array($this->session->userdata('group_id')) : array();
+		$selected_roles = ( ! ee('Permission')->isSuperAdmin()) ? ee()->session->getMember()->getAllRoles()->pluck('role_id') : array();
 
-		// only member groups with design manager access
-		$member_groups = ee('Model')->get('MemberGroup')
-			->filter('group_id', 'NOT IN', array(1, 2, 4))
-			->filter('can_access_design', 'y')
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('group_title', 'asc')
-			->all()
-			->getDictionary('group_id', 'group_title');
+		// only roles with design manager access
+		$roles = ee('Model')->get('Role', ee('Permission')->rolesThatCan('access_design'))
+			->filter('role_id', 'NOT IN', array(1, 2, 4))
+			->order('name', 'asc')
+			->all();
+
+		$choices = [];
+		$values = [];
+
+		foreach ($roles as $role)
+		{
+			$choices['role_id_' . $role->getId()] = [
+				'label' => $role->name,
+				'children' => [
+					'can_create_templates_template_group_id_' . ':role_id_' . $role->getId() => lang('can_create_templates'),
+					'can_edit_templates_template_group_id_' . ':role_id_' . $role->getId()   => lang('can_edit_templates'),
+					'can_delete_templates_template_group_id_' . ':role_id_' . $role->getId() => lang('can_delete_templates'),
+					'can_manage_settings_template_group_id_' . ':role_id_' . $role->getId()  => lang('can_manage_settings'),
+				]
+			];
+		}
+
+		$perms = [
+			'can_create_templates_template_group_id_',
+			'can_edit_templates_template_group_id_',
+			'can_delete_templates_template_group_id_',
+			'can_manage_settings_template_group_id_',
+		];
+
+		foreach ($selected_roles as $role_id)
+		{
+			$values[] = 'role_id_' . $role_id;
+
+			foreach ($perms as $perm)
+			{
+				$values[] = $perm . ':role_id_' . $role_id;
+			}
+		}
 
 		if ( ! empty($_POST))
 		{
@@ -81,22 +111,64 @@ class Group extends AbstractDesignController {
 
 				if ($result->isValid())
 				{
+					$permissions = [];
+
 					// Only set member groups from post if they have permission to admin member groups and a value is set
-					if (ee()->input->post('member_groups') && ($this->session->userdata('group_id') == 1 OR ee()->cp->allowed_group('can_admin_mbr_groups')))
+					if (ee()->input->post('roles') && (ee('Permission')->isSuperAdmin() OR ee('Permission')->can('admin_roles')))
 					{
-						$group->MemberGroups = ee('Model')->get('MemberGroup', ee('Request')->post('member_groups'))->all();
+						$role_ids = [];
+
+						foreach (ee('Request')->post('roles') as $value)
+						{
+							if (empty($value))
+							{
+								continue;
+							}
+
+							if (strpos($value, 'role_id_') === 0)
+							{
+								$role_ids[] = str_replace('role_id_', '', $value);
+							}
+							else
+							{
+								list($permission, $role_id) = explode(':role_id_', $value);
+
+								$permissions[] = ee('Model')->make('Permission', [
+									'role_id'    => $role_id,
+									'site_id'    => ee()->config->item('site_id'),
+									'permission' => $permission
+								]);
+							}
+						}
+
+						$group->Roles = ee('Model')->get('Role', $role_ids)->all();
 					}
-					elseif ($this->session->userdata('group_id') != 1 AND ! ee()->cp->allowed_group('can_admin_mbr_groups'))
+					elseif ( ! ee('Permission')->isSuperAdmin() AND ! ee('Permission')->can('admin_roles'))
 					{
 						// No permission to admin, so their group is automatically added to the template group
-						$group->MemberGroups = ee('Model')->get('MemberGroup', $this->session->userdata('group_id'))->first();
+						$role_id = ee()->session->getMember()->PrimaryRole->getId();
+						$group->Roles = ee('Model')->get('Role', $role_id)->all();
+
+						foreach ($perms as $perm)
+						{
+							$permissions[] = ee('Model')->make('Permission', [
+								'role_id'    => $role_id,
+								'site_id'    => ee()->config->item('site_id'),
+								'permission' => $perm
+							]);
+						}
 					}
 
 					// Does the current member have permission to access the template group they just created?
-					$member_groups = $group->MemberGroups->pluck('group_id');
-					$redirect_name = ($this->session->userdata('group_id') == 1 OR in_array($this->session->userdata('group_id'), $member_groups)) ? TRUE : FALSE;
+					$redirect_name = (ee('Permission')->isSuperAdmin() OR ee('Permission')->hasAnyRole($roles)) ? TRUE : FALSE;
 
 					$group->save();
+
+					foreach ($permissions as $perm)
+					{
+						$perm->permission .= $group->getId();
+						$perm->save();
+					}
 
 					$duplicate = FALSE;
 
@@ -133,8 +205,8 @@ class Group extends AbstractDesignController {
 							$new_template->edit_date = ee()->localize->now;
 							$new_template->site_id = ee()->config->item('site_id');
 							$new_template->hits = 0; // Reset hits
-							$new_template->NoAccess = $master_template->NoAccess;
-							if (ee()->session->userdata['group_id'] != 1)
+							$new_template->Roles = $master_template->Roles;
+							if ( ! ee('Permission')->isSuperAdmin())
 							{
 								$new_template->allow_php = FALSE;
 							}
@@ -201,15 +273,18 @@ class Group extends AbstractDesignController {
 						)
 					),
 					array(
-					'title' => 'template_member_groups',
-					'desc' => 'template_member_groups_desc',
-					'fields' => array(
-						'member_groups' => array(
-							'type' => 'checkbox',
-							'choices' => $member_groups,
-							'value' => $selected_member_groups,
-							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('member_groups'))
+						'title' => 'template_roles',
+						'desc' => 'template_roles_desc',
+						'fields' => array(
+							'roles' => array(
+								'type' => 'checkbox',
+								'required' => TRUE,
+								'nested' => TRUE,
+								'auto_select_parents' => TRUE,
+								'choices' => $choices,
+								'value' => $values,
+								'no_results' => [
+									'text' => sprintf(lang('no_found'), lang('roles'))
 								]
 							)
 						)
@@ -219,7 +294,7 @@ class Group extends AbstractDesignController {
 		);
 
 		// Permission check for assigning member groups to templates
-		if ( ! ee()->cp->allowed_group('can_admin_mbr_groups'))
+		if ( ! ee('Permission')->can('admin_roles'))
 		{
 			unset($vars['sections'][0][3]);
 		}
@@ -232,7 +307,7 @@ class Group extends AbstractDesignController {
 
 	public function edit($group_name)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_template_groups'))
+		if ( ! ee('Permission')->can('edit_template_groups'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -249,21 +324,52 @@ class Group extends AbstractDesignController {
 			show_error(sprintf(lang('error_no_template_group'), $group_name));
 		}
 
-		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
+		if ( ! in_array($group->group_id, $this->assigned_template_groups))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$selected_member_groups = ($group->MemberGroups) ? $group->MemberGroups->pluck('group_id') : array();
+		// only roles with design manager access
+		$roles = ee('Model')->get('Role', ee('Permission')->rolesThatCan('access_design'))
+			->filter('role_id', 'NOT IN', array(1, 2, 4))
+			->order('name', 'asc')
+			->all();
 
-		// only member groups with permission to access templates
-		$member_groups = ee('Model')->get('MemberGroup')
-			->filter('group_id', 'NOT IN', array(1, 2, 4))
-			->filter('can_access_design', 'y')
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('group_title', 'asc')
-			->all()
-			->getDictionary('group_id', 'group_title');
+		$choices = [];
+		$values = [];
+
+		foreach ($roles as $role)
+		{
+			$choices['role_id_' . $role->getId()] = [
+				'label' => $role->name,
+				'children' => [
+					'can_create_templates_template_group_id_' . $group->getId() . ':role_id_' . $role->getId() => lang('can_create_templates'),
+					'can_edit_templates_template_group_id_' . $group->getId() . ':role_id_' . $role->getId()   => lang('can_edit_templates'),
+					'can_delete_templates_template_group_id_' . $group->getId() . ':role_id_' . $role->getId() => lang('can_delete_templates'),
+					'can_manage_settings_template_group_id_' . $group->getId() . ':role_id_' . $role->getId()  => lang('can_manage_settings'),
+				]
+			];
+		}
+
+		$perms = [
+			'can_create_templates_template_group_id_' . $group->getId(),
+			'can_edit_templates_template_group_id_' . $group->getId(),
+			'can_delete_templates_template_group_id_' . $group->getId(),
+			'can_manage_settings_template_group_id_' . $group->getId(),
+		];
+
+		foreach ($group->Roles as $role)
+		{
+			$values[] = 'role_id_' . $role->getId();
+
+			foreach ($perms as $perm)
+			{
+				if ($role->has($perm))
+				{
+					$values[] = $perm . ':role_id_' . $role->getId();
+				}
+			}
+		}
 
 		if ( ! empty($_POST))
 		{
@@ -276,23 +382,54 @@ class Group extends AbstractDesignController {
 				{
 					// On edit, if they don't have permission to edit member group permissions, they can't change
 					// template member group settings
-					if ($this->session->userdata('group_id') == 1 OR ee()->cp->allowed_group('can_admin_mbr_groups'))
+					if (ee('Permission')->isSuperAdmin() OR ee('Permission')->can('admin_roles'))
 					{
+						ee('Model')->get('Permission')
+							->filter('permission', 'IN', $perms)
+							->filter('site_id', ee()->config->item('site_id'))
+							->delete();
+
 						// If post is null and field should be present, unassign members
 						// If field isn't present, we don't change whatever it's currently set to
-						if ( ! ee()->input->post('member_groups'))
+						if ( ! ee('Request')->post('roles'))
 						{
-							$group->MemberGroups = array();
+							$group->Roles = [];
 						}
 						else
 						{
-							$group->MemberGroups = ee('Model')->get('MemberGroup', ee('Request')->post('member_groups'))->all();
+							$role_ids = [];
+							$permisisons = [];
+
+							foreach (ee('Request')->post('roles') as $value)
+							{
+								if (empty($value))
+								{
+									continue;
+								}
+
+								if (strpos($value, 'role_id_') === 0)
+								{
+									$role_ids[] = str_replace('role_id_', '', $value);
+								}
+								else
+								{
+									list($permission, $role_id) = explode(':role_id_', $value);
+
+									ee('Model')->make('Permission', [
+										'role_id'    => $role_id,
+										'site_id'    => ee()->config->item('site_id'),
+										'permission' => $permission
+									])->save();
+								}
+							}
+
+							$group->Roles = ee('Model')->get('Role', $role_ids)->all();
 						}
 					}
 
-					// Does the current member have permission to access the template group they just edited?
-					$member_groups = $group->MemberGroups->pluck('group_id');
-					$redirect_name = ($this->session->userdata('group_id') == 1 OR in_array($this->session->userdata('group_id'), $member_groups)) ? TRUE : FALSE;
+					// Does the current member have permission to access the template group they just created?
+					$roles = $group->Roles->pluck('role_id');
+					$redirect_name = (ee('Permission')->isSuperAdmin() OR ee('Permission')->hasAnyRole($roles)) ? TRUE : FALSE;
 
 					$group->save();
 
@@ -340,16 +477,18 @@ class Group extends AbstractDesignController {
 						)
 					),
 					array(
-					'title' => 'template_member_groups',
-					'desc' => 'template_member_groups_desc',
+					'title' => 'template_roles',
+					'desc' => 'template_roles_desc',
 					'fields' => array(
-						'member_groups' => array(
+						'roles' => array(
 							'type' => 'checkbox',
 							'required' => TRUE,
-							'choices' => $member_groups,
-							'value' => $selected_member_groups,
+							'nested' => TRUE,
+							'auto_select_parents' => TRUE,
+							'choices' => $choices,
+							'value' => $values,
 							'no_results' => [
-								'text' => sprintf(lang('no_found'), lang('member_groups'))
+								'text' => sprintf(lang('no_found'), lang('roles'))
 								]
 							)
 						)
@@ -359,7 +498,7 @@ class Group extends AbstractDesignController {
 		);
 
 		// Permission check for assigning member groups to templates
-		if ( ! ee()->cp->allowed_group('can_admin_mbr_groups'))
+		if ( ! ee('Permission')->can('admin_roles'))
 		{
 			unset($vars['sections'][0][2]);
 		}
@@ -372,7 +511,7 @@ class Group extends AbstractDesignController {
 
 	public function remove()
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_template_groups'))
+		if ( ! ee('Permission')->can('delete_template_groups'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -388,7 +527,7 @@ class Group extends AbstractDesignController {
 		}
 		else
 		{
-			if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
+			if ( ! in_array($group->group_id, $this->assigned_template_groups))
 			{
 				show_error(lang('unauthorized_access'), 403);
 			}

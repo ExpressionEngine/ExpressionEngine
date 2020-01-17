@@ -2030,19 +2030,11 @@ class Moblog {
 			return FALSE;
 		}
 
-		$group_id = $auth->member('group_id');
+		$assigned_channels = ee()->session->getMember()->getAssignedChannels()->indexBy('channel_id');
 
-		// Do they have permission to post to this channel?
-		if ($group_id  != '1')
+		if ( ! isset($assigned_channels[$this->moblog_array['moblog_channel_id']]))
 		{
-			ee()->db->where('group_id', $group_id);
-			ee()->db->where('channel_id', $this->moblog_array['moblog_channel_id']);
-			$count = ee()->db->count_all_results('channel_member_groups');
-
-			if ($count == 0)
-			{
-				return FALSE;
-			}
+			return FALSE;
 		}
 
 		$this->author	=  $auth->member('member_id');

@@ -21,7 +21,7 @@ class Captcha extends Settings {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_security_settings'))
+		if ( ! ee('Permission')->can('access_security_settings'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

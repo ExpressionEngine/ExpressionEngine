@@ -22,7 +22,7 @@ class MemberGateway extends Gateway {
 
 	// Properties
 	protected $member_id;
-	protected $group_id;
+	protected $role_id;
 	protected $username;
 	protected $screen_name;
 	protected $password;

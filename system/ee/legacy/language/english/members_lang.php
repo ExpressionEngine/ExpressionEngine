@@ -4,9 +4,7 @@ $lang = array(
 
 'admin_members' => 'Admin Members',
 
-'all_member_groups' => 'All Member Groups',
-
-'all_members' => 'All Members',
+'all_roles' => 'All Roles',
 
 'alpha' => 'Alphabetical Ascending',
 
@@ -56,15 +54,15 @@ $lang = array(
 
 'control_panel' => 'Control Panel',
 
-'copy_member_group' => 'Create a New Member Group based on <b>%s</b>',
+'copy_role' => 'Create a New Role based on <b>%s</b>',
 
 'cp_log' => 'Control Panel Activity',
 
 'create_member' => 'Create Member',
 
-'create_member_group' => 'Create Member Group',
+'create_role' => 'Create Role',
 
-'create_new_member_group' => 'Create a New Member Group',
+'create_new_role' => 'Create a New Role',
 
 'custom_fields' => 'Custom Fields',
 
@@ -78,9 +76,9 @@ $lang = array(
 
 'delete_member_confirm' => 'Are you sure you want to delete this member?',
 
-'delete_member_group' => 'Delete Member Group',
+'delete_role' => 'Delete Role',
 
-'delete_member_group_confirm' => 'Are you sure you want to delete this member group?',
+'delete_role_confirm' => 'Are you sure you want to delete this role?',
 
 'delete_members_confirm' => 'Are you sure you want to delete these members?',
 
@@ -90,7 +88,7 @@ $lang = array(
 
 'edit_group' => 'Edit Group',
 
-'edit_member_group' => 'Edit Member Group',
+'edit_role' => 'Edit Role',
 
 'edit_profile' => 'Edit Profile',
 
@@ -120,7 +118,7 @@ $lang = array(
 
 'filter_by' => 'Filter by',
 
-'filter_member_group' => 'Filter by Member Group',
+'filter_role' => 'Filter by Role',
 
 'filter_member_name' => 'Filter by Member Name',
 
@@ -132,7 +130,7 @@ $lang = array(
 
 'group_id' => 'Group ID',
 
-'group_lock' => 'Member Group Security Lock',
+'group_lock' => 'Role Security Lock',
 
 'group_title' => 'Group Title',
 
@@ -172,7 +170,7 @@ $lang = array(
 
 'last_visit' => 'Last Visit',
 
-'lock_description' => 'When enabled, only Super Admins can add or remove members from this group.',
+'lock_description' => 'Only <mark>Super Admin</mark>s can add or remove members from this role.',
 
 'locked' => 'Locked',
 
@@ -210,13 +208,13 @@ $lang = array(
 
 'member_approved_success_desc' => 'The member <b>%s</b> has been approved.',
 
-'member_assignment_none' => 'None, members in this group will be deleted',
+'member_assignment_none' => 'None, members with this role will be deleted',
 
-'member_assignment_warning' => 'Members are currently assigned to some of these groups. What member group should they be re-assigned to?',
+'member_assignment_warning' => 'Members are currently assigned to some of these groups. What role should they be re-assigned to?',
 
-'member_cfg' => 'Member Group Settings',
+'member_cfg' => 'Role Settings',
 
-'member_cfg_existing' => 'Member Group \'%s\' Settings',
+'member_cfg_existing' => 'Role \'%s\' Settings',
 
 'member_created' => 'Member Created',
 
@@ -242,23 +240,33 @@ $lang = array(
 
 'member_fields_removed_desc' => 'The following Member Fields have been removed:',
 
-'member_group' => 'Member Group',
+'primary_role' => 'Primary Role',
 
-'member_group_filter' => 'member group',
+'primary_role_desc' => 'Assign the primary role for this user.',
 
-'member_group_assignment' => 'Member Group Assignment',
+'role_groups' => 'Role Groups',
 
-'member_group_deleted' => 'Member Group Deleted',
+'role_groups_desc' => 'Assign this user a group of access permissions.',
 
-'member_group_desc' => 'Assign this user access permissions.',
+'additional_roles' => 'Additional Roles',
 
-'member_group_updated_desc' => 'Member Group has been saved successfully.',
+'role' => 'Role',
 
-'member_groups' => 'Member Groups',
+'roles_desc' => 'Assign this user access permissions.',
 
-'member_groups_removed_desc' => 'Member Group has been deleted successfully.',
+'role_filter' => 'role',
 
-'member_groups_remove_problem' => 'There was a problem deleting member groups.',
+'role_assignment' => 'Role Assignment',
+
+'role_deleted' => 'Role Deleted',
+
+'role_desc' => 'Assign this user access permissions.',
+
+'role_updated_desc' => 'Role has been saved successfully.',
+
+'roles_removed_desc' => 'Role has been deleted successfully.',
+
+'roles_remove_problem' => 'There was a problem deleting roles.',
 
 'member_has_cp_access' => 'Can access the control panel',
 
@@ -302,7 +310,7 @@ $lang = array(
 
 'moderation_actions' => 'Moderation actions',
 
-'moderation_actions_desc' => 'Users in this group will be allowed to perform all of the selected actions.',
+'moderation_actions_desc' => 'Users with this role will be allowed to perform all of the selected actions.',
 
 'new_member_added' => 'New member created:',
 
@@ -332,8 +340,6 @@ $lang = array(
 
 'pending_activation' => 'Pending Activation',
 
-'pending_members' => 'All Members (Pending Activation)',
-
 'personal_messaging' => 'Personal Messaging',
 
 'preferences_updated' => 'Preferences Updated',
@@ -342,11 +348,11 @@ $lang = array(
 
 'profile_templates' => 'Member Profile Templates',
 
-'register_member' => 'New Member',
+'register_member' => 'Register New Member',
 
 'resend' => 'Resend Activation Email',
 
-'save_member_group' => 'Edit Member Group',
+'save_role' => 'Edit Role',
 
 'screen_name' => 'Screen Name',
 
@@ -412,7 +418,7 @@ $lang = array(
 
 'your_password_delete_members_desc' => 'You <b>must</b> enter your password in order to delete members.',
 
-'your_password_delete_member_groups_desc' => 'You <b>must</b> enter your password in order to delete member groups.',
+'your_password_delete_roles_desc' => 'You <b>must</b> enter your password in order to delete roles.',
 
 
 /* Member banning */
@@ -520,7 +526,7 @@ $lang = array(
 
 'can_access_sys_prefs_desc' => 'When enabled, users assigned to this group may access the software settings.',
 
-'can_access_tg' => 'Can edit templates in this group:',
+'can_access_tg' => 'Can edit templates with this role:',
 
 'can_access_translate' => 'Translation',
 
@@ -538,9 +544,9 @@ $lang = array(
 
 'can_admin_design_desc' => 'When enabled, users assigned to this group may access the global template settings and template routes.',
 
-'can_admin_mbr_groups' => 'Access member groups',
+'can_admin_mbr_groups' => 'Access roles',
 
-'can_admin_mbr_groups_desc' => 'When enabled, users assigned to this group may access member group settings in the software.',
+'can_admin_mbr_groups_desc' => 'When enabled, users assigned to this group may access role settings in the software.',
 
 'can_admin_mbr_templates' => 'Can administrate member profile templates',
 
@@ -552,13 +558,9 @@ $lang = array(
 
 'can_admin_upload_prefs' => 'Can administrate file upload preferences',
 
-'can_assign_post_authors' => 'Change entry author',
-
 'can_ban_users' => 'Ban members',
 
 'can_delete_all_comments' => 'Delete comments by others',
-
-'can_delete_all_entries' => 'Delete entries, by others',
 
 'can_delete_members' => 'Delete members',
 
@@ -568,19 +570,15 @@ $lang = array(
 
 'can_delete_self_desc' => 'When enabled, users assigned to this group may delete their own accounts without approval',
 
-'can_delete_self_entries' => 'Delete own entries',
-
 'can_edit_all_comments' => 'Edit comments by others',
 
 'can_edit_html_buttons' => 'Can edit own HTML formatting buttons',
-
-'can_edit_other_entries' => 'Edit entries, by others',
 
 'can_edit_own_comments' => 'Edit own comments',
 
 'can_email_from_profile' => 'Can email other members via the profile email console',
 
-'can_email_member_groups' => 'Send email to Member Groups',
+'can_email_roles' => 'Send email to Roles',
 
 'can_post_comments' => 'Submit comments',
 
@@ -622,7 +620,7 @@ $lang = array(
 
 'comment_actions' => 'Moderation actions',
 
-'comment_actions_desc' => 'Users in this group will be allowed to perform all of the selected actions.',
+'comment_actions_desc' => 'Users with this role will be allowed to perform all of the selected actions.',
 
 'commenting' => 'Commenting',
 
@@ -664,7 +662,7 @@ $lang = array(
 
 'footer_helper_links' => 'Access footer helper links',
 
-'footer_helper_links_desc' => 'Choose which links this member group can access in the CP footer.',
+'footer_helper_links_desc' => 'Choose which links this role can access in the CP footer.',
 
 'global_cp_access' => 'Control Panel Access',
 
@@ -672,7 +670,7 @@ $lang = array(
 
 'group_name_desc' => 'Be descriptive, like authors or editors',
 
-'group_title_exists' => 'There is already a Member Group with that name.',
+'group_title_exists' => 'There is already a Role with that name.',
 
 'homepage_news' => 'Show news on CP homepage',
 
@@ -680,7 +678,7 @@ $lang = array(
 
 'include_members_in' => 'Include members in',
 
-'include_members_in_desc' => 'Users in this group will be included in all of the selected list types.',
+'include_members_in_desc' => 'Users with this role will be included in all of the selected list types.',
 
 'mbr_account_privs' => 'Member Account Privileges',
 
@@ -688,19 +686,19 @@ $lang = array(
 
 'mbr_delete_notify_emails_desc' => 'All recipients will be notified anytime a user deletes their account. Separate e-mails with a comma.',
 
-'member_group_created' => 'Member Group Created:',
+'role_created' => 'Role Created:',
 
-'member_group_updated' => 'Member Group Updated:',
+'role_updated' => 'Role Updated:',
 
 'members' => 'Members',
 
-'missing_group_title' => 'The member group must have a name',
+'missing_group_title' => 'The role must have a name',
 
 'must_have_channels' => 'All sites must have channels.',
 
 'no_cp_modules_installed' => 'No Modules with Control Panel Access Installed',
 
-'only_superadmins_can_admin_groups' => 'Only Super Admins can access the Member Groups page',
+'only_superadmins_can_admin_groups' => 'Only Super Admins can access the Roles page',
 
 'prv_msg_send_limit' => 'Per day maximum',
 
@@ -718,9 +716,11 @@ $lang = array(
 
 'search_privs' => 'Search Privileges',
 
+'cp_access' => 'CP Access',
+
 'site_access' => 'Website Access',
 
-'site_access_desc' => 'Users in this group will be allowed access to the website for each status mode selected.',
+'site_access_desc' => 'Users with this role will be allowed access to the website for each status mode selected.',
 
 'super_admin_edit_note' => 'Note: You can only edit the name and description for the Super Admin group',
 
@@ -758,17 +758,13 @@ $lang = array(
 
 'can_access_site' => 'Can Access Site',
 
-'can_create_entries' => 'Create entries',
-
-'can_edit_self_entries' => 'Edit own entries',
-
 'can_not_delete_only_member' => 'You cannot delete the only member in the database',
 
 'can_send_bulletins' => 'Send bulletins',
 
 'can_send_bulletins_desc' => 'When enabled, users assigned to this group may send bulletins.',
 
-'cannot_change_your_group' => 'Super Admins cannot change their member group assignment. Please have another Super Admin reassign you.',
+'cannot_change_your_group' => 'Super Admins cannot change their role assignment. Please have another Super Admin reassign you.',
 
 'cannot_delete_super_admin' => 'You may not delete the only Super Admin. Please create a new Super Admin first.',
 
@@ -788,7 +784,7 @@ $lang = array(
 
 'create_member_field' => 'Create Member Field',
 
-'create_member_groups' => 'Create new groups',
+'create_roles' => 'Create new groups',
 
 'create_members' => 'Create new members',
 
@@ -808,8 +804,6 @@ $lang = array(
 
 'current_fields' => 'Member Fields',
 
-'custom_member_fields' => 'Member Fields',
-
 'delete_categories' => 'Delete categories',
 
 'delete_channel_fields' => 'Delete channel fields',
@@ -818,7 +812,7 @@ $lang = array(
 
 'delete_files' => 'Delete files',
 
-'delete_member_groups' => 'Delete groups',
+'delete_roles' => 'Delete groups',
 
 'delete_profile_field_confirmation' => 'Are you sure you want to permanently delete this Member Profile Field?',
 
@@ -844,7 +838,7 @@ $lang = array(
 
 'edit_member_field' => 'Edit Field',
 
-'edit_member_groups' => 'Edit groups',
+'edit_roles' => 'Edit groups',
 
 'edit_members' => 'Edit members',
 
@@ -954,7 +948,7 @@ $lang = array(
 
 'rte_toolsets' => 'RTE toolsets',
 
-'search_member_groups_button' => 'Search Member Groups',
+'search_roles_button' => 'Search Roles',
 
 'search_members_button' => 'Search Members',
 
@@ -964,7 +958,7 @@ $lang = array(
 
 'show_all_banned' => 'All %d banned',
 
-'show_all_member_groups' => 'All %d member groups',
+'show_all_roles' => 'All %d roles',
 
 'show_all_members' => 'All %d members',
 
@@ -989,6 +983,274 @@ $lang = array(
 'upload_new_files' => 'Upload new files',
 
 'upload_new_toolsets' => 'Upload new toolsets',
+
+/* Roles */
+
+'roles_manager' => 'Roles Manager',
+
+'role_groups' => 'Role Groups',
+
+'role_group' => 'Role Group',
+
+'new_role' => 'New Role',
+
+'group_roles_desc' => 'Assign one of more roles to this group.',
+
+'create_role_group' => 'New Role Group',
+
+'create_role_group_error' => 'Cannot Create Role Group',
+
+'create_role_group_error_desc' => 'We were unable to create this role group, please review and fix errors below.',
+
+'create_role_group_success' => 'Role Group Created',
+
+'create_role_group_success_desc' => 'The role group <b>%s</b> has been created.',
+
+'edit_role_group' => 'Edit Role Group',
+
+'edit_role_group_error' => 'Cannot Update Role Group',
+
+'edit_role_group_error_desc' => 'We were unable to update this role group, please review and fix errors below.',
+
+'edit_role_group_success' => 'Role Group Updated',
+
+'edit_role_group_success_desc' => 'The role group <b>%s</b> has been updated.',
+
+'role_groups_removed_desc' => 'The following role groups were removed',
+
+'create_role' => 'New Role',
+
+'create_role_error' => 'Cannot Create Role',
+
+'create_role_error_desc' => 'We were unable to create this role, please review and fix errors below.',
+
+'create_role_success' => 'Role Created',
+
+'create_role_success_desc' => 'The role <b>%s</b> has been created.',
+
+'edit_role' => 'Edit Role',
+
+'edit_role_error' => 'Cannot Update Role',
+
+'edit_role_error_desc' => 'We were unable to update this role, please review and fix errors below.',
+
+'edit_role_success' => 'Role Updated',
+
+'edit_role_success_desc' => 'The role <b>%s</b> has been updated.',
+
+'roles_removed_desc' => 'The following role were removed',
+
+'channel_access' => 'Channel access',
+
+'channel_access_desc' => 'Users can perform each selected action on the selected channel.',
+
+'can_admin_roles' => 'Access member roles',
+
+'can_admin_roles_desc' => 'When enabled, users assigned to this role may access member role settings in the software.',
+
+'template_group_access' => 'Template group access',
+
+'template_group_access_desc' => 'Users can perform each selected action on the selected template group.',
+
+'upload_destination_access' => 'Allowed upload directory access',
+
+'upload_destination_access_desc' => 'Users can access all of the selected upload directories.',
+
+'member_role_assignment' => 'Member Role Assignment',
+
+/* Access Overview */
+
+'access_overview' => 'Access Overview',
+
+'access_permissions' => 'Access permissions',
+
+'access' => 'Access?',
+
+'granted_by' => 'Granted by',
+
+'primary_role' => 'Primary Role',
+
+'permissions_granted' => 'The following permissions are granted to <b>%s</b>.',
+
+'member_roles' => 'Member Roles',
+
+'access_to' => 'Access <b>%s</b>',
+
+'access_overview_can_view_online_system' => 'Website access (online)',
+
+'access_overview_can_view_offline_system' => 'Website access (offline)',
+
+'access_overview_can_view_profiles' => 'Access public profiles',
+
+'access_overview_can_delete_self' => 'Delete account',
+
+'access_overview_can_post_comments' => 'Submit comments',
+
+'access_overview_can_moderate_comments' => 'Moderate comments',
+
+'access_overview_can_edit_own_comments' => 'Edit own comments',
+
+'access_overview_can_delete_own_comments' => 'Delete own comments',
+
+'access_overview_can_edit_all_comments' => 'Edit comments by others',
+
+'access_overview_can_delete_all_comments' => 'Delete comments by others',
+
+'access_overview_can_search' => 'Access search utility',
+
+'access_overview_can_send_private_messages' => 'Access personal messages',
+
+'access_overview_can_attach_in_private_messages' => 'Allow attachments',
+
+'access_overview_can_send_bulletins' => 'Send bulletins',
+
+'access_overview_can_access_cp' => 'Access control panel',
+
+'access_overview_can_access_footer_report_bug' => 'Access Report Bug link',
+
+'access_overview_can_access_footer_new_ticket' => 'Access New ticket link',
+
+'access_overview_can_access_footer_user_guide' => 'Access User Guide link',
+
+'access_overview_can_view_homepage_news' => 'See homepage news',
+
+'access_overview_can_admin_channels' => 'Access channel manager',
+
+'access_overview_can_create_channels' => 'Create channels',
+
+'access_overview_can_edit_channels' => 'Edit channels',
+
+'access_overview_can_delete_channels' => 'Delete channels',
+
+'access_overview_can_create_channel_fields' => 'Create fields',
+
+'access_overview_can_edit_channel_fields' => 'Edit fields',
+
+'access_overview_can_delete_channel_fields' => 'Delete fields',
+
+'access_overview_can_create_categories' => 'Create categories',
+
+'access_overview_can_edit_categories' => 'Edit categories',
+
+'access_overview_can_delete_categories' => 'Delete categories',
+
+'access_overview_can_create_statuses' => 'Create statuses',
+
+'access_overview_can_edit_statuses' => 'Edit statuses',
+
+'access_overview_can_delete_statuses' => 'Delete statuses',
+
+'access_overview_can_create_entries' => 'Create entries',
+
+'access_overview_can_edit_self_entries' => 'Edit own entries',
+
+'access_overview_can_delete_self_entries' => 'Delete own entries',
+
+'access_overview_can_edit_other_entries' => 'Edit entries, by others',
+
+'access_overview_can_delete_all_entries' => 'Delete entries, by others',
+
+'access_overview_can_assign_post_authors' => 'Change author',
+
+'access_overview_can_access_files' => 'Access file manager',
+
+'access_overview_can_create_upload_directories' => 'Create upload directories',
+
+'access_overview_can_edit_upload_directories' => 'Edit upload directories',
+
+'access_overview_can_delete_upload_directories' => 'Delete upload directories',
+
+'access_overview_can_upload_new_files' => 'Upload files',
+
+'access_overview_can_edit_files' => 'Edit files',
+
+'access_overview_can_delete_files' => 'Delete files',
+
+'access_overview_can_access_members' => 'Access members',
+
+'access_overview_can_create_members' => 'Create members',
+
+'access_overview_can_edit_members' => 'Edit members',
+
+'access_overview_can_delete_members' => 'Delete members',
+
+'access_overview_can_ban_users' => 'Ban members',
+
+'access_overview_can_email_from_profile' => 'Email members',
+
+'access_overview_can_edit_html_buttons' => 'Manage own HTML Buttons',
+
+'access_overview_can_admin_roles' => 'Access roles',
+
+'access_overview_can_create_roles' => 'Create roles',
+
+'access_overview_can_edit_roles' => 'Edit roles',
+
+'access_overview_can_delete_roles' => 'Delete roles',
+
+'access_overview_can_access_design' => 'Access template manager',
+
+'access_overview_can_admin_design' => 'Access global template settings',
+
+'access_overview_can_create_template_groups' => 'Create template groups',
+
+'access_overview_can_edit_template_groups' => 'Edit template groups',
+
+'access_overview_can_delete_template_groups' => 'Delete template groups',
+
+'access_overview_can_create_template_partials' => 'Create template partials',
+
+'access_overview_can_edit_template_partials' => 'Edit template partials',
+
+'access_overview_can_delete_template_partials' => 'Delete template partials',
+
+'access_overview_can_create_template_variables' => 'Create template variables',
+
+'access_overview_can_edit_template_variables' => 'Edit template variables',
+
+'access_overview_can_delete_template_variables' => 'Delete template variables',
+
+'access_overview_can_create_templates' => 'Create templates',
+
+'access_overview_can_edit_templates' => 'Edit templates',
+
+'access_overview_can_delete_templates' => 'Delete templates',
+
+'access_overview_can_manage_settings' => 'Manage settings & access',
+
+'access_overview_can_access_addons' => 'Access add-on manager',
+
+'access_overview_can_admin_addons' => 'Manage add-ons (install/remove)',
+
+'access_overview_can_upload_new_toolsets' => 'Upload RTE toolsets',
+
+'access_overview_can_edit_toolsets' => 'Edit RTE toolsets',
+
+'access_overview_can_delete_toolsets' => 'Delete RTE toolsets',
+
+'access_overview_can_access_utilities' => 'Access system utilities',
+
+'access_overview_can_access_comm' => 'Access communicate',
+
+'access_overview_can_email_roles' => 'Send email to specific roles',
+
+'access_overview_can_send_cached_email' => 'View/Send cached email',
+
+'access_overview_can_access_translate' => 'Access translation',
+
+'access_overview_can_access_import' => 'Access Import',
+
+'access_overview_can_access_sql_manager' => 'Access SQL management',
+
+'access_overview_can_access_data' => 'Access data operations',
+
+'access_overview_can_access_logs' => 'Access system logs',
+
+'access_overview_can_access_sys_prefs' => 'Access system settings',
+
+'access_overview_can_access_security_settings' => 'Access security & privacy',
+
+'access_overview_can_manage_consents' => 'Access consent requests',
 
 );
 

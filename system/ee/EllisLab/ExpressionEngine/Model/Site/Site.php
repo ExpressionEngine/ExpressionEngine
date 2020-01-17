@@ -85,8 +85,8 @@ class Site extends Model {
 			'model' => 'UploadDestination',
 			'type' => 'hasMany'
 		),
-		'MemberGroups' => array(
-			'model' => 'MemberGroup',
+		'Permissions' => array(
+			'model' => 'Permission',
 			'type' => 'hasMany'
 		),
 		'HTMLButtons' => array(
@@ -100,7 +100,11 @@ class Site extends Model {
 		'Configs' => array(
 			'model' => 'Config',
 			'type' => 'hasMany'
-		)
+		),
+		'RoleSettings' => array(
+			'model' => 'RoleSetting',
+			'type' => 'hasMany'
+		),
 	);
 
 	protected static $_validation_rules = array(
@@ -154,7 +158,8 @@ class Site extends Model {
 		$this->createNewStats();
 		$this->createHTMLButtons();
 		$this->createSpecialtyTemplates();
-		$this->createMemberGroups();
+		$this->copyPermisisons();
+		$this->copyRoleSettings();
     }
 
 	/**
@@ -249,22 +254,43 @@ class Site extends Model {
 	}
 
 	/**
-	 * Creates member groups for this site by cloning site 1's member groups
+	 * Creates permissions for this site by cloning site 1's permisisons
 	 *
 	 * @return void
 	 */
-	protected function createMemberGroups()
+	protected function copyPermisisons()
 	{
-		$groups = $this->getModelFacade()->get('MemberGroup')
+		$permissions = $this->getModelFacade()->get('Permission')
 			->filter('site_id', 1)
 			->all();
 
-		foreach($groups as $group)
+		foreach($permissions as $permission)
 		{
-			$data = $group->getValues();
+			$data = $permission->getValues();
 			$data['site_id'] = $this->site_id;
 
-			$this->getModelFacade()->make('MemberGroup', $data)->save();
+			$this->getModelFacade()->make('Permission', $data)->save();
+		}
+	}
+
+	/**
+	 * Creates RoleSettings for this site by cloning site 1's RoleSettings
+	 *
+	 * @return void
+	 */
+	protected function copyRoleSettings()
+	{
+		$role_settings = $this->getModelFacade()->get('RoleSetting')
+			->filter('site_id', 1)
+			->all();
+
+		foreach($role_settings as $role_setting)
+		{
+			$data = $role_setting->getValues();
+			$data['site_id'] = $this->site_id;
+			$data['role_id'] = $role_setting->role_id;
+
+			$this->getModelFacade()->make('RoleSetting', $data)->save();
 		}
 	}
 }

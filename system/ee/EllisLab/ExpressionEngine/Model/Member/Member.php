@@ -14,6 +14,7 @@ use DateTimeZone;
 use EllisLab\ExpressionEngine\Model\Content\ContentModel;
 use EllisLab\ExpressionEngine\Model\Member\Display\MemberFieldLayout;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 /**
  * Member
@@ -35,8 +36,27 @@ class Member extends ContentModel {
 	);
 
 	protected static $_relationships = array(
-		'MemberGroup' => array(
-			'type' => 'belongsTo'
+		'PrimaryRole' => array(
+			'type' => 'belongsTo',
+			'model' => 'Role',
+			'to_key' => 'role_id',
+			'from_key' => 'role_id',
+		),
+		'Roles' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Role',
+			'pivot' => array(
+				'table' => 'members_roles'
+			),
+			'weak' => TRUE
+		),
+		'RoleGroups' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'RoleGroup',
+			'pivot' => array(
+				'table' => 'members_role_groups'
+			),
+			'weak' => TRUE
 		),
 		'HTMLButtons' => array(
 			'type' => 'hasMany',
@@ -189,11 +209,11 @@ class Member extends ContentModel {
 
 	protected static $_field_data = array(
 		'field_model'     => 'MemberField',
-		'structure_model' => 'MemberGroup',
+		'structure_model' => 'Member',
 	);
 
 	protected static $_validation_rules = array(
-		'group_id'        => 'required|isNatural|validateGroupId',
+		'role_id'         => 'required|isNatural|validateRoleId',
 		'username'        => 'required|unique|validateUsername',
 		'screen_name'     => 'validateScreenName',
 		'email'           => 'required|email|uniqueEmail|validateEmail',
@@ -213,7 +233,7 @@ class Member extends ContentModel {
 
 	// Properties
 	protected $member_id;
-	protected $group_id;
+	protected $role_id;
 	protected $username;
 	protected $screen_name;
 	protected $password;
@@ -320,16 +340,16 @@ class Member extends ContentModel {
 				));
 			}
 
-			if (isset($changed['group_id']))
+			if (isset($changed['role_id']))
 			{
 				ee()->logger->log_action(sprintf(
 					lang('member_changed_member_group'),
-					$this->MemberGroup->group_title,
+					$this->PrimaryRole->name,
 					$this->username,
 					$this->member_id
 				));
 
-				ee()->session->set_cache(__CLASS__, "getStructure({$this->group_id})", NULL);
+				ee()->session->set_cache(__CLASS__, "getStructure({$this->role_id})", NULL);
 			}
 		}
 
@@ -557,8 +577,8 @@ class Member extends ContentModel {
 		}
 
 		// Make sure to get the correct site, revert once issue #1285 is fixed
-		$member_group = $this->getModelFacade()->get('MemberGroup')
-			->filter('group_id', $this->group_id)
+		$primary_role = $this->getModelFacade()->get('RoleSetting')
+			->filter('role_id', $this->role_id)
 			->filter('site_id', $site_id)
 			->first();
 
@@ -582,11 +602,11 @@ class Member extends ContentModel {
 				}
 			}
 		}
-		elseif ( ! empty($member_group->cp_homepage))
+		elseif ( ! empty($primary_role->cp_homepage))
 		{
-			$cp_homepage = $member_group->cp_homepage;
-			$cp_homepage_channel = $member_group->cp_homepage_channel;
-			$cp_homepage_custom = $member_group->cp_homepage_custom;
+			$cp_homepage = $primary_role->cp_homepage;
+			$cp_homepage_channel = $primary_role->cp_homepage_channel;
+			$cp_homepage_custom = $primary_role->cp_homepage_custom;
 		}
 
 		switch ($cp_homepage) {
@@ -615,13 +635,7 @@ class Member extends ContentModel {
 	 */
 	public function getStructure()
 	{
-		if ( ! $structure = ee()->session->cache(__CLASS__, "getStructure({$this->group_id})"))
-		{
-			$structure = $this->MemberGroup;
-			ee()->session->set_cache(__CLASS__, "getStructure({$this->group_id})", $structure);
-		}
-
-		return $structure;
+		return $this;
 	}
 
 	/**
@@ -637,18 +651,18 @@ class Member extends ContentModel {
 	/**
 	 * Ensures the group ID exists and the member has permission to add to the group
 	 */
-	public function validateGroupId($key, $group_id)
+	public function validateRoleId($key, $role_id)
 	{
-		$member_groups = $this->getModelFacade()->get('MemberGroup');
+		$roles = $this->getModelFacade()->get('Role');
 
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
-			$member_groups->filter('is_locked', 'n');
+			$roles->filter('is_locked', 'n');
 		}
 
-		if ( ! in_array($group_id, $member_groups->all()->pluck('group_id')))
+		if ( ! in_array($role_id, $roles->all()->pluck('role_id')))
 		{
-			return 'invalid_group_id';
+			return 'invalid_role_id';
 		}
 
 		return TRUE;
@@ -921,7 +935,7 @@ class Member extends ContentModel {
 		$email = 'redacted'.$this->getId();
 		$ip_address = ee('IpAddress')->anonymize($this->ip_address);
 
-		$this->setProperty('group_id', 2); // Ban member
+		$this->setProperty('role_id', 2); // Ban member
 		$this->setProperty('username', $username);
 		$this->setProperty('screen_name', $username);
 		$this->setProperty('email', $email);
@@ -984,6 +998,238 @@ class Member extends ContentModel {
 	{
 		return (bool) preg_match('/^redacted\d+$/', $this->email);
 	}
+
+	protected function saveToCache($key, $data)
+	{
+		if (isset(ee()->session))
+		{
+			ee()->session->set_cache(__CLASS__, $key, $data);
+		}
+	}
+
+	protected function getFromCache($key)
+	{
+		if (isset(ee()->session))
+		{
+			return ee()->session->cache(__CLASS__, $key, FALSE);
+		}
+
+		return FALSE;
+	}
+
+	public function getAllRoles()
+	{
+		$cache_key = "Member/{$this->member_id}/Roles";
+
+		$roles = $this->getFromCache($cache_key);
+
+		if ($roles === FALSE)
+		{
+			$roles = $this->Roles->indexBy('name');
+			$roles[$this->PrimaryRole->name] = $this->PrimaryRole;
+
+			foreach ($this->RoleGroups as $role_group)
+			{
+				foreach ($role_group->Roles as $role)
+				{
+					$roles[$role->name] = $role;
+				}
+			}
+
+			$roles = new Collection($roles);
+
+			$this->saveToCache($cache_key, $roles);
+		}
+
+		return $roles;
+	}
+
+	public function getAssignedModules()
+	{
+		if ($this->isSuperAdmin())
+		{
+			return $this->getModelFacade()->get('Module')->all();
+		}
+
+		$modules = [];
+		foreach ($this->getAllRoles() as $role)
+		{
+			foreach ($role->AssignedModules as $module)
+			{
+				$modules[$module->getId()] = $module;
+			}
+		}
+
+		return new Collection($modules);
+	}
+
+	public function getAssignedChannels()
+	{
+		if ($this->isSuperAdmin())
+		{
+			return $this->getModelFacade()->get('Channel')->all();
+		}
+
+		$channels = [];
+		foreach ($this->getAllRoles() as $role)
+		{
+			foreach ($role->AssignedChannels as $channel)
+			{
+				$channels[$channel->getId()] = $channel;
+			}
+		}
+
+		return new Collection($channels);
+	}
+
+	public function getAssignedUploadDestinations()
+	{
+		if ($this->isSuperAdmin())
+		{
+			return $this->getModelFacade()->get('UploadDestination')->all();
+		}
+
+		$uploads = [];
+		foreach ($this->getAllRoles() as $role)
+		{
+			foreach ($role->AssignedUploadDestinations as $dir)
+			{
+				$uploads[$dir->getId()] = $dir;
+			}
+		}
+
+		return new Collection($uploads);
+	}
+
+	public function getAssignedStatuses()
+	{
+		if ($this->isSuperAdmin())
+		{
+			return $this->getModelFacade()->get('Status')->all();
+		}
+
+		$statuses = [];
+		foreach ($this->getAllRoles() as $role)
+		{
+			foreach ($role->AssignedStatuses as $status)
+			{
+				$statuses[$status->getId()] = $status;
+			}
+		}
+
+		return new Collection($statuses);
+	}
+
+	public function getAssignedTemplateGroups()
+	{
+		if ($this->isSuperAdmin())
+		{
+			return $this->getModelFacade()->get('TemplateGroup')->all();
+		}
+
+		$template_groups = [];
+		foreach ($this->getAllRoles() as $role)
+		{
+			foreach ($role->AssignedTemplateGroups as $template_group)
+			{
+				$template_groups[$template_group->getId()] = $template_group;
+			}
+		}
+
+		return new Collection($template_groups);
+	}
+
+	public function getAssignedTemplates()
+	{
+		if ($this->isSuperAdmin())
+		{
+			return $this->getModelFacade()->get('Template')->all();
+		}
+
+		$templates = [];
+		foreach ($this->getAllRoles() as $role)
+		{
+			foreach ($role->AssignedTemplates as $template)
+			{
+				$templates[$template->getId()] = $template;
+			}
+		}
+
+		return new Collection($templates);
+	}
+
+	public function getPermissions()
+	{
+		$cache_key = "Member/{$this->member_id}/Permissions";
+
+		$permissions = $this->getFromCache($cache_key);
+
+		if ($permissions === FALSE)
+		{
+			$permissions = $this->getModelFacade()->get('Permission')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('role_id', 'IN', $this->getAllRoles()->pluck('role_id'))
+				->all()
+				->getDictionary('permission', 'permission_id');
+
+			$this->saveToCache($cache_key, $permissions);
+		}
+
+		return $permissions;
+	}
+
+	public function can($permission)
+	{
+		$permissions = $this->getPermissions();
+		return array_key_exists('can_' . $permission, $permissions);
+	}
+
+	public function has($permission)
+	{
+		$permissions = $this->getPermissions();
+		return array_key_exists($permission, $permissions);
+	}
+
+	public function isSuperAdmin()
+	{
+		return in_array(1, $this->getAllRoles()->pluck('role_id'));
+	}
+
+	public function isBanned()
+	{
+		return $this->role_id == 2 || in_array(2, $this->getAllRoles()->pluck('role_id'));
+	}
+
+	public function isPending()
+	{
+		return $this->role_id == 3 || in_array(3, $this->getAllRoles()->pluck('role_id'));
+	}
+
+	/**
+	 * Returns array of field models; implements StructureModel interface
+	 */
+	public function getAllCustomFields()
+	{
+		$member_cfields = ee()->session->cache('EllisLab::RoleModel', 'getCustomFields');
+
+		// might be empty, so need to be specific
+		if ( ! is_array($member_cfields))
+		{
+			$member_cfields = $this->getModelFacade()->get('MemberField')->all()->asArray();
+			ee()->session->set_cache('EllisLab::RoleModel', 'getCustomFields', $member_cfields);
+		}
+
+		return $member_cfields;
+	}
+
+	/**
+	 * Returns name of content type for these fields; implements StructureModel interface
+	 */
+	public function getContentType()
+	{
+		return 'member';
+	}
 }
+
 
 // EOF

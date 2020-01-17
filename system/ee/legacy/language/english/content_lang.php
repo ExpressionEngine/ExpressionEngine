@@ -542,7 +542,7 @@ $lang = array(
 
 'no_glossary' => 'A glossary does not exist',
 
-'no_member_groups' => 'You need to select at least one member group to apply/remove a layout.',
+'no_member_roles' => 'You need to select at least one member role to apply/remove a layout.',
 
 'no_related_entries' => 'No entries exist for this related channel',
 

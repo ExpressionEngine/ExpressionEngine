@@ -23,7 +23,7 @@ class Sandr extends Utilities {
 	 */
 	public function index()
 	{
-		if ( ! ee()->cp->allowed_group('can_access_data'))
+		if ( ! ee('Permission')->can('access_data'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -136,11 +136,6 @@ class Sandr extends Utilities {
 					'properties',
 					'file_properties',
 					'url'
-				),
-				'exp_member_groups' => array(
-					'group_title',
-					'group_description',
-					'mbr_delete_notify_emails'
 				),
 				'exp_global_variables'	=> array('variable_data'),
 				'exp_categories'		=> array('cat_image'),

@@ -23,7 +23,7 @@ class Query extends Utilities {
 	public function index($show_validation = TRUE)
 	{
 		// Super Admins only, please
-		if (ee()->session->userdata('group_id') != '1')
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -112,7 +112,7 @@ class Query extends Utilities {
 		}
 
 		// If it's a DELETE query, require that a Super Admin be the one submitting it
-		if (ee()->session->userdata('group_id') != '1')
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			if (strpos(strtoupper($sql), 'DELETE') !== FALSE OR strpos(strtoupper($sql), 'ALTER') !== FALSE OR strpos(strtoupper($sql), 'TRUNCATE') !== FALSE OR strpos(strtoupper($sql), 'DROP') !== FALSE)
 			{

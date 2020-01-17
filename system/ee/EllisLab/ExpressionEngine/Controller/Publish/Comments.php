@@ -24,7 +24,7 @@ class Comments extends AbstractPublishController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group_any(
+		if ( ! ee('Permission')->hasAny(
 			'can_moderate_comments',
 			'can_edit_own_comments',
 			'can_delete_own_comments',
@@ -50,8 +50,8 @@ class Comments extends AbstractPublishController {
 		}
 
 		$vars = array(
-			'can_delete' => ee()->cp->allowed_group('can_delete_all_comments') && ee()->cp->allowed_group('can_delete_own_comments'),
-			'can_moderate' => ee()->cp->allowed_group('can_moderate_comments'),
+			'can_delete' => ee('Permission')->can('delete_all_comments') && ee('Permission')->can('delete_own_comments'),
+			'can_moderate' => ee('Permission')->can('moderate_comments'),
 		);
 
 		$channel = NULL;
@@ -156,7 +156,7 @@ class Comments extends AbstractPublishController {
 		}
 
 		// if there are Spam comments, and the user can access them, give them a link
-		if (ee()->cp->allowed_group('can_moderate_spam') && ee('Addon')->get('spam') && ee('Addon')->get('spam')->isInstalled())
+		if (ee('Permission')->can('moderate_spam') && ee('Addon')->get('spam') && ee('Addon')->get('spam')->isInstalled())
 		{
 			$spam_total = ee('Model')->get('Comment')
 				->filter('site_id', ee()->config->item('site_id'))
@@ -299,20 +299,20 @@ class Comments extends AbstractPublishController {
 			ee()->view->cp_heading = sprintf(lang('all_comments_for_entry'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'));
 		}
 
-		$vars['can_delete'] = ee()->cp->allowed_group_any(
+		$vars['can_delete'] = ee('Permission')->hasAny(
 			'can_delete_own_comments',
 			'can_delete_all_comments'
 		);
-		$vars['can_moderate'] = ee()->cp->allowed_group('can_moderate_comments');
+		$vars['can_moderate'] = ee('Permission')->can('moderate_comments');
 
 		ee()->cp->render('publish/comments/index', $vars);
 	}
 
 	public function edit($comment_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_all_comments')
-		  && ! ee()->cp->allowed_group('can_edit_own_comments')
-		  && ! ee()->cp->allowed_group('can_moderate_comments'))
+		if ( ! ee('Permission')->can('edit_all_comments')
+		  && ! ee('Permission')->can('edit_own_comments')
+		  && ! ee('Permission')->can('moderate_comments'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -328,11 +328,11 @@ class Comments extends AbstractPublishController {
 
 		// this form lets you edit, moderate, or both. Set permissions
 		$can_edit = FALSE;
-		$can_moderate = ee()->cp->allowed_group('can_moderate_comments');
+		$can_moderate = ee('Permission')->can('moderate_comments');
 
-		if (ee()->cp->allowed_group('can_edit_all_comments') OR
+		if (ee('Permission')->can('edit_all_comments') OR
 			($comment->author_id == ee()->session->userdata('member_id')
-				&& ee()->cp->allowed_group('can_edit_own_comments')
+				&& ee('Permission')->can('edit_own_comments')
 			))
 		{
 			$can_edit = TRUE;
@@ -563,8 +563,8 @@ class Comments extends AbstractPublishController {
 
 			// You get an edit button if you can edit all comments or you can
 			// edit your own comments and this comment is one of yours
-			if (ee()->cp->allowed_group('can_edit_all_comments')
-				|| (ee()->cp->allowed_group('can_edit_own_comments')
+			if (ee('Permission')->can('edit_all_comments')
+				|| (ee('Permission')->can('edit_own_comments')
 					&& $comment->author_id == ee()->session->userdata('member_id')))
 			{
 				$toolbar = array(
@@ -643,8 +643,8 @@ class Comments extends AbstractPublishController {
 	private function remove($comment_ids)
 	{
 		// Cannot remove if you cannot edit
-		if ( ! ee()->cp->allowed_group('can_delete_all_comments')
-		  && ! ee()->cp->allowed_group('can_delete_own_comments'))
+		if ( ! ee('Permission')->can('delete_all_comments')
+		  && ! ee('Permission')->can('delete_own_comments'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -657,8 +657,8 @@ class Comments extends AbstractPublishController {
 		$comments = ee('Model')->get('Comment', $comment_ids)
 			->filter('site_id', ee()->config->item('site_id'));
 
-		if ( ! ee()->cp->allowed_group('can_delete_all_comments')
-		  && ee()->cp->allowed_group('can_delete_own_comments'))
+		if ( ! ee('Permission')->can('delete_all_comments')
+		  && ee('Permission')->can('delete_own_comments'))
 		{
 			$comments->filter('author_id', ee()->session->userdata('member_id'));
 		}
@@ -684,7 +684,7 @@ class Comments extends AbstractPublishController {
 
 	private function setStatus($comment_ids, $status)
 	{
-		if ( ! ee()->cp->allowed_group('can_moderate_comments'))
+		if ( ! ee('Permission')->can('moderate_comments'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

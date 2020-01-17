@@ -18,7 +18,7 @@ feature 'Channel Layouts: Create/Edit' do
     @page.should have_date_tab
     # @page.should have_hide_date_tab
     @page.should have_layout_name
-    @page.should have_member_groups
+    @page.should have_roles
     @page.should have_submit_button
   end
 
