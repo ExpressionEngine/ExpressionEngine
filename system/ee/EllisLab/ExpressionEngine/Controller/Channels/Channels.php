@@ -325,7 +325,7 @@ class Channels extends AbstractChannelsController {
 		ee()->cp->add_js_script('file', 'cp/channel/channel_manager');
 
 		ee()->javascript->set_global('status.default_name', lang('status'));
-		ee()->cp->add_js_script('file', array('colorpicker/simplecolor', 'colorpicker/colorpicker'));
+		ee()->cp->add_js_script('file', array('library/simplecolor', 'components/colorpicker'));
 
 		ee()->view->header = array(
 			'title' => lang('channel_manager'),

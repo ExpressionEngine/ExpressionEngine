@@ -849,7 +849,7 @@ class File_field {
 		// Include dependencies
 		ee()->cp->add_js_script(array(
 			'file'		=> array(
-				'underscore',
+				'vendor/underscore',
 				'files/publish_fields'
 			),
 			'plugin'	=> array(

@@ -19,6 +19,7 @@ class Javascript_loader {
 	public function __construct()
 	{
 		define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET.'javascript/'.PATH_JS.'/');
+		define('PATH_JAVASCRIPT_BUILD', PATH_THEMES.'cp/js/build/');
 	}
 
 	/**
@@ -83,6 +84,20 @@ class Javascript_loader {
 				else
 				{
 					$file = ee()->security->sanitize_filename($file);
+				}
+
+				// Attempt to load files from the new js folder first
+				// TODO: Remove this temporary code once all js assets have been moved
+				// from asset/javascript/src to cp/js
+				if ($type == 'file')
+				{
+					$new_file = PATH_JAVASCRIPT_BUILD.$file.'.js';
+
+					if (file_exists($new_file))
+					{
+						$contents .= file_get_contents($new_file)."\n\n";
+						continue;
+					}
 				}
 
 				$file = $path.$file.'.js';

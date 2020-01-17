@@ -21,6 +21,15 @@
 	background: #F5F6F7;
 }
 
+
+.CodeMirror-activeline-background {
+	background: transparent;
+}
+.CodeMirror-activeline-gutter .CodeMirror-linenumber {
+	font-weight: bold;
+	color: rgb(127, 129, 138);
+}
+
 /**
  * codemirror/lint.css slightly modified for EE:
  */
