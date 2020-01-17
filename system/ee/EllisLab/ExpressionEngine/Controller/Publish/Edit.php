@@ -101,9 +101,9 @@ class Edit extends AbstractPublishController {
 
 		$columns = array_merge($columns, array(
 			'column_entry_date',
-			'column_status' => array(
-				'type'	=> Table::COL_STATUS
-			),
+			'column_status' => [
+				'encode' => FALSE
+			],
 			array(
 				'type'	=> Table::COL_CHECKBOX
 			)
@@ -224,17 +224,7 @@ class Edit extends AbstractPublishController {
 
 			if ($status)
 			{
-				$highlight = new Color($status->highlight);
-				$color = ($highlight->isLight())
-					? $highlight->darken(100)
-					: $highlight->lighten(100);
-
-				$status = array(
-					'content'          => (in_array($status->status, array('open', 'closed'))) ? lang($status->status) : $status->status,
-					'status'           => $status->status,
-					'color'            => $color,
-					'background-color' => $status->highlight
-				);
+				$status = $status->renderTag();
 			}
 			else
 			{

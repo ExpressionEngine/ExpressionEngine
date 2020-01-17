@@ -462,11 +462,6 @@ class SelectItem extends React.Component {
       )
     }
 
-    if (props.item.component) {
-      const Tag = `${props.item.component.tag}`;
-      label = (<Tag className={props.item.component.class} style={props.item.component.style}>{props.item.component.label}</Tag>)
-    }
-
     let listItem = (
       <label className={'checkbox-label'}
           data-id={props.reorderable && ! props.nested ? props.item.value : null}>
@@ -525,11 +520,6 @@ class SelectedItem extends React.Component {
   render () {
     let props = this.props
     let label = props.item.label
-
-    if (props.item.component) {
-      const Tag = `${props.item.component.tag}`;
-      label = (<Tag className={props.item.component.class} style={props.item.component.style}>{props.item.component.label}</Tag>)
-    }
 
     return (
       <div className="lots-of-checkboxes__selection">

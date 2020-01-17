@@ -1173,7 +1173,7 @@ class ChannelEntry extends ContentModel {
 				continue;
 			}
 
-			$status_options[] = $status->getOptionComponent();
+			$status_options[] = $status->getSelectOptionComponent();
 		}
 
 		$field->setItem('field_list_items', $status_options);

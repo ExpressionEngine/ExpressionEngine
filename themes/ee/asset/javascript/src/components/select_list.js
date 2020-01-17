@@ -553,14 +553,6 @@ function (_React$Component2) {
         }, props.item.section);
       }
 
-      if (props.item.component) {
-        var Tag = "".concat(props.item.component.tag);
-        label = React.createElement(Tag, {
-          className: props.item.component["class"],
-          style: props.item.component.style
-        }, props.item.component.label);
-      }
-
       var listItem = React.createElement("label", {
         className: 'checkbox-label',
         "data-id": props.reorderable && !props.nested ? props.item.value : null
@@ -638,15 +630,6 @@ function (_React$Component3) {
     value: function render() {
       var props = this.props;
       var label = props.item.label;
-
-      if (props.item.component) {
-        var Tag = "".concat(props.item.component.tag);
-        label = React.createElement(Tag, {
-          className: props.item.component["class"],
-          style: props.item.component.style
-        }, props.item.component.label);
-      }
-
       return React.createElement("div", {
         className: "lots-of-checkboxes__selection"
       }, React.createElement("i", {

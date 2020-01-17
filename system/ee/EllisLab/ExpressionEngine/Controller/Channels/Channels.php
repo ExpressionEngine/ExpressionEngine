@@ -733,7 +733,7 @@ class Channels extends AbstractChannelsController {
 
 		foreach ($statuses as $status)
 		{
-			$status_options[] = $status->getOptionComponent(['use_ids' => TRUE]);
+			$status_options[] = $status->getSelectOptionComponent(true);
 		}
 
 		$selected = ee('Request')->post('statuses') ?: [];
@@ -755,6 +755,7 @@ class Channels extends AbstractChannelsController {
 			'field_name'       => 'statuses',
 			'choices'          => $status_options,
 			'disabled_choices' => $default,
+			'encode' 		   => FALSE,
 			'unremovable_choices' => $default,
 			'value'            => $selected,
 			'multi'            => TRUE,
