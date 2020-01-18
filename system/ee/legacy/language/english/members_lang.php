@@ -170,7 +170,7 @@ $lang = array(
 
 'last_visit' => 'Last Visit',
 
-'lock_description' => 'Only <mark>Super Admin</mark>s can add or remove members from this role.',
+'lock_description' => 'Only <code>Super Admins</code> can add or remove members from this role.',
 
 'locked' => 'Locked',
 
@@ -264,7 +264,7 @@ $lang = array(
 
 'role_updated_desc' => 'Role has been saved successfully.',
 
-'roles_removed_desc' => 'Role has been deleted successfully.',
+'roles_deleted_desc' => 'Role has been deleted successfully.',
 
 'roles_remove_problem' => 'There was a problem deleting roles.',
 
@@ -986,7 +986,7 @@ $lang = array(
 
 /* Roles */
 
-'roles_manager' => 'Roles Manager',
+'roles_manager' => 'Member Roles',
 
 'role_groups' => 'Role Groups',
 
@@ -1016,7 +1016,7 @@ $lang = array(
 
 'edit_role_group_success_desc' => 'The role group <b>%s</b> has been updated.',
 
-'role_groups_removed_desc' => 'The following role groups were removed',
+'role_groups_removed_desc' => 'The following role groups were deleted',
 
 'create_role' => 'New Role',
 
@@ -1038,7 +1038,7 @@ $lang = array(
 
 'edit_role_success_desc' => 'The role <b>%s</b> has been updated.',
 
-'roles_removed_desc' => 'The following role were removed',
+'roles_deleted_desc' => 'The following roles were deleted',
 
 'channel_access' => 'Channel access',
 

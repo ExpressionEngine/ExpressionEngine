@@ -14,11 +14,12 @@ use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Service\Filter\FilterFactory;
+use EllisLab\ExpressionEngine\Controller\Members;
 
 /**
  * Member Fields Controller
  */
-class Fields extends CP_Controller {
+class Fields extends Members\Members {
 
 	protected $base_url;
 	protected $perpage;
@@ -40,6 +41,7 @@ class Fields extends CP_Controller {
 		ee()->lang->loadfile('members');
 		ee()->lang->loadfile('channel');
 		$this->base_url = ee('CP/URL')->make('members/fields');
+		$this->generateSidebar('fields');
 	}
 
 	/**

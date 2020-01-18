@@ -61,10 +61,13 @@ abstract class AbstractRoles extends CP_Controller {
 		// More than one group can be active, so we use an array
 		$active_groups = (is_array($active)) ? $active : array($active);
 
-		$all_roles = ee('CP/Sidebar')->makeNew()->addMarginBottom();
-		$all_roles->addHeader(lang('all_roles'), ee('CP/URL')->make('members/roles'))->isInactive();
-
 		$sidebar = ee('CP/Sidebar')->makeNew();
+
+		$all_roles = $sidebar->addItem(lang('all_roles'), ee('CP/URL')->make('members/roles'));
+
+		if ($active) {
+			$all_roles->isInactive();
+		}
 
 		$list = $sidebar->addHeader(lang('role_groups'));
 
@@ -127,7 +130,11 @@ abstract class AbstractRoles extends CP_Controller {
 				ee('CP/URL')->make('members/roles/groups/create')
 			);
 
-		ee()->view->left_nav = $all_roles->render().$sidebar->render();
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL')->make('members')->compile() => lang('members'),
+		);
+
+		ee()->view->left_nav = $sidebar->render();
 	}
 }
 

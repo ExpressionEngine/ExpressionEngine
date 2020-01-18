@@ -40,8 +40,8 @@ class Roles extends AbstractRolesController {
 		$this->generateSidebar($group_id);
 
 		$vars['create_url'] = $group_id
-			? ee('CP/URL')->make('roles/create/'.$group_id)
-			: ee('CP/URL')->make('roles/create');
+			? ee('CP/URL')->make('members/roles/create/'.$group_id)
+			: ee('CP/URL')->make('members/roles/create');
 		$vars['base_url'] = $base_url;
 
 		$data = array();
@@ -137,12 +137,7 @@ class Roles extends AbstractRolesController {
 				'label' => $role->name,
 				'href' => $edit_url,
 				'selected' => ($role_id && $role->getId() == $role_id),
-				'toolbar_items' => ee('Permission')->can('edit_roles') ? [
-					'edit' => [
-						'href' => $edit_url,
-						'title' => lang('edit')
-					]
-				] : NULL,
+				'toolbar_items' => NULL,
 				'selection' => ee('Permission')->can('delete_roles') ? [
 					'name' => 'selection[]',
 					'value' => $role->getId(),
@@ -188,10 +183,6 @@ class Roles extends AbstractRolesController {
 		{
 			$group_id = ee('Request')->post('group_id');
 		}
-
-		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('members/roles')->compile() => lang('roles_manager')
-		);
 
 		$this->generateSidebar($group_id);
 
@@ -327,10 +318,6 @@ class Roles extends AbstractRolesController {
 		$role_groups = $role->RoleGroups;
 		$active_groups = $role_groups->pluck('group_id');
 		$this->generateSidebar($active_groups);
-
-		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL')->make('members/roles')->compile() => lang('roles_manager'),
-		);
 
 		$errors = NULL;
 
@@ -1714,7 +1701,7 @@ class Roles extends AbstractRolesController {
 		ee('CP/Alert')->makeInline('roles')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(lang('roles_removed_desc'))
+			->addToBody(lang('roles_deleted_desc'))
 			->addToBody($role_names)
 			->defer();
 
