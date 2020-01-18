@@ -1,7 +1,7 @@
 class MemberImport < ControlPanelPage
 
   element :file_location, 'input[name=xml_file]'
-  elements :member_group, 'input[name=group_id]'
+  elements :role, 'input[name=role_id]'
   elements :language, 'input[name=language]'
   element :tz_country, 'select[name=tz_country]'
   element :timezone, 'select[name=timezones]'

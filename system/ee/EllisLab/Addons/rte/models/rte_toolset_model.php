@@ -124,29 +124,13 @@ class Rte_toolset_model extends CI_Model {
 		}
 
 		// are you an admin?
-		$admin = ($this->session->userdata('group_id') == '1');
+		$admin = (ee('Permission')->isSuperAdmin());
 
 		if ( ! $admin)
 		{
-			// get the group_ids with access
-			$result = $this->db
-						->select('module_member_groups.group_id')
-						->from('module_member_groups')
-						->join('modules', 'modules.module_id = module_member_groups.module_id')
-						->where('modules.module_name', 'Rte')
-						->get();
-
-			if ($result->num_rows())
-			{
-				foreach ($result->result_array() as $r)
-				{
-					if ($this->session->userdata('group_id') == $r['group_id'])
-					{
-						$admin = TRUE;
-						break;
-					}
-				}
-			}
+			$member = ee()->session->getMember();
+			$assigned_modules = $member->getAssignedModules()->pluck('module_name');
+			$admin = in_array('Rte', $assigned_modules);
 		}
 
 		return (($toolset->member_id != 0 && $toolset->member_id == $this->session->userdata('member_id')) ||

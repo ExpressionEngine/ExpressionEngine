@@ -13,7 +13,7 @@ namespace EllisLab\ExpressionEngine\Controller\Members;
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-
+use EllisLab\ExpressionEngine\Service\Filter\FilterFactory;
 use EllisLab\ExpressionEngine\Controller\Members;
 
 /**
@@ -21,6 +21,10 @@ use EllisLab\ExpressionEngine\Controller\Members;
  */
 class Fields extends Members\Members {
 
+	protected $base_url;
+	protected $perpage;
+	protected $page = 1;
+	protected $offset = 0;
 
 	/**
 	 * Constructor
@@ -29,11 +33,12 @@ class Fields extends Members\Members {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_admin_mbr_groups'))
+		if ( ! ee('Permission')->can('admin_roles'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
 
+		ee()->lang->loadfile('members');
 		ee()->lang->loadfile('channel');
 		$this->base_url = ee('CP/URL')->make('members/fields');
 		$this->generateSidebar('fields');
@@ -493,6 +498,23 @@ class Fields extends Members\Members {
 		});');
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Display filters
+	 *
+	 * @param int
+	 * @return void
+	 */
+	protected function renderFilters(FilterFactory $filters)
+	{
+		ee()->view->filters = $filters->render($this->base_url);
+		$this->params = $filters->values();
+		$this->perpage = $this->params['perpage'];
+		$this->page = ((int) ee()->input->get('page')) ?: 1;
+		$this->offset = ($this->page - 1) * $this->perpage;
+
+		$this->base_url->addQueryStringVariables($this->params);
 	}
 }
 // END CLASS

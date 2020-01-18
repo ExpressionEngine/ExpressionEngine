@@ -11,10 +11,10 @@
 
 			<a href="https://expressionengine.com/support" class="dropdown__link app-about__link app-about__support-link"><i class="fas fa-life-ring fa-fw"></i> <?=lang('support')?></a>
 
-			<?php if (ee()->cp->allowed_group('can_access_footer_report_bug')): ?>
+			<?php if (ee('Permission')->can('access_footer_report_bug')): ?>
 				<a href="https://expressionengine.com/support/bugs/new" class="dropdown__link app-about__link app-about__bug-link" rel="external noreferrer"><i class="fas fa-bug fa-fw"></i> <?=lang('report_bug')?></a>
 			<?php endif ?>
-			<?php if (ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
+			<?php if (ee('Permission')->can('access_footer_user_guide')): ?>
 				<a href="<?=DOC_URL?>" class="dropdown__link app-about__link app-about__user-guide-link" rel="external noreferrer"><i class="fas fa-book fa-fw"></i> <?=lang('user_guide')?></a>
 			<?php endif; ?>
 			<?php if ($show_news_button): ?>
@@ -23,7 +23,7 @@
 
 
 
-			<?php if (ee()->session->userdata('group_id') == 1): ?>
+			<?php if (ee('Permission')->isSuperAdmin()): ?>
 				<div class="app-about__status app-about__status--checking">
 					<?=lang('checking_for_updates')?>
 				</div>

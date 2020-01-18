@@ -21,7 +21,7 @@ class Email extends Settings {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_comm'))
+		if ( ! ee('Permission')->can('access_comm'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

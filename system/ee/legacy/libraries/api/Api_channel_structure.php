@@ -422,7 +422,7 @@ class Api_channel_structure extends Api {
 		*/
 
 		// for superadmins, assign it right away
-		if (ee()->session->userdata('group_id') == 1)
+		if (ee('Permission')->isSuperAdmin())
 		{
 			ee()->session->userdata['assigned_channels'][$channel_id] = $data['channel_title'];
 		}

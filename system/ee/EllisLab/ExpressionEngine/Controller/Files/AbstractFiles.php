@@ -1,11 +1,10 @@
 <?php
 /**
- * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
- * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
+ * @copyright Copyright (c) 2003-2018, EllisLab, Inc. (https://ellislab.com)
+ * @license   https://expressionengine.com/license
  */
 
 namespace EllisLab\ExpressionEngine\Controller\Files;
@@ -24,8 +23,6 @@ use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
  */
 abstract class AbstractFiles extends CP_Controller {
 
-	protected $no_access;
-
 	/**
 	 * Constructor
 	 */
@@ -33,37 +30,14 @@ abstract class AbstractFiles extends CP_Controller {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group('can_access_files'))
+		if ( ! ee('Permission')->can('access_files'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->lang->loadfile('filemanager');
 
-		ee()->view->can_edit_upload_directories = ee()->cp->allowed_group('can_edit_upload_directories');
-	}
-
-	protected function getNoAccess()
-	{
-		if ( ! is_array($this->no_access))
-		{
-			$this->no_access = [];
-
-			if (ee()->session->userdata('group_id') != 1)
-			{
-				$query = ee('Model/Datastore')->rawQuery();
-				$query->where('member_group', ee()->session->userdata('group_id'));
-				$query->from('upload_no_access');
-				$result = $query->get();
-
-				foreach ($result->result_array() as $row)
-				{
-					$this->no_access[] = $row['upload_id'];
-				}
-			}
-		}
-
-		return $this->no_access;
+		ee()->view->can_edit_upload_directories = ee('Permission')->can('edit_upload_directories');
 	}
 
 	protected function generateSidebar($active = NULL)
@@ -81,7 +55,7 @@ abstract class AbstractFiles extends CP_Controller {
 		$list = $header->addFolderList('directory')
 			->withNoResultsText(lang('zero_directories_found'));
 
-		if (ee()->cp->allowed_group('can_create_upload_directories'))
+		if (ee('Permission')->can('create_upload_directories'))
 		{
 			$header->withButton(lang('new'), ee('CP/URL')->make('files/uploads/create'));
 
@@ -103,15 +77,13 @@ abstract class AbstractFiles extends CP_Controller {
 			->filter('module_id', 0)
 			->order('name', 'asc');
 
-		$no_access = $this->getNoAccess();
-
-		if ( ! empty($no_access))
-		{
-			$upload_destinations->filter('id', 'NOT IN', $no_access);
-		}
-
 		foreach ($upload_destinations->all() as $destination)
 		{
+			if ($destination->memberHasAccess(ee()->session->getMember()) === FALSE)
+			{
+				continue;
+			}
+
 			$display_name = htmlspecialchars($destination->name, ENT_QUOTES, 'UTF-8');
 
 			$item = $list->addItem($display_name, ee('CP/URL')->make('files/directory/' . $destination->id))
@@ -119,12 +91,12 @@ abstract class AbstractFiles extends CP_Controller {
 				->withRemoveConfirmation(lang('upload_directory') . ': <b>' . $display_name . '</b>')
 				->identifiedBy($destination->id);
 
-			if ( ! ee()->cp->allowed_group('can_edit_upload_directories'))
+			if ( ! ee('Permission')->can('edit_upload_directories'))
 			{
 				$item->cannotEdit();
 			}
 
-			if ( ! ee()->cp->allowed_group('can_delete_upload_directories'))
+			if ( ! ee('Permission')->can('delete_upload_directories'))
 			{
 				$item->cannotRemove();
 			}
@@ -143,7 +115,7 @@ abstract class AbstractFiles extends CP_Controller {
 	protected function stdHeader($active = NULL)
 	{
 		$upload_destinations = [];
-		if (ee()->cp->allowed_group('can_upload_new_files'))
+		if (ee('Permission')->can('upload_new_files'))
 		{
 			$upload_destinations = ee('Model')->get('UploadDestination')
 				->fields('id', 'name')
@@ -152,11 +124,13 @@ abstract class AbstractFiles extends CP_Controller {
 				->order('name', 'asc')
 				->all();
 
-			$no_access = $this->getNoAccess();
-
-			if ( ! empty($no_access))
+			if ( ! ee('Permission')->isSuperAdmin())
 			{
-				$upload_destinations->filter('id', 'NOT IN', $no_access);
+				$member = ee()->session->getMember();
+				$upload_destinations = $upload_destinations->filter(function($dir) use ($member)
+				{
+					return $dir->memberHasAccess($member);
+				});
 			}
 
 			$choices = [];
@@ -187,7 +161,7 @@ abstract class AbstractFiles extends CP_Controller {
 		ee()->view->header = array(
 			'title' => lang('file_manager'),
 			'toolbar_items' => $toolbar_items,
-			'action_button' => ee()->cp->allowed_group('can_upload_new_files') && $upload_destinations->count() ? [
+			'action_button' => ee('Permission')->can('upload_new_files') && $upload_destinations->count() ? [
 				'text' => '<i class="fas fa-cloud-upload-alt icon-left"></i>' . lang('upload'),
 				'filter_placeholder' => lang('filter_upload_directories'),
 				'choices' => count($choices) > 1 ? $choices : NULL,
@@ -246,11 +220,11 @@ abstract class AbstractFiles extends CP_Controller {
 		$data = array();
 
 		$file_id = ee()->session->flashdata('file_id');
-		$member_group = ee()->session->userdata['group_id'];
+		$member = ee()->session->getMember();
 
 		foreach ($files as $file)
 		{
-			if ( ! $file->memberGroupHasAccess($member_group))
+			if ( ! $file->memberHasAccess($member))
 			{
 				continue;
 			}
@@ -273,7 +247,7 @@ abstract class AbstractFiles extends CP_Controller {
 				),
 			);
 
-			if ( ! ee()->cp->allowed_group('can_edit_files'))
+			if ( ! ee('Permission')->can('edit_files'))
 			{
 				unset($toolbar['view']);
 				unset($toolbar['crop']);
@@ -287,7 +261,7 @@ abstract class AbstractFiles extends CP_Controller {
 
 			$file_description = $file->title;
 
-			if (ee()->cp->allowed_group('can_edit_files'))
+			if (ee('Permission')->can('edit_files'))
 			{
 				$file_description = '<a href data-file-id="'.$file->file_id.'" rel="modal-view-file" class="m-link">'.$file->title.'</a>';
 			}

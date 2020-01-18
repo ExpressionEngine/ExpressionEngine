@@ -6,6 +6,7 @@ $command = array_shift($argv);
 
 $longopts = array(
 	"site-id:",
+	"raw",
 	"help",
 );
 
@@ -21,14 +22,30 @@ EOF;
 }
 
 $site_id = isset($options['site-id']) && is_numeric($options['site-id']) ? (int) $options['site-id'] : 1;
+$index = '';
+$raw = isset($options['raw']) ? TRUE : FALSE;
 
 ee()->config->site_prefs('', $site_id);
 
-$item = array_shift($argv);
+$item = NULL;
+$value = NULL;
 
-if (empty($argv))
+$item = array_pop($argv);
+
+if ( ! empty($argv))
 {
-	$value = ee()->config->item($item);
+	$arg = array_pop($argv);
+
+	if ($arg[0] != '-' && (end($argv) != '--site-id'))
+	{
+		$value = $item;
+		$item = $arg;
+	}
+}
+
+if (empty($value))
+{
+	$value = ee()->config->item($item, $index, $raw);
 	if (empty($value))
 	{
 		exit('empty');
@@ -36,10 +53,8 @@ if (empty($argv))
 	exit((string)$value);
 }
 
-$value = array_shift($argv);
-
 ee()->config->update_site_prefs(array($item => $value), $site_id);
 ee()->config->site_prefs('', $site_id);
-print $item . ' is now ' . ee()->config->item($item);
+print $item . ' is now ' . ee()->config->item($item, $index, $raw);
 
 // EOF

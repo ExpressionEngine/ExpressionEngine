@@ -14,9 +14,6 @@ use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
-use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
-use EllisLab\ExpressionEngine\Service\Filter\FilterFactory;
-use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
 /**
  * Members Controller
@@ -24,133 +21,110 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 class Members extends CP_Controller {
 
 	protected $base_url;
-	private $group;
-	private $filter = TRUE;
-	protected $perpage;
-	protected $page = 1;
-	protected $offset = 0;
 
-	/**
-	 * Constructor
-	 */
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 
-		$this->perpage = ee()->config->item('memberlist_row_limit');
-		$this->group_id = ($this->input->get_post('group') && $this->input->get_post('group') != 'all') ? $this->input->get_post('group') : '';
-
-		if ( ! ee()->cp->allowed_group('can_access_members'))
+		if ( ! ee('Permission')->can('access_members'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->lang->loadfile('members');
-		ee()->load->model('member_model');
-		ee()->load->library('form_validation');
 
 		$this->base_url = ee('CP/URL')->make('members');
-		$this->set_view_header($this->base_url);
+		$this->stdHeader();
 	}
 
 	protected function generateSidebar($active = NULL)
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$header = $sidebar->addHeader(lang('members'));
+		$sidebar->addHeader(lang('members'));
 
-		$list = $header->addBasicList();
+		$all = $sidebar->addItem(lang('all_members'), ee('CP/URL')->make('members')->compile());
 
-		$all = $list->addItem(lang('all_members'), ee('CP/URL')->make('members')->compile());
-
-		if ($active == 'all_members')
-		{
+		if ($active == 'all_members') {
 			$all->isActive();
 		}
 
-		if (ee()->cp->allowed_group('can_edit_members'))
-		{
-			$pending = $list->addItem(lang('pending_activation'), ee('CP/URL', 'members/pending')->compile());
+		if (ee('Permission')->can('edit_members')) {
+			$pending = $sidebar->addItem(lang('pending_activation'), ee('CP/URL', 'members/pending')->compile());
 
-			if ($active == 'pending')
-			{
+			if ($active == 'pending') {
 				$pending->isActive();
+			}
+
+			$banned = $sidebar->addItem(lang('banned'), ee('CP/URL', 'members/banned')->compile());
+
+			if ($active == 'banned') {
+				$banned->isActive();
 			}
 		}
 
-		if (ee()->cp->allowed_group('can_admin_mbr_groups'))
+		if (ee('Permission')->can('can_admin_roles'))
 		{
-			$header = $sidebar->addHeader(lang('member_settings'));
+			$sidebar->addHeader(lang('member_settings'));
 
-			$list = $header->addBasicList();
+			$member_roles = $sidebar->addItem(lang('member_roles'), ee('CP/URL')->make('members/roles'))->withIcon('user-tag');
+			$custom_member_fields = $sidebar->addItem(lang('custom_member_fields'), ee('CP/URL')->make('members/fields'))->withIcon('bars');
 
-			$member_groups = $list->addItem(lang('member_groups'), ee('CP/URL')->make('members/groups'))->withIcon('user-tag');
-			$custom_member_fields = $list->addItem(lang('custom_member_fields'), ee('CP/URL')->make('members/fields'))->withIcon('bars');
+			if ($active == 'roles') {
+				$member_roles->isActive();
+			}
 
 			if ($active == 'fields') {
 				$custom_member_fields->isActive();
 			}
-
-			if ($active == 'groups') {
-				$member_groups->isActive();
-			}
 		}
 
-		if (ee()->cp->allowed_group('can_ban_users'))
+		if (ee('Permission')->can('ban_users'))
 		{
 			$ban_settings = $sidebar->addItem(lang('manage_bans'), ee('CP/URL')->make('members/ban-settings'))->withIcon('ban');
 
-			if ($active == 'ban') {
+			if ($active == 'ban-settings') {
 				$ban_settings->isActive();
 			}
 		}
 	}
 
-	/**
-	 * MemberList
-	 */
 	public function index()
 	{
-		$member_name = $this->input->get_post('filter_by_keyword');
+		if (ee('Request')->post('bulk_action') == 'remove')
+		{
+			$this->delete();
+			ee()->functions->redirect($this->base_url);
+		}
 
-		$table = $this->initializeTable();
+		$members = ee('Model')->get('Member')->with('PrimaryRole');
 
-		$page = (ee()->input->get('page') > 0) ? ee()->input->get('page') : 1;
+		$filters = $this->makeAndApplyFilters($members, TRUE);
+		$vars['filters'] = $filters->render($this->base_url);
 
-		$state = array(
-			'sort'	=> array($table->sort_col => $table->sort_dir)
-		);
+		$filter_values = $filters->values();
 
-		$params = array(
-			'member_name' => $member_name
-		);
+		$page = ((int) ee('Request')->get('page')) ?: 1;
+		$offset = ($page - 1) * $filter_values['perpage']; // Offset is 0 indexed
 
-		$data = $this->_member_search($state, $params);
+		$total_members = $members->count();
+
+		$members->limit($filter_values['perpage'])
+			->offset($offset);
 
 		$this->generateSidebar('all_members');
 
-		$table->setData($data['rows']);
-		$data['table'] = $table->viewData($this->base_url);
-		$data['form_url'] = ee('CP/URL')->make('members/delete');
+		$table = $this->buildTableFromMemberQuery($members);
 
-		$base_url = $data['table']['base_url'];
+		$vars['table'] = $table->viewData($this->base_url);
+		$vars['form_url'] = $vars['table']['base_url'];
 
-		if ( ! empty($data['table']['data']))
+		if ( ! empty($vars['table']['data']))
 		{
-			$data['pagination'] = ee('CP/Pagination', $data['total_rows'])
-				->perPage($data['per_page'])
+			$vars['pagination'] = ee('CP/Pagination', $total_members)
+				->perPage($filter_values['perpage'])
 				->currentPage($page)
-				->render($base_url);
-		}
-
-		// Set search results heading
-		if ( ! empty($data['table']['search']))
-		{
-			ee()->view->cp_heading = sprintf(
-				lang('search_results_heading'),
-				$data['table']['total_rows'],
-				$data['table']['search']
-			);
+				->render($this->base_url);
 		}
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
@@ -160,7 +134,7 @@ class Members extends CP_Controller {
 
 		if ( ! ee('Session')->isWithinAuthTimeout())
 		{
-			$data['confirm_remove_secure_form_ctrls'] = [
+			$vars['confirm_remove_secure_form_ctrls'] = [
 				'title' => 'your_password',
 				'desc' => 'your_password_delete_members_desc',
 				'group' => 'verify_password',
@@ -174,26 +148,23 @@ class Members extends CP_Controller {
 			];
 		}
 
-		$data['can_delete_members'] = ee()->cp->allowed_group('can_delete_members');
+		$vars['can_delete_members'] = ee('Permission')->can('delete_members');
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('all_members');
-		ee()->cp->render('members/view_members', $data);
+		ee()->cp->render('members/view_members', $vars);
 	}
 
 	public function pending()
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_members'))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
+		$this->base_url = ee('CP/URL')->make('members/pending');
 
-		$action = ee()->input->post('bulk_action');
+		$action = ee('Request')->post('bulk_action');
 
 		if ($action)
 		{
-			$ids = ee()->input->post('selection');
+			$ids = ee('Request')->post('selection');
 			switch ($action)
 			{
 				case 'approve':
@@ -209,130 +180,267 @@ class Members extends CP_Controller {
 					break;
 			}
 
-			ee()->functions->redirect(ee('CP/URL', 'members/pending'));
+			ee()->functions->redirect($this->base_url);
 		}
 
 		$this->generateSidebar('pending');
 
-		$this->base_url = ee('CP/URL')->make('members/pending');
-
-		$vars = array(
-			'cp_page_title' => lang('pending_members'),
-			'can_delete' => ee()->cp->allowed_group('can_delete_members'),
-			'can_edit' => ee()->cp->allowed_group('can_edit_members'),
-			'resend_available' => (ee()->config->item('req_mbr_activation') == 'email')
-		);
-
-		$checkboxes = $vars['can_delete'] || $vars['can_edit'] || $vars['resend_available'];
-
 		$members = ee('Model')->get('Member')
-			->with('MemberGroup')
-			->filter('group_id', 4)
-			->filter('MemberGroup.site_id', ee()->config->item('site_id'));
+			->filter('role_id', 4);
 
-		$listings = $this->listingsPage($members, $this->base_url, 'no_pending_members_found', $checkboxes);
+		$filters = $this->makeAndApplyFilters($members, FALSE);
+		$vars['filters'] = $filters->render($this->base_url);
 
-		$vars = array_merge($listings, $vars);
+		$filter_values = $filters->values();
 
-		$this->set_view_header($this->base_url);
-		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
-		ee()->cp->add_js_script(array(
-			'file' => array('cp/confirm_remove'),
-		));
+		$page = ((int) ee('Request')->get('page')) ?: 1;
+		$offset = ($page - 1) * $filter_values['perpage']; // Offset is 0 indexed
 
-		ee()->cp->render('members/pending', $vars);
-	}
+		$total_members = $members->count();
 
+		$members->limit($filter_values['perpage'])
+			->offset($offset);
 
-	/**
-	 * Creates $vars array of filtered member Table/Pagination
-	 *
-	 * @param	Builder 	$members	Query builder object for Members
-	 * @param	object 		$base_url	CP/URL
-	 * @param	string 		$no_results_text
-	 * @param	mixed 		$checkboxes	Optional T/F indicating permission to use checkboxes.
-	 *          default of NULL falls back on using can_delete_members permission
-	 * @return  $array 		$vars array of filtered member table data
-	 */
-	protected function listingsPage($members, $base_url, $no_results_text, $checkboxes = NULL)
-	{
-		$vars = array();
+		$table = $this->buildTableFromMemberQuery($members);
 
-		// Allow them to tokenize searches
-		// possible tokens: id, member_id, username, screen_name, email
-		$search_terms = $this->_check_search_tokens(ee()->input->get_post('filter_by_keyword'));
-
-		if ( ! empty($search_terms))
-		{
-			$keywords = ee()->input->get_post('filter_by_keyword');
-			$vars['search_terms'] = ee('Format')->make('Text', $keywords)->convertToEntities();
-
-			if ( ! is_array($search_terms))
-			{
-				$members->search(array('screen_name', 'username', 'email', 'member_id'), $search_terms);
-			}
-			else
-			{
-				foreach ($search_terms as $field => $term)
-				{
-					$members->search($field, $term);
-				}
-			}
-
-			// Set search results heading
-			ee()->view->cp_heading = sprintf(
-				lang('search_results_heading'),
-				$members->count(),
-				$vars['search_terms']
-			);
-		}
-
-		$total = $members->count();
-
-		$filter = ee('CP/Filter')
-				->add('Keyword')
-				->add('Perpage', $total, 'show_all_banned');
-
-		$this->renderFilters($filter);
-		$members->limit($this->perpage)
-			->offset($this->offset);
-
-		$table = $this->buildTableFromMemberQuery($members, $checkboxes);
-		$table->setNoResultsText($no_results_text);
-
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData($this->base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 
 		if ( ! empty($vars['table']['data']))
 		{
-			$vars['pagination'] = ee('CP/Pagination', $total)
-				->perPage($this->perpage)
-				->currentPage($this->page)
-			->render($base_url);
+			$vars['pagination'] = ee('CP/Pagination', $total_members)
+				->perPage($filter_values['perpage'])
+				->currentPage($page)
+				->render($this->base_url);
 		}
 
-		return $vars;
+		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/confirm_remove', 'cp/members/members'),
+		));
+
+		if ( ! ee('Session')->isWithinAuthTimeout())
+		{
+			$vars['confirm_remove_secure_form_ctrls'] = [
+				'title' => 'your_password',
+				'desc' => 'your_password_delete_members_desc',
+				'group' => 'verify_password',
+				'fields' => [
+					'verify_password' => [
+						'type'      => 'password',
+						'required'  => TRUE,
+						'maxlength' => PASSWORD_MAX_LENGTH
+					]
+				]
+			];
+		}
+
+		$vars['can_edit'] = ee('Permission')->can('edit_members');
+		$vars['can_delete'] = ee('Permission')->can('delete_members');
+
+		ee()->view->base_url = $this->base_url;
+		ee()->view->ajax_validate = TRUE;
+		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('pending_members');
+		ee()->cp->render('members/pending', $vars);
 	}
 
-
-	public function banSettings()
+	/**
+	 * Decline pending members
+	 *
+	 * @param array $ids The ID(s) of the member(s) being approved
+	 * @return void
+	 */
+	private function decline(array $ids)
 	{
-		if ( ! ee()->cp->allowed_group('can_ban_users'))
+		if ( ! ee('Permission')->can('delete_members'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
 
-		$this->generateSidebar('ban');
+		$members = ee('Model')->get('Member', $ids)
+			->fields('member_id', 'username', 'screen_name', 'email', 'role_id')
+			->filter('role_id', 4)
+			->all();
 
-		$this->base_url = ee('CP/URL', 'members/ban-settings');
-		$this->set_view_header($this->base_url);
+		if (ee()->config->item('declined_member_notification') == 'y')
+		{
+			$template = ee('Model')->get('SpecialtyTemplate')
+				->filter('template_name', 'decline_member_validation')
+				->first();
 
-		$values = array(
+			foreach ($members as $member)
+			{
+				$this->pendingMemberNotification($template, $member);
+			}
+		}
+
+		$usernames = $members->pluck('username');
+		$single = ($members->count() == 1);
+		$members->delete();
+
+		/* -------------------------------------------
+		/* 'cp_members_validate_members' hook.
+		/*  - Additional processing when member(s) are validated in the CP
+		/*  - Added 1.5.2, 2006-12-28
+		*/
+			ee()->extensions->call('cp_members_validate_members', $ids);
+			if (ee()->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
+
+		// Update
+		ee()->stats->update_member_stats();
+
+		if ($single)
+		{
+			ee('CP/Alert')->makeInline('view-members')
+				->asSuccess()
+				->withTitle(lang('member_declined_success'))
+				->addToBody(sprintf(lang('member_declined_success_desc'), $usernames[0]))
+				->defer();
+		}
+		else
+		{
+			ee('CP/Alert')->makeInline('view-members')
+				->asSuccess()
+				->withTitle(lang('members_declined_success'))
+				->addToBody(lang('members_declined_success_desc'))
+				->addToBody($usernames)
+				->defer();
+		}
+	}
+
+	/**
+	 * Resend activation emails for pending members
+	 *
+	 * @param array $ids The ID(s) of the member(s) being approved
+	 * @return void
+	 */
+	private function resend(array $ids)
+	{
+		if ( ! ee('Permission')->can('edit_members') OR
+			ee()->config->item('req_mbr_activation') !== 'email')
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+
+		$members = ee('Model')->get('Member', $ids)
+			->fields('member_id', 'username', 'screen_name', 'email', 'role_id', 'authcode')
+			->filter('role_id', 4)
+			->all();
+
+		$template = ee('Model')->get('SpecialtyTemplate')
+			->filter('template_name', 'mbr_activation_instructions')
+			->first();
+
+		$action_id = ee()->functions->fetch_action_id('Member', 'activate_member');
+
+		foreach ($members as $member)
+		{
+			$swap = array(
+				'email'     => $member->email,
+				'activation_url' => ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id='.$member->authcode
+			);
+
+			$this->pendingMemberNotification($template, $member, $swap);
+		}
+
+		if ($members->count() == 1)
+		{
+			ee('CP/Alert')->makeInline('view-members')
+				->asSuccess()
+				->withTitle(lang('member_activation_resent_success'))
+				->addToBody(sprintf(lang('member_activation_resent_success_desc'), $member->username))
+				->defer();
+		}
+		else
+		{
+			ee('CP/Alert')->makeInline('view-members')
+				->asSuccess()
+				->withTitle(lang('member_activation_resent_success'))
+				->addToBody(lang('members_activation_resent_success_desc'))
+				->addToBody($members->pluck('username'))
+				->defer();
+		}
+	}
+
+	public function banned()
+	{
+		if ( ! ee('Permission')->can('ban_users'))
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+
+		ee()->load->library('form_validation');
+
+		$this->base_url = ee('CP/URL', 'members/banned');
+
+		if (ee('Request')->post('bulk_action') == 'remove')
+		{
+			$this->delete();
+			ee()->functions->redirect($this->base_url);
+		}
+
+		$this->generateSidebar('banned');
+
+		$members = ee('Model')->get('Member')
+			->filter('role_id', 2);
+
+		$filters = $this->makeAndApplyFilters($members, FALSE);
+		$vars['filters'] = $filters->render($this->base_url);
+
+		$filter_values = $filters->values();
+
+		$page = ((int) ee('Request')->get('page')) ?: 1;
+		$offset = ($page - 1) * $filter_values['perpage']; // Offset is 0 indexed
+
+		$total_members = $members->count();
+
+		$members->limit($filter_values['perpage'])
+			->offset($offset);
+
+		$table = $this->buildTableFromMemberQuery($members);
+
+		$vars['table'] = $table->viewData($this->base_url);
+		$vars['form_url'] = $vars['table']['base_url'];
+
+		if ( ! empty($vars['table']['data']))
+		{
+			$vars['pagination'] = ee('CP/Pagination', $total_members)
+				->perPage($filter_values['perpage'])
+				->currentPage($page)
+				->render($this->base_url);
+		}
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/confirm_remove', 'cp/members/members'),
+		));
+
+		if ( ! ee('Session')->isWithinAuthTimeout())
+		{
+			$vars['confirm_remove_secure_form_ctrls'] = [
+				'title' => 'your_password',
+				'desc' => 'your_password_delete_members_desc',
+				'group' => 'verify_password',
+				'fields' => [
+					'verify_password' => [
+						'type'      => 'password',
+						'required'  => TRUE,
+						'maxlength' => PASSWORD_MAX_LENGTH
+					]
+				]
+			];
+		}
+
+		$vars['can_delete_members'] = ee('Permission')->can('delete_members');
+
+		$values = [
 			'banned_ips' => '',
 			'banned_emails' => '',
 			'banned_usernames' => '',
 			'banned_screen_names' => '',
-		);
+		];
 
 		foreach (array_keys($values) as $item)
 		{
@@ -464,14 +572,14 @@ class Members extends CP_Controller {
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			$prefs = [
-				'ban_action'      => ee()->input->post('ban_action'),
-				'ban_message'     => ee()->input->post('ban_message'),
-				'ban_destination' => ee()->input->post('ban_destination'),
+				'ban_action'      => ee('Request')->post('ban_action'),
+				'ban_message'     => ee('Request')->post('ban_message'),
+				'ban_destination' => ee('Request')->post('ban_destination'),
 			];
 
 			foreach (array_keys($values) as $item)
 			{
-				$value = ee()->input->post($item);
+				$value = ee('Request')->post($item);
 				$value = implode('|', explode(NL, $value));
 				$prefs[$item] = $value;
 			}
@@ -494,15 +602,196 @@ class Members extends CP_Controller {
 				->now();
 		}
 
+		ee()->cp->render('members/banned', $vars);
+	}
+
+	public function banSettings()
+	{
+		if (!ee('Permission')->can('ban_users')) {
+			show_error(lang('unauthorized_access'), 403);
+		}
+
+		ee()->load->library('form_validation');
+
+		$this->generateSidebar('ban-settings');
+		$this->stdHeader();
+		$this->base_url = ee('CP/URL', 'members/banned');
+
+		$values = [
+			'banned_ips' => '',
+			'banned_emails' => '',
+			'banned_usernames' => '',
+			'banned_screen_names' => '',
+		];
+
+		foreach (array_keys($values) as $item)
+		{
+			$value = ee()->config->item($item);
+
+			if ($value != '')
+			{
+				foreach (explode('|', $value) as $line)
+				{
+					$values[$item] .= $line.NL;
+				}
+			}
+		}
+
+		$ban_action = ee()->config->item('ban_action');
+
+		$vars['form'] = array(
+			'ajax_validate' => TRUE,
+			'base_url'      => $this->base_url,
+			'cp_page_title' => lang('manage_bans'),
+			'save_btn_text' => sprintf(lang('btn_save'), lang('settings')),
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => array(
+				array(
+					array(
+						'title' => 'ip_address_banning',
+						'desc' => 'ip_banning_instructions',
+						'fields' => array(
+							'banned_ips' => array(
+								'type' => 'textarea',
+								'value' => $values['banned_ips']
+							)
+						)
+					),
+					array(
+						'title' => 'email_address_banning',
+						'desc' => 'email_banning_instructions',
+						'fields' => array(
+							'banned_emails' => array(
+								'type' => 'textarea',
+								'value' => $values['banned_emails']
+							)
+						)
+					),
+					array(
+						'title' => 'username_banning',
+						'desc' => 'username_banning_instructions',
+						'fields' => array(
+							'banned_usernames' => array(
+								'type' => 'textarea',
+								'value' => $values['banned_usernames']
+							)
+						)
+					),
+					array(
+						'title' => 'screen_name_banning',
+						'desc' => 'screen_name_banning_instructions',
+						'fields' => array(
+							'banned_screen_names' => array(
+								'type' => 'textarea',
+								'value' => $values['banned_screen_names']
+							)
+						)
+					),
+					array(
+						'title' => 'ban_options',
+						'desc'  => 'ban_options_desc',
+						'fields' => array(
+							'ban_action_pt1' => array(
+								'type' => 'radio',
+								'name' => 'ban_action',
+								'choices' => array(
+									'restrict' => lang('restrict_to_viewing'),
+									'message' => lang('show_this_message'),
+								),
+								'value' => $ban_action
+							),
+							'ban_message' => array(
+								'type' => 'textarea',
+								'value' => ee()->config->item('ban_message')
+							),
+							'ban_action_pt2' => array(
+								'type' => 'radio',
+								'name' => 'ban_action',
+								'choices' => array(
+									'bounce' => lang('send_to_site'),
+								),
+								'value' => $ban_action
+							),
+							'ban_destination' => array(
+								'type' => 'text',
+								'value' => ee()->config->item('ban_destination')
+							),
+						)
+					)
+				)
+			)
+		);
+
+		// @TODO: Stop using form_validation
+		ee()->form_validation->set_rules(array(
+			array(
+				 'field'   => 'banned_usernames',
+				 'label'   => 'lang:banned_usernames',
+				 'rules'   => 'valid_xss_check'
+			),
+			array(
+				 'field'   => 'banned_screen_names',
+				 'label'   => 'lang:banned_screen_names',
+				 'rules'   => 'valid_xss_check'
+			),
+			array(
+				 'field'   => 'banned_emails',
+				 'label'   => 'lang:banned_emails',
+				 'rules'   => 'valid_xss_check'
+			),
+			array(
+				 'field'   => 'banned_ips',
+				 'label'   => 'lang:banned_ips',
+				 'rules'   => 'valid_xss_check'
+			)
+		));
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			$prefs = [
+				'ban_action'      => ee('Request')->post('ban_action'),
+				'ban_message'     => ee('Request')->post('ban_message'),
+				'ban_destination' => ee('Request')->post('ban_destination'),
+			];
+
+			foreach (array_keys($values) as $item)
+			{
+				$value = ee('Request')->post($item);
+				$value = implode('|', explode(NL, $value));
+				$prefs[$item] = $value;
+			}
+
+			ee()->config->update_site_prefs($prefs);
+
+			ee('CP/Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('ban_settings_updated'))
+				->defer();
+
+			ee()->functions->redirect($this->base_url);
+		}
+
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_error'))
+				->addToBody(lang('settings_save_error_desc'))
+				->now();
+		}
+
 		ee()->cp->render('members/ban_settings', $vars);
 	}
 
-	private function initializeTable($checkboxes = NULL)
+	private function initializeTable()
 	{
-		if (is_null($checkboxes))
-		{
-			$checkboxes = ee()->cp->allowed_group('can_delete_members');
-		}
+		$checkboxes = ee('Permission')->can('delete_members');
 
 		// Get order by and sort preferences for our initial state
 		$order_by = (ee()->config->item('memberlist_order_by')) ?: 'member_id';
@@ -518,14 +807,14 @@ class Members extends CP_Controller {
 			$order_by = 'total_forum_posts';
 		}
 
-		$sort_col = ee()->input->get('sort_col') ?: $order_by;
-		$sort_dir = ee()->input->get('sort_dir') ?: $sort;
+		$sort_col = ee('Request')->get('sort_col') ?: $order_by;
+		$sort_dir = ee('Request')->get('sort_dir') ?: $sort;
 
 		$table = ee('CP/Table', array(
 			'sort_col' => $sort_col,
 			'sort_dir' => $sort_dir,
 			'limit' => ee()->config->item('memberlist_row_limit'),
-			'search' => ee()->input->get_post('filter_by_keyword'),
+			// 'search' => ee('Request')->get_post('filter_by_keyword'),
 		));
 
 		$table->setNoResultsText('no_members_found');
@@ -540,7 +829,7 @@ class Members extends CP_Controller {
 			'dates' => array(
 				'encode' => FALSE
 			),
-			'member_group' => array(
+			'primary_role' => array(
 				'encode' => FALSE
 			)
 		);
@@ -565,7 +854,7 @@ class Members extends CP_Controller {
 			'member_id'    => 'member_id',
 			'username'     => 'username',
 			'dates'        => 'join_date',
-			'member_group' => 'group_id'
+			'primary_role' => 'PrimaryRole.name'
 		);
 
 		$members = $members->order($sort_map[$table->sort_col], $table->config['sort_dir'])
@@ -578,9 +867,10 @@ class Members extends CP_Controller {
 		foreach ($members as $member)
 		{
 			$can_edit_member = FALSE;
-			if (ee()->cp->allowed_group('can_edit_members'))
+
+			if (ee('Permission')->can('can_edit_members'))
 			{
-				if ($member->MemberGroup->getId() == 1)
+				if (ee('Permission')->isSuperAdmin())
 				{
 					$can_edit_member = (bool) (ee()->session->userdata('group_id') == 1);
 				}
@@ -594,7 +884,7 @@ class Members extends CP_Controller {
 
 			$attrs = array();
 
-			switch ($member->MemberGroup->group_title)
+			switch ($member->PrimaryRole->name)
 			{
 				case 'Banned':
 					$group = "<span class='st-banned'>" . lang('banned') . "</span>";
@@ -604,12 +894,12 @@ class Members extends CP_Controller {
 					$group = "<span class='st-pending'>" . lang('pending') . "</span>";
 					$attrs['class'] = 'pending';
 
-					if (ee()->cp->allowed_group('can_edit_members')) {
+					if (ee('Permission')->can('edit_members')) {
 						$group .= "<a class=\"success-link icon-right button button--small button--secondary-alt\" href=\"" . ee('CP/URL')->make('members/approve/' . $member->member_id) . "\" title=\"" . lang('approve') . "\"><i class=\"fas fa-check\"></i></a>";
 					}
 					break;
 				default:
-					$group = $member->MemberGroup->group_title;
+					$group = $member->PrimaryRole->name;
 			}
 
 			$email = "<a href = '" . ee('CP/URL')->make('utilities/communicate/member/' . $member->member_id) . "'>".$member->email."</a>";
@@ -635,7 +925,7 @@ class Members extends CP_Controller {
 			);
 
 			// add the checkbox if they can delete members
-			if (ee()->cp->allowed_group('can_delete_members'))
+			if (ee('Permission')->can('delete_members'))
 			{
 				$column[] = array(
 					'name' => 'selection[]',
@@ -663,442 +953,55 @@ class Members extends CP_Controller {
 		return $table;
 	}
 
-	/**
-	 * member search
-	 *
-	 * @return void
-	 */
-	private function _member_search($state, $params)
+	protected function makeAndApplyFilters($members, $roles = FALSE)
 	{
-		$search_value = $params['member_name'];
-		$group_id = $this->group_id ?: '';
-		$column_filter = ($this->input->get_post('column_filter')) ? $this->input->get_post('column_filter') : 'all';
+		$filters = ee('CP/Filter');
 
-		// Check for search tokens within the search_value
-		$search_value = $this->_check_search_tokens($search_value);
-
-		$convert = array(
-			'member_group' => 'group_id',
-			'dates' => 'join_date'
-		);
-
-		$sort_key = key($state['sort']);
-
-		if (isset($convert[$sort_key]))
+		if ($roles)
 		{
-			$sort = array($convert[$sort_key] => array_pop($state['sort']));
-		}
-		else
-		{
-			$sort = $state['sort'];
+			$roles = ee('Model')->get('Role')
+				->order('name', 'asc')
+				->all()
+				->getDictionary('role_id', 'name');
+
+			$role_filter = $filters->make('role_id', 'role_filter', $roles);
+			$role_filter->setPlaceholder(lang('all'));
+			$role_filter->disableCustomValue();
+
+			$filters->add($role_filter);
 		}
 
-		$total_rows = $this->member_model->count_members($group_id, $search_value, $column_filter);
+		$filters->add('Keyword');
 
-		// Create filter object
-		$group_ids = ee('Model')->get('MemberGroup')
-			// Pending has its own view
-			->filter('group_id', 'NOT IN', array(4))
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('group_title', 'asc')
-			->all()
-			->getDictionary('group_id', 'group_title');
+		$filter_values = $filters->values();
 
-		$options = $group_ids;
-		$options['all'] = lang('all');
-
-		$group = ee('CP/Filter')->make('group', 'member_group_filter', $options);
-		$group->setPlaceholder(lang('all'));
-		$group->disableCustomValue();
-
-
-		$filters = ee('CP/Filter')
-				->add($group)
-				->add('Keyword')
-				->add('Perpage', $total_rows, 'show_all_members');
-
-		$this->renderFilters($filters);
-
-		$members = $this->member_model->get_members($group_id, $this->perpage, $this->offset, $search_value, $sort, $column_filter);
-		$members = $members ? $members->result_array() : array();
-		$member_groups = $this->member_model->get_member_groups();
-		$groups = array();
-
-		foreach($member_groups->result() as $group)
+		foreach ($filter_values as $key => $value)
 		{
-			$groups[$group->group_id] = $group->group_title;
-		}
-
-		$rows = array();
-
-
-
-		foreach ($members as $member)
-		{
-			$can_edit_member = ee()->session->userdata('group_id') == 1 || $member['group_id'] != 1;
-
-			$attributes = array();
-			$edit_link = ee('CP/URL')->make('members/profile/', array('id' => $member['member_id']));
-
-			switch ($groups[$member['group_id']])
+			if ($value)
 			{
-				case 'Banned':
-					$group = "<span class='st-banned'>" . lang('banned') . "</span>";
-					$attributes['class'] = 'banned';
-					break;
-				case 'Pending':
-					$group = "<span class='st-pending'>" . lang('pending') . "</span>";
-					$attributes['class'] = 'pending';
-					if ($can_edit_member && ee()->cp->allowed_group('can_edit_members'))
-					{
-						$group .= "<a class=\"success-link icon-right button button--small button--secondary-alt\" href=\"" . ee('CP/URL')->make('members/approve/' . $member['member_id']) . "\" title=\"" . lang('approve') . "\"><i class=\"fas fa-check\"></i></a>";
-					}
-					break;
-				default:
-					$group = htmlentities($groups[$member['group_id']], ENT_QUOTES, 'UTF-8');
-			}
-
-			if (ee()->session->flashdata('highlight_id') == $member['member_id'])
-			{
-				$attributes['class'] = 'selected';
-			}
-
-			$email = "<a href = '" . ee('CP/URL')->make('utilities/communicate/member/' . $member['member_id']) . "'>".$member['email']."</a>";
-
-			if ($can_edit_member && ee()->cp->allowed_group('can_edit_members'))
-			{
-				$username_display = "<a href = '" . $edit_link . "'>". $member['username']."</a>";
-			}
-			else
-			{
-				$username_display = $member['username'];
-			}
-
-			$username_display .= '<br><span class="meta-info">&mdash; '.$email.'</span>';
-			$last_visit = ($member['last_visit']) ? ee()->localize->human_time($member['last_visit']) : '--';
-			$row = array(
-				'columns' => array(
-					'id' => $member['member_id'],
-					'username' => $username_display,
-					'<span class="meta-info">
-						<b>'.lang('joined').'</b>: '.ee()->localize->format_date(ee()->session->userdata('date_format', ee()->config->item('date_format')), $member['join_date']).'<br>
-						<b>'.lang('last_visit').'</b>: '.$last_visit.'
-					</span>',
-					'member_group' => $group
-				),
-				'attrs' => $attributes
-			);
-
-			// add the checkbox if they can delete members
-			if (ee()->cp->allowed_group('can_delete_members'))
-			{
-				$row['columns'][] = array(
-					'name' => 'selection[]',
-					'value' => $member['member_id'],
-					'data'	=> array(
-						'confirm' => lang('member') . ': <b>' . htmlentities($member['username'], ENT_QUOTES, 'UTF-8') . '</b>'
-					),
-					'disabled' => ! $can_edit_member
-				);
-			}
-
-			$rows[] = $row;
-		}
-
-		return array(
-			'rows' => $rows,
-			'per_page' => $this->perpage,
-			'total_rows' => $total_rows,
-			'member_name' => $params['member_name'],
-			'member_groups' => $member_groups
-		);
-	}
-
-	/**
-	 * Approve pending members
-	 *
-	 * @param int|array $ids The ID(s) of the member(s) being approved
-	 * @return void
-	 */
-	public function approve($ids)
-	{
-		if ( ! ee()->cp->allowed_group('can_edit_members') OR
-			ee('Request')->method() !== 'POST')
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
-		if ( ! is_array($ids))
-		{
-			$ids = array($ids);
-		}
-
-		$members = ee('Model')->get('Member', $ids)
-			->fields('member_id', 'username', 'screen_name', 'email', 'group_id')
-			->filter('group_id', 4)
-			->all();
-
-		if (ee()->config->item('approved_member_notification') == 'y')
-		{
-			$template = ee('Model')->get('SpecialtyTemplate')
-				->filter('template_name', 'validated_member_notify')
-				->first();
-
-			foreach ($members as $member)
-			{
-				$this->pendingMemberNotification($template, $member, array('email' => $member->email));
-			}
-		}
-
-		$members->group_id = ee()->config->item('default_member_group');
-		$members->save();
-
-		/* -------------------------------------------
-		/* 'cp_members_validate_members' hook.
-		/*  - Additional processing when member(s) are validated in the CP
-		/*  - Added 1.5.2, 2006-12-28
-		*/
-			ee()->extensions->call('cp_members_validate_members', $ids);
-			if (ee()->extensions->end_script === TRUE) return;
-		/*
-		/* -------------------------------------------*/
-
-		// Update
-		ee()->stats->update_member_stats();
-
-		if ($members->count() == 1)
-		{
-			ee('CP/Alert')->makeInline('view-members')
-				->asSuccess()
-				->withTitle(lang('member_approved_success'))
-				->addToBody(sprintf(lang('member_approved_success_desc'), $members->first()->username))
-				->defer();
-		}
-		else
-		{
-			ee('CP/Alert')->makeInline('view-members')
-				->asSuccess()
-				->withTitle(lang('members_approved_success'))
-				->addToBody(lang('members_approved_success_desc'))
-				->addToBody($members->pluck('username'))
-				->defer();
-		}
-
-		ee()->functions->redirect(ee('CP/URL', 'members/pending'));
-	}
-
-	/**
-	 * Decline pending members
-	 *
-	 * @param array $ids The ID(s) of the member(s) being approved
-	 * @return void
-	 */
-	private function decline(array $ids)
-	{
-		if ( ! ee()->cp->allowed_group('can_delete_members'))
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
-		$members = ee('Model')->get('Member', $ids)
-			->fields('member_id', 'username', 'screen_name', 'email', 'group_id')
-			->filter('group_id', 4)
-			->all();
-
-		if (ee()->config->item('declined_member_notification') == 'y')
-		{
-			$template = ee('Model')->get('SpecialtyTemplate')
-				->filter('template_name', 'decline_member_validation')
-				->first();
-
-			foreach ($members as $member)
-			{
-				$this->pendingMemberNotification($template, $member);
-			}
-		}
-
-		$usernames = $members->pluck('username');
-		$single = ($members->count() == 1);
-		$members->delete();
-
-		/* -------------------------------------------
-		/* 'cp_members_validate_members' hook.
-		/*  - Additional processing when member(s) are validated in the CP
-		/*  - Added 1.5.2, 2006-12-28
-		*/
-			ee()->extensions->call('cp_members_validate_members', $ids);
-			if (ee()->extensions->end_script === TRUE) return;
-		/*
-		/* -------------------------------------------*/
-
-		// Update
-		ee()->stats->update_member_stats();
-
-		if ($single)
-		{
-			ee('CP/Alert')->makeInline('view-members')
-				->asSuccess()
-				->withTitle(lang('member_declined_success'))
-				->addToBody(sprintf(lang('member_declined_success_desc'), $usernames[0]))
-				->defer();
-		}
-		else
-		{
-			ee('CP/Alert')->makeInline('view-members')
-				->asSuccess()
-				->withTitle(lang('members_declined_success'))
-				->addToBody(lang('members_declined_success_desc'))
-				->addToBody($usernames)
-				->defer();
-		}
-	}
-
-	/**
-	 * Resend activation emails for pending members
-	 *
-	 * @param array $ids The ID(s) of the member(s) being approved
-	 * @return void
-	 */
-	private function resend(array $ids)
-	{
-		if ( ! ee()->cp->allowed_group('can_edit_members') OR
-			ee()->config->item('req_mbr_activation') !== 'email')
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
-		$members = ee('Model')->get('Member', $ids)
-			->fields('member_id', 'username', 'screen_name', 'email', 'group_id', 'authcode')
-			->filter('group_id', 4)
-			->all();
-
-		$template = ee('Model')->get('SpecialtyTemplate')
-			->filter('template_name', 'mbr_activation_instructions')
-			->first();
-
-		$action_id = ee()->functions->fetch_action_id('Member', 'activate_member');
-
-		foreach ($members as $member)
-		{
-			$swap = array(
-				'email'     => $member->email,
-				'activation_url' => ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id='.$member->authcode
-			);
-
-			$this->pendingMemberNotification($template, $member, $swap);
-		}
-
-		if ($members->count() == 1)
-		{
-			ee('CP/Alert')->makeInline('view-members')
-				->asSuccess()
-				->withTitle(lang('member_activation_resent_success'))
-				->addToBody(sprintf(lang('member_activation_resent_success_desc'), $member->username))
-				->defer();
-		}
-		else
-		{
-			ee('CP/Alert')->makeInline('view-members')
-				->asSuccess()
-				->withTitle(lang('member_activation_resent_success'))
-				->addToBody(lang('members_activation_resent_success_desc'))
-				->addToBody($members->pluck('username'))
-				->defer();
-		}
-	}
-
-	/**
-	 * Sends an email to a member based on a provided template.
-	 *
-	 * @param EllisLab\ExpressionEngine\Model\Template\SpecialtyTemplate $template The email template
-	 * @param EllisLab\ExpressionEngine\Model\Member\Member $member The member to be emailed
-	 * @return bool TRUE of the email sent, FALSE if it did not
-	 */
-	private function pendingMemberNotification($template, $member, array $extra_swap = array())
-	{
-		ee()->load->library('email');
-		ee()->load->helper('text');
-
-		$swap = array(
-			'name'		=> $member->getMemberName(),
-			'site_name'	=> stripslashes(ee()->config->item('site_name')),
-			'site_url'	=> ee()->config->item('site_url'),
-			'username'	=> $member->username,
-			) + $extra_swap;
-
-		$email_title = ee()->functions->var_swap($template->data_title, $swap);
-		$email_message = ee()->functions->var_swap($template->template_data, $swap);
-
-		ee()->email->wordwrap = TRUE;
-		ee()->email->mailtype = ee()->config->item('mail_format');
-		ee()->email->from(
-			ee()->config->item('webmaster_email'),
-			ee()->config->item('webmaster_name')
-		);
-		ee()->email->to($member->email);
-		ee()->email->subject($email_title);
-		ee()->email->message(entities_to_ascii($email_message));
-		return ee()->email->send();
-	}
-
-	/**
-	 * Display filters
-	 *
-	 * @param int
-	 * @return void
-	 */
-	protected function renderFilters(FilterFactory $filters)
-	{
-		ee()->view->filters = $filters->render($this->base_url);
-		$this->params = $filters->values();
-		$this->perpage = $this->params['perpage'];
-		$this->page = ((int) ee()->input->get('page')) ?: 1;
-		$this->offset = ($this->page - 1) * $this->perpage;
-
-		$this->base_url->addQueryStringVariables($this->params);
-	}
-
-	/**
-	 * Looks through the member search string for search tokens (e.g. id:3
-	 * or username:john)
-	 *
-	 * @param string $search_string The string to look through for tokens
-	 * @return string/array String if there are no tokens within the
-	 * 	string, otherwise it's an associative array with the tokens as
-	 * 	the keys
-	 */
-	private function _check_search_tokens($search_string = '')
-	{
-		if (strpos($search_string, ':') !== FALSE)
-		{
-			$search_array = array();
-			$tokens = array('id', 'member_id', 'username', 'screen_name', 'email');
-
-			foreach ($tokens as $token)
-			{
-				// This regular expression looks for a token immediately
-				// followed by one of three things:
-				// - a value within double quotes
-				// - a value within single quotes
-				// - a value without spaces
-
-				if (preg_match('/'.$token.'\:((?:"(.*?)")|(?:\'(.*?)\')|(?:[^\s:]+?))(?:\s|$)/i', $search_string, $matches))
+				if ($key == 'filter_by_keyword')
 				{
-					// The last item within matches is what we want
-					$search_array[$token] = end($matches);
+					$members->search(['screen_name', 'username', 'email', 'member_id'], $value);
+				}
+				elseif ($key == 'role_filter')
+				{
+					$role = ee('Model')->get('Role', $value)->first();
+
+					if ($role)
+					{
+						$members->filter('member_id', 'IN', $role->Members->pluck('member_id'));
+					}
+				}
+				else
+				{
+					$members->filter($key, $value);
 				}
 			}
-
-			// If both ID and Member_ID are set, unset ID
-			if (isset($search_array['id']) AND isset($search_array['member_id']))
-			{
-				unset($search_array['id']);
-			}
-
-			return $search_array;
 		}
 
-		return $search_string;
+		$filters->add('Perpage', $members->count(), 'show_all_members');
+
+		return $filters;
 	}
 
 	/**
@@ -1110,14 +1013,22 @@ class Members extends CP_Controller {
 	public function confirm()
 	{
 		$vars = array();
-		$selected = ee()->input->post('selection');
+		$selected = ee('Request')->post('selection');
 		$vars['selected'] = $selected;
+
+		$entries = ee('Model')->get('ChannelEntry')
+			->fields('author_id')
+			->filter('author_id', 'IN', $selected)
+			->count();
 
 		// Do the users being deleted have entries assigned to them?
 		// If so, fetch the member names for reassigment
-		if (ee()->member_model->count_member_entries($selected) > 0)
+		if ($entries > 0)
 		{
-			$group_ids = ee()->member_model->get_members_group_ids($selected);
+			$group_ids = ee('Model')->get('Member', $selected)
+				->fields('role_id')
+				->all()
+				->pluck('role_id');
 
 			$vars['heirs'] = $this->heirFilter($group_ids, $selected);
 
@@ -1139,7 +1050,7 @@ class Members extends CP_Controller {
 			);
 		}
 
-		ee()->view->cp_page_title = lang('delete_member');
+		ee()->view->cp_page_title = lang('delete_member') ;
 		ee()->cp->render('members/delete_confirm', $vars);
 	}
 
@@ -1161,7 +1072,7 @@ class Members extends CP_Controller {
 			->search(
 				['screen_name', 'username', 'email', 'member_id'], $search_term
 			)
-			->filter('group_id', 'IN', $group_ids)
+			->filter('role_id', 'IN', $group_ids)
 			->filter('member_id', 'NOT IN', $selected)
 			->order('screen_name')
 			->limit(100)
@@ -1178,111 +1089,6 @@ class Members extends CP_Controller {
 	}
 
 	/**
-	 * Member Delete
-	 *
-	 * Delete Members
-	 *
-	 * @return	mixed
-	 */
-	public function delete()
-	{
-		$member_ids = ee()->input->post('selection', TRUE);
-
-		if ( ! ee()->cp->allowed_group('can_delete_members') ||
-			! $member_ids)
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
-		if ( ! ee('Session')->isWithinAuthTimeout())
-		{
-			$validator = ee('Validation')->make();
-			$validator->setRules(array(
-				'verify_password'  => 'required|authenticated'
-			));
-			$password_confirm = $validator->validate($_POST);
-
-			if ($password_confirm->failed())
-			{
-				ee('CP/Alert')->makeInline('view-members')
-					->asIssue()
-					->withTitle(lang('member_delete_problem'))
-					->addToBody(lang('invalid_password'))
-					->defer();
-
-				return ee()->functions->redirect($this->base_url);
-			}
-
-			ee('Session')->resetAuthTimeout();
-		}
-
-		if ( ! is_array($member_ids))
-		{
-			$member_ids = array($member_ids);
-		}
-
-		if (in_array(ee()->session->userdata['member_id'], $member_ids))
-		{
-			show_error(lang('can_not_delete_self'));
-		}
-
-		// Check to see if they're deleting super admins
-		$this->_super_admin_delete_check($member_ids);
-
-		// If we got this far we're clear to delete the members
-		// First, assign an heir if we are to do so
-		if (ee()->input->post('heir_action') == 'assign')
-		{
-			if ( ! ee()->input->post('heir'))
-			{
-				show_error(lang('heir_required'));
-			}
-
-			$heir = ee('Model')->get('Member', ee()->input->post('heir'))->first();
-
-			ee()->db->where_in('author_id', $member_ids);
-			ee()->db->update('entry_versioning', array('author_id' => $heir->getId()));
-
-			ee()->db->where_in('author_id', $member_ids);
-			ee()->db->update('channel_titles', array('author_id' => $heir->getId()));
-
-			ee()->db->where_in('uploaded_by_member_id', $member_ids);
-			ee()->db->update('files', array('uploaded_by_member_id' => $heir->getId()));
-
-			ee()->db->where_in('modified_by_member_id', $member_ids);
-			ee()->db->update('files', array('modified_by_member_id' => $heir->getId()));
-
-			$heir->updateAuthorStats();
-		}
-
-		// If we got this far we're clear to delete the members
-		ee('Model')->get('Member')->with('MemberGroup')->filter('member_id', 'IN', $member_ids)->delete();
-
-		// Send member deletion notifications
-		$this->_member_delete_notifications($member_ids);
-
-		/* -------------------------------------------
-		/* 'cp_members_member_delete_end' hook.
-		/*  - Additional processing when a member is deleted through the CP
-		*/
-			ee()->extensions->call('cp_members_member_delete_end', $member_ids);
-			if (ee()->extensions->end_script === TRUE) return;
-		/*
-		/* -------------------------------------------*/
-
-		$cp_message = (count($member_ids) == 1) ?
-			lang('member_deleted') : lang('members_deleted');
-
-		ee('CP/Alert')->makeInline('view-members')
-			->asSuccess()
-			->withTitle(lang('member_delete_success'))
-			->addToBody($cp_message)
-			->defer();
-
-		ee()->functions->redirect($this->base_url);
-	}
-
-	/**
 	 * Member Anonymize
 	 */
 	public function anonymize()
@@ -1292,7 +1098,7 @@ class Members extends CP_Controller {
 			->filter('member_id', $member_id)
 			->first();
 
-		if ( ! ee()->cp->allowed_group('can_delete_members') ||
+		if ( ! ee('Permission')->can('delete_members') ||
 			! $member)
 		{
 			show_error(lang('unauthorized_access'), 403);
@@ -1340,6 +1146,104 @@ class Members extends CP_Controller {
 		ee()->functions->redirect($profile_url);
 	}
 
+	public function delete()
+	{
+		$member_ids = ee('Request')->post('selection', TRUE);
+
+		if ( ! ee('Permission')->can('delete_members') ||
+			! $member_ids)
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+
+		if ( ! ee('Session')->isWithinAuthTimeout())
+		{
+			$validator = ee('Validation')->make();
+			$validator->setRules(array(
+				'verify_password'  => 'required|authenticated'
+			));
+			$password_confirm = $validator->validate($_POST);
+
+			if ($password_confirm->failed())
+			{
+				ee('CP/Alert')->makeInline('view-members')
+					->asIssue()
+					->withTitle(lang('member_delete_problem'))
+					->addToBody(lang('invalid_password'))
+					->defer();
+
+				return ee()->functions->redirect($this->base_url);
+			}
+
+			ee('Session')->resetAuthTimeout();
+		}
+
+		if ( ! is_array($member_ids))
+		{
+			$member_ids = array($member_ids);
+		}
+
+		if (in_array(ee()->session->userdata('member_id'), $member_ids))
+		{
+			show_error(lang('can_not_delete_self'));
+		}
+
+		// Check to see if they're deleting super admins
+		$this->_super_admin_delete_check($member_ids);
+
+		// If we got this far we're clear to delete the members
+		// First, assign an heir if we are to do so
+		if (ee('Request')->post('heir_action') == 'assign')
+		{
+			if ( ! ee('Request')->post('heir'))
+			{
+				show_error(lang('heir_required'));
+			}
+
+			$heir = ee('Model')->get('Member', ee('Request')->post('heir'))->first();
+
+			ee()->db->where_in('author_id', $member_ids);
+			ee()->db->update('entry_versioning', array('author_id' => $heir->getId()));
+
+			ee()->db->where_in('author_id', $member_ids);
+			ee()->db->update('channel_titles', array('author_id' => $heir->getId()));
+
+			ee()->db->where_in('uploaded_by_member_id', $member_ids);
+			ee()->db->update('files', array('uploaded_by_member_id' => $heir->getId()));
+
+			ee()->db->where_in('modified_by_member_id', $member_ids);
+			ee()->db->update('files', array('modified_by_member_id' => $heir->getId()));
+
+			$heir->updateAuthorStats();
+		}
+
+		// If we got this far we're clear to delete the members
+		ee('Model')->get('Member')->filter('member_id', 'IN', $member_ids)->delete();
+
+		// Send member deletion notifications
+		$this->_member_delete_notifications($member_ids);
+
+		/* -------------------------------------------
+		/* 'cp_members_member_delete_end' hook.
+		/*  - Additional processing when a member is deleted through the CP
+		*/
+			ee()->extensions->call('cp_members_member_delete_end', $member_ids);
+			if (ee()->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
+
+		$cp_message = (count($member_ids) == 1) ?
+			lang('member_deleted') : lang('members_deleted');
+
+		ee('CP/Alert')->makeInline('view-members')
+			->asSuccess()
+			->withTitle(lang('member_delete_success'))
+			->addToBody($cp_message)
+			->defer();
+
+		ee()->functions->redirect($this->base_url);
+	}
+
 	/**
 	 * Check to see if the members being deleted are super admins. If they are
 	 * we need to make sure that the deleting user is a super admin and that
@@ -1355,24 +1259,30 @@ class Members extends CP_Controller {
 			$member_ids = array($member_ids);
 		}
 
-		$super_admins = ee('Model')->get('Member')
-			->filter('group_id', 1)
-			->filter('member_id', 'IN', $member_ids)
-			->count();
+		$super_admins = ee()->db->select('COUNT(member_id) AS count')
+			->where('role_id', '1')
+			->where_in('member_id', $member_ids)
+			->get('members_roles')
+			->result();
+
+		$super_admins = $super_admins[0]->count;
 
 		if ($super_admins > 0)
 		{
 			// You must be a Super Admin to delete a Super Admin
 
-			if (ee()->session->userdata['group_id'] != 1)
+			if ( ! ee('Permission')->isSuperAdmin())
 			{
 				show_error(lang('must_be_superadmin_to_delete_one'));
 			}
 
 			// You can't delete the only Super Admin
-			$total_super_admins = ee('Model')->get('Member')
-				->filter('group_id', 1)
-				->count();
+			$total_super_admins = ee()->db->select('COUNT(member_id) AS count')
+				->where('role_id', '1')
+				->get('members_roles')
+				->result();
+
+			$total_super_admins = $total_super_admins[0]->count;
 
 			if ($super_admins >= $total_super_admins)
 			{
@@ -1390,17 +1300,43 @@ class Members extends CP_Controller {
 	 */
 	private function _member_delete_notifications($member_ids)
 	{
-		// Email notification recipients
-		$group_query = ee()->db->distinct()
-			->select('member_id, screen_name, email, mbr_delete_notify_emails')
-			->join('member_groups', 'members.group_id = member_groups.group_id', 'left')
-			->where('mbr_delete_notify_emails !=', '')
-			->where_in('member_id', $member_ids)
-			->get('members');
+		$role_ids = ee('Model')->get('RoleSetting')
+			->fields('role_id', 'mbr_delete_notify_emails')
+			->filter('mbr_delete_notify_emails', '!=', '')
+			->all();
 
-		foreach ($group_query->result() as $member)
+		if (empty($role_ids))
 		{
-			$notify_address = $member->mbr_delete_notify_emails;
+			return; // No configured notifications at all
+		}
+
+		ee()->load->helper('string');
+
+		$role_ids = $role_ids->indexBy('role_id');
+
+		$members = ee('Model')->get('Member', $member_ids)
+			->fields('member_id', 'screen_name', 'email')
+			->all();
+
+		foreach ($members as $member)
+		{
+			$notify_address = [];
+
+			foreach ($member->getAllRoles() as $role)
+			{
+				if (isset($role_ids[$role->getId()]))
+				{
+					$notify_address[] = $role_ids[$role->getId()];
+				}
+			}
+
+			// This member does not belong to a Role with email notifcations
+			if (empty($notify_address))
+			{
+				continue;
+			}
+
+			$notify_address = implode(',', $notify_address);
 
 			$swap = array(
 				'name'		=> $member->screen_name,
@@ -1450,32 +1386,390 @@ class Members extends CP_Controller {
 		}
 	}
 
+	public function create()
+	{
+		if ( ! ee('Permission')->can('create_members'))
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+
+		$this->base_url = ee('CP/URL')->make('members/create');
+
+		$vars['errors'] = NULL;
+
+		$vars = [
+			'sections' => [],
+			'tabs'     => [
+				'member' => $this->renderMemberTab($vars['errors']),
+				'roles'  => $this->renderRolesTab($vars['errors']),
+			]
+		];
+
+		if ( ! ee('Session')->isWithinAuthTimeout())
+		{
+			$vars['sections']['secure_form_ctrls'] = array(
+				array(
+					'title' => 'your_password',
+					'desc' => 'your_password_desc',
+					'group' => 'verify_password',
+					'fields' => array(
+						'verify_password' => array(
+							'type'      => 'password',
+							'required'  => TRUE,
+							'maxlength' => PASSWORD_MAX_LENGTH
+						)
+					)
+				)
+			);
+		}
+
+		if ( ! empty($_POST))
+		{
+			$member = ee('Model')->make('Member');
+
+			// Separate validator to validate confirm_password and verify_password
+			$validator = ee('Validation')->make();
+			$validator->setRules(array(
+				'confirm_password' => 'matches[password]',
+				'verify_password'  => 'whenGroupIdIs['.implode(',', ee('Permission')->rolesThatCan('access_cp')).']|authenticated[useAuthTimeout]'
+			));
+
+			$validator->defineRule('whenGroupIdIs', function($key, $password, $parameters, $rule)
+			{
+				// Don't need to validate if a member group without CP access was chosen
+				return in_array($_POST['role_id'], $parameters) ? TRUE : $rule->skip();
+			});
+
+			$member->set($_POST);
+
+			// Set some other defaults
+			$member->screen_name = $_POST['username'];
+			$member->ip_address = ee()->input->ip_address();
+			$member->join_date = ee()->localize->now;
+			$member->language = ee()->config->item('deft_lang');
+
+			$role_groups = !empty(ee('Request')->post('role_groups')) ? ee('Request')->post('role_groups') : array();
+
+			$member->RoleGroups = ee('Model')->get('RoleGroup', $role_groups)->all();
+			$member->Roles = ee('Model')->get('Role', ee('Request')->post('roles'))->all();
+
+			$result = $member->validate();
+			$password_confirm = $validator->validate($_POST);
+
+			// Add password confirmation failure to main result object
+			if ($password_confirm->failed())
+			{
+				$rules = $password_confirm->getFailed();
+				foreach ($rules as $field => $rule)
+				{
+					$result->addFailed($field, $rule[0]);
+				}
+			}
+
+			if ($response = $this->ajaxValidation($result))
+			{
+				return $response;
+			}
+
+			if ($result->isValid())
+			{
+				// Now that we know the password is valid, hash it
+				$member->hashAndUpdatePassword($member->password);
+
+				// -------------------------------------------
+				// 'cp_members_member_create_start' hook.
+				//  - Take over member creation when done through the CP
+				//  - Added 1.4.2
+				//
+					ee()->extensions->call('cp_members_member_create_start');
+					if (ee()->extensions->end_script === TRUE) return;
+				//
+				// -------------------------------------------
+
+				$member->save();
+
+				// -------------------------------------------
+				// 'cp_members_member_create' hook.
+				//  - Additional processing when a member is created through the CP
+				//
+					ee()->extensions->call('cp_members_member_create', $member->getId(), $member->getValues());
+					if (ee()->extensions->end_script === TRUE) return;
+				//
+				// -------------------------------------------
+
+				ee()->logger->log_action(lang('new_member_added').NBS.$member->username);
+				ee()->stats->update_member_stats();
+
+				ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('member_created'))
+					->addToBody(sprintf(lang('member_created_desc'), $member->username))
+					->defer();
+
+				if (ee('Request')->post('submit') == 'save_and_new')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('members/create'));
+				}
+				elseif (ee()->input->post('submit') == 'save_and_close')
+				{
+					ee()->functions->redirect(ee('CP/URL')->make('members'));
+				}
+				else
+				{
+					ee()->session->set_flashdata('highlight_id', $member->getId());
+					ee()->functions->redirect(ee('CP/URL')->make('members/profile/settings/', ['id' => $member->getId()]));
+				}
+			}
+			else
+			{
+				$vars['errors'] = $result;
+				ee('CP/Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('member_not_created'))
+					->addToBody(lang('member_not_created_desc'))
+					->now();
+			}
+		}
+
+		ee()->view->base_url = $this->base_url;
+		ee()->view->ajax_validate = TRUE;
+		ee()->view->cp_page_title = lang('register_member');
+		ee()->view->buttons = [
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save',
+				'text' => 'save',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_new',
+				'text' => 'save_and_new',
+				'working' => 'btn_saving'
+			],
+			[
+				'name' => 'submit',
+				'type' => 'submit',
+				'value' => 'save_and_close',
+				'text' => 'save_and_close',
+				'working' => 'btn_saving'
+			]
+		];
+		ee()->cp->render('settings/form', $vars);
+	}
+
+	private function renderMemberTab($errors)
+	{
+		$section = [
+			[
+				'title' => 'username',
+				'fields' => [
+					'username' => [
+						'type' => 'text',
+						'required' => TRUE,
+						'maxlength' => USERNAME_MAX_LENGTH
+					]
+				]
+			],
+			[
+				'title' => 'mbr_email_address',
+				'fields' => [
+					'email' => [
+						'type' => 'text',
+						'required' => TRUE,
+						'maxlength' => USERNAME_MAX_LENGTH
+					]
+				]
+			],
+			[
+				'title' => 'password',
+				'desc' => 'password_desc',
+				'fields' => [
+					'password' => [
+						'type' => 'password',
+						'required' => TRUE,
+						'maxlength' => PASSWORD_MAX_LENGTH
+					]
+				]
+			],
+			[
+				'title' => 'password_confirm',
+				'desc' => 'password_confirm_desc',
+				'fields' => [
+					'confirm_password' => [
+						'type' => 'password',
+						'required' => TRUE,
+						'maxlength' => PASSWORD_MAX_LENGTH
+					]
+				]
+			]
+		];
+
+		return ee('View')->make('_shared/form/section')
+				->render(array('name' => NULL, 'settings' => $section, 'errors' => $errors));
+	}
+
+	private function renderRolesTab($errors)
+	{
+		$roles = ee('Model')->get('Role')
+			->fields('role_id', 'name')
+			->order('name')
+			->all()
+			->getDictionary('role_id', 'name');
+
+		$role_groups = ee('Model')->get('RoleGroup')
+			->fields('group_id', 'name')
+			->order('name')
+			->all()
+			->getDictionary('group_id', 'name');
+
+		$sections = [
+			[
+				[
+					'title' => 'primary_role',
+					'desc' => 'primary_role_desc',
+					'fields' => [
+						'role_id' => [
+							'type' => 'radio',
+							'required' => TRUE,
+							'choices' => $roles,
+							'value' => ee()->config->item('default_primary_role')
+						]
+					]
+				],
+			],
+			'additional_roles' => [
+				[
+					'title' => 'role_groups',
+					'desc' => 'role_groups_desc',
+					'fields' => [
+						'role_groups' => [
+							'type' => 'checkbox',
+							'choices' => $role_groups
+						]
+					]
+				],
+				[
+					'title' => 'roles',
+					'desc' => 'roles_desc',
+					'fields' => [
+						'roles' => [
+							'type' => 'checkbox',
+							'choices' => $roles
+						]
+					]
+				],
+			]
+		];
+
+		$html = '';
+
+		foreach ($sections as $name => $settings)
+		{
+			$html .= ee('View')->make('_shared/form/section')
+				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
+		}
+
+		return $html;
+	}
+
+	/**
+	 * Approve pending members
+	 *
+	 * @param int|array $ids The ID(s) of the member(s) being approved
+	 * @return void
+	 */
+	public function approve($ids)
+	{
+		if ( ! ee('Permission')->can('edit_members') OR
+			ee('Request')->method() !== 'POST')
+		{
+			show_error(lang('unauthorized_access'), 403);
+		}
+
+		if ( ! is_array($ids))
+		{
+			$ids = array($ids);
+		}
+
+		$members = ee('Model')->get('Member', $ids)
+			->fields('member_id', 'username', 'screen_name', 'email', 'role_id')
+			->filter('role_id', 4)
+			->all();
+
+		if (ee()->config->item('approved_member_notification') == 'y')
+		{
+			$template = ee('Model')->get('SpecialtyTemplate')
+				->filter('template_name', 'validated_member_notify')
+				->first();
+
+			foreach ($members as $member)
+			{
+				$this->pendingMemberNotification($template, $member, array('email' => $member->email));
+			}
+		}
+
+		$members->role_id = ee()->config->item('default_primary_role');
+		$members->save();
+
+		/* -------------------------------------------
+		/* 'cp_members_validate_members' hook.
+		/*  - Additional processing when member(s) are validated in the CP
+		/*  - Added 1.5.2, 2006-12-28
+		*/
+			ee()->extensions->call('cp_members_validate_members', $ids);
+			if (ee()->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
+
+		// Update
+		ee()->stats->update_member_stats();
+
+		if ($members->count() == 1)
+		{
+			ee('CP/Alert')->makeInline('view-members')
+				->asSuccess()
+				->withTitle(lang('member_approved_success'))
+				->addToBody(sprintf(lang('member_approved_success_desc'), $members->first()->username))
+				->defer();
+		}
+		else
+		{
+			ee('CP/Alert')->makeInline('view-members')
+				->asSuccess()
+				->withTitle(lang('members_approved_success'))
+				->addToBody(lang('members_approved_success_desc'))
+				->addToBody($members->pluck('username'))
+				->defer();
+		}
+
+		ee()->functions->redirect(ee('CP/URL', 'members/pending'));
+	}
+
 	/**
 	 * Set the header for the members section
 	 * @param String $form_url Form URL
 	 * @param String $search_button_value The text for the search button
 	 */
-	protected function set_view_header($form_url, $search_button_value = '')
+	protected function stdHeader()
 	{
-		$search_button_value = ($search_button_value) ?: lang('search_members_button');
-
-		$header = array(
+		$header = [
 			'title' => lang('member_manager'),
-			'toolbar_items' => array(
-				'settings' => array(
+			'toolbar_items' => [
+				'settings' => [
 					'href' => ee('CP/URL')->make('settings/members'),
 					'title' => lang('member_settings')
-				),
-			),
-			'form_url' => $form_url,
-			'search_button_value' => $search_button_value,
-			'action_button' => ee()->cp->allowed_group('can_create_members') ? [
-				'text' => lang('register_member'),
+				],
+			],
+			'action_button' => ee('Permission')->can('create_members') ? [
+				'text' => lang('new_member'),
 				'href' => ee('CP/URL')->make('members/create')
 			] : NULL
-		);
+		];
 
-		if ( ! ee()->cp->allowed_group('can_access_settings'))
+		if (!ee('Permission')->can('access_settings'))
 		{
 			unset($header['toolbar_items']);
 		}
@@ -1483,6 +1777,3 @@ class Members extends CP_Controller {
 		ee()->view->header = $header;
 	}
 }
-// END CLASS
-
-// EOF

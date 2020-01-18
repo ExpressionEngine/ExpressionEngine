@@ -518,6 +518,8 @@ $lang = array(
 
 'name' => 'Name',
 
+'short_name' => 'Short name',
+
 'name_your_site' => 'Name your site',
 
 'new' => 'New',
@@ -572,6 +574,19 @@ $lang = array(
 
 'xhtml' => 'XHTML',
 
+/* Members Menu */
+
+'new_member' => 'New Member',
+
+'all_members' => 'All Members',
+
+'pending_members' => 'Pending Members',
+
+'ban_management' => 'Ban Management',
+
+'roles' => 'Roles',
+
+'custom_member_fields' => 'Member Fields',
 
 /* Footer */
 'about_expressionengine' => 'About ExpressionEngine',
@@ -685,6 +700,29 @@ $lang = array(
 'reindex_not_needed_desc' => 'Your search index is up-to-date!',
 
 'reindex_explained_desc' => 'The search index can become stale if you have recently changed whether or not certain field types are searchable.<br>Please see the <a href="' . DOC_URL .'/cp/utilities/reindex.html">user guide</a> for more details.',
+
+/* Permisisons */
+
+'can_create_templates' => 'Create templates',
+
+'can_edit_templates' => 'Edit templates',
+
+'can_delete_templates' => 'Delete templates',
+
+'can_manage_settings' => 'Manage settings & access',
+
+'can_create_entries' => 'Create entries',
+
+'can_edit_self_entries' => 'Edit own entries',
+
+'can_delete_self_entries' => 'Delete own entries',
+
+'can_edit_other_entries' => 'Edit entries, by others',
+
+'can_delete_all_entries' => 'Delete entries, by others',
+
+'can_assign_post_authors' => 'Change entry author',
+
 
 );
 

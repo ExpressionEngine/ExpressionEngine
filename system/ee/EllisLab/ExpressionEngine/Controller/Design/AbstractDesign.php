@@ -30,6 +30,7 @@ abstract class AbstractDesign extends CP_Controller {
 	protected $perpage = 25;
 	protected $page = 1;
 	protected $offset = 0;
+	protected $assigned_template_groups = [];
 
 	/**
 	 * Constructor
@@ -41,12 +42,14 @@ abstract class AbstractDesign extends CP_Controller {
 		ee('CP/Alert')->makeDeprecationNotice()->now();
 
 
-		if ( ! $this->cp->allowed_group('can_access_design'))
+		if ( ! ee('Permission')->can('access_design'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
 
 		ee()->lang->loadfile('design');
+
+		$this->assigned_template_groups = array_keys(ee()->session->userdata('assigned_template_groups'));
 	}
 
 	/**
@@ -80,7 +83,7 @@ abstract class AbstractDesign extends CP_Controller {
 		// Template Groups
 		$template_group_list = $sidebar->addHeader(lang('template_groups'));
 
-		if (ee()->cp->allowed_group('can_create_template_groups'))
+		if (ee('Permission')->can('create_template_groups'))
 		{
 			$template_group_list = $template_group_list->withButton(lang('new'), ee('CP/URL')->make('design/group/create'));
 		}
@@ -90,7 +93,7 @@ abstract class AbstractDesign extends CP_Controller {
 				->withRemovalKey('group_name')
 			->withNoResultsText(lang('zero_template_groups_found'));
 
-		if (ee()->cp->allowed_group('can_edit_template_groups'))
+		if (ee('Permission')->can('edit_template_groups'))
 		{
 			$template_group_list->canReorder();
 		}
@@ -99,12 +102,11 @@ abstract class AbstractDesign extends CP_Controller {
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('group_order', 'asc');
 
-		if (ee()->session->userdata['group_id'] != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
-			$assigned_groups =  array_keys(ee()->session->userdata['assigned_template_groups']);
-			$template_groups->filter('group_id', 'IN', $assigned_groups);
+			$template_groups->filter('group_id', 'IN', $this->assigned_template_groups);
 
-			if (empty($assigned_groups))
+			if (empty($this->assigned_template_groups))
 			{
 				$template_groups->markAsFutile();
 			}
@@ -119,12 +121,12 @@ abstract class AbstractDesign extends CP_Controller {
 			$item->withRemoveConfirmation(lang('template_group') . ': <b>' . $group->group_name . '</b>')
 				->identifiedBy($group->group_name);
 
-			if ( ! ee()->cp->allowed_group('can_edit_template_groups'))
+			if ( ! ee('Permission')->can('edit_template_groups'))
 			{
 				$item->cannotEdit();
 			}
 
-			if ( ! ee()->cp->allowed_group('can_delete_template_groups'))
+			if ( ! ee('Permission')->can('delete_template_groups'))
 			{
 				$item->cannotRemove();
 			}
@@ -164,7 +166,7 @@ abstract class AbstractDesign extends CP_Controller {
 			$item->isActive();
 		}
 
-		if (ee()->cp->allowed_group('can_admin_mbr_templates') && ee('Model')->get('Module')->filter('module_name', 'Member')->first())
+		if (ee('Permission')->can('admin_mbr_templates') && ee('Model')->get('Module')->filter('module_name', 'Member')->first())
 		{
 			$item = $system_templates->addItem(lang('members'), ee('CP/URL')->make('design/members'))
 				->withEditUrl(ee('CP/URL')->make('design/members'))
@@ -193,7 +195,7 @@ abstract class AbstractDesign extends CP_Controller {
 		$sidebar->addDivider();
 
 		// Template Partials
-		if (ee()->cp->allowed_group_any('can_create_template_partials', 'can_edit_template_partials', 'can_delete_template_partials'))
+		if (ee('Permission')->hasAny('can_create_template_partials', 'can_edit_template_partials', 'can_delete_template_partials'))
 		{
 			$header = $sidebar->addItem(lang('template_partials'), ee('CP/URL')->make('design/snippets'))->withIcon('shapes');
 
@@ -204,7 +206,7 @@ abstract class AbstractDesign extends CP_Controller {
 		}
 
 		// Template Variables
-		if (ee()->cp->allowed_group_any('can_create_template_variables', 'can_edit_template_variables', 'can_delete_template_variables'))
+		if (ee('Permission')->hasAny('can_create_template_variables', 'can_edit_template_variables', 'can_delete_template_variables'))
 		{
 			$header = $sidebar->addItem(lang('template_variables'), ee('CP/URL')->make('design/variables'))->withIcon('cube');
 
@@ -216,7 +218,7 @@ abstract class AbstractDesign extends CP_Controller {
 
 
 		// Template Routes
-		if ( ! TemplateRoute::getConfig() && ee()->cp->allowed_group('can_admin_design'))
+		if ( ! TemplateRoute::getConfig() && ee('Permission')->can('admin_design'))
 		{
 			$header = $sidebar->addItem(lang('template_routes'), ee('CP/URL')->make('design/routes'))->withIcon('truck');
 
@@ -257,12 +259,12 @@ abstract class AbstractDesign extends CP_Controller {
 			'search_button_value' => lang('search_templates')
 		);
 
-		if ( ! ee()->cp->allowed_group('can_access_sys_prefs', 'can_admin_design'))
+		if ( ! ee('Permission')->hasAll('can_access_sys_prefs', 'can_admin_design'))
 		{
 			unset($header['toolbar_items']['settings']);
 		}
 
-		if (ee('Model')->get('Template')->count() > 0 && ee()->session->userdata('group_id') == 1)
+		if (ee('Model')->get('Template')->count() > 0 && ee('Permission')->isSuperAdmin())
 		{
 			$header['toolbar_items']['export'] =array(
 				'href' => ee('CP/URL', 'design/export'),
@@ -271,41 +273,6 @@ abstract class AbstractDesign extends CP_Controller {
 		}
 
 		ee()->view->header = $header;
-	}
-
-	/**
-	 * Determines if the logged in user has edit privileges for a given template
-	 * group. We need either a group's unique id or a template's unique id to
-	 * determine access.
-	 *
-	 * @param  int  $group_id    The id of the template group in question (optional)
-	 * @param  int  $template_id The id of the template in question (optional)
-	 * @return bool TRUE if the user has edit privileges, FALSE if not
-	 */
-	protected function hasEditTemplatePrivileges($group_id = NULL, $template_id = NULL)
-	{
-		// If the user is a Super Admin, return true
-		if (ee()->session->userdata['group_id'] == 1)
-		{
-			return TRUE;
-		}
-
-		if ( ! $group_id)
-		{
-			if ( ! $template_id)
-			{
-				return FALSE;
-			}
-			else
-			{
-				$group_id = ee('Model')->get('Template', $template_id)
-					->fields('group_id')
-					->first()
-					->group_id;
-			}
-		}
-
-		return array_key_exists($group_id, ee()->session->userdata['assigned_template_groups']);
 	}
 
 	protected function loadCodeMirrorAssets($selector = 'template_data')
@@ -512,7 +479,7 @@ abstract class AbstractDesign extends CP_Controller {
 				$template_name = $group->group_name . '/' . $template_name;
 			}
 
-			if (ee()->cp->allowed_group('can_edit_templates'))
+			if (ee('Permission')->can('edit_templates_template_group_id_' . $group->getId()))
 			{
 				$template_name = '<a href="' . $edit_url->compile() . '">' . $template_name . '</a>';
 			}
@@ -564,9 +531,13 @@ abstract class AbstractDesign extends CP_Controller {
 				)
 			);
 
-			if ( ! ee()->cp->allowed_group('can_edit_templates'))
+			if ( ! ee('Permission')->can('edit_templates_template_group_id_' . $group->getId()))
 			{
 				unset($toolbar['edit']);
+			}
+
+			if ( ! ee('Permission')->can('manage_settings_template_group_id_' . $group->getId()))
+			{
 				unset($toolbar['settings']);
 			}
 
@@ -657,7 +628,19 @@ abstract class AbstractDesign extends CP_Controller {
 
 	protected function removeTemplates($template_ids)
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_templates'))
+		$group_ids = [];
+		$authorized = FALSE;
+
+		foreach ($this->assigned_template_groups as $group_id)
+		{
+			if (ee('Permission')->can('can_delete_templates_template_group_id_' . $group_id))
+			{
+				$authorized = TRUE;
+				$group_ids[] = $group_id;
+			}
+		}
+
+		if ( ! $authorized)
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -670,7 +653,14 @@ abstract class AbstractDesign extends CP_Controller {
 		$template_names = array();
 		$templates = ee('Model')->get('Template', $template_ids)
 			->filter('site_id', ee()->config->item('site_id'))
-			->all();
+			->filter('group_id', 'IN', $group_ids);
+
+		if (empty($group_ids))
+		{
+			$templates->markAsFutile();
+		}
+
+		$templates = $templates->all();
 
 		foreach ($templates as $template)
 		{

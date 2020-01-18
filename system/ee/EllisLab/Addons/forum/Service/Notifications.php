@@ -100,21 +100,8 @@ class Notifications {
 				( ! $reply && $notify_moderators_topics)
 			)
 		{
-			// can be member ID or group ID based
-			ee()->db->select('email');
-			ee()->db->from('members, forum_moderators');
-			ee()->db->where('(exp_members.member_id = exp_forum_moderators.mod_member_id OR exp_members.group_id = exp_forum_moderators.mod_group_id)', NULL, FALSE);
-			ee()->db->where('exp_forum_moderators.mod_forum_id', $topic->forum_id);
-
-			$query = ee()->db->get();
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result() as $row)
-				{
-					$notify_email_str .= ','.$row->email;
-				}
-			}
+			$forum = ee('Model')->get('ee:Forum', $topic->forum_id)->first();
+			$notify_email_str .= $forum->getModeratorEmailString();
 		}
 
 		$addresses = array_unique($this->commaDelimToArray($notify_email_str));

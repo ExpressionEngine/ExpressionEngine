@@ -38,7 +38,7 @@ feature 'Communicate' do
     @page.should have_recipient
     @page.should have_cc
     @page.should have_bcc
-    @page.should have_member_groups
+    @page.should have_member_roles
     @page.should have_submit_button
   end
 
@@ -56,7 +56,7 @@ feature 'Communicate' do
   end
 
   it "disables groups with no members" do
-    @page.member_groups.each do |group|
+    @page.member_roles.each do |group|
       group.first(:xpath, ".//..").should have_text 'Guests' if group[:disabled]
     end
   end
@@ -158,7 +158,7 @@ feature 'Communicate' do
   end
 
   it "allows recipient to be empty if a group is selected" do
-    @page.member_groups[0].set(true)
+    @page.member_roles[0].set(true)
     @page.submit_button.click
 
     @page.recipient.first(:xpath, ".//../..")[:class].should_not include 'invalid'

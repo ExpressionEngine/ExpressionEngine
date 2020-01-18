@@ -508,14 +508,11 @@ class Rte_lib {
 		}
 
 		// Swap the real URL with {filedir_x}
-		ee()->load->model('file_upload_preferences_model');
-		$dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(
-			ee()->session->userdata('group_id')
-		);
+		$dirs = ee()->session->getMember()->getAssignedUploadDestinations();
 
 		foreach($dirs as $d)
 		{
-			$data = str_replace($d['url'], "{filedir_{$d['id']}}", $data);
+			$data = str_replace($d->url, "{filedir_{$d->id}}", $data);
 		}
 
 		return $data;
@@ -580,16 +577,13 @@ class Rte_lib {
 
 		// Swap {filedir_x} with the real URL. It will be converted back
 		// upon submit by the RTE Image tool.
-		ee()->load->model('file_upload_preferences_model');
-		$dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(
-			ee()->session->userdata('group_id')
-		);
+		$dirs = ee()->session->getMember()->getAssignedUploadDestinations();
 
 		foreach($dirs as $d)
 		{
 			// tag to replace
-			$filedir = "{filedir_{$d['id']}}";
-			$data = str_replace($filedir, $d['url'], $data);
+			$filedir = "{filedir_{$d->id}}";
+			$data = str_replace($filedir, $d->url, $data);
 		}
 
 		$field['value'] = $data;

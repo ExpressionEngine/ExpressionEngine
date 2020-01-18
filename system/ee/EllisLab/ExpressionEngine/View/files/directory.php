@@ -14,7 +14,7 @@
 		<fieldset class="bulk-action-bar hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
-				<?php if (ee()->cp->allowed_group('can_delete_files')): ?>
+				<?php if (ee('Permission')->can('delete_files')): ?>
 					<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-delete-file"><?=lang('delete')?></option>
 				<?php endif ?>
 				<option value="download"><?=lang('download')?></option>

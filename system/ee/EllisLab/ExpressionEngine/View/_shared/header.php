@@ -44,8 +44,8 @@ $current_page = ee()->uri->segment(2);
 		<section class="ee-wrapper">
 
 			<div class="ee-sidebar">
-				<?php if (ee()->config->item('multiple_sites_enabled') === 'y' && (count($cp_main_menu['sites']) > 0 || ee()->cp->allowed_group('can_admin_sites'))): ?>
-				<a class="ee-sidebar__title js-dropdown-toggle" data-dropdown-pos="bottom-center"><?=ee()->config->item('site_name')?><span class="ee-sidebar__title-down-arrow"><i class="fas fa-chevron-down"></i></span></a>
+				<?php if (ee()->config->item('multiple_sites_enabled') === 'y' && (count($cp_main_menu['sites']) > 0 || ee('Permission')->can('admin_sites'))): ?>
+				<a class="ee-sidebar__title js-dropdown-toggle" data-dropdown-use-root="true" data-dropdown-pos="bottom-center"><?=ee()->config->item('site_name')?><span class="ee-sidebar__title-down-arrow"><i class="fas fa-chevron-down"></i></span></a>
 
 				<div class="dropdown">
 					<a class="dropdown__link" href="<?=ee()->config->item('site_url')?>" rel="external"><i class="fas fa-eye"></i> <?=lang('view_site')?></a>
@@ -72,14 +72,14 @@ $current_page = ee()->uri->segment(2);
 							<?php endif; ?> -->
 						<a href="<?=ee('CP/URL', 'homepage')?>" title="<?=lang('nav_overview')?>" class="ee-sidebar__item <?= ($current_page == 'homepage' ? 'active' : '') ?>"><i class="fas fa-tachometer-alt"></i> <?=lang('nav_overview')?></a>
 
-						<?php if (ee()->cp->allowed_group_any('can_edit_other_entries', 'can_edit_self_entries')) : ?>
-						<a data-dropdown-pos="right-start" href="<?= ee('CP/URL', 'publish/edit') ?>" class="ee-sidebar__item js-dropdown-hover <?= (($current_page == 'publish') ? 'active' : '') ?>"><i class="fas fa-newspaper"></i> <?= lang('menu_entries') ?></a>
+						<?php if (ee('Permission')->hasAny('can_edit_other_entries', 'can_edit_self_entries')) : ?>
+						<a data-dropdown-use-root="true" data-dropdown-pos="right-start" href="<?= ee('CP/URL', 'publish/edit') ?>" class="ee-sidebar__item js-dropdown-hover <?= (($current_page == 'publish') ? 'active' : '') ?>"><i class="fas fa-newspaper"></i> <?= lang('menu_entries') ?></a>
 						<div class="dropdown js-filterable">
 							<a href="<?= ee('CP/URL', 'publish/edit') ?>" class="dropdown__link"><b>View All</b></a>
 							<?php foreach ($cp_main_menu['channels']['edit'] as $channel_name => $link): ?>
 								<div class="dropdown__item">
 									<a href="<?=$link?>"><?=$channel_name?></a>
-									<?php if (ee()->cp->allowed_group('can_create_entries') && array_key_exists($channel_name, $cp_main_menu['channels']['create'])): ?>
+									<?php if (ee('Permission')->can('create_entries') && array_key_exists($channel_name, $cp_main_menu['channels']['create'])): ?>
 									<a href="<?=$cp_main_menu['channels']['create'][$channel_name]?>" class="dropdown__item-button button button--action button--small"><i class="fas fa-plus"></i></a>
 									<?php endif; ?>
 								</div>
@@ -87,19 +87,19 @@ $current_page = ee()->uri->segment(2);
 						</div>
 						<?php endif; ?>
 
-						<?php if (ee()->cp->allowed_group('can_access_files')) : ?>
+						<?php if (ee('Permission')->can('access_files')) : ?>
 						<a href="<?= ee('CP/URL', 'files') ?>" class="ee-sidebar__item <?= ($current_page == 'files' ? 'active' : '') ?>"><i class="fas fa-folder"></i> <?= lang('menu_files') ?></a>
 						<?php endif; ?>
 
-						<?php if (ee()->cp->allowed_group('can_access_members')) : ?>
+						<?php if (ee('Permission')->can('access_members')) : ?>
 						<a href="<?= ee('CP/URL', 'members') ?>" class="ee-sidebar__item <?= ($current_page == 'members' ? 'active' : '') ?>"><i class="fas fa-users"></i> <?= lang('menu_members') ?></a>
 						<?php endif; ?>
 
-						<?php if (ee()->cp->allowed_group('can_admin_channels') && ee()->cp->allowed_group_any('can_create_categories', 'can_edit_categories', 'can_delete_categories')) : ?>
+						<?php if (ee('Permission')->can('admin_channels') && ee('Permission')->hasAny('can_create_categories', 'can_edit_categories', 'can_delete_categories')) : ?>
 						<a href="<?= ee('CP/URL')->make('categories') ?>" class="ee-sidebar__item <?= ($current_page == 'categories' ? 'active' : '') ?>"><i class="fas fa-tags"></i> <?= lang('categories') ?></a>
 						<?php endif; ?>
 
-						<?php if (ee()->cp->allowed_group('can_access_addons')) : ?>
+						<?php if (ee('Permission')->can('access_addons')) : ?>
 						<a href="<?= ee('CP/URL')->make('addons') ?>" class="ee-sidebar__item <?= ($current_page == 'addons' ? 'active' : '') ?>"><i class="fas fa-puzzle-piece"></i> <?= lang('addons') ?></a>
 						<?php endif; ?>
 					</div>
@@ -111,7 +111,7 @@ $current_page = ee()->uri->segment(2);
 						<nav class="nav-custom">
 							<?php foreach ($custom->getItems() as $item) : ?>
 							<?php if ($item->isSubmenu()) : ?>
-								<a class="js-dropdown-toggle ee-sidebar__item" data-dropdown-pos="bottom-center" href=""><?= lang($item->title) ?></a>
+								<a class="js-dropdown-toggle ee-sidebar__item" data-dropdown-use-root="true" data-dropdown-pos="bottom-center" href=""><?= lang($item->title) ?></a>
 								<div class="dropdown">
 									<?php if ($item->hasFilter()) : ?>
 									<form class="dropdown__search">
@@ -159,7 +159,7 @@ $current_page = ee()->uri->segment(2);
 							</div>
 						<?php endif; ?>
 
-						<?php if (ee()->cp->allowed_group('can_access_sys_prefs')) : ?>
+						<?php if (ee('Permission')->can('access_sys_prefs')) : ?>
 						<a href="<?= ee('CP/URL', 'settings') ?>" title="<?= lang('nav_settings') ?>" class="ee-sidebar__item <?= ($current_page == 'settings' ? 'active' : '') ?>"><i class="fas fa-cog"></i> <?= lang('nav_settings') ?></a>
 						<?php endif; ?>
 
@@ -183,7 +183,7 @@ $current_page = ee()->uri->segment(2);
 							}
 						?>
 
-						<a href="" data-dropdown-pos="top-start" data-toggle-dropdown="app-about-dropdown" class="ee-sidebar__item ee-sidebar__version js-dropdown-toggle js-about <?=$version_class?>">ExpressionEngine <span><?=$formatted_version?></span></a>
+						<a href="" data-dropdown-use-root="true" data-dropdown-pos="top-start" data-toggle-dropdown="app-about-dropdown" class="ee-sidebar__item ee-sidebar__version js-dropdown-toggle js-about <?=$version_class?>">ExpressionEngine <span><?=$formatted_version?></span></a>
 					</div>
 
 				</div>

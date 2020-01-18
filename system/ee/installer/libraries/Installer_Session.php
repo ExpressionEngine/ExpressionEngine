@@ -37,6 +37,16 @@ class Installer_Session {
 		return ( ! isset($this->userdata[$which])) ? $default : $this->userdata[$which];
 	}
 
+	public function all_userdata()
+	{
+		return $this->userdata;
+	}
+
+	public function getMember()
+	{
+		return ee('Model')->get('Member', 1)->first();
+	}
+
 	public function session_id($which = '')
 	{
 		return 0;

@@ -396,7 +396,7 @@ $lang = array(
 
 'cat_field_ajax_reorder_fail_desc' => 'We failed to save your new category fields order. Refresh the page and make sure you\'re logged in.',
 
-'cat_group_no_member_groups_found' => 'No <b>member groups</b> with permissions exist.',
+'cat_group_no_roles_found' => 'No <b>roles</b> with permissions exist.',
 
 'cat_image_choose' => 'Choose from directory',
 
@@ -498,7 +498,7 @@ $lang = array(
 
 'delete_categories' => 'Delete Categories',
 
-'delete_categories_desc' => 'Users in selected groups will be allowed to delete categories in this category group.</em><em>Super Administrators are <b>always</b> allowed.',
+'delete_categories_desc' => 'Users in selected roles will be allowed to delete categories in this category group.</em><em>Super Administrators are <b>always</b> allowed.',
 
 'duplicate_category_group_name' => 'A category group already exists with the same name.',
 
@@ -506,7 +506,7 @@ $lang = array(
 
 'edit_categories' => 'Edit Categories',
 
-'edit_categories_desc' => 'Users in selected groups will be allowed to edit categories in this category group.</em><em>Super Administrators are <b>always</b> allowed.',
+'edit_categories_desc' => 'Users in selected roles will be allowed to edit categories in this category group.</em><em>Super Administrators are <b>always</b> allowed.',
 
 'edit_category' => 'Edit Category',
 
@@ -599,6 +599,10 @@ $lang = array(
 'statuses_removed' => 'Statuses removed',
 
 'statuses_removed_desc' => '%d statuses were removed.',
+
+'channel_roles' => 'Allowed Roles',
+
+'channel_roles_desc' => 'Users in these roles can perform each selected action in this channel.',
 
 );
 

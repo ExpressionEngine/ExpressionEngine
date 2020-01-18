@@ -29,14 +29,13 @@ class TemplateGroup extends Model {
 	);
 
 	protected static $_relationships = array(
-		'MemberGroups' => array(
+		'Roles' => array(
 			'type'     => 'HasAndBelongsToMany',
-			'model'    => 'MemberGroup',
-			'from_key' => 'group_id',
+			'model'    => 'Role',
 			'pivot' => array(
-				'table' => 'template_member_groups',
+				'table' => 'template_groups_roles',
 				'left'  => 'template_group_id',
-				'right' => 'group_id'
+				'right' => 'role_id'
 			)
 		),
 		'Templates' => array(

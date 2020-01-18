@@ -176,7 +176,7 @@ class Msm extends CP_Controller {
 
 	public function create()
 	{
-		if ( ! ee()->cp->allowed_group('can_admin_sites')) // permission not currently setable, thus admin only
+		if ( ! ee('Permission')->can('admin_sites')) // permission not currently setable, thus admin only
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -282,7 +282,7 @@ class Msm extends CP_Controller {
 
 	public function edit($site_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_admin_sites'))
+		if ( ! ee('Permission')->can('admin_sites'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -539,7 +539,7 @@ class Msm extends CP_Controller {
 		// Refresh Sites List
 		$assigned_sites = array();
 
-		if (ee()->session->userdata['group_id'] == 1)
+		if (ee('Permission')->isSuperAdmin())
 		{
 			$result = ee('Model')->get('Site')
 				->fields('site_id', 'site_label')
@@ -555,7 +555,7 @@ class Msm extends CP_Controller {
 				->all();
 		}
 
-		if ((ee()->session->userdata['group_id'] == 1 OR ee()->session->userdata['assigned_sites'] != '') && count($result) > 0)
+		if ((ee('Permission')->isSuperAdmin() OR ee()->session->userdata['assigned_sites'] != '') && count($result) > 0)
 		{
 			$assigned_sites = $result->getDictionary('site_id', 'site_label');
 		}

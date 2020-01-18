@@ -24,7 +24,7 @@ class Filepicker_mcp {
 		$this->base_url = 'addons/settings/filepicker';
 		$this->access = FALSE;
 
-		if (ee()->cp->allowed_group('can_access_files'))
+		if (ee('Permission')->can('access_files'))
 		{
 			$this->access = TRUE;
 		}
@@ -35,17 +35,16 @@ class Filepicker_mcp {
 	protected function getUserUploadDirectories()
 	{
 		$dirs = ee('Model')->get('UploadDestination')
-			->with('NoAccess')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('module_id', 0)
 			->order('name', 'asc')
 			->all();
 
-		$member_group = ee()->session->userdata['group_id'];
+		$member = ee()->session->getMember();
 
-		return $dirs->filter(function($dir) use ($member_group)
+		return $dirs->filter(function($dir) use ($member)
 		{
-			return $dir->memberGroupHasAccess($member_group);
+			return $dir->memberHasAccess($member);
 		});
 	}
 
@@ -255,7 +254,7 @@ class Filepicker_mcp {
 			// show a slightly different message if we have no upload directories
 			if ($nodirs)
 			{
-				if (ee()->cp->allowed_group('can_create_upload_directories'))
+				if (ee('Permission')->can('create_upload_directories'))
 				{
 					$table->setNoResultsText(
 						lang('zero_upload_directories_found'),
@@ -361,9 +360,9 @@ class Filepicker_mcp {
 			ee()->output->send_ajax_response(lang('file_not_found'), TRUE);
 		}
 
-		$member_group = ee()->session->userdata['group_id'];
+		$member = ee()->session->getMember();
 
-		if ($file->memberGroupHasAccess($member_group) === FALSE || $this->access === FALSE)
+		if ($file->memberHasAccess($member) === FALSE || $this->access === FALSE)
 		{
 			ee()->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 		}

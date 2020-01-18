@@ -13,7 +13,7 @@ class Communicate < ControlPanelPage
   element :recipient, 'input[name="recipient"]'
   element :cc, 'input[name="cc"]'
   element :bcc, 'input[name="bcc"]'
-  elements :member_groups, 'div[data-input-value="member_groups"] input'
+  elements :member_roles, 'div[data-input-value="member_roles"] input'
   element :submit_button, 'div.form-btns.form-btns-top input[type="submit"]'
 
   def load

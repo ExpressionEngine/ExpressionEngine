@@ -1205,7 +1205,7 @@ class Member {
 	 */
 	public function confirm_delete_form()
 	{
-		if (ee()->session->userdata('can_delete_self') !== 'y')
+		if ( ! ee('Permission')->can('delete_self'))
 		{
 			return ee()->output->show_user_error('general', ee()->lang->line('cannot_delete_self'));
 		}
@@ -1243,13 +1243,13 @@ class Member {
 		// after logging out.
 
 		if (ee()->session->userdata('member_id') == 0 OR
-			ee()->session->userdata('can_delete_self') !== 'y')
+			 ! ee('Permission')->can('delete_self'))
 		{
 			return ee()->output->show_user_error('general', ee()->lang->line('not_authorized'));
 		}
 
 		// If the user is a SuperAdmin, then no deletion
-		if (ee()->session->userdata('group_id') == 1)
+		if (ee('Permission')->isSuperAdmin())
 		{
 			return ee()->output->show_user_error('general', ee()->lang->line('cannot_delete_super_admin'));
 		}
@@ -1945,8 +1945,8 @@ class Member {
 		}
 
 		// Parse the self deletion conditional
-		if (ee()->session->userdata('can_delete_self') == 'y' &&
-			ee()->session->userdata('group_id') != 1)
+		if (ee('Permission')->can('delete_self') &&
+			! ee('Permission')->isSuperAdmin())
 		{
 			$str = $this->_allow_if('can_delete', $str);
 		}
@@ -2220,7 +2220,6 @@ class Member {
 
 		$member = ee('Model')
 			->get('Member', $member_id)
-			->with('MemberGroup')
 			->first();
 
 		if ( ! $member)
@@ -2228,7 +2227,7 @@ class Member {
 			return ee()->TMPL->tagdata = '';
 		}
 
-		$results = $member->getValues() + array('group_title' => $member->MemberGroup->group_title);
+		$results = $member->getValues() + ['group_title' => $member->PrimaryRole->name, 'primary_role_name' => $member->PrimaryRole->name];
 		$default_fields = $results;
 
 		// Is there an avatar?
@@ -2549,10 +2548,9 @@ class Member {
 			$ignored = ee()->session->userdata('ignore_list');
 		}
 
-		$query = ee()->db->query("SELECT m.member_id, m.group_id, m.username, m.screen_name, m.email, m.ip_address, m.total_entries, m.total_comments, m.private_messages, m.total_forum_topics, m.total_forum_posts AS total_forum_replies, m.total_forum_topics + m.total_forum_posts AS total_forum_posts,
-							g.group_title AS group_description FROM exp_members AS m, exp_member_groups AS g
-							WHERE g.group_id = m.group_id
-							AND g.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'
+		$query = ee()->db->query("SELECT m.member_id, m.role_id, m.role_id AS group_id, m.username, m.screen_name, m.email, m.ip_address, m.total_entries, m.total_comments, m.private_messages, m.total_forum_topics, m.total_forum_posts AS total_forum_replies, m.total_forum_topics + m.total_forum_posts AS total_forum_posts,
+							r.name AS group_description FROM exp_members AS m, exp_roles AS r
+							WHERE r.role_id = m.role_id
 							AND m.member_id IN ('".implode("', '", $ignored)."')");
 
 		if ($query->num_rows() == 0)

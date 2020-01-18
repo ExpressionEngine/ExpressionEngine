@@ -62,8 +62,8 @@ class EE_Menu {
 		$args = array($custom);
 		$items = ee('Model')->get('MenuItem')
 			->fields('MenuItem.*', 'Children.*')
-			->with(array('Set' => 'MemberGroups'), 'Children')
-			->filter('MemberGroups.group_id', ee()->session->userdata('group_id'))
+			->with(array('Set' => 'RoleSettings'), 'Children')
+			->filter('RoleSettings.role_id', ee()->session->userdata('role_id'))
 			->order('MenuItem.sort')
 			->order('Children.sort')
 			->all();
@@ -157,29 +157,35 @@ class EE_Menu {
 			{
 				$filtered_by_channel = ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $channel->channel_id));
 
-				// Edit link
-				$menu['edit'][$channel->channel_title] = $filtered_by_channel;
-
-				// Only add Create link if channel has room for more entries
-				if (empty($channel->max_entries) OR
-					($channel->max_entries != 0 && $channel->total_records < $channel->max_entries))
+				if (ee('Permission')->can('create_entries_channel_id_' . $channel->getId()))
 				{
-					// Create link
-					$menu['create'][$channel->channel_title] = ee('CP/URL')->make('publish/create/' . $channel->channel_id);
+					// Only add Create link if channel has room for more entries
+					if (empty($channel->max_entries) OR
+						($channel->max_entries != 0 && $channel->total_records < $channel->max_entries))
+					{
+						// Create link
+						$menu['create'][$channel->channel_title] = ee('CP/URL')->make('publish/create/' . $channel->channel_id);
+					}
 				}
 
-				// If there's a limit of 1, just send them to the edit screen for that entry
-				if ( ! empty($channel->max_entries) &&
-					$channel->total_records == 1 && $channel->max_entries == 1)
+				if (ee('Permission')->hasAny('can_edit_other_entries_channel_id_' . $channel->getId(), 'can_edit_self_entries_channel_id_' . $channel->getId()))
 				{
-					$entry = ee('Model')->get('ChannelEntry')
-						->filter('channel_id', $channel->channel_id)
-						->first();
+					// Edit link
+					$menu['edit'][$channel->channel_title] = $filtered_by_channel;
 
-					// Just in case $channel->total_records is inaccurate
-					if ($entry)
+					// If there's a limit of 1, just send them to the edit screen for that entry
+					if ( ! empty($channel->max_entries) &&
+						$channel->total_records == 1 && $channel->max_entries == 1)
 					{
-						$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
+						$entry = ee('Model')->get('ChannelEntry')
+							->filter('channel_id', $channel->channel_id)
+							->first();
+
+						// Just in case $channel->total_records is inaccurate
+						if ($entry)
+						{
+							$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
+						}
 					}
 				}
 			}
@@ -198,8 +204,8 @@ class EE_Menu {
 	{
 		$menu = array();
 
-		if (ee()->cp->allowed_group('can_admin_channels') &&
-			ee()->cp->allowed_group_any(
+		if (ee('Permission')->can('admin_channels') &&
+			ee('Permission')->hasAny(
 			'can_create_channels',
 			'can_edit_channels',
 			'can_delete_channels',
@@ -221,7 +227,7 @@ class EE_Menu {
 
 			foreach ($sections as $name => $path)
 			{
-				if (ee()->cp->allowed_group_any(
+				if (ee('Permission')->hasAny(
 					"can_create_{$name}",
 					"can_edit_{$name}",
 					"can_delete_{$name}"
@@ -233,17 +239,17 @@ class EE_Menu {
 			}
 		}
 
-		if (ee()->cp->allowed_group('can_access_design'))
+		if (ee('Permission')->can('access_design'))
 		{
 			$menu['templates'] = ee('CP/URL')->make('design');
 		}
 
-		if (ee()->config->item('multiple_sites_enabled') == 'y' && ee()->cp->allowed_group('can_admin_sites'))
+		if (ee()->config->item('multiple_sites_enabled') == 'y' && ee('Permission')->can('admin_sites'))
 		{
 			$menu['msm_manager'] = ee('CP/URL')->make('msm');
 		}
 
-		if (ee()->cp->allowed_group('can_access_utilities'))
+		if (ee('Permission')->can('access_utilities'))
 		{
 
 			$utility_options = array(
@@ -256,7 +262,7 @@ class EE_Menu {
 
 			foreach ($utility_options as $allow => $link)
 			{
-				if (ee()->cp->allowed_group($allow))
+				if (ee('Permission')->hasAll($allow))
 				{
 					$menu['utilities'] = $link;
 					break;
@@ -268,15 +274,15 @@ class EE_Menu {
 
 			if ( ! isset($menu['utilities']))
 			{
-				if (ee()->cp->allowed_group('can_access_addons')
-					&& ee()->cp->allowed_group('can_admin_addons'))
+				if (ee('Permission')->can('access_addons')
+					&& ee('Permission')->can('admin_addons'))
 				{
 					$menu['utilities'] = ee('CP/URL')->make('utilities/extensions');
 				}
 			}
 		}
 
-		if (ee()->cp->allowed_group('can_access_logs'))
+		if (ee('Permission')->can('access_logs'))
 		{
 			$menu['logs'] = ee('CP/URL')->make('logs');
 		}

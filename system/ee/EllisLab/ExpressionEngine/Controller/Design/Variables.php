@@ -28,7 +28,7 @@ class Variables extends AbstractDesignController {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group_any('can_create_template_variables', 'can_edit_template_variables', 'can_delete_template_variables'))
+		if ( ! ee('Permission')->hasAny('can_create_template_variables', 'can_edit_template_variables', 'can_delete_template_variables'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -199,7 +199,7 @@ class Variables extends AbstractDesignController {
 
 	public function create()
 	{
-		if ( ! ee()->cp->allowed_group('can_create_template_variables'))
+		if ( ! ee('Permission')->can('create_template_variables'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -312,7 +312,7 @@ class Variables extends AbstractDesignController {
 
 	public function edit($variable_id)
 	{
-		if ( ! ee()->cp->allowed_group('can_edit_template_variables'))
+		if ( ! ee('Permission')->can('edit_template_variables'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -445,7 +445,7 @@ class Variables extends AbstractDesignController {
 	 */
 	private function remove($variable_ids)
 	{
-		if ( ! ee()->cp->allowed_group('can_delete_template_variables'))
+		if ( ! ee('Permission')->can('delete_template_variables'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

@@ -24,7 +24,7 @@
 
 		<fieldset class="fieldset-required <?=form_error_class('thequery')?>">
 			<div class="field-instruct">
-				<label><?=lang('sql_query_to_run')?></label>
+				<label><?=lang('query')?></label>
 			</div>
 			<div class="field-control">
 				<textarea class="js-sql-query-textarea" name="thequery" cols="" rows="10"><?=set_value('thequery')?></textarea>

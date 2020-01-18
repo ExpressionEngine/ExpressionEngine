@@ -172,7 +172,7 @@ feature 'Query Form' do
     click_link "Next"
 
     no_php_js_errors
-    results.should have(7).rows
+    results.should have(9).rows
     results.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
   end
 
@@ -186,12 +186,12 @@ feature 'Query Form' do
     no_php_js_errors
     results = QueryResults.new
     results.sort_links[0].click
-    results.table.find('tbody tr:nth-child(1) td:nth-child(1)').should have_text '32'
+    results.table.find('tbody tr:nth-child(1) td:nth-child(1)').should have_text '34'
 
     no_php_js_errors
     click_link "Next"
 
-    results.table.find('tbody tr:nth-child(1) td:nth-child(1)').should have_text '7'
+    results.table.find('tbody tr:nth-child(1) td:nth-child(1)').should have_text '9'
   end
 
   def show_status

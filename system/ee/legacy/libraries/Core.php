@@ -301,7 +301,7 @@ class EE_Core {
 
 		// Now that we have a session we'll enable debugging if the user is a super admin
 		if (ee()->config->item('debug') == 1
-			&& (ee()->session->userdata('group_id') == 1
+			&& (ee('Permission')->isSuperAdmin()
 				|| ee()->session->userdata('can_debug') == 'y'
 				)
 			)
@@ -309,7 +309,7 @@ class EE_Core {
 			$this->_enable_debugging();
 		}
 
-		if ((ee()->session->userdata('group_id') == 1 || ee()->session->userdata('can_debug') == 'y')
+		if ((ee('Permission')->isSuperAdmin() || ee()->session->userdata('can_debug') == 'y')
 			&& ee()->config->item('show_profiler') == 'y')
 		{
 			ee()->output->enable_profiler(TRUE);
@@ -461,8 +461,8 @@ class EE_Core {
 		// Is the user banned or not allowed CP access?
 		// Before rendering the full control panel we'll make sure the user isn't banned
 		// But only if they are not a Super Admin, as they can not be banned
-		if ((ee()->session->userdata('group_id') != 1 && ee()->session->ban_check('ip')) OR
-			(ee()->session->userdata('member_id') !== 0 && ! ee()->cp->allowed_group('can_access_cp')))
+		if ((! ee('Permission')->isSuperAdmin() && ee()->session->ban_check('ip')) OR
+			(ee()->session->userdata('member_id') !== 0 && ! ee('Permission')->can('access_cp')))
 		{
 			return ee()->output->fatal_error(lang('not_authorized'));
 		}

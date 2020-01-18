@@ -26,7 +26,7 @@ class CpSettings extends Profile {
 	{
 		$field['allowed_channels'] = array();
 		$all_sites_have_channels = TRUE;
-		$assigned_channels = $this->member->MemberGroup->AssignedChannels->pluck('channel_id');
+		$assigned_channels = $this->member->getAssignedChannels()->pluck('channel_id');
 
 		// If MSM is enabled, let them choose a channel for each site, should they
 		// want to redirect to the publish form on each site
@@ -40,7 +40,7 @@ class CpSettings extends Profile {
 				// Get only the channels they're allowed to post in
 				$field['allowed_channels'][$site->getId()] = $site->Channels->filter(function($channel)
 				{
-					return (ee()->session->userdata('group_id') == 1 OR ( ! empty($assigned_channels) && in_array($channel->getId(), $assigned_channels)));
+					return (ee('Permission')->isSuperAdmin() OR ( ! empty($assigned_channels) && in_array($channel->getId(), $assigned_channels)));
 				})->getDictionary('channel_id', 'channel_title');
 
 				// No channels? Let them know

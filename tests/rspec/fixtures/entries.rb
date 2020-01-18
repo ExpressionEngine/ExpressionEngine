@@ -82,7 +82,7 @@ options[:number].to_i.times do
   time = Time.now
 
   # First, get a random member who can add this stuff, use the Super Admin group
-  member = Member.where(group_id: 1)
+  member = Member.where(role_id: 1)
     .order('RAND()')
     .first()
   # Generate title

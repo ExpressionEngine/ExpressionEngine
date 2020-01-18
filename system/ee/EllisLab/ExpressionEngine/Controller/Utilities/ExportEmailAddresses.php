@@ -28,7 +28,7 @@ class ExportEmailAddresses extends Utilities {
 	{
 		parent::__construct();
 
-		if ( ! ee('Permission')->has('can_access_members'))
+		if ( ! ee('Permission')->can('access_members'))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}

@@ -25,7 +25,7 @@ class Updater extends CP_Controller {
 	{
 		parent::__construct();
 
-		if (ee()->session->userdata('group_id') != 1 OR
+		if ( ! ee('Permission')->isSuperAdmin() OR
 			ee('Request')->method() != 'POST')
 		{
 			show_error(lang('unauthorized_access'), 403);

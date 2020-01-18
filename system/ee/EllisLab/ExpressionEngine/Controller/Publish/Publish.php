@@ -23,11 +23,16 @@ class Publish extends AbstractPublishController {
 	{
 		parent::__construct();
 
-		if ( ! ee('Permission')->hasAny(
-			'can_create_entries',
-			'can_edit_self_entries',
-			'can_edit_other_entries'
-		))
+		$perms = [];
+
+		foreach ($this->assigned_channel_ids as $channel_id)
+		{
+			$perms[] = 'can_create_entries_channel_id_' . $channel_id;
+			$perms[] = 'can_edit_self_entries_channel_id_' . $channel_id;
+			$perms[] = 'can_edit_other_entries_channel_id_' . $channel_id;
+		}
+
+		if ( ! ee('Permission')->hasAny($perms))
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
@@ -156,7 +161,7 @@ class Publish extends AbstractPublishController {
 			show_404();
 		}
 
-		if ( ! ee()->cp->allowed_group('can_create_entries') OR
+		if ( ! ee('Permission')->can('create_entries_channel_id_' . $channel_id) OR
 			 ! in_array($channel_id, $this->assigned_channel_ids))
 		{
 			show_error(lang('unauthorized_access'), 403);
@@ -268,8 +273,8 @@ class Publish extends AbstractPublishController {
 		$channel_layout = ee('Model')->get('ChannelLayout')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('channel_id', $entry->channel_id)
-			->with('MemberGroups')
-			->filter('MemberGroups.group_id', ee()->session->userdata['group_id'])
+			->with('PrimaryRoles')
+			->filter('PrimaryRoles.role_id', ee()->session->userdata('role_id'))
 			->first();
 
 		$vars['layout'] = $entry->getDisplay($channel_layout);

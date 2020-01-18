@@ -123,7 +123,7 @@ class Spam_upd {
 		$query = ee()->db->get_where('modules', array('module_name' => 'Spam'));
 
 		ee()->db->where('module_id', $query->row('module_id'));
-		ee()->db->delete('module_member_groups');
+		ee()->db->delete('module_member_roles');
 
 		ee()->db->where('module_name', 'Spam');
 		ee()->db->delete('modules');
@@ -427,14 +427,14 @@ class Spam_upd {
 			}
 
 			// fake out the group ID so the entry will validate properly
-			ee()->session->userdata['group_id'] = $entry->Author->group_id;
+			ee()->session->userdata['group_id'] = $entry->Author->role_id;
 
 			// just in case this member group doesn't exist or have channel assignments anymore
-			if ( ! isset($assigned_channels[$entry->Author->group_id]))
+			if ( ! isset($assigned_channels[$entry->Author->role_id]))
 			{
 				continue;
 			}
-			ee()->session->userdata['assigned_channels'] = $assigned_channels[$entry->Author->group_id];
+			ee()->session->userdata['assigned_channels'] = $assigned_channels[$entry->Author->role_id];
 			ee()->config->set_item('site_id', $entry->Channel->site_id);
 
 			$entry->set($postdata);

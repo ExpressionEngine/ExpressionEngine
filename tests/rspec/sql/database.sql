@@ -1,7 +1,7 @@
 #
 # SQL Export
-# Created by Querious (201035)
-# Created: July 19, 2018 at 1:39:45 PM PDT
+# Created by Querious (201038)
+# Created: April 2, 2019 at 11:13:18 AM PDT
 # Encoding: Unicode (UTF-8)
 #
 
@@ -10,18 +10,18 @@ SET @PREVIOUS_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;
 SET FOREIGN_KEY_CHECKS = 0;
 
 
+DROP TABLE IF EXISTS `exp_upload_prefs_roles`;
 DROP TABLE IF EXISTS `exp_upload_prefs`;
-DROP TABLE IF EXISTS `exp_upload_no_access`;
 DROP TABLE IF EXISTS `exp_update_notices`;
 DROP TABLE IF EXISTS `exp_update_log`;
 DROP TABLE IF EXISTS `exp_throttle`;
+DROP TABLE IF EXISTS `exp_templates_roles`;
 DROP TABLE IF EXISTS `exp_templates`;
 DROP TABLE IF EXISTS `exp_template_routes`;
-DROP TABLE IF EXISTS `exp_template_no_access`;
-DROP TABLE IF EXISTS `exp_template_member_groups`;
+DROP TABLE IF EXISTS `exp_template_groups_roles`;
 DROP TABLE IF EXISTS `exp_template_groups`;
+DROP TABLE IF EXISTS `exp_statuses_roles`;
 DROP TABLE IF EXISTS `exp_statuses`;
-DROP TABLE IF EXISTS `exp_status_no_access`;
 DROP TABLE IF EXISTS `exp_stats`;
 DROP TABLE IF EXISTS `exp_specialty_templates`;
 DROP TABLE IF EXISTS `exp_snippets`;
@@ -32,15 +32,20 @@ DROP TABLE IF EXISTS `exp_search_log`;
 DROP TABLE IF EXISTS `exp_search`;
 DROP TABLE IF EXISTS `exp_rte_toolsets`;
 DROP TABLE IF EXISTS `exp_rte_tools`;
+DROP TABLE IF EXISTS `exp_roles_role_groups`;
+DROP TABLE IF EXISTS `exp_roles`;
+DROP TABLE IF EXISTS `exp_role_settings`;
+DROP TABLE IF EXISTS `exp_role_groups`;
 DROP TABLE IF EXISTS `exp_revision_tracker`;
 DROP TABLE IF EXISTS `exp_reset_password`;
 DROP TABLE IF EXISTS `exp_remember_me`;
 DROP TABLE IF EXISTS `exp_relationships`;
 DROP TABLE IF EXISTS `exp_plugins`;
+DROP TABLE IF EXISTS `exp_permissions`;
 DROP TABLE IF EXISTS `exp_password_lockout`;
 DROP TABLE IF EXISTS `exp_online_users`;
 DROP TABLE IF EXISTS `exp_modules`;
-DROP TABLE IF EXISTS `exp_module_member_groups`;
+DROP TABLE IF EXISTS `exp_module_member_roles`;
 DROP TABLE IF EXISTS `exp_message_listed`;
 DROP TABLE IF EXISTS `exp_message_folders`;
 DROP TABLE IF EXISTS `exp_message_data`;
@@ -48,15 +53,16 @@ DROP TABLE IF EXISTS `exp_message_copies`;
 DROP TABLE IF EXISTS `exp_message_attachments`;
 DROP TABLE IF EXISTS `exp_menu_sets`;
 DROP TABLE IF EXISTS `exp_menu_items`;
+DROP TABLE IF EXISTS `exp_members_roles`;
+DROP TABLE IF EXISTS `exp_members_role_groups`;
 DROP TABLE IF EXISTS `exp_members`;
 DROP TABLE IF EXISTS `exp_member_search`;
 DROP TABLE IF EXISTS `exp_member_news_views`;
-DROP TABLE IF EXISTS `exp_member_groups`;
 DROP TABLE IF EXISTS `exp_member_fields`;
 DROP TABLE IF EXISTS `exp_member_data_field_1`;
 DROP TABLE IF EXISTS `exp_member_data`;
 DROP TABLE IF EXISTS `exp_member_bulletin_board`;
-DROP TABLE IF EXISTS `exp_layout_publish_member_groups`;
+DROP TABLE IF EXISTS `exp_layout_publish_member_roles`;
 DROP TABLE IF EXISTS `exp_layout_publish`;
 DROP TABLE IF EXISTS `exp_html_buttons`;
 DROP TABLE IF EXISTS `exp_grid_columns`;
@@ -90,7 +96,7 @@ DROP TABLE IF EXISTS `exp_channels_channel_fields`;
 DROP TABLE IF EXISTS `exp_channels_channel_field_groups`;
 DROP TABLE IF EXISTS `exp_channels`;
 DROP TABLE IF EXISTS `exp_channel_titles`;
-DROP TABLE IF EXISTS `exp_channel_member_groups`;
+DROP TABLE IF EXISTS `exp_channel_member_roles`;
 DROP TABLE IF EXISTS `exp_channel_form_settings`;
 DROP TABLE IF EXISTS `exp_channel_fields`;
 DROP TABLE IF EXISTS `exp_channel_field_groups_fields`;
@@ -307,10 +313,10 @@ CREATE TABLE `exp_channel_form_settings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `exp_channel_member_groups` (
-  `group_id` smallint(4) unsigned NOT NULL,
+CREATE TABLE `exp_channel_member_roles` (
+  `role_id` int(10) NOT NULL,
   `channel_id` int(6) unsigned NOT NULL,
-  PRIMARY KEY (`group_id`,`channel_id`)
+  PRIMARY KEY (`role_id`,`channel_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -551,7 +557,7 @@ CREATE TABLE `exp_cp_log` (
   `action` varchar(200) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `site_id` (`site_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_developer_log` (
@@ -598,8 +604,8 @@ CREATE TABLE `exp_email_cache` (
 
 CREATE TABLE `exp_email_cache_mg` (
   `cache_id` int(6) unsigned NOT NULL,
-  `group_id` smallint(4) NOT NULL,
-  PRIMARY KEY (`cache_id`,`group_id`)
+  `role_id` int(10) NOT NULL,
+  PRIMARY KEY (`cache_id`,`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -676,7 +682,7 @@ CREATE TABLE `exp_fieldtypes` (
   `settings` text,
   `has_global_settings` char(1) DEFAULT 'n',
   PRIMARY KEY (`fieldtype_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_file_categories` (
@@ -775,7 +781,7 @@ CREATE TABLE `exp_global_variables` (
   PRIMARY KEY (`variable_id`),
   KEY `variable_name` (`variable_name`),
   KEY `site_id` (`site_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_grid_columns` (
@@ -826,10 +832,10 @@ CREATE TABLE `exp_layout_publish` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `exp_layout_publish_member_groups` (
+CREATE TABLE `exp_layout_publish_member_roles` (
   `layout_id` int(10) unsigned NOT NULL,
-  `group_id` int(4) unsigned NOT NULL,
-  PRIMARY KEY (`layout_id`,`group_id`)
+  `role_id` int(10) NOT NULL,
+  PRIMARY KEY (`layout_id`,`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -890,118 +896,6 @@ CREATE TABLE `exp_member_fields` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `exp_member_groups` (
-  `group_id` smallint(4) unsigned NOT NULL,
-  `site_id` int(4) unsigned NOT NULL DEFAULT '1',
-  `menu_set_id` int(5) unsigned NOT NULL DEFAULT '1',
-  `group_title` varchar(100) NOT NULL,
-  `group_description` text NOT NULL,
-  `is_locked` char(1) NOT NULL DEFAULT 'n',
-  `can_view_offline_system` char(1) NOT NULL DEFAULT 'n',
-  `can_view_online_system` char(1) NOT NULL DEFAULT 'y',
-  `can_access_cp` char(1) NOT NULL DEFAULT 'y',
-  `can_access_footer_report_bug` char(1) NOT NULL DEFAULT 'n',
-  `can_access_footer_new_ticket` char(1) NOT NULL DEFAULT 'n',
-  `can_access_footer_user_guide` char(1) NOT NULL DEFAULT 'n',
-  `can_view_homepage_news` char(1) NOT NULL DEFAULT 'y',
-  `can_access_files` char(1) NOT NULL DEFAULT 'n',
-  `can_access_design` char(1) NOT NULL DEFAULT 'n',
-  `can_access_addons` char(1) NOT NULL DEFAULT 'n',
-  `can_access_members` char(1) NOT NULL DEFAULT 'n',
-  `can_access_sys_prefs` char(1) NOT NULL DEFAULT 'n',
-  `can_access_comm` char(1) NOT NULL DEFAULT 'n',
-  `can_access_utilities` char(1) NOT NULL DEFAULT 'n',
-  `can_access_data` char(1) NOT NULL DEFAULT 'n',
-  `can_access_logs` char(1) NOT NULL DEFAULT 'n',
-  `can_admin_channels` char(1) NOT NULL DEFAULT 'n',
-  `can_admin_design` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_members` char(1) NOT NULL DEFAULT 'n',
-  `can_admin_mbr_groups` char(1) NOT NULL DEFAULT 'n',
-  `can_admin_mbr_templates` char(1) NOT NULL DEFAULT 'n',
-  `can_ban_users` char(1) NOT NULL DEFAULT 'n',
-  `can_admin_addons` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_categories` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_categories` char(1) NOT NULL DEFAULT 'n',
-  `can_view_other_entries` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_other_entries` char(1) NOT NULL DEFAULT 'n',
-  `can_assign_post_authors` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_self_entries` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_all_entries` char(1) NOT NULL DEFAULT 'n',
-  `can_view_other_comments` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_own_comments` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_own_comments` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_all_comments` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_all_comments` char(1) NOT NULL DEFAULT 'n',
-  `can_moderate_comments` char(1) NOT NULL DEFAULT 'n',
-  `can_send_cached_email` char(1) NOT NULL DEFAULT 'n',
-  `can_email_member_groups` char(1) NOT NULL DEFAULT 'n',
-  `can_email_from_profile` char(1) NOT NULL DEFAULT 'n',
-  `can_view_profiles` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_html_buttons` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_self` char(1) NOT NULL DEFAULT 'n',
-  `mbr_delete_notify_emails` varchar(255) DEFAULT NULL,
-  `can_post_comments` char(1) NOT NULL DEFAULT 'n',
-  `exclude_from_moderation` char(1) NOT NULL DEFAULT 'n',
-  `can_search` char(1) NOT NULL DEFAULT 'n',
-  `search_flood_control` mediumint(5) unsigned NOT NULL,
-  `can_send_private_messages` char(1) NOT NULL DEFAULT 'n',
-  `prv_msg_send_limit` smallint(5) unsigned NOT NULL DEFAULT '20',
-  `prv_msg_storage_limit` smallint(5) unsigned NOT NULL DEFAULT '60',
-  `can_attach_in_private_messages` char(1) NOT NULL DEFAULT 'n',
-  `can_send_bulletins` char(1) NOT NULL DEFAULT 'n',
-  `include_in_authorlist` char(1) NOT NULL DEFAULT 'n',
-  `include_in_memberlist` char(1) NOT NULL DEFAULT 'y',
-  `cp_homepage` varchar(20) DEFAULT NULL,
-  `cp_homepage_channel` int(10) unsigned NOT NULL DEFAULT '0',
-  `cp_homepage_custom` varchar(100) DEFAULT NULL,
-  `can_create_entries` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_self_entries` char(1) NOT NULL DEFAULT 'n',
-  `can_upload_new_files` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_files` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_files` char(1) NOT NULL DEFAULT 'n',
-  `can_upload_new_toolsets` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_toolsets` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_toolsets` char(1) NOT NULL DEFAULT 'n',
-  `can_create_upload_directories` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_upload_directories` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_upload_directories` char(1) NOT NULL DEFAULT 'n',
-  `can_create_channels` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_channels` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_channels` char(1) NOT NULL DEFAULT 'n',
-  `can_create_channel_fields` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_channel_fields` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_channel_fields` char(1) NOT NULL DEFAULT 'n',
-  `can_create_statuses` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_statuses` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_statuses` char(1) NOT NULL DEFAULT 'n',
-  `can_create_categories` char(1) NOT NULL DEFAULT 'n',
-  `can_create_member_groups` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_member_groups` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_member_groups` char(1) NOT NULL DEFAULT 'n',
-  `can_create_members` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_members` char(1) NOT NULL DEFAULT 'n',
-  `can_create_new_templates` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_templates` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_templates` char(1) NOT NULL DEFAULT 'n',
-  `can_create_template_groups` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_template_groups` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_template_groups` char(1) NOT NULL DEFAULT 'n',
-  `can_create_template_partials` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_template_partials` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_template_partials` char(1) NOT NULL DEFAULT 'n',
-  `can_create_template_variables` char(1) NOT NULL DEFAULT 'n',
-  `can_delete_template_variables` char(1) NOT NULL DEFAULT 'n',
-  `can_edit_template_variables` char(1) NOT NULL DEFAULT 'n',
-  `can_access_security_settings` char(1) NOT NULL DEFAULT 'n',
-  `can_access_translate` char(1) NOT NULL DEFAULT 'n',
-  `can_access_import` char(1) NOT NULL DEFAULT 'n',
-  `can_access_sql_manager` char(1) NOT NULL DEFAULT 'n',
-  `can_moderate_spam` char(1) NOT NULL DEFAULT 'n',
-  `can_manage_consents` char(1) NOT NULL DEFAULT 'n',
-  PRIMARY KEY (`group_id`,`site_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
 CREATE TABLE `exp_member_news_views` (
   `news_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `version` varchar(10) DEFAULT NULL,
@@ -1029,7 +923,7 @@ CREATE TABLE `exp_member_search` (
 
 CREATE TABLE `exp_members` (
   `member_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `group_id` smallint(4) NOT NULL DEFAULT '0',
+  `role_id` int(10) DEFAULT NULL,
   `username` varchar(50) NOT NULL,
   `screen_name` varchar(50) NOT NULL,
   `password` varchar(128) NOT NULL,
@@ -1096,10 +990,24 @@ CREATE TABLE `exp_members` (
   `cp_homepage_channel` varchar(255) DEFAULT NULL,
   `cp_homepage_custom` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`member_id`),
-  KEY `group_id` (`group_id`),
+  KEY `group_id` (`role_id`),
   KEY `unique_id` (`unique_id`),
   KEY `password` (`password`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `exp_members_role_groups` (
+  `member_id` int(10) unsigned NOT NULL,
+  `group_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`member_id`,`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE `exp_members_roles` (
+  `member_id` int(10) unsigned NOT NULL,
+  `role_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`member_id`,`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 CREATE TABLE `exp_menu_items` (
@@ -1202,10 +1110,10 @@ CREATE TABLE `exp_message_listed` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `exp_module_member_groups` (
-  `group_id` smallint(4) unsigned NOT NULL,
+CREATE TABLE `exp_module_member_roles` (
+  `role_id` int(10) NOT NULL,
   `module_id` mediumint(5) unsigned NOT NULL,
-  PRIMARY KEY (`group_id`,`module_id`)
+  PRIMARY KEY (`role_id`,`module_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -1245,6 +1153,16 @@ CREATE TABLE `exp_password_lockout` (
   KEY `ip_address` (`ip_address`),
   KEY `user_agent` (`user_agent`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `exp_permissions` (
+  `permission_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `role_id` int(10) unsigned NOT NULL,
+  `site_id` int(5) unsigned NOT NULL,
+  `permission` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`permission_id`),
+  KEY `role_id_site_id` (`role_id`,`site_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=171 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 CREATE TABLE `exp_plugins` (
@@ -1311,6 +1229,51 @@ CREATE TABLE `exp_revision_tracker` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+CREATE TABLE `exp_role_groups` (
+  `group_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE `exp_role_settings` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `role_id` int(10) NOT NULL,
+  `site_id` int(4) unsigned NOT NULL DEFAULT '1',
+  `menu_set_id` int(5) unsigned NOT NULL DEFAULT '1',
+  `is_locked` char(1) NOT NULL DEFAULT 'n',
+  `mbr_delete_notify_emails` varchar(255) DEFAULT NULL,
+  `exclude_from_moderation` char(1) NOT NULL DEFAULT 'n',
+  `search_flood_control` mediumint(5) unsigned NOT NULL,
+  `prv_msg_send_limit` smallint(5) unsigned NOT NULL DEFAULT '20',
+  `prv_msg_storage_limit` smallint(5) unsigned NOT NULL DEFAULT '60',
+  `include_in_authorlist` char(1) NOT NULL DEFAULT 'n',
+  `include_in_memberlist` char(1) NOT NULL DEFAULT 'y',
+  `cp_homepage` varchar(20) DEFAULT NULL,
+  `cp_homepage_channel` int(10) unsigned NOT NULL DEFAULT '0',
+  `cp_homepage_custom` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `role_id` (`role_id`,`site_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `exp_roles` (
+  `role_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `short_name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `is_locked` char(1) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'n',
+  PRIMARY KEY (`role_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE `exp_roles_role_groups` (
+  `role_id` int(10) unsigned NOT NULL,
+  `group_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`role_id`,`group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 CREATE TABLE `exp_rte_tools` (
   `tool_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(75) DEFAULT NULL,
@@ -1371,7 +1334,7 @@ CREATE TABLE `exp_security_hashes` (
   `hash` varchar(40) NOT NULL,
   PRIMARY KEY (`hash_id`),
   KEY `session_id` (`session_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_sessions` (
@@ -1412,7 +1375,7 @@ CREATE TABLE `exp_snippets` (
   `edit_date` int(10) NOT NULL DEFAULT '0',
   PRIMARY KEY (`snippet_id`),
   KEY `site_id` (`site_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=118 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_specialty_templates` (
@@ -1455,13 +1418,6 @@ CREATE TABLE `exp_stats` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `exp_status_no_access` (
-  `status_id` int(6) unsigned NOT NULL,
-  `member_group` smallint(4) unsigned NOT NULL,
-  PRIMARY KEY (`status_id`,`member_group`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
 CREATE TABLE `exp_statuses` (
   `status_id` int(6) unsigned NOT NULL AUTO_INCREMENT,
   `status` varchar(50) NOT NULL,
@@ -1469,6 +1425,13 @@ CREATE TABLE `exp_statuses` (
   `highlight` varchar(30) NOT NULL,
   PRIMARY KEY (`status_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `exp_statuses_roles` (
+  `role_id` int(10) unsigned NOT NULL,
+  `status_id` int(6) unsigned NOT NULL,
+  PRIMARY KEY (`role_id`,`status_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 CREATE TABLE `exp_template_groups` (
@@ -1484,17 +1447,10 @@ CREATE TABLE `exp_template_groups` (
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `exp_template_member_groups` (
-  `group_id` smallint(4) unsigned NOT NULL,
+CREATE TABLE `exp_template_groups_roles` (
+  `role_id` int(10) NOT NULL,
   `template_group_id` mediumint(5) unsigned NOT NULL,
-  PRIMARY KEY (`group_id`,`template_group_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-CREATE TABLE `exp_template_no_access` (
-  `template_id` int(6) unsigned NOT NULL,
-  `member_group` smallint(4) unsigned NOT NULL,
-  PRIMARY KEY (`template_id`,`member_group`)
+  PRIMARY KEY (`role_id`,`template_group_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -1536,6 +1492,13 @@ CREATE TABLE `exp_templates` (
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 
 
+CREATE TABLE `exp_templates_roles` (
+  `role_id` int(10) unsigned NOT NULL,
+  `template_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`role_id`,`template_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 CREATE TABLE `exp_throttle` (
   `throttle_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ip_address` varchar(45) NOT NULL DEFAULT '0',
@@ -1556,7 +1519,7 @@ CREATE TABLE `exp_update_log` (
   `line` int(10) unsigned DEFAULT NULL,
   `file` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`log_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 CREATE TABLE `exp_update_notices` (
@@ -1566,13 +1529,6 @@ CREATE TABLE `exp_update_notices` (
   `is_header` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`notice_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-
-CREATE TABLE `exp_upload_no_access` (
-  `upload_id` int(6) unsigned NOT NULL,
-  `member_group` smallint(4) unsigned NOT NULL,
-  PRIMARY KEY (`upload_id`,`member_group`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_upload_prefs` (
@@ -1598,6 +1554,13 @@ CREATE TABLE `exp_upload_prefs` (
   PRIMARY KEY (`id`),
   KEY `site_id` (`site_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `exp_upload_prefs_roles` (
+  `role_id` int(10) unsigned NOT NULL,
+  `upload_id` int(4) unsigned NOT NULL,
+  PRIMARY KEY (`role_id`,`upload_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 
@@ -1754,9 +1717,9 @@ ALTER TABLE `exp_channel_form_settings` ENABLE KEYS;
 UNLOCK TABLES;
 
 
-LOCK TABLES `exp_channel_member_groups` WRITE;
-ALTER TABLE `exp_channel_member_groups` DISABLE KEYS;
-ALTER TABLE `exp_channel_member_groups` ENABLE KEYS;
+LOCK TABLES `exp_channel_member_roles` WRITE;
+ALTER TABLE `exp_channel_member_roles` DISABLE KEYS;
+ALTER TABLE `exp_channel_member_roles` ENABLE KEYS;
 UNLOCK TABLES;
 
 
@@ -1847,7 +1810,7 @@ INSERT INTO `exp_config` (`config_id`, `site_id`, `key`, `value`) VALUES
 	(19,1,'new_member_notification','n'),
 	(20,1,'mbr_notification_emails',''),
 	(21,1,'require_terms_of_service','y'),
-	(22,1,'default_member_group','5'),
+	(22,1,'default_primary_role','5'),
 	(23,1,'profile_trigger','member'),
 	(24,1,'member_theme','default'),
 	(27,1,'avatar_url','http://ee2/images/avatars/'),
@@ -2022,6 +1985,9 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_cp_log` WRITE;
 ALTER TABLE `exp_cp_log` DISABLE KEYS;
+INSERT INTO `exp_cp_log` (`id`, `site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES
+	(1,1,0,'0','127.0.0.1',1554228237,'Changed password for "admin" (1)'),
+	(2,1,1,'admin','127.0.0.1',1554228237,'Logged in');
 ALTER TABLE `exp_cp_log` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -2169,20 +2135,62 @@ UNLOCK TABLES;
 LOCK TABLES `exp_global_variables` WRITE;
 ALTER TABLE `exp_global_variables` DISABLE KEYS;
 INSERT INTO `exp_global_variables` (`variable_id`, `site_id`, `variable_name`, `variable_data`, `edit_date`) VALUES
-	(1,1,'.htaccess','deny from all',0),
-	(2,1,'branding_begin','<div id="branding">\n	<div id="branding_logo"></div>\n	<div id="branding_sub">\n		<h1><a href="{site_url}" title="Agile Records Home"></a></h1>',0),
-	(3,1,'branding_end','</div> <!-- ending #branding_sub -->\n</div> <!-- ending #branding -->',0),
-	(4,1,'comment_guidelines','<div id="comment_guidelines">\n	<h6>Comment Guidelines</h6>\n	<p>Basic HTML formatting permitted - <br />\n		<code>&lt;ul&gt;</code>, <code>&lt;li&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;a href&gt;</code>, <code>&lt;blockquote&gt;</code>, <code>&lt;code&gt;</code></p>\n</div>',0),
-	(5,1,'favicon','<!-- Favicon -->\n',0),
-	(6,1,'html_close','</body>\n</html>',0),
-	(7,1,'html_head','<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml">\n<head>\n<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n',0),
-	(8,1,'html_head_end','</head>\n',0),
-	(9,1,'js','<!-- JS -->\n<script src="http://code.jquery.com/jquery-1.12.1.min.js" type="text/javascript"></script>\n<script src="{site_url}themes/site/default/js/onload.js" type="text/javascript"></script>',0),
-	(10,1,'nav_access','<ul id="nav_access">\n	<li><a href="#navigation">Skip to navigation</a></li>\n	<li><a href="#primary_content_wrapper">Skip to content</a></li>\n</ul>',0),
-	(11,1,'rss','<!-- RSS -->\n<link href="{path=news/rss}" rel="alternate" type="application/rss+xml" title="RSS Feed" />',0),
-	(12,1,'rss_links','<h5>RSS Feeds <img src="{site_url}themes/site/default/images/rss12.gif" alt="RSS Icon" class="rssicon" /></h5>\n		<div id="news_rss">\n			<p>Subscribe to our RSS Feeds</p>\n			<ul>\n				<li><a href="{path=\'news/rss\'}">News RSS Feed</a></li>\n				<li><a href="{path=\'news/atom\'}">News ATOM Feed</a></li>\n			</ul>\n		</div>',0),
-	(13,1,'wrapper_begin','<div id="page">\n<div id="content_wrapper">',0),
-	(14,1,'wrapper_close','</div> <!-- ending #content_wrapper -->\n</div> <!-- ending #page -->',0);
+	(1,1,'.htaccess','deny from all',1507320059),
+	(2,1,'branding_begin','<div id="branding">\n	<div id="branding_logo"></div>\n	<div id="branding_sub">\n		<h1><a href="{site_url}" title="Agile Records Home"></a></h1>',1507320059),
+	(3,1,'branding_end','</div> <!-- ending #branding_sub -->\n</div> <!-- ending #branding -->',1507320059),
+	(4,1,'comment_guidelines','<div id="comment_guidelines">\n	<h6>Comment Guidelines</h6>\n	<p>Basic HTML formatting permitted - <br />\n		<code>&lt;ul&gt;</code>, <code>&lt;li&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;a href&gt;</code>, <code>&lt;blockquote&gt;</code>, <code>&lt;code&gt;</code></p>\n</div>',1507320059),
+	(5,1,'favicon','<!-- Favicon -->\n',1507320059),
+	(6,1,'html_close','</body>\n</html>',1507320059),
+	(7,1,'html_head','<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml">\n<head>\n<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n',1507320059),
+	(8,1,'html_head_end','</head>\n',1507320059),
+	(9,1,'js','<!-- JS -->\n<script src="http://code.jquery.com/jquery-1.12.1.min.js" type="text/javascript"></script>\n<script src="{site_url}themes/site/default/js/onload.js" type="text/javascript"></script>',1507320059),
+	(10,1,'nav_access','<ul id="nav_access">\n	<li><a href="#navigation">Skip to navigation</a></li>\n	<li><a href="#primary_content_wrapper">Skip to content</a></li>\n</ul>',1507320059),
+	(11,1,'rss','<!-- RSS -->\n<link href="{path=news/rss}" rel="alternate" type="application/rss+xml" title="RSS Feed" />',1507320059),
+	(12,1,'rss_links','<h5>RSS Feeds <img src="{site_url}themes/site/default/images/rss12.gif" alt="RSS Icon" class="rssicon" /></h5>\n		<div id="news_rss">\n			<p>Subscribe to our RSS Feeds</p>\n			<ul>\n				<li><a href="{path=\'news/rss\'}">News RSS Feed</a></li>\n				<li><a href="{path=\'news/atom\'}">News ATOM Feed</a></li>\n			</ul>\n		</div>',1507320059),
+	(13,1,'wrapper_begin','<div id="page">\n<div id="content_wrapper">',1507320059),
+	(14,1,'wrapper_close','</div> <!-- ending #content_wrapper -->\n</div> <!-- ending #page -->',1507320059),
+	(15,0,'bing_validation_code','<meta name="msvalidate.01" content="72EA15300AE3FDD180FB4F41D863D1E6" />',1554228238),
+	(16,0,'gv_aws_public_key','AKIAJY5MANY6L7TE6HJA',1554228238),
+	(17,0,'gv_linkedin_url','http://www.linkedin.com/company/110946?trk=tyah&trkInfo=tas%3A2gc',1554228238),
+	(18,0,'gv_aws_private_key','2rCJkSBsH3eI6nVhzoP7mpeesvUASdtEtm4WNkH6',1554228238),
+	(19,0,'gv_comment_expired','Commenting for this entry has <b>expired</b>.',1554228238),
+	(20,0,'gv_Sidebar_Sign_Up_Text','Keep up with <strong>2GC activities</strong> and the wider strategy world by signing up for our newsletter.',1554228238),
+	(21,0,'hello','sdfs\n\nlalala\n',1554228238),
+	(22,0,'laughter','hahahahahahah\n',1554228238),
+	(23,0,'gv_static_url','/',1554228238),
+	(24,0,'lv_grid',' ',1554228238),
+	(25,0,'gv_entries_none','There are <b>no</b> entries in this channel.',1554228238),
+	(26,0,'gv_static_url_noslash','http://static.2gc.eu',1554228238),
+	(27,0,'gv_fallback_image','/assets/images/site/iStock_research_76959041_LARGE.jpg',1554228238),
+	(28,0,'gv_twitter_url','https://twitter.com/2GCActiveMgmt',1554228238),
+	(29,0,'gv_HTML_keywords_defaults','balanced scorecard, strategy implementation, performance management, consultant, training, BSC',1554228238),
+	(30,0,'gv_sep','&nbsp;/&nbsp;',1554228238),
+	(31,0,'gv_comment_disabled','Commenting for this entry is <b>disabled</b>.',1554228238),
+	(32,0,'testing','some content',1554228238),
+	(33,0,'gv_comment_ignore','You are ignoring',1554228238),
+	(34,0,'gv_comment_none','There are <b>no</b> comments on this entry.',1554228238),
+	(35,0,'poop','asdfsdfsd\n',1554228238),
+	(36,0,'gv_facebook_url','https://www.facebook.com/2GCActiveManagement',1554228238),
+	(37,1,'bing_validation_code','<meta name="msvalidate.01" content="72EA15300AE3FDD180FB4F41D863D1E6" />',1554228238),
+	(38,1,'gv_aws_public_key','AKIAJY5MANY6L7TE6HJA',1554228238),
+	(39,1,'gv_linkedin_url','http://www.linkedin.com/company/110946?trk=tyah&trkInfo=tas%3A2gc',1554228238),
+	(40,1,'gv_aws_private_key','2rCJkSBsH3eI6nVhzoP7mpeesvUASdtEtm4WNkH6',1554228238),
+	(41,1,'gv_comment_expired','Commenting for this entry has <b>expired</b>.',1554228238),
+	(42,1,'gv_Sidebar_Sign_Up_Text','Keep up with <strong>2GC activities</strong> and the wider strategy world by signing up for our newsletter.',1554228238),
+	(43,1,'hello','sdfs\n\nlalala\n',1554228238),
+	(44,1,'gv_static_url','/',1554228238),
+	(45,1,'gv_entries_none','There are <b>no</b> entries in this channel.',1554228238),
+	(46,1,'gv_static_url_noslash','http://static.2gc.eu',1554228238),
+	(47,1,'gv_fallback_image','/assets/images/site/iStock_research_76959041_LARGE.jpg',1554228238),
+	(48,1,'gv_twitter_url','https://twitter.com/2GCActiveMgmt',1554228238),
+	(49,1,'gv_HTML_keywords_defaults','balanced scorecard, strategy implementation, performance management, consultant, training, BSC',1554228238),
+	(50,1,'gv_sep','&nbsp;/&nbsp;',1554228238),
+	(51,1,'gv_comment_disabled','Commenting for this entry is <b>disabled</b>.',1554228238),
+	(52,1,'testing','some content',1554228238),
+	(53,1,'gv_comment_ignore','You are ignoring',1554228238),
+	(54,1,'gv_comment_none','There are <b>no</b> comments on this entry.',1554228238),
+	(55,1,'poop','asdfsdfsd\n',1554228238),
+	(56,1,'gv_facebook_url','https://www.facebook.com/2GCActiveManagement',1554228238);
 ALTER TABLE `exp_global_variables` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -2211,9 +2219,9 @@ ALTER TABLE `exp_layout_publish` ENABLE KEYS;
 UNLOCK TABLES;
 
 
-LOCK TABLES `exp_layout_publish_member_groups` WRITE;
-ALTER TABLE `exp_layout_publish_member_groups` DISABLE KEYS;
-ALTER TABLE `exp_layout_publish_member_groups` ENABLE KEYS;
+LOCK TABLES `exp_layout_publish_member_roles` WRITE;
+ALTER TABLE `exp_layout_publish_member_roles` DISABLE KEYS;
+ALTER TABLE `exp_layout_publish_member_roles` ENABLE KEYS;
 UNLOCK TABLES;
 
 
@@ -2259,18 +2267,6 @@ ALTER TABLE `exp_member_fields` ENABLE KEYS;
 UNLOCK TABLES;
 
 
-LOCK TABLES `exp_member_groups` WRITE;
-ALTER TABLE `exp_member_groups` DISABLE KEYS;
-INSERT INTO `exp_member_groups` (`group_id`, `site_id`, `menu_set_id`, `group_title`, `group_description`, `is_locked`, `can_view_offline_system`, `can_view_online_system`, `can_access_cp`, `can_access_footer_report_bug`, `can_access_footer_new_ticket`, `can_access_footer_user_guide`, `can_view_homepage_news`, `can_access_files`, `can_access_design`, `can_access_addons`, `can_access_members`, `can_access_sys_prefs`, `can_access_comm`, `can_access_utilities`, `can_access_data`, `can_access_logs`, `can_admin_channels`, `can_admin_design`, `can_delete_members`, `can_admin_mbr_groups`, `can_admin_mbr_templates`, `can_ban_users`, `can_admin_addons`, `can_edit_categories`, `can_delete_categories`, `can_view_other_entries`, `can_edit_other_entries`, `can_assign_post_authors`, `can_delete_self_entries`, `can_delete_all_entries`, `can_view_other_comments`, `can_edit_own_comments`, `can_delete_own_comments`, `can_edit_all_comments`, `can_delete_all_comments`, `can_moderate_comments`, `can_send_cached_email`, `can_email_member_groups`, `can_email_from_profile`, `can_view_profiles`, `can_edit_html_buttons`, `can_delete_self`, `mbr_delete_notify_emails`, `can_post_comments`, `exclude_from_moderation`, `can_search`, `search_flood_control`, `can_send_private_messages`, `prv_msg_send_limit`, `prv_msg_storage_limit`, `can_attach_in_private_messages`, `can_send_bulletins`, `include_in_authorlist`, `include_in_memberlist`, `cp_homepage`, `cp_homepage_channel`, `cp_homepage_custom`, `can_create_entries`, `can_edit_self_entries`, `can_upload_new_files`, `can_edit_files`, `can_delete_files`, `can_upload_new_toolsets`, `can_edit_toolsets`, `can_delete_toolsets`, `can_create_upload_directories`, `can_edit_upload_directories`, `can_delete_upload_directories`, `can_create_channels`, `can_edit_channels`, `can_delete_channels`, `can_create_channel_fields`, `can_edit_channel_fields`, `can_delete_channel_fields`, `can_create_statuses`, `can_delete_statuses`, `can_edit_statuses`, `can_create_categories`, `can_create_member_groups`, `can_delete_member_groups`, `can_edit_member_groups`, `can_create_members`, `can_edit_members`, `can_create_new_templates`, `can_edit_templates`, `can_delete_templates`, `can_create_template_groups`, `can_edit_template_groups`, `can_delete_template_groups`, `can_create_template_partials`, `can_edit_template_partials`, `can_delete_template_partials`, `can_create_template_variables`, `can_delete_template_variables`, `can_edit_template_variables`, `can_access_security_settings`, `can_access_translate`, `can_access_import`, `can_access_sql_manager`, `can_moderate_spam`, `can_manage_consents`) VALUES
-	(1,1,1,'Super Admin','','n','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y',NULL,'n','y','n',0,'y',20,60,'y','y','y','y',NULL,0,NULL,'n','n','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','n','n','n','n','y','y'),
-	(2,1,1,'Banned','','n','n','n','n','n','n','n','y','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n',NULL,'n','n','n',60,'n',20,60,'n','n','n','n',NULL,0,NULL,'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n'),
-	(3,1,1,'Guests','','n','n','y','n','n','n','n','y','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n',NULL,'n','n','n',10,'n',20,60,'n','n','n','y',NULL,0,NULL,'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n'),
-	(4,1,1,'Pending','','n','n','y','n','n','n','n','y','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n',NULL,'n','n','n',10,'n',20,60,'n','n','n','y',NULL,0,NULL,'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n'),
-	(5,1,1,'Members','','n','n','y','n','n','n','n','y','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','y','y','y','y',NULL,'n','n','n',10,'y',20,60,'y','n','n','y',NULL,0,NULL,'n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n');
-ALTER TABLE `exp_member_groups` ENABLE KEYS;
-UNLOCK TABLES;
-
-
 LOCK TABLES `exp_member_news_views` WRITE;
 ALTER TABLE `exp_member_news_views` DISABLE KEYS;
 ALTER TABLE `exp_member_news_views` ENABLE KEYS;
@@ -2285,15 +2281,35 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_members` WRITE;
 ALTER TABLE `exp_members` DISABLE KEYS;
-INSERT INTO `exp_members` (`member_id`, `group_id`, `username`, `screen_name`, `password`, `salt`, `unique_id`, `crypt_key`, `authcode`, `email`, `signature`, `avatar_filename`, `avatar_width`, `avatar_height`, `photo_filename`, `photo_width`, `photo_height`, `sig_img_filename`, `sig_img_width`, `sig_img_height`, `ignore_list`, `private_messages`, `accept_messages`, `last_view_bulletins`, `last_bulletin_date`, `ip_address`, `join_date`, `last_visit`, `last_activity`, `total_entries`, `total_comments`, `total_forum_topics`, `total_forum_posts`, `last_entry_date`, `last_comment_date`, `last_forum_post_date`, `last_email_date`, `in_authorlist`, `accept_admin_email`, `accept_user_email`, `notify_by_default`, `notify_of_pm`, `display_signatures`, `parse_smileys`, `smart_notifications`, `language`, `timezone`, `time_format`, `date_format`, `include_seconds`, `cp_theme`, `profile_theme`, `forum_theme`, `tracker`, `template_size`, `notepad`, `notepad_size`, `bookmarklets`, `quick_links`, `quick_tabs`, `show_sidebar`, `pmember_id`, `rte_enabled`, `rte_toolset_id`, `cp_homepage`, `cp_homepage_channel`, `cp_homepage_custom`) VALUES
-	(1,1,'admin','Admin','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bc62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'kevin.cupp@gmail.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1409242030,0,0,10,0,0,0,1409242030,0,0,0,'n','y','y','y','y','y','y','y','english','America/New_York','12','%n/%j/%Y','n',NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,'',NULL,'n',0,'y',0,NULL,NULL,NULL),
-	(2,1,'robin','Robin Screen','5zaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bz62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'mediacow@localhost',NULL,'procotopus.png',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'4',1,'y',0,0,'127.0.0.1',1465853984,1491259180,1491324114,83,10,7,4,0,1469650137,1487020433,0,'n','y','y','y','y','y','y','y','english','America/New_York','12','%n/%j/%Y','n',NULL,NULL,'Shares',NULL,'28',NULL,'18',NULL,'Query Results|index.php?/cp/utilities/query|1\nOffsite 2|http://test.com|4',NULL,'n',0,'y',0,'entries_edit','{"1":"1","2":"14","3":"8"}',''),
+INSERT INTO `exp_members` (`member_id`, `role_id`, `username`, `screen_name`, `password`, `salt`, `unique_id`, `crypt_key`, `authcode`, `email`, `signature`, `avatar_filename`, `avatar_width`, `avatar_height`, `photo_filename`, `photo_width`, `photo_height`, `sig_img_filename`, `sig_img_width`, `sig_img_height`, `ignore_list`, `private_messages`, `accept_messages`, `last_view_bulletins`, `last_bulletin_date`, `ip_address`, `join_date`, `last_visit`, `last_activity`, `total_entries`, `total_comments`, `total_forum_topics`, `total_forum_posts`, `last_entry_date`, `last_comment_date`, `last_forum_post_date`, `last_email_date`, `in_authorlist`, `accept_admin_email`, `accept_user_email`, `notify_by_default`, `notify_of_pm`, `display_signatures`, `parse_smileys`, `smart_notifications`, `language`, `timezone`, `time_format`, `date_format`, `include_seconds`, `cp_theme`, `profile_theme`, `forum_theme`, `tracker`, `template_size`, `notepad`, `notepad_size`, `bookmarklets`, `quick_links`, `quick_tabs`, `show_sidebar`, `pmember_id`, `rte_enabled`, `rte_toolset_id`, `cp_homepage`, `cp_homepage_channel`, `cp_homepage_custom`) VALUES
+	(1,1,'admin','Admin','$2y$10$qsQy1nR3O9cj6.9GfLO3jefRfJApT5moC9789sY4eJNodwI/PWpxa','','bc62f762437a95f19b722924b85f76bc19fb6430','162e3a013f5785e3471c7c749e02e5d9d67d3076',NULL,'kevin.cupp@gmail.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1409242030,1554228237,1554228237,10,0,0,0,1409242030,0,0,0,'n','y','y','y','y','y','y','y','english','America/New_York','12','%n/%j/%Y','n',NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,'',NULL,'n',0,'y',0,NULL,NULL,NULL),
+	(2,1,'robin','Robin Screen','5zaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bz62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'mediacow@localhost',NULL,'procotopus.png',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'4',1,'y',0,0,'127.0.0.1',1465853984,1491259180,1491324114,83,10,7,4,0,1469650137,1487020433,0,'n','y','y','y','y','y','n','y','english','America/New_York','12','%n/%j/%Y','n',NULL,NULL,'Shares',NULL,'28',NULL,'18',NULL,'Query Results|index.php?/cp/utilities/query|1\nOffsite 2|http://test.com|4',NULL,'n',0,'y',0,'entries_edit','{"1":"1","2":"14","3":"8"}',''),
 	(3,2,'banned1','Banned 1','5aaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','by62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'edit2@localhost',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1484840926,0,0,2,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','english',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,NULL,NULL,'n',0,'y',0,NULL,NULL,NULL),
 	(4,4,'pending1','Pending 1','5daa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bx62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'edit5@localhost',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1484841088,0,0,2,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','english',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,NULL,NULL,'n',0,'y',0,NULL,NULL,NULL),
 	(5,4,'pending2','Pending 2','5eaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bm62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'edit6@localhost',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1485306436,0,0,0,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','english',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,NULL,NULL,'n',0,'y',0,NULL,NULL,NULL),
 	(6,5,'member1','Member 1','5faa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bn62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'editor7@localhost',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1485306584,0,0,0,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','english',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,NULL,NULL,'n',0,'y',0,NULL,NULL,NULL),
 	(7,5,'member2','Member 2','5gaa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bo62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'editor8@localhost',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1485307720,0,0,0,0,0,0,0,0,0,0,'n','y','y','y','y','y','y','y','english',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'28',NULL,'18',NULL,NULL,NULL,'n',0,'y',0,NULL,NULL,NULL);
 ALTER TABLE `exp_members` ENABLE KEYS;
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_members_role_groups` WRITE;
+ALTER TABLE `exp_members_role_groups` DISABLE KEYS;
+ALTER TABLE `exp_members_role_groups` ENABLE KEYS;
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_members_roles` WRITE;
+ALTER TABLE `exp_members_roles` DISABLE KEYS;
+INSERT INTO `exp_members_roles` (`member_id`, `role_id`) VALUES
+	(1,1),
+	(2,1),
+	(3,2),
+	(4,4),
+	(5,4),
+	(6,5),
+	(7,5);
+ALTER TABLE `exp_members_roles` ENABLE KEYS;
 UNLOCK TABLES;
 
 
@@ -2339,9 +2355,9 @@ ALTER TABLE `exp_message_listed` ENABLE KEYS;
 UNLOCK TABLES;
 
 
-LOCK TABLES `exp_module_member_groups` WRITE;
-ALTER TABLE `exp_module_member_groups` DISABLE KEYS;
-ALTER TABLE `exp_module_member_groups` ENABLE KEYS;
+LOCK TABLES `exp_module_member_roles` WRITE;
+ALTER TABLE `exp_module_member_roles` DISABLE KEYS;
+ALTER TABLE `exp_module_member_roles` ENABLE KEYS;
 UNLOCK TABLES;
 
 
@@ -2373,6 +2389,113 @@ ALTER TABLE `exp_password_lockout` ENABLE KEYS;
 UNLOCK TABLES;
 
 
+LOCK TABLES `exp_permissions` WRITE;
+ALTER TABLE `exp_permissions` DISABLE KEYS;
+INSERT INTO `exp_permissions` (`permission_id`, `role_id`, `site_id`, `permission`) VALUES
+	(21,1,1,'can_admin_mbr_templates'),
+	(26,1,1,'can_view_other_entries'),
+	(27,1,1,'can_edit_other_entries'),
+	(28,1,1,'can_assign_post_authors'),
+	(29,1,1,'can_delete_self_entries'),
+	(30,1,1,'can_delete_all_entries'),
+	(31,1,1,'can_view_other_comments'),
+	(37,1,1,'can_send_cached_email'),
+	(38,1,1,'can_email_roles'),
+	(70,1,1,'can_create_new_templates'),
+	(71,1,1,'can_edit_templates'),
+	(72,1,1,'can_delete_templates'),
+	(82,1,1,'can_moderate_spam'),
+	(84,2,1,'can_view_homepage_news'),
+	(85,3,1,'can_view_online_system'),
+	(86,3,1,'can_view_homepage_news'),
+	(87,4,1,'can_view_online_system'),
+	(88,4,1,'can_view_homepage_news'),
+	(89,5,1,'can_view_online_system'),
+	(90,5,1,'can_view_homepage_news'),
+	(91,5,1,'can_email_from_profile'),
+	(92,5,1,'can_view_profiles'),
+	(93,5,1,'can_edit_html_buttons'),
+	(94,5,1,'can_delete_self'),
+	(95,5,1,'can_send_private_messages'),
+	(96,5,1,'can_attach_in_private_messages'),
+	(97,1,1,''),
+	(98,1,1,''),
+	(99,1,1,'can_view_online_system'),
+	(100,1,1,'can_view_offline_system'),
+	(101,1,1,'can_moderate_comments'),
+	(102,1,1,'can_edit_own_comments'),
+	(103,1,1,'can_delete_own_comments'),
+	(104,1,1,'can_edit_all_comments'),
+	(105,1,1,'can_delete_all_comments'),
+	(106,1,1,'can_access_footer_report_bug'),
+	(107,1,1,'can_access_footer_new_ticket'),
+	(108,1,1,'can_access_footer_user_guide'),
+	(109,1,1,'can_create_channels'),
+	(110,1,1,'can_edit_channels'),
+	(111,1,1,'can_delete_channels'),
+	(112,1,1,'can_create_channel_fields'),
+	(113,1,1,'can_edit_channel_fields'),
+	(114,1,1,'can_delete_channel_fields'),
+	(115,1,1,'can_create_categories'),
+	(116,1,1,'can_edit_categories'),
+	(117,1,1,'can_delete_categories'),
+	(118,1,1,'can_create_statuses'),
+	(119,1,1,'can_edit_statuses'),
+	(120,1,1,'can_delete_statuses'),
+	(121,1,1,'can_create_upload_directories'),
+	(122,1,1,'can_edit_upload_directories'),
+	(123,1,1,'can_delete_upload_directories'),
+	(124,1,1,'can_upload_new_files'),
+	(125,1,1,'can_edit_files'),
+	(126,1,1,'can_delete_files'),
+	(127,1,1,'can_create_roles'),
+	(128,1,1,'can_edit_roles'),
+	(129,1,1,'can_delete_roles'),
+	(130,1,1,'can_create_members'),
+	(131,1,1,'can_edit_members'),
+	(132,1,1,'can_delete_members'),
+	(133,1,1,'can_ban_users'),
+	(134,1,1,'can_email_from_profile'),
+	(135,1,1,'can_edit_html_buttons'),
+	(136,1,1,'can_create_template_groups'),
+	(137,1,1,'can_edit_template_groups'),
+	(138,1,1,'can_delete_template_groups'),
+	(139,1,1,'can_create_template_partials'),
+	(140,1,1,'can_edit_template_partials'),
+	(141,1,1,'can_delete_template_partials'),
+	(142,1,1,'can_create_template_variables'),
+	(143,1,1,'can_edit_template_variables'),
+	(144,1,1,'can_delete_template_variables'),
+	(145,1,1,'can_upload_new_toolsets'),
+	(146,1,1,'can_edit_toolsets'),
+	(147,1,1,'can_delete_toolsets'),
+	(148,1,1,'can_access_comm'),
+	(149,1,1,'can_email_roles'),
+	(150,1,1,'can_send_cached_email'),
+	(151,1,1,'can_access_data'),
+	(152,1,1,'can_view_profiles'),
+	(153,1,1,'can_delete_self'),
+	(154,1,1,'can_send_private_messages'),
+	(155,1,1,'can_attach_in_private_messages'),
+	(156,1,1,'can_send_bulletins'),
+	(157,1,1,'can_access_cp'),
+	(158,1,1,'can_view_homepage_news'),
+	(159,1,1,'can_admin_channels'),
+	(160,1,1,'can_access_files'),
+	(161,1,1,'can_access_members'),
+	(162,1,1,'can_admin_roles'),
+	(163,1,1,'can_access_design'),
+	(164,1,1,'can_admin_design'),
+	(165,1,1,'can_access_addons'),
+	(166,1,1,'can_admin_addons'),
+	(167,1,1,'can_access_utilities'),
+	(168,1,1,'can_access_logs'),
+	(169,1,1,'can_access_sys_prefs'),
+	(170,1,1,'can_manage_consents');
+ALTER TABLE `exp_permissions` ENABLE KEYS;
+UNLOCK TABLES;
+
+
 LOCK TABLES `exp_plugins` WRITE;
 ALTER TABLE `exp_plugins` DISABLE KEYS;
 ALTER TABLE `exp_plugins` ENABLE KEYS;
@@ -2400,6 +2523,42 @@ UNLOCK TABLES;
 LOCK TABLES `exp_revision_tracker` WRITE;
 ALTER TABLE `exp_revision_tracker` DISABLE KEYS;
 ALTER TABLE `exp_revision_tracker` ENABLE KEYS;
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_role_groups` WRITE;
+ALTER TABLE `exp_role_groups` DISABLE KEYS;
+ALTER TABLE `exp_role_groups` ENABLE KEYS;
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_role_settings` WRITE;
+ALTER TABLE `exp_role_settings` DISABLE KEYS;
+INSERT INTO `exp_role_settings` (`id`, `role_id`, `site_id`, `menu_set_id`, `is_locked`, `mbr_delete_notify_emails`, `exclude_from_moderation`, `search_flood_control`, `prv_msg_send_limit`, `prv_msg_storage_limit`, `include_in_authorlist`, `include_in_memberlist`, `cp_homepage`, `cp_homepage_channel`, `cp_homepage_custom`) VALUES
+	(1,1,1,0,'n','','y',0,20,60,'y','y','overview',1,''),
+	(2,2,1,1,'n',NULL,'n',60,20,60,'n','n',NULL,0,NULL),
+	(3,3,1,1,'n',NULL,'n',10,20,60,'n','y',NULL,0,NULL),
+	(4,4,1,1,'n',NULL,'n',10,20,60,'n','y',NULL,0,NULL),
+	(5,5,1,1,'n',NULL,'n',10,20,60,'n','y',NULL,0,NULL);
+ALTER TABLE `exp_role_settings` ENABLE KEYS;
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_roles` WRITE;
+ALTER TABLE `exp_roles` DISABLE KEYS;
+INSERT INTO `exp_roles` (`role_id`, `name`, `short_name`, `description`, `is_locked`) VALUES
+	(1,'Super Admin','super_admin','','n'),
+	(2,'Banned','banned','','n'),
+	(3,'Guests','guests','','n'),
+	(4,'Pending','pending','','n'),
+	(5,'Members','members','','n');
+ALTER TABLE `exp_roles` ENABLE KEYS;
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_roles_role_groups` WRITE;
+ALTER TABLE `exp_roles_role_groups` DISABLE KEYS;
+ALTER TABLE `exp_roles_role_groups` ENABLE KEYS;
 UNLOCK TABLES;
 
 
@@ -2442,12 +2601,16 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_security_hashes` WRITE;
 ALTER TABLE `exp_security_hashes` DISABLE KEYS;
+INSERT INTO `exp_security_hashes` (`hash_id`, `date`, `session_id`, `hash`) VALUES
+	(1,1554228237,'74023f314bc1319b2cc0ebc20e1ab828847d27e2','5b0ff3f779067bb6e1eb7ef3c36044f1ae7b3b72');
 ALTER TABLE `exp_security_hashes` ENABLE KEYS;
 UNLOCK TABLES;
 
 
 LOCK TABLES `exp_sessions` WRITE;
 ALTER TABLE `exp_sessions` DISABLE KEYS;
+INSERT INTO `exp_sessions` (`session_id`, `member_id`, `admin_sess`, `ip_address`, `user_agent`, `fingerprint`, `login_state`, `sess_start`, `auth_timeout`, `last_activity`, `can_debug`) VALUES
+	('74023f314bc1319b2cc0ebc20e1ab828847d27e2',1,1,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1 Safari/605.1.15','e1856dabb829c1c4e6e75f6eaa388abf',NULL,1554228237,0,1554228300,'0');
 ALTER TABLE `exp_sessions` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -2455,7 +2618,7 @@ UNLOCK TABLES;
 LOCK TABLES `exp_sites` WRITE;
 ALTER TABLE `exp_sites` DISABLE KEYS;
 INSERT INTO `exp_sites` (`site_id`, `site_label`, `site_name`, `site_description`, `site_bootstrap_checksums`, `site_pages`) VALUES
-	(1,'EE3','default_site',NULL,'YToxOntzOjU2OiIvaG9tZS9xdWlubmNoci9Qcm9qZWN0cy9hcmNoaXZlL0RvbnRGdWNrVGhpc1VwL2luZGV4LnBocCI7czozMjoiNjY4NGIxNzQ1YjNjZTRmMWQ2NDYyMzI4NDMwOWQwOGIiO30=','');
+	(1,'EE3','default_site',NULL,'YToyOntzOjUyOiIvVXNlcnMvc2V0aC9FbGxpc0xhYi9FeHByZXNzaW9uRW5naW5lLUZPU1MvaW5kZXgucGhwIjtzOjMyOiI1NDBkZTAyMzE0NmRlYjkwZmE1ODFiZGRlZGE1Y2U2ZCI7czo3OiJlbWFpbGVkIjthOjA6e319','');
 ALTER TABLE `exp_sites` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -2463,19 +2626,123 @@ UNLOCK TABLES;
 LOCK TABLES `exp_snippets` WRITE;
 ALTER TABLE `exp_snippets` DISABLE KEYS;
 INSERT INTO `exp_snippets` (`snippet_id`, `site_id`, `snippet_name`, `snippet_contents`, `edit_date`) VALUES
-	(1,1,'.htaccess','deny from all',0),
-	(2,1,'global_edit_this','{if author_id == logged_in_member_id OR logged_in_group_id == "1"}&bull; <a href="{cp_url}?S={cp_session_id}&amp;D=cp&amp;C=content_publish&amp;M=entry_form&amp;channel_id={channel_id}&amp;entry_id={entry_id}">Edit This</a>{/if}',0),
-	(3,1,'global_featured_band','<div id="featured_band">\n    <h2>Featured Band</h2>\n    {exp:channel:entries channel="news" limit="1" status="featured" rdf="off" disable="trackbacks" category="2" dynamic="no"}\n    <div class="image">\n        <h4><a href="{comment_url_title_auto_path}"><span>{title}</span></a></h4>\n        {if news_image}\n			<img src="{news_image}" alt="{title}"/>\n		{/if}\n    </div>\n    {news_body}\n    {/exp:channel:entries}\n</div>',0),
-	(4,1,'global_featured_welcome','<div id="welcome">\n    {exp:channel:entries channel="about" url_title="about_the_label" dynamic="no"  limit="1" disable="pagination|member_date|categories|category_fields|trackbacks"}\n    {if about_image != ""}\n        <img src="{about_image}" alt="map" width="210" height="170" />\n    {/if}\n    {about_body}\n    <a href="{comment_url_title_auto_path}">Read more about us</a>\n    {/exp:channel:entries}\n</div>',0),
-	(5,1,'global_footer','<div id="siteinfo">\n    <p>Copyright @ {exp:channel:entries limit="1" sort="asc" disable="custom_fields|comments|pagination|categories"}\n\n{if "{entry_date format=\'%Y\'}" != "{current_time format=\'%Y\'}"}{entry_date format="%Y"} - {/if}{/exp:channel:entries} {current_time format="%Y"}, powered by <a href="http://expressionengine.com">ExpressionEngine</a></p>\n    <p class="logo"><a href="#">Agile Records</a></p>\n	{if group_id == "1"}<p>{total_queries} queries in {elapsed_time} seconds</p>{/if}\n</div> <!-- ending #siteinfo -->',0),
-	(6,1,'global_strict_urls','<!-- Strict URLS: https://ellislab.com/expressionengine/user-guide/cp/templates/global_template_preferences.html -->\n{if segment_2 != \'\'}\n  {redirect="404"}\n{/if}',0),
-	(7,1,'global_stylesheets','<!-- CSS -->\n<!-- This makes use of the stylesheet= parameter, which automatically appends a time stamp to allow for the browser\'s caching mechanism to cache the stylesheet.  This allows for faster page-loads times.\nStylesheet linking is documented at https://ellislab.com/expressionengine/user-guide/templates/globals/stylesheet.html -->\n    <link href="{stylesheet=global_embeds/site_css}" type="text/css" rel="stylesheet" media="screen" />\n    <!--[if IE 6]><link href="{stylesheet=global_embeds/css_screen-ie6}" type="text/css" rel="stylesheet" media="screen" /><![endif]-->\n    <!--[if IE 7]><link href="{stylesheet=global_embeds/css_screen-ie7}" type="text/css" rel="stylesheet" media="screen" /><![endif]-->\n',0),
-	(8,1,'global_top_member','<div id="member">\n\n	<!-- Utilized member conditionals: https://ellislab.com/expressionengine/user-guide/templates/globals/conditionals.html-->\n            <h4>Hello{if logged_in} {screen_name}{/if}!</h4>\n            {if is_core == FALSE}\n			<ul>\n				{if logged_in}\n                <li><a href="{path=\'member/profile\'}">Your Home</a></li>\n                <li><a href="{path=LOGOUT}">Log out</a></li>\n				{/if}\n				{if logged_out}\n				<li><a href="{path=\'member/register\'}">Register</a></li>\n				<li><a href="{path=\'member/login\'}">Log in</a></li>\n				{/if}\n            </ul>\n			{/if}\n        </div> <!-- ending #member -->',0),
-	(9,1,'global_top_search','<!-- Simple Search Form: https://ellislab.com/expressionengine/user-guide/modules/search/index.html#simple \n\nThe parameters here help to identify what templates to use and where to search:\n\nResults page - result_page: https://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_result_page\n\nNo Results found: no_result_page: https://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_no_result_page\n\nsearch_in - search in titles? titles and entries? titles, entries?  https://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_search_in-->\n\n{exp:search:simple_form channel="news" result_page="search/results" no_result_page="search/no_results" search_in="everywhere"}\n<fieldset>\n    <label for="search">Search:</label>\n    <input type="text" name="keywords" id="search" value=""  />\n	<input type="image" id="submit" name="submit" class="submit" src="{site_url}themes/site/default/images/spacer.gif" />\n</fieldset>\n{/exp:search:simple_form}',0),
-	(10,1,'news_calendar','<h5>Calendar</h5>\n		<div id="news_calendar">\n			\n			<!-- Channel Calendar Tag: https://ellislab.com/expressionengine/user-guide/modules/channel/calendar.html -->\n			\n			{exp:channel:calendar switch="calendarToday|calendarCell" channel="news"}\n			<table class="calendarBG" border="0" cellpadding="6" cellspacing="1" summary="My Calendar">\n			<tr class="calendarHeader">\n			<th><div class="calendarMonthLinks"><a href="{previous_path=\'news/archives\'}">&lt;&lt;</a></div></th>\n			<th colspan="5">{date format="%F %Y"}</th>\n			<th><div class="calendarMonthLinks"><a class="calendarMonthLinks" href="{next_path=\'news/archives\'}">&gt;&gt;</a></div></th>\n			</tr>\n			<tr>\n			{calendar_heading}\n			<td class="calendarDayHeading">{lang:weekday_abrev}</td>\n			{/calendar_heading}\n			</tr>\n\n			{calendar_rows }\n			{row_start}<tr>{/row_start}\n\n			{if entries}\n			<td class=\'{switch}\' align=\'center\'><a href="{day_path=\'news/archives\'}">{day_number}</a></td>\n			{/if}\n\n			{if not_entries}\n			<td class=\'{switch}\' align=\'center\'>{day_number}</td>\n			{/if}\n\n			{if blank}\n			<td class=\'calendarBlank\'>{day_number}</td>\n			{/if}\n\n			{row_end}</tr>{/row_end}\n			{/calendar_rows}\n			</table>\n			{/exp:channel:calendar}\n		</div> <!-- ending #news_calendar -->',0),
-	(11,1,'news_categories','<div id="sidebar_category_archives">\n      		<h5>Categories</h5>\n  			<ul id="categories">\n  				<!-- Weblog Categories tag: https://ellislab.com/expressionengine/user-guide/modules/weblog/categories.html -->\n				\n  				{exp:channel:categories channel="news" style="linear"}\n  				<li><a href="{path=\'news/archives\'}">{category_name}</a></li>\n  				{/exp:channel:categories}\n  			</ul>\n  		</div>',0),
-	(12,1,'news_month_archives','<div id="sidebar_date_archives">\n    	    <h5>Date Archives</h5>\n    		<ul id="months">\n    			{!-- Archive Month Link Tags: https://ellislab.com/expressionengine/user-guide/modules/weblog/archive_month_links.html --}\n		\n    			{exp:channel:month_links channel="news" limit="50"}\n    			<li><a href="{path=\'news/archives\'}">{month}, {year}</a></li>\n    			{/exp:channel:month_links}\n    		</ul>\n    	</div>',0),
-	(13,1,'news_popular','<h5>Popular News Items</h5>\n\n<!-- Channel Entries tag ordered by track views for "popular posts".  See Tracking Entry Views at https://ellislab.com/expressionengine/user-guide/modules/weblog/entry_tracking.html -->\n\n{exp:channel:entries channel="news" limit="4" disable="categories|custom_fields|category_fields|trackbacks|pagination|member_data" dynamic="no"}\n	{if count == "1"}<ul>{/if}\n		<li><a href="{comment_url_title_auto_path}">{title}</a> </li>\n	{if count == total_results}</ul>{/if}\n{/exp:channel:entries}',0);
+	(1,1,'.htaccess','deny from all',1532019189),
+	(2,1,'global_edit_this','{if author_id == logged_in_member_id OR logged_in_group_id == "1"}&bull; <a href="{cp_url}?S={cp_session_id}&amp;D=cp&amp;C=content_publish&amp;M=entry_form&amp;channel_id={channel_id}&amp;entry_id={entry_id}">Edit This</a>{/if}',1532019189),
+	(3,1,'global_featured_band','<div id="featured_band">\n    <h2>Featured Band</h2>\n    {exp:channel:entries channel="news" limit="1" status="featured" rdf="off" disable="trackbacks" category="2" dynamic="no"}\n    <div class="image">\n        <h4><a href="{comment_url_title_auto_path}"><span>{title}</span></a></h4>\n        {if news_image}\n			<img src="{news_image}" alt="{title}"/>\n		{/if}\n    </div>\n    {news_body}\n    {/exp:channel:entries}\n</div>',1532019189),
+	(4,1,'global_featured_welcome','<div id="welcome">\n    {exp:channel:entries channel="about" url_title="about_the_label" dynamic="no"  limit="1" disable="pagination|member_date|categories|category_fields|trackbacks"}\n    {if about_image != ""}\n        <img src="{about_image}" alt="map" width="210" height="170" />\n    {/if}\n    {about_body}\n    <a href="{comment_url_title_auto_path}">Read more about us</a>\n    {/exp:channel:entries}\n</div>',1532019189),
+	(5,1,'global_footer','<div id="siteinfo">\n    <p>Copyright @ {exp:channel:entries limit="1" sort="asc" disable="custom_fields|comments|pagination|categories"}\n\n{if "{entry_date format=\'%Y\'}" != "{current_time format=\'%Y\'}"}{entry_date format="%Y"} - {/if}{/exp:channel:entries} {current_time format="%Y"}, powered by <a href="http://expressionengine.com">ExpressionEngine</a></p>\n    <p class="logo"><a href="#">Agile Records</a></p>\n	{if group_id == "1"}<p>{total_queries} queries in {elapsed_time} seconds</p>{/if}\n</div> <!-- ending #siteinfo -->',1532019189),
+	(6,1,'global_strict_urls','<!-- Strict URLS: https://ellislab.com/expressionengine/user-guide/cp/templates/global_template_preferences.html -->\n{if segment_2 != \'\'}\n  {redirect="404"}\n{/if}',1532019189),
+	(7,1,'global_stylesheets','<!-- CSS -->\n<!-- This makes use of the stylesheet= parameter, which automatically appends a time stamp to allow for the browser\'s caching mechanism to cache the stylesheet.  This allows for faster page-loads times.\nStylesheet linking is documented at https://ellislab.com/expressionengine/user-guide/templates/globals/stylesheet.html -->\n    <link href="{stylesheet=global_embeds/site_css}" type="text/css" rel="stylesheet" media="screen" />\n    <!--[if IE 6]><link href="{stylesheet=global_embeds/css_screen-ie6}" type="text/css" rel="stylesheet" media="screen" /><![endif]-->\n    <!--[if IE 7]><link href="{stylesheet=global_embeds/css_screen-ie7}" type="text/css" rel="stylesheet" media="screen" /><![endif]-->\n',1532019189),
+	(8,1,'global_top_member','<div id="member">\n\n	<!-- Utilized member conditionals: https://ellislab.com/expressionengine/user-guide/templates/globals/conditionals.html-->\n            <h4>Hello{if logged_in} {screen_name}{/if}!</h4>\n            {if is_core == FALSE}\n			<ul>\n				{if logged_in}\n                <li><a href="{path=\'member/profile\'}">Your Home</a></li>\n                <li><a href="{path=LOGOUT}">Log out</a></li>\n				{/if}\n				{if logged_out}\n				<li><a href="{path=\'member/register\'}">Register</a></li>\n				<li><a href="{path=\'member/login\'}">Log in</a></li>\n				{/if}\n            </ul>\n			{/if}\n        </div> <!-- ending #member -->',1532019189),
+	(9,1,'global_top_search','<!-- Simple Search Form: https://ellislab.com/expressionengine/user-guide/modules/search/index.html#simple \n\nThe parameters here help to identify what templates to use and where to search:\n\nResults page - result_page: https://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_result_page\n\nNo Results found: no_result_page: https://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_no_result_page\n\nsearch_in - search in titles? titles and entries? titles, entries?  https://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_search_in-->\n\n{exp:search:simple_form channel="news" result_page="search/results" no_result_page="search/no_results" search_in="everywhere"}\n<fieldset>\n    <label for="search">Search:</label>\n    <input type="text" name="keywords" id="search" value=""  />\n	<input type="image" id="submit" name="submit" class="submit" src="{site_url}themes/site/default/images/spacer.gif" />\n</fieldset>\n{/exp:search:simple_form}',1532019189),
+	(10,1,'news_calendar','<h5>Calendar</h5>\n		<div id="news_calendar">\n			\n			<!-- Channel Calendar Tag: https://ellislab.com/expressionengine/user-guide/modules/channel/calendar.html -->\n			\n			{exp:channel:calendar switch="calendarToday|calendarCell" channel="news"}\n			<table class="calendarBG" border="0" cellpadding="6" cellspacing="1" summary="My Calendar">\n			<tr class="calendarHeader">\n			<th><div class="calendarMonthLinks"><a href="{previous_path=\'news/archives\'}">&lt;&lt;</a></div></th>\n			<th colspan="5">{date format="%F %Y"}</th>\n			<th><div class="calendarMonthLinks"><a class="calendarMonthLinks" href="{next_path=\'news/archives\'}">&gt;&gt;</a></div></th>\n			</tr>\n			<tr>\n			{calendar_heading}\n			<td class="calendarDayHeading">{lang:weekday_abrev}</td>\n			{/calendar_heading}\n			</tr>\n\n			{calendar_rows }\n			{row_start}<tr>{/row_start}\n\n			{if entries}\n			<td class=\'{switch}\' align=\'center\'><a href="{day_path=\'news/archives\'}">{day_number}</a></td>\n			{/if}\n\n			{if not_entries}\n			<td class=\'{switch}\' align=\'center\'>{day_number}</td>\n			{/if}\n\n			{if blank}\n			<td class=\'calendarBlank\'>{day_number}</td>\n			{/if}\n\n			{row_end}</tr>{/row_end}\n			{/calendar_rows}\n			</table>\n			{/exp:channel:calendar}\n		</div> <!-- ending #news_calendar -->',1532019189),
+	(11,1,'news_categories','<div id="sidebar_category_archives">\n      		<h5>Categories</h5>\n  			<ul id="categories">\n  				<!-- Weblog Categories tag: https://ellislab.com/expressionengine/user-guide/modules/weblog/categories.html -->\n				\n  				{exp:channel:categories channel="news" style="linear"}\n  				<li><a href="{path=\'news/archives\'}">{category_name}</a></li>\n  				{/exp:channel:categories}\n  			</ul>\n  		</div>',1532019189),
+	(12,1,'news_month_archives','<div id="sidebar_date_archives">\n    	    <h5>Date Archives</h5>\n    		<ul id="months">\n    			{!-- Archive Month Link Tags: https://ellislab.com/expressionengine/user-guide/modules/weblog/archive_month_links.html --}\n		\n    			{exp:channel:month_links channel="news" limit="50"}\n    			<li><a href="{path=\'news/archives\'}">{month}, {year}</a></li>\n    			{/exp:channel:month_links}\n    		</ul>\n    	</div>',1532019189),
+	(13,1,'news_popular','<h5>Popular News Items</h5>\n\n<!-- Channel Entries tag ordered by track views for "popular posts".  See Tracking Entry Views at https://ellislab.com/expressionengine/user-guide/modules/weblog/entry_tracking.html -->\n\n{exp:channel:entries channel="news" limit="4" disable="categories|custom_fields|category_fields|trackbacks|pagination|member_data" dynamic="no"}\n	{if count == "1"}<ul>{/if}\n		<li><a href="{comment_url_title_auto_path}">{title}</a> </li>\n	{if count == total_results}</ul>{/if}\n{/exp:channel:entries}',1532019189),
+	(14,0,'sn_beta_redirect','{!-- {if ! logged_in}{redirect="/" status_code="307"}{/if} --}\n',1554228210),
+	(15,0,'_sn_resources_quicklinks_V9','<h4 class="heading-primary">Resource Quick Links</h4>\n{exp:category_construct:categories group_id="1"}\n<a class="btn btn-borders btn-default r-small {if construct:cat_url_title == segment_2}focus{/if} mr-xs mb-sm" href="{path=\'resources/{construct:cat_url_title}\'}">{construct:cat_name}</a>\n{/exp:category_construct:categories}\n',1554228210),
+	(16,0,'CAR-CAS-services-list','{exp:channel:entries site="UnityBPO" channel="service_segments" entry_id="143"}\n	<div class="segment_box">\n        <h4>{segment_name}</h4>\n        {segment_description_car}\n	</div>\n{/exp:channel:entries}\n\n<ul>\n{exp:channel:entries site="UnityBPO" channel="services" category_group="3" category="19" dynamic="no" sort=\'asc\' orderby="service_name"}\n        <li>{service_name}</li>\n{/exp:channel:entries}\n</ul>',1554228210),
+	(17,0,'TP_Lego_reviews_468x60','<!-- TP_Lego_reviews_468x60 -->\n<div id=\'div-gpt-ad-1417781056636-0\' style=\'width:468px; height:60px;\'>\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() { googletag.display(\'div-gpt-ad-1417781056636-0\'); });\n</script>\n</div>',1554228210),
+	(18,0,'CAR-CPS-services-list','{exp:channel:entries site="UnityBPO" channel="service_segments" entry_id="145"}\n	<div class="segment_box">\n        <h4>{segment_name}</h4>\n        {segment_description_car}\n	</div>\n{/exp:channel:entries}\n\n<ul>\n{exp:channel:entries site="UnityBPO" channel="services" category_group="3" category="45" dynamic="no" sort=\'asc\' orderby="service_name"}\n        <li>{service_name}</li>\n{/exp:channel:entries}\n</ul>',1554228210),
+	(19,0,'test-thest','wfsdfsdsd',1554228210),
+	(20,0,'TP_Lego_challenge_468x60','<!-- TP_Lego_challenge_468x60 -->\n<div id=\'div-gpt-ad-1417780805929-0\' style=\'width:468px; height:60px;\'>\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() { googletag.display(\'div-gpt-ad-1417780805929-0\'); });\n</script>\n</div>',1554228210),
+	(21,0,'_sn_resources_topiclinks_V9','<h4 class="heading-primary">Topic Quick Links</h4>\n{exp:category_construct:categories group_id="2"}\n<a class="btn btn-borders btn-default r-small {if construct:cat_url_title == segment_2}focus{/if} mr-xs mb-sm" href="{path=\'resources/{construct:cat_url_title}\'}">{construct:cat_name}</a>{/exp:category_construct:categories}\n',1554228210),
+	(22,0,'snp-page-nav-pronetwork','<ul class="page-nav">\n	{exp:channel:prev_entry channel=\'community_pronet\'}\n		<li class="move-left"><a href="{path=\'pro-network/member\'}" title="View {title}"><span class="nav-word">Before</span><span class="nav-arrow">&lsaquo;</span></a></li>\n	{/exp:channel:prev_entry}\n	{exp:channel:next_entry channel=\'community_pronet\'}\n		<li class="move-right"><a href="{path=\'pro-network/member\'}" title="View {title}"><span class="nav-word">Next</span><span class="nav-arrow">&rsaquo;</span></a></li>\n	{/exp:channel:next_entry}\n</ul>',1554228210),
+	(23,0,'TP_Lego_reviews_468x60_header','<script type=\'text/javascript\'>\nvar googletag = googletag || {};\ngoogletag.cmd = googletag.cmd || [];\n(function() {\nvar gads = document.createElement(\'script\');\ngads.async = true;\ngads.type = \'text/javascript\';\nvar useSSL = \'https:\' == document.location.protocol;\ngads.src = (useSSL ? \'https:\' : \'http:\') + \n\'//www.googletagservices.com/tag/js/gpt.js\';\nvar node = document.getElementsByTagName(\'script\')[0];\nnode.parentNode.insertBefore(gads, node);\n})();\n</script>\n\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() {\ngoogletag.defineSlot(\'/1581346/TP_Lego_reviews_468x60\', [468, 60], \'div-gpt-ad-1417781056636-0\').addService(googletag.pubads());\ngoogletag.pubads().enableSingleRequest();\ngoogletag.enableServices();\n});\n</script>',1554228210),
+	(24,0,'_sn_aside_social_icons_and_signup','<!-- Aside - Social Icons: Start -->\n<h4>Follow Us</h4>\n<div class="social-icons">\n	<ul class="social-icons">\n		<li class="social-icons-facebook"><a href="{gv_facebook_url}" target="_blank"><i class="fa fa-facebook" title="Follow us on Facebook"></i><span class="social-label">Follow us on Facebook</span></a></li>\n		<li class="social-icons-twitter"><a href="{gv_twitter_url}" target="_blank"><i class="fa fa-twitter" title="Follow us on Twitter"></i><span class="social-label"><span class="hidden">Follow us on Twitter</span></a></li>\n		<li class="social-icons-linkedin"><a href="{gv_linkedin_url}" target="_blank"><i class="fa fa-linkedin" title="Follow us on LinkedIn"></i><span class="social-label"><span class="hidden">Follow us on LinkedIn</span></a></li>\n	</ul>\n</div>\n	<div class="newsletter">\n	<h4 class="">Newsletter</h4>\n	<p>{gv_Sidebar_Sign_Up_Text}</p>\n	<a href="{path=\'contact-us\'}" class="btn btn-lg btn-tertiary">Subscribe</a>\n</div>\n<!-- Aside - Social Icons: End -->',1554228210),
+	(25,0,'eight_hot_products','yes',1554228210),
+	(26,0,'tw-promo-banner','<style type="text/css">\n    @font-face {\n    font-family: \'source_sans_probold\';\n    src: url(\'/assets/fonts/sourcesanspro-bold.eot\');\n    src: url(\'/assets/fonts/sourcesanspro-bold.eot?#iefix\') format(\'embedded-opentype\'),\n         url(\'/assets/fonts/sourcesanspro-bold.woff2\') format(\'woff2\'),\n         url(\'/assets/fonts/sourcesanspro-bold.woff\') format(\'woff\'),\n         url(\'/assets/fonts/sourcesanspro-bold.ttf\') format(\'truetype\'),\n         url(\'/assets/fonts/sourcesanspro-bold.svg#source_sans_probold\') format(\'svg\');\n    font-weight: normal;\n    font-style: normal;\n    }\n\n    #tw-promo {background:#005297; width: 940px;; padding: 10px; clear: both; margin: 10px 0px;}\n    #tw-promo img {margin-right: 30px; float: left}\n    #tw-promo p {float: left; font-family: \'source_sans_probold\'!important; font-size: 22px; color: #fff; width: 320px; line-height: 19px;margin:0px;}\n    #tw-promo ul {float:left; padding: 7px;}\n    #tw-promo ul li {display: inline; margin-left: 20px; color: #07d6b8; font-family: \'source_sans_probold\'!important; border: 2px solid #07d6b8; border-radius: 3px; font-size: 17px;}\n    #tw-promo ul a li {color: #07d6b8; text-decoration: none; padding: 3px 14px;}\n    #tw-promo ul li {color: #ffffff; text-decoration: none;}\n    #tw-promo ul a {text-decoration: none;}\n    #tw-promo ul li:hover {color: #ffffff; border: 2px solid #ffffff;}\n</style>\n\n<div id="tw-promo">\n    <a href="http://www.teachwire.net" target="_blank"><img src="https://www.teachprimary.com/assets/images/tw-logo.jpg" title="Teachwire Logo" alt="Teachwire Logo"></a>\n\n    <p>Discover the latest from the world of education</p>\n\n    <ul>\n        <a href="http://www.teachwire.net/teaching-resources" target="_blank"><li>Free Resources</li></a>\n        <a href="http://www.teachwire.net/news" target="_blank"><li>News</li></a>\n        <a href="http://www.teachwire.net/products" target="_blank"><li>Products</li></a>\n    </ul>\n    <div style="clear:both;"></div>\n</div>',1554228210),
+	(27,0,'_sn_resource_topic_tags_V9','<i class="fa fa-tag"></i>{exp:category_construct:categories group_id="2" entry_id="{entry_id}" namespace="topic_tags"}<a href="{path=\'resources/{topic_tags:cat_url_title}\'}" class="ml-xs">{topic_tags:cat_name}</a>{if {topic_tags:level_count} < {topic_tags:level_total_results}},{/if}{/exp:category_construct:categories}',1554228210),
+	(28,0,'anothercustom','do da',1554228210),
+	(29,0,'CAR-RBS-services-list','{exp:channel:entries site="UnityBPO" channel="service_segments" entry_id="148"}\n	<div class="segment_box">\n        <h4>{segment_name}</h4>\n        {segment_description_car}\n	</div>\n{/exp:channel:entries}\n\n<ul>\n{exp:channel:entries site="UnityBPO" channel="services" category_group="3" category="25" dynamic="no" sort=\'asc\' orderby="service_name"}\n        <li>{service_name}</li>\n{/exp:channel:entries}\n</ul>',1554228210),
+	(30,0,'snp-sub-nav-about','<ul class="subnav">\n	<li><a{if \'{segment_2}\' == \'\' AND \'{segment_1}\' != \'team\'} class="act"{/if} href="{path=\'about\'}" title="About">About</a></li>\n	<li><a{if \'{segment_1}\' == \'team\'} class="act"{/if} href="{path=\'team\'}" title="Our Team">Our Team</a></li>\n	<li><a{if \'{segment_2}\' == \'career\'} class="act"{/if} href="{path=\'about/career\'}" title="Careers">Careers</a></li>\n	<li><a{if \'{segment_2}\' == \'media\'} class="act"{/if} href="{path=\'about/trademark-use-policy\'}" title="Trademark Policy and Logos">Trademark Policy</a></li>\n	<li><a{if \'{segment_2}\' == \'privacy-policy\'} class="act"{/if} href="{path=\'about/privacy-policy\'}" title="Our Privacy Policy">Privacy Policy</a></li>\n	<li><a{if \'{segment_2}\' == \'terms-of-service\'} class="act"{/if} href="{path=\'about/terms-of-service\'}" title="Our Terms of Service">Terms of Service</a></li>\n</ul>',1554228210),
+	(31,0,'snp-dev-preview-allowed-members-snippet','57594,  // Brandon Kelly\n477088, // Brad Bell\n11141,  // Solspace\n27917,  // Leevi Graham\n95721,  // Rob Sanchez\n20600,  // Lodewijk\n27266,  // Iain Urquhart\n26708,  // Mark Huot\n23843,  // Travis Schmeisser\n88913,  // Erik Reagan\n37203,  // Brad Parscale (DevDemon)\n63214,  // David Dexter (Codesly)\n41199,  // Brian Litzinger\n81227,  // Ty Wangsness\n45424,  // Michael Rog\n81468,  // Steve Fickus\n117633, // Mark Drzycimski\n52086,  // Derek Hogue\n68656,  // Brad Morse\n113685, // Nigel Hughes\n10151,  // Kurt Deutscher\n85114,  // Darren Miller\n57110,  // Benoit Marchal\n111711, // Leon Dijk\n25848,  // Ryan Bonnell\n67284,  // Malcolm Elsworth\n25695,  // Andrew Weaver\n27149,  // Dom Stubbs\n88970,  // John Wells\n80309,  // Filip Quivreux\n172462, // Robson Sobral\n38612,  // Bjørn Børresen\n202704, // Nicco De Gols\n74770,  // Sam Lomax\n61136,  // Wouter Vervloet\n71595,  // Aaron Walden\n51810,  // Ben Croker\n173762, // Robin Hodges\n38398,  // Laisvunas Sopauskas\n41384,  // Gerhard Dalenoort\n64810,  // Satya Prakash\n44053,  // Ira Salsberg\n28574,  // Ryan Irelan\n34732,  // Erwin van Lun\n29059,  // Joe Paravisini\n24514,  // David Pak\n130014, // Gurudutt Verma\n57692,  // Max Lazar\n62804,  // Jeremy Gimbel\n8937,   // Michael Boyink\n148660, // Filip Vanderstappen\n271613, // Eric Lamb\n88569,  // Christopher Imrie\n42063,  // Matt Weinberg (Vector Media Group)\n75737,  // Nicolas Bottari\n85795,  // Isaac Rayway\n72496,  // Carl Crawley\n470679, // Brad Boegler (Nexcess)\n17845,  // John Henry Donovan\n252260, // Rein de Vries\n82560,  // Michael Witwicki (Booyant)\n55159,  // Yuri Salimovskiy (IntoEEtive)\n19047,  // John de Beer\n60554,  // Pierre-Vincent Ledoux\n389533, // Jeremy Worboys\n268558, // Patrick Woodcock\n54907,  // Peter Felix\n31959,  // Ryan Masuga\n78834,  // Filippo Salza\n6239,   // Mark Croxton\n277712, // Doug Thwaites\n278502, // Scott Henderson\n93909,  // Robin Willmot (Coffee Bean Design)\n273072, // Benjamin Kohl (Masuga Design)\n320071, // Patrick Pohler (Anecka)\n180778, // Nick Le Guillou\n163911, // Joel Bradbury\n39258,  // John Baxter\n52412,  // Chris Newton\n744767, // Chris Barrett\n708540, // Justin Kimbrell\n59261,  // Kevin Smith\n24866,  // Dan Decker\n55748,  // Jan van Lysebettens\n18841,  // Travis Smith (Hop Studios)\n205746, // Stephen Callender\n5981,   // John Morton\n26202,  // Kelly Sims (Codesly)\n146940, // Digital Surgeons\n60429,  // Padraig Kennedy\n128978, // Maxim WEB (Websecret)\n86359,  // Dan Diemer\n21571,  // Jamie Pittock\n88117,  // Jamie Taylor (Percipio)\n764443, // Matt Barry\n64510,  // Ian Young (Expresso)\n24830,  // Nathan Pitman\n279344, // Yahya Jokhab (UXspan)\n46322,  // Marcus Neto\n36528,  // Seth Giammanco\n261488, // Andrew Fairlie (Red Carrot)\n46960,  // James Smith\n24707,	// Kelsey Martens\n941058,	// Bryan Burgers\n157466, // Michael Leigeber\n72001,	// Lance Johnson (Green Egg Media)\n64667,	// Marc Miller\n987330,	// Louis Dekeister (Hop Studios)\n901835, // Pedro Guimaraes (Willow Light Studio)\n44070,	// TJ Draper\n35906,	// Jesse Schutt\n49510,	// Jon Thomas (AnalyticL)\n161307, // Jelle de Jong\n60019,	// Eli Van Zoeren\n54661,	// Jason Siffring (Surprise Highway)\n57958,	// Christofer Sandin (Republic Factory)\n51298,	// Ragnar Frostason (Republic Factory)\n200489,	// Berry Timmermans\n74522,	// John Moylan\n109307,	// Will Hyman\n88845,	// Tyson Oshiro\n38319,	// Aidann Bowley (BridgingUnit)\n62202,	// Andrew Gunstone (Thirst Studios)\n441576,	// Josh Clark (dynam)\n65823,	// Emily Fitton (Punch Buggy Digital Agency)\n79823,	// Danny Bull (Digi Nut)\n68548,  // Elliot Lewis (no two the same)\n299670,	// Shane Woodward (thotbox)\n2995,   // Willem de Boer\n205341,	// Jeroen Dewaele (Bits of Love)\n991585,	// Iain Saxon (EE-Garage)\n81504,  // Tom Jaeger (EE Harbor)\n286710, // Shane Eckert (EE Harbor)\n991652, // Shane Nielsen (EE Harbor)\n991653,	// Matt D. Johnson (EE Harbor)\n53641,	// Daniel Grebb\n65133,	// Steven Peercy\n210929,	// Paul Sijpkes\n158756,	// Taylor Daughtry (STAMP)\n44115,	// Casey Reid (Clearfire)\n82763,	// Roger Huges (Triad)\n149429,	// Manuel Payano (DevDemon)\n71359,	// Douglas Green\n1000714, // Andris Sevcenko (Pixel and Tonic)\n40086,	// Jerry Price\n57275,	// Susan Snipes (Q Digital Studio)\n252960,	// Clinton Reeves (Q Digital Studio)\n269656,	// Mike Wenger (Q Digital Studio)\n1002883, // Grant Rowley (Q Digital Studio)\n283802,	// Anthony Mellor (Climbing Turn)\n42590,	// Trevor Davis (Viget Labs)\n307143,	// Jimmy Fursman (Mercutio Consulting)\n1000655, // Gustavs Gutmanis (Solspace)\n881491,	// Taylor Daughtry (Caddis)\n1008940, // mlemay\n40487, // Panchesco\n1016503, // strukt\n',1554228210),
+	(32,0,'snp-store-site','https://store.ellislab.com/',1554228210),
+	(33,0,'custom','i am va',1554228210),
+	(34,0,'CAR-MAS-services-list','{exp:channel:entries site="UnityBPO" channel="service_segments" entry_id="147"}\n	<div class="segment_box">\n        <h4>{segment_name}</h4>\n        {segment_description_car}\n	</div>\n{/exp:channel:entries}\n\n<ul>\n{exp:channel:entries site="UnityBPO" channel="services" category_group="3" category="27" dynamic="no" sort=\'asc\' orderby="service_name"}\n        <li>{service_name}</li>\n{/exp:channel:entries}\n</ul>',1554228210),
+	(35,0,'_sn_modalnotification','{if query_string == "t"}\n<div class="modal fade" id="thanks" tabindex="-1" role="dialog" aria-labelledby="largeModalLabel" aria-hidden="true">\n					<div class="modal-dialog modal-lg">\n						<div class="modal-content">\n							<div class="modal-header">\n								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\n								<h4 class="modal-title" id="largeModalLabel" property="name">Subscribe to the 2GC Email Newsletter</h4>\n							</div>\n							<div class="modal-body">\n			Thank you for subscribing to our newsletter!<button type="button" class="btn btn btn-primary pull-right" style="margin-top:-7px;" data-dismiss="modal" aria-hidden="true">Close</button>\n							</div>\n						</div>\n					</div>\n</div>\n{/if}',1554228210),
+	(36,0,'CAR-TMP-CLI-services-list','<div class="segment_box">\n    <a href="/clinical-services/clinician-services" class="svc_link">Clinician Services</a>\n    <a href="/clinical-services/clinical-monitoring-services" class="svc_link">Clinical Monitoring Services</a>\n    <a href="/clinical-services/patient-services" class="svc_link">Patient Services</a>\n    <a href="/clinical-services/business-intelligence-analytics" class="svc_link">Business Intelligence & Analytics</a>\n</div>',1554228210),
+	(37,0,'snp-subscription-card-warning','{exp:br_subscribe:subscription}\n	<section class="alert-wrap alert-inline">\n		<div class="alert-wrap-inner">\n			<div class="alert-content">\n				<p>If you delete the card used for your subscription, your subscription will be canceled. If you need to change the card used for your subscription, please edit that card and make changes as needed.</p>\n			</div>\n		</div>\n	</section>\n{/exp:br_subscribe:subscription}',1554228210),
+	(38,0,'CAR-HBI-services-list','{exp:channel:entries site="UnityBPO" channel="service_segments" entry_id="146"}\n	<div class="segment_box">\n        <h4>{segment_name}</h4>\n        {segment_description_car}\n	</div>\n{/exp:channel:entries}\n\n<ul>\n{exp:channel:entries site="UnityBPO" channel="services" category_group="3" category="46" dynamic="no" sort=\'asc\' orderby="service_name"}\n        <li>{service_name}</li>\n{/exp:channel:entries}\n</ul>',1554228210),
+	(39,0,'snp-support-site','https://support.ellislab.com/',1554228210),
+	(40,0,'TP_Lego_learntolearn_468x60','<!-- TP_Lego_learntolearn_468x60 -->\n<div id=\'div-gpt-ad-1417780904051-0\' style=\'width:468px; height:60px;\'>\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() { googletag.display(\'div-gpt-ad-1417780904051-0\'); });\n</script>\n</div>',1554228210),
+	(41,0,'hello','{exp:member:custom_profile_data}{exp:query sql="SELECT md.m_field_id_13 AS custom_field FROM exp_member_data AS md WHERE md.member_id = \'{member_id}\'" }{custom_field}{/exp:query}{/exp:member:custom_profile_data}',1554228210),
+	(42,0,'social_share','<div class="share">\n					<a href="https://www.facebook.com/sharer/sharer.php?u=teachprimary.com/pie" target="_blank" class="ir share-btn facebook-btn" title="Share on Facebook">Share on Facebook</a>\n					<a href="https://twitter.com/share?url=http://www.teachprimary.com/pie" target="_blank" class="ir share-btn twitter-btn" title="Share on Twitter">Share on Twitter</a>\n					<a href="http://www.linkedin.com/shareArticle?mini=true&url=http%3A//www.teachprimary.com/pie&title=Free%20Pie%20Corbett%20Teaching%20Resources&source=Teach%20Primary%20Magazine" target="_blank" class="ir share-btn linked-btn" title="Share via LinkedIn">Share via LinkedIn</a>\n					<a href="mailto:?subject=Free Pie Corbett Teaching Resources!&amp;body=I thought you might like to check out these free Pie Corbett resources: http://www.teachprimary.com/pie." class="ir share-btn email-btn" title="Share via Email">Share via Email</a>\n				</div>',1554228210),
+	(43,0,'CAR-CMS-services-list','{exp:channel:entries site="UnityBPO" channel="service_segments" entry_id="144"}\n	<div class="segment_box">\n        <h4>{segment_name}</h4>\n        {segment_description_car}\n	</div>\n{/exp:channel:entries}\n\n<ul>\n{exp:channel:entries site="UnityBPO" channel="services" category_group="3" category="20" dynamic="no" sort=\'asc\' orderby="service_name"}\n        <li>{service_name}</li>\n{/exp:channel:entries}\n</ul>',1554228210),
+	(44,0,'TP_Lego_maths_468x60','<!-- TP_Lego_maths_468x60 -->\n<div id=\'div-gpt-ad-1417781007065-0\' style=\'width:468px; height:60px;\'>\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() { googletag.display(\'div-gpt-ad-1417781007065-0\'); });\n</script>\n</div>',1554228210),
+	(45,0,'snp-page-nav-team','<ul class="page-nav">\n	{exp:channel:prev_entry channel=\'about_team\'}\n		<li class="move-left"><a href="{path=\'team/member\'}" title="{title}"><span class="nav-word">{title}</span><span class="nav-arrow">&lsaquo;</span></a></li>\n	{/exp:channel:prev_entry}\n	{exp:channel:next_entry channel=\'about_team\'}\n		<li class="move-right"><a href="{path=\'team/member\'}" title="{title}"><span class="nav-word">{title}</span><span class="nav-arrow">&rsaquo;</span></a></li>\n	{/exp:channel:next_entry}\n</ul>',1554228210),
+	(46,0,'snp-bc-bottom','			</ul>\n		</div>\n	</div>\n</nav>',1554228210),
+	(47,0,'snp-google-analytics-main','<script type="text/javascript">\n\n  var _gaq = _gaq || [];\n  _gaq.push([\'_setAccount\', \'UA-12953034-1\']);\n  _gaq.push([\'_setDomainName\', \'{gv-google-analytics-domain}\']);\n  _gaq.push([\'_setCustomVar\', 1, \'Category\', \'{if segment_2 == \'\'}{segment_1}{/if}{segment_2}\',3]);\n  _gaq.push([\'_setCustomVar\', 2, \'Product\', \'{if segment_1 == \'expressionengine\'}ExpressionEngine{/if}{if segment_1 == \'codeigniter\'}CodeIgniter{/if}{if segment_1 == \'mojomotor\'}MojoMotor{/if}\',3]);\n  _gaq.push([\'_setCustomVar\', 3, \'Member Group\', \'{logged_in_group_id}\',3]);\n  _gaq.push([\'_setCustomVar\', 4, \'Site\', \'{site_short_name}\',3]);\n  _gaq.push([\'_trackPageview\']);\n\nfunction trackOutboundLink(link, category, action, label) { \n\ntry { \n_gaq.push([\'_trackEvent\', category , action, label]); \n} catch(err){}\n \nsetTimeout(function() {\n// jQuery handles rel="external" links for us so we don\'t have anything to do here but pause\nreturn false;\n}, 100);\n}\n\n(function() {\n    var ga = document.createElement(\'script\'); ga.type = \'text/javascript\'; ga.async = true;\n    ga.src = (\'https:\' == document.location.protocol ? \'https://ssl\' : \'http://www\') + \'.google-analytics.com/ga.js\';\n    var s = document.getElementsByTagName(\'script\')[0];\n	s.parentNode.insertBefore(ga, s);\n})();\n\n</script>',1554228210),
+	(48,0,'snp-page-nav-blog','<ul class="page-nav">\n	{exp:channel:prev_entry channel=\'blog_articles\'}\n		<li class="move-left"><a href="{path=\'blog/entry\'}" title="Read {title}"><span class="nav-word">Before</span><span class="nav-arrow">&lsaquo;</span></a></li>\n	{/exp:channel:prev_entry}\n	{exp:channel:next_entry channel=\'blog_articles\'}\n		<li class="move-right"><a href="{path=\'blog/entry\'}" title="Read {title}"><span class="nav-word">Next</span><span class="nav-arrow">&rsaquo;</span></a></li>\n	{/exp:channel:next_entry}\n</ul>',1554228210),
+	(49,0,'sn_pagination','{!-- Pagination: Start --}\n{paginate}\n<div class="row">\n    <div>\n                                  {pagination_links page_padding="3"  always_show_first_last="no"}\n                                    <ul class="pagination pagination-lg pull-right pr-md mt-md">\n                                      {first_page}\n                                        <li><a href="{pagination_url}">«</a></li>\n                                      {/first_page}\n                                \n                                      {if previous_page}\n                                      {previous_page}\n                                        <li {if current_page}class="active"{/if}><a href="{pagination_url}">{pagination_page_number}</a></li>\n                                      {/previous_page}\n                                      {/if}\n                                \n                                      {page}\n                                        <li {if current_page}class="active"{/if}><a href="{pagination_url}">{pagination_page_number}</a></li>\n                                      {/page}\n                                \n                                      {if next_page}\n                                      {next_page}\n                                        <li {if current_page}class="active"{/if}><a href="{pagination_url}">{pagination_page_number}</a></li>\n                                      {/next_page}\n                                      {/if}\n                                \n                                      {last_page}\n                                        <li><a href="{pagination_url}">»</a></li>\n                                      {/last_page}\n                                    </ul>\n                                  {/pagination_links}\n    </div>\n</div>\n                                {/paginate}\n\n{!-- Pagination: End --}\n',1554228210),
+	(50,0,'TP_Lego_hp_468x60','<!-- TP_Lego_hp_468x60 -->\n<div id=\'div-gpt-ad-1417780872058-0\' style=\'width:468px; height:60px;\'>\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() { googletag.display(\'div-gpt-ad-1417780872058-0\'); });\n</script>\n</div>',1554228210),
+	(51,0,'category_shadows_image','                        {exp:category_construct:categories entry_id="{what_we_do_item_selector:image_button_switcher:entry_id}"}\n                            {if construct:level_count == "1"}\n                                {exp:channel:categories show="{construct:cat_id}" style="linear"}\n                                    {category_image}\n                                {/exp:channel:categories}\n                            {/if}\n                        {/exp:category_construct:categories}',1554228210),
+	(52,0,'snp_blog_list_paginate','{!-- pagination --}\n{paginate}\n	<div class="paginate">\n		{pagination_links page_padding=\'1\'}\n			<ul>\n				{previous_page}\n					<li><a href="{pagination_url}">Previous Page</a></li>\n				{/previous_page}\n				{page}\n					<li><a href="{pagination_url}"{if current_page} class="act"{/if}>{pagination_page_number}</a></li>\n				{/page}\n				{next_page}\n					<li><a href="{pagination_url}">Next Page</a></li>\n				{/next_page}\n			</ul>\n		{/pagination_links}\n	</div>\n{/paginate}',1554228210),
+	(53,0,'TP_Lego_learntolearn_468x60_header','<script type=\'text/javascript\'>\nvar googletag = googletag || {};\ngoogletag.cmd = googletag.cmd || [];\n(function() {\nvar gads = document.createElement(\'script\');\ngads.async = true;\ngads.type = \'text/javascript\';\nvar useSSL = \'https:\' == document.location.protocol;\ngads.src = (useSSL ? \'https:\' : \'http:\') + \n\'//www.googletagservices.com/tag/js/gpt.js\';\nvar node = document.getElementsByTagName(\'script\')[0];\nnode.parentNode.insertBefore(gads, node);\n})();\n</script>\n\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() {\ngoogletag.defineSlot(\'/1581346/TP_Lego_learntolearn_468x60\', [468, 60], \'div-gpt-ad-1417780904051-0\').addService(googletag.pubads());\ngoogletag.pubads().enableSingleRequest();\ngoogletag.enableServices();\n});\n</script>',1554228210),
+	(54,0,'snp-menu-header','			<nav class="main-nav">\n				<div class="column-wrap">\n					<div class="column colspan-16">\n						<ul class="collapsed-nav">\n							<li class="menu-ico"><a href="{gv-main-site}/#" title="View Menu"><img src="/asset/css/img/menu-ico.gif" alt="menu icon"></a></li>\n							<nav class="primary-nav">\n								<ul>\n									<li class="products-item"><a href="{gv-main-site}/#" title="View Products">products</a></li>\n									<ul class="products-nav">\n										<li class="ee"><a{if segment_1 == \'expressionengine\'} class="act"{/if} href="{gv-main-site}/expressionengine" title="ExpressionEngine, Commercial Web Platform">ExpressionEngine</a></li>\n										{!-- <li><a{if segment_1 == \'codeigniter\'} class="act"{/if} href="{gv-main-site}/codeigniter" title="CodeIgniter, Open Source PHP framework">CodeIgniter</a></li> --}\n										{!-- <li><a{if segment_1 == \'mojomotor\'} class="act"{/if} href="{gv-main-site}/mojomotor" title="MojoMotor">MojoMotor</a></li> --}\n										<li class="last-item"><a{if segment_1 == \'support\'} class="act"{/if} href="{gv-main-site}/support" title="Product &amp; Customer Support">Support</a></li>\n									</ul>\n									<li class="about"><a{if segment_1 == \'about\'} class="act"{/if} href="{gv-main-site}/about" title="About EllisLab">about</a></li>\n									<li><a{if segment_1 == \'blog\'} class="act"{/if} href="{gv-main-site}/blog" title="Our Blog">blog</a></li>\n									<li class="last-item"><a{if segment_1 == \'community\' OR  segment_1 == \'enterprise\' OR segment_1 == \'pro-network\' OR segment_1 == \'showcase\'} class="act"{/if} href="{gv-main-site}/community" title="The Community">community</a></li>\n								</ul>\n							</nav>\n						</ul>\n						<ul class="secondary-nav">\n							{if logged_in}\n								{if {exp:br_subscribe:has_subscription} == 0}\n									<li><a{if \'{site_short_name}\' == \'support\'} class="act"{/if} href="{gv-support-site}" title="EllisLab Support Center">Help/Bugs</a></li>\n								{/if}\n								{if {exp:br_subscribe:has_subscription} == 1}\n									<li><a{if \'{site_short_name}\' == \'support\'} class="act"{/if} href="{gv-support-site}" title="EllisLab Support Center">my tickets</a></li>\n								{/if}\n							{/if}\n							<li><a{if \'{site_short_name}\' == \'store\'} class="act"{/if} href="{gv-store-site}" title="EllisLab Store">store</a> {if {exp:brilliant_retail:cart_items} != 0}<a class="cart-number" href="{gv-store-site}cart" title="Your Cart">{exp:brilliant_retail:cart_items}</a>{/if}</li>\n							{if logged_in}\n								<li class="logged-in"><a href="{gv-main-site}/forums/member/profile" title="Your Account Settings">account</a></li>\n							{/if}\n							{if logged_out}\n								<li class="logged-out"><a href="#" title="Please Sign In">Sign In</a></li>\n							{/if}\n						</ul>\n						{if logged_in}\n							<div class="login-wrap login-account hide">\n								<span class="arrow-border"></span>\n								<span class="arrow"></span>\n								<h3><b>{screen_name}</b> (<a href="{path=\'logout\'}" title="sign out of this account?">sign out?</a>)</h3>\n								<ul class="arrowlist">\n									<li><a href="{gv-main-site}/forums/member/{member_id}" title="view your public profile">Public Profile</a></li>\n									<li><a href="{gv-main-site}/forums/member/profile" title="Account Settings">Account Settings</a></li>\n									<li><a href="{gv-store-site}manage" title="Manage Purchases">Manage Purchases</a></li>\n								</ul>\n							</div>\n						{/if}\n						{if logged_out}\n							<div class="login-wrap login-form hide">\n								<span class="arrow-border"></span>\n								<span class="arrow"></span>\n								{exp:member:login_form return=\'{current_url}\'}\n									<fieldset>\n										<input type="hidden" name="auto_login" value="1">\n									</fieldset>\n									<fieldset>\n										<input name="username" type="text" value="" placeholder="username" autocapitalize="off" autocorrect="off">\n									</fieldset>\n									<fieldset>\n										<input name="password" type="password" value="" placeholder="password" autocapitalize="off" autocorrect="off">\n										<em><a href="{gv-main-site}/forums/member/forgot_password" title="Retrieve password">Forgot password</a> or <a href="{gv-main-site}/forums/member/register" title="Create a new account">New account</a></em>\n									</fieldset>\n									<fieldset class="last">\n										<input type="submit" value="sign in">\n									</fieldset>\n								{/exp:member:login_form}\n							</div>\n						{/if}\n					</div>\n				</div>\n			</nav>\n',1554228210),
+	(55,0,'CAR-TMP-TEL-services-list','<div class="segment_box">\n	<a href="/telehealth-services/telehealth-services-outsourcing" class="svc_link">Telehealth Services Outsourcing</a>\n</div>',1554228210),
+	(56,0,'TP-nav','<div id="menu">\n    <ul id="mainnav">\n        <li id="nav_home"><a href="http://www.teachprimary.com/">Home</a></li>\n        <li id="nav_triedandtested"><a href="http://www.teachprimary.com/tried_and_tested">Tried &amp; Tested</a>\n            <ul>             \n                <li><a href="http://www.teachprimary.com/book_reviews">Book Reviews</a></li>\n            </ul>\n        </li>\n        <li id="nav_resources"><a href="http://www.teachprimary.com/learning_resources">Resources</a></li>\n        <li id="nav_news"><a href="http://www.teachprimary.com/news">News</a></li>\n        <li id="nav_interactive"><a href="http://www.teachprimary.com/interactive">Interactive</a></li>\n        <li id="nav_books"><a href="http://www.teachprimary.com/giveaway">Giveaways</a></li>\n        <li id="nav_events"><a href="http://www.teachprimary.com/events">Events</a></li>\n        <li id="nav_hotproducts"><a href="http://www.teachprimary.com/hot_products">Hot Products</a>\n            <ul>             \n                <!--<li><a href="http://www.teachprimary.com/resource-guide" target="_blank">2014 Resource Guide</a></li>-->\n                <li><a href="http://www.teachprimary.com/resource-guide/2015" target="_blank">2015 Resource Guide</a></li>\n\n            </ul>\n        </li>\n        <li id="nav_hotproducts"><a href="http://www.teachprimary.com/50-lessons">Lesson Plans</a>\n        <!-- <li id="nav_hotproducts"><a href="http://www.teachprimary.com/contact">Contact Us</a> \n        \n            <ul>             \n                <li><a href="http://www.teachprimary.com/advertising">Advertise</a></li> \n            </ul>-->\n        </li>\n        <li id="nav_subscribe" style="width: 90px;"><a href="http://www.teachprimary.com/subscribe/teachers">Subscribe</a>\n            <ul>             \n                <li><a href="http://www.teachprimary.com/subscribe/teachers">Print Edition</a></li>\n                <li><a href="http://www.teachprimary.com/subscribe/digital">Digital Edition</a></li>\n            </ul>\n        </li>\n    </ul>\n</div>',1554228210),
+	(57,0,'snp-main-site','https://ellislab.com',1554228210),
+	(58,0,'TP_Lego_challenge_468x60_header','<script type=\'text/javascript\'>\nvar googletag = googletag || {};\ngoogletag.cmd = googletag.cmd || [];\n(function() {\nvar gads = document.createElement(\'script\');\ngads.async = true;\ngads.type = \'text/javascript\';\nvar useSSL = \'https:\' == document.location.protocol;\ngads.src = (useSSL ? \'https:\' : \'http:\') + \n\'//www.googletagservices.com/tag/js/gpt.js\';\nvar node = document.getElementsByTagName(\'script\')[0];\nnode.parentNode.insertBefore(gads, node);\n})();\n</script>\n\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() {\ngoogletag.defineSlot(\'/1581346/TP_Lego_challenge_468x60\', [468, 60], \'div-gpt-ad-1417780805929-0\').addService(googletag.pubads());\ngoogletag.pubads().enableSingleRequest();\ngoogletag.enableServices();\n});\n</script>',1554228210),
+	(59,0,'snp_main_nav','					<ul class="main-nav">\n						<li><a{if segment_1 == \'\'} class="act"{/if} href="{homepage}">Home</a></li>\n						<li><a{if segment_1 == \'about\'} class="act"{/if} href="{path=\'about\'}">About</a></li>\n						<li><a{if segment_1 == \'blog\'} class="act"{/if} href="{path=\'blog\'}">Blog</a></li>\n						<li><a{if segment_1 == \'contact\'} class="act"{/if} href="{path=\'contact\'}">Contact</a></li>\n					</ul>',1554228210),
+	(60,0,'snp-page-nav-showcase','<ul class="page-nav">\n	{exp:channel:prev_entry channel=\'community_showcase\'}\n		<li class="move-left"><a href="{path=\'showcase/entry\'}" title="Read {title}"><span class="nav-word">Before</span><span class="nav-arrow">&lsaquo;</span></a></li>\n	{/exp:channel:prev_entry}\n	{exp:channel:next_entry channel=\'community_showcase\'}\n		<li class="move-right"><a href="{path=\'showcase/entry\'}" title="Read {title}"><span class="nav-word">Next</span><span class="nav-arrow">&rsaquo;</span></a></li>\n	{/exp:channel:next_entry}\n</ul>',1554228210),
+	(61,0,'hmmm','This is strange.',1554228210),
+	(62,0,'CAR-TMP-HOM-services-list','<div class="segment_box">\n    <a href="/home-health-and-hospice/clinician-services" class="svc_link">Clinician Services</a>\n    <a href="/home-health-and-hospice/service-desk" class="svc_link">Service Desk</a>\n    <a href="/home-health-and-hospice/back-office-support" class="svc_link">Back-Office Support</a>\n    <a href="/home-health-and-hospice/field-staff-services" class="svc_link">Field Staff Services</a>\n    <a href="/home-health-and-hospice/managed-services" class="svc_link">Managed Services</a>\n    <a href="/home-health-and-hospice/professional-services" class="svc_link">Professional Services</a>\n</div>',1554228210),
+	(63,0,'CAR-NCS-services-list','{exp:channel:entries site="UnityBPO" channel="service_segments" entry_id="149"}\n	<div class="segment_box">\n        <h4>{segment_name}</h4>\n        {segment_description_car}\n	</div>\n{/exp:channel:entries}\n\n<ul>\n{exp:channel:entries site="UnityBPO" channel="services" category_group="3" category="26" dynamic="no" sort=\'asc\' orderby="service_name"}\n        <li>{service_name}</li>\n{/exp:channel:entries}\n</ul>',1554228210),
+	(64,0,'CAR-TAO-services-list','{exp:channel:entries site="UnityBPO" channel="service_segments" entry_id="152"}\n	<div class="segment_box">\n        <h4>{segment_name}</h4>\n        {segment_description_car}\n	</div>\n{/exp:channel:entries}\n\n<ul>\n{exp:channel:entries site="UnityBPO" channel="services" category_group="3" category="16" dynamic="no" sort=\'asc\' orderby="service_name"}\n        <li>{service_name}</li>\n{/exp:channel:entries}\n</ul>',1554228210),
+	(65,0,'CAR-PIO-services-list','{exp:channel:entries site="UnityBPO" channel="service_segments" entry_id="151"}\n	<div class="segment_box">\n        <h4>{segment_name}</h4>\n        {segment_description_car}\n	</div>\n{/exp:channel:entries}\n\n<ul>\n{exp:channel:entries site="UnityBPO" channel="services" category_group="3" category="23" dynamic="no" sort=\'asc\' orderby="service_name"}\n        <li>{service_name}</li>\n{/exp:channel:entries}\n</ul>',1554228210),
+	(66,0,'TP_Lego_literacy_468x60_header','<script type=\'text/javascript\'>\nvar googletag = googletag || {};\ngoogletag.cmd = googletag.cmd || [];\n(function() {\nvar gads = document.createElement(\'script\');\ngads.async = true;\ngads.type = \'text/javascript\';\nvar useSSL = \'https:\' == document.location.protocol;\ngads.src = (useSSL ? \'https:\' : \'http:\') + \n\'//www.googletagservices.com/tag/js/gpt.js\';\nvar node = document.getElementsByTagName(\'script\')[0];\nnode.parentNode.insertBefore(gads, node);\n})();\n</script>\n\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() {\ngoogletag.defineSlot(\'/1581346/TP_Lego_literacy_468x60\', [468, 60], \'div-gpt-ad-1417780951914-0\').addService(googletag.pubads());\ngoogletag.pubads().enableSingleRequest();\ngoogletag.enableServices();\n});\n</script>',1554228210),
+	(67,0,'snp-header-bottom','		</header>\n		<section class="content">',1554228210),
+	(68,0,'CAR-TMP-PRO-services-list','<div class="segment_box">\n	<a href="/professional-services/professional-services-outsourcing" class="svc_link">Professional Services Outsourcing</a>\n</div>',1554228210),
+	(69,0,'TP_Lego_computing_468x60','<!-- TP_Lego_computing_468x60 -->\n<div id=\'div-gpt-ad-1417780851151-0\' style=\'width:468px; height:60px;\'>\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() { googletag.display(\'div-gpt-ad-1417780851151-0\'); });\n</script>\n</div>',1554228210),
+	(70,0,'snp-bc-top','<nav class="breadcrumb-nav">\n	<div class="column-wrap">\n		<div class="column colspan-16">\n			<ul>\n				<li><a href="{gv-main-site}" title="Return to EllisLab">EllisLab</a></li>',1554228210),
+	(71,0,'TP_Lego_maths_468x60_header','<script type=\'text/javascript\'>\nvar googletag = googletag || {};\ngoogletag.cmd = googletag.cmd || [];\n(function() {\nvar gads = document.createElement(\'script\');\ngads.async = true;\ngads.type = \'text/javascript\';\nvar useSSL = \'https:\' == document.location.protocol;\ngads.src = (useSSL ? \'https:\' : \'http:\') + \n\'//www.googletagservices.com/tag/js/gpt.js\';\nvar node = document.getElementsByTagName(\'script\')[0];\nnode.parentNode.insertBefore(gads, node);\n})();\n</script>\n\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() {\ngoogletag.defineSlot(\'/1581346/TP_Lego_maths_468x60\', [468, 60], \'div-gpt-ad-1417781007065-0\').addService(googletag.pubads());\ngoogletag.pubads().enableSingleRequest();\ngoogletag.enableServices();\n});\n</script>',1554228210),
+	(72,0,'snp-sub-nav-pronetwork','{preload_replace:t_group=\'pro-network\'}\n\n{exp:el_pro_net:membership_info}\n<h2>My Membership</h2>\n<ul class="subnav sorter">\n	<li><a href="{path=\'{t_group}/member/{url_title}\'}">View My Listing</a></li>\n	<li><a href="{path=\'{t_group}/download-badges\'}">Download Badges</a></li>\n	<li>Impressions: {multi_views}</li>\n	<li>Listing views: {single_views}</li>\n</ul>\n{/exp:el_pro_net:membership_info}\n\n\n<ul class="subnav">\n	<li><a href="{path=\'{t_group}/join\'}" title="Join the Professional Network">Join</a></li>\n	<li><a href="{path=\'{t_group}/faq\'}" title="Read the F.A.Q.">Pro Net F.A.Q.</a></li>\n	<li><a href="http://director-ee.com/jobs" title="Job Board - powered by Director-EE" rel="external">Job Board</a></li>\n</ul>\n<h2>Sort</h2>\n<ul class="subnav sorter">\n	<li><a href="{path=\'{t_group}\'}" class="pronet-show-all" title="View all Pro Network Members">Show All</a></li>\n	<li><a class="pronet-service" href="#" title="View all Services">By Service</a>\n			{exp:channel:categories channel=\'community_pronet\' category_group=\'5\' class=\'checklist pronet-service-list hide\' id=\'pronet-service-list\'}\n			    <a href="{path=\'{t_group}\'}" title="View our {category_name} team">{category_name}</a>\n			{/exp:channel:categories}\n	</li>\n	<li><a class="pronet-location" href="#" title="View all Locations">By Location</a>\n			{exp:channel:categories channel=\'community_pronet\' category_group=\'9\' class=\'checklist pronet-location-list hide\' id=\'pronet-location-list\'}\n			    <a href="{path=\'{t_group}\'}" title="View team members in {category_name}">{category_name}</a>\n			{/exp:channel:categories}\n	</li>\n</ul>',1554228210),
+	(73,0,'lol','lalalala\n',1554228210),
+	(74,0,'TP_Lego_literacy_468x60','<!-- TP_Lego_literacy_468x60 -->\n<div id=\'div-gpt-ad-1417780951914-0\' style=\'width:468px; height:60px;\'>\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() { googletag.display(\'div-gpt-ad-1417780951914-0\'); });\n</script>\n</div>',1554228210),
+	(75,0,'sn_onward_links_switcher','{!-- Onward links switcher: Start --}\n        {if sp-image_button_switcher_title}<h4>{sp-image_button_switcher_title}</h4>{/if}\n        <div class="pb-md col-md-12 pl-none pr-none">\n        {sp-image-button-switcher limit="4"}\n          {if sp-image-button-switcher:channel_short_name == "category_shadows"}\n             {exp:stash:category_image parse="yes" trim="yes" output="no" parse_depth="2"}\n                  {exp:category_construct:categories entry_id="{sp-image-button-switcher:entry_id}" parse="inward"}\n                      {if construct:level_count == "1"}\n                          {exp:channel:categories show="{construct:cat_id}" style="linear"}\n                              {category_image}\n                          {/exp:channel:categories}\n                      {/if}\n                  {/exp:category_construct:categories}\n              {/exp:stash:category_image}\n          {/if}\n            <div class="col-sm-{if sp-image-button-switcher:total_results > 4}3{if:else}{exp:math formula="(12/[1])" params="{sp-image-button-switcher:total_results}"}{/if} col-xs-6 portfolio-item pl-none pr-none">\n					<a href="\n    					{if sp-image-button-switcher:channel_short_name == "category_shadows"}{path=\'resources/{exp:category_construct:categories entry_id="{sp-image-button-switcher:entry_id}"}{if construct:level_count == "1"}{construct:cat_url_title}{/if}{/exp:category_construct:categories}\'}\n    					{if:elseif sp-image-button-switcher:channel_short_name == "resources" || sp-image-button-switcher:channel_short_name == "features"}{path=\'resources/{exp:category_construct:categories entry_id="{sp-image-button-switcher:entry_id}"}{if construct:level_count == "1"}{construct:cat_url_title}{/if}{/exp:category_construct:categories}/{sp-image-button-switcher:url_title}\'}\n    					{if:elseif sp-image-button-switcher:channel_short_name == "training"}{path=\'training/{sp-image-button-switcher:url_title}\'}\n    					{if:else}{path=\'{sp-image-button-switcher:channel_short_name}/{sp-image-button-switcher:url_title}\'}{/if}\n        					">\n					<span class="thumb-info" style="border:0;">\n						<span class="thumb-info-wrapper">\n                            <img \n                                src="\n{if {sp-image-button-switcher:total_results} == 1}\n    {exp:ce_img:pair \n          src=\'{if sp-image-button-switcher:channel_short_name == "category_shadows"}{exp:stash:category_image}{if:else}{sp-image-button-switcher:resource_hero_image:url}{/if}\'\n          allow_scale_larger=\'yes\' \n          fallback_src="{gv_fallback_image}" \n          width=\'880\'\n          height=\'165\'\n          save_type=\'jpg\'\n          crop=\'yes|center,center||yes\'\n          parse=\'inward\'}\n          {exp:ce_img:single src="{made}"\n              width="880"\n              height="165"\n              crop="yes|center,center||no"\n              interlace="yes" \n              url_only="yes"\n              parse="inward"\n              hash_filename="yes"}\n    {/exp:ce_img:pair}\n{if:elseif {sp-image-button-switcher:total_results} == 2}\n    {exp:ce_img:pair \n          src=\'{if sp-image-button-switcher:channel_short_name == "category_shadows"}{exp:stash:category_image}{if:else}{sp-image-button-switcher:resource_hero_image:url}{/if}\'\n          allow_scale_larger=\'yes\' \n          fallback_src="{gv_fallback_image}" \n          width=\'440\'\n          height=\'165\'\n          save_type=\'jpg\'\n          crop=\'yes|center,center||yes\'\n          parse=\'inward\'}\n          {exp:ce_img:single src="{made}"\n              width="440"\n              height="165"\n              crop="yes|center,center||no"\n              interlace="yes" \n              url_only="yes"\n              parse="inward"\n              hash_filename="yes"}\n    {/exp:ce_img:pair}\n{if:elseif {sp-image-button-switcher:total_results} == 3}\n    {exp:ce_img:pair \n          src=\'{if sp-image-button-switcher:channel_short_name == "category_shadows"}{exp:stash:category_image}{if:else}{sp-image-button-switcher:resource_hero_image:url}{/if}\'\n          allow_scale_larger=\'yes\' \n          fallback_src="{gv_fallback_image}" \n          width=\'293\'\n          height=\'165\'\n          save_type=\'jpg\'\n          crop=\'yes|center,center||yes\'\n          parse=\'inward\'}\n          {exp:ce_img:single src="{made}"\n              width="293"\n              height="165"\n              crop="yes|center,center||no"\n              interlace="yes" \n              url_only="yes"\n              parse="inward"\n              hash_filename="yes"}\n    {/exp:ce_img:pair}\n{if:else}\n    {exp:ce_img:pair \n          src=\'{if sp-image-button-switcher:channel_short_name == "category_shadows"}{exp:stash:category_image}{if:else}{sp-image-button-switcher:resource_hero_image:url}{/if}\'\n          allow_scale_larger=\'yes\' \n          fallback_src="{gv_fallback_image}" \n          width=\'220\'\n          height=\'165\'\n          save_type=\'jpg\'\n          crop=\'yes|center,center||yes\'\n          parse=\'inward\'}\n          {exp:ce_img:single src="{made}"\n              width="220"\n              height="165"\n              crop="yes|center,center||no"\n              interlace="yes" \n              url_only="yes"\n              parse="inward"\n              hash_filename="yes"}\n    {/exp:ce_img:pair}\n{/if}                \n                                            "\n                                    srcset="\n{if {sp-image-button-switcher:total_results} == 1}\n    {exp:ce_img:pair \n          src=\'{if sp-image-button-switcher:channel_short_name == "category_shadows"}{exp:stash:category_image}{if:else}{sp-image-button-switcher:resource_hero_image:url}{/if}\'\n          allow_scale_larger=\'yes\' \n          fallback_src="{gv_fallback_image}" \n          width=\'1760\'\n          height=\'330\'\n          save_type=\'jpg\'\n          crop=\'yes|center,center||yes\'\n          parse=\'inward\'}\n          {exp:ce_img:single src="{made}"\n              width="1760"\n              height="330"\n              crop="yes|center,center||no"\n              interlace="yes" \n              url_only="yes"\n              parse="inward"\n              hash_filename="yes"}\n    {/exp:ce_img:pair}\n{if:elseif {sp-image-button-switcher:total_results} == 2}\n    {exp:ce_img:pair \n          src=\'{if sp-image-button-switcher:channel_short_name == "category_shadows"}{exp:stash:category_image}{if:else}{sp-image-button-switcher:resource_hero_image:url}{/if}\'\n          allow_scale_larger=\'yes\' \n          fallback_src="{gv_fallback_image}" \n          width=\'880\'\n          height=\'330\'\n          save_type=\'jpg\'\n          crop=\'yes|center,center||yes\'\n          parse=\'inward\'}\n          {exp:ce_img:single src="{made}"\n              width="880"\n              height="330"\n              crop="yes|center,center||no"\n              interlace="yes" \n              url_only="yes"\n              parse="inward"\n              hash_filename="yes"}\n    {/exp:ce_img:pair}\n{if:elseif {sp-image-button-switcher:total_results} == 3}\n    {exp:ce_img:pair \n          src=\'{if sp-image-button-switcher:channel_short_name == "category_shadows"}{exp:stash:category_image}{if:else}{sp-image-button-switcher:resource_hero_image:url}{/if}\'\n          allow_scale_larger=\'yes\' \n          fallback_src="{gv_fallback_image}" \n          width=\'586\'\n          height=\'330\'\n          save_type=\'jpg\'\n          crop=\'yes|center,center||yes\'\n          parse=\'inward\'}\n          {exp:ce_img:single src="{made}"\n              width="586"\n              height="330"\n              crop="yes|center,center||no"\n              interlace="yes" \n              url_only="yes"\n              parse="inward"\n              hash_filename="yes"}\n    {/exp:ce_img:pair}\n{if:else}\n    {exp:ce_img:pair \n          src=\'{if sp-image-button-switcher:channel_short_name == "category_shadows"}{exp:stash:category_image}{if:else}{sp-image-button-switcher:resource_hero_image:url}{/if}\'\n          allow_scale_larger=\'yes\' \n          fallback_src="{gv_fallback_image}" \n          width=\'440\'\n          height=\'330\'\n          save_type=\'jpg\'\n          crop=\'yes|center,center||yes\'\n          parse=\'inward\'}\n          {exp:ce_img:single src="{made}"\n              width="440"\n              height="330"\n              crop="yes|center,center||no"\n              interlace="yes" \n              url_only="yes"\n              parse="inward"\n              hash_filename="yes"}\n    {/exp:ce_img:pair}\n{/if}                \n                                    2x"\n                                width="{if sp-image-button-switcher:total_results == "1"}880{if:elseif sp-image-button-switcher:total_results == "2"}440{if:elseif sp-image-button-switcher:total_results == "3"}293{if:else}220{/if}" class="" alt="{title}" property="image" />\n							<span class="thumb-info-title">\n								<span class="thumb-info-inner">{if sp-image-button-switcher:sp-headline}{sp-image-button-switcher:sp-headline}{if:else}{sp-image-button-switcher:title}{/if}</span>\n							</span>\n							<span class="thumb-info-action">\n								<span class="thumb-info-action-icon"><i class="fa fa-link"></i></span>\n							</span>\n						</span>\n					</span>\n				</a>\n            </div>\n        {/sp-image-button-switcher}\n{!-- Onward links switcher: End --}\n',1554228210),
+	(76,0,'testing','here\'s my content\'',1554228210),
+	(77,0,'snp-dev-preview-allowed-groups','1,6,13',1554228210),
+	(78,0,'snp_blog_list','<div class="entry">\n	{!-- title --}\n	<h2><a href="{path=\'{p_url}/{p_url_entry}/{url_title}\'}">{title}</a></h2>\n	<p><b>on:</b> {entry_date format=\'%n/%j/%Y\'}, <b>by:</b> <a href="{path=\'member/{author_id}\'}">{author}</a>, <a href="{path=\'{p_url}/{p_url_entry}/{url_title}#comments\'}">{comment_total} comment{if comment_total != 1}s{/if}</a></p>\n</div>',1554228210),
+	(79,0,'TP_Lego_computing_468x60_header','<script type=\'text/javascript\'>\nvar googletag = googletag || {};\ngoogletag.cmd = googletag.cmd || [];\n(function() {\nvar gads = document.createElement(\'script\');\ngads.async = true;\ngads.type = \'text/javascript\';\nvar useSSL = \'https:\' == document.location.protocol;\ngads.src = (useSSL ? \'https:\' : \'http:\') + \n\'//www.googletagservices.com/tag/js/gpt.js\';\nvar node = document.getElementsByTagName(\'script\')[0];\nnode.parentNode.insertBefore(gads, node);\n})();\n</script>\n\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() {\ngoogletag.defineSlot(\'/1581346/TP_Lego_computing_468x60\', [468, 60], \'div-gpt-ad-1417780851151-0\').addService(googletag.pubads());\ngoogletag.pubads().enableSingleRequest();\ngoogletag.enableServices();\n});\n</script>',1554228210),
+	(80,0,'CAR-TMP-MAN-services-list','<div class="segment_box">\n    <a href="/managed-services/managed-applications-services" class="svc_link">Managed Applications Services</a>\n    <a href="/managed-services/biomedical-device-integration-support" class="svc_link">Biomedical Device Integration Support</a>\n    <a href="/managed-services/non-clinical-it-services" class="svc_link">Non-Clinical IT Services</a>\n</div>',1554228210),
+	(81,0,'CAR-TIO-services-list','{exp:channel:entries site="UnityBPO" channel="service_segments" entry_id="153"}\n	<div class="segment_box">\n        <h4>{segment_name}</h4>\n        {segment_description_car}\n	</div>\n{/exp:channel:entries}\n\n<ul>\n{exp:channel:entries site="UnityBPO" channel="services" category_group="3" category="17" dynamic="no" sort=\'asc\' orderby="service_name"}\n        <li>{service_name}</li>\n{/exp:channel:entries}\n</ul>',1554228210),
+	(82,0,'_sn_resources_quicklinks_sm_V9','<div class="visible-xs visible-sm container p-none pb-md contentv">\n	<div class="col-sm-2 menu-prompt p-none pull-left">Resource Quick Links: </div><div>{exp:category_construct:categories group_id="1"}<a class="btn btn-borders btn-default btn-sm mr-sm {if construct:cat_url_title == segment_2}focus{/if}" href="{path=\'resources/{construct:cat_url_title}\'}">{construct:cat_name}</a>{/exp:category_construct:categories}</div>\n</div>',1554228210),
+	(83,0,'_sn_resources_topiclinks_sm_V9','<div class="visible-xs visible-sm container p-none pb-md contentv">\n	<div class="col-sm-2 menu-prompt p-none pull-left">Topic Quick Links: </div><div>{exp:category_construct:categories group_id="2"}<a class="btn btn-borders btn-default btn-sm mr-sm {if construct:cat_url_title == segment_2}focus{/if}" href="{path=\'resources/{construct:cat_url_title}\'}">{construct:cat_name}</a>{/exp:category_construct:categories}</div>\n</div>\n',1554228210),
+	(84,0,'TP_Lego_hp_468x60_header','<script type=\'text/javascript\'>\nvar googletag = googletag || {};\ngoogletag.cmd = googletag.cmd || [];\n(function() {\nvar gads = document.createElement(\'script\');\ngads.async = true;\ngads.type = \'text/javascript\';\nvar useSSL = \'https:\' == document.location.protocol;\ngads.src = (useSSL ? \'https:\' : \'http:\') + \n\'//www.googletagservices.com/tag/js/gpt.js\';\nvar node = document.getElementsByTagName(\'script\')[0];\nnode.parentNode.insertBefore(gads, node);\n})();\n</script>\n\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() {\ngoogletag.defineSlot(\'/1581346/TP_Lego_hp_468x60\', [468, 60], \'div-gpt-ad-1417780872058-0\').addService(googletag.pubads());\ngoogletag.pubads().enableSingleRequest();\ngoogletag.enableServices();\n});\n</script>',1554228210),
+	(85,0,'some_partial','hahah yayayaya',1554228210),
+	(86,0,'CAR-PAO-services-list','{exp:channel:entries site="UnityBPO" channel="service_segments" entry_id="150"}\n	<div class="segment_box">\n        <h4>{segment_name}</h4>\n        {segment_description_car}\n	</div>\n{/exp:channel:entries}\n\n<ul>\n{exp:channel:entries site="UnityBPO" channel="services" category_group="3" category="22" dynamic="no" sort=\'asc\' orderby="service_name"}\n        <li>{service_name}</li>\n{/exp:channel:entries}\n</ul>',1554228210),
+	(87,1,'sn_beta_redirect','{!-- {if ! logged_in}{redirect="/" status_code="307"}{/if} --}\n',1554228210),
+	(88,1,'_sn_resources_quicklinks_V9','<h4 class="heading-primary">Resource Quick Links</h4>\n{exp:category_construct:categories group_id="1"}\n<a class="btn btn-borders btn-default r-small {if construct:cat_url_title == segment_2}focus{/if} mr-xs mb-sm" href="{path=\'resources/{construct:cat_url_title}\'}">{construct:cat_name}</a>\n{/exp:category_construct:categories}\n',1554228210),
+	(89,1,'TP_Lego_reviews_468x60','<!-- TP_Lego_reviews_468x60 -->\n<div id=\'div-gpt-ad-1417781056636-0\' style=\'width:468px; height:60px;\'>\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() { googletag.display(\'div-gpt-ad-1417781056636-0\'); });\n</script>\n</div>',1554228210),
+	(90,1,'TP_Lego_challenge_468x60','<!-- TP_Lego_challenge_468x60 -->\n<div id=\'div-gpt-ad-1417780805929-0\' style=\'width:468px; height:60px;\'>\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() { googletag.display(\'div-gpt-ad-1417780805929-0\'); });\n</script>\n</div>',1554228210),
+	(91,1,'_sn_resources_topiclinks_V9','<h4 class="heading-primary">Topic Quick Links</h4>\n{exp:category_construct:categories group_id="2"}\n<a class="btn btn-borders btn-default r-small {if construct:cat_url_title == segment_2}focus{/if} mr-xs mb-sm" href="{path=\'resources/{construct:cat_url_title}\'}">{construct:cat_name}</a>{/exp:category_construct:categories}\n',1554228210),
+	(92,1,'TP_Lego_reviews_468x60_header','<script type=\'text/javascript\'>\nvar googletag = googletag || {};\ngoogletag.cmd = googletag.cmd || [];\n(function() {\nvar gads = document.createElement(\'script\');\ngads.async = true;\ngads.type = \'text/javascript\';\nvar useSSL = \'https:\' == document.location.protocol;\ngads.src = (useSSL ? \'https:\' : \'http:\') + \n\'//www.googletagservices.com/tag/js/gpt.js\';\nvar node = document.getElementsByTagName(\'script\')[0];\nnode.parentNode.insertBefore(gads, node);\n})();\n</script>\n\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() {\ngoogletag.defineSlot(\'/1581346/TP_Lego_reviews_468x60\', [468, 60], \'div-gpt-ad-1417781056636-0\').addService(googletag.pubads());\ngoogletag.pubads().enableSingleRequest();\ngoogletag.enableServices();\n});\n</script>',1554228210),
+	(93,1,'_sn_aside_social_icons_and_signup','<!-- Aside - Social Icons: Start -->\n<h4>Follow Us</h4>\n<div class="social-icons">\n	<ul class="social-icons">\n		<li class="social-icons-facebook"><a href="{gv_facebook_url}" target="_blank"><i class="fa fa-facebook" title="Follow us on Facebook"></i><span class="social-label">Follow us on Facebook</span></a></li>\n		<li class="social-icons-twitter"><a href="{gv_twitter_url}" target="_blank"><i class="fa fa-twitter" title="Follow us on Twitter"></i><span class="social-label"><span class="hidden">Follow us on Twitter</span></a></li>\n		<li class="social-icons-linkedin"><a href="{gv_linkedin_url}" target="_blank"><i class="fa fa-linkedin" title="Follow us on LinkedIn"></i><span class="social-label"><span class="hidden">Follow us on LinkedIn</span></a></li>\n	</ul>\n</div>\n	<div class="newsletter">\n	<h4 class="">Newsletter</h4>\n	<p>{gv_Sidebar_Sign_Up_Text}</p>\n	<a href="{path=\'contact-us\'}" class="btn btn-lg btn-tertiary">Subscribe</a>\n</div>\n<!-- Aside - Social Icons: End -->',1554228210),
+	(94,1,'_sn_resource_topic_tags_V9','<i class="fa fa-tag"></i>{exp:category_construct:categories group_id="2" entry_id="{entry_id}" namespace="topic_tags"}<a href="{path=\'resources/{topic_tags:cat_url_title}\'}" class="ml-xs">{topic_tags:cat_name}</a>{if {topic_tags:level_count} < {topic_tags:level_total_results}},{/if}{/exp:category_construct:categories}',1554228210),
+	(95,1,'_sn_modalnotification','{if query_string == "t"}\n<div class="modal fade" id="thanks" tabindex="-1" role="dialog" aria-labelledby="largeModalLabel" aria-hidden="true">\n					<div class="modal-dialog modal-lg">\n						<div class="modal-content">\n							<div class="modal-header">\n								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\n								<h4 class="modal-title" id="largeModalLabel" property="name">Subscribe to the 2GC Email Newsletter</h4>\n							</div>\n							<div class="modal-body">\n			Thank you for subscribing to our newsletter!<button type="button" class="btn btn btn-primary pull-right" style="margin-top:-7px;" data-dismiss="modal" aria-hidden="true">Close</button>\n							</div>\n						</div>\n					</div>\n</div>\n{/if}',1554228210),
+	(96,1,'TP_Lego_learntolearn_468x60','<!-- TP_Lego_learntolearn_468x60 -->\n<div id=\'div-gpt-ad-1417780904051-0\' style=\'width:468px; height:60px;\'>\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() { googletag.display(\'div-gpt-ad-1417780904051-0\'); });\n</script>\n</div>',1554228210),
+	(97,1,'TP_Lego_maths_468x60','<!-- TP_Lego_maths_468x60 -->\n<div id=\'div-gpt-ad-1417781007065-0\' style=\'width:468px; height:60px;\'>\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() { googletag.display(\'div-gpt-ad-1417781007065-0\'); });\n</script>\n</div>',1554228210),
+	(98,1,'sn_pagination','{!-- Pagination: Start --}\n{paginate}\n<div class="row">\n    <div>\n                                  {pagination_links page_padding="3"  always_show_first_last="no"}\n                                    <ul class="pagination pagination-lg pull-right pr-md mt-md">\n                                      {first_page}\n                                        <li><a href="{pagination_url}">«</a></li>\n                                      {/first_page}\n                                \n                                      {if previous_page}\n                                      {previous_page}\n                                        <li {if current_page}class="active"{/if}><a href="{pagination_url}">{pagination_page_number}</a></li>\n                                      {/previous_page}\n                                      {/if}\n                                \n                                      {page}\n                                        <li {if current_page}class="active"{/if}><a href="{pagination_url}">{pagination_page_number}</a></li>\n                                      {/page}\n                                \n                                      {if next_page}\n                                      {next_page}\n                                        <li {if current_page}class="active"{/if}><a href="{pagination_url}">{pagination_page_number}</a></li>\n                                      {/next_page}\n                                      {/if}\n                                \n                                      {last_page}\n                                        <li><a href="{pagination_url}">»</a></li>\n                                      {/last_page}\n                                    </ul>\n                                  {/pagination_links}\n    </div>\n</div>\n                                {/paginate}\n\n{!-- Pagination: End --}\n',1554228210),
+	(99,1,'TP_Lego_hp_468x60','<!-- TP_Lego_hp_468x60 -->\n<div id=\'div-gpt-ad-1417780872058-0\' style=\'width:468px; height:60px;\'>\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() { googletag.display(\'div-gpt-ad-1417780872058-0\'); });\n</script>\n</div>',1554228210),
+	(100,1,'category_shadows_image','                        {exp:category_construct:categories entry_id="{what_we_do_item_selector:image_button_switcher:entry_id}"}\n                            {if construct:level_count == "1"}\n                                {exp:channel:categories show="{construct:cat_id}" style="linear"}\n                                    {category_image}\n                                {/exp:channel:categories}\n                            {/if}\n                        {/exp:category_construct:categories}',1554228210),
+	(101,1,'snp_blog_list_paginate','{!-- pagination --}\n{paginate}\n	<div class="paginate">\n		{pagination_links page_padding=\'1\'}\n			<ul>\n				{previous_page}\n					<li><a href="{pagination_url}">Previous Page</a></li>\n				{/previous_page}\n				{page}\n					<li><a href="{pagination_url}"{if current_page} class="act"{/if}>{pagination_page_number}</a></li>\n				{/page}\n				{next_page}\n					<li><a href="{pagination_url}">Next Page</a></li>\n				{/next_page}\n			</ul>\n		{/pagination_links}\n	</div>\n{/paginate}',1554228210),
+	(102,1,'TP_Lego_learntolearn_468x60_header','<script type=\'text/javascript\'>\nvar googletag = googletag || {};\ngoogletag.cmd = googletag.cmd || [];\n(function() {\nvar gads = document.createElement(\'script\');\ngads.async = true;\ngads.type = \'text/javascript\';\nvar useSSL = \'https:\' == document.location.protocol;\ngads.src = (useSSL ? \'https:\' : \'http:\') + \n\'//www.googletagservices.com/tag/js/gpt.js\';\nvar node = document.getElementsByTagName(\'script\')[0];\nnode.parentNode.insertBefore(gads, node);\n})();\n</script>\n\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() {\ngoogletag.defineSlot(\'/1581346/TP_Lego_learntolearn_468x60\', [468, 60], \'div-gpt-ad-1417780904051-0\').addService(googletag.pubads());\ngoogletag.pubads().enableSingleRequest();\ngoogletag.enableServices();\n});\n</script>',1554228210),
+	(103,1,'TP-nav','<div id="menu">\n    <ul id="mainnav">\n        <li id="nav_home"><a href="http://www.teachprimary.com/">Home</a></li>\n        <li id="nav_triedandtested"><a href="http://www.teachprimary.com/tried_and_tested">Tried &amp; Tested</a>\n            <ul>             \n                <li><a href="http://www.teachprimary.com/book_reviews">Book Reviews</a></li>\n            </ul>\n        </li>\n        <li id="nav_resources"><a href="http://www.teachprimary.com/learning_resources">Resources</a></li>\n        <li id="nav_news"><a href="http://www.teachprimary.com/news">News</a></li>\n        <li id="nav_interactive"><a href="http://www.teachprimary.com/interactive">Interactive</a></li>\n        <li id="nav_books"><a href="http://www.teachprimary.com/giveaway">Giveaways</a></li>\n        <li id="nav_events"><a href="http://www.teachprimary.com/events">Events</a></li>\n        <li id="nav_hotproducts"><a href="http://www.teachprimary.com/hot_products">Hot Products</a>\n            <ul>             \n                <!--<li><a href="http://www.teachprimary.com/resource-guide" target="_blank">2014 Resource Guide</a></li>-->\n                <li><a href="http://www.teachprimary.com/resource-guide/2015" target="_blank">2015 Resource Guide</a></li>\n\n            </ul>\n        </li>\n        <li id="nav_hotproducts"><a href="http://www.teachprimary.com/50-lessons">Lesson Plans</a>\n        <!-- <li id="nav_hotproducts"><a href="http://www.teachprimary.com/contact">Contact Us</a> \n        \n            <ul>             \n                <li><a href="http://www.teachprimary.com/advertising">Advertise</a></li> \n            </ul>-->\n        </li>\n        <li id="nav_subscribe" style="width: 90px;"><a href="http://www.teachprimary.com/subscribe/teachers">Subscribe</a>\n            <ul>             \n                <li><a href="http://www.teachprimary.com/subscribe/teachers">Print Edition</a></li>\n                <li><a href="http://www.teachprimary.com/subscribe/digital">Digital Edition</a></li>\n            </ul>\n        </li>\n    </ul>\n</div>',1554228210),
+	(104,1,'TP_Lego_challenge_468x60_header','<script type=\'text/javascript\'>\nvar googletag = googletag || {};\ngoogletag.cmd = googletag.cmd || [];\n(function() {\nvar gads = document.createElement(\'script\');\ngads.async = true;\ngads.type = \'text/javascript\';\nvar useSSL = \'https:\' == document.location.protocol;\ngads.src = (useSSL ? \'https:\' : \'http:\') + \n\'//www.googletagservices.com/tag/js/gpt.js\';\nvar node = document.getElementsByTagName(\'script\')[0];\nnode.parentNode.insertBefore(gads, node);\n})();\n</script>\n\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() {\ngoogletag.defineSlot(\'/1581346/TP_Lego_challenge_468x60\', [468, 60], \'div-gpt-ad-1417780805929-0\').addService(googletag.pubads());\ngoogletag.pubads().enableSingleRequest();\ngoogletag.enableServices();\n});\n</script>',1554228210),
+	(105,1,'snp_main_nav','					<ul class="main-nav">\n						<li><a{if segment_1 == \'\'} class="act"{/if} href="{homepage}">Home</a></li>\n						<li><a{if segment_1 == \'about\'} class="act"{/if} href="{path=\'about\'}">About</a></li>\n						<li><a{if segment_1 == \'blog\'} class="act"{/if} href="{path=\'blog\'}">Blog</a></li>\n						<li><a{if segment_1 == \'contact\'} class="act"{/if} href="{path=\'contact\'}">Contact</a></li>\n					</ul>',1554228210),
+	(106,1,'hmmm','This is strange.',1554228210),
+	(107,1,'TP_Lego_literacy_468x60_header','<script type=\'text/javascript\'>\nvar googletag = googletag || {};\ngoogletag.cmd = googletag.cmd || [];\n(function() {\nvar gads = document.createElement(\'script\');\ngads.async = true;\ngads.type = \'text/javascript\';\nvar useSSL = \'https:\' == document.location.protocol;\ngads.src = (useSSL ? \'https:\' : \'http:\') + \n\'//www.googletagservices.com/tag/js/gpt.js\';\nvar node = document.getElementsByTagName(\'script\')[0];\nnode.parentNode.insertBefore(gads, node);\n})();\n</script>\n\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() {\ngoogletag.defineSlot(\'/1581346/TP_Lego_literacy_468x60\', [468, 60], \'div-gpt-ad-1417780951914-0\').addService(googletag.pubads());\ngoogletag.pubads().enableSingleRequest();\ngoogletag.enableServices();\n});\n</script>',1554228210),
+	(108,1,'TP_Lego_computing_468x60','<!-- TP_Lego_computing_468x60 -->\n<div id=\'div-gpt-ad-1417780851151-0\' style=\'width:468px; height:60px;\'>\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() { googletag.display(\'div-gpt-ad-1417780851151-0\'); });\n</script>\n</div>',1554228210),
+	(109,1,'TP_Lego_maths_468x60_header','<script type=\'text/javascript\'>\nvar googletag = googletag || {};\ngoogletag.cmd = googletag.cmd || [];\n(function() {\nvar gads = document.createElement(\'script\');\ngads.async = true;\ngads.type = \'text/javascript\';\nvar useSSL = \'https:\' == document.location.protocol;\ngads.src = (useSSL ? \'https:\' : \'http:\') + \n\'//www.googletagservices.com/tag/js/gpt.js\';\nvar node = document.getElementsByTagName(\'script\')[0];\nnode.parentNode.insertBefore(gads, node);\n})();\n</script>\n\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() {\ngoogletag.defineSlot(\'/1581346/TP_Lego_maths_468x60\', [468, 60], \'div-gpt-ad-1417781007065-0\').addService(googletag.pubads());\ngoogletag.pubads().enableSingleRequest();\ngoogletag.enableServices();\n});\n</script>',1554228210),
+	(110,1,'lol','lalalala\n',1554228210),
+	(111,1,'TP_Lego_literacy_468x60','<!-- TP_Lego_literacy_468x60 -->\n<div id=\'div-gpt-ad-1417780951914-0\' style=\'width:468px; height:60px;\'>\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() { googletag.display(\'div-gpt-ad-1417780951914-0\'); });\n</script>\n</div>',1554228210),
+	(112,1,'sn_onward_links_switcher','{!-- Onward links switcher: Start --}\n        {if sp-image_button_switcher_title}<h4>{sp-image_button_switcher_title}</h4>{/if}\n        <div class="pb-md col-md-12 pl-none pr-none">\n        {sp-image-button-switcher limit="4"}\n          {if sp-image-button-switcher:channel_short_name == "category_shadows"}\n             {exp:stash:category_image parse="yes" trim="yes" output="no" parse_depth="2"}\n                  {exp:category_construct:categories entry_id="{sp-image-button-switcher:entry_id}" parse="inward"}\n                      {if construct:level_count == "1"}\n                          {exp:channel:categories show="{construct:cat_id}" style="linear"}\n                              {category_image}\n                          {/exp:channel:categories}\n                      {/if}\n                  {/exp:category_construct:categories}\n              {/exp:stash:category_image}\n          {/if}\n            <div class="col-sm-{if sp-image-button-switcher:total_results > 4}3{if:else}{exp:math formula="(12/[1])" params="{sp-image-button-switcher:total_results}"}{/if} col-xs-6 portfolio-item pl-none pr-none">\n					<a href="\n    					{if sp-image-button-switcher:channel_short_name == "category_shadows"}{path=\'resources/{exp:category_construct:categories entry_id="{sp-image-button-switcher:entry_id}"}{if construct:level_count == "1"}{construct:cat_url_title}{/if}{/exp:category_construct:categories}\'}\n    					{if:elseif sp-image-button-switcher:channel_short_name == "resources" || sp-image-button-switcher:channel_short_name == "features"}{path=\'resources/{exp:category_construct:categories entry_id="{sp-image-button-switcher:entry_id}"}{if construct:level_count == "1"}{construct:cat_url_title}{/if}{/exp:category_construct:categories}/{sp-image-button-switcher:url_title}\'}\n    					{if:elseif sp-image-button-switcher:channel_short_name == "training"}{path=\'training/{sp-image-button-switcher:url_title}\'}\n    					{if:else}{path=\'{sp-image-button-switcher:channel_short_name}/{sp-image-button-switcher:url_title}\'}{/if}\n        					">\n					<span class="thumb-info" style="border:0;">\n						<span class="thumb-info-wrapper">\n                            <img \n                                src="\n{if {sp-image-button-switcher:total_results} == 1}\n    {exp:ce_img:pair \n          src=\'{if sp-image-button-switcher:channel_short_name == "category_shadows"}{exp:stash:category_image}{if:else}{sp-image-button-switcher:resource_hero_image:url}{/if}\'\n          allow_scale_larger=\'yes\' \n          fallback_src="{gv_fallback_image}" \n          width=\'880\'\n          height=\'165\'\n          save_type=\'jpg\'\n          crop=\'yes|center,center||yes\'\n          parse=\'inward\'}\n          {exp:ce_img:single src="{made}"\n              width="880"\n              height="165"\n              crop="yes|center,center||no"\n              interlace="yes" \n              url_only="yes"\n              parse="inward"\n              hash_filename="yes"}\n    {/exp:ce_img:pair}\n{if:elseif {sp-image-button-switcher:total_results} == 2}\n    {exp:ce_img:pair \n          src=\'{if sp-image-button-switcher:channel_short_name == "category_shadows"}{exp:stash:category_image}{if:else}{sp-image-button-switcher:resource_hero_image:url}{/if}\'\n          allow_scale_larger=\'yes\' \n          fallback_src="{gv_fallback_image}" \n          width=\'440\'\n          height=\'165\'\n          save_type=\'jpg\'\n          crop=\'yes|center,center||yes\'\n          parse=\'inward\'}\n          {exp:ce_img:single src="{made}"\n              width="440"\n              height="165"\n              crop="yes|center,center||no"\n              interlace="yes" \n              url_only="yes"\n              parse="inward"\n              hash_filename="yes"}\n    {/exp:ce_img:pair}\n{if:elseif {sp-image-button-switcher:total_results} == 3}\n    {exp:ce_img:pair \n          src=\'{if sp-image-button-switcher:channel_short_name == "category_shadows"}{exp:stash:category_image}{if:else}{sp-image-button-switcher:resource_hero_image:url}{/if}\'\n          allow_scale_larger=\'yes\' \n          fallback_src="{gv_fallback_image}" \n          width=\'293\'\n          height=\'165\'\n          save_type=\'jpg\'\n          crop=\'yes|center,center||yes\'\n          parse=\'inward\'}\n          {exp:ce_img:single src="{made}"\n              width="293"\n              height="165"\n              crop="yes|center,center||no"\n              interlace="yes" \n              url_only="yes"\n              parse="inward"\n              hash_filename="yes"}\n    {/exp:ce_img:pair}\n{if:else}\n    {exp:ce_img:pair \n          src=\'{if sp-image-button-switcher:channel_short_name == "category_shadows"}{exp:stash:category_image}{if:else}{sp-image-button-switcher:resource_hero_image:url}{/if}\'\n          allow_scale_larger=\'yes\' \n          fallback_src="{gv_fallback_image}" \n          width=\'220\'\n          height=\'165\'\n          save_type=\'jpg\'\n          crop=\'yes|center,center||yes\'\n          parse=\'inward\'}\n          {exp:ce_img:single src="{made}"\n              width="220"\n              height="165"\n              crop="yes|center,center||no"\n              interlace="yes" \n              url_only="yes"\n              parse="inward"\n              hash_filename="yes"}\n    {/exp:ce_img:pair}\n{/if}                \n                                            "\n                                    srcset="\n{if {sp-image-button-switcher:total_results} == 1}\n    {exp:ce_img:pair \n          src=\'{if sp-image-button-switcher:channel_short_name == "category_shadows"}{exp:stash:category_image}{if:else}{sp-image-button-switcher:resource_hero_image:url}{/if}\'\n          allow_scale_larger=\'yes\' \n          fallback_src="{gv_fallback_image}" \n          width=\'1760\'\n          height=\'330\'\n          save_type=\'jpg\'\n          crop=\'yes|center,center||yes\'\n          parse=\'inward\'}\n          {exp:ce_img:single src="{made}"\n              width="1760"\n              height="330"\n              crop="yes|center,center||no"\n              interlace="yes" \n              url_only="yes"\n              parse="inward"\n              hash_filename="yes"}\n    {/exp:ce_img:pair}\n{if:elseif {sp-image-button-switcher:total_results} == 2}\n    {exp:ce_img:pair \n          src=\'{if sp-image-button-switcher:channel_short_name == "category_shadows"}{exp:stash:category_image}{if:else}{sp-image-button-switcher:resource_hero_image:url}{/if}\'\n          allow_scale_larger=\'yes\' \n          fallback_src="{gv_fallback_image}" \n          width=\'880\'\n          height=\'330\'\n          save_type=\'jpg\'\n          crop=\'yes|center,center||yes\'\n          parse=\'inward\'}\n          {exp:ce_img:single src="{made}"\n              width="880"\n              height="330"\n              crop="yes|center,center||no"\n              interlace="yes" \n              url_only="yes"\n              parse="inward"\n              hash_filename="yes"}\n    {/exp:ce_img:pair}\n{if:elseif {sp-image-button-switcher:total_results} == 3}\n    {exp:ce_img:pair \n          src=\'{if sp-image-button-switcher:channel_short_name == "category_shadows"}{exp:stash:category_image}{if:else}{sp-image-button-switcher:resource_hero_image:url}{/if}\'\n          allow_scale_larger=\'yes\' \n          fallback_src="{gv_fallback_image}" \n          width=\'586\'\n          height=\'330\'\n          save_type=\'jpg\'\n          crop=\'yes|center,center||yes\'\n          parse=\'inward\'}\n          {exp:ce_img:single src="{made}"\n              width="586"\n              height="330"\n              crop="yes|center,center||no"\n              interlace="yes" \n              url_only="yes"\n              parse="inward"\n              hash_filename="yes"}\n    {/exp:ce_img:pair}\n{if:else}\n    {exp:ce_img:pair \n          src=\'{if sp-image-button-switcher:channel_short_name == "category_shadows"}{exp:stash:category_image}{if:else}{sp-image-button-switcher:resource_hero_image:url}{/if}\'\n          allow_scale_larger=\'yes\' \n          fallback_src="{gv_fallback_image}" \n          width=\'440\'\n          height=\'330\'\n          save_type=\'jpg\'\n          crop=\'yes|center,center||yes\'\n          parse=\'inward\'}\n          {exp:ce_img:single src="{made}"\n              width="440"\n              height="330"\n              crop="yes|center,center||no"\n              interlace="yes" \n              url_only="yes"\n              parse="inward"\n              hash_filename="yes"}\n    {/exp:ce_img:pair}\n{/if}                \n                                    2x"\n                                width="{if sp-image-button-switcher:total_results == "1"}880{if:elseif sp-image-button-switcher:total_results == "2"}440{if:elseif sp-image-button-switcher:total_results == "3"}293{if:else}220{/if}" class="" alt="{title}" property="image" />\n							<span class="thumb-info-title">\n								<span class="thumb-info-inner">{if sp-image-button-switcher:sp-headline}{sp-image-button-switcher:sp-headline}{if:else}{sp-image-button-switcher:title}{/if}</span>\n							</span>\n							<span class="thumb-info-action">\n								<span class="thumb-info-action-icon"><i class="fa fa-link"></i></span>\n							</span>\n						</span>\n					</span>\n				</a>\n            </div>\n        {/sp-image-button-switcher}\n{!-- Onward links switcher: End --}\n',1554228210),
+	(113,1,'snp_blog_list','<div class="entry">\n	{!-- title --}\n	<h2><a href="{path=\'{p_url}/{p_url_entry}/{url_title}\'}">{title}</a></h2>\n	<p><b>on:</b> {entry_date format=\'%n/%j/%Y\'}, <b>by:</b> <a href="{path=\'member/{author_id}\'}">{author}</a>, <a href="{path=\'{p_url}/{p_url_entry}/{url_title}#comments\'}">{comment_total} comment{if comment_total != 1}s{/if}</a></p>\n</div>',1554228210),
+	(114,1,'TP_Lego_computing_468x60_header','<script type=\'text/javascript\'>\nvar googletag = googletag || {};\ngoogletag.cmd = googletag.cmd || [];\n(function() {\nvar gads = document.createElement(\'script\');\ngads.async = true;\ngads.type = \'text/javascript\';\nvar useSSL = \'https:\' == document.location.protocol;\ngads.src = (useSSL ? \'https:\' : \'http:\') + \n\'//www.googletagservices.com/tag/js/gpt.js\';\nvar node = document.getElementsByTagName(\'script\')[0];\nnode.parentNode.insertBefore(gads, node);\n})();\n</script>\n\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() {\ngoogletag.defineSlot(\'/1581346/TP_Lego_computing_468x60\', [468, 60], \'div-gpt-ad-1417780851151-0\').addService(googletag.pubads());\ngoogletag.pubads().enableSingleRequest();\ngoogletag.enableServices();\n});\n</script>',1554228210),
+	(115,1,'_sn_resources_quicklinks_sm_V9','<div class="visible-xs visible-sm container p-none pb-md contentv">\n	<div class="col-sm-2 menu-prompt p-none pull-left">Resource Quick Links: </div><div>{exp:category_construct:categories group_id="1"}<a class="btn btn-borders btn-default btn-sm mr-sm {if construct:cat_url_title == segment_2}focus{/if}" href="{path=\'resources/{construct:cat_url_title}\'}">{construct:cat_name}</a>{/exp:category_construct:categories}</div>\n</div>',1554228210),
+	(116,1,'_sn_resources_topiclinks_sm_V9','<div class="visible-xs visible-sm container p-none pb-md contentv">\n	<div class="col-sm-2 menu-prompt p-none pull-left">Topic Quick Links: </div><div>{exp:category_construct:categories group_id="2"}<a class="btn btn-borders btn-default btn-sm mr-sm {if construct:cat_url_title == segment_2}focus{/if}" href="{path=\'resources/{construct:cat_url_title}\'}">{construct:cat_name}</a>{/exp:category_construct:categories}</div>\n</div>\n',1554228210),
+	(117,1,'TP_Lego_hp_468x60_header','<script type=\'text/javascript\'>\nvar googletag = googletag || {};\ngoogletag.cmd = googletag.cmd || [];\n(function() {\nvar gads = document.createElement(\'script\');\ngads.async = true;\ngads.type = \'text/javascript\';\nvar useSSL = \'https:\' == document.location.protocol;\ngads.src = (useSSL ? \'https:\' : \'http:\') + \n\'//www.googletagservices.com/tag/js/gpt.js\';\nvar node = document.getElementsByTagName(\'script\')[0];\nnode.parentNode.insertBefore(gads, node);\n})();\n</script>\n\n<script type=\'text/javascript\'>\ngoogletag.cmd.push(function() {\ngoogletag.defineSlot(\'/1581346/TP_Lego_hp_468x60\', [468, 60], \'div-gpt-ad-1417780872058-0\').addService(googletag.pubads());\ngoogletag.pubads().enableSingleRequest();\ngoogletag.enableServices();\n});\n</script>',1554228210);
 ALTER TABLE `exp_snippets` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -2503,14 +2770,8 @@ UNLOCK TABLES;
 LOCK TABLES `exp_stats` WRITE;
 ALTER TABLE `exp_stats` DISABLE KEYS;
 INSERT INTO `exp_stats` (`stat_id`, `site_id`, `total_members`, `recent_member_id`, `recent_member`, `total_entries`, `total_forum_topics`, `total_forum_posts`, `total_comments`, `last_entry_date`, `last_forum_post_date`, `last_comment_date`, `last_visitor_date`, `most_visitors`, `most_visitor_date`, `last_cache_clear`) VALUES
-	(1,1,1,1,'Admin',1,0,0,0,1409242030,0,0,0,0,0,1409242030);
+	(1,1,1,1,'Admin',1,0,0,0,1409242030,0,0,0,0,0,1554833038);
 ALTER TABLE `exp_stats` ENABLE KEYS;
-UNLOCK TABLES;
-
-
-LOCK TABLES `exp_status_no_access` WRITE;
-ALTER TABLE `exp_status_no_access` DISABLE KEYS;
-ALTER TABLE `exp_status_no_access` ENABLE KEYS;
 UNLOCK TABLES;
 
 
@@ -2521,6 +2782,16 @@ INSERT INTO `exp_statuses` (`status_id`, `status`, `status_order`, `highlight`) 
 	(2,'closed',2,'990000'),
 	(3,'Featured',3,'000000');
 ALTER TABLE `exp_statuses` ENABLE KEYS;
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_statuses_roles` WRITE;
+ALTER TABLE `exp_statuses_roles` DISABLE KEYS;
+INSERT INTO `exp_statuses_roles` (`role_id`, `status_id`) VALUES
+	(5,1),
+	(5,2),
+	(5,3);
+ALTER TABLE `exp_statuses_roles` ENABLE KEYS;
 UNLOCK TABLES;
 
 
@@ -2535,40 +2806,9 @@ ALTER TABLE `exp_template_groups` ENABLE KEYS;
 UNLOCK TABLES;
 
 
-LOCK TABLES `exp_template_member_groups` WRITE;
-ALTER TABLE `exp_template_member_groups` DISABLE KEYS;
-ALTER TABLE `exp_template_member_groups` ENABLE KEYS;
-UNLOCK TABLES;
-
-
-LOCK TABLES `exp_template_no_access` WRITE;
-ALTER TABLE `exp_template_no_access` DISABLE KEYS;
-INSERT INTO `exp_template_no_access` (`template_id`, `member_group`) VALUES
-	(1,2),
-	(2,2),
-	(3,2),
-	(4,2),
-	(4,3),
-	(4,4),
-	(4,5),
-	(5,2),
-	(6,2),
-	(7,2),
-	(8,2),
-	(9,2),
-	(10,2),
-	(11,2),
-	(12,2),
-	(13,2),
-	(14,2),
-	(15,2),
-	(16,2),
-	(16,3),
-	(16,4),
-	(16,5),
-	(17,2),
-	(18,2);
-ALTER TABLE `exp_template_no_access` ENABLE KEYS;
+LOCK TABLES `exp_template_groups_roles` WRITE;
+ALTER TABLE `exp_template_groups_roles` DISABLE KEYS;
+ALTER TABLE `exp_template_groups_roles` ENABLE KEYS;
 UNLOCK TABLES;
 
 
@@ -2603,6 +2843,61 @@ ALTER TABLE `exp_templates` ENABLE KEYS;
 UNLOCK TABLES;
 
 
+LOCK TABLES `exp_templates_roles` WRITE;
+ALTER TABLE `exp_templates_roles` DISABLE KEYS;
+INSERT INTO `exp_templates_roles` (`role_id`, `template_id`) VALUES
+	(3,1),
+	(3,2),
+	(3,3),
+	(3,5),
+	(3,6),
+	(3,7),
+	(3,8),
+	(3,9),
+	(3,10),
+	(3,11),
+	(3,12),
+	(3,13),
+	(3,14),
+	(3,15),
+	(3,17),
+	(3,18),
+	(4,1),
+	(4,2),
+	(4,3),
+	(4,5),
+	(4,6),
+	(4,7),
+	(4,8),
+	(4,9),
+	(4,10),
+	(4,11),
+	(4,12),
+	(4,13),
+	(4,14),
+	(4,15),
+	(4,17),
+	(4,18),
+	(5,1),
+	(5,2),
+	(5,3),
+	(5,5),
+	(5,6),
+	(5,7),
+	(5,8),
+	(5,9),
+	(5,10),
+	(5,11),
+	(5,12),
+	(5,13),
+	(5,14),
+	(5,15),
+	(5,17),
+	(5,18);
+ALTER TABLE `exp_templates_roles` ENABLE KEYS;
+UNLOCK TABLES;
+
+
 LOCK TABLES `exp_throttle` WRITE;
 ALTER TABLE `exp_throttle` DISABLE KEYS;
 ALTER TABLE `exp_throttle` ENABLE KEYS;
@@ -2627,7 +2922,9 @@ INSERT INTO `exp_update_log` (`log_id`, `timestamp`, `message`, `method`, `line`
 	(13,1505759243,'Could not add column \'exp_member_groups.can_moderate_spam\'. Column already exists.','Smartforge::add_column',618,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
 	(14,1505759243,'Could not drop key \'file_id\' from table \'exp_file_categories\'. Key does not exist.','Smartforge::drop_key',679,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
 	(15,1505759243,'Could not create key \'PRIMARY\' on table \'exp_file_categories\'. Key already exists.','Smartforge::add_key',682,'/Users/seth/EllisLab/ExpressionEngine/system/ee/installer/updates/ud_4_00_00.php'),
-	(16,1505759245,'Update complete. Now running version 4.0.0.',NULL,NULL,NULL);
+	(16,1505759245,'Update complete. Now running version 4.0.0.',NULL,NULL,NULL),
+	(17,1554228195,'Updating to 6.0.0',NULL,NULL,NULL),
+	(18,1554228210,'Update complete. Now running version 6.0.0.',NULL,NULL,NULL);
 ALTER TABLE `exp_update_log` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -2643,12 +2940,6 @@ ALTER TABLE `exp_update_notices` ENABLE KEYS;
 UNLOCK TABLES;
 
 
-LOCK TABLES `exp_upload_no_access` WRITE;
-ALTER TABLE `exp_upload_no_access` DISABLE KEYS;
-ALTER TABLE `exp_upload_no_access` ENABLE KEYS;
-UNLOCK TABLES;
-
-
 LOCK TABLES `exp_upload_prefs` WRITE;
 ALTER TABLE `exp_upload_prefs` DISABLE KEYS;
 INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, `url`, `allowed_types`, `default_modal_view`, `max_size`, `max_height`, `max_width`, `properties`, `pre_format`, `post_format`, `file_properties`, `file_pre_format`, `file_post_format`, `cat_group`, `batch_location`, `module_id`) VALUES
@@ -2661,6 +2952,23 @@ ALTER TABLE `exp_upload_prefs` ENABLE KEYS;
 UNLOCK TABLES;
 
 
+LOCK TABLES `exp_upload_prefs_roles` WRITE;
+ALTER TABLE `exp_upload_prefs_roles` DISABLE KEYS;
+INSERT INTO `exp_upload_prefs_roles` (`role_id`, `upload_id`) VALUES
+	(1,1),
+	(1,2),
+	(1,3),
+	(1,4),
+	(1,5),
+	(1,6),
+	(5,1),
+	(5,2);
+ALTER TABLE `exp_upload_prefs_roles` ENABLE KEYS;
+UNLOCK TABLES;
+
+
 
 
 SET FOREIGN_KEY_CHECKS = @PREVIOUS_FOREIGN_KEY_CHECKS;
+
+

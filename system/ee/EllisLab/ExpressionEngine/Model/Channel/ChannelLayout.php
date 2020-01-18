@@ -35,12 +35,12 @@ class ChannelLayout extends Model implements LayoutInterface {
 			'type' => 'belongsTo',
 			'key' => 'channel_id'
 		),
-		'MemberGroups' => array(
+		'PrimaryRoles' => array(
 			'type' => 'hasAndBelongsToMany',
-			'model' => 'MemberGroup',
+			'model' => 'Role',
 			'pivot' => array(
-				'table' => 'layout_publish_member_groups',
-				'key' => 'group_id',
+				'table' => 'layout_publish_member_roles',
+				'key' => 'role_id',
 			)
 		),
 	);

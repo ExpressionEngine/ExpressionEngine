@@ -74,7 +74,7 @@ return [
 		{
 			 return new EntryListing\EntryListing(
 				ee()->config->item('site_id'),
-				(ee()->session->userdata['group_id'] == 1),
+				(ee('Permission')->isSuperAdmin()),
 				array_keys(ee()->session->userdata['assigned_channels']),
 				ee()->localize->now,
 				$search_value,
@@ -262,10 +262,19 @@ return [
 			return new Profiler\Profiler(ee()->lang, ee('View'), ee()->uri, ee('Format'));
 		},
 
-		'Permission' => function($ee)
+		'Permission' => function($ee, $site_id = NULL)
 		{
-			$userdata = ee()->session->userdata;
-			return new Permission\Permission($userdata);
+			$userdata = ee()->session->all_userdata();
+			$member = ee()->session->getMember();
+			$site_id = ($site_id) ?: ee()->config->item('site_id');
+
+			return new Permission\Permission(
+				$ee->make('Model'),
+				$userdata,
+				($member) ? $member->getPermissions() : [],
+				($member) ? $member->Roles->getDictionary('role_id', 'name') : [],
+				$site_id
+			);
 		},
 
 		'Updater/Runner' => function($ee)
@@ -617,7 +626,6 @@ return [
 			'HTMLButton' => 'Model\Member\HTMLButton',
 			'Member' => 'Model\Member\Member',
 			'MemberField' => 'Model\Member\MemberField',
-			'MemberGroup' => 'Model\Member\MemberGroup',
 			'MemberNewsView' => 'Model\Member\NewsView',
 			'OnlineMember' => 'Model\Member\Online',
 
@@ -640,6 +648,14 @@ return [
 			'ConsentAuditLog' => 'Model\Consent\ConsentAuditLog',
 			'ConsentRequest' => 'Model\Consent\ConsentRequest',
 			'ConsentRequestVersion' => 'Model\Consent\ConsentRequestVersion',
+
+			// ..\Permission
+			'Permission' => 'Model\Permission\Permission',
+
+			// ..\Role
+			'Role' => 'Model\Role\Role',
+			'RoleGroup' => 'Model\Role\RoleGroup',
+			'RoleSetting' => 'Model\Role\RoleSetting',
 
 			// ..\Config
 			'Config' => 'Model\Config\Config',

@@ -45,9 +45,9 @@ $lang = array(
 
 
 /* Communicate */
-'add_member_groups' => 'Add member group(s)',
+'add_member_roles' => 'Add member role(s)',
 
-'add_member_groups_desc' => 'Send Email to <b>all</b> members in chosen group(s).',
+'add_member_roles_desc' => 'Send Email to <b>all</b> members in chosen role(s).',
 
 'attachment' => 'Attachment',
 
@@ -332,6 +332,8 @@ $lang = array(
 
 'member_group' => 'Member group',
 
+'role' => 'Role',
+
 'member_import_error' => 'Attention: Import not completed',
 
 'member_import_error_desc' => 'We were unable to complete the import, please review and fix errors below.',
@@ -405,6 +407,8 @@ $lang = array(
 'sql_query_form' => 'SQL Query Form',
 
 'sql_query_form_abbr' => '<abbr title="Structured Query Language">SQL</abbr> Query Form',
+
+'query' => 'Query',
 
 'sql_query_to_run' => 'Query to run',
 

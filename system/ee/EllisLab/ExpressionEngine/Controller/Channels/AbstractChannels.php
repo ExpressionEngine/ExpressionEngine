@@ -38,7 +38,7 @@ abstract class AbstractChannels extends CP_Controller {
 		// Allow AJAX requests for category editing
 		if (AJAX_REQUEST && in_array(ee()->router->method, array('createCat', 'editCat')))
 		{
-			if ( ! ee()->cp->allowed_group_any(
+			if ( ! ee('Permission')->hasAny(
 				'can_create_categories',
 				'can_edit_categories'
 			))
@@ -48,11 +48,11 @@ abstract class AbstractChannels extends CP_Controller {
 		}
 		else
 		{
-			if ( ! ee()->cp->allowed_group('can_admin_channels'))
+			if ( ! ee('Permission')->can('admin_channels'))
 			{
 				show_error(lang('unauthorized_access'), 403);
 			}
-			elseif ( ! ee()->cp->allowed_group_any(
+			elseif ( ! ee('Permission')->hasAny(
 				'can_create_channels',
 				'can_edit_channels',
 				'can_delete_channels',

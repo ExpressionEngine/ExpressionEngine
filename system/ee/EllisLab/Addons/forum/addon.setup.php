@@ -38,7 +38,7 @@ return array(
 	'models.dependencies' => array(
 		'Administrator'   => array(
 			'ee:Member',
-			'ee:MemberGroup'
+			'ee:Role'
 		),
 		'Attachment'   => array(
 			'ee:Member'
@@ -51,7 +51,7 @@ return array(
 		),
 		'Moderator'   => array(
 			'ee:Member',
-			'ee:MemberGroup'
+			'ee:Role'
 		),
 		'Poll'   => array(
 			'ee:Member'

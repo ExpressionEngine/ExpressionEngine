@@ -163,7 +163,7 @@ class Rte_upd {
 
 		// Member access
 		ee()->db->delete(
-			'module_member_groups',
+			'module_member_roles',
 			array('module_id' => $module_id)
 		);
 

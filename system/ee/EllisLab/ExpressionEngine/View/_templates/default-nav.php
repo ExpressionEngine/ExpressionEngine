@@ -2,6 +2,7 @@
 
 <?php if (isset($header)): ?>
 <div class="main-nav">
+	<div class="main-nav__wrap">
 	<a class="main-nav__mobile-menu js-toggle-main-sidebar hidden">
 		<svg xmlns="http://www.w3.org/2000/svg" width="18.585" height="13.939" viewBox="0 0 18.585 13.939"><g transform="translate(-210.99 -17.71)"><path d="M3,12.1H19.585" transform="translate(208.99 12.575)" fill="none" stroke-linecap="round" stroke-width="2"/><path d="M3,6H19.585" transform="translate(208.99 12.71)" fill="none" stroke-linecap="round" stroke-width="2"/><path d="M3,18H9.386" transform="translate(208.99 12.649)" fill="none" stroke-linecap="round" stroke-width="2"/></g></svg>
 	</a>
@@ -37,7 +38,7 @@
 			<?php endif ?>
 			<?php if (isset($header['action_button'])): ?>
 				<?php if (isset($header['action_button']['choices'])): ?>
-					<button type="button" class="button button--action js-dropdown-toggle" data-dropdown-pos="bottom-end"><?=$header['action_button']['text']?> <i class="fas fa-caret-down icon-right"></i></button>
+					<button type="button" class="button button--action js-dropdown-toggle has-sub" data-dropdown-pos="bottom-end"><?=$header['action_button']['text']?></button>
 					<div class="dropdown">
 						<?php if (count($header['action_button']['choices']) > 8): ?>
 							<div class="dropdown__search">
@@ -83,18 +84,18 @@
 				<?php endforeach ?>
 			<?php endif ?>
 	</div>
-
+	</div>
 
 	<div class="main-nav__account">
-			<a type="button" data-dropdown-offset="21px, -46px" data-dropdown-pos="bottom-end" class="main-nav__account-icon js-dropdown-toggle">
+			<button type="button" data-dropdown-offset="21px, -46px" data-dropdown-pos="bottom-end" class="main-nav__account-icon js-dropdown-toggle">
 				<img src="<?= $cp_avatar_path ?>" alt="<?=$cp_screen_name?>">
-			</a>
+			</button>
 
 			<div class="dropdown account-menu">
 				<div class="account-menu__header">
 					<div class="account-menu__header-title">
 						<h2><?=$cp_screen_name?></h2>
-						<span><?=$cp_member_group_title?></span>
+						<span><?=$cp_member_primary_role_title?></span>
 					</div>
 
 					<img class="account-menu__icon js-hide-dropdowns" src="<?= $cp_avatar_path ?>" alt="">

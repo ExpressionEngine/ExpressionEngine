@@ -1545,7 +1545,7 @@ class Comment {
 		/**  Can the user post comments?
 		/** ----------------------------------------*/
 
-		if ( ! ee('Permission')->has('can_post_comments'))
+		if ( ! ee('Permission')->can('post_comments'))
 		{
 			$error[] = ee()->lang->line('cmt_no_authorized_for_comments');
 
@@ -1684,7 +1684,7 @@ class Comment {
 		/** ----------------------------------------*/
 		if ($query->row('comment_timelock') != '' AND $query->row('comment_timelock') > 0)
 		{
-			if (ee()->session->userdata['group_id'] != 1)
+			if ( ! ee('Permission')->isSuperAdmin())
 			{
 				$time = ee()->localize->now - $query->row('comment_timelock') ;
 
@@ -1705,7 +1705,7 @@ class Comment {
 		/** ----------------------------------------*/
 		if (ee()->config->item('deny_duplicate_data') == 'y')
 		{
-			if (ee()->session->userdata['group_id'] != 1)
+			if ( ! ee('Permission')->isSuperAdmin())
 			{
 				ee()->db->where('comment', $_POST['comment']);
 				$result = ee()->db->count_all_results('comments');
@@ -1724,13 +1724,22 @@ class Comment {
 
 		$channel_id         = $query->row('channel_id') ;
 		$require_membership = $query->row('comment_require_membership') ;
-		$comment_moderate   = (ee()->session->userdata['group_id'] == 1 OR ee()->session->userdata['exclude_from_moderation'] == 'y') ? 'n' : $force_moderation;
+		$comment_moderate   = (ee('Permission')->isSuperAdmin() OR ee()->session->userdata['exclude_from_moderation'] == 'y') ? 'n' : $force_moderation;
 		$entry_id           = $query->row('entry_id');
 		$comment_site_id    = $query->row('site_id');
 
 		$comment_string = ee('Security/XSS')->clean($_POST['comment']);
 
-		$is_spam = ee()->session->userdata('group_id') != 1 && ee('Spam')->isSpam($comment_string);
+		// This may be verbose (it could be a simple ternary) but it reads better:
+		// Super Admins are exempt from Spam checking.
+		if (ee('Permission')->isSuperAdmin())
+		{
+			$is_spam = FALSE;
+		}
+		else
+		{
+			$is_spam = ee('Spam')->isSpam($comment_string);
+		}
 
 		if ($is_spam === TRUE)
 		{
@@ -1768,7 +1777,7 @@ class Comment {
 
 			// Membership is pending
 
-			if (ee()->session->userdata['group_id'] == 4)
+			if (ee()->session->getMember()->isPending())
 			{
 				return ee()->output->show_user_error('general', ee()->lang->line('cmt_account_not_active'));
 			}
@@ -2104,7 +2113,7 @@ class Comment {
 
 		// non-member comments will expose email addresses, so make sure the visitor should
 		// be able to see this data before including it
-		$expose_emails = (ee()->session->userdata('group_id') == 1) ? TRUE : FALSE;
+		$expose_emails = (ee('Permission')->isSuperAdmin()) ? TRUE : FALSE;
 
 		$vars = array();
 		$total_results = count($subscribed);
@@ -2250,7 +2259,7 @@ class Comment {
 		$edited_status = (ee()->input->get_post('status') == 'close');
 		$edited_comment = ee()->input->get_post('comment');
 		$can_edit = FALSE;
-		$can_moderate = ee('Permission')->has('can_moderate_comments');
+		$can_moderate = ee('Permission')->can('moderate_comments');
 
 		$comment = ee('Model')->get('Comment', ee()->input->get_post('comment_id'))
 			->with('Author', 'Channel', 'Entry')

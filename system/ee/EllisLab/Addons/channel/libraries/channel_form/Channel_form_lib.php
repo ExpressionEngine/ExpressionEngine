@@ -145,7 +145,9 @@ class Channel_form_lib
 		$this->fetch_logged_out_member(ee()->TMPL->fetch_param('logged_out_member_id'));
 
 		$member_id = ee()->session->userdata('member_id') ?: $this->logged_out_member_id;
-		$this->member = ee('Model')->get('Member', $member_id)->with('MemberGroup')->first();
+		$this->member = ee('Model')->get('Member', $member_id)
+			->with('PrimaryRole')
+			->first();
 
 		if ( ! $this->member)
 		{
@@ -153,10 +155,10 @@ class Channel_form_lib
 			return ee()->TMPL->no_results();
 		}
 
-		$assigned_channels = $this->member->MemberGroup->AssignedChannels->pluck('channel_id');
+		$assigned_channels = $this->member->getAssignedChannels()->pluck('channel_id');
 
 		// Can they post?
-		if ( ! in_array($this->channel('channel_id'), $assigned_channels) && (int) $this->member->MemberGroup->getId() != 1)
+		if ( ! in_array($this->channel('channel_id'), $assigned_channels) && ! ee('Permission')->isSuperAdmin())
 		{
 			$this->switch_site($current_site_id);
 			return ee()->TMPL->no_results();
@@ -198,7 +200,7 @@ class Channel_form_lib
 
 		if ($this->edit && $this->bool_string(ee()->TMPL->fetch_param('author_only')) && $this->entry('author_id') != $member_id)
 		{
-			if (ee()->session->userdata('group_id') != 1)
+			if ( ! ee('Permission')->isSuperAdmin())
 			{
 				throw new Channel_form_exception(lang('channel_form_author_only'));
 			}
@@ -773,7 +775,7 @@ class Channel_form_lib
 		}
 
 		//set group-based return url
-		$this->form_hidden('return', (ee()->TMPL->fetch_param('return_'.$this->member->MemberGroup->getId())) ? ee()->TMPL->fetch_param('return_'.$this->member->MemberGroup->getId()) : ee()->TMPL->fetch_param('return'));
+		$this->form_hidden('return', (ee()->TMPL->fetch_param('return_'.$this->member->PrimaryRole->getId())) ? ee()->TMPL->fetch_param('return_'.$this->member->PrimaryRole->getId()) : ee()->TMPL->fetch_param('return'));
 
 		// build the form
 
@@ -1438,7 +1440,7 @@ GRID_FALLBACK;
 		}
 
 		$member_id = ee()->session->userdata('member_id') ?: $this->logged_out_member_id;
-		$this->member = ee('Model')->get('Member', $member_id)->with('MemberGroup')->first();
+		$this->member = ee('Model')->get('Member', $member_id)->first();
 
 		if ( ! $this->member)
 		{
@@ -1801,7 +1803,7 @@ GRID_FALLBACK;
 			$_POST['categories'] = array('cat_group_id_'.$cat_groups[0] => (is_array($_POST['category'])) ? $_POST['category'] : [$_POST['category']]);
 		}
 
-		if (in_array($this->channel('channel_id'), $this->member->MemberGroup->AssignedChannels->pluck('channel_id')) OR (int) $this->member->MemberGroup->getId() == 1)
+		if (in_array($this->channel('channel_id'), $this->member->getAssignedChannels()->pluck('channel_id')) OR ee('Permission')->isSuperAdmin())
 		{
 			$entry_data = array_filter(
 				$_POST,
@@ -1823,18 +1825,13 @@ GRID_FALLBACK;
 				// Lastly we check for spam before saving a new entry
 				if ( ! $this->entry('entry_id'))
 				{
-					// set the real group ID or 3 for guests for spam exemption check
-					// can't trust group_id on the session object due to _member_group_override()
-					$real_group_id = (ee()->session->userdata('member_id')) ? ee()->session->userdata('group_id') : 3;
-					$is_spam = $real_group_id != 1 && ee('Spam')->isSpam($spam_content);
-
-					if ($is_spam)
+					if (ee('Permission')->isSuperAdmin() || ! ee('Spam')->isSpam($spam_content))
 					{
-						ee('Spam')->moderate('channel', $this->entry, $spam_content, $entry_data);
+						$this->entry->save();
 					}
 					else
 					{
-						$this->entry->save();
+						ee('Spam')->moderate('channel', $this->entry, $spam_content, $entry_data);
 					}
 				}
 				else
@@ -2409,19 +2406,18 @@ GRID_FALLBACK;
 
 		if ($logged_out_member_id)
 		{
-			ee()->db->select('member_id, group_id');
-			ee()->db->where('member_id', $logged_out_member_id);
+			$member = ee('Model')->get('Member', $logged_out_member_id)
+				->with('PrimaryRole')
+				->first();
 
-			$query = ee()->db->get('members');
-
-			if ($query->num_rows() == 0)
+			if ( ! $member)
 			{
 				// Invalid guest member id was specified
 				throw new Channel_form_exception(lang('channel_form_invalid_guest_member_id'), 'general');
 			}
 
-			$this->logged_out_member_id = $query->row('member_id');
-			$this->logged_out_group_id = $query->row('group_id');
+			$this->logged_out_member_id = $member->getId();
+			$this->logged_out_group_id = $member->PrimaryRole->getId();
 		}
 	}
 
@@ -2508,33 +2504,18 @@ GRID_FALLBACK;
 
 		ee()->lang->loadfile('content');
 
+		$assigned_statuses = $this->member->getAssignedStatuses()->indexBy('status_id');
+
 		foreach ($this->channel->Statuses as $index => $status)
 		{
-			$this->statuses[$index]['status_id'] = $status->getId();
-			$this->statuses[$index]['status'] = $status->status;
-			$this->statuses[$index]['selected'] = ($status->status == $this->entry('status'))
-				? ' selected="selected"' : '';
-			$this->statuses[$index]['checked'] = ($status->status == $this->entry('status'))
-				? ' checked="checked"' : '';
-		}
-
-		$member_group_id = $this->member->MemberGroup->getId();
-
-		$no_access = ee()->db->where('member_group', $member_group_id)
-								  ->get('status_no_access')
-								  ->result_array();
-		$remove = array();
-
-		foreach ($no_access as $no)
-		{
-			$remove[] = $no['status_id'];
-		}
-
-		foreach ($this->statuses as $idx => $status)
-		{
-			if (in_array($status['status_id'], $remove))
+			if (isset($assigned_statuses[$status->getId()]))
 			{
-				unset($this->statuses[$idx]);
+				$this->statuses[$index]['status_id'] = $status->getId();
+				$this->statuses[$index]['status'] = $status->status;
+				$this->statuses[$index]['selected'] = ($status->status == $this->entry('status'))
+					? ' selected="selected"' : '';
+				$this->statuses[$index]['checked'] = ($status->status == $this->entry('status'))
+					? ' checked="checked"' : '';
 			}
 		}
 	}
@@ -2630,7 +2611,7 @@ GRID_FALLBACK;
 		$bool_variable = array('secure_return', 'json', 'author_only');
 		// required, channel, return
 
-		$m_group_id = $this->member->MemberGroup->getId();
+		$m_group_id = $this->member->PrimaryRole->getId();
 
 		// We'll just take all of the parameters and put then in an array
 		$params = array_merge(array_keys(ee()->TMPL->tagparams), $bool_variable);
@@ -3588,7 +3569,7 @@ SCRIPT;
 			return;
 		}
 
-		$id = ( ! $reset) ? $this->member->MemberGroup->getId() : 0;
+		$id = ( ! $reset) ? $this->member->PrimaryRole->getId() : 0;
 
 		ee()->session->userdata['group_id'] = $id;
 	}

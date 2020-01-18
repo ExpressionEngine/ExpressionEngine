@@ -23,7 +23,7 @@ feature 'Member Settings' do
     @page.require_terms_of_service.value.should == require_terms_of_service
     @page.allow_member_localization.value.should == allow_member_localization
     @page.req_mbr_activation.has_checked_radio(ee_config(item: 'req_mbr_activation')).should == true
-    @page.default_member_group.has_checked_radio(ee_config(item: 'default_member_group')).should == true
+    @page.default_primary_role.has_checked_radio(ee_config(item: 'default_primary_role')).should == true
     @page.member_theme.has_checked_radio(ee_config(item: 'member_theme')).should == true
     @page.memberlist_order_by.has_checked_radio(ee_config(item: 'memberlist_order_by')).should == true
     @page.memberlist_sort_order.has_checked_radio(ee_config(item: 'memberlist_sort_order')).should == true
@@ -68,7 +68,7 @@ feature 'Member Settings' do
     @page.req_mbr_activation.choose_radio_option('none')
     @page.require_terms_of_service_toggle.click
     @page.allow_member_localization_toggle.click
-    @page.default_member_group.choose_radio_option('1')
+    @page.default_primary_role.choose_radio_option('1')
     @page.member_theme.choose_radio_option('default')
     @page.memberlist_order_by.choose_radio_option('dates')
     @page.memberlist_sort_order.choose_radio_option('asc')
@@ -82,7 +82,7 @@ feature 'Member Settings' do
     @page.req_mbr_activation.has_checked_radio('none').should == true
     @page.require_terms_of_service.value.should_not == require_terms_of_service
     @page.allow_member_localization.value.should_not == allow_member_localization
-    @page.default_member_group.has_checked_radio('1').should == true
+    @page.default_primary_role.has_checked_radio('1').should == true
     @page.member_theme.has_checked_radio('default').should == true
     @page.memberlist_order_by.has_checked_radio('dates').should == true
     @page.memberlist_sort_order.has_checked_radio('asc').should == true

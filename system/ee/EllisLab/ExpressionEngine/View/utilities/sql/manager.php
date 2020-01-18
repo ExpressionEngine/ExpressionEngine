@@ -12,12 +12,15 @@
 	<div class="tbl-ctrls">
 		<?=form_open($table['base_url'])?>
 			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-			<fieldset class="tbl-search right">
-				<input placeholder="<?=lang('search')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
-			</fieldset>
 
 			<div class="title-bar">
 				<h2 class="title-bar__title"><?=$table_heading?></h2>
+
+				<div class="title-bar__extra-tools">
+					<div class="search-input">
+						<input class="search-input__input" placeholder="<?=lang('search')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
+					</div>
+				</div>
 			</div>
 
 			<?php $this->embed('_shared/table', $table); ?>

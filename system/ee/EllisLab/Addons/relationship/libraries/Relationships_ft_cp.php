@@ -161,30 +161,37 @@ class Relationships_ft_cp {
 		$prefix = ee()->db->dbprefix;
 
 		// First the author groups
-		$groups = ee('Model')->get('MemberGroup')
-			->fields('group_id', 'group_title')
+		$role_settings = ee('Model')->get('RoleSetting')
+			->with('Role')
 			->filter('include_in_authorlist', 'y')
-			->order('group_title', 'asc');
+			->order('Role.name', 'asc');
 
 		if ( ! $from_all_sites)
 		{
-			$groups->filter('site_id', '1');
+			$role_settings->filter('site_id', '1');
 		}
 
-		$groups = $groups->all();
-		$group_ids = $groups->pluck('group_id');
+		$role_settings = $role_settings->all();
+		$roles = $role_settings->Role;
+		$role_ids = $roles->pluck('role_id');
+
+		$member_ids = [];
+		foreach ($roles as $role)
+		{
+			$member_ids = array_merge($role->getAllMembers()->pluck('member_id'), $member_ids);
+		}
 
 		// Then all authors who are in those groups or who have author access
 		$members = ee('Model')->get('Member')
-			->fields('member_id', 'group_id', 'screen_name', 'username')
+			->fields('member_id', 'screen_name', 'username')
 			->filter('in_authorlist', 'y')
 			->order('screen_name', 'asc')
 			->order('username', 'asc')
 			->limit(100);
 
-		if ($groups->count())
+		if ( ! empty($member_ids))
 		{
-			$members->orFilter('group_id', 'IN', $group_ids);
+			$members->orFilter('member_id', 'IN', $member_ids);
 		}
 
 		if ($search)
@@ -194,26 +201,32 @@ class Relationships_ft_cp {
 			);
 		}
 
-		$group_to_member = array_fill_keys($group_ids, array());
+		$role_to_member = array_fill_keys($role_ids, array());
 
 		foreach ($members->all() as $m)
 		{
-			$group_to_member[$m->group_id][] = $m;
+			foreach ($m->getAllRoles() as $role)
+			{
+				if (isset($role_to_member[$role->role_id]))
+				{
+					$role_to_member[$role->role_id][] = $m;
+				}
+			}
 		}
 
 		$authors = array();
 
 		// Reoder by groups with subitems for authors
-		foreach ($groups as $group)
+		foreach ($roles as $role)
 		{
-			$authors['g_'.$group->group_id] = array(
-				'name' => $group->group_title,
+			$authors['g_'.$role->role_id] = array(
+				'name' => $role->name,
 				'children' => array()
 			);
 
-			foreach ($group_to_member[$group->group_id] as $m)
+			foreach ($role_to_member[$role->role_id] as $m)
 			{
-				$authors['g_'.$group->group_id]['children']['m_'.$m->member_id] = $m->getMemberName();
+				$authors['g_'.$role->role_id]['children']['m_'.$m->member_id] = $m->getMemberName();
 			}
 		}
 

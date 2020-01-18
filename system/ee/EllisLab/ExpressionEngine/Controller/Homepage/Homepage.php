@@ -68,7 +68,7 @@ class Homepage extends CP_Controller {
 			->count();
 
 		$vars['number_of_banned_members'] = ee('Model')->get('Member')
-			->filter('group_id', 2)
+			->filter('role_id', 2)
 			->count();
 
 		$vars['number_of_closed_entries'] = ee('Model')->get('ChannelEntry')
@@ -106,11 +106,11 @@ class Homepage extends CP_Controller {
 				ee()->lang->load($trapped->content_type);
 			}
 
-			$vars['can_moderate_spam'] = ee()->cp->allowed_group('can_moderate_spam');
+			$vars['can_moderate_spam'] = ee('Permission')->can('moderate_spam');
 		}
 
 		$vars['can_view_homepage_news'] = bool_config_item('show_ee_news')
-			&& ee()->cp->allowed_group('can_view_homepage_news');
+			&& ee('Permission')->can('view_homepage_news');
 
 		if ($vars['can_view_homepage_news'])
 		{
@@ -166,15 +166,15 @@ class Homepage extends CP_Controller {
 			$pings->shareAnalytics();
 		}
 
-		$vars['can_moderate_comments'] = ee()->cp->allowed_group('can_moderate_comments');
-		$vars['can_edit_comments'] = ee()->cp->allowed_group('can_edit_all_comments');
-		$vars['can_access_members'] = ee()->cp->allowed_group('can_access_members');
-		$vars['can_create_members'] = ee()->cp->allowed_group('can_create_members');
-		$vars['can_access_channels'] = ee()->cp->allowed_group('can_admin_channels');
-		$vars['can_create_channels'] = ee()->cp->allowed_group('can_create_channels');
-		$vars['can_access_fields'] = ee()->cp->allowed_group('can_create_channel_fields', 'can_edit_channel_fields', 'can_delete_channel_fields');
-		$vars['can_access_member_settings'] = ee()->cp->allowed_group('can_access_sys_prefs', 'can_access_members');
-		$vars['can_create_entries'] = ee()->cp->allowed_group('can_create_entries');
+		$vars['can_moderate_comments'] = ee('Permission')->can('moderate_comments');
+		$vars['can_edit_comments'] = ee('Permission')->can('edit_all_comments');
+		$vars['can_access_members'] = ee('Permission')->can('access_members');
+		$vars['can_create_members'] = ee('Permission')->can('create_members');
+		$vars['can_access_channels'] = ee('Permission')->can('admin_channels');
+		$vars['can_create_channels'] = ee('Permission')->can('create_channels');
+		$vars['can_access_fields'] = ee('Permission')->hasAll('can_create_channel_fields', 'can_edit_channel_fields', 'can_delete_channel_fields');
+		$vars['can_access_member_settings'] = ee('Permission')->hasAll('can_access_sys_prefs', 'can_access_members');
+		$vars['can_create_entries'] = ee('Permission')->can('can_create_entries');
 
 		$vars['header'] = array(
 			'title' => ee()->config->item('site_name'),
@@ -217,7 +217,7 @@ class Homepage extends CP_Controller {
 
 	public function acceptChecksums()
 	{
-		if (ee()->session->userdata('group_id') != 1)
+		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			show_error(lang('unauthorized_access'), 403);
 		}
