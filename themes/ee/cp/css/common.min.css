@@ -6836,7 +6836,7 @@ tr.selected .st-status {
     margin-top: -2px;
     stroke: var(--ee-text-secondary);
     transition: all 400ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    transition-delay: 0ms; }
+    transition-delay: 20ms; }
   .ee-wrapper:not(.sidebar-hidden):not(.sidebar-hidden-no-anim) .main-nav__mobile-menu svg {
     transform: scaleX(-1); }
 
@@ -11826,6 +11826,7 @@ body[data-theme="dark"] .status-tag--closed {
   position: sticky;
   top: 0;
   height: 100vh;
+  overflow-y: auto;
   z-index: 10;
   background: var(--ee-sidebar-bg); }
 
