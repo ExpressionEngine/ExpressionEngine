@@ -132,10 +132,21 @@ var DropdownController = function () {
 
 
   function getDropdownForElement(element) {
-    var dropdown = $(element).next('.dropdown').get(0) || $("[data-dropdown='".concat(element.dataset.toggleDropdown, "']")).get(0); // Does the dropdown exist?
+    var dropdown = $(element).next('.dropdown').get(0) || $("[data-dropdown='".concat(element.dataset.toggleDropdown, "']")).get(0); // Should the dropdown be moved to the root of the page?
+
+    var useRoot = element.dataset.dropdownUseRoot || false; // Does the dropdown exist?
 
     if (!dropdown) {
+      if (useRoot && element._dropdown) {
+        return element._dropdown;
+      }
+
       return null;
+    }
+
+    if (useRoot) {
+      element._dropdown = dropdown;
+      $(dropdown).appendTo(document.body);
     } // If the dropdown doesn't has a popper, initialize a new popper
 
 
