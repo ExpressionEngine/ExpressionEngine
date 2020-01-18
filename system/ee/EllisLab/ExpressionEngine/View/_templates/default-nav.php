@@ -95,7 +95,7 @@
 				<div class="account-menu__header">
 					<div class="account-menu__header-title">
 						<h2><?=$cp_screen_name?></h2>
-						<span><?=$cp_member_group_title?></span>
+						<span><?=$cp_member_primary_role_title?></span>
 					</div>
 
 					<img class="account-menu__icon js-hide-dropdowns" src="<?= $cp_avatar_path ?>" alt="">
