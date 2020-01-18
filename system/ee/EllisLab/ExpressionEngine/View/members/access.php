@@ -6,7 +6,9 @@
 	<?=ee('CP/Alert')->getAllInlines()?>
 </div>
 
-<?php if (isset($filters)) echo $filters; ?>
+<div class="title-bar">
+	<?php if (isset($filters)) echo $filters; ?>
+</div>
 
 <?php $i = 0; ?>
 
@@ -29,10 +31,10 @@
 					<tr>
 						<td>
 						<?php if (isset($row['nested'])): ?>
-						<span class="icon--nested"></span>
+						<span class="text-muted icon-left">&horbar;</span>
 						<?php endif; ?>
 						<?php if ($row['caution']): ?>
-						<span class="txt-caution"><span class="icon--caution" title="excercise caution">
+						<span class="text-security-caution"><i class="icon--caution icon-left"></i>
 						<?php endif; ?>
 
 						<?=$row['permission']?>
@@ -43,9 +45,9 @@
 						</td>
 
 						<?php if ($row['access']): ?>
-						<td><span class="st-open"><?=lang('yes')?></span></td>
+						<td><span class="status-tag status-tag--open"><?=lang('yes')?></span></td>
 						<?php else: ?>
-						<td><span class="st-closed"><?=lang('no')?></span></td>
+						<td><span class="status-tag status-tag--closed"><?=lang('no')?></span></td>
 						<?php endif; ?>
 
 						<?php if (is_array($row['granted'])): ?>

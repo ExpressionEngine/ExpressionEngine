@@ -506,7 +506,7 @@ $lang = array(
 
 'can_access_file_manager' => 'Access file manager',
 
-'can_access_files' => 'File Manager',
+'can_access_files' => 'Files',
 
 'can_access_import' => 'Import',
 
@@ -531,6 +531,8 @@ $lang = array(
 'can_access_translate' => 'Translation',
 
 'can_access_utilities' => 'Utilities',
+
+'add_on_manager' => 'Add-Ons',
 
 'can_admin_addons' => 'Install or remove add-ons',
 
@@ -656,7 +658,7 @@ $lang = array(
 
 'edit_listing' => 'All entries edit listing',
 
-'file_manager' => 'File Manager',
+'file_manager' => 'Files',
 
 'file_manager_desc' => 'When enabled, users assigned to this group may access the file manager.',
 
@@ -724,7 +726,7 @@ $lang = array(
 
 'super_admin_edit_note' => 'Note: You can only edit the name and description for the Super Admin group',
 
-'template_manager' => 'Template Manager',
+'template_manager' => 'Templates',
 
 'tools_utilities' => 'Utilities',
 

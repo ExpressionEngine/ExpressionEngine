@@ -10440,9 +10440,11 @@ body[data-theme="dark"] .status-tag--closed {
 .icon--category:before {
   content: "\f02b"; }
 
-.icon--caution:before {
-  content: "\f3ed";
-  margin: 0; }
+.icon--caution {
+  color: var(--ee-security-caution); }
+  .icon--caution:before {
+    content: "\f3ed";
+    margin: 0; }
 
 .icon--changes:before {
   content: "\f15c"; }
@@ -10521,6 +10523,7 @@ body[data-theme="dark"] .status-tag--closed {
   content: "\f011"; }
 
 .icon--primary:before {
+  color: var(--ee-success);
   content: "\f005";
   margin: 0; }
 
@@ -12058,6 +12061,12 @@ body[data-theme="dark"] .status-tag--closed {
 
 .cursor-move {
   cursor: move; }
+
+.text-security-caution {
+  color: var(--ee-security-caution); }
+
+.text-muted {
+  color: var(--ee-text-tertiary); }
 
 .key {
   position: relative;

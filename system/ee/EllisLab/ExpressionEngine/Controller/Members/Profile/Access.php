@@ -110,7 +110,7 @@ class Access extends Profile {
 
 		if (empty($permissions))
 		{
-			$primary_icon = ' <span class="icon--primary" title="' . lang('primary_role') . '"></span>';
+			$primary_icon = ' <span class="icon--primary icon-right" title="' . lang('primary_role') . '"></span>';
 
 			$allowed = ee('Model')->get('Permission')
 				->with('Role')
