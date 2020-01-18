@@ -36,6 +36,8 @@ class DropDownButton extends React.Component {
     }
 
     render() {
+        let dropdownItems = this.state.items.filter(el => el != this.state.selected)
+
         return (
             <>
                 <button type="button" className={"button js-dropdown-toggle has-sub " + this.props.buttonClass} onClick={this.toggle}>{this.state.selected ? this.state.selected.label : this.props.title}</button>
@@ -49,13 +51,15 @@ class DropDownButton extends React.Component {
                             </form>
                         </div>
                     }
-                    {/* {this.state.selected &&
-                        <div className="filter-submenu__selected">
-                            <a href="#" onClick={(e) => this.selectItem(e, null)}>{this.state.selected.label}</a>
-                        </div>
-                    } */}
+                    {this.state.selected && <>
+                        <a href="#" className="dropdown__link dropdown__link--selected" onClick={(e) => this.selectItem(e, null)}>{this.state.selected.label}</a>
+
+                        {dropdownItems.length > 0 &&
+                        <div className="dropdown__divider"></div>
+                        }
+                    </> }
                     <div className="dropdown__scroll">
-                        {this.state.items.map(item =>
+                        {dropdownItems.map(item =>
                             <a href="#" key={item.value} className={"dropdown__link " + this.props.itemClass} rel={this.props.rel} onClick={(e) => this.selectItem(e, item)}>{item.label}</a>
                         )}
                     </div>
