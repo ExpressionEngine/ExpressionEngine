@@ -1,52 +1,52 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
-<?php if (isset($tables['third'])): ?>
-<div class="box mb table-list-wrap">
-<?php else: ?>
-<div class="box table-list-wrap">
-<?php endif; ?>
-	<div class="tbl-ctrls">
-		<?=form_open($form_url)?>
-			<h1><?=$cp_heading['first']?></h1>
-			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-			<?php if (isset($filters['first'])) echo $filters['first']; ?>
-			<?php $this->embed('_shared/table', $tables['first']); ?>
-			<?php if ( ! empty($tables['first']['columns']) && ! empty($tables['first']['data'])): ?>
-			<fieldset class="tbl-bulk-act hidden">
-				<select name="bulk_action">
-					<option value="">-- <?=lang('with_selected')?> --</option>
-					<option value="install"><?=lang('install')?></option>
-					<option value="remove" data-confirm-trigger-first="selected" rel="modal-confirm-remove"><?=lang('uninstall')?></option>
-					<option value="update"><?=lang('update')?></option>
-				</select>
-				<button class="btn submit" data-conditional-modal="confirm-trigger-first"><?=lang('submit')?></button>
-			</fieldset>
+<?=form_open($form_url)?>
+<div class="tab-wrap">
+	<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+
+<div class="tab-bar">
+	<div class="tab-bar__tabs">
+		<button type="button" class="tab-bar__tab active js-tab-button" rel="t-0"><?=lang('installed')?></button>
+		<button type="button" class="tab-bar__tab js-tab-button" rel="t-2">
+			<?=lang('updates')?>
+
+			<?php if (! empty($updates)) : ?>
+			<span class="tab-bar__tab-notification"><?=count($updates)?></span>
 			<?php endif; ?>
-		<?=form_close()?>
+		</button>
 	</div>
 </div>
-<?php if (isset($tables['third'])): ?>
-<div class="box table-list-wrap">
-	<div class="tbl-ctrls">
-		<?=form_open($form_url)?>
-			<h1><?=$cp_heading['third']?></h1>
-			<?php if (isset($filters['third'])) echo $filters['third']; ?>
-			<?php $this->embed('_shared/table', $tables['third']); ?>
-			<?php if ( ! empty($tables['third']['columns']) && ! empty($tables['third']['data'])): ?>
-			<fieldset class="tbl-bulk-act hidden">
-				<select name="bulk_action">
-					<option value="">-- <?=lang('with_selected')?> --</option>
-					<option value="install"><?=lang('install')?></option>
-					<option value="remove" data-confirm-trigger-third="selected" rel="modal-confirm-remove"><?=lang('uninstall')?></option>
-					<option value="update"><?=lang('update')?></option>
-				</select>
-				<button class="btn submit" data-conditional-modal="confirm-trigger-third"><?=lang('submit')?></button>
-			</fieldset>
-			<?php endif; ?>
-		<?=form_close()?>
+
+<div class="tab t-0 tab-open">
+
+	<div class="add-on-card-list">
+		<?php $addons = $installed; foreach ($addons as $addon): ?>
+			<?php $this->embed('_shared/add-on-card', ['addon' => $addon, 'show_updates' => false]); ?>
+		<?php endforeach; ?>
+	</div>
+
+	<?php if (count($uninstalled)): ?>
+		<h4 class="line-heading"><?=lang('uninstalled')?></h4>
+		<hr>
+
+		<div class="add-on-card-list">
+			<?php foreach ($uninstalled as $addon): ?>
+				<?php $this->embed('_shared/add-on-card', ['addon' => $addon, 'show_updates' => false]); ?>
+			<?php endforeach; ?>
+		</div>
+	<?php endif; ?>
+</div>
+
+<div class="tab t-2">
+	<div class="add-on-card-list">
+		<?php foreach ($updates as $addon): ?>
+			<?php $this->embed('_shared/add-on-card', ['addon' => $addon, 'show_updates' => true]); ?>
+		<?php endforeach; ?>
 	</div>
 </div>
-<?php endif; ?>
+
+</div>
+<?=form_close()?>
 
 <?php ee('CP/Modal')->startModal('modal-confirm-remove'); ?>
 <div class="modal-wrap modal-confirm-remove hidden">

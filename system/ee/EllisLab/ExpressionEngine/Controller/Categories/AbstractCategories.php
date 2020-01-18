@@ -76,7 +76,9 @@ abstract class AbstractCategories extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$list = $sidebar->addFolderList('categories')
+		$header = $sidebar->addHeader(lang('category_groups'));
+
+		$list = $header->addFolderList('categories')
 			->withNoResultsText(sprintf(lang('no_found'), lang('category_groups')));
 
 		if (ee('Permission')->can('delete_categories'))
@@ -99,7 +101,7 @@ abstract class AbstractCategories extends CP_Controller {
 			$item = $list->addItem(
 				$group_name,
 				ee('CP/URL')->make('categories/group/' . $group->getId())
-			);
+			)->withIcon('tags');
 
 			if (ee('Permission')->can('edit_categories'))
 			{

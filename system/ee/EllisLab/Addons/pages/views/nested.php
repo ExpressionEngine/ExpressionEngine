@@ -1,4 +1,3 @@
-<div class="box table-list-wrap">
 	<div class="tbl-ctrls">
 		<?=form_open($base_url)?>
 			<fieldset class="tbl-search right">
@@ -25,14 +24,14 @@
 			</fieldset>
 			<h1><?=lang('all_pages')?></h1>
 			<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-			<div class="tbl-list-wrap">
+			<div class="js-list-group-wrap">
 				<?php if (count($pages->children()) != 0): ?>
-					<div class="tbl-list-ctrl">
-						<label class="ctrl-all"><span>select all</span> <input type="checkbox"></label>
+					<div class="list-group-controls">
+						<label class="ctrl-all"><span><?=lang('select_all')?></span> <input type="checkbox" class="checkbox--small"></label>
 					</div>
 				<?php endif ?>
-				<div class="nestable">
-					<ul class="tbl-list">
+				<div>
+					<ul class="list-group list-group--nested">
 						<?php foreach ($pages->children() as $page): ?>
 							<?php $this->embed('pages:_page', array('page' => $page)); ?>
 						<?php endforeach ?>
@@ -48,16 +47,15 @@
 					</ul>
 				</div>
 			</div>
-			<fieldset class="tbl-bulk-act hidden">
+			<fieldset class="bulk-action-bar hidden">
 				<select name="bulk_action">
 					<option>-- <?=lang('with_selected')?> --</option>
 					<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
 				</select>
-				<input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
+				<input class="button button--primary" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
 			</fieldset>
 		</form>
 	</div>
-</div>
 
 <?php
 $modal_vars = array(

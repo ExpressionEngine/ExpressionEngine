@@ -52,6 +52,30 @@ class Query extends Utilities {
 		}
 
 		ee()->view->cp_page_title = lang('sql_query_form');
+
+		ee()->cp->add_js_script([
+			'plugin'	=> 'ee_codemirror',
+			'ui'		=> 'resizable',
+			'file'		=> array(
+				'cp/utilities/sql-query-form',
+				'vendor/codemirror/codemirror',
+				'vendor/codemirror/closebrackets',
+				'vendor/codemirror/comment',
+				'vendor/codemirror/lint',
+				'vendor/codemirror/active-line',
+				'vendor/codemirror/overlay',
+				'vendor/codemirror/xml',
+				'vendor/codemirror/css',
+				'vendor/codemirror/javascript',
+				'vendor/codemirror/htmlmixed',
+				'ee-codemirror-mode',
+				'vendor/codemirror/dialog',
+				'vendor/codemirror/searchcursor',
+				'vendor/codemirror/search',
+				'vendor/codemirror/sql',
+			)
+		]);
+
 		ee()->cp->render('utilities/query/index');
 	}
 

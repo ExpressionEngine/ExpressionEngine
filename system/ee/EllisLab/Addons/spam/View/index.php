@@ -1,36 +1,31 @@
-<div class="box table-list-wrap">
 	<div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
-		<h1>
-			<ul class="toolbar">
-				<li class="settings">
-					<a href="<?=ee('CP/URL', 'addons/settings/spam/settings')?>" title="<?=lang('spam_settings')?>"></a>
-				</li>
-			</ul>
-			<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
-		</h1>
-
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
-		<?php if (isset($filters)) echo $filters; ?>
+		<div class="title-bar">
+			<h2 class="title-bar__title">
+				<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></br>
+			</h2>
+
+			<?php if (isset($filters)) echo $filters; ?>
+		</div>
 
 		<?= ee('View')->make('ee:_shared/table')->render($table); ?>
 
 		<?php if ( ! empty($pagination)) echo $pagination; ?>
 
 		<?php if ( ! empty($table['data'])): ?>
-		<fieldset class="tbl-bulk-act">
+		<fieldset class="bulk-action-bar">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('mark_selected')?> --</option>
 				<option value="remove" rel="modal-confirm-remove"><?=lang('deny_spam')?></option>
 				<option value="approve" class="yes" rel="modal-confirm-remove"><?=lang('approve_spam')?></option>
 			</select>
-			<button class="btn submit"><?=lang('submit')?></button>
+			<button class="button button--primary"><?=lang('submit')?></button>
 		</fieldset>
 		<?php endif; ?>
 	<?=form_close()?>
 	</div>
-</div>
 
 <?php $this->startOrAppendBlock('modals'); ?>
 

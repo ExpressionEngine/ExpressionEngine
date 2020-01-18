@@ -57,16 +57,16 @@ Grid.Publish = function(field, settings) {
 	this.blankRow = $('tr.grid-blank-row', this.root);
 	this.emptyField = $('tr.no-results', this.root);
 	this.tableActions = $('tr.tbl-action', this.root);
-	this.rowContainer = this.root.find('> tbody');
-	this.addButtonToolbar = $('ul.toolbar:has(li.add)', this.parentContainer);
+	this.rowContainer = this.root.find('.grid-field__table tbody');
+	this.addButtonToolbar = $('a[rel=add_row]', this.parentContainer);
 	this.header = null;
 	this.isFileGrid = this.root.closest('.js-file-grid').size() > 0;
 
 	this.rowSelector = 'tr';
 	this.cellSelector = 'td';
-	this.reorderHandleContainerSelector = 'th.reorder-col, td.reorder-col';
+	this.reorderHandleContainerSelector = '.js-grid-reorder-handle';
 	this.deleteContainerHeaderSelector = 'th.grid-remove';
-	this.deleteButtonsSelector = 'td:last-child .toolbar .remove:has(a[rel=remove_row])';
+	this.deleteButtonsSelector = 'a[rel=remove_row]';
 	this.sortableParams = {};
 
 	this.settings = (settings !== undefined) ? settings : EE.grid_field_settings[field.id];
@@ -170,9 +170,13 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 				},
 				// Fire 'afterSort' event on sort stop
 				afterSort: function(row) {
+					// Jquery sortable sets the display property to table-cell, which breaks the grid styles, so remove it
+					row.removeAttr("style");
+
 					that._fireEvent('afterSort', row);
 					$(document).trigger('entry:preview');
-				}
+				},
+				handle: '.js-grid-reorder-handle'
 			};
 
 		params = $.extend(params, this.sortableParams);
@@ -216,8 +220,6 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			showControls = rowCount > 0;
 
 		// Show add button below field when there are more than zero rows
-		this.addButtonToolbar.toggle(showControls && ! this.isFileGrid);
-		$(this.reorderHandleContainerSelector, this.root).toggle(showControls);
 		$(this.deleteContainerHeaderSelector, this.root).toggle(showControls);
 
 		if (this.header) {
@@ -267,7 +269,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	_bindAddButton: function() {
 		var that = this;
 
-		$('a[rel=add_row]', this.parentContainer)
+		$('[rel=add_row]', this.parentContainer)
 			.add('.tbl-action a.add', this.root)
 			.on('click', function(event) {
 				event.preventDefault();

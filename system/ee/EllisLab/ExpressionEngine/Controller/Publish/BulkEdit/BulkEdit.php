@@ -93,7 +93,7 @@ class BulkEdit extends AbstractBulkEdit {
 
 		$fluid_markup = $this->getFluidMarkupForFields($displayed_fields, $field_templates, $fields, $errors);
 
-		$fieldset_class = 'fieldset-faux-fluid';
+		$fieldset_class = '';
 		if ($errors)
 		{
 			$fieldset_class .= ' fieldset-invalid';

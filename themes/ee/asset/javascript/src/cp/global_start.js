@@ -297,7 +297,7 @@ EE.cp.bindSortableFolderLists = function() {
 		containment: 'parent',			// Contain to parent
 		handle: 'a',					// Set drag handle
 		cancel: 'ul.toolbar',			// Do not allow sort on this handle
-		items: '> li',					// Only allow these to be sortable
+		items: '> .sidebar__link',		// Only allow these to be sortable
 		sort: EE.sortable_sort_helper,	// Custom sort handler
 		// After sort finishes
 		stop: function(event, ui)

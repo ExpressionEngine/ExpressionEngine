@@ -88,6 +88,19 @@ var ColorPicker = /** @class */ (function (_super) {
             this.colorChanged();
         }
     };
+    ColorPicker.renderFields = function (context) {
+        var colorPickers = (context || document).querySelectorAll('input[data-colorpicker-react]');
+        for (var index = 0; index < colorPickers.length; index++) {
+            var container = colorPickers[index];
+            if (container.disabled)
+                continue;
+            var props = JSON.parse(window.atob(container.dataset.colorpickerReact));
+            props.inputName = container.name;
+            var newContainer = document.createElement('div');
+            container.parentNode.replaceChild(newContainer, container);
+            ReactDOM.render(React.createElement(ColorPicker, props, null), newContainer);
+        }
+    };
     /** Selects a color optionally setting the input value to something other than the selected color return string */
     ColorPicker.prototype.selectColor = function (newColor, inputValue) {
         if (inputValue === void 0) { inputValue = null; }
@@ -96,6 +109,8 @@ var ColorPicker = /** @class */ (function (_super) {
     };
     /** Notifies that the color has changed by calling the onChange callback  */
     ColorPicker.prototype.colorChanged = function () {
+        // Refresh live preview
+        $(document).trigger('entry:preview', 225);
         if (!this.props.onChange)
             return;
         var color = this.getReturnColorStr(this.state.selectedColor);
@@ -129,7 +144,7 @@ var ColorPicker = /** @class */ (function (_super) {
             return '';
         if (this.props.enableOpacity && returnColor.rgb.a != 1)
             return returnColor.rgbaStr;
-        return returnColor.hexStr;
+        return returnColor.hexStr.toUpperCase();
     };
     /** Returns the selected color making sure it's not null */
     ColorPicker.prototype.getSafeSelectedColor = function () {
@@ -191,26 +206,26 @@ var ColorPicker = /** @class */ (function (_super) {
         if (this.opacitySliderRef != null && this.opacitySliderKnobRef != null) {
             opacitySliderPos = Math.round((1 - currentColor.rgb.a) * (this.opacitySliderRef.offsetHeight - this.opacitySliderKnobRef.offsetHeight)) + 'px';
         }
-        return (React.createElement("div", { className: "c-colorpicker" },
-            React.createElement("input", { className: "c-colorpicker-input", type: "text", id: this.props.inputId, name: this.props.inputName, value: this.state.inputValue, onChange: this.onInputChange, onFocus: this.showColorPanel, onBlur: this.hideColorPanel, autoComplete: "off" }),
-            React.createElement("span", { className: "c-colorpicker-input-color" },
+        return (React.createElement("div", { className: "colorpicker" },
+            React.createElement("input", { className: "colorpicker__input", type: "text", id: this.props.inputId, name: this.props.inputName, value: this.state.inputValue, onChange: this.onInputChange, onFocus: this.showColorPanel, onBlur: this.hideColorPanel, autoComplete: "off" }),
+            React.createElement("span", { className: "colorpicker__input-color", style: { borderColor: currentColor.shade(-15).rgbaStr } },
                 React.createElement("span", { style: { background: currentColor.rgbaStr } })),
-            React.createElement("div", { className: "c-colorpicker-panel", style: { display: this.state.showPanel ? 'block' : 'none' }, onMouseDown: function (e) { e.stopPropagation(); e.preventDefault(); } },
+            React.createElement("div", { className: "colorpicker__panel", style: { display: this.state.showPanel ? 'block' : 'none' }, onMouseDown: function (e) { e.stopPropagation(); e.preventDefault(); } },
                 (allowedColors == 'any') &&
-                    React.createElement("div", { className: "c-colorpicker-controls" },
-                        React.createElement("div", { className: "c-colorpicker-hue-box", style: { background: hueColor }, onMouseDown: function (e) { return _this.handleDrag(e, 'mouse', _this.onHueBoxMove); }, onTouchStart: function (e) { return _this.handleDrag(e, 'touch', _this.onHueBoxMove); }, ref: function (el) { return _this.hueBoxRef = el; } },
-                            React.createElement("div", { className: "c-colorpicker-hue-box-knob", style: { top: hueKnobPosY, left: hueKnobPosX, background: hexStr }, ref: function (el) { return _this.hueBoxKnobRef = el; } })),
-                        React.createElement("div", { className: "c-colorpicker-slider c-colorpicker-hue-slider", onMouseDown: function (e) { return _this.handleDrag(e, 'mouse', _this.onHueSliderMove); }, onTouchStart: function (e) { return _this.handleDrag(e, 'touch', _this.onHueSliderMove); }, ref: function (el) { return _this.hueSliderRef = el; } },
-                            React.createElement("div", { className: "c-colorpicker-slider-knob", ref: function (el) { return _this.hueSliderKnobRef = el; }, style: { background: hueColor, top: hueSliderPos } })),
+                    React.createElement("div", { className: "colorpicker__controls" },
+                        React.createElement("div", { className: "colorpicker__hue-box", style: { background: hueColor }, onMouseDown: function (e) { return _this.handleDrag(e, 'mouse', _this.onHueBoxMove); }, onTouchStart: function (e) { return _this.handleDrag(e, 'touch', _this.onHueBoxMove); }, ref: function (el) { return _this.hueBoxRef = el; } },
+                            React.createElement("div", { className: "colorpicker__hue-box-knob", style: { top: hueKnobPosY, left: hueKnobPosX, background: hexStr }, ref: function (el) { return _this.hueBoxKnobRef = el; } })),
+                        React.createElement("div", { className: "colorpicker__slider colorpicker__hue-slider", onMouseDown: function (e) { return _this.handleDrag(e, 'mouse', _this.onHueSliderMove); }, onTouchStart: function (e) { return _this.handleDrag(e, 'touch', _this.onHueSliderMove); }, ref: function (el) { return _this.hueSliderRef = el; } },
+                            React.createElement("div", { className: "colorpicker__slider-knob", ref: function (el) { return _this.hueSliderKnobRef = el; }, style: { background: hueColor, top: hueSliderPos } })),
                         this.props.enableOpacity &&
-                            React.createElement("div", { className: "c-colorpicker-slider c-colorpicker-opacity-slider", onMouseDown: function (e) { return _this.handleDrag(e, 'mouse', _this.onOpacitySliderMove); }, onTouchStart: function (e) { return _this.handleDrag(e, 'touch', _this.onOpacitySliderMove); }, ref: function (el) { return _this.opacitySliderRef = el; } },
-                                React.createElement("div", { className: "c-colorpicker-slider-knob", ref: function (el) { return _this.opacitySliderKnobRef = el; }, style: { background: hexStr, top: opacitySliderPos } }),
-                                React.createElement("div", { className: "c-colorpicker-slider-inner", style: { background: "linear-gradient(to top, " + currentColor.withAlpha(0).rgbaStr + ", " + hexStr + ")" } }))),
-                React.createElement("div", { className: "c-colorpicker-swatches" }, this.props.swatches.map(function (colorStr, index) {
+                            React.createElement("div", { className: "colorpicker__slider colorpicker__opacity-slider", onMouseDown: function (e) { return _this.handleDrag(e, 'mouse', _this.onOpacitySliderMove); }, onTouchStart: function (e) { return _this.handleDrag(e, 'touch', _this.onOpacitySliderMove); }, ref: function (el) { return _this.opacitySliderRef = el; } },
+                                React.createElement("div", { className: "colorpicker__slider-knob", ref: function (el) { return _this.opacitySliderKnobRef = el; }, style: { background: hexStr, top: opacitySliderPos } }),
+                                React.createElement("div", { className: "colorpicker__slider-inner", style: { background: "linear-gradient(to top, " + currentColor.withAlpha(0).rgbaStr + ", " + hexStr + ")" } }))),
+                React.createElement("div", { className: "colorpicker__swatches" }, this.props.swatches.map(function (colorStr, index) {
                     var color = new SimpleColor(colorStr);
                     if (!color.isValid)
                         return '';
-                    return (React.createElement("div", { key: index, className: "c-colorpicker-swatch " + (color.rgbaStr == currentColor.rgbaStr ? 'is-selected' : ''), "data-color": colorStr, onClick: _this.onSwatchClick, style: { backgroundColor: color.rgbaStr, borderColor: color.shade(-15).rgbaStr } }));
+                    return (React.createElement("div", { key: index, className: "colorpicker__swatch " + (color.rgbaStr == currentColor.rgbaStr ? 'is-selected' : ''), "data-color": colorStr, onClick: _this.onSwatchClick, style: { backgroundColor: color.rgbaStr, borderColor: color.shade(-15).rgbaStr } }));
                 })))));
     };
     ColorPicker.defaultProps = {
@@ -227,3 +242,23 @@ var ColorPicker = /** @class */ (function (_super) {
     return ColorPicker;
 }(React.Component));
 // TODO: The color picker overflows the grid field
+// Render color picker inputs when created:
+$(document).ready(function () {
+    // Using window.load to make sure this code gets called after all document.readys
+    $(window).load(function () {
+        ColorPicker.renderFields();
+    });
+});
+Grid.bind('colorpicker', 'display', function (cell) {
+    ColorPicker.renderFields(cell[0]);
+});
+$(document).on('grid:addRow', function (cell) {
+    ColorPicker.renderFields(cell[0]);
+});
+FluidField.on('colorpicker', 'add', function (field) {
+    ColorPicker.renderFields(field[0]);
+});
+// Load any color pickers when the field manager selects a fieldtype
+FieldManager.on('fieldModalDisplay', function (modal) {
+    ColorPicker.renderFields(modal[0]);
+});

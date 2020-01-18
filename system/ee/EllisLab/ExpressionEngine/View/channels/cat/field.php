@@ -1,6 +1,5 @@
-<?php $this->extend('_templates/default-nav-table'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
-<div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
 		<fieldset class="tbl-search right">
 			<a class="btn tn action" href="<?=ee('CP/URL')->make('categories/fields/create/'.$group_id)?>"><?=lang('create_new')?></a>
@@ -9,20 +8,20 @@
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 		<?php if (isset($filters)) echo $filters; ?>
 		<?php $this->embed('_shared/table', $table); ?>
-		<fieldset class="tbl-bulk-act hidden">
+		<fieldset class="bulk-action-bar hidden">
 			<select name="bulk_action">
 				<option>-- <?=lang('with_selected')?> --</option>
-				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-delete"><?=lang('delete')?></option>
 			</select>
-			<input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
+			<input class="button button--primary" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
 		</fieldset>
 	</form>
-</div>
+
 
 <?php
 
 $modal_vars = array(
-	'name'		=> 'modal-confirm-remove',
+	'name'		=> 'modal-confirm-delete',
 	'form_url'	=> ee('CP/URL')->make('categories/fields/remove', ee()->cp->get_url_state()),
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove',
@@ -30,6 +29,6 @@ $modal_vars = array(
 	)
 );
 
-$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
-ee('CP/Modal')->addModal('remove', $modal);
+$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
+ee('CP/Modal')->addModal('delete', $modal);
 ?>

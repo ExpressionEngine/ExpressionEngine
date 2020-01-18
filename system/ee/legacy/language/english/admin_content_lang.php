@@ -244,13 +244,13 @@ $lang = array(
 
 'field_groups_desc' => 'Used to group together related custom fields.',
 
-'field_groups_removed_desc' => 'The following field groups were removed',
+'field_groups_deleted_desc' => 'The following field groups were deleted',
 
 'field_is_hidden' => 'Show this field by default?',
 
 'field_label_info' => 'This is the name that will appear in the PUBLISH page',
 
-'field_manager' => 'Field Manager',
+'field_manager' => 'Fields',
 
 'field_options' => 'Field Options',
 
@@ -268,7 +268,7 @@ $lang = array(
 
 'fields' => 'Fields',
 
-'fields_removed_desc' => 'The following fields were removed',
+'fields_deleted_desc' => 'The following fields were deleted',
 
 'filter_by_group' => 'field group',
 
@@ -298,7 +298,7 @@ $lang = array(
 
 'html_button' => 'HTML Button',
 
-'html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons',
+'html_buttons' => 'HTML Buttons',
 
 'htmlbutton_delete_instructions' => 'To delete an item submit the form with the tag name blank',
 

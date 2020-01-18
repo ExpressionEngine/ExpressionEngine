@@ -1,27 +1,24 @@
-<li class="tbl-list-item" data-id="<?=$category->data->cat_id?>">
-	<div class="tbl-row<?php if (ee()->session->flashdata('highlight_id') == $category->data->cat_id): ?> selected<?php endif ?>">
+<li class="js-nested-item" data-id="<?=$category->data->cat_id?>">
+	<div class="list-item list-item--action <?php if (ee()->session->flashdata('highlight_id') == $category->data->cat_id): ?> list-item--selected<?php endif ?>">
 		<?php if ($can_edit_categories): ?>
-		<div class="reorder"></div>
+		<div class="list-item__handle"><i class="fas fa-bars"></i></div>
 		<?php endif; ?>
-		<div class="txt">
-			<div class="main">
-				<b><?=ee('Format')->make('Text', $category->data->cat_name)->convertToEntities()?></b>
+		<a class="list-item__content" <?php if ($can_edit_categories): ?>href="<?=ee('CP/URL')->make('categories/edit/'.$category->data->group_id.'/'.$category->data->cat_id)?>"<?php endif; ?>>
+			<div class="list-item__title">
+				<?=ee('Format')->make('Text', $category->data->cat_name)->convertToEntities()?>
 			</div>
-			<div class="secondary">
-				<span class="faded">ID#</span> <?=$category->data->cat_id?> <span class="faded">/</span> <?=$category->data->cat_url_title?>
+			<div class="list-item__secondary">
+				#<?=$category->data->cat_id?> <span class="faded">/</span> <?=$category->data->cat_url_title?>
 			</div>
-		</div>
-		<?php if ($can_edit_categories): ?>
-		<ul class="toolbar">
-			<li class="edit"><a href="<?=ee('CP/URL')->make('categories/edit/'.$category->data->group_id.'/'.$category->data->cat_id)?>"></a></li>
-		</ul>
-		<?php endif; ?>
+		</a>
 		<?php if ($can_delete_categories): ?>
-		<div class="check-ctrl"><input type="checkbox" name="categories[]" value="<?=$category->data->cat_id?>" data-confirm="<?=lang('category') . ': <b>' . htmlentities($category->data->cat_name, ENT_QUOTES, 'UTF-8') . '</b>'?>"></div>
+		<div class="list-item__checkbox">
+			<input type="checkbox" name="categories[]" value="<?=$category->data->cat_id?>" data-confirm="<?=lang('category') . ': <b>' . htmlentities($category->data->cat_name, ENT_QUOTES, 'UTF-8') . '</b>'?>">
+		</div>
 		<?php endif; ?>
 	</div>
 	<?php if (count($category->children())): ?>
-		<ul class="tbl-list">
+		<ul class="list-group list-group--nested">
 			<?php foreach ($category->children() as $child): ?>
 				<?php $this->embed('channels/cat/_category', array('category' => $child)); ?>
 			<?php endforeach ?>

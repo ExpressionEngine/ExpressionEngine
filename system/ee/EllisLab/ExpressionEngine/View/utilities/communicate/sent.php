@@ -1,28 +1,31 @@
-<?php $this->extend('_templates/default-nav-table'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
-<div class="tbl-ctrls">
 <?=form_open($table['base_url'])?>
-	<fieldset class="tbl-search right">
-		<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
-		<input class="btn submit" type="submit" value="<?=lang('search_emails_button')?>">
-	</fieldset>
-	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 	<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+
+	<div class="title-bar">
+		<h2 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h2>
+		<div class="title-bar__extra-tools">
+			<div class="search-input">
+			<input class="search-input__input" placeholder="<?=lang('search')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
+			</div>
+		</div>
+	</div>
+
 	<?php $this->embed('_shared/table', $table); ?>
 
 	<?=$pagination?>
 
 	<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
-		<fieldset class="tbl-bulk-act hidden">
+		<fieldset class="bulk-action-bar hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
-				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-delete"><?=lang('delete')?></option>
 			</select>
-			<button class="btn submit" data-conditional-modal="confirm-trigger" ><?=lang('submit')?></button>
+			<button class="button button--primary" data-conditional-modal="confirm-trigger" ><?=lang('submit')?></button>
 		</fieldset>
 	<?php endif; ?>
 <?=form_close()?>
-</div>
 
 <?php foreach($emails as $email): ?>
 	<?php ee('CP/Modal')->startModal('email-' . $email->cache_id); ?>
@@ -49,13 +52,13 @@
 
 <?php
 $modal_vars = array(
-	'name'      => 'modal-confirm-remove',
+	'name'      => 'modal-confirm-delete',
 	'form_url'	=> $table['base_url'],
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)
 );
 
-$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
 ee('CP/Modal')->addModal('remove', $modal);
 ?>

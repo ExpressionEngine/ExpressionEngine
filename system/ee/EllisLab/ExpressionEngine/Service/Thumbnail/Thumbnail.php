@@ -29,6 +29,11 @@ class Thumbnail {
 	protected $path;
 
 	/**
+	 * @var boolean Whether the file is missing
+	 */
+	protected $missing = false;
+
+	/**
 	 * Constructor: sets the url and path properties based on the arguments
 	 *
 	 * @param File $file (optional) A File entity from which we'll calculate the
@@ -80,6 +85,7 @@ class Thumbnail {
 	 */
 	public function setMissing()
 	{
+		$this->missing = true;
 		$this->url = PATH_CP_GBL_IMG . 'missing.jpg';
 		$this->path = PATH_THEMES . 'asset/img/missing.jpg';
 	}

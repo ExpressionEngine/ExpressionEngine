@@ -50,46 +50,37 @@ class Utilities extends CP_Controller {
 
 		if (ee('Permission')->can('access_comm'))
 		{
-			$left_nav = $sidebar->addHeader(lang('communicate'), ee('CP/URL')->make('utilities/communicate'));
+			$sidebar->addHeader(lang('communicate'));
+
+			$sidebar->addItem(lang('send_email'), ee('CP/URL')->make('utilities/communicate'));
 
 			if (ee('Permission')->can('send_cached_email'))
 			{
-				$left_nav->addBasicList()
-					->addItem(lang('sent'), ee('CP/URL')->make('utilities/communicate/sent'));
+				$sidebar->addItem(lang('sent'), ee('CP/URL')->make('utilities/communicate/sent'));
 			}
 		}
+
+		$sidebar->addDivider();
 
 		if (ee('Permission')->can('access_translate'))
 		{
-			$langauge_list = $sidebar->addHeader(lang('cp_translation'))
-				->addBasicList();
-			$default_language = ee()->config->item('deft_lang') ?: 'english';
-			$languages = array();
+			$translation_item = $sidebar->addItem(lang('cp_translations'), ee('CP/URL')->make('utilities/translate'));
+
 			foreach (ee()->lang->language_pack_names() as $key => $value)
 			{
-				$menu_title = $value;
 				$url = ee('CP/URL')->make('utilities/translate/' . $key);
-				if ($key == $default_language)
-				{
-					$menu_title .= ' (' . lang('default') . ')';
-					// Make the default language first
-					$languages = array_merge(array($menu_title => $url), $languages);
-					continue;
+
+				if ($url->matchesTheRequestedURI()) {
+					$translation_item->isActive();
 				}
-				$languages[$menu_title] = $url;
-			}
-			foreach ($languages as $menu_title => $url)
-			{
-				$langauge_list->addItem($menu_title, $url);
 			}
 		}
 
-		$sidebar->addHeader(lang('php_info'), ee('CP/URL')->make('utilities/php'))
+		$sidebar->addItem(lang('php_info'), ee('CP/URL')->make('utilities/php'))
 			->urlIsExternal();
 
-		if (ee('Permission')->can('access_addons') && ee('Permission')->can('admin_addons'))
-		{
-			$sidebar->addHeader(lang('debug_extensions'), ee('CP/URL')->make('utilities/extensions'));
+		if (ee('Permission')->can('access_addons') && ee('Permission')->can('admin_addons')) {
+			$sidebar->addItem(lang('debug_extensions'), ee('CP/URL')->make('utilities/extensions'));
 		}
 
 		if (ee('Permission')->hasAny('can_access_import', 'can_access_members'))
@@ -110,7 +101,7 @@ class Utilities extends CP_Controller {
 		if (ee('Permission')->can('access_sql_manager'))
 		{
 			$db_list = $sidebar->addHeader(lang('database'))->addBasicList();
-			$db_list->addItem(lang('backup_utility'), ee('CP/URL')->make('utilities/db-backup'));
+			$db_list->addItem(lang('backup_database'), ee('CP/URL')->make('utilities/db-backup'));
 			$db_list->addItem(lang('sql_manager_abbr'), ee('CP/URL')->make('utilities/sql'));
 			$db_list->addItem(lang('query_form'), ee('CP/URL')->make('utilities/query'));
 		}

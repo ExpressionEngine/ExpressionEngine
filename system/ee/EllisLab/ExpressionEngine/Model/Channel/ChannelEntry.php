@@ -928,9 +928,9 @@ class ChannelEntry extends ContentModel {
 					'field_label'			=> lang('entry_status'),
 					'field_required'		=> 'n',
 					'field_show_fmt'		=> 'n',
-					'field_instructions'	=> lang('entry_status_desc'),
+					'field_instructions'	=> '',
 					'field_text_direction'	=> 'ltr',
-					'field_type'			=> 'radio',
+					'field_type'			=> 'select',
 					'field_list_items'      => array(),
 					'field_maxl'			=> 100,
 					'populateCallback'		=> array($this, 'populateStatus')
@@ -1171,11 +1171,17 @@ class ChannelEntry extends ContentModel {
 		{
 			if (ee('Permission')->isSuperAdmin() || in_array($status->getId(), $assigned_statuses))
 			{
-				$status_options[] = $status->getOptionComponent();
+				$status_options[] = $status->getSelectOptionComponent();
 			}
 		}
 
-		$field->setItem('field_list_items', $status_options);
+		$field_items = [];
+
+		foreach ($status_options as $option) {
+			$field_items[$option['value']] = $option['label'];
+		}
+
+		$field->setItem('field_list_items', $field_items);
 	}
 
 	public function getAuthorName()

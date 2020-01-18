@@ -4,7 +4,7 @@ return array(
 	'author'         => 'EllisLab',
 	'author_url'     => 'https://ellislab.com/',
 	'name'           => 'Forum',
-	'description'    => '',
+	'description'    => 'Add a full-featured forum to your site',
 	'version'        => '5.0.1',
 	'namespace'      => 'EllisLab\Addons\Forum',
 	'settings_exist' => TRUE,

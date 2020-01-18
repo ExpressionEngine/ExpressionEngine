@@ -133,7 +133,7 @@ class Homepage extends CP_Controller {
 					$news[] = array(
 						'title'   => strip_tags($item->get_title()),
 						'date'    => ee()->localize->format_date(
-							"%j%S %F, %Y",
+							"%j%S %M, %Y",
 							$item->get_date('U')
 						),
 						'content' => ee('Security/XSS')->clean(
@@ -175,6 +175,10 @@ class Homepage extends CP_Controller {
 		$vars['can_access_fields'] = ee('Permission')->hasAll('can_create_channel_fields', 'can_edit_channel_fields', 'can_delete_channel_fields');
 		$vars['can_access_member_settings'] = ee('Permission')->hasAll('can_access_sys_prefs', 'can_access_members');
 		$vars['can_create_entries'] = ee('Permission')->can('can_create_entries');
+
+		$vars['header'] = array(
+			'title' => ee()->config->item('site_name'),
+		);
 
 		ee()->view->cp_page_title = ee()->config->item('site_name') . ' ' . lang('overview');
 		ee()->cp->render('homepage', $vars);

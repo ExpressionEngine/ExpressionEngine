@@ -54,7 +54,7 @@ function () {
           _this2.currentlyRunning--;
 
           _this2.start();
-        }).catch(function () {
+        })["catch"](function () {
           _this2.currentlyRunning--;
 
           _this2.start();

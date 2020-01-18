@@ -2,25 +2,23 @@
 	<link rel="stylesheet" href="<?=URL_THEMES.'debug/css/eecms-debug.min.css'?>" type="text/css" media="screen" />
 <?php endif; ?>
 
-<section id="debug">
-	<div class="col-group">
-		<div class="col w-16">
-			<div class="box has-tabs">
-				<h1><?=$uri?></h1>
-				<div class="tab-wrap">
-					<ul class="tabs">
-						<?php foreach ($sections as $i => $section): ?>
-							<li><a <?=($i==0)?'class="act"':''?> href="" rel="t-<?=$i?>"><?=$section->getSummary()?></a></li>
-						<?php endforeach; ?>
-					</ul>
-					<?php
-					foreach ($rendered_sections as $rendered_section)
-					{
-						echo $rendered_section;
-					}
-					?>
+<section class="ee-debugger">
+	<div class="ee-debugger__inner">
+		<h1 class="ee-debugger__title"><?=$uri?></h1>
+		<div class="tab-wrap">
+			<div class="tab-bar">
+				<div class="tab-bar__tabs">
+					<?php foreach ($sections as $i => $section): ?>
+						<button type="button" class="tab-bar__tab js-tab-button <?=($i==0)?'active':''?>" rel="t-<?=$i?>"><?=$section->getSummary()?></button>
+					<?php endforeach; ?>
 				</div>
 			</div>
+			<?php
+			foreach ($rendered_sections as $rendered_section)
+			{
+				echo $rendered_section;
+			}
+			?>
 		</div>
 	</div>
 </section>
@@ -31,8 +29,8 @@
 	!function() {
 		"use strict";
 
-		var wrap = document.querySelector('#debug .tab-wrap');
-		var tabs = wrap.querySelectorAll('ul.tabs a');
+		var wrap = document.querySelector('.ee-debugger .tab-wrap');
+		var tabs = wrap.querySelectorAll('.tab-bar__tab');
 		var sheets = wrap.querySelectorAll('.tab');
 
 		var removeClassFromAll = function(list, klass) {
@@ -44,13 +42,13 @@
 		var handleTabClick = function(evt) {
 			evt.preventDefault();
 
-			removeClassFromAll(tabs, 'act');
+			removeClassFromAll(tabs, 'active');
 			removeClassFromAll(sheets, 'tab-open');
 
 			var tab = this;
 			var sheet = wrap.querySelector('.tab.' + this.rel);
 
-			tab.classList.add('act');
+			tab.classList.add('active');
 			sheet.classList.add('tab-open');
 		};
 
@@ -79,6 +77,11 @@
 	</script>
 <?php endif; ?>
 
-<link rel="stylesheet" href="<?=URL_THEMES?>debug/css/highlight.css">
 <script src="<?=URL_THEMES?>debug/javascript/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+	document.querySelectorAll('.ee-debugger pre code').forEach(function (block) {
+		hljs.highlightBlock(block);
+	});
+});
+</script>

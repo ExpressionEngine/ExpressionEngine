@@ -9,19 +9,19 @@
     "watch:old-js": "npm run build:old-js -- --watch"
   },
   "devDependencies": {
-    "@babel/cli": "^7.1.2",
-    "@babel/core": "^7.1.2",
-    "@babel/plugin-proposal-class-properties": "^7.1.0",
-    "@babel/preset-env": "^7.1.0",
-    "@babel/preset-react": "^7.0.0",
-    "@types/jquery": "^3.3.30",
-    "@types/react": "^16.8.23",
-    "@types/react-dom": "^16.8.4",
-    "del": "^5.0.0",
+    "@babel/cli": "^7.7.5",
+    "@babel/core": "^7.7.5",
+    "@babel/plugin-proposal-class-properties": "^7.7.4",
+    "@babel/preset-env": "^7.7.6",
+    "@babel/preset-react": "^7.7.4",
+    "@types/jquery": "^3.3.31",
+    "@types/react": "^16.9.16",
+    "@types/react-dom": "^16.9.4",
+    "del": "^5.1.0",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-typescript": "^5.0.1",
-    "typescript": "^3.5.2"
+    "typescript": "^3.7.3"
   },
   "dependencies": {}
 }

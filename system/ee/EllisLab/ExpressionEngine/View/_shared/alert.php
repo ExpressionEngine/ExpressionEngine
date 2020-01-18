@@ -21,8 +21,8 @@
 		<?php endif; ?>
 	</div>
 	<?php if ($alert->has_close_button): ?>
-		<div class="app-notice__controls">
-			<a href="#" class="app-notice__dismiss js-notice-dismiss"></a>
-		</div>
+		<a href="#" class="app-notice__controls js-notice-dismiss">
+			<span class="app-notice__dismiss"></span>
+		</a>
 	<?php endif; ?>
 </div>

@@ -73,11 +73,7 @@ class Profile extends CP_Controller {
 		ee()->cp->set_breadcrumb(ee('CP/URL')->make('members'), lang('members'));
 
 		ee()->view->header = array(
-			'title' => sprintf(lang('profile_header'),
-				htmlentities($this->member->username, ENT_QUOTES, 'UTF-8'),
-				htmlentities($this->member->email, ENT_QUOTES, 'UTF-8'),
-				$this->member->ip_address
-			)
+			'title' => $this->member->username
 		);
 	}
 
@@ -93,14 +89,11 @@ class Profile extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$header = $sidebar->addHeader(lang('personal_settings'), ee('CP/URL')->make('members/profile', $this->query_string));
-
-		if (ee()->uri->uri_string == 'cp/members/profile/settings')
-		{
-			$header->isActive();
-		}
+		$header = $sidebar->addHeader(lang('account'));
 
 		$list = $header->addBasicList();
+
+		$list->addItem(lang('personal_settings'), ee('CP/URL')->make('members/profile/settings', $this->query_string));
 
 		$list->addItem(lang('email_settings'), ee('CP/URL')->make('members/profile/email', $this->query_string));
 		$list->addItem(lang('auth_settings'), ee('CP/URL')->make('members/profile/auth', $this->query_string));
@@ -119,8 +112,10 @@ class Profile extends CP_Controller {
 			$publishing_link = ee('CP/URL')->make('members/profile/publishing', $this->query_string);
 		}
 
-		$list = $sidebar->addHeader(lang('publishing_settings'), $publishing_link)
+		$list = $sidebar->addHeader(lang('content'))
 			->addBasicList();
+
+		$list->addItem(lang('publishing_settings'), $publishing_link);
 
 		if (ee('Permission')->can('edit_html_buttons'))
 		{
@@ -154,7 +149,7 @@ class Profile extends CP_Controller {
 			$list = $sidebar->addHeader(lang('administration'))
 				->addBasicList();
 
-			$list->addItem(lang('view_activity'), ee('CP/URL')->make('members/profile/activity', $this->query_string));
+			$list->addItem(lang('info_and_activity'), ee('CP/URL')->make('members/profile/activity', $this->query_string));
 
 			$list->addItem(lang('blocked_members'), ee('CP/URL')->make('members/profile/ignore', $this->query_string));
 

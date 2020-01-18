@@ -7,22 +7,30 @@ $lang = array(
 
 
 /* Develop Menu */
-'addon_manager' => 'Add-On Manager',
+'addon_manager' => 'Add-Ons',
 
-'channel_manager' => 'Channel Manager',
+'channel_manager' => 'Channels',
+
+'entries' => 'Entries',
+
+'menu_entries' => 'Entries',
 
 'logs' => 'Logs',
 
-'msm_manager' => 'Site Manager',
+'msm_manager' => 'Sites',
 
 'nav_developer' => 'Developer',
 
 'nav_developer_tools' => 'Developer Tools',
 
-'template_manager' => 'Template Manager',
+'template_manager' => 'Templates',
 
 'utilities' => 'Utilities',
 
+'dark_theme'  => 'Dark Theme',
+'light_theme' => 'Light Theme',
+
+'go_to' => 'Go To...',
 
 /* Control Panel */
 'action_can_not_be_undone' => 'THIS ACTION CANNOT BE UNDONE',
@@ -111,6 +119,8 @@ $lang = array(
 
 'password' => 'Password',
 
+'password_for' => 'Password for %s',
+
 'password_label' => 'Password:',
 
 'powered_by' => 'Powered By',
@@ -152,6 +162,10 @@ $lang = array(
 'unauthorized' => 'Unauthorized',
 
 'unauthorized_access' => 'You are not authorized to access this page',
+
+'machines_only_request' => 'You really shouldn\'t be here. This land is only for bots and machines.',
+
+'addon_missing_jump_method' => 'Add-on missing requested jump menu method.',
 
 'update_check_btn' => 'Check for Update',
 
@@ -289,7 +303,7 @@ $lang = array(
 
 'results' => 'results',
 
-'select_all' => 'select all',
+'select_all' => 'Select All',
 
 'search_in' => 'Search in',
 
@@ -336,6 +350,14 @@ $lang = array(
 'will_be_logged' => 'This action will be logged',
 
 'important' => 'Important!',
+
+'view_as' => 'View as ',
+
+'viewtype_list' => 'List',
+
+'viewtype_thumb' => 'Thumbnails',
+
+'viewtype_hybrid' => 'Hybrid',
 
 /* Sites and Channels */
 'avatar_path' => 'Avatar Path',
@@ -428,7 +450,7 @@ $lang = array(
 
 
 /* Common */
-'alphadash_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
+'alphadash_desc' => 'No spaces. Underscores and dashes are allowed.',
 
 'auto_br' => 'Auto line break',
 
@@ -480,9 +502,9 @@ $lang = array(
 
 'image' => 'Image',
 
-'keyword_filter' => 'keywords, hit enter',
+'keyword_filter' => 'Search',
 
-'log_out' => 'log out',
+'log_out' => 'Log Out',
 
 'menu_create' => 'Create',
 
@@ -530,7 +552,7 @@ $lang = array(
 
 'revisions' => 'Revisions',
 
-'search_results_heading' => 'Search Results<br><i>we found %d results for "%s"</i>',
+'search_results_heading' => 'Search Results<br><i>Found %d results for "%s"</i>',
 
 'settings_save_error' => 'Attention: Settings not saved',
 
@@ -601,9 +623,11 @@ $lang = array(
 
 'report_bug' => 'Report Bug',
 
+'whats_new' => 'What\'s New?',
+
 'scroll_to_top' => 'scroll to top',
 
-'session_timeout' => 'Your administration access session has timed out. Please use the form below to log back into your control panel.',
+'session_timeout' => 'Your admin session has timed out. Please re-enter your password to log back in.',
 
 'up_to_date' => 'Up to date!',
 
@@ -623,6 +647,14 @@ $lang = array(
 
 'btn_confirm_and_save_working' => 'Saving...',
 
+/* confirm delete modal */
+'btn_confirm_and_delete' => 'Confirm and Delete',
+
+'btn_confirm_and_delete_working' => 'Deleting...',
+
+'confirm_delete' => 'Are You Sure?',
+
+'confirm_deletion_desc' => 'You are attempting to delete the following items:',
 
 /*confirm show all modal */
 'all_items' => 'All %d items',

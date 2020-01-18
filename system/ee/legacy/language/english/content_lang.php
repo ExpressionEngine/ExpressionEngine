@@ -76,7 +76,7 @@ $lang = array(
 
 'comment_status_desc' => 'Status of this comment.',
 
-'comments_removed_desc' => 'The following comments were removed',
+'comments_deleted_desc' => 'The following comments were deleted',
 
 'comments_status_updated_desc' => 'The following comments were set to %s',
 
@@ -114,9 +114,9 @@ $lang = array(
 
 'edit_entry_with_title' => 'Edit Entry: %s',
 
-'entries' => 'entries',
+'entries' => 'Entries',
 
-'entries_removed_desc' => 'The following entries were removed',
+'entries_deleted_desc' => 'The following entries were deleted',
 
 'entry' => 'Entry',
 
@@ -130,9 +130,9 @@ $lang = array(
 
 'entry_limit_reached_one_desc' => 'This channel is limited to one entry.',
 
-'entry_manager' => 'Entry Manager',
+'entry_manager' => 'Entries',
 
-'entry_status' => 'Status',
+'entry_status' => 'Entry Status',
 
 'entry_status_desc' => 'Entry status.',
 
@@ -231,6 +231,8 @@ $lang = array(
 'button_mode' => 'Button Mode:',
 
 'calendar' => 'Calendar',
+
+'close_preview' => 'Close Preview',
 
 'cancel_preview' => 'Cancel Preview',
 
@@ -373,6 +375,8 @@ $lang = array(
 'field_blank' => 'You left a field blank.',
 
 'fields' => 'Fields',
+
+'add_field' => 'Add Field',
 
 'file_exists' => 'A file already exists with this name',
 
@@ -798,7 +802,15 @@ $lang = array(
 
 'add_new_row' => 'Add new row',
 
+'add_row' => 'Add Row',
+
 'collapse' => 'Collapse',
+
+'collapse_all' => 'Collapse All',
+
+'expand' => 'Expand',
+
+'expand_all' => 'Expand All',
 
 'creating_new_in_rel' => 'Creating new entry in <b>#to_channel#</b> for a relationship with <b>#from_channel#</b>',
 

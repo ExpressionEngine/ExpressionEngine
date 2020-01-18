@@ -148,6 +148,7 @@ abstract class AbstractDesign extends CP_Controller {
 
 		$item = $system_templates->addItem(lang('messages'), ee('CP/URL')->make('design/system'))
 			->withEditUrl(ee('CP/URL')->make('design/system'))
+			->cannotEdit()
 			->cannotRemove();
 
 		if ($active == 'messages')
@@ -157,6 +158,7 @@ abstract class AbstractDesign extends CP_Controller {
 
 		$item = $system_templates->addItem(lang('email'), ee('CP/URL')->make('design/email'))
 			->withEditUrl(ee('CP/URL')->make('design/email'))
+			->cannotEdit()
 			->cannotRemove();
 
 		if ($active == 'email')
@@ -168,6 +170,7 @@ abstract class AbstractDesign extends CP_Controller {
 		{
 			$item = $system_templates->addItem(lang('members'), ee('CP/URL')->make('design/members'))
 				->withEditUrl(ee('CP/URL')->make('design/members'))
+				->cannotEdit()
 				->cannotRemove();
 
 			if ($active == 'members')
@@ -180,6 +183,7 @@ abstract class AbstractDesign extends CP_Controller {
 		{
 			$item = $system_templates->addItem(lang('forums'), ee('CP/URL')->make('design/forums'))
 				->withEditUrl(ee('CP/URL')->make('design/forums'))
+				->cannotEdit()
 				->cannotRemove();
 
 			if ($active == 'forums')
@@ -188,15 +192,12 @@ abstract class AbstractDesign extends CP_Controller {
 			}
 		}
 
+		$sidebar->addDivider();
+
 		// Template Partials
 		if (ee('Permission')->hasAny('can_create_template_partials', 'can_edit_template_partials', 'can_delete_template_partials'))
 		{
-			$header = $sidebar->addHeader(lang('template_partials'), ee('CP/URL')->make('design/snippets'));
-
-			if (ee('Permission')->can('create_template_partials'))
-			{
-				$header->withButton(lang('new'), ee('CP/URL')->make('design/snippets/create'));
-			}
+			$header = $sidebar->addItem(lang('template_partials'), ee('CP/URL')->make('design/snippets'))->withIcon('shapes');
 
 			if ($active == 'partials')
 			{
@@ -207,12 +208,7 @@ abstract class AbstractDesign extends CP_Controller {
 		// Template Variables
 		if (ee('Permission')->hasAny('can_create_template_variables', 'can_edit_template_variables', 'can_delete_template_variables'))
 		{
-			$header = $sidebar->addHeader(lang('template_variables'), ee('CP/URL')->make('design/variables'));
-
-			if (ee('Permission')->can('create_template_variables'))
-			{
-				$header->withButton(lang('new'), ee('CP/URL')->make('design/variables/create'));
-			}
+			$header = $sidebar->addItem(lang('template_variables'), ee('CP/URL')->make('design/variables'))->withIcon('cube');
 
 			if ($active == 'variables')
 			{
@@ -224,7 +220,7 @@ abstract class AbstractDesign extends CP_Controller {
 		// Template Routes
 		if ( ! TemplateRoute::getConfig() && ee('Permission')->can('admin_design'))
 		{
-			$header = $sidebar->addHeader(lang('template_routes'), ee('CP/URL')->make('design/routes'));
+			$header = $sidebar->addItem(lang('template_routes'), ee('CP/URL')->make('design/routes'))->withIcon('truck');
 
 			if ($active == 'routes')
 			{
@@ -294,8 +290,6 @@ abstract class AbstractDesign extends CP_Controller {
 			);
 		}
 
-		ee()->cp->add_to_head(ee()->view->head_link('css/codemirror.css'));
-		ee()->cp->add_to_head(ee()->view->head_link('css/codemirror-additions.css'));
 		ee()->cp->add_js_script(array(
 				'plugin'	=> 'ee_codemirror',
 				'ui'		=> 'resizable',
@@ -492,12 +486,12 @@ abstract class AbstractDesign extends CP_Controller {
 
 			if (strncmp($template->template_name, $hidden_indicator, $hidden_indicator_length) == 0)
 			{
-				$template_name = '<span class="hidden-tmp">' . $template_name . '</span>';
+				$template_name = '<i class="fas fa-sm fa-eye-slash icon-left"></i>' . $template_name;
 			}
 
 			if ($template->template_name == 'index')
 			{
-				$template_name = '<span class="index">' . $template_name . '</span>';
+				$template_name = '<i class="fas fa-home fa-sm icon-left"></i>' . $template_name;
 			}
 
 			$view_url = ee()->functions->fetch_site_index();
@@ -678,7 +672,7 @@ abstract class AbstractDesign extends CP_Controller {
 		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(lang('templates_removed_desc'))
+			->addToBody(lang('templates_deleted_desc'))
 			->addToBody($template_names)
 			->defer();
 	}

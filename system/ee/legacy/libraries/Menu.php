@@ -222,8 +222,7 @@ class EE_Menu {
 		{
 			$sections = array(
 				'channels' => 'channels',
-				'channel_fields' => 'fields',
-				'categories' => 'categories'
+				'channel_fields' => 'fields'
 			);
 
 			foreach ($sections as $name => $path)
@@ -248,11 +247,6 @@ class EE_Menu {
 		if (ee()->config->item('multiple_sites_enabled') == 'y' && ee('Permission')->can('admin_sites'))
 		{
 			$menu['msm_manager'] = ee('CP/URL')->make('msm');
-		}
-
-		if (ee('Permission')->can('access_addons'))
-		{
-			$menu['addons'] = ee('CP/URL')->make('addons');
 		}
 
 		if (ee('Permission')->can('access_utilities'))

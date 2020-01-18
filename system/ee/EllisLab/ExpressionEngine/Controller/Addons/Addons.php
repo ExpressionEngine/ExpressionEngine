@@ -199,224 +199,31 @@ class Addons extends CP_Controller {
 			});
 		}
 
-		$developers = array_map(function($addon) { return $addon['developer']; }, $addons['third']);
-		array_unique($developers);
-
-		// Retain column sorting when filtering
-		foreach (array('first', 'third') as $party)
-		{
-			$sort_col = $party . '_sort_col';
-			if (ee()->input->get($sort_col))
-			{
-				$this->base_url->setQueryStringVariable($sort_col, ee()->input->get($sort_col));
-			}
-
-			$sort_dir = $party . '_sort_dir';
-			if (ee()->input->get($sort_dir))
-			{
-				$this->base_url->setQueryStringVariable($sort_dir, ee()->input->get($sort_dir));
-			}
-		}
-
-		$this->filters(array(
-			'first' => count($addons['first']),
-			'third' => count($addons['third'])
-		), $developers);
-
 		$return_url = ee('CP/URL')->getCurrentUrl();
-
-		foreach (array('first', 'third') as $party)
-		{
-			if ($party == 'third' && ! count($addons[$party]))
-			{
-				continue;
-			}
-
-			$data = array();
-
-			// Setup the Table
-			$config = array(
-				'autosort' => TRUE,
-				'autosearch' => TRUE,
-				'search' => $this->params["filter_by_{$party}_keyword"],
-				'sort_col' => ee()->input->get($party . '_sort_col') ?: NULL,
-				'sort_col_qs_var' => $party . '_sort_col',
-				'sort_dir' => ee()->input->get($party . '_sort_dir') ?: 'asc',
-				'sort_dir_qs_var' => $party . '_sort_dir',
-				'limit' => 0
-			);
-
-			$table = ee('CP/Table', $config);
-			$columns =	array(
-				'addon',
-				'version' => array(
-					'encode' => FALSE
-				),
-				'manage' => array(
-					'type'	=> Table::COL_TOOLBAR
-				)
-			);
-
-
-			if (ee('Permission')->can('admin_addons'))
-			{
-				$columns[] = array(
-					'type'	=> Table::COL_CHECKBOX
-				);
-			}
-
-			$table->setColumns($columns);
-
-			$table->setNoResultsText('no_addon_search_results');
-
-			$this->base_url->setQueryStringVariable($party . '_page', $table->config['page']);
-
-			foreach($addons[$party] as $addon => $info)
-			{
-				// Filter based on status
-				$status_key = 'filter_by_' . $party . '_status';
-				if (isset($this->params[$status_key]))
-				{
-					if ((strtolower($this->params[$status_key]) == 'installed'
-						 && $info['installed'] == FALSE)
-					     ||	(strtolower($this->params[$status_key]) == 'uninstalled'
-							 && $info['installed'] == TRUE)
-					     ||	(strtolower($this->params[$status_key]) == 'updates'
-							 && (! isset($info['update'])
-							     || $info['installed'] == FALSE)))
-					{
-						continue;
-					}
-				}
-
-				// Filter based on developer
-				if ($party == 'third'
-					&& isset($this->params['filter_by_developer']))
-				{
-					if ($this->params['filter_by_developer'] != $this->makeDeveloperKey($info['developer']))
-					{
-						continue;
-					}
-				}
-
-				$toolbar = array(
-					'install' => array(
-						'href' => '#',
-						'data-post-url' => ee('CP/URL')->make(
-							'addons/install/' . $info['package'],
-							array(
-								'return' => $return_url->encode()
-							)
-						),
-						'title' => lang('install'),
-						'content' => lang('install'),
-						'type' => 'txt-only',
-						'class' => 'add'
-					)
-				);
-
-				$attrs = array('class' => 'not-installed');
-				$addon_name = $info['name'];
-
-				if ($info['installed'])
-				{
-					$toolbar = array();
-
-					if (isset($info['settings_url']))
-					{
-						$toolbar['settings'] = array(
-							'href' => $info['settings_url'],
-							'title' => lang('settings'),
-						);
-
-						$addon_name = array(
-							'content' => $addon_name,
-							'href' => $info['settings_url']
-						);
-					}
-
-					if (isset($info['manual_url']))
-					{
-						$toolbar['manual'] = array(
-							'href' => $info['manual_url'],
-							'title' => lang('manual'),
-						);
-
-						if ($info['manual_external'])
-						{
-							$toolbar['manual']['rel'] = 'external';
-						}
-					}
-
-					if (isset($info['update']))
-					{
-						$toolbar['txt-only'] = array(
-							'href' => '#',
-							'data-post-url' => ee('CP/URL')->make(
-								'addons/update/' . $info['package'],
-								array(
-									'return' => $return_url->encode()
-								)
-							),
-							'title' => strtolower(lang('update')),
-							'class' => 'add',
-							'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['update']))
-						);
-					}
-
-					$attrs = array();
-				}
-
-				if ( ! ee('Permission')->can('admin_addons'))
-				{
-					unset($toolbar['install']);
-				}
-
-				$row = array(
-					'attrs' => $attrs,
-					'columns' => array(
-						'addon' => $addon_name,
-						'version' => $this->formatVersionNumber($info['version']),
-						array('toolbar_items' => $toolbar)
-					)
-				);
-
-				if (ee('Permission')->can('admin_addons'))
-				{
-					$row['columns'][] = array(
-						'name' => 'selection[]',
-						'value' => $info['package'],
-						'data'	=> array(
-							'confirm' => lang('addon') . ': <b>' . $info['name'] . '</b>'
-						)
-					);
-				}
-
-				$data[] = $row;
-			}
-
-			$table->setData($data);
-			$vars['tables'][$party] = $table->viewData($this->base_url);
-		}
-
 		$vars['form_url'] = $this->base_url->setQueryStringVariable('return', $return_url->encode());
 
-		// Set search results heading (first and third)
-		if (ee()->input->get_post('search'))
-		{
-			ee()->view->cp_heading = array(
-				'first' => sprintf(
-					lang('search_results_heading'),
-					$vars['tables']['first']['total_rows'],
-					$vars['tables']['first']['search']
-				),
-				'third' => sprintf(
-				lang('search_results_heading'),
-				$vars['tables']['third']['total_rows'],
-				$vars['tables']['third']['search']
-			)
-			);
+		// Create the urls for managing the add-on
+		foreach ($addons as $key => $addon) {
+			$addons[$key]['install_url'] = ee('CP/URL')->make('addons/install/' . $addon['package'], ['return' => $return_url->encode()]);
+			$addons[$key]['update_url'] = ee('CP/URL')->make('addons/update/' . $addon['package'], ['return' => $return_url->encode()]);
+			$addons[$key]['remove_url'] = ee('CP/URL')->make('addons/remove/' . $addon['package'], ['return' => $return_url->encode()]);
 		}
+
+		// Sort the add-ons alphabetically
+		ksort($addons);
+
+		$vars['uninstalled'] = array_filter($addons, function($addon) {
+			return ! $addon['installed'];
+		});
+
+		$vars['installed'] = array_filter($addons, function($addon) {
+			return $addon['installed'];
+		});
+
+		// Uninstalled add-ons
+		$vars['updates'] = array_filter($addons, function($addon) {
+			return isset($addon['update']);
+		});
 
 		$vars['header'] = array(
 			'search_button_value' => lang('search_addons_button'),
@@ -426,7 +233,7 @@ class Addons extends CP_Controller {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('addon') . ': <b>### ' . lang('addons') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/confirm_remove'),
+			'file' => ['cp/confirm_remove', 'cp/add-ons'],
 		));
 
 		ee()->cp->render('addons/index', $vars);
@@ -441,10 +248,7 @@ class Addons extends CP_Controller {
 	{
 		$addon_infos = ee('Addon')->all();
 
-		$addons = array(
-			'first' => array(),
-			'third' => array()
-		);
+		$addons = [];
 
 		foreach ($addon_infos as $name => $info)
 		{
@@ -456,6 +260,7 @@ class Addons extends CP_Controller {
 			}
 
 			$addon = $this->getExtension($name);
+			$addon = array_merge($addon, $this->getJumpMenu($name));
 			$addon = array_merge($addon, $this->getFieldType($name));
 			$addon = array_merge($addon, $this->getPlugin($name));
 			$addon = array_merge($addon, $this->getModule($name));
@@ -473,8 +278,11 @@ class Addons extends CP_Controller {
 					$addon['manual_external'] = TRUE;
 				}
 
-				$party = ($addon['developer'] == 'EllisLab') ? 'first' : 'third';
-				$addons[$party][$name] = $addon;
+                if (file_exists(PATH_THIRD_THEMES . $name . '/icon.png')) {
+                    $addon['icon_url'] = URL_THIRD_THEMES . $name . '/icon.png';
+                }
+
+				$addons[$name] = $addon;
 			}
 		}
 
@@ -815,7 +623,7 @@ class Addons extends CP_Controller {
 	 * @param	str|array	$addons	The name(s) of add-ons to uninstall
 	 * @return	void
 	 */
-	private function remove($addons)
+	public function remove($addons)
 	{
 		if ( ! ee('Permission')->can('admin_addons'))
 		{
@@ -1190,6 +998,7 @@ class Addons extends CP_Controller {
 			'version'		=> '--',
 			'installed'		=> FALSE,
 			'name'			=> $display_name,
+			'description'   => $info->get('description'),
 			'package'		=> $name,
 			'type'			=> 'module',
 		);
@@ -1262,6 +1071,7 @@ class Addons extends CP_Controller {
 			'version'		=> '--',
 			'installed'		=> FALSE,
 			'name'			=> $info->getName(),
+			'description'   => $info->get('description'),
 			'package'		=> $name,
 			'type'			=> 'plugin',
 		);
@@ -1318,6 +1128,7 @@ class Addons extends CP_Controller {
 			'version'		=> '--',
 			'installed'		=> FALSE,
 			'name'			=> $info->getName(),
+			'description'   => $info->get('description'),
 			'package'		=> $name,
 			'type'			=> 'fieldtype',
 		);
@@ -1345,6 +1156,39 @@ class Addons extends CP_Controller {
 				$data['settings_url'] = ee('CP/URL')->make('addons/settings/' . $name);
 			}
 		}
+
+		return $data;
+	}
+
+	/**
+	 * Get data on a jump menu
+	 *
+	 * @param	str	$name	The add-on name
+	 * @return	array		Jump data in the following format:
+	 *   e.g. 'icon'             => 'fa-plus',
+	 *        'command'          => 'create new entry',
+	 *        'command_title'    => 'Create <b>Entry</b> in <i>[channel]</i>',
+	 *        'dynamic'          => true,
+	 *        'addon'            => false,
+	 *        'target'           => 'publish/create'
+	 */
+	private function getJumpMenu($name)
+	{
+		try
+		{
+			$info = ee('Addon')->get($name);
+		}
+		catch (\Exception $e)
+		{
+			show_404();
+		}
+
+		if ( ! $info->hasJumpMenu())
+		{
+			return array();
+		}
+
+		$data['jumps'] = $info->getJumps();
 
 		return $data;
 	}
@@ -1393,6 +1237,7 @@ class Addons extends CP_Controller {
 			'installed'		=> FALSE,
 			'enabled'		=> NULL,
 			'name'			=> $info->getName(),
+			'description'   => $info->get('description'),
 			'package'		=> $name,
 			'class'			=> $class_name,
 		);

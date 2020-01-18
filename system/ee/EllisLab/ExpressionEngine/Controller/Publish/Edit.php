@@ -114,12 +114,9 @@ class Edit extends AbstractPublishController {
 
 		$columns = array_merge($columns, array(
 			'column_entry_date',
-			'column_status' => array(
-				'type'	=> Table::COL_STATUS
-			),
-			'manage' => array(
-				'type'	=> Table::COL_TOOLBAR
-			),
+			'column_status' => [
+				'encode' => FALSE
+			],
 			array(
 				'type'	=> Table::COL_CHECKBOX
 			)
@@ -212,34 +209,16 @@ class Edit extends AbstractPublishController {
 			{
 				if (ee('Permission')->can('moderate_comments'))
 				{
-					$comments = '(<a href="' . ee('CP/URL')->make('publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>)';
+					$comments = '<a href="' . ee('CP/URL')->make('publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>';
 				}
 				else
 				{
-					$comments = '(' . $entry->comment_total . ')';
+					$comments = $entry->comment_total;
 				}
 			}
 			else
 			{
-				$comments = '(0)';
-			}
-
-			$toolbar = array();
-
-			if ($entry->hasLivePreview())
-			{
-				$toolbar['view'] = array(
-					'href' => ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, ['preview' => 'y']),
-					'title' => lang('preview'),
-				);
-			}
-
-			if ($can_edit)
-			{
-				$toolbar['edit'] = array(
-					'href' => $edit_link,
-					'title' => lang('edit')
-				);
+				$comments = '0';
 			}
 
 			if (ee('Permission')->can('delete_all_entries_channel_id_' . $entry->channel_id)
@@ -262,17 +241,7 @@ class Edit extends AbstractPublishController {
 
 			if ($status)
 			{
-				$highlight = new Color($status->highlight);
-				$color = ($highlight->isLight())
-					? $highlight->darken(100)
-					: $highlight->lighten(100);
-
-				$status = array(
-					'content'          => (in_array($status->status, array('open', 'closed'))) ? lang($status->status) : $status->status,
-					'status'           => $status->status,
-					'color'            => $color,
-					'background-color' => $status->highlight
-				);
+				$status = $status->renderTag();
 			}
 			else
 			{
@@ -284,7 +253,6 @@ class Edit extends AbstractPublishController {
 				$title,
 				ee()->localize->human_time($entry->entry_date),
 				$status,
-				array('toolbar_items' => $toolbar),
 				array(
 					'name' => 'selection[]',
 					'value' => $entry->entry_id,
@@ -495,6 +463,9 @@ class Edit extends AbstractPublishController {
 		);
 
 		$vars = array(
+			'header' => [
+				'title' => lang('edit_entry'),
+			],
 			'form_url' => $base_url,
 			'form_attributes' => $form_attributes,
 			'form_title' => lang('edit_entry'),
@@ -705,7 +676,14 @@ class Edit extends AbstractPublishController {
 
 		$entries->delete();
 
-		return $entry_names;
+		ee('CP/Alert')->makeInline('entries-form')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody(lang('entries_deleted_desc'))
+			->addToBody($entry_names)
+			->defer();
+
+		ee()->functions->redirect(ee('CP/URL')->make('publish/edit', ee()->cp->get_url_state()));
 	}
 }
 

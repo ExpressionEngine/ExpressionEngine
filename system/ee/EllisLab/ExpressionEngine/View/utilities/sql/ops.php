@@ -1,6 +1,5 @@
-<?php $this->extend('_templates/default-nav-table'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
-<div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
 		<fieldset class="tbl-search right">
 			<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=htmlentities($table['search'], ENT_QUOTES, 'UTF-8')?>">
@@ -9,4 +8,3 @@
 		<h1><?=$cp_page_title?></h1>
 		<?php $this->embed('_shared/table', $table);?>
 	</form>
-</div>

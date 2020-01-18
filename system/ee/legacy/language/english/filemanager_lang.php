@@ -8,6 +8,8 @@ $lang = array(
 
 'btn_cancel_upload' => 'Cancel Upload',
 
+'delete_file' => 'Delete File',
+
 'btn_edit_file_meta' => 'Save File Meta',
 
 'btn_finish_upload' => 'Finish Upload',
@@ -24,7 +26,7 @@ $lang = array(
 
 'download' => 'Download',
 
-'edit_file_metadata' => 'Edit "%s" Meta Data',
+'edit_file_metadata' => 'Edit File Meta Data',
 
 'edit_file_metadata_error' => 'Cannot Update File Meta Data',
 
@@ -44,7 +46,7 @@ $lang = array(
 
 'file_data' => 'File Data',
 
-'file_manager' => 'File Manager',
+'file_manager' => 'Files',
 
 'file_not_added_to_db' => 'File could not be recorded in the database',
 
@@ -190,7 +192,7 @@ $lang = array(
 
 'files_not_found_desc' => 'Highlighted files cannot be found on the server.',
 
-'files_removed_desc' => 'The following files were removed',
+'files_deleted_desc' => 'The following files were deleted',
 
 'flip_horizontally' => 'Flip, horizontally',
 
@@ -224,9 +226,9 @@ $lang = array(
 
 'success' => 'Success',
 
-'upload_directory_removed' => 'Upload directory removed',
+'upload_directory_deleted' => 'Upload directory deleted',
 
-'upload_directory_removed_desc' => 'The upload directory <b>%s</b> has been removed.',
+'upload_directory_deleted_desc' => 'The upload directory <b>%s</b> has been deleted.',
 
 'upload_filedata_error' => 'Cannot Upload File',
 
@@ -270,7 +272,7 @@ $lang = array(
 
 'constrain_or_crop' => 'Constrain or Crop',
 
-'constrain_or_crop_desc' => 'Changes to images in this <mark>upload</mark> directory, made upon upload.',
+'constrain_or_crop_desc' => 'Changes to images in this <code>upload</code> directory, made upon upload.',
 
 'create_upload_directory' => 'Create Upload Directory',
 
@@ -278,7 +280,7 @@ $lang = array(
 
 'default_modal_view' => 'Default modal view?',
 
-'default_modal_view_desc' => 'Default view for this upload directory in the file picker modal.',
+'default_modal_view_desc' => 'How files should be displayed by default for this upload directory.',
 
 'default_modal_view_list' => 'List',
 
@@ -312,7 +314,7 @@ $lang = array(
 
 'file_sync_desc' => '<b>%d</b> files',
 
-'file_sync_desc_images' => '<b>%d</b> <mark>image</mark> files',
+'file_sync_desc_images' => '<b>%d</b> <code>image</code> files',
 
 'horizontal' => 'horizontal',
 
@@ -410,7 +412,7 @@ $lang = array(
 
 'upload_path' => 'Upload path',
 
-'upload_path_desc' => 'Full path location of this <mark>upload</mark> directory.',
+'upload_path_desc' => 'Full path location of this <code>upload</code> directory.',
 
 'upload_privileges' => 'Upload Privileges',
 
@@ -420,7 +422,7 @@ $lang = array(
 
 'upload_url' => 'Upload directory',
 
-'upload_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of this <mark>upload</mark> directory.',
+'upload_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of this <code>upload</code> directory.',
 
 'vertical' => 'vertical',
 
@@ -486,9 +488,9 @@ $lang = array(
 
 'watermarks' => 'Watermarks',
 
-'watermarks_removed' => 'Watermarks removed',
+'watermarks_deleted' => 'Watermarks deleted',
 
-'watermarks_removed_desc' => '%d watermarks were removed.',
+'watermarks_deleted_desc' => '%d watermarks were deleted.',
 
 'watermarks_true_type' => 'Enable True Type?',
 

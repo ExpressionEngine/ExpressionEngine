@@ -467,7 +467,7 @@ class Snippets extends AbstractDesignController {
 		ee('CP/Alert')->makeInline('snippet-form')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(lang('snippets_removed_desc'))
+			->addToBody(lang('snippets_deleted_desc'))
 			->addToBody($names)
 			->defer();
 	}

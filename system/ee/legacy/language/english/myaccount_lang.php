@@ -28,7 +28,9 @@ $lang = array(
 
 'auth_settings' => 'Username & Password',
 
-'avatar_settings' => 'Avatar Settings',
+'avatar_settings' => 'Avatar',
+
+'account' => 'Account',
 
 'banned_email' => 'The email address you submitted is banned',
 
@@ -204,7 +206,7 @@ $lang = array(
 
 'homepage_preferences' => 'Home Page Preferences',
 
-'html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons',
+'html_buttons' => 'HTML Buttons',
 
 'html_buttons_updated' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons Updated',
 
@@ -474,7 +476,7 @@ $lang = array(
 
 'smart_notifications' => 'Enable smart notifications',
 
-'smart_notifications_desc' => 'When enabled, smart notifications will be possible.',
+'smart_notifications_desc' => 'When enabled, once you receive a notification from a thread, you won’t receive any more until you have visited that thread.',
 
 'subscriptions' => 'Current Subscriptions',
 
@@ -556,6 +558,8 @@ $lang = array(
 'validating_members' => 'Members awaiting activation',
 
 'view_activity' => 'View Activity',
+
+'info_and_activity' => 'Info & Activity',
 
 'yahoo_im' => 'Yahoo IM',
 

@@ -529,7 +529,7 @@ abstract class AbstractPublish extends CP_Controller {
 				'type'    => 'submit',
 				'value'   => 'preview',
 				'text'    => 'preview',
-				'class'   => 'action js-modal-link--side' . $extra_class,
+				'class'   => 'action' . $extra_class,
 				'attrs'   => 'rel="live-preview" disabled="disabled"',
 				'working' => 'btn_previewing'
 			];

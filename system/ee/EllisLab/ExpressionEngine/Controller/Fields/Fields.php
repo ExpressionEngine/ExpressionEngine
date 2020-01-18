@@ -159,12 +159,7 @@ class Fields extends AbstractFieldsController {
 				'href' => $edit_url,
 				'extra' => LD.$field->field_name.RD,
 				'selected' => ($field_id && $field->getId() == $field_id),
-				'toolbar_items' => ee('Permission')->can('edit_channel_fields') ? [
-					'edit' => [
-						'href' => $edit_url,
-						'title' => lang('edit')
-					]
-				] : NULL,
+				'toolbar_items' => NULL,
 				'selection' => ee('Permission')->can('delete_channel_fields') ? [
 					'name' => 'selection[]',
 					'value' => $field->getId(),
@@ -641,7 +636,7 @@ class Fields extends AbstractFieldsController {
 		ee('CP/Alert')->makeInline('fields')
 			->asSuccess()
 			->withTitle(lang('success'))
-			->addToBody(lang('fields_removed_desc'))
+			->addToBody(lang('fields_deleted_desc'))
 			->addToBody($field_names)
 			->defer();
 

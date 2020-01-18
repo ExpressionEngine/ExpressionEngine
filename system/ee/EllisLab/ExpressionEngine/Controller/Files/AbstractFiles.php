@@ -62,8 +62,9 @@ abstract class AbstractFiles extends CP_Controller {
 			$list->withRemoveUrl(ee('CP/URL')->make('files/rmdir', array('return' => ee('CP/URL')->getCurrentUrl()->encode())))
 				->withRemovalKey('dir_id');
 
-			$watermark_header = $sidebar->addHeader(lang('watermarks'), ee('CP/URL')->make('files/watermarks'))
-				->withButton(lang('new'), ee('CP/URL')->make('files/watermarks/create'));
+			$sidebar->addDivider();
+
+			$watermark_header = $sidebar->addItem(lang('watermarks'), ee('CP/URL')->make('files/watermarks'))->withIcon('tint');
 
 			if ($active == 'watermark')
 			{
@@ -161,7 +162,7 @@ abstract class AbstractFiles extends CP_Controller {
 			'title' => lang('file_manager'),
 			'toolbar_items' => $toolbar_items,
 			'action_button' => ee('Permission')->can('upload_new_files') && $upload_destinations->count() ? [
-				'text' => lang('upload_file'),
+				'text' => '<i class="fas fa-cloud-upload-alt icon-left"></i>' . lang('upload'),
 				'filter_placeholder' => lang('filter_upload_directories'),
 				'choices' => count($choices) > 1 ? $choices : NULL,
 				'href' => ee('CP/URL')->make('files/upload/' . $upload_destinations->first()->getId())->compile()
@@ -217,7 +218,6 @@ abstract class AbstractFiles extends CP_Controller {
 			->all();
 
 		$data = array();
-		$missing_files = FALSE;
 
 		$file_id = ee()->session->flashdata('file_id');
 		$member = ee()->session->getMember();
@@ -229,18 +229,13 @@ abstract class AbstractFiles extends CP_Controller {
 				continue;
 			}
 
-			$edit_link =  ee('CP/URL')->make('files/file/edit/' . $file->file_id);
 			$toolbar = array(
-				'view' => array(
+				'edit' => array(
 					'href' => '',
 					'rel' => 'modal-view-file',
 					'class' => 'm-link',
-					'title' => lang('view'),
+					'title' => lang('edit'),
 					'data-file-id' => $file->file_id
-				),
-				'edit' => array(
-					'href' => $edit_link,
-					'title' => lang('edit')
 				),
 				'crop' => array(
 					'href' => ee('CP/URL')->make('files/file/crop/' . $file->file_id),
@@ -255,7 +250,6 @@ abstract class AbstractFiles extends CP_Controller {
 			if ( ! ee('Permission')->can('edit_files'))
 			{
 				unset($toolbar['view']);
-				unset($toolbar['edit']);
 				unset($toolbar['crop']);
 			}
 
@@ -269,11 +263,21 @@ abstract class AbstractFiles extends CP_Controller {
 
 			if (ee('Permission')->can('edit_files'))
 			{
-				$file_description = '<a href="'.$edit_link.'">'.$file->title.'</a>';
+				$file_description = '<a href data-file-id="'.$file->file_id.'" rel="modal-view-file" class="m-link">'.$file->title.'</a>';
+			}
+
+			$attrs = array();
+
+			if (!$file->exists()) {
+				$attrs['class'] = 'missing';
+
+				$file_description .= '<br><em class="faded">' . lang('file_not_found') . '</em>';
+			} else {
+				$file_description .= '<br><em class="faded">' . $file->file_name . '</em>';
 			}
 
 			$column = array(
-				$file_description.'<br><em class="faded">' . $file->file_name . '</em>',
+				$file_description,
 				$file->mime_type,
 				ee()->localize->human_time($file->upload_date),
 				array('toolbar_items' => $toolbar),
@@ -285,14 +289,6 @@ abstract class AbstractFiles extends CP_Controller {
 					)
 				)
 			);
-
-			$attrs = array();
-
-			if ( ! $file->exists())
-			{
-				$attrs['class'] = 'missing';
-				$missing_files = TRUE;
-			}
 
 			if ($file_id && $file->file_id == $file_id)
 			{
@@ -313,16 +309,6 @@ abstract class AbstractFiles extends CP_Controller {
 		}
 
 		$table->setData($data);
-
-		if ($missing_files)
-		{
-			ee('CP/Alert')->makeInline('missing-files')
-				->asWarning()
-				->cannotClose()
-				->withTitle(lang('files_not_found'))
-				->addToBody(lang('files_not_found_desc'))
-				->now();
-		}
 
 		return $table;
 	}
@@ -367,14 +353,14 @@ abstract class AbstractFiles extends CP_Controller {
 		ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $file->upload_location_id));
 	}
 
-	protected function listingsPage($files, $base_url)
+	protected function listingsPage($files, $base_url, $view_type = 'table')
 	{
 		$vars = array();
 		$search_terms = ee()->input->get_post('filter_by_keyword');
 
 		if ($search_terms)
 		{
-			$base_url->setQueryStringVariable('fliter_by_keyword', $search_terms);
+			$base_url->setQueryStringVariable('filter_by_keyword', $search_terms);
 			$files->search(['title', 'file_name', 'mime_type'], $search_terms);
 			$vars['search_terms'] = htmlentities($search_terms, ENT_QUOTES, 'UTF-8');
 		}
@@ -384,6 +370,7 @@ abstract class AbstractFiles extends CP_Controller {
 
 		$filters = ee('CP/Filter')
 			->add('Keyword')
+			->add('ViewType')
 			->add('Perpage', $total_files, 'show_all_files');
 
 		$filter_values = $filters->values();
@@ -393,15 +380,28 @@ abstract class AbstractFiles extends CP_Controller {
 		$offset = ($page - 1) * $perpage;
 
 		$base_url->addQueryStringVariables($filter_values);
-		$table = $this->buildTable($files, $perpage, $offset);
 
-		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
-		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
+		if ($view_type === 'table') {
+			$table = $this->buildTable($files, $perpage, $offset);
 
-		ee()->view->filters = $filters->render($base_url);
+			$base_url->setQueryStringVariable('sort_col', $table->sort_col);
+			$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
 
-		$vars['table'] = $table->viewData($base_url);
-		$vars['form_url'] = $vars['table']['base_url'];
+			ee()->view->filters = $filters->render($base_url);
+
+			$vars['table'] = $table->viewData($base_url);
+			$vars['form_url'] = $vars['table']['base_url'];
+		} elseif ($view_type === 'thumb') {
+			$vars['form_url'] = $base_url;
+
+			ee()->view->filters = $filters->render($base_url);
+
+			$files = $files->limit($perpage)
+						->offset($offset)
+						->all();
+
+			$vars['files'] = $files;
+		}
 
 		$vars['pagination'] = ee('CP/Pagination', $total_files)
 			->perPage($perpage)

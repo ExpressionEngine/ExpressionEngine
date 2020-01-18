@@ -18,7 +18,7 @@ $lang = array(
 
 'admin_email_template_desc' => 'Template to use for notifying an admin of a sale.',
 
-'admin_email_template_unsubscribe' => 'Admin <mark>cancel</mark> email template',
+'admin_email_template_unsubscribe' => 'Admin <code>cancel</code> email template',
 
 'admin_email_template_unsubscribe_desc' => 'Template to use for notifying an admin of a cancellation.',
 
@@ -92,7 +92,7 @@ $lang = array(
 
 'customer_email_template_desc' => 'Template to use when sending sale confirmation email to purchaser.',
 
-'customer_email_unsubscribe' => 'Customer <mark>cancel</mark> email template',
+'customer_email_unsubscribe' => 'Customer <code>cancel</code> email template',
 
 'customer_email_unsubscribe_desc' => 'Template to use when sending cancel confirmation email to canceler.',
 

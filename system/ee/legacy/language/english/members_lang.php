@@ -238,7 +238,7 @@ $lang = array(
 
 'member_field_saved_desc' => 'Member Field has been saved successfully.',
 
-'member_fields_removed_desc' => 'The following Member Fields have been removed:',
+'member_fields_deleted_desc' => 'The following Member Fields have been deleted:',
 
 'primary_role' => 'Primary Role',
 
@@ -272,7 +272,7 @@ $lang = array(
 
 'member_id' => 'ID',
 
-'member_manager' => 'Member Manager',
+'member_manager' => 'Members',
 
 'member_not_created' => 'Cannot Create Member',
 

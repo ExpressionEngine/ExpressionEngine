@@ -2,9 +2,10 @@
 
 <div class="form-standard">
 	<?=form_open(ee('CP/URL')->make('utilities/query'), 'class="ajax-validate"')?>
-		<div class="form-btns form-btns-top">
-			<h1><?=lang('sql_query_form_abbr')?></h1>
+		<div class="title-bar title-bar--large">
+			<h2 class="title-bar__title"><?=lang('sql_query_form_abbr')?></h2>
 		</div>
+
 		<?=ee('CP/Alert')
 			->makeInline()
 			->asImportant()
@@ -18,37 +19,27 @@
 				->addToBody(htmlentities($invalid_query, ENT_QUOTES, 'UTF-8'))
 				->render()?>
 		<?php endif ?>
+
 		<?=ee('CP/Alert')->getAllInlines()?>
-		<fieldset>
-			<div class="field-instruct">
-				<label><?=lang('common_queries')?></label>
-				<em><?=lang('common_queries_desc')?><br>
-					<?php
-					$status_query =	array(
-						'thequery' => rawurlencode(base64_encode('SHOW STATUS')),
-						'signature' => ee('Encrypt')->sign('SHOW STATUS')
-					);
-					$variables_query = array(
-						'thequery' => rawurlencode(base64_encode('SHOW VARIABLES')),
-						'signature' => ee('Encrypt')->sign('SHOW VARIABLES')
-					);
-					$process_query = array(
-						'thequery' => rawurlencode(base64_encode('SHOW PROCESSLIST')),
-						'signature' => ee('Encrypt')->sign('SHOW PROCESSLIST')
-					);
-					?>
-					<a href="<?=ee('CP/URL')->make('utilities/query/run-query', $status_query)?>">SHOW STATUS</a>,
-					<a href="<?=ee('CP/URL')->make('utilities/query/run-query', $variables_query)?>">SHOW VARIABLES</a>,
-					<a href="<?=ee('CP/URL')->make('utilities/query/run-query', $process_query)?>">SHOW PROCESSLIST</a></em>
-			</div>
-		</fieldset>
+
 		<fieldset class="fieldset-required <?=form_error_class('thequery')?>">
 			<div class="field-instruct">
-				<label><?=lang('sql_query_to_run')?></label>
+				<label><?=lang('query')?></label>
 			</div>
 			<div class="field-control">
-				<textarea class="has-format-options" name="thequery" cols="" rows="10"><?=set_value('thequery')?></textarea>
+				<textarea class="js-sql-query-textarea" name="thequery" cols="" rows="10"><?=set_value('thequery')?></textarea>
 				<?=form_error('thequery')?>
+
+				<div class="field-instruct">
+					<div class="button-group">
+						<button type="button" class="button button--secondary-alt font-monospace" onclick="insertIntoSQlQueryForm('SELECT * FROM `exp_` WHERE 1');">SELECT *</button>
+						<button type="button" class="button button--secondary-alt font-monospace" onclick="insertIntoSQlQueryForm('INSERT INTO `exp_` (``) VALUES ()');">INSERT</button>
+						<button type="button" class="button button--secondary-alt font-monospace" onclick="insertIntoSQlQueryForm('UPDATE `exp_` SET ``=\'\' WHERE 1');">UPDATE</button>
+						<button type="button" class="button button--secondary-alt font-monospace" onclick="insertIntoSQlQueryForm('SHOW VARIABLES');">SHOW VARIABLES</button>
+						<button type="button" class="button button--secondary-alt font-monospace" onclick="insertIntoSQlQueryForm('SHOW STATUS');">SHOW STATUS</button>
+						<button type="button" class="button button--secondary-alt font-monospace" onclick="insertIntoSQlQueryForm('SHOW PROCESSLIST');">SHOW PROCESSLIST</button>
+					</div>
+				</div>
 			</div>
 		</fieldset>
 

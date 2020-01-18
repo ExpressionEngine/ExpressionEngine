@@ -27,6 +27,12 @@ if (isset($settings['field_disabled']) && $settings['field_disabled'] == 'y')
 <?php if ($toolbar || ( ! $toolbar && isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y')): ?>
 	<div class="format-options">
 		<?php if ($toolbar): ?>
+			<div class="d-flex align-items-center">
+			<?php if (isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y'): ?>
+				<?=form_dropdown($format_name, $format_options, $settings['field_fmt'])?>
+				<span class="mr-s"></span>
+			<?php endif; ?>
+
 			<ul class="toolbar">
 				<?php if (isset($settings['field_show_file_selector']) && $settings['field_show_file_selector'] == 'y'): ?>
 				<li class="upload"><a class="m-link textarea-field-filepicker" href="<?=$fp_url?>" rel="modal-file" title="<?=lang('upload_file')?>" rel="modal-file" data-input-value="<?=$name?>"></a></li>
@@ -34,12 +40,8 @@ if (isset($settings['field_disabled']) && $settings['field_disabled'] == 'y')
 				<?php if ($smileys_enabled && isset($settings['field_show_smileys']) && $settings['field_show_smileys'] == 'y'): ?>
 				<li class="emoji"><a href="" title="<?=lang('open_emoji')?>"></a></li>
 				<?php endif; ?>
-				<?php if (isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y'): ?>
-				<li class="form-element">
-					<?=form_dropdown($format_name, $format_options, $settings['field_fmt'])?>
-				</li>
-				<?php endif; ?>
 			</ul>
+			</div>
 		<?php endif ?>
 
 		<?php if (isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y' && ! $toolbar): ?>

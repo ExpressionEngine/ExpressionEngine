@@ -53,7 +53,6 @@ class ViewHelpers {
 				'value' => $value,
 				'label' => $label,
 				'instructions' => isset($label['instructions']) ? $label['instructions'] : '',
-				'component' => isset($label['component']) ? $label['component'] : '',
 				'sectionLabel' => $current_section
 			];
 

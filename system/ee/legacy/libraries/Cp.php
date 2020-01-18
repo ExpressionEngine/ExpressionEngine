@@ -113,7 +113,8 @@ class Cp {
 			'cp_theme_url'			=> $this->cp_theme_url,
 			'cp_current_site_label'	=> ee()->config->item('site_name'),
 			'cp_screen_name'		=> $member->screen_name,
-			'cp_avatar_path'		=> ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : '',
+			'cp_member_group_title' => $member->MemberGroup ? $member->MemberGroup->group_title : '',
+			'cp_avatar_path'		=> ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (ee()->config->slash_item('avatar_url') . 'default/default-avatar.png'),
 			'cp_avatar_width'		=> ($member->avatar_filename) ? $member->avatar_width : '',
 			'cp_avatar_height'		=> ($member->avatar_filename) ? $member->avatar_height : '',
 			'cp_quicklinks'			=> $this->_get_quicklinks($member->quick_links),
@@ -152,7 +153,9 @@ class Cp {
 			'clear_all'				=> lang('clear_all'),
 			'keyword_search'		=> lang('keyword_search'),
 			'loading'				=> lang('loading'),
-			'searching'				=> lang('searching')
+			'searching'				=> lang('searching'),
+			'dark_theme'			=> lang('dark_theme'),
+			'light_theme'			=> lang('light_theme')
 		);
 
 		ee()->javascript->set_global(array(
@@ -179,13 +182,27 @@ class Cp {
 		$js_scripts = array(
 			'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog', 'button'),
 			'plugin'	=> array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all', 'nestable'),
-			'file'		=> array('vendor/react/react.min', 'vendor/react/react-dom.min',
+			'file'		=> array('vendor/react/react.min', 'vendor/react/react-dom.min', 'vendor/popper', 'vendor/focus-visible',
 			'vendor/underscore', 'cp/global_start', 'cp/form_validation', 'cp/sort_helper', 'cp/form_group',
-			'cp/modal_form', 'cp/confirm_remove', 'cp/fuzzy_filters',
-			'components/no_results', 'components/loading', 'components/filters',
+			'bootstrap/dropdown-controller', 'cp/modal_form', 'cp/confirm_remove', 'cp/fuzzy_filters',
+			'components/no_results', 'components/loading', 'components/filters', 'components/dropdown_button',
 			'components/filterable', 'components/toggle', 'components/select_list',
 			'fields/select/select', 'fields/select/mutable_select', 'fields/dropdown/dropdown')
 		);
+
+		// If the user is a super-admin, give them jump menu access.
+		if (ee()->session->userdata('group_id') == 1) {
+			// Prime the jump cache commands. This will load the native commands as well as any commands from
+			// add-ons. If an add-on's commands have been updated, the cache should expire in 60 seconds or so.
+			ee('CP/JumpMenu')->primeCache(true); // pass true to empty and refill the cache
+
+			ee()->javascript->set_global(array(
+				'cp.jumpMenuURL' => ee('CP/URL', 'JUMPTARGET')->compile(),
+				'cp.JumpMenuCommands' => ee('CP/JumpMenu')->getItems()
+			));
+
+			$js_scripts['file'][] = 'cp/jump_menu';
+		}
 
 		$modal = ee('View')->make('ee:_shared/modal_confirm_remove')->render([
 			'name'		=> 'modal-default-confirm-remove',

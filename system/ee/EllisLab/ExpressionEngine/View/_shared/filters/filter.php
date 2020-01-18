@@ -1,12 +1,13 @@
-<a class="has-sub" href="" data-filter-label="<?=strtolower(lang($label))?>">
+<button type="button" class="has-sub filter-bar__button js-dropdown-toggle" data-filter-label="<?=strtolower(lang($label))?>">
 	<?=lang($label)?>
 	<?php if ($value): ?>
 	<span class="faded">(<?=htmlentities($value, ENT_QUOTES, 'UTF-8')?>)</span>
 	<?php endif; ?>
-</a>
-<div class="sub-menu">
+</button>
+<div class="dropdown">
 	<?php if ($has_custom_value || $has_list_filter): ?>
-	<fieldset class="filter-search">
+	<div class="dropdown__search">
+		<div class="search-input">
 		<input
 			type="text"
 			name="<?=$name?>"
@@ -15,12 +16,15 @@
 			<?php if ($has_list_filter): ?>
 			data-fuzzy-filter="true"
 			<?php endif; ?>
+			class="search-input__input"
 		>
-	</fieldset>
+		</div>
+	</div>
 	<?php endif; ?>
-	<ul>
+
+	<div class="dropdown__scroll">
 	<?php foreach ($options as $url => $label): ?>
-		<li><a href="<?=$url?>"><?=$label?></a></li>
+		<a class="dropdown__link" href="<?=$url?>"><?=$label?></a>
 	<?php endforeach; ?>
-	</ul>
+	</div>
 </div>

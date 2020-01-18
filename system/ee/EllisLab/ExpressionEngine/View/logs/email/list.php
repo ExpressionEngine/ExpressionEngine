@@ -2,34 +2,40 @@
 
 <div class="tbl-ctrls">
 <?=form_open($form_url)?>
-	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 	<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-	<?php if (isset($filters)) echo $filters; ?>
-	<section class="item-wrap log">
+
+	<div class="title-bar">
+		<h2 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h2>
+		<?php if (isset($filters)) echo $filters; ?>
+	</div>
+
+	<section>
 		<?php if (count($logs) == 0): ?>
 			<p class="no-results"><?=lang('no_email_logs_found')?></p>
 		<?php else: ?>
+			<div class="list-group">
 			<?php foreach($logs as $log): ?>
 
-			<div class="item">
-				<ul class="toolbar">
-					<li class="remove"><a href="" class="m-link" rel="modal-confirm-<?=$log->cache_id?>" title="remove"></a></li>
-				</ul>
-				<h3>
-					<b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->cache_date)?><br>
-					<b><?=lang('username')?>:</b> <a href="<?=ee('CP/URL')->make('myaccount', array('id' => $log->member_id))?>"><?=$log->member_name?></a>,
-					<b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$log->ip_address?>
-				</h3>
-				<div class="message">
-					<p><?=lang('sent_to')?> <b><?=$log->recipient_name?></b>, <?=lang('subject')?>: <a href="<?=ee('CP/URL')->make('logs/email/view/'.$log->cache_id)?>"><?=$log->subject?></a></p>
+			<div class="list-item">
+				<div class="list-item__content">
+					<a href="" class="m-link button button--danger float-right" rel="modal-confirm-<?=$log->cache_id?>" title="<?=lang('delete')?>"><i class="fas fa-trash-alt"></i></a>
+					<div>
+						<b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->cache_date)?><br>
+						<b><?=lang('username')?>:</b> <a href="<?=ee('CP/URL')->make('myaccount', array('id' => $log->member_id))?>"><?=$log->member_name?></a>,
+						<b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$log->ip_address?>
+					</div>
+					<div class="list-item__body">
+						<pre><code><?=lang('sent_to')?> <b><?=$log->recipient_name?></b>, <?=lang('subject')?>: <a href="<?=ee('CP/URL')->make('logs/email/view/'.$log->cache_id)?>"><?=$log->subject?></a></pre></code>
+					</div>
 				</div>
 			</div>
 			<?php endforeach; ?>
+			</div>
 
 			<?=$pagination?>
 
-			<fieldset class="tbl-bulk-act">
-				<button class="btn action m-link" rel="modal-confirm-all"><?=lang('clear_email_logs')?></button>
+			<fieldset class="bulk-action-bar">
+				<button class="button button--danger m-link" rel="modal-confirm-all"><?=lang('clear_email_logs')?></button>
 			</fieldset>
 		<?php endif; ?>
 	</section>
@@ -54,7 +60,7 @@ foreach($logs as $log)
 		)
 	);
 
-	$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+	$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
 	ee('CP/Modal')->addModal($log->cache_id, $modal);
 }
 
@@ -73,6 +79,6 @@ $modal_vars = array(
 	)
 );
 
-$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
 ee('CP/Modal')->addModal('all', $modal);
 ?>

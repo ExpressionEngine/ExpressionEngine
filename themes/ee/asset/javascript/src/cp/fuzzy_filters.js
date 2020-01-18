@@ -240,8 +240,8 @@ $.fn.fuzzyFilter = function() {
 		$(this).data('fuzzyFilterActive', true);
 
 		var input = $(this);
-		var list = $(this).closest('.sub-menu, .nav-sub-menu, .filter-submenu')
-			.find('ul, .filter-submenu__scroll');
+		var list = $(this).closest('.sub-menu, .nav-sub-menu, .filter-submenu, .dropdown')
+			.find('ul, .filter-submenu__scroll, .dropdown__scroll');
 
 		var focusBar = new ListFocus(list);
 		var fuzzyList = new FuzzyListSearch(list, {

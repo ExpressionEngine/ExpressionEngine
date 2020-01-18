@@ -97,7 +97,7 @@ class Communicate extends Utilities {
 			}
 		}
 
-		$vars['cp_page_title'] = lang('communicate');
+		$vars['cp_page_title'] = lang('send_email');
 
 		if ($default['mailtype'] != 'html')
 		{

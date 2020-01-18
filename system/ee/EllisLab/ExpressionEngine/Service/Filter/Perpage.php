@@ -64,7 +64,7 @@ class Perpage extends Filter {
 		if ($is_modal)
 		{
 			$this->options = array('10' => '10 '.lang('results')) + $this->options;
-			$this->default_value = 10;
+			$this->default_value = 25;
 		}
 	}
 

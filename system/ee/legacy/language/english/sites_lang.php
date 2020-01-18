@@ -60,7 +60,7 @@ $lang = array(
 
 'sites' => 'Sites',
 
-'sites_removed_desc' => 'The following sites were removed',
+'sites_deleted_desc' => 'The following sites were deleted',
 
 'switch_to' => 'Switch to',
 

@@ -32,10 +32,6 @@ foreach ($normalized_choices as $key => $choice)
 	{
 		$nested = TRUE;
 	}
-	if ( ! empty($choice['component']))
-	{
-		$force_react = TRUE;
-	}
 }
 
 $count = ee('View/Helpers')->countChoices($normalized_choices);
@@ -82,9 +78,12 @@ if ($count <= $too_many
 					OR ( ! is_bool($value) && $key == $value));
 				$disabled = in_array($key, $disabled_choices) ? ' disabled' : ''; ?>
 
-				<label<?php if ($checked): ?> class="act"<?php endif ?>>
-					<input type="<?=($multi) ? 'checkbox' : 'radio'?>" name="<?=$field_name?>" value="<?=htmlentities($key, ENT_QUOTES, 'UTF-8')?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=isset($attrs) ? $attrs : ''?><?=$disabled?>> <?=$label?>
+				<label class="checkbox-label" <?php if ($checked): ?> class="act"<?php endif ?>>
+					<input type="<?=($multi) ? 'checkbox' : 'radio'?>" name="<?=$field_name?>" value="<?=htmlentities($key, ENT_QUOTES, 'UTF-8')?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=isset($attrs) ? $attrs : ''?><?=$disabled?>>
+					<div class="checkbox-label__text">
+					<?=$label?>
 						<?php if ($instructions): ?><i><?=$instructions?></i><?php endif ?>
+					</div>
 				</label>
 			<?php endforeach; ?>
 		</div>

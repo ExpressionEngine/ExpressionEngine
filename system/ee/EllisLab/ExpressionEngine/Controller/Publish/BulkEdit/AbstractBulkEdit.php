@@ -89,7 +89,8 @@ abstract class AbstractBulkEdit extends CP_Controller {
 				'filters' => '',
 				'errors' => $errors,
 				'reorderable' => FALSE,
-				'show_field_type' => FALSE
+				'show_field_type' => FALSE,
+				'is_bulk_edit' => TRUE
 			]);
 		}
 
@@ -102,7 +103,8 @@ abstract class AbstractBulkEdit extends CP_Controller {
 				'filters' => '',
 				'errors' => NULL,
 				'reorderable' => FALSE,
-				'show_field_type' => FALSE
+				'show_field_type' => FALSE,
+				'is_bulk_edit' => TRUE
 			]);
 		}
 
@@ -110,6 +112,7 @@ abstract class AbstractBulkEdit extends CP_Controller {
 			'fields'          => $displayed_fields_markup,
 			'field_templates' => $template_fields_markup,
 			'filters'         => $filters,
+			'is_bulk_edit'	  => TRUE
 		]);
 	}
 

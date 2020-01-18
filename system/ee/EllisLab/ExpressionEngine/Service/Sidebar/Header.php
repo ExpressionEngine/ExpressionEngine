@@ -70,9 +70,13 @@ class Header {
 	 * @param URL|string $url A CP\URL object or string containing the
 	 *   URL for the header.
 	 * @return self This returns a reference to itself
+	 * @deprecated Deprecated in 6.0
 	 */
 	public function withUrl($url)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('6.0', 'Headers with urls are deprecated. $sidebar->addItem() should be used instead.');
+
 		$this->url = $url;
 		if ($url instanceof URL && $url->isTheRequestedURI())
 		{
@@ -82,13 +86,32 @@ class Header {
 	}
 
 	/**
+	 * Returns true if the header has a url set
+	 *
+	 * @return bool
+	 * @deprecated Don't use
+	 */
+	public function hasUrl()
+	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('6.0', 'Headers with urls are deprecated. $sidebar->addItem() should be used instead.');
+
+		return !empty($this->url);
+	}
+
+	/**
 	 * Sets the $url_is_external property
 	 *
 	 * @param bool $external (optional) TRUE if it is external, FALSE if not
 	 * @return self This returns a reference to itself
+	 *
+	 * @deprecated Deprecated in 6.0
 	 */
 	public function urlIsExternal($external = TRUE)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('6.0', 'Headers with urls are deprecated. $sidebar->addItem() should be used instead.');
+
 		$this->url_is_external = $external;
 		return $this;
 	}
@@ -100,7 +123,7 @@ class Header {
 	 */
 	public function isActive()
 	{
-		$this->class .= 'act ';
+		$this->class .= 'active ';
 		return $this;
 	}
 
@@ -111,7 +134,7 @@ class Header {
 	 */
 	public function isInactive()
 	{
-		$this->class = str_replace('act', '', $this->class);
+		$this->class = str_replace('active', '', $this->class);
 		return $this;
 	}
 

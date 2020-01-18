@@ -2,10 +2,14 @@
 
 <div class="form-standard">
 	<?=form_open(ee('CP/URL')->make('utilities/sandr'), 'class="ajax-validate"')?>
-		<div class="form-btns form-btns-top">
-			<h1><?=$cp_page_title?></h1>
+		<div class="title-bar">
+			<h2 class="title-bar__title"><?=$cp_page_title?></h2>
+
+			<div class="title-bar__extra-tools">
 			<?=cp_form_submit('btn_sandr', 'btn_sandr_working')?>
+			</div>
 		</div>
+
 		<?=ee('CP/Alert')
 			->makeInline()
 			->asImportant()

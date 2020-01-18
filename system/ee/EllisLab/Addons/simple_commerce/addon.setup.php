@@ -4,7 +4,7 @@ return array(
 	'author'      => 'EllisLab',
 	'author_url'  => 'https://ellislab.com/',
 	'name'        => 'Simple Commerce',
-	'description' => '',
+	'description' => 'Easily integrate EE with PayPal',
 	'version'     => '2.2.1',
 	'namespace'   => 'EllisLab\Addons\SimpleCommerce',
 	'settings_exist' => TRUE,

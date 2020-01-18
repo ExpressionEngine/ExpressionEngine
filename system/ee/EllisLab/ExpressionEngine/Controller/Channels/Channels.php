@@ -76,10 +76,6 @@ class Channels extends AbstractChannelsController {
 				'extra' => LD.$channel->channel_name.RD,
 				'selected' => ($highlight_id && $channel->getId() == $highlight_id) OR in_array($channel->getId(), $imported_channels),
 				'toolbar_items' => [
-					'edit' => [
-						'href' => $edit_url,
-						'title' => lang('edit')
-					],
 					'download' => [
 						'href' => ee('CP/URL', 'channels/sets/export/' . $channel->getId()),
 						'title' => lang('export')
@@ -141,8 +137,8 @@ class Channels extends AbstractChannelsController {
 
 			ee('CP/Alert')->makeInline('channels')
 				->asSuccess()
-				->withTitle(lang('channels_removed'))
-				->addToBody(sprintf(lang('channels_removed_desc'), count($channel_ids)))
+				->withTitle(lang('channels_deleted'))
+				->addToBody(sprintf(lang('channels_deleted_desc'), count($channel_ids)))
 				->defer();
 		}
 		else
@@ -328,7 +324,7 @@ class Channels extends AbstractChannelsController {
 		ee()->cp->add_js_script('file', array('library/simplecolor', 'components/colorpicker'));
 
 		ee()->view->header = array(
-			'title' => lang('channel_manager'),
+			'title' => is_null($channel_id) ? lang('create_channel') : lang('edit_channel'),
 			'toolbar_items' => array(
 				'settings' => array(
 					'href' => ee('CP/URL')->make('settings/content-design'),
@@ -738,7 +734,7 @@ class Channels extends AbstractChannelsController {
 
 		foreach ($statuses as $status)
 		{
-			$status_options[] = $status->getOptionComponent(['use_ids' => TRUE]);
+			$status_options[] = $status->getSelectOptionComponent(true);
 		}
 
 		$selected = ee('Request')->post('statuses') ?: [];
@@ -760,6 +756,7 @@ class Channels extends AbstractChannelsController {
 			'field_name'       => 'statuses',
 			'choices'          => $status_options,
 			'disabled_choices' => $default,
+			'encode' 		   => FALSE,
 			'unremovable_choices' => $default,
 			'value'            => $selected,
 			'multi'            => TRUE,

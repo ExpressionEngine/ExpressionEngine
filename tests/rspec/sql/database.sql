@@ -2070,7 +2070,8 @@ INSERT INTO `exp_fieldtypes` (`fieldtype_id`, `name`, `version`, `settings`, `ha
 	(13,'url','1.0.0','YTowOnt9','n'),
 	(14,'email_address','1.0.0','YTowOnt9','n'),
 	(15,'toggle','1.0.0','YTowOnt9','n'),
-	(16,'fluid_field','1.0.0','YTowOnt9','n');
+	(16,'fluid_field','1.0.0','YTowOnt9','n'),
+  (17,'colorpicker','1.0.0','YTowOnt9','n');
 ALTER TABLE `exp_fieldtypes` ENABLE KEYS;
 UNLOCK TABLES;
 
