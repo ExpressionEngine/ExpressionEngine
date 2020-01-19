@@ -28,7 +28,11 @@ class Relationship extends React.Component {
 
             ReactDOM.render(React.createElement(Relationship, props, null), this)
         })
-    }
+	}
+
+	componentDidMount() {
+		this.bindSortable()
+	}
 
     selectItem(item) {
         const index = this.state.selected.findIndex((obj) => obj.value === item.value);
@@ -101,6 +105,38 @@ class Relationship extends React.Component {
         this.setState({ filterTerm: event.target.value || false })
     }
 
+	bindSortable = () => {
+		let thisRef = this
+
+		$(this.listGroup).sortable({
+			axis: 'y',
+			containment: 'parent',
+			handle: '.list-item__handle',
+			items: '.list-item',
+			sort: EE.sortable_sort_helper,
+			start: (event, ui) => {
+				// Save the start index for later
+				$(this).attr('data-start-index', ui.item.index());
+			},
+			stop: (event, ui) => {
+
+				var newIndex = ui.item.index();
+				var oldIndex = $(this).attr('data-start-index');
+
+				// Cancel the sort so jQeury doesn't move the items
+				// This needs to be done by react since it handles the dom
+				$(thisRef.listGroup).sortable('cancel')
+
+				let selected = thisRef.state.selected
+
+				// Move the item to the new position
+				selected.splice(newIndex, 0, selected.splice(oldIndex, 1)[0]);
+
+				thisRef.setState({ selected: selected })
+			}
+		})
+	}
+
     render() {
         let props = this.props
 
@@ -135,11 +171,14 @@ class Relationship extends React.Component {
         return (
             <div ref={el => this.field = el}>
                 {this.state.selected.length > 0 &&
-                <ul className="list-group list-group--connected mb-s">
+                <ul className="list-group list-group--connected mb-s" ref={el => this.listGroup = el}>
                     {
                         this.state.selected.map((item) => {
                             return (
                                 <li className="list-item">
+									{this.state.selected.length > 1 &&
+									<div class="list-item__handle"><i class="fas fa-bars"></i></div>
+									}
                                     <div className="list-item__content">
                                         <div class="list-item__title">{item.label} {this.state.selected.length > 10 && <small className="meta-info ml-s float-right"> {item.instructions}</small>}</div>
                                         {this.state.selected.length <= 10 &&

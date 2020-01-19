@@ -77,6 +77,35 @@ function (_React$Component) {
       });
     });
 
+    _defineProperty(_assertThisInitialized(_this), "bindSortable", function () {
+      var thisRef = _assertThisInitialized(_this);
+
+      $(_this.listGroup).sortable({
+        axis: 'y',
+        containment: 'parent',
+        handle: '.list-item__handle',
+        items: '.list-item',
+        sort: EE.sortable_sort_helper,
+        start: function start(event, ui) {
+          // Save the start index for later
+          $(_assertThisInitialized(_this)).attr('data-start-index', ui.item.index());
+        },
+        stop: function stop(event, ui) {
+          var newIndex = ui.item.index();
+          var oldIndex = $(_assertThisInitialized(_this)).attr('data-start-index'); // Cancel the sort so jQeury doesn't move the items
+          // This needs to be done by react since it handles the dom
+
+          $(thisRef.listGroup).sortable('cancel');
+          var selected = thisRef.state.selected; // Move the item to the new position
+
+          selected.splice(newIndex, 0, selected.splice(oldIndex, 1)[0]);
+          thisRef.setState({
+            selected: selected
+          });
+        }
+      });
+    });
+
     _this.state = {
       selected: props.selected,
       items: props.items,
@@ -87,6 +116,11 @@ function (_React$Component) {
   }
 
   _createClass(Relationship, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      this.bindSortable();
+    }
+  }, {
     key: "selectItem",
     value: function selectItem(item) {
       var index = this.state.selected.findIndex(function (obj) {
@@ -179,11 +213,18 @@ function (_React$Component) {
           return _this3.field = el;
         }
       }, this.state.selected.length > 0 && React.createElement("ul", {
-        className: "list-group list-group--connected mb-s"
+        className: "list-group list-group--connected mb-s",
+        ref: function ref(el) {
+          return _this3.listGroup = el;
+        }
       }, this.state.selected.map(function (item) {
         return React.createElement("li", {
           className: "list-item"
-        }, React.createElement("div", {
+        }, _this3.state.selected.length > 1 && React.createElement("div", {
+          "class": "list-item__handle"
+        }, React.createElement("i", {
+          "class": "fas fa-bars"
+        })), React.createElement("div", {
           className: "list-item__content"
         }, React.createElement("div", {
           "class": "list-item__title"
