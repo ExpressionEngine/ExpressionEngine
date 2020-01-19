@@ -187,7 +187,7 @@ class Relationship extends React.Component {
                                     </div>
                                     <div class="list-item__content-right">
                                         <div className="button-group">
-                                            <button type="button" onClick={() => this.deselect(item.value)} className="button button--small button--secondary-alt"><i class="fas fa-times"></i></button>
+                                            <button type="button" title={EE.relationship.lang.remove} onClick={() => this.deselect(item.value)} className="button button--small button--secondary-alt"><i class="fas fa-times"></i></button>
                                         </div>
                                     </div>
                                 </li>
@@ -208,19 +208,19 @@ class Relationship extends React.Component {
                 }
 
                 <div style={{display: showAddButton ? 'block' : 'none' }}>
-                    <button type="button" className="js-dropdown-toggle button button--secondary-alt"><i class="fas fa-plus icon-left"></i> Relate Entry</button>
+				<button type="button" className="js-dropdown-toggle button button--secondary-alt"><i class="fas fa-plus icon-left"></i> {EE.relationship.lang.relateEntry}</button>
                     <div className="dropdown js-dropdown-auto-focus-input">
                         <div className="dropdown__search d-flex">
                             <div className="filter-bar flex-grow">
                                 <div className="filter-bar__item flex-grow">
                                     <div className="search-input">
-                                        <input type="text" class="search-input__input" onChange={this.handleSearch} placeholder="Search" />
+                                        <input type="text" class="search-input__input" onChange={this.handleSearch} placeholder={EE.relationship.lang.search} />
                                     </div>
                                 </div>
                                 <div className="filter-bar__item">
                                     <DropDownButton
                                         keepSelectedState={true}
-                                        title="Channel"
+                                        title={EE.relationship.lang.channel}
                                         items={channelFilterItems}
                                         onSelect={(value) => this.channelFilterChange(value)}
                                         buttonClass="filter-bar__button"

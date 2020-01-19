@@ -22,6 +22,8 @@ $lang = array(
 
 'any_status' => 'Any status',
 
+'relate_entry' => 'Relate Entry',
+
 'rel_ft_allow_multi' => 'Allow multiple relationships?',
 
 'rel_ft_allow_multi_desc' => 'When enabled, authors will be allowed to create multiple relationships.',

@@ -238,6 +238,7 @@ function (_React$Component) {
           className: "button-group"
         }, React.createElement("button", {
           type: "button",
+          title: EE.relationship.lang.remove,
           onClick: function onClick() {
             return _this3.deselect(item.value);
           },
@@ -264,7 +265,7 @@ function (_React$Component) {
         className: "js-dropdown-toggle button button--secondary-alt"
       }, React.createElement("i", {
         "class": "fas fa-plus icon-left"
-      }), " Relate Entry"), React.createElement("div", {
+      }), " ", EE.relationship.lang.relateEntry), React.createElement("div", {
         className: "dropdown js-dropdown-auto-focus-input"
       }, React.createElement("div", {
         className: "dropdown__search d-flex"
@@ -278,12 +279,12 @@ function (_React$Component) {
         type: "text",
         "class": "search-input__input",
         onChange: this.handleSearch,
-        placeholder: "Search"
+        placeholder: EE.relationship.lang.search
       }))), React.createElement("div", {
         className: "filter-bar__item"
       }, React.createElement(DropDownButton, {
         keepSelectedState: true,
-        title: "Channel",
+        title: EE.relationship.lang.channel,
         items: channelFilterItems,
         onSelect: function onSelect(value) {
           return _this3.channelFilterChange(value);
