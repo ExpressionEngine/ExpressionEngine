@@ -5,8 +5,10 @@
 			<h3 class="title-bar__title"><?= lang('preview'); ?></h3>
 
 			<div class="title-bar__extra-tools">
-				<a href="<?=$download_url?>" class="button button--clear" title="<?=lang('download')?>"><i class="fas fa-lg fa-download"></i></a>
-				<a href="<?=$file->getAbsoluteURL()?>" rel="external" class="button button--clear" title="<?=lang('open')?>"><i class="fas fa-lg fa-external-link-alt"></i></a>
+				<div class="button-group">
+					<a class="button button--large filter-bar__button" href="<?=$download_url?>" title="<?=lang('download')?>"><i class="fas fa-download"></i></a>
+					<a class="button button--large filter-bar__button" href="<?=$file->getAbsoluteURL()?>" rel="external"  title="<?=lang('open')?>"><i class="fas fa-link"></i></a>
+				</div>
 			</div>
 		</div>
 

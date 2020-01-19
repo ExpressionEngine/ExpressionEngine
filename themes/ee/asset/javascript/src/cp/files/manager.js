@@ -28,6 +28,7 @@
 				dataType: 'html',
 				success: function (data) {
 					$("." + modal + " div.box").html(data);
+					SelectField.renderFields()
 				}
 			})
 		});
