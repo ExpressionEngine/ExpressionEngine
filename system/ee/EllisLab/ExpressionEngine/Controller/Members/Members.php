@@ -902,7 +902,7 @@ class Members extends CP_Controller {
 					$group = $member->PrimaryRole->name;
 			}
 
-			$email = "<a href = '" . ee('CP/URL')->make('utilities/communicate/member/' . $member->member_id) . "'>".$member->email."</a>";
+			$email = "<a class=\"text-muted\" href='" . ee('CP/URL')->make('utilities/communicate/member/' . $member->member_id) . "'>".$member->email."</a>";
 
 			if ($can_edit_member) {
 				$username_display = "<a href = '" . $edit_link . "'>". $member->username."</a>";
@@ -911,7 +911,17 @@ class Members extends CP_Controller {
 				$username_display = $member->username;
 			}
 
-			$username_display .= '<br><span class="meta-info">&mdash; '.$email.'</span>';
+			$username_display .= '<br><span class="meta-info">'.$email.'</span>';
+
+			$avatar_url = ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (ee()->config->slash_item('avatar_url') . 'default/default-avatar.png');
+
+			$username_display = "
+			<div class=\"d-flex align-items-center\">
+			<img src=\"$avatar_url\" class=\"avatar-icon add-mrg-right\">
+			<div>$username_display</div>
+			</div>
+			";
+
 			$last_visit = ($member->last_visit) ? ee()->localize->human_time($member->last_visit) : '--';
 
 			$column = array(
