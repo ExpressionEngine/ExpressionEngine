@@ -47,7 +47,7 @@ if ($can_create_channels || count($menu['channels']['create'])): ?>
 <?php if ($can_access_members):?>
 	<div class="dashboard__item widget">
 		<div class="widget__title-bar">
-			<h2 class="widget__title"><?=lang('recent_members'); ?></h2>
+			<h2 class="widget__title"><?=lang('members'); ?></h2>
 
 			<div>
 				<div class="button-group">
@@ -65,9 +65,8 @@ if ($can_create_channels || count($menu['channels']['create'])): ?>
 		</div>
 
 		<ul class="simple-list">
-		<?php
-			if(!empty($number_of_channels)):
-				$recent_members = $members = ee('Model')->get('Member')
+			<?php
+				$recent_members = ee('Model')->get('Member')
 				->order('last_visit', 'DESC')
 				->limit(7)
 				->all();
@@ -83,61 +82,65 @@ if ($can_create_channels || count($menu['channels']['create'])): ?>
 					</a>
 				</li>
 				<?php endforeach; ?>
-			<?php endif; ?>
 		</ul>
 	</div>
 <?php endif; ?>
 
 
 
-	<?php $spam_comment_width = ($spam_module_installed) ? '' : 'dashboard__item--full'; ?>
-	<?php if (ee()->config->item('enable_comments') == 'y'): ?>
+<?php $spam_comment_width = ($spam_module_installed) ? '' : 'dashboard__item--full'; ?>
+<?php if (ee()->config->item('enable_comments') == 'y'): ?>
 	<div class="dashboard__item widget <?=$spam_comment_width?>">
 		<div class="widget__title-bar">
 			<h2 class="widget__title"><?=lang('comments'); ?></h2>
 
 			<div>
-				<?php if ($can_moderate_comments && $can_edit_comments): ?>
-					<a class="button button--secondary-alt" href="<?=ee('CP/URL', 'publish/comments')?>"><?=lang('review_all_new')?></a>
+				<?php if ($can_edit_comments): ?>
+					<a class="button button--secondary-alt" href="<?=ee('CP/URL', 'publish/comments')?>"><?=$number_of_new_comments?> <?=lang('new_comments')?></a>
 				<?php endif; ?>
 			</div>
 		</div>
 
-		<ul class="list-group">
+		<ul class="simple-list">
+			<?php
+			$comments = ee('Model')->get('Comment')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('comment_date', 'DESC')
+			->limit(3)
+			->all();
 
-			<?php if ($can_edit_comments): ?>
-			<div class="list-item list-item--action">
-				<a href="<?=ee('CP/URL')->make('publish/comments', array('filter_by_date' => ee()->localize->now - ee()->session->userdata['last_visit']))?>" class="list-item__content">
-					<b><?=$number_of_new_comments?></b> <?=lang('new_comments') ?> <?=lang('since_last_login')?> (<?=$last_visit?>)
-					<i class="fas fa-chevron-right float-right" style="margin-top: 2px;"></i>
-				</a>
-			</div>
-			<?php else: ?>
-			<div class="list-item">
-				<div class="list-item__content">
-					<b><?=$number_of_new_comments?></b> <?=lang('new_comments') ?> <?=lang('since_last_login')?> (<?=$last_visit?>)
+			foreach($comments as $comment):
+			?>
+			<li>
+				<div class="d-flex">
+					<div>
+						<p class="meta-info">
+							<a href="admin.php?/cp/members"><?=$comment->name?></a>
+							<?=lang('commented_on')?> <a href="<?=ee('CP/URL')->make('publish/edit/entry/' . $comment->getEntry()->entry_id)?>"><?=$comment->getEntry()->title?></a>
+						</p>
+						<p><?=ellipsize($comment->comment, 150)?></p>
+					</div>
 				</div>
-			</div>
-			<?php endif; ?>
-
-			<?php if ($can_moderate_comments): ?>
-				<div class="list-item list-item--action">
-					<a href="<?=ee('CP/URL')->make('publish/comments', array('filter_by_status' => 'p'))?>" class="list-item__content">
-						<b><?=$number_of_pending_comments?></b> <?=lang('are')?> <?=lang('awaiting_moderation')?>
-						<i class="fas fa-chevron-right float-right" style="margin-top: 2px;"></i>
-					</a>
-				</div>
-
-				<?php if ($spam_module_installed): ?>
-				<div class="list-item list-item--action">
-					<a href="<?=ee('CP/URL')->make('addons/settings/spam', array('content_type' => 'comment'))?>" class="list-item__content">
-						<b><?=$number_of_spam_comments?></b> <?=lang('have_been')?> <?=lang('flagged_as_spam')?>
-						<i class="fas fa-chevron-right float-right" style="margin-top: 2px;"></i>
-					</a>
-				</div>
-				<?php endif ?>
-			<?php endif; ?>
+			</li>
+			<?php endforeach; ?>
 		</ul>
+
+		<?php if ($can_moderate_comments): ?>
+		<div class="widget__bottom-buttons">
+			<a href="<?=ee('CP/URL')->make('publish/comments', array('filter_by_status' => 'p'))?>" class="button">
+				<?php if ($number_of_pending_comments > 0): ?>
+				<i class="icon--caution icon-left"></i>
+				<?php endif ?>
+				<b><?=$number_of_pending_comments?></b> <?=lang('awaiting_moderation')?>
+			</a>
+
+			<?php if ($spam_module_installed): ?>
+				<a href="<?=ee('CP/URL')->make('addons/settings/spam', array('content_type' => 'comment'))?>" class="button">
+					<b><?=$number_of_spam_comments?></b> <?=lang('flagged_as_spam')?>
+				</a>
+			<?php endif ?>
+		</div>
+		<?php endif; ?>
 	</div>
 	<?php endif; ?>
 

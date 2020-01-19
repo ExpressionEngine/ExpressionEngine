@@ -30,7 +30,9 @@ $lang = array(
 
 'field_groups' => 'Field Groups',
 
-'flagged_as_spam' => 'flagged as potential spam',
+'flagged_as_spam' => 'flagged as spam',
+
+'commented_on' => 'commented on',
 
 'has' => 'has',
 

@@ -113,7 +113,7 @@ class Cp {
 			'cp_theme_url'			=> $this->cp_theme_url,
 			'cp_current_site_label'	=> ee()->config->item('site_name'),
 			'cp_screen_name'		=> $member->screen_name,
-			'cp_member_primary_role_title' => $member->PrimaryRole->name,
+			'cp_member_primary_role_title' => $member->PrimaryRole ? $member->PrimaryRole->name : '',
 			'cp_avatar_path'		=> ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (ee()->config->slash_item('avatar_url') . 'default/default-avatar.png'),
 			'cp_avatar_width'		=> ($member->avatar_filename) ? $member->avatar_width : '',
 			'cp_avatar_height'		=> ($member->avatar_filename) ? $member->avatar_height : '',
