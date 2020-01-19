@@ -41,6 +41,7 @@
 $current_page = ee()->uri->segment(2);
 ?>
 
+	<div class="ee-wrapper-overflow">
 		<section class="ee-wrapper">
 
 			<div class="ee-sidebar">

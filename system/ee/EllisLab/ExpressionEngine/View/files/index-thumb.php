@@ -4,7 +4,7 @@
 	<?=form_open($form_url)?>
 		<div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
-		<div class="title-bar">
+		<div class="title-bar js-filters-collapsable">
 			<h2 class="title-bar__title"><?=$cp_heading?></h2>
 			<?php if (isset($filters)) echo $filters; ?>
 		</div>

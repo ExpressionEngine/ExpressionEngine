@@ -6016,7 +6016,6 @@ html {
 body {
   font-family: "Roboto", "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", sans-serif;
   height: 100%;
-  overflow-x: hidden;
   font-size: 1rem;
   line-height: 1.5;
   color: var(--ee-text-normal);
@@ -6100,9 +6099,11 @@ code {
   font-size: 0.96em;
   white-space: normal; }
 
+pre {
+  overflow-x: auto; }
+
 pre code {
   display: block;
-  overflow-x: auto;
   padding: 10px 15px 10px 15px;
   border: none;
   border-radius: 7px;
@@ -7432,12 +7433,13 @@ tr.selected .st-status {
         max-width: 100%; } }
 
 .filter-bar__button {
-  line-height: 27px;
+  line-height: 27px !important;
   background: var(--ee-bg-0);
   border-radius: 7px;
   color: var(--ee-text-secondary);
   border: 1px solid var(--ee-border);
-  text-transform: capitalize; }
+  text-transform: capitalize;
+  text-align: left; }
   .filter-bar__button:hover {
     color: inherit;
     border-color: var(--ee-border-dark); }
@@ -9723,6 +9725,7 @@ body[data-theme="dark"] .dialog--danger .dialog__header {
 .list-item__content {
   display: block;
   flex: 1 1;
+  min-width: 0;
   padding: 10px 15px 10px 15px;
   color: var(--ee-text-normal);
   line-height: 1.5; }
@@ -11966,6 +11969,9 @@ body[data-theme="dark"] .status-tag--closed {
     color: var(--ee-error);
     content: "\f2ed"; }
 
+.ee-wrapper-overflow {
+  overflow-x: hidden; }
+
 .ee-wrapper {
   display: flex;
   min-height: 100%;
@@ -12012,8 +12018,8 @@ body[data-theme="dark"] .status-tag--closed {
 
 .container {
   padding-top: 0px;
-  flex: 1 1 auto;
-  width: 100%; }
+  flex: 1 1 80%;
+  min-width: 0; }
 
 .secondary-sidebar-container {
   display: flex;
@@ -12024,7 +12030,7 @@ body[data-theme="dark"] .status-tag--closed {
       flex-direction: column-reverse; } }
 
 .secondary-sidebar {
-  flex: 0 0 310px;
+  flex: 0 2 310px;
   padding-right: 40px; }
   @media (max-width: 767px) {
     .secondary-sidebar {

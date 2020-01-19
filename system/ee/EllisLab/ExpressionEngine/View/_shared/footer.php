@@ -1,6 +1,6 @@
 			</div>
 		</section>
-
+	</div>
 
 		<div class="dropdown app-about" data-dropdown="app-about-dropdown">
 			<div class="app-about__title">ExpressionEngine <span class="float-right"><?=$formatted_version?></span></div>
