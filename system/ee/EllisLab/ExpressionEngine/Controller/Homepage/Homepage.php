@@ -23,14 +23,6 @@ class Homepage extends CP_Controller {
 
 		ee('CP/Alert')->makeDeprecationNotice()->now();
 
-		$stats = ee('Model')->get('Stats')
-			->filter('site_id', ee()->config->item('site_id'))
-			->first();
-
-		$vars['number_of_members'] = $stats->total_members;
-		$vars['number_of_entries'] = $stats->total_entries;
-		$vars['number_of_comments'] = $stats->total_comments;
-
 		// First login, this is 0 on the first page load
 		$vars['last_visit'] = (empty(ee()->session->userdata['last_visit'])) ? ee()->localize->human_time() : ee()->localize->human_time(ee()->session->userdata['last_visit']);
 
@@ -63,24 +55,6 @@ class Homepage extends CP_Controller {
 				->first()
 				->channel_id;
 		}
-
-		$vars['number_of_channel_fields'] = ee('Model')->get('ChannelField')
-			->count();
-
-		$vars['number_of_banned_members'] = ee('Model')->get('Member')
-			->filter('role_id', 2)
-			->count();
-
-		$vars['number_of_closed_entries'] = ee('Model')->get('ChannelEntry')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('status', 'closed')
-			->count();
-
-		$vars['number_of_comments_on_closed_entries'] = ee('Model')->get('Comment')
-			->with('Entry')
-			->filter('Comment.site_id', ee()->config->item('site_id'))
-			->filter('Entry.status', 'closed')
-			->count();
 
 		$vars['spam_module_installed'] = (bool) ee('Model')->get('Module')->filter('module_name', 'Spam')->count();
 

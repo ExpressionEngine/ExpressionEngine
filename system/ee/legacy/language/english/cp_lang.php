@@ -301,6 +301,8 @@ $lang = array(
 
 'recent_entries' => 'Recent Entries',
 
+'recent_members' => 'Recent Members',
+
 'results' => 'results',
 
 'select_all' => 'Select All',

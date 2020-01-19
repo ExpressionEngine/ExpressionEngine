@@ -44,27 +44,49 @@ if ($can_create_channels || count($menu['channels']['create'])): ?>
 	</div>
 <?php endif; ?>
 
+<?php if ($can_access_members):?>
 	<div class="dashboard__item widget">
 		<div class="widget__title-bar">
-			<h2 class="widget__title"><?=lang('members'); ?></h2>
+			<h2 class="widget__title"><?=lang('recent_members'); ?></h2>
 
 			<div>
-				<?php if ($can_create_members): ?>
-					<a class="button button--secondary-alt" href="<?=ee('CP/URL', 'members/create')?>"><?=lang('register_new')?></a>
-				<?php endif; ?>
+				<div class="button-group">
+					<?php
+					$pending_count = ee('Model')->get('Member')->filter('role_id', 4)->count();
+
+					if ($pending_count > 0):
+					?>
+					<a href="<?=ee('CP/URL')->make('members/pending')?>" class="button button--secondary-alt"><?=$pending_count?> <?=lang('pending')?></a>
+					<?php endif; ?>
+
+					<a class="button button--secondary-alt" href="<?=ee('CP/URL', 'members')?>"><?=lang('view_all')?></a>
+				</div>
 			</div>
 		</div>
 
-		<ul class="list">
-			<?php if ($can_access_members):?>
-			<li><a href="<?=ee('CP/URL', 'members')?>"><b><?=$number_of_members?></b> <?=lang('members')?></a></li>
-			<li><a href="<?=ee('CP/URL')->make('members', array('group' => 2))?>"><b><?=$number_of_banned_members?></b> <?=lang('banned_members')?></a></li>
-			<?php else: ?>
-			<li><b><?=$number_of_members?></b> <?=lang('members')?></li>
+		<ul class="simple-list">
+		<?php
+			if(!empty($number_of_channels)):
+				$recent_members = $members = ee('Model')->get('Member')
+				->order('last_visit', 'DESC')
+				->limit(7)
+				->all();
+
+				foreach($recent_members as $member):
+					$last_visit = ($member->last_visit) ? ee()->localize->human_time($member->last_visit) : '--';
+					$avatar_url = ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (ee()->config->slash_item('avatar_url') . 'default/default-avatar.png');
+				?>
+				<li>
+					<a href="<?=ee('CP/URL')->make('members/profile/settings&id=' . $member->member_id);?>" class="d-flex align-items-center normal-link">
+						<img src="<?=$avatar_url?>" class="avatar-icon add-mrg-right" alt="">
+						<div class="flex-grow"><?= $member->screen_name; ?> <span class="meta-info float-right"><?=$last_visit?></span></div>
+					</a>
+				</li>
+				<?php endforeach; ?>
 			<?php endif; ?>
 		</ul>
 	</div>
-
+<?php endif; ?>
 
 
 
