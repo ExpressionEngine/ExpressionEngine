@@ -248,15 +248,17 @@ $(document).ready(function(){
 	// -------------------------------------------------------------------
 
 	// Hides the sidebar when the window width is too small for it and shows the mobile menu button
-	function updateMainSidebar() {
+	var updateMainSidebar = _.debounce(function() {
 		if (window.innerWidth < 1000) {
 			$('.ee-wrapper').addClass('sidebar-hidden-no-anim is-mobile');
 			$('.main-nav__mobile-menu').removeClass('hidden');
+			$('.ee-wrapper-overflow').addClass('is-mobile');
 		} else {
 			$('.ee-wrapper').removeClass('sidebar-hidden-no-anim sidebar-hidden is-mobile');
 			$('.main-nav__mobile-menu').addClass('hidden');
+			$('.ee-wrapper-overflow').removeClass('is-mobile');
 		}
-	}
+	}, 100)
 
 	// Update the sidebar visibility on page load, and when the window width changes
 	window.addEventListener('resize', function () { updateMainSidebar() })
@@ -367,7 +369,7 @@ $(document).ready(function(){
 		}
 	})
 
-	function updateFilterBars() {
+	var updateFilterBars = _.debounce(function() {
 		var collapse = false
 
 		if (window.innerWidth < 1000) {
@@ -380,7 +382,7 @@ $(document).ready(function(){
 			collapseFilterBar(this, collapse)
 			$(this).find('.filter-bar').toggleClass('filter-bar--collapsible', collapse)
 		})
-	}
+	})
 
 	// Update the filter bars on page load, and when the window width changes
 	window.addEventListener('resize', function () { updateFilterBars() })
