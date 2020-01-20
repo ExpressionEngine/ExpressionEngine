@@ -5,10 +5,7 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 ## Patch Release
 
 Bullet list below, e.g.
-   - Added <new feature>
-   - Fixed a bug (#<linked issue number>) where <bug behavior>.
-
-
+	- Ignores url_title in fetch param function, for issues related to URL titles called `n`
 
 EOF MARKER: This line helps prevent merge conflicts when things are
 added on the bottoms of lists
