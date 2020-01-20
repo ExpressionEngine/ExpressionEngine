@@ -46,7 +46,13 @@ class Member_register extends Member {
 		}
 
 		// Fetch the registration form
-		$reg_form = $this->_load_element('registration_form');
+		$tagdata = trim(ee()->TMPL->tagdata);
+
+		if (! empty($tagdata)) {
+			$reg_form = ee()->TMPL->tagdata;
+		} else {
+			$reg_form = $this->_load_element('registration_form');
+		}
 
 		// Do we have custom fields to show?
 		$query = ee()->db->where('m_field_reg', 'y')
@@ -375,17 +381,17 @@ class Member_register extends Member {
 		if (ee()->config->item('req_mbr_activation') == 'manual' OR
 			ee()->config->item('req_mbr_activation') == 'email')
 		{
-			$data['group_id'] = 4;  // Pending
+			$data['role_id'] = 4;  // Pending
 		}
 		else
 		{
 			if (ee()->config->item('default_primary_role') == '')
 			{
-				$data['group_id'] = 4;  // Pending
+				$data['role_id'] = 4;  // Pending
 			}
 			else
 			{
-				$data['group_id'] = ee()->config->item('default_primary_role');
+				$data['role_id'] = ee()->config->item('default_primary_role');
 			}
 		}
 
@@ -477,7 +483,6 @@ class Member_register extends Member {
 
 			ee()->db->query("DELETE FROM exp_captcha WHERE (word='".ee()->db->escape_str($_POST['captcha'])."' AND ip_address = '".ee()->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
 		}
-
 
 		$member->save();
 
@@ -662,11 +667,11 @@ class Member_register extends Member {
 		}
 
 		// Set the member group
-		$group_id = ee()->config->item('default_primary_role');
+		$role_id = ee()->config->item('default_primary_role');
 
 		// Is there even a Pending (group 4) account for this particular user?
-		$query = ee()->db->select('member_id, group_id, email')
-							  ->where('group_id', 4)
+		$query = ee()->db->select('member_id, role_id, email')
+							  ->where('role_id', 4)
 							  ->where('authcode', $id)
 							  ->get('members');
 
@@ -685,9 +690,9 @@ class Member_register extends Member {
 
 		// If the member group hasn't been switched we'll do it.
 
-		if ($query->row('group_id')  != $group_id)
+		if ($query->row('role_id') != $role_id)
 		{
-			ee()->db->query("UPDATE exp_members SET group_id = '".ee()->db->escape_str($group_id)."' WHERE authcode = '".ee()->db->escape_str($id)."'");
+			ee()->db->query("UPDATE exp_members SET role_id = '" . ee()->db->escape_str($role_id) . "' WHERE authcode = '" . ee()->db->escape_str($id) . "'");
 		}
 
 		ee()->db->query("UPDATE exp_members SET authcode = '' WHERE authcode = '$id'");
