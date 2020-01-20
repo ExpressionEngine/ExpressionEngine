@@ -109,6 +109,8 @@ class EE_Template {
 
 	protected $modified_vars      = FALSE;
 
+	protected $ignore_fetch		  = [ 'url_title' ];
+
 	/**
 	 * Constructor
 	 *
@@ -1903,6 +1905,13 @@ class EE_Template {
 	 */
 	public function fetch_param($which, $default = FALSE)
 	{
+
+		if(in_array($which, $this->ignore_fetch)) {
+
+			return $this->tagparams[$which];
+
+		}
+
 		if ( ! isset($this->tagparams[$which]))
 		{
 			return $default;
