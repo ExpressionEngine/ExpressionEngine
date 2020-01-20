@@ -121,6 +121,14 @@ function (_React$Component) {
       this.bindSortable();
     }
   }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps, prevState) {
+      if (this.state.selected !== prevState.selected) {
+        // Refresh the sortable items when the selected items change
+        this.bindSortable();
+      }
+    }
+  }, {
     key: "selectItem",
     value: function selectItem(item) {
       var index = this.state.selected.findIndex(function (obj) {

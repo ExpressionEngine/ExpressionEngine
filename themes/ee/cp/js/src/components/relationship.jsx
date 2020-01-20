@@ -34,6 +34,13 @@ class Relationship extends React.Component {
 		this.bindSortable()
 	}
 
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.selected !== prevState.selected) {
+            // Refresh the sortable items when the selected items change
+            this.bindSortable()
+        }
+    }
+
     selectItem(item) {
         const index = this.state.selected.findIndex((obj) => obj.value === item.value);
 
