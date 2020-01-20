@@ -30,38 +30,38 @@ class Members extends Jumps {
 
 	public function view()
 	{
-		$groups = $this->loadMemberGroups(ee()->input->post('searchString'));
+		$roles = $this->loadMemberRoles(ee()->input->post('searchString'));
 
 		$response = array();
 
-		foreach ($groups as $group) {
-			$response['viewMemberGroup' . $group->group_title] = array(
+		foreach ($roles as $role) {
+			$response['viewMemberRole' . $role->name] = array(
 				'icon' => 'fa-eye',
-				'command' => $group->group_title,
-				'command_title' => $group->group_title,
+				'command' => $role->name,
+				'command_title' => $role->name,
 				'dynamic' => false,
 				'addon' => false,
-				'target' => ee('CP/URL')->make('members', array('group' => $group->getId()))->compile()
+				'target' => ee('CP/URL')->make('members', array('role_id' => $role->getId()))->compile()
 			);
 		}
 
 		$this->sendResponse($response);
 	}
 
-	public function group()
+	public function role()
 	{
-		$groups = $this->loadMemberGroups(ee()->input->post('searchString'));
+		$roles = $this->loadMemberRoles(ee()->input->post('searchString'));
 
 		$response = array();
 
-		foreach ($groups as $group) {
-			$response['editMemberGroup' . $group->group_title] = array(
+		foreach ($roles as $role) {
+			$response['editMemberRole' . $role->name] = array(
 				'icon' => 'fa-pencil-alt',
-				'command' => $group->group_title,
-				'command_title' => $group->group_title,
+				'command' => $role->name,
+				'command_title' => $role->name,
 				'dynamic' => false,
 				'addon' => false,
-				'target' => ee('CP/URL')->make('members/groups/edit/' . $group->getId())->compile()
+				'target' => ee('CP/URL')->make('members/roles/edit/' . $role->getId())->compile()
 			);
 		}
 
@@ -79,9 +79,9 @@ class Members extends Jumps {
 
 			$response['editMember' . $member->getId()] = array(
 				'icon' => 'fa-pencil-alt',
-				'command' => $member->username,
-				'command_title' => $member->username,
-				'command_context' => $member->getMemberGroup()->group_title,
+				'command' => $member->username . ' ' . $member->email,
+				'command_title' => $member->username . ' <em>(' . $member->email . ')</em>',
+				'command_context' => $member->PrimaryRole->name,
 				'dynamic' => false,
 				'addon' => false,
 				'target' => ee('CP/URL')->make('members/profile/settings', array('id' => $member->getId()))->compile()
@@ -91,20 +91,20 @@ class Members extends Jumps {
 		$this->sendResponse($response);
 	}
 
-	private function loadMemberGroups($searchString = false)
+	private function loadMemberRoles($searchString = false)
 	{
-		$groups = ee('Model')->get('MemberGroup');
+		$roles = ee('Model')->get('Role');
 
 		if (!empty($searchString)) {
 			// Break the search string into individual keywords so we can partially match them.
 			$keywords = explode(' ', $searchString);
 
 			foreach ($keywords as $keyword) {
-				$groups->filter('group_title', 'LIKE', '%' . $keyword . '%');
+				$roles->filter('name', 'LIKE', '%' . $keyword . '%');
 			}
 		}
 
-		return $groups->order('group_title', 'ASC')->limit(11)->all();
+		return $roles->order('name', 'ASC')->limit(11)->all();
 	}
 
 	private function loadMembers($searchString = false)
@@ -117,6 +117,7 @@ class Members extends Jumps {
 
 			foreach ($keywords as $keyword) {
 				$members->filter('username', 'LIKE', '%' . $keyword . '%');
+				$members->orFilter('email', 'LIKE', '%' . $keyword . '%');
 			}
 		}
 
