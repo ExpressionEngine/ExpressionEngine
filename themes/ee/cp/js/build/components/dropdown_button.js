@@ -49,7 +49,12 @@ function (_React$Component) {
 
       _this.props.onSelect(item ? item.value : null);
 
-      $(event.target).closest('.dropdown').prev('a.button').click();
+      var dropdown = _this.dropdown;
+
+      if (dropdown) {
+        DropdownController.hideDropdown(dropdown, $(dropdown).prev('.js-dropdown-toggle')[0]);
+      }
+
       event.preventDefault();
     });
 
@@ -66,13 +71,17 @@ function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
+      var dropdownItems = this.state.items.filter(function (el) {
+        return el != _this2.state.selected;
+      });
       return React.createElement(React.Fragment, null, React.createElement("button", {
         type: "button",
-        className: "button js-dropdown-toggle " + this.props.buttonClass,
+        className: "button js-dropdown-toggle has-sub " + this.props.buttonClass,
         onClick: this.toggle
-      }, this.state.selected ? this.state.selected.label : this.props.title, " ", React.createElement("i", {
-        "class": "fas fa-caret-down icon-right"
-      })), React.createElement("div", {
+      }, this.state.selected ? this.state.selected.label : this.props.title), React.createElement("div", {
+        ref: function ref(el) {
+          return _this2.dropdown = el;
+        },
         className: "dropdown"
       }, this.state.items.length > 7 && React.createElement("div", {
         className: "dropdown__search"
@@ -83,9 +92,17 @@ function (_React$Component) {
         type: "text",
         placeholder: this.props.placeholder,
         onChange: this.handleSearch
-      })))), React.createElement("div", {
+      })))), this.state.selected && React.createElement(React.Fragment, null, React.createElement("a", {
+        href: "#",
+        className: "dropdown__link dropdown__link--selected",
+        onClick: function onClick(e) {
+          return _this2.selectItem(e, null);
+        }
+      }, this.state.selected.label), dropdownItems.length > 0 && React.createElement("div", {
+        className: "dropdown__divider"
+      })), React.createElement("div", {
         className: "dropdown__scroll"
-      }, this.state.items.map(function (item) {
+      }, dropdownItems.map(function (item) {
         return React.createElement("a", {
           href: "#",
           key: item.value,

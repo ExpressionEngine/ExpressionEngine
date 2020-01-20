@@ -381,12 +381,16 @@ class Relationship_ft extends EE_Fieldtype {
 
 		ee()->javascript->set_global([
 			'relationship.publishCreateUrl' => ee('CP/URL')->make('publish/create/###')->compile(),
-			'relationship.lang.creatingNew' => lang('creating_new_in_rel')
+			'relationship.lang.creatingNew' => lang('creating_new_in_rel'),
+			'relationship.lang.relateEntry' => lang('relate_entry'),
+			'relationship.lang.search' 		=> lang('search'),
+			'relationship.lang.channel' 	=> lang('channel'),
+			'relationship.lang.remove' 		=> lang('remove'),
 		]);
 
 		ee()->cp->add_js_script([
 			'plugin' => ['ui.touch.punch', 'ee_interact.event'],
-			'file' => ['fields/relationship/mutable_relationship', 'fields/relationship/relationship'],
+			'file' => ['components/relationship'],
 			'ui' => 'sortable'
 		]);
 
@@ -467,7 +471,8 @@ class Relationship_ft extends EE_Fieldtype {
 			$choices[] = [
 				'value' => $entry->getId(),
 				'label' => $entry->title,
-				'instructions' => $entry->Channel->channel_title
+				'instructions' => $entry->Channel->channel_title,
+				'channel_id' => $entry->Channel->getId()
 			];
 		}
 
@@ -477,7 +482,8 @@ class Relationship_ft extends EE_Fieldtype {
 			$selected[] = [
 				'value' => $child->getId(),
 				'label' => $child->title,
-				'instructions' => $child->Channel->channel_title
+				'instructions' => $child->Channel->channel_title,
+				'channel_id' => $entry->Channel->getId()
 			];
 		}
 
@@ -508,10 +514,19 @@ class Relationship_ft extends EE_Fieldtype {
 			];
 		}
 
-		$channel_choices = $channels->filter(function($channel) {
+		$channels = $channels->filter(function($channel) {
 			return ! $channel->maxEntriesLimitReached()
 				&& in_array($channel->getId(), array_keys(ee()->session->userdata('assigned_channels')));
 		});
+
+		$channel_choices = [];
+
+		foreach ($channels as $channel) {
+			$channel_choices[] = [
+				'title' => $channel->channel_title,
+				'id' => $channel->getId()
+			];
+		}
 
 		return ee('View')->make('relationship:publish')->render([
 			'field_name' => $field_name,
