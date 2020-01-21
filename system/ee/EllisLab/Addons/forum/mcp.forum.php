@@ -3958,15 +3958,9 @@ class Forum_mcp extends CP_Controller {
 	 */
 	private function isGdAvailable()
 	{
-		if (! extension_loaded('gd'))
-		{
-			if (! function_exists('dl') OR ! @dl('gd.so'))
-			{
-				return FALSE;
-			}
-		}
 
-		return TRUE;
+		return extension_loaded('gd');
+
 	}
 
 	/**
