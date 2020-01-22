@@ -85,7 +85,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware {
 		'yesNo' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\YesNo',
 		'boolString' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\YesNo',
 
-		'timestamp' => 'EllisLab\ExpressionEngine\Service\Model\Column\Object\Timestamp',
+		'timestamp' => 'EllisLab\ExpressionEngine\Service\Model\Column\ColumnObject\Timestamp',
 
 		'base64' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64',
 		'base64Array' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64Array',
