@@ -829,7 +829,7 @@ class EE_Input {
 			{
 				if ( ! in_array($global, $protected))
 				{
-					global $$global;
+					global ${$global};
 					$$global = NULL;
 				}
 			}
@@ -839,7 +839,7 @@ class EE_Input {
 				{
 					if ( ! in_array($key, $protected))
 					{
-						global $$key;
+						global ${$key};
 						$$key = NULL;
 					}
 				}
