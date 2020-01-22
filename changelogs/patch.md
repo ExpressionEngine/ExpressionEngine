@@ -3,10 +3,7 @@
 ExpressionEngine uses semantic versioning. This file contains changes to ExpressionEngine since the last Build / Version release for PATCH version changes only.
 
 ## Patch Release
-
-Bullet list below, e.g.
-   - Added <new feature>
-   - Fixed a bug (#<linked issue number>) where <bug behavior>.
+    - Updates six (6) files for PHP 7.4 compatibility.
 
 
 
