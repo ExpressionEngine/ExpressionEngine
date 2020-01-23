@@ -36,15 +36,6 @@ class Member_register extends Member {
 			ee()->output->show_message($data);
 		}
 
-		// Is the current user logged in?
-		if (ee()->session->userdata('member_id') != 0)
-		{
-			return ee()->output->show_user_error(
-				'general',
-				array(lang('mbr_you_are_registered'))
-			);
-		}
-
 		// Fetch the registration form
 		$tagdata = trim(ee()->TMPL->tagdata);
 
