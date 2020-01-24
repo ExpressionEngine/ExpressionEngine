@@ -83,10 +83,15 @@ class Member_auth extends Member {
 	 */
 	public function member_login()
 	{
-		// If they are already logged in then send them away.
-		if (ee()->session->userdata('member_id') !== 0)
-		{
-			return ee()->functions->redirect(ee()->functions->fetch_site_index());
+
+		$return = ee()->input->get_post('RET');
+
+		if (empty($return)) {
+			$return_link = ee()->functions->fetch_site_index();
+		} elseif (is_numeric($return)) {
+			$return_link = ee()->functions->form_backtrack($return);
+		} else {
+			$return_link = $return;
 		}
 
 		ee()->load->library('auth');
@@ -145,21 +150,33 @@ class Member_auth extends Member {
 		{
 			// Multiple Site Login
 			$incoming = $this->_do_multi_auth($sites, $multi);
-			$success = '_build_multi_success_message';
+			// $success = '_build_multi_success_message';
 
 			$current_url = ee()->functions->fetch_site_index();
 			$current_search_url = preg_replace('/\/S=.*$/', '', $current_url);
 			$current_idx = array_search($current_search_url, $sites_array);
+
+			// Figure out return
+			if  ( ! $return_link = ee()->input->get('RET'))
+			{
+				$return_link = $sites[ee()->input->get('orig')];
+			}
+			else
+			{
+				$return_link = base64_decode(strtr($return_link, '_-', '/='));
+			}
 		}
 		else
 		{
 			// Regular Login
 			$incoming = $this->_do_auth($username, $password);
-			$success = '_build_success_message';
+			// $success = '_build_success_message';
 
 			$current_url = ee()->functions->fetch_site_index();
 			$current_search_url = preg_replace('/\/S=.*$/', '', $current_url);
 			$current_idx = array_search($current_search_url, $sites_array);
+
+			$return_link = reduce_double_slashes(ee()->functions->form_backtrack());
 		}
 
 		// Set login state
@@ -188,7 +205,7 @@ class Member_auth extends Member {
 			->where('session_id', ee()->session->userdata('session_id'))
 			->update('sessions');
 
-		$this->$success($sites_array);
+		return ee()->functions->redirect($return_link);
 	}
 
 	/**
@@ -532,16 +549,33 @@ class Member_auth extends Member {
 	 */
 	public function member_logout()
 	{
-		// Check CSRF Token
-		$token = FALSE;
-		if ( ! $token) $token = ee()->input->get('csrf_token');
-		if ( ! $token) $token = ee()->input->get('XID');
+		$return = ee()->input->get_post('RET');
 
-		if ( ! bool_config_item('disable_csrf_protection') && $token != CSRF_TOKEN)
-		{
-			return ee()->output->show_user_error('general', array(lang('not_authorized')));
+		if (empty($return)) {
+			$return_link = ee()->functions->fetch_site_index();
+		} elseif (is_numeric($return)) {
+			$return_link = ee()->functions->form_backtrack($return);
+		} else {
+			$return_link = $return;
 		}
 
+		// If they are already logged out then send them away.
+		if (ee()->session->userdata('member_id') === 0)
+		{
+			return ee()->functions->redirect($return_link);
+		}
+
+		// If this is a GET request, they're using the `path="logout"` tag so check the CSRF Token.
+		if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+			$token = FALSE;
+			if ( ! $token) $token = ee()->input->get('csrf_token');
+			if ( ! $token) $token = ee()->input->get('XID');
+
+			if ( ! bool_config_item('disable_csrf_protection') && $token != CSRF_TOKEN)
+			{
+				return ee()->output->show_user_error('general', array(lang('not_authorized')));
+			}
+		}
 		// Kill the session and cookies
 		ee()->db->where('site_id', ee()->config->item('site_id'));
 		ee()->db->where('ip_address', ee()->input->ip_address());
@@ -564,10 +598,6 @@ class Member_auth extends Member {
 		/*
 		/* -------------------------------------------*/
 
-		// Is this a forum redirect?
-		$name = '';
-		unset($url);
-
 		if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed'))
 		{
 			if (ee()->input->get_post('board_id') !== FALSE &&
@@ -584,23 +614,11 @@ class Member_auth extends Member {
 					->get('forum_boards');
 			}
 
-			$url = $query->row('board_forum_url') ;
-			$name = $query->row('board_label') ;
+			$return_link = $query->row('board_forum_url') ;
+			$return_link = ( ! isset($return_link)) ? ee()->config->item('site_url') : parse_config_variables($return_link);
 		}
 
-		// Build success message
-		$url	= ( ! isset($url)) ? ee()->config->item('site_url')	: parse_config_variables($url);
-		$name	= ( ! isset($url)) ? stripslashes(ee()->config->item('site_name'))	: $name;
-
-		$data = array(
-			'title' 	=> lang('mbr_login'),
-			'heading'	=> lang('thank_you'),
-			'content'	=> lang('mbr_you_are_logged_out'),
-			'redirect'	=> $url,
-			'link'		=> array($url, $name)
-		);
-
-		ee()->output->show_message($data);
+		return ee()->functions->redirect($return_link);
 	}
 
 	/**
