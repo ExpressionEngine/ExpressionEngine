@@ -150,7 +150,6 @@ class Member_auth extends Member {
 		{
 			// Multiple Site Login
 			$incoming = $this->_do_multi_auth($sites, $multi);
-			// $success = '_build_multi_success_message';
 
 			$current_url = ee()->functions->fetch_site_index();
 			$current_search_url = preg_replace('/\/S=.*$/', '', $current_url);
@@ -170,7 +169,6 @@ class Member_auth extends Member {
 		{
 			// Regular Login
 			$incoming = $this->_do_auth($username, $password);
-			// $success = '_build_success_message';
 
 			$current_url = ee()->functions->fetch_site_index();
 			$current_search_url = preg_replace('/\/S=.*$/', '', $current_url);
@@ -417,92 +415,6 @@ class Member_auth extends Member {
 
 			return ee()->functions->redirect($next_url);
 		}
-	}
-
-	private function _build_multi_success_message($sites)
-	{
-		// Figure out return
-		if  ( ! $ret = ee()->input->get('RET'))
-		{
-			$ret = $sites[ee()->input->get('orig')];
-		}
-		else
-		{
-			$ret = base64_decode(strtr($ret, '_-', '/='));
-		}
-
-		// That was our last site, show the success message
-
-		$data = array(
-			'title' 	=> lang('mbr_login'),
-			'heading'	=> lang('thank_you'),
-			'content'	=> lang('mbr_you_are_logged_in'),
-			'redirect'	=> $ret,
-			'link'		=> array($ret, lang('back'))
-		);
-
-		// Pull preferences for the original site
-		$orig_id = ee()->input->get('orig_site_id');
-
-		if (is_numeric($orig_id))
-		{
-			ee()->db->select('site_name, site_id');
-			$query = ee()->db->get_where('sites', array(
-				'site_id' => (int) $orig_id
-			));
-
-			if ($query->num_rows() == 1)
-			{
-				$final_site_id = $query->row('site_id');
-				$final_site_name = $query->row('site_name');
-
-				ee()->config->site_prefs($final_site_name, $final_site_id);
-			}
-		}
-
-		ee()->output->show_message($data);
-	}
-
-	/**
-	 * Build Success Message
-	 */
-	private function _build_success_message($sites)
-	{
-		// Build success message
-		$site_name = (ee()->config->item('site_name') == '') ? lang('back') : stripslashes(ee()->config->item('site_name'));
-
-		$return = reduce_double_slashes(ee()->functions->form_backtrack());
-
-		// Is this a forum request?
-		if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed'))
-		{
-			if (ee()->input->get_post('board_id') !== FALSE &&
-				is_numeric(ee()->input->get_post('board_id')))
-			{
-				$query = ee()->db->select('board_label')
-					->where('board_id', (int) ee()->input->get_post('board_id'))
-					->get('forum_boards');
-			}
-			else
-			{
-				$query = ee()->db->select('board_label')
-					->where('board_id', (int) 1)
-					->get('forum_boards');
-			}
-
-			$site_name	= $query->row('board_label') ;
-		}
-
-		// Build success message
-		$data = array(
-			'title' 	=> lang('mbr_login'),
-			'heading'	=> lang('thank_you'),
-			'content'	=> lang('mbr_you_are_logged_in'),
-			'redirect'	=> $return,
-			'link'		=> array($return, $site_name)
-		);
-
-		ee()->output->show_message($data);
 	}
 
 	/**
