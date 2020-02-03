@@ -907,9 +907,9 @@ class Member {
 	}
 
 	/**
-	 * Manual Login Form
+	 * Manual Logout Form
 	 *
-	 * This lets users create a stand-alone login form in any template
+	 * This lets users create a stand-alone logout form in any template
 	 */
 	public function logout_form()
 	{
@@ -957,6 +957,39 @@ class Member {
 		}
 
 		$MA->member_logout();
+	}
+
+	/**
+	 * Manual Forgot Password Form
+	 *
+	 * This lets users create a stand-alone form in any template
+	 */
+	public function forgot_password_form()
+	{
+		// Create form
+		$data['hidden_fields'] = array(
+										'ACT' => ee()->functions->fetch_action_id('Member', 'send_reset_token'),
+										'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '-2'
+									  );
+
+		if (ee()->TMPL->fetch_param('form_name') && ee()->TMPL->fetch_param('form_name') != "")
+		{
+			$data['name'] = ee()->TMPL->fetch_param('form_name');
+		}
+
+		$data['id'] = ee()->TMPL->form_id;
+
+		$data['class'] = ee()->TMPL->form_class;
+
+		$data['action'] = ee()->TMPL->fetch_param('action');
+
+		$res  = ee()->functions->form_declaration($data);
+
+		$res .= stripslashes(ee()->TMPL->tagdata);
+
+		$res .= "</form>";
+
+		return $res;
 	}
 
 	/**
