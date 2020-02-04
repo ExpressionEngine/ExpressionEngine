@@ -24,8 +24,13 @@ class Text extends Formatter {
 
 	public function __construct($content, $lang, $session, $config, $options)
 	{
+
+		ee()->load->helper('multibyte');
+
 		$this->multibyte = extension_loaded('mbstring');
+
 		parent::__construct($content, $lang, $session, $config, $options);
+
 	}
 
 	/**
@@ -407,7 +412,7 @@ class Text extends Formatter {
 	 */
 	public function length()
 	{
-		$this->content = ($this->multibyte) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
+		$this->content = ee_mb_strlen($this->content, 'utf8');
 		return $this;
 	}
 
@@ -424,7 +429,7 @@ class Text extends Formatter {
 		$preserve_words = (isset($options['preserve_words'])) ? $options['preserve_words'] : FALSE;
 		$this->content = strip_tags($this->content);
 
-		$length = ($this->multibyte) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
+		$length = ee_mb_strlen($this->content, 'utf8');
 
 		if ($length < $limit)
 		{
@@ -441,7 +446,7 @@ class Text extends Formatter {
 			)
 		);
 
-		$length = ($this->multibyte) ? mb_strlen($this->content, 'utf8') : strlen($this->content);
+		$length = ee_mb_strlen($this->content, 'utf8');
 
 		if ($length <= $limit)
 		{

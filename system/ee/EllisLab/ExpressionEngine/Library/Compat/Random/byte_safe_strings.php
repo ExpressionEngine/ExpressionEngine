@@ -51,7 +51,10 @@ if (!is_callable('RandomCompat_strlen')) {
                 );
             }
 
-            return (int) mb_strlen($binary_string, '8bit');
+
+            ee()->load->helper('multibyte');
+
+            return (int) ee_mb_strlen($binary_string, '8bit');
         }
 
     } else {

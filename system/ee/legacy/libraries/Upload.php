@@ -55,6 +55,7 @@ class EE_Upload {
 		}
 
 		ee()->load->helper('xss');
+		ee()->load->helper('multibyte');
 
 		$props['xss_clean'] = xss_check();
 
@@ -98,7 +99,7 @@ class EE_Upload {
 
 		$_FILES['userfile'] = array(
 			'name' => $name,
-			'size' => mb_strlen($data),
+			'size' => ee_mb_strlen($data),
 			'tmp_name' => $tmp,
 			'error' => UPLOAD_ERR_OK
 		);
