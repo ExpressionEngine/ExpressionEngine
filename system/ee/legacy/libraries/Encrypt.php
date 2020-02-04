@@ -287,9 +287,12 @@ class EE_Encrypt {
 			return FALSE;
 		}
 
-		$init_vect = ($this->mb_available) ? mb_substr($data, 0, $init_size, 'ascii') : substr($data, 0, $init_size);
-		$data = ($this->mb_available) ? mb_substr($data, $init_size, mb_strlen($data, 'ascii'), 'ascii') : substr($data, $init_size);
+		$init_vect = ee_mb_substr($data, 0, $init_size, 'ascii');
+
+		$data = ee_mb_substr($data, $init_size, ee_mb_strlen($data, 'ascii'), 'ascii');
+
 		return rtrim(mcrypt_decrypt($this->_get_cipher(), $key, $data, $this->_get_mode(), $init_vect), "\0");
+
 	}
 
 	/**

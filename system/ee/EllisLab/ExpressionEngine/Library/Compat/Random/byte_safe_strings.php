@@ -136,7 +136,9 @@ if (!is_callable('RandomCompat_substr')) {
                 return '';
             }
 
-            return (string) mb_substr($binary_string, $start, $length, '8bit');
+            ee()->load->helper('multibyte');
+
+            return (string) ee_mb_substr($binary_string, $start, $length, '8bit');
         }
 
     } else {

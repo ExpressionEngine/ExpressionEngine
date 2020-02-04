@@ -459,15 +459,14 @@ class Text extends Formatter {
 			// characters may affect where the wrap occurs
 			$this->content = wordwrap($this->content, $limit, "\n", true);
 
-			$cut = ($this->multibyte)
-				? mb_substr($this->content, 0, ee_mb_strpos($this->content, "\n"), 'utf8')
-				: substr($this->content, 0, strpos($this->content, "\n"));
+			$cut = ee_mb_substr($this->content, 0, ee_mb_strpos($this->content, "\n"), 'utf8');
+
 		}
 		else
 		{
-			$cut = ($this->multibyte)
-				? mb_substr($this->content, 0, $limit, 'utf8')
-				: substr($this->content, 0, $limit);
+
+			$cut = ee_mb_substr($this->content, 0, $limit, 'utf8');
+
 		}
 
 		$this->content = (strlen($cut) == strlen($this->content)) ? $cut : $cut.$end_char;

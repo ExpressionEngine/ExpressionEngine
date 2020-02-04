@@ -114,11 +114,9 @@ class Encrypt {
 
 		$iv_size = openssl_cipher_iv_length($this->method);
 
-		$iv = ($this->mb_available) ? mb_substr($data, 0, $iv_size, 'ascii') : substr($data, 0, $iv_size);
+		$iv = ee_mb_substr($data, 0, $iv_size, 'ascii');
 		
-		$data = ($this->mb_available)
-					? mb_substr($data, $iv_size, ee_mb_strlen($data, 'ascii'), 'ascii')
-					: substr($data, $iv_size);
+		$data = ee_mb_substr($data, $iv_size, ee_mb_strlen($data, 'ascii'), 'ascii');
 
 		return openssl_decrypt($data, $this->method, $key, $this->options, $iv);
 	}
