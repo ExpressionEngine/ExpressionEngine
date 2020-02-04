@@ -460,7 +460,7 @@ class Text extends Formatter {
 			$this->content = wordwrap($this->content, $limit, "\n", true);
 
 			$cut = ($this->multibyte)
-				? mb_substr($this->content, 0, mb_strpos($this->content, "\n"), 'utf8')
+				? mb_substr($this->content, 0, ee_mb_strpos($this->content, "\n"), 'utf8')
 				: substr($this->content, 0, strpos($this->content, "\n"));
 		}
 		else

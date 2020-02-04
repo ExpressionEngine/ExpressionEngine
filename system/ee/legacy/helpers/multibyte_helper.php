@@ -13,16 +13,53 @@
  * Multibyte Helpers
  */
 
+if ( ! function_exists( 'ee_get_encoding' ) )
+{
+	function ee_get_encoding($encoding)
+	{
+
+		if (null === $encoding) {
+
+		    return ee()->config->item('charset') ?: 'utf8';
+
+		}
+
+		if ('UTF-8' === $encoding) {
+
+		    return 'UTF-8';
+
+		}
+
+		$encoding = strtoupper($encoding);
+
+		if ( '8BIT' === $encoding || 'BINARY' === $encoding ) {
+
+		    return 'CP850';
+
+		}
+
+		if ( 'UTF8' === $encoding ) {
+
+		    return 'UTF-8';
+
+		}
+
+		return $encoding;
+
+	}
+
+}
+
 /**
  * Replace deprecated mb_string
  * @param  string $str
  * @param  string $encoding
  * @return integer
  */
-if ( ! function_exists('ee_mb_string'))
+if ( ! function_exists('ee_mb_strlen'))
 {
 
-	function ee_mb_string( $str, $encoding = null ) {
+	function ee_mb_strlen( $str, $encoding = null ) {
 
 		if ( null === $encoding ) {
 
@@ -71,6 +108,32 @@ if ( ! function_exists('ee_mb_string'))
 
 		// Fencepost: preg_split() always returns one extra item in the array.
 		return --$count;
+	}
+
+}
+
+if ( ! function_exists('ee_mb_strpos')) {
+
+	function ee_mb_strpos($haystack, $needle, $offset = 0, $encoding = null)
+	{
+	    $encoding = ee_get_encoding($encoding);
+
+	    if ('CP850' === $encoding || 'ASCII' === $encoding) {
+
+	        return strpos($haystack, $needle, $offset);
+
+	    }
+
+	    $needle = (string) $needle;
+
+	    if ('' === $needle) {
+
+	        return false;
+
+	    }
+
+	    return iconv_strpos($haystack, $needle, $offset, $encoding);
+
 	}
 
 }
