@@ -186,3 +186,4 @@ if( ! function_exists( 'ee_mb_substr ') ) {
 	}
 
 }
+
