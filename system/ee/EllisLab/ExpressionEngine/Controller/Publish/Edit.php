@@ -86,7 +86,6 @@ class Edit extends AbstractPublishController {
 		{
 			// cast to bool
 			$vars['channels_exist']  = (bool)ee('Model')->get('Channel')->filter('site_id', ee()->config->item('site_id'))->count();
-
 		}
 
 		$vars['filters'] = $filters->render($base_url);
