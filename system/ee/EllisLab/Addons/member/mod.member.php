@@ -969,7 +969,12 @@ class Member {
 		// Create form
 		$data['hidden_fields'] = array(
 										'ACT' => ee()->functions->fetch_action_id('Member', 'send_reset_token'),
-										'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '-2'
+										'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '-2',
+										'P' => ee()->functions->get_protected_form_params(array(
+											'password_reset_url' => ee()->TMPL->fetch_param('password_reset_url'),
+											'password_reset_email_subject' => ee()->TMPL->fetch_param('password_reset_email_subject'),
+											'password_reset_email_template' => ee()->TMPL->fetch_param('password_reset_email_template')
+										))
 									  );
 
 		if (ee()->TMPL->fetch_param('form_name') && ee()->TMPL->fetch_param('form_name') != "")
