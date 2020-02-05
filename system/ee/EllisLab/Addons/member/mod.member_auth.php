@@ -461,15 +461,12 @@ class Member_auth extends Member {
 	 */
 	public function member_logout()
 	{
-		$return = ee()->input->get_post('RET');
+		// Handle our protected data if any. This contains our extra params.
+		$protected = ee()->functions->handle_protected();
 
-		if (empty($return)) {
-			$return_link = ee()->functions->fetch_site_index();
-		} elseif (is_numeric($return)) {
-			$return_link = ee()->functions->form_backtrack($return);
-		} else {
-			$return_link = $return;
-		}
+		// Determine where we need to return to in case of success or error.
+		$return_link = ee()->functions->determine_return();
+		$return_error_link = ee()->functions->determine_error_return();
 
 		// If they are already logged out then send them away.
 		if (ee()->session->userdata('member_id') === 0)
@@ -526,8 +523,12 @@ class Member_auth extends Member {
 					->get('forum_boards');
 			}
 
-			$return_link = $query->row('board_forum_url') ;
-			$return_link = ( ! isset($return_link)) ? ee()->config->item('site_url') : parse_config_variables($return_link);
+			$forum_return_link = $query->row('board_forum_url') ;
+
+			if (! empty($forum_return_link))
+			{
+				$return_link = parse_config_variables($forum_return_link);
+			}
 		}
 
 		return ee()->functions->redirect($return_link);
@@ -589,28 +590,35 @@ class Member_auth extends Member {
 	 */
 	public function send_reset_token()
 	{
+		// Handle our protected data if any. This contains our extra params.
+		$protected = ee()->functions->handle_protected();
+
+		// Determine where we need to return to in case of success or error.
+		$return_success_link = ee()->functions->determine_return();
+		$return_error_link = ee()->functions->determine_error_return();
+
 		// if this user is logged in, then send them away.
 		if (ee()->session->userdata('member_id') !== 0)
 		{
-			return ee()->functions->redirect(ee()->functions->fetch_site_index());
+			return ee()->functions->redirect($return_link);
 		}
 
 		// Is user banned?
 		if (ee()->session->userdata('is_banned') === TRUE)
 		{
-			return ee()->output->show_user_error('general', array(lang('not_authorized')));
+			return ee()->output->show_user_error('general', array(lang('not_authorized')), '', $return_error_link);
 		}
 
 		// Error trapping
 		if ( ! $address = ee()->input->post('email'))
 		{
-			return ee()->output->show_user_error('submission', array(lang('invalid_email_address')));
+			return ee()->output->show_user_error('submission', array(lang('invalid_email_address')), '', $return_error_link);
 		}
 
 		ee()->load->helper('email');
 		if ( ! valid_email($address))
 		{
-			return ee()->output->show_user_error('submission', array(lang('invalid_email_address')));
+			return ee()->output->show_user_error('submission', array(lang('invalid_email_address')), '', $return_error_link);
 		}
 
 		if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed'))
@@ -675,7 +683,7 @@ class Member_auth extends Member {
 
 		if ($requests >= $max_requests_in_a_day)
 		{
-			return ee()->output->show_user_error('submission', array(lang('password_reset_flood_lock')));
+			return ee()->output->show_user_error('submission', array(lang('password_reset_flood_lock')), '', $return_error_link);
 		}
 
 		// Create a new DB record with the temporary reset code
@@ -683,21 +691,49 @@ class Member_auth extends Member {
 		$data = array('member_id' => $member_id, 'resetcode' => $rand, 'date' => ee()->localize->now);
 		ee()->db->query(ee()->db->insert_string('exp_reset_password', $data));
 
+		$template = ee()->functions->fetch_email_template('forgot_password_instructions');
+
+		// Determine if they have a forgot password member template or if we should use the default.
+		if (! empty($protected->password_reset_url))
+		{
+			$reset_url = $protected->password_reset_url;
+		}
+		else
+		{
+			$reset_url = reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . ee()->config->item('profile_trigger') . '/reset_password');
+		}
+
+		// Add a cache breaker and possible forum_id to the reset pass url.
+		$reset_url .= '?&id='.$rand.$forum_id;
+
+		if (! empty($protected->password_reset_email_template))
+		{
+			$reset_email_template = ee()->TMPL->fetch_and_parse_from_path($protected->password_reset_email_template);
+		} else {
+			$reset_email_template = $template['data'];
+		}
+
+		// Check if we have a password reset subject param, otherwise, use the one from the default template.
+		if (! empty($protected->password_reset_email_subject))
+		{
+			$reset_email_subject = $protected->password_reset_email_subject;
+		} else {
+			$reset_email_subject = $template['title'];
+		}
+
 		// Build the email message
 		$swap = array(
 			'name'		=> $name,
-			'username'    => $username,
-			'reset_url'	=> reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . ee()->config->item('profile_trigger') . '/reset_password?&id='.$rand.$forum_id),
+			'username'  => $username,
+			'reset_url'	=> $reset_url,
 			'site_name'	=> $site_name,
 			'site_url'	=> $return
 		);
 
-		$template = ee()->functions->fetch_email_template('forgot_password_instructions');
-
 		// _var_swap calls string replace on $template[] for each key in
 		// $swap.  If the key doesn't exist then no swapping happens.
-		$email_tit = $this->_var_swap($template['title'], $swap);
-		$email_msg = $this->_var_swap($template['data'], $swap);
+		$reset_email_subject = $this->_var_swap($reset_email_subject, $swap);
+		$email_msg = $this->_var_swap($reset_email_template, $swap);
 
 		// Instantiate the email class
 		ee()->load->library('email');
@@ -705,12 +741,12 @@ class Member_auth extends Member {
 		ee()->email->mailtype = ee()->config->item('mail_format');
 		ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
 		ee()->email->to($address);
-		ee()->email->subject($email_tit);
+		ee()->email->subject($reset_email_subject);
 		ee()->email->message($email_msg);
 
 		if ( ! ee()->email->send())
 		{
-			return ee()->output->show_user_error('submission', array(lang('error_sending_email')));
+			return ee()->output->show_user_error('submission', array(lang('error_sending_email')), '', $return_error_link);
 		}
 
 		// Build success message
