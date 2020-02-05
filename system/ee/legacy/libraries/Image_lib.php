@@ -1008,7 +1008,7 @@ class EE_Image_lib {
 		{
 			// set our RGB value from above to be transparent and merge the images with the specified opacity
 			imagecolortransparent($wm_img, imagecolorat($wm_img, $this->wm_x_transp, $this->wm_y_transp));
-			imagecopymerge($src_img, $wm_img, $x_axis, $y_axis, 0, 0, $wm_width, $wm_height, $this->wm_opacity);
+			imagecopymerge($src_img, $wm_img, $x_axis, $y_axis, 0, 0, $wm_width, $wm_height, (int) $this->wm_opacity);
 		}
 
 		//  Output the image
