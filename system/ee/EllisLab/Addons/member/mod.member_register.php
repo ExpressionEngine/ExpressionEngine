@@ -156,6 +156,13 @@ class Member_register extends Member {
 			}
 		}
 
+		$field_values = ee()->session->flashdata('field_values');
+
+		if (!empty($field_values))
+		{
+			$reg_form = ee()->TMPL->parse_variables($reg_form, array($field_values));
+		}
+
 		$un_min_len = str_replace("%x", ee()->config->item('un_min_len'),
 									lang('mbr_username_length'));
 		$pw_min_len = str_replace("%x", ee()->config->item('pw_min_len'),
@@ -185,8 +192,9 @@ class Member_register extends Member {
 		// Generate Form declaration
 		$data['hidden_fields'] = array(
 			'ACT'  => ee()->functions->fetch_action_id('Member', 'register_member'),
-			'RET'  => ee()->functions->fetch_site_index(),
+			'RET'  => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : ee()->functions->fetch_site_index(),
 			'FROM' => ($this->in_forum == TRUE) ? 'forum' : '',
+			'P' => ee()->functions->get_protected_form_params(),
 		);
 
 		if ($this->in_forum === TRUE)
@@ -210,6 +218,13 @@ class Member_register extends Member {
 		{
 			return FALSE;
 		}
+
+		// Handle our protected data if any. This contains our extra params.
+		$protected = ee()->functions->handle_protected();
+
+		// Determine where we need to return to in case of success or error.
+		$return_link = ee()->functions->determine_return();
+		$return_error_link = ee()->functions->determine_error_return();
 
 		// Is user banned?
 		if (ee()->session->userdata('is_banned') === TRUE)
@@ -457,7 +472,16 @@ class Member_register extends Member {
 		// Display error if there are any
 		if (count($errors) > 0)
 		{
-			return ee()->output->show_user_error('submission', $errors);
+			ee()->session->set_flashdata('errors', $errors);
+
+			// Save the POSTed variables to refill the form, except for sensitive or dynamically created ones.
+			$field_values = array_filter($_POST, function ($key) {
+				return ! (in_array($key, array('ACT', 'RET', 'FROM', 'P', 'site_id', 'password', 'password_confirm')));
+			}, ARRAY_FILTER_USE_KEY);
+
+			ee()->session->set_flashdata('field_values', $field_values);
+
+			return ee()->output->show_user_error('submission', $errors, '', $return_error_link);
 		}
 
 		$member->hashAndUpdatePassword($member->password);
@@ -469,7 +493,7 @@ class Member_register extends Member {
 
 			if ($query->row('count')  == 0)
 			{
-				return ee()->output->show_user_error('submission', array(lang('captcha_incorrect')));
+				return ee()->output->show_user_error('submission', array(lang('captcha_incorrect')), '', $return_error_link);
 			}
 
 			ee()->db->query("DELETE FROM exp_captcha WHERE (word='".ee()->db->escape_str($_POST['captcha'])."' AND ip_address = '".ee()->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
@@ -605,7 +629,7 @@ class Member_register extends Member {
 			'link'		=> array($return, $site_name)
 		);
 
-		ee()->output->show_message($data);
+		return ee()->functions->redirect($return_link);
 	}
 
 	private function _do_form_query()
