@@ -513,8 +513,14 @@ class EE_Output {
 	 * @param	bool
 	 * @return	void
 	 */
-	function show_message($data, $xhtml = TRUE)
+	function show_message($data, $xhtml = TRUE, $redirect_url = FALSE)
 	{
+		// If we have a redirect URL, use that instead of outputting the standard page.
+		if (! empty($redirect_url))
+		{
+			ee()->functions->redirect($redirect_url);
+		}
+
 		@header("Cache-Control: no-cache, must-revalidate");
 		@header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
 		@header("Pragma: no-cache");
