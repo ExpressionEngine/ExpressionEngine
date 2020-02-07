@@ -394,6 +394,8 @@ $lang = array(
 
 'mbr_username' => 'Username',
 
+'mbr_username_email_sent' => 'Forgot Username Email Sent',
+
 'mbr_username_length' => 'Usernames must be at least %x characters long',
 
 'mbr_view_posts_by_member' => 'View all posts by this member',
