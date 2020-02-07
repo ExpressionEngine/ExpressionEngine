@@ -534,6 +534,140 @@ class Member_auth extends Member {
 		return ee()->functions->redirect($return_link);
 	}
 
+	public function send_username()
+	{
+		// Handle our protected data if any. This contains our extra params.
+		$protected = ee()->functions->handle_protected();
+
+		// Determine where we need to return to in case of success or error.
+		$return_success_link = ee()->functions->determine_return();
+		$return_error_link = ee()->functions->determine_error_return();
+
+		// Is user banned?
+		if (ee()->session->userdata('is_banned') === TRUE)
+		{
+			return ee()->output->show_user_error('general', array(lang('not_authorized')), '', $return_error_link);
+		}
+
+		// Error trapping
+		if ( ! $address = ee()->input->post('email'))
+		{
+			return ee()->output->show_user_error('submission', array(lang('invalid_email_address')), '', $return_error_link);
+		}
+
+		ee()->load->helper('email');
+		if ( ! valid_email($address))
+		{
+			return ee()->output->show_user_error('submission', array(lang('invalid_email_address')), '', $return_error_link);
+		}
+
+		if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed'))
+		{
+			if (ee()->input->get_post('board_id') !== FALSE &&
+				is_numeric(ee()->input->get_post('board_id')))
+			{
+				$query = ee()->db->select('board_forum_url, board_id, board_label')
+					->where('board_id', (int) ee()->input->get_post('board_id'))
+					->get('forum_boards');
+			}
+			else
+			{
+				$query = ee()->db->select('board_forum_url, board_id, board_label')
+					->where('board_id', (int) 1)
+					->get('forum_boards');
+			}
+
+			$return		= parse_config_variables($query->row('board_forum_url'));
+			$site_name	= $query->row('board_label') ;
+			$board_id	= $query->row('board_id') ;
+		}
+		else
+		{
+			$site_name	= stripslashes(ee()->config->item('site_name'));
+			$return 	= ee()->config->item('site_url');
+		}
+
+		$forum_id = (ee()->input->get_post('FROM') == 'forum') ? '&r=f&board_id='.$board_id : '';
+
+		$address = strip_tags($address);
+
+		$memberQuery = ee()->db->select('member_id, username, screen_name')
+			->where('email', $address)
+			->get('members');
+
+		if ($memberQuery->num_rows() == 0)
+		{
+			// Build success message
+			$data = array(
+				'title' 	=> lang('mbr_passwd_email_sent'),
+				'heading'	=> lang('thank_you'),
+				'content'	=> lang('forgotten_username_email_sent'),
+				'link'		=> array($return, $site_name)
+			);
+
+			ee()->output->show_message($data);
+		}
+
+		$member_id = $memberQuery->row('member_id');
+		$username  = $memberQuery->row('username');
+		$name  = ($memberQuery->row('screen_name') == '') ? $memberQuery->row('username') : $memberQuery->row('screen_name');
+
+		$template = ee()->functions->fetch_email_template('forgot_username_instructions');
+
+		if (! empty($protected['email_template']))
+		{
+			$email_template = ee()->TMPL->fetch_template_from_path($protected['email_template']);
+		} else {
+			$email_template = $template['data'];
+		}
+
+		// Check if we have a password reset subject param, otherwise, use the one from the default template.
+		if (! empty($protected['email_subject']))
+		{
+			$email_subject = $protected['email_subject'];
+		} else {
+			$email_subject = $template['title'];
+		}
+
+		// Build the email message
+		$swap = array(
+			'name'		=> $name,
+			'username'  => $username,
+			'site_name'	=> $site_name,
+			'site_url'	=> $return
+		);
+
+		// _var_swap calls string replace on $template[] for each key in
+		// $swap.  If the key doesn't exist then no swapping happens.
+		$email_subject = $this->_var_swap($email_subject, $swap);
+		$email_msg = $this->_var_swap($email_template, $swap);
+
+		// Instantiate the email class
+		ee()->load->library('email');
+		ee()->email->wordwrap = true;
+		ee()->email->mailtype = ee()->config->item('mail_format');
+		ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
+		ee()->email->to($address);
+		ee()->email->subject($email_subject);
+		ee()->email->message($email_msg);
+
+		if ( ! ee()->email->send())
+		{
+			return ee()->output->show_user_error('submission', array(lang('error_sending_email')), '', $return_error_link);
+		}
+
+		// Build success message
+		$data = array(
+			'title' 	=> lang('mbr_username_email_sent'),
+			'heading'	=> lang('thank_you'),
+			'content'	=> lang('forgotten_email_sent'),
+			'link'		=> array($return, $site_name)
+		);
+
+		// If we have a success return link, go to that, otherwise, output the standard message.
+		ee()->output->show_message($data, true, $return_success_link);
+	}
+
 	/**
 	 * Member Forgot Password Form
 	 *
@@ -711,19 +845,19 @@ class Member_auth extends Member {
 		// Add the reset code and possible forum_id to the reset pass url.
 		$reset_url .= '?id=' . $resetcode . $forum_id;
 
-		if (! empty($protected['password_reset_email_template']))
+		if (! empty($protected['email_template']))
 		{
-			$reset_email_template = ee()->TMPL->fetch_and_parse_from_path($protected['password_reset_email_template']);
+			$email_template = ee()->TMPL->fetch_template_and_parse_from_path($protected['email_template']);
 		} else {
-			$reset_email_template = $template['data'];
+			$email_template = $template['data'];
 		}
 
 		// Check if we have a password reset subject param, otherwise, use the one from the default template.
-		if (! empty($protected['password_reset_email_subject']))
+		if (! empty($protected['email_subject']))
 		{
-			$reset_email_subject = $protected['password_reset_email_subject'];
+			$email_subject = $protected['email_subject'];
 		} else {
-			$reset_email_subject = $template['title'];
+			$email_subject = $template['title'];
 		}
 
 		// Build the email message
@@ -737,8 +871,8 @@ class Member_auth extends Member {
 
 		// _var_swap calls string replace on $template[] for each key in
 		// $swap.  If the key doesn't exist then no swapping happens.
-		$reset_email_subject = $this->_var_swap($reset_email_subject, $swap);
-		$email_msg = $this->_var_swap($reset_email_template, $swap);
+		$email_subject = $this->_var_swap($email_subject, $swap);
+		$email_msg = $this->_var_swap($email_template, $swap);
 
 		// Instantiate the email class
 		ee()->load->library('email');
@@ -746,7 +880,7 @@ class Member_auth extends Member {
 		ee()->email->mailtype = ee()->config->item('mail_format');
 		ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
 		ee()->email->to($address);
-		ee()->email->subject($reset_email_subject);
+		ee()->email->subject($email_subject);
 		ee()->email->message($email_msg);
 
 		if ( ! ee()->email->send())

@@ -964,6 +964,60 @@ class Member {
 	 *
 	 * This lets users create a stand-alone form in any template
 	 */
+	public function forgot_username_form()
+	{
+		// Create form
+		$data['hidden_fields'] = array(
+										'ACT' => ee()->functions->fetch_action_id('Member', 'send_username'),
+										'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '-1',
+										'P' => ee()->functions->get_protected_form_params(array(
+											'email_subject' => ee()->TMPL->fetch_param('email_subject'),
+											'email_template' => ee()->TMPL->fetch_param('email_template')
+										))
+									  );
+
+		if (ee()->TMPL->fetch_param('form_name') && ee()->TMPL->fetch_param('form_name') != "")
+		{
+			$data['name'] = ee()->TMPL->fetch_param('form_name');
+		}
+
+		$data['id'] = ee()->TMPL->form_id;
+
+		$data['class'] = ee()->TMPL->form_class;
+
+		$data['action'] = ee()->TMPL->fetch_param('action');
+
+		$res  = ee()->functions->form_declaration($data);
+
+		$res .= stripslashes(ee()->TMPL->tagdata);
+
+		$res .= "</form>";
+
+		return $res;
+	}
+
+	public function send_username()
+	{
+		if ( ! class_exists('Member_auth'))
+		{
+			require PATH_ADDONS.'member/mod.member_auth.php';
+		}
+
+		$MA = new Member_auth();
+
+		foreach(get_object_vars($this) as $key => $value)
+		{
+			$MA->{$key} = $value;
+		}
+
+		return $MA->send_username();
+	}
+
+	/**
+	 * Manual Forgot Password Form
+	 *
+	 * This lets users create a stand-alone form in any template
+	 */
 	public function forgot_password_form()
 	{
 		// Create form
@@ -972,8 +1026,8 @@ class Member {
 										'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '-1',
 										'P' => ee()->functions->get_protected_form_params(array(
 											'password_reset_url' => ee()->TMPL->fetch_param('password_reset_url'),
-											'password_reset_email_subject' => ee()->TMPL->fetch_param('password_reset_email_subject'),
-											'password_reset_email_template' => ee()->TMPL->fetch_param('password_reset_email_template')
+											'email_subject' => ee()->TMPL->fetch_param('email_subject'),
+											'email_template' => ee()->TMPL->fetch_param('email_template')
 										))
 									  );
 
