@@ -184,6 +184,8 @@ If you made these changes, please accept the modifications on the control panel 
 
 'password_reset_flood_lock' => 'You have tried to reset your password too many times today. Please check your inbox and spam folders for previous requests, or contact the site administrator.',
 
+'forgotten_username_email_sent' => 'If this email address is associated with an account, an email containing your username has just been emailed to you.',
+
 'your_new_login_info' => 'Login information',
 
 
