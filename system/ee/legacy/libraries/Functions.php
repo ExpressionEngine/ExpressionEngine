@@ -397,15 +397,18 @@ class EE_Functions {
 
 	/**
 	 * Determine the return link based on various factors. Used in form returns.
-	 * @return string URL to redirect to
+	 * @return  string|bool  URL to redirect to or false
 	 */
-	public function determine_return()
+	public function determine_return($go_to_index = FALSE)
 	{
 		$return = ee()->input->get_post('RET');
+		$return_link = false;
 
 		if (empty($return)) {
-			// If we don't have a return in the POST, go to the site index.
-			$return_link = ee()->functions->fetch_site_index();
+			// If we don't have a return in the POST and we've specified to go to the site index.
+			if ($go_to_index === TRUE) {
+				$return_link = ee()->functions->fetch_site_index();
+			}
 		} elseif (is_numeric($return)) {
 			// If the return is a number, it's a reference to how many pages back we have to go.
 			$return_link = ee()->functions->form_backtrack($return);
