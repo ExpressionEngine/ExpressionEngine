@@ -4,9 +4,8 @@ ExpressionEngine uses semantic versioning. This file contains changes to Express
 
 ## Minor Release
 
-Bullet list below, e.g.
-   - Added <new feature>
-   - Fixed a bug (#<linked issue number>) where <bug behavior>.
+- Adds support for PHP7.4
+- Removes deprecated function, bringing true minimum version to 5.6
 
 
 
