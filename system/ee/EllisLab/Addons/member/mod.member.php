@@ -969,7 +969,7 @@ class Member {
 		// Create form
 		$data['hidden_fields'] = array(
 										'ACT' => ee()->functions->fetch_action_id('Member', 'send_reset_token'),
-										'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '-2',
+										'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '-1',
 										'P' => ee()->functions->get_protected_form_params(array(
 											'password_reset_url' => ee()->TMPL->fetch_param('password_reset_url'),
 											'password_reset_email_subject' => ee()->TMPL->fetch_param('password_reset_email_subject'),
@@ -1037,6 +1037,75 @@ class Member {
 		}
 
 		$MA->send_reset_token();
+	}
+
+	public function reset_password_form()
+	{
+		// Handle our protected data if any. This contains our extra params.
+		$protected = ee()->functions->handle_protected();
+
+		// Determine where we need to return to in case of success or error.
+		$return_success_link = ee()->functions->determine_return();
+		$return_error_link = ee()->functions->determine_error_return();
+
+		// If the user is banned, send them away.
+		if (ee()->session->userdata('is_banned') === TRUE)
+		{
+			return ee()->output->show_user_error('general', array(lang('not_authorized')), '', $return_error_link);
+		}
+
+		// They didn't include their token.  Give em an error.
+		if ( ! ($resetcode = ee()->input->get_post('id')))
+		{
+			return ee()->output->show_user_error('submission', array(lang('mbr_no_reset_id')), '', $return_error_link);
+		}
+
+		// Make sure the token is valid and belongs to a member.
+		$member_id_query = ee()->db->select('member_id')
+			->where('resetcode', $resetcode)
+			->where('date >', (ee()->localize->now - (60*60)))
+			->get('reset_password');
+
+		if ($member_id_query->num_rows() === 0)
+		{
+			return ee()->output->show_user_error('submission', array(lang('mbr_id_not_found')), '', $return_error_link);
+		}
+
+		// Check to see whether we're in the forum or not.
+		$in_forum = isset($_GET['r']) && $_GET['r'] == 'f';
+
+		// Create form
+		$data['hidden_fields'] = array(
+										'ACT' => ee()->functions->fetch_action_id('Member', 'process_reset_password'),
+										'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '',
+										'FROM'	=> ($in_forum == TRUE) ? 'forum' : '',
+										'P' => ee()->functions->get_protected_form_params(),
+										'resetcode' => $resetcode
+									  );
+
+		if ($in_forum === TRUE)
+		{
+			$data['hidden_fields']['board_id'] = (int)$_GET['board_id'];
+		}
+
+		if (ee()->TMPL->fetch_param('form_name') && ee()->TMPL->fetch_param('form_name') != "")
+		{
+			$data['name'] = ee()->TMPL->fetch_param('form_name');
+		}
+
+		$data['id'] = ee()->TMPL->form_id;
+
+		$data['class'] = ee()->TMPL->form_class;
+
+		$data['action'] = ee()->TMPL->fetch_param('action');
+
+		$res  = ee()->functions->form_declaration($data);
+
+		$res .= stripslashes(ee()->TMPL->tagdata);
+
+		$res .= "</form>";
+
+		return $res;
 	}
 
 	/**
