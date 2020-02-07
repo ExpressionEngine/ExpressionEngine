@@ -333,7 +333,7 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 			{
 				if ($this->object === FALSE)
 				{
-					return ee()->$method_parts['1']($m);
+					return ee()->{$method_parts['1']}($m);
 				}
 				else
 				{
