@@ -600,7 +600,7 @@ class Member_auth extends Member {
 		// if this user is logged in, then send them away.
 		if (ee()->session->userdata('member_id') !== 0)
 		{
-			return ee()->functions->redirect($return_link);
+			return ee()->functions->redirect($return_success_link);
 		}
 
 		// Is user banned?
@@ -687,36 +687,41 @@ class Member_auth extends Member {
 		}
 
 		// Create a new DB record with the temporary reset code
-		$rand = ee()->functions->random('alnum', 8);
-		$data = array('member_id' => $member_id, 'resetcode' => $rand, 'date' => ee()->localize->now);
+		$resetcode = ee()->functions->random('alnum', 8);
+		$data = array('member_id' => $member_id, 'resetcode' => $resetcode, 'date' => ee()->localize->now);
 		ee()->db->query(ee()->db->insert_string('exp_reset_password', $data));
 
 		$template = ee()->functions->fetch_email_template('forgot_password_instructions');
 
 		// Determine if they have a forgot password member template or if we should use the default.
-		if (! empty($protected->password_reset_url))
+		if (! empty($protected['password_reset_url']))
 		{
-			$reset_url = $protected->password_reset_url;
+			$reset_url = trim(strtolower($protected['password_reset_url']));
+
+			// Make sure it's an actual URL.
+			if (substr($reset_url, 0, 4) !== 'http') {
+				$reset_url = ee()->functions->fetch_site_index(0, 0) . '/' . $reset_url;
+			}
 		}
 		else
 		{
 			$reset_url = reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . ee()->config->item('profile_trigger') . '/reset_password');
 		}
 
-		// Add a cache breaker and possible forum_id to the reset pass url.
-		$reset_url .= '?&id='.$rand.$forum_id;
+		// Add the reset code and possible forum_id to the reset pass url.
+		$reset_url .= '?id=' . $resetcode . $forum_id;
 
-		if (! empty($protected->password_reset_email_template))
+		if (! empty($protected['password_reset_email_template']))
 		{
-			$reset_email_template = ee()->TMPL->fetch_and_parse_from_path($protected->password_reset_email_template);
+			$reset_email_template = ee()->TMPL->fetch_and_parse_from_path($protected['password_reset_email_template']);
 		} else {
 			$reset_email_template = $template['data'];
 		}
 
 		// Check if we have a password reset subject param, otherwise, use the one from the default template.
-		if (! empty($protected->password_reset_email_subject))
+		if (! empty($protected['password_reset_email_subject']))
 		{
-			$reset_email_subject = $protected->password_reset_email_subject;
+			$reset_email_subject = $protected['password_reset_email_subject'];
 		} else {
 			$reset_email_subject = $template['title'];
 		}
@@ -749,6 +754,7 @@ class Member_auth extends Member {
 			return ee()->output->show_user_error('submission', array(lang('error_sending_email')), '', $return_error_link);
 		}
 
+
 		// Build success message
 		$data = array(
 			'title' 	=> lang('mbr_passwd_email_sent'),
@@ -757,7 +763,8 @@ class Member_auth extends Member {
 			'link'		=> array($return, $site_name)
 		);
 
-		ee()->output->show_message($data);
+		// If we have a success return link, go to that, otherwise, output the standard message.
+		ee()->output->show_message($data, true, $return_success_link);
 	}
 
 	/**
@@ -847,6 +854,13 @@ class Member_auth extends Member {
 	 */
 	public function process_reset_password()
 	{
+		// Handle our protected data if any. This contains our extra params.
+		$protected = ee()->functions->handle_protected();
+
+		// Determine where we need to return to in case of success or error.
+		$return_success_link = ee()->functions->determine_return();
+		$return_error_link = ee()->functions->determine_error_return();
+
 		// if the user is logged in, then send them away
 		if (ee()->session->userdata('member_id') !== 0)
 		{
@@ -856,12 +870,12 @@ class Member_auth extends Member {
 		// If the user is banned, send them away.
 		if (ee()->session->userdata('is_banned') === TRUE)
 		{
-			return ee()->output->show_user_error('general', array(lang('not_authorized')));
+			return ee()->output->show_user_error('general', array(lang('not_authorized')), '', $return_error_link);
 		}
 
 		if ( ! ($resetcode = ee()->input->get_post('resetcode')))
 		{
-			return ee()->output->show_user_error('submission', array(lang('mbr_no_reset_id')));
+			return ee()->output->show_user_error('submission', array(lang('mbr_no_reset_id')), '', $return_error_link);
 		}
 
 		// We'll use this in a couple of places to determine whether a token is still valid
@@ -876,18 +890,25 @@ class Member_auth extends Member {
 
 		if ($member_id_query->num_rows() === 0)
 		{
-			return ee()->output->show_user_error('submission', array(lang('mbr_id_not_found')));
+			return ee()->output->show_user_error('submission', array(lang('mbr_id_not_found')), '', $return_error_link);
+		}
+
+		// If we're here, the reset code was in the URL properly so make sure it's on the error_link
+		// as the native EE backtracker doesn't append querystrings.
+		if (! empty($return_error_link) && strpos($return_error_link, 'id=') === FALSE)
+		{
+			$return_error_link .= '?id=' . $resetcode;
 		}
 
 		// Ensure the passwords match.
 		if ( ! ($password = ee()->input->get_post('password')))
 		{
-			return ee()->output->show_user_error('submission', array(lang('mbr_missing_password')));
+			return ee()->output->show_user_error('submission', array(lang('mbr_missing_password')), '', $return_error_link);
 		}
 
 		if ( ! ($password_confirm = ee()->input->get_post('password_confirm')))
 		{
-			return ee()->output->show_user_error('submission', array(lang('mbr_missing_confirm')));
+			return ee()->output->show_user_error('submission', array(lang('mbr_missing_confirm')), '', $return_error_link);
 		}
 
 		// Validate the password, using EE_Validate. This will also
@@ -906,7 +927,7 @@ class Member_auth extends Member {
 		$VAL->validate_password();
 		if (count($VAL->errors) > 0)
 		{
-			return ee()->output->show_user_error('submission', $VAL->errors);
+			return ee()->output->show_user_error('submission', $VAL->errors, '', $return_error_link);
 		}
 
 		// Update the database with the new password.  Apply the appropriate salt first.
@@ -978,7 +999,7 @@ class Member_auth extends Member {
 		/*
 		/* -------------------------------------------*/
 
-		ee()->output->show_message($data);
+		ee()->output->show_message($data, true, $return_success_link);
 	}
 
 	/**
