@@ -967,7 +967,7 @@ class EE_Input {
 		}
 
 		// We strip slashes if magic quotes is on to keep things consistent
-		if (get_magic_quotes_gpc())
+		if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc())
 		{
 			$str = stripslashes($str);
 		}
