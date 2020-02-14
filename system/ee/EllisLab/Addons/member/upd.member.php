@@ -13,7 +13,7 @@
  */
 class Member_upd {
 
-	var $version = '2.1.0';
+	var $version = '3.0.0';
 
 	/**
 	 * Module Installer
