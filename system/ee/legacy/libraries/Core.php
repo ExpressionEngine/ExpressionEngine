@@ -55,6 +55,7 @@ class EE_Core {
 		}
 
 		// some path constants to simplify things
+		define('PATH_PRO_ADDONS', SYSPATH . 'ee/EllisLab/Addons/pro/levelups/');
 		define('PATH_ADDONS', SYSPATH . 'ee/EllisLab/Addons/');
 		define('PATH_MOD',    SYSPATH . 'ee/EllisLab/Addons/');
 		define('PATH_PI',     SYSPATH . 'ee/EllisLab/Addons/');
@@ -97,6 +98,11 @@ class EE_Core {
 		ee()->load->database();
 		ee()->db->swap_pre = 'exp_';
 		ee()->db->db_debug = FALSE;
+
+		// Load the Pro addons first if they exist
+		if(is_dir(PATH_PRO_ADDONS)) {
+			ee('App')->setupAddons(PATH_PRO_ADDONS);
+		}
 
 		// boot the addons
 		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
