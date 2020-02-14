@@ -15,7 +15,7 @@ class LiteLoader
         $file .= $addon_file;
 
         if (file_exists($file)) {
-            eval('namespace ' . $namespace . '?>; ' . file_get_contents($file));
+            eval('namespace ' . $namespace . '; ?> ' . file_get_contents($file));
         }
     }
 }
