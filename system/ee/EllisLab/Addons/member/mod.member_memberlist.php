@@ -267,15 +267,43 @@ class Member_memberlist extends Member {
 			return ee()->output->show_user_error('general', array(ee()->lang->line('mbr_not_allowed_to_view_profiles')));
 		}
 
+		// Find out where our memberlist page actually is (for doing search results).
+		$memberlist_url = ee()->TMPL->fetch_param('memberlist_url');
+
 		/** ----------------------------------------
 		/**  Grab the templates
 		/** ----------------------------------------*/
 
-		$template = $this->_load_element('memberlist');
+		// Fetch the template tag data
+		$tagdata = trim(ee()->TMPL->tagdata);
+
+		// If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
+		if (! empty($tagdata)) {
+			$template = ee()->TMPL->tagdata;
+		} else {
+			$template = $this->_load_element('memberlist');
+		}
+
 		$vars = ee('Variables/Parser')->extractVariables($template);
 		$var_cond = ee()->functions->assign_conditional_variables($template, '/');
 
-		$memberlist_rows = $this->_load_element('memberlist_rows');
+		// Find out if we have sub-tag data for our `member_rows` tag. If not, use the legacy speciality template.
+		if (strpos($template, '{/member_rows}') !== FALSE)
+		{
+			$member_rows_tag_length = strlen(LD . 'member_rows' . RD);
+
+			// Find the starting and ending position of our subtag and calculate the difference so we can grab it.
+			$member_rows_start = strpos($template, LD . 'member_rows' . RD) + $member_rows_tag_length;
+			$member_rows_end = strpos($template, LD . '/member_rows' . RD);
+			$member_rows_diff = $member_rows_end - $member_rows_start;
+
+			$memberlist_rows = substr($template, $member_rows_start, $member_rows_diff);
+		}
+		else
+		{
+			$memberlist_rows = $this->_load_element('memberlist_rows');
+		}
+
 		$mvars = ee('Variables/Parser')->extractVariables($memberlist_rows);
 		$mvar_cond = ee()->functions->assign_conditional_variables($memberlist_rows, '/');
 
@@ -965,7 +993,20 @@ class Member_memberlist extends Member {
 			'action' => $this->_member_path('do_member_search')
 		));
 		$template = str_replace(LD."form:form_declaration:do_member_search".RD, $form_open_member_search, $template);
-		$template = str_replace(LD."member_rows".RD, $str, $template);
+
+		if (! empty($member_rows_diff))
+		{
+			$member_rows_start = strpos($template, LD . 'member_rows' . RD);
+			$member_rows_end = strpos($template, LD . '/member_rows' . RD) + $member_rows_tag_length + 1;
+			$member_rows_diff = $member_rows_end - $member_rows_start;
+
+			$template = substr_replace($template, $str, $member_rows_start, $member_rows_diff);
+		}
+		else
+		{
+			$template = str_replace(LD."member_rows".RD, $str, $template);
+		}
+
 
 		return	$template;
 	}
