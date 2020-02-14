@@ -24,6 +24,7 @@ class EE_Functions {
 	public $file_paths         = array();
 	public $conditional_debug  = FALSE;
 	public $catfields          = array();
+	public static $protected_data   = array();
 
 	/**
 	 * Fetch base site index
@@ -333,6 +334,111 @@ class EE_Functions {
 		}
 
 		return $str;
+	}
+
+	/**
+	 * Create an encrypted string of form params for the front-end forms.
+	 * @param  array  $params Custom params for specific forms
+	 * @return string         Encoded data
+	 */
+	public function get_protected_form_params($params = array())
+	{
+		// Setup some default params that every front-end form can use.
+		$default_params = array(
+			'return_error' => ee()->TMPL->fetch_param('return_error'),
+			'inline_errors' => ee()->TMPL->fetch_param('inline_errors'),
+		);
+
+		// Merge in any custom params.
+		$params = array_merge($default_params, $params);
+
+		return $this->protect_data($params);
+	}
+
+	/**
+	 * Take array data and encode it for use in form posts.
+	 * @param  array $data Array data you want to encode
+	 * @return string      Encoded data
+	 */
+	public function protect_data($data)
+	{
+		if (! is_array($data))
+		{
+			return false;
+		}
+
+		// JSON encode the data (as the encrypt system expects a string) and then encrypt it.
+		return ee('Encrypt')->encode(json_encode($data));
+	}
+
+	/**
+	 * Check for and decode protected form data for use after form submission.
+	 * @return string|array|boolean The decoded data or false if no data exists.
+	 */
+	public function handle_protected()
+	{
+		// Grab the protected data from the posted form.
+		$protected = ee()->input->get_post('P');
+
+		if (! empty($protected))
+		{
+			// Decrypt and json decode the resulting data.
+			self::$protected_data = json_decode(ee('Encrypt')->decode($protected), true);
+
+			// Sanity check that the data decrypted / decoded properly.
+			if (! is_array(self::$protected_data))
+			{
+				self::$protected_data = array();
+			}
+		}
+
+		return self::$protected_data;
+	}
+
+	/**
+	 * Determine the return link based on various factors. Used in form returns.
+	 * @return  string|bool  URL to redirect to or false
+	 */
+	public function determine_return($go_to_index = FALSE)
+	{
+		$return = ee()->input->get_post('RET');
+		$return_link = false;
+
+		if (empty($return)) {
+			// If we don't have a return in the POST and we've specified to go to the site index.
+			if ($go_to_index === TRUE) {
+				$return_link = ee()->functions->fetch_site_index();
+			}
+		} elseif (is_numeric($return)) {
+			// If the return is a number, it's a reference to how many pages back we have to go.
+			$return_link = ee()->functions->form_backtrack($return);
+		} else {
+			// If we're here, the return is a full string.
+			$return_link = $return;
+		}
+
+		return $return_link;
+	}
+
+	/**
+	 * Determine the return link based on various factors. Used in form returns.
+	 * @return string URL to redirect to
+	 */
+	public function determine_error_return()
+	{
+		// Find out if we have the `return_error` param in our protected data.
+		if (! empty(self::$protected_data['return_error']))
+		{
+			return self::$protected_data['return_error'];
+		}
+		elseif (! empty(self::$protected_data['inline_errors']) && self::$protected_data['inline_errors'] === 'yes')
+		{
+			// If they specified inline errors, return to the page the form submitted from.
+			return ee()->functions->form_backtrack(1);
+		}
+
+		// There was no return page or inline specified so the error will go to the standard output.
+		return false;
 	}
 
 	/**

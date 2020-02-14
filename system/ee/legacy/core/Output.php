@@ -513,8 +513,14 @@ class EE_Output {
 	 * @param	bool
 	 * @return	void
 	 */
-	function show_message($data, $xhtml = TRUE)
+	function show_message($data, $xhtml = TRUE, $redirect_url = FALSE)
 	{
+		// If we have a redirect URL, use that instead of outputting the standard page.
+		if (! empty($redirect_url))
+		{
+			ee()->functions->redirect($redirect_url);
+		}
+
 		@header("Cache-Control: no-cache, must-revalidate");
 		@header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
 		@header("Pragma: no-cache");
@@ -565,19 +571,47 @@ class EE_Output {
 			$data['content'] = ee()->typography->parse_type(stripslashes($data['content']), array('text_format' => 'xhtml'));
 		}
 
-		ee()->db->select('template_data');
-		ee()->db->where('site_id', ee()->config->item('site_id'));
-		ee()->db->where('template_name', 'message_template');
-		$query = ee()->db->get('specialty_templates');
+		$template_data = false;
 
-		$row = $query->row_array();
+		// Determine if we have an override template for the system messages.
+		$template_group = ee('Model')->get('TemplateGroup')
+								->filter('site_id', ee()->config->item('site_id'))
+								->filter('group_name', 'system_messages')->first();
+
+		if (! empty($template_group))
+		{
+			$template = ee('Model')->get('Template')
+								->filter('site_id', ee()->config->item('site_id'))
+								->filter('group_id', $template_group->group_id)
+								->filter('template_name', 'generic')->first();
+
+			if (!empty($template) && !empty($template->template_data))
+			{
+				$template_data = $template->template_data;
+			}
+		}
+
+		if (empty($template_data))
+		{
+			ee()->db->select('template_data');
+			ee()->db->where('site_id', ee()->config->item('site_id'));
+			ee()->db->where('template_name', 'message_template');
+			$query = ee()->db->get('specialty_templates');
+
+			$row = $query->row_array();
+			$template_data = $row['template_data'];
+		}
 
 		foreach ($data as $key => $val)
 		{
-			$row['template_data']  = str_replace('{'.$key.'}', $val, $row['template_data'] );
+			$template_data  = str_replace('{'.$key.'}', $val, $template_data );
 		}
 
-		$output = stripslashes($row['template_data']);
+		$output = stripslashes($template_data);
+
+		// Pass the output template through the normal template parser to handle any other tags a user might add.
+		ee()->TMPL->parse($output);
+		$output = ee()->TMPL->parse_globals(ee()->TMPL->final_template);
 
 		// -------------------------------------------
 		// 'output_show_message' hook.
@@ -604,8 +638,20 @@ class EE_Output {
 	 * @param	string
 	 * @return	void
 	 */
-	function show_user_error($type = 'submission', $errors, $heading = '')
+	function show_user_error($type = 'submission', $errors, $heading = '', $redirect_url = '')
 	{
+		// If we have a redirect URL, use that instead of outputting the standard error page.
+		if (! empty($redirect_url))
+		{
+			ee()->session->set_flashdata('errors', $errors);
+			ee()->functions->redirect($redirect_url);
+		}
+		else
+		{
+			// If we're using an error template, kill our flashdata.
+			ee()->session->_age_flashdata();
+		}
+
 		$this->set_header("Content-Type: text/html; charset=".ee()->config->item('charset'));
 		$this->set_status_header(403);
 

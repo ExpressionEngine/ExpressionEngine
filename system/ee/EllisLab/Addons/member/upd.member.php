@@ -30,6 +30,7 @@ class Member_upd {
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'activate_member')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'member_login')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'member_logout')";
+		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'send_username')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'send_reset_token')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'process_reset_password')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'send_member_email')";
@@ -92,6 +93,20 @@ class Member_upd {
 
 	function update($current='')
 	{
+		if (version_compare($current, '3.0', '<'))
+		{
+			ee()->load->dbforge();
+
+			$sql = array();
+
+			$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'send_username')";
+
+			foreach($sql as $query)
+			{
+				ee()->db->query($query);
+			}
+		}
+
 		return TRUE;
 	}
 
