@@ -60,6 +60,8 @@ class Edit extends AbstractPublishController {
 		}
 
 		$vars = array();
+		$vars['channels_exist'] = true;
+
 		$base_url = ee('CP/URL')->make('publish/edit');
 
 		$entry_listing = ee('CP/EntryListing',
@@ -78,6 +80,13 @@ class Edit extends AbstractPublishController {
 		}
 
 		$count = $entry_listing->getEntryCount();
+
+		// if no entries check to see if we have any channels 
+		if(empty($count))
+		{
+			// cast to bool
+			$vars['channels_exist']  = (bool)ee('Model')->get('Channel')->filter('site_id', ee()->config->item('site_id'))->count();
+		}
 
 		$vars['filters'] = $filters->render($base_url);
 		$vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
@@ -123,7 +132,17 @@ class Edit extends AbstractPublishController {
 		));
 
 		$table->setColumns($columns);
-		$table->setNoResultsText(lang('no_entries_exist'));
+		if($vars['channels_exist'])
+		{
+			$table->setNoResultsText(lang('no_entries_exist'));	
+		}
+		else
+		{
+			$table->setNoResultsText(
+			sprintf(lang('no_found'), lang('channels'))
+			.' <a href="'.ee('CP/URL', 'channels/create').'">'.lang('add_new').'</a>');
+		}
+		
 
 		$show_new_button = TRUE;
 		if ($channel_id)
