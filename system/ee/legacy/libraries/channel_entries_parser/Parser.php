@@ -174,6 +174,11 @@ class EE_Channel_data_parser {
 		// If custom fields are enabled, notify them of the data we're about to send
 		if ( ! empty($channel->cfields))
 		{
+
+
+
+
+
 			$this->_send_custom_field_data_to_fieldtypes($entries);
 		}
 
@@ -230,6 +235,24 @@ class EE_Channel_data_parser {
 			{
 				$tagdata = call_user_func($callbacks['tagdata_loop_start'], $tagdata, $row);
 			}
+
+			/**
+* Tom Runningtest for pro version zzxx
+* This is for editing a whole entry.
+*/
+
+// if there's an image url set in the control panel, then use this style
+// echo "<pre>";
+// var_dump($tagdata);
+// exit;
+
+// $tagdata = "\n" . '<a href="#">EDIT</a>'
+//  . "\n" . $tagdata;
+
+
+/**
+* Tom Runningtest for pro version
+*/
 
 			// -------------------------------------------------------
 			// Row data callback. Do what you want.
@@ -351,6 +374,7 @@ class EE_Channel_data_parser {
 
 			if (isset($callbacks['tagdata_loop_end']))
 			{
+				// $tagdata = 'test3332221111'.call_user_func($callbacks['tagdata_loop_end'], $tagdata, $row);
 				$tagdata = call_user_func($callbacks['tagdata_loop_end'], $tagdata, $row);
 			}
 

@@ -140,6 +140,80 @@ class Homepage extends CP_Controller {
 			$pings->shareAnalytics();
 		}
 
+
+		/**
+ * Tom testing tempalte parsing as a whole.
+ */
+		//----------------------------------------
+        // Allows template parsing!
+        //----------------------------------------
+//         ee()->load->library('template', null, 'TMPL');
+
+//         $out = '{exp:channel:form channel="blog" return="channel_name/edit/ENTRY_ID" entry_id="1"}
+
+//     <label for="title">Title</label>
+//     <input type="text" name="title" id="title" value="{title}" size="50" maxlength="100" onkeyup="liveUrlTitle(event);">
+
+//     <label for="url_title">URL Title</label>
+//     <input type="text" name="url_title" id="url_title" value="{url_title}" maxlength="75" size="50">
+
+//     {custom_fields}
+//      <br><br><br>
+//         <label for="{field_name}">{if required}* {/if}{field_label}</label>
+
+//         {field_instructions}
+//         {formatting_buttons}
+
+//         {if error}
+//           <p class="error">{error}</p>
+//         {/if}
+
+
+//         {if text}
+//           <input type="text" dir="{text_direction}" id="{field_name}" name="{field_name}" value="{field_data}" maxlength="{maxlength}" size="50">
+//         {/if}
+
+//         {if grid}
+//           {display_field}
+//           <br>
+//           <br>
+//         {/if}
+
+// 	    {if textarea}
+//           {display_field}
+//           <br>
+//           <br>
+//         {/if}
+
+//         {if multiselect}
+//           <select id="{field_name}" name="{field_name}[]" multiple="multiple">
+//             {options}
+//               <option value="{option_value}"{selected}>{option_name}</option>
+//             {/options}
+//           </select>
+//       {/if}
+
+//     {/custom_fields}
+
+
+//     <input type="submit" name="submit" value="Submit">
+// {/exp:channel:form}';
+
+//         ee()->TMPL->parse($out, false, ee()->config->item('site_id'));
+//         $out = ee()->TMPL->final_template;
+
+//         // remove EE comments to fix bug in EE 2.9.0
+//         if (method_exists(ee()->TMPL, 'remove_ee_comments')) {
+//             $out = ee()->TMPL->remove_ee_comments($out);
+//         }
+//         $vars['out'] = $out;
+        // return $out;
+// var_dump($out);
+// exit;
+/**
+ * END Tom testing tempalte parsing as a whole.
+ */
+
 		$vars['can_moderate_comments'] = ee('Permission')->can('moderate_comments');
 		$vars['can_edit_comments'] = ee('Permission')->can('edit_all_comments');
 		$vars['can_access_members'] = ee('Permission')->can('access_members');

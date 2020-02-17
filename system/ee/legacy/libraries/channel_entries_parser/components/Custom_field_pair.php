@@ -156,6 +156,18 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 
 					list($modifier, $content, $params, $chunk) = $chk_data;
 
+
+					/**
+ * TOMS Pro version discovery.... this is where we want to inject the pro edit I think for tag pair items.
+ * needs more testing.
+ * zzxx
+  */
+ // echo "<pre>";
+ // var_dump($field_name);
+ // exit;
+ // $tagdata = str_replace(LD.$tag.RD, '<a href="http://ee6testing.test/site/test/'.$data['channel_id'].'/'.$tag.'/'.$data['entry_id'].'">EDIT TAG </a>'.LD.$tag.RD, $tagdata);
+$content = '<a href="http://ee6.test/site/test/'.$data['channel_id'].'/'.$field_name.'/'.$data['entry_id'].'">EDIT TAG </a>'.$content;
+
 					$tpl_chunk = '';
 					// Set up parse function name based on whether or not
 					// we have a modifier

@@ -49,6 +49,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 	{
 		$tag = $obj->tag();
 		$data = $obj->row();
+		$test = $data;
 		$prefix = $obj->prefix();
 
 		$site_id = $data['site_id'];
@@ -144,6 +145,27 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 						$entry
 					);
 				}
+
+				// echo "<pre>";
+	// taking the relationship field name out of the field for channel forms.
+	$channel_form_field_name = $tag;
+	if(!empty($rfields))
+	{
+		foreach($rfields as $field_name => $num)
+		{
+			$channel_form_field_name = str_replace($field_name.':', '', $tag);
+		}
+	}
+// var_dump($tag, $entry, $tagdata, $channel_form_field_name);
+// exit;
+$tagdata = str_replace(LD.$tag.RD, '<a href="http://ee6.test/site/test/'.$test['channel_id'].'/'.$channel_form_field_name.'/'.$test['entry_id'].'">EDIT TAG </a>'.LD.$tag.RD, $tagdata);
+
+// var_dump($tag, $entry, $tagdata);
+// exit;
+				$tagdata = str_replace(LD.$tag.RD, $entry, $tagdata);
+// echo "here<pre>";
+// var_dump($tagdata);
+// exit;
 
 				$tagdata = str_replace(LD.$tag.RD, $entry, $tagdata);
 			}
