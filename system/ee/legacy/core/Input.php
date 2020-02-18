@@ -966,12 +966,6 @@ class EE_Input {
 			return $new_array;
 		}
 
-		// We strip slashes if magic quotes is on to keep things consistent
-		if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc())
-		{
-			$str = stripslashes($str);
-		}
-
 		// Clean UTF-8 if supported
 		if (UTF8_ENABLED === TRUE)
 		{
