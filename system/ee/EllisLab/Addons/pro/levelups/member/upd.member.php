@@ -8,11 +8,15 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use EllisLab\Addons\Pro\Components\LiteLoader;
+
+LiteLoader::loadIntoNamespace('member/upd.member.php');
+
 /**
  * Member Management update class
  */
-class Member_upd {
-
+class Member_upd extends Lite\Member
+{
 	var $version = '2.1.0';
 
 	/**
@@ -30,6 +34,7 @@ class Member_upd {
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'activate_member')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'member_login')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'member_logout')";
+		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'send_username')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'send_reset_token')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'process_reset_password')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'send_member_email')";
@@ -92,6 +97,20 @@ class Member_upd {
 
 	function update($current='')
 	{
+		if (version_compare($current, '3.0', '<'))
+		{
+			ee()->load->dbforge();
+
+			$sql = array();
+
+			$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'send_username')";
+
+			foreach($sql as $query)
+			{
+				ee()->db->query($query);
+			}
+		}
+
 		return TRUE;
 	}
 
