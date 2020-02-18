@@ -9,7 +9,7 @@ git archive --format=tar -o ee.tar $STASH_NAME
 # Absolutely have to have the git folder available in the archive?
 #tar --append --file=ee.tar .git
 
-IMAGE_NAME="ellislab/eecms-test:old"
+IMAGE_NAME="eecms_test:latest"
 VOLUME_ID=`docker volume create`
 HELPER_CONTAINER_ID=`docker create -v $VOLUME_ID:/app $IMAGE_NAME /bin/true`
 
@@ -48,7 +48,9 @@ else
 
 	((STATUS+=$?))
 
-	mkdir /tmp/artifacts > /dev/null
+	if [ ! -d /tmp/artifacts ]; then
+		mkdir /tmp/artifacts > /dev/null
+	fi
 	docker cp $HELPER_CONTAINER_ID:/app/artifacts/. /tmp/artifacts
 fi
 
