@@ -541,7 +541,15 @@ class Lexer extends AbstractLexer {
 				{
 					$this->syncWithAnnotation($annotation);
 				}
-			}
+      }
+
+
+      //clean up the conditional from edit link
+      //do regex search based on the marker in url
+      if ($type=='STRING')
+      {
+        $lexeme = preg_replace("/<a href=\"(.*?)test(.*?)<\/a>/is", '', $lexeme, 1);
+      }
 
 			switch ($type)
 			{

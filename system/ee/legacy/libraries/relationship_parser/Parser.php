@@ -238,7 +238,7 @@ class EE_Relationship_data_parser {
 	public function replace($node, $tagdata, $data)
 	{
 		$prefix = $node->name().':';
-		$channel = $this->_channel;
+    $channel = $this->_channel;
 
 		// Load the parser
 		ee()->load->library('channel_entries_parser');
@@ -253,7 +253,18 @@ class EE_Relationship_data_parser {
 			)
 		);
 
-		$result = $parser->parse($channel, $data, $config);
+    $result = $parser->parse($channel, $data, $config);
+
+    /** 
+     * inject edit tag
+     * proof of concept
+     * */
+    $entry_id = array_key_first($node->data['entry_ids']);
+    $channel_id = $node->data['parser']->entry($entry_id)['channel_id'];
+    $field_name = $node->data['field_name'];
+
+    $edit_link = '<a href="http://ee6.test/site/test/'.$channel_id.'/'.$field_name.'/'.$entry_id.'">EDIT TAG </a>';
+    $result = $edit_link.$result;
 
 		// Lastly, handle the backspace parameter
 		$backspace = $node->param('backspace');
