@@ -13,7 +13,7 @@
  */
 class Channel_upd {
 
-	var $version		= '2.0.1';
+	var $version		= '2.0.2';
 
 	/**
 	 * Module Installer
@@ -48,6 +48,13 @@ class Channel_upd {
 		$data = array(
 			'class' => 'Channel',
 			'method' => 'combo_loader'
+		);
+
+    ee()->db->insert('actions', $data);
+    
+    $data = array(
+			'class' => 'Channel',
+			'method' => 'live_preview'
 		);
 
 		ee()->db->insert('actions', $data);
@@ -86,7 +93,7 @@ class Channel_upd {
 	 */
 	function update()
 	{
-		return TRUE;
+    return TRUE;
 	}
 
 }
