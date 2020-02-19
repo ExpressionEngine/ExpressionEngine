@@ -1,0 +1,27 @@
+{if logged_in}
+	<p>Logged in as <b>{username}</b></p>
+	<ul>
+		<li><a href="/members/logout">Logout</a></li>
+		<li><a href="/members/edit-profile">Edit Profile</a></li>
+		<li><a href="/members/edit-email">Edit Email</a></li>
+		<li><a href="/members/edit-userpass">Edit Username &amp; Password</a></li>
+	</ul>
+{if:else}
+	<p>Logged out</p>
+	<ul>
+		<li><a href="/members/login">Login</a>
+			<ul>
+				<li><a href="/members/forgot-password">Forgot Password</a></li>
+				<li><a href="/members/forgot-username">Forgot Username</a></li>
+				<li><a href="/members/reset-password">Reset Password</a></li>
+			</ul>
+		</li>
+		<li><a href="/members/registration">Register</a></li>
+		<li><a href="/members/registration-custom">Register - Custom</a></li>
+	</ul>
+{/if}
+
+<ul>
+	<li><a href="/members/memberlist">Members</a></li>
+	<li><a href="/members/search">Search Members</a></li>
+</ul>

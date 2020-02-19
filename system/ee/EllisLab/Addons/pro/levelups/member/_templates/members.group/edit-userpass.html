@@ -1,0 +1,54 @@
+{layout="members/_layout"}
+
+<h1>Edit Username &amp; Password</h1>
+
+<div class="result">
+{if last_segment == "success"}
+    <h4>Username &amp; Password Updated!</h4>
+{if:elseif logged_in}
+    {exp:member:edit_userpass
+        return="members/edit-userpass/success"
+        inline_errors="yes"
+        }
+
+        {if errors}
+            <fieldset class="error">
+                <legend>Errors</legend>
+            {errors}
+                {error}<br />
+            {/errors}
+            </fieldset>
+        {/if}
+
+        {form_declaration}
+
+        <b><span class='alert'>*</span>&nbsp; Username</b><br />
+        <input type='text' class='input' name='username' value='{username}' maxlength="{username_max_length}" style='width:100%' />
+        <br /><br />
+
+        <b><span class='alert'>*</span>&nbsp; Screen Name</b><br />
+        <input type='text' class='input' name='screen_name' value='{screen_name}' maxlength="{username_max_length}" style='width:100%' />
+        <br /><br />
+
+        <b><span class='alert'>*</span>&nbsp; New Password</b><br />
+        <input type='password' class='input' name='password' value='' maxlength="{password_max_length}" style='width:100%' />
+        <br /><br />
+
+        <b><span class='alert'>*</span>&nbsp; Confirm New Password</b><br />
+        <input type='password' class='input' name='password_confirm' value='' maxlength="{password_max_length}" style='width:100%' />
+        <br /><br />
+
+        <b><span class='alert'>*</span>&nbsp; Existing Password</b><br />
+        You must submit the current password to update email address<br />
+        <input type='password' class='input' name='current_password' value='' maxlength='{password_max_length}' style='width:300px'/>
+        <br /><br />
+
+        <input type='submit' class='submit' value='Update' />
+        <br /><br />
+        <span class="alert">*</span> Required
+
+        </form>
+
+    {/exp:member:edit_userpass}
+{/if}
+</div>
