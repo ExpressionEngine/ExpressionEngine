@@ -42,8 +42,8 @@ class Updater {
 				'convertMembersGroupToPrimaryRole',
 				'reassignLayoutsToPrimaryRole',
 				'reassignEmailCacheToPrimaryRole',
-        'addColorPickerFieldType',
-        'addLivePreview'
+				'addColorPickerFieldType',
+				'addLivePreview'
 			]
 		);
 
@@ -873,7 +873,7 @@ class Updater {
 		);
   }
   
-  private function addLivePreview()
+	private function addLivePreview()
 	{
 		$row_data = array(
 			'class' => 'Channel',

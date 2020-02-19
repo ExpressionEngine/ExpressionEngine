@@ -74,10 +74,10 @@ class LivePreview {
   /**
    * generate and display the live preview
    */
-  public function preview($channel_id, $entry_id = NULL)
+	public function preview($channel_id, $entry_id = NULL)
 	{
-    
-    if (empty($_POST))
+
+		if (empty($_POST))
 		{
 			return;
 		}
@@ -122,8 +122,8 @@ class LivePreview {
 			&& ! empty($_POST['pages__pages_template_id']))
 		{
 			$values = [
-				'pages_uri'         => $_POST['pages__pages_uri'],
-				'pages_template_id' => $_POST['pages__pages_template_id'],
+			'pages_uri'         => $_POST['pages__pages_uri'],
+			'pages_template_id' => $_POST['pages__pages_template_id'],
 			];
 
 			$page_tab = new \Pages_tab;
@@ -161,12 +161,12 @@ class LivePreview {
 		//  - Set alternate URI and/or template to use for preview
 		//  - Added 4.2.0
 		//
-			if (ee()->extensions->active_hook('publish_live_preview_route') === TRUE)
-			{
-				$route = ee()->extensions->call('publish_live_preview_route', array_merge($_POST, $data), $uri, $template_id);
-				$uri = $route['uri'];
-				$template_id = $route['template_id'];
-			}
+		if (ee()->extensions->active_hook('publish_live_preview_route') === TRUE)
+		{
+			$route = ee()->extensions->call('publish_live_preview_route', array_merge($_POST, $data), $uri, $template_id);
+			$uri = $route['uri'];
+			$template_id = $route['template_id'];
+		}
 		//
 		// -------------------------------------------
 

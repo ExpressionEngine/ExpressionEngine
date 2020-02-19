@@ -357,7 +357,7 @@ class Publish extends AbstractPublishController {
 
 	public function preview($channel_id, $entry_id = NULL)
 	{
-    return ee('LivePreview')->preview($channel_id, $entry_id);
+		return ee('LivePreview')->preview($channel_id, $entry_id);
 	}
 }
 
