@@ -536,6 +536,8 @@ $lang = array(
 
 'no_found' => 'No <b>%s</b> found.',
 
+'no_roles_with_design_access_found' => 'No <b>Roles</b> with <b>template manager access</b> found.',
+
 'no_rows_returned' => 'No rows returned',
 
 'none' => 'None',

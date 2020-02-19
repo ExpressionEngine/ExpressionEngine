@@ -120,9 +120,16 @@ class Publish extends Jumps
 
 	private function loadEntries($searchString = false)
 	{
+		$channels = ee()->functions->fetch_assigned_channels();
+
+		// Make sure we have channels before trying to load entries.
+		if (empty($channels)) {
+			return [];
+		}
+
 		$entries = ee('Model')->get('ChannelEntry')
-				->fields('entry_id', 'title')//, 'Author.screen_name', 'entry_date')
-				->filter('channel_id', 'IN', ee()->functions->fetch_assigned_channels());
+				->fields('entry_id', 'title')
+				->filter('channel_id', 'IN', $channels);
 
 		if (!empty($searchString)) {
 			// Break the search string into individual keywords so we can partially match them.

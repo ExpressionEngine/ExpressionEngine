@@ -11,8 +11,13 @@
 /**
  * Member Management Front-end Class
  */
-class Member {
 
+use EllisLab\Addons\Pro\Components\LiteLoader;
+
+LiteLoader::loadIntoNamespace('member/mod.member.php');
+
+class Member extends Lite\Member
+{
 	var $trigger			= 'member';
 	var $member_template	= TRUE;
 	var $theme_class		= 'profile_theme';
@@ -122,7 +127,7 @@ class Member {
 	/**
 	 * Constructor
 	 */
-	public function __construct()
+	function __construct()
 	{
 		ee()->lang->loadfile('myaccount');
 		ee()->lang->loadfile('member');
@@ -350,7 +355,7 @@ class Member {
 
 		if (in_array($function, array('upload_photo', 'upload_avatar', 'upload_signature_image', '_upload_image')))
 		{
-			require_once PATH_ADDONS.'member/mod.member_images.php';
+			require_once PATH_ADDONS.'pro/levelups/member/mod.member_images.php';
 
 			$MI = new Member_images();
 
@@ -428,7 +433,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -473,7 +478,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -493,7 +498,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -513,7 +518,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_auth'))
 		{
-			require PATH_ADDONS.'member/mod.member_auth.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_auth.php';
 		}
 
 		$MA = new Member_auth();
@@ -533,7 +538,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -553,7 +558,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -573,7 +578,7 @@ class Member {
 	{
 	 	if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -593,7 +598,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -613,7 +618,7 @@ class Member {
 	{
 	 	if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -633,7 +638,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -653,7 +658,7 @@ class Member {
 	{
 	 	if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -673,7 +678,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -693,7 +698,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -713,7 +718,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -733,7 +738,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_images'))
 		{
-			require PATH_ADDONS.'member/mod.member_images.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_images.php';
 		}
 
 		$MI = new Member_images();
@@ -753,7 +758,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_images'))
 		{
-			require PATH_ADDONS.'member/mod.member_images.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_images.php';
 		}
 
 		$MI = new Member_images();
@@ -773,7 +778,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_images'))
 		{
-			require PATH_ADDONS.'member/mod.member_images.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_images.php';
 		}
 
 		$MI = new Member_images();
@@ -793,7 +798,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_images'))
 		{
-			require PATH_ADDONS.'member/mod.member_images.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_images.php';
 		}
 
 		$MI = new Member_images();
@@ -813,7 +818,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_images'))
 		{
-			require PATH_ADDONS.'member/mod.member_images.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_images.php';
 		}
 
 		$MI = new Member_images();
@@ -833,7 +838,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_images'))
 		{
-			require PATH_ADDONS.'member/mod.member_images.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_images.php';
 		}
 
 		$MI = new Member_images();
@@ -853,7 +858,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -873,7 +878,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -893,7 +898,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_auth'))
 		{
-			require PATH_ADDONS.'member/mod.member_auth.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_auth.php';
 		}
 
 		$MA = new Member_auth();
@@ -946,7 +951,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_auth'))
 		{
-			require PATH_ADDONS.'member/mod.member_auth.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_auth.php';
 		}
 
 		$MA = new Member_auth();
@@ -1000,7 +1005,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_auth'))
 		{
-			require PATH_ADDONS.'member/mod.member_auth.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_auth.php';
 		}
 
 		$MA = new Member_auth();
@@ -1058,7 +1063,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_auth'))
 		{
-			require PATH_ADDONS.'member/mod.member_auth.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_auth.php';
 		}
 
 		$MA = new Member_auth();
@@ -1080,7 +1085,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_auth'))
 		{
-			require PATH_ADDONS.'member/mod.member_auth.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_auth.php';
 		}
 
 		$MA = new Member_auth();
@@ -1169,7 +1174,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_auth'))
 		{
-			require PATH_ADDONS.'member/mod.member_auth.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_auth.php';
 		}
 
 		$MA = new Member_auth();
@@ -1189,7 +1194,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_auth'))
 		{
-			require PATH_ADDONS.'member/mod.member_auth.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_auth.php';
 		}
 
 		$MA = new Member_auth();
@@ -1209,7 +1214,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_subscriptions'))
 		{
-			require PATH_ADDONS.'member/mod.member_subscriptions.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_subscriptions.php';
 		}
 
 		$MS = new Member_subscriptions();
@@ -1229,7 +1234,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_subscriptions'))
 		{
-			require PATH_ADDONS.'member/mod.member_subscriptions.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_subscriptions.php';
 		}
 
 		$MS = new Member_subscriptions();
@@ -1249,7 +1254,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -1269,7 +1274,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -1289,7 +1294,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -1310,7 +1315,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -1331,7 +1336,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_register'))
 		{
-			require PATH_ADDONS.'member/mod.member_register.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_register.php';
 		}
 
 		$MR = new Member_register();
@@ -1353,7 +1358,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_register'))
 		{
-			require PATH_ADDONS.'member/mod.member_register.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_register.php';
 		}
 
 		$MR = new Member_register();
@@ -1373,7 +1378,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_register'))
 		{
-			require PATH_ADDONS.'member/mod.member_register.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_register.php';
 		}
 
 		$MR = new Member_register();
@@ -1625,7 +1630,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -1645,7 +1650,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_ADDONS.'member/mod.member_settings.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -1665,7 +1670,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_memberlist'))
 		{
-			require PATH_ADDONS.'member/mod.member_memberlist.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_memberlist.php';
 		}
 
 		$MM = new Member_memberlist();
@@ -1685,7 +1690,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_memberlist'))
 		{
-			require PATH_ADDONS.'member/mod.member_memberlist.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_memberlist.php';
 		}
 
 		$MM = new Member_memberlist();
@@ -1705,7 +1710,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_memberlist'))
 		{
-			require PATH_ADDONS.'member/mod.member_memberlist.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_memberlist.php';
 		}
 
 		$MM = new Member_memberlist();
@@ -1719,13 +1724,63 @@ class Member {
 	}
 
 	/**
+	 * Member Search Form
+	 *
+	 * This lets users create a stand-alone form in any template
+	 */
+	public function member_search_form()
+	{
+		$result_page = ee()->TMPL->fetch_param('result_page');
+
+		if (!empty($result_page) && substr($result_page, 0, 4) !== 'http' && substr($result_page, 0, 1) !== '/')
+		{
+			$result_page = '/' . $result_page;
+		}
+
+		// Create form
+		$data['hidden_fields'] = array(
+										'ACT' => ee()->functions->fetch_action_id('Member', 'do_member_search'),
+										'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '-1',
+										'P' => ee()->functions->get_protected_form_params(array(
+											'result_page' => $result_page,
+										))
+									  );
+
+		if (ee()->TMPL->fetch_param('form_name') && ee()->TMPL->fetch_param('form_name') != "")
+		{
+			$data['name'] = ee()->TMPL->fetch_param('form_name');
+		}
+
+		$data['id'] = ee()->TMPL->form_id;
+
+		$data['class'] = ee()->TMPL->form_class;
+
+		// Use the `result_page` as our action. If empty, it'll default to the ACT URL.
+		$data['action'] = (ee()->TMPL->fetch_param('result_page') && ee()->TMPL->fetch_param('result_page') != "") ? strtolower(ee()->TMPL->fetch_param('result_page')) : '';
+
+		// If the action is relative, make sure it has a leading slash so we don't append it to the current url.
+		if (!empty($data['action']) && substr($data['action'], 0, 4) !== 'http' && substr($data['action'], 0, 1) !== '/')
+		{
+			$data['action'] = '/' . $data['action'];
+		}
+
+		$res  = ee()->functions->form_declaration($data);
+
+		$res .= stripslashes(ee()->TMPL->tagdata);
+
+		$res .= "</form>";
+
+		return $res;
+	}
+
+	/**
 	 * Member Search Results
 	 */
 	public function member_search()
 	{
 		if ( ! class_exists('Member_memberlist'))
 		{
-			require PATH_ADDONS.'member/mod.member_memberlist.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_memberlist.php';
 		}
 
 		$MM = new Member_memberlist();
@@ -1745,7 +1800,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_memberlist'))
 		{
-			require PATH_ADDONS.'member/mod.member_memberlist.php';
+			require PATH_ADDONS.'pro/levelups/member/mod.member_memberlist.php';
 		}
 
 		$MM = new Member_memberlist();
@@ -1865,7 +1920,7 @@ class Member {
 	/**
 	 * Convet special characters
 	 */
-	public function _convert_special_chars($str)
+	function _convert_special_chars($str)
 	{
 		return str_replace(array('<', '>', '{', '}', '\'', '"', '?'), array('&lt;', '&gt;', '&#123;', '&#125;', '&apos;', '&quot;', '&#63;'), $str);
 	}
@@ -1873,7 +1928,7 @@ class Member {
 	/**
 	 * Parse the index template
 	 */
-	public function _parse_index_template($str)
+	function _parse_index_template($str)
 	{
 		$req = ($this->request == '') ? 'profile' : $this->request;
 
@@ -1896,7 +1951,7 @@ class Member {
 	/**
 	 * Member Home Page
 	 */
-	public function _member_page($str)
+	function _member_page($str)
 	{
 		$template = $this->_load_element('member_page');
 
@@ -1937,7 +1992,7 @@ class Member {
 	/**
 	 * Load theme element
 	 */
-	public function _load_element($which)
+	function _load_element($which)
 	{
 		if ($this->theme_path == '')
 		{
@@ -1964,7 +2019,7 @@ class Member {
 	/**
 	 * Trigger Error Template
 	 */
-	public function _trigger_error($heading, $message = '', $use_lang = TRUE)
+	function _trigger_error($heading, $message = '', $use_lang = TRUE)
 	{
 		return $this->_var_swap($this->_load_element('error'),
 								array(
@@ -1977,7 +2032,7 @@ class Member {
 	/**
 	 * Sets the title of the page
 	 */
-	public function _set_page_title($title)
+	function _set_page_title($title)
 	{
 		if ($this->page_title == '')
 		{
@@ -2063,7 +2118,7 @@ class Member {
 	/**
 	 * Breadcrumb trail links
 	 */
-	public function _crumb_trail($data)
+	function _crumb_trail($data)
 	{
 		$trail	= $this->_load_element('breadcrumb_trail');
 
@@ -2081,7 +2136,7 @@ class Member {
 	/**
 	 * Finalize the Crumbs
 	 */
-	public function _build_crumbs($title, $crumbs, $str)
+	function _build_crumbs($title, $crumbs, $str)
 	{
 		$this->_set_page_title(($title == '') ? 'Powered By ExpressionEngine' : $title);
 
@@ -2097,7 +2152,7 @@ class Member {
 	/**
 	 * Fetch member profile crumb item
 	 */
-	public function _fetch_member_crumb($item = '')
+	function _fetch_member_crumb($item = '')
 	{
 		if ($item == '')
 			return FALSE;
@@ -2110,7 +2165,7 @@ class Member {
 	 *
 	 * Right now we only use this to parse the logged-in/logged-out vars
 	 */
-	public function _prep_element($str)
+	function _prep_element($str)
 	{
 		if ($str == '')
 		{
@@ -2155,7 +2210,7 @@ class Member {
 	/**
 	 * Finalize a few things
 	 */
-	public function _final_prep($str)
+	function _final_prep($str)
 	{
 		// Which mode are we in?
 		// This class can either be run in "stand-alone" mode or through the template engine.
@@ -2313,7 +2368,7 @@ class Member {
 	/**
 	 * Set base values of class vars
 	 */
-	public function _set_properties($props = array())
+	function _set_properties($props = array())
 	{
 		if (count($props) > 0)
 		{
@@ -2327,7 +2382,7 @@ class Member {
 	/**
 	 * Sets the member basepath
 	 */
-	public function _member_set_basepath()
+	function _member_set_basepath()
 	{
 		$this->basepath = ee()->functions->create_url($this->trigger);
 	}
@@ -2335,7 +2390,7 @@ class Member {
 	/**
 	 * Compiles a path string
 	 */
-	public function _member_path($uri = '')
+	function _member_path($uri = '')
 	{
 		if ($this->basepath == '')
 		{
@@ -2348,12 +2403,12 @@ class Member {
 	/**
 	 * Helpers for "if" conditions
 	 */
-	public function _deny_if($cond, $str, $replace = '')
+	function _deny_if($cond, $str, $replace = '')
 	{
 		return preg_replace("/\{if\s+".$cond."\}.+?\{\/if\}/si", $replace, $str);
 	}
 
-	public function _allow_if($cond, $str)
+	function _allow_if($cond, $str)
 	{
 		return preg_replace("/\{if\s+".$cond."\}(.+?)\{\/if\}/si", "\\1", $str);
 	}
@@ -2361,7 +2416,7 @@ class Member {
 	/**
 	 * Replace variables
 	 */
-	public function _var_swap($str, $data)
+	function _var_swap($str, $data)
 	{
 		if ( ! is_array($data))
 		{
@@ -2379,7 +2434,7 @@ class Member {
 	/**
 	 * Swap single variables with final value
 	 */
-	public function _var_swap_single($search, $replace, $source, $encode_ee_tags = TRUE)
+	function _var_swap_single($search, $replace, $source, $encode_ee_tags = TRUE)
 	{
 		if ($encode_ee_tags)
 		{
@@ -2407,7 +2462,7 @@ class Member {
 	/**
 	 * Custom Member Profile Data
 	 */
-	public function custom_profile_data()
+	function custom_profile_data()
 	{
 
 		$member_id = ( ! ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
@@ -2721,7 +2776,7 @@ class Member {
 	/**
 	 * Ignore List
 	 */
-	public function ignore_list()
+	function ignore_list()
 	{
 		$pre = 'ignore_';
 		$prelen = strlen($pre);
