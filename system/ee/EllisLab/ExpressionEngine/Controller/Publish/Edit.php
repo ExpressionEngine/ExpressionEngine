@@ -509,8 +509,12 @@ class Edit extends AbstractPublishController {
 
 		if ($entry->isLivePreviewable())
 		{
+			$action_id = ee()->db->select('action_id')
+				->where('class', 'Channel')
+				->where('method', 'live_preview')
+				->get('actions');
 			$modal = ee('View')->make('publish/live-preview-modal')->render([
-				'preview_url' => ee('CP/URL')->make('publish/preview/' . $entry->channel_id . '/' . $entry->entry_id)
+				'preview_url' => ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.$action_id->row('action_id').AMP.'channel_id='.$entry->channel_id.AMP.'entry_id='.$entry->entry_id
 			]);
 			ee('CP/Modal')->addModal('live-preview', $modal);
 		}
