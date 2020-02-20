@@ -3,4 +3,4 @@
 	{display_field}
 {/custom_fields}
 <input type="submit" />
-<a href="<?=$full_link?>" target="_blank"><?php echo lang('edit_in_full_form') ?></a>
+<a href="<?=$full_link?>"><?php echo lang('edit_in_full_form') ?></a>

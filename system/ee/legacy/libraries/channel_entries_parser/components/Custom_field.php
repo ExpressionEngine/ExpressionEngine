@@ -145,6 +145,16 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 					);
 				}
 
+        // taking the relationship field name out of the field for channel forms.
+        $channel_form_field_name = $tag;
+        if(!empty($rfields))
+        {
+          foreach($rfields as $field_name => $num)
+          {
+            $channel_form_field_name = str_replace($field_name.':', '', $tag);
+          }
+        }
+
 				//frontend edit link
 				if (IS_PRO) 
 				{

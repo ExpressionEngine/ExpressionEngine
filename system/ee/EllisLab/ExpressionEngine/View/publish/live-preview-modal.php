@@ -2,7 +2,9 @@
 	<div class="live-preview live-preview--closed">
 		<div class="live-preview__form">
 			<div class="live-preview__form-header">
+				<?php if (!$hide_closer): ?>
 				<h1><a href class="js-close-live-preview"><i class="fas fa-times"></i> <?=lang('close_preview')?></a></h1>
+				<?php endif; ?>
 				<div class="button-group">
 					<button href="" class="button button--primary js-live-preview-save-button"><?=lang('save')?></button>
 				</div>

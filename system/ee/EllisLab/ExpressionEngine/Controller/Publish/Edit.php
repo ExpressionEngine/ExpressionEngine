@@ -495,6 +495,11 @@ class Edit extends AbstractPublishController {
 			'in_modal_context' => $sequence_editing
 		);
 
+		if (ee()->input->get('hide_closer')==='y' && ee()->input->get('return')!='')
+		{
+			$vars['form_hidden'] = ['return'	=> urldecode(ee()->input->get('return'))];
+		}
+
 		if ($sequence_editing)
 		{
 			$vars['modal_title'] = sprintf('(%d of %d) %s', $index, count($entry_ids), $entry_title);
@@ -509,9 +514,11 @@ class Edit extends AbstractPublishController {
 
 		if ($entry->isLivePreviewable())
 		{
-			$modal = ee('View')->make('publish/live-preview-modal')->render([
-				'preview_url' => ee('CP/URL')->make('publish/preview/' . $entry->channel_id . '/' . $entry->entry_id)
-			]);
+			$modal_vars = [
+				'preview_url' => ee('CP/URL')->make('publish/preview/' . $entry->channel_id . '/' . $entry->entry_id),
+				'hide_closer'	=> ee()->input->get('hide_closer')==='y' ? true : false
+			];
+			$modal = ee('View')->make('publish/live-preview-modal')->render($modal_vars);
 			ee('CP/Modal')->addModal('live-preview', $modal);
 		}
 
