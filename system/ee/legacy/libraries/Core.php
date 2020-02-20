@@ -108,6 +108,16 @@ class EE_Core {
 		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
 		ee('App')->setupAddons(PATH_THIRD);
 
+		//is this pro version?
+		if (is_dir(PATH_PRO_ADDONS) && ee('Addon')->get('pro')->isInstalled())
+		{
+			define('IS_PRO',		TRUE);
+		}
+		else
+		{
+			define('IS_PRO',		FALSE);
+		}
+
 		// Set ->api on the legacy facade to the model factory
 		ee()->set('api', ee()->di->make('Model'));
 

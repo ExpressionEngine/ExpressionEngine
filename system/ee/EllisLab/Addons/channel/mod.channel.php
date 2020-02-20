@@ -5670,6 +5670,9 @@ class Channel {
 	 * @method popcorn
 	 * @return Template string parsed already?
 	 */
+
+	 // Yuri: this is being replaced with single_field_editor()
+	 // will likely remove from release unless we use it somewhere else
 	public function popcorn()
 	{
 

@@ -1965,7 +1965,11 @@ GRID_FALLBACK;
 			);
 		}
 
-		$return = ($this->_meta['return']) ? ee()->functions->create_url($this->_meta['return']) : ee()->functions->fetch_site_index();
+		$return = ($this->_meta['return']) 
+			? (
+				(strpos($this->_meta['return'], 'http://')===0 || strpos($this->_meta['return'], 'https://')===0) ? $this->_meta['return'] : ee()->functions->create_url($this->_meta['return'])
+				) 
+			: ee()->functions->fetch_site_index();
 
 		if (strpos($return, 'ENTRY_ID') !== FALSE)
 		{
