@@ -24,15 +24,19 @@ class FrontEdit {
 	 */
 	public function entryFieldEditLink($channel_id, $entry_id, $field_short_name)
 	{
-		$action_id = ee()->db->select('action_id')
-			->where('class', 'Channel')
-			->where('method', 'single_field_editor')
-			->get('actions');
-		if ($action_id->num_rows()!=1) return '';
+		//TODO: need to add permission layer here
+		if (! AJAX_REQUEST && !ee('LivePreview')->hasEntryData())
+		{
+			$action_id = ee()->db->select('action_id')
+				->where('class', 'Channel')
+				->where('method', 'single_field_editor')
+				->get('actions');
+			if ($action_id->num_rows()!=1) return '';
 
-		$edit_link = "<a href=\"".ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.$action_id->row('action_id').AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id.AMP.'short_name='.$field_short_name."\" class=\"ee_popcorn\">".lang('edit_this')." (entry_id=".$entry_id.")</a>";
-		
-		return $edit_link;
+			$edit_link = "<a href=\"".ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.$action_id->row('action_id').AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id.AMP.'short_name='.$field_short_name."\" class=\"ee_popcorn\">".lang('edit_this')." (entry_id=".$entry_id.")</a>";
+			
+			return $edit_link;
+		}
 	}
 
 }
