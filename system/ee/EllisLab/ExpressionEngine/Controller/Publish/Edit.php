@@ -523,9 +523,11 @@ class Edit extends AbstractPublishController {
 			{
 				$preview_url .= AMP . 'return='. urlencode(ee()->input->get('return'));
 			}
-			$modal = ee('View')->make('publish/live-preview-modal')->render([
-				'preview_url' => $preview_url
-			]);
+			$modal_vars = [
+				'preview_url' => $preview_url,
+				'hide_closer'	=> ee()->input->get('hide_closer')==='y' ? true : false
+			];
+			$modal = ee('View')->make('publish/live-preview-modal')->render($modal_vars);
 			ee('CP/Modal')->addModal('live-preview', $modal);
 		}
 
