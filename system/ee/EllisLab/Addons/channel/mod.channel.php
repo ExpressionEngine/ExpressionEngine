@@ -5918,8 +5918,9 @@ class Channel {
 	{
 		$entry_id = ee()->input->get_post('entry_id');
 		$channel_id = ee()->input->get_post('channel_id');
+		$return = urldecode(ee()->input->get('return'));
 
-		return ee('LivePreview')->preview($channel_id, $entry_id);
+		return ee('LivePreview')->preview($channel_id, $entry_id, $return);
 	}
 }
 // END CLASS

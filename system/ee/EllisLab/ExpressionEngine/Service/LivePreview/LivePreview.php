@@ -74,7 +74,7 @@ class LivePreview {
   /**
    * generate and display the live preview
    */
-	public function preview($channel_id, $entry_id = NULL)
+	public function preview($channel_id, $entry_id = NULL, $preview_url = NULL)
 	{
 
 		if (empty($_POST))
@@ -135,7 +135,20 @@ class LivePreview {
 			$template_id = $_POST['pages__pages_template_id'];
 		}
 
-		if ($entry->hasPageURI())
+		//if this if fronteditor request, we preview on originator uri
+		if (!empty($preview_url))
+		{
+			$site_index = str_replace(['http:', 'https:'], '', ee()->functions->fetch_site_index());
+			$preview_url = str_replace(['http:', 'https:'], '', $preview_url);
+			$uri = str_replace($site_index, '', $preview_url);
+			$parsed_url = parse_url($uri);
+			if ($parsed_url)
+			{
+				$uri = str_replace($parsed_url['host'], '', $uri);
+			}
+			$uri = trim($uri, '/');
+		}
+		elseif ($entry->hasPageURI())
 		{
 			$uri = $entry->getPageURI();
 			ee()->uri->page_query_string = $entry->entry_id;
