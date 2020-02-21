@@ -50,6 +50,13 @@ class Channel_upd {
 			'method' => 'combo_loader'
 		);
 
+    ee()->db->insert('actions', $data);
+    
+		$data = array(
+			'class' => 'Channel',
+			'method' => 'live_preview'
+		);
+
 		ee()->db->insert('actions', $data);
 
 		ee()->db->insert('content_types', array('name' => 'channel'));
@@ -86,7 +93,7 @@ class Channel_upd {
 	 */
 	function update()
 	{
-		return TRUE;
+    return TRUE;
 	}
 
 }

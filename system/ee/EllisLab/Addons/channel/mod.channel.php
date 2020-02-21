@@ -5913,6 +5913,14 @@ class Channel {
 
 		return array($field_sqla, $field_sqlb);
 	}
+
+	public function live_preview()
+	{
+		$entry_id = ee()->input->get_post('entry_id');
+		$channel_id = ee()->input->get_post('channel_id');
+
+		return ee('LivePreview')->preview($channel_id, $entry_id);
+	}
 }
 // END CLASS
 
