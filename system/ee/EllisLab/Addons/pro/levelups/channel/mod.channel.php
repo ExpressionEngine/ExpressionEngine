@@ -28,6 +28,8 @@ class Channel extends Lite\Channel {
 	public function single_field_editor()
 	{
 
+
+
 		ee()->load->library('channel_form/channel_form_lib');
 		//ee()->load->library('view');
 		ee()->lang->loadfile('channel');
@@ -38,7 +40,13 @@ class Channel extends Lite\Channel {
 		ee()->TMPL->tagparams['require_entry'] = 'yes';
 		ee()->TMPL->tagparams['return'] = @$_SERVER['HTTP_REFERER'];
 		ee()->TMPL->tagparams['show_fields'] = ee()->input->get_post('short_name');
-		$full_link = ee('CP/URL')->make('publish/edit/entry/' . $entry_id . AMP . 'preview=y' . AMP .'hide_closer=y' . AMP . 'return='.urlencode(ee()->TMPL->tagparams['return']), [], ee()->config->item('cp_url'));
+
+		$full_link = NULL;
+		if (ee('Permission')->can('access_cp'))
+		{
+			$full_link = ee('CP/URL')->make('publish/edit/entry/' . $entry_id . AMP . 'preview=y' . AMP .'hide_closer=y' . AMP . 'return='.urlencode(ee()->TMPL->tagparams['return']), [], ee()->config->item('cp_url'));
+		}		
+
 		ee()->TMPL->tagdata = ee('View')->make('channel:single_field_editor')->render(['full_link'	=> $full_link]);
 
 		$out = '';

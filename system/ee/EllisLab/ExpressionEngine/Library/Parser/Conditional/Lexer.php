@@ -548,7 +548,7 @@ class Lexer extends AbstractLexer {
       //do regex search based on the marker in url
       if ($type=='STRING')
       {
-        $lexeme = preg_replace("/<a href=\"(.*?)test(.*?)<\/a>/is", '', $lexeme, 1);
+        $lexeme = preg_replace("/<a href=\"(.*?)\" class=\"eeFrontEdit\"><\/a>/is", '', $lexeme, 1);
       }
 
 			switch ($type)
