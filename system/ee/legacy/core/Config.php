@@ -1955,7 +1955,14 @@ class EE_Config {
 			$pref = str_replace(APPPATH, EE_APPPATH, $pref);
 		}
 
-		return parse_config_variables($pref);
+		$pref = parse_config_variables($pref);
+		
+		if (strpos($pref, '/')!==0 && strpos($pref, 'http:')!==0 && strpos($pref, 'https:')!==0 )
+		{
+			$pref = '/'.$pref;
+		}
+
+		return $pref;
 	}
 
 
