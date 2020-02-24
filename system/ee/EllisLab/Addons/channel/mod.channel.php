@@ -2426,6 +2426,7 @@ class Channel {
 
 		//cache the entry_id
 		ee()->session->cache['channel']['entry_ids'] = $entries;
+		ee()->session->cache['channel']['channel_ids'] = $channel_ids;
 
 		$end = "ORDER BY FIELD(t.entry_id, " . implode($entries, ',') . ")";
 

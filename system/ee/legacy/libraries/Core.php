@@ -229,6 +229,9 @@ class EE_Core {
 		define('URL_THEMES_GLOBAL_ASSET', URL_THEMES.'asset/');
 		define('PATH_CP_THEME', PATH_THEMES.'cp/');
 
+		define('PATH_PRO_THEMES', PATH_THEMES.'pro/');
+		define('URL_PRO_THEMES', URL_THEMES.'pro/');
+
 		define('PATH_THIRD_THEMES', $theme_path.'user/');
 		define('URL_THIRD_THEMES', $theme_url.'user/');
 
