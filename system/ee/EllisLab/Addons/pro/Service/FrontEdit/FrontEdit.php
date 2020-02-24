@@ -39,21 +39,31 @@ class FrontEdit {
    * @param int $channel_id Channel id
    * @param int $entry_id Entry id
 	 * @param string $field_short_name Field short name
+	 * @param string $field_id
 	 */
 	public function entryFieldEditLink($channel_id, $entry_id, $field_short_name)
 	{
-		$has_permission = $this->hasFrontEditPermission($channel_id, $entry_id);
-		if (! AJAX_REQUEST && !ee('LivePreview')->hasEntryData() && $has_permission)
+		if (bool_config_item('disable_frontedit'))
 		{
-			$action_id = ee()->db->select('action_id')
-				->where('class', 'Channel')
-				->where('method', 'single_field_editor')
-				->get('actions');
-			if ($action_id->num_rows()!=1) return '';
+			return;
+		}
+		
+		$has_permission = $this->hasFrontEditPermission($channel_id, $entry_id);
 
-			$edit_link = "<a href=\"".ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.$action_id->row('action_id').AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id.AMP.'short_name='.$field_short_name."\" class=\"eeFrontEdit\">".lang('edit_this')."</a>";
-			
-			return $edit_link;
+		if (isset(ee()->TMPL) && is_object(ee()->TMPL) && in_array(ee()->TMPL->template_type, ['webpage', 'static']))
+		{
+			if (! AJAX_REQUEST && !ee('LivePreview')->hasEntryData() && $has_permission)
+			{
+				$action_id = ee()->db->select('action_id')
+					->where('class', 'Channel')
+					->where('method', 'single_field_editor')
+					->get('actions');
+				if ($action_id->num_rows()!=1) return '';
+
+				$edit_link = "<a href=\"".ee()->functions->fetch_site_index().QUERY_MARKER.'ACT='.$action_id->row('action_id').AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id.AMP.'field_name='.$field_short_name."\" class=\"eeFrontEdit\">".lang('edit_this')."</a>";
+				
+				return $edit_link;
+			}
 		}
 	}
 

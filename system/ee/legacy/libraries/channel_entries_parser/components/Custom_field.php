@@ -120,6 +120,16 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 					}
 
 					ee()->load->remove_package_path($_ft_path);
+
+					//frontend edit link
+					if (IS_PRO) 
+					{
+						if (!isset($obj->disable_frontedit) || $obj->disable_frontedit!=true)
+						{
+							$frontEdit = new EllisLab\Addons\Pro\Service\FrontEdit\FrontEdit();
+							$tagdata = str_replace(LD.$tag.RD, $frontEdit->entryFieldEditLink($orig_data['channel_id'], $orig_data['entry_id'], $field['field_name']).LD.$tag.RD, $tagdata);
+						}
+					}
 				}
 				else
 				{
@@ -146,21 +156,20 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component {
 				}
 
         // taking the relationship field name out of the field for channel forms.
-        $channel_form_field_name = $tag;
+        /*$channel_form_field_name = $tag;
         if(!empty($rfields))
         {
           foreach($rfields as $field_name => $num)
           {
-            $channel_form_field_name = str_replace($field_name.':', '', $tag);
+						$channel_form_field_name = str_replace($field_name.':', '', $tag);
+						var_dump($channel_form_field_name);
+						var_dump($num);
+						var_dump($field['field_name']);
+						var_dump($field_id);
+						echo '<hr>';
           }
-        }
+				}*/
 
-				//frontend edit link
-				if (IS_PRO) 
-				{
-					$frontEdit = new EllisLab\Addons\Pro\Service\FrontEdit\FrontEdit();
-					$tagdata = str_replace(LD.$tag.RD, $frontEdit->entryFieldEditLink($orig_data['channel_id'], $orig_data['entry_id'], $channel_form_field_name).LD.$tag.RD, $tagdata);
-				}
 
 				$tagdata = str_replace(LD.$tag.RD, $entry, $tagdata);
 			}

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2019, EllisLab Corp. (https://ellislab.com)
+ * @copyright Copyright (c) 2003-2020, EllisLab Corp. (https://ellislab.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -146,6 +146,27 @@ class EE_Output {
 	{
 		$this->cache_expiration = ( ! is_numeric($time)) ? 0 : $time;
 	}
+
+	/**
+	 * add content before closing body tag
+	 */
+	public function add_to_foot($output, $content)
+	{
+		// If the output data contains closing </body> and </html> tags
+		// we will remove them and add them back after we insert the profile data
+		if (preg_match("|</body>.*?</html>|is", $output))
+		{
+			$output  = preg_replace("|</body>.*?</html>|is", '', $output);
+			$output .= $content;
+			$output .= '</body></html>';
+		}
+		else
+		{
+			$output .= $content;
+		}
+		return $output;
+	}
+
 
 	/**
 	 * Display the final output
@@ -364,18 +385,7 @@ class EE_Output {
 				$profiler->addSection('template', ee()->TMPL->log);
 			}
 
-			// If the output data contains closing </body> and </html> tags
-			// we will remove them and add them back after we insert the profile data
-			if (preg_match("|</body>.*?</html>|is", $output))
-			{
-				$output  = preg_replace("|</body>.*?</html>|is", '', $output);
-				$output .= $profiler->render();
-				$output .= '</body></html>';
-			}
-			else
-			{
-				$output .= $profiler->render();
-			}
+			$output = $this->add_to_foot($output, $profiler->render());
 		}
 
 		if (REQ == 'PAGE')

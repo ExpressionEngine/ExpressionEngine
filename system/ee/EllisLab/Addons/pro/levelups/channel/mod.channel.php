@@ -28,7 +28,10 @@ class Channel extends Lite\Channel {
 	public function single_field_editor()
 	{
 
-
+		if (bool_config_item('disable_frontedit'))
+		{
+			return;
+		}
 
 		ee()->load->library('channel_form/channel_form_lib');
 		//ee()->load->library('view');
@@ -39,7 +42,7 @@ class Channel extends Lite\Channel {
 		ee()->TMPL->tagparams['entry_id'] = $entry_id = ee()->input->get_post('entry_id');
 		ee()->TMPL->tagparams['require_entry'] = 'yes';
 		ee()->TMPL->tagparams['return'] = @$_SERVER['HTTP_REFERER'];
-		ee()->TMPL->tagparams['show_fields'] = ee()->input->get_post('short_name');
+		ee()->TMPL->tagparams['show_fields'] = ee()->input->get_post('field_name');
 
 		$full_link = NULL;
 		if (ee('Permission')->can('access_cp'))
