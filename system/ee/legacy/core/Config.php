@@ -1957,7 +1957,7 @@ class EE_Config {
 
 		$pref = parse_config_variables($pref);
 		
-		if (strpos($pref, '/')!==0 && strpos($pref, 'http:')!==0 && strpos($pref, 'https:')!==0 )
+		if (strpos($pref, '/')!==0 && stripos($pref, 'http:')!==0 && stripos($pref, 'https:')!==0 )
 		{
 			$pref = '/'.$pref;
 		}
