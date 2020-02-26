@@ -8851,7 +8851,6 @@ fieldset {
   width: 1%; }
 
 .grid-field__column--tools {
-  vertical-align: top;
   font-size: 1rem;
   padding: 5px 8px 5px 8px !important; }
   .grid-field__column--tools button {
