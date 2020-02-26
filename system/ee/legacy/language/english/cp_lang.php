@@ -727,6 +727,18 @@ $lang = array(
 
 'can_assign_post_authors' => 'Change entry author',
 
+/* Dashboard Widgets */
+
+'save_dashboard_layout'	=> 'Save layout',
+
+'edit_dashboard_layout'	=> 'Edit layout',
+
+'dashboard_layout_saved'	=> 'Layout saved',
+
+'dashboard_layout_save_error' => 'Could not save layout',
+
+'dashboard_needs_some_widgets' => 'Please enable at least one widget',
+
 
 );
 

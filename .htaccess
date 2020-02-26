@@ -1,0 +1,30 @@
+
+# Secure .htaccess file
+<Files .htaccess>
+  order allow,deny
+  deny from all
+</Files>
+
+# Don't show any directory without an index file
+Options -Indexes
+
+# Dont list files in index pages
+IndexIgnore *
+
+<IfModule mod_rewrite.c>
+
+RewriteEngine On
+
+# Redirect index.php Requests
+# ------------------------------
+#RewriteCond %{REQUEST_METHOD} !=POST [NC]
+#RewriteCond %{THE_REQUEST} ^GET.*index\.php [NC]
+#RewriteCond %{THE_REQUEST} !/system/.*
+#RewriteRule (.*?)index\.php/*(.*) /$1$2 [R=301,L]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php/$1 [L]
+
+</IfModule>
+

@@ -1343,6 +1343,31 @@ class EE_Schema {
 			`sort` int(5) NOT NULL DEFAULT '0',
 			PRIMARY KEY (`item_id`),
 			KEY `set_id` (`set_id`)
+			)";
+			
+		$Q[] = "CREATE TABLE `exp_dashboard_layouts` (
+  			`layout_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  			`member_id` int(10) unsigned DEFAULT NULL,
+				`role_id` int(10) unsigned DEFAULT NULL,
+				`order` varchar(255) DEFAULT NULL,
+  			PRIMARY KEY (`layout_id`),
+				KEY `member_id` (`member_id`),
+				KEY `role_id` (`role_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_dashboard_layout_widgets` (
+			`layout_id` int(10) unsigned NOT NULL,
+			`widget_id` int(10) unsigned NOT NULL
+			KEY `layouts_widgets` (`layout_id`, `widget_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_dashboard_widgets` (
+			`widget_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`name` varchar(50) DEFAULT NULL,
+			`data` mediumtext NULL,
+			`type` varchar(10) DEFAULT NULL,
+			`source` varchar(50) DEFAULT NULL
+			PRIMARY KEY (`widget_id`)
 	  	)";
 
 		$Q[] = "CREATE TABLE `exp_consent_requests` (

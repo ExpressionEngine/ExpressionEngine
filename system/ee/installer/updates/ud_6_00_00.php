@@ -42,7 +42,11 @@ class Updater {
 				'convertMembersGroupToPrimaryRole',
 				'reassignLayoutsToPrimaryRole',
 				'reassignEmailCacheToPrimaryRole',
-				'addColorPickerFieldType'
+				'addColorPickerFieldType',
+				'addWidgetsTable',
+				'addDashboardLayoutsTable',
+				'addLayoutWidgetsTable',
+				'insertDefaultWidgets'
 			]
 		);
 
@@ -871,6 +875,173 @@ class Updater {
 			]
 		);
 	}
+
+	private function addWidgetsTable()
+	{
+		if (ee()->db->table_exists('dashboard_widgets'))
+		{
+			return;
+		}
+
+		ee()->dbforge->add_field(
+			[
+				'widget_id' => [
+					'type'           => 'int',
+					'constraint'     => 10,
+					'null'           => FALSE,
+					'unsigned'       => TRUE,
+					'auto_increment' => TRUE
+				],
+				'name' => [
+					'type'       => 'varchar',
+					'constraint' => 50,
+					'null'       => TRUE,
+					'default'		 => NULL
+				],
+				'data' => [
+					'type'       => 'mediumtext',
+					'null'       => TRUE
+				],
+				'type' => [
+					'type'       => 'varchar',
+					'constraint' => 10,
+					'null'       => TRUE,
+					'default'		 => NULL
+				],
+				'source' => [
+					'type'       => 'varchar',
+					'constraint' => 50,
+					'null'       => TRUE,
+					'default'		 => NULL
+				]
+			]
+		);
+		ee()->dbforge->add_key('widget_id', TRUE);
+		ee()->smartforge->create_table('dashboard_widgets');
+
+		ee()->db->data_cache = []; // Reset the cache so it will re-fetch a list of tables
+
+	}
+
+	private function addDashboardLayoutsTable()
+	{
+		if (ee()->db->table_exists('dashboard_layouts'))
+		{
+			return;
+		}
+
+		ee()->dbforge->add_field(
+			[
+				'layout_id' => [
+					'type'           => 'int',
+					'constraint'     => 10,
+					'null'           => FALSE,
+					'unsigned'       => TRUE,
+					'auto_increment' => TRUE
+				],
+				'member_id' => [
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => TRUE,
+					'default'		 => NULL
+				],
+				'role_id' => [
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => TRUE,
+					'default'		 => NULL
+				],
+				'order' => [
+					'type'       => 'varchar',
+					'constraint' => 255,
+					'null'       => TRUE,
+					'default'		 => NULL
+				],
+			]
+		);
+		ee()->dbforge->add_key('layout_id', TRUE);
+		ee()->dbforge->add_key('member_id');
+		ee()->dbforge->add_key('role_id');
+		ee()->smartforge->create_table('dashboard_layouts');
+
+		ee()->db->data_cache = []; // Reset the cache so it will re-fetch a list of tables
+
+	}
+
+	private function addLayoutWidgetsTable()
+	{
+		if (ee()->db->table_exists('dashboard_layout_widgets'))
+		{
+			return;
+		}
+
+		ee()->dbforge->add_field(
+			[
+				'layout_id' => [
+					'type'           => 'int',
+					'constraint'     => 10,
+					'null'           => FALSE,
+					'unsigned'       => TRUE
+				],
+				'widget_id' => [
+					'type'           => 'int',
+					'constraint'     => 10,
+					'null'           => FALSE,
+					'unsigned'       => TRUE
+				]
+			]
+		);
+
+		ee()->smartforge->create_table('dashboard_layout_widgets');
+
+		ee()->db->data_cache = []; // Reset the cache so it will re-fetch a list of tables
+		ee()->smartforge->add_key('dashboard_layout_widgets', ['layout_id', 'widget_id'], 'layouts_widgets');
+
+	}
+
+	private function insertDefaultWidgets()
+	{
+		$insert = [
+			[
+				'name' => 'Get support',
+				'data' => '',
+				'type' => 'html',
+				'source' => 'ee:support'
+			],
+			[
+				'name' => lang('recent_entries'),
+				'data' => '',
+				'type' => 'php',
+				'source' => 'ee:recent_entries'
+			],
+			[
+				'name' => lang('members'),
+				'data' => '',
+				'type' => 'php',
+				'source' => 'ee:members'
+			],
+			[
+				'name' => lang('comments'),
+				'data' => '',
+				'type' => 'php',
+				'source' => 'ee:comments'
+			],
+			[
+				'name' => lang('eecms_news'),
+				'data' => '',
+				'type' => 'php',
+				'source' => 'ee:eecms_news'
+			]
+		];
+
+		if ( ! empty($insert))
+		{
+			ee()->db->insert_batch('dashboard_widgets', $insert);
+		}
+	}
+
 }
 
 // EOF

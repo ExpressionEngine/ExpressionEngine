@@ -108,6 +108,18 @@ class EE_Core {
 		ee('App')->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
 		ee('App')->setupAddons(PATH_THIRD);
 
+		//is this pro version?
+		if (is_dir(PATH_PRO_ADDONS) && ee('Addon')->get('pro')->isInstalled())
+		{
+				define('IS_PRO',        TRUE);
+		}
+		else
+		{
+				define('IS_PRO',        FALSE);
+		}
+		 
+	 
+
 		// Set ->api on the legacy facade to the model factory
 		ee()->set('api', ee()->di->make('Model'));
 
@@ -218,6 +230,9 @@ class EE_Core {
 		define('PATH_THEMES_GLOBAL_ASSET', PATH_THEMES.'asset/');
 		define('URL_THEMES_GLOBAL_ASSET', URL_THEMES.'asset/');
 		define('PATH_CP_THEME', PATH_THEMES.'cp/');
+
+		define('PATH_PRO_THEMES', PATH_THEMES.'pro/');
+		define('URL_PRO_THEMES', URL_THEMES.'pro/');
 
 		define('PATH_THIRD_THEMES', $theme_path.'user/');
 		define('URL_THIRD_THEMES', $theme_url.'user/');
