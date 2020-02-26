@@ -252,7 +252,7 @@ function (_React$Component) {
           },
           className: "button button--small button--secondary-alt"
         }, React.createElement("i", {
-          "class": "fas fa-times"
+          "class": "fas fa-fw fa-trash-alt"
         })))));
       })), this.state.selected.length == 0 && React.createElement("input", {
         type: "hidden",

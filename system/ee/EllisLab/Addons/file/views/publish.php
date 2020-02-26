@@ -20,7 +20,7 @@
 		<div class="fields-upload-tools">
 			<div class="button-group">
 				<?=$fp_edit?>
-				<a href="" class="remove button button--secondary-alt" title="<?=lang('remove')?>"><i class="fas fa-times"></i></a>
+				<a href="" class="remove button button--secondary-alt" title="<?=lang('remove')?>"><i class="fa fa-times"></i></a>
 			</div>
 		</div>
 	</div>

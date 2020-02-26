@@ -79,7 +79,7 @@ EE.cp.JumpMenu = {
     }
   },
   _keyPress: function _keyPress(e) {
-    if (e.target && e.target.className.indexOf('jump-to') !== -1) {
+    if (e.target && e.target.className == 'jump-to') {
       if (e.key == 'Enter') {
         // User selected an option.
         document.querySelector('#jumpMenuResults' + EE.cp.JumpMenu.currentFocus + ' > .jump-menu__link--active').click();
@@ -103,7 +103,7 @@ EE.cp.JumpMenu = {
     // Make sure subsequent keystrokes don't rapid fire ajax requests.
     clearTimeout(EE.cp.JumpMenu.typingTimeout); // Check to see if our keystroke is in one of the jump menu fields, otherwise ignore it.
 
-    if (e.target && e.target.className.indexOf('jump-to') !== -1) {
+    if (e.target && e.target.className == 'jump-to') {
       if (e.key == 'Escape') {
         // Pressing ESC should close the jump menu. We blur the field to make sure
         // subsequent keystrokes aren't entered into it just in case.

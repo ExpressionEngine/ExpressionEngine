@@ -194,7 +194,7 @@ class Relationship extends React.Component {
                                     </div>
                                     <div class="list-item__content-right">
                                         <div className="button-group">
-                                            <button type="button" title={EE.relationship.lang.remove} onClick={() => this.deselect(item.value)} className="button button--small button--secondary-alt"><i class="fas fa-times"></i></button>
+                                            <button type="button" title={EE.relationship.lang.remove} onClick={() => this.deselect(item.value)} className="button button--small button--secondary-alt"><i class="fas fa-fw fa-trash-alt"></i></button>
                                         </div>
                                     </div>
                                 </li>
