@@ -65,11 +65,11 @@ if ( ! function_exists('ee_mb_strlen'))
 
 		if ('CP850' === $encoding || 'ASCII' === $encoding) {
 
-			return \strlen($s);
+			return strlen($str);
 
 		}
 
-		return @iconv_strlen($s, $encoding);
+		return @iconv_strlen($str, $encoding);
 
 	}
 
