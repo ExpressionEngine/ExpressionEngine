@@ -13,8 +13,14 @@
  * Multibyte Helpers
  */
 
+/**
+ * gets encoding by string
+ * @param  string $encoding
+ * @return string
+ */
 if ( ! function_exists( 'ee_get_encoding' ) )
 {
+
 	function ee_get_encoding($encoding)
 	{
 
@@ -75,7 +81,16 @@ if ( ! function_exists('ee_mb_strlen'))
 
 }
 
-if ( ! function_exists('ee_mb_strpos')) {
+/**
+ * Replace deprecated mb_strpos
+ * @param  string  $haystack
+ * @param  string  $needle
+ * @param  integer $offset
+ * @param  string  $encoding
+ * @return mixed - FALSE if not found, integer if found
+ */
+if ( ! function_exists('ee_mb_strpos'))
+{
 
 	function ee_mb_strpos($haystack, $needle, $offset = 0, $encoding = null)
 	{
@@ -101,6 +116,14 @@ if ( ! function_exists('ee_mb_strpos')) {
 
 }
 
+/**
+ * Replace deprecated mb_substr
+ * @param  string $s
+ * @param  string $start
+ * @param  mixed $length
+ * @param  mixed $encoding
+ * @return string
+ */
 if( ! function_exists( 'ee_mb_substr ') ) {
 
 	function ee_mb_substr($s, $start, $length = null, $encoding = null)
