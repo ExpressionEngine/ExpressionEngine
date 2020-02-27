@@ -308,12 +308,17 @@ class Filemanager {
 		{
 			$D = @getimagesize($file_path);
 
-			$image_size = array(
-				'height'	=> $D['1'],
-				'width'	=> $D['0']
+			if($D && is_array($D)) {
+
+				$image_size = array(
+					'height'	=> $D['1'],
+					'width'	=> $D['0']
 				);
 
-			return $image_size;
+				return $image_size;
+
+			}
+
 		}
 
 		return FALSE;
