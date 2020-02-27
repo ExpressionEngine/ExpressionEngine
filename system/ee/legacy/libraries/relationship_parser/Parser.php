@@ -216,7 +216,7 @@ class EE_Relationship_data_parser {
 
 		foreach ($matches as $match)
 		{
-			$tagdata = 'testststststststst'.str_replace(
+			$tagdata = str_replace(
 				$match[0],
 				$this->replace($node, $match[1], $data),
 				$tagdata

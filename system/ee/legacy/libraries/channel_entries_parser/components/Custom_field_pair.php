@@ -157,15 +157,6 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 					list($modifier, $content, $params, $chunk) = $chk_data;
 
 
-					//frontend edit link
-					if (IS_PRO) 
-					{
-						if (!isset($ft->disable_frontedit) || $ft->disable_frontedit!=true)
-						{						 
-							$frontEdit = new EllisLab\Addons\Pro\Service\FrontEdit\FrontEdit();
-							$content = $frontEdit->entryFieldEditLink($data['channel_id'], $data['entry_id'], $field_name).$content;
-						}
-					}
 
 					$tpl_chunk = '';
 					// Set up parse function name based on whether or not
@@ -211,6 +202,16 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 							$content,
 							$modifier
 						));
+					}
+
+					//frontend edit link
+					if (IS_PRO) 
+					{
+						if (!isset($ft->disable_frontedit) || $ft->disable_frontedit!=true)
+						{						 
+							$frontEdit = new EllisLab\Addons\Pro\Service\FrontEdit\FrontEdit();
+							$tpl_chunk = $frontEdit->entryFieldEditLink($data['channel_id'], $data['entry_id'], $field_name).$tpl_chunk;
+						}
 					}
 
 					$tagdata = str_replace($chunk, $tpl_chunk, $tagdata);

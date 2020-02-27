@@ -236,23 +236,6 @@ class EE_Channel_data_parser {
 				$tagdata = call_user_func($callbacks['tagdata_loop_start'], $tagdata, $row);
 			}
 
-			/**
-* Tom Runningtest for pro version zzxx
-* This is for editing a whole entry.
-*/
-
-// if there's an image url set in the control panel, then use this style
-// echo "<pre>";
-// var_dump($tagdata);
-// exit;
-
-// $tagdata = "\n" . '<a href="#">EDIT</a>'
-//  . "\n" . $tagdata;
-
-
-/**
-* Tom Runningtest for pro version
-*/
 
 			// -------------------------------------------------------
 			// Row data callback. Do what you want.
