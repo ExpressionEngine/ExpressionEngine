@@ -1357,7 +1357,7 @@ class EE_Schema {
 
 		$Q[] = "CREATE TABLE `exp_dashboard_layout_widgets` (
 			`layout_id` int(10) unsigned NOT NULL,
-			`widget_id` int(10) unsigned NOT NULL
+			`widget_id` int(10) unsigned NOT NULL,
 			KEY `layouts_widgets` (`layout_id`, `widget_id`)
 		)";
 
@@ -1366,8 +1366,8 @@ class EE_Schema {
 			`widget_name` varchar(50) DEFAULT NULL,
 			`widget_data` mediumtext NULL,
 			`widget_type` varchar(10) NOT NULL,
-			`widget_source` varchar(50) NOT NULL
-			`widget_file` varchar(100) DEFAULT NULL
+			`widget_source` varchar(50) NOT NULL,
+			`widget_file` varchar(100) DEFAULT NULL,
 			PRIMARY KEY (`widget_id`)
 	  	)";
 
