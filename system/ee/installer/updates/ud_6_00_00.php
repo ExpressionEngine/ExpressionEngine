@@ -45,8 +45,7 @@ class Updater {
 				'addColorPickerFieldType',
 				'addWidgetsTable',
 				'addDashboardLayoutsTable',
-				'addLayoutWidgetsTable',
-				'insertDefaultWidgets'
+				'addLayoutWidgetsTable'
 			]
 		);
 
@@ -892,25 +891,29 @@ class Updater {
 					'unsigned'       => TRUE,
 					'auto_increment' => TRUE
 				],
-				'name' => [
+				'widget_name' => [
 					'type'       => 'varchar',
 					'constraint' => 50,
 					'null'       => TRUE,
 					'default'		 => NULL
 				],
-				'data' => [
+				'widget_data' => [
 					'type'       => 'mediumtext',
 					'null'       => TRUE
 				],
-				'type' => [
+				'widget_type' => [
 					'type'       => 'varchar',
 					'constraint' => 10,
-					'null'       => TRUE,
-					'default'		 => NULL
+					'null'       => FALSE
 				],
-				'source' => [
+				'widget_source' => [
 					'type'       => 'varchar',
 					'constraint' => 50,
+					'null'       => FALSE
+				],
+				'widget_file' => [
+					'type'       => 'varchar',
+					'constraint' => 100,
 					'null'       => TRUE,
 					'default'		 => NULL
 				]
@@ -999,47 +1002,6 @@ class Updater {
 		ee()->db->data_cache = []; // Reset the cache so it will re-fetch a list of tables
 		ee()->smartforge->add_key('dashboard_layout_widgets', ['layout_id', 'widget_id'], 'layouts_widgets');
 
-	}
-
-	private function insertDefaultWidgets()
-	{
-		$insert = [
-			[
-				'name' => 'Get support',
-				'data' => '',
-				'type' => 'html',
-				'source' => 'ee:support'
-			],
-			[
-				'name' => lang('recent_entries'),
-				'data' => '',
-				'type' => 'php',
-				'source' => 'ee:recent_entries'
-			],
-			[
-				'name' => lang('members'),
-				'data' => '',
-				'type' => 'php',
-				'source' => 'ee:members'
-			],
-			[
-				'name' => lang('comments'),
-				'data' => '',
-				'type' => 'php',
-				'source' => 'ee:comments'
-			],
-			[
-				'name' => lang('eecms_news'),
-				'data' => '',
-				'type' => 'php',
-				'source' => 'ee:eecms_news'
-			]
-		];
-
-		if ( ! empty($insert))
-		{
-			ee()->db->insert_batch('dashboard_widgets', $insert);
-		}
 	}
 
 }

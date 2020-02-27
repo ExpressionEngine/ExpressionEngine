@@ -1363,10 +1363,11 @@ class EE_Schema {
 
 		$Q[] = "CREATE TABLE `exp_dashboard_widgets` (
 			`widget_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-			`name` varchar(50) DEFAULT NULL,
-			`data` mediumtext NULL,
-			`type` varchar(10) DEFAULT NULL,
-			`source` varchar(50) DEFAULT NULL
+			`widget_name` varchar(50) DEFAULT NULL,
+			`widget_data` mediumtext NULL,
+			`widget_type` varchar(10) NOT NULL,
+			`widget_source` varchar(50) NOT NULL
+			`widget_file` varchar(100) DEFAULT NULL
 			PRIMARY KEY (`widget_id`)
 	  	)";
 
