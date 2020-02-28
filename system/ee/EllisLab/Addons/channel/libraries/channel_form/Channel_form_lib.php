@@ -1026,7 +1026,9 @@ EE.grid_cache = [];
 
 window.Grid = {
 	bind: function() {
-		EE.grid_cache.push(arguments);
+		if (typeof(EE.grid_cache) !== 'undefined') {
+			EE.grid_cache.push(arguments);
+		}
 	}
 };
 
@@ -1044,6 +1046,7 @@ GRID_FALLBACK;
 		}
 
 		$this->head .= "\n".' // ]]>'."\n".'</script>';
+		$this->head .= ee()->javascript->get_global();
 		$js_file_strings = array();
 
 		$js_defaults = array(
