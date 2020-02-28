@@ -537,6 +537,7 @@ class EE_Functions {
 			'secure'		=> TRUE,
 			'enctype' 		=> '',
 			'onsubmit'		=> '',
+			'target'		=> ''
 		);
 
 
