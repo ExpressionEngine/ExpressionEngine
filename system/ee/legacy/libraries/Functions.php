@@ -597,13 +597,14 @@ class EE_Functions {
 		$data['name']	= (isset($data['name']) && $data['name'] != '') ? 'name="'.$data['name'].'" '	: '';
 		$data['id']		= ($data['id'] != '') 							? 'id="'.$data['id'].'" ' 		: '';
 		$data['class']	= ($data['class'] != '')						? 'class="'.$data['class'].'" '	: '';
+		$data['target']	= ($data['target'] != '')						? 'target="'.$data['target'].'" '	: '';
 
 		if ($data['enctype'] == 'multi' OR strtolower($data['enctype']) == 'multipart/form-data')
 		{
 			$data['enctype'] = 'enctype="multipart/form-data" ';
 		}
 
-		$form  = '<form '.$data['id'].$data['class'].$data['name'].'method="post" action="'.$data['action'].'" '.$data['onsubmit'].' '.$data['enctype'].">\n";
+		$form  = '<form '.$data['id'].$data['class'].$data['name'].$data['target'].'method="post" action="'.$data['action'].'" '.$data['onsubmit'].' '.$data['enctype'].">\n";
 
 		if ($data['secure'] == TRUE)
 		{
