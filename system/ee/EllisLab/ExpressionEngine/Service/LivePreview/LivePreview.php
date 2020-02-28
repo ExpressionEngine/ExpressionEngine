@@ -173,8 +173,8 @@ class LivePreview {
 		// 'publish_live_preview_route' hook.
 		//  - Set alternate URI and/or template to use for preview
 		//  - Added 4.2.0
-		//
-		if (ee()->extensions->active_hook('publish_live_preview_route') === TRUE)
+		// - skip hook for requests that already have preview URL (added in 6.0.0)
+		if (empty($preview_url) && ee()->extensions->active_hook('publish_live_preview_route') === TRUE)
 		{
 			$route = ee()->extensions->call('publish_live_preview_route', array_merge($_POST, $data), $uri, $template_id);
 			$uri = $route['uri'];
