@@ -138,13 +138,13 @@ class LivePreview {
 		//if this if fronteditor request, we preview on originator uri
 		if (!empty($preview_url))
 		{
-			$site_index = str_replace(['http:', 'https:'], '', ee()->functions->fetch_site_index());
-			$preview_url = str_replace(['http:', 'https:'], '', $preview_url);
+			$site_index = str_ireplace(['http:', 'https:'], '', ee()->functions->fetch_site_index());
+			$preview_url = str_ireplace(['http:', 'https:'], '', $preview_url);
 			$uri = str_replace($site_index, '', $preview_url);
 			$parsed_url = parse_url($uri);
-			if ($parsed_url)
+			if ($parsed_url && isset($parsed_url['host']))
 			{
-				$uri = str_replace($parsed_url['host'], '', $uri);
+				$uri = str_ireplace($parsed_url['host'], '', $uri);
 			}
 			$uri = trim($uri, '/');
 		}

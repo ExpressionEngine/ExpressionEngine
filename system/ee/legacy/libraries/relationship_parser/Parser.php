@@ -258,7 +258,7 @@ class EE_Relationship_data_parser {
     // frontend edit link
 		if (IS_PRO) 
 		{
-			$entry_id = array_key_first($node->data['entry_ids']);
+			$entry_id = key($node->data['entry_ids']);
 			$channel_id = $node->data['parser']->entry($entry_id)['channel_id'];
 			$field_name = $node->data['field_name'];
 
