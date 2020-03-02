@@ -1158,10 +1158,16 @@ class ChannelEntry extends ContentModel {
 
 		if ( ! count($all_statuses))
 		{
-			$status_options = array(
-				'open' => lang('open'),
-				'closed' => lang('closed')
-			);
+			$status_options = [
+				[
+					'value'	=> 'open',
+					'label'	=> lang('open')
+				],
+				[
+					'value'	=> 'closed',
+					'label'	=> lang('closed')
+				]
+			];
 		}
 
 		$member = ee()->session->getMember();
