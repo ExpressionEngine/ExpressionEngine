@@ -315,16 +315,17 @@ else: ?>
 	<?php endif ?>
 
 		<tbody>
+			<tr class="no-results<?php if ( ! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?> <?php if (!empty($data)): ?>hidden<?php endif?>"><td colspan="<?=(count($columns)+intval($header_sorts))?>">
 			<?php
 			// Output this if Grid input so we can dynamically show it via JS
-			if (empty($data)): ?>
-				<p class="no-results<?php if ( ! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?>">
+			?>
+				<p>
 					<?=lang($no_results['text'])?>
 					<?php if ( ! empty($no_results['action_text'])): ?>
 						<a rel="add_row" <?=$no_results['external'] ? 'rel="external"' : '' ?> href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
 					<?php endif ?>
 				</p>
-			<?php endif ?>
+			</td></tr>
 			<?php $i = 1;
 			foreach ($data as $heading => $rows): ?>
 				<?php if ( ! $subheadings) {

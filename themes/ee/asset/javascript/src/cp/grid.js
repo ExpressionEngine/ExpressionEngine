@@ -196,7 +196,12 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 
 		// Figure out how many rows we need to add
 		var rowsCount = this._getRows().size(),
-			neededRows = this.settings.grid_min_rows - rowsCount;
+			neededRows = 0;
+
+		if (typeof(this.settings)!=='undefined') 
+		{
+			this.settings.grid_min_rows - rowsCount;
+		}
 
 		// Show empty field message if field is empty and no rows are needed
 		if (rowsCount == 0 && neededRows == 0) {
@@ -226,15 +231,18 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			this.header.toggle(showControls);
 		}
 
-		if (this.settings.grid_max_rows !== '') {
-			// Show add button if row count is below the max rows setting,
-			// and only if there are already other rows present
-			this.addButtonToolbar.toggle(rowCount < this.settings.grid_max_rows && rowCount > 0 && ! this.isFileGrid);
-		}
+		if (typeof(this.settings)!=='undefined')
+		{
+			if (this.settings.grid_max_rows !== '') {
+				// Show add button if row count is below the max rows setting,
+				// and only if there are already other rows present
+				this.addButtonToolbar.toggle(rowCount < this.settings.grid_max_rows && rowCount > 0 && ! this.isFileGrid);
+			}
 
-		if (this.settings.grid_min_rows !== '') {
-			// Show delete buttons if the row count is above the min rows setting
-			$(this.deleteButtonsSelector, this.root).toggle(rowCount > this.settings.grid_min_rows);
+			if (this.settings.grid_min_rows !== '') {
+				// Show delete buttons if the row count is above the min rows setting
+				$(this.deleteButtonsSelector, this.root).toggle(rowCount > this.settings.grid_min_rows);
+			}
 		}
 
 		// Do not allow sortable to run when there is only one row, otherwise
@@ -929,7 +937,7 @@ if (typeof _ !== 'undefined' && EE.grid_cache !== 'undefined') {
 
 $(document).ready(function () {
 	FluidField.on('grid', 'add', function(el) {
-  		EE.grid($('table', el));
+  		EE.grid($('div', el));
 	});
 });
 
