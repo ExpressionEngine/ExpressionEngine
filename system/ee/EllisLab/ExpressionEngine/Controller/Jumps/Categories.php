@@ -21,6 +21,10 @@ class Categories extends Jumps
 	public function __construct()
 	{
 		parent::__construct();
+		if (!ee('Permission')->hasAny(['create_categories', 'edit_categories']))
+		{
+			$this->sendResponse([]);
+		}
 	}
 
 	/**

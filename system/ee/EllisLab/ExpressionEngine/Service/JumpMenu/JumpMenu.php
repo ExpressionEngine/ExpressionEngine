@@ -31,7 +31,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'View <b>Entries</b> in <i>[channel]</i>',
 				'dynamic' => true,
 				'addon' => false,
-				'target' => 'publish/view'
+				'target' => 'publish/view',
+				'permission'=>NULL
 			),
 			'createEntryIn' => array(
 				'icon' => 'fa-plus',
@@ -39,7 +40,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Create <b>Entry</b> in <i>[channel]</i>',
 				'dynamic' => true,
 				'addon' => false,
-				'target' => 'publish/create'
+				'target' => 'publish/create',
+				'permission'=>['create_entries']
 			),
 			'editEntry' => array(
 				'icon' => 'fa-pencil-alt',
@@ -47,7 +49,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit <b>Entry</b> titled <i>[title]</i>',
 				'dynamic' => true,
 				'addon' => false,
-				'target' => 'publish/edit'
+				'target' => 'publish/edit',
+				'permission'=>['can_edit_other_entries', 'can_edit_self_entries']
 			),
 			'createMember' => array(
 				'icon' => 'fa-plus',
@@ -55,7 +58,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Create <b>Member</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'members/create'
+				'target' => 'members/create',
+				'permission' => 'create_members'
 			),
 			'createMemberGroup' => array(
 				'icon' => 'fa-plus',
@@ -63,7 +67,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Create <b>Member Group</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'members/groups/create'
+				'target' => 'members/groups/create',
+				'permission' => 'create_roles'
 			),
 			'createCategoryIn' => array(
 				'icon' => 'fa-plus',
@@ -71,7 +76,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Create <b>Category</b> in <i>[category group]</i>',
 				'dynamic' => true,
 				'addon' => false,
-				'target' => 'categories/create'
+				'target' => 'categories/create',
+				'permission' => 'create_categories'
 			),
 			'editCategory' => array(
 				'icon' => 'fa-pencil-alt',
@@ -79,7 +85,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit <b>Category</b> titled <i>[category]</i>',
 				'dynamic' => true,
 				'addon' => false,
-				'target' => 'categories/edit'
+				'target' => 'categories/edit',
+				'permission' => 'edit_categories'
 			),
 			'viewFiles' => array(
 				'icon' => 'fa-eye',
@@ -87,7 +94,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'View <b>All Files</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'files'
+				'target' => 'files',
+				'permission' => 'access_files'
 			),
 			'viewFilesIn' => array(
 				'icon' => 'fa-eye',
@@ -95,7 +103,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'View <b>Files</b> in <i>[upload directory]</i>',
 				'dynamic' => true,
 				'addon' => false,
-				'target' => 'files/view'
+				'target' => 'files/view',
+				'permission' => 'edit_files'
 			),
 			'editUploadDirectory' => array(
 				'icon' => 'fa-pencil-alt',
@@ -103,7 +112,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit <b>Upload Directory</b>',
 				'dynamic' => true,
 				'addon' => false,
-				'target' => 'files/directories'
+				'target' => 'files/directories',
+				'permission' => 'edit_upload_directories'
 			),
 			'viewMembers' => array(
 				'icon' => 'fa-eye',
@@ -111,7 +121,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'View <b>Members</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'members'
+				'target' => 'members',
+				'permission' => 'access_members'
 			),
 			'viewMembersIn' => array(
 				'icon' => 'fa-eye',
@@ -119,7 +130,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'View <b>Members</b> in <i>[member group]</i>',
 				'dynamic' => true,
 				'addon' => false,
-				'target' => 'members/view'
+				'target' => 'members/view',
+				'permission' => 'access_members'
 			),
 			'editMember' => array(
 				'icon' => 'fa-pencil-alt',
@@ -127,7 +139,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit <b>Member</b> titled <i>[name]</i>',
 				'dynamic' => true,
 				'addon' => false,
-				'target' => 'members/edit'
+				'target' => 'members/edit',
+				'permission' => 'edit_members'
 			),
 			'editMemberGroup' => array(
 				'icon' => 'fa-pencil-alt',
@@ -135,7 +148,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit <b>Member Group</b> titled <i>[group]</i>',
 				'dynamic' => true,
 				'addon' => false,
-				'target' => 'members/group'
+				'target' => 'members/group',
+				'permission' => 'edit_roles'
 			),
 			'viewAddons' => array(
 				'icon' => 'fa-eye',
@@ -143,7 +157,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'View <b>Add-ons</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'addons'
+				'target' => 'addons',
+				'permission' => 'access_addons'
 			),
 			'viewChannels' => array(
 				'icon' => 'fa-eye',
@@ -151,7 +166,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'View <b>Channels</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'channels'
+				'target' => 'channels',
+				'permission' => 'admin_channels'
 			),
 			'viewChannelFields' => array(
 				'icon' => 'fa-eye',
@@ -159,7 +175,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'View <b>Channel Fields</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'fields'
+				'target' => 'fields',
+				'permission' => ['create_channel_fields', 'edit_channel_fields']
 			),
 			'createChannelField' => array(
 				'icon' => 'fa-plus',
@@ -167,7 +184,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Create <b>Channel Field</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'fields/create'
+				'target' => 'fields/create',
+				'permission' => 'create_channel_fields'
 			),
 			'createChannel' => array(
 				'icon' => 'fa-plus',
@@ -175,7 +193,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Create <b>Channel</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'channels/create'
+				'target' => 'channels/create',
+				'permission' => 'create_channels'
 			),
 			'editChannel' => array(
 				'icon' => 'fa-pencil-alt',
@@ -183,7 +202,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit <b>Channel</b> titled <i>[channel]</i>',
 				'dynamic' => true,
 				'addon' => false,
-				'target' => 'channels/edit'
+				'target' => 'channels/edit',
+				'permission' => 'edit_channels'
 			),
 			'viewTemplates' => array(
 				'icon' => 'fa-eye',
@@ -191,7 +211,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'View <b>Templates</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'design'
+				'target' => 'design',
+				'permission' => 'access_design'
 			),
 			'viewTemplatesIn' => array(
 				'icon' => 'fa-eye',
@@ -199,7 +220,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'View <b>Templates</b> in <i>[group]</i>',
 				'dynamic' => true,
 				'addon' => false,
-				'target' => 'templates/view'
+				'target' => 'templates/view',
+				'permission' => 'access_design'
 			),
 			'createTemplateGroup' => array(
 				'icon' => 'fa-plus',
@@ -207,7 +229,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Create <b>Template Group</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'design/group/create'
+				'target' => 'design/group/create',
+				'permission' => 'create_template_groups'
 			),
 			'createTemplateIn' => array(
 				'icon' => 'fa-plus',
@@ -215,7 +238,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Create <b>Template</b> in <i>[group]</i>',
 				'dynamic' => true,
 				'addon' => false,
-				'target' => 'templates/create'
+				'target' => 'templates/create',
+				'permission' => 'access_design'
 			),
 			'editTemplate' => array(
 				'icon' => 'fa-pencil-alt',
@@ -223,7 +247,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit <b>Template</b> titled <i>[template]</i>',
 				'dynamic' => true,
 				'addon' => false,
-				'target' => 'templates/edit'
+				'target' => 'templates/edit',
+				'permission' => 'access_design'
 			),
 			'editTemplateGroup' => array(
 				'icon' => 'fa-pencil-alt',
@@ -231,7 +256,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit <b>Template Group</b> titled <i>[group]</i>',
 				'dynamic' => true,
 				'addon' => false,
-				'target' => 'templates/group'
+				'target' => 'templates/group',
+				'permission' => 'edit_template_groups'
 			),
 			'systemSettingsGeneral' => array(
 				'icon' => 'fa-wrench',
@@ -239,7 +265,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit <b>General</b> Settings',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'settings/general'
+				'target' => 'settings/general',
+				'permission' => 'access_sys_prefs'
 			),
 			'systemSettingsUrls' => array(
 				'icon' => 'fa-wrench',
@@ -247,7 +274,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit General Settings &raquo; <b>URL and Path</b> Settings',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'settings/urls'
+				'target' => 'settings/urls',
+				'permission' => 'access_sys_prefs'
 			),
 			'systemSettingsEmail' => array(
 				'icon' => 'fa-wrench',
@@ -255,7 +283,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit General Settings &raquo; <b>Outgoing Email</b> Settings',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'settings/email'
+				'target' => 'settings/email',
+				'permission' => 'access_sys_prefs'
 			),
 			'systemSettingsDebugging' => array(
 				'icon' => 'fa-wrench',
@@ -263,7 +292,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit General Settings &raquo; <b>Debugging</b> Settings',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'settings/debug-output'
+				'target' => 'settings/debug-output',
+				'permission' => 'access_sys_prefs'
 			),
 			'systemSettingsContentDesign' => array(
 				'icon' => 'fa-wrench',
@@ -271,7 +301,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit <b>Content & Design</b> Settings',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'settings/content-design'
+				'target' => 'settings/content-design',
+				'permission' => 'access_sys_prefs'
 			),
 			'systemSettingsComments' => array(
 				'icon' => 'fa-wrench',
@@ -279,7 +310,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit Content & Design &raquo; <b>Comment</b> Settings',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'settings/comments'
+				'target' => 'settings/comments',
+				'permission' => 'access_sys_prefs'
 			),
 			'systemSettingsButtons' => array(
 				'icon' => 'fa-wrench',
@@ -287,7 +319,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit Content & Design &raquo; <b>HTML Buttons</b> Settings',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'settings/buttons'
+				'target' => 'settings/buttons',
+				'permission' => 'access_sys_prefs'
 			),
 			'systemSettingsTemplate' => array(
 				'icon' => 'fa-wrench',
@@ -295,7 +328,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit Content & Design &raquo; <b>Template</b> Settings',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'settings/template'
+				'target' => 'settings/template',
+				'permission' => 'access_sys_prefs'
 			),
 			'systemSettingsHitTracking' => array(
 				'icon' => 'fa-wrench',
@@ -303,7 +337,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit Content & Design &raquo; <b>Hit Tracking</b> Settings',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'settings/hit-tracking'
+				'target' => 'settings/hit-tracking',
+				'permission' => 'access_sys_prefs'
 			),
 			'systemSettingsWordCensoring' => array(
 				'icon' => 'fa-wrench',
@@ -311,7 +346,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit Content & Design &raquo; <b>Word Censoring</b> Settings',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'settings/word-censor'
+				'target' => 'settings/word-censor',
+				'permission' => 'access_sys_prefs'
 			),
 			'systemSettingsMenuManager' => array(
 				'icon' => 'fa-wrench',
@@ -319,7 +355,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit Content & Design &raquo; <b>Menu Manager</b> Settings',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'settings/menu-manager'
+				'target' => 'settings/menu-manager',
+				'permission' => 'access_sys_prefs'
 			),
 			'systemSettingsMembers' => array(
 				'icon' => 'fa-wrench',
@@ -327,7 +364,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit <b>Members</b> Settings',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'settings/members'
+				'target' => 'settings/members',
+				'permission' => 'access_sys_prefs'
 			),
 			'systemSettingsMessages' => array(
 				'icon' => 'fa-wrench',
@@ -335,7 +373,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit Members &raquo; <b>Messages</b> Settings',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'settings/messages'
+				'target' => 'settings/messages',
+				'permission' => 'access_sys_prefs'
 			),
 			'systemSettingsAvatars' => array(
 				'icon' => 'fa-wrench',
@@ -343,7 +382,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit Members &raquo; <b>Avatars</b> Settings',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'settings/avatars'
+				'target' => 'settings/avatars',
+				'permission' => 'access_sys_prefs'
 			),
 			'systemSettingsSecurityPrivacy' => array(
 				'icon' => 'fa-wrench',
@@ -351,7 +391,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit <b>Security & Privacy</b> Settings',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'settings/security-privacy'
+				'target' => 'settings/security-privacy',
+				'permission' => 'access_security_settings'
 			),
 			'systemSettingsAccessThrottling' => array(
 				'icon' => 'fa-wrench',
@@ -359,7 +400,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit Security & Privacy &raquo; <b>Access Throttling</b> Settings',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'settings/throttling'
+				'target' => 'settings/throttling',
+				'permission' => 'access_security_settings'
 			),
 			'systemSettingsCaptcha' => array(
 				'icon' => 'fa-wrench',
@@ -367,7 +409,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit Security & Privacy &raquo; <b>CAPTCHA</b> Settings',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'settings/captcha'
+				'target' => 'settings/captcha',
+				'permission' => 'access_security_settings'
 			),
 			'systemSettingsConsentRequests' => array(
 				'icon' => 'fa-wrench',
@@ -375,7 +418,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'Edit Security & Privacy &raquo; <b>Consent Requests</b> Settings',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'settings/consents'
+				'target' => 'settings/consents',
+				'permission' => 'manage_consents'
 			),
 			'systemUtilitiesCommunicate' => array(
 				'icon' => 'fa-hammer',
@@ -383,7 +427,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'System Utilities &raquo; <b>Communicate</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'utilities/communicate'
+				'target' => 'utilities/communicate',
+				'permission'	=> 'access_comm'
 			),
 			'systemUtilitiesCommunicateSent' => array(
 				'icon' => 'fa-hammer',
@@ -391,7 +436,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'System Utilities &raquo; Communicate &raquo; <b>Sent</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'utilities/communicate/sent'
+				'target' => 'utilities/communicate/sent',
+				'permission'	=> 'access_comm'
 			),
 			'systemUtilitiesTranslation' => array(
 				'icon' => 'fa-hammer',
@@ -399,7 +445,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'System Utilities &raquo; <b>CP Translation</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'utilities/translate'
+				'target' => 'utilities/translate',
+				'permission'	=> 'access_translate'
 			),
 			'systemUtilitiesPHPInfo' => array(
 				'icon' => 'fa-hammer',
@@ -407,7 +454,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'System Utilities &raquo; <b>PHP Info</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'utilities/php'
+				'target' => 'utilities/php',
+				'permission'	=> 'access_utilities'
 			),
 			'systemUtilitiesExtensions' => array(
 				'icon' => 'fa-hammer',
@@ -415,7 +463,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'System Utilities &raquo; <b>Extensions</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'utilities/extensions'
+				'target' => 'utilities/extensions',
+				'permission'	=> 'access_utilities'
 			),
 			'systemUtilitiesFileConverter' => array(
 				'icon' => 'fa-hammer',
@@ -423,7 +472,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'System Utilities &raquo; Member Tools &raquo; <b>File Converter</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'utilities/import-converter'
+				'target' => 'utilities/import-converter',
+				'permission'	=> 'access_import'
 			),
 			'systemUtilitiesMemberImport' => array(
 				'icon' => 'fa-hammer',
@@ -431,7 +481,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'System Utilities &raquo; Member Tools &raquo; <b>Member Import</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'utilities/member-import'
+				'target' => 'utilities/member-import',
+				'permission'	=> 'access_import'
 			),
 			'systemUtilitiesMassNotificationExport' => array(
 				'icon' => 'fa-hammer',
@@ -439,7 +490,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'System Utilities &raquo; Member Tools &raquo; <b>Mass Notification Export</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'utilities/export-email-addresses'
+				'target' => 'utilities/export-email-addresses',
+				'permission'	=> 'access_import'
 			),
 			'systemUtilitiesBackupUtility' => array(
 				'icon' => 'fa-hammer',
@@ -447,7 +499,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'System Utilities &raquo; Database &raquo; <b>Backup Utility</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'utilities/db-backup'
+				'target' => 'utilities/db-backup',
+				'permission'	=> 'access_sql_manager'
 			),
 			'systemUtilitiesSQLManager' => array(
 				'icon' => 'fa-hammer',
@@ -455,7 +508,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'System Utilities &raquo; Database &raquo; <b>SQL Manager</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'utilities/sql'
+				'target' => 'utilities/sql',
+				'permission'	=> 'access_sql_manager'
 			),
 			'systemUtilitiesQueryForm' => array(
 				'icon' => 'fa-hammer',
@@ -463,7 +517,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'System Utilities &raquo; Database &raquo; <b>SQL Query Form</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'utilities/query'
+				'target' => 'utilities/query',
+				'permission'	=> 'access_sql_manager'
 			),
 			'systemUtilitiesCacheManager' => array(
 				'icon' => 'fa-hammer',
@@ -471,7 +526,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'System Utilities &raquo; Data Operations &raquo; <b>Cache Manager</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'utilities/cache'
+				'target' => 'utilities/cache',
+				'permission'	=> 'access_data'
 			),
 			'systemUtilitiesSearchReindex' => array(
 				'icon' => 'fa-hammer',
@@ -479,7 +535,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'System Utilities &raquo; Data Operations &raquo; <b>Search Reindex</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'utilities/reindex'
+				'target' => 'utilities/reindex',
+				'permission'	=> 'access_data'
 			),
 			'systemUtilitiesStatistics' => array(
 				'icon' => 'fa-hammer',
@@ -487,7 +544,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'System Utilities &raquo; Data Operations &raquo; <b>Statistics</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'utilities/stats'
+				'target' => 'utilities/stats',
+				'permission'	=> 'access_data'
 			),
 			'systemUtilitiesSearchAndReplace' => array(
 				'icon' => 'fa-hammer',
@@ -495,7 +553,8 @@ class JumpMenu extends AbstractJumpMenu
 				'command_title' => 'System Utilities &raquo; Data Operations &raquo; <b>Search and Replace</b>',
 				'dynamic' => false,
 				'addon' => false,
-				'target' => 'utilities/sandr'
+				'target' => 'utilities/sandr',
+				'permission'	=> 'access_data'
 			),
 			'switchTheme' => array(
 				'icon' => 'fa-random',
@@ -526,46 +585,66 @@ class JumpMenu extends AbstractJumpMenu
 	 */
 	public function getItems()
 	{
+		$items = ee()->cache->file->get('jumpmenu');
+		if (empty($items))
+		{
+			$this->primeCache();
+		}
 		return self::$items;
 	}
 
 	/**
-	 * Returns cached items and rebuilds item list and caches it if necessary
-	 * @param  boolean $flush Whether to force flush the jump menu cache.
+	 * Returns items and rebuilds item list and caches it
 	 */
-	public function primeCache($flush = false)
+	public function primeCache()
 	{
-		if ($flush === true)
+		ee()->cache->file->delete('jumpmenu');
+
+		$items = self::$items;
+
+		if (!ee('Permission')->isSuperAdmin())
 		{
-			ee()->cache->file->delete('jumpmenu');
+			foreach ($items[1] as $name => $item)
+			{
+				if (!empty($item['permission']))
+				{
+					if (!ee('Permission')->hasAny($item['permission']))
+					{
+						unset($items[1][$name]);
+					}
+				}
+			}
 		}
 
-		$items = ee()->cache->file->get('jumpmenu');
-
-		if (empty($items))
+		if (ee('Permission')->can('access_addons'))
 		{
 			$addon_infos = ee('Addon')->all();
-
-			$items = self::$items;
-
+			$assigned_modules = ee()->session->getMember()->getAssignedModules()->pluck('module_name');
 			foreach ($addon_infos as $name => $info)
 			{
-				$info = ee('Addon')->get($name);
+
+				if ($info->hasModule() && !in_array($info->getModuleClass(), $assigned_modules))
+				{
+					continue;
+				}
 
 				if ($info->get('built_in') || ! $info->isInstalled() || ! $info->get('settings_exist'))
 				{
 					continue;
 				}
 
-				// Create a jump to the add-on itself.
-				$items[1]['addon_' . $name] = array(
-					'icon' => 'fa-puzzle-piece',
-					'command' => 'addon add-on ' . $name,
-					'command_title' => 'Add-on: ' . $info->getName(),
-					'dynamic' => false,
-					'addon' => true,
-					'target' => 'addons/settings/' . $name
-				);
+				if ($info->hasExtension() || $info->hasControlPanel())
+				{
+					// Create a jump to the add-on itself.
+					$items[1]['addon_' . $name] = array(
+						'icon' => 'fa-puzzle-piece',
+						'command' => 'addon add-on ' . $name,
+						'command_title' => 'Add-on: ' . $info->getName(),
+						'dynamic' => false,
+						'addon' => true,
+						'target' => 'addons/settings/' . $name
+					);
+				}
 
 				if ( ! $info->hasJumpMenu())
 				{
@@ -574,12 +653,12 @@ class JumpMenu extends AbstractJumpMenu
 
 				$items[1] = array_merge($items[1], $info->getJumps());
 			}
-
-			// Cache our items. We're bypassing the checks for the default
-			// cache driver because we want this to be cached and working
-			// even if the dev has set caching to disabled.
-			ee()->cache->file->save('jumpmenu', $items, 60);
 		}
+
+		// Cache our items. We're bypassing the checks for the default
+		// cache driver because we want this to be cached and working
+		// even if the dev has set caching to disabled.
+		ee()->cache->file->save('jumpmenu', $items, 60);
 
 		// Assign our combined item list back to our static variable.
 		self::$items = $items;

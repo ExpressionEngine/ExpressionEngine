@@ -217,6 +217,18 @@ class Permission {
 	 */
 	protected function check($which)
 	{
+		//legacy permission support
+		if (in_array($which, ['create_entries', 'can_edit_other_entries', 'can_edit_self_entries', 'delete_self_entries', 'delete_all_entries', 'assign_post_authors']))
+		{
+			$assigned_channels = ee()->session->getMember()->getAssignedChannels()->pluck('channel_id');
+			foreach ($assigned_channels as $channel_id)
+			{
+				$check = $this->check($which.'_channel_id_'.$channel_id);
+				if ($check) return $check;
+			}
+			return FALSE;
+		}
+		
 		$k = $this->getUserdatum($which);
 
 		if ($k === TRUE OR $k == 'y')

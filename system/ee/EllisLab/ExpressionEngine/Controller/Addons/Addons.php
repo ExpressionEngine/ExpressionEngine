@@ -432,6 +432,8 @@ class Addons extends CP_Controller {
 			}
 		}
 
+		ee('CP/JumpMenu')->primeCache();
+
 		foreach (array('first', 'third') as $party)
 		{
 			if ( ! empty($updated[$party]))
@@ -606,6 +608,8 @@ class Addons extends CP_Controller {
 				}
 			}
 		}
+
+		ee('CP/JumpMenu')->primeCache();
 
 		$return = $this->base_url;
 

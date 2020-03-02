@@ -21,6 +21,10 @@ class Publish extends Jumps
 	public function __construct()
 	{
 		parent::__construct();
+		if (!ee('Permission')->hasAny(['can_edit_other_entries', 'can_edit_self_entries']))
+		{
+			$this->sendResponse([]);
+		}
 	}
 
 	/**

@@ -20,6 +20,10 @@ class Templates extends Jumps {
 	public function __construct()
 	{
 		parent::__construct();
+		if (!ee('Permission')->can('access_design'))
+		{
+			$this->sendResponse([]);
+		}
 	}
 
 	/**

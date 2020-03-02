@@ -20,6 +20,10 @@ class Files extends Jumps {
 	public function __construct()
 	{
 		parent::__construct();
+		if (!ee('Permission')->can('access_files'))
+		{
+			$this->sendResponse([]);
+		}
 	}
 
 	/**
