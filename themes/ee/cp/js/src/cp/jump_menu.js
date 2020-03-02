@@ -90,7 +90,7 @@ EE.cp.JumpMenu = {
 			} else if (e.key == 'ArrowUp' || e.key == 'ArrowDown') {
 				e.preventDefault();
 			}
-		} else if ((!e.target || e.target.className != 'jump-to') && e.key == 'j' && (e.ctrlKey || e.metaKey)) {
+		} else if ((!e.target || e.target.className.indexOf('jump-to') === -1) && e.key == 'j' && (e.ctrlKey || e.metaKey)) {
 			EE.cp.JumpMenu._showJumpMenu();
 		}
 	},

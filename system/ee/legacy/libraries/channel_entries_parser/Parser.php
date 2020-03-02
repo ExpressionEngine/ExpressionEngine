@@ -174,6 +174,11 @@ class EE_Channel_data_parser {
 		// If custom fields are enabled, notify them of the data we're about to send
 		if ( ! empty($channel->cfields))
 		{
+
+
+
+
+
 			$this->_send_custom_field_data_to_fieldtypes($entries);
 		}
 
@@ -230,6 +235,7 @@ class EE_Channel_data_parser {
 			{
 				$tagdata = call_user_func($callbacks['tagdata_loop_start'], $tagdata, $row);
 			}
+
 
 			// -------------------------------------------------------
 			// Row data callback. Do what you want.
@@ -351,6 +357,7 @@ class EE_Channel_data_parser {
 
 			if (isset($callbacks['tagdata_loop_end']))
 			{
+				// $tagdata = 'test3332221111'.call_user_func($callbacks['tagdata_loop_end'], $tagdata, $row);
 				$tagdata = call_user_func($callbacks['tagdata_loop_end'], $tagdata, $row);
 			}
 

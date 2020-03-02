@@ -42,7 +42,8 @@ class Updater {
 				'convertMembersGroupToPrimaryRole',
 				'reassignLayoutsToPrimaryRole',
 				'reassignEmailCacheToPrimaryRole',
-				'addColorPickerFieldType'
+				'addColorPickerFieldType',
+				'addLivePreview'
 			]
 		);
 
@@ -870,6 +871,22 @@ class Updater {
 				'has_global_settings' => 'n'
 			]
 		);
+  }
+  
+	private function addLivePreview()
+	{
+		$row_data = array(
+			'class' => 'Channel',
+			'method' => 'live_preview'
+		);
+
+		ee()->db->where($row_data);
+		$count = ee()->db->count_all_results('actions');
+
+		if ($count == 0)
+		{
+			ee()->db->insert('actions', $row_data);
+		}
 	}
 }
 

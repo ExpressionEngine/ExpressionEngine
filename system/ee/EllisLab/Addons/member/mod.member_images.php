@@ -144,6 +144,12 @@ class Member_images extends Member {
 	 */
 	public function edit_avatar()
 	{
+		// Are avatars enabled?
+		if (ee()->config->item('enable_avatars') == 'n')
+		{
+			return $this->_trigger_error('edit_avatar', 'avatars_not_enabled');
+		}
+
 		// Fetch the avatar template
 		$template = $this->_load_element('edit_avatar');
 
@@ -167,6 +173,12 @@ class Member_images extends Member {
 			$template = $this->_deny_if('no_avatar', $template);
 
 			$avatar_url = ee()->config->slash_item('avatar_url');
+			$avatar_fs_path = ee()->config->slash_item('avatar_path');
+
+			if (file_exists($avatar_fs_path.'default/'.$query->row('avatar_filename')))
+			{
+				$avatar_url .= 'default/';
+			}
 
 			$cur_avatar_url	= $avatar_url.$query->row('avatar_filename');
 
@@ -174,7 +186,15 @@ class Member_images extends Member {
 			$avatar_height 	= $query->row('avatar_height') ;
 		}
 
-		$template = $this->_allow_if('can_upload_avatar', $template);
+		// Can users upload their own images?
+		if (ee()->config->item('allow_avatar_uploads') == 'y')
+		{
+			$template = $this->_allow_if('can_upload_avatar', $template);
+		}
+		else
+		{
+			$template = $this->_deny_if('can_upload_avatar', $template);
+		}
 
 		// Are there pre-installed avatars?
 
@@ -271,6 +291,12 @@ class Member_images extends Member {
 	 */
 	public function browse_avatars()
 	{
+		// Are avatars enabled?
+		if (ee()->config->item('enable_avatars') == 'n')
+		{
+			return $this->_trigger_error('edit_avatar', 'avatars_not_enabled');
+		}
+
 		// Define the paths and get the images
 		$avatar_path = ee()->config->slash_item('avatar_path').ee()->security->sanitize_filename($this->cur_id).'/';
 		$avatar_url = ee()->config->slash_item('avatar_url').ee()->security->sanitize_filename($this->cur_id).'/';
@@ -371,6 +397,12 @@ class Member_images extends Member {
 	 */
 	public function select_avatar()
 	{
+		// Are avatars enabled?
+		if (ee()->config->item('enable_avatars') == 'n')
+		{
+			return $this->_trigger_error('edit_avatar', 'avatars_not_enabled');
+		}
+
 		if (ee()->input->get_post('avatar') === FALSE OR
 			ee()->input->get_post('folder') === FALSE)
 		{
