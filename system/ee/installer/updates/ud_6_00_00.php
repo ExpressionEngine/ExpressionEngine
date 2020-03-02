@@ -43,7 +43,10 @@ class Updater {
 				'reassignLayoutsToPrimaryRole',
 				'reassignEmailCacheToPrimaryRole',
 				'addColorPickerFieldType',
-				'addLivePreview'
+				'addLivePreview',
+				'addWidgetsTable',
+				'addDashboardLayoutsTable',
+				'addLayoutWidgetsTable'
 			]
 		);
 
@@ -888,6 +891,136 @@ class Updater {
 			ee()->db->insert('actions', $row_data);
 		}
 	}
+
+	private function addWidgetsTable()
+	{
+		if (ee()->db->table_exists('dashboard_widgets'))
+		{
+			return;
+		}
+
+		ee()->dbforge->add_field(
+			[
+				'widget_id' => [
+					'type'           => 'int',
+					'constraint'     => 10,
+					'null'           => FALSE,
+					'unsigned'       => TRUE,
+					'auto_increment' => TRUE
+				],
+				'widget_name' => [
+					'type'       => 'varchar',
+					'constraint' => 50,
+					'null'       => TRUE,
+					'default'		 => NULL
+				],
+				'widget_data' => [
+					'type'       => 'mediumtext',
+					'null'       => TRUE
+				],
+				'widget_type' => [
+					'type'       => 'varchar',
+					'constraint' => 10,
+					'null'       => FALSE
+				],
+				'widget_source' => [
+					'type'       => 'varchar',
+					'constraint' => 50,
+					'null'       => FALSE
+				],
+				'widget_file' => [
+					'type'       => 'varchar',
+					'constraint' => 100,
+					'null'       => TRUE,
+					'default'		 => NULL
+				]
+			]
+		);
+		ee()->dbforge->add_key('widget_id', TRUE);
+		ee()->smartforge->create_table('dashboard_widgets');
+
+		ee()->db->data_cache = []; // Reset the cache so it will re-fetch a list of tables
+
+	}
+
+	private function addDashboardLayoutsTable()
+	{
+		if (ee()->db->table_exists('dashboard_layouts'))
+		{
+			return;
+		}
+
+		ee()->dbforge->add_field(
+			[
+				'layout_id' => [
+					'type'           => 'int',
+					'constraint'     => 10,
+					'null'           => FALSE,
+					'unsigned'       => TRUE,
+					'auto_increment' => TRUE
+				],
+				'member_id' => [
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => TRUE,
+					'default'		 => NULL
+				],
+				'role_id' => [
+					'type'       => 'int',
+					'constraint' => 10,
+					'unsigned'   => TRUE,
+					'null'       => TRUE,
+					'default'		 => NULL
+				],
+				'order' => [
+					'type'       => 'varchar',
+					'constraint' => 255,
+					'null'       => TRUE,
+					'default'		 => NULL
+				],
+			]
+		);
+		ee()->dbforge->add_key('layout_id', TRUE);
+		ee()->dbforge->add_key('member_id');
+		ee()->dbforge->add_key('role_id');
+		ee()->smartforge->create_table('dashboard_layouts');
+
+		ee()->db->data_cache = []; // Reset the cache so it will re-fetch a list of tables
+
+	}
+
+	private function addLayoutWidgetsTable()
+	{
+		if (ee()->db->table_exists('dashboard_layout_widgets'))
+		{
+			return;
+		}
+
+		ee()->dbforge->add_field(
+			[
+				'layout_id' => [
+					'type'           => 'int',
+					'constraint'     => 10,
+					'null'           => FALSE,
+					'unsigned'       => TRUE
+				],
+				'widget_id' => [
+					'type'           => 'int',
+					'constraint'     => 10,
+					'null'           => FALSE,
+					'unsigned'       => TRUE
+				]
+			]
+		);
+
+		ee()->smartforge->create_table('dashboard_layout_widgets');
+
+		ee()->db->data_cache = []; // Reset the cache so it will re-fetch a list of tables
+		ee()->smartforge->add_key('dashboard_layout_widgets', ['layout_id', 'widget_id'], 'layouts_widgets');
+
+	}
+
 }
 
 // EOF
