@@ -587,7 +587,7 @@ class Cp {
 					'file'				=> array(),
 					'package'			=> array(),
 					'fp_module'			=> array(),
-					'pro_file'				=> array()
+					'pro_file'			=> array()
 			);
 
 			$this->requests[] = $str.AMP.'v='.max($mtimes);
