@@ -9,7 +9,7 @@
 			<?php if (isset($filters)) echo $filters; ?>
 		</div>
 
-		<?php $this->embed('_shared/thumb', $files->toArray()); ?>
+		<?php $this->embed('_shared/thumb', $files->asArray()); ?>
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
 		<fieldset class="bulk-action-bar hidden">
