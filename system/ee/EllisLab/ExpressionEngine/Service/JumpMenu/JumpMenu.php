@@ -585,7 +585,7 @@ class JumpMenu extends AbstractJumpMenu
 	 */
 	public function getItems()
 	{
-		$items = ee()->cache->file->get('jumpmenu');
+		$items = ee()->cache->file->get('jumpmenu/'.ee()->session->getMember()->getId());
 		if (empty($items))
 		{
 			$this->primeCache();
@@ -594,11 +594,21 @@ class JumpMenu extends AbstractJumpMenu
 	}
 
 	/**
+	 * clear all caches
+	 * for now we're just forcing file driver, but that might change later
+	 */
+
+	public function clearAllCaches()
+	{
+		ee()->cache->file->clean('jumpmenu');
+	}
+
+	/**
 	 * Returns items and rebuilds item list and caches it
 	 */
 	public function primeCache()
 	{
-		ee()->cache->file->delete('jumpmenu');
+		ee()->cache->file->delete('jumpmenu/'.ee()->session->getMember()->getId());
 
 		$items = self::$items;
 
@@ -658,7 +668,7 @@ class JumpMenu extends AbstractJumpMenu
 		// Cache our items. We're bypassing the checks for the default
 		// cache driver because we want this to be cached and working
 		// even if the dev has set caching to disabled.
-		ee()->cache->file->save('jumpmenu', $items, 3600);
+		ee()->cache->file->save('jumpmenu/'.ee()->session->getMember()->getId(), $items, 3600);
 
 		// Assign our combined item list back to our static variable.
 		self::$items = $items;

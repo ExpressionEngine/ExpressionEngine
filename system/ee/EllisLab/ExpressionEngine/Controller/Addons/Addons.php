@@ -428,7 +428,7 @@ class Addons extends CP_Controller {
 			}
 		}
 
-		ee('CP/JumpMenu')->primeCache();
+		ee('CP/JumpMenu')->clearAllCaches();
 
 		foreach (array('first', 'third') as $party)
 		{
@@ -605,7 +605,7 @@ class Addons extends CP_Controller {
 			}
 		}
 
-		ee('CP/JumpMenu')->primeCache();
+		ee('CP/JumpMenu')->clearAllCaches();
 
 		$return = $this->base_url;
 
