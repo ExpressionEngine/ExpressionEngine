@@ -108,7 +108,8 @@ class Publish extends Jumps
 
 	private function loadChannels($searchString = false)
 	{
-		$channels = ee('Model')->get('Channel');
+		$channels = ee('Model')->get('Channel')
+			->filter('channel_id', 'IN', ee()->functions->fetch_assigned_channels());
 
 		if (!empty($searchString)) {
 			// Break the search string into individual keywords so we can partially match them.

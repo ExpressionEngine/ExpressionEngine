@@ -41,7 +41,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => true,
 				'addon' => false,
 				'target' => 'publish/create',
-				'permission'=>['create_entries']
+				'permission'=>['can_create_entries']
 			),
 			'editEntry' => array(
 				'icon' => 'fa-pencil-alt',
@@ -59,7 +59,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'members/create',
-				'permission' => 'create_members'
+				'permission' => 'can_create_members'
 			),
 			'createMemberGroup' => array(
 				'icon' => 'fa-plus',
@@ -68,7 +68,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'members/groups/create',
-				'permission' => 'create_roles'
+				'permission' => 'can_create_roles'
 			),
 			'createCategoryIn' => array(
 				'icon' => 'fa-plus',
@@ -77,7 +77,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => true,
 				'addon' => false,
 				'target' => 'categories/create',
-				'permission' => 'create_categories'
+				'permission' => 'can_create_categories'
 			),
 			'editCategory' => array(
 				'icon' => 'fa-pencil-alt',
@@ -86,7 +86,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => true,
 				'addon' => false,
 				'target' => 'categories/edit',
-				'permission' => 'edit_categories'
+				'permission' => 'can_edit_categories'
 			),
 			'viewFiles' => array(
 				'icon' => 'fa-eye',
@@ -95,7 +95,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'files',
-				'permission' => 'access_files'
+				'permission' => 'can_access_files'
 			),
 			'viewFilesIn' => array(
 				'icon' => 'fa-eye',
@@ -104,7 +104,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => true,
 				'addon' => false,
 				'target' => 'files/view',
-				'permission' => 'edit_files'
+				'permission' => 'can_edit_files'
 			),
 			'editUploadDirectory' => array(
 				'icon' => 'fa-pencil-alt',
@@ -113,7 +113,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => true,
 				'addon' => false,
 				'target' => 'files/directories',
-				'permission' => 'edit_upload_directories'
+				'permission' => 'can_edit_upload_directories'
 			),
 			'viewMembers' => array(
 				'icon' => 'fa-eye',
@@ -122,7 +122,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'members',
-				'permission' => 'access_members'
+				'permission' => 'can_access_members'
 			),
 			'viewMembersIn' => array(
 				'icon' => 'fa-eye',
@@ -131,7 +131,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => true,
 				'addon' => false,
 				'target' => 'members/view',
-				'permission' => 'access_members'
+				'permission' => 'can_access_members'
 			),
 			'editMember' => array(
 				'icon' => 'fa-pencil-alt',
@@ -140,7 +140,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => true,
 				'addon' => false,
 				'target' => 'members/edit',
-				'permission' => 'edit_members'
+				'permission' => 'can_edit_members'
 			),
 			'editMemberGroup' => array(
 				'icon' => 'fa-pencil-alt',
@@ -149,7 +149,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => true,
 				'addon' => false,
 				'target' => 'members/group',
-				'permission' => 'edit_roles'
+				'permission' => 'can_edit_roles'
 			),
 			'viewAddons' => array(
 				'icon' => 'fa-eye',
@@ -158,7 +158,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'addons',
-				'permission' => 'access_addons'
+				'permission' => 'can_access_addons'
 			),
 			'viewChannels' => array(
 				'icon' => 'fa-eye',
@@ -167,7 +167,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'channels',
-				'permission' => 'admin_channels'
+				'permission' => 'can_admin_channels'
 			),
 			'viewChannelFields' => array(
 				'icon' => 'fa-eye',
@@ -176,7 +176,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'fields',
-				'permission' => ['create_channel_fields', 'edit_channel_fields']
+				'permission' => ['can_create_channel_fields', 'can_edit_channel_fields']
 			),
 			'createChannelField' => array(
 				'icon' => 'fa-plus',
@@ -185,7 +185,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'fields/create',
-				'permission' => 'create_channel_fields'
+				'permission' => 'can_create_channel_fields'
 			),
 			'createChannel' => array(
 				'icon' => 'fa-plus',
@@ -194,7 +194,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'channels/create',
-				'permission' => 'create_channels'
+				'permission' => 'can_create_channels'
 			),
 			'editChannel' => array(
 				'icon' => 'fa-pencil-alt',
@@ -203,7 +203,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => true,
 				'addon' => false,
 				'target' => 'channels/edit',
-				'permission' => 'edit_channels'
+				'permission' => 'can_edit_channels'
 			),
 			'viewTemplates' => array(
 				'icon' => 'fa-eye',
@@ -212,7 +212,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'design',
-				'permission' => 'access_design'
+				'permission' => 'can_access_design'
 			),
 			'viewTemplatesIn' => array(
 				'icon' => 'fa-eye',
@@ -221,7 +221,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => true,
 				'addon' => false,
 				'target' => 'templates/view',
-				'permission' => 'access_design'
+				'permission' => 'can_access_design'
 			),
 			'createTemplateGroup' => array(
 				'icon' => 'fa-plus',
@@ -230,7 +230,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'design/group/create',
-				'permission' => 'create_template_groups'
+				'permission' => 'can_create_template_groups'
 			),
 			'createTemplateIn' => array(
 				'icon' => 'fa-plus',
@@ -239,7 +239,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => true,
 				'addon' => false,
 				'target' => 'templates/create',
-				'permission' => 'access_design'
+				'permission' => 'can_access_design'
 			),
 			'editTemplate' => array(
 				'icon' => 'fa-pencil-alt',
@@ -248,7 +248,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => true,
 				'addon' => false,
 				'target' => 'templates/edit',
-				'permission' => 'access_design'
+				'permission' => 'can_access_design'
 			),
 			'editTemplateGroup' => array(
 				'icon' => 'fa-pencil-alt',
@@ -257,7 +257,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => true,
 				'addon' => false,
 				'target' => 'templates/group',
-				'permission' => 'edit_template_groups'
+				'permission' => 'can_edit_template_groups'
 			),
 			'systemSettingsGeneral' => array(
 				'icon' => 'fa-wrench',
@@ -266,7 +266,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'settings/general',
-				'permission' => 'access_sys_prefs'
+				'permission' => 'can_access_sys_prefs'
 			),
 			'systemSettingsUrls' => array(
 				'icon' => 'fa-wrench',
@@ -275,7 +275,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'settings/urls',
-				'permission' => 'access_sys_prefs'
+				'permission' => 'can_access_sys_prefs'
 			),
 			'systemSettingsEmail' => array(
 				'icon' => 'fa-wrench',
@@ -284,7 +284,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'settings/email',
-				'permission' => 'access_sys_prefs'
+				'permission' => 'can_access_sys_prefs'
 			),
 			'systemSettingsDebugging' => array(
 				'icon' => 'fa-wrench',
@@ -293,7 +293,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'settings/debug-output',
-				'permission' => 'access_sys_prefs'
+				'permission' => 'can_access_sys_prefs'
 			),
 			'systemSettingsContentDesign' => array(
 				'icon' => 'fa-wrench',
@@ -302,7 +302,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'settings/content-design',
-				'permission' => 'access_sys_prefs'
+				'permission' => 'can_access_sys_prefs'
 			),
 			'systemSettingsComments' => array(
 				'icon' => 'fa-wrench',
@@ -311,7 +311,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'settings/comments',
-				'permission' => 'access_sys_prefs'
+				'permission' => 'can_access_sys_prefs'
 			),
 			'systemSettingsButtons' => array(
 				'icon' => 'fa-wrench',
@@ -320,7 +320,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'settings/buttons',
-				'permission' => 'access_sys_prefs'
+				'permission' => 'can_access_sys_prefs'
 			),
 			'systemSettingsTemplate' => array(
 				'icon' => 'fa-wrench',
@@ -329,7 +329,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'settings/template',
-				'permission' => 'access_sys_prefs'
+				'permission' => 'can_access_sys_prefs'
 			),
 			'systemSettingsHitTracking' => array(
 				'icon' => 'fa-wrench',
@@ -338,7 +338,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'settings/hit-tracking',
-				'permission' => 'access_sys_prefs'
+				'permission' => 'can_access_sys_prefs'
 			),
 			'systemSettingsWordCensoring' => array(
 				'icon' => 'fa-wrench',
@@ -347,7 +347,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'settings/word-censor',
-				'permission' => 'access_sys_prefs'
+				'permission' => 'can_access_sys_prefs'
 			),
 			'systemSettingsMenuManager' => array(
 				'icon' => 'fa-wrench',
@@ -356,7 +356,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'settings/menu-manager',
-				'permission' => 'access_sys_prefs'
+				'permission' => 'can_access_sys_prefs'
 			),
 			'systemSettingsMembers' => array(
 				'icon' => 'fa-wrench',
@@ -374,7 +374,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'settings/messages',
-				'permission' => 'access_sys_prefs'
+				'permission' => 'can_access_sys_prefs'
 			),
 			'systemSettingsAvatars' => array(
 				'icon' => 'fa-wrench',
@@ -383,7 +383,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'settings/avatars',
-				'permission' => 'access_sys_prefs'
+				'permission' => 'can_access_sys_prefs'
 			),
 			'systemSettingsSecurityPrivacy' => array(
 				'icon' => 'fa-wrench',
@@ -392,7 +392,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'settings/security-privacy',
-				'permission' => 'access_security_settings'
+				'permission' => 'can_access_security_settings'
 			),
 			'systemSettingsAccessThrottling' => array(
 				'icon' => 'fa-wrench',
@@ -401,7 +401,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'settings/throttling',
-				'permission' => 'access_security_settings'
+				'permission' => 'can_access_security_settings'
 			),
 			'systemSettingsCaptcha' => array(
 				'icon' => 'fa-wrench',
@@ -410,7 +410,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'settings/captcha',
-				'permission' => 'access_security_settings'
+				'permission' => 'can_access_security_settings'
 			),
 			'systemSettingsConsentRequests' => array(
 				'icon' => 'fa-wrench',
@@ -419,7 +419,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'settings/consents',
-				'permission' => 'manage_consents'
+				'permission' => 'can_manage_consents'
 			),
 			'systemUtilitiesCommunicate' => array(
 				'icon' => 'fa-hammer',
@@ -428,7 +428,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'utilities/communicate',
-				'permission'	=> 'access_comm'
+				'permission'	=> 'can_access_comm'
 			),
 			'systemUtilitiesCommunicateSent' => array(
 				'icon' => 'fa-hammer',
@@ -437,7 +437,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'utilities/communicate/sent',
-				'permission'	=> 'access_comm'
+				'permission'	=> 'can_access_comm'
 			),
 			'systemUtilitiesTranslation' => array(
 				'icon' => 'fa-hammer',
@@ -446,7 +446,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'utilities/translate',
-				'permission'	=> 'access_translate'
+				'permission'	=> 'can_access_translate'
 			),
 			'systemUtilitiesPHPInfo' => array(
 				'icon' => 'fa-hammer',
@@ -455,7 +455,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'utilities/php',
-				'permission'	=> 'access_utilities'
+				'permission'	=> 'can_access_utilities'
 			),
 			'systemUtilitiesExtensions' => array(
 				'icon' => 'fa-hammer',
@@ -464,7 +464,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'utilities/extensions',
-				'permission'	=> 'access_utilities'
+				'permission'	=> 'can_access_utilities'
 			),
 			'systemUtilitiesFileConverter' => array(
 				'icon' => 'fa-hammer',
@@ -473,7 +473,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'utilities/import-converter',
-				'permission'	=> 'access_import'
+				'permission'	=> 'can_access_import'
 			),
 			'systemUtilitiesMemberImport' => array(
 				'icon' => 'fa-hammer',
@@ -482,7 +482,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'utilities/member-import',
-				'permission'	=> 'access_import'
+				'permission'	=> 'can_access_import'
 			),
 			'systemUtilitiesMassNotificationExport' => array(
 				'icon' => 'fa-hammer',
@@ -491,7 +491,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'utilities/export-email-addresses',
-				'permission'	=> 'access_import'
+				'permission'	=> 'can_access_import'
 			),
 			'systemUtilitiesBackupUtility' => array(
 				'icon' => 'fa-hammer',
@@ -500,7 +500,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'utilities/db-backup',
-				'permission'	=> 'access_sql_manager'
+				'permission'	=> 'can_access_sql_manager'
 			),
 			'systemUtilitiesSQLManager' => array(
 				'icon' => 'fa-hammer',
@@ -509,7 +509,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'utilities/sql',
-				'permission'	=> 'access_sql_manager'
+				'permission'	=> 'can_access_sql_manager'
 			),
 			'systemUtilitiesQueryForm' => array(
 				'icon' => 'fa-hammer',
@@ -518,7 +518,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'utilities/query',
-				'permission'	=> 'access_sql_manager'
+				'permission'	=> 'can_access_sql_manager'
 			),
 			'systemUtilitiesCacheManager' => array(
 				'icon' => 'fa-hammer',
@@ -527,7 +527,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'utilities/cache',
-				'permission'	=> 'access_data'
+				'permission'	=> 'can_access_data'
 			),
 			'systemUtilitiesSearchReindex' => array(
 				'icon' => 'fa-hammer',
@@ -536,7 +536,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'utilities/reindex',
-				'permission'	=> 'access_data'
+				'permission'	=> 'can_access_data'
 			),
 			'systemUtilitiesStatistics' => array(
 				'icon' => 'fa-hammer',
@@ -545,7 +545,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'utilities/stats',
-				'permission'	=> 'access_data'
+				'permission'	=> 'can_access_data'
 			),
 			'systemUtilitiesSearchAndReplace' => array(
 				'icon' => 'fa-hammer',
@@ -554,7 +554,7 @@ class JumpMenu extends AbstractJumpMenu
 				'dynamic' => false,
 				'addon' => false,
 				'target' => 'utilities/sandr',
-				'permission'	=> 'access_data'
+				'permission'	=> 'can_access_data'
 			),
 			'switchTheme' => array(
 				'icon' => 'fa-random',
@@ -658,7 +658,7 @@ class JumpMenu extends AbstractJumpMenu
 		// Cache our items. We're bypassing the checks for the default
 		// cache driver because we want this to be cached and working
 		// even if the dev has set caching to disabled.
-		ee()->cache->file->save('jumpmenu', $items, 60);
+		ee()->cache->file->save('jumpmenu', $items, 3600);
 
 		// Assign our combined item list back to our static variable.
 		self::$items = $items;

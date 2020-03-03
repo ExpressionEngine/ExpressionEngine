@@ -38,12 +38,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 // 100             - Choose Result (or keep tying - goto 70)
 // 110               - Redirect to matches jump URL (edit entry X)
 
-document.addEventListener("keydown", function(e) {
-  if (e.keyCode == 74 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
-    e.preventDefault(); //Ctrl+J
-  }
-}, false);
-
 /**
  * EE Jump Menu
  */
@@ -102,6 +96,7 @@ EE.cp.JumpMenu = {
         e.preventDefault();
       }
     } else if ((!e.target || e.target.className != 'jump-to') && e.key == 'j' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
       EE.cp.JumpMenu._showJumpMenu();
     }
   },
