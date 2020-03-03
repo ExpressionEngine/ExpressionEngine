@@ -111,11 +111,11 @@ class EE_Core {
 		//is this pro version?
 		if (is_dir(PATH_PRO_ADDONS) && ee('Addon')->get('pro')->isInstalled())
 		{
-				define('IS_PRO',        TRUE);
+			define('IS_PRO',        TRUE);
 		}
 		else
 		{
-				define('IS_PRO',        FALSE);
+			define('IS_PRO',        FALSE);
 		}
 		 
 	 
