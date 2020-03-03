@@ -189,11 +189,7 @@ class Addons extends CP_Controller {
 		if ( ! ee('Permission')->isSuperAdmin())
 		{
 			$that = $this;
-			$addons['first'] = array_filter($addons['first'], function($addon) use ($that)
-			{
-				return (isset($addon['module_id']) && in_array($addon['module_id'], $that->assigned_modules));
-			});
-			$addons['third'] = array_filter($addons['third'], function($addon) use ($that)
+			$addons = array_filter($addons, function($addon) use ($that)
 			{
 				return (isset($addon['module_id']) && in_array($addon['module_id'], $that->assigned_modules));
 			});

@@ -36,7 +36,7 @@ class Session {
 	}
 	public function isWithinAuthTimeout()
 	{
-		return $this->session->isWithinAuthTimeout();
+		return (!empty($this->session) && $this->session->isWithinAuthTimeout());
 	}
 }
 
