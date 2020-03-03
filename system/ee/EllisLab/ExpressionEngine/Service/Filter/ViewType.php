@@ -48,7 +48,7 @@ class Viewtype extends Filter {
 			'thumb'  => lang('viewtype_thumb'),
 		);
 
-		$this->default_value = 'thumb';
+		$this->default_value = 'table';
 	}
 
 	/**

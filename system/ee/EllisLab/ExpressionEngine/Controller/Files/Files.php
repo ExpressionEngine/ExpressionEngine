@@ -25,7 +25,7 @@ class Files extends AbstractFilesController {
 
 	public function index()
 	{
-		$view_type = 'thumb';
+		$view_type = 'table';
 
 		if (!empty($_GET['viewtype']) && $_GET['viewtype']) {
 			$view_type = $_GET['viewtype'];
