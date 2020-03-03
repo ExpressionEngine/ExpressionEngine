@@ -96,6 +96,7 @@ EE.cp.JumpMenu = {
         e.preventDefault();
       }
     } else if ((!e.target || e.target.className != 'jump-to') && e.key == 'j' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
       EE.cp.JumpMenu._showJumpMenu();
     }
   },

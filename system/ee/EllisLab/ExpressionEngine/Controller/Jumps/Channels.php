@@ -21,6 +21,10 @@ class Channels extends Jumps
 	public function __construct()
 	{
 		parent::__construct();
+		if (!ee('Permission')->can('admin_channels'))
+		{
+			$this->sendResponse([]);
+		}
 	}
 
 	/**

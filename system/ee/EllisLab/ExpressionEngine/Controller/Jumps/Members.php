@@ -17,6 +17,10 @@ class Members extends Jumps {
 	public function __construct()
 	{
 		parent::__construct();
+		if (!ee('Permission')->can('access_members'))
+		{
+			$this->sendResponse([]);
+		}
 	}
 
 	/**
@@ -35,13 +39,13 @@ class Members extends Jumps {
 		$response = array();
 
 		foreach ($groups as $group) {
-			$response['viewMemberGroup' . $group->group_title] = array(
+			$response['viewMemberGroup' . $group->name] = array(
 				'icon' => 'fa-eye',
-				'command' => $group->group_title,
-				'command_title' => $group->group_title,
+				'command' => $group->name,
+				'command_title' => $group->name,
 				'dynamic' => false,
 				'addon' => false,
-				'target' => ee('CP/URL')->make('members', array('group' => $group->getId()))->compile()
+				'target' => ee('CP/URL')->make('members', array('role_id' => $group->getId()))->compile()
 			);
 		}
 
@@ -93,18 +97,18 @@ class Members extends Jumps {
 
 	private function loadMemberGroups($searchString = false)
 	{
-		$groups = ee('Model')->get('MemberGroup');
+		$groups = ee('Model')->get('Role');
 
 		if (!empty($searchString)) {
 			// Break the search string into individual keywords so we can partially match them.
 			$keywords = explode(' ', $searchString);
 
 			foreach ($keywords as $keyword) {
-				$groups->filter('group_title', 'LIKE', '%' . $keyword . '%');
+				$groups->filter('name', 'LIKE', '%' . $keyword . '%');
 			}
 		}
 
-		return $groups->order('group_title', 'ASC')->limit(11)->all();
+		return $groups->order('name', 'ASC')->limit(11)->all();
 	}
 
 	private function loadMembers($searchString = false)

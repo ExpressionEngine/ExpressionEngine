@@ -476,6 +476,12 @@ class Auth {
 		$authed = new Auth_result($member->row());
 		$member->free_result();
 
+		//if they can access CP, build jump menu now
+		if (ee('Permission')->can('access_cp'))
+		{
+			ee('CP/JumpMenu')->primeCache();
+		}
+
 		return $authed;
 	}
 

@@ -21,6 +21,10 @@ class Publish extends Jumps
 	public function __construct()
 	{
 		parent::__construct();
+		if (!ee('Permission')->hasAny(['can_edit_other_entries', 'can_edit_self_entries']))
+		{
+			$this->sendResponse([]);
+		}
 	}
 
 	/**
@@ -104,7 +108,8 @@ class Publish extends Jumps
 
 	private function loadChannels($searchString = false)
 	{
-		$channels = ee('Model')->get('Channel');
+		$channels = ee('Model')->get('Channel')
+			->filter('channel_id', 'IN', ee()->functions->fetch_assigned_channels());
 
 		if (!empty($searchString)) {
 			// Break the search string into individual keywords so we can partially match them.

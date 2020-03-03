@@ -25,11 +25,6 @@ class Jumps extends CP_Controller {
 			$this->invalidRequest();
 		}
 
-		if (ee()->session->userdata('group_id') != 1)
-		{
-			show_error(lang('unauthorized_access'), 403);
-		}
-
 		$this->checkRequestSegments();
 	}
 
@@ -41,6 +36,11 @@ class Jumps extends CP_Controller {
 
 	public function addons()
 	{
+		if (!ee('Permission')->can('access_addons'))
+		{
+			$this->sendResponse([]);
+		}
+
 		if (empty(ee()->uri->segments[4]) || empty(ee()->uri->segments[5]))
 		{
 			$this->invalidRequest();
