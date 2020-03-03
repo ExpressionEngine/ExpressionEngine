@@ -189,6 +189,13 @@ class ThemeInstaller {
 
 		@chmod($path_tmpl.'default_site', DIR_WRITE_MODE);
 
+		//default template preferences
+		$default_template_preference = new \stdClass();
+		$default_template_preference->access = new \stdClass();
+		$default_template_preference->access->Guests = 'y';
+		$default_template_preference->access->Pending = 'y';
+		$default_template_preference->access->Members = 'y';
+
 		$theme_template_dir = $this->installer_path."site_themes/{$theme_name}/templates/";
 		foreach (directory_map($theme_template_dir) as $directory => $contents)
 		{
@@ -249,7 +256,7 @@ class ThemeInstaller {
 						$template,
 						(isset($template_preferences->$group_name->$template_name))
 							? $template_preferences->$group_name->$template_name
-							: new \stdClass()
+							: $default_template_preference
 					);
 					$template->save();
 				}
@@ -300,7 +307,7 @@ class ThemeInstaller {
 
 			$access = $template_preferences->access;
 			$template->Roles = $roles->filter(function($role) use ($access) {
-				return ($access->{$role->name} == 'y');
+				return (isset($access->{$role->name}) && $access->{$role->name} == 'y');
 			});
 		}
 

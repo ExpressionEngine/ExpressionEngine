@@ -1630,7 +1630,14 @@ class EE_Schema {
 				'can_moderate_spam',
 				'can_manage_consents',
 			],
+			3 => [
+				'can_view_online_system',
+			],
+			4 => [
+				'can_view_online_system',
+			],
 			5 => [
+				'can_view_online_system',
 				'can_email_from_profile',
 				'can_view_profiles',
 				'can_edit_html_buttons',
